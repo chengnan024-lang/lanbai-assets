@@ -1,0 +1,631 @@
+{
+ "_about": "Lanbai PPv2 profiles (Color Grading mode = High Definition Range, Tonemapper = Neutral in EVERY profile). Trackballs are PPv2 Vector4 (x,y,z = wheel colour with max channel 1, w = offset slider). Every profile overrides the SAME full parameter set (see lens_cine.md section 3.3). priority = timeline order; transition = raise the incoming volume's weight 0->1 while the outgoing stays at 1, then set the outgoing to 0.",
+ "common": {
+  "hueShift": 0,
+  "colorFilter": "#FFFFFF",
+  "mixer": "identity",
+  "curves": "default",
+  "bloom": {
+   "anamorphicRatio": 0,
+   "fastMode": false,
+   "clamp": 65472,
+   "dirt": null
+  },
+  "vignette": {
+   "intensity": 0
+  },
+  "grain": {
+   "intensity": 0
+  },
+  "autoExposure": "off",
+  "depthOfField": "off",
+  "motionBlur": "off",
+  "chromaticAberration": "off",
+  "ambientOcclusion": "off",
+  "screenSpaceReflections": "off",
+  "lensDistortion": "off"
+ },
+ "profiles": {
+  "S1": {
+   "priority": 1,
+   "name": "站牌 the stop (rain)",
+   "ppv2": {
+    "postExposure": 0.0,
+    "temperature": -6,
+    "tint": 3,
+    "saturation": -15,
+    "contrast": 12,
+    "lift": [
+     0.9875,
+     0.9905,
+     1,
+     0.008
+    ],
+    "gamma": [
+     0.97,
+     0.98,
+     1,
+     0
+    ],
+    "gain": [
+     1,
+     1,
+     1,
+     0
+    ],
+    "bloom": {
+     "intensity": 4,
+     "threshold": 1.0,
+     "softKnee": 0.6,
+     "diffusion": 8,
+     "color": "#FFFFFF"
+    }
+   }
+  },
+  "S2": {
+   "priority": 2,
+   "name": "夜路 night road (radio, mono)",
+   "ppv2": {
+    "postExposure": -0.15,
+    "temperature": -6,
+    "tint": 3,
+    "saturation": -22,
+    "contrast": 10,
+    "lift": [
+     0.9875,
+     0.9905,
+     1,
+     0.008
+    ],
+    "gamma": [
+     0.97,
+     0.98,
+     1,
+     0
+    ],
+    "gain": [
+     1,
+     0.99,
+     0.97,
+     0
+    ],
+    "bloom": {
+     "intensity": 3.5,
+     "threshold": 1.0,
+     "softKnee": 0.6,
+     "diffusion": 7.5,
+     "color": "#FFFFFF"
+    }
+   }
+  },
+  "S3": {
+   "priority": 3,
+   "name": "离地 lift-off / moonlit cloud sea (REFERENCE EV0)",
+   "ppv2": {
+    "postExposure": -0.9,
+    "temperature": -6,
+    "tint": 3,
+    "saturation": -6,
+    "contrast": 14,
+    "lift": [
+     0.9875,
+     0.9905,
+     1,
+     0.008
+    ],
+    "gamma": [
+     0.97,
+     0.98,
+     1,
+     0
+    ],
+    "gain": [
+     1,
+     1,
+     1,
+     0
+    ],
+    "bloom": {
+     "intensity": 3.5,
+     "threshold": 1.05,
+     "softKnee": 0.5,
+     "diffusion": 7,
+     "color": "#FFFFFF"
+    }
+   }
+  },
+  "S4": {
+   "priority": 4,
+   "name": "触手之门 tentacle gate",
+   "ppv2": {
+    "postExposure": -1.1,
+    "temperature": -7,
+    "tint": 5,
+    "saturation": -4,
+    "contrast": 22,
+    "lift": [
+     0.99,
+     0.99,
+     1,
+     0.006
+    ],
+    "gamma": [
+     0.98,
+     0.975,
+     1,
+     0
+    ],
+    "gain": [
+     1,
+     0.985,
+     1,
+     0
+    ],
+    "bloom": {
+     "intensity": 6,
+     "threshold": 0.95,
+     "softKnee": 0.5,
+     "diffusion": 8.5,
+     "color": "#F2ECFF"
+    }
+   }
+  },
+  "S6": {
+   "priority": 6,
+   "name": "天空 I dawn",
+   "ppv2": {
+    "postExposure": -1.0,
+    "temperature": -3,
+    "tint": 2,
+    "saturation": 4,
+    "contrast": 12,
+    "lift": [
+     0.99,
+     0.993,
+     1,
+     0.004
+    ],
+    "gamma": [
+     0.995,
+     0.997,
+     1,
+     0
+    ],
+    "gain": [
+     1,
+     0.97,
+     0.92,
+     0
+    ],
+    "bloom": {
+     "intensity": 4,
+     "threshold": 1.1,
+     "softKnee": 0.6,
+     "diffusion": 8.5,
+     "color": "#FFF4E8"
+    }
+   }
+  },
+  "S7a": {
+   "priority": 7,
+   "name": "海面 under the surface",
+   "ppv2": {
+    "postExposure": -0.8,
+    "temperature": -4,
+    "tint": -2,
+    "saturation": 4,
+    "contrast": 8,
+    "lift": [
+     0.985,
+     1,
+     1,
+     0.006
+    ],
+    "gamma": [
+     0.98,
+     0.995,
+     1,
+     0
+    ],
+    "gain": [
+     0.99,
+     1,
+     1,
+     0
+    ],
+    "bloom": {
+     "intensity": 4,
+     "threshold": 1.0,
+     "softKnee": 0.6,
+     "diffusion": 8,
+     "color": "#E8FAFF"
+    }
+   }
+  },
+  "S7b": {
+   "priority": 8,
+   "name": "深海 the deep",
+   "ppv2": {
+    "postExposure": -0.4,
+    "temperature": -6,
+    "tint": 2,
+    "saturation": 2,
+    "contrast": 16,
+    "lift": [
+     0.9875,
+     0.9905,
+     1,
+     0.008
+    ],
+    "gamma": [
+     0.97,
+     0.98,
+     1,
+     0
+    ],
+    "gain": [
+     1,
+     1,
+     1,
+     0
+    ],
+    "bloom": {
+     "intensity": 6,
+     "threshold": 0.85,
+     "softKnee": 0.6,
+     "diffusion": 7,
+     "color": "#FFFFFF"
+    }
+   }
+  },
+  "S8": {
+   "priority": 9,
+   "name": "天空 II dusk (the mirror frame)",
+   "ppv2": {
+    "postExposure": -0.5,
+    "temperature": 3,
+    "tint": 1,
+    "saturation": 8,
+    "contrast": 10,
+    "lift": [
+     0.985,
+     0.99,
+     1,
+     0.006
+    ],
+    "gamma": [
+     0.99,
+     0.993,
+     1,
+     0
+    ],
+    "gain": [
+     1,
+     0.955,
+     0.87,
+     0
+    ],
+    "bloom": {
+     "intensity": 6,
+     "threshold": 1.0,
+     "softKnee": 0.6,
+     "diffusion": 9,
+     "color": "#FFE6CC"
+    }
+   }
+  },
+  "S8b": {
+   "priority": 10,
+   "name": "blue hour (dusk -> night)",
+   "ppv2": {
+    "postExposure": -0.3,
+    "temperature": -5,
+    "tint": 4,
+    "saturation": 0,
+    "contrast": 8,
+    "lift": [
+     0.9875,
+     0.9905,
+     1,
+     0.008
+    ],
+    "gamma": [
+     0.97,
+     0.98,
+     1,
+     0
+    ],
+    "gain": [
+     1,
+     1,
+     1,
+     0
+    ],
+    "bloom": {
+     "intensity": 4,
+     "threshold": 1.0,
+     "softKnee": 0.6,
+     "diffusion": 8,
+     "color": "#FFFFFF"
+    }
+   }
+  },
+  "S9a": {
+   "priority": 11,
+   "name": "天空 III star sea (start)",
+   "ppv2": {
+    "postExposure": 0.3,
+    "temperature": -6,
+    "tint": 4,
+    "saturation": 0,
+    "contrast": 14,
+    "lift": [
+     0.9875,
+     0.9905,
+     1,
+     0.008
+    ],
+    "gamma": [
+     0.97,
+     0.98,
+     1,
+     0
+    ],
+    "gain": [
+     1,
+     1,
+     1,
+     0
+    ],
+    "bloom": {
+     "intensity": 5,
+     "threshold": 0.9,
+     "softKnee": 0.7,
+     "diffusion": 6,
+     "color": "#FFFFFF"
+    }
+   }
+  },
+  "S9b": {
+   "priority": 12,
+   "name": "星海 climax (end of 9)",
+   "ppv2": {
+    "postExposure": 1.3,
+    "temperature": -4,
+    "tint": 3,
+    "saturation": -4,
+    "contrast": 10,
+    "lift": [
+     0.9875,
+     0.9905,
+     1,
+     0.008
+    ],
+    "gamma": [
+     0.975,
+     0.985,
+     1,
+     0
+    ],
+    "gain": [
+     1,
+     1,
+     1,
+     0
+    ],
+    "bloom": {
+     "intensity": 10,
+     "threshold": 0.7,
+     "softKnee": 0.7,
+     "diffusion": 8,
+     "color": "#F4F8FF"
+    }
+   }
+  },
+  "S10": {
+   "priority": 13,
+   "name": "白光 white (neutral; the 藍白 overlay carries the colour)",
+   "ppv2": {
+    "postExposure": 0.0,
+    "temperature": 0,
+    "tint": 0,
+    "saturation": 0,
+    "contrast": 0,
+    "lift": [
+     1,
+     1,
+     1,
+     0
+    ],
+    "gamma": [
+     1,
+     1,
+     1,
+     0
+    ],
+    "gain": [
+     1,
+     1,
+     1,
+     0
+    ],
+    "bloom": {
+     "intensity": 0,
+     "threshold": 1.0,
+     "softKnee": 0.5,
+     "diffusion": 7,
+     "color": "#FFFFFF"
+    }
+   }
+  },
+  "S11": {
+   "priority": 14,
+   "name": "假醒 false awakening (= S2 exactly: normality is the lie)",
+   "ppv2": {
+    "postExposure": -0.15,
+    "temperature": -6,
+    "tint": 3,
+    "saturation": -22,
+    "contrast": 10,
+    "lift": [
+     0.9875,
+     0.9905,
+     1,
+     0.008
+    ],
+    "gamma": [
+     0.97,
+     0.98,
+     1,
+     0
+    ],
+    "gain": [
+     1,
+     0.99,
+     0.97,
+     0
+    ],
+    "bloom": {
+     "intensity": 3.5,
+     "threshold": 1.0,
+     "softKnee": 0.6,
+     "diffusion": 7.5,
+     "color": "#FFFFFF"
+    }
+   }
+  },
+  "S12": {
+   "priority": 15,
+   "name": "醒 awakening (rain stopped)",
+   "ppv2": {
+    "postExposure": 0.0,
+    "temperature": -5,
+    "tint": 3,
+    "saturation": -8,
+    "contrast": 10,
+    "lift": [
+     0.9875,
+     0.9905,
+     1,
+     0.008
+    ],
+    "gamma": [
+     0.975,
+     0.985,
+     1,
+     0
+    ],
+    "gain": [
+     1,
+     1,
+     1,
+     0
+    ],
+    "bloom": {
+     "intensity": 3.5,
+     "threshold": 1.0,
+     "softKnee": 0.6,
+     "diffusion": 7.5,
+     "color": "#FFFFFF"
+    }
+   }
+  }
+ },
+ "helpers": {
+  "FLASH_TEAR": {
+   "priority": 100,
+   "ppv2": {
+    "postExposure": 2.0,
+    "bloom": {
+     "intensity": 14,
+     "threshold": 0.6,
+     "softKnee": 0.8,
+     "diffusion": 9,
+     "color": "#F4EEFF"
+    }
+   },
+   "envelope": "weight 0->1 in 0.25 s (ease-in), hold 0.15 s, 1->0 in 0.10 s exactly when the black overlay snaps on"
+  },
+  "WHITE_RAMP": {
+   "priority": 100,
+   "ppv2": {
+    "postExposure": 3.0,
+    "saturation": -40,
+    "bloom": {
+     "intensity": 20,
+     "threshold": 0.3,
+     "softKnee": 1.0,
+     "diffusion": 10,
+     "color": "#EEF4F8"
+    }
+   },
+   "envelope": "weight 0->1 over the last 5 s of the crescendo (ease-in cubic), then 1->0 over 1.0 s while the 藍白 overlay goes 0->1; ends at weight 0 with S10 at weight 1"
+  },
+  "MIRROR_PULSE": {
+   "priority": 90,
+   "ppv2": {
+    "postExposure": 0.35,
+    "bloom": {
+     "intensity": 9,
+     "threshold": 0.8
+    }
+   },
+   "envelope": "per mirror crossing: 0->1 in 0.08 s, 1->0 in 0.35 s. Never more than 3 pulses per second (photosensitivity)."
+  }
+ },
+ "lens_desktop_only": {
+  "LENS_ARCHIVE": {
+   "priority": 200,
+   "used_in": [
+    "S1",
+    "S2",
+    "S3 until the cloud entry",
+    "S11"
+   ],
+   "vignette": {
+    "mode": "Classic",
+    "color": "#02040A",
+    "center": [
+     0.5,
+     0.5
+    ],
+    "intensity": 0.26,
+    "smoothness": 0.45,
+    "roundness": 1,
+    "rounded": false
+   },
+   "grain": {
+    "colored": false,
+    "intensity": 0.2,
+    "size": 1.0,
+    "luminanceContribution": 0.85
+   }
+  },
+  "LENS_CLEAN": {
+   "priority": 201,
+   "used_in": [
+    "S3 after the break-out",
+    "S4..S10",
+    "S12"
+   ],
+   "vignette": {
+    "mode": "Classic",
+    "color": "#02040A",
+    "center": [
+     0.5,
+     0.5
+    ],
+    "intensity": 0.2,
+    "smoothness": 0.4,
+    "roundness": 1,
+    "rounded": false
+   },
+   "grain": {
+    "colored": false,
+    "intensity": 0.06,
+    "size": 0.8,
+    "luminanceContribution": 0.9
+   }
+  }
+ }
+}

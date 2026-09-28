@@ -1,0 +1,1068 @@
+{
+ "kelvin": {
+  "2100": "#FF9624",
+  "2400": "#FFA642",
+  "3200": "#FFC47A",
+  "4300": "#FFE0B4",
+  "5600": "#FFF5E5",
+  "6500": "#FFFFFF",
+  "7500": "#EAF2FF",
+  "9000": "#D6E4FF"
+ },
+ "tube": "#F6E7C0",
+ "tear": "#CE8BFF",
+ "lights": [
+  {
+   "scene": "S1",
+   "role": "Key: stop lamp (LED 5600 K), card on the road at the pool centre",
+   "color": "#FFF5E5",
+   "E": 1.3,
+   "inspector": 1.127,
+   "card": "#818181"
+  },
+  {
+   "scene": "S1",
+   "role": "Fill: cabin spill through the open door (tube cream), card on the kerb",
+   "color": "#F6E7C0",
+   "E": 0.35,
+   "inspector": 0.621,
+   "card": "#3E3E3A"
+  },
+  {
+   "scene": "S1",
+   "role": "Headlight pool on the road 10 m ahead (halogen 3200 K)",
+   "color": "#FFC47A",
+   "E": 0.9,
+   "inspector": 0.953,
+   "card": "#6A5542"
+  },
+  {
+   "scene": "S1",
+   "role": "Ambient only (Trilight sky #1A2438), card facing up",
+   "color": "#1A2438",
+   "E": 1.0,
+   "inspector": 1.0,
+   "card": "#050C17"
+  },
+  {
+   "scene": "S2",
+   "role": "Key: cabin tubes, card on a seat cushion",
+   "color": "#F6E7C0",
+   "E": 0.55,
+   "inspector": 0.762,
+   "card": "#4D4B46"
+  },
+  {
+   "scene": "S2",
+   "role": "Streetlight sweep peak (sodium 2100 K), card on a seat",
+   "color": "#FF9624",
+   "E": 0.9,
+   "inspector": 0.953,
+   "card": "#623D2B"
+  },
+  {
+   "scene": "S2",
+   "role": "Headlight pool on the road 10 m ahead",
+   "color": "#FFC47A",
+   "E": 0.9,
+   "inspector": 0.953,
+   "card": "#645141"
+  },
+  {
+   "scene": "S3",
+   "role": "Key: moon (9000 K) directional, intensity reference E = 1",
+   "color": "#D6E4FF",
+   "E": 1.0,
+   "inspector": 1.0,
+   "card": "#414C5B"
+  },
+  {
+   "scene": "S3",
+   "role": "Cabin tubes after the break-out (half of S2)",
+   "color": "#F6E7C0",
+   "E": 0.27,
+   "inspector": 0.551,
+   "card": "#242524"
+  },
+  {
+   "scene": "S4",
+   "role": "Moon rim source (same moon), card facing the moon",
+   "color": "#D6E4FF",
+   "E": 1.0,
+   "inspector": 1.0,
+   "card": "#3C4354"
+  },
+  {
+   "scene": "S4",
+   "role": "Tear light (violet) directional from the tear, card facing the tear",
+   "color": "#CE8BFF",
+   "E": 0.8,
+   "inspector": 0.904,
+   "card": "#301C47"
+  },
+  {
+   "scene": "S4",
+   "role": "Cloud-sea bounce from below (#5A6488), card facing down",
+   "color": "#5A6488",
+   "E": 0.24370299219062033,
+   "inspector": 0.526,
+   "card": "#060713"
+  },
+  {
+   "scene": "S4",
+   "role": "Cabin tubes base level before they die",
+   "color": "#F6E7C0",
+   "E": 0.25,
+   "inspector": 0.533,
+   "card": "#1E1C1D"
+  },
+  {
+   "scene": "S6",
+   "role": "Key: dawn sun 3200 K, 6 deg elevation",
+   "color": "#FFC47A",
+   "E": 3.0,
+   "inspector": 1.648,
+   "card": "#8E6B47"
+  },
+  {
+   "scene": "S6",
+   "role": "Sky ambient only (Trilight sky #5A78B8), card facing up",
+   "color": "#5A78B8",
+   "E": 1.0,
+   "inspector": 1.0,
+   "card": "#102038"
+  },
+  {
+   "scene": "S7a",
+   "role": "Key: sun through the surface (#A8DCEB), card facing up",
+   "color": "#A8DCEB",
+   "E": 1.6,
+   "inspector": 1.238,
+   "card": "#3A636B"
+  },
+  {
+   "scene": "S7a",
+   "role": "Water ambient (Trilight equator #2B7FA8), card facing sideways",
+   "color": "#2B7FA8",
+   "E": 1.0,
+   "inspector": 1.0,
+   "card": "#002A39"
+  },
+  {
+   "scene": "S7b",
+   "role": "Palace glow from below (vermilion point light) at the bus",
+   "color": "#FF5A2E",
+   "E": 0.15,
+   "inspector": 0.422,
+   "card": "#1F090F"
+  },
+  {
+   "scene": "S7b",
+   "role": "Deep ambient (Trilight sky #0E3050), card facing up",
+   "color": "#0E3050",
+   "E": 1.0,
+   "inspector": 1.0,
+   "card": "#000D1D"
+  },
+  {
+   "scene": "S8",
+   "role": "Key/back: dusk sun 2400 K on the horizon, card facing the sun",
+   "color": "#FFA642",
+   "E": 2.2,
+   "inspector": 1.431,
+   "card": "#935A24"
+  },
+  {
+   "scene": "S8",
+   "role": "Ground ambient: rose-violet cloud sea (#6A4A78), card facing down",
+   "color": "#6A4A78",
+   "E": 1.0,
+   "inspector": 1.0,
+   "card": "#221629"
+  },
+  {
+   "scene": "S8",
+   "role": "Sky ambient: ocean ceiling (#1C3350), card facing up",
+   "color": "#1C3350",
+   "E": 1.0,
+   "inspector": 1.0,
+   "card": "#000E1B"
+  },
+  {
+   "scene": "S9a",
+   "role": "Starlight ambient (Trilight sky #1A2A4A), card facing up",
+   "color": "#1A2A4A",
+   "E": 1.0,
+   "inspector": 1.0,
+   "card": "#031022"
+  },
+  {
+   "scene": "S9a",
+   "role": "Mirror-crossing pulse light 8000 K (peak)",
+   "color": "#E2EDFF",
+   "E": 0.3,
+   "inspector": 0.579,
+   "card": "#38414D"
+  },
+  {
+   "scene": "S12",
+   "role": "Key: stop lamp (same as S1)",
+   "color": "#FFF5E5",
+   "E": 1.3,
+   "inspector": 1.127,
+   "card": "#818080"
+  },
+  {
+   "scene": "S12",
+   "role": "Ambient only (clearing sky #121C2E), card facing up",
+   "color": "#121C2E",
+   "E": 1.0,
+   "inspector": 1.0,
+   "card": "#030A15"
+  }
+ ],
+ "targets": {
+  "S1": [
+   {
+    "element": "Fog colour (Exp2)",
+    "display": "#101A2B",
+    "set": "#151B2C",
+    "lin": [
+     0.0075,
+     0.01122,
+     0.02467
+    ]
+   },
+   {
+    "element": "Sky zenith (overcast night)",
+    "display": "#070B14",
+    "set": "#0A080F",
+    "lin": [
+     0.00291,
+     0.00247,
+     0.00459
+    ]
+   },
+   {
+    "element": "Sky horizon",
+    "display": "#0E1628",
+    "set": "#131729",
+    "lin": [
+     0.00647,
+     0.00844,
+     0.02177
+    ]
+   },
+   {
+    "element": "Horizon toward the town (sodium-lit cloud base)",
+    "display": "#231E24",
+    "set": "#2A1F21",
+    "lin": [
+     0.02273,
+     0.01391,
+     0.01496
+    ]
+   },
+   {
+    "element": "Town lights (soft sprites, fog-free)",
+    "display": "#D98A3E",
+    "set": "#F87A00",
+    "lin": [
+     0.93879,
+     0.19316,
+     0.0
+    ]
+   },
+   {
+    "element": "Rain streaks inside the lamp cone",
+    "display": "#9AA8B8",
+    "set": "#A0ACBF",
+    "lin": [
+     0.34919,
+     0.41375,
+     0.51899
+    ]
+   },
+   {
+    "element": "Rain streaks elsewhere",
+    "display": "#1E2632",
+    "set": "#242831",
+    "lin": [
+     0.01736,
+     0.02131,
+     0.03101
+    ]
+   },
+   {
+    "element": "Lamp cone (fake volumetric) core",
+    "display": "#3A4658",
+    "set": "#3F4756",
+    "lin": [
+     0.05034,
+     0.06343,
+     0.0935
+    ]
+   }
+  ],
+  "S2": [
+   {
+    "element": "Fog colour",
+    "display": "#0A0F18",
+    "set": "#0D0E16",
+    "lin": [
+     0.00414,
+     0.00457,
+     0.00816
+    ]
+   },
+   {
+    "element": "Sky",
+    "display": "#05080F",
+    "set": "#060406",
+    "lin": [
+     0.0018,
+     0.00116,
+     0.00197
+    ]
+   },
+   {
+    "element": "Radio dial glow",
+    "display": "#F2A640",
+    "set": "#FF7B00 @ +0.47",
+    "lin": [
+     1.38168,
+     0.2759,
+     0.0
+    ]
+   },
+   {
+    "element": "Sodium lamp heads passing",
+    "display": "#FFC27A",
+    "set": "#FF8300 @ +1.22",
+    "lin": [
+     2.32485,
+     0.52961,
+     0.0
+    ]
+   }
+  ],
+  "S3": [
+   {
+    "element": "Sky zenith",
+    "display": "#08101F",
+    "set": "#16192B",
+    "lin": [
+     0.00778,
+     0.00982,
+     0.02367
+    ]
+   },
+   {
+    "element": "Sky horizon (away from the moon)",
+    "display": "#111B30",
+    "set": "#242A43",
+    "lin": [
+     0.01764,
+     0.02338,
+     0.05565
+    ]
+   },
+   {
+    "element": "Sky 10 deg around the moon",
+    "display": "#26344F",
+    "set": "#414B69",
+    "lin": [
+     0.05243,
+     0.07082,
+     0.14235
+    ]
+   },
+   {
+    "element": "Moon halo (disc of 6 deg)",
+    "display": "#5A6A88",
+    "set": "#818DB0",
+    "lin": [
+     0.21886,
+     0.26576,
+     0.43157
+    ]
+   },
+   {
+    "element": "Fog colour above the clouds",
+    "display": "#111B30",
+    "set": "#242A43",
+    "lin": [
+     0.01764,
+     0.02338,
+     0.05565
+    ]
+   },
+   {
+    "element": "Town underglow patches on the cloud sea",
+    "display": "#6A4630",
+    "set": "#95612E",
+    "lin": [
+     0.29946,
+     0.1185,
+     0.02779
+    ]
+   },
+   {
+    "element": "Cloud-entry whiteout fog",
+    "display": "#4A5568",
+    "set": "#6C7385",
+    "lin": [
+     0.15138,
+     0.17256,
+     0.23573
+    ]
+   }
+  ],
+  "S4": [
+   {
+    "element": "Sky void",
+    "display": "#070A14",
+    "set": "#13181E",
+    "lin": [
+     0.00633,
+     0.00919,
+     0.01264
+    ]
+   },
+   {
+    "element": "Haze fog (far colossi dissolve into it)",
+    "display": "#1B2240",
+    "set": "#383E60",
+    "lin": [
+     0.03944,
+     0.04874,
+     0.11664
+    ]
+   },
+   {
+    "element": "Violet halo around the tear",
+    "display": "#6B45C8",
+    "set": "#9163FF @ +0.49",
+    "lin": [
+     0.39882,
+     0.17573,
+     1.40182
+    ]
+   },
+   {
+    "element": "Violet light shafts (additive, where two overlap)",
+    "display": "#3A2A70",
+    "set": "#644B9D",
+    "lin": [
+     0.12639,
+     0.07041,
+     0.33776
+    ]
+   },
+   {
+    "element": "Cloud sea under the tear (tinted)",
+    "display": "#4E4F7A",
+    "set": "#7A78A6",
+    "lin": [
+     0.19437,
+     0.18685,
+     0.38325
+    ]
+   },
+   {
+    "element": "Tear edge glow (just outside the core)",
+    "display": "#C9B2FF",
+    "set": "#9779FF @ +2.43",
+    "lin": [
+     1.66675,
+     1.03724,
+     5.40696
+    ]
+   }
+  ],
+  "S5": [
+   {
+    "element": "Black overlay",
+    "display": "#010207",
+    "set": "#000000",
+    "lin": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   {
+    "element": "Falling motes",
+    "display": "#2A3550",
+    "set": "#4C5772",
+    "lin": [
+     0.0724,
+     0.09626,
+     0.16979
+    ]
+   }
+  ],
+  "S6": [
+   {
+    "element": "Zenith",
+    "display": "#3E64A6",
+    "set": "#678BED",
+    "lin": [
+     0.13542,
+     0.25903,
+     0.84347
+    ]
+   },
+   {
+    "element": "Earth-shadow band (anti-sun horizon)",
+    "display": "#8C98B8",
+    "set": "#B9C8FF @ +0.15",
+    "lin": [
+     0.53409,
+     0.64176,
+     1.10683
+    ]
+   },
+   {
+    "element": "Belt of Venus (above the Earth shadow)",
+    "display": "#D9B3B9",
+    "set": "#FFBEC4 @ +0.97",
+    "lin": [
+     1.95649,
+     1.01057,
+     1.07432
+    ]
+   },
+   {
+    "element": "Sun-side horizon",
+    "display": "#F2C79A",
+    "set": "#FFA96B @ +1.86",
+    "lin": [
+     3.6333,
+     1.44057,
+     0.53605
+    ]
+   },
+   {
+    "element": "Fog colour (average forward horizon)",
+    "display": "#C4B8C0",
+    "set": "#FFEBF7 @ +0.40",
+    "lin": [
+     1.31563,
+     1.08919,
+     1.22887
+    ]
+   },
+   {
+    "element": "Sea far below (mirror, deep blue)",
+    "display": "#1C3D63",
+    "set": "#395A8B",
+    "lin": [
+     0.04082,
+     0.10114,
+     0.25711
+    ]
+   }
+  ],
+  "S7a": [
+   {
+    "element": "Snell window (the sky seen from below)",
+    "display": "#E6F3F8",
+    "set": "#D8EFFF @ +2.03",
+    "lin": [
+     2.80596,
+     3.52519,
+     4.09594
+    ]
+   },
+   {
+    "element": "Water fog, shallow",
+    "display": "#2B7FA8",
+    "set": "#60A1DF",
+    "lin": [
+     0.11824,
+     0.35772,
+     0.74013
+    ]
+   },
+   {
+    "element": "God-ray cards (additive result)",
+    "display": "#7FC4DD",
+    "set": "#8ECBFF @ +0.99",
+    "lin": [
+     0.53953,
+     1.19389,
+     1.9926
+    ]
+   },
+   {
+    "element": "Surface underside outside the window (total reflection)",
+    "display": "#0F3A5A",
+    "set": "#324C74",
+    "lin": [
+     0.03225,
+     0.07172,
+     0.1733
+    ]
+   }
+  ],
+  "S7b": [
+   {
+    "element": "Water fog, 30-60 m",
+    "display": "#16507A",
+    "set": "#385D86",
+    "lin": [
+     0.03939,
+     0.11066,
+     0.23769
+    ]
+   },
+   {
+    "element": "Water fog, deep",
+    "display": "#061A30",
+    "set": "#152237",
+    "lin": [
+     0.00756,
+     0.0163,
+     0.03886
+    ]
+   },
+   {
+    "element": "Abyss (looking down, before the palace)",
+    "display": "#02070F",
+    "set": "#040305",
+    "lin": [
+     0.00113,
+     0.00105,
+     0.0015
+    ]
+   },
+   {
+    "element": "Plankton (bioluminescent points)",
+    "display": "#8FE8FF",
+    "set": "#77BAFF @ +1.80",
+    "lin": [
+     0.64509,
+     1.71261,
+     3.48016
+    ]
+   },
+   {
+    "element": "Palace glow, vermilion 朱",
+    "display": "#FF5A2E",
+    "set": "#FF4D00 @ +1.27",
+    "lin": [
+     2.41349,
+     0.17781,
+     0.0
+    ]
+   },
+   {
+    "element": "Palace glow, violet 紫贝",
+    "display": "#8A5CFF",
+    "set": "#6D48FF @ +1.87",
+    "lin": [
+     0.55691,
+     0.23902,
+     3.65536
+    ]
+   }
+  ],
+  "S8": [
+   {
+    "element": "Ocean ceiling, straight overhead (deep water)",
+    "display": "#10263F",
+    "set": "#1C304F",
+    "lin": [
+     0.01179,
+     0.02985,
+     0.07729
+    ]
+   },
+   {
+    "element": "Ocean ceiling near the horizon (mirror)",
+    "display": "#C98A7A",
+    "set": "#FDA692",
+    "lin": [
+     0.98168,
+     0.37894,
+     0.28887
+    ]
+   },
+   {
+    "element": "Sky slot at the horizon",
+    "display": "#F2A56B",
+    "set": "#FF8851 @ +1.34",
+    "lin": [
+     2.53139,
+     0.62541,
+     0.20847
+    ]
+   },
+   {
+    "element": "Cloud-sea shadows below",
+    "display": "#4A3560",
+    "set": "#564376",
+    "lin": [
+     0.09385,
+     0.05589,
+     0.18018
+    ]
+   },
+   {
+    "element": "Fog colour",
+    "display": "#B77F78",
+    "set": "#DB9790",
+    "lin": [
+     0.71041,
+     0.31029,
+     0.28039
+    ]
+   }
+  ],
+  "S8b": [
+   {
+    "element": "Blue-hour sky (the purest 蓝 of the piece)",
+    "display": "#2E4F8A",
+    "set": "#405796",
+    "lin": [
+     0.05052,
+     0.09614,
+     0.3063
+    ]
+   },
+   {
+    "element": "Blue-hour horizon",
+    "display": "#6F86B0",
+    "set": "#8093C8",
+    "lin": [
+     0.21748,
+     0.29381,
+     0.57894
+    ]
+   }
+  ],
+  "S9a": [
+   {
+    "element": "Sky zenith 紺",
+    "display": "#0B1A33",
+    "set": "#11192D",
+    "lin": [
+     0.00578,
+     0.00965,
+     0.02625
+    ]
+   },
+   {
+    "element": "Sky horizon",
+    "display": "#16294A",
+    "set": "#1D2741",
+    "lin": [
+     0.01248,
+     0.02062,
+     0.05344
+    ]
+   },
+   {
+    "element": "Milky Way, brightest diffuse",
+    "display": "#6F82A0",
+    "set": "#6A758E",
+    "lin": [
+     0.14409,
+     0.17802,
+     0.27022
+    ]
+   },
+   {
+    "element": "Sea reflection (mirror, -0.3 EV)",
+    "display": "#0A1428",
+    "set": "#0F1222",
+    "lin": [
+     0.00468,
+     0.00625,
+     0.01639
+    ]
+   }
+  ],
+  "S10": [
+   {
+    "element": "The 藍白 overlay (full field)",
+    "display": "#E8F1F5",
+    "set": "#D3EEFF @ +1.45",
+    "lin": [
+     1.78223,
+     2.33636,
+     2.73601
+    ]
+   }
+  ],
+  "S11": [
+   {
+    "element": "Sea in the sky, underside",
+    "display": "#0F2438",
+    "set": "#11283E",
+    "lin": [
+     0.00567,
+     0.02111,
+     0.04776
+    ]
+   },
+   {
+    "element": "Amber light pools on the sea",
+    "display": "#B8763A",
+    "set": "#D56B00",
+    "lin": [
+     0.66548,
+     0.14697,
+     0.0
+    ]
+   },
+   {
+    "element": "Fog colour",
+    "display": "#0A0F18",
+    "set": "#0D0E16",
+    "lin": [
+     0.00414,
+     0.00457,
+     0.00816
+    ]
+   }
+  ],
+  "S12": [
+   {
+    "element": "Sky zenith (breaking cloud)",
+    "display": "#070B14",
+    "set": "#09080D",
+    "lin": [
+     0.00278,
+     0.00228,
+     0.00412
+    ]
+   },
+   {
+    "element": "Pre-dawn 藍白 band, 0-4 deg above the horizon",
+    "display": "#8FA6BE",
+    "set": "#94ABCB",
+    "lin": [
+     0.29594,
+     0.40672,
+     0.60002
+    ]
+   },
+   {
+    "element": "Fog colour (thin)",
+    "display": "#111B2A",
+    "set": "#161C29",
+    "lin": [
+     0.0078,
+     0.01136,
+     0.02189
+    ]
+   },
+   {
+    "element": "Fireflies",
+    "display": "#D8F28A",
+    "set": "#DCFF00 @ +0.52",
+    "lin": [
+     1.02517,
+     1.42989,
+     0.0
+    ]
+   },
+   {
+    "element": "Town lights (now visible)",
+    "display": "#D98A3E",
+    "set": "#FD8000",
+    "lin": [
+     0.98608,
+     0.21748,
+     0.0
+    ]
+   }
+  ]
+ },
+ "ramp": {
+  "S1": [
+   "#070C12",
+   "#0D1117",
+   "#161A1F",
+   "#23272C",
+   "#363A3F",
+   "#50545A",
+   "#72777D",
+   "#9BA0A6",
+   "#C5C9CD",
+   "#E7E9EC",
+   "#FEFFFF"
+  ],
+  "S2": [
+   "#070B11",
+   "#0D1116",
+   "#16191E",
+   "#23262A",
+   "#34383C",
+   "#4D5055",
+   "#6D7176",
+   "#95999E",
+   "#BFC1C5",
+   "#E2E4E6",
+   "#FAFBFD"
+  ],
+  "S3": [
+   "#04090F",
+   "#060C12",
+   "#0C1117",
+   "#161A20",
+   "#24282D",
+   "#373C41",
+   "#52575D",
+   "#757B82",
+   "#A0A5AB",
+   "#CACED3",
+   "#EBEDF0"
+  ],
+  "S4": [
+   "#05050D",
+   "#07070F",
+   "#0B0C13",
+   "#13141B",
+   "#202027",
+   "#32333B",
+   "#4C4E56",
+   "#70727B",
+   "#9C9EA8",
+   "#C8CBD2",
+   "#ECEDF2"
+  ],
+  "S6": [
+   "#01060B",
+   "#05090E",
+   "#0C0F13",
+   "#16191C",
+   "#252628",
+   "#39393B",
+   "#535455",
+   "#767678",
+   "#A09FA1",
+   "#C9C8C9",
+   "#EAE9EA"
+  ],
+  "S7a": [
+   "#000C0B",
+   "#00100F",
+   "#021616",
+   "#111F20",
+   "#222E2E",
+   "#374143",
+   "#535D5E",
+   "#768082",
+   "#9FA7AA",
+   "#C7CED0",
+   "#E8ECED"
+  ],
+  "S7b": [
+   "#040A11",
+   "#080E14",
+   "#10151B",
+   "#1B2026",
+   "#2B3036",
+   "#42484E",
+   "#62686F",
+   "#8A9097",
+   "#B6BBC1",
+   "#DDE1E4",
+   "#F8FAFC"
+  ],
+  "S8": [
+   "#020910",
+   "#080E13",
+   "#121519",
+   "#1F2022",
+   "#313030",
+   "#484645",
+   "#686461",
+   "#8F8986",
+   "#B8B3AE",
+   "#DDD8D4",
+   "#F7F4F1"
+  ],
+  "S8b": [
+   "#060B12",
+   "#0C1117",
+   "#14191E",
+   "#21242A",
+   "#32353B",
+   "#494D53",
+   "#686C73",
+   "#8E9299",
+   "#B7BAC0",
+   "#DCDDE2",
+   "#F6F7F9"
+  ],
+  "S9a": [
+   "#070D13",
+   "#0E1319",
+   "#181D23",
+   "#272B31",
+   "#3C4047",
+   "#585D65",
+   "#7E838B",
+   "#A9ADB4",
+   "#D2D5DA",
+   "#F1F2F5",
+   "#FFFFFF"
+  ],
+  "S9b": [
+   "#101419",
+   "#1B1E23",
+   "#2A2D32",
+   "#3E4247",
+   "#5B5E63",
+   "#7F8288",
+   "#A8ABB0",
+   "#D0D2D6",
+   "#EFEFF2",
+   "#FFFFFF",
+   "#FFFFFF"
+  ],
+  "S10": [
+   "#0A0A0A",
+   "#121212",
+   "#1D1D1D",
+   "#2B2B2B",
+   "#3E3E3E",
+   "#575757",
+   "#767676",
+   "#9B9B9B",
+   "#C0C0C0",
+   "#E0E0E0",
+   "#F7F7F7"
+  ],
+  "S11": [
+   "#070B11",
+   "#0D1116",
+   "#16191E",
+   "#23262A",
+   "#34383C",
+   "#4D5055",
+   "#6D7176",
+   "#95999E",
+   "#BFC1C5",
+   "#E2E4E6",
+   "#FAFBFD"
+  ],
+  "S12": [
+   "#070C12",
+   "#0D1217",
+   "#171B20",
+   "#24282D",
+   "#373B40",
+   "#51555A",
+   "#73777D",
+   "#9B9FA5",
+   "#C4C7CC",
+   "#E6E8EB",
+   "#FDFEFF"
+  ]
+ }
+}

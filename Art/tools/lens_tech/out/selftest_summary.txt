@@ -1,0 +1,9 @@
+A_lanbai_gate_plunge_dawn          flashes/1s=2.0 WCAG=PASS Lanbai=PASS rise0.25= 0.51 rise1= 0.78 rise2= 1.37 fall0.25= 5.09 peakAPL=103
+B_cine_gate_plunge_dawn            flashes/1s=4.0 WCAG=FAIL Lanbai=FAIL rise0.25= 2.77 rise1= 3.68 rise2= 4.33 fall0.25= 5.16 peakAPL=105
+C_lookdev_gate_flicker             flashes/1s=6.5 WCAG=FAIL Lanbai=FAIL rise0.25= 1.15 rise1= 1.08 rise2= 0.87 fall0.25= 1.13 peakAPL=82
+D1_strobe_4Hz_sanity               flashes/1s=4.0 WCAG=FAIL Lanbai=FAIL rise0.25= 0.00 rise1= 0.00 rise2= 0.00 fall0.25=-0.00 peakAPL=136
+D2_strobe_2.5Hz_sanity             flashes/1s=2.5 WCAG=PASS Lanbai=FAIL rise0.25= 2.64 rise1= 2.64 rise2= 0.00 fall0.25= 2.64 peakAPL=136
+E1_cine_white_9b_to_10             flashes/1s=0.5 WCAG=PASS Lanbai=PASS rise0.25= 0.34 rise1= 1.22 rise2= 2.13 fall0.25=-0.00 peakAPL=239
+E2_lanbai_white_9b_to_10_VR        flashes/1s=0.5 WCAG=PASS Lanbai=PASS rise0.25= 0.21 rise1= 0.84 rise2= 1.20 fall0.25=-0.00 peakAPL=224
+F1_cine_second_white_11_to_12      flashes/1s=0.5 WCAG=PASS Lanbai=PASS rise0.25= 3.38 rise1= 5.28 rise2= 6.26 fall0.25= 2.79 peakAPL=239
+F2_lanbai_second_white_11_to_12    flashes/1s=0.5 WCAG=PASS Lanbai=PASS rise0.25= 0.23 rise1= 0.88 rise2= 1.74 fall0.25= 0.37 peakAPL=176
