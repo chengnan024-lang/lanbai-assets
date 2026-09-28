@@ -1,0 +1,10 @@
+*.png binary
+*.jpg binary
+*.exr binary
+*.hdr binary
+*.fbx binary
+*.blend binary
+*.npz binary
+*.md text eol=lf
+*.py text eol=lf
+*.shader text eol=lf
