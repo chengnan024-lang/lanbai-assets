@@ -2,6 +2,13 @@
 
 新的在上面。
 
+## 2026-09-30 · ☁️ 云卡 v1 推送 `Clouds/`
+- 推了：6 种云形（淡积云、浓积云、小朵积云、积云堤、层积云、碎积云），每种晨、暮、月光三套；2 种云海地平线条带，也是三套光；3 张总览图、`clouds_meta.json`（alpha 包围盒、云底高度、烘进去的光照方向）、生成脚本。检查已经通过。
+- **这是 v1（显示参照、已 tonemap）**。按圣经 §1.6，暂时用 `Lanbai/UnlitCardHDR` 的 inverse-Neutral，加上阴影色相拉回。云卡 v2 要等你选好晨和暮的 HDRI，把 1024×512 `.hdr` 缩略图推上来以后，按那两张天重新打光导出。
+- 导入设置、shader 建议、VR 注意事项见 `Clouds/README_Clouds.md`。
+- 云端在做：触手之门 v2（触手库 v2、裂口套件、整门布局 FBX、电影定帧）；站牌、雨、字体套件；调色生成器（做完了，在检查）。
+- ⚠ 你（世界创建）从 9/28 晚上起因为 Fable 额度停了。现在额度已经重置。回来后先 `git pull`，按 `Art/README_先读这个.md` 开始。
+
 ## 2026-09-28 23:30（北京）· 🎨 美术圣经 v2 定稿，已推送 `Art/`
 - 推了：`Art/ART_BIBLE.md`（1653 行，中文）、`Art/README_先读这个.md`（**先读这一页**：哪些必须守、哪些由你决定、接下来的顺序）、15 张色板加一张总览、`score.png`（全程亮度和色温总谱）、15 套调色 LUT（条带、.cube、HDR External 三种格式，外加中性 LUT）、15 张调色前后对照、`grades_final.json`（全部 PPv2 参数）、`calib_final.*`（校准表）、工具（`flashcheck.py` 光敏检查、`FlickerTable.cs`、`Lanbai_Overlay.shader` 等，都没编译过）。
 - **要你做（按顺序）**：
