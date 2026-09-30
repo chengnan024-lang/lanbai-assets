@@ -1,0 +1,1258 @@
+// ═══════════════════════════════════════════════════════════════════
+//  蓝白 · 旅程时间轴（全房间同步）
+//  只同步一个数：出发的服务器时刻。每个人按 "现在 − 出发时刻" 算进度 t，所有幕、环境的位置、
+//  天空、后处理、音乐的播放位置都由 t 确定性地算出来 —— 迟到的人看到的和大家一样。
+//  9/30：时间轴改成由乐句标签推出来（LB_Cues，本地实测的 U0–U12 / F0–F16），事件都绑在标签上；
+//  运动（开车、离地、世界速度、坠落）是平滑阶梯速度的积分，也是 t 的确定函数。车不动，世界动。
+//  幕：站牌 → 夜路 → 离地（光之海 / 入云 / 月之路）→ 触手之门 → 门内 → 投入 → 晨 → 海 → 暮 → 蓝时·星海 → 白 → 假醒 → 醒
+//  数据由编辑器里的「蓝白 → 一键生成世界」填写（LB_Udon + LB_Cues）。
+// ═══════════════════════════════════════════════════════════════════
+using UdonSharp;
+using UnityEngine;
+using UnityEngine.Rendering.PostProcessing;
+using VRC.SDKBase;
+using VRC.Udon.Common;
+using TMPro;
+
+namespace Lanbai
+{
+    [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
+    [DefaultExecutionOrder(-50)]
+    public class LB_Journey : UdonSharpBehaviour
+    {
+        // 幕（下标 = segStart 的下标）
+        public const int S_IDLE = 0, S_ROAD = 1, S_LIFT = 2, S_GATE = 3, S_INSIDE = 4, S_PLUNGE = 5, S_SKY1 = 6, S_DEEP1 = 7,
+                         S_SKY2 = 8, S_SKY3 = 9, S_WHITE = 10, S_FALSE = 11, S_WAKE = 12, S_END = 13;
+        // 天空的样子：0 雾夜 1 深蓝夜空（破云后）2 晨 3 暮 4 星夜 5 天上有海（假醒）6 深海 7 蓝时
+        public const int SKY_ROADNIGHT = 0, SKY_NIGHT = 1, SKY_DAWN = 2, SKY_DUSK = 3, SKY_STARS = 4, SKY_SEAABOVE = 5, SKY_DEEP = 6, SKY_BLUE = 7;
+        // 细分标签（cueX 的下标，和 LB_Cues.X_* 一致）
+        public const int X_U6K = 0, X_U7B = 1, X_U8B = 2, X_U8C = 3, X_LIP1 = 4, X_LIP8 = 11, X_VOICEEND = 12, X_F2H = 13, X_F9B = 14, X_F11B = 15, X_F16R = 16, X_FEND = 17;
+
+        [Header("时间表（秒，相对出发；下标 = 幕，最后一项 = 结束）")]
+        public float[] segStart;
+
+        [Header("乐句标签（时间轴秒）：U0–U12、F0–F16、细分（LB_Cues 生成）")]
+        public float[] cueU;
+        public float[] cueF;
+        public float[] cueX;
+
+        [Header("运动：v(t) = v0 + Σ dv·smoothstep((t − t0) / dur)；位移是它的积分")]
+        public float[] roadT0, roadDur, roadDv;      // 前进（世界速度），t = 0 起，v0 = 0
+        public float[] altT0, altDur, altDv;         // 离地后的爬升（路往下沉）
+        public float[] fallT0, fallDur, fallDv;      // 坠落（F0 起）
+        public float fallV0 = 4f;
+        public float lampEndLead = 5f;               // 路灯在 U2 那一刻车前方几米处结束
+
+        [Header("车")]
+        public Transform busRoot;
+        public Renderer[] busRenderers;          // 淡出用（材质要有 _Alpha）
+        public Renderer[] glassRenderers;        // 玻璃：淡到一半就关掉
+        public Transform doorPivot;              // 车门：前半扇，绕前缘转开
+        public Transform doorPivot2;             // 后半扇：挂在前半扇后缘上，反向折起来
+        public Transform fan;                    // 司机台上的小风扇（叶片绕 z 转）
+        public Transform[] wheels;               // 轮子（路上转）
+        public Transform pendant;                // 后视镜上的挂件：跟着车晃
+        public Light[] cabinLights;              // 车厢灯管的灯（按 manifest：0 后 1 中 2 前）
+        public Renderer[] cabinTubes;
+        public float cabinLightIntensity = 4.2f;
+        public float cabinTubeEmission = 4.5f;
+        public float doorOpenAngle = -80f;
+        public Transform spawnInBus;             // 出发时不在车上的人传送到这里
+        public Vector3 busMin = new Vector3(-1.3f, -0.5f, -5f);
+        public Vector3 busMax = new Vector3(1.3f, 2.6f, 5f);
+        public Vector3 heroEye = new Vector3(0.70f, 1.77f, 0.20f);   // 主座位的眼睛（车的局部坐标）：诗句按它的方位 / 仰角 / 距离摆
+        public float wheelRadius = 0.41f;
+
+        [Header("第 4 幕管灯闪烁表（云端 FlickerTable；t 相对 U9）")]
+        public float[] flickerT;
+        public float[] flickerDur;
+        public float[] flickerLevel;
+        public int[] flickerMask;                // bit i = 灯管 i（行 × 5 + 列，列 0 = 最前）
+
+        [Header("夜路（车不动，路往后流）")]
+        public GameObject roadGroup;
+        public Transform roadRoot;               // 离地时整个往下沉、往前倾
+        public Transform[] roadTiles;            // 沿 +z 排列的路段，会循环
+        public float tileLen = 100f;
+        public float roadSpeed = 10f;            // 假醒时路流动的速度（= 夜路的 10 m/s）
+        public GameObject[] tileLamps;           // 每个路段的路灯组（子物体一盏一盏）
+        public GameObject roadPatch;             // （旧：车灯照着的一小块路；现在不用）
+        public Renderer[] roadSurfaces;
+        public Transform lightSea;               // 离地后脚下的灯海
+        public Transform cloudSea;               // 破云后脚下的云海
+        public Transform truck;                  // （旧：对向的货车；圣经里没有，关着）
+        public Renderer[] groundRenderers;       // 大地（不动，分块）：路面靠贴图滚动
+        public GameObject rainIdle, rainMoving, rainHeadlight;   // 雨：停着时竖着下、开起来斜着往后飞、车头灯前那一团
+        public float lampFlipHeight = 17f;       // 假醒时路灯倒挂的高度
+
+        [Header("触手之门")]
+        public GameObject gateGroup;
+        public Transform gateRoot;               // 裂口在它的原点；U9 时到车上
+        public float gateDistance = 700f;        // （旧）
+        public Material tentacleMaterial;        // 车头灯照在触手上：位置每帧更新
+        public Renderer riftGlow;                // 裂口后面的紫晕：一呼一吸
+
+        [Header("天空 & 坠落")]
+        public Renderer skyDome;
+        public Transform[] clouds;               // 坠落时往上流的云
+        public float cloudHeight = 1400f;        // 云循环的高度
+        public float fallSpeed = 12f;            // （旧）
+        public GameObject skyGroup;
+        public Material cloudMaterial;           // 云的颜色跟着天空走
+        public Transform seaA, seaB;             // A：晨的海面（F2 入水）；B：海的底面（F9b 从它掉出去，之后是暮色里的海之天花）；星海里两张轮流当镜子
+        public Renderer seaARenderer, seaBRenderer;
+        public GameObject deepGroup;             // 深海：悬浮物、光柱、根
+        public Transform godRays;
+        public Transform[] motes;
+        public float moteHeight = 200f;
+        public Light sun;
+
+        [Header("天空参数表（下标 = 天空的样子）")]
+        public Color[] skyTop;
+        public Color[] skyHorizon;
+        public Color[] skyBottom;
+        public Vector4[] sunDir;                 // xyz 方向 + w 光斑大小
+        public Color[] sunColor;
+        public float[] starAmount;
+        public Color[] fogColor;
+        public float[] fogDensity;
+        public Color[] ambient;
+        public Color[] sunLight;                 // 方向光颜色（a = 强度）
+        public float[] horizonFog;
+        public float[] skyClouds;
+        public Texture[] skyTex;
+        public float[] skyTexExposure;
+        public float[] skyTexRot;
+        float _hfog = 0.6f;
+
+        [Header("星海：十三面镜（旧的海面当占位）")]
+        public float[] starCross;                // 每次穿越的时刻（时间轴 t）
+        public float[] starSpeed;                // 每面镜子上升的速度
+        public GameObject meteors;               // （圣经：星海里没有流星——一直关着）
+        public GameObject plankton;              // 深海里的浮游微光（F4 女高音起）
+        public Vector3 milkyWayNormal = new Vector3(0.3f, 0.6f, 0.74f);
+        public float milkyWayTurn = 5f;
+
+        [Header("深海参数")]
+        public Color deepFog = new Color(0.02f, 0.07f, 0.14f);
+        public float deepFogDensity = 0.012f;
+        public Color deepAmbient = new Color(0.03f, 0.08f, 0.16f);
+
+        [Header("后处理（旧的 8 套，等 LanbaiGradeBuilder 的 15 套换上）")]
+        public PostProcessVolume ppNight, ppGate, ppDawn, ppDusk, ppStars, ppDeep, ppWhite, ppBlack;
+        public float whiteEv = 11f;              // ppWhite 的 postExposure（weight × 它 = 加的 EV）
+        public float blackEv = 14f;
+
+        [Header("声音")]
+        public AudioSource radio;                // 司机位的收音机（3D）
+        public AudioLowPassFilter radioFilter;
+        public AudioHighPassFilter radioHighPass;
+        public AudioSource radioNoise;           // 收音机的沙沙声
+        public AudioSource world;                // 世界的声音（2D）
+        public AudioSource boom;                 // （圣经：投入是 3 秒真静默，不放）
+        public AudioSource splash;               // 入水 / 出水（比音乐低 ≥ 24 dB）
+        public AudioSource insects;              // 站牌的虫鸣
+        public AudioSource rain;                 // 车顶的雨（2D，跟着雨的有无）
+        public AudioClip urlicht;                // 《原光》
+        public AudioClip finale;                 // 末乐章后半
+        public float urlichtAt = 3f;             // Urlicht 文件 0 秒在时间轴上的位置（前面 3 秒调台噪音）
+        public float urlichtFadeA = 243.9f, urlichtFadeB = 245.64f;   // 文件秒
+        public float finaleAt = 240.36f;         // 末乐章：t = 文件秒 + finaleAt
+        public float finaleStart = 11.18f;       // 末乐章从文件第几秒开始放
+        public float finaleFadeA = 930.6f, finaleFadeB = 933.1f;
+        public float musicVolume = 0.85f;
+        public float radioVolume = 0.55f;        // 收音机窄带时的音量（打开后 +4 dB）
+        public float noiseTrimDb = -13.5f;       // 噪音文件比 Urlicht 开头响多少（平均电平差），换算成"比音乐低 n dB"用
+        public float splashVolume = 0.02f;
+        public float insectsVolume = 0.35f;
+
+        [Header("诗（每句 3 个阶段的文字：下标 = 句 × 3 + 阶段；中文玩家 / 日文玩家 / 其他人）")]
+        public TextMeshPro poem;
+        public Transform poemRoot;               // 诗的物体（TextMeshPro.transform 在 Udon 里拿不到，另外存一份）
+        public string[] poemText;
+        public string[] poemTextJa;
+        public string[] poemTextEn;
+        public float[] poemAt;                   // 出现（时间轴 t）
+        public float[] poemHold;                 // 总停留（含淡入淡出）
+        public float[] poemIn;                   // 淡入秒数
+        public float[] poemOut;                  // 淡出秒数
+        public float[] poemReveal1;              // 第 2 阶段（逐句揭示）在出现后第几秒；≤ 0 = 没有
+        public float[] poemReveal2;
+        public float[] poemAz;                   // 方位（0 = 车头，+ = 右），度
+        public float[] poemEl;                   // 仰角，度
+        public float[] poemDist;                 // 距离，米
+        public float[] poemSize;                 // 主行字高（em），度
+        public Color[] poemColor;                // a = 不透明度
+        public float[] poemDrift;                // 退场漂移：+1 向上 0.2°，−1 向下
+        public bool[] poemFixed;                 // true = 不用注视规则（庄子在地平线上的固定位置）
+        string[] _poemActive;
+        int _poemIdx = -1, _poemStage = -1;
+        float _poemAzUsed;
+
+        // ── 同步 ──
+        [UdonSynced] int departureMs;
+
+        // ── 调试（小助手读） ──
+        [HideInInspector] public int dbgSeg = -1;
+        [HideInInspector] public float dbgT = -1f;
+        [HideInInspector] public string dbgPoem = "";
+
+        // ── 运行时 ──
+        int _lastSeg = -1;
+        float _lastT = -1f;
+        float[] _cloudBase;
+        float[] _moteBase;
+        Vector3[] _cloudPos;
+        Vector3[] _motePos;
+        Vector3 _busBasePos;
+        float _wheelAngle;
+        float _starTurn;
+        MaterialPropertyBlock _mpb;
+        float _doorAngle;
+        bool _wasIdle = true;
+        Vector3 _mwNormal;
+        bool _lampsFlipped;
+        Transform _stopProps;
+        float _lampEndS, _gateS9, _alt6, _fallS2, _fallS9b;
+        float _l0 = -1f, _l1 = -1f, _l2 = -1f;
+        int _seenDeparture;
+
+        void Start()
+        {
+            _mpb = new MaterialPropertyBlock();
+            if (clouds != null)
+            {
+                _cloudBase = new float[clouds.Length];
+                _cloudPos = new Vector3[clouds.Length];
+                for (int i = 0; i < clouds.Length; i++) { _cloudPos[i] = clouds[i].localPosition; _cloudBase[i] = _cloudPos[i].y; }
+            }
+            if (motes != null)
+            {
+                _moteBase = new float[motes.Length];
+                _motePos = new Vector3[motes.Length];
+                for (int i = 0; i < motes.Length; i++) { _motePos[i] = motes[i].localPosition; _moteBase[i] = _motePos[i].y; }
+            }
+            if (busRoot != null) _busBasePos = busRoot.localPosition;
+            if (roadTiles != null && roadTiles.Length > 0 && roadTiles[0] != null) _stopProps = roadTiles[0].Find("BusStop");
+            if (truck != null) truck.gameObject.SetActive(false);
+            if (roadPatch != null) roadPatch.SetActive(false);
+            if (meteors != null) meteors.SetActive(false);
+            // 由标签推出来的几个常数
+            _lampEndS = RoadD(cueU[2]) + lampEndLead;
+            _gateS9 = RoadD(cueU[9]);
+            _alt6 = AltD(cueU[6]);
+            _fallS2 = FallD(cueF[2]);
+            _fallS9b = FallD(cueX[X_F9B]);
+            _doorAngle = doorOpenAngle;
+            _mwNormal = milkyWayNormal;
+            PickLanguage(VRCPlayerApi.GetCurrentLanguage());
+            ApplyIdle();
+        }
+
+        public override void OnLanguageChanged(string language) { PickLanguage(language); }
+
+        void PickLanguage(string language)
+        {
+            string l = language != null ? language.ToLower() : "";
+            _poemActive = poemTextEn;
+            if (l.StartsWith("zh")) _poemActive = poemText;
+            else if (l.StartsWith("ja")) _poemActive = poemTextJa;
+            if (_poemActive == null || poemText == null || _poemActive.Length != poemText.Length) _poemActive = poemText;
+            _poemIdx = -1; _poemStage = -1;
+        }
+
+        // ═════════════════════════════════════════════════════════════
+        //  出发（司机位的按钮）
+        // ═════════════════════════════════════════════════════════════
+        /// <summary>能不能出发：还没出发过，或者已经醒了、最后一句字也淡出了（圣经：不自动重开，有人再按才开下一轮）。</summary>
+        public bool CanDepart()
+        {
+            if (departureMs == 0) return true;
+            float t = TripTime();
+            return segStart != null && segStart.Length > S_WAKE && t > segStart[S_WAKE] + 90f;
+        }
+
+        public void _Depart()
+        {
+            if (!CanDepart()) return;
+            if (!Networking.IsOwner(gameObject)) Networking.SetOwner(Networking.LocalPlayer, gameObject);
+            departureMs = Networking.GetServerTimeInMilliseconds();
+            if (departureMs == 0) departureMs = 1;
+            RequestSerialization();
+        }
+
+        /// <summary>调试：从第几秒开始（编辑器里的小助手用）。</summary>
+        public void _DebugSeek(float seconds)
+        {
+            if (!Networking.IsOwner(gameObject)) Networking.SetOwner(Networking.LocalPlayer, gameObject);
+            departureMs = Networking.GetServerTimeInMilliseconds() - Mathf.RoundToInt(seconds * 1000f);
+            if (departureMs == 0) departureMs = 1;
+            RequestSerialization();
+        }
+        public float debugSeekSeconds;
+        public void _DebugSeekVar() { _DebugSeek(debugSeekSeconds); }
+
+        public bool IsTravelling() { return departureMs != 0; }
+        public float TripTime() { return departureMs == 0 ? -1f : (Networking.GetServerTimeInMilliseconds() - departureMs) * 0.001f; }
+
+        // ═════════════════════════════════════════════════════════════
+        void Update()
+        {
+            if (departureMs == 0) { ApplyIdle(); return; }
+            if (departureMs != _seenDeparture) { _seenDeparture = departureMs; _wasIdle = true; }     // 新的一轮（或调试跳转）
+            float t = (Networking.GetServerTimeInMilliseconds() - departureMs) * 0.001f;
+            if (t < 0f) t = 0f;
+            int seg = SegAt(t);
+            float tl = t - segStart[seg];
+            float segLen = segStart[seg + 1] - segStart[seg];
+            float u = segLen > 0.001f ? Mathf.Clamp01(tl / segLen) : 1f;
+
+            if (_wasIdle)
+            {
+                _wasIdle = false;
+                // 出发那一刻：不在车上的人接进来
+                var lp = Networking.LocalPlayer;
+                if (lp != null && spawnInBus != null && t < 5f)
+                {
+                    Vector3 p = lp.GetPosition();
+                    Vector3 l = busRoot != null ? busRoot.InverseTransformPoint(p) : p;
+                    if (l.x < busMin.x || l.x > busMax.x || l.y < busMin.y || l.y > busMax.y || l.z < busMin.z || l.z > busMax.z)
+                        lp.TeleportTo(spawnInBus.position, spawnInBus.rotation);
+                }
+                _lastT = -1f;
+            }
+            ApplyAll(t, seg, tl, u);
+        }
+
+        void ApplyIdle()
+        {
+            if (!_wasIdle) { _wasIdle = true; _lastT = -1f; }
+            ApplyAll(0f, S_IDLE, 0f, 0f);
+        }
+
+        void ApplyAll(float t, int seg, float tl, float u)
+        {
+            dbgT = seg == S_IDLE ? -1f : t; dbgSeg = seg;
+            ApplyGroups(t, seg, tl);
+            ApplyRoad(t, seg, tl);
+            ApplyLift(t, seg);
+            ApplyGate(t, seg);
+            ApplyFall(t, seg, tl);
+            ApplySky(t, seg, tl);
+            ApplyPost(t, seg, tl);
+            ApplyBus(t, seg, tl);
+            ApplyAudio(t, seg, tl);
+            ApplyPoem(seg == S_IDLE ? -1f : t);
+            _lastSeg = seg;
+            _lastT = seg == S_IDLE ? -1f : t;
+        }
+
+        int SegAt(float t)
+        {
+            int s = S_ROAD;
+            for (int i = S_ROAD; i < S_END; i++) if (t >= segStart[i]) s = i;
+            return s;       // 过了 S_END 仍停在"醒"：圣经说不自动重开
+        }
+
+        float Smooth(float u) { u = Mathf.Clamp01(u); return u * u * (3f - 2f * u); }
+        float EaseOut(float u) { u = Mathf.Clamp01(u); return 1f - (1f - u) * (1f - u); }
+        float Lin(float u) { return Mathf.Clamp01(u); }
+        float Db(float db) { return Mathf.Pow(10f, db / 20f); }
+        float LogLerp(float a, float b, float k) { return Mathf.Exp(Mathf.Lerp(Mathf.Log(a), Mathf.Log(b), Mathf.Clamp01(k))); }
+
+        // ── 平滑阶梯速度的积分 ──
+        float RampV(float t, float v0, float[] t0, float[] dur, float[] dv)
+        {
+            float v = v0;
+            if (t0 == null) return v;
+            for (int i = 0; i < t0.Length; i++) v += dv[i] * Smooth((t - t0[i]) / dur[i]);
+            return v;
+        }
+        float RampD(float t, float tStart, float v0, float[] t0, float[] dur, float[] dv)
+        {
+            if (t <= tStart) return 0f;
+            float d = v0 * (t - tStart);
+            if (t0 == null) return d;
+            for (int i = 0; i < t0.Length; i++)
+            {
+                float x = (t - t0[i]) / dur[i];
+                if (x <= 0f) continue;
+                if (x >= 1f) d += dv[i] * (dur[i] * 0.5f + (t - t0[i] - dur[i]));
+                else d += dv[i] * dur[i] * (x * x * x - 0.5f * x * x * x * x);
+            }
+            return d;
+        }
+        float RoadV(float t) { return RampV(t, 0f, roadT0, roadDur, roadDv); }
+        float RoadD(float t) { return RampD(t, 0f, 0f, roadT0, roadDur, roadDv); }
+        float AltD(float t) { return RampD(t, 0f, 0f, altT0, altDur, altDv); }
+        float FallV(float t) { return t < cueF[0] ? 0f : RampV(t, fallV0, fallT0, fallDur, fallDv); }
+        float FallD(float t) { return RampD(t, cueF[0], fallV0, fallT0, fallDur, fallDv); }
+
+        // ═════════════════════════════════════════════════════════════
+        //  哪些东西开着
+        // ═════════════════════════════════════════════════════════════
+        void ApplyGroups(float t, int seg, float tl)
+        {
+            float U5 = cueU[5], U6 = cueU[6];
+            // 路：站牌、夜路、离地到入云的白雾里（U5 + 3.5 秒，被雾藏住）；假醒（白收缩进灯里时出现）、醒
+            bool roadVisible = seg <= S_ROAD || (seg == S_LIFT && t < U5 + 3.5f) || seg >= S_FALSE;
+            // 路这一组（里面还有灯海、云海、雨）一直开到门内结束；路本身（RoadRoot）按上面；白里全关
+            bool roadGrp = seg <= S_INSIDE || seg >= S_FALSE;
+            bool gate = seg >= S_LIFT && seg <= S_INSIDE && t >= U6;
+            bool sky = seg >= S_SKY1 && seg < S_WHITE;                // 白里什么形状都没有（§6·10）
+            bool deep = seg == S_DEEP1;
+            if (roadGroup != null && roadGroup.activeSelf != roadGrp) roadGroup.SetActive(roadGrp);
+            if (roadRoot != null && roadRoot.gameObject.activeSelf != roadVisible) roadRoot.gameObject.SetActive(roadVisible);
+            if (gateGroup != null && gateGroup.activeSelf != gate) gateGroup.SetActive(gate);
+            if (skyGroup != null && skyGroup.activeSelf != sky) skyGroup.SetActive(sky);
+            if (deepGroup != null && deepGroup.activeSelf != deep) deepGroup.SetActive(deep);
+            bool glowLife = seg == S_DEEP1 && t > cueF[4];         // F4 女高音浮起：第一条生物荧光
+            if (plankton != null && plankton.activeSelf != glowLife) plankton.SetActive(glowLife);
+        }
+
+        // ═════════════════════════════════════════════════════════════
+        //  路：按走过的距离往后流；路灯到 U2 为止；假醒时路灯倒挂
+        // ═════════════════════════════════════════════════════════════
+        void FlipLamps(bool flipped)
+        {
+            if (_lampsFlipped == flipped || tileLamps == null) return;
+            _lampsFlipped = flipped;
+            for (int i = 0; i < tileLamps.Length; i++)
+            {
+                if (tileLamps[i] == null) continue;
+                Transform lamps = tileLamps[i].transform;
+                for (int c = 0; c < lamps.childCount; c++)
+                {
+                    Transform lamp = lamps.GetChild(c);
+                    Vector3 p = lamp.localPosition;
+                    lamp.localScale = new Vector3(1f, flipped ? -1f : 1f, 1f);
+                    lamp.localPosition = new Vector3(p.x, flipped ? lampFlipHeight : 0f, p.z);
+                    Transform light = lamp.Find("Light");
+                    if (light != null) light.localRotation = Quaternion.Euler(flipped ? -90f : 90f, 0f, 0f);
+                }
+            }
+        }
+
+        void SetGround(float offset)
+        {
+            if (groundRenderers == null) return;
+            Color sky = Color.Lerp(RenderSettings.fogColor, skyHorizon != null && skyHorizon.Length > 0 ? skyHorizon[SKY_ROADNIGHT] : RenderSettings.fogColor, 0.5f);
+            for (int i = 0; i < groundRenderers.Length; i++)
+            {
+                var r = groundRenderers[i];
+                if (r == null) continue;
+                r.GetPropertyBlock(_mpb);
+                _mpb.SetFloat("_Scroll", offset);
+                _mpb.SetColor("_SkyColor", sky);
+                r.SetPropertyBlock(_mpb);
+            }
+        }
+
+        /// <summary>雨：0 停着（竖直）、1 开着（往后飞 + 车头灯前）、-1 没有雨。</summary>
+        void SetRain(int mode)
+        {
+            if (rain != null)
+            {
+                float target = mode == 0 ? 0.55f : (mode == 1 ? 0.62f : 0f);
+                rain.volume = Mathf.MoveTowards(rain.volume, target, Time.deltaTime * 0.25f);
+                if (target > 0f && !rain.isPlaying) rain.Play();
+                if (target == 0f && rain.volume < 0.001f && rain.isPlaying) rain.Stop();
+            }
+            if (rainIdle != null && rainIdle.activeSelf != (mode == 0)) rainIdle.SetActive(mode == 0);
+            if (rainMoving != null && rainMoving.activeSelf != (mode == 1)) rainMoving.SetActive(mode == 1);
+            if (rainHeadlight != null && rainHeadlight.activeSelf != (mode == 1)) rainHeadlight.SetActive(mode == 1);
+        }
+
+        void PlaceTiles(float offset)
+        {
+            if (roadTiles == null) return;
+            int n = roadTiles.Length;
+            float total = n * tileLen;
+            for (int i = 0; i < n; i++)
+            {
+                if (roadTiles[i] == null) continue;
+                float z = Mathf.Repeat(i * tileLen - offset + tileLen, total) - tileLen;
+                var p = roadTiles[i].localPosition;
+                roadTiles[i].localPosition = new Vector3(p.x, p.y, z);
+            }
+        }
+
+        /// <summary>每盏路灯按它在路上的位置 s（离站牌多少米）决定有没有：站牌后面没有；s 超过 U2 那一刻车前方就没有灯了（村子结束，暗段）。倒挂时全有。</summary>
+        void UpdateLamps(float offset, bool all)
+        {
+            if (roadTiles == null || tileLamps == null) return;
+            for (int i = 0; i < roadTiles.Length && i < tileLamps.Length; i++)
+            {
+                if (roadTiles[i] == null || tileLamps[i] == null) continue;
+                float s0 = roadTiles[i].localPosition.z + offset;         // 这个路段的起点在路上的位置
+                Transform lamps = tileLamps[i].transform;
+                for (int c = 0; c < lamps.childCount; c++)
+                {
+                    Transform lamp = lamps.GetChild(c);
+                    float sl = s0 + lamp.localPosition.z;
+                    bool lit = all || (sl > -5f && sl < _lampEndS);      // 站牌后面（出生点身后）保持黑暗空旷
+                    if (lamp.gameObject.activeSelf != lit) lamp.gameObject.SetActive(lit);
+                }
+            }
+        }
+
+        void ApplyRoad(float t, int seg, float tl)
+        {
+            if (roadRoot == null) return;
+            bool onRoad = seg <= S_LIFT || seg >= S_WHITE;
+            if (!onRoad) { SetRain(-1); return; }
+            float offset;
+            if (seg == S_IDLE || seg == S_WAKE) offset = 0f;                                   // 站牌：车停在站旁
+            else if (seg == S_WHITE || seg == S_FALSE) offset = 30f + roadSpeed * (t - segStart[S_WHITE]);   // 假醒：路又流起来（10 m/s，和夜路一样）
+            else offset = RoadD(t);
+            PlaceTiles(offset);
+            SetGround(offset);
+            // 雨：站牌竖着下；开车后斜着飞；离地 10 秒后停；假醒没有雨；醒来雨已经停了
+            int rainMode = -1;
+            if (seg == S_IDLE) rainMode = 0;
+            else if (seg == S_ROAD || (seg == S_LIFT && t < cueU[3] + 10f)) rainMode = 1;
+            SetRain(rainMode);
+            bool flipped = seg == S_WHITE || seg == S_FALSE;
+            FlipLamps(flipped);
+            UpdateLamps(offset, flipped);
+            // 站牌那一段的东西（布告栏等）只在它还是"站牌"的时候出现（路段循环回来就不是了）
+            if (_stopProps != null)
+            {
+                bool stop = (seg == S_IDLE || seg == S_WAKE || seg == S_ROAD || seg == S_LIFT) && offset <= tileLen;
+                if (_stopProps.gameObject.activeSelf != stop) _stopProps.gameObject.SetActive(stop);
+            }
+            if (roadSurfaces != null)
+                for (int i = 0; i < roadSurfaces.Length; i++)
+                    if (roadSurfaces[i] != null && !roadSurfaces[i].enabled) roadSurfaces[i].enabled = true;
+        }
+
+        /// <summary>离地（U3）：路往下沉、往前倾；灯海在脚下；破云（U6）后脚下是云海，车离云顶 40 m → U9 150 m。</summary>
+        void ApplyLift(float t, int seg)
+        {
+            float U3 = cueU[3], U5 = cueU[5], U6 = cueU[6], U9 = cueU[9];
+            bool lifting = seg >= S_LIFT && seg <= S_INSIDE;
+            float alt = lifting ? AltD(t) : 0f;
+            if (roadRoot != null)
+            {
+                float k = lifting ? Smooth((t - U3) / 25f) : 0f;
+                roadRoot.localPosition = new Vector3(0f, -alt, 0f);
+                roadRoot.localRotation = Quaternion.Euler(-10f * k, 0f, 0f);
+            }
+            if (lightSea != null)
+            {
+                bool on = seg == S_LIFT && t >= U3 && t < U5 + 3.5f;
+                if (lightSea.gameObject.activeSelf != on) lightSea.gameObject.SetActive(on);
+                if (on) lightSea.localPosition = new Vector3(0f, -alt - 40f, 300f - 0.3f * (RoadD(t) - RoadD(U3)));
+            }
+            if (cloudSea != null)
+            {
+                bool on = lifting && t >= U6 - 3f && t < U9 + 2f;
+                if (cloudSea.gameObject.activeSelf != on) cloudSea.gameObject.SetActive(on);
+                if (on) cloudSea.localPosition = new Vector3(0f, -40f - (alt - _alt6), 0f);
+            }
+        }
+
+        // ═════════════════════════════════════════════════════════════
+        //  触手之门：U6 破云时裂口在 2.7 km 外，按世界速度推过来，U9 进入；门内（U9 → U12）它在身后退去
+        // ═════════════════════════════════════════════════════════════
+        void ApplyGate(float t, int seg)
+        {
+            if (gateRoot == null) return;
+            bool on = seg >= S_LIFT && seg <= S_INSIDE && t >= cueU[6];
+            if (!on) return;
+            float z = _gateS9 - RoadD(t);           // U9 之前为正（在前方），之后为负（在身后）
+            gateRoot.localPosition = new Vector3(0f, 0f, z);
+            if (tentacleMaterial != null) tentacleMaterial.SetVector("_Light2", new Vector4(0f, 1f, 4.5f - z, 75f));
+            if (riftGlow != null)
+            {
+                float near = Mathf.Clamp01(1f - z / 2700f);
+                riftGlow.GetPropertyBlock(_mpb);
+                _mpb.SetFloat("_Intensity", (1.0f + 0.25f * Mathf.Sin(t * 6.2832f / 8f)) * Mathf.Lerp(0.7f, 1.6f, near));   // 呼吸：8 秒一次
+                riftGlow.SetPropertyBlock(_mpb);
+            }
+        }
+
+        // ═════════════════════════════════════════════════════════════
+        //  坠落：云按坠落距离往上流；海面 A 在 F2 到车上（入水），海底 B 在 F9b 到车上（掉进暮色）；星海里两张轮流当镜子
+        // ═════════════════════════════════════════════════════════════
+        void ApplyFall(float t, int seg, float tl)
+        {
+            if (seg < S_SKY1 || seg > S_WHITE)
+            {
+                if (seaA != null && seaA.gameObject.activeSelf) seaA.gameObject.SetActive(false);
+                if (seaB != null && seaB.gameObject.activeSelf) seaB.gameObject.SetActive(false);
+                return;
+            }
+            float d = FallD(t);
+            if (clouds != null)
+                for (int i = 0; i < clouds.Length; i++)
+                {
+                    if (clouds[i] == null) continue;
+                    float y = Mathf.Repeat(_cloudBase[i] + d, cloudHeight) - cloudHeight * 0.5f;
+                    clouds[i].localPosition = new Vector3(_cloudPos[i].x, y, _cloudPos[i].z);
+                }
+            if (motes != null && seg == S_DEEP1)
+                for (int i = 0; i < motes.Length; i++)
+                {
+                    if (motes[i] == null) continue;
+                    float y = Mathf.Repeat(_moteBase[i] + 0.7f * d, moteHeight) - moteHeight * 0.5f;
+                    motes[i].localPosition = new Vector3(_motePos[i].x, y, _motePos[i].z);
+                }
+            if (seg >= S_SKY3)
+            {
+                // 星海：十三面镜从脚下升上来（B 管偶数次，A 管奇数次）
+                bool hide = seg == S_WHITE && tl > 6f;
+                PlaceStarSea(seaB, seaBRenderer, t, 0, hide);
+                PlaceStarSea(seaA, seaARenderer, t, 1, hide);
+            }
+            else
+            {
+                float yA = 1.5f + (d - _fallS2);                 // 晨的海面：F2 时到车上，之后在头顶慢慢升走
+                float yB = 1.5f + (d - _fallS9b);                // 海的底面：F9b 时到车上，之后是暮色里的海之天花
+                PlaceSea(seaA, seaARenderer, yA, SKY_DAWN, seg == S_SKY2, 1f);
+                float ceilFade = 1f - Smooth((t - cueF[11]) / 8f);       // 8-ii（F11 entschweben）：天花 8 秒里淡进天
+                PlaceSea(seaB, seaBRenderer, yB, SKY_DUSK, false, seg == S_SKY2 ? ceilFade : 1f);
+            }
+            // 入水（F2）、出水（F9b）：很轻的一声（比音乐低 ≥ 24 dB）；星海里的镜子穿越没有声音（圣经：马勒以外没有任何声音）
+            if (splash != null && _lastT >= 0f)
+            {
+                float f2 = cueF[2], f9b = cueX[X_F9B];
+                if ((_lastT < f2 && t >= f2 && t < f2 + 1f) || (_lastT < f9b && t >= f9b && t < f9b + 1f)) { splash.volume = splashVolume; splash.Play(); }
+            }
+        }
+
+        /// <summary>星海里的一张镜子（占位：旧的海面）：在它负责的那些穿越里找包含 t 的那一次，从脚下升上来、穿过车、再升走。</summary>
+        void PlaceStarSea(Transform sea, Renderer r, float t, int parity, bool hide)
+        {
+            if (sea == null) return;
+            int found = -1; float tc = 0f, before = 0f, after = 0f;
+            if (starCross != null)
+                for (int i = parity; i < starCross.Length; i += 2)
+                {
+                    float c = starCross[i];
+                    float prev = i > 0 ? starCross[i - 1] : c - 18f;
+                    float next = i + 1 < starCross.Length ? starCross[i + 1] : c + 30f;
+                    float b = Mathf.Min(40f, (c - prev) * 0.9f);
+                    float a = Mathf.Min(20f, (next - c) * 0.9f);
+                    if (t >= c - b && t <= c + a) { found = i; tc = c; before = b; after = a; break; }
+                }
+            if (found < 0 || hide)
+            {
+                if (sea.gameObject.activeSelf) sea.gameObject.SetActive(false);
+                return;
+            }
+            float speed = starSpeed != null && found < starSpeed.Length ? starSpeed[found] : 12f;
+            float y = 1.5f + speed * (t - tc);
+            if (!sea.gameObject.activeSelf) sea.gameObject.SetActive(true);
+            sea.localPosition = new Vector3(0f, y, 0f);
+            float fade = Mathf.Min(Smooth((t - (tc - before)) / Mathf.Max(before * 0.35f, 1f)), Smooth(((tc + after) - t) / Mathf.Max(after * 0.5f, 1f)));
+            SetSeaLook(r, SKY_STARS, 1f, fade);
+        }
+
+        void PlaceSea(Transform sea, Renderer r, float y, int skyIdx, bool hide, float extraFade)
+        {
+            if (sea == null) return;
+            bool on = !hide && y > -1700f && y < 900f && extraFade > 0.001f;
+            if (sea.gameObject.activeSelf != on) sea.gameObject.SetActive(on);
+            if (!on) return;
+            sea.localPosition = new Vector3(0f, y, 0f);
+            float fade = Mathf.Min(Smooth((y + 1700f) / 250f), Smooth((900f - y) / 200f)) * extraFade;
+            SetSeaLook(r, skyIdx, 0f, fade);
+        }
+
+        void SetSkyTex(int ia, int ib, float k, float texFade)
+        {
+            if (skyTex == null || skyTex.Length == 0) return;
+            Texture ta = ia < skyTex.Length ? skyTex[ia] : null, tb = ib < skyTex.Length ? skyTex[ib] : null;
+            float aa = ta != null ? 1f : 0f, ab = tb != null ? 1f : 0f;
+            if (ta == null) ta = tb; if (tb == null) tb = ta;
+            if (ta != null) _mpb.SetTexture("_SkyTexA", ta);
+            if (tb != null) _mpb.SetTexture("_SkyTexB", tb);
+            _mpb.SetFloat("_TexBlend", k);
+            _mpb.SetFloat("_TexAmount", Mathf.Lerp(aa, ab, k) * texFade);
+            _mpb.SetFloat("_TexAExp", skyTexExposure != null && ia < skyTexExposure.Length ? skyTexExposure[ia] : 1f);
+            _mpb.SetFloat("_TexBExp", skyTexExposure != null && ib < skyTexExposure.Length ? skyTexExposure[ib] : 1f);
+            float ra = skyTexRot != null && ia < skyTexRot.Length ? skyTexRot[ia] : 0f, rb = skyTexRot != null && ib < skyTexRot.Length ? skyTexRot[ib] : 0f;
+            if (ia == SKY_STARS) ra += _starTurn; if (ib == SKY_STARS) rb += _starTurn;
+            _mpb.SetFloat("_TexARot", ra); _mpb.SetFloat("_TexBRot", rb);
+            float ca = skyClouds != null && ia < skyClouds.Length ? skyClouds[ia] : 0f, cb = skyClouds != null && ib < skyClouds.Length ? skyClouds[ib] : 0f;
+            _mpb.SetFloat("_Clouds", Mathf.Lerp(ca, cb, k) * texFade);
+        }
+
+        void SetSeaLook(Renderer r, int skyIdx, float mirror, float fade)
+        {
+            if (r == null || skyTop == null || skyIdx >= skyTop.Length) return;
+            r.GetPropertyBlock(_mpb);
+            _mpb.SetColor("_SkyTop", skyTop[skyIdx]);
+            _mpb.SetColor("_SkyHorizon", skyHorizon[skyIdx]);
+            _mpb.SetColor("_SkyBottom", skyBottom[skyIdx]);
+            _mpb.SetVector("_SunDir", sunDir[skyIdx]);
+            _mpb.SetColor("_SunColor", sunColor[skyIdx]);
+            _mpb.SetFloat("_Stars", starAmount[skyIdx]);
+            _mpb.SetFloat("_MilkyWay", Mathf.Max(0f, starAmount[skyIdx] - 0.5f) * 2.6f);
+            _mpb.SetVector("_MilkyWayNormal", new Vector4(_mwNormal.x, _mwNormal.y, _mwNormal.z, 0f));
+            _mpb.SetFloat("_Mirror", mirror);
+            _mpb.SetFloat("_Fade", fade);
+            SetSkyTex(skyIdx, skyIdx, 0f, 1f);
+            r.SetPropertyBlock(_mpb);
+        }
+
+        // ═════════════════════════════════════════════════════════════
+        //  天空球、雾、环境光、太阳（雾按圣经 §6 的数：入云 0.067、破云 0.00035、门的光雾 0.0006、门内 0.0035……）
+        // ═════════════════════════════════════════════════════════════
+        void ApplySky(float t, int seg, float tl)
+        {
+            int a = SKY_ROADNIGHT, b = SKY_ROADNIGHT; float k = 0f, dark = 0f, sunDim = 0f, skyFog = 0f;
+            bool fogSet = false, ambSet = false; float fogD = 0f; Color fogC = Color.black, ambC = Color.black;
+            float deepK = 0f;
+            float U1 = cueU[1], U2 = cueU[2], U5 = cueU[5], U6 = cueU[6], U9 = cueU[9], U12 = cueU[12];
+            float F2 = cueF[2], F8 = cueF[8], F12 = cueF[12], F13 = cueF[13], F9b = cueX[X_F9B];
+            switch (seg)
+            {
+                case S_IDLE:
+                case S_ROAD:
+                    // 雾：站牌 0.009 → 夜路 0.008（U1 起 20 秒）→ 暗段 0.0025（U2 起 40 秒）
+                    fogSet = true; fogC = fogColor[SKY_ROADNIGHT];
+                    fogD = Mathf.Lerp(Mathf.Lerp(0.009f, 0.008f, Smooth((t - U1) / 20f)), 0.0025f, Smooth((t - U2) / 40f));
+                    break;
+                case S_LIFT:
+                case S_GATE:
+                    fogSet = true;
+                    if (t < U5)
+                    {
+                        fogC = fogColor[SKY_ROADNIGHT];
+                        fogD = Mathf.Lerp(0.008f, 0.0025f, Smooth((t - U2) / 40f));
+                    }
+                    else if (t < U6)
+                    {
+                        // 入云（≥ 7 秒的白雾遮挡）：暖 → 冷；天空球也吃雾；在雾里把天空换成月夜
+                        float inK = Smooth((t - U5) / 2.5f);
+                        fogD = Mathf.Lerp(0.0025f, 0.067f, inK);
+                        fogC = Color.Lerp(new Color(0.227f, 0.208f, 0.188f), new Color(0.424f, 0.451f, 0.510f), Smooth((t - U5) / (U6 - U5)));
+                        skyFog = inK;
+                        if (t > U5 + 3.5f) { a = SKY_NIGHT; b = SKY_NIGHT; }
+                    }
+                    else
+                    {
+                        // 破云（U6）：2.5 秒内雾 0.067 → 0.00035（ease-out）；然后 30 秒里变成门的光雾带（0.0006，#505466）
+                        a = SKY_NIGHT; b = SKY_NIGHT;
+                        float outK = EaseOut((t - U6) / 2.5f);
+                        float bandK = Smooth((t - U6) / 30f);
+                        fogD = Mathf.Lerp(Mathf.Lerp(0.067f, 0.00035f, outK), 0.0006f, bandK);
+                        fogC = Color.Lerp(Color.Lerp(new Color(0.424f, 0.451f, 0.510f), new Color(0.141f, 0.165f, 0.251f), outK), new Color(0.314f, 0.329f, 0.400f), bandK);
+                        skyFog = 1f - outK;
+                    }
+                    break;
+                case S_INSIDE:
+                    // 门内：暗；雾 0.0035，颜色从第 1 重 #2A3347 到第 8 重 #6E808D
+                    a = SKY_NIGHT; b = SKY_NIGHT;
+                    skyFog = Smooth((t - U9) / 3f);                         // 看出去是光唇之间的薄雾（天空球也吃雾），不是黑
+                    sunDim = skyFog;
+                    fogSet = true; fogD = 0.0035f;
+                    fogC = Color.Lerp(new Color(0.165f, 0.200f, 0.278f), new Color(0.431f, 0.502f, 0.553f), Lin((t - U9) / (U12 - U9)));
+                    ambSet = true; ambC = fogC * 0.8f;                         // 光只来自窗外的薄雾（圣经：_Udon_CabinAmbient）
+                    break;
+                case S_PLUNGE: a = SKY_DAWN; b = SKY_DAWN; dark = 1f; break;
+                case S_SKY1: a = SKY_DAWN; b = SKY_DAWN; break;
+                case S_DEEP1:
+                    // 入水 1.5 秒变成水；7c（F8 起 20 秒）下方开始发暮色的玫瑰光；F9b 前 0.8 秒水从车窗往上流走
+                    a = SKY_DAWN; b = SKY_DUSK; k = Smooth((t - F8) / 20f);
+                    deepK = Smooth((t - F2) / 1.5f) * (1f - Smooth((t - (F9b - 0.8f)) / 0.8f));
+                    break;
+                case S_SKY2: a = SKY_DUSK; b = SKY_DUSK; break;
+                case S_SKY3:
+                    // 8b 蓝时（F12 起 8 秒变蓝）→ 变暗（F12 + 15 起 8 秒）→ 天问在黑里（到 F13）→ F13 银河 1.2 秒点燃到 80%，再 3 秒到 100%
+                    fogSet = true; fogD = Mathf.Lerp(fogDensity[SKY_DUSK], 0f, Smooth((t - F12) / 30f)); fogC = fogColor[SKY_BLUE];
+                    if (t < F12 + 23f)
+                    {
+                        a = SKY_DUSK; b = SKY_BLUE; k = Smooth((t - F12) / 8f);
+                        dark = Smooth((t - (F12 + 15f)) / 8f);
+                    }
+                    else
+                    {
+                        a = SKY_STARS; b = SKY_STARS;
+                        dark = 1f - (0.8f * Smooth((t - F13) / 1.2f) + 0.2f * Smooth((t - F13 - 1.2f) / 3f));
+                    }
+                    break;
+                case S_WHITE: a = SKY_STARS; b = SKY_STARS; break;
+                case S_FALSE:
+                    // 假醒：4–20 秒一切正常（海在头顶但闪光关着，读作夜空）；20 秒闪光打开，天花变成了海
+                    a = SKY_ROADNIGHT; b = SKY_SEAABOVE; k = Smooth((tl - 18f) / 4f);
+                    fogSet = true; fogD = 0.006f; fogC = fogColor[SKY_ROADNIGHT];
+                    break;
+                case S_WAKE:
+                    a = SKY_ROADNIGHT; b = SKY_ROADNIGHT;
+                    fogSet = true; fogD = 0.005f; fogC = fogColor[SKY_ROADNIGHT];
+                    break;
+            }
+            if (seg == S_DEEP1) deepK = Mathf.Clamp01(deepK);
+            Color top = Color.Lerp(skyTop[a], skyTop[b], k), hor = Color.Lerp(skyHorizon[a], skyHorizon[b], k), bot = Color.Lerp(skyBottom[a], skyBottom[b], k);
+            Vector4 sd = Vector4.Lerp(sunDir[a], sunDir[b], k);
+            Color sc = Color.Lerp(sunColor[a], sunColor[b], k);
+            float stars = Mathf.Lerp(starAmount[a], starAmount[b], k);
+            Color fc = Color.Lerp(fogColor[a], fogColor[b], k);
+            float fd = Mathf.Lerp(fogDensity[a], fogDensity[b], k);
+            Color am = Color.Lerp(ambient[a], ambient[b], k);
+            Color sl = Color.Lerp(sunLight[a], sunLight[b], k);
+            _hfog = horizonFog != null && horizonFog.Length > Mathf.Max(a, b) ? Mathf.Lerp(horizonFog[a], horizonFog[b], k) : 0.6f;
+            if (fogSet) { fc = fogC; fd = fogD; }
+            if (ambSet) am = ambC;
+            if (deepK > 0f)
+            {
+                top = Color.Lerp(top, skyTop[SKY_DEEP], deepK); hor = Color.Lerp(hor, skyHorizon[SKY_DEEP], deepK); bot = Color.Lerp(bot, skyBottom[SKY_DEEP], deepK);
+                sc = Color.Lerp(sc, sunColor[SKY_DEEP], deepK); sd = Vector4.Lerp(sd, sunDir[SKY_DEEP], deepK); stars *= 1f - deepK;
+                fc = Color.Lerp(fc, fogColor[SKY_DEEP], deepK); fd = Mathf.Lerp(fd, fogDensity[SKY_DEEP], deepK); am = Color.Lerp(am, ambient[SKY_DEEP], deepK);
+                sl = Color.Lerp(sl, sunLight[SKY_DEEP], deepK);
+            }
+            float seaAbove = a == SKY_SEAABOVE || b == SKY_SEAABOVE ? (a == SKY_SEAABOVE ? 1f - k : k) : 0f;
+            // 星海里银河慢慢转（F13 点燃之后）
+            float turn = seg >= S_SKY3 && t > F13 ? (t - F13) / 60f * milkyWayTurn : 0f;
+            _mwNormal = Quaternion.AngleAxis(turn, Vector3.up) * milkyWayNormal;
+            _starTurn = turn;
+            SetSky(top, hor, bot, sd, sc, stars, fc, dark, seaAbove, a, b, k, 1f - deepK, skyFog);
+            fc = Color.Lerp(fc, Color.black, dark);
+            am = Color.Lerp(am, Color.black, dark);
+            RenderSettings.fogColor = fc;
+            RenderSettings.fogDensity = fd;
+            RenderSettings.ambientLight = am;
+            if (sun != null)
+            {
+                sun.color = new Color(sl.r, sl.g, sl.b, 1f);
+                sun.intensity = sl.a * (1f - Mathf.Max(dark, sunDim));        // 门内：世界主光接近 0
+                Vector3 dir = new Vector3(sd.x, sd.y, sd.z);
+                if (dir.sqrMagnitude > 0.001f) sun.transform.rotation = Quaternion.LookRotation(-dir.normalized, Vector3.up);
+            }
+            if (godRays != null && seg == S_DEEP1)
+            {
+                float headY = 400f;
+                if (seaA != null && seaA.gameObject.activeSelf && seaA.localPosition.y > 0f) headY = seaA.localPosition.y;
+                godRays.localPosition = new Vector3(0f, Mathf.Clamp(headY, 40f, 420f) - 200f, 0f);
+            }
+        }
+
+        void SetSky(Color top, Color hor, Color bot, Vector4 sd, Color sc, float stars, Color fog, float dark, float seaAbove, int ia, int ib, float k, float texFade, float skyFog)
+        {
+            if (skyDome == null) return;
+            skyDome.GetPropertyBlock(_mpb);
+            SetSkyTex(ia, ib, k, texFade * (1f - dark));
+            _mpb.SetColor("_SkyTop", top * (1f - dark));
+            _mpb.SetColor("_SkyHorizon", hor * (1f - dark));
+            _mpb.SetColor("_SkyBottom", bot * (1f - dark));
+            _mpb.SetVector("_SunDir", sd);
+            _mpb.SetColor("_SunColor", sc * (1f - dark));
+            stars *= 1f - dark;
+            _mpb.SetFloat("_Stars", stars);
+            _mpb.SetFloat("_MilkyWay", Mathf.Max(0f, stars - 0.5f) * 2.6f);
+            _mpb.SetVector("_MilkyWayNormal", new Vector4(_mwNormal.x, _mwNormal.y, _mwNormal.z, 0f));
+            _mpb.SetColor("_FogColor", Color.Lerp(fog, Color.black, dark));
+            _mpb.SetFloat("_FogAmount", skyFog);
+            _mpb.SetFloat("_HorizonFog", _hfog);
+            _mpb.SetFloat("_SeaAbove", seaAbove);
+            skyDome.SetPropertyBlock(_mpb);
+            if (cloudMaterial != null)
+            {
+                Color lit = Color.Lerp(hor, Color.white, 0.35f) * (1f - dark);
+                Color shade = Color.Lerp(top, hor, 0.5f) * 0.9f * (1f - dark);
+                cloudMaterial.SetColor("_Color", new Color(lit.r, lit.g, lit.b, 1f));
+                cloudMaterial.SetColor("_Shade", new Color(shade.r, shade.g, shade.b, 1f));
+                cloudMaterial.SetVector("_SunDir", sd);
+                Color sunc = sc * 0.5f + hor * 0.5f;
+                cloudMaterial.SetColor("_SunColor", new Color(sunc.r, sunc.g, sunc.b, 1f) * (1f - dark));
+            }
+        }
+
+        // ═════════════════════════════════════════════════════════════
+        //  后处理（占位：旧的 8 套 volume）。权重全部由 t 算出来（不再逐帧追赶），按圣经 §6.x 的转场表：
+        //  底色（夜 / 门 / 晨 / 海 / 暮 / 星）归一化混合；白、黑是叠在上面的遮罩 + EXPO 脉冲（weight × EV = 加减的档数）
+        // ═════════════════════════════════════════════════════════════
+        void ApplyPost(float t, int seg, float tl)
+        {
+            float night = 0f, gate = 0f, dawn = 0f, dusk = 0f, stars = 0f, deep = 0f, white = 0f, black = 0f;
+            float U6 = cueU[6], U9 = cueU[9], U12 = cueU[12];
+            float F0 = cueF[0], F2 = cueF[2], F12 = cueF[12], F16 = cueF[16], F9b = cueX[X_F9B];
+            float we = 1f / whiteEv, be = 1f / blackEv;
+            switch (seg)
+            {
+                case S_IDLE: case S_ROAD: night = 1f; break;
+                case S_LIFT:
+                case S_GATE:
+                    // U6 起 S4 用 30 秒 smoothstep 升到 1；破云 EXPO_UP +0.5 EV（0.4 秒升、3 秒衰减）
+                    gate = Smooth((t - U6) / 30f); night = 1f - gate;
+                    white = Pulse(t, U6, 0.4f, 3f) * 0.5f * we;
+                    break;
+                case S_INSIDE:
+                    gate = 1f;
+                    // U9：管灯 150% 一闪（EXPO_UP +0.3，0.2 秒）；U12 前 0.5 秒 FLASH_TEAR：+1.5 EV 0.4 秒升起、保持 0.1 秒
+                    if (t < U9 + 0.2f) white = 0.3f * we;
+                    float fl = U12 - 0.5f;
+                    if (t >= fl) white = Mathf.Max(white, 1.5f * we * Lin((t - fl) / 0.4f));
+                    break;
+                case S_PLUNGE:
+                    // 黑遮罩 0.25 秒升起、同时 ΔEV 归零；遮罩满了硬切到晨
+                    dawn = 1f;
+                    float x = Lin(tl / 0.25f);
+                    black = x; white = 1.5f * we * (1f - x);
+                    if (x >= 1f) { black = 1f; white = 0f; }
+                    break;
+                case S_SKY1:
+                    // F0 + 1.0：先有呼唤再有光；1.5 秒预滚，然后黑 → 晨 7 秒 EV 线性
+                    dawn = 1f;
+                    black = 1f - Lin((t - (F0 + 2.5f)) / 7f);
+                    break;
+                case S_DEEP1:
+                    // 入水：EXPO_DOWN −0.5 EV（0.3 秒降、1 秒回）；水线越过车窗顶（≈F2 + 1）后 1.5 秒 S7a 升到 1
+                    deep = Smooth((t - (F2 + 1f)) / 1.5f); dawn = 1f - deep;
+                    black = Pulse(t, F2, 0.3f, 1f) * 0.5f * be;
+                    break;
+                case S_SKY2:
+                    // 出海：≥ 6 秒 EV 线性（S7b → S8 线性 weight），末尾 EXPO_UP +0.8 再 4 秒衰减
+                    dusk = Lin((t - F9b) / 6f); deep = 1f - dusk;
+                    white = Pulse(t, F9b + 6f, 0.4f, 4f) * 0.8f * we;
+                    break;
+                case S_SKY3:
+                    // 蓝时之后跟着变暗走到星海（F12 + 15 起 8 秒）；镜子穿越 EXPO_UP +0.35（第 10–12 面不加）；F16 前 10.2 秒：冲击 → 膨胀 → 遮罩到白
+                    stars = Smooth((t - (F12 + 15f)) / 8f); dusk = 1f - stars;
+                    if (starCross != null)
+                        for (int i = 0; i < starCross.Length && i < 9; i++) white = Mathf.Max(white, Pulse(t, starCross[i], 0.4f, 3f) * 0.35f * we);
+                    float w0 = F16 - 10.2f;
+                    if (t >= w0)
+                    {
+                        float ev;
+                        if (t < w0 + 1.2f) ev = Lin((t - w0) / 1.2f) * 1.0f;
+                        else if (t < w0 + 7.2f) ev = 1.0f + Lin((t - w0 - 1.2f) / 6f) * 1.4f;
+                        else ev = 2.4f + Lin((t - w0 - 7.2f) / 3f) * (whiteEv - 2.4f);
+                        white = Mathf.Max(white, ev * we);
+                    }
+                    break;
+                case S_WHITE: stars = 1f; white = 1f; break;
+                case S_FALSE:
+                    // 白收缩进灯里（0–8 秒，EV 线性）；第 62 秒第二次白：6.5 秒 EV 线性到约 luma 176，保持 3 秒
+                    night = 1f;
+                    white = 1f - Lin(tl / 8f);
+                    if (tl >= 62f) white = Mathf.Max(white, Lin((tl - 62f) / 6.5f) * 0.5f);
+                    break;
+                case S_WAKE:
+                    // 满了同一帧硬切到醒；4 秒收缩进站台的灯管
+                    night = 1f;
+                    white = 0.5f * (1f - Lin(tl / 4f));
+                    break;
+            }
+            float sum = night + gate + dawn + dusk + stars + deep;
+            if (sum > 0.0001f) { night /= sum; gate /= sum; dawn /= sum; dusk /= sum; stars /= sum; deep /= sum; }
+            if (ppNight != null) ppNight.weight = night;
+            if (ppGate != null) ppGate.weight = gate;
+            if (ppDawn != null) ppDawn.weight = dawn;
+            if (ppDusk != null) ppDusk.weight = dusk;
+            if (ppStars != null) ppStars.weight = stars;
+            if (ppDeep != null) ppDeep.weight = deep;
+            if (ppWhite != null) ppWhite.weight = Mathf.Clamp01(white);
+            if (ppBlack != null) ppBlack.weight = Mathf.Clamp01(black);
+        }
+
+        /// <summary>一个脉冲：在 t0 起 rise 秒线性升到 1，再 decay 秒线性落回 0。</summary>
+        float Pulse(float t, float t0, float rise, float decay)
+        {
+            if (t < t0) return 0f;
+            if (t < t0 + rise) return (t - t0) / rise;
+            return 1f - Lin((t - t0 - rise) / decay);
+        }
+
+        // ═════════════════════════════════════════════════════════════
+        //  车：门、轮子、挂件、管灯、慢慢消失
+        // ═════════════════════════════════════════════════════════════
+        void ApplyBus(float t, int seg, float tl)
+        {
+            // 门：圣经——车门不关。只有假醒是关着的（在白里关上）；醒来时在第二次白里打开
+            bool closed = (seg == S_WHITE && tl > 3f) || seg == S_FALSE;
+            float target = closed ? 0f : doorOpenAngle;
+            if (seg == S_WHITE || seg == S_FALSE || seg == S_WAKE) _doorAngle = target;
+            else _doorAngle = Mathf.MoveTowards(_doorAngle, target, Time.deltaTime * 60f);
+            if (doorPivot != null) doorPivot.localRotation = Quaternion.Euler(0f, _doorAngle, 0f);
+            if (doorPivot2 != null) doorPivot2.localRotation = Quaternion.Euler(0f, -_doorAngle * 2f, 0f);
+            if (fan != null) fan.localRotation = Quaternion.Euler(0f, 0f, Mathf.Repeat(Time.time * 720f, 360f));
+            // 轮子：按车速转（离地后 10 秒里慢慢停）
+            float v = 0f;
+            if (seg == S_ROAD) v = RoadV(t);
+            else if (seg == S_LIFT) v = RoadV(t) * Mathf.Clamp01(1f - (t - cueU[3]) / 10f);
+            else if (seg == S_FALSE) v = roadSpeed;
+            if (wheels != null && v > 0.01f)
+            {
+                _wheelAngle = Mathf.Repeat(_wheelAngle + Time.deltaTime * v / wheelRadius * Mathf.Rad2Deg, 360f);
+                for (int i = 0; i < wheels.Length; i++) if (wheels[i] != null) wheels[i].localRotation = Quaternion.Euler(_wheelAngle, 0f, 0f);
+            }
+            // 车不抖（圣经：无颠簸、无镜头震动；旧车感靠胎噪、雨声和挂件）
+            if (busRoot != null && busRoot.localPosition != _busBasePos) busRoot.localPosition = _busBasePos;
+            if (pendant != null)
+            {
+                float sw = seg == S_ROAD || seg == S_FALSE ? 1f : 0.3f;
+                float tt = Time.time;
+                pendant.localRotation = Quaternion.Euler(Mathf.Sin(tt * 2.1f) * 6f * sw, 0f, Mathf.Sin(tt * 1.7f + 0.5f) * 9f * sw + Mathf.Sin(tt * 5.3f) * 2f * sw);
+            }
+            ApplyLamps(t, seg);
+            // 慢慢消失（占位：dither 淡出；圣经是从天窗开始的侵蚀，等云端的车厢 shader）
+            float a = 1f;
+            switch (seg)
+            {
+                case S_DEEP1: a = Mathf.Lerp(1f, 0.8f, Smooth((t - cueF[2]) / 60f)); break;
+                case S_SKY2: a = Mathf.Lerp(0.8f, 0.45f, Smooth((t - segStart[S_SKY2]) / 40f)); break;
+                case S_SKY3:
+                    int n = 0;
+                    if (starCross != null) for (int i = 0; i < starCross.Length; i++) if (t >= starCross[i]) n = i + 1;
+                    a = n >= 13 ? 0f : 0.45f - 0.35f * n / 12f;
+                    break;
+                case S_WHITE: a = 0f; break;
+            }
+            SetBusAlpha(a);
+        }
+
+        /// <summary>管灯：夜路 1；入云（U5）降到一半；U6 起 30 秒降到 E 0.25；第 4 幕按闪烁表一盏盏跌落；U9 150% 一闪后全灭；之后一直灭，假醒和醒是稳的。</summary>
+        void ApplyLamps(float t, int seg)
+        {
+            float U5 = cueU[5], U6 = cueU[6], U9 = cueU[9];
+            float baseL = 1f;
+            if (seg == S_LIFT || seg == S_GATE)
+            {
+                if (t >= U5) baseL = Mathf.Lerp(1f, 0.5f, Smooth((t - U5) / 3f));
+                if (t >= U6) baseL = Mathf.Lerp(0.5f, 0.3125f, Smooth((t - U6) / 30f));
+            }
+            else if (seg >= S_INSIDE && seg <= S_WHITE)
+            {
+                baseL = 0f;
+                if (seg == S_INSIDE && t < U9 + 0.45f) baseL = t < U9 + 0.2f ? 0.47f : Mathf.Lerp(0.47f, 0f, (t - U9 - 0.2f) / 0.25f);    // 0.3125 × 150%
+            }
+            float l0 = baseL, l1 = baseL, l2 = baseL;
+            if ((seg == S_LIFT || seg == S_GATE) && flickerT != null && t >= U6)
+            {
+                float rel = t - U9;
+                for (int i = 0; i < flickerT.Length; i++)
+                {
+                    float s0 = flickerT[i];
+                    if (rel < s0) break;
+                    if (U9 + s0 < U6 || rel >= s0 + flickerDur[i]) continue;
+                    int m = flickerMask[i];
+                    float lv = baseL * flickerLevel[i];
+                    if ((m & 99) != 0) l2 = lv;      // 列 0–1（前）
+                    if ((m & 132) != 0) l1 = lv;     // 列 2（中）
+                    if ((m & 792) != 0) l0 = lv;     // 列 3–4（后）
+                }
+            }
+            SetCabinLamps(l0, l1, l2);
+        }
+
+        void SetCabinLamps(float l0, float l1, float l2)
+        {
+            if (Mathf.Abs(l0 - _l0) < 0.005f && Mathf.Abs(l1 - _l1) < 0.005f && Mathf.Abs(l2 - _l2) < 0.005f) return;
+            _l0 = l0; _l1 = l1; _l2 = l2;
+            float avg = (l0 + l1 + l2) / 3f;
+            if (cabinLights != null)
+                for (int i = 0; i < cabinLights.Length; i++)
+                {
+                    if (cabinLights[i] == null) continue;
+                    float l = cabinLights.Length == 3 ? (i == 0 ? l0 : (i == 1 ? l1 : l2)) : avg;
+                    cabinLights[i].intensity = cabinLightIntensity * l;
+                }
+            if (cabinTubes != null)
+                for (int i = 0; i < cabinTubes.Length; i++)
+                {
+                    var r = cabinTubes[i];
+                    if (r == null) continue;
+                    r.GetPropertyBlock(_mpb);
+                    _mpb.SetFloat("_Emission", cabinTubeEmission * Mathf.Max(avg, 0.04f));
+                    r.SetPropertyBlock(_mpb);
+                }
+        }
+
+        float _alpha = -1f;
+        void SetBusAlpha(float a)
+        {
+            if (Mathf.Abs(a - _alpha) < 0.002f) return;
+            _alpha = a;
+            if (glassRenderers != null)
+                for (int i = 0; i < glassRenderers.Length; i++)
+                    if (glassRenderers[i] != null && glassRenderers[i].enabled != (a > 0.55f)) glassRenderers[i].enabled = a > 0.55f;
+            if (busRenderers == null) return;
+            for (int i = 0; i < busRenderers.Length; i++)
+            {
+                var r = busRenderers[i];
+                if (r == null) continue;
+                r.GetPropertyBlock(_mpb);
+                _mpb.SetFloat("_Alpha", a);
+                r.SetPropertyBlock(_mpb);
+            }
+        }
+
+        // ═════════════════════════════════════════════════════════════
+        //  声音：出发 → 3 秒调台噪音 → 《原光》从收音机里（窄带、单声道、3D）→ U3 打开成整个世界（8 秒）→
+        //  U12 最后一个可闻采样 → 3.0 秒数字静音 → 末乐章 → 文件结束 → 白里 5 秒静默 → 假醒只有电台噪音（60 秒咔哒关掉）→ 醒：虫鸣
+        // ═════════════════════════════════════════════════════════════
+        void ApplyAudio(float t, int seg, float tl)
+        {
+            float U3 = cueU[3];
+            float open = Smooth((t - U3) / 8f);
+            // ── 收音机：Urlicht ──
+            float pos = t - urlichtAt;
+            bool radioOn = seg >= S_ROAD && seg <= S_INSIDE && urlicht != null && pos >= 0f && pos < urlichtFadeB;
+            if (radio != null)
+            {
+                if (radioOn)
+                {
+                    if (radio.clip != urlicht) radio.clip = urlicht;
+                    SyncSource(radio, pos, true);
+                    radio.spatialBlend = 1f - open;
+                    float fade = 1f - Lin((pos - urlichtFadeA) / (urlichtFadeB - urlichtFadeA));
+                    radio.volume = radioVolume * Mathf.Lerp(1f, 1.585f, open) * fade;          // 打开时 +4 dB
+                    if (radioFilter != null) radioFilter.cutoffFrequency = LogLerp(3400f, 16000f, open);
+                    if (radioHighPass != null) radioHighPass.cutoffFrequency = LogLerp(350f, 30f, open);
+                }
+                else if (radio.isPlaying) radio.Stop();
+            }
+            // ── 收音机的噪音（dB 都是相对音乐的电平）──
+            if (radioNoise != null)
+            {
+                float db = -200f;
+                if (seg >= S_ROAD && seg <= S_LIFT)
+                {
+                    if (t < urlichtAt) db = -10f;                                     // 调台
+                    else db = Mathf.Lerp(-26f, -60f, open);                           // 窄带底噪；U3 打开后 −60
+                }
+                else if (seg == S_FALSE && tl < 60f) db = Mathf.Lerp(-40f, -30f, Lin(tl / 8f));   // 假醒：淡入，60 秒自己咔哒关掉
+                float nv = db > -80f ? radioVolume * Db(db + noiseTrimDb) : 0f;
+                if (nv > 0.0005f)
+                {
+                    radioNoise.volume = nv;
+                    if (!radioNoise.isPlaying) radioNoise.Play();
+                }
+                else if (radioNoise.isPlaying) radioNoise.Stop();
+            }
+            // ── 末乐章：t = 文件秒 + finaleAt；从 11.18 秒起 0.1 秒淡入；930.6–933.1 淡出 ──
+            float fpos = t - finaleAt;
+            bool worldOn = finale != null && seg >= S_PLUNGE && seg <= S_WHITE && fpos >= finaleStart && fpos < finaleFadeB;
+            if (world != null)
+            {
+                if (worldOn)
+                {
+                    if (world.clip != finale) world.clip = finale;
+                    SyncSource(world, fpos, false);
+                    float fin = Lin((fpos - finaleStart) / 0.1f);
+                    float fout = 1f - Lin((fpos - finaleFadeA) / (finaleFadeB - finaleFadeA));
+                    world.volume = musicVolume * fin * fout;
+                }
+                else if (world.isPlaying) world.Stop();
+            }
+            // ── 虫鸣：站牌有；出发后没有；醒来 6–14 秒升到满 ──
+            if (insects != null)
+            {
+                float iv = seg == S_IDLE ? insectsVolume : (seg == S_WAKE ? insectsVolume * Smooth((tl - 6f) / 8f) : 0f);
+                if (iv > 0.001f)
+                {
+                    insects.volume = iv;
+                    if (!insects.isPlaying) insects.Play();
+                }
+                else if (insects.isPlaying) insects.Stop();
+            }
+        }
+
+        /// <summary>音乐跟着时间轴：没在放就从该在的位置开始；差 1.5 秒以上立刻跳过去；
+        /// 差 0.4 秒以上、离上次跳至少 4 秒、这次播放里最多再修 3 次（流式音频跳转后有时会慢半拍）。</summary>
+        void SyncSource(AudioSource src, float pos, bool isRadio)
+        {
+            float d = Mathf.Abs(src.time - pos);
+            float last = isRadio ? _radioSeekAt : _worldSeekAt;
+            int fixes = isRadio ? _radioFix : _worldFix;
+            bool seek = false;
+            if (!src.isPlaying || d > 1.5f) { seek = true; fixes = 0; }
+            else if (d > 0.4f && Time.time - last > 4f && fixes < 3) { seek = true; fixes++; }
+            if (!seek) return;
+            src.time = pos;
+            if (!src.isPlaying) src.Play();
+            if (isRadio) { _radioSeekAt = Time.time; _radioFix = fixes; }
+            else { _worldSeekAt = Time.time; _worldFix = fixes; }
+        }
+        float _radioSeekAt = -100f, _worldSeekAt = -100f;
+        int _radioFix, _worldFix;
+
+        // ═════════════════════════════════════════════════════════════
+        //  诗：每句按圣经 §7.5 的时刻、停留、方位 / 仰角 / 距离、字高摆在车内空间里（本地）
+        // ═════════════════════════════════════════════════════════════
+        void ApplyPoem(float t)
+        {
+            if (poem == null || poemAt == null || _poemActive == null) return;
+            int idx = -1;
+            if (t >= 0f)
+                for (int i = 0; i < poemAt.Length; i++) if (t >= poemAt[i] && t < poemAt[i] + poemHold[i]) idx = i;
+            if (idx < 0)
+            {
+                SetPoemAlpha(0f);
+                if (_poemIdx != -1) { _poemIdx = -1; _poemStage = -1; dbgPoem = ""; }
+                return;
+            }
+            float local = t - poemAt[idx];
+            float hold = poemHold[idx], fin = poemIn[idx], fout = poemOut[idx];
+            float outK = Lin((local - (hold - fout)) / fout);
+            float a = Mathf.Min(EaseOut(local / fin), 1f - outK);
+            int stage = 0;
+            if (poemReveal1[idx] > 0f && local >= poemReveal1[idx]) stage = 1;
+            if (poemReveal2[idx] > 0f && local >= poemReveal2[idx]) stage = 2;
+            if (idx != _poemIdx)
+            {
+                _poemIdx = idx; _poemStage = -1;
+                _poemAzUsed = GazeAz(idx);
+                Color c = poemColor[idx];
+                poem.color = new Color(c.r, c.g, c.b, 0f);
+            }
+            if (stage != _poemStage)
+            {
+                _poemStage = stage;
+                int k = idx * 3 + stage;
+                string s = k < _poemActive.Length ? _poemActive[k] : "";
+                poem.text = s;
+                dbgPoem = idx + ":" + stage;
+            }
+            PlacePoem(idx, _poemAzUsed, poemEl[idx] + 0.2f * poemDrift[idx] * outK);
+            SetPoemAlpha(a * poemColor[idx].a);
+        }
+
+        /// <summary>注视规则（§7.4.6）：默认方位和玩家当前头的朝向差 ≤ 50° 就用默认；否则放在当前朝向（按 15° 取整）朝默认偏 20°。之后不再跟随。</summary>
+        float GazeAz(int idx)
+        {
+            float az = poemAz[idx];
+            if (poemFixed != null && idx < poemFixed.Length && poemFixed[idx]) return az;
+            var lp = Networking.LocalPlayer;
+            if (lp == null) return az;
+            Quaternion hr = lp.GetTrackingData(VRCPlayerApi.TrackingDataType.Head).rotation;
+            Vector3 f = hr * Vector3.forward;
+            if (busRoot != null) f = busRoot.InverseTransformDirection(f);
+            if (f.x * f.x + f.z * f.z < 0.0001f) return az;
+            float yaw = Mathf.Atan2(f.x, f.z) * Mathf.Rad2Deg;
+            float d = Mathf.DeltaAngle(yaw, az);
+            if (Mathf.Abs(d) > 50f) az = Mathf.Round(yaw / 15f) * 15f + Mathf.Sign(d) * 20f;
+            return az;
+        }
+
+        void PlacePoem(int idx, float az, float el)
+        {
+            float ra = az * Mathf.Deg2Rad, re = el * Mathf.Deg2Rad;
+            Vector3 dirL = new Vector3(Mathf.Sin(ra) * Mathf.Cos(re), Mathf.Sin(re), Mathf.Cos(ra) * Mathf.Cos(re));
+            Vector3 eye = busRoot != null ? busRoot.TransformPoint(heroEye) : heroEye;
+            Vector3 dir = busRoot != null ? busRoot.TransformDirection(dirL) : dirL;
+            float dist = poemDist[idx];
+            Transform tr = poemRoot;
+            if (tr == null) return;
+            tr.position = eye + dir * dist;
+            tr.rotation = Quaternion.LookRotation(dir, busRoot != null ? busRoot.up : Vector3.up);
+            float h = dist * Mathf.Tan(poemSize[idx] * Mathf.Deg2Rad);     // 字高（em）= 距离 × tan(度数)；TMP 字号 10 = 1 m
+            tr.localScale = new Vector3(h, h, h);
+        }
+
+        void SetPoemAlpha(float a)
+        {
+            if (poem == null) return;
+            Color c = poem.color;
+            if (Mathf.Abs(c.a - a) > 0.002f)
+            {
+                if (_poemIdx >= 0 && poemColor != null && _poemIdx < poemColor.Length) { Color pc = poemColor[_poemIdx]; poem.color = new Color(pc.r, pc.g, pc.b, a); }
+                else poem.color = new Color(c.r, c.g, c.b, a);
+            }
+        }
+    }
+}

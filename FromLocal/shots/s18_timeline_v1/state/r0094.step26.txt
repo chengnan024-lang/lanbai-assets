@@ -1,0 +1,12 @@
+t=60.8  幕=2  诗=
+Radio ▶ vol 0.8718 「LB_Urlicht」 57.78s 3D 0.00 LP 16000 HP 30
+RadioNoise ■ vol 0.0058 3D 1.00
+World ■ vol 0.8000 3D 0.00
+Insects ■ vol 0.3500 3D 0.70
+Rain ▶ vol 0.4921 「LB_Rain」 22.83s 3D 0.00
+Splash ■ vol 0.7000 3D 0.00
+后处理 Night=1
+雾 0.0039 #24262C  环境 #22242A
+Road 开  RoadRoot 开 y=-36.5  BusStop 关  LightSea 开 y=-76.5 z=268.4  CloudSea 关  Gate 关  GateRoot 开(父关)  Sky 关  Deep 关  SeaA 关  SeaB 关  RainIdle 关  RainMoving 关  
+路灯 0 盏   管灯 1.50 1.50 1.50   门 -80°
+诗 （无）

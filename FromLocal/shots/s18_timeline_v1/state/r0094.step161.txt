@@ -1,0 +1,12 @@
+t=1176.82  幕=10  诗=
+Radio ■ vol 0.0030 3D 0.00 LP 16000 HP 30
+RadioNoise ■ vol 0.0058 3D 1.00
+World ■ vol 0.8500 3D 0.00
+Insects ■ vol 0.3500 3D 0.70
+Rain ■ vol 0.0000 3D 0.00
+Splash ■ vol 0.0073 3D 0.00
+后处理 Stars=1 White=1
+雾 0.0008 #060A16  环境 #0A1020
+Road 开  RoadRoot 开 y=0  BusStop 关  LightSea 关  CloudSea 关  Gate 关  GateRoot 开(父关)  Sky 关  Deep 关  SeaA 关  SeaB 关  RainIdle 关  RainMoving 关  
+路灯 8 盏，最远 z=369   管灯 0.00 0.00 0.00   门 0°
+诗 （无）

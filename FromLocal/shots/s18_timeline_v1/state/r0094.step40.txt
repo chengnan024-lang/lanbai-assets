@@ -1,0 +1,12 @@
+t=137.8  幕=2  诗=1:0
+Radio ▶ vol 0.8718 「LB_Urlicht」 134.80s 3D 0.00 LP 16000 HP 30
+RadioNoise ■ vol 0.0058 3D 1.00
+World ■ vol 0.8000 3D 0.00
+Insects ■ vol 0.3500 3D 0.70
+Rain ■ vol 0.0000 3D 0.00
+Splash ■ vol 0.7000 3D 0.00
+后处理 Night=0.951 Gate=0.049
+雾 0.00036 #262C42  环境 #0C1020
+Road 开  RoadRoot 关  BusStop 关  LightSea 关  CloudSea 开 y=-42.5  Gate 开  GateRoot 开 z=2463.9  Sky 关  Deep 关  SeaA 关  SeaB 关  RainIdle 关  RainMoving 关  
+路灯 0 盏   管灯 0.74 0.74 0.74   门 -80°
+诗 （无）

@@ -1,0 +1,12 @@
+t=74.80701  幕=2  诗=0:0
+Radio ▶ vol 0.8718 「LB_Urlicht」 71.80s 3D 0.00 LP 16000 HP 30
+RadioNoise ■ vol 0.0058 3D 1.00
+World ■ vol 0.8000 3D 0.00
+Insects ■ vol 0.3500 3D 0.70
+Rain ■ vol 0.0000 3D 0.00
+Splash ■ vol 0.7000 3D 0.00
+后处理 Night=1
+雾 0.0025 #24262C  环境 #22242A
+Road 开  RoadRoot 开 y=-198.1  BusStop 关  LightSea 开 y=-238.1 z=206.4  CloudSea 关  Gate 关  GateRoot 开(父关)  Sky 关  Deep 关  SeaA 关  SeaB 关  RainIdle 关  RainMoving 关  
+路灯 0 盏   管灯 1.50 1.50 1.50   门 -80°
+诗 α 0.90 方位 50.0° 仰角 -9.0° 距离 40.0 m 字高 2.40° #E2DDD4「我欲因之梦吴越 / I would dream my way to Wu and Yue — / 一夜飞度镜湖月 / in one night fly across the Mirror Lake moon」

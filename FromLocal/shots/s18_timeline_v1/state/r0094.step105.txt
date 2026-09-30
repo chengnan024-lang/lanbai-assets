@@ -1,0 +1,12 @@
+t=450.804  幕=7  诗=
+Radio ■ vol 0.0030 3D 0.00 LP 16000 HP 30
+RadioNoise ■ vol 0.0058 3D 1.00
+World ▶ vol 0.8500 「LB_Finale」 210.44s 3D 0.00
+Insects ■ vol 0.3500 3D 0.70
+Rain ■ vol 0.0000 3D 0.00
+Splash ■ vol 0.0073 3D 0.00
+后处理 Deep=1
+雾 0.0045 #0D3050  环境 #123A58
+Road 关  RoadRoot 关  BusStop 关  LightSea 关  CloudSea 关  Gate 关  GateRoot 开(父关)  Sky 开  Deep 开  SeaA 开 y=115.2  SeaB 开 y=-488.1  RainIdle 关  RainMoving 关  
+路灯 0 盏   管灯 0.00 0.00 0.00   门 -80°
+诗 （无）

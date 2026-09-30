@@ -1,0 +1,12 @@
+t=1268.811  幕=12  诗=10:0
+Radio ■ vol 0.0030 3D 0.00 LP 16000 HP 30
+RadioNoise ■ vol 0.0037 3D 1.00
+World ■ vol 0.8500 3D 0.00
+Insects ▶ vol 0.3500 「LB_Insects」 2.01s 3D 0.70
+Rain ■ vol 0.0000 3D 0.00
+Splash ■ vol 0.0073 3D 0.00
+后处理 Night=1
+雾 0.005 #24262C  环境 #22242A
+Road 开  RoadRoot 开 y=0  BusStop 开  LightSea 关  CloudSea 关  Gate 关  GateRoot 开(父关)  Sky 关  Deep 关  SeaA 关  SeaB 关  RainIdle 关  RainMoving 关  
+路灯 4 盏，最远 z=74   管灯 1.50 1.50 1.50   门 -80°
+诗 α 0.90 方位 50.0° 仰角 -9.0° 距离 40.0 m 字高 2.40° #D9E2E7「惟觉时之枕席 / Only the pillow and mat of waking — / 失向来之烟霞 / lost, the mists and glow of before」
