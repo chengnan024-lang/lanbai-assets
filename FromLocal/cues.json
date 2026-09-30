@@ -1,0 +1,521 @@
+{
+ "about": "蓝白 · 乐句标签（本地实测）。file = build 播放的 ogg 里的秒；t = 时间轴秒（出发 = 0）。",
+ "audio": {
+  "urlicht": {
+   "file": "Assets/Lanbai/Music/LB_Urlicht.ogg",
+   "md5": "ef936feca2fff85fad13a25fa70d6218",
+   "duration": 247.564,
+   "recording": "Ferrier / Klemperer / Concertgebouworkest, 1951（Holland Festival，单声道）"
+  },
+  "finale": {
+   "file": "Assets/Lanbai/Music/LB_Finale.ogg",
+   "md5": "a8dd301ec58a1132305c383dd7393649",
+   "duration": 933.1,
+   "recording": "Bruno Walter / New York Philharmonic / Westminster Choir, 1958；文件从第二面 3:20 起"
+  }
+ },
+ "timeline": {
+  "T_urlicht": 3.0,
+  "silence": 3.0,
+  "F_offset": 240.36,
+  "finale_play_from_file": 11.18,
+  "note": "t = 0 出发（全房间同步的那一刻）→ 3.0 s 调台噪音 → Urlicht 文件从 0 播 → U12 → 3.0 s 数字静音 → F0；末乐章 t = 文件秒 + F_offset"
+ },
+ "U": {
+  "U0": {
+   "file": 0.9,
+   "t": 3.9,
+   "conf": "高",
+   "event": "*O Röschen rot!* 第一个音",
+   "note": "人声 0.9 s 起；之前 0.6–0.9 s 只有唱片底噪"
+  },
+  "U1": {
+   "file": 14.5,
+   "t": 17.5,
+   "conf": "高",
+   "event": "铜管众赞歌起（Choralmäßig）",
+   "note": "人声的 *rot!* 在 14.1 s 收；10.2 s 起有很轻的低音木管，明亮的铜管在 14.5 s"
+  },
+  "U2": {
+   "file": 31.0,
+   "t": 34.0,
+   "conf": "中",
+   "event": "众赞歌最后几句开始（灯尽）",
+   "note": "众赞歌四句：14.5–30.7 · 31.0–35.8 · 36.1–43.4 · 43.8–46.8；U2 取倒数第三句起，到 U3 有 16 s 暗段"
+  },
+  "U3": {
+   "file": 47.3,
+   "t": 50.3,
+   "conf": "高",
+   "event": "*Der Mensch liegt in größter Not!*",
+   "note": "第二句 *…in größter Pein!* 57.7"
+  },
+  "U4": {
+   "file": 72.8,
+   "t": 75.8,
+   "conf": "高",
+   "event": "*Je lieber möcht' ich im Himmel sein*",
+   "note": "唱两遍：72.8–88.0、88.6–104.4（第二遍的 *Himmel* 高音 96.5–101.6）"
+  },
+  "U5": {
+   "file": 104.5,
+   "t": 107.5,
+   "conf": "高",
+   "event": "管弦过渡（人声结束）",
+   "note": "104.5–124.5 管弦，124.5–126.1 休止"
+  },
+  "U6": {
+   "file": 130.8,
+   "t": 133.8,
+   "conf": "高",
+   "event": "*Da kam ich auf einen breiten Weg*",
+   "note": "调性转换 / *Etwas bewegter* 的管弦在 126.1 先进（U6k）"
+  },
+  "U7": {
+   "file": 147.3,
+   "t": 150.3,
+   "conf": "高",
+   "event": "*Da kam ein Engelein*",
+   "note": ""
+  },
+  "U8": {
+   "file": 163.15,
+   "t": 166.15,
+   "conf": "高",
+   "event": "*Ach nein!*",
+   "note": ""
+  },
+  "U9": {
+   "file": 176.55,
+   "t": 179.55,
+   "conf": "高",
+   "event": "*Ich bin von Gott*",
+   "note": ""
+  },
+  "U10": {
+   "file": 182.95,
+   "t": 185.95,
+   "conf": "高",
+   "event": "*Der liebe Gott*（…wird mir ein Lichtchen geben）",
+   "note": "*Der liebe Gott* 唱两遍"
+  },
+  "U11": {
+   "file": 199.4,
+   "t": 202.4,
+   "conf": "高",
+   "event": "*wird leuchten mir*（…bis in das ewig selig Leben）",
+   "note": ""
+  },
+  "U12": {
+   "file": 245.64,
+   "t": 248.64,
+   "conf": "高",
+   "event": "终和弦结束（文件最后一个可闻采样）",
+   "note": "和弦在 −47 dBFS 被截断，不是自然消失；建议 243.9–245.64 做 1.7 s 淡出，让\"释放\"听起来是自然的"
+  }
+ },
+ "U_sub": {
+  "U6k": {
+   "file": 126.1,
+   "t": 129.1,
+   "conf": "高",
+   "event": "调性转换，*Etwas bewegter* 管弦先进",
+   "note": "破云可以放在这里，人声 4.7 s 后唱到\"宽阔的路\""
+  },
+  "U7b": {
+   "file": 152.1,
+   "t": 155.1,
+   "conf": "中",
+   "event": "*…und wollt' mich abweisen*",
+   "note": "巨像 2 的冠越过月盘"
+  },
+  "U8b": {
+   "file": 164.9,
+   "t": 167.9,
+   "conf": "中",
+   "event": "*Ich ließ mich nicht abweisen!*（第一遍）",
+   "note": ""
+  },
+  "U8c": {
+   "file": 168.4,
+   "t": 171.4,
+   "conf": "低",
+   "event": "第二遍 *Ach nein! Ich ließ mich nicht abweisen!*",
+   "note": ""
+  },
+  "LIP1": {
+   "file": 176.55,
+   "t": 179.55,
+   "conf": "高",
+   "event": "光唇 1 = U9 *Ich bin von Gott*（入口）",
+   "note": ""
+  },
+  "LIP2": {
+   "file": 179.9,
+   "t": 182.9,
+   "conf": "中",
+   "event": "光唇 2 = *…und will wieder zu Gott*",
+   "note": ""
+  },
+  "LIP3": {
+   "file": 182.95,
+   "t": 185.95,
+   "conf": "高",
+   "event": "光唇 3 = U10 *Der liebe Gott*",
+   "note": ""
+  },
+  "LIP4": {
+   "file": 190.9,
+   "t": 193.9,
+   "conf": "中",
+   "event": "光唇 4 = *…wird mir ein Lichtchen geben*",
+   "note": "表盘在这里 3 秒提亮（*ein Lichtchen* 193.1）"
+  },
+  "LIP5": {
+   "file": 199.4,
+   "t": 202.4,
+   "conf": "高",
+   "event": "光唇 5 = U11 *wird leuchten mir*",
+   "note": ""
+  },
+  "LIP6": {
+   "file": 204.15,
+   "t": 207.15,
+   "conf": "中",
+   "event": "光唇 6 = *…bis in das ewig*",
+   "note": ""
+  },
+  "LIP7": {
+   "file": 211.05,
+   "t": 214.05,
+   "conf": "中",
+   "event": "光唇 7 = *selig*",
+   "note": "第二遍 *selig* 约 216–221.7"
+  },
+  "LIP8": {
+   "file": 221.75,
+   "t": 224.75,
+   "conf": "中",
+   "event": "光唇 8 = 长音 *Leben*",
+   "note": "高音保持到约 228.0，人声 230.8 完全结束；之后是管弦尾声"
+  },
+  "U_voiceEnd": {
+   "file": 230.8,
+   "t": 233.8,
+   "conf": "高",
+   "event": "人声完全结束，管弦尾声 230.8–245.64",
+   "note": ""
+  }
+ },
+ "F": {
+  "F0": {
+   "file": 11.28,
+   "t": 251.64,
+   "conf": "高",
+   "event": "大召唤第一声远方号角",
+   "note": "0–11.2 s 是前一段崩塌的余响（尖叫的尾巴），不播"
+  },
+  "F1": {
+   "file": 41.5,
+   "t": 281.86,
+   "conf": "中",
+   "event": "长笛 / 短笛的鸟鸣（远方铜管之上）",
+   "note": "号角与小号的呼应 11.3–37；长笛鸟鸣 41.5 起；53–62 全团渐强、61–63 定音鼓滚奏；105–112.6 再一段鸟鸣"
+  },
+  "F2": {
+   "file": 111.7,
+   "t": 352.06,
+   "conf": "中",
+   "event": "最后一声鸟鸣",
+   "note": "之后是约 11 s 持续渐弱的远方和弦，**122.9 真正的静**（F2h），126.85 合唱"
+  },
+  "F3": {
+   "file": 126.85,
+   "t": 367.21,
+   "conf": "高",
+   "event": "合唱 ppp 无伴奏 *Aufersteh'n, ja aufersteh'n*",
+   "note": ""
+  },
+  "F4": {
+   "file": 205.65,
+   "t": 446.01,
+   "conf": "中",
+   "event": "女高音从合唱里浮起（*Unsterblich Leben*）",
+   "note": "217 起女高音唱到高音区（C5–E5）"
+  },
+  "F5": {
+   "file": 404.6,
+   "t": 644.96,
+   "conf": "高",
+   "event": "女低音之前的管弦间奏（第二段合唱 *…die starben* 结束）",
+   "note": "间奏 404.6–495.2"
+  },
+  "F6": {
+   "file": 495.2,
+   "t": 735.56,
+   "conf": "高",
+   "event": "女低音 *O glaube, mein Herz, o glaube*",
+   "note": ""
+  },
+  "F7": {
+   "file": 507.9,
+   "t": 748.26,
+   "conf": "高",
+   "event": "*Es geht dir nichts verloren!*（…*Dein, was du geliebt*）",
+   "note": "*Dein ist, ja dein…* 约 515–537"
+  },
+  "F8": {
+   "file": 594.8,
+   "t": 835.16,
+   "conf": "高",
+   "event": "合唱 *Was entstanden ist, das muss vergehen*",
+   "note": "*Hör' auf zu beben!* 637.6，*Bereite dich zu leben!* 661.8–681.3"
+  },
+  "F9": {
+   "file": 688.75,
+   "t": 929.11,
+   "conf": "高",
+   "event": "二重唱 *O Schmerz! Du Alldurchdringer!*",
+   "note": "*O Tod! … Nun bist du bezwungen!* 约 696.9–700.0"
+  },
+  "F10": {
+   "file": 701.9,
+   "t": 942.26,
+   "conf": "中",
+   "event": "二重唱 *Mit Flügeln, die ich mir errungen*",
+   "note": "二重唱的 *werd' ich entschweben* 约 716–720.7，*zum Licht…* 720.7–729"
+  },
+  "F11": {
+   "file": 729.4,
+   "t": 969.76,
+   "conf": "中",
+   "event": "合唱 *Mit Flügeln… werde ich entschweben*",
+   "note": "男声先进（很低）"
+  },
+  "F12": {
+   "file": 746.7,
+   "t": 987.06,
+   "conf": "高",
+   "event": "*Sterben werd' ich, um zu leben!*",
+   "note": "重复到约 772.5"
+  },
+  "F13": {
+   "file": 777.85,
+   "t": 1018.21,
+   "conf": "高",
+   "event": "*Aufersteh'n, ja aufersteh'n wirst du, mein Herz, in einem Nu!* 管风琴 fff",
+   "note": ""
+  },
+  "F14": {
+   "file": 819.3,
+   "t": 1059.66,
+   "conf": "中",
+   "event": "*Was du geschlagen, zu Gott wird es dich tragen!*",
+   "note": "*zu Gott* 反复 833–874"
+  },
+  "F15": {
+   "file": 875.0,
+   "t": 1115.36,
+   "conf": "高",
+   "event": "合唱结束，管弦结尾（钟、锣）",
+   "note": "单独的钟声在这版录音里分辨不出来（见下面\"强拍\"）"
+  },
+  "F16": {
+   "file": 908.95,
+   "t": 1149.31,
+   "conf": "高",
+   "event": "终和弦起音",
+   "note": "和弦到 930.4 收，之后是 −47 dBFS 的余响 / 底噪，文件在 933.1 截止（没有淡出）"
+  }
+ },
+ "F_sub": {
+  "F2h": {
+   "file": 122.9,
+   "t": 363.26,
+   "conf": "高",
+   "event": "大召唤之后真正的静（持续和弦结束）",
+   "note": ""
+  },
+  "F9b": {
+   "file": 700.0,
+   "t": 940.36,
+   "conf": "中",
+   "event": "*…Nun bist du bezwungen!* 结束",
+   "note": "紧接着就是 F10，没有明显的管弦空档"
+  },
+  "F11b": {
+   "file": 736.0,
+   "t": 976.36,
+   "conf": "低",
+   "event": "合唱的 *entschweben*（窗帘松开横杆）",
+   "note": "±2 s"
+  },
+  "F16r": {
+   "file": 930.4,
+   "t": 1170.76,
+   "conf": "高",
+   "event": "终和弦收（乐队停）",
+   "note": ""
+  },
+  "F_end": {
+   "file": 933.1,
+   "t": 1173.46,
+   "conf": "高",
+   "event": "文件结束（−47 dBFS 的尾巴被截断）",
+   "note": "建议 930.6–933.1 淡出到 0；\"低于 −60 dBFS\"就取 933.1"
+  }
+ },
+ "F13_F16_accents_file": [
+  770.07,
+  774.71,
+  775.92,
+  786.83,
+  790.06,
+  793.22,
+  796.91,
+  805.46,
+  809.47,
+  811.94,
+  813.93,
+  816.95,
+  820.27,
+  821.92,
+  825.38,
+  830.26,
+  831.93,
+  836.85,
+  839.52,
+  842.31,
+  845.46,
+  848.85,
+  849.55,
+  851.2,
+  853.55,
+  865.06,
+  869.1,
+  873.4,
+  885.19,
+  897.22,
+  897.76,
+  909.09,
+  912.22,
+  913.5,
+  914.94,
+  917.28,
+  919.68,
+  921.74,
+  923.25,
+  928.73
+ ],
+ "F13_F16_accents_t": [
+  1010.43,
+  1015.07,
+  1016.28,
+  1027.19,
+  1030.42,
+  1033.58,
+  1037.27,
+  1045.82,
+  1049.83,
+  1052.3,
+  1054.29,
+  1057.31,
+  1060.63,
+  1062.28,
+  1065.74,
+  1070.62,
+  1072.29,
+  1077.21,
+  1079.88,
+  1082.67,
+  1085.82,
+  1089.21,
+  1089.91,
+  1091.56,
+  1093.91,
+  1105.42,
+  1109.46,
+  1113.76,
+  1125.55,
+  1137.58,
+  1138.12,
+  1149.45,
+  1152.58,
+  1153.86,
+  1155.3,
+  1157.64,
+  1160.04,
+  1162.1,
+  1163.61,
+  1169.09
+ ],
+ "tempo_bpm": 57.4,
+ "derived": {
+  "v_g": 59.02,
+  "U9_minus_U6": 45.75,
+  "F12_to_F13": 31.15,
+  "F13_to_F16": 131.1,
+  "mirror_r": 1.2265,
+  "mirror_gaps": [
+   2.5,
+   3.07,
+   3.76,
+   4.61,
+   5.66,
+   6.94,
+   8.51,
+   10.44,
+   12.81,
+   15.71,
+   19.27,
+   23.63
+  ],
+  "mirror_sum": 116.9,
+  "mirror_crossings_file": [
+   792.05,
+   794.55,
+   797.62,
+   801.38,
+   805.99,
+   811.65,
+   818.59,
+   827.1,
+   837.54,
+   850.35,
+   866.05,
+   885.32,
+   908.95
+  ],
+  "mirror_crossings_snapped_file": [
+   792.05,
+   794.55,
+   797.62,
+   801.38,
+   805.46,
+   811.94,
+   818.59,
+   827.1,
+   836.85,
+   849.55,
+   866.05,
+   885.19,
+   908.95
+  ],
+  "mirror_crossings_snapped_t": [
+   1032.41,
+   1034.91,
+   1037.98,
+   1041.74,
+   1045.82,
+   1052.3,
+   1058.95,
+   1067.46,
+   1077.21,
+   1089.91,
+   1106.41,
+   1125.55,
+   1149.31
+  ],
+  "hold_after_ignite": 10.0
+ }
+}
