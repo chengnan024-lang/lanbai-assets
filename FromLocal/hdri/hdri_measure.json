@@ -1,0 +1,1010 @@
+{
+ "belfast_sunset_puresky": {
+  "sun_el": 2.29,
+  "sun_az_u": 217.4,
+  "max_over_median": 26,
+  "max": 24.5,
+  "anti_20_40": {
+   "h_ab": 293.2,
+   "C": 16.4,
+   "L": 61.7,
+   "srgb": "#9392AF"
+  },
+  "anti_hor_0_6": {
+   "h_ab": 298.5,
+   "C": 7.7,
+   "L": 42.4,
+   "srgb": "#65626F"
+  },
+  "anti_8_20": {
+   "h_ab": 302.5,
+   "C": 11.1,
+   "L": 55.7,
+   "srgb": "#888396"
+  },
+  "zenith": {
+   "h_ab": 285.2,
+   "C": 19.8,
+   "L": 66.9,
+   "srgb": "#9AA1C5"
+  },
+  "sun_side_hor": {
+   "h_ab": 71.7,
+   "C": 70.0,
+   "L": 177.0,
+   "srgb": "#FFFFFF"
+  }
+ },
+ "citrus_orchard_puresky": {
+  "sun_el": 15.64,
+  "sun_az_u": 253.7,
+  "max_over_median": 15,
+  "max": 16.4,
+  "anti_20_40": {
+   "h_ab": 261.1,
+   "C": 11.9,
+   "L": 61.7,
+   "srgb": "#8697A9"
+  },
+  "anti_hor_0_6": {
+   "h_ab": 258.6,
+   "C": 9.1,
+   "L": 43.5,
+   "srgb": "#5B6875"
+  },
+  "anti_8_20": {
+   "h_ab": 260.9,
+   "C": 9.8,
+   "L": 51.0,
+   "srgb": "#6E7B8A"
+  },
+  "zenith": {
+   "h_ab": 267.2,
+   "C": 9.8,
+   "L": 70.4,
+   "srgb": "#A2ADBE"
+  },
+  "sun_side_hor": {
+   "h_ab": 316.4,
+   "C": 0.4,
+   "L": 59.2,
+   "srgb": "#8F8E8F"
+  }
+ },
+ "citrus_orchard_road_puresky": {
+  "sun_el": 3.69,
+  "sun_az_u": 208.7,
+  "max_over_median": 21,
+  "max": 21.0,
+  "anti_20_40": {
+   "h_ab": 263.0,
+   "C": 12.5,
+   "L": 61.7,
+   "srgb": "#8697AB"
+  },
+  "anti_hor_0_6": {
+   "h_ab": 258.3,
+   "C": 11.6,
+   "L": 45.9,
+   "srgb": "#5D6F7F"
+  },
+  "anti_8_20": {
+   "h_ab": 257.8,
+   "C": 13.3,
+   "L": 52.8,
+   "srgb": "#6C8094"
+  },
+  "zenith": {
+   "h_ab": 267.8,
+   "C": 13.7,
+   "L": 71.3,
+   "srgb": "#A0B0C7"
+  },
+  "sun_side_hor": {
+   "h_ab": 312.2,
+   "C": 6.5,
+   "L": 65.9,
+   "srgb": "#A49EA9"
+  }
+ },
+ "drackenstein_quarry_puresky": {
+  "sun_el": 5.8,
+  "sun_az_u": 216.0,
+  "max_over_median": 2189,
+  "max": 2108.9,
+  "anti_20_40": {
+   "h_ab": 261.2,
+   "C": 7.7,
+   "L": 61.7,
+   "srgb": "#8C96A2"
+  },
+  "anti_hor_0_6": {
+   "h_ab": 106.4,
+   "C": 5.5,
+   "L": 64.4,
+   "srgb": "#9D9D93"
+  },
+  "anti_8_20": {
+   "h_ab": 239.8,
+   "C": 3.9,
+   "L": 68.7,
+   "srgb": "#A1A9AD"
+  },
+  "zenith": {
+   "h_ab": 271.5,
+   "C": 8.1,
+   "L": 46.4,
+   "srgb": "#676E7B"
+  },
+  "sun_side_hor": {
+   "h_ab": 74.9,
+   "C": 70.9,
+   "L": 153.9,
+   "srgb": "#FFFFFF"
+  }
+ },
+ "evening_road_01_puresky": {
+  "sun_el": 16.35,
+  "sun_az_u": 216.7,
+  "max_over_median": 22,
+  "max": 17.3,
+  "anti_20_40": {
+   "h_ab": 256.2,
+   "C": 23.7,
+   "L": 61.7,
+   "srgb": "#6E9ABD"
+  },
+  "anti_hor_0_6": {
+   "h_ab": 230.9,
+   "C": 5.6,
+   "L": 62.0,
+   "srgb": "#8B989D"
+  },
+  "anti_8_20": {
+   "h_ab": 244.6,
+   "C": 14.2,
+   "L": 73.2,
+   "srgb": "#9AB8CB"
+  },
+  "zenith": {
+   "h_ab": 261.3,
+   "C": 19.9,
+   "L": 40.4,
+   "srgb": "#43627F"
+  },
+  "sun_side_hor": {
+   "h_ab": 193.6,
+   "C": 2.6,
+   "L": 59.3,
+   "srgb": "#899090"
+  }
+ },
+ "hilly_terrain_01_puresky": {
+  "sun_el": 11.43,
+  "sun_az_u": 216.0,
+  "max_over_median": 49628,
+  "max": 21922.7,
+  "anti_20_40": {
+   "h_ab": 248.3,
+   "C": 21.7,
+   "L": 61.7,
+   "srgb": "#6C9BB8"
+  },
+  "anti_hor_0_6": {
+   "h_ab": 147.1,
+   "C": 3.8,
+   "L": 72.5,
+   "srgb": "#ADB4AE"
+  },
+  "anti_8_20": {
+   "h_ab": 234.5,
+   "C": 15.4,
+   "L": 74.2,
+   "srgb": "#96BCCD"
+  },
+  "zenith": {
+   "h_ab": 250.0,
+   "C": 15.8,
+   "L": 47.5,
+   "srgb": "#567489"
+  },
+  "sun_side_hor": {
+   "h_ab": 84.8,
+   "C": 35.9,
+   "L": 113.7,
+   "srgb": "#FFFFE0"
+  }
+ },
+ "industrial_sunset_02_puresky": {
+  "sun_el": 2.29,
+  "sun_az_u": 216.0,
+  "max_over_median": 3398,
+  "max": 1889.5,
+  "anti_20_40": {
+   "h_ab": 260.9,
+   "C": 29.8,
+   "L": 61.7,
+   "srgb": "#649AC9"
+  },
+  "anti_hor_0_6": {
+   "h_ab": 258.2,
+   "C": 15.4,
+   "L": 54.9,
+   "srgb": "#6E869D"
+  },
+  "anti_8_20": {
+   "h_ab": 254.2,
+   "C": 22.8,
+   "L": 65.5,
+   "srgb": "#78A4C6"
+  },
+  "zenith": {
+   "h_ab": 266.2,
+   "C": 27.1,
+   "L": 48.8,
+   "srgb": "#4F77A1"
+  },
+  "sun_side_hor": {
+   "h_ab": 45.1,
+   "C": 92.9,
+   "L": 118.2,
+   "srgb": "#FFFBB3"
+  }
+ },
+ "industrial_sunset_puresky": {
+  "sun_el": 4.04,
+  "sun_az_u": 216.4,
+  "max_over_median": 507,
+  "max": 398.3,
+  "anti_20_40": {
+   "h_ab": 263.0,
+   "C": 26.9,
+   "L": 61.7,
+   "srgb": "#6E99C4"
+  },
+  "anti_hor_0_6": {
+   "h_ab": 260.0,
+   "C": 11.8,
+   "L": 62.4,
+   "srgb": "#8799AB"
+  },
+  "anti_8_20": {
+   "h_ab": 256.0,
+   "C": 23.0,
+   "L": 71.8,
+   "srgb": "#8AB5D8"
+  },
+  "zenith": {
+   "h_ab": 271.0,
+   "C": 8.6,
+   "L": 59.6,
+   "srgb": "#88909F"
+  },
+  "sun_side_hor": {
+   "h_ab": 63.3,
+   "C": 47.5,
+   "L": 110.8,
+   "srgb": "#FFFFCB"
+  }
+ },
+ "kloppenheim_01_puresky": {
+  "sun_el": 3.34,
+  "sun_az_u": 215.7,
+  "max_over_median": 79,
+  "max": 62.7,
+  "anti_20_40": {
+   "h_ab": 274.6,
+   "C": 13.6,
+   "L": 61.7,
+   "srgb": "#8A95AD"
+  },
+  "anti_hor_0_6": {
+   "h_ab": 272.4,
+   "C": 11.6,
+   "L": 50.3,
+   "srgb": "#6E788B"
+  },
+  "anti_8_20": {
+   "h_ab": 273.9,
+   "C": 12.3,
+   "L": 55.7,
+   "srgb": "#7C869B"
+  },
+  "zenith": {
+   "h_ab": 272.4,
+   "C": 18.6,
+   "L": 67.7,
+   "srgb": "#94A6C6"
+  },
+  "sun_side_hor": {
+   "h_ab": 60.9,
+   "C": 28.4,
+   "L": 109.1,
+   "srgb": "#FFFFE9"
+  }
+ },
+ "kloppenheim_06_puresky": {
+  "sun_el": 7.91,
+  "sun_az_u": 218.5,
+  "max_over_median": 34,
+  "max": 19.6,
+  "anti_20_40": {
+   "h_ab": 267.4,
+   "C": 22.7,
+   "L": 61.7,
+   "srgb": "#7A97BD"
+  },
+  "anti_hor_0_6": {
+   "h_ab": 190.8,
+   "C": 1.2,
+   "L": 71.9,
+   "srgb": "#AEB1B0"
+  },
+  "anti_8_20": {
+   "h_ab": 259.3,
+   "C": 16.7,
+   "L": 74.6,
+   "srgb": "#A0BBD5"
+  },
+  "zenith": {
+   "h_ab": 270.6,
+   "C": 19.1,
+   "L": 43.9,
+   "srgb": "#546987"
+  },
+  "sun_side_hor": {
+   "h_ab": 66.4,
+   "C": 30.1,
+   "L": 84.8,
+   "srgb": "#FCCAA0"
+  }
+ },
+ "lonely_road_afternoon_puresky": {
+  "sun_el": 8.96,
+  "sun_az_u": 216.0,
+  "max_over_median": 482245,
+  "max": 106689.4,
+  "anti_20_40": {
+   "h_ab": 257.2,
+   "C": 28.5,
+   "L": 61.7,
+   "srgb": "#639BC6"
+  },
+  "anti_hor_0_6": {
+   "h_ab": 216.9,
+   "C": 9.5,
+   "L": 94.4,
+   "srgb": "#D9F4FA"
+  },
+  "anti_8_20": {
+   "h_ab": 251.5,
+   "C": 26.6,
+   "L": 80.1,
+   "srgb": "#95CDF5"
+  },
+  "zenith": {
+   "h_ab": 260.1,
+   "C": 23.3,
+   "L": 42.0,
+   "srgb": "#3E6788"
+  },
+  "sun_side_hor": {
+   "h_ab": 99.8,
+   "C": 20.2,
+   "L": 161.4,
+   "srgb": "#FFFFFF"
+  }
+ },
+ "mpumalanga_veld_puresky": {
+  "sun_el": 8.61,
+  "sun_az_u": 216.0,
+  "max_over_median": 1709177,
+  "max": 151076.9,
+  "anti_20_40": {
+   "h_ab": 279.9,
+   "C": 43.4,
+   "L": 61.7,
+   "srgb": "#6D95E0"
+  },
+  "anti_hor_0_6": {
+   "h_ab": 258.6,
+   "C": 18.2,
+   "L": 105.2,
+   "srgb": "#F3FFFF"
+  },
+  "anti_8_20": {
+   "h_ab": 273.2,
+   "C": 44.6,
+   "L": 93.7,
+   "srgb": "#B8F0FF"
+  },
+  "zenith": {
+   "h_ab": 281.2,
+   "C": 29.9,
+   "L": 37.1,
+   "srgb": "#405786"
+  },
+  "sun_side_hor": {
+   "h_ab": 234.6,
+   "C": 12.0,
+   "L": 188.4,
+   "srgb": "#FFFFFF"
+  }
+ },
+ "quarry_01_puresky": {
+  "sun_el": 10.02,
+  "sun_az_u": 216.0,
+  "max_over_median": 322302,
+  "max": 63125.1,
+  "anti_20_40": {
+   "h_ab": 256.3,
+   "C": 27.3,
+   "L": 61.7,
+   "srgb": "#659BC3"
+  },
+  "anti_hor_0_6": {
+   "h_ab": 214.9,
+   "C": 9.3,
+   "L": 84.5,
+   "srgb": "#BED8DC"
+  },
+  "anti_8_20": {
+   "h_ab": 246.6,
+   "C": 24.3,
+   "L": 77.5,
+   "srgb": "#8FC7E8"
+  },
+  "zenith": {
+   "h_ab": 258.4,
+   "C": 20.1,
+   "L": 42.5,
+   "srgb": "#466884"
+  },
+  "sun_side_hor": {
+   "h_ab": 85.7,
+   "C": 44.4,
+   "L": 152.5,
+   "srgb": "#FFFFFF"
+  }
+ },
+ "quarry_04_puresky": {
+  "sun_el": 5.8,
+  "sun_az_u": 216.0,
+  "max_over_median": 257,
+  "max": 190.8,
+  "anti_20_40": {
+   "h_ab": 261.2,
+   "C": 21.7,
+   "L": 61.7,
+   "srgb": "#7698BA"
+  },
+  "anti_hor_0_6": {
+   "h_ab": 237.3,
+   "C": 12.3,
+   "L": 63.4,
+   "srgb": "#829EAB"
+  },
+  "anti_8_20": {
+   "h_ab": 255.6,
+   "C": 15.6,
+   "L": 66.2,
+   "srgb": "#89A4BC"
+  },
+  "zenith": {
+   "h_ab": 266.0,
+   "C": 20.6,
+   "L": 45.5,
+   "srgb": "#526E8E"
+  },
+  "sun_side_hor": {
+   "h_ab": 78.4,
+   "C": 22.8,
+   "L": 90.5,
+   "srgb": "#FDE0BA"
+  }
+ },
+ "qwantani_dawn_puresky": {
+  "sun_el": 8.61,
+  "sun_az_u": 214.6,
+  "max_over_median": 10,
+  "max": 8.4,
+  "anti_20_40": {
+   "h_ab": 275.1,
+   "C": 11.9,
+   "L": 61.7,
+   "srgb": "#8C95AA"
+  },
+  "anti_hor_0_6": {
+   "h_ab": 343.8,
+   "C": 4.5,
+   "L": 56.6,
+   "srgb": "#8F858A"
+  },
+  "anti_8_20": {
+   "h_ab": 306.3,
+   "C": 3.8,
+   "L": 67.9,
+   "srgb": "#A7A4AB"
+  },
+  "zenith": {
+   "h_ab": 272.8,
+   "C": 14.8,
+   "L": 41.0,
+   "srgb": "#546179"
+  },
+  "sun_side_hor": {
+   "h_ab": 70.6,
+   "C": 25.1,
+   "L": 100.0,
+   "srgb": "#FFF8D1"
+  }
+ },
+ "qwantani_dusk_1_puresky": {
+  "sun_el": 20.21,
+  "sun_az_u": 213.9,
+  "max_over_median": 4,
+  "max": 4.0,
+  "anti_20_40": {
+   "h_ab": 272.3,
+   "C": 13.2,
+   "L": 61.7,
+   "srgb": "#8996AC"
+  },
+  "anti_hor_0_6": {
+   "h_ab": 276.1,
+   "C": 8.1,
+   "L": 45.7,
+   "srgb": "#676C79"
+  },
+  "anti_8_20": {
+   "h_ab": 280.6,
+   "C": 7.3,
+   "L": 58.9,
+   "srgb": "#8A8D9A"
+  },
+  "zenith": {
+   "h_ab": 271.0,
+   "C": 17.5,
+   "L": 46.0,
+   "srgb": "#5C6E8A"
+  },
+  "sun_side_hor": {
+   "h_ab": 303.6,
+   "C": 2.6,
+   "L": 55.0,
+   "srgb": "#848387"
+  }
+ },
+ "qwantani_dusk_2_puresky": {
+  "sun_el": 11.43,
+  "sun_az_u": 217.8,
+  "max_over_median": 7,
+  "max": 5.4,
+  "anti_20_40": {
+   "h_ab": 289.2,
+   "C": 18.2,
+   "L": 61.7,
+   "srgb": "#9093B3"
+  },
+  "anti_hor_0_6": {
+   "h_ab": 304.7,
+   "C": 12.3,
+   "L": 49.1,
+   "srgb": "#797286"
+  },
+  "anti_8_20": {
+   "h_ab": 299.8,
+   "C": 13.7,
+   "L": 57.5,
+   "srgb": "#8C879F"
+  },
+  "zenith": {
+   "h_ab": 284.7,
+   "C": 23.4,
+   "L": 57.0,
+   "srgb": "#7D87B0"
+  },
+  "sun_side_hor": {
+   "h_ab": 31.7,
+   "C": 35.8,
+   "L": 94.4,
+   "srgb": "#FFD8CC"
+  }
+ },
+ "qwantani_sunrise_puresky": {
+  "sun_el": 1.93,
+  "sun_az_u": 216.0,
+  "max_over_median": 1266,
+  "max": 1042.2,
+  "anti_20_40": {
+   "h_ab": 264.7,
+   "C": 18.2,
+   "L": 61.7,
+   "srgb": "#7F97B5"
+  },
+  "anti_hor_0_6": {
+   "h_ab": 55.0,
+   "C": 2.6,
+   "L": 62.4,
+   "srgb": "#9B9693"
+  },
+  "anti_8_20": {
+   "h_ab": 255.4,
+   "C": 10.7,
+   "L": 71.5,
+   "srgb": "#A0B1C2"
+  },
+  "zenith": {
+   "h_ab": 269.8,
+   "C": 18.3,
+   "L": 45.0,
+   "srgb": "#576C89"
+  },
+  "sun_side_hor": {
+   "h_ab": 55.3,
+   "C": 74.7,
+   "L": 118.1,
+   "srgb": "#FFFFBA"
+  }
+ },
+ "qwantani_sunset_puresky": {
+  "sun_el": 6.15,
+  "sun_az_u": 216.0,
+  "max_over_median": 95679,
+  "max": 50467.6,
+  "anti_20_40": {
+   "h_ab": 268.4,
+   "C": 24.2,
+   "L": 61.7,
+   "srgb": "#7897BF"
+  },
+  "anti_hor_0_6": {
+   "h_ab": 105.6,
+   "C": 2.1,
+   "L": 75.3,
+   "srgb": "#BABAB6"
+  },
+  "anti_8_20": {
+   "h_ab": 261.5,
+   "C": 19.9,
+   "L": 77.0,
+   "srgb": "#A3C1E2"
+  },
+  "zenith": {
+   "h_ab": 270.1,
+   "C": 19.4,
+   "L": 43.5,
+   "srgb": "#526886"
+  },
+  "sun_side_hor": {
+   "h_ab": 68.1,
+   "C": 231.9,
+   "L": 283.3,
+   "srgb": "#FFFFFF"
+  }
+ },
+ "rocky_ridge_puresky": {
+  "sun_el": 5.8,
+  "sun_az_u": 230.1,
+  "max_over_median": 35917,
+  "max": 11298.6,
+  "anti_20_40": {
+   "h_ab": 277.4,
+   "C": 28.1,
+   "L": 61.7,
+   "srgb": "#7D95C6"
+  },
+  "anti_hor_0_6": {
+   "h_ab": 282.0,
+   "C": 8.4,
+   "L": 59.3,
+   "srgb": "#8B8E9D"
+  },
+  "anti_8_20": {
+   "h_ab": 270.8,
+   "C": 20.7,
+   "L": 68.3,
+   "srgb": "#91A8CC"
+  },
+  "zenith": {
+   "h_ab": 278.7,
+   "C": 20.5,
+   "L": 53.0,
+   "srgb": "#707EA1"
+  },
+  "sun_side_hor": {
+   "h_ab": 77.0,
+   "C": 142.7,
+   "L": 270.1,
+   "srgb": "#FFFFFF"
+  }
+ },
+ "rosendal_park_sunset_puresky": {
+  "sun_el": 1.93,
+  "sun_az_u": 219.2,
+  "max_over_median": 31,
+  "max": 18.7,
+  "anti_20_40": {
+   "h_ab": 277.3,
+   "C": 25.7,
+   "L": 61.7,
+   "srgb": "#8095C2"
+  },
+  "anti_hor_0_6": {
+   "h_ab": 287.4,
+   "C": 19.2,
+   "L": 66.1,
+   "srgb": "#9A9FC1"
+  },
+  "anti_8_20": {
+   "h_ab": 282.0,
+   "C": 22.0,
+   "L": 65.8,
+   "srgb": "#939FC6"
+  },
+  "zenith": {
+   "h_ab": 274.8,
+   "C": 29.3,
+   "L": 54.4,
+   "srgb": "#6583B4"
+  },
+  "sun_side_hor": {
+   "h_ab": 46.5,
+   "C": 95.4,
+   "L": 208.4,
+   "srgb": "#FFFFFF"
+  }
+ },
+ "scythian_tombs_puresky": {
+  "sun_el": 13.18,
+  "sun_az_u": 215.7,
+  "max_over_median": 2162,
+  "max": 2329.3,
+  "anti_20_40": {
+   "h_ab": 262.5,
+   "C": 5.8,
+   "L": 61.7,
+   "srgb": "#8E969F"
+  },
+  "anti_hor_0_6": {
+   "h_ab": 243.5,
+   "C": 0.6,
+   "L": 51.7,
+   "srgb": "#7A7B7C"
+  },
+  "anti_8_20": {
+   "h_ab": 253.9,
+   "C": 2.8,
+   "L": 62.3,
+   "srgb": "#93979B"
+  },
+  "zenith": {
+   "h_ab": 268.7,
+   "C": 4.1,
+   "L": 55.9,
+   "srgb": "#82868D"
+  },
+  "sun_side_hor": {
+   "h_ab": 74.2,
+   "C": 23.7,
+   "L": 88.8,
+   "srgb": "#FCDAB4"
+  }
+ },
+ "syferfontein_0d_clear_puresky": {
+  "sun_el": 3.69,
+  "sun_az_u": 215.0,
+  "max_over_median": 50,
+  "max": 14.2,
+  "anti_20_40": {
+   "h_ab": 281.4,
+   "C": 42.3,
+   "L": 61.7,
+   "srgb": "#7294DE"
+  },
+  "anti_hor_0_6": {
+   "h_ab": 276.9,
+   "C": 25.1,
+   "L": 58.6,
+   "srgb": "#788DB8"
+  },
+  "anti_8_20": {
+   "h_ab": 279.6,
+   "C": 36.8,
+   "L": 61.6,
+   "srgb": "#7694D5"
+  },
+  "zenith": {
+   "h_ab": 283.1,
+   "C": 39.0,
+   "L": 48.3,
+   "srgb": "#5571B3"
+  },
+  "sun_side_hor": {
+   "h_ab": 81.2,
+   "C": 66.8,
+   "L": 226.4,
+   "srgb": "#FFFFFF"
+  }
+ },
+ "syferfontein_1d_clear_puresky": {
+  "sun_el": 0.88,
+  "sun_az_u": 216.0,
+  "max_over_median": 164662,
+  "max": 47235.0,
+  "anti_20_40": {
+   "h_ab": 261.5,
+   "C": 17.6,
+   "L": 61.7,
+   "srgb": "#7D98B3"
+  },
+  "anti_hor_0_6": {
+   "h_ab": 83.9,
+   "C": 16.6,
+   "L": 71.8,
+   "srgb": "#BFAE92"
+  },
+  "anti_8_20": {
+   "h_ab": 235.5,
+   "C": 9.9,
+   "L": 76.5,
+   "srgb": "#A9C1CC"
+  },
+  "zenith": {
+   "h_ab": 267.0,
+   "C": 15.4,
+   "L": 40.3,
+   "srgb": "#4E6078"
+  },
+  "sun_side_hor": {
+   "h_ab": 73.9,
+   "C": 292.8,
+   "L": 330.5,
+   "srgb": "#FFFFE2"
+  }
+ },
+ "syferfontein_6d_clear_puresky": {
+  "sun_el": 5.8,
+  "sun_az_u": 215.7,
+  "max_over_median": 430035,
+  "max": 94276.0,
+  "anti_20_40": {
+   "h_ab": 269.6,
+   "C": 29.0,
+   "L": 61.7,
+   "srgb": "#7297C8"
+  },
+  "anti_hor_0_6": {
+   "h_ab": 142.3,
+   "C": 10.2,
+   "L": 90.5,
+   "srgb": "#D9E8D8"
+  },
+  "anti_8_20": {
+   "h_ab": 257.8,
+   "C": 24.6,
+   "L": 80.4,
+   "srgb": "#A0CCF4"
+  },
+  "zenith": {
+   "h_ab": 270.2,
+   "C": 20.0,
+   "L": 41.8,
+   "srgb": "#4D6483"
+  },
+  "sun_side_hor": {
+   "h_ab": 95.0,
+   "C": 208.1,
+   "L": 506.8,
+   "srgb": "#FFFFFF"
+  }
+ },
+ "table_mountain_1_puresky": {
+  "sun_el": 12.83,
+  "sun_az_u": 229.4,
+  "max_over_median": 581911,
+  "max": 65539.6,
+  "anti_20_40": {
+   "h_ab": 278.4,
+   "C": 11.2,
+   "L": 61.7,
+   "srgb": "#8E95A8"
+  },
+  "anti_hor_0_6": {
+   "h_ab": 244.8,
+   "C": 10.0,
+   "L": 78.4,
+   "srgb": "#B0C5D2"
+  },
+  "anti_8_20": {
+   "h_ab": 273.4,
+   "C": 6.6,
+   "L": 65.3,
+   "srgb": "#999FAA"
+  },
+  "zenith": {
+   "h_ab": 279.1,
+   "C": 10.8,
+   "L": 42.2,
+   "srgb": "#5D6375"
+  },
+  "sun_side_hor": {
+   "h_ab": 119.5,
+   "C": 11.2,
+   "L": 127.5,
+   "srgb": "#FFFFFF"
+  }
+ },
+ "table_mountain_2_puresky": {
+  "sun_el": 7.21,
+  "sun_az_u": 229.7,
+  "max_over_median": 367411,
+  "max": 51037.2,
+  "anti_20_40": {
+   "h_ab": 296.9,
+   "C": 1.4,
+   "L": 61.7,
+   "srgb": "#959597"
+  },
+  "anti_hor_0_6": {
+   "h_ab": 176.8,
+   "C": 6.7,
+   "L": 78.2,
+   "srgb": "#B4C5C1"
+  },
+  "anti_8_20": {
+   "h_ab": 270.3,
+   "C": 1.6,
+   "L": 57.6,
+   "srgb": "#898A8D"
+  },
+  "zenith": {
+   "h_ab": 276.6,
+   "C": 10.2,
+   "L": 41.0,
+   "srgb": "#5A6171"
+  },
+  "sun_side_hor": {
+   "h_ab": 101.0,
+   "C": 33.2,
+   "L": 151.1,
+   "srgb": "#FFFFFF"
+  }
+ },
+ "wasteland_clouds_puresky": {
+  "sun_el": 7.56,
+  "sun_az_u": 216.0,
+  "max_over_median": 1286,
+  "max": 1142.4,
+  "anti_20_40": {
+   "h_ab": 249.6,
+   "C": 20.7,
+   "L": 61.7,
+   "srgb": "#6F9AB7"
+  },
+  "anti_hor_0_6": {
+   "h_ab": 209.2,
+   "C": 4.5,
+   "L": 58.6,
+   "srgb": "#848F91"
+  },
+  "anti_8_20": {
+   "h_ab": 217.0,
+   "C": 7.2,
+   "L": 72.8,
+   "srgb": "#A3B6BA"
+  },
+  "zenith": {
+   "h_ab": 251.9,
+   "C": 16.5,
+   "L": 47.9,
+   "srgb": "#56758C"
+  },
+  "sun_side_hor": {
+   "h_ab": 83.8,
+   "C": 52.9,
+   "L": 115.0,
+   "srgb": "#FFFFC1"
+  }
+ }
+}
