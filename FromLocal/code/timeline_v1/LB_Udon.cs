@@ -147,6 +147,8 @@ namespace Lanbai.EditorTools
             j.meteors = R.meteors; j.plankton = R.plankton; j.milkyWayNormal = new Vector3(0.3f, 0.6f, 0.74f); j.milkyWayTurn = 5f;
             j.ppNight = R.ppNight; j.ppGate = R.ppGate; j.ppDawn = R.ppDawn; j.ppDusk = R.ppDusk; j.ppStars = R.ppStars; j.ppDeep = R.ppDeep; j.ppWhite = R.ppWhite; j.ppBlack = R.ppBlack;
             j.whiteEv = 11f; j.blackEv = 14f;
+            // 圣经的 15 套（LB_Grades 的槽）：profile 都在就用它们
+            j.useGrades = LB_Grades.Ready(); j.ppBase = R.ppBase; j.ppGrade = R.ppGrades; j.gradePE = LB_Grades.PostExposures(); j.ppHelper = R.ppHelpers; j.expoTarget = 4f;
             j.radio = R.radio; j.radioFilter = R.radioFilter; j.radioHighPass = R.radioHighPass; j.radioNoise = R.radioNoise; j.world = R.world; j.boom = R.boom; j.splash = R.splash; j.insects = R.insects; j.rain = R.rain;
             j.urlicht = Music("LB_Urlicht"); j.finale = Music("LB_Finale");
             j.urlichtAt = LB_Cues.T_URLICHT; j.urlichtFadeA = LB_Cues.URLICHT_FADE_A; j.urlichtFadeB = LB_Cues.URLICHT_FADE_B;

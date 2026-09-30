@@ -143,6 +143,19 @@ namespace Lanbai
         public float whiteEv = 11f;              // ppWhite 的 postExposure（weight × 它 = 加的 EV）
         public float blackEv = 14f;
 
+        [Header("圣经的 15 套调色 + 助手（LB_Grades 的槽；15 套 profile 都在时 useGrades = true，旧的 8 套归 0，白 / 黑只当全屏遮罩）")]
+        public bool useGrades;
+        public PostProcessVolume ppBase;                 // 旧的基础层（ACES）
+        public PostProcessVolume[] ppGrade;              // 15 套场景调色，下标 G_*（priority = 时间顺序）
+        public float[] gradePE;                          // 每套的 postExposure（EXPO 公式里的底值 b）
+        public PostProcessVolume[] ppHelper;             // 助手，下标 H_*
+        public float expoTarget = 4f;                    // EXPO_UP / EXPO_DOWN 的远目标（±4 EV）
+        public const int G_S1 = 0, G_S2 = 1, G_S3 = 2, G_S4 = 3, G_S4C = 4, G_S6 = 5, G_S7A = 6, G_S7B = 7, G_S8 = 8, G_S8B = 9, G_S9A = 10, G_S9B = 11, G_S10 = 12, G_S11 = 13, G_S12 = 14;
+        public const int H_EXPO_UP = 0, H_EXPO_DOWN = 1, H_WHITE_SAT = 2, H_WHITE_BLOOM = 3, H_LENS_CLEAN = 4, H_LENS_ARCHIVE = 5;
+        float[] _gw;
+        bool _inVR, _vrChecked;
+        [HideInInspector] public float dbgDEV, dbgB;
+
         [Header("声音")]
         public AudioSource radio;                // 司机位的收音机（3D）
         public AudioLowPassFilter radioFilter;
@@ -220,6 +233,7 @@ namespace Lanbai
         void Start()
         {
             _mpb = new MaterialPropertyBlock();
+            _gw = new float[15];
             if (clouds != null)
             {
                 _cloudBase = new float[clouds.Length];
@@ -867,6 +881,7 @@ namespace Lanbai
         // ═════════════════════════════════════════════════════════════
         void ApplyPost(float t, int seg, float tl)
         {
+            if (useGrades && ppGrade != null && ppGrade.Length == 15 && gradePE != null && gradePE.Length == 15) { ApplyGrades(t, seg, tl); return; }
             float night = 0f, gate = 0f, dawn = 0f, dusk = 0f, stars = 0f, deep = 0f, white = 0f, black = 0f;
             float U6 = cueU[6], U9 = cueU[9], U12 = cueU[12];
             float F0 = cueF[0], F2 = cueF[2], F12 = cueF[12], F16 = cueF[16], F9b = cueX[X_F9B];
@@ -883,7 +898,7 @@ namespace Lanbai
                 case S_INSIDE:
                     gate = 1f;
                     // U9：管灯 150% 一闪（EXPO_UP +0.3，0.2 秒）；U12 前 0.5 秒 FLASH_TEAR：+1.5 EV 0.4 秒升起、保持 0.1 秒
-                    if (t < U9 + 0.2f) white = 0.3f * we;
+                    white = Pulse(t, U9, 0.2f, 0.5f) * 0.3f * we;
                     float fl = U12 - 0.5f;
                     if (t >= fl) white = Mathf.Max(white, 1.5f * we * Lin((t - fl) / 0.4f));
                     break;
@@ -913,7 +928,7 @@ namespace Lanbai
                     // 蓝时之后跟着变暗走到星海（F12 + 15 起 8 秒）；镜子穿越 EXPO_UP +0.35（第 10–12 面不加）；F16 前 10.2 秒：冲击 → 膨胀 → 遮罩到白
                     stars = Smooth((t - (F12 + 15f)) / 8f); dusk = 1f - stars;
                     if (starCross != null)
-                        for (int i = 0; i < starCross.Length && i < 9; i++) white = Mathf.Max(white, Pulse(t, starCross[i], 0.4f, 3f) * 0.35f * we);
+                        for (int i = 0; i < starCross.Length && i < 9; i++) white = Mathf.Max(white, Pulse(t, starCross[i], 0.08f, 0.35f) * 0.35f * we);
                     float w0 = F16 - 10.2f;
                     if (t >= w0)
                     {
@@ -947,6 +962,133 @@ namespace Lanbai
             if (ppDeep != null) ppDeep.weight = deep;
             if (ppWhite != null) ppWhite.weight = Mathf.Clamp01(white);
             if (ppBlack != null) ppBlack.weight = Mathf.Clamp01(black);
+        }
+
+        // ═════════════════════════════════════════════════════════════
+        //  圣经的调色（§1.4、§6.x 转场总表、附录 B）：
+        //  · 场景调色按时间顺序 priority；交叉淡化 = 旧的保持 1、新的 0 → 1，新的到 1 旧的才归 0；遮罩全满时同一帧硬切
+        //  · 这一帧所有曝光事件加成一个 ΔEV，EXPO_UP 的 weight = ΔEV / (4 − b)（ΔEV < 0 用 EXPO_DOWN：−ΔEV / (b + 4)），
+        //    b = 场景调色混合出来的 postExposure —— 结果恰好是 b + ΔEV，而且对 ΔEV 线性
+        //  · 全屏遮罩还是旧的 White / Black（占位，等云端的 Lanbai_Overlay）
+        // ═════════════════════════════════════════════════════════════
+        void Cross(int a, int b, float w) { _gw[b] = w; _gw[a] = w >= 1f ? 0f : 1f; }
+
+        void ApplyGrades(float t, int seg, float tl)
+        {
+            if (!_vrChecked)
+            {
+                _vrChecked = true;
+                var lp = Networking.LocalPlayer;
+                _inVR = lp != null && lp.IsUserInVR();
+                if (_inVR && ppHelper != null)          // VR 里没有任何锁屏效果：镜头层整个关掉
+                    for (int i = H_LENS_CLEAN; i < ppHelper.Length; i++) if (ppHelper[i] != null) ppHelper[i].gameObject.SetActive(false);
+            }
+            for (int i = 0; i < 15; i++) _gw[i] = 0f;
+            float U0 = cueU[0], U1 = cueU[1], U2 = cueU[2], U3 = cueU[3], U5 = cueU[5], U6 = cueU[6], U9 = cueU[9], U12 = cueU[12];
+            float F0 = cueF[0], F2 = cueF[2], F3 = cueF[3], F5 = cueF[5], F12 = cueF[12], F13 = cueF[13], F16 = cueF[16], F9b = cueX[X_F9B];
+            float w0 = F16 - 10.2f;             // 白：冲击 1.2 秒 → 膨胀 6 秒 → 遮罩 3 秒，结束在 F16
+            float dEV = 0f, white = 0f, black = 0f, wSat = 0f, wBloom = 0f;
+            switch (seg)
+            {
+                case S_IDLE: _gw[G_S1] = 1f; break;
+                case S_ROAD:
+                case S_LIFT:
+                case S_GATE:
+                    // S1 → S2：U1 起 8 秒；S3 叠在 S2 上：U2 起 40 秒到 0.3，入云（U5）后 7 秒到 1（白雾遮挡里），S2 才归 0；S4：U6 起 30 秒
+                    Cross(G_S1, G_S2, Smooth((t - U1) / 8f));
+                    if (t >= U2)
+                    {
+                        float s3 = t >= U5 ? 0.3f + 0.7f * Lin((t - U5) / 7f) : 0.3f * Smooth((t - U2) / 40f);
+                        _gw[G_S3] = s3;
+                        if (s3 >= 1f) _gw[G_S2] = 0f;
+                    }
+                    if (t >= U6) Cross(G_S3, G_S4, Smooth((t - U6) / 30f));
+                    dEV += 0.5f * Pulse(t, U6, 0.4f, 3f);                        // 破云：+0.5 EV
+                    break;
+                case S_INSIDE:
+                    Cross(G_S4, G_S4C, Smooth((t - (U9 + 0.5f)) / 8f));          // 管灯闪光后 0.5 秒起 8 秒
+                    dEV += 0.3f * Pulse(t, U9, 0.2f, 0.5f);                       // 管灯 150% 一闪
+                    if (t >= U12 - 0.5f) dEV += 1.5f * Lin((t - (U12 - 0.5f)) / 0.4f);   // FLASH_TEAR：+1.5 EV 0.4 秒 EV 线性、保持 0.1 秒
+                    break;
+                case S_PLUNGE:
+                    float x = Lin(tl / 0.25f);
+                    black = x;
+                    if (x < 1f) { _gw[G_S4C] = 1f; dEV += 1.5f * (1f - x); }     // 黑遮罩 0.25 秒升起，ΔEV 同时归零
+                    else _gw[G_S6] = 1f;                                          // 遮罩满了：同一帧硬切到晨
+                    break;
+                case S_SKY1:
+                    _gw[G_S6] = 1f;
+                    black = 1f - Lin((t - (F0 + 2.5f)) / 7f);                     // F0 + 1.0 起 1.5 秒预滚，然后 7 秒 EV 线性
+                    break;
+                case S_DEEP1:
+                    Cross(G_S6, G_S7A, Smooth((t - (F2 + 1f)) / 1.5f));           // 水线越过车窗顶后 1.5 秒
+                    if (t >= F3) Cross(G_S7A, G_S7B, Lin((t - F3) / (F5 - F3)));   // 下沉途中线性
+                    dEV -= 0.5f * Pulse(t, F2, 0.3f, 1f);                         // 入水：EXPO_DOWN −0.5
+                    break;
+                case S_SKY2:
+                    Cross(G_S7B, G_S8, Lin((t - F9b) / 6f));                      // 出海：≥ 6 秒 EV 线性
+                    dEV += 0.8f * Pulse(t, F9b + 6f, 0.4f, 4f);                   // 末尾 +0.8 EV，4 秒衰减
+                    break;
+                case S_SKY3:
+                    Cross(G_S8, G_S8B, Smooth((t - F12) / 8f));                   // 蓝时
+                    if (t >= F12 + 15f) Cross(G_S8B, G_S9A, Smooth((t - (F12 + 15f)) / 8f));   // 跟着变暗走
+                    if (t >= F13) _gw[G_S9B] = Mathf.Pow(Lin((t - F13) / (F16 - F13)), 2.5f);  // F13 → F16：x^2.5
+                    if (starCross != null)
+                        for (int i = 0; i < starCross.Length && i < 9; i++) dEV += 0.35f * Pulse(t, starCross[i], 0.08f, 0.35f);   // 镜子（第 10–12 面不加）
+                    if (t >= w0)
+                    {
+                        float c = Lin((t - w0) / 1.2f), sw = Lin((t - w0 - 1.2f) / 6f), m = Lin((t - w0 - 7.2f) / 3f);
+                        dEV += t < w0 + 1.2f ? c : 1f + 1.4f * sw;                                    // 冲击 → +1.0，膨胀 → +2.4
+                        wSat = t < w0 + 1.2f ? 0.42f * c : 0.42f + 0.58f * sw;
+                        wBloom = t < w0 + 1.2f ? 0.5f * c : (t < w0 + 7.2f ? 0.5f + 0.5f * sw : 1f - m);   // 遮罩本身永不 bloom
+                        white = m;
+                    }
+                    break;
+                case S_WHITE: _gw[G_S10] = 1f; white = 1f; break;
+                case S_FALSE:
+                    _gw[G_S11] = 1f;
+                    white = 1f - Lin(tl / 8f);                                    // 白收缩进灯里
+                    dEV += 1.0f * (1f - Lin(tl / 4f));                            // +1.0 EV，4 秒衰减
+                    if (tl >= 62f) white = Mathf.Max(white, 0.5f * Lin((tl - 62f) / 6.5f));   // 第二次白
+                    break;
+                case S_WAKE:
+                    _gw[G_S12] = 1f;
+                    white = 0.5f * (1f - Lin(tl / 4f));                           // 收缩进站台的灯管
+                    dEV += 0.8f * (1f - Lin(tl / 5f));                            // +0.8 EV，5 秒衰减
+                    break;
+            }
+            // 底值 b：按 priority 顺序把场景调色的 postExposure 混出来（PPv2：param = lerp(当前, 覆盖值, weight)）
+            float b = 0f;
+            for (int i = 0; i < 15; i++) if (_gw[i] > 0f) b = Mathf.Lerp(b, gradePE[i], _gw[i]);
+            float wUp = dEV > 0.0001f ? Mathf.Clamp01(dEV / (expoTarget - b)) : 0f;
+            float wDown = dEV < -0.0001f ? Mathf.Clamp01(-dEV / (b + expoTarget)) : 0f;
+            // 桌面镜头层：LENS_CLEAN 一直 1（白的膨胀里降到 0）；LENS_ARCHIVE：U0 起 8 秒到 1、U3 起 8 秒回 0，假醒 1
+            float lensClean = 1f, lensArchive = 0f;
+            if (seg == S_ROAD || seg == S_LIFT) lensArchive = Smooth((t - U0) / 8f) * (1f - Smooth((t - U3) / 8f));
+            else if (seg == S_FALSE) lensArchive = 1f;
+            if (seg == S_SKY3 && t >= w0 + 1.2f) lensClean = 1f - Lin((t - w0 - 1.2f) / 6f);
+            if (seg == S_WHITE) lensClean = 0f;
+            if (_inVR) { lensClean = 0f; lensArchive = 0f; }
+            for (int i = 0; i < 15; i++) if (ppGrade[i] != null) ppGrade[i].weight = _gw[i];
+            if (ppHelper != null && ppHelper.Length >= 6)
+            {
+                if (ppHelper[H_EXPO_UP] != null) ppHelper[H_EXPO_UP].weight = wUp;
+                if (ppHelper[H_EXPO_DOWN] != null) ppHelper[H_EXPO_DOWN].weight = wDown;
+                if (ppHelper[H_WHITE_SAT] != null) ppHelper[H_WHITE_SAT].weight = wSat;
+                if (ppHelper[H_WHITE_BLOOM] != null) ppHelper[H_WHITE_BLOOM].weight = wBloom;
+                if (ppHelper[H_LENS_CLEAN] != null) ppHelper[H_LENS_CLEAN].weight = lensClean;
+                if (ppHelper[H_LENS_ARCHIVE] != null) ppHelper[H_LENS_ARCHIVE].weight = lensArchive;
+            }
+            if (ppBase != null) ppBase.weight = 0f;
+            if (ppNight != null) ppNight.weight = 0f;
+            if (ppGate != null) ppGate.weight = 0f;
+            if (ppDawn != null) ppDawn.weight = 0f;
+            if (ppDusk != null) ppDusk.weight = 0f;
+            if (ppStars != null) ppStars.weight = 0f;
+            if (ppDeep != null) ppDeep.weight = 0f;
+            if (ppWhite != null) ppWhite.weight = Mathf.Clamp01(white);
+            if (ppBlack != null) ppBlack.weight = Mathf.Clamp01(black);
+            dbgDEV = dEV; dbgB = b;
         }
 
         /// <summary>一个脉冲：在 t0 起 rise 秒线性升到 1，再 decay 秒线性落回 0。</summary>

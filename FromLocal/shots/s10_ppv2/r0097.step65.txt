@@ -1,0 +1,12 @@
+t=947.5001  幕=8  诗=  圣经调色=True ΔEV=0.6519849 b=-0.5
+Radio ■ vol 0.0035 3D 0.00 LP 16000 HP 30
+RadioNoise ■ vol 0.0058 3D 1.00
+World ▶ vol 0.8500 「LB_Finale」 707.14s 3D 0.00
+Insects ■ vol 0.3500 3D 0.70
+Rain ■ vol 0.0000 3D 0.00
+Splash ■ vol 0.0073 3D 0.00
+后处理 S8=1 EXPO_UP=0.145 LENS_CLEAN=1
+雾 0.0009 #6A4A5A  环境 #5A4060
+Road 关  RoadRoot 关  BusStop 关  LightSea 关  CloudSea 关  Gate 关  GateRoot 开(父关)  Sky 开  Deep 关  SeaA 关  SeaB 开 y=35.9  RainIdle 关  RainMoving 关  
+路灯 0 盏   管灯 0.00 0.00 0.00   门 -80°
+诗 （无）

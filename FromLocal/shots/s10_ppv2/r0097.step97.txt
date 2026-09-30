@@ -1,0 +1,12 @@
+t=1181.003  幕=11  诗=  圣经调色=True ΔEV=0.3642273 b=-0.15
+Radio ■ vol 0.0035 3D 0.00 LP 16000 HP 30
+RadioNoise ▶ vol 0.0017 「LB_Noise」 1.98s 3D 1.00
+World ■ vol 0.8500 3D 0.00
+Insects ■ vol 0.3500 3D 0.70
+Rain ■ vol 0.0000 3D 0.00
+Splash ■ vol 0.0073 3D 0.00
+后处理 White=0.682 S11=1 EXPO_UP=0.088 LENS_CLEAN=1 LENS_ARCHIVE=1
+雾 0.006 #24262C  环境 #22242A
+Road 开  RoadRoot 开 y=0  BusStop 关  LightSea 关  CloudSea 关  Gate 关  GateRoot 开(父关)  Sky 关  Deep 关  SeaA 关  SeaB 关  RainIdle 关  RainMoving 关  
+路灯 8 盏，最远 z=327   管灯 1.50 1.50 1.50   门 0°
+诗 （无）

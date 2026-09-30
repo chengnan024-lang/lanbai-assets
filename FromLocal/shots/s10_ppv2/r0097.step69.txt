@@ -1,0 +1,12 @@
+t=991.007  幕=9  诗=7:2  圣经调色=True ΔEV=0 b=-0.4019866
+Radio ■ vol 0.0035 3D 0.00 LP 16000 HP 30
+RadioNoise ■ vol 0.0058 3D 1.00
+World ▶ vol 0.8500 「LB_Finale」 750.62s 3D 0.00
+Insects ■ vol 0.3500 3D 0.70
+Rain ■ vol 0.0000 3D 0.00
+Splash ■ vol 0.0073 3D 0.00
+后处理 S8=1 S8b=0.49 LENS_CLEAN=1
+雾 0.00086 #3F5790  环境 #423D60
+Road 关  RoadRoot 关  BusStop 关  LightSea 关  CloudSea 关  Gate 关  GateRoot 开(父关)  Sky 开  Deep 关  SeaA 关  SeaB 关  RainIdle 关  RainMoving 关  
+路灯 0 盏   管灯 0.00 0.00 0.00   门 -80°
+诗 α 0.90 方位 35.0° 仰角 0.0° 距离 60.0 m 字高 2.20° #EADCD6「天之苍苍，其正色邪？ / Is the blue of the sky its true color? / 其远而无所至极邪？ / Or is it only far, and without end? /  / 其视下也，亦若是则已矣 / Looking down, it would look the same.」

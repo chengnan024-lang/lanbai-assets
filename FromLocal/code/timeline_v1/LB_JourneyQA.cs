@@ -37,7 +37,8 @@ namespace Lanbai.EditorTools
             var jGo = Find("Journey");
             var ub = jGo != null ? jGo.GetComponent<UdonBehaviour>() : null;
             if (ub != null)
-                sb.Append("t=").Append(ub.GetProgramVariable("dbgT")).Append("  幕=").Append(ub.GetProgramVariable("dbgSeg")).Append("  诗=").Append(ub.GetProgramVariable("dbgPoem")).Append('\n');
+                sb.Append("t=").Append(ub.GetProgramVariable("dbgT")).Append("  幕=").Append(ub.GetProgramVariable("dbgSeg")).Append("  诗=").Append(ub.GetProgramVariable("dbgPoem"))
+                  .Append("  圣经调色=").Append(ub.GetProgramVariable("useGrades")).Append(" ΔEV=").Append(ub.GetProgramVariable("dbgDEV")).Append(" b=").Append(ub.GetProgramVariable("dbgB")).Append('\n');
             // ── 声音 ──
             foreach (var n in new[] { "Radio", "RadioNoise", "World", "Insects", "Rain", "Splash" })
             {

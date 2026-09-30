@@ -1,0 +1,2 @@
+场景调色 0/15：S1· S2· S3· S4· S4c· S6· S7a· S7b· S8· S8b· S9a· S9b· S10· S11· S12· | EXPO_UP· EXPO_DOWN· WHITE_SAT· WHITE_BLOOM· LENS_CLEAN· LENS_ARCHIVE· 
+→ 还用旧的 8 套（等 LanbaiGradeBuilder 把 profile 生成到 Assets/Lanbai/Grades/Profiles）

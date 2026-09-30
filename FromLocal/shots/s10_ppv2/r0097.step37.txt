@@ -1,0 +1,12 @@
+t=181.018  幕=4  诗=  圣经调色=True ΔEV=0 b=-0.852019
+Radio ▶ vol 0.8718 「LB_Urlicht」 178.01s 3D 0.00 LP 16000 HP 30
+RadioNoise ■ vol 0.0058 3D 1.00
+World ■ vol 0.8000 3D 0.00
+Insects ■ vol 0.3500 3D 0.70
+Rain ■ vol 0.0000 3D 0.00
+Splash ■ vol 0.7000 3D 0.00
+后处理 S4=1 S4c=0.04 LENS_CLEAN=1
+雾 0.0035 #2C3548  环境 #232A3A
+Road 开  RoadRoot 关  BusStop 关  LightSea 关  CloudSea 开 y=-155.3  Gate 开  GateRoot 开 z=-86.5  Sky 关  Deep 关  SeaA 关  SeaB 关  RainIdle 关  RainMoving 关  
+路灯 0 盏   管灯 0.00 0.00 0.00   门 -80°
+诗 （无）
