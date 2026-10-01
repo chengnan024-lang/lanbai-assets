@@ -1,0 +1,279 @@
+{
+ "shot": "U8fwd",
+ "t": 169.65,
+ "APL": 49.8,
+ "APL_through_glass": 75.0,
+ "luma_lt12_pct": 18.4,
+ "strong_violet_pct": 0.0,
+ "near_body": {
+  "L_median": 12.0,
+  "L_p10": 6.0,
+  "L_p90": 39.8,
+  "pixels": 283
+ },
+ "pillars": null,
+ "mid_crowns": {
+  "L_median": 18.4,
+  "L_p10": 9.0,
+  "L_p90": 38.8,
+  "pixels": 23092
+ },
+ "mid_bodies": {
+  "L_median": 2.6,
+  "L_p10": 2.1,
+  "L_p90": 5.7,
+  "pixels": 149905
+ },
+ "colossus_crowns": {
+  "L_median": 11.8,
+  "L_p10": 8.0,
+  "L_p90": 21.4,
+  "pixels": 7516
+ },
+ "engel": {
+  "L_median": 26.6,
+  "L_p10": 4.1,
+  "L_p90": 41.3,
+  "pixels": 83815
+ },
+ "background_colossi": {
+  "L_median": 12.0,
+  "L_p10": 11.8,
+  "L_p90": 13.4,
+  "pixels": 1961
+ },
+ "haze_behind": {
+  "L_median": 32.6,
+  "L_p10": 26.0,
+  "L_p90": 57.7,
+  "pixels": 67951
+ },
+ "silhouette": {
+  "near": {
+   "rim_band": {
+    "L_median": 31.5,
+    "L_p10": 10.6,
+    "L_p90": 42.0,
+    "pixels": 96
+   },
+   "body_inside_edge": {
+    "L_median": 11.1,
+    "L_p10": 6.0,
+    "L_p90": 27.6,
+    "pixels": 142
+   },
+   "rim_p99": 45.2,
+   "rim_p99_away_from_wound": 45.2
+  },
+  "pillar": {
+   "rim_band": null,
+   "body_inside_edge": null
+  },
+  "mid": {
+   "rim_band": {
+    "L_median": 21.0,
+    "L_p10": 11.5,
+    "L_p90": 64.8,
+    "pixels": 1649
+   },
+   "body_inside_edge": {
+    "L_median": 11.1,
+    "L_p10": 7.1,
+    "L_p90": 19.2,
+    "pixels": 3368
+   },
+   "rim_p99": 100.0,
+   "rim_p99_away_from_wound": 80.1
+  },
+  "colossus": {
+   "rim_band": {
+    "L_median": 14.6,
+    "L_p10": 8.0,
+    "L_p90": 42.8,
+    "pixels": 766
+   },
+   "body_inside_edge": {
+    "L_median": 10.1,
+    "L_p10": 7.4,
+    "L_p90": 39.9,
+    "pixels": 1508
+   },
+   "rim_p99": 72.4,
+   "rim_p99_away_from_wound": 39.2
+  },
+  "hero": {
+   "rim_band": {
+    "L_median": 17.2,
+    "L_p10": 5.1,
+    "L_p90": 24.8,
+    "pixels": 683
+   },
+   "body_inside_edge": {
+    "L_median": 16.2,
+    "L_p10": 4.8,
+    "L_p90": 24.8,
+    "pixels": 1369
+   },
+   "rim_p99": 29.2,
+   "rim_p99_away_from_wound": 29.2
+  },
+  "bg": {
+   "rim_band": null,
+   "body_inside_edge": null
+  },
+  "rear": {
+   "rim_band": null,
+   "body_inside_edge": null
+  },
+  "surge": {
+   "rim_band": null,
+   "body_inside_edge": null
+  }
+ },
+ "layer_steps": {
+  "pillar->mid (edge)": null,
+  "mid crowns->colossus crowns": -6.6,
+  "colossus crowns->haze": 20.8,
+  "pillars->mid crowns": null
+ },
+ "area_pct": {
+  "pillars": 0.0,
+  "mid": 8.3,
+  "engel": 4.0,
+  "colossi": 0.6,
+  "near": 0.0,
+  "sky": 11.4,
+  "deck": 22.0,
+  "tear": 7.61,
+  "shell": 45.5
+ },
+ "silhouettes_above_horizon": 7,
+ "L85_outside_wound_pct": 0.063,
+ "cloud": {
+  "pool": {
+   "L_median": 30.4,
+   "L_p10": 18.2,
+   "L_p90": 45.4,
+   "pixels": 81874
+  },
+  "plain": {
+   "L_median": 24.8,
+   "L_p10": 19.9,
+   "L_p90": 38.2,
+   "pixels": 25818
+  },
+  "moonward_p90_L": 49.6,
+  "moonward_C_median": 15.4,
+  "plain_C_median": 10.3
+ },
+ "lavender_outside_25deg_pct": 1.6,
+ "round3": {
+  "per_instance": {
+   "Colossus_3": {
+    "kind": "hero",
+    "role": "engel",
+    "dL_ring": 8.2,
+    "area_pct": 4.04,
+    "hand_dL_ring": null,
+    "body_dL_ring": 8.2
+   },
+   "Hand_L0": {
+    "kind": "mid",
+    "role": "hand",
+    "dL_ring": -26.4,
+    "area_pct": 3.1
+   },
+   "Hand_L1": {
+    "kind": "mid",
+    "role": "hand",
+    "dL_ring": -26.9,
+    "area_pct": 2.25
+   },
+   "Hand_L2": {
+    "kind": "mid",
+    "role": "hand",
+    "dL_ring": -18.7,
+    "area_pct": 2.93
+   },
+   "Hand_R1": {
+    "kind": "mid",
+    "role": "hand",
+    "dL_ring": null,
+    "area_pct": 0.06
+   },
+   "Colossus_bg_01": {
+    "kind": "bg",
+    "role": "background",
+    "dL_ring": null,
+    "area_pct": 0.09
+   },
+   "Colossus_bg_04": {
+    "kind": "bg",
+    "role": "background",
+    "dL_ring": null,
+    "area_pct": 0.0
+   },
+   "Colossus_2": {
+    "kind": "colossus",
+    "role": "moon",
+    "dL_ring": -25.4,
+    "area_pct": 0.53
+   },
+   "Near_1": {
+    "kind": "near",
+    "role": "near",
+    "dL_ring": 1.2,
+    "area_pct": 0.01
+   }
+  },
+  "dL_ring": {
+   "pillars": null,
+   "hands": {
+    "median": -26.4,
+    "min": -26.9,
+    "max": -18.7,
+    "n": 3
+   },
+   "engel": {
+    "median": 8.2,
+    "min": 8.2,
+    "max": 8.2,
+    "n": 1
+   },
+   "colossi": {
+    "median": -25.4,
+    "min": -25.4,
+    "max": -25.4,
+    "n": 1
+   },
+   "surge": null,
+   "near": {
+    "median": 1.2,
+    "min": 1.2,
+    "max": 1.2,
+    "n": 1
+   },
+   "rear": null
+  },
+  "tide": {
+   "blades": 6,
+   "pixels_pct": 0.526,
+   "dL_ring": -1.4,
+   "brighter_than_sky_pct": null
+  },
+  "top10_sky_L": 8.8,
+  "top25_sky_L": 14.2,
+  "frac_L15_40_pct": 29.8,
+  "mirror_IoU": 0.02,
+  "tear_centroid_x_pct": 51.9,
+  "silhouettes_gt10pct_above_horizon": 3,
+  "deck_sigma_L": {
+   "near": 1.22,
+   "mid": 1.05
+  },
+  "near_deck_L": 21.3,
+  "halo_C_0_1deg": 25.0,
+  "halo_C_1_3deg": 22.6,
+  "halo_L_1_3deg": 42.7
+ }
+}

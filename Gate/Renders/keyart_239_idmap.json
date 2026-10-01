@@ -1,0 +1,236 @@
+{
+"1": {
+"id": "Pillar_R",
+"layer": "colossus",
+"role": "pillar",
+"kind": "pillar"
+},
+"2": {
+"id": "Pillar_L",
+"layer": "colossus",
+"role": "pillar",
+"kind": "pillar"
+},
+"3": {
+"id": "Colossus_3",
+"layer": "colossus",
+"role": "engel",
+"kind": "hero"
+},
+"4": {
+"id": "Hand_L0",
+"layer": "mid",
+"role": "hand",
+"kind": "mid"
+},
+"5": {
+"id": "Hand_L1",
+"layer": "mid",
+"role": "hand",
+"kind": "mid"
+},
+"6": {
+"id": "Hand_L2",
+"layer": "mid",
+"role": "hand",
+"kind": "mid"
+},
+"7": {
+"id": "Hand_R0",
+"layer": "mid",
+"role": "hand",
+"kind": "mid"
+},
+"8": {
+"id": "Hand_R1",
+"layer": "mid",
+"role": "hand",
+"kind": "mid"
+},
+"9": {
+"id": "Hand_R2",
+"layer": "mid",
+"role": "hand",
+"kind": "mid"
+},
+"10": {
+"id": "Colossus_bg_00",
+"layer": "colossus_bg",
+"role": "background",
+"kind": "bg"
+},
+"11": {
+"id": "Colossus_bg_01",
+"layer": "colossus_bg",
+"role": "background",
+"kind": "bg"
+},
+"12": {
+"id": "Colossus_bg_02",
+"layer": "colossus_bg",
+"role": "background",
+"kind": "bg"
+},
+"13": {
+"id": "Colossus_bg_03",
+"layer": "colossus_bg",
+"role": "background",
+"kind": "bg"
+},
+"14": {
+"id": "Colossus_bg_04",
+"layer": "colossus_bg",
+"role": "background",
+"kind": "bg"
+},
+"15": {
+"id": "Colossus_bg_05",
+"layer": "colossus_bg",
+"role": "background",
+"kind": "bg"
+},
+"16": {
+"id": "Colossus_1",
+"layer": "colossus",
+"role": "rilke",
+"kind": "colossus"
+},
+"17": {
+"id": "Colossus_2",
+"layer": "colossus",
+"role": "moon",
+"kind": "colossus"
+},
+"18": {
+"id": "Surge_00",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"19": {
+"id": "Surge_01",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"20": {
+"id": "Surge_02",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"21": {
+"id": "Surge_03",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"22": {
+"id": "Surge_04",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"23": {
+"id": "Surge_05",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"24": {
+"id": "Surge_06",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"25": {
+"id": "Surge_07",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"26": {
+"id": "Surge_08",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"27": {
+"id": "Surge_09",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"28": {
+"id": "Surge_10",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"29": {
+"id": "Surge_11",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"30": {
+"id": "Surge_12",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"31": {
+"id": "Surge_13",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"32": {
+"id": "Surge_14",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"33": {
+"id": "Surge_15",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"34": {
+"id": "Surge_16",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"35": {
+"id": "Surge_17",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"36": {
+"id": "Surge_18",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"37": {
+"id": "Surge_19",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"38": {
+"id": "Surge_20",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"39": {
+"id": "Surge_21",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+}
+}

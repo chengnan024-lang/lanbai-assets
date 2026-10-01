@@ -1,0 +1,63 @@
+{
+ "beat": "'...und wollt' mich abweisen': colossus 2's upper body (u 0.2-0.4, ~1.6 deg wide at 2.6 km) comes down across the 1.2 deg disc",
+ "coverage": [
+  {
+   "t": 152.1,
+   "covered": 0.08
+  },
+  {
+   "t": 153.6,
+   "covered": 0.51
+  },
+  {
+   "t": 154.1,
+   "covered": 0.68
+  },
+  {
+   "t": 154.6,
+   "covered": 0.84
+  },
+  {
+   "t": 155.1,
+   "covered": 0.96
+  },
+  {
+   "t": 155.6,
+   "covered": 1.0
+  },
+  {
+   "t": 156.1,
+   "covered": 0.97
+  },
+  {
+   "t": 156.6,
+   "covered": 0.93
+  },
+  {
+   "t": 157.1,
+   "covered": 0.89
+  },
+  {
+   "t": 158.1,
+   "covered": 0.78
+  },
+  {
+   "t": 158.6,
+   "covered": 0.72
+  },
+  {
+   "t": 160.1,
+   "covered": 0.51
+  },
+  {
+   "t": 163.1,
+   "covered": 0.13
+  },
+  {
+   "t": 166.1,
+   "covered": 0.0
+  }
+ ],
+ "udon_rule": "the disc is >= 90 % covered over [U7b, U7b + 1.5] (run 6 table: 0.96 at U7b, 1.00 at U7b + 0.5, 0.93 at U7b + 1.5, 0.89 at U7b + 2.0): START the fade of the skybox moon DISC at U7b + 1.5 and take it out over 2 s (EV-linear), leaving the halo #5A6A88 (Lanbai/Sky halo term) on: the moon is TAKEN. The track keys keep the body near the halo for a few more seconds; then parallax carries it left of the empty halo.",
+ "aureole": "Lanbai/Sky moon halo: fill = #8FA3C8 x (1.6 exp(-0.9 a) + 0.06 exp(-0.32 a)), a = angle from the disc centre in degrees (L* ~55 at 1 deg, the band by ~8 deg); LanbaiFog adds 0.35 x the same term"
+}

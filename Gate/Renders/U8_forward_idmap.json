@@ -1,0 +1,170 @@
+{
+"1": {
+"id": "Pillar_R",
+"layer": "colossus",
+"role": "pillar",
+"kind": "pillar"
+},
+"2": {
+"id": "Pillar_L",
+"layer": "colossus",
+"role": "pillar",
+"kind": "pillar"
+},
+"3": {
+"id": "Colossus_3",
+"layer": "colossus",
+"role": "engel",
+"kind": "hero"
+},
+"4": {
+"id": "Hand_L0",
+"layer": "mid",
+"role": "hand",
+"kind": "mid"
+},
+"5": {
+"id": "Hand_L1",
+"layer": "mid",
+"role": "hand",
+"kind": "mid"
+},
+"6": {
+"id": "Hand_L2",
+"layer": "mid",
+"role": "hand",
+"kind": "mid"
+},
+"7": {
+"id": "Hand_R0",
+"layer": "mid",
+"role": "hand",
+"kind": "mid"
+},
+"8": {
+"id": "Hand_R1",
+"layer": "mid",
+"role": "hand",
+"kind": "mid"
+},
+"9": {
+"id": "Hand_R2",
+"layer": "mid",
+"role": "hand",
+"kind": "mid"
+},
+"10": {
+"id": "Colossus_bg_00",
+"layer": "colossus_bg",
+"role": "background",
+"kind": "bg"
+},
+"11": {
+"id": "Colossus_bg_01",
+"layer": "colossus_bg",
+"role": "background",
+"kind": "bg"
+},
+"12": {
+"id": "Colossus_bg_02",
+"layer": "colossus_bg",
+"role": "background",
+"kind": "bg"
+},
+"13": {
+"id": "Colossus_bg_03",
+"layer": "colossus_bg",
+"role": "background",
+"kind": "bg"
+},
+"14": {
+"id": "Colossus_bg_04",
+"layer": "colossus_bg",
+"role": "background",
+"kind": "bg"
+},
+"15": {
+"id": "Colossus_bg_05",
+"layer": "colossus_bg",
+"role": "background",
+"kind": "bg"
+},
+"16": {
+"id": "Colossus_1",
+"layer": "colossus",
+"role": "rilke",
+"kind": "colossus"
+},
+"17": {
+"id": "Colossus_2",
+"layer": "colossus",
+"role": "moon",
+"kind": "colossus"
+},
+"40": {
+"id": "Near_0",
+"layer": "near",
+"role": "near",
+"kind": "near"
+},
+"41": {
+"id": "Near_1",
+"layer": "near",
+"role": "near",
+"kind": "near"
+},
+"42": {
+"id": "Near_2",
+"layer": "near",
+"role": "near",
+"kind": "near"
+},
+"43": {
+"id": "Rear_00",
+"layer": "rear",
+"role": "rear",
+"kind": "rear"
+},
+"44": {
+"id": "Rear_01",
+"layer": "rear",
+"role": "rear",
+"kind": "rear"
+},
+"45": {
+"id": "Rear_02",
+"layer": "rear",
+"role": "rear",
+"kind": "rear"
+},
+"46": {
+"id": "Rear_03",
+"layer": "rear",
+"role": "rear",
+"kind": "rear"
+},
+"47": {
+"id": "Rear_04",
+"layer": "rear",
+"role": "rear",
+"kind": "rear"
+},
+"48": {
+"id": "Rear_05",
+"layer": "rear",
+"role": "rear",
+"kind": "rear"
+},
+"49": {
+"id": "Rear_06",
+"layer": "rear",
+"role": "rear",
+"kind": "rear"
+},
+"50": {
+"id": "Rear_07",
+"layer": "rear",
+"role": "rear",
+"kind": "rear"
+}
+}

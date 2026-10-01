@@ -1,0 +1,900 @@
+{
+ "own_motion": [
+  {
+   "id": "Pillar_R",
+   "layer": "colossus",
+   "role": "pillar",
+   "max_deg_s": 0.44,
+   "at_t": 172.3,
+   "at_u": 1.0,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Pillar_L",
+   "layer": "colossus",
+   "role": "pillar",
+   "max_deg_s": 0.43,
+   "at_t": 175.3,
+   "at_u": 0.98,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Colossus_3",
+   "layer": "colossus",
+   "role": "engel",
+   "max_deg_s": 0.32,
+   "at_t": 159.3,
+   "at_u": 1.0,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Hand_L0",
+   "layer": "mid",
+   "role": "hand",
+   "max_deg_s": 0.83,
+   "at_t": 173.55,
+   "at_u": 0.72,
+   "limit": 1.0,
+   "ok": true
+  },
+  {
+   "id": "Hand_L1",
+   "layer": "mid",
+   "role": "hand",
+   "max_deg_s": 0.67,
+   "at_t": 177.55,
+   "at_u": 0.89,
+   "limit": 1.0,
+   "ok": true
+  },
+  {
+   "id": "Hand_L2",
+   "layer": "mid",
+   "role": "hand",
+   "max_deg_s": 0.85,
+   "at_t": 172.55,
+   "at_u": 0.7,
+   "limit": 1.0,
+   "ok": true
+  },
+  {
+   "id": "Hand_R0",
+   "layer": "mid",
+   "role": "hand",
+   "max_deg_s": 0.83,
+   "at_t": 148.55,
+   "at_u": 0.22,
+   "limit": 1.0,
+   "ok": true
+  },
+  {
+   "id": "Hand_R1",
+   "layer": "mid",
+   "role": "hand",
+   "max_deg_s": 0.86,
+   "at_t": 148.55,
+   "at_u": 0.16,
+   "limit": 1.0,
+   "ok": true
+  },
+  {
+   "id": "Hand_R2",
+   "layer": "mid",
+   "role": "hand",
+   "max_deg_s": 0.87,
+   "at_t": 148.55,
+   "at_u": 0.2,
+   "limit": 1.0,
+   "ok": true
+  },
+  {
+   "id": "Colossus_bg_00",
+   "layer": "colossus_bg",
+   "role": "background",
+   "max_deg_s": 0.0,
+   "at_t": 156.3,
+   "at_u": 0.69,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Colossus_bg_01",
+   "layer": "colossus_bg",
+   "role": "background",
+   "max_deg_s": 0.0,
+   "at_t": 175.3,
+   "at_u": 0.22,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Colossus_bg_02",
+   "layer": "colossus_bg",
+   "role": "background",
+   "max_deg_s": 0.0,
+   "at_t": 152.05,
+   "at_u": 0.62,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Colossus_bg_03",
+   "layer": "colossus_bg",
+   "role": "background",
+   "max_deg_s": 0.0,
+   "at_t": 153.55,
+   "at_u": 0.73,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Colossus_bg_04",
+   "layer": "colossus_bg",
+   "role": "background",
+   "max_deg_s": 0.0,
+   "at_t": 179.55,
+   "at_u": 0.24,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Colossus_bg_05",
+   "layer": "colossus_bg",
+   "role": "background",
+   "max_deg_s": 0.0,
+   "at_t": 150.05,
+   "at_u": 0.65,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Colossus_1",
+   "layer": "colossus",
+   "role": "rilke",
+   "max_deg_s": 0.29,
+   "at_t": 159.8,
+   "at_u": 0.99,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Colossus_2",
+   "layer": "colossus",
+   "role": "moon",
+   "max_deg_s": 0.49,
+   "at_t": 178.55,
+   "at_u": 0.95,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Surge_00",
+   "layer": "surge",
+   "role": "surge",
+   "max_deg_s": 0.49,
+   "at_t": 155.8,
+   "at_u": 0.99,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Surge_01",
+   "layer": "surge",
+   "role": "surge",
+   "max_deg_s": 0.49,
+   "at_t": 155.8,
+   "at_u": 0.99,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Surge_02",
+   "layer": "surge",
+   "role": "surge",
+   "max_deg_s": 0.45,
+   "at_t": 151.3,
+   "at_u": 0.99,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Surge_03",
+   "layer": "surge",
+   "role": "surge",
+   "max_deg_s": 0.49,
+   "at_t": 154.55,
+   "at_u": 0.99,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Surge_04",
+   "layer": "surge",
+   "role": "surge",
+   "max_deg_s": 0.49,
+   "at_t": 153.3,
+   "at_u": 0.99,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Surge_05",
+   "layer": "surge",
+   "role": "surge",
+   "max_deg_s": 0.49,
+   "at_t": 156.8,
+   "at_u": 0.99,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Surge_06",
+   "layer": "surge",
+   "role": "surge",
+   "max_deg_s": 0.48,
+   "at_t": 155.3,
+   "at_u": 0.99,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Surge_07",
+   "layer": "surge",
+   "role": "surge",
+   "max_deg_s": 0.46,
+   "at_t": 151.55,
+   "at_u": 0.99,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Surge_08",
+   "layer": "surge",
+   "role": "surge",
+   "max_deg_s": 0.5,
+   "at_t": 156.3,
+   "at_u": 0.99,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Surge_09",
+   "layer": "surge",
+   "role": "surge",
+   "max_deg_s": 0.48,
+   "at_t": 156.3,
+   "at_u": 0.99,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Surge_10",
+   "layer": "surge",
+   "role": "surge",
+   "max_deg_s": 0.49,
+   "at_t": 155.3,
+   "at_u": 0.99,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Surge_11",
+   "layer": "surge",
+   "role": "surge",
+   "max_deg_s": 0.46,
+   "at_t": 152.55,
+   "at_u": 0.99,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Surge_12",
+   "layer": "surge",
+   "role": "surge",
+   "max_deg_s": 0.47,
+   "at_t": 153.3,
+   "at_u": 0.99,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Surge_13",
+   "layer": "surge",
+   "role": "surge",
+   "max_deg_s": 0.47,
+   "at_t": 153.3,
+   "at_u": 0.99,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Surge_14",
+   "layer": "surge",
+   "role": "surge",
+   "max_deg_s": 0.49,
+   "at_t": 155.55,
+   "at_u": 0.99,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Surge_15",
+   "layer": "surge",
+   "role": "surge",
+   "max_deg_s": 0.5,
+   "at_t": 150.55,
+   "at_u": 0.99,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Surge_16",
+   "layer": "surge",
+   "role": "surge",
+   "max_deg_s": 0.5,
+   "at_t": 150.8,
+   "at_u": 0.99,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Surge_17",
+   "layer": "surge",
+   "role": "surge",
+   "max_deg_s": 0.5,
+   "at_t": 152.55,
+   "at_u": 0.99,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Surge_18",
+   "layer": "surge",
+   "role": "surge",
+   "max_deg_s": 0.49,
+   "at_t": 155.8,
+   "at_u": 0.99,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Surge_19",
+   "layer": "surge",
+   "role": "surge",
+   "max_deg_s": 0.49,
+   "at_t": 153.05,
+   "at_u": 0.99,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Surge_20",
+   "layer": "surge",
+   "role": "surge",
+   "max_deg_s": 0.48,
+   "at_t": 154.3,
+   "at_u": 0.99,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Surge_21",
+   "layer": "surge",
+   "role": "surge",
+   "max_deg_s": 0.47,
+   "at_t": 156.3,
+   "at_u": 0.99,
+   "limit": 0.5,
+   "ok": true
+  },
+  {
+   "id": "Rear_00",
+   "layer": "rear",
+   "role": "rear",
+   "max_deg_s": 0.0,
+   "at_t": 178.56,
+   "at_u": 0.51,
+   "limit": 1.0,
+   "ok": true
+  },
+  {
+   "id": "Rear_01",
+   "layer": "rear",
+   "role": "rear",
+   "max_deg_s": 0.0,
+   "at_t": 175.38,
+   "at_u": 0.52,
+   "limit": 1.0,
+   "ok": true
+  },
+  {
+   "id": "Rear_02",
+   "layer": "rear",
+   "role": "rear",
+   "max_deg_s": 0.0,
+   "at_t": 164.83,
+   "at_u": 0.52,
+   "limit": 1.0,
+   "ok": true
+  },
+  {
+   "id": "Rear_03",
+   "layer": "rear",
+   "role": "rear",
+   "max_deg_s": 0.0,
+   "at_t": 164.72,
+   "at_u": 0.34,
+   "limit": 1.0,
+   "ok": true
+  },
+  {
+   "id": "Rear_04",
+   "layer": "rear",
+   "role": "rear",
+   "max_deg_s": 0.0,
+   "at_t": 175.34,
+   "at_u": 0.78,
+   "limit": 1.0,
+   "ok": true
+  },
+  {
+   "id": "Rear_05",
+   "layer": "rear",
+   "role": "rear",
+   "max_deg_s": 0.0,
+   "at_t": 167.24,
+   "at_u": 0.97,
+   "limit": 1.0,
+   "ok": true
+  },
+  {
+   "id": "Rear_06",
+   "layer": "rear",
+   "role": "rear",
+   "max_deg_s": 0.0,
+   "at_t": 175.61,
+   "at_u": 0.64,
+   "limit": 1.0,
+   "ok": true
+  },
+  {
+   "id": "Rear_07",
+   "layer": "rear",
+   "role": "rear",
+   "max_deg_s": 0.0,
+   "at_t": 181.01,
+   "at_u": 0.99,
+   "limit": 1.0,
+   "ok": true
+  }
+ ],
+ "clearance": [
+  {
+   "id": "Hand_L0",
+   "min_skin_to_shell_m": 71.1,
+   "t": 178.6999999999984,
+   "worst_v_over_1_05d": 0.0,
+   "eye_deg_s": 0.0
+  },
+  {
+   "id": "Hand_L1",
+   "min_skin_to_shell_m": 65.8,
+   "t": 178.4999999999984,
+   "worst_v_over_1_05d": 0.0,
+   "eye_deg_s": 0.0
+  },
+  {
+   "id": "Hand_R1",
+   "min_skin_to_shell_m": 99.1,
+   "t": 178.29999999999842,
+   "worst_v_over_1_05d": 0.0,
+   "eye_deg_s": 0.0
+  },
+  {
+   "id": "Near_0",
+   "min_skin_to_shell_m": 14.2,
+   "t": 167.49999999999903,
+   "worst_v_over_1_05d": 0.73,
+   "eye_deg_s": 18.3
+  },
+  {
+   "id": "Near_1",
+   "min_skin_to_shell_m": 11.5,
+   "t": 168.299999999999,
+   "worst_v_over_1_05d": 0.89,
+   "eye_deg_s": 36.6
+  },
+  {
+   "id": "Near_2",
+   "min_skin_to_shell_m": 48.6,
+   "t": 167.49999999999903,
+   "worst_v_over_1_05d": 0.0,
+   "eye_deg_s": 0.0
+  }
+ ],
+ "eye_speed_U8_U9": [
+  {
+   "id": "Pillar_R",
+   "max_eye_deg_s": 8.0,
+   "eye": "rear",
+   "t": 166.15,
+   "min_shell_m": 338.8,
+   "ok": true
+  },
+  {
+   "id": "Pillar_L",
+   "max_eye_deg_s": 6.0,
+   "eye": "rear",
+   "t": 166.65,
+   "min_shell_m": 564.8,
+   "ok": true
+  },
+  {
+   "id": "Colossus_3",
+   "max_eye_deg_s": 12.8,
+   "eye": "rear",
+   "t": 177.4,
+   "min_shell_m": 263.0,
+   "ok": true
+  },
+  {
+   "id": "Hand_L0",
+   "max_eye_deg_s": 42.0,
+   "eye": "rear",
+   "t": 178.9,
+   "min_shell_m": 78.6,
+   "ok": true
+  },
+  {
+   "id": "Hand_L1",
+   "max_eye_deg_s": 42.8,
+   "eye": "rear",
+   "t": 178.4,
+   "min_shell_m": 77.2,
+   "ok": true
+  },
+  {
+   "id": "Hand_L2",
+   "max_eye_deg_s": 17.8,
+   "eye": "rear",
+   "t": 178.9,
+   "min_shell_m": 188.0,
+   "ok": true
+  },
+  {
+   "id": "Hand_R0",
+   "max_eye_deg_s": 12.5,
+   "eye": "main",
+   "t": 177.65,
+   "min_shell_m": 274.8,
+   "ok": true
+  },
+  {
+   "id": "Hand_R1",
+   "max_eye_deg_s": 30.5,
+   "eye": "rear",
+   "t": 178.4,
+   "min_shell_m": 109.1,
+   "ok": true
+  },
+  {
+   "id": "Hand_R2",
+   "max_eye_deg_s": 11.1,
+   "eye": "rear",
+   "t": 177.65,
+   "min_shell_m": 314.8,
+   "ok": true
+  },
+  {
+   "id": "Colossus_bg_00",
+   "max_eye_deg_s": 1.4,
+   "eye": "main",
+   "t": 179.9,
+   "min_shell_m": 1559.9,
+   "ok": true
+  },
+  {
+   "id": "Colossus_bg_01",
+   "max_eye_deg_s": 2.0,
+   "eye": "main",
+   "t": 180.15,
+   "min_shell_m": 1467.7,
+   "ok": true
+  },
+  {
+   "id": "Colossus_bg_02",
+   "max_eye_deg_s": 1.5,
+   "eye": "main",
+   "t": 179.15,
+   "min_shell_m": 2169.1,
+   "ok": true
+  },
+  {
+   "id": "Colossus_bg_03",
+   "max_eye_deg_s": 1.0,
+   "eye": "main",
+   "t": 180.15,
+   "min_shell_m": 1913.3,
+   "ok": true
+  },
+  {
+   "id": "Colossus_bg_04",
+   "max_eye_deg_s": 1.8,
+   "eye": "rear",
+   "t": 180.4,
+   "min_shell_m": 1623.6,
+   "ok": true
+  },
+  {
+   "id": "Colossus_bg_05",
+   "max_eye_deg_s": 1.4,
+   "eye": "rear",
+   "t": 180.4,
+   "min_shell_m": 2254.5,
+   "ok": true
+  },
+  {
+   "id": "Colossus_1",
+   "max_eye_deg_s": 1.5,
+   "eye": "rear",
+   "t": 180.4,
+   "min_shell_m": 1536.9,
+   "ok": true
+  },
+  {
+   "id": "Colossus_2",
+   "max_eye_deg_s": 1.5,
+   "eye": "main",
+   "t": 180.4,
+   "min_shell_m": 1061.7,
+   "ok": true
+  },
+  {
+   "id": "Surge_00",
+   "max_eye_deg_s": 1.8,
+   "eye": "main",
+   "t": 177.9,
+   "min_shell_m": 1926.2,
+   "ok": true
+  },
+  {
+   "id": "Surge_01",
+   "max_eye_deg_s": 2.0,
+   "eye": "main",
+   "t": 176.9,
+   "min_shell_m": 1688.4,
+   "ok": true
+  },
+  {
+   "id": "Surge_02",
+   "max_eye_deg_s": 1.3,
+   "eye": "main",
+   "t": 179.4,
+   "min_shell_m": 2532.6,
+   "ok": true
+  },
+  {
+   "id": "Surge_03",
+   "max_eye_deg_s": 1.5,
+   "eye": "rear",
+   "t": 180.4,
+   "min_shell_m": 2040.1,
+   "ok": true
+  },
+  {
+   "id": "Surge_04",
+   "max_eye_deg_s": 1.6,
+   "eye": "main",
+   "t": 180.4,
+   "min_shell_m": 1938.1,
+   "ok": true
+  },
+  {
+   "id": "Surge_05",
+   "max_eye_deg_s": 2.0,
+   "eye": "main",
+   "t": 180.4,
+   "min_shell_m": 1510.8,
+   "ok": true
+  },
+  {
+   "id": "Surge_06",
+   "max_eye_deg_s": 1.5,
+   "eye": "rear",
+   "t": 180.4,
+   "min_shell_m": 1770.8,
+   "ok": true
+  },
+  {
+   "id": "Surge_07",
+   "max_eye_deg_s": 0.9,
+   "eye": "rear",
+   "t": 180.4,
+   "min_shell_m": 2447.3,
+   "ok": true
+  },
+  {
+   "id": "Surge_08",
+   "max_eye_deg_s": 1.6,
+   "eye": "rear",
+   "t": 180.4,
+   "min_shell_m": 1326.2,
+   "ok": true
+  },
+  {
+   "id": "Surge_09",
+   "max_eye_deg_s": 1.7,
+   "eye": "rear",
+   "t": 180.4,
+   "min_shell_m": 1159.6,
+   "ok": true
+  },
+  {
+   "id": "Surge_10",
+   "max_eye_deg_s": 1.0,
+   "eye": "main",
+   "t": 180.4,
+   "min_shell_m": 1713.0,
+   "ok": true
+  },
+  {
+   "id": "Surge_11",
+   "max_eye_deg_s": 0.9,
+   "eye": "main",
+   "t": 180.15,
+   "min_shell_m": 2095.2,
+   "ok": true
+  },
+  {
+   "id": "Surge_12",
+   "max_eye_deg_s": 0.9,
+   "eye": "rear",
+   "t": 180.4,
+   "min_shell_m": 2212.4,
+   "ok": true
+  },
+  {
+   "id": "Surge_13",
+   "max_eye_deg_s": 1.8,
+   "eye": "rear",
+   "t": 180.4,
+   "min_shell_m": 1413.8,
+   "ok": true
+  },
+  {
+   "id": "Surge_14",
+   "max_eye_deg_s": 1.6,
+   "eye": "rear",
+   "t": 180.4,
+   "min_shell_m": 1706.8,
+   "ok": true
+  },
+  {
+   "id": "Surge_15",
+   "max_eye_deg_s": 1.1,
+   "eye": "rear",
+   "t": 180.4,
+   "min_shell_m": 2412.2,
+   "ok": true
+  },
+  {
+   "id": "Surge_16",
+   "max_eye_deg_s": 1.1,
+   "eye": "main",
+   "t": 178.65,
+   "min_shell_m": 2562.5,
+   "ok": true
+  },
+  {
+   "id": "Surge_17",
+   "max_eye_deg_s": 1.4,
+   "eye": "rear",
+   "t": 180.4,
+   "min_shell_m": 2198.9,
+   "ok": true
+  },
+  {
+   "id": "Surge_18",
+   "max_eye_deg_s": 2.1,
+   "eye": "main",
+   "t": 178.65,
+   "min_shell_m": 1590.2,
+   "ok": true
+  },
+  {
+   "id": "Surge_19",
+   "max_eye_deg_s": 1.6,
+   "eye": "rear",
+   "t": 180.4,
+   "min_shell_m": 2028.5,
+   "ok": true
+  },
+  {
+   "id": "Surge_20",
+   "max_eye_deg_s": 1.7,
+   "eye": "main",
+   "t": 178.9,
+   "min_shell_m": 2002.2,
+   "ok": true
+  },
+  {
+   "id": "Surge_21",
+   "max_eye_deg_s": 1.8,
+   "eye": "rear",
+   "t": 180.4,
+   "min_shell_m": 1870.8,
+   "ok": true
+  },
+  {
+   "id": "Rear_00",
+   "max_eye_deg_s": 26.9,
+   "eye": "rear",
+   "t": 167.9,
+   "min_shell_m": 124.5,
+   "ok": true
+  },
+  {
+   "id": "Rear_01",
+   "max_eye_deg_s": 25.8,
+   "eye": "rear",
+   "t": 167.15,
+   "min_shell_m": 130.3,
+   "ok": true
+  },
+  {
+   "id": "Rear_02",
+   "max_eye_deg_s": 6.6,
+   "eye": "rear",
+   "t": 166.15,
+   "min_shell_m": 290.0,
+   "ok": true
+  },
+  {
+   "id": "Rear_03",
+   "max_eye_deg_s": 7.5,
+   "eye": "rear",
+   "t": 166.15,
+   "min_shell_m": 277.4,
+   "ok": true
+  },
+  {
+   "id": "Rear_04",
+   "max_eye_deg_s": 7.4,
+   "eye": "rear",
+   "t": 166.15,
+   "min_shell_m": 283.8,
+   "ok": true
+  },
+  {
+   "id": "Rear_05",
+   "max_eye_deg_s": 2.9,
+   "eye": "rear",
+   "t": 166.15,
+   "min_shell_m": 578.7,
+   "ok": true
+  },
+  {
+   "id": "Rear_06",
+   "max_eye_deg_s": 2.7,
+   "eye": "rear",
+   "t": 166.15,
+   "min_shell_m": 656.2,
+   "ok": true
+  },
+  {
+   "id": "Rear_07",
+   "max_eye_deg_s": 2.4,
+   "eye": "rear",
+   "t": 166.15,
+   "min_shell_m": 564.1,
+   "ok": true
+  }
+ ],
+ "tide_crest_deg_s": {
+  "median": 0.448,
+  "max": 0.853
+ }
+}

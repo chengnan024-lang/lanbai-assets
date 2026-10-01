@@ -1,0 +1,249 @@
+{
+ "Core": {
+  "screen": "#F5F2EC",
+  "fill_hex": "#FFEDD1",
+  "fill_ev": 1.84,
+  "linear": [
+   3.5801,
+   3.0319,
+   2.2827
+  ],
+  "check": "#F5F2EC",
+  "xT0": 1.69,
+  "source": "bible"
+ },
+ "Fibre": {
+  "screen": "#E2E8F3",
+  "fill_hex": "#DFE6FF",
+  "fill_ev": 1.56,
+  "linear": [
+   2.1758,
+   2.3332,
+   2.9485
+  ],
+  "check": "#E2E8F3",
+  "xT0": 1.39,
+  "source": "bible"
+ },
+ "Glow": {
+  "screen": "#C0B9E4",
+  "fill_hex": "#C6B4FF",
+  "fill_ev": 1.04,
+  "linear": [
+   1.1612,
+   0.9385,
+   2.0562
+  ],
+  "check": "#C0B9E4",
+  "xT0": 0.97,
+  "source": "bible"
+ },
+ "Halo": {
+  "screen": "#5B57A1",
+  "fill_hex": "#8275D0",
+  "fill_ev": 0.0,
+  "linear": [
+   0.2232,
+   0.1779,
+   0.6308
+  ],
+  "check": "#5B57A1",
+  "xT0": 0.3,
+  "source": "bible"
+ },
+ "ShaftPair": {
+  "screen": "#31335A",
+  "fill_hex": "#4C4A74",
+  "fill_ev": 0.0,
+  "linear": [
+   0.0723,
+   0.0685,
+   0.1746
+  ],
+  "check": "#31335A",
+  "xT0": 0.08,
+  "source": "bible"
+ },
+ "CloudGlow": {
+  "screen": "#495270",
+  "fill_hex": "#696F8D",
+  "fill_ev": 0.0,
+  "linear": [
+   0.1413,
+   0.159,
+   0.2664
+  ],
+  "check": "#495270",
+  "xT0": 0.13,
+  "source": "bible"
+ },
+ "HazeNear": {
+  "screen": "#484D63",
+  "fill_hex": "#67697D",
+  "fill_ev": 0.0,
+  "linear": [
+   0.1356,
+   0.1413,
+   0.2051
+  ],
+  "check": "#484D63",
+  "xT0": 0.1,
+  "source": "bible"
+ },
+ "HazeFar": {
+  "screen": "#2A3041",
+  "fill_hex": "#424755",
+  "fill_ev": 0.0,
+  "linear": [
+   0.0545,
+   0.063,
+   0.0908
+  ],
+  "check": "#2A3041",
+  "xT0": 0.04,
+  "source": "bible"
+ },
+ "Void": {
+  "screen": "#070A14",
+  "fill_hex": "#0E1217",
+  "fill_ev": 0.0,
+  "linear": [
+   0.0044,
+   0.006,
+   0.0086
+  ],
+  "check": "#070A14",
+  "xT0": 0.0,
+  "source": "bible"
+ },
+ "FogGlobal": {
+  "screen": "#353B4F",
+  "fill_hex": "#505466",
+  "fill_ev": 0.0,
+  "linear": [
+   0.0802,
+   0.0887,
+   0.1329
+  ],
+  "check": "#353B4F",
+  "xT0": 0.06,
+  "source": "bible"
+ },
+ "FarTearLine": {
+  "screen": "#D2CEE4",
+  "fill_hex": "#E6D8FF",
+  "fill_ev": 1.08,
+  "linear": [
+   1.6728,
+   1.4517,
+   2.114
+  ],
+  "check": "#D5D2E6",
+  "xT0": 1.0,
+  "source": "bible"
+ },
+ "FlapInner": {
+  "screen": "#3E3C66",
+  "fill_hex": "#5C5582",
+  "fill_ev": 0.0,
+  "linear": [
+   0.1076,
+   0.0908,
+   0.2238
+  ],
+  "check": "#3E3C66",
+  "xT0": 0.11,
+  "source": "solved (S4, no bloom)"
+ },
+ "FlapOuterNear": {
+  "screen": "#141726",
+  "fill_hex": "#252634",
+  "fill_ev": 0.0,
+  "linear": [
+   0.0181,
+   0.0198,
+   0.0342
+  ],
+  "check": "#141726",
+  "xT0": 0.02,
+  "source": "solved (S4, no bloom)"
+ },
+ "FlapOuterFar": {
+  "screen": "#0C0E18",
+  "fill_hex": "#18191F",
+  "fill_ev": 0.0,
+  "linear": [
+   0.009,
+   0.0098,
+   0.0135
+  ],
+  "check": "#0C0E18",
+  "xT0": 0.01,
+  "source": "solved (S4, no bloom)"
+ },
+ "MoonRim": {
+  "screen": "#A9C2FF",
+  "fill_hex": "#7A85FF",
+  "fill_ev": 2.26,
+  "linear": [
+   0.9355,
+   1.1194,
+   4.7848
+  ],
+  "check": "#A9C2FF",
+  "xT0": 2.25,
+  "source": "solved (S4, no bloom)"
+ },
+ "MoonDisc": {
+  "screen": "#EAEEF4",
+  "fill_hex": "#F0F4FF",
+  "fill_ev": 1.58,
+  "linear": [
+   2.6215,
+   2.7085,
+   2.9957
+  ],
+  "check": "#EAEEF4",
+  "xT0": 1.41,
+  "source": "solved (S4, no bloom)"
+ },
+ "MoonHalo": {
+  "screen": "#5A6A88",
+  "fill_hex": "#7D8BAA",
+  "fill_ev": 0.0,
+  "linear": [
+   0.2059,
+   0.2594,
+   0.4026
+  ],
+  "check": "#5A6A88",
+  "xT0": 0.19,
+  "source": "solved (S4, no bloom)"
+ },
+ "Cloth": {
+  "screen": "#0C0E18",
+  "fill_hex": "#18191F",
+  "fill_ev": 0.0,
+  "linear": [
+   0.009,
+   0.0098,
+   0.0135
+  ],
+  "check": "#0C0E18",
+  "xT0": 0.01,
+  "source": "solved (S4, no bloom)"
+ },
+ "ShaftBeam": {
+  "screen": "#31335A",
+  "fill_hex": "#4C4A74",
+  "fill_ev": 0.0,
+  "linear": [
+   0.0362,
+   0.0343,
+   0.0873
+  ],
+  "check": "#20213E",
+  "xT0": 0.08,
+  "source": "half of ShaftPair (two beams overlap = the bible target)"
+ }
+}

@@ -1,0 +1,370 @@
+{
+ "cell_px": [
+  256,
+  512
+ ],
+ "layout": "2 columns x 4 rows per atlas, index = row * 2 + col, row 0 at the top",
+ "note": "every silhouette leans RIGHT (toward the tear for arms left of it); the root sits at (root_u, 0) of its cell; a quad of height cell_height_in_lengths x arm length shows the arm at its true size; moon rim painted on the leaning side",
+ "cells": [
+  {
+   "variant": "A",
+   "yaw_deg": 0,
+   "lean_deg": 24,
+   "root_u": 0.0964,
+   "cell_height_in_lengths": 1.0004,
+   "atlas": "TentacleTide_Atlas_A",
+   "index": 0,
+   "uv_rect": [
+    0.0,
+    0.75,
+    0.5,
+    1.0
+   ]
+  },
+  {
+   "variant": "C",
+   "yaw_deg": 40,
+   "lean_deg": 30,
+   "root_u": 0.0966,
+   "cell_height_in_lengths": 0.778,
+   "atlas": "TentacleTide_Atlas_A",
+   "index": 1,
+   "uv_rect": [
+    0.5,
+    0.75,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "variant": "E",
+   "yaw_deg": 0,
+   "lean_deg": 18,
+   "root_u": 0.0991,
+   "cell_height_in_lengths": 0.9383,
+   "atlas": "TentacleTide_Atlas_A",
+   "index": 2,
+   "uv_rect": [
+    0.0,
+    0.5,
+    0.5,
+    0.75
+   ]
+  },
+  {
+   "variant": "F",
+   "yaw_deg": 200,
+   "lean_deg": 26,
+   "root_u": 0.0919,
+   "cell_height_in_lengths": 1.0919,
+   "atlas": "TentacleTide_Atlas_A",
+   "index": 3,
+   "uv_rect": [
+    0.5,
+    0.5,
+    1.0,
+    0.75
+   ]
+  },
+  {
+   "variant": "A",
+   "yaw_deg": 120,
+   "lean_deg": 34,
+   "root_u": 0.0808,
+   "cell_height_in_lengths": 1.3739,
+   "atlas": "TentacleTide_Atlas_A",
+   "index": 4,
+   "uv_rect": [
+    0.0,
+    0.25,
+    0.5,
+    0.5
+   ]
+  },
+  {
+   "variant": "E",
+   "yaw_deg": 150,
+   "lean_deg": 22,
+   "root_u": 0.1019,
+   "cell_height_in_lengths": 0.8965,
+   "atlas": "TentacleTide_Atlas_A",
+   "index": 5,
+   "uv_rect": [
+    0.5,
+    0.25,
+    1.0,
+    0.5
+   ]
+  },
+  {
+   "variant": "F",
+   "yaw_deg": 30,
+   "lean_deg": 30,
+   "root_u": 0.1208,
+   "cell_height_in_lengths": 0.7052,
+   "atlas": "TentacleTide_Atlas_A",
+   "index": 6,
+   "uv_rect": [
+    0.0,
+    0.0,
+    0.5,
+    0.25
+   ]
+  },
+  {
+   "variant": "C",
+   "yaw_deg": 250,
+   "lean_deg": 20,
+   "root_u": 0.0835,
+   "cell_height_in_lengths": 1.0061,
+   "atlas": "TentacleTide_Atlas_A",
+   "index": 7,
+   "uv_rect": [
+    0.5,
+    0.0,
+    1.0,
+    0.25
+   ]
+  },
+  {
+   "variant": "B",
+   "yaw_deg": 30,
+   "lean_deg": 26,
+   "root_u": 0.4185,
+   "cell_height_in_lengths": 0.7995,
+   "atlas": "TentacleTide_Atlas_B",
+   "index": 0,
+   "uv_rect": [
+    0.0,
+    0.75,
+    0.5,
+    1.0
+   ]
+  },
+  {
+   "variant": "D",
+   "yaw_deg": 0,
+   "lean_deg": 20,
+   "root_u": 0.1012,
+   "cell_height_in_lengths": 0.9142,
+   "atlas": "TentacleTide_Atlas_B",
+   "index": 1,
+   "uv_rect": [
+    0.5,
+    0.75,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "variant": "E",
+   "yaw_deg": 90,
+   "lean_deg": 30,
+   "root_u": 0.0975,
+   "cell_height_in_lengths": 0.9631,
+   "atlas": "TentacleTide_Atlas_B",
+   "index": 2,
+   "uv_rect": [
+    0.0,
+    0.5,
+    0.5,
+    0.75
+   ]
+  },
+  {
+   "variant": "F",
+   "yaw_deg": 120,
+   "lean_deg": 22,
+   "root_u": 0.4457,
+   "cell_height_in_lengths": 0.7528,
+   "atlas": "TentacleTide_Atlas_B",
+   "index": 3,
+   "uv_rect": [
+    0.5,
+    0.5,
+    1.0,
+    0.75
+   ]
+  },
+  {
+   "variant": "A",
+   "yaw_deg": 250,
+   "lean_deg": 28,
+   "root_u": 0.0874,
+   "cell_height_in_lengths": 1.1873,
+   "atlas": "TentacleTide_Atlas_B",
+   "index": 4,
+   "uv_rect": [
+    0.0,
+    0.25,
+    0.5,
+    0.5
+   ]
+  },
+  {
+   "variant": "C",
+   "yaw_deg": 140,
+   "lean_deg": 32,
+   "root_u": 0.0886,
+   "cell_height_in_lengths": 0.9039,
+   "atlas": "TentacleTide_Atlas_B",
+   "index": 5,
+   "uv_rect": [
+    0.5,
+    0.25,
+    1.0,
+    0.5
+   ]
+  },
+  {
+   "variant": "F",
+   "yaw_deg": 300,
+   "lean_deg": 18,
+   "root_u": 0.0851,
+   "cell_height_in_lengths": 1.2529,
+   "atlas": "TentacleTide_Atlas_B",
+   "index": 6,
+   "uv_rect": [
+    0.0,
+    0.0,
+    0.5,
+    0.25
+   ]
+  },
+  {
+   "variant": "E",
+   "yaw_deg": 210,
+   "lean_deg": 26,
+   "root_u": 0.0769,
+   "cell_height_in_lengths": 1.4875,
+   "atlas": "TentacleTide_Atlas_B",
+   "index": 7,
+   "uv_rect": [
+    0.5,
+    0.0,
+    1.0,
+    0.25
+   ]
+  },
+  {
+   "variant": "F",
+   "yaw_deg": 60,
+   "lean_deg": 34,
+   "root_u": 0.2147,
+   "cell_height_in_lengths": 0.7827,
+   "atlas": "TentacleTide_Atlas_C",
+   "index": 0,
+   "uv_rect": [
+    0.0,
+    0.75,
+    0.5,
+    1.0
+   ]
+  },
+  {
+   "variant": "A",
+   "yaw_deg": 300,
+   "lean_deg": 20,
+   "root_u": 0.0964,
+   "cell_height_in_lengths": 1.0005,
+   "atlas": "TentacleTide_Atlas_C",
+   "index": 1,
+   "uv_rect": [
+    0.5,
+    0.75,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "variant": "D",
+   "yaw_deg": 160,
+   "lean_deg": 26,
+   "root_u": 0.2903,
+   "cell_height_in_lengths": 0.6279,
+   "atlas": "TentacleTide_Atlas_C",
+   "index": 2,
+   "uv_rect": [
+    0.0,
+    0.5,
+    0.5,
+    0.75
+   ]
+  },
+  {
+   "variant": "E",
+   "yaw_deg": 330,
+   "lean_deg": 24,
+   "root_u": 0.0988,
+   "cell_height_in_lengths": 0.942,
+   "atlas": "TentacleTide_Atlas_C",
+   "index": 3,
+   "uv_rect": [
+    0.5,
+    0.5,
+    1.0,
+    0.75
+   ]
+  },
+  {
+   "variant": "C",
+   "yaw_deg": 80,
+   "lean_deg": 28,
+   "root_u": 0.096,
+   "cell_height_in_lengths": 0.786,
+   "atlas": "TentacleTide_Atlas_C",
+   "index": 4,
+   "uv_rect": [
+    0.0,
+    0.25,
+    0.5,
+    0.5
+   ]
+  },
+  {
+   "variant": "B",
+   "yaw_deg": 200,
+   "lean_deg": 22,
+   "root_u": 0.1556,
+   "cell_height_in_lengths": 0.5248,
+   "atlas": "TentacleTide_Atlas_C",
+   "index": 5,
+   "uv_rect": [
+    0.5,
+    0.25,
+    1.0,
+    0.5
+   ]
+  },
+  {
+   "variant": "F",
+   "yaw_deg": 250,
+   "lean_deg": 30,
+   "root_u": 0.0753,
+   "cell_height_in_lengths": 1.5903,
+   "atlas": "TentacleTide_Atlas_C",
+   "index": 6,
+   "uv_rect": [
+    0.0,
+    0.0,
+    0.5,
+    0.25
+   ]
+  },
+  {
+   "variant": "A",
+   "yaw_deg": 30,
+   "lean_deg": 26,
+   "root_u": 0.0973,
+   "cell_height_in_lengths": 0.9849,
+   "atlas": "TentacleTide_Atlas_C",
+   "index": 7,
+   "uv_rect": [
+    0.5,
+    0.0,
+    1.0,
+    0.25
+   ]
+  }
+ ]
+}

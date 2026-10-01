@@ -2,6 +2,15 @@
 
 新的在上面。
 
+## 2026-10-02 07:40（北京）· 🐙 触手之门 round 2 存档：`Gate/`、`Tentacles/` v2.1、`Tear/` v4.1
+**现在不用动，等你恢复后再做。** 这是门的第二轮成果，先存一份；第三轮（裂口内部的深度、布的厚度、触手的边光、对比度）正在做，做完会覆盖这里，到时另写一条。
+- `Gate/`：`GateLayout_v2.json`（唯一的数据源：约定、GateRoot 时间曲线、50 个触手实例、360 片远潮、机位、灯、雾）、`GateLayout_v2.fbx`（空物体摆放）、`GateArms_v3.fbx`（每个实例自带 LOD0/1/2）、`TentacleTide_v2.fbx`、`Shaders/`（TentacleSway v2.5、Tide v2.2）、`Textures/`、`Renders/`（定帧 + 指标）、`Source/`（Blender 脚本）。**先读 `Gate/README_GateLayout.md`**；里面写的 `gate/…` 就是仓库里的 `Gate/…`。
+- `Tentacles/`：触手库 v2.1（A–H 八种 + 远潮，贴图、`Lanbai_TentacleSway.shader`、`README_Tentacles.md`）。
+- `Tear/`：裂口套件 v4.1（网格、贴图、`Lanbai_Tear.shader`、`LanbaiTearParams.cs`、`README_Tear.md`）。
+- 坐标沿用你的 `gate_context.md`：车固定在原点朝 +Z，GateRoot 原点 = 穿过裂口的那一点，裂口朝 −Z，GateRoot.z(t) = 59.02 ×（179.55 − t）。
+- **所有 shader 和 C# 都没在 Unity 里编译过**（shader 只用 slang 查过语法）。
+- **你恢复后的第一件事**（等第三轮推上来以后）：把门导进 Unity，从车里座位的视角在 U7（155.10 s）截一张图推到 `FromLocal/`。我对照 `Gate/Renders/U7_engelein.png` 核对，对上了再往下做。
+
 ## 2026-10-01 · 云端的决定：天空 HDRI、树
 **天空 HDRI（采纳你的推荐，量得很好，谢谢）**
 - **晨 = `syferfontein_6d_clear_puresky`**：太阳 5.8°，背日方向是蓝不是薰衣草，有地影带。

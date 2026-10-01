@@ -1,0 +1,250 @@
+{
+ "cell_px": [
+  256,
+  512
+ ],
+ "layout": "2 columns x 4 rows per atlas, index = row * 2 + col, row 0 at the top",
+ "note": "v3 (gate run 6): v4 arm form (swan neck, crest 55-70 %, top third curls over and down), half the cells are clusters of 2-4 arms; every silhouette leans RIGHT; root at (root_u, 0); quad height = cell_height_in_lengths x size (size = the largest arm of the cell); alpha feathered over the bottom 7 %; faint moon edge upper-left",
+ "cells": [
+  {
+   "variant": "v3_bow",
+   "kind": "single",
+   "lean_deg": 0,
+   "root_u": 0.1259,
+   "cell_height_in_lengths": 1.463,
+   "atlas": "TentacleTide_v3_Atlas_A",
+   "index": 0,
+   "uv_rect": [
+    0.0,
+    0.75,
+    0.5,
+    1.0
+   ]
+  },
+  {
+   "variant": "v3_reach",
+   "kind": "single",
+   "lean_deg": 0,
+   "root_u": 0.1085,
+   "cell_height_in_lengths": 1.6138,
+   "atlas": "TentacleTide_v3_Atlas_A",
+   "index": 1,
+   "uv_rect": [
+    0.5,
+    0.75,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "variant": "v3_rear",
+   "kind": "single",
+   "lean_deg": 0,
+   "root_u": 0.1436,
+   "cell_height_in_lengths": 1.3513,
+   "atlas": "TentacleTide_v3_Atlas_A",
+   "index": 2,
+   "uv_rect": [
+    0.0,
+    0.5,
+    0.5,
+    0.75
+   ]
+  },
+  {
+   "variant": "v3_lash",
+   "kind": "single",
+   "lean_deg": 0,
+   "root_u": 0.1192,
+   "cell_height_in_lengths": 1.3686,
+   "atlas": "TentacleTide_v3_Atlas_A",
+   "index": 3,
+   "uv_rect": [
+    0.5,
+    0.5,
+    1.0,
+    0.75
+   ]
+  },
+  {
+   "variant": "v3_hump",
+   "kind": "single",
+   "lean_deg": 0,
+   "root_u": 0.1164,
+   "cell_height_in_lengths": 1.8524,
+   "atlas": "TentacleTide_v3_Atlas_A",
+   "index": 4,
+   "uv_rect": [
+    0.0,
+    0.25,
+    0.5,
+    0.5
+   ]
+  },
+  {
+   "variant": "v3_whip",
+   "kind": "single",
+   "lean_deg": 0,
+   "root_u": 0.1088,
+   "cell_height_in_lengths": 1.394,
+   "atlas": "TentacleTide_v3_Atlas_A",
+   "index": 5,
+   "uv_rect": [
+    0.5,
+    0.25,
+    1.0,
+    0.5
+   ]
+  },
+  {
+   "variant": "v3_curl",
+   "kind": "single",
+   "lean_deg": 0,
+   "root_u": 0.1387,
+   "cell_height_in_lengths": 1.3061,
+   "atlas": "TentacleTide_v3_Atlas_A",
+   "index": 6,
+   "uv_rect": [
+    0.0,
+    0.0,
+    0.5,
+    0.25
+   ]
+  },
+  {
+   "variant": "v3_swan",
+   "kind": "single",
+   "lean_deg": 0,
+   "root_u": 0.1044,
+   "cell_height_in_lengths": 1.7471,
+   "atlas": "TentacleTide_v3_Atlas_A",
+   "index": 7,
+   "uv_rect": [
+    0.5,
+    0.0,
+    1.0,
+    0.25
+   ]
+  },
+  {
+   "variant": "v3_cluster",
+   "kind": "cluster3",
+   "lean_deg": 0,
+   "root_u": 0.2846,
+   "cell_height_in_lengths": 2.6281,
+   "atlas": "TentacleTide_v3_Atlas_B",
+   "index": 0,
+   "uv_rect": [
+    0.0,
+    0.75,
+    0.5,
+    1.0
+   ]
+  },
+  {
+   "variant": "v3_cluster",
+   "kind": "cluster4",
+   "lean_deg": 0,
+   "root_u": 0.3148,
+   "cell_height_in_lengths": 2.7303,
+   "atlas": "TentacleTide_v3_Atlas_B",
+   "index": 1,
+   "uv_rect": [
+    0.5,
+    0.75,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "variant": "v3_cluster",
+   "kind": "cluster3",
+   "lean_deg": 0,
+   "root_u": 0.2221,
+   "cell_height_in_lengths": 2.2226,
+   "atlas": "TentacleTide_v3_Atlas_B",
+   "index": 2,
+   "uv_rect": [
+    0.0,
+    0.5,
+    0.5,
+    0.75
+   ]
+  },
+  {
+   "variant": "v3_cluster",
+   "kind": "cluster5",
+   "lean_deg": 0,
+   "root_u": 0.2252,
+   "cell_height_in_lengths": 2.6336,
+   "atlas": "TentacleTide_v3_Atlas_B",
+   "index": 3,
+   "uv_rect": [
+    0.5,
+    0.5,
+    1.0,
+    0.75
+   ]
+  },
+  {
+   "variant": "v3_cluster",
+   "kind": "cluster4",
+   "lean_deg": 0,
+   "root_u": 0.206,
+   "cell_height_in_lengths": 1.8685,
+   "atlas": "TentacleTide_v3_Atlas_B",
+   "index": 4,
+   "uv_rect": [
+    0.0,
+    0.25,
+    0.5,
+    0.5
+   ]
+  },
+  {
+   "variant": "v3_cluster",
+   "kind": "cluster3",
+   "lean_deg": 0,
+   "root_u": 0.2339,
+   "cell_height_in_lengths": 2.5111,
+   "atlas": "TentacleTide_v3_Atlas_B",
+   "index": 5,
+   "uv_rect": [
+    0.5,
+    0.25,
+    1.0,
+    0.5
+   ]
+  },
+  {
+   "variant": "v3_cluster",
+   "kind": "cluster5",
+   "lean_deg": 0,
+   "root_u": 0.1859,
+   "cell_height_in_lengths": 2.5948,
+   "atlas": "TentacleTide_v3_Atlas_B",
+   "index": 6,
+   "uv_rect": [
+    0.0,
+    0.0,
+    0.5,
+    0.25
+   ]
+  },
+  {
+   "variant": "v3_cluster",
+   "kind": "cluster4",
+   "lean_deg": 0,
+   "root_u": 0.2352,
+   "cell_height_in_lengths": 2.2955,
+   "atlas": "TentacleTide_v3_Atlas_B",
+   "index": 7,
+   "uv_rect": [
+    0.5,
+    0.0,
+    1.0,
+    0.25
+   ]
+  }
+ ]
+}

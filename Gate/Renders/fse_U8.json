@@ -1,0 +1,63 @@
+{
+ "limit": 4.0,
+ "note": "Transparent overdraw budget at U8 / U8 + 7 s (tech M11; bible 1.9: <= 4.0 full-screen equivalents).\nProjects every transparent card of the gate from the hero eye (U8fwd framing: yaw 0, pitch 0, hFOV 90, 16:9) and sums\neach card's screen coverage (overlapping cards of one part counted separately). The cabin glass (0.7) and the cloud\nsea (0.9) are the critique's own estimates (their geometry is the Unity side's). Writes final/fse_U8.json.",
+ "frames": {
+  "U8": {
+   "Tear_Lens": 0.121,
+   "Tear_Rip_Branch_A": 0.0,
+   "Tear_Rip_Branch_B": 0.0,
+   "Tear_Rip_Hairline": 0.0,
+   "Tear_Rip_Twig_1": 0.0,
+   "Tear_Rip_Twig_2": 0.0,
+   "Tear_Fibres": 0.002,
+   "Tear_Halo": 0.413,
+   "Tear_SkyFolds": 0.273,
+   "Tear_CloudGlow": 0.452,
+   "Towers": 0.0,
+   "Far clouds + horizon relief": 0.295,
+   "Gate beams (2)": 0.0,
+   "Tide": 0.439,
+   "CabinGlass (critique estimate)": 0.7,
+   "CloudSea cards (critique estimate)": 0.9,
+   "TOTAL": 3.6
+  },
+  "U8+3.5": {
+   "Tear_Lens": 0.203,
+   "Tear_Rip_Branch_A": 0.0,
+   "Tear_Rip_Branch_B": 0.0,
+   "Tear_Rip_Hairline": 0.0,
+   "Tear_Rip_Twig_1": 0.0,
+   "Tear_Rip_Twig_2": 0.0,
+   "Tear_Fibres": 0.002,
+   "Tear_Halo": 0.358,
+   "Tear_SkyFolds": 0.435,
+   "Tear_CloudGlow": 0.0,
+   "Towers": 0.0,
+   "Far clouds + horizon relief": 0.297,
+   "Gate beams (2)": 0.0,
+   "Tide": 0.0,
+   "CabinGlass (critique estimate)": 0.7,
+   "CloudSea cards (critique estimate)": 0.9,
+   "TOTAL": 2.9
+  },
+  "U8+7": {
+   "Tear_Lens": 0.379,
+   "Tear_Rip_Branch_A": 0.0,
+   "Tear_Rip_Branch_B": 0.0,
+   "Tear_Rip_Hairline": 0.0,
+   "Tear_Rip_Twig_1": 0.0,
+   "Tear_Rip_Twig_2": 0.0,
+   "Tear_Fibres": 0.005,
+   "Tear_Halo": 0.602,
+   "Tear_SkyFolds": 0.672,
+   "Tear_CloudGlow": 0.0,
+   "Towers": 0.0,
+   "Far clouds + horizon relief": 0.299,
+   "Gate beams (2)": 0.0,
+   "Tide": 0.0,
+   "CabinGlass (critique estimate)": 0.7,
+   "CloudSea cards (critique estimate)": 0.9,
+   "TOTAL": 3.56
+  }
+ }
+}

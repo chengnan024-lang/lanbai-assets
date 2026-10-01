@@ -1,0 +1,41 @@
+{
+ "U6": {
+  "APL": 48.2,
+  "luma_lt12": 0.0,
+  "strong_violet": 0.12,
+  "near_black": 0.0,
+  "near_white": 0.0,
+  "crop_box_px": [
+   717,
+   300,
+   1202,
+   573
+  ]
+ },
+ "U7": {
+  "APL": 51.1,
+  "luma_lt12": 0.0,
+  "strong_violet": 0.23,
+  "near_black": 0.0,
+  "near_white": 0.0,
+  "crop_box_px": [
+   602,
+   171,
+   1317,
+   573
+  ]
+ },
+ "U8": {
+  "APL": 65.0,
+  "luma_lt12": 8.1,
+  "strong_violet": 1.74,
+  "near_black": 0.0,
+  "near_white": 0.01,
+  "crop_box_px": [
+   211,
+   47,
+   1708,
+   889
+  ]
+ }
+}

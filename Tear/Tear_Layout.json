@@ -1,0 +1,693 @@
+{
+ "about": "Lanbai tear kit v2 (art bible 6.4, 8.1 #6). Unity object space of Tear_Root. The kit faces +Z (put the bus on the +Z side, i.e. rotate the root so +Z points at the bus); +Y up; the pivot is the lens axis at cloud-top height. Root scale 1 = tear height H 1000 m above the cloud top at FULL opening. Uniform scale = H / 1000.",
+ "frame_os": {
+  "across_right": [
+   -0.99756,
+   -0.06976,
+   -0.0
+  ],
+  "axis_up": [
+   -0.06976,
+   0.99756,
+   -0.0
+  ],
+  "toward_bus": [
+   0.0,
+   -0.0,
+   1.0
+  ],
+  "widest_point": [
+   -33.3834,
+   399.62151,
+   -0.0
+  ],
+  "top_tip": [
+   -65.20332,
+   1000.3303,
+   -0.0
+  ],
+  "tear_light_origin_for_directional_light": [
+   -26.50746,
+   379.07434,
+   -60.0
+  ]
+ },
+ "lens": {
+  "height_above_cloud_top": 1000.0,
+  "bottom_tip_below_cloud_top": 150.0,
+  "tilt_deg": 4.0,
+  "widest_at_fraction_of_height": 0.4,
+  "left_share": 0.45,
+  "right_share": 0.55,
+  "width_full_m": 300.0,
+  "width_fraction_min": 0.18,
+  "width_fraction_max": 0.3,
+  "emission_uv_rect_axis_m": {
+   "t": [
+    -180.0,
+    1042.4418980811722
+   ],
+   "a": [
+    -215.0,
+    245.0
+   ]
+  }
+ },
+ "stages": {
+  "U6": {
+   "D_m": 2700.0,
+   "H_m": 565.0,
+   "root_scale": 0.565,
+   "Udon_TearOpen": 0.0,
+   "width_fraction": 0.18,
+   "Udon_RipProgress": 0.0,
+   "bus_above_cloud_top_m": 40.0,
+   "top_elevation_deg": 11.0
+  },
+  "U7": {
+   "D_m": 1800.0,
+   "H_m": 635.0,
+   "root_scale": 0.635,
+   "Udon_TearOpen": 0.333,
+   "width_fraction": 0.22,
+   "Udon_RipProgress": 0.55,
+   "bus_above_cloud_top_m": 50.0,
+   "top_elevation_deg": 18.0
+  },
+  "U8": {
+   "D_m": 900.0,
+   "H_m": 875.0,
+   "root_scale": 0.875,
+   "Udon_TearOpen": 1.0,
+   "width_fraction": 0.3,
+   "Udon_RipProgress": 1.0,
+   "bus_above_cloud_top_m": 60.0,
+   "top_elevation_deg": 42.2
+  }
+ },
+ "rips": {
+  "Tear_Rip_Branch_A": {
+   "side": "right",
+   "branches_at_t_m": 815.0,
+   "off_axis_deg": 31.0,
+   "length_root_scale_1_m": 409.4,
+   "length_at_U7_m": 260.0,
+   "width_max_root_scale_1_m": 15.0,
+   "RipProgress_window": [
+    0.0,
+    0.75
+   ]
+  },
+  "Tear_Rip_Branch_B": {
+   "side": "left",
+   "branches_at_t_m": 745.0,
+   "off_axis_deg": 35.0,
+   "length_root_scale_1_m": 267.7,
+   "length_at_U7_m": 170.0,
+   "width_max_root_scale_1_m": 12.0,
+   "RipProgress_window": [
+    0.25,
+    1.0
+   ]
+  },
+  "Tear_Rip_Hairline": {
+   "side": "left",
+   "branches_at_t_m": 996.4418980811722,
+   "off_axis_deg": 2.0,
+   "length_root_scale_1_m": 340.0,
+   "length_at_U7_m": 215.9,
+   "width_max_root_scale_1_m": 2.6,
+   "RipProgress_window": [
+    0.05,
+    0.9
+   ]
+  },
+  "Tear_Rip_Twig_1": {
+   "side": "right",
+   "branches_at_t_m": 1122.4418980811722,
+   "off_axis_deg": 38.0,
+   "length_root_scale_1_m": 60.0,
+   "length_at_U7_m": 38.1,
+   "width_max_root_scale_1_m": 1.8,
+   "RipProgress_window": [
+    0.45,
+    0.9
+   ]
+  },
+  "Tear_Rip_Twig_2": {
+   "side": "left",
+   "branches_at_t_m": 1217.4418980811722,
+   "off_axis_deg": 33.0,
+   "length_root_scale_1_m": 45.0,
+   "length_at_U7_m": 28.6,
+   "width_max_root_scale_1_m": 1.6,
+   "RipProgress_window": [
+    0.6,
+    1.0
+   ]
+  }
+ },
+ "flaps": {
+  "Tear_Flap_L": {
+   "side": "left",
+   "fold_span_t_m": [
+    150.0,
+    255.0
+   ],
+   "length_m": 80.0,
+   "band_in_Tear_Flaps_1024": 0
+  },
+  "Tear_Flap_R": {
+   "side": "right",
+   "fold_span_t_m": [
+    350.0,
+    600.0
+   ],
+   "length_m": 135.0,
+   "band_in_Tear_Flaps_1024": 1
+  }
+ },
+ "halo_cards": [
+  {
+   "width_m": 330.0,
+   "height_m": 620.0,
+   "behind_lens_m": 25.0,
+   "breath_phase_lag": 0.04,
+   "gain_uv2x": 2.8
+  },
+  {
+   "width_m": 360.0,
+   "height_m": 880.0,
+   "behind_lens_m": 40.0,
+   "breath_phase_lag": 0.0,
+   "gain_uv2x": 1.0
+  },
+  {
+   "width_m": 640.0,
+   "height_m": 1000.0,
+   "behind_lens_m": 60.0,
+   "breath_phase_lag": 0.08,
+   "gain_uv2x": 1.0
+  }
+ ],
+ "shafts": [
+  {
+   "start_os": [
+    -76.51266,
+    124.32184,
+    6.0
+   ],
+   "axis_os": [
+    0.09156,
+    -0.16231,
+    0.98248
+   ],
+   "half_width_m": 13.2,
+   "length_m": 2351.3,
+   "yaw_deg": -5.3,
+   "pitch_deg": -9.3
+  },
+  {
+   "start_os": [
+    25.35988,
+    95.25655,
+    6.0
+   ],
+   "axis_os": [
+    0.2599,
+    -0.25343,
+    0.93178
+   ],
+   "half_width_m": 27.2,
+   "length_m": 2350.5,
+   "yaw_deg": -15.6,
+   "pitch_deg": -14.7
+  },
+  {
+   "start_os": [
+    -110.54964,
+    515.83958,
+    6.0
+   ],
+   "axis_os": [
+    0.1632,
+    -0.22139,
+    0.96143
+   ],
+   "half_width_m": 18.7,
+   "length_m": 2037.5,
+   "yaw_deg": -9.6,
+   "pitch_deg": -12.8
+  },
+  {
+   "start_os": [
+    -81.93746,
+    248.83379,
+    6.0
+   ],
+   "axis_os": [
+    0.21176,
+    -0.19892,
+    0.95686
+   ],
+   "half_width_m": 19.8,
+   "length_m": 2488.0,
+   "yaw_deg": -12.5,
+   "pitch_deg": -11.5
+  },
+  {
+   "start_os": [
+    1.21032,
+    332.76058,
+    6.0
+   ],
+   "axis_os": [
+    0.25039,
+    -0.19013,
+    0.94929
+   ],
+   "half_width_m": 27.8,
+   "length_m": 2479.9,
+   "yaw_deg": -14.8,
+   "pitch_deg": -11.0
+  },
+  {
+   "start_os": [
+    -71.4749,
+    142.33011,
+    6.0
+   ],
+   "axis_os": [
+    0.20349,
+    -0.27333,
+    0.94015
+   ],
+   "half_width_m": 22.3,
+   "length_m": 1757.0,
+   "yaw_deg": -12.2,
+   "pitch_deg": -15.9
+  },
+  {
+   "start_os": [
+    -55.18518,
+    377.30149,
+    6.0
+   ],
+   "axis_os": [
+    -0.16109,
+    -0.17831,
+    0.9707
+   ],
+   "half_width_m": 28.2,
+   "length_m": 2762.2,
+   "yaw_deg": 9.4,
+   "pitch_deg": -10.3
+  },
+  {
+   "start_os": [
+    -39.96533,
+    345.63527,
+    6.0
+   ],
+   "axis_os": [
+    -0.20283,
+    -0.27268,
+    0.94048
+   ],
+   "half_width_m": 19.5,
+   "length_m": 1625.5,
+   "yaw_deg": 12.2,
+   "pitch_deg": -15.8
+  },
+  {
+   "start_os": [
+    10.91528,
+    94.08687,
+    6.0
+   ],
+   "axis_os": [
+    -0.23647,
+    -0.2251,
+    0.9452
+   ],
+   "half_width_m": 33.3,
+   "length_m": 2765.6,
+   "yaw_deg": 14.0,
+   "pitch_deg": -13.0
+  },
+  {
+   "start_os": [
+    -52.03203,
+    384.19048,
+    6.0
+   ],
+   "axis_os": [
+    -0.05462,
+    -0.24453,
+    0.9681
+   ],
+   "half_width_m": 18.6,
+   "length_m": 2178.4,
+   "yaw_deg": 3.2,
+   "pitch_deg": -14.2
+  },
+  {
+   "start_os": [
+    -78.04313,
+    364.28373,
+    6.0
+   ],
+   "axis_os": [
+    -0.11673,
+    -0.17637,
+    0.97738
+   ],
+   "half_width_m": 32.5,
+   "length_m": 1866.4,
+   "yaw_deg": 6.8,
+   "pitch_deg": -10.2
+  },
+  {
+   "start_os": [
+    46.2139,
+    335.45913,
+    6.0
+   ],
+   "axis_os": [
+    -0.20308,
+    -0.23575,
+    0.95036
+   ],
+   "half_width_m": 23.9,
+   "length_m": 1515.5,
+   "yaw_deg": 12.1,
+   "pitch_deg": -13.6
+  }
+ ],
+ "materials": {
+  "Tear_CloudGlow": {
+   "part": "CloudGlow",
+   "texture": "Halo_512.png",
+   "render_queue": 2988
+  },
+  "Tear_SkyFolds": {
+   "part": "Folds",
+   "texture": "Tear_SkyFolds_1024.png",
+   "render_queue": 2990
+  },
+  "Tear_Halo": {
+   "part": "Halo",
+   "texture": "Halo_512.png",
+   "render_queue": 2992
+  },
+  "Tear_Lens": {
+   "part": "Lens",
+   "texture": "Tear_Emission_2048x512.png",
+   "render_queue": 2994
+  },
+  "Tear_Rip": {
+   "part": "Rip",
+   "texture": "Tear_Rip_1024x128.png",
+   "render_queue": 2995
+  },
+  "Tear_Fibres": {
+   "part": "Fibre",
+   "texture": "Tear_Fibres_1024.png",
+   "render_queue": 2996
+  },
+  "Tear_Shaft": {
+   "part": "Shaft",
+   "texture": "Shaft_Gradient_256x1024.png",
+   "render_queue": 2998
+  },
+  "Tear_Flap": {
+   "part": "Flap",
+   "texture": "Tear_Flaps_1024.png",
+   "render_queue": 2450
+  }
+ },
+ "meshes": {
+  "Tear_Lens": {
+   "verts": 1080,
+   "tris": 1904,
+   "material": "Tear_Lens"
+  },
+  "Tear_Flap_L": {
+   "verts": 2880,
+   "tris": 5538,
+   "material": "Tear_Flap"
+  },
+  "Tear_Flap_R": {
+   "verts": 2880,
+   "tris": 5538,
+   "material": "Tear_Flap"
+  },
+  "Tear_Rip_Branch_A": {
+   "verts": 480,
+   "tris": 760,
+   "material": "Tear_Rip"
+  },
+  "Tear_Rip_Branch_B": {
+   "verts": 480,
+   "tris": 760,
+   "material": "Tear_Rip"
+  },
+  "Tear_Rip_Hairline": {
+   "verts": 480,
+   "tris": 760,
+   "material": "Tear_Rip"
+  },
+  "Tear_Rip_Twig_1": {
+   "verts": 480,
+   "tris": 760,
+   "material": "Tear_Rip"
+  },
+  "Tear_Rip_Twig_2": {
+   "verts": 480,
+   "tris": 760,
+   "material": "Tear_Rip"
+  },
+  "Tear_Fibres": {
+   "verts": 1320,
+   "tris": 880,
+   "material": "Tear_Fibres"
+  },
+  "Tear_Halo": {
+   "verts": 12,
+   "tris": 6,
+   "material": "Tear_Halo"
+  },
+  "Tear_SkyFolds": {
+   "verts": 1292,
+   "tris": 994,
+   "material": "Tear_SkyFolds"
+  },
+  "Tear_CloudGlow": {
+   "verts": 4,
+   "tris": 2,
+   "material": "Tear_CloudGlow"
+  },
+  "Tear_Shafts": {
+   "verts": 288,
+   "tris": 264,
+   "material": "Tear_Shaft"
+  },
+  "Tear_ShaftCard": {
+   "verts": 24,
+   "tris": 22,
+   "material": "Tear_Shaft"
+  }
+ },
+ "fills_S4": {
+  "Core": {
+   "screen": "#F5F2EC",
+   "fill": "#FFEDD1",
+   "ev": 1.84,
+   "linear": [
+    3.5801,
+    3.0319,
+    2.2827
+   ]
+  },
+  "Fibre": {
+   "screen": "#E2E8F3",
+   "fill": "#DFE6FF",
+   "ev": 1.56,
+   "linear": [
+    2.1758,
+    2.3332,
+    2.9485
+   ]
+  },
+  "Glow": {
+   "screen": "#C0B9E4",
+   "fill": "#C6B4FF",
+   "ev": 1.04,
+   "linear": [
+    1.1612,
+    0.9385,
+    2.0562
+   ]
+  },
+  "Halo": {
+   "screen": "#5B57A1",
+   "fill": "#8275D0",
+   "ev": 0.0,
+   "linear": [
+    0.2232,
+    0.1779,
+    0.6308
+   ]
+  },
+  "ShaftPair": {
+   "screen": "#31335A",
+   "fill": "#4C4A74",
+   "ev": 0.0,
+   "linear": [
+    0.0723,
+    0.0685,
+    0.1746
+   ]
+  },
+  "CloudGlow": {
+   "screen": "#495270",
+   "fill": "#696F8D",
+   "ev": 0.0,
+   "linear": [
+    0.1413,
+    0.159,
+    0.2664
+   ]
+  },
+  "HazeNear": {
+   "screen": "#484D63",
+   "fill": "#67697D",
+   "ev": 0.0,
+   "linear": [
+    0.1356,
+    0.1413,
+    0.2051
+   ]
+  },
+  "HazeFar": {
+   "screen": "#2A3041",
+   "fill": "#424755",
+   "ev": 0.0,
+   "linear": [
+    0.0545,
+    0.063,
+    0.0908
+   ]
+  },
+  "Void": {
+   "screen": "#070A14",
+   "fill": "#0E1217",
+   "ev": 0.0,
+   "linear": [
+    0.0044,
+    0.006,
+    0.0086
+   ]
+  },
+  "FogGlobal": {
+   "screen": "#353B4F",
+   "fill": "#505466",
+   "ev": 0.0,
+   "linear": [
+    0.0802,
+    0.0887,
+    0.1329
+   ]
+  },
+  "FarTearLine": {
+   "screen": "#D2CEE4",
+   "fill": "#E6D8FF",
+   "ev": 1.08,
+   "linear": [
+    1.6728,
+    1.4517,
+    2.114
+   ]
+  },
+  "FlapInner": {
+   "screen": "#3E3C66",
+   "fill": "#5C5582",
+   "ev": 0.0,
+   "linear": [
+    0.1076,
+    0.0908,
+    0.2238
+   ]
+  },
+  "FlapOuterNear": {
+   "screen": "#141726",
+   "fill": "#252634",
+   "ev": 0.0,
+   "linear": [
+    0.0181,
+    0.0198,
+    0.0342
+   ]
+  },
+  "FlapOuterFar": {
+   "screen": "#0C0E18",
+   "fill": "#18191F",
+   "ev": 0.0,
+   "linear": [
+    0.009,
+    0.0098,
+    0.0135
+   ]
+  },
+  "MoonRim": {
+   "screen": "#A9C2FF",
+   "fill": "#7A85FF",
+   "ev": 2.26,
+   "linear": [
+    0.9355,
+    1.1194,
+    4.7848
+   ]
+  },
+  "MoonDisc": {
+   "screen": "#EAEEF4",
+   "fill": "#F0F4FF",
+   "ev": 1.58,
+   "linear": [
+    2.6215,
+    2.7085,
+    2.9957
+   ]
+  },
+  "MoonHalo": {
+   "screen": "#5A6A88",
+   "fill": "#7D8BAA",
+   "ev": 0.0,
+   "linear": [
+    0.2059,
+    0.2594,
+    0.4026
+   ]
+  },
+  "Cloth": {
+   "screen": "#0C0E18",
+   "fill": "#18191F",
+   "ev": 0.0,
+   "linear": [
+    0.009,
+    0.0098,
+    0.0135
+   ]
+  },
+  "ShaftBeam": {
+   "screen": "#31335A",
+   "fill": "#4C4A74",
+   "ev": 0.0,
+   "linear": [
+    0.0362,
+    0.0343,
+    0.0873
+   ]
+  }
+ }
+}
