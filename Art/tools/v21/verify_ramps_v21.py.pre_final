@@ -1,0 +1,294 @@
+# -*- coding: utf-8 -*-
+"""v2.1 ramp-law + flash checks on the MEASURED timeline (bible §1.8):
+  any full-field rise <= 0.5 EV / 0.25 s, <= 1.0 EV / 1 s, <= 1.8 EV / 2 s; L = full-field mean relative luminance of the
+  DISPLAYED frame (with bloom), EV = log2(max(L, 0.004)); darkening is free but counts as a flash; <= 2 flashes per 1 s.
+Simulator and frames: the bible's own (bible_work/lutlib + scenes_v2 + the hue-mapped S3/S6/S8 mocks), corrected PPv2 maths
+(EXPO_UP/DOWN w = dEV/(H - b)). Every event carries its timeline t from cues_v21.py. Writes v21/ramp_checks_v21.json."""
+import os, sys, json, copy, math, time, numpy as np
+HERE = os.path.dirname(os.path.abspath(__file__))
+BW = os.path.abspath(os.path.join(HERE, '../../bible_work'))
+sys.path.insert(0, HERE); sys.path.insert(0, BW)
+from cues_v21 import T, D, MIRRORS
+os.chdir(BW)
+from lutlib import ppv2, PROF, GF
+import scenes_v2 as V, scenes_proc as SP
+from scipy.ndimage import zoom, gaussian_filter
+from PIL import Image
+FLOOR = 0.004; LUMA = np.array([0.2126, 0.7152, 0.0722])
+def relLpx(d): return ppv2.srgb_to_lin(np.clip(d, 0, 1)) @ LUMA
+def relL(d): return float(relLpx(d).mean())
+def apl(d): return float((np.clip(d, 0, 1) @ LUMA).mean() * 255)
+def law(ts, L):
+    ts = np.asarray(ts); ev = np.log2(np.maximum(np.asarray(L, float), FLOOR)); out = {}
+    for win, lim in ((0.25, 0.5), (1.0, 1.0), (2.0, 1.8)):
+        m = 0.0
+        for i, t in enumerate(ts):
+            j = np.searchsorted(ts, t + win, side='right') - 1
+            m = max(m, float(ev[i:j + 1].max() - ev[i]))
+        out['%.2fs' % win] = [round(m, 2), lim, 'PASS' if m <= lim + 1e-6 else 'FAIL']
+    return out
+def verdict(lw): return 'PASS' if all(v[2] == 'PASS' for v in lw.values()) else 'FAIL'
+def lin_law(dEV, dur):
+    """analytic: an EV-linear rise of dEV over dur seconds."""
+    r = dEV / dur; out = {}
+    for win, lim in ((0.25, 0.5), (1.0, 1.0), (2.0, 1.8)):
+        m = min(dEV, r * win); out['%.2fs' % win] = [round(m, 2), lim, 'PASS' if m <= lim + 1e-6 else 'FAIL']
+    return out
+def lerp_prof(a, b, w):
+    a, b = ppv2.full(a), ppv2.full(b); o = {}
+    for k in a:
+        if isinstance(a[k], dict): o[k] = {kk: (a[k][kk] + (b[k][kk] - a[k][kk]) * w if isinstance(a[k][kk], (int, float)) and not isinstance(a[k][kk], bool) else (b[k][kk] if w > 0.5 else a[k][kk])) for kk in a[k]}
+        elif isinstance(a[k], (int, float)) and not isinstance(a[k], bool): o[k] = a[k] + (b[k] - a[k]) * w
+        elif isinstance(a[k], (tuple, list)): o[k] = tuple(np.array(a[k]) + (np.array(b[k]) - np.array(a[k])) * w)
+        else: o[k] = b[k] if w > 0.5 else a[k]
+    return o
+def with_dev(p, dEV):
+    p = copy.deepcopy(ppv2.full(p)); b = p['postExposure']
+    if dEV >= 0: w = dEV / (4 - b); p['postExposure'] = b + (4 - b) * w
+    else: w = -dEV / (b + 4); p['postExposure'] = b + (-4 - b) * w
+    return p, w
+def chain_white(base, dEV, sat_w, bloom_w):
+    p, w = with_dev(base, dEV)
+    p['saturation'] = p['saturation'] + (GF['helpers']['WHITE_SAT']['ppv2']['saturation'] - p['saturation']) * sat_w
+    WB = GF['helpers']['WHITE_BLOOM']['ppv2']['bloom']
+    for k in ('intensity', 'threshold', 'softKnee', 'diffusion'): p['bloom'][k] = p['bloom'][k] + (WB[k] - p['bloom'][k]) * bloom_w
+    return p, w
+def sstep(x): x = np.clip(x, 0, 1); return x * x * (3 - 2 * x)
+def small(img, f=0.5): return np.stack([zoom(img[..., c], f, order=1) for c in range(3)], -1)
+FR = np.load('../lens_cine/mock/frames.npz')
+def mock(key):
+    a = FR[key]
+    return np.stack([np.asarray(Image.fromarray(a[..., c].astype(np.float32), 'F').resize((SP.W, SP.H), Image.BILINEAR)) for c in range(3)], -1).astype(np.float64)
+def gain_to_apl(scene, p, target):
+    lo, hi = 0.05, 20.0
+    for _ in range(40):
+        g = math.sqrt(lo * hi)
+        if apl(ppv2.render(scene * g, p, True)) < target: lo = g
+        else: hi = g
+    return scene * math.sqrt(lo * hi)
+EV = []
+def add(**kw):
+    kw.setdefault('verdict', verdict(kw['law']) if 'law' in kw else 'PASS'); EV.append(kw)
+    print('%-34s %-8s %s' % (kw['id'], kw['verdict'], kw.get('law', '')), flush=True)
+t_start = time.time()
+# ============================================================ 1. U4h touch the cloud: fog 0 -> 0.067, APL 34 -> 62 over 8 s EV-linear
+d = 2.2 * math.log2(62 / 34.0)
+add(id='U4h_touch_cloud', event='触云：雾 0 → 0.067，APL 34 → 62，EV 线性 8 s；天窗先白', anchor='U4h', t=[T['U4h'], T['U5']],
+    method='analytic (EV-linear %.2f EV / 8 s)' % d, law=lin_law(d, 8.0))
+# ============================================================ 2. U6k break-out: in-cloud APL floor + EXPO_UP +0.5 (0.6 s up, 3 s down), fog clears 2.5 s ease-out
+S3 = gain_to_apl(small(mock('S3'), 0.5), PROF['S3'], 50.0)
+def breakout(a_fog, rise):
+    fog = gain_to_apl(np.ones_like(S3) * 0.2, PROF['S3'], a_fog)
+    ts = np.arange(-0.5, 4.5, 0.05); L = []
+    for t in ts:
+        f = 1 - (1 - (1 - np.clip(t / 2.5, 0, 1)) ** 2) if t >= 0 else 1.0
+        dv = 0.0 if t < 0 else (0.5 * min(t / rise, 1) if t < rise else 0.5 * max(0, 1 - (t - rise) / 3.0))
+        p, w = with_dev(PROF['S3'], dv); L.append(relL(ppv2.render(f * fog + (1 - f) * S3, p, True)))
+    return law(ts, L)
+for a_fog, tag, role in ((58.0, 'U6k_breakout_cloudAPL58', 'spec (E13 floor)'), (62.0, 'U6k_breakout_cloudAPL62', 'spec (in-cloud 62)'),
+                         (44.0, 'U6k_breakout_cloudAPL44_control', 'control: cloud allowed to go dark')):
+    add(id=tag, event='破云：雾 2.5 s 散尽 + EXPO_UP +0.5 EV（0.6 s 升、3 s 降，w 0.102）；云中 APL %d' % a_fog, anchor='U6k', t=[T['U6k'], T['U6k'] + 3.6],
+        method='sim (S3 mock @ APL 50, uniform cloud @ APL %d, PPv2 + bloom)' % a_fog, role=role, law=breakout(a_fog, 0.6),
+        weight=round(with_dev(PROF['S3'], 0.5)[1], 3))
+# ============================================================ 3. U6 moon road: 4 s wipe along the road, each pixel >= 2 s, area < 5%
+add(id='U6_moon_road', event='月光之路铺开（沿路擦除 4 s，每像素 ≥ 2 s，面积 < 5%，比周围云顶亮 3–5 倍）', anchor='U6', t=[T['U6'], T['U6'] + 4.0],
+    method='analytic upper bound: 5 pct of the frame going x5 in luminance -> full field <= log2(1 + 0.05*4) = %.2f EV total' % math.log2(1.2),
+    law=lin_law(math.log2(1.2), 2.0))
+# ============================================================ 4. U9 tube flash + LIP1 band (flash-count rule)
+add(id='U9_tube_flash', event='管灯 150% 一闪（EXPO_UP +0.3 EV、0.2 s，w 0.062）→ 0.25 s 全灭；第 1 重光唇光带推迟到 180.15', anchor='U9',
+    t=[T['U9'], T['U9'] + 0.45], method='analytic (+0.3 EV in 0.2 s) + flash count', law=lin_law(0.3, 0.2),
+    weight=round(with_dev(PROF['S4'], 0.3)[1], 3), flashes_in_any_1s=2, flash_rule='<= 2 / s: tube blink (1) + LIP1 band at 180.15 (1) -> 2, at the limit; the 0.6 s delay keeps the band from riding the blink')
+# ============================================================ 5. 4c: dial one step brighter, warm point growth
+add(id='4c_dial_Lichtchen', event='表盘提亮一档（3 s 线性，屏幕 #E19867 → #F2B169，< 0.5% 画面）', anchor='ein Lichtchen', t=[196.1, 199.1],
+    method='analytic local (full field < 0.02 EV)', law=lin_law(0.02, 3.0))
+add(id='4c_warm_point', event='前方暖白点长大（U11 → 246.39，0.3° → 12°，自身遵守爬升律）', anchor='U11 → U12 − 2.25', t=[T['U11'], D['STILL']],
+    method='analytic: APL 42 -> 55 over 44 s', law=lin_law(2.2 * math.log2(55 / 42.0), 44.0))
+# ============================================================ 6. FLASH_TEAR, now ending on U12
+fr = small(V.tear_inside('S4c'))
+ts, L, ap = [], [], []
+for t in np.arange(0, 0.51, 0.02):
+    p, w = with_dev(PROF['S4c'], min(t / 0.4, 1.0) * 1.5); dd = ppv2.render(fr, p, True)
+    ts.append(t); L.append(relL(dd)); ap.append(apl(dd))
+add(id='U12_FLASH_TEAR', event='唯一授权闪光：+1.5 EV（0.4 s EV 线性 → 248.29，保持 0.1 s → 248.39，0.25 s 落入黑 → U12 248.64）', anchor='U12 − 0.75',
+    t=[D['FLASH0'], T['U12']], method='sim (4c frame, S4c, bloom, no bloom override)', law=law(ts, L),
+    verdict='AUTHORISED EXCEPTION', full_field_EV=round(math.log2(L[-1] / L[0]), 2), apl_before=round(ap[0]), apl_peak=round(ap[-1]),
+    weight=round(with_dev(PROF['S4c'], 1.5)[1], 3), stillness=dict(from_t=D['STILL'], to_t=D['FLASH0'], seconds=round(D['FLASH0'] - D['STILL'], 2), rule='>= 1.5 s of no change before the flash', ok=D['FLASH0'] - D['STILL'] >= 1.5 - 1e-9),
+    vr_peak_apl_ok=ap[-1] <= 150)
+# ============================================================ 7. black -> dawn: per-direction EV-linear overlay, staggered by direction
+dawn = V.remapped_mock(mock('S6'), [(285, 330, 270, 0.62)]) * 0.6
+Dd = ppv2.render(dawn, PROF['S6'], True); Lpx = relLpx(Dd); Lbar = float(Lpx.mean())
+az, el = V.cam(0.0)
+colL = Lpx.mean(0); az_sun = float(az[0, int(np.argmax(np.convolve(colL, np.ones(40) / 40, 'same')))])
+def overlay_alpha(x, Lb, L0=FLOOR):
+    Lx = L0 * (Lb / L0) ** np.clip(x, 0, 1); return (Lb - Lx) / (Lb - L0)
+def dawn_sim(S_el, S_sun, Dur, dt=0.02):
+    t0 = S_el * np.clip((90 - el) / 90, 0, 1.1) + S_sun * np.exp(-((az - az_sun) / 30.0) ** 2)
+    ts = np.arange(0, t0.max() + Dur + 0.5, dt); L = []
+    for t in ts:
+        a = overlay_alpha((t - t0) / Dur, Lbar); L.append(float((Lpx * (1 - a) + FLOOR * a).mean()))
+    return ts, L, float(t0.max() + Dur)
+for (se, ss, Dur, tag, role) in ((2.0, 1.5, 7.5, 'F0_dawn_per_direction_7.5s', 'spec'), (2.0, 1.5, 8.0, 'F0_dawn_per_direction_8.0s_fallback', 'fallback if a view direction fails in the headset'),
+                                 (3.0, 1.0, 3.0, 'F0_dawn_v2_literal_control', 'control: v2 wording (7 s total, each pixel >= 2 s)')):
+    ts, L, tot = dawn_sim(se, ss, Dur)
+    add(id=tag, event='黑 → 晨：每方向 %.1f s EV 线性（EvOverlayAlpha），天顶先、地平线 +%.1f s、下方 +%.1f s、太阳扇区再 +%.1f s；总 %.1f s' % (Dur, se, se * 1.1, ss, tot),
+        anchor='F0 + 2.5', t=[D['DAWN0'], round(D['DAWN0'] + tot, 2)], method='sim (S6 hue-mapped mock @ APL %d, per-pixel overlay)' % round(apl(Dd)), role=role,
+        law=law(ts, L), apl_end=round(apl(Dd)), total_s=round(tot, 2))
+add(id='F0_preroll', event='预滚：真黑 L≈0.0002 → 地板 0.004（1.5 s，低于地板，不计入）', anchor='F0 + 1.0', t=[T['F0'] + 1.0, D['DAWN0']], method='below the 0.004 floor by definition',
+    law=lin_law(0.0, 1.5))
+# ============================================================ 8. dawn -> sea-mirror local events
+add(id='F0s_cloud_towers', event='云塔应答：三根云塔的冠 +0.7 EV（各 4 s，错开 1.5 s；每根 < 3% 画面）', anchor='F0s', t=[T['F0s'], 273.36],
+    method='analytic: 3 x 3 pct of the frame x (2^0.7 - 1) -> full field <= %.2f EV' % math.log2(1 + 0.09 * (2 ** 0.7 - 1)), law=lin_law(math.log2(1 + 0.09 * (2 ** 0.7 - 1)), 4.0))
+add(id='305.4_under_the_deck', event='出云盖：太阳被挡，APL 96 → 74（变暗，免费）', anchor='305.4（几何）', t=[305.4, 306.4], method='darkening is free', law=lin_law(0.0, 1.0))
+d = 2.2 * math.log2(92 / 74.0)
+add(id='F1b1_sun_returns', event='太阳从云盖远边下面重新出来：日盘 2.2 s 露全，APL 74 → 92', anchor='F1b1', t=[T['F1b1'], T['F1b1'] + 2.2],
+    method='analytic (EV-linear %.2f EV / 2.2 s, disc emergence is ~linear in luminance -> bound by the mean rate x1.3)' % d, law=lin_law(d * 1.3, 2.2))
+# ============================================================ 9. water entry at F2h
+add(id='F2h_water_entry', event='入水：EXPO_DOWN −0.5 EV（0.3 s 降，w 0.156）→ 1 s 回；S6 → S7a 1.5 s（水线遮挡）', anchor='F2h', t=[T['F2h'], T['F2h'] + 1.3],
+    method='analytic (recovery +0.5 EV in 1.0 s)', law=lin_law(0.5, 1.0), weight=round(-(-0.5) / (PROF['S7a']['postExposure'] + 4), 3))
+# ============================================================ 10. 7c rose pre-payment
+add(id='7c_rose_prepay', event='7c 玫瑰预付：F8b 起海底发光，F8c 焦散自下而上；APL 20 → 32（大部分在 902–921）', anchor='F8b → F9s', t=[T['F8b'], D['EXIT']],
+    method='analytic: worst segment APL 24 -> 32 over 19 s', law=lin_law(2.2 * math.log2(32 / 24.0), 19.0))
+# ============================================================ 11. SEA EXIT: EXPO_DOWN pin, one EV-linear release cresting +0.5 EV on F9, 4 s decay
+deep = small(V.deep('S7b'))
+dusk = small(V.remapped_mock(mock('S8'), [(288, 335, 283, 0.62)]))
+D8 = ppv2.render(dusk, PROF['S8'], True); L8 = relL(D8)
+R = T['F9'] - D['EXIT']          # 6.75 s
+for rose_hex, fillnote in (('#392735', 'v2 fill (#2A1E30 display), darker 7c end'), ('#6C4643', 'v2.1 fill of #5A3A3E (7c end target)')):
+    rose = ppv2.hex_to_lin(rose_hex); c7 = deep * (1 - 0.55) + rose * 0.55
+    D7 = ppv2.render(c7, PROF['S7b'], True); L7 = relL(D7); dEV = math.log2(L8 / L7)
+    ts = np.arange(-2.0, R + 4.0 + 1.0, 0.1); L = []; W = []; Hh = D8.shape[0]
+    for t in ts:
+        if t < 0: L.append(L7); W.append(0.0); continue
+        dv = -dEV + (dEV + 0.5) * (t / R) if t <= R else 0.5 * max(0.0, 1 - (t - R) / 4.0)
+        p, w = with_dev(lerp_prof(PROF['S7b'], PROF['S8'], float(sstep(t / 8.0))), dv); W.append(w)
+        l = relLpx(ppv2.render(dusk, p, True))
+        if t < 0.8: k = int(Hh * (1 - t / 0.8)); l = np.concatenate([relLpx(D7)[:k], l[k:]], 0)
+        L.append(float(l.mean()))
+    add(id='EXIT_F9s+0.5_%s' % rose_hex.strip('#'), event='出海 922.36：水线 0.8 s；EXPO_DOWN 钉住 %.2f EV → 一条 EV 线性的线 %.2f s 放开到 F9 上 +0.5 EV → 4 s 回 0（933.11）；S7b → S8 8 s smoothstep' % (dEV, R),
+        anchor='F9s + 0.5 → F9', t=[D['EXIT'], round(T['F9'] + 4.0, 2)], method='sim (7b deep frame + rose fog %s -> S8 dusk mock, PPv2 + bloom, 0.8 s bottom-up waterline)' % rose_hex,
+        role='spec · ' + fillnote, law=law(ts, L), apl_7c_end=round(apl(D7)), apl_dusk=round(apl(D8)), pin_EV=round(dEV, 2), w_pin=round(max(W[:25]), 3),
+        w_crest=round(with_dev(PROF['S8'], 0.5)[1], 3), crest_on='F9 %.2f' % T['F9'],
+        director_rule='dEV(t) = target(t) - scene(t): the line is TOTAL luminance; the sun disc (lower limb ~923.9, half at F9, full ~932.0) is inside it, never added on top')
+# v2 as written (control): S7b -> S8 weight over 6 s, no pin
+ts = np.arange(-1, 8, 0.1); L = []
+rose = ppv2.hex_to_lin('#392735'); c7 = deep * (1 - 0.55) + rose * 0.55; D7 = ppv2.render(c7, PROF['S7b'], True)
+for t in ts:
+    if t < 0: L.append(relL(D7)); continue
+    l = relLpx(ppv2.render(dusk, lerp_prof(PROF['S7b'], PROF['S8'], min(t / 6, 1)), True))
+    if t < 0.8: k = int(l.shape[0] * (1 - t / 0.8)); l = np.concatenate([relLpx(D7)[:k], l[k:]], 0)
+    L.append(float(l.mean()))
+add(id='EXIT_v2_as_written_control', event='对照：v2 写法（S7b → S8 weight 6 s，无钉住；亮度跳变来自 0.8 s 水线）', anchor='(v2)', t=None, method='sim', role='control (E3)', law=law(ts, L))
+# ============================================================ 12. dusk: ceiling dissolve (per-pixel 5 s EV-linear, front 4 s)
+pp = 2.2 * math.log2(138 / 36.0)
+add(id='F10e_ceiling_dissolve', event='头顶的海溶化：前沿 4 s（956.36 → 960.36），每像素 5 s EV 线性，天顶 ≈965.4 散尽；_OtherSky 0 → 1 8 s', anchor='F10e',
+    t=[T['F10e'], 965.4], method='analytic bound: full-field EV rate <= max per-pixel rate (%.2f EV / 5 s)' % pp, law=lin_law(pp, 5.0))
+add(id='F10e_ceiling_dissolve_4s_per_pixel_control', event='对照：若每像素只给 4 s', anchor='(control)', t=None, method='analytic bound', role='control', law=lin_law(pp, 4.0))
+add(id='F12_sunline_collapse', event='日线 6 s 收成一点熄灭 → 蓝时 → 变暗（全是变暗，免费）', anchor='F12', t=[T['F12'], 1009.21], method='darkening is free', law=lin_law(0.0, 1.0))
+# ============================================================ 13. F13 ignition
+# The frame goes from the 0.004 floor (#04060E sky, EV -7.97) to the lit star sea (EV -4.42): +3.55 EV full field.
+# v2 wording (content 80 % in 1.2 s + 20 % in 3 s, "no exposure change") is simulated as the CONTROL.
+# v2.1 spec: the ignition is a WAVE (zenith + nadir fronts meet at the horizon in 1.2 s, 0.3 s soft front: the whole ring is
+# drawn in one instant) and the full-field light is ONE EV-linear line over 4.2 s (1018.21 -> 1022.41): the Director pins
+# EXPO_DOWN at F13 and releases it against TOTAL luminance (same method as the sea exit), dEV(t) = target(t) - scene(t).
+starsea = small(V.starsea('S9a')); dark = np.broadcast_to(SP.SL('#04060E', 'S9a'), starsea.shape).copy()
+L_dark = relL(ppv2.render(dark, PROF['S9a'], True)); L_end = relL(ppv2.render(starsea, PROF['S9a'], True))
+ts = np.arange(-0.5, 5.0, 0.02); L = []
+for t in ts:
+    g = 0.0 if t < 0 else (0.8 * t / 1.2 if t < 1.2 else min(1.0, 0.8 + 0.2 * (t - 1.2) / 3.0))
+    L.append(relL(ppv2.render(dark * (1 - g) + starsea * g, PROF['S9a'], True)))
+add(id='F13_galaxy_ignition_v2_wording_control', event='对照：v2 写法（银河 1.2 s 到 80%、再 3 s 补足，按亮度线性，不改曝光）', anchor='(v2)', t=None,
+    method='sim (#04060E sky -> S9a star-sea frame, PPv2 + bloom)', role='control (v2 wording)', law=law(ts, L),
+    ev_start=round(math.log2(max(L_dark, FLOOR)), 2), ev_end=round(math.log2(L_end), 2), dEV_full_field=round(math.log2(L_end / max(L_dark, FLOOR)), 2),
+    note='v2 / synthesis cited 0.34 / 0.86 / 0.96 PASS: that figure was a hand estimate in proposal_bleed.md, never simulated')
+az9, el9 = V.cam(6.0); az9 = zoom(az9, 0.5, order=1); el9 = zoom(el9, 0.5, order=1)
+t_px = 1.2 * np.clip(1 - np.abs(el9) / 90.0, 0, 1)        # wave time per pixel: zenith / nadir first, horizon at 1.2 s
+E0 = math.log2(max(L_dark, FLOOR)); E1 = math.log2(L_end)
+def ignition(t_wave, t_rel0, dur, tag, role, text):
+    ts = np.arange(-0.5, t_rel0 + dur + 1.0, 0.05); L = []; Wd = []
+    for t in ts:
+        cov = np.clip((t - (t_px * t_wave / 1.2 - 0.3)) / 0.3, 0, 1)[..., None] if t >= 0 else np.zeros_like(el9)[..., None]
+        content = dark * (1 - cov) + starsea * cov
+        if t <= 0: L.append(relL(ppv2.render(content, PROF['S9a'], True))); Wd.append(0.0); continue
+        target = 2 ** (E0 + (E1 - E0) * np.clip((t - t_rel0) / dur, 0, 1))
+        if relL(ppv2.render(content, PROF['S9a'], True)) <= target: dv = 0.0      # nothing to hold back
+        else:
+            lo, hi = -4.29, 0.0
+            for _ in range(14):                              # Director: exposure that puts the TOTAL on the target line
+                m = (lo + hi) / 2
+                if relL(ppv2.render(content, with_dev(PROF['S9a'], m)[0], True)) < target: lo = m
+                else: hi = m
+            dv = (lo + hi) / 2
+        p9, w9 = with_dev(PROF['S9a'], dv); Wd.append(w9); L.append(relL(ppv2.render(content, p9, True)))
+    add(id=tag, event=text, anchor='F13', t=[T['F13'], round(T['F13'] + t_rel0 + dur, 2)], role=role,
+        method='sim (wave-front content #04060E -> S9a star sea, forward view pitch +6; Director solves dEV(t) = target(t) - scene(t) per frame; PPv2 + bloom)',
+        law=law(ts, L), dEV_full_field=round(E1 - E0, 2), w_pin_max=round(max(Wd), 3), min_EV_linear_duration_s=round((E1 - E0) / 0.9, 2),
+        director_rule='same as the sea exit: target = total luminance; calibrated from screenshots at F13, F13 + 0.6, F13 + 1.2, and the end of the swell')
+ignition(1.2, 0.0, 4.2, 'F13_ignition_release_from_F13_control', 'control: release starts at F13 while the wave is still crossing',
+         '对照：EV 线性的线从 F13 起 4.2 s，而点燃波 1.2 s 才走到地平线（前方视向的内容来得晚，要追赶）')
+ignition(1.2, 1.2, 4.2, 'F13_galaxy_ignition_wave_then_swell', 'spec',
+         '银河点燃（v2.1）：两道点燃波从天顶、天底出发，1.2 s 在地平线相遇（整圈画出，EXPO_DOWN 把全画面按在地板上）；圈合上起，全画面一条 EV 线性的线 4.2 s 涨满（1019.41 → 1023.61）')
+# ============================================================ 14. mirror pulses (crossings 1-9) and the band rhythm
+climax = small(V.starsea('S9b', climax=True))
+base = ppv2.render(climax, PROF['S9b'], True); p, w = with_dev(PROF['S9b'], 0.35); pk = ppv2.render(climax, p, True)
+gaps = np.diff(MIRRORS)
+add(id='9c_mirror_pulses_1_to_9', event='镜子脉冲 +0.35 EV（0.08 s 入 / 0.35 s 出），第 1–9 面：' + ' / '.join('%.2f' % m for m in MIRRORS[:9]), anchor='穿越（从 F16 倒数，E1）',
+    t=[MIRRORS[0], MIRRORS[8]], method='sim (S9b climax frame) + analytic', law=lin_law(float(np.log2(relL(pk) / relL(base))), 0.08),
+    weight=round(w, 3), full_field_EV=round(float(np.log2(relL(pk) / relL(base))), 2), b_t='S9a and S9b both +0.30 -> w constant',
+    gaps=[round(float(g), 2) for g in gaps], gaps_non_increasing=bool(np.all(np.diff(gaps) <= 1e-9)), min_gap=round(float(gaps.min()), 2),
+    no_pulse_in_white_window=[m for m in MIRRORS[9:12]], white_window_from=D['WHITE0'])
+# ============================================================ 15. the white: crash + swell + overlay, ending on F16
+fr = small(V.starsea('S9b', climax=True))
+ts, L, aps = [], [], []
+for t in np.arange(0, 7.21, 0.05):
+    dv = min(t / 1.2, 1.0) if t <= 1.2 else 1.0 + (t - 1.2) / 6.0 * 1.4
+    bw = 0.5 * min(t / 1.2, 1) if t <= 1.2 else 0.5 + 0.5 * (t - 1.2) / 6.0
+    p, w = chain_white(PROF['S9b'], dv, dv / 2.4, bw); dd = ppv2.render(fr, p, True)
+    ts.append(t); L.append(relL(dd)); aps.append(apl(dd))
+Lw = float(ppv2.srgb_to_lin(np.array([0xE8, 0xF1, 0xF5]) / 255) @ LUMA); e0 = math.log2(L[-1])
+for t in np.arange(0.05, 3.01, 0.05): ts.append(7.2 + t); L.append(2 ** (e0 + (math.log2(Lw) - e0) * t / 3.0))
+add(id='9_to_10_white', event='白：冲击 1.2 s（→ +1.0 EV）+ 膨胀 6 s（→ +2.4 EV）+ 遮罩 3 s EV 线性到 #E8F1F5；F16 遮罩全满的同一帧硬切 S10（剪 2）',
+    anchor='F16 − 10.2', t=[D['WHITE0'], T['F16']], method='sim (S9b climax frame, EXPO_UP + WHITE_SAT + WHITE_BLOOM, then overlay)', law=law(ts, L),
+    apl_start=round(aps[0]), apl_swell_end=round(aps[-1]), weights=dict(crash_end=round(with_dev(PROF['S9b'], 1.0)[1], 3), swell_end=round(with_dev(PROF['S9b'], 2.4)[1], 3)),
+    white_hold_s=D['WHITE_HOLD'], white_hold_rule='<= 30 s', white_hold_ok=D['WHITE_HOLD'] <= 30.0)
+add(id='10_to_11_cut', event='10 → 11 硬切 S11 + 填值；EXPO_UP +1.0 EV（w 0.241）与遮罩填值 × 2^−1.0 同帧 → 屏幕一码不动；之后 4 s 衰减（变暗）', anchor='静默结束',
+    t=[D['SILENCE_END'], D['SILENCE_END'] + 8.0], method='analytic (fill compensation is exact: postExposure multiplies before the LUT)', law=lin_law(0.0, 1.0),
+    weight=round(with_dev(PROF['S11'], 1.0)[1], 3))
+# ============================================================ 16. second white: per-direction 6.5 s EV-linear, windows first, cabin 2 s later
+fr = SP.road('S11', false=True); D11 = ppv2.render(fr, PROF['S11'], True); P11 = relLpx(D11); L11 = float(P11.mean())
+Lw2 = float(ppv2.srgb_to_lin(np.array([0xA3, 0xB4, 0xBE]) / 255) @ LUMA)
+az, el = V.cam(0.0)
+win = (((el > -15) & (el < 18) & (az > -50) & (az < 25)) | ((az > 30) & (el > -10) & (el < 25))).astype(float)
+win = gaussian_filter(win, 6.0)
+def w2(stagger, Dur, dt=0.02):
+    t0 = stagger * (1 - win); ts = np.arange(0, stagger + Dur + 0.5, dt); L = []
+    for t in ts:
+        x = np.clip((t - t0) / Dur, 0, 1); Lx = L11 * (Lw2 / L11) ** x; a = (Lx - L11) / (Lw2 - L11)
+        L.append(float((P11 * (1 - a) + Lw2 * a).mean()))
+    return ts, L
+for stagger, Dur, tag, role in ((2.0, 6.5, '11_to_12_second_white', 'spec (E9)'), (0.0, 6.5, '11_to_12_second_white_no_stagger', 'reference')):
+    ts, L = w2(stagger, Dur)
+    add(id=tag, event='第二次白：每方向 %.1f s EV 线性到 #A3B4BE，车窗先、向内错开 %.1f s；1248.96 遮罩全满同帧硬切 S12（剪 3）+ EXPO_UP +0.8（w 0.200）' % (Dur, stagger),
+        anchor='第 11 幕 +62 s', t=[D['W2_0'], D['CUT3']], method='sim (S11 false-wake frame @ APL %d, per-pixel overlay)' % round(apl(D11)), role=role, law=law(ts, L),
+        dEV=round(math.log2(Lw2 / L11), 2))
+add(id='12_shrink_into_tube', event='收缩进站台灯管 4 s，+0.8 EV 5 s 衰减（变暗）', anchor='1251.96', t=[D['S12_0'], D['S12_0'] + 5.0], method='darkening is free', law=lin_law(0.0, 1.0))
+add(id='12_notice_box_lamp', event='公告箱灯管 +95 s：一次“嗒”跌落 + 1.5 s 缓亮（箱内 170–190，< 2% 画面）', anchor='第 12 幕 +95 s', t=[1346.96, 1348.46],
+    method='analytic local (one flash, full field < 0.05 EV)', law=lin_law(0.05, 1.5))
+# ============================================================ 17. periodic light bands through the cabin (flash rule: <= 2 per second)
+lips = [T['LIP1'] + 0.6] + [T['LIP%d' % k] for k in range(2, 9)]
+bands = dict(sodium_2=[25.0, 28.7, 31.9, 35.1, 38.3], lips_4c=[round(x, 2) for x in lips],
+             bronze_7b=[672.0, 677.1, 682.3, 687.4, 692.6, 697.7, 702.8, 708.0, 713.1, 718.3, 723.4, 728.6], mirrors_9c=MIRRORS)
+mg = {k: round(float(np.diff(v).min()), 2) for k, v in bands.items()}
+add(id='cabin_light_bands', event='穿过车厢的光带：钠灯 5 次、光唇 8 重（扫过 1.2 → 2.4 s）、铜灯 12 对、镜线 13 面', anchor='各自的乐句', t=[25.0, T['F16']],
+    method='flash rule: every band >= 2.5 s apart (<= 0.4 per s, limit 2 per s)', law={'min_gap_s': [min(mg.values()), 2.5, 'PASS' if min(mg.values()) >= 2.5 else 'FAIL']},
+    verdict='PASS' if min(mg.values()) >= 2.5 else 'FAIL', min_gaps=mg, times=bands)
+# ============================================================ summary
+out = dict(about='蓝白 v2.1 · 爬升律与闪烁核查（实测时间轴）。t = 时间轴秒（cues.json）。law = [本事件任意窗口内的最大上升 EV, 上限, 结果]。control / fallback / reference 行不是规格，只作对照。',
+           law='任意 0.25 s ≤ 0.5 EV、1 s ≤ 1.0 EV、2 s ≤ 1.8 EV（全画面平均相对亮度，含 bloom；EV = log2(max(L, 0.004))）',
+           simulator='bible_work/lutlib + scenes_v2 + lens_cine/mock（与 ramp_checks_v2.json 同一模拟器）', runtime_s=round(time.time() - t_start, 1), events=EV)
+spec = [e for e in EV if e.get('role', 'spec').startswith('spec') or 'role' not in e]
+out['summary'] = dict(spec_events=len(spec), spec_pass=sum(e['verdict'] == 'PASS' for e in spec),
+                      authorised_exception=[e['id'] for e in spec if e['verdict'] == 'AUTHORISED EXCEPTION'],
+                      spec_fail=[e['id'] for e in spec if e['verdict'] == 'FAIL'],
+                      controls_fail_as_expected=[e['id'] for e in EV if e.get('role', '').startswith('control') and e['verdict'] == 'FAIL'])
+json.dump(out, open(os.path.join(HERE, '../ramp_checks_v21.json'), 'w'), ensure_ascii=False, indent=1)
+print(json.dumps(out['summary'], ensure_ascii=False, indent=1))

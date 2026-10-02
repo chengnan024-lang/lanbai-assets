@@ -1,0 +1,219 @@
+# -*- coding: utf-8 -*-
+"""Single source of truth for the ART BIBLE images: palettes (display targets), timeline, value score."""
+
+# (hex display target, 中文 role, english role)
+SCENES = [
+ dict(id='01', key='S1', zh='站牌', en='The stop', grade='S1', sub='雨夜 · 一盏藍白灯管 · 湿路面的镜子（桌面 LENS_CLEAN）', pal=[
+   ('#070B14', '褐 夜底（天、深影）', 'kachi night floor'),
+   ('#121A28', '濃藍 雾与远野', 'koiai fog / far field'),
+   ('#EEF5F7', '灯白 灯管与路面光带', 'tube + its road streak'),
+   ('#D0DBDF', '站牌 藍白珐琅（受光）', 'sign enamel, lit'),
+   ('#16406A', '站牌 靛蓝字', 'sign indigo ink'),
+   ('#C9DCE0', '车窗冷光', 'lit bus windows'),
+   ('#B2252C', '尾灯红（≤0.3% 画面）', 'tail lamps, tiny'),
+   ('#DC8F51', '远镇钠灯（小点）', 'far sodium points')]),
+ dict(id='02', key='S2', zh='夜路', en='Night road', grade='S2', sub='收音机里的 Urlicht · 钠灯扫过空座', pal=[
+   ('#05080F', '窗外夜', 'exterior night'),
+   ('#16191C', '车厢暗部', 'cabin shadow'),
+   ('#C4CACA', '灯管下天花', 'ceiling under tubes'),
+   ('#4A2229', '牛血红座椅（灯管下）', 'oxblood seat, tube-lit'),
+   ('#B9773F', '钠灯扫光峰值（座椅顶）', 'sodium sweep peak'),
+   ('#E19867', '收音机表盘（档案 grade 压住饱和）', 'radio dial, archival'),
+   ('#C8A878', '车灯照湿路', 'headlight pool, wet road')]),
+ dict(id='03', key='S3', zh='离地', en='Lift-off', grade='S3', sub='光之海 → 云海 · 镜湖月（亮度基准 EV0）', pal=[
+   ('#E8A050', '光之海 钠灯', 'sea of lights, sodium'),
+   ('#08101F', '紺 天顶', 'kon zenith'),
+   ('#111B30', '地平线（背月）', 'horizon, away from moon'),
+   ('#26344F', '月旁天光', 'sky around the moon'),
+   ('#AEBFD2', '月白 云顶', 'moonlit cloud tops'),
+   ('#2A3850', '云谷', 'cloud hollows'),
+   ('#DDE7F5', '月光之路', 'the moon road')]),
+ dict(id='04', key='S4', zh='触手之门', en='The tentacle gate', grade='S4', sub='天还在被撕开 · 未染的白 · 光雾带前的黑色巨臂', pal=[
+   ('#070A14', '虚空（方位 >60° 或仰角 >35°）', 'void, far from the tear'),
+   ('#484D63', '光雾带 裂口旁（0–15°）', 'haze band beside the tear'),
+   ('#2A3041', '光雾带 离裂口 50°', 'haze band at 50°'),
+   ('#0F1116', '近处触手本体', 'near arm body'),
+   ('#262B38', '巨像冠部（雾中，头清脚没）', 'colossus crown in haze'),
+   ('#A9C2FF', '月光轮廓', 'moon rim'),
+   ('#A99DE1', '裂口侧轮廓 / 裂口光', 'tear-side rim'),
+   ('#5B57A1', '紫晕（黄昏靛紫，呼吸）', 'halo, dusk indigo-violet'),
+   ('#495270', '裂口下的云海', 'cloud sea under the tear'),
+   ('#F5F2EC', '裂口核心：未染的白', 'tear core: undyed white')]),
+ dict(id='04c', key='S4c', zh='门内', en='Inside the tear', grade='S4c', sub='暗的恩典 · 染料越来越薄 · Lichtchen', pal=[
+   ('#0C0E14', '暗车厢剪影', 'dark cabin silhouette'),
+   ('#1D2336', '第一重光唇之间的雾', 'mist at lip 1'),
+   ('#53606E', '第八重光唇之间的雾', 'mist at lip 8'),
+   ('#E6E1F2', '光唇纤维 第 1 重（一丝紫）', 'fibres, lip 1'),
+   ('#D9DFEE', '光唇纤维 第 4 重', 'fibres, lip 4'),
+   ('#C2D8E2', '光唇纤维 第 8 重（瓶覗）', 'fibres, lip 8 (kamenozoki)'),
+   ('#F2B169', '收音机 = Lichtchen', 'radio dial = Lichtchen'),
+   ('#FFF1DC', '前方暖白光点', 'the warm point ahead')]),
+ dict(id='05', key='S4c', zh='投入', en='The plunge', grade='S4c', sub='三秒真静默 · 唯一的黑', pal=[
+   ('#F5F2EC', '最后一帧：裂口之光', 'last frame: tear light'),
+   ('#0A0C14', '车厢余辉（2 秒内消失）', 'cabin afterglow'),
+   ('#030409', '黑（抬起的蓝黑地板）', 'black, lifted floor')]),
+ dict(id='06', key='S6', zh='天空 I · 晨', en='Sky I, dawn', grade='S6', sub='大召唤 · 白上的藍与金 · 金色光带里的尘', pal=[
+   ('#3E64A6', '天顶 藍', 'zenith ai'),
+   ('#8C98B8', '地影带（背日地平线）', 'Earth-shadow band'),
+   ('#CFB7B7', '金星带（珍珠，不是粉）', 'Belt of Venus, pearl'),
+   ('#F2C79A', '日侧地平线', 'sun-side horizon'),
+   ('#F6DCC4', '云顶 桃金', 'cloud tops, peach'),
+   ('#8593AA', '云影 藍灰（绝不紫、绝不褐）', 'cloud shadows, blue-grey'),
+   ('#E8B878', '座椅上的金色光带', 'sun stripes on seats'),
+   ('#1C3D63', '脚下远海', 'the sea far below')]),
+ dict(id='07a', key='S7a', zh='海面之下', en='Under the surface', grade='S7a', sub='斯涅尔之窗 · 海雪上升 · 群青，不是青绿', pal=[
+   ('#E6F3F8', '斯涅尔窗 藍白', 'Snell window core'),
+   ('#ACD4ED', '座椅上的焦散', 'caustics on seats'),
+   ('#90BFE9', '光柱', 'god rays'),
+   ('#3876AB', '浅水 縹', 'shallow water hanada'),
+   ('#11395E', '窗外全反射的暗镜', 'total-reflection mirror'),
+   ('#697987', '海雪', 'marine snow'),
+   ('#8AC6FF', '生物荧光', 'bioluminescence')]),
+ dict(id='07b', key='S7b', zh='深海 · 河伯', en='The deep, the palace', grade='S7b', sub='朱与靛 · 灯在水下燃烧 · 门开着 · 无人', pal=[
+   ('#02070F', '深渊', 'abyss'),
+   ('#061A30', '深水 濃藍', 'deep water'),
+   ('#26496C', '灯光被水吃掉后的靛', 'indigo falloff of the lamps'),
+   ('#B52A1E', '朱漆（灯旁 3 m 内）', 'cinnabar lacquer near a flame'),
+   ('#FFC46A', '青铜灯焰', 'bronze-lamp flame'),
+   ('#D8CFE0', '鱼鳞屋 珍珠光', 'nacre roof glint'),
+   ('#7A4A6E', '紫贝阙（受光，小面积）', 'cowrie gate, lit, small'),
+   ('#8AC6FF', '船体生物光', 'bioluminescent trail')]),
+ dict(id='08', key='S8', zh='天空 II · 暮', en='Sky II, dusk', grade='S8', sub='其视下也，亦若是 · 暖只在光里 · 窗帘成翼', pal=[
+   ('#10263F', '头顶的海（天花）', 'ocean ceiling overhead'),
+   ('#C98A7A', '天花近地平的镜光', 'ceiling mirror at grazing'),
+   ('#FFE2B0', '日线', 'the sun-line'),
+   ('#F2A56B', '天缝 琥珀', 'the sky slot'),
+   ('#E7A0A0', '玫瑰带', 'rose band'),
+   ('#808AB2', '中天 靛灰', 'mid-sky, indigo-slate'),
+   ('#3D4A80', '天顶', 'zenith'),
+   ('#363D59', '云影 靛石（阴影里只有蓝）', 'cloud shadows, indigo-slate'),
+   ('#C3BAD2', '逆光窗帘之翼', 'backlit curtain wings')]),
+ dict(id='08b', key='S8b', zh='蓝时', en='The blue hour', grade='S8b', sub='太阳死去 · 蓝最纯的一刻', pal=[
+   ('#16223F', '天顶', 'zenith'),
+   ('#2E4F8A', '蓝 最纯', 'the purest ai'),
+   ('#6F86B0', '地平线', 'horizon'),
+   ('#1A2A4E', '另一片天的天底', 'the other sky, nadir'),
+   ('#E8EEF8', '第一颗星', 'first stars')]),
+ dict(id='09', key='S9a', zh='天空 III · 星海', en='Sky III, the star sea', grade='S9a', sub='天问 → 银河一瞬点燃 → 十三面白铜镜 → 星尘', pal=[
+   ('#04060E', '点燃之前的黑（天问）', 'dark before ignition'),
+   ('#08112A', '紺 星空底', 'kon star sky'),
+   ('#6F82A0', '银河 漫射', 'Milky Way diffuse'),
+   ('#C8B79A', '银心 暖尘', 'galactic core dust'),
+   ('#F2F6FF', '星', 'star white'),
+   ('#CDBF9C', '白铜镜面里的银河 / 星尘', 'Milky Way in white bronze; star dust'),
+   ('#1E3B34', '镜背 铜绿', 'verdigris mirror back'),
+   ('#DCE8FF', '镜线', 'the mirror line')]),
+ dict(id='10', key='S10', zh='白光', en='The white', grade='S10', sub='藍白 · 名字作为颜色 · 从不是 #FFFFFF', pal=[
+   ('#A3B4BE', '第二次白（11→12）', 'second white (11→12)'),
+   ('#D7E3E8', '藍白 VR 头显', 'aijiro, VR'),
+   ('#E8F1F5', '藍白 桌面', 'aijiro, desktop'),
+   ('#EEF4F8', '冲击时的 bloom 色', 'bloom colour of the crash')]),
+ dict(id='11', key='S11', zh='假醒', en='False awakening', grade='S11', sub='一切正常，除了头顶有一片海 · 门是关着的', pal=[
+   ('#05080F', '夜', 'night'),
+   ('#0F2438', '头顶的海（底面）', 'the sea overhead'),
+   ('#D08A59', '海面上的钠灯闪光', 'amber glitter on the sea'),
+   ('#F2B070', '倒挂的灯头', 'inverted lamp heads'),
+   ('#C4CACA', '车厢（完好、过于完好）', 'cabin, too perfect'),
+   ('#3B3029', '干路上的灯池', 'lamp pool on dry road'),
+   ('#C8CAC2', '空白的目的地牌', 'the blank destination blind')]),
+ dict(id='12', key='S12', zh='醒', en='Awakening', grade='S12', sub='雨停了 · 一点小小的光来到你面前 · 车从未开动', pal=[
+   ('#070B14', '褐 夜', 'kachi night'),
+   ('#EEF5F7', '灯白', 'the tube'),
+   ('#D0DBDF', '站牌 藍白', 'sign enamel'),
+   ('#16406A', '站牌 靛蓝', 'sign ink'),
+   ('#DDE8EA', '静水中的灯影', 'tube in the still puddle'),
+   ('#FCF5DA', 'Lichtchen（那一只）', 'the Lichtchen'),
+   ('#DEEA88', '田上的萤火虫', 'field fireflies'),
+   ('#1B2431', '天边藍白带（起）', 'aijiro band, start'),
+   ('#33465B', '天边藍白带（8 分钟后）', 'aijiro band, after 8 min')]),
+]
+
+# ======================================================================================= v2.1 TIMELINE
+# Measured timeline (FromLocal/cues.json): t = seconds from departure (t = 0); Urlicht t = file + 3.0, finale t = file + 240.36.
+# Every boundary below is a label or a label + offset from synthesis §3/§4 (cues_v21.py); the Director binds to labels.
+# (t_start, t_end, label, APL desktop luma (start, end), key light K (or None), mean display colour, ladder rung hex, grade[, shape])
+# shape (optional) = exponent p for APL(x) = a0 + (a1 - a0) * x**p  (1 = linear; the x^2.5 accumulation of scene 9)
+from cues_v21 import T, D, MIRRORS
+PHASES = [
+ (-90.0, 0.0, '1 站牌', (22, 22), 7000, '#0F1520', '#070B14', 'S1'),
+ (0.0, T['U1'], '静候', (22, 22), 7000, '#141820', '#070B14', 'S1→S2'),
+ (T['U1'], T['U2b'], '2 夜路', (32, 30), 7000, '#17181C', '#070B14', 'S2'),
+ (T['U2b'], T['U3'], '暗段', (24, 22), 7000, '#101216', '#070B14', 'S2'),
+ (T['U3'], T['U4'], '3a 升起', (24, 27), 2100, '#171620', '#0E1A2F', 'S2→S3 0.3'),
+ (T['U4'], T['U4h'], '3b 云底', (28, 34), 2100, '#2A2126', '#0E1A2F', ''),
+ (T['U4h'], T['U5'], '触云', (34, 62), 7000, '#3E4450', '#1F4E79', ''),
+ (T['U5'], T['U6k'], '云中', (62, 62), 7000, '#4A5568', '#1F4E79', 'S3'),
+ (T['U6k'], T['U7'], '3c 月之路', (50, 50), 9000, '#2E3A52', '#1B2E52', 'S3→S4'),
+ (T['U7'], T['U9'], '4 门', (38, 40), 16000, '#262A3C', '#0E1A2F', 'S4'),
+ (T['U9'], T['U11'], '4c 喉·Lichtchen', (30, 42), 12000, '#1E2433', '#0E1A2F', 'S4c'),
+ (T['U11'], T['U12'], '4c selig Leben', (42, 55), 12000, '#2A3242', '#B4D6E3', 'S4c'),
+ (T['U12'], T['F0'] + 2.5, '5 投入', (4, 4), None, '#030409', '#070B14', 'S6'),
+ (T['F0'] + 2.5, D['DAWN1'], '日出', (4, 110), 3200, '#6A6C78', '#B4D6E3', 'S6', 1.8),
+ (D['DAWN1'], T['F1'], '6 晨', (110, 110), 3200, '#86868E', '#B4D6E3', 'S6'),
+ (T['F1'], 305.40, '6b 云峡', (108, 96), 3200, '#80828E', '#B4D6E3', 'S6'),
+ (305.40, T['F1b1'], '6c 云盖下', (74, 74), 8000, '#5C6A7E', '#7FB2CC', 'S6'),
+ (T['F1b1'], 337.00, '太阳重现', (92, 94), 3200, '#7E8490', '#7FB2CC', 'S6'),
+ (337.00, T['F2h'], '6d 海镜', (94, 90), 3200, '#7A8492', '#7FB2CC', 'S6'),
+ (T['F2h'], T['F3e'], '7a 被海接住', (85, 60), 12000, '#3A6690', '#3A7CA8', 'S7a'),
+ (T['F3e'], T['F3e1'], '水柱', (60, 46), 12000, '#2A5480', '#1F4E79', 'S7a→S7b'),
+ (T['F3e1'], T['F3e2'], '最后一闪', (46, 35), 12000, '#1C3E60', '#1F4E79', 'S7a→S7b'),
+ (T['F3e2'], T['F3e3'], '海脊', (35, 25), 12000, '#12304C', '#0E1A2F', 'S7a→S7b'),
+ (T['F3e3'], T['F3i'], '藍熄灭', (25, 25), 12000, '#0E2236', '#0E1A2F', 'S7a→S7b'),
+ (T['F3i'], T['F5'], '播种', (25, 16), 12000, '#0E2236', '#1F4E79', 'S7a→S7b'),
+ (T['F5'], 668.60, '7b 近', (16, 18), 2200, '#0A1624', '#0E1A2F', 'S7b'),
+ (668.60, T['F6'], '7b 行列', (18, 20), 2200, '#0C1826', '#0E1A2F', 'S7b'),
+ (T['F6'], T['F7s'], '7b 门前', (20, 20), 2200, '#0C1826', '#0E1A2F', 'S7b'),
+ (T['F7s'], T['F8'], '7b 离开', (20, 18), 2200, '#0A1624', '#0E1A2F', 'S7b'),
+ (T['F8'], T['F8b'], '7c 退去', (18, 20), 2200, '#0C1422', '#0E1A2F', 'S7b'),
+ (T['F8b'], 897.96, '7c 海底发光', (20, 30), 2400, '#241C22', '#0E1A2F', 'S7b'),
+ (897.96, D['EXIT'], '倒置的窗', (30, 34), 2400, '#2E2224', '#0E1A2F', 'S7b'),
+ (D['EXIT'], T['F9'], '出海', (34, 80), 2400, '#6A5058', '#1F4E79', 'S7b→S8'),
+ (T['F9'], T['F10e'], '8 暮·天花', (80, 76), 2400, '#5E4E58', '#1F4E79', 'S8'),
+ (T['F10e'], 965.40, '变形', (76, 90), 2400, '#66565E', '#1F4E79', 'S8'),
+ (965.40, T['F12'], '8 另一片天', (90, 88), 2400, '#6A5A62', '#1F4E79', 'S8'),
+ (T['F12'], 993.06, '日线收', (88, 50), 2400, '#4A4A66', '#3A7CA8', 'S8→S8b'),
+ (993.06, 1001.21, '8b 蓝时', (50, 40), 15000, '#2C4A80', '#3A7CA8', 'S8b'),
+ (1001.21, 1009.21, '变暗', (40, 6), 15000, '#141C34', '#1B2E52', 'S8b→S9a'),
+ (1009.21, T['F13'], '9a 天问', (6, 6), None, '#05060C', '#070B14', 'S9a'),
+ (T['F13'], D['IGNITE_FULL'], '点燃', (6, 30), 10000, '#0A1428', '#1B2E52', 'S9a', 1.8),
+ (D['IGNITE_FULL'], MIRRORS[0], '9b 一瞬', (30, 30), 10000, '#0C1830', '#1B2E52', 'S9a'),
+ (MIRRORS[0], D['WHITE0'], '9c 十三面镜', (30, 73), 9000, '#2E3850', '#1B2E52', 'S9a→S9b', 2.5),
+ (D['WHITE0'], T['F16'], '白光爬升', (73, 239), 8000, '#8C9AA8', '#E8F1F5', 'S9b', 2.0),
+ (T['F16'], D['SILENCE_END'], '10 白', (239, 239), 8000, '#E8F1F5', '#E8F1F5', 'S10'),
+ (D['SILENCE_END'], D['W2_0'], '11 假醒', (30, 30), 7000, '#141820', '#070B14', 'S11'),
+ (D['W2_0'], D['CUT3'], '第二次白', (30, 176), 8000, '#8E9CA6', '#B4D6E3', 'S11', 1.8),
+ (D['CUT3'], D['S12_0'], '白保持', (176, 176), 8000, '#A3B4BE', '#B4D6E3', 'S12'),
+ (D['S12_0'], 1350.0, '12 醒', (24, 27), 7000, '#10161F', '#070B14', 'S12'),
+]
+# colour of the key-light lane where the light is not a blackbody (or is the tube)
+KEY_COLOUR = {'1 站牌': '#E4F1F3', '静候': '#E4F1F3', '2 夜路': '#E4F1F3', '暗段': '#E4F1F3', '触云': '#C8CED8', '云中': '#C8CED8',
+              '11 假醒': '#E4F1F3', '12 醒': '#E4F1F3', '4 门': '#A99DE1', '4c 喉·Lichtchen': '#D9DFEE', '4c selig Leben': '#C2D8E2',
+              '7a 被海接住': '#B0D9F2', '水柱': '#90BFE9', '最后一闪': '#90BFE9', '海脊': '#8AC6FF', '藍熄灭': '#8AC6FF', '播种': '#8AC6FF',
+              '6c 云盖下': '#AFC4E0'}
+KEY_LABEL = {'4 门': '靛紫裂口光', '4c 喉·Lichtchen': '纤维白 → 瓶覗', '1 站牌': '灯管 ≈7000 K', '播种': '生物光', '6c 云盖下': '天光（日被云盖挡住）'}
+
+# every measured label, plus the v2.1 sub-labels that drive an image (lane 0 = main U/F, lane 1 = sub-labels)
+MAIN = ['U0', 'U1', 'U2', 'U3', 'U4', 'U5', 'U6', 'U7', 'U8', 'U9', 'U10', 'U11', 'U12', 'F0', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7',
+        'F8', 'F9', 'F10', 'F11', 'F12', 'F13', 'F14', 'F15', 'F16']
+SUBL = ['U2b', 'U3b', 'U4h', 'U5r', 'U6k', 'U7b', 'U8c', 'U_voiceEnd', 'F0s', 'F1c', 'F1t', 'F1b1', 'F1b2', 'F1z', 'F2h', 'F4p', 'F3e', 'F3e1',
+        'F3e2', 'F3e3', 'F3i', 'F5p', 'F5q', 'F5r', 'F7e', 'F7s', 'F7p', 'F8a', 'F8b', 'F8c', 'F8r', 'F9s', 'F9t', 'F9b', 'F10e', 'F10l', 'F16r']
+SHORT = {'U0': 'Röschen rot', 'U1': '众赞歌 · 开车', 'U2': '', 'U3': 'Not', 'U4': 'Je lieber', 'U5': '入云', 'U6': 'breiten Weg', 'U7': 'Engelein',
+         'U8': 'Ach nein!', 'U9': 'von Gott', 'U10': 'Der liebe Gott', 'U11': 'leuchten', 'U12': '剪 1 · 黑', 'F0': '号角（黑）', 'F1': '鸟鸣',
+         'F2': '最后鸟鸣', 'F3': "Aufersteh'n", 'F4': '女高音', 'F5': '间奏', 'F6': 'O glaube', 'F7': 'nichts verloren', 'F8': 'Was entstanden',
+         'F9': 'O Schmerz', 'F10': 'Mit Flügeln', 'F11': '合唱 Flügeln', 'F12': 'Sterben', 'F13': 'in einem Nu', 'F14': 'zu Gott', 'F15': '合唱止',
+         'F16': '剪 2 · 白', 'U2b': '灯尽', 'U3b': 'Pein', 'U4h': '触云', 'U5r': '休止', 'U6k': '破云', 'U7b': '吞月', 'U8c': '无字',
+         'U_voiceEnd': '人声止', 'F0s': '云塔', 'F1c': '云墙', 'F1b1': '日重现', 'F1z': '坠入之句', 'F2h': '真静·入水', 'F3e': '下沉',
+         'F3i': 'gesät', 'F5p': '神道', 'F5q': '行列', 'F5r': '河伯', 'F7s': '离开', 'F8a': '宫灯复活', 'F8b': '颤动停', 'F8c': '另一句',
+         'F9s': '出海', 'F9b': '论点', 'F10e': '变形·升', 'F10l': '入光', 'F16r': '和弦收', 'F1t': '云墙最高', 'F1b2': '海镜第一块',
+         'F7e': '静止', 'F8r': '最后的静止', 'F9t': '镜带变厚', 'F4p': '光柱汇一', 'F3e1': '窗最后一闪', 'F3e2': '海脊', 'F3e3': '藍熄灭',
+         'F7p': '宫灯在头顶', 'F15': '合唱止 · 镜 10'}
+CUES = [(T[k], k, SHORT.get(k, ''), 0) for k in MAIN] + [(T[k], k, SHORT.get(k, ''), 1) for k in SUBL] + \
+       [(D['SILENCE_END'], '10→11', '静默止', 2), (D['CUT3'], '剪 3', '第二次白', 2), (-90.0, '坐下', '虫鸣', 2)]
+# text on screen (appear, fully gone) for the text lane; poem numbers as in bible §7.5
+TEXT = [(71.80, 86.80, '李白'), (137.30, 150.30, '里尔克'), (166.15, 171.5, 'Ach nein!'), (345.36, 357.96, '坠入深海'),
+        (714.0, 730.5, '河伯'), (903.0, 916.4, '另一片天'), (971.4, 993.0, '庄子'), (1009.21, 1019.41, '天问'), (1206.46, 1222.16, '齐物论'),
+        (D['S12_0'] + 16.0, D['S12_0'] + 30.2, '李白'), (D['S12_0'] + 66.0, D['S12_0'] + 79.6, '济慈')]
+CUTS = [(T['U12'], '剪 1'), (T['F16'], '剪 2'), (D['CUT3'], '剪 3')]
+SCENE_HDR = [(-90.0, '1 站牌'), (0.0, '2 夜路'), (T['U3'], '3 离地'), (T['U7'], '4 门'), (T['U9'], '4c'), (T['F0'], '6 晨'),
+             (T['F2h'], '7a 海'), (T['F5'], '7b 河伯'), (T['F8'], '7c'), (D['EXIT'], '8 暮'), (T['F12'], '8b'), (1001.21, '9 星海'),
+             (T['F16'], '10 白'), (D['SILENCE_END'], '11 假醒'), (D['S12_0'], '12 醒')]

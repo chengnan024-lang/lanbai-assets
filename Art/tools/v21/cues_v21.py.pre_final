@@ -1,0 +1,73 @@
+# -*- coding: utf-8 -*-
+"""v2.1 timeline: every label in timeline seconds (t = 0 at departure).
+Measured labels come from FromLocal/cues.json (U, U_sub, F, F_sub). The sub-labels in SUB are the v2.1 additions
+(synthesis §1): read off the cues.md notes or the digitised loudness of cues_finale.png (+-0.5-1 s) and must be
+dragged by ear in Audacity before the build. The Director binds to labels; seconds here are for humans and tools."""
+import json
+CUES_JSON = '/home/user/lanbai-assets/FromLocal/cues.json'
+J = json.load(open(CUES_JSON, encoding='utf-8'))
+FO = J['timeline']['F_offset']            # 240.36  (finale file s -> t)
+UO = J['timeline']['T_urlicht']           # 3.0     (urlicht file s -> t)
+def uf(file_s): return round(file_s + UO, 2)
+def ff(file_s): return round(file_s + FO, 2)
+
+T = {}          # label -> t
+SRC = {}        # label -> (file s, source, meaning)
+for grp in ('U', 'U_sub', 'F', 'F_sub'):
+    for k, v in J[grp].items():
+        T[k] = v['t']; SRC[k] = (v['file'], 'cues.json ' + v['conf'], v['event'])
+
+SUB = {   # v2.1 sub-labels (not yet in cues.json): (t, file s, source, what it is, what it drives)
+ 'U2b': (uf(36.1), 36.1, 'cues.md', '众赞歌第三句起', '灯尽'),
+ 'U3b': (uf(57.7), 57.7, 'cues.md', '…in größter Pein!', '灯海揭示完'),
+ 'U4b': (uf(88.6), 88.6, 'cues.md', '第二遍 Je lieber…', '—'),
+ 'U4h': (uf(96.5), 96.5, 'cues.md', '第二遍 Himmel 高音（到 104.6）', '触云'),
+ 'U5r': (uf(124.5), 124.5, 'cues.md', '全团休止（到 U6k）', '第一次完全静止'),
+ 'F0s': (ff(26.0), 26.0, '波形', '召唤的膨胀（号角 + 小号，峰 ≈268.4）', '云塔应答'),
+ 'F1c': (ff(51.5), 51.5, '波形', '全团渐强起', '云墙升起'),
+ 'F1t': (ff(61.0), 61.0, 'cues.md', '定音鼓滚奏（到 303.4）', '云墙最高'),
+ 'F1b1': (ff(78.0), 78.0, '波形', '远方铜管峰（这一段最响）', '太阳重现'),
+ 'F1b2': (ff(86.0), 86.0, '波形', '第二次铜管峰', '海镜的第一块'),
+ 'F1z': (ff(105.0), 105.0, 'cues.md', '第二段鸟鸣（到 353.0）', '用户之句（晨）'),
+ 'F3e': (ff(234.0), 234.0, '波形', '第一段合唱（含女高音）结束，管弦间奏起', '开始下沉'),
+ 'F3i': (ff(318.5), 318.5, '波形', '第二段合唱 Wieder aufzublühn ppp 起', '播种'),
+ 'F5p': (ff(415.5), 415.5, '波形', '间奏膨胀之峰', '整条神道可见'),
+ 'F5q': (ff(435.0), 435.0, '波形', '间奏安静的台地（到 ≈707）', '行列'),
+ 'F5r': (ff(468.5), 468.5, '波形', '间奏第二次膨胀（到 ≈728）', '河伯之问'),
+ 'F7e': (ff(537.0), 537.0, 'cues.md', '女低音乐句结束', '—'),
+ 'F7s': (ff(556.5), 556.5, '波形', '女高音 O glaube: du wardst nicht umsonst geboren!', '离开'),
+ 'F8a': (ff(608.5), 608.5, '波形', '合唱强起 Was vergangen, auferstehen!', '宫灯在下面复活'),
+ 'F8b': (ff(637.6), 637.6, 'cues.md', "Hör' auf zu beben!", '颤动停止，玫瑰光起'),
+ 'F8c': (ff(661.8), 661.8, 'cues.md', 'Bereite dich zu leben!（到 921.66）', '用户之句（暮）'),
+ 'F8r': (ff(680.0), 680.0, '波形', '一口气的休止', '水里最后的静止'),
+ 'F9s': (ff(681.5), 681.5, '波形', 'O Schmerz 之前的管弦膨胀（峰 ≈924.9）', '出海 = F9s + 0.5'),
+ 'F9t': (ff(696.9), 696.9, 'cues.md', 'O Tod! Du Allbezwinger!', '—'),
+ 'F10e': (ff(716.0), 716.0, 'cues.md', "二重唱 werd' ich entschweben", '唯一的变形'),
+ 'F10l': (ff(720.7), 720.7, 'cues.md', "zum Licht, zu dem kein Aug' gedrungen", '翼入光'),
+}
+for k, (t, fs, src, what, use) in SUB.items():
+    T[k] = t; SRC[k] = (fs, src, what)
+
+# derived moments used across the bible (seconds, all from labels)
+D = dict(
+    EXIT=round(T['F9s'] + 0.5, 2),                         # 922.36 sea exit
+    STILL=round(T['U12'] - 2.25, 2),                       # 246.39 everything stops before FLASH_TEAR
+    FLASH0=round(T['U12'] - 0.75, 2),                      # 247.89
+    DAWN0=round(T['F0'] + 2.5, 2),                         # 254.14 first direction starts
+    DAWN1=round(T['F0'] + 13.7, 2),                        # 265.34 dawn complete
+    WHITE0=round(T['F16'] - 10.2, 2),                      # 1139.11
+    SILENCE_END=round(J['F_sub']['F_end']['t'] + 5.0, 2),  # 1178.46 10 -> 11
+)
+D['WHITE_HOLD'] = round(D['SILENCE_END'] - T['F16'], 2)     # 29.15
+D['W2_0'] = round(D['SILENCE_END'] + 62.0, 2)               # 1240.46
+D['CUT3'] = round(D['W2_0'] + 8.5, 2)                        # 1248.96
+D['S12_0'] = round(D['CUT3'] + 3.0, 2)                       # 1251.96
+D['VG'] = round(2700.0 / (T['U9'] - T['U6']), 2)            # 59.02
+
+# mirrors (E1): gaps 2.5 * r^(k-1) counted BACK from F16, snapped to accents within +-0.8 s keeping gaps non-increasing
+MIRRORS = [1032.41, 1056.04, 1075.31, 1091.56, 1103.82, 1113.76, 1122.77, 1129.71, 1135.37, 1139.98, 1143.74, 1146.81, 1149.31]
+
+if __name__ == '__main__':
+    for k, v in sorted(T.items(), key=lambda kv: kv[1]):
+        print('%-10s %8.2f  %s' % (k, v, SRC[k][2]))
+    print(D)
