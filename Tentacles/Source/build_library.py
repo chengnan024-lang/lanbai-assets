@@ -399,8 +399,9 @@ def occlusion_map(key, n=OCC_N):
     if key in MACRO:
         Tm = Torus(n)
         # wet eroded basalt: pits and lumps in every direction (v1's grooves along the body read as tree bark)
-        g1 = Tm.noise(6, 30, 1.2, ax=1.0, ay=0.85, seed=80 + ord(key))
-        g2 = Tm.noise(16, 70, 1.0, ax=1.0, ay=1.0, seed=90 + ord(key))
+        kseed = sum(ord(c) for c in key)            # (gate v4: multi-letter custom keys)
+        g1 = Tm.noise(6, 30, 1.2, ax=1.0, ay=0.85, seed=80 + kseed)
+        g2 = Tm.noise(16, 70, 1.0, ax=1.0, ay=1.0, seed=90 + kseed)
         ridged = 0.7 * g1 / 2.5 - 0.30 * np.abs(g2) / 2.5
         fade = _smoothstep(0.02, 0.10, tq) * _smoothstep(0.85, 0.65, tq)
         macro = 0.5 + 0.5 * np.clip((ridged - ridged.mean()) / (3 * ridged.std()), -1, 1) * fade[:, None] * MACRO[key]
@@ -1228,8 +1229,14 @@ def _fog_factor(nt, fg, dist, zpos, density_scale=1.0, cap=None, cap_h=True):
     return mx.outputs['Result']
 
 
+THIN_K = (0.12, 0.40)            # gate round 8: thin parts (b = r / R_root) lose the main maps' tile period
+THIN_SMOOTH = 0.84                # ... one continuous wet sheen (the moon rim's wet term reads it too: no beads)
+THIN_ALBEDO = (0.017, 0.017, 0.022)   # ... the albedo map's mean (linear)
+
+
 def make_material(name='M_Tentacle', tex_dir=None, pix_angle=None, fog=None, rim_dir=None, rim=None,
-                  translucency=1.0, tear_pos=(0.0, 1800.0, 300.0), occl=None, colossus=False, tide=False):
+                  translucency=1.0, tear_pos=(0.0, 1800.0, 300.0), occl=None, colossus=False, tide=False,
+                  tiling=None, detail_tiling=None):
     """The preview of Lanbai/TentacleSway v2 (every extra mirrors a line of the Unity shader).
     occl = this variant's T_Tentacle_X_Occlusion.png (crease mask in B, macro height in R), sampled at
     (UV0.x, UVSway.x) = (U, t). fog = FOG-like dict (LanbaiFog); rim_dir = direction toward the moon.
@@ -1291,12 +1298,13 @@ def make_material(name='M_Tentacle', tex_dir=None, pix_angle=None, fog=None, rim
         oi = N('ShaderNodeObjectInfo')
         so = N('ShaderNodeSeparateColor'); L(oi.outputs['Color'], so.inputs[0])
         r = mathn('MULTIPLY', mathn('MAXIMUM', colB, 0.035), so.outputs['Red'])     # metres (obj colour R = R_root x scale)
-        texel = mathn('MULTIPLY', r, 2 * math.pi / TEX_N / (COLOSSUS_TILING if colossus else 1.0))
+        texel = mathn('MULTIPLY', r, 2 * math.pi / TEX_N / (tiling or (COLOSSUS_TILING if colossus else 1.0)))
         foot = mathn('MULTIPLY', cam.outputs['View Distance'], pix_angle)
         foot.node.label = 'pix_angle'
         lod = mathn('LOGARITHM', mathn('MAXIMUM', mathn('DIVIDE', foot, texel), 1.0), 2.0)
 
-    til = COLOSSUS_TILING if colossus else 1.0          # colossi: the shared skin 3x finer (Unity: _MainTex tiling 3, 3)
+    til = tiling or (COLOSSUS_TILING if colossus else 1.0)   # colossi: the shared skin 3x finer (Unity: _MainTex tiling
+    # 3, 3); gate v4 (round 3, critique M16): per instance, the skin density follows the arm's girth (tiling override)
     uvt = uv.outputs['UV']
     if til != 1.0:
         mpt = N('ShaderNodeMapping'); mpt.inputs['Scale'].default_value = (til, til, 1.0)
@@ -1330,7 +1338,8 @@ def make_material(name='M_Tentacle', tex_dir=None, pix_angle=None, fog=None, rim
 
     # ---- detail normal (Standard "Secondary Normal Map", tiling 4 x 4.6), faded like its mips ----
     mp = N('ShaderNodeMapping')
-    mp.inputs['Scale'].default_value = (DETAIL_TILING[0] * til, DETAIL_TILING[1] * til, 1.0)
+    dtil = detail_tiling or til         # gate v4: the hide relief keeps its physical scale on the giants
+    mp.inputs['Scale'].default_value = (DETAIL_TILING[0] * dtil, DETAIL_TILING[1] * dtil, 1.0)
     L(uv.outputs['UV'], mp.inputs['Vector'])
     dt = N('ShaderNodeTexImage'); dt.image = _img(os.path.join(tex_dir, 'T_Tentacle_DetailNormal.png'), True)
     dt.interpolation = 'Cubic'
@@ -1356,7 +1365,11 @@ def make_material(name='M_Tentacle', tex_dir=None, pix_angle=None, fog=None, rim
     #      pores) x grazing flatten only -- the taut convex side is smooth, not polished rubber
     ndv = mathn('ABSOLUTE', vmath('DOT_PRODUCT', geo.outputs['Normal'], geo.outputs['Incoming']))
     graze = mathn('ADD', 1.0 - GRAZING_FLATTEN, mathn('MULTIPLY', sstep(ndv, *GRAZING_RANGE), GRAZING_FLATTEN))
-    keep = graze
+    # gate round 8 (tech r4 B2, awe r4 M5: one texture tile = one circumference, so on the whips every row-coherent
+    # feature repeated as evenly spaced RINGS / BEADS): thin parts fade the main maps out. thinK = smoothstep(0.12,
+    # 0.40, b): main normal x thinK, smoothness -> one continuous wet 0.84, albedo -> its mean (Unity: TentacleSway v2.7)
+    thinK = sstep(colB, THIN_K[0], THIN_K[1])
+    keep = mathn('MULTIPLY', graze, thinK)
     if occ is not None:
         keep = mathn('MULTIPLY', keep, mathn('ADD', CONVEX_KEEP, mathn('MULTIPLY', oc.outputs['Blue'], 1.0 - CONVEX_KEEP)))
     if colossus:        # no fine creases beyond 1.5 km
@@ -1382,6 +1395,9 @@ def make_material(name='M_Tentacle', tex_dir=None, pix_angle=None, fog=None, rim
     bsdf = N('ShaderNodeBsdfPrincipled')
     sepm = N('ShaderNodeSeparateColor'); L(ms, sepm.inputs[0])
     L(sepm.outputs[0], bsdf.inputs['Metallic'])
+    smoothV = N('ShaderNodeMix'); smoothV.data_type = 'FLOAT'
+    L(thinK, smoothV.inputs[0]); smoothV.inputs[2].default_value = THIN_SMOOTH; L(ms_a, smoothV.inputs[3])
+    ms_a = smoothV.outputs[0]
     L(mathn('SUBTRACT', 1.0, ms_a), bsdf.inputs['Roughness'])
     L(normal, bsdf.inputs['Normal'])
     try:
@@ -1390,6 +1406,9 @@ def make_material(name='M_Tentacle', tex_dir=None, pix_angle=None, fog=None, rim
     except KeyError:
         pass
     tint_f = mathn('SUBTRACT', 1.0, sstep(colB, TIP_TINT_TO, TIP_TINT_FROM))
+    albT = N('ShaderNodeMix'); albT.data_type = 'RGBA'; albT.blend_type = 'MIX'
+    L(thinK, albT.inputs['Factor']); albT.inputs['A'].default_value = (*THIN_ALBEDO, 1.0); L(alb, albT.inputs['B'])
+    alb = albT.outputs['Result']
     mix = N('ShaderNodeMix'); mix.data_type = 'RGBA'; mix.blend_type = 'MULTIPLY'
     L(tint_f, mix.inputs['Factor']); L(alb, mix.inputs['A'])
     mix.inputs['B'].default_value = (*TIP_TINT, 1)

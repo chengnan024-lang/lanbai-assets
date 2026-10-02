@@ -1,5 +1,5 @@
 {
- "about": "Lanbai tear kit v2 (art bible 6.4, 8.1 #6). Unity object space of Tear_Root. The kit faces +Z (put the bus on the +Z side, i.e. rotate the root so +Z points at the bus); +Y up; the pivot is the lens axis at cloud-top height. Root scale 1 = tear height H 1000 m above the cloud top at FULL opening. Uniform scale = H / 1000.",
+ "about": "Lanbai tear kit v6 (gate round 8 = refine round 4; art bible 6.4, 8.1 #6). Unity object space of Tear_Root. The kit faces +Z (put the bus on the +Z side, i.e. rotate the root so +Z points at the bus); +Y up; the pivot is the lens axis at cloud-top height. Root scale 1 = tear height H 1000 m above the cloud top at FULL opening. Uniform scale = H / 1000.",
  "frame_os": {
   "across_right": [
    -0.99756,
@@ -121,80 +121,85 @@
     0.05,
     0.9
    ]
-  },
-  "Tear_Rip_Twig_1": {
-   "side": "right",
-   "branches_at_t_m": 1122.4418980811722,
-   "off_axis_deg": 38.0,
-   "length_root_scale_1_m": 60.0,
-   "length_at_U7_m": 38.1,
-   "width_max_root_scale_1_m": 1.8,
-   "RipProgress_window": [
-    0.45,
-    0.9
-   ]
-  },
-  "Tear_Rip_Twig_2": {
-   "side": "left",
-   "branches_at_t_m": 1217.4418980811722,
-   "off_axis_deg": 33.0,
-   "length_root_scale_1_m": 45.0,
-   "length_at_U7_m": 28.6,
-   "width_max_root_scale_1_m": 1.6,
-   "RipProgress_window": [
-    0.6,
-    1.0
-   ]
   }
  },
  "flaps": {
   "Tear_Flap_L": {
    "side": "left",
    "fold_span_t_m": [
-    150.0,
-    255.0
+    520.0,
+    650.0
    ],
-   "length_m": 80.0,
+   "length_m": 72.0,
    "band_in_Tear_Flaps_1024": 0
   },
   "Tear_Flap_R": {
    "side": "right",
    "fold_span_t_m": [
     350.0,
-    600.0
+    650.0
    ],
-   "length_m": 135.0,
+   "length_m": 150.0,
    "band_in_Tear_Flaps_1024": 1
   }
  },
+ "foot_clouds_retired": "v6: the five v5 FootCloud cards are out of the kit (a front-lit pedestal at U7, white crumbs at U8): Tear_FootSkyline + Tear_LightLane replace them (README_Tear v6)",
+ "foot_skyline": {
+  "mesh": "Tear_FootSkyline",
+  "front_toward_bus_kit_m": 140.0,
+  "half_width_in_lens_half_widths": 2.6,
+  "z_kit_m": [
+   -39.0625,
+   70.3125
+  ],
+  "texture": "Tear_FootSkyline_1024x160.png (A = skyline alpha, R = backlit rim; straight alpha)",
+  "sink_note": "Udon may lower it by FOOT_CLOUD_SINK (GateLayout_v2.json tear.fades) x 0 (round 8: it STAYS to U9: it hides the lens / cloud junction)"
+ },
+ "foot_skyline_inner": {
+  "mesh": "Tear_FootSkylineIn",
+  "front_toward_bus_kit_m": 11.0,
+  "half_width_in_lens_half_widths": 1.5,
+  "z_kit_m": [
+   -13.67,
+   24.61
+  ],
+  "texture": "Tear_FootSkylineIn_512x160.png (A = low billow row, R = backlit rim; straight alpha)",
+  "note": "v6.1 (gate round 9): the white ends on billows, not on a straight lens / flat cloud line (U8 forward); material = a copy of Tear_FootSkyline with this texture"
+ },
+ "light_lane": {
+  "mesh": "Tear_LightLane",
+  "half_width_kit_m": 420.0,
+  "length_kit_m": 2400.0,
+  "note": "Part LANE (Blend DstColor One): the lane is computed per pixel from the eye; the quad only covers it"
+ },
  "halo_cards": [
   {
-   "width_m": 330.0,
-   "height_m": 620.0,
+   "width_m": 440.0,
+   "height_m": 760.0,
    "behind_lens_m": 25.0,
    "breath_phase_lag": 0.04,
-   "gain_uv2x": 2.8
+   "gain_uv2x": 1.3
   },
   {
    "width_m": 360.0,
-   "height_m": 880.0,
+   "height_m": 860.0,
    "behind_lens_m": 40.0,
    "breath_phase_lag": 0.0,
-   "gain_uv2x": 1.0
+   "gain_uv2x": 0.9
   },
   {
-   "width_m": 640.0,
-   "height_m": 1000.0,
+   "width_m": 620.0,
+   "height_m": 980.0,
    "behind_lens_m": 60.0,
    "breath_phase_lag": 0.08,
-   "gain_uv2x": 1.0
+   "gain_uv2x": 0.9
   }
  ],
  "shafts": [
   {
    "start_os": [
-    -76.51266,
-    124.32184,
+    -56.63437,
+    125.71186,
     6.0
    ],
    "axis_os": [
@@ -209,8 +214,8 @@
   },
   {
    "start_os": [
-    25.35988,
-    95.25655,
+    18.71886,
+    94.79216,
     6.0
    ],
    "axis_os": [
@@ -225,8 +230,8 @@
   },
   {
    "start_os": [
-    -110.54964,
-    515.83958,
+    -112.06534,
+    515.73359,
     6.0
    ],
    "axis_os": [
@@ -241,8 +246,8 @@
   },
   {
    "start_os": [
-    -81.93746,
-    248.83379,
+    -73.0885,
+    249.45257,
     6.0
    ],
    "axis_os": [
@@ -257,8 +262,8 @@
   },
   {
    "start_os": [
-    1.21032,
-    332.76058,
+    -0.16425,
+    332.66446,
     6.0
    ],
    "axis_os": [
@@ -273,8 +278,8 @@
   },
   {
    "start_os": [
-    -71.4749,
-    142.33011,
+    -56.34178,
+    143.38832,
     6.0
    ],
    "axis_os": [
@@ -289,8 +294,8 @@
   },
   {
    "start_os": [
-    -55.18518,
-    377.30149,
+    -53.58888,
+    377.41311,
     6.0
    ],
    "axis_os": [
@@ -305,8 +310,8 @@
   },
   {
    "start_os": [
-    -39.96533,
-    345.63527,
+    -39.5061,
+    345.66738,
     6.0
    ],
    "axis_os": [
@@ -321,8 +326,8 @@
   },
   {
    "start_os": [
-    10.91528,
-    94.08687,
+    8.57389,
+    93.92314,
     6.0
    ],
    "axis_os": [
@@ -337,8 +342,8 @@
   },
   {
    "start_os": [
-    -52.03203,
-    384.19048,
+    -50.11811,
+    384.32432,
     6.0
    ],
    "axis_os": [
@@ -353,8 +358,8 @@
   },
   {
    "start_os": [
-    -78.04313,
-    364.28373,
+    -76.40099,
+    364.39856,
     6.0
    ],
    "axis_os": [
@@ -369,8 +374,8 @@
   },
   {
    "start_os": [
-    46.2139,
-    335.45913,
+    42.59999,
+    335.20642,
     6.0
    ],
    "axis_os": [
@@ -410,11 +415,6 @@
    "texture": "Tear_Rip_1024x128.png",
    "render_queue": 2995
   },
-  "Tear_Fibres": {
-   "part": "Fibre",
-   "texture": "Tear_Fibres_1024.png",
-   "render_queue": 2996
-  },
   "Tear_Shaft": {
    "part": "Shaft",
    "texture": "Shaft_Gradient_256x1024.png",
@@ -424,6 +424,21 @@
    "part": "Flap",
    "texture": "Tear_Flaps_1024.png",
    "render_queue": 2450
+  },
+  "Tear_FootSkyline": {
+   "part": "Skyline",
+   "texture": "Tear_FootSkyline_1024x160.png",
+   "render_queue": 2989
+  },
+  "Tear_FootSkylineIn": {
+   "part": "Skyline",
+   "texture": "Tear_FootSkylineIn_512x160.png",
+   "render_queue": 2989
+  },
+  "Tear_LightLane": {
+   "part": "Lane",
+   "texture": "(none: procedural; any white texture)",
+   "render_queue": 2989
   }
  },
  "meshes": {
@@ -457,21 +472,6 @@
    "tris": 760,
    "material": "Tear_Rip"
   },
-  "Tear_Rip_Twig_1": {
-   "verts": 480,
-   "tris": 760,
-   "material": "Tear_Rip"
-  },
-  "Tear_Rip_Twig_2": {
-   "verts": 480,
-   "tris": 760,
-   "material": "Tear_Rip"
-  },
-  "Tear_Fibres": {
-   "verts": 1320,
-   "tris": 880,
-   "material": "Tear_Fibres"
-  },
   "Tear_Halo": {
    "verts": 12,
    "tris": 6,
@@ -479,7 +479,7 @@
   },
   "Tear_SkyFolds": {
    "verts": 1292,
-   "tris": 994,
+   "tris": 256,
    "material": "Tear_SkyFolds"
   },
   "Tear_CloudGlow": {
@@ -491,6 +491,21 @@
    "verts": 288,
    "tris": 264,
    "material": "Tear_Shaft"
+  },
+  "Tear_FootSkyline": {
+   "verts": 4,
+   "tris": 2,
+   "material": "Tear_FootSkyline"
+  },
+  "Tear_FootSkylineIn": {
+   "verts": 4,
+   "tris": 2,
+   "material": "Tear_FootSkylineIn"
+  },
+  "Tear_LightLane": {
+   "verts": 16,
+   "tris": 14,
+   "material": "Tear_LightLane"
   },
   "Tear_ShaftCard": {
    "verts": 24,

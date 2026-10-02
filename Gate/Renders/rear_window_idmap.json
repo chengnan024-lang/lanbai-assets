@@ -1,0 +1,386 @@
+{
+"1": {
+"id": "Pillar_R",
+"layer": "colossus",
+"role": "pillar",
+"kind": "pillar"
+},
+"2": {
+"id": "Pillar_L",
+"layer": "colossus",
+"role": "pillar",
+"kind": "pillar"
+},
+"3": {
+"id": "Colossus_3",
+"layer": "colossus",
+"role": "engel",
+"kind": "hero"
+},
+"4": {
+"id": "Hand_L0",
+"layer": "mid",
+"role": "hand",
+"kind": "mid"
+},
+"5": {
+"id": "Hand_L1",
+"layer": "mid",
+"role": "hand",
+"kind": "mid"
+},
+"6": {
+"id": "Hand_L2",
+"layer": "mid",
+"role": "hand",
+"kind": "mid"
+},
+"7": {
+"id": "Hand_R0",
+"layer": "mid",
+"role": "hand",
+"kind": "mid"
+},
+"8": {
+"id": "Hand_R1",
+"layer": "mid",
+"role": "hand",
+"kind": "mid"
+},
+"9": {
+"id": "Hand_R2",
+"layer": "mid",
+"role": "hand",
+"kind": "mid"
+},
+"10": {
+"id": "Colossus_bg_00",
+"layer": "colossus_bg",
+"role": "background",
+"kind": "bg"
+},
+"11": {
+"id": "Colossus_bg_01",
+"layer": "colossus_bg",
+"role": "background",
+"kind": "bg"
+},
+"12": {
+"id": "Colossus_bg_02",
+"layer": "colossus_bg",
+"role": "background",
+"kind": "bg"
+},
+"13": {
+"id": "Colossus_bg_03",
+"layer": "colossus_bg",
+"role": "background",
+"kind": "bg"
+},
+"14": {
+"id": "Colossus_bg_04",
+"layer": "colossus_bg",
+"role": "background",
+"kind": "bg"
+},
+"15": {
+"id": "Colossus_bg_05",
+"layer": "colossus_bg",
+"role": "background",
+"kind": "bg"
+},
+"16": {
+"id": "Colossus_1",
+"layer": "colossus",
+"role": "rilke",
+"kind": "colossus"
+},
+"17": {
+"id": "Colossus_2",
+"layer": "colossus",
+"role": "moon",
+"kind": "colossus"
+},
+"18": {
+"id": "Mult_000",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"19": {
+"id": "Mult_001",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"20": {
+"id": "Mult_002",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"21": {
+"id": "Mult_003",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"22": {
+"id": "Mult_004",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"23": {
+"id": "Mult_005",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"24": {
+"id": "Mult_006",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"25": {
+"id": "Mult_007",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"26": {
+"id": "Mult_008",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"27": {
+"id": "Mult_009",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"28": {
+"id": "Mult_010",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"29": {
+"id": "Mult_011",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"30": {
+"id": "Mult_012",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"31": {
+"id": "Mult_013",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"32": {
+"id": "Mult_014",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"33": {
+"id": "Mult_015",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"34": {
+"id": "Mult_016",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"35": {
+"id": "Mult_017",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"36": {
+"id": "Mult_018",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"37": {
+"id": "Mult_019",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"38": {
+"id": "Mult_020",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"39": {
+"id": "Mult_021",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"40": {
+"id": "Mult_022",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"41": {
+"id": "Mult_023",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"42": {
+"id": "Mult_024",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"43": {
+"id": "Mult_025",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"44": {
+"id": "Mult_026",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"45": {
+"id": "Mult_027",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"46": {
+"id": "Mult_028",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"47": {
+"id": "Mult_029",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"48": {
+"id": "Mult_030",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"49": {
+"id": "Mult_031",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"50": {
+"id": "Mult_032",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"51": {
+"id": "Mult_033",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"52": {
+"id": "Mult_034",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"53": {
+"id": "Mult_035",
+"layer": "surge",
+"role": "surge",
+"kind": "surge"
+},
+"54": {
+"id": "Near_0",
+"layer": "near",
+"role": "near",
+"kind": "near"
+},
+"55": {
+"id": "Near_1",
+"layer": "near",
+"role": "near",
+"kind": "near"
+},
+"56": {
+"id": "Near_2",
+"layer": "near",
+"role": "near",
+"kind": "near"
+},
+"57": {
+"id": "Rear_ArchA",
+"layer": "rear",
+"role": "rear",
+"kind": "rear"
+},
+"58": {
+"id": "Rear_ArchB",
+"layer": "rear",
+"role": "rear",
+"kind": "rear"
+},
+"59": {
+"id": "Rear_Hand0",
+"layer": "rear",
+"role": "rear",
+"kind": "rear"
+},
+"60": {
+"id": "Rear_Hand1",
+"layer": "rear",
+"role": "rear",
+"kind": "rear"
+},
+"61": {
+"id": "Rear_Hand2",
+"layer": "rear",
+"role": "rear",
+"kind": "rear"
+},
+"62": {
+"id": "Rear_Hand2F",
+"layer": "rear",
+"role": "rear",
+"kind": "rear"
+},
+"63": {
+"id": "Rear_Hand3",
+"layer": "rear",
+"role": "rear",
+"kind": "rear"
+},
+"64": {
+"id": "Rear_Hand4",
+"layer": "rear",
+"role": "rear",
+"kind": "rear"
+}
+}

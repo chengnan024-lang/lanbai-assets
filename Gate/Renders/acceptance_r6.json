@@ -1,0 +1,609 @@
+{
+ "keyart_239": {
+  "tones": {
+   "APL": 35.2,
+   "luma_lt12_pct": 26.4,
+   "top18_sky_L_p90": 2.9,
+   "top18_all_L_p90": 2.9,
+   "band_L_by_az": {
+    "3-8": 26.7,
+    "8-13": 25.1,
+    "13-18": 23.0,
+    "18-23": 20.8,
+    "23-28": 17.3,
+    "28-33": 16.5,
+    "43-48": 10.6
+   },
+   "band_peak_L": 26.7,
+   "moon_L_max": 79.7,
+   "L_gt90_outside_wound_pct": 0.001,
+   "brightest2000_centroid": [
+    0.455,
+    0.493
+   ],
+   "brightest2000_in_wound_pct": 99.9
+  },
+  "bright": {
+   "L_gt80_outside_wound_moon_pct": 0.006,
+   "L_gt80_outside_px": 160,
+   "brightest2000_in_wound_pct": 100.0
+  },
+  "silhouettes": {
+   "pixels": 3990,
+   "post_bloom_p10_p50_p90": [
+    11.4,
+    27.7,
+    59.2
+   ],
+   "pre_bloom_p10_p50_p90": [
+    4.5,
+    5.7,
+    56.1
+   ]
+  },
+  "tear_shape": {
+   "visible_rows": 585,
+   "max_width_px": 138,
+   "width_at_5pct_from_foot_over_max": 0.33,
+   "longest_ruler_run_cols": 4,
+   "longest_ruler_run_cols_tearID": 6,
+   "detached_bright_shapes": 4,
+   "foot_band_sd_L": 14.5,
+   "foot_band_p95_L": 70.6,
+   "sky_highpass_sd_within_1p5_widths": 4.2
+  },
+  "tear_r5": {
+   "visible_rows": 579,
+   "axis_L_range_central80": 17.5,
+   "axis_L_max": 98.1,
+   "axis_L_min": 80.6,
+   "axis_L_at_tip_end": 80.6,
+   "axis_L_at_foot_end": 87.1,
+   "hot_row_minus_widest_row_pct_of_span": 2.3,
+   "b_lips": -5.4,
+   "b_tip": -3.2,
+   "b_hot": 2.6,
+   "lipglow_6px_sd_L": 23.1,
+   "lipglow_6px_median_C": 14.5,
+   "lipglow_6px_median_L": 30.7,
+   "dark_segments_per_lip": {
+    "left": 2,
+    "right": 2
+   },
+   "white_centroid_x_pct": 44.8
+  },
+  "multitude": {
+   "members_ge30px": 10,
+   "measured": 10,
+   "interior_range_median": 3.3,
+   "pct_range_ge6": 0.0,
+   "free_band_pct_of_visible_az": 69.4,
+   "visible_az_range": [
+    -36,
+    48
+   ]
+  },
+  "lane_deck": {
+   "lane_p95_L": 53.4,
+   "lane_p5_L": 8.9,
+   "deck_1_3km_row_sd_median": 9.5
+  },
+  "sea_r5": {
+   "moonward_p5_L": 8.0,
+   "moonward_p95_L": 49.5,
+   "moonward_local_sd_L": 5.1,
+   "moon_path_minus_off_L": 13.1,
+   "deck_area_pct": 42.0
+  }
+ },
+ "U7_engelein": {
+  "tones": {
+   "APL": 26.4,
+   "luma_lt12_pct": 29.1,
+   "APL_through_glass": 36.8,
+   "top18_sky_L_p90": 3.1,
+   "top18_all_L_p90": 3.5,
+   "band_L_by_az": {
+    "3-8": 26.4,
+    "8-13": 24.3,
+    "13-18": 22.1,
+    "18-23": 21.6,
+    "23-28": 19.3,
+    "28-33": 18.7,
+    "38-43": 13.9,
+    "43-48": 13.4
+   },
+   "band_peak_L": 26.4,
+   "moon_L_max": 50.1,
+   "L_gt90_outside_wound_pct": 0.0,
+   "brightest2000_centroid": [
+    0.514,
+    0.38
+   ],
+   "brightest2000_in_wound_pct": 100.0
+  },
+  "bright": {
+   "L_gt80_outside_wound_moon_pct": 0.001,
+   "L_gt80_outside_px": 27,
+   "brightest2000_in_wound_pct": 100.0
+  },
+  "silhouettes": {
+   "pixels": 1825,
+   "post_bloom_p10_p50_p90": [
+    11.4,
+    26.0,
+    65.4
+   ],
+   "pre_bloom_p10_p50_p90": [
+    4.2,
+    9.1,
+    63.7
+   ]
+  },
+  "tear_shape": {
+   "visible_rows": 396,
+   "max_width_px": 95,
+   "width_at_5pct_from_foot_over_max": 0.32,
+   "longest_ruler_run_cols": 8,
+   "longest_ruler_run_cols_tearID": 8,
+   "detached_bright_shapes": 1,
+   "foot_band_sd_L": 14.0,
+   "foot_band_p95_L": 68.5,
+   "sky_highpass_sd_within_1p5_widths": 5.0
+  },
+  "tear_r5": {
+   "visible_rows": 394,
+   "axis_L_range_central80": 17.5,
+   "axis_L_max": 96.9,
+   "axis_L_min": 79.4,
+   "axis_L_at_tip_end": 79.4,
+   "axis_L_at_foot_end": 86.4,
+   "hot_row_minus_widest_row_pct_of_span": 2.5,
+   "b_lips": -4.3,
+   "b_tip": -3.1,
+   "b_hot": 3.1,
+   "lipglow_6px_sd_L": 23.7,
+   "lipglow_6px_median_C": 13.5,
+   "lipglow_6px_median_L": 37.0,
+   "dark_segments_per_lip": {
+    "left": 5,
+    "right": 6
+   },
+   "white_centroid_x_pct": 50.7
+  },
+  "multitude": {
+   "members_ge30px": 12,
+   "measured": 11,
+   "interior_range_median": 2.6,
+   "pct_range_ge6": 9.1,
+   "free_band_pct_of_visible_az": 69.2,
+   "visible_az_range": [
+    -45,
+    45
+   ]
+  },
+  "lane_deck": {
+   "lane_p95_L": 54.5,
+   "lane_p5_L": 9.5,
+   "deck_1_3km_row_sd_median": 9.2
+  },
+  "sea_r5": {
+   "moonward_p5_L": 9.0,
+   "moonward_p95_L": 48.2,
+   "moonward_local_sd_L": 5.3,
+   "moon_path_minus_off_L": 10.0,
+   "deck_area_pct": 23.6
+  }
+ },
+ "U8_forward": {
+  "tones": {
+   "APL": 43.0,
+   "luma_lt12_pct": 18.4,
+   "APL_through_glass": 63.2,
+   "top18_sky_L_p90": 14.2,
+   "top18_all_L_p90": 13.2,
+   "band_L_by_az": {
+    "3-8": 34.4,
+    "8-13": 27.5,
+    "13-18": 25.6,
+    "18-23": 24.7,
+    "23-28": 21.5,
+    "28-33": 18.6,
+    "33-38": 34.7,
+    "38-43": 31.3
+   },
+   "band_peak_L": 34.7,
+   "moon_L_max": 46.7,
+   "L_gt90_outside_wound_pct": 0.033,
+   "brightest2000_centroid": [
+    0.555,
+    0.199
+   ],
+   "brightest2000_in_wound_pct": 100.0
+  },
+  "bright": {
+   "L_gt80_outside_wound_moon_pct": 0.066,
+   "L_gt80_outside_px": 1367,
+   "brightest2000_in_wound_pct": 100.0
+  },
+  "silhouettes": {
+   "pixels": 5690,
+   "post_bloom_p10_p50_p90": [
+    6.1,
+    25.1,
+    67.8
+   ],
+   "pre_bloom_p10_p50_p90": [
+    1.8,
+    3.9,
+    64.9
+   ]
+  },
+  "tear_shape": {
+   "visible_rows": 487,
+   "max_width_px": 238,
+   "width_at_5pct_from_foot_over_max": 0.46,
+   "longest_ruler_run_cols": 18,
+   "longest_ruler_run_cols_tearID": 18,
+   "detached_bright_shapes": 15,
+   "foot_band_sd_L": 15.9,
+   "foot_band_p95_L": 71.3,
+   "sky_highpass_sd_within_1p5_widths": 5.9
+  },
+  "tear_r5": {
+   "visible_rows": 496,
+   "axis_L_range_central80": 14.2,
+   "axis_L_max": 96.5,
+   "axis_L_min": 82.4,
+   "axis_L_at_tip_end": 95.4,
+   "axis_L_at_foot_end": 82.4,
+   "hot_row_minus_widest_row_pct_of_span": 14.4,
+   "b_lips": -7.2,
+   "b_tip": 2.8,
+   "b_hot": 2.6,
+   "lipglow_6px_sd_L": 21.9,
+   "lipglow_6px_median_C": 10.7,
+   "lipglow_6px_median_L": 70.6,
+   "dark_segments_per_lip": {
+    "left": 2,
+    "right": 3
+   },
+   "white_centroid_x_pct": 51.6
+  },
+  "multitude": {
+   "members_ge30px": 2,
+   "measured": 2,
+   "interior_range_median": 3.6,
+   "pct_range_ge6": 0.0,
+   "free_band_pct_of_visible_az": 87.9,
+   "visible_az_range": [
+    -45,
+    45
+   ]
+  },
+  "lane_deck": {
+   "lane_p95_L": 73.6,
+   "lane_p5_L": 23.8,
+   "deck_1_3km_row_sd_median": 9.2
+  },
+  "sea_r5": {
+   "moonward_p5_L": 8.9,
+   "moonward_p95_L": 59.6,
+   "moonward_local_sd_L": 2.7,
+   "moon_path_minus_off_L": 8.6,
+   "deck_area_pct": 21.1
+  },
+  "periodicity_fft_peak_over_median": {
+   "Hand_L0": {
+    "all_bins": 8.7,
+    "ring_band": 2.9,
+    "ring_band_bins": 368
+   },
+   "Hand_L1": {
+    "all_bins": 7.7,
+    "ring_band": 5.7,
+    "ring_band_bins": 504
+   },
+   "Hand_L2": {
+    "all_bins": 6.6,
+    "ring_band": 2.8,
+    "ring_band_bins": 339
+   },
+   "Hand_R1": {
+    "all_bins": 3.4,
+    "ring_band": 2.9,
+    "ring_band_bins": 512
+   },
+   "Colossus_2": {
+    "all_bins": 6.9,
+    "ring_band": 3.6,
+    "ring_band_bins": 287
+   }
+  }
+ },
+ "U6_approach": {
+  "tones": {
+   "APL": 29.8,
+   "luma_lt12_pct": 18.6,
+   "APL_through_glass": 40.4,
+   "top18_sky_L_p90": 12.8,
+   "top18_all_L_p90": 10.5,
+   "band_L_by_az": {
+    "3-8": 19.3,
+    "8-13": 18.3,
+    "13-18": 17.1,
+    "23-28": 15.1,
+    "28-33": 13.2,
+    "38-43": 11.6,
+    "43-48": 19.1
+   },
+   "band_peak_L": 19.3,
+   "moon_L_max": 92.5,
+   "L_gt90_outside_wound_pct": 0.035,
+   "brightest2000_centroid": [
+    0.495,
+    0.446
+   ],
+   "brightest2000_in_wound_pct": 89.1
+  },
+  "bright": {
+   "L_gt80_outside_wound_moon_pct": 0.053,
+   "L_gt80_outside_px": 1099,
+   "brightest2000_in_wound_pct": 89.1
+  },
+  "silhouettes": {
+   "pixels": 0
+  },
+  "tear_shape": {
+   "visible_rows": 279,
+   "max_width_px": 60,
+   "width_at_5pct_from_foot_over_max": 0.32,
+   "longest_ruler_run_cols": 3,
+   "longest_ruler_run_cols_tearID": 6,
+   "detached_bright_shapes": 1,
+   "foot_band_sd_L": 12.0,
+   "foot_band_p95_L": 58.1,
+   "sky_highpass_sd_within_1p5_widths": 4.5
+  },
+  "tear_r5": {
+   "visible_rows": 272,
+   "axis_L_range_central80": 16.0,
+   "axis_L_max": 96.4,
+   "axis_L_min": 80.3,
+   "axis_L_at_tip_end": 80.3,
+   "axis_L_at_foot_end": 86.2,
+   "hot_row_minus_widest_row_pct_of_span": 0.2,
+   "b_lips": -3.8,
+   "b_tip": -3.1,
+   "b_hot": 3.1,
+   "lipglow_6px_sd_L": 17.5,
+   "lipglow_6px_median_C": 15.7,
+   "lipglow_6px_median_L": 27.4,
+   "dark_segments_per_lip": {
+    "left": 5,
+    "right": 2
+   },
+   "white_centroid_x_pct": 50.5
+  },
+  "multitude": {
+   "members_ge30px": 0,
+   "measured": 0,
+   "free_band_pct_of_visible_az": 100.0,
+   "visible_az_range": [
+    -45,
+    45
+   ]
+  },
+  "lane_deck": {
+   "lane_p95_L": 47.0,
+   "lane_p5_L": 4.9,
+   "deck_1_3km_row_sd_median": 7.2
+  },
+  "sea_r5": {
+   "moonward_p5_L": 6.9,
+   "moonward_p95_L": 44.6,
+   "moonward_local_sd_L": 3.1,
+   "moon_path_minus_off_L": 6.3,
+   "deck_area_pct": 31.0
+  }
+ },
+ "U8a_ach_nein": {
+  "tones": {
+   "APL": 92.1,
+   "luma_lt12_pct": 0.0,
+   "APL_through_glass": 160.3,
+   "top18_sky_L_p90": null,
+   "top18_all_L_p90": 29.2,
+   "band_L_by_az": {},
+   "band_peak_L": null,
+   "L_gt90_outside_wound_pct": 0.0,
+   "brightest2000_centroid": [
+    0.633,
+    0.676
+   ],
+   "brightest2000_in_wound_pct": 100.0
+  },
+  "u8a": {
+   "APL": 92.1,
+   "luma_lt12_pct": 0.0,
+   "white_L80_pct_of_frame": 20.3,
+   "skylight_hole_pct_of_frame": 50.0,
+   "white_L80_pct_of_hole": 40.6,
+   "brightest2000_in_skylight_pct": 100.0
+  },
+  "specks": {
+   "specks_outside_white": 73
+  }
+ },
+ "rear_window": {
+  "tones": {
+   "APL": 25.0,
+   "luma_lt12_pct": 43.0,
+   "APL_through_glass": 31.1,
+   "top18_sky_L_p90": 2.6,
+   "top18_all_L_p90": 6.5,
+   "band_L_by_az": {},
+   "band_peak_L": null,
+   "L_gt90_outside_wound_pct": 0.002,
+   "brightest2000_centroid": [
+    0.744,
+    0.239
+   ],
+   "brightest2000_in_wound_pct": 0.0
+  },
+  "periodicity_fft_peak_over_median": {
+   "Rear_ArchA": {
+    "all_bins": 5.6,
+    "ring_band": 4.3,
+    "ring_band_bins": 512
+   },
+   "Rear_ArchB": {
+    "all_bins": 7.3,
+    "ring_band": 2.0,
+    "ring_band_bins": 222
+   },
+   "Rear_Hand0": {
+    "all_bins": 11.4,
+    "ring_band": 2.6,
+    "ring_band_bins": 331
+   },
+   "Rear_Hand1": {
+    "all_bins": 6.8,
+    "ring_band": 3.7,
+    "ring_band_bins": 252
+   },
+   "Rear_Hand2": {
+    "all_bins": 12.7,
+    "ring_band": 1.8,
+    "ring_band_bins": 174
+   },
+   "Rear_Hand3": {
+    "all_bins": 13.6,
+    "ring_band": 2.8,
+    "ring_band_bins": 325
+   },
+   "Rear_Hand4": {
+    "all_bins": 14.3,
+    "ring_band": 2.4,
+    "ring_band_bins": 169
+   }
+  },
+  "rear": {
+   "APL": 25.0,
+   "luma_lt12_pct": 43.0,
+   "arms": {
+    "Rear_ArchA": {
+     "width_pct": 58.9,
+     "area_pct": 4.56
+    },
+    "Rear_ArchB": {
+     "width_pct": 62.9,
+     "area_pct": 6.26
+    },
+    "Rear_Hand0": {
+     "width_pct": 27.4,
+     "area_pct": 7.84
+    },
+    "Rear_Hand1": {
+     "width_pct": 45.4,
+     "area_pct": 9.72
+    },
+    "Rear_Hand2": {
+     "width_pct": 47.6,
+     "area_pct": 1.16
+    },
+    "Rear_Hand3": {
+     "width_pct": 31.8,
+     "area_pct": 1.98
+    },
+    "Rear_Hand4": {
+     "width_pct": 38.5,
+     "area_pct": 1.24
+    }
+   },
+   "arms_ge6pct_width": 7,
+   "touching_pairs": [
+    "Rear_ArchA+Rear_ArchB",
+    "Rear_ArchA+Rear_Hand0",
+    "Rear_ArchA+Rear_Hand1",
+    "Rear_ArchA+Rear_Hand2",
+    "Rear_ArchA+Rear_Hand3",
+    "Rear_ArchA+Rear_Hand4",
+    "Rear_ArchB+Rear_Hand0",
+    "Rear_ArchB+Rear_Hand1",
+    "Rear_ArchB+Rear_Hand2",
+    "Rear_ArchB+Rear_Hand3",
+    "Rear_ArchB+Rear_Hand4",
+    "Rear_Hand0+Rear_Hand1",
+    "Rear_Hand0+Rear_Hand3",
+    "Rear_Hand0+Rear_Hand4",
+    "Rear_Hand1+Rear_Hand2",
+    "Rear_Hand2+Rear_Hand3",
+    "Rear_Hand3+Rear_Hand4"
+   ]
+  },
+  "rear_extra": {
+   "plain_p95_L": 36.4,
+   "border_dark_pct": 98.4
+  }
+ },
+ "U8b_spot": {
+  "tones": {
+   "APL": 56.3,
+   "luma_lt12_pct": 9.0,
+   "top18_all_L_p90": 44.6,
+   "brightest2000_centroid": [
+    0.404,
+    0.333
+   ]
+  }
+ },
+ "U8_side": {
+  "tones": {
+   "APL": 21.4,
+   "luma_lt12_pct": 35.0,
+   "APL_through_glass": 19.1,
+   "top18_sky_L_p90": 2.8,
+   "top18_all_L_p90": 6.9,
+   "band_L_by_az": {},
+   "band_peak_L": null,
+   "L_gt90_outside_wound_pct": 0.02,
+   "brightest2000_centroid": [
+    0.652,
+    0.487
+   ],
+   "brightest2000_in_wound_pct": 0.0
+  },
+  "periodicity_fft_peak_over_median": {
+   "Near_1": {
+    "all_bins": 75.1,
+    "ring_band": 6.6,
+    "ring_band_bins": 406
+   }
+  }
+ },
+ "U8_near": {
+  "tones": {
+   "APL": 20.4,
+   "luma_lt12_pct": 33.6,
+   "APL_through_glass": 19.5,
+   "top18_sky_L_p90": 2.9,
+   "top18_all_L_p90": 4.7,
+   "band_L_by_az": {},
+   "band_peak_L": null,
+   "L_gt90_outside_wound_pct": 0.0,
+   "brightest2000_centroid": [
+    0.013,
+    0.37
+   ],
+   "brightest2000_in_wound_pct": 0.0
+  },
+  "periodicity_fft_peak_over_median": {
+   "Near_1": {
+    "all_bins": 36.0,
+    "ring_band": 3.4,
+    "ring_band_bins": 329
+   }
+  }
+ }
+}

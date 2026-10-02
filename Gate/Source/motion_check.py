@@ -7,7 +7,8 @@ import os
 import numpy as np
 import gate_layout as G
 
-LIMIT = dict(colossus=0.5, colossus_bg=0.5, mid=1.0, rear=1.0, surge=0.5, near=None)
+LIMIT = dict(colossus=0.5, colossus_bg=0.5, mid=1.0, rear=1.0, surge=1.0, near=None)   # round 4: 'surge' = the multitude
+# (150 3D arms rising U7 - 5 .. U7b, crown <= ~1 deg/s: the mid-layer convention, a documented deviation, README §12)
 
 if __name__ == '__main__':
     lay = G.build_layout()
@@ -70,7 +71,7 @@ if __name__ == '__main__':
         print('eye', o)
     tide_rows = []
     import json as _j
-    cells = _j.load(open(os.path.join(G.LAN, 'deliver', 'Tentacles', 'Textures', 'TentacleTide_Atlas.json')))['cells']
+    cells = None      # round 4: build_tide always uses the v3 cells (the v2.1 atlas json is in deliver/Tentacles/_superseded~)
     for td in G.build_tide(cells):     # tide rise: the crest's own elevation speed from the U7b eye (limit ~0.3)
         a = td['anim'][0]
         e = G.E_HERO

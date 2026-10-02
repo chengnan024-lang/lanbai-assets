@@ -17,13 +17,16 @@ for d in ('FBX', 'Source'):
     os.makedirs(os.path.join(DEL, d), exist_ok=True)
 
 QUEUE = {'Tear_CloudGlow': 2988, 'Tear_SkyFolds': 2990, 'Tear_Halo': 2992, 'Tear_Lens': 2994, 'Tear_Rip': 2995,
-         'Tear_Fibres': 2996, 'Tear_Shaft': 2998, 'Tear_Flap': 2450}
-PART = {'Tear_Lens': 'Lens', 'Tear_Rip': 'Rip', 'Tear_Flap': 'Flap', 'Tear_Fibres': 'Fibre', 'Tear_Halo': 'Halo',
-        'Tear_Shaft': 'Shaft', 'Tear_SkyFolds': 'Folds', 'Tear_CloudGlow': 'CloudGlow'}
+         'Tear_Shaft': 2998, 'Tear_Flap': 2450, 'Tear_FootSkyline': 2989, 'Tear_FootSkylineIn': 2989, 'Tear_LightLane': 2989}
+PART = {'Tear_Lens': 'Lens', 'Tear_Rip': 'Rip', 'Tear_Flap': 'Flap', 'Tear_Halo': 'Halo',
+        'Tear_Shaft': 'Shaft', 'Tear_SkyFolds': 'Folds', 'Tear_CloudGlow': 'CloudGlow',
+        'Tear_FootSkyline': 'Skyline', 'Tear_FootSkylineIn': 'Skyline', 'Tear_LightLane': 'Lane'}
 TEXOF = {'Tear_Lens': 'Tear_Emission_2048x512.png', 'Tear_Rip': 'Tear_Rip_1024x128.png',
          'Tear_Flap': 'Tear_Flaps_1024.png', 'Tear_Fibres': 'Tear_Fibres_1024.png', 'Tear_Halo': 'Halo_512.png',
          'Tear_Shaft': 'Shaft_Gradient_256x1024.png', 'Tear_SkyFolds': 'Tear_SkyFolds_1024.png',
-         'Tear_CloudGlow': 'Halo_512.png'}
+         'Tear_CloudGlow': 'Halo_512.png', 'Tear_FootSkyline': 'Tear_FootSkyline_1024x160.png',
+         'Tear_FootSkylineIn': 'Tear_FootSkylineIn_512x160.png',
+         'Tear_LightLane': '(none: procedural; any white texture)'}
 
 
 def clear():
@@ -71,7 +74,7 @@ def main():
         return [round(float(-v[0]), 5), round(float(v[2]), 5), round(float(-v[1]), 5)]
     fills = json.load(open(os.path.join(os.path.dirname(HERE), 'tear_fills.json')))
     lay = {
-        'about': 'Lanbai tear kit v2 (art bible 6.4, 8.1 #6). Unity object space of Tear_Root. The kit faces +Z '
+        'about': 'Lanbai tear kit v6 (gate round 8 = refine round 4; art bible 6.4, 8.1 #6). Unity object space of Tear_Root. The kit faces +Z '
                  '(put the bus on the +Z side, i.e. rotate the root so +Z points at the bus); +Y up; the pivot is the '
                  'lens axis at cloud-top height. Root scale 1 = tear height H 1000 m above the cloud top at FULL '
                  'opening. Uniform scale = H / 1000.',
@@ -96,8 +99,23 @@ def main():
         'flaps': {f['name']: dict(side='right' if f['side'] > 0 else 'left', fold_span_t_m=[f['t0'], f['t1']],
                                   length_m=f['length'], band_in_Tear_Flaps_1024=K.FLAP_BAND[f['name']])
                   for f in T.FLAPS},
+        'foot_clouds_retired': 'v6: the five v5 FootCloud cards are out of the kit (a front-lit pedestal at U7, white crumbs '
+                               'at U8): Tear_FootSkyline + Tear_LightLane replace them (README_Tear v6)',
+        'foot_skyline': dict(mesh='Tear_FootSkyline', front_toward_bus_kit_m=K.SKYLINE_FRONT,
+                             half_width_in_lens_half_widths=K.SKYLINE_WS, z_kit_m=list(K.SKYLINE_Z),
+                             texture='Tear_FootSkyline_1024x160.png (A = skyline alpha, R = backlit rim; straight alpha)',
+                             sink_note='Udon may lower it by FOOT_CLOUD_SINK (GateLayout_v2.json tear.fades) x 0 (round 8: it '
+                                       'STAYS to U9: it hides the lens / cloud junction)'),
+        'foot_skyline_inner': dict(mesh='Tear_FootSkylineIn', front_toward_bus_kit_m=K.SKYLINE_IN_FRONT,
+                                   half_width_in_lens_half_widths=K.SKYLINE_IN_WS, z_kit_m=[round(z, 2) for z in K.SKYLINE_IN_Z],
+                                   texture='Tear_FootSkylineIn_512x160.png (A = low billow row, R = backlit rim; straight alpha)',
+                                   note='v6.1 (gate round 9): the white ends on billows, not on a straight lens / flat cloud '
+                                        'line (U8 forward); material = a copy of Tear_FootSkyline with this texture'),
+        'light_lane': dict(mesh='Tear_LightLane', half_width_kit_m=K.LANE_HALF, length_kit_m=K.LANE_LEN,
+                           note='Part LANE (Blend DstColor One): the lane is computed per pixel from the eye; the quad only '
+                                'covers it'),
         'halo_cards': [dict(width_m=w, height_m=h, behind_lens_m=d, breath_phase_lag=ph, gain_uv2x=g)
-                       for (w, h, d, ph, g) in K.HALO_CARDS],
+                       for (w, h, d, ph, g, *_r) in K.HALO_CARDS],
         'shafts': [dict(start_os=u(T.P(s['t'], s['a'], -6.0)[()]), axis_os=u(K.shaft_axis(s)),
                         half_width_m=round(s['half_width'], 1), length_m=round(s['length'], 1),
                         yaw_deg=round(s['yaw'], 1), pitch_deg=round(s['pitch'], 1)) for s in K.shaft_layout()],

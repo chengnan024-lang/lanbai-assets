@@ -2,6 +2,40 @@
 
 新的在上面。
 
+## 2026-10-02 22:00（北京）· 🐙 触手之门定稿（Blender 阶段）：`Gate/`、`Tentacles/`、`Tear/` v6.1
+**这一条取代下面 10-02 07:40 那份 round 2 存档。** 门又过了两轮（美术和技术评审各两次，外加我自己审），画面上这一版是定稿；剩下的弱点大多要等真的车和真的 Unity 画面才能判断。**现在不用动，等你恢复后再做。**
+- **先读 `Gate/README_GateLayout.md`。** 路径对照：README 里的 `gate/…` = 仓库 `Gate/…`，`deliver/Tear` = `Tear/`，`deliver/Tentacles` = `Tentacles/`。
+- `Gate/`：
+  - `GateLayout_v2.json`：唯一的数据源。有 GateRoot 时间曲线、64 个触手实例的位姿、相位、每个实例的材质参数和升起时间，还有 360 片远潮、机位、灯、雾。
+  - `GateLayout_v2.fbx`：空物体摆放，读回核对过，位置误差 5 mm 以内。
+  - `GateArms_v4.fbx`：112 个物体，每个实例自带 LOD0/1/2。
+  - `GateMultitude_v2.fbx`：远处那一群臂，12 种姿态。
+  - `TentacleTide_v2.fbx`：远潮。
+  - `Shaders/`：TentacleSway v2.7c、GateAirSky v3、Tide v2.2，以及天空和雾共用的 `LanbaiGateSky.cginc`。
+  - `Textures/`、`Renders/`（定帧 + 指标）、`Source/`（Blender 脚本）。
+- `Tear/`：裂口套件 v6.1。裂口有了深度、毛边、张力褶、垂下来的布片和脚下的云。
+- `Tentacles/`：触手库（A–H 八种，含贴图和 shader）。
+- 跟 round 2 比改了什么：
+  - 画面压暗了，上半天接近黑，裂口是唯一最亮的地方；
+  - 触手被裂口的光和月光勾出了边，抓布边的指尖改成缠绕；
+  - 远处加了一群臂，云塔保留；
+  - 车内的目的地牌改成空白；
+  - 后窗外改成几条巨臂在车后合拢；
+  - 天窗镜头重新构图。
+- 已知弱点（README §13）：
+  - 缩略图尺寸下，裂口读起来像一道细长的缝；
+  - 远处那群臂体积感不够；
+  - U8a 天窗里白色只占约 40%，右下角那团暗色的弧要等真车定了视角再调；
+  - U8fwd 偏亮（APL 43）。
+- **所有 shader 和 C# 都没在 Unity 里编译过**（shader 只用 slang 查过语法）。
+- **你恢复后的第一件事**：
+  1. 导入门，按 README 搭起来。
+  2. 从主座位、在 U7（155.10 s）截一张图。
+  3. 记一下这一幕的帧时间（ms）。
+  4. 推到 `FromLocal/gate_test/`。
+
+  我对照 `Gate/Renders/U7_engelein.png` 核对，看 Unity 里能还原几成，再决定哪些要改成更省的做法。
+
 ## 2026-10-02 07:40（北京）· 🐙 触手之门 round 2 存档：`Gate/`、`Tentacles/` v2.1、`Tear/` v4.1
 **现在不用动，等你恢复后再做。** 这是门的第二轮成果，先存一份；第三轮（裂口内部的深度、布的厚度、触手的边光、对比度）正在做，做完会覆盖这里，到时另写一条。
 - `Gate/`：`GateLayout_v2.json`（唯一的数据源：约定、GateRoot 时间曲线、50 个触手实例、360 片远潮、机位、灯、雾）、`GateLayout_v2.fbx`（空物体摆放）、`GateArms_v3.fbx`（每个实例自带 LOD0/1/2）、`TentacleTide_v2.fbx`、`Shaders/`（TentacleSway v2.5、Tide v2.2）、`Textures/`、`Renders/`（定帧 + 指标）、`Source/`（Blender 脚本）。**先读 `Gate/README_GateLayout.md`**；里面写的 `gate/…` 就是仓库里的 `Gate/…`。

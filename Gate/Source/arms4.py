@@ -27,10 +27,20 @@ _R4 = PchipInterpolator(*map(np.array, zip(*RAD4)))
 CUSTOM = {}
 
 
-def rad4(u, thick=1.0):
-    """r / R_root at arc fraction u. thick > 1 keeps the body heavier for longer (pillars)."""
+def rad4(u, thick=1.0, swell=None):
+    """r / R_root at arc fraction u. thick > 1 keeps the body heavier for longer (pillars). round 8: swell = (u0, amount,
+    width): a muscular girth swell (+amount) centred at u0 (awe r4 M4: the rear arch read as a tapering horn / tusk)."""
     u = np.clip(np.asarray(u, float), 0.0, 1.0)
-    return _R4(u ** thick)
+    r = _R4(u ** thick)
+    if swell:
+        u0, am, w = swell
+        r = r * (1.0 + am * np.exp(-((u - u0) / w) ** 2))
+    return r
+
+
+def rad_key(key, u):
+    c = CUSTOM[key]
+    return rad4(u, c['thick'], c.get('swell'))
 
 
 # ------------------------------------------------------------------------------------------------ curves
@@ -109,6 +119,45 @@ def hook_end(ctrl, radius, turn_deg, toward, n=5, tighten=0.4):
     return C
 
 
+def coil_end(ctrl, centre, axis, radius, turns=1.25, pitch=None, handed=1, n_per_turn=14, taper=0.75):
+    """round 4 (AD round 3 item 2: 'grips read as crab claws: make them tentacle tips COILING 1-1.5 turns around the
+    cloth edge, pulling it'): replace the last control point by a helix round the hem. centre = a point on the hem's
+    axis, axis = the hem's tangent (the coil winds DOWN it), radius = coil radius (m), pitch = advance per turn (m,
+    default 2 x radius). The finger arrives on the side it comes from, then wraps `turns` times, tightening."""
+    C = [np.asarray(c, float) for c in ctrl[:-1]]
+    c0 = np.asarray(centre, float)
+    ax = np.asarray(axis, float)
+    ax = ax / np.linalg.norm(ax)
+    come = C[-1] - c0
+    e1 = come - come.dot(ax) * ax
+    e1 /= np.linalg.norm(e1)
+    e2 = np.cross(ax, e1) * handed
+    pitch = 2.0 * radius if pitch is None else pitch
+    nt = int(max(4, round(turns * n_per_turn)))
+    # arrive TANGENTIALLY: start the helix a quarter turn early, where its tangent continues the finger's direction
+    arr = c0 - C[-1]
+    arr /= np.linalg.norm(arr)
+    best = None
+    for th0, hs in ((-0.5 * math.pi, 1), (0.5 * math.pi, 1), (-0.5 * math.pi, -1), (0.5 * math.pi, -1)):
+        e2h = e2 * hs
+        tg = -e1 * math.sin(th0) + e2h * math.cos(th0)
+        sc = float(tg.dot(arr))
+        if best is None or sc > best[0]:
+            best = (sc, th0, e2h)
+    _, th0, e2h = best
+    # a lead-in point between the last control point and the helix start (no kink)
+    p_start = c0 + radius * (e1 * math.cos(th0) + e2h * math.sin(th0))
+    tg0 = -e1 * math.sin(th0) + e2h * math.cos(th0)
+    lead = min(4.0 * radius, 0.55 * float(np.linalg.norm(C[-1] - c0)))     # never past the previous control point
+    C.append(p_start - tg0 * lead)
+    for i in range(nt + 1):
+        f = i / nt
+        th = th0 + 2 * math.pi * turns * f
+        r = radius * (1.0 - (1.0 - taper) * f)
+        C.append(c0 + r * (e1 * math.cos(th) + e2h * math.sin(th)) - ax * pitch * turns * f)
+    return C
+
+
 # ------------------------------------------------------------------------------------------------ braid
 def braid(axis_ctrl, fingers, n_axis=600, turns=0.6, rho_k=0.78, phase0=0.0, n=1601):
     """a BUNDLE = one forearm that becomes a hand. axis_ctrl runs from the shared root (under the cloud) to the wrist;
@@ -134,7 +183,7 @@ def braid(axis_ctrl, fingers, n_axis=600, turns=0.6, rho_k=0.78, phase0=0.0, n=1
 
 
 # ------------------------------------------------------------------------------------------------ registry
-def register(key, P_world, R_root, phase, lods=((40, 210), (24, 120), (12, 48)), thick=1.0, vofs=0.0):
+def register(key, P_world, R_root, phase, lods=((40, 210), (24, 120), (12, 48)), thick=1.0, vofs=0.0, swell=None):
     """register a custom gate variant: P_world = dense centreline (CF metres); the variant's local frame is the
     world frame translated to P_world[0] (instance R = I, scale = 1). Returns the root (CF)."""
     P_world = np.asarray(P_world, float)
@@ -143,7 +192,7 @@ def register(key, P_world, R_root, phase, lods=((40, 210), (24, 120), (12, 48)),
     BL.VARIANTS[key] = dict(L=cl['L'], R=float(R_root), heavy=1.0, phase=float(phase), vofs=float(vofs),
                             lods=[[tuple(l)] for l in lods], custom=True, thick=float(thick))
     BL._CLINE[key] = cl
-    CUSTOM[key] = dict(thick=float(thick))
+    CUSTOM[key] = dict(thick=float(thick), swell=tuple(swell) if swell else None)
     return root
 
 
@@ -154,7 +203,7 @@ def is_custom(key):
 def rel_radius(key, u):
     """r / R_root of any gate variant (custom or library)."""
     if key in CUSTOM:
-        return rad4(u, CUSTOM[key]['thick'])
+        return rad_key(key, u)
     sp = BL.VARIANTS[key]
     return BL.radius_profile(u, sp.get('heavy', 1.0), (sp['phase'] * 7.3) % 1.0)
 
@@ -171,7 +220,7 @@ def variant_parts(key, lod=0):
     th = CUSTOM[key]['thick']
     seg, rings = sp['lods'][lod][0]
     wseed = (sp['phase'] * 7.3) % 1.0
-    p = BL.make_tube(cl, lambda uu: R * rad4(uu, th), seg, rings, R, lambda uu: np.asarray(uu, float),
+    p = BL.make_tube(cl, lambda uu: R * rad_key(key, uu), seg, rings, R, lambda uu: np.asarray(uu, float),
                      v_offset=sp.get('vofs', 0.0), lump_seed=wseed * 6.0, sigma_frac=0.003, rmin_frac=0.012,
                      vmin_frac=0.03)
     p['name'] = 'core'
@@ -206,7 +255,7 @@ def occlusion_map(key, n=512):
     the concave side of each bend (scaled by strain), R = macro height (colossi), G = occlusion."""
     orig = BL.radius_profile
     th = CUSTOM[key]['thick']
-    BL.radius_profile = lambda u, heavy=1.0, wob_seed=0.0: rad4(u, th)
+    BL.radius_profile = lambda u, heavy=1.0, wob_seed=0.0: rad_key(key, u)
     added = False
     if is_colossus(key) and key not in BL.MACRO:
         BL.MACRO[key] = 1.0

@@ -26,7 +26,8 @@ HALF_W = 1.04
 FLOOR_Y = 0.62
 CEIL_Y = 2.45
 WS_BOT, WS_TOP = 1.36, 2.24     # windscreen glass bottom / top (el -15 / +22 from the eye at 1.3 m)
-SKY_C = np.array([0.42, CEIL_Y, 2.75])   # skylight centre (above the door step, in front of the hero seat)
+SKY_C = np.array([0.55, CEIL_Y, 2.80])   # skylight centre; round 4: straight above-ahead of the hero seat (az 0, el 45 from the
+                                         # seated eye), so at U8 + 7 the wound fills it (r3: 0.42 / 2.75, az -10.5)
 SKY_HALF = 0.30
 
 
@@ -90,7 +91,9 @@ class Shell:
 def build(t, sh, look, lamps):
     """the shell + cabin lights; lamps = [moon, tear, fill] sun objects (light linking set here)."""
     S = Shell(t)
-    paint = S.mat('Wall', lin('#D9D4C5'), 0.55)
+    # round 8 (tech r4 m10): the placeholder shell must not be the brightest thing in the side frames: those shots
+    # darken the paint (look shell_paint); the wipers are no longer a mirror (roughness 0.25 -> 0.55: U8fwd sill glint)
+    paint = S.mat('Wall', lin(look.get('shell_paint', '#D9D4C5')), 0.55 if 'shell_paint' not in look else 0.7)
     ceil = S.mat('Ceiling', lin('#E2DDCF'), 0.75)
     rubber = S.mat('Seal', lin('#2B2B2B'), 0.85, spec=0.15)
     dash = S.mat('Dash', lin('#353637'), 0.8, spec=0.25)
@@ -101,6 +104,62 @@ def build(t, sh, look, lamps):
     linen = S.mat('Linen', lin('#262626'), 0.9, spec=0.2)
     bake = S.mat('Bakelite', lin('#2E2E2E'), 0.45)
     W, fz = HALF_W, FRONT_Z
+    if look.get('clean_shell', 0) > 0:
+        # round 4 (AD round 3 item 6: 'the bus shell is a PLACEHOLDER: clean framing only'): U8a sees ONE flat dark
+        # ceiling with the 0.6 m skylight in a 4 cm dark frame, the light falling in (beam + dust), nothing else
+        # the floor spot (L* 60-75) bounces a faint cold light onto the ceiling (Unity: the cabin lightmap)
+        dark = S.mat('CeilDark', lin('#16171B'), 0.85, spec=0.1, emit=np.array(lin('#2A2E3A')), emit_k=look.get('ceil_bounce', 0.55))
+        sx0, sx1 = SKY_C[0] - SKY_HALF, SKY_C[0] + SKY_HALF
+        sz0, sz1 = SKY_C[2] - SKY_HALF, SKY_C[2] + SKY_HALF
+        E = 6.0
+        for nm, lo, hi in (('RoofA', (-E, CEIL_Y, -E), (E, CEIL_Y + 0.08, sz0)),
+                           ('RoofB', (-E, CEIL_Y, sz1), (E, CEIL_Y + 0.08, E)),
+                           ('RoofC', (-E, CEIL_Y, sz0), (sx0, CEIL_Y + 0.08, sz1)),
+                           ('RoofD', (sx1, CEIL_Y, sz0), (E, CEIL_Y + 0.08, sz1))):
+            S.box(nm, lo, hi, dark)
+        fw = 0.04
+        frame = S.mat('SkyFrameDark', lin('#0E0F12'), 0.6, spec=0.3)
+        # round 8 (awe r4 M3 / tech M7: 'no light visibly falls in'): the REVEAL faces of the well catch the wound's light
+        # (L* 40-60, brighter toward the glass) and the ceiling round the opening glows faintly (L* 30 -> 20 within 0.5 m)
+        if look.get('well_lit', 0.0) > 0:
+            mw, bw_ = new_mat('SkyWellLit')
+            gz = bw_.sep(bw_.N('ShaderNodeTexCoord').outputs['Generated'])[2]
+            wl = bw_.scale(bw_.rgb(tuple(np.array(lin('#9A98B4')))), bw_.math('MULTIPLY', bw_.smooth(gz, 0.0, 1.0, 0.45, 1.0), look['well_lit']))
+            bw_.out(bw_.emission(wl))
+            frame = mw
+        for nm, lo, hi in (('SkyF0', (sx0 - fw, CEIL_Y - 0.02, sz0 - fw), (sx1 + fw, CEIL_Y + 0.12, sz0)),
+                           ('SkyF1', (sx0 - fw, CEIL_Y - 0.02, sz1), (sx1 + fw, CEIL_Y + 0.12, sz1 + fw)),
+                           ('SkyF2', (sx0 - fw, CEIL_Y - 0.02, sz0), (sx0, CEIL_Y + 0.12, sz1)),
+                           ('SkyF3', (sx1, CEIL_Y - 0.02, sz0), (sx1 + fw, CEIL_Y + 0.12, sz1))):
+            S.box(nm, lo, hi, frame)
+            if look.get('well_lit', 0.0) > 0:      # an unlit glow (Unity: unlit), not a lamp for the rest of the cabin
+                S.objs[-1].visible_diffuse = False
+                S.objs[-1].visible_glossy = False
+        if look.get('well_ring', 0.0) > 0:     # the glow ring on the ceiling round the opening (additive, under it)
+            mr, br = new_mat('SkyRing')
+            uvr = br.uv('UVMap')
+            ur, vr, _ = br.sep(uvr)
+            kr = br.math('MULTIPLY', br.math('POWER', vr, 2.5), look['well_ring'])
+            br.out(br.add(br.emission(br.scale(br.rgb(tuple(np.array(lin('#5C5F70')))), br.math('POWER', kr, 1.6))), br.transparent()))
+            Rr = SKY_HALF + 0.5
+            y_ = CEIL_Y - 0.005
+            # four trapezoids round the opening; UV v = 0 at the outer edge -> 0.5 at the opening
+            for i, ((ax, az), (bx, bz)) in enumerate((((-1, -1), (1, -1)), ((1, -1), (1, 1)), ((1, 1), (-1, 1)), ((-1, 1), (-1, -1)))):
+                po = [(SKY_C[0] + ax * Rr, y_, SKY_C[2] + az * Rr), (SKY_C[0] + bx * Rr, y_, SKY_C[2] + bz * Rr)]
+                pi = [(SKY_C[0] + bx * (SKY_HALF + fw), y_, SKY_C[2] + bz * (SKY_HALF + fw)), (SKY_C[0] + ax * (SKY_HALF + fw), y_, SKY_C[2] + az * (SKY_HALF + fw))]
+                S.quad('SkyRing%d' % i, po[0], po[1], pi[0], pi[1], mr)
+                S.objs[-1].visible_shadow = False
+                S.objs[-1].visible_diffuse = False
+                S.objs[-1].visible_glossy = False
+        S.box('Floor', (-E, FLOOR_Y - 0.1, -E), (E, FLOOR_Y, E), floor)
+        skylight_spot(S, dict(look, spot=look.get('spot', 1.0)))
+        m, b = new_mat('SkyGlassClean')
+        tr = b.N('ShaderNodeBsdfTransparent'); tr.inputs['Color'].default_value = (0.94, 0.945, 0.94, 1)
+        b.out(tr.outputs[0])
+        S.quad('SkyGlass', (sx0, CEIL_Y + 0.1, sz0), (sx1, CEIL_Y + 0.1, sz0), (sx1, CEIL_Y + 0.1, sz1), (sx0, CEIL_Y + 0.1, sz1), m)
+        S.objs[-1].visible_shadow = False
+        _link_lamps(S, lamps)
+        return S
     # ---- floor, roof (with the skylight hole), walls below / above the windows, nose
     S.box('Floor', (-W, FLOOR_Y - 0.1, -3.5), (W, FLOOR_Y, 3.5), floor)
     sx0, sx1 = SKY_C[0] - SKY_HALF, SKY_C[0] + SKY_HALF
@@ -159,7 +218,7 @@ def build(t, sh, look, lamps):
                        ('SealT', (-W, WS_TOP - 0.02, fz - 0.02), (W, WS_TOP + 0.03, fz + 0.03))):
         S.box(nm, lo, hi, rubber)
     # parked wipers (outside the glass, along its bottom edge): dark arms whose top edge catches the wound's light
-    wip = S.mat('Wiper', lin('#2A2B2C'), 0.25, 1.0)
+    wip = S.mat('Wiper', lin('#2A2B2C'), 0.55, 1.0)
     for x0, x1 in ((-0.95, -0.12), (0.05, 0.86)):
         V = np.array([[x0, WS_BOT + 0.035, fz + 0.035], [x1, WS_BOT + 0.075, fz + 0.035], [x1, WS_BOT + 0.095, fz + 0.04],
                       [x0, WS_BOT + 0.05, fz + 0.04]])
@@ -191,8 +250,14 @@ def build(t, sh, look, lamps):
     # glass: windscreen (flat front + wrap-round corners), door glass, side windows, skylight
     glass(S, look)
     objs = S.objs
+    _link_lamps(S, lamps)
+    return S
+
+
+def _link_lamps(S, lamps):
     # light linking: the tear light is shadowed only by the shell (Unity: no shadows; the skylight spot is a card
     # there); the fill-from-below never lights the cabin
+    objs = S.objs
     moon, tear_l, fill = lamps
     col = bpy.data.collections.new('BusShell')
     for o in objs:
@@ -261,9 +326,12 @@ def destination_blind(S, fz):
     tx = b.tex(img, b.uv('UVMap'))
     r_, g_, _ = b.sepc(tx.outputs['Color'])
     lin_ = np.array(lin('#262626'))
-    base = b.scale(b.rgb(tuple(lin_ * np.array(lin('#232A3A')) * 0.3 * 4.0)), b.math('ADD', 0.6, b.math('MULTIPLY', g_, 0.4)))
-    letters = b.scale(b.rgb(tuple(np.array(lin('#F2F5F0')) * 2.5 * 0.055)), r_)     # run 6: x 0.055 (was 0.16: a grey title card); only the wound behind it lights the letters through the linen
-    b.out(b.emission(b.rgbadd(base, letters)))
+    # round 4 (AD round 3 item 4: 'from inside it still reads 白蓝'): the INSIDE face is BLANK - a dark lightbox back
+    # (#0A0C12) with a faint UNIFORM glow (#1A1E28, L* ~9), weave contrast <= 2 L*, no glyphs. The outside face keeps
+    # 「蓝白」 for Acts 1 / 12 (the texture's R channel, read only by the outside material; README §0).
+    # round 8 (tech r4 m13): x 2.3 -> screen L* ~7 under the S4 grade (was ~3); README §8.5: screen target L* 6-8
+    base = b.scale(b.rgb(tuple(np.array(lin('#1A1E28')) * 2.3)), b.math('ADD', 0.96, b.math('MULTIPLY', g_, 0.04)))
+    b.out(b.emission(base))
     # behind the top strip of the windscreen's left pane (as on a real bus: read from outside through the glass;
     # from the hero seat it hangs at el +20..+23, az -42..-11: left of the wound, never over it)
     x0, x1 = -0.74, -0.02
@@ -416,8 +484,8 @@ def skylight_spot(S, look):
     gx = b.math('SUBTRACT', b.math('FRACT', b.math('DIVIDE', px, 0.05)), 0.5)
     gy = b.math('SUBTRACT', b.math('FRACT', b.math('DIVIDE', py, 0.05)), 0.5)
     stud = b.smooth(b.math('SQRT', b.math('ADD', b.math('MULTIPLY', gx, gx), b.math('MULTIPLY', gy, gy))), 0.25, 0.18)
-    e = b.math('MULTIPLY', b.math('MULTIPLY', box, lens), b.math('ADD', 0.86, b.math('MULTIPLY', stud, 0.14)))
-    col = np.array(lin('#E2E8F3')) * look.get('spot_gain', 0.85) * look.get('spot', 1.0)
+    e = b.math('MULTIPLY', b.math('MULTIPLY', box, lens), b.math('ADD', 0.944, b.math('MULTIPLY', stud, 0.056)))   # round 8 (m1): studs x 0.4 (a speaker grille)
+    col = np.array(lin('#E2E8F3')) * look.get('spot_gain', 1.15) * look.get('spot', 1.0)      # round 4 (m7): luma 170-200
     b.out(b.add(b.emission(b.scale(b.rgb(tuple(col)), e)), b.transparent()))
     S.quad('SkySpot', qe[0], qe[1], qe[2], qe[3], m)
     # the beam: the prism between the skylight and the spot, additive, brightest near the floor
@@ -434,17 +502,21 @@ def skylight_spot(S, look):
         j = (i + 1) % 4
         S.quad('SkyBeam%d' % i, q[i], q[j], top[j], top[i], mb)
     # dust in the beam (300 motes, 3-6 mm, bright only inside the beam)
+    if look.get('dust_gain', 1.2) <= 0:          # round 8 (U8a): no dust at all (specks over the shell / the white)
+        for o in S.objs[-6:]:
+            o.visible_shadow = False
+        return
     rng = np.random.default_rng(4)
     md, bd = new_mat('Dust')
-    bd.out(bd.emission(tuple(np.array(lin('#E2E8F3')) * 3.0 * look.get('spot', 1.0))))
+    bd.out(bd.emission(tuple(np.array(lin('#E2E8F3')) * look.get('dust_gain', 1.2) * look.get('spot', 1.0))))
     V, F = [], []
     for n in range(300):
         a, c = rng.random(), rng.random()
-        f = rng.random()
+        f = rng.random() ** 0.45            # round 4 (M5): denser near the skylight, only inside the beam
         lo = q[0] + (q[1] - q[0]) * a + (q[3] - q[0]) * c
         hi = top[0] + (top[1] - top[0]) * a + (top[3] - top[0]) * c
         p = lo + (hi - lo) * f
-        r = rng.uniform(0.0015, 0.003)
+        r = rng.uniform(0.0007, 0.0014)     # round 4: <= 1.5 px (3-6 mm read as a starfield)
         k0 = len(V)
         V += [p + np.array([r, 0, 0]), p + np.array([-r, 0, 0]), p + np.array([0, r, 0]), p + np.array([0, 0, r])]
         F += [(k0, k0 + 2, k0 + 3), (k0 + 1, k0 + 3, k0 + 2), (k0, k0 + 1, k0 + 2), (k0, k0 + 3, k0 + 1)]

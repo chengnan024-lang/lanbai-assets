@@ -1,18 +1,97 @@
-# 蓝白 / Lanbai：裂口套件 v4（Tear Kit）
+# 蓝白 / Lanbai：裂口套件 v6.1（Tear Kit）
 
 依据：`art/ART_BIBLE.md` §6·4「裂口的几何」「发光体」、§6·4c、§8.1 #6，以及 `SPEC.md` 末尾的 ★★ v2 覆盖条款。
 云端（我们）负责全部美学；实现方在 Unity 2022.3（Built-in RP、VRChat SDK、UdonSharp、PPv2）里落地。
 
 > **⚠ `Lanbai_Tear.shader` 与 `LanbaiTearParams.cs` 都是在没有 Unity 编译器的情况下写的，未编译。** 请实现方编译、在头显里**闭一只眼、再闭另一只眼**各看一遍（SPS-I）。
 >
-> 旧的第一版（读起来像“白色火焰 / 水晶片”，已被否决）整个挪到了 `_v1~/`，第二版在 `_v2~/`（文件夹名带 `~`，Unity 不导入，避免两份 `Lanbai/Tear`）。不要用。
+> 旧的第一版（读起来像“白色火焰 / 水晶片”，已被否决）整个挪到了 `_v1~/`，第二版在 `_v2~/`，v4 / v4.1 的贴图在 `_v4_textures~/` 与 `gate/_r3/deliver_Tear~/`（文件夹名带 `~`，Unity 不导入，避免两份 `Lanbai/Tear`）。不要用。
+>
+> **`LanbaiVR.cginc` 用哪一份（技术评审 r3 m11）**：项目里有两份同名文件，内容不同。**唯一正确的是 `art/lens_tech/shaders/LanbaiVR.cginc`**（它有本 shader 用到的 `LanbaiNearFade`）；`deliver2/Rain/Shaders/LanbaiVR.cginc` 是雨那一步的分支（多了 `LanbaiCentreEyePos`、没有 `LanbaiNearFade`）。把 lens_tech 那一份拷到 `Lanbai_Tear.shader` 同一个文件夹里（Unity 先找同目录的 include）；两份最好在 Unity 一侧合并成一份（取并集）。
+
+## v6.1（门第 9 轮，2026-10-02）——只改了两处，先读这一节
+
+1. **撕裂支线 v7**（`make_rip`；v6 留作 `make_rip_v6`，v6 贴图在 `_v6_textures~/`）。v6 是一根边缘光滑的白色圆锥：它的 fbm 锯齿只有 ±1.25 m（关键帧里约 2 px），
+   而 U7 时只露出根部那三分之一，于是读成**一根白色的角 / 刺**。v7 的裂口顺着布的经纬走：
+   - 裂缝中心线是**台阶**（8–22 m 一段、错开 1.2–3.2 m，细的一端台阶变小——细的锯齿会读成闪电）；两侧唇各自有 0.6–1.6 m 的纤维状锯齿；
+   - 在 u 0.12 / 0.40 / 0.66 有三处**“还连着”的收窄**（缩到 ~25%），每处 2–3 根**深色经纱**横跨（染过色的布纱挡在白前面），其中一根断了、断头一撮白；另有 3 根单独的横纱，斜度各不相同——不是梯子；
+   - 两侧唇上有短的未染白纤维（1.5–5 m，越细的地方越少越短）；裂内亮度有起伏（25 m 格 × 0.78–1.0），最宽处略热；根部 × 0.75 → 尖端 × 0.35（同 v6），没有薰衣草色。
+   数据契约不变（同一张 `Textures/Tear_Rip_1024x128.png`、同一个材质、`_Udon_RipProgress` 不变）。对比：`gate/wip/r9/_rip7_cmp.png`（左 v6、右 v7，关键帧 1:1 放大 2 倍）。
+2. **新部件 `Tear_FootSkylineIn`**（Part = Skyline，材质 = `Tear_FootSkyline` 的副本换贴图 `Textures/Tear_FootSkylineIn_512x160.png`）：
+   在透镜前 11 套件米（~8 m）立一排**低的背光云头**（3–8 m，宽 2 × 1.5 个半宽）。原因：U8 前方的定稿里，白的底在 V 形缺口里仍有一段 40 px 的**尺子直线**——
+   那是透镜和**平的云顶面**的交线，眼睛在云顶上 ~120 m 往下看，外排缺口的尖投影在这条线下面 0.9°。这排云头挡在线前，白就收在云头上。
+   Unity 里 CloudSea 是带 alpha 的云头卡，本来就不是平面，所以这张卡是保险（1 个四边形、只在脚附近，FSE 已计入 `gate_fse.py`）。
+   网格在 `FBX/Tear_Kit.fbx`（v6.1，`verify_fbx.py` 通过：位置误差 1.7e-6，3 套 UV），放置数在 `Tear_Layout.json` → `foot_skyline_inner`。
+
+`Lanbai_Tear.shader` 没有改（v6.1 只是贴图 + 一个用现有 Part 的网格）。`Source/` 已同步（`build_kit.py` 自动拷贝）。
+
+## v6（门第 8 轮 = refine round 4，2026-10-02）
+
+依据：两份 r4 评审（`gate/critique_awe_r4.md` B1 / B4 / M3、`gate/critique_tech_r4.md` B1 / M4 / M5 / M8）+ AD 第 3 轮第 1 条（白里有纵深 + 布）。
+美术 r4 的判词：“伤口是**云做的底座上的一支蜡烛火焰**，不是天上的一道撕口”；U8 前方：白的底是一条尺子一样的直线，下面一块平的薰衣草色地板。
+v6 的改法（对比图 `gate/final/compare_r4_tear.png`，数在 `gate/README_GateLayout.md` §10）：
+
+1. **脚 = 天被撕到了云海里**：透镜下半段收成**尖的**（`tear_def` 的 `f_lo = (1 − lo^1.4)^1.4`：云顶处只有最宽处的 0.24；1.25 / 1.45 的版本在 U8 读成龙卷风的漏斗）；
+   最低 50 m 混成被照亮的雾（`F_MIST_LENS`，更白），**alpha 在一个深而参差的坡上切掉**（`CloudFootFadeN(−30, 18)`，35 m 格 / ±40 m 噪声；v5 是 −14…2 m、60 m / ±12 m）。
+2. **新部件 `Tear_FootSkyline`**（Part = Skyline）：云海自己的一排云头立在脚前（140 套件米朝车），堆成**两片分开的唇**（26 / 33 m）夹着一道 **V 形缺口**，
+   白顺着缺口流进云里；朝车的那面是云头的背光面（填 `_SkyCloud` = 后面 CloudSea 卡的月光色），轮廓是被伤口从背后照亮的边（`_FootMist × _SkyRim × 离缺口近的权重`）。
+   贴图 `Textures/Tear_FootSkyline_1024x160.png`（A = 剪影，R = 边光，直 alpha），由 `gate/gate_scene.skyline_image()` 生成。**v5 的 5 张脚部云团退役**（读成正面打光的底座 / U8 的白色碎屑），`_PART_FOOTCLOUD` 仍可编译。
+3. **新部件 `Tear_LightLane`**（Part = Lane，`Blend DstColor One`）：伤口在云顶上的光路，从脚朝眼睛（逐像素按眼睛方位算），只照亮云头、云沟仍暗。门里由 Udon 按距离缩放它的 x（README_GateLayout §2.1）。
+4. **翻布更大、不对称**：左边一片**小而高**（t 520–650、长 72 m、上举 44°）——左手的盘绕扣住它的唇；右边一片大的（t 350–650、长 150 m、上举 68°）**朝车剥开**，
+   盖住 ~20 m 的白、把唇线打断。`FLAP_SAG 0.30`、`FLAP_FLAT 0.22`；里面 × 0.55（不再是一条紫色的“衬里”）、撕边透光 × 0.6。对称的两片在 U6 读成豆荚 / 阴唇——不要回到对称。
+5. **布的边**：纤维带**断开**（亮的部分 ≤ ~50% 周长）、更亮更冷（+6 L\*、b\* −5，技术 r4 m14）；**远唇**（`FAR_LIP`：右唇里面 2–7.5% 宽的远墙，−17%）；
+   **断纱**（`THREADS6`：只从一侧唇出发、从不横跨超过局部宽度的 85%）；**散线**（`FRAYS6`：渐细的下垂簇，`FRAY_W (3.2, 0.8)`）；纤维图集改成弯曲交叉的（不再是“树干 + 分枝”，美术 r4 m2）。
+6. **薄纱**（`VEILS6`）：倾斜的柔和台阶，不再像一束光柱。
+7. **张力褶**（`make_skyfolds` v6c）：每个抓点 3 道**下垂的折痕**、互不交叉、暗面为主（v6 / v6b 的放射版读成“日芒”、草的排线）；门里覆盖值 0.55 → 1.0；
+   **U6 时 × 0.15、U7 时 × 1**（褶跟着手来：没有手时它们读成“胡须”）。
+8. **撕裂支线**（`make_rip` v6）：从根部连着的渐细线，不再有薰衣草色。
+9. **光晕 v6**：三张卡以**热核**为中心（40% H、偏右 10% 宽），较宽的两张偏左（开着的左唇亮、翻布那一侧暗），颜色 `#7A7B9C`（单独 C\* ~20，叠在光雾带上 ≤ 15；v5 `#5B57A1` C\* 45）。
+   门里随距离淡出、到 0 关 renderer（README_GateLayout §2.2）。
+10. **预深度 pass**：`_DepthPrepass = 0` 的材质在顶点阶段就把三角形裁掉（技术 r4 M5）。
+11. **CloudGlow**：叠加材质 `_NearFootCut 1`（脚 ±1.5 半宽内只有相乘的光池）、`_FootAddK 0.25`。
+
+重建：`tear/v2/make_textures.py` → `build_kit.py` → `verify_fbx.py`（`Tear_FootSkyline`、`Tear_LightLane` 在 FBX 里，父物体 `Tear_Root`，3 套 UV）。
+slang 语法 / 类型检查：**11 个 Part + 两种预深度 pass 全部通过**（`gate/Shaders/slang_check/run_check_tear6.py`；仍未在 Unity 编译）。`Source/` 已同步。
+`LanbaiTearParams.cs` 没有改（v6 的新参数都是材质属性；门的 Udon 在 README_GateLayout §2.1）。`Renders/` 里仍是旧的预览——v6 的样子以门的定稿为准（`gate/final/`）。
+
+## v5（门 round 4 = refine round 3，2026-10-02）
+
+美术总监第 3 轮的第 1 条：“裂口是一张贴纸：一块平的白 + 一圈霓虹紫的描边；布像纸。”两份 r3 评审实测：白沿轴只差 2–6 L\*（应 ≥ 18），唇和中心一样暖，
+唇外 0–0.25° 一圈恒定的 L\* 51–69、C\* 25 的“画上去的”辉光，翻布是天色的纸（L\* 32–35），脚下是暗的毛边。另有两个只在 Unity 里暴露的问题
+（BT-1 噪声随 GateRoot 爬、BT-2 `Color` 属性被二次伽马）。v5 的改法（对比图 `gate/final/compare_r3_tear.png`，数在 `gate/README_GateLayout.md` §10）：
+
+1. **白里有纵深**（`make_textures.make_emission` v5）：内部的宽度 / 中心先平滑（σ 45 m，唇的锯齿不再带进横向衰减，去掉了横条纹）；
+   亮度 `Yb = 0.95 + 1.10·(1 − sn^1.35)`（sn = 离轴的归一距离）+ 一个**偏离中心的热核**（最宽一行、偏右 10% 宽：`tear_def.T_HOT / HOT_OFF`，× 1.05）
+   × 唇的变暗 × ±8% 的雾场；颜色在**等亮度下从暖（热核）走到冷（唇、两端）**（`WARM → COOL`）。4 片**薄纱**（`VEILS5`）各有一个亮瓣、一个平台、一个暗侧，从不与透镜同形。
+2. **唇不再画辉光**。唇 = 一条断续的**纤维带**（1.6% 宽）；只在布被**拉薄**的地方（最宽的 30% 与抓点周围，`STRETCH_T / STRETCH_GRIP_SIGMA`）边缘透光
+   `#C9C2EE → #3E3C66`；6 道**张力褶**（`EDGE_FOLDS`：暗的长月牙，从抓点出发、越过唇伸到外面）；8 簇**散线**（`FRAYS`，下垂）；
+   **横跨的纱线**（`THREADS5`：3 根被背光照透的 `#BDB7D6`，带垂度、波与较粗的两端，+ 1 根断的）。v4 的唇辉光、拉链线、厚度带全部去掉。
+   发丝裂的小枝去掉。
+3. **天之布的褶**（`make_skyfolds` v5）：从伤口放射出去的软褶，按位置有增益（尖 0.3、脚 0.7、抓点 0.8），亮 0.034、暗 alpha 0.24（v4 的读法像一把“日芒”）。
+   光晕最里面那张卡 520×900 m、增益 1.5（v4 的 2.8 太紫）。
+4. **翻布 = 染过的深布**：外面 `_FlapOuterNear → _FlapOuterFar`（L\* 5–8，`_OuterSky` 默认 0）× 丝绸纹，里面 `_FlapInner`（接伤口光），光泽 0.35；
+   撕边最后 1.2–6 m 与散线**透出伤口的光**（`_FlapEdge #8F86D0` × `_FlapTrans 0.9`）；自由端**下垂**（`FLAP_SAG 0.16`：`drop = 0.16·L·rn^1.6·(0.6 + 0.4(1 − s))`），
+   卷 120° / 125°；贴图 alpha 羽化（没有再细分网格，§10）。
+5. **脚 = 被照亮的雾，不是暗毛边**：透镜最低 55 m 混成被照亮的雾 `_FootMist`（`#D8D4EE × 0.62`），只在云顶以下（−14 … +2 m）切 alpha、不切颜色；
+   新部件 **`Tear_FootCloud_0…4`**（`tear_def.FOOT_CLOUDS`：5 张背光的积云 / 小云团卡，挂点 = 唇的位置、随张开移动，薄边是被照亮的雾、厚的核是 CloudGlow × 4，
+   顶点色 R = 离轴权重、G = 高度提升）；`Tear_CloudGlow` 多一个**脚部光瓣**（`_FootGlow 2.2`、`_FootLobe`）：伤口下的云墙是画面里最亮的云（L\* 55–70）。
+6. **BT-2**：shader 里**所有颜色属性都改成 `Vector`**，填的就是**线性值**（§4 的表直接照抄）。VRChat 项目是 Linear 色彩空间，`Color` 属性会被再转一次伽马
+   （v4 的唇辉光会变成 (1.39, 0.87, 4.88)、翻布暗 13 倍）。
+7. **BT-1**：`CloudFootFade(R)` 的噪声在**云海坐标**里取样：`(posWS − _Udon_GateOrigin.xyz) / 60`、±12 m（门每帧写 `_Udon_GateOrigin` = GateRoot 的世界位置）。
+   v4 用世界坐标，Tear_Root 以 59 m/s 移动时脚会“沸腾”（2.7 格/s）。
+8. **纤维部件退役**：`Tear_Fibres` 网格不在套件里了（散线画进了透镜贴图）；`_PART_FIBRE` 仍可编译（旧材质不报错）。`Tear_Fibres_1024.png` 不再使用。
+9. **门里的淡出**（`gate/GateLayout_v2.json tear.fades`，透明预算）：CloudGlow 叠加 U8 − 2 → U8 + 1、SkyFolds U8 + 2 → U8 + 6、脚部云团 U8 − 2 → U8 + 3 **沉回云海**（`localPosition.y`）；`Tear_CloudGlow_Lit` 的 `_Intensity` 与两个 CloudGlow 材质的 `_FootGlow` U8 − 2 → U8 + 2 乘到 0.4（`POOL_FADE`：伤口填满挡风玻璃时光池不与白抢）。
+
+重建：`tear/v2/make_textures.py` → `build_kit.py` → `verify_fbx.py`（全部部件位置误差 ≤ 1.2e-4 m，3 套 UV，翻布法线 = 源，脚部云团的 UV1 / UV2 / 顶点色都在）。
+slang 语法 / 类型检查 **10 个部件全部通过**（仍未在 Unity 编译）。`Source/` 已同步。`Renders/` 里仍是 v2 的预览图——v5 的样子以门的定稿为准（`gate/final/`，裂口在每一张里；
+对比 `gate/final/compare_r3_tear.png`）。
 
 ## v4.1（门 round 3 第 6 轮，2026-10-01）——只改了一处
 - **拉链线 9 → 5 根，不再等距**：9 根等距、几乎垂直于轴线的纱线在主视觉里读成“梯子 / 缝线”（一种不该有的手术缝合联想）。现在 5 根（`tear_def.zipper_threads` run 6：间距随机且 ≥ 14 m、宽 0.55–1.2 × 6 m、两端错开 ±9 m 但永不交叉、下垂 3–9 m，第 2、4 根断开），读作“被拉长、快要断的经线”。
 - 只重新生成了 `Textures/Tear_Emission_2048x512.png`（其余贴图的生成代码没变，重跑后逐字节等价或仅噪声种子相同）；网格、shader、材质参数都没变。旧贴图在 `_v4_textures~/`（Unity 忽略 `~` 结尾的文件夹）。
 - 门的布局里，两只手各有一根手指（`Hand_L1`、`Hand_R1`）现在是**横跨白色、勾住对面唇边的鞭梢**（见 `gate/README_GateLayout.md`）。它们在透镜前方 30 m，不与 kit 的任何网格相交。
 
-## v4（门 round 3，2026-10-01）改了什么——**先读这一节**（下面的 v3 一节仍然描述数据契约）
+## v4（门 round 3，2026-10-01）改了什么（历史；下面的 v3 一节描述的数据契约 §2 已按 v5 更新）
 
 门的 round-2 评审（`gate/critique_awe_r2.md` B4、`gate/critique_tech_r2.md` M2 / M4 / minor）：v3 读起来是“一块放在石头里的水晶”，
 三层同心的内唇 + 两侧肉色的褶有**解剖学的读法**，四片翻布像锡纸 / 紫晶块，上端像闪电，天空本身没有被拉扯。v4 的改法：
@@ -72,19 +151,22 @@
 
 | 文件 | 内容 |
 |---|---|
-| `FBX/Tear_Kit.fbx` | 整个套件：空物体 `Tear_Root` 下 13 个网格（见 §2），全部在同一个物体空间里（子物体变换为单位变换）。用 `lib/export_unity.py` 导出：导入后旋转 0、缩放 1。 |
+| `FBX/Tear_Kit.fbx` | 整个套件：空物体 `Tear_Root` 下 **12 个网格（v6：透镜、2 片翻布、3 道撕裂、光晕、天之布褶、云海辉光、光束扇、`Tear_FootSkyline`、`Tear_LightLane`）**，全部在同一个物体空间里（子物体变换为单位变换）。用 `lib/export_unity.py` 导出：导入后旋转 0、缩放 1。 |
 | `FBX/Tear_ShaftCard.fbx` | 单张光束卡（给实现方在中层触手之间重新摆光束用）：轴 = 本地 +Z，长 1 m（把物体 Z 缩放成光束长度），半宽 40 m（UV2.x）。 |
 | `Lanbai_Tear.shader` | `Lanbai/Tear`：一个 shader 管所有部件，材质里用 **Part** 下拉选部件（关键字 `_PART_*`）。需要 `LanbaiVR.cginc`（已交付在 `art/lens_tech/shaders/`，放在 shader 同目录）。 |
 | `LanbaiTearParams.cs` | UdonSharp：把 4 个全局参数推给 GPU（§5）。 |
 | `Tear_Layout.json` | 机器可读：物体空间的轴向、各幕的尺寸 / 参数、分叉裂、翻卷布、光晕卡、12 张光束卡的位置、材质与渲染队列、网格面数、全部填色。 |
-| `Textures/Tear_Emission_2048x512.png` | 透镜：RGB = 填色 ÷ 4（sRGB 编码），A = 这一点盖住了多少天（核心 1、纤维部分、辉光 0）。 |
-| `Textures/Tear_Rip_1024x128.png` | 分叉裂（两道共用）：同上编码。 |
-| `Textures/Tear_Fibres_1024.png` | 8 种纤维（每种 128×1024，根在下），A = 亮度。 |
-| `Textures/Tear_Flaps_1024.png` | 4 片翻卷布的遮罩（从下到上 L1、L2、R1、R2 各 256 行）：R = 离撕边的距离 ÷ 24 m，G = 丝绸（0.5 中性），B = 撕边外的散线，A = 布的覆盖（镂空）。 |
+| `Textures/Tear_Emission_2048x512.png` | 透镜 v5：RGB = 填色 ÷ 4（sRGB 编码），A = 这一点盖住了多少天（白 1、纤维带 / 散线部分、唇外 0：**v5 唇外不画辉光**）。 |
+| `Textures/Tear_Rip_1024x128.png` | 分叉裂（两道共用）：同上编码。**v7（v6.1）**：经纬台阶、收窄处的深色横纱、唇上短纤维。 |
+| `Textures/Tear_Fibres_1024.png` | **v5 不再使用**（纤维部件退役，散线画进了透镜贴图）。 |
+| `Textures/Tear_Flaps_1024.png` | 翻布的遮罩（v4 起只有 2 片：`Tear_Layout.json flaps.*.band_in_Tear_Flaps_1024` 给出各自的行带；v5 alpha 羽化）：R = 离撕边的距离 ÷ 24 m，G = 丝绸（0.5 中性），B = 撕边外的散线，A = 布的覆盖（镂空）。 |
 | `Textures/Tear_SkyFolds_1024.png` | **新增**：伤口四周“天之布”的拉扯褶皱 + 最外一层光晕（预乘：RGB 加光，A 压暗褶谷）。 |
-| `Textures/Halo_512.png` | 紫晕径向卡：RGB = 填色 `#8275D0` × 衰减（sRGB），A = 衰减。云海辉光卡也用它。 |
+| `Textures/Halo_512.png` | 光晕径向卡：RGB = 填色（**v6 `#7A7B9C`**）× 衰减（sRGB），A = 衰减。云海辉光卡也用它。 |
+| `Textures/Tear_FootSkyline_1024x160.png` | **v6 新增**：脚前的云头剪影（A，直 alpha）+ 背光边（R = G = B）。导入：sRGB 关、Alpha Is Transparency 关、Clamp、BC7。 |
+| `Textures/Tear_FootSkylineIn_512x160.png` | **v6.1 新增**：透镜前一排低云头（A）+ 背光边（R = G = B），给 `Tear_FootSkylineIn`。导入同上。 |
 | `Textures/Shaft_Gradient_256x1024.png` | 光束卡：横向 3 束，纵向 v = 0 在裂口一端，A = 亮度。 |
-| `Renders/` | 预览（§7）。 |
+| `Renders/` | v2 的预览（§7，历史）。v5 的样子看 `gate/final/` 与 `gate/final/compare_r3_tear.png`。 |
+| （门的）`../Clouds/Cloud_Cumulus_moon.png`、`Cloud_Puff_moon.png` | v5 的脚部云团用的卡；**v6 脚部云团退役**，不再需要。 |
 | `Source/` | `Tear_Kit.blend` 与全部生成脚本（`tear_def.py` 是唯一的几何定义；`make_textures.py`、`kit_mesh.py`、`build_kit.py`、`render_tear.py`；核对用 `verify_fbx.py`、`fse.py`、`metrics.py`）。这些脚本在云端工作区 `tear/v2/` 里运行（相对路径按那里写），`python3 make_textures.py && python3 build_kit.py` 可完全重建。 |
 
 ---
@@ -93,27 +175,27 @@
 
 **物体空间（Unity，`Tear_Root` 的本地空间）：** +Y 向上；套件**正面朝 +Z**（车在 +Z 那一侧）；+X 在车上看是**左**（Unity 的 X 镜像），所以材质里的 `_TearAcrossOS`（车上看“向右”）= `(-0.99756, -0.06976, 0)`，`_TearAxisOS`（透镜轴，向上、顶端右倾 4°）= `(-0.06976, 0.99756, 0)`。原点 = 透镜轴与云顶高度的交点。根缩放 1 = 裂口在云顶以上高 **H = 1000 m**、**全开（宽 30% H）**。
 
-| 网格 | 顶点 / 三角 | 材质（Part） | 说明 |
+| 网格（v5） | 顶点 / 三角 | 材质（Part） | 说明 |
 |---|---|---|---|
-| `Tear_Lens` | 1 080 / 1 904 | Tear_Lens（Lens） | 只覆盖透镜 + 辉光的带状网格（不是大方片，省 overdraw）。脚一直裂进云海里（到云顶下 150 m）。 |
-| `Tear_Flap_L1/L2/R1/R2` | 各 1 680 / 3 190 | Tear_Flap（Flap） | 两侧各 2 片，翻卷的靛蓝丝绸；布长 150–300 m（根缩放 1），外翻后露出 ≈ 50–150 m。法线 = **外面**（染色面）。 |
-| `Tear_Rip_Branch_A/B` | 各 480 / 760 | Tear_Rip（Rip） | 两道分叉裂：U7 时长 **261 m / 172 m**，宽 **9.3 / 7.2 m**，偏离主轴 **28–37°**（全长都在圣经的 25–40° 内）。 |
-| `Tear_Fibres` | 1 320 / 880 | Tear_Fibres（Fibre） | v3：**220 张**纤维卡，只长在缺口处（0.5–1.5% H），垂直于边，朝外，0.3 Hz 摆动。 |
-| `Tear_Halo` | 8 / 4 | Tear_Halo（Halo） | **2 张**呼吸的紫晕径向卡（v3：**360×880 m、640×1000 m**，≤ 0.5 H，卡边渐隐）。第 3 层（最宽的 1500×1750 m）烘在 `Tear_SkyFolds` 里（§6）。 |
-| `Tear_SkyFolds` | 1 292 / 1 486 | Tear_SkyFolds（Folds） | 天之布的褶皱卡（空白的格子已剔除；v3 卡边渐隐、去掉尖顶上的烟团）。 |
-| `Tear_CloudGlow` | 4 / 2 | Tear_CloudGlow（CloudGlow） | 裂口下云海的叠加横卡（半径 1.1 km，放在云顶高度）。 |
-| `Tear_Shafts` | 288 / 264 | Tear_Shaft（Shaft） | 12 张光束卡合成一个网格（每张 2–3 束，半宽 12–45 m，长 1.5–3 km）；shader 里绕自身轴做公告板。 |
+| `Tear_Lens` | 1 080 / 1 904 | Tear_Lens（Lens） | 只覆盖透镜 + 唇的带状网格。脚一直裂进云海里（到云顶下 150 m），云顶以下只切 alpha。 |
+| `Tear_Flap_L`、`Tear_Flap_R` | 各 2 880 / 5 538 | Tear_Flap（Flap） | v4 起只有 2 片（左 15–25% H 的小卷、右 35–60% H 的剥开），焊在唇上；v5 自由端下垂、撕边透光。法线 = **外面**。 |
+| `Tear_Rip_Branch_A/B`、`Tear_Rip_Hairline` | 各 480 / 760 | Tear_Rip（Rip） | 两道分叉裂（暗唇的透镜，6–12 m 宽）+ 一条发丝裂（v5 去掉了小枝）。 |
+| `Tear_Halo` | 12 / 6 | Tear_Halo（Halo） | **3 张**呼吸的紫晕卡：520×900 m（增益 1.5，UV2.x）、360×880 m、640×1000 m。 |
+| `Tear_SkyFolds` | 1 292 / 490 | Tear_SkyFolds（Folds） | 天之布的放射软褶（v5）。 |
+| `Tear_CloudGlow` | 4 / 2 | Tear_CloudGlow + Tear_CloudGlow_Lit（同一网格两个材质） | 裂口下云海的横卡（半径 1.1 km，云顶高度）；v5 多了脚部光瓣。 |
+| `Tear_Shafts` | 288 / 264 | Tear_Shaft（Shaft） | 12 张光束卡（**门里关掉**，门用 `Tear_ShaftCard.fbx` 摆 2 束）。 |
+| `Tear_FootCloud_0…4`（v5 新） | 各 4 / 2 | Tear_FootCloud_Cumulus / _Puff（FootCloud） | 伤口脚前的 5 张背光云团卡（`Tear_Layout.json foot_clouds`）：UV1.x = 挂点（随张开移动），UV2 = (云底 v, 云顶 v)，顶点色 R = 离轴权重、G = 高度提升。 |
 
-合计约 **2.1 万三角**。
+合计约 **1.6 万三角**（`Tear_ShaftCard.fbx` 另算 22）。
 
 **顶点数据（shader 依赖，导入时请：Mesh Compression = Off；Generate Lightmap UVs = 关——它会覆盖 UV2；Normals = Import）：**
 
 | 通道 | 内容 |
 |---|---|
 | UV0 (`TEXCOORD0`) | 贴图 UV |
-| UV1 (`TEXCOORD1`) | x = **a_hinge**：该顶点“挂在哪一点上”的横向偏移（m，全开时）。shader 把顶点沿 `_TearAcrossOS` 移动 `a_hinge × (w − 1)`，w = 当前宽度 / 30%。透镜自己的横坐标就是 a，于是透镜按比例变窄；翻卷布、纤维、分叉裂跟着它们的唇平移；褶皱卡只在两唇之间被压缩。y = 相位（摆动 / 飘动 / 呼吸滞后）。 |
-| UV2 (`TEXCOORD2`) | 分叉裂：x/y = `_Udon_RipProgress` 的窗口（A：0–0.75，B：0.25–1）；光束：x = 半宽（m），y = 长度（m）。 |
-| COLOR | 翻卷布：R = 内面接到的裂口光，G = 外面接到的裂口光，B = 折线 → 撕边（0–1），A = 飘动权重。光束：RGB = 光束轴（物体空间）× 0.5 + 0.5（法线带不过 FBX/Unity，所以放在颜色里）。 |
+| UV1 (`TEXCOORD1`) | x = **a_hinge**（脚部云团：挂点）：该顶点“挂在哪一点上”的横向偏移（m，全开时）。shader 把顶点沿 `_TearAcrossOS` 移动 `a_hinge × (w − 1)`，w = 当前宽度 / 30%。透镜自己的横坐标就是 a，于是透镜按比例变窄；翻卷布、纤维、分叉裂跟着它们的唇平移；褶皱卡只在两唇之间被压缩。y = 相位（摆动 / 飘动 / 呼吸滞后）。 |
+| UV2 (`TEXCOORD2`) | 分叉裂：x/y = `_Udon_RipProgress` 的窗口（A：0–0.75，B：0.25–1）；光束：x = 半宽（m），y = 长度（m）；光晕：x = 每卡增益；脚部云团：(云底 v, 云顶 v)。 |
+| COLOR | 翻卷布：R = 内面接到的裂口光，G = 外面接到的裂口光，B = 折线 → 撕边（0–1），A = 飘动权重。光束：RGB = 光束轴（物体空间）× 0.5 + 0.5。脚部云团：R = 离轴权重（0.35–1），G = 高度提升（0.45–1）。 |
 | NORMAL | 翻卷布 = 外面的法线（已核对：FBX 里与源数据点积 = 1.0000）。 |
 
 我们已用 Blender 自带的 FBX 解析器（和 Unity 的 FBX SDK 读的是同一份数据）核对过：顶点 = 源数据 (x, z, −y)、误差 ≤ 1e-4 m；每个网格 3 层 UV；翻卷布法线、光束轴颜色逐顶点一致；UpAxis = Y、UnitScale = 100。
@@ -125,13 +207,16 @@
 - `Tear_Root` 放在**裂口脚下的云顶高度**、车前方 D 处（方位 0°），旋转使本地 +Z 指向车；**均匀缩放 = H / 1000**。它随世界速度 v_g 与云海同速移动（R_Gate）。
 - 宽度用 `_Udon_TearOpen`，不是缩放。
 
-| 乐句 | D | H | 根缩放 | `_Udon_TearOpen` | 宽（占 H） | `_Udon_RipProgress` | 车离云顶 | 顶的仰角（核对） |
+| 乐句 | t | H（**门的 JSON 结点**） | 根缩放 | `_Udon_TearOpen` | 宽（占 H） | `_Udon_RipProgress` | 车离云顶 | 顶的仰角（核对） |
 |---|---|---|---|---|---|---|---|---|
-| U6 | 2.7 km | 565 m | 0.565 | 0 | 18% | 0 | 40 m | **+11.0°** |
-| U7 | 1.8 km | 635 m | 0.635 | 0.333 | 22% | 0 → 1（16 s） | 50 m | **+18.0°** |
-| U8 | 0.9 km | 875 m | 0.875 | 1 | 30% | 1 | 60 m | **+42.2°** |
-| U8 + 7 s | 0.48 km | 920 m | 0.92 | 1 | 30% | 1 | — | +60° |
-| U9 | 0 | ≈1 000 m | 1.0 | 1 | 30% | 1 | 150 m | 进入（15% 高） |
+| U6 | 133.80 | 565 m | 0.565 | 0 | 18% | 0 | 40 m | **+11.0°** |
+| U7 | 150.30 | 616 m | 0.616 | 0.333 | 22% | 0 → 1（16 s） | 40 → 50 m | **+18.0°** |
+| U7b | 155.10 | 640 m | 0.640 | ~0.48 | ~24% | 0.3 | ~47 m | +21.9° |
+| U8 | 166.15 | 799 m | 0.799 | 1 | 30% | 1 | 60 m | **+42.3°** |
+| U9 | 179.55 | 1 000 m | 1.0 | 1 | 30% | 1 | 150 m | 进入（15% 高） |
+
+**H(t) 以 `gate/GateLayout_v2.json` 的 `timeline.tear_H_knots`（单调 PCHIP，另有 (160.5, 715) 一个结点）为准**（技术评审 r3 m4）：圣经表的 U8 875 m 是按圣经的距离算的；
+门实测的距离下 799 m 才让顶在 U8 落在 +42°。D（离车距离）由 GateRoot 的运动给出（U6 2.70 km、U7 1.73 km、U8 0.79 km）。
 
 实测（由 `tear_def.py` 计算，含撕边、折线鼓包）：全开最宽 **300 m = 30.0% H**，在 **38.5%** 高度；以透镜轴计左 **45.0%** / 右 **55.0%**；轴斜 4°。U6 的 18% 由 shader 把横向乘 0.6 得到。
 
@@ -141,19 +226,23 @@
 
 ## 4. 材质设置（每个部件一个材质，都用 `Lanbai/Tear`）
 
-| 材质 | Part | Src / Dst Blend | ZWrite | Cull | AlphaToMask | Render Queue | 贴图（导入设置见下） | 其它 |
+| 材质 | Part | Src / Dst Blend | ZWrite | Cull | AlphaToMask | Render Queue | 贴图 | 其它（**颜色都是线性 Vector，直接照抄**） |
 |---|---|---|---|---|---|---|---|---|
-| Tear_CloudGlow | CloudGlow | One / One | Off | Off | Off | **2988** | Halo_512 | `_Tint` = `#696F8D`（线性 0.1413, 0.1590, 0.2664）；软粒子淡出 40 m ；**v3b：`_Intensity` 0.25** |
-| Tear_CloudGlow_Lit（v3b，同一网格第二个材质） | CloudGlow | **DstColor / One** | Off | Off | Off | **2989** | Halo_512 | `_Tint` = 线性 (0.607, 0.683, 1.144)（#495270 的色相、亮度 0.7）；其余同上：光落在云上，云团的明暗保留 |
-| Tear_SkyFolds | Folds | One / OneMinusSrcAlpha | Off | Off | Off | **2990** | Tear_SkyFolds_1024 | `_Tint` 白 |
-| Tear_Halo | Halo | One / One | Off | Off | Off | **2992** | Halo_512 | `_Tint` 白；呼吸 ±0.25 EV、8 s |
-| Tear_Lens | Lens | One / OneMinusSrcAlpha | Off | Off | Off | **2994** | Tear_Emission_2048x512 | `_EmissionScale` 4；**`_DepthPrepass` = 1**（白布不透明处写深度，远处的云卡不会画到它上面） |
-| Tear_Rip | Rip | One / OneMinusSrcAlpha | Off | Off | Off | **2995** | Tear_Rip_1024x128 | `_EmissionScale` 4；`_RipFront` 0.1 |
-| Tear_Fibres | Fibre | One / One | Off | Off | Off | **2996** | Tear_Fibres_1024 | 根 `#DFE6FF @ +1.56`，尖 = 唇辉光 × 0.75 |
-| Tear_Shaft | Shaft | One / One | Off | Off | Off | **2998** | Shaft_Gradient_256x1024 | `_Tint` = 一束的填色（`#4C4A74` × 0.5，线性 0.0362, 0.0343, 0.0873：两束重叠 = 圣经的 `#31335A`）；软淡 40 m、侧视淡出、近处 60–460 m 淡入 |
-| Tear_Flap | Flap | One / Zero | **On** | Off | **On** | **2450** | Tear_Flaps_1024 | 镂空 0.5 + alpha-to-coverage（MSAA）；月光轮廓 1.5 px（`fwidth`，任何距离都是像素宽） |
+| Tear_CloudGlow | CloudGlow | One / One | Off | Off | Off | **2988** | Halo_512 | `_Tint` (0.1413, 0.1590, 0.2664)；`_Intensity` 0.25（门 v6：U8 − 4 → U8 − 0.5 乘到 0、关 renderer）；**`_NearFootCut 1`、`_FootAddK 0.25`**；`_FootGlow` 2.2、`_FootLobe` (−0.5, 159, −60, 220)；`_LanesTex` = `gate/Textures/Tear_CloudLanes_1024.png` |
+| Tear_CloudGlow_Lit（同一网格第二个材质） | CloudGlow | **DstColor / One** | Off | Off | Off | **2989** | Halo_512 | `_Tint` (0.607, 0.683, 1.144)；`_FootGlow` **0.98**（= 2.2 × 1.6 / 3.6：渲染里光瓣在相乘那一层是 dst × tint × 2.2 × 1.6，叠加那一层是 (Glow × 0.3 + CloudGlow × 1.2) × 2.2 ≈ CloudGlow × 2.2 × 3.6）；`_Intensity` 1 |
+| **Tear_FootSkyline（v6）** | **Skyline** | One / OneMinusSrcAlpha | Off | Off | Off | **2989** | Tear_FootSkyline_1024x160 | `_SkyCloud` = 它后面 CloudSea 卡的月光色（线性；渲染 U7 (0.060, 0.066, 0.082)）、`_SkyRim` 1.2、`_SkyNear` 0.27、`_FootMist` 同透镜 |
+| **Tear_FootSkylineIn（v6.1）** | **Skyline** | One / OneMinusSrcAlpha | Off | Off | Off | **2989** | Tear_FootSkylineIn_512x160 | 同 Tear_FootSkyline（复制那个材质、只换贴图） |
+| **Tear_LightLane（v6）** | **Lane** | **DstColor / One** | Off | Off | Off | **2989** | （无，白贴图即可） | `_LaneW` (1.6, 5, 1400)、`_LaneFoot` (0.527, 0.485, 0.776)、`_LaneNear` (0.275, 0.323, 0.527)、`_Intensity` 1（门：U8 − 2 → U8 + 2 到 0.45） |
+| ~~Tear_FootCloud_*（v5）~~ | FootCloud | | | | | | | **v6 退役**（网格不在套件里了） |
+| Tear_SkyFolds | Folds | One / OneMinusSrcAlpha | Off | Off | Off | **2990** | Tear_SkyFolds_1024 | `_Tint` (1, 1, 1)；门 v6：U6 + 13.5 时 0.15 → U7 时 1，U8 + 2 → U8 + 6 到 0、关 renderer |
+| Tear_Halo | Halo | One / One | Off | Off | Off | **2992** | Halo_512 | `_Tint` (1, 1, 1)；呼吸 ±0.25 EV、8 s；门 v6：`_Intensity` × 距离淡出、< 0.05 关 renderer |
+| Tear_Lens | Lens | One / OneMinusSrcAlpha | Off | Off | Off | **2994** | Tear_Emission_2048x512 | `_EmissionScale` 4；`_DepthPrepass` 1（**只有透镜**；其它材质 0）；v6：`_FootMist` (1.64, 1.56, 1.96)、`_FootMistM` 50、`_FootCut` (−30, 18, 35, 80) |
+| Tear_Rip | Rip | One / OneMinusSrcAlpha | Off | Off | Off | **2995** | Tear_Rip_1024x128 | `_EmissionScale` 4；`_Intensity` 0.55；`_RipFront` 0.1 |
+| Tear_Shaft | Shaft | One / One | Off | Off | Off | **2998** | Shaft_Gradient_256x1024 | `_Tint` (0.0362, 0.0343, 0.0873)；门里只用 2 束（`Tear_ShaftCard.fbx`） |
+| Tear_Flap | Flap | One / Zero | **On** | Off | **On** | **2450** | Tear_Flaps_1024 | `_FlapOuterNear` (0.0181, 0.0198, 0.0342)、`_FlapOuterFar` (0.0090, 0.0098, 0.0135)、`_FlapInner` **(0.0592, 0.0499, 0.1231)**（v6：× 0.55，不再是紫色衬里）、`_FlapEdge` (0.5495, 0.4188, 1.3912)、`_FlapTrans` **0.6**、`_SheenMul` 0.35、`_OuterSky` 0、`_FoldBleed` 0；镂空 0.5 + alpha-to-coverage |
+| （所有部件） | | | | | | | | `_HazeColor` (0.1085, 0.1130, 0.1641)（v5：光雾带 × 0.80，与门一致） |
 
-**为什么要固定队列：** 13 个网格的原点都在同一点，Unity 按物体中心排序时分不出前后。顺序是：云海辉光 → 天之布褶皱 → 紫晕 → 透镜（先写深度）→ 分叉裂 → 纤维 → 光束。翻卷布是镂空不透明的（写深度，自己卷起来的部分自己遮挡）。云卡（3000）在所有这些之后画：挡在裂口前面的云照常盖住它。
+**为什么要固定队列：** 12 个网格的原点都在同一点，Unity 按物体中心排序时分不出前后。顺序是：云海辉光 → 脚前云头 / 光路（v6）→ 天之布褶皱 → 紫晕 → 透镜（先写深度）→ 分叉裂 → 光束。翻卷布是镂空不透明的（写深度，自己卷起来的部分自己遮挡）。云卡（3000）在所有这些之后画：挡在裂口前面的云照常盖住它。
 
 **贴图导入：**
 
@@ -161,7 +250,7 @@
 |---|---|---|---|---|---|
 | Tear_Emission、Tear_Rip、Tear_SkyFolds、Halo | **开** | **关（重要！）**：唇辉光在 A = 0 的地方仍有颜色，开了会被抹掉 | 开 | Clamp | BC7（RGBA） |
 | Tear_Flaps | 关 | 关 | 开，**Mip Maps Preserve Coverage = 开**，Alpha Cutoff 0.5 | Clamp | BC7 |
-| Tear_Fibres、Shaft_Gradient | 关 | 关 | 开 | Clamp | BC7（或只取 A 的单通道格式） |
+| Shaft_Gradient | 关 | 关 | 开 | Clamp | BC7（或只取 A 的单通道格式） |
 
 Aniso：透镜与翻卷布 4，其它 1。
 
@@ -175,6 +264,7 @@ Aniso：透镜与翻卷布 4，其它 1。
 | `_Udon_RipProgress` | 0–1 | 两道分叉裂沿长度裂开，裂尖始终是尖的（一段 10% 长的“奔跑的前端”） | U7 起 0 → 1 用约 16 s：A 在 0–0.75、B 在 0.25–1，各约 12 s，错开 4 s（≤ 0.5°/s） |
 | `_Udon_TearHide` | 0–1 | 0 = 可见（**没设过的全局读作 0，所以默认可见**），1 = 消失 | U6 出现时 1 → 0 |
 | `_Udon_TearBreath` | −1–1 | 可选：覆盖紫晕的呼吸相位 | 不设（0）= shader 自己呼吸（±0.25 EV、8 s 正弦，外层稍滞后） |
+| `_Udon_GateOrigin`（v5，float4） | xyz = GateRoot 本帧的世界位置 | 脚部淡出的噪声在云海坐标里取样（BT-1）；没写时用世界坐标（旧行为） | 门每帧写（`gate/README_GateLayout.md` §2.1） |
 | `_Udon_CloudTop`（v3，float4，`SetGlobalVector`） | x = 云顶的世界 y，w = 1 | 透镜 / 褶皱 / 光晕在云顶以上 40 m 内带噪声淡出、以下裁掉（裂口脚溶进云里） | 门每帧写 `(−h_bus(t), 0, 0, 1)`（与触手 shader 共用，`gate/README_GateLayout.md` §2.1）；没设时不淡出 |
 
 尺寸和位置是变换（根缩放 = H / 1000，位置 = 裂口脚），不是 shader 参数。`LanbaiTearParams.cs` 是最小的推送脚本；Director 每帧写它的字段即可。
@@ -182,6 +272,8 @@ Aniso：透镜与翻卷布 4，其它 1。
 ---
 
 ## 6. 各部件的美术说明
+
+> 下面是 v3 的说明（历史）。**v5 的透镜、唇、翻布、脚以开头的 v5 一节为准**：没有第二层同形的布、没有唇外辉光、翻布只有 2 片且是深色的染布。
 
 **透镜（未染的白）。** 核心填 `#FFEDD1 @ +1.84`（屏幕 `#F5F2EC`，×T0 1.68：柔和地晕），**最宽处最亮，向两端淡到 70%**。核心不是平的光：
 - 白布本身有沿轴的经纱细纹和很淡的褶；
@@ -216,6 +308,7 @@ Aniso：透镜与翻卷布 4，其它 1。
 | `Tear_U6_detail.png`、`Tear_U7_detail.png` | 同一车位的长焦（水平 FOV 26° / 40°），看结构用。 |
 | `Tear_U6_crop.png`、`Tear_U7_crop.png`、`Tear_U8_crop.png` | 从上面三张裁出的裂口局部（最多放大 2 倍）。 |
 | `Tear_Textures_Sheet.png` | 全部贴图一览（彩色图叠在光雾带上经 S4 调色；遮罩按通道显示）。 |
+| **`Tear_Textures_Sheet_v5.png`**（v5） | v5 的全部贴图一览（同样的画法；透镜贴图里能看到热核、薄纱、纱线、散线与暗褶）。 |
 
 黑色剪影只是比例尺：简化的管状触手（圣经的锥度、雾封顶 0.6 × exp(−高度/500 m)、月侧轮廓），不是触手库；云海是带烘焙月光的高度场。二者都**不是**本套件的交付物。
 
@@ -241,6 +334,7 @@ U8 正前方（俯仰 0）实测 overdraw（全屏等量，FSE）：透镜 0.12�
 
 ## 10. 还没做 / 需要实机确认
 
+- `LanbaiVR.cginc`：用 `art/lens_tech/shaders/` 那一份（见开头的说明）。
 - **未编译**：shader、UdonSharp 都要编译；VR 双眼各看一遍；确认 MSAA 下翻卷布的 alpha-to-coverage；确认 `AlphaToMask [_AlphaToMask]` 这种属性写法在你们的 Unity 版本里可用（不行就给翻卷布单独复制一份 shader，写死 `AlphaToMask On`）。
 - `SOFTPARTICLES_ON` 依赖 `_CameraDepthTexture`（圣经 §1.6：常开的带阴影平行光保证它存在）。
 - 套件默认不吃雾（`_Atten` = 0，圣经“天上的东西不吃雾”）；`LanbaiFog.cginc` 交付后如需方向雾色，把 `_HazeColor` 换成 `LanbaiHorizon(viewDir)`。
@@ -248,13 +342,13 @@ U8 正前方（俯仰 0）实测 overdraw（全屏等量，FSE）：透镜 0.12�
 - §8.1 #6 的其余两项（**门内光唇 3 种网格 + 按乐句的布局脚本**、**天窗光斑卡 + 投影脚本**）不在这次任务里。
 - 光束的最终位置要跟 `GateLayout.json` 的中层触手缝对齐（`Tear_ShaftCard.fbx`）。
 
-## 11. 填色表（“填”= Unity 取色器里输入的值；屏幕目标在 S4 下核对过）
+## 11. 填色表（“填”= 线性值，v5 起直接填进 `Vector` 属性；屏幕目标在 S4 下核对过）
 
 | 用途 | 屏幕目标 | 填（HDR） | 线性值 | ×T0 | 来源 |
 |---|---|---|---|---|---|
 | 核心：未染的白 | `#F5F2EC` | `#FFEDD1 @ +1.84` | 3.580, 3.032, 2.283 | 1.69 | 圣经 |
 | 光唇纤维 | `#E2E8F3` | `#DFE6FF @ +1.56` | 2.176, 2.333, 2.949 | 1.39 | 圣经 |
-| 唇外辉光 | `#C0B9E4` | `#C6B4FF @ +1.04` | 1.161, 0.939, 2.056 | 0.97 | 圣经 |
+| 唇外辉光（**v5 不再画**：唇的光来自纤维带与被拉薄处的透光） | `#C0B9E4` | `#C6B4FF @ +1.04` | 1.161, 0.939, 2.056 | 0.97 | 圣经 |
 | 紫晕（呼吸中值） | `#5B57A1` | `#8275D0` | 0.223, 0.178, 0.631 | 0.30 | 圣经 |
 | 光束（两束叠加处） | `#31335A` | `#4C4A74`（一束填一半） | 0.072, 0.069, 0.175 | 0.08 | 圣经 |
 | 裂口下云海（叠加卡） | `#495270` | `#696F8D` | 0.141, 0.159, 0.266 | 0.13 | 圣经 |

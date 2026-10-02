@@ -28,6 +28,9 @@ def hexlin(h):
 FILL = json.load(open(os.path.join(os.path.dirname(HERE), 'tear_fills.json')))
 F = {k: np.array(v['linear']) for k, v in FILL.items()}
 HAZE_NEAR, HAZE_FAR, VOID = F['HazeNear'], F['HazeFar'], F['Void']
+F_MIST = np.array([1.7864, 1.5136, 2.6079]) * 0.62      # v5: lit mist at the foot (#D8D4EE solved under S4, x 0.62: L* ~76)
+F_MIST_LENS = np.array([2.05, 1.95, 2.45]) * 0.80        # v6: the lens' own foot mist, whiter (#E4E2EE-ish, L* ~85)
+F_EDGE = np.array([0.5495, 0.4188, 1.3912])             # v5: backlit thin cloth / loose threads (#8F86D0 solved under S4)
 MOON_AZ, MOON_EL = -12.0, 8.0
 
 
@@ -432,21 +435,22 @@ def silhouettes(stage, kit_pos, kit_S):
 def kit_materials(stage_cfg, px_m, sky_fn=None):
     mats = {}
     em = load_img(os.path.join(TEX, 'Tear_Emission_2048x512.png'), 'sRGB', 'CHANNEL_PACKED')
-    ri = load_img(os.path.join(TEX, 'Tear_Rip_1024x128.png'), 'sRGB', 'CHANNEL_PACKED')
+    ri = load_img(os.environ.get('LANBAI_RIP_TEX') or os.path.join(TEX, 'Tear_Rip_1024x128.png'), 'sRGB', 'CHANNEL_PACKED')   # env: test override
     fi = load_img(os.path.join(TEX, 'Tear_Fibres_1024.png'), 'Non-Color', 'CHANNEL_PACKED')
     fl = load_img(os.path.join(TEX, 'Tear_Flaps_1024.png'), 'Non-Color', 'CHANNEL_PACKED')
     ha = load_img(os.path.join(TEX, 'Halo_512.png'), 'sRGB', 'CHANNEL_PACKED')
     sh = load_img(os.path.join(TEX, 'Shaft_Gradient_256x1024.png'), 'Non-Color', 'CHANNEL_PACKED')
     sf = load_img(os.path.join(TEX, 'Tear_SkyFolds_1024.png'), 'sRGB', 'CHANNEL_PACKED')
-    def foot_fade(b):
-        """v3: the kit dissolves into the cloud top over 40 m with billow noise (Unity: CloudFootFade(): clip below
-        _Udon_CloudTop, saturate((y - cloudTop) / 40) x noise) -- Lens, Folds AND Halo (a halo card cut by the cloud
-        plane drew a ruler line under the wound in the U8 forward frame)"""
+    def foot_fade(b, lo=0.0, hi=40.0, cell=60.0, amp=24.0):
+        """v5: the kit meets the cloud top over `hi` m with SOFT billow noise (60 m cells, +-12 m; v4: 22 m / +-36 m read
+        as a mottled 'grass' fringe). Unity: CloudFootFade(), noise sampled in the cloud-sea frame (worldPos -
+        _Udon_GateOrigin). v6 (gate round 8, tech r4 B1): the LENS uses a deeper, ragged cut (35 m cells, +-40 m)."""
         geo = b.N('ShaderNodeNewGeometry')
-        nz = b.N('ShaderNodeTexNoise'); nz.inputs['Scale'].default_value = 1.0 / 22.0; nz.inputs['Detail'].default_value = 3.0
+        nz = b.N('ShaderNodeTexNoise'); nz.inputs['Scale'].default_value = 1.0 / cell; nz.inputs['Detail'].default_value = 2.0
         b.L(geo.outputs['Position'], nz.inputs['Vector'])
-        zf = b.math('ADD', b.sep(geo.outputs['Position'])[2], b.math('MULTIPLY', b.math('SUBTRACT', nz.outputs['Fac'], 0.5), 36.0))
-        return b.smooth(zf, stage_cfg.get('ctop', 4.0), stage_cfg.get('ctop', 4.0) + 40.0)
+        zf = b.math('ADD', b.sep(geo.outputs['Position'])[2], b.math('MULTIPLY', b.math('SUBTRACT', nz.outputs['Fac'], 0.5), amp))
+        c0 = stage_cfg.get('ctop', 4.0)
+        return b.smooth(zf, c0 + lo, c0 + hi)
 
     m, b = new_mat('Tear_SkyFolds')
     uvf = b.uv('UVMap')
@@ -462,13 +466,21 @@ def kit_materials(stage_cfg, px_m, sky_fn=None):
     I = stage_cfg.get('intensity', 1.0)
 
     # --- lens: premultiplied (out = rgb*4 + (1-A)*dst)
+    # v5 (AD round 3 item 1 / awe B1 'foot'): the white does not fade to dark at the cloud top: over its lowest ~55 m it
+    # turns into LIT MIST (#C9C2EE x 0.85, L* ~78) and only then meets the cloud, which glows under the foot
+    # (Tear_CloudGlow / the deck's foot term). Alpha is cut only below the cloud top (Unity: clip, then the cloud cards).
     m, b = new_mat('Tear_Lens')
     tx = b.tex(em, b.uv('UVMap'))
-    # v3: the foot dissolves into the cloud top over 40 m with billow noise (Unity: clip below _Udon_CloudTop and
-    # saturate((y - cloudTop) / 40) x noise in the Lens / Folds / Halo parts)
-    ctop = foot_fade(b)
-    rgb = b.scale(tx.outputs['Color'], b.math('MULTIPLY', ctop, T.EMISSION_SCALE * I))
-    b.out(b.add(b.emission(rgb), b.mixs(b.math('MULTIPLY', tx.outputs['Alpha'], ctop), b.transparent(), b.emission((0, 0, 0)))))
+    # v6 (gate round 8, tech r4 B1 / awe B4: at U8 the 16 m ramp read as a ruler-straight floor edge): the white turns
+    # to lit mist over 110 m and is cut over 48 m with 35 m / +-40 m noise (Unity: _FootMistM 110, CloudFootFadeR(-30, 18))
+    up = foot_fade(b, 0.0, stage_cfg.get('foot_mist', 50.0), 45.0, 40.0)
+    rgb = b.scale(tx.outputs['Color'], T.EMISSION_SCALE * I)
+    mist = b.scale(b.rgb(tuple(F_MIST_LENS)), b.math('MULTIPLY', tx.outputs['Alpha'], I))
+    rgb = b.mix(up, mist, rgb)
+    cut = foot_fade(b, -30.0, 18.0, 35.0, 80.0)
+    al = b.math('MULTIPLY', tx.outputs['Alpha'], cut)
+    rgb = b.scale(rgb, cut)
+    b.out(b.add(b.emission(rgb), b.mixs(al, b.transparent(), b.emission((0, 0, 0)))))
     mats['Tear_Lens'] = m
 
     # --- rips: progress-driven reveal with a pointed running front
@@ -497,10 +509,10 @@ def kit_materials(stage_cfg, px_m, sky_fn=None):
     b.out(b.add(b.emission(b.scale(col, k)), b.transparent()))
     mats['Tear_Fibres'] = m
 
-    # --- flaps v4 (gate round 3, critique B4.3 / tech M4): the sky's own cloth peeling back. OUTER face = the sky's
-    #     colour behind it (Unity: LanbaiHorizon(viewDir) + the halo there, x _OuterSky 0.94) with a faint silk sheen
-    #     where it turns; INNER face (seen only on the rolled lip) wound-lit #3E3C66 -> #5B5A88 x (0.15 + 0.6 R);
-    #     a thin desaturated rim only along the rolled torn edge; fold bleed 0.15.
+    # --- flaps v5 (gate round 4, AD round 3 item 1: 'cloth hanging with weight, translucent backlit edges, not crumpled
+    #     grey paper'): OUTER face = the dyed cloth, #141726 at the hinge -> #0C0E18 at the torn edge (L* 5-8; v4's
+    #     sky-coloured outer face read as grey paper); INNER face (the rolled lip) wound-lit #3E3C66; the last 1.5-6 m
+    #     before the torn edge and the loose threads TRANSMIT the wound light, #8F86D0; a faint silk sheen.
     m, b = new_mat('Tear_Flap')
     uv = b.uv('UVMap')
     tx = b.tex(fl, uv)
@@ -510,28 +522,18 @@ def kit_materials(stage_cfg, px_m, sky_fn=None):
     cR, cG, cB = b.sepc(vc.outputs['Color'])
     geo = b.N('ShaderNodeNewGeometry')
     back = geo.outputs['Backfacing']
-    Vd = b.vmath('SCALE', geo.outputs['Incoming'], None, -1.0)
-    silk = b.math('ADD', 0.94, b.math('MULTIPLY', b.math('SUBTRACT', tG, 0.5), 0.5))
-    if sky_fn is not None:
-        sky = sky_fn(b, Vd)
-    else:
-        sky = b.rgb(tuple(F['HazeNear']))
-    outer = b.scale(sky, b.math('MULTIPLY', silk, stage_cfg.get('flap_outer', 0.94)))
-    inner = b.scale(b.mix(cB, tuple(F['FlapInner']), tuple(F['FlapInner'] * 1.55)),
-                    b.math('MULTIPLY', b.math('ADD', 0.15, b.math('MULTIPLY', cR, 0.6)), silk))
+    silk = b.math('ADD', 1.0, b.math('MULTIPLY', b.math('SUBTRACT', tG, 0.5), 0.8))
+    outer = b.scale(b.mix(cB, tuple(F['FlapOuterNear']), tuple(F['FlapOuterFar'])), silk)
+    inner = b.scale(b.mix(cB, tuple(F['FlapInner']), tuple(F['FlapInner'] * 1.4)),
+                    b.math('MULTIPLY', b.math('ADD', 0.25, b.math('MULTIPLY', cR, 0.75)),
+                           b.math('MULTIPLY', silk, stage_cfg.get('flap_inner', 0.55))))     # v6: the inner face darker (no violet 'lining')
     col = b.mix(back, outer, inner)
     ndv = b.math('ABSOLUTE', b.vmath('DOT_PRODUCT', geo.outputs['Normal'], geo.outputs['Incoming']))
-    sheen = b.math('MULTIPLY', b.math('POWER', b.math('SUBTRACT', 1.0, ndv), 3.0), b.math('ADD', 0.1, cR))
-    col = b.rgbadd(col, b.scale(b.rgb(tuple(F['FlapInner'])), b.math('MULTIPLY', sheen, 0.5)))
-    fold = b.math('POWER', b.math('MAXIMUM', b.math('SUBTRACT', 1.0, b.math('DIVIDE', cB, 0.06)), 0.0), 2.0)
-    col = b.rgbadd(col, b.scale(b.rgb(tuple(F['Glow'])), b.math('MULTIPLY', fold, 0.15)))
-    # rim: 1-2 px along the torn edge, only where the cloth has rolled (B > 0.75), C* <= 20
+    sheen = b.math('MULTIPLY', b.math('POWER', b.math('SUBTRACT', 1.0, ndv), 4.0), b.math('ADD', 0.05, cR))
+    col = b.rgbadd(col, b.scale(b.rgb(tuple(F['FlapInner'])), b.math('MULTIPLY', sheen, stage_cfg.get('flap_sheen', 0.35))))
     dist_m = b.math('MULTIPLY', tR, 24.0)
-    ol = b.math('SUBTRACT', 1.0, b.smooth(dist_m, px_m * 0.5, px_m * 1.5))
-    ol = b.math('MULTIPLY', ol, b.smooth(cB, 0.70, 0.85))
-    rimc = F['MoonRim'] * 0.35
-    rimc = 0.45 * rimc + 0.55 * np.full(3, float(rimc @ np.array([0.2126, 0.7152, 0.0722])))
-    col = b.mix(ol, col, tuple(rimc))
+    trans = b.math('POWER', b.smooth(dist_m, 6.0, 1.2), 1.5)
+    col = b.rgbadd(col, b.scale(b.rgb(tuple(F_EDGE)), b.math('MULTIPLY', trans, stage_cfg.get('flap_trans', 0.6))))
     alpha = b.math('MINIMUM', b.math('MULTIPLY', cov, foot_fade(b)), 1.0)
     b.out(b.mixs(alpha, b.transparent(), b.emission(col)))
     mats['Tear_Flap'] = m
@@ -568,8 +570,10 @@ def build_kit(stage_cfg, kit_S, kit_pos, cam_world, px_m, skip=(), sky_fn=None):
     cam_kit = np.array(Minv @ Vector(cam_world))
     obs = []
     for p in K.all_parts():
-        if p['name'] in skip or p['name'] == 'Tear_CloudGlow':
+        if p['name'] in skip or p['name'] == 'Tear_CloudGlow' or p['name'].startswith('Tear_FootCloud'):
             continue
+        if p['name'] in ('Tear_FootSkyline', 'Tear_FootSkylineIn', 'Tear_LightLane'):
+            continue            # v6: the gate renders draw these on the deck impostor (gate_scene.foot_skyline / lane)
         V = K.deform(p, open01, cam_kit)
         uvs = [('UVMap', p['UV0']), ('UV1', p['UV1']), ('UV2', p['UV2'])]
         cols = []

@@ -12,9 +12,12 @@
 //    tearHide     0..1  0 = visible, 1 = gone            fade 1 -> 0 at U6 (an unset global reads 0 = visible)
 //    breathPhase -1..1  optional                         leave 0: the halo breathes by itself (+-0.25 EV, 8 s)
 //
-//  The kit's SIZE and PLACE are transforms, not shader globals: Tear_Root uniform scale = H / 1000
-//  (U6 0.565, U7 0.635, U8 0.875, U8+7 s 0.92, U9 1.0) and its position = the tear foot on the cloud top at
-//  distance D ahead of the bus (moving with the world speed v_g). See README_Tear.md §3.
+//  The kit's SIZE and PLACE are transforms, not shader globals: Tear_Root uniform scale = H(t) / 1000 with H(t) the
+//  monotone PCHIP through gate/GateLayout_v2.json timeline.tear_H_knots (U6 565, U7 616, U7b 640, 160.5 s 715,
+//  U8 799, U9 1000 m; the gate is the authority, not the bible's 875 at U8), and its position = the tear foot on the
+//  cloud top, a child of GateRoot (gate/README_GateLayout.md §2.2).
+//  v5 (gate round 4): the gate ALSO writes _Udon_GateOrigin (GateRoot.position: the foot fade's noise lives in the
+//  cloud-sea frame) and the fades in GateLayout_v2.json tear.fades; neither is this component's job.
 // =====================================================================================================
 using UdonSharp;
 using UnityEngine;

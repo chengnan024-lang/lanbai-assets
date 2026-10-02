@@ -1,288 +1,352 @@
 {
  "U7_engelein": {
-  "APL": 31.1,
-  "APL_glass": 44.0,
-  "luma_lt12": 22.2,
+  "APL": 26.4,
+  "APL_glass": 36.8,
+  "luma_lt12": 29.1,
   "violet": 0.01,
-  "L_pillars": 4.8,
-  "L_mid_crowns": 15.6,
-  "L_colossus_crowns": 11.9,
-  "L_haze": 28.3,
+  "L_pillars": 2.8,
+  "L_mid_crowns": 15.9,
+  "L_colossus_crowns": 6.4,
+  "L_haze": 22.1,
   "steps": {
-   "pillar->mid (edge)": 6.7,
-   "mid crowns->colossus crowns": -3.7,
-   "colossus crowns->haze": 16.4,
-   "pillars->mid crowns": 10.8
+   "pillar->mid (edge)": 8.2,
+   "mid crowns->colossus crowns": -9.5,
+   "colossus crowns->haze": 15.7,
+   "pillars->mid crowns": 13.1
   },
   "cloud": {
    "pool": {
-    "L_median": 42.2,
-    "L_p10": 36.8,
-    "L_p90": 50.7,
-    "pixels": 3908
+    "L_median": 42.4,
+    "L_p10": 33.8,
+    "L_p90": 68.8,
+    "pixels": 4189
    },
    "plain": {
-    "L_median": 10.3,
-    "L_p10": 5.2,
-    "L_p90": 23.7,
-    "pixels": 45848
+    "L_median": 10.4,
+    "L_p10": 4.5,
+    "L_p90": 24.3,
+    "pixels": 46485
    },
-   "moonward_p90_L": 37.8,
-   "moonward_C_median": 10.2,
+   "moonward_p90_L": 51.0,
+   "moonward_C_median": 10.0,
    "plain_C_median": 7.4
   },
-  "lavender_out25": 1.1,
+  "lavender_out25": 0.9,
   "L85_out": 0.0,
   "area": {
-   "pillars": 9.9,
-   "mid": 1.8,
+   "pillars": 10.2,
+   "mid": 1.4,
    "engel": 0.7,
    "colossi": 0.6,
    "near": 0.0,
-   "sky": 15.4,
-   "deck": 24.5,
-   "tear": 1.2,
-   "shell": 45.6
+   "sky": 15.8,
+   "deck": 23.6,
+   "tear": 1.04,
+   "shell": 45.5
   },
   "dL_ring": {
    "pillars": {
-    "median": -7.4,
-    "min": -13.6,
-    "max": -1.2,
+    "median": -5.2,
+    "min": -10.8,
+    "max": 0.3,
     "n": 2
    },
    "hands": {
-    "median": -18.8,
-    "min": -20.9,
-    "max": -15.4,
+    "median": -10.8,
+    "min": -19.5,
+    "max": 6.9,
     "n": 6
    },
    "engel": {
-    "median": -8.6,
-    "min": -8.6,
-    "max": -8.6,
+    "median": -2.4,
+    "min": -2.4,
+    "max": -2.4,
     "n": 1
    },
    "colossi": {
-    "median": -3.9,
-    "min": -22.8,
-    "max": -2.9,
-    "n": 3
+    "median": -6.2,
+    "min": -18.3,
+    "max": -4.9,
+    "n": 4
    },
-   "surge": null,
+   "surge": {
+    "median": -4.6,
+    "min": -7.5,
+    "max": -2.0,
+    "n": 7
+   },
    "near": null,
    "rear": null
   },
   "tide": {
-   "blades": 2,
-   "pixels_pct": 0.214,
-   "dL_ring": 0.0,
+   "blades": 1,
+   "pixels_pct": 0.203,
+   "dL_ring": 0.5,
    "brighter_than_sky_pct": null
   },
-  "top10": 3.4,
-  "top25": 11.9,
-  "frac_L15_40": 26.1,
-  "mirror_IoU": 0.06,
+  "top10": 2.3,
+  "top25": 3.1,
+  "frac_L15_40": 16.1,
+  "mirror_IoU": 0.11,
   "tear_x": 50.8,
-  "sil_gt10": 7,
+  "sil_gt10": 10,
   "deck_sigma": {
-   "near": 1.38,
-   "mid": 2.0
+   "near": 2.33,
+   "mid": 4.63
   },
-  "near_deck_L": 14.3,
-  "halo_C_0_1": 23.2,
-  "halo_C_1_3": 15.3,
-  "halo_L_1_3": 30.3,
+  "near_deck_L": 13.2,
+  "halo_C_0_1": 14.2,
+  "halo_C_1_3": 12.3,
+  "halo_L_1_3": 21.1,
   "per_instance": {
    "Pillar_R": {
     "kind": "pillar",
     "role": "pillar",
-    "dL_ring": -1.2,
-    "area_pct": 7.25
+    "dL_ring": 0.3,
+    "area_pct": 7.56
    },
    "Pillar_L": {
     "kind": "pillar",
     "role": "pillar",
-    "dL_ring": -13.6,
+    "dL_ring": -10.8,
     "area_pct": 2.61
    },
    "Colossus_3": {
     "kind": "hero",
     "role": "engel",
-    "dL_ring": -8.6,
-    "area_pct": 0.68,
-    "hand_dL_ring": -20.6,
-    "body_dL_ring": -8.1
+    "dL_ring": -2.4,
+    "area_pct": 0.73,
+    "hand_dL_ring": -4.0,
+    "body_dL_ring": -1.8
    },
    "Hand_L0": {
     "kind": "mid",
     "role": "hand",
-    "dL_ring": -15.4,
-    "area_pct": 0.17
+    "dL_ring": -6.5,
+    "area_pct": 0.14
    },
    "Hand_L1": {
     "kind": "mid",
     "role": "hand",
-    "dL_ring": -20.9,
+    "dL_ring": -17.2,
     "area_pct": 0.2
    },
    "Hand_L2": {
     "kind": "mid",
     "role": "hand",
-    "dL_ring": -20.9,
-    "area_pct": 0.25
+    "dL_ring": -19.5,
+    "area_pct": 0.29
    },
    "Hand_R0": {
     "kind": "mid",
     "role": "hand",
-    "dL_ring": -17.3,
-    "area_pct": 0.42
+    "dL_ring": -11.1,
+    "area_pct": 0.48
    },
    "Hand_R1": {
     "kind": "mid",
     "role": "hand",
-    "dL_ring": -18.3,
-    "area_pct": 0.7
+    "dL_ring": -10.4,
+    "area_pct": 0.25
    },
    "Hand_R2": {
     "kind": "mid",
     "role": "hand",
-    "dL_ring": -19.2,
-    "area_pct": 0.08
+    "dL_ring": 6.9,
+    "area_pct": 0.04
+   },
+   "Colossus_bg_00": {
+    "kind": "bg",
+    "role": "background",
+    "dL_ring": -6.5,
+    "area_pct": 0.01
    },
    "Colossus_bg_01": {
     "kind": "bg",
     "role": "background",
-    "dL_ring": -3.9,
-    "area_pct": 0.24
+    "dL_ring": -5.9,
+    "area_pct": 0.23
    },
    "Colossus_bg_02": {
     "kind": "bg",
     "role": "background",
-    "dL_ring": -2.9,
+    "dL_ring": -4.9,
     "area_pct": 0.02
-   },
-   "Colossus_bg_04": {
-    "kind": "bg",
-    "role": "background",
-    "dL_ring": null,
-    "area_pct": 0.04
    },
    "Colossus_2": {
     "kind": "colossus",
     "role": "moon",
-    "dL_ring": -22.8,
-    "area_pct": 0.31
+    "dL_ring": -18.3,
+    "area_pct": 0.38
    },
-   "Surge_04": {
+   "Mult_000": {
+    "kind": "surge",
+    "role": "surge",
+    "dL_ring": -4.9,
+    "area_pct": 0.05
+   },
+   "Mult_001": {
     "kind": "surge",
     "role": "surge",
     "dL_ring": null,
-    "area_pct": 0.05
+    "area_pct": 0.01
    },
-   "Surge_05": {
+   "Mult_002": {
     "kind": "surge",
     "role": "surge",
     "dL_ring": null,
     "area_pct": 0.04
    },
-   "Surge_06": {
+   "Mult_003": {
     "kind": "surge",
     "role": "surge",
-    "dL_ring": null,
-    "area_pct": 0.03
+    "dL_ring": -5.8,
+    "area_pct": 0.22
    },
-   "Surge_09": {
+   "Mult_005": {
+    "kind": "surge",
+    "role": "surge",
+    "dL_ring": -3.8,
+    "area_pct": 0.02
+   },
+   "Mult_006": {
+    "kind": "surge",
+    "role": "surge",
+    "dL_ring": -4.6,
+    "area_pct": 0.05
+   },
+   "Mult_011": {
+    "kind": "surge",
+    "role": "surge",
+    "dL_ring": -7.5,
+    "area_pct": 0.06
+   },
+   "Mult_014": {
     "kind": "surge",
     "role": "surge",
     "dL_ring": null,
     "area_pct": 0.0
    },
-   "Surge_17": {
+   "Mult_016": {
+    "kind": "surge",
+    "role": "surge",
+    "dL_ring": -3.3,
+    "area_pct": 0.1
+   },
+   "Mult_018": {
+    "kind": "surge",
+    "role": "surge",
+    "dL_ring": -2.0,
+    "area_pct": 0.02
+   },
+   "Mult_029": {
+    "kind": "surge",
+    "role": "surge",
+    "dL_ring": null,
+    "area_pct": 0.01
+   },
+   "Mult_031": {
+    "kind": "surge",
+    "role": "surge",
+    "dL_ring": null,
+    "area_pct": 0.01
+   },
+   "Mult_032": {
     "kind": "surge",
     "role": "surge",
     "dL_ring": null,
     "area_pct": 0.04
    },
-   "Surge_18": {
+   "Mult_033": {
     "kind": "surge",
     "role": "surge",
     "dL_ring": null,
-    "area_pct": 0.05
+    "area_pct": 0.33
+   },
+   "Mult_034": {
+    "kind": "surge",
+    "role": "surge",
+    "dL_ring": null,
+    "area_pct": 0.02
    }
   }
  },
  "keyart_239": {
-  "APL": 43.5,
-  "APL_glass": 43.5,
-  "luma_lt12": 11.2,
-  "violet": 0.0,
+  "APL": 35.2,
+  "APL_glass": 35.2,
+  "luma_lt12": 26.4,
+  "violet": 0.01,
   "L_pillars": 1.5,
-  "L_mid_crowns": 17.9,
-  "L_colossus_crowns": 4.5,
-  "L_haze": 28.7,
+  "L_mid_crowns": 16.9,
+  "L_colossus_crowns": 4.2,
+  "L_haze": 22.5,
   "steps": {
-   "pillar->mid (edge)": 8.4,
-   "mid crowns->colossus crowns": -13.4,
-   "colossus crowns->haze": 24.2,
-   "pillars->mid crowns": 16.4
+   "pillar->mid (edge)": 9.5,
+   "mid crowns->colossus crowns": -12.7,
+   "colossus crowns->haze": 18.3,
+   "pillars->mid crowns": 15.4
   },
   "cloud": {
    "pool": {
-    "L_median": 43.8,
-    "L_p10": 38.1,
-    "L_p90": 51.9,
-    "pixels": 8795
+    "L_median": 44.1,
+    "L_p10": 34.8,
+    "L_p90": 69.5,
+    "pixels": 9361
    },
    "plain": {
-    "L_median": 19.6,
-    "L_p10": 13.8,
-    "L_p90": 31.7,
-    "pixels": 27229
+    "L_median": 18.6,
+    "L_p10": 12.4,
+    "L_p90": 27.8,
+    "pixels": 29012
    },
-   "moonward_p90_L": 36.5,
-   "moonward_C_median": 10.3,
-   "plain_C_median": 11.5
+   "moonward_p90_L": 49.0,
+   "moonward_C_median": 10.1,
+   "plain_C_median": 11.2
   },
-  "lavender_out25": 1.1,
-  "L85_out": 0.003,
+  "lavender_out25": 0.9,
+  "L85_out": 0.002,
   "area": {
-   "pillars": 10.8,
-   "mid": 3.4,
-   "engel": 3.7,
-   "colossi": 1.2,
+   "pillars": 11.1,
+   "mid": 4.2,
+   "engel": 2.6,
+   "colossi": 1.3,
    "near": 0.0,
-   "sky": 34.9,
-   "deck": 43.4,
-   "tear": 1.95,
-   "shell": 0.4
+   "sky": 35.3,
+   "deck": 42.0,
+   "tear": 1.68,
+   "shell": 0.0
   },
   "dL_ring": {
    "pillars": {
-    "median": -7.0,
-    "min": -7.4,
-    "max": -6.6,
+    "median": -1.1,
+    "min": -1.3,
+    "max": -1.0,
     "n": 2
    },
    "hands": {
-    "median": -20.0,
-    "min": -23.7,
-    "max": -16.5,
+    "median": -13.8,
+    "min": -23.2,
+    "max": -7.9,
     "n": 6
    },
    "engel": {
-    "median": 6.7,
-    "min": 6.7,
-    "max": 6.7,
+    "median": -1.0,
+    "min": -1.0,
+    "max": -1.0,
     "n": 1
    },
    "colossi": {
-    "median": -4.9,
-    "min": -23.3,
-    "max": -2.5,
-    "n": 3
+    "median": -6.7,
+    "min": -18.5,
+    "max": -4.4,
+    "n": 4
    },
-   "surge": null,
+   "surge": {
+    "median": -5.8,
+    "min": -7.6,
+    "max": -4.8,
+    "n": 4
+   },
    "near": null,
    "rear": null
   },
@@ -292,265 +356,330 @@
    "dL_ring": null,
    "brighter_than_sky_pct": null
   },
-  "top10": 3.7,
-  "top25": 6.9,
-  "frac_L15_40": 46.7,
-  "mirror_IoU": 0.04,
+  "top10": 2.5,
+  "top25": 2.8,
+  "frac_L15_40": 27.1,
+  "mirror_IoU": 0.09,
   "tear_x": 44.9,
-  "sil_gt10": 8,
+  "sil_gt10": 13,
   "deck_sigma": {
-   "near": 1.51,
-   "mid": 1.82
+   "near": 2.49,
+   "mid": 4.29
   },
-  "near_deck_L": 15.3,
-  "halo_C_0_1": 22.6,
-  "halo_C_1_3": 14.7,
-  "halo_L_1_3": 30.8,
+  "near_deck_L": 13.8,
+  "halo_C_0_1": 14.2,
+  "halo_C_1_3": 11.3,
+  "halo_L_1_3": 18.3,
   "per_instance": {
    "Pillar_R": {
     "kind": "pillar",
     "role": "pillar",
-    "dL_ring": -7.4,
-    "area_pct": 9.57
+    "dL_ring": -1.3,
+    "area_pct": 9.93
    },
    "Pillar_L": {
     "kind": "pillar",
     "role": "pillar",
-    "dL_ring": -6.6,
+    "dL_ring": -1.0,
     "area_pct": 1.2
    },
    "Colossus_3": {
     "kind": "hero",
     "role": "engel",
-    "dL_ring": 6.7,
-    "area_pct": 3.66,
-    "hand_dL_ring": -4.0,
-    "body_dL_ring": 3.3
+    "dL_ring": -1.0,
+    "area_pct": 2.61,
+    "hand_dL_ring": -4.5,
+    "body_dL_ring": -0.8
    },
    "Hand_L0": {
     "kind": "mid",
     "role": "hand",
-    "dL_ring": -16.5,
-    "area_pct": 0.3
+    "dL_ring": -12.4,
+    "area_pct": 0.26
    },
    "Hand_L1": {
     "kind": "mid",
     "role": "hand",
-    "dL_ring": -21.5,
-    "area_pct": 0.36
+    "dL_ring": -17.2,
+    "area_pct": 0.35
    },
    "Hand_L2": {
     "kind": "mid",
     "role": "hand",
-    "dL_ring": -23.7,
-    "area_pct": 0.46
+    "dL_ring": -23.2,
+    "area_pct": 0.52
    },
    "Hand_R0": {
     "kind": "mid",
     "role": "hand",
-    "dL_ring": -17.2,
-    "area_pct": 0.65
+    "dL_ring": -12.2,
+    "area_pct": 0.94
    },
    "Hand_R1": {
     "kind": "mid",
     "role": "hand",
-    "dL_ring": -18.7,
-    "area_pct": 1.15
+    "dL_ring": -7.9,
+    "area_pct": 1.5
    },
    "Hand_R2": {
     "kind": "mid",
     "role": "hand",
-    "dL_ring": -21.4,
-    "area_pct": 0.46
+    "dL_ring": -15.2,
+    "area_pct": 0.63
+   },
+   "Colossus_bg_00": {
+    "kind": "bg",
+    "role": "background",
+    "dL_ring": -6.0,
+    "area_pct": 0.01
    },
    "Colossus_bg_01": {
     "kind": "bg",
     "role": "background",
-    "dL_ring": -4.9,
-    "area_pct": 0.42
+    "dL_ring": -7.3,
+    "area_pct": 0.41
    },
    "Colossus_bg_04": {
     "kind": "bg",
     "role": "background",
     "dL_ring": null,
-    "area_pct": 0.21
+    "area_pct": 0.14
    },
    "Colossus_bg_05": {
     "kind": "bg",
     "role": "background",
-    "dL_ring": -2.5,
+    "dL_ring": -4.4,
     "area_pct": 0.03
    },
    "Colossus_2": {
     "kind": "colossus",
     "role": "moon",
-    "dL_ring": -23.3,
-    "area_pct": 0.58
+    "dL_ring": -18.5,
+    "area_pct": 0.71
    },
-   "Surge_05": {
+   "Mult_000": {
     "kind": "surge",
     "role": "surge",
-    "dL_ring": null,
-    "area_pct": 0.08
+    "dL_ring": -5.4,
+    "area_pct": 0.12
    },
-   "Surge_06": {
-    "kind": "surge",
-    "role": "surge",
-    "dL_ring": null,
-    "area_pct": 0.06
-   },
-   "Surge_09": {
+   "Mult_001": {
     "kind": "surge",
     "role": "surge",
     "dL_ring": null,
     "area_pct": 0.01
    },
-   "Surge_17": {
+   "Mult_002": {
     "kind": "surge",
     "role": "surge",
     "dL_ring": null,
-    "area_pct": 0.06
+    "area_pct": 0.09
    },
-   "Surge_18": {
+   "Mult_003": {
+    "kind": "surge",
+    "role": "surge",
+    "dL_ring": -6.3,
+    "area_pct": 0.45
+   },
+   "Mult_005": {
     "kind": "surge",
     "role": "surge",
     "dL_ring": null,
+    "area_pct": 0.03
+   },
+   "Mult_006": {
+    "kind": "surge",
+    "role": "surge",
+    "dL_ring": -4.8,
     "area_pct": 0.1
    },
-   "Surge_19": {
+   "Mult_011": {
+    "kind": "surge",
+    "role": "surge",
+    "dL_ring": -7.6,
+    "area_pct": 0.11
+   },
+   "Mult_016": {
     "kind": "surge",
     "role": "surge",
     "dL_ring": null,
-    "area_pct": 0.05
+    "area_pct": 0.04
+   },
+   "Mult_029": {
+    "kind": "surge",
+    "role": "surge",
+    "dL_ring": null,
+    "area_pct": 0.01
+   },
+   "Mult_031": {
+    "kind": "surge",
+    "role": "surge",
+    "dL_ring": null,
+    "area_pct": 0.01
+   },
+   "Mult_032": {
+    "kind": "surge",
+    "role": "surge",
+    "dL_ring": null,
+    "area_pct": 0.09
+   },
+   "Mult_033": {
+    "kind": "surge",
+    "role": "surge",
+    "dL_ring": null,
+    "area_pct": 0.55
+   },
+   "Mult_034": {
+    "kind": "surge",
+    "role": "surge",
+    "dL_ring": null,
+    "area_pct": 0.16
    }
   }
  },
  "U8_forward": {
-  "APL": 49.8,
-  "APL_glass": 75.0,
+  "APL": 43.0,
+  "APL_glass": 63.2,
   "luma_lt12": 18.4,
-  "violet": 0.0,
+  "violet": 0.03,
   "L_pillars": null,
-  "L_mid_crowns": 18.4,
-  "L_colossus_crowns": 11.8,
-  "L_haze": 32.6,
+  "L_mid_crowns": 14.2,
+  "L_colossus_crowns": 6.1,
+  "L_haze": 24.3,
   "steps": {
    "pillar->mid (edge)": null,
-   "mid crowns->colossus crowns": -6.6,
-   "colossus crowns->haze": 20.8,
+   "mid crowns->colossus crowns": -8.1,
+   "colossus crowns->haze": 18.2,
    "pillars->mid crowns": null
   },
   "cloud": {
    "pool": {
-    "L_median": 30.4,
-    "L_p10": 18.2,
-    "L_p90": 45.4,
-    "pixels": 81874
+    "L_median": 29.5,
+    "L_p10": 20.3,
+    "L_p90": 60.4,
+    "pixels": 88109
    },
    "plain": {
-    "L_median": 24.8,
-    "L_p10": 19.9,
-    "L_p90": 38.2,
-    "pixels": 25818
+    "L_median": 22.3,
+    "L_p10": 17.6,
+    "L_p90": 27.8,
+    "pixels": 28864
    },
-   "moonward_p90_L": 49.6,
-   "moonward_C_median": 15.4,
-   "plain_C_median": 10.3
+   "moonward_p90_L": 61.6,
+   "moonward_C_median": 13.6,
+   "plain_C_median": 9.7
   },
-  "lavender_out25": 1.6,
-  "L85_out": 0.063,
+  "lavender_out25": 3.6,
+  "L85_out": 0.048,
   "area": {
    "pillars": 0.0,
-   "mid": 8.3,
-   "engel": 4.0,
-   "colossi": 0.6,
+   "mid": 8.1,
+   "engel": 4.2,
+   "colossi": 1.0,
    "near": 0.0,
-   "sky": 11.4,
-   "deck": 22.0,
-   "tear": 7.61,
+   "sky": 14.4,
+   "deck": 21.1,
+   "tear": 5.55,
    "shell": 45.5
   },
   "dL_ring": {
    "pillars": null,
    "hands": {
-    "median": -26.4,
-    "min": -26.9,
-    "max": -18.7,
-    "n": 3
+    "median": -10.1,
+    "min": -18.5,
+    "max": -9.0,
+    "n": 4
    },
    "engel": {
-    "median": 8.2,
-    "min": 8.2,
-    "max": 8.2,
+    "median": 7.8,
+    "min": 7.8,
+    "max": 7.8,
     "n": 1
    },
    "colossi": {
-    "median": -25.4,
-    "min": -25.4,
-    "max": -25.4,
-    "n": 1
+    "median": -13.7,
+    "min": -19.4,
+    "max": -8.0,
+    "n": 2
    },
-   "surge": null,
+   "surge": {
+    "median": -6.5,
+    "min": -7.4,
+    "max": 1.7,
+    "n": 4
+   },
    "near": {
-    "median": 1.2,
-    "min": 1.2,
-    "max": 1.2,
+    "median": 7.5,
+    "min": 7.5,
+    "max": 7.5,
     "n": 1
    },
    "rear": null
   },
   "tide": {
-   "blades": 6,
-   "pixels_pct": 0.526,
-   "dL_ring": -1.4,
+   "blades": 0,
+   "pixels_pct": 0.0,
+   "dL_ring": null,
    "brighter_than_sky_pct": null
   },
-  "top10": 8.8,
-  "top25": 14.2,
-  "frac_L15_40": 29.8,
-  "mirror_IoU": 0.02,
-  "tear_x": 51.9,
-  "sil_gt10": 3,
+  "top10": 7.3,
+  "top25": 9.7,
+  "frac_L15_40": 26.5,
+  "mirror_IoU": 0.03,
+  "tear_x": 51.5,
+  "sil_gt10": 6,
   "deck_sigma": {
-   "near": 1.22,
-   "mid": 1.05
+   "near": 2.64,
+   "mid": 2.47
   },
-  "near_deck_L": 21.3,
-  "halo_C_0_1": 25.0,
-  "halo_C_1_3": 22.6,
-  "halo_L_1_3": 42.7,
+  "near_deck_L": 22.7,
+  "halo_C_0_1": 13.2,
+  "halo_C_1_3": 11.8,
+  "halo_L_1_3": 24.3,
   "per_instance": {
    "Colossus_3": {
     "kind": "hero",
     "role": "engel",
-    "dL_ring": 8.2,
-    "area_pct": 4.04,
-    "hand_dL_ring": null,
-    "body_dL_ring": 8.2
+    "dL_ring": 7.8,
+    "area_pct": 4.17,
+    "hand_dL_ring": -66.1,
+    "body_dL_ring": 7.7
    },
    "Hand_L0": {
     "kind": "mid",
     "role": "hand",
-    "dL_ring": -26.4,
-    "area_pct": 3.1
+    "dL_ring": -9.1,
+    "area_pct": 2.08
    },
    "Hand_L1": {
     "kind": "mid",
     "role": "hand",
-    "dL_ring": -26.9,
-    "area_pct": 2.25
+    "dL_ring": -9.0,
+    "area_pct": 2.11
    },
    "Hand_L2": {
     "kind": "mid",
     "role": "hand",
-    "dL_ring": -18.7,
-    "area_pct": 2.93
+    "dL_ring": -18.5,
+    "area_pct": 3.43
+   },
+   "Hand_R0": {
+    "kind": "mid",
+    "role": "hand",
+    "dL_ring": null,
+    "area_pct": 0.0
    },
    "Hand_R1": {
     "kind": "mid",
     "role": "hand",
-    "dL_ring": null,
-    "area_pct": 0.06
+    "dL_ring": -11.1,
+    "area_pct": 0.48
+   },
+   "Colossus_bg_00": {
+    "kind": "bg",
+    "role": "background",
+    "dL_ring": -8.0,
+    "area_pct": 0.21
    },
    "Colossus_bg_01": {
     "kind": "bg",
@@ -567,13 +696,55 @@
    "Colossus_2": {
     "kind": "colossus",
     "role": "moon",
-    "dL_ring": -25.4,
-    "area_pct": 0.53
+    "dL_ring": -19.4,
+    "area_pct": 0.66
+   },
+   "Mult_008": {
+    "kind": "surge",
+    "role": "surge",
+    "dL_ring": -6.5,
+    "area_pct": 0.0
+   },
+   "Mult_009": {
+    "kind": "surge",
+    "role": "surge",
+    "dL_ring": -6.5,
+    "area_pct": 0.01
+   },
+   "Mult_011": {
+    "kind": "surge",
+    "role": "surge",
+    "dL_ring": -7.4,
+    "area_pct": 0.04
+   },
+   "Mult_013": {
+    "kind": "surge",
+    "role": "surge",
+    "dL_ring": null,
+    "area_pct": 0.01
+   },
+   "Mult_016": {
+    "kind": "surge",
+    "role": "surge",
+    "dL_ring": null,
+    "area_pct": 0.0
+   },
+   "Mult_024": {
+    "kind": "surge",
+    "role": "surge",
+    "dL_ring": 1.7,
+    "area_pct": 0.24
+   },
+   "Mult_027": {
+    "kind": "surge",
+    "role": "surge",
+    "dL_ring": null,
+    "area_pct": 0.01
    },
    "Near_1": {
     "kind": "near",
     "role": "near",
-    "dL_ring": 1.2,
+    "dL_ring": 7.5,
     "area_pct": 0.01
    }
   }

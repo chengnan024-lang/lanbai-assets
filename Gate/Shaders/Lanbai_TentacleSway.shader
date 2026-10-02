@@ -1,3 +1,51 @@
+//  v2.7c (gate round 9, 2026-10-02; UNCOMPILED): _RimLadderFloor (the far-rim ladder exp(-rho d) x (900/d)^1.2 was
+//    x 0.01-0.02 at 3-5 km, so the multitude's tier A / B moon rims (awe r4 B2.3) were invisible): ladder = max(.., floor);
+//    tier A 0.5 / B 0.3 with _RimGain 2.4 (GateLayout_v2.json multitude.tiers). _RimGain range 0..4. Nothing else changed.
+//  v2.7 (gate round 8, 2026-10-02; cloud art team; UNCOMPILED - compile in Unity 2022.3 and check every pass):
+//    * the sky / band / halo / moon air now come from the SHARED include LanbaiGateSky.cginc (same folder), which the
+//      skybox Lanbai_GateAirSky v3 includes too (tech r4 BT-3). Incl. the BACK band (|az| 110-150) and the v6 halo cards
+//      (centred on the hot spot, lip-weighted, #7A7B9C) with the distance fade smoothstep(250, 1200, D) (tech M4, m5, m6).
+//    * THIN PARTS (tech r4 B2: evenly spaced rings / beads = one texture tile per circumference on the whips):
+//      thinK = smoothstep(0.12, 0.40, b): main normal x thinK, smoothness -> 0.84, albedo -> _ThinAlbedo; the moon rim's
+//      wet term uses that smoothness. The detail normal (non-integer tiling, fine) stays.
+//    * WOUND SPECULAR (tech r4 M1, awe B3.1: the Engel's L* 100 streak): x farK = lerp(1, _WoundSpecFar,
+//      smoothstep(_ReflFarRange)), x (0.4 + 0.6 wet streaks), none above el +25 deg from the eye, min(.., _WoundSpecMax
+//      0.35; near arms 0.6); the source radius capped (min(hw / d, 0.6): no leak onto faces turned away from the white).
+//    * OVER THE WHITE (awe r4 B3.2: arms in front of the wound read as grey rubber): OverWhite() = the point is in front
+//      of the tear plane and ON SCREEN over the white or within _OverWhiteRamp deg of it (angle to the nearest axis
+//      point minus the lens half width there, _TearHW0/1 = the half-width curve along the axis, 8 knots x the global
+//      half width). Then albedo, emission and specular x _OverWhiteDim (0.12), the fog density x (1 - 0.6 ovr), the
+//      wound's air x (1 - 0.85 ovr), and both silhouette edges carry a 0.9 px WRAP of the white (_WrapGain 1.2).
+//    * the wound terms are OFF until Udon sets _Udon_TearFoot (w > 0) or the material's _TearFootM.w > 0 (tech m4;
+//      default _TearFootM.w = 0: no fixed-world-point wound light while GateRoot moves).
+//    * v2.7b _StreakKeep: the far specular scale spares the long wet streaks by this much (the renders did this since round
+//      3 and the shader did not: the Engel's L* 100 streak in the r4 key was the MOON glint on a kept streak); per kind.
+//    * the multitude's reveal: _Reveal x (_UseGlobalReveal ? _Udon_MultReveal[_RevealGroup] : 1) (tech r4 BT-4: one
+//      global per group instead of 150 per-frame MaterialPropertyBlock writes). Groups: x = hold to U9 - 1, y = fade
+//      at U8 + 1 (members that would stand by the white in the U8 forward view).
+//    * fog tiers of the multitude: instanced _FogCapI 0.39 / 0.50 / 0.60 (round 8: tiers 0.45 / 0.58 / 0.70 x 0.86; the v2.6
+//      header said 0.64 / 0.72 / 0.80 while the JSON had 0.72 / 0.80 / 0.86).
+// =====================================================================================================
+//  v2.6 (gate round 4, 2026-10-02; cloud art team; UNCOMPILED - compile in Unity 2022.3 and check every pass):
+//    * THE WOUND IS THE KEY LIGHT (AD round 3 item 2). The tear is a LINE LIGHT on the segment _TearFoot -> _TearTop
+//      (globals _Udon_TearFoot / _Udon_TearTop, xyz world, w = half width m; Udon writes them every frame from GateRoot
+//      and H(t), README_GateLayout §2.1; material fallbacks _TearFootM / _TearTopM):
+//        - diffuse: albedo x _TearLight x _TearDiffuse x (_TearDiffuseRef / d)^2 x saturate((N.L + w) / (1 + w))^2,
+//          L / d to the closest point of the segment (the renders: two ellipse area lights the size of the white);
+//        - specular (wet skin mirrors the white): representative point of the segment closest to the reflection ray
+//          (Karis 2013 tube light), lobe exp(-(theta / sigma)^2), sigma^2 = sigma_r^2 + (halfWidth / d)^2,
+//          sigma_r = 1.5 (1 - smoothness)^2 + 0.02, x min(1, sigma_s / sigma) x F_schlick(N.V, 0.04) x
+//          _TearSpecRadiance x _TearSpec; NOT scaled by _ReflectionScaleFar (only the sky probe is);
+//        - _RimWound: the edges that face the white ON SCREEN (N and L projected perpendicular to V) get a thin
+//          violet -> violet-white wrap, x (1 - N.V)^3 x the _RimWoundPx band x (0.25 + 0.75 nearW),
+//          nearW = exp(-angle(camera->P, camera->Q) / _RimWoundDeg); NOT on the far-rim ladder; the thin-tip
+//          transmission uses the same screen-space facing (v2.5's facingT was ~0 on every silhouette).
+//    * every world noise (root dissolve, ragged cloud-top fade) is sampled in the CLOUD-SEA frame:
+//      pN = worldPos - _Udon_GateOrigin.xyz (global, GateRoot.position each frame). v2.5 sampled worldPos while GateRoot
+//      moves at 59 m/s, so the dissolve holes streamed across every root at ~10 cells/s (tech BT-1).
+//    * the moon rim's facing uses the global moon direction (moonD) like backM (tech m15).
+//    * instanced _FogCapI (> 0: per-instance fog cap; the multitude's three tiers 0.64 / 0.72 / 0.80).
+//    * _BandEl default (6, 22, 2) and the band fills x 0.80 (AD round 3 item 3: void by ~+20 deg).
 // =====================================================================================================
 //  v2.5 (gate round 3 run 6, 2026-10-01; UNCOMPILED): _RootDissolve (m, default 18; 0 = off). In the lowest
 //    _RootDissolve m of the cloud-top fade zone the arm DISSOLVES: clip(smoothstep(-2, _RootDissolve, zf) - n), n = a
@@ -114,7 +162,7 @@
 //      shadow pass) -- bible "细尖最小宽度膨胀 1 px";
 //    * LanbaiFog (own fog, `nofog`), see lanbaiFog() and the hook below.
 //  Keep the tentacles OUT of static batching (object-space vertex animation). GPU instancing is fine
-//  (the per-instance phase comes from the object's world position, instancing-safe).
+//  (the per-instance phase: v2.3+ the instanced _Phase from GateLayout_v2.json; NOT the world position, GateRoot moves).
 // =====================================================================================================
 Shader "Lanbai/TentacleSway"
 {
@@ -149,9 +197,11 @@ Shader "Lanbai/TentacleSway"
 
         [Header(Gate v2.2  girth  cloud clip  pixel rim  per instance from GateLayout_v2.json)]
         _Phase ("Per-instance sway phase (instanced; GateLayout instances[*].phase)", Range(0, 1)) = 0
-        _RimGain ("Rim ladder gain (pillar .25, mid .14, colossus .08, hero .06, bg .05, near 1)", Range(0, 2)) = 1
+        _RimGain ("Rim ladder gain (pillar .25, mid .14, colossus .08, hero .06, bg .05, near 1; multitude tier A / B 2.4)", Range(0, 4)) = 1
+        _RimLadderFloor ("v2.7c: the far-rim ladder never drops below this (multitude tier A .5, B .3; others 0)", Range(0, 1)) = 0
         _ReflectionScaleFar ("Specular scale beyond _ReflFarRange.y (lerp from 1 at .x)", Range(0, 1)) = 1
         _ReflFarRange ("Specular fade range m: from x to y (pillars 150, 450)", Vector) = (250, 800, 0, 0)
+        _StreakKeep ("v2.7b: wet streaks keep this much specular at distance (near/rear .8, mid/pillar .5, colossus .15, Engel/bg/multitude 0)", Range(0, 1)) = 0.8
         [Toggle] _RimBackOnly ("Moon rims only when the moon is in front of the view (rear window: 0)", Float) = 1
         [Toggle] _UseUVRadius ("Use UV2.x = baked radius / root radius (GateArms_v3.fbx: 1; library meshes: 0)", Float) = 0
         _Reveal ("Reveal 0..1 (instanced; 0 = all haze, renderer off)", Range(0, 1)) = 1
@@ -159,7 +209,7 @@ Shader "Lanbai/TentacleSway"
         _MoonGlowColor ("Moon aureole #8FA3C8, linear", Vector) = (0.275, 0.366, 0.578, 1)
         _MoonGlowShape ("Aureole: a1, k1, a2, k2 (a1 e^-k1 deg + a2 e^-k2 deg)", Vector) = (1.6, 0.9, 0.06, 0.32)
         _HaloFog ("Wound air (halo cards) in the fog colour", Range(0, 2)) = 0.35
-        _HaloColor ("Halo #8275D0 fill, linear", Vector) = (0.205, 0.178, 0.630, 1)
+        _HaloColor ("Halo v6 #7A7B9C fill, linear", Vector) = (0.195, 0.198, 0.332, 1)
         _CloudTopColor ("Cloud-top colour the roots fade into (linear fill)", Vector) = (0.026, 0.030, 0.038, 1)
         _CloudFade ("Cloud-top fade height (m)", Float) = 25
         _RootDissolve ("Root dissolve height in the fade zone (m, 0 = off)", Float) = 18
@@ -180,9 +230,40 @@ Shader "Lanbai/TentacleSway"
         _RimWet ("Moon Rim On Dry Skin (x, wet streaks = 1)", Range(0, 1)) = 0.25
         _RimDir ("Direction Toward The Moon (world xyz, GateLayout.json)", Vector) = (-0.206, 0.139, 0.969, 0)
         _RimTearColor ("Tear Rim #A99DE1, linear rgb", Vector) = (0.397, 0.337, 0.753, 1)
-        _RimTear ("Tear Rim Strength", Range(0, 2)) = 0.08
+        _RimTear ("Tear Rim Strength (v2.6: the wound light below does the work)", Range(0, 2)) = 0.08
+        [Header(v2.6 the wound as a line light)]
+        _TearFootM ("Tear segment foot (world xyz, w = half width; 0 = no wound light until Udon sets the global)", Vector) = (0, 0, 1800, 0)
+        _TearTopM ("Tear segment top (world xyz; global _Udon_TearTop wins)", Vector) = (-20, 600, 1830, 0)
+        _TearDiffuse ("Wound diffuse E at the reference distance", Range(0, 8)) = 2.0
+        _TearDiffuseRef ("Wound diffuse reference distance (m)", Float) = 600
+        _TearWrap ("Wound diffuse wrap", Range(0, 1)) = 0.4
+        _TearSpec ("Wound specular (wet skin mirrors the white)", Range(0, 4)) = 1.0
+        _TearSpecRadiance ("Radiance of the white (linear)", Float) = 2.2
+        _RimWound ("Wound rim (screen-space facing), not laddered", Range(0, 12)) = 5.0
+        _RimWoundPx ("Wound rim width (px)", Range(0, 8)) = 2.5
+        _RimWoundDeg ("Wound rim falloff (deg on screen from the white)", Float) = 6.0
+        _RimWoundNear ("Wound rim colour next to the white (linear)", Vector) = (0.76, 0.80, 0.90, 1)
         _TearProximity ("Tear Rim: full below x m, none beyond y m", Vector) = (200, 1200, 0, 0)
         _TearPos ("Tear Centre (world xyz, GateLayout.json)", Vector) = (0, 297, 1800, 0)
+
+        [Header(v2.7 thin parts  wound spec clamp  over the white  multitude reveal)]
+        _ThinK ("Thin parts lose the main maps: b from x to y", Vector) = (0.12, 0.40, 0, 0)
+        _ThinSmooth ("Thin parts smoothness", Range(0, 1)) = 0.84
+        _ThinAlbedo ("Thin parts albedo (the map mean, linear)", Vector) = (0.017, 0.017, 0.022, 1)
+        _WoundSpecMax ("Wound specular clamp (linear; near arms 0.6)", Range(0, 2)) = 0.35
+        _WoundSpecFar ("Wound specular far scale (hands 1, pillars .5, colossi .3, Engel / bg / multitude .15)", Range(0, 1)) = 0.3
+        _WoundSpecEl ("No wound specular above x deg (fade from y deg)", Vector) = (25, 18, 0, 0)
+        _TearHW0 ("Lens half width along the axis, knots 0-3 (x the global half width)", Vector) = (0.234, 0.525, 0.739, 1.0)
+        _TearHW1 ("Lens half width along the axis, knots 4-7", Vector) = (0.924, 0.622, 0.325, 0.089)
+        _OverWhiteRamp ("Over the white: ramp beyond the lens edge (deg)", Float) = 1.5
+        _OverWhiteDim ("Over the white: surface multiplier", Range(0, 1)) = 0.12
+        _OverWhiteFog ("Over the white: fog density x (1 - this)", Range(0, 1)) = 0.6
+        _OverWhiteAir ("Over the white: wound air x (1 - this)", Range(0, 1)) = 0.85
+        _WrapGain ("Over the white: edge wrap gain", Range(0, 4)) = 1.2
+        _WrapPx ("Over the white: edge wrap width (px)", Range(0, 4)) = 0.9
+        _WrapColor ("Over the white: wrap colour (linear)", Vector) = (0.80, 0.80, 0.92, 1)
+        [Toggle] _UseGlobalReveal ("Multitude: x the global _Udon_MultReveal of its group", Float) = 0
+        _BackBand ("Back band (|az| 110-150) x HazeFar", Range(0, 2)) = 0.55
 
         [Header(Tip)]
         _TipTint ("Tip Indigo Drift (albedo multiplier)", Vector) = (0.86, 0.80, 1.10, 0)
@@ -198,11 +279,11 @@ Shader "Lanbai/TentacleSway"
         _FogCap ("Fog Cap Beyond 1.5 km", Range(0, 1)) = 0.6
         _FogCapFrom ("Cap blends in from x to y metres", Vector) = (1300, 1700, 0, 0)
         _FogCapHeight ("Cap Height Falloff m (colossi 1600; 0 = none)", Float) = 500
-        _HazeNear ("Haze Band Next To The Tear #484D63, linear", Vector) = (0.0648, 0.0742, 0.1248, 1)
-        _HazeFar ("Haze Band 50 deg Away #2A3041, linear", Vector) = (0.0232, 0.0296, 0.0512, 1)
+        _HazeNear ("Haze Band Next To The Tear (v2.6: fill x 0.80), linear", Vector) = (0.1085, 0.1130, 0.1641, 1)
+        _HazeFar ("Haze Band 50 deg Away (v2.6: fill x 0.80), linear", Vector) = (0.0436, 0.0504, 0.0726, 1)
         _Void ("Void #070A14, linear", Vector) = (0.0021, 0.0030, 0.0070, 1)
         _BandAz ("Band azimuth: full to x deg, gone at y deg", Vector) = (50, 60, 0, 0)
-        _BandEl ("Band elevation: full to x deg, gone at y deg, power z (v2.3: the bible 12, 35, 1)", Vector) = (12, 35, 1, 0)
+        _BandEl ("Band elevation: full to x deg, gone at y deg, power z (v2.6: 6, 22, 2)", Vector) = (6, 22, 2, 0)
         _BelowHorizon ("Below the horizon: from x deg to y deg, darkest factor z", Vector) = (-25, 0, 0.55, 0)
     }
 
@@ -223,6 +304,8 @@ Shader "Lanbai/TentacleSway"
         // #define LANBAI_FOG_INCLUDED and provide  half3 LanbaiHorizon(float3 viewDirWS)  (the horizon function
         // Lanbai/Sky shares). Until then this shader uses its own copy of the gate's haze band (LanbaiBand).
         // #include "LanbaiFog.cginc"
+        // v2.7: the gate's band / moon air / wound air -- SHARED with the skybox Lanbai_GateAirSky v3 (same folder)
+        #include "LanbaiGateSky.cginc"
 
         sampler2D _MainTex;
         sampler2D _MetallicGlossMap;
@@ -256,29 +339,82 @@ Shader "Lanbai/TentacleSway"
         float4 _Udon_CloudTop;        // global: x = cloud-sea top (world y) this frame; w > 0 = set (else _CloudTopY)
 
         half _RimGain;
+        half _RimLadderFloor;
         half _ReflectionScaleFar;
+        half _StreakKeep;
         float4 _CloudTopColor;
         float _CloudFade;
         float _RootDissolve;
-        half _BelowDesat;
-        float4 _Udon_TearPos;         // global: the tear core (world) this frame; w > 0 = set (else _TearPos)
-        float4 _Udon_TearH;           // global: x = tear height H(t) m; w > 0 = set (else 640)
-        float4 _Udon_MoonDir;         // global: xyz = world direction TO the moon; w > 0 = set (else _RimDir)
         float4 _ReflFarRange;
         float _RimBackOnly;
         float _UseUVRadius;
         half _MoonGlowFog;
-        float4 _MoonGlowColor;
-        float4 _MoonGlowShape;
         half _HaloFog;
-        float4 _HaloColor;
 
         UNITY_INSTANCING_BUFFER_START(LanbaiGate)
             UNITY_DEFINE_INSTANCED_PROP(float, _Phase)
             UNITY_DEFINE_INSTANCED_PROP(float, _Girth)
             UNITY_DEFINE_INSTANCED_PROP(float, _GirthFalloff)
             UNITY_DEFINE_INSTANCED_PROP(float, _Reveal)
+            UNITY_DEFINE_INSTANCED_PROP(float, _FogCapI)
+            UNITY_DEFINE_INSTANCED_PROP(float, _RevealGroup)
         UNITY_INSTANCING_BUFFER_END(LanbaiGate)
+
+        float4 _ThinK; half _ThinSmooth; float4 _ThinAlbedo;
+        half _WoundSpecMax, _WoundSpecFar; float4 _WoundSpecEl;
+        float4 _TearHW0, _TearHW1;
+        float _OverWhiteRamp; half _OverWhiteDim, _OverWhiteFog, _OverWhiteAir, _WrapGain, _WrapPx; float4 _WrapColor;
+        float _UseGlobalReveal;
+        float4 _Udon_MultReveal;      // v2.7 global: x = the multitude's reveal (group 0: hold to U9 - 1), y = group 1
+
+        float4 _Udon_GateOrigin;      // v2.6 global: xyz = GateRoot.position this frame (the cloud-sea frame for noise)
+        float4 _Udon_TearFoot;        // v2.6 global: xyz = the tear axis foot (world), w = half width m; w > 0 = set
+        float4 _Udon_TearTop;         // v2.6 global: xyz = the tear axis top (world)
+        float4 _TearFootM, _TearTopM;
+        half _TearDiffuse, _TearDiffuseRef, _TearWrap, _TearSpec, _TearSpecRadiance;
+        half _RimWound, _RimWoundPx, _RimWoundDeg;
+        float4 _RimWoundNear;
+
+        float3 NoisePos(float3 w)  { return w - _Udon_GateOrigin.xyz; }
+        void TearSegment(out float3 A, out float3 B, out float hw)
+        {
+            bool g = _Udon_TearFoot.w > 0.0;
+            A = g ? _Udon_TearFoot.xyz : _TearFootM.xyz;
+            B = g ? _Udon_TearTop.xyz : _TearTopM.xyz;
+            hw = g ? _Udon_TearFoot.w : _TearFootM.w;
+        }
+
+        // v2.7: 1 when the wound light is defined (Udon global set, or the material fallback w > 0)
+        half WoundOn() { return (_Udon_TearFoot.w > 0.0 || _TearFootM.w > 0.0) ? 1.0 : 0.0; }
+
+        // v2.7: the lens half width (m) at axis fraction u (8 knots, piecewise linear) x the global half width
+        float TearHalfWidthAt(float u, float hwMax)
+        {
+            float x = saturate(u) * 7.0;
+            float k[8] = { _TearHW0.x, _TearHW0.y, _TearHW0.z, _TearHW0.w, _TearHW1.x, _TearHW1.y, _TearHW1.z, _TearHW1.w };
+            int i = (int)min(floor(x), 6.0);
+            return lerp(k[i], k[i + 1], x - i) * hwMax;
+        }
+
+        // v2.7 (awe r4 B3.2): 0..1, the point is in front of the tear plane and on screen over the white or within
+        // _OverWhiteRamp deg of its edge
+        half OverWhite(float3 Pw)
+        {
+            if (WoundOn() < 0.5) return 0.0;
+            float3 tA, tB; float thw;
+            TearSegment(tA, tB, thw);
+            float3 tAB = tB - tA;
+            float uq = saturate(dot(Pw - tA, tAB) / max(dot(tAB, tAB), 1.0));
+            float3 Qw = tA + tAB * uq;
+            float3 Vc = normalize(Pw - _WorldSpaceCameraPos);
+            float3 dQ = Qw - _WorldSpaceCameraPos;
+            float angW = degrees(acos(clamp(dot(Vc, normalize(dQ)), -1.0, 1.0)));
+            float angHW = degrees(atan(TearHalfWidthAt(uq, thw) / max(length(dQ), 1.0)));
+            float r = max(_OverWhiteRamp, 0.05);
+            half ovr = smoothstep(r, -0.15 * r, angW - angHW);
+            half front = smoothstep(-40.0, 0.0, tA.z - Pw.z);                 // world z: the tear plane faces -Z
+            return ovr * front;
+        }
 
         float CloudTop()
         {
@@ -292,11 +428,10 @@ Shader "Lanbai/TentacleSway"
         float4 _RimTearColor;
         half _RimTear;
         float4 _TearProximity;
-        float4 _TearPos;
 
         float3 TearPos()
         {
-            return (_Udon_TearPos.w > 0.0) ? _Udon_TearPos.xyz : _TearPos.xyz;
+            return LanbaiTearPos();
         }
 
         // the specular scale rides in s.Alpha (opaque shader: Alpha is free): lerp(diffuse only, full Standard, k)
@@ -346,17 +481,8 @@ Shader "Lanbai/TentacleSway"
         float _FogCap;
         float4 _FogCapFrom;
         float _FogCapHeight;
-        float4 _HazeNear;
-        float4 _HazeFar;
-        float4 _Void;
-        float4 _BandAz;
-        float4 _BandEl;
-        float4 _BelowHorizon;
 
         // Optional Udon globals (VRCShader.SetGlobal*). Never set = 0, and then the material values above win.
-        float4 _Udon_FogBandDir;      // xyz: world direction of the band centre (the tear); length < 0.5 = unset
-        float4 _Udon_FogBandColor;    // rgb: band colour next to the tear (linear); a > 0 = set
-        float _Udon_FogBandWidth;     // azimuth (deg) where the band is fully the far colour; > 0 = set
         float _Udon_FogDensity;       // Exp density; > 0 = set
 
         struct Input
@@ -432,63 +558,11 @@ Shader "Lanbai/TentacleSway"
             o.rawU = v.texcoord.x;
         }
 
-        // LanbaiBand: the haze-band sky colour in world direction V (camera -> point). Azimuth is measured from
-        // the horizontal direction camera -> tear (or _Udon_FogBandDir when set). Identical to the preview
-        // (_band_colour in build_library.py) and to lib/preview_rig.py's world.
-        half3 LanbaiBand(float3 V)
+        // v2.7: LanbaiBand / HaloProfile / the wound's air live in LanbaiGateSky.cginc (shared with the skybox)
+        half3 LanbaiFogColour(float3 V, float dist, half ovr)
         {
-            float el = degrees(asin(clamp(V.y, -1.0, 1.0)));
-            float3 T = (dot(_Udon_FogBandDir.xyz, _Udon_FogBandDir.xyz) > 0.25) ? _Udon_FogBandDir.xyz
-                                                                               : (TearPos() - _WorldSpaceCameraPos);
-            float2 th = normalize(T.xz + float2(1e-5, 0.0));
-            float2 vh = normalize(V.xz + float2(1e-5, 0.0));
-            float az = degrees(acos(clamp(dot(th, vh), -1.0, 1.0)));
-            float bw = (_Udon_FogBandWidth > 0.0) ? _Udon_FogBandWidth : _BandAz.x;
-            float bg = (_Udon_FogBandWidth > 0.0) ? _Udon_FogBandWidth + (_BandAz.y - _BandAz.x) : _BandAz.y;
-            half3 nearC = (_Udon_FogBandColor.a > 0.0) ? (half3)_Udon_FogBandColor.rgb : (half3)_HazeNear.rgb;
-            half3 band = lerp(nearC, (half3)_HazeFar.rgb, smoothstep(0.0, bw, az));
-            float wel = 1.0 - smoothstep(_BandEl.x, _BandEl.y, el);
-            wel = pow(saturate(wel), (_BandEl.z > 0.0) ? _BandEl.z : 1.0);
-            float w = (1.0 - smoothstep(bw, bg, az)) * wel;
-            half3 sky = lerp((half3)_Void.rgb, band, w);
-            float below = lerp(_BelowHorizon.z, 1.0, smoothstep(_BelowHorizon.x, _BelowHorizon.y, el));
-            half lum = dot(sky, half3(0.2126, 0.7152, 0.0722));
-            sky = lerp(sky, lum * half3(0.92, 0.98, 1.12), _BelowDesat * smoothstep(0.0, -4.0, el));
-            return sky * below;
-        }
-
-        // the halo cards' radial profile (Halo_512: soft core + long tail, 0 at q = 1)
-        half HaloProfile(float q)
-        {
-            float f = 0.62 / pow(1.0 + (q / 0.16) * (q / 0.16), 1.15) + 0.38 * exp(-(q / 0.55) * (q / 0.55));
-            return (half)(saturate((f - 0.0296) / 0.9704) * smoothstep(1.0, 0.72, q));
-        }
-
-        // v2.4: the air's colour = the band + the moon's air + the wound's air (as in the renders)
-        half3 LanbaiFogColour(float3 V, float dist)
-        {
-        #if defined(LANBAI_FOG_INCLUDED)
-            half3 c = LanbaiHorizon(V);
-        #else
-            half3 c = LanbaiBand(V);
-        #endif
-            float3 md = (_Udon_MoonDir.w > 0.0) ? normalize(_Udon_MoonDir.xyz) : normalize(_RimDir.xyz);
-            float am = degrees(acos(clamp(dot(V, md), -1.0, 1.0)));
-            c += _MoonGlowColor.rgb * (_MoonGlowFog * (_MoonGlowShape.x * exp(-_MoonGlowShape.y * am) + _MoonGlowShape.z * exp(-_MoonGlowShape.w * am)));
-            // the wound's air: the three halo cards (w, h at H = 1000 m: 330 x 620 gain 2.8, 360 x 880, 640 x 1000)
-            // on the tear plane (world z = tear z; the kit faces -Z), seen along V, only in front of that plane
-            float3 T = TearPos();
-            float tpl = (T.z - _WorldSpaceCameraPos.z) / max(V.z, 1e-4);
-            if (_HaloFog > 0.0 && V.z > 1e-3 && dist < tpl)
-            {
-                float k = ((_Udon_TearH.w > 0.0) ? _Udon_TearH.x : 640.0) / 1000.0;
-                float2 r = (_WorldSpaceCameraPos.xy + V.xy * tpl) - T.xy;
-                half acc = 2.8 * HaloProfile(length(r / (0.5 * k * float2(330.0, 620.0))))
-                         + HaloProfile(length(r / (0.5 * k * float2(360.0, 880.0))))
-                         + HaloProfile(length(r / (0.5 * k * float2(640.0, 1000.0))));
-                c += _HaloColor.rgb * (acc * _HaloFog);
-            }
-            return c;
+            float3 md = LanbaiMoonDir(_RimDir.xyz);
+            return LanbaiGateFogColour(V, dist, md, _MoonGlowFog, _HaloFog * (1.0 - _OverWhiteAir * ovr));
         }
 
         void surf(Input IN, inout SurfaceOutputStandard o)
@@ -499,8 +573,9 @@ Shader "Lanbai/TentacleSway"
             // v2.5: the root dissolves in the lowest _RootDissolve m of the (ragged) cloud-top fade zone
             if (_RootDissolve > 0.0)
             {
-                float zd = IN.worldPos.y - CloudTop() + (VNoise(IN.worldPos / 18.0) - 0.5) * 30.0;
-                clip(smoothstep(-2.0, _RootDissolve, zd) - VNoise(IN.worldPos / 6.0 + 17.3));
+                float3 pN = NoisePos(IN.worldPos);           // v2.6: the cloud-sea frame (GateRoot moves)
+                float zd = IN.worldPos.y - CloudTop() + (VNoise(pN / 18.0) - 0.5) * 30.0;
+                clip(smoothstep(-2.0, _RootDissolve, zd) - VNoise(pN / 6.0 + 17.3));
             }
             half4 alb = tex2D(_MainTex, IN.uv_MainTex) * _Color;
             half4 ms = tex2D(_MetallicGlossMap, IN.uv_MainTex);
@@ -519,7 +594,10 @@ Shader "Lanbai/TentacleSway"
             // pores) x grazing flatten only -- NOT masked, so the taut convex side is smooth skin, not rubber
             half ndvT = saturate(normalize(IN.viewDir).z);
             half graze = lerp(1.0, smoothstep(0.05, 0.5, ndvT), _GrazingFlatten);
-            half keep = graze * lerp(_ConvexCrease, 1.0, oc.b);
+            // v2.7 (tech r4 B2): thin parts lose the tile-periodic main maps (no evenly spaced rings / beads)
+            half bT = (_UseUVRadius > 0.5) ? IN.radR : IN.color.b;
+            half thinK = smoothstep(_ThinK.x, _ThinK.y, bT);
+            half keep = graze * lerp(_ConvexCrease, 1.0, oc.b) * thinK;
             keep *= lerp(1.0, 1.0 - smoothstep(1000.0, 1500.0, dist), _Colossus);
             n = normalize(lerp(half3(0, 0, 1), n, keep));
             nd = normalize(lerp(half3(0, 0, 1), nd, graze));
@@ -542,9 +620,9 @@ Shader "Lanbai/TentacleSway"
             // tip: the albedo drifts to indigo where the arm is thin (vertex colour B = r / r_root)
             half b = (_UseUVRadius > 0.5) ? IN.radR : IN.color.b;
             half tint = 1.0 - smoothstep(0.02, 0.22, b);
-            o.Albedo = alb.rgb * lerp(half3(1, 1, 1), (half3)_TipTint.rgb, tint);
+            o.Albedo = lerp((half3)_ThinAlbedo.rgb, alb.rgb, thinK) * lerp(half3(1, 1, 1), (half3)_TipTint.rgb, tint);
             o.Metallic = ms.r;
-            half smoothV = ms.a * _Glossiness;
+            half smoothV = lerp(_ThinSmooth, ms.a * _Glossiness, thinK);      // v2.7: one continuous wet sheen on the whips
             o.Smoothness = smoothV;
             o.Occlusion = lerp(1.0, oc.g, _OcclusionStrength) * _ReflectionScale;
 
@@ -552,12 +630,12 @@ Shader "Lanbai/TentacleSway"
             half ndv = saturate(abs(dot(Nw, Vw)));
 
             // moon rim: #9DB8FF x pow(1 - N.V, 5) x saturate(0.3 - N.L_moon), beaded by the wet streaks
-            half nlm = dot(Nw, normalize(_RimDir.xyz));
+            float3 moonD = (_Udon_MoonDir.w > 0.0) ? normalize(_Udon_MoonDir.xyz) : normalize(_RimDir.xyz);
+            half nlm = dot(Nw, moonD);                                          // v2.6 (m15): the global moon direction
             half wet = lerp(_RimWet, 1.0, saturate((smoothV - 0.58) / 0.30));
             // v2.3 rim ladder + back-lit only (the moon in front of the view)
             float densL = (_Udon_FogDensity > 0.0) ? _Udon_FogDensity : _FogDensity;
-            half ladder = exp(-densL * dist) * clamp(pow(900.0 / max(dist, 1.0), 1.2), 0.12, 1.0) * _RimGain;
-            float3 moonD = (_Udon_MoonDir.w > 0.0) ? normalize(_Udon_MoonDir.xyz) : normalize(_RimDir.xyz);
+            half ladder = max(exp(-densL * dist) * clamp(pow(900.0 / max(dist, 1.0), 1.2), 0.12, 1.0), _RimLadderFloor) * _RimGain;   // v2.7c floor
             half backM = lerp(1.0, smoothstep(-0.15, 0.45, dot(-Vw, moonD)), _RimBackOnly);
             half wetL = 0.6 + 0.8 * smoothstep(0.55, 0.9, smoothV);
             half3 rimM = _RimMoonColor.rgb * (_RimMoon * pow(saturate(1.0 - ndv), 5.0) * saturate(0.3 - nlm) * wet * ladder * backM);
@@ -576,7 +654,53 @@ Shader "Lanbai/TentacleSway"
             half ib = saturate(1.0 - b);
             half thin = ib * ib * (1.0 - smoothstep(0.10, 0.35, b));
             half back = saturate(dot(-Vw, Lt));
-            half3 trans = _Translucent.rgb * _TearLight.rgb * (_TipGlow * thin * facingT * back * back);
+            // ---- v2.6: the wound as a line light ------------------------------------------------------------
+            float3 tA, tB; float thw;
+            TearSegment(tA, tB, thw);
+            float3 tAB = tB - tA;
+            float3 Pw = IN.worldPos;
+            float uq = saturate(dot(Pw - tA, tAB) / max(dot(tAB, tAB), 1.0));
+            float3 Qw = tA + tAB * uq;                                           // nearest point of the white's axis
+            float3 Lq = Qw - Pw;
+            float dq = max(length(Lq), 1.0);
+            Lq /= dq;
+            float3 Nn = normalize(WorldNormalVector(IN, o.Normal));             // normal-mapped
+            half wrapD = pow(saturate((dot(Nn, Lq) + _TearWrap) / (1.0 + _TearWrap)), 2.0);
+            half Et = _TearDiffuse * min(pow(_TearDiffuseRef / dq, 2.0), 16.0);
+            half3 woundDiff = o.Albedo * _TearLight.rgb / max(max(_TearLight.r, _TearLight.g), _TearLight.b) * (Et * wrapD * WoundOn());
+            // specular: the point of the segment closest to the reflection ray (tube light)
+            half ndvN = max(dot(Nn, Vw), 1e-3);
+            float3 Rw = 2.0 * ndvN * Nn - Vw;
+            float3 L0 = tA - Pw;
+            float rl0 = dot(Rw, L0), rld = dot(Rw, tAB), l0ld = dot(L0, tAB);
+            float tr = saturate((rl0 * rld - l0ld) / max(dot(tAB, tAB) - rld * rld, 1e-3));
+            float3 Lc = L0 + tAB * tr;
+            float dc = max(length(Lc), 1.0);
+            float th = acos(clamp(dot(Rw, Lc / dc), -1.0, 1.0));
+            half rough = 1.0 - smoothV;
+            half sigR = 1.5 * rough * rough + 0.02;
+            half sigS = min(thw / dc, 0.6);                                   // v2.7: capped source radius (no back leak)
+            half sig = sqrt(sigR * sigR + sigS * sigS);
+            half fres = 0.04 + 0.96 * pow(1.0 - ndvN, 5.0);
+            half inFront = smoothstep(-60.0, 20.0, tA.z - Pw.z);              // nothing mirrored behind the tear plane
+            half wOn = WoundOn();
+            // v2.7 (tech r4 M1 / awe B3.1): far scale, wet-streak break, no wound glint above el +25, clamp
+            half farK = lerp(1.0, _WoundSpecFar, smoothstep(_ReflFarRange.x, max(_ReflFarRange.y, _ReflFarRange.x + 1.0), dist));
+            half brk = 0.4 + 0.6 * smoothstep(0.70, 0.88, smoothV);
+            half elP = degrees(asin(clamp(-Vw.y, -1.0, 1.0)));
+            half elK = smoothstep(_WoundSpecEl.x, _WoundSpecEl.y, elP);
+            half wsAmt = _TearSpec * _TearSpecRadiance * fres * exp(-(th / sig) * (th / sig)) * min(sigS / sig, 1.0) * inFront;
+            half3 woundSpec = half3(0.93, 0.92, 1.0) * (min(wsAmt * farK * brk * elK, _WoundSpecMax) * wOn);
+            // _RimWound: the edges that face the white on screen
+            float3 Np = normalize(Nw - Vw * dot(Nw, Vw) + 1e-5);
+            float3 Lp = normalize(Lq - Vw * dot(Lq, Vw) + 1e-5);
+            half facingS = saturate(dot(Np, Lp));
+            float3 Vc = normalize(Pw - _WorldSpaceCameraPos);
+            float3 Vq = normalize(Qw - _WorldSpaceCameraPos);
+            half angW = degrees(acos(clamp(dot(Vc, Vq), -1.0, 1.0)));
+            half nearW = exp(-angW / max(_RimWoundDeg, 0.5));
+
+            half3 trans = _Translucent.rgb * _TearLight.rgb * (_TipGlow * thin * facingS * (0.3 + 0.7 * nearW));
 
             // v2.2 pixel rim (as rendered): band N.V < thr = sqrt(2 N px / r), px = pixel footprint, r = local radius
             float objScale = max(length(unity_ObjectToWorld._m00_m10_m20), 1e-4);
@@ -589,9 +713,26 @@ Shader "Lanbai/TentacleSway"
             half proxPx = 1.0 - smoothstep(200.0, 1600.0, tdist);
             half3 rimPx = band * ladder * wetL * (_RimMoonColor.rgb * (_RimPxMoon * moonK) + _RimTearColor.rgb * (_RimPxTear * facingPx * proxPx));
 
-            o.Emission = rimM + rimT + trans + rimPx;
+            half thrW = min(sqrt(2.0 * _RimWoundPx * pxW / rLoc), 0.85);
+            half bandW = pow(1.0 - min(ndv / max(thrW, 1e-4), 1.0), 1.2);
+            half3 cW = lerp((half3)_RimTearColor.rgb, (half3)_RimWoundNear.rgb, nearW);
+            // v2.7 (awe r4 B3.2): an arm IN FRONT of the white shows its shadow side: everything x _OverWhiteDim, the wound
+            // rim off there, and a thin WRAP of the white on both silhouette edges instead
+            half ovr = OverWhite(Pw);
+            half3 rimW = cW * (_RimWound * pow(saturate(1.0 - ndv), 3.0) * facingS * (0.25 + 0.75 * nearW) * bandW * (1.0 - ovr) * WoundOn());
+            half thrV = min(sqrt(2.0 * _WrapPx * pxW / rLoc), 0.85);
+            half bandV = pow(1.0 - min(ndv / max(thrV, 1e-4), 1.0), 2.0);
+            half3 wrapV = (half3)_WrapColor.rgb * (_WrapGain * bandV * ovr);
+            half dimK = lerp(1.0, _OverWhiteDim, ovr);
+            o.Albedo *= dimK;
+
+            o.Emission = (rimM + rimT + trans * WoundOn() + rimPx + woundDiff + woundSpec) * dimK + rimW + wrapV;
             // the specular scale for LightingLanbai (opaque: Alpha is free)
-            o.Alpha = lerp(1.0, _ReflectionScaleFar, smoothstep(_ReflFarRange.x, max(_ReflFarRange.y, _ReflFarRange.x + 1.0), dist));
+            // v2.7b: the long wet streaks keep _StreakKeep of their specular at distance (they sell scale on the pillars and
+            // hands); the far giants 0. v2.7c note: the Engel's L* 100 streak was the GRAZING MOON GLINT of the whole
+            // specular (10 linear even at _ReflectionScaleFar 0.15), not only the kept streak: its material has 0.01
+            half farS = lerp(_ReflectionScaleFar, 1.0, _StreakKeep * smoothstep(0.80, 0.90, smoothV));
+            o.Alpha = lerp(1.0, farS, smoothstep(_ReflFarRange.x, max(_ReflFarRange.y, _ReflFarRange.x + 1.0), dist)) * dimK;
         }
 
         // LanbaiFog (ART BIBLE v2 §6·4): f = 1 - exp(-d rho (1 + extra exp(-h / 60 m))), h above the cloud tops
@@ -606,20 +747,25 @@ Shader "Lanbai/TentacleSway"
             float h = max(IN.worldPos.y - CloudTop(), 0.0);
             float dens = (_Udon_FogDensity > 0.0) ? _Udon_FogDensity : _FogDensity;
             // v2.4 (tech B3): the cloud-top extra is ADDED to the density scale (as in the renders)
-            float rho = dens * (_FogDensityScale + _FogExtra.x * exp(-h / max(_FogExtra.y, 1.0)));
+            half ovr = OverWhite(IN.worldPos);                                // v2.7: the air in front of a silhouette over the white
+            float rho = dens * (_FogDensityScale + _FogExtra.x * exp(-h / max(_FogExtra.y, 1.0))) * (1.0 - _OverWhiteFog * ovr);
             float f = 1.0 - exp(-dist * rho);
-            float fc = min(f, _FogCap) * (_FogCapHeight > 0.0 ? exp(-h / _FogCapHeight) : 1.0);
+            float capI = UNITY_ACCESS_INSTANCED_PROP(LanbaiGate, _FogCapI);
+            float fc = min(f, (capI > 0.0) ? capI : _FogCap) * (_FogCapHeight > 0.0 ? exp(-h / _FogCapHeight) : 1.0);
             f = lerp(f, fc, smoothstep(_FogCapFrom.x, _FogCapFrom.y, dist));
             // v2.4 (tech B1): the reveal comes AFTER the cap: at 0 the arm is all haze (and Udon turns it off)
-            f = 1.0 - (1.0 - f) * UNITY_ACCESS_INSTANCED_PROP(LanbaiGate, _Reveal);
+            float rv = UNITY_ACCESS_INSTANCED_PROP(LanbaiGate, _Reveal);
+            if (_UseGlobalReveal > 0.5)                                       // v2.7: the multitude's group reveal (one global)
+                rv *= (UNITY_ACCESS_INSTANCED_PROP(LanbaiGate, _RevealGroup) > 0.5) ? _Udon_MultReveal.y : _Udon_MultReveal.x;
+            f = 1.0 - (1.0 - f) * rv;
             // v2.3: the last _CloudFade m above the cloud top fade (ragged) toward the lit cloud-top colour
-            float zf = IN.worldPos.y - CloudTop() + (VNoise(IN.worldPos / 18.0) - 0.5) * 30.0;
+            float zf = IN.worldPos.y - CloudTop() + (VNoise(NoisePos(IN.worldPos) / 18.0) - 0.5) * 30.0;   // v2.6: sea frame
             half cf = smoothstep(_CloudFade + 3.0, -2.0, zf);
         #ifdef UNITY_PASS_FORWARDADD
             color.rgb *= (1.0 - f) * (1.0 - cf);
         #else
             color.rgb = lerp(color.rgb, (half3)_CloudTopColor.rgb, cf);
-            color.rgb = lerp(color.rgb, LanbaiFogColour(V, dist), f);
+            color.rgb = lerp(color.rgb, LanbaiFogColour(V, dist, ovr), f);
         #endif
             color.a = 1.0;
         }

@@ -1,0 +1,14 @@
+{
+"16": {
+"id": "Colossus_1",
+"layer": "colossus",
+"role": "rilke",
+"kind": "colossus"
+},
+"17": {
+"id": "Colossus_2",
+"layer": "colossus",
+"role": "moon",
+"kind": "colossus"
+}
+}

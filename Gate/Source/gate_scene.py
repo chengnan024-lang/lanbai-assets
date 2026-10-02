@@ -48,17 +48,32 @@ COL_FILL = RT.hexlin('#5A6488') / RT.hexlin('#5A6488').max()
 LOOK = dict(
     fog=0.0006, fog_extra=1.5, fog_extra_h=25.0, cap=0.92, cap_h=500.0, cap_from=1300.0, cap_to=1700.0,
     tide_cap=0.80, cap_h_col=5000.0, kit_glossy=0.0, fog_mid=1.0, fog_colossus=1.0, fog_pillar=1.0, fog_hero=1.0, fog_bg=1.0, arm_spec=1.0, near_spec=0.45, glow_fog=0.35, moon_glow_fog=0.35,
-    rim_moon=0.80, rim_tear=0.08, tip_glow=1.0, rim_px=2.2, rim_px_near=5.0, rim_moon_px=1.3, rim_tear_px=2.2,
-    rim_gain_near=1.0, rim_gain_pillar=0.25, rim_gain_mid=0.14, rim_gain_colossus=0.08, rim_gain_hero=0.06,
+    rim_moon=0.80, rim_tear=0.08, tip_glow=1.0, rim_wound=5.0, rimw_surge=0.12, rimw_bg=0.3, rimw_colossus=0.6, rim_px=2.2, rim_px_near=5.0, rim_moon_px=1.3, rim_tear_px=2.2,
+    rim_gain_near=1.0, rim_gain_pillar=0.25, rim_gain_mid=0.45, rim_gain_colossus=0.08, rim_gain_hero=0.15,
     rim_gain_bg=0.05, rim_gain_rear=0.1, rim_gain_surge=0.04, below_desat=0.6, fog_surge=1.0, spec_surge=0.15,
-    spec_near=0.6, spec_pillar=0.08, spec_mid=0.3, spec_colossus=0.2, spec_hero=0.15, spec_bg=0.15, spec_rear=1.0,
+    spec_near=0.6, spec_pillar=0.08, spec_mid=0.3, spec_colossus=0.2, spec_hero=0.01, spec_bg=0.15, spec_rear=1.0,   # run 9: hero 0.15 -> 0.01 (the Engel's L* 100 streak = the grazing MOON glint: 10 lin at 15 %, wip/r6/eng_cmp)
     cloud_alb=0.72, cloud_moon=0.6, cloud_tear=1.0, cloud_glow=1.0, cloud_amb=1.0, cloud_rim=1.0, cloud_detail=0.0,
-    card_fog=0.5, card_gain=1.0,
-    shaft=0.8, halo=1.0, folds=0.55, intensity=1.0, aur_a=1.6, aur_k=0.9, aur_b=0.06,
-    stars=1.0, dome_a=40.0, cloud_mist=0.7, floor='deck', mist=1.0, mist_gain=1.0, far_gain=0.6, deck_extra=0.5, deck_fog=1.0, deck_gain=0.52, deck_desat=0.8, row_gain=0.55, row_tint=(0.80, 0.86, 1.0), row_violet=1.3, row_moon=0.8,
-    shells=10, shell_noise=1.0, tubes=1.15, deck_quiet=1.0, deck_quiet_near=0.30, deck_quiet_far=0.12,
+    card_fog=0.5, card_gain=1.0, crevasse=0.9, seam_lip=0.5,     # round 8: the short foot CANYON floor + lit lips (awe r4 B1.1)
+        # round 4: the seam is off (a thin line on the deck = a crack)
+    shaft=0.35, halo=1.0, folds=1.0, intensity=1.0, aur_a=1.6, aur_k=0.9, aur_b=0.06,
+    stars=1.0, dome_a=40.0, cloud_mist=0.7, floor='deck', mist=1.0, mist_gain=1.0, far_gain=0.50, deck_extra=0.5, deck_fog=1.0, deck_gain=0.44, deck_desat=0.8, row_gain=0.55, row_tint=(0.80, 0.86, 1.0), row_violet=1.3, row_moon=0.8,
+    shells=10, shell_noise=1.0, tubes=1.15, deck_quiet=1.0, deck_quiet_near=0.30, deck_quiet_far=0.45,   # round 8 (awe r4 M1.1): 0.12 -> 0.45 (billows to the horizon)
+   
     deck_quiet_px=28.0, deck_near_gain=0.7, streak_keep=0.8, pool=0.85,
+    # round 8b (the Engel's L* 100 streak at the top edge was the MOON specular kept on a wet streak, not the wound's):
+    # the far giants do not keep their wet-streak specular (Unity: _StreakKeep per kind, TentacleSway v2.7)
+    streak_keep_hero=0.0, streak_keep_colossus=0.15, streak_keep_bg=0.0, streak_keep_surge=0.0, streak_keep_mid=0.5, streak_keep_pillar=0.5,
     cards=0.0, puffs=0, puff_gain=0.5, puff_w=(0.08, 0.2), puff_vis=(0.12, 0.3),
+    wrap_px=0.9, wrap_p=2.0, wrap_gain=1.2, ovr_dim=0.12, ovr_ramp=1.5, ovr_fog=0.6, ovr_air=0.85,   # round 8 (B3.2)
+    tspec_max=0.35, tspec_max_near=0.6, tspec_sig_max=0.6, tspec_el0=18.0, tspec_el1=25.0,       # round 8 (B3.1 / M1)
+    lane=1.0, lane_len=1400.0, lane_w0=1.6, lane_w1=5.0, lane_crest=0.42, lane_base=0.02, lane_fog=0.5,         # round 8 (B3.3)
+    deck_nr=1.0, deck_nr_keep=0.62, deck_nr_gain=1.15,                                            # round 8 (B3.5)
+    mult_cap=G.MULT_CAP_K, skyline=1.0, skyline_rim=1.2, skyline_pool=0.3, skyline_near=0.7, skyline_front=110.0, skyline_w=2.6, skyline_h=1.0, skyline_sink=0.0,   # round 8 (B1.1)
+    # round 9: inner foot billow row (the white ends on billows, not on the opaque deck plane's straight line), the
+    # multitude at the LOD Unity picks (README §9 screen heights), tier A / B moon rims kept at 3-5 km (floor) x 6
+    skyline_in=1.0, skyline_in_h=0.35, skyline_in_front=8.0, skyline_in_w=1.5, skyline_in_rim=1.0,
+    mult_lod_auto=1.0, mult_rim_floor_a=0.5, mult_rim_floor_b=0.3, mult_rim_k=6.0,
+    wet_env_pillar=0.0,                  # round 9: tested 1.5 / 2.0 (wip/r9/pil_w*): only blotches at the lower right limb; off
     sleeves=0.0, root_dissolve=18.0,     # run 6: the root sleeve cards read as a striped 'barcode' band with a straight
                                          # top at the hand roots; retired. The arm's own cloud fade dissolves instead.
 )
@@ -145,6 +160,36 @@ def exclude_from(lamps, objs):
     return col
 
 
+def tear_area_lights(t, look):
+    """the white as an area emitter (front + back ellipse lights at the lens, diffuse rays only). Returns the front
+    light (the bus shell's shadow linking uses it)."""
+    core = G.tear_core_cf(t)
+    hw = float(G.tear_half_width(t))
+    H = float(G.tear_H(t))
+    P0 = look.get('tear_E', 2.0) * math.pi * math.pi * look.get('tear_dref', 600.0) ** 2
+    front = None
+    for name, d, gain in (('L_TearArea_F', (0.0, -1.0, 0.0), 1.0), ('L_TearArea_B', (0.0, 1.0, 0.0), look.get('tear_back', 0.35))):
+        if gain <= 0:
+            continue
+        ld = bpy.data.lights.new(name, 'AREA')
+        ld.shape = 'ELLIPSE'
+        ld.size = 2 * hw * 0.75
+        ld.size_y = H * 0.80
+        ld.energy = P0 * gain
+        ld.color = tuple(COL_TEAR)
+        ld.use_shadow = True
+        ob = bpy.data.objects.new(name, ld)
+        bpy.context.scene.collection.objects.link(ob)
+        ob.location = tuple(np.asarray(core, float) + np.array(d) * 4.0 - np.array([0.0, 0.0, 0.05 * H]))
+        ob.rotation_euler = (-Vector(d)).to_track_quat('Z', 'Y').to_euler()
+        ob.visible_camera = False
+        ob.visible_glossy = False
+        ob.visible_transmission = False
+        if front is None:
+            front = ob
+    return front
+
+
 # ============================================================================================ LanbaiFog
 class Fog:
     """Per-render constants of the gate's aerial perspective (bible 1.6 / 6.4): exponential density 0.0006
@@ -160,8 +205,10 @@ class Fog:
         self.S = G.tear_H(t) / G.TD.H
         self.halo_img = load_img(os.path.join(TEAR_TEX, 'Halo_512.png'), 'sRGB', 'CHANNEL_PACKED')
 
-    def nodes(self, b, cap=True, cap_v=None, cap_h=None, dens=1.0, extra=True, glow=True, reveal=1.0):
-        """(factor, colour) sockets in node builder b."""
+    def nodes(self, b, cap=True, cap_v=None, cap_h=None, dens=1.0, extra=True, glow=True, reveal=1.0, ovr=None):
+        """(factor, colour) sockets in node builder b. ovr (round 8): the over-the-white factor of an arm in front of the
+        wound: its fog density x (1 - ovr_fog x ovr) and the wound's air term x (1 - ovr_air x ovr) (the glow of the white
+        is BEHIND the silhouette; Unity: TentacleSway v2.7 OverWhite in LanbaiFogColour)."""
         k = self.k
         geo = b.N('ShaderNodeNewGeometry')
         camd = b.N('ShaderNodeCameraData')
@@ -174,6 +221,8 @@ class Fog:
         if extra:        # the mist lying on the cloud sea is the same for every layer (the density scale is not)
             rho = b.math('MULTIPLY', b.math('ADD', dens, b.math('MULTIPLY', b.math('EXPONENT', b.math('DIVIDE', h, -k['fog_extra_h'])),
                                                                              k['fog_extra'])), k['fog'])
+        if ovr is not None:
+            rho = b.math('MULTIPLY', rho, b.math('SUBTRACT', 1.0, b.math('MULTIPLY', ovr, k.get('ovr_fog', 0.6))))
         f = b.math('SUBTRACT', 1.0, b.math('EXPONENT', b.math('MULTIPLY', b.math('MULTIPLY', dist, rho), -1.0)))
         if cap:
             cv = k['cap'] if cap_v is None else cap_v
@@ -184,10 +233,10 @@ class Fog:
             f = b.mixf(b.smooth(dist, k['cap_from'], k['cap_to']), f, fc)
         if reveal < 0.999:          # round 3 (tech B1): _Reveal after the cap: f = lerp(1, f, _Reveal)
             f = b.math('SUBTRACT', 1.0, b.math('MULTIPLY', b.math('SUBTRACT', 1.0, f), float(reveal)))
-        col = self.colour(b, V, dist, glow)
+        col = self.colour(b, V, dist, glow, ovr=ovr)
         return f, col
 
-    def colour(self, b, V, dist=None, glow=True):
+    def colour(self, b, V, dist=None, glow=True, ovr=None):
         """LanbaiHorizon(V) + moon air + tear air (fill space)."""
         sky = horizon_nodes(b, V, self.k)
         # the moon's air (identical to the sky's halo term)
@@ -197,14 +246,17 @@ class Fog:
                     b.math('MULTIPLY', b.math('EXPONENT', b.math('MULTIPLY', ang, -0.32)), self.k.get('aur_b', 0.05)))
         sky = b.rgbadd(sky, b.scale(b.rgb(tuple(RT.hexlin('#8FA3C8'))), b.math('MULTIPLY', hi, self.k['moon_glow_fog'])))
         if glow and self.k['glow_fog'] > 0:
-            sky = b.rgbadd(sky, b.scale(self.tear_air(b, V, dist), self.k['glow_fog']))
+            g_ = self.k['glow_fog']
+            if ovr is not None:
+                g_ = b.math('MULTIPLY', b.math('SUBTRACT', 1.0, b.math('MULTIPLY', ovr, self.k.get('ovr_air', 0.85))), g_)
+            sky = b.rgbadd(sky, b.scale(self.tear_air(b, V, dist), g_))
         return sky
 
     def tear_air(self, b, V, dist):
         """the halo cards (and the widest halo layer of the folds card) seen along V, where they are BEHIND the
         shaded point (the cards themselves are drawn on top of anything behind them)."""
         S = self.S
-        c_a = float(G.TD.path(np.array([K.HALO_T]))[0]) + 12.0
+        c_a = K.halo_centre_a()
         AX, AC = G.TD.AX, G.TD.AC
         y_plane = 50.0 * S
         dy = y_plane - self.cam[1]
@@ -217,8 +269,8 @@ class Fog:
         pz = b.math('ADD', self.cam[2], b.math('MULTIPLY', vz, tpl))
         acc = None
         cards = list(K.HALO_CARDS)          # v4: (w, h, depth, phase, gain); the widest layer is gone since v3
-        for i, (w, h, d, ph, gk) in enumerate(cards):
-            c = G.TD.P(K.HALO_T, c_a, d)[()] * S
+        for i, (w, h, d, ph, gk, da) in enumerate(cards):
+            c = G.TD.P(K.HALO_T, c_a + da, d)[()] * S
             rx = b.math('SUBTRACT', px, c[0])
             rz = b.math('SUBTRACT', pz, c[2])
             u = b.math('ADD', 0.5, b.math('DIVIDE', b.math('ADD', b.math('MULTIPLY', rx, AC[0]), b.math('MULTIPLY', rz, AC[2])), w * S))
@@ -228,7 +280,7 @@ class Fog:
             tx = b.tex(self.halo_img, uv.outputs[0])
             g = b.scale(tx.outputs['Color'], gk)
             acc = g if acc is None else b.rgbadd(acc, g)
-        acc = b.scale(acc, b.math('MULTIPLY', in_front, self.k['halo'] * self.k['intensity']))
+        acc = b.scale(acc, b.math('MULTIPLY', in_front, self.k['halo'] * self.k['intensity'] * halo_dist(self.cam, self.t)))
         return acc
 
 
@@ -239,6 +291,8 @@ def fog_wrap(mat, fog, clip=True, **kw):
     b = NB(nt)
     out = [n for n in nt.nodes if n.type == 'OUTPUT_MATERIAL'][0]
     src = out.inputs['Surface'].links[0].from_socket
+    if kw.pop('ovr', False):
+        kw['ovr'] = over_white(b, fog, fog.t)
     f, col = fog.nodes(b, **kw)
     em = b.emission(col)
     sh = b.mixs(f, src, em)
@@ -276,7 +330,8 @@ def horizon_nodes(b, V, k):
     x, y, z = b.sep(V)
     el = b.math('MULTIPLY', b.math('ARCSINE', b.math('MINIMUM', b.math('MAXIMUM', z, -1.0), 1.0)), 180 / math.pi)
     az = b.math('ABSOLUTE', b.math('MULTIPLY', b.math('ARCTAN2', x, y), 180 / math.pi))
-    band = b.mix(b.smooth(az, 0, 50), tuple(F['HazeNear']), tuple(F['HazeFar']))
+    bg_ = k.get('band_gain', G.BAND_GAIN)
+    band = b.mix(b.smooth(az, 0, 50), tuple(F['HazeNear'] * bg_), tuple(F['HazeFar'] * bg_))
     if k.get('band_ramp', 1.0) < 0.999:      # round 3: the band comes up with S4 (30 s smoothstep from U6): before
         # it, the horizon is act 3's moonlit night (fog fill #242A40)
         band = b.mix(k['band_ramp'], tuple(RT.hexlin('#242A40')), band)
@@ -284,6 +339,12 @@ def horizon_nodes(b, V, k):
     wel = b.math('POWER', b.smooth(el, lo, hi, 1.0, 0.0), pw)
     wb = b.math('MULTIPLY', b.smooth(az, 50, 60, 1, 0), wel)
     sky = b.mix(wb, tuple(F['Void']), band)
+    # round 4 (AD round 3 item 5 / tech m16): a faint BACK band behind the bus (|az| > 110: HazeFar x back_band), so the
+    # rear / side windows hold a horizon (L* 8-12) instead of dead void. Unity: LanbaiHorizon _BackBand.
+    bb_ = k.get('back_band', 0.55)
+    if bb_ > 0:
+        wbk = b.math('MULTIPLY', b.smooth(az, k.get('back_az0', 65.0), k.get('back_az1', 120.0)), wel)   # round 8: from 65 deg (side windows hold a horizon too)
+        sky = b.rgbadd(sky, b.scale(b.rgb(tuple(F['HazeFar'] * bg_ * bb_)), wbk))
     # round 2 (critique B8): below the horizon the air over the cloud sea is moonlit silver, not the lavender band
     # (Unity: LanbaiHorizon(), dir.y < 0: lerp(band, luminance x (0.92, 0.98, 1.12), _BelowDesat x saturate(-el / 4)))
     if k.get('below_desat', 0) > 0:
@@ -313,9 +374,12 @@ def world(look):
     limb = b.smooth(ang, 0.62, 0.0, 0.78, 1.0)
     # round 3: the Udon rule (JSON moon.udon_rule): once colossus 2 has taken the disc (U7b - 0.5 .. + 1.5) the disc
     # fades out over 2 s and only the aureole stays
-    moon = b.scale(b.rgb(tuple(F['MoonDisc'])), b.math('MULTIPLY', b.math('MULTIPLY', disc, limb), look.get('moon_disc', 1.0)))
+    moon = b.scale(b.rgb(tuple(F['MoonDisc'])), b.math('MULTIPLY', b.math('MULTIPLY', disc, limb),
+                                                       look.get('moon_disc', 1.0) * look.get('moon_disc_gain', 1.0)))
     # round 2 (critique B6.3): a real aureole: ~L* 55 at 1 deg falling to the band by ~8 deg (#5A6A88 silver)
-    halo_i = b.math('ADD', b.math('MULTIPLY', b.math('EXPONENT', b.math('MULTIPLY', ang, -look.get('aur_k', 1.1))), look.get('aur_a', 0.55)),
+    # round 4 (tech m1): once the disc has faded only the halo stays: the core term x (0.35 + 0.65 disc weight)
+    core_w = 0.35 + 0.65 * float(look.get('moon_disc', 1.0))
+    halo_i = b.math('ADD', b.math('MULTIPLY', b.math('EXPONENT', b.math('MULTIPLY', ang, -look.get('aur_k', 1.1))), look.get('aur_a', 0.55) * core_w),
                     b.math('MULTIPLY', b.math('EXPONENT', b.math('MULTIPLY', ang, -0.32)), look.get('aur_b', 0.05)))
     halo = b.scale(b.rgb(tuple(RT.hexlin('#8FA3C8'))), b.math('MULTIPLY', halo_i, b.math('SUBTRACT', 1.0,
                    b.math('MULTIPLY', disc, look.get('moon_disc', 1.0)))))      # no hole where the faded disc was
@@ -396,15 +460,19 @@ def variant_mesh(key, lod, girth=1.0, form=None):
     return me
 
 
-def tentacle_mat(key, kind, fog, t, pix_angle, dens=1.0, reveal=1.0, tiling=None):
+def tentacle_mat(key, kind, fog, t, pix_angle, dens=1.0, reveal=1.0, tiling=None, cap_v=None, rim_over=None):
     """Lanbai/TentacleSway preview + rim ladder + LanbaiFog with the instance's density scale and _Reveal (round 3:
     f = lerp(1, f, _Reveal) after the cap). Cap 0.92 x height falloff only for the far kinds."""
     dens = round(float(dens), 2)
     reveal = round(float(reveal), 2)
     tiling = tiling or (None, None)
-    k = (key, kind, dens, reveal, tiling)
+    k = (key, kind, dens, reveal, tiling, cap_v, tuple(sorted((rim_over or {}).items())))
     if k in _MAT:
         return _MAT[k]
+    if rim_over:              # round 8: per-tier rim gains of the multitude (Unity: per-instance _RimGain / _RimWound)
+        import copy
+        fog = copy.copy(fog)
+        fog.k = dict(fog.k, **rim_over)
     core = G.tear_core_cf(t)
     if G.A4.is_custom(key):
         colossus = G.A4.is_colossus(key)
@@ -416,16 +484,27 @@ def tentacle_mat(key, kind, fog, t, pix_angle, dens=1.0, reveal=1.0, tiling=None
                          rim_dir=tuple(G.L_MOON), rim=dict(moon=fog.k['rim_moon'], tear=fog.k['rim_tear']),
                          translucency=fog.k['tip_glow'], tear_pos=tuple(core), occl=occl, colossus=colossus,
                          tiling=tiling[0], detail_tiling=tiling[1])
+    ak = fog.k.get('alb_' + kind, 1.0)
+    if abs(ak - 1.0) > 1e-3:      # round 8 (tech r4 M3): per-kind albedo scale (the rear arms: _Color 0.5)
+        pb = [n for n in m.node_tree.nodes if n.type == 'BSDF_PRINCIPLED'][0]
+        if pb.inputs['Base Color'].links:
+            bb = NB(m.node_tree)
+            srcc = pb.inputs['Base Color'].links[0].from_socket
+            bb.L(bb.scale(srcc, float(ak)), pb.inputs['Base Color'])
     spec_scale(m, fog.k['arm_spec'] * fog.k.get('spec_' + kind, 1.0), SPEC_RANGE.get(kind, (250.0, 800.0)),
-               fog.k.get('streak_keep', 0.8))
+               fog.k.get('streak_keep_' + kind, fog.k.get('streak_keep', 0.8)))   # round 8b: per kind (Unity _StreakKeep)
+    add_tear_spec(m, fog, t, kind)
     add_pixel_rim(m, fog, t, pix_angle, kind)
     far = kind in ('colossus', 'bg', 'hero', 'surge')
-    fog_wrap(m, fog, cap=far, dens=dens, cap_h=fog.k['cap_h_col'] if far else None, reveal=reveal)
+    fog_wrap(m, fog, cap=far, dens=dens, cap_h=fog.k['cap_h_col'] if far else None, reveal=reveal, cap_v=cap_v, ovr=True)
     _MAT[k] = m
     return m
 
 
 SPEC_RANGE = dict(pillar=(150.0, 450.0))      # tech M1: _ReflFarRange per kind (default 250-800 m)
+# round 8: the wound's tube specular far scale per kind (Unity: _ReflectionScaleFar applied to woundSpec as well). The
+# hands keep theirs (they are the wound's neighbours: their tear-side form IS this term); the far giants lose it.
+TSPEC_FAR = dict(mid=1.0, near=1.0, rear=1.0, pillar=0.5, hero=0.15, colossus=0.3, bg=0.15, surge=0.15)
 
 
 def spec_scale(m, k, rng=(250.0, 800.0), streak_keep=0.0):
@@ -467,6 +546,144 @@ def spec_scale(m, k, rng=(250.0, 800.0), streak_keep=0.0):
         nt.links.new(mix.outputs[0], l.to_socket)
 
 
+def tear_axis_cf(t):
+    """the wound as a line light: (A, B) = foot / top points of the tear axis (CF), a little behind the cloth, and its
+    half width (m). Unity: _TearFoot / _TearTop / _TearHalfWidth globals (written by the gate's Udon with GateRoot)."""
+    S_ = G.tear_H(t) / G.TD.H
+    A_ = np.array([0.5 * float(G.TD.path(np.array([0.0]))[0]) * S_, 30.0 * S_, 0.0])
+    B_ = G.TD.P(G.TD.T_TOP * 0.92, float(G.TD.path(np.array([G.TD.T_TOP * 0.92]))[0]), 30.0)[()] * S_
+    return A_, B_, float(G.tear_half_width(t))
+
+
+_HWIMG = {}
+
+
+def tear_hw_image(t, n=512):
+    """round 8: the lens half width (m, real, current opening) along the tear axis A..B of tear_axis_cf, as a 1-D float
+    image (R = m / 1000). Unity: TentacleSway v2.7 _TearHW (the same curve as 8 floats, see README §4)."""
+    key = round(float(t), 2)
+    if key in _HWIMG:
+        return _HWIMG[key]
+    uu = (np.arange(n) + 0.5) / n
+    tk = uu * G.TD.T_TOP * 0.92
+    aL, aR = G.TD.lips(tk)
+    S_ = G.tear_H(t) / G.TD.H
+    hw = 0.5 * (aR - aL) * G.TD.width_mul(G.tear_open(t)) * S_
+    img = bpy.data.images.new('TearHW_%.2f' % t, n, 1, alpha=True, float_buffer=True, is_data=True)
+    px_ = np.zeros((1, n, 4), np.float32)
+    px_[..., 0] = hw / 1000.0
+    px_[..., 3] = 1.0
+    img.pixels.foreach_set(px_.ravel())
+    img.update()
+    _HWIMG[key] = img
+    return img
+
+
+def over_white(b, fog, t, ramp_deg=None):
+    """round 8 (awe r4 B3.2 / tech: 'arms in front of the wound are its shadow side'): 0..1, the shaded point lies in
+    front of the tear plane and ON SCREEN over the white or within ramp_deg of its edge. Screen-angular test: the angle
+    from the point to the nearest point Q of the tear axis minus the lens half width at Q seen from the eye.
+    Unity: TentacleSway v2.7 OverWhite() with _Udon_TearFoot / _Udon_TearTop and the _TearHW curve."""
+    k = fog.k
+    ramp = float(k.get('ovr_ramp', 1.5) if ramp_deg is None else ramp_deg)
+    A_, B_, hw = tear_axis_cf(t)
+    AB = B_ - A_
+    S_ = G.tear_H(t) / G.TD.H
+    geo = b.N('ShaderNodeNewGeometry')
+    Pp = geo.outputs['Position']
+    uu = b.math('DIVIDE', b.vmath('DOT_PRODUCT', b.vmath('SUBTRACT', Pp, b.vec(tuple(A_))), b.vec(tuple(AB))), float(AB @ AB))
+    uu = b.math('MINIMUM', b.math('MAXIMUM', uu, 0.0), 1.0)
+    Qp = b.vmath('ADD', b.vec(tuple(A_)), _scale_vec(b, b.vec(tuple(AB)), uu))
+    cam_ = b.vec(tuple(float(c) for c in fog.cam))
+    Vc = b.vmath('NORMALIZE', b.vmath('SUBTRACT', Pp, cam_))
+    dQ = b.vmath('SUBTRACT', Qp, cam_)
+    Vq = b.vmath('NORMALIZE', dQ)
+    cosw = b.math('MINIMUM', b.math('MAXIMUM', b.vmath('DOT_PRODUCT', Vc, Vq), -1.0), 1.0)
+    angW = b.math('MULTIPLY', b.math('ARCCOSINE', cosw), 180.0 / math.pi)
+    uvh = b.N('ShaderNodeCombineXYZ')
+    b.L(uu, uvh.inputs[0])
+    uvh.inputs[1].default_value = 0.5
+    hwl = b.math('MULTIPLY', b.sepc(b.tex(tear_hw_image(t), uvh.outputs[0], ext='EXTEND').outputs['Color'])[0], 1000.0)
+    angHW = b.math('MULTIPLY', b.math('ARCTANGENT', b.math('DIVIDE', hwl, b.math('MAXIMUM', b.vmath('LENGTH', dQ), 1.0))),
+                   180.0 / math.pi)
+    dW = b.math('SUBTRACT', angW, angHW)
+    ovr = b.smooth(dW, ramp, -0.15 * ramp)
+    front = b.smooth(b.sep(Pp)[1], 40.0 * S_, 0.0)
+    return b.math('MULTIPLY', ovr, front)
+
+
+def add_tear_spec(mat, fog, t, kind):
+    """round 4 (AD round 3 item 2: 'the tear is the key light'): the wet skin MIRRORS the white. Analytical
+    representative-point specular of the tear axis as a tube light (Karis 2013), the same math as TentacleSway v2.6:
+      R = reflect(-V, N); Lc = the point of segment A..B closest to the ray (P, R); theta = angle(R, Lc - P);
+      sigma = sqrt(sigma_r^2 + sigma_s^2), sigma_r = 1.5 x (1 - smoothness)^2 + 0.02, sigma_s = halfWidth / |Lc - P|;
+      spec = F_schlick(N.V, 0.04) x _TearSpecRadiance x min(1, sigma_s / sigma) x exp(-(theta / sigma)^2) x _TearSpec.
+    Added as emission inside the fog (the white is hidden from glossy rays: spec_scale may not dim this term)."""
+    k = fog.k
+    gain = k.get('tear_spec', 1.0) * k.get('tspec_' + kind, 1.0)
+    if gain <= 0:
+        return
+    nt = mat.node_tree
+    b = NB(nt)
+    out = [n for n in nt.nodes if n.type == 'OUTPUT_MATERIAL'][0]
+    src = out.inputs['Surface'].links[0].from_socket
+    p = [n for n in nt.nodes if n.type == 'BSDF_PRINCIPLED'][0]
+    N = p.inputs['Normal'].links[0].from_socket if p.inputs['Normal'].links else b.N('ShaderNodeNewGeometry').outputs['Normal']
+    geo = b.N('ShaderNodeNewGeometry')
+    P_ = geo.outputs['Position']
+    V = geo.outputs['Incoming']                                    # point -> camera
+    ndv = b.math('MAXIMUM', b.vmath('DOT_PRODUCT', N, V), 1e-3)
+    R = b.vmath('SUBTRACT', _scale_vec(b, N, b.math('MULTIPLY', ndv, 2.0)), V)
+    A_, B_, hw = tear_axis_cf(t)
+    L0 = b.vmath('SUBTRACT', b.vec(tuple(A_)), P_)
+    Ld = tuple(B_ - A_)
+    rl0 = b.vmath('DOT_PRODUCT', R, L0)
+    rld = b.vmath('DOT_PRODUCT', R, b.vec(Ld))
+    l0ld = b.vmath('DOT_PRODUCT', L0, b.vec(Ld))
+    num = b.math('SUBTRACT', b.math('MULTIPLY', rl0, rld), l0ld)
+    den = b.math('MAXIMUM', b.math('SUBTRACT', float(np.dot(Ld, Ld)), b.math('MULTIPLY', rld, rld)), 1e-3)
+    tt = b.math('MINIMUM', b.math('MAXIMUM', b.math('DIVIDE', num, den), 0.0), 1.0)
+    Lc = b.vmath('ADD', L0, _scale_vec(b, b.vec(Ld), tt))
+    dist = b.math('MAXIMUM', b.vmath('LENGTH', Lc), 1.0)
+    Ls = b.vmath('NORMALIZE', Lc)
+    cth = b.math('MINIMUM', b.math('MAXIMUM', b.vmath('DOT_PRODUCT', R, Ls), -1.0), 1.0)
+    th = b.math('ARCCOSINE', cth)
+    msn = [n for n in nt.nodes if n.type == 'TEX_IMAGE' and n.image and 'MetallicSmoothness' in n.image.name]
+    sm = msn[0].outputs['Alpha'] if msn else 0.63
+    rough = b.math('SUBTRACT', 1.0, sm)
+    sig_r = b.math('ADD', b.math('MULTIPLY', b.math('MULTIPLY', rough, rough), 1.5), 0.02)
+    # round 8: the source's angular radius is capped (0.6 rad): with hw / dist ~ 2 rad next to the lens the Gaussian
+    # lobe leaked onto faces whose mirror direction points AWAY from the white (the camera-facing side of an arm in
+    # front of the wound read as grey rubber, awe r4 B3.2). Unity: min(_TearHalfWidth / d, 0.6).
+    sig_s = b.math('MINIMUM', b.math('DIVIDE', hw, dist), k.get('tspec_sig_max', 0.6))
+    sig = b.math('SQRT', b.math('ADD', b.math('MULTIPLY', sig_r, sig_r), b.math('MULTIPLY', sig_s, sig_s)))
+    lobe = b.math('EXPONENT', b.math('MULTIPLY', -1.0, b.math('POWER', b.math('DIVIDE', th, sig), 2.0)))
+    norm = b.math('MINIMUM', b.math('DIVIDE', sig_s, sig), 1.0)
+    fres = b.math('ADD', 0.04, b.math('MULTIPLY', b.math('POWER', b.math('SUBTRACT', 1.0, ndv), 5.0), 0.96))
+    # the white seen from the far side of the tear plane is the sky-cloth's back: no mirror image behind the lens
+    front = b.smooth(b.sep(P_)[1], 60.0, -20.0)
+    amt = b.math('MULTIPLY', b.math('MULTIPLY', b.math('MULTIPLY', fres, lobe), norm), b.math('MULTIPLY', front, gain * k.get('tear_spec_L', 2.2)))
+    # round 8 (awe r4 B3.1, tech r4 M1: the Engel carried an L* 100 streak at the key's top edge = a second brightest
+    # point): (1) scaled with distance like every other far specular (farK = lerp(1, _ReflectionScaleFar,
+    # smoothstep(_ReflFarRange)), (2) broken by the mucus streaks (dry skin x 0.4), (3) none above el +25 deg from the
+    # eye, (4) clamped to _WoundSpecMax (0.35 linear, near arms 0.6).
+    rng_ = SPEC_RANGE.get(kind, (250.0, 800.0))
+    camd = b.N('ShaderNodeCameraData')
+    farK = b.smooth(camd.outputs['View Distance'], rng_[0], rng_[1], 1.0, float(k.get('tspecfar_' + kind, TSPEC_FAR.get(kind, 0.3))))
+    wetm = b.smooth(sm, 0.70, 0.88) if msn else 0.5
+    if msn:      # round 8: thin parts = one continuous wet sheen (no tile-periodic beads)
+        wetm = b.mixf(b.smooth(b.attr('GR').outputs['Fac'], 0.12, 0.40), 0.8, wetm)
+    brk = b.math('ADD', 0.4, b.math('MULTIPLY', wetm, 0.6))
+    cam_ = b.vec(tuple(float(c) for c in fog.cam))
+    dcp = b.vmath('NORMALIZE', b.vmath('SUBTRACT', P_, cam_))
+    el = b.math('MULTIPLY', b.math('ARCSINE', b.math('MINIMUM', b.math('MAXIMUM', b.sep(dcp)[2], -1.0), 1.0)), 180.0 / math.pi)
+    elk = b.smooth(el, k.get('tspec_el1', 25.0), k.get('tspec_el0', 18.0))
+    amt = b.math('MULTIPLY', b.math('MULTIPLY', amt, farK), b.math('MULTIPLY', brk, elk))
+    amt = b.math('MINIMUM', amt, k.get('tspec_max_near', 0.6) if kind == 'near' else k.get('tspec_max', 0.35))
+    col = b.scale(b.rgb((0.93, 0.92, 1.0)), amt)
+    b.L(b.add(src, b.emission(col)), out.inputs['Surface'])
+
+
 def arm_kind(it):
     r = it.get('role')
     if r == 'pillar':
@@ -487,6 +704,9 @@ def rim_ladder(b, kind, k):
     d = b.math('MAXIMUM', camd.outputs['View Distance'], 1.0)
     T = b.math('EXPONENT', b.math('MULTIPLY', d, -k['fog'] * RIM_DENS.get(kind, 1.0)))
     lad = b.math('MINIMUM', b.math('MAXIMUM', b.math('POWER', b.math('DIVIDE', 900.0, d), 1.2), 0.12), 1.0)
+    fl = float(k.get('rim_lad_floor_' + kind, 0.0))
+    if fl > 0:      # round 9: the multitude's tier A / B dominants keep a 1-px moon rim at 3-5 km (Unity: _RimLadderFloor)
+        return b.math('MAXIMUM', b.math('MULTIPLY', T, lad), fl)
     return b.math('MULTIPLY', T, lad)
 
 
@@ -526,13 +746,88 @@ def add_pixel_rim(mat, fog, t, pix_angle, kind):
     prox = b.smooth(b.vmath('LENGTH', tv), 200.0, 1600.0, 1.0, 0.0)
     ms = load_img(os.path.join(TEXT, 'T_Tentacle_MetallicSmoothness.png'), 'Non-Color', 'STRAIGHT')
     wet = b.math('ADD', 0.6, b.math('MULTIPLY', b.smooth(b.tex(ms, b.uv('UVMap')).outputs['Alpha'], 0.55, 0.9), 0.8))
+    # round 8 (tech r4 B2): on thin parts the rim does not follow the tile-periodic streaks (one continuous wet edge)
+    thinK = b.smooth(b.attr('GR').outputs['Fac'], 0.12, 0.40)
+    wet = b.mixf(thinK, 1.15, wet)
     lad = b.math('MULTIPLY', rim_ladder(b, kind, k), wet)
     gk = k.get('rim_gain_' + kind, 1.0)
     rm = b.scale(b.rgb(tuple(RT.hexlin('#9DB8FF'))), b.math('MULTIPLY', b.math('MULTIPLY', mask, moonk), k['rim_moon_px'] * gk))
     rt = b.scale(b.rgb(tuple(RT.hexlin('#A99DE1'))), b.math('MULTIPLY', b.math('MULTIPLY', mask, b.math('MULTIPLY', facing, prox)),
                                                          k['rim_tear_px'] * gk))
-    em = b.emission(b.scale(b.rgbadd(rm, rt), lad))
-    b.L(b.add(src, em), out.inputs['Surface'])
+    rgb_em = b.scale(b.rgbadd(rm, rt), lad)
+    wge = float(k.get('wet_env_' + kind, 0.0))
+    if wge > 0:
+        # round 9 (awe r4 M1.3 'broken wet streaks L* 25-40' on Pillar_R): the long mucus runs (smoothness >= 0.8) mirror
+        # the moon-lit cloud plain BEHIND the bus (the rear frame's silver plain): only where the reflected ray points
+        # below ~+20 deg, x a soft Fresnel. The deck impostor is camera-only in these renders, so the term stands in for
+        # what a Unity reflection probe holding the CloudSea cards gives. Unity: TentacleSway v2.7c _WetEnv.
+        Rv = b.vmath('SUBTRACT', Vd, _scale_vec(b, N, b.math('MULTIPLY', b.vmath('DOT_PRODUCT', N, Vd), 2.0)))
+        envk = b.smooth(b.sep(Rv)[2], k.get('wet_env_el', 0.34), -0.03)
+        wetS = b.smooth(b.tex(ms, b.uv('UVMap'), ext='REPEAT').outputs['Alpha'], k.get('wet_env_lo', 0.78), k.get('wet_env_hi', 0.85))   # the long runs (raw A p99 0.81)
+        brk_ = b.N('ShaderNodeTexNoise')
+        brk_.inputs['Scale'].default_value = 2.2
+        b.L(b.uv('UVSway'), brk_.inputs['Vector'])
+        brk = b.smooth(brk_.outputs['Fac'], 0.36, 0.56) if k.get('wet_env_brk', 0.0) > 0 else 1.0
+        fr = b.math('ADD', 0.35, b.math('MULTIPLY', b.math('POWER', b.math('SUBTRACT', 1.0, ndv), 2.0), 0.65))
+        amt_w = b.math('MULTIPLY', b.math('MULTIPLY', wetS, brk), b.math('MULTIPLY', b.math('MULTIPLY', envk, fr), wge))
+        rgb_em = b.rgbadd(rgb_em, b.scale(b.rgb(tuple(RT.hexlin('#8F9AC0'))), amt_w))
+    em = b.emission(rgb_em)
+    # round 8 (awe r4 B3.2): an arm IN FRONT of the white shows us its shadow side: the surface (diffuse, the moon and
+    # wound speculars, the library rims) x ovr_dim; its edges get a WRAP of the white on BOTH sides (below). Unity:
+    # TentacleSway v2.7 _OverWhiteDim (0.2) / _WrapWound.
+    ovr = over_white(b, fog, t)
+    dimk = 1.0 - k.get('ovr_dim', 0.2)
+    blk = b.emission((0.0, 0.0, 0.0))
+    src = b.mixs(b.math('MULTIPLY', ovr, dimk), src, blk)
+    em = b.mixs(b.math('MULTIPLY', ovr, dimk), em, blk)
+    sh_ = b.add(src, em)
+    # round 4 (AD round 3 item 2; tech AD-2 'screen-space wound facing'): the edges that face the white ON SCREEN catch
+    # it: Np, Lp = N and the direction to the NEAREST POINT OF THE TEAR AXIS projected perpendicular to the view;
+    # facingS = saturate(Np.Lp); nearW = exp(-angle(view ray, to-wound) / 6 deg); colour #A99DE1 -> violet-white
+    # #E2E8F3-ish with nearW; x (1 - |N.V|)^3 x the pixel band; NOT multiplied by the far-rim ladder (the wound is the
+    # key light). Unity: TentacleSway v2.6 _RimWound (1.2) with _TearFoot / _TearTop.
+    rw = k.get('rim_wound', 1.2) * k.get('rimw_' + kind, 1.0)
+    if rw > 0:
+        S_ = G.tear_H(t) / G.TD.H
+        A_ = np.array([0.5 * float(G.TD.path(np.array([0.0]))[0]) * S_, 30.0 * S_, 0.0])
+        B_ = G.TD.P(G.TD.T_TOP * 0.92, float(G.TD.path(np.array([G.TD.T_TOP * 0.92]))[0]), 30.0)[()] * S_
+        AB = B_ - A_
+        Pp = geo.outputs['Position']
+        uu = b.math('DIVIDE', b.vmath('DOT_PRODUCT', b.vmath('SUBTRACT', Pp, b.vec(tuple(A_))), b.vec(tuple(AB))), float(AB @ AB))
+        uu = b.math('MINIMUM', b.math('MAXIMUM', uu, 0.0), 1.0)
+        Qp = b.vmath('ADD', b.vec(tuple(A_)), b.vmath('SCALE', b.vec(tuple(AB)), None, 1.0))
+        Qp = b.vmath('ADD', b.vec(tuple(A_)), _scale_vec(b, b.vec(tuple(AB)), uu))
+        Lt = b.vmath('NORMALIZE', b.vmath('SUBTRACT', Qp, Pp))
+        Vw = b.vmath('SCALE', geo.outputs['Incoming'], None, 1.0)          # point -> camera
+        Np = b.vmath('NORMALIZE', b.vmath('SUBTRACT', N, _scale_vec(b, Vw, b.vmath('DOT_PRODUCT', N, Vw))))
+        Lp = b.vmath('NORMALIZE', b.vmath('SUBTRACT', Lt, _scale_vec(b, Vw, b.vmath('DOT_PRODUCT', Lt, Vw))))
+        facingS = b.math('MAXIMUM', b.vmath('DOT_PRODUCT', Np, Lp), 0.0)
+        # nearW: the ON-SCREEN angular distance from the point to the nearest axis point (camera -> P vs camera -> Q)
+        cam_ = b.N('ShaderNodeCombineXYZ')
+        for i_, c_ in enumerate(fog.cam):
+            cam_.inputs[i_].default_value = float(c_)
+        Vc = b.vmath('NORMALIZE', b.vmath('SUBTRACT', Pp, cam_.outputs[0]))
+        Vq = b.vmath('NORMALIZE', b.vmath('SUBTRACT', Qp, cam_.outputs[0]))
+        cosw = b.math('MINIMUM', b.math('MAXIMUM', b.vmath('DOT_PRODUCT', Vc, Vq), -1.0), 1.0)
+        angW = b.math('MULTIPLY', b.math('ARCCOSINE', cosw), 180.0 / math.pi)
+        nearW = b.math('EXPONENT', b.math('DIVIDE', angW, -k.get('rimw_deg', 6.0)))
+        cW = b.mix(nearW, tuple(RT.hexlin('#A99DE1')), (0.76, 0.80, 0.90))
+        ndv3 = b.math('POWER', b.math('SUBTRACT', 1.0, ndv), 3.0)
+        amt = b.math('MULTIPLY', b.math('MULTIPLY', ndv3, facingS), b.math('ADD', 0.25, b.math('MULTIPLY', nearW, 0.75)))
+        thr_w = b.math('MINIMUM', b.math('SQRT', b.math('DIVIDE', b.math('MULTIPLY', foot, 2.0 * k.get('rimw_px', 2.5)), r)), 0.85)
+        mask_w = b.math('POWER', b.math('SUBTRACT', 1.0, b.math('MINIMUM', b.math('DIVIDE', ndv, thr_w), 1.0)), 1.2)
+        amt = b.math('MULTIPLY', b.math('MULTIPLY', amt, mask_w), rw)
+        amt = b.math('MULTIPLY', amt, b.math('SUBTRACT', 1.0, ovr))
+        sh_ = b.add(sh_, b.emission(b.scale(cW, amt)))
+    # the wrap: both silhouette edges of an arm over the white carry the white (1-3 px, L* 70-85, violet-white), the
+    # core stays dark. (1 - |N.V|)^wrap_p inside the same pixel band as the wound rim.
+    wg = k.get('wrap_gain', 1.6) * k.get('wrap_' + kind, 1.0)
+    if wg > 0:
+        thr_v = b.math('MINIMUM', b.math('SQRT', b.math('DIVIDE', b.math('MULTIPLY', foot, 2.0 * k.get('wrap_px', 2.0)), r)), 0.85)
+        mask_v = b.math('POWER', b.math('SUBTRACT', 1.0, b.math('MINIMUM', b.math('DIVIDE', ndv, thr_v), 1.0)), k.get('wrap_p', 1.0))
+        wamt = b.math('MULTIPLY', b.math('MULTIPLY', mask_v, ovr), wg)
+        sh_ = b.add(sh_, b.emission(b.scale(b.rgb((0.80, 0.80, 0.92)), wamt)))
+    b.L(sh_, out.inputs['Surface'])
     fix_material_rims(mat, kind, k)
 
 
@@ -585,6 +880,11 @@ def _scale_vec(b, src, f):
     return v.outputs[0]
 
 
+# round 8 (awe r4 B2.2): tier A / B dominants carry a 1-px moon rim (L* band + 15..25), tier A a wound wash
+MULT_TIER_RIMS = {0.45: dict(rim_gain_surge=0.40, rimw_surge=0.35), 0.58: dict(rim_gain_surge=0.40, rimw_surge=0.15),
+                  0.70: dict(rim_gain_surge=0.08, rimw_surge=0.12)}
+
+
 def place_tentacles(layout, t, fog, pix_angle, only=None):
     obs = []
     for it in layout:
@@ -597,12 +897,33 @@ def place_tentacles(layout, t, fog, pix_angle, only=None):
         top = (root + it['scale'] * (G.cl_points(it['variant'], 40)[0] @ R.T))[:, 2].max()
         if top < -2.0:
             continue                                   # still under the cloud
-        me = variant_mesh(it['variant'], it['lod'], it.get('girth', 1.0), it.get('form'))
+        lod_ = it['lod']
+        if it.get('fog_tier') and fog.k.get('mult_lod_auto', 0.0) > 0 and fog.k.get('_vfov'):
+            # round 9: the LOD Unity's LODGroup picks (README §9: screen height LOD0 > 25 %, LOD1 > 6 %): the dominants
+            # were rendered at LOD2 (8 x 20) and showed 25 m facets / kinks in the key
+            hvis = top - max(float(root[2]), 0.0)
+            dd = float(np.linalg.norm(np.asarray(root, float) - np.asarray(fog.cam, float)))
+            rel = (hvis / max(dd, 1.0)) / fog.k['_vfov']
+            lod_ = 0 if rel > 0.25 else (1 if rel > 0.06 else 2)
+        me = variant_mesh(it['variant'], lod_, it.get('girth', 1.0), it.get('form'))
         kind = arm_kind(it)
         Rm = BL.VARIANTS[it['variant']]['R'] * it['scale']
         til = G.A4.skin_tiling(Rm) if G.A4.is_custom(it['variant']) else (None, None)
-        mat = tentacle_mat(it['variant'], kind, fog, t, pix_angle, G.fog_scale_at(it, t) * fog.k.get('fog_' + kind, 1.0),
-                           reveal=rv, tiling=til)
+        if it.get('fog_tier'):          # the multitude: one skin density for all (3-5 km: below the texel anyway)
+            til = (1.0, 4.0)
+        if it.get('fog_tier'):      # round 4: the multitude, fogged by tier (_FogCap per instance; density 1)
+            tr_ = MULT_TIER_RIMS.get(round(float(it['fog_tier']), 2), {})
+            fl_ = {0.45: fog.k.get('mult_rim_floor_a', 0.0), 0.58: fog.k.get('mult_rim_floor_b', 0.0)}.get(round(float(it['fog_tier']), 2), 0.0)
+            if fl_ > 0:                              # round 9: tier A / B moon rims survive the far ladder
+                tr_ = dict(tr_, rim_lad_floor_surge=fl_,
+                           rim_gain_surge=tr_.get('rim_gain_surge', 0.4) * fog.k.get('mult_rim_k', 1.0))
+            mat = tentacle_mat(it['variant'], kind, fog, t, pix_angle, fog.k.get('fog_' + kind, 1.0), reveal=rv,
+                               tiling=til, cap_v=float(it['fog_tier']) * fog.k.get('mult_cap', 1.0), rim_over=tr_)
+        else:
+            # round 8 (awe r4 M1.4): colossus 2 is backlit by the moon right behind it: a 2-4 px moon rim (L* 55-70)
+            ro = dict(rim_gain_colossus=fog.k.get('c2_rim', 0.9), rim_px_scale=fog.k.get('c2_rim_px', 2.2)) if it.get('role') == 'moon' else None
+            mat = tentacle_mat(it['variant'], kind, fog, t, pix_angle, G.fog_scale_at(it, t) * fog.k.get('fog_' + kind, 1.0),
+                               reveal=rv, tiling=til, rim_over=ro)
         ob = bpy.data.objects.new(it['id'], me)
         bpy.context.scene.collection.objects.link(ob)
         M = np.eye(4)
@@ -1071,6 +1392,24 @@ def cloud_shells(t, cam_pos, fog, look, yaw=0.0, span=60.0, full=False):
 
 
 # ============================================================================================ mist strata + far clouds
+_BLUR = {}
+
+
+def blurred_alpha(card, sigma_frac=0.012):
+    """round 8: the cloud card's alpha blurred (sigma = sigma_frac x width), cached in wip/ (the soft silver lining)."""
+    if card in _BLUR:
+        return _BLUR[card]
+    fn = os.path.join(G.WIP, 'blur_%s_%.3f.png' % (card, sigma_frac))
+    if not os.path.exists(fn):
+        from PIL import Image
+        from scipy.ndimage import gaussian_filter
+        a = np.asarray(Image.open(os.path.join(CLOUDS, card + '.png')))[..., 3].astype(np.float32) / 255.0
+        bl_ = gaussian_filter(a, sigma_frac * a.shape[1])
+        Image.fromarray((np.clip(bl_, 0, 1) * 255 + 0.5).astype(np.uint8)).save(fn)
+    _BLUR[card] = load_img(fn, 'Non-Color', 'STRAIGHT')
+    return _BLUR[card]
+
+
 def mist_card(name, spec, cam_pos, fog, look, kind='mist'):
     """a cloud-kit card as a camera-facing (yaw only) alpha plane. kind 'mist': a luminous veil = LanbaiFog colour of
     its direction x (0.85 + 0.6 x card luminance), alpha x opacity (the haze lying between depth layers);
@@ -1104,7 +1443,27 @@ def mist_card(name, spec, cam_pos, fog, look, kind='mist'):
     else:
         # round 3: towers / far cumulus read as solid silver weather, not wisps (density x 0.45, no cap)
         f, fc2 = fog.nodes(b, cap=False, extra=False, dens=look.get('far_fog', 0.45))
+        # round 4 (awe B3.4 / M6): towers stand IN the sea: +20 % fog toward their bases
+        zb = b.sep(b.N('ShaderNodeNewGeometry').outputs['Position'])[2]
+        f = b.math('ADD', f, b.math('MULTIPLY', b.math('SUBTRACT', 1.0, f), b.smooth(zb, 220.0, 0.0, 0.0, look.get('tower_base_fog', 0.22))))
         col = b.mix(f, b.scale(tx.outputs['Color'], look['far_gain']), fc2)
+        # round 4 (AD round 3 item 3 'the moon lights nothing'): SILVER LININGS: the thin, soft border of a cloud within
+        # ~15 deg of the moon glows (backlit forward scatter), 2-6 px, L* 55-70. Unity: cloud card shader _SilverLining
+        # (x pow(saturate(dot(V, moonDir)), ..) x the card's soft-edge band of alpha).
+        cm = b.math('MINIMUM', b.math('MAXIMUM', b.vmath('DOT_PRODUCT', Vd, b.vec(G.L_MOON)), -1.0), 1.0)
+        angm = b.math('MULTIPLY', b.math('ARCCOSINE', cm), 180.0 / math.pi)
+        nearm = b.math('EXPONENT', b.math('DIVIDE', angm, -look.get('silver_deg', 7.0)))
+        aa = tx.outputs['Alpha']
+        # round 8 (awe r4 M2: 1-2 px jagged linings read as lightning / neon outlines): FORWARD SCATTER in the thin outer
+        # part of the cloud = a SOFT gradient inward from the outline (blurred alpha, sigma 1.2 % of the card width:
+        # 4-12 px), only within ~15 deg of the moon, peak L* 45-60; the body stays below the band.
+        bimg = blurred_alpha(card)
+        ba = b.tex(bimg, b.uv('UVMap')).outputs['Color']
+        ba = b.sepc(ba)[0]
+        edge = b.math('MULTIPLY', b.smooth(ba, 0.98, 0.45), b.smooth(aa, 0.02, 0.3))
+        nearm = b.math('MULTIPLY', nearm, b.smooth(angm, look.get('silver_max_deg', 15.0), 0.6 * look.get('silver_max_deg', 15.0)))
+        col = b.scale(col, look.get('tower_body', 0.85))
+        col = b.rgbadd(col, b.scale(b.rgb((0.82, 0.88, 1.0)), b.math('MULTIPLY', b.math('MULTIPLY', edge, nearm), look.get('silver', 0.9))))
         al = b.math('MULTIPLY', tx.outputs['Alpha'], spec['opacity'])
         # resume: the base melts into the deck over its lowest ~120 m (no straight cut where the deck plane hides it)
         zz = b.sep(b.N('ShaderNodeNewGeometry').outputs['Position'])[2]
@@ -1115,6 +1474,65 @@ def mist_card(name, spec, cam_pos, fog, look, kind='mist'):
     ob.visible_diffuse = False
     ob.visible_glossy = False
     return ob
+
+
+# ============================================================================================ foot clouds (round 4)
+def foot_clouds(t, cam_pos, fog, look, zplane):
+    """G.FOOT_CLOUDS: camera-facing (yaw) cloud cards in front of the tear's foot, backlit by the wound: thin edges
+    (low card alpha) glow lit-mist lavender-white, dense cores mid violet-grey, the card's own billow shading kept at
+    x0.6-1.3; brightest near the foot axis; base melting into the deck. Unity: Lanbai/Tear Part=FootCloud (same math)."""
+    meta = json.load(open(os.path.join(CLOUDS, 'clouds_meta.json')))
+    S = G.tear_H(t) / G.TD.H
+    hw = float(G.tear_half_width(t))
+    xc = 0.5 * float(G.TD.path(np.array([0.0]))[0]) * S
+    obs = []
+    for i, (card, xf, y, w, show, mir) in enumerate(G.FOOT_CLOUDS):
+        img = load_img(os.path.join(CLOUDS, card + '.png'), 'sRGB', 'STRAIGHT')
+        iw, ih = img.size
+        mt_ = meta.get(card, {})
+        base_v = mt_.get('cloud_base_v', 0.2)
+        top_v = mt_.get('opaque_bbox_uv', [0, 0, 1, 0.72])[3]
+        W_ = w * S
+        Hc = W_ * ih / iw
+        loc = np.array([xc + xf * hw, y * S, 0.0])
+        d = loc - np.asarray(cam_pos)
+        d[2] = 0
+        d /= np.linalg.norm(d)
+        right = np.array([d[1], -d[0], 0.0]) * (-1 if mir else 1)
+        up = np.array([0, 0, 1.0])
+        ztop = zplane + show * S * (1.0 - G.key_at(G.FOOT_CLOUD_SINK, t))      # round 4: they sink U8 - 1 .. U8 + 5
+        o = loc + up * (ztop - top_v * Hc)
+        V = np.array([o - right * W_ / 2, o + right * W_ / 2, o + right * W_ / 2 + up * Hc, o - right * W_ / 2 + up * Hc])
+        ob = mesh_from_numpy('FootCloud_%d' % i, V, np.array([(0, 1, 2, 3)]),
+                             uvs=[('UVMap', np.array([(0, 0), (1, 0), (1, 1), (0, 1)]))], smooth=False)
+        m, b = new_mat('M_FootCloud_%d' % i)
+        tx = b.tex(img, b.uv('UVMap'))
+        A_ = tx.outputs['Alpha']
+        lum = b.vmath('DOT_PRODUCT', tx.outputs['Color'], b.vec((0.2126, 0.7152, 0.0722)))
+        # round 8 (awe r4 B1.2: the cards were FRONT-lit, tops darker than bottoms = a pedestal): BACKLIT like cumulus
+        # in front of the sun: dense cores dark violet-grey (L* 15-25), the thin outline glowing (2-6 px, L* 75-90),
+        # brightest on the side toward the slot. Unity: Lanbai/Tear Part=FootCloud v6 (_EdgeGain 3.2, _CoreGain 0.8).
+        thick = b.smooth(A_, 0.55, 0.95)
+        edge_c = tuple(RT.F_MIST * look.get('foot_cloud_edge', 3.2))
+        core_c = tuple(np.asarray(F['CloudGlow']) * look.get('foot_cloud_core', 1.7))
+        col = b.mix(thick, edge_c, core_c)
+        col = b.rgbadd(col, b.scale(b.rgb(tuple(RT.F_MIST)), b.math('MULTIPLY', b.math('SUBTRACT', 1.0, b.smooth(A_, 0.05, 0.75)),
+                                                                         look.get('foot_cloud_rim', 4.5))))
+        col = b.scale(col, b.math('ADD', 0.75, b.math('MULTIPLY', b.math('MINIMUM', b.math('DIVIDE', lum, 0.35), 1.0), 0.35)))
+        geo = b.N('ShaderNodeNewGeometry')
+        pz = b.sep(geo.outputs['Position'])[2]
+        px = b.sep(geo.outputs['Position'])[0]
+        near = b.math('EXPONENT', b.math('MULTIPLY', -1.0, b.math('POWER', b.math('DIVIDE', b.math('SUBTRACT', px, xc), 1.8 * hw), 2.0)))
+        lift = b.smooth(pz, zplane - 5.0, ztop, 0.45, 1.0)
+        col = b.scale(col, b.math('MULTIPLY', b.math('ADD', 0.35, b.math('MULTIPLY', near, 0.65)), lift))
+        al = b.math('MULTIPLY', A_, b.smooth(pz, zplane - 8.0, zplane + 6.0))
+        b.out(b.mixs(al, b.transparent(), b.emission(col)))
+        ob.data.materials.append(m)
+        ob.visible_shadow = False
+        ob.visible_diffuse = False
+        ob.visible_glossy = False
+        obs.append(ob)
+    return obs
 
 
 # ============================================================================================ root collars
@@ -1274,7 +1692,10 @@ def root_sleeves(layout, t, cam_pos, fog, look, zplane=12.0, tag=None):
     specs = sleeve_specs(layout, t, cam_pos)
     if not specs:
         return None
-    img = load_img(os.path.join(OUT, 'Textures', 'Gate_RootSleeve_512.png'), 'sRGB', 'STRAIGHT')
+    fn_ = os.path.join(OUT, 'Textures', 'Gate_RootSleeve_512.png')
+    if not os.path.exists(fn_):           # round 8 (tech m11): retired to Textures/_retired~
+        fn_ = os.path.join(OUT, 'Textures', '_retired~', 'Gate_RootSleeve_512.png')
+    img = load_img(fn_, 'sRGB', 'STRAIGHT')
     m, b = new_mat('M_RootSleeve')
     tx = b.tex(img, b.uv('UVMap'))
     lum = b.sepc(tx.outputs['Color'])[0]
@@ -1341,14 +1762,84 @@ def deck_impostor(tag, t, cam_pos, fog, look, yaw=0.0):
             qn, qf = look.get('deck_quiet_near', 0.30), look.get('deck_quiet_far', 0.55)
             keep = qn + (qf - qn) * np.clip((dist - 300.0) / 900.0, 0.0, 1.0)
             base = gaussian_filter(lum, look.get('deck_quiet_px', 28.0))
-            tgt = base + (lum - base) * keep[:, None]
+            # round 4 (AD round 3 item 3 'cloud sea with silver crests toward the moon and deep troughs'): per pixel
+            # azimuth; the MOONWARD half (az < -5) keeps its billows (keep 0.6 near -> 0.45 far, r3: 0.30 / 0.12), gets a
+            # 1.35 gamma about the deck median (crests up, troughs down) and a MOON PATH: forward-scattered moonlight on
+            # the crests in a +-7 deg wedge under the moon. Near the tear foot and on the right: unchanged (quiet).
+            tx0 = math.tan(math.radians(hfov / 2))
+            uxv = ((np.arange(W) + 0.5) / W * 2 - 1) * tx0
+            uyv = (1 - (np.arange(H) + 0.5) / H * 2) * tyv
+            pp_, yy_ = math.radians(pitch), math.radians(yaw)
+            fw = np.array([math.sin(yy_) * math.cos(pp_), math.cos(yy_) * math.cos(pp_), math.sin(pp_)])
+            rw = np.array([math.cos(yy_), -math.sin(yy_), 0.0])
+            uw = np.cross(rw, fw)
+            Dv = fw[None, None] + uxv[None, :, None] * rw[None, None] + uyv[:, None, None] * uw[None, None]
+            AZ = np.degrees(np.arctan2(Dv[..., 0], Dv[..., 1]))
+            wm = (G.ss((-AZ - 5.0) / 9.0) * look.get('deck_moonward', 1.0)).astype(np.float32)
+            km = look.get('deck_mw_near', 0.60) + (look.get('deck_mw_far', 0.30) - look.get('deck_mw_near', 0.60)) * np.clip((dist - 300.0) / 1700.0, 0.0, 1.0)
+            keepP = keep[:, None] * (1 - wm) + km[:, None] * wm
+            tgt = base + (lum - base) * keepP
+            ok = al > 0.5
+            med = float(np.median(tgt[ok])) if ok.any() else 0.05
+            gm = look.get('deck_gamma_mw', 1.35)
+            wmg = wm * (1.0 - G.ss((dist - 2000.0) / 2000.0))[:, None]          # crisp crests near, soft far
+            tgt = tgt * (1 - wmg) + med * np.power(np.maximum(tgt, 0.0) / med, gm) * wmg
+            lane = np.exp(-((AZ - G.MOON_AZ) / look.get('moon_path_w', 7.0)) ** 2) * \
+                (G.ss((dist - 250.0) / 400.0) * (1.0 - G.ss((dist - 1500.0) / 1500.0)))[:, None]
+            # blurred crests (the sharp ones far away drew bright 'lightning' lines)
+            crest = gaussian_filter(np.maximum(lum - base, 0.0), 1.6)
+            tgt = tgt + lane * (crest * look.get('moon_path', 1.6) + base * look.get('moon_path_base', 0.25))
+            # round 8 (awe r4 B3.5): the near-right deck (under Pillar_R) was mud (p50 9, sd 4.8): it keeps its billows
+            # and is not darkened (crests toward the moon side of each billow, L* 14-18)
+            kk = float(cam_pos[2]) / eye_h
+            wr_ = (G.ss((AZ - 6.0) / 10.0) * (1.0 - G.ss((dist[:, None] * kk - 700.0) / 600.0))).astype(np.float32) * look.get('deck_nr', 1.0)
+            tgt = tgt + (lum - base) * wr_ * np.maximum(look.get('deck_nr_keep', 0.62) - keepP, 0.0)
             ng = look.get('deck_near_gain', 0.7)
             g = ng + (1.0 - ng) * np.clip((dist - 150.0) / 700.0, 0.0, 1.0)
-            tgt = np.maximum(tgt * g[:, None], 0.0)
+            gP = g[:, None] * (1 - wr_) + look.get('deck_nr_gain', 1.15) * wr_
+            tgt = np.maximum(tgt * gP, 0.0)
+            # round 8 (awe r4 B3.3, 'the white must be the light of the world'): a LIGHT LANE of the wound on the sea,
+            # the glitter path from the foot to the viewer: per pixel azimuth within w(d) of the foot's azimuth
+            # (w 1.6 deg at the foot -> 5 deg at the near end, 1.0-1.6 km long), the billow crests (high-pass) lifted
+            # violet-white #C0B9E4 at the foot cooling to #8F9AC0, the troughs barely. Unity: Tear_LightLane card
+            # (additive, Lanbai/Tear Part=Lane, the deck's own luminance x the lane mask; README §5).
+            lg = look.get('lane', 1.0) * float(G.key_at(G.LANE_FADE, t))
+            if lg > 0:
+                Sx = G.tear_H(t) / G.TD.H
+                xf_ = 0.5 * float(G.TD.path(np.array([0.0]))[0]) * Sx
+                azf = math.degrees(math.atan2(xf_ - float(cam_pos[0]), -float(cam_pos[1])))
+                Df = math.hypot(xf_ - float(cam_pos[0]), float(cam_pos[1]))
+                dA = dist[:, None] * kk
+                Ll = look.get('lane_len', 1400.0)
+                fr_ = np.clip((Df - dA) / Ll, 0.0, 1.0)                  # 0 at the foot -> 1 at the near end
+                wdeg = look.get('lane_w0', 1.6) + (look.get('lane_w1', 5.0) - look.get('lane_w0', 1.6)) * fr_
+                inl = np.exp(-((AZ - azf) / wdeg) ** 2) * G.ss((Df + 60.0 - dA) / 120.0) * (1.0 - G.ss((fr_ - 0.7) / 0.3))
+                # billow relief relative to its neighbourhood: crests (the backlit rims and tops facing the wound) up,
+                # troughs stay dark (the near deck is backlit by the moon: absolute crests vanish toward the foot)
+                rel = gaussian_filter(lum, 0.8) / (base + 0.015)
+                crest2 = G.ss((rel - 0.85) / 1.1)
+                amp = inl * (crest2 * look.get('lane_crest', 0.42) + look.get('lane_base', 0.02)) * (1.0 - 0.45 * fr_)
+                c0 = RT.hexlin('#C0B9E4'); c1 = RT.hexlin('#8F9AC0')
+                c0 = c0 / float(c0 @ np.array([0.2126, 0.7152, 0.0722])); c1 = c1 / float(c1 @ np.array([0.2126, 0.7152, 0.0722]))
+                lane_rgb = (c0[None, None] * (1 - fr_[..., None]) + c1[None, None] * fr_[..., None]) * (amp * lg)[..., None]
+                look['_lane_rgb'] = lane_rgb.astype(np.float32)
+            # moonlit cloud is cold silver: desaturate the moonward half further (C* <= 6)
+            grey = (st @ np.array([0.2126, 0.7152, 0.0722], np.float32))[..., None] * np.array([0.92, 0.98, 1.12], np.float32)
+            st = st * (1 - 0.7 * wm[..., None]) + grey * 0.7 * wm[..., None]
         else:
             base = gaussian_filter(lum, look.get('deck_soft_px', 6.0))
             tgt = np.maximum(base + (lum - base) * (1.0 - soft), 0.0)
         prem = st * (tgt / np.maximum(lum, 1e-5))[..., None] * al[..., None]
+    lane_rgb = look.pop('_lane_rgb', None)
+    hf = float(look.get('deck_hfeather', 0.0))
+    if hf > 0:      # round 8 (rear: 'a ruler-straight horizon'): the farthest rows melt into the band over hf deg
+        tyv_ = math.tan(math.radians(hfov / 2)) * H / W
+        el_ = pitch + np.degrees(np.arctan((0.5 - (np.arange(H) + 0.5) / H) * 2 * tyv_))
+        el_top = float(el_[np.where(al.max(1) > 0.5)[0]].max()) if (al.max(1) > 0.5).any() else 0.0
+        fr_ = np.clip((el_top - el_) / hf, 0.0, 1.0)
+        fr_ = (fr_ * fr_ * (3 - 2 * fr_)).astype(np.float32)
+        prem = prem * fr_[:, None, None]
+        al = al * fr_[:, None]
     k = float(cam_pos[2]) / eye_h
     img = bpy.data.images.new('Deck_' + tag, W, H, alpha=True, float_buffer=True, is_data=True)
     img.alpha_mode = 'CHANNEL_PACKED'
@@ -1369,74 +1860,290 @@ def deck_impostor(tag, t, cam_pos, fog, look, yaw=0.0):
     cx, cy = float(cam_pos[0]), float(cam_pos[1])
     V = np.array([[cx - R0, cy - R0, zp], [cx + R0, cy - R0, zp], [cx + R0, cy + R0, zp], [cx - R0, cy + R0, zp]])
     ob = mesh_from_numpy('CloudDeck_' + tag, V, np.array([(0, 1, 2, 3)]), smooth=False)
-    m, b = new_mat('M_Deck_' + tag)
-    geo0 = b.N('ShaderNodeNewGeometry')
-    dv = b.vmath('SUBTRACT', geo0.outputs['Position'], b.vec(tuple(np.asarray(cam_pos, float))))
-    dz = b.vmath('DOT_PRODUCT', dv, b.vec(tuple(f)))
-    ux = b.math('DIVIDE', b.vmath('DOT_PRODUCT', dv, b.vec(tuple(r))), b.math('MULTIPLY', b.math('MAXIMUM', dz, 1e-3), tx_))
-    uy = b.math('DIVIDE', b.vmath('DOT_PRODUCT', dv, b.vec(tuple(u))), b.math('MULTIPLY', b.math('MAXIMUM', dz, 1e-3), ty_))
-    uvc = b.N('ShaderNodeCombineXYZ')
-    b.L(b.math('ADD', 0.5, b.math('MULTIPLY', ux, 0.5)), uvc.inputs[0])
-    b.L(b.math('ADD', 0.5, b.math('MULTIPLY', uy, 0.5)), uvc.inputs[1])
-    tx = b.tex(img, uvc.outputs[0])
-    tx.interpolation = 'Cubic'
-    inside = b.math('MULTIPLY', b.math('GREATER_THAN', dz, 1.0),
-                    b.math('MULTIPLY', b.math('LESS_THAN', b.math('ABSOLUTE', ux), 1.0), b.math('LESS_THAN', b.math('ABSOLUTE', uy), 1.0)))
-    a = b.math('MULTIPLY', tx.outputs['Alpha'], inside)
-    geo = b.N('ShaderNodeNewGeometry')
-    Vd = b.vmath('SCALE', geo.outputs['Incoming'], None, -1.0)
-    vz = b.sep(Vd)[2]
-    tpl = b.math('DIVIDE', -(float(cam_pos[2]) - 12.0 * k), b.math('MINIMUM', vz, -1e-4))
-    rho = look['fog'] * (1.0 + look['deck_extra'])
-    fg = b.math('SUBTRACT', 1.0, b.math('EXPONENT', b.math('MULTIPLY', tpl, -rho)))
-    fg = b.math('MULTIPLY', fg, look['deck_fog'])
-    fcol = fog.colour(b, Vd, None, glow=True)
-    dc = tx.outputs['Color']
-    if look.get('deck_gamma', 1.0) != 1.0:      # lift the deck's shadows (prem colour / alpha, ^gamma, x alpha)
-        st = b.N('ShaderNodeVectorMath'); st.operation = 'DIVIDE'
-        b.L(dc, st.inputs[0]); b.L(b.N('ShaderNodeCombineXYZ').outputs[0], st.inputs[1])
-        cx = st.inputs[1].links[0].from_node
-        for i in range(3):
-            b.L(b.math('MAXIMUM', a, 1e-3), cx.inputs[i])
-        pw = b.N('ShaderNodeMath'); pw.operation = 'POWER'
-        sep = b.sep(st.outputs[0])
-        cc = b.N('ShaderNodeCombineXYZ')
-        for i in range(3):
-            b.L(b.math('POWER', sep[i], look['deck_gamma']), cc.inputs[i])
-        dc = b.scale(cc.outputs[0], a)
-    dc = b.scale(dc, look['deck_gain'])
-    if look.get('deck_desat', 0.0) > 0:      # moonlit cloud is cold silver (h 255-268, C* <= 6), not lavender (B8)
-        lum = b.vmath('DOT_PRODUCT', dc, b.vec((0.2126, 0.7152, 0.0722)))
-        dc = b.mix(look['deck_desat'], dc, b.rgbmul(b.gray(lum), b.rgb((0.92, 0.98, 1.12))))
-    add = None
-    if not tag.startswith('rear'):
-        dc, add = deck_tear_light(b, dc, a, t, look)
-    elif look.get('glory', 1.0) > 0:
-        # round 3 (awe rear): the bus's own shadow at the anti-moon point (~8 deg below the horizon behind it) inside a
-        # faint COLOURLESS moon glory (ring r ~3.2 deg, +5..7 L*, C* <= 6). Unity: MoonGlory card (JSON 'glory').
-        am = b.vmath('DOT_PRODUCT', Vd, b.vec(tuple(-G.L_MOON)))
-        ang = b.math('MULTIPLY', b.math('ARCCOSINE', b.math('MINIMUM', am, 1.0)), 180.0 / math.pi)
-        ring = b.math('MULTIPLY', b.math('EXPONENT', b.math('MULTIPLY', b.math('POWER', b.math('DIVIDE', b.math('SUBTRACT', ang, 3.2), 0.75), 2.0), -1.0)), 0.30)
-        core = b.math('MULTIPLY', b.math('EXPONENT', b.math('MULTIPLY', b.math('POWER', b.math('DIVIDE', ang, 1.7), 2.0), -1.0)), 0.16)
-        g = b.math('MULTIPLY', b.math('ADD', ring, core), look.get('glory', 1.0))
-        lum = b.vmath('DOT_PRODUCT', dc, b.vec((0.2126, 0.7152, 0.0722)))
-        dc = b.rgbadd(dc, b.scale(b.rgbmul(b.gray(lum), b.rgb((0.97, 1.0, 1.04))), g))
-        shadow = b.smooth(ang, 0.30, 0.16)
-        dc = b.scale(dc, b.math('SUBTRACT', 1.0, b.math('MULTIPLY', shadow, 0.55)))
-    col = b.rgbadd(b.scale(dc, b.math('SUBTRACT', 1.0, fg)),
-                   b.scale(fcol, b.math('MULTIPLY', a, fg)))
-    if add is not None:      # the kit's Tear_CloudGlow / Tear_Foot are unfogged additive sky objects (bible 1.6)
-        col = b.rgbadd(col, add)
-    em = b.emission(col)
-    tr = b.N('ShaderNodeBsdfTransparent')
-    b.L(b.gray(b.math('SUBTRACT', 1.0, a)), tr.inputs['Color'])
-    b.out(b.add(em, tr.outputs[0]))
-    ob.data.materials.append(m)
+    limg = None
+    if lane_rgb is not None:
+        limg = bpy.data.images.new('Lane_' + tag, W, H, alpha=True, float_buffer=True, is_data=True)
+        limg.alpha_mode = 'CHANNEL_PACKED'
+        lr = np.concatenate([lane_rgb * al[..., None], al[..., None]], -1)[::-1]
+        limg.pixels.foreach_set(np.ascontiguousarray(lr, np.float32).ravel())
+        limg.update()
+
+    def deck_mat(name, sky=None):
+        """the deck material; sky (round 8): the FOOT SKYLINE card's own (alpha, rim) image: the same camera-projected
+        deck colour (so it continues the sea seamlessly) but its alpha is a billow skyline that rises 8-35 m above the
+        deck plane in front of the foot, with a slot (the canyon) where the white runs down, and a backlit rim."""
+        m, b = new_mat(name)
+        geo0 = b.N('ShaderNodeNewGeometry')
+        dv = b.vmath('SUBTRACT', geo0.outputs['Position'], b.vec(tuple(np.asarray(cam_pos, float))))
+        dz = b.vmath('DOT_PRODUCT', dv, b.vec(tuple(f)))
+        ux = b.math('DIVIDE', b.vmath('DOT_PRODUCT', dv, b.vec(tuple(r))), b.math('MULTIPLY', b.math('MAXIMUM', dz, 1e-3), tx_))
+        uy = b.math('DIVIDE', b.vmath('DOT_PRODUCT', dv, b.vec(tuple(u))), b.math('MULTIPLY', b.math('MAXIMUM', dz, 1e-3), ty_))
+        uvc = b.N('ShaderNodeCombineXYZ')
+        b.L(b.math('ADD', 0.5, b.math('MULTIPLY', ux, 0.5)), uvc.inputs[0])
+        b.L(b.math('ADD', 0.5, b.math('MULTIPLY', uy, 0.5)), uvc.inputs[1])
+        tx = b.tex(img, uvc.outputs[0])
+        tx.interpolation = 'Cubic'
+        inside = b.math('MULTIPLY', b.math('GREATER_THAN', dz, 1.0),
+                        b.math('MULTIPLY', b.math('LESS_THAN', b.math('ABSOLUTE', ux), 1.0), b.math('LESS_THAN', b.math('ABSOLUTE', uy), 1.0)))
+        a = b.math('MULTIPLY', tx.outputs['Alpha'], inside)
+        if sky is not None:
+            stx = b.tex(sky['img'], b.uv('UVMap'), ext='CLIP')
+            stx.interpolation = 'Linear'
+            a = b.math('MULTIPLY', stx.outputs['Alpha'], inside)
+            srim = b.sepc(stx.outputs['Color'])[0]
+        geo = b.N('ShaderNodeNewGeometry')
+        Vd = b.vmath('SCALE', geo.outputs['Incoming'], None, -1.0)
+        vz = b.sep(Vd)[2]
+        tpl = b.math('DIVIDE', -(float(cam_pos[2]) - 12.0 * k), b.math('MINIMUM', vz, -1e-4))
+        rho = look['fog'] * (1.0 + look['deck_extra'])
+        fg = b.math('SUBTRACT', 1.0, b.math('EXPONENT', b.math('MULTIPLY', tpl, -rho)))
+        fg = b.math('MULTIPLY', fg, look['deck_fog'])
+        fcol = fog.colour(b, Vd, None, glow=True)
+        dc = tx.outputs['Color']
+        if sky is not None:            # straight deck colour (the deck is opaque there) x the skyline alpha
+            dc = b.scale(dc, b.math('DIVIDE', a, b.math('MAXIMUM', tx.outputs['Alpha'], 0.05)))
+        if look.get('deck_gamma', 1.0) != 1.0:      # lift the deck's shadows (prem colour / alpha, ^gamma, x alpha)
+            st = b.N('ShaderNodeVectorMath'); st.operation = 'DIVIDE'
+            b.L(dc, st.inputs[0]); b.L(b.N('ShaderNodeCombineXYZ').outputs[0], st.inputs[1])
+            cx = st.inputs[1].links[0].from_node
+            for i in range(3):
+                b.L(b.math('MAXIMUM', a, 1e-3), cx.inputs[i])
+            pw = b.N('ShaderNodeMath'); pw.operation = 'POWER'
+            sep = b.sep(st.outputs[0])
+            cc = b.N('ShaderNodeCombineXYZ')
+            for i in range(3):
+                b.L(b.math('POWER', sep[i], look['deck_gamma']), cc.inputs[i])
+            dc = b.scale(cc.outputs[0], a)
+        dc = b.scale(dc, look['deck_gain'])
+        if look.get('deck_desat', 0.0) > 0:      # moonlit cloud is cold silver (h 255-268, C* <= 6), not lavender (B8)
+            lum = b.vmath('DOT_PRODUCT', dc, b.vec((0.2126, 0.7152, 0.0722)))
+            dc = b.mix(look['deck_desat'], dc, b.rgbmul(b.gray(lum), b.rgb((0.92, 0.98, 1.12))))
+        add = None
+        if not tag.startswith('rear'):
+            # the skyline's faces toward us are the BACKLIT billows' shadow side: the pool barely reaches them
+            pk_ = 1.0
+            if sky is not None:      # 1 where the card meets the deck plane (seamless) -> skyline_pool 10 m above it
+                pk_ = b.smooth(b.sep(b.N('ShaderNodeNewGeometry').outputs['Position'])[2], zp + 1.0, zp + 10.0, 1.0,
+                               look.get('skyline_pool', 0.3))
+            dc, add = deck_tear_light(b, dc, a, t, look, pool_k=pk_)
+        elif look.get('glory', 1.0) > 0:
+            # round 3 (awe rear): the bus's own shadow at the anti-moon point (~8 deg below the horizon behind it) inside a
+            # faint COLOURLESS moon glory (ring r ~3.2 deg, +5..7 L*, C* <= 6). Unity: MoonGlory card (JSON 'glory').
+            am = b.vmath('DOT_PRODUCT', Vd, b.vec(tuple(-G.L_MOON)))
+            ang = b.math('MULTIPLY', b.math('ARCCOSINE', b.math('MINIMUM', am, 1.0)), 180.0 / math.pi)
+            ring = b.math('MULTIPLY', b.math('EXPONENT', b.math('MULTIPLY', b.math('POWER', b.math('DIVIDE', b.math('SUBTRACT', ang, 3.2), 0.75), 2.0), -1.0)), 0.30)
+            core = b.math('MULTIPLY', b.math('EXPONENT', b.math('MULTIPLY', b.math('POWER', b.math('DIVIDE', ang, 1.7), 2.0), -1.0)), 0.16)
+            g = b.math('MULTIPLY', b.math('ADD', ring, core), look.get('glory', 1.0))
+            lum = b.vmath('DOT_PRODUCT', dc, b.vec((0.2126, 0.7152, 0.0722)))
+            dc = b.rgbadd(dc, b.scale(b.rgbmul(b.gray(lum), b.rgb((0.97, 1.0, 1.04))), g))
+            shadow = b.smooth(ang, 0.30, 0.16)
+            dc = b.scale(dc, b.math('SUBTRACT', 1.0, b.math('MULTIPLY', shadow, 0.55)))
+        col = b.rgbadd(b.scale(dc, b.math('SUBTRACT', 1.0, fg)),
+                       b.scale(fcol, b.math('MULTIPLY', a, fg)))
+        if add is not None:      # the kit's Tear_CloudGlow / Tear_Foot are unfogged additive sky objects (bible 1.6)
+            col = b.rgbadd(col, add)
+        if limg is not None:      # round 8: the wound's light lane (additive, half-fogged: the air near the foot is lit too)
+            ltx = b.tex(limg, uvc.outputs[0])
+            ltx.interpolation = 'Cubic'
+            lcol = b.scale(ltx.outputs['Color'], b.math('MULTIPLY', inside, b.math('SUBTRACT', 1.0, b.math('MULTIPLY', fg, look.get('lane_fog', 0.5)))))
+            col = b.rgbadd(col, lcol)
+        if sky is not None:            # the backlit rim of the billows in front of the wound (brightest beside the slot)
+            geoS = b.N('ShaderNodeNewGeometry')
+            pxS = b.sep(geoS.outputs['Position'])[0]
+            nearS = b.math('EXPONENT', b.math('MULTIPLY', -1.0, b.math('POWER', b.math('DIVIDE', b.math('SUBTRACT', pxS, sky['xc']), sky['near_w']), 2.0)))
+            rk = b.math('MULTIPLY', b.math('MULTIPLY', srim, a), b.math('ADD', 0.12, b.math('MULTIPLY', nearS, 0.88)))
+            col = b.rgbadd(col, b.scale(b.rgb(tuple(RT.F_MIST)), b.math('MULTIPLY', rk, look.get('skyline_rim', 1.4) * sky['gain'])))
+        em = b.emission(col)
+        tr = b.N('ShaderNodeBsdfTransparent')
+        b.L(b.gray(b.math('SUBTRACT', 1.0, a)), tr.inputs['Color'])
+        b.out(b.add(em, tr.outputs[0]))
+        return m
+
+    ob.data.materials.append(deck_mat('M_Deck_' + tag))
     ob.visible_shadow = False
     ob.visible_diffuse = False
     ob.visible_glossy = False
+    if not tag.startswith('rear') and look.get('skyline', 1.0) > 0 and look.get('_skyline_ok', True):
+        sk = foot_skyline(t, cam_pos, look, zp)
+        if sk is not None:
+            obk, simg, info = sk
+            obk.data.materials.append(deck_mat('M_FootSkyline', dict(img=simg, **info)))
+            obk.visible_shadow = False
+            obk.visible_diffuse = False
+            obk.visible_glossy = False
+        if look.get('skyline_in', 0.0) > 0:          # round 9: the inner billow row at the lens foot
+            ski = foot_skyline(t, cam_pos, look, zp, inner=True)
+            if ski is not None:
+                obi, simg_i, info_i = ski
+                obi.data.materials.append(deck_mat('M_FootSkylineIn', dict(img=simg_i, **info_i)))
+                obi.visible_shadow = False
+                obi.visible_diffuse = False
+                obi.visible_glossy = False
     print('deck %s: k %.2f, %dx%d' % (tag, k, W, H))
     return ob
+
+
+_SKY = {}
+
+
+def skyline_image_inner(seed=11, n=512, m=160, ws=1.5, ztop=45.0, zbot=-25.0):
+    """round 9 (tech r4 B1 / awe r4 B4 'depth-test the tear against the deck's billows, not a flat plane'): the INNER foot
+    skyline, a low billow row standing a few metres in front of the lens. In the renders the deck impostor is an OPAQUE
+    flat plane, so wherever the eye looks down into the slot (U8 forward: ~120 m up, 0.8 km out) the white ended on the
+    straight lens / plane line. This row of 8-20 m backlit billows makes that end a billow line (the Unity CloudSea cards
+    are alpha billows already: in Unity this card is optional, Tear_FootSkylineIn). R = rim, A = alpha."""
+    key = ('in', seed, n, m, ws)
+    if key in _SKY:
+        return _SKY[key]
+    from scipy.ndimage import distance_transform_edt
+    SS = 2
+    N_, M_ = n * SS, m * SS
+    x = (np.arange(N_) + 0.5) / N_ * 2 * ws - ws
+    z = ztop - (np.arange(M_) + 0.5) / M_ * (ztop - zbot)
+    rng = np.random.default_rng(seed)
+    hw_m = 70.0
+    Hs = np.full(N_, 4.0)
+    bumps = []
+    xi = -ws + 0.05
+    while xi < ws - 0.05:
+        bumps.append((xi, rng.uniform(0.07, 0.16), rng.uniform(7.0, 19.0)))
+        xi += rng.uniform(0.06, 0.13)
+    kids = []
+    for (bx, br, bh) in bumps:
+        for q in range(int(rng.integers(2, 5))):
+            fx = rng.uniform(-0.8, 0.8)
+            kids.append((bx + fx * br, br * rng.uniform(0.22, 0.4), bh * (1.0 - 0.4 * fx * fx) + br * hw_m * rng.uniform(0.02, 0.08)))
+    for (bx, br, bh) in bumps + kids:
+        rx = br * hw_m
+        dx = (x - bx) * hw_m
+        cap = bh - rx * 0.55 + np.sqrt(np.maximum(rx * rx - dx * dx, 0.0)) * (np.abs(dx) < rx)
+        Hs = np.maximum(Hs, np.where(np.abs(dx) < rx, cap, -1e9))
+    Hs = Hs + 1.2 * G.TD.fbm(x * 14.0, seed + 3, 2)
+    alpha = (z[:, None] < Hs[None, :]).astype(np.float32)
+    dpx = distance_transform_edt(alpha > 0.5, sampling=((ztop - zbot) / M_, 2 * ws * hw_m / N_))
+    rim = np.exp(-dpx / 2.0) * alpha
+    endf = G.ss((ws - np.abs(x)) / (0.45 * ws))
+    alpha = alpha * endf[None, :]
+    rim = rim * endf[None, :]
+    alpha = alpha.reshape(m, SS, n, SS).mean((1, 3))
+    rim = rim.reshape(m, SS, n, SS).mean((1, 3))
+    rgba = np.zeros((m, n, 4), np.float32)
+    rgba[..., 0] = rim
+    rgba[..., 3] = alpha
+    _SKY[key] = rgba
+    return rgba
+
+
+def skyline_image(seed=7, n=1024, m=160, ws=2.6, ztop=45.0, zbot=-25.0):
+    """round 8 (awe r4 B1.1 'rip the cloud sea at the foot' / tech B1 'no straight floor edge'): the FOOT SKYLINE
+    alpha + rim image, in units of the tear's half width hw across (x' = -ws..ws hw) and metres up (zbot..ztop over the
+    deck plane). The billow skyline of the sea in front of the foot (8-18 m bumps), heaped into two parted LIPS (26 and
+    33 m) either side of a V SLOT (0.20 hw half-open at the lip tops, 0.06 hw at the plane, closing 20 m below it) into
+    which the white runs down. R = backlit rim (exp(-d / 2.4 m) from the outline), A = alpha. Unity: Tear_FootSkyline
+    (deliver/Tear/Textures/Tear_FootSkyline_1024x160.png, README_Tear §v6)."""
+    key = (seed, n, m, ws)
+    if key in _SKY:
+        return _SKY[key]
+    from scipy.ndimage import distance_transform_edt
+    SS = 2
+    N_, M_ = n * SS, m * SS
+    x = (np.arange(N_) + 0.5) / N_ * 2 * ws - ws               # in hw
+    z = ztop - (np.arange(M_) + 0.5) / M_ * (ztop - zbot)      # m (row 0 = top)
+    rng = np.random.default_rng(seed)
+    hw_m = 70.0                                                # nominal hw (m) for the bump radii in x (hw units)
+    Hs = np.full(N_, 2.0)
+    # the two lips
+    bumps = [(-0.62, 0.42, 26.0), (-1.05, 0.36, 19.0), (0.55, 0.38, 33.0), (0.98, 0.40, 22.0), (-0.34, 0.16, 20.0),
+             (0.31, 0.14, 24.0)]
+    xi = -ws + 0.3
+    while xi < ws - 0.2:
+        if abs(xi) > 1.25:
+            bumps.append((xi, rng.uniform(0.18, 0.38), rng.uniform(7.0, 17.0) * (1.0 - 0.45 * G.ss((abs(xi) - 1.5) / (ws - 1.5)))))
+        xi += rng.uniform(0.16, 0.30)
+    kids = []
+    for (bx, br, bh) in bumps:          # cauliflower: 3-5 small heads on every billow's crown
+        for q in range(int(rng.integers(3, 6))):
+            fx = rng.uniform(-0.75, 0.75)
+            kids.append((bx + fx * br, br * rng.uniform(0.18, 0.34), bh * (1.0 - 0.35 * fx * fx) + br * hw_m * rng.uniform(0.02, 0.10)))
+    for (bx, br, bh) in bumps + kids:
+        rx = br * hw_m
+        dx = (x - bx) * hw_m
+        cap = bh - rx * 0.55 + np.sqrt(np.maximum(rx * rx - dx * dx, 0.0)) * (np.abs(dx) < rx)
+        Hs = np.maximum(Hs, np.where(np.abs(dx) < rx, cap, -1e9))
+    Hs = Hs + 1.6 * G.TD.fbm(x * 9.0, seed + 3, 2)
+    Z = z[:, None]
+    alpha = (Z < Hs[None, :]).astype(np.float32)
+    # the V slot
+    zl = 30.0
+    # round 8b (U8 forward: the white was cut FLAT where the lens plane meets the cloud plane, inside the slot): the slot is a
+    # true V whose point is 6 m ABOVE the plane -- the lips close under the white, so the junction is never seen
+    zc = 6.0
+    sw = 0.32 * np.clip((Z - zc) / (zl - zc), 0.0, 1.0) ** 0.8
+    # the cloud is CONTINUOUS under the white (the centre was only the 2 m base: a flat sill the white stood on); the V is
+    # cut into it from above
+    bridge = 24.0 + 3.0 * G.TD.fbm(x * 7.0, seed + 9, 2)
+    Hs = np.maximum(Hs, np.where(np.abs(x) < 0.42, bridge * G.ss((0.42 - np.abs(x)) / 0.15), -1e9))
+    alpha = (Z < Hs[None, :]).astype(np.float32)
+    jag = 0.012 * G.TD.fbm(Z / 3.0, seed + 5, 2)
+    slot = (np.abs(x[None, :] - 0.02 + jag) < sw).astype(np.float32)
+    alpha = alpha * (1.0 - slot)
+    # rim: distance (m) to the outline inside the cloud
+    dpx = distance_transform_edt(alpha > 0.5, sampling=((ztop - zbot) / M_, 2 * ws * hw_m / N_))
+    rim = np.exp(-dpx / 2.4) * alpha
+    # ends merge into the sea
+    endf = G.ss((ws - np.abs(x)) / (0.35 * ws))
+    alpha = alpha * endf[None, :]
+    rim = rim * endf[None, :]
+    alpha = alpha.reshape(m, SS, n, SS).mean((1, 3))
+    rim = rim.reshape(m, SS, n, SS).mean((1, 3))
+    rgba = np.zeros((m, n, 4), np.float32)
+    rgba[..., 0] = rim
+    rgba[..., 3] = alpha
+    _SKY[key] = rgba
+    return rgba
+
+
+def foot_skyline(t, cam_pos, look, zp, inner=False):
+    """the FOOT SKYLINE card: vertical, facing the eye, skyline_front m in front of the foot on the eye -> foot line,
+    2 x skyline_w tear half widths wide; heights in m (sinking with G.FOOT_CLOUD_SINK x 0.4 after U8)."""
+    S_ = G.tear_H(t) / G.TD.H
+    hw = float(G.tear_half_width(t))
+    xf_ = 0.5 * float(G.TD.path(np.array([0.0]))[0]) * S_
+    foot = np.array([xf_, 0.0])
+    c2 = np.asarray(cam_pos, float)[:2]
+    dvec = foot - c2
+    D = float(np.linalg.norm(dvec))
+    dvec /= D
+    front = min(look.get('skyline_front', 110.0) * (0.6 + 0.4 * S_), 0.4 * D)
+    ws = look.get('skyline_w', 2.6)
+    if inner:
+        front = look.get('skyline_in_front', 8.0)
+        ws = look.get('skyline_in_w', 1.5)
+    ctr = foot - dvec * front
+    rv = np.array([dvec[1], -dvec[0]])                     # screen-right
+    sink = float(G.key_at(G.FOOT_CLOUD_SINK, t)) * look.get('skyline_sink', 0.6)
+    hs = look.get('skyline_h', 1.0) * (1.0 - sink) * float(np.clip(S_ / 0.64, 0.85, 1.4))      # lips grow with the tear
+    ztop, zbot = 45.0, -25.0
+    if inner:
+        hs = look.get('skyline_in_h', 1.0) * float(np.clip(S_ / 0.64, 0.85, 1.4))
+    rgba = skyline_image_inner(ws=ws, ztop=ztop, zbot=zbot) if inner else skyline_image(ws=ws, ztop=ztop, zbot=zbot)
+    m_, n_ = rgba.shape[:2]
+    key = ('FootSkyIn_%.2f' if inner else 'FootSkyline_%.2f') % ws
+    img = bpy.data.images.get(key)
+    if img is None:
+        img = bpy.data.images.new(key, n_, m_, alpha=True, float_buffer=True, is_data=True)
+        img.alpha_mode = 'CHANNEL_PACKED'
+        img.pixels.foreach_set(np.ascontiguousarray(rgba[::-1], np.float32).ravel())
+        img.update()
+    W_ = ws * hw * (D - front) / D * 1.0
+    z0, z1 = zp + zbot * hs, zp + ztop * hs
+    P0 = np.array([ctr[0] - rv[0] * W_, ctr[1] - rv[1] * W_])
+    P1 = np.array([ctr[0] + rv[0] * W_, ctr[1] + rv[1] * W_])
+    V = np.array([[P0[0], P0[1], z0], [P1[0], P1[1], z0], [P1[0], P1[1], z1], [P0[0], P0[1], z1]])
+    ob = mesh_from_numpy('FootSkylineIn' if inner else 'FootSkyline', V, np.array([(0, 1, 2, 3)]),
+                         uvs=[('UVMap', np.array([(0, 0), (1, 0), (1, 1), (0, 1)]))], smooth=False)
+    return ob, img, dict(xc=float(ctr[0]), near_w=look.get('skyline_near', 0.7) * hw * (D - front) / D,
+                         gain=look.get('skyline_in_rim', 1.0) if inner else 1.0)
 
 
 _LANES = {}
@@ -1455,7 +2162,7 @@ def lanes_image(t):
     return _LANES[fn]
 
 
-def deck_tear_light(b, dc, a, t, look):
+def deck_tear_light(b, dc, a, t, look, pool_k=1.0):
     """the wound's light on the cloud sea, per pixel on the deck plane (Unity: Tear_CloudGlow x Tear_CloudLanes +
     Tear_Foot): (1) the pool (#495270 target) centred 150 m x S behind the foot, cut by the shadow lanes;
     (2) the foot crevasse running 700 m toward the bus, its floor #C0B9E4 and dark walls; (3) a cold silver lift
@@ -1475,14 +2182,19 @@ def deck_tear_light(b, dc, a, t, look):
     # pool: full within ~300 m, half by ~650 m, gone by ~1.3 km
     pool = b.math('ADD', b.math('MULTIPLY', b.math('EXPONENT', b.math('MULTIPLY', b.math('POWER', b.math('DIVIDE', rg, 420.0), 2.0), -1.0)), 0.75),
                   b.math('MULTIPLY', b.math('EXPONENT', b.math('MULTIPLY', b.math('DIVIDE', rg, 900.0), -1.0)), 0.25))
-    pool = b.math('MULTIPLY', b.math('MULTIPLY', pool, lanes), look.get('pool', 1.1))
+    pool = b.math('MULTIPLY', b.math('MULTIPLY', pool, lanes), b.math('MULTIPLY', pool_k, look.get('pool', 1.1)))
     # v3b: the pool LIGHTS the cloud it falls on (multiply-add, Unity: Tear_CloudGlow with Blend DstColor One, i.e.
     # dst x (1 + glow)): the billows keep their modelling; a flat additive veil (v3) washed the U8 foreground flat.
     # A small additive floor (25 %) keeps the gaps between billows from going black under the wound.
     cg = np.asarray(F['CloudGlow'], float)
     tint = tuple(cg / max(float(cg @ np.array([0.2126, 0.7152, 0.0722])), 1e-6))
-    glow = b.rgbadd(b.scale(b.rgbmul(dc, b.rgb(tint)), b.math('MULTIPLY', pool, look.get('pool_mul', 0.7))),
-                    b.scale(b.rgb(tuple(F['CloudGlow'])), b.math('MULTIPLY', pool, b.math('MULTIPLY', a, 0.25))))
+    # round 4 (tech r3 M5: U8 forward APL): the lit-pool multiply and the foot lobe dim with G.POOL_FADE after U8
+    pk = float(G.key_at(G.POOL_FADE, t)) * look.get('pool_fade_gain', 1.0)
+    hw0 = float(G.tear_half_width(t))
+    nearfoot = b.smooth(b.math('SQRT', b.math('ADD', b.math('POWER', px, 2.0), b.math('POWER', py, 2.0))), 1.5 * hw0, 3.0 * hw0)
+    glow = b.rgbadd(b.scale(b.rgbmul(dc, b.rgb(tint)), b.math('MULTIPLY', pool, look.get('pool_mul', 0.7) * pk)),
+                    b.scale(b.rgb(tuple(F['CloudGlow'])), b.math('MULTIPLY', b.math('MULTIPLY', pool, nearfoot),
+                                                               b.math('MULTIPLY', a, 0.25 * G.key_at(G.CLOUDGLOW_ADD, t)))))
     out = b.rgbmul(dc, b.mix(b.math('MINIMUM', pool, 1.0), (1.0, 1.0, 1.0), (0.95, 0.95, 1.08)))
     # crevasse
     L = G.CREVASSE['length']
@@ -1491,29 +2203,62 @@ def deck_tear_light(b, dc, a, t, look):
     w = b.math('MULTIPLY', w0, b.math('POWER', b.math('SUBTRACT', 1.0, s), 0.8))
     xc0 = 0.5 * float(G.TD.path(np.array([0.0]))[0]) * S
     xc = b.math('ADD', xc0, b.math('MULTIPLY', b.math('MULTIPLY', b.math('SINE', b.math('DIVIDE', py, 97.0)), s), G.CREVASSE['wander']))
-    nz = b.N('ShaderNodeTexNoise'); nz.inputs['Scale'].default_value = 1.0 / 40.0; nz.inputs['Detail'].default_value = 3.0
+    nz = b.N('ShaderNodeTexNoise'); nz.inputs['Scale'].default_value = 1.0 / 110.0; nz.inputs['Detail'].default_value = 1.0
     b.L(P, nz.inputs['Vector'])
     q = b.math('DIVIDE', b.math('ABSOLUTE', b.math('SUBTRACT', px, xc)), b.math('MAXIMUM', b.math('MULTIPLY', w, 0.5), 0.5))
-    q = b.math('ADD', q, b.math('MULTIPLY', b.math('SUBTRACT', nz.outputs['Fac'], 0.5), 0.6))
+    q = b.math('ADD', q, b.math('MULTIPLY', b.math('SUBTRACT', nz.outputs['Fac'], 0.5), 0.25))      # round 4: soft, no lightning
     inside = b.math('MULTIPLY', b.smooth(q, 1.0, 0.55), b.smooth(py, 30.0, -10.0))
     inside = b.math('MULTIPLY', inside, b.smooth(s, 1.0, 0.85))
     wall = b.math('MULTIPLY', b.smooth(q, 1.25, 0.95), b.math('SUBTRACT', 1.0, inside))
-    wall = b.math('MULTIPLY', wall, b.smooth(py, 30.0, -10.0))
-    floor_ = b.scale(b.rgb(tuple(F['Glow'])), b.math('MULTIPLY', b.math('MULTIPLY', b.math('POWER', b.math('SUBTRACT', 1.0, s), 1.3),
+    wall = b.math('MULTIPLY', wall, b.math('MULTIPLY', b.smooth(py, 30.0, -10.0), b.smooth(s, 1.0, 0.85)))   # round 8: ends with the canyon (was a hairline to the camera)
+    # round 8b: the canyon floor is the white's own lit MIST continuing down into the slot (F_MIST_LENS, low chroma); the
+    # lavender Glow fill read as a violet block between the skyline lips at U8 forward
+    floor_ = b.scale(b.rgb(tuple(np.asarray(RT.F_MIST_LENS) * look.get('crev_floor_k', 0.55))), b.math('MULTIPLY', b.math('MULTIPLY', b.math('POWER', b.math('SUBTRACT', 1.0, s), 1.3),
                                                                                        b.smooth(q, 0.9, 0.0, 0.35, 1.0)), look.get('crevasse', 0.35)))
-    out = b.scale(out, b.math('SUBTRACT', 1.0, b.math('MULTIPLY', b.math('MAXIMUM', wall, inside), look.get('crev_dark', 0.3))))
+    out = b.scale(out, b.math('SUBTRACT', 1.0, b.math('MULTIPLY', b.math('MAXIMUM', wall, inside), look.get('crev_dark', 0.0))))
     add = b.rgbadd(glow, b.scale(floor_, b.math('MULTIPLY', inside, a)))
+    # round 4 (AD round 3 item 1 'foot', awe B1): the seam's cloud LIPS are lit from below (#495270 -> #7A7FA0), not dark
+    # walls; and the cloud wall under the white glows (L* 55-70 within +-1.5 half widths): the wound does not stand ON the
+    # horizon, it continues INTO the sea. Unity: Tear_CloudGlow v5 foot lobe (_FootGlow) + seam lips (_SeamLip).
+    lipc = b.mix(b.math('POWER', b.math('SUBTRACT', 1.0, s), 1.5), tuple(F['CloudGlow']), tuple(RT.hexlin('#7A7FA0') * 1.6))
+    add = b.rgbadd(add, b.scale(lipc, b.math('MULTIPLY', b.math('MULTIPLY', wall, a), look.get('seam_lip', 0.9))))
+    hw = float(G.tear_half_width(t))
+    fg = b.math('EXPONENT', b.math('MULTIPLY', -1.0, b.math('ADD',
+             b.math('POWER', b.math('DIVIDE', b.math('SUBTRACT', px, xc0), 1.6 * hw), 2.0),
+             b.math('POWER', b.math('DIVIDE', b.math('ADD', py, 60.0 * S), 220.0 * S), 2.0))))
+    fg = b.math('MULTIPLY', fg, b.math('MULTIPLY', pool_k, look.get('foot_glow', 2.2) * float(G.key_at(G.POOL_FADE, t))))
+    fcol = (np.asarray(F['Glow']) * 0.30 + np.asarray(F['CloudGlow']) * 1.2)
+    out = b.rgbadd(out, b.scale(b.rgbmul(dc, b.rgb(tint)), b.math('MULTIPLY', fg, look.get('foot_mul', 2.6))))
+    # round 8 (tech r4 B1.3 / awe B4: a flat lavender floor under the foot at U8): the additive part of the foot lobe
+    # only far from the foot axis' near field and x 0.25; the lit floor follows the billows (multiplicative above)
+    add = b.rgbadd(add, b.scale(b.rgb(tuple(fcol)), b.math('MULTIPLY', fg, b.math('MULTIPLY', a, look.get('foot_add', 0.25)))))
     return out, add
 
 
 # ============================================================================================ tear kit + shafts
+def halo_dist(cam_pos, t):
+    """round 8 (tech r4 M4): the halo cards fade as the bus closes in: x smoothstep(250, 1200, D), D = eye -> tear plane
+    (0.60 at U8, ~0.3 at U8 + 3.5, ~0.05 at U8 + 7); the bloom of the white takes over. Unity: Udon writes the Halo
+    material's _Intensity x this every frame (README §2.1) and turns the renderer off at 0."""
+    D = max(float(-np.asarray(cam_pos, float)[1]), 0.0)
+    x = float(np.clip((D - 250.0) / 950.0, 0.0, 1.0))
+    # round 8 (overdraw, gate_fse): remapped so it reaches 0 by ~U8 + 3.5 (k = saturate((ss - 0.25) / 0.75)): 0.47 at
+    # U8, 0 from D ~ 575 m; the renderer is off below 0.05 (the cards are 1.3 FSE at U8 + 7 even when faint)
+    k = max((x * x * (3 - 2 * x) - 0.25) / 0.75, 0.0)
+    return k if k >= 0.05 else 0.0
+
+
 def tear_kit(t, cam_pos, look, hfov, W, ctop=4.0):
     """ctop = the cloud-top height the kit's foot dissolves into (Unity: _Udon_CloudTop): the deck impostor's plane
     (12 m x k) + 2 m, so the 40 m foot fade starts where the rendered cloud starts hiding the cards."""
     S = G.tear_H(t) / G.TD.H
     D = max(np.linalg.norm(cam_pos - G.tear_core_cf(t)), 50.0)
-    cfg = dict(open=0.18 + 0.12 * G.tear_open(t), rip=G.rip_progress(t), halo=look['halo'], folds=look['folds'],
+    cfg = dict(open=0.18 + 0.12 * G.tear_open(t), rip=G.rip_progress(t), halo=look['halo'] * halo_dist(cam_pos, t),
+               folds=look['folds'] * G.key_at(G.SKYFOLDS_FADE, t),
                intensity=look['intensity'], shaft=look['shaft'], ctop=float(ctop))
+    for k_ in ('flap_inner', 'flap_trans', 'flap_sheen'):      # round 8: per-shot flap shading (U8a: dark cloth)
+        if k_ in look:
+            cfg[k_] = float(look[k_])
     px_m = D * math.tan(math.radians(hfov / W)) / S
     fog = Fog(t, cam_pos, look)
     obs = RT.build_kit(cfg, S, (0.0, 0.0, 0.0), tuple(cam_pos), px_m, skip=('Tear_Shafts',),
@@ -1521,7 +2266,7 @@ def tear_kit(t, cam_pos, look, hfov, W, ctop=4.0):
     # as in Unity: the kit is unlit cards that the tentacles do not reflect (their tear light is the directional
     # light + the shader's tear rim); Cycles would otherwise mirror the halo cards' back faces on every arm
     for o in obs:
-        o.visible_glossy = look['kit_glossy'] > 0
+        o.visible_glossy = look['kit_glossy'] > 0 or (o.name.startswith('Tear_Lens') and look.get('lens_glossy', 0.0) > 0)
         o.visible_diffuse = False
         o.visible_transmission = False
     return obs, cfg
@@ -1617,15 +2362,21 @@ def build(shot, W, H, spp, look=None, only=None, nobus=False, sh=None):
     sc = setup(W, H, spp)
     sc.cycles.glossy_bounces = int(look.get('gloss_b', 1))
     sc.cycles.max_bounces = max(1, int(look.get('gloss_b', 1)))
-    cam_pos = G.eye_cf(t, sh['eye'])
+    eye_ = np.asarray(sh['eye'], float) + np.array([float(sh.get('ex', 0.0)), float(sh.get('ey', 0.0)), float(sh.get('ez', 0.0))])
+    cam_pos = G.eye_cf(t, eye_)
     world(look)
     cam = camera(cam_pos, sh['yaw'], sh['pitch'], sh['hfov'])
     fog = Fog(t, cam_pos, look)
     core = G.tear_core_cf(t)
     # lights (Unity: realtime directionals; sun strength = pi x E)
     moon = sun('L_Moon', -G.L_MOON, math.pi * E_MOON, COL_MOON, angle_deg=1.2, shadow=True)
-    tear_l = sun('L_Tear', G.unit(cam_pos - core), math.pi * E_TEAR, COL_TEAR, angle_deg=4.0, shadow=False)
-    fill = sun('L_Fill', (0, 0, 1.0), math.pi * E_FILL, COL_FILL, angle_deg=30.0, shadow=False)
+    # round 4 (AD round 3 item 2, awe B2 / tech AD-2): the WOUND IS THE KEY LIGHT. v4 had a sun pointing from the core
+    # at the camera (it lit only the faces we cannot see). Now: two ellipse area lights the size of the white at the
+    # lens (front: toward the bus; back: dimmer), diffuse only, E_tear(d) = tear_E x (tear_dref / d)^2, shadowed; and the
+    # white lens itself is visible to glossy rays, so the wet skin mirrors it. Unity: TentacleSway v2.6 line light
+    # (_TearFoot -> _TearTop segment: wrap diffuse + representative-point specular) + _RimWound (README §4).
+    tear_l = tear_area_lights(t, look)
+    fill = sun('L_Fill', (0, 0, 1.0), math.pi * look.get('fill_E', E_FILL), COL_FILL, angle_deg=30.0, shadow=False)
     layout = G.build_layout()
     pix_angle = math.radians(sh['hfov']) / W
     want = lambda k: (only is None) or (k in only)
@@ -1637,10 +2388,11 @@ def build(shot, W, H, spp, look=None, only=None, nobus=False, sh=None):
     look['zplane'] = zplane
     if want('tear'):
         tear_kit(t, cam_pos, look, sh['hfov'], W, ctop=zplane + 2.0)
+    look['_vfov'] = 2.0 * math.atan(math.tan(math.radians(sh['hfov']) / 2.0) * H / W)   # round 9: LOD by screen height
     if want('arms'):
         place_tentacles(layout, t, fog, pix_angle)
-    if want('tide'):
-        cells = json.load(open(os.path.join(TEXT, 'TentacleTide_Atlas.json')))['cells']
+    if want('tide') and G.tide_reveal(t) > 0.0:      # round 4 (m12): renderer off at _Reveal 0 (also in the ID pass)
+        cells = None      # round 4: build_tide always uses the v3 cells (the v2.1 atlas json is in deliver/Tentacles/_superseded~)
         tide_billboards(G.build_tide(cells), t, cam_pos, fog, look)
     if want('shafts'):
         shafts(G.build_shafts(), t, cam_pos, look)
@@ -1652,6 +2404,8 @@ def build(shot, W, H, spp, look=None, only=None, nobus=False, sh=None):
             cloud_floor(t, cam_pos, fog, look, yaw=sh['yaw'], span=sh['hfov'] * 0.5 + 25, full=(shot == 'rear'))
             if 'CloudFloor' in bpy.data.objects:
                 exclude_from([tear_l, fill], [bpy.data.objects['CloudFloor']])
+        if look.get('foot_clouds', 0.0) > 0 and want('tear'):      # round 8: replaced by the foot skyline (deck_impostor)
+            foot_clouds(t, cam_pos, fog, look, zplane)
         if look.get('collars', 0.0) > 0:          # round 3: the crisp collars are retired (B6.1); sleeves instead
             root_collars(layout, t, cam_pos, fog, look, zplane=zplane)
         if look.get('sleeves', 1.0) > 0:
@@ -1661,6 +2415,10 @@ def build(shot, W, H, spp, look=None, only=None, nobus=False, sh=None):
                 mist_card('Mist_%02d' % i, spc, cam_pos, fog, look, 'mist')
             for i, spc in enumerate(G.mist_positions(G.FAR_CLOUDS)):
                 mist_card('FarCloud_%02d' % i, spc, cam_pos, fog, look, 'far')
+        if look.get('scarf', 0.0) > 0 and want('arms'):     # round 4 (awe B2 scale device): lit wisps round the bodies
+            for spc in G.scarf_specs(layout, t, cam_pos):
+                spc = dict(spc, opacity=spc['opacity'] * look['scarf'])
+                mist_card(spc['id'], spc, cam_pos, fog, look, 'mist')
         if look.get('relief', 1.0) > 0:       # run 6: horizon relief (the tide rises from behind cloud heads)
             for i, spc in enumerate(G.mist_positions(G.horizon_relief())):
                 mist_card('Relief_%02d' % i, spc, cam_pos, fog, look, 'far')
@@ -1669,6 +2427,11 @@ def build(shot, W, H, spp, look=None, only=None, nobus=False, sh=None):
                 sg = float(np.interp(t, [k[0] for k in spc['sag']], [k[1] for k in spc['sag']]))
                 spc = dict(spc, width=spc['width'], opacity=spc['opacity'] * float(np.interp(t, [k[0] for k in spc['alpha']], [k[1] for k in spc['alpha']])))
                 spc['sag_y'] = sg
+                if spc.get('sink'):      # round 4: the tower sinks into the sea
+                    dz = float(np.interp(t, [k[0] for k in spc['sink']], [k[1] for k in spc['sink']]))
+                    spc['loc'] = np.asarray(spc['loc'], float) + np.array([0.0, 0.0, dz])
+                if spc['opacity'] <= 0.0:
+                    continue
                 mist_card(spc['id'], spc, cam_pos, fog, look, 'far')
         tdir = G.unit(core - cam_pos)
         if look['cards'] > 0:
@@ -1677,7 +2440,39 @@ def build(shot, W, H, spp, look=None, only=None, nobus=False, sh=None):
     if sh.get('bus') and not nobus and want('bus'):
         import gate_bus
         gate_bus.build(t, sh, look, [moon, tear_l, fill])
+    if look.get('rear_frame', 0.0) > 0:       # round 8 (awe r4 M4): a clean placeholder rear-window border
+        rear_window_frame(cam_pos, sh, W, H, look)
     return sc, cam_pos
+
+
+def rear_window_frame(cam_pos, sh, W, H, look):
+    """round 8: a plain dark border (the rear glass's frame, PLACEHOLDER shell: one clean frame, no detailing), 0.6 m in
+    front of the eye, covering look['rear_frame'] (~5 %) of the frame width / height on each side, slightly rounded."""
+    y, p = math.radians(sh['yaw']), math.radians(sh['pitch'])
+    f = np.array([math.sin(y) * math.cos(p), math.cos(y) * math.cos(p), math.sin(p)])
+    r = np.array([math.cos(y), -math.sin(y), 0.0])
+    u = np.cross(r, f)
+    d = 0.6
+    tx = math.tan(math.radians(sh['hfov'] / 2)) * d
+    ty = tx * H / W
+    k = float(look.get('rear_frame', 0.05))
+    c = np.asarray(cam_pos, float) + f * d
+    # outer (beyond the view) and inner rectangles, as 4 quads
+    ox, oy = tx * 1.2, ty * 1.2
+    ix, iy = tx * (1 - 2 * k), ty * (1 - 2 * k * W / H)
+    quads = [((-ox, -oy), (ox, -iy)), ((-ox, iy), (ox, oy)), ((-ox, -iy), (-ix, iy)), ((ix, -iy), (ox, iy))]
+    V, Fc = [], []
+    for (x0, y0), (x1, y1) in quads:
+        b0 = len(V)
+        for (xx, yy) in ((x0, y0), (x1, y0), (x1, y1), (x0, y1)):
+            V.append(c + r * xx + u * yy)
+        Fc.append((b0, b0 + 1, b0 + 2, b0 + 3))
+    ob = mesh_from_numpy('RearWindowFrame', np.array(V), np.array(Fc), smooth=False)
+    m, b = new_mat('M_RearWindowFrame')
+    b.out(b.emission(tuple(RT.hexlin('#1A1D24') * 0.35)))
+    ob.data.materials.append(m)
+    ob.visible_shadow = False
+    return ob
 
 
 def render(shot, W, H, spp, base, look=None, only=None, nobus=False, sh=None, border=None):
@@ -1763,16 +2558,21 @@ def id_materials(base=None):
             srcn = [n for n in nt.nodes if n.type == 'TEX_IMAGE' and n.image is src.image][0]
             bb.L(bb.mixs(bb.math('GREATER_THAN', srcn.outputs['Alpha'], 0.5), bb.transparent(), bb.emission((0, 0, 0.5))),
                  out.inputs['Surface'])
+        elif nm in ('FootSkyline', 'FootSkylineIn'):          # round 8: cloud (its own skyline alpha)
+            simg = [im for im in bpy.data.images if im.name.startswith('FootSkyline_' if nm == 'FootSkyline' else 'FootSkyIn_')][0]
+            tx = b.tex(simg, b.uv('UVMap'))
+            b.out(b.mixs(b.math('GREATER_THAN', tx.outputs['Alpha'], 0.5), b.transparent(), b.emission((0.0, 0.0, 0.5))))
         elif nm == 'Tide':
             _alpha_tested(b, ob, 0.75)
         elif nm.startswith(('Tear_Lens', 'Tear_Flap')):
             _alpha_tested(b, ob, 0.25)
-        elif nm.startswith(('Tower_', 'RootSleeves', 'FarCloud_')):
+        elif nm.startswith(('Tower_', 'RootSleeves', 'FarCloud_', 'FootCloud_', 'Relief_')):
             _alpha_tested(b, ob, 0.5)          # round 3: cloud towers / sleeves count as cloud (they hide what is behind)
         elif nm.startswith(('Tear_', 'Mist_', 'FarCloud_', 'Shafts', 'Wedges', 'Card_', 'Collar')):
             b.out(b.transparent())
         else:                               # the bus shell (glass is see-through)
-            if 'Glass' in nm or 'Windscreen' in nm or 'WsCorner' in nm or 'Rain' in nm:
+            if 'Glass' in nm or 'Windscreen' in nm or 'WsCorner' in nm or 'Rain' in nm or \
+                    nm.startswith(('SkyBeam', 'SkyRing', 'SkySpot', 'Dust')):     # round 8 (tech m12): light, not shell
                 b.out(b.transparent())
             else:
                 b.out(b.emission((0.0, 0.0, 1.0)))
@@ -1820,7 +2620,7 @@ def _parse_set(args):
                     v = float(v)
                 except ValueError:
                     pass
-                (sh if k in ('t', 'yaw', 'pitch', 'hfov') else look)[k] = v
+                (sh if k in ('t', 'yaw', 'pitch', 'hfov', 'ex', 'ey', 'ez') else look)[k] = v
     return look, sh
 
 

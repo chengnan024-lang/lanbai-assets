@@ -1,4 +1,4 @@
-"""final/contact_sheet.png: the key art on top, the seven in-bus frames below in story order (labels = cue + time)."""
+"""final/contact_sheet.png: the key art on top, the eight in-bus frames below in story order (labels = cue + time)."""
 import os
 from PIL import Image, ImageDraw, ImageFont
 from gate_scene_shots import SHOTS
@@ -7,7 +7,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 F = os.path.join(HERE, 'final')
 W = 2560
 key = Image.open(os.path.join(F, 'keyart_239.png')).convert('RGB')
-names = [('U6', 'U6_approach'), ('U7', 'U7_engelein'), ('U8side', 'U8_side'), ('U8fwd', 'U8_forward'),
+names = [('U6', 'U6_approach'), ('U7', 'U7_engelein'), ('U8side', 'U8_side'), ('U8near', 'U8_near'), ('U8fwd', 'U8_forward'),
          ('U8a', 'U8a_ach_nein'), ('U8b', 'U8b_spot'), ('rear', 'rear_window')]
 COLS = 3
 tw = (W - (COLS + 1) * 16) // COLS

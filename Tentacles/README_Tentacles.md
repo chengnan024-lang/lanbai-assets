@@ -6,13 +6,36 @@
 > 以及 v1 的两份验收 `tentacles/verify_art_v1.json`、`verify_tech_v1.json`（逐条处理见第 13 节）。
 > **v1 的交付原样存档在 `_v1/`**（FBX、贴图、shader、README、三张渲染）。
 
-> **门 round 3 第 6 轮（2026-10-01，最新）：远潮换图集。** 门里的远潮改用 `gate/Textures/TentacleTide_v3_Atlas_A/B.png`
+> **门第 8 轮（refine round 4，2026-10-02，最新）——与本库有关的只有这些：**
+> - 门的触手 shader 升到 **`gate/Shaders/Lanbai_TentacleSway.shader` v2.7**，天空 / 雾色改用同目录的 **`LanbaiGateSky.cginc`**
+>   （天空盒 `Lanbai_GateAirSky` **v3** 也包含它，所以天和远处被雾吃掉的臂是同一个颜色；技术 r4 BT-3）。天空盒挪到了 `gate/Shaders/`，
+>   本目录的 v2 在 `_superseded~/Lanbai_GateAirSky_v2.shader.txt`。下文第 1 节清单里的 `Lanbai_GateAirSky.shader` 是历史说明。
+> - **细的部分（鞭梢）不再用主贴图**（技术 r4 B2：UV0 是保角的，鞭梢上一个贴图周期 ≈ 一圈周长 ≈ 2r，贴图里任何成行的东西都会
+>   每 2r 重复一次 = 等距的环 / 珠）：v2.7 `_ThinK (0.12, 0.40)`：UVRadius < 0.12 的地方法线 / 光滑度 / 反照率 → 平滑的
+>   `_ThinSmooth 0.84` / `_ThinAlbedo`，只留非整数平铺的细节法线。预览材质 `Source/build_library.make_material` 加了同样的
+>   `thinK`（`THIN_K`、`THIN_SMOOTH`、`THIN_ALBEDO`），本库的渲染与门的渲染一致。**本库 8 个 FBX 不变**：库里的材质 `_UseUVRadius 0`
+>   时 UVRadius 读不到，`_ThinK` 设 (0, 0) 即关掉。
+> - 门里的“很多小的”现在是 **`gate/GateMultitude_v2.fbx`**（12 个姿态，含镜像；36 个实例，5 簇），v1 已挪到 `gate/_r4/`。
+> - 伤口高光有了远距缩放与上限（`_WoundSpecFar`、`_WoundSpecMax`）；白前面的臂变成剪影（`OverWhite()`、`_Wrap*`）。参数见
+>   `gate/README_GateLayout.md` §5、§7.1。
+
+> **门 round 4（refine round 3，2026-10-02）——与本库有关的只有这些：**
+> - 门的触手 shader 升到 **`gate/Shaders/Lanbai_TentacleSway.shader` v2.6**（伤口当主光：线光源漫反射 + 管状高光 + 屏幕空间伤口轮廓
+>   `_RimWound`；噪声在云海坐标里取样 `_Udon_GateOrigin`；实例化 `_FogCapI`；月轮廓统一用 `_Udon_MoonDir`）。对本库的 8 个 FBX 完全兼容：
+>   不写 `_Udon_TearFoot / _Udon_TearTop` 时 `_TearDiffuse / _TearSpec / _RimWound` 设 0 即回到 v2.5 的样子。
+> - 门里的“很多小的”现在是 **`gate/GateMultitude_v1.fbx`**（6 个规范姿态 MU0–MU5，每个 `_LOD0/1/2`，GPU 实例化 150 个），
+>   不再用本库的变体做浪涌环。
+> - **远潮的 v1 网格与 v2.1 图集挪进了 `_superseded~/`**（技术评审 r3 m10）：`TentacleTide_v1.fbx`（只有 4 套 UV，Tide v2.2 需要 UV4–UV6）、
+>   `TentacleTide_v2.1_Atlas_A/B/C.png` + `.json`。门的远潮只用 `gate/TentacleTide_v2.fbx` + `gate/Textures/TentacleTide_v3_Atlas_A/B.png`。
+>   下文提到 `FBX/TentacleTide.fbx` 与 `Textures/TentacleTide_Atlas_*` 的地方都是历史说明。
+
+> **门 round 3 第 6 轮（2026-10-01）：远潮换图集。** 门里的远潮改用 `gate/Textures/TentacleTide_v3_Atlas_A/B.png`
 > （+ `TentacleTide_v3_Atlas.json`，生成脚本 `gate/tide_atlas_v3.py`）：v2.1 图集的细长、带珠状边的“叶片”在 5–12 km 外排成一行，
 > 读成地平线上的一排**草**。v3 的剪影来自门的 v4 臂形（粗根、t 0.45 起天鹅颈收细、上 1/3 弯过来向下），一半格子是 3–5 条臂的簇，
 > 底部 7% 羽化。tide shader 升到 **v2.2**（UV6 `TideMist`：每片的根在自己的雾高度里化开）。本目录的 v2.1 图集只对库自己的
 > `TentacleTide.fbx` 有效，不再用于门。
 
-> **门 round 3（2026-10-01，最新）——先读这一段：**
+> **门 round 3（2026-10-01）：**
 > - **shader 只有一份**：`gate/Shaders/Lanbai_TentacleSway.shader`（**v2.5**）和 `gate/Shaders/Lanbai_TentacleTide_v2.shader`（**v2.2**，第 6 轮）。
 >   本目录原来的 `Lanbai_TentacleSway.shader`（v2.1）、`Lanbai_TentacleTide.shader`（v1）和旧的 `GateLayout.json`（v1）都挪进了
 >   `_superseded~/` 并改名为 `.shader.txt` / `_v1.json`；`_v1/` 改名为 `_v1~/`。Unity 会忽略以 `~` 结尾的文件夹，所以把整个

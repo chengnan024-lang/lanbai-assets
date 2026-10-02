@@ -50,7 +50,7 @@ V_G = 2700.0 / (CUE['U9'] - CUE['U6'])          # 59.02 m/s, constant from U6 to
 ENTRY_H = 150.0                                   # bus origin above the cloud top at U9 = 15 % of H(U9) = 1000 m
 CLIMB_T0 = CUE['U9'] - 19.05                      # 160.50: 60 -> 150 m smoothstep; peak 6*90/19.05^2 = 1.49 m/s^2
 EYE_SEATED = np.array([0.55, 1.70, 2.05])         # Unity, bus-relative (hero seat, generic shell, see gate_bus.py)
-EYE_STAND_REAR = np.array([0.0, 1.95, -2.75])     # in the aisle, leaning over the rear bench toward the rear window
+EYE_STAND_REAR = np.array([0.0, 1.95, -3.15])     # round 4: leaning over the rear bench, face at the rear glass (the window fills the view)
 EYE_AISLE = np.array([0.05, 2.0, -1.6])           # standing in the aisle behind the hero seat (U8b)
 
 
@@ -59,7 +59,8 @@ def ss(x):
     return x * x * (3 - 2 * x)
 
 
-BAND_EL = (12.0, 34.0, 5.0)     # round 3 (critique B7.2): full to ~+13, 0.37 at +18, 0.17 at +20, 0.002 at +26, void by +34
+BAND_EL = (6.0, 22.0, 2.0)      # round 4 (AD round 3 item 3): full to ~+7, 0.71 at +10, 0.32 at +13, 0.09 at +16, void by ~+20 (r3: (12, 34, 5))
+BAND_GAIN = 0.80                # round 4: band peak next to the wound L* 33 -> ~27 (HazeNear / HazeFar fills x 0.80)
 S4_RAMP = 30.0                  # bible 3 -> 4: S4 (and the band) rise with a 30 s smoothstep from U6
 
 
@@ -819,17 +820,23 @@ def _along(p0, p1, f):
 
 # ---------------------------------------------------------------------------------------------------- hero arms
 FOG_PILLAR = 0.05         # LanbaiFog density scale (the only true blacks)
+# round 4 (tech M3): the pillars come out of the haze more slowly (U6 + 13.5 .. U7b - 1: ~8 s, the band rising with S4;
+# r3: 6 s). A tower in front of a 0.5 km pillar would block the key frame's right third until U7b (it cannot sink
+# 850 m in 7 s at <= 0.3 deg/s): documented deviation, no pillar tower.
+PILLAR_REVEAL = [(CUE['U6'] + 13.5, 0.0), (CUE['U7b'] - 1.0, 1.0)]
 FOG_HAND = 0.30           # hands: a dark volume in the band (body L* 15-18 against 30-34; critique B1)
-FOG_ENGEL = 0.80          # 'a pale shape leans out of the haze' (body band - 8..10; its hand dark against the glow)
-FOG_BG = 1.0              # background giants: band - 8 (cap 0.92 beyond 1.3 km, x height falloff)
+FOG_ENGEL = 0.40          # round 4 (awe M1): body L* 8-11, darker than the band (0.80 read as a grey girder)
+ENGEL_GRIP_ZF = 0.66
+ENGEL_COIL_R = 40.0
+FOG_BG = 0.45             # round 4 (awe M6): background giants = the clusters' dominant arms, band - 8 (not ghosts)
 FOG_SURGE = 1.0
 FOG_COL = 0.55            # colossus 1
 FOG_C2 = 0.12             # colossus 2: a black notch in the moon's aureole (L* <= 12)
 
 
-def _hero(id_, layer, role, key, P, R_root, note, thick=1.0, lod=0, lods=((40, 210), (24, 120), (12, 48))):
+def _hero(id_, layer, role, key, P, R_root, note, thick=1.0, lod=0, lods=((40, 210), (24, 120), (12, 48)), swell=None):
     rng = np.random.default_rng(zlib.crc32(id_.encode()))
-    root = A4.register(key, P, R_root, float(rng.random()), lods=lods, thick=thick, vofs=float(rng.uniform(0, 1)))
+    root = A4.register(key, P, R_root, float(rng.random()), lods=lods, thick=thick, vofs=float(rng.uniform(0, 1)), swell=swell)
     it = inst(id_, layer, key, root, np.eye(3), 1.0, lod=lod, note=note)
     it['role'] = role
     return it
@@ -840,8 +847,9 @@ def pillar_R_ctrl():
     through the top-right corner (you never see where it ends). (A breach hump in front of it was tried: at this girth
     it read as a black dome / rock, so the pillar breaches in one piece.) After the bus has passed it leans in over the
     road behind it ('close')."""
+    # round 8 (awe r4 M1.3: 'a constant-width trunk'): a slight S-bend (+-20 m) and a faster taper (thick 0.9)
     return [(232, -1018, -160), (248, -1012, -60), (262, -1006, 30),
-            (300, -995, 175), (365, -980, 345), (440, -958, 495), (520, -928, 615), (600, -888, 695),
+            (318, -995, 175), (388, -980, 345), (430, -958, 495), (498, -928, 615), (590, -888, 695),
             (670, -842, 722), (730, -792, 700), (770, -752, 640)]
 
 
@@ -893,12 +901,17 @@ def _finger_path(wrist, grip, bulge_el, spread_az, eye=None):
 # run 6: one finger of each hand is a WHIP that crosses the white and hooks the OPPOSITE lip (bible: 'fingertips
 # interlacing in the lower half of the wound, as if closing it; it cannot be closed'). Left hand -> right lip at
 # zf 0.24, right hand -> left lip at zf 0.36; in front of the lens (y -30), the tip curling down over the far lip.
-CROSS = {-1: dict(zf=0.24, own_zf=0.27, bulge=0.07), +1: dict(zf=0.36, own_zf=0.44, bulge=0.06)}
+# round 4 (awe M5: 'at U8 + 3.5 the two whips touch mid-white and form a W'): two DIAGONALS that cross as an X at ~41 %
+# of H (inside the windscreen at U8 + 3.5), ~10 % of the width left of the axis; the right (bigger) whip in front
+# (y -42), the left behind (y -22)
+CROSS = {-1: dict(zf=0.16, own_zf=0.42, bulge=0.03, y=-22.0), +1: dict(zf=0.24, own_zf=0.38, bulge=0.03, y=-42.0)}
+COIL_R = 7.0          # round 4: coil radius (m) for a 20 m finger root (scaled by R0 / 20)
+HAND_SMOOTH_M = 45.0  # round 4: centreline smoothing of the hand fingers (m)
 
 
 def cross_target(t, side):
     c = CROSS[side]
-    return lip_point(t, c['zf'], -side, out=10.0, y=-30.0)
+    return lip_point(t, c['zf'], -side, out=10.0, y=c.get('y', -30.0))
 
 
 def _cross_path(wrist, side, t=None, eye=None):
@@ -906,7 +919,7 @@ def _cross_path(wrist, side, t=None, eye=None):
     t = T_HERO if t is None else t
     c = CROSS[side]
     H = tear_H(t)
-    own = lip_point(t, c['own_zf'], side, out=-6.0, y=-34.0)
+    own = lip_point(t, c['own_zf'], side, out=-6.0, y=c.get('y', -34.0) - 4.0)
     far = cross_target(t, side)
     mid = 0.5 * (own + far) + np.array([0.0, -4.0, c['bulge'] * H])
     curl1 = far + np.array([-side * 14.0, -2.0, -0.05 * H])
@@ -928,22 +941,28 @@ def hand_ctrl(side):
     the flap's rolled lip and hook into the white (tear_def grips). The fingers stay together (a hand, not a fan of
     fronds). Right = the big hand on the right peel (~700 m); left = the small one on the left curl (~450 m)."""
     g = lambda k: grip_cf(T_HERO, side, k)
-    if side < 0:      # LEFT: small, low
+    # round 4 (awe B2 'no knees / unmirror', AD round 3 item 2): the two hands are now DIFFERENT gestures. The left
+    # REACHES: a low diagonal from under the moon to the left curl, its wrist rounded (45 m smoothing, no apex). The
+    # right is a tall BREAKING WAVE: it leaves the cloud leaning away from the wound, crests in a broad arc (el ~14.5)
+    # and comes down over the right peel. Crests offset ~7 deg (>> 4 % of the frame height). (A breaking wave on BOTH
+    # sides was tried: two hoops straddling the light, the moon hidden: wip/r5/k01.)
+    if side < 0:      # LEFT: small, low: a REACHING diagonal under the moon (the r3 gesture, the wrist rounded)
         axis = [azel_pt(-13.0, -6.0, -380) * np.array([1, 1, 0]) + np.array([0, 0, -70.0]),
-                azel_pt(-11.6, -1.4, -340), azel_pt(-9.4, 2.6, -285), azel_pt(-7.1, 5.9, -230),
-                azel_pt(-5.2, 7.9, -180)]
-        wrist = (-5.2, 7.9, -180.0)
-        f = [(23.0, _finger_path(wrist, g(0), 0.9, -0.35)),
+                azel_pt(-11.6, -1.4, -340), azel_pt(-9.4, 2.6, -285), azel_pt(-7.3, 5.6, -232),
+                azel_pt(-5.6, 7.2, -192)]
+        wrist = (-5.6, 7.2, -192.0)
+        f = [(23.0, _finger_path(wrist, g(0), 0.7, -0.35)),
              (19.0, _cross_path(wrist, -1)),                         # run 6: the whip across the white
-             (19.0, _finger_path(wrist, g(2), 0.6, 0.35))]
+             (19.0, _finger_path(wrist, g(2), 0.5, 0.35))]
     else:             # RIGHT: the big one
-        axis = [azel_pt(21.5, -6.0, -470) * np.array([1, 1, 0]) + np.array([0, 0, -80.0]),
-                azel_pt(19.8, -1.4, -430), azel_pt(16.8, 4.2, -365), azel_pt(13.4, 9.4, -300),
-                azel_pt(10.4, 12.8, -235)]
-        wrist = (10.4, 12.8, -235.0)
-        f = [(34.0, _finger_path(wrist, g(0), 1.0, 0.5)),
+        axis = [azel_pt(22.5, -6.0, -470) * np.array([1, 1, 0]) + np.array([0, 0, -80.0]),
+                azel_pt(23.2, 0.6, -455), azel_pt(22.8, 6.8, -425), azel_pt(20.9, 11.9, -378),
+                azel_pt(17.6, 14.4, -325), azel_pt(13.8, 14.6, -285), azel_pt(10.6, 13.0, -255),
+                azel_pt(8.6, 11.0, -240)]
+        wrist = (8.6, 11.0, -240.0)
+        f = [(34.0, _finger_path(wrist, g(0), 0.4, 0.35)),
              (27.0, _cross_path(wrist, +1)),                         # run 6: the whip across the white
-             (28.0, _finger_path(wrist, g(2), 0.8, -0.5))]
+             (28.0, _finger_path(wrist, g(2), 0.3, -0.35))]
     return axis, f
 
 
@@ -952,21 +971,30 @@ def build_heroes():
     out = []
     # --- gate pillars (standing at activation; revealed from their towers U7 - 2 .. U7b + 6)
     P = A4.curve(A4.hook_end(pillar_R_ctrl(), 30.0, 100.0, (0.3, 0.6, -1.0)))
-    it = _hero('Pillar_R', 'colossus', 'pillar', 'PR', P, 54.0, 'right gate pillar: hump, leans in, arches over the road',
-               thick=1.25)
+    it = _hero('Pillar_R', 'colossus', 'pillar', 'PR', P, 58.0, 'right gate pillar: hump, leans in, arches over the road',
+               thick=0.92)
     it['fog'] = FOG_PILLAR
-    it['reveal'] = [(U7 - 2.0, 0.0), (U7b - 0.5, 1.0)]
+    it['reveal'] = PILLAR_REVEAL
     out.append(it)
     P = A4.curve(A4.hook_end(pillar_L_ctrl(), 24.0, 45.0, (0.5, -0.3, -1.0)))      # resume: no 'J' hook
     it = _hero('Pillar_L', 'colossus', 'pillar', 'PL', P, 36.0, 'left gate pillar: far; only its whip in the key frame',
                thick=1.2)
     it['fog'] = FOG_PILLAR
-    it['reveal'] = [(U7 - 2.0, 0.0), (U7b - 0.5, 1.0)]
+    it['reveal'] = PILLAR_REVEAL
     out.append(it)
     # --- the Engel (bows in U7 - 1 .. U8 by 3 deg about its root)
-    P = A4.curve(A4.hook_end(engel_ctrl(), 22.0, 55.0, (-0.6, -0.3, -0.4)))      # resume: a soft droop, not a '?'
-    it = _hero('Colossus_3', 'colossus', 'engel', 'ENG', P, 104.0, "'der Engel': leans over the wound; its hand hangs "
-               "in front of the lens", thick=1.15)
+    # round 4 (awe M1): the Engel's last quarter no longer hangs over the white as a dark strap: it comes down along
+    # the RIGHT side of the needle and COILS the right lip at 66 % of H, the third and biggest grip (never over the
+    # widest part of the core)
+    ectl = engel_ctrl()[:9]
+    gp = lip_point(T_HERO, ENGEL_GRIP_ZF, +1, out=6.0, y=-28.0)
+    ectl += [np.array([gp[0] + 55.0, -10.0, 760.0]), np.array([gp[0] + 85.0, -24.0, 600.0]),
+             np.array([gp[0] + 80.0, -30.0, gp[2] + 70.0]), np.array([gp[0] + 45.0, -30.0, gp[2] + 25.0]), gp]
+    hem_ax = np.array([float(TD.AX[0]), 0.0, float(TD.AX[2])])
+    P = A4.curve(A4.coil_end(ectl, gp + np.array([3.0, 0.0, 0.0]), hem_ax, ENGEL_COIL_R, turns=1.25, pitch=1.6 * ENGEL_COIL_R, handed=-1),
+                 smooth=9.0)
+    it = _hero('Colossus_3', 'colossus', 'engel', 'ENG', P, 104.0, "'der Engel': leans over the wound; its hand coils "
+               "the right lip at 66 % of H", thick=1.15)
     it['fog'] = FOG_ENGEL
     it['reveal'] = [(U7 - 2.0, 0.0), (U7b - 1.0, 1.0)]
     _hero_to_final(it, np.eye(3), (U7 - 1.0, U8, 3.0, _lean_axis(it['root'], (0.0, 0.0))))
@@ -978,8 +1006,21 @@ def build_heroes():
         Ps = A4.braid(axis, fingers, turns=0.62 if side < 0 else 0.55, phase0=0.4 if side < 0 else 2.1)
         cls = []
         for k, ((R0, _), P) in enumerate(zip(fingers, Ps)):
-            P = A4.curve(A4.hook_end([P[i] for i in np.linspace(0, len(P) - 1, 30 if k == 1 else 26).astype(int)],
-                                     6.0 * R0 / 15.0, 35.0 if k == 1 else 110.0, (-side * 1.0, -0.35, -0.6)), smooth=1.5)
+            # round 4 (awe B2 'no knees'): the whole finger path is smoothed at ~45 m (the wrist split and the lip turn
+            # were 5-20 m radius bends on a ~1 km arm), the ends pinned
+            Lp = float(np.sum(np.linalg.norm(np.diff(P, axis=0), axis=1)))
+            P = A4.resample(A4.smooth_poly(P, HAND_SMOOTH_M / (Lp / (len(P) - 1))), len(P))
+            sub = [P[i] for i in np.linspace(0, len(P) - 1, 30 if k == 1 else 26).astype(int)]
+            if k != 1:
+                sub = sub[:-2] + [sub[-1]]
+            if k == 1:
+                P = A4.curve(A4.hook_end(sub, 6.0 * R0 / 15.0, 35.0, (-side * 1.0, -0.35, -0.6)), smooth=1.5)
+            else:      # round 4: the grip fingers COIL 1.25 turns round the rolled hem (axis = the lip tangent)
+                gp = np.asarray(sub[-1], float)
+                hem_ax = np.array([float(TD.AX[0]), 0.0, float(TD.AX[2])])
+                P = A4.curve(A4.coil_end(sub, gp + np.array([-side * 2.0, 0.0, 0.0]), hem_ax, COIL_R * R0 / 20.0,
+                                         turns=1.25, pitch=1.9 * COIL_R * R0 / 20.0, handed=(1 if k == 0 else -1) * side),
+                             smooth=1.2)
             it = _hero('Hand_%s%d' % (name, k), 'mid', 'hand', 'H%s%d' % (name, k), P, R0,
                        'hand bundle %s, finger %d: hooks the %s' % (name, k, 'left curl' if side < 0 else 'right peel'))
             it['bundle'] = 'Hand_' + name
@@ -1028,6 +1069,58 @@ def _proc_arm(rng, e_cf, L, lean_deg, to_xy=(0.0, 0.0), curl=1.0, hook_scale=1.0
 
 
 SURGE_SEED = 41
+MULT_N = 24
+MULT_N_TOTAL = 150            # (round 4; round 8: the members come from MULT_CLUSTERS)
+MULT_VMAX = 0.60             # round 8 (tech r4 m8): visible own speed <= 0.6 deg/s (r4: 0.95)
+MULT_T0MIN = CUE['U6'] + 2.0  # 135.8: earliest rise start (hidden: reveal 0 until U6 + 14)
+MULT_T1MAX = CUE['U7b']       # all up by U7b
+# round 8 (awe r4 B2 'the multitude is a reed bed and it cost the frame its towers'): FEWER, BIGGER, LAYERED: 5 clusters
+# (3 left, 2 right) standing BETWEEN / BEHIND the giants' cumulus towers, >= 6 deg of clear band between them (>= 35 % of
+# az +-50 free), one dominant (500-650 m) per cluster with a 3:1 height ratio, fog tiers by distance (cap 0.45 / 0.58 /
+# 0.70: body = band -9 / -6 / -3), moon rims on tiers A/B. (az from the U7b eye, sigma deg, members, distance m,
+# dominant height m)
+MULT_CLUSTERS = [(-30.5, 1.8, 8, 4300.0, 620.0), (-19.5, 1.5, 6, 5000.0, 520.0), (-45.0, 2.2, 7, 3500.0, 600.0),
+                 (29.5, 2.0, 8, 3800.0, 650.0), (45.5, 2.0, 7, 3200.0, 560.0)]
+MULT_TIERS = ((3300.0, 0.45), (4300.0, 0.58), (1e9, 0.70))
+# surge crests of the belt: (az deg from the U7b eye, sigma deg, weight, mid distance m)
+MULT_SURGES = [(-42.0, 6.0, 1.0, 3800.0), (-29.0, 4.5, 1.2, 3100.0), (-17.0, 2.5, 0.6, 4500.0),
+               (16.0, 3.0, 0.8, 4200.0), (26.0, 5.0, 1.3, 3300.0), (38.0, 5.0, 1.1, 3700.0), (50.0, 5.0, 0.9, 4400.0)]
+LOOK_FOG = 0.0006          # = gate_scene.LOOK['fog'] (LanbaiFog density per m)
+MULT_CANON = {}
+
+
+def _mult_variants():
+    """register the canonical multitude poses (local frame: leaves the cloud at the origin, leans toward +y).
+    round 8 (awe r4 B2.3 'no crown hook smaller than 8 px'): 'reach' ends in a straight thread (no hook), 'curl' in a
+    REAL curl (radius 0.07 L, 170-230 deg: >= 12 px across at 4 km), 'fall' recoils with a 0.05 L half curl. Every pose
+    also exists MIRRORED (key + 'm', x -> -x: tech r4 M2 'mirror half'; its own instanced mesh in Unity)."""
+    rng = np.random.default_rng(907)
+    specs = [('MU0', 'reach', 46.0), ('MU1', 'reach', 38.0), ('MU2', 'curl', 33.0), ('MU3', 'curl', 27.0),
+             ('MU4', 'fall', 24.0), ('MU5', 'fall', 18.0)]
+    keys = []
+    for key, fam, lean in specs:
+        L = 1000.0
+        if fam == 'fall':        # rises leaning toward the wound, then the upper third recoils back and down
+            sl = math.tan(math.radians(lean))
+            pts2 = [(-0.08 * sl, -0.13), (0.0, 0.0), (0.10 * sl + 0.03, 0.26), (0.20 * sl + 0.07, 0.46),
+                    (0.24 * sl + 0.07, 0.60), (0.20 * sl + 0.02, 0.70), (0.12 * sl - 0.04, 0.73), (0.05 * sl - 0.08, 0.69),
+                    (0.02 * sl - 0.10, 0.62)]
+            w = rng.uniform(-0.06, 0.06) * L
+            ctrl = [np.array([w * math.sin(math.pi * i / 8), hh * L, zz * L]) for i, (hh, zz) in enumerate(pts2)]
+            ctrl = A4.hook_end(ctrl, 0.05 * L, rng.uniform(80, 110), (0.0, -0.3, -1.0), n=6)
+        elif fam == 'reach':     # a straight thread-thin whip, slight droop, no hook
+            ctrl = _proc_arm(rng, (0.0, 0.0, 0.0), L, lean, to_xy=(0.0, 5000.0), curl=0.35, hook_scale=0.05)
+        else:                    # a real curl at the crown
+            ctrl = _proc_arm(rng, (0.0, 0.0, 0.0), L, lean, to_xy=(0.0, 5000.0), curl=1.2, hook_scale=0.0)
+            ctrl = A4.hook_end(ctrl[:-4], 0.07 * L, rng.uniform(170, 230), (0.0, 0.2, -1.0), n=8, tighten=0.45)
+        P = A4.curve(ctrl)
+        for mk, Pm in ((key, P), (key + 'm', P * np.array([-1.0, 1.0, 1.0]))):
+            A4.register(mk, Pm, L / 21.0, float(rng.random()), lods=((16, 64), (10, 36), (8, 20)), thick=1.05)
+            MULT_CANON[mk] = (Pm[0].copy(), float(Pm[:, 2].max()))
+            keys.append(mk)
+    return keys
+
+
 BACKGROUND = [   # (az from the U7b eye, distance m, length m): bodies inside the band (crest el <= 13 deg)
     (-24.0, 3600.0, 760.0), (-36.0, 3300.0, 820.0), (-50.0, 3800.0, 900.0),
     (21.0, 4100.0, 860.0), (38.0, 3400.0, 780.0), (52.0, 3900.0, 920.0),
@@ -1055,8 +1148,10 @@ def build_others():
                lods=((28, 140), (18, 80), (10, 36)))
     it['fog'] = FOG_COL
     h = float(world_centreline(it, T_HERO, 4)[0][:, 2].max())
-    fit_rise(it, U6 + 10.0, 0.3, h + 40.0, prof_='beta', ease=3.5)
-    it['reveal'] = [(U6 + 10.0, 0.0), (U6 + 16.0, 1.0)]      # tech B1
+    # round 4 (tech M1): the crown sits AT the cloud top at U6 + 10 and breaks it at once (trap, <= 0.3 deg/s): ~60 m up
+    # when the Rilke line fades (U6 + 14), ~300 m by U7b, done by U8 (r3: a beta ease left it under the cloud until U7b)
+    fit_rise(it, U6 + 10.0, 0.30, h + 5.0, prof_='trap', ease=0.1, t1_max=CUE['U8'])
+    it['reveal'] = [(U6 + 9.0, 0.0), (U6 + 13.0, 1.0)]      # tech B1
     out.append(it)
     # --- colossus 2 (takes the moon on '...abweisen'): custom, its round side toward the camera
     M = e + 2520.0 * L_MOON
@@ -1065,7 +1160,8 @@ def build_others():
             azel_pt(-7.8, 10.9, 935), azel_pt(-7.0, 9.6, 930)]
     # resume: the crown passes over the disc as a smooth shoulder and the whip runs on toward the wound, drooping
     # (the hooked 'cobra head' read as a '?' / shepherd's crook)
-    P = A4.curve(A4.hook_end(ctrl, 14.0, 40.0, (0.1, -0.2, -1.0)))
+    # round 8 (awe r4 M1.4): the tip ends in a slow curl (>= 25 px across in the key), not a horn point
+    P = A4.curve(A4.hook_end(ctrl, 30.0, 190.0, (0.1, -0.2, -1.0), n=8, tighten=0.45))
     it = _hero('Colossus_2', 'colossus', 'moon', 'C2', P, 55.0, "takes the moon on '...abweisen'", thick=1.1)
     it['fog'] = FOG_C2
     ax_bow = unit(np.cross(unit(np.array([L_MOON[0], L_MOON[1], 0.0])), np.array([0, 0, 1.0])))
@@ -1079,25 +1175,85 @@ def build_others():
     it['reveal'] = [(U6 + 8.0, 0.0), (U6 + 14.0, 1.0)]       # tech B1: C2 out of the haze U6 + 8 .. + 14
     track_moon(it, U7b + 1.0, CUE['U9'], dt=1.0, vmax=0.30, u_sec=0.36)   # run 6: 0.35 -> 0.30 (whip 0.57 deg/s near U9)
     out.append(it)
-    # --- the surge ring: 22 small arms at 2.5-4 km in the band, az +-8..+-55, leaning toward the wound; they break the
-    # deck crowns first from U7 (bible: 12 -> 30 in 12 s), <= 0.5 deg/s
-    azs = [float(a + rng.uniform(-1.2, 1.2)) for a in np.linspace(-56.0, -18.0, 10)] + \
-          [float(a + rng.uniform(-1.2, 1.2)) for a in np.linspace(16.0, 56.0, 12)]      # resume: clear of the foot
-    for i, az in enumerate(sorted(azs)):
-        d = float(rng.uniform(2500, 4000))
-        L = float(rng.uniform(200, 350))
-        ep = at_az(az, d, 0.0)
-        P = A4.curve(_proc_arm(rng, ep, L, rng.uniform(22, 40), curl=0.7, hook_scale=0.3))    # run 6: reach, no fern hook
-        it = _hero('Surge_%02d' % i, 'surge', 'surge', 'SG%02d' % i, P, L / 18.0, 'surge ring', lod=1,
-                   lods=((20, 90), (12, 48), (8, 24)))
-        it['fog'] = FOG_SURGE
-        h = float(world_centreline(it, T_HERO, 4)[0][:, 2].max())
-        t0 = U7 - 6.0 + 1.5 * rng.random() + 2.5 * (1.0 - abs(az) / 56.0)     # outer first; crowns break from U7 - 6
-        fit_rise(it, t0, 0.5, h + 30.0, prof_='trap', ease=0.25)
-        # resume: the surge is a wave: it recedes into the haze before U8 (from 1.5-3 km at U8 the drooping crowns read
-        # as weeds at the wound's foot)
-        it['reveal'] = [(U7 - 30.0, 1.0), (CUE['U8'] - 5.0, 1.0), (CUE['U8'] + 1.0, 0.0)]
-        out.append(it)
+    # --- round 4 (awe B4 / tech M6, bible 'hundreds of black arms surging toward it'): THE MULTITUDE replaces the
+    # 22-arm surge ring and the hero-window tide: around each background giant (the cluster's dominant arm, which keeps
+    # its cloud tower) MULT_N instanced low-poly arms (6 canonical poses MU0..MU5: reaching / half-curled / falling
+    # back), 150-420 m tall, spread +-2.6 deg x +-700 m, ALL leaning 25-50 deg toward the wound (yaw per instance),
+    # fogged in three tiers (f 0.64 / 0.72 / 0.80: body = band - 6..-10 L*). They surge up from U7 - 8 crown first in a
+    # wave rolling inward (outer and farther first, <= 0.3 deg/s) and recede into the haze before U8 like the surge did.
+    # Unity: ONE GPU-instanced draw per pose mesh (GateMultitude_v1.fbx, LOD2 ~320-600 tris), per-instance data in the
+    # JSON 'multitude' block (_Reveal, fog tier, phase).
+    keys = _mult_variants()
+    base = [k for k in keys if not k.endswith('m')]
+    j = 0
+    U8f = CUE['U8'] + 3.5
+    e8 = eye_cf(U8f)
+    core8 = tear_core_cf(U8f)
+    for ci, (az0, sig, nm, dmid, hdom) in enumerate(MULT_CLUSTERS):
+        azs = np.sort(az0 + sig * np.linspace(-1.0, 1.0, nm) + rng.uniform(-0.35, 0.35, nm) * sig / max(nm - 1, 1))
+        dom = int(rng.integers(nm // 3, nm - nm // 3))
+        for m_ in range(nm):
+            az_ = float(azs[m_])
+            de0 = float(np.clip(dmid + rng.uniform(-350.0, 350.0) + (0.0 if m_ == dom else rng.uniform(0.0, 500.0)), 2600.0, 5600.0))
+            E = at_az(az_, de0, 0.0)
+            if m_ == dom:
+                fam = 'reach' if ci % 2 == 0 else 'curl'
+                hgt = hdom * rng.uniform(0.95, 1.05)
+            else:
+                fam = rng.choice(['reach', 'curl', 'fall'], p=[0.50, 0.32, 0.18])
+                hgt = hdom * rng.uniform(0.30, 0.68)
+            key = {'reach': base[0:2], 'curl': base[2:4], 'fall': base[4:6]}[fam][int(rng.integers(0, 2))]
+            if rng.random() < 0.5:
+                key = key + 'm'
+            P0, zmax = MULT_CANON[key]
+            sc = hgt / zmax
+            hd = unit(np.array([-E[0], -E[1], 0.0]))
+            th = math.atan2(-hd[0], hd[1]) + math.radians(rng.uniform(-22.0, 22.0))
+            R = np.array([[math.cos(th), -math.sin(th), 0.0], [math.sin(th), math.cos(th), 0.0], [0.0, 0.0, 1.0]])
+            root = E + sc * (R @ P0)
+            de = float(np.linalg.norm(E[:2] - e[:2]))
+            dist_tear = float(np.linalg.norm(E[:2]))
+            # tech r4 M2: the surge ROLLS inward: phase = frac(distance to the wound / 600 m)
+            it = inst('Mult_%03d' % j, 'surge', key, root, R, sc, lod=2, phase=(dist_tear / 600.0) % 1.0,
+                      note='multitude cluster %d (%s%s)' % (ci, fam, ', dominant' if m_ == dom else ''))
+            it['role'] = 'surge'
+            it['cluster'] = ci
+            it['dominant'] = bool(m_ == dom)
+            it['fog_tier'] = next(c for (dm, c) in MULT_TIERS if de < dm)
+            # round 8 (tech r4 m7 / m8): rises crown first, mostly HIDDEN (reveal 0 until U6 + 14); the dominants are up
+            # by U7b - 1, the smaller ones still surge through U7 .. U7b + 6 (mid-surge at the hero moment), <= 0.6 deg/s
+            ang = math.degrees(math.atan2(hgt, de))
+            t1 = (CUE['U7b'] - 1.0 - float(rng.uniform(0.0, 3.0))) if m_ == dom else float(CUE['U7'] + rng.uniform(1.0, 10.0))
+            T = float(np.clip(ang / 0.45, 10.0, 22.0))
+            a = dict(type='rise', t0=float(max(MULT_T0MIN, t1 - T)), t1=float(t1), depth=float(hgt + 30.0), prof='trap', ease=0.2)
+            it['anim'].insert(0, a)
+            for _k in range(10):
+                v, _, _ = own_speed(it, a['t0'] - 0.5, a['t1'] + 0.5, dt=0.25, step=8)
+                if v <= MULT_VMAX:
+                    break
+                Tn = (a['t1'] - a['t0']) * v / MULT_VMAX * 1.03
+                a['t0'] = max(MULT_T0MIN, a['t1'] - Tn)
+                if a['t1'] - a['t0'] < Tn - 0.1:          # the start is pinned: finish later
+                    a['t1'] = a['t0'] + Tn
+            it['rise_vmax'] = round(float(v), 2)
+            # tech r4 M2: hold to U9 - 1 unless it would stand within 6 deg of the white in the U8 forward view
+            W8, _ = world_centreline(it, U8f, 10)
+            vis = W8[:, 2] > 0
+            near_white = False
+            if vis.any():
+                az8, el8 = azel_of(W8[vis] - e8)
+                aw, ew = azel_of(core8[None] - e8)
+                hw8 = math.degrees(math.atan2(tear_half_width(U8f), float(np.linalg.norm(core8 - e8))))
+                H8 = tear_H(U8f)
+                top8 = math.degrees(math.atan2(H8 - e8[2], float(np.linalg.norm(core8[:2] - e8[:2]))))
+                inx = np.abs(az8 - aw[0]) < hw8 + 6.0
+                iny = el8 < top8 + 6.0
+                near_white = bool((inx & iny).any())
+            it['reveal'] = [(CUE['U6'] + 14.0, 0.0), (CUE['U6'] + 18.0, 1.0)] + (
+                [(CUE['U8'] - 4.0, 1.0), (CUE['U8'] + 1.0, 0.0)] if near_white else [(CUE['U9'] - 2.0, 1.0), (CUE['U9'] - 1.0, 0.0)])
+            it['near_white_U8'] = near_white
+            out.append(it)
+            j += 1
     return out
 
 
@@ -1204,38 +1360,93 @@ def near_clearance(it, t0=None, t1=None, step=0.25):
 
 # ---------------------------------------------------------------------------------------------------- rear (Orpheus)
 def build_rear(seed=23):
-    """The Orpheus shot (round 2): two groups rooted 1.0-1.6 km behind the bus's U9 position, 300-520 m either side
-    of the road, rise once the bus is >= 600 m past them (>= 25 s, <= 1 deg/s) and lean in over the road so their
-    whips cross the road axis 400-700 m behind the bus (el +8..+15 from the rear window): a hand closing."""
-    rng = np.random.default_rng(seed)
-    out = []
-    t_r = CUE['U9'] - 2.0
+    """round 4 (AD round 3 item 5: 'arms behind read as small crab legs in fog -> 2-3 COLOSSAL arms crossing behind the
+    bus like a closing portcullis, rim light only'). Designed from the rear eye at U9 - 2 (CF (0, -121, 149), looking
+    -y; screen-left = +x): ARCH_A rises screen-left-low -> screen-right-high (crown out of the frame top), ARCH_B crosses
+    it right -> left at ~60 % height, and the HAND: a braided bundle arching over the road above the frame whose 4
+    fingers hang DOWN into the window, tips at el 5-10 deg. Roots 0.95-1.15 km behind the bus at U9 - 2 (Pillar_R
+    class, root radius 52-62 m: 7-9 % of the frame width each). They stand from activation, hidden (_Reveal 0), and come
+    out of the haze over U9 - 8 .. U9 - 3, when they are behind the bus (rear window only), leaning 5 deg in over the
+    road over U9 - 10 .. U9 (<= 0.5 deg/s)."""
+    U9 = CUE['U9']
+    t_r = U9 - 2.0
     e = eye_cf(t_r, EYE_STAND_REAR)
-    spec = [(-1, -1150.0, 'G', 760.0), (1, -1220.0, 'F', 820.0), (-1, -1400.0, 'F', 640.0), (1, -1480.0, 'G', 700.0),
-            (-1, -1650.0, 'C', 780.0), (1, -1700.0, 'F', 600.0), (-1, -1900.0, 'G', 720.0), (1, -1950.0, 'C', 760.0)]
-    for i, (side, y, key, L_) in enumerate(spec):
-        x = side * rng.uniform(300.0, 520.0)
-        sc = L_ / BL.VARIANTS[key]['L']
-        root = np.array([x, y + rng.uniform(-40, 40), -rng.uniform(40.0, 70.0)])
-        # whip over the road axis, 400-700 m behind the bus at t_r, el 8-15 from the rear eye
-        yb = e[1] - rng.uniform(420.0, 700.0)
-        dist = e[1] - yb
-        zt = e[2] + dist * math.tan(math.radians(rng.uniform(8.0, 15.0)))
-        tgt = np.array([-side * rng.uniform(0.0, 60.0), yb, zt])
-        want = dict(floor=-60.0, tip3=(tgt, 2.0), tipdir=(tgt + np.array([-side * 200.0, 0.0, -60.0]), 1.0),
-                    bend=2.0, profile=1.0)
-        R, s_ = solve_pose(key, root, sc, e, want, alphas=range(10, 70, 5), betas=range(-180, 180, 15),
-                           gammas=range(0, 360, 15), step=14)
-        R, s_ = refine_pose(key, root, sc, e, want, R)
-        it = inst('Rear_%02d' % i, 'rear', key, root, R, sc, lod=0, girth=rng.uniform(1.5, 1.7))
-        it['role'] = 'rear'
-        t_pass = CUE['U9'] - (-y) / V_G
-        # round 3: no rise (a 700 m arm cannot rise in the ~20 s between the bus passing it and U9 at <= 1 deg/s, so
-        # at the rear-window moment they were still under the cloud). They STAND from activation, hidden (_Reveal 0,
-        # renderer off) while they are still ahead of / beside the bus, and come out of the haze only once the bus is
-        # 470-940 m past them (t_pass + 8 .. + 16 s; their whips reach forward over the road): out of the forward view.
-        it['reveal'] = [(t_pass + 8.0, 0.0), (t_pass + 16.0, 1.0)]     # whip included: out of the forward view
+    yb = e[1]
+    out = []
+    # ARCH_A: root screen-left (x +), rises and crosses to screen-right high
+    # round 8 (awe r4 M4: 'a horn / tusk'): an S-bend low down and a muscular swell at 30-40 % of its length
+    ctl_a = [np.array([430.0, yb - 1150.0, -170.0]), np.array([420.0, yb - 1140.0, 0.0]), np.array([395.0, yb - 1110.0, 210.0]),
+             np.array([300.0, yb - 1070.0, 400.0]), np.array([90.0, yb - 1030.0, 560.0]), np.array([-120.0, yb - 1000.0, 650.0]),
+             np.array([-300.0, yb - 980.0, 700.0]), np.array([-460.0, yb - 960.0, 690.0])]
+    # ARCH_B: root screen-right (x -), crosses right -> left at ~60 % height, the whip drooping on the left
+    ctl_b = [np.array([-470.0, yb - 1080.0, -170.0]), np.array([-460.0, yb - 1075.0, 0.0]), np.array([-400.0, yb - 1050.0, 190.0]),
+             np.array([-260.0, yb - 1010.0, 330.0]), np.array([-60.0, yb - 970.0, 395.0]), np.array([150.0, yb - 950.0, 400.0]),
+             np.array([330.0, yb - 940.0, 345.0]), np.array([440.0, yb - 935.0, 270.0])]
+    for key, nm, ctl, R0, dirn, sw in (('RA', 'Rear_ArchA', ctl_a, 62.0, (-1.0, 0.2, -0.6), (0.34, 0.24, 0.10)),
+                                       ('RB', 'Rear_ArchB', ctl_b, 52.0, (0.6, 0.2, -1.0), (0.40, 0.18, 0.12))):
+        P = A4.curve(A4.hook_end(ctl, 34.0, 150.0, dirn, n=7, tighten=0.45))     # the crown ends in a curl, not a point
+        it = _hero(nm, 'rear', 'rear', key, P, R0, 'rear portcullis: a colossal arm crossing behind the bus', thick=1.2, swell=sw)
         out.append(it)
+    # the HAND: forearm from far screen-right, over the road above the frame, 4 fingers hanging down (el 5-10 at the tips)
+    axis = [np.array([-700.0, yb - 1250.0, -170.0]), np.array([-680.0, yb - 1230.0, 200.0]), np.array([-560.0, yb - 1180.0, 620.0]),
+            np.array([-360.0, yb - 1120.0, 900.0]), np.array([-120.0, yb - 1080.0, 980.0])]
+    # round 8 (awe r4 M4 / tech M3: 'four identical, evenly spaced J-hooks = coat hooks'): FIVE fingers, lengths
+    # 1.0 / 0.85 / 0.7 / 0.95 / 0.6, roots spaced irregularly (+-35 %), converging on a point below the frame like a
+    # closing hand; every tip different and in its own plane: a straight thread, a half curl (opposite handedness,
+    # rotated 60 deg), a fork (+ a short branch finger), a slight hook, a frayed drop.
+    # (x at the knuckles, tip el deg, R0 m, length factor, tip kind)
+    FING = ((-205.0, 3.0, 96.0, 1.00, 'thread'), (-85.0, 5.0, 108.0, 0.85, 'curl'), (5.0, 7.5, 92.0, 0.70, 'fork'),
+            (120.0, 4.0, 100.0, 0.95, 'hook'), (255.0, 9.5, 78.0, 0.60, 'drop'))
+    fingers = []
+    conv_x = 20.0                       # the hand closes on x ~ 20 m below the frame
+    for k, (fx, tip_el, R0, lf, kind) in enumerate(FING):
+        d = 1050.0 + 25.0 * k
+        zt = e[2] + d * math.tan(math.radians(tip_el))
+        z_mid = 940.0 - (940.0 - zt) * 0.55
+        tx = fx + (conv_x - fx) * 0.22 * lf
+        pts = [np.array([fx * 0.35 - 60.0, yb - 1070.0, 940.0]), np.array([fx * 0.8, yb - d + 10.0, 780.0]),
+               np.array([fx * 0.97, yb - d, z_mid]), np.array([0.5 * (fx + tx), yb - d + 4.0, 0.5 * (z_mid + zt)]), np.array([tx, yb - d + 8.0, zt])]
+        fingers.append((R0, pts, kind))
+    Ps = A4.braid(axis, [(R0, pts) for (R0, pts, _k) in fingers], turns=0.5, phase0=0.7)
+    for k, ((R0, _, kind), P) in enumerate(zip(fingers, Ps)):
+        Lp = float(np.sum(np.linalg.norm(np.diff(P, axis=0), axis=1)))
+        P = A4.resample(A4.smooth_poly(P, 130.0 / (Lp / (len(P) - 1))), len(P))
+        sub = [P[i] for i in np.linspace(0, len(P) - 1, 26).astype(int)]
+        if kind == 'curl':          # round 9: a HALF curl to screen-left IN THE PICTURE PLANE (was in depth: edge-on = a spike)
+            P = A4.curve(A4.hook_end(sub, 0.5 * R0, 120.0, (1.0, 0.0, 0.45), n=7, tighten=0.35), smooth=1.5)
+        elif kind == 'hook':
+            # round 9 (the rear final: the hanging fingers read as FANGS / icicles: tapered spikes with 22-40 m hooks
+            # at ~1 km): the tip APPENDED as an S-WHIP in the picture plane (the rear eye looks -y); full length kept
+            c_ = A4.hook_end(sub, 70.0, 50.0, (-1.0, 0.0, 0.1), n=4, tighten=0.2)
+            P = A4.curve(A4.hook_end(c_, 32.0, 120.0, (1.0, 0.0, 0.35), n=6, tighten=0.45), smooth=1.5)
+        elif kind == 'drop':        # round 9: a real CURL facing the eye (230 deg, radius ~2.5 x the local diameter)
+            P = A4.curve(A4.hook_end(sub, 0.36 * R0, 230.0, (1.0, 0.0, 0.25), n=10, tighten=0.45), smooth=1.5)
+        elif kind == 'thread':      # round 9: an S-WHIP running out to a thread (no curl), in the picture plane
+            c_ = A4.hook_end(sub, 110.0, 35.0, (-1.0, 0.0, 0.0), n=4, tighten=0.1)
+            P = A4.curve(A4.hook_end(c_, 80.0, 60.0, (1.0, 0.0, 0.2), n=5, tighten=0.2), smooth=1.5)
+        else:                       # 'fork': round 9: a gentle bend to screen-right, the branch leaves at 60 %
+            P = A4.curve(A4.hook_end(sub, 90.0, 45.0, (-1.0, 0.0, 0.15), n=4, tighten=0.2), smooth=1.5)
+        it = _hero('Rear_Hand%d' % k, 'rear', 'rear', 'RH%d' % k, P, R0, 'rear portcullis hand, finger %d (%s tip)' % (k, kind),
+                   thick=1.8)
+        it['bundle'] = 'Rear_Hand'
+        out.append(it)
+        if kind == 'fork':          # the fork: a branch leaving the finger at 60 % of its length (round 9: was 80 %, 68 px)
+            j = int(0.60 * (len(P) - 1))
+            p0 = P[j]
+            tg = A4.frames(P)['T'][j] if 'T' in A4.frames(P) else (P[j + 1] - P[j])
+            tg = tg / np.linalg.norm(tg)
+            side = unit(np.cross(tg, np.array([0.0, 1.0, 0.0])))
+            br = [p0 - tg * 30.0, p0, p0 + tg * 70.0 + side * 45.0, p0 + tg * 150.0 + side * 110.0 + np.array([0, 0, -20.0])]
+            Pb = A4.curve(br, smooth=1.0)
+            rb = float(R0 * A4.rad_key('RH%d' % k, np.array([0.80]))[0]) * 0.75
+            itb = _hero('Rear_Hand%dF' % k, 'rear', 'rear', 'RH%dF' % k, Pb, rb, 'rear hand, the fork of finger %d' % k, thick=0.9)
+            itb['bundle'] = 'Rear_Hand'
+            out.append(itb)
+    for it in out:
+        it['reveal'] = [(U9 - 8.0, 0.0), (U9 - 3.0, 1.0)]
+        it['fog'] = 0.35          # round 8 (tech r4 M3): bodies at or below the void, rim light only
+        ax = unit(np.cross(np.array([0.0, 1.0, 0.0]), np.array([0.0, 0.0, 1.0])))     # lean about the x axis: in over the road
+        _hero_to_final(it, np.eye(3), (U9 - 14.0, U9 + 2.0, -5.0, ax))     # <= 0.47 deg/s peak
     return out
 
 
@@ -1370,7 +1581,7 @@ def build_tide(cells=None, cfg=TIDE):
     return out
 
 
-TIDE_REVEAL = [(CUE['U8'] - 5.0, 1.0), (CUE['U8'] + 1.0, 0.0)]
+TIDE_REVEAL = [(CUE['U7b'] + 2.0, 1.0), (CUE['U8'] - 2.0, 0.0)]     # round 4: recedes earlier (the multitude holds the hero window; FSE)
 
 
 def tide_reveal(t):
@@ -1398,8 +1609,9 @@ def build_shafts(ring=None, seed=17):
     S = tear_H(t) / TD.H
     e = E_HERO
     beams = [  # side, lens height frac, end az, end el, half-width (m at the lips), gain
-        (-1, 0.38, -13.5, 17.0, 34.0, 1.0),
-        (1, 0.44, 13.0, 21.0, 30.0, 0.6),
+        # round 4 (AD round 3 item 3): LOW and LATERAL through the arm gaps, below el +12 (never up into the void)
+        (-1, 0.30, -24.0, 7.5, 30.0, 1.0),
+        (1, 0.36, 22.0, 9.0, 26.0, 0.6),
     ]
     out = []
     for i, (side, zf, az_e, el_e, hw, gain) in enumerate(beams):
@@ -1414,15 +1626,19 @@ def build_shafts(ring=None, seed=17):
                         kit_space=True, gain=float(gain), end_azel=(az_e, el_e), widen=3.2))
     wedges = []
     rng = np.random.default_rng(seed)
-    for name, caz, cd in (('Hand_L', -7.5, 1130.0), ('Hand_R', 10.0, 1180.0)):
-        side = -1.0 if caz < 0 else 1.0
-        el0 = 5.0
-        p0 = at_az(caz, cd + 80.0, 0.0)
-        p0[2] = e[2] + (cd + 80.0) * math.tan(math.radians(el0))
-        E = e + 700.0 * dir_azel(caz * 1.9 + side * 3.0, el0 + 5.0)
+    # round 8 (awe r4 B3.4 'shadows INSIDE the luminous fog'): 4 wedges radiating from the wound behind the arms that
+    # block it (Hand_L, Hand_R's forearm and its low finger, the Engel's hand), alpha 0.32-0.42 (-6..-10 L* in the band),
+    # soft edges ~1.5 deg. (name, start az, start el, start distance from the U7b eye, end az, end el, half width m, alpha)
+    for name, caz, el0, cd, eaz, eel, hw_, al_ in (('Hand_L', -7.5, 5.0, 1210.0, -17.0, 9.5, 80.0, 0.40),
+                                                   ('Hand_R', 10.0, 5.5, 1260.0, 23.0, 10.5, 85.0, 0.36),
+                                                   ('Hand_R2', 5.0, 2.0, 1300.0, 12.0, 2.5, 60.0, 0.30),
+                                                   ('Engel', 4.5, 11.0, 1350.0, 15.0, 15.5, 70.0, 0.32)):
+        p0 = at_az(caz, cd, 0.0)
+        p0[2] = e[2] + cd * math.tan(math.radians(el0))
+        E = e + 700.0 * dir_azel(eaz, eel)
         ax = unit(E - p0)
-        wedges.append(dict(id='Wedge_%s' % name, start=p0, axis=ax, half_width=80.0, length=900.0,
-                           alpha=float(rng.uniform(0.15, 0.22)), widen=2.5))
+        wedges.append(dict(id='Wedge_%s' % name, start=p0, axis=ax, half_width=hw_, length=900.0,
+                           alpha=float(al_ * rng.uniform(0.95, 1.05)), widen=2.5))
     return out, wedges
 
 
@@ -1504,9 +1720,10 @@ def tower_specs(layout):
         out.append(dict(id='Tower_' + it['id'], card=card, loc=loc, width=float(w), height=float(h), opacity=0.92,
                         mirror=bool(r[0] < e[0] + 400.0), role='tower', hides=it['id'],
                         sag=[[t_rev, 1.0], [t_rev + 25.0, 0.72]],
-                        # tech M11: the towers have done their work once the giants stand; they thin and are gone by
-                        # U8 - 1 (U8 / U8 + 7 overdraw budget)
-                        alpha=[[t_rev, 1.0], [max(t_rev + 6.0, CUE['U7b'] + 4.0), 0.8], [CUE['U8'] - 1.0, 0.0]]))
+                        # round 4 (tech M3): the towers SINK into the sea (0.75 x their height over 25 s, <= 0.3 deg/s)
+                        # once the giants stand, instead of vanishing in 6 s; the last 2 s (all under the cloud line) alpha -> 0
+                        sink=[[t_rev + 6.0, 0.0], [t_rev + 31.0, -0.75 * h]],
+                        alpha=[[t_rev + 29.0, 1.0], [t_rev + 31.0, 0.0]]))
     return out
 
 
@@ -1547,7 +1764,58 @@ if __name__ == '__main__':
 # Tear_CloudLanes_1024.png multiplied into Tear_CloudGlow; same CF rectangle LANES_RECT) and a foot CREVASSE: the
 # tear runs on into the cloud toward the bus, 700 m long, its floor glowing #C0B9E4.
 LANES_RECT = (-2000.0, 2000.0, -2400.0, 1600.0)     # x0, x1, y0, y1 (CF m, tear foot = origin)
-CREVASSE = dict(length=240.0, w0_frac=0.32, wander=8.0)   # run 6: 700 m read as a crack / river drawn to the camera; now the foot's own split
+# round 4 (AD round 3 item 1 'foot'): billows standing in front of the wound's foot, BACKLIT by it (thin edges glow
+# lavender-white, dense cores mid-grey-violet), so the white sinks INTO lit cloud instead of standing on the horizon.
+# (card, x as a fraction of the foot half width (+ right), y m toward the bus (-), width m, height showing above the
+# cloud top m, mirror) -- all x S (tear_H / 1000). Unity: children of Tear_Root, Lanbai/Tear Part=FootCloud (README).
+# round 4 (awe B2 'scale device'): a thin lit cloud SCARF (a stratus wisp, L* 30-40, 20-40 m thick) wrapped across a
+# body at 20-35 % of its height: weather round a body says 'mountain'. (instance, height fraction, card width m,
+# opacity, mirror). The wisp's cloud band is ~0.15 x the card width thick (Cloud_Wisp_moon: v 0.36 .. 0.64 of h = w/2).
+SCARVES = [('Hand_L0', 0.45, 260.0, 0.8, False), ('Hand_R0', 0.42, 340.0, 0.8, True), ('Pillar_R', 0.25, 420.0, 0.6, False)]
+
+
+def scarf_specs(lay, t, cam_pos, scarves=None):
+    """the scarves at time t: a camera-facing wisp centred on the body's centreline at the height fraction, pushed
+    toward the camera by the body radius + 12 m (in front of the body, wrapping it)."""
+    out = []
+    byid = {it['id']: it for it in lay}
+    for (iid, hf, w, op, mir) in (SCARVES if scarves is None else scarves):
+        it = byid.get(iid)
+        if it is None:
+            continue
+        W, u = world_centreline(it, t, 4)
+        top = float(W[:, 2].max())
+        zs = hf * top
+        k = int(np.argmax(W[:, 2] >= zs))
+        p = W[k].copy()
+        d = np.asarray(cam_pos, float) - p
+        d[2] = 0.0
+        d /= max(np.linalg.norm(d), 1e-6)
+        rad = float(BL.VARIANTS[it['variant']]['R']) * it['scale'] * it.get('girth', 1.0)
+        loc = p + d * (rad + 12.0)
+        h = w * 0.5
+        loc[2] = zs - (0.50 - 0.3613) * h          # the wisp's band (v 0.36 .. 0.64) centred on zs
+        out.append(dict(id='Scarf_' + iid, card='Cloud_Wisp_moon', loc=loc, width=w, opacity=op, mirror=mir,
+                        parent=iid, height_fraction=hf))
+    return out
+
+
+FOOT_CLOUDS = TD.FOOT_CLOUDS      # round 4: single source in tear_def (the kit ships them)
+# round 4 (FSE, bible 1.9): kit parts that leave before / during the U8 .. U9 overdraw peak (render = Unity keys)
+FOOT_CLOUD_SINK = [(CUE['U8'] - 2.0, 0.0), (CUE['U8'] + 3.0, 0.65)]     # round 8 (tech r4 B1): sink to 0.35 of the showing height and STAY to U9 - 1 (they hide the lens/cloud junction)     # round 4: gone by U8 + 3 (U8fwd showed white crumbs)       # fraction of each card's showing height
+CLOUDGLOW_ADD = [(CUE['U8'] - 4.0, 1.0), (CUE['U8'] - 0.5, 0.0)]        # additive CloudGlow pass (the multiply pass stays); round 8: off before U8 (overdraw: its renderer goes off at 0)
+SKYFOLDS_FADE = [(CUE['U6'] + 13.5, 0.15), (CUE['U7'], 1.0), (CUE['U8'] + 2.0, 1.0), (CUE['U8'] + 6.0, 0.0)]   # round 8: the creases come with the GRIPS (at U6 there are no hands yet: alone they read as whiskers)
+LANE_FADE = [(CUE['U8'] - 2.0, 1.0), (CUE['U8'] + 2.0, 0.45)]      # round 8: the light lane dims with the pool (U8 APL)
+MULT_CAP_K = 0.86            # round 8b: the multitude's fog caps x this (tiers 0.45 / 0.58 / 0.70 -> 0.39 / 0.50 / 0.60): the clusters read at 640 px (render: LOOK mult_cap; JSON: _FogCapI)
+LANE_HALF_K = 0.10            # round 8 (overdraw): Udon scales Tear_LightLane's localScale.x so its half width = 0.10 x D (eye -> foot), clamp [0.15, 1] x 420 kit m
+POOL_FADE = [(CUE['U8'] - 2.0, 1.0), (CUE['U8'] + 2.0, 0.4)]      # round 4 (M5): Tear_CloudGlow_Lit _Intensity and _FootGlow x this
+
+
+def key_at(keys, t):
+    return float(np.interp(t, [k[0] for k in keys], [k[1] for k in keys]))
+
+
+CREVASSE = dict(length=230.0, w0_frac=0.20, wander=4.0)   # round 8: the short CANYON floor of the foot (awe r4 B1.1), x S   # round 4: the seam is OFF in the look (crevasse 0): any thin line on the deck read as a crack / lightning   # run 6: 700 m read as a crack / river drawn to the camera; now the foot's own split
 
 
 def lane_mask(layout, t=None, n=1024):

@@ -1,0 +1,659 @@
+{
+ "keyart_239": {
+  "tones": {
+   "APL": 35.2,
+   "luma_lt12_pct": 26.4,
+   "top18_sky_L_p90": 2.9,
+   "top18_all_L_p90": 2.9,
+   "band_L_by_az": {
+    "3-8": 26.7,
+    "8-13": 25.1,
+    "13-18": 23.0,
+    "18-23": 20.8,
+    "23-28": 17.3,
+    "28-33": 16.5,
+    "43-48": 10.6
+   },
+   "band_peak_L": 26.7,
+   "moon_L_max": 79.7,
+   "L_gt90_outside_wound_pct": 0.001,
+   "brightest2000_centroid": [
+    0.455,
+    0.493
+   ],
+   "brightest2000_in_wound_pct": 99.9
+  },
+  "tear": {
+   "visible_rows": 579,
+   "axis_L_range_central80": 17.5,
+   "axis_L_max": 98.1,
+   "axis_L_min": 80.6,
+   "axis_L_at_tip_end": 80.6,
+   "axis_L_at_foot_end": 87.1,
+   "hot_row_minus_widest_row_pct_of_span": 2.3,
+   "b_lips": -5.4,
+   "b_tip": -3.2,
+   "b_hot": 2.6,
+   "lipglow_6px_sd_L": 23.1,
+   "lipglow_6px_median_C": 14.5,
+   "lipglow_6px_median_L": 30.7,
+   "dark_segments_per_lip": {
+    "left": 2,
+    "right": 2
+   },
+   "white_centroid_x_pct": 44.8
+  },
+  "arms": {
+   "Colossus_3": {
+    "sections": 43,
+    "cross_section_range_L_median": 11.6,
+    "cross_section_range_L_p25": 1.6,
+    "tear_side_flank_L_median": 3.5,
+    "body_L_median": 2.1,
+    "pixels": 71638
+   },
+   "Hand_L0": {
+    "sections": 45,
+    "cross_section_range_L_median": 26.9,
+    "cross_section_range_L_p25": 13.8,
+    "tear_side_flank_L_median": 37.1,
+    "body_L_median": 18.6,
+    "pixels": 7150
+   },
+   "Hand_L1": {
+    "sections": 51,
+    "cross_section_range_L_median": 36.3,
+    "cross_section_range_L_p25": 12.2,
+    "tear_side_flank_L_median": 14.1,
+    "body_L_median": 11.6,
+    "pixels": 9657
+   },
+   "Hand_L2": {
+    "sections": 56,
+    "cross_section_range_L_median": 31.4,
+    "cross_section_range_L_p25": 20.2,
+    "tear_side_flank_L_median": 15.9,
+    "body_L_median": 9.1,
+    "pixels": 14303
+   },
+   "Hand_R0": {
+    "sections": 49,
+    "cross_section_range_L_median": 10.4,
+    "cross_section_range_L_p25": 7.5,
+    "tear_side_flank_L_median": 15.8,
+    "body_L_median": 6.6,
+    "pixels": 25802
+   },
+   "Hand_R1": {
+    "sections": 59,
+    "cross_section_range_L_median": 26.0,
+    "cross_section_range_L_p25": 7.5,
+    "tear_side_flank_L_median": 14.9,
+    "body_L_median": 6.5,
+    "pixels": 41174
+   },
+   "Hand_R2": {
+    "sections": 36,
+    "cross_section_range_L_median": 3.2,
+    "cross_section_range_L_p25": 2.3,
+    "tear_side_flank_L_median": 8.2,
+    "body_L_median": 7.0,
+    "pixels": 17316
+   }
+  },
+  "multitude": {
+   "members_visible": 14,
+   "members_ge30px_tall": 12,
+   "area_pct": 1.77,
+   "lean_toward_wound": "7/8"
+  },
+  "sea": {
+   "moonward_p5_L": 8.0,
+   "moonward_p95_L": 49.5,
+   "moonward_local_sd_L": 5.1,
+   "moon_path_minus_off_L": 13.1,
+   "deck_area_pct": 42.0
+  },
+  "same_row_contrast": {
+   "Pillar_R": {
+    "dL_same_row_median": -1.8,
+    "rows": 211,
+    "brighter_rows_pct": 0.0
+   },
+   "Pillar_L": {
+    "dL_same_row_median": -1.0,
+    "rows": 164,
+    "brighter_rows_pct": 8.5
+   },
+   "Colossus_3": {
+    "dL_same_row_median": -1.5,
+    "rows": 262,
+    "brighter_rows_pct": 0.8
+   },
+   "Colossus_bg_01": {
+    "dL_same_row_median": -6.8,
+    "rows": 36,
+    "brighter_rows_pct": 0.0
+   },
+   "Colossus_bg_05": {
+    "dL_same_row_median": -4.5,
+    "rows": 23,
+    "brighter_rows_pct": 0.0
+   },
+   "Colossus_2": {
+    "dL_same_row_median": -22.1,
+    "rows": 134,
+    "brighter_rows_pct": 0.0
+   }
+  }
+ },
+ "U7_engelein": {
+  "tones": {
+   "APL": 26.4,
+   "luma_lt12_pct": 29.1,
+   "APL_through_glass": 36.8,
+   "top18_sky_L_p90": 3.1,
+   "top18_all_L_p90": 3.5,
+   "band_L_by_az": {
+    "3-8": 26.4,
+    "8-13": 24.3,
+    "13-18": 22.1,
+    "18-23": 21.6,
+    "23-28": 19.3,
+    "28-33": 18.7,
+    "38-43": 13.9,
+    "43-48": 13.4
+   },
+   "band_peak_L": 26.4,
+   "moon_L_max": 50.1,
+   "L_gt90_outside_wound_pct": 0.0,
+   "brightest2000_centroid": [
+    0.514,
+    0.38
+   ],
+   "brightest2000_in_wound_pct": 100.0
+  },
+  "tear": {
+   "visible_rows": 394,
+   "axis_L_range_central80": 17.5,
+   "axis_L_max": 96.9,
+   "axis_L_min": 79.4,
+   "axis_L_at_tip_end": 79.4,
+   "axis_L_at_foot_end": 86.4,
+   "hot_row_minus_widest_row_pct_of_span": 2.5,
+   "b_lips": -4.3,
+   "b_tip": -3.1,
+   "b_hot": 3.1,
+   "lipglow_6px_sd_L": 23.7,
+   "lipglow_6px_median_C": 13.5,
+   "lipglow_6px_median_L": 37.0,
+   "dark_segments_per_lip": {
+    "left": 5,
+    "right": 6
+   },
+   "white_centroid_x_pct": 50.7
+  },
+  "arms": {
+   "Colossus_3": {
+    "sections": 23,
+    "cross_section_range_L_median": 14.3,
+    "cross_section_range_L_p25": 8.9,
+    "tear_side_flank_L_median": 5.5,
+    "body_L_median": 2.4,
+    "pixels": 15214
+   },
+   "Hand_L0": {
+    "sections": 43,
+    "cross_section_range_L_median": 24.7,
+    "cross_section_range_L_p25": 12.8,
+    "tear_side_flank_L_median": 37.6,
+    "body_L_median": 19.1,
+    "pixels": 3003
+   },
+   "Hand_L1": {
+    "sections": 51,
+    "cross_section_range_L_median": 37.1,
+    "cross_section_range_L_p25": 10.2,
+    "tear_side_flank_L_median": 14.8,
+    "body_L_median": 11.1,
+    "pixels": 4217
+   },
+   "Hand_L2": {
+    "sections": 52,
+    "cross_section_range_L_median": 32.5,
+    "cross_section_range_L_p25": 22.9,
+    "tear_side_flank_L_median": 14.5,
+    "body_L_median": 9.1,
+    "pixels": 6027
+   },
+   "Hand_R0": {
+    "sections": 39,
+    "cross_section_range_L_median": 9.7,
+    "cross_section_range_L_p25": 6.4,
+    "tear_side_flank_L_median": 10.2,
+    "body_L_median": 5.3,
+    "pixels": 9863
+   },
+   "Hand_R1": {
+    "sections": 39,
+    "cross_section_range_L_median": 24.9,
+    "cross_section_range_L_p25": 10.3,
+    "tear_side_flank_L_median": 17.3,
+    "body_L_median": 4.6,
+    "pixels": 5081
+   },
+   "Hand_R2": {
+    "sections": 14,
+    "cross_section_range_L_median": 29.3,
+    "cross_section_range_L_p25": 26.6,
+    "tear_side_flank_L_median": 35.1,
+    "body_L_median": 25.3,
+    "pixels": 785
+   }
+  },
+  "multitude": {
+   "members_visible": 16,
+   "members_ge30px_tall": 13,
+   "area_pct": 0.98,
+   "lean_toward_wound": "6/7"
+  },
+  "sea": {
+   "moonward_p5_L": 9.0,
+   "moonward_p95_L": 48.2,
+   "moonward_local_sd_L": 5.3,
+   "moon_path_minus_off_L": 10.0,
+   "deck_area_pct": 23.6
+  },
+  "same_row_contrast": {
+   "Pillar_R": {
+    "dL_same_row_median": -1.1,
+    "rows": 150,
+    "brighter_rows_pct": 0.0
+   },
+   "Pillar_L": {
+    "dL_same_row_median": -10.6,
+    "rows": 120,
+    "brighter_rows_pct": 0.0
+   },
+   "Colossus_3": {
+    "dL_same_row_median": -4.2,
+    "rows": 114,
+    "brighter_rows_pct": 0.9
+   },
+   "Colossus_bg_01": {
+    "dL_same_row_median": -6.7,
+    "rows": 21,
+    "brighter_rows_pct": 0.0
+   },
+   "Colossus_bg_02": {
+    "dL_same_row_median": -4.9,
+    "rows": 23,
+    "brighter_rows_pct": 4.3
+   },
+   "Colossus_2": {
+    "dL_same_row_median": -21.6,
+    "rows": 89,
+    "brighter_rows_pct": 0.0
+   }
+  }
+ },
+ "U8_forward": {
+  "tones": {
+   "APL": 43.0,
+   "luma_lt12_pct": 18.4,
+   "APL_through_glass": 63.2,
+   "top18_sky_L_p90": 14.2,
+   "top18_all_L_p90": 13.2,
+   "band_L_by_az": {
+    "3-8": 34.4,
+    "8-13": 27.5,
+    "13-18": 25.6,
+    "18-23": 24.7,
+    "23-28": 21.5,
+    "28-33": 18.6,
+    "33-38": 34.7,
+    "38-43": 31.3
+   },
+   "band_peak_L": 34.7,
+   "moon_L_max": 46.7,
+   "L_gt90_outside_wound_pct": 0.033,
+   "brightest2000_centroid": [
+    0.555,
+    0.199
+   ],
+   "brightest2000_in_wound_pct": 100.0
+  },
+  "tear": {
+   "visible_rows": 496,
+   "axis_L_range_central80": 14.2,
+   "axis_L_max": 96.5,
+   "axis_L_min": 82.4,
+   "axis_L_at_tip_end": 95.4,
+   "axis_L_at_foot_end": 82.4,
+   "hot_row_minus_widest_row_pct_of_span": 14.4,
+   "b_lips": -7.2,
+   "b_tip": 2.8,
+   "b_hot": 2.6,
+   "lipglow_6px_sd_L": 21.9,
+   "lipglow_6px_median_C": 10.7,
+   "lipglow_6px_median_L": 70.6,
+   "dark_segments_per_lip": {
+    "left": 2,
+    "right": 3
+   },
+   "white_centroid_x_pct": 51.6
+  },
+  "arms": {
+   "Colossus_3": {
+    "sections": 24,
+    "cross_section_range_L_median": 8.5,
+    "cross_section_range_L_p25": 4.9,
+    "tear_side_flank_L_median": 23.2,
+    "body_L_median": 24.4,
+    "pixels": 86533
+   },
+   "Hand_L0": {
+    "sections": 39,
+    "cross_section_range_L_median": 14.2,
+    "cross_section_range_L_p25": 3.6,
+    "tear_side_flank_L_median": 14.1,
+    "body_L_median": 3.2,
+    "pixels": 43215
+   },
+   "Hand_L1": {
+    "sections": 47,
+    "cross_section_range_L_median": 36.5,
+    "cross_section_range_L_p25": 24.9,
+    "tear_side_flank_L_median": 16.0,
+    "body_L_median": 6.5,
+    "pixels": 43698
+   },
+   "Hand_L2": {
+    "sections": 45,
+    "cross_section_range_L_median": 23.7,
+    "cross_section_range_L_p25": 9.9,
+    "tear_side_flank_L_median": 12.7,
+    "body_L_median": 2.1,
+    "pixels": 71039
+   },
+   "Hand_R1": {
+    "sections": 15,
+    "cross_section_range_L_median": 30.4,
+    "cross_section_range_L_p25": 23.9,
+    "tear_side_flank_L_median": 11.7,
+    "body_L_median": 17.7,
+    "pixels": 9876
+   }
+  },
+  "multitude": {
+   "members_visible": 7,
+   "members_ge30px_tall": 3,
+   "area_pct": 0.32,
+   "lean_toward_wound": "0/0"
+  },
+  "sea": {
+   "moonward_p5_L": 8.9,
+   "moonward_p95_L": 59.6,
+   "moonward_local_sd_L": 2.7,
+   "moon_path_minus_off_L": 8.6,
+   "deck_area_pct": 21.1
+  },
+  "same_row_contrast": {
+   "Colossus_3": {
+    "dL_same_row_median": -2.9,
+    "rows": 270,
+    "brighter_rows_pct": 41.9
+   },
+   "Colossus_bg_00": {
+    "dL_same_row_median": -8.1,
+    "rows": 71,
+    "brighter_rows_pct": 2.8
+   },
+   "Colossus_2": {
+    "dL_same_row_median": -19.3,
+    "rows": 100,
+    "brighter_rows_pct": 3.0
+   }
+  }
+ },
+ "U6_approach": {
+  "tones": {
+   "APL": 29.8,
+   "luma_lt12_pct": 18.6,
+   "APL_through_glass": 40.4,
+   "top18_sky_L_p90": 12.8,
+   "top18_all_L_p90": 10.5,
+   "band_L_by_az": {
+    "3-8": 19.3,
+    "8-13": 18.3,
+    "13-18": 17.1,
+    "23-28": 15.1,
+    "28-33": 13.2,
+    "38-43": 11.6,
+    "43-48": 19.1
+   },
+   "band_peak_L": 19.3,
+   "moon_L_max": 92.5,
+   "L_gt90_outside_wound_pct": 0.035,
+   "brightest2000_centroid": [
+    0.495,
+    0.446
+   ],
+   "brightest2000_in_wound_pct": 89.1
+  },
+  "tear": {
+   "visible_rows": 272,
+   "axis_L_range_central80": 16.0,
+   "axis_L_max": 96.4,
+   "axis_L_min": 80.3,
+   "axis_L_at_tip_end": 80.3,
+   "axis_L_at_foot_end": 86.2,
+   "hot_row_minus_widest_row_pct_of_span": 0.2,
+   "b_lips": -3.8,
+   "b_tip": -3.1,
+   "b_hot": 3.1,
+   "lipglow_6px_sd_L": 17.5,
+   "lipglow_6px_median_C": 15.7,
+   "lipglow_6px_median_L": 27.4,
+   "dark_segments_per_lip": {
+    "left": 5,
+    "right": 2
+   },
+   "white_centroid_x_pct": 50.5
+  },
+  "arms": {},
+  "multitude": {
+   "members_visible": 0,
+   "members_ge30px_tall": 0,
+   "area_pct": 0.0,
+   "lean_toward_wound": "0/0"
+  },
+  "sea": {
+   "moonward_p5_L": 6.9,
+   "moonward_p95_L": 44.6,
+   "moonward_local_sd_L": 3.1,
+   "moon_path_minus_off_L": 6.3,
+   "deck_area_pct": 31.0
+  },
+  "same_row_contrast": {
+   "Colossus_2": {
+    "dL_same_row_median": -14.4,
+    "rows": 72,
+    "brighter_rows_pct": 0.0
+   }
+  }
+ },
+ "U8a_ach_nein": {
+  "tones": {
+   "APL": 92.1,
+   "luma_lt12_pct": 0.0,
+   "top18_all_L_p90": 29.2,
+   "brightest2000_centroid": [
+    0.633,
+    0.676
+   ]
+  },
+  "u8a": {
+   "APL": 92.1,
+   "luma_lt12_pct": 0.0,
+   "white_L80_pct_of_frame": 20.3,
+   "skylight_hole_pct_of_frame": 50.0,
+   "white_L80_pct_of_hole": 40.6,
+   "brightest2000_in_skylight_pct": 100.0
+  }
+ },
+ "rear_window": {
+  "tones": {
+   "APL": 25.0,
+   "luma_lt12_pct": 43.0,
+   "APL_through_glass": 31.1,
+   "top18_sky_L_p90": 2.6,
+   "top18_all_L_p90": 6.5,
+   "band_L_by_az": {},
+   "band_peak_L": null,
+   "L_gt90_outside_wound_pct": 0.002,
+   "brightest2000_centroid": [
+    0.744,
+    0.239
+   ],
+   "brightest2000_in_wound_pct": 0.0
+  },
+  "rear": {
+   "APL": 25.0,
+   "luma_lt12_pct": 43.0,
+   "arms": {
+    "Rear_ArchA": {
+     "width_pct": 58.9,
+     "area_pct": 4.56
+    },
+    "Rear_ArchB": {
+     "width_pct": 62.9,
+     "area_pct": 6.26
+    },
+    "Rear_Hand0": {
+     "width_pct": 27.4,
+     "area_pct": 7.84
+    },
+    "Rear_Hand1": {
+     "width_pct": 45.4,
+     "area_pct": 9.72
+    },
+    "Rear_Hand2": {
+     "width_pct": 47.6,
+     "area_pct": 1.16
+    },
+    "Rear_Hand3": {
+     "width_pct": 31.8,
+     "area_pct": 1.98
+    },
+    "Rear_Hand4": {
+     "width_pct": 38.5,
+     "area_pct": 1.24
+    }
+   },
+   "arms_ge6pct_width": 7,
+   "touching_pairs": [
+    "Rear_ArchA+Rear_ArchB",
+    "Rear_ArchA+Rear_Hand0",
+    "Rear_ArchA+Rear_Hand1",
+    "Rear_ArchA+Rear_Hand2",
+    "Rear_ArchA+Rear_Hand3",
+    "Rear_ArchA+Rear_Hand4",
+    "Rear_ArchB+Rear_Hand0",
+    "Rear_ArchB+Rear_Hand1",
+    "Rear_ArchB+Rear_Hand2",
+    "Rear_ArchB+Rear_Hand3",
+    "Rear_ArchB+Rear_Hand4",
+    "Rear_Hand0+Rear_Hand1",
+    "Rear_Hand0+Rear_Hand3",
+    "Rear_Hand0+Rear_Hand4",
+    "Rear_Hand1+Rear_Hand2",
+    "Rear_Hand2+Rear_Hand3",
+    "Rear_Hand3+Rear_Hand4"
+   ]
+  }
+ },
+ "U8b_spot": {
+  "tones": {
+   "APL": 56.3,
+   "luma_lt12_pct": 9.0,
+   "top18_all_L_p90": 44.6,
+   "brightest2000_centroid": [
+    0.404,
+    0.333
+   ]
+  }
+ },
+ "U8_side": {
+  "tones": {
+   "APL": 21.4,
+   "luma_lt12_pct": 35.0,
+   "APL_through_glass": 19.1,
+   "top18_sky_L_p90": 2.8,
+   "top18_all_L_p90": 6.9,
+   "band_L_by_az": {},
+   "band_peak_L": null,
+   "L_gt90_outside_wound_pct": 0.02,
+   "brightest2000_centroid": [
+    0.652,
+    0.487
+   ],
+   "brightest2000_in_wound_pct": 0.0
+  }
+ },
+ "U8_near": {
+  "tones": {
+   "APL": 20.4,
+   "luma_lt12_pct": 33.6,
+   "APL_through_glass": 19.5,
+   "top18_sky_L_p90": 2.9,
+   "top18_all_L_p90": 4.7,
+   "band_L_by_az": {},
+   "band_peak_L": null,
+   "L_gt90_outside_wound_pct": 0.0,
+   "brightest2000_centroid": [
+    0.013,
+    0.37
+   ],
+   "brightest2000_in_wound_pct": 0.0
+  }
+ },
+ "knees": {
+  "Hand_L0": {
+   "length_m": 630.0,
+   "min_radius_m": 67.0,
+   "ratio": 0.11,
+   "at_u": 0.79
+  },
+  "Hand_L1": {
+   "length_m": 820.0,
+   "min_radius_m": 39.0,
+   "ratio": 0.05,
+   "at_u": 0.68
+  },
+  "Hand_L2": {
+   "length_m": 658.0,
+   "min_radius_m": 75.0,
+   "ratio": 0.11,
+   "at_u": 0.58
+  },
+  "Hand_R0": {
+   "length_m": 958.0,
+   "min_radius_m": 69.0,
+   "ratio": 0.07,
+   "at_u": 0.68
+  },
+  "Hand_R1": {
+   "length_m": 1150.0,
+   "min_radius_m": 62.0,
+   "ratio": 0.05,
+   "at_u": 0.79
+  },
+  "Hand_R2": {
+   "length_m": 985.0,
+   "min_radius_m": 54.0,
+   "ratio": 0.05,
+   "at_u": 0.7
+  }
+ }
+}

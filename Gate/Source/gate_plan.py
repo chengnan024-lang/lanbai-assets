@@ -264,6 +264,6 @@ if __name__ == '__main__':
     shot = sys.argv[1]
     W = int(sys.argv[2]) if len(sys.argv) > 2 else 960
     lay = G.build_layout()
-    cells = json.load(open(os.path.join(G.LAN, 'deliver', 'Tentacles', 'Textures', 'TentacleTide_Atlas.json')))['cells']
+    cells = None      # round 4: build_tide always uses the v3 cells (the v2.1 atlas json is in deliver/Tentacles/_superseded~)
     tide = G.build_tide(cells)
     print(plan(shot, W, layout=lay, tide=tide, extra=guides if shot != 'key' else None))

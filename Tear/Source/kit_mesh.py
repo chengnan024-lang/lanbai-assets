@@ -162,19 +162,31 @@ def fibres(n_cards=220, seed=5):
 HALO_CARDS = [  # (width, height, depth behind the lens, phase lag, gain)   root scale 1
     # v3 (gate critique M12): radius <= 0.5 H so C* 35-45 sits within 2-3 deg of the lips and is gone by ~8 deg
     # v4 (tech M2): + an INNER card (radius ~0.15 H, gain 2.8): the breathing #5B57A1 at 1-3 deg from the lips
-    (330.0, 620.0, 25.0, 0.04, 2.8),
-    (360.0, 880.0, 40.0, 0.00, 1.0),
-    (640.0, 1000.0, 60.0, 0.08, 1.0),
+    # v5 (AD round 3: 'halo = soft atmospheric bloom, never a drawn line'): the drawn lip glow is gone; the inner card
+    # grows to radius ~0.25 H and carries the violet near the lips
+    # v6 (gate round 8, awe r4 B1.8): centred on the HOT SPOT (40 % H, +10 % of the width right) and weighted by lip: the
+    # wider cards sit LEFT of it (the open left lip glows, the flap side much less); the 6th field = across offset (m)
+    # of the card centre from the hot spot. Colour #7A7B9C (C* ~20 alone, <= 15 over the band; v5 #5B57A1 C* 45).
+    (440.0, 760.0, 25.0, 0.04, 1.3, 0.0),
+    (360.0, 860.0, 40.0, 0.00, 0.9, -55.0),
+    (620.0, 980.0, 60.0, 0.08, 0.9, -90.0),
 ]
 HALO_WIDE = (1500.0, 1750.0)
-HALO_T = 380.0
+HALO_T = T.T_HOT
+
+
+def halo_centre_a():
+    """across offset (kit m) of the hot spot at HALO_T (= make_emission's a_hot, on the smoothed centre)."""
+    aL, aR = T.lips(np.array([HALO_T]))
+    return 0.5 * float(aL[0] + aR[0]) + T.HOT_OFF * float(aR[0] - aL[0])
 
 
 def halo():
     """additive radial cards behind the lens; UV2.x = gain (v4: the inner card is x2.8)."""
     V, F, UV0, UV1, UV2 = [], [], [], [], []
-    c_a = float(T.path(np.array([HALO_T]))[0]) + 12.0
-    for i, (w, h, d, ph, g) in enumerate(HALO_CARDS):
+    c_a0 = halo_centre_a()
+    for i, (w, h, d, ph, g, da) in enumerate(HALO_CARDS):
+        c_a = c_a0 + da
         b = len(V)
         for (x, y) in ((-0.5, -0.5), (0.5, -0.5), (0.5, 0.5), (-0.5, 0.5)):
             V.append(T.P(HALO_T + y * h, c_a + x * w, d)[()])
@@ -308,11 +320,115 @@ def shaft_card(w0=0.4):
     return p
 
 
+def foot_clouds():
+    """round 4: Tear_FootCloud_<i>: one quad per T.FOOT_CLOUDS entry, facing the bus (-y), its base under the cloud top,
+    the card's cloud top at `show` m above it. Modelled at FULL opening: UV1.x = the across offset it hangs from (the
+    shader's opening deform moves it with the lips). COLOR: R = near-axis weight 0.35..1, G = height lift 0.45 -> 1."""
+    import json, os
+    meta = json.load(open(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+                                       'deliver', 'Clouds', 'clouds_meta.json')))
+    out = []
+    xc = 0.5 * float(T.path(np.array([0.0]))[0])
+    hw = 0.5 * T.W_TOT
+    for i, (card, xf, y, w, show, mir) in enumerate(T.FOOT_CLOUDS):
+        sz = meta[card]['size']
+        Hc = w * sz[1] / sz[0]
+        top_v = meta[card]['opaque_bbox_uv'][3]
+        x0 = xc + xf * hw
+        z0 = show - top_v * Hc
+        xs = (x0 - w / 2, x0 + w / 2)
+        V = np.array([[xs[0], y, z0], [xs[1], y, z0], [xs[1], y, z0 + Hc], [xs[0], y, z0 + Hc]])
+        us = (1.0, 0.0) if mir else (0.0, 1.0)
+        UV0 = np.array([[us[0], 0.0], [us[1], 0.0], [us[1], 1.0], [us[0], 1.0]])
+        near = 0.35 + 0.65 * np.exp(-((V[:, 0] - xc) / (1.8 * hw)) ** 2)
+        lift = np.where(V[:, 2] > 0.5 * (z0 + z0 + Hc), 1.0, 0.45)
+        COL = np.stack([near, lift, np.zeros(4), np.ones(4)], 1)
+        UV1 = np.stack([np.full(4, x0), np.zeros(4)], 1)
+        UV2 = np.stack([np.full(4, meta[card]['cloud_base_v']), np.full(4, top_v)], 1)
+        p = part('Tear_FootCloud_%d' % i, V, [(0, 1, 2, 3)], UV0, UV1, UV2, COL=COL,
+                 mat='Tear_FootCloud_' + card.replace('Cloud_', '').replace('_moon', ''))
+        p['card'] = card
+        out.append(p)
+    return out
+
+
+# ------------------------------------------------------------------------------------------- v6 foot (gate round 8)
+SKYLINE_WS = 2.6            # half widths (of the lens at its widest) either side of the axis
+SKYLINE_FRONT = 140.0       # kit m in front of the foot (toward the bus): ~98 m at U7 (S 0.64), ~110 m at U8 (S 0.8)
+SKYLINE_Z = (-25.0 / 0.64, 45.0 / 0.64)       # kit m about the cloud top: the 70 m tall image at S 0.64
+
+
+def foot_skyline():
+    """v6 (awe r4 B1.1, tech r4 B1): Tear_FootSkyline: ONE vertical quad facing the bus, SKYLINE_FRONT kit m in front of
+    the foot, 2 x 2.6 lens half widths wide, -39 .. +70 kit m about the cloud top. Texture Tear_FootSkyline_1024x160
+    (A = the billow skyline with the two parted lips and the V slot the white runs down into, R = backlit rim). UV1.x =
+    the across offset from the axis (the opening deform narrows it with the lens, so the slot stays on the white)."""
+    xc = 0.5 * float(T.path(np.array([0.0]))[0])
+    hw = 0.5 * T.W_TOT
+    W = SKYLINE_WS * hw
+    y = -SKYLINE_FRONT
+    z0, z1 = SKYLINE_Z
+    V = np.array([[xc - W, y, z0], [xc + W, y, z0], [xc + W, y, z1], [xc - W, y, z1]])
+    UV0 = np.array([[0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0]])
+    UV1 = np.stack([V[:, 0] - xc, np.zeros(4)], 1)
+    N = np.tile(np.array([0.0, -1.0, 0.0]), (4, 1))
+    return part('Tear_FootSkyline', V, [(0, 1, 2, 3)], UV0, UV1, N=N, mat='Tear_FootSkyline')
+
+
+# v6.1 (gate round 9, tech r4 B1 / awe r4 B4): the INNER billow row, a few metres in front of the lens: the white's foot
+# ends on billows (8-20 m x 0.35), never on a straight lens / cloud-plane line. In Unity the CloudSea cards are alpha
+# billows already, so this card is the safety net for wherever the lens meets a flat cloud top (optional, cheap: 1 quad).
+SKYLINE_IN_WS = 1.5
+SKYLINE_IN_FRONT = 11.0     # kit m (~8 m at S 0.7)
+SKYLINE_IN_Z = (-25.0 * 0.35 / 0.64, 45.0 * 0.35 / 0.64)
+
+
+def foot_skyline_inner():
+    """v6.1: Tear_FootSkylineIn: one vertical quad facing the bus, SKYLINE_IN_FRONT kit m in front of the lens foot,
+    2 x 1.5 lens half widths wide. Texture Tear_FootSkylineIn_512x160 (A = low billow row, R = backlit rim), material
+    as Tear_FootSkyline (Part = Skyline)."""
+    xc = 0.5 * float(T.path(np.array([0.0]))[0])
+    hw = 0.5 * T.W_TOT
+    W = SKYLINE_IN_WS * hw
+    y = -SKYLINE_IN_FRONT
+    z0, z1 = SKYLINE_IN_Z
+    V = np.array([[xc - W, y, z0], [xc + W, y, z0], [xc + W, y, z1], [xc - W, y, z1]])
+    UV0 = np.array([[0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0]])
+    UV1 = np.stack([V[:, 0] - xc, np.zeros(4)], 1)
+    N = np.tile(np.array([0.0, -1.0, 0.0]), (4, 1))
+    return part('Tear_FootSkylineIn', V, [(0, 1, 2, 3)], UV0, UV1, N=N, mat='Tear_FootSkylineIn')
+
+
+LANE_HALF = 420.0           # kit m across (covers 3 x the lane's 1/e width from U6 to U9)
+LANE_LEN = 2400.0           # kit m from the foot toward the bus (>= the 1400 m world lane at S >= 0.58)
+
+
+def light_lane():
+    """v6 (awe r4 B3.4 'a light lane from the foot to the eye'): Tear_LightLane: a flat quad on the cloud top from 60 kit
+    m behind the foot to LANE_LEN toward the bus (Blend DstColor One, queue 2989). The lane itself is computed per
+    pixel from the eye (Part LANE): this mesh only has to cover it. No opening deform (UV1 0)."""
+    xc = 0.5 * float(T.path(np.array([0.0]))[0])
+    y0, y1 = 60.0, -LANE_LEN
+    nv = 8                  # a few rows so the cloud-top plane holds under the deck's own relief / fog
+    ys = np.linspace(y0, y1, nv)
+    V, UV0 = [], []
+    for j, yy in enumerate(ys):
+        for xx in (xc - LANE_HALF, xc + LANE_HALF):
+            V.append((xx, yy, 0.6))
+            UV0.append(((xx - xc + LANE_HALF) / (2 * LANE_HALF), j / (nv - 1.0)))
+    F = [(2 * j, 2 * j + 1, 2 * j + 3, 2 * j + 2) for j in range(nv - 1)]
+    N = np.tile(np.array([0.0, 0.0, 1.0]), (len(V), 1))
+    return part('Tear_LightLane', np.array(V), F, np.array(UV0), N=N, mat='Tear_LightLane')
+
+
 def all_parts():
     P = [lens()]
     P += [flap(f) for f in T.FLAPS]
     P += [rip(r) for r in T.RIPS]
-    P += [fibres(), halo(), skyfolds(), cloud_glow(), shafts()]
+    # v5: no fibre cards (they read as cilia / mould at U8): the frayed threads are drawn in Tear_Emission
+    P += [halo(), skyfolds(), cloud_glow(), shafts()]
+    # v6 (gate round 8): the five v5 FootCloud cards read as a front-lit pedestal -> the foot SKYLINE card + the LANE
+    P += [foot_skyline(), foot_skyline_inner(), light_lane()]
     return P
 
 

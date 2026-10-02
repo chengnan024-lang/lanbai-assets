@@ -88,7 +88,10 @@ def profile(t):
     t = np.asarray(t, float)
     lo = np.clip((T_W - t) / (T_W - T_BOT), 0, 1)
     hi = np.clip((t - T_W) / (T_TOP - T_W), 0, 1)
-    f_lo = np.clip(1 - lo ** 1.7, 0, 1) ** 0.95
+    # v6 (gate round 8, awe r4 B1: 'a candle flame on a pedestal': the foot was blunt, 63 % of the max width at 5 % of
+    # the height): the lower part is a LENS too, pointed where it runs down into the cloud: 0.34 of the max width at
+    # t = 60, ~0.2 at the cloud top, a narrow slot below it (the rip runs on into the sea)
+    f_lo = np.clip(1 - lo ** 1.4, 0, 1) ** 1.4      # v6b: 0.24 at the cloud top, 0.35 at t 50 (a pointed foot read as a tornado at U8)
     f_hi = np.clip(1 - hi ** 1.45, 0, 1) ** 1.42
     f = np.where(t <= T_W, f_lo, f_hi)
     return np.where((t < T_BOT) | (t > T_TOP), 0.0, f)
@@ -133,7 +136,17 @@ FLAPS = [
     dict(name='Tear_Flap_L', side=-1, t0=150.0, t1=255.0, length=80.0, lift=40.0, roll=190.0, peak=0.45, seed=211),
     dict(name='Tear_Flap_R', side=+1, t0=350.0, t1=600.0, length=135.0, lift=50.0, roll=200.0, peak=0.52, seed=213),
 ]
-FLAP_FLAT = 0.30      # fraction of the flap's flat width by which the lens lip is pushed out (white under the flap)
+# v5 (gate round 4, AD 1: 'cloth hanging with weight, not crumpled grey paper'): a softer roll, and the free part
+# SAGS under its own weight (the free corner is the lowest point): drop = SAG x length x rn^1.6 x (0.6 + 0.4 s-weight)
+for _f, _roll in zip(FLAPS, (120.0, 125.0)):
+    _f['roll'] = _roll
+# v6 (gate round 8, awe r4 B1.4 'flaps you can see': 15-35 px shards in the key): one BIG flap per side, 30-36 % of the
+# tear height along the lip, peeled out 120-170 m, hanging (sag 0.30: the free corner is the lowest point); together
+# with the narrower v6 lower lens they break the lens outline over ~20 % of each lip near the widest part
+FLAPS[0].update(t0=520.0, t1=650.0, length=72.0, lift=44.0, roll=95.0, peak=0.45)    # left: SMALL and high (asymmetry: never a pair of 'lips' / a pod)
+FLAPS[1].update(t0=350.0, t1=650.0, length=150.0, lift=68.0, roll=105.0, peak=0.55)    # v6b: peeled TOWARD the bus (covers ~20 m of the white, breaks the lip line)
+FLAP_SAG = 0.30
+FLAP_FLAT = 0.22      # v6: 0.30 -> 0.22 (the bigger flaps) # fraction of the flap's flat width by which the lens lip is pushed out (white under the flap)
 
 
 def flap_bump(t, side):
@@ -230,19 +243,25 @@ VEILS = [
 ]
 THICK_FRAC = 0.065       # right-edge cloth thickness, fraction of the local lens width
 ZIP_T0 = 0.84            # the zipper of bridging threads: the top 16 % of the lens (fraction of T_TOP)
-ZIP_N = 9                # threads (2 of them snapped)
-ZIP_SNAPPED = (3, 6)
+ZIP_N = 5                # run 6: 5 threads, irregular (9 evenly spaced square threads read as a ladder / stitches)
+ZIP_SNAPPED = (1, 3)
 ZIP_W = 6.0              # thread width (m at full scale; >= 0.15 deg from the U7b bus)
 
 
 def zipper_threads(seed=77):
-    """[(t_left, t_right, sag m, width m, snapped bool)] of the bridging threads across the top of the lens."""
+    """[(t_left, t_right, sag m, width m, snapped bool)] of the bridging threads across the top of the lens.
+    Run 6: irregular spacing (sorted random, >= 14 m apart), widths 0.55-1.2 x, skew +-9 m (never crossing), sag
+    3-9 m (stretched fibres that droop, not rungs)."""
     rng = np.random.default_rng(seed)
-    ts = np.linspace(ZIP_T0 * T_TOP + 12.0, T_TOP - 18.0, ZIP_N) + rng.uniform(-6, 6, ZIP_N)
+    lo, hi = ZIP_T0 * T_TOP + 10.0, T_TOP - 24.0
+    while True:
+        ts = np.sort(rng.uniform(lo, hi, ZIP_N))
+        if np.all(np.diff(ts) >= 14.0):
+            break
     out = []
     for i, t in enumerate(ts):
-        skew = rng.uniform(-4.0, 4.0)          # nearly square to the axis: stitches, never an X pattern
-        out.append((float(t - skew), float(t + skew), float(rng.uniform(0.8, 2.0)), float(ZIP_W * rng.uniform(0.8, 1.15)),
+        skew = rng.uniform(-9.0, 9.0)
+        out.append((float(t - skew), float(t + skew), float(rng.uniform(3.0, 9.0)), float(ZIP_W * rng.uniform(0.55, 1.2)),
                     i in ZIP_SNAPPED))
     return out
 
@@ -279,11 +298,9 @@ RIPS = [
     # the HAIRLINE: the rip still running on up from the needle into the dark, 1-2 px, no glow; 2 tiny side twigs
     dict(name='Tear_Rip_Hairline', side=0, t0=T_TOP - 6.0, length=340.0, off=2.0, bend=-3.0, width=2.6, seed=303,
          window=(0.05, 0.9), jog=0.35, axis_start=True),
-    dict(name='Tear_Rip_Twig_1', side=+1, t0=T_TOP + 120.0, length=60.0, off=38.0, bend=10.0, width=1.8, seed=304,
-         window=(0.45, 0.9), jog=0.3, on='Tear_Rip_Hairline'),
-    dict(name='Tear_Rip_Twig_2', side=-1, t0=T_TOP + 215.0, length=45.0, off=33.0, bend=-8.0, width=1.6, seed=305,
-         window=(0.6, 1.0), jog=0.3, on='Tear_Rip_Hairline'),
 ]
+# v5: the two side twigs of the hairline are gone (AD round 3 item 6: 'a white branching hairline that reads as a dead
+# twig'); the hairline itself stays (1-2 px, no glow)
 RIP_MARGIN = 34.0     # half-width of the rip strip (m) incl. its glow
 
 
@@ -299,7 +316,7 @@ def rip_centreline(r, n=160):
         t0, a0 = float(hp[k, 0]), float(hp[k, 1])
     else:
         aL, aR = lips(t0)
-        a0 = float(aR if r['side'] > 0 else aL) - r['side'] * 3.0
+        a0 = float(aR if r['side'] > 0 else aL) - r['side'] * 6.0      # v6: the root overlaps the lip (no detached spindle)
     u = np.linspace(0, 1, n)
     sd = r['side'] if r['side'] != 0 else 1
     ang = np.radians(r['off'] + r['bend'] * u ** 1.5 + 1.2 * fbm(u * 4, r['seed'], 2))   # from the axis
@@ -355,7 +372,7 @@ def flap_frame(fl, s):
 # the fingertips that hook the flaps / lip (gate layout v4): (side, flap name or None = the lip itself, s along the
 # hinge (or t for the lip), r along the flap (fraction of its torn length), tent m, pull (out, toward bus, down))
 GRIPS = [
-    (-1, 'Tear_Flap_L', 0.30, 0.93, 14.0), (-1, 'Tear_Flap_L', 0.66, 0.93, 12.0), (-1, None, 370.0, 0.0, 0.0),
+    (-1, None, 300.0, 0.0, 0.0), (-1, 'Tear_Flap_L', 0.50, 0.93, 10.0), (-1, None, 165.0, 0.0, 0.0),   # v6: the left hand coils the LIP
     (+1, 'Tear_Flap_R', 0.30, 0.95, 22.0), (+1, 'Tear_Flap_R', 0.52, 0.96, 26.0), (+1, 'Tear_Flap_R', 0.74, 0.95, 20.0),
 ]
 
@@ -402,6 +419,11 @@ def flap_surface(fl, ns=72, nr=40, grips=True):
             pos = pos + (tent * g)[..., None] * pull / np.linalg.norm(pull, axis=-1, keepdims=True)
             crease = np.exp(-((s[:, None] - sg) / 0.035) ** 2) * smoothstep(0.1, 0.8, rn) * 3.0
             pos = pos + crease[..., None] * view3[None, None, :]
+    # v5: weight. The free part hangs: every point drops by FLAP_SAG x L x rn^1.6, more toward the flap's lower end (the
+    # free corner is the lowest point), and is pulled a little toward the bus (cloth falling forward off the lip)
+    sw = 0.6 + 0.4 * (1.0 - s[:, None])
+    drop = FLAP_SAG * L * np.clip(rn, 0, 1) ** 1.6 * sw
+    pos = pos - drop[..., None] * np.array([0.0, 0.0, 1.0])[None, None, :] + (0.25 * drop)[..., None] * view3[None, None, :]
     # the OUTER (dyed, sky-side) face looks at the bus while the sheet is only lifted (phi < 90): n = cos(phi) view - sin(phi) in
     # (resume fix: the v4 draft had the sign reversed, so the bus saw the wound-lit inner face everywhere)
     n_ana = np.cos(phi)[..., None] * view3[None, None, :] - np.sin(phi)[..., None] * in3[:, None, :]
@@ -453,3 +475,87 @@ def width_mul(open01):
 FOLD_T0, FOLD_T1 = -150.0, 1500.0
 FOLD_A0, FOLD_A1 = -900.0, 900.0
 FOLD_CLAMP = (-W_L, W_R)       # across offsets that move with the opening (vertex shader: a += (w-1)*clamp(a))
+
+
+# ============================================================================================== v5 (gate round 4)
+# AD round 3 item 1: the tear read as a sticker (a flat white plateau with a uniform violet outline). v5 replaces the
+# outline with a PHYSICAL edge that changes along its length, and gives the white depth. All in kit space (full
+# opening, H = 1000 m); the emission texture draws them (make_textures.make_emission v5).
+T_HOT = T_W               # the hot spot sits at the widest row ...
+HOT_OFF = 0.10            # ... offset 10 % of the local width toward the RIGHT lip (the bible's 45 / 55 split)
+
+# veils: soft torn sheets of mist inside the white, NEVER concentric: (t0, t1, across frac of the half width at t0 and
+# t1 (+ right), bright side (+1: toward +a), gain (linear fill), width as a fraction of the local width, coolness)
+VEILS5 = [
+    (110.0, 470.0, -0.62, -0.02, +1, 0.42, 0.065, 0.35),
+    (300.0, 650.0, 0.62, 0.18, -1, 0.34, 0.055, 0.30),
+    (500.0, 860.0, -0.45, 0.20, +1, 0.30, 0.070, 0.45),
+    (20.0, 290.0, 0.30, 0.66, -1, 0.26, 0.050, 0.55),
+]
+
+# folds of the cloth turned TOWARD the bus at the lip: dark silhouettes laid on the white (L* <= 10), 3-4 per lip
+# (side, t centre, length m along the lip, depth as a fraction of the local width, skew -1..1)
+EDGE_FOLDS = [
+    (-1, 300.0, 70.0, 0.030, 0.4), (-1, 525.0, 85.0, 0.035, -0.5), (-1, 688.0, 50.0, 0.035, 0.3),
+    (+1, 142.0, 64.0, 0.030, -0.4), (+1, 640.0, 80.0, 0.035, 0.5), (+1, 770.0, 46.0, 0.045, 0.2),
+]
+
+# clusters of frayed threads standing out from the lip (lit L* 60-85): (side, t, n, length range m, spread deg)
+FRAYS = [
+    (-1, 168.0, 5, (18.0, 46.0), 20.0), (-1, 398.0, 4, (14.0, 34.0), 16.0), (-1, 600.0, 6, (20.0, 52.0), 22.0),
+    (-1, 760.0, 3, (10.0, 24.0), 14.0),
+    (+1, 205.0, 5, (16.0, 40.0), 18.0), (+1, 330.0, 6, (22.0, 56.0), 22.0), (+1, 560.0, 4, (14.0, 36.0), 18.0),
+    (+1, 705.0, 5, (16.0, 44.0), 20.0),
+]
+# v6 (awe r4 B1.9 'frays read as whiskers'): clusters of 3-6 strands from ONE root, tapering 3.2 -> 0.8 m (2 -> 0.5 px in
+# the key), 16-64 m long, drooping with gravity; fewer clusters, none isolated
+FRAYS6 = [
+    (-1, 300.0, 5, (22.0, 58.0), 18.0), (-1, 470.0, 4, (16.0, 44.0), 14.0), (-1, 690.0, 3, (14.0, 34.0), 12.0),
+    (+1, 250.0, 4, (18.0, 50.0), 16.0), (+1, 560.0, 6, (24.0, 64.0), 20.0), (+1, 770.0, 3, (12.0, 30.0), 12.0),
+]
+FRAY_W = (3.2, 0.8)
+
+# threads still bridging the gap (backlit, never black): (t at the left lip, t at the right lip, sag as a fraction of
+# the span, width m, kind) kind: 'span' or 'snapped' (hangs from the left lip)
+THREADS5 = [
+    (382.0, 362.0, 0.085, 2.4, 'span'),
+    (468.0, 486.0, 0.065, 1.8, 'span'),
+    (712.0, 698.0, 0.095, 1.7, 'span'),
+    (560.0, 0.0, 0.0, 2.2, 'snapped'),
+]
+
+# v6 (gate round 8, awe r4 B1.5: 'three full-width thread hoops turn the lens into a cylinder'): NO thread spans the
+# whole gap. Each is attached to ONE lip and snapped: (kind, side of the lip it hangs from, t at that lip, angle deg off
+# horizontal (+ = rising toward the other lip), fraction of the local width it reaches before the break, sag as a
+# fraction of its run, root width m, droop length m of the broken end)
+THREADS6 = [
+    ('reach', -1, 372.0, 27.0, 0.68, 0.07, 2.6, 46.0),
+    ('snapped', -1, 548.0, -80.0, 0.30, 0.0, 2.2, 0.0),
+    ('reach', +1, 652.0, -21.0, 0.55, 0.06, 1.9, 34.0),
+]
+# v6 (awe r4 B1.7 'veils, not a beam'): 4 soft torn SHEETS of mist inside the white, each a soft STEP (+4..+8 L*) along
+# a line tilted 15-35 deg off the axis, the bright side decaying over decay m (never a bright streak rising from the
+# foot): (t centre, across centre as a fraction of the half width, angle deg from the axis (+ toward +a), length m,
+# bright side (+1 = +normal), gain, decay m)
+VEILS6 = [
+    (235.0, -0.20, 30.0, 300.0, +1, 0.16, 75.0),
+    (430.0, 0.22, -24.0, 330.0, -1, 0.14, 85.0),
+    (610.0, -0.08, 33.0, 250.0, +1, 0.12, 60.0),
+    (140.0, 0.30, -17.0, 200.0, -1, 0.10, 50.0),
+]
+FAR_LIP = (0.020, 0.075, 0.17)   # v6 (awe r4 B1.7): the far wall inside the RIGHT lip: from 2 % to 7.5 % of the width, -17 %
+
+# where the cloth is STRETCHED (thin, translucent, glowing at the edge): the widest 30 % of the lens and round the grips
+STRETCH_T = (T_W, 160.0)       # centre, sigma (m)
+STRETCH_GRIP_SIGMA = 48.0
+
+# backlit billows in front of the wound's foot (gate round 4): (card, x as a fraction of the foot half width at the
+# CURRENT opening (+ right), y m toward the bus (-), width m, height showing above the cloud top m, mirror), kit units.
+# Kit: Tear_FootCloud_<i> quads (Part=FootCloud), modelled at full opening, moved with the opening through UV1.x.
+# v6 (gate round 8, awe r4 B1.1/B1.2: the 5 cards in front of the foot read as a front-lit PEDESTAL): only TWO, the
+# parted LIPS of the torn cloud either side of the slot the white runs down into (their inner edges ~0.15 half widths
+# off the axis), backlit by the wound (thin edges glow, dense cores dark), 45-70 m showing (30-45 m at U7).
+FOOT_CLOUDS = [
+    ('Cloud_Cumulus_moon', -1.00, -40.0, 240.0, 70.0, False),
+    ('Cloud_Puff_moon', 0.86, -55.0, 200.0, 58.0, True),
+]
