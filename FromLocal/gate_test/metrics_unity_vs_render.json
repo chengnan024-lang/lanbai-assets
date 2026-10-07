@@ -1,0 +1,72 @@
+{
+ "U7_unity_t155.10.png": {
+  "APL": 35.1,
+  "luma_lt12_pct": 24.8,
+  "top25_Lstar_p90": 5.4,
+  "Lstar_max": 99.5,
+  "pct_Lstar_gt85": 0.65,
+  "brightest_2000px_bbox": [
+   970,
+   365,
+   1003,
+   461
+  ],
+  "lower_45pct_APL": 42.3
+ },
+ "U7_engelein.png": {
+  "APL": 26.4,
+  "luma_lt12_pct": 29.1,
+  "top25_Lstar_p90": 9.0,
+  "Lstar_max": 98.1,
+  "pct_Lstar_gt85": 0.59,
+  "brightest_2000px_bbox": [
+   970,
+   364,
+   1003,
+   461
+  ],
+  "lower_45pct_APL": 26.7
+ },
+ "keyart_unity_t154.50.png": {
+  "APL": 37.8,
+  "luma_lt12_pct": 26.0,
+  "top25_Lstar_p90": 4.3,
+  "Lstar_max": 99.5,
+  "pct_Lstar_gt85": 1.06,
+  "brightest_2000px_bbox": [
+   1151,
+   475,
+   1182,
+   586
+  ],
+  "lower_45pct_APL": 49.6
+ },
+ "keyart_unity_t155.10.png": {
+  "APL": 37.8,
+  "luma_lt12_pct": 26.5,
+  "top25_Lstar_p90": 4.5,
+  "Lstar_max": 99.5,
+  "pct_Lstar_gt85": 1.13,
+  "brightest_2000px_bbox": [
+   1153,
+   470,
+   1184,
+   581
+  ],
+  "lower_45pct_APL": 49.4
+ },
+ "keyart_239.png": {
+  "APL": 35.2,
+  "luma_lt12_pct": 26.4,
+  "top25_Lstar_p90": 3.8,
+  "Lstar_max": 100.0,
+  "pct_Lstar_gt85": 1.06,
+  "brightest_2000px_bbox": [
+   1149,
+   473,
+   1268,
+   587
+  ],
+  "lower_45pct_APL": 47.6
+ }
+}

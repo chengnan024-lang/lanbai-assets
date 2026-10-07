@@ -1,0 +1,73 @@
+搭好了：单独的臂 28 条、群臂 36 条（2 个档材质），给 64 个实例建了 LODGroup。t = 155.10：GateRoot (0, 92.12, 1442.95)，云顶 y -57.88；臂 56 条显现、8 条关着；群臂 group0 1.00 / group1 1.00；远潮 _Reveal 1.00；月盘增益 0.60；裂口 H 640.0 m（缩放 0.640）、张开 0.479、撕裂 0.216；叠加光池 ×1.00、布褶 ×1.00、光晕 ×1.00（D 1441 m）、光路 ×1.00（x 缩放 0.544）、光池 ×1.00
+备注：
+  · 裂口平行光只照车厢层（JSON lights.tear）：测试场景没有车，Culling Mask 设成 Nothing
+—— 逐条 ——
+Pillar_R  M_Gate_Pillar_R  R_root 56.353 m（物体空间）× 缩放 1  L 1277.2  平铺 主 2.254 / 细节 56.35×64.81  _Colossus 1  遮罩 T_Gate_PR_Occlusion.png
+Pillar_L  M_Gate_Pillar_L  R_root 34.397 m（物体空间）× 缩放 1  L 1029.2  平铺 主 1.376 / 细节 34.4×39.56  _Colossus 1  遮罩 T_Gate_PL_Occlusion.png
+Colossus_3  M_Gate_Colossus_3  R_root 101.813 m（物体空间）× 缩放 1  L 2826.1  平铺 主 3 / 细节 64×73.6  _Colossus 1  遮罩 T_Gate_ENG_Occlusion.png
+Hand_L0  M_Gate_Hand_L0  R_root 23.595 m（物体空间）× 缩放 1  L 630.4  平铺 主 1 / 细节 23.6×27.13  遮罩 T_Gate_HL0_Occlusion.png
+Hand_L1  M_Gate_Hand_L1  R_root 18.018 m（物体空间）× 缩放 1  L 819.8  平铺 主 1 / 细节 18.02×20.72  遮罩 T_Gate_HL1_Occlusion.png
+Hand_L2  M_Gate_Hand_L2  R_root 19.382 m（物体空间）× 缩放 1  L 658.3  平铺 主 1 / 细节 19.38×22.29  遮罩 T_Gate_HL2_Occlusion.png
+Hand_R0  M_Gate_Hand_R0  R_root 32.629 m（物体空间）× 缩放 1  L 958.1  平铺 主 1.305 / 细节 32.63×37.52  遮罩 T_Gate_HR0_Occlusion.png
+Hand_R1  M_Gate_Hand_R1  R_root 26.175 m（物体空间）× 缩放 1  L 1150  平铺 主 1.047 / 细节 26.17×30.1  遮罩 T_Gate_HR1_Occlusion.png
+Hand_R2  M_Gate_Hand_R2  R_root 28.967 m（物体空间）× 缩放 1  L 985.2  平铺 主 1.159 / 细节 28.97×33.31  遮罩 T_Gate_HR2_Occlusion.png
+Colossus_bg_00  M_Gate_Colossus_bg_00  R_root 33.963 m（物体空间）× 缩放 1  L 1142.3  平铺 主 1.359 / 细节 33.96×39.06  _Colossus 1  遮罩 T_Gate_BG0_Occlusion.png
+Colossus_bg_01  M_Gate_Colossus_bg_01  R_root 35.711 m（物体空间）× 缩放 1  L 1217.2  平铺 主 1.428 / 细节 35.71×41.07  _Colossus 1  遮罩 T_Gate_BG1_Occlusion.png
+Colossus_bg_02  M_Gate_Colossus_bg_02  R_root 42.93 m（物体空间）× 缩放 1  L 1345.9  平铺 主 1.717 / 细节 42.93×49.37  _Colossus 1  遮罩 T_Gate_BG2_Occlusion.png
+Colossus_bg_03  M_Gate_Colossus_bg_03  R_root 38.592 m（物体空间）× 缩放 1  L 1285.2  平铺 主 1.544 / 细节 38.59×44.38  _Colossus 1  遮罩 T_Gate_BG3_Occlusion.png
+Colossus_bg_04  M_Gate_Colossus_bg_04  R_root 35.333 m（物体空间）× 缩放 1  L 1173.6  平铺 主 1.413 / 细节 35.33×40.63  _Colossus 1  遮罩 T_Gate_BG4_Occlusion.png
+Colossus_bg_05  M_Gate_Colossus_bg_05  R_root 40.745 m（物体空间）× 缩放 1  L 1413.6  平铺 主 1.63 / 细节 40.75×46.86  _Colossus 1  遮罩 T_Gate_BG5_Occlusion.png
+Colossus_1  M_Gate_Colossus_1  R_root 23.709 m（物体空间）× 缩放 1  L 647.3  平铺 主 1 / 细节 23.71×27.27  _Colossus 1  遮罩 T_Gate_C1_Occlusion.png
+Colossus_2  M_Gate_Colossus_2  R_root 52.964 m（物体空间）× 缩放 1  L 1157  平铺 主 2.119 / 细节 52.96×60.91  _Colossus 1  遮罩 T_Gate_C2_Occlusion.png
+Mult_000  pose MU3m  M_Multitude_TierC_far  R_root 46.954 m（物体空间）× 缩放 0.659  L 1604.6  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU3m_Occlusion.png
+Mult_001  pose MU2  M_Multitude_TierC_far  R_root 47.607 m（物体空间）× 缩放 0.331  L 1597.8  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU2_Occlusion.png
+Mult_002  pose MU4m  M_Multitude_TierC_far  R_root 46.04 m（物体空间）× 缩放 0.515  L 1244.1  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU4m_Occlusion.png
+Mult_003  pose MU1  M_Multitude_TierC_far  R_root 46.719 m（物体空间）× 缩放 1.036  L 1559.7  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU1_Occlusion.png
+Mult_004  pose MU0  M_Multitude_TierC_far  R_root 46.655 m（物体空间）× 缩放 0.468  L 1543.1  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU0_Occlusion.png
+Mult_005  pose MU1  M_Multitude_TierC_far  R_root 46.719 m（物体空间）× 缩放 0.649  L 1559.7  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU1_Occlusion.png
+Mult_006  pose MU1m  M_Multitude_TierC_far  R_root 46.284 m（物体空间）× 缩放 0.589  L 1559.6  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU1m_Occlusion.png
+Mult_007  pose MU1m  M_Multitude_TierC_far  R_root 46.284 m（物体空间）× 缩放 0.399  L 1559.7  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU1m_Occlusion.png
+Mult_008  pose MU3  M_Multitude_TierC_far  R_root 46.085 m（物体空间）× 缩放 0.29  L 1604.5  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU3_Occlusion.png
+Mult_009  pose MU1m  M_Multitude_TierC_far  R_root 46.284 m（物体空间）× 缩放 0.503  L 1559.7  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU1m_Occlusion.png
+Mult_010  pose MU5m  M_Multitude_TierC_far  R_root 46.883 m（物体空间）× 缩放 0.243  L 1207.5  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU5m_Occlusion.png
+Mult_011  pose MU2m  M_Multitude_TierC_far  R_root 47.162 m（物体空间）× 缩放 0.883  L 1597.8  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU2m_Occlusion.png
+Mult_012  pose MU3  M_Multitude_TierC_far  R_root 46.085 m（物体空间）× 缩放 0.531  L 1604.5  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU3_Occlusion.png
+Mult_013  pose MU0m  M_Multitude_TierC_far  R_root 46.906 m（物体空间）× 缩放 0.369  L 1543.1  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU0m_Occlusion.png
+Mult_014  pose MU0  M_Multitude_TierB_mid  R_root 46.655 m（物体空间）× 缩放 0.371  L 1543.2  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU0_Occlusion.png
+Mult_015  pose MU0  M_Multitude_TierB_mid  R_root 46.655 m（物体空间）× 缩放 0.463  L 1543.3  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU0_Occlusion.png
+Mult_016  pose MU1  M_Multitude_TierB_mid  R_root 46.719 m（物体空间）× 缩放 0.996  L 1559.6  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU1_Occlusion.png
+Mult_017  pose MU2m  M_Multitude_TierB_mid  R_root 47.162 m（物体空间）× 缩放 0.39  L 1597.5  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU2m_Occlusion.png
+Mult_018  pose MU2m  M_Multitude_TierB_mid  R_root 47.162 m（物体空间）× 缩放 0.536  L 1597.8  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU2m_Occlusion.png
+Mult_019  pose MU0m  M_Multitude_TierB_mid  R_root 46.906 m（物体空间）× 缩放 0.379  L 1543.1  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU0m_Occlusion.png
+Mult_020  pose MU2m  M_Multitude_TierB_mid  R_root 47.162 m（物体空间）× 缩放 0.461  L 1597.9  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU2m_Occlusion.png
+Mult_021  pose MU2m  M_Multitude_TierB_mid  R_root 47.162 m（物体空间）× 缩放 0.613  L 1597.8  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU2m_Occlusion.png
+Mult_022  pose MU4  M_Multitude_TierB_mid  R_root 47.059 m（物体空间）× 缩放 0.5  L 1244.2  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU4_Occlusion.png
+Mult_023  pose MU1  M_Multitude_TierB_mid  R_root 46.719 m（物体空间）× 缩放 0.364  L 1559.8  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU1_Occlusion.png
+Mult_024  pose MU2  M_Multitude_TierB_mid  R_root 47.607 m（物体空间）× 缩放 1.034  L 1597.8  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU2_Occlusion.png
+Mult_025  pose MU4  M_Multitude_TierB_mid  R_root 47.059 m（物体空间）× 缩放 0.342  L 1244  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU4_Occlusion.png
+Mult_026  pose MU0m  M_Multitude_TierB_mid  R_root 46.906 m（物体空间）× 缩放 0.553  L 1543.1  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU0m_Occlusion.png
+Mult_027  pose MU0  M_Multitude_TierB_mid  R_root 46.655 m（物体空间）× 缩放 0.509  L 1543.1  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU0_Occlusion.png
+Mult_028  pose MU0  M_Multitude_TierB_mid  R_root 46.655 m（物体空间）× 缩放 0.357  L 1543.1  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU0_Occlusion.png
+Mult_029  pose MU3m  M_Multitude_TierB_mid  R_root 46.954 m（物体空间）× 缩放 0.328  L 1604.6  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU3m_Occlusion.png
+Mult_030  pose MU4  M_Multitude_TierB_mid  R_root 47.059 m（物体空间）× 缩放 0.277  L 1244.2  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU4_Occlusion.png
+Mult_031  pose MU1m  M_Multitude_TierB_mid  R_root 46.284 m（物体空间）× 缩放 0.368  L 1559.6  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU1m_Occlusion.png
+Mult_032  pose MU1  M_Multitude_TierB_mid  R_root 46.719 m（物体空间）× 缩放 0.539  L 1559.6  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU1_Occlusion.png
+Mult_033  pose MU0  M_Multitude_TierB_mid  R_root 46.655 m（物体空间）× 缩放 0.923  L 1543.2  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU0_Occlusion.png
+Mult_034  pose MU2m  M_Multitude_TierB_mid  R_root 47.162 m（物体空间）× 缩放 0.421  L 1597.9  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU2m_Occlusion.png
+Mult_035  pose MU4  M_Multitude_TierB_mid  R_root 47.059 m（物体空间）× 缩放 0.235  L 1244.4  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU4_Occlusion.png
+Near_0  M_Gate_Near_0  R_root 2（库表；网格量得 1.722） m（物体空间）× 缩放 2.8  L 72  平铺 主 1 / 细节 4×4.6  遮罩 T_Tentacle_D_Occlusion.png
+Near_1  M_Gate_Near_1  R_root 1.35（库表；网格量得 1.3） m（物体空间）× 缩放 3  L 61.8  平铺 主 1 / 细节 4×4.6  遮罩 T_Tentacle_C_Occlusion.png
+Near_2  M_Gate_Near_2  R_root 2（库表；网格量得 1.921） m（物体空间）× 缩放 2.2  L 72  平铺 主 1 / 细节 4×4.6  遮罩 T_Tentacle_D_Occlusion.png
+Rear_ArchA  M_Gate_Rear_ArchA  R_root 59.521 m（物体空间）× 缩放 1  L 1534.1  平铺 主 2.381 / 细节 59.52×68.45  遮罩 T_Gate_RA_Occlusion.png
+Rear_ArchB  M_Gate_Rear_ArchB  R_root 52.996 m（物体空间）× 缩放 1  L 1408.5  平铺 主 2.12 / 细节 53×60.95  遮罩 T_Gate_RB_Occlusion.png
+Rear_Hand0  M_Gate_Rear_Hand0  R_root 97.361 m（物体空间）× 缩放 1  L 2214  平铺 主 3 / 细节 64×73.6  遮罩 T_Gate_RH0_Occlusion.png
+Rear_Hand1  M_Gate_Rear_Hand1  R_root 106.002 m（物体空间）× 缩放 1  L 2254.2  平铺 主 3 / 细节 64×73.6  遮罩 T_Gate_RH1_Occlusion.png
+Rear_Hand2  M_Gate_Rear_Hand2  R_root 86.828 m（物体空间）× 缩放 1  L 2216.1  平铺 主 3 / 细节 64×73.6  遮罩 T_Gate_RH2_Occlusion.png
+Rear_Hand2F  M_Gate_Rear_Hand2F  R_root 35.58 m（物体空间）× 缩放 1  L 202.5  平铺 主 1.423 / 细节 35.58×40.92  遮罩 T_Gate_RH2F_Occlusion.png
+Rear_Hand3  M_Gate_Rear_Hand3  R_root 103.46 m（物体空间）× 缩放 1  L 2360  平铺 主 3 / 细节 64×73.6  遮罩 T_Gate_RH3_Occlusion.png
+Rear_Hand4  M_Gate_Rear_Hand4  R_root 74.879 m（物体空间）× 缩放 1  L 2278.2  平铺 主 2.995 / 细节 64×73.6  遮罩 T_Gate_RH4_Occlusion.png
+远潮 TideRoot：子网格的 FBX 材质名 [M_TentacleTide_A, M_TentacleTide_B] → [M_TentacleTide_v3_A, M_TentacleTide_v3_B]
+Tear_Kit.fbx 的根（Tear_Kit）就是 Tear_Root（Unity 导入时把唯一的根空物体并进了模型根），按它来挂
+Tear_Shafts（套件自带的 12 张光束扇）：关掉——门里只用 JSON shafts 的 2 束
+光束 Shaft_00：起点 (38.56, 304.16, 8)，半宽 46.9 套件米（卡的横截面缩放 1.173），长 3437.5，增益 1；JSON 的 widen 3.2 没有可对应的参数（卡是等宽的）
+光束 Shaft_01：起点 (-98.87, 354.85, 8)，半宽 40.6 套件米（卡的横截面缩放 1.015），长 3437.5，增益 0.6；JSON 的 widen 3.2 没有可对应的参数（卡是等宽的）

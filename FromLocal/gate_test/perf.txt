@@ -1,0 +1,34 @@
+# 触手之门 · 性能（gate_test，2026-10-08）
+
+## 1. 帧时间、单次渲染的统计（编辑模式，LB_GateTest.Perf，HDR 渲染目标）
+机位 U7，t = 155.10；显卡 NVIDIA GeForce RTX 4060 Laptop GPU（Direct3D11），CPU 13th Gen Intel(R) Core(TM) i9-13980HX
+Unity 编辑器、编辑模式里用一台相机直接渲染到 HDR 的 RenderTexture（ARGBHalf，含 PPv2），渲染前后各读 1 个像素做 GPU 同步；QualitySettings：LOD Bias 2.00，像素光 8，阴影距离 150，4 级，MSAA 4
+一次渲染（1920×1080）：
+  ProfilerRecorder（这一帧里渲染前后的差）：draw call 0、batches 0、SetPass 0、三角面 0、顶点 0、投影物体 0（渲染后的累计值：draw 0、三角 0；recorder 有效 True）
+  UnityStats（渲染后 / 渲染前）：draw call 6654 / 6654、batches 6654 / 6654、SetPass 4696 / 4696、三角面 12,763,148 / 12,763,148、顶点 15,585,298 / 15,585,298
+  按视锥 + LODGroup 规则数（每个子网格 / 材质算一次，不算阴影和后处理的 pass）：看得见的 renderer 68 个（LOD0 31、LOD1 21、LOD2 0），子网格 × 材质 69，三角面 279,348，其中投影的 0 个
+    GateRoot/Mult_*：45,120 三角
+    GateRoot/Colossus_2：16,800 三角
+    GateRoot/Hand_R2：16,800 三角
+    GateRoot/Hand_R1：16,800 三角
+    GateRoot/Hand_R0：16,800 三角
+    GateRoot/Hand_L2：16,800 三角
+    GateRoot/Hand_L1：16,800 三角
+    GateRoot/Hand_L0：16,800 三角
+    GateRoot/Colossus_3：16,800 三角
+    GateRoot/Pillar_L：16,800 三角
+    GateRoot/Pillar_R：16,800 三角
+    GateRoot/Tear_Root：15,588 三角
+帧时间（预热 4 次、取 24 次的中位数；合计 = CPU 提交 + 等 GPU 画完，不重叠地算，偏保守）：
+  电脑 1920×1080：合计 4.8 ms（约 210 fps），其中 CPU 1.1 ms；最快 / 最慢 4.5 / 5.3 ms
+  VR 两只眼 1832×1920×2（竖直视角 100°，同一方向渲两次）：合计 10.3 ms（约 97 fps），其中 CPU 2.2 ms；最快 / 最慢 10.0 / 11.0 ms
+
+（注：编辑模式里手动 Camera.Render() 不进 ProfilerRecorder / UnityStats，所以上面那两行是 0 和旧值，不用看；按视锥 + LOD 规则数的那一行是对的。）
+
+## 2. Draw call / 三角面（Play 里 Game 视图那一帧：r0109，LB_GateTest.StatsBegin / StatsRead）
+Game 视图 971×436（Play True），相机竖直视角 48.36°（按这个宽高比把水平视角对到 90°）
+UnityStats（Game 视图上一帧，和 Stats 窗口同一个来源）：draw call 206、batches 206、SetPass 204、三角面 877,435、顶点 469,444、投影物体 0、动态合批 0 / 实例化合批 104、渲染纹理切换 18
+ProfilerRecorder（每帧总数：上一帧 / 最近 30 帧的中位数）：Draw Calls Count 206 / 206，Batches Count 206 / 206，SetPass Calls Count 204 / 204，Triangles Count 877,435 / 877,435，Vertices Count 469,444 / 469,444，Shadow Casters Count 0 / 0，Visible Skinned Meshes Count 0 / 0
+
+## 3. 关掉补光对照（r0112）——无效
+Game 视图当时没有出帧（Screen 640×480 是默认值，ProfilerRecorder 全是 0，UnityStats 关补光前后一模一样），这一组数不能用。

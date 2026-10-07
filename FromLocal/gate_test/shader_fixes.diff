@@ -1,0 +1,38 @@
+--- lanbai-assets/Gate/Shaders/Lanbai_TentacleSway.shader（原样）	2026-10-07 18:02:25.437679958 +0000
++++ dream/Assets/Lanbai/Gate/Shaders/Lanbai_TentacleSway.shader（改后）
+@@ -416,6 +416,7 @@
+             return ovr * front;
+         }
+ 
++        float _CloudTopY;     // [gate_test 2026-10-08] declared before CloudTop() uses it (was declared further down: D3D "undeclared identifier")
+         float CloudTop()
+         {
+             return (_Udon_CloudTop.w > 0.0) ? _Udon_CloudTop.x : _CloudTopY;
+@@ -477,7 +478,6 @@
+         float _FogDensity;
+         float _FogDensityScale;
+         float4 _FogExtra;
+-        float _CloudTopY;
+         float _FogCap;
+         float4 _FogCapFrom;
+         float _FogCapHeight;
+--- lanbai-assets/Tear/Lanbai_Tear.shader（原样）
++++ dream/Assets/Lanbai/Tear/Lanbai_Tear.shader（改后）
+@@ -103,7 +103,7 @@
+         [Header(Rip)]
+         _RipFront ("Running-front length (0..1 of the rip)", Float) = 0.1
+ 
+-        [Header(Flap: indigo silk)]
++        [Header(Flap  indigo silk)]
+         _FlapOuterNear ("Outer face at the fold, LINEAR (#141726 screen)", Vector) = (0.0181, 0.0198, 0.0342, 1)
+         _FlapOuterFar ("Outer face at the torn edge, LINEAR (#0C0E18 screen)", Vector) = (0.0090, 0.0098, 0.0135, 1)
+         _FlapInner ("Inner face, tear-lit, LINEAR (#3E3C66 screen)", Vector) = (0.1076, 0.0908, 0.2238, 1)
+@@ -157,7 +157,7 @@
+         _LanesRect ("Lanes rect, tear frame m: x0, x1, y0 (toward the bus), y1", Vector) = (-2000, 2000, -2400, 1600)
+         _RimDesat ("Flap moon outline desaturation", Range(0, 1)) = 0.55
+ 
+-        [Header(Depth prepass: Lens only)]
++        [Header(Depth prepass  Lens only)]
+         [Toggle] _DepthPrepass ("Write depth where the white is opaque", Float) = 0
+ 
+         [Header(Render state)]
