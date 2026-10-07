@@ -1166,7 +1166,7 @@
    "type": "Directional (CABIN ONLY: culling mask = the bus layers, NOT the tentacles)",
    "color": "#A99DE1",
    "E": 0.8,
-   "inspector": 0.9,
+   "inspector": 0.8,
    "shadows": "none",
    "direction": "from _Udon_TearPos toward the bus each frame",
    "round4": "the tentacles get the wound from TentacleSway v2.7 itself (v2.6 + the far scale / clamp _WoundSpecFar / _WoundSpecMax, none above el +25 deg, OVER-THE-WHITE dimming): a LINE LIGHT on _Udon_TearFoot -> _Udon_TearTop (wrap diffuse E = _TearDiffuse x (_TearDiffuseRef / d)^2, the tube-light specular of the white on the wet skin, and the screen-space _RimWound). The renders: two ellipse area lights the size of the white at the lens (front E 2.0 @ 600 m, back x 0.35, diffuse only) + the analytical specular. Do not let the directional also light the arms (double light)"
@@ -1175,9 +1175,10 @@
    "type": "Directional",
    "color": "#5A6488",
    "E": 0.24,
-   "inspector": 0.52,
+   "inspector": 0.24,
    "from_below": true
-  }
+  },
+  "note_inspector": "VRChat forces GraphicsSettings.lightsUseLinearIntensity = true, so the Inspector intensity equals E (fixed 2026-10-08 after the Unity gate_test; the earlier 0.52 / 0.9 used the gamma conversion)."
  },
  "sky_band": {
   "near": "#484D63 (fill #67697D) next to the tear",

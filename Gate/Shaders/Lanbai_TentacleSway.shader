@@ -416,6 +416,7 @@ Shader "Lanbai/TentacleSway"
             return ovr * front;
         }
 
+        float _CloudTopY;     // declared before CloudTop() uses it (Unity gate_test 2026-10-08: D3D "undeclared identifier")
         float CloudTop()
         {
             return (_Udon_CloudTop.w > 0.0) ? _Udon_CloudTop.x : _CloudTopY;
@@ -477,7 +478,6 @@ Shader "Lanbai/TentacleSway"
         float _FogDensity;
         float _FogDensityScale;
         float4 _FogExtra;
-        float _CloudTopY;
         float _FogCap;
         float4 _FogCapFrom;
         float _FogCapHeight;

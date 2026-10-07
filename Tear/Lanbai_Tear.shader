@@ -103,7 +103,7 @@ Shader "Lanbai/Tear"
         [Header(Rip)]
         _RipFront ("Running-front length (0..1 of the rip)", Float) = 0.1
 
-        [Header(Flap: indigo silk)]
+        [Header(Flap  indigo silk)]
         _FlapOuterNear ("Outer face at the fold, LINEAR (#141726 screen)", Vector) = (0.0181, 0.0198, 0.0342, 1)
         _FlapOuterFar ("Outer face at the torn edge, LINEAR (#0C0E18 screen)", Vector) = (0.0090, 0.0098, 0.0135, 1)
         _FlapInner ("Inner face, tear-lit, LINEAR (#3E3C66 screen)", Vector) = (0.1076, 0.0908, 0.2238, 1)
@@ -157,7 +157,7 @@ Shader "Lanbai/Tear"
         _LanesRect ("Lanes rect, tear frame m: x0, x1, y0 (toward the bus), y1", Vector) = (-2000, 2000, -2400, 1600)
         _RimDesat ("Flap moon outline desaturation", Range(0, 1)) = 0.55
 
-        [Header(Depth prepass: Lens only)]
+        [Header(Depth prepass  Lens only)]
         [Toggle] _DepthPrepass ("Write depth where the white is opaque", Float) = 0
 
         [Header(Render state)]

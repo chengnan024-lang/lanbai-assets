@@ -455,7 +455,7 @@ def main(write_tex=True):
             moon=dict(type='Directional', color='#D6E4FF', E=1.0, inspector=1.0, shadows='soft',
                       direction_to_light_unity=r3(M_W @ G.L_MOON, 4), azimuth_deg=G.MOON_AZ, elevation_deg=G.MOON_EL),
             tear=dict(type='Directional (CABIN ONLY: culling mask = the bus layers, NOT the tentacles)', color='#A99DE1',
-                      E=0.8, inspector=0.9, shadows='none', direction='from _Udon_TearPos toward the bus each frame',
+                      E=0.8, inspector=0.8, shadows='none', direction='from _Udon_TearPos toward the bus each frame',
                       round4='the tentacles get the wound from TentacleSway v2.7 itself (v2.6 + the far scale / clamp '
                              '_WoundSpecFar / _WoundSpecMax, none above el +25 deg, OVER-THE-WHITE dimming): a LINE LIGHT on _Udon_TearFoot -> '
                              '_Udon_TearTop (wrap diffuse E = _TearDiffuse x (_TearDiffuseRef / d)^2, the tube-light '
@@ -463,7 +463,7 @@ def main(write_tex=True):
                              'ellipse area lights the size of the white at the lens (front E 2.0 @ 600 m, back x 0.35, '
                              'diffuse only) + the analytical specular. Do not let the directional also light the arms '
                              '(double light)'),
-            fill=dict(type='Directional', color='#5A6488', E=0.24, inspector=0.52, from_below=True)),
+            fill=dict(type='Directional', color='#5A6488', E=0.24, inspector=0.24, from_below=True)),
         sky_band=dict(
             near='#484D63 (fill #67697D) next to the tear', far='#2A3041 (fill #424755) at 50 deg', void='#070A14',
             azimuth='smoothstep(0, 50, |az|) near->far; x (1 - smoothstep(50, 60, |az|))',

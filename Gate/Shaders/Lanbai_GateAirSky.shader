@@ -33,7 +33,7 @@ Shader "Lanbai/GateAirSky"
         _AureoleGain ("Aureole gain in the sky (the arms' fog uses 0.35)", Range(0, 2)) = 1.0
         _MoonDisc ("Moon Disc #D6E4FF, linear rgb (HDR; x moon_disc_gain 0.6 at U7)", Vector) = (2.6, 2.8, 3.1, 1)
         _HaloColor ("Halo v6 #7A7B9C (unused by the sky; shared include)", Vector) = (0.195, 0.198, 0.332, 1)
-        _Stars ("Stars", Range(0, 3)) = 1
+        _Stars ("Stars (0 in act 4: stars are kept for the star sea, act 9)", Range(0, 3)) = 0
     }
     SubShader
     {
