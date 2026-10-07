@@ -1,0 +1,19 @@
+{
+ "cells": [
+  "plain",
+  "beaded",
+  "beaded_fine",
+  "twin",
+  "faint",
+  "wobble",
+  "bright_head",
+  "twin_beaded"
+ ],
+ "cell_px": [
+  64,
+  512
+ ],
+ "layout": "8x1, cell 0 left",
+ "v": "0 = tail (bottom) .. 1 = head (top)",
+ "core_fraction_of_width": 0.2
+}

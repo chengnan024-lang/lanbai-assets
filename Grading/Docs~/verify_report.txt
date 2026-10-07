@@ -1,0 +1,47 @@
+Lanbai grade data verification
+================================
+A. parsed 21 entries from LanbaiGradeData.cs, 567 field comparisons against grades_engine.json / calib_final.json
+   every scene entry carries the same 31-parameter override set (bible 1.4's 22 + the 9 Channel Mixer entries)
+   engine numbers differ from the look definition only in temperature, tint, saturation, contrast, lift, gamma, gain and the channel mixer (identity in the look definition); postExposure, bloom, helpers, common: identical
+F. sha256 chain intact: C# header -> grades_engine / grades_final / calib_final; engine solve and engine fills -> their sources
+B. LanbaiExposure generated region: 15 scenes in priority order, postExposure table, EXPO +4 / -4
+C. compiled + executed C# (Tools~/compile_check/dump.json): 567 float32 field comparisons, LanbaiExposure static math run for 16 cases
+D. ENGINE GATE (PPv2 3.x Neutral path, two independent models from the package source; art simulator NOT used)
+   §C test card, 15 profiles x 11 patches through the engine: worst 3 codes (tolerance 3)
+   black point at input 0 (bible 1.3.5 / 1.4), engine vs bible:
+     S1   §C max 1   black #02060D (bible #02060D)  red kept   C# prediction vs model: 0
+     S2   §C max 1   black #02060C (bible #02060C)  red kept   C# prediction vs model: 0
+     S3   §C max 1   black #01060E (bible #01060E)  red kept   C# prediction vs model: 0
+     S4   §C max 1   black #03030C (bible #03040C)  red kept   C# prediction vs model: 0
+     S4c  §C max 1   black #02020A (bible #02020A)  red kept   C# prediction vs model: 0
+     S6   §C max 1   black #000309 (bible #000309)   C# prediction vs model: 0
+     S7a  §C max 3   black #030B0F (bible #030B0F)  red kept   C# prediction vs model: 0
+     S7b  §C max 1   black #01060E (bible #01060E)  red kept   C# prediction vs model: 0
+     S8   §C max 1   black #00050D (bible #00050D)   C# prediction vs model: 0
+     S8b  §C max 1   black #01060E (bible #01060E)  red kept   C# prediction vs model: 0
+     S9a  §C max 1   black #01060E (bible #01060E)  red kept   C# prediction vs model: 0
+     S9b  §C max 1   black #01060D (bible #01060E)  red kept   C# prediction vs model: 0
+     S10  §C max 1   black #010101 (bible #000000)   C# prediction vs model: 0
+     S11  §C max 1   black #02060C (bible #02060C)  red kept   C# prediction vs model: 0
+     S12  §C max 1   black #01060D (bible #01060D)  red kept   C# prediction vs model: 0
+   the two engine models agree to 0 code(s) on every patch
+   test-card colour row (8 saturated colours, not bible targets), engine vs look per profile: S1 4, S2 6, S3 11, S4 9, S4c 3, S6 4, S7a 8, S7b 7, S8 5, S8b 8, S9a 11, S9b 9, S10 1, S11 6, S12 4
+   calib through the engine: §A 29 readings worst 3, §B 96 fills worst 3 (9 with the engine fill of calib_engine.json), §D 10 overlay fills worst 1 codes
+   D0 (informational, NOT an engine check): the look-definition record still reproduces §C in the art simulator: 0 codes
+E. ART_BIBLE appendix B: 265 values compared (B1 against the look-definition record, B2 against the helpers)
+   table B3 (v2.1) weights recomputed with w = dEV/(4-b), -dEV/(b+4):
+     U6k break-out                                b = -0.90 (S3)  dEV +0.50  ->  w = 0.1020   (bible 0.102)
+     U9 tube flash                                b = -0.85 (S4)  dEV +0.30  ->  w = 0.0619   (bible 0.062)
+     FLASH_TEAR                                   b = -0.90 (S4c)  dEV +1.50  ->  w = 0.3061   (bible 0.306)
+     F2h water entry (S6 base)                    b = -0.75 (S6)  dEV -0.50  ->  w = 0.1538   (bible 0.154)
+     F2h water entry (S7a base)                   b = -0.80 (S7a)  dEV -0.50  ->  w = 0.1562   (bible 0.156)
+     exit to dusk: pin (7c end #3A2629, b = S7b)  b = -0.40 (S7b)  dEV -2.43  ->  w = 0.6750   (bible 0.68)
+     exit to dusk: release apex F9                b = -0.50 (S8)  dEV +0.50  ->  w = 0.1111   (bible 0.11)
+     mirror pulse (faces 1-11)                    b = +0.30 (S9a)  dEV +0.35  ->  w = 0.0946   (bible 0.095)
+     white crash                                  b = +0.30 (S9b)  dEV +1.00  ->  w = 0.2703   (bible 0.27)
+     white swell                                  b = +0.30 (S9b)  dEV +2.40  ->  w = 0.6486   (bible 0.649)
+     after first white                            b = -0.15 (S11)  dEV +1.00  ->  w = 0.2410   (bible 0.241)
+     after second white                           b = +0.00 (S12)  dEV +0.80  ->  w = 0.2000   (bible 0.2)
+G. regenerated in a temporary copy from Tools~/inputs: LanbaiGradeData.cs, the LanbaiExposure region and the README tables are byte-identical
+
+RESULT: PASS (no differences)

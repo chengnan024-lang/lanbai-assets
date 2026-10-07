@@ -1,0 +1,1590 @@
+{
+ "glyphs_drawn": 6398,
+ "missing": [],
+ "purple": [
+  {
+   "panel": "P03_LiBai_Dream/zh",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P04a_Rilke/zh",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P04b_Urlicht/zh",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": "n/a (scene 4)"
+  },
+  {
+   "panel": "P06_Dream_Dawn/zh",
+   "purple_share": 0.0,
+   "rule": "h285–330 C*>12",
+   "limit": 0.02
+  },
+  {
+   "panel": "P07_HeBo/zh",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P08a_Dream_Dusk/zh",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P08b_Zhuangzi/zh/t=12.0/w=1500",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P09_Tianwen/zh",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P11_Zhuangzi_Butterfly/zh",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P12a_LiBai_Wake/zh",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P12b_Keats/zh",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P03_LiBai_Dream/ja",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P04a_Rilke/ja",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P04b_Urlicht/ja",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": "n/a (scene 4)"
+  },
+  {
+   "panel": "P06_Dream_Dawn/ja",
+   "purple_share": 0.0,
+   "rule": "h285–330 C*>12",
+   "limit": 0.02
+  },
+  {
+   "panel": "P07_HeBo/ja",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P08a_Dream_Dusk/ja",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P08b_Zhuangzi/ja/t=12.0/w=1500",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P09_Tianwen/ja",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P11_Zhuangzi_Butterfly/ja",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P12a_LiBai_Wake/ja",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P12b_Keats/ja",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P03_LiBai_Dream/en",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P04a_Rilke/en",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P04b_Urlicht/en",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": "n/a (scene 4)"
+  },
+  {
+   "panel": "P06_Dream_Dawn/en",
+   "purple_share": 0.0,
+   "rule": "h285–330 C*>12",
+   "limit": 0.02
+  },
+  {
+   "panel": "P07_HeBo/en",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P08a_Dream_Dusk/en",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P08b_Zhuangzi/en/t=12.0/w=1500",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P09_Tianwen/en",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P11_Zhuangzi_Butterfly/en",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P12a_LiBai_Wake/en",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P12b_Keats/en",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P03_LiBai_Dream/de",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P04a_Rilke/de",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P04b_Urlicht/de",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": "n/a (scene 4)"
+  },
+  {
+   "panel": "P06_Dream_Dawn/de",
+   "purple_share": 0.0,
+   "rule": "h285–330 C*>12",
+   "limit": 0.02
+  },
+  {
+   "panel": "P07_HeBo/de",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P08a_Dream_Dusk/de",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P08b_Zhuangzi/de/t=12.0/w=1500",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P09_Tianwen/de",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P11_Zhuangzi_Butterfly/de",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P12a_LiBai_Wake/de",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P12b_Keats/de",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P08b_Zhuangzi/en/t=12.0/w=3096",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P08b_Zhuangzi/zh/t=12.0/w=1020",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P08b_Zhuangzi/ja/t=12.0/w=1020",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P08b_Zhuangzi/en/t=12.0/w=1020",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P08b_Zhuangzi/en/t=1.5/w=1539",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P08b_Zhuangzi/en/t=5.5/w=1539",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P08b_Zhuangzi/en/t=12.0/w=1539",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P08b_Zhuangzi/en/t=19.6/w=1539",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  }
+ ],
+ "composite": [
+  {
+   "grade": "S2→S3@0.299",
+   "background": "#14141E",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#14141E",
+   "under_text_proof": "#14141E",
+   "under_text_diff_codes": 0,
+   "text_unity": "#DDD8CF",
+   "text_proof": "#D8D3CA",
+   "text_diff_codes": 5,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 216.4,
+   "target_luma": 221.4,
+   "bloom_share": 0.0,
+   "panel": "P03_LiBai_Dream/zh",
+   "poem": "P03_LiBai_Dream",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S3→S4@0.195",
+   "background": "#3C4155",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#3C4155",
+   "under_text_proof": "#3C4155",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D3D8E2",
+   "text_proof": "#CFD4DD",
+   "text_diff_codes": 5,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 215.7,
+   "target_luma": 220.6,
+   "bloom_share": 0.0,
+   "panel": "P04a_Rilke/zh",
+   "poem": "P04a_Rilke",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S4",
+   "background": "#404965",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#404965",
+   "under_text_proof": "#404965",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D3D8E2",
+   "text_proof": "#CFD4DD",
+   "text_diff_codes": 5,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 215.7,
+   "target_luma": 220.6,
+   "bloom_share": 0.0,
+   "panel": "P04b_Urlicht/zh",
+   "poem": "P04b_Urlicht",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S6",
+   "background": "#767271",
+   "scrim": [
+    "#E8F1F5",
+    0.25,
+    0.116
+   ],
+   "text_alpha": 1.0,
+   "under_text_unity": "#9AA0A5",
+   "under_text_proof": "#9D9FA0",
+   "under_text_diff_codes": 5,
+   "text_unity": "#1F2A3A",
+   "text_proof": "#1F2A3A",
+   "text_diff_codes": 0,
+   "text_vs_target_codes": 0,
+   "text_luma_unity": 40.8,
+   "target_luma": 40.8,
+   "bloom_share": 0.0,
+   "panel": "P06_Dream_Dawn/zh",
+   "poem": "P06_Dream_Dawn",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S7b",
+   "background": "#082039",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#082039",
+   "under_text_proof": "#082039",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D4DDE3",
+   "text_proof": "#CFD8DD",
+   "text_diff_codes": 6,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 219.5,
+   "target_luma": 224.4,
+   "bloom_share": 0.0,
+   "panel": "P07_HeBo/zh",
+   "poem": "P07_HeBo",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S7b",
+   "background": "#2F2329",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#2F2329",
+   "under_text_proof": "#2F2329",
+   "under_text_diff_codes": 0,
+   "text_unity": "#E6D7D1",
+   "text_proof": "#E0D2CD",
+   "text_diff_codes": 6,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 217.8,
+   "target_luma": 222.5,
+   "bloom_share": 0.0016,
+   "panel": "P08a_Dream_Dusk/zh",
+   "poem": "P08a_Dream_Dusk",
+   "bloom": {
+    "halo_max_codes": 0.32,
+    "on_text_max_codes": 0.67,
+    "prefilter_max": 0.00273
+   }
+  },
+  {
+   "grade": "S8",
+   "background": "#C9B2A3",
+   "scrim": [
+    "#0E1A2F",
+    0.3,
+    0.367
+   ],
+   "text_alpha": 0.9,
+   "under_text_unity": "#AF978B",
+   "under_text_proof": "#AC988D",
+   "under_text_diff_codes": 3,
+   "text_unity": "#E7D9D2",
+   "text_proof": "#E5D6D0",
+   "text_diff_codes": 3,
+   "text_vs_target_codes": 4,
+   "text_luma_unity": 219.5,
+   "target_luma": 222.5,
+   "bloom_share": 0.0,
+   "panel": "P08b_Zhuangzi/zh/t=12.0/w=1500",
+   "poem": "P08b_Zhuangzi_Xiaoyao",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S9a",
+   "background": "#04060E",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#04060E",
+   "under_text_proof": "#04060E",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D4DDE3",
+   "text_proof": "#CFD8DD",
+   "text_diff_codes": 6,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 219.5,
+   "target_luma": 224.4,
+   "bloom_share": 0.0,
+   "panel": "P09_Tianwen/zh",
+   "poem": "P09_Tianwen",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S11",
+   "background": "#090D19",
+   "scrim": null,
+   "text_alpha": 0.8,
+   "under_text_unity": "#090D19",
+   "under_text_proof": "#090D19",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D6CBB8",
+   "text_proof": "#CBC2B2",
+   "text_diff_codes": 11,
+   "text_vs_target_codes": 12,
+   "text_luma_unity": 204.0,
+   "target_luma": 214.8,
+   "bloom_share": 0.0,
+   "panel": "P11_Zhuangzi_Butterfly/zh",
+   "poem": "P11_Zhuangzi_Butterfly",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S12",
+   "background": "#070A11",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#070A11",
+   "under_text_proof": "#070A11",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D4DDE3",
+   "text_proof": "#CFD8DD",
+   "text_diff_codes": 6,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 219.5,
+   "target_luma": 224.4,
+   "bloom_share": 0.0,
+   "panel": "P12a_LiBai_Wake/zh",
+   "poem": "P12a_LiBai_Wake",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S12",
+   "background": "#060A10",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#060A10",
+   "under_text_proof": "#060A10",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D4DDE3",
+   "text_proof": "#CFD8DD",
+   "text_diff_codes": 6,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 219.5,
+   "target_luma": 224.4,
+   "bloom_share": 0.0,
+   "panel": "P12b_Keats/zh",
+   "poem": "P12b_Keats",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S2→S3@0.299",
+   "background": "#17161F",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#17161F",
+   "under_text_proof": "#17161F",
+   "under_text_diff_codes": 0,
+   "text_unity": "#DDD8CF",
+   "text_proof": "#D8D3CB",
+   "text_diff_codes": 5,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 216.4,
+   "target_luma": 221.4,
+   "bloom_share": 0.0,
+   "panel": "P03_LiBai_Dream/ja",
+   "poem": "P03_LiBai_Dream",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S3→S4@0.195",
+   "background": "#3E4357",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#3E4357",
+   "under_text_proof": "#3E4357",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D3D8E2",
+   "text_proof": "#CFD4DD",
+   "text_diff_codes": 5,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 215.7,
+   "target_luma": 220.6,
+   "bloom_share": 0.0,
+   "panel": "P04a_Rilke/ja",
+   "poem": "P04a_Rilke",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S4",
+   "background": "#3F4965",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#3F4965",
+   "under_text_proof": "#3F4965",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D3D8E2",
+   "text_proof": "#CFD4DD",
+   "text_diff_codes": 5,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 215.7,
+   "target_luma": 220.6,
+   "bloom_share": 0.0,
+   "panel": "P04b_Urlicht/ja",
+   "poem": "P04b_Urlicht",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S6",
+   "background": "#817B77",
+   "scrim": [
+    "#E8F1F5",
+    0.25,
+    0.116
+   ],
+   "text_alpha": 1.0,
+   "under_text_unity": "#A0A4A7",
+   "under_text_proof": "#A3A3A3",
+   "under_text_diff_codes": 4,
+   "text_unity": "#1F2A3A",
+   "text_proof": "#1F2A3A",
+   "text_diff_codes": 0,
+   "text_vs_target_codes": 0,
+   "text_luma_unity": 40.8,
+   "target_luma": 40.8,
+   "bloom_share": 0.0,
+   "panel": "P06_Dream_Dawn/ja",
+   "poem": "P06_Dream_Dawn",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S7b",
+   "background": "#081E37",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#081E37",
+   "under_text_proof": "#081E37",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D4DDE3",
+   "text_proof": "#CFD8DD",
+   "text_diff_codes": 6,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 219.5,
+   "target_luma": 224.4,
+   "bloom_share": 0.0,
+   "panel": "P07_HeBo/ja",
+   "poem": "P07_HeBo",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S7b",
+   "background": "#302329",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#302329",
+   "under_text_proof": "#302329",
+   "under_text_diff_codes": 0,
+   "text_unity": "#E6D7D1",
+   "text_proof": "#E0D2CD",
+   "text_diff_codes": 6,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 217.8,
+   "target_luma": 222.5,
+   "bloom_share": 0.0016,
+   "panel": "P08a_Dream_Dusk/ja",
+   "poem": "P08a_Dream_Dusk",
+   "bloom": {
+    "halo_max_codes": 0.31,
+    "on_text_max_codes": 0.66,
+    "prefilter_max": 0.00274
+   }
+  },
+  {
+   "grade": "S8",
+   "background": "#C9B2A3",
+   "scrim": [
+    "#0E1A2F",
+    0.3,
+    0.367
+   ],
+   "text_alpha": 0.9,
+   "under_text_unity": "#AF978B",
+   "under_text_proof": "#AC988D",
+   "under_text_diff_codes": 3,
+   "text_unity": "#E7D9D2",
+   "text_proof": "#E5D6D0",
+   "text_diff_codes": 3,
+   "text_vs_target_codes": 4,
+   "text_luma_unity": 219.5,
+   "target_luma": 222.5,
+   "bloom_share": 0.0,
+   "panel": "P08b_Zhuangzi/ja/t=12.0/w=1500",
+   "poem": "P08b_Zhuangzi_Xiaoyao",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S9a",
+   "background": "#04060E",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#04060E",
+   "under_text_proof": "#04060E",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D4DDE3",
+   "text_proof": "#CFD8DD",
+   "text_diff_codes": 6,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 219.5,
+   "target_luma": 224.4,
+   "bloom_share": 0.0,
+   "panel": "P09_Tianwen/ja",
+   "poem": "P09_Tianwen",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S11",
+   "background": "#080C16",
+   "scrim": null,
+   "text_alpha": 0.8,
+   "under_text_unity": "#080C16",
+   "under_text_proof": "#080C16",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D6CBB8",
+   "text_proof": "#CBC2B2",
+   "text_diff_codes": 11,
+   "text_vs_target_codes": 12,
+   "text_luma_unity": 204.0,
+   "target_luma": 214.8,
+   "bloom_share": 0.0,
+   "panel": "P11_Zhuangzi_Butterfly/ja",
+   "poem": "P11_Zhuangzi_Butterfly",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S12",
+   "background": "#060A11",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#060A11",
+   "under_text_proof": "#060A11",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D4DDE3",
+   "text_proof": "#CFD8DD",
+   "text_diff_codes": 6,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 219.5,
+   "target_luma": 224.4,
+   "bloom_share": 0.0,
+   "panel": "P12a_LiBai_Wake/ja",
+   "poem": "P12a_LiBai_Wake",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S12",
+   "background": "#060A10",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#060A10",
+   "under_text_proof": "#060A10",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D4DDE3",
+   "text_proof": "#CFD8DD",
+   "text_diff_codes": 6,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 219.5,
+   "target_luma": 224.4,
+   "bloom_share": 0.0,
+   "panel": "P12b_Keats/ja",
+   "poem": "P12b_Keats",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S2→S3@0.299",
+   "background": "#16151E",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#16151E",
+   "under_text_proof": "#16151E",
+   "under_text_diff_codes": 0,
+   "text_unity": "#DDD8CF",
+   "text_proof": "#D8D3CA",
+   "text_diff_codes": 5,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 216.4,
+   "target_luma": 221.4,
+   "bloom_share": 0.0,
+   "panel": "P03_LiBai_Dream/en",
+   "poem": "P03_LiBai_Dream",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S3→S4@0.195",
+   "background": "#3D4257",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#3D4257",
+   "under_text_proof": "#3D4257",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D3D8E2",
+   "text_proof": "#CFD4DD",
+   "text_diff_codes": 5,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 215.7,
+   "target_luma": 220.6,
+   "bloom_share": 0.0,
+   "panel": "P04a_Rilke/en",
+   "poem": "P04a_Rilke",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S4",
+   "background": "#404A66",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#404A66",
+   "under_text_proof": "#404A66",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D3D8E2",
+   "text_proof": "#CFD4DD",
+   "text_diff_codes": 5,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 215.7,
+   "target_luma": 220.6,
+   "bloom_share": 0.0,
+   "panel": "P04b_Urlicht/en",
+   "poem": "P04b_Urlicht",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S6",
+   "background": "#827B75",
+   "scrim": [
+    "#E8F1F5",
+    0.25,
+    0.116
+   ],
+   "text_alpha": 1.0,
+   "under_text_unity": "#A0A4A6",
+   "under_text_proof": "#A4A3A2",
+   "under_text_diff_codes": 4,
+   "text_unity": "#1F2A3A",
+   "text_proof": "#1F2A3A",
+   "text_diff_codes": 0,
+   "text_vs_target_codes": 0,
+   "text_luma_unity": 40.8,
+   "target_luma": 40.8,
+   "bloom_share": 0.0,
+   "panel": "P06_Dream_Dawn/en",
+   "poem": "P06_Dream_Dawn",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S7b",
+   "background": "#081E36",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#081E36",
+   "under_text_proof": "#081E36",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D4DDE3",
+   "text_proof": "#CFD8DD",
+   "text_diff_codes": 6,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 219.5,
+   "target_luma": 224.4,
+   "bloom_share": 0.0,
+   "panel": "P07_HeBo/en",
+   "poem": "P07_HeBo",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S7b",
+   "background": "#2F2328",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#2F2328",
+   "under_text_proof": "#2F2328",
+   "under_text_diff_codes": 0,
+   "text_unity": "#E6D7D1",
+   "text_proof": "#E0D2CD",
+   "text_diff_codes": 6,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 217.8,
+   "target_luma": 222.5,
+   "bloom_share": 0.0016,
+   "panel": "P08a_Dream_Dusk/en",
+   "poem": "P08a_Dream_Dusk",
+   "bloom": {
+    "halo_max_codes": 0.38,
+    "on_text_max_codes": 0.74,
+    "prefilter_max": 0.00273
+   }
+  },
+  {
+   "grade": "S8",
+   "background": "#C9B2A3",
+   "scrim": [
+    "#0E1A2F",
+    0.3,
+    0.367
+   ],
+   "text_alpha": 0.9,
+   "under_text_unity": "#AF978B",
+   "under_text_proof": "#AC988D",
+   "under_text_diff_codes": 3,
+   "text_unity": "#E7D9D2",
+   "text_proof": "#E5D6D0",
+   "text_diff_codes": 3,
+   "text_vs_target_codes": 4,
+   "text_luma_unity": 219.5,
+   "target_luma": 222.5,
+   "bloom_share": 0.0,
+   "panel": "P08b_Zhuangzi/en/t=12.0/w=1500",
+   "poem": "P08b_Zhuangzi_Xiaoyao",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S9a",
+   "background": "#04060E",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#04060E",
+   "under_text_proof": "#04060E",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D4DDE3",
+   "text_proof": "#CFD8DD",
+   "text_diff_codes": 6,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 219.5,
+   "target_luma": 224.4,
+   "bloom_share": 0.0,
+   "panel": "P09_Tianwen/en",
+   "poem": "P09_Tianwen",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S11",
+   "background": "#080C16",
+   "scrim": null,
+   "text_alpha": 0.8,
+   "under_text_unity": "#080C16",
+   "under_text_proof": "#080C16",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D6CBB8",
+   "text_proof": "#CBC2B2",
+   "text_diff_codes": 11,
+   "text_vs_target_codes": 12,
+   "text_luma_unity": 204.0,
+   "target_luma": 214.8,
+   "bloom_share": 0.0,
+   "panel": "P11_Zhuangzi_Butterfly/en",
+   "poem": "P11_Zhuangzi_Butterfly",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S12",
+   "background": "#060A11",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#060A11",
+   "under_text_proof": "#060A11",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D4DDE3",
+   "text_proof": "#CFD8DD",
+   "text_diff_codes": 6,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 219.5,
+   "target_luma": 224.4,
+   "bloom_share": 0.0,
+   "panel": "P12a_LiBai_Wake/en",
+   "poem": "P12a_LiBai_Wake",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S12",
+   "background": "#060910",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#060910",
+   "under_text_proof": "#060910",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D4DDE3",
+   "text_proof": "#CFD8DD",
+   "text_diff_codes": 6,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 219.5,
+   "target_luma": 224.4,
+   "bloom_share": 0.0,
+   "panel": "P12b_Keats/en",
+   "poem": "P12b_Keats",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S2→S3@0.299",
+   "background": "#16151E",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#16151E",
+   "under_text_proof": "#16151E",
+   "under_text_diff_codes": 0,
+   "text_unity": "#DDD8CF",
+   "text_proof": "#D8D3CA",
+   "text_diff_codes": 5,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 216.4,
+   "target_luma": 221.4,
+   "bloom_share": 0.0,
+   "panel": "P03_LiBai_Dream/de",
+   "poem": "P03_LiBai_Dream",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S3→S4@0.195",
+   "background": "#3F4559",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#3F4559",
+   "under_text_proof": "#3F4559",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D3D8E2",
+   "text_proof": "#CFD4DD",
+   "text_diff_codes": 5,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 215.7,
+   "target_luma": 220.6,
+   "bloom_share": 0.0,
+   "panel": "P04a_Rilke/de",
+   "poem": "P04a_Rilke",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S4",
+   "background": "#424B67",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#424B67",
+   "under_text_proof": "#424B67",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D3D8E2",
+   "text_proof": "#CFD4DD",
+   "text_diff_codes": 5,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 215.7,
+   "target_luma": 220.6,
+   "bloom_share": 0.0,
+   "panel": "P04b_Urlicht/de",
+   "poem": "P04b_Urlicht",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S6",
+   "background": "#827B75",
+   "scrim": [
+    "#E8F1F5",
+    0.25,
+    0.116
+   ],
+   "text_alpha": 1.0,
+   "under_text_unity": "#A0A4A6",
+   "under_text_proof": "#A4A3A2",
+   "under_text_diff_codes": 4,
+   "text_unity": "#1F2A3A",
+   "text_proof": "#1F2A3A",
+   "text_diff_codes": 0,
+   "text_vs_target_codes": 0,
+   "text_luma_unity": 40.8,
+   "target_luma": 40.8,
+   "bloom_share": 0.0,
+   "panel": "P06_Dream_Dawn/de",
+   "poem": "P06_Dream_Dawn",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S7b",
+   "background": "#081E36",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#081E36",
+   "under_text_proof": "#081E36",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D4DDE3",
+   "text_proof": "#CFD8DD",
+   "text_diff_codes": 6,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 219.5,
+   "target_luma": 224.4,
+   "bloom_share": 0.0,
+   "panel": "P07_HeBo/de",
+   "poem": "P07_HeBo",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S7b",
+   "background": "#2F2328",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#2F2328",
+   "under_text_proof": "#2F2328",
+   "under_text_diff_codes": 0,
+   "text_unity": "#E6D7D1",
+   "text_proof": "#E0D2CD",
+   "text_diff_codes": 6,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 217.8,
+   "target_luma": 222.5,
+   "bloom_share": 0.0016,
+   "panel": "P08a_Dream_Dusk/de",
+   "poem": "P08a_Dream_Dusk",
+   "bloom": {
+    "halo_max_codes": 0.38,
+    "on_text_max_codes": 0.74,
+    "prefilter_max": 0.00273
+   }
+  },
+  {
+   "grade": "S8",
+   "background": "#C9B2A3",
+   "scrim": [
+    "#0E1A2F",
+    0.3,
+    0.367
+   ],
+   "text_alpha": 0.9,
+   "under_text_unity": "#AF978B",
+   "under_text_proof": "#AC988D",
+   "under_text_diff_codes": 3,
+   "text_unity": "#E7D9D2",
+   "text_proof": "#E5D6D0",
+   "text_diff_codes": 3,
+   "text_vs_target_codes": 4,
+   "text_luma_unity": 219.5,
+   "target_luma": 222.5,
+   "bloom_share": 0.0,
+   "panel": "P08b_Zhuangzi/de/t=12.0/w=1500",
+   "poem": "P08b_Zhuangzi_Xiaoyao",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S9a",
+   "background": "#04060E",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#04060E",
+   "under_text_proof": "#04060E",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D4DDE3",
+   "text_proof": "#CFD8DD",
+   "text_diff_codes": 6,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 219.5,
+   "target_luma": 224.4,
+   "bloom_share": 0.0,
+   "panel": "P09_Tianwen/de",
+   "poem": "P09_Tianwen",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S11",
+   "background": "#080C16",
+   "scrim": null,
+   "text_alpha": 0.8,
+   "under_text_unity": "#080C16",
+   "under_text_proof": "#080C16",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D6CBB8",
+   "text_proof": "#CBC2B2",
+   "text_diff_codes": 11,
+   "text_vs_target_codes": 12,
+   "text_luma_unity": 204.0,
+   "target_luma": 214.8,
+   "bloom_share": 0.0,
+   "panel": "P11_Zhuangzi_Butterfly/de",
+   "poem": "P11_Zhuangzi_Butterfly",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S12",
+   "background": "#060A11",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#060A11",
+   "under_text_proof": "#060A11",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D4DDE3",
+   "text_proof": "#CFD8DD",
+   "text_diff_codes": 6,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 219.5,
+   "target_luma": 224.4,
+   "bloom_share": 0.0,
+   "panel": "P12a_LiBai_Wake/de",
+   "poem": "P12a_LiBai_Wake",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S12",
+   "background": "#060910",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#060910",
+   "under_text_proof": "#060910",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D4DDE3",
+   "text_proof": "#CFD8DD",
+   "text_diff_codes": 6,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 219.5,
+   "target_luma": 224.4,
+   "bloom_share": 0.0,
+   "panel": "P12b_Keats/de",
+   "poem": "P12b_Keats",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S8",
+   "background": "#C8B1A2",
+   "scrim": [
+    "#0E1A2F",
+    0.3,
+    0.367
+   ],
+   "text_alpha": 0.9,
+   "under_text_unity": "#AE968A",
+   "under_text_proof": "#AB978C",
+   "under_text_diff_codes": 3,
+   "text_unity": "#E7D9D2",
+   "text_proof": "#E5D6D0",
+   "text_diff_codes": 3,
+   "text_vs_target_codes": 4,
+   "text_luma_unity": 219.5,
+   "target_luma": 222.5,
+   "bloom_share": 0.0,
+   "panel": "P08b_Zhuangzi/en/t=12.0/w=3096",
+   "poem": "P08b_Zhuangzi_Xiaoyao",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S8",
+   "background": "#C8B0A1",
+   "scrim": [
+    "#0E1A2F",
+    0.3,
+    0.367
+   ],
+   "text_alpha": 0.9,
+   "under_text_unity": "#AE9589",
+   "under_text_proof": "#AB968B",
+   "under_text_diff_codes": 3,
+   "text_unity": "#E7D9D2",
+   "text_proof": "#E5D6D0",
+   "text_diff_codes": 3,
+   "text_vs_target_codes": 4,
+   "text_luma_unity": 219.5,
+   "target_luma": 222.5,
+   "bloom_share": 0.0,
+   "panel": "P08b_Zhuangzi/zh/t=12.0/w=1020",
+   "poem": "P08b_Zhuangzi_Xiaoyao",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S8",
+   "background": "#C8B0A1",
+   "scrim": [
+    "#0E1A2F",
+    0.3,
+    0.367
+   ],
+   "text_alpha": 0.9,
+   "under_text_unity": "#AE9589",
+   "under_text_proof": "#AB968B",
+   "under_text_diff_codes": 3,
+   "text_unity": "#E7D9D2",
+   "text_proof": "#E5D6D0",
+   "text_diff_codes": 3,
+   "text_vs_target_codes": 4,
+   "text_luma_unity": 219.5,
+   "target_luma": 222.5,
+   "bloom_share": 0.0,
+   "panel": "P08b_Zhuangzi/ja/t=12.0/w=1020",
+   "poem": "P08b_Zhuangzi_Xiaoyao",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S8",
+   "background": "#C8B0A1",
+   "scrim": [
+    "#0E1A2F",
+    0.3,
+    0.367
+   ],
+   "text_alpha": 0.9,
+   "under_text_unity": "#AE9589",
+   "under_text_proof": "#AB968B",
+   "under_text_diff_codes": 3,
+   "text_unity": "#E7D9D2",
+   "text_proof": "#E5D6D0",
+   "text_diff_codes": 3,
+   "text_vs_target_codes": 4,
+   "text_luma_unity": 219.5,
+   "target_luma": 222.5,
+   "bloom_share": 0.0,
+   "panel": "P08b_Zhuangzi/en/t=12.0/w=1020",
+   "poem": "P08b_Zhuangzi_Xiaoyao",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S8",
+   "background": "#B6A9A3",
+   "scrim": [
+    "#0E1A2F",
+    0.3,
+    0.367
+   ],
+   "text_alpha": 0.9,
+   "under_text_unity": "#9B8F8B",
+   "under_text_proof": "#9B908D",
+   "under_text_diff_codes": 2,
+   "text_unity": "#E7D8D2",
+   "text_proof": "#E4D6D0",
+   "text_diff_codes": 3,
+   "text_vs_target_codes": 4,
+   "text_luma_unity": 218.8,
+   "target_luma": 222.5,
+   "bloom_share": 0.0,
+   "panel": "P08b_Zhuangzi/en/t=1.5/w=1539",
+   "poem": "P08b_Zhuangzi_Xiaoyao",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S8",
+   "background": "#C9B1A2",
+   "scrim": [
+    "#0E1A2F",
+    0.3,
+    0.367
+   ],
+   "text_alpha": 0.9,
+   "under_text_unity": "#AF968A",
+   "under_text_proof": "#AC978C",
+   "under_text_diff_codes": 3,
+   "text_unity": "#E7D9D2",
+   "text_proof": "#E5D6D0",
+   "text_diff_codes": 3,
+   "text_vs_target_codes": 4,
+   "text_luma_unity": 219.5,
+   "target_luma": 222.5,
+   "bloom_share": 0.0,
+   "panel": "P08b_Zhuangzi/en/t=5.5/w=1539",
+   "poem": "P08b_Zhuangzi_Xiaoyao",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S8",
+   "background": "#C9B1A2",
+   "scrim": [
+    "#0E1A2F",
+    0.3,
+    0.367
+   ],
+   "text_alpha": 0.9,
+   "under_text_unity": "#AF968A",
+   "under_text_proof": "#AC978C",
+   "under_text_diff_codes": 3,
+   "text_unity": "#E7D9D2",
+   "text_proof": "#E5D6D0",
+   "text_diff_codes": 3,
+   "text_vs_target_codes": 4,
+   "text_luma_unity": 219.5,
+   "target_luma": 222.5,
+   "bloom_share": 0.0,
+   "panel": "P08b_Zhuangzi/en/t=12.0/w=1539",
+   "poem": "P08b_Zhuangzi_Xiaoyao",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S8",
+   "background": "#C9B1A2",
+   "scrim": [
+    "#0E1A2F",
+    0.3,
+    0.367
+   ],
+   "text_alpha": 0.9,
+   "under_text_unity": "#AF968A",
+   "under_text_proof": "#AC978C",
+   "under_text_diff_codes": 3,
+   "text_unity": "#E7D9D2",
+   "text_proof": "#E5D6D0",
+   "text_diff_codes": 3,
+   "text_vs_target_codes": 4,
+   "text_luma_unity": 219.5,
+   "target_luma": 222.5,
+   "bloom_share": 0.0,
+   "panel": "P08b_Zhuangzi/en/t=19.6/w=1539",
+   "poem": "P08b_Zhuangzi_Xiaoyao",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  }
+ ],
+ "credits_full_version_length_mm": 3196.1,
+ "coleridge_slip_mm": [
+  173.5,
+  151.0
+ ],
+ "coleridge_longest_verse_mm": 143.5,
+ "missing_count": 0,
+ "verdict": "PASS: no missing glyph (no tofu)",
+ "purple_verdict": "PASS: every panel outside scene 4 has <= 2 % purple (max 0.00 %)",
+ "n_lines": 379
+}

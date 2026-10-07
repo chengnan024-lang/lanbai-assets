@@ -1,0 +1,1556 @@
+{
+ "_what": "calib_final sections A / B / D through the PPv2 3.x Neutral path with the engine grades (grades_engine.json). Screen targets are those of calib_final (unchanged). \"set_engine\" = the fill to type in Unity INSTEAD of calib_final \"set\" (only where the engine missed by >= 3 codes).",
+ "source_grades_engine_sha256": "6b224dfe751e5f42cae93d7584db26bc4c7d49d858f6ac7b014853505091e56b",
+ "source_calib_sha256": "ac341a06c733a1c92c86414fc09171bb162ecda16556972c36629f269abd8cc8",
+ "resolve_at_codes": 3,
+ "lights": [
+  {
+   "scene": "S1",
+   "role": "主光：站牌灯管，路面灯池中心（灰卡朝上）",
+   "target": "#676F76",
+   "engine": "#666F75",
+   "codes": 1
+  },
+  {
+   "scene": "S1",
+   "role": "主光：站牌灯管照在站牌面上（白卡贴站牌；站牌珐琅新反照率 #DDE9EA → E 1.47）",
+   "target": "#D4DBDF",
+   "engine": "#D4DBDF",
+   "codes": 0
+  },
+  {
+   "scene": "S1",
+   "role": "补光：开着的车门漏光（冷，R_Stop 里的烘焙面光），路肩",
+   "target": "#3A4147",
+   "engine": "#3A4146",
+   "codes": 1
+  },
+  {
+   "scene": "S1",
+   "role": "车头灯（卤素 3200 K，实时双瓣聚光，只此一份）前方 10 m 路面",
+   "target": "#6B553D",
+   "engine": "#6B543D",
+   "codes": 1
+  },
+  {
+   "scene": "S1",
+   "role": "仅环境光 Trilight sky #1A2438（灰卡朝上）",
+   "target": "#050C18",
+   "engine": "#050D19",
+   "codes": 1
+  },
+  {
+   "scene": "S2",
+   "role": "车厢灯管（_CabinTubeLM），座垫上；头像补光按同一读数",
+   "target": "#585F64",
+   "engine": "#585F64",
+   "codes": 0
+  },
+  {
+   "scene": "S2",
+   "role": "钠灯扫光峰值（2050 K），座椅顶",
+   "target": "#623C25",
+   "engine": "#623C25",
+   "codes": 0
+  },
+  {
+   "scene": "S3",
+   "role": "主光：月光 9000 K，平行光（全片亮度基准 E=1；方位 -12° 仰角 +8°）",
+   "target": "#414C5D",
+   "engine": "#414B5D",
+   "codes": 1
+  },
+  {
+   "scene": "S3",
+   "role": "白卡（0.80）朝月：必须等于最亮云卡顶部 ±10",
+   "target": "#8D9CB1",
+   "engine": "#8C9CB1",
+   "codes": 1
+  },
+  {
+   "scene": "S4",
+   "role": "月光（轮廓光源），灰卡朝月",
+   "target": "#434C5D",
+   "engine": "#434C5D",
+   "codes": 0
+  },
+  {
+   "scene": "S4",
+   "role": "裂口光 #A99DE1，平行光，灰卡朝裂口",
+   "target": "#2B2946",
+   "engine": "#2B2946",
+   "codes": 0
+  },
+  {
+   "scene": "S4",
+   "role": "云海反光（自下而上 #5A6488），灰卡朝下",
+   "target": "#070915",
+   "engine": "#070A16",
+   "codes": 1
+  },
+  {
+   "scene": "S4",
+   "role": "灯管熄灭前基准",
+   "target": "#20242B",
+   "engine": "#20242B",
+   "codes": 0
+  },
+  {
+   "scene": "S4",
+   "role": "天窗光斑（U8–U9，叠加卡；白卡读数）",
+   "target": "#99A1AD",
+   "engine": "#98A1AD",
+   "codes": 1
+  },
+  {
+   "scene": "S4c",
+   "role": "门内环境 _Udon_CabinAmbient #B5C3DB ×0.30（灰卡朝前）",
+   "target": "#1E212B",
+   "engine": "#1E212B",
+   "codes": 0
+  },
+  {
+   "scene": "S6",
+   "role": "主光：晨日 3200 K，仰角 6°",
+   "target": "#957649",
+   "engine": "#967649",
+   "codes": 1
+  },
+  {
+   "scene": "S6",
+   "role": "白卡（0.80）朝日",
+   "target": "#E4C98F",
+   "engine": "#E4C98F",
+   "codes": 0
+  },
+  {
+   "scene": "S6",
+   "role": "天光环境 Trilight sky #5A78B8（灰卡朝上）",
+   "target": "#162643",
+   "engine": "#152743",
+   "codes": 1
+  },
+  {
+   "scene": "S6",
+   "role": "车厢环境 #98A4B8 ×0.5（灰卡朝前）",
+   "target": "#20262F",
+   "engine": "#1F262F",
+   "codes": 1
+  },
+  {
+   "scene": "S7a",
+   "role": "透过水面的日光 #B0D9F2（灰卡朝上）",
+   "target": "#446172",
+   "engine": "#436072",
+   "codes": 1
+  },
+  {
+   "scene": "S7a",
+   "role": "浅水车厢环境 #6186A7 ×0.6",
+   "target": "#0D212F",
+   "engine": "#0E2230",
+   "codes": 1
+  },
+  {
+   "scene": "S7b",
+   "role": "青铜灯焰暖光 2200 K，距灯 2 m",
+   "target": "#6C3F15",
+   "engine": "#6F3E16",
+   "codes": 3
+  },
+  {
+   "scene": "S7b",
+   "role": "同一盏灯的靛色远光 #2A557B，距灯 8 m",
+   "target": "#001325",
+   "engine": "#021426",
+   "codes": 2
+  },
+  {
+   "scene": "S8",
+   "role": "主/逆光：暮日 2400 K 在地平线，灰卡朝日",
+   "target": "#925A12",
+   "engine": "#935A14",
+   "codes": 2
+  },
+  {
+   "scene": "S8",
+   "role": "白卡（0.80）朝暮日",
+   "target": "#E4AD1E",
+   "engine": "#E5AD1F",
+   "codes": 1
+  },
+  {
+   "scene": "S8",
+   "role": "车厢环境 #828BAA ×0.45",
+   "target": "#1A1F2A",
+   "engine": "#1A1F2B",
+   "codes": 1
+  },
+  {
+   "scene": "S9a",
+   "role": "星光环境 Trilight sky #1A2A4A（灰卡朝上）",
+   "target": "#031024",
+   "engine": "#041025",
+   "codes": 1
+  },
+  {
+   "scene": "S9a",
+   "role": "镜线扫过时的点光 8000 K 峰值",
+   "target": "#38414F",
+   "engine": "#38404E",
+   "codes": 1
+  },
+  {
+   "scene": "S12",
+   "role": "主光：站牌灯管（同 S1）",
+   "target": "#667076",
+   "engine": "#656F76",
+   "codes": 1
+  }
+ ],
+ "unlit": [
+  {
+   "scene": "S1",
+   "element": "雾色（Exp）= 地平线",
+   "target": "#121A28",
+   "set": "#161B27",
+   "engine": "#121A29",
+   "codes": 1
+  },
+  {
+   "scene": "S1",
+   "element": "天顶（阴云夜）",
+   "target": "#070B14",
+   "set": "#09080D",
+   "engine": "#070B15",
+   "codes": 1
+  },
+  {
+   "scene": "S1",
+   "element": "朝镇方向的地平线（钠光照亮的云底）",
+   "target": "#241E22",
+   "set": "#2A1F1E",
+   "engine": "#241E22",
+   "codes": 0
+  },
+  {
+   "scene": "S1",
+   "element": "灯管发光体核心",
+   "target": "#EEF5F7",
+   "set": "#E7FEFF @ +1.03",
+   "engine": "#EEF6F8",
+   "codes": 1
+  },
+  {
+   "scene": "S1",
+   "element": "远镇钠灯点",
+   "target": "#DC8F51",
+   "set": "#FF7C00 @ +0.30",
+   "engine": "#DF8D51",
+   "codes": 3,
+   "set_engine": "#FF8103 @ +0.24",
+   "engine_after": "#DD8F51",
+   "codes_after": 1,
+   "xT0": 0.97,
+   "xT0_engine": 0.93
+  },
+  {
+   "scene": "S1",
+   "element": "灯锥内的雨丝",
+   "target": "#9AA8B4",
+   "set": "#9DADB7",
+   "engine": "#99A8B4",
+   "codes": 1
+  },
+  {
+   "scene": "S1",
+   "element": "尾灯",
+   "target": "#B2252C",
+   "set": "#CB1500",
+   "engine": "#B6272D",
+   "codes": 4,
+   "set_engine": "#C51104",
+   "engine_after": "#B2252C",
+   "codes_after": 0,
+   "xT0": 0.47,
+   "xT0_engine": 0.44
+  },
+  {
+   "scene": "S2",
+   "element": "雾色",
+   "target": "#0A0F18",
+   "set": "#0D0F15",
+   "engine": "#0B1019",
+   "codes": 1
+  },
+  {
+   "scene": "S2",
+   "element": "天",
+   "target": "#05080F",
+   "set": "#060405",
+   "engine": "#050910",
+   "codes": 1
+  },
+  {
+   "scene": "S2",
+   "element": "收音机表盘",
+   "target": "#E19867",
+   "set": "#FF7703 @ +0.71",
+   "engine": "#E39868",
+   "codes": 2
+  },
+  {
+   "scene": "S2",
+   "element": "钠灯灯头经过",
+   "target": "#EDAD77",
+   "set": "#FF7B00 @ +1.14",
+   "engine": "#EEAD78",
+   "codes": 1
+  },
+  {
+   "scene": "S3",
+   "element": "光之海 钠灯",
+   "target": "#E8A050",
+   "set": "#FF8525 @ +1.48",
+   "engine": "#EC9E4F",
+   "codes": 4,
+   "set_engine": "#FF8B29 @ +1.38",
+   "engine_after": "#E9A050",
+   "codes_after": 1,
+   "xT0": 1.23,
+   "xT0_engine": 1.15
+  },
+  {
+   "scene": "S3",
+   "element": "天顶",
+   "target": "#08101F",
+   "set": "#151928",
+   "engine": "#081120",
+   "codes": 1
+  },
+  {
+   "scene": "S3",
+   "element": "地平线（背月）= 云上雾色",
+   "target": "#111B30",
+   "set": "#242A40",
+   "engine": "#121B31",
+   "codes": 1
+  },
+  {
+   "scene": "S3",
+   "element": "月旁天光（10°）",
+   "target": "#26344F",
+   "set": "#404B66",
+   "engine": "#25344F",
+   "codes": 1
+  },
+  {
+   "scene": "S3",
+   "element": "月面（不裁切，可见月海）",
+   "target": "#EAEEF4",
+   "set": "#F0F5FF @ +1.67",
+   "engine": "#EAEEF5",
+   "codes": 1
+  },
+  {
+   "scene": "S3",
+   "element": "月晕（6°）",
+   "target": "#5A6A88",
+   "set": "#818DAB",
+   "engine": "#596A88",
+   "codes": 1
+  },
+  {
+   "scene": "S3",
+   "element": "月光之路核心",
+   "target": "#DDE7F5",
+   "set": "#CFDEFF @ +1.74",
+   "engine": "#DDE8F6",
+   "codes": 1
+  },
+  {
+   "scene": "S3",
+   "element": "入云白雾",
+   "target": "#4A5568",
+   "set": "#6C7382",
+   "engine": "#495467",
+   "codes": 1
+  },
+  {
+   "scene": "S3",
+   "element": "橙色云底（城市照亮）",
+   "target": "#7A4A2A",
+   "set": "#AA652C",
+   "engine": "#7E492A",
+   "codes": 4,
+   "set_engine": "#A5672D",
+   "engine_after": "#7A4A2A",
+   "codes_after": 0,
+   "xT0": 0.18,
+   "xT0_engine": 0.17
+  },
+  {
+   "scene": "S3",
+   "element": "远处裂口（一笔白线，极淡紫晕）",
+   "target": "#D2CEE4",
+   "set": "#E6D8FF @ +1.08",
+   "engine": "#D2CEE5",
+   "codes": 1
+  },
+  {
+   "scene": "S4",
+   "element": "虚空天色（>60° 或 >+35°）",
+   "target": "#070A14",
+   "set": "#0E1217",
+   "engine": "#070B15",
+   "codes": 1
+  },
+  {
+   "scene": "S4",
+   "element": "光雾带 裂口旁 = 该方位雾色",
+   "target": "#484D63",
+   "set": "#67697D",
+   "engine": "#474C62",
+   "codes": 1
+  },
+  {
+   "scene": "S4",
+   "element": "光雾带 50° 外",
+   "target": "#2A3041",
+   "set": "#424755",
+   "engine": "#2A3041",
+   "codes": 0
+  },
+  {
+   "scene": "S4",
+   "element": "全局雾色 RenderSettings（光雾带 30° 处）",
+   "target": "#353B4F",
+   "set": "#505466",
+   "engine": "#343B4F",
+   "codes": 1
+  },
+  {
+   "scene": "S4",
+   "element": "紫晕（呼吸中值）",
+   "target": "#5B57A1",
+   "set": "#8275D0",
+   "engine": "#5B57A2",
+   "codes": 1
+  },
+  {
+   "scene": "S4",
+   "element": "光束（两束叠加处）",
+   "target": "#31335A",
+   "set": "#4C4A74",
+   "engine": "#30335A",
+   "codes": 1
+  },
+  {
+   "scene": "S4",
+   "element": "裂口下云海（叠加卡）",
+   "target": "#495270",
+   "set": "#696F8D",
+   "engine": "#485270",
+   "codes": 1
+  },
+  {
+   "scene": "S4",
+   "element": "裂口边缘辉光",
+   "target": "#C0B9E4",
+   "set": "#C6B4FF @ +1.04",
+   "engine": "#BFB8E5",
+   "codes": 1
+  },
+  {
+   "scene": "S4",
+   "element": "裂口纤维",
+   "target": "#E2E8F3",
+   "set": "#DFE6FF @ +1.56",
+   "engine": "#E2E9F4",
+   "codes": 1
+  },
+  {
+   "scene": "S4",
+   "element": "裂口核心：未染的白",
+   "target": "#F5F2EC",
+   "set": "#FFEDD1 @ +1.84",
+   "engine": "#F6F3EC",
+   "codes": 1
+  },
+  {
+   "scene": "S4c",
+   "element": "第 1 重光唇之间的雾",
+   "target": "#1D2336",
+   "set": "#2A3347",
+   "engine": "#1D2336",
+   "codes": 0
+  },
+  {
+   "scene": "S4c",
+   "element": "第 8 重光唇之间的雾",
+   "target": "#53606E",
+   "set": "#6E808D",
+   "engine": "#53606E",
+   "codes": 0
+  },
+  {
+   "scene": "S4c",
+   "element": "光唇纤维 第 1 重",
+   "target": "#E6E1F2",
+   "set": "#DFCFFF @ +1.96",
+   "engine": "#E6E1F2",
+   "codes": 0
+  },
+  {
+   "scene": "S4c",
+   "element": "光唇纤维 第 4 重",
+   "target": "#D9DFEE",
+   "set": "#CBD8FF @ +1.78",
+   "engine": "#D9DFEE",
+   "codes": 0
+  },
+  {
+   "scene": "S4c",
+   "element": "光唇纤维 第 8 重（瓶覗）",
+   "target": "#C2D8E2",
+   "set": "#BCEAFF @ +1.29",
+   "engine": "#C2D8E2",
+   "codes": 0
+  },
+  {
+   "scene": "S4c",
+   "element": "Lichtchen 表盘（提亮一档后；S4c 下可达的最饱和值）",
+   "target": "#F2B169",
+   "set": "#FF7B00 @ +2.13",
+   "engine": "#F3B169",
+   "codes": 1
+  },
+  {
+   "scene": "S4c",
+   "element": "前方暖白光点",
+   "target": "#FFF1DC",
+   "set": "#FFC187 @ +2.79",
+   "engine": "#FFF1DC",
+   "codes": 0
+  },
+  {
+   "scene": "S6",
+   "element": "天顶",
+   "target": "#3E64A6",
+   "set": "#5B7ED7",
+   "engine": "#3F64A7",
+   "codes": 1
+  },
+  {
+   "scene": "S6",
+   "element": "地影带",
+   "target": "#8C98B8",
+   "set": "#B8C4F7",
+   "engine": "#8B98B8",
+   "codes": 1
+  },
+  {
+   "scene": "S6",
+   "element": "金星带（珍珠）",
+   "target": "#CFB7B7",
+   "set": "#FFCFCB @ +0.61",
+   "engine": "#CFB7B7",
+   "codes": 0
+  },
+  {
+   "scene": "S6",
+   "element": "日侧地平线",
+   "target": "#F2C79A",
+   "set": "#FFA26F @ +1.83",
+   "engine": "#F2C79A",
+   "codes": 0
+  },
+  {
+   "scene": "S6",
+   "element": "雾色",
+   "target": "#C4B8C0",
+   "set": "#FFE4F0 @ +0.31",
+   "engine": "#C4B8C0",
+   "codes": 0
+  },
+  {
+   "scene": "S6",
+   "element": "云影（v2 云卡目标）",
+   "target": "#8593AA",
+   "set": "#AEBCDD",
+   "engine": "#8593AA",
+   "codes": 0
+  },
+  {
+   "scene": "S6",
+   "element": "脚下远海",
+   "target": "#1C3D63",
+   "set": "#304F7A",
+   "engine": "#1C3D63",
+   "codes": 0
+  },
+  {
+   "scene": "S6",
+   "element": "日盘（小面积，可裁切）",
+   "target": "#FFF3DE",
+   "set": "#FFCE9E @ +2.55",
+   "engine": "#FFF3DE",
+   "codes": 0
+  },
+  {
+   "scene": "S7a",
+   "element": "斯涅尔窗核心",
+   "target": "#E6F3F8",
+   "set": "#D9F4FF @ +1.98",
+   "engine": "#E7F4F9",
+   "codes": 1
+  },
+  {
+   "scene": "S7a",
+   "element": "浅水雾 0–15 m",
+   "target": "#507DA6",
+   "set": "#77A0D2",
+   "engine": "#4F7DA6",
+   "codes": 1
+  },
+  {
+   "scene": "S7a",
+   "element": "光柱（叠加结果）",
+   "target": "#90BFE9",
+   "set": "#8AB2FF @ +1.30",
+   "engine": "#8FBFE9",
+   "codes": 1
+  },
+  {
+   "scene": "S7a",
+   "element": "全反射暗镜",
+   "target": "#11395E",
+   "set": "#2C4B72",
+   "engine": "#14395E",
+   "codes": 3,
+   "set_engine": "#294B72",
+   "engine_after": "#11395E",
+   "codes_after": 0,
+   "xT0": 0.07,
+   "xT0_engine": 0.07
+  },
+  {
+   "scene": "S7a",
+   "element": "水下天空渐变 上",
+   "target": "#94CAE9",
+   "set": "#8FC3FF @ +1.30",
+   "engine": "#93CAE9",
+   "codes": 1
+  },
+  {
+   "scene": "S7a",
+   "element": "水下天空渐变 中",
+   "target": "#3E6486",
+   "set": "#5F80A4",
+   "engine": "#3D6486",
+   "codes": 1
+  },
+  {
+   "scene": "S7a",
+   "element": "焦散（座椅上）",
+   "target": "#ACD4ED",
+   "set": "#9FCBFF @ +1.46",
+   "engine": "#ABD5ED",
+   "codes": 1
+  },
+  {
+   "scene": "S7a",
+   "element": "生物荧光",
+   "target": "#8AC6FF",
+   "set": "#5E7AFF @ +2.73",
+   "engine": "#8CC8FF",
+   "codes": 2
+  },
+  {
+   "scene": "S7a",
+   "element": "海雪",
+   "target": "#697987",
+   "set": "#8F9AA5",
+   "engine": "#687986",
+   "codes": 1
+  },
+  {
+   "scene": "S7b",
+   "element": "水雾 15–60 m",
+   "target": "#1A4163",
+   "set": "#334E69",
+   "engine": "#1C4062",
+   "codes": 2
+  },
+  {
+   "scene": "S7b",
+   "element": "深水雾（宫殿）",
+   "target": "#04121E",
+   "set": "#0D181F",
+   "engine": "#05131F",
+   "codes": 1
+  },
+  {
+   "scene": "S7b",
+   "element": "深渊",
+   "target": "#02070F",
+   "set": "#040302",
+   "engine": "#03070F",
+   "codes": 1
+  },
+  {
+   "scene": "S7b",
+   "element": "灯焰",
+   "target": "#FFC46A",
+   "set": "#FF5E2A @ +3.11",
+   "engine": "#FFC46A",
+   "codes": 0
+  },
+  {
+   "scene": "S7b",
+   "element": "灯晕卡中段（靛）",
+   "target": "#2A557B",
+   "set": "#446282",
+   "engine": "#29547B",
+   "codes": 1
+  },
+  {
+   "scene": "S7b",
+   "element": "船体生物光",
+   "target": "#8AC6FF",
+   "set": "#6676FF @ +2.35",
+   "engine": "#8CC6FF",
+   "codes": 2
+  },
+  {
+   "scene": "S7b",
+   "element": "海底玫瑰光（7c 末）",
+   "target": "#2A1E30",
+   "set": "#392735",
+   "engine": "#291E30",
+   "codes": 1
+  },
+  {
+   "scene": "S8",
+   "element": "头顶海水",
+   "target": "#10263F",
+   "set": "#1C304B",
+   "engine": "#11263F",
+   "codes": 1
+  },
+  {
+   "scene": "S8",
+   "element": "天花近地平镜光",
+   "target": "#C98A7A",
+   "set": "#FFA495 @ +0.01",
+   "engine": "#CA8A79",
+   "codes": 1
+  },
+  {
+   "scene": "S8",
+   "element": "天缝",
+   "target": "#F2A56B",
+   "set": "#FF855C @ +1.37",
+   "engine": "#F3A56A",
+   "codes": 1
+  },
+  {
+   "scene": "S8",
+   "element": "日线",
+   "target": "#FFE2B0",
+   "set": "#FF9167 @ +2.74",
+   "engine": "#FFE3B0",
+   "codes": 1
+  },
+  {
+   "scene": "S8",
+   "element": "玫瑰带",
+   "target": "#E7A0A0",
+   "set": "#FF9396 @ +0.92",
+   "engine": "#E8A0A0",
+   "codes": 1
+  },
+  {
+   "scene": "S8",
+   "element": "中天 靛灰",
+   "target": "#808AB2",
+   "set": "#92A3DF",
+   "engine": "#7F8AB3",
+   "codes": 1
+  },
+  {
+   "scene": "S8",
+   "element": "天顶",
+   "target": "#3D4A80",
+   "set": "#4B5997",
+   "engine": "#3D4980",
+   "codes": 1
+  },
+  {
+   "scene": "S8",
+   "element": "云影（v2 云卡目标）",
+   "target": "#363D59",
+   "set": "#424B6A",
+   "engine": "#353D5A",
+   "codes": 1
+  },
+  {
+   "scene": "S8",
+   "element": "雾色 8-i",
+   "target": "#B77F78",
+   "set": "#DE9692",
+   "engine": "#B87E78",
+   "codes": 1
+  },
+  {
+   "scene": "S8",
+   "element": "雾色 8-ii（另一片天，地平线处）",
+   "target": "#B98A86",
+   "set": "#E0A4A3",
+   "engine": "#B98A86",
+   "codes": 0
+  },
+  {
+   "scene": "S8",
+   "element": "另一片天 天底",
+   "target": "#2E3C66",
+   "set": "#3B4A78",
+   "engine": "#2E3C66",
+   "codes": 0
+  },
+  {
+   "scene": "S8b",
+   "element": "蓝时 最纯的蓝",
+   "target": "#2E4F8A",
+   "set": "#3F5790",
+   "engine": "#2E4F8A",
+   "codes": 0
+  },
+  {
+   "scene": "S8b",
+   "element": "蓝时 地平线",
+   "target": "#6F86B0",
+   "set": "#8093C2",
+   "engine": "#6E86B0",
+   "codes": 1
+  },
+  {
+   "scene": "S9a",
+   "element": "点燃前的黑（可达值）",
+   "target": "#04060E",
+   "set": "#050000",
+   "engine": "#05060E",
+   "codes": 1
+  },
+  {
+   "scene": "S9a",
+   "element": "星空底",
+   "target": "#08112A",
+   "set": "#0D0F23",
+   "engine": "#09112B",
+   "codes": 1
+  },
+  {
+   "scene": "S9a",
+   "element": "银河漫射最亮处",
+   "target": "#6F82A0",
+   "set": "#6A758A",
+   "engine": "#6E81A0",
+   "codes": 1
+  },
+  {
+   "scene": "S9a",
+   "element": "银心暖尘",
+   "target": "#C8B79A",
+   "set": "#CBAE82",
+   "engine": "#CAB799",
+   "codes": 2
+  },
+  {
+   "scene": "S9a",
+   "element": "镜线",
+   "target": "#DCE8FF",
+   "set": "#8D95FF @ +1.89",
+   "engine": "#D9E8FF",
+   "codes": 3,
+   "set_engine": "#9095FF @ +1.89",
+   "engine_after": "#DCE8FF",
+   "codes_after": 0,
+   "xT0": 3.75,
+   "xT0_engine": 3.75
+  },
+  {
+   "scene": "S9b",
+   "element": "第 13 面镜的远缘（F14 起）",
+   "target": "#4E545E",
+   "set": "#4B4D51",
+   "engine": "#4D535D",
+   "codes": 1
+  },
+  {
+   "scene": "S9b",
+   "element": "星尘",
+   "target": "#CDBF9C",
+   "set": "#D0B784",
+   "engine": "#D0BF9A",
+   "codes": 3,
+   "set_engine": "#CCB686",
+   "engine_after": "#CDBF9C",
+   "codes_after": 0,
+   "xT0": 0.66,
+   "xT0_engine": 0.63
+  },
+  {
+   "scene": "S10",
+   "element": "藍白遮罩球（桌面）",
+   "target": "#E8F1F5",
+   "set": "#D5F0FF @ +1.42",
+   "engine": "#E8F1F5",
+   "codes": 0
+  },
+  {
+   "scene": "S10",
+   "element": "藍白遮罩球（VR）",
+   "target": "#D7E3E8",
+   "set": "#D3F0FF @ +0.83",
+   "engine": "#D7E3E8",
+   "codes": 0
+  },
+  {
+   "scene": "S10",
+   "element": "第二次白",
+   "target": "#A3B4BE",
+   "set": "#ADC7D9",
+   "engine": "#A3B4BE",
+   "codes": 0
+  },
+  {
+   "scene": "S11",
+   "element": "头顶的海",
+   "target": "#0F2438",
+   "set": "#0F283C",
+   "engine": "#122438",
+   "codes": 3,
+   "set_engine": "#09283C",
+   "engine_after": "#0F2438",
+   "codes_after": 0,
+   "xT0": 0.03,
+   "xT0_engine": 0.03
+  },
+  {
+   "scene": "S11",
+   "element": "海面钠光闪烁",
+   "target": "#D08A59",
+   "set": "#FF8003 @ +0.19",
+   "engine": "#D28A59",
+   "codes": 2
+  },
+  {
+   "scene": "S11",
+   "element": "雾色",
+   "target": "#0A0F18",
+   "set": "#0D0F15",
+   "engine": "#0B1019",
+   "codes": 1
+  },
+  {
+   "scene": "S12",
+   "element": "天顶（云开）",
+   "target": "#070B14",
+   "set": "#09080C",
+   "engine": "#070C15",
+   "codes": 1
+  },
+  {
+   "scene": "S12",
+   "element": "藍白带 起",
+   "target": "#1B2431",
+   "set": "#20252E",
+   "engine": "#1B2431",
+   "codes": 0
+  },
+  {
+   "scene": "S12",
+   "element": "藍白带 8 分钟后",
+   "target": "#33465B",
+   "set": "#384757",
+   "engine": "#32465B",
+   "codes": 1
+  },
+  {
+   "scene": "S12",
+   "element": "雾色",
+   "target": "#111B2A",
+   "set": "#151C27",
+   "engine": "#111C2A",
+   "codes": 1
+  },
+  {
+   "scene": "S12",
+   "element": "Lichtchen 核心",
+   "target": "#FCF5DA",
+   "set": "#FFC985 @ +1.83",
+   "engine": "#FFF5DA",
+   "codes": 3,
+   "kept": "calib fill kept: within 3 codes, and the re-solve would cut its bloom (xT0 2.70 -> 2.04)"
+  },
+  {
+   "scene": "S12",
+   "element": "Lichtchen 光晕（α 0.30）",
+   "target": "#EBECA6",
+   "set": "#FFFF6E @ +0.70",
+   "engine": "#EDEDA6",
+   "codes": 2
+  },
+  {
+   "scene": "S12",
+   "element": "田上萤火虫",
+   "target": "#DEEA88",
+   "set": "#E2FF4A @ +0.63",
+   "engine": "#E0EB89",
+   "codes": 2
+  },
+  {
+   "scene": "S12",
+   "element": "远镇灯",
+   "target": "#E0914A",
+   "set": "#FF7E1E @ +0.40",
+   "engine": "#E3904A",
+   "codes": 3,
+   "set_engine": "#FF8220 @ +0.33",
+   "engine_after": "#E1914A",
+   "codes_after": 1,
+   "xT0": 1.0,
+   "xT0_engine": 0.95
+  }
+ ],
+ "overlay": [
+  {
+   "when": "9→10 遮罩阶段",
+   "grade": "S9b + WHITE_SAT(1)",
+   "role": "藍白（桌面）",
+   "target": "#E8F1F5",
+   "set": "#D6F5FF @ +0.57",
+   "engine": "#E8F2F6",
+   "codes": 1
+  },
+  {
+   "when": "9→10 遮罩阶段",
+   "grade": "S9b + WHITE_SAT(1)",
+   "role": "藍白（VR）",
+   "target": "#D7E3E8",
+   "set": "#D5F6FF @ +0.06",
+   "engine": "#D7E4E9",
+   "codes": 1
+  },
+  {
+   "when": "10 保持",
+   "grade": "S10",
+   "role": "藍白（桌面）",
+   "target": "#E8F1F5",
+   "set": "#D5F0FF @ +1.42",
+   "engine": "#E8F1F5",
+   "codes": 0
+  },
+  {
+   "when": "10 保持",
+   "grade": "S10",
+   "role": "藍白（VR）",
+   "target": "#D7E3E8",
+   "set": "#D3F0FF @ +0.83",
+   "engine": "#D7E3E8",
+   "codes": 0
+  },
+  {
+   "when": "10→11 收缩",
+   "grade": "S11",
+   "role": "藍白（桌面），遮罩在 S11 下收缩",
+   "target": "#E8F1F5",
+   "set": "#D5F4FF @ +1.20",
+   "engine": "#E8F1F5",
+   "codes": 0
+  },
+  {
+   "when": "10→11 收缩",
+   "grade": "S11",
+   "role": "藍白（VR），遮罩在 S11 下收缩",
+   "target": "#D7E3E8",
+   "set": "#D4F5FF @ +0.66",
+   "engine": "#D7E3E8",
+   "codes": 0
+  },
+  {
+   "when": "11→12 升起",
+   "grade": "S11",
+   "role": "第二次白（升起与保持）",
+   "target": "#A3B4BE",
+   "set": "#ADC8D5",
+   "engine": "#A3B4BE",
+   "codes": 0
+  },
+  {
+   "when": "11→12 收缩",
+   "grade": "S12",
+   "role": "第二次白（硬切到 S12 之后收缩）",
+   "target": "#A3B4BE",
+   "set": "#AABEC7",
+   "engine": "#A2B4BE",
+   "codes": 1
+  },
+  {
+   "when": "4c→5 黑",
+   "grade": "S4c",
+   "role": "投入之黑",
+   "target": "#030409",
+   "set": "#030400",
+   "engine": "#03040A",
+   "codes": 1
+  },
+  {
+   "when": "5→6 黑",
+   "grade": "S6",
+   "role": "投入之黑（硬切到 S6 之后）",
+   "target": "#030409",
+   "set": "#090200",
+   "engine": "#030409",
+   "codes": 0
+  }
+ ],
+ "bloom_t0": {
+  "S1": 228.4,
+  "S2": 228.3,
+  "S3": 228.3,
+  "S4": 228.1,
+  "S4c": 228.2,
+  "S6": 227.6,
+  "S7a": 228.1,
+  "S7b": 228.1,
+  "S8": 228.9,
+  "S8b": 228.3,
+  "S9a": 228.3,
+  "S9b": 228.7,
+  "S10": 224.3,
+  "S11": 228.3,
+  "S12": 228.4
+ },
+ "blacks": {
+  "S1": {
+   "target": "#02060D",
+   "engine": "#02060D"
+  },
+  "S2": {
+   "target": "#02060C",
+   "engine": "#02060C"
+  },
+  "S3": {
+   "target": "#01060E",
+   "engine": "#01060E"
+  },
+  "S4": {
+   "target": "#03040C",
+   "engine": "#03030C"
+  },
+  "S4c": {
+   "target": "#02020A",
+   "engine": "#02020A"
+  },
+  "S6": {
+   "target": "#000309",
+   "engine": "#000309"
+  },
+  "S7a": {
+   "target": "#030B0F",
+   "engine": "#030B0F"
+  },
+  "S7b": {
+   "target": "#01060E",
+   "engine": "#01060E"
+  },
+  "S8": {
+   "target": "#00050D",
+   "engine": "#00050D"
+  },
+  "S8b": {
+   "target": "#01060E",
+   "engine": "#01060E"
+  },
+  "S9a": {
+   "target": "#01060E",
+   "engine": "#01060E"
+  },
+  "S9b": {
+   "target": "#01060E",
+   "engine": "#01060D"
+  },
+  "S10": {
+   "target": "#000000",
+   "engine": "#010101"
+  },
+  "S11": {
+   "target": "#02060C",
+   "engine": "#02060C"
+  },
+  "S12": {
+   "target": "#01060D",
+   "engine": "#01060D"
+  }
+ },
+ "colour_patches": {
+  "names": [
+   "站牌字 sign ink",
+   "裂口紫晕 wound violet",
+   "尾灯红 tail red",
+   "钠灯橙 sodium",
+   "藍 ai sea blue",
+   "暮玫瑰 dusk rose",
+   "湿叶绿 wet leaf",
+   "Lichtchen 暖白"
+  ],
+  "linear": [
+   [
+    0.018,
+    0.071,
+    0.195
+   ],
+   [
+    0.223,
+    0.178,
+    0.63
+   ],
+   [
+    0.597,
+    0.008,
+    0.002
+   ],
+   [
+    1.231,
+    0.248,
+    0.004
+   ],
+   [
+    0.02,
+    0.1,
+    0.25
+   ],
+   [
+    0.55,
+    0.25,
+    0.2
+   ],
+   [
+    0.04,
+    0.09,
+    0.03
+   ],
+   [
+    1.0,
+    0.75,
+    0.45
+   ]
+  ],
+  "look": {
+   "S1": [
+    "#1D4A7B",
+    "#7D77BF",
+    "#B2252E",
+    "#DC8F53",
+    "#205889",
+    "#B38C87",
+    "#365339",
+    "#D6CBB9"
+   ],
+   "S2": [
+    "#234672",
+    "#7972B4",
+    "#A82E33",
+    "#D48B5C",
+    "#28547F",
+    "#AA8682",
+    "#364F39",
+    "#CFC4B3"
+   ],
+   "S3": [
+    "#05345F",
+    "#5956A1",
+    "#900A19",
+    "#BE682A",
+    "#013F6C",
+    "#8E6865",
+    "#203B28",
+    "#B4A793"
+   ],
+   "S4": [
+    "#0B335F",
+    "#5B57A1",
+    "#900E1C",
+    "#C06B33",
+    "#083F6B",
+    "#906967",
+    "#233B28",
+    "#B7AB96"
+   ],
+   "S4c": [
+    "#1A365C",
+    "#605898",
+    "#8E1C21",
+    "#B96B3A",
+    "#1D4168",
+    "#8D6965",
+    "#2A3D2B",
+    "#B1A491"
+   ],
+   "S6": [
+    "#0E3A63",
+    "#645CA2",
+    "#9B0207",
+    "#C46B00",
+    "#0C456F",
+    "#966D64",
+    "#264227",
+    "#B8AA8E"
+   ],
+   "S7a": [
+    "#033965",
+    "#5E5AA4",
+    "#980007",
+    "#C26900",
+    "#004471",
+    "#936B66",
+    "#214127",
+    "#B6A990"
+   ],
+   "S7b": [
+    "#003E73",
+    "#6966B9",
+    "#A9000D",
+    "#D57700",
+    "#004C81",
+    "#A67A76",
+    "#24482D",
+    "#CABEA6"
+   ],
+   "S8": [
+    "#143E68",
+    "#7262A9",
+    "#A80000",
+    "#D27000",
+    "#144A74",
+    "#A67465",
+    "#2C4625",
+    "#CAB590"
+   ],
+   "S8b": [
+    "#0E4477",
+    "#716BB8",
+    "#AB0616",
+    "#D47C20",
+    "#0A5184",
+    "#A87D7A",
+    "#2D4D32",
+    "#CABCA8"
+   ],
+   "S9a": [
+    "#00528F",
+    "#8781D3",
+    "#C50017",
+    "#EA9420",
+    "#00629E",
+    "#C39793",
+    "#355D3C",
+    "#E2D7C3"
+   ],
+   "S9b": [
+    "#0B518B",
+    "#8981D1",
+    "#C5001E",
+    "#EA9731",
+    "#01619B",
+    "#C49891",
+    "#375C3A",
+    "#E4D8C3"
+   ],
+   "S10": [
+    "#264D7A",
+    "#8176B9",
+    "#B61707",
+    "#D9870E",
+    "#285B87",
+    "#B2877B",
+    "#3A5732",
+    "#D0C2A7"
+   ],
+   "S11": [
+    "#234672",
+    "#7972B4",
+    "#A82E33",
+    "#D48B5C",
+    "#28547F",
+    "#AA8682",
+    "#364F39",
+    "#CFC4B3"
+   ],
+   "S12": [
+    "#194B7D",
+    "#7D76C1",
+    "#B51B24",
+    "#DD8B40",
+    "#1A598B",
+    "#B48A85",
+    "#355438",
+    "#D6C9B5"
+   ]
+  },
+  "engine": {
+   "S1": [
+    "#204A7B",
+    "#7976C0",
+    "#B6282E",
+    "#DF8D52",
+    "#24588A",
+    "#B38A86",
+    "#385339",
+    "#D7CBB8"
+   ],
+   "S2": [
+    "#294772",
+    "#7872B5",
+    "#AB3234",
+    "#D58B5C",
+    "#2E5480",
+    "#AA8581",
+    "#374F38",
+    "#CFC4B2"
+   ],
+   "S3": [
+    "#0D345F",
+    "#5856A1",
+    "#970D1B",
+    "#C4662B",
+    "#0C3F6C",
+    "#906664",
+    "#223C28",
+    "#B6A792"
+   ],
+   "S4": [
+    "#10335F",
+    "#5B57A2",
+    "#99121E",
+    "#C66833",
+    "#113F6B",
+    "#936865",
+    "#243B28",
+    "#B9AA95"
+   ],
+   "S4c": [
+    "#1C365C",
+    "#605999",
+    "#901E21",
+    "#BB6B3A",
+    "#204168",
+    "#8E6865",
+    "#2A3D2A",
+    "#B2A390"
+   ],
+   "S6": [
+    "#103A63",
+    "#635CA2",
+    "#9D0507",
+    "#C56A02",
+    "#10456F",
+    "#976C64",
+    "#264227",
+    "#B8AA8E"
+   ],
+   "S7a": [
+    "#0B3965",
+    "#5D5AA5",
+    "#9C0309",
+    "#C66600",
+    "#084471",
+    "#956A65",
+    "#224128",
+    "#B7A98F"
+   ],
+   "S7b": [
+    "#043E73",
+    "#6765BA",
+    "#B00010",
+    "#DA7603",
+    "#034B81",
+    "#A97974",
+    "#25482C",
+    "#CCBEA5"
+   ],
+   "S8": [
+    "#173E68",
+    "#7162AA",
+    "#AC0001",
+    "#D57100",
+    "#194A75",
+    "#A77465",
+    "#2D4725",
+    "#CAB58F"
+   ],
+   "S8b": [
+    "#134477",
+    "#706AB9",
+    "#B00717",
+    "#D77A20",
+    "#125184",
+    "#AA7C79",
+    "#2E4D32",
+    "#CBBDA7"
+   ],
+   "S9a": [
+    "#0B518F",
+    "#847FD4",
+    "#CD0017",
+    "#EF9320",
+    "#06629E",
+    "#C79692",
+    "#365D3B",
+    "#E4D8C3"
+   ],
+   "S9b": [
+    "#0E518C",
+    "#857FD2",
+    "#CE021D",
+    "#F09333",
+    "#0A619B",
+    "#C89690",
+    "#385D3A",
+    "#E6D9C3"
+   ],
+   "S10": [
+    "#264E7A",
+    "#8176B9",
+    "#B61708",
+    "#D9870E",
+    "#285B87",
+    "#B2877C",
+    "#3A5732",
+    "#D0C2A7"
+   ],
+   "S11": [
+    "#294772",
+    "#7872B5",
+    "#AB3234",
+    "#D58B5C",
+    "#2E5480",
+    "#AA8581",
+    "#374F38",
+    "#CFC4B2"
+   ],
+   "S12": [
+    "#1B4B7E",
+    "#7976C2",
+    "#B91E25",
+    "#E08A40",
+    "#1D598C",
+    "#B58984",
+    "#365438",
+    "#D6C9B5"
+   ]
+  }
+ }
+}

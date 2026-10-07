@@ -1,0 +1,3460 @@
+{
+ "_about": "Lanbai ART BIBLE v2 resolved grade set. Colour Grading mode = High Definition Range, Tonemapper = Neutral in EVERY profile. Trackballs = PPv2 Vector4 (x,y,z wheel colour, max channel 1; w = offset). Every scene profile overrides the SAME full parameter set. Scene crossfade: incoming (higher priority) 0->1 while outgoing stays 1, then outgoing -> 0. PPv2 OVERRIDES ARE ABSOLUTE: param = lerp(current, override, weight). Helpers therefore carry FAR targets and the Director solves their weight every frame (see helpers._how).",
+ "common": {
+  "hueShift": 0,
+  "colorFilter": "#FFFFFF",
+  "mixer": "identity",
+  "curves": "default",
+  "bloom": {
+   "anamorphicRatio": 0,
+   "fastMode": true,
+   "clamp": 4.24,
+   "dirt": null,
+   "_clamp_note": "clamp is gamma-space in PPv2: 4.24 = 24 scene-linear (v1 wrote 24 = 1,088 linear)"
+  },
+  "vignette": {
+   "intensity": 0
+  },
+  "grain": {
+   "intensity": 0
+  },
+  "autoExposure": "off",
+  "depthOfField": "off",
+  "motionBlur": "off",
+  "chromaticAberration": "off",
+  "ambientOcclusion": "off",
+  "screenSpaceReflections": "off",
+  "lensDistortion": "off"
+ },
+ "profiles": {
+  "S1": {
+   "priority": 1,
+   "name": "站牌 the stop (rain)",
+   "ppv2": {
+    "postExposure": 0.0,
+    "temperature": -2.5,
+    "tint": 5.94,
+    "saturation": -12.2,
+    "contrast": 6.58,
+    "lift": [
+     0.9736,
+     0.984,
+     1.0,
+     0.02
+    ],
+    "gamma": [
+     0.9689,
+     0.9837,
+     1.0,
+     -0.085
+    ],
+    "gain": [
+     0.9875,
+     1.0,
+     0.9934,
+     0.1257
+    ],
+    "bloom": {
+     "intensity": 4,
+     "threshold": 1.69,
+     "softKnee": 0.6,
+     "diffusion": 8,
+     "color": "#FFFFFF"
+    },
+    "mixer": [
+     97.36,
+     3.74,
+     -4.88,
+     -0.91,
+     102.65,
+     -0.54,
+     0.45,
+     1.71,
+     99.73
+    ]
+   },
+   "bloom_T0_scene_linear": 1.269,
+   "bloom_T0_note": "bloom starts at scene-linear 1.269 (pre-exposure) = neutral grey displayed at luma 228",
+   "ppv2_lookdef": {
+    "temperature": -4,
+    "tint": 3,
+    "saturation": -15,
+    "contrast": 12,
+    "lift": [
+     0.9875,
+     0.9905,
+     1,
+     0.008
+    ],
+    "gamma": [
+     0.97,
+     0.98,
+     1,
+     0
+    ],
+    "gain": [
+     1,
+     1,
+     1,
+     0
+    ]
+   }
+  },
+  "S2": {
+   "priority": 2,
+   "name": "夜路 night road (radio, mono)",
+   "ppv2": {
+    "postExposure": -0.15,
+    "temperature": -3.94,
+    "tint": 3.11,
+    "saturation": -21.78,
+    "contrast": 3.19,
+    "lift": [
+     0.9726,
+     0.9836,
+     1.0,
+     0.0161
+    ],
+    "gamma": [
+     0.9697,
+     0.9818,
+     1.0,
+     -0.0944
+    ],
+    "gain": [
+     1.0,
+     0.9968,
+     0.9733,
+     0.1504
+    ],
+    "bloom": {
+     "intensity": 3.5,
+     "threshold": 1.8,
+     "softKnee": 0.6,
+     "diffusion": 7.5,
+     "color": "#FFFFFF"
+    },
+    "mixer": [
+     98.75,
+     1.15,
+     -1.4,
+     -0.86,
+     101.59,
+     -0.53,
+     -0.38,
+     0.63,
+     99.91
+    ]
+   },
+   "bloom_T0_scene_linear": 1.458,
+   "bloom_T0_note": "bloom starts at scene-linear 1.458 (pre-exposure) = neutral grey displayed at luma 228",
+   "ppv2_lookdef": {
+    "temperature": -4,
+    "tint": 3,
+    "saturation": -22,
+    "contrast": 10,
+    "lift": [
+     0.9875,
+     0.9905,
+     1,
+     0.008
+    ],
+    "gamma": [
+     0.97,
+     0.98,
+     1,
+     0
+    ],
+    "gain": [
+     1,
+     0.99,
+     0.97,
+     0
+    ]
+   }
+  },
+  "S3": {
+   "priority": 3,
+   "name": "离地 lift-off / moonlit cloud sea (REFERENCE EV0)",
+   "ppv2": {
+    "postExposure": -0.9,
+    "temperature": -4.34,
+    "tint": 1.96,
+    "saturation": -1.54,
+    "contrast": 5.49,
+    "lift": [
+     0.9696,
+     0.9818,
+     1.0,
+     0.0212
+    ],
+    "gamma": [
+     0.9747,
+     0.985,
+     1.0,
+     -0.1194
+    ],
+    "gain": [
+     0.9971,
+     1.0,
+     0.9975,
+     0.2036
+    ],
+    "bloom": {
+     "intensity": 3.5,
+     "threshold": 1.99,
+     "softKnee": 0.5,
+     "diffusion": 7,
+     "color": "#FFFFFF"
+    },
+    "mixer": [
+     99.8,
+     0.29,
+     -3.45,
+     -0.82,
+     101.3,
+     -0.57,
+     1.31,
+     2.3,
+     99.14
+    ]
+   },
+   "bloom_T0_scene_linear": 2.272,
+   "bloom_T0_note": "bloom starts at scene-linear 2.272 (pre-exposure) = neutral grey displayed at luma 228",
+   "ppv2_lookdef": {
+    "temperature": -6,
+    "tint": 3,
+    "saturation": -6,
+    "contrast": 14,
+    "lift": [
+     0.9875,
+     0.9905,
+     1,
+     0.008
+    ],
+    "gamma": [
+     0.97,
+     0.98,
+     1,
+     0
+    ],
+    "gain": [
+     1,
+     1,
+     1,
+     0
+    ]
+   }
+  },
+  "S4": {
+   "priority": 4,
+   "name": "触手之门 the tentacle gate (dusk-violet wound, indigo haze band)",
+   "ppv2": {
+    "postExposure": -0.85,
+    "temperature": -4.19,
+    "tint": -0.26,
+    "saturation": -5.17,
+    "contrast": 6.89,
+    "lift": [
+     0.9773,
+     0.9797,
+     1.0,
+     0.0202
+    ],
+    "gamma": [
+     0.987,
+     0.9838,
+     1.0,
+     -0.1226
+    ],
+    "gain": [
+     0.9986,
+     1.0,
+     0.998,
+     0.2146
+    ],
+    "bloom": {
+     "intensity": 5,
+     "threshold": 1.93,
+     "softKnee": 0.5,
+     "diffusion": 8.5,
+     "color": "#F0F0F6"
+    },
+    "mixer": [
+     100.23,
+     -0.47,
+     -3.44,
+     -1.12,
+     101.15,
+     -0.39,
+     1.16,
+     2.93,
+     98.85
+    ]
+   },
+   "bloom_T0_scene_linear": 2.124,
+   "bloom_T0_note": "bloom starts at scene-linear 2.124 (pre-exposure) = neutral grey displayed at luma 228",
+   "ppv2_lookdef": {
+    "temperature": -6,
+    "tint": 2,
+    "saturation": -10,
+    "contrast": 16,
+    "lift": [
+     0.99,
+     0.99,
+     1,
+     0.006
+    ],
+    "gamma": [
+     0.98,
+     0.98,
+     1,
+     0
+    ],
+    "gain": [
+     1,
+     1,
+     1,
+     0
+    ]
+   }
+  },
+  "S4c": {
+   "priority": 5,
+   "name": "门内 inside the tear (dark grace; the dye thins)",
+   "ppv2": {
+    "postExposure": -0.9,
+    "temperature": -2.89,
+    "tint": 1.65,
+    "saturation": -13.56,
+    "contrast": 0.8,
+    "lift": [
+     0.9824,
+     0.9835,
+     1.0,
+     0.0061
+    ],
+    "gamma": [
+     0.9893,
+     0.9814,
+     1.0,
+     -0.0699
+    ],
+    "gain": [
+     0.9994,
+     0.991,
+     1.0,
+     0.1188
+    ],
+    "bloom": {
+     "intensity": 6,
+     "threshold": 2.69,
+     "softKnee": 0.7,
+     "diffusion": 9,
+     "color": "#F2F3F6"
+    },
+    "mixer": [
+     99.81,
+     0.11,
+     -1.08,
+     -0.73,
+     100.56,
+     -0.28,
+     0.08,
+     0.42,
+     99.86
+    ]
+   },
+   "bloom_T0_scene_linear": 2.646,
+   "bloom_T0_note": "bloom starts at scene-linear 2.646 (pre-exposure) = neutral grey displayed at luma 228",
+   "ppv2_lookdef": {
+    "temperature": -3,
+    "tint": 2,
+    "saturation": -14,
+    "contrast": 6,
+    "lift": [
+     0.99,
+     0.99,
+     1,
+     0.004
+    ],
+    "gamma": [
+     0.985,
+     0.98,
+     1,
+     0
+    ],
+    "gain": [
+     1,
+     0.99,
+     1,
+     0
+    ]
+   }
+  },
+  "S6": {
+   "priority": 6,
+   "name": "天空 I 晨 dawn (藍 and gold on white)",
+   "ppv2": {
+    "postExposure": -0.75,
+    "temperature": -3.79,
+    "tint": -0.54,
+    "saturation": 4.28,
+    "contrast": 3.23,
+    "lift": [
+     0.9801,
+     0.9902,
+     1.0,
+     0.0083
+    ],
+    "gamma": [
+     1.0,
+     0.995,
+     0.9974,
+     -0.0425
+    ],
+    "gain": [
+     1.0,
+     0.9861,
+     0.9426,
+     0.0615
+    ],
+    "bloom": {
+     "intensity": 4,
+     "threshold": 2.24,
+     "softKnee": 0.6,
+     "diffusion": 8.5,
+     "color": "#FFF4E8"
+    },
+    "mixer": [
+     99.06,
+     0.66,
+     -1.13,
+     -0.37,
+     101.37,
+     -0.18,
+     0.37,
+     1.75,
+     99.62
+    ]
+   },
+   "bloom_T0_scene_linear": 2.358,
+   "bloom_T0_note": "bloom starts at scene-linear 2.358 (pre-exposure) = neutral grey displayed at luma 228",
+   "ppv2_lookdef": {
+    "temperature": -4,
+    "tint": 0,
+    "saturation": 2,
+    "contrast": 6,
+    "lift": [
+     0.99,
+     0.993,
+     1,
+     0.004
+    ],
+    "gamma": [
+     0.995,
+     0.997,
+     1,
+     0
+    ],
+    "gain": [
+     1,
+     0.98,
+     0.94,
+     0
+    ]
+   }
+  },
+  "S7a": {
+   "priority": 7,
+   "name": "海面之下 under the surface (open-ocean ultramarine, never teal)",
+   "ppv2": {
+    "postExposure": -0.8,
+    "temperature": -2.15,
+    "tint": 1.43,
+    "saturation": 8.38,
+    "contrast": -12.2,
+    "lift": [
+     0.9619,
+     0.9898,
+     1.0,
+     0.0128
+    ],
+    "gamma": [
+     0.9738,
+     0.9878,
+     1.0,
+     -0.2499
+    ],
+    "gain": [
+     0.9855,
+     0.9957,
+     1.0,
+     0.4132
+    ],
+    "bloom": {
+     "intensity": 4,
+     "threshold": 2.24,
+     "softKnee": 0.6,
+     "diffusion": 8,
+     "color": "#E8FAFF"
+    },
+    "mixer": [
+     100.36,
+     0.67,
+     -2.61,
+     -0.16,
+     101.08,
+     0.47,
+     1.33,
+     2.13,
+     99.48
+    ]
+   },
+   "bloom_T0_scene_linear": 2.358,
+   "bloom_T0_note": "bloom starts at scene-linear 2.358 (pre-exposure) = neutral grey displayed at luma 228",
+   "ppv2_lookdef": {
+    "temperature": -4,
+    "tint": 1,
+    "saturation": 4,
+    "contrast": 8,
+    "lift": [
+     0.99,
+     0.995,
+     1,
+     0.008
+    ],
+    "gamma": [
+     0.975,
+     0.985,
+     1,
+     0
+    ],
+    "gain": [
+     0.985,
+     0.995,
+     1,
+     0
+    ]
+   }
+  },
+  "S7b": {
+   "priority": 8,
+   "name": "深海 the deep",
+   "ppv2": {
+    "postExposure": -0.4,
+    "temperature": -4.59,
+    "tint": 1.39,
+    "saturation": 5.96,
+    "contrast": 4.16,
+    "lift": [
+     0.9653,
+     0.9788,
+     1.0,
+     0.0224
+    ],
+    "gamma": [
+     0.9748,
+     0.9888,
+     1.0,
+     -0.1571
+    ],
+    "gain": [
+     0.9974,
+     1.0,
+     0.9978,
+     0.2687
+    ],
+    "bloom": {
+     "intensity": 6,
+     "threshold": 1.85,
+     "softKnee": 0.6,
+     "diffusion": 7,
+     "color": "#FFFFFF"
+    },
+    "mixer": [
+     99.76,
+     0.53,
+     -4.17,
+     -0.22,
+     101.35,
+     -0.9,
+     1.36,
+     1.47,
+     99.28
+    ]
+   },
+   "bloom_T0_scene_linear": 1.548,
+   "bloom_T0_note": "bloom starts at scene-linear 1.548 (pre-exposure) = neutral grey displayed at luma 228",
+   "ppv2_lookdef": {
+    "temperature": -6,
+    "tint": 2,
+    "saturation": 2,
+    "contrast": 16,
+    "lift": [
+     0.9875,
+     0.9905,
+     1,
+     0.008
+    ],
+    "gamma": [
+     0.97,
+     0.98,
+     1,
+     0
+    ],
+    "gain": [
+     1,
+     1,
+     1,
+     0
+    ]
+   }
+  },
+  "S8": {
+   "priority": 9,
+   "name": "天空 II dusk (the mirror frame)",
+   "ppv2": {
+    "postExposure": -0.5,
+    "temperature": 4.86,
+    "tint": 3.32,
+    "saturation": 7.63,
+    "contrast": 7.86,
+    "lift": [
+     0.9731,
+     0.9871,
+     1.0,
+     0.0165
+    ],
+    "gamma": [
+     1.0,
+     0.9905,
+     0.9959,
+     -0.0449
+    ],
+    "gain": [
+     1.0,
+     0.9701,
+     0.9025,
+     0.064
+    ],
+    "bloom": {
+     "intensity": 6,
+     "threshold": 2.02,
+     "softKnee": 0.6,
+     "diffusion": 9,
+     "color": "#FFE6CC"
+    },
+    "mixer": [
+     99.01,
+     2.45,
+     -0.7,
+     0.1,
+     101.04,
+     -0.53,
+     0.44,
+     -0.57,
+     99.97
+    ]
+   },
+   "bloom_T0_scene_linear": 1.879,
+   "bloom_T0_note": "bloom starts at scene-linear 1.879 (pre-exposure) = neutral grey displayed at luma 228",
+   "ppv2_lookdef": {
+    "temperature": 3,
+    "tint": 1,
+    "saturation": 5,
+    "contrast": 10,
+    "lift": [
+     0.985,
+     0.99,
+     1,
+     0.006
+    ],
+    "gamma": [
+     0.99,
+     0.993,
+     1,
+     0
+    ],
+    "gain": [
+     1,
+     0.965,
+     0.9,
+     0
+    ]
+   }
+  },
+  "S8b": {
+   "priority": 10,
+   "name": "blue hour (dusk -> night)",
+   "ppv2": {
+    "postExposure": -0.3,
+    "temperature": -3.98,
+    "tint": 2.83,
+    "saturation": 2.13,
+    "contrast": 0.92,
+    "lift": [
+     0.9738,
+     0.9839,
+     1.0,
+     0.0131
+    ],
+    "gamma": [
+     0.9705,
+     0.9829,
+     1.0,
+     -0.0957
+    ],
+    "gain": [
+     1.0,
+     0.9996,
+     0.999,
+     0.1648
+    ],
+    "bloom": {
+     "intensity": 4,
+     "threshold": 1.92,
+     "softKnee": 0.6,
+     "diffusion": 8,
+     "color": "#FFFFFF"
+    },
+    "mixer": [
+     100.41,
+     -0.39,
+     -2.76,
+     -0.66,
+     100.51,
+     -0.3,
+     0.77,
+     1.94,
+     99.31
+    ]
+   },
+   "bloom_T0_scene_linear": 1.68,
+   "bloom_T0_note": "bloom starts at scene-linear 1.680 (pre-exposure) = neutral grey displayed at luma 228",
+   "ppv2_lookdef": {
+    "temperature": -5,
+    "tint": 4,
+    "saturation": 0,
+    "contrast": 8,
+    "lift": [
+     0.9875,
+     0.9905,
+     1,
+     0.008
+    ],
+    "gamma": [
+     0.97,
+     0.98,
+     1,
+     0
+    ],
+    "gain": [
+     1,
+     1,
+     1,
+     0
+    ]
+   }
+  },
+  "S9a": {
+   "priority": 11,
+   "name": "天空 III star sea (start)",
+   "ppv2": {
+    "postExposure": 0.3,
+    "temperature": -3.87,
+    "tint": 1.88,
+    "saturation": 4.32,
+    "contrast": 3.36,
+    "lift": [
+     0.9675,
+     0.9802,
+     1.0,
+     0.0199
+    ],
+    "gamma": [
+     0.9791,
+     0.9872,
+     1.0,
+     -0.1407
+    ],
+    "gain": [
+     1.0,
+     0.998,
+     0.9976,
+     0.256
+    ],
+    "bloom": {
+     "intensity": 5,
+     "threshold": 1.72,
+     "softKnee": 0.7,
+     "diffusion": 6,
+     "color": "#FFFFFF"
+    },
+    "mixer": [
+     100.95,
+     -0.84,
+     -4.27,
+     -0.42,
+     100.61,
+     -1.0,
+     1.3,
+     3.42,
+     98.68
+    ]
+   },
+   "bloom_T0_scene_linear": 0.989,
+   "bloom_T0_note": "bloom starts at scene-linear 0.989 (pre-exposure) = neutral grey displayed at luma 228",
+   "ppv2_lookdef": {
+    "temperature": -6,
+    "tint": 4,
+    "saturation": 0,
+    "contrast": 14,
+    "lift": [
+     0.9875,
+     0.9905,
+     1,
+     0.008
+    ],
+    "gamma": [
+     0.97,
+     0.98,
+     1,
+     0
+    ],
+    "gain": [
+     1,
+     1,
+     1,
+     0
+    ]
+   }
+  },
+  "S9b": {
+   "priority": 12,
+   "name": "星海高潮 star-sea climax (black stays black; light comes from sources)",
+   "ppv2": {
+    "postExposure": 0.3,
+    "temperature": -1.8,
+    "tint": 1.32,
+    "saturation": 0.4,
+    "contrast": 9.44,
+    "lift": [
+     0.9712,
+     0.9824,
+     1.0,
+     0.025
+    ],
+    "gamma": [
+     0.9877,
+     0.991,
+     1.0,
+     -0.1017
+    ],
+    "gain": [
+     1.0,
+     0.9992,
+     0.998,
+     0.1978
+    ],
+    "bloom": {
+     "intensity": 8,
+     "threshold": 1.7,
+     "softKnee": 0.7,
+     "diffusion": 8,
+     "color": "#F4F8FF"
+    },
+    "mixer": [
+     100.6,
+     -0.45,
+     -5.31,
+     -1.24,
+     100.75,
+     -1.31,
+     0.79,
+     3.19,
+     98.64
+    ]
+   },
+   "bloom_T0_scene_linear": 0.964,
+   "bloom_T0_note": "bloom starts at scene-linear 0.964 (pre-exposure) = neutral grey displayed at luma 228",
+   "ppv2_lookdef": {
+    "temperature": -4,
+    "tint": 3,
+    "saturation": -4,
+    "contrast": 16,
+    "lift": [
+     0.9875,
+     0.9905,
+     1,
+     0.008
+    ],
+    "gamma": [
+     0.975,
+     0.985,
+     1,
+     0
+    ],
+    "gain": [
+     1,
+     1,
+     1,
+     0
+    ]
+   }
+  },
+  "S10": {
+   "priority": 13,
+   "name": "白光 white (neutral; the 藍白 overlay carries the colour)",
+   "ppv2": {
+    "postExposure": 0.0,
+    "temperature": 0,
+    "tint": 0,
+    "saturation": 0,
+    "contrast": 0,
+    "lift": [
+     1,
+     1,
+     1,
+     0
+    ],
+    "gamma": [
+     1,
+     1,
+     1,
+     0
+    ],
+    "gain": [
+     1,
+     1,
+     1,
+     0
+    ],
+    "bloom": {
+     "intensity": 0,
+     "threshold": 1.8,
+     "softKnee": 0.6,
+     "diffusion": 7.5,
+     "color": "#FFFFFF"
+    },
+    "mixer": [
+     100.0,
+     0.0,
+     0.0,
+     0.0,
+     100.0,
+     0.0,
+     0.0,
+     0.0,
+     100.0
+    ]
+   },
+   "bloom_T0_scene_linear": 1.458,
+   "bloom_T0_note": "bloom starts at scene-linear 1.458 (pre-exposure) = neutral grey displayed at luma 228",
+   "ppv2_lookdef": {
+    "temperature": 0,
+    "tint": 0,
+    "saturation": 0,
+    "contrast": 0,
+    "lift": [
+     1,
+     1,
+     1,
+     0
+    ],
+    "gamma": [
+     1,
+     1,
+     1,
+     0
+    ],
+    "gain": [
+     1,
+     1,
+     1,
+     0
+    ]
+   }
+  },
+  "S11": {
+   "priority": 14,
+   "name": "假醒 false awakening (= S2 exactly: normality is the lie)",
+   "ppv2": {
+    "postExposure": -0.15,
+    "temperature": -3.94,
+    "tint": 3.11,
+    "saturation": -21.78,
+    "contrast": 3.19,
+    "lift": [
+     0.9726,
+     0.9836,
+     1.0,
+     0.0161
+    ],
+    "gamma": [
+     0.9697,
+     0.9818,
+     1.0,
+     -0.0944
+    ],
+    "gain": [
+     1.0,
+     0.9968,
+     0.9733,
+     0.1504
+    ],
+    "bloom": {
+     "intensity": 3.5,
+     "threshold": 1.8,
+     "softKnee": 0.6,
+     "diffusion": 7.5,
+     "color": "#FFFFFF"
+    },
+    "mixer": [
+     98.75,
+     1.15,
+     -1.4,
+     -0.86,
+     101.59,
+     -0.53,
+     -0.38,
+     0.63,
+     99.91
+    ]
+   },
+   "bloom_T0_scene_linear": 1.458,
+   "bloom_T0_note": "bloom starts at scene-linear 1.458 (pre-exposure) = neutral grey displayed at luma 228",
+   "ppv2_lookdef": {
+    "temperature": -4,
+    "tint": 3,
+    "saturation": -22,
+    "contrast": 10,
+    "lift": [
+     0.9875,
+     0.9905,
+     1,
+     0.008
+    ],
+    "gamma": [
+     0.97,
+     0.98,
+     1,
+     0
+    ],
+    "gain": [
+     1,
+     0.99,
+     0.97,
+     0
+    ]
+   }
+  },
+  "S12": {
+   "priority": 15,
+   "name": "醒 awakening (rain stopped)",
+   "ppv2": {
+    "postExposure": 0.0,
+    "temperature": -3.01,
+    "tint": 3.97,
+    "saturation": -5.35,
+    "contrast": 5.29,
+    "lift": [
+     0.9748,
+     0.9848,
+     1.0,
+     0.0178
+    ],
+    "gamma": [
+     0.9753,
+     0.9877,
+     1.0,
+     -0.0743
+    ],
+    "gain": [
+     0.9953,
+     1.0,
+     0.997,
+     0.1129
+    ],
+    "bloom": {
+     "intensity": 3.5,
+     "threshold": 1.72,
+     "softKnee": 0.6,
+     "diffusion": 7.5,
+     "color": "#FFFFFF"
+    },
+    "mixer": [
+     99.21,
+     1.37,
+     -4.02,
+     -0.59,
+     101.28,
+     -0.22,
+     0.53,
+     2.11,
+     99.5
+    ]
+   },
+   "bloom_T0_scene_linear": 1.319,
+   "bloom_T0_note": "bloom starts at scene-linear 1.319 (pre-exposure) = neutral grey displayed at luma 228",
+   "ppv2_lookdef": {
+    "temperature": -4,
+    "tint": 3,
+    "saturation": -8,
+    "contrast": 10,
+    "lift": [
+     0.9875,
+     0.9905,
+     1,
+     0.008
+    ],
+    "gamma": [
+     0.975,
+     0.985,
+     1,
+     0
+    ],
+    "gain": [
+     1,
+     1,
+     1,
+     0
+    ]
+   }
+  }
+ },
+ "helpers": {
+  "_how": "PPv2 does param = lerp(current, override, weight). An exposure helper with a FAR target H (+4 or -4) gives exactly b + dEV when weight w = dEV / (H - b), where b = the postExposure already blended by the scene volumes below it (b = lerp(pe_old, pe_new, w_new) during a scene crossfade). The Director sums every exposure event active this frame (beat decay + flash + white ramp + mirror pulse) into ONE dEV(t) and sets EXPO_UP (dEV > 0) or EXPO_DOWN (dEV < 0). Route C (External LUT, profile postExposure = 0) is the same formula with b = 0.",
+  "EXPO_UP": {
+   "priority": 100,
+   "ppv2": {
+    "postExposure": 4.0
+   },
+   "weight": "dEV / (4 - b)",
+   "events": {
+    "break-out U6": "+0.5 EV in 0.4 s, then 3 s linear decay (w_peak = 0.102 at b = -0.9)",
+    "U9 tube flash": "+0.3 EV in 0.2 s, 0.5 s decay (w_peak 0.062 at b = -0.85)",
+    "FLASH_TEAR U12": "desktop +1.5 EV in 0.4 s EV-linear, hold 0.1 s (w = 0.306 at b = -0.9); VR: min(+1.5, EV that brings APL to 150)",
+    "exit into dusk F9": "+0.8 EV at the end of the >= 6 s ramp, 4 s decay (w_peak 0.178 at b = -0.5)",
+    "white crash / swell": "crash 0 -> +1.0 EV in 1.2 s, swell -> +2.4 EV in 6 s (w = 0.270 / 0.649 at b = +0.3)",
+    "mirror pulse": "+0.35 EV, 0.08 s in / 0.35 s out, w = 0.35 / (4 - b(t)); suppressed for crossings inside the white ramp (mirrors 10-12)",
+    "after the first white": "+1.0 EV at weight solved against S11 (w = 0.241), 4 s decay, overlay fill compensated",
+    "after the second white": "+0.8 EV against S12 (w = 0.200), 5 s decay, overlay fill compensated"
+   }
+  },
+  "EXPO_DOWN": {
+   "priority": 99,
+   "ppv2": {
+    "postExposure": -4.0
+   },
+   "weight": "-dEV / (b + 4)",
+   "events": {
+    "water entry F2": "-0.5 EV in 0.3 s, 1 s recovery (w_peak 0.156 at b = -0.8)"
+   }
+  },
+  "WHITE_SAT": {
+   "priority": 96,
+   "ppv2": {
+    "saturation": -30
+   },
+   "weight": "= white-ramp fraction: 0 -> 0.42 (crash) -> 1.0 (swell); hard-cut to 0 under the full overlay"
+  },
+  "WHITE_BLOOM": {
+   "priority": 96,
+   "ppv2": {
+    "bloom": {
+     "intensity": 12,
+     "threshold": 0.8,
+     "softKnee": 0.8,
+     "diffusion": 9,
+     "color": "#EEF4F8"
+    }
+   },
+   "weight": "crash 0 -> 0.5, swell -> 1.0, then 1 -> 0 EV-linearly WITH the 3 s overlay (so the overlay itself never blooms)"
+  },
+  "LENS_ARCHIVE": {
+   "priority": 200,
+   "desktop_only": true,
+   "vignette": {
+    "intensity": 0.26,
+    "smoothness": 0.45,
+    "color": "#02040A"
+   },
+   "grain": {
+    "intensity": 0.2,
+    "size": 1.0,
+    "lumContrib": 0.85,
+    "colored": false
+   },
+   "weight": "U0 0 -> 1 over 8 s (the record starts); U3 1 -> 0 over 8 s (the sound opens); 10->11 0 -> 1 under the white; 11->12 1 -> 0 under the second white"
+  },
+  "LENS_CLEAN": {
+   "priority": 199,
+   "desktop_only": true,
+   "vignette": {
+    "intensity": 0.2,
+    "smoothness": 0.4,
+    "color": "#02040A"
+   },
+   "grain": {
+    "intensity": 0.06,
+    "size": 0.8,
+    "lumContrib": 0.8,
+    "colored": false
+   },
+   "weight": "1 everywhere on desktop (scene 1 included); LENS_ARCHIVE sits above it"
+  }
+ },
+ "lens_desktop_only": {
+  "LENS_ARCHIVE": {
+   "priority": 200,
+   "used_in": [
+    "S1",
+    "S2",
+    "S3 until the cloud entry",
+    "S11"
+   ],
+   "vignette": {
+    "mode": "Classic",
+    "color": "#02040A",
+    "center": [
+     0.5,
+     0.5
+    ],
+    "intensity": 0.26,
+    "smoothness": 0.45,
+    "roundness": 1,
+    "rounded": false
+   },
+   "grain": {
+    "colored": false,
+    "intensity": 0.2,
+    "size": 1.0,
+    "luminanceContribution": 0.85
+   }
+  },
+  "LENS_CLEAN": {
+   "priority": 201,
+   "used_in": [
+    "S3 after the break-out",
+    "S4..S10",
+    "S12"
+   ],
+   "vignette": {
+    "mode": "Classic",
+    "color": "#02040A",
+    "center": [
+     0.5,
+     0.5
+    ],
+    "intensity": 0.2,
+    "smoothness": 0.4,
+    "roundness": 1,
+    "rounded": false
+   },
+   "grain": {
+    "colored": false,
+    "intensity": 0.06,
+    "size": 0.8,
+    "luminanceContribution": 0.9
+   }
+  }
+ },
+ "_changes_v1": [
+  "bloom.fastMode = true in every profile (lens_tech: VR cost)",
+  "S1/S2/S11/S12 temperature -6 -> -4 (cool 藍白 tubes turned cyan at -6)",
+  "NEW S4c 门内 inside the tear",
+  "S8 saturation +8 -> +5, gain (1,0.955,0.87) -> (1,0.965,0.90) (corrected AP1->sRGB matrix)"
+ ],
+ "_changes_v2": [
+  "bloom threshold re-solved per profile: knee start T0 at luma 228 (v1 thresholds 0.7-1.1 made everything above luma 100-166 bloom)",
+  "bloom clamp 24 -> 4.24 (gamma; = 24 linear)",
+  "S4 -0.85 / -6 / +2 / sat -10 / contrast +16, gamma (0.98,0.98,1,0), gain neutral, bloom #F0F0F6 (critique_awe B2)",
+  "S4c -0.9 / -3 / +2 / sat -14, bloom 6 #F2F3F6 (critique_awe B3: dark grace, APL 30->55)",
+  "S6 temp -4, tint 0, sat +2, contrast +6, gain (1,0.98,0.94), postExposure retuned to APL 110 with bloom on the v2-hue dawn frame (critique_awe M4)",
+  "S7a tint +1, lift (0.99,0.995,1,0.008), gamma (0.975,0.985,1,0), gain (0.985,0.995,1,0): red never crushed to 0 (critique_awe M6)",
+  "S9b postExposure +0.8 -> +0.3, contrast +16, night lift, bloom 10 -> 8: black stays black; the climb comes from emitters (critique_awe M8)",
+  "helpers rebuilt: PPv2 lerps to ABSOLUTE override values, so exposure helpers are EXPO_UP (+4) / EXPO_DOWN (-4) driven by w = dEV/(H-b); bloom and saturation helpers split off; FLASH_TEAR has no bloom override (critique_feasibility B-1, B-2)"
+ ],
+ "_route_c_crossfade": "External LUTs blend in display-linear light: for an exposure-changing crossfade drive w(t) = (2^(dEV*x) - 1)/(2^dEV - 1), x = 0..1",
+ "_engine": {
+  "what": "Engine realisation of the look. profiles.*.ppv2 = the numbers PPv2 3.x (HDR, Neutral) needs to SHOW the bible / calib_final screen targets; profiles.*.ppv2_lookdef = the look-definition numbers of art/grades_final.json (bible appendix B1), which only mean the right thing in the art simulator (ACES working spaces). Screen targets are unchanged (bible law 1). ppv2.mixer = PPv2 channel mixer, 9 percentages row-major (mixerRedOutRedIn ... mixerBlueOutBlueIn). postExposure, bloom, colorFilter, hueShift, helpers: identical to grades_final.json.",
+  "solver": "Tools~/engine/solve_engine_grades.py (tier all, crossfade neighbours 0.3)",
+  "engine_model": "Tools~/engine/ppv2_engine.py (PPv2 3.0.2 / 3.6.0 source: LogC contrast, linear Rec.709 WB/LGG/sat, 33^3 half LUT)",
+  "source_grades_sha256": "7069446c1f4118539483eef07544ba1303356c9e730c8b1d9d5660b87643727f",
+  "source_calib_sha256": "ac341a06c733a1c92c86414fc09171bb162ecda16556972c36629f269abd8cc8",
+  "black_override": {
+   "S7a": "#030B0F"
+  },
+  "report": {
+   "S1": {
+    "sectionC": [
+     {
+      "k": -6,
+      "engine": "#070C13",
+      "target": "#070C12",
+      "codes": 1
+     },
+     {
+      "k": -5,
+      "engine": "#0D1218",
+      "target": "#0D1117",
+      "codes": 1
+     },
+     {
+      "k": -4,
+      "engine": "#161A20",
+      "target": "#171A1F",
+      "codes": 1
+     },
+     {
+      "k": -3,
+      "engine": "#24272C",
+      "target": "#24272C",
+      "codes": 0
+     },
+     {
+      "k": -2,
+      "engine": "#363A3F",
+      "target": "#373A3F",
+      "codes": 1
+     },
+     {
+      "k": -1,
+      "engine": "#505459",
+      "target": "#51545A",
+      "codes": 1
+     },
+     {
+      "k": 0,
+      "engine": "#73767C",
+      "target": "#74777C",
+      "codes": 1
+     },
+     {
+      "k": 1,
+      "engine": "#9C9FA5",
+      "target": "#9DA0A5",
+      "codes": 1
+     },
+     {
+      "k": 2,
+      "engine": "#C6C8CD",
+      "target": "#C7C8CC",
+      "codes": 1
+     },
+     {
+      "k": 3,
+      "engine": "#E8EAEC",
+      "target": "#E8E9EC",
+      "codes": 1
+     },
+     {
+      "k": 4,
+      "engine": "#FFFFFF",
+      "target": "#FFFFFF",
+      "codes": 0
+     }
+    ],
+    "sectionC_max": 1,
+    "black": {
+     "label": "black (input 0)",
+     "kind": "black",
+     "engine": "#02060D",
+     "target": "#02060D",
+     "codes": 0
+    },
+    "max_by_kind": {
+     "black": 0,
+     "ramp": 1,
+     "A": 1,
+     "colour": 4,
+     "B": 4
+    },
+    "worst_listed": [
+     {
+      "label": "§B 尾灯",
+      "kind": "B",
+      "engine": "#B6272D",
+      "target": "#B2252C",
+      "codes": 4
+     },
+     {
+      "label": "§B 远镇钠灯点",
+      "kind": "B",
+      "engine": "#DF8D51",
+      "target": "#DC8F51",
+      "codes": 3
+     },
+     {
+      "label": "§A 主光：站牌灯管，路面灯池中心（灰卡朝上）",
+      "kind": "A",
+      "engine": "#666F75",
+      "target": "#676F76",
+      "codes": 1
+     },
+     {
+      "label": "§A 补光：开着的车门漏光（冷，R_Stop 里的烘焙面光），路肩",
+      "kind": "A",
+      "engine": "#3A4146",
+      "target": "#3A4147",
+      "codes": 1
+     },
+     {
+      "label": "§A 车头灯（卤素 3200 K，实时双瓣聚光，只此一份）前方 10 m 路面",
+      "kind": "A",
+      "engine": "#6B543D",
+      "target": "#6B553D",
+      "codes": 1
+     },
+     {
+      "label": "§A 仅环境光 Trilight sky #1A2438（灰卡朝上）",
+      "kind": "A",
+      "engine": "#050D19",
+      "target": "#050C18",
+      "codes": 1
+     }
+    ],
+    "frame": {
+     "mean": 0.798,
+     "p99": 1.0,
+     "max": 9
+    },
+    "neighbour": {
+     "mean": 0.875,
+     "p99": 3.0,
+     "max": 3
+    },
+    "saturated": {
+     "mean": 1.62,
+     "p99": 9.0,
+     "max": 13
+    },
+    "random": {
+     "mean": 1.58,
+     "p99": 10.009999999999991,
+     "max": 25
+    },
+    "tier": "all"
+   },
+   "S2": {
+    "sectionC": [
+     {
+      "k": -6,
+      "engine": "#070C12",
+      "target": "#070B11",
+      "codes": 1
+     },
+     {
+      "k": -5,
+      "engine": "#0D1117",
+      "target": "#0D1116",
+      "codes": 1
+     },
+     {
+      "k": -4,
+      "engine": "#161A1E",
+      "target": "#16191E",
+      "codes": 1
+     },
+     {
+      "k": -3,
+      "engine": "#23262A",
+      "target": "#23262A",
+      "codes": 0
+     },
+     {
+      "k": -2,
+      "engine": "#35373C",
+      "target": "#35383C",
+      "codes": 1
+     },
+     {
+      "k": -1,
+      "engine": "#4D5054",
+      "target": "#4E5055",
+      "codes": 1
+     },
+     {
+      "k": 0,
+      "engine": "#6E7175",
+      "target": "#6F7176",
+      "codes": 1
+     },
+     {
+      "k": 1,
+      "engine": "#96989D",
+      "target": "#97989D",
+      "codes": 1
+     },
+     {
+      "k": 2,
+      "engine": "#C0C1C5",
+      "target": "#C0C1C5",
+      "codes": 0
+     },
+     {
+      "k": 3,
+      "engine": "#E3E4E6",
+      "target": "#E3E3E6",
+      "codes": 1
+     },
+     {
+      "k": 4,
+      "engine": "#FBFBFC",
+      "target": "#FBFBFC",
+      "codes": 0
+     }
+    ],
+    "sectionC_max": 1,
+    "black": {
+     "label": "black (input 0)",
+     "kind": "black",
+     "engine": "#02060C",
+     "target": "#02060C",
+     "codes": 0
+    },
+    "max_by_kind": {
+     "black": 0,
+     "ramp": 1,
+     "A": 0,
+     "colour": 6,
+     "B": 2
+    },
+    "worst_listed": [
+     {
+      "label": "§B 收音机表盘",
+      "kind": "B",
+      "engine": "#E39868",
+      "target": "#E19867",
+      "codes": 2
+     },
+     {
+      "label": "§B 雾色",
+      "kind": "B",
+      "engine": "#0B1019",
+      "target": "#0A0F18",
+      "codes": 1
+     },
+     {
+      "label": "§B 天",
+      "kind": "B",
+      "engine": "#050910",
+      "target": "#05080F",
+      "codes": 1
+     },
+     {
+      "label": "§B 钠灯灯头经过",
+      "kind": "B",
+      "engine": "#EEAD78",
+      "target": "#EDAD77",
+      "codes": 1
+     },
+     {
+      "label": "§A 车厢灯管（_CabinTubeLM），座垫上；头像补光按同一读数",
+      "kind": "A",
+      "engine": "#585F64",
+      "target": "#585F64",
+      "codes": 0
+     },
+     {
+      "label": "§A 钠灯扫光峰值（2050 K），座椅顶",
+      "kind": "A",
+      "engine": "#623C25",
+      "target": "#623C25",
+      "codes": 0
+     }
+    ],
+    "frame": {
+     "mean": 0.521,
+     "p99": 1.0,
+     "max": 3
+    },
+    "neighbour": {
+     "mean": 0.628,
+     "p99": 1.0,
+     "max": 7
+    },
+    "saturated": {
+     "mean": 0.615,
+     "p99": 2.0,
+     "max": 2
+    },
+    "random": {
+     "mean": 1.089,
+     "p99": 7.0,
+     "max": 16
+    },
+    "tier": "all"
+   },
+   "S3": {
+    "sectionC": [
+     {
+      "k": -6,
+      "engine": "#040911",
+      "target": "#040910",
+      "codes": 1
+     },
+     {
+      "k": -5,
+      "engine": "#070C14",
+      "target": "#060C13",
+      "codes": 1
+     },
+     {
+      "k": -4,
+      "engine": "#0D1219",
+      "target": "#0C1118",
+      "codes": 1
+     },
+     {
+      "k": -3,
+      "engine": "#161B21",
+      "target": "#161A21",
+      "codes": 1
+     },
+     {
+      "k": -2,
+      "engine": "#24282E",
+      "target": "#24282E",
+      "codes": 0
+     },
+     {
+      "k": -1,
+      "engine": "#373C42",
+      "target": "#373C42",
+      "codes": 0
+     },
+     {
+      "k": 0,
+      "engine": "#52575E",
+      "target": "#52575E",
+      "codes": 0
+     },
+     {
+      "k": 1,
+      "engine": "#757A82",
+      "target": "#757B83",
+      "codes": 1
+     },
+     {
+      "k": 2,
+      "engine": "#A0A5AC",
+      "target": "#A0A5AC",
+      "codes": 0
+     },
+     {
+      "k": 3,
+      "engine": "#CACED4",
+      "target": "#CACED3",
+      "codes": 1
+     },
+     {
+      "k": 4,
+      "engine": "#ECEEF1",
+      "target": "#EBEDF1",
+      "codes": 1
+     }
+    ],
+    "sectionC_max": 1,
+    "black": {
+     "label": "black (input 0)",
+     "kind": "black",
+     "engine": "#01060E",
+     "target": "#01060E",
+     "codes": 0
+    },
+    "max_by_kind": {
+     "black": 0,
+     "ramp": 1,
+     "A": 1,
+     "colour": 11,
+     "B": 4
+    },
+    "worst_listed": [
+     {
+      "label": "§B 光之海 钠灯",
+      "kind": "B",
+      "engine": "#EC9E4F",
+      "target": "#E8A050",
+      "codes": 4
+     },
+     {
+      "label": "§B 橙色云底（城市照亮）",
+      "kind": "B",
+      "engine": "#7E492A",
+      "target": "#7A4A2A",
+      "codes": 4
+     },
+     {
+      "label": "§A 主光：月光 9000 K，平行光（全片亮度基准 E=1；方位 -12° 仰角 +8°）",
+      "kind": "A",
+      "engine": "#414B5D",
+      "target": "#414C5D",
+      "codes": 1
+     },
+     {
+      "label": "§A 白卡（0.80）朝月：必须等于最亮云卡顶部 ±10",
+      "kind": "A",
+      "engine": "#8C9CB1",
+      "target": "#8D9CB1",
+      "codes": 1
+     },
+     {
+      "label": "§B 天顶",
+      "kind": "B",
+      "engine": "#081120",
+      "target": "#08101F",
+      "codes": 1
+     },
+     {
+      "label": "§B 地平线（背月）= 云上雾色",
+      "kind": "B",
+      "engine": "#121B31",
+      "target": "#111B30",
+      "codes": 1
+     }
+    ],
+    "frame": {
+     "mean": 0.762,
+     "p99": 2.0,
+     "max": 2
+    },
+    "neighbour": {
+     "mean": 0.912,
+     "p99": 4.0,
+     "max": 6
+    },
+    "saturated": {
+     "mean": 0.827,
+     "p99": 1.0,
+     "max": 1
+    },
+    "random": {
+     "mean": 1.529,
+     "p99": 9.0,
+     "max": 31
+    },
+    "tier": "all"
+   },
+   "S4": {
+    "sectionC": [
+     {
+      "k": -6,
+      "engine": "#06070F",
+      "target": "#05060E",
+      "codes": 1
+     },
+     {
+      "k": -5,
+      "engine": "#090A12",
+      "target": "#080911",
+      "codes": 1
+     },
+     {
+      "k": -4,
+      "engine": "#0F1017",
+      "target": "#0E1016",
+      "codes": 1
+     },
+     {
+      "k": -3,
+      "engine": "#181920",
+      "target": "#18191F",
+      "codes": 1
+     },
+     {
+      "k": -2,
+      "engine": "#26272E",
+      "target": "#25272D",
+      "codes": 1
+     },
+     {
+      "k": -1,
+      "engine": "#393B42",
+      "target": "#393B42",
+      "codes": 0
+     },
+     {
+      "k": 0,
+      "engine": "#54575E",
+      "target": "#54585F",
+      "codes": 1
+     },
+     {
+      "k": 1,
+      "engine": "#787C83",
+      "target": "#787D84",
+      "codes": 1
+     },
+     {
+      "k": 2,
+      "engine": "#A3A8AE",
+      "target": "#A3A8AE",
+      "codes": 0
+     },
+     {
+      "k": 3,
+      "engine": "#CDD1D6",
+      "target": "#CDD1D6",
+      "codes": 0
+     },
+     {
+      "k": 4,
+      "engine": "#EEF1F3",
+      "target": "#EEF0F3",
+      "codes": 1
+     }
+    ],
+    "sectionC_max": 1,
+    "black": {
+     "label": "black (input 0)",
+     "kind": "black",
+     "engine": "#03030C",
+     "target": "#03040C",
+     "codes": 1
+    },
+    "max_by_kind": {
+     "black": 1,
+     "ramp": 2,
+     "A": 1,
+     "colour": 9,
+     "B": 1
+    },
+    "worst_listed": [
+     {
+      "label": "§A 云海反光（自下而上 #5A6488），灰卡朝下",
+      "kind": "A",
+      "engine": "#070A16",
+      "target": "#070915",
+      "codes": 1
+     },
+     {
+      "label": "§A 天窗光斑（U8–U9，叠加卡；白卡读数）",
+      "kind": "A",
+      "engine": "#98A1AD",
+      "target": "#99A1AD",
+      "codes": 1
+     },
+     {
+      "label": "§B 虚空天色（>60° 或 >+35°）",
+      "kind": "B",
+      "engine": "#070B15",
+      "target": "#070A14",
+      "codes": 1
+     },
+     {
+      "label": "§B 光雾带 裂口旁 = 该方位雾色",
+      "kind": "B",
+      "engine": "#474C62",
+      "target": "#484D63",
+      "codes": 1
+     },
+     {
+      "label": "§B 全局雾色 RenderSettings（光雾带 30° 处）",
+      "kind": "B",
+      "engine": "#343B4F",
+      "target": "#353B4F",
+      "codes": 1
+     },
+     {
+      "label": "§B 紫晕（呼吸中值）",
+      "kind": "B",
+      "engine": "#5B57A2",
+      "target": "#5B57A1",
+      "codes": 1
+     }
+    ],
+    "frame": {
+     "mean": 0.658,
+     "p99": 1.0,
+     "max": 2
+    },
+    "neighbour": {
+     "mean": 0.896,
+     "p99": 2.0,
+     "max": 5
+    },
+    "saturated": {
+     "mean": 0.782,
+     "p99": 2.0,
+     "max": 2
+    },
+    "random": {
+     "mean": 1.53,
+     "p99": 10.019999999999982,
+     "max": 50
+    },
+    "tier": "all"
+   },
+   "S4c": {
+    "sectionC": [
+     {
+      "k": -6,
+      "engine": "#06060F",
+      "target": "#06060E",
+      "codes": 1
+     },
+     {
+      "k": -5,
+      "engine": "#0A0A12",
+      "target": "#0A0A12",
+      "codes": 0
+     },
+     {
+      "k": -4,
+      "engine": "#111118",
+      "target": "#111218",
+      "codes": 1
+     },
+     {
+      "k": -3,
+      "engine": "#1B1B21",
+      "target": "#1C1C21",
+      "codes": 1
+     },
+     {
+      "k": -2,
+      "engine": "#2A2A2F",
+      "target": "#2A2A2F",
+      "codes": 0
+     },
+     {
+      "k": -1,
+      "engine": "#3E3E43",
+      "target": "#3E3E43",
+      "codes": 0
+     },
+     {
+      "k": 0,
+      "engine": "#58585D",
+      "target": "#58585D",
+      "codes": 0
+     },
+     {
+      "k": 1,
+      "engine": "#797A7F",
+      "target": "#797A7F",
+      "codes": 0
+     },
+     {
+      "k": 2,
+      "engine": "#A0A1A5",
+      "target": "#A0A1A6",
+      "codes": 1
+     },
+     {
+      "k": 3,
+      "engine": "#C7C8CB",
+      "target": "#C7C8CB",
+      "codes": 0
+     },
+     {
+      "k": 4,
+      "engine": "#E7E7EA",
+      "target": "#E7E7EA",
+      "codes": 0
+     }
+    ],
+    "sectionC_max": 1,
+    "black": {
+     "label": "black (input 0)",
+     "kind": "black",
+     "engine": "#02020A",
+     "target": "#02020A",
+     "codes": 0
+    },
+    "max_by_kind": {
+     "black": 0,
+     "ramp": 1,
+     "A": 0,
+     "colour": 3,
+     "B": 1,
+     "D": 0
+    },
+    "worst_listed": [
+     {
+      "label": "§B Lichtchen 表盘（提亮一档后；S4c 下可达的最饱和值）",
+      "kind": "B",
+      "engine": "#F3B169",
+      "target": "#F2B169",
+      "codes": 1
+     },
+     {
+      "label": "§A 门内环境 _Udon_CabinAmbient #B5C3DB ×0.30（灰卡朝前）",
+      "kind": "A",
+      "engine": "#1E212B",
+      "target": "#1E212B",
+      "codes": 0
+     },
+     {
+      "label": "§B 第 1 重光唇之间的雾",
+      "kind": "B",
+      "engine": "#1D2336",
+      "target": "#1D2336",
+      "codes": 0
+     },
+     {
+      "label": "§B 第 8 重光唇之间的雾",
+      "kind": "B",
+      "engine": "#53606E",
+      "target": "#53606E",
+      "codes": 0
+     },
+     {
+      "label": "§B 光唇纤维 第 1 重",
+      "kind": "B",
+      "engine": "#E6E1F2",
+      "target": "#E6E1F2",
+      "codes": 0
+     },
+     {
+      "label": "§B 光唇纤维 第 4 重",
+      "kind": "B",
+      "engine": "#D9DFEE",
+      "target": "#D9DFEE",
+      "codes": 0
+     }
+    ],
+    "frame": {
+     "mean": 0.215,
+     "p99": 1.0,
+     "max": 2
+    },
+    "neighbour": {
+     "mean": 0.327,
+     "p99": 1.0,
+     "max": 2
+    },
+    "saturated": {
+     "mean": 0.277,
+     "p99": 1.0,
+     "max": 1
+    },
+    "random": {
+     "mean": 0.639,
+     "p99": 3.0,
+     "max": 8
+    },
+    "tier": "all"
+   },
+   "S6": {
+    "sectionC": [
+     {
+      "k": -6,
+      "engine": "#03080E",
+      "target": "#03080D",
+      "codes": 1
+     },
+     {
+      "k": -5,
+      "engine": "#070D12",
+      "target": "#080C11",
+      "codes": 1
+     },
+     {
+      "k": -4,
+      "engine": "#0F1418",
+      "target": "#101417",
+      "codes": 1
+     },
+     {
+      "k": -3,
+      "engine": "#1B1F22",
+      "target": "#1B1E21",
+      "codes": 1
+     },
+     {
+      "k": -2,
+      "engine": "#2A2D30",
+      "target": "#2B2D30",
+      "codes": 1
+     },
+     {
+      "k": -1,
+      "engine": "#3F4244",
+      "target": "#3F4244",
+      "codes": 0
+     },
+     {
+      "k": 0,
+      "engine": "#5A5D5F",
+      "target": "#5A5D5F",
+      "codes": 0
+     },
+     {
+      "k": 1,
+      "engine": "#7D8082",
+      "target": "#7D8082",
+      "codes": 0
+     },
+     {
+      "k": 2,
+      "engine": "#A4A8AA",
+      "target": "#A5A7A9",
+      "codes": 1
+     },
+     {
+      "k": 3,
+      "engine": "#CBCECF",
+      "target": "#CBCDCF",
+      "codes": 1
+     },
+     {
+      "k": 4,
+      "engine": "#EAECED",
+      "target": "#EAECED",
+      "codes": 0
+     }
+    ],
+    "sectionC_max": 1,
+    "black": {
+     "label": "black (input 0)",
+     "kind": "black",
+     "engine": "#000309",
+     "target": "#000309",
+     "codes": 0
+    },
+    "max_by_kind": {
+     "black": 0,
+     "ramp": 2,
+     "A": 1,
+     "colour": 4,
+     "B": 1,
+     "D": 0
+    },
+    "worst_listed": [
+     {
+      "label": "§A 主光：晨日 3200 K，仰角 6°",
+      "kind": "A",
+      "engine": "#967649",
+      "target": "#957649",
+      "codes": 1
+     },
+     {
+      "label": "§A 天光环境 Trilight sky #5A78B8（灰卡朝上）",
+      "kind": "A",
+      "engine": "#152743",
+      "target": "#162643",
+      "codes": 1
+     },
+     {
+      "label": "§A 车厢环境 #98A4B8 ×0.5（灰卡朝前）",
+      "kind": "A",
+      "engine": "#1F262F",
+      "target": "#20262F",
+      "codes": 1
+     },
+     {
+      "label": "§B 天顶",
+      "kind": "B",
+      "engine": "#3F64A7",
+      "target": "#3E64A6",
+      "codes": 1
+     },
+     {
+      "label": "§B 地影带",
+      "kind": "B",
+      "engine": "#8B98B8",
+      "target": "#8C98B8",
+      "codes": 1
+     },
+     {
+      "label": "§A 白卡（0.80）朝日",
+      "kind": "A",
+      "engine": "#E4C98F",
+      "target": "#E4C98F",
+      "codes": 0
+     }
+    ],
+    "frame": {
+     "mean": 0.443,
+     "p99": 1.0,
+     "max": 1
+    },
+    "neighbour": {
+     "mean": 0.546,
+     "p99": 1.0,
+     "max": 1
+    },
+    "saturated": {
+     "mean": 0.588,
+     "p99": 1.0,
+     "max": 1
+    },
+    "random": {
+     "mean": 0.91,
+     "p99": 4.0,
+     "max": 16
+    },
+    "tier": "all"
+   },
+   "S7a": {
+    "sectionC": [
+     {
+      "k": -6,
+      "engine": "#060E12",
+      "target": "#030B0F",
+      "codes": 3
+     },
+     {
+      "k": -5,
+      "engine": "#091115",
+      "target": "#060E13",
+      "codes": 3
+     },
+     {
+      "k": -4,
+      "engine": "#0F171B",
+      "target": "#0E1519",
+      "codes": 2
+     },
+     {
+      "k": -3,
+      "engine": "#182024",
+      "target": "#191E22",
+      "codes": 2
+     },
+     {
+      "k": -2,
+      "engine": "#262D31",
+      "target": "#272D31",
+      "codes": 1
+     },
+     {
+      "k": -1,
+      "engine": "#3A4045",
+      "target": "#3B4145",
+      "codes": 1
+     },
+     {
+      "k": 0,
+      "engine": "#555B61",
+      "target": "#565C61",
+      "codes": 1
+     },
+     {
+      "k": 1,
+      "engine": "#787E84",
+      "target": "#797F84",
+      "codes": 1
+     },
+     {
+      "k": 2,
+      "engine": "#A1A6AC",
+      "target": "#A1A7AC",
+      "codes": 1
+     },
+     {
+      "k": 3,
+      "engine": "#CACDD1",
+      "target": "#C9CDD1",
+      "codes": 1
+     },
+     {
+      "k": 4,
+      "engine": "#EAECEF",
+      "target": "#E9ECEE",
+      "codes": 1
+     }
+    ],
+    "sectionC_max": 3,
+    "black": {
+     "label": "black (input 0)",
+     "kind": "black",
+     "engine": "#030B0F",
+     "target": "#030B0F",
+     "codes": 0
+    },
+    "max_by_kind": {
+     "black": 0,
+     "ramp": 5,
+     "A": 1,
+     "colour": 8,
+     "B": 3
+    },
+    "worst_listed": [
+     {
+      "label": "§B 全反射暗镜",
+      "kind": "B",
+      "engine": "#14395E",
+      "target": "#11395E",
+      "codes": 3
+     },
+     {
+      "label": "§B 生物荧光",
+      "kind": "B",
+      "engine": "#8CC8FF",
+      "target": "#89C6FF",
+      "codes": 3
+     },
+     {
+      "label": "§A 透过水面的日光 #B0D9F2（灰卡朝上）",
+      "kind": "A",
+      "engine": "#436072",
+      "target": "#446172",
+      "codes": 1
+     },
+     {
+      "label": "§A 浅水车厢环境 #6186A7 ×0.6",
+      "kind": "A",
+      "engine": "#0E2230",
+      "target": "#0D212F",
+      "codes": 1
+     },
+     {
+      "label": "§B 斯涅尔窗核心",
+      "kind": "B",
+      "engine": "#E7F4F9",
+      "target": "#E6F3F8",
+      "codes": 1
+     },
+     {
+      "label": "§B 浅水雾 0–15 m",
+      "kind": "B",
+      "engine": "#4F7DA6",
+      "target": "#507DA6",
+      "codes": 1
+     }
+    ],
+    "frame": {
+     "mean": 0.587,
+     "p99": 1.0,
+     "max": 2
+    },
+    "neighbour": {
+     "mean": 1.917,
+     "p99": 4.0,
+     "max": 14
+    },
+    "saturated": {
+     "mean": 0.601,
+     "p99": 1.0,
+     "max": 2
+    },
+    "random": {
+     "mean": 2.654,
+     "p99": 9.0,
+     "max": 45
+    },
+    "tier": "all"
+   },
+   "S7b": {
+    "sectionC": [
+     {
+      "k": -6,
+      "engine": "#040A12",
+      "target": "#040A12",
+      "codes": 0
+     },
+     {
+      "k": -5,
+      "engine": "#080E16",
+      "target": "#080E15",
+      "codes": 1
+     },
+     {
+      "k": -4,
+      "engine": "#10151C",
+      "target": "#10151C",
+      "codes": 0
+     },
+     {
+      "k": -3,
+      "engine": "#1B2027",
+      "target": "#1B2026",
+      "codes": 1
+     },
+     {
+      "k": -2,
+      "engine": "#2B3037",
+      "target": "#2B3037",
+      "codes": 0
+     },
+     {
+      "k": -1,
+      "engine": "#41474E",
+      "target": "#42484F",
+      "codes": 1
+     },
+     {
+      "k": 0,
+      "engine": "#61676F",
+      "target": "#626870",
+      "codes": 1
+     },
+     {
+      "k": 1,
+      "engine": "#899097",
+      "target": "#8A9098",
+      "codes": 1
+     },
+     {
+      "k": 2,
+      "engine": "#B6BCC2",
+      "target": "#B6BBC2",
+      "codes": 1
+     },
+     {
+      "k": 3,
+      "engine": "#DDE1E6",
+      "target": "#DDE1E5",
+      "codes": 1
+     },
+     {
+      "k": 4,
+      "engine": "#F9FBFD",
+      "target": "#F8FAFD",
+      "codes": 1
+     }
+    ],
+    "sectionC_max": 1,
+    "black": {
+     "label": "black (input 0)",
+     "kind": "black",
+     "engine": "#01060E",
+     "target": "#01060E",
+     "codes": 0
+    },
+    "max_by_kind": {
+     "black": 0,
+     "ramp": 2,
+     "A": 3,
+     "colour": 7,
+     "B": 2
+    },
+    "worst_listed": [
+     {
+      "label": "§A 青铜灯焰暖光 2200 K，距灯 2 m",
+      "kind": "A",
+      "engine": "#6F3E16",
+      "target": "#6C3F15",
+      "codes": 3
+     },
+     {
+      "label": "§A 同一盏灯的靛色远光 #2A557B，距灯 8 m",
+      "kind": "A",
+      "engine": "#021426",
+      "target": "#001325",
+      "codes": 2
+     },
+     {
+      "label": "§B 水雾 15–60 m",
+      "kind": "B",
+      "engine": "#1C4062",
+      "target": "#1A4163",
+      "codes": 2
+     },
+     {
+      "label": "§B 船体生物光",
+      "kind": "B",
+      "engine": "#8CC6FF",
+      "target": "#8AC6FF",
+      "codes": 2
+     },
+     {
+      "label": "§B 深水雾（宫殿）",
+      "kind": "B",
+      "engine": "#05131F",
+      "target": "#04121E",
+      "codes": 1
+     },
+     {
+      "label": "§B 深渊",
+      "kind": "B",
+      "engine": "#03070F",
+      "target": "#02070F",
+      "codes": 1
+     }
+    ],
+    "frame": {
+     "mean": 0.886,
+     "p99": 1.0,
+     "max": 7
+    },
+    "neighbour": {
+     "mean": 1.313,
+     "p99": 4.0,
+     "max": 4
+    },
+    "saturated": {
+     "mean": 0.817,
+     "p99": 2.0,
+     "max": 6
+    },
+    "random": {
+     "mean": 1.827,
+     "p99": 16.00999999999999,
+     "max": 30
+    },
+    "tier": "all"
+   },
+   "S8": {
+    "sectionC": [
+     {
+      "k": -6,
+      "engine": "#030A11",
+      "target": "#020910",
+      "codes": 1
+     },
+     {
+      "k": -5,
+      "engine": "#070F14",
+      "target": "#080E14",
+      "codes": 1
+     },
+     {
+      "k": -4,
+      "engine": "#12161A",
+      "target": "#121519",
+      "codes": 1
+     },
+     {
+      "k": -3,
+      "engine": "#1F2123",
+      "target": "#1F2023",
+      "codes": 1
+     },
+     {
+      "k": -2,
+      "engine": "#303031",
+      "target": "#303031",
+      "codes": 0
+     },
+     {
+      "k": -1,
+      "engine": "#484645",
+      "target": "#484646",
+      "codes": 1
+     },
+     {
+      "k": 0,
+      "engine": "#676462",
+      "target": "#676462",
+      "codes": 0
+     },
+     {
+      "k": 1,
+      "engine": "#8D8986",
+      "target": "#8E8A86",
+      "codes": 1
+     },
+     {
+      "k": 2,
+      "engine": "#B7B3AF",
+      "target": "#B8B3AF",
+      "codes": 1
+     },
+     {
+      "k": 3,
+      "engine": "#DCD9D5",
+      "target": "#DCD8D5",
+      "codes": 1
+     },
+     {
+      "k": 4,
+      "engine": "#F6F4F2",
+      "target": "#F7F4F1",
+      "codes": 1
+     }
+    ],
+    "sectionC_max": 1,
+    "black": {
+     "label": "black (input 0)",
+     "kind": "black",
+     "engine": "#00050D",
+     "target": "#00050D",
+     "codes": 0
+    },
+    "max_by_kind": {
+     "black": 0,
+     "ramp": 2,
+     "A": 2,
+     "colour": 5,
+     "B": 1
+    },
+    "worst_listed": [
+     {
+      "label": "§A 主/逆光：暮日 2400 K 在地平线，灰卡朝日",
+      "kind": "A",
+      "engine": "#935A14",
+      "target": "#925A12",
+      "codes": 2
+     },
+     {
+      "label": "§A 白卡（0.80）朝暮日",
+      "kind": "A",
+      "engine": "#E5AD1F",
+      "target": "#E4AD1E",
+      "codes": 1
+     },
+     {
+      "label": "§A 车厢环境 #828BAA ×0.45",
+      "kind": "A",
+      "engine": "#1A1F2B",
+      "target": "#1A1F2A",
+      "codes": 1
+     },
+     {
+      "label": "§B 头顶海水",
+      "kind": "B",
+      "engine": "#11263F",
+      "target": "#10263F",
+      "codes": 1
+     },
+     {
+      "label": "§B 天花近地平镜光",
+      "kind": "B",
+      "engine": "#CA8A79",
+      "target": "#C98A7A",
+      "codes": 1
+     },
+     {
+      "label": "§B 天缝",
+      "kind": "B",
+      "engine": "#F3A56A",
+      "target": "#F2A46B",
+      "codes": 1
+     }
+    ],
+    "frame": {
+     "mean": 0.65,
+     "p99": 1.0,
+     "max": 2
+    },
+    "neighbour": {
+     "mean": 0.803,
+     "p99": 1.0,
+     "max": 4
+    },
+    "saturated": {
+     "mean": 0.701,
+     "p99": 1.0,
+     "max": 2
+    },
+    "random": {
+     "mean": 1.302,
+     "p99": 9.0,
+     "max": 36
+    },
+    "tier": "all"
+   },
+   "S8b": {
+    "sectionC": [
+     {
+      "k": -6,
+      "engine": "#060C13",
+      "target": "#060B13",
+      "codes": 1
+     },
+     {
+      "k": -5,
+      "engine": "#0C1118",
+      "target": "#0C1118",
+      "codes": 0
+     },
+     {
+      "k": -4,
+      "engine": "#151920",
+      "target": "#14191F",
+      "codes": 1
+     },
+     {
+      "k": -3,
+      "engine": "#20242B",
+      "target": "#21242B",
+      "codes": 1
+     },
+     {
+      "k": -2,
+      "engine": "#32353C",
+      "target": "#32353C",
+      "codes": 0
+     },
+     {
+      "k": -1,
+      "engine": "#494D54",
+      "target": "#494D54",
+      "codes": 0
+     },
+     {
+      "k": 0,
+      "engine": "#686C73",
+      "target": "#686C74",
+      "codes": 1
+     },
+     {
+      "k": 1,
+      "engine": "#8E9299",
+      "target": "#8E929A",
+      "codes": 1
+     },
+     {
+      "k": 2,
+      "engine": "#B7BAC1",
+      "target": "#B7BAC1",
+      "codes": 0
+     },
+     {
+      "k": 3,
+      "engine": "#DCDEE2",
+      "target": "#DCDDE2",
+      "codes": 1
+     },
+     {
+      "k": 4,
+      "engine": "#F6F7FA",
+      "target": "#F6F7F9",
+      "codes": 1
+     }
+    ],
+    "sectionC_max": 1,
+    "black": {
+     "label": "black (input 0)",
+     "kind": "black",
+     "engine": "#01060E",
+     "target": "#01060E",
+     "codes": 0
+    },
+    "max_by_kind": {
+     "black": 0,
+     "ramp": 1,
+     "colour": 8,
+     "B": 1
+    },
+    "worst_listed": [
+     {
+      "label": "§B 蓝时 地平线",
+      "kind": "B",
+      "engine": "#6E86B0",
+      "target": "#6F86B0",
+      "codes": 1
+     },
+     {
+      "label": "§B 蓝时 最纯的蓝",
+      "kind": "B",
+      "engine": "#2E4F8A",
+      "target": "#2E4F8A",
+      "codes": 0
+     }
+    ],
+    "frame": {
+     "mean": 0.572,
+     "p99": 1.0,
+     "max": 2
+    },
+    "neighbour": {
+     "mean": 0.778,
+     "p99": 2.0,
+     "max": 3
+    },
+    "saturated": {
+     "mean": 0.561,
+     "p99": 2.0,
+     "max": 2
+    },
+    "random": {
+     "mean": 1.056,
+     "p99": 5.009999999999991,
+     "max": 17
+    },
+    "tier": "all"
+   },
+   "S9a": {
+    "sectionC": [
+     {
+      "k": -6,
+      "engine": "#070D15",
+      "target": "#070D14",
+      "codes": 1
+     },
+     {
+      "k": -5,
+      "engine": "#0E131A",
+      "target": "#0E131A",
+      "codes": 0
+     },
+     {
+      "k": -4,
+      "engine": "#191D24",
+      "target": "#181D23",
+      "codes": 1
+     },
+     {
+      "k": -3,
+      "engine": "#272B32",
+      "target": "#272B32",
+      "codes": 0
+     },
+     {
+      "k": -2,
+      "engine": "#3C4047",
+      "target": "#3C4048",
+      "codes": 1
+     },
+     {
+      "k": -1,
+      "engine": "#585D65",
+      "target": "#585D66",
+      "codes": 1
+     },
+     {
+      "k": 0,
+      "engine": "#7E828B",
+      "target": "#7E838C",
+      "codes": 1
+     },
+     {
+      "k": 1,
+      "engine": "#A9ADB5",
+      "target": "#A9ADB5",
+      "codes": 0
+     },
+     {
+      "k": 2,
+      "engine": "#D2D5DB",
+      "target": "#D2D5DB",
+      "codes": 0
+     },
+     {
+      "k": 3,
+      "engine": "#F1F3F7",
+      "target": "#F1F2F6",
+      "codes": 1
+     },
+     {
+      "k": 4,
+      "engine": "#FFFFFF",
+      "target": "#FFFFFF",
+      "codes": 0
+     }
+    ],
+    "sectionC_max": 1,
+    "black": {
+     "label": "black (input 0)",
+     "kind": "black",
+     "engine": "#01060E",
+     "target": "#01060E",
+     "codes": 0
+    },
+    "max_by_kind": {
+     "black": 0,
+     "ramp": 1,
+     "A": 1,
+     "colour": 11,
+     "B": 3
+    },
+    "worst_listed": [
+     {
+      "label": "§B 镜线",
+      "kind": "B",
+      "engine": "#D9E8FF",
+      "target": "#DCE8FF",
+      "codes": 3
+     },
+     {
+      "label": "§B 银心暖尘",
+      "kind": "B",
+      "engine": "#CAB799",
+      "target": "#C8B79A",
+      "codes": 2
+     },
+     {
+      "label": "§A 星光环境 Trilight sky #1A2A4A（灰卡朝上）",
+      "kind": "A",
+      "engine": "#041025",
+      "target": "#031024",
+      "codes": 1
+     },
+     {
+      "label": "§A 镜线扫过时的点光 8000 K 峰值",
+      "kind": "A",
+      "engine": "#38404E",
+      "target": "#38414F",
+      "codes": 1
+     },
+     {
+      "label": "§B 点燃前的黑（可达值）",
+      "kind": "B",
+      "engine": "#05060E",
+      "target": "#04060E",
+      "codes": 1
+     },
+     {
+      "label": "§B 星空底",
+      "kind": "B",
+      "engine": "#09112B",
+      "target": "#08112B",
+      "codes": 1
+     }
+    ],
+    "frame": {
+     "mean": 0.906,
+     "p99": 2.0,
+     "max": 2
+    },
+    "neighbour": {
+     "mean": 1.094,
+     "p99": 4.0,
+     "max": 4
+    },
+    "saturated": {
+     "mean": 0.868,
+     "p99": 1.0,
+     "max": 1
+    },
+    "random": {
+     "mean": 1.61,
+     "p99": 9.0,
+     "max": 31
+    },
+    "tier": "all"
+   },
+   "S9b": {
+    "sectionC": [
+     {
+      "k": -6,
+      "engine": "#080D14",
+      "target": "#070C13",
+      "codes": 1
+     },
+     {
+      "k": -5,
+      "engine": "#0E1319",
+      "target": "#0E1218",
+      "codes": 1
+     },
+     {
+      "k": -4,
+      "engine": "#191D22",
+      "target": "#181C21",
+      "codes": 1
+     },
+     {
+      "k": -3,
+      "engine": "#272A30",
+      "target": "#272B30",
+      "codes": 1
+     },
+     {
+      "k": -2,
+      "engine": "#3C3F44",
+      "target": "#3C4045",
+      "codes": 1
+     },
+     {
+      "k": -1,
+      "engine": "#595C62",
+      "target": "#595D63",
+      "codes": 1
+     },
+     {
+      "k": 0,
+      "engine": "#7F8288",
+      "target": "#808389",
+      "codes": 1
+     },
+     {
+      "k": 1,
+      "engine": "#ABAEB4",
+      "target": "#ABAEB4",
+      "codes": 0
+     },
+     {
+      "k": 2,
+      "engine": "#D5D7DB",
+      "target": "#D5D6DA",
+      "codes": 1
+     },
+     {
+      "k": 3,
+      "engine": "#F3F5F7",
+      "target": "#F3F4F6",
+      "codes": 1
+     },
+     {
+      "k": 4,
+      "engine": "#FFFFFF",
+      "target": "#FFFFFF",
+      "codes": 0
+     }
+    ],
+    "sectionC_max": 1,
+    "black": {
+     "label": "black (input 0)",
+     "kind": "black",
+     "engine": "#01060D",
+     "target": "#01060E",
+     "codes": 1
+    },
+    "max_by_kind": {
+     "black": 1,
+     "ramp": 1,
+     "colour": 9,
+     "B": 3
+    },
+    "worst_listed": [
+     {
+      "label": "§B 星尘",
+      "kind": "B",
+      "engine": "#D0BF9A",
+      "target": "#CDBF9C",
+      "codes": 3
+     },
+     {
+      "label": "§B 第 13 面镜的远缘（F14 起）",
+      "kind": "B",
+      "engine": "#4D535D",
+      "target": "#4E545E",
+      "codes": 1
+     }
+    ],
+    "frame": {
+     "mean": 1.079,
+     "p99": 3.0,
+     "max": 4
+    },
+    "neighbour": {
+     "mean": 0.971,
+     "p99": 2.0,
+     "max": 3
+    },
+    "saturated": {
+     "mean": 0.852,
+     "p99": 1.0,
+     "max": 3
+    },
+    "random": {
+     "mean": 1.944,
+     "p99": 10.0,
+     "max": 27
+    },
+    "tier": "all"
+   },
+   "S10": {
+    "sectionC": [
+     {
+      "k": -6,
+      "engine": "#0A0A0A",
+      "target": "#0A0A0A",
+      "codes": 0
+     },
+     {
+      "k": -5,
+      "engine": "#121212",
+      "target": "#121212",
+      "codes": 0
+     },
+     {
+      "k": -4,
+      "engine": "#1D1D1D",
+      "target": "#1D1D1D",
+      "codes": 0
+     },
+     {
+      "k": -3,
+      "engine": "#2B2B2B",
+      "target": "#2B2B2B",
+      "codes": 0
+     },
+     {
+      "k": -2,
+      "engine": "#3E3E3E",
+      "target": "#3E3E3E",
+      "codes": 0
+     },
+     {
+      "k": -1,
+      "engine": "#575757",
+      "target": "#575757",
+      "codes": 0
+     },
+     {
+      "k": 0,
+      "engine": "#777777",
+      "target": "#767676",
+      "codes": 1
+     },
+     {
+      "k": 1,
+      "engine": "#9B9B9B",
+      "target": "#9B9B9B",
+      "codes": 0
+     },
+     {
+      "k": 2,
+      "engine": "#C0C0C0",
+      "target": "#C0C0C0",
+      "codes": 0
+     },
+     {
+      "k": 3,
+      "engine": "#E0E0E0",
+      "target": "#E0E0E0",
+      "codes": 0
+     },
+     {
+      "k": 4,
+      "engine": "#F7F7F7",
+      "target": "#F7F7F7",
+      "codes": 0
+     }
+    ],
+    "sectionC_max": 1,
+    "black": {
+     "label": "black (input 0)",
+     "kind": "black",
+     "engine": "#010101",
+     "target": "#000000",
+     "codes": 1
+    },
+    "max_by_kind": {
+     "black": 1,
+     "ramp": 1,
+     "colour": 1,
+     "B": 0,
+     "D": 0
+    },
+    "worst_listed": [
+     {
+      "label": "§B 藍白遮罩球（桌面）",
+      "kind": "B",
+      "engine": "#E8F1F5",
+      "target": "#E8F1F5",
+      "codes": 0
+     },
+     {
+      "label": "§B 藍白遮罩球（VR）",
+      "kind": "B",
+      "engine": "#D7E3E8",
+      "target": "#D7E3E8",
+      "codes": 0
+     },
+     {
+      "label": "§B 第二次白",
+      "kind": "B",
+      "engine": "#A3B4BE",
+      "target": "#A3B4BE",
+      "codes": 0
+     },
+     {
+      "label": "§D 10 保持 藍白（桌面）",
+      "kind": "D",
+      "engine": "#E8F1F5",
+      "target": "#E8F1F5",
+      "codes": 0
+     },
+     {
+      "label": "§D 10 保持 藍白（VR）",
+      "kind": "D",
+      "engine": "#D7E3E8",
+      "target": "#D7E3E8",
+      "codes": 0
+     }
+    ],
+    "random": {
+     "mean": 0.606,
+     "p99": 1.0,
+     "max": 1
+    },
+    "tier": "unchanged (neutral)"
+   },
+   "S11": {
+    "sectionC": [
+     {
+      "k": -6,
+      "engine": "#070C12",
+      "target": "#070B11",
+      "codes": 1
+     },
+     {
+      "k": -5,
+      "engine": "#0D1117",
+      "target": "#0D1116",
+      "codes": 1
+     },
+     {
+      "k": -4,
+      "engine": "#161A1E",
+      "target": "#16191E",
+      "codes": 1
+     },
+     {
+      "k": -3,
+      "engine": "#23262A",
+      "target": "#23262A",
+      "codes": 0
+     },
+     {
+      "k": -2,
+      "engine": "#35373C",
+      "target": "#35383C",
+      "codes": 1
+     },
+     {
+      "k": -1,
+      "engine": "#4D5054",
+      "target": "#4E5055",
+      "codes": 1
+     },
+     {
+      "k": 0,
+      "engine": "#6E7175",
+      "target": "#6F7176",
+      "codes": 1
+     },
+     {
+      "k": 1,
+      "engine": "#96989D",
+      "target": "#97989D",
+      "codes": 1
+     },
+     {
+      "k": 2,
+      "engine": "#C0C1C5",
+      "target": "#C0C1C5",
+      "codes": 0
+     },
+     {
+      "k": 3,
+      "engine": "#E3E4E6",
+      "target": "#E3E3E6",
+      "codes": 1
+     },
+     {
+      "k": 4,
+      "engine": "#FBFBFC",
+      "target": "#FBFBFC",
+      "codes": 0
+     }
+    ],
+    "sectionC_max": 1,
+    "black": {
+     "label": "black (input 0)",
+     "kind": "black",
+     "engine": "#02060C",
+     "target": "#02060C",
+     "codes": 0
+    },
+    "max_by_kind": {
+     "black": 0,
+     "ramp": 1,
+     "A": 0,
+     "colour": 6,
+     "B": 2
+    },
+    "worst_listed": [
+     {
+      "label": "§B 收音机表盘",
+      "kind": "B",
+      "engine": "#E39868",
+      "target": "#E19867",
+      "codes": 2
+     },
+     {
+      "label": "§B 雾色",
+      "kind": "B",
+      "engine": "#0B1019",
+      "target": "#0A0F18",
+      "codes": 1
+     },
+     {
+      "label": "§B 天",
+      "kind": "B",
+      "engine": "#050910",
+      "target": "#05080F",
+      "codes": 1
+     },
+     {
+      "label": "§B 钠灯灯头经过",
+      "kind": "B",
+      "engine": "#EEAD78",
+      "target": "#EDAD77",
+      "codes": 1
+     },
+     {
+      "label": "§A 车厢灯管（_CabinTubeLM），座垫上；头像补光按同一读数",
+      "kind": "A",
+      "engine": "#585F64",
+      "target": "#585F64",
+      "codes": 0
+     },
+     {
+      "label": "§A 钠灯扫光峰值（2050 K），座椅顶",
+      "kind": "A",
+      "engine": "#623C25",
+      "target": "#623C25",
+      "codes": 0
+     }
+    ],
+    "frame": {
+     "mean": 0.521,
+     "p99": 1.0,
+     "max": 3
+    },
+    "neighbour": {
+     "mean": 0.628,
+     "p99": 1.0,
+     "max": 7
+    },
+    "saturated": {
+     "mean": 0.615,
+     "p99": 2.0,
+     "max": 2
+    },
+    "random": {
+     "mean": 1.089,
+     "p99": 7.0,
+     "max": 16
+    },
+    "tier": "copy of S2"
+   },
+   "S12": {
+    "sectionC": [
+     {
+      "k": -6,
+      "engine": "#070D13",
+      "target": "#070C13",
+      "codes": 1
+     },
+     {
+      "k": -5,
+      "engine": "#0E1218",
+      "target": "#0E1218",
+      "codes": 0
+     },
+     {
+      "k": -4,
+      "engine": "#171B21",
+      "target": "#171B20",
+      "codes": 1
+     },
+     {
+      "k": -3,
+      "engine": "#25282D",
+      "target": "#25282D",
+      "codes": 0
+     },
+     {
+      "k": -2,
+      "engine": "#373B40",
+      "target": "#383B40",
+      "codes": 1
+     },
+     {
+      "k": -1,
+      "engine": "#51545A",
+      "target": "#51555A",
+      "codes": 1
+     },
+     {
+      "k": 0,
+      "engine": "#73767C",
+      "target": "#73777D",
+      "codes": 1
+     },
+     {
+      "k": 1,
+      "engine": "#9B9FA4",
+      "target": "#9C9FA4",
+      "codes": 1
+     },
+     {
+      "k": 2,
+      "engine": "#C4C7CC",
+      "target": "#C5C7CB",
+      "codes": 1
+     },
+     {
+      "k": 3,
+      "engine": "#E7E8EB",
+      "target": "#E7E8EB",
+      "codes": 0
+     },
+     {
+      "k": 4,
+      "engine": "#FDFEFF",
+      "target": "#FDFEFF",
+      "codes": 0
+     }
+    ],
+    "sectionC_max": 1,
+    "black": {
+     "label": "black (input 0)",
+     "kind": "black",
+     "engine": "#01060D",
+     "target": "#01060D",
+     "codes": 0
+    },
+    "max_by_kind": {
+     "black": 0,
+     "ramp": 1,
+     "A": 1,
+     "colour": 4,
+     "B": 3,
+     "D": 1
+    },
+    "worst_listed": [
+     {
+      "label": "§B 远镇灯",
+      "kind": "B",
+      "engine": "#E3904A",
+      "target": "#E0914A",
+      "codes": 3
+     },
+     {
+      "label": "§B Lichtchen 光晕（α 0.30）",
+      "kind": "B",
+      "engine": "#EDEDA6",
+      "target": "#EBECA6",
+      "codes": 2
+     },
+     {
+      "label": "§B 田上萤火虫",
+      "kind": "B",
+      "engine": "#E0EB89",
+      "target": "#DEEA88",
+      "codes": 2
+     },
+     {
+      "label": "§A 主光：站牌灯管（同 S1）",
+      "kind": "A",
+      "engine": "#656F76",
+      "target": "#667076",
+      "codes": 1
+     },
+     {
+      "label": "§B 天顶（云开）",
+      "kind": "B",
+      "engine": "#070C15",
+      "target": "#070B14",
+      "codes": 1
+     },
+     {
+      "label": "§B 藍白带 8 分钟后",
+      "kind": "B",
+      "engine": "#32465B",
+      "target": "#33465B",
+      "codes": 1
+     }
+    ],
+    "frame": {
+     "mean": 0.846,
+     "p99": 2.0,
+     "max": 6
+    },
+    "saturated": {
+     "mean": 1.534,
+     "p99": 5.009999999999991,
+     "max": 8
+    },
+    "random": {
+     "mean": 1.26,
+     "p99": 8.0,
+     "max": 24
+    },
+    "tier": "all"
+   }
+  }
+ }
+}
