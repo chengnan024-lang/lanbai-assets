@@ -1,0 +1,136 @@
+{
+ "file": "../Gate/Renders/U8a_ach_nein.png",
+ "size": [
+  1920,
+  1080
+ ],
+ "act": "4",
+ "APL": 92.1,
+ "luma_lt12_pct": 0.0,
+ "luma_p50_p95_p99": [
+  61.9,
+  233.1,
+  242.2
+ ],
+ "top25_Lstar_p90": 31.3,
+ "Lstar_max": 97.2,
+ "pct_Lstar_gt85": 16.84,
+ "APL_target": {
+  "seg": "4",
+  "name": "触手之门",
+  "APL": [
+   38,
+   40
+  ],
+  "range_pm15": [
+   32.3,
+   46.0
+  ],
+  "pass": false
+ },
+ "violet_h290_325_C15": {
+  "pct": 0.48,
+  "largest_region_pct": 0.15
+ },
+ "violet_C30_pct": 0.22,
+ "lavender_h285_330_C12": {
+  "pct": 7.77,
+  "largest_region_pct": 5.78
+ },
+ "violet_pass": true,
+ "pure_black": {
+  "pct": 0.0,
+  "largest_region_pct": 0.0
+ },
+ "pure_white": {
+  "pct": 0.02,
+  "largest_region_pct": 0.0
+ },
+ "black_white_pass": true,
+ "red_zero_pct": 0.0,
+ "min_code": [
+  12,
+  15,
+  25
+ ],
+ "brightest_2000": {
+  "clusters_ge5pct": 1,
+  "largest_share_pct": 99.9,
+  "bbox": [
+   1167,
+   675,
+   1372,
+   875
+  ],
+  "centroid_xy01": [
+   0.632,
+   0.676
+  ],
+  "threshold_luma": 245.3
+ },
+ "one_brightest_pass": true,
+ "warm_shadow_pct": 0.0,
+ "palette": [
+  {
+   "name": "虚空",
+   "hex": "#070A14",
+   "nearest_dE_p0.1": 2.5,
+   "pct_within_dE5": 4.72
+  },
+  {
+   "name": "光雾带裂口旁",
+   "hex": "#484D63",
+   "nearest_dE_p0.1": 1.1,
+   "pct_within_dE5": 20.59
+  },
+  {
+   "name": "光雾带50° 外",
+   "hex": "#2A3041",
+   "nearest_dE_p0.1": 1.4,
+   "pct_within_dE5": 33.52
+  },
+  {
+   "name": "近处触手本体",
+   "hex": "#0F1116",
+   "nearest_dE_p0.1": 3.8,
+   "pct_within_dE5": 1.36
+  },
+  {
+   "name": "巨像冠部",
+   "hex": "#262B38",
+   "nearest_dE_p0.1": 0.6,
+   "pct_within_dE5": 34.13
+  },
+  {
+   "name": "月光轮廓",
+   "hex": "#A9C2FF",
+   "nearest_dE_p0.1": 11.8,
+   "pct_within_dE5": 0.0
+  },
+  {
+   "name": "裂口侧轮廓",
+   "hex": "#A99DE1",
+   "nearest_dE_p0.1": 11.1,
+   "pct_within_dE5": 0.0
+  },
+  {
+   "name": "紫晕",
+   "hex": "#5B57A1",
+   "nearest_dE_p0.1": 4.8,
+   "pct_within_dE5": 0.11
+  },
+  {
+   "name": "裂口下云海",
+   "hex": "#495270",
+   "nearest_dE_p0.1": 3.6,
+   "pct_within_dE5": 3.86
+  },
+  {
+   "name": "未染的白",
+   "hex": "#F5F2EC",
+   "nearest_dE_p0.1": 0.0,
+   "pct_within_dE5": 11.28
+  }
+ ],
+ "mean_colour_hex": "#7A7B80"
+}

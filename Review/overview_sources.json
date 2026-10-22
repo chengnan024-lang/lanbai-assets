@@ -1,0 +1,21 @@
+{
+ "_about": "全片总览图的来源：每一幕的主机位用哪张图（路径相对仓库根）。kind = render（包的渲染）/ unity（本地截图）/ bible（圣经测试帧，还没有真图时的占位）。有新的主机位图过审就改这里，然后重跑 Tools~/make_overview.py。",
+ "acts": [
+  {"act": "1",  "t": -30,     "seg": "1",   "img": "Art/previews/Preview_S1_01_stop.png",            "kind": "bible"},
+  {"act": "2",  "t": 28,      "seg": "2",   "img": "Art/previews/Preview_S2_02_nightroad.png",       "kind": "bible"},
+  {"act": "3",  "t": 140,     "seg": "3c",  "img": "Art/previews/Preview_S3_03_liftoff_moon.png",    "kind": "bible"},
+  {"act": "4",  "t": 155.1,   "seg": "4",   "img": "Gate/Renders/U7_engelein.png",                   "kind": "render", "also": ["FromLocal/gate_test/U7_unity_t155.10.png"]},
+  {"act": "4c", "t": 214,     "seg": "4c",  "img": "Art/previews/Preview_S4c_04c_inside_tear.png",   "kind": "bible"},
+  {"act": "5",  "t": 250,     "seg": "5",   "img": null,                                             "kind": "black"},
+  {"act": "6",  "t": 270,     "seg": "6",   "img": "Art/previews/Preview_S6_06_dawn.png",            "kind": "bible"},
+  {"act": "7a", "t": 420,     "seg": "7a",  "img": "Art/previews/Preview_S7a_07a_undersea.png",      "kind": "bible"},
+  {"act": "7b", "t": 748,     "seg": "7b3", "img": "Art/previews/Preview_S7b_07b_deep_palace.png",   "kind": "bible"},
+  {"act": "7c", "t": 900,     "seg": "7c",  "img": null,                                             "kind": "missing"},
+  {"act": "8",  "t": 940.4,   "seg": "8",   "img": "Art/previews/Preview_S8_08_dusk.png",            "kind": "bible"},
+  {"act": "8b", "t": 997,     "seg": "8b",  "img": "Art/previews/Preview_S8b_08b_bluehour.png",      "kind": "bible"},
+  {"act": "9",  "t": 1137,    "seg": "9c",  "img": "Art/previews/Preview_S9b_09b_starsea_climax.png","kind": "bible"},
+  {"act": "10", "t": 1160,    "seg": "10",  "img": null,                                             "kind": "white"},
+  {"act": "11", "t": 1210,    "seg": "11",  "img": "Art/previews/Preview_S11_11_false_wake.png",     "kind": "bible"},
+  {"act": "12", "t": 1290,    "seg": "12",  "img": "Art/previews/Preview_S12_12_wake.png",           "kind": "bible"}
+ ]
+}
