@@ -23,17 +23,21 @@ VRChat 只允许 Udon 写 `_Udon_` 前缀的全局 shader 量（`VRCShader.SetGl
 | `_Udon_ReflCube` / `_Udon_ReflCube_HDR` / `_Udon_ReflExposure` | 每幕烘好的反射立方图 | 当前幕的驱动 | Rain；海、星海、暮的天花 |
 | `_Udon_CabinLightmap` / `_Udon_CabinAmbient` / `_Udon_CabinBleach` / `_Udon_CabinFade` | 车厢管灯、环境色、漂白、侵蚀（圣经 §4.8） | 时间轴 / 车厢驱动 | 车厢 shader（总控在做）、Rain |
 | `_Udon_CaseLight` | 公告箱纸的发光 | 第 12 幕 | Rain |
-| `_Udon_Caustics` | 水下焦散强度 / 方向（圣经 §4.8） | 海驱动 | 车厢、海 |
+| `_Udon_Caustics` | float4：x 强度 0..1（已含深度衰减）、y 方向 +1 从上 / −1 从下（7c）、z 焦散的钟（秒）、w 平铺缩放（定义见 `Sea/README_Sea接口.md` §3） | 海驱动 | 车厢、海 |
+| `_Udon_CausticsColor` / `_Udon_CausticsTex` | 焦散的线性颜色 × E；焦散序列帧图集（全局纹理） | 海驱动 | 车厢、海 |
+| `_Udon_SeaLevel` / `_Udon_SeaMode` | 当前海面世界 y；0 无、1 ABOVE、2 BELOW、3 CEILING、4 BELOW 翻转（7c） | 当前幕（6、8 = 云；7 = 海） | 海、车厢 |
+| `_Udon_SeaClock` | float4：x 浪的钟、yz 海水相对车的平移（世界 xz）、w > 0 已设 | 当前幕 | 海 |
+| `_Udon_Underwater` | 0..1：眼睛在水里 | 海 | `LanbaiFog`、海、车厢玻璃 |
+| `_Udon_WaterFogUp` / `_Udon_WaterFogMid` / `_Udon_WaterFogDown` | 水下雾色（朝上 / 水平 / 朝下，线性） | 海 | `LanbaiFog` |
 | `_Udon_WorldS` | （本地的时间轴里用的，含义见 `FromLocal/code/timeline_v1/`） | 本地 | 本地 |
 
 ## 预留（还没人写，先占名字）
 
 | 全局量 | 预定含义 | 归谁 |
 |---|---|---|
-| `_Udon_SunDir` / `_Udon_SunDisc` | 指向日的单位向量；日盘增益 | 天空 |
+| `_Udon_SunDir` / `_Udon_SunDisc` | 指向日的单位向量（w > 0 = 已设，海的 ABOVE 也读）；日盘增益 | 天空 |
 | `_Udon_SkyBlend` | `Lanbai/Sky` 两张立方图的混合 | 天空 |
 | `_Udon_HorizonColor` / `_Udon_ZenithColor` | 地平线 / 天顶色（`LanbaiHorizon` 的底色） | 天空 |
 | `_Udon_StarGain` / `_Udon_GalaxyGain` | 星点、银河辉光的增益（第 9 幕的点燃线 g(t)） | 天空 |
-| `_Udon_SeaLevel` / `_Udon_SeaMode` | 海面世界 y；ABOVE / BELOW / CEILING | 海 |
 | `_Udon_MirrorIndex` / `_Udon_MirrorPhase` | 第几面镜、穿越进度 | 门内（镜子） |
 | `_Udon_OverlayColor` / `_Udon_OverlayAlpha` | 遮罩球填色、alpha | 门内（`Lanbai_Overlay` v2） |
