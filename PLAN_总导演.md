@@ -11,7 +11,7 @@
 
 | # | 会话 | 职责 | 分支 | 状态 | 做到哪 | 下一步 |
 |---|---|---|---|---|---|---|
-| 0 | **总导演**（蓝白总控安排） | 计划、美术把关、终审、合并进 main、写 HANDOFF_LOG | `main` | 🟢 | 计划、约定、全局量登记已推（2a8e439）；开了 3 个子会话；车厢 + Director + 检查工具的工作流在跑 | 开总工程师和 4 个新会话；每次巡检审片 |
+| 0 | **总导演**（蓝白总控安排） | 计划、美术把关、终审、合并进 main、写 HANDOFF_LOG | `main` | 🟢 | 计划、约定、全局量登记、本计划已推；9 个会话全部开起来、已通知新分工；车厢 + Director v1 + 检查工具的工作流在跑（研究 → 实现 → 检查 → 预览 → 独立评审） | 巡检；审片；车厢 v1 交付；Director / 检查工具 v1 交给总工程师 |
 | 1 | **总工程师**（新） | 全片技术：检查工具、渲染标准台、性能 / 透明 / 显存账本、Director 分发层、每个包的技术审查、Unity 导入模拟 | `pkg/engineering` | ⚪ 刚开 | — | 接手检查工具和 Director v1；搭渲染标准台；建性能账本 |
 | 2 | **门**（私密对话） | 第 4 幕收尾（门的云海、门的云卡、光束、阴影楔、搭建脚本 + 4 处小修） | `pkg/gate-clouds` | 🟢 | 云海参数定版，在写 Unity 的 `GateCloudDeck` shader | 云卡 → 光束 → 布局 / 搭建 → 交 |
 | 3 | **天空** | `LanbaiFog` / `LanbaiSky`（全片共用，**最先交**）、`Lanbai/Sky`、真实星表的星、月、日、银河；每一幕的天空预设；第 9 幕的天（星海、银河点燃） | `pkg/sky` | 🟢 | 读完资料，在写 `LanbaiSky.cginc` 首版 | 推雾 / 天的接口 |
@@ -24,6 +24,8 @@
 | — | **本地**（世界创建） | 车、乡道、站、导入、截图、性能实测 | — | ⏳ | 等门的包 | 门的包合进 main 后导入重测 |
 
 图例：🟢 在做　⚪ 刚开　🟡 等别人　🔴 卡住　✅ 交付进 main
+
+会话 ID（总导演巡检用）：总导演 `session_01HFCmABtu3ezXTX3d4bxhAm` · 总工程师 `session_01KkS56fbJ2PHMzFo5cG61GU` · 门（私密对话）`session_017wL3odbFgMnkHZ9aGe3x4c` · 天空 `session_01Nf2iZx1zWD6Xt6BAtCCBfu` · 云 `session_013vgQ9h6QhaATkngugnzkS6` · 海 `session_01TfkHVMMsMpfQeiXJYh2XC6` · 宫殿 `session_01Axat6dHcb4g41dmvwqN8jA` · 门内 `session_01KDJqh9LuqKy3VMmtCbV14X` · 镜与白 `session_01TPk3Xf1e9wdpx1j441uF4n` · 灯与假醒 `session_01XMEkuyTcFjSNQoUqpju58H`
 
 ---
 
