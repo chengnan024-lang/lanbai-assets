@@ -1,3 +1,6 @@
+//  v2.7d (gate clouds kit, 2026-10-22; UNCOMPILED): `noforwardadd` on the surface pragma. The gate_test found a real
+//    floating point division by zero in the generated ForwardAdd POINT variant; the gate has no point lights and the
+//    fill directional is Not Important (spherical harmonics), so the pass did nothing but cost a draw. Nothing else changed.
 //  v2.7c (gate round 9, 2026-10-02; UNCOMPILED): _RimLadderFloor (the far-rim ladder exp(-rho d) x (900/d)^1.2 was
 //    x 0.01-0.02 at 3-5 km, so the multitude's tier A / B moon rims (awe r4 B2.3) were invisible): ladder = max(.., floor);
 //    tier A 0.5 / B 0.3 with _RimGain 2.4 (GateLayout_v2.json multitude.tiers). _RimGain range 0..4. Nothing else changed.
@@ -293,7 +296,7 @@ Shader "Lanbai/TentacleSway"
         LOD 300
 
         CGPROGRAM
-        #pragma surface surf Lanbai fullforwardshadows vertex:vert addshadow finalcolor:lanbaiFog nofog
+        #pragma surface surf Lanbai fullforwardshadows vertex:vert addshadow finalcolor:lanbaiFog nofog noforwardadd   // v2.7d: no ForwardAdd (gate_test: a real divide by zero in its POINT variant; the fill is Not Important = SH, no point lights in the gate)
         #pragma target 4.0
         #pragma multi_compile_instancing
         #include "UnityStandardUtils.cginc"

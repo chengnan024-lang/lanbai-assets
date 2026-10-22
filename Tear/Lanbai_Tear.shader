@@ -91,12 +91,12 @@ Shader "Lanbai/Tear"
         _Intensity ("Intensity", Float) = 1
         _EmissionScale ("Emission scale (Lens/Rip PNG = fill / 4)", Float) = 4
 
-        [Header(Tear frame (object space of Tear_Root))]
+        [Header(Tear frame  object space of Tear_Root)]
         _TearAcrossOS ("Across axis (+ = right as seen from the bus)", Vector) = (-0.99756, -0.06976, 0, 0)
         _TearAxisOS ("Lens axis (up, tilted 4 deg)", Vector) = (-0.06976, 0.99756, 0, 0)
         _OpenMin ("Width at _Udon_TearOpen = 0 (fraction of full)", Float) = 0.6
 
-        [Header(Own attenuation (sky object, optional))]
+        [Header(Own attenuation  sky object  optional)]
         _Atten ("Attenuation per m (0 = off)", Float) = 0
         _HazeColor ("Haze fill, LINEAR (band next to the tear, x 0.80 since v5)", Vector) = (0.1085, 0.1130, 0.1641, 1)
 
