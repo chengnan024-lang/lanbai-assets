@@ -1,0 +1,1976 @@
+{
+ "_about": "全片账本的数据。每一项都有 source；status：bible（圣经写的数）/ bible-cap（圣经的上限，不是估计）/ package（包报的）/ measured（本地实测）/ engineer-estimate（总工程师估的，算法写在 source）/ unknown。",
+ "budgets": {
+  "world_ms": 5.3,
+  "world_peak_ms": 6.3,
+  "ppv2_ms": 1.2,
+  "fse_sustained": 4.0,
+  "fse_peak": 7.0,
+  "layers_per_pixel": 8,
+  "particles_per_act": 5000,
+  "systems_per_act": 8,
+  "udon_ms": 0.4,
+  "vram_mb": 700,
+  "download_mb": 250,
+  "hotspots": [
+   {
+    "name": "第 4 幕",
+    "t0": 150.3,
+    "t1": 179.55,
+    "world_ms": 7.1,
+    "source": "bible §1.9 line 264"
+   },
+   {
+    "name": "第 7b 宫殿（F5 → 7c 前 40 秒）",
+    "t0": 644.96,
+    "t1": 875.16,
+    "world_ms": 6.4,
+    "source": "bible §1.9 line 264"
+   }
+  ],
+  "source": "bible §1.9 lines 262-264"
+ },
+ "samples": [
+  {
+   "label": "U7b 门主视觉",
+   "t": 155.1
+  },
+  {
+   "label": "U8 门透明峰",
+   "t": 166.15
+  },
+  {
+   "label": "U8+7 天窗",
+   "t": 173.15
+  },
+  {
+   "label": "F1b1 太阳重现",
+   "t": 318.36
+  },
+  {
+   "label": "F5 宫殿入画",
+   "t": 645.0
+  },
+  {
+   "label": "F7p 宫殿最近",
+   "t": 810.0
+  },
+  {
+   "label": "F13 银河点燃",
+   "t": 1018.5
+  },
+  {
+   "label": "第 12 面镜",
+   "t": 1137.6
+  }
+ ],
+ "items": [
+  {
+   "name": "第 1 幕 世界",
+   "owner": "本地",
+   "kind": "world",
+   "active": [
+    [
+     -90.0,
+     0.0
+    ]
+   ],
+   "gpu_ms": null,
+   "status": "unknown",
+   "source": "圣经没有给这一幕的总代价",
+   "expects": [
+    "gpu_ms"
+   ]
+  },
+  {
+   "name": "PPv2（第 1 幕）",
+   "owner": "Grading",
+   "kind": "post",
+   "active": [
+    [
+     -90.0,
+     0.0
+    ]
+   ],
+   "gpu_ms": 1.2,
+   "status": "bible-cap",
+   "source": "bible §1.9 line 262"
+  },
+  {
+   "name": "车厢玻璃 BusGlass（车窗、挡风、车门、天窗）（第 1 幕）",
+   "owner": "车厢",
+   "kind": "transparent",
+   "active": [
+    [
+     -90.0,
+     0.0
+    ]
+   ],
+   "fse": 0.7,
+   "status": "bible",
+   "source": "bible §1.9 line 262",
+   "quote": "车厢玻璃约 0.7 FSE 每一幕都要算进去"
+  },
+  {
+   "name": "雨粒子（灯锥 1800 + 车头灯 900 + 其他 600 + 溅花 200/s）（第 1 幕）",
+   "owner": "本地",
+   "kind": "particles",
+   "active": [
+    [
+     -90.0,
+     0.0
+    ]
+   ],
+   "particles": 3300,
+   "systems": null,
+   "status": "bible",
+   "source": "bible §6·1 line 733",
+   "quote": "总计 ≤ 3 300 活跃"
+  },
+  {
+   "name": "雨套件第 1 幕粒子系统（灯锥雨、车头灯雨、其他地方、溅花、3 个滴水系统）（第 1 幕）",
+   "owner": "本地",
+   "kind": "particles",
+   "active": [
+    [
+     -90.0,
+     0.0
+    ]
+   ],
+   "particles": 3290,
+   "systems": 7,
+   "status": "bible",
+   "source": "rain README §3.1 line 221",
+   "quote": "合计 7 个系统、约 3 290 活跃（≤ 3 300）"
+  },
+  {
+   "name": "第 1→2 幕 世界",
+   "owner": "本地",
+   "kind": "world",
+   "active": [
+    [
+     0.0,
+     17.5
+    ]
+   ],
+   "gpu_ms": null,
+   "status": "unknown",
+   "source": "圣经没有给这一幕的总代价",
+   "expects": [
+    "gpu_ms"
+   ]
+  },
+  {
+   "name": "PPv2（第 1→2 幕）",
+   "owner": "Grading",
+   "kind": "post",
+   "active": [
+    [
+     0.0,
+     17.5
+    ]
+   ],
+   "gpu_ms": 1.2,
+   "status": "bible-cap",
+   "source": "bible §1.9 line 262"
+  },
+  {
+   "name": "车厢玻璃 BusGlass（车窗、挡风、车门、天窗）（第 1→2 幕）",
+   "owner": "车厢",
+   "kind": "transparent",
+   "active": [
+    [
+     0.0,
+     17.5
+    ]
+   ],
+   "fse": 0.7,
+   "status": "bible",
+   "source": "bible §1.9 line 262",
+   "quote": "车厢玻璃约 0.7 FSE 每一幕都要算进去"
+  },
+  {
+   "name": "雨套件第 1 幕粒子系统（灯锥雨、车头灯雨、其他地方、溅花、3 个滴水系统）（第 1→2 幕）",
+   "owner": "本地",
+   "kind": "particles",
+   "active": [
+    [
+     0.0,
+     17.5
+    ]
+   ],
+   "particles": 3290,
+   "systems": 7,
+   "status": "bible",
+   "source": "rain README §3.1 line 221",
+   "quote": "合计 7 个系统、约 3 290 活跃（≤ 3 300）"
+  },
+  {
+   "name": "第 2 幕 世界",
+   "owner": "本地",
+   "kind": "world",
+   "active": [
+    [
+     17.5,
+     39.1
+    ]
+   ],
+   "gpu_ms": null,
+   "status": "unknown",
+   "source": "圣经没有给这一幕的总代价",
+   "expects": [
+    "gpu_ms"
+   ]
+  },
+  {
+   "name": "PPv2（第 2 幕）",
+   "owner": "Grading",
+   "kind": "post",
+   "active": [
+    [
+     17.5,
+     39.1
+    ]
+   ],
+   "gpu_ms": 1.2,
+   "status": "bible-cap",
+   "source": "bible §1.9 line 262"
+  },
+  {
+   "name": "车厢玻璃 BusGlass（车窗、挡风、车门、天窗）（第 2 幕）",
+   "owner": "车厢",
+   "kind": "transparent",
+   "active": [
+    [
+     17.5,
+     39.1
+    ]
+   ],
+   "fse": 0.7,
+   "status": "bible",
+   "source": "bible §1.9 line 262",
+   "quote": "车厢玻璃约 0.7 FSE 每一幕都要算进去"
+  },
+  {
+   "name": "车外雨：车灯光束 900 + 跟随最近路灯的 400 系统 + 车本地 800 条雨丝（第 2 幕）",
+   "owner": "本地",
+   "kind": "particles",
+   "active": [
+    [
+     17.5,
+     39.1
+    ]
+   ],
+   "particles": 2100,
+   "systems": 3,
+   "status": "engineer-estimate",
+   "source": "bible §6·2 line 789",
+   "quote": "车外雨只在车灯光束里（900）和经过的每盏灯锥里（一个 400 粒子系统跟随最近的灯）；车本地 800 条雨丝"
+  },
+  {
+   "name": "第 2→3 幕 世界",
+   "owner": "本地",
+   "kind": "world",
+   "active": [
+    [
+     39.1,
+     50.3
+    ]
+   ],
+   "gpu_ms": null,
+   "status": "unknown",
+   "source": "圣经没有给这一幕的总代价",
+   "expects": [
+    "gpu_ms"
+   ]
+  },
+  {
+   "name": "PPv2（第 2→3 幕）",
+   "owner": "Grading",
+   "kind": "post",
+   "active": [
+    [
+     39.1,
+     50.3
+    ]
+   ],
+   "gpu_ms": 1.2,
+   "status": "bible-cap",
+   "source": "bible §1.9 line 262"
+  },
+  {
+   "name": "车厢玻璃 BusGlass（车窗、挡风、车门、天窗）（第 2→3 幕）",
+   "owner": "车厢",
+   "kind": "transparent",
+   "active": [
+    [
+     39.1,
+     50.3
+    ]
+   ],
+   "fse": 0.7,
+   "status": "bible",
+   "source": "bible §1.9 line 262",
+   "quote": "车厢玻璃约 0.7 FSE 每一幕都要算进去"
+  },
+  {
+   "name": "车外雨（车灯光束里）（第 2→3 幕）",
+   "owner": "本地",
+   "kind": "particles",
+   "active": [
+    [
+     39.1,
+     50.3
+    ]
+   ],
+   "particles": 900,
+   "systems": null,
+   "status": "bible",
+   "source": "bible §6·2 line 789",
+   "quote": "车外雨只在车灯光束里（900）"
+  },
+  {
+   "name": "第 3a 幕 世界",
+   "owner": "待定",
+   "kind": "world",
+   "active": [
+    [
+     50.3,
+     75.8
+    ]
+   ],
+   "gpu_ms": null,
+   "status": "unknown",
+   "source": "圣经没有给这一幕的总代价",
+   "expects": [
+    "gpu_ms"
+   ]
+  },
+  {
+   "name": "PPv2（第 3a 幕）",
+   "owner": "Grading",
+   "kind": "post",
+   "active": [
+    [
+     50.3,
+     75.8
+    ]
+   ],
+   "gpu_ms": 1.2,
+   "status": "bible-cap",
+   "source": "bible §1.9 line 262"
+  },
+  {
+   "name": "车厢玻璃 BusGlass（车窗、挡风、车门、天窗）（第 3a 幕）",
+   "owner": "车厢",
+   "kind": "transparent",
+   "active": [
+    [
+     50.3,
+     75.8
+    ]
+   ],
+   "fse": 0.7,
+   "status": "bible",
+   "source": "bible §1.9 line 262",
+   "quote": "车厢玻璃约 0.7 FSE 每一幕都要算进去"
+  },
+  {
+   "name": "第 3b 幕 世界",
+   "owner": "待定",
+   "kind": "world",
+   "active": [
+    [
+     75.8,
+     129.1
+    ]
+   ],
+   "gpu_ms": null,
+   "status": "unknown",
+   "source": "圣经没有给这一幕的总代价",
+   "expects": [
+    "gpu_ms"
+   ]
+  },
+  {
+   "name": "PPv2（第 3b 幕）",
+   "owner": "Grading",
+   "kind": "post",
+   "active": [
+    [
+     75.8,
+     129.1
+    ]
+   ],
+   "gpu_ms": 1.2,
+   "status": "bible-cap",
+   "source": "bible §1.9 line 262"
+  },
+  {
+   "name": "车厢玻璃 BusGlass（车窗、挡风、车门、天窗）（第 3b 幕）",
+   "owner": "车厢",
+   "kind": "transparent",
+   "active": [
+    [
+     75.8,
+     129.1
+    ]
+   ],
+   "fse": 0.7,
+   "status": "bible",
+   "source": "bible §1.9 line 262",
+   "quote": "车厢玻璃约 0.7 FSE 每一幕都要算进去"
+  },
+  {
+   "name": "第 3c 幕 世界",
+   "owner": "待定",
+   "kind": "world",
+   "active": [
+    [
+     129.1,
+     150.3
+    ]
+   ],
+   "gpu_ms": null,
+   "status": "unknown",
+   "source": "圣经没有给这一幕的总代价",
+   "expects": [
+    "gpu_ms"
+   ]
+  },
+  {
+   "name": "PPv2（第 3c 幕）",
+   "owner": "Grading",
+   "kind": "post",
+   "active": [
+    [
+     129.1,
+     150.3
+    ]
+   ],
+   "gpu_ms": 1.2,
+   "status": "bible-cap",
+   "source": "bible §1.9 line 262"
+  },
+  {
+   "name": "车厢玻璃 BusGlass（车窗、挡风、车门、天窗）（第 3c 幕）",
+   "owner": "车厢",
+   "kind": "transparent",
+   "active": [
+    [
+     129.1,
+     150.3
+    ]
+   ],
+   "fse": 0.7,
+   "status": "bible",
+   "source": "bible §1.9 line 262",
+   "quote": "车厢玻璃约 0.7 FSE 每一幕都要算进去"
+  },
+  {
+   "name": "第 4 幕 世界（圣经估计，含阴影平行光）",
+   "owner": "门",
+   "kind": "world",
+   "active": [
+    [
+     150.3,
+     179.55
+    ]
+   ],
+   "gpu_ms": 7.1,
+   "status": "bible",
+   "source": "bible §1.9 line 264",
+   "quote": "第 4 幕（≈7.1 ms，含远潮 0.2 ms）"
+  },
+  {
+   "name": "PPv2（第 4 幕）",
+   "owner": "Grading",
+   "kind": "post",
+   "active": [
+    [
+     150.3,
+     179.55
+    ]
+   ],
+   "gpu_ms": 1.2,
+   "status": "bible-cap",
+   "source": "bible §1.9 line 262"
+  },
+  {
+   "name": "第 4 幕 透明（门实测 gate_fse，U8）",
+   "owner": "门",
+   "kind": "transparent",
+   "active": [
+    [
+     150.3,
+     179.55
+    ]
+   ],
+   "fse": 3.77,
+   "status": "package",
+   "source": "Gate/README_GateLayout.md §9（含车厢玻璃 0.7、云海卡 0.9 两项估计）"
+  },
+  {
+   "name": "纤维卡 600 根 + 150 根松散丝线 + 300 颗尘（30 m 内）（第 4 幕）",
+   "owner": "门",
+   "kind": "particles",
+   "active": [
+    [
+     150.3,
+     179.55
+    ]
+   ],
+   "particles": 300,
+   "systems": null,
+   "status": "bible",
+   "source": "bible §6·4 line 911",
+   "quote": "600 根纤维卡（2–15 m，叠加，0.3 Hz 摆动）、150 根松散丝线**朝**裂口漂、300 颗尘"
+  },
+  {
+   "name": "第 4c 幕 世界",
+   "owner": "门内",
+   "kind": "world",
+   "active": [
+    [
+     179.55,
+     248.64
+    ]
+   ],
+   "gpu_ms": null,
+   "status": "unknown",
+   "source": "圣经没有给这一幕的总代价",
+   "expects": [
+    "gpu_ms"
+   ]
+  },
+  {
+   "name": "PPv2（第 4c 幕）",
+   "owner": "Grading",
+   "kind": "post",
+   "active": [
+    [
+     179.55,
+     248.64
+    ]
+   ],
+   "gpu_ms": 1.2,
+   "status": "bible-cap",
+   "source": "bible §1.9 line 262"
+  },
+  {
+   "name": "车厢玻璃 BusGlass（车窗、挡风、车门、天窗）（第 4c 幕）",
+   "owner": "车厢",
+   "kind": "transparent",
+   "active": [
+    [
+     179.55,
+     248.64
+    ]
+   ],
+   "fse": 0.7,
+   "status": "bible",
+   "source": "bible §1.9 line 262",
+   "quote": "车厢玻璃约 0.7 FSE 每一幕都要算进去"
+  },
+  {
+   "name": "90 根松散丝线（第 4c 幕）",
+   "owner": "门内",
+   "kind": "particles",
+   "active": [
+    [
+     179.55,
+     248.64
+    ]
+   ],
+   "particles": 90,
+   "systems": null,
+   "status": "bible",
+   "source": "bible §6·4c line 1029",
+   "quote": "90 根松散丝线在车周围慢漂向中心"
+  },
+  {
+   "name": "第 5 幕 世界",
+   "owner": "门内",
+   "kind": "world",
+   "active": [
+    [
+     248.64,
+     251.64
+    ]
+   ],
+   "gpu_ms": null,
+   "status": "unknown",
+   "source": "圣经没有给这一幕的总代价",
+   "expects": [
+    "gpu_ms"
+   ]
+  },
+  {
+   "name": "PPv2（第 5 幕）",
+   "owner": "Grading",
+   "kind": "post",
+   "active": [
+    [
+     248.64,
+     251.64
+    ]
+   ],
+   "gpu_ms": 1.2,
+   "status": "bible-cap",
+   "source": "bible §1.9 line 262"
+  },
+  {
+   "name": "第 6a 幕 世界",
+   "owner": "云",
+   "kind": "world",
+   "active": [
+    [
+     251.64,
+     281.86
+    ]
+   ],
+   "gpu_ms": null,
+   "status": "unknown",
+   "source": "圣经没有给这一幕的总代价",
+   "expects": [
+    "gpu_ms"
+   ]
+  },
+  {
+   "name": "PPv2（第 6a 幕）",
+   "owner": "Grading",
+   "kind": "post",
+   "active": [
+    [
+     251.64,
+     281.86
+    ]
+   ],
+   "gpu_ms": 1.2,
+   "status": "bible-cap",
+   "source": "bible §1.9 line 262"
+  },
+  {
+   "name": "车厢玻璃 BusGlass（车窗、挡风、车门、天窗）（第 6a 幕）",
+   "owner": "车厢",
+   "kind": "transparent",
+   "active": [
+    [
+     251.64,
+     281.86
+    ]
+   ],
+   "fse": 0.7,
+   "status": "bible",
+   "source": "bible §1.9 line 262",
+   "quote": "车厢玻璃约 0.7 FSE 每一幕都要算进去"
+  },
+  {
+   "name": "晨光柱：窗形挤出体（叠加 α 0.06–0.10）+ 300 颗尘；天窗一条（第 6a 幕）",
+   "owner": "云",
+   "kind": "particles",
+   "active": [
+    [
+     251.64,
+     281.86
+    ]
+   ],
+   "particles": 300,
+   "systems": null,
+   "status": "bible",
+   "source": "bible §6·6 line 1121",
+   "quote": "窗形挤出体（叠加）`#FFD9A8` α 0.06–0.10 + 300 颗尘"
+  },
+  {
+   "name": "第 6b 幕 世界",
+   "owner": "云",
+   "kind": "world",
+   "active": [
+    [
+     281.86,
+     305.4
+    ]
+   ],
+   "gpu_ms": null,
+   "status": "unknown",
+   "source": "圣经没有给这一幕的总代价",
+   "expects": [
+    "gpu_ms"
+   ]
+  },
+  {
+   "name": "PPv2（第 6b 幕）",
+   "owner": "Grading",
+   "kind": "post",
+   "active": [
+    [
+     281.86,
+     305.4
+    ]
+   ],
+   "gpu_ms": 1.2,
+   "status": "bible-cap",
+   "source": "bible §1.9 line 262"
+  },
+  {
+   "name": "车厢玻璃 BusGlass（车窗、挡风、车门、天窗）（第 6b 幕）",
+   "owner": "车厢",
+   "kind": "transparent",
+   "active": [
+    [
+     281.86,
+     305.4
+    ]
+   ],
+   "fse": 0.7,
+   "status": "bible",
+   "source": "bible §1.9 line 262",
+   "quote": "车厢玻璃约 0.7 FSE 每一幕都要算进去"
+  },
+  {
+   "name": "晨光柱：窗形挤出体（叠加 α 0.06–0.10）+ 300 颗尘；天窗一条（第 6b 幕）",
+   "owner": "云",
+   "kind": "particles",
+   "active": [
+    [
+     281.86,
+     305.4
+    ]
+   ],
+   "particles": 300,
+   "systems": null,
+   "status": "bible",
+   "source": "bible §6·6 line 1121",
+   "quote": "窗形挤出体（叠加）`#FFD9A8` α 0.06–0.10 + 300 颗尘"
+  },
+  {
+   "name": "第 6c 幕 世界",
+   "owner": "云",
+   "kind": "world",
+   "active": [
+    [
+     305.4,
+     337.0
+    ]
+   ],
+   "gpu_ms": null,
+   "status": "unknown",
+   "source": "圣经没有给这一幕的总代价",
+   "expects": [
+    "gpu_ms"
+   ]
+  },
+  {
+   "name": "PPv2（第 6c 幕）",
+   "owner": "Grading",
+   "kind": "post",
+   "active": [
+    [
+     305.4,
+     337.0
+    ]
+   ],
+   "gpu_ms": 1.2,
+   "status": "bible-cap",
+   "source": "bible §1.9 line 262"
+  },
+  {
+   "name": "车厢玻璃 BusGlass（车窗、挡风、车门、天窗）（第 6c 幕）",
+   "owner": "车厢",
+   "kind": "transparent",
+   "active": [
+    [
+     305.4,
+     337.0
+    ]
+   ],
+   "fse": 0.7,
+   "status": "bible",
+   "source": "bible §1.9 line 262",
+   "quote": "车厢玻璃约 0.7 FSE 每一幕都要算进去"
+  },
+  {
+   "name": "晨光柱：窗形挤出体（叠加 α 0.06–0.10）+ 300 颗尘；天窗一条（第 6c 幕）",
+   "owner": "云",
+   "kind": "particles",
+   "active": [
+    [
+     305.4,
+     337.0
+    ]
+   ],
+   "particles": 300,
+   "systems": null,
+   "status": "bible",
+   "source": "bible §6·6 line 1121",
+   "quote": "窗形挤出体（叠加）`#FFD9A8` α 0.06–0.10 + 300 颗尘"
+  },
+  {
+   "name": "第 6d 幕 世界",
+   "owner": "云",
+   "kind": "world",
+   "active": [
+    [
+     337.0,
+     363.26
+    ]
+   ],
+   "gpu_ms": null,
+   "status": "unknown",
+   "source": "圣经没有给这一幕的总代价",
+   "expects": [
+    "gpu_ms"
+   ]
+  },
+  {
+   "name": "PPv2（第 6d 幕）",
+   "owner": "Grading",
+   "kind": "post",
+   "active": [
+    [
+     337.0,
+     363.26
+    ]
+   ],
+   "gpu_ms": 1.2,
+   "status": "bible-cap",
+   "source": "bible §1.9 line 262"
+  },
+  {
+   "name": "车厢玻璃 BusGlass（车窗、挡风、车门、天窗）（第 6d 幕）",
+   "owner": "车厢",
+   "kind": "transparent",
+   "active": [
+    [
+     337.0,
+     363.26
+    ]
+   ],
+   "fse": 0.7,
+   "status": "bible",
+   "source": "bible §1.9 line 262",
+   "quote": "车厢玻璃约 0.7 FSE 每一幕都要算进去"
+  },
+  {
+   "name": "晨光柱：窗形挤出体（叠加 α 0.06–0.10）+ 300 颗尘；天窗一条（第 6d 幕）",
+   "owner": "云",
+   "kind": "particles",
+   "active": [
+    [
+     337.0,
+     363.26
+    ]
+   ],
+   "particles": 300,
+   "systems": null,
+   "status": "bible",
+   "source": "bible §6·6 line 1121",
+   "quote": "窗形挤出体（叠加）`#FFD9A8` α 0.06–0.10 + 300 颗尘"
+  },
+  {
+   "name": "第 7a 幕 世界",
+   "owner": "海",
+   "kind": "world",
+   "active": [
+    [
+     363.26,
+     644.96
+    ]
+   ],
+   "gpu_ms": null,
+   "status": "unknown",
+   "source": "圣经没有给这一幕的总代价",
+   "expects": [
+    "gpu_ms"
+   ]
+  },
+  {
+   "name": "PPv2（第 7a 幕）",
+   "owner": "Grading",
+   "kind": "post",
+   "active": [
+    [
+     363.26,
+     644.96
+    ]
+   ],
+   "gpu_ms": 1.2,
+   "status": "bible-cap",
+   "source": "bible §1.9 line 262"
+  },
+  {
+   "name": "车厢玻璃 BusGlass（车窗、挡风、车门、天窗）（第 7a 幕）",
+   "owner": "车厢",
+   "kind": "transparent",
+   "active": [
+    [
+     363.26,
+     644.96
+    ]
+   ],
+   "fse": 0.7,
+   "status": "bible",
+   "source": "bible §1.9 line 262",
+   "quote": "车厢玻璃约 0.7 FSE 每一幕都要算进去"
+  },
+  {
+   "name": "海雪 1 200 颗（25 m 球内）（第 7a 幕）",
+   "owner": "海",
+   "kind": "particles",
+   "active": [
+    [
+     363.26,
+     644.96
+    ]
+   ],
+   "particles": 1200,
+   "systems": null,
+   "status": "bible",
+   "source": "bible §6·7a line 1206",
+   "quote": "海雪 1 200 颗"
+  },
+  {
+   "name": "船体生物荧光轨迹（F4 起，300/s，寿命 1.5–3 s）（第 7a 幕）",
+   "owner": "海",
+   "kind": "particles",
+   "active": [
+    [
+     363.26,
+     644.96
+    ]
+   ],
+   "particles": 900,
+   "systems": null,
+   "status": "engineer-estimate",
+   "source": "bible §6·7a line 1193",
+   "quote": "300/s、寿命 1.5–3 s"
+  },
+  {
+   "name": "播下的光 200 个（0.2 秒诞生闪后恒定微光）（第 7a 幕）",
+   "owner": "海",
+   "kind": "particles",
+   "active": [
+    [
+     363.26,
+     644.96
+    ]
+   ],
+   "particles": 200,
+   "systems": null,
+   "status": "bible",
+   "source": "bible §6·7a line 1193",
+   "quote": "200 个播下的光"
+  },
+  {
+   "name": "座椅缝冒泡（40）（第 7a 幕）",
+   "owner": "海",
+   "kind": "particles",
+   "active": [
+    [
+     363.26,
+     644.96
+    ]
+   ],
+   "particles": 40,
+   "systems": null,
+   "status": "bible",
+   "source": "bible §6·7a line 1208",
+   "quote": "座椅缝冒泡（40）"
+  },
+  {
+   "name": "第 7b 幕 世界（圣经估计，含阴影平行光）",
+   "owner": "海+宫殿",
+   "kind": "world",
+   "active": [
+    [
+     644.96,
+     835.16
+    ]
+   ],
+   "gpu_ms": 6.4,
+   "status": "bible",
+   "source": "bible §1.9 line 264",
+   "quote": "第 7b 幕宫殿（≈6.4 ms"
+  },
+  {
+   "name": "PPv2（第 7b 幕）",
+   "owner": "Grading",
+   "kind": "post",
+   "active": [
+    [
+     644.96,
+     835.16
+    ]
+   ],
+   "gpu_ms": 1.2,
+   "status": "bible-cap",
+   "source": "bible §1.9 line 262"
+  },
+  {
+   "name": "车厢玻璃 BusGlass（车窗、挡风、车门、天窗）（第 7b 幕）",
+   "owner": "车厢",
+   "kind": "transparent",
+   "active": [
+    [
+     644.96,
+     835.16
+    ]
+   ],
+   "fse": 0.7,
+   "status": "bible",
+   "source": "bible §1.9 line 262",
+   "quote": "车厢玻璃约 0.7 FSE 每一幕都要算进去"
+  },
+  {
+   "name": "播下的冷光点（约 200，延续）（第 7b 幕）",
+   "owner": "海+宫殿",
+   "kind": "particles",
+   "active": [
+    [
+     644.96,
+     835.16
+    ]
+   ],
+   "particles": 200,
+   "systems": null,
+   "status": "bible",
+   "source": "bible §6·7a line 1183",
+   "quote": "约有 200 个静止的冷光点"
+  },
+  {
+   "name": "第 7c 幕 世界（圣经估计，含阴影平行光）",
+   "owner": "海",
+   "kind": "world",
+   "active": [
+    [
+     835.16,
+     922.36
+    ]
+   ],
+   "gpu_ms": 6.4,
+   "status": "bible",
+   "source": "bible §1.9 line 264",
+   "quote": "一直到 7c 的前 40 秒"
+  },
+  {
+   "name": "PPv2（第 7c 幕）",
+   "owner": "Grading",
+   "kind": "post",
+   "active": [
+    [
+     835.16,
+     922.36
+    ]
+   ],
+   "gpu_ms": 1.2,
+   "status": "bible-cap",
+   "source": "bible §1.9 line 262"
+  },
+  {
+   "name": "车厢玻璃 BusGlass（车窗、挡风、车门、天窗）（第 7c 幕）",
+   "owner": "车厢",
+   "kind": "transparent",
+   "active": [
+    [
+     835.16,
+     922.36
+    ]
+   ],
+   "fse": 0.7,
+   "status": "bible",
+   "source": "bible §1.9 line 262",
+   "quote": "车厢玻璃约 0.7 FSE 每一幕都要算进去"
+  },
+  {
+   "name": "第 8 幕 世界",
+   "owner": "云",
+   "kind": "world",
+   "active": [
+    [
+     922.36,
+     987.06
+    ]
+   ],
+   "gpu_ms": null,
+   "status": "unknown",
+   "source": "圣经没有给这一幕的总代价",
+   "expects": [
+    "gpu_ms"
+   ]
+  },
+  {
+   "name": "PPv2（第 8 幕）",
+   "owner": "Grading",
+   "kind": "post",
+   "active": [
+    [
+     922.36,
+     987.06
+    ]
+   ],
+   "gpu_ms": 1.2,
+   "status": "bible-cap",
+   "source": "bible §1.9 line 262"
+  },
+  {
+   "name": "车厢玻璃 BusGlass（车窗、挡风、车门、天窗）（第 8 幕）",
+   "owner": "车厢",
+   "kind": "transparent",
+   "active": [
+    [
+     922.36,
+     987.06
+    ]
+   ],
+   "fse": 0.7,
+   "status": "bible",
+   "source": "bible §1.9 line 262",
+   "quote": "车厢玻璃约 0.7 FSE 每一幕都要算进去"
+  },
+  {
+   "name": "第 8b 幕 世界",
+   "owner": "云",
+   "kind": "world",
+   "active": [
+    [
+     987.06,
+     1001.21
+    ]
+   ],
+   "gpu_ms": null,
+   "status": "unknown",
+   "source": "圣经没有给这一幕的总代价",
+   "expects": [
+    "gpu_ms"
+   ]
+  },
+  {
+   "name": "PPv2（第 8b 幕）",
+   "owner": "Grading",
+   "kind": "post",
+   "active": [
+    [
+     987.06,
+     1001.21
+    ]
+   ],
+   "gpu_ms": 1.2,
+   "status": "bible-cap",
+   "source": "bible §1.9 line 262"
+  },
+  {
+   "name": "车厢玻璃 BusGlass（车窗、挡风、车门、天窗）（第 8b 幕）",
+   "owner": "车厢",
+   "kind": "transparent",
+   "active": [
+    [
+     987.06,
+     1001.21
+    ]
+   ],
+   "fse": 0.7,
+   "status": "bible",
+   "source": "bible §1.9 line 262",
+   "quote": "车厢玻璃约 0.7 FSE 每一幕都要算进去"
+  },
+  {
+   "name": "第 9a 幕 世界",
+   "owner": "天空",
+   "kind": "world",
+   "active": [
+    [
+     1001.21,
+     1018.21
+    ]
+   ],
+   "gpu_ms": null,
+   "status": "unknown",
+   "source": "圣经没有给这一幕的总代价",
+   "expects": [
+    "gpu_ms"
+   ]
+  },
+  {
+   "name": "PPv2（第 9a 幕）",
+   "owner": "Grading",
+   "kind": "post",
+   "active": [
+    [
+     1001.21,
+     1018.21
+    ]
+   ],
+   "gpu_ms": 1.2,
+   "status": "bible-cap",
+   "source": "bible §1.9 line 262"
+  },
+  {
+   "name": "车厢玻璃 BusGlass（车窗、挡风、车门、天窗）（第 9a 幕）",
+   "owner": "车厢",
+   "kind": "transparent",
+   "active": [
+    [
+     1001.21,
+     1018.21
+    ]
+   ],
+   "fse": 0.7,
+   "status": "bible",
+   "source": "bible §1.9 line 262",
+   "quote": "车厢玻璃约 0.7 FSE 每一幕都要算进去"
+  },
+  {
+   "name": "第 9b 幕 世界",
+   "owner": "天空",
+   "kind": "world",
+   "active": [
+    [
+     1018.21,
+     1032.41
+    ]
+   ],
+   "gpu_ms": null,
+   "status": "unknown",
+   "source": "圣经没有给这一幕的总代价",
+   "expects": [
+    "gpu_ms"
+   ]
+  },
+  {
+   "name": "PPv2（第 9b 幕）",
+   "owner": "Grading",
+   "kind": "post",
+   "active": [
+    [
+     1018.21,
+     1032.41
+    ]
+   ],
+   "gpu_ms": 1.2,
+   "status": "bible-cap",
+   "source": "bible §1.9 line 262"
+  },
+  {
+   "name": "车厢玻璃 BusGlass（车窗、挡风、车门、天窗）（第 9b 幕）",
+   "owner": "车厢",
+   "kind": "transparent",
+   "active": [
+    [
+     1018.21,
+     1032.41
+    ]
+   ],
+   "fse": 0.7,
+   "status": "bible",
+   "source": "bible §1.9 line 262",
+   "quote": "车厢玻璃约 0.7 FSE 每一幕都要算进去"
+  },
+  {
+   "name": "第 9c 幕 世界（圣经估计，含阴影平行光）",
+   "owner": "天空+镜与白",
+   "kind": "world",
+   "active": [
+    [
+     1032.41,
+     1149.31
+    ]
+   ],
+   "gpu_ms": 2.6,
+   "status": "bible",
+   "source": "bible §6·9 line 1493",
+   "quote": "这一幕约 2.6 ms"
+  },
+  {
+   "name": "PPv2（第 9c 幕）",
+   "owner": "Grading",
+   "kind": "post",
+   "active": [
+    [
+     1032.41,
+     1149.31
+    ]
+   ],
+   "gpu_ms": 1.2,
+   "status": "bible-cap",
+   "source": "bible §1.9 line 262"
+  },
+  {
+   "name": "车厢玻璃 BusGlass（车窗、挡风、车门、天窗）（第 9c 幕）",
+   "owner": "车厢",
+   "kind": "transparent",
+   "active": [
+    [
+     1032.41,
+     1149.31
+    ]
+   ],
+   "fse": 0.7,
+   "status": "bible",
+   "source": "bible §1.9 line 262",
+   "quote": "车厢玻璃约 0.7 FSE 每一幕都要算进去"
+  },
+  {
+   "name": "镜子星尘：每面 250 颗，同时溶解 ≤ 3 面、≤ 750 颗（第 9c 幕）",
+   "owner": "天空+镜与白",
+   "kind": "particles",
+   "active": [
+    [
+     1032.41,
+     1149.31
+    ]
+   ],
+   "particles": 750,
+   "systems": null,
+   "status": "bible",
+   "source": "bible §6·9 line 1477",
+   "quote": "同时溶解的镜子 ≤ 3 面，≤ 750 颗"
+  },
+  {
+   "name": "第 10 幕 世界",
+   "owner": "镜与白",
+   "kind": "world",
+   "active": [
+    [
+     1149.31,
+     1178.46
+    ]
+   ],
+   "gpu_ms": null,
+   "status": "unknown",
+   "source": "圣经没有给这一幕的总代价",
+   "expects": [
+    "gpu_ms"
+   ]
+  },
+  {
+   "name": "PPv2（第 10 幕）",
+   "owner": "Grading",
+   "kind": "post",
+   "active": [
+    [
+     1149.31,
+     1178.46
+    ]
+   ],
+   "gpu_ms": 1.2,
+   "status": "bible-cap",
+   "source": "bible §1.9 line 262"
+  },
+  {
+   "name": "第 11 幕 世界",
+   "owner": "灯与假醒",
+   "kind": "world",
+   "active": [
+    [
+     1178.46,
+     1240.46
+    ]
+   ],
+   "gpu_ms": null,
+   "status": "unknown",
+   "source": "圣经没有给这一幕的总代价",
+   "expects": [
+    "gpu_ms"
+   ]
+  },
+  {
+   "name": "PPv2（第 11 幕）",
+   "owner": "Grading",
+   "kind": "post",
+   "active": [
+    [
+     1178.46,
+     1240.46
+    ]
+   ],
+   "gpu_ms": 1.2,
+   "status": "bible-cap",
+   "source": "bible §1.9 line 262"
+  },
+  {
+   "name": "车厢玻璃 BusGlass（车窗、挡风、车门、天窗）（第 11 幕）",
+   "owner": "车厢",
+   "kind": "transparent",
+   "active": [
+    [
+     1178.46,
+     1240.46
+    ]
+   ],
+   "fse": 0.7,
+   "status": "bible",
+   "source": "bible §1.9 line 262",
+   "quote": "车厢玻璃约 0.7 FSE 每一幕都要算进去"
+  },
+  {
+   "name": "第 11→12 幕 世界",
+   "owner": "灯与假醒",
+   "kind": "world",
+   "active": [
+    [
+     1240.46,
+     1254.96
+    ]
+   ],
+   "gpu_ms": null,
+   "status": "unknown",
+   "source": "圣经没有给这一幕的总代价",
+   "expects": [
+    "gpu_ms"
+   ]
+  },
+  {
+   "name": "PPv2（第 11→12 幕）",
+   "owner": "Grading",
+   "kind": "post",
+   "active": [
+    [
+     1240.46,
+     1254.96
+    ]
+   ],
+   "gpu_ms": 1.2,
+   "status": "bible-cap",
+   "source": "bible §1.9 line 262"
+  },
+  {
+   "name": "第 12 幕 世界",
+   "owner": "本地",
+   "kind": "world",
+   "active": [
+    [
+     1254.96,
+     1729.96
+    ]
+   ],
+   "gpu_ms": null,
+   "status": "unknown",
+   "source": "圣经没有给这一幕的总代价",
+   "expects": [
+    "gpu_ms"
+   ]
+  },
+  {
+   "name": "PPv2（第 12 幕）",
+   "owner": "Grading",
+   "kind": "post",
+   "active": [
+    [
+     1254.96,
+     1729.96
+    ]
+   ],
+   "gpu_ms": 1.2,
+   "status": "bible-cap",
+   "source": "bible §1.9 line 262"
+  },
+  {
+   "name": "车厢玻璃 BusGlass（车窗、挡风、车门、天窗）（第 12 幕）",
+   "owner": "车厢",
+   "kind": "transparent",
+   "active": [
+    [
+     1254.96,
+     1729.96
+    ]
+   ],
+   "fse": 0.7,
+   "status": "bible",
+   "source": "bible §1.9 line 262",
+   "quote": "车厢玻璃约 0.7 FSE 每一幕都要算进去"
+  },
+  {
+   "name": "萤火虫 46 + 水田镜像副本；14 只蛾（第 12 幕）",
+   "owner": "本地",
+   "kind": "particles",
+   "active": [
+    [
+     1254.96,
+     1729.96
+    ]
+   ],
+   "particles": 46,
+   "systems": null,
+   "status": "bible",
+   "source": "bible §6·12 line 1622",
+   "quote": "田上萤火虫 46"
+  },
+  {
+   "name": "第 4 幕 世界 + PPv2（门实测标定的估计：4060L 8.6 ms → 3060 约 9.5–11 ms，取 10.0；不含云海、车、玻璃）",
+   "owner": "门",
+   "kind": "calibration",
+   "active": [
+    [
+     150.3,
+     179.55
+    ]
+   ],
+   "gpu_ms": null,
+   "est_total_ms": 10.0,
+   "status": "engineer-estimate",
+   "source": "Engineering/ledgers/README_账本.md §1.1；FromLocal/gate_test/perf.txt"
+  },
+  {
+   "name": "trim sheet",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 5.33,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §4.2 line 549",
+   "note": "albedo only; normal/mask maps would multiply"
+  },
+  {
+   "name": "座椅套",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 5.33,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §4.2 line 549",
+   "note": ""
+  },
+  {
+   "name": "座椅磨损 / 亮面遮罩（每座）",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 1.33,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §4.2 line 549",
+   "note": "'每座' — if one per seat, multiply by seat count (not stated)"
+  },
+  {
+   "name": "皮纹细节法线",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 1.33,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §4.2 line 549",
+   "note": ""
+  },
+  {
+   "name": "橡胶地板",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 1.33,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §4.2 line 549",
+   "note": ""
+  },
+  {
+   "name": "过道脏污遮罩",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 1.33,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §4.2 line 549",
+   "note": ""
+  },
+  {
+   "name": "窗帘 + 褪色遮罩",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 1.33,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §4.2 line 549",
+   "note": "+512² mask ≈0.33 MB"
+  },
+  {
+   "name": "玻璃污渍图集",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 5.33,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §4.2 line 549",
+   "note": ""
+  },
+  {
+   "name": "水滴",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 2.67,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §4.2 line 549",
+   "note": ""
+  },
+  {
+   "name": "收音机",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 1.33,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §4.2 line 549",
+   "note": ""
+  },
+  {
+   "name": "仪表台与方向盘",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 1.33,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §4.2 line 549",
+   "note": ""
+  },
+  {
+   "name": "车内立方图",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 0.5,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §4.2 line 549",
+   "note": ""
+  },
+  {
+   "name": "窗形 cookie",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 0.33,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §4.2 line 549",
+   "note": ""
+  },
+  {
+   "name": "焦散 16 帧",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 5.33,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §4.2 line 549",
+   "note": ""
+  },
+  {
+   "name": "_CabinTubeLM（+ 方向图）",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 2.67,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §4.2 line 549",
+   "note": ""
+  },
+  {
+   "name": "车外壳 albedo + mask",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 42.67,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §4.9 line 631",
+   "note": ""
+  },
+  {
+   "name": "车外壳 normal",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 5.33,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §4.9 line 631",
+   "note": ""
+  },
+  {
+   "name": "站牌套件（albedo BC7、normal、MetallicSmoothness）",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 4.0,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §5.2 line 650",
+   "note": ""
+  },
+  {
+   "name": "Stop_WetMask",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 1.33,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §6·1 line 738",
+   "note": ""
+  },
+  {
+   "name": "沥青 Poly Haven 2K（albedo + normal + rough）",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 16.0,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §8.2 line 1803",
+   "note": "map count assumed 3"
+  },
+  {
+   "name": "CloudFloor_moon（RGBA + 高度）",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 5.33,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §6·3 line 859",
+   "note": "+1024² height ≈1.33 MB"
+  },
+  {
+   "name": "月面圆盘",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 1.33,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §6·3 line 861",
+   "note": ""
+  },
+  {
+   "name": "Tear_Emission",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 1.33,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §6·4 line 960",
+   "note": ""
+  },
+  {
+   "name": "Tear_Fibres",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 1.33,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §6·4 line 960",
+   "note": ""
+  },
+  {
+   "name": "Shaft_Gradient",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 0.33,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §6·4 line 960",
+   "note": ""
+  },
+  {
+   "name": "Halo",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 0.33,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §6·4 line 960",
+   "note": ""
+  },
+  {
+   "name": "TentacleTide_Atlas_A/B/C",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 4.0,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §8.1 #5 line 1785",
+   "note": ""
+  },
+  {
+   "name": "触手褶皱遮罩（每个变体）",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 10.67,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §8.1 #5 line 1785",
+   "note": "8 variants per §8.1 line 1778 (count assumed = 8)"
+  },
+  {
+   "name": "晨 HDRI ≥ 8K",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 42.67,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §8.2 line 1801",
+   "note": "minimum size; may be imported as cubemap (8K equirect → 2048/face ≈ 32 MB BC6H w/ mips) — assumption"
+  },
+  {
+   "name": "暮 HDRI ≥ 8K",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 42.67,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §8.2 line 1802",
+   "note": ""
+  },
+  {
+   "name": "每幕 _Udon_ReflCube（约 13 幕）",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 6.5,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §1.6 line 178",
+   "note": "count 13 assumed = one per act"
+  },
+  {
+   "name": "银河辉光立方图 _CubeB",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 8.0,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §6·9 line 1440",
+   "note": ""
+  },
+  {
+   "name": "宫殿 5 套",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 26.67,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §8.1 #10 line 1791",
+   "note": "per set map count unknown (×1 here)"
+  },
+  {
+   "name": "白铜镜 镜面 / 镜背",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 10.67,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §8.1 #11 line 1792",
+   "note": ""
+  },
+  {
+   "name": "CJK TMP 图集（每个字体资产）",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 16.0,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §7.2 line 1715",
+   "note": "SDF atlases are typically Alpha8 (1 B/px → 4 MB); RGBA32 is the worst case; count of CJK font assets ≥ 4 (宋 Regular/Medium, 明朝 Regular/Medium)"
+  },
+  {
+   "name": "雨套件贴图（套件自报）",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 20,
+   "download_mb": null,
+   "status": "bible",
+   "source": "rain README §10 line 394",
+   "note": ""
+  },
+  {
+   "name": "Gate 远潮图集 v3（实际交付 2 张）",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": null,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "gate README §0 line 86",
+   "note": ""
+  },
+  {
+   "name": "Gate 目的地牌",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": null,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "gate README §0 line 91",
+   "note": ""
+  },
+  {
+   "name": "Tear v6.1 脚前云头贴图",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": null,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "gate README §0 line 93",
+   "note": ""
+  },
+  {
+   "name": "城市灯点网格",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": null,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §8.1 #9 line 1789",
+   "note": ""
+  },
+  {
+   "name": "星图源（离线，不进 build）",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": null,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §8.2 line 1809",
+   "note": "source only; runtime uses extracted sprites + 1024/face cube"
+  },
+  {
+   "name": "音频：Streaming、Vorbis 0.5",
+   "owner": "?",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": null,
+   "download_mb": null,
+   "status": "engineer-estimate",
+   "source": "bible §1.9 line 263",
+   "note": "two recordings: Urlicht ≈245.6 s file, finale ≈933.1 s file (§2 lines 277–279) + CC0 ambiences; sizes not stated"
+  }
+ ]
+}
