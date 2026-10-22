@@ -26,7 +26,7 @@
 
 图例：🟢 在做　⚪ 刚开　🟡 等别人　🔴 卡住　✅ 交付进 main
 
-会话 ID（总导演巡检用）：总导演 `session_01HFCmABtu3ezXTX3d4bxhAm` · 总工程师 `session_01KkS56fbJ2PHMzFo5cG61GU` · 门（私密对话）`session_017wL3odbFgMnkHZ9aGe3x4c` · 天空 `session_01Nf2iZx1zWD6Xt6BAtCCBfu` · 云 `session_013vgQ9h6QhaATkngugnzkS6` · 海 `session_01TfkHVMMsMpfQeiXJYh2XC6` · 宫殿 `session_01Axat6dHcb4g41dmvwqN8jA` · 门内 `session_01KDJqh9LuqKy3VMmtCbV14X` · 镜与白 `session_01TPk3Xf1e9wdpx1j441uF4n` · 灯与假醒 `session_01XMEkuyTcFjSNQoUqpju58H`
+会话 ID（总导演巡检用）：总导演 `session_01HFCmABtu3ezXTX3d4bxhAm` · 总工程师 `session_01KkS56fbJ2PHMzFo5cG61GU` · 门（私密对话）`session_017wL3odbFgMnkHZ9aGe3x4c` · 天空 `session_01Nf2iZx1zWD6Xt6BAtCCBfu` · 云 `session_013vgQ9h6QhaATkngugnzkS6` · 海 `session_01TfkHVMMsMpfQeiXJYh2XC6` · 宫殿 `session_01Axat6dHcb4g41dmvwqN8jA` · 门内 `session_01KDJqh9LuqKy3VMmtCbV14X` · 镜与白 `session_01TPk3Xf1e9wdpx1j441uF4n` · 灯与假醒 `session_01XMEkuyTcFjSNQoUqpju58H` · 美术审片 `session_01SarinYNkKF3q18n5XHsFaH`；每小时巡检：定时任务 `trig_01VVywPbcGNvCmGxRUBnwvRr`（每小时 :53）
 
 ---
 
