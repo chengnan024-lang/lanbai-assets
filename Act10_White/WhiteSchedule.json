@@ -1,0 +1,287 @@
+{
+ "about": "蓝白 · 白（第 12 面 → F16 → 第 10 幕 → 收缩进灯里）的全部曲线。圣经 v2.1 §6·9→10、§6·10、§6·10→11、§1.8、calib_final §D。由 Act10_White/Tools~/make_white_schedule.py 生成，不要手改。时刻都由标签算（第 12 面来自 Mirrors/MirrorSchedule.json）。",
+ "version": "1.0",
+ "labels": {
+  "mirror12": 1137.58,
+  "impact_end": 1138.78,
+  "swell_end_hush": 1144.78,
+  "mask_start": 1146.31,
+  "F16_cut2": 1149.31,
+  "F16r": 1170.76,
+  "playback_fade": [
+   1170.96,
+   1173.46
+  ],
+  "file_end": 1173.46,
+  "silence_end": 1178.46,
+  "shrink_end": 1186.46
+ },
+ "curve_rules": {
+  "knots": "[t, value]，相邻节点之间线性插值（EV 线性的量直接给 EV；权重给 weight）；第一个节点之前取第一个值、最后一个之后取最后一个值",
+  "ev_linear": "EXPO_UP 的 ΔEV 在节点之间线性 → w = ΔEV / (4 − b) 也线性：EV 线性的包络保持 EV 线性（§1.4）"
+ },
+ "exposure": {
+  "helper": "EXPO_UP",
+  "base_b": 0.3,
+  "formula": "w = ΔEV / (4 − b)",
+  "dEV_knots": [
+   [
+    1137.58,
+    0.0
+   ],
+   [
+    1138.78,
+    1.0
+   ],
+   [
+    1144.78,
+    2.4
+   ],
+   [
+    1146.31,
+    2.4
+   ],
+   [
+    1149.31,
+    2.4
+   ]
+  ],
+  "weight_check": {
+   "impact_end": 0.27,
+   "swell_end": 0.649
+  },
+  "at_F16": "同一帧：EXPO_UP → 0（ΔEV 归零），场景 S9a/S9b → 0、S10 → 1；遮罩此刻全满，填值同帧换成 S10 那一行，屏幕一码不动",
+  "after_silence": {
+   "t": 1178.46,
+   "dEV": 1.0,
+   "weight": 0.241,
+   "decay_s": 4.0,
+   "base_b": -0.15,
+   "note": "10 → 11：遮罩全满时同帧硬切 S10 → S11，EXPO_UP +1.0（w 0.241，S11 的 b = −0.15）且填值同时 × 2^−1.0；之后 4 s 线性衰减（变暗，免费）"
+  }
+ },
+ "white_sat": {
+  "knots": [
+   [
+    1137.58,
+    0.0
+   ],
+   [
+    1138.78,
+    0.42
+   ],
+   [
+    1144.78,
+    1.0
+   ],
+   [
+    1149.309,
+    1.0
+   ],
+   [
+    1149.31,
+    0.0
+   ]
+  ],
+  "note": "F16 遮罩全满同帧硬切到 0"
+ },
+ "white_bloom": {
+  "knots": [
+   [
+    1137.58,
+    0.0
+   ],
+   [
+    1138.78,
+    0.5
+   ],
+   [
+    1144.78,
+    1.0
+   ],
+   [
+    1146.31,
+    1.0
+   ],
+   [
+    1149.31,
+    0.0
+   ]
+  ],
+  "mask_rule": "遮罩的 3 s 里随遮罩 EV 线性 1 → 0（= 1 − x，x = 遮罩的归一化时间；遮罩本身永远不 bloom）"
+ },
+ "lens_desktop": {
+  "LENS_CLEAN": [
+   [
+    1138.78,
+    1.0
+   ],
+   [
+    1144.78,
+    0.0
+   ],
+   [
+    1178.459,
+    0.0
+   ],
+   [
+    1178.46,
+    1.0
+   ]
+  ],
+  "LENS_ARCHIVE": [
+   [
+    1178.459,
+    0.0
+   ],
+   [
+    1178.46,
+    1.0
+   ]
+  ],
+  "note": "白不是被拍下来的，没有暗角：两层在膨胀的 6 s 里降到 0（LENS_ARCHIVE 此时本来就是 0）。10 → 11 在遮罩全满下同帧回到 1（假醒是档案）。LENS_CLEAN 回到 1 的时刻圣经没写（§1.4 只说桌面恒为 1、白的膨胀里降到 0），这里取遮罩下的 1178.46。VR 里两层不存在。"
+ },
+ "mirror13_face_extra": {
+  "EV_knots": [
+   [
+    1138.78,
+    0.0
+   ],
+   [
+    1146.31,
+    3.0
+   ]
+  ],
+  "shape": "EV 线性 0.40 EV/s；冲击的 1.2 s 里不升",
+  "multiplier": "镜面自发光 × 2^EV（只乘第 13 面的自发光项，不乘反射项）",
+  "see": "Mirrors/MirrorSchedule.json mirrors[12].face_emission_extra"
+ },
+ "overlay": {
+  "shader": "Lanbai_Overlay v2（会话「门内」，Overlay/；没推之前照圣经 §1.8 的接口：_Color rgb = HDR 填色、a = 不透明度；球跟头部位置；物体空间抖动）",
+  "mask_in": {
+   "t": [
+    1146.31,
+    1149.31
+   ],
+   "curve": "EvOverlayAlpha(x, Lscene, Lwhite, Lscene, Lwhite)",
+   "x": "(t − 1146.31) / 3.0",
+   "Lscene": "标量：按“极端视向”定（变白的遮罩按最暗的视向建，§1.8 E17）——数值见 Act10_White/Docs~/white_check.txt，由 check_white.py 仿真选出",
+   "fill_row": "S9b_WHITESAT",
+   "fill_times_2pow_minus_dEV": true
+  },
+  "hold": {
+   "t": [
+    1149.31,
+    1178.46
+   ],
+   "alpha": 1.0,
+   "fill_row": "S10",
+   "breath": {
+    "amount": 0.02,
+    "hz": 0.1,
+    "note": "±2 %、0.1 Hz；乘在填色上"
+   },
+   "peak_hold_s": 29.15,
+   "rule": "峰值保持 ≤ 30 s（只算 F16 → 静默结束）；本地若延长播放淡出，必须同步缩短 5 s 静默"
+  },
+  "shrink": {
+   "t": [
+    1178.46,
+    1186.46
+   ],
+   "fill_row": "S11",
+   "fill_times_2pow_minus_dEV": true,
+   "alpha": "按世界方向错开的 EV 线性遮罩（亮的东西先出现）：alpha(dir, t) = EvOverlayAlpha(clamp01((t − t0 − lead(dir)) / T), Lwhite, Lscene11, Lscene11, Lwhite)",
+   "lead_order": [
+    "车厢管灯（车厢顶棚的两排灯管方向）",
+    "路灯（侧窗、地平线上方 0–25°）",
+    "头顶的海（天顶）"
+   ],
+   "lead_s": [
+    0.0,
+    1.5,
+    3.0
+   ],
+   "T_s": 5.0,
+   "lobes_note": "方向由第 11 幕（灯与假醒）给：管灯在车里是固定的（相对车），路灯与海在第 11 幕的布局里。v2 遮罩若不支持按方向的 alpha，退路 = 全方向同一条 8 s 曲线（变暗免费，爬升律无关）"
+  },
+  "fills": {
+   "S9b_WHITESAT": {
+    "desktop": {
+     "set": "#D6F5FF @ +0.57",
+     "linear_rgb": [
+      0.998257,
+      1.355517,
+      1.484524
+     ]
+    },
+    "vr": {
+     "set": "#D5F6FF @ +0.06",
+     "linear_rgb": [
+      0.693643,
+      0.960718,
+      1.042466
+     ]
+    },
+    "screen": {
+     "desktop": "#E8F1F5",
+     "vr": "#D7E3E8"
+    }
+   },
+   "S10": {
+    "desktop": {
+     "set": "#D5F0FF @ +1.42",
+     "linear_rgb": [
+      1.780479,
+      2.331652,
+      2.675855
+     ]
+    },
+    "vr": {
+     "set": "#D3F0FF @ +0.83",
+     "linear_rgb": [
+      1.157995,
+      1.549016,
+      1.777685
+     ]
+    },
+    "screen": {
+     "desktop": "#E8F1F5",
+     "vr": "#D7E3E8"
+    }
+   },
+   "S11": {
+    "desktop": {
+     "set": "#D5F4FF @ +1.20",
+     "linear_rgb": [
+      1.528658,
+      2.078365,
+      2.297397
+     ]
+    },
+    "vr": {
+     "set": "#D4F5FF @ +0.66",
+     "linear_rgb": [
+      1.040287,
+      1.442772,
+      1.580083
+     ]
+    },
+    "screen": {
+     "desktop": "#E8F1F5",
+     "vr": "#D7E3E8"
+    }
+   }
+  },
+  "vr_select": "Networking.LocalPlayer.IsUserInVR() → vr 那一列；否则 desktop"
+ },
+ "renderers": {
+  "off_at_F16": "遮罩全满时（F16）遮罩后面的一切关闭：第 9 幕的星、镜、尘、车厢（第 13 面带走座位 = 同一帧）",
+  "on_at_F16_note": "R_Road（干燥版）与 R_False 在第 10 幕的白里激活（归第 11 幕 / Director；这里只写时刻）",
+  "activate_next": [
+   1149.31,
+   1178.46
+  ]
+ },
+ "audio_note": "音乐 F16r 和弦收，播放淡出 1170.96 → 1173.46（本地），之后 5 s 数字静默；电台噪音 1178.46 起 −40 → −30 dB（第 11 幕）"
+}
