@@ -7,7 +7,8 @@ Bloom, vignette: written here from the PPv2 3.x source (Bloom.cs, Bloom.shader, 
              iterations = clamp(floor(logs), 1, 16); sampleScale = 0.5 + logs - floor(logs)
              lthresh = GammaToLinearSpace(threshold); knee = lthresh * softKnee + 1e-5;
              _Threshold = (lthresh, lthresh - knee, 2 knee, 0.25 / knee); _Params.x = GammaToLinearSpace(clamp)
-             intensity = 2^(intensity / 10) - 1; colour = settings.color.linear
+             intensity = 2^(intensity / 10) - 1; colour = settings.color.linear, set with MaterialPropertyBlock.SetColor
+             (which linearises again in Linear colour space -> the effective tint is linearised twice)
              mip0 = Prefilter4(source) (half res); mip i = Downsample4(mip i-1), size max(floor(/2), 1);
              up = mip last; for i = it-2 .. 0: up = UpsampleBox(up, sampleScale) + mip i
   fastMode   (every Lanbai profile): *4Tap / UpsampleBox passes, Uber keyword BLOOM_LOW
@@ -41,9 +42,16 @@ def grades():
     return _GRADES
 
 
-def hex_lin(h):
-    h = h.lstrip('#')
-    v = np.array([int(h[i:i + 2], 16) / 255.0 for i in (0, 2, 4)])
+def gamma01(c):
+    """hex '#RRGGBB' or a 0..1 gamma triplet -> np.array of gamma components 0..1."""
+    if isinstance(c, str):
+        h = c.lstrip('#')
+        return np.array([int(h[i:i + 2], 16) / 255.0 for i in (0, 2, 4)])
+    return np.asarray(c, float)
+
+
+def hex_lin(c):
+    v = gamma01(c)
     return np.where(v <= 0.04045, v / 12.92, ((v + 0.055) / 1.055) ** 2.4)
 
 
@@ -67,11 +75,9 @@ DEFAULT_STATE = dict(postExposure=0.0, temperature=0.0, tint=0.0, saturation=0.0
 
 
 def _lerp(a, b, w):
-    if isinstance(a, str):          # colours: PPv2 ColorParameter.Interp lerps the raw (gamma) components
-        ca = np.array([int(a.lstrip('#')[i:i + 2], 16) for i in (0, 2, 4)], float)
-        cb = np.array([int(b.lstrip('#')[i:i + 2], 16) for i in (0, 2, 4)], float)
-        c = ca + (cb - ca) * w
-        return '#' + ''.join('%02X' % int(round(x)) for x in c)
+    if isinstance(a, str) or isinstance(b, str):   # colours: ColorParameter.Interp lerps the raw (gamma) floats, no rounding
+        ca, cb = gamma01(a), gamma01(b)
+        return [float(x) for x in ca + (cb - ca) * w]
     if isinstance(a, (list, tuple)):
         return [x + (y - x) * w for x, y in zip(a, b)]
     if isinstance(a, bool):
@@ -115,6 +121,7 @@ def blend(weights):
     for key, w in items:
         if w <= 0:
             continue
+        w = min(float(w), 1.0)                       # PostProcessManager: Mathf.Clamp01(volume.weight)
         ov = profile_overrides(key)
         for k, v in ov.items():
             if isinstance(v, dict):
@@ -201,7 +208,11 @@ def bloom_pyramid(lin, b):
         up = _upsample_box(up, ww, hh, sample_scale) + mips[i]
     final = _upsample_box(up, W, H, sample_scale)
     k = 2.0 ** (b['intensity'] / 10.0) - 1.0
-    return final * k * hex_lin(b['color'])
+    # Bloom.cs: linearColor = color.linear, then uberSheet.properties.SetColor(_Bloom_Color, linearColor):
+    # MaterialPropertyBlock.SetColor converts sRGB -> linear AGAIN in a Linear-space project, so the tint the
+    # Uber shader sees is GammaToLinear(GammaToLinear(c)) (white unaffected). Verified against the 3.4.0 source.
+    c = np.array([gamma_to_linear_space(v) for v in hex_lin(b['color'])])
+    return final * k * c
 
 
 def _upsample_box(src, out_w, out_h, sample_scale):
@@ -233,8 +244,8 @@ def grade(lin, spec, bloom=True, lens=True):
     spec: see state_for(). lens=False drops vignette even if the spec has a LENS layer.
     Returns (codes float 0..255 (H, W, 3), state, bloom term)."""
     st = state_for(spec)
-    x = np.maximum(np.nan_to_num(np.asarray(lin, np.float64)[..., :3], nan=0.0, posinf=65472.0), 0.0)
-    x = np.minimum(x, 65472.0)          # half float
+    x = np.maximum(np.nan_to_num(np.asarray(lin, np.float64)[..., :3], nan=0.0, posinf=65504.0), 0.0)
+    x = np.minimum(x, 65504.0)          # SafeHDR: min(c, HALF_MAX)
     bl = bloom_pyramid(x, st['bloom']) if bloom else np.zeros_like(x)
     x = x + bl
     if lens:
