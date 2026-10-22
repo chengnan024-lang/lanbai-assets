@@ -39,7 +39,7 @@ def at(D, t):
         for k in KEYS:
             v = it.get(k)
             if v is None:
-                if k in it.get('expects', ('gpu_ms', 'fse')):
+                if k in it.get('expects', ()):
                     missing[k].append(it['name'])
             else:
                 s[k] += v
@@ -70,7 +70,7 @@ def verdict(v, cap, peak=None):
 
 def table(D):
     B = D['budgets']
-    rows = ['| 时刻 | t | GPU 世界 + PPv2（ms） | 透明 FSE | 粒子 | Udon ms | 实时灯 | 缺数的项 |', '|---|---|---|---|---|---|---|---|']
+    rows = ['| 时刻 | t | GPU 世界 + PPv2（ms；上限 %.1f，热点按圣经） | ' % (D['budgets']['world_ms'] + D['budgets']['ppv2_ms']) + '透明 FSE | 粒子 | Udon ms | 实时灯 | 缺数的项 |', '|---|---|---|---|---|---|---|---|']
     series = []
     for label, t in sample_times(D):
         s, miss, items = at(D, t)
@@ -79,12 +79,19 @@ def table(D):
         if hot:
             cap_ms = hot[0]['world_ms'] + B['ppv2_ms']
         nmiss = sorted({n for k in ('gpu_ms', 'fse') for n in miss[k]})
-        rows.append('| %s | %.2f | %.2f %s | %.2f %s | %d %s | %.2f | %d | %s |' % (
-            label, t, s['gpu_ms'], verdict(s['gpu_ms'], cap_ms, B['world_peak_ms'] + B['ppv2_ms'] if not hot else None),
+        est = [it['est_total_ms'] for it in items if it.get('est_total_ms')]
+        if miss['gpu_ms']:
+            gtxt = '? + %.1f（世界未知）' % s['gpu_ms']
+        else:
+            gtxt = '%.2f %s' % (s['gpu_ms'], verdict(s['gpu_ms'], cap_ms, B['world_peak_ms'] + B['ppv2_ms'] if not hot else None))
+        if est:
+            gtxt += '；**标定估计 %.1f** %s' % (max(est), verdict(max(est), cap_ms))
+        rows.append('| %s | %.2f | %s | %.2f %s | %d %s | %.2f | %d | %s |' % (
+            label, t, gtxt,
             s['fse'], verdict(s['fse'], B['fse_sustained'], B['fse_peak']), s['particles'],
             verdict(s['particles'], B['particles_per_act']), s['udon_ms'], s['realtime_lights'],
             ('%d：' % len(nmiss) + '、'.join(nmiss[:4]) + ('…' if len(nmiss) > 4 else '')) if nmiss else ''))
-        series.append((t, s['gpu_ms'], s['fse'], s['particles'], cap_ms))
+        series.append((t, max(est) if est else (s['gpu_ms'] if not miss['gpu_ms'] else float('nan')), s['fse'], s['particles'], cap_ms))
     return rows, series
 
 
@@ -115,6 +122,13 @@ def chart(series, out):
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
     t = [s[0] for s in series]
+    try:
+        from matplotlib import font_manager
+        fp = os.path.join(REPO, 'Fonts', 'Originals~', 'SourceHanSerifCN-Regular.otf')
+        font_manager.fontManager.addfont(fp)
+        plt.rcParams['font.family'] = font_manager.FontProperties(fname=fp).get_name()
+    except Exception:
+        pass
     fig, ax = plt.subplots(2, 1, figsize=(14, 6), sharex=True)
     ax[0].step(t, [s[1] for s in series], where='post', color='#2E4F8A', label='GPU 估计（ms，9 MP）')
     ax[0].step(t, [s[4] for s in series], where='post', color='#B52A1E', ls='--', label='上限（世界 + PPv2；热点按圣经）')
@@ -127,13 +141,6 @@ def chart(series, out):
     ax[1].set_xlabel('时间轴 t（秒）')
     for a in ax:
         a.grid(alpha=0.3)
-    try:
-        from matplotlib import font_manager
-        fp = os.path.join(REPO, 'Fonts', 'Originals~', 'SourceHanSerifCN-Regular.otf')
-        font_manager.fontManager.addfont(fp)
-        plt.rcParams['font.family'] = font_manager.FontProperties(fname=fp).get_name()
-    except Exception:
-        pass
     fig.tight_layout()
     fig.savefig(out, dpi=110)
 
