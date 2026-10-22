@@ -12,12 +12,14 @@
 
 | 会话 | 只改这些文件夹 | 分支 |
 |---|---|---|
-| 总导演（蓝白总控安排） | 根目录文档、`HANDOFF_LOG.md`、`Cabin/`、`Common/UdonGlobals.md`、`Common/Shaders/LanbaiVR.cginc` | `main` |
+| 总导演（蓝白总控安排） | 根目录文档、`HANDOFF_LOG.md`、`Common/UdonGlobals.md`、`Common/Shaders/LanbaiVR.cginc` | `main` |
+| 总导演（车厢，和别的包一样要过审） | `Cabin/` | `pkg/cabin` |
+| 美术审片 | `Review/` | `pkg/review` |
 | 总工程师 | `Common/Tools~/`、`Director/`、`Engineering/` | `pkg/engineering` |
 | 门（私密对话） | `GateClouds/`；修补时 `Gate/`、`Tear/`、`Tentacles/` | `pkg/gate-clouds` |
 | 天空 | `Common/Shaders/LanbaiFog.cginc`、`Common/Shaders/LanbaiSky.cginc`、`Sky/`、`Act09_StarSea/` | `pkg/sky` |
 | 云 | `Clouds_v2/`、`Act06_Dawn/`、`Act08_Dusk/` | `pkg/clouds` |
-| 海 | `Sea/`、`Act07_Sea/` | `pkg/sea` |
+| 海 | `Sea/`、`Act07_Sea/`、`Common/Shaders/LanbaiCaustics.cginc` | `pkg/sea` |
 | 宫殿 | `Palace/` | `pkg/palace` |
 | 门内 | `Act04c_Inside/`、`Overlay/` | `pkg/inside` |
 | 镜与白 | `Mirrors/`、`Act10_White/` | `pkg/mirrors` |
@@ -26,7 +28,7 @@
 - **站牌套件不做**（小楠说先不做）。第 1、2、12 幕的路、车、站由本地做；圣经是美术依据。
 - **第 3 幕**待定（门交了以后再定）。
 - 分工表没写到的东西，写进自己文件夹的 `给总控.md`，总导演来分。
-- **例外**：总导演和总工程师可以往任何包的分支推 `<包>/总导演意见.md`、`<包>/总工程师意见.md` 这两个文件（只有这两个）。所以每个会话**推之前先 `git pull --rebase origin <自己的分支>`**。
+- **例外**：总导演、总工程师、美术审片可以往任何包的分支推 `<包>/总导演意见.md`、`<包>/总工程师意见.md`、`<包>/美术审片意见.md` 这三个文件（只有这三个）。**美术审片的意见和总导演的意见一样要逐条回应**（改，或者在 README 的“与评审的分歧”里写明理由）。所以每个会话**推之前先 `git pull --rebase origin <自己的分支>`**。
 - Blender 迭代规矩、美是最高原则：见 `PLAN_总导演.md` 第四、五节。**每个会话都要照做。**
 
 ---
@@ -78,6 +80,7 @@
 | `LanbaiVR.cginc` | 总控 | ✅ 已放（= `Rain/Shaders/LanbaiVR.cginc`） |
 | `LanbaiFog.cginc` | 天空 | **天空的第一件交付**：先推接口 + 能编译的最小实现，别的会话照接口写 |
 | `LanbaiSky.cginc` | 天空 | 同上（`LanbaiHorizon(dir)` 等与 `Lanbai/Sky` 共用的函数） |
+| `LanbaiCaustics.cginc` | 海 | 焦散采样 `LanbaiCabinCaustics(posWS, nWS)`；车厢从第 1 幕起就 include 它，所以放 `Common/`，不放 `Sea/` |
 
 `LanbaiFog.cginc` 的**最小接口**（天空可以加，不能改名、不能改参数）：
 
