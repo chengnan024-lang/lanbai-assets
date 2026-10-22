@@ -17,7 +17,7 @@
 | 门（私密对话） | `GateClouds/`；修补时 `Gate/`、`Tear/`、`Tentacles/` | `pkg/gate-clouds` |
 | 天空 | `Common/Shaders/LanbaiFog.cginc`、`Common/Shaders/LanbaiSky.cginc`、`Sky/`、`Act09_StarSea/` | `pkg/sky` |
 | 云 | `Clouds_v2/`、`Act06_Dawn/`、`Act08_Dusk/` | `pkg/clouds` |
-| 海 | `Sea/`、`Act07_Sea/` | `pkg/sea` |
+| 海 | `Sea/`、`Act07_Sea/`、`Common/Shaders/LanbaiCaustics.cginc` | `pkg/sea` |
 | 宫殿 | `Palace/` | `pkg/palace` |
 | 门内 | `Act04c_Inside/`、`Overlay/` | `pkg/inside` |
 | 镜与白 | `Mirrors/`、`Act10_White/` | `pkg/mirrors` |
@@ -78,6 +78,7 @@
 | `LanbaiVR.cginc` | 总控 | ✅ 已放（= `Rain/Shaders/LanbaiVR.cginc`） |
 | `LanbaiFog.cginc` | 天空 | **天空的第一件交付**：先推接口 + 能编译的最小实现，别的会话照接口写 |
 | `LanbaiSky.cginc` | 天空 | 同上（`LanbaiHorizon(dir)` 等与 `Lanbai/Sky` 共用的函数） |
+| `LanbaiCaustics.cginc` | 海 | 焦散采样 `LanbaiCabinCaustics(posWS, nWS)`；车厢从第 1 幕起就 include 它，所以放 `Common/`，不放 `Sea/` |
 
 `LanbaiFog.cginc` 的**最小接口**（天空可以加，不能改名、不能改参数）：
 
