@@ -39,5 +39,5 @@ VRChat 只允许 Udon 写 `_Udon_` 前缀的全局 shader 量（`VRCShader.SetGl
 | `_Udon_SkyBlend` | `Lanbai/Sky` 两张立方图的混合 | 天空 |
 | `_Udon_HorizonColor` / `_Udon_ZenithColor` | 地平线 / 天顶色（`LanbaiHorizon` 的底色） | 天空 |
 | `_Udon_StarGain` / `_Udon_GalaxyGain` | 星点、银河辉光的增益（第 9 幕的点燃线 g(t)） | 天空 |
-| `_Udon_MirrorIndex` / `_Udon_MirrorPhase` | 第几面镜、穿越进度 | 门内（镜子） |
+| `_Udon_MirrorIndex` / `_Udon_MirrorPhase` | 第几面镜、穿越进度 | 镜与白 |
 | `_Udon_OverlayColor` / `_Udon_OverlayAlpha` | 遮罩球填色、alpha | 门内（`Lanbai_Overlay` v2） |
