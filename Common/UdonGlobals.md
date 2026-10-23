@@ -29,6 +29,8 @@ VRChat 只允许 Udon 写 `_Udon_` 前缀的全局 shader 量（`VRCShader.SetGl
 | `_Udon_SeaClock` | float4：x 浪的钟、yz 海水相对车的平移（世界 xz）、w > 0 已设 | 当前幕 | 海 |
 | `_Udon_Underwater` | 0..1：眼睛在水里 | 海 | `LanbaiFog`、海、车厢玻璃 |
 | `_Udon_WaterFogUp` / `_Udon_WaterFogMid` / `_Udon_WaterFogDown` | 水下雾色（朝上 / 水平 / 朝下，线性） | 海 | `LanbaiFog` |
+| `_Udon_MirrorPlane` | float4：x 当前镜面在车正下方的世界 y、y 镜线强度 0–1、z 镜序号 1–13（0 无）、w 穿越进度 −1…1 | 镜子驱动 | 车厢、`Lanbai/BronzeMirror`、星尘 |
+| `_Udon_MirrorRimLight` | float4：xyz 最近镜缘点世界位置、w 目标照度 E（0–0.3，8000 K） | 镜子驱动 | 车厢 / 头像补光 |
 | `_Udon_WorldS` | （本地的时间轴里用的，含义见 `FromLocal/code/timeline_v1/`） | 本地 | 本地 |
 
 ## 预留（还没人写，先占名字）
@@ -39,5 +41,4 @@ VRChat 只允许 Udon 写 `_Udon_` 前缀的全局 shader 量（`VRCShader.SetGl
 | `_Udon_SkyBlend` | `Lanbai/Sky` 两张立方图的混合 | 天空 |
 | `_Udon_HorizonColor` / `_Udon_ZenithColor` | 地平线 / 天顶色（`LanbaiHorizon` 的底色） | 天空 |
 | `_Udon_StarGain` / `_Udon_GalaxyGain` | 星点、银河辉光的增益（第 9 幕的点燃线 g(t)） | 天空 |
-| `_Udon_MirrorIndex` / `_Udon_MirrorPhase` | 第几面镜、穿越进度 | 镜与白 |
 | `_Udon_OverlayColor` / `_Udon_OverlayAlpha` | 遮罩球填色、alpha | 门内（`Lanbai_Overlay` v2） |
