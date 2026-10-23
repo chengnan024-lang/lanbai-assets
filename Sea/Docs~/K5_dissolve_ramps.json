@@ -1,0 +1,31 @@
+{
+ "0.25s": {
+  "limit_EV": 0.5,
+  "worst_EV": 0.159,
+  "PASS": true,
+  "at_t": 959.9,
+  "at_el_deg": 41.2,
+  "at_az_deg": -80.0
+ },
+ "1s": {
+  "limit_EV": 1.0,
+  "worst_EV": 0.636,
+  "PASS": true,
+  "at_t": 958.3,
+  "at_el_deg": 41.2,
+  "at_az_deg": -105.0
+ },
+ "2s": {
+  "limit_EV": 1.8,
+  "worst_EV": 1.273,
+  "PASS": true,
+  "at_t": 958.25,
+  "at_el_deg": 41.2,
+  "at_az_deg": -105.0
+ },
+ "total_change_EV": {
+  "max": 3.178,
+  "min": -0.0
+ },
+ "about": "K5 · the act-8 ceiling dissolve against the VR ramp law, PER PIXEL (bible §1.8: any brightening <= 0.5 EV in 0.25 s,"
+}
