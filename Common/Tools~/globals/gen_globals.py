@@ -20,6 +20,11 @@ REPO = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
 sys.path.insert(0, os.path.join(REPO, 'Engineering', 'ledgers'))
 import globals_scan as GS  # noqa: E402
 
+# types stated in the owning package's interface document where no shader declares the name yet (source in the comment)
+KNOWN = {'_Udon_SeaLevel': 'float', '_Udon_SeaMode': 'float',          # Sea/README_Sea接口.md §3 (pkg/sea)
+         '_Udon_SeaClock': 'float4', '_Udon_Caustics': 'float4', '_Udon_CausticsColor': 'float4',   # same
+         '_Udon_MirrorPlane': 'float4', '_Udon_MirrorRimLight': 'float4',                          # Mirrors/给总控.md
+         '_Udon_WorldS': 'float', '_Udon_T': 'float'}                                              # LB_Journey (local)
 NORM = {'half': 'float', 'half2': 'float2', 'half3': 'float3', 'half4': 'float4', 'fixed4': 'float4', 'fixed': 'float'}
 
 
@@ -62,17 +67,24 @@ def main():
            '//  !!! WRITTEN WITHOUT A UNITY COMPILER; checked with Common/Tools~/compile_check (DXC + Unity CGIncludes). !!!',
            '// =====================================================================================================',
            '#ifndef LANBAI_GLOBALS_INCLUDED', '#define LANBAI_GLOBALS_INCLUDED', '']
-    for n in sorted(reg):
-        guessed = n not in types
+    names = sorted(n for n in reg if not (n not in types and any(k != n and k.startswith(n) for k in reg)))   # drop bare prefixes (`_Udon_Wiper*`)
+    for n in names:
+        guessed = n not in types and n not in KNOWN
+        sib = re.sub(r'\d+$', '', n)
+        sib_t = {next(iter(types[k])) for k in types if re.sub(r'\d+$', '', k) == sib and k != n and re.search(r'\d$', k)}
         if n in types:
             t = next(iter(types[n]))
+        elif n in KNOWN:
+            t = KNOWN[n]
+        elif re.search(r'\d$', n) and len(sib_t) == 1:
+            t, guessed = next(iter(sib_t)), False          # _Udon_Lamp3 = the type of the declared _Udon_Lamp0
         else:
             row = rowtext.get(n, '')
             if 'Cube' in n:
                 t = 'samplerCUBE'
-            elif 'Tex' in n or '纹理' in row:
+            elif n.endswith('Tex') or n.endswith('Texture'):
                 t = 'sampler2D'
-            elif re.search(r'\bfloat4\b|xyz|rgb', row):
+            elif re.search(r'`%s`[^|]*\|\s*float4\b|\|\s*float4\b' % re.escape(n), row) or re.search(r'xyz|rgb|float4', row):
                 t = 'float4'
             elif re.search(r'\bfloat\b|0\.\.1|0–1|秒', row):
                 t = 'float'
@@ -84,7 +96,7 @@ def main():
     txt = '\n'.join(out)
     if a.out:
         open(a.out, 'w', encoding='utf-8').write(txt)
-        print('wrote %s (%d globals)' % (a.out, len(reg)))
+        print('wrote %s (%d globals, %d with a guessed type)' % (a.out, len(names), txt.count('type guessed')))
     else:
         sys.stdout.write(txt)
 
