@@ -48,6 +48,11 @@ VRChat 只允许 Udon 写 `_Udon_` 前缀的全局 shader 量（`VRCShader.SetGl
 | `_Udon_NadirColor` / `_Udon_FogShape` / `_Udon_FogBelow` / `_Udon_FogModel` | 天底色（模型 B）；带 / 地平线满和消失的仰角、幂、背带增益；地平线以下的暗化；A 带 ↔ B 渐变的混合（定义见 `Sky/README_Fog接口.md`） | 当前幕 | `LanbaiSky` / `LanbaiFog` |
 | `_Udon_FogCube` / `_Udon_FogCubeParams` | 预染色、预模糊的雾立方图（`samplerCUBE`，线性 HDR）；权重、mip、最大仰角、曝光 | 当前幕 | `LanbaiSky` |
 | `_Udon_SeaBus` / `_Udon_SeaBusVel` | float4：车的原点在水的坐标系里的位置（x、−深度、前进的路），w > 0 已设；它的速度 m/s | 第 7 幕驱动（海） | `Lanbai/SeaParticles`（海雪、播下的光、船体荧光） |
+| `_Udon_SkySpot` | float4：x 天窗光斑的亮度包络 0..1（U8 → ≈169.2 从 −5 EV 按 EV 线性升到 1，→ U9 平滑降到 0.6，U9 → U9 + 0.25 s 到 0），yzw 不用（D-16） | `LanbaiSkylightSpot`（门内） | `Lanbai/SkylightSpot` |
+| `_Udon_InsideGrade` | float4：rgb 第 4 → 4c 交叉淡化期间布的填色乘数，a > 0 有效（没人写时当 1）（D-16，预留） | 门内驱动 | `Lanbai/InsideLip` |
+| `_Udon_PalaceVeil` | 从台地下方罩住宫殿建筑的雾（第 7b 幕 F7p；定义见 `Act07_Sea/PalaceFrame_约定.json`）（D-17） | 第 7 幕驱动（海） | 宫殿 shader |
+| `_Udon_SkyGlobals` / `_Udon_Sky_*`（一族，约 45 个） / `_Udon_SkyCubeTexA` / `_Udon_SkyCubeTexB` | 一个天空材质，各预设的差别全走全局量；`_Udon_Sky_<材质属性名>`；两张全局立方图（定义见 `Sky/README`）（D-18） | 天空预设 / `LanbaiSkyDriver` | `Lanbai/Sky` |
+| `_Udon_StarShape` | float4：x 最暗星等、y 雾带内的 EV、z 带半宽（D-18） | 天空预设 | `Lanbai/StarPoints` |
 | `_Udon_WorldS` | （本地的时间轴里用的，含义见 `FromLocal/code/timeline_v1/`） | 本地 | 本地 |
 
 ## 预留（还没人写，先占名字）
