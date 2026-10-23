@@ -46,6 +46,7 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
     // r06 (art review r05 #6): after the sleeve the gradient turns toward the dot and narrows into a radial falloff
     public float codaBandWidthDeg = 40f, codaSideK = 0.45f, codaTopK = 0.38f;
     public float dotAzDeg = -6.5f;
+    public float sleeveFogK = 0.75f, sleeveDepth = 85.51f;     // r07: darker air inside lip 8's sleeve
     // chief engineer r1 #2: off by default. Tick only after the local timeline has handed act 4c / 5's window
     // (177.55 -> 252.64) to the dispatcher (extWindows, extAtmosphere / extSun); otherwise LB_Journey writes these.
     public bool writeRenderSettings = false;
@@ -258,11 +259,15 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
         float c = SS((t - tSleeveExit) / 4f);                 // the coda: toward the dot, narrower, darker round the edges
         float az = dotAzDeg * Mathf.Deg2Rad;
         Vector3 bd = Vector3.Normalize(new Vector3(Mathf.Sin(az) * c, 0f, Mathf.Cos(az) * c + (1f - c)));
-        float sideK = Mathf.Lerp(behindK, codaSideK, c);
-        float topK = Mathf.Lerp(zenithK, codaTopK, c), botK = Mathf.Lerp(nadirK, codaTopK, c);
+        // r07 (art pre-review r0 #2): the air inside the sleeve is darker (a tunnel in thick cloth), lifting at the exit
+        float ks = SS((s - lipS[7]) / 15f) * (1f - SS((s - lipS[7] - sleeveDepth) / 30f));
+        float sk = Mathf.Lerp(1f, sleeveFogK, ks);
+        float sideK = Mathf.Lerp(behindK, codaSideK, c) * sk;
+        float topK = Mathf.Lerp(zenithK, codaTopK, c) * sk, botK = Mathf.Lerp(nadirK, codaTopK, c) * sk;
+        float aheadKs = aheadK * sk;
         VRCShader.SetGlobalFloat(_idDensity, dens);
         VRCShader.SetGlobalVector(_idBandDir, new Vector4(bd.x, 0f, bd.z, 1f));
-        VRCShader.SetGlobalVector(_idBandColor, new Vector4(ahead.r * aheadK, ahead.g * aheadK, ahead.b * aheadK, 1f));
+        VRCShader.SetGlobalVector(_idBandColor, new Vector4(ahead.r * aheadKs, ahead.g * aheadKs, ahead.b * aheadKs, 1f));
         VRCShader.SetGlobalFloat(_idBandWidth, Mathf.Lerp(bandWidthDeg, codaBandWidthDeg, c));
         VRCShader.SetGlobalVector(_idHorizon, new Vector4(behind.r * sideK, behind.g * sideK, behind.b * sideK, 2f));      // a = 2: model B
         VRCShader.SetGlobalVector(_idZenith, new Vector4(mid.r * topK, mid.g * topK, mid.b * topK, 1f));

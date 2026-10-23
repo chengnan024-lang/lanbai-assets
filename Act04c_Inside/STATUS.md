@@ -1,4 +1,4 @@
-2026-10-23 06:40（UTC）· r07 + 总工程师第 1 轮已推：LanbaiGrade、RenderSettings / 主光默认不写、shader 改 include LanbaiGlobals（全仓 DXC 检查 0 错误、C# 0 错误）、美术 r06 的阻断按 r07 改完 · 下一步：美术评审 r07；透明叠绘 FSE 量表；进门 / 袖的 flashcheck 序列 · 没有卡住
+2026-10-23 07:10（UTC）· r07 全部已推：美术 r05 / r06 的阻断按 r07 改完（等复审）、总工程师第 1 轮 5 条全改、美术审片预审逐条回应（README §14、Docs~/measure_r07.md）· 下一步：228 正前方的结构（袖的内层布片进画框）、透明叠绘 FSE、进门 / 袖的 flashcheck 序列 · 没有卡住
 
 # 门内 · 进度
 

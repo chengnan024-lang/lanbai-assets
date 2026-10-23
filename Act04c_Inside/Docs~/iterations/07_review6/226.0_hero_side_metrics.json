@@ -4,10 +4,10 @@
    960,
    540
   ],
-  "APL": 41.92,
-  "EV_display": -5.089,
+  "APL": 38.36,
+  "EV_display": -5.263,
   "luma_lt12_pct": 5.15,
-  "Lstar_gt85_pct": 0.157,
+  "Lstar_gt85_pct": 0.153,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
   "purple_pct": 0.0,
@@ -21,21 +21,21 @@
     526
    ],
    "centroid": [
-    682.2,
-    281.0
+    682.3,
+    279.7
    ],
    "clusters": 23,
-   "clusters_ge5pct": 6,
-   "min_luma": 215.3,
+   "clusters_ge5pct": 5,
+   "min_luma": 215.0,
    "centroid_az_el": [
     112.89,
-    -1.37
+    -1.22
    ]
   },
   "top25_Lstar": {
-   "mean": 16.56,
-   "p50": 15.57,
-   "p90": 18.3
+   "mean": 14.92,
+   "p50": 13.74,
+   "p90": 16.47
   },
   "palette": {
    "act": "04c",
@@ -44,30 +44,30 @@
      "hex": "#0C0E14",
      "role": "暗车厢剪影",
      "closest_dE_p1": 2.1,
-     "within10_pct": 5.16
+     "within10_pct": 7.58
     },
     {
      "hex": "#1D2336",
      "role": "第一重光唇之间的雾",
-     "closest_dE_p1": 3.6,
-     "within10_pct": 89.37
+     "closest_dE_p1": 3.3,
+     "within10_pct": 90.25
     },
     {
      "hex": "#53606E",
      "role": "第八重光唇之间的雾",
-     "closest_dE_p1": 7.9,
-     "within10_pct": 1.33
+     "closest_dE_p1": 8.0,
+     "within10_pct": 1.29
     },
     {
      "hex": "#E6E1F2",
      "role": "光唇纤维 第 1 重（一丝紫）",
-     "closest_dE_p1": 29.0,
-     "within10_pct": 0.0
+     "closest_dE_p1": 29.2,
+     "within10_pct": 0.01
     },
     {
      "hex": "#D9DFEE",
      "role": "光唇纤维 第 4 重",
-     "closest_dE_p1": 26.2,
+     "closest_dE_p1": 26.4,
      "within10_pct": 0.3
     },
     {
@@ -89,9 +89,9 @@
      "within10_pct": 0.0
     }
    ],
-   "pixel_to_nearest_dE_median": 4.7,
-   "pixel_to_nearest_dE_p90": 6.4,
-   "pixels_within10_pct": 96.4
+   "pixel_to_nearest_dE_median": 4.4,
+   "pixel_to_nearest_dE_p90": 5.3,
+   "pixels_within10_pct": 97.3
   }
  },
  "cam": {
@@ -186,7 +186,7 @@
   ]
  },
  "scene": {
-  "what": "第 4c 幕 t=226.00 s=1825.7 lips=6 fog=#4D5966",
+  "what": "第 4c 幕 t=226.00 s=1825.7 lips=6 fog=#424D59",
   "bus": "bible_v2",
   "glass": true,
   "samples": 16,
@@ -195,7 +195,7 @@
    540
   ]
  },
- "render_seconds": 27.0,
+ "render_seconds": 19.9,
  "lens": "clean",
- "note": "r07 per art review r06: lip 8 held until lip 7 is close (no target at 205), hidden / fading lips blend into the dome's fog by visibility, translucent band 3 % H, weave 6 %, folds 0.08 H +-25 %, fibres x3.15, dot glow is a radius with an exp tail drawn as glare, inner ply rims lit"
+ "note": "r07 darker air in the sleeve"
 }
