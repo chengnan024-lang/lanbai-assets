@@ -31,6 +31,7 @@ Shader "Lanbai/GateCloudCard"
         _Alpha ("Alpha (JSON opacity x sink fade; MPB)", Range(0, 1)) = 1
         _Lining ("Lining near the moon: gain, width (deg), max angle (deg), -", Vector) = (0.35, 7, 15, 0)
         _Melt ("Base melt: from (m above the cloud top), over (m)", Vector) = (-20, 90, 0, 0)
+        _Feather ("Bottom feather over the quad (0..1): alpha, sky channel", Vector) = (0.15, 0.3, 0, 0)
         _FogDensity ("Fog density, scale, moon air, CAP (towers 0.5, far / horizon 0.62, mist 0.7)", Vector) = (0.0006, 1.0, 0.35, 0.5)
         _SoftFade ("Soft depth fade (m; with the SOFTPARTICLES_ON keyword)", Float) = 30
         _CloudTopY ("Cloud top world y (fallback; _Udon_CloudTop wins)", Float) = -57.4
@@ -68,7 +69,7 @@ Shader "Lanbai/GateCloudCard"
             #include "Assets/Lanbai/Gate/Shaders/LanbaiGateSky.cginc"
 
             sampler2D _MainTex;
-            float4 _Scale, _MoonColor, _SkyColor, _Lining, _Melt, _FogDensity, _RimDir;
+            float4 _Scale, _MoonColor, _SkyColor, _Lining, _Melt, _Feather, _FogDensity, _RimDir;
             float _MoonE, _SkyE, _SoftFade, _CloudTopY;
             #include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc"
             UNITY_DECLARE_DEPTH_TEXTURE(_CameraDepthTexture);
@@ -79,11 +80,11 @@ Shader "Lanbai/GateCloudCard"
                 UNITY_DEFINE_INSTANCED_PROP(float, _Gain)
             UNITY_INSTANCING_BUFFER_END(Props)
 
-            struct appdata { float4 vertex : POSITION; float2 uv : TEXCOORD0; UNITY_VERTEX_INPUT_INSTANCE_ID };
+            struct appdata { float4 vertex : POSITION; float2 uv : TEXCOORD0; float2 uv2 : TEXCOORD1; UNITY_VERTEX_INPUT_INSTANCE_ID };
             struct v2f
             {
                 float4 pos : SV_POSITION;
-                float2 uv : TEXCOORD0;
+                float3 uv : TEXCOORD0;      // xy = texture, z = 0..1 up the cropped quad (the builder's uv2.y)
                 float3 wpos : TEXCOORD1;
                 float4 proj : TEXCOORD2;
                 float3 pivot : TEXCOORD3;
@@ -116,7 +117,7 @@ Shader "Lanbai/GateCloudCard"
                 o.wpos = w;
                 o.pivot = pivot;
                 o.pos = UnityWorldToClipPos(w);
-                o.uv = v.uv;
+                o.uv = float3(v.uv, v.uv2.y);
                 o.proj = ComputeScreenPos(o.pos);
                 o.proj.z = -mul(UNITY_MATRIX_V, float4(w, 1.0)).z;
                 return o;
@@ -131,6 +132,9 @@ Shader "Lanbai/GateCloudCard"
                 float alphaK = UNITY_ACCESS_INSTANCED_PROP(Props, _Alpha);
                 float2 uv = float2(mir > 0.5 ? 1.0 - i.uv.x : i.uv.x, i.uv.y);
                 float4 tx = tex2D(_MainTex, uv);
+                // round 4 (art r2): the lowest 15 % of the card feathered, its sky channel over the lowest 30 % (no bright bottom edge)
+                tx.b *= smoothstep(0.0, _Feather.y, i.uv.z);
+                tx.a *= smoothstep(0.0, _Feather.x, i.uv.z);
 
                 float3 eye = _WorldSpaceCameraPos;
                 float3 V = i.wpos - eye;

@@ -1,4 +1,4 @@
-# 触手之门 · 云套件 GateClouds v1.3（云海、云塔、远云、地平线云团、越远越宽的光束、阴影楔）
+# 触手之门 · 云套件 GateClouds v1.4（云海、云塔、远云、地平线云团、越远越宽的光束、阴影楔）
 
 写的人：云端「门」会话（分支 `pkg/gate-clouds`）。对象：小楠电脑上 Unity 2022.3 那一侧的会话。2026-10-23。
 **这里的 shader 和 C# 都没有在 Unity 里编译过。**
@@ -38,7 +38,8 @@
 | `Docs~/deck_scroll_U7_60fps.mp4` + `Docs~/deck_scroll_frames/` | U7 机位 2 秒、60 fps 的云海滚动（只有云海，960×540），查闪烁用 |
 | `Docs~/cards_contact.jpg` | 5 张云卡的三个光照通道 |
 | `Docs~/fse_clouds.json` | 透明叠绘（§5.3） |
-| `Docs~/iterations/` | 01–08 的迭代记录（每轮一张图一句话） |
+| `Docs~/iterations/` | 01–09 的迭代记录（每轮一张图一句话） |
+| `Docs~/r4_crops/` | 第 4 轮 1:1 前后对比裁图（上 = 第 3 轮，下 = 第 4 轮）：两处边光碎块、光池、云谷 |
 
 ---
 
@@ -68,12 +69,13 @@
 3. 打开搭好门的场景（要有 `GateRoot`，裂口根 `Tear_Root` 或 `Tear_Kit` 在它下面）。菜单 **蓝白/Gate Clouds/Build**（或 `LanbaiGateCloudsBuilder.Build()`）。它会：
    - 设贴图导入：云海两张和 `Gate/Textures/Tear_CloudLanes_1024.png` = sRGB 关、mip、各向异性 4、PC **不压缩 RGBA32**（高度场压缩会出块）；云卡 = sRGB 开、Clamp、mip、PC BC7、Alpha Is Transparency。
    - 建网格和材质（`GateClouds/Generated/`），在 `GateRoot/GateClouds/` 下建 `Deck`、`Cards/<id>`（37 张）、`Wedges/<id>`（4 道），裂口根下建 `GateBeam_Shaft_00/01`。
-   - 关掉 `Tear_CloudGlow`、`Tear_CloudGlow_Additive`、`Tear_LightLane` 的 renderer（光池由云海画）。**门的总驱动如果每帧打开它们，请让它别开。**
+   - 关掉 `Tear_CloudGlow`、`Tear_CloudGlow_Additive`、`Tear_LightLane`（光池由云海画）、`Tear_FootSkyline`、`Tear_FootSkylineIn`（脚前的暗云唇：现在裂口脚落进云海真实的云头和峡谷里，美术 r2）以及测试场景的旧等宽光束 `Shaft_00/01`（和 `GateBeam_Shaft_*` 重复，技术 r2 #2）的 renderer。
    - 驱动 `LanbaiGateClouds` 挂在**常开的**物体 `GateClouds_Driver` 上（场景里有 `Director` 就挂在它下面），`root` = `GateRoot/GateClouds`。
    - UdonSharp（反射调用，没有 U# 也能编译）：没有程序资产就建 `Assets/Lanbai/UdonPrograms/LanbaiGateClouds.asset` 并编译；组件经 `UdonSharpUndo.AddComponent`（或 `AddComponent` + `RunBehaviourSetup`）加上；填完数组 `CopyProxyToUdon`；**没有底层 UdonBehaviour 就报错停下**，不会静默完成。
    - 按 U7b 预览一次。可以重复运行（先删上一次搭的）。
-4. 测试场景的 `LB_GateTest.Apply(t)` 里加一行 `LanbaiGateCloudsBuilder.Apply(t);`（编辑模式预览云塔和卡的 property block；Play / VRChat 里由驱动的 `Start` 写）。
+4. **测试场景的 `FromLocal/gate_test/code/LB_GateTest_Run.cs` 第 123–127 行**：`SetPB(..., on = true)` 每次 Apply 都会把上面关掉的 `Tear_CloudGlow`、`Tear_CloudGlow_Additive`、`Tear_LightLane` 重新打开（光池画两遍、平面光池被云头切碎），`Shaft_00/01` 也每帧开着。**请把这几处改成 `on = false`（或删掉），否则 §8 的截图作废**（技术 r2 #2）。然后在 `LB_GateTest.Apply(t)` 里加一行 `LanbaiGateCloudsBuilder.Apply(t);`（编辑模式预览云塔和卡的 property block；Play / VRChat 里由驱动写）。
 5. 正式场景：分发层按 `LanbaiWindow()` 在窗口内每帧调 `LanbaiTick(t)`，在遮挡下调 `LanbaiActivate(on)`（CONTROL §5）。
+6. **上线前置条件（技术 r2 #4）**：云海依赖的 `_Udon_CloudTop`、`_Udon_GateOrigin`、`_Udon_TearFoot` 现在只有编辑器里的测试脚本写。正式世界里要由**门的总驱动**每帧写（`给总控.md` §3），否则云海不随 v_g 流动、云顶停在 −57.4、峡谷和光池固定不动。
 
 **读的全局量**（都已登记）：`_Udon_CloudTop`、`_Udon_GateOrigin`、`_Udon_MoonDir`、`_Udon_TearPos`、`_Udon_TearH`、`_Udon_TearFoot`，以及门内会话定义的 `_Udon_InsidePortal`（x = 裂口平面世界 z，y = 1 生效：U9 以后平面另一侧的云海、云卡、光束都不画）。**写的全局量**：`_Udon_FogBandColor = (0.1085, 0.1130, 0.1641, 1)`（第 4 幕的光雾带，给以后所有 `LanbaiFog` 用户；登记表里第 4 幕归门的驱动）。
 
@@ -86,10 +88,14 @@
 - **步进**：从眼睛沿视线进云层，**步长按离云面的距离自适应**（`dt = clamp(0.9 × 离云面高度 / (|V.y| + 0.6), 0.004 t, 0.05 t)`，离得近才走小步）。钻到高度场下面以后二分 3 次，再在最后一个区间里**线性插值求交**。抖动是**世界方向**的哈希（两只眼对同一个远点取同一个值，不跟屏幕走）。步进和二分只用便宜的 `tex2Dlod`；只有最后一次着色用 `tex2Dgrad`（硬件各向异性）。
 - **高度场** = 宏观起伏（6.4 km）+ 振幅 × 积云头（1.6 km 周期，云头半径 9–40 m）。噪声都在**云海坐标** `worldPos − _Udon_GateOrigin` 里取，云海跟着门以 v_g 走。
 - **云面**：朝月漫反射（烘好的 N·L）× 前方云头的投影（烘好的到月路径）+ 天光 × AO；菜花小鼓包做成**明暗**（同一张图缩小 5 倍的 AO），不做几何（几何会把掠过的视线截停，银边上出黑点）；云槽（低于局部平均面）变暗并填进雾。
-- **银边**：云头上一层 0.5 m 的软云皮。视线越过云顶、又离开时穿过它，前向散射的月光就是银边。**只在两个楔区最亮**：月光路（月亮方位 ±7°、0.3–2.5 km、×1.6）和裂口脚下（600 m 内）；别处 45%。视线"落到"它马上要撞的云顶上时，那段云皮不算（暗的顶、亮的轮廓）；越过轮廓再撞上后面的云头，照常算。比一个像素还细的银边淡掉（防远处 1 px 闪）。
+- **银边**：云头上一层 0.5 m 的软云皮。视线越过云顶、又离开时穿过它，前向散射的月光就是银边。**只在两个楔区最亮**：月光路（月亮方位 ±7°、0.3–2.5 km、×0.9）和裂口脚下（600 m 内，×1）；别处 16%（美术 r2：× 0.35）。视线"落到"它马上要撞的云顶上时，那段云皮不算（暗的顶、亮的轮廓）；越过轮廓再撞上后面的云头，照常算。比一个像素还细的银边淡掉（防远处 1 px 闪）。
+- **银边 · 第 4 轮**（美术 r2 BLOCKER / MAJOR）：① 云皮要等离云面的高度**回升一个云皮厚度**才算"越过云顶"（以前任何一点回升都算，菜花噪声让半个顶盖被算成银边 = 撕碎的亮块）；② 撞上时"是不是轮廓"是平滑的斜坡（`_Skin3.xy`），不是开关；③ **每个云头自己的银边**：计入时乘 0.4–1.6（细节贴图换一个偏移和尺度的低频噪声，`_Skin3.zw`、`_RimVarScale`），宽窄亮暗各不相同；④ 越过云顶时离云面不到 1.5 像素的，那一部分像素算云头本身的暗面（`_Skin2.w`），轮廓不再是一阶一阶的亮台阶。
 - **VR 舒适（圣经 §1.8，v ≤ 1.05 d）**：云海以 59 m/s 沿 z 流过，只有车行进路径**横向 ±56 m 以内**的云头会贴近车。这条"车道"里的起伏**按比例压低**到眼下 57 m（形状保留），45 → 140 m 平滑放开。别处不受影响。
 - **峡谷**：从裂口脚朝车方向 230 m × S，宽从白的 20% 收到 0，刻下 25 m，两唇隆起 5 m，谷底 = 白的雾光 `#C0B9E4 × 0.35`。
 - **光池**：`× (1 + (0.607, 0.683, 1.144) × weight × Tear_CloudLanes)`，weight = 0.75 exp(−(r/420 S)²) + 0.25 exp(−r/900 S)，中心在脚朝车 180 S 处（`GateLayout clouds.pool`）。
+- **脚下的光**（第 4 轮，美术 r2）：裂口照在脚下云头上的光，加法，`#E2E8F3 × 1.5 × exp(−(r / 250 m)²) × lerp(0.1, 1, AO²)`（主要落在云头顶上），中心在脚朝车 60 m（× S / 0.64）。keyart 里中心线性亮度 0.36 = 边光中位数的 2.2 倍（边光 p95 的 0.8 倍）。
+  - 为什么不是"边光 × 1.5"按 p95 算的 2.75：U8 时车离脚只有 600 m，整片近处云海都在光池里，2.75 会把它烧成白色。1.5 让 U8 前方脚边云海的 p50 / p90 / p99 = 65 / 146 / 184，定稿 `U8_forward` 是 63 / 137 / 183。
+- **云槽**（第 4 轮）：天光 × AO 降到 0.35（× 0.7），槽里混雾的比例 0.75 → 0.4、强度 0.55 → 0.7（槽更暗、更深，不再被雾抬亮）。
 - **雾**：`LanbaiGateFogColour`（光雾带 + 0.35 月晕）在撞点距离 × 1.3 处混。远处 2.5 km 外用平均云面。
 - **深度图**：第二个 pass（`LightMode = ShadowCaster`，同一个高度场、≤ 48 步、无光照），云海进 `_CameraDepthTexture`：软粒子、裂口的光束 / 褶、云卡的深度淡化都看得到云头。renderer 的 Cast Shadows 仍是 Off。
 
@@ -104,11 +110,16 @@
 | 想要 | 调 |
 |---|---|
 | 整体亮 / 暗 | `_Gain`（0.9）；只调月光 `_MoonE`（0.38） |
-| 银边更亮 / 更宽 | `_Skin.x`（0.8）、`_Skin.y`（0.5 m）；楔外的银边 `_RimWedge.w`（0.45） |
-| 月光路更宽 / 更亮 | `_RimWedge.x`（7°）、`_RimWedge.y`（1.6） |
+| 银边更亮 / 更宽 | `_Skin.x`（0.8）、`_Skin.y`（0.5 m）；楔外的银边 `_RimWedge.w`（0.16） |
+| 月光路更宽 / 更亮 | `_RimWedge.x`（7°）、`_RimWedge.y`（0.9） |
+| 每个云头银边差多少 | `_Skin3.zw`（0.4–1.6）；噪声尺度 `_RimVarScale`（0.37） |
+| 轮廓台阶更软 | `_Skin2.w`（1.5 像素；再大银边会变细变暗） |
+| 脚下的光 | `_FootPool`（半径 250 m、朝车 60 m、强度 1.5、槽里的底 0.1）、`_FootPoolColor` |
+| 云槽深浅 | `_AmbK`（0.35）、`_Trough.z`（0.7）、`_Trough.w`（0.4） |
 | 侧窗 / 后窗的云更亮 | `_Surf.z`（朝月漫反射 0.8） |
 | 远处更快化进雾 | `_FogDensity.y`（1.3） |
 | 光池强弱 | `_PoolTint.w`（1） |
+| 云卡底边 | `_Feather`（底部 15% 羽化、天光通道底部 30% 淡掉） |
 | 省性能 | `_Steps`（128 是上限，平均只用 ~21）、`_Adapt.y`（0.05 → 0.08）、`_MarchRange.y`（2500 → 1500） |
 | 后窗视角 | 和天空盒一样，`_BackBand` 1.25 |
 
@@ -143,11 +154,12 @@
 | 组 | 张数 | 卡 | 队列 | 化开（云顶以上） | 雾上限 |
 |---|---|---|---|---|---|
 | 云塔 `tower` | 9 | Congestus ×7、Bank ×2 | 3000 | −30 → +120 m | 0.5 |
-| 远云 `far` | 4 | Congestus、Bank | 2990 | −10 → +120 m | 0.62 |
-| 地平线云团 `horizon` | 22 | Strato、Puff、Bank（宽 ×0.8–1.3、高 ×0.55–1.65，打破对称） | 2990 | −10 → +120 m | 0.62 |
+| 远云 `far` | 4 | Congestus、Bank | 2990 | −10 → +120 m | 0.70 |
+| 地平线云团 `horizon` | 22 | Strato、Puff、Bank（宽 ×0.8–1.3、高 ×0.55–1.65，打破对称） | 2990 | −10 → +120 m | 0.70 |
 | 雾卡 `mist` | 2 | Wisp | 3000 | −10 → +50 m | 0.7 |
 - 云塔高度按 JSON 的 `height_m`；揭开后 25 s 塌到 0.72，6 s 起下沉 0.75 个塔高，最后 2 秒淡出、关 renderer（JSON `towers`，没改）。
 - 云海写深度，卡的下半截被云头挡住 = "从云海里长出来"。
+- 第 4 轮（美术 r2）：卡的最下 15% 羽化、天光通道（B）在最下 30% 淡掉（不再有一条亮的底边；网格的 uv2.y = 裁过的四边形从下到上 0…1）；远云和地平线云团的雾上限 0.62 → 0.70（+13%）。
 
 ---
 
@@ -173,7 +185,7 @@
 
 ## 6. 驱动 `LanbaiGateClouds`（UdonSharp）
 - 接口（CONTROL §5）：`LanbaiTick(t)`、`LanbaiActivate(on)`（开关 `root`，不关自己）、`LanbaiWindow()` = 布局 JSON 的 `window` = {U6 − 20, U9 + 2}。
-- `Start`：每张卡写 property block（`_Mirror`、`_Gain`、`_Alpha`）；写 `_Udon_FogBandColor`。`LanbaiTick` 里懒初始化（同一帧被激活又被调时 `Start` 还没跑）。
+- `Start` → `_Init()`：每张卡写 property block（`_Mirror`、`_Gain`、`_Alpha`）；写 `_Udon_FogBandColor`。`LanbaiTick` 里懒初始化调的也是 `_Init()`（同一帧被激活又被调时 `Start` 还没跑；不把事件方法当普通方法调，技术 r2 #7）。
 - 云塔：`localScale.y × sag`、`localPosition.y + sink`、`_Alpha = opacity × alpha`，alpha 0 时关 renderer。
 - 用到的 Udon API：`MaterialPropertyBlock`、`Renderer.SetPropertyBlock`、`VRCShader.PropertyToID / SetGlobalVector`。没有 `GetPropertyBlock`。
 
@@ -203,6 +215,7 @@
 | `Source/gate_clouds_layout.py` | 写 `GateClouds_Layout.json` |
 | `Source/preview_gate.py` | 整帧预览（云海 + 卡 + 光束；`--over` 贴回 Unity 截图的触手；`--fse` 量透明叠绘） |
 | `Source/measure_comb.py` | 美术审片的"轮廓梳齿"量法 |
+| `Source/measure_rims.py` | 第 4 轮的量法：云海区（画面下 45%）p5 / p50 / p95 / p99.5，边光像素（比 15 px 中值亮 12 码以上）的 p95 / p99.5 |
 | `Tools~/slang_check.py`、`Tools~/cs_check/check_cs.sh` | shader / C# 检查 |
 
 ---
@@ -210,9 +223,11 @@
 ## 10. 评审记录与分歧
 四份独立评审（美术、技术、VR 与性能、640 px 陌生人；`Docs~/reviews/`）+ 总工程师 + 美术审片预审。第 1 轮全部"不通过"，第 2、3 轮的改动见 `Docs~/iterations/README.md` 和 `给总控.md`。**与评审的分歧**（照 CONTROL §0 写明理由）：
 1. **近处云头（美术 r1 #3 "近景云团大、占画宽 1/3"）× VR 铁律**：定稿里车正前下方的大云头离眼只有 10–35 m，以 59 m/s 掠过，违反圣经 §1.8。我们守铁律：车行进路径 ±56 m 的车道里云头按比例压到眼下 57 m。所以 keyart / U7 画面中下方的近景云头比定稿矮、小。车道外照常。
-2. **楔外的银边（美术 r1 #2 要 ≤ 30%）**：用了 45%。30% 时画面右半边（背月一侧）完全没有轮廓，读成一片死灰；定稿右侧仍有中等亮度的边。
+2. **楔外的银边（美术 r1 #2 要 ≤ 30%）**：第 3 轮用 45%，第 4 轮照美术 r2 改到 16%（× 0.35），配合每个云头 0.4–1.6 的起伏，右半边仍有零星的边，不再是一片死灰。**这一条不再有分歧。**
 3. **性能目标（VR r1 ≤ 1 ms、总工程师 1–1.5 ms）**：估算 1.5–2.5 ms，见 §3.4 和 `给总控.md`，等实测和总导演决定；我们没有自己降画质。
 4. **美术审片 P1 建议"跨过云顶的比例软混合"**：用的是"最贴近云面的点离撞点多远"这个判据（越过了轮廓才计入），配合自适应步长和线性求交；量出的梳齿比例 4.7%（审片目标 ≤ 8%，第 1 轮 53%，定稿 1%）。
+5. **云谷 p5 ≈ 20（美术 r2）**：天光 × 0.7、槽里少混雾之后，U7 的 p5 = 19，keyart 26、U8 前方 23。keyart / U8 前方压不到 20，原因是 0.5–1 km 处的大气雾本身就有 ~0.03 线性（≈ 26 码）；把雾减 30% 只降 2 码，却丢掉纵深，所以没减。要更暗只能动雾，请美术定。
+6. **轮廓的 1 像素台阶**：撕碎的亮块（BLOCKER 本体）去掉了；剩下的是一个硬轮廓在像素网格上的正常锯齿（光线步进的边，MSAA 管不到）。`_Skin2.w` 再加大会把银边本身吃掉（试过 6 像素：银边变细变暗），所以停在 1.5。
 
 ---
 
@@ -224,3 +239,4 @@
 5. 云卡只有两个月光角度（35° / 70°），月亮几乎正对 / 正背的卡是外推的。
 6. 驱动只管云；门内会话要的 U9 交界四件事（GateRoot 减速、`_Udon_TearHide`、门户裁剪的 renderer 开关、触手卷回）属于**门的总驱动**，这一版只做了 shader 一侧的 `_Udon_InsidePortal` 裁剪（`给总控.md`）。
 7. 预览里的触手和裂口是 10-08 的 Unity 截图贴回去的，接缝（裂口周围的椭圆）不是云的问题。
+8. 陌生人 r2："云塔像平纸板、和触手相像"——第 4 轮只做了底边羽化和远处加雾；云塔本身仍是一张公告板（没有视差）。要更立体需要多层卡或体积，留作下一轮的选项（`给总控.md`）。

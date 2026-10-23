@@ -22,7 +22,7 @@ import deck_ref as D  # noqa: E402
 
 LAY = json.load(open(os.path.join(KIT, 'GateClouds_Layout.json')))
 SHAPES = {s['shape']: s for s in LAY['shapes']}
-CARD = dict(FogCap=float(os.environ.get('FOGCAP', 1.0)), MoonE=0.146, SkyE=0.89, SkyColor=np.array([0.060, 0.064, 0.088]), Lining=(0.35, 7.0, 15.0),
+CARD = dict(FogCap=float(os.environ.get('FOGCAP', 1.0)), Feather=(0.15, 0.30), MoonE=0.146, SkyE=0.89, SkyColor=np.array([0.060, 0.064, 0.088]), Lining=(0.35, 7.0, 15.0),
             FogDensity=0.0006, FogScale=1.0, MoonAirFog=0.35)
 BEAM = dict(Tint=np.array([0.0362, 0.0343, 0.0873]), Lobe=(2.6, 1.0, 0.04, 1.3), EdgeFadePow=3.0,
             NearFadeM=(60.0, 460.0), FogDensity=0.0006, FogScale=0.5)
@@ -130,6 +130,13 @@ def main():
             continue
         uu = 1 - u[m] if c['mirror'] > 0.5 else u[m]
         tx = bilinear(load_card(c['shape']), uu, v[m])
+        # round 4 (art r2): the card's lowest 15 % feathered, its sky channel faded over the lowest 30 % (no bright
+        # bottom edge); qv = 0..1 over the cropped quad (the shader: TEXCOORD1 from the builder)
+        vb0 = min(bb[1], s['pivot_uv'][1])
+        qv = np.clip((v[m] - vb0) / max(bb[3] - vb0, 1e-6), 0, 1)
+        tx = tx.copy()
+        tx[:, 2] *= D.ss(0.0, CARD['Feather'][1], qv)
+        tx[:, 3] *= D.ss(0.0, CARD['Feather'][0], qv)
         Vm = V[m]
         los = (piv - eye)[[0, 2]]
         los /= np.linalg.norm(los)
@@ -226,6 +233,13 @@ def main():
         bg = D.grade(D.band(V, eye, tear) + D.moon_air(V))
         diff = np.abs(median_filter(ov @ [0.2126, 0.7152, 0.0722], 3) - bg @ [0.2126, 0.7152, 0.0722])
         mk = binary_opening(diff > 10, iterations=1)
+        # round 4 (art r2): the screenshots still carry the old flat-cloud parts at the tear's foot (Tear_FootSkyline /
+        # FootSkylineIn lumps, Tear_LightLane's horizontal strips, which the builder now switches off): near the deck
+        # horizon keep only the white lens (> 150 codes) and the dark arms (< 38) from the screenshot
+        lum = ov @ [0.2126, 0.7152, 0.0722]
+        vy = V[..., 1]
+        near_hz = (vy < 0.02) & (vy > -0.12)
+        mk = mk & ~(near_hz & (lum <= 150) & (lum >= 38))
         mk = binary_dilation(mk, iterations=1).astype(float)
         mk = gaussian_filter(mk, 0.8)[..., None]
         img = img * (1 - mk) + ov * mk

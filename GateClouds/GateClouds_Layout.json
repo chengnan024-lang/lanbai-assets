@@ -539,7 +539,7 @@
     -10.0,
     130.0
    ],
-   "fog_cap": 0.62,
+   "fog_cap": 0.7,
    "moon_rel_deg_U7b": 24.0,
    "sag_keys": [],
    "sink_keys": [],
@@ -566,7 +566,7 @@
     -10.0,
     130.0
    ],
-   "fog_cap": 0.62,
+   "fog_cap": 0.7,
    "moon_rel_deg_U7b": 53.0,
    "sag_keys": [],
    "sink_keys": [],
@@ -593,7 +593,7 @@
     -10.0,
     130.0
    ],
-   "fog_cap": 0.62,
+   "fog_cap": 0.7,
    "moon_rel_deg_U7b": 2.0,
    "sag_keys": [],
    "sink_keys": [],
@@ -620,7 +620,7 @@
     -10.0,
     130.0
    ],
-   "fog_cap": 0.62,
+   "fog_cap": 0.7,
    "moon_rel_deg_U7b": 29.0,
    "sag_keys": [],
    "sink_keys": [],
@@ -647,7 +647,7 @@
     -10.0,
     130.0
    ],
-   "fog_cap": 0.62,
+   "fog_cap": 0.7,
    "moon_rel_deg_U7b": 17.9,
    "sag_keys": [],
    "sink_keys": [],
@@ -674,7 +674,7 @@
     -10.0,
     130.0
    ],
-   "fog_cap": 0.62,
+   "fog_cap": 0.7,
    "moon_rel_deg_U7b": 41.9,
    "sag_keys": [],
    "sink_keys": [],
@@ -701,7 +701,7 @@
     -10.0,
     130.0
    ],
-   "fog_cap": 0.62,
+   "fog_cap": 0.7,
    "moon_rel_deg_U7b": 48.8,
    "sag_keys": [],
    "sink_keys": [],
@@ -728,7 +728,7 @@
     -10.0,
     130.0
    ],
-   "fog_cap": 0.62,
+   "fog_cap": 0.7,
    "moon_rel_deg_U7b": 29.8,
    "sag_keys": [],
    "sink_keys": [],
@@ -755,7 +755,7 @@
     -10.0,
     130.0
    ],
-   "fog_cap": 0.62,
+   "fog_cap": 0.7,
    "moon_rel_deg_U7b": 57.2,
    "sag_keys": [],
    "sink_keys": [],
@@ -782,7 +782,7 @@
     -10.0,
     130.0
    ],
-   "fog_cap": 0.62,
+   "fog_cap": 0.7,
    "moon_rel_deg_U7b": 56.9,
    "sag_keys": [],
    "sink_keys": [],
@@ -809,7 +809,7 @@
     -10.0,
     130.0
    ],
-   "fog_cap": 0.62,
+   "fog_cap": 0.7,
    "moon_rel_deg_U7b": 58.0,
    "sag_keys": [],
    "sink_keys": [],
@@ -836,7 +836,7 @@
     -10.0,
     130.0
    ],
-   "fog_cap": 0.62,
+   "fog_cap": 0.7,
    "moon_rel_deg_U7b": 36.3,
    "sag_keys": [],
    "sink_keys": [],
@@ -863,7 +863,7 @@
     -10.0,
     130.0
    ],
-   "fog_cap": 0.62,
+   "fog_cap": 0.7,
    "moon_rel_deg_U7b": 54.3,
    "sag_keys": [],
    "sink_keys": [],
@@ -890,7 +890,7 @@
     -10.0,
     130.0
    ],
-   "fog_cap": 0.62,
+   "fog_cap": 0.7,
    "moon_rel_deg_U7b": 68.2,
    "sag_keys": [],
    "sink_keys": [],
@@ -917,7 +917,7 @@
     -10.0,
     130.0
    ],
-   "fog_cap": 0.62,
+   "fog_cap": 0.7,
    "moon_rel_deg_U7b": 18.3,
    "sag_keys": [],
    "sink_keys": [],
@@ -944,7 +944,7 @@
     -10.0,
     130.0
    ],
-   "fog_cap": 0.62,
+   "fog_cap": 0.7,
    "moon_rel_deg_U7b": 37.0,
    "sag_keys": [],
    "sink_keys": [],
@@ -971,7 +971,7 @@
     -10.0,
     130.0
    ],
-   "fog_cap": 0.62,
+   "fog_cap": 0.7,
    "moon_rel_deg_U7b": 42.9,
    "sag_keys": [],
    "sink_keys": [],
@@ -998,7 +998,7 @@
     -10.0,
     130.0
    ],
-   "fog_cap": 0.62,
+   "fog_cap": 0.7,
    "moon_rel_deg_U7b": 59.1,
    "sag_keys": [],
    "sink_keys": [],
@@ -1025,7 +1025,7 @@
     -10.0,
     130.0
    ],
-   "fog_cap": 0.62,
+   "fog_cap": 0.7,
    "moon_rel_deg_U7b": 56.7,
    "sag_keys": [],
    "sink_keys": [],
@@ -1052,7 +1052,7 @@
     -10.0,
     130.0
    ],
-   "fog_cap": 0.62,
+   "fog_cap": 0.7,
    "moon_rel_deg_U7b": 40.9,
    "sag_keys": [],
    "sink_keys": [],
@@ -1079,7 +1079,7 @@
     -10.0,
     130.0
    ],
-   "fog_cap": 0.62,
+   "fog_cap": 0.7,
    "moon_rel_deg_U7b": 43.9,
    "sag_keys": [],
    "sink_keys": [],
@@ -1106,7 +1106,7 @@
     -10.0,
     130.0
    ],
-   "fog_cap": 0.62,
+   "fog_cap": 0.7,
    "moon_rel_deg_U7b": 37.2,
    "sag_keys": [],
    "sink_keys": [],
@@ -1133,7 +1133,7 @@
     -10.0,
     130.0
    ],
-   "fog_cap": 0.62,
+   "fog_cap": 0.7,
    "moon_rel_deg_U7b": 44.8,
    "sag_keys": [],
    "sink_keys": [],
@@ -1160,7 +1160,7 @@
     -10.0,
     130.0
    ],
-   "fog_cap": 0.62,
+   "fog_cap": 0.7,
    "moon_rel_deg_U7b": 31.4,
    "sag_keys": [],
    "sink_keys": [],
@@ -1187,7 +1187,7 @@
     -10.0,
     130.0
    ],
-   "fog_cap": 0.62,
+   "fog_cap": 0.7,
    "moon_rel_deg_U7b": 15.2,
    "sag_keys": [],
    "sink_keys": [],
@@ -1214,7 +1214,7 @@
     -10.0,
     130.0
    ],
-   "fog_cap": 0.62,
+   "fog_cap": 0.7,
    "moon_rel_deg_U7b": 66.7,
    "sag_keys": [],
    "sink_keys": [],

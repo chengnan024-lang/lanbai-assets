@@ -38,14 +38,26 @@ DEFAULTS = dict(
     G1=0.8, G2=-0.18, GMix=0.62,    # two-lobe HG
     MoonE=0.38,                     # moon radiance on the deck (x _MoonColor)
     MsK=0.01, MsTau=0.28,           # multiple scattering: E x MsK x exp(-tau x MsTau)
-    AmbK=0.5,                      # sky ambient (x _AmbColor) x AO
+    AmbK=0.35,                     # sky ambient (x _AmbColor) x AO (round 4: x 0.7, deeper troughs)
     FarRim=0.0, FarMeanH=8.0,     # rays not hit by MarchMax: the mean-height plane, + the average rim
     FogDensity=0.0006, FogScale=1.3, MoonAirFog=0.35,
     # round 2 (art r1 #2): rims only in two wedges: the moon path (+-MoonPathDeg under the moon, 0.3-2.5 km, x MoonPathGain)
     # and the tear's foot (within FootR of it); outside them RimOut of the rim
-    RimFoot=3.0, MoonPathDeg=7.0, MoonPathGain=1.6, FootR=600.0, RimOut=0.45,
+    RimFoot=3.0, MoonPathDeg=7.0, MoonPathGain=0.9, FootR=600.0, RimOut=0.16,
+    # round 4 (art r2 BLOCKER): pending skin commits once the clearance has RISEN RiseK x edge above its minimum (not on any
+    # uptick: micro noise committed half lids), and the silhouette test at a hit is a smooth ramp, not a step
+    RiseK=1.0, SilSoft=(0.5, 3.0),
+    # round 4: a ray that passes over a crest closer than CovK pixels (across) is partly covered by the head: that
+    # fraction takes the head's body shade (stored at the closest sample) -> a 1-2 px ramp instead of a stair-step
+    CovK=1.5,
+    # round 4 (art r2 MAJOR): every head its own rim: the committed skin x RimVarMin..RimVarMax from a coarse noise
+    # (the detail tile's height at RimVarScale, a different offset) at the point the ray came closest
+    RimVarMin=0.4, RimVarMax=1.6, RimVarScale=0.37,
+    # round 4 (art r2 MAJOR): the light the tear throws on the deck at its foot: additive, #E2E8F3, gaussian radius
+    # FootPoolR m about FootPoolOff m toward the bus from the foot, x the sky-facing term (tops brighter than troughs)
+    FootPoolE=1.5, FootPoolR=250.0, FootPoolOff=60.0, FootPoolAO=0.1, FootPoolCol=(0.7605, 0.8070, 0.8963),
     # troughs darker and filled with the haze: depth under the local mean (a coarse mip) -> toward the fog colour
-    TroughLod=3.5, TroughDepth=18.0, TroughK=0.55, TroughFog=0.75,
+    TroughLod=3.5, TroughDepth=18.0, TroughK=0.7, TroughFog=0.4,
     DetailMin=-12.0, DetailMax=56.0, MacroMin=-12.0, MacroMax=12.0, TauMaxD=160.0, TauMaxM=400.0,
     AmpMin=0.3, AmpMax=0.8, VarMin=0.75, VarMax=1.15,     # macro B (a 0..1 field) -> AmpMin..AmpMax
     PeriodD=1600.0, PeriodM=6400.0, MicroScale=5.0, MicroAmp=4.0, MicroEnv=0.35, MicroShade=0.9,
@@ -241,8 +253,7 @@ def render_deck(cam, t, w, h, tex_dir, P, pool=True):
         h_pk = cloud_top + P['MacroMax'] + P['DetailMax'] * P['AmpMax']
         s_l = np.clip((cap - h_low) / (h_pk - h_low), 0.0, 1.0)
         H = np.where(H > h_low, h_low + (H - h_low) * (1 + (s_l - 1) * lane), H)
-        H = np.minimum(H, cap)
-        # the crevasse (shader: the same lines)
+        # the crevasse (shader: the same lines); round 4 (tech r2 #1): BEFORE the cap, the lip may not rise over it
         al = (foot_w[2] - p[:, 2]) / max(P['CrevLen'] * S_t, 1.0)
         hwc = np.maximum(P['CrevW'] * foot_w[3] * (1 - al), 0.5)
         ac = np.abs(p[:, 0] - foot_w[0]) / hwc
@@ -250,6 +261,7 @@ def render_deck(cam, t, w, h, tex_dir, P, pool=True):
         kc = (1 - ss(0.55, 1.0, ac)) * inl
         lip = np.exp(-(ac - 1.2) ** 2 / 0.18) * inl * (1 - al)
         H = H - P['CrevDepth'] * kc + P['CrevLip'] * lip
+        H = np.minimum(H, cap)
         crev_last[0] = kc * np.clip(1 - al, 0, 1)
         return p[:, 1] - H, dd, mm, amp, foot
 
@@ -262,15 +274,22 @@ def render_deck(cam, t, w, h, tex_dir, P, pool=True):
     def moon_tau(dd, mm, amp):
         return P['SigmaL'] * (amp * dd[:, 1] * P['TauMaxD'] + mm[:, 1] * P['TauMaxM'])
 
+    def rim_var(tq, sel):
+        """per head rim factor RimVarMin..RimVarMax at distance tq along rays sel (one fetch, at a commit)"""
+        p = ro + Vh[sel] * tq[:, None]
+        sc = P['RimVarScale'] / P['PeriodD']
+        nz = det.sample((p[:, 0] - O[0]) * sc + 0.71, (p[:, 2] - O[2]) * sc + 0.29, np.full(len(sel), 2.0))[:, 0]
+        return P['RimVarMin'] + (P['RimVarMax'] - P['RimVarMin']) * ss(0.25, 0.75, nz)
+
     n = len(Vh)
     allr = np.arange(n)
     T = np.ones(n)
     acc = np.zeros((n, 3))
     thit = t1.copy()
     got = np.zeros(n, bool)
-    t_prev = t0.copy()
     t_end = np.minimum(t1, P['MarchMax'])
     t_s = np.maximum(np.maximum(t0, P['MarchMin']), 0.5 * (ro[1] - cloud_top) / vyh)
+    t_prev = t_s.copy()      # round 4 (tech r2 #1): c_prev is taken at t_s, so the bracket starts there too
     k = np.maximum(P['StepK'], (np.maximum(t_end / t_s, 1.0)) ** (1.0 / max(N - 1, 1)) - 1.0)     # reach t_end by step N-1
     # 1) coarse march, EXPONENTIAL steps t_i = t0 (1 + k)^(i + jitter): the vertical step ~ k x eye height everywhere;
     #    the soft skin above the heads (silver edges where a ray grazes a crest), until the ray dips under the field
@@ -286,6 +305,7 @@ def render_deck(cam, t, w, h, tex_dir, P, pool=True):
     pend_L = np.zeros((n, 3))
     pend_cmin = np.full(n, 1e9)
     pend_tmin = np.zeros(n)
+    pend_body = np.zeros((n, 3))
     for i in range(N):
         live = (~got) & (t_prev < t_end)
         steps_used[live] += 1
@@ -324,12 +344,18 @@ def render_deck(cam, t, w, h, tex_dir, P, pool=True):
         closer = cb < pend_cmin[idx]
         pend_cmin[idx] = np.where(closer, cb, pend_cmin[idx])
         pend_tmin[idx] = np.where(closer, tm, pend_tmin[idx])
-        rising = c > c_prev[idx]
+        body = (P['MoonE'] * P['SurfLambert'] * dd[:, 3] * np.exp(-moon_tau(dd, mm, amp) * P['SurfShadow']))[:, None] * MOON_COL \
+            + (P['AmbK'] * dd[:, 2])[:, None] * AMB_COL
+        pend_body[idx] = np.where(closer[:, None], body, pend_body[idx])
+        rising = c > pend_cmin[idx] + P['RiseK'] * edge
         ci = idx[rising]
         po = pend_od[ci]
-        a = 1 - np.exp(-po)
+        a = 1 - np.exp(-po * rim_var(pend_tmin[ci], ci))
         acc[ci] += (T[ci] * a / np.maximum(po, 1e-9))[:, None] * pend_L[ci]
         T[ci] *= 1 - a
+        hid = 1 - np.clip(pend_cmin[ci] / np.maximum(P['CovK'] * pend_tmin[ci] * pix_ang, 1e-3), 0, 1)
+        acc[ci] += (T[ci] * hid)[:, None] * pend_body[ci]
+        T[ci] *= 1 - hid
         pend_od[ci] = 0.0
         pend_L[ci] = 0.0
         pend_cmin[ci] = 1e9
@@ -339,8 +365,9 @@ def render_deck(cam, t, w, h, tex_dir, P, pool=True):
         # at a hit: if the ray came closest to the surface well BEFORE the hit, it passed over a crest (a silhouette)
         # and the skin counts; if it came closest right where it hits, it sank onto a top (a lid) and only
         # SkinApproach counts
-        sil = (tm[under] - pend_tmin[hit_i]) > P['SilGap'] * pend_tmin[hit_i]
-        po = pend_od[hit_i] * np.where(sil, 1.0, P['SkinApproach'])
+        rel = (tm[under] - pend_tmin[hit_i]) / (P['SilGap'] * np.maximum(pend_tmin[hit_i], 1e-3))
+        sil = ss(P.get('SilSoft0', P['SilSoft'][0]), P.get('SilSoft1', P['SilSoft'][1]), rel)
+        po = pend_od[hit_i] * (P['SkinApproach'] + (1 - P['SkinApproach']) * sil) * rim_var(pend_tmin[hit_i], hit_i)
         a = 1 - np.exp(-po)
         acc[hit_i] += (T[hit_i] * a / np.maximum(pend_od[hit_i], 1e-9))[:, None] * pend_L[hit_i]
         T[hit_i] *= 1 - a
@@ -394,6 +421,12 @@ def render_deck(cam, t, w, h, tex_dir, P, pool=True):
     rim = P['FarRim'] * P['MoonE'] * phase[gi] * np.exp(-tau * P['SkinSigmaL'] / P['SigmaL']) * farw[gi]
     surf = ((moon + rim)[:, None] * MOON_COL + (P['AmbK'] * dd[:, 2])[:, None] * AMB_COL) * var[:, None] \
         + np.array(P['CrevGlow'])[None, :] * crev_last[0][:, None]
+    # the tear's light at its foot (round 4): additive, x the sky-facing AO (tops catch it, troughs less)
+    if P['FootPoolE'] > 0:
+        php = ro + Vh[gi] * thit[gi][:, None]
+        rp = np.hypot(php[:, 0] - foot_w[0], php[:, 2] - (foot_w[2] - P['FootPoolOff'] * S_t / 0.64))
+        wp = np.exp(-(rp / (P['FootPoolR'] * S_t / 0.64)) ** 2)
+        surf = surf + (P['FootPoolE'] * wp * (P['FootPoolAO'] + (1 - P['FootPoolAO']) * dd[:, 2] ** 2))[:, None] * np.array(P['FootPoolCol'])[None, :]
     # troughs (round 2): how far the hit lies under the local mean surface (the field at a coarse mip) -> the haze
     fogC = band(Vh, ro, tear) + moon_air(Vh) * P['MoonAirFog']
     ph = ro + Vh[gi] * thit[gi][:, None]

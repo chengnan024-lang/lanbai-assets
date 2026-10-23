@@ -54,20 +54,24 @@ Shader "Lanbai/GateCloudDeck"
         _MoonColor ("Moon colour #D6E4FF, linear", Vector) = (0.6724, 0.7758, 1.0, 1)
         _MoonE ("Moon radiance on the deck", Range(0, 2)) = 0.38
         _AmbColor ("Sky ambient (HazeFar), linear", Vector) = (0.0436, 0.0504, 0.0726, 1)
-        _AmbK ("Sky ambient x AO", Range(0, 2)) = 0.5
+        _AmbK ("Sky ambient x AO (round 4: 0.35, deeper troughs)", Range(0, 2)) = 0.35
         _Phase ("HG g1, g2, mix, surface lobe softening", Vector) = (0.8, -0.18, 0.62, 0.35)
         _Skin ("Skin: sigma (1/m), edge (m), approach weight, sigma toward the moon", Vector) = (0.8, 0.5, 0.0, 0.12)
-        _Skin2 ("Skin: silhouette gap (x t), sub-pixel fade (x edge / footprint), -, -", Vector) = (0.04, 3, 0, 0)
-        _RimWedge ("Rim wedges: moon path half angle (deg), moon path gain, foot radius (m), outside", Vector) = (7, 1.6, 600, 0.45)
+        _Skin2 ("Skin: silhouette gap (x t), sub-pixel fade (x edge / footprint), commit rise (x edge), crest cover (px)", Vector) = (0.04, 3, 1, 1.5)
+        _Skin3 ("Skin: silhouette ramp from, to (x gap); per-head rim min, max", Vector) = (0.5, 3, 0.4, 1.6)
+        _RimVarScale ("Per-head rim noise scale (x detail period)", Float) = 0.37
+        _RimWedge ("Rim wedges: moon path half angle (deg), moon path gain, foot radius (m), outside", Vector) = (7, 0.9, 600, 0.16)
         _Surf ("Surface: sigma toward the moon, forward lobe, Lambert, cast-shadow scale", Vector) = (0.14, 0.015, 0.8, 0.35)
         _Ms ("Multiple scattering: k, tau scale; far rim, -", Vector) = (0.01, 0.28, 0, 0)
-        _Trough ("Troughs: coarse LOD offset, depth (m), strength, fog fraction", Vector) = (3.5, 18, 0.55, 0.75)
+        _Trough ("Troughs: coarse LOD offset, depth (m), strength, fog fraction", Vector) = (3.5, 18, 0.7, 0.4)
         _Gain ("Gain", Range(0, 3)) = 0.9
 
         [Header(Pool and crevasse  GateLayout clouds.pool  tear.crevasse)]
         _PoolTint ("Pool tint (dst x (1 + tint x weight)), linear; w = strength", Vector) = (0.607, 0.683, 1.144, 1)
         _Crev ("Crevasse: length x S (m), half width / white half width, depth (m), lip height (m)", Vector) = (230, 0.4, 25, 5)
         _CrevGlow ("Crevasse floor glow #C0B9E4 x 0.35, linear", Vector) = (0.184, 0.170, 0.272, 1)
+        _FootPool ("Foot pool: radius (m), offset toward the bus (m), strength, floor under the tops  (x S / 0.64)", Vector) = (250, 60, 1.5, 0.1)
+        _FootPoolColor ("Foot pool colour #E2E8F3, linear", Vector) = (0.7605, 0.8070, 0.8963, 1)
         _TearFootW ("Tear foot fallback: world xyz, w = white half width (global _Udon_TearFoot wins)", Vector) = (-0.3, -57.4, 1497.6, 76)
 
         [Header(Fog  LanbaiGateSky)]
@@ -108,9 +112,9 @@ Shader "Lanbai/GateCloudDeck"
             float4 _Periods, _DetailRange, _TauMax, _AmpRange, _Micro;
             float _Steps, _LodBias;
             float4 _Adapt, _MarchRange, _Comfort;
-            float4 _MoonColor, _AmbColor, _Phase, _Skin, _Skin2, _RimWedge, _Surf, _Ms, _Trough;
-            float _MoonE, _AmbK, _Gain;
-            float4 _PoolTint, _Crev, _CrevGlow, _TearFootW;
+            float4 _MoonColor, _AmbColor, _Phase, _Skin, _Skin2, _Skin3, _RimWedge, _Surf, _Ms, _Trough;
+            float _MoonE, _AmbK, _Gain, _RimVarScale;
+            float4 _PoolTint, _Crev, _CrevGlow, _TearFootW, _FootPool, _FootPoolColor;
             float4 _FogDensity;
             float _CloudTopY;
             float4 _GateOrigin, _RimDir;
@@ -208,8 +212,7 @@ Shader "Lanbai/GateCloudDeck"
                 float hPk = r.top + _DetailRange.w + _DetailRange.y * _AmpRange.y;
                 float sL = saturate((cap - hLow) / (hPk - hLow));
                 if (H > hLow) H = hLow + (H - hLow) * (1.0 + (sL - 1.0) * lane);
-                H = min(H, cap);
-                // the crevasse: the foot of the white splits the deck along -Z (toward the bus)
+                // the crevasse: the foot of the white splits the deck along -Z (toward the bus); before the cap (tech r2 #1)
                 float al = (r.foot.z - p.z) / max(_Crev.x * r.S, 1.0);
                 float hwc = max(_Crev.y * r.foot.w * (1.0 - al), 0.5);
                 float ac = abs(p.x - r.foot.x) / hwc;
@@ -217,12 +220,21 @@ Shader "Lanbai/GateCloudDeck"
                 float k = (1.0 - smoothstep(0.55, 1.0, ac)) * inLen;
                 float lip = exp(-(ac - 1.2) * (ac - 1.2) / 0.18) * inLen * (1.0 - al);
                 H += -_Crev.z * k + _Crev.w * lip;
+                H = min(H, cap);
                 s.crev = k * saturate(1.0 - al);
                 s.c = p.y - H;
                 return s;
             }
 
             float MoonTauRaw(DeckSample s) { return s.amp * s.d.g * _TauMax.x + s.m.g * _TauMax.y; }   // metres of cloud
+
+            // per-head rim factor (round 4, art r2): the detail tile's height at _RimVarScale, another offset, mip 2
+            float RimVar(DeckRay r, float t)
+            {
+                float2 cs = (r.ro.xz + r.V.xz * t - r.O.xz) * (_RimVarScale / _Periods.x);
+                float nz = tex2Dlod(_DetailTex, float4(cs + float2(0.71, 0.29), 0.0, 2.0)).r;
+                return lerp(_Skin3.z, _Skin3.w, smoothstep(0.25, 0.75, nz));
+            }
 
             float Hash3(float3 q) { return frac(sin(dot(q, float3(12.9898, 78.233, 37.719))) * 43758.5453); }
 
@@ -258,6 +270,8 @@ Shader "Lanbai/GateCloudDeck"
                 // would paint over it); always farther than the proxy (conservative depth)
                 float3 camFwd = -UNITY_MATRIX_V[2].xyz;
                 float tDepth = min(tHit, 0.99 * _ProjectionParams.z / max(dot(V, camFwd), 1e-3));
+                // never nearer than the proxy 1.5 m under the eye (tech r2 #1: also covers a far plane < ~15 km)
+                tDepth = max(tDepth, 1.5 / max(-V.y, 1e-4) * 1.001);
                 float4 clip = UnityWorldToClipPos(ro + V * tDepth);
                 return clip.z / clip.w;
             }
@@ -297,7 +311,8 @@ Shader "Lanbai/GateCloudDeck"
                 float3 pendL = 0.0;
                 float pendOd = 0.0;
                 float pendCmin = 1e9, pendTmin = 0.0;
-                float tPrev = t0;
+                float3 pendBody = 0.0;
+                float tPrev = ts;                                          // cPrev is taken at ts (tech r2 #1)
                 float tHit = t1;
                 bool hit = false;
                 float cPrev = Field(r, ts, false).c;
@@ -333,12 +348,23 @@ Shader "Lanbai/GateCloudDeck"
                     float3 S = moon * _MoonColor.rgb + (_AmbK * f.d.b) * _AmbColor.rgb;
                     pendOd += od;
                     pendL += od * S;
-                    if (cb < pendCmin) { pendCmin = cb; pendTmin = tm; }
-                    if (f.c > cPrev)                                   // passed over a crest: commit the rim
+                    if (cb < pendCmin)
                     {
-                        float a = 1.0 - exp(-pendOd);
+                        pendCmin = cb; pendTmin = tm;
+                        // the head's body shade here (for the part of the pixel the crest covers)
+                        pendBody = (_MoonE * _Surf.z * f.d.a * exp(-_Surf.x * MoonTauRaw(f) * _Surf.w)) * _MoonColor.rgb
+                                 + (_AmbK * f.d.b) * _AmbColor.rgb;
+                    }
+                    // passed over a crest (the clearance has risen _Skin2.z skins above its minimum): commit the rim
+                    if (f.c > pendCmin + _Skin2.z * edge)
+                    {
+                        float a = 1.0 - exp(-pendOd * RimVar(r, pendTmin));
                         acc += T * a / max(pendOd, 1e-9) * pendL;
                         T *= 1.0 - a;
+                        // a crest closer than _Skin2.w pixels covers that part of the pixel (no stair-step)
+                        float hid = 1.0 - saturate(pendCmin / max(_Skin2.w * pendTmin * r.pix, 1e-3));
+                        acc += T * hid * pendBody;
+                        T *= 1.0 - hid;
                         pendOd = 0.0;
                         pendL = 0.0;
                         pendCmin = 1e9;
@@ -347,7 +373,8 @@ Shader "Lanbai/GateCloudDeck"
                     if (f.c < 0.0)                                     // sank onto a surface
                     {
                         // a silhouette if the ray came closest well before the hit; a lid if right at it
-                        float w = ((tm - pendTmin) > _Skin2.x * pendTmin) ? 1.0 : _Skin.z;
+                        float rel = (tm - pendTmin) / (_Skin2.x * max(pendTmin, 1e-3));
+                        float w = lerp(_Skin.z, 1.0, smoothstep(_Skin3.x, _Skin3.y, rel)) * RimVar(r, pendTmin);
                         float a = 1.0 - exp(-pendOd * w);
                         acc += T * a / max(pendOd, 1e-9) * pendL;
                         T *= 1.0 - a;
@@ -396,6 +423,11 @@ Shader "Lanbai/GateCloudDeck"
                 float rim = _Ms.z * _MoonE * phase * exp(-_Skin.w * MoonTauRaw(h)) * farW;
                 float3 surf = ((moonS + rim) * _MoonColor.rgb + (_AmbK * h.d.b) * _AmbColor.rgb) * var
                             + _CrevGlow.rgb * h.crev;                  // the white's own mist on the crevasse floor
+                // the tear's light at its foot (round 4, art r2): additive, mostly on the tops (AO^2); strength matched to the
+                // final U8_forward (deck by the foot p50 / p90 / p99 = 63 / 137 / 183 codes)
+                float2 dp = ph.xz - float2(r.foot.x, r.foot.z - _FootPool.y * r.S / 0.64);
+                float rp = length(dp) / max(_FootPool.x * r.S / 0.64, 1e-3);
+                surf += (_FootPool.z * exp(-rp * rp) * lerp(_FootPool.w, 1.0, h.d.b * h.d.b)) * _FootPoolColor.rgb;
                 // troughs: how far the hit lies under the local mean surface (a coarse mip) -> toward the haze
                 float3 fogC = LanbaiGateFogColour(r.V, tHit, moonD, (half)_FogDensity.z, 0.0);
                 float lodT = max(log2(max(h.foot, 1e-3) / (_Periods.x * _DetailTex_TexelSize.x)) + _Trough.x, _Trough.x);
@@ -440,7 +472,6 @@ Shader "Lanbai/GateCloudDeck"
             #pragma vertex vert
             #pragma fragment fragDepth
             #pragma target 5.0
-            #pragma multi_compile_shadowcaster
 
             half4 fragDepth(v2f i, out float depth : DECK_DEPTH) : SV_Target
             {
@@ -455,7 +486,7 @@ Shader "Lanbai/GateCloudDeck"
                 float ts = max(max(t0, _MarchRange.x), 0.5 * (r.ro.y - r.top) / r.vy);
                 float jit = Hash3(floor(r.V / (r.pix * 1.5)));
                 float cPrev = Field(r, ts, false).c;
-                float tPrev = t0;
+                float tPrev = ts;
                 float tCur = ts * (1.0 + _Adapt.x * (1.0 + 4.0 * jit)) + max(cPrev, 0.0) * _Adapt.z / (r.vy + _Adapt.w) * jit;
                 float tHit = 0.0;
                 bool hit = false;
@@ -483,7 +514,7 @@ Shader "Lanbai/GateCloudDeck"
                     tPrev = tm;
                     tCur = tm + clamp(_Adapt.z * c / (r.vy + _Adapt.w), _Adapt.x * tm, _Adapt.y * tm);
                 }
-                if (!hit) tHit = clamp((r.ro.y - (r.top + _MarchRange.z)) / r.vy, tPrev, 16000.0);
+                if (!hit) tHit = clamp((r.ro.y - (r.top + _MarchRange.z)) / r.vy, tEnd, 16000.0);   // as the main pass
                 if (_Udon_InsidePortal.y > 0.5 && r.ro.z + r.V.z * tHit > _Udon_InsidePortal.x) discard;
                 depth = DeckDepth(r.ro, r.V, tHit);
                 return 0;

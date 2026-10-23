@@ -47,8 +47,8 @@ def shape_of(card):
 
 GROUP = {
     'tower': dict(queue=3000, melt=[-30.0, 150.0], fog_cap=0.5),       # round 2: a 30-60 m mist skirt (art r1 #4)
-    'far': dict(queue=2990, melt=[-10.0, 130.0], fog_cap=0.62),
-    'horizon': dict(queue=2990, melt=[-10.0, 130.0], fog_cap=0.62),
+    'far': dict(queue=2990, melt=[-10.0, 130.0], fog_cap=0.70),        # round 4 (art r2): far banks +13 % fog
+    'horizon': dict(queue=2990, melt=[-10.0, 130.0], fog_cap=0.70),
     'mist': dict(queue=3000, melt=[-10.0, 60.0], fog_cap=0.7),
 }
 

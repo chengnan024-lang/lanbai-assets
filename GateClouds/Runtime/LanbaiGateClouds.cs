@@ -7,7 +7,7 @@
 //                          always-active object (Director v1 rule: never switch off the object you live on)
 //     LanbaiWindow()       {U6 - 20, U9 + 2} = {113.80, 181.55} (GateRoot's own window)
 // (Apply() with the public `t` does the same as LanbaiTick, for a caller that sets t itself.)
-// Start(): every card gets its MaterialPropertyBlock (_Mirror, _Gain, _Alpha = opacity): property blocks are not
+// Start() / _Init(): every card gets its MaterialPropertyBlock (_Mirror, _Gain, _Alpha = opacity): property blocks are not
 // saved with the scene, so they are written at runtime.
 // Apply(): the towers SAG (localScale.y x sag, pivot on the base), SINK (localPosition.y + sink) and fade out in their
 // last 2 s (alpha); a renderer turns off at alpha 0 (GateLayout_v2.json towers, unchanged).
@@ -56,7 +56,7 @@ public class LanbaiGateClouds : UdonSharpBehaviour
 
     public void LanbaiTick(float time)
     {
-        if (_mpb == null) Start();             // activated and ticked in the same frame: Start has not run yet (tech r1 #9)
+        if (_mpb == null) _Init();             // activated and ticked in the same frame: Start has not run yet (tech r1 #9)
         t = time;
         VRCShader.SetGlobalVector(_idFogBand, _fogBand);
         Apply();
@@ -77,6 +77,12 @@ public class LanbaiGateClouds : UdonSharpBehaviour
     }
 
     void Start()
+    {
+        if (_mpb == null) _Init();
+    }
+
+    // the set-up, callable before Start (tech r2 #7: an event method is not called as a plain method)
+    public void _Init()
     {
         _mpb = new MaterialPropertyBlock();
         _idAlpha = VRCShader.PropertyToID("_Alpha");
@@ -118,7 +124,7 @@ public class LanbaiGateClouds : UdonSharpBehaviour
 
     public void Apply()
     {
-        if (_mpb == null) Start();
+        if (_mpb == null) _Init();
         for (int i = 0; i < towers.Length; i++)
         {
             Transform tr = towers[i];

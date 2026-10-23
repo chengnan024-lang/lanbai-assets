@@ -128,6 +128,7 @@ public static class LanbaiGateCloudsBuilder
         var m = new Mesh { name = "GateClouds_Card_" + s.shape };
         m.vertices = new[] { new Vector3(u0 - pu, v0 - pv, 0), new Vector3(u1 - pu, v0 - pv, 0), new Vector3(u1 - pu, v1 - pv, 0), new Vector3(u0 - pu, v1 - pv, 0) };
         m.uv = new[] { new Vector2(u0, v0), new Vector2(u1, v0), new Vector2(u1, v1), new Vector2(u0, v1) };
+        m.uv2 = new[] { new Vector2(0, 0), new Vector2(1, 0), new Vector2(1, 1), new Vector2(0, 1) };   // y: 0..1 up the quad (the bottom feather)
         m.normals = new[] { Vector3.back, Vector3.back, Vector3.back, Vector3.back };
         m.triangles = new[] { 0, 2, 1, 0, 3, 2 };
         float r = Mathf.Max(pu - u0, u1 - pu);
@@ -293,8 +294,8 @@ public static class LanbaiGateCloudsBuilder
 
         // driver: on an ALWAYS-ACTIVE object (Director v1: LanbaiActivate switches `root`, never the driver's own object):
         // under the scene's "Director" if there is one, else its own top-level object "GateClouds_Driver"
-        GameObject oldDrv = GameObject.Find("GateClouds_Driver");
-        if (oldDrv != null) UnityEngine.Object.DestroyImmediate(oldDrv);
+        Transform oldDrv = FindInScene("GateClouds_Driver");                // inactive ones too (tech r2 #8)
+        if (oldDrv != null) UnityEngine.Object.DestroyImmediate(oldDrv.gameObject);
         var drvGo = new GameObject("GateClouds_Driver");
         Transform director = FindInScene("Director");
         if (director != null) drvGo.transform.SetParent(director, false);
@@ -309,13 +310,16 @@ public static class LanbaiGateCloudsBuilder
         drv.sinkKeys = sinkK.ToArray(); drv.sinkStart = sinkS.ToArray(); drv.sinkCount = sinkN.ToArray();
         drv.alphaKeys = alK.ToArray(); drv.alphaStart = alS.ToArray(); drv.alphaCount = alN.ToArray();
         SetupUdonSharp(drv);
-        // the deck now draws the tear's pool itself (tech r1 #4): the flat cloud-top layers would be cut by the billows
+        // the deck now draws the tear's pool itself (tech r1 #4): the flat cloud-top layers would be cut by the billows;
+        // round 4: the foot's skyline cards (art r2: dark lumps; the deck's billows and crevasse take the lens foot now)
+        // and the gate test's old even-width shafts (tech r2 #2: two sets of beams next to GateBeam_Shaft_*)
         if (tearRoot != null)
-            foreach (string n in new[] { "Tear_CloudGlow", "Tear_CloudGlow_Additive", "Tear_LightLane" })
+            foreach (string n in new[] { "Tear_CloudGlow", "Tear_CloudGlow_Additive", "Tear_LightLane", "Tear_FootSkyline",
+                                         "Tear_FootSkylineIn", "Shaft_00", "Shaft_01" })
             {
                 Transform t = FindDeep(tearRoot, n);
                 var rr = t != null ? t.GetComponent<Renderer>() : null;
-                if (rr != null) { rr.enabled = false; Debug.Log("[GateClouds] turned off " + n + " (the deck draws the pool)"); }
+                if (rr != null) { rr.enabled = false; Debug.Log("[GateClouds] turned off " + n + " (GateClouds replaces it)"); }
             }
         EditorUtility.SetDirty(drv);
         AssetDatabase.SaveAssets();
@@ -339,11 +343,18 @@ public static class LanbaiGateCloudsBuilder
     static object CallStatic(Type t, string name, params object[] args)
     {
         if (t == null) return null;
-        foreach (MethodInfo mi in t.GetMethods(BindingFlags.Public | BindingFlags.Static))
+        // an overload with exactly args.Length parameters first (tech r2 #3: CopyProxyToUdon(b) vs (b, policy): the
+        // reflection order is not defined, and a null policy throws), then one whose extra parameters have defaults
+        MethodInfo[] all = t.GetMethods(BindingFlags.Public | BindingFlags.Static);
+        for (int pass = 0; pass < 2; pass++)
+        foreach (MethodInfo mi in all)
         {
             if (mi.Name != name || mi.IsGenericMethodDefinition) continue;
             ParameterInfo[] ps = mi.GetParameters();
-            if (ps.Length < args.Length) continue;
+            if (pass == 0 ? ps.Length != args.Length : ps.Length <= args.Length) continue;
+            bool defs = true;
+            for (int k = args.Length; k < ps.Length; k++) if (!ps[k].HasDefaultValue) defs = false;
+            if (!defs) continue;
             bool ok = true;
             for (int k = 0; k < args.Length; k++)
                 if (args[k] != null && !ps[k].ParameterType.IsInstanceOfType(args[k])) { ok = false; break; }
@@ -370,9 +381,13 @@ public static class LanbaiGateCloudsBuilder
             return go.AddComponent<LanbaiGateClouds>();
         }
         // 1) the program asset
-        var tmp = go.AddComponent<LanbaiGateClouds>();
-        MonoScript ms = MonoScript.FromMonoBehaviour(tmp);
-        UnityEngine.Object.DestroyImmediate(tmp);
+        MonoScript ms = null;                                                 // tech r2 #9: no temporary component
+        foreach (string g in AssetDatabase.FindAssets("LanbaiGateClouds t:MonoScript"))
+        {
+            var cand = AssetDatabase.LoadAssetAtPath<MonoScript>(AssetDatabase.GUIDToAssetPath(g));
+            if (cand != null && cand.GetClass() == typeof(LanbaiGateClouds)) { ms = cand; break; }
+        }
+        if (ms == null) throw new Exception("[GateClouds] LanbaiGateClouds.cs not found in the project");
         UnityEngine.Object asset = CallStatic(utT, "GetUdonSharpProgramAsset", ms) as UnityEngine.Object;
         FieldInfo src = paT.GetField("sourceCsScript");
         if (asset == null && src != null)
@@ -444,7 +459,7 @@ public static class LanbaiGateCloudsBuilder
     // edit-mode preview: the same evaluation as LanbaiGateClouds.Apply, plus every card's property block
     public static void Apply(float t)
     {
-        GameObject dg = GameObject.Find("GateClouds_Driver");
+        Transform dg = FindInScene("GateClouds_Driver");
         var d = dg != null ? dg.GetComponent<LanbaiGateClouds>() : null;
         if (d == null) { Debug.LogWarning("[GateClouds] not built"); return; }
         var mpb = new MaterialPropertyBlock();
