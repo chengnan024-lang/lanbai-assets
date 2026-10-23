@@ -36,7 +36,8 @@ public static class LanbaiGateCloudsBuilder
         public float[] sag_keys; public float[] sink_keys; public float[] alpha_keys; public string hides;
     }
     [Serializable] public class BeamDef { public string id; public string parent; public float mode; public float[] start; public float[] axis; public float half_width; public float length; public float widen; public float intensity; }
-    [Serializable] public class Layout { public float hero_t; public float[] window; public DeckDef deck; public ShapeDef[] shapes; public CardDef[] cards; public BeamDef[] beams; }
+    [Serializable] public class FogBandDef { public float[] color; public float until; }
+    [Serializable] public class Layout { public float hero_t; public float[] window; public FogBandDef fog_band; public DeckDef deck; public ShapeDef[] shapes; public CardDef[] cards; public BeamDef[] beams; }
 
     const string RootName = "GateClouds";
 
@@ -329,6 +330,11 @@ public static class LanbaiGateCloudsBuilder
         var drv = AddDriver(drvGo);
         drv.root = root.gameObject;
         if (L.window != null && L.window.Length == 2) { drv.windowStart = L.window[0]; drv.windowEnd = L.window[1]; }
+        if (L.fog_band != null && L.fog_band.color != null && L.fog_band.color.Length == 4 && L.fog_band.until > 0f)
+        {
+            drv.fogBandColor = new Vector4(L.fog_band.color[0], L.fog_band.color[1], L.fog_band.color[2], L.fog_band.color[3]);
+            drv.fogBandUntil = L.fog_band.until;
+        }
         drv.cardRenderers = allR.ToArray(); drv.cardMirror = allMir.ToArray(); drv.cardGain = allGain.ToArray(); drv.cardOpacity = allOp.ToArray();
         drv.towers = towT.ToArray(); drv.towerRenderers = towR.ToArray(); drv.towerOpacity = towOp.ToArray();
         drv.towerMirror = towMir.ToArray(); drv.towerGain = towGain.ToArray();
@@ -398,23 +404,28 @@ public static class LanbaiGateCloudsBuilder
     // Assets/Lanbai/UdonPrograms/ (not Generated/), 2) compile, 3) the component through UdonSharpUndo.AddComponent
     // (or AddComponent + RunBehaviourSetup), 4) after the fields are filled, CopyProxyToUdon; a missing backing
     // UdonBehaviour is an error, not a silent pass.
-    static LanbaiGateClouds AddDriver(GameObject go)
+    static LanbaiGateClouds AddDriver(GameObject go) { return (LanbaiGateClouds)AddUdonSharp(go, typeof(LanbaiGateClouds)); }
+    static void SetupUdonSharp(LanbaiGateClouds drv) { SetupUdonSharp((MonoBehaviour)drv); }
+
+    // any UdonSharpBehaviour type (also used by Gate/Editor/LanbaiGateDriverBuilder.cs for LanbaiGateDriver and the
+    // Play-mode test clock): its program asset in Assets/Lanbai/UdonPrograms/<Type>.asset, compiled, then the component
+    public static MonoBehaviour AddUdonSharp(GameObject go, Type type)
     {
         Type paT = FindType("UdonSharp.UdonSharpProgramAsset");
         Type utT = FindType("UdonSharpEditor.UdonSharpEditorUtility");
         if (paT == null || utT == null)
         {
-            Debug.LogError("[GateClouds] UdonSharp is not in this project: LanbaiGateClouds will not run in VRChat");
-            return go.AddComponent<LanbaiGateClouds>();
+            Debug.LogError("[GateClouds] UdonSharp is not in this project: " + type.Name + " will not run in VRChat");
+            return (MonoBehaviour)go.AddComponent(type);
         }
         // 1) the program asset
         MonoScript ms = null;                                                 // tech r2 #9: no temporary component
-        foreach (string g in AssetDatabase.FindAssets("LanbaiGateClouds t:MonoScript"))
+        foreach (string g in AssetDatabase.FindAssets(type.Name + " t:MonoScript"))
         {
             var cand = AssetDatabase.LoadAssetAtPath<MonoScript>(AssetDatabase.GUIDToAssetPath(g));
-            if (cand != null && cand.GetClass() == typeof(LanbaiGateClouds)) { ms = cand; break; }
+            if (cand != null && cand.GetClass() == type) { ms = cand; break; }
         }
-        if (ms == null) throw new Exception("[GateClouds] LanbaiGateClouds.cs not found in the project");
+        if (ms == null) throw new Exception("[GateClouds] " + type.Name + ".cs not found in the project");
         UnityEngine.Object asset = CallStatic(utT, "GetUdonSharpProgramAsset", ms) as UnityEngine.Object;
         FieldInfo src = paT.GetField("sourceCsScript");
         if (asset == null && src != null)
@@ -426,38 +437,42 @@ public static class LanbaiGateCloudsBuilder
             }
             asset = ScriptableObject.CreateInstance(paT);
             src.SetValue(asset, ms);
-            AssetDatabase.CreateAsset(asset, "Assets/Lanbai/UdonPrograms/LanbaiGateClouds.asset");
+            AssetDatabase.CreateAsset(asset, "Assets/Lanbai/UdonPrograms/" + type.Name + ".asset");
             AssetDatabase.SaveAssets();
-            Debug.Log("[GateClouds] created Assets/Lanbai/UdonPrograms/LanbaiGateClouds.asset");
+            Debug.Log("[GateClouds] created Assets/Lanbai/UdonPrograms/" + type.Name + ".asset");
             // 2) compile (UdonSharpCompilerV1.CompileSync), so the new program exists before the behaviour is set up
             CallStatic(FindType("UdonSharp.Compiler.UdonSharpCompilerV1"), "CompileSync");
         }
         // 3) the component with its backing UdonBehaviour
-        LanbaiGateClouds drv = null;
+        MonoBehaviour drv = null;
         Type undoT = FindType("UdonSharpEditor.UdonSharpUndo");
         if (undoT != null)
             foreach (MethodInfo mi in undoT.GetMethods(BindingFlags.Public | BindingFlags.Static))
                 if (mi.Name == "AddComponent" && mi.IsGenericMethodDefinition && mi.GetParameters().Length == 1)
                 {
-                    drv = mi.MakeGenericMethod(typeof(LanbaiGateClouds)).Invoke(null, new object[] { go }) as LanbaiGateClouds;
+                    drv = mi.MakeGenericMethod(type).Invoke(null, new object[] { go }) as MonoBehaviour;
                     break;
                 }
         if (drv == null)
         {
-            drv = go.AddComponent<LanbaiGateClouds>();
+            drv = (MonoBehaviour)go.AddComponent(type);
             CallStatic(utT, "RunBehaviourSetup", drv);
         }
         return drv;
     }
 
-    static void SetupUdonSharp(LanbaiGateClouds drv)
+    // after the fields are filled: copy them into the backing UdonBehaviour; a missing backing behaviour is an error
+    public static void SetupUdonSharp(MonoBehaviour b)
     {
         Type utT = FindType("UdonSharpEditor.UdonSharpEditorUtility");
         if (utT == null) return;
-        CallStatic(utT, "CopyProxyToUdon", drv);
-        if (CallStatic(utT, "GetBackingUdonBehaviour", drv) == null)
-            throw new InvalidOperationException("[GateClouds] LanbaiGateClouds has no backing UdonBehaviour: check the UdonSharp program asset (Assets/Lanbai/UdonPrograms/LanbaiGateClouds.asset) and the Console");
+        CallStatic(utT, "CopyProxyToUdon", b);
+        if (CallStatic(utT, "GetBackingUdonBehaviour", b) == null)
+            throw new InvalidOperationException("[GateClouds] " + b.GetType().Name + " has no backing UdonBehaviour: check the UdonSharp program asset (Assets/Lanbai/UdonPrograms/" + b.GetType().Name + ".asset) and the Console");
     }
+
+    public static Transform FindInScenePublic(string name) { return FindInScene(name); }
+    public static Transform FindDeepPublic(Transform p, string name) { return FindDeep(p, name); }
 
     static void Pack(float[] keys, List<float> all, List<int> start, List<int> count)
     {

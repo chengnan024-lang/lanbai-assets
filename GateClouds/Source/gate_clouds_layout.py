@@ -123,6 +123,9 @@ def main():
               '(t0, v0, t1, v1, ...), timeline seconds, smoothstep between keys.',
         hero_t=HERO_T,
         window=[round(CUES['U6'] - WINDOW_BEFORE_U6, 2), round(CUES['U9'] + WINDOW_AFTER_U9, 2)],
+        # act 4's light-fog band colour (= LanbaiGateSky _HazeNear, GateLayout sky_band 'gain') and until when the gate
+        # writes it: U9, then the inside driver (chief engineer 10-23, tech r3 #3)
+        fog_band=dict(color=[0.1085, 0.1130, 0.1641, 1.0], until=CUES['U9']),
         deck=dict(parent='GateRoot', local_y=round(y_bot, 2), quad_size=40000.0,
                   detail='Deck_Detail_1024.png', macro='Deck_Macro_512.png',
                   note='a flat quad under the deck slab, moving with GateRoot; Lanbai/GateCloudDeck ray-marches '
