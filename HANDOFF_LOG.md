@@ -2,6 +2,129 @@
 
 新的在上面。
 
+## 2026-10-24（北京）· 门的云 GateClouds v1.5 合进 main：导入、改测试脚本、实测、截图
+**让你久等了，谢谢。** 10-08 你测出门里缺的是云，这一包就是云，已经合进 main（合并提交 `0ce6630`）。**先读 `GateClouds/README_GateClouds.md` 的 §2（怎么搭）、§3.4（性能和画质开关）、§8（要你截的图和要量的数）。** 还是只在测试场景 `Assets/Lanbai/Tests/GateTest.unity` 里做，主场景不动。
+
+**这次到了什么：**
+- `GateClouds/`（新）：
+  - 云海 `Lanbai/GateCloudDeck`：一张跟着 GateRoot 走的大四边形，在 shader 里步进出云头，会写深度。峡谷直接刻进云海，光池也改由云海自己画。
+  - 37 张云卡 `Lanbai/GateCloudCard`：云塔 9、远云 4、地平线云团 22、雾卡 2，位置照 `GateLayout_v2.json`。云塔的塌陷、下沉、淡出由 U# 驱动 `LanbaiGateClouds` 按时间做。
+  - `Lanbai/GateBeam`：2 束越远越宽的光束，加 4 道阴影楔。
+  - 一键搭建菜单 **蓝白/Gate Clouds/Build**。数据只有一个来源：`GateClouds_Layout.json`。
+- 你 10-08 提的几件也一起改了：
+  - 远潮 shader 升到 v2.3，雾色和触手、天空用同一份（你 §2.2 第 10 条）。
+  - TentacleSway 升到 v2.7d，加了 `noforwardadd`，POINT 变体的除零没有了。
+  - `Lanbai_Tear.shader` 两处 `[Header]` 改好了。它的 include 改成公共的 `Assets/Lanbai/Common/Shaders/LanbaiVR.cginc`，不用再从 `Delivered/lens_tech/` 拷一份。
+- **shader 和 C# 都没在 Unity 里编译过。** shader 用 DXC 加 Unity 2022.3.22f1 的 CGIncludes 查过，0 错 0 警告；C# 用 Roslyn 查过。第一次跑请把 Console 原样推回来，UdonSharp 的输出也要。
+
+**更正 10-08 的一句：** "第 4 幕不要星星"已经被总导演推翻（D-06）。第 4 幕要留月下的亮星，没有银河，用的是和天空同一套星，由门第 10 轮做。**现在先别自己开星。** 你的 `M_GateAirSky` 是 10-08 以前建的，shader 默认值改了，材质上的值不会跟着变。如果 `_Stars` 还是 1，请改成 0。
+
+**请按顺序做：**
+
+1. **拉 main**：在 `E:\IDMdownload\VRCC\lanbai-assets` 里 `git pull`。
+
+2. **拷进 Unity：**
+   - 整个 `GateClouds/` → `Assets/Lanbai/GateClouds/`。`Docs~`、`Tools~` 带 `~`，Unity 不会编译。
+   - 整个 `Common/` → `Assets/Lanbai/Common/`。**这是新的，必须拷**：门、裂口、云的 shader 现在都 include `Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc`，少了它就全部编不过。你 10-08 放在 Tear shader 旁边的那份 `LanbaiVR.cginc` 以后用不到了。
+   - 更新 `Gate/GateLayout_v2.json`、整个 `Gate/Shaders/`，以及 `Tear/Lanbai_Tear.shader`。你 10-08 的两处修改已经合在里面，直接覆盖就行。
+   - 相机远裁剪面要 ≥ 20 km。测试场景是 45 km，不用动。
+
+3. **10-08 说过的两项设置，还没做的话现在做：**
+   - **Vertex Compression 关掉 TexCoord0–TexCoord3**（Player → Other Settings → Vertex Compression）。
+   - **补光的 Render Mode 设成 Not Important**（D-07：补光一律这样）。`LB_GateTest.Build` 每次都会重新建 `Gate_Lights/Fill_from_below`，所以**每次 Build 之后都要再设一次**，或者写进你的脚本。灯的强度 Build 会从 JSON 的 `inspector` 一栏读，现在是月光 1.0、补光 0.24、裂口光 0.8，读进来就对，不用手填。
+
+4. **改你的 `LB_GateTest_Run.cs`**（D-15：门不改 `FromLocal/`，这几行由你改）。为什么要改：Build 会关掉平面光池、光路和旧的等宽光束，可你的 Apply 每次都用 `on = true` 把它们重新打开。不改的话，截图和帧时间都作废。**只改 `SetPB` 的第 4 个参数，别的不动。** 逐行对照在 `GateClouds/给本地_补丁_LB_GateTest_Run.md`。行号按仓库里 `FromLocal/gate_test/code/` 的那一版；你 Unity 里那份如果改过，就按内容找。
+   ```diff
+    // 第 123 行
+   -SetPB(tear, "Tear_CloudGlow_Additive", mpb, kAdd > 0f, "_Intensity", 0.25f * kAdd, "_FootGlow", 2.2f * kPool);
+   +SetPB(tear, "Tear_CloudGlow_Additive", mpb, false, "_Intensity", 0.25f * kAdd, "_FootGlow", 2.2f * kPool);   // GateClouds: the deck draws the pool
+    // 第 124 行
+   -SetPB(tear, "Tear_CloudGlow", mpb, true, "_Intensity", 1f * kPool, "_FootGlow", 0.98f * kPool);
+   +SetPB(tear, "Tear_CloudGlow", mpb, false, "_Intensity", 1f * kPool, "_FootGlow", 0.98f * kPool);   // GateClouds: the deck draws the pool
+    // 第 127 行
+   -SetPB(tear, "Tear_LightLane", mpb, true, "_Intensity", kLane, null, 0f);
+   +SetPB(tear, "Tear_LightLane", mpb, false, "_Intensity", kLane, null, 0f);   // GateClouds: the deck draws the pool
+    // 第 134 行
+   -if (st != null) SetPB(st, st.name, mpb, true, "_Intensity", F(G(OJ, "shaft"), 0.35f) * F(G(s, "gain"), 1f), null, 0f);
+   +if (st != null) SetPB(st, st.name, mpb, false, "_Intensity", F(G(OJ, "shaft"), 0.35f) * F(G(s, "gain"), 1f), null, 0f);   // GateClouds: GateBeam_Shaft_* replace Shaft_00/01
+   ```
+   第 125、126 行（`Tear_SkyFolds`、`Tear_Halo`）**不改**。
+
+   然后照 README §2 第 4 步，在 `LB_GateTest.Apply` 里加一行，放在第 174 行 `SceneView.RepaintAll();` 前面就行：`LanbaiGateCloudsBuilder.Apply(t);`。它在编辑模式下给云塔和云卡写 property block。`LanbaiGateCloudsBuilder` 编进的是不带 asmdef 的 Editor 程序集。如果你的测试脚本在 asmdef 里，这一行会编不过，请告诉我们。
+
+5. **`Tear_CloudLanes_1024.png` 照你的导入脚本来（BC7）**，云的 Build 不再碰它的导入设置。
+
+6. **按这个顺序搭：**
+   1. 跑 `Lanbai.Tests.LB_GateTest.Build("155.1")`，用新的 JSON 和 shader 把门重搭一遍。搭完做三件事：
+      - 补光设成 Not Important（第 3 步）。
+      - 远潮材质 `M_TentacleTide_v3_A / B`（在 `Assets/Lanbai/Tests/GateTest_Materials/`）还是旧值。照 `GateClouds_Layout.json` 的 `tide_material` 填上 `_HazeNear (0.1085, 0.1130, 0.1641)`、`_HazeFar (0.0436, 0.0504, 0.0726)`、`_BandEl (6, 22, 2)`；也可以右键这三项点 Reset。
+      - 检查 `_Stars` 是 0（见上面"更正"）。
+   2. 点菜单 **蓝白/Gate Clouds/Build**。它会做这些事：
+      - 设好贴图的导入方式。
+      - 在 `Assets/Lanbai/GateClouds/Generated/` 里建网格和材质。
+      - 在 `GateRoot/GateClouds/` 下建 `Deck`、`Cards/<id>`（37 张）、`Wedges/<id>`（4 道），在 `Tear_Root` 下建 `GateBeam_Shaft_00/01`。
+      - 关掉 `Tear_CloudGlow`、`Tear_CloudGlow_Additive`、`Tear_LightLane`、`Tear_FootSkyline`、`Tear_FootSkylineIn`、`Shaft_00/01` 的 renderer。
+      - 在场景根上建 `GateClouds_Driver`，并建 U# 程序资产 `Assets/Lanbai/UdonPrograms/LanbaiGateClouds.asset`。
+
+      跑完 Console 里应该有 `[GateClouds] deck quality: default` 和 `[GateClouds] built: deck, 37 cards (9 towers), 6 beams`。如果它报"no backing UdonBehaviour"停下了，把 Console 推上来。
+   3. 跑 `Lanbai.Tests.LB_GateTest.Apply("155.1")`。
+   4. 进 Play 前、后各看一眼 Hierarchy：`Tear_Root` 下 `Tear_CloudGlow`、`Tear_CloudGlow_Additive`、`Tear_LightLane`、`Shaft_00`、`Shaft_01` 的 MeshRenderer 都关着，`GateBeam_Shaft_00/01` 开着。
+   - **注意：以后每次重跑 `LB_GateTest.Build`，都要接着再点一次 蓝白/Gate Clouds/Build。** 门的 Build 会删掉 GateRoot 和挂在下面的云。忘了也不会抛异常，Apply 会跳过丢了的云卡和云塔，并在 Console 里警告“请重跑 Gate Clouds/Build”。
+
+7. **画质档：截图一律用 `default`。** `GateClouds_Layout.json` 里的 `deck.quality` 现在就是 `"default"`。`auto_lite` 只用来多量一次帧时间：
+   - 在 Unity 里那份 `Assets/Lanbai/GateClouds/GateClouds_Layout.json` 中，把 `"quality": "default"` 改成 `"auto_lite"`，再点 Build，Console 会写 `[GateClouds] deck quality: auto_lite`。
+   - 量完改回 `"default"`，再 Build 一次。名字写错的话会退回 `default`，并报一条警告。
+   - **不要直接改材质上的 `_Adapt`、`_MarchRange`、`_Steps`**，下一次 Build 会把它们盖掉。
+
+**要量的（最要紧：总导演要拿真数据来定砍哪里，U7 要不要多采样也等这个数）：**
+- **机位：** **U7（t = 155.10）**和**U8 前方 `U8fwd`（t = 169.65）**。
+- **每个机位量三种状态：** 全开；关掉 `GateRoot/GateClouds/Deck`；关掉整个 `GateRoot/GateClouds`。
+  - 关的时候要关 GameObject 本身。Apply 会把云卡的 renderer 重新打开，只关 renderer 不管用。
+  - 光束 `GateBeam_Shaft_00/01` 挂在 `Tear_Root` 下，不在 `GateClouds` 里面。量“关掉整个 GateClouds”这一档时，**把这两束也一起关掉**。
+- **帧时间：** 桌面和 VR 估算都要，测法和 10-08 一样：`Lanbai.Tests.LB_GateTest.Perf("cam=U7;t=155.1")`、`Perf("cam=U8fwd;t=169.65")`。报告写在 `LanbaiReports/GateTest_Perf_<机位>.txt`，同一个机位的下一次会把它盖掉，**所以每量一次就改个文件名**。
+- **GPU Profiler / Frame Debugger（或 RenderDoc）：** 至少量 U7 全开那一帧，列出最贵的几项，以及云海那一项各占多少 ms。**这一轮只在编辑模式下量**：先用 `StatsBegin("cam=U7")` 把参考相机摆到机位，再在 Game 视图里抓。**不要进 Play 量**：没有门的总驱动，Play 里全局量会丢，云海会停在默认位置，量出来的数不对。
+- **有时间再做：**
+  - 用 `auto_lite` 档在 U7、U8fwd 各量一次。
+  - 用 `StatsBegin` / `StatsRead` 再读一次 draw call 和三角面，看 10-08 的"三倍"还在不在。
+- **参考数：** 第 4 幕的预算是 8.3 ms。10-08 不带云的 VR 估算已经是 10.3 ms。云海按估算要 1.5–2.5 ms，深度 pass 另加 0.3–0.6 ms（README §3.4，没实测过）。超了也**照实推上来，别自己砍**。
+
+**要截的图**（和 10-08 同一个测试场景、同样的 HDR 截图方法、`default` 档）：
+
+| 机位（JSON `cameras`） | t | 尺寸 | 对照图 |
+|---|---|---|---|
+| `key` | 154.50 | 2560×1072 | `GateClouds/Docs~/compare_key.png` |
+| `U7` | 155.10 | 1920×1080 | `compare_U7.png` |
+| `U8fwd` | 169.65 | 1920×1080 | `compare_U8fwd.png` |
+| `U8side` | 166.45 | 1920×1080 | `compare_U8side.png` |
+| `rear` | 177.55 | 1920×1080 | `compare_rear.png` |
+
+- 用 `Lanbai.Tests.LB_GateTest.Shoot("cam=key;w=2560;h=1072;ss=2;file=…")` 拍。不写 t，就用这个机位在 JSON 里自己的 t。
+- **拍 `rear` 之前**，把天空盒 `M_GateAirSky`、云海 `M_GateCloudDeck`、云卡材质，以及后窗那 8 条 `Rear_*` 臂的材质，`_BackBand` 都设成 1.25。拍完全部改回 0.55。
+- 每张图按 `Gate/Source/gate_metrics.py` 那几项量（或者用 `Engineering/render_harness/lbh_grade.py --png`），写成 10-08 那样的 `metrics_unity_vs_render.json`。
+- **`key` 和 `U8fwd` 两张最要紧。** 终审留了两条，要拿第一张 Unity 截图复量：keyart 里裂口脚下的光，和 U8 前方光池里云团的暗心。
+- `compare_*.png` 上半张是这一版的参照，下半张是定稿。上半张里的触手和裂口是从你 10-08 的截图贴回去的。下面这些都是贴图合成造成的，不是目标，不用去对：裂口周围那圈椭圆；平顶的黑块（被裁掉的近处触手）；压在云上的裂口尖（Unity 里云头会挡住它）；星星。滚动的 mp4 是 v1.4 的代码出的（v1.5 没改步进和银边）。
+
+**全部推到 `FromLocal/gate_clouds_test/`：**
+- 截图，命名照 10-08 的习惯：`<机位>_unity_t<秒>.png`。
+- 量出来的数。
+- 各次的 `GateTest_Perf_*` 报告。
+- GPU Profiler / RenderDoc 的截图或导出。
+- 原样的 Console（含 UdonSharp）。
+- 改过的测试脚本。
+- 一页说明：你改了什么、自己定了什么，照 10-08 `README_说明.md` 的写法。
+
+**有时间顺手做：**
+- 在 Frame Debugger 里看一眼，`UpdateDepthTexture` 有没有画云海（ShadowCaster pass）。
+- 头显里的检查（云海滚动 10 秒看银边闪不闪、闭左右眼各看一遍）**这次先不做**，等门的总驱动 `LanbaiGateDriver` 到了再做。没有它，Play 里云海不会动。
+- 跑一次 **蓝白/Grades/Probe Bloom Colour (single or double sRGB decode)**，把 `LanbaiReports/BloomColour_Report.md` 推上来。总导演 10-23 定了 bloom 颜色保持默认补偿，你跑一次确认就行。
+
+**现在先别做：**
+- **别把云接进主场景和正式世界。** 正式世界里要由门的总驱动 `LanbaiGateDriver` 每帧写 `_Udon_CloudTop`、`_Udon_GateOrigin`、`_Udon_TearFoot`。现在没人写这三个量，云海就不会流动。它是门合并以后做的第一件事（D-15），做好了另写一条。测试场景里这三个量由你的 `LB_GateTest.Apply` 写，没问题。
+- **别手调数值**：云海、云卡、光束的材质，`GateClouds_Layout.json`，LOD，都别动。README §3.3 列了能调的参数，但现在不调。唯一要切的只有画质档。如果超预算，总导演拿到你的数以后，按圣经 §1.9 的顺序定砍什么。
+- **别把 Build 关掉的那几样开回来。** 如果裂口透镜和云相交的地方露出一条直线，截图告诉我们，门会在峡谷两边的唇上加高。
+- 星（D-06）和云塔的视差卡放在门第 10 轮做；U7 轮廓要不要多采样，等你实测完再定。这三样都别自己做。
+- `GateClouds/` 里的文件别改。编不过的话照 10-08 的做法：只做能编过的最小修改，把 diff 推回来。
+
 ## 2026-10-08（北京）· ✅ 门的导入测试：云端的回复
 **谢谢，测得非常仔细。** 结论：除了云，门在 Unity 里基本还原了定稿。keyart 机位的构图、裂口、触手的边光、群臂、Engel、月亮都在原位，平均亮度 37.8 对 35.2，最亮的像素也都在裂口里。看不到的那部分是**我们漏交了云**，不是你那边的问题。
 
