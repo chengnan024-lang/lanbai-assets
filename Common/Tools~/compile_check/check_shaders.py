@@ -277,6 +277,14 @@ def main():
     ap.add_argument('-I', dest='inc', action='append', default=[], help='extra include folder (reported: in Unity the file must sit next to the shader)')
     ap.add_argument('--json', default=None, help='also write the report as JSON here (outside the repo)')
     args = ap.parse_args()
+    # 'Assets/Lanbai/<X>/...' resolves against the repo (or git worktree) that holds the files being checked
+    import subprocess
+    first = os.path.abspath(args.paths[0])
+    top = subprocess.run(['git', '-C', first if os.path.isdir(first) else os.path.dirname(first), 'rev-parse', '--show-toplevel'],
+                         capture_output=True, text=True).stdout.strip()
+    if top:
+        TU.REPO = top
+        globals()['REPO'] = top
     env = load_env()
     rep = Report()
     dxc = None
