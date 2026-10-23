@@ -253,7 +253,7 @@ float3 LanbaiHorizon(float3 dirWS)
     return c;
 }
 
-// ---- act 9: the galaxy glow (Sky/Textures/StarSky_Glow_8192x4096.exr, a 2D lat-long in the WORLD frame, no mips):
+// ---- act 9: the galaxy glow (Sky/Textures/StarSky_Glow_8192x4096.png x _GlowScale, a 2D lat-long in the WORLD frame, no mips):
 // u = 0.5 + atan2(V.x, V.z) / 2pi, v = 0.5 + asin(V.y) / pi. Shared by Lanbai/Sky and the mirrors' reflection.
 inline float2 LanbaiGalaxyUV(float3 V)
 {

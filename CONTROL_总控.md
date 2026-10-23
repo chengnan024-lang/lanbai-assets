@@ -1,26 +1,35 @@
 # 蓝白 · 总控（谁在做什么、共同约定）
 
-> 写的人：云端会话「蓝白总控安排」（下面叫**总控**）。2026-10-22（北京）开始。
+> 写的人：云端会话「蓝白总控安排」（下面叫**总控**；10-22 起小楠叫它**总导演**，总控 = 总导演）。2026-10-22（北京）开始。
 > 小楠的话：「你来作为蓝白总控安排一切」；「开 3 个子会话并行」；「你去和她（私密对话）对接」。
 > 这一页是所有云端会话的**共同约定**。每个会话开工前先读这一页，再读 `Art/README_先读这个.md` 和圣经 `Art/ART_BIBLE.md` §1（总纲）。
 
 ---
 
-## 0. 分工（2026-10-22 起）
+## 0. 分工
 
-本地（小楠电脑上的「世界创建」）按旅程顺序**一幕一幕**导入、截图、推 `FromLocal/`。所以云端按同一个顺序交付，每一幕是一个“拿来就能用”的包。
+**谁做什么、做到哪儿：见 `PLAN_总导演.md`（总计划与进度表，总导演每次巡检更新）。** 下面只列文件夹归属，免得互相踩。
 
-| 会话 | 负责 | 文件夹（只改自己的） | 分支 | 本地什么时候用 |
-|---|---|---|---|---|
-| **私密对话**（门） | **第 4 幕收尾**：门的云海（`Lanbai/GateCloudDeck`）、门用的月光云卡 v2 与云卡 shader、云塔 / 远云 / 雾卡 / 地平线云团、越远越宽的光束、阴影楔、布局 JSON + 搭建脚本 + 驱动、预览、README。另外顺手收：峡谷 3 张卡、远潮 shader 接 `LanbaiGateSky.cginc` 并给填值、TentacleSway 的 POINT 变体除零、Tear shader 第 99 行 Header 警告 | `GateClouds/`；修补时可改 `Gate/`、`Tear/`、`Tentacles/` | `pkg/gate-clouds` | **下一个**（本地在等它） |
-| **子会话「天空」** | **全片的天与雾**：`Common/Shaders/LanbaiFog.cginc`（先交接口）、`Lanbai/Sky`（§8.1 #8）、真实星表的星、月、银河；**云卡 v2**（§8.1 #4：按两张 HDRI 重打光、场景线性、`CloudFloor_*`、云峡云墙、8-ii 变体）；然后按顺序做**第 6 幕（晨）**、**第 8 / 8b 幕（暮、蓝时）**、**第 9 幕的天（星海、银河点燃）** 的包 | `Common/Shaders/LanbaiFog.cginc`、`Common/Shaders/LanbaiSky.cginc`、`Sky/`、`Clouds_v2/`、`Act06_Dawn/`、`Act08_Dusk/`、`Act09_StarSea/` | `pkg/sky` | 第 6、8、9 幕 |
-| **子会话「海」** | **第 7 幕全部**：海套件（§8.1 #7，`Lanbai/Sea` ABOVE / BELOW / CEILING）、7a（水下、海脊石壁、水柱、播下的光）、7b 河伯宫殿套件（§8.1 #10、`PalaceLayout.json`）、7c（海底即天、倒置的斯涅尔之窗、焦散从下往上）、6→7 入水与 7→8 出海的接口 | `Sea/`、`Palace/`、`Act07_Sea/` | `pkg/sea` | 第 7 幕 |
-| **子会话「门内」** | **第 4c 幕（门内）+ 第 5 幕（投入）**：门内光唇 3 种网格 + 按乐句的布局、第 8 重的“袖”、前方暖白点、天窗光斑卡 + 投影脚本（§8.1 #6 剩下的）；然后**白铜镜**（§8.1 #11）与第 9 幕的镜子时间表、**第 10 幕（白）**、`Lanbai_Overlay` v2；最后**路灯 / 电线杆**与**第 11 幕（假醒、倒挂的灯）** | `Act04c_Inside/`、`Mirrors/`、`Act10_White/`、`Lamps/`、`Act11_FalseWake/`、`Overlay/` | `pkg/inside` | 第 4c、5、9、10、11 幕 |
-| **总控**（这个会话） | 分工、审片、合并进 `main`、写 `HANDOFF_LOG.md`；自己做跨幕的代码：`Common/`（共用 include、全局量登记）、**车厢 shader**（§8.1 #12）、**Director 的分发层**（接本地的 `LB_Journey`，见 §5） | `Common/`（除了天空那两个 include）、`Cabin/`、`Director/`、根目录的文档 | `main` | 随各幕 |
+| 会话 | 只改这些文件夹 | 分支 |
+|---|---|---|
+| 总导演（蓝白总控安排） | 根目录文档、`HANDOFF_LOG.md`、`Common/UdonGlobals.md`、`Common/Shaders/LanbaiVR.cginc` | `main` |
+| **车**（10-23 起，D-10） | `Bus/`、`Cabin/` | `pkg/bus` |
+| 美术审片 | `Review/` | `pkg/review` |
+| 总工程师 | `Common/Tools~/`、`Common/Shaders/LanbaiGlobals.cginc`、`Director/`、`Engineering/`、`Grading/`（维护） | `pkg/engineering` |
+| 门（私密对话） | `GateClouds/`；修补时 `Gate/`、`Tear/`、`Tentacles/` | `pkg/gate-clouds` |
+| 天空 | `Common/Shaders/LanbaiFog.cginc`、`Common/Shaders/LanbaiSky.cginc`、`Sky/`、`Act09_StarSea/` | `pkg/sky` |
+| 云 | `Clouds_v2/`、`Act06_Dawn/`、`Act08_Dusk/` | `pkg/clouds` |
+| 海 | `Sea/`、`Act07_Sea/`、`Common/Shaders/LanbaiCaustics.cginc` | `pkg/sea` |
+| 宫殿 | `Palace/` | `pkg/palace` |
+| 门内 | `Act04c_Inside/`、`Overlay/` | `pkg/inside` |
+| 镜与白 | `Mirrors/`、`Act10_White/` | `pkg/mirrors` |
+| 灯与假醒 | `Lamps/`、`Act11_FalseWake/` | `pkg/lamps` |
 
 - **站牌套件不做**（小楠说先不做）。第 1、2、12 幕的路、车、站由本地做；圣经是美术依据。
-- **第 3 幕**（离地：灯海、月下云海、3→4 裂口展开）：月下云海要用门的云海 shader。等私密对话把门交了，再问小楠要不要她接着做第 3 幕。
-- 任何人发现分工表没写到的东西，写进自己文件夹的 `给总控.md`，总控来分。
+- **第 3 幕**待定（门交了以后再定）。
+- 分工表没写到的东西，写进自己文件夹的 `给总控.md`，总导演来分。
+- **例外**：总导演、总工程师、美术审片可以往任何包的分支推 `<包>/总导演意见.md`、`<包>/总工程师意见.md`、`<包>/美术审片意见.md` 这三个文件（只有这三个）。**美术审片的意见和总导演的意见一样要逐条回应**（改，或者在 README 的“与评审的分歧”里写明理由）。所以每个会话**推之前先 `git pull --rebase origin <自己的分支>`**。
+- Blender 迭代规矩、美是最高原则：见 `PLAN_总导演.md` 第四、五节。**每个会话都要照做。**
 
 ---
 
@@ -42,7 +51,7 @@
 4. **运行时驱动**（UdonSharp）：见 §5 的接口。
 5. **参考渲染**：云端渲的“应该长这样”，从固定机位（主座位眼位，桌面 1920×1080、水平 90°），**按圣经的 PPv2 模拟调色**（`Grading/Tools~/engine/ppv2_engine.py`），附量出的数（APL、最亮点位置、紫占比、爬升律）。能做 numpy 版 shader 移植就做（门的做法），这样参考图和 Unity 用的是同一套数学。
 6. **中文 README**：先写“拷哪些文件夹、点哪个菜单、在哪一秒从哪个机位截图推回来”，再写细节；末尾写**诚实的已知弱点**。
-7. **检查**：C# 用 Roslyn 对 Unity 引用程序集类型检查、shader 用 slang 查语法（做法见 `Grading/Tools~/compile_check/`、`Rain/Tools~/compile_check/`）。写明“没在 Unity 里编译过”。
+7. **检查**：一律用 main 上的 **`Common/Tools~/compile_check/`**（总工程师的 v1：DXC + Unity 2022.3.22f1 的 CGIncludes 原件、变体、surface shader、SPS-I / 雾 / `_Udon_` / include 的 lint，C# 用 Roslyn；门测试里本地撞上的两个真错误都能复现）。先读它的 `README_compile_check.md`。写明“没在 Unity 里编译过”。
 8. **评审**：每个包交之前至少一轮独立的**美术评审 + 技术评审**（另开 agent，只给它圣经、渲染和代码，不给你的结论），改完再审，直到两份都“通过”。评审稿放 `<文件夹>/Docs~/`。
 
 质量第一，慢慢做（小楠：「还是不要节省不要将就啦」）。
@@ -53,6 +62,7 @@
 
 - **坐标**：Unity 世界，米，Y 上。**车固定在原点、车头朝 +Z，世界往车后移（跑步机）。** 车厢地板 y = 0.62；主座位眼位见 `Gate/GateLayout_v2.json` 的 `cameras.U7`（约 (0.55, 1.70, 2.05)）；`LB_Journey.heroEye` 是 (0.70, 1.77, 0.20)，两者不同，**以本地最新的为准，在 README 里写清你用的哪一个**。
 - **时间**：时间轴秒 t（出发 = 0）。所有时刻引用 `FromLocal/cues.json` 的标签（U0–U12、F0–F16 和子标签），不写死数字；圣经 v2.1 §2 是乐句表。圣经 v2.1 晚于本地的 `timeline_v1.md`，两者冲突时**以圣经 v2.1 为准**，并在 README 里列出差异给本地。
+- **圣经的修订**：`Art/总导演裁决.md` 的每一条压过 `ART_BIBLE.md` 原文。
 - **调色**：PPv2 HDR + Neutral，每幕一个 profile（`Grading/` 已经生成），永不 ACES；只让发光体 bloom。无光照资产以**场景线性**值进入调色。
 - **灯光强度：Inspector 值 = 线性照度 E。** VRChat SDK 强制 `lightsUseLinearIntensity = true`（本地 9/30 查到，门测试又确认了）。**圣经 §1.5 “Built-in 灯光陷阱 1”（Inspector = E^(1/2.2)）作废**；圣经和 `calib_final` 里按 gamma 换算的 Inspector 值都要按 E 重算。
 - **补光**（不投影的）一律 Render Mode = **Not Important**（进球谐，不多画一遍 ForwardAdd）。
@@ -71,6 +81,8 @@
 | `LanbaiVR.cginc` | 总控 | ✅ 已放（= `Rain/Shaders/LanbaiVR.cginc`） |
 | `LanbaiFog.cginc` | 天空 | **天空的第一件交付**：先推接口 + 能编译的最小实现，别的会话照接口写 |
 | `LanbaiSky.cginc` | 天空 | 同上（`LanbaiHorizon(dir)` 等与 `Lanbai/Sky` 共用的函数） |
+| `LanbaiGlobals.cginc` | 总工程师 | **所有 `_Udon_` 全局量只在这里声明一次**（每个名字单独 `#ifndef` 保护），按 `Common/UdonGlobals.md` 生成。各 shader / include 不再自己声明 `_Udon_` 量，改成 include 它（门的 `LanbaiGateSky`、天空、海、门内都要换） |
+| `LanbaiCaustics.cginc` | 海 | 焦散采样 `LanbaiCabinCaustics(posWS, nWS)`；车厢从第 1 幕起就 include 它，所以放 `Common/`，不放 `Sea/` |
 
 `LanbaiFog.cginc` 的**最小接口**（天空可以加，不能改名、不能改参数）：
 

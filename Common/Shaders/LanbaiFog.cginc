@@ -59,7 +59,8 @@ float _FogCap;               // 0..1 maximum fog amount (<= 0 = 1, no cap)
 #ifndef LANBAI_FOG_OWN_HEIGHT
 float _FogHeightFalloff;     // metres: density x exp(-(y - base) / this) above the base height (<= 0 = uniform)
 #endif
-#ifndef LANBAI_FOG_OWN_DENSITY
+#if !defined(LANBAI_FOG_OWN_DENSITY) && !defined(LANBAI_DECL__Udon_FogDensity)
+#define LANBAI_DECL__Udon_FogDensity
 float _Udon_FogDensity;      // (legacy, registered) Exp density per metre; > 0 = set
 #endif
 #ifndef LANBAI_DECL__Udon_Fog

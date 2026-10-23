@@ -60,53 +60,194 @@ float4 _Udon_GalaxyGain;   // x = glow + star floor gain g(t); w > 0 = set
 #define LANBAI_DECL__Udon_SkyGlobals
 float4 _Udon_SkyGlobals;
 #endif
+#ifndef LANBAI_DECL__Udon_SkyCubeTexA
+#define LANBAI_DECL__Udon_SkyCubeTexA
 samplerCUBE _Udon_SkyCubeTexA;
+#endif
+#ifndef LANBAI_DECL__Udon_SkyCubeTexB
+#define LANBAI_DECL__Udon_SkyCubeTexB
 samplerCUBE _Udon_SkyCubeTexB;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_ZenithTintA
+#define LANBAI_DECL__Udon_Sky_ZenithTintA
 float4 _Udon_Sky_ZenithTintA;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_MidTintA
+#define LANBAI_DECL__Udon_Sky_MidTintA
 float4 _Udon_Sky_MidTintA;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_HorizonTintA
+#define LANBAI_DECL__Udon_Sky_HorizonTintA
 float4 _Udon_Sky_HorizonTintA;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_HorizonAntiTintA
+#define LANBAI_DECL__Udon_Sky_HorizonAntiTintA
 float4 _Udon_Sky_HorizonAntiTintA;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_ZenithTintB
+#define LANBAI_DECL__Udon_Sky_ZenithTintB
 float4 _Udon_Sky_ZenithTintB;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_MidTintB
+#define LANBAI_DECL__Udon_Sky_MidTintB
 float4 _Udon_Sky_MidTintB;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_HorizonTintB
+#define LANBAI_DECL__Udon_Sky_HorizonTintB
 float4 _Udon_Sky_HorizonTintB;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_HorizonAntiTintB
+#define LANBAI_DECL__Udon_Sky_HorizonAntiTintB
 float4 _Udon_Sky_HorizonAntiTintB;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_TintElevation
+#define LANBAI_DECL__Udon_Sky_TintElevation
 float4 _Udon_Sky_TintElevation;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_NadirColor
+#define LANBAI_DECL__Udon_Sky_NadirColor
 float4 _Udon_Sky_NadirColor;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_BelowShape
+#define LANBAI_DECL__Udon_Sky_BelowShape
 float4 _Udon_Sky_BelowShape;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_Band1Color
+#define LANBAI_DECL__Udon_Sky_Band1Color
 float4 _Udon_Sky_Band1Color;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_Band1Shape
+#define LANBAI_DECL__Udon_Sky_Band1Shape
 float4 _Udon_Sky_Band1Shape;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_Band2Color
+#define LANBAI_DECL__Udon_Sky_Band2Color
 float4 _Udon_Sky_Band2Color;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_Band2Shape
+#define LANBAI_DECL__Udon_Sky_Band2Shape
 float4 _Udon_Sky_Band2Shape;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_OtherTint
+#define LANBAI_DECL__Udon_Sky_OtherTint
 float4 _Udon_Sky_OtherTint;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_NightColor
+#define LANBAI_DECL__Udon_Sky_NightColor
 float4 _Udon_Sky_NightColor;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_StarFloorAdd
+#define LANBAI_DECL__Udon_Sky_StarFloorAdd
 float4 _Udon_Sky_StarFloorAdd;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_NightMaskDir
+#define LANBAI_DECL__Udon_Sky_NightMaskDir
 float4 _Udon_Sky_NightMaskDir;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_NightMaskShape
+#define LANBAI_DECL__Udon_Sky_NightMaskShape
 float4 _Udon_Sky_NightMaskShape;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_SunDir
+#define LANBAI_DECL__Udon_Sky_SunDir
 float4 _Udon_Sky_SunDir;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_SunColor
+#define LANBAI_DECL__Udon_Sky_SunColor
 float4 _Udon_Sky_SunColor;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_SunShape
+#define LANBAI_DECL__Udon_Sky_SunShape
 float4 _Udon_Sky_SunShape;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_SunGlow
+#define LANBAI_DECL__Udon_Sky_SunGlow
 float4 _Udon_Sky_SunGlow;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_SunGlowColor
+#define LANBAI_DECL__Udon_Sky_SunGlowColor
 float4 _Udon_Sky_SunGlowColor;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_MoonDir
+#define LANBAI_DECL__Udon_Sky_MoonDir
 float4 _Udon_Sky_MoonDir;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_MoonColor
+#define LANBAI_DECL__Udon_Sky_MoonColor
 float4 _Udon_Sky_MoonColor;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_MoonGlow
+#define LANBAI_DECL__Udon_Sky_MoonGlow
 float4 _Udon_Sky_MoonGlow;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_MoonGlowColor
+#define LANBAI_DECL__Udon_Sky_MoonGlowColor
 float4 _Udon_Sky_MoonGlowColor;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_PurpleGuard
+#define LANBAI_DECL__Udon_Sky_PurpleGuard
 float4 _Udon_Sky_PurpleGuard;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_SunRemove
+#define LANBAI_DECL__Udon_Sky_SunRemove
 float4 _Udon_Sky_SunRemove;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_RotationA
+#define LANBAI_DECL__Udon_Sky_RotationA
 float4 _Udon_Sky_RotationA;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_ExposureA
+#define LANBAI_DECL__Udon_Sky_ExposureA
 float4 _Udon_Sky_ExposureA;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_ClampA
+#define LANBAI_DECL__Udon_Sky_ClampA
 float4 _Udon_Sky_ClampA;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_RotationB
+#define LANBAI_DECL__Udon_Sky_RotationB
 float4 _Udon_Sky_RotationB;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_ExposureB
+#define LANBAI_DECL__Udon_Sky_ExposureB
 float4 _Udon_Sky_ExposureB;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_ClampB
+#define LANBAI_DECL__Udon_Sky_ClampB
 float4 _Udon_Sky_ClampB;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_Band2Gain
+#define LANBAI_DECL__Udon_Sky_Band2Gain
 float4 _Udon_Sky_Band2Gain;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_OtherGain
+#define LANBAI_DECL__Udon_Sky_OtherGain
 float4 _Udon_Sky_OtherGain;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_OtherSeam
+#define LANBAI_DECL__Udon_Sky_OtherSeam
 float4 _Udon_Sky_OtherSeam;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_OtherFromB
+#define LANBAI_DECL__Udon_Sky_OtherFromB
 float4 _Udon_Sky_OtherFromB;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_HorizonLift
+#define LANBAI_DECL__Udon_Sky_HorizonLift
 float4 _Udon_Sky_HorizonLift;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_MoonRadius
+#define LANBAI_DECL__Udon_Sky_MoonRadius
 float4 _Udon_Sky_MoonRadius;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_Exposure
+#define LANBAI_DECL__Udon_Sky_Exposure
 float4 _Udon_Sky_Exposure;
+#endif
+#ifndef LANBAI_DECL__Udon_Sky_GlowScale
+#define LANBAI_DECL__Udon_Sky_GlowScale
 float4 _Udon_Sky_GlowScale;
+#endif
 static float4 p_ZenithTintA;
 static float4 p_MidTintA;
 static float4 p_HorizonTintA;
