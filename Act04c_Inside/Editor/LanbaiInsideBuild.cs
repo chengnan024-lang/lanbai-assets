@@ -142,7 +142,7 @@ namespace Lanbai.Inside.Editor
             float H = InsideLayoutData.LipH[ki];
             m.SetFloat("_LipGlow", 3.15f);                                 // r06 / r07 (art reviews r05 #1, r06 S2): fibres to luma 200
             m.SetFloat("_WeaveAmount", 0.02f);                             // r06-r11: the streaks read as rain on glass
-            m.SetVector("_Folds", new Vector4(0.08f * H, 0.5f * H, 0.25f, 0.35f * H));   // r07: visible at 100-400 m
+            m.SetVector("_Folds", new Vector4(0.08f * H, 0.5f * H, 0f, 0.35f * H));   // r15: the old texture fold off (its u-sampling drew staircase seams); x = 0.08 H still sets the pleat scale
             m.SetFloat("_ThreadCore", objName == "Lip8_Wall" ? 1f : 0f);
             m.SetVector("_DotHalo", new Vector4(dotHaloR, dotHaloR * 0.86f, dotHaloR * 0.70f, 0f));
             m.SetFloat("_FogHeightFalloff", 0f);
@@ -203,6 +203,8 @@ namespace Lanbai.Inside.Editor
             Arr("lipT", InsideLayoutData.LipT); Arr("lipS", InsideLayoutData.LipS);
             Arr("lipMatLip", lipMatLip);
             Arr("bandStart", InsideLayoutData.BandStart); Arr("bandSweep", InsideLayoutData.BandSweep);
+            void Col1(string name, Color v) { var p = so.FindProperty(name); if (p != null) p.colorValue = v; }
+            Col1("dialBase", InsideLayoutData.DialBase); Col1("dialBright", InsideLayoutData.DialBright);   // same source as inside_drive.dial
             Cols("zoneFill", InsideLayoutData.ZoneFill); Cols("fibreFill", InsideLayoutData.FibreFill); Cols("bandColour", InsideLayoutData.BandColour);
             var root = so.FindProperty("insideRoot"); if (root != null) root.objectReferenceValue = insideRoot.transform;
             var rootGo = so.FindProperty("insideRootObject"); if (rootGo != null) rootGo.objectReferenceValue = insideRoot;

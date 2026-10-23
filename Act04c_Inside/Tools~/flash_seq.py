@@ -51,6 +51,45 @@ def flash(run, out, vr=False):
     print('flash sequence: %d frames, peak APL %.1f at t %.3f' % (len(rows), peak['APL'], peak['t']))
 
 
+def _compose(img, t):
+    lum = img @ np.array([0.2126, 0.7152, 0.0722])
+    dEV = DR.delta_ev(t)
+    ov = DR.overlay(t, scene_L=float(lum.mean() * 2 ** (-0.9 + dEV)))
+    sid = 'S6' if t >= D.U12 else 'S4c'
+    x = img
+    if ov is not None:
+        fill = np.asarray(ov['fill']) * 2.0 ** (-ov['dEV'])
+        x = ov['alpha'] * fill[None, None, :] + (1 - ov['alpha']) * img
+    return LG.grade(x, sid, dEV=dEV), dEV, ov
+
+
+def flashdyn(frozen, rundir, out):
+    """D-20: the dot's glow grows inside the flash, so the frames 247.88 .. 248.65 come from their own linear renders
+    (<rundir>/f_<t>/linear.npy, t to 3 decimals); the rest from the frozen frame."""
+    os.makedirs(out, exist_ok=True)
+    base = down(np.load(os.path.join(frozen, 'linear.npy')).astype(np.float64))
+    rows = []
+    for i, t in enumerate(np.arange(245.9, 249.3, 1 / 60.0)):
+        p = os.path.join(rundir, 'f_%.3f' % t, 'linear.npy')
+        img = down(np.load(p).astype(np.float64)) if os.path.exists(p) else base
+        c, dEV, ov = _compose(img, t)
+        Image.fromarray(np.clip(np.round(c), 0, 255).astype(np.uint8)).save(os.path.join(out, 'f%05d.png' % i))
+        rows.append(dict(t=round(float(t), 4), dEV=round(dEV, 3), own=os.path.exists(p), APL=round(LG.apl(c), 2)))
+    json.dump(rows, open(os.path.join(out, 'sequence.json'), 'w'), indent=0)
+    peak = max(rows, key=lambda r: r['APL'])
+    print('flash (dynamic dot) sequence: %d frames (%d own renders), peak APL %.1f at t %.3f' % (len(rows), sum(r['own'] for r in rows), peak['APL'], peak['t']))
+
+
+def stills(rundir, out):
+    """the four act-5 stills at full resolution (D-20): <rundir>/<t>/linear.npy composed like the sequence."""
+    os.makedirs(out, exist_ok=True)
+    for t in (247.9, 248.29, 248.5, 248.64):
+        img = np.load(os.path.join(rundir, '%.2f' % t, 'linear.npy')).astype(np.float64)
+        c, dEV, ov = _compose(img, t)
+        Image.fromarray(np.clip(np.round(c), 0, 255).astype(np.uint8)).save(os.path.join(out, '%.2f_hero.png' % t))
+        print('%.2f dEV %.2f overlay %s APL %.1f' % (t, dEV, None if ov is None else round(ov['alpha'], 3), LG.apl(c)))
+
+
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()
     ap.add_argument('mode')
@@ -60,3 +99,8 @@ if __name__ == '__main__':
     a = ap.parse_args()
     if a.mode == 'flash':
         flash(a.src, a.out, a.vr)
+    elif a.mode == 'flashdyn':
+        frozen, rundir = a.src.split(',')
+        flashdyn(frozen, rundir, a.out)
+    elif a.mode == 'stills':
+        stills(a.src, a.out)

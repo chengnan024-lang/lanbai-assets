@@ -40,7 +40,7 @@ Shader "Lanbai/InsideLip"
         _LipGlowWidth ("Lip glow width (m)", Float) = 2.5
         _LipGlowFar ("Translucency band (x gain, y width m)", Vector) = (0.08, 40, 0, 0)
         _GrainRoll ("Fibre grain roll (deg, = the lip's roll)", Float) = 0
-        _Folds ("Tension folds (x period along the edge m, y period away m, z amount, w falloff m)", Vector) = (48, 300, 0.25, 200)
+        _Folds ("Tension folds (x period along the edge m, y period away m, z amount, w falloff m)", Vector) = (48, 300, 0, 200)
         [Header(Fringe)]
         _FringeTex ("Fringe (R fibres, G coverage, B clump)", 2D) = "black" {}
         _FringeGain ("Fringe gain", Float) = 2.75
@@ -156,22 +156,24 @@ Shader "Lanbai/InsideLip"
                 wp.z += 0.5 * sw * sin(_Udon_InsideClock.x * 0.41 + v.uv0.x * 23.0);
             #endif
             #if defined(_PART_DOT)
-                // billboard about the object origin. r07 (art review r06 S1): _Udon_InsideDot.y is the glow RADIUS (brief:
-                // 4 deg at LIP4 -> 12 deg), the core x stays a diameter; the halo is an exp tail with no hard edge
+                // billboard about the object origin. D-20: _Udon_InsideDot.y is the glow DIAMETER (bible §1.8: <= 12 deg),
+                // .x the core diameter, .z the gain, .w the glow scale during FLASH_TEAR (1 otherwise; D-20 lets the glow
+                // grow inside the authorised 0.4 s rise). The halo is an exp tail with no hard edge.
                 float3 c = mul(unity_ObjectToWorld, float4(0, 0, 0, 1)).xyz;
                 float3 eye = LanbaiCentreEyePos();
-                float3 f = normalize(c - eye);
+                float3 f = normalize(c - eye);                               // the direction: from the eyes' midpoint
                 float3 r = normalize(cross(float3(0, 1, 0), f));
                 float3 u = cross(f, r);
-                // r07: the halo is glare, never cut by the cloth in front of the dot: the billboard is drawn 40 m out along
-                // the dot's direction at the same angular size (in front of every sheet, whose openings keep >= 40 m
-                // clear of the path; behind the cabin, so the bus still hides it). The core's sightline through every
-                // opening is checked by the layout (Tools~/inside_layout.py, from LIP4 + 2 s).
+                // r07: the halo is glare, never cut by the cloth in front of the dot: drawn 40 m out along the dot's
+                // direction at the same angular size (in front of every sheet, whose openings keep >= 40 m clear of
+                // the path; behind the cabin). 总导演终审: anchored per EYE (_WorldSpaceCameraPos is this eye's under
+                // SPS-I), so it has zero parallax and fuses at infinity, not in front of the opening's edge.
                 float d = 40.0;
-                c = eye + f * d;
-                float halfG = d * tan(radians(max(_Udon_InsideDot.y, 0.01)));
+                c = _WorldSpaceCameraPos + f * d;
+                float gs = max(_Udon_InsideDot.w, 1.0);
+                float halfG = d * tan(radians(max(_Udon_InsideDot.y * gs, 0.01)) * 0.5);
                 wp = c + (r * v.uv0.x + u * v.uv0.y) * 2.0 * halfG;          // uv0 in -0.5 .. 0.5
-                o.aux = float4(v.uv0 * 2.0, 0.5 * _Udon_InsideDot.x / max(_Udon_InsideDot.y, 0.01), 0);
+                o.aux = float4(v.uv0 * 2.0, _Udon_InsideDot.x / max(_Udon_InsideDot.y * gs, 0.01), 0);
             #elif defined(_PART_LOOSE)
                 // uv0 = (along 0..1, side -1/1); uv1 = (phase s, radial speed m/s); uv2 = (r0 m, angle rad); uv3 = (z0 m, length m)
                 // color = (axis dir xyz * 0.5 + 0.5, brightness). Round the path axis (the bus's z axis), bus-anchored:

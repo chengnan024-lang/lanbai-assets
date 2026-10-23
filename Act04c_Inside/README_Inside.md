@@ -60,7 +60,7 @@
 | Threads | 窄端没断的深色纬纱，边上透光 |
 | Lip8_Ply0..4 + Lip8_Wall | 袖：入口、出口发光；中间 3 层暗（× 0.12，没有毛边，两层是不合拢的布片），每层整体有 2.5–5 m 的缓慢起伏；90 根被拉出来的发丝（0.12–0.45 m 宽，每根只占深度的 25–60%，断头下垂，纤维色 × 0.03–0.10） |
 | Dome | 跟车的 2.4 km 球，画 `LanbaiHorizon(dir)`（无穷远的雾），写深度 |
-| Dot | 暖白点：天上的东西，不吃雾，方位 −6.5°、仰角 +4°、2.3 km；核 0.3° → 0.9°、辉光 4° → 12°；核 `#FFC187 @ +2.79`，辉光颜色不那么橙（线性 × (1, 0.86, 0.70)），剖面 (1−r)^1.5 × 软边、亮度 × 0.32 |
+| Dot | 暖白点：天上的东西，不吃雾，方位 −6.5°、仰角 +4°、2.3 km；核直径 0.3° → 0.9°、辉光**直径** 4° → 12°（D-20：圣经 §1.8 的上限，按直径）；作为眩光画在 40 m 处、**每只眼各自锚定**（零视差，融合在无穷远，不在开口边的前面；方向按两眼中点）；核 `#FFC187 @ +2.79`，辉光颜色不那么橙（线性 × (1, 0.86, 0.70)），剖面 (1−r)^1.5 × 软边、亮度 × 0.32 |
 | Loose | 90 根松散丝线，车坐标里朝前慢漂，颜色 = 当前纤维 × 0.25 |
 
 纤维填色：第 1 重 `#DFCFFF @ +1.96`、第 4 重 `#CBD8FF @ +1.78`、第 8 重 `#BCEAFF @ +1.29`（圣经），中间按对数插值（JSON 里每一重都有线性值）。
@@ -73,17 +73,21 @@
 
 ## 5. 车厢（给 `Lanbai/Cabin`，总导演在做）
 
+- 穿越光带的颜色（D-08，总导演终审）：取纤维色的色相、按“灰卡在屏幕上 C* ≤ 12、h ≤ 290”去饱和（第 1–3 重原来是丁香紫 C* 14–19），亮度仍按灰卡 luma 120 解（`Tools~/build_json.py` 的 `band_colour`）。
 - `_Udon_CabinAmbient`：门的 `#232A3A` × 0.3 → `#B5C3DB` × 0.30（灰卡 `#1E212B`），Trilight 门的三色 → `#3D4863` / `#4C5979` / `#1F283B`，世界主光 1.0 → 0.001：都在 180.05 → 188.05（与 S4 → S4c 同一条 smoothstep）。
 - 穿越光带 `_Udon_CabinSlice` / `_Udon_CabinSliceColor`（总导演已批的接口）：前沿 1.5 m 软边 + 3.5 m 指数拖尾，从车头 +3.6 扫到车尾 −4.0；第 1 重 180.15 起，扫过 1.2 / 1.2 / 1.3 / 1.5 / 1.7 / 1.9 / 2.1 s；第 8 重 2.4 s 扫进来盖满（w = 1），228.6 起从车尾往车头退 2.4 s（w = −1：前沿**前面**亮）。颜色 = 线性 E × 纤维色，按“灰卡 ≤ luma 120”在 S4c 下解出（JSON 的 `band_colour_linear`）。
-- `_Udon_RadioDial`：196.1 → 199.1 从 `#FF7703 @ +0.71` 线性到 `#FF7B00 @ +2.13`（屏幕 `#F2B169`），248.39 → 248.64 随黑降到 0，此后永不再亮。
+- `_Udon_RadioDial`：196.1 → 199.1 从 `#FF7703 @ +0.71`（线性 1.636, 0.302, 0.0015）线性到 `#FF7B00 @ +2.13`（4.377, 0.867, 0；屏幕 `#F2B169`），248.39 → 248.64 随黑降到 0，此后永不再亮。两个值由搭建菜单从 `InsideLayoutData` 填（和 Python 模型同一个来源；总导演终审指出原来的底值写成了 1/4）。`tLichtDial` = 196.10 是参数，本地听了再定（D-16）。
 
 ## 6. 第 5 幕
 
+- **暖白点在闪光里放大（D-20）**：授权的 0.4 s 升起里，辉光直径 × (1 + 1.5 k)、亮度 × (1 + k)，k = ΔEV / 1.5，亮度集中到暖白点方向（读成“光淹没玻璃”），`_Udon_InsideDot.w` 是辉光倍数。参考帧 `Docs~/iterations/15_flash/`（247.90 / 248.29 / 248.50 / 248.64：APL 55.7 / 94.9 / 27.0 / 4.3）。
 - `LanbaiDeltaEV(t)`：247.89 → 248.29 0 → +1.5 EV 线性，保持到 248.39，248.39 → 248.64 回到 0。**分发层把它和别的事件加起来写一次 EXPO**；单独测试时勾 `writeExposure`。
 - 黑：248.39 → 248.64 遮罩 EV 线性从画面到 `#030409`（S4c 填 `#030400` × 2^(−ΔEV)），248.64 同一帧换 S6 的 `#090200`（分发层同一帧硬切 S4c → S6）；遮罩保持到 F0 + 1.0，交给第 6 幕。
 - 248.64 在黑下关 `InsideRoot`（`LanbaiActivate(false)`）。
 
 ## 7. 新的全局量（总导演已登记）
+
+`_Udon_InsideDot`：x 核直径（度）、y 辉光**直径**（度，≤ 12）、z 增益、**w 闪光里的辉光倍数**（1 平时，D-20）。
 
 `_Udon_InsidePortal`、`_Udon_InsideDot`、`_Udon_InsideFibre`、`_Udon_InsideClock`、`_Udon_InsideFog`、`_Udon_CabinSlice`、`_Udon_CabinSliceColor`、`_Udon_RadioDial`；天窗光斑另加 `_Udon_SkySpot`（x = 亮度包络，**请登记**）。
 
@@ -98,7 +102,8 @@
 | 布局 | `~/bpy/bin/python Tools~/inside_layout.py` | 净空、偏移、暖白点视线、框住、交替：全过（`Tools~/out/layout_solved.json`） |
 | FBX 读回 | `~/bpy/bin/python Tools~/inside_mesh.py` | 33 / 33 个网格位置一致 |
 | 天窗光斑投影 | `~/bpy/bin/python Tools~/skylight_check.py` | 与门的 25 个采样最大差 0.5 mm |
-| 闪光（246.4 → 249.3，60 fps，由冻住的一帧 × 2^ΔEV + 黑遮罩 + S4c → S6 硬切合成） | `Tools~/flash_seq.py flash …` → `Art/tools/lens_tech/flashcheck.py` | WCAG 2.3.1 PASS；蓝白闪光规则 PASS（任一秒最多 1 次）；上升 0.92 EV / 0.25 s、1.45 EV / 1 s（授权的 FLASH_TEAR，ramp law 标 FAIL 是预期的）；峰值 APL luma 105（≤ 150） |
+| 闪光（D-20 以后：245.9 → 249.3，60 fps；247.88 → 248.65 每帧单独渲（暖白点在放大），其余用冻住的一帧；× 2^ΔEV + 黑遮罩 + S4c → S6 硬切；`Tools~/flash_seq.py flashdyn`） | `Docs~/flashcheck/flash_dyn_245.9-249.3_60fps.json` | WCAG PASS、闪光规则 PASS（1 次）、上升 1.05 EV / 0.25 s、1.66 EV / 1 s（授权的 FLASH_TEAR）、峰值 APL 109（≤ 150） |
+| 闪光（D-20 以前） | `Tools~/flash_seq.py flash …` → `Art/tools/lens_tech/flashcheck.py` | WCAG 2.3.1 PASS；蓝白闪光规则 PASS（任一秒最多 1 次）；上升 0.92 EV / 0.25 s、1.45 EV / 1 s（授权的 FLASH_TEAR，ramp law 标 FAIL 是预期的）；峰值 APL luma 105（≤ 150） |
 | 进门 179.6–182.6（30 fps）、袖 224–232（15 fps） | `Tools~/render/seqs.sh`（320×180）→ flashcheck；`Docs~/flashcheck/` | 进门：WCAG PASS、蓝白闪光规则 PASS（任一秒 1.5 次）、ramp law PASS、峰值 APL 48；袖：WCAG PASS、闪光规则 PASS（1 次）、ramp law PASS（上升 0.33 EV / 1 s）、峰值 58。**注意**：这两段序列是在 r09 → r12 改材质的同时在后台渲的，前后帧不全是同一版外观（差别是布面的褶和透光，不影响闪光）；进门前半秒是门的画面，Blender 这边画不出来，只能从 U9 起 |
 
 ## 9. 参考图（`Docs~/iterations/12_lock/`，PPv2 模拟调色后，960×540）

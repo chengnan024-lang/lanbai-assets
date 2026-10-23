@@ -24,11 +24,47 @@ def r(x, n=4):
     return round(float(x), n)
 
 
+def _lab(codes):
+    x = np.asarray(codes, float) / 255.0
+    lin = np.where(x <= 0.04045, x / 12.92, ((x + 0.055) / 1.055) ** 2.4)
+    M = np.array([[0.4124, 0.3576, 0.1805], [0.2126, 0.7152, 0.0722], [0.0193, 0.1192, 0.9505]])
+    xyz = M @ lin / np.array([0.95047, 1.0, 1.08883])
+    f = np.where(xyz > 0.008856, np.cbrt(xyz), 7.787 * xyz + 16 / 116)
+    L, a, b = 116 * f[1] - 16, 500 * (f[0] - f[1]), 200 * (f[1] - f[2])
+    return L, float(np.hypot(a, b)), float(np.degrees(np.arctan2(b, a)) % 360)
+
+
+def _solve_luma(c, target=120.0):
+    lo, hi = 0.0, 50.0
+    for _ in range(60):
+        m = 0.5 * (lo + hi)
+        luma = float(LG.display(0.18 * c * m, 'S4c') @ [0.2126, 0.7152, 0.0722])
+        lo, hi = (m, hi) if luma < target else (lo, m)
+    return lo
+
+
 def band_colour(k):
     """linear E x colour of the crossing band so a grey card (0.18) facing it reads luma 120 under S4c (seats, darker
-    than grey, stay below 120): solved on the grey card's display luma."""
+    than grey, stay below 120): solved on the grey card's display luma.
+    D-08 (总导演终审 of 4b5d500: lips 1-3 lit the cabin lilac, C* 14-19 / h 291-301): the hue is the fibre colour's,
+    desaturated toward its own luminance (and pulled toward blue) until the grey card on screen is C* <= 12, h <= 290."""
     fib = np.asarray(DR.fibre_fill(k))
     c = fib / max(fib.max(), 1e-6)
+    lum = float(c @ [0.2126, 0.7152, 0.0722])
+    for step in range(60):
+        m = _solve_luma(c)
+        _, C, h = _lab(LG.display(0.18 * c * m, 'S4c'))
+        if C <= 12.0 and (h <= 290.0 or C < 3.0):
+            break
+        c = lum + (c - lum) * 0.93                              # less chroma
+        if h > 290.0:
+            c = c * np.array([0.985, 1.0, 1.0])                 # less red: toward blue
+        c = c / max(c.max(), 1e-6)
+    lo = _solve_luma(c)
+    return tuple(c * lo)
+
+
+def _unused():
     lo, hi = 0.0, 50.0
     for _ in range(60):
         m = 0.5 * (lo + hi)
@@ -108,6 +144,9 @@ def main():
     cs.append('        public static readonly float[] BandSweep = %s;' % cs_floats(D.BAND_SWEEP))
     cs.append('        public static readonly Color[] FibreFill = %s;' % cs_colors([l['fibre_fill_linear'] for l in lips]))
     cs.append('        public static readonly Color[] BandColour = %s;' % cs_colors([l['band_colour_linear'] for l in lips]))
+    db, dbr = DR.fill_hdr('#FF7703', 0.71), DR.fill_hdr('#FF7B00', 2.13)      # the radio dial (same source as inside_drive.dial)
+    cs.append('        public static readonly Color DialBase = new Color(%.4ff, %.4ff, %.4ff);' % tuple(float(v) for v in db))
+    cs.append('        public static readonly Color DialBright = new Color(%.4ff, %.4ff, %.4ff);' % tuple(float(v) for v in dbr))
     cs.append('        public static readonly Color[] ZoneFill = %s;' % cs_colors([z['fill_linear'] for z in zones]))
     cs.append('        public static readonly Color ClothFill = new Color(%.6ff, %.6ff, %.6ff, 1f);' % tuple(DR.fill_of(D.CLOTH_SCREEN)))
     cs.append('        public static readonly Color DotFill = new Color(%.6ff, %.6ff, %.6ff, 1f);' % tuple(DR.fill_hdr(*D.DOT_FILL)))

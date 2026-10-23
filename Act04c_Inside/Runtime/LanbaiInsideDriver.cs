@@ -65,7 +65,8 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
     public float dotGrowFrom = 202.40f;           // U11
     public float dotStop = 246.39f;               // U12 - 2.25: nothing changes after this
     public Vector2 dotCoreDeg = new Vector2(0.3f, 0.9f);
-    public Vector2 dotGlowDeg = new Vector2(4f, 12f);
+    public Vector2 dotGlowDeg = new Vector2(4f, 12f);          // DIAMETERS (D-20; bible §1.8: <= 12 deg)
+    public float flashDotGlow = 1.5f, flashDotGain = 1.0f;     // D-20: the glow grows inside the flash's rise
 
     [Header("Fibres (current lip colour for the loose threads)")]
     public Color[] fibreFill = new Color[8];
@@ -87,8 +88,8 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
     public float gradeFadeDur = 8f;
     public Color[] bandColour = new Color[8];     // linear E x colour of each crossing band (solved: seat top <= luma 120)
     public float bandSoft = 1.5f, bandTail = 3.5f;
-    public Color dialBase = new Color(0.4f, 0.10f, 0.0f);          // act 2's dial fill (#FF7703 @ +0.71)
-    public Color dialBright = new Color(4.38f, 0.83f, 0.0f);       // #FF7B00 @ +2.13
+    public Color dialBase = new Color(1.636f, 0.302f, 0.0015f);    // act 2's dial fill (#FF7703 @ +0.71); the build fills it from InsideLayoutData
+    public Color dialBright = new Color(4.377f, 0.867f, 0f);       // #FF7B00 @ +2.13 (总导演终审: the old base was 1/4)
 
     [Header("Act 5")]
     public LanbaiOverlay overlay;
@@ -346,7 +347,10 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
         float glow = Mathf.Lerp(dotGlowDeg.x, dotGlowDeg.y, g);
         float gain = 0f;
         if (t >= dotAppear) gain = Mathf.Pow(2f, -6f * (1f - Mathf.Clamp01((t - dotAppear) / dotAppearDur)));
-        VRCShader.SetGlobalVector(_idDot, new Vector4(core, glow, gain, 0f));
+        // D-20: inside FLASH_TEAR's authorised rise the dot's glow grows with it and the light gathers toward the dot
+        // ("light flooding the glass", not a uniform lift): glow x (1 + 1.5 k), gain x (1 + k), k = dEV / flashEV
+        float k = Mathf.Clamp01(LanbaiDeltaEV(t) / Mathf.Max(flashEV, 1e-3f));
+        VRCShader.SetGlobalVector(_idDot, new Vector4(core, glow, gain * (1f + flashDotGain * k), 1f + flashDotGlow * k));
         if (dotTransform != null) dotTransform.gameObject.SetActive(gain > 0f && t < tU12);
     }
 

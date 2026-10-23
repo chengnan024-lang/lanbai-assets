@@ -150,7 +150,16 @@ def lip_material(k, st=None):
     vis = 1.0 if st is None else lip_visibility(k, st['t'])
     return dict(cloth=fill_of(D.CLOTH_SCREEN), fibre=fibre_fill(k), roll=0.0, weave_scale=40.0, weave_amount=0.02,
                 lip_glow=3.15 * vis, lip_w=max(0.5, 0.002 * Hk), band=(0.07 * vis, 0.04 * Hk), fringe_gain=2.75 * vis,
-                thread_rim=0.6 * vis, folds=(0.08 * Hk, 0.5 * Hk, 0.25, 0.35 * Hk), fog_cap_cloth=SHEET_FOG_CAP, vis=vis)
+                thread_rim=0.6 * vis, folds=(0.08 * Hk, 0.5 * Hk, 0.0, 0.35 * Hk), fog_cap_cloth=SHEET_FOG_CAP, vis=vis)
+
+
+FLASH_DOT_GLOW, FLASH_DOT_GAIN = 1.5, 1.0             # D-20: the dot's glow grows inside FLASH_TEAR's rise
+
+
+def dot_flash(t):
+    """(glow scale, gain scale) of the dot during FLASH_TEAR (D-20; LanbaiInsideDriver.WriteDot)."""
+    k = min(max(delta_ev(t) / 1.5, 0.0), 1.0)
+    return 1.0 + FLASH_DOT_GLOW * k, 1.0 + FLASH_DOT_GAIN * k
 
 
 def delta_ev(t):

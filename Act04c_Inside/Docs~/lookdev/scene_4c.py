@@ -453,12 +453,15 @@ def build(ctx):
         # r07: the halo is glare (Unity: ZTest Always); here the quad sits 40 m out with the same angular size, in front
         # of every sheet (the layout keeps the core clear of the cloth)
         c = eye + dd * 40.0
-        half = 40.0 * math.tan(math.radians(glow))          # r07: the glow angle is a radius
+        gs, gk = DR.dot_flash(t)                            # D-20: grows inside the flash's rise
+        glow = glow * gs
+        gain = gain * gk
+        half = 40.0 * math.tan(math.radians(glow) * 0.5)    # D-20: the glow angle is a DIAMETER (bible: <= 12 deg)
         f = dd / np.linalg.norm(dd)
         r = np.cross([0, 1, 0], f)
         r /= np.linalg.norm(r)
         u = np.cross(f, r)
         quad = dict(V=np.array([c + (-r - u) * half, c + (r - u) * half, c + (r + u) * half, c + (-r + u) * half]),
                     F=np.array([(0, 1, 2), (0, 2, 3)]), uv0=np.array([[-0.5, -0.5], [0.5, -0.5], [0.5, 0.5], [-0.5, 0.5]]))
-        mesh(None, 'Inside_Dot', quad, 0.0, mat_dot(st['dot_core'], 0.32, 0.5 * core / glow, gain))
+        mesh(None, 'Inside_Dot', quad, 0.0, mat_dot(st['dot_core'], 0.32, core / glow, gain))
     return dict(what='第 4c 幕 t=%.2f s=%.1f lips=%d fog=%s' % (t, s, made, st['fog_zone_hex']))
