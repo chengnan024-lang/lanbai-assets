@@ -37,6 +37,8 @@ Shader "Lanbai/Sea"
         _ReflClamp ("Cube sample max channel  linear  act 6 = disc x 0.41", Float) = 2.4
         _WaterColor ("Water body colour  linear", Vector) = (0.0156, 0.0484, 0.0954, 0)
         _DiscCenter ("Disc  xy centre world xz  z radius m  w fade band m", Vector) = (0, 0, 0, 0)
+        _FogCap ("Fog cap  0..1  0 none", Range(0, 1)) = 0
+        _FogHeightFalloff ("Fog height falloff m  0 uniform  act 8 ceiling 120", Float) = 0
         [Enum(None, 0, LanbaiFog, 1)] _FogMode ("Fog  bible numbering  0 none  1 LanbaiFog", Float) = 1
 
         [Header(Above  sun glitter)]

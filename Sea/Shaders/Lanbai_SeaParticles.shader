@@ -18,6 +18,8 @@
 //               TRAIL: x = phase 0..1 in the pool, y = life s · BUBBLE: x = delay s (one-shot) / phase 0..1 (loop), y = duration s
 //    COLOR      rgb = linear colour, a = alpha
 //  GLOBALS: _Udon_T (timeline s), _Udon_SeaBus (xyz = bus origin in the water frame), _Udon_SeaBusVel (xyz m/s, same frame)
+//  BOUNDS: the vertex shader moves every quad (snow wraps around the bus, seeds are fixed in the water frame), so the
+//  generated mesh MUST carry bounds that enclose where it draws (the Act07 builder sets a 4 km box), or Unity culls it.
 //  Billboards face the CENTRE eye; never narrower than _MinPx pixels (energy kept: alpha x coverage); nothing inside
 //  _NearFade.x of the eye (bible §1.8: nothing within 0.3 m; sparks never within 5 m is the layout's job).
 // =====================================================================================================
@@ -46,7 +48,7 @@ Shader "Lanbai/SeaParticles"
     }
     SubShader
     {
-        Tags { "Queue" = "Transparent+10" "RenderType" = "Transparent" "IgnoreProjector" = "True" "ForceNoShadowCasting" = "True" }
+        Tags { "Queue" = "Transparent-10" "RenderType" = "Transparent" "IgnoreProjector" = "True" "ForceNoShadowCasting" = "True" }
         Blend [_SrcBlend] [_DstBlend]
         ZWrite Off
         Cull Off

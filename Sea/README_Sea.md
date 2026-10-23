@@ -37,7 +37,8 @@
 | `Textures/ShaftStreaks_256.png` | 光柱条纹 |
 | `Textures/Cube_Dawn_256.exr`、`Cube_DuskLower_256.exr`、`Cube_Dusk_256.exr` | **备用**立方图（Syferfontein 两张 HDRI，6 面横条、D3D 面方向、BC6H）：正式的由总工程师的 `LanbaiReflectionBaker` 烘 |
 | `Models/Sea_Disc.fbx` | r 40 km 的圆盘（中心密） |
-| `Models/Sea_Ceiling.fbx` | 天花：`Sea_Ceiling_Inner`（r ≤ 2.4 km，不透明）+ `Sea_Ceiling_Edge`（2.4–3.2 km，透明，2.7 km 软边） |
+| `Models/Sea_Dome.fbx` | 水下穹顶（真尺寸 r 1800 m：bounds 对） |
+| `Models/Sea_Ceiling.fbx` | 天花：`Sea_Ceiling_Inner`（r ≤ 2.4 km，不透明）+ `Sea_Ceiling_Edge`（2.4–3.2 km，透明，2.7 km 处 50%、渐隐带 800 m） |
 | `Editor/LanbaiSeaEditor.cs` | 导入设置 + 材质菜单 |
 | `Tools~/` | `make_sea_textures.py`、`make_sea_assets.py`（贴图、网格、立方图的生成）、`sea_numpy.py`（**shader 的逐行 numpy 移植**，参考图用它）、`grade.py`、`k5_dissolve_ramps.py`、旧的 `compile_check/` |
 | `Docs~/` | `lookdev_brief.md`、`lookdev/scene_kit.py`（标准台的场景脚本）、`iterations/`（20 轮）、`K5_dissolve_ramps.json`、评审稿 |
@@ -72,7 +73,7 @@
 ## 4. 对评审意见的回应
 
 - **总工程师第 1 轮（`总工程师意见.md`，接口 v1）**：8 条“必须改”全改（溶化 alpha 按亮度标量解、分母小时退回线性；灯点用四边形；入水 / 出海两块平面不并存；Toksvig 全程按屏幕导数；`_ReflClamp` 按日盘；天花拆内盘 / 外环；第 6、8 幕归云；焦散放 Common）。建议里：焦散有 `[branch]` 提前退出、`tex2Dgrad` 防 mip 缝；`_FogMode` 用圣经编号；`_SunDir` 在 shader 里 normalize；平移对 576 m 取模（驱动）；第 11 幕变体已加。没采纳的一条：**水下雾仍用 `_Udon_WaterFog*` 三色**（天空 v1.1 已经照这个读，不改成模型 B 的参数，免得两个会话都要改）。
-- 美术 / 技术独立评审与陌生人测试：见 `Docs~/review_r1_*.md`（本轮）。
+- 美术 / 技术独立评审第 1 轮与陌生人测试：原稿 `Docs~/review_r1_art.md`、`review_r1_tech.md`、`review_r1_stranger.md`；**逐条回应 `Docs~/review_r1_response.md`**（技术 6 条必须改全改；美术逐帧改了第 2 轮帧 21–28）。
 
 ---
 
@@ -95,4 +96,4 @@
 
 ## 7. 与评审的分歧
 
-（本轮评审后填。）
+见 `Docs~/review_r1_response.md` 末节：APL 目标是正前方的（特写帧不可比）；替身天的数不归海；7c 窗缘留一点颤动是有意的。

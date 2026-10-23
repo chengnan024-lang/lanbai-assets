@@ -24,7 +24,7 @@ namespace Lanbai.Sea.Editor
             ti.mipmapEnabled = true;
             ti.wrapMode = TextureWrapMode.Repeat;
             ti.filterMode = FilterMode.Trilinear;
-            ti.anisoLevel = 4;
+            ti.anisoLevel = 1;                      // the shader folds what the mip chain averages into roughness (it assumes isotropic mips)
             ti.textureCompression = TextureImporterCompression.CompressedHQ;
             if (n.StartsWith("SeaN_"))
             {
@@ -168,7 +168,8 @@ namespace Lanbai.Sea.Editor
         {
             if (d == null) return;
             d.SetVector("_WaterColor", Lin(0.0116f, 0.0296f, 0.0683f));                 // #10263F <- fill #1C304B (S8)
-            d.SetVector("_DiscCenter", edge ? new Vector4(0f, 0f, 2700f, 500f) : Vector4.zero);
+            d.SetVector("_DiscCenter", edge ? new Vector4(0f, 0f, 2700f, 800f) : Vector4.zero);   // 2.7 km, 800 m band (>= 500, bible)
+            d.SetFloat("_FogHeightFalloff", 120f);                                        // the warm dusk fog must not tint the water overhead violet (D-17)
             d.SetFloat("_NormalStrength", 0.25f);
             d.SetVector("_MirrorTint", new Vector4(1f, 1.2f, 0.85f, 0f));               // D-17: the mirror band to gold (h_ab 62)
             d.SetVector("_PurpleGuard", new Vector4(1f, 0.02f, 0f, 0f));

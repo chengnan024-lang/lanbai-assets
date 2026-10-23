@@ -7,7 +7,8 @@
 //  direction: exactly LanbaiHorizon(dir) of LanbaiFog.cginc, i.e. the underwater fog colour, so anything that fogs out
 //  meets it with no seam. Opaque, ZWrite On (the skybox, drawn after opaques, is then hidden behind it).
 //  Only drawn while _Udon_Underwater > 0 (fragments are discarded otherwise; the driver also switches the renderer).
-//  Mesh: any closed sphere (Unity's built-in sphere is fine); its scale and position are ignored.
+//  Mesh: Sea/Models/Sea_Dome.fbx (r 1800 m, so its bounds cover what it draws; a 0.5 m sphere would be frustum-culled
+//  whenever the bus origin is off-screen). The vertex shader re-centres it on the eye, so only its bounds matter.
 // =====================================================================================================
 Shader "Lanbai/SeaDome"
 {

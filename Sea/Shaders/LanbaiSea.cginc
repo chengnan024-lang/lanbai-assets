@@ -50,7 +50,8 @@ inline float3 LanbaiSeaCube(float3 dir, float perceptualRough)
     float lod = perceptualRough * (1.7 - 0.7 * perceptualRough) * 6.0;      // UNITY_SPECCUBE_LOD_STEPS
     float4 c = texCUBElod(_Udon_ReflCube, float4(dir, lod));
     float e = _Udon_ReflExposure > 0.0 ? _Udon_ReflExposure : 1.0;
-    float3 rgb = DecodeHDR(c, _Udon_ReflCube_HDR) * e;
+    float4 hdr = _Udon_ReflCube_HDR.x > 0.0 ? _Udon_ReflCube_HDR : float4(1.0, 1.0, 0.0, 0.0);   // never set: plain linear
+    float3 rgb = DecodeHDR(c, hdr) * e;
     float m = max(max(rgb.r, rgb.g), rgb.b);
     return (m > _ReflClamp) ? rgb * (_ReflClamp / m) : rgb;                  // the cube's own sun never doubles the disc
 }
@@ -118,7 +119,8 @@ inline float3 LanbaiSeaNormal(float2 q, float2 worldXZ, out float slopeVar)
     m *= 1.0 - _CalmAll;
     float k = _NormalStrength * _WaveAmp * lerp(_CalmStrength, 1.0, m);
     // slopes (tangent-space: x = world x, y = world z)
-    float2 s = (nL.xy / max(nL.z, 0.2) + nS.xy / max(nS.z, 0.2)) * k;
+    // n_ts = normalize(-dh/dx, -dh/dz, 1): the SLOPE is -n.xy / n.z (same sign convention as LanbaiGerstnerSlope)
+    float2 s = -(nL.xy / max(nL.z, 0.2) + nS.xy / max(nS.z, 0.2)) * k;
     if (_GerstnerAmp.x + _GerstnerAmp.y + _GerstnerAmp.z > 0.0)
         s += LanbaiGerstnerSlope(q, t) * _WaveAmp;
     float vL = LANBAI_SEA_VAR_LARGE * LanbaiSeaUnresolved(LanbaiSeaLod(uvL));

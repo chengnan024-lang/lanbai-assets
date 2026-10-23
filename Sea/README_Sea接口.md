@@ -91,7 +91,7 @@
 | 属性 | 默认 | 说明 |
 |---|---|---|
 | `_WaterColor` | (0.0116, 0.0296, 0.0683) | 头顶透见的深水（屏幕 `#10263F`，填 `#1C304B`） |
-| `_DiscCenter` | (0, 0, 2700, 500) | 有限的圆：2.7 km 处 alpha 0.5，渐隐带 500 m（2.45 → 2.95 km） |
+| `_DiscCenter` | (0, 0, 2700, 800) | 有限的圆：2.7 km 处 alpha 0.5，渐隐带 800 m（2.3 → 3.1 km；圣经 ≥ 500 m）。只在外环材质上 |
 | `_NormalStrength` | 0.25 | 圣经：法线扰动 ≈ 0.02 rad |
 | `_DissolveTime` | −1 | **天花溶化的时钟：t − 956.36（F10e）**；< 0 = 完整。驱动每帧写 |
 | `_DissolveFront` | 4 | 前沿从地平线走到天顶的秒数（956.36 → 960.36） |
@@ -121,7 +121,7 @@
 |---|---|---|
 | `_Udon_SeaLevel` | float：当前那块海面的世界 y（第 6 幕：云写；第 7 幕：海写；第 8 幕：云写天花的 y；第 11 幕：灯与假醒） | 当前幕 |
 | `_Udon_SeaMode` | float：0 没有海、1 ABOVE、2 BELOW（7a）、3 CEILING、4 BELOW 翻转（7c） | 当前幕 |
-| `_Udon_SeaClock` | float4：x = 浪的钟（秒，用时间轴 t 即可）；yz = 海水相对车的平移（世界 xz，米，= 车走过的路），**驱动对 576 m（64 与 9 的公倍数）取模再写**，不然几百米以后 float 的小数位不够、浪会抖；w > 0 = 已设。没设时用 `_Time.y`、平移 0 | 当前幕 |
+| `_Udon_SeaClock` | float4：x = 浪的钟（秒，用时间轴 t 即可）；yz = 海水相对车的平移（世界 xz，米，= 车走过的路），**不要取模**（宏遮罩 1500 m、第 11 幕的长浪 60 / 37 / 23 m 都不是同一个公倍数，取模那一帧会整片跳；不取模时 5 km 的平移也只差 ~0.05 texel，够用。总工程师评审 r1）；w > 0 = 已设。没设时用 `_Time.y`、平移 0 | 当前幕 |
 | `_Udon_Underwater`（新） | float 0..1：眼睛在水里。雾和天走水下（见 `给总控.md` 对 `LanbaiFog` 的请求） | 海 |
 | `_Udon_WaterFogUp` / `_Udon_WaterFogMid` / `_Udon_WaterFogDown` | 水下雾色（朝上 / 水平 / 朝下，线性）；天空 v1.1 的 `LanbaiHorizon` 已经照这个读 | 海 |
 | `_Udon_T`、`_Udon_SeaBus`、`_Udon_SeaBusVel`（新，待登记） | 时间轴秒；车的原点在水的坐标系里的位置（x, −深度, 前进）；它的速度 m/s | 海（第 7 幕） |
@@ -144,7 +144,7 @@
 **第 8 幕（CEILING）**
 1. 圆盘 `Sea_Ceiling.fbx` 放在 R_Dusk 下，xz 跟车，**y = 出海那一帧我写的 `_Udon_SeaLevel`**，之后按 `dusk_motion_final.json` 的 h(t) 往上退（0 → 272 m，F10e）。材质 `M_08_SeaCeiling`（模式 Ceiling），法线朝下（网格翻过来，或 x 轴转 180°）。
 2. `_Udon_ReflCube` = `ReflCube_DuskLower`（天花的镜面反射的是**下面**的暮天）；`_SkyBehindCube` = 暮的上半球。
-3. 溶化：956.36 起每帧写 `_DissolveTime = t − 956.36`；≥ 9.0（965.36）以后关掉 renderer。宫殿的金点：`PalaceSpecks_Points` 放在天花上方 40–200 m，材质 `Lanbai/SeaSpecks` 设 `_CeilingMode 1`，读同一个 `_DissolveTime`，自己最后走。
+3. 溶化：956.36 起每帧写 `_DissolveTime = t − 956.36`，**写三个材质**：`M_08_SeaCeilingFade`（内盘此刻换成它）、`M_08_SeaCeilingEdge`、金点的 `Lanbai/SeaSpecks`；≥ 9.0（965.36）以后关掉 renderer。宫殿的金点：`PalaceSpecks_Points` 放在天花上方 40–200 m，材质 `Lanbai/SeaSpecks` 设 `_CeilingMode 1`，读同一个 `_DissolveTime`，自己最后走。
 4. `_Udon_SeaMode` = 3；`_Udon_Underwater` = 0（出海那一帧我写 0）。
 
 ---

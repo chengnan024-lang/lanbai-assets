@@ -166,6 +166,13 @@ def make_meshes():
     ob = disc_mesh('Sea_Disc', 40000.0, 40, 96)
     export(ob, os.path.join(KIT, 'Models', 'Sea_Disc.fbx'))
     bpy.ops.wm.read_factory_settings(use_empty=True)
+    # the underwater dome at its real size (bounds!), any orientation: an icosphere r 1800 m, normals in
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=4, radius=1800.0)
+    dome = bpy.context.active_object
+    dome.name = 'Sea_Dome'
+    export(dome, os.path.join(KIT, 'Models', 'Sea_Dome.fbx'))
+    bpy.ops.wm.read_factory_settings(use_empty=True)
     # the act-8 ceiling in two pieces (README_Sea接口 §2.4, chief engineer #6): an OPAQUE inner disc r <= 2.4 km and a
     # TRANSPARENT edge ring 2.4 .. 3.2 km that carries the soft edge (alpha 0.5 at 2.7 km, band 500 m)
     inner = disc_mesh('Sea_Ceiling_Inner', 2400.0, 26, 96, down=True)

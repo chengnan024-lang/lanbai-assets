@@ -222,7 +222,7 @@ def sea_normal(q, worldXZ, t, M):
     m = m * (1.0 - cp[3] * (1.0 - smoothstep(0.6 * cp[2], max(cp[2], 1e-3), pd)))
     m = m * (1.0 - M['CalmAll'])
     k = M['NormalStrength'] * M['WaveAmp'] * (M['CalmStrength'] + (1 - M['CalmStrength']) * m)
-    s = (nL[..., :2] / np.maximum(nL[..., 2:3], 0.2) + nS[..., :2] / np.maximum(nS[..., 2:3], 0.2)) * k[..., None]
+    s = -(nL[..., :2] / np.maximum(nL[..., 2:3], 0.2) + nS[..., :2] / np.maximum(nS[..., 2:3], 0.2)) * k[..., None]
     if sum(M['GerstnerAmp']) > 0:
         s = s + gerstner_slope(q, t, M) * M['WaveAmp']
     var = (VAR_LARGE * unresolved(lodL) + VAR_SMALL * unresolved(lodS)) * k * k

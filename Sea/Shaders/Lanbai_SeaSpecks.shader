@@ -10,6 +10,11 @@
 //  Light: no fog colour, own extinction exp(-d * _Atten) (bible: 灯焰与门光 '_FogMode 2, _Atten 0.004').
 //  Ceiling mode (_CeilingMode 1): each point fades with the ceiling's dissolve, LAST in its own pixel
 //  (LanbaiCeilingLampProgress, same _DissolveTime / _DissolveFront / _DissolvePixel as the ceiling material).
+//  The points sit ABOVE the ceiling (in the water), but the ceiling's inner disc is opaque and writes depth: so in ceiling
+//  mode every point is moved along its own eye ray to _CeilingGap m BELOW the plane (_Udon_SeaLevel = the ceiling's y),
+//  its radius scaled to keep its angular size, and dimmed by the water it shines through (exp(-_WaterAtten x path)).
+//  Draw order: Transparent-20, after the opaque ceiling, before the cabin glass (3000).
+//  The mesh's bounds must enclose the drawn positions (the builder sets 4 km bounds).
 // =====================================================================================================
 Shader "Lanbai/SeaSpecks"
 {
@@ -21,13 +26,15 @@ Shader "Lanbai/SeaSpecks"
         _Atten ("Extinction per m", Float) = 0.004
         _Flicker ("Flicker amount", Range(0, 0.3)) = 0.06
         _CeilingMode ("Ceiling mode  act 8", Float) = 0
+        _CeilingGap ("Ceiling mode  m below the plane", Float) = 0.5
+        _WaterAtten ("Ceiling mode  water extinction per m", Float) = 0.02
         _DissolveTime ("Dissolve clock", Float) = -1
         _DissolveFront ("Dissolve front s", Float) = 4
         _DissolvePixel ("Dissolve per pixel s", Float) = 5
     }
     SubShader
     {
-        Tags { "Queue" = "Transparent-5" "RenderType" = "Transparent" "IgnoreProjector" = "True" "ForceNoShadowCasting" = "True" }
+        Tags { "Queue" = "Transparent-20" "RenderType" = "Transparent" "IgnoreProjector" = "True" "ForceNoShadowCasting" = "True" }
         Blend One One
         ZWrite Off
         Cull Off
@@ -44,7 +51,7 @@ Shader "Lanbai/SeaSpecks"
             #include "LanbaiSeaGlobals.cginc"
 
             float4 _Tint;
-            float _Gain, _MinFWHM, _Atten, _Flicker, _CeilingMode, _DissolveTime, _DissolveFront, _DissolvePixel;
+            float _Gain, _MinFWHM, _Atten, _Flicker, _CeilingMode, _DissolveTime, _DissolveFront, _DissolvePixel, _CeilingGap, _WaterAtten;
 
             struct appdata
             {
@@ -74,8 +81,23 @@ Shader "Lanbai/SeaSpecks"
                 float3 eye = LanbaiCentreEyePos();
                 float3 toP = P - eye;
                 float dist = length(toP);
+                float rScale = 1.0, waterT = 1.0;
+                if (_CeilingMode > 0.5)
+                {
+                    float3 dirP = toP / max(dist, 1e-3);
+                    float plane = _Udon_SeaLevel - _CeilingGap;
+                    if (dirP.y > 1e-3 && P.y > plane)
+                    {
+                        float tp = (plane - eye.y) / dirP.y;
+                        waterT = exp(-_WaterAtten * max(dist - tp, 0.0));
+                        rScale = tp / max(dist, 1e-3);
+                        P = eye + dirP * tp;
+                        toP = P - eye;
+                        dist = tp;
+                    }
+                }
                 float cov;
-                float r = v.uv1.y + LanbaiInflate(v.uv1.y, dist, _MinFWHM, cov);
+                float r = v.uv1.y * rScale + LanbaiInflate(v.uv1.y * rScale, dist, _MinFWHM, cov);
                 float3 fwd = -toP / max(dist, 1e-3);
                 float3 rightV = normalize(cross(float3(0.0, 1.0, 0.0), fwd) + float3(1e-5, 0.0, 0.0));
                 float3 upV = cross(fwd, rightV);
@@ -83,7 +105,7 @@ Shader "Lanbai/SeaSpecks"
                 o.uv = v.uv0;
                 float hz = min(v.uv2.y, 1.5);
                 float fl = 1.0 - _Flicker * v.color.a * (0.5 + 0.5 * sin(6.2831853 * (hz * t + v.uv2.x)));
-                float k = v.uv1.x * _Gain * fl * exp(-dist * _Atten) * cov * cov;
+                float k = v.uv1.x * _Gain * fl * exp(-dist * _Atten) * waterT * cov * cov;
                 if (_CeilingMode > 0.5 && _DissolveTime >= 0.0)
                 {
                     float el = degrees(asin(saturate(-fwd.y)));

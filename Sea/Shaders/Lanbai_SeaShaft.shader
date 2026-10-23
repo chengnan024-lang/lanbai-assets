@@ -11,6 +11,7 @@
 //    UV1       x = half width m, y = length m, z = seed 0..1, w = alpha 0.04..0.08
 //  The quad turns around its own axis to face the CENTRE eye (cylindrical billboard: same in both eyes).
 //  Gather (F4p): every centre slides toward _GatherPoint (object space) by _Gather 0..1, keeping its own small offset.
+//  BOUNDS: the builder sets the mesh bounds to enclose the full shafts (and the gather point), not just the centres.
 //  Additive (One One). No depth write. Fogged like the water (its light is scattered by the same water).
 // =====================================================================================================
 Shader "Lanbai/SeaShaft"
@@ -29,7 +30,7 @@ Shader "Lanbai/SeaShaft"
     }
     SubShader
     {
-        Tags { "Queue" = "Transparent+5" "RenderType" = "Transparent" "IgnoreProjector" = "True" "ForceNoShadowCasting" = "True" }
+        Tags { "Queue" = "Transparent-15" "RenderType" = "Transparent" "IgnoreProjector" = "True" "ForceNoShadowCasting" = "True" }
         Blend One One
         ZWrite Off
         Cull Off
