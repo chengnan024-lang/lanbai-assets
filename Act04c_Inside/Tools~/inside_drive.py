@@ -148,8 +148,8 @@ def lip_material(k, st=None):
     it stays 12-20 luma darker than the air in its opening; the weave streaks at ~20 % contrast; folds +-28 %, closer."""
     Hk = [1000.0, 790.0, 940.0, 525.0, 615.0, 345.0, 285.0, 195.0][k - 1]
     vis = 1.0 if st is None else lip_visibility(k, st['t'])
-    return dict(cloth=fill_of(D.CLOTH_SCREEN), fibre=fibre_fill(k), roll=0.0, weave_scale=40.0, weave_amount=0.06,
-                lip_glow=3.15 * vis, lip_w=max(0.5, 0.002 * Hk), band=(0.10 * vis, 0.03 * Hk), fringe_gain=2.75 * vis,
+    return dict(cloth=fill_of(D.CLOTH_SCREEN), fibre=fibre_fill(k), roll=0.0, weave_scale=40.0, weave_amount=0.02,
+                lip_glow=3.15 * vis, lip_w=max(0.5, 0.002 * Hk), band=(0.07 * vis, 0.04 * Hk), fringe_gain=2.75 * vis,
                 thread_rim=0.6 * vis, folds=(0.08 * Hk, 0.5 * Hk, 0.25, 0.35 * Hk), fog_cap_cloth=SHEET_FOG_CAP, vis=vis)
 
 

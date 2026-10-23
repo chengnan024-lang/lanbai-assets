@@ -92,7 +92,12 @@ def sheet(contour, Hk, seed, gain=1.0, r_far=R_FAR, centre=(0.0, 0.0), billow=0.
     V2, F = T['vertices'], T['triangles']
     dd, idx = tree.query(V2)
     # inside the opening the nearest-point distance is not "into the cloth": the triangulation has no such vertices
-    u = arc[idx]
+    # r12 (art review r11 S4): the nearest edge point jumps across the medial axis and the folds (a function of u) broke
+    # into zigzag seams there: u = the inverse-distance circular mean of the 4 nearest edge points (wrap-aware)
+    dk, ik = tree.query(V2, k=4)
+    wk = 1.0 / np.maximum(dk, 1e-3) ** 2
+    ang = arc[ik] / perim * 2.0 * np.pi
+    u = (np.angle((wk * np.exp(1j * ang)).sum(1)) % (2.0 * np.pi)) / (2.0 * np.pi) * perim
     z = curl_z(dd, u, Hk, seed, perim)
     if billow > 0:
         z = z + billow_z(V2, seed, billow, 45.0) * (1.0 - np.exp(-dd / 6.0))   # the edge keeps its curl, the cloth sags

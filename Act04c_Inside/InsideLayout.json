@@ -768,8 +768,8 @@
    "lip_glow": 3.15,
    "lip_glow_width_m": 2.0,
    "translucency_band": [
-    0.1,
-    30.0
+    0.07,
+    40.0
    ],
    "band_colour_linear": [
     2.1275,
@@ -804,8 +804,8 @@
    "lip_glow": 3.15,
    "lip_glow_width_m": 1.58,
    "translucency_band": [
-    0.1,
-    23.7
+    0.07,
+    31.6
    ],
    "band_colour_linear": [
     1.9651,
@@ -840,8 +840,8 @@
    "lip_glow": 3.15,
    "lip_glow_width_m": 1.88,
    "translucency_band": [
-    0.1,
-    28.2
+    0.07,
+    37.6
    ],
    "band_colour_linear": [
     1.8163,
@@ -876,8 +876,8 @@
    "lip_glow": 3.15,
    "lip_glow_width_m": 1.05,
    "translucency_band": [
-    0.1,
-    15.8
+    0.07,
+    21.0
    ],
    "band_colour_linear": [
     1.6798,
@@ -912,8 +912,8 @@
    "lip_glow": 3.15,
    "lip_glow_width_m": 1.23,
    "translucency_band": [
-    0.1,
-    18.4
+    0.07,
+    24.6
    ],
    "band_colour_linear": [
     1.5725,
@@ -948,8 +948,8 @@
    "lip_glow": 3.15,
    "lip_glow_width_m": 0.69,
    "translucency_band": [
-    0.1,
-    10.3
+    0.07,
+    13.8
    ],
    "band_colour_linear": [
     1.4686,
@@ -984,8 +984,8 @@
    "lip_glow": 3.15,
    "lip_glow_width_m": 0.57,
    "translucency_band": [
-    0.1,
-    8.5
+    0.07,
+    11.4
    ],
    "band_colour_linear": [
     1.372,
@@ -1020,8 +1020,8 @@
    "lip_glow": 3.15,
    "lip_glow_width_m": 0.5,
    "translucency_band": [
-    0.1,
-    5.8
+    0.07,
+    7.8
    ],
    "band_colour_linear": [
     1.2824,
@@ -1128,7 +1128,7 @@
   "density_gate": 0.0006,
   "density_inside": 0.0035,
   "density_ramp": "U9 .. U9 + 2 s smoothstep",
-  "ahead_m": 250.0,
+  "ahead_m": 100.0,
   "nadir_k": 0.8,
   "band_dir": [
    0,

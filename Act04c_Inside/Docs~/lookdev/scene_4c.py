@@ -210,7 +210,16 @@ def mat_sheet(name, P, fp):
                  N.math('ADD', 0.55, N.math('MULTIPLY', cr_, 0.45)))
     bandmod = N.math('ADD', N.math('ADD', 0.5, N.math('MULTIPLY', N.math('SUBTRACT', wr, 0.5), 1.6)), N.math('MULTIPLY', N.math('SUBTRACT', wg, 0.5), 0.3))
     bandmod = N.math('MINIMUM', N.math('MAXIMUM', bandmod, 0.0), 1.0)
-    band = N.math('MULTIPLY', N.math('MULTIPLY', P['band'][0], N.math('EXPONENT', N.math('DIVIDE', d_edge, -P['band'][1]))), bandmod)
+    # r11 (art review r10 B2): the thin weave near the tear lets the light through, mottled at ~0.03 H (not a rim glow)
+    Hb = P['band'][1] / 0.04
+    # r12 (art review r11 S5): domain-warped (no lattice)
+    wu = N.math('ADD', N.math('MULTIPLY', u_edge, 2 * math.pi / (0.03 * Hb)),
+                N.math('MULTIPLY', N.math('SINE', N.math('ADD', N.math('MULTIPLY', d_edge, 2 * math.pi / (0.037 * Hb)), 0.4)), 1.3))
+    wd = N.math('ADD', N.math('MULTIPLY', d_edge, 2 * math.pi / (0.05 * Hb)),
+                N.math('MULTIPLY', N.math('SINE', N.math('ADD', N.math('MULTIPLY', u_edge, 2 * math.pi / (0.043 * Hb)), 1.1)), 1.6))
+    mott = N.math('ADD', 0.5, N.math('ADD', N.math('MULTIPLY', N.math('MULTIPLY', N.math('SINE', wu), N.math('SINE', wd)), 0.35),
+                                     N.math('MULTIPLY', N.math('SINE', N.math('MULTIPLY', u_edge, 2 * math.pi / (0.071 * Hb))), 0.2)))
+    band = N.math('MULTIPLY', N.math('MULTIPLY', P['band'][0], N.math('EXPONENT', N.math('DIVIDE', d_edge, -P['band'][1]))), N.math('MAXIMUM', mott, 0.0))
     gain = N.attr('Col')
     gr, _, _ = N.sep(gain.outputs['Color'])
     glow = N.math('MULTIPLY', N.math('ADD', lip, N.math('MULTIPLY', band, foldK)), gr)
@@ -221,15 +230,20 @@ def mat_sheet(name, P, fp):
     # a darker band just behind the glowing rim
     Hk = fo[0] / 0.08
     tau = 2.0 * math.pi
-    # r10 (art review r09 B2: a phase that depended on the distance to the edge drew iso-lines = strata): the ridges
-    # run ACROSS the tear (constant along the edge normal: phase from u only), each fold 0.05-0.12 H long and tapering
-    ph = N.math('ADD', N.math('MULTIPLY', u_edge, tau / fo[0]),
-                N.math('MULTIPLY', N.math('SINE', N.math('MULTIPLY', u_edge, tau / (2.7 * fo[0]))), 1.7))
-    fold = N.math('ADD', N.math('MULTIPLY', N.math('SINE', ph), 0.65),
-                  N.math('MULTIPLY', N.math('SINE', N.math('ADD', N.math('MULTIPLY', ph, 2.3), 1.1)), 0.35))
+    # r11 (art review r10 B2): discrete soft ridges ACROSS the tear (constant along the edge normal: from u only), one
+    # every 0.06 H where a slow gate lets it through (3-6 per sheet edge-run), each 0.016 H wide with a lit and a shadow
+    # flank (the derivative of a gaussian bump: +- ~8 luma on the cloth), 0.05-0.12 H long, tapering
+    P_ = 0.06 * Hk
+    xr = N.math('SUBTRACT', N.math('FRACT', N.math('DIVIDE', u_edge, P_)), 0.5)
+    w_ = 0.016 * Hk / P_
+    bump = N.math('MULTIPLY', N.math('MULTIPLY', xr, -2.0 / w_),
+                  N.math('EXPONENT', N.math('MULTIPLY', N.math('MULTIPLY', xr, xr), -1.0 / (w_ * w_))))
+    gate = N.smooth(0.25, 0.6, N.math('ADD', N.math('MULTIPLY', N.math('SINE', N.math('ADD', N.math('MULTIPLY', u_edge, tau / (0.41 * Hk)), 0.3)), 0.5),
+                                       N.math('MULTIPLY', N.math('SINE', N.math('MULTIPLY', u_edge, tau / (0.17 * Hk))), 0.35)))
+    fold = N.math('MULTIPLY', bump, gate)
     flen = N.math('ADD', 0.085 * Hk, N.math('MULTIPLY', N.math('SINE', N.math('ADD', N.math('MULTIPLY', u_edge, tau / (0.31 * Hk)), 0.7)), 0.035 * Hk))
     env = N.math('SUBTRACT', 1.0, N.smooth(0.0, 1.0, N.math('DIVIDE', d_edge, flen)))
-    fk = N.math('ADD', 1.0, N.math('MULTIPLY', N.math('MULTIPLY', fold, fo[2]), env))
+    fk = N.math('ADD', 1.0, N.math('MULTIPLY', N.math('MULTIPLY', fold, 0.42 * fo[2] / 0.25), env))
     lw = P['lip_w']
     band_in = N.math('MULTIPLY', N.smooth(lw * 1.0, lw * 1.6, d_edge),
                      N.math('SUBTRACT', 1.0, N.smooth(lw + 0.005 * Hk, lw + 0.009 * Hk, d_edge)))

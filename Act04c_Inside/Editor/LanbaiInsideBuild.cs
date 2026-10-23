@@ -141,7 +141,7 @@ namespace Lanbai.Inside.Editor
             m.SetFloat("_FogCap", part == "SHEET" ? SheetFogCap : 1f);     // r06: the cloth stays 12-20 luma darker than the air beyond it
             float H = InsideLayoutData.LipH[ki];
             m.SetFloat("_LipGlow", 3.15f);                                 // r06 / r07 (art reviews r05 #1, r06 S2): fibres to luma 200
-            m.SetFloat("_WeaveAmount", 0.06f);                             // r06 / r07: the streaks read as rain on glass
+            m.SetFloat("_WeaveAmount", 0.02f);                             // r06-r11: the streaks read as rain on glass
             m.SetVector("_Folds", new Vector4(0.08f * H, 0.5f * H, 0.25f, 0.35f * H));   // r07: visible at 100-400 m
             m.SetFloat("_ThreadCore", objName == "Lip8_Wall" ? 1f : 0f);
             m.SetVector("_DotHalo", new Vector4(dotHaloR, dotHaloR * 0.86f, dotHaloR * 0.70f, 0f));
@@ -151,7 +151,7 @@ namespace Lanbai.Inside.Editor
                 roll = InsideLayoutData.PlyRoll[objName[8] - '0'];
             m.SetFloat("_GrainRoll", roll);
             m.SetFloat("_LipGlowWidth", InsideLayoutData.LipGlowWidth[ki]);
-            m.SetVector("_LipGlowFar", new Vector4(0.10f, InsideLayoutData.BandWidth[ki], 0f, 0f));
+            m.SetVector("_LipGlowFar", new Vector4(0.07f, InsideLayoutData.BandWidth[ki], 0f, 0f));   // r12: -30 % (art review r11 S6)
             var weave = AssetDatabase.LoadAssetAtPath<Texture2D>(Root + "/Textures/Inside_Weave_1024.png");
             var fringe = AssetDatabase.LoadAssetAtPath<Texture2D>(Root + "/Textures/Inside_Fringe_2048x256.png");
             if (weave != null) m.SetTexture("_WeaveTex", weave);

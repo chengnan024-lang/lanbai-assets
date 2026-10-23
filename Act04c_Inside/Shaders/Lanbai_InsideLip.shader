@@ -35,7 +35,7 @@ Shader "Lanbai/InsideLip"
         [Header(Sheet)]
         _WeaveTex ("Weave (R warp streaks, G fine weave, B blotches)", 2D) = "grey" {}
         _WeaveScale ("Weave tile size (m)", Float) = 40
-        _WeaveAmount ("Weave contrast", Range(0, 1)) = 0.06
+        _WeaveAmount ("Weave contrast", Range(0, 1)) = 0.02
         _LipGlow ("Lip glow on the cloth (x fibre colour)", Float) = 3.15
         _LipGlowWidth ("Lip glow width (m)", Float) = 2.5
         _LipGlowFar ("Translucency band (x gain, y width m)", Vector) = (0.08, 40, 0, 0)
@@ -227,7 +227,13 @@ Shader "Lanbai/InsideLip"
                 float comb = tex2D(_FringeTex, float2(uEdge / 64.0, 0.02)).r;
                 // + a faint wide band where the torn cloth thins and glows from inside (review r1: not a neon outline on
                 //   a black cut-out), broken up by the weave's blotches
-                float band = _LipGlowFar.x * exp(-dEdge / max(_LipGlowFar.y, 1.0)) * saturate(0.5 + 1.6 * (w.r - 0.5) + 0.3 * (w.g - 0.5));   // r02: along the warp, not blotches
+                // r11 (art review r10 B2): the thin weave near the tear lets the light through, mottled at ~0.03 H
+                float Hb = _LipGlowFar.y / 0.04;
+                // r12 (art review r11 S5): domain-warped, no lattice
+                float wu = uEdge * 6.2831853 / (0.03 * Hb) + 1.3 * sin(dEdge * 6.2831853 / (0.037 * Hb) + 0.4);
+                float wd = dEdge * 6.2831853 / (0.05 * Hb) + 1.6 * sin(uEdge * 6.2831853 / (0.043 * Hb) + 1.1);
+                float mott = 0.5 + 0.35 * sin(wu) * sin(wd) + 0.2 * sin(uEdge * 6.2831853 / (0.071 * Hb));
+                float band = _LipGlowFar.x * exp(-dEdge / max(_LipGlowFar.y, 1.0)) * max(mott, 0.0);
                 float glow = _LipGlow * exp(-dEdge / _LipGlowWidth) * (0.55 + 0.45 * comb) + band * foldK;
                 float3 c = (cloth + _FibreColor.rgb * glow * g) * gradeK;
                 // r07: a hidden / fading lip (the driver's _Gain = visibility, bible "<= 3 lips at once") blends into the
@@ -238,12 +244,17 @@ Shader "Lanbai/InsideLip"
                 // mips and fog): procedural tension folds radiating from the torn edge (+-_Folds.z) and, on ~15-20 % of
                 // the edge, the curled-back face: a darker band just behind the glowing rim. H from _Folds.x = 0.08 H.
                 float Hm = _Folds.x / 0.08;
-                // r10 (art review r09 B2): the ridges run ACROSS the tear (phase from u only; a d term drew iso-lines =
-                // strata), each fold 0.05-0.12 H long and tapering
-                float ph = uEdge * 6.2831853 / _Folds.x + 1.7 * sin(uEdge * 6.2831853 / (2.7 * _Folds.x));
-                float fold2 = 0.65 * sin(ph) + 0.35 * sin(2.3 * ph + 1.1);
+                // r11 (art review r10 B2): discrete soft ridges ACROSS the tear (from u only = constant along the edge
+                // normal), one every 0.06 H where a slow gate lets it through, 0.016 H wide with a lit and a shadow flank
+                // (a gaussian bump's derivative, +- ~8 luma), 0.05-0.12 H long and tapering
+                float Pr = 0.06 * Hm;
+                float xr = frac(uEdge / Pr) - 0.5;
+                float wr = 0.016 * Hm / Pr;
+                float bump = -2.0 / wr * xr * exp(-xr * xr / (wr * wr));
+                float gateR = smoothstep(0.25, 0.6, 0.5 * sin(uEdge * 6.2831853 / (0.41 * Hm) + 0.3) + 0.35 * sin(uEdge * 6.2831853 / (0.17 * Hm)));
+                float fold2 = bump * gateR;
                 float flen = 0.085 * Hm + 0.035 * Hm * sin(uEdge * 6.2831853 / (0.31 * Hm) + 0.7);
-                float fk = 1.0 + _Folds.z * fold2 * (1.0 - smoothstep(0.0, 1.0, dEdge / flen));
+                float fk = 1.0 + 1.68 * _Folds.z * fold2 * (1.0 - smoothstep(0.0, 1.0, dEdge / flen));
                 float lw = _LipGlowWidth;
                 float bandIn = smoothstep(lw, lw * 1.6, dEdge) * (1.0 - smoothstep(lw + 0.005 * Hm, lw + 0.009 * Hm, dEdge));
                 float cm = sin(uEdge * 6.2831853 / (0.05 * Hm)) + 0.8 * sin(uEdge * 6.2831853 / (0.017 * Hm));

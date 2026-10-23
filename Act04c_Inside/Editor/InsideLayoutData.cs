@@ -11,7 +11,7 @@ namespace Lanbai.Inside.Editor
         public static readonly float[] LipH = new float[] { 1000.000000f, 790.000000f, 940.000000f, 525.000000f, 615.000000f, 345.000000f, 285.000000f, 195.000000f };
         public static readonly float[] LipRoll = new float[] { -4.000000f, 28.850000f, -25.380000f, 4.260000f, -26.000000f, 11.060000f, -4.880000f, 16.540000f };
         public static readonly float[] LipGlowWidth = new float[] { 2.000000f, 1.580000f, 1.880000f, 1.050000f, 1.230000f, 0.690000f, 0.570000f, 0.500000f };
-        public static readonly float[] BandWidth = new float[] { 30.000000f, 23.700000f, 28.200000f, 15.800000f, 18.400000f, 10.300000f, 8.500000f, 5.800000f };
+        public static readonly float[] BandWidth = new float[] { 40.000000f, 31.600000f, 37.600000f, 21.000000f, 24.600000f, 13.800000f, 11.400000f, 7.800000f };
         public static readonly float[] BandStart = new float[] { 180.150000f, 182.900000f, 185.950000f, 193.900000f, 202.400000f, 207.150000f, 214.050000f, 224.750000f };
         public static readonly float[] BandSweep = new float[] { 1.200000f, 1.200000f, 1.300000f, 1.500000f, 1.700000f, 1.900000f, 2.100000f, 2.400000f };
         public static readonly Color[] FibreFill = new Color[] { new Color(2.870900f, 2.427600f, 3.890600f, 1f), new Color(2.566500f, 2.404300f, 3.732100f, 1f), new Color(2.294300f, 2.381100f, 3.580100f, 1f), new Color(2.050900f, 2.358300f, 3.434300f, 1f), new Color(1.804700f, 2.266500f, 3.154700f, 1f), new Color(1.588100f, 2.178200f, 2.897900f, 1f), new Color(1.397500f, 2.093400f, 2.662000f, 1f), new Color(1.229700f, 2.011900f, 2.445300f, 1f) };
