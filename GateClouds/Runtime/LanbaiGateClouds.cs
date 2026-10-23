@@ -3,7 +3,8 @@
 //
 // Filled by LanbaiGateCloudsBuilder (蓝白/Gate Clouds/Build). The act interface of CONTROL_总控.md §5:
 //     LanbaiTick(t)        every frame inside LanbaiWindow() (t = timeline seconds)
-//     LanbaiActivate(on)   GateRoot/GateClouds on / off (only under an occluder, like GateRoot itself)
+//     LanbaiActivate(on)   `root` (GateRoot/GateClouds) on / off, only under an occluder; the driver itself sits on an
+//                          always-active object (Director v1 rule: never switch off the object you live on)
 //     LanbaiWindow()       {U6 - 20, U9 + 2} = {113.80, 181.55} (GateRoot's own window)
 // (Apply() with the public `t` does the same as LanbaiTick, for a caller that sets t itself.)
 // Start(): every card gets its MaterialPropertyBlock (_Mirror, _Gain, _Alpha = opacity): property blocks are not
@@ -20,6 +21,9 @@ public class LanbaiGateClouds : UdonSharpBehaviour
 {
     [Header("Timeline seconds (set by the Director before Apply)")]
     public float t;
+
+    [Header("The clouds' root (GateRoot/GateClouds), switched by LanbaiActivate")]
+    public GameObject root;
 
     [Header("All cards (builder)")]
     public Renderer[] cardRenderers;
@@ -46,21 +50,24 @@ public class LanbaiGateClouds : UdonSharpBehaviour
     public int[] alphaCount;
 
     private MaterialPropertyBlock _mpb;
-    private int _idAlpha, _idMirror, _idGain;
+    private int _idAlpha, _idMirror, _idGain, _idFogBand;
+    // act 4's haze band for every LanbaiFog user (Common/UdonGlobals.md: act 4 = the gate's driver): LANBAI_GATE_NEAR
+    private Vector4 _fogBand = new Vector4(0.1085f, 0.1130f, 0.1641f, 1f);
 
     public void LanbaiTick(float time)
     {
         if (_mpb == null) Start();             // activated and ticked in the same frame: Start has not run yet (tech r1 #9)
         t = time;
+        VRCShader.SetGlobalVector(_idFogBand, _fogBand);
         Apply();
     }
 
     public void LanbaiActivate(bool on)
     {
-        gameObject.SetActive(on);
+        if (root != null) root.SetActive(on);
     }
 
-    // {U6 - 20, U9 + 2} from FromLocal/cues.json (U6 133.80, U9 179.55); the builder can overwrite these
+    // written by the builder from GateClouds_Layout.json "window" = {U6 - 20, U9 + 2} (FromLocal/cues.json labels)
     public float windowStart = 113.80f;
     public float windowEnd = 181.55f;
 
@@ -75,6 +82,8 @@ public class LanbaiGateClouds : UdonSharpBehaviour
         _idAlpha = VRCShader.PropertyToID("_Alpha");
         _idMirror = VRCShader.PropertyToID("_Mirror");
         _idGain = VRCShader.PropertyToID("_Gain");
+        _idFogBand = VRCShader.PropertyToID("_Udon_FogBandColor");
+        VRCShader.SetGlobalVector(_idFogBand, _fogBand);
         for (int i = 0; i < cardRenderers.Length; i++)
         {
             if (cardRenderers[i] == null) continue;

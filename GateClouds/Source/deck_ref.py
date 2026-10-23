@@ -346,13 +346,18 @@ def render_deck(cam, t, w, h, tex_dir, P, pool=True):
         T[hit_i] *= 1 - a
         # 2) refine the crossing between the previous and this sample (5 bisections)
         lo, hi = t_prev[hit_i], tm[under]
+        clo, chi = np.maximum(ca[under], 0.0), c[under]
         for _ in range(int(P['Bisect'])):
             mid = 0.5 * (lo + hi)
             cmid = field(mid, hit_i)[0]
             below = cmid < 0
             hi = np.where(below, mid, hi)
+            chi = np.where(below, cmid, chi)
             lo = np.where(below, lo, mid)
-        thit[hit_i] = hi
+            clo = np.where(below, clo, cmid)
+        # round 3 (art review P1): the crossing by LINEAR interpolation in the last interval, not its end point (each
+        # column landed on a different step end: the comb along the silhouettes)
+        thit[hit_i] = lo + (hi - lo) * clo / np.maximum(clo - chi, 1e-6)
         got[hit_i] = True
         t_prev[idx] = tm
         dtn = np.clip(P['StepC'] * np.maximum(c, 0) / (vyh[idx] + P['Slope']), P['KMin'] * tm, P['KMax'] * tm)
@@ -458,7 +463,8 @@ def main():
     col, alpha, dist = render_deck(cam, t, w, h, tex, P, pool='--nopool' not in a)
     img = grade(col)
     Image.fromarray(img.astype(np.uint8)).save(out)
-    np.save(out.replace('.png', '_lin.npy'), col.astype(np.float32))
+    if '--npy' in a:
+        np.save(out.replace('.png', '_lin.npy'), col.astype(np.float32))
     print('wrote', out, 'APL bottom 20%%: %.1f' % (img[int(h * 0.8):] @ [0.2126, 0.7152, 0.0722]).mean())
 
 

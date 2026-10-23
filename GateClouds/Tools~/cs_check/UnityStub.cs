@@ -25,7 +25,7 @@ namespace UnityEngine
     { public Vector3 localPosition, localScale; public Quaternion localRotation; public Transform parent; public int childCount;
       public Transform Find(string n) => null; public Transform GetChild(int i) => null; public void SetParent(Transform p, bool w) { }
       public System.Collections.IEnumerator GetEnumerator() => null; }
-    public class GameObject : Object { public GameObject(string n) { } public Transform transform; public void SetActive(bool b) { }
+    public class GameObject : Object { public GameObject(string n) { } public Transform transform; public void SetActive(bool b) { } public static GameObject Find(string n) => null;
         public T AddComponent<T>() where T : Component => default; public T GetComponent<T>() => default;
         public SceneManagement.Scene scene; }
     public class Renderer : Component { public bool enabled; public Material sharedMaterial;
@@ -41,7 +41,7 @@ namespace UnityEngine
         public void SetTexture(string n, Texture t) { } public void SetVector(string n, Vector4 v) { } public void SetFloat(string n, float v) { } }
     public sealed class MaterialPropertyBlock { public void Clear() { } public void SetFloat(int id, float v) { } public void SetFloat(string n, float v) { } }
     public enum FilterMode { Point, Bilinear, Trilinear } public enum TextureWrapMode { Repeat, Clamp }
-    public static class Debug { public static void Log(object o) { } public static void LogWarning(object o) { } }
+    public static class Debug { public static void Log(object o) { } public static void LogWarning(object o) { } public static void LogError(object o) { } }
     public static class JsonUtility { public static T FromJson<T>(string s) => default; }
     [AttributeUsage(AttributeTargets.Field)] public class HeaderAttribute : Attribute { public HeaderAttribute(string h) { } }
     namespace Rendering { public enum ShadowCastingMode { Off, On } public enum BlendMode { Zero = 0, One = 1, OneMinusSrcAlpha = 10 } }
@@ -74,7 +74,7 @@ namespace UdonSharp
     public enum BehaviourSyncMode { Any, None, Continuous, Manual, NoVariableSync }
     [AttributeUsage(AttributeTargets.Class)] public sealed class UdonBehaviourSyncModeAttribute : Attribute { public UdonBehaviourSyncModeAttribute(BehaviourSyncMode m) { } }
 }
-namespace VRC.SDKBase { public static class VRCShader { public static int PropertyToID(string name) => 0; } }
+namespace VRC.SDKBase { public static class VRCShader { public static int PropertyToID(string name) => 0; public static void SetGlobalVector(int id, UnityEngine.Vector4 v) { } } }
 namespace UnityEditor
 {
     public class MonoScript : UnityEngine.Object { public static MonoScript FromMonoBehaviour(UnityEngine.MonoBehaviour b) => null; }

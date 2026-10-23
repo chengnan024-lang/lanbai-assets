@@ -170,7 +170,7 @@ Shader "Lanbai/Tear"
 
     CGINCLUDE
     #include "UnityCG.cginc"
-    #include "LanbaiVR.cginc"
+    #include "Assets/Lanbai/Common/Shaders/LanbaiVR.cginc"   // the canonical copy (has LanbaiNearFade + LanbaiCentreEyePos); 2026-10-23
 
     sampler2D _MainTex; float4 _MainTex_ST;
     float4 _Tint; float _Intensity, _EmissionScale;

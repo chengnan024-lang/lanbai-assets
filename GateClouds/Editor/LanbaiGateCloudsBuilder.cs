@@ -31,7 +31,7 @@ public static class LanbaiGateCloudsBuilder
         public float[] sag_keys; public float[] sink_keys; public float[] alpha_keys; public string hides;
     }
     [Serializable] public class BeamDef { public string id; public string parent; public float mode; public float[] start; public float[] axis; public float half_width; public float length; public float widen; public float intensity; }
-    [Serializable] public class Layout { public float hero_t; public DeckDef deck; public ShapeDef[] shapes; public CardDef[] cards; public BeamDef[] beams; }
+    [Serializable] public class Layout { public float hero_t; public float[] window; public DeckDef deck; public ShapeDef[] shapes; public CardDef[] cards; public BeamDef[] beams; }
 
     const string RootName = "GateClouds";
 
@@ -275,7 +275,8 @@ public static class LanbaiGateCloudsBuilder
             m.SetFloat("_Mode", b.mode);
             m.SetFloat("_SrcBlend", b.mode < 0.5f ? (float)UnityEngine.Rendering.BlendMode.One : (float)UnityEngine.Rendering.BlendMode.Zero);
             m.SetFloat("_DstBlend", b.mode < 0.5f ? (float)UnityEngine.Rendering.BlendMode.One : (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-            V(m, "_Beam", b.half_width, b.length, b.widen, 0);
+            V(m, "_Beam", b.half_width, b.length, b.widen, 0.85f);
+            if (b.mode > 0.5f) V(m, "_ViewCone", 25f, 40f, 0f, 0f);    // wedges: only toward the wound (VR r1: 1.86 FSE at U8side)
             m.SetFloat("_Intensity", b.intensity);
             if (b.mode > 0.5f) V(m, "_NearFadeM", 0, 1, 0, 0);       // wedges: no near fade (they start behind the arms)
             m.renderQueue = b.mode < 0.5f ? 2998 : 2991;                 // wedges after the far cards (tech r1 #13)
@@ -290,8 +291,16 @@ public static class LanbaiGateCloudsBuilder
             r.receiveShadows = false;
         }
 
-        // driver
-        var drv = root.gameObject.AddComponent<LanbaiGateClouds>();
+        // driver: on an ALWAYS-ACTIVE object (Director v1: LanbaiActivate switches `root`, never the driver's own object):
+        // under the scene's "Director" if there is one, else its own top-level object "GateClouds_Driver"
+        GameObject oldDrv = GameObject.Find("GateClouds_Driver");
+        if (oldDrv != null) UnityEngine.Object.DestroyImmediate(oldDrv);
+        var drvGo = new GameObject("GateClouds_Driver");
+        Transform director = FindInScene("Director");
+        if (director != null) drvGo.transform.SetParent(director, false);
+        var drv = AddDriver(drvGo);
+        drv.root = root.gameObject;
+        if (L.window != null && L.window.Length == 2) { drv.windowStart = L.window[0]; drv.windowEnd = L.window[1]; }
         drv.cardRenderers = allR.ToArray(); drv.cardMirror = allMir.ToArray(); drv.cardGain = allGain.ToArray(); drv.cardOpacity = allOp.ToArray();
         drv.towers = towT.ToArray(); drv.towerRenderers = towR.ToArray(); drv.towerOpacity = towOp.ToArray();
         drv.towerMirror = towMir.ToArray(); drv.towerGain = towGain.ToArray();
@@ -299,7 +308,7 @@ public static class LanbaiGateCloudsBuilder
         drv.sagKeys = sagK.ToArray(); drv.sagStart = sagS.ToArray(); drv.sagCount = sagN.ToArray();
         drv.sinkKeys = sinkK.ToArray(); drv.sinkStart = sinkS.ToArray(); drv.sinkCount = sinkN.ToArray();
         drv.alphaKeys = alK.ToArray(); drv.alphaStart = alS.ToArray(); drv.alphaCount = alN.ToArray();
-        SetupUdonSharp(drv, gen);
+        SetupUdonSharp(drv);
         // the deck now draws the tear's pool itself (tech r1 #4): the flat cloud-top layers would be cut by the billows
         if (tearRoot != null)
             foreach (string n in new[] { "Tear_CloudGlow", "Tear_CloudGlow_Additive", "Tear_LightLane" })
@@ -311,6 +320,7 @@ public static class LanbaiGateCloudsBuilder
         EditorUtility.SetDirty(drv);
         AssetDatabase.SaveAssets();
         UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(root.gameObject.scene);
+        UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(drvGo.scene);
         Apply(L.hero_t);
         Debug.Log(string.Format("[GateClouds] built: deck, {0} cards ({1} towers), {2} beams", allR.Count, towT.Count, L.beams.Length));
         return root.gameObject;
@@ -326,53 +336,85 @@ public static class LanbaiGateCloudsBuilder
         return null;
     }
 
-    // UdonSharp 1.x by reflection (the kit compiles with or without it; tech r1 #1): a program asset for the driver's
-    // script (reuse one if it exists), the backing UdonBehaviour (RunBehaviourSetup), then the proxy's fields -> Udon
-    static void SetupUdonSharp(LanbaiGateClouds drv, string gen)
+    static object CallStatic(Type t, string name, params object[] args)
+    {
+        if (t == null) return null;
+        foreach (MethodInfo mi in t.GetMethods(BindingFlags.Public | BindingFlags.Static))
+        {
+            if (mi.Name != name || mi.IsGenericMethodDefinition) continue;
+            ParameterInfo[] ps = mi.GetParameters();
+            if (ps.Length < args.Length) continue;
+            bool ok = true;
+            for (int k = 0; k < args.Length; k++)
+                if (args[k] != null && !ps[k].ParameterType.IsInstanceOfType(args[k])) { ok = false; break; }
+            if (!ok) continue;
+            object[] full = new object[ps.Length];
+            for (int k = 0; k < ps.Length; k++) full[k] = k < args.Length ? args[k] : (ps[k].HasDefaultValue ? ps[k].DefaultValue : null);
+            return mi.Invoke(null, full);
+        }
+        return null;
+    }
+
+    // UdonSharp 1.x, by reflection so the kit compiles with or without it (tech r1 #1, chief engineer #6; the same steps
+    // as FromLocal/code/timeline_v1/LB_Udon.cs): 1) a program asset for the driver's script in
+    // Assets/Lanbai/UdonPrograms/ (not Generated/), 2) compile, 3) the component through UdonSharpUndo.AddComponent
+    // (or AddComponent + RunBehaviourSetup), 4) after the fields are filled, CopyProxyToUdon; a missing backing
+    // UdonBehaviour is an error, not a silent pass.
+    static LanbaiGateClouds AddDriver(GameObject go)
     {
         Type paT = FindType("UdonSharp.UdonSharpProgramAsset");
         Type utT = FindType("UdonSharpEditor.UdonSharpEditorUtility");
-        if (paT == null || utT == null) { Debug.LogWarning("[GateClouds] UdonSharp not found: LanbaiGateClouds needs its program asset (Add Component in the Inspector)"); return; }
-        MonoScript ms = MonoScript.FromMonoBehaviour(drv);
-        FieldInfo src = paT.GetField("sourceCsScript");
-        UnityEngine.Object asset = null;
-        foreach (string g in AssetDatabase.FindAssets("t:UdonSharpProgramAsset"))
+        if (paT == null || utT == null)
         {
-            UnityEngine.Object a = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(g), paT);
-            if (a != null && src != null && (UnityEngine.Object)src.GetValue(a) == ms) { asset = a; break; }
+            Debug.LogError("[GateClouds] UdonSharp is not in this project: LanbaiGateClouds will not run in VRChat");
+            return go.AddComponent<LanbaiGateClouds>();
         }
+        // 1) the program asset
+        var tmp = go.AddComponent<LanbaiGateClouds>();
+        MonoScript ms = MonoScript.FromMonoBehaviour(tmp);
+        UnityEngine.Object.DestroyImmediate(tmp);
+        UnityEngine.Object asset = CallStatic(utT, "GetUdonSharpProgramAsset", ms) as UnityEngine.Object;
+        FieldInfo src = paT.GetField("sourceCsScript");
         if (asset == null && src != null)
         {
+            if (!AssetDatabase.IsValidFolder("Assets/Lanbai/UdonPrograms"))
+            {
+                if (!AssetDatabase.IsValidFolder("Assets/Lanbai")) AssetDatabase.CreateFolder("Assets", "Lanbai");
+                AssetDatabase.CreateFolder("Assets/Lanbai", "UdonPrograms");
+            }
             asset = ScriptableObject.CreateInstance(paT);
             src.SetValue(asset, ms);
-            AssetDatabase.CreateAsset(asset, gen + "/LanbaiGateClouds_Program.asset");
+            AssetDatabase.CreateAsset(asset, "Assets/Lanbai/UdonPrograms/LanbaiGateClouds.asset");
             AssetDatabase.SaveAssets();
-            Debug.Log("[GateClouds] created the UdonSharp program asset " + gen + "/LanbaiGateClouds_Program.asset");
+            Debug.Log("[GateClouds] created Assets/Lanbai/UdonPrograms/LanbaiGateClouds.asset");
+            // 2) compile (UdonSharpCompilerV1.CompileSync), so the new program exists before the behaviour is set up
+            CallStatic(FindType("UdonSharp.Compiler.UdonSharpCompilerV1"), "CompileSync");
         }
-        foreach (MethodInfo mi in utT.GetMethods(BindingFlags.Public | BindingFlags.Static))
+        // 3) the component with its backing UdonBehaviour
+        LanbaiGateClouds drv = null;
+        Type undoT = FindType("UdonSharpEditor.UdonSharpUndo");
+        if (undoT != null)
+            foreach (MethodInfo mi in undoT.GetMethods(BindingFlags.Public | BindingFlags.Static))
+                if (mi.Name == "AddComponent" && mi.IsGenericMethodDefinition && mi.GetParameters().Length == 1)
+                {
+                    drv = mi.MakeGenericMethod(typeof(LanbaiGateClouds)).Invoke(null, new object[] { go }) as LanbaiGateClouds;
+                    break;
+                }
+        if (drv == null)
         {
-            ParameterInfo[] ps = mi.GetParameters();
-            if (mi.Name == "RunBehaviourSetup" && ps.Length >= 1 && ps[0].ParameterType.IsInstanceOfType(drv))
-            {
-                object[] args = new object[ps.Length];
-                args[0] = drv;
-                for (int k = 1; k < ps.Length; k++) args[k] = ps[k].HasDefaultValue ? ps[k].DefaultValue : null;
-                mi.Invoke(null, args);
-                break;
-            }
+            drv = go.AddComponent<LanbaiGateClouds>();
+            CallStatic(utT, "RunBehaviourSetup", drv);
         }
-        foreach (MethodInfo mi in utT.GetMethods(BindingFlags.Public | BindingFlags.Static))
-        {
-            ParameterInfo[] ps = mi.GetParameters();
-            if (mi.Name == "CopyProxyToUdon" && ps.Length >= 1 && ps[0].ParameterType.IsInstanceOfType(drv))
-            {
-                object[] args = new object[ps.Length];
-                args[0] = drv;
-                for (int k = 1; k < ps.Length; k++) args[k] = ps[k].HasDefaultValue ? ps[k].DefaultValue : null;
-                mi.Invoke(null, args);
-                break;
-            }
-        }
+        return drv;
+    }
+
+    static void SetupUdonSharp(LanbaiGateClouds drv)
+    {
+        Type utT = FindType("UdonSharpEditor.UdonSharpEditorUtility");
+        if (utT == null) return;
+        CallStatic(utT, "CopyProxyToUdon", drv);
+        if (CallStatic(utT, "GetBackingUdonBehaviour", drv) == null)
+            throw new InvalidOperationException("[GateClouds] LanbaiGateClouds has no backing UdonBehaviour: check the UdonSharp program asset (Assets/Lanbai/UdonPrograms/LanbaiGateClouds.asset) and the Console");
     }
 
     static void Pack(float[] keys, List<float> all, List<int> start, List<int> count)
@@ -402,10 +444,9 @@ public static class LanbaiGateCloudsBuilder
     // edit-mode preview: the same evaluation as LanbaiGateClouds.Apply, plus every card's property block
     public static void Apply(float t)
     {
-        Transform gateRoot = FindInScene("GateRoot");
-        Transform root = gateRoot != null ? gateRoot.Find(RootName) : null;
-        if (root == null) { Debug.LogWarning("[GateClouds] not built"); return; }
-        var d = root.GetComponent<LanbaiGateClouds>();
+        GameObject dg = GameObject.Find("GateClouds_Driver");
+        var d = dg != null ? dg.GetComponent<LanbaiGateClouds>() : null;
+        if (d == null) { Debug.LogWarning("[GateClouds] not built"); return; }
         var mpb = new MaterialPropertyBlock();
         for (int i = 0; i < d.cardRenderers.Length; i++)
         {

@@ -15,8 +15,9 @@ inc.append(_root)
 ok = True
 for f in files:
     src = open(f).read()
+    shared = ''.join(m.group(1) for m in re.finditer(r'CGINCLUDE(.*?)ENDCG', src, re.S))   # Unity prepends it to every pass
     for k, m in enumerate(re.finditer(r'CGPROGRAM(.*?)ENDCG', src, re.S)):
-        body = m.group(1)
+        body = shared + m.group(1)
         prag = dict(re.findall(r'#pragma\s+(vertex|fragment)\s+(\w+)', body))
         variants = [[]]
         for mc in re.findall(r'#pragma\s+(?:multi_compile|shader_feature)(?:_local)?\s+(.*)', body):

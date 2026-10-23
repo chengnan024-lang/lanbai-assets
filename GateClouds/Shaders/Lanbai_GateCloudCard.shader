@@ -149,7 +149,7 @@ Shader "Lanbai/GateCloudCard"
                 // forward-scatter lining near the moon (round 8: soft, on the blurred alpha edge, <= 15 deg)
                 float am = degrees(acos(clamp(dot(V, moonD), -1.0, 1.0)));
                 float edge = smoothstep(0.02, 0.35, tx.a) * (1.0 - smoothstep(0.55, 0.95, tx.a));   // the soft alpha border, broad (no drawn line)
-                float lining = _Lining.x * exp(-am / _Lining.y) * step(am, _Lining.z) * edge;
+                float lining = _Lining.x * exp(-am / _Lining.y) * (1.0 - smoothstep(0.6 * _Lining.z, _Lining.z, am)) * edge;   // no step at the cut-off
                 float3 c = (_MoonE * (moonC * (1.0 + lining))) * _MoonColor.rgb + (_SkyE * tx.b * _Scale.z) * _SkyColor.rgb;
                 c *= UNITY_ACCESS_INSTANCED_PROP(Props, _Gain);
 

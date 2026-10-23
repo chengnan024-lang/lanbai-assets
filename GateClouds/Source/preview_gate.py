@@ -24,7 +24,7 @@ LAY = json.load(open(os.path.join(KIT, 'GateClouds_Layout.json')))
 SHAPES = {s['shape']: s for s in LAY['shapes']}
 CARD = dict(FogCap=float(os.environ.get('FOGCAP', 1.0)), MoonE=0.146, SkyE=0.89, SkyColor=np.array([0.060, 0.064, 0.088]), Lining=(0.35, 7.0, 15.0),
             FogDensity=0.0006, FogScale=1.0, MoonAirFog=0.35)
-BEAM = dict(Tint=np.array([0.0362, 0.0343, 0.0873]), Lobe=(2.6, 1.0, 0.04, 1.3), EdgeFadePow=2.0,
+BEAM = dict(Tint=np.array([0.0362, 0.0343, 0.0873]), Lobe=(2.6, 1.0, 0.04, 1.3), EdgeFadePow=3.0,
             NearFadeM=(60.0, 460.0), FogDensity=0.0006, FogScale=0.5)
 
 
@@ -104,6 +104,8 @@ def main():
         piv = O + np.array(c['position']) + np.array([0.0, sink, 0.0])
         items.append((np.linalg.norm(piv - eye), c, piv, sag, al))
     items.sort(key=lambda x: -x[0])
+    layers = np.zeros((h, w), np.int32)                # transparent overdraw (raster coverage, after the deck's depth)
+    fse = dict(cards=0.0, shafts=0.0, wedges=0.0)
     for _, c, piv, sag, al in items:
         s = SHAPES[c['shape']]
         W, Hh = c['size'][0], c['size'][1] * sag
@@ -119,6 +121,11 @@ def main():
         u = lx + s['pivot_uv'][0]
         v = ly + s['pivot_uv'][1]
         m = (tt > 0) & (u >= 0) & (u <= 1) & (v >= 0) & (v <= 1) & (tt < dist)
+        bb = s['bbox_uv']
+        uu_ = 1 - u if c['mirror'] > 0.5 else u
+        mr = (tt > 0) & (uu_ >= bb[0]) & (uu_ <= bb[2]) & (v >= min(bb[1], s['pivot_uv'][1])) & (v <= bb[3]) & (tt < dist)
+        layers += mr
+        fse['cards'] += mr.mean()
         if not m.any():
             continue
         uu = 1 - u[m] if c['mirror'] > 0.5 else u[m]
@@ -133,7 +140,7 @@ def main():
         moonC = tx[:, 0] * sc[0] * (1 - wk) + tx[:, 1] * sc[1] * wk
         am = np.degrees(np.arccos(np.clip(Vm @ moon, -1, 1)))
         edge = D.ss(0.02, 0.35, tx[:, 3]) * (1 - D.ss(0.55, 0.95, tx[:, 3]))
-        lining = CARD['Lining'][0] * np.exp(-am / CARD['Lining'][1]) * (am <= CARD['Lining'][2]) * edge
+        lining = CARD['Lining'][0] * np.exp(-am / CARD['Lining'][1]) * (1 - D.ss(0.6 * CARD['Lining'][2], CARD['Lining'][2], am)) * edge
         cc = (CARD['MoonE'] * moonC * (1 + lining))[:, None] * D.MOON_COL + \
              (CARD['SkyE'] * tx[:, 2] * sc[2])[:, None] * CARD['SkyColor']
         cc *= c['gain']
@@ -168,25 +175,48 @@ def main():
         tt = ((st - eye) @ n) / np.where(np.abs(den) > 1e-6, den, 1e-6)
         P3 = eye + V * tt[..., None]
         z = ((P3 - st) @ ax) / ln
-        hw = hw0 * (1 + (b['widen'] - 1) * np.clip(z, 0, 1))
+        if b['mode'] > 0.5:                              # a wedge stops 300 m before the eye (shader: the same)
+            zmax = max((np.dot(eye - st, ax) - 300.0) / ln, 0.0)
+            z = np.where(z <= zmax, z, 9.0)
+        hw = hw0 * (1 + (b['widen'] - 1) * np.clip(z, 0, 1)) * 0.85      # the strip trimmed to the lobe's 4 %
         x = ((P3 - st) @ side) / hw
         m = (tt > 0) & (z >= 0) & (z <= 1) & (np.abs(x) <= 1) & (tt < dist)
+        # the shader collapses the whole strip when it is seen along its axis or lies entirely inside the near fade
+        perp_m = np.linalg.norm(np.cross(ax, (eye - mid) / np.linalg.norm(eye - mid)))
+        nearfar = max(np.linalg.norm(st - eye), np.linalg.norm(st + ax * ln - eye))
+        whole = np.clip(perp_m * 1.4, 0, 1) ** BEAM['EdgeFadePow'] * D.ss(BEAM['NearFadeM'][0] if b['mode'] < 0.5 else 0.0,
+                                                                         BEAM['NearFadeM'][1] if b['mode'] < 0.5 else 1.0, nearfar)
+        cone = 1.0
+        if b['mode'] > 0.5:                              # the wedges' view cone toward the wound (25..40 deg)
+            ang = math.degrees(math.acos(np.clip(np.dot((mid - eye) / np.linalg.norm(mid - eye), (tear - eye) / np.linalg.norm(tear - eye)), -1, 1)))
+            cone = 1 - float(D.ss(25.0, 40.0, ang))
+            whole *= cone
+        if whole < 0.003:
+            continue
+        layers += m
+        fse['shafts' if b['mode'] < 0.5 else 'wedges'] += m.mean()
         if not m.any():
             continue
-        xx, zz = x[m], z[m]
+        xx, zz = x[m] * 0.85, z[m]
         lo = BEAM['Lobe']
         lobe = np.exp(-lo[0] * xx * xx) * np.clip(1 - xx * xx, 0, 1) ** lo[1]
         along = D.ss(0, lo[2], zz) * np.clip(1 - zz, 0, 1) ** lo[3]
         Vm = V[m]
         perp = np.linalg.norm(np.cross(ax, -Vm), axis=-1)
         dd = tt[m]
-        fade = np.clip(perp * 1.4, 0, 1) ** BEAM['EdgeFadePow'] * D.ss(BEAM['NearFadeM'][0], BEAM['NearFadeM'][1], dd) \
-            * np.exp(-BEAM['FogDensity'] * BEAM['FogScale'] * dd)
+        nf = BEAM['NearFadeM'] if b['mode'] < 0.5 else (0.0, 1.0)
+        fade = np.clip(perp * 1.4, 0, 1) ** BEAM['EdgeFadePow'] * D.ss(nf[0], nf[1], dd) \
+            * np.exp(-BEAM['FogDensity'] * BEAM['FogScale'] * dd) * cone
         k = lobe * along * fade * b['intensity']
         if b['mode'] < 0.5:
             col[m] += BEAM['Tint'] * k[:, None]
         else:
             col[m] *= (1 - np.clip(k, 0, 1))[:, None]
+    if '--fse' in a:
+        out_j = dict(cam=camname, t=t, w=w, h=h, fse={k: round(v, 3) for k, v in fse.items()},
+                     fse_total=round(sum(fse.values()), 3), max_layers=int(layers.max()),
+                     px_over_8=float((layers > 8).mean()))
+        print(json.dumps(out_j))
     img = D.grade(col)
     if '--over' in a:
         # paste the Unity screenshot where it is NOT its own sky / flat fog (the arms, the tear): compare it with what

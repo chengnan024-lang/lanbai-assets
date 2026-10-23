@@ -96,12 +96,7 @@ Shader "Lanbai/GateCloudDeck"
         Tags { "Queue" = "Geometry+40" "RenderType" = "Opaque" "IgnoreProjector" = "True" "DisableBatching" = "True" }
         Cull Off ZWrite On ZTest LEqual
 
-        Pass
-        {
-            CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-            #pragma target 5.0
+        CGINCLUDE
             #include "UnityCG.cginc"
             #include "Assets/Lanbai/Gate/Shaders/LanbaiGateSky.cginc"
 
@@ -109,6 +104,7 @@ Shader "Lanbai/GateCloudDeck"
             sampler2D _MacroTex;
             sampler2D _LanesTex;
             float4 _DetailTex_TexelSize;
+            float4 _MacroTex_TexelSize;
             float4 _Periods, _DetailRange, _TauMax, _AmpRange, _Micro;
             float _Steps, _LodBias;
             float4 _Adapt, _MarchRange, _Comfort;
@@ -168,8 +164,10 @@ Shader "Lanbai/GateCloudDeck"
                 float crev;       // crevasse depth x its fade toward the bus: the floor glow
             };
 
-            // the height field at distance t (deck_ref.field): anisotropic footprint through tex2Dgrad
-            DeckSample Field(DeckRay r, float t)
+            // the height field at distance t (deck_ref.field). aniso = false (the march, the bisection, the depth pass):
+            // tex2Dlod at the footprint's geometric-mean LOD, exactly the reference; aniso = true (the one shading sample):
+            // tex2Dgrad with both footprint axes (hardware anisotropic filtering). Called with literals: no runtime branch.
+            DeckSample Field(DeckRay r, float t, bool aniso)
             {
                 DeckSample s;
                 float3 p = r.ro + r.V * t;
@@ -180,8 +178,18 @@ Shader "Lanbai/GateCloudDeck"
                 float lb = exp2(_LodBias);
                 float2 gA = r.acrossDir * (across * lb);
                 float2 gB = r.alongDir * (along * lb);
-                s.d = tex2Dgrad(_DetailTex, cs / _Periods.x, gA / _Periods.x, gB / _Periods.x);
-                s.m = tex2Dgrad(_MacroTex, cs / _Periods.y, gA / _Periods.y, gB / _Periods.y);
+                float texD = _Periods.x * _DetailTex_TexelSize.x;
+                float texM = _Periods.y * _MacroTex_TexelSize.x;
+                if (aniso)
+                {
+                    s.d = tex2Dgrad(_DetailTex, cs / _Periods.x, gA / _Periods.x, gB / _Periods.x);
+                    s.m = tex2Dgrad(_MacroTex, cs / _Periods.y, gA / _Periods.y, gB / _Periods.y);
+                }
+                else
+                {
+                    s.d = tex2Dlod(_DetailTex, float4(cs / _Periods.x, 0.0, log2(max(s.foot / texD, 1e-4)) + _LodBias));
+                    s.m = tex2Dlod(_MacroTex, float4(cs / _Periods.y, 0.0, log2(max(s.foot / texM, 1e-4)) + _LodBias));
+                }
                 float hd = lerp(_DetailRange.x, _DetailRange.y, s.d.r);
                 float hm = lerp(_DetailRange.z, _DetailRange.w, s.m.r);
                 s.amp = lerp(_AmpRange.x, _AmpRange.y, s.m.b);
@@ -191,7 +199,7 @@ Shader "Lanbai/GateCloudDeck"
                 float lodU = log2(max(s.foot * sc / (_Periods.x * _DetailTex_TexelSize.x), 1e-4)) + _LodBias;
                 float mu = 0.45;
                 [branch] if (lodU < 3.5)
-                    mu = tex2Dgrad(_DetailTex, cs * sc / _Periods.x + float2(0.37, 0.61), gA * sc / _Periods.x, gB * sc / _Periods.x).r;
+                    mu = tex2Dlod(_DetailTex, float4(cs * sc / _Periods.x + float2(0.37, 0.61), 0.0, max(lodU, 0.0))).r;
                 float fade = 1.0 - smoothstep(1.0, 3.5, lodU);
                 float micro = _Micro.x * ((mu - 0.45) * fade + _Micro.y * (1.0 - fade));
                 float H = r.top + hm + s.amp * (hd + micro);
@@ -228,14 +236,13 @@ Shader "Lanbai/GateCloudDeck"
             #endif
             struct FOut { half4 col : SV_Target; float depth : DECK_DEPTH; };
 
-            FOut frag(v2f i)
+
+            DeckRay MakeRay(float3 wpos)
             {
-                UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
                 DeckRay r;
                 r.ro = _WorldSpaceCameraPos;
-                r.V = normalize(i.wpos - r.ro);
+                r.V = normalize(wpos - r.ro);
                 r.vy = -r.V.y;
-                if (r.vy < 1e-4) discard;                                  // only rays going down
                 r.O = GateOrigin();
                 r.top = CloudTop();
                 r.pix = 2.0 / (_ScreenParams.y * unity_CameraProjection._m11);
@@ -245,6 +252,32 @@ Shader "Lanbai/GateCloudDeck"
                 r.acrossDir = float2(-r.alongDir.y, r.alongDir.x);
                 r.foot = (_Udon_TearFoot.w > 0.0) ? _Udon_TearFoot : _TearFootW;
                 r.S = ((_Udon_TearH.w > 0.0) ? _Udon_TearH.x : 640.0) / 1000.0;
+                return r;
+            }
+
+            float DeckDepth(float3 ro, float3 V, float tHit)
+            {
+                // the hit, never beyond the far plane (a far-fallback point up to 16 km out would clamp and the skybox
+                // would paint over it); always farther than the proxy (conservative depth)
+                float3 camFwd = -UNITY_MATRIX_V[2].xyz;
+                float tDepth = min(tHit, 0.99 * _ProjectionParams.z / max(dot(V, camFwd), 1e-3));
+                float4 clip = UnityWorldToClipPos(ro + V * tDepth);
+                return clip.z / clip.w;
+            }
+        ENDCG
+
+        Pass
+        {
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+            #pragma target 5.0
+
+            FOut frag(v2f i)
+            {
+                UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
+                DeckRay r = MakeRay(i.wpos);
+                if (r.vy < 1e-4) discard;                                  // only rays going down
 
                 float3 moonD = LanbaiMoonDir(_RimDir.xyz);
                 float yTop = r.top + _DetailRange.w + _DetailRange.y * _AmpRange.y;
@@ -270,7 +303,7 @@ Shader "Lanbai/GateCloudDeck"
                 float tPrev = t0;
                 float tHit = t1;
                 bool hit = false;
-                float cPrev = Field(r, ts).c;
+                float cPrev = Field(r, ts, false).c;
                 float tCur = ts * (1.0 + _Adapt.x * (1.0 + 4.0 * jit)) + max(cPrev, 0.0) * _Adapt.z / (r.vy + _Adapt.w) * jit;
 
                 // 1) adaptive march + the skin (rims), until the ray dips under the field
@@ -279,7 +312,7 @@ Shader "Lanbai/GateCloudDeck"
                 {
                     if (s >= N || tPrev >= tEnd) break;
                     float tm = min(tCur, tEnd);
-                    DeckSample f = Field(r, tm);
+                    DeckSample f = Field(r, tm, false);
                     float dt = max(tm - tPrev, 0.0);
                     float ca = max(cPrev, 0.0);
                     float cb = max(f.c, 0.0);
@@ -322,16 +355,18 @@ Shader "Lanbai/GateCloudDeck"
                         acc += T * a / max(pendOd, 1e-9) * pendL;
                         T *= 1.0 - a;
                         // 2) refine the crossing
-                        float lo = tPrev, hi = tm;
+                        float lo = tPrev, hi = tm, clo = ca, chi = f.c;
                         int nb = (int)_MarchRange.w;
                         [loop]
                         for (int b = 0; b < 6; b++)
                         {
                             if (b >= nb) break;
                             float mid = 0.5 * (lo + hi);
-                            if (Field(r, mid).c < 0.0) hi = mid; else lo = mid;
+                            float cm2 = Field(r, mid, false).c;
+                            if (cm2 < 0.0) { hi = mid; chi = cm2; } else { lo = mid; clo = cm2; }
                         }
-                        tHit = hi;
+                        // the crossing by linear interpolation in the last interval (art review P1: no comb)
+                        tHit = lo + (hi - lo) * clo / max(clo - chi, 1e-6);
                         hit = true;
                         break;
                     }
@@ -347,7 +382,7 @@ Shader "Lanbai/GateCloudDeck"
                 }
 
                 // 3) the surface at the hit
-                DeckSample h = Field(r, tHit);
+                DeckSample h = Field(r, tHit, true);
                 float tau = _Surf.x * MoonTauRaw(h);
                 float phS = 1.0 + (phase - 1.0) * _Phase.w;
                 float moonS = _MoonE * (_Surf.z * h.d.a * exp(-tau * _Surf.w) + _Surf.y * phS * exp(-tau)
@@ -391,13 +426,70 @@ Shader "Lanbai/GateCloudDeck"
                 if (_Udon_InsidePortal.y > 0.5 && ph.z > _Udon_InsidePortal.x) discard;
                 FOut o;
                 o.col = half4(c, 1.0);
-                // depth: the hit, never beyond the far plane (a far-fallback point up to 16 km out would clamp and the
-                // skybox would paint over it); always farther than the proxy (conservative depth)
-                float3 camFwd = -UNITY_MATRIX_V[2].xyz;
-                float tDepth = min(tHit, 0.99 * _ProjectionParams.z / max(dot(r.V, camFwd), 1e-3));
-                float4 clip = UnityWorldToClipPos(r.ro + r.V * tDepth);
-                o.depth = clip.z / clip.w;
+                o.depth = DeckDepth(r.ro, r.V, tHit);
                 return o;
+            }
+            ENDCG
+        }
+
+        // the deck in _CameraDepthTexture (tech r1 #5 / chief engineer #5): the same height field and adaptive march, no
+        // skin, light or fog; <= 48 steps, 2 bisections + the linear crossing. Soft particles, the Tear shafts / folds and
+        // the cards' depth fades then see the billows. Cast Shadows stays Off on the renderer (camera depth only).
+        Pass
+        {
+            Tags { "LightMode" = "ShadowCaster" }
+            ZWrite On ZTest LEqual Cull Off ColorMask 0
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment fragDepth
+            #pragma target 5.0
+            #pragma multi_compile_shadowcaster
+
+            half4 fragDepth(v2f i, out float depth : DECK_DEPTH) : SV_Target
+            {
+                UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
+                DeckRay r = MakeRay(i.wpos);
+                if (r.vy < 1e-4) discard;
+                float yTop = r.top + _DetailRange.w + _DetailRange.y * _AmpRange.y;
+                float yBot = r.top + _DetailRange.z + _DetailRange.x * _AmpRange.y;
+                float t0 = max((r.ro.y - yTop) / r.vy, 0.0);
+                float t1 = min((r.ro.y - yBot) / r.vy, 16000.0);
+                float tEnd = min(t1, _MarchRange.y);
+                float ts = max(max(t0, _MarchRange.x), 0.5 * (r.ro.y - r.top) / r.vy);
+                float jit = Hash3(floor(r.V / (r.pix * 1.5)));
+                float cPrev = Field(r, ts, false).c;
+                float tPrev = t0;
+                float tCur = ts * (1.0 + _Adapt.x * (1.0 + 4.0 * jit)) + max(cPrev, 0.0) * _Adapt.z / (r.vy + _Adapt.w) * jit;
+                float tHit = 0.0;
+                bool hit = false;
+                [loop]
+                for (int s = 0; s < 48; s++)
+                {
+                    if (tPrev >= tEnd) break;
+                    float tm = min(tCur, tEnd);
+                    float c = Field(r, tm, false).c;
+                    if (c < 0.0)
+                    {
+                        float lo = tPrev, hi = tm, clo = max(cPrev, 0.0), chi = c;
+                        [unroll]
+                        for (int b = 0; b < 2; b++)
+                        {
+                            float mid = 0.5 * (lo + hi);
+                            float cm2 = Field(r, mid, false).c;
+                            if (cm2 < 0.0) { hi = mid; chi = cm2; } else { lo = mid; clo = cm2; }
+                        }
+                        tHit = lo + (hi - lo) * clo / max(clo - chi, 1e-6);
+                        hit = true;
+                        break;
+                    }
+                    cPrev = c;
+                    tPrev = tm;
+                    tCur = tm + clamp(_Adapt.z * c / (r.vy + _Adapt.w), _Adapt.x * tm, _Adapt.y * tm);
+                }
+                if (!hit) tHit = clamp((r.ro.y - (r.top + _MarchRange.z)) / r.vy, tPrev, 16000.0);
+                if (_Udon_InsidePortal.y > 0.5 && r.ro.z + r.V.z * tHit > _Udon_InsidePortal.x) discard;
+                depth = DeckDepth(r.ro, r.V, tHit);
+                return 0;
             }
             ENDCG
         }

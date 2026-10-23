@@ -46,3 +46,21 @@ float Luminance(float3 c) { return dot(c, float3(0.2126729, 0.7151522, 0.0721750
 #define UNITY_DECLARE_DEPTH_TEXTURE(n) Sampler2D n
 #define UNITY_PROJ_COORD(a) a
 #endif
+#ifndef UNITY_STUB3
+#define UNITY_STUB3
+#define fixed half
+#define fixed2 half2
+#define fixed3 half3
+#define fixed4 half4
+float4x4 unity_MatrixP;
+#define UNITY_MATRIX_P unity_MatrixP
+#define UNITY_INITIALIZE_OUTPUT(type, name) name = (type)0
+half3 LinearToGammaSpace(half3 c) { return pow(max(c, 0.0), 1.0 / 2.2); }
+half3 GammaToLinearSpace(half3 c) { return pow(max(c, 0.0), 2.2); }
+float3 UnityObjectToViewPos(float3 p) { return mul(unity_MatrixV, mul(unity_ObjectToWorld, float4(p, 1.0))).xyz; }
+float3 UnityObjectToViewPos(float4 p) { return UnityObjectToViewPos(p.xyz); }
+float3 UnityObjectToWorldNormal(float3 n) { return normalize(mul(n, (float3x3)unity_WorldToObject)); }
+float3 UnityWorldSpaceViewDir(float3 p) { return _WorldSpaceCameraPos - p; }
+float4 _WorldSpaceLightPos0;
+float4 _LightColor0;
+#endif

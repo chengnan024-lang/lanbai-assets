@@ -1,6 +1,10 @@
 {
  "about": "蓝白 gate clouds kit v1 (2026-10-22): the cloud deck, the v2 cloud cards (towers, far banks, horizon masses, mist), the widening shafts and the shadow wedges. Positions in the GateRoot frame (or Tear_Root object space for the shafts), exactly as GateLayout_v2.json. Built by Editor/LanbaiGateCloudsBuilder.cs; animated by Runtime/LanbaiGateClouds.cs. Keys are flattened (t0, v0, t1, v1, ...), timeline seconds, smoothstep between keys.",
  "hero_t": 155.1,
+ "window": [
+  113.8,
+  181.55
+ ],
  "deck": {
   "parent": "GateRoot",
   "local_y": -176.6,

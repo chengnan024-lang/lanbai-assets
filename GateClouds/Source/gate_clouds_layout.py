@@ -20,6 +20,8 @@ CUES = G['timeline']['cues']
 MOON = G['lights']['moon']['direction_to_light_unity']
 EYE = (0.55, 1.7, 2.05)
 HERO_T = CUES['U7b']
+WINDOW_BEFORE_U6 = 20.0      # GateRoot is activated at U6 - 20 (README_GateLayout §2)
+WINDOW_AFTER_U9 = 2.0
 
 
 def ss(x):
@@ -120,6 +122,7 @@ def main():
               'Editor/LanbaiGateCloudsBuilder.cs; animated by Runtime/LanbaiGateClouds.cs. Keys are flattened '
               '(t0, v0, t1, v1, ...), timeline seconds, smoothstep between keys.',
         hero_t=HERO_T,
+        window=[round(CUES['U6'] - WINDOW_BEFORE_U6, 2), round(CUES['U9'] + WINDOW_AFTER_U9, 2)],
         deck=dict(parent='GateRoot', local_y=round(y_bot, 2), quad_size=40000.0,
                   detail='Deck_Detail_1024.png', macro='Deck_Macro_512.png',
                   note='a flat quad under the deck slab, moving with GateRoot; Lanbai/GateCloudDeck ray-marches '

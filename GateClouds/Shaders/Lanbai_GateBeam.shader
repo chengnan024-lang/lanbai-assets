@@ -24,7 +24,9 @@ Shader "Lanbai/GateBeam"
         _Mode ("Mode: 0 shaft (add), 1 wedge (shadow)", Float) = 0
         [Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend ("Src blend (shaft One, wedge Zero)", Float) = 1
         [Enum(UnityEngine.Rendering.BlendMode)] _DstBlend ("Dst blend (shaft One, wedge OneMinusSrcAlpha)", Float) = 1
-        _Beam ("Beam: half width at the start, length, widen (end / start width), -", Vector) = (46.9, 3437.5, 3.2, 0)
+        _Beam ("Beam: half width at the start, length, widen (end / start width), strip trim (lobe > 4 %: 0.85)", Vector) = (46.9, 3437.5, 3.2, 0.85)
+        _ViewCone ("Drawn only within x..y deg of the line of sight to the tear (wedges 25, 40; 0, 0 = always)", Vector) = (0, 0, 0, 0)
+        _TearPosB ("Tear core fallback (world; global _Udon_TearPos wins)", Vector) = (0, 297, 1800, 0)
         _Tint ("Shaft fill, LINEAR (Tear kit 0.0362 0.0343 0.0873)", Vector) = (0.0362, 0.0343, 0.0873, 1)
         _Intensity ("Shaft: 0.35 x gain (1.0 / 0.6); wedge: alpha (0.30-0.42)", Range(0, 2)) = 0.35
         _Lobe ("Lobe: sharpness, edge power; fade-in (z), fade-out power", Vector) = (2.6, 1.0, 0.04, 1.3)
@@ -57,7 +59,8 @@ Shader "Lanbai/GateBeam"
                 return _WorldSpaceCameraPos;
             #endif
             }
-            float4 _Beam, _Tint, _Lobe, _NearFadeM, _FogDensity;
+            float4 _Beam, _Tint, _Lobe, _NearFadeM, _FogDensity, _ViewCone, _TearPosB;
+            float4 _Udon_TearPos;
             UNITY_DECLARE_DEPTH_TEXTURE(_CameraDepthTexture);
             float4 _Udon_InsidePortal;   // x = the tear plane's world z, y = 1 once the bus is through (act 4c)
 
@@ -78,12 +81,15 @@ Shader "Lanbai/GateBeam"
                 UNITY_SETUP_INSTANCE_ID(v);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
                 float z = v.uv.y;
-                float3 c = float3(0.0, 0.0, z * _Beam.y);                 // on the axis (object space)
                 float3 eyeW = CentreEye();                                  // both eyes see the same strip (CONTROL §3)
                 float3 camOS = mul(unity_WorldToObject, float4(eyeW, 1.0)).xyz;
+                // a wedge stops 300 m before it would reach the eye (it lay across the side windows at U8: VR r1 FSE)
+                if (_Mode > 0.5) z = min(z, max((camOS.z - 300.0) / max(_Beam.y, 1.0), 0.0));
+                float3 c = float3(0.0, 0.0, z * _Beam.y);                 // on the axis (object space)
                 float3 side = normalize(cross(float3(0.0, 0.0, 1.0), camOS - c) + float3(1e-6, 0.0, 0.0));
                 float hw = _Beam.x * (1.0 + (_Beam.z - 1.0) * z);
-                float3 p = c + side * ((v.uv.x * 2.0 - 1.0) * hw);
+                float trim = (_Beam.w > 0.0) ? _Beam.w : 1.0;              // the strip ends where the lobe is ~4 % (VR r1 FSE)
+                float3 p = c + side * ((v.uv.x * 2.0 - 1.0) * hw * trim);
                 float3 pw = mul(unity_ObjectToWorld, float4(p, 1.0)).xyz;
                 float3 axisW = normalize(mul((float3x3)unity_ObjectToWorld, float3(0.0, 0.0, 1.0)));
                 float3 Vw = eyeW - pw;
@@ -99,9 +105,17 @@ Shader "Lanbai/GateBeam"
                 float3 ab = bW - aW;
                 float perpM = length(cross(axisW, normalize(eyeW - mW)));
                 float whole = pow(saturate(perpM * 1.4), _EdgeFadePow) * smoothstep(_NearFadeM.x, _NearFadeM.y, max(length(aW - eyeW), length(bW - eyeW)));   // all of it near -> gone
+                // the wedges are shadows in the haze band TOWARD the wound: off when the strip is far off that line of sight
+                if (_ViewCone.y > 0.0)
+                {
+                    float3 tp = (_Udon_TearPos.w > 0.0) ? _Udon_TearPos.xyz : _TearPosB.xyz;
+                    float ang = degrees(acos(clamp(dot(normalize(mW - eyeW), normalize(tp - eyeW)), -1.0, 1.0)));
+                    whole *= 1.0 - smoothstep(_ViewCone.x, _ViewCone.y, ang);
+                    o.fade *= 1.0 - smoothstep(_ViewCone.x, _ViewCone.y, ang);
+                }
                 o.pos = (whole < 0.003) ? float4(0.0, 0.0, 0.0, 0.0) : UnityWorldToClipPos(pw);
                 o.wz = pw.z;
-                o.uv = v.uv;
+                o.uv = float2(v.uv.x, z);
                 o.proj = ComputeScreenPos(o.pos);
                 o.proj.z = -mul(UNITY_MATRIX_V, float4(pw, 1.0)).z;
                 return o;
@@ -111,7 +125,7 @@ Shader "Lanbai/GateBeam"
             {
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
                 if (_Udon_InsidePortal.y > 0.5 && i.wz > _Udon_InsidePortal.x) discard;   // U9: not into act 4c
-                float x = i.uv.x * 2.0 - 1.0;
+                float x = (i.uv.x * 2.0 - 1.0) * ((_Beam.w > 0.0) ? _Beam.w : 1.0);
                 float z = i.uv.y;
                 float lobe = exp(-_Lobe.x * x * x) * pow(saturate(1.0 - x * x), _Lobe.y);
                 float along = smoothstep(0.0, _Lobe.z, z) * pow(saturate(1.0 - z), _Lobe.w);
