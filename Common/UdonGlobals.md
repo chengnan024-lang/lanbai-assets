@@ -38,13 +38,14 @@ VRChat 只允许 Udon 写 `_Udon_` 前缀的全局 shader 量（`VRCShader.SetGl
 | `_Udon_InsideDot` / `_Udon_InsideFibre` / `_Udon_InsideClock` / `_Udon_InsideFog` | 暖白点；纤维填色；丝线时钟；当前区雾色与密度 | 门内驱动 | `Lanbai/InsideLip` 等 |
 | `_Udon_CabinSlice` / `_Udon_CabinSliceColor` | 车厢穿越光带：前沿车坐标 z、软边、指数拖尾、覆盖；颜色 × E、窗形遮罩权重 | 门内驱动（第 9 幕镜子也用） | `Lanbai/Cabin` |
 | `_Udon_RadioDial` | 收音机表盘发光填值 | 时间轴 / 门内驱动（4c、5） | `Lanbai/Cabin` |
+| `_Udon_SkyBlend` | float4：x 立方图 A → B、y 程序化权重、z 夜的权重（按方向延迟）、w > 0 已设 | 当前幕（6、8 = 云；9 = 天空） | `Lanbai/Sky` |
+| `_Udon_SkyFx` | float4：x 另一片天、y 地平线带 1 的增益、z 日线半长（度）、w > 0 已设 | 同上 | `Lanbai/Sky` |
+| `_Udon_SunDir` / `_Udon_SunDisc` | 指向日的单位向量（w > 0 已设）；x 增益、y 半径（度）、z 日线半长（度）、w > 0 已设 | 6、8 幕的驱动 | `Lanbai/Sky`、海 |
+| `_Udon_HorizonColor` / `_Udon_ZenithColor` | 地平线 / 天顶色（`LanbaiHorizon` 的底色）；第 9 幕的 `_Udon_ZenithColor` = 星空底 | 当前幕 | `LanbaiFog`、`Lanbai/Sky`、镜子 |
+| `_Udon_GalaxyGain` | float4：x 银河辉光 + 星空底的增益（含点燃线 g(t)）、w > 0 已设 | 第 9 幕（天空） | `Lanbai/Sky`、镜子 |
+| `_Udon_StarGain` | float4：x 星点总增益、y 亮星加成、z 亮星个数、w > 0 已设 | 第 9 幕（天空） | `Lanbai/StarPoints`、镜子 |
 | `_Udon_WorldS` | （本地的时间轴里用的，含义见 `FromLocal/code/timeline_v1/`） | 本地 | 本地 |
 
 ## 预留（还没人写，先占名字）
 
-| 全局量 | 预定含义 | 归谁 |
-|---|---|---|
-| `_Udon_SunDir` / `_Udon_SunDisc` | 指向日的单位向量（w > 0 = 已设，海的 ABOVE 也读）；日盘增益 | 天空 |
-| `_Udon_SkyBlend` | `Lanbai/Sky` 两张立方图的混合 | 天空 |
-| `_Udon_HorizonColor` / `_Udon_ZenithColor` | 地平线 / 天顶色（`LanbaiHorizon` 的底色） | 天空 |
-| `_Udon_StarGain` / `_Udon_GalaxyGain` | 星点、银河辉光的增益（第 9 幕的点燃线 g(t)） | 天空 |
+（目前没有。）
