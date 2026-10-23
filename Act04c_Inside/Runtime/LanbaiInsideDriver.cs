@@ -106,7 +106,7 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
         _idHorizon, _idZenith, _idNadir, _idShape, _idBelow, _idAmbient, _idSlice, _idSliceColor, _idDial,
         _idFog, _idFogModel, _idFogBase, _idFogCube, _idStarGain, _idGalaxyGain;
     private bool _ready;
-    private bool _ownSky;                          // this act has taken the fog / sky globals over (from U9; D-22)
+    private bool _activated;                       // LanbaiActivate has run (a late joiner inside 4c keeps the dome on)
     private float _lastT = -1f;
 
     void Start()
@@ -114,7 +114,7 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
         Init();
         // 总导演终审 #1 / #7: the dome, the dot and the loose threads (bus-anchored) are off until the window, and the
         // lips' visibility is written before anything of the inside can show
-        if (busAnchoredObject != null) busAnchoredObject.SetActive(false);
+        if (!_activated && busAnchoredObject != null) busAnchoredObject.SetActive(false);
         WriteLipsVisible(0f);
     }
 
@@ -157,6 +157,7 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
     public void LanbaiActivate(bool on)
     {
         Init();
+        _activated = true;
         if (on)
         {
             _lastVis = null;                       // re-write every lip material (a second departure starts clean)
@@ -167,24 +168,22 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
         if (!on) HandBack();
     }
 
-    /// <summary>总导演终审 #2: leaving the window, give the shared globals back (D-22: one writer at a time): the portal
-    /// off, the fog / sky channels unset (w = 0) so the next act's writer or the defaults apply, the dot off.</summary>
+    /// <summary>D-22 supplement: leaving the window, hand back only this act's own globals (the portal, the dot) and the
+    /// legacy _Udon_FogDensity. The shared fog / sky / star channels are never cleared (w = 0): the next act's writer
+    /// (act 6's dawn fog from cut 1, or the gate on a seek back) owns them.</summary>
     private void HandBack()
     {
         VRCShader.SetGlobalVector(_idPortal, Vector4.zero);
         VRCShader.SetGlobalVector(_idDot, Vector4.zero);
-        if (_ownSky)
-        {
-            VRCShader.SetGlobalVector(_idFog, Vector4.zero);
-            VRCShader.SetGlobalVector(_idFogModel, Vector4.zero);
-            VRCShader.SetGlobalVector(_idFogBase, Vector4.zero);
-            VRCShader.SetGlobalVector(_idFogCube, Vector4.zero);
-            VRCShader.SetGlobalVector(_idStarGain, Vector4.zero);
-            VRCShader.SetGlobalVector(_idGalaxyGain, Vector4.zero);
-            VRCShader.SetGlobalFloat(_idDensity, 0f);
-            VRCShader.SetGlobalVector(_idHorizon, Vector4.zero);
-            _ownSky = false;
-        }
+        VRCShader.SetGlobalFloat(_idDensity, 0f);
+    }
+
+    /// <summary>The local head's world z (the bus never moves; world = bus space); -inf without a local player.</summary>
+    private float EyeZ()
+    {
+        VRCPlayerApi lp = Networking.LocalPlayer;
+        if (lp == null) return -1e9f;
+        return lp.GetTrackingData(VRCPlayerApi.TrackingDataType.Head).position.z;
     }
 
     /// <summary>A copy of LanbaiOverlay.EvOverlayAlpha (bible §1.8 E17): UdonSharp 1.x may not call another U# class's
@@ -225,14 +224,24 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
         if (insideRoot != null) insideRoot.localPosition = new Vector3(0f, 0f, -s);
         // the portal: armed from the window's start; the tear plane is lip 1's plane = InsideRoot's origin
         VRCShader.SetGlobalVector(_idPortal, new Vector4(-s, 1f, 0f, 0f));
-        if (t < tU9)                                               // before U9 the gate owns fog, ambient, light (D-22)
+        // D-22 supplement: the boundary is the frame the inside APPEARS (the eye within 0.7 m of the tear plane, the same
+        // test the shader uses to un-collapse it), or U9, whichever comes first; from that frame this act writes the fog
+        // (with U9's values until U9), and only until cut 1 (U12: act 6 writes its dawn fog from there)
+        bool shown = t >= tU9 || EyeZ() >= -s - 0.7f;
+        if (!shown)                                                // the gate owns fog, ambient, light (D-22)
         {
             WriteLipsVisible(0f);                                  // #7: materials only (no globals)
             _lastT = t;
             return;
         }
+        if (t < tU12) WriteFog(Mathf.Max(t, tU9), Mathf.Max(s, 0f));
+        if (t < tU9)
+        {
+            WriteLipsVisible(0f);
+            _lastT = t;
+            return;
+        }
 
-        WriteFog(t, s);
         WriteLipsVisible(s);
         WriteDot(t);
         WriteCabin(t);
@@ -326,7 +335,7 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
         VRCShader.SetGlobalVector(_idFogCube, Vector4.zero);                          // no fog cube inside
         VRCShader.SetGlobalVector(_idStarGain, new Vector4(0f, 0f, 0f, 1f));          // no stars inside the cloth
         VRCShader.SetGlobalVector(_idGalaxyGain, new Vector4(0f, 0f, 0f, 1f));
-        _ownSky = true;
+
         VRCShader.SetGlobalVector(_idBandDir, new Vector4(bd.x, 0f, bd.z, 1f));
         VRCShader.SetGlobalVector(_idBandColor, new Vector4(ahead.r * aheadKs, ahead.g * aheadKs, ahead.b * aheadKs, 1f));
         VRCShader.SetGlobalFloat(_idBandWidth, Mathf.Lerp(bandWidthDeg, codaBandWidthDeg, c));

@@ -16,6 +16,9 @@ namespace Lanbai.Inside.Editor
     {
         const string Root = "Assets/Lanbai/Act04c_Inside/";
 
+        // bump when the postprocessing changes, so models imported before (e.g. Skylight_Spot without its bounds) re-import
+        public override uint GetVersion() { return 2; }
+
         void OnPreprocessModel()
         {
             if (!assetPath.StartsWith(Root)) return;
