@@ -1,0 +1,204 @@
+{
+ "metrics": {
+  "size": [
+   960,
+   540
+  ],
+  "APL": 27.04,
+  "EV_display": -5.547,
+  "luma_lt12_pct": 48.89,
+  "Lstar_gt85_pct": 0.0,
+  "clip_black_pct": 0.0,
+  "clip_white_pct": 0.0,
+  "purple_pct": 0.0,
+  "violet_strong_pct": 0.0,
+  "lavender_act6_pct": 0.0,
+  "brightest": {
+   "bbox": [
+    504,
+    82,
+    822,
+    386
+   ],
+   "centroid": [
+    664.6,
+    279.4
+   ],
+   "clusters": 18,
+   "clusters_ge5pct": 6,
+   "min_luma": 117.3,
+   "centroid_az_el": [
+    14.4,
+    47.34
+   ]
+  },
+  "top25_Lstar": {
+   "mean": 9.19,
+   "p50": 2.31,
+   "p90": 25.78
+  },
+  "palette": {
+   "act": "04c",
+   "swatches": [
+    {
+     "hex": "#0C0E14",
+     "role": "暗车厢剪影",
+     "closest_dE_p1": 1.7,
+     "within10_pct": 72.82
+    },
+    {
+     "hex": "#1D2336",
+     "role": "第一重光唇之间的雾",
+     "closest_dE_p1": 8.3,
+     "within10_pct": 3.86
+    },
+    {
+     "hex": "#53606E",
+     "role": "第八重光唇之间的雾",
+     "closest_dE_p1": 3.3,
+     "within10_pct": 15.0
+    },
+    {
+     "hex": "#E6E1F2",
+     "role": "光唇纤维 第 1 重（一丝紫）",
+     "closest_dE_p1": 52.9,
+     "within10_pct": 0.0
+    },
+    {
+     "hex": "#D9DFEE",
+     "role": "光唇纤维 第 4 重",
+     "closest_dE_p1": 50.9,
+     "within10_pct": 0.0
+    },
+    {
+     "hex": "#C2D8E2",
+     "role": "光唇纤维 第 8 重（瓶覗）",
+     "closest_dE_p1": 47.2,
+     "within10_pct": 0.0
+    },
+    {
+     "hex": "#F2B169",
+     "role": "收音机 = Lichtchen",
+     "closest_dE_p1": 70.6,
+     "within10_pct": 0.0
+    },
+    {
+     "hex": "#FFF1DC",
+     "role": "前方暖白光点",
+     "closest_dE_p1": 62.0,
+     "within10_pct": 0.0
+    }
+   ],
+   "pixel_to_nearest_dE_median": 2.3,
+   "pixel_to_nearest_dE_p90": 9.1,
+   "pixels_within10_pct": 91.6
+  }
+ },
+ "cam": {
+  "eye": [
+   0.55,
+   1.7,
+   2.05
+  ],
+  "yaw_deg": 0.0,
+  "pitch_deg": 49.0,
+  "hfov_deg": 50.0,
+  "res": [
+   960,
+   540
+  ],
+  "t": 174.15,
+  "cue": "U8 + 8.0 s (... Ich liess mich nicht abweisen), looking up through the skylight",
+  "bus_shell": true,
+  "source": "Gate/GateLayout_v2.json cameras.U8a",
+  "note": "天窗（= Gate cameras.U8a 的机位，不带时间）",
+  "name": "hero_skylight"
+ },
+ "grade_spec": {
+  "S4c": 1.0,
+  "LENS_CLEAN": 1.0
+ },
+ "grade_state": {
+  "postExposure": -0.9,
+  "temperature": -2.89,
+  "tint": 1.65,
+  "saturation": -13.56,
+  "contrast": 0.8,
+  "lift": [
+   0.9824,
+   0.9835,
+   1.0,
+   0.0061
+  ],
+  "gamma": [
+   0.9893,
+   0.9814,
+   1.0,
+   -0.0699
+  ],
+  "gain": [
+   0.9994,
+   0.991,
+   1.0,
+   0.1188
+  ],
+  "mixer": [
+   99.81,
+   0.11,
+   -1.08,
+   -0.73,
+   100.56,
+   -0.28,
+   0.08,
+   0.42,
+   99.86
+  ],
+  "bloom": {
+   "intensity": 6.0,
+   "threshold": 2.69,
+   "softKnee": 0.7,
+   "diffusion": 9.0,
+   "color": [
+    0.9490196078431372,
+    0.9529411764705882,
+    0.9647058823529412
+   ],
+   "clamp": 4.239999999997963
+  },
+  "vignette": {
+   "intensity": 0.2,
+   "smoothness": 0.4,
+   "roundness": 1.0,
+   "rounded": false,
+   "color": [
+    0.00784313725490196,
+    0.01568627450980392,
+    0.0392156862745098
+   ]
+  }
+ },
+ "bloom_share_of_APL": 0.0,
+ "t": 226.0,
+ "target": {
+  "phase": "4c selig Leben",
+  "APL": 48.6,
+  "grade": "S4c",
+  "range": [
+   42,
+   55
+  ]
+ },
+ "scene": {
+  "what": "第 4c 幕 t=226.00 s=1825.7 lips=6 fog=#53606E",
+  "bus": "bible_v2",
+  "glass": true,
+  "samples": 16,
+  "res": [
+   960,
+   540
+  ]
+ },
+ "render_seconds": 37.0,
+ "lens": "clean",
+ "note": "r03 short fibres, dark cabin silhouette, sleeve side views"
+}

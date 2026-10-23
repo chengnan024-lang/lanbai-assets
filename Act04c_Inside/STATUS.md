@@ -1,4 +1,4 @@
-2026-10-23 01:55（UTC）· 遮罩 v2 已推（Overlay/）；第 4c 幕：布局求解器、三种撕口生成、网格生成、shader（slang 过）已做，设计评审回来 34 条，正在写设计稿 v2 · 下一步：设计稿 v2 → lookdev_brief → Blender 迭代 · 没有卡住
+2026-10-23 02:10（UTC）· 第 4c 幕设计稿 v2（评审 34 条全部处理）、布局求解、网格 + FBX（读回 26/26）、shader、驱动、搭建菜单（Roslyn / slang 过）、Blender 迭代 3 轮 · 下一步：陌生人测试 + 美术评审 → r04 → 天窗光斑 → flashcheck → README · 没有卡住
 
 # 门内 · 进度
 
