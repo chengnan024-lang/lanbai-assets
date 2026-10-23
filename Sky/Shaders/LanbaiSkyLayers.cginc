@@ -384,7 +384,7 @@ float3 LanbaiCubeUpper(samplerCUBE cube, half4 hdr, float3 Vs, float rot, float 
     c = min(c * exp2(ev), clampV);
     c *= LanbaiCubeTint(Vs, zt, mt, ht, hat, S);
     // the HDRI's own sun (a flat blob ~3 deg wide where the HDRI clipped; the mips blur it further) is taken out
-    // (director r2 #3): within p_SunRemove.x deg of the sun the luminance is soft-capped (knee 4, hue kept) at
+    // (director r2 #3): within p_SunRemove.x deg of the sun the luminance is soft-capped (knee 8, hue kept) at
     //   cap(a) = p_SunRemove.y x (max(a, 1.5) / x)^-z     (linear, after the tints; y ~ the sky at radius x; z = a gentle
     //                                                       aureole so the cap is a glow, not a flat disc)
     // and the clipped (whitish) blob's hue pulled toward the sun colour by w. 1.5x radius fade: monotone, no ring.
@@ -396,7 +396,8 @@ float3 LanbaiCubeUpper(samplerCUBE cube, half4 hdr, float3 Vs, float rot, float 
         float L = max(dot(c, float3(0.2126, 0.7152, 0.0722)), 1e-6);
         float cap = max(p_SunRemove.y, 1e-4) * pow(max(as, 1.5) / p_SunRemove.x, -p_SunRemove.z);
         float q = L / cap;
-        float3 capped = c * rsqrt(sqrt(1.0 + q * q * q * q));
+        float q4 = q * q * q * q;
+        float3 capped = c * rsqrt(sqrt(sqrt(1.0 + q4 * q4)));   // knee 8: the sky below the cap is left alone (a knee 4 trimmed it and drew a ring where it let go)
         float3 sunHue = p_SunColor.rgb / max(dot(p_SunColor.rgb, float3(0.2126, 0.7152, 0.0722)), 1e-4);
         float k = p_SunRemove.w * saturate(q - 1.0);          // only where the cap actually bit
         capped = lerp(capped, sunHue * dot(capped, float3(0.2126, 0.7152, 0.0722)), k);

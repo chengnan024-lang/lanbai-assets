@@ -82,7 +82,7 @@ P['dawn'] = dict(acts='6（晨，F0 → F2h）', profile='S6', sunAz=30.0, cubeA
                   _Band1Color=v4(F('#B8C4F7'), 0.3), _Band1Shape=[2.0, 2.5, 180, 55], _Band1Gain=0.6,
                   _Band2Color=v4(F('#FFCFCB @ +0.61'), 0.3), _Band2Shape=[10.0, 4.0, 180, 50], _Band2Gain=0.3,
                   _NadirColor=v4(F('#6F8FA8'), 0.5), _BelowShape=[-75, 1.0, 0.6, 2.0], _PurpleGuard=[1.0, 0.86, 1.25, 0],
-                  _SunRemove=[7.0, 2.4, 0.25, 0.6]),
+                  _SunRemove=[7.0, 3.2, 0.25, 0.6]),
     globals=dict(_Udon_SunDir=v4(SUN6, 1), _Udon_SunDisc=[1.0, 0.265, 0, 1], _Udon_FogDensity=0.00012),
     fog_from_sky=dict(near_az=30.0, width=70.0, zen_el=60.0, nadir=F('#6F8FA8')),
     notes='天顶 #3E64A6、背日 45° #AFC4E0、日侧地平线 #F2C79A、地影带 #8C98B8 + 很淡的金星带 #CFB7B7（HDRI 里没有，由两条地平线带给）、日盘直径 0.53°（D-18）#FFF3DE（填 #FFCE9E @ +2.55）+ 小光晕；HDRI 自己的日斑由 _SunRemove 软封顶。太阳 方位 +30°（D-12，车门里）、仰角 5.8°（HDRI 的太阳）。')
