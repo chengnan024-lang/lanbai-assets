@@ -273,6 +273,45 @@ def mat_dot(core_lin, glow_k, core_frac, gain, halo_lin=(6.92, 5.95, 4.84)):
     return m
 
 
+def mat_loose(col_lin, fp):
+    m = bpy.data.materials.new('Inside_Loose')
+    N = NT(m)
+    cg = N.attr('Col')
+    gr, _, _ = N.sep(cg.outputs['Color'])
+    k = N.math('MULTIPLY', gr, N.math('SUBTRACT', 1.0, N.fog_amount(fp['density'])))
+    N.done(N.add(N.emission(N.vmath('SCALE', N.rgb(col_lin), s=k)), N.transparent()))
+    return m
+
+
+def loose_mesh(o, clk, eye, width=0.008, px=math.radians(90.0) / 960.0):
+    """numpy port of the shader's loose-thread vertex stage (uv0 along / side, uv1 phase / speed, uv2 r0 / angle,
+    uv3 z0 / length, col = axis, brightness); the ribbon is inflated to >= 1 px and its brightness x coverage."""
+    uv0, uv1, uv2, uv3, col = (np.asarray(o[k], float) for k in ('uv0', 'uv1', 'uv2', 'uv3', 'col'))
+    period = 40.0
+    age = np.mod((clk + uv1[:, 0]) / period, 1.0)
+    r = uv2[:, 0] * (1.0 - 0.25 * age)
+    ln = uv3[:, 1]
+    ang = uv2[:, 1] + 0.15 * np.sin(clk * 0.21 + uv1[:, 0])
+    base = np.stack([np.cos(ang) * r, 1.6 + np.sin(ang) * r * 0.75, uv3[:, 0] + uv1[:, 1] * (age - 0.5) * period], -1)
+    axis = col[:, :3] * 2.0 - 1.0
+    axis /= np.linalg.norm(axis, axis=1, keepdims=True)
+    along = axis * ((uv0[:, 0] - 0.5) * ln)[:, None]
+    along[:, 1] += 0.25 * ln * np.sin(uv0[:, 0] * np.pi) * np.sin(clk * 0.4 + uv1[:, 0])
+    wp = base + along
+    side = np.cross(axis, wp - eye)
+    side /= np.linalg.norm(side, axis=1, keepdims=True) + 1e-9
+    dist = np.linalg.norm(wp - eye, axis=1)
+    rmin = 0.5 * px * dist
+    rdraw = np.maximum(width * 0.5, rmin)
+    cov = (width * 0.5) / rdraw
+    wp = wp + side * (uv0[:, 1] * rdraw)[:, None]
+    life = (np.clip(age / 0.15, 0, 1) ** 2 * (3 - 2 * np.clip(age / 0.15, 0, 1))) * \
+           (1.0 - (lambda x: x * x * (3 - 2 * x))(np.clip((age - 0.8) / 0.2, 0, 1))) * \
+           (lambda x: x * x * (3 - 2 * x))(np.clip((r - 3.0) / 2.0, 0, 1))
+    g = cov * life * col[:, 3]
+    return dict(V=wp, F=o['F'], col=np.stack([g, np.ones_like(g), np.zeros_like(g), np.ones_like(g)], -1))
+
+
 # ------------------------------------------------------------------------------------------------ meshes
 def mesh(S, name, o, offset_z, mat):
     V = np.asarray(o['V'], float).copy()
@@ -348,6 +387,12 @@ def build(ctx):
         if 'Lip%d_Threads' % k in objs:
             mesh(None, 'Lip%d_Threads' % k, objs['Lip%d_Threads' % k], zk, mat_thread('Lip%dT' % k, P, fp))
         made += 1
+    # r08: the loose threads (bus-anchored; the same motion as Lanbai/InsideLip _PART_LOOSE), x 4 inside the sleeve
+    if not a.get('noloose'):
+        lo = loose_mesh(objs['Inside_Loose'], DR.clock(t), eye)
+        if lo is not None:
+            gain = DR.LOOSE_GAIN * DR.loose_gain(t)
+            mesh(None, 'Inside_Loose', lo, 0.0, mat_loose(np.asarray(DR.fibre_fill(min(8, max(1, sum(1 for x in D.LIP_T if x <= t))))) * gain, fp))
     # the dome (bus-anchored, r 2.4 km) = the fog at infinity
     mesh(None, 'Inside_Dome', objs['Inside_Dome'], 0.0, mat_dome(fp))
     # the dot: a billboard toward the eye, 2.3 km out along the fixed bus direction

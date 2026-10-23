@@ -22,6 +22,30 @@ FOG_D0, FOG_D1 = 0.0006, D.FOG_DENSITY  # act 4's density -> the inside's, over 
 NADIR_K = 0.80                          # darker below (review r1 / art review r03)
 SHEET_FOG_CAP, LIP8_HOLD_M, LIP8_RAMP_M = 0.30, 70.0, 60.0
 SLEEVE_FOG_K = 0.75                                    # r07: the air inside the sleeve
+SLEEVE_LOOSE_K = 4.0                                   # r08: loose fibres pulled from the thick cloth, inside the sleeve
+LOOSE_GAIN = 0.25                                      # the shader's _LooseGain (x the current fibre colour)
+
+
+def sleeve_weight(t):
+    """0 outside lip 8's sleeve, 1 inside (15 m in at the entry, 30 m out past the exit)."""
+    s = float(D.dist(t))
+    S8 = float(D.dist(D.LIP_T[7]))
+    return float(D.ss((s - S8) / 15.0)) * (1.0 - float(D.ss((s - S8 - D.SLEEVE_DEPTH) / 30.0)))
+
+
+def loose_gain(t):
+    """r08 (art pre-review r0 #2: 228 forward had no structure; the 40 m clearance keeps every cloth edge out of the
+    forward frame inside the sleeve): the loose fibres x 4 in the sleeve."""
+    return 1.0 + (SLEEVE_LOOSE_K - 1.0) * sleeve_weight(t)
+
+
+def clock(t):
+    """the loose threads' clock: = t, easing to a stop over the last 4 s before STOP_T (LanbaiInsideDriver.Clock)."""
+    t0 = D.STOP_T - 4.0
+    if t <= t0:
+        return float(t)
+    x = min(max((t - t0) / 4.0, 0.0), 1.0)
+    return t0 + 4.0 * (x - x ** 3 + 0.5 * x ** 4)
 CODA_BW, CODA_SIDE_K, CODA_TOP_K = 40.0, 0.45, 0.38      # r06: the coda's radial gradient round the dot
 AHEAD_K, BEHIND_K, ZENITH_K = 1.0, 0.72, 0.85        # r05: the gradient falls off sideways (bw 100) instead of brightening ahead
 
@@ -83,9 +107,7 @@ def fog_params(t):
     lerp = lambda a, b: a + (b - a) * c
     # r07 (art pre-review r0 #2: 228 forward was a grey card + a dot): inside the sleeve the air is darker (a tunnel in
     # thick cloth); it lifts at the exit over ~2 s (0.42 EV: within the ramp law) into the coda
-    S8 = float(D.dist(D.LIP_T[7]))
-    ks = float(D.ss((s - S8) / 15.0)) * (1.0 - float(D.ss((s - S8 - D.SLEEVE_DEPTH) / 30.0)))
-    sk = 1.0 + (SLEEVE_FOG_K - 1.0) * ks
+    sk = 1.0 + (SLEEVE_FOG_K - 1.0) * sleeve_weight(t)
     return dict(model='B gradient', band_dir=tuple(bd), bw=lerp(100.0, CODA_BW),
                 near=tuple(fog_colour_at_s(s + FOG_AHEAD_M) * AHEAD_K * sk),
                 far=tuple(fog_colour_at_s(s - FOG_AHEAD_M) * lerp(BEHIND_K, CODA_SIDE_K) * sk),

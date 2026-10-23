@@ -49,7 +49,8 @@ Shader "Lanbai/SkylightSpot"
             float4 _Color;
             float _Gain, _BeamGain, _DustGain, _SkyHalf, _FloorY, _Penumbra;
             float4 _SkyC, _CoreOfs;
-            // not yet in LanbaiGlobals.cginc (asked in 给总控.md): declared under the same guard so the generated file wins
+
+            // registered (D-16) but not yet in the generated LanbaiGlobals.cginc: same guard, so the regenerated file wins
             #ifndef LANBAI_DECL__Udon_SkySpot
             #define LANBAI_DECL__Udon_SkySpot
             float4 _Udon_SkySpot;

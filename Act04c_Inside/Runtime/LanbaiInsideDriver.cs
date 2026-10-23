@@ -47,6 +47,7 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
     public float codaBandWidthDeg = 40f, codaSideK = 0.45f, codaTopK = 0.38f;
     public float dotAzDeg = -6.5f;
     public float sleeveFogK = 0.75f, sleeveDepth = 85.51f;     // r07: darker air inside lip 8's sleeve
+    public float sleeveLooseK = 4f;                             // r08: loose fibres x 4 inside the sleeve
     // chief engineer r1 #2: off by default. Tick only after the local timeline has handed act 4c / 5's window
     // (177.55 -> 252.64) to the dispatcher (extWindows, extAtmosphere / extSun); otherwise LB_Journey writes these.
     public bool writeRenderSettings = false;
@@ -189,7 +190,10 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
         WriteCabin(t);
         VRCShader.SetGlobalVector(_idClock, new Vector4(Clock(t), 0f, 0f, 0f));
         Color fib = FibreAt(s);
-        VRCShader.SetGlobalVector(_idFibre, new Vector4(fib.r, fib.g, fib.b, looseGain));
+        // r08: the loose fibres x sleeveLooseK inside lip 8's sleeve (the 40 m clearance keeps every cloth edge out of
+        // the forward view there; these are the structure ahead)
+        float ksl = SS((s - lipS[7]) / 15f) * (1f - SS((s - lipS[7] - sleeveDepth) / 30f));
+        VRCShader.SetGlobalVector(_idFibre, new Vector4(fib.r, fib.g, fib.b, looseGain * Mathf.Lerp(1f, sleeveLooseK, ksl)));
         if (writeExposure && exposure != null) exposure.SetDeltaEV(LanbaiDeltaEV(t));
         WriteBlack(t);
         _lastT = t;
