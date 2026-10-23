@@ -181,6 +181,13 @@ float3 LanbaiHorizonBand(float3 V, float3 nearC, float3 farC, float3 voidC, floa
 // is clamped to 90. A step still moving at the zenith (the dawn fit had its end at 94.5) makes a cone = a bullseye; one
 // ending AT 90 is a smooth paraboloid there. Presets whose gradient reaches the zenith end it at 90, not below (a step
 // ending at 85 leaves a flat disc with a curvature edge round it).
+// geometric (log-space) blend: a linear-light lerp between a bright horizon and a dark zenith stays bright on screen to
+// ~60 deg and then plunges = a dark disc overhead; the log blend darkens evenly in display terms (director r2 #2)
+inline float3 LanbaiGeoLerp(float3 a, float3 b, float t)
+{
+    return exp2(lerp(log2(max(a, 1e-6)), log2(max(b, 1e-6)), t));
+}
+
 inline float LanbaiUpStep(float lo, float hi, float el)
 {
     float x = saturate((el - lo) / max(min(hi, 90.0) - lo, 1e-4));
@@ -197,7 +204,7 @@ float3 LanbaiHorizonGradient(float3 V, float3 nearC, float3 farC, float3 zenC, f
     up = pow(saturate(up), (shape.z > 0.0) ? shape.z : 1.0);
     float dn = smoothstep(below.y, min(below.x, below.y - 0.1), el);           // 0 at below.y .. 1 at below.x (both <= 0)
     dn = pow(saturate(dn), (below.z > 0.0) ? below.z : 1.0);
-    float3 c = lerp(hz, zenC, up);
+    float3 c = LanbaiGeoLerp(hz, zenC, up);
     return lerp(c, nadC, dn);
 }
 

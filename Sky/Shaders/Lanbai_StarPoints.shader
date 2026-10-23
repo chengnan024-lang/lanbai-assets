@@ -48,14 +48,12 @@ Shader "Lanbai/StarPoints"
             #pragma fragment frag
             #pragma target 3.5
             #include "UnityCG.cginc"
+            #include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc" // registered _Udon_ globals (guarded; ours below skip what it declares)
             #include "Assets/Lanbai/Common/Shaders/LanbaiSky.cginc"     // (+ LanbaiVR) the fog band geometry for _Udon_StarShape
 
             float _StarScale, _MagRef, _MagSlope, _MagFloor, _FWHM, _BrightCount, _BrightBoost, _Gain, _Distance, _UseGlobalGain;
             float4 _OrderFade, _Tint;
-            #ifndef LANBAI_DECL__Udon_StarGain
-            #define LANBAI_DECL__Udon_StarGain
-            float4 _Udon_StarGain;     // x = gain, y = bright-rank boost (> 0 = set), z = bright-rank count (> 0 = set); w > 0 = set
-            #endif
+            // _Udon_StarGain (LanbaiGlobals): x = gain, y = bright-rank boost (> 0 = set), z = bright-rank count (> 0 = set); w > 0 = set
             #ifndef LANBAI_DECL__Udon_StarShape
             #define LANBAI_DECL__Udon_StarShape
             float4 _Udon_StarShape;    // x = faintest magnitude (overrides _MagFloor), y = EV inside the fog band (acts 3-4: -1), z = band half width deg (else _Udon_FogBandWidth); w > 0 = set

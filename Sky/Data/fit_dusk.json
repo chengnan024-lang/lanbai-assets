@@ -5,28 +5,28 @@
  "profile": "S8",
  "tints": {
   "_ZenithTintA": [
-   0.6957,
-   0.5592,
-   0.618
+   0.7087,
+   0.5644,
+   0.6371
   ],
   "_MidTintA": [
-   1.7007,
-   1.2033,
-   0.9417
+   1.1525,
+   0.9387,
+   0.7741
   ],
   "_HorizonTintA": [
-   0.3172,
-   0.0786,
-   0.0644
+   0.3361,
+   0.0762,
+   0.0636
   ],
   "_HorizonAntiTintA": [
-   0.6833,
-   0.2676,
-   0.1981
+   1.8472,
+   1.2827,
+   1.0576
   ],
   "_TintElevation": [
-   9.97,
-   12.04,
+   10.0,
+   40.0,
    90.0,
    1.0
   ]
@@ -34,31 +34,39 @@
  "check": {
   "zenith": {
    "target": "#3D4A80",
-   "got": "#3D4A7E"
+   "got": "#3D4A80"
   },
   "midsky": {
    "target": "#808AB2",
-   "got": "#8B91BC"
+   "got": "#808EB8"
   },
   "midback": {
    "target": "#808AB2",
-   "got": "#7480AB"
+   "got": "#6A7BA6"
   },
   "midside": {
    "target": "#808AB2",
-   "got": "#7F8DB5"
+   "got": "#6C7CA6"
   },
   "lowback": {
    "target": "#7E88AE",
-   "got": "#8488A9"
+   "got": "#898EB1"
   },
   "lowside": {
    "target": "#9C8FA6",
-   "got": "#9A8FA8"
+   "got": "#9D90A9"
   },
   "sunhor": {
    "target": "#FFB070",
-   "got": "#FFB070"
+   "got": "#FFB677"
+  },
+  "sun12": {
+   "target": "#E7A0A0",
+   "got": "#DD9895"
+  },
+  "sun25": {
+   "target": "#8A96B6",
+   "got": "#B3ACC5"
   }
  }
 }

@@ -66,7 +66,7 @@ Shader "Lanbai/Sky"
         [Header(Other sky  act 8 ii)]
         _OtherSky ("Other sky weight (global _Udon_SkyFx.x wins)", Range(0, 1)) = 0
         _OtherGain ("Other sky gain (bible x0.82 = -0.3 EV)", Float) = 0.82
-        _OtherTint ("Other sky tint, linear", Vector) = (0.92, 0.95, 1.05, 1)
+        _OtherTint ("Other sky tint rgb  a pull toward the nadir colour with depth", Vector) = (0.92, 0.95, 1.05, 0)
         _OtherSeam ("Other sky seam width deg", Float) = 1
         _OtherFromB ("Other sky from cube B (1) instead of the same cubes (0)", Float) = 0
         [Header(Night  stars are Lanbai StarPoints)]
@@ -77,11 +77,11 @@ Shader "Lanbai/Sky"
         _GalaxyGain ("Galaxy glow gain (global _Udon_GalaxyGain.x wins)", Float) = 0
         _GlowScale ("Galaxy glow scale (the PNG is normalised; Sky/Data/StarSky.json glow_scale)", Float) = 1
         _NightMaskDir ("Night delay  the front direction xyz (sun death azimuth)", Vector) = (0, 0, 1, 0)
-        _NightMaskShape ("Night delay  x azimuth half width deg  y soft deg  z elevation top deg  w soft deg", Vector) = (30, 45, 6, 22)
+        _NightMaskShape ("Night mask ellipse  x az half axis  y its soft  z el half axis  w its soft", Vector) = (30, 45, 6, 22)
         [Header(Sun)]
         _SunDir ("Sun direction fallback (global _Udon_SunDir wins)", Vector) = (0.7, 0.1, 0.7, 0)
         _SunColor ("Sun disc colour, linear HDR (dawn fill #FFCE9E x 2^2.55)", Vector) = (5.86, 3.70, 1.98, 1)
-        _SunShape ("Sun  x radius deg  y soft edge deg  z limb darkening  w line half length deg", Vector) = (0.45, 0.04, 0.55, 0)
+        _SunShape ("Sun  x radius deg  y soft edge deg  z limb darkening  w line half length deg", Vector) = (0.265, 0.04, 0.55, 0)
         _SunGain ("Sun gain (global _Udon_SunDisc.x wins)", Float) = 1
         _SunRemove ("Remove the HDRI sun  x radius deg  y luminance cap  z aureole  w hue to sun", Vector) = (0, 2.5, 0.25, 0.6)
         _SunGlow ("Sun aureole  x gain  y falloff per deg  z wide gain  w wide falloff", Vector) = (0, 1.2, 0, 0.15)

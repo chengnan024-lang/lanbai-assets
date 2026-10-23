@@ -2,10 +2,11 @@
 // !!! NOT COMPILED IN UNITY: Roslyn type-check against UnityEditor 2021.1 only (Sky/Tools~/compile_check/check_cs.sh). !!!
 //
 //   蓝白/Sky/Build Star Mesh          Sky/Data/StarPoints_BSC5.csv -> Sky/Generated/StarPoints_BSC5.asset (4 verts / star)
-//   蓝白/Sky/Build Preset Materials   Sky/SkyPresets.json -> Sky/Generated/M_Sky_<preset>.mat (+ M_Sky_StarPoints.mat);
-//                                     re-measures each HDRI's sun on its source .hdr and corrects _RotationA
-//   蓝白/Sky/Create Preset Objects    one GameObject per preset with LanbaiSkyPreset (U#) + its program asset
-//   蓝白/Sky/Preview Window           apply a preset in the editor (skybox + globals + fog density), clear the globals
+//   蓝白/Sky/Build Sky                ONE material Sky/Generated/M_Sky.mat (= RenderSettings.skybox) + one GameObject per
+//                                     preset (LanbaiSkyPreset, U#, + program assets) from Sky/SkyPresets.json; re-measures
+//                                     each HDRI's sun on its source .hdr and writes the rotation into _Udon_Sky_RotationA
+//   蓝白/Sky/Create Preset Objects    = Build Sky (old name)
+//   蓝白/Sky/Preview Window           apply a preset in the editor (globals + global cube + fog density), clear the globals
 //   蓝白/Sky/Bake Fog Cube From Skybox  the current skybox -> a 64 px HDR cubemap for _Udon_FogCube (optional)
 // Re-runnable: everything is rewritten in place. Report: Sky/Generated/SkyBuild_Report.txt
 using System;
@@ -135,54 +136,42 @@ namespace Lanbai.Sky.EditorTools
         public static string RootFolder() { return SkyRoot(); }
 
         // ---------------------------------------------------------------------------------------------------------
-        [MenuItem("蓝白/Sky/Build Preset Materials")]
-        public static void BuildPresetMaterials()
+        // ONE skybox material for the whole film (chief engineer r2 #0): Sky/Generated/M_Sky.mat with the textures that
+        // never change (galaxy glow, moon); every preset difference is a global (LanbaiSkyPreset). The HDRI sun is
+        // re-measured on each source .hdr and the corrected rotation goes into that preset's _Udon_Sky_RotationA.
+        [MenuItem("蓝白/Sky/Build Sky (one material + preset objects)")]
+        public static void BuildSky()
         {
             StringBuilder rep = new StringBuilder();
             rep.AppendLine("蓝白 · Sky build report " + DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
-            Shader sky = Shader.Find("Lanbai/Sky");
-            if (sky == null) { Debug.LogError("[Lanbai/Sky] shader Lanbai/Sky not found (compile errors?)"); return; }
+            Material mat = BuildSkyMaterial(rep);
+            if (mat == null) return;
+            RenderSettings.skybox = mat;
+            rep.AppendLine("RenderSettings.skybox = " + AssetDatabase.GetAssetPath(mat) + " (save the scene)");
             SkyPresetFile pf = LoadPresets();
-            Texture glow = AssetDatabase.LoadAssetAtPath<Texture>(SkyRoot() + "/Textures/StarSky_Glow_8192x4096.png");
-            Texture moon = AssetDatabase.LoadAssetAtPath<Texture>(SkyRoot() + "/Textures/Moon_Disc_1024.png");
+            Dictionary<string, float> rot = new Dictionary<string, float>();
             foreach (SkyPreset p in pf.presets)
             {
-                string path = Gen() + "/M_Sky_" + p.name + ".mat";
-                Material mat = AssetDatabase.LoadAssetAtPath<Material>(path);
-                if (mat == null) { mat = new Material(sky); AssetDatabase.CreateAsset(mat, path); }
-                mat.shader = sky;
-                foreach (SkyKV kv in p.floats) mat.SetFloat(kv.k, kv.v);
-                foreach (SkyKV4 kv in p.vectors) mat.SetVector(kv.k, V4(kv.v));
-                if (!string.IsNullOrEmpty(p.cubeA))
+                if (string.IsNullOrEmpty(p.cubeA)) continue;
+                Cubemap cube = FindCube(p.cubeA, out string cubePath);
+                if (cube == null)
                 {
-                    Cubemap cube = FindCube(p.cubeA, out string cubePath);
-                    if (cube == null)
-                        rep.AppendLine("  " + p.name + ": cube '" + p.cubeA + "' NOT FOUND (import the HDRI as Texture Shape = Cube, Lat-Long), material left without _CubeA");
-                    else
-                    {
-                        mat.SetTexture("_CubeA", cube);
-                        rep.AppendLine("  " + p.name + ": _CubeA = " + cubePath);
-                        if (p.sunAz > -900f && cubePath.ToLowerInvariant().EndsWith(".hdr"))
-                        {
-                            Vector3 sun;
-                            if (HdrSunDirection(cubePath, out sun))
-                            {
-                                float az = Mathf.Atan2(sun.x, sun.z) * Mathf.Rad2Deg;
-                                float el = Mathf.Asin(Mathf.Clamp(sun.y, -1f, 1f)) * Mathf.Rad2Deg;
-                                float rot = Mathf.DeltaAngle(0f, p.sunAz - az);
-                                float had = mat.GetFloat("_RotationA");
-                                mat.SetFloat("_RotationA", rot);
-                                rep.AppendLine(string.Format(CultureInfo.InvariantCulture,
-                                    "    HDRI sun measured on the source file: az {0:F2} el {1:F2} -> _RotationA {2:F2} (cloud value from the 1K file {3:F2}); align the real-time sun to az {4:F1} el {1:F2}",
-                                    az, el, rot, had, p.sunAz));
-                            }
-                        }
-                    }
+                    rep.AppendLine("  " + p.name + ": cube '" + p.cubeA + "' NOT FOUND (import the HDRI as Texture Shape = Cube, Lat-Long): this preset has no HDRI");
+                    continue;
                 }
-                if (p.glow && glow != null) mat.SetTexture("_GlowTex", glow);
-                if (p.moon && moon != null) mat.SetTexture("_MoonTex", moon);
-                EditorUtility.SetDirty(mat);
+                rep.AppendLine("  " + p.name + ": cube A = " + cubePath);
+                if (p.sunAz > -900f && cubePath.ToLowerInvariant().EndsWith(".hdr") && HdrSunDirection(cubePath, out Vector3 sun))
+                {
+                    float az = Mathf.Atan2(sun.x, sun.z) * Mathf.Rad2Deg;
+                    float el = Mathf.Asin(Mathf.Clamp(sun.y, -1f, 1f)) * Mathf.Rad2Deg;
+                    float r = Mathf.DeltaAngle(0f, p.sunAz - az);
+                    rot[p.name] = r;
+                    rep.AppendLine(string.Format(CultureInfo.InvariantCulture,
+                        "    HDRI sun measured on the source file: az {0:F2} el {1:F2} -> _Udon_Sky_RotationA {2:F2} (cloud value from the 1K file {3:F2}); align the real-time sun to az {4:F1} el {1:F2}",
+                        az, el, r, GetGlobal4(p, "_Udon_Sky_RotationA").x, p.sunAz));
+                }
             }
+            CreatePresetObjectsWith(pf, mat, rot, rep);
             Shader stars = Shader.Find("Lanbai/StarPoints");
             if (stars != null)
             {
@@ -193,7 +182,37 @@ namespace Lanbai.Sky.EditorTools
             AssetDatabase.SaveAssets();
             File.WriteAllText(Gen() + "/SkyBuild_Report.txt", rep.ToString());
             AssetDatabase.Refresh();
-            Debug.Log("[Lanbai/Sky] presets built\n" + rep);
+            Debug.Log("[Lanbai/Sky] sky built\n" + rep);
+        }
+
+        public static Material BuildSkyMaterial(StringBuilder rep)
+        {
+            Shader sky = Shader.Find("Lanbai/Sky");
+            if (sky == null) { Debug.LogError("[Lanbai/Sky] shader Lanbai/Sky not found (compile errors?)"); return null; }
+            string path = Gen() + "/M_Sky.mat";
+            Material mat = AssetDatabase.LoadAssetAtPath<Material>(path);
+            if (mat == null) { mat = new Material(sky); AssetDatabase.CreateAsset(mat, path); }
+            mat.shader = sky;
+            Texture glow = AssetDatabase.LoadAssetAtPath<Texture>(SkyRoot() + "/Textures/StarSky_Glow_8192x4096.png");
+            Texture moon = AssetDatabase.LoadAssetAtPath<Texture>(SkyRoot() + "/Textures/Moon_Disc_1024.png");
+            if (glow != null) mat.SetTexture("_GlowTex", glow); else rep.AppendLine("  StarSky_Glow_8192x4096.png NOT FOUND");
+            if (moon != null) mat.SetTexture("_MoonTex", moon); else rep.AppendLine("  Moon_Disc_1024.png NOT FOUND");
+            mat.SetFloat("_Dither", 1f);
+            EditorUtility.SetDirty(mat);
+            rep.AppendLine("one material: " + path + " (all preset values arrive as _Udon_Sky_* globals, _Udon_SkyGlobals.x = 1)");
+            return mat;
+        }
+
+        static Vector4 GetGlobal4(SkyPreset p, string k)
+        {
+            foreach (SkyKV4 kv in p.globalVectors) if (kv.k == k) return V4(kv.v);
+            return Vector4.zero;
+        }
+
+        static Color Gamma(Vector4 lin)
+        {
+            return new Color(Mathf.LinearToGammaSpace(Mathf.Max(lin.x, 0f)), Mathf.LinearToGammaSpace(Mathf.Max(lin.y, 0f)),
+                             Mathf.LinearToGammaSpace(Mathf.Max(lin.z, 0f)), 1f);
         }
 
         static Vector4 V4(float[] a)
@@ -289,8 +308,13 @@ namespace Lanbai.Sky.EditorTools
         [MenuItem("蓝白/Sky/Create Preset Objects")]
         public static void CreatePresetObjects()
         {
+            BuildSky();
+        }
+
+        static void CreatePresetObjectsWith(SkyPresetFile pf, Material mat, Dictionary<string, float> rot, StringBuilder rep)
+        {
             EnsureProgramAsset("LanbaiSkyPreset");
-            SkyPresetFile pf = LoadPresets();
+            EnsureProgramAsset("LanbaiSkyDriver");
             // updated in place (references from drivers to these objects survive a re-run); new presets are added
             GameObject root = GameObject.Find("Lanbai_SkyPresets");
             if (root == null) root = new GameObject("Lanbai_SkyPresets");
@@ -309,14 +333,26 @@ namespace Lanbai.Sky.EditorTools
                     c = (add != null) ? (Lanbai.Sky.LanbaiSkyPreset)add.Invoke(null, new object[] { go })
                                       : go.AddComponent<Lanbai.Sky.LanbaiSkyPreset>();
                 c.presetName = p.name;
-                c.skyMaterial = AssetDatabase.LoadAssetAtPath<Material>(Gen() + "/M_Sky_" + p.name + ".mat");
+                c.skyMaterial = mat;
+                c.cubeA = string.IsNullOrEmpty(p.cubeA) ? null : FindCube(p.cubeA, out string _);
+                c.cubeB = null;
                 c.vectorNames = new string[p.globalVectors.Length]; c.vectorValues = new Vector4[p.globalVectors.Length];
-                for (int i = 0; i < p.globalVectors.Length; i++) { c.vectorNames[i] = p.globalVectors[i].k; c.vectorValues[i] = V4(p.globalVectors[i].v); }
+                for (int i = 0; i < p.globalVectors.Length; i++)
+                {
+                    c.vectorNames[i] = p.globalVectors[i].k;
+                    Vector4 v = V4(p.globalVectors[i].v);
+                    if (p.globalVectors[i].k == "_Udon_Sky_RotationA" && rot.ContainsKey(p.name)) v.x = rot[p.name];
+                    if (p.globalVectors[i].k == "_Udon_SkyGlobals" && c.cubeA == null) v.y = 0f;   // no HDRI here: procedural only
+                    c.vectorValues[i] = v;
+                }
                 c.floatNames = new string[p.globalFloats.Length]; c.floatValues = new float[p.globalFloats.Length];
                 for (int i = 0; i < p.globalFloats.Length; i++) { c.floatNames[i] = p.globalFloats[i].k; c.floatValues[i] = p.globalFloats[i].v; }
+                // Built-in fog / ambient (only written when the act turns ownsAtmosphere on): the far horizon and the zenith
+                c.fogColor = Gamma(GetGlobal4(p, "_Udon_HorizonColor"));
+                c.ambientColor = Gamma(GetGlobal4(p, "_Udon_ZenithColor"));
                 EditorUtility.SetDirty(c);
             }
-            Debug.Log("[Lanbai/Sky] preset objects under Lanbai_SkyPresets (" + pf.presets.Length + ")" + (add == null ? "  (UdonSharp editor not found: plain AddComponent used)" : ""));
+            rep.AppendLine("preset objects under Lanbai_SkyPresets (" + pf.presets.Length + ")" + (add == null ? "  (UdonSharp editor not found: plain AddComponent used)" : ""));
         }
 
         public static void EnsureProgramAsset(string scriptName)
@@ -342,31 +378,34 @@ namespace Lanbai.Sky.EditorTools
         // ---------------------------------------------------------------------------------------------------------
         public static void ApplyPresetInEditor(SkyPreset p)
         {
-            Material mat = AssetDatabase.LoadAssetAtPath<Material>(Gen() + "/M_Sky_" + p.name + ".mat");
+            Material mat = AssetDatabase.LoadAssetAtPath<Material>(Gen() + "/M_Sky.mat");
             if (mat != null) RenderSettings.skybox = mat;
             ClearGlobals();
+            Cubemap cube = string.IsNullOrEmpty(p.cubeA) ? null : FindCube(p.cubeA, out string _);
+            if (cube != null) Shader.SetGlobalTexture("_Udon_SkyCubeTexA", cube);
             foreach (SkyKV kv in p.globalFloats)
-            {
-                if (kv.k == "_Udon_FogDensity") RenderSettings.fogDensity = kv.v;
                 Shader.SetGlobalFloat(kv.k, kv.v);
-            }
             foreach (SkyKV4 kv in p.globalVectors)
             {
-                if (kv.k == "_Udon_Fog") RenderSettings.fogDensity = kv.v[0];
-                Shader.SetGlobalVector(kv.k, V4(kv.v));
+                Vector4 v = V4(kv.v);
+                if (kv.k == "_Udon_Fog") RenderSettings.fogDensity = v.x;
+                if (kv.k == "_Udon_SkyGlobals" && cube == null) v.y = 0f;
+                Shader.SetGlobalVector(kv.k, v);
             }
             SceneView.RepaintAll();
         }
 
-        static readonly string[] AllVec = { "_Udon_FogBandDir", "_Udon_FogBandColor", "_Udon_HorizonColor", "_Udon_ZenithColor", "_Udon_NadirColor",
-            "_Udon_FogShape", "_Udon_FogBelow", "_Udon_FogCubeParams", "_Udon_FogBase", "_Udon_SunDir", "_Udon_SunDisc", "_Udon_MoonDir", "_Udon_MoonDisc",
-            "_Udon_SkyBlend", "_Udon_SkyFx", "_Udon_GalaxyGain", "_Udon_StarGain", "_Udon_Fog", "_Udon_FogModel" };
-        static readonly string[] AllFloat = { "_Udon_FogBandWidth", "_Udon_FogDensity" };
-
+        // every global any preset writes (the union is in every preset) + the ones the sky reads but presets do not own
         public static void ClearGlobals()
         {
-            foreach (string k in AllVec) Shader.SetGlobalVector(k, Vector4.zero);
-            foreach (string k in AllFloat) Shader.SetGlobalFloat(k, 0f);
+            SkyPresetFile pf = LoadPresets();
+            foreach (SkyPreset p in pf.presets)
+            {
+                foreach (SkyKV4 kv in p.globalVectors) Shader.SetGlobalVector(kv.k, Vector4.zero);
+                foreach (SkyKV kv in p.globalFloats) Shader.SetGlobalFloat(kv.k, 0f);
+            }
+            foreach (string k in new string[] { "_Udon_FogCubeParams", "_Udon_FogBase", "_Udon_StarShape", "_Udon_Underwater" })
+                Shader.SetGlobalVector(k, Vector4.zero);
         }
 
         // ---------------------------------------------------------------------------------------------------------

@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import sky_cpu as S, grade as G
 
 CFG = {
-    'dawn': dict(hdri='syferfontein_6d_clear_puresky_1k.hdr', sid='S6', rot=-80.7, sun_az=45.0,
+    'dawn': dict(hdri='syferfontein_6d_clear_puresky_1k.hdr', sid='S6', rot=None, sun_az=30.0, mid_hi=40.0,   # D-12: the dawn sun in the bus door, az +30 (bible had +45); rotation re-measured
                  targets={  # region: (az0, az1 relative to the sun, el0, el1), screen target (bible §6·6 / calib)
                      'zenith': ((-180, 180), (84, 89.5), '#3E64A6'),
                      'anti45': ((165, 195), (40, 50), '#AFC4E0'),
@@ -18,7 +18,7 @@ CFG = {
                      'sun12': ((-30, 30), (10, 16), '#E2D9CC'),   # no bible number: warm pearl-white above the gold (no mauve)
                      'side15': ((80, 100), (10, 20), '#B8C6D8'),  # no bible number: pale blue at the side windows
                  }),
-    'dusk': dict(hdri='syferfontein_0d_clear_puresky_1k.hdr', sid='S8', rot=None, sun_az=0.0,
+    'dusk': dict(hdri='syferfontein_0d_clear_puresky_1k.hdr', sid='S8', rot=None, sun_az=0.0, mid_hi=40.0,   # zenith darkening over >= 50 deg (art r0 #5)
                  targets={
                      'zenith': ((-180, 180), (80, 89.5), '#3D4A80'),
                      'midsky': ((-60, 60), (35, 55), '#808AB2'),
@@ -27,6 +27,10 @@ CFG = {
                      'lowback': ((140, 220), (10, 20), '#7E88AE'),   # no bible number: indigo-grey above the rose band (h < 285)
                      'lowside': ((70, 110), (6, 16), '#9C8FA6'),     # no bible number: the warm -> indigo turn at the side, kept grey
                      'sunhor': ((-20, 20), (0.5, 6), '#FFB070'),
+                     # art pre-review r0 #1: no near-white pink haze over the sun (it is copied into 8-ii's lower half):
+                     # the bible's ladder seam #F2A56B -> rose belt #E7A0A0 -> mid sky #808AB2
+                     'sun12': ((-30, 30), (9, 15), '#E7A0A0'),
+                     'sun25': ((-35, 35), (22, 32), '#8A96B6'),   # no bible number: on the way to #808AB2, h 279 (away from the purple band)
                  }),
 }
 
@@ -88,9 +92,9 @@ def main(name):
         return np.array(r)
 
     lo = np.r_[-np.ones(9) * 3, 1.0, 12.0, 0.0, -np.ones(3) * 3]   # mid -> zenith over >= 30 deg: no lid overhead
-    hi = np.r_[np.ones(9) * 3, 10.0, 60.0, 1e-3, np.ones(3) * 3]   # mid <= 60: >= 30 deg to the zenith
+    hi = np.r_[np.ones(9) * 3, 10.0, c.get('mid_hi', 60.0), 1e-3, np.ones(3) * 3]   # mid <= 60: >= 30 deg to the zenith
     res = None
-    for y0, f0 in ((30.0, 0.0), (20.0, 0.0), (45.0, 0.0), (55.0, 0.0)):   # a few starts: the elevations make it non-convex
+    for y0, f0 in ((30.0, 0.0), (20.0, 0.0), (min(45.0, c.get('mid_hi', 60.0) - 1), 0.0)):   # a few starts: the elevations make it non-convex
         p0 = np.full(15, 0.01); p0[9] = 4.0; p0[10] = y0; p0[11] = f0
         r = least_squares(resid, p0, bounds=(lo, hi), diff_step=1e-2, x_scale=np.r_[np.ones(9), 2.0, 10.0, 0.3, np.ones(3)])
         print('start', y0, f0, 'cost %.5f' % r.cost)

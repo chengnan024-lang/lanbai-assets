@@ -369,7 +369,7 @@ float3 LanbaiCubeTint(float3 Vs, float3 zt, float3 mt, float3 ht, float3 hat, fl
     float3 hTint = lerp(hat, ht, LanbaiSunward(Vs, S, p_TintElevation.w));
     float t1 = LanbaiUpStep(p_TintElevation.x, max(p_TintElevation.y, p_TintElevation.x + 0.1), el);
     float t2 = LanbaiUpStep(p_TintElevation.y, max(p_TintElevation.z, p_TintElevation.y + 0.1), el);
-    return lerp(lerp(hTint, mt, t1), zt, t2);
+    return LanbaiGeoLerp(lerp(hTint, mt, t1), zt, t2);     // mid -> zenith in log space: even on screen, no dark disc overhead
 }
 
 float3 LanbaiCubeUpper(samplerCUBE cube, half4 hdr, float3 Vs, float rot, float ev, float clampV,
@@ -563,12 +563,17 @@ float3 LanbaiPurpleGuard(float3 c, float4 g)
 // act 8b -> 9: per-direction night weight. x = 0..1 over the 8 s darkening; the back and the zenith reach 1 at
 // x = 0.75 (6 s), the front horizon band (|az| < 40 deg of p_NightMaskDir, below ~12 deg) is still 50 % at 0.75 and
 // reaches 1 at x = 1. (bible §6·8b: front band >= 50 % at 1007.2, black at 1009.21; elsewhere black in 6 s)
+inline float LanbaiSq(float x) { return x * x; }
+
 float LanbaiNightWeight(float3 V, float x)
 {
     float az = LanbaiAzimuthDeg(V, p_NightMaskDir.xyz);
     float el = LanbaiElevationDeg(V);
-    float f = (1.0 - smoothstep(p_NightMaskShape.x, p_NightMaskShape.x + p_NightMaskShape.y, az))
-            * (1.0 - smoothstep(p_NightMaskShape.z, p_NightMaskShape.z + p_NightMaskShape.w, abs(el)));
+    // an ELLIPSE in (azimuth, elevation) with a soft rim, not two windows multiplied (that drew a glowing rounded
+    // rectangle in the sky as it went dark: art pre-review r0 #4). x / z = the half axes, y / w = their soft widths.
+    float e = sqrt(LanbaiSq(az / max(p_NightMaskShape.x, 1.0)) + LanbaiSq(el / max(p_NightMaskShape.z, 1.0)));
+    float soft = max(p_NightMaskShape.y / max(p_NightMaskShape.x, 1.0), p_NightMaskShape.w / max(p_NightMaskShape.z, 1.0));
+    float f = 1.0 - smoothstep(1.0, 1.0 + max(soft, 0.1), e);
     float d = 0.5 * f;
     float w = saturate((x - d) / (0.75 - 0.25 * f));
     return w * w * (3.0 - 2.0 * w);                       // eased: no visible edge where neighbouring directions differ
@@ -609,6 +614,9 @@ float3 LanbaiSkyColour(float3 V)
         float3 o = (p_OtherFromB > 0.5) ? LanbaiCubes(Vo, S, 1.0) : LanbaiCubes(Vo, S, blend);
         if (sunG > 0.0)
             o += LanbaiSunTerm(Vo, S, sunG, sunR, sunLine);
+        // the other sky darkens toward the nadir colour with depth (p_OtherTint.a = how far; the depth = p_BelowShape.x):
+        // the upper sky's near-white afterglow is not copied as it is into the lower half (art pre-review r0 #1)
+        o = LanbaiGeoLerp(o, p_NadirColor.rgb, p_OtherTint.a * LanbaiUpStep(0.0, max(-p_BelowShape.x, 0.1), -LanbaiElevationDeg(V)));
         c = lerp(c, o * p_OtherGain * p_OtherTint.rgb, w);
     }
 

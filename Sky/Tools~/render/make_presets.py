@@ -42,7 +42,7 @@ def tints(name):
 
 # ---------------------------------------------------------------------------------------------------------------
 # presets: material (Lanbai/Sky properties), globals (written by the act driver), meta
-SUN6 = dir_az_el(45.0, 5.8)      # dawn: the HDRI sun is at 5.8 deg; the real-time light aligns to it (bible §6·6)
+SUN6 = dir_az_el(30.0, 5.8)      # dawn: D-12 az +30 (in the bus door); el = the HDRI sun 5.8 (D-12: +6); the real-time light aligns to it
 SUN8 = dir_az_el(0.0, 0.5)       # dusk: azimuth 0, elevation +0.5 deg, in the windscreen (bible §6·8)
 P = {}
 
@@ -62,42 +62,47 @@ P['overcast_rain_night_town'] = dict(acts='1（站牌：朝镇方向的地平线
                  _Udon_FogDensity=0.009),
     notes='= 阴云夜 + 镇子方向钠光照亮的云底 #241E22（填 #2A1F1E）。_RotationA = 镇子的方位（这里按 −70° 放，本地按车站布局改；雾的朝向 _Udon_FogBandDir 跟着改）。')
 
+# D-06: acts 3 and 4 share the star set and the gain; only stars brighter than magnitude 3; L* <= 12 at 1080p
+# (check_stars.py --solve gives the largest passing gain; check_stars.py checks it)
+STAR_GAIN_MOON = 0.017   # check_stars.py --solve, 10-23: the largest gain with every star <= 12 L* above its sky
 P['moon_night'] = dict(acts='3（离地、月下云海）', profile='S3', cubeA=None,
     material=dict(_ProcWeight=1.0, _SunGain=0.0, _MoonGain=1.0, _MoonRadius=0.6, _MoonDir=v4(dir_az_el(-12, 8), 0),
                   _MoonColor=v4(F('#F0F5FF @ +2.17')), _MoonGlow=[20.0, 1.5, 13.2, 0.43], _MoonGlowColor=[0.19, 0.21, 0.35, 1.0]),
     globals=dict(_Udon_HorizonColor=v4(F('#242A40'), 2.0), _Udon_FogBandColor=v4(F('#2E3753')), _Udon_FogBandDir=v4(dir_az_el(-12, 0), 0),
                  _Udon_FogBandWidth=120.0, _Udon_ZenithColor=v4(F('#151928')), _Udon_NadirColor=v4(F('#1A2034')), _Udon_FogShape=[0, 40, 1.5, 0.0], _Udon_FogBelow=[-40, 0, 1.0, 0],
-                 _Udon_MoonDir=v4(dir_az_el(-12, 8), 1), _Udon_MoonDisc=[1.0, 0.6, 0, 1], _Udon_StarGain=[0.35, 1.0, 1, 1], _Udon_FogDensity=0.00035),
-    notes='天顶 #08101F（填 #151928）、背月地平线 = 云上雾色 #111B30（填 #242A40）、月面 #EAEEF4（填 #F0F5FF @ +1.67）、月晕按 calib S3 拟合（6° #5A6A88、10° #26344F）。月在 −12° / +8°、直径 1.2°。破云（U6k）起有星：星点 _Udon_StarGain.x 0.35（亮星读得出，暗星被月光天吃掉）。')
+                 _Udon_MoonDir=v4(dir_az_el(-12, 8), 1), _Udon_MoonDisc=[1.0, 0.6, 0, 1], _Udon_StarGain=[STAR_GAIN_MOON, 1.0, 1, 1], _Udon_StarShape=[3.0, 0.0, 0.0, 1.0], _Udon_GalaxyGain=[0.0, 0, 0, 1],
+                 _Udon_FogDensity=0.00035),
+    notes='天顶 #08101F（填 #151928）、背月地平线 = 云上雾色 #111B30（填 #242A40）、月面 #EAEEF4（填 #F0F5FF @ +1.67）、月晕按 calib S3 拟合（6° #5A6A88、10° #26344F）。月在 −12° / +8°、直径 1.2°。破云（U6k）起有星（D-06）：只留 3 等以上的亮星（_Udon_StarShape.x），1080p 下最亮的星 L* ≤ 12（check_stars.py），没有银河；第 4 幕用同一套星、同一个增益。')
 
-P['dawn'] = dict(acts='6（晨，F0 → F2h）', profile='S6', sunAz=45.0, cubeA='syferfontein_6d_clear_puresky',
+P['dawn'] = dict(acts='6（晨，F0 → F2h）', profile='S6', sunAz=30.0, cubeA='syferfontein_6d_clear_puresky',
     hdri_file=os.path.join(HDRI, 'syferfontein_6d_clear_puresky_1k.hdr'),
     material=dict(_RotationA=fit['dawn']['rotation'], _ExposureA=0.0, _ClampA=16.0, **tints('dawn'),
-                  _SunDir=v4(SUN6, 0), _SunColor=v4(F('#FFCE9E @ +2.55')), _SunShape=[0.45, 0.04, 0.55, 0], _SunGain=1.0,
+                  _SunDir=v4(SUN6, 0), _SunColor=v4(F('#FFCE9E @ +2.55')), _SunShape=[0.265, 0.04, 0.55, 0], _SunGain=1.0,
+                  _SunGlow=[0.35, 1.6, 0.0, 0.0], _SunGlowColor=v4(F('#FFCE9E')),   # D-18: 0.53 deg disc, the rest of the sun's weight in a tight aureole (+ bloom)
                   _Band1Color=v4(F('#B8C4F7'), 0.3), _Band1Shape=[2.0, 2.5, 180, 55], _Band1Gain=0.6,
                   _Band2Color=v4(F('#FFCFCB @ +0.61'), 0.3), _Band2Shape=[10.0, 4.0, 180, 50], _Band2Gain=0.3,
                   _NadirColor=v4(F('#6F8FA8'), 0.5), _BelowShape=[-75, 1.0, 0.6, 2.0], _PurpleGuard=[1.0, 0.86, 1.25, 0],
                   _SunRemove=[7.0, 2.4, 0.25, 0.6]),
-    globals=dict(_Udon_SunDir=v4(SUN6, 1), _Udon_SunDisc=[1.0, 0.45, 0, 1], _Udon_FogDensity=0.00012),
-    fog_from_sky=dict(near_az=45.0, width=70.0, zen_el=60.0, nadir=F('#6F8FA8')),
-    notes='天顶 #3E64A6、背日 45° #AFC4E0、日侧地平线 #F2C79A、地影带 #8C98B8 + 很淡的金星带 #CFB7B7（HDRI 里没有，由两条地平线带给）、日盘 0.9° #FFF3DE（填 #FFCE9E @ +2.55）。太阳 方位 +45°、仰角 5.8°（HDRI 的太阳）。')
+    globals=dict(_Udon_SunDir=v4(SUN6, 1), _Udon_SunDisc=[1.0, 0.265, 0, 1], _Udon_FogDensity=0.00012),
+    fog_from_sky=dict(near_az=30.0, width=70.0, zen_el=60.0, nadir=F('#6F8FA8')),
+    notes='天顶 #3E64A6、背日 45° #AFC4E0、日侧地平线 #F2C79A、地影带 #8C98B8 + 很淡的金星带 #CFB7B7（HDRI 里没有，由两条地平线带给）、日盘直径 0.53°（D-18）#FFF3DE（填 #FFCE9E @ +2.55）+ 小光晕；HDRI 自己的日斑由 _SunRemove 软封顶。太阳 方位 +30°（D-12，车门里）、仰角 5.8°（HDRI 的太阳）。')
 
 dusk_common = dict(_RotationA=fit['dusk']['rotation'], _ExposureA=0.0, _ClampA=16.0, **tints('dusk'),
-                   _SunDir=v4(SUN8, 0), _SunColor=v4(F('#FF9167 @ +2.74')), _SunShape=[0.45, 0.04, 0.4, 0], _SunGain=1.0,
+                   _SunDir=v4(SUN8, 0), _SunColor=v4(F('#FF9167 @ +2.74')), _SunShape=[0.265, 0.04, 0.4, 0], _SunGain=1.0,
                    _SunGlow=[0.25, 0.9, 0.06, 0.12], _SunGlowColor=v4(F('#FF855C')),
                    _Band2Color=v4(F('#FF9396 @ +0.92'), 0.25), _Band2Shape=[4.0, 3.0, 180, 55], _Band2Gain=0.6,
                    _NadirColor=v4(F('#3B4A78'), 0.6), _BelowShape=[-60, 0.7, 0.6, 0.8], _PurpleGuard=[1.0, 0.82, 1.25, 0],
-                   _OtherGain=0.82, _OtherTint=[0.92, 0.95, 1.05, 1], _OtherSeam=1.0)
+                   _OtherGain=0.82, _OtherTint=[0.92, 0.95, 1.05, 0.85], _OtherSeam=1.0)   # .a: the lower half darkens to the nadir (art r0 #1)
 P['dusk_8i'] = dict(acts='8-i（出海 → F10e）', profile='S8', sunAz=0.0, cubeA='syferfontein_0d_clear_puresky',
     hdri_file=os.path.join(HDRI, 'syferfontein_0d_clear_puresky_1k.hdr'),
-    material=dict(dusk_common, _OtherSky=0.0),
-    globals=dict(_Udon_SunDir=v4(SUN8, 1), _Udon_SunDisc=[1.0, 0.45, 0, 1], _Udon_SkyFx=[0, 0, 0, 1], _Udon_FogDensity=0.00015),
+    material=dict(dusk_common, _OtherSky=0.0, _BelowShape=[-35, 0.8, 0.6, 0.8], _NadirColor=v4(F('#3B4A78'), 1.0)),   # half way to the nadir blue by -17 deg, no 'ground' under the sunset (art r0 #3); full mid desaturation: no mauve on the way
+    globals=dict(_Udon_SunDir=v4(SUN8, 1), _Udon_SunDisc=[1.0, 0.265, 0, 1], _Udon_SkyFx=[0, 0, 0, 1], _Udon_FogDensity=0.00015),
     fog_from_sky=dict(near_az=0.0, width=80.0, zen_el=60.0, nadir=F('#3B4A78')),
     notes='日带 #FFB070、玫瑰带 #E7A0A0（填 #FF9396 @ +0.92）、中天 #808AB2、天顶 #3D4A80、日盘 #FFE2B0（填 #FF9167 @ +2.74）、天缝 #F2A56B（日晕）。太阳 方位 0°、仰角 +0.5°。紫护栏把 HDRI 背日的藍紫在 S8 的暖调色下拉回靛灰。')
 P['dusk_8ii'] = dict(acts='8-ii（另一片天，F10e → F12）', profile='S8', sunAz=0.0, cubeA='syferfontein_0d_clear_puresky',
     hdri_file=os.path.join(HDRI, 'syferfontein_0d_clear_puresky_1k.hdr'),
     material=dict(dusk_common, _OtherSky=1.0),
-    globals=dict(_Udon_SunDir=v4(SUN8, 1), _Udon_SunDisc=[1.0, 0.45, 0, 1], _Udon_SkyFx=[1.0, 0, 0, 1], _Udon_FogDensity=0.00025),
+    globals=dict(_Udon_SunDir=v4(SUN8, 1), _Udon_SunDisc=[1.0, 0.265, 0, 1], _Udon_SkyFx=[1.0, 0, 0, 1], _Udon_FogDensity=0.00025),
     fog_from_sky=dict(near_az=0.0, width=80.0, zen_el=60.0, nadir=F('#3B4A78')),
     notes='_OtherSky 0 → 1（956.36 → 964.36，8 秒 smoothstep）：下半球按 (−x, −y, z) 取样，×0.82、染 (0.92, 0.95, 1.05)，1° 软接缝；两个太阳在接缝上熔成一条线。F12 起日线：_Udon_SunDisc.z（线的半长）10° → 0、增益 → 0（987.06 → 993.06）。')
 
@@ -116,7 +121,10 @@ night = F('#050000'); floor = F('#0D0F23')   # (star_sea = the end state of the 
 P['star_sea'] = dict(acts='9（星海，F13 起）', profile='S9a', cubeA=None, glow=True,
     material=dict(_ProcWeight=1.0, _NightBlend=1.0, _NightColor=v4(night), _StarFloorAdd=v4(np.maximum(floor - night, 0)),
                   _GalaxyGain=1.0, _SunGain=0.0),
-    globals=dict(_Udon_SkyBlend=[0, 1, 1, 1], _Udon_GalaxyGain=[1.0, 0, 0, 1], _Udon_StarGain=[1.0, 4.0, 50, 1],
+    # the act-9 driver owns the stars and the galaxy (x = 0 until F13 / the ignition): the preset writes them OFF;
+    # the preview sheet shows the lit state (preview_globals)
+    preview_globals=dict(_Udon_GalaxyGain=[1.0, 0, 0, 1], _Udon_StarGain=[1.0, 4.0, 50, 1]),
+    globals=dict(_Udon_SkyBlend=[0, 1, 1, 1], _Udon_GalaxyGain=[0.0, 0, 0, 1], _Udon_StarGain=[0.0, 4.0, 50, 1], _Udon_StarShape=[6.5, 0.0, 0.0, 1.0],
                  _Udon_HorizonColor=v4(floor, 2.0), _Udon_FogBandColor=v4(floor), _Udon_ZenithColor=v4(floor), _Udon_NadirColor=v4(floor),
                  _Udon_FogDensity=0.0),
     notes='点燃前的黑 #04060E（填 #050000，S9a）；F13 一帧所有星点出现（_Udon_StarGain.x 0 → 1）；银河辉光与星空底 #08112A（填 #0D0F23）走 g(t)，4.2 秒涨满（_Udon_GalaxyGain.x）；之后 x^2.5 曲线上 1.0 → 1.8、最亮 200 颗 ×4 → ×8。雾关。_Udon_ZenithColor = 当前的星空底（镜子用）。')
@@ -212,6 +220,7 @@ def render_sheet(name, p, out_json):
     if p.get('fog_from_sky'):
         globs.update(fog_group(p))
         p['globals'] = globs
+    globs = dict(globs, **p.get('preview_globals', {}))
     W, H = 480, 270
     tiles, meas = [], {}
     for label, yaw, pitch in VIEWS:
@@ -307,7 +316,10 @@ def normalise_globals(p):
 
 GATE_ACT4 = dict(act='4（触手之门，U6 → U9）', model=0.0, near=[0.1085, 0.1130, 0.1641], far=[0.0436, 0.0504, 0.0726], zenith=[0.0021, 0.0030, 0.0070],
                  nadir=None, band_dir='朝裂口（门的驱动写 _Udon_FogBandDir，或只写 _Udon_TearPos）', width=50.0, shape=[6, 22, 2, 0.55], below=[-25, 0, 0.55, 0.6],
-                 density=0.0006, note='= Gate/Shaders/LanbaiGateSky.cginc 的 LanbaiBand（GateLayout_v2.json sky_band 第 8 轮），逐方向相等。门的触手另外加 0.35 × 月晕 + 伤口空气（LanbaiApplyFogEx 可以加）。门的驱动至少写 _Udon_FogBandColor = (0.1085, 0.1130, 0.1641, 1) 或 _Udon_TearPos（w = 1）。')
+                 density=0.0006,
+                 stars=dict(_Udon_StarGain=[STAR_GAIN_MOON, 1.0, 1.0, 1.0], _Udon_StarShape=[3.0, -1.0, 0.0, 1.0], _Udon_GalaxyGain=[0.0, 0.0, 0.0, 1.0],
+                            note='D-06：第 4 幕的星 = 第 3 幕的同一套星、同一个增益，只留 3 等以上，光雾带（_Udon_FogBandDir ± _Udon_FogBandWidth、仰角 10° 以下）里再暗 1 EV（StarShape.y = −1），没有银河。门用自己的星时按同样四条。'),
+                 note='= Gate/Shaders/LanbaiGateSky.cginc 的 LanbaiBand（GateLayout_v2.json sky_band 第 8 轮），逐方向相等。门的触手另外加 0.35 × 月晕 + 伤口空气（LanbaiApplyFogEx 可以加）。门的驱动至少写 _Udon_FogBandColor = (0.1085, 0.1130, 0.1641, 1) 或 _Udon_TearPos（w = 1）。')
 TRANSITIONS = [   # bible §6.x; t = timeline seconds computed from the labels (Director binds the labels)
     dict(label='U1', t=[17.50, 37.50], what='雾 0.009 → 0.008（开车）', curve='smoothstep'),
     dict(label='U2b', t=[39.10, 79.10], what='雾 0.008 → 0.0025（灯尽 → 离地）', curve='smoothstep'),
@@ -361,6 +373,10 @@ def main():
     for name, p in P.items():
         if p.get('glow'):
             p['material']['_GlowScale'] = gs
+        # every preset says what the stars do (tech r2 #5): off unless the preset turns them on
+        p['globals'].setdefault('_Udon_StarGain', [0.0, 1.0, 1.0, 1.0])
+        p['globals'].setdefault('_Udon_StarShape', [6.5, 0.0, 0.0, 1.0])
+        p['globals'].setdefault('_Udon_GalaxyGain', [0.0, 0.0, 0.0, 1.0])
         render_sheet(name, p, meas)
         p['_own_globals'] = set(p['globals'].keys())
         add_sky_globals(p)

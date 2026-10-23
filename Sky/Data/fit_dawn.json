@@ -1,32 +1,32 @@
 {
  "act": "dawn",
  "hdri": "syferfontein_6d_clear_puresky_1k.hdr",
- "rotation": -80.7,
+ "rotation": -95.68,
  "profile": "S6",
  "tints": {
   "_ZenithTintA": [
-   1.0261,
-   1.3193,
-   2.6225
+   1.2565,
+   1.4963,
+   2.7368
   ],
   "_MidTintA": [
-   7.1583,
-   6.0502,
-   5.0725
+   5.1727,
+   4.1177,
+   3.4623
   ],
   "_HorizonTintA": [
-   0.5422,
-   0.202,
-   0.1366
+   0.4832,
+   0.1708,
+   0.1106
   ],
   "_HorizonAntiTintA": [
-   1.7021,
-   1.2062,
-   1.6339
+   1.414,
+   1.0216,
+   1.4539
   ],
   "_TintElevation": [
    1.0,
-   59.6,
+   40.0,
    90.0,
    1.0
   ]
@@ -34,31 +34,31 @@
  "check": {
   "zenith": {
    "target": "#3E64A6",
-   "got": "#3E64A6"
+   "got": "#3F65A7"
   },
   "anti45": {
    "target": "#AFC4E0",
-   "got": "#A2C2DF"
+   "got": "#95B2D3"
   },
   "sunhor": {
    "target": "#F2C79A",
-   "got": "#F4CA9C"
+   "got": "#F2C79A"
   },
   "sun30": {
    "target": "#B4C6D8",
-   "got": "#D5DEE5"
+   "got": "#DCE2EA"
   },
   "antihor": {
    "target": "#AEB8CC",
-   "got": "#C0C6D9"
+   "got": "#B9C1D5"
   },
   "sun12": {
    "target": "#E2D9CC",
-   "got": "#E0D4CA"
+   "got": "#E8DED5"
   },
   "side15": {
    "target": "#B8C6D8",
-   "got": "#8DA0BC"
+   "got": "#92A6BF"
   }
  }
 }

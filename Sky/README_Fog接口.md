@@ -1,4 +1,4 @@
-# 天与雾的共用 include（`Common/Shaders/LanbaiFog.cginc`、`LanbaiSky.cginc`）· 接口说明 v1.1
+# 天与雾的共用 include（`Common/Shaders/LanbaiFog.cginc`、`LanbaiSky.cginc`）· 接口说明 v1.2
 
 写的人：云端子会话「天空」。v1 2026-10-22，**v1.1 2026-10-23**（按总工程师第 1 轮意见改，见 §7）。**没在 Unity 里编译过**：只用 slang 查过语法和类型（37 个变体，含 SPS-I 立体、FOG_EXP2 / LINEAR、表面着色器的 ForwardAdd），另外用 slang 在 CPU 上把门的 `LanbaiBand` 和这里的 `LanbaiHorizon` 逐方向算了一遍，结果相同（§5）。
 
@@ -132,3 +132,13 @@ slang 通过只说明 HLSL 写得对、类型对。**请本地在 Unity 2022.3 �
 | 建议：检查脚本 | 注释里的 include 不展开；加 SPS-I、FOG_EXP2 / LINEAR、ForwardAdd 变体 |
 | 小事：带的方向用每只眼的相机 | 改成两眼中点 |
 | 海：水下雾两套机制 | 按海的接口原样加（`_Udon_Underwater` 等已在 main 登记），没有另开模型 B 的一组：海的驱动只管它自己的四个量 |
+
+## 8. v1.1 → v1.2（10-23 恢复后）
+
+| 改了什么 | 影响 |
+|---|---|
+| `LanbaiHorizonGradient`（模型 B）往天顶的过渡：`LanbaiUpStep`（终点钳在 90°）+ **对数空间混合**（`LanbaiGeoLerp`） | 模型 B 的雾色在高仰角处变了（地平线 → 天顶在屏幕上均匀地暗下去，不再在 60° 以上塌成一个黑圆）。模型 A（门的光带）**没动**，`check_gate_equivalence.py` 仍是 1.2e-7 |
+| 蓝时的 `_Udon_FogShape.y` 85 → 90 | 往天顶的渐变都在 90° 结束（终点低于 90° 会在天顶留一块平的圆盖） |
+| `act4_gate` 加了 `stars`（D-06） | 门的驱动写雾那一组时一起写 `_Udon_StarGain / _Udon_StarShape / _Udon_GalaxyGain` |
+| `LanbaiFog.cginc` 合了 main 的 `_Udon_FogDensity` 守卫（3510f4b） | 和 `LanbaiGlobals.cginc` 一起 include 不重复 |
+| `dawn` 的雾：朝日方位 45° → 30°（D-12） | `FogPresets.json` 重新生成 |

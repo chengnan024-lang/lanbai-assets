@@ -7,10 +7,10 @@
 
 ## 0. 拷什么、点什么、截什么
 
-1. 先按 `Sky/README_Sky.md` §0 做完：拷 `Common/`、`Sky/`，点 `蓝白/Sky/Build Star Mesh`、`蓝白/Sky/Build Preset Materials`。
+1. 先按 `Sky/README_Sky.md` §0 做完：拷 `Common/`、`Sky/`，点 `蓝白/Sky/Build Star Mesh`、`蓝白/Sky/Build Sky`。
 2. 拷 `Act09_StarSea/` → `Assets/Lanbai/Act09_StarSea/`。
 3. 菜单 **`蓝白/Build/Act09`** → 场景里 `R_StarSea`（三个星的物体 + `LanbaiAct09Driver`），同时建驱动的 U# 程序资产。可以重复点（先删上一次的 `R_StarSea`）。
-4. 天空盒：第 8b 和第 9 幕用**同一个材质** `Sky/Generated/M_Sky_blue_hour.mat`（程序化蓝时 + 夜层 + 银河辉光），第 8b 幕的驱动（「云」）在蓝时开始前换上它。
+4. 天空盒：全片一个材质 `Sky/Generated/M_Sky.mat`（Sky v1.2）。第 8b 幕的驱动（「云」）写 `blue_hour` 预设（含 `_Udon_Sky_*`、`_GlowScale`），本幕的驱动只接着写 `_Udon_SkyBlend / SkyFx / GalaxyGain / StarGain / ZenithColor / Fog`。**参考帧和 g(t) 还是旧银河算的，下一窗按 Gaia 银河重标定。**
 5. Director 的分发层按 `LanbaiWindow()`（992.06 → 1149.31）每帧调 `LanbaiTick(t)`。
 
 **请推回来的截图**（桌面 1920×1080、水平 90°、主座位眼位，PPv2 开，渲进 ARGBHalf）：

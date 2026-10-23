@@ -1,6 +1,6 @@
 // 蓝白 · 菜单 蓝白/Build/Act09：按 Act09_StarSea.json 搭第 9 幕的天（可重复运行：先删上一次搭的 R_StarSea）。
 // !!! NOT COMPILED IN UNITY: Roslyn type-check against UnityEditor 2021.1 only (Sky/Tools~/compile_check/check_cs.sh). !!!
-// Needs: 蓝白/Sky/Build Star Mesh + Build Preset Materials run first (they make the main star mesh and the materials).
+// Needs: 蓝白/Sky/Build Star Mesh + Build Sky run first (they make the main star mesh, the one sky material and M_Sky_StarPoints.mat).
 using System;
 using System.IO;
 using UnityEditor;
@@ -44,7 +44,7 @@ namespace Lanbai.Act09.EditorTools
             string gen = LanbaiSkyBuild.GeneratedFolder();
             Mesh main = AssetDatabase.LoadAssetAtPath<Mesh>(gen + "/StarPoints_BSC5.asset");
             Material starMat = AssetDatabase.LoadAssetAtPath<Material>(gen + "/M_Sky_StarPoints.mat");
-            if (main == null || starMat == null) { Debug.LogError("[Act09] run 蓝白/Sky/Build Star Mesh and Build Preset Materials first"); return; }
+            if (main == null || starMat == null) { Debug.LogError("[Act09] run 蓝白/Sky/Build Star Mesh and 蓝白/Sky/Build Sky first"); return; }
 
             // first stars (real stars around the zenith, their real magnitudes; order = the order they go out)
             int nf = d.first_stars.stars.Length;
