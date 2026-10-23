@@ -1,4 +1,4 @@
-# 门的总驱动 `LanbaiGateDriver` v1.1（第 4 幕）
+# 门的总驱动 `LanbaiGateDriver` v1.2（第 4 幕）
 
 门（GateClouds 会话）写，2026-10-23，按总导演裁决 D-15。**没在 Unity / UdonSharp 里编译过**。用共用检查跑过：`Common/Tools~/compile_check/check_cs.sh GateClouds Gate`，editor + player 两组 Roslyn 和 U# 规则 lint 都过，`C# CHECK OK`。
 
@@ -32,12 +32,20 @@ U# 的程序资产、编译和 `CopyProxyToUdon` 都用 `GateClouds/Editor/Lanba
   - **只在 [U6, U9) 写**：113.80 → 133.80 不写（那时归天空），U9 以后也不写（归门内）。
   - **写哪些**：`_Udon_Fog`、`FogBandColor`、`FogBandDir`、`FogBandWidth`、`FogBase`、`FogBelow`、`FogCubeParams`、`FogModel`、`FogShape`、`HorizonColor`、`ZenithColor`、`NadirColor`、`StarGain`、`StarShape`、`GalaxyGain`，还有 `_Udon_MoonDir`、`_Udon_MoonDisc`（月盘用门自己的关键帧）。
   - **数值只有一个来源**：天空的 `Sky/SkyPresets.json`（`moon_night` 的 globalVectors / globalFloats）和 `Sky/FogPresets.json`（`act4_gate`，以及 transitions 里 `U6` 那一段的时刻）。Build Driver 时读进来，驱动里不另存一份数。
+  - **只写需要写的**（v1.2）：混合到 1 以后，常量只在那一帧写一次，之后只写光带方向；收臂以后光带方向冻住（U9 前最后几帧不会跳）。
   - **怎么写**：按天空自己的 U6 过渡（133.8 → 163.8，smoothstep）从 A（`moon_night`）混到 B（`act4_gate`）。只有一边有的量全程保持那一边的值，比如 `NadirColor`、`FogBase`。`act4_gate` 的光带方向是"朝裂口"，每帧按眼 → 裂口核心的水平方向算。
   - **天空套件没拷进工程时**：Build Driver 会警告，驱动在 [U6, U9) 只写 `_Udon_FogBandColor`，值取 `GateClouds_Layout.json` 的 `fog_band`。
   - `LanbaiGateClouds` 不再写光雾带。
+- **触手 / 远潮 / 云和天对齐（v1.2，总导演 v1.1 复核）**：
+  - 问题：`LanbaiGateSky.cginc` 的 `LanbaiBand` 只吃 near、宽、方向三个混合量，far、void、仰角、地平线以下都用材质值，密度也不看 `_Udon_Fog`。所以在 U6 的过渡里，触手的雾和天对不上。
+  - 改法（v2）：只要天的模型全局量设了（`_Udon_FogModel.w > 0`，门的驱动在 [U6, U9) 写、天空在 U6 以前写），`LanbaiBand` 就**直接返回 `LanbaiHorizon(V)`**（天空自己的模型，第 4 幕里和旧的光带差 1.2 × 10⁻⁷）。新增 `LanbaiGateDensity(材质密度)`，顺序和 LanbaiFog 的 `LanbaiFogDensity()` 一样：`_Udon_Fog` → `_Udon_FogDensity` → 材质。
+  - 用到的地方：TentacleSway（两处）、远潮、云海、云卡。GateAirSky 走 `LanbaiGateSkyColour → LanbaiBand`，跟着一起变。U6 过渡不缩短。
+  - **核对**：`GateClouds/Source/check_d22_fog.py` 把 `LanbaiHorizon` 和旧的 `LanbaiBand` 移植到 numpy，在 140、150.3 两个时刻，比较 1.5 km 外一条暗臂和它背后的天，图在 `GateClouds/Docs~/d22_fog_check.png`：
+    - 旧的雾在光带里是一块灰色硬边矩形；140 时仰角 20° 以上，臂比背后的天暗 1.1 EV（总导演量的约 1.7 EV 是同一个毛病）。
+    - 新的雾颜色每个方向都等于天，只剩臂自己的明暗。140 时仰角 20° 以上 −0.19 EV。
 - **门的灯（v1.1）**：
-  - `Gate_Lights/Tear_CabinOnly`：方向从裂口核心指向车。强度 = E（Build 时从灯上读，默认 0.8），**U9 → U9 + 0.25 线性降到 0**，和天窗光斑同一刻。颜色由 Build 改成 **`#B9B6D6`（D-08）**，`#A99DE1` 只留给裂口 shader 里的细内缘。
-  - `Fill_from_below`：门激活时开，臂收掉时关。
+  - `Gate_Lights/Tear_CabinOnly`：方向从裂口核心指向车。强度 = E（Build 时从灯上读，默认 0.8）× 随伤口渐亮（v1.2：从 U6k 破云起，U6 时 0.6，之后随张开到 U8 时 1），**U9 → U9 + 0.25 线性降到 0**，和天窗光斑同一刻。颜色由 Build 从 `GateLayout_v2.json` `lights.tear.color` 读，现在是 **`#B9B6D6`（D-08，已改进 JSON 和 `gate_export.py`）**，`#A99DE1` 只留给裂口 shader 里的细内缘。
+  - `Fill_from_below`：门激活时开，和车厢裂口光一起在 U9 → U9 + 0.25 淡出（v1.2：不再一帧归零）。
   - 两盏灯在 `LanbaiActivate(false)` 和 `Start` 时都关，第 4 幕之后不再一直亮着。
   - **Moon 不动**，见 `GateClouds/给总控.md` §8 的建议。
 - **不归它写的**：

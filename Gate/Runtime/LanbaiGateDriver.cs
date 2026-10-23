@@ -24,7 +24,7 @@
 //  and from the property blocks LB_GateTest left on the arms (phase, fog cap, group, variant dims, occlusion map).
 //  Cost per frame (README_GateDriver §2): only the instances inside their pose span are posed (each: <= 2 Ease, <= 2
 //  Slerp, 2 transform writes), the 3 near arms always; single arms write their blocks only while their reveal changes;
-//  2 tear parts while visible, 13 globals; the multitude's renderers only at the two crossings of 0.
+//  2 tear parts while visible, 12 gate globals + the D-22 family; the multitude's renderers only at the two crossings of 0.
 // =====================================================================================================
 using UdonSharp;
 using UnityEngine;
@@ -55,6 +55,7 @@ public class LanbaiGateDriver : UdonSharpBehaviour
 
     [Header("Timeline (GateDriver_Bake.json)")]
     public float windowStart = 113.80f, windowEnd = 181.55f;
+    public float U6k = 129.10f;
     public float U6 = 133.80f, U7 = 150.30f, U7b = 155.10f, U8 = 166.15f, U9 = 179.55f, vg = 59.0164f;
     public float[] hT, hH, hD;                 // tear_H_knots and their PCHIP slopes
     public Vector3 moonDir = new Vector3(-0.2059f, 0.1392f, 0.9686f);
@@ -102,6 +103,8 @@ public class LanbaiGateDriver : UdonSharpBehaviour
     private bool _warned, _active;
     private int[] _skyVecIds, _skyFloatIds;
     private int _idFogBand;
+    private bool _skyFull;                     // the blend reached act4_gate: only the band direction changes now
+    private Vector4 _bandDirFrozen;
 
     // ---- CONTROL §5 ----------------------------------------------------------------------------------------------
     public void LanbaiTick(float t)
@@ -136,6 +139,7 @@ public class LanbaiGateDriver : UdonSharpBehaviour
         Evaluate(windowStart);
         // not ticked yet: the tear position is not "set" (readers fall back to their materials) and the lights stay off
         VRCShader.SetGlobalVector(_idTearPos, new Vector4(0f, 0f, 0f, 0f));
+        if (!skyFromSky) Debug.LogWarning("[LanbaiGateDriver] built without the sky kit: only _Udon_FogBandColor is written on [U6, U9). Re-run 蓝白/Gate/Build Driver after the sky kit is in the project (D-22)");
         if (!_active)
         {
             if (cabinLightL != null) cabinLightL.enabled = false;
@@ -280,8 +284,9 @@ public class LanbaiGateDriver : UdonSharpBehaviour
             float f0 = U7b + 1.5f;
             if (t > f0) disc *= 1f - SS((t - f0) / 2f);
             VRCShader.SetGlobalVector(_idDisc, new Vector4(disc, 0.6f, 0f, 1f));
-            WriteSky(t, tearPos, eye);
+            WriteSky(t, tearPos, eye, retired);
         }
+        else _skyFull = false;                                    // re-entering the span rewrites everything
         VRCShader.SetGlobalFloat(_idOpen, open);
         VRCShader.SetGlobalFloat(_idRip, rip);
         VRCShader.SetGlobalFloat(_idHide, hidden ? 1f : 0f);
@@ -296,24 +301,28 @@ public class LanbaiGateDriver : UdonSharpBehaviour
         // 0.25 (with the skylight spot); the fill from below lives with the arms. Both only while the gate is active
         if (cabinLight != null && tearPos.sqrMagnitude > 1f)
             cabinLight.rotation = Quaternion.LookRotation(-tearPos.normalized, Vector3.up);
+        // the wound's light comes with the wound: from U6k (the cloud break) to 0.6 at U6, then with the opening to 1 at U8;
+        // both lights fade together over U9 -> U9 + 0.25 (no one-frame cut)
+        float fadeOut = 1f - Mathf.Clamp01((t - U9) / 0.25f);
         if (cabinLightL != null)
         {
-            float k = cabinE * (1f - Mathf.Clamp01((t - U9) / 0.25f));
+            float k = cabinE * SS((t - U6k) / Mathf.Max(0.1f, U6 - U6k)) * (0.6f + 0.4f * open) * fadeOut;
             bool on = _active && k > 0f;
             if (cabinLightL.enabled != on) cabinLightL.enabled = on;
             if (on) cabinLightL.intensity = k;
         }
         if (fillLight != null)
         {
-            bool on = _active && !retired;
+            float kf = fillE * fadeOut;
+            bool on = _active && kf > 0f;
             if (fillLight.enabled != on) fillLight.enabled = on;
-            if (on) fillLight.intensity = fillE;
+            if (on) fillLight.intensity = kf;
         }
         _retired = retired;
     }
 
     // moon_night -> act4_gate, smoothstep over the sky's U6 transition; act4_gate's band points at the tear (D-22)
-    void WriteSky(float t, Vector3 tearPos, Vector3 eye)
+    void WriteSky(float t, Vector3 tearPos, Vector3 eye, bool retired)
     {
         if (!skyFromSky)
         {
@@ -321,9 +330,12 @@ public class LanbaiGateDriver : UdonSharpBehaviour
             return;
         }
         float x = SS((t - skyFadeT0) / Mathf.Max(1e-3f, skyFadeT1 - skyFadeT0));
+        bool full = x >= 1f;
         for (int i = 0; i < _skyVecIds.Length; i++)
         {
+            if (full && _skyFull && i != skyBandDirIndex) continue;          // constants: written once at the end of the blend
             Vector4 b = skyVecB[i];
+            if (i == skyBandDirIndex && retired) { VRCShader.SetGlobalVector(_skyVecIds[i], _bandDirFrozen); continue; }   // the bus is at the plane: hold
             if (i == skyBandDirIndex)
             {
                 Vector3 d = tearPos - eye;
@@ -336,10 +348,13 @@ public class LanbaiGateDriver : UdonSharpBehaviour
                 Vector3 h = new Vector3(v.x, 0f, v.z);
                 if (h.sqrMagnitude > 1e-6f) { h.Normalize(); v = new Vector4(h.x, 0f, h.z, v.w); }
             }
+            if (i == skyBandDirIndex) _bandDirFrozen = v;
             VRCShader.SetGlobalVector(_skyVecIds[i], v);
         }
-        for (int i = 0; i < _skyFloatIds.Length; i++)
-            VRCShader.SetGlobalFloat(_skyFloatIds[i], Mathf.Lerp(skyFloatA[i], skyFloatB[i], x));
+        if (!(full && _skyFull))
+            for (int i = 0; i < _skyFloatIds.Length; i++)
+                VRCShader.SetGlobalFloat(_skyFloatIds[i], Mathf.Lerp(skyFloatA[i], skyFloatB[i], x));
+        _skyFull = full;
     }
 
     // every LOD renderer of instance i: its whole block (no GetPropertyBlock needed), the reveal, on / off

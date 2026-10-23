@@ -1,4 +1,4 @@
-2026-10-23 · **驱动 v1.1 可以终审了** · 门的两盏灯归驱动（车厢裂口光 U9 → U9 + 0.25 降到 0，#B9B6D6；补光随臂关）；D-22 天 / 雾 / 月 / 星只在 [U6, U9) 写，数值读天空的 SkyPresets / FogPresets（moon_night → act4_gate，133.8 → 163.8）；云套件不再写光雾带；收臂加眼的位置、群臂先开关、隐藏的臂不算位姿、Start 里 TearPos.w = 0、cues / 门内 JSON 断言；窗口结束回头看那一条记在 README §4；Moon 的建议在 给总控 §8；C# 检查 OK
+2026-10-23 · **驱动 v1.2 可以终审了** · LanbaiGateSky v2：光带 = LanbaiHorizon、密度 = _Udon_Fog（触手、远潮、云海、云卡跟着天走过 U6 过渡；check_d22_fog.py：140 时高处 −1.12 → −0.19 EV）；光带方向收臂后冻结；没有天空套件时 Start 警告；D-08 颜色进 GateLayout_v2.json / gate_export.py，Builder 从 JSON 读；裂口光从 U6k 随伤口渐亮、补光一起淡出；常量只写一次；Wire Scene 提示只在有 Director 时；shader 8 文件 0 错 0 警告、C# OK
 
 ## 进度
 - [x] 云海 `Lanbai/GateCloudDeck` + `Deck_Detail_1024` / `Deck_Macro_512` + `Source/deck_ref.py`（逐行 numpy 移植）；独立技术审查一轮（移植对照），改完

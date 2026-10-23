@@ -453,7 +453,7 @@ Shader "Lanbai/GateCloudDeck"
                 acc += T * surf;
 
                 // fog at the hit distance
-                float fog = 1.0 - exp(-_FogDensity.x * _FogDensity.y * tHit);
+                float fog = 1.0 - exp(-LanbaiGateDensity(_FogDensity.x) * _FogDensity.y * tHit);   // v1.6: D-22
                 float3 c = acc * _Gain * (1.0 - fog) + fogC * fog;
 
                 // the tear's light pool (GateLayout clouds.pool) in the TEAR FRAME: origin = Tear_Root (the foot is its local

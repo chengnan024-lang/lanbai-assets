@@ -97,7 +97,7 @@ def main():
     out = dict(
         about='蓝白 gate driver bake (Gate/Source/gate_driver_bake.py from GateLayout_v2.json); read by '
               'Gate/Editor/LanbaiGateDriverBuilder.cs. Do not edit by hand.',
-        U6=cues['U6'], U7=cues['U7'], U7b=cues['U7b'], U8=cues['U8'], U9=cues['U9'],
+        U6k=cues['U6k'], U6=cues['U6'], U7=cues['U7'], U7b=cues['U7b'], U8=cues['U8'], U9=cues['U9'],
         vg=float(tl['v_g_m_per_s']),
         h_t=kt, h_H=kh, h_d=[float(v) for v in pchip_slopes(kt, kh)],
         moon_dir=[float(v) for v in J['lights']['moon']['direction_to_light_unity']],

@@ -632,7 +632,7 @@ Shader "Lanbai/TentacleSway"
             half nlm = dot(Nw, moonD);                                          // v2.6 (m15): the global moon direction
             half wet = lerp(_RimWet, 1.0, saturate((smoothV - 0.58) / 0.30));
             // v2.3 rim ladder + back-lit only (the moon in front of the view)
-            float densL = (_Udon_FogDensity > 0.0) ? _Udon_FogDensity : _FogDensity;
+            float densL = LanbaiGateDensity(_FogDensity);   // v2.7e: D-22 (_Udon_Fog first)
             half ladder = max(exp(-densL * dist) * clamp(pow(900.0 / max(dist, 1.0), 1.2), 0.12, 1.0), _RimLadderFloor) * _RimGain;   // v2.7c floor
             half backM = lerp(1.0, smoothstep(-0.15, 0.45, dot(-Vw, moonD)), _RimBackOnly);
             half wetL = 0.6 + 0.8 * smoothstep(0.55, 0.9, smoothV);
@@ -743,7 +743,7 @@ Shader "Lanbai/TentacleSway"
             float dist = length(d);
             float3 V = d / max(dist, 1e-4);
             float h = max(IN.worldPos.y - CloudTop(), 0.0);
-            float dens = (_Udon_FogDensity > 0.0) ? _Udon_FogDensity : _FogDensity;
+            float dens = LanbaiGateDensity(_FogDensity);    // v2.7e: D-22 (_Udon_Fog first)
             // v2.4 (tech B3): the cloud-top extra is ADDED to the density scale (as in the renders)
             half ovr = OverWhite(IN.worldPos);                                // v2.7: the air in front of a silhouette over the white
             float rho = dens * (_FogDensityScale + _FogExtra.x * exp(-h / max(_FogExtra.y, 1.0))) * (1.0 - _OverWhiteFog * ovr);
