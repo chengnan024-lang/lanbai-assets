@@ -34,6 +34,7 @@ def dir_az_el(az, el):
 
 
 _ENV = {}
+_SYNTH = {}
 
 
 def env_dawn():
@@ -44,6 +45,46 @@ def env_dawn():
         k = float(lin('#5B7ED7') @ [0.2126, 0.7152, 0.0722]) / float(env.lookup(np.array([[0.0, 1.0, 0.0]]))[0] @ [0.2126, 0.7152, 0.0722])
         _ENV['dawn'] = S.Env(S.clamp_max_channel(e * k, 16.0))
     return _ENV['dawn']
+
+
+def env_dusk_synth(kind):
+    """the bible's 8-i dusk sky as fills (§6·8 大气 / 色板): sun band #FFB070, rose band (back to the sun) fill #FF9396 @ +0.92,
+    mid-sky fill #92A3DF, zenith fill #4B5997; 'lower' = the other sky (-x, -y, z) x 0.82 x (0.92, 0.95, 1.05), 'upper' = below the
+    horizon the horizon colour fading to the other-sky nadir fill #3B4A78. Sun: az 0, el +0.5, 0.9 deg, fill #FF9167 @ +2.74."""
+    key = 'synth_' + kind
+    if key in _ENV:
+        return _ENV[key]
+    H, W = 512, 1024
+    lat = (np.arange(H) + 0.5) / H * np.pi - np.pi / 2
+    lon = (np.arange(W) + 0.5) / W * 2 * np.pi - np.pi
+    LON, LAT = np.meshgrid(lon, lat)
+    sun_band, rose = lin('#FFB070', 0.9), lin('#FF9396', 0.92)
+    mid, zen, nadir = lin('#92A3DF'), lin('#4B5997'), lin('#3B4A78')
+
+    def sky(lo, la):
+        el = np.degrees(la)[..., None]
+        towards = (0.5 + 0.5 * np.cos(lo))[..., None] ** 3                      # 1 at the sun's azimuth
+        hor = rose + (sun_band - rose) * towards
+        glow = lin('#FF855C', 1.37) * (np.exp(-np.abs(el) / 2.0) * towards ** 4)  # the bright slot at the sun (天缝 #F2A56B)
+        c = np.where(el < 25, hor + (mid - hor) * S.smoothstep(0.0, 25.0, el), mid + (zen - mid) * S.smoothstep(25.0, 90.0, el))
+        return c + glow
+    up = sky(LON, np.maximum(LAT, 0.0))
+    if kind == 'lower':
+        mir = sky(-LON, np.maximum(-LAT, 0.0)) * np.array([0.92, 0.95, 1.05]) * 0.82
+        w = S.smoothstep(0.0, math.radians(1.0), -LAT)[..., None]
+        out = up * (1 - w) + mir * w
+    else:
+        hz = sky(LON, np.zeros_like(LAT))
+        w = S.smoothstep(0.0, math.radians(float(_SYNTH.get('below_deg', 5.0))), -LAT)[..., None]
+        out = np.where(LAT[..., None] >= 0, up, hz * (1 - w) + nadir * w)
+    d = np.stack([np.cos(LAT) * np.sin(LON), np.sin(LAT), np.cos(LAT) * np.cos(LON)], -1)
+    sunc = lin('#FF9167', 2.74)
+    for el, g in ((0.5, 1.0), (-0.5, 0.82 if kind == 'lower' else 0.0)):
+        if g:
+            ang = np.degrees(np.arccos(np.clip(d @ dir_az_el(0.0, el), -1, 1)))
+            out = out + sunc[None, None, :] * g * (1.0 - S.smoothstep(0.42, 0.48, ang))[..., None]
+    _ENV[key] = S.Env(S.clamp_max_channel(out, 16.0))
+    return _ENV[key]
 
 
 def env_dusk(kind):
@@ -169,10 +210,20 @@ def frame_K4(rays, eye, t, a):
     sunc = lin('#FF9167', 2.74)
     M = dict(WaterColor=(0.0116, 0.0296, 0.0683), DiscCenter=(0, 0, 2700, 500), NormalStrength=float(a.get('nstr', 0.25)),
              DissolveTime=float(a.get('dissolve', -1.0)), ReflClamp=float(a.get('clamp', 8.0)))
-    rgb, alpha, hit, P = S.shade_plane(eye, rays, eye[1] + h, 'ceiling', t, M, env=env_dusk('lower'), behind_env=env_dusk('upper'))
-    sky = env_dusk('upper').lookup(rays) + sun_disc(rays, sdir, sunc)
-    fog_fn = horizon_fog_fn(env_dusk('upper'))
-    rgb = S.fog(rgb, P, eye, 0.00015, fog_fn)
+    _SYNTH['below_deg'] = a.get('below', 5.0)
+    E = env_dusk_synth if a.get('sky', 'synth') == 'synth' else env_dusk
+    rgb, alpha, hit, P = S.shade_plane(eye, rays, eye[1] + h, 'ceiling', t, M, env=E('lower'), behind_env=E('upper'))
+    sky = E('upper').lookup(rays)
+    fogc = lin('#DE9692')                                    # bible §6·8 大气: Exp 0.00015, fill #DE9692
+    # height falloff (LanbaiFog _FogHeightFalloff, metres): the fog thins above the eye, so the deep-blue water overhead
+    # is not tinted by the warm horizon fog (2 % of #DE9692 over #10263F reads violet). Unity: the ceiling material's
+    # _FogHeightFalloff = this value (README_Sea §4).
+    Hf = float(a.get('fogH', 120.0))
+    dy = np.maximum(P[..., 1] - eye[1], 0.0)
+    dist = np.linalg.norm(P - eye, axis=-1)
+    tau = 0.00015 * dist * np.where(dy > 1e-3, Hf * (1 - np.exp(-dy / Hf)) / np.maximum(dy, 1e-3), 1.0)
+    f = (1.0 - np.exp(-tau))[..., None]
+    rgb = rgb * (1 - f) + fogc * f
     a_ = (alpha * hit)[..., None]
     return rgb * a_ + sky * (1 - a_), dict(h=h)
 
