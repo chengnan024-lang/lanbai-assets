@@ -8,10 +8,12 @@ brightest           the brightest 2000 px at 1920x1080 (scaled with the pixel co
                     given), how many separate clusters they form (bible §1.3 #1: one brightest point per frame)
 purple              % pixels with h_ab 290..325 and C* > 15 (bible §1.3 #4: <= 2 % outside acts 4 / 4c);
                     act-4 strong violet (C* > 30), act-6 lavender (h 285..330, C* > 12)
-palette             per swatch of the act palette (Art/tools/v21/scene_data_v21.py): the closest pixel population
-                    (p1 of dE76 over pixels) and % pixels within dE 10; per pixel: dE to the nearest swatch (median, p90)
+palette             per swatch of the act palette (Art/tools/v21/scene_data_v21.py): nearest pixels (p0.1 of CIEDE2000) and
+                    % pixels within dE 5; per pixel: dE2000 to the nearest swatch (median, p90)
 top25_Lstar         L* of the top quarter of the frame (mean, p50, p90) (gate test 'upper 25 %')
-clip                % pixels at pure black (all codes <= 3) / pure white (all >= 252) (bible §1.3 #5: <= 2 %)
+clip                pure black (every channel <= #030409) / pure white (luma >= 246, #F4F7FA): % and the largest connected
+                    region % (bible §1.3 #5: no REGION > 2 %); warm_shadow_pct = L* < 25, C* > 6, h 20-100 (§1.3 #2)
+                    — these and the palette ΔE2000 follow the art review's definitions (Review/标准.md §2)
 luma_lt12, Lstar_gt85  % pixels (gate_metrics)
 CIE Lab: sRGB D65, as gate's metrics.lab."""
 import math
@@ -40,6 +42,46 @@ def lab(codes):
     a = 500 * (f[..., 0] - f[..., 1])
     b = 200 * (f[..., 1] - f[..., 2])
     return L, a, b
+
+
+def de2000(l1, l2):
+    """CIEDE2000, l1 (..., 3) vs l2 (3,) — same code as Review/Tools~/measure.py (the art review's definition)."""
+    L1, a1, b1 = l1[..., 0], l1[..., 1], l1[..., 2]
+    L2, a2, b2 = l2
+    C1, C2 = np.hypot(a1, b1), np.hypot(a2, b2)
+    Cb = (C1 + C2) / 2
+    G = 0.5 * (1 - np.sqrt(Cb ** 7 / (Cb ** 7 + 25 ** 7)))
+    a1p, a2p = (1 + G) * a1, (1 + G) * a2
+    C1p, C2p = np.hypot(a1p, b1), np.hypot(a2p, b2)
+    h1p = np.degrees(np.arctan2(b1, a1p)) % 360
+    h2p = np.degrees(np.arctan2(b2, a2p)) % 360
+    dLp, dCp, dh = L2 - L1, C2p - C1p, h2p - h1p
+    dh = np.where(dh > 180, dh - 360, np.where(dh < -180, dh + 360, dh))
+    dh = np.where(C1p * C2p == 0, 0, dh)
+    dHp = 2 * np.sqrt(C1p * C2p) * np.sin(np.radians(dh / 2))
+    Lbp, Cbp, hs = (L1 + L2) / 2, (C1p + C2p) / 2, h1p + h2p
+    hbp = np.where(C1p * C2p == 0, hs, np.where(np.abs(h1p - h2p) > 180, np.where(hs < 360, (hs + 360) / 2, (hs - 360) / 2), hs / 2))
+    T = 1 - 0.17 * np.cos(np.radians(hbp - 30)) + 0.24 * np.cos(np.radians(2 * hbp)) + 0.32 * np.cos(np.radians(3 * hbp + 6)) - 0.20 * np.cos(np.radians(4 * hbp - 63))
+    dth = 30 * np.exp(-((hbp - 275) / 25) ** 2)
+    Rc = 2 * np.sqrt(Cbp ** 7 / (Cbp ** 7 + 25 ** 7))
+    Sl = 1 + 0.015 * (Lbp - 50) ** 2 / np.sqrt(20 + (Lbp - 50) ** 2)
+    Sc, Sh = 1 + 0.045 * Cbp, 1 + 0.015 * Cbp * T
+    Rt = -np.sin(np.radians(2 * dth)) * Rc
+    return np.sqrt((dLp / Sl) ** 2 + (dCp / Sc) ** 2 + (dHp / Sh) ** 2 + Rt * (dCp / Sc) * (dHp / Sh))
+
+
+def largest_region_pct(mask, work_w=480):
+    """bible §1.3 '>2 % of the frame' read as the largest 8-connected region (downsampled to 480 wide) = Review's rule."""
+    if not mask.any():
+        return 0.0
+    h, w = mask.shape
+    s = max(1, w // work_w)
+    m = mask[:h - h % s, :w - w % s].reshape(h // s, s, w // s, s).mean((1, 3)) > 0.5
+    if not m.any():
+        return 0.0
+    lab_, n = label(m, structure=np.ones((3, 3)))
+    sizes = np.bincount(lab_.ravel())[1:]
+    return float(sizes.max() / m.size * 100)
 
 
 def hex_codes(h):
@@ -84,10 +126,17 @@ def measure(codes, act=None, cam=None, n_bright=2000, mask=None):
     o['EV_display'] = round(float(np.log2(max(lum_lin[sel].mean(), 0.004))), 3)
     o['luma_lt12_pct'] = round(float((luma[sel] < 12).sum() / n * 100), 2)
     o['Lstar_gt85_pct'] = round(float((L[sel] > 85).sum() / n * 100), 3)
-    o['clip_black_pct'] = round(float(((im <= 3).all(-1) & sel).sum() / n * 100), 3)
-    o['clip_white_pct'] = round(float(((im >= 252).all(-1) & sel).sum() / n * 100), 3)
+    blk = np.all(im <= np.array([3, 4, 9]), -1) & sel          # <= #030409 per channel (Review's definition)
+    wht = (luma >= 246) & sel                                   # >= luma of #F4F7FA
+    o['clip_black_pct'] = round(float(blk.sum() / n * 100), 3)
+    o['clip_white_pct'] = round(float(wht.sum() / n * 100), 3)
+    o['clip_black_largest_region_pct'] = round(largest_region_pct(blk), 2)
+    o['clip_white_largest_region_pct'] = round(largest_region_pct(wht), 2)
+    warm = (L < 25) & (C > 6) & (h >= 20) & (h <= 100) & sel   # §1.3 #2: no warm colour in the shadows
+    o['warm_shadow_pct'] = round(float(warm.sum() / n * 100), 2)
     pur = (h >= 290) & (h <= 325) & (C > 15) & sel
     o['purple_pct'] = round(float(pur.sum() / n * 100), 3)
+    o['purple_largest_region_pct'] = round(largest_region_pct(pur), 2)
     o['violet_strong_pct'] = round(float(((h >= 290) & (h <= 325) & (C > 30) & sel).sum() / n * 100), 3)
     o['lavender_act6_pct'] = round(float(((h >= 285) & (h <= 330) & (C > 12) & sel).sum() / n * 100), 3)
     # brightest 2000 px
@@ -132,13 +181,14 @@ def palette_dev(L, a, b, sel, act):
     dmin = np.full(lab_px.shape[0], np.inf)
     for hx, zh, en in pal:
         Ls, as_, bs = lab(hex_codes(hx)[None, :])
-        d = np.sqrt(((lab_px - np.array([Ls[0], as_[0], bs[0]])) ** 2).sum(-1))
+        d = de2000(lab_px, np.array([Ls[0], as_[0], bs[0]]))
         dmin = np.minimum(dmin, d)
-        sw.append(dict(hex=hx, role=zh, closest_dE_p1=round(float(np.percentile(d, 1)), 1),
-                       within10_pct=round(float((d < 10).mean() * 100), 2)))
-    return dict(act=sc[0]['id'], swatches=sw, pixel_to_nearest_dE_median=round(float(np.median(dmin)), 1),
+        sw.append(dict(hex=hx, role=zh, nearest_dE2000_p01=round(float(np.percentile(d, 0.1)), 1),
+                       within_dE5_pct=round(float((d < 5).mean() * 100), 2)))
+    return dict(act=sc[0]['id'], metric='CIEDE2000 (as Review/Tools~/measure.py)', swatches=sw,
+                pixel_to_nearest_dE_median=round(float(np.median(dmin)), 1),
                 pixel_to_nearest_dE_p90=round(float(np.percentile(dmin, 90)), 1),
-                pixels_within10_pct=round(float((dmin < 10).mean() * 100), 1))
+                pixels_within5_pct=round(float((dmin < 5).mean() * 100), 1))
 
 
 def apl_target(t):

@@ -57,7 +57,7 @@ def metrics_caption(m, target=None):
     if 'centroid_az_el' in b:
         s += '  方位 %.1f° 仰 %.1f°' % tuple(b['centroid_az_el'])
     if 'palette' in m and 'pixel_to_nearest_dE_median' in m['palette']:
-        s += '  色板 ΔE 中位 %.1f' % m['palette']['pixel_to_nearest_dE_median']
+        s += '  色板 ΔE2000 中位 %.1f' % m['palette']['pixel_to_nearest_dE_median']
     return s
 
 
