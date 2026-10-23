@@ -79,13 +79,14 @@ float LanbaiFogAmountEx(float3 posWS, float3 camPosWS, float density, float cap,
 {
     float d = distance(posWS, camPosWS);
     float base = (_Udon_FogBase.w > 0.0) ? _Udon_FogBase.x : camPosWS.y;
-    float tau = max(density, 0.0) * d * LanbaiHeightFactor(camPosWS.y, posWS.y, base, heightScale);
+    float uw = saturate(_Udon_Underwater);
+    float tau = max(density, 0.0) * d * lerp(LanbaiHeightFactor(camPosWS.y, posWS.y, base, heightScale), 1.0, uw);
     float f = 1.0 - exp(-tau);
 #if defined(FOG_LINEAR)
     // linear mode is not used in Lanbai (bible: Exponential only); approximate with Unity's own factor
     f = 1.0 - saturate(d * unity_FogParams.z + unity_FogParams.w);
 #endif
-    return min(f, (cap > 0.0) ? cap : 1.0);
+    return lerp(min(f, (cap > 0.0) ? cap : 1.0), f, uw);     // water is uniform: no cap, no height falloff
 }
 
 float LanbaiFogAmount(float3 posWS, float3 camPosWS)

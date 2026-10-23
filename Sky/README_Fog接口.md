@@ -1,4 +1,6 @@
-# 天与雾的共用 include（`Common/Shaders/LanbaiFog.cginc`、`LanbaiSky.cginc`）· 接口说明 v1
+# 天与雾的共用 include（`Common/Shaders/LanbaiFog.cginc`、`LanbaiSky.cginc`）· 接口说明 v1.1
+
+> v1.1（10-23）：加海的水下参数组（`_Udon_Underwater`、`_Udon_WaterFogUp/Mid/Down`）、`LanbaiGalaxyUV()`；`_Udon_SunDisc.z` 改为日线半长。接口（三个函数的名字和参数）不变。
 
 写的人：云端子会话「天空」，2026-10-22。**没在 Unity 里编译过**：只用 slang 查过语法和类型（`Sky/Tools~/compile_check/`），另外用 slang 在 CPU 上把门的 `LanbaiBand` 和这里的 `LanbaiHorizon` 逐方向算了一遍，结果相同（见 §4）。
 
@@ -47,7 +49,8 @@ _FogHeightFalloff ("Fog Height Scale m (0 = none)", Float) = 0
 | 只设了 `_Udon_FogBandColor`（a > 0，门的驱动本来就写它） | **A，门的默认值**：= `Gate/Shaders/LanbaiGateSky.cginc` 的 `LanbaiBand()`，同一套算术、同一组数（`GateLayout_v2.json` `sky_band` 第 8 轮） | 第 4 幕 |
 | `_Udon_HorizonColor.a = 1` | **A「光带」**：朝 `_Udon_FogBandDir` 的一条带（近色 → 远色），某个仰角以上是虚空色；背后带；地平线以下变暗、去饱和 | 3、4、4c、夜 |
 | `_Udon_HorizonColor.a = 2` | **B「渐变」**：地平线色从朝向（近色）到背向（远色），往上过渡到天顶色，往下过渡到天底色；没有方位截断 | 晨、暮、蓝时、水下 |
-| `_Udon_FogCubeParams.x > 0` | 叠加：往一张**预先调好色、模糊过的天空立方图**（`_Udon_FogCube`）混，权重 x | 有 HDRI 的幕（晨、暮）：雾色就等于物体背后的天 |
+| `_Udon_FogCubeParams.x > 0` | 叠加：往一张**预先调好色、模糊过的天空立方图**（`_Udon_FogCube`）混，权重 x | 有 HDRI 的幕（晨、暮）：雾色就等于物体背后的天（`蓝白/Sky/Bake Fog Cube From Skybox`） |
+| `_Udon_Underwater > 0`（海写） | **水下参数组**（海的请求）：雾色按视线的 y 在 `_Udon_WaterFogMid` → `Up` / `Down` 之间 smoothstep，权重 = `_Udon_Underwater`；**水下时 `_FogCap` 和高度衰减不起作用**（水是均匀的） | 第 7 幕 |
 
 全局量（线性颜色）：
 
@@ -67,7 +70,7 @@ _FogHeightFalloff ("Fog Height Scale m (0 = none)", Float) = 0
 | `_Udon_SunDir` / `_Udon_SunDisc`（预留给天空） | 日的方向；x 日盘增益、y 半径（度）、z 软边（度）；w > 0 = 设了 |
 | `_Udon_MoonDir` / `_Udon_MoonDisc`（已登记） | 月（第 3–4 幕门写，之后天空写） |
 
-每一幕的参数组（填哪几个数）在各幕的包里（`Act06_Dawn/` 等）给出，由那一幕的驱动写；`Lanbai/Sky` 的包里会有一个 U# 小组件按名字写整组。
+每一幕的参数组在 `Sky/SkyPresets.json`（见 `Sky/README_Sky.md` §3），由那一幕的驱动写；U# 小组件 `Sky/Runtime/LanbaiSkyPreset.cs` 按预设写整组。
 
 ## 4. 和门的关系（第 4 幕）
 

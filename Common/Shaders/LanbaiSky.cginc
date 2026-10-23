@@ -23,6 +23,7 @@
 //   _Udon_FogCubeParams.x > 0  -> blend toward a pre-tinted, pre-blurred sky cube (_Udon_FogCube, baked by
 //                               蓝白/Sky/Bake Fog Cube from the act's HDRI and its _ZenithTint/_HorizonTint) with
 //                               weight x. For the HDRI acts this makes the fog EXACTLY the sky behind the object.
+//   _Udon_Underwater > 0  -> the sea's under-water colours (up / level / down) take over with that weight.
 //
 //  ---- include order with the gate --------------------------------------------------------------------------
 //   Gate/Shaders/LanbaiGateSky.cginc declares _Udon_FogBandDir/_Udon_FogBandColor/_Udon_FogBandWidth,
@@ -57,8 +58,12 @@ float4 _Udon_FogBelow;        // x = from deg (< 0 = set), y = to deg, z = model
 float4 _Udon_FogCubeParams;   // x = weight of the fog cube 0..1 (> 0 = used), y = mip, z = max elevation deg for the lookup,
                               // w = exposure multiplier (0 = 1)
 samplerCUBE _Udon_FogCube;    // pre-tinted, pre-blurred sky (linear HDR; RGBM/dLDR decoded by the importer: use RGBAHalf / BC6H)
-float4 _Udon_SunDir;          // xyz = world direction TO the sun, w > 0 = set
-float4 _Udon_SunDisc;         // x = disc gain, y = disc radius deg, z = soft edge deg; w > 0 = set
+float4 _Udon_SunDir;          // xyz = world direction TO the sun, w > 0 = set (the sea's ABOVE mode reads it too)
+float4 _Udon_SunDisc;         // x = disc gain, y = disc radius deg, z = sun line half length deg (act 8); w > 0 = set
+float  _Udon_Underwater;      // 0..1 the eye is under water (written by the sea driver)
+float4 _Udon_WaterFogUp;      // rgb: under-water fog colour looking up (linear)
+float4 _Udon_WaterFogMid;     // rgb: ... looking level
+float4 _Udon_WaterFogDown;    // rgb: ... looking down
 
 // ---- gate defaults (GateLayout_v2.json 'sky_band', round 8; = Lanbai_GateAirSky v3 material defaults) ---------
 #define LANBAI_GATE_NEAR    float3(0.1085, 0.1130, 0.1641)
@@ -162,7 +167,22 @@ float3 LanbaiHorizon(float3 dirWS)
         cube *= (_Udon_FogCubeParams.w > 0.0) ? _Udon_FogCubeParams.w : 1.0;
         c = lerp(c, cube, saturate(_Udon_FogCubeParams.x));
     }
+    // the sea's under-water group (Sea/README_Sea接口.md): bright up, dark down, uniform density
+    if (_Udon_Underwater > 0.0)
+    {
+        float y = V.y;
+        float3 w = (y >= 0.0) ? lerp(_Udon_WaterFogMid.rgb, _Udon_WaterFogUp.rgb, smoothstep(0.0, 1.0, y))
+                              : lerp(_Udon_WaterFogMid.rgb, _Udon_WaterFogDown.rgb, smoothstep(0.0, 1.0, -y));
+        c = lerp(c, w, saturate(_Udon_Underwater));
+    }
     return c;
+}
+
+// ---- act 9: the galaxy glow (Sky/Textures/StarSky_Glow_4096x2048.exr, a 2D lat-long in the WORLD frame, no mips):
+// u = 0.5 + atan2(V.x, V.z) / 2pi, v = 0.5 + asin(V.y) / pi. Shared by Lanbai/Sky and the mirrors' reflection.
+inline float2 LanbaiGalaxyUV(float3 V)
+{
+    return float2(0.5 + atan2(V.x, V.z) * (0.5 / UNITY_PI), 0.5 + asin(clamp(V.y, -1.0, 1.0)) * (1.0 / UNITY_PI));
 }
 
 // ---- sun, moon -------------------------------------------------------------------------------------------------

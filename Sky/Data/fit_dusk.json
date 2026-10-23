@@ -1,0 +1,64 @@
+{
+ "act": "dusk",
+ "hdri": "syferfontein_0d_clear_puresky_1k.hdr",
+ "rotation": -125.33,
+ "profile": "S8",
+ "tints": {
+  "_ZenithTintA": [
+   0.7089,
+   0.5774,
+   0.6223
+  ],
+  "_MidTintA": [
+   1.9213,
+   1.3147,
+   0.9883
+  ],
+  "_HorizonTintA": [
+   0.3135,
+   0.0703,
+   0.0562
+  ],
+  "_HorizonAntiTintA": [
+   1.4387,
+   1.0573,
+   0.9125
+  ],
+  "_TintElevation": [
+   4.47,
+   36.09,
+   46.09,
+   1.0
+  ]
+ },
+ "check": {
+  "zenith": {
+   "target": "#3D4A80",
+   "got": "#3C4A7E"
+  },
+  "midsky": {
+   "target": "#808AB2",
+   "got": "#858BB7"
+  },
+  "midback": {
+   "target": "#808AB2",
+   "got": "#7A85AD"
+  },
+  "midside": {
+   "target": "#808AB2",
+   "got": "#838EB4"
+  },
+  "lowback": {
+   "target": "#7E88AE",
+   "got": "#8289AC"
+  },
+  "lowside": {
+   "target": "#9C8FA6",
+   "got": "#978EA8"
+  },
+  "sunhor": {
+   "target": "#FFB070",
+   "got": "#FFB070"
+  }
+ }
+}
