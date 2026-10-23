@@ -15,7 +15,7 @@
 | 总导演（蓝白总控安排） | 根目录文档、`HANDOFF_LOG.md`、`Common/UdonGlobals.md`、`Common/Shaders/LanbaiVR.cginc` | `main` |
 | 总导演（车厢，和别的包一样要过审） | `Cabin/` | `pkg/cabin` |
 | 美术审片 | `Review/` | `pkg/review` |
-| 总工程师 | `Common/Tools~/`、`Director/`、`Engineering/` | `pkg/engineering` |
+| 总工程师 | `Common/Tools~/`、`Common/Shaders/LanbaiGlobals.cginc`、`Director/`、`Engineering/`、`Grading/`（维护） | `pkg/engineering` |
 | 门（私密对话） | `GateClouds/`；修补时 `Gate/`、`Tear/`、`Tentacles/` | `pkg/gate-clouds` |
 | 天空 | `Common/Shaders/LanbaiFog.cginc`、`Common/Shaders/LanbaiSky.cginc`、`Sky/`、`Act09_StarSea/` | `pkg/sky` |
 | 云 | `Clouds_v2/`、`Act06_Dawn/`、`Act08_Dusk/` | `pkg/clouds` |
@@ -51,7 +51,7 @@
 4. **运行时驱动**（UdonSharp）：见 §5 的接口。
 5. **参考渲染**：云端渲的“应该长这样”，从固定机位（主座位眼位，桌面 1920×1080、水平 90°），**按圣经的 PPv2 模拟调色**（`Grading/Tools~/engine/ppv2_engine.py`），附量出的数（APL、最亮点位置、紫占比、爬升律）。能做 numpy 版 shader 移植就做（门的做法），这样参考图和 Unity 用的是同一套数学。
 6. **中文 README**：先写“拷哪些文件夹、点哪个菜单、在哪一秒从哪个机位截图推回来”，再写细节；末尾写**诚实的已知弱点**。
-7. **检查**：C# 用 Roslyn 对 Unity 引用程序集类型检查、shader 用 slang 查语法（做法见 `Grading/Tools~/compile_check/`、`Rain/Tools~/compile_check/`）。写明“没在 Unity 里编译过”。
+7. **检查**：一律用 main 上的 **`Common/Tools~/compile_check/`**（总工程师的 v1：DXC + Unity 2022.3.22f1 的 CGIncludes 原件、变体、surface shader、SPS-I / 雾 / `_Udon_` / include 的 lint，C# 用 Roslyn；门测试里本地撞上的两个真错误都能复现）。先读它的 `README_compile_check.md`。写明“没在 Unity 里编译过”。
 8. **评审**：每个包交之前至少一轮独立的**美术评审 + 技术评审**（另开 agent，只给它圣经、渲染和代码，不给你的结论），改完再审，直到两份都“通过”。评审稿放 `<文件夹>/Docs~/`。
 
 质量第一，慢慢做（小楠：「还是不要节省不要将就啦」）。
@@ -62,6 +62,7 @@
 
 - **坐标**：Unity 世界，米，Y 上。**车固定在原点、车头朝 +Z，世界往车后移（跑步机）。** 车厢地板 y = 0.62；主座位眼位见 `Gate/GateLayout_v2.json` 的 `cameras.U7`（约 (0.55, 1.70, 2.05)）；`LB_Journey.heroEye` 是 (0.70, 1.77, 0.20)，两者不同，**以本地最新的为准，在 README 里写清你用的哪一个**。
 - **时间**：时间轴秒 t（出发 = 0）。所有时刻引用 `FromLocal/cues.json` 的标签（U0–U12、F0–F16 和子标签），不写死数字；圣经 v2.1 §2 是乐句表。圣经 v2.1 晚于本地的 `timeline_v1.md`，两者冲突时**以圣经 v2.1 为准**，并在 README 里列出差异给本地。
+- **圣经的修订**：`Art/总导演裁决.md` 的每一条压过 `ART_BIBLE.md` 原文。
 - **调色**：PPv2 HDR + Neutral，每幕一个 profile（`Grading/` 已经生成），永不 ACES；只让发光体 bloom。无光照资产以**场景线性**值进入调色。
 - **灯光强度：Inspector 值 = 线性照度 E。** VRChat SDK 强制 `lightsUseLinearIntensity = true`（本地 9/30 查到，门测试又确认了）。**圣经 §1.5 “Built-in 灯光陷阱 1”（Inspector = E^(1/2.2)）作废**；圣经和 `calib_final` 里按 gamma 换算的 Inspector 值都要按 E 重算。
 - **补光**（不投影的）一律 Render Mode = **Not Important**（进球谐，不多画一遍 ForwardAdd）。
@@ -80,6 +81,7 @@
 | `LanbaiVR.cginc` | 总控 | ✅ 已放（= `Rain/Shaders/LanbaiVR.cginc`） |
 | `LanbaiFog.cginc` | 天空 | **天空的第一件交付**：先推接口 + 能编译的最小实现，别的会话照接口写 |
 | `LanbaiSky.cginc` | 天空 | 同上（`LanbaiHorizon(dir)` 等与 `Lanbai/Sky` 共用的函数） |
+| `LanbaiGlobals.cginc` | 总工程师 | **所有 `_Udon_` 全局量只在这里声明一次**（每个名字单独 `#ifndef` 保护），按 `Common/UdonGlobals.md` 生成。各 shader / include 不再自己声明 `_Udon_` 量，改成 include 它（门的 `LanbaiGateSky`、天空、海、门内都要换） |
 | `LanbaiCaustics.cginc` | 海 | 焦散采样 `LanbaiCabinCaustics(posWS, nWS)`；车厢从第 1 幕起就 include 它，所以放 `Common/`，不放 `Sea/` |
 
 `LanbaiFog.cginc` 的**最小接口**（天空可以加，不能改名、不能改参数）：
