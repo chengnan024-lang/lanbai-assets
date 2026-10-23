@@ -9,15 +9,15 @@
 
 #ifndef LANBAI_DECL__Udon_CabinAmbient
 #define LANBAI_DECL__Udon_CabinAmbient
-float4 _Udon_CabinAmbient; // type guessed from the registry row: confirm
+float4 _Udon_CabinAmbient;
 #endif
 #ifndef LANBAI_DECL__Udon_CabinBleach
 #define LANBAI_DECL__Udon_CabinBleach
-float4 _Udon_CabinBleach; // type guessed from the registry row: confirm
+float4 _Udon_CabinBleach;
 #endif
 #ifndef LANBAI_DECL__Udon_CabinFade
 #define LANBAI_DECL__Udon_CabinFade
-float4 _Udon_CabinFade; // type guessed from the registry row: confirm
+float4 _Udon_CabinFade;
 #endif
 #ifndef LANBAI_DECL__Udon_CabinLightmap
 #define LANBAI_DECL__Udon_CabinLightmap
@@ -25,7 +25,7 @@ float _Udon_CabinLightmap;
 #endif
 #ifndef LANBAI_DECL__Udon_CabinSliceColor
 #define LANBAI_DECL__Udon_CabinSliceColor
-float4 _Udon_CabinSliceColor; // type guessed from the registry row: confirm
+float4 _Udon_CabinSliceColor;
 #endif
 #ifndef LANBAI_DECL__Udon_CaseLight
 #define LANBAI_DECL__Udon_CaseLight
@@ -37,7 +37,7 @@ float4 _Udon_CausticsColor;
 #endif
 #ifndef LANBAI_DECL__Udon_CausticsTex
 #define LANBAI_DECL__Udon_CausticsTex
-sampler2D _Udon_CausticsTex; // type guessed from the registry row: confirm
+sampler2D _Udon_CausticsTex;
 #endif
 #ifndef LANBAI_DECL__Udon_CloudTop
 #define LANBAI_DECL__Udon_CloudTop
@@ -89,7 +89,7 @@ float _Udon_FogDensity;
 #endif
 #ifndef LANBAI_DECL__Udon_GalaxyGain
 #define LANBAI_DECL__Udon_GalaxyGain
-float4 _Udon_GalaxyGain; // reserved
+float4 _Udon_GalaxyGain;
 #endif
 #ifndef LANBAI_DECL__Udon_GateOrigin
 #define LANBAI_DECL__Udon_GateOrigin
@@ -101,27 +101,27 @@ float _Udon_GateTime;
 #endif
 #ifndef LANBAI_DECL__Udon_HorizonColor
 #define LANBAI_DECL__Udon_HorizonColor
-float4 _Udon_HorizonColor; // reserved
+float4 _Udon_HorizonColor;
 #endif
 #ifndef LANBAI_DECL__Udon_InsideClock
 #define LANBAI_DECL__Udon_InsideClock
-float4 _Udon_InsideClock; // type guessed from the registry row: confirm
+float4 _Udon_InsideClock;
 #endif
 #ifndef LANBAI_DECL__Udon_InsideDot
 #define LANBAI_DECL__Udon_InsideDot
-float4 _Udon_InsideDot; // type guessed from the registry row: confirm
+float4 _Udon_InsideDot;
 #endif
 #ifndef LANBAI_DECL__Udon_InsideFibre
 #define LANBAI_DECL__Udon_InsideFibre
-float4 _Udon_InsideFibre; // type guessed from the registry row: confirm
+float4 _Udon_InsideFibre;
 #endif
 #ifndef LANBAI_DECL__Udon_InsideFog
 #define LANBAI_DECL__Udon_InsideFog
-float4 _Udon_InsideFog; // type guessed from the registry row: confirm
+float4 _Udon_InsideFog;
 #endif
 #ifndef LANBAI_DECL__Udon_InsidePortal
 #define LANBAI_DECL__Udon_InsidePortal
-float4 _Udon_InsidePortal; // type guessed from the registry row: confirm
+float4 _Udon_InsidePortal;
 #endif
 #ifndef LANBAI_DECL__Udon_Lamp0
 #define LANBAI_DECL__Udon_Lamp0
@@ -317,7 +317,7 @@ float4 _Udon_OverlayLum;
 #endif
 #ifndef LANBAI_DECL__Udon_RadioDial
 #define LANBAI_DECL__Udon_RadioDial
-float4 _Udon_RadioDial; // type guessed from the registry row: confirm
+float4 _Udon_RadioDial;
 #endif
 #ifndef LANBAI_DECL__Udon_RainAmount
 #define LANBAI_DECL__Udon_RainAmount
@@ -365,11 +365,15 @@ float _Udon_SeaMode;
 #endif
 #ifndef LANBAI_DECL__Udon_SkyBlend
 #define LANBAI_DECL__Udon_SkyBlend
-float4 _Udon_SkyBlend; // reserved
+float4 _Udon_SkyBlend;
+#endif
+#ifndef LANBAI_DECL__Udon_SkyFx
+#define LANBAI_DECL__Udon_SkyFx
+float4 _Udon_SkyFx;
 #endif
 #ifndef LANBAI_DECL__Udon_StarGain
 #define LANBAI_DECL__Udon_StarGain
-float4 _Udon_StarGain; // reserved
+float4 _Udon_StarGain;
 #endif
 #ifndef LANBAI_DECL__Udon_StopOffset
 #define LANBAI_DECL__Udon_StopOffset
@@ -377,11 +381,11 @@ float4 _Udon_StopOffset;
 #endif
 #ifndef LANBAI_DECL__Udon_SunDir
 #define LANBAI_DECL__Udon_SunDir
-float4 _Udon_SunDir; // reserved
+float4 _Udon_SunDir;
 #endif
 #ifndef LANBAI_DECL__Udon_SunDisc
 #define LANBAI_DECL__Udon_SunDisc
-float4 _Udon_SunDisc; // reserved
+float4 _Udon_SunDisc;
 #endif
 #ifndef LANBAI_DECL__Udon_TearBreath
 #define LANBAI_DECL__Udon_TearBreath
@@ -465,7 +469,7 @@ float _Udon_WorldS;
 #endif
 #ifndef LANBAI_DECL__Udon_ZenithColor
 #define LANBAI_DECL__Udon_ZenithColor
-float4 _Udon_ZenithColor; // reserved
+float4 _Udon_ZenithColor;
 #endif
 
 #endif // LANBAI_GLOBALS_INCLUDED
