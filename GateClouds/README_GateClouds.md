@@ -39,8 +39,8 @@
 | `Docs~/cards_contact.jpg` | 5 张云卡的三个光照通道 |
 | `Docs~/fse_clouds.json` | 透明叠绘（§5.3） |
 | `Docs~/perf_options_crops.png` | 性能方案 B / C 和现在的 1:1 对比（`给总控.md` §1） |
-| `Docs~/iterations/` | 01–09 的迭代记录（每轮一张图一句话） |
-| `Docs~/r4_crops/` | 第 4 轮 1:1 前后对比裁图（上 = 第 3 轮，下 = 第 4 轮）：两处边光碎块、光池、云谷 |
+| `Docs~/iterations/` | 01–10 的迭代记录（每轮一张图一句话） |
+| `Docs~/r4_crops/` | 1:1 前后对比裁图（上 = 第 3 轮，下 = v1.4 终版）：边光碎块、U7 台阶、U8 前方、光池、云谷 |
 
 ---
 
