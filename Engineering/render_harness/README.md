@@ -97,7 +97,7 @@ def build(ctx):
 - `--dev 0.5`：这一帧的曝光事件 ΔEV。标准台按圣经 §1.4 自动解 `EXPO_UP` / `EXPO_DOWN` 的权重（w = ΔEV/(4 − b)）。
 - `--lens clean`：桌面镜头层（暗角；**颗粒不模拟**，它是噪声，对 APL 的影响可以忽略）。**和本地的桌面截图比的时候加上**（本地截图里 LENS_CLEAN = 1）；VR 用 `--vr`（没有任何镜头层）。
 - bloom 按 PPv2 fastMode 的源码移植（半分辨率金字塔、二次软膝阈值、4-tap 下采样 / 上采样），阈值和 clamp 是 gamma 值（圣经 §1.4）。`metrics.json` 的 `bloom_share_of_APL` = 开 bloom 和关 bloom 的 APL 差。
-- `--bloom-tint double`（默认）：按 Unity 的实际行为，bloom 的颜色被线性化**两次**（PPv2 `Bloom.cs` 用 `MaterialPropertyBlock.SetColor` 传已经是线性的颜色，线性工程里会再转一次；见 `Engineering/给总导演.md`）。`Grading` 做了补偿以后改用 `single`。白色的 bloom 两种一样。
+- `--bloom-tint single`（默认）：bloom 的颜色 = 设计值。PPv2 的 `Bloom.cs` 用 `MaterialPropertyBlock.SetColor` 传已经线性化的颜色，线性工程里会再转一次；`Grading/` 的生成器**默认就写补偿后的颜色**（`bloomColorCompensated`，本地门测试的 `GradeBuild_Report.md` 写着“compensated”），所以 Unity 里看到的是设计值。`--bloom-tint double` = 没有补偿时 PPv2 的样子（对照用；`蓝白/Grades/Probe Bloom Colour` 实测出“single decode”时生成器会关掉补偿，那时也用 single）。白色的 bloom 两种一样。
 - 输入必须是**场景线性**：标准台把 Blender 的 View Transform 设成 Standard、曝光 0，EXR 里存的就是线性值，**不要在场景脚本里改色彩管理**。
 
 ## 3. 量的数（`metrics.json`）
@@ -109,14 +109,15 @@ def build(ctx):
 | `APL` | sRGB 显示码的 Rec.709 亮度平均，0–255 | 圣经 §2 每一段的目标（`target`，按 `--t` 查 `Art/tools/v21/scene_data_v21.py`），±15% |
 | `EV_display` | log2(显示线性亮度平均)，爬升律的 L | §1.8 |
 | `brightest` | 最亮的 2000 px（1080p 下；别的分辨率按像素数缩放）：外框、重心、重心的方位 / 仰角、分成几团（`clusters_ge5pct` = 占 5% 以上的团数） | §1.3 第 1 条：每帧一个最亮点，在眼睛该去的地方 |
-| `purple_pct` | h_ab 290–325 且 C\* > 15 的占比 | §1.3 第 4 条：第 4、4c 幕以外 ≤ 2% |
+| `purple_pct` / `purple_largest_region_pct` | h_ab 290–325 且 C\* > 15 的占比 / 最大连通块的占比 | §1.3 第 4 条：第 4、4c 幕以外“大于 2% 的区域”不许——按最大连通块判（和美术审片同一个读法） |
 | `violet_strong_pct` / `lavender_act6_pct` | C\* > 30 的紫（第 4 幕 ≤ 10%）；h 285–330 且 C\* > 12（第 6 幕 ≤ 2%） | §1.3 第 4 条 |
-| `palette` | 本幕色板每一色：最接近的那 1% 像素的 ΔE76、ΔE < 10 的像素占比；每个像素到最近一色的 ΔE（中位、p90） | `Art/palettes/`、`scene_data_v21.SCENES` |
+| `palette` | 本幕色板每一色：最接近的那 0.1% 像素的 **ΔE2000**、ΔE < 5 的像素占比；每个像素到最近一色的 ΔE2000（中位、p90） | `Art/palettes/`、`scene_data_v21.SCENES` |
 | `top25_Lstar` | 画面上 1/4 的 L\*（平均、中位、p90） | 门测试的“上 25%” |
-| `clip_black_pct` / `clip_white_pct` | 纯黑（三通道 ≤ 3）、纯白（≥ 252）的占比 | §1.3 第 5 条：大于 2% 不许 |
+| `clip_black_*` / `clip_white_*` | 纯黑（每个通道 ≤ `#030409`）、纯白（亮度 ≥ 246 = `#F4F7FA`）：占比和最大连通块 | §1.3 第 5 条：大于 2% 的区域不许 |
+| `warm_shadow_pct` | L\* < 25、C\* > 6、h 20–100 的占比（阴影里发暖） | §1.3 第 2 条 |
 | `luma_lt12_pct`、`Lstar_gt85_pct` | 门的两个数 | |
 
-色板用 ΔE76（CIE Lab，D65）。ΔE 中位数大不一定是错（色板只列关键色），要看每一色的 `closest_dE_p1`：某个关键色在画面里根本找不到（p1 很大），才说明画面缺了它。
+**和美术审片对齐**：纯黑 / 纯白、紫的连通块、阴影发暖、色板的 ΔE2000 都是照美术审片的 `Review/Tools~/measure.py`（`Review/标准.md` 第 2 节）的定义写的，同一张图两边量出来是同一个数。不同的只有色板来源：标准台用 `scene_data_v21.SCENES`（圣经的色板），审片用它自己的 `Review/targets.json`。ΔE 中位数大不一定是错（色板只列关键色），要看每一色的 `closest_dE_p1`：某个关键色在画面里根本找不到（p1 很大），才说明画面缺了它。
 
 ## 4. 迭代存档的约定（`PLAN_总导演.md` 第四节）
 
@@ -130,6 +131,13 @@ def build(ctx):
 
 `--out` 目录里自动有 `stranger/img_<hash>.png`（640 px 宽、没有字、文件名不透露意图）和一个提问文件。开一个**不给任何背景**的 agent，只给它这张图和提问文件里的那句话。它的回答原样记进评审稿。
 
+## 5.5 透明叠绘 FSE（给账本的数）
+
+```bash
+~/bpy/bin/python Engineering/render_harness/lbh_render.py --scene <场景.py> --cam hero --t 166.15 --grade S4 --out /tmp/x --fse
+```
+场景脚本里给每个透明物体设自定义属性 `ob['lb_fse'] = '<层名>'`（或者命令行 `--fse-pattern '^Cloud'` 按物体名匹配）。标准台对每个透明物体单独渲一张覆盖图：它自己是白色自发光，别的不透明物体是 holdout（挡住它、自己不出现），别的透明物体隐藏——数出来的就是 GPU 真正要画的片元（alpha = 0 的地方也算）。输出 `fse.json`（合计、按层、按物体、任一像素最多几层、超过 8 层的像素占比）和 `fse_layers.png`（每像素层数的热图），同时写进 `metrics.json` 的 `scene.fse`。Cull Back 的透明物体设 `ob['lb_fse_cull'] = 'back'`。默认 480×270、1 采样（覆盖只要几何，够了）。**交付时把关键时刻的 `fse.json` 放进包的 `Docs~/`，账本按它记**；车厢玻璃 0.7 由账本统一加，不在这里量。
+
 ## 6. 已知的近似（诚实版）
 
 1. **不是 Unity**：Cycles 的路径追踪 ≠ Unity Built-in 的前向渲染。材质要和 Unity 一致，最好的办法是把 shader 的数学移植成 numpy / 发光节点（门的做法），场景里尽量用 `mat_emission` 写确定的线性值；Principled BSDF 的高光、多次弹射在 Unity 里没有。
@@ -137,4 +145,4 @@ def build(ctx):
 3. **bloom** 是照源码移植的，但没和 Unity 逐像素对过；**颗粒**不模拟；`Dithering` 不模拟。
 4. **VR**：只是单眼的近似视场，立体视差、SPS-I 都不模拟。
 5. **车壳**是角度合同的占位，不是真车。真车（`Cabin/`）来了就换 `--bus fbx:`。
-6. 透明叠绘（FSE）不在这里量——每个包按自己的透明层算，交给总工程师记进 `Engineering/ledgers/`（算法见那边的 README）。
+6. FSE（§5.5）按几何覆盖算：shader 里在顶点阶段把三角形裁掉的（门的透镜预深度那种做法）这里看不出来，要在场景脚本里把那样的物体隐藏。

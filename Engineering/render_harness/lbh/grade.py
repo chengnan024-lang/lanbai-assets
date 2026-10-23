@@ -174,7 +174,8 @@ def _four_tap(src, out_w, out_h, off_src_texels):
     return 0.5 * (_sample1d(tx, 0, uy - o) + _sample1d(tx, 0, uy + o))
 
 
-BLOOM_TINT_MODE = 'double'   # 'double' = what Unity does (SetColor linearises again); 'single' = the designed tint
+BLOOM_TINT_MODE = 'single'   # 'single' = the designed tint = what Unity shows with Grading's default compensation;
+                             # 'double' = PPv2 uncompensated (SetColor linearises again)
 
 
 def bloom_pyramid(lin, b):

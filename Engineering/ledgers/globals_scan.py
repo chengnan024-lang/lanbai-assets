@@ -81,6 +81,11 @@ def scan(ref):
             for m in HLSL_DECL.finditer(txt):
                 uses[m.group(2)].append((f, 'decl', m.group(1)))
                 seen.add(m.group(2))
+                # 'float4 _Udon_A, _Udon_B, _Udon_C;' : the rest of the declaration list has the same type
+                tail = txt[m.end():txt.find(';', m.end())] if txt.find(';', m.end()) > 0 else ''
+                for n2 in re.findall(r',\s*(_Udon_[A-Za-z0-9_]+)', tail):
+                    uses[n2].append((f, 'decl', m.group(1)))
+                    seen.add(n2)
         for n in set(NAME.findall(txt)) - seen:
             if ext in ('.cs', '.shader', '.cginc', '.hlsl', '.compute'):
                 uses[n].append((f, 'ref', ''))

@@ -1,7 +1,8 @@
-2026-10-23 02:30（UTC）· 总工程师：compile_check v1（DXC + Unity 2022.3.22f1 CGIncludes，复现门测试的两个真错误）、Director v1（生成式分发层）、天空第 1 轮意见、cues v2.1 补丁、集成说明 v0、账本 v1 都已推。门里程碑 1 的技术审查在跑。下一步：门的意见 → 海的意见（下一窗口）→ LanbaiReflectionBaker。卡点：LanbaiGlobals.cginc 的归属等总导演定；额度按窗口分批。
+2026-10-23 01:45（UTC）· 总工程师：LanbaiGlobals.cginc（批准、已生成，115 个全局量，11 个类型待各包确认；门的 GateSky 换法写在 Common/Shaders/README_LanbaiGlobals.md）；Grading 接手（bloom 补偿本来就默认开，更正已写进 给总导演）；门 / 海 / 镜子 / 天空意见已推；Director v1 + 反射烘焙器；车的决定技术对照（v1 车 9/15）。天空 v1 第 2 轮审查在跑。下一步：天空第 2 轮意见 → 14 处圣经矛盾挑出要裁的。卡点：无。
 
 # 总工程师 · 进度
 
+| 10-23 01:45 | LanbaiGlobals.cginc 生成器 + 文件；Grading 接手（LENS_CLEAN 199）；标准台 bloom 默认改回设计值；FSE 量法；车的决定对照 |
 | 10-23 02:30 | compile_check v1 接手补完；Director v1；天空意见；cues 补丁；集成说明 v0；bloom 颜色开关 |
 | 时间（UTC） | 做到哪 |
 |---|---|

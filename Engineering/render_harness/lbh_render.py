@@ -82,8 +82,8 @@ def common_args(ap):
     ap.add_argument('--lens', default='none', choices=['none', 'clean', 'archive'], help='桌面镜头层（暗角；颗粒不模拟）。和本地桌面截图比时用 clean')
     ap.add_argument('--vr', action='store_true', help='VR：不加任何镜头层')
     ap.add_argument('--no-bloom', action='store_true')
-    ap.add_argument('--bloom-tint', default='double', choices=['double', 'single'],
-                    help='double（默认）= Unity 实际：bloom 颜色被线性化两次；single = 设计值（Grading 做了补偿以后用这个）')
+    ap.add_argument('--bloom-tint', default='single', choices=['single', 'double'],
+                    help='single（默认）= 设计的颜色 = Unity 里 Grading 默认做了补偿以后的样子；double = 没补偿的 PPv2（颜色被线性化两次）')
     ap.add_argument('--act', default=None, help='色板键：01 02 03 04 04c 05 06 07a 07b 08 08b 09 10 11 12')
     ap.add_argument('--t', type=float, default=None, help='时间轴秒（只用来查圣经 §2 的目标 APL；场景脚本自己用 ctx["t"]）')
     ap.add_argument('--note', default=None, help='这一轮的一句话（写进 note.txt，迭代总览会用）')
@@ -104,6 +104,9 @@ def main():
     ap.add_argument('--quality', default='preview', choices=['preview', 'final'])
     ap.add_argument('--samples', type=int, default=None)
     ap.add_argument('--set', action='append', default=[], help='传给场景脚本的 k=v（ctx["args"]）')
+    ap.add_argument('--fse', action='store_true', help='另外量透明叠绘 FSE（物体上设自定义属性 lb_fse = 层名，或用 --fse-pattern）')
+    ap.add_argument('--fse-pattern', action='append', default=[], help='物体名的正则，匹配到的算透明层')
+    ap.add_argument('--fse-res', default='480x270')
     common_args(ap)
     args = ap.parse_args()
 
@@ -137,9 +140,15 @@ def main():
     dt = time.time() - t0
     np.save(os.path.join(args.out, 'linear.npy'), lin.astype(np.float16))
     info.update(dict(bus=args.bus, glass=args.glass, samples=samples, res=cam['res']))
+    if args.fse or args.fse_pattern:
+        from lbh import fse as F
+        fw, fh = (int(x) for x in args.fse_res.lower().split('x'))
+        info['fse'] = F.measure(args.out, res=(fw, fh), patterns=args.fse_pattern)
     rec = finish(lin, args, cam, args.out, info, dt)
     m = rec['metrics']
     tgt = rec.get('target')
+    if 'fse' in info:
+        print('[lbh] FSE total %.3f  layers %s  max layers/pixel %s' % (info['fse'].get('total', 0), info['fse'].get('layers'), info['fse'].get('max_layers_per_pixel')))
     print('[lbh] %s  APL %.1f%s  purple %.2f%%  brightest at %s  (%0.0f s render)' % (
         args.out, m['APL'], (' (target %.0f, %s)' % (tgt['APL'], tgt['phase'])) if tgt else '', m['purple_pct'],
         m['brightest'].get('centroid_az_el', m['brightest']['centroid']), dt))
