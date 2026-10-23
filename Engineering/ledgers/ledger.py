@@ -31,11 +31,19 @@ def active(it, t):
     return any(a <= t < b for a, b in it['active'])
 
 
+def k_is_component(it):
+    return it.get('kind') not in ('world', 'post', 'calibration') and it.get('gpu_ms') is not None and \
+        it.get('status') in ('engineer-estimate', 'package', 'measured')
+
+
 def at(D, t):
     s = {k: 0.0 for k in KEYS}
     missing = {k: [] for k in KEYS}
     items = [it for it in D['items'] if active(it, t)]
+    has_world = any(it.get('kind') == 'world' and it.get('gpu_ms') is not None for it in items)
     for it in items:
+        if has_world and k_is_component(it):
+            continue                     # the bible's act total already contains this component (shown in the estimate column)
         for k in KEYS:
             v = it.get(k)
             if v is None:
