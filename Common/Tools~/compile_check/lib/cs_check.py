@@ -119,8 +119,16 @@ def layout(files):
         return asm[name]
 
     notes = []
+    def repo_top(path):
+        d = os.path.dirname(path)
+        while os.path.dirname(d) != d:
+            if os.path.exists(os.path.join(d, '.git')):      # a repo or a git worktree (.git is a file there)
+                return d
+            d = os.path.dirname(d)
+        return os.path.dirname(path)
+
     for f in files:
-        top = REPO if f.startswith(REPO + os.sep) else os.path.dirname(f)
+        top = REPO if f.startswith(REPO + os.sep) else repo_top(f)
         ad = find_asmdef(f, top)
         if ad:
             try:
