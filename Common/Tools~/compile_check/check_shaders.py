@@ -98,7 +98,7 @@ def collect(paths):
             out.append(p)
             continue
         for root, dirs, files in os.walk(p):
-            dirs[:] = [d for d in dirs if not d.startswith('.') and d != '__pycache__']
+            dirs[:] = [d for d in dirs if not d.startswith('.') and not d.endswith('~') and d != '__pycache__']   # Unity ignores '~' folders
             for f in files:
                 if f.endswith(('.shader', '.cginc', '.hlsl')):
                     out.append(os.path.join(root, f))
