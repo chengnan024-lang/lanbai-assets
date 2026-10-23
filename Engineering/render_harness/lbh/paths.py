@@ -2,6 +2,7 @@
 """Where things live in the repo. Every other module imports from here, so the harness can be run from any cwd."""
 import os
 import sys
+sys.dont_write_bytecode = True   # importing Art/tools/v21 must not leave __pycache__ in other folders
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 HARNESS = os.path.dirname(HERE)                      # Engineering/render_harness
