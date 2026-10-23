@@ -61,7 +61,7 @@ def max_star_L(act, gain, cache={}):
             d = camera_dirs(W, H, HFOV, yaw, pitch).astype(np.float32)
             cache[key] = (d, S.render(d, p['material'], g).reshape(H, W, 3))
         d, sky = cache[key]
-        img = SC.splat(sky.copy(), W, H, HFOV, yaw, pitch, cat['dir'], pk, cat['col'], FWHM_PX)
+        img = SC.splat(sky.copy(), W, H, HFOV, yaw, pitch, cat['dir'], pk, cat['col'], FWHM_PX, snap=True)   # worst case (tech r2 #5)
         add = (img - sky).max(axis=2)
         away = np.degrees(np.arccos(np.clip(d.reshape(H, W, 3) @ moon, -1, 1))) > 3.0
         m = (add > 1e-5) & away

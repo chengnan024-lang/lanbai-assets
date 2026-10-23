@@ -20,9 +20,9 @@
    换了原图之后要重新确认的数只有两个：①**太阳方位**——构建器在原图上重新量，写进 `_Udon_Sky_RotationA`（报告里有）；②拟合的乘色在 1K 缩略图上做的，8K 的平均色一样，**不用重拟合**；只有换了另一张 HDRI 才要跑 `Tools~/render/fit_hdri_tints.py`。
 3. 菜单 **`蓝白/Sky/Build Star Mesh`** → `Sky/Generated/StarPoints_BSC5.asset`。
 4. 菜单 **`蓝白/Sky/Build Sky`** → **一个**材质 `Sky/Generated/M_Sky.mat`（`Lanbai/Sky`，银河辉光、月面贴好），并设成场景的天空盒（**存一下场景**）；场景里 `Lanbai_SkyPresets` 下每个预设一个物体（U# `LanbaiSkyPreset`，填好全局量、立方图、雾色 / 环境色；自动建 `LanbaiSkyPreset`、`LanbaiSkyDriver` 的程序资产）；再在 HDRI 原图上**重新量太阳**，把旋转写进那个预设的 `_Udon_Sky_RotationA`（报告 `Sky/Generated/SkyBuild_Report.txt`，实时平行光按里面的方位 / 仰角对齐）。可以重复点：原地更新，驱动对这些物体的引用不会断。
-5. 驱动：要么每幕自己的驱动调 `LanbaiSkyPreset.Apply()` / `ApplyBlend()`，要么建一个物体挂 `LanbaiSkyDriver`（§3.1），按时间表填预设。**一幕只有一个写天空全局量的驱动**（§3.1 的表）。
+5. 驱动：`Build Sky` 同时建好**两个** `LanbaiSkyDriver`（`Lanbai_SkyDriver_Acts1to3`、`Lanbai_SkyDriver_Acts11to12`，各管一段连续的时间窗，表来自 `SkyPresets.json` 的 `drivers`，时刻按 `FromLocal/cues.json` 的标签算好），挂进 Director 的分发层；第 6、8、8b 幕由「云」的驱动调 `LanbaiSkyPreset.Apply()` / `ApplyBlend()`。**一幕只有一个写天空全局量的驱动**（§3.1 的表）。
 6. 菜单 **`蓝白/Sky/Preview Window`**：在编辑器里点一个预设就写好全局量、全局立方图和雾密度（只在编辑模式里有效，进 Play 会丢，见坑 9）。
-7. 星：场景里建一个空物体，挂 MeshFilter = `StarPoints_BSC5.asset`、MeshRenderer = `M_Sky_StarPoints.mat`（关阴影、关光照探针）。位置无所谓（shader 不用物体变换）。材质的 `_Gain` 默认 0：星由每个预设写的 `_Udon_StarGain` 点亮。
+7. 星：`Build Sky` 建**全片唯一的**主星物体 `Lanbai_Stars_BSC5`（`StarPoints_BSC5.asset` + `M_Sky_StarPoints.mat`，关阴影 / 探针；每次都把材质 `_Gain` 写回 0）。星由每个预设写的 `_Udon_StarGain` 点亮；第 9 幕不再另建一份（以前两份叠加 = 所有星 +1 EV）。
 
 **请推回来的截图**（桌面 1920×1080、水平 90°、主座位眼位 `cameras.U7` (0.55, 1.70, 2.05)，PPv2 开，渲进 ARGBHalf 再调色）：在一个空场景里（只有天空盒 + 星，没有车）每个预设截“前方 / 车门 +45° / 天窗仰 70° / 背后”四张，`moon_night` 另加一张对着月亮的 1:1 裁切（1920 / 90°，看月面读不读得出），和 `Sky/Docs~/presets/preset_<预设>.png` 对照；另外 Console 原样。
 
@@ -127,9 +127,9 @@
 | 10（白） | — | 遮罩球（`Mirrors/`、`Overlay/`） | 天被遮住 |
 | 11、12 | `overcast_rain_night`（12 的开头） | `LanbaiSkyDriver` | 白遮罩下 `Apply()` |
 
-**`LanbaiSkyDriver`**：`presets[i]` 在 `[presetT0[i], presetT1[i])` 里是当前的；进入时从 `presets[i − 1]` 用 `fadeSec[i]` 秒 smoothstep 淡入（0 = 硬切，只能在遮挡下）；不在任何条目里的时段什么都不写（别的驱动在写）。每次换条目 `Apply()` 一次，淡变期间每帧 `ApplyBlend`。
-**`ApplyBlend` 的规矩**（一个材质以后不换材质）：两边名字相同（每个预设都列全），逐个插值；但**立方图的参数**（A / B 的乘色、旋转、EV、钳位）不和“没有这张图的那一边”插值（不然图会转起来），由有图的一边给；`_Udon_SkyGlobals` 取两边的最大值（淡变期间图一直绑着）；全局立方图取这边的，没有就取那边的。
-**所有权**：`ownsAtmosphere`（`RenderSettings` 的雾密度 / 雾色 / 环境色，给内置 shader）、`ownsSkybox`（把 `M_Sky.mat` 设成天空盒；构建时已经设好，一般不用）**默认都关**，由负责那一幕的驱动决定开不开。
+**`LanbaiSkyDriver`**：每个实例只管一段连续的时间窗（`LanbaiWindow()` 就是它，分发层按它让出 RenderSettings），四个数组由 `Build Sky` 从 `SkyPresets.json` 填，`Start()` 检查长度一致（不一致就报错、不运行）。`presets[i]` 在 `[presetT0[i], presetT1[i])` 里是当前的；进入时从 `presets[i − 1]` 用 `fadeSec[i]` 秒 smoothstep 淡入（0 = 硬切，只能在遮挡下）；不在任何条目里的时段什么都不写（别的驱动在写）。每次换条目 `Apply()` 一次，淡变期间每帧 `ApplyBlend`。
+**`ApplyBlend` 的规矩**（一个材质以后不换材质）：两边名字相同、顺序相同（构建器排好序，映射是恒等），每个量按 `SkyPresets.json` 导出的**组**（`vecGroups`，不在 Udon 里猜名字）处理：立方图 A / B 的参数（乘色、旋转、EV、钳位）和立方图层共用的参数（`TintElevation`、`NadirColor`、`BelowShape`、`SunRemove`、`HorizonLift`、`OtherTint`、`BelowMirror`）不和“没有图的那一边”插值，由有图的一边给；**两边都有图 A 但不是同一张（或旋转不同，第 1 → 2 幕）时走 B 槽交叉淡化**：对面的图绑到 `_Udon_SkyCubeTexB`、它的 A 参数放进 B 槽、`_Udon_SkyBlend.x` = t，t = 1 时 `other.Apply()` 把它放回 A，画面一样——天不会转；`_Udon_SkyGlobals` 取最大值；方向量（雾带方向、日、月、夜遮罩）一边是零就不拉、两边都有就归一化插值；`blendSkip` 里的名字这一段不写（`dusk_8ii` 的 `_Udon_SunDisc`：F12 起日线由「云」的驱动写，一个名字一个写入者）。`Tools~/render/test_sequence.py` 用同样的规则按片子顺序回放，并查淡变中点的天顶梯度、t = 0.999 与 `Apply(b)` 的差（< 1 个显示码）。
+**所有权**：`ownsAtmosphere`（`RenderSettings` 的雾密度 / 雾色 / 环境色，给内置 shader）、`ownsSkybox`（把 `M_Sky.mat` 设成天空盒；构建时已经设好，一般不用）**默认都关**，由负责那一幕的驱动决定开不开。`ownsAtmosphere` 只写 `RenderSettings.ambientLight`；环境光是 Trilight 模式时赤道色 / 地面色仍归 `LB_Journey`。
 
 ---
 
@@ -149,7 +149,7 @@
 
 展开（`Lanbai_StarPoints.shader` 的 vert）：中心 C = 两眼中点 + D × `_Distance`（40 km）；右 R = normalize(cross(up, D))（D 接近竖直时 up 换成 x）、上 U = cross(D, R)；半边长 h = 2 × FWHM 像素 × `LanbaiPixelAngle()` × `_Distance`；P = C + (R·uv0.x + U·uv0.y)·h。亮度 = `_StarScale`（1.6）× 10^(−0.4 × `_MagSlope`（0.5）× (m − `_MagRef`（0）))，排名在亮星个数以内的 × 亮星加成（按 20 个排名平滑过渡），`_UseGlobalGain` = 0 的材质不读全局增益，× `_Udon_StarGain.x`，× 顺序遮罩；片元是 exp(−4 ln2 r²)（r 以 FWHM 为单位），叠加混合。镜子在模板里画第二遍时，把 D 换成镜面反射后的方向即可（平面镜：D' = reflect(D, n)；凸 1.5% 的鱼眼在镜子 shader 里做）。
 
-**银河辉光**（`StarSky_Glow_8192x4096.png`）：**照片**——ESA/Gaia/DPAC 的 Gaia EDR3 全天彩色图（银道坐标的经纬图，经 `mw_plot` 包（MIT，H. Leung）取得，`Source~/data/`）。**授权 CC BY-SA 3.0 IGO，署名“ESA/Gaia/DPAC”**（D-11 已定）；这张衍生纹理也是 CC BY-SA 3.0 IGO。做法（`Source~/make_starsky.py`）：显示值 → 线性；3×3 开运算去掉点状的星（星由星表精灵画，留一半细颗粒）；减掉高银纬的天光背景；亮度曲线 ^1.6，最亮的 0.1%（人马、盾牌、天鹅的星云团）到填值、带的主体远低于它（带内中位 0.07、90% 分位 0.21）；软膝；然后按圣经的色板重新上色：旋臂冷（填 `#6A758A`，屏幕 `#6F82A0`），**暖尘只在核球**（银心 ±13° 的高斯 × 图自己的红蓝比，填 `#CBAE82`，屏幕 `#C8B79A`）。暗尘带（大暗隙）、星云团、麦哲伦云都是照片里本来就有的。8192×4096（0.044°/纹素），8 位 sRGB PNG 归一到 1（半浮点 EXR 是 135 MB，超过仓库上限），材质 × `_GlowScale`（`Data/StarSky.json` 的 `glow_scale`，现在 0.5006；8 位 sRGB 在暗处的台阶比一个显示码细，再加 shader 的抖动）。导入：sRGB 开、不要 mip、U 重复 V 钳、BC7、Max Size 8192（`LanbaiSkyImport.cs` 自动设）。星空底 `#0D0F23` 不在图里，`Lanbai/Sky` 加。
+**银河辉光**（`StarSky_Glow_8192x4096.png`）：**照片**——ESA/Gaia/DPAC 的 Gaia EDR3 全天彩色图（银道坐标的经纬图，经 `mw_plot` 包（MIT，H. Leung）取得，`Source~/data/`）。**授权 CC BY-SA 3.0 IGO，署名“ESA/Gaia/DPAC”**（D-11 已定）；这张衍生纹理也是 CC BY-SA 3.0 IGO。做法（`Source~/make_starsky.py`）：显示值 → 线性；3×3 开运算去掉点状的星（星由星表精灵画，留一半细颗粒）；减掉高银纬的天光背景；亮度曲线 ^1.6，最亮的 0.1%（人马、盾牌、天鹅的星云团）到填值、带的主体远低于它（带内中位 0.07、90% 分位 0.21）；软膝；然后按圣经的色板重新上色：旋臂冷（填 `#6A758A`，屏幕 `#6F82A0`），**暖尘只在核球**（银心 ±13° 的高斯 × 图自己的红蓝比，填 `#CBAE82`，屏幕 `#C8B79A`）。暗尘带（大暗隙）、星云团、麦哲伦云都是照片里本来就有的。8192×4096（0.044°/纹素），8 位 sRGB PNG 归一到 1（半浮点 EXR 是 135 MB，超过仓库上限），材质 × `_GlowScale`（`Data/StarSky.json` 的 `glow_scale`，现在 0.5006；8 位 sRGB 在暗处的台阶比一个显示码细，再加 shader 的抖动）。导入：sRGB 开、**有 mip**（shader 按像素大小选 LOD：桌面 1080p / 90° 是 mip 0，头显约 mip 1，头动时不闪）、U 重复 V 钳、BC7、Max Size 8192（`LanbaiSkyImport.cs` 自动设）。星空底 `#0D0F23` 不在图里，`Lanbai/Sky` 加。
 映射（`LanbaiSky.cginc` 的 `LanbaiGalaxyUV`）：u = 0.5 + atan2(V.x, V.z) / 2π，v = 0.5 + asin(V.y) / π；不用 mip（圣经：任何模糊都不要）。
 
 **第 3、4 幕的星（D-06）**：同一张星表、同一个增益（`moon_night` 的 `_Udon_StarGain.x` = 0.017，第 4 幕 `FogPresets.json` 的 `act4_gate.stars` 写同一个数），只留 **3 等以上**（`_Udon_StarShape.x` = 3，圣经 §6·4“只有 mag < 3 的星”），**没有银河**（`_Udon_GalaxyGain.x` = 0），第 4 幕光雾带里**再暗 1 EV**（`_Udon_StarShape.y` = −1，带 = `_Udon_FogBandDir` ± `_Udon_FogBandWidth`、仰角 10° 以下，软边 10° / 15°），FWHM 1.6 px（材质的范围 1.5–4，单像素的星在头显里会闪）。**L\* ≤ 12 我的读法**：1080p、水平 90°、调色之后，最亮那颗星**比它所在的天高出的 L\*** ≤ 12（绝对的 L\* ≤ 12 做不到：月夜朝月一侧的地平线天本身就超过 L\* 12，那里一颗星都不能有）；`Tools~/render/check_stars.py` 在四个视向、两幕各量一次（月盘 ±3° 除外），结果 第 3 幕最亮的星比它的天高 ΔL\* 10.9、第 4 幕 11.5（≤ 12，通过；0.017 是通过的最大增益）（`Data/stars_D06.json`）。读法不对请总导演改，脚本里改 `L_MAX` 和量法就行。

@@ -8,7 +8,7 @@ namespace Lanbai.Sky.EditorTools
 {
     public class LanbaiSkyImport : AssetPostprocessor
     {
-        public override uint GetVersion() { return 3; }   // bump when the settings change: Unity re-imports
+        public override uint GetVersion() { return 4; }   // bump when the settings change: Unity re-imports
 
         static bool Mine(string path)
         {
@@ -46,13 +46,15 @@ namespace Lanbai.Sky.EditorTools
             }
             else if (f.StartsWith("StarSky_Glow"))
             {
-                // world-frame lat-long sampled by Lanbai/Sky with its own mapping (LanbaiGalaxyUV), always mip 0:
-                // no mips (no blur, bible §6·9), U repeats across the seam, V clamps at the poles.
+                // world-frame lat-long sampled by Lanbai/Sky with its own mapping (LanbaiGalaxyUV) at an explicit LOD (one
+                // texel per pixel: mip 0 on a 1080p desktop, mip ~1 in a headset, no shimmer; tech r2 #7). U repeats
+                // across the seam, V clamps at the poles.
                 // 8-bit sRGB PNG normalised to 1 (the material's _GlowScale = Sky/Data/StarSky.json glow_scale)
                 ti.textureType = TextureImporterType.Default;
                 ti.textureShape = TextureImporterShape.Texture2D;
                 ti.sRGBTexture = true;
-                ti.mipmapEnabled = false;
+                ti.mipmapEnabled = true;
+                ti.mipmapFilter = TextureImporterMipFilter.BoxFilter;
                 ti.wrapModeU = TextureWrapMode.Repeat;
                 ti.wrapModeV = TextureWrapMode.Clamp;
                 ti.filterMode = FilterMode.Bilinear;

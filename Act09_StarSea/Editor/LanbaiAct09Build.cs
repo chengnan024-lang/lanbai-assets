@@ -76,7 +76,11 @@ namespace Lanbai.Act09.EditorTools
             GameObject old = GameObject.Find("R_StarSea");
             if (old != null) UnityEngine.Object.DestroyImmediate(old);
             GameObject root = new GameObject("R_StarSea");
-            Renderer rMain = MakeStarObject(root, "Stars_BSC5", main, starMat);
+            // the main stars are the film's ONE star object (Sky's Lanbai_Stars_BSC5, 蓝白/Sky/Build Sky): a second copy here drew
+            // every star twice from F13 (+1 EV, tech review r2 #4). The driver does not switch it (gain 0 = culled in the
+            // vertex shader), so seeking back to acts 3-4 never finds it disabled.
+            Renderer rMain = null;
+            if (LanbaiSkyBuild.FindRoot("Lanbai_Stars_BSC5", false) == null) Debug.LogWarning("[Act09] no Lanbai_Stars_BSC5 in the scene: run 蓝白/Sky/Build Sky");
             Renderer rFirst = MakeStarObject(root, "Stars_First", firstMesh, firstMat);
             Renderer rQ = MakeStarObject(root, "Stars_Question", qMesh, qMat);
 

@@ -21,7 +21,7 @@ def flux(mag, rank, scale=1.0, mag_ref=0.0, slope=0.62, bright_count=50.0, brigh
     return np.where(mag <= mag_floor, f, 0.0)
 
 
-def splat(img, w, h, hfov, yaw, pitch, dirs, peaks, cols, fwhm=1.6):
+def splat(img, w, h, hfov, yaw, pitch, dirs, peaks, cols, fwhm=1.6, snap=False):
     """img (h, w, 3) += Gaussians. dirs (N, 3) Unity world; peaks (N,) linear peak; cols (N, 3) luminance-1 colour."""
     t = np.tan(np.radians(hfov) / 2)
     p, yw = np.radians(pitch), np.radians(yaw)
@@ -31,6 +31,8 @@ def splat(img, w, h, hfov, yaw, pitch, dirs, peaks, cols, fwhm=1.6):
     vis = cam[:, 2] > 1e-3
     x = cam[vis, 0] / cam[vis, 2] / t; y = cam[vis, 1] / cam[vis, 2] / (t * h / w)
     px = (x + 1) / 2 * w - 0.5; py = (1 - y) / 2 * h - 0.5
+    if snap:   # worst case: every star on a pixel centre (full peak in one pixel), as the head moves it gets there
+        px = np.round(px); py = np.round(py)
     pk = peaks[vis]; cl = cols[vis]
     r = int(np.ceil(2 * fwhm))
     k = -4 * np.log(2) / fwhm ** 2

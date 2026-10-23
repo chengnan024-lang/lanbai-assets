@@ -26,6 +26,7 @@ float4 _OtherTint;
 float _NightBlend;
 float4 _NightColor, _StarFloorAdd;
 sampler2D _GlowTex;
+float4 _GlowTex_TexelSize;
 float _GalaxyGain;
 float4 _NightMaskDir, _NightMaskShape;
 float4 _SunDir, _SunColor, _SunShape, _SunGlow, _SunGlowColor, _SunRemove;
@@ -402,7 +403,7 @@ float3 LanbaiCubeUpper(samplerCUBE cube, half4 hdr, float3 Vs, float rot, float 
         float w = 1.0 - smoothstep(p_SunRemove.x, 1.5 * p_SunRemove.x, as);
         float L = max(dot(c, float3(0.2126, 0.7152, 0.0722)), 1e-6);
         float cap = max(p_SunRemove.y, 1e-4) * pow(max(as, 1.5) / p_SunRemove.x, -p_SunRemove.z);
-        float q = L / cap;
+        float q = min(L / cap, 1e4);   // q^8 stays finite
         float q4 = q * q * q * q;
         float3 capped = c * rsqrt(sqrt(sqrt(1.0 + q4 * q4)));   // knee 8: the sky below the cap is left alone (a knee 4 trimmed it and drew a ring where it let go)
         float3 sunHue = p_SunColor.rgb / max(dot(p_SunColor.rgb, float3(0.2126, 0.7152, 0.0722)), 1e-4);
@@ -509,7 +510,11 @@ float3 LanbaiMoonTerm(float3 V, float gain)
 
 float3 LanbaiGalaxy(float3 V)
 {
-    return tex2Dlod(_GlowTex, float4(LanbaiGalaxyUV(V), 0.0, 0.0)).rgb * p_GlowScale;     // the PNG is normalised
+    // explicit LOD (tech r2 #7): one texel per pixel. The 8K map is 0.044 deg / texel; a headset pixel is 0.06-0.1 deg,
+    // so mip 0 would shimmer with the head; on a 1080p desktop at 90 deg (0.047 deg / px) it stays mip 0, no blur.
+    float texelRad = 6.2831853 * max(_GlowTex_TexelSize.x, 1e-6);
+    float lod = max(0.0, log2(LanbaiPixelAngle() / texelRad));
+    return tex2Dlod(_GlowTex, float4(LanbaiGalaxyUV(V), 0.0, lod)).rgb * p_GlowScale;     // the PNG is normalised
 }
 
 // two horizon bands (earth shadow / Venus belt at dawn; the blue-hour band; the waking line of act 12): the sky is
@@ -580,11 +585,12 @@ float LanbaiNightWeight(float3 V, float x)
 {
     float az = LanbaiAzimuthDeg(V, p_NightMaskDir.xyz);
     float el = LanbaiElevationDeg(V);
-    // an ELLIPSE in (azimuth, elevation) with a soft rim, not two windows multiplied (that drew a glowing rounded
-    // rectangle in the sky as it went dark: art pre-review r0 #4). x / z = the half axes, y / w = their soft widths.
-    float e = sqrt(LanbaiSq(az / max(p_NightMaskShape.x, 1.0)) + LanbaiSq(el / max(p_NightMaskShape.z, 1.0)));
-    float soft = max(p_NightMaskShape.y / max(p_NightMaskShape.x, 1.0), p_NightMaskShape.w / max(p_NightMaskShape.z, 1.0));
-    float f = 1.0 - smoothstep(1.0, 1.0 + max(soft, 0.1), e);
+    // an ELLIPSE in (azimuth, elevation), not two windows multiplied (that drew a glowing rounded rectangle as the sky
+    // went dark: art pre-review r0 #4). Inner ellipse (x, z) = full, outer (x + y, z + w) = none, each axis keeps its
+    // own soft width (tech r2 #8); along each ray from the centre the weight runs from the inner to the outer rim.
+    float e1 = sqrt(LanbaiSq(az / max(p_NightMaskShape.x, 0.1)) + LanbaiSq(el / max(p_NightMaskShape.z, 0.1)));
+    float e2 = sqrt(LanbaiSq(az / max(p_NightMaskShape.x + p_NightMaskShape.y, 0.2)) + LanbaiSq(el / max(p_NightMaskShape.z + p_NightMaskShape.w, 0.2)));
+    float f = 1.0 - smoothstep(1.0 / max(e1, 1e-4), 1.0 / max(e2, 1e-4), 1.0);
     float d = 0.5 * f;
     float w = saturate((x - d) / (0.75 - 0.25 * f));
     return w * w * (3.0 - 2.0 * w);                       // eased: no visible edge where neighbouring directions differ

@@ -26,8 +26,13 @@ namespace Lanbai.Sky.EditorTools
         public string name; public string acts; public string profile; public string cubeA; public bool glow; public bool moon;
         public float sunAz; public string notes;
         public SkyKV[] floats; public SkyKV4[] vectors; public SkyKV[] globalFloats; public SkyKV4[] globalVectors;
+        public int[] vecGroups; public int[] vecPartner; public string[] blendSkip;
     }
-    [Serializable] public class SkyPresetFile { public string about; public SkyPreset[] presets; }
+    [Serializable] public class SkyDriverEntry { public string preset; public float t0; public float t1; public float fade; public string label; }
+    [Serializable] public class SkyDriverDef { public string name; public SkyDriverEntry[] entries; }
+    [Serializable] public class SkyRot { public string preset; public float rotation; }
+    [Serializable] public class SkyRotFile { public SkyRot[] rotations; }
+    [Serializable] public class SkyPresetFile { public string about; public SkyPreset[] presets; public SkyDriverDef[] drivers; }
 
     public static class LanbaiSkyBuild
     {
@@ -171,14 +176,10 @@ namespace Lanbai.Sky.EditorTools
                         az, el, r, GetGlobal4(p, "_Udon_Sky_RotationA").x, p.sunAz));
                 }
             }
-            CreatePresetObjectsWith(pf, mat, rot, rep);
-            Shader stars = Shader.Find("Lanbai/StarPoints");
-            if (stars != null)
-            {
-                string sp = Gen() + "/M_Sky_StarPoints.mat";
-                if (AssetDatabase.LoadAssetAtPath<Material>(sp) == null)
-                    AssetDatabase.CreateAsset(new Material(stars), sp);
-            }
+            SaveRotations(rot);
+            GameObject presetRoot = CreatePresetObjectsWith(pf, mat, rot, rep);
+            CreateDrivers(pf, presetRoot, rep);
+            CreateStarObject(rep);
             AssetDatabase.SaveAssets();
             File.WriteAllText(Gen() + "/SkyBuild_Report.txt", rep.ToString());
             AssetDatabase.Refresh();
@@ -311,13 +312,65 @@ namespace Lanbai.Sky.EditorTools
             BuildSky();
         }
 
-        static void CreatePresetObjectsWith(SkyPresetFile pf, Material mat, Dictionary<string, float> rot, StringBuilder rep)
+        // a scene root by name, inactive ones included (GameObject.Find misses those and the builder made duplicates)
+        public static GameObject FindRoot(string n, bool create)
+        {
+            foreach (GameObject g in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects())
+                if (g.name == n) return g;
+            if (!create) return null;
+            GameObject r = new GameObject(n);
+            Undo.RegisterCreatedObjectUndo(r, "蓝白 Sky build");
+            return r;
+        }
+
+        static GameObject Child(GameObject root, string n)
+        {
+            Transform tr = root.transform.Find(n);
+            if (tr != null) return tr.gameObject;
+            GameObject go = new GameObject(n);
+            Undo.RegisterCreatedObjectUndo(go, "蓝白 Sky build");
+            go.transform.SetParent(root.transform, false);
+            return go;
+        }
+
+        static string RotPath() { return Gen() + "/SkyBuild_Rotations.json"; }
+
+        static void SaveRotations(Dictionary<string, float> rot)
+        {
+            List<SkyRot> l = new List<SkyRot>();
+            foreach (KeyValuePair<string, float> kv in rot) l.Add(new SkyRot { preset = kv.Key, rotation = kv.Value });
+            File.WriteAllText(RotPath(), JsonUtility.ToJson(new SkyRotFile { rotations = l.ToArray() }, true));
+        }
+
+        static Dictionary<string, float> LoadRotations()
+        {
+            Dictionary<string, float> d = new Dictionary<string, float>();
+            if (!File.Exists(RotPath())) return d;
+            SkyRotFile f = JsonUtility.FromJson<SkyRotFile>(File.ReadAllText(RotPath()));
+            if (f != null && f.rotations != null) foreach (SkyRot r in f.rotations) d[r.preset] = r.rotation;
+            return d;
+        }
+
+        static Vector4 PresetVector(SkyPreset p, int i, Dictionary<string, float> rot, bool hasCube)
+        {
+            Vector4 v = V4(p.globalVectors[i].v);
+            if (p.globalVectors[i].k == "_Udon_Sky_RotationA" && rot.ContainsKey(p.name)) v.x = rot[p.name];
+            if (p.globalVectors[i].k == "_Udon_SkyGlobals" && !hasCube) v.y = 0f;   // no HDRI here: procedural only
+            return v;
+        }
+
+        static GameObject CreatePresetObjectsWith(SkyPresetFile pf, Material mat, Dictionary<string, float> rot, StringBuilder rep)
         {
             EnsureProgramAsset("LanbaiSkyPreset");
             EnsureProgramAsset("LanbaiSkyDriver");
-            // updated in place (references from drivers to these objects survive a re-run); new presets are added
-            GameObject root = GameObject.Find("Lanbai_SkyPresets");
-            if (root == null) root = new GameObject("Lanbai_SkyPresets");
+            // updated in place (references from drivers to these objects survive a re-run); new presets are added,
+            // objects of presets no longer in the JSON are removed (with Undo)
+            GameObject root = FindRoot("Lanbai_SkyPresets", true);
+            HashSet<string> keep = new HashSet<string>();
+            foreach (SkyPreset p in pf.presets) keep.Add("SkyPreset_" + p.name);
+            List<GameObject> stale = new List<GameObject>();
+            foreach (Transform ch in root.transform) if (ch.name.StartsWith("SkyPreset_") && !keep.Contains(ch.name)) stale.Add(ch.gameObject);
+            foreach (GameObject g in stale) { rep.AppendLine("  removed " + g.name + " (no longer in SkyPresets.json)"); Undo.DestroyObjectImmediate(g); }
             Type addType = Type.GetType("UdonSharpEditor.UdonSharpUndo, UdonSharp.Editor");
             System.Reflection.MethodInfo add = null;
             if (addType != null)
@@ -325,9 +378,7 @@ namespace Lanbai.Sky.EditorTools
                     if (mi.Name == "AddComponent" && mi.IsGenericMethodDefinition) { add = mi.MakeGenericMethod(typeof(Lanbai.Sky.LanbaiSkyPreset)); break; }
             foreach (SkyPreset p in pf.presets)
             {
-                Transform tr = root.transform.Find("SkyPreset_" + p.name);
-                GameObject go = (tr != null) ? tr.gameObject : new GameObject("SkyPreset_" + p.name);
-                go.transform.SetParent(root.transform, false);
+                GameObject go = Child(root, "SkyPreset_" + p.name);
                 Lanbai.Sky.LanbaiSkyPreset c = go.GetComponent<Lanbai.Sky.LanbaiSkyPreset>();
                 if (c == null)
                     c = (add != null) ? (Lanbai.Sky.LanbaiSkyPreset)add.Invoke(null, new object[] { go })
@@ -336,15 +387,14 @@ namespace Lanbai.Sky.EditorTools
                 c.skyMaterial = mat;
                 c.cubeA = string.IsNullOrEmpty(p.cubeA) ? null : FindCube(p.cubeA, out string _);
                 c.cubeB = null;
+                Undo.RecordObject(c, "蓝白 Sky build");
                 c.vectorNames = new string[p.globalVectors.Length]; c.vectorValues = new Vector4[p.globalVectors.Length];
                 for (int i = 0; i < p.globalVectors.Length; i++)
                 {
                     c.vectorNames[i] = p.globalVectors[i].k;
-                    Vector4 v = V4(p.globalVectors[i].v);
-                    if (p.globalVectors[i].k == "_Udon_Sky_RotationA" && rot.ContainsKey(p.name)) v.x = rot[p.name];
-                    if (p.globalVectors[i].k == "_Udon_SkyGlobals" && c.cubeA == null) v.y = 0f;   // no HDRI here: procedural only
-                    c.vectorValues[i] = v;
+                    c.vectorValues[i] = PresetVector(p, i, rot, c.cubeA != null);
                 }
+                c.vecGroups = p.vecGroups; c.vecPartner = p.vecPartner; c.blendSkip = p.blendSkip;
                 c.floatNames = new string[p.globalFloats.Length]; c.floatValues = new float[p.globalFloats.Length];
                 for (int i = 0; i < p.globalFloats.Length; i++) { c.floatNames[i] = p.globalFloats[i].k; c.floatValues[i] = p.globalFloats[i].v; }
                 // Built-in fog / ambient (only written when the act turns ownsAtmosphere on): the far horizon and the zenith
@@ -353,6 +403,61 @@ namespace Lanbai.Sky.EditorTools
                 EditorUtility.SetDirty(c);
             }
             rep.AppendLine("preset objects under Lanbai_SkyPresets (" + pf.presets.Length + ")" + (add == null ? "  (UdonSharp editor not found: plain AddComponent used)" : ""));
+            return root;
+        }
+
+        // README_Sky §3.1: one LanbaiSkyDriver per continuous window, arrays from SkyPresets.json 'drivers' (cues.json t)
+        static void CreateDrivers(SkyPresetFile pf, GameObject presetRoot, StringBuilder rep)
+        {
+            if (pf.drivers == null) return;
+            Type addType = Type.GetType("UdonSharpEditor.UdonSharpUndo, UdonSharp.Editor");
+            System.Reflection.MethodInfo add = null;
+            if (addType != null)
+                foreach (System.Reflection.MethodInfo mi in addType.GetMethods())
+                    if (mi.Name == "AddComponent" && mi.IsGenericMethodDefinition) { add = mi.MakeGenericMethod(typeof(Lanbai.Sky.LanbaiSkyDriver)); break; }
+            foreach (SkyDriverDef d in pf.drivers)
+            {
+                GameObject go = FindRoot(d.name, true);
+                Lanbai.Sky.LanbaiSkyDriver c = go.GetComponent<Lanbai.Sky.LanbaiSkyDriver>();
+                if (c == null)
+                    c = (add != null) ? (Lanbai.Sky.LanbaiSkyDriver)add.Invoke(null, new object[] { go }) : go.AddComponent<Lanbai.Sky.LanbaiSkyDriver>();
+                Undo.RecordObject(c, "蓝白 Sky build");
+                int n = d.entries.Length;
+                c.presets = new Lanbai.Sky.LanbaiSkyPreset[n]; c.presetT0 = new float[n]; c.presetT1 = new float[n]; c.fadeSec = new float[n];
+                for (int i = 0; i < n; i++)
+                {
+                    Transform tr = presetRoot.transform.Find("SkyPreset_" + d.entries[i].preset);
+                    c.presets[i] = (tr != null) ? tr.GetComponent<Lanbai.Sky.LanbaiSkyPreset>() : null;
+                    if (c.presets[i] == null) rep.AppendLine("  " + d.name + ": preset " + d.entries[i].preset + " NOT FOUND");
+                    c.presetT0[i] = d.entries[i].t0; c.presetT1[i] = d.entries[i].t1; c.fadeSec[i] = d.entries[i].fade;
+                }
+                c.root = presetRoot;
+                EditorUtility.SetDirty(c);
+                rep.AppendLine(string.Format(CultureInfo.InvariantCulture, "driver {0}: {1} entries, window {2:F2} .. {3:F2}", d.name, n, d.entries[0].t0, d.entries[n - 1].t1));
+            }
+        }
+
+        // the ONE main star object of the film (acts 3, 4, 9 ...; tech r2 #4: act 9 used to make a second one)
+        public static Renderer CreateStarObject(StringBuilder rep)
+        {
+            Mesh mesh = AssetDatabase.LoadAssetAtPath<Mesh>(Gen() + "/StarPoints_BSC5.asset");
+            Shader stars = Shader.Find("Lanbai/StarPoints");
+            if (mesh == null || stars == null) { rep.AppendLine("stars: run 蓝白/Sky/Build Star Mesh first (or Lanbai/StarPoints does not compile)"); return null; }
+            string sp = Gen() + "/M_Sky_StarPoints.mat";
+            Material m = AssetDatabase.LoadAssetAtPath<Material>(sp);
+            if (m == null) { m = new Material(stars); AssetDatabase.CreateAsset(m, sp); }
+            m.shader = stars;
+            m.SetFloat("_Gain", 0f);           // every preset writes _Udon_StarGain; the material alone draws nothing
+            m.SetFloat("_UseGlobalGain", 1f);
+            EditorUtility.SetDirty(m);
+            GameObject go = FindRoot("Lanbai_Stars_BSC5", true);
+            MeshFilter mf = go.GetComponent<MeshFilter>(); if (mf == null) mf = Undo.AddComponent<MeshFilter>(go);
+            MeshRenderer mr = go.GetComponent<MeshRenderer>(); if (mr == null) mr = Undo.AddComponent<MeshRenderer>(go);
+            mf.sharedMesh = mesh; mr.sharedMaterial = m;
+            mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; mr.receiveShadows = false;
+            mr.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off; mr.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
+            rep.AppendLine("stars: Lanbai_Stars_BSC5 (" + sp + ", _Gain 0)");
+            return mr;
         }
 
         public static void EnsureProgramAsset(string scriptName)
@@ -383,14 +488,14 @@ namespace Lanbai.Sky.EditorTools
             ClearGlobals();
             Cubemap cube = string.IsNullOrEmpty(p.cubeA) ? null : FindCube(p.cubeA, out string _);
             if (cube != null) Shader.SetGlobalTexture("_Udon_SkyCubeTexA", cube);
+            Dictionary<string, float> rot = LoadRotations();   // the same measured rotation the runtime objects carry
             foreach (SkyKV kv in p.globalFloats)
                 Shader.SetGlobalFloat(kv.k, kv.v);
-            foreach (SkyKV4 kv in p.globalVectors)
+            for (int i = 0; i < p.globalVectors.Length; i++)
             {
-                Vector4 v = V4(kv.v);
-                if (kv.k == "_Udon_Fog") RenderSettings.fogDensity = v.x;
-                if (kv.k == "_Udon_SkyGlobals" && cube == null) v.y = 0f;
-                Shader.SetGlobalVector(kv.k, v);
+                Vector4 v = PresetVector(p, i, rot, cube != null);
+                if (p.globalVectors[i].k == "_Udon_Fog") RenderSettings.fogDensity = v.x;
+                Shader.SetGlobalVector(p.globalVectors[i].k, v);
             }
             SceneView.RepaintAll();
         }
@@ -404,8 +509,8 @@ namespace Lanbai.Sky.EditorTools
                 foreach (SkyKV4 kv in p.globalVectors) Shader.SetGlobalVector(kv.k, Vector4.zero);
                 foreach (SkyKV kv in p.globalFloats) Shader.SetGlobalFloat(kv.k, 0f);
             }
-            foreach (string k in new string[] { "_Udon_FogCubeParams", "_Udon_FogBase", "_Udon_StarShape", "_Udon_Underwater" })
-                Shader.SetGlobalVector(k, Vector4.zero);
+            // (the presets write _Udon_FogCubeParams / _Udon_FogBase / _Udon_StarShape themselves; the gate's and the sea's
+            // own names are theirs to reset when their windows end)
         }
 
         // ---------------------------------------------------------------------------------------------------------

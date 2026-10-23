@@ -24,16 +24,29 @@ namespace Lanbai.Sky
 
         private int lastIndex = -2;
         private bool lastWasFade;
+        private bool valid;
 
         void Start()
         {
-            if (presets != null && presets.Length > 0 && presets[0] != null)
+            // the four arrays come from Sky/SkyPresets.json 'drivers' (蓝白/Sky/Build Sky); a mismatch would throw in
+            // LanbaiTick and stop this behaviour for the whole show: refuse to run instead (tech r2 #3)
+            int n = (presets != null) ? presets.Length : 0;
+            valid = n > 0 && presetT0 != null && presetT1 != null && fadeSec != null
+                    && presetT0.Length == n && presetT1.Length == n && fadeSec.Length == n;
+            if (!valid)
+            {
+                Debug.LogError("[LanbaiSkyDriver] " + name + ": presets / presetT0 / presetT1 / fadeSec lengths differ or are empty: not running (re-run 蓝白/Sky/Build Sky)");
+                return;
+            }
+            if (presets[0] != null)
                 presets[0].Apply();
         }
 
         public float[] LanbaiWindow()
         {
-            if (presetT0 == null || presetT0.Length == 0)
+            // ONE continuous span per instance (acts 1-3, acts 11-12 are two instances): the dispatcher hands the
+            // RenderSettings over by these windows, so a window must not cover acts this driver does not write
+            if (presetT0 == null || presetT0.Length == 0 || presetT1 == null || presetT1.Length != presetT0.Length)
                 return new float[] { 0f, 0f };
             float a = presetT0[0], b = presetT1[0];
             for (int i = 1; i < presetT0.Length; i++)
@@ -61,7 +74,7 @@ namespace Lanbai.Sky
 
         public void LanbaiTick(float t)
         {
-            if (presets == null || presetT0 == null)
+            if (!valid)
                 return;
             int i = IndexAt(t);
             if (i < 0 || presets[i] == null)
@@ -69,7 +82,7 @@ namespace Lanbai.Sky
                 lastIndex = -1;
                 return;
             }
-            float f = (fadeSec != null && i < fadeSec.Length) ? fadeSec[i] : 0f;
+            float f = fadeSec[i];
             bool fading = i > 0 && presets[i - 1] != null && f > 0f && t < presetT0[i] + f;
             if (fading)
             {

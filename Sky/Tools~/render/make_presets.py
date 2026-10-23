@@ -99,7 +99,8 @@ P['dusk_8i'] = dict(acts='8-i（出海 → F10e）', profile='S8', sunAz=0.0, cu
     globals=dict(_Udon_SunDir=v4(SUN8, 1), _Udon_SunDisc=[1.0, 0.265, 0, 1], _Udon_SkyFx=[0, 0, 0, 1], _Udon_FogDensity=0.00015),
     fog_from_sky=dict(near_az=0.0, width=80.0, zen_el=60.0, nadir=F('#3B4A78')),
     notes='日带 #FFB070、玫瑰带 #E7A0A0（填 #FF9396 @ +0.92）、中天 #808AB2、天顶 #3D4A80、日盘 #FFE2B0（填 #FF9167 @ +2.74）、天缝 #F2A56B（日晕）。太阳 方位 0°、仰角 +0.5°。紫护栏把 HDRI 背日的藍紫在 S8 的暖调色下拉回靛灰。')
-P['dusk_8ii'] = dict(acts='8-ii（另一片天，F10e → F12）', profile='S8', sunAz=0.0, cubeA='syferfontein_0d_clear_puresky',
+P['dusk_8ii'] = dict(blend_skip=['_Udon_SunDisc'],   # F12 -> 8b: the clouds' driver writes the sun line (one writer, tech r2 #2b)
+    acts='8-ii（另一片天，F10e → F12）', profile='S8', sunAz=0.0, cubeA='syferfontein_0d_clear_puresky',
     hdri_file=os.path.join(HDRI, 'syferfontein_0d_clear_puresky_1k.hdr'),
     material=dict(dusk_common, _OtherSky=1.0),
     globals=dict(_Udon_SunDir=v4(SUN8, 1), _Udon_SunDisc=[1.0, 0.265, 0, 1], _Udon_SkyFx=[1.0, 0, 0, 1], _Udon_FogDensity=0.00025),
@@ -108,10 +109,10 @@ P['dusk_8ii'] = dict(acts='8-ii（另一片天，F10e → F12）', profile='S8',
 
 bh_zen = inv_screen('#16223F', 'S8b')
 P['blue_hour'] = dict(acts='8b（蓝时，993.06 → 1001.21）+ 第 9 幕同一个材质', profile='S8b', cubeA=None, glow=True,
-    material=dict(_ProcWeight=1.0, _SunGain=0.0, _Band1Color=v4(F('#3F5790'), 0.0), _Band1Shape=[14.0, -10.0, 0, 110], _Band1Gain=0.85,
+    material=dict(_ProcWeight=1.0, _SunGain=0.0, _SunDir=v4(SUN8, 0), _Band1Color=v4(F('#3F5790'), 0.0), _Band1Shape=[14.0, -10.0, 0, 110], _Band1Gain=0.85,
                   _NightMaskDir=v4(dir_az_el(0, 0), 0), _NightMaskShape=[30, 45, 6, 22], _NightColor=v4(F('#050000')),
                   _StarFloorAdd=v4(np.maximum(F('#0D0F23') - F('#050000'), 0)), _GalaxyGain=0.0, _PurpleGuard=[1.0, 0.86, 1.25, 0]),
-    globals=dict(_Udon_HorizonColor=v4(F('#8093C2') * 0.80, 2.0), _Udon_FogBandColor=v4(F('#8093C2')), _Udon_FogBandDir=v4(dir_az_el(0, 0), 0),
+    globals=dict(_Udon_SunDir=v4(SUN8, 1), _Udon_HorizonColor=v4(F('#8093C2') * 0.80, 2.0), _Udon_FogBandColor=v4(F('#8093C2')), _Udon_FogBandDir=v4(dir_az_el(0, 0), 0),
                  _Udon_FogBandWidth=90.0, _Udon_ZenithColor=v4(bh_zen), _Udon_NadirColor=v4(F('#1A2A4E') * 1.3),
                  _Udon_FogShape=[1.0, 90.0, 0.8, 0], _Udon_FogBelow=[-60, 0, 1.0, 0], _Udon_SkyBlend=[0, 1, 0, 1], _Udon_SkyFx=[0, 0.85, 0, 1],
                  _Udon_FogDensity=0.0),
@@ -354,6 +355,49 @@ def write_fog_presets():
     json.dump(out, open(os.path.join(REPO, 'Sky', 'FogPresets.json'), 'w'), indent=1, ensure_ascii=False, default=float)
 
 
+CUBE_A = ['ZenithTintA', 'MidTintA', 'HorizonTintA', 'HorizonAntiTintA', 'RotationA', 'ExposureA', 'ClampA']
+CUBE_SHARED = ['TintElevation', 'NadirColor', 'BelowShape', 'SunRemove', 'HorizonLift', 'OtherTint', 'BelowMirror']
+DIRS = ['_Udon_FogBandDir', '_Udon_SunDir', '_Udon_MoonDir', '_Udon_Sky_SunDir', '_Udon_Sky_MoonDir', '_Udon_Sky_NightMaskDir']
+
+
+def blend_group(n):
+    """LanbaiSkyPreset.ApplyBlend groups: 0 lerp, 1 cube-A parameter, 2 cube-B parameter, 3 flags (max),
+    4 a parameter of the cube layer shared by A and B (from the side that has a cube), 5 a direction (w-aware)"""
+    if n == '_Udon_SkyGlobals':
+        return 3
+    if n in DIRS:
+        return 5
+    if n.startswith('_Udon_Sky_'):
+        b = n[len('_Udon_Sky_'):]
+        if b in CUBE_A:
+            return 1
+        if b[:-1] + 'A' in CUBE_A and b.endswith('B'):
+            return 2
+        if b in CUBE_SHARED:
+            return 4
+    return 0
+
+
+def cue_t(label):
+    c = json.load(open(os.path.join(REPO, 'FromLocal', 'cues.json')))
+    for grp in ('U', 'U_sub', 'F', 'F_sub'):
+        if label in c.get(grp, {}):
+            return float(c[grp][label]['t'])
+    raise KeyError(label)
+
+
+def driver_tables():
+    """README_Sky §3.1: LanbaiSkyDriver instances, one per continuous window (tech r2 #3). t from FromLocal/cues.json."""
+    return [
+        dict(name='Lanbai_SkyDriver_Acts1to3', entries=[
+            dict(preset='overcast_rain_night_town', t0=0.0, t1=cue_t('U1'), fade=0.0, label='0 → U1'),
+            dict(preset='overcast_rain_night', t0=cue_t('U1'), t1=cue_t('U6k'), fade=10.0, label='U1 → U6k（钠光 10 秒淡掉）'),
+            dict(preset='moon_night', t0=cue_t('U6k'), t1=cue_t('U6'), fade=0.0, label='U6k 破云（云里，遮挡下）→ U6（门接手雾）')]),
+        dict(name='Lanbai_SkyDriver_Acts11to12', entries=[
+            dict(preset='overcast_rain_night', t0=cue_t('F16'), t1=100000.0, fade=0.0, label='F16 白遮罩下 → 片尾')]),
+    ]
+
+
 def check_one_material(name, p):
     """the preset through the material (old path) vs the same preset through the globals on a DEFAULT material
     (one-material path): must be the same picture"""
@@ -391,6 +435,7 @@ def main():
     # into the blue hour)
     allv = sorted({k for p in P.values() for k, v in p['globals'].items() if np.ndim(v) > 0})
     allf = sorted({k for p in P.values() for k, v in p['globals'].items() if np.ndim(v) == 0})
+    allv = sorted(set(allv) | {'_Udon_FogCubeParams', '_Udon_FogBase'})   # the sky's own, written 0 = off (tech r2 #12)
     for p in P.values():
         for k in allv:
             p['globals'].setdefault(k, [0.0, 0.0, 0.0, 0.0])
@@ -405,13 +450,19 @@ def main():
                 e['floats'].append({'k': k, 'v': round(float(v), 6)})
             else:
                 e['vectors'].append({'k': k, 'v': [round(float(x), 6) for x in v]})
-        for k, v in p['globals'].items():
+        for k, v in sorted(p['globals'].items()):     # one fixed order in every preset: ApplyBlend's map is the identity
             if np.ndim(v) == 0:
                 e['globalFloats'].append({'k': k, 'v': round(float(v), 6)})
             else:
                 e['globalVectors'].append({'k': k, 'v': [round(float(x), 6) for x in v]})
+        # how ApplyBlend treats each vector (tech r2 #2c: explicit, not guessed from the name in Udon)
+        names = [kv['k'] for kv in e['globalVectors']]
+        e['vecGroups'] = [blend_group(n) for n in names]
+        e['vecPartner'] = [names.index(n[:-1] + 'A') if blend_group(n) == 2 else -1 for n in names]
+        e['blendSkip'] = list(p.get('blend_skip', []))
         e['measured_views'] = meas[name]
         out['presets'].append(e)
+    out['drivers'] = driver_tables()
     json.dump(out, open(os.path.join(REPO, 'Sky', 'SkyPresets.json'), 'w'), indent=1, ensure_ascii=False)
     print('wrote Sky/SkyPresets.json')
 

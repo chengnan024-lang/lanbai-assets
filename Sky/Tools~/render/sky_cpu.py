@@ -57,6 +57,7 @@ def render(dirs, params=None, globs=None):
     u.setdefault('_ScreenParams', (480.0, 270.0, 1.0, 1.0))           # the preview tiles (LanbaiPixelAngle -> moon mip)
     u.setdefault('UNITY_MATRIX_P', [[1.0, 0, 0, 0], [0, 1.0 / 0.5625, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0]])
     u.setdefault('_MoonTex_TexelSize', (1 / 1024.0, 1 / 1024.0, 1024.0, 1024.0))
+    u.setdefault('_GlowTex_TexelSize', (1 / 8192.0, 1 / 4096.0, 8192.0, 4096.0))   # (the CPU sampler ignores the LOD)
     return renderer().run(dirs, u)
 
 
