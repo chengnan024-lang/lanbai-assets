@@ -15,6 +15,11 @@
 //
 // LB_Journey (local) calls, once per frame after its own work:   dispatcher.LanbaiDispatch(t);
 // and at spawn, under the 3 s black (bible §1.9):                dispatcher.LanbaiPrewarm();
+// Optional 4th driver method (bible §1.4: ONE dEV per frame, ONE writer of the PPv2 weights = LB_Journey.ApplyGrades):
+//     public float[] LanbaiGrade(float t)     {dEV, whiteSat, whiteBloom, lensCleanMul} for this frame, or null
+//   The dispatcher calls it after LanbaiTick for drivers inside their window and sums: gradeDEV = sum dEV, gradeWhiteSat /
+//   gradeWhiteBloom = max, gradeLensClean = min. LanbaiDispatch must therefore run BEFORE ApplyGrades in LB_Journey, and
+//   ApplyGrades adds gradeDEV to its own events (dropping its own copy of any event a driver now reports).
 // Drivers are ticked in class-name order, then scene order: deterministic. Two drivers whose windows overlap must not
 // write the same thing (Engineering/README_集成.md §2).
 using UdonSharp;
@@ -25,6 +30,12 @@ public class LanbaiActDispatcher : UdonSharpBehaviour
 {
     [Header("Read by LB_Journey (extWindows): every driver window, flattened t0, t1, t0, t1, ...")]
     public float[] windowsFlat = new float[0];
+    [Header("Exposure events summed from the drivers (optional LanbaiGrade(t)); read by LB_Journey.ApplyGrades")]
+    public bool gradeOwned;          // some driver reported grade events this frame
+    public float gradeDEV;           // sum of every driver's dEV (EV; ApplyGrades adds it to its own dEV, then solves EXPO_UP/DOWN)
+    public float gradeWhiteSat;      // max of the drivers' WHITE_SAT weights
+    public float gradeWhiteBloom;    // max of the drivers' WHITE_BLOOM weights
+    public float gradeLensClean = 1; // min of the drivers' desktop lens-layer multipliers (1 = untouched)
     [Header("Debug")]
     public float lastT = -1f;
     public int activeCount;
@@ -57,6 +68,7 @@ public class LanbaiActDispatcher : UdonSharpBehaviour
     {
         lastT = t;
         int act = 0;
+        gradeOwned = false; gradeDEV = 0f; gradeWhiteSat = 0f; gradeWhiteBloom = 0f; gradeLensClean = 1f;
         bool hold = _prewarm > 0;
         if (_prewarm > 0) _prewarm--;
         // <LANBAI-GENERATED-DISPATCH>

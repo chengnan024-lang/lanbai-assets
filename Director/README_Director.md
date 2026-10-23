@@ -10,11 +10,30 @@
    ```csharp
    public LanbaiActDispatcher dispatcher;            // Inspector 里拖 Lanbai/Director
    // Update() 末尾、算完 t 和 ApplyGrades 之后：
-   if (dispatcher != null) dispatcher.LanbaiDispatch(t);
+   if (dispatcher != null) dispatcher.LanbaiDispatch(t);   // 放在 ApplyGrades() 之前（它要读下面的 grade* 结果）
    // 出生的 3 秒黑场里调一次（圣经 §1.9：所有根物体在相机前激活 2 帧预热 shader）：
    if (dispatcher != null) dispatcher.LanbaiPrewarm();
    ```
    接管开关要的“哪些时间段有驱动接管”：`dispatcher.windowsFlat`（t0, t1 成对）或 `dispatcher.LanbaiCovered(t)`。
+
+## 0.5 曝光：驱动只算，`ApplyGrades` 唯一写（总导演 10-23 对镜子的裁决）
+
+圣经 §1.4：一帧只有一个 ΔEV、PPv2 的权重只有一个写的人——就是本地的 `LB_Journey.ApplyGrades`。有曝光事件的包（镜子脉冲、白、以后的入水 / 出海……）在驱动里加**可选的第 4 个方法**：
+
+```csharp
+public float[] LanbaiGrade(float t)   // {ΔEV, WHITE_SAT 权重, WHITE_BLOOM 权重, 桌面镜头层乘数}，这一帧没有事件就 return null
+```
+
+分发层在窗口里的驱动 `LanbaiTick` 之后调它，汇总成 `gradeDEV`（相加）、`gradeWhiteSat` / `gradeWhiteBloom`（取大）、`gradeLensClean`（取小），`gradeOwned` = 有没有驱动报了。`ApplyGrades` 里：
+```csharp
+if (dispatcher != null && dispatcher.gradeOwned) {
+    dEV += dispatcher.gradeDEV;                       // 然后照常 w = ΔEV/(4 − b) 解 EXPO_UP / EXPO_DOWN
+    wSat = Mathf.Max(wSat, dispatcher.gradeWhiteSat);
+    wBloom = Mathf.Max(wBloom, dispatcher.gradeWhiteBloom);
+    lensClean *= dispatcher.gradeLensClean;
+}
+```
+并且**删掉 `ApplyGrades` 里同一件事件自己的那一份**（例如镜与白的包装好以后，`starCross` 的镜子脉冲和白的冲击 / 膨胀不再由 `ApplyGrades` 算）——哪些要删，每个包合进 main 时写进 `Engineering/README_集成.md` §5。镜与白的 `ownsExposure = false` 就是这个模式。
 
 ## 1. 为什么分发层是生成出来的
 

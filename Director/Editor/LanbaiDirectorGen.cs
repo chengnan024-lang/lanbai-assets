@@ -91,6 +91,7 @@ namespace Lanbai.Director.Editor
             var start = new StringBuilder();
             var wins = new StringBuilder();
             var disp = new StringBuilder();
+            const BindingFlags PF = BindingFlags.Public | BindingFlags.Instance;
             for (int k = 0; k < types.Count; k++)
             {
                 string c = types[k].FullName.Replace('+', '.'), d = "d" + k;
@@ -109,6 +110,17 @@ namespace Lanbai.Director.Editor
                 wins.AppendFormat(
                     "        for (int i = 0; i < {0}.Length; i++)\n" +
                     "            if ({0}_w[2 * i] <= {0}_w[2 * i + 1]) {{ windowsFlat[2 * n] = {0}_w[2 * i]; windowsFlat[2 * n + 1] = {0}_w[2 * i + 1]; n++; }}\n", d);
+                var gm = types[k].GetMethod("LanbaiGrade", PF, null, new[] { typeof(float) }, null);
+                bool hasGrade = gm != null && gm.ReturnType == typeof(float[]);
+                string grade = hasGrade
+                    ? "                float[] g = d.LanbaiGrade(t);\n" +
+                      "                if (g != null && g.Length >= 4)\n" +
+                      "                {\n" +
+                      "                    gradeOwned = true; gradeDEV += g[0];\n" +
+                      "                    gradeWhiteSat = Mathf.Max(gradeWhiteSat, g[1]); gradeWhiteBloom = Mathf.Max(gradeWhiteBloom, g[2]);\n" +
+                      "                    gradeLensClean = Mathf.Min(gradeLensClean, g[3]);\n" +
+                      "                }\n"
+                    : "";
                 disp.AppendFormat(
                     "        for (int i = 0; i < {0}.Length; i++)\n" +
                     "        {{\n" +
@@ -116,8 +128,12 @@ namespace Lanbai.Director.Editor
                     "            if (d == null) continue;\n" +
                     "            bool inside = hold || (t >= {0}_w[2 * i] && t < {0}_w[2 * i + 1]);\n" +
                     "            if (inside != {0}_on[i]) {{ d.LanbaiActivate(inside); {0}_on[i] = inside; }}\n" +
-                    "            if (inside && !hold) {{ d.LanbaiTick(t); act++; }}\n" +
-                    "        }}\n", d, c);
+                    "            if (inside && !hold)\n" +
+                    "            {{\n" +
+                    "                d.LanbaiTick(t); act++;\n" +
+                    "{2}" +
+                    "            }}\n" +
+                    "        }}\n", d, c, grade);
             }
             src = Replace(src, "LANBAI-GENERATED-FIELDS", fields.ToString());
             src = Replace(src, "LANBAI-GENERATED-START", start.ToString());
