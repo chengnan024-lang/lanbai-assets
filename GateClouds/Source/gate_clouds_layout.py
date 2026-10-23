@@ -126,7 +126,17 @@ def main():
         deck=dict(parent='GateRoot', local_y=round(y_bot, 2), quad_size=40000.0,
                   detail='Deck_Detail_1024.png', macro='Deck_Macro_512.png',
                   note='a flat quad under the deck slab, moving with GateRoot; Lanbai/GateCloudDeck ray-marches '
-                       'the billows and writes their depth. Material = the shader defaults (= deck_ref.DEFAULTS).'),
+                       'the billows and writes their depth. Material = the shader defaults (= deck_ref.DEFAULTS).',
+                  # the deck's quality switch (总导演 10-23 / D-15: merge first, measure, then cut in bible 1.9 order):
+                  # the builder writes the chosen tier's _Adapt / _MarchRange / _Steps onto M_GateCloudDeck
+                  quality='default',
+                  quality_tiers=[
+                      dict(name='default', adapt=[0.004, 0.05, 0.9, 0.6], march_range=[12.0, 2500.0, 8.0, 3.0], steps=128,
+                           note='the reference look; mean march steps keyart 24.2 / U7 16.4 / U8 fwd 15.6 / U8 side 20.3'),
+                      dict(name='auto_lite', adapt=[0.004, 0.09, 0.9, 0.6], march_range=[12.0, 2500.0, 8.0, 3.0], steps=128,
+                           note='bigger steps away from the surface: 9-16 % fewer steps, image change mean <= 0.08 / '
+                                'p99 <= 1 code (Docs~/perf_options_crops.png option C)'),
+                  ]),
         shapes=shapes, cards=cards, beams=shafts,
         tide_material=dict(note='gate_test §2.2 item 10: Lanbai_TentacleTide_v2.shader is now v2.3 (includes '
                                 'LanbaiGateSky.cginc; these are its new defaults). Existing materials M_TentacleTide_A / B '

@@ -11,7 +11,44 @@
   "quad_size": 40000.0,
   "detail": "Deck_Detail_1024.png",
   "macro": "Deck_Macro_512.png",
-  "note": "a flat quad under the deck slab, moving with GateRoot; Lanbai/GateCloudDeck ray-marches the billows and writes their depth. Material = the shader defaults (= deck_ref.DEFAULTS)."
+  "note": "a flat quad under the deck slab, moving with GateRoot; Lanbai/GateCloudDeck ray-marches the billows and writes their depth. Material = the shader defaults (= deck_ref.DEFAULTS).",
+  "quality": "default",
+  "quality_tiers": [
+   {
+    "name": "default",
+    "adapt": [
+     0.004,
+     0.05,
+     0.9,
+     0.6
+    ],
+    "march_range": [
+     12.0,
+     2500.0,
+     8.0,
+     3.0
+    ],
+    "steps": 128,
+    "note": "the reference look; mean march steps keyart 24.2 / U7 16.4 / U8 fwd 15.6 / U8 side 20.3"
+   },
+   {
+    "name": "auto_lite",
+    "adapt": [
+     0.004,
+     0.09,
+     0.9,
+     0.6
+    ],
+    "march_range": [
+     12.0,
+     2500.0,
+     8.0,
+     3.0
+    ],
+    "steps": 128,
+    "note": "bigger steps away from the surface: 9-16 % fewer steps, image change mean <= 0.08 / p99 <= 1 code (Docs~/perf_options_crops.png option C)"
+   }
+  ]
  },
  "shapes": [
   {

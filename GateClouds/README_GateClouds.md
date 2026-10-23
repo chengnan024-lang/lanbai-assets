@@ -74,7 +74,7 @@
    - 驱动 `LanbaiGateClouds` 挂在**常开的**物体 `GateClouds_Driver` 上（场景里有 `Director` 就挂在它下面），`root` = `GateRoot/GateClouds`。
    - UdonSharp（反射调用，没有 U# 也能编译）：没有程序资产就建 `Assets/Lanbai/UdonPrograms/LanbaiGateClouds.asset` 并编译；组件经 `UdonSharpUndo.AddComponent`（或 `AddComponent` + `RunBehaviourSetup`）加上；填完数组 `CopyProxyToUdon`；**没有底层 UdonBehaviour 就报错停下**，不会静默完成。
    - 按 U7b 预览一次。可以重复运行（先删上一次搭的）。
-4. **测试场景的 `FromLocal/gate_test/code/LB_GateTest_Run.cs` 第 123–127 行**：`SetPB(..., on = true)` 每次 Apply 都会把上面关掉的 `Tear_CloudGlow`、`Tear_CloudGlow_Additive`、`Tear_LightLane` 重新打开（光池画两遍、平面光池被云头切碎），`Shaft_00/01` 也每帧开着。**请把这几处改成 `on = false`（或删掉），否则 §8 的截图作废**（技术 r2 #2）。然后在 `LB_GateTest.Apply(t)` 里加一行 `LanbaiGateCloudsBuilder.Apply(t);`（编辑模式预览云塔和卡的 property block；Play / VRChat 里由驱动写）。
+4. **测试场景的 `FromLocal/gate_test/code/LB_GateTest_Run.cs` 第 123、124、127、134 行**（逐行的原文 / 改成：`给本地_补丁_LB_GateTest_Run.md`）：`SetPB(..., on = true)` 每次 Apply 都会把上面关掉的 `Tear_CloudGlow`、`Tear_CloudGlow_Additive`、`Tear_LightLane` 重新打开（光池画两遍、平面光池被云头切碎），`Shaft_00/01` 也每帧开着。**请把这几处改成 `on = false`（或删掉），否则 §8 的截图作废**（技术 r2 #2）。然后在 `LB_GateTest.Apply(t)` 里加一行 `LanbaiGateCloudsBuilder.Apply(t);`（编辑模式预览云塔和卡的 property block；Play / VRChat 里由驱动写）。
 5. 正式场景：分发层按 `LanbaiWindow()` 在窗口内每帧调 `LanbaiTick(t)`，在遮挡下调 `LanbaiActivate(on)`（CONTROL §5）。
 6. **上线前置条件（技术 r2 #4）**：云海依赖的 `_Udon_CloudTop`、`_Udon_GateOrigin`、`_Udon_TearFoot` 现在只有编辑器里的测试脚本写。正式世界里要由**门的总驱动**每帧写（`给总控.md` §3），否则云海不随 v_g 流动、云顶停在 −57.4、峡谷和光池固定不动。
 
@@ -127,7 +127,13 @@
 ### 3.4 性能（**参照渲染里数的，必须在 Unity 实测**）
 - `deck_ref.py`（和 shader 同一套步进）：第 4 轮（新起点之后）keyart **24.2**、U7 16.4、U8 前方 15.6、U8 侧窗 20.3 步 / 像素（p90 30–47；第 3 轮是 20.5–21），8% 的像素在 2.5 km 内没撞上（用平均云面）。每步 2 次 `tex2Dlod`（近处 3 次），撞上后 3 次二分（各 2–3 次），最后着色 1 次各向异性 + 3 次 `tex2Dlod`。
 - 估算（两只眼 2×1832×1920，云海占约一半，early-Z 去掉车厢挡住的约 1/4）：每帧约 **170 M 次双线性取样 + ~5 G 条 ALU**，在 RTX 3060 / 4060L 上大约 **1.5–2.5 ms**；深度 pass 另加约 0.3–0.6 ms（只在相机有深度图时）。**这超过总工程师给的 1–1.5 ms 目标的上沿**。我没有自己降画质：方案写在 `给总控.md`，请总导演定；本地先实测。
-- **请在测试场景里**：有 / 没有 `GateRoot/GateClouds/Deck` 各量一次帧时间（桌面 + VR 估算，同 10-08 的方法），附 GPU Profiler 或 RenderDoc 里最贵的几项。
+- **画质开关**（总导演 10-23、D-15：先合并，实测以后再按圣经 §1.9 的顺序砍，不先动云海的美）：`GateClouds_Layout.json` 的 `deck.quality` 选一档，Build 时把这一档的 `_Adapt`、`_MarchRange`、`_Steps` 写进 `M_GateCloudDeck`：
+  | 档 | `_Adapt` | `_MarchRange` | `_Steps` | 平均步数 / 画面 |
+  |---|---|---|---|---|
+  | `default`（默认） | (0.004, **0.05**, 0.9, 0.6) | (12, 2500, 8, 3) | 128 | keyart 24.2、U7 16.4、U8 前方 15.6、U8 侧窗 20.3 |
+  | `auto_lite` | (0.004, **0.09**, 0.9, 0.6) | 同上 | 128 | 少 9–16% 步；画面差平均 ≤ 0.08 码、p99 ≤ 1 码（`Docs~/perf_options_crops.png` 的 C） |
+  切换：把 JSON 里的 `"quality": "default"` 改成 `"auto_lite"`，重新 Build；或者直接在材质上改 `_Adapt.y`。
+- **请本地实测（推到 `FromLocal/gate_clouds_test/`）**：导入后，在 **U7（t = 155.10）和 U8 前方（t = 169.65）** 两个机位，用 **GPU Profiler** 量第 4 幕的帧时间，**有云海 / 没云海（关掉 `GateRoot/GateClouds/Deck`）各一次**；桌面 + VR 估算，方法同 10-08。有余力再用 `auto_lite` 量一次。附 GPU Profiler 或 RenderDoc 里最贵的几项。总导演拿到真数据以后再定砍哪里。
 
 ---
 

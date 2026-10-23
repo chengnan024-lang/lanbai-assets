@@ -22,7 +22,12 @@ using UnityEngine;
 
 public static class LanbaiGateCloudsBuilder
 {
-    [Serializable] public class DeckDef { public string parent; public float local_y; public float quad_size; public string detail; public string macro; }
+    [Serializable] public class DeckDef
+    {
+        public string parent; public float local_y; public float quad_size; public string detail; public string macro;
+        public string quality; public QualityDef[] quality_tiers;       // the deck's quality switch (README §3.4)
+    }
+    [Serializable] public class QualityDef { public string name; public float[] adapt; public float[] march_range; public int steps; }
     [Serializable] public class ShapeDef { public string shape; public string texture; public int[] size_px; public float[] scale; public float[] pivot_uv; public float[] bbox_uv; }
     [Serializable] public class CardDef
     {
@@ -204,6 +209,16 @@ public static class LanbaiGateCloudsBuilder
         string lanes = Path.GetDirectoryName(kit).Replace('\\', '/') + "/Gate/Textures/Tear_CloudLanes_1024.png";
         SetupTexture(lanes, false, false, true);
         deckMat.SetTexture("_LanesTex", AssetDatabase.LoadAssetAtPath<Texture2D>(lanes));
+        // the quality tier named in the JSON (deck.quality: "default" | "auto_lite"); none named = the shader defaults
+        if (L.deck.quality_tiers != null)
+            foreach (QualityDef q in L.deck.quality_tiers)
+                if (q.name == L.deck.quality && q.adapt != null && q.adapt.Length == 4 && q.march_range != null && q.march_range.Length == 4)
+                {
+                    V(deckMat, "_Adapt", q.adapt);
+                    V(deckMat, "_MarchRange", q.march_range);
+                    deckMat.SetFloat("_Steps", q.steps);
+                    Debug.Log("[GateClouds] deck quality: " + q.name);
+                }
         var deck = new GameObject("Deck");
         deck.transform.SetParent(root, false);
         deck.transform.localPosition = new Vector3(0, L.deck.local_y, 0);
