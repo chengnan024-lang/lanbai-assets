@@ -174,6 +174,9 @@ def _four_tap(src, out_w, out_h, off_src_texels):
     return 0.5 * (_sample1d(tx, 0, uy - o) + _sample1d(tx, 0, uy + o))
 
 
+BLOOM_TINT_MODE = 'double'   # 'double' = what Unity does (SetColor linearises again); 'single' = the designed tint
+
+
 def bloom_pyramid(lin, b):
     """PPv2 fastMode bloom: returns the full-res bloom term already multiplied by intensity and colour (linear)."""
     if b['intensity'] <= 0:
@@ -211,7 +214,9 @@ def bloom_pyramid(lin, b):
     # Bloom.cs: linearColor = color.linear, then uberSheet.properties.SetColor(_Bloom_Color, linearColor):
     # MaterialPropertyBlock.SetColor converts sRGB -> linear AGAIN in a Linear-space project, so the tint the
     # Uber shader sees is GammaToLinear(GammaToLinear(c)) (white unaffected). Verified against the 3.4.0 source.
-    c = np.array([gamma_to_linear_space(v) for v in hex_lin(b['color'])])
+    c = hex_lin(b['color'])
+    if BLOOM_TINT_MODE == 'double':
+        c = np.array([gamma_to_linear_space(v) for v in c])
     return final * k * c
 
 
