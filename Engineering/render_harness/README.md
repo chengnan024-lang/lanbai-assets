@@ -97,7 +97,7 @@ def build(ctx):
 - `--dev 0.5`：这一帧的曝光事件 ΔEV。标准台按圣经 §1.4 自动解 `EXPO_UP` / `EXPO_DOWN` 的权重（w = ΔEV/(4 − b)）。
 - `--lens clean`：桌面镜头层（暗角；**颗粒不模拟**，它是噪声，对 APL 的影响可以忽略）。**和本地的桌面截图比的时候加上**（本地截图里 LENS_CLEAN = 1）；VR 用 `--vr`（没有任何镜头层）。
 - bloom 按 PPv2 fastMode 的源码移植（半分辨率金字塔、二次软膝阈值、4-tap 下采样 / 上采样），阈值和 clamp 是 gamma 值（圣经 §1.4）。`metrics.json` 的 `bloom_share_of_APL` = 开 bloom 和关 bloom 的 APL 差。
-- `--bloom-tint double`（默认）：按 Unity 的实际行为，bloom 的颜色被线性化**两次**（PPv2 `Bloom.cs` 用 `MaterialPropertyBlock.SetColor` 传已经是线性的颜色，线性工程里会再转一次；见 `Engineering/给总导演.md`）。`Grading` 做了补偿以后改用 `single`。白色的 bloom 两种一样。
+- `--bloom-tint single`（默认）：bloom 的颜色 = 设计值。PPv2 的 `Bloom.cs` 用 `MaterialPropertyBlock.SetColor` 传已经线性化的颜色，线性工程里会再转一次；`Grading/` 的生成器**默认就写补偿后的颜色**（`bloomColorCompensated`，本地门测试的 `GradeBuild_Report.md` 写着“compensated”），所以 Unity 里看到的是设计值。`--bloom-tint double` = 没有补偿时 PPv2 的样子（对照用；`蓝白/Grades/Probe Bloom Colour` 实测出“single decode”时生成器会关掉补偿，那时也用 single）。白色的 bloom 两种一样。
 - 输入必须是**场景线性**：标准台把 Blender 的 View Transform 设成 Standard、曝光 0，EXR 里存的就是线性值，**不要在场景脚本里改色彩管理**。
 
 ## 3. 量的数（`metrics.json`）
