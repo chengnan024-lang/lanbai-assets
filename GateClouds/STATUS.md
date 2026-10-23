@@ -1,4 +1,4 @@
-2026-10-23 06:15 UTC · **已暂停**（小楠要求）· 第 4 轮 + 第 3 轮评审的修改都在 0513b1d（编译检查 0 错 0 警告）· 没做完：Docs~ 的整帧图还是第 4 轮初版、滚动序列、画质开关（JSON/README）· 下一步和卡点见 暂停总结.md · 还没到「可以终审了」
+2026-10-23 · **可以终审了** · v1.4：终审美术、技术都是有条件通过、没有 BLOCKER（Docs~/reviews/final.md）；共用编译检查 shader 8 文件 0 错 0 警告、C# OK；终版图、裁图、EXR、2 秒滚动 mp4 都是终版代码出的；画质开关（default / auto_lite）+ 本地实测请求；本地补丁 给本地_补丁_LB_GateTest_Run.md · 合并后：LanbaiGateDriver（D-15 第一件）、云塔视差卡、终审余项（README §10 第 10 条）
 
 ## 进度
 - [x] 云海 `Lanbai/GateCloudDeck` + `Deck_Detail_1024` / `Deck_Macro_512` + `Source/deck_ref.py`（逐行 numpy 移植）；独立技术审查一轮（移植对照），改完

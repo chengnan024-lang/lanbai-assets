@@ -209,16 +209,28 @@ public static class LanbaiGateCloudsBuilder
         string lanes = Path.GetDirectoryName(kit).Replace('\\', '/') + "/Gate/Textures/Tear_CloudLanes_1024.png";
         SetupTexture(lanes, false, false, true);
         deckMat.SetTexture("_LanesTex", AssetDatabase.LoadAssetAtPath<Texture2D>(lanes));
-        // the quality tier named in the JSON (deck.quality: "default" | "auto_lite"); none named = the shader defaults
+        // the quality tier named in the JSON (deck.quality: "default" | "auto_lite"); an unknown or empty name falls back to
+        // "default" with a warning (the material is reused between builds: it must never keep the last build's tier)
+        QualityDef pick = null, def = null;
         if (L.deck.quality_tiers != null)
             foreach (QualityDef q in L.deck.quality_tiers)
-                if (q.name == L.deck.quality && q.adapt != null && q.adapt.Length == 4 && q.march_range != null && q.march_range.Length == 4)
-                {
-                    V(deckMat, "_Adapt", q.adapt);
-                    V(deckMat, "_MarchRange", q.march_range);
-                    deckMat.SetFloat("_Steps", q.steps);
-                    Debug.Log("[GateClouds] deck quality: " + q.name);
-                }
+            {
+                if (q.adapt == null || q.adapt.Length != 4 || q.march_range == null || q.march_range.Length != 4) continue;
+                if (q.name == "default") def = q;
+                if (q.name == L.deck.quality) pick = q;
+            }
+        if (pick == null)
+        {
+            Debug.LogWarning("[GateClouds] deck.quality \"" + L.deck.quality + "\" not found in quality_tiers: using \"default\"");
+            pick = def;
+        }
+        if (pick != null)
+        {
+            V(deckMat, "_Adapt", pick.adapt);
+            V(deckMat, "_MarchRange", pick.march_range);
+            deckMat.SetFloat("_Steps", Mathf.Clamp(pick.steps > 0 ? pick.steps : 128, 16, 160));   // a missing "steps" reads 0
+            Debug.Log("[GateClouds] deck quality: " + pick.name);
+        }
         var deck = new GameObject("Deck");
         deck.transform.SetParent(root, false);
         deck.transform.localPosition = new Vector3(0, L.deck.local_y, 0);

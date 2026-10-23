@@ -26,7 +26,7 @@
 //  Cloud-sea frame: samples at (worldPos - _Udon_GateOrigin).xz, so the deck travels with GateRoot (v_g).
 //  Globals (registered): _Udon_CloudTop, _Udon_GateOrigin, _Udon_MoonDir, _Udon_TearPos, _Udon_TearH, _Udon_TearFoot,
 //  _Udon_InsidePortal (act 4c). Unset -> the material fallbacks.
-//  Cost (deck_ref.py, key / U7 / U8): mean ~21 march steps per pixel (p90 ~37), 2-3 fetches each, 3 bisections.
+//  Cost (deck_ref.py, key / U7 / U8): mean 15.6-24.2 march steps per pixel (p90 30-47), 2-3 fetches each, 3 bisections.
 //  Includes Assets/Lanbai/Gate/Shaders/LanbaiGateSky.cginc (project-root path, CONTROL_总控 §3).
 // =====================================================================================================
 Shader "Lanbai/GateCloudDeck"
@@ -44,7 +44,7 @@ Shader "Lanbai/GateCloudDeck"
         _Micro ("Micro: amplitude m, envelope, shading, -", Vector) = (4, 0.35, 0.9, 0)
 
         [Header(March)]
-        _Steps ("Max steps (mean use ~21)", Range(16, 160)) = 128
+        _Steps ("Max steps (mean use 16-24)", Range(16, 160)) = 128
         _Adapt ("Adaptive steps: k min, k max (x t), clearance factor, slope", Vector) = (0.004, 0.05, 0.9, 0.6)
         _MarchRange ("March from (m), to (m); far mean height above the top (m); bisections", Vector) = (12, 2500, 8, 3)
         _Comfort ("Comfort: clearance under the eye (m), lane depth under the eye (m), lane half width full, gone (m)", Vector) = (2, 57, 45, 140)
