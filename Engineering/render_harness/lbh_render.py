@@ -104,6 +104,9 @@ def main():
     ap.add_argument('--quality', default='preview', choices=['preview', 'final'])
     ap.add_argument('--samples', type=int, default=None)
     ap.add_argument('--set', action='append', default=[], help='传给场景脚本的 k=v（ctx["args"]）')
+    ap.add_argument('--fse', action='store_true', help='另外量透明叠绘 FSE（物体上设自定义属性 lb_fse = 层名，或用 --fse-pattern）')
+    ap.add_argument('--fse-pattern', action='append', default=[], help='物体名的正则，匹配到的算透明层')
+    ap.add_argument('--fse-res', default='480x270')
     common_args(ap)
     args = ap.parse_args()
 
@@ -137,9 +140,15 @@ def main():
     dt = time.time() - t0
     np.save(os.path.join(args.out, 'linear.npy'), lin.astype(np.float16))
     info.update(dict(bus=args.bus, glass=args.glass, samples=samples, res=cam['res']))
+    if args.fse or args.fse_pattern:
+        from lbh import fse as F
+        fw, fh = (int(x) for x in args.fse_res.lower().split('x'))
+        info['fse'] = F.measure(args.out, res=(fw, fh), patterns=args.fse_pattern)
     rec = finish(lin, args, cam, args.out, info, dt)
     m = rec['metrics']
     tgt = rec.get('target')
+    if 'fse' in info:
+        print('[lbh] FSE total %.3f  layers %s  max layers/pixel %s' % (info['fse'].get('total', 0), info['fse'].get('layers'), info['fse'].get('max_layers_per_pixel')))
     print('[lbh] %s  APL %.1f%s  purple %.2f%%  brightest at %s  (%0.0f s render)' % (
         args.out, m['APL'], (' (target %.0f, %s)' % (tgt['APL'], tgt['phase'])) if tgt else '', m['purple_pct'],
         m['brightest'].get('centroid_az_el', m['brightest']['centroid']), dt))
