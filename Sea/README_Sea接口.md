@@ -49,9 +49,9 @@
 |---|---|---|---|
 | `M_06_Sea`（ABOVE，S6） | `33_K1_r05fwd`（俯 10°）、`23_K1_r04`（俯 45°） | `_WaterColor` (0.0163, 0.0430, 0.1070) = `#304F7A` 的填值 × 0.55；`_CalmAll` 0.85；`_SunColor` (5.856, 3.615, 2.002) = 日盘 `#FFCE9E @ +2.55`；`_ReflClamp` 2.378 = 日盘最大通道 × 2^−1.3；`_SunDir` (0.4973, 0.1045, 0.8613) = 方位 +30°、仰角 +6°（D-12）；`_SunDiscDeg` 0.53（D-18，`_Udon_SunDisc` 设了就用它的）；`_PurpleMask` R | `_CalmPatch`、`_CalmAll`（§4）、`_SunColor` × 云盖遮挡 |
 | `M_07a_SeaSurface`（BELOW，S7a） | `29_K2_r06`（仰 60°）、`30_K2_r06_up90`（仰 90°）、`31_K2_r06_vr_roof`（VR） | `_WindowGain` **18**；`_WindowTint` (1.5, 1.3, 1, **0.85**)（w = 窗心的去饱和，到窗缘降到 0）；`_WindowCore` (**4.45, 3, 2, 1**)（窗心亮度上限 = 线性亮度 4.45，窗缘比窗心暗 3 EV，按视线天顶角的 2 次方走）；`_WindowRadial` (1, 2) = 关（被 `_WindowCore` 取代）；`_ReflClamp` 1.5（窗里立方图采样的上限）；`_TIRColor` (0.012, 0.037, 0.090)；`_PurpleMask` G+B | **VR**：`_WindowCore` = (3.2, 4, 2, 1)（§2.3 末） |
-| `M_07c_SeaMirror`（BELOW 翻转，S7b） | `34_K3_r16`（俯 45°，897.96） | `_AirSide` −1；`_WindowCube` = Cube_DuskLower；`_WindowGain` **0.25**（直接是 0.25，不是“× 0.12”）；`_WindowSunColor` (24, 8.5, 5)；`_WindowSunGain` 1；`_WindowSunDir` (0, −0.0523, 0.9986, **3**)（另一个太阳在方位 0、仰角 −3°，弧半高 3°）；`_WindowSunSpread` 30；`_TIRCubeGain` 1；`_TIRColor` (0.0241, 0.0126, 0.0121) = 雾 `#3E2C2B` × 0.5；`_WaveAmp` 0.3；`_ReflClamp` 8；`_PurpleMask` B | `_WaveAmp` 0.3（F8）→ **0.02**（F8b 起 6 秒，圣经“颤动停止”）；`_WindowGain` 0 →（F8b → 897.96）0.25；`_WindowSunColor` × 同一条 0 → 1 |
+| `M_07c_SeaMirror`（BELOW 翻转，S7b） | `34_K3_r16`（俯 45°，897.96） | `_AirSide` −1；`_WindowCube` = Cube_DuskLower；`_WindowGain` **0.25**（直接是 0.25，不是“× 0.12”）；`_WindowSunColor` (24, 8.5, 5)；`_WindowSunGain` 1；`_WindowSunDir` (0, −0.0523, 0.9986, **3**)（另一个太阳在方位 0、仰角 −3°，弧半高 3°）；`_WindowSunSpread` 30；`_TIRCubeGain` 1；`_TIRColor` (0.0241, 0.0126, 0.0121) = 雾 `#3E2C2B` × 0.5；`_WaveAmp` 0.02（897.96 那一刻）；`_ReflClamp` 8；`_PurpleMask` B | `_WaveAmp`：F8 起 0.3 → **0.02**（F8b 起 6 秒，圣经“颤动停止”）；`_WindowGain` 0 →（F8b → 897.96）0.25；`_WindowSunColor` × 同一条 0 → 1 |
 | `M_08_SeaCeiling` / `…Edge` / `…Fade`（CEILING，S8） | `35_K4_r10_35`、`36_K4_r10_0`、`K5_dissolve_series.png` | 共用：`_WaterColor` (0.0116, 0.0296, 0.0683)；`_FogHeightFalloff` 120；`_NormalStrength` 0.25；`_WaveRotate` (**70.7, 35**)（两张浪图的风向转到视轴上：左右均匀）；`_CalmStrength` 1（天花不要平静斑：左右一样）；`_MirrorTint` (**1.25, 1.3, 1.25**)、`_ReflGain` **1.5**（镜带“珍珠金”）；`_ReflClamp` 8；`_PurpleMask` A。Inner / Fade：`_DiscCenter` 0；Edge：`_DiscCenter` (0, 0, 2700, 800) | `_DissolveTime`（§2.4） |
-| `M_11_SeaHanging`（CEILING，S11） | `37_K6_r01_glints_off`、`38_K6_r01_glints_on` | `_WaterColor` (0.0048, 0.0212, 0.0452) = 圣经第 11 幕填 `#0F283C`；`_NormalStrength` 0.1；`_GerstnerAmp` (0.6, 0.35, 0.15)；`_LampGlints` **6**；`_PurpleCeiling` = `Sea_PurpleCeiling_S11.png`、`_PurpleMask` R | — |
+| `M_11_SeaHanging`（CEILING，S11） | `37_K6_r01_glints_off`、`38_K6_r01_glints_on` | `_WaterColor` (0.0048, 0.0212, 0.0452) = 圣经第 11 幕填 `#0F283C`；`_NormalStrength` 0.1；`_GerstnerAmp` (0.6, 0.35, 0.15)；`_LampGlints` **5.4**；`_PurpleCeiling` = `Sea_PurpleCeiling_S11.png`、`_PurpleMask` R | — |
 
 ### 2.1 三个模式共用
 
@@ -63,7 +63,7 @@
 | `_LargeScroll` / `_SmallScroll` | (0.9, 0.35) / (−0.4, 0.7) | 各自的漂移（m/s，xz） |
 | `_NormalStrength` | 1 | 总的法线强度 |
 | `_WaveRotate` | (0, 0) | 两张浪图在世界 xz 里转多少度（x 大浪、y 小浪）。天花用 (70.7, 35)：把风向转到正前方，论点之帧左右的波纹一样（终审） |
-| `_WaveAmp` | 1 | 浪的振幅（7c 在 F8b 起 6 秒衰减到 0.3；别处 1） |
+| `_WaveAmp` | 1 | 浪的振幅（7c：F8 时 0.3，F8b 起 6 秒降到 0.02；别处 1） |
 | `_Macro` / `_MacroTile` | SeaMacro / 1500 | 平静 / 起纹宏遮罩 |
 | `_CalmStrength` | 0.15 | 平静区里法线乘多少 |
 | `_CalmAll` | 0 | 0..1：把整片海压平到平静区的样子（第 6 幕 337.0 海镜落定用） |
@@ -105,7 +105,7 @@
 | `_WindowSunDir` / `_WindowSunSpread` | (0, −0.0087, 1, 1.2) / 14 | 空气那一侧的太阳方向；w = 弧的半高（度）。Spread = 弧沿窗缘的半宽（度） |
 | `_WindowSunFloor` | 0.35 | 日弧的透射下限（贴着临界角时菲涅耳会把它擦掉） |
 
-**VR 抬头（D-09：APL ≤ 150）**：用标准台 `bible_v2` 车壳、**车顶从仰角 40° 往上全被侵蚀掉**（最坏情况）、仰 90° 量（`Docs~/iterations/31_K2_r06_vr_roof`）。桌面的数（4.45, 3, 2）在 VR 里是 APL 176.9（`32_…desktopvalues`）；**VR 驱动写 `_WindowCore` = (3.2, 4, 2, 1)** → APL 146.5，窗心 L\* 84.5（`#BBD7E9`）。也就是说：整片视野都是窗的时候，“窗心 L\* ≥ 90”和“APL ≤ 150”不能同时成立，VR 让亮度（安全）赢，窗心的相对关系（窗心最亮、窗缘暗 1.8 EV）不变。车顶只侵蚀到天窗附近时 APL 远低于 150（同一机位、不开顶：16.8）。
+**VR 抬头（D-09：APL ≤ 150）**：用标准台 `bible_v2` 车壳、**车顶从仰角 40° 往上全被侵蚀掉**（最坏情况）、仰 90° 量（`Docs~/iterations/31_K2_r06_vr_roof`）。桌面的数（4.45, 3, 2）在 VR 里是 APL 178.1（`32_…desktopvalues`）；**VR 驱动写 `_WindowCore` = (3.2, 4, 2, 1)** → APL 147.8，窗心 L\* 85.2（`#CED6DD`）。也就是说：整片视野都是窗的时候，“窗心 L\* ≥ 90”和“APL ≤ 150”不能同时成立，VR 让亮度（安全）赢，窗心的相对关系（窗心最亮、窗缘暗 1.8 EV）不变。车顶只侵蚀到天窗附近时 APL 远低于 150（同一机位、不开顶：16.8）。
 
 ### 2.4 CEILING（第 8 幕：海之天花）
 
@@ -136,7 +136,7 @@
 | `_GerstnerAmp` | (0, 0, 0) | (0.6, 0.35, 0.15) | 振幅（米）；0 = 关（第 6、7、8 幕） |
 | `_GerstnerDir` | (0.94, 0.34, 0.5, 0.866) | 同 | 第 1、2 个浪的方向（世界 xz），第 3 个是两者角平分线转 90° |
 | `_NormalStrength` | 1 | 0.1 | FFT 小浪只留一点：灯的闪光是长浪上的一串光，不是一片糊 |
-| `_LampGlints` | 0 | 6 | 读 `_Udon_Lamp0..7` 的 GGX 闪光，**和 Rain 的 `LanbaiLamps.cginc` 同一个约定**（E · NdotL · Vis · π · D · F，E = I / d²；读 `_Udon_LampAxis`（灯管当线光源）、`_Udon_LampDir`（锥角））。屏幕目标 `#D08A59`：**只用 `_LampGlints` 校**（0..16），不要动 `_Udon_Lamp*.w`（路面也在读）。6 是用替身灯（I 15、半径 0.1 m、钠灯色）校到最亮一点 ≈ `#D08A59` 的值 |
+| `_LampGlints` | 0 | 5.4 | 读 `_Udon_Lamp0..7` 的 GGX 闪光，**和 Rain 的 `LanbaiLamps.cginc` 同一个约定**（E · NdotL · Vis · π · D · F，E = I / d²；读 `_Udon_LampAxis`（灯管当线光源）、`_Udon_LampDir`（锥角）；球光源取离反射线最近的一点，D 和 Vis 用 α、再乘 (α/α′)²，和 Rain 逐项一样）。屏幕目标 `#D08A59`：**只用 `_LampGlints` 校**（0..16），不要动 `_Udon_Lamp*.w`（路面也在读）。5.4 是用替身灯（I 15、半径 0.1 m、钠灯色）校到最亮一点 ≈ `#D08A59` 的值 |
 | `_DiscCenter.z` | | 0 | 无限 |
 只用浪的**斜率**（80 m 外 0.6 m 的起伏看不出高度，看得出的是灯在上面的光）。其他照 CEILING（`_DissolveTime` 保持 −1）。参考帧：`37_K6_r01_glints_off`（圣经：前 8–20 秒读成夜空）、`38_K6_r01_glints_on`。
 
@@ -189,7 +189,7 @@
 5. 倒影太阳的钳位在 shader 里（`_SunReflPeakEV` 1.3），不用驱动管。
 
 **第 8 幕（CEILING）**
-1. 圆盘 `Sea_Ceiling.fbx` 放在 R_Dusk 下，xz 跟车，**y = 出海那一帧我写的 `_Udon_SeaLevel`**，之后按 `dusk_motion_final.json` 的 h(t) 往上退（0 → 272 m，F10e）。材质 `M_08_SeaCeiling`（模式 Ceiling），法线朝下（网格翻过来，或 x 轴转 180°）。
+1. 圆盘 `Sea_Ceiling.fbx` 放在 R_Dusk 下，xz 跟车，**y = 出海那一帧我写的 `_Udon_SeaLevel`**，之后按 `dusk_motion_final.json` 的 h(t) 往上退（0 → 272 m，F10e）。两个子网格两个材质：**`Sea_Ceiling_Inner` → `M_08_SeaCeiling`**（956.36 换成 `M_08_SeaCeilingFade`），**`Sea_Ceiling_Edge` → `M_08_SeaCeilingEdge`**。网格法线已经朝下（导出时就是 −Y），不用再翻。
 2. `_Udon_ReflCube` = `ReflCube_DuskLower`（天花的镜面反射的是**下面**的暮天）；`_SkyBehindCube` = 暮的上半球。
 3. 溶化：956.36 起每帧写 `_DissolveTime = t − 956.36`，**写三个材质**：`M_08_SeaCeilingFade`（内盘此刻换成它）、`M_08_SeaCeilingEdge`、金点的 `Lanbai/SeaSpecks`；≥ 9.0（965.36）以后关掉 renderer。宫殿的金点：`PalaceSpecks_Points` 放在天花上方 40–200 m，材质 `Lanbai/SeaSpecks` 设 `_CeilingMode 1`、**队列 2995**、顶点色 = §2.6 的金，读同一个 `_DissolveTime`，自己最后走。
 4. `_Udon_SeaMode` = 3；`_Udon_Underwater` = 0（出海那一帧我写 0）。

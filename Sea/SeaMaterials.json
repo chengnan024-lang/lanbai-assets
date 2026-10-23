@@ -41,7 +41,7 @@
     {"k": "_WindowSunGain", "v": [1]},
     {"k": "_WindowSunDir", "v": [0, -0.0523, 0.9986, 3]},
     {"k": "_WindowSunSpread", "v": [30]},
-    {"k": "_WaveAmp", "v": [0.3]},
+    {"k": "_WaveAmp", "v": [0.02]},
     {"k": "_ReflClamp", "v": [8]},
     {"k": "_PurpleMask", "v": [0, 0, 1, 0]}
    ],
@@ -69,7 +69,7 @@
     {"k": "_DiscCenter", "v": [0, 0, 0, 0]},
     {"k": "_GerstnerAmp", "v": [0.6, 0.35, 0.15, 0]},
     {"k": "_NormalStrength", "v": [0.1]},
-    {"k": "_LampGlints", "v": [6]},
+    {"k": "_LampGlints", "v": [5.4]},
     {"k": "_PurpleMask", "v": [1, 0, 0, 0]}
    ],
    "tex": [{"k": "_PurpleCeiling", "path": "Textures/Sea_PurpleCeiling_S11.png"}]

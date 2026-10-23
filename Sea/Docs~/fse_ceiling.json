@@ -1,29 +1,35 @@
 {
- "about": "act-8 ceiling: screen fraction covered (hero eye, 90 deg desktop). Inner disc is OPAQUE until 956.36 (no blend cost), then transparent for the 9 s dissolve; the edge ring is transparent throughout.",
+ "about": "act-8 ceiling: the screen fraction each piece of Sea_Ceiling.fbx covers (hero eye, 1920x1080, 90 deg desktop), for the Inner opaque until 956.36 (no blend cost), then transparent for the 9 s dissolve; the edge ring is transparent throughout. Seam at 2.3 km (final review #3).",
  "frames": {
   "exit 922.36 pitch 0": {
+   "h_m": 0.5,
    "inner_FSE": 0.5,
    "edge_ring_FSE": 0.0
   },
   "exit 922.36 pitch 35": {
+   "h_m": 0.5,
    "inner_FSE": 1.0,
    "edge_ring_FSE": 0.0
   },
   "F9b 940.36 pitch 0": {
-   "inner_FSE": 0.437,
-   "edge_ring_FSE": 0.016
+   "h_m": 148.0,
+   "inner_FSE": 0.434,
+   "edge_ring_FSE": 0.018
   },
   "F9b 940.36 pitch 35": {
+   "h_m": 148.0,
    "inner_FSE": 1.0,
    "edge_ring_FSE": 0.0
   },
   "F10e 956.36 pitch 0": {
-   "inner_FSE": 0.384,
-   "edge_ring_FSE": 0.029
+   "h_m": 272.0,
+   "inner_FSE": 0.379,
+   "edge_ring_FSE": 0.034
   },
   "F10e 956.36 pitch 35": {
-   "inner_FSE": 0.968,
-   "edge_ring_FSE": 0.03
+   "h_m": 272.0,
+   "inner_FSE": 0.962,
+   "edge_ring_FSE": 0.036
   }
  }
 }

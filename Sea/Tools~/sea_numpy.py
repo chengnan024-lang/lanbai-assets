@@ -178,7 +178,7 @@ DEFAULTS = dict(LargeTile=64.0, SmallTile=9.0, LargeScroll=(0.9, 0.35), SmallScr
                 WaveAmp=1.0, MacroTile=1500.0, CalmStrength=0.15, CalmAll=0.0, CalmPatch=(0, 0, 0, 0), IOR=1.333,
                 Smoothness=0.97, ReflGain=1.0, ReflClamp=2.4, WaterColor=(0.0156, 0.0484, 0.0954), DiscCenter=(0, 0, 0, 0),
                 SunColor=(0, 0, 0), SunDir=(0.4973, 0.1045, 0.8613), SunGlitterRough=0.12, SunReflPeakEV=1.3, SunDiscDeg=0.53,
-                AirSide=1.0, WindowGain=1.0, WindowTint=(1, 1, 1), Dispersion=(1.331, 1.337), TIRColor=(0.0222, 0.0685, 0.1651),
+                AirSide=1.0, WindowGain=1.0, WindowTint=(1, 1, 1, 0), Dispersion=(1.331, 1.337), TIRColor=(0.0222, 0.0685, 0.1651),
                 TIRCubeGain=0.0, WindowEdgeSoft=0.6, WindowRadial=(1.0, 2.0), WindowSunDir=(0.0, -0.0087, 1.0, 1.2), WindowSunSpread=14.0, WindowSunColor=(0, 0, 0), WindowSunFloor=0.35, WindowSunGain=1.0, WindowCore=(0.0, 0.5, 2.0, 0.0), DissolveTime=-1.0, DissolveFront=4.0, DissolvePixel=5.0,
                 FogMode=1, ReflExposure=1.0, MirrorTint=(1.0, 1.0, 1.0), PurpleGuard=(1.0,), PurpleMask=(1, 1, 1, 1), PurpleCeiling='main',
                 GerstnerLength=(60, 37, 23, 0.08), GerstnerAmp=(0, 0, 0), GerstnerDir=(0.94, 0.34, 0.5, 0.866), LampGlints=0.0, Lamps=())
@@ -470,15 +470,18 @@ def ceiling_lamps(P, Nw, V, a, eta, M):
             tt = saturate((dot(R, L0) * RoS - L0 @ seg) / np.maximum(sl2 - RoS * RoS, 1e-6))
             Lvec = L0 + seg * tt[..., None]
             lineNorm = a / saturate(a + 0.5 * math.sqrt(sl2) / (2.0 * np.sqrt(d2)))
-        L = normalize(Lvec)
+        c2r = dot(Lvec, R)[..., None] * R - Lvec
+        closest = Lvec + c2r * saturate(rad / np.maximum(np.linalg.norm(c2r, axis=-1), 1e-5))[..., None]
+        L = normalize(closest)
+        dL = np.maximum(np.linalg.norm(Lvec, axis=-1), 1e-3)
+        aP = saturate(a + rad / (2 * dL))
+        sphereNorm = (a / aP) ** 2
         NdotL = saturate(dot(Nw, L)); NdotV = np.maximum(dot(Nw, V), 1e-4)
-        aP = saturate(a + rad / (2 * np.sqrt(d2)))
         H = normalize(L + V)
         F = fresnel(saturate(dot(V, H)), eta)
         cone = 1.0 if dirw[3] <= -0.999 else smoothstep(dirw[3] - 0.08, dirw[3] + 0.08, normalize(-toC) @ dirw[:3])
         E = I0 / d2 * cone
-        out += np.asarray(col) * (E * NdotL * smith_vis(NdotL, NdotV, aP) * np.pi * ggx_d(saturate(dot(Nw, H)), aP) * F
-                                  * (a * a) / (aP * aP) * lineNorm)[..., None]
+        out += np.asarray(col) * (E * NdotL * smith_vis(NdotL, NdotV, a) * np.pi * sphereNorm * lineNorm * ggx_d(saturate(dot(Nw, H)), a) * F)[..., None]
     return out
 
 

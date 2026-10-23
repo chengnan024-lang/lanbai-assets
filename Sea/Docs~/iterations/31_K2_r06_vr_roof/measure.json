@@ -1,20 +1,20 @@
 {
- "APL": 146.5,
+ "APL": 147.8,
  "regions": "core = within 15 deg of the zenith; rim = 38..50 deg from the zenith (critical angle 48.6)",
  "core": {
-  "median": "#BBD7E9",
-  "Lstar": 84.5,
-  "h_ab": 245.3,
-  "C": 13.2,
+  "median": "#CED6DD",
+  "Lstar": 85.2,
+  "h_ab": 252.6,
+  "C": 4.6,
   "pct": 10.02
  },
- "core_dE2000_to_E6F3F8_median": 8.9,
- "core_brightest_luma": 217.6,
- "core_mean_lin": 0.6516039945546628,
- "rim_brightest_luma": 120.9,
- "rim_p99.9_minus_core_median_EV": -1.76,
+ "core_dE2000_to_E6F3F8_median": 6.9,
+ "core_brightest_luma": 219.2,
+ "core_mean_lin": 0.6614088090238637,
+ "rim_brightest_luma": 121.7,
+ "rim_p99.9_minus_core_median_EV": -1.79,
  "rim_peak_minus_core_peak_EV": -1.86,
- "frame_brightest_zenith_deg": 0.8,
+ "frame_brightest_zenith_deg": 2.5,
  "dark_mirror": {
   "median": "n/a"
  },

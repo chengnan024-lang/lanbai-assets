@@ -6,7 +6,8 @@
 //
 //  Render state is per material (the builder sets it; see README_Sea §材质):
 //    ABOVE / BELOW : Queue Geometry (2000), Blend One Zero, ZWrite On
-//    CEILING       : Queue Transparent-10 (2990), Blend SrcAlpha OneMinusSrcAlpha, ZWrite Off
+//    CEILING       : inner disc OPAQUE (2000, ZWrite On) until 956.36; edge ring + dissolve: Queue 2990, Blend SrcAlpha
+//                    OneMinusSrcAlpha, ZWrite Off (README_Sea接口 §2.4). Act 11: opaque.
 //  The disc mesh follows the bus in xz (the bus is at the world origin); waves move by _Udon_SeaClock.yz.
 // =====================================================================================================
 Shader "Lanbai/Sea"
@@ -24,7 +25,7 @@ Shader "Lanbai/Sea"
         _SmallScroll ("Small drift m per s xz", Vector) = (-0.4, 0.7, 0, 0)
         _NormalStrength ("Normal strength", Range(0, 3)) = 1
         _WaveRotate ("Wave maps turned deg  x large  y small", Vector) = (0, 0, 0, 0)
-        _WaveAmp ("Wave amplitude  7c decays to 0.3", Range(0, 1)) = 1
+        _WaveAmp ("Wave amplitude  7c 0.3 at F8 then 0.02 from F8b", Range(0, 1)) = 1
         [NoScaleOffset] _Macro ("Macro mask  R rippled  G gust", 2D) = "white" {}
         _MacroTile ("Macro tile m", Float) = 1500
         _CalmStrength ("Normal factor in calm slicks", Range(0, 1)) = 0.15
@@ -80,7 +81,7 @@ Shader "Lanbai/Sea"
         _GerstnerLength ("Gerstner wavelengths m xyz  w Hz", Vector) = (60, 37, 23, 0.08)
         _GerstnerAmp ("Gerstner amplitudes m  0 off", Vector) = (0, 0, 0, 0)
         _GerstnerDir ("Gerstner directions  xy wave 1  zw wave 2", Vector) = (0.94, 0.34, 0.5, 0.866)
-        _LampGlints ("Lamp glints gain  udon lamps  act 11 6", Range(0, 16)) = 0
+        _LampGlints ("Lamp glints gain  udon lamps  act 11 5.4", Range(0, 16)) = 0
 
         [Header(Render state  set by the builder)]
         [Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend ("Src blend", Float) = 1

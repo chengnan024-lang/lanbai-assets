@@ -113,7 +113,8 @@ Shader "Lanbai/SeaSpecks"
                 o.uv = v.uv0;
                 float hz = min(v.uv2.y, 1.5);
                 float fl = 1.0 - _Flicker * v.color.a * (0.5 + 0.5 * sin(6.2831853 * (hz * t + v.uv2.x)));
-                float k = v.uv1.x * _Gain * fl * exp(-dist * _Atten) * cov * cov;
+                // ceiling mode: the water term (waterT) IS the extinction; _Atten (the far city's own fade in 7b) is not applied
+                float k = v.uv1.x * _Gain * fl * (_CeilingMode > 0.5 ? 1.0 : exp(-dist * _Atten)) * cov * cov;
                 if (_CeilingMode > 0.5)
                     k *= 1.0 - LanbaiCeilingLampProgress(-fwd);
                 o.col = v.color.rgb * _Tint.rgb * waterT * k;

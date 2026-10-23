@@ -417,7 +417,7 @@ inline float LanbaiEvLinearAlpha(float Lc, float Ls, float p)
 //   _Udon_Lamp{i} xyz position, w intensity I; _Udon_LampColor{i} rgb linear, a source radius m;
 //   _Udon_LampAxis{i} xyz half-length vector of a tube (0 = point); _Udon_LampDir{i} xyz emission axis, w cos half-angle
 //   (-1 = omni). Calibrate on screen with _LampGlints only: _Udon_Lamp*.w is shared with the road.
-float  _LampGlints;          // gain (0 = off: acts 6 / 8). Act 11: 6 -> the brightest glint at the bible's #D08A59 with the
+float  _LampGlints;          // gain (0 = off: acts 6 / 8). Act 11: 5.4 -> the brightest glint at the bible's #D08A59 with the
                              // stand-in lamps (I 15); the Lamps session calibrates THIS on screen, never _Udon_Lamp*.w
 inline float3 LanbaiCeilingLampOne(float4 lamp, float4 colR, float4 axis, float4 dirW, float3 P, float3 Nw, float3 V, float a, float eta)
 {
@@ -438,16 +438,21 @@ inline float3 LanbaiCeilingLampOne(float4 lamp, float4 colR, float4 axis, float4
         Lvec = L0 + seg * tt;
         lineNorm = a / saturate(a + 0.5 * sqrt(segLen2) / (2.0 * sqrt(d2)));
     }
-    float3 L = normalize(Lvec);
+    // sphere source (Karis): the sphere point closest to the reflection ray; D and Vis at alpha, x (alpha / alpha')^2
+    float radius = colR.a;
+    float3 centerToRay = dot(Lvec, R) * R - Lvec;
+    float3 closest = Lvec + centerToRay * saturate(radius / max(length(centerToRay), 1e-5));
+    float3 L = normalize(closest);
+    float dL = max(length(Lvec), 1e-3);
+    float aP = saturate(a + radius / (2.0 * dL));
+    float sphereNorm = (a / aP) * (a / aP);
     float NdotL = saturate(dot(Nw, L));
     float NdotV = max(dot(Nw, V), 1e-4);
-    float aP = saturate(a + colR.a / (2.0 * sqrt(d2)));                       // sphere widening (Karis)
     float3 H = normalize(L + V);
     float F = LanbaiFresnel(saturate(dot(V, H)), eta);
     float cone = dirW.w <= -0.999 ? 1.0 : smoothstep(dirW.w - 0.08, dirW.w + 0.08, dot(normalize(-toC), dirW.xyz));
     float E = lamp.w / d2 * cone;
-    return colR.rgb * (E * NdotL * LanbaiSmithVis(NdotL, NdotV, aP) * UNITY_PI * LanbaiGGX_D(saturate(dot(Nw, H)), aP) * F
-                       * (a * a) / (aP * aP) * lineNorm);
+    return colR.rgb * (E * NdotL * LanbaiSmithVis(NdotL, NdotV, a) * UNITY_PI * sphereNorm * lineNorm * LanbaiGGX_D(saturate(dot(Nw, H)), a) * F);
 }
 inline float3 LanbaiCeilingLamps(float3 P, float3 Nw, float3 V, float a, float eta)
 {

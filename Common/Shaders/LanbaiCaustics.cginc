@@ -1,7 +1,7 @@
 // =====================================================================================================
 //  Lanbai / LanbaiCaustics.cginc   蓝白 · underwater caustics (bible §4.8 '水下焦散', §6·7a, 7c '焦散从下往上')
 //
-//  !!! WRITTEN WITHOUT A UNITY COMPILER (cloud side). Syntax-checked with Slang against a Unity stub only. !!!
+//  !!! WRITTEN WITHOUT A UNITY COMPILER (cloud side). Checked with DXC + Unity 2022.3 CGIncludes (Common/Tools~/compile_check), never in Unity. !!!
 //
 //  For the CABIN shader (Control's Lanbai/Cabin) and anything else that wants the sea's caustics:
 //      #include "Assets/Lanbai/Common/Shaders/LanbaiCaustics.cginc"

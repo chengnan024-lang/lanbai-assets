@@ -5,13 +5,14 @@
   Models/Sea_Ceiling.fbx   Sea_Ceiling_Inner (disc r 2.3 km) + Sea_Ceiling_Edge (ring 2.3 .. 3.2 km), faces DOWN (normal -Y),
                            sharing ONE ring of vertices at 2.3 km (192 segments both sides: no T-junction, no gap)  (CEILING)
   Textures/Cube_Dawn_256.exr       act-6 sky (syferfontein_6d_clear_puresky), sun at azimuth +30 deg (D-12)  (_WindowCube 7a; ABOVE test)
-  Textures/Cube_DuskLower_256.exr  act-8 sky (syferfontein_0d_clear_puresky), sun azimuth 0, LOWER hemisphere = the
-                                   'other sky' (-x, -y, z) x 0.82 x (0.92, 0.95, 1.05) (bible §6·8 8-ii)     (_WindowCube 7c; ceiling reflection)
-  Textures/Cube_Dusk_256.exr       act-8 sky, upper hemisphere; lower = horizon colour fading to the nadir #3B4A78 (fill)
+  Textures/Cube_DuskLower_256.exr  act-8 sky = the reference frames' synthetic bible dusk (scene_kit.env_dusk_synth), sun
+                                   azimuth 0, LOWER hemisphere = the 'other sky' (-x, -y, z) x 0.82 x (0.92, 0.95, 1.05)
+                                   (bible §6·8 8-ii)                                                    (_WindowCube 7c; ceiling reflection)
+  Textures/Cube_Dusk_256.exr       the same dusk, upper hemisphere; lower = horizon colour fading to the nadir #3B4A78 (fill)
                                    (the ceiling's _SkyBehindCube)
 All three are FALLBACKS (no clouds, no cloud cover): the real ones are baked in Unity from the Sky's scene
 (Sea/给总控.md §5). Layout: Unity 6-frame horizontal strip (+X -X +Y -Y +Z -Z), D3D face orientation, linear half EXR.
-Scale: the HDRI is multiplied so that its zenith reads the bible's zenith FILL (dawn #5B7ED7, dusk #4B5997) in luminance;
+Scale: the dawn HDRI is multiplied so that its zenith reads the bible's zenith FILL #5B7ED7 in luminance (the dusk cubes are the bible's fills already);
 every texel is clamped to max channel 16 (Lanbai/Sky clamps the HDRI sun at linear 16, bible §6·6 日盘).
 """
 import math
@@ -79,26 +80,17 @@ def make_cubes():
     write_exr(strip.astype(np.float32), os.path.join(out, 'Cube_Dawn_256.exr'))
     print('dawn scale', k)
 
-    dusk = S.Env(S.equirect_from_hdr(S.read_hdr(os.path.join(hd, 'syferfontein_0d_clear_puresky_1k.hdr')), 0.0))
-    kd = zenith_scale(dusk, '#4B5997')
-    tint = np.array([0.92, 0.95, 1.05]) * 0.82
-
-    def lower(d):
-        up = dusk.lookup(d) * kd
-        mir = dusk.lookup(d * np.array([-1.0, -1.0, 1.0])) * kd * tint
-        w = S.smoothstep(0.0, math.sin(math.radians(1.0)), -d[..., 1:2])        # 1 deg soft seam at the horizon
-        return S.clamp_max_channel(up * (1 - w) + mir * w, 16.0)
-    write_exr(strip_from(lower).astype(np.float32), os.path.join(out, 'Cube_DuskLower_256.exr'))
-
-    nadir = srgb_to_lin('#3B4A78')
-
-    def behind(d):
-        up = dusk.lookup(d) * kd
-        hor = dusk.lookup(S.normalize(d * np.array([1.0, 0.0, 1.0]) + np.array([0.0, 0.02, 0.0]))) * kd
-        w = S.smoothstep(0.0, 1.0, -d[..., 1:2])
-        low = hor * (1 - w) + nadir * w
-        return S.clamp_max_channel(np.where(d[..., 1:2] >= 0, up, low), 16.0)
-    write_exr(strip_from(behind).astype(np.float32), os.path.join(out, 'Cube_Dusk_256.exr'))
+    # act 8: the SAME synthetic bible dusk the reference frames use (scene_kit.env_dusk_synth: sun band, rose band, mid sky
+    # #92A3DF, zenith #4B5997, the other sky below = (-x, -y, z) x 0.82 x (0.92, 0.95, 1.05), nadir #3B4A78), so the 7c window
+    # and the act-8 ceiling look in Unity like 34_K3 / 35_K4 (final review: the shipped cubes must be what the frames show)
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('scene_kit', os.path.join(KIT, 'Docs~', 'lookdev', 'scene_kit.py'))
+    SK = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(SK)
+    low, up = SK.env_dusk_synth('lower'), SK.env_dusk_synth('upper')
+    write_exr(strip_from(lambda d: S.clamp_max_channel(low.lookup(d), 16.0)).astype(np.float32), os.path.join(out, 'Cube_DuskLower_256.exr'))
+    write_exr(strip_from(lambda d: S.clamp_max_channel(up.lookup(d), 16.0)).astype(np.float32), os.path.join(out, 'Cube_Dusk_256.exr'))
+    kd = 1.0
     print('dusk scale', kd)
 
 

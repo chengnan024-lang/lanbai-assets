@@ -4,10 +4,10 @@
    960,
    540
   ],
-  "APL": 138.02,
-  "EV_display": -1.528,
+  "APL": 138.33,
+  "EV_display": -1.525,
   "luma_lt12_pct": 0.0,
-  "Lstar_gt85_pct": 19.865,
+  "Lstar_gt85_pct": 20.409,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
   "clip_black_largest_region_pct": 0.0,
@@ -19,27 +19,27 @@
   "lavender_act6_pct": 0.0,
   "brightest": {
    "bbox": [
-    461,
+    455,
     1,
-    505,
-    29
+    521,
+    51
    ],
    "centroid": [
-    482.4,
-    13.6
+    486.9,
+    14.8
    ],
-   "clusters": 1,
-   "clusters_ge5pct": 1,
-   "min_luma": 243.3,
+   "clusters": 5,
+   "clusters_ge5pct": 2,
+   "min_luma": 241.4,
    "centroid_az_el": [
-    6.57,
-    87.75
+    17.23,
+    87.56
    ]
   },
   "top25_Lstar": {
-   "mean": 81.29,
-   "p50": 86.09,
-   "p90": 94.81
+   "mean": 81.32,
+   "p50": 86.44,
+   "p90": 94.53
   },
   "palette": {
    "act": "07a",
@@ -48,25 +48,25 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 2.3,
-     "within_dE5_pct": 10.23
+     "nearest_dE2000_p01": 2.9,
+     "within_dE5_pct": 14.73
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 1.0,
-     "within_dE5_pct": 14.36
+     "nearest_dE2000_p01": 5.5,
+     "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 4.3,
-     "within_dE5_pct": 1.8
+     "nearest_dE2000_p01": 6.5,
+     "within_dE5_pct": 0.0
     },
     {
      "hex": "#3876AB",
      "role": "浅水 縹",
-     "nearest_dE2000_p01": 8.4,
+     "nearest_dE2000_p01": 8.9,
      "within_dE5_pct": 0.0
     },
     {
@@ -78,19 +78,19 @@
     {
      "hex": "#697987",
      "role": "海雪",
-     "nearest_dE2000_p01": 3.8,
-     "within_dE5_pct": 1.12
+     "nearest_dE2000_p01": 3.4,
+     "within_dE5_pct": 1.43
     },
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 6.9,
+     "nearest_dE2000_p01": 9.5,
      "within_dE5_pct": 0.0
     }
    ],
-   "pixel_to_nearest_dE_median": 4.3,
-   "pixel_to_nearest_dE_p90": 9.9,
-   "pixels_within5_pct": 60.2
+   "pixel_to_nearest_dE_median": 5.1,
+   "pixel_to_nearest_dE_p90": 10.3,
+   "pixels_within5_pct": 49.4
   }
  },
  "cam": {
@@ -168,7 +168,7 @@
    "color": "#000000"
   }
  },
- "bloom_share_of_APL": 0.43,
+ "bloom_share_of_APL": 0.1,
  "t": 367.21,
  "target": {
   "phase": "7a 被海接住",
@@ -192,7 +192,7 @@
    540
   ]
  },
- "render_seconds": 11.1,
+ "render_seconds": 11.9,
  "lens": "none",
  "bloom_tint": "single",
  "note": "K2 r06 (final review #5): core ceiling _WindowCore (4.45, 3 EV, ^2), gain 18, tint 1.5/1.3/1 desat 0.85 at the core, TIR (0.012, 0.037, 0.090), fog-up x0.38 -- SeaMaterials.json"
