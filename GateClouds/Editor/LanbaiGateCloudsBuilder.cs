@@ -330,11 +330,7 @@ public static class LanbaiGateCloudsBuilder
         var drv = AddDriver(drvGo);
         drv.root = root.gameObject;
         if (L.window != null && L.window.Length == 2) { drv.windowStart = L.window[0]; drv.windowEnd = L.window[1]; }
-        if (L.fog_band != null && L.fog_band.color != null && L.fog_band.color.Length == 4 && L.fog_band.until > 0f)
-        {
-            drv.fogBandColor = new Vector4(L.fog_band.color[0], L.fog_band.color[1], L.fog_band.color[2], L.fog_band.color[3]);
-            drv.fogBandUntil = L.fog_band.until;
-        }
+        // fog_band: read by Gate/Editor/LanbaiGateDriverBuilder.cs (the gate driver's fallback when the sky kit is missing)
         drv.cardRenderers = allR.ToArray(); drv.cardMirror = allMir.ToArray(); drv.cardGain = allGain.ToArray(); drv.cardOpacity = allOp.ToArray();
         drv.towers = towT.ToArray(); drv.towerRenderers = towR.ToArray(); drv.towerOpacity = towOp.ToArray();
         drv.towerMirror = towMir.ToArray(); drv.towerGain = towGain.ToArray();

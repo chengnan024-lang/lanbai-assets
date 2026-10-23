@@ -50,6 +50,157 @@ public static class LanbaiGateDriverBuilder
     [MenuItem("蓝白/Gate/Build Driver + Test Clock (Play mode only)")]
     public static void BuildClockMenu() { Build(true); }
 
+    // ---- a tiny JSON reader (the sky's FogPresets.json mixes types under one key: JsonUtility cannot read it) ----------
+    // objects -> Dictionary<string, object>, arrays -> List<object>, numbers -> double, strings, true / false, null
+    class Json
+    {
+        string s; int i;
+        public static object Parse(string text) { var j = new Json { s = text, i = 0 }; return j.Value(); }
+        void Ws() { while (i < s.Length && char.IsWhiteSpace(s[i])) i++; }
+        object Value()
+        {
+            Ws();
+            char c = s[i];
+            if (c == '{')
+            {
+                var d = new Dictionary<string, object>(); i++; Ws();
+                if (s[i] == '}') { i++; return d; }
+                while (true) { Ws(); string k = Str(); Ws(); i++; d[k] = Value(); Ws(); if (s[i] == ',') { i++; continue; } i++; return d; }
+            }
+            if (c == '[')
+            {
+                var l = new List<object>(); i++; Ws();
+                if (s[i] == ']') { i++; return l; }
+                while (true) { l.Add(Value()); Ws(); if (s[i] == ',') { i++; continue; } i++; return l; }
+            }
+            if (c == '"') return Str();
+            if (s.Substring(i).StartsWith("true")) { i += 4; return true; }
+            if (s.Substring(i).StartsWith("false")) { i += 5; return false; }
+            if (s.Substring(i).StartsWith("null")) { i += 4; return null; }
+            int b = i;
+            while (i < s.Length && "+-0123456789.eE".IndexOf(s[i]) >= 0) i++;
+            return double.Parse(s.Substring(b, i - b), System.Globalization.CultureInfo.InvariantCulture);
+        }
+        string Str()
+        {
+            var sb = new System.Text.StringBuilder(); i++;
+            while (s[i] != '"')
+            {
+                if (s[i] == '\\')
+                {
+                    i++;
+                    char e = s[i];
+                    if (e == 'u') { sb.Append((char)Convert.ToInt32(s.Substring(i + 1, 4), 16)); i += 4; }
+                    else sb.Append(e == 'n' ? '\n' : e == 't' ? '\t' : e);
+                }
+                else sb.Append(s[i]);
+                i++;
+            }
+            i++;
+            return sb.ToString();
+        }
+    }
+
+    static Vector4 Vec(object o, float w)
+    {
+        var l = o as List<object>;
+        if (l == null) return Vector4.zero;
+        float[] f = new float[4] { 0f, 0f, 0f, w };
+        for (int k = 0; k < l.Count && k < 4; k++) f[k] = Convert.ToSingle(l[k]);
+        return new Vector4(f[0], f[1], f[2], f[3]);
+    }
+
+    static string FindAsset(string name, string ext)
+    {
+        foreach (string id in AssetDatabase.FindAssets(name))
+        {
+            string p = AssetDatabase.GUIDToAssetPath(id);
+            if (p.EndsWith(name + ext)) return p;
+        }
+        return null;
+    }
+
+    // D-22: the gate writes the sky's fog family, moon and stars on [U6, U9), blending the sky's moon_night (A) into its
+    // act4_gate (B) over the sky's own U6 transition. The numbers come only from the sky's two JSONs (no copy here).
+    static void FillSky(LanbaiGateDriver d)
+    {
+        string sp = FindAsset("SkyPresets", ".json"), fp = FindAsset("FogPresets", ".json");
+        d.skyFromSky = false;
+        d.skyVecNames = new string[0]; d.skyVecA = new Vector4[0]; d.skyVecB = new Vector4[0];
+        d.skyFloatNames = new string[0]; d.skyFloatA = new float[0]; d.skyFloatB = new float[0]; d.skyBandDirIndex = -1;
+        if (sp == null || fp == null)
+        {
+            Debug.LogWarning("[GateDriver] Sky/SkyPresets.json or Sky/FogPresets.json is not in the project (the sky kit): the driver writes only _Udon_FogBandColor on [U6, U9). Copy the sky kit and re-run Build Driver (D-22)");
+            return;
+        }
+        var SP = (Dictionary<string, object>)Json.Parse(File.ReadAllText(sp));
+        var FP = (Dictionary<string, object>)Json.Parse(File.ReadAllText(fp));
+        Dictionary<string, object> moon = null, gate = null;
+        foreach (object o in (List<object>)SP["presets"]) { var p = (Dictionary<string, object>)o; if ((string)p["name"] == "moon_night") moon = p; }
+        foreach (object o in (List<object>)FP["acts"]) { var p = (Dictionary<string, object>)o; if ((string)p["preset"] == "act4_gate") gate = p; }
+        if (moon == null || gate == null) { Debug.LogWarning("[GateDriver] moon_night / act4_gate not found in the sky's JSONs"); return; }
+        foreach (object o in (List<object>)FP["transitions"])
+        {
+            var tr = (Dictionary<string, object>)o;
+            if ((string)tr["label"] == "U6") { var tt = (List<object>)tr["t"]; d.skyFadeT0 = Convert.ToSingle(tt[0]); d.skyFadeT1 = Convert.ToSingle(tt[1]); }
+        }
+        // A: the sky's own globals for moon_night, only the fog family and the stars (the skybox's _Udon_Sky_* stay the sky's;
+        // the moon direction / disc are written from the gate's own keys)
+        var vA = new Dictionary<string, Vector4>(); var fA = new Dictionary<string, float>();
+        foreach (object o in (List<object>)moon["globalVectors"])
+        {
+            var kv = (Dictionary<string, object>)o; string k = (string)kv["k"];
+            if (Mine(k)) vA[k] = Vec(kv["v"], 0f);
+        }
+        foreach (object o in (List<object>)moon["globalFloats"])
+        {
+            var kv = (Dictionary<string, object>)o; string k = (string)kv["k"];
+            if (Mine(k)) fA[k] = Convert.ToSingle(kv["v"]);
+        }
+        // B: act4_gate in FogPresets' own layout (globals_order)
+        var vB = new Dictionary<string, Vector4>(); var fB = new Dictionary<string, float>();
+        vB["_Udon_FogModel"] = new Vector4(Convert.ToSingle(gate["model"]), 0f, 0f, 1f);
+        vB["_Udon_FogBandColor"] = Vec(gate["near"], 1f);
+        vB["_Udon_HorizonColor"] = Vec(gate["far"], 1f);
+        if (gate["zenith"] != null) vB["_Udon_ZenithColor"] = Vec(gate["zenith"], 1f);
+        if (gate["nadir"] != null) vB["_Udon_NadirColor"] = Vec(gate["nadir"], 1f);
+        bool bandTowardTear = !(gate["band_dir"] is List<object>);
+        vB["_Udon_FogBandDir"] = bandTowardTear ? (vA.ContainsKey("_Udon_FogBandDir") ? vA["_Udon_FogBandDir"] : Vector4.zero) : Vec(gate["band_dir"], 0f);
+        vB["_Udon_FogShape"] = Vec(gate["shape"], 0f);
+        vB["_Udon_FogBelow"] = Vec(gate["below"], 0f);
+        vB["_Udon_Fog"] = new Vector4(Convert.ToSingle(gate["density"]), 0f, 0f, 1f);
+        if (gate["width"] != null) fB["_Udon_FogBandWidth"] = Convert.ToSingle(gate["width"]);
+        if (gate.ContainsKey("stars") && gate["stars"] is Dictionary<string, object>)
+            foreach (var kv in (Dictionary<string, object>)gate["stars"])
+                if (kv.Value is List<object>) vB[kv.Key] = Vec(kv.Value, 0f);
+        // the union: a name only one side has holds that value through the blend
+        var vn = new List<string>(); var va = new List<Vector4>(); var vb = new List<Vector4>();
+        foreach (var k in vA.Keys) if (!vn.Contains(k)) vn.Add(k);
+        foreach (var k in vB.Keys) if (!vn.Contains(k)) vn.Add(k);
+        vn.Sort(StringComparer.Ordinal);
+        foreach (var k in vn)
+        {
+            Vector4 a = vA.ContainsKey(k) ? vA[k] : vB[k], b = vB.ContainsKey(k) ? vB[k] : vA[k];
+            va.Add(a); vb.Add(b);
+        }
+        var fn = new List<string>(); var fa = new List<float>(); var fb = new List<float>();
+        foreach (var k in fA.Keys) if (!fn.Contains(k)) fn.Add(k);
+        foreach (var k in fB.Keys) if (!fn.Contains(k)) fn.Add(k);
+        fn.Sort(StringComparer.Ordinal);
+        foreach (var k in fn) { fa.Add(fA.ContainsKey(k) ? fA[k] : fB[k]); fb.Add(fB.ContainsKey(k) ? fB[k] : fA[k]); }
+        d.skyVecNames = vn.ToArray(); d.skyVecA = va.ToArray(); d.skyVecB = vb.ToArray();
+        d.skyFloatNames = fn.ToArray(); d.skyFloatA = fa.ToArray(); d.skyFloatB = fb.ToArray();
+        d.skyBandDirIndex = bandTowardTear ? vn.IndexOf("_Udon_FogBandDir") : -1;
+        d.skyFromSky = true;
+        Debug.Log("[GateDriver] D-22 sky handover: " + vn.Count + " vectors + " + fn.Count + " floats, moon_night -> act4_gate over " + d.skyFadeT0 + " -> " + d.skyFadeT1);
+    }
+
+    static bool Mine(string k)
+    {
+        return k.StartsWith("_Udon_Fog") || k == "_Udon_HorizonColor" || k == "_Udon_ZenithColor" || k == "_Udon_NadirColor"
+               || k.StartsWith("_Udon_Star") || k == "_Udon_GalaxyGain";
+    }
+
     static Vector3 V3(float[] a) { return a != null && a.Length >= 3 ? new Vector3(a[0], a[1], a[2]) : Vector3.zero; }
     static Quaternion Q(float[] a, int o) { return new Quaternion(a[o], a[o + 1], a[o + 2], a[o + 3]); }
 
@@ -84,6 +235,21 @@ public static class LanbaiGateDriverBuilder
         d.gateRoot = gateRoot;
         d.tearRoot = tearRoot;
         d.cabinLight = lights != null ? lights.Find("Tear_CabinOnly") : null;
+        d.cabinLightL = d.cabinLight != null ? d.cabinLight.GetComponent<Light>() : null;
+        Transform fill = lights != null ? lights.Find("Fill_from_below") : null;
+        d.fillLight = fill != null ? fill.GetComponent<Light>() : null;
+        // D-08: the cabin's tear light #B9B6D6 (the lavender #A99DE1 only on the thin inner edge, in the Tear shader)
+        if (d.cabinLightL != null) { d.cabinLightL.color = new Color(0xB9 / 255f, 0xB6 / 255f, 0xD6 / 255f); d.cabinE = d.cabinLightL.intensity > 0f ? d.cabinLightL.intensity : 0.8f; }
+        if (d.fillLight != null) d.fillE = d.fillLight.intensity > 0f ? d.fillLight.intensity : 0.24f;
+        if (d.cabinLightL == null || d.fillLight == null) Debug.LogWarning("[GateDriver] Gate_Lights/Tear_CabinOnly or Fill_from_below not found: those lights are not driven");
+        FillSky(d);
+        // the act-4 band colour when the sky kit is missing: GateClouds_Layout.json fog_band (the gate's own value)
+        string gl = FindAsset("GateClouds_Layout", ".json");
+        if (gl != null)
+        {
+            var GL = (Dictionary<string, object>)Json.Parse(File.ReadAllText(gl));
+            if (GL.ContainsKey("fog_band")) d.fallbackBand = Vec(((Dictionary<string, object>)GL["fog_band"])["color"], 1f);
+        }
         Transform folds = tearRoot != null ? LanbaiGateCloudsBuilder.FindDeepPublic(tearRoot, "Tear_SkyFolds") : null;
         Transform halo = tearRoot != null ? LanbaiGateCloudsBuilder.FindDeepPublic(tearRoot, "Tear_Halo") : null;
         d.foldsRenderer = folds != null ? folds.GetComponent<Renderer>() : null;
@@ -180,6 +346,7 @@ public static class LanbaiGateDriverBuilder
         }
         EditorUtility.SetDirty(d);
         UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(go.scene);
+        Debug.Log("[GateDriver] if the scene has a Director: re-run 蓝白/Director/2 Wire Scene (the driver object was rebuilt)");
         Debug.Log(string.Format("[GateDriver] built: {0} instances ({1} missing), {2} renderers, {3} tide renderers, {4} track keys",
                                 n, missing, rend.Count, d.tideRenderers.Length, trT.Count));
         return d;

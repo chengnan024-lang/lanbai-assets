@@ -58,9 +58,32 @@ def ease(a):
                 e=float(a.get('ease_e', 0.25)), b=float(a.get('beta_b', 3.5)))
 
 
+def check_sources(cues):
+    """the cues against FromLocal/cues.json and the deceleration against the inside's InsideLayout.json, when they are
+    there (tech review driver v1.1): a moved cue fails the bake instead of silently drifting"""
+    repo = os.path.dirname(GATE)
+    cp = os.path.join(repo, 'FromLocal', 'cues.json')
+    if os.path.exists(cp):
+        C = json.load(open(cp))
+        allu = dict(C.get('U', {}))
+        allu.update(C.get('U_sub', {}))
+        for k in ('U6', 'U7', 'U7b', 'U8', 'U9'):
+            if k in allu:
+                assert abs(float(allu[k]['t']) - float(cues[k])) < 1e-3, ('cue moved', k, allu[k]['t'], cues[k])
+    ip = os.path.join(repo, 'Act04c_Inside', 'InsideLayout.json')
+    v_end, t_end = 12.0, 233.8                       # origin/pkg/inside InsideLayout.json motion (asserted when on disk)
+    if os.path.exists(ip):
+        I = json.load(open(ip))
+        v_end = float(I['motion']['v_end'])
+        t_end = float(I['cues']['U_voiceEnd'])
+        assert abs(float(I['cues']['U9']) - float(cues['U9'])) < 1e-3, ('U9 differs from the inside', I['cues']['U9'])
+    return v_end, t_end
+
+
 def main():
     tl = J['timeline']
     cues = tl['cues']
+    v_end, t_end = check_sources(cues)
     kt = [float(k['t']) for k in tl['tear_H_knots']]
     kh = [float(k['H']) for k in tl['tear_H_knots']]
     mt, mg = keys(J['moon']['disc_gain_keys'], 'gain')
@@ -87,7 +110,7 @@ def main():
         # after U9 GateRoot.z = -s(t), the inside's closed form (总导演 10-23 01:10: GateRoot stays the gate driver's;
         # origin/pkg/inside Act04c_Inside/InsideLayout.json motion): s = v_g tau + (v_end - v_g) T (x^3 - x^4 / 2),
         # x = tau / T, tau = t - U9, T = U_voiceEnd - U9; after T: s(T) + v_end (tau - T); before U9: v_g tau
-        v_end=12.0, decel_T=round(233.8 - float(cues['U9']), 4),
+        v_end=v_end, decel_T=round(t_end - float(cues['U9']), 4),
         inst=[],
     )
     for it in J['instances']:

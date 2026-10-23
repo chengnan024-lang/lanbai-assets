@@ -92,7 +92,7 @@
 7. 正式场景：分发层按 `LanbaiWindow()` 在窗口内每帧调 `LanbaiTick(t)`，在遮挡下调 `LanbaiActivate(on)`（CONTROL §5）。
 8. **门的总驱动 `LanbaiGateDriver`**（`Gate/README_GateDriver.md`）每帧写 GateRoot 和全局量。**上线前置条件（技术 r2 #4）**：云海依赖的 `_Udon_CloudTop`、`_Udon_GateOrigin`、`_Udon_TearFoot` 现在只有编辑器里的测试脚本写。正式世界里要由**门的总驱动**每帧写（`给总控.md` §3），否则云海不随 v_g 流动、云顶停在 −57.4、峡谷和光池固定不动。
 
-**读的全局量**（都已登记）：`_Udon_CloudTop`、`_Udon_GateOrigin`、`_Udon_MoonDir`、`_Udon_TearPos`、`_Udon_TearH`、`_Udon_TearFoot`，以及门内会话定义的 `_Udon_InsidePortal`（x = 裂口平面世界 z，y = 1 生效：U9 以后平面另一侧的云海、云卡、光束都不画）。**写的全局量**：`_Udon_FogBandColor = (0.1085, 0.1130, 0.1641, 1)`（第 4 幕的光雾带，给以后所有 `LanbaiFog` 用户；登记表里第 4 幕归门的驱动）。
+**读的全局量**（都已登记）：`_Udon_CloudTop`、`_Udon_GateOrigin`、`_Udon_MoonDir`、`_Udon_TearPos`、`_Udon_TearH`、`_Udon_TearFoot`，以及门内会话定义的 `_Udon_InsidePortal`（x = 裂口平面世界 z，y = 1 生效：U9 以后平面另一侧的云海、云卡、光束都不画）。**写的全局量**：没有。第 4 幕的光雾带（`_Udon_FogBand*` 和整个雾 / 月 / 星一族）按 D-22 归门的总驱动 `LanbaiGateDriver` 写（`Gate/README_GateDriver.md`）。
 
 ---
 
@@ -206,7 +206,7 @@
 
 ## 6. 驱动 `LanbaiGateClouds`（UdonSharp）
 - 接口（CONTROL §5）：`LanbaiTick(t)`、`LanbaiActivate(on)`（开关 `root`，不关自己）、`LanbaiWindow()` = 布局 JSON 的 `window` = {U6 − 20, U9 + 2}。
-- `Start` → `_Init()`：每张卡写 property block（`_Mirror`、`_Gain`、`_Alpha`）。`_Udon_FogBandColor` 只在 `LanbaiTick` 里、**t < 179.55**（U9）时写：之后归门内的驱动（总工程师 10-23、技术 r3 #3），世界加载时也不写。`LanbaiWindow()` 返回缓存的数组（不产生垃圾）。`LanbaiTick` 里懒初始化调的也是 `_Init()`（同一帧被激活又被调时 `Start` 还没跑；不把事件方法当普通方法调，技术 r2 #7）。
+- `Start` → `_Init()`：每张卡写 property block（`_Mirror`、`_Gain`、`_Alpha`）。不写全局量（光雾带归门的总驱动，D-22）。`LanbaiTick` 里懒初始化调的也是 `_Init()`（同一帧被激活又被调时 `Start` 还没跑；不把事件方法当普通方法调，技术 r2 #7）。
 - 云塔：`localScale.y × sag`、`localPosition.y + sink`、`_Alpha = opacity × alpha`，alpha 0 时关 renderer。
 - 用到的 Udon API：`MaterialPropertyBlock`、`Renderer.SetPropertyBlock`、`VRCShader.PropertyToID / SetGlobalVector`。没有 `GetPropertyBlock`。
 
