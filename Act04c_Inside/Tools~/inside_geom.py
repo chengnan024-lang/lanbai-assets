@@ -275,9 +275,11 @@ def sleeve_wall(entry, exit_, dz, seed=313, n=90):
         p0, p1 = edge(E, ce), edge(X, cx)
         w = rng.uniform(0.12, 0.45) * (2.5 if rng.random() < 0.1 else 1.0)    # r05: hairs, a few thicker (r04 read as cables)
         m = 24
-        f = np.linspace(0, 1, m)
+        ln = rng.uniform(0.25, 0.6)                     # r06 (art review r05 #7): strands broken, 25-60 % of the depth
+        f0 = rng.uniform(0.0, 1.0 - ln)
+        f = f0 + ln * np.linspace(0, 1, m)
         P = p0[None] + (p1 - p0)[None] * f[:, None]
-        sag = rng.uniform(1.5, 7.0) * 4 * f * (1 - f)
+        sag = rng.uniform(1.5, 7.0) * 4 * f * (1 - f) + rng.uniform(1.0, 4.0) * ((f - f0) / ln) ** 2    # loose ends droop
         P[:, 1] -= sag
         side = np.array([-(p1 - p0)[1], (p1 - p0)[0]]) / (np.linalg.norm(p1 - p0) + 1e-9)
         P += side[None] * (rng.uniform(0.5, 2.5) * np.sin(f * np.pi * rng.uniform(1, 3) + rng.uniform(0, 6.28)))[:, None]
@@ -292,7 +294,7 @@ def sleeve_wall(entry, exit_, dz, seed=313, n=90):
         for i in range(m - 1):
             Fs += [(k0 + i, k0 + i + 1, k0 + m + i + 1), (k0 + i, k0 + m + i + 1, k0 + m + i)]
     V = np.concatenate(Vs, 0)
-    g = np.repeat(rng.uniform(0.04, 0.14, len(Vs)), [len(q) for q in Vs])     # r05: dim, uneven
+    g = np.repeat(rng.uniform(0.03, 0.10, len(Vs)), [len(q) for q in Vs])     # r05: dim, uneven
     col = np.stack([g, np.ones_like(g), np.zeros_like(g), np.ones_like(g)], -1)
     return dict(V=V, F=np.array(Fs), uv0=np.concatenate(UVs, 0), col=col)
 
@@ -437,7 +439,7 @@ def build():
         C = LY.lip_polygon('hole', p['seed'], 195.0 * p['scale'], p['roll'], p['offset'],
                            jag_seed=None)
         contours.append(C)
-        sh = sheet(C, 195.0, p['seed'] + 7 * i, p['gain'], billow=2.5 if p['fringe'] else 5.0)
+        sh = sheet(C, 195.0, p['seed'] + 7 * i, max(p['gain'], 0.30), billow=2.5 if p['fringe'] else 5.0)   # r07: inner plies' rims lit (art review r06 S3)
         if p['partial']:
             sh = cut_partial(sh, np.asarray(C).mean(0), p['partial'][0], p['partial'][1], 18.0)
         objs['Lip8_Ply%d_Sheet' % i] = sh

@@ -9,6 +9,7 @@
 // Materials: Assets/Lanbai/Act04c_Inside/Materials/M_04c_*.mat (shader Lanbai/InsideLip, one per part per lip).
 #if UNITY_EDITOR
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
@@ -49,7 +50,15 @@ namespace Lanbai.Inside.Editor
             extras.transform.SetParent(busAnch.transform, false);
 
             int n = 0;
-            foreach (var r in lips.GetComponentsInChildren<MeshRenderer>(true)) { Setup(r, MaterialFor(r.name, shader)); n++; }
+            var lipMats = new List<Material>();
+            var lipMatLip = new List<float>();
+            foreach (var r in lips.GetComponentsInChildren<MeshRenderer>(true))
+            {
+                var m = MaterialFor(r.name, shader);
+                Setup(r, m); n++;
+                // r06: the driver's "<= 3 lips visible" rule writes _Gain (= visibility) on every lip material
+                lipMats.Add(m); lipMatLip.Add(LipIndex(r.name));
+            }
             foreach (var r in extras.GetComponentsInChildren<MeshRenderer>(true)) { Setup(r, MaterialFor(r.name, shader)); n++; }
 
             // the Lichtchen: 2.3 km from the hero eye along the bus-fixed direction
@@ -69,7 +78,17 @@ namespace Lanbai.Inside.Editor
             string note = Lanbai.Overlay.Editor.LanbaiOverlayBuild.AddUdonSharp(drvGo, Root + "/Runtime/LanbaiInsideDriver.cs",
                 Root + "/Runtime/LanbaiInsideDriver.asset", "LanbaiInsideDriver");
             var comp = drvGo.GetComponent("LanbaiInsideDriver");
-            if (comp != null) Fill(new SerializedObject(comp), insideRoot, dot);
+            if (comp != null)
+            {
+                var so = new SerializedObject(comp);
+                var pm = so.FindProperty("lipMats");
+                if (pm != null)
+                {
+                    pm.arraySize = lipMats.Count;
+                    for (int i = 0; i < lipMats.Count; i++) pm.GetArrayElementAtIndex(i).objectReferenceValue = lipMats[i];
+                }
+                Fill(so, insideRoot, dot, lipMatLip.ToArray());
+            }
             insideRoot.SetActive(false);
             AssetDatabase.SaveAssets();
             Debug.Log("[Lanbai 4c] built Lanbai_Inside: " + n + " renderers. " + note +
@@ -95,6 +114,8 @@ namespace Lanbai.Inside.Editor
             return 0;
         }
 
+        const float SheetFogCap = 0.30f;
+
         static Material MaterialFor(string objName, Shader shader)
         {
             string path = MatDir + "/M_04c_" + objName + ".mat";
@@ -115,10 +136,11 @@ namespace Lanbai.Inside.Editor
             m.SetVector("_ClothColor", new Vector4(cloth.r, cloth.g, cloth.b, 0f));
             m.SetVector("_FibreColor", new Vector4(fib.r, fib.g, fib.b, 0f));
             m.SetFloat("_Gain", 1f);
-            m.SetFloat("_FogCap", part == "SHEET" ? 0.55f : 1f);     // r04: the cloth stays darker than the air beyond it
+            m.SetFloat("_FogCap", part == "SHEET" ? SheetFogCap : 1f);     // r06: the cloth stays 12-20 luma darker than the air beyond it
             float H = InsideLayoutData.LipH[ki];
-            m.SetFloat("_LipGlow", 1f);
-            m.SetVector("_Folds", new Vector4(0.05f * H, 0.5f * H, 0.12f, 0.35f * H));
+            m.SetFloat("_LipGlow", 3.15f);                                 // r06 / r07 (art reviews r05 #1, r06 S2): fibres to luma 200
+            m.SetFloat("_WeaveAmount", 0.06f);                             // r06 / r07: the streaks read as rain on glass
+            m.SetVector("_Folds", new Vector4(0.08f * H, 0.5f * H, 0.25f, 0.35f * H));   // r07: visible at 100-400 m
             m.SetFloat("_ThreadCore", objName == "Lip8_Wall" ? 1f : 0f);
             m.SetVector("_DotHalo", new Vector4(dotHaloR, dotHaloR * 0.86f, dotHaloR * 0.70f, 0f));
             m.SetFloat("_FogHeightFalloff", 0f);
@@ -132,10 +154,10 @@ namespace Lanbai.Inside.Editor
             var fringe = AssetDatabase.LoadAssetAtPath<Texture2D>(Root + "/Textures/Inside_Fringe_2048x256.png");
             if (weave != null) m.SetTexture("_WeaveTex", weave);
             if (fringe != null) m.SetTexture("_FringeTex", fringe);
-            m.SetFloat("_FringeGain", 1f);
+            m.SetFloat("_FringeGain", 2.75f);
             Color dot = InsideLayoutData.DotFill;
             m.SetVector("_DotCore", new Vector4(dot.r, dot.g, dot.b, 0f));
-            m.SetFloat("_DotGlow", 0.22f);
+            m.SetFloat("_DotGlow", 0.32f);
             m.SetFloat("_DotDist", InsideLayoutData.DotDist);
             switch (part)
             {
@@ -160,7 +182,7 @@ namespace Lanbai.Inside.Editor
             m.SetOverrideTag("RenderType", type);
         }
 
-        static void Fill(SerializedObject so, GameObject insideRoot, Transform dot)
+        static void Fill(SerializedObject so, GameObject insideRoot, Transform dot, float[] lipMatLip)
         {
             void F(string name, float v) { var p = so.FindProperty(name); if (p != null) p.floatValue = v; }
             void Arr(string name, float[] v)
@@ -176,6 +198,7 @@ namespace Lanbai.Inside.Editor
             F("tU6", InsideLayoutData.U6); F("tU9", InsideLayoutData.U9); F("tVoiceEnd", InsideLayoutData.VoiceEnd);
             F("tU12", InsideLayoutData.U12); F("tLichtDial", InsideLayoutData.LichtDial); F("tSleeveExit", InsideLayoutData.SleeveExit);
             Arr("lipT", InsideLayoutData.LipT); Arr("lipS", InsideLayoutData.LipS);
+            Arr("lipMatLip", lipMatLip);
             Arr("bandStart", InsideLayoutData.BandStart); Arr("bandSweep", InsideLayoutData.BandSweep);
             Cols("zoneFill", InsideLayoutData.ZoneFill); Cols("fibreFill", InsideLayoutData.FibreFill); Cols("bandColour", InsideLayoutData.BandColour);
             var root = so.FindProperty("insideRoot"); if (root != null) root.objectReferenceValue = insideRoot.transform;

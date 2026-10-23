@@ -35,21 +35,21 @@ Shader "Lanbai/InsideLip"
         [Header(Sheet)]
         _WeaveTex ("Weave (R warp streaks, G fine weave, B blotches)", 2D) = "grey" {}
         _WeaveScale ("Weave tile size (m)", Float) = 40
-        _WeaveAmount ("Weave contrast", Range(0, 1)) = 0.45
-        _LipGlow ("Lip glow on the cloth (x fibre colour)", Float) = 0.35
+        _WeaveAmount ("Weave contrast", Range(0, 1)) = 0.06
+        _LipGlow ("Lip glow on the cloth (x fibre colour)", Float) = 3.15
         _LipGlowWidth ("Lip glow width (m)", Float) = 2.5
         _LipGlowFar ("Translucency band (x gain, y width m)", Vector) = (0.08, 40, 0, 0)
         _GrainRoll ("Fibre grain roll (deg, = the lip's roll)", Float) = 0
-        _Folds ("Tension folds (x period along the edge m, y period away m, z amount, w falloff m)", Vector) = (30, 300, 0.12, 200)
+        _Folds ("Tension folds (x period along the edge m, y period away m, z amount, w falloff m)", Vector) = (48, 300, 0.25, 200)
         [Header(Fringe)]
         _FringeTex ("Fringe (R fibres, G coverage, B clump)", 2D) = "black" {}
-        _FringeGain ("Fringe gain", Float) = 1
+        _FringeGain ("Fringe gain", Float) = 2.75
         [Header(Thread)]
         _ThreadRim ("Thread rim (x fibre colour)", Float) = 0.6
         _ThreadCore ("Thread core lit by the fibres (0 = dark weft, 1 = fibre lit)", Range(0, 1)) = 0
         [Header(Dot)]
         _DotCore ("Dot core (linear HDR)", Vector) = (6.92, 3.66, 1.63, 0)
-        _DotGlow ("Dot glow (x core)", Float) = 0.22
+        _DotGlow ("Dot glow (x core)", Float) = 0.32
         _DotHalo ("Dot halo colour (linear, less orange than the core)", Vector) = (6.92, 5.95, 4.84, 0)
         _DotDist ("Dot distance (m)", Float) = 2300
         [Header(Loose threads)]
@@ -146,16 +146,22 @@ Shader "Lanbai/InsideLip"
                 o.col = v.color;
                 o.aux = float4(v.uv2, v.uv3);
             #if defined(_PART_DOT)
-                // billboard about the object origin, sized by the angular diameter (the glow is the outer edge of the quad)
+                // billboard about the object origin. r07 (art review r06 S1): _Udon_InsideDot.y is the glow RADIUS (brief:
+                // 4 deg at LIP4 -> 12 deg), the core x stays a diameter; the halo is an exp tail with no hard edge
                 float3 c = mul(unity_ObjectToWorld, float4(0, 0, 0, 1)).xyz;
                 float3 eye = LanbaiCentreEyePos();
                 float3 f = normalize(c - eye);
                 float3 r = normalize(cross(float3(0, 1, 0), f));
                 float3 u = cross(f, r);
-                float d = distance(c, eye);
-                float halfG = d * tan(radians(max(_Udon_InsideDot.y, 0.01)) * 0.5);
+                // r07: the halo is glare, never cut by the cloth in front of the dot: the billboard is drawn 40 m out along
+                // the dot's direction at the same angular size (in front of every sheet, whose openings keep >= 40 m
+                // clear of the path; behind the cabin, so the bus still hides it). The core's sightline through every
+                // opening is checked by the layout (Tools~/inside_layout.py, from LIP4 + 2 s).
+                float d = 40.0;
+                c = eye + f * d;
+                float halfG = d * tan(radians(max(_Udon_InsideDot.y, 0.01)));
                 wp = c + (r * v.uv0.x + u * v.uv0.y) * 2.0 * halfG;          // uv0 in -0.5 .. 0.5
-                o.aux = float4(v.uv0 * 2.0, _Udon_InsideDot.x / max(_Udon_InsideDot.y, 0.01), 0);
+                o.aux = float4(v.uv0 * 2.0, 0.5 * _Udon_InsideDot.x / max(_Udon_InsideDot.y, 0.01), 0);
             #elif defined(_PART_LOOSE)
                 // uv0 = (along 0..1, side -1/1); uv1 = (phase s, radial speed m/s); uv2 = (r0 m, angle rad); uv3 = (z0 m, length m)
                 // color = (axis dir xyz * 0.5 + 0.5, brightness). Round the path axis (the bus's z axis), bus-anchored:
@@ -223,7 +229,10 @@ Shader "Lanbai/InsideLip"
                 float band = _LipGlowFar.x * exp(-dEdge / max(_LipGlowFar.y, 1.0)) * saturate(0.5 + 1.6 * (w.r - 0.5) + 0.3 * (w.g - 0.5));   // r02: along the warp, not blotches
                 float glow = _LipGlow * exp(-dEdge / _LipGlowWidth) * (0.55 + 0.45 * comb) + band * foldK;
                 float3 c = (cloth + _FibreColor.rgb * glow * g) * gradeK;
-                return float4(Fogged(c, i.wpos), 1.0);
+                // r07: a hidden / fading lip (the driver's _Gain = visibility, bible "<= 3 lips at once") blends into the
+                // fog at infinity in this direction (the dome's colour): no pop when it appears, no ghost while hidden
+                float3 dirV = normalize(i.wpos - LanbaiCentreEyePos());
+                return float4(lerp(LanbaiHorizon(dirV) * gradeK, Fogged(c, i.wpos), saturate(_Gain)), 1.0);
             #elif defined(_PART_FRINGE)
                 float4 f = tex2D(_FringeTex, i.uv.xy);
                 float3 c = _FibreColor.rgb * f.r * (0.7 + 0.6 * f.b) * _FringeGain * g * i.col.g * gradeK;   // col.g: bundle gaps
@@ -246,7 +255,7 @@ Shader "Lanbai/InsideLip"
                 float rc = max(i.aux.z, 1e-3);                                  // core radius as a fraction of the glow radius
                 float px = fwidth(r);
                 float core = 1.0 - smoothstep(rc - px, rc + px, r);
-                float halo = pow(saturate(1.0 - r), 2.6) * (1.0 - core);
+                float halo = exp(-4.5 * r) * smoothstep(1.0, 0.6, r) * (1.0 - core);   // r07: exp tail, no visible rim
                 float3 c = (_DotCore.rgb * core + _DotHalo.rgb * _DotGlow * halo) * _Udon_InsideDot.z;
                 return float4(c, 0.0);
             #else   // _PART_LOOSE

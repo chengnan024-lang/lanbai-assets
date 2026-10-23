@@ -81,6 +81,22 @@ def framing(poly_m, s_lip, t_cross):
     return ang, float(np.linalg.norm(hit - c) / half), dz
 
 
+def offset_min(poly_m, s_lip, t_cross):
+    """r06 (art review r05 #3: 205 s showed lips 6 / 7 concentric round the dot): the dot's off-centre fraction is checked
+    over the whole time the dot is seen through this opening (from the dot's appearance or 14 s out, to 2 s before the
+    crossing), not only at one instant: the hit point drifts as the opening comes closer."""
+    pg = Polygon(poly_m)
+    c = np.array(pg.centroid.coords[0])
+    half = 0.5 * np.sqrt(pg.area)
+    d = D.dot_dir()
+    worst = 9.0
+    for t in np.arange(max(D.DOT_APPEAR[0] + 1.0, t_cross - 14.0), t_cross - 2.0, 0.5):
+        dz = s_lip - float(D.dist(t)) - D.HERO_EYE[2]
+        hit = D.HERO_EYE[:2] + d[:2] / d[2] * dz
+        worst = min(worst, float(np.linalg.norm(hit - c) / half))
+    return worst
+
+
 def framing_points(poly_m, s_lip, t_cross):
     t = t_cross - 6.0
     dz = s_lip - float(D.dist(t)) - D.HERO_EYE[2]
@@ -154,6 +170,8 @@ def solve():
                     score = -abs(off - 0.38) * 3
                 else:
                     if off < 0.6:                                  # r04: well off-centre (art review r03: nesting)
+                        continue
+                    if k >= 5 and offset_min(P, D.S_LIP[k - 1], D.LIP_T[k - 1]) < 0.6:
                         continue
                     hit, cen = framing_points(P, D.S_LIP[k - 1], D.LIP_T[k - 1])
                     side = np.sign(hit[0] - cen[0])

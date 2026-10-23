@@ -216,6 +216,8 @@ def mat_sheet(name, P, fp):
     glow = N.math('MULTIPLY', N.math('ADD', lip, N.math('MULTIPLY', band, foldK)), gr)
     col = N.vmath('ADD', cloth, N.vmath('SCALE', N.rgb(P['fibre']), s=glow))
     col = N.mix(col, N.horizon(fp), N.math('MINIMUM', N.fog_amount(fp['density']), P['fog_cap_cloth']))
+    # r07: a hidden / fading lip blends into the fog at infinity (the dome's colour) by its visibility: no pop, no ghost
+    col = N.mix(N.horizon(fp), col, float(P.get('vis', 1.0)))
     N.done(N.emission(col))
     return m
 
@@ -265,7 +267,7 @@ def mat_dot(core_lin, glow_k, core_frac, gain, halo_lin=(6.92, 5.95, 4.84)):
     r = N.math('SQRT', N.math('ADD', N.math('MULTIPLY', N.math('MULTIPLY', u, 2.0), N.math('MULTIPLY', u, 2.0)),
                                   N.math('MULTIPLY', N.math('MULTIPLY', v, 2.0), N.math('MULTIPLY', v, 2.0))))
     core = N.math('SUBTRACT', 1.0, N.smooth(core_frac * 0.92, core_frac * 1.08, r))
-    halo = N.math('MULTIPLY', N.math('POWER', N.math('MAXIMUM', N.math('SUBTRACT', 1.0, r), 0.0), 2.6), N.math('SUBTRACT', 1.0, core))
+    halo = N.math('MULTIPLY', N.math('MULTIPLY', N.math('EXPONENT', N.math('MULTIPLY', r, -4.5)), N.smooth(1.0, 0.6, r)), N.math('SUBTRACT', 1.0, core))   # r07: exp tail
     c = N.vmath('ADD', N.vmath('SCALE', N.rgb(core_lin), s=core), N.vmath('SCALE', N.rgb(halo_lin), s=N.math('MULTIPLY', halo, glow_k)))
     N.done(N.add(N.emission(N.vmath('SCALE', c, s=float(gain))), N.transparent()))
     return m
@@ -352,13 +354,15 @@ def build(ctx):
     core, glow, gain = D.dot_size(t)
     if gain > 0:
         dd = D.dot_dir()
-        c = eye + dd * D.DOT_DIST
-        half = D.DOT_DIST * math.tan(math.radians(glow) * 0.5)
+        # r07: the halo is glare (Unity: ZTest Always); here the quad sits 40 m out with the same angular size, in front
+        # of every sheet (the layout keeps the core clear of the cloth)
+        c = eye + dd * 40.0
+        half = 40.0 * math.tan(math.radians(glow))          # r07: the glow angle is a radius
         f = dd / np.linalg.norm(dd)
         r = np.cross([0, 1, 0], f)
         r /= np.linalg.norm(r)
         u = np.cross(f, r)
         quad = dict(V=np.array([c + (-r - u) * half, c + (r - u) * half, c + (r + u) * half, c + (-r + u) * half]),
                     F=np.array([(0, 1, 2), (0, 2, 3)]), uv0=np.array([[-0.5, -0.5], [0.5, -0.5], [0.5, 0.5], [-0.5, 0.5]]))
-        mesh(None, 'Inside_Dot', quad, 0.0, mat_dot(st['dot_core'], 0.22, core / glow, gain))
+        mesh(None, 'Inside_Dot', quad, 0.0, mat_dot(st['dot_core'], 0.32, 0.5 * core / glow, gain))
     return dict(what='第 4c 幕 t=%.2f s=%.1f lips=%d fog=%s' % (t, s, made, st['fog_zone_hex']))

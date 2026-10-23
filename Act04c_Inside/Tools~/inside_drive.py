@@ -20,6 +20,8 @@ OUT = os.path.join(D.HERE, 'out')
 FOG_AHEAD_M = 250.0                     # the fog ahead is the next zone's colour, behind the previous one's
 FOG_D0, FOG_D1 = 0.0006, D.FOG_DENSITY  # act 4's density -> the inside's, over U9 .. U9 + 2 s (smoothstep)
 NADIR_K = 0.80                          # darker below (review r1 / art review r03)
+SHEET_FOG_CAP, LIP8_HOLD_M, LIP8_RAMP_M = 0.30, 70.0, 60.0
+CODA_BW, CODA_SIDE_K, CODA_TOP_K = 40.0, 0.45, 0.38      # r06: the coda's radial gradient round the dot
 AHEAD_K, BEHIND_K, ZENITH_K = 1.0, 0.72, 0.85        # r05: the gradient falls off sideways (bw 100) instead of brightening ahead
 
 
@@ -70,18 +72,56 @@ def fog_params(t):
     s = float(D.dist(t))
     dens = FOG_D0 + (FOG_D1 - FOG_D0) * float(D.ss((t - D.U9) / 2.0))
     mid = fog_colour_at_s(s)
-    # r04 (art review r03: the coda was a flat grey card): a little lighter ahead, darker behind and overhead / below
-    return dict(model='B gradient', band_dir=(0.0, 0.0, 1.0), bw=100.0,
-                near=tuple(fog_colour_at_s(s + FOG_AHEAD_M) * AHEAD_K), far=tuple(fog_colour_at_s(s - FOG_AHEAD_M) * BEHIND_K),
-                zenith=tuple(mid * ZENITH_K), nadir=tuple(mid * NADIR_K), shape=(25.0, 90.0, 1.0, 0.0), below=(-90.0, -15.0, 1.0, 0.0),
+    # r04 (art review r03: the coda was a flat grey card): a little lighter ahead, darker behind and overhead / below.
+    # r06 (art review r05 #6): after the sleeve the gradient turns toward the dot and narrows: the bible's #53606E stays
+    # straight ahead (where it is measured), the frame's edges fall to ~luma 50, overhead / below ~40.
+    c = float(D.ss((t - D.SLEEVE_EXIT_T) / 4.0))
+    dd = D.dot_dir()
+    bd = np.array([dd[0], 0.0, dd[2]]) * c + np.array([0.0, 0.0, 1.0]) * (1.0 - c)
+    bd = bd / np.linalg.norm(bd)
+    lerp = lambda a, b: a + (b - a) * c
+    return dict(model='B gradient', band_dir=tuple(bd), bw=lerp(100.0, CODA_BW),
+                near=tuple(fog_colour_at_s(s + FOG_AHEAD_M) * AHEAD_K),
+                far=tuple(fog_colour_at_s(s - FOG_AHEAD_M) * lerp(BEHIND_K, CODA_SIDE_K)),
+                zenith=tuple(mid * lerp(ZENITH_K, CODA_TOP_K)), nadir=tuple(mid * lerp(NADIR_K, CODA_TOP_K)),
+                shape=(lerp(25.0, 8.0), 90.0, 1.0, 0.0), below=(-90.0, lerp(-15.0, -6.0), 1.0, 0.0),
                 density=dens, unity_fog_colour=tuple(mid))
 
 
+def lip_visibility(k, t):
+    """r06 (art review r05 #3, bible "<= 3 lips visible at once"): the two nearest lips ahead are fully there, the third
+    fades in (smoothstep) over the run from the last crossing to the next one, the rest are fogged out completely (their
+    glow x 0 and their cloth's fog cap -> 1). Lips already crossed: 1 (behind you; the fog does the rest).
+    Continuous at every crossing: the third lip reaches 1 exactly when the nearest is crossed and it becomes the second.
+    r07 (art review r06 B1): lip 8's ring would sit inside lip 7's hole round the dot (a target): it also waits until
+    lip 7 is 70 m away and fades in over 60 m (~4 s), so it is never drawn inside lip 7 round the dot."""
+    s = float(D.dist(t))
+    S = [float(D.dist(x)) for x in D.LIP_T]
+    if s >= S[k - 1]:
+        return 1.0
+    ahead = [i for i in range(8) if S[i] > s]
+    rank = ahead.index(k - 1)
+    if rank <= 1:
+        v = 1.0
+    elif rank >= 3:
+        v = 0.0
+    else:
+        prev = max([x for x in S if x <= s] + [0.0])
+        x = (s - prev) / max(S[ahead[0]] - prev, 1e-3)
+        v = float(D.ss(np.clip(x, 0.0, 1.0)))
+    if k == 8:
+        v *= float(D.ss(np.clip((s - (S[6] - LIP8_HOLD_M)) / LIP8_RAMP_M, 0.0, 1.0)))
+    return v
+
+
 def lip_material(k, st=None):
+    """r06 (art review r05 #1, #2): fibres x 3 in a narrower rim, the fringe x 2.6; the cloth's own fog capped at 0.30 so
+    it stays 12-20 luma darker than the air in its opening; the weave streaks at ~20 % contrast; folds +-28 %, closer."""
     Hk = [1000.0, 790.0, 940.0, 525.0, 615.0, 345.0, 285.0, 195.0][k - 1]
-    return dict(cloth=fill_of(D.CLOTH_SCREEN), fibre=fibre_fill(k), roll=0.0, weave_scale=40.0, weave_amount=0.45,
-                lip_glow=1.0, lip_w=max(0.6, 0.0025 * Hk), band=(0.10, 0.08 * Hk), fringe_gain=1.0, thread_rim=0.6,
-                folds=(0.05 * Hk, 0.5 * Hk, 0.12, 0.35 * Hk), fog_cap_cloth=0.55)
+    vis = 1.0 if st is None else lip_visibility(k, st['t'])
+    return dict(cloth=fill_of(D.CLOTH_SCREEN), fibre=fibre_fill(k), roll=0.0, weave_scale=40.0, weave_amount=0.06,
+                lip_glow=3.15 * vis, lip_w=max(0.5, 0.002 * Hk), band=(0.10 * vis, 0.03 * Hk), fringe_gain=2.75 * vis,
+                thread_rim=0.6 * vis, folds=(0.08 * Hk, 0.5 * Hk, 0.25, 0.35 * Hk), fog_cap_cloth=SHEET_FOG_CAP, vis=vis)
 
 
 def delta_ev(t):

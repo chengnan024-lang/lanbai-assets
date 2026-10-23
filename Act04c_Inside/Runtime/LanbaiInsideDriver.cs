@@ -43,7 +43,15 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
     public float nadirK = 0.80f;
     public float aheadK = 1.0f, behindK = 0.72f, zenithK = 0.85f;
     public float bandWidthDeg = 100f;           // the fog falls off sideways: the frame's edges are darker than ahead
+    // r06 (art review r05 #6): after the sleeve the gradient turns toward the dot and narrows into a radial falloff
+    public float codaBandWidthDeg = 40f, codaSideK = 0.45f, codaTopK = 0.38f;
+    public float dotAzDeg = -6.5f;
     public bool writeRenderSettings = true;
+
+    [Header("Lips visible (bible: <= 3 at once; r06)")]
+    public Material[] lipMats;                    // every lip material (sheet, fringe, hang, threads, plies, wall)
+    public float[] lipMatLip;                     // which lip (1..8) each material belongs to
+    public float lip8HoldM = 70f, lip8RampM = 60f;
 
     [Header("Lichtchen ahead (sky object)")]
     public Transform dotTransform;                // bus-anchored, 2.3 km along the dot direction from the hero eye
@@ -151,6 +159,7 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
         if (t < tU9) { _lastT = t; return; }                       // before U9 the gate owns fog, ambient, light
 
         WriteFog(t, s);
+        WriteLipsVisible(s);
         WriteDot(t);
         WriteCabin(t);
         VRCShader.SetGlobalVector(_idClock, new Vector4(Clock(t), 0f, 0f, 0f));
@@ -222,20 +231,76 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
         Color mid = ZoneAtS(s);
         Color ahead = ZoneAtS(s + fogAheadM);
         Color behind = ZoneAtS(s - fogAheadM);
+        float c = SS((t - tSleeveExit) / 4f);                 // the coda: toward the dot, narrower, darker round the edges
+        float az = dotAzDeg * Mathf.Deg2Rad;
+        Vector3 bd = Vector3.Normalize(new Vector3(Mathf.Sin(az) * c, 0f, Mathf.Cos(az) * c + (1f - c)));
+        float sideK = Mathf.Lerp(behindK, codaSideK, c);
+        float topK = Mathf.Lerp(zenithK, codaTopK, c), botK = Mathf.Lerp(nadirK, codaTopK, c);
         VRCShader.SetGlobalFloat(_idDensity, dens);
-        VRCShader.SetGlobalVector(_idBandDir, new Vector4(0f, 0f, 1f, 1f));
+        VRCShader.SetGlobalVector(_idBandDir, new Vector4(bd.x, 0f, bd.z, 1f));
         VRCShader.SetGlobalVector(_idBandColor, new Vector4(ahead.r * aheadK, ahead.g * aheadK, ahead.b * aheadK, 1f));
-        VRCShader.SetGlobalFloat(_idBandWidth, bandWidthDeg);
-        VRCShader.SetGlobalVector(_idHorizon, new Vector4(behind.r * behindK, behind.g * behindK, behind.b * behindK, 2f));      // a = 2: model B
-        VRCShader.SetGlobalVector(_idZenith, new Vector4(mid.r * zenithK, mid.g * zenithK, mid.b * zenithK, 1f));
-        VRCShader.SetGlobalVector(_idNadir, new Vector4(mid.r * nadirK, mid.g * nadirK, mid.b * nadirK, 1f));
-        VRCShader.SetGlobalVector(_idShape, new Vector4(25f, 90f, 1f, 0f));
-        VRCShader.SetGlobalVector(_idBelow, new Vector4(-90f, -15f, 1f, 0f));
+        VRCShader.SetGlobalFloat(_idBandWidth, Mathf.Lerp(bandWidthDeg, codaBandWidthDeg, c));
+        VRCShader.SetGlobalVector(_idHorizon, new Vector4(behind.r * sideK, behind.g * sideK, behind.b * sideK, 2f));      // a = 2: model B
+        VRCShader.SetGlobalVector(_idZenith, new Vector4(mid.r * topK, mid.g * topK, mid.b * topK, 1f));
+        VRCShader.SetGlobalVector(_idNadir, new Vector4(mid.r * botK, mid.g * botK, mid.b * botK, 1f));
+        VRCShader.SetGlobalVector(_idShape, new Vector4(Mathf.Lerp(25f, 8f, c), 90f, 1f, 0f));
+        VRCShader.SetGlobalVector(_idBelow, new Vector4(-90f, Mathf.Lerp(-15f, -6f, c), 1f, 0f));
         VRCShader.SetGlobalVector(_idFogInside, new Vector4(mid.r, mid.g, mid.b, dens));
         if (writeRenderSettings)
         {
             RenderSettings.fogColor = mid;          // the average, for built-in shaders (bible §1.6)
             RenderSettings.fogDensity = dens;
+        }
+    }
+
+    // ------------------------------------------------------------------------------------------------ lips visible
+    /// <summary>Bible "<= 3 lips visible at once" (art review r05 #3): the two nearest lips ahead are fully there, the
+    /// third fades in (smoothstep) over the run from the last crossing to the next, the rest are fogged out (glow x 0,
+    /// the sheet = the dome's fog colour). Crossed lips: 1. Continuous at every crossing. Same as Tools~/inside_drive.lip_visibility.</summary>
+    public float LipVisible(int k, float s)
+    {
+        if (s >= lipS[k - 1]) return 1f;
+        int rank = 0;
+        int first = -1;
+        float prev = 0f;
+        for (int i = 0; i < 8; i++)
+        {
+            if (lipS[i] > s)
+            {
+                if (first < 0) first = i;
+                if (i < k - 1) rank++;
+            }
+            else prev = Mathf.Max(prev, lipS[i]);
+        }
+        float v;
+        if (rank <= 1) v = 1f;
+        else if (rank >= 3) v = 0f;
+        else v = SS((s - prev) / Mathf.Max(lipS[first] - prev, 1e-3f));
+        // r07 (art review r06 B1): lip 8's ring would sit inside lip 7's hole round the dot (a target): it waits until
+        // lip 7 is lip8HoldM away and fades in over lip8RampM
+        if (k == 8) v *= SS((s - (lipS[6] - lip8HoldM)) / lip8RampM);
+        return v;
+    }
+
+    private float[] _lastVis;
+
+    private void WriteLipsVisible(float s)
+    {
+        if (lipMats == null || lipMatLip == null) return;
+        if (_lastVis == null || _lastVis.Length != lipMats.Length)
+        {
+            _lastVis = new float[lipMats.Length];
+            for (int i = 0; i < _lastVis.Length; i++) _lastVis[i] = -1f;
+        }
+        for (int i = 0; i < lipMats.Length; i++)
+        {
+            Material m = lipMats[i];
+            if (m == null) continue;
+            int k = Mathf.Clamp((int)lipMatLip[i], 1, 8);
+            float v = LipVisible(k, s);
+            if (Mathf.Abs(v - _lastVis[i]) < 0.002f) continue;   // Udon: only the few materials that change this frame
+            _lastVis[i] = v;
+            m.SetFloat("_Gain", v);          // glow x v; the sheet blends into the dome's fog colour by v (shader)
         }
     }
 
