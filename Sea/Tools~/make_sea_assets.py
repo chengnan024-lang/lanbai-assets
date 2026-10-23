@@ -101,6 +101,33 @@ def make_cubes():
     print('dusk scale', kd)
 
 
+def ring_mesh(name, r0, r1, rings, segs, down=False):
+    """annulus r0..r1 (the ceiling's transparent edge ring)"""
+    import bpy
+    import bmesh
+    me = bpy.data.meshes.new(name)
+    bm = bmesh.new()
+    radii = [r0 + (r1 - r0) * i / (rings - 1) for i in range(rings)]
+    ringv = [[bm.verts.new((r * math.cos(2 * math.pi * j / segs), r * math.sin(2 * math.pi * j / segs), 0.0)) for j in range(segs)] for r in radii]
+    for a, b in zip(ringv[:-1], ringv[1:]):
+        for j in range(segs):
+            bm.faces.new((a[j], b[j], b[(j + 1) % segs], a[(j + 1) % segs]))
+    bmesh.ops.triangulate(bm, faces=bm.faces[:])
+    for f in bm.faces:
+        f.normal_update()
+        if (f.normal.z < 0) != down:
+            f.normal_flip()
+    uv = bm.loops.layers.uv.new('UVMap')
+    for f in bm.faces:
+        for l in f.loops:
+            l[uv].uv = (l.vert.co.x / 1000.0, l.vert.co.y / 1000.0)
+    bm.to_mesh(me)
+    bm.free()
+    ob = bpy.data.objects.new(name, me)
+    bpy.context.scene.collection.objects.link(ob)
+    return ob
+
+
 def disc_mesh(name, radius, rings, segs, down=False):
     import bpy
     import bmesh
@@ -139,8 +166,13 @@ def make_meshes():
     ob = disc_mesh('Sea_Disc', 40000.0, 40, 96)
     export(ob, os.path.join(KIT, 'Models', 'Sea_Disc.fbx'))
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    ob = disc_mesh('Sea_Ceiling', 3200.0, 28, 96, down=True)
-    export(ob, os.path.join(KIT, 'Models', 'Sea_Ceiling.fbx'))
+    # the act-8 ceiling in two pieces (README_Sea接口 §2.4, chief engineer #6): an OPAQUE inner disc r <= 2.4 km and a
+    # TRANSPARENT edge ring 2.4 .. 3.2 km that carries the soft edge (alpha 0.5 at 2.7 km, band 500 m)
+    inner = disc_mesh('Sea_Ceiling_Inner', 2400.0, 26, 96, down=True)
+    ring = ring_mesh('Sea_Ceiling_Edge', 2400.0, 3200.0, 9, 192, down=True)
+    from export_unity import export_fbx
+    export_fbx(os.path.join(KIT, 'Models', 'Sea_Ceiling.fbx'), [inner, ring])
+    print('wrote Sea_Ceiling.fbx (Inner + Edge)')
 
 
 def export(ob, path):

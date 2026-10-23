@@ -63,6 +63,8 @@ Shader "Lanbai/Sea"
 
         [Header(Ceiling  act 8)]
         [NoScaleOffset] _SkyBehindCube ("Sky behind the ceiling", Cube) = "black" {}
+        _MirrorTint ("Mirror band tint  D-17 toward gold", Vector) = (1, 1, 1, 0)
+        _PurpleGuard ("Purple guard  x on  y max OKLab chroma", Vector) = (1, 0.02, 0, 0)
         _DissolveTime ("Dissolve clock  t minus 956.36  negative whole", Float) = -1
         _DissolveFront ("Dissolve front s", Float) = 4
         _DissolvePixel ("Dissolve per pixel s", Float) = 5

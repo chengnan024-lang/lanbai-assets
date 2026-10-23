@@ -209,11 +209,12 @@ def frame_K4(rays, eye, t, a):
     sdir = dir_az_el(0.0, 0.5)
     sunc = lin('#FF9167', 2.74)
     M = dict(WaterColor=(0.0116, 0.0296, 0.0683), DiscCenter=(0, 0, 2700, 500), NormalStrength=float(a.get('nstr', 0.25)),
-             DissolveTime=float(a.get('dissolve', -1.0)), ReflClamp=float(a.get('clamp', 8.0)))
+             DissolveTime=float(a.get('dissolve', -1.0)), ReflClamp=float(a.get('clamp', 8.0)),
+             MirrorTint=tuple(float(x) for x in a.get('mtint', '1,1,1').split(',')), PurpleGuard=(float(a.get('guard', 1.0)), 0.02))
     _SYNTH['below_deg'] = a.get('below', 5.0)
     E = env_dusk_synth if a.get('sky', 'synth') == 'synth' else env_dusk
     rgb, alpha, hit, P = S.shade_plane(eye, rays, eye[1] + h, 'ceiling', t, M, env=E('lower'), behind_env=E('upper'))
-    sky = E('upper').lookup(rays)
+    sky = S.purple_guard(E('upper').lookup(rays), dict(PurpleGuard=(1.0, 0.02)))   # stand-in sky: the bible's other-sky nadir #2E3C66 sits on the violet edge (Sky's call)
     fogc = lin('#DE9692')                                    # bible §6·8 大气: Exp 0.00015, fill #DE9692
     # height falloff (LanbaiFog _FogHeightFalloff, metres): the fog thins above the eye, so the deep-blue water overhead
     # is not tinted by the warm horizon fog (2 % of #DE9692 over #10263F reads violet). Unity: the ceiling material's

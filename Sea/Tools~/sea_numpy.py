@@ -180,7 +180,7 @@ DEFAULTS = dict(LargeTile=64.0, SmallTile=9.0, LargeScroll=(0.9, 0.35), SmallScr
                 SunColor=(0, 0, 0), SunDir=(0.703, 0.105, 0.703), SunGlitterRough=0.12, SunReflPeakEV=1.3, SunDiscDeg=0.9,
                 AirSide=1.0, WindowGain=1.0, WindowTint=(1, 1, 1), Dispersion=(1.331, 1.337), TIRColor=(0.0222, 0.0685, 0.1651),
                 TIRCubeGain=0.0, WindowEdgeSoft=0.6, WindowRadial=(1.0, 2.0), WindowSunDir=(0.0, -0.0087, 1.0, 1.2), WindowSunSpread=14.0, WindowSunColor=(0, 0, 0), WindowSunFloor=0.35, DissolveTime=-1.0, DissolveFront=4.0, DissolvePixel=5.0,
-                FogMode=1, ReflExposure=1.0,
+                FogMode=1, ReflExposure=1.0, MirrorTint=(1.0, 1.0, 1.0), PurpleGuard=(1.0, 0.02),
                 GerstnerLength=(60, 37, 23, 0.08), GerstnerAmp=(0, 0, 0), GerstnerDir=(0.94, 0.34, 0.5, 0.866), LampGlints=0.0, Lamps=())
 
 _TEX = {}
@@ -358,6 +358,31 @@ def below(N, I, var, window_env, refl_env, M):
     return mirror * F[..., None] + win * ((1 - F) * edge * (1 - wcover))[..., None] + wsun
 
 
+def lin_to_oklab(c):
+    M1 = np.array([[0.4122214708, 0.5363325363, 0.0514459929], [0.2119034982, 0.6806995451, 0.1073969566], [0.0883024619, 0.2817188376, 0.6299787005]])
+    M2 = np.array([[0.2104542553, 0.7936177850, -0.0040720468], [1.9779984951, -2.4285922050, 0.4505937099], [0.0259040371, 0.7827717662, -0.8086757660]])
+    return np.cbrt(np.maximum(c @ M1.T, 0.0)) @ M2.T
+
+
+def oklab_to_lin(L):
+    M1 = np.array([[1.0, 0.3963377774, 0.2158037573], [1.0, -0.1055613458, -0.0638541728], [1.0, -0.0894841775, -1.2914855480]])
+    M2 = np.array([[4.0767416621, -3.3077115913, 0.2309699292], [-1.2684380046, 2.6097574011, -0.3413193965], [-0.0041960863, -0.7034186147, 1.7076147010]])
+    return np.maximum((L @ M1.T) ** 3 @ M2.T, 0.0)
+
+
+def purple_guard(c, M):
+    on, cmax = M['PurpleGuard']
+    if on <= 0:
+        return c
+    L = lin_to_oklab(c)
+    C = np.hypot(L[..., 1], L[..., 2])
+    h = (np.degrees(np.arctan2(L[..., 2], L[..., 1])) + 360.0) % 360.0
+    band = smoothstep(265.0, 285.0, h) * (1.0 - smoothstep(330.0, 350.0, h))
+    Ct = np.where(C > cmax, C + (cmax - C) * band * on, C)
+    L[..., 1:] *= (Ct / np.maximum(C, 1e-9))[..., None]
+    return oklab_to_lin(L)
+
+
 def ceiling_progress(I, M):
     if M['DissolveTime'] < 0:
         return np.zeros(I.shape[:-1])
@@ -397,8 +422,9 @@ def ceiling(N, I, var, worldXZ, refl_env, behind_env, M, P=None):
     R = I - 2 * dot(I, Nw)[..., None] * Nw
     R[..., 1] = -np.abs(R[..., 1])
     a = alpha_of(var, M)
-    refl = cube(refl_env, R, np.sqrt(saturate(a)), M) * M['ReflGain']
+    refl = cube(refl_env, R, np.sqrt(saturate(a)), M) * M['ReflGain'] * np.asarray(M['MirrorTint'])
     c = refl * F + np.asarray(M['WaterColor']) * (1 - F)
+    c = purple_guard(c, M)
     if M['LampGlints'] > 0:
         c = c + ceiling_lamps(P, Nw, -I, a, 1.0 / M['IOR'], M) * M['LampGlints']
     alpha = disc_alpha(worldXZ, M)

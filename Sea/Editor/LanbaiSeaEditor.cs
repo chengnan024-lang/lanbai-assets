@@ -94,8 +94,10 @@ namespace Lanbai.Sea.Editor
 
         static T Load<T>(string rel) where T : Object { return AssetDatabase.LoadAssetAtPath<T>(Root + "/" + rel); }
 
-        /// one material per surface; mode = 0 Above, 1 Below, 2 Ceiling
-        public static Material Make(string name, int mode)
+        /// one material per surface; mode = 0 Above, 1 Below, 2 Ceiling. transparent: null = by mode (Ceiling transparent)
+        public static Material Make(string name, int mode) { return Make(name, mode, mode == 2); }
+
+        public static Material Make(string name, int mode, bool transparent)
         {
             var sh = Shader.Find("Lanbai/Sea");
             if (sh == null) { Debug.LogError("[Lanbai Sea] shader Lanbai/Sea not found (did it compile?)"); return null; }
@@ -110,7 +112,6 @@ namespace Lanbai.Sea.Editor
             m.SetFloat("_SEA", mode);
             m.DisableKeyword("_SEA_ABOVE"); m.DisableKeyword("_SEA_BELOW"); m.DisableKeyword("_SEA_CEILING");
             m.EnableKeyword(mode == 0 ? "_SEA_ABOVE" : mode == 1 ? "_SEA_BELOW" : "_SEA_CEILING");
-            bool transparent = mode == 2;
             m.SetFloat("_SrcBlend", (float)(transparent ? BlendMode.SrcAlpha : BlendMode.One));
             m.SetFloat("_DstBlend", (float)(transparent ? BlendMode.OneMinusSrcAlpha : BlendMode.Zero));
             m.SetFloat("_ZWrite", transparent ? 0f : 1f);
@@ -144,17 +145,35 @@ namespace Lanbai.Sea.Editor
                 c.SetFloat("_TIRCubeGain", 1f);
                 c.SetFloat("_WindowGain", 0f);       // the driver opens it (F8b -> 897.96)
             }
-            // act 8 · the sea ceiling (the Sky places it)
-            var d = Make("M_08_SeaCeiling", 2);
-            if (d != null)
+            // act 8 · the sea ceiling (the Clouds session places it): Sea_Ceiling.fbx = Sea_Ceiling_Inner (r <= 2.4 km) +
+            // Sea_Ceiling_Edge (2.4 .. 3.2 km). Inner = M_08_SeaCeiling (OPAQUE) until 956.36, then M_08_SeaCeilingFade;
+            // Edge = M_08_SeaCeilingEdge (transparent, the soft 2.7 km edge) throughout. README_Sea接口 §2.4.
+            CeilingCommon(Make("M_08_SeaCeiling", 2, false), false);
+            CeilingCommon(Make("M_08_SeaCeilingEdge", 2, true), true);
+            CeilingCommon(Make("M_08_SeaCeilingFade", 2, true), false);
+            // act 11 · the hanging sea 80 m over the road (the Lamps session places it; Lamps/总导演意见.md §2)
+            var h = Make("M_11_SeaHanging", 2, false);
+            if (h != null)
             {
-                d.SetVector("_WaterColor", Lin(0.0116f, 0.0296f, 0.0683f));
-                d.SetVector("_DiscCenter", new Vector4(0f, 0f, 2700f, 500f));
-                d.SetFloat("_NormalStrength", 0.25f);
-                d.SetTexture("_SkyBehindCube", Load<Cubemap>("Textures/Cube_Dusk_256.exr"));
+                h.SetVector("_WaterColor", Lin(0.0116f, 0.0296f, 0.0683f));
+                h.SetVector("_DiscCenter", Vector4.zero);
+                h.SetVector("_GerstnerAmp", new Vector4(0.6f, 0.35f, 0.15f, 0f));
+                h.SetFloat("_LampGlints", 1f);
             }
             AssetDatabase.SaveAssets();
             Debug.Log("[Lanbai Sea] materials written to " + Root + "/Materials");
+        }
+
+        static void CeilingCommon(Material d, bool edge)
+        {
+            if (d == null) return;
+            d.SetVector("_WaterColor", Lin(0.0116f, 0.0296f, 0.0683f));                 // #10263F <- fill #1C304B (S8)
+            d.SetVector("_DiscCenter", edge ? new Vector4(0f, 0f, 2700f, 500f) : Vector4.zero);
+            d.SetFloat("_NormalStrength", 0.25f);
+            d.SetVector("_MirrorTint", new Vector4(1f, 1.2f, 0.85f, 0f));               // D-17: the mirror band to gold (h_ab 62)
+            d.SetVector("_PurpleGuard", new Vector4(1f, 0.02f, 0f, 0f));
+            d.SetFloat("_ReflClamp", 8f);
+            d.SetTexture("_SkyBehindCube", Load<Cubemap>("Textures/Cube_Dusk_256.exr"));
         }
     }
 }

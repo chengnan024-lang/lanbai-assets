@@ -288,6 +288,7 @@ inline float3 LanbaiSeaBelow(float3 N, float3 I, float slopeVar)
 // ============================================================================================== CEILING
 UNITY_DECLARE_TEXCUBE(_SkyBehindCube);
 float4 _SkyBehindCube_HDR;
+float4 _MirrorTint;          // the grazing mirror band's tint (D-17: toward gold, h_ab >= 60); (1, 1, 1) = none
 float  _DissolveTime;        // t - F10e (956.36); < 0 = whole
 float  _DissolveFront;       // 4 s: the front runs horizon -> zenith
 float  _DissolvePixel;       // 5 s: each pixel's own EV-linear fade
@@ -306,6 +307,46 @@ inline float LanbaiCeilingLampProgress(float3 viewDir)
 }
 
 inline float LanbaiLuma(float3 c) { return dot(c, float3(0.2126, 0.7152, 0.0722)); }
+
+// ---- OKLab (Ottosson 2020), linear sRGB in / out ------------------------------------------------------------------
+inline float3 LanbaiLinToOklab(float3 c)
+{
+    float l = 0.4122214708 * c.r + 0.5363325363 * c.g + 0.0514459929 * c.b;
+    float m = 0.2119034982 * c.r + 0.6806995451 * c.g + 0.1073969566 * c.b;
+    float s = 0.0883024619 * c.r + 0.2817188376 * c.g + 0.6299787005 * c.b;
+    l = pow(max(l, 0.0), 1.0 / 3.0); m = pow(max(m, 0.0), 1.0 / 3.0); s = pow(max(s, 0.0), 1.0 / 3.0);
+    return float3(0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s,
+                  1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s,
+                  0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s);
+}
+inline float3 LanbaiOklabToLin(float3 L)
+{
+    float l = L.x + 0.3963377774 * L.y + 0.2158037573 * L.z;
+    float m = L.x - 0.1055613458 * L.y - 0.0638541728 * L.z;
+    float s = L.x - 0.0894841775 * L.y - 1.2914855480 * L.z;
+    l = l * l * l; m = m * m * m; s = s * s * s;
+    return max(float3(4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+                     -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
+                     -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s), 0.0);
+}
+
+// Purple guard (Art/总导演裁决.md D-17; bible §1.3.4: outside acts 4 / 4c no region > 2 % may be h_ab 290-325 & C* > 15).
+// Any colour whose OKLab hue falls in the violet band is pulled toward the grey axis: chroma <= _PurpleGuard.y.
+// (OKLab hue of CIELab 290..325 is ~ 280..330 for these darks; the band is widened by 10 deg each side, soft edges.)
+float4 _PurpleGuard;         // x = 0 off / 1 on, y = max OKLab chroma inside the band (0.02 ~ CIE C* 5), zw unused
+inline float3 LanbaiPurpleGuard(float3 c)
+{
+    if (_PurpleGuard.x <= 0.0) return c;
+    float3 L = LanbaiLinToOklab(c);
+    float C = length(L.yz);
+    if (C <= _PurpleGuard.y) return c;
+    float h = degrees(atan2(L.z, L.y));
+    h = h < 0.0 ? h + 360.0 : h;
+    float band = smoothstep(265.0, 285.0, h) * (1.0 - smoothstep(330.0, 350.0, h));
+    float Ct = lerp(C, _PurpleGuard.y, band * _PurpleGuard.x);
+    L.yz *= Ct / C;
+    return LanbaiOklabToLin(L);
+}
 
 // alpha that makes   lerp(sky, ceil, alpha)   follow L(p) = Lc^(1-p) Ls^p  (EV-linear per pixel, bible §1.8)
 inline float LanbaiEvLinearAlpha(float Lc, float Ls, float p)
@@ -355,8 +396,9 @@ inline float4 LanbaiSeaCeiling(float3 N, float3 I, float slopeVar, float2 worldX
     float3 R = reflect(I, Nw);                                 // down: the dusk below (ReflCube_DuskLower)
     R.y = -abs(R.y);
     float a = LanbaiSeaAlpha(slopeVar);
-    float3 refl = LanbaiSeaCube(R, LanbaiSeaPerceptual(a)) * _ReflGain;
+    float3 refl = LanbaiSeaCube(R, LanbaiSeaPerceptual(a)) * _ReflGain * _MirrorTint.rgb;
     float3 c = refl * F + _WaterColor.rgb * (1.0 - F);
+    c = LanbaiPurpleGuard(c);                                  // D-17: the rose-gold -> deep-blue transition never passes violet
     [branch] if (_LampGlints > 0.0)
         c += LanbaiCeilingLamps(P, Nw, -I, a, 1.0 / _IOR) * _LampGlints;
     float alpha = LanbaiSeaDiscAlpha(worldXZ);
