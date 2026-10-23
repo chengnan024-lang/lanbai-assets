@@ -31,6 +31,13 @@ VRChat 只允许 Udon 写 `_Udon_` 前缀的全局 shader 量（`VRCShader.SetGl
 | `_Udon_WaterFogUp` / `_Udon_WaterFogMid` / `_Udon_WaterFogDown` | 水下雾色（朝上 / 水平 / 朝下，线性） | 海 | `LanbaiFog` |
 | `_Udon_MirrorPlane` | float4：x 当前镜面在车正下方的世界 y、y 镜线强度 0–1、z 镜序号 1–13（0 无）、w 穿越进度 −1…1 | 镜子驱动 | 车厢、`Lanbai/BronzeMirror`、星尘 |
 | `_Udon_MirrorRimLight` | float4：xyz 最近镜缘点世界位置、w 目标照度 E（0–0.3，8000 K） | 镜子驱动 | 车厢 / 头像补光 |
+| `_Udon_OverlayColor` | rgb 填色 × 2^(−ΔEV)，a FLAT 模式的 alpha | `LanbaiOverlay`（由当时拥有遮罩的幕调用） | `Lanbai/Overlay` |
+| `_Udon_OverlayCurve` / `_Udon_OverlayLum` | 曲线（tau、T、模式、呼吸）；(Lfrom, Lto, Lscene, Lover) | 同上 | 同上 |
+| `_Udon_OverlayLobe0..3` / `_Udon_OverlayLead` / `_Udon_OverlayLeadElse` | 方向领先瓣（方向、半角）；各瓣领先秒数；其余方向领先与软边 | 同上 | 同上 |
+| `_Udon_InsidePortal` | x 裂口平面世界 z，y = 1 门户生效 | 门内驱动 | 门内 shader、**门的 shader / 驱动** |
+| `_Udon_InsideDot` / `_Udon_InsideFibre` / `_Udon_InsideClock` / `_Udon_InsideFog` | 暖白点；纤维填色；丝线时钟；当前区雾色与密度 | 门内驱动 | `Lanbai/InsideLip` 等 |
+| `_Udon_CabinSlice` / `_Udon_CabinSliceColor` | 车厢穿越光带：前沿车坐标 z、软边、指数拖尾、覆盖；颜色 × E、窗形遮罩权重 | 门内驱动（第 9 幕镜子也用） | `Lanbai/Cabin` |
+| `_Udon_RadioDial` | 收音机表盘发光填值 | 时间轴 / 门内驱动（4c、5） | `Lanbai/Cabin` |
 | `_Udon_WorldS` | （本地的时间轴里用的，含义见 `FromLocal/code/timeline_v1/`） | 本地 | 本地 |
 
 ## 预留（还没人写，先占名字）
@@ -41,4 +48,3 @@ VRChat 只允许 Udon 写 `_Udon_` 前缀的全局 shader 量（`VRCShader.SetGl
 | `_Udon_SkyBlend` | `Lanbai/Sky` 两张立方图的混合 | 天空 |
 | `_Udon_HorizonColor` / `_Udon_ZenithColor` | 地平线 / 天顶色（`LanbaiHorizon` 的底色） | 天空 |
 | `_Udon_StarGain` / `_Udon_GalaxyGain` | 星点、银河辉光的增益（第 9 幕的点燃线 g(t)） | 天空 |
-| `_Udon_OverlayColor` / `_Udon_OverlayAlpha` | 遮罩球填色、alpha | 门内（`Lanbai_Overlay` v2） |
