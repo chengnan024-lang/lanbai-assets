@@ -50,6 +50,7 @@ public class LanbaiGateClouds : UdonSharpBehaviour
 
     public void LanbaiTick(float time)
     {
+        if (_mpb == null) Start();             // activated and ticked in the same frame: Start has not run yet (tech r1 #9)
         t = time;
         Apply();
     }
@@ -59,9 +60,13 @@ public class LanbaiGateClouds : UdonSharpBehaviour
         gameObject.SetActive(on);
     }
 
+    // {U6 - 20, U9 + 2} from FromLocal/cues.json (U6 133.80, U9 179.55); the builder can overwrite these
+    public float windowStart = 113.80f;
+    public float windowEnd = 181.55f;
+
     public float[] LanbaiWindow()
     {
-        return new float[] { 113.80f, 181.55f };
+        return new float[] { windowStart, windowEnd };
     }
 
     void Start()
@@ -104,7 +109,7 @@ public class LanbaiGateClouds : UdonSharpBehaviour
 
     public void Apply()
     {
-        if (_mpb == null) return;
+        if (_mpb == null) Start();
         for (int i = 0; i < towers.Length; i++)
         {
             Transform tr = towers[i];

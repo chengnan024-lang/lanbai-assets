@@ -1,6 +1,6 @@
 // =====================================================================================================
 //  v2.3 (gate clouds kit, 2026-10-22; UNCOMPILED): the fog colour is the SHARED gate sky (gate_test §2.2 item 10):
-//    #include "LanbaiGateSky.cginc" (same folder) and LanbaiGateFogColour(V, dist, moon, 0.35, 0) -- the band WITH the
+//    #include "Assets/Lanbai/Gate/Shaders/LanbaiGateSky.cginc" (project-root path, CONTROL §3) and LanbaiGateFogColour(V, dist, moon, 0.35, 0) -- the band WITH the
 //    round-8 back band and below-horizon desaturation, + the moon aureole, exactly the arms' fog. The private copy of
 //    LanbaiBand (v2 values (12, 34, 5), unscaled fills) is gone; the defaults are the gate's: _HazeNear (0.1085,
 //    0.1130, 0.1641), _HazeFar (0.0436, 0.0504, 0.0726), _BandEl (6, 22, 2). Geometry, rise, sway, mist unchanged.
@@ -91,7 +91,7 @@ Shader "Lanbai/TentacleTide"
             #pragma fragment frag
             #pragma target 3.0
             #include "UnityCG.cginc"
-            #include "LanbaiGateSky.cginc"
+            #include "Assets/Lanbai/Gate/Shaders/LanbaiGateSky.cginc"
 
             sampler2D _MainTex;
             float _Opacity, _RimGain, _SwayAmp, _SwayPeriod, _AtlasGain, _Reveal;

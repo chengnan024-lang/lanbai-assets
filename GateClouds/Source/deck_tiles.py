@@ -35,9 +35,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 MOON = np.array([-0.2059, 0.1392, 0.9686])
 MOON = MOON / np.linalg.norm(MOON)
 
-P_D, N_D = 960.0, 1024
+P_D, N_D = 1600.0, 1024
 P_M, N_M = 6400.0, 512
-H_DETAIL_MIN, H_DETAIL_MAX = -12.0, 44.0
+H_DETAIL_MIN, H_DETAIL_MAX = -12.0, 56.0
 H_MACRO_MIN, H_MACRO_MAX = -12.0, 12.0
 TAU_MAX_D, TAU_MAX_M = 160.0, 400.0
 AMP_MIN, AMP_MAX = 0.35, 1.2
@@ -102,7 +102,7 @@ def cumulus_heads(rng, period, coverage, n_heads, r_range):
         stack = [(x, y, z, r, 0)]
         while stack:
             px_, py_, pz_, pr_, lv = stack.pop()
-            if lv >= 3 or pr_ < 1.6:
+            if lv >= 3 or pr_ < 1.2:
                 continue
             for _ in range(rng.integers(3, 7) if lv == 0 else rng.integers(2, 5)):
                 el = math.radians(rng.uniform(18, 72))
@@ -170,16 +170,17 @@ def main():
     cov = np.clip(0.50 + 0.85 * cov, 0.08, 1.0)
     base = -11.0 + 3.0 * fbm_periodic(N_D, 6, 4, rng)
     H = base.copy()
-    heads = cumulus_heads(rng, P_D, cov, 1700, (10.0, 26.0))
+    heads = cumulus_heads(rng, P_D, cov, 2200, (9.0, 40.0))   # round 2 (art r1 #3): 2.5x bigger, sizes 1:4
     stamp_spheres(H, heads, P_D, N_D)
-    H += 0.7 * fbm_periodic(N_D, 120, 3, rng)          # cauliflower grain
+    H += 1.2 * fbm_periodic(N_D, 160, 3, rng)          # cauliflower grain
     H = ndimage.gaussian_filter(H, 0.6, mode='wrap')
+    H = 0.6 * H                                    # round 2 (art r1 #3): heights x 0.6, rounder and softer
     print('detail heads %d  H %.1f .. %.1f  mean %.1f  (%.0fs)' % (len(heads), H.min(), H.max(), H.mean(), time.time() - t0))
-    tau = moon_path(H, P_D, EDGE_D, 360.0, 1.0)
+    tau = moon_path(H, P_D, EDGE_D, 700.0, 2.0)
     tau = ndimage.gaussian_filter(tau, 2.0, mode='wrap')     # multiple scattering softens the moon's shadow lanes
     print('detail tau p50 %.1f p95 %.1f max %.1f (%.0fs)' % (np.percentile(tau, 50), np.percentile(tau, 95), tau.max(),
                                                           time.time() - t0))
-    ao = sky_ao(H, P_D, (3.0, 10.0, 28.0))
+    ao = sky_ao(H, P_D, (6.0, 20.0, 60.0))
     Hs = ndimage.gaussian_filter(H, 1.0, mode='wrap')
     px = P_D / N_D
     gx = (np.roll(Hs, -1, 1) - np.roll(Hs, 1, 1)) / (2 * px)

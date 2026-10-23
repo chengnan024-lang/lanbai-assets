@@ -53,7 +53,7 @@ namespace UnityEditor
     using UnityEngine;
     [AttributeUsage(AttributeTargets.Method)] public class MenuItem : Attribute { public MenuItem(string p) { } }
     public static class AssetDatabase { public static string[] FindAssets(string f) => null; public static string GUIDToAssetPath(string g) => null;
-        public static T LoadAssetAtPath<T>(string p) where T : Object => null; public static void CreateAsset(Object o, string p) { }
+        public static T LoadAssetAtPath<T>(string p) where T : Object => null; public static Object LoadAssetAtPath(string p, System.Type t) => null; public static void CreateAsset(Object o, string p) { }
         public static bool IsValidFolder(string p) => true; public static string CreateFolder(string a, string b) => null; public static void SaveAssets() { } }
     public static class EditorUtility { public static void CopySerialized(Object a, Object b) { } public static void SetDirty(Object o) { } }
     public class AssetImporter : Object { public static AssetImporter GetAtPath(string p) => null; public void SaveAndReimport() { } }
@@ -61,7 +61,7 @@ namespace UnityEditor
     public enum TextureImporterMipFilter { BoxFilter } public enum TextureImporterNPOTScale { None }
     public enum TextureImporterFormat { RGBA32, BC7 } public enum TextureImporterCompression { Uncompressed, CompressedHQ }
     public class TextureImporterPlatformSettings { public int maxTextureSize; public TextureImporterFormat format; public TextureImporterCompression textureCompression; public bool overridden; }
-    public class TextureImporter : AssetImporter { public TextureImporterType textureType; public bool sRGBTexture; public TextureImporterAlphaSource alphaSource;
+    public class TextureImporter : AssetImporter { public TextureImporterCompression textureCompression; public TextureImporterType textureType; public bool sRGBTexture; public TextureImporterAlphaSource alphaSource;
         public bool alphaIsTransparency; public TextureWrapMode wrapMode; public bool mipmapEnabled; public TextureImporterMipFilter mipmapFilter;
         public FilterMode filterMode; public int anisoLevel; public int maxTextureSize; public TextureImporterNPOTScale npotScale;
         public TextureImporterPlatformSettings GetDefaultPlatformTextureSettings() => null; public TextureImporterPlatformSettings GetPlatformTextureSettings(string p) => null;
@@ -75,3 +75,11 @@ namespace UdonSharp
     [AttributeUsage(AttributeTargets.Class)] public sealed class UdonBehaviourSyncModeAttribute : Attribute { public UdonBehaviourSyncModeAttribute(BehaviourSyncMode m) { } }
 }
 namespace VRC.SDKBase { public static class VRCShader { public static int PropertyToID(string name) => 0; } }
+namespace UnityEditor
+{
+    public class MonoScript : UnityEngine.Object { public static MonoScript FromMonoBehaviour(UnityEngine.MonoBehaviour b) => null; }
+}
+namespace UnityEngine
+{
+    public class ScriptableObject : Object { public static ScriptableObject CreateInstance(System.Type t) => null; }
+}

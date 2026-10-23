@@ -44,7 +44,7 @@ def shape_of(card):
 
 
 GROUP = {
-    'tower': dict(queue=3000, melt=[-20.0, 90.0], fog_cap=0.5),
+    'tower': dict(queue=3000, melt=[-30.0, 150.0], fog_cap=0.5),       # round 2: a 30-60 m mist skirt (art r1 #4)
     'far': dict(queue=2990, melt=[-10.0, 130.0], fog_cap=0.62),
     'horizon': dict(queue=2990, melt=[-10.0, 130.0], fog_cap=0.62),
     'mist': dict(queue=3000, melt=[-10.0, 60.0], fog_cap=0.7),
@@ -85,8 +85,15 @@ def main():
         cards.append(card_entry(it['id'], 'tower', it, it))
     for k, it in enumerate(G['clouds']['far']):
         cards.append(card_entry('Far_%02d' % k, 'far', it))
+    # round 2 (art r1 #5): the horizon masses were near-symmetric islands of one height: widths x 0.8-1.3, heights
+    # x 0.55-1.65 (a 3x spread), seeded, so the far line breaks up at different heights
+    import random
+    rnd = random.Random(11)
     for k, it in enumerate(G['clouds']['horizon_relief']['items']):
-        cards.append(card_entry('Horizon_%02d' % k, 'horizon', it))
+        e = card_entry('Horizon_%02d' % k, 'horizon', it)
+        sw, sh = rnd.uniform(0.8, 1.3), rnd.uniform(0.55, 1.65)
+        e['size'] = [round(e['size'][0] * sw, 1), round(e['size'][1] * sh, 1)]
+        cards.append(e)
     for k, it in enumerate(G['clouds']['mist']):
         cards.append(card_entry('Mist_%02d' % k, 'mist', it))
     shapes = []

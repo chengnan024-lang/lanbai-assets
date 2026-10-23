@@ -24,15 +24,15 @@ Shader "Lanbai/GateCloudCard"
         _Scale ("Channel scales from gate_cards.json (R, G, B)", Vector) = (1, 1, 1, 0)
         _Mirror ("Mirrored (moon on the card's left; MPB)", Float) = 0
         _MoonColor ("Moon colour #D6E4FF, linear", Vector) = (0.6724, 0.7758, 1.0, 1)
-        _MoonE ("Moon on the cards (1 = the bake's light)", Range(0, 4)) = 0.09
+        _MoonE ("Moon on the cards (1 = the bake's light)", Range(0, 4)) = 0.146
         _SkyColor ("Sky light colour, linear (the band, desaturated)", Vector) = (0.060, 0.064, 0.088, 1)
-        _SkyE ("Sky light on the cards", Range(0, 4)) = 0.55
+        _SkyE ("Sky light on the cards", Range(0, 4)) = 0.89
         _Gain ("Card gain (JSON gain; MPB)", Range(0, 3)) = 1
         _Alpha ("Alpha (JSON opacity x sink fade; MPB)", Range(0, 1)) = 1
-        _Lining ("Lining near the moon: gain, width (deg), max angle (deg), -", Vector) = (0.9, 7, 15, 0)
+        _Lining ("Lining near the moon: gain, width (deg), max angle (deg), -", Vector) = (0.35, 7, 15, 0)
         _Melt ("Base melt: from (m above the cloud top), over (m)", Vector) = (-20, 90, 0, 0)
         _FogDensity ("Fog density, scale, moon air, CAP (towers 0.5, far / horizon 0.62, mist 0.7)", Vector) = (0.0006, 1.0, 0.35, 0.5)
-        _SoftFade ("Soft depth fade (m; 0 = off: turn on only when the camera has a depth texture)", Float) = 0
+        _SoftFade ("Soft depth fade (m; with the SOFTPARTICLES_ON keyword)", Float) = 30
         _CloudTopY ("Cloud top world y (fallback; _Udon_CloudTop wins)", Float) = -57.4
         _RimDir ("Direction to the moon (fallback; _Udon_MoonDir wins)", Vector) = (-0.2059, 0.1392, 0.9686, 0)
 
@@ -63,6 +63,7 @@ Shader "Lanbai/GateCloudCard"
             #pragma fragment frag
             #pragma target 3.5
             #pragma multi_compile_instancing
+            #pragma multi_compile _ SOFTPARTICLES_ON
             #include "UnityCG.cginc"
             #include "Assets/Lanbai/Gate/Shaders/LanbaiGateSky.cginc"
 
@@ -70,6 +71,7 @@ Shader "Lanbai/GateCloudCard"
             float4 _Scale, _MoonColor, _SkyColor, _Lining, _Melt, _FogDensity, _RimDir;
             float _MoonE, _SkyE, _SoftFade, _CloudTopY;
             float4 _Udon_CloudTop;
+            float4 _Udon_InsidePortal;   // x = the tear plane's world z, y = 1 once the bus is through (act 4c)
             UNITY_DECLARE_DEPTH_TEXTURE(_CameraDepthTexture);
 
             UNITY_INSTANCING_BUFFER_START(Props)
@@ -110,7 +112,7 @@ Shader "Lanbai/GateCloudCard"
                 float sy = length(unity_ObjectToWorld._m01_m11_m21);
                 float3 toEye = CentreEye() - pivot;
                 float2 f = normalize(toEye.xz + float2(1e-5, 0.0));
-                float3 right = float3(f.y, 0.0, -f.x);                    // card x, seen from the eye: to the right
+                float3 right = float3(-f.y, 0.0, f.x);                    // card x, seen from the eye: to the right (tech r1 #3)
                 float3 w = pivot + right * (v.vertex.x * sx) + float3(0.0, v.vertex.y * sy, 0.0);
                 o.wpos = w;
                 o.pivot = pivot;
@@ -125,6 +127,7 @@ Shader "Lanbai/GateCloudCard"
             {
                 UNITY_SETUP_INSTANCE_ID(i);
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
+                if (_Udon_InsidePortal.y > 0.5 && i.wpos.z > _Udon_InsidePortal.x) discard;   // U9: not into act 4c
                 float mir = UNITY_ACCESS_INSTANCED_PROP(Props, _Mirror);
                 float alphaK = UNITY_ACCESS_INSTANCED_PROP(Props, _Alpha);
                 float2 uv = float2(mir > 0.5 ? 1.0 - i.uv.x : i.uv.x, i.uv.y);
@@ -145,7 +148,7 @@ Shader "Lanbai/GateCloudCard"
                 float moonC = lerp(tx.r * _Scale.x, tx.g * _Scale.y, wk);
                 // forward-scatter lining near the moon (round 8: soft, on the blurred alpha edge, <= 15 deg)
                 float am = degrees(acos(clamp(dot(V, moonD), -1.0, 1.0)));
-                float edge = saturate(1.0 - abs(tx.a - 0.45) / 0.45);
+                float edge = smoothstep(0.02, 0.35, tx.a) * (1.0 - smoothstep(0.55, 0.95, tx.a));   // the soft alpha border, broad (no drawn line)
                 float lining = _Lining.x * exp(-am / _Lining.y) * step(am, _Lining.z) * edge;
                 float3 c = (_MoonE * (moonC * (1.0 + lining))) * _MoonColor.rgb + (_SkyE * tx.b * _Scale.z) * _SkyColor.rgb;
                 c *= UNITY_ACCESS_INSTANCED_PROP(Props, _Gain);
@@ -158,11 +161,13 @@ Shader "Lanbai/GateCloudCard"
                 // base melting into the deck, + the soft depth fade where the billows cut the card
                 float top = (_Udon_CloudTop.w > 0.0) ? _Udon_CloudTop.x : _CloudTopY;
                 float a = tx.a * alphaK * smoothstep(top + _Melt.x, top + _Melt.x + _Melt.y, i.wpos.y);
+            #if defined(SOFTPARTICLES_ON)
                 if (_SoftFade > 0.0)
                 {
                     float sceneZ = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE_PROJ(_CameraDepthTexture, UNITY_PROJ_COORD(i.proj)));
                     a *= saturate((sceneZ - i.proj.z) / _SoftFade);
                 }
+            #endif
                 return half4(c, a);
             }
             ENDCG

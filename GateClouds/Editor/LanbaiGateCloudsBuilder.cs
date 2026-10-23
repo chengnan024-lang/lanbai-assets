@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
@@ -85,18 +86,15 @@ public static class LanbaiGateCloudsBuilder
         ti.mipmapEnabled = true;
         ti.mipmapFilter = TextureImporterMipFilter.BoxFilter;
         ti.filterMode = FilterMode.Trilinear;
-        ti.anisoLevel = repeat ? 16 : 2;          // the deck's grazing footprints go through tex2Dgrad (anisotropic)
+        ti.anisoLevel = repeat ? 4 : 2;           // the deck's footprints already go through tex2Dgrad (VR r1: 16 was 4-8x the fetches)
         ti.maxTextureSize = 2048;
         ti.npotScale = TextureImporterNPOTScale.None;
-        var ps = ti.GetDefaultPlatformTextureSettings();
-        ps.maxTextureSize = 2048;
-        ps.format = uncompressed ? TextureImporterFormat.RGBA32 : TextureImporterFormat.BC7;
-        ps.textureCompression = uncompressed ? TextureImporterCompression.Uncompressed : TextureImporterCompression.CompressedHQ;
-        ti.SetPlatformTextureSettings(ps);
+        // Default platform: compression only (its format must stay Automatic); the format goes in the PC override
+        ti.textureCompression = uncompressed ? TextureImporterCompression.Uncompressed : TextureImporterCompression.CompressedHQ;
         var pc = ti.GetPlatformTextureSettings("Standalone");
         pc.overridden = true;
         pc.maxTextureSize = 2048;
-        pc.format = ps.format;
+        pc.format = uncompressed ? TextureImporterFormat.RGBA32 : TextureImporterFormat.BC7;
         ti.SetPlatformTextureSettings(pc);
         ti.SaveAndReimport();
     }
@@ -124,14 +122,16 @@ public static class LanbaiGateCloudsBuilder
 
     static Mesh CardQuad(ShapeDef s)
     {
+        // the quad cropped to the cloud's alpha bbox (VR r1: ~32 % less overdraw); positions in card units (scale = size)
         float pu = s.pivot_uv[0], pv = s.pivot_uv[1];
+        float u0 = s.bbox_uv[0], v0 = Mathf.Min(s.bbox_uv[1], pv), u1 = s.bbox_uv[2], v1 = s.bbox_uv[3];
         var m = new Mesh { name = "GateClouds_Card_" + s.shape };
-        m.vertices = new[] { new Vector3(-pu, -pv, 0), new Vector3(1 - pu, -pv, 0), new Vector3(1 - pu, 1 - pv, 0), new Vector3(-pu, 1 - pv, 0) };
-        m.uv = new[] { Vector2.zero, Vector2.right, Vector2.one, Vector2.up };
+        m.vertices = new[] { new Vector3(u0 - pu, v0 - pv, 0), new Vector3(u1 - pu, v0 - pv, 0), new Vector3(u1 - pu, v1 - pv, 0), new Vector3(u0 - pu, v1 - pv, 0) };
+        m.uv = new[] { new Vector2(u0, v0), new Vector2(u1, v0), new Vector2(u1, v1), new Vector2(u0, v1) };
         m.normals = new[] { Vector3.back, Vector3.back, Vector3.back, Vector3.back };
         m.triangles = new[] { 0, 2, 1, 0, 3, 2 };
-        float r = Mathf.Max(pu, 1 - pu);
-        m.bounds = new Bounds(new Vector3(0, 0.5f - pv, 0), new Vector3(2 * r, 1, 2 * r));   // the yaw billboard turns
+        float r = Mathf.Max(pu - u0, u1 - pu);
+        m.bounds = new Bounds(new Vector3(0, 0.5f * (v0 + v1) - pv, 0), new Vector3(2 * r, v1 - v0, 2 * r));   // the yaw billboard turns
         return m;
     }
 
@@ -157,6 +157,7 @@ public static class LanbaiGateCloudsBuilder
     // ---- materials ------------------------------------------------------------------------------------------------
     static Material SaveMat(Shader sh, string path)
     {
+        if (sh == null) throw new Exception("[GateClouds] a kit shader did not compile (Shader.Find returned null): see the Console, " + path);
         var m = AssetDatabase.LoadAssetAtPath<Material>(path);
         if (m == null) { m = new Material(sh); AssetDatabase.CreateAsset(m, path); }
         m.shader = sh;
@@ -199,6 +200,9 @@ public static class LanbaiGateCloudsBuilder
         Material deckMat = SaveMat(deckSh, gen + "/M_GateCloudDeck.mat");
         deckMat.SetTexture("_DetailTex", AssetDatabase.LoadAssetAtPath<Texture2D>(kit + "/Textures/" + L.deck.detail));
         deckMat.SetTexture("_MacroTex", AssetDatabase.LoadAssetAtPath<Texture2D>(kit + "/Textures/" + L.deck.macro));
+        string lanes = Path.GetDirectoryName(kit).Replace('\\', '/') + "/Gate/Textures/Tear_CloudLanes_1024.png";
+        SetupTexture(lanes, false, false, true);
+        deckMat.SetTexture("_LanesTex", AssetDatabase.LoadAssetAtPath<Texture2D>(lanes));
         var deck = new GameObject("Deck");
         deck.transform.SetParent(root, false);
         deck.transform.localPosition = new Vector3(0, L.deck.local_y, 0);
@@ -274,7 +278,7 @@ public static class LanbaiGateCloudsBuilder
             V(m, "_Beam", b.half_width, b.length, b.widen, 0);
             m.SetFloat("_Intensity", b.intensity);
             if (b.mode > 0.5f) V(m, "_NearFadeM", 0, 1, 0, 0);       // wedges: no near fade (they start behind the arms)
-            m.renderQueue = b.mode < 0.5f ? 2998 : 2990;
+            m.renderQueue = b.mode < 0.5f ? 2998 : 2991;                 // wedges after the far cards (tech r1 #13)
             var go = new GameObject((b.parent == "Tear_Root" ? "GateBeam_" : "") + b.id);
             go.transform.SetParent(parent, false);
             go.transform.localPosition = new Vector3(b.start[0], b.start[1], b.start[2]);
@@ -295,15 +299,80 @@ public static class LanbaiGateCloudsBuilder
         drv.sagKeys = sagK.ToArray(); drv.sagStart = sagS.ToArray(); drv.sagCount = sagN.ToArray();
         drv.sinkKeys = sinkK.ToArray(); drv.sinkStart = sinkS.ToArray(); drv.sinkCount = sinkN.ToArray();
         drv.alphaKeys = alK.ToArray(); drv.alphaStart = alS.ToArray(); drv.alphaCount = alN.ToArray();
-#if UDONSHARP
-        UdonSharpEditor.UdonSharpEditorUtility.CopyProxyToUdon(drv);
-#endif
+        SetupUdonSharp(drv, gen);
+        // the deck now draws the tear's pool itself (tech r1 #4): the flat cloud-top layers would be cut by the billows
+        if (tearRoot != null)
+            foreach (string n in new[] { "Tear_CloudGlow", "Tear_CloudGlow_Additive", "Tear_LightLane" })
+            {
+                Transform t = FindDeep(tearRoot, n);
+                var rr = t != null ? t.GetComponent<Renderer>() : null;
+                if (rr != null) { rr.enabled = false; Debug.Log("[GateClouds] turned off " + n + " (the deck draws the pool)"); }
+            }
         EditorUtility.SetDirty(drv);
         AssetDatabase.SaveAssets();
         UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(root.gameObject.scene);
         Apply(L.hero_t);
         Debug.Log(string.Format("[GateClouds] built: deck, {0} cards ({1} towers), {2} beams", allR.Count, towT.Count, L.beams.Length));
         return root.gameObject;
+    }
+
+    static Type FindType(string full)
+    {
+        foreach (Assembly a in AppDomain.CurrentDomain.GetAssemblies())
+        {
+            Type t = a.GetType(full);
+            if (t != null) return t;
+        }
+        return null;
+    }
+
+    // UdonSharp 1.x by reflection (the kit compiles with or without it; tech r1 #1): a program asset for the driver's
+    // script (reuse one if it exists), the backing UdonBehaviour (RunBehaviourSetup), then the proxy's fields -> Udon
+    static void SetupUdonSharp(LanbaiGateClouds drv, string gen)
+    {
+        Type paT = FindType("UdonSharp.UdonSharpProgramAsset");
+        Type utT = FindType("UdonSharpEditor.UdonSharpEditorUtility");
+        if (paT == null || utT == null) { Debug.LogWarning("[GateClouds] UdonSharp not found: LanbaiGateClouds needs its program asset (Add Component in the Inspector)"); return; }
+        MonoScript ms = MonoScript.FromMonoBehaviour(drv);
+        FieldInfo src = paT.GetField("sourceCsScript");
+        UnityEngine.Object asset = null;
+        foreach (string g in AssetDatabase.FindAssets("t:UdonSharpProgramAsset"))
+        {
+            UnityEngine.Object a = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(g), paT);
+            if (a != null && src != null && (UnityEngine.Object)src.GetValue(a) == ms) { asset = a; break; }
+        }
+        if (asset == null && src != null)
+        {
+            asset = ScriptableObject.CreateInstance(paT);
+            src.SetValue(asset, ms);
+            AssetDatabase.CreateAsset(asset, gen + "/LanbaiGateClouds_Program.asset");
+            AssetDatabase.SaveAssets();
+            Debug.Log("[GateClouds] created the UdonSharp program asset " + gen + "/LanbaiGateClouds_Program.asset");
+        }
+        foreach (MethodInfo mi in utT.GetMethods(BindingFlags.Public | BindingFlags.Static))
+        {
+            ParameterInfo[] ps = mi.GetParameters();
+            if (mi.Name == "RunBehaviourSetup" && ps.Length >= 1 && ps[0].ParameterType.IsInstanceOfType(drv))
+            {
+                object[] args = new object[ps.Length];
+                args[0] = drv;
+                for (int k = 1; k < ps.Length; k++) args[k] = ps[k].HasDefaultValue ? ps[k].DefaultValue : null;
+                mi.Invoke(null, args);
+                break;
+            }
+        }
+        foreach (MethodInfo mi in utT.GetMethods(BindingFlags.Public | BindingFlags.Static))
+        {
+            ParameterInfo[] ps = mi.GetParameters();
+            if (mi.Name == "CopyProxyToUdon" && ps.Length >= 1 && ps[0].ParameterType.IsInstanceOfType(drv))
+            {
+                object[] args = new object[ps.Length];
+                args[0] = drv;
+                for (int k = 1; k < ps.Length; k++) args[k] = ps[k].HasDefaultValue ? ps[k].DefaultValue : null;
+                mi.Invoke(null, args);
+                break;
+            }
+        }
     }
 
     static void Pack(float[] keys, List<float> all, List<int> start, List<int> count)

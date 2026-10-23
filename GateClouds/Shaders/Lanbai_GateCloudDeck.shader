@@ -1,25 +1,32 @@
 // =====================================================================================================
-//  Lanbai / GateCloudDeck  v1 (gate clouds kit, 2026-10-22; cloud art team)   蓝白 · 触手之门 · 云海   Built-in RP
+//  Lanbai / GateCloudDeck  v2 (gate clouds kit, 2026-10-23; cloud art team)   蓝白 · 触手之门 · 云海   Built-in RP
 //
 //  !!! WRITTEN WITHOUT A UNITY COMPILER !!!  Compile and check in Unity 2022.3 before use.
 //
 //  The gate's cloud sea, seen from 40-150 m above it, out to the horizon. One big quad (GateClouds_DeckQuad, built by
-//  LanbaiGateCloudsBuilder) lies flat under everything; every pixel of it ray-marches a HEIGHT FIELD of cumulus heads
-//  (two periodic tiles baked for the gate's moon by Source/deck_tiles.py) and shades it:
-//    * the dense surface: Lambert toward the moon (baked N.L) x the heads' cast shadow (baked moon path) + sky x AO;
-//      looking toward the moon you see the heads' dark flanks, from the side / rear windows their silver moon side
+//  LanbaiGateCloudsBuilder) is pulled by the vertex shader to 1.5 m under the eye (a proxy ABOVE every head, so the
+//  real hit is always farther: conservative depth keeps early-Z); every pixel of it ray-marches a HEIGHT FIELD of
+//  cumulus heads (two periodic tiles baked for the gate's moon by Source/deck_tiles.py) and shades it:
+//    * the dense surface: Lambert toward the moon (baked N.L) x the heads' cast shadow (baked moon path) + sky x AO,
+//      the cauliflower as shading (the detail tile 5x smaller), troughs darker and filled with the haze
 //    * the SOFT SKIN over the heads: where a ray passes over a crest it crosses a thin lit skin -> the silver rims
-//      (forward-scattered moonlight, two-lobe HG). Skin met while the ray sinks onto a top it then hits does not
-//      count (_SkinApproach): dark tops, bright silhouettes, like the Blender finals.
-//    * the gate's fog (LanbaiGateSky.cginc: band + 0.35 moon aureole), at the hit distance x _FogScale.
-//  It writes the hit depth (SV_Depth), so the arms' roots, the tear's foot and the cloud cards meet the billows
-//  where they really are. Tear_CloudGlow(_Lit) then multiplies the pool onto it exactly as before.
+//      (forward-scattered moonlight, two-lobe HG); full strength only in the MOON PATH (+-7 deg under the moon,
+//      0.3-2.5 km, x 1.6) and near the tear's FOOT, 45 % elsewhere (art r1 B2); skin met while the ray sinks onto a top
+//      it then hits does not count (dark tops, bright silhouettes, like the Blender finals)
+//    * the tear's light POOL x (1 + tint x weight x Tear_CloudLanes) (it was Tear_CloudGlow on the flat cloud-top
+//      plane, which the real billows would cut to pieces: the builder turns Tear_CloudGlow / _Additive / Tear_LightLane
+//      off)
+//    * the crevasse: the foot of the white splits the deck (GateLayout tear.crevasse)
+//    * the gate's fog (LanbaiGateSky.cginc: band + 0.35 moon aureole) at the hit distance x _FogDensity.y
+//  VR comfort (bible 1.8): heads within ~56 m sideways of the bus path stay 57 m under the eye (scaled down, not cut);
+//  no head rises above the eye. Steps adapt to the clearance (relaxed height-field tracing), the jitter is a hash of
+//  the WORLD ray direction (both eyes agree, nothing locked to the screen), sub-pixel rims fade (no 1-px shimmer).
 //
-//  The numpy port Source/deck_ref.py is the reference: the same march, LOD, lighting, fog. Same defaults.
+//  The numpy port Source/deck_ref.py (render_deck) is the reference: the same march, LOD, lighting, fog, defaults.
 //  Cloud-sea frame: samples at (worldPos - _Udon_GateOrigin).xz, so the deck travels with GateRoot (v_g).
-//  Globals (README_GateLayout §2.1, unchanged): _Udon_CloudTop (x = cloud top world y, w = 1), _Udon_GateOrigin,
-//  _Udon_MoonDir, _Udon_TearPos (band azimuth). Unset -> the material fallbacks.
-//  Cost: mean ~20-30 march steps per pixel (each 3 fetches), 5 bisections, early out (Source/deck_ref.py prints it).
+//  Globals (registered): _Udon_CloudTop, _Udon_GateOrigin, _Udon_MoonDir, _Udon_TearPos, _Udon_TearH, _Udon_TearFoot,
+//  _Udon_InsidePortal (act 4c). Unset -> the material fallbacks.
+//  Cost (deck_ref.py, key / U7 / U8): mean ~21 march steps per pixel (p90 ~37), 2-3 fetches each, 3 bisections.
 //  Includes Assets/Lanbai/Gate/Shaders/LanbaiGateSky.cginc (project-root path, CONTROL_总控 §3).
 // =====================================================================================================
 Shader "Lanbai/GateCloudDeck"
@@ -29,36 +36,42 @@ Shader "Lanbai/GateCloudDeck"
         [Header(Tiles  deck_tiles.py)]
         [NoScaleOffset] _DetailTex ("Deck_Detail_1024 (R height, G moon path, B sky AO, A moon N.L); linear", 2D) = "gray" {}
         [NoScaleOffset] _MacroTex ("Deck_Macro_512 (R swell, G moon path, B amplitude, A brightness); linear", 2D) = "gray" {}
-        _Periods ("Periods m: detail, macro, micro scale, -", Vector) = (960, 6400, 7, 0)
-        _DetailRange ("Detail height min, max (m); macro min, max (m)", Vector) = (-12, 44, -12, 12)
+        [NoScaleOffset] _LanesTex ("Tear_CloudLanes_1024 (R 1 = lit, 0.15 = root shadow); linear", 2D) = "white" {}
+        _Periods ("Periods m: detail, macro, micro scale, anisotropy max", Vector) = (1600, 6400, 5, 4)
+        _DetailRange ("Detail height min, max (m); macro min, max (m)", Vector) = (-12, 56, -12, 12)
         _TauMax ("Moon path max (m): detail, macro", Vector) = (160, 400, 0, 0)
         _AmpRange ("Detail amplitude: macro B 0..1 maps to min..max; brightness min, max", Vector) = (0.3, 0.8, 0.75, 1.15)
-        _Micro ("Micro: amplitude m, envelope, -, -", Vector) = (5, 0.35, 0, 0)
+        _Micro ("Micro: amplitude m, envelope, shading, -", Vector) = (4, 0.35, 0.9, 0)
 
         [Header(March)]
-        _Steps ("Max steps (mean use ~20-30)", Range(16, 160)) = 120
-        _StepK ("Min step growth per step", Range(0.005, 0.1)) = 0.02
-        _MarchRange ("March from (m), to (m); far mean height above the top (m); clearance under the eye (m)", Vector) = (12, 1600, 12, 6)
+        _Steps ("Max steps (mean use ~21)", Range(16, 160)) = 128
+        _Adapt ("Adaptive steps: k min, k max (x t), clearance factor, slope", Vector) = (0.004, 0.05, 0.9, 0.6)
+        _MarchRange ("March from (m), to (m); far mean height above the top (m); bisections", Vector) = (12, 2500, 8, 3)
+        _Comfort ("Comfort: clearance under the eye (m), lane depth under the eye (m), lane half width full, gone (m)", Vector) = (2, 57, 45, 140)
         _LodBias ("LOD bias", Range(-2, 2)) = 0
 
         [Header(Light)]
         _MoonColor ("Moon colour #D6E4FF, linear", Vector) = (0.6724, 0.7758, 1.0, 1)
         _MoonE ("Moon radiance on the deck", Range(0, 2)) = 0.38
         _AmbColor ("Sky ambient (HazeFar), linear", Vector) = (0.0436, 0.0504, 0.0726, 1)
-        _AmbK ("Sky ambient x AO", Range(0, 2)) = 0.35
+        _AmbK ("Sky ambient x AO", Range(0, 2)) = 0.5
         _Phase ("HG g1, g2, mix, surface lobe softening", Vector) = (0.8, -0.18, 0.62, 0.35)
         _Skin ("Skin: sigma (1/m), edge (m), approach weight, sigma toward the moon", Vector) = (0.8, 0.5, 0.0, 0.12)
+        _Skin2 ("Skin: silhouette gap (x t), sub-pixel fade (x edge / footprint), -, -", Vector) = (0.04, 3, 0, 0)
+        _RimWedge ("Rim wedges: moon path half angle (deg), moon path gain, foot radius (m), outside", Vector) = (7, 1.6, 600, 0.45)
         _Surf ("Surface: sigma toward the moon, forward lobe, Lambert, cast-shadow scale", Vector) = (0.14, 0.015, 0.8, 0.35)
-        _Ms ("Multiple scattering: k, tau scale; far rim, -", Vector) = (0.01, 0.28, 0.12, 0)
-        _Gain ("Gain", Range(0, 3)) = 1
+        _Ms ("Multiple scattering: k, tau scale; far rim, -", Vector) = (0.01, 0.28, 0, 0)
+        _Trough ("Troughs: coarse LOD offset, depth (m), strength, fog fraction", Vector) = (3.5, 18, 0.55, 0.75)
+        _Gain ("Gain", Range(0, 3)) = 0.9
 
-        [Header(Crevasse  the foot splits the deck  GateLayout tear.crevasse)]
+        [Header(Pool and crevasse  GateLayout clouds.pool  tear.crevasse)]
+        _PoolTint ("Pool tint (dst x (1 + tint x weight)), linear; w = strength", Vector) = (0.607, 0.683, 1.144, 1)
         _Crev ("Crevasse: length x S (m), half width / white half width, depth (m), lip height (m)", Vector) = (230, 0.4, 25, 5)
         _CrevGlow ("Crevasse floor glow #C0B9E4 x 0.35, linear", Vector) = (0.184, 0.170, 0.272, 1)
         _TearFootW ("Tear foot fallback: world xyz, w = white half width (global _Udon_TearFoot wins)", Vector) = (-0.3, -57.4, 1497.6, 76)
 
         [Header(Fog  LanbaiGateSky)]
-        _FogDensity ("Fog density (gate: 0.0006) x scale", Vector) = (0.0006, 1.8, 0.35, 0)
+        _FogDensity ("Fog density (gate 0.0006), scale, moon air", Vector) = (0.0006, 1.3, 0.35, 0)
         _CloudTopY ("Cloud top world y (fallback; _Udon_CloudTop wins)", Float) = -57.4
         _GateOrigin ("GateRoot position (fallback; _Udon_GateOrigin wins)", Vector) = (0, 92.6, 1478.4, 0)
         _RimDir ("Direction to the moon (fallback; _Udon_MoonDir wins)", Vector) = (-0.2059, 0.1392, 0.9686, 0)
@@ -79,7 +92,7 @@ Shader "Lanbai/GateCloudDeck"
     }
     SubShader
     {
-        // opaque, after the arms (it writes its own depth, so the order only matters for overdraw)
+        // opaque, after the arms; conservative depth (the proxy lies above every hit), so early-Z still culls it
         Tags { "Queue" = "Geometry+40" "RenderType" = "Opaque" "IgnoreProjector" = "True" "DisableBatching" = "True" }
         Cull Off ZWrite On ZTest LEqual
 
@@ -88,26 +101,27 @@ Shader "Lanbai/GateCloudDeck"
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            #pragma target 3.5
+            #pragma target 5.0
             #include "UnityCG.cginc"
             #include "Assets/Lanbai/Gate/Shaders/LanbaiGateSky.cginc"
 
             sampler2D _DetailTex;
             sampler2D _MacroTex;
+            sampler2D _LanesTex;
             float4 _DetailTex_TexelSize;
-            float4 _MacroTex_TexelSize;
             float4 _Periods, _DetailRange, _TauMax, _AmpRange, _Micro;
-            float _Steps, _StepK, _LodBias;
-            float4 _MarchRange;
-            float4 _MoonColor, _AmbColor, _Phase, _Skin, _Surf, _Ms;
+            float _Steps, _LodBias;
+            float4 _Adapt, _MarchRange, _Comfort;
+            float4 _MoonColor, _AmbColor, _Phase, _Skin, _Skin2, _RimWedge, _Surf, _Ms, _Trough;
             float _MoonE, _AmbK, _Gain;
+            float4 _PoolTint, _Crev, _CrevGlow, _TearFootW;
             float4 _FogDensity;
             float _CloudTopY;
             float4 _GateOrigin, _RimDir;
             float4 _Udon_CloudTop;
             float4 _Udon_GateOrigin;
             float4 _Udon_TearFoot;     // xyz = the tear's foot (world), w = half width of the white (m)
-            float4 _Crev, _CrevGlow, _TearFootW;
+            float4 _Udon_InsidePortal; // x = the tear plane's world z, y = 1 once the bus is through (act 4c): nothing beyond it
 
             struct appdata { float4 vertex : POSITION; UNITY_VERTEX_INPUT_INSTANCE_ID };
             struct v2f
@@ -122,8 +136,11 @@ Shader "Lanbai/GateCloudDeck"
                 v2f o;
                 UNITY_SETUP_INSTANCE_ID(v);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
-                o.wpos = mul(unity_ObjectToWorld, v.vertex).xyz;
-                o.pos = UnityWorldToClipPos(o.wpos);
+                float3 w = mul(unity_ObjectToWorld, v.vertex).xyz;
+                // the proxy: 1.5 m under THIS eye (no head rises above eye - _Comfort.x = 2 m, so every hit is farther)
+                w.y = _WorldSpaceCameraPos.y - 1.5;
+                o.wpos = w;
+                o.pos = UnityWorldToClipPos(w);
                 return o;
             }
 
@@ -132,12 +149,13 @@ Shader "Lanbai/GateCloudDeck"
 
             float HG(float c, float g) { return (1.0 - g * g) / pow(max(1.0 + g * g - 2.0 * g * c, 1e-4), 1.5); }
 
-            // the ray context the field needs
             struct DeckRay
             {
                 float3 ro, V, O;
                 float top, vy, pix;
                 float2 acrossDir, alongDir;    // unit horizontal axes of the pixel footprint
+                float4 foot;                   // the tear's foot (world xyz, w = white half width)
+                float S;                       // tear scale H / 1000
             };
 
             struct DeckSample
@@ -146,18 +164,18 @@ Shader "Lanbai/GateCloudDeck"
                 float4 d;         // detail texel
                 float4 m;         // macro texel
                 float amp;
-                float foot;       // footprint (m), for the skin
-                float crev;       // how deep in the crevasse (0..1) x its fade toward the bus: the floor glow
+                float foot;       // footprint (m)
+                float crev;       // crevasse depth x its fade toward the bus: the floor glow
             };
 
-            // the height field at distance t (exactly deck_ref.field): anisotropic footprint through tex2Dgrad
+            // the height field at distance t (deck_ref.field): anisotropic footprint through tex2Dgrad
             DeckSample Field(DeckRay r, float t)
             {
                 DeckSample s;
                 float3 p = r.ro + r.V * t;
                 float2 cs = p.xz - r.O.xz;
                 float across = max(t * r.pix, 1e-3);
-                float along = min(across / max(r.vy, 0.02), across * 16.0);
+                float along = min(across / max(r.vy, 0.02), across * _Periods.w);
                 s.foot = sqrt(across * along);
                 float lb = exp2(_LodBias);
                 float2 gA = r.acrossDir * (across * lb);
@@ -167,24 +185,29 @@ Shader "Lanbai/GateCloudDeck"
                 float hd = lerp(_DetailRange.x, _DetailRange.y, s.d.r);
                 float hm = lerp(_DetailRange.z, _DetailRange.w, s.m.r);
                 s.amp = lerp(_AmpRange.x, _AmpRange.y, s.m.b);
-                // micro cauliflower: the detail tile again, _Periods.z times smaller; where its lumps are below a pixel the
-                // surface sits at their upper envelope (a skimming ray is still stopped)
+                // micro cauliflower: the detail tile again, _Periods.z times smaller; only near (it is gone by LOD 3.5);
+                // beyond, the surface sits at the lumps' upper envelope (a skimming ray is still stopped)
                 float sc = _Periods.z;
                 float lodU = log2(max(s.foot * sc / (_Periods.x * _DetailTex_TexelSize.x), 1e-4)) + _LodBias;
-                float mu = tex2Dgrad(_DetailTex, cs * sc / _Periods.x + float2(0.37, 0.61), gA * sc / _Periods.x, gB * sc / _Periods.x).r;
+                float mu = 0.45;
+                [branch] if (lodU < 3.5)
+                    mu = tex2Dgrad(_DetailTex, cs * sc / _Periods.x + float2(0.37, 0.61), gA * sc / _Periods.x, gB * sc / _Periods.x).r;
                 float fade = 1.0 - smoothstep(1.0, 3.5, lodU);
                 float micro = _Micro.x * ((mu - 0.45) * fade + _Micro.y * (1.0 - fade));
                 float H = r.top + hm + s.amp * (hd + micro);
-                // never a head into the bus: within ~300 m the heads stop _MarchRange.w below the eye
-                float dxz = length(p.xz - r.ro.xz);
-                H = lerp(min(H, r.ro.y - _MarchRange.w), H, smoothstep(150.0, 400.0, dxz));
-                // the crevasse: the foot of the white splits the deck along -Z (toward the bus), length _Crev.x x S,
-                // half width _Crev.y x the white's half width -> 0, _Crev.z deep, the lips raised _Crev.w
-                float4 ft = (_Udon_TearFoot.w > 0.0) ? _Udon_TearFoot : _TearFootW;
-                float S = ((_Udon_TearH.w > 0.0) ? _Udon_TearH.x : 640.0) / 1000.0;
-                float al = (ft.z - p.z) / max(_Crev.x * S, 1.0);
-                float hwc = max(_Crev.y * ft.w * (1.0 - al), 0.5);
-                float ac = abs(p.x - ft.x) / hwc;
+                // VR comfort (bible 1.8, v <= 1.05 d): only heads within ~56 m sideways of the bus path pass close; in
+                // that lane the relief is scaled down to _Comfort.y under the eye; nowhere above eye - _Comfort.x
+                float lane = 1.0 - smoothstep(_Comfort.z, _Comfort.w, abs(p.x - r.ro.x));
+                float cap = r.ro.y - _Comfort.x - (_Comfort.y - _Comfort.x) * lane;
+                float hLow = r.top + _DetailRange.z + _DetailRange.x * _AmpRange.y;
+                float hPk = r.top + _DetailRange.w + _DetailRange.y * _AmpRange.y;
+                float sL = saturate((cap - hLow) / (hPk - hLow));
+                if (H > hLow) H = hLow + (H - hLow) * (1.0 + (sL - 1.0) * lane);
+                H = min(H, cap);
+                // the crevasse: the foot of the white splits the deck along -Z (toward the bus)
+                float al = (r.foot.z - p.z) / max(_Crev.x * r.S, 1.0);
+                float hwc = max(_Crev.y * r.foot.w * (1.0 - al), 0.5);
+                float ac = abs(p.x - r.foot.x) / hwc;
                 float inLen = smoothstep(-0.04, 0.02, al) * (1.0 - smoothstep(0.7, 1.0, al));
                 float k = (1.0 - smoothstep(0.55, 1.0, ac)) * inLen;
                 float lip = exp(-(ac - 1.2) * (ac - 1.2) / 0.18) * inLen * (1.0 - al);
@@ -194,15 +217,16 @@ Shader "Lanbai/GateCloudDeck"
                 return s;
             }
 
-            float MoonTau(DeckSample s)
-            {
-                return _Surf.x * (s.amp * s.d.g * _TauMax.x + s.m.g * _TauMax.y);
-            }
+            float MoonTauRaw(DeckSample s) { return s.amp * s.d.g * _TauMax.x + s.m.g * _TauMax.y; }   // metres of cloud
 
-            // interleaved gradient noise (Jimenez 2014)
-            float IGN(float2 px) { return frac(52.9829189 * frac(dot(px, float2(0.06711056, 0.00583715)))); }
+            float Hash3(float3 q) { return frac(sin(dot(q, float3(12.9898, 78.233, 37.719))) * 43758.5453); }
 
-            struct FOut { half4 col : SV_Target; float depth : SV_Depth; };
+            #if defined(UNITY_REVERSED_Z)
+                #define DECK_DEPTH SV_DepthLessEqual
+            #else
+                #define DECK_DEPTH SV_DepthGreaterEqual
+            #endif
+            struct FOut { half4 col : SV_Target; float depth : DECK_DEPTH; };
 
             FOut frag(v2f i)
             {
@@ -219,6 +243,8 @@ Shader "Lanbai/GateCloudDeck"
                 float lvh = length(vh);
                 r.alongDir = (lvh > 1e-5) ? vh / lvh : float2(0.0, 1.0);
                 r.acrossDir = float2(-r.alongDir.y, r.alongDir.x);
+                r.foot = (_Udon_TearFoot.w > 0.0) ? _Udon_TearFoot : _TearFootW;
+                r.S = ((_Udon_TearH.w > 0.0) ? _Udon_TearH.x : 640.0) / 1000.0;
 
                 float3 moonD = LanbaiMoonDir(_RimDir.xyz);
                 float yTop = r.top + _DetailRange.w + _DetailRange.y * _AmpRange.y;
@@ -228,43 +254,56 @@ Shader "Lanbai/GateCloudDeck"
                 float tEnd = min(t1, _MarchRange.y);
                 float ts = max(max(t0, _MarchRange.x), 0.5 * (r.ro.y - r.top) / r.vy);
                 int N = (int)_Steps;
-                float k = max(_StepK, pow(max(tEnd / ts, 1.0), 1.0 / max(N - 1, 1)) - 1.0);   // the last sample (s = N-1, jit -> 0) reaches tEnd
-                float jit = IGN(i.pos.xy);
+                // jitter: a hash of the WORLD ray direction quantised at ~1.5 pixels (stereo-consistent, world-locked)
+                float jit = Hash3(floor(r.V / (r.pix * 1.5)));
 
                 float cm = dot(r.V, moonD);
                 float phase = _Phase.z * HG(cm, _Phase.x) + (1.0 - _Phase.z) * HG(cm, _Phase.y);
+                float2 mh = normalize(moonD.xz + float2(1e-5, 0.0));
+                float dazMoon = degrees(acos(clamp(dot(r.alongDir, mh), -1.0, 1.0)));
 
                 float T = 1.0;
                 float3 acc = 0.0;
                 float3 pendL = 0.0;
                 float pendOd = 0.0;
+                float pendCmin = 1e9, pendTmin = 0.0;
                 float tPrev = t0;
                 float tHit = t1;
                 bool hit = false;
                 float cPrev = Field(r, ts).c;
+                float tCur = ts * (1.0 + _Adapt.x * (1.0 + 4.0 * jit)) + max(cPrev, 0.0) * _Adapt.z / (r.vy + _Adapt.w) * jit;
 
-                // 1) exponential march + the skin (rims), until the ray dips under the field
+                // 1) adaptive march + the skin (rims), until the ray dips under the field
                 [loop]
                 for (int s = 0; s < 160; s++)
                 {
                     if (s >= N || tPrev >= tEnd) break;
-                    float tm = min(ts * pow(1.0 + k, s + jit), tEnd);
+                    float tm = min(tCur, tEnd);
                     DeckSample f = Field(r, tm);
                     float dt = max(tm - tPrev, 0.0);
                     float ca = max(cPrev, 0.0);
                     float cb = max(f.c, 0.0);
                     float edge0 = _Skin.y;
                     float edge = edge0 + 0.35 * f.foot;
-                    // exact skin column for a clearance varying linearly from ca to cb
+                    // exact skin column for a clearance varying linearly from ca to cb; sub-pixel rims fade
                     float dc = cb - ca;
                     float ea = exp(-ca / edge), eb = exp(-cb / edge);
                     float colm = (abs(dc) > 1e-3) ? dt * edge * (ea - eb) / dc : dt * eb;
-                    float od = _Skin.x * (edge0 / edge) * colm;
-                    float tauS = _Skin.w * (f.amp * f.d.g * _TauMax.x + f.m.g * _TauMax.y);
-                    float moon = _MoonE * (phase * exp(-tauS) + _Ms.x * exp(-tauS * _Ms.y));
+                    float od = _Skin.x * (edge0 / edge) * colm * saturate(_Skin2.y * edge0 / f.foot);
+                    float tauS = _Skin.w * MoonTauRaw(f);
+                    // the rim's wedges: the moon path and the tear's foot
+                    float3 pz = r.ro + r.V * tm;
+                    float dh = length(pz.xz - r.ro.xz);
+                    float wMoon = exp(-(dazMoon / _RimWedge.x) * (dazMoon / _RimWedge.x)) * smoothstep(200.0, 300.0, dh)
+                                * (1.0 - smoothstep(2500.0, 3200.0, dh));
+                    float2 df = pz.xz - r.foot.xz;
+                    float wFoot = exp(-dot(df, df) / (_RimWedge.z * _RimWedge.z));
+                    float gw = max(_RimWedge.w + (_RimWedge.y - _RimWedge.w) * wMoon, _RimWedge.w + (1.0 - _RimWedge.w) * wFoot);
+                    float moon = _MoonE * gw * (phase * exp(-tauS) + _Ms.x * exp(-tauS * _Ms.y));
                     float3 S = moon * _MoonColor.rgb + (_AmbK * f.d.b) * _AmbColor.rgb;
                     pendOd += od;
                     pendL += od * S;
+                    if (cb < pendCmin) { pendCmin = cb; pendTmin = tm; }
                     if (f.c > cPrev)                                   // passed over a crest: commit the rim
                     {
                         float a = 1.0 - exp(-pendOd);
@@ -272,19 +311,23 @@ Shader "Lanbai/GateCloudDeck"
                         T *= 1.0 - a;
                         pendOd = 0.0;
                         pendL = 0.0;
+                        pendCmin = 1e9;
                     }
                     cPrev = f.c;
                     if (f.c < 0.0)                                     // sank onto a surface
                     {
-                        float po = pendOd * _Skin.z;
-                        float a = 1.0 - exp(-po);
+                        // a silhouette if the ray came closest well before the hit; a lid if right at it
+                        float w = ((tm - pendTmin) > _Skin2.x * pendTmin) ? 1.0 : _Skin.z;
+                        float a = 1.0 - exp(-pendOd * w);
                         acc += T * a / max(pendOd, 1e-9) * pendL;
                         T *= 1.0 - a;
-                        // 2) refine the crossing (5 bisections)
+                        // 2) refine the crossing
                         float lo = tPrev, hi = tm;
-                        [unroll]
-                        for (int b = 0; b < 5; b++)
+                        int nb = (int)_MarchRange.w;
+                        [loop]
+                        for (int b = 0; b < 6; b++)
                         {
+                            if (b >= nb) break;
                             float mid = 0.5 * (lo + hi);
                             if (Field(r, mid).c < 0.0) hi = mid; else lo = mid;
                         }
@@ -293,36 +336,63 @@ Shader "Lanbai/GateCloudDeck"
                         break;
                     }
                     tPrev = tm;
+                    tCur = tm + clamp(_Adapt.z * cb / (r.vy + _Adapt.w), _Adapt.x * tm, _Adapt.y * tm);
                 }
                 float farW = 0.0;
                 if (!hit)
                 {
-                    // the far deck: the field at the mean-height plane, + the average rim
+                    // the far deck: the field at the mean-height plane
                     tHit = clamp((r.ro.y - (r.top + _MarchRange.z)) / r.vy, tEnd, 16000.0);
                     farW = 1.0;
                 }
 
                 // 3) the surface at the hit
                 DeckSample h = Field(r, tHit);
-                float tau = MoonTau(h);
+                float tau = _Surf.x * MoonTauRaw(h);
                 float phS = 1.0 + (phase - 1.0) * _Phase.w;
                 float moonS = _MoonE * (_Surf.z * h.d.a * exp(-tau * _Surf.w) + _Surf.y * phS * exp(-tau)
                                         + _Ms.x * exp(-tau * _Ms.y));
-                float rim = _Ms.z * _MoonE * phase * exp(-_Skin.w * (h.amp * h.d.g * _TauMax.x + h.m.g * _TauMax.y)) * farW;
                 float var = lerp(_AmpRange.z, _AmpRange.w, h.m.a);
+                float3 ph = r.ro + r.V * tHit;
+                float2 cs = ph.xz - r.O.xz;
+                // the cauliflower as shading: the detail tile's AO at the micro scale, faded with its LOD
+                float lodS = log2(max(h.foot, 1e-3) * _Periods.z / (_Periods.x * _DetailTex_TexelSize.x));
+                float msh = 0.75;
+                [branch] if (lodS < 4.0)
+                    msh = tex2Dlod(_DetailTex, float4(cs * _Periods.z / _Periods.x + float2(0.37, 0.61), 0.0, max(lodS, 0.0))).b;
+                var *= 1.0 + _Micro.z * (msh - 0.75) * (1.0 - smoothstep(1.5, 4.0, lodS));
+                float rim = _Ms.z * _MoonE * phase * exp(-_Skin.w * MoonTauRaw(h)) * farW;
                 float3 surf = ((moonS + rim) * _MoonColor.rgb + (_AmbK * h.d.b) * _AmbColor.rgb) * var
                             + _CrevGlow.rgb * h.crev;                  // the white's own mist on the crevasse floor
+                // troughs: how far the hit lies under the local mean surface (a coarse mip) -> toward the haze
+                float3 fogC = LanbaiGateFogColour(r.V, tHit, moonD, (half)_FogDensity.z, 0.0);
+                float lodT = max(log2(max(h.foot, 1e-3) / (_Periods.x * _DetailTex_TexelSize.x)) + _Trough.x, _Trough.x);
+                float dm = tex2Dlod(_DetailTex, float4(cs / _Periods.x, 0.0, lodT)).r;
+                float hMean = r.top + lerp(_DetailRange.z, _DetailRange.w, h.m.r) + h.amp * lerp(_DetailRange.x, _DetailRange.y, dm);
+                float trough = saturate((hMean - ph.y) / _Trough.y) * _Trough.z;
+                surf = lerp(surf, fogC * _Trough.w, trough);
                 acc += T * surf;
 
                 // fog at the hit distance
-                float3 fogC = LanbaiGateFogColour(r.V, tHit, moonD, (half)_FogDensity.z, 0.0);
                 float fog = 1.0 - exp(-_FogDensity.x * _FogDensity.y * tHit);
                 float3 c = acc * _Gain * (1.0 - fog) + fogC * fog;
 
+                // the tear's light pool (GateLayout clouds.pool): about (0, 150 S toward the bus) of the foot,
+                // x Tear_CloudLanes (x0..x1 = -2000..2000 m across GateRoot, along = foot.z - z: -2400 (far) .. 1600)
+                float2 pc = float2(r.foot.x, r.foot.z - 180.0 * r.S);
+                float rr = length(ph.xz - pc) / max(r.S / 0.64, 1e-3);
+                float wgt = 0.75 * exp(-(rr / 420.0) * (rr / 420.0)) + 0.25 * exp(-rr / 900.0);
+                float2 luv = float2((ph.x - r.O.x + 2000.0) / 4000.0, 1.0 - ((r.foot.z - ph.z) + 2400.0) / 4000.0);
+                if (all(luv >= 0.0) && all(luv <= 1.0))
+                    wgt *= tex2Dlod(_LanesTex, float4(luv, 0.0, 0.0)).r;
+                c *= 1.0 + _PoolTint.rgb * (_PoolTint.w * wgt);
+
+                // U9: the bus is through the tear: the deck beyond the tear plane is not drawn into act 4c
+                if (_Udon_InsidePortal.y > 0.5 && ph.z > _Udon_InsidePortal.x) discard;
                 FOut o;
                 o.col = half4(c, 1.0);
-                // depth: the hit, but never beyond the far plane (a far-fallback point up to 16 km out would clamp to the
-                // far value and the skybox, drawn after the opaques, would paint over it)
+                // depth: the hit, never beyond the far plane (a far-fallback point up to 16 km out would clamp and the
+                // skybox would paint over it); always farther than the proxy (conservative depth)
                 float3 camFwd = -UNITY_MATRIX_V[2].xyz;
                 float tDepth = min(tHit, 0.99 * _ProjectionParams.z / max(dot(r.V, camFwd), 1e-3));
                 float4 clip = UnityWorldToClipPos(r.ro + r.V * tDepth);

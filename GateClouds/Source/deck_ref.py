@@ -29,23 +29,29 @@ CUES = LAYOUT['timeline']['cues']
 DEFAULTS = dict(
     # march: exponential steps t_i = t_s (1 + k)^(i + jitter), t_s = max(slab entry, MarchMin, half the way to the
     # cloud top); k = max(StepK, what reaches MarchMax in Steps); then 5 bisections at the crossing
-    Steps=120, StepK=0.02, MarchMin=12.0, MarchMax=1600.0, LodBias=0.0, AnisoMax=16.0,
+    Steps=128, StepK=0.018, KMin=0.004, KMax=0.05, StepC=0.9, Slope=0.6, MarchMin=12.0, MarchMax=2500.0, Bisect=3, LodBias=0.0, AnisoMax=4.0,
     # the soft skin over the heads (the silver rims): column density SkinSigma x exp(-clearance / edge),
     # edge = SkinEdge + 0.35 x footprint; skin met while sinking onto a surface counts SkinApproach
-    SkinSigma=0.8, SkinEdge=0.5, SkinApproach=0.0, SkinSigmaL=0.12,
+    SkinSigma=0.8, SkinEdge=0.5, SkinApproach=0.0, SilGap=0.04, SkinSigmaL=0.12,
     # the opaque surface: moon through the head (baked path x SigmaL) x a softened lobe, + sky x AO
     SigmaL=0.14, SurfMoon=0.015, SurfPhase=0.35, SurfLambert=0.8, SurfShadow=0.35,
     G1=0.8, G2=-0.18, GMix=0.62,    # two-lobe HG
     MoonE=0.38,                     # moon radiance on the deck (x _MoonColor)
     MsK=0.01, MsTau=0.28,           # multiple scattering: E x MsK x exp(-tau x MsTau)
-    AmbK=0.35,                      # sky ambient (x _AmbColor) x AO
-    FarRim=0.12, FarMeanH=12.0,     # rays not hit by MarchMax: the mean-height plane, + the average rim
-    FogDensity=0.0006, FogScale=1.8, MoonAirFog=0.35,
-    DetailMin=-12.0, DetailMax=44.0, MacroMin=-12.0, MacroMax=12.0, TauMaxD=160.0, TauMaxM=400.0,
+    AmbK=0.5,                      # sky ambient (x _AmbColor) x AO
+    FarRim=0.0, FarMeanH=8.0,     # rays not hit by MarchMax: the mean-height plane, + the average rim
+    FogDensity=0.0006, FogScale=1.3, MoonAirFog=0.35,
+    # round 2 (art r1 #2): rims only in two wedges: the moon path (+-MoonPathDeg under the moon, 0.3-2.5 km, x MoonPathGain)
+    # and the tear's foot (within FootR of it); outside them RimOut of the rim
+    RimFoot=3.0, MoonPathDeg=7.0, MoonPathGain=1.6, FootR=600.0, RimOut=0.45,
+    # troughs darker and filled with the haze: depth under the local mean (a coarse mip) -> toward the fog colour
+    TroughLod=3.5, TroughDepth=18.0, TroughK=0.55, TroughFog=0.75,
+    DetailMin=-12.0, DetailMax=56.0, MacroMin=-12.0, MacroMax=12.0, TauMaxD=160.0, TauMaxM=400.0,
     AmpMin=0.3, AmpMax=0.8, VarMin=0.75, VarMax=1.15,     # macro B (a 0..1 field) -> AmpMin..AmpMax
-    PeriodD=960.0, PeriodM=6400.0, MicroScale=7.0, MicroAmp=5.0, MicroEnv=0.35,
-    Clearance=6.0, Gain=1.0,
+    PeriodD=1600.0, PeriodM=6400.0, MicroScale=5.0, MicroAmp=4.0, MicroEnv=0.35, MicroShade=0.9,
+    Clearance=2.0, ComfortD=57.0, LaneW=(45.0, 140.0), Gain=0.9,
     CrevLen=230.0, CrevW=0.4, CrevDepth=25.0, CrevLip=5.0, CrevGlow=(0.184, 0.170, 0.272),
+    PoolTint=(0.607, 0.683, 1.144), PoolK=1.0,
     TearH=640.0, TearOpen=0.48,     # reference only (Unity: _Udon_TearH / _Udon_TearFoot)
 )
 MOON_COL = np.array([0.6724, 0.7758, 1.0])                  # #D6E4FF linear
@@ -55,6 +61,8 @@ SKY = dict(HazeNear=np.array([0.1085, 0.1130, 0.1641]), HazeFar=np.array([0.0436
            Void=np.array([0.0021, 0.0030, 0.0070]), BandAz=(50.0, 60.0), BandEl=(6.0, 22.0, 2.0),
            BelowHorizon=(-25.0, 0.0, 0.55), BelowDesat=0.6, BackBand=float(os.environ.get('BACKBAND', 0.55)),
            MoonGlowColor=np.array([0.275, 0.366, 0.578]), MoonGlowShape=(1.6, 0.9, 0.06, 0.32))
+_lp = os.path.join(REPO, 'Gate', 'Textures', 'Tear_CloudLanes_1024.png')
+LANES = (np.asarray(Image.open(_lp).convert('RGB')).astype(np.float32)[..., 0] / 255.0) if os.path.exists(_lp) else None
 AMB_COL = np.array([0.0436, 0.0504, 0.0726]) * 1.0         # = HazeFar: the sky the deck sees overhead (shader default)
 
 
@@ -191,7 +199,10 @@ def render_deck(cam, t, w, h, tex_dir, P, pool=True):
     t1 = np.minimum((ro[1] - y_bot) / vyh, 16000.0)
     L = t1 - t0
     yy, xx = np.nonzero(hit)
-    jit = ign(xx.astype(float), yy.astype(float))
+    # jitter: a hash of the ray's WORLD direction quantised at ~ the pixel angle (round 2, VR r1: screen-space IGN was
+    # different in the two eyes and locked to the screen); both eyes see the same value for the same far point
+    q = np.floor(Vh / (pix_ang * 1.5))
+    jit = np.mod(np.sin(q @ np.array([12.9898, 78.233, 37.719])) * 43758.5453, 1.0)
     N = int(P['Steps'])
     cos_m = Vh @ MOON_DIR
     phase = P['GMix'] * hg(cos_m, P['G1']) + (1 - P['GMix']) * hg(cos_m, P['G2'])
@@ -205,8 +216,8 @@ def render_deck(cam, t, w, h, tex_dir, P, pool=True):
         # pixel footprint on the deck: across = t x pixel angle, along = across / |V.y| (grazing elongation).
         # The shader hands both axes to tex2Dgrad (hardware anisotropic filtering); here: their geometric mean.
         across = np.maximum(tm * pix_ang, 1e-3)
-        along = across / np.maximum(vyh[sel], 0.02)
-        foot = np.sqrt(across * np.minimum(along, across * P['AnisoMax']))
+        along = np.minimum(across / np.maximum(vyh[sel], 0.02), across * P['AnisoMax'])
+        foot = np.sqrt(across * along)
         dd = det.sample(cx / P['PeriodD'], cz / P['PeriodD'], np.log2(foot / texel_d) + P['LodBias'])
         mm = mac.sample(cx / P['PeriodM'], cz / P['PeriodM'], np.log2(foot / texel_m) + P['LodBias'])
         hd = P['DetailMin'] + dd[:, 0] * (P['DetailMax'] - P['DetailMin'])
@@ -219,9 +230,18 @@ def render_deck(cam, t, w, h, tex_dir, P, pool=True):
         # their upper envelope (MicroEnv x amplitude) instead of their mean
         micro = P['MicroAmp'] * ((mu[:, 0] - 0.45) * fade + P['MicroEnv'] * (1 - fade))
         H = cloud_top + hm + amp * (hd + micro)
-        # never a head into the bus: within ~300 m the heads stop Clearance below the eye
-        dxz = np.hypot(p[:, 0] - ro[0], p[:, 2] - ro[2])
-        H = H + (np.minimum(H, ro[1] - P['Clearance']) - H) * (1 - ss(150.0, 400.0, dxz))
+        # VR comfort (bible 1.8: v <= 1.05 d, v_g = 59 m/s -> nothing passes closer than 56 m): the deck streams past
+        # along z, so only heads within ~56 m sideways of the bus path ever come close: in that corridor they stay
+        # ComfortD below the eye (a soft lane under the bus); everywhere no head rises above eye - Clearance (the
+        # conservative-depth proxy sits there)
+        lane = 1 - ss(P['LaneW'][0], P['LaneW'][1], np.abs(p[:, 0] - ro[0]))
+        cap = ro[1] - P['Clearance'] - (P['ComfortD'] - P['Clearance']) * lane
+        # inside the lane the relief is SCALED down (heads keep their shape, lower), not cut flat
+        h_low = cloud_top + P['MacroMin'] + P['DetailMin'] * P['AmpMax']
+        h_pk = cloud_top + P['MacroMax'] + P['DetailMax'] * P['AmpMax']
+        s_l = np.clip((cap - h_low) / (h_pk - h_low), 0.0, 1.0)
+        H = np.where(H > h_low, h_low + (H - h_low) * (1 + (s_l - 1) * lane), H)
+        H = np.minimum(H, cap)
         # the crevasse (shader: the same lines)
         al = (foot_w[2] - p[:, 2]) / max(P['CrevLen'] * S_t, 1.0)
         hwc = np.maximum(P['CrevW'] * foot_w[3] * (1 - al), 0.5)
@@ -254,17 +274,25 @@ def render_deck(cam, t, w, h, tex_dir, P, pool=True):
     k = np.maximum(P['StepK'], (np.maximum(t_end / t_s, 1.0)) ** (1.0 / max(N - 1, 1)) - 1.0)     # reach t_end by step N-1
     # 1) coarse march, EXPONENTIAL steps t_i = t0 (1 + k)^(i + jitter): the vertical step ~ k x eye height everywhere;
     #    the soft skin above the heads (silver edges where a ray grazes a crest), until the ray dips under the field
+    vh_ = Vh[:, [0, 2]] / np.maximum(np.linalg.norm(Vh[:, [0, 2]], axis=-1, keepdims=True), 1e-6)
+    mh_ = MOON_DIR[[0, 2]] / np.linalg.norm(MOON_DIR[[0, 2]])
+    daz_moon = np.degrees(np.arccos(np.clip(vh_ @ mh_, -1, 1)))
     steps_used = np.zeros(n)
     c_prev = field(t_s, allr)[0]
+    # round 2: ADAPTIVE steps (relaxed height-field tracing): dt = clamp(StepC x clearance / (|V.y| + Slope), KMin t, KMax t);
+    # small steps only where the ray skims a head (the exponential schedule stepped through thin crests: dark speckles)
+    t_cur = t_s * (1 + P['KMin'] * (1 + 4 * jit)) + np.maximum(c_prev, 0) * P['StepC'] / (vyh + P['Slope']) * jit
     pend_od = np.zeros(n)
     pend_L = np.zeros((n, 3))
+    pend_cmin = np.full(n, 1e9)
+    pend_tmin = np.zeros(n)
     for i in range(N):
         live = (~got) & (t_prev < t_end)
         steps_used[live] += 1
         if not live.any():
             break
         idx = allr[live]
-        tm = np.minimum(t_s[idx] * (1 + k[idx]) ** (i + jit[idx]), t_end[idx])
+        tm = np.minimum(t_cur[idx], t_end[idx])
         c, dd, mm, amp, foot = field(tm, idx)
         dt = np.maximum(tm - t_prev[idx], 0.0)
         ca = c_prev[idx]
@@ -277,15 +305,25 @@ def render_deck(cam, t, w, h, tex_dir, P, pool=True):
         dc = cb - ca
         ea, eb = np.exp(-ca / edge), np.exp(-cb / edge)
         col_ = np.where(np.abs(dc) > 1e-3, dt * edge * (ea - eb) / np.where(np.abs(dc) > 1e-3, dc, 1.0), dt * eb)
-        od = P['SkinSigma'] * (edge0 / edge) * col_
+        od = P['SkinSigma'] * (edge0 / edge) * col_ * np.clip(P['RimFoot'] * edge0 / foot, 0, 1)   # sub-pixel rims fade (no 1-px shimmer)
         tau = moon_tau(dd, mm, amp) * (P['SkinSigmaL'] / P['SigmaL'])
-        moon = P['MoonE'] * (phase[idx] * np.exp(-tau) + P['MsK'] * np.exp(-tau * P['MsTau']))
+        # the rim's wedges (round 2)
+        pz = ro + Vh[idx] * tm[:, None]
+        dist_h = np.hypot(pz[:, 0] - ro[0], pz[:, 2] - ro[2])
+        w_moon = np.exp(-(daz_moon[idx] / P['MoonPathDeg']) ** 2) * ss(200.0, 300.0, dist_h) * (1 - ss(2500.0, 3200.0, dist_h))
+        w_foot = np.exp(-((pz[:, 0] - foot_w[0]) ** 2 + (pz[:, 2] - foot_w[2]) ** 2) / P['FootR'] ** 2)
+        gw = np.maximum(P['RimOut'] + (P['MoonPathGain'] - P['RimOut']) * w_moon, P['RimOut'] + (1 - P['RimOut']) * w_foot)
+        moon = P['MoonE'] * gw * (phase[idx] * np.exp(-tau) + P['MsK'] * np.exp(-tau * P['MsTau']))
         S = moon[:, None] * MOON_COL + (P['AmbK'] * dd[:, 2])[:, None] * AMB_COL
         # rims, not lids (the finals: dark tops, bright silhouettes): skin met while the clearance SHRINKS is held as
         # pending; it is committed when the ray passes over the crest (clearance grows again), and only SkinApproach of
         # it counts if the ray sinks onto the surface instead
         pend_od[idx] += od
         pend_L[idx] += od[:, None] * S
+        # where the pending skin came closest to the surface (for the silhouette test at a hit)
+        closer = cb < pend_cmin[idx]
+        pend_cmin[idx] = np.where(closer, cb, pend_cmin[idx])
+        pend_tmin[idx] = np.where(closer, tm, pend_tmin[idx])
         rising = c > c_prev[idx]
         ci = idx[rising]
         po = pend_od[ci]
@@ -294,16 +332,21 @@ def render_deck(cam, t, w, h, tex_dir, P, pool=True):
         T[ci] *= 1 - a
         pend_od[ci] = 0.0
         pend_L[ci] = 0.0
+        pend_cmin[ci] = 1e9
         c_prev[idx] = c
         under = c < 0
         hit_i = idx[under]
-        po = pend_od[hit_i] * P['SkinApproach']
+        # at a hit: if the ray came closest to the surface well BEFORE the hit, it passed over a crest (a silhouette)
+        # and the skin counts; if it came closest right where it hits, it sank onto a top (a lid) and only
+        # SkinApproach counts
+        sil = (tm[under] - pend_tmin[hit_i]) > P['SilGap'] * pend_tmin[hit_i]
+        po = pend_od[hit_i] * np.where(sil, 1.0, P['SkinApproach'])
         a = 1 - np.exp(-po)
         acc[hit_i] += (T[hit_i] * a / np.maximum(pend_od[hit_i], 1e-9))[:, None] * pend_L[hit_i]
         T[hit_i] *= 1 - a
         # 2) refine the crossing between the previous and this sample (5 bisections)
         lo, hi = t_prev[hit_i], tm[under]
-        for _ in range(5):
+        for _ in range(int(P['Bisect'])):
             mid = 0.5 * (lo + hi)
             cmid = field(mid, hit_i)[0]
             below = cmid < 0
@@ -312,6 +355,8 @@ def render_deck(cam, t, w, h, tex_dir, P, pool=True):
         thit[hit_i] = hi
         got[hit_i] = True
         t_prev[idx] = tm
+        dtn = np.clip(P['StepC'] * np.maximum(c, 0) / (vyh[idx] + P['Slope']), P['KMin'] * tm, P['KMax'] * tm)
+        t_cur[idx] = tm + dtn
     # rays that leave the march range (or the slab) unhit: the far deck = the field at the mean-height plane, shaded
     # as a surface at its (heavily filtered) LOD
     print('mean march steps %.1f (p90 %.0f), unhit %.0f%%' % (steps_used.mean(), np.percentile(steps_used, 90),
@@ -333,22 +378,52 @@ def render_deck(cam, t, w, h, tex_dir, P, pool=True):
     moon = P['MoonE'] * (P['SurfLambert'] * lam * np.exp(-tau * P['SurfShadow'])
                          + P['SurfMoon'] * ph_s * np.exp(-tau) + P['MsK'] * np.exp(-tau * P['MsTau']))
     var = P['VarMin'] + mm[:, 3] * (P['VarMax'] - P['VarMin'])
+    # round 2: the cauliflower as SHADING, not geometry (micro geometry intercepted the skimming rays and punched dark
+    # holes into the rims): the detail tile's AO at MicroScale, faded with its LOD
+    ph0 = ro + Vh[gi] * thit[gi][:, None]
+    cx0, cz0 = ph0[:, 0] - O[0], ph0[:, 2] - O[2]
+    lod_s = np.log2(np.maximum(foot, 1e-3) * P['MicroScale'] / texel_d)
+    ms = det.sample(cx0 * P['MicroScale'] / P['PeriodD'] + 0.37, cz0 * P['MicroScale'] / P['PeriodD'] + 0.61, lod_s)
+    var = var * (1 + P['MicroShade'] * (ms[:, 2] - 0.75) * (1 - ss(1.5, 4.0, lod_s)))
     # far (unmarched) rays: the crest rims that the march would have found, on average
     rim = P['FarRim'] * P['MoonE'] * phase[gi] * np.exp(-tau * P['SkinSigmaL'] / P['SigmaL']) * farw[gi]
     surf = ((moon + rim)[:, None] * MOON_COL + (P['AmbK'] * dd[:, 2])[:, None] * AMB_COL) * var[:, None] \
         + np.array(P['CrevGlow'])[None, :] * crev_last[0][:, None]
+    # troughs (round 2): how far the hit lies under the local mean surface (the field at a coarse mip) -> the haze
+    fogC = band(Vh, ro, tear) + moon_air(Vh) * P['MoonAirFog']
+    ph = ro + Vh[gi] * thit[gi][:, None]
+    cxz = ph[:, [0, 2]] - O[[0, 2]]
+    across = np.maximum(thit[gi] * pix_ang, 1e-3)
+    foot_t = np.sqrt(across * np.minimum(across / np.maximum(vyh[gi], 0.02), across * P['AnisoMax']))
+    lod_t = np.log2(foot_t / texel_d) + P['TroughLod']
+    dm = det.sample(cxz[:, 0] / P['PeriodD'], cxz[:, 1] / P['PeriodD'], np.maximum(lod_t, P['TroughLod']))
+    hmean = cloud_top + P['MacroMin'] + mm[:, 0] * (P['MacroMax'] - P['MacroMin']) + amp * (
+        P['DetailMin'] + dm[:, 0] * (P['DetailMax'] - P['DetailMin']))
+    trough = np.clip((hmean - ph[:, 1]) / P['TroughDepth'], 0, 1) * P['TroughK']
+    surf = surf * (1 - trough)[:, None] + fogC[gi] * P['TroughFog'] * trough[:, None]
     acc[gi] += T[gi, None] * surf
     T[gi] = 0.0
     # fog at the hit distance (the half-transmittance point)
-    fogC = band(Vh, ro, tear) + moon_air(Vh) * P['MoonAirFog']
     f = 1 - np.exp(-P['FogDensity'] * P['FogScale'] * thit)
     out = acc * P['Gain'] * (1 - f)[:, None] + fogC * f[:, None]
-    if pool:   # approximate Tear_CloudGlow_Lit: dst x (1 + tint x weight) (not part of the deck shader)
+    if pool:
+        # round 2 (tech r1 #4): the tear's light POOL is part of the deck now (Tear_CloudGlow lay on the flat cloud-top
+        # plane, and the deck's real billows would cut it to pieces): dst x (1 + tint x weight x lanes), weight =
+        # 0.75 exp(-(r/420 S)^2) + 0.25 exp(-r/900 S) about (0, 150 S toward the bus) of the foot (GateLayout clouds.pool)
         ph = ro + Vh * thit[:, None]
-        S_ = 640.0 / 1000.0
-        r = np.hypot(ph[:, 0] - O[0], ph[:, 2] - (O[2] - 150.0 * S_))
+        cx, cz = foot_w[0], foot_w[2] - (30.0 + 150.0) * S_t
+        r = np.hypot(ph[:, 0] - cx, ph[:, 2] - cz) / max(S_t / 0.64, 1e-3)
         wgt = 0.75 * np.exp(-(r / 420.0) ** 2) + 0.25 * np.exp(-r / 900.0)
-        out = out * (1 + np.array([0.607, 0.683, 1.144])[None, :] * wgt[:, None])
+        if LANES is not None:
+            u = (ph[:, 0] - O[0] + 2000.0) / 4000.0
+            along = foot_w[2] - ph[:, 2]                      # + toward the bus
+            v = (along + 2400.0) / 4000.0                     # row 0 of the PNG = far (beyond the tear)
+            inb = (u >= 0) & (u <= 1) & (v >= 0) & (v <= 1)
+            ln = np.ones_like(u)
+            hh, ww = LANES.shape
+            ln[inb] = LANES[np.clip((v[inb] * hh).astype(int), 0, hh - 1), np.clip((u[inb] * ww).astype(int), 0, ww - 1)]
+            wgt = wgt * ln
+        out = out * (1 + np.array(P['PoolTint'])[None, :] * (P['PoolK'] * wgt)[:, None])
     col[hit] = out
     alpha[hit] = 1.0
     dist[hit] = thit

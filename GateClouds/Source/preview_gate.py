@@ -22,7 +22,7 @@ import deck_ref as D  # noqa: E402
 
 LAY = json.load(open(os.path.join(KIT, 'GateClouds_Layout.json')))
 SHAPES = {s['shape']: s for s in LAY['shapes']}
-CARD = dict(FogCap=float(os.environ.get('FOGCAP', 1.0)), MoonE=0.09, SkyE=0.55, SkyColor=np.array([0.060, 0.064, 0.088]), Lining=(0.9, 7.0, 15.0),
+CARD = dict(FogCap=float(os.environ.get('FOGCAP', 1.0)), MoonE=0.146, SkyE=0.89, SkyColor=np.array([0.060, 0.064, 0.088]), Lining=(0.35, 7.0, 15.0),
             FogDensity=0.0006, FogScale=1.0, MoonAirFog=0.35)
 BEAM = dict(Tint=np.array([0.0362, 0.0343, 0.0873]), Lobe=(2.6, 1.0, 0.04, 1.3), EdgeFadePow=2.0,
             NearFadeM=(60.0, 460.0), FogDensity=0.0006, FogScale=0.5)
@@ -109,7 +109,7 @@ def main():
         W, Hh = c['size'][0], c['size'][1] * sag
         f = piv[[0, 2]] - eye[[0, 2]]
         f = -f / np.linalg.norm(f)                               # pivot -> eye (horizontal)
-        right = np.array([f[1], 0.0, -f[0]])
+        right = np.array([-f[1], 0.0, f[0]])            # the eye's right (tech r1 #3: was the left)
         n = np.array([f[0], 0.0, f[1]])
         den = V @ n
         tt = ((piv - eye) @ n) / np.where(np.abs(den) > 1e-6, den, 1e-6)
@@ -132,7 +132,7 @@ def main():
         sc = s['scale']
         moonC = tx[:, 0] * sc[0] * (1 - wk) + tx[:, 1] * sc[1] * wk
         am = np.degrees(np.arccos(np.clip(Vm @ moon, -1, 1)))
-        edge = np.clip(1 - np.abs(tx[:, 3] - 0.45) / 0.45, 0, 1)
+        edge = D.ss(0.02, 0.35, tx[:, 3]) * (1 - D.ss(0.55, 0.95, tx[:, 3]))
         lining = CARD['Lining'][0] * np.exp(-am / CARD['Lining'][1]) * (am <= CARD['Lining'][2]) * edge
         cc = (CARD['MoonE'] * moonC * (1 + lining))[:, None] * D.MOON_COL + \
              (CARD['SkyE'] * tx[:, 2] * sc[2])[:, None] * CARD['SkyColor']
