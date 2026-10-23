@@ -41,4 +41,14 @@ def build(ctx):
     # a sodium point far below (bloom check)
     ml = S.mat_emission('Lamp', S.hex_lin('#E8A050'), 40.0)
     S.mesh_object('Lamp', [(18, -39.9, 300), (22, -39.9, 300), (22, -39.9, 304), (18, -39.9, 304)], [(0, 3, 2, 1)], ml)
+    if ctx['args'].get('fse_cards'):
+        _fse_cards(S)
     return dict(what='demo: moon over a flat cloud sea')
+
+
+def _fse_cards(S):
+    """two overlapping transparent cards in front of the bus (FSE self-test: lbh_render --fse)"""
+    m = S.mat_emission('Card', (0.05, 0.05, 0.06), 1.0)
+    for i, z in enumerate((40.0, 60.0)):
+        ob = S.mesh_object('FseCard%d' % i, [(-20, -5, z), (20, -5, z), (20, 15, z), (-20, 15, z)], [(0, 1, 2, 3)], m)
+        ob['lb_fse'] = 'cards'

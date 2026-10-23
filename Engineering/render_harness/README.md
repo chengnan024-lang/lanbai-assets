@@ -130,6 +130,13 @@ def build(ctx):
 
 `--out` 目录里自动有 `stranger/img_<hash>.png`（640 px 宽、没有字、文件名不透露意图）和一个提问文件。开一个**不给任何背景**的 agent，只给它这张图和提问文件里的那句话。它的回答原样记进评审稿。
 
+## 5.5 透明叠绘 FSE（给账本的数）
+
+```bash
+~/bpy/bin/python Engineering/render_harness/lbh_render.py --scene <场景.py> --cam hero --t 166.15 --grade S4 --out /tmp/x --fse
+```
+场景脚本里给每个透明物体设自定义属性 `ob['lb_fse'] = '<层名>'`（或者命令行 `--fse-pattern '^Cloud'` 按物体名匹配）。标准台对每个透明物体单独渲一张覆盖图：它自己是白色自发光，别的不透明物体是 holdout（挡住它、自己不出现），别的透明物体隐藏——数出来的就是 GPU 真正要画的片元（alpha = 0 的地方也算）。输出 `fse.json`（合计、按层、按物体、任一像素最多几层、超过 8 层的像素占比）和 `fse_layers.png`（每像素层数的热图），同时写进 `metrics.json` 的 `scene.fse`。Cull Back 的透明物体设 `ob['lb_fse_cull'] = 'back'`。默认 480×270、1 采样（覆盖只要几何，够了）。**交付时把关键时刻的 `fse.json` 放进包的 `Docs~/`，账本按它记**；车厢玻璃 0.7 由账本统一加，不在这里量。
+
 ## 6. 已知的近似（诚实版）
 
 1. **不是 Unity**：Cycles 的路径追踪 ≠ Unity Built-in 的前向渲染。材质要和 Unity 一致，最好的办法是把 shader 的数学移植成 numpy / 发光节点（门的做法），场景里尽量用 `mat_emission` 写确定的线性值；Principled BSDF 的高光、多次弹射在 Unity 里没有。
@@ -137,4 +144,4 @@ def build(ctx):
 3. **bloom** 是照源码移植的，但没和 Unity 逐像素对过；**颗粒**不模拟；`Dithering` 不模拟。
 4. **VR**：只是单眼的近似视场，立体视差、SPS-I 都不模拟。
 5. **车壳**是角度合同的占位，不是真车。真车（`Cabin/`）来了就换 `--bus fbx:`。
-6. 透明叠绘（FSE）不在这里量——每个包按自己的透明层算，交给总工程师记进 `Engineering/ledgers/`（算法见那边的 README）。
+6. FSE（§5.5）按几何覆盖算：shader 里在顶点阶段把三角形裁掉的（门的透镜预深度那种做法）这里看不出来，要在场景脚本里把那样的物体隐藏。
