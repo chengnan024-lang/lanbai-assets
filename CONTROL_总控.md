@@ -62,6 +62,7 @@
 
 - **坐标**：Unity 世界，米，Y 上。**车固定在原点、车头朝 +Z，世界往车后移（跑步机）。** 车厢地板 y = 0.62；主座位眼位见 `Gate/GateLayout_v2.json` 的 `cameras.U7`（约 (0.55, 1.70, 2.05)）；`LB_Journey.heroEye` 是 (0.70, 1.77, 0.20)，两者不同，**以本地最新的为准，在 README 里写清你用的哪一个**。
 - **时间**：时间轴秒 t（出发 = 0）。所有时刻引用 `FromLocal/cues.json` 的标签（U0–U12、F0–F16 和子标签），不写死数字；圣经 v2.1 §2 是乐句表。圣经 v2.1 晚于本地的 `timeline_v1.md`，两者冲突时**以圣经 v2.1 为准**，并在 README 里列出差异给本地。
+- **圣经的修订**：`Art/总导演裁决.md` 的每一条压过 `ART_BIBLE.md` 原文。
 - **调色**：PPv2 HDR + Neutral，每幕一个 profile（`Grading/` 已经生成），永不 ACES；只让发光体 bloom。无光照资产以**场景线性**值进入调色。
 - **灯光强度：Inspector 值 = 线性照度 E。** VRChat SDK 强制 `lightsUseLinearIntensity = true`（本地 9/30 查到，门测试又确认了）。**圣经 §1.5 “Built-in 灯光陷阱 1”（Inspector = E^(1/2.2)）作废**；圣经和 `calib_final` 里按 gamma 换算的 Inspector 值都要按 E 重算。
 - **补光**（不投影的）一律 Render Mode = **Not Important**（进球谐，不多画一遍 ForwardAdd）。
