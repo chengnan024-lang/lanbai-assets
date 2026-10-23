@@ -13,9 +13,9 @@ VRChat 只允许 Udon 写 `_Udon_` 前缀的全局 shader 量（`VRCShader.SetGl
 | `_Udon_CloudTop` | x = 门的云顶世界 y（= −h_bus(t)） | 门驱动 | Gate、Tear |
 | `_Udon_TearPos` / `_Udon_TearH` / `_Udon_TearFoot` / `_Udon_TearTop` | 裂口位置、高度、脚（w = 白的半宽）、顶 | 门驱动 | Gate、Tear、Tentacles |
 | `_Udon_TearOpen` / `_Udon_RipProgress` / `_Udon_TearHide` / `_Udon_TearBreath` | 裂口张开、撕裂进度、隐藏、呼吸 | 门驱动 | Tear |
-| `_Udon_MoonDir` / `_Udon_MoonDisc` | 指向月的单位向量；月盘增益 | 门驱动（第 3–4 幕；之后归天空） | Gate、Tentacles |
+| `_Udon_MoonDir` / `_Udon_MoonDisc` | 指向月的单位向量；月盘增益 | 天空（U6 133.80 之前）→ 门驱动（133.80 → U9）→ 之后的幕（D-22） | Gate、Tentacles、`Lanbai/Sky` |
 | `_Udon_MultReveal` | 群臂两组显现 | 门驱动 | Gate |
-| `_Udon_FogBandDir` / `_Udon_FogBandColor` / `_Udon_FogBandWidth` / `_Udon_FogDensity` | 光雾带（`LanbaiHorizon` 的参数，圣经 §1.6） | 当前幕的驱动（第 4 幕 = 门） | Gate、Tentacles；**以后所有 `LanbaiFog` 用户** |
+| `_Udon_FogBandDir` / `_Udon_FogBandColor` / `_Udon_FogBandWidth` / `_Udon_FogDensity` | 光雾带（`LanbaiHorizon` 的参数，圣经 §1.6） | 当前幕的驱动：天空（< 133.80）→ 门驱动（133.80 → U9，含 U6 过渡）→ 门内（≥ U9）（D-22） | Gate、Tentacles；**以后所有 `LanbaiFog` 用户** |
 | `_Udon_Wetness` | 湿润 0–1（Lagarde） | 时间轴 | Rain |
 | `_Udon_RainAmount` / `_Udon_RainFall` / `_Udon_FlowDir` / `_Udon_FlowDirB` / `_Udon_FlowMix` / `_Udon_RunClock` / `_Udon_RunStretch` / `_Udon_StopOffset` / `_Udon_Drip0..3` / `_Udon_OneDropA/B` | 雨套件 | 雨驱动 | Rain |
 | `_Udon_Wiper*`（Time、Pivot0/1、Axis0/1、Rest0/1） | 雨刮 | 雨驱动 | Rain |
