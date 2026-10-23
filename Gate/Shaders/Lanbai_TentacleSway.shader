@@ -1,3 +1,6 @@
+//  v2.7d (gate clouds kit, 2026-10-22; UNCOMPILED): `noforwardadd` on the surface pragma. The gate_test found a real
+//    floating point division by zero in the generated ForwardAdd POINT variant; the gate has no point lights and the
+//    fill directional is Not Important (spherical harmonics), so the pass did nothing but cost a draw. Nothing else changed.
 //  v2.7c (gate round 9, 2026-10-02; UNCOMPILED): _RimLadderFloor (the far-rim ladder exp(-rho d) x (900/d)^1.2 was
 //    x 0.01-0.02 at 3-5 km, so the multitude's tier A / B moon rims (awe r4 B2.3) were invisible): ladder = max(.., floor);
 //    tier A 0.5 / B 0.3 with _RimGain 2.4 (GateLayout_v2.json multitude.tiers). _RimGain range 0..4. Nothing else changed.
@@ -293,7 +296,7 @@ Shader "Lanbai/TentacleSway"
         LOD 300
 
         CGPROGRAM
-        #pragma surface surf Lanbai fullforwardshadows vertex:vert addshadow finalcolor:lanbaiFog nofog
+        #pragma surface surf Lanbai fullforwardshadows vertex:vert addshadow finalcolor:lanbaiFog nofog noforwardadd   // v2.7d: no ForwardAdd (gate_test: a real divide by zero in its POINT variant; the fill is Not Important = SH, no point lights in the gate)
         #pragma target 4.0
         #pragma multi_compile_instancing
         #include "UnityStandardUtils.cginc"
@@ -336,7 +339,7 @@ Shader "Lanbai/TentacleSway"
         half _RimPxMoon;
         half _RimPxTear;
         half _ReflectionScale;
-        float4 _Udon_CloudTop;        // global: x = cloud-sea top (world y) this frame; w > 0 = set (else _CloudTopY)
+        #include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc"
 
         half _RimGain;
         half _RimLadderFloor;
@@ -365,11 +368,7 @@ Shader "Lanbai/TentacleSway"
         float4 _TearHW0, _TearHW1;
         float _OverWhiteRamp; half _OverWhiteDim, _OverWhiteFog, _OverWhiteAir, _WrapGain, _WrapPx; float4 _WrapColor;
         float _UseGlobalReveal;
-        float4 _Udon_MultReveal;      // v2.7 global: x = the multitude's reveal (group 0: hold to U9 - 1), y = group 1
 
-        float4 _Udon_GateOrigin;      // v2.6 global: xyz = GateRoot.position this frame (the cloud-sea frame for noise)
-        float4 _Udon_TearFoot;        // v2.6 global: xyz = the tear axis foot (world), w = half width m; w > 0 = set
-        float4 _Udon_TearTop;         // v2.6 global: xyz = the tear axis top (world)
         float4 _TearFootM, _TearTopM;
         half _TearDiffuse, _TearDiffuseRef, _TearWrap, _TearSpec, _TearSpecRadiance;
         half _RimWound, _RimWoundPx, _RimWoundDeg;
@@ -483,7 +482,6 @@ Shader "Lanbai/TentacleSway"
         float _FogCapHeight;
 
         // Optional Udon globals (VRCShader.SetGlobal*). Never set = 0, and then the material values above win.
-        float _Udon_FogDensity;       // Exp density; > 0 = set
 
         struct Input
         {

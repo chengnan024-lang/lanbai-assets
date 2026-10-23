@@ -1,0 +1,1452 @@
+{
+ "about": "蓝白 gate clouds kit v1 (2026-10-22): the cloud deck, the v2 cloud cards (towers, far banks, horizon masses, mist), the widening shafts and the shadow wedges. Positions in the GateRoot frame (or Tear_Root object space for the shafts), exactly as GateLayout_v2.json. Built by Editor/LanbaiGateCloudsBuilder.cs; animated by Runtime/LanbaiGateClouds.cs. Keys are flattened (t0, v0, t1, v1, ...), timeline seconds, smoothstep between keys.",
+ "hero_t": 155.1,
+ "window": [
+  113.8,
+  181.55
+ ],
+ "deck": {
+  "parent": "GateRoot",
+  "local_y": -176.6,
+  "quad_size": 40000.0,
+  "detail": "Deck_Detail_1024.png",
+  "macro": "Deck_Macro_512.png",
+  "note": "a flat quad under the deck slab, moving with GateRoot; Lanbai/GateCloudDeck ray-marches the billows and writes their depth. Material = the shader defaults (= deck_ref.DEFAULTS).",
+  "quality": "default",
+  "quality_tiers": [
+   {
+    "name": "default",
+    "adapt": [
+     0.004,
+     0.05,
+     0.9,
+     0.6
+    ],
+    "march_range": [
+     12.0,
+     2500.0,
+     8.0,
+     3.0
+    ],
+    "steps": 128,
+    "note": "the reference look; mean march steps keyart 24.2 / U7 16.4 / U8 fwd 15.6 / U8 side 20.3"
+   },
+   {
+    "name": "auto_lite",
+    "adapt": [
+     0.004,
+     0.09,
+     0.9,
+     0.6
+    ],
+    "march_range": [
+     12.0,
+     2500.0,
+     8.0,
+     3.0
+    ],
+    "steps": 128,
+    "note": "bigger steps away from the surface: 9-16 % fewer steps, image change mean <= 0.08 / p99 <= 1 code (Docs~/perf_options_crops.png option C)"
+   }
+  ]
+ },
+ "shapes": [
+  {
+   "shape": "Congestus",
+   "texture": "GateCard_Congestus.png",
+   "size_px": [
+    1024,
+    1024
+   ],
+   "scale": [
+    1.572581,
+    0.816692,
+    0.478829
+   ],
+   "pivot_uv": [
+    0.4965,
+    0.1006
+   ],
+   "bbox_uv": [
+    0.0908,
+    0.084,
+    0.9023,
+    0.9219
+   ]
+  },
+  {
+   "shape": "Bank",
+   "texture": "GateCard_Bank.png",
+   "size_px": [
+    2048,
+    1024
+   ],
+   "scale": [
+    1.615894,
+    0.828333,
+    0.492378
+   ],
+   "pivot_uv": [
+    0.4988,
+    0.2852
+   ],
+   "bbox_uv": [
+    0.0586,
+    0.2676,
+    0.939,
+    0.7295
+   ]
+  },
+  {
+   "shape": "Strato",
+   "texture": "GateCard_Strato.png",
+   "size_px": [
+    2048,
+    1024
+   ],
+   "scale": [
+    1.473594,
+    0.688009,
+    0.508595
+   ],
+   "pivot_uv": [
+    0.5024,
+    0.3857
+   ],
+   "bbox_uv": [
+    0.0693,
+    0.3027,
+    0.9355,
+    0.6963
+   ]
+  },
+  {
+   "shape": "Puff",
+   "texture": "GateCard_Puff.png",
+   "size_px": [
+    1024,
+    1024
+   ],
+   "scale": [
+    1.593094,
+    0.791675,
+    0.490465
+   ],
+   "pivot_uv": [
+    0.5049,
+    0.3408
+   ],
+   "bbox_uv": [
+    0.0938,
+    0.3213,
+    0.916,
+    0.6738
+   ]
+  },
+  {
+   "shape": "Wisp",
+   "texture": "GateCard_Wisp.png",
+   "size_px": [
+    2048,
+    1024
+   ],
+   "scale": [
+    1.557305,
+    0.583563,
+    0.557525
+   ],
+   "pivot_uv": [
+    0.499,
+    0.4375
+   ],
+   "bbox_uv": [
+    0.0605,
+    0.3447,
+    0.9375,
+    0.6582
+   ]
+  }
+ ],
+ "cards": [
+  {
+   "id": "Tower_Colossus_3",
+   "group": "tower",
+   "shape": "Congestus",
+   "position": [
+    1051.9,
+    -175.0,
+    862.6
+   ],
+   "size": [
+    1307.3,
+    1046.3
+   ],
+   "opacity": 0.92,
+   "gain": 1.0,
+   "mirror": 1.0,
+   "queue": 3000,
+   "melt": [
+    -30.0,
+    150.0
+   ],
+   "fog_cap": 0.5,
+   "moon_rel_deg_U7b": 36.5,
+   "sag_keys": [
+    148.3,
+    1.0,
+    173.3,
+    0.72
+   ],
+   "sink_keys": [
+    154.3,
+    0.0,
+    179.3,
+    -644.475
+   ],
+   "alpha_keys": [
+    177.3,
+    1.0,
+    179.3,
+    0.0
+   ],
+   "hides": "Colossus_3"
+  },
+  {
+   "id": "Tower_Colossus_bg_00",
+   "group": "tower",
+   "shape": "Congestus",
+   "position": [
+    -1445.0,
+    -175.0,
+    1769.2
+   ],
+   "size": [
+    856.4,
+    685.4
+   ],
+   "opacity": 0.92,
+   "gain": 1.0,
+   "mirror": 0.0,
+   "queue": 3000,
+   "melt": [
+    -30.0,
+    150.0
+   ],
+   "fog_cap": 0.5,
+   "moon_rel_deg_U7b": 12.2,
+   "sag_keys": [
+    148.3,
+    1.0,
+    173.3,
+    0.72
+   ],
+   "sink_keys": [
+    154.3,
+    0.0,
+    179.3,
+    -422.191
+   ],
+   "alpha_keys": [
+    177.3,
+    1.0,
+    179.3,
+    0.0
+   ],
+   "hides": "Colossus_bg_00"
+  },
+  {
+   "id": "Tower_Colossus_bg_01",
+   "group": "tower",
+   "shape": "Congestus",
+   "position": [
+    -1899.8,
+    -175.0,
+    1143.7
+   ],
+   "size": [
+    895.1,
+    716.4
+   ],
+   "opacity": 0.92,
+   "gain": 1.0,
+   "mirror": 0.0,
+   "queue": 3000,
+   "melt": [
+    -30.0,
+    150.0
+   ],
+   "fog_cap": 0.5,
+   "moon_rel_deg_U7b": 24.3,
+   "sag_keys": [
+    148.3,
+    1.0,
+    173.3,
+    0.72
+   ],
+   "sink_keys": [
+    154.3,
+    0.0,
+    179.3,
+    -441.266
+   ],
+   "alpha_keys": [
+    177.3,
+    1.0,
+    179.3,
+    0.0
+   ],
+   "hides": "Colossus_bg_01"
+  },
+  {
+   "id": "Tower_Colossus_bg_02",
+   "group": "tower",
+   "shape": "Congestus",
+   "position": [
+    -2866.3,
+    -175.0,
+    934.3
+   ],
+   "size": [
+    1144.7,
+    916.1
+   ],
+   "opacity": 0.92,
+   "gain": 1.0,
+   "mirror": 0.0,
+   "queue": 3000,
+   "melt": [
+    -30.0,
+    150.0
+   ],
+   "fog_cap": 0.5,
+   "moon_rel_deg_U7b": 38.4,
+   "sag_keys": [
+    148.3,
+    1.0,
+    173.3,
+    0.72
+   ],
+   "sink_keys": [
+    154.3,
+    0.0,
+    179.3,
+    -564.332
+   ],
+   "alpha_keys": [
+    177.3,
+    1.0,
+    179.3,
+    0.0
+   ],
+   "hides": "Colossus_bg_02"
+  },
+  {
+   "id": "Tower_Colossus_bg_03",
+   "group": "tower",
+   "shape": "Bank",
+   "position": [
+    1456.7,
+    -175.0,
+    2317.0
+   ],
+   "size": [
+    1532.3,
+    1366.2
+   ],
+   "opacity": 0.92,
+   "gain": 1.0,
+   "mirror": 1.0,
+   "queue": 3000,
+   "melt": [
+    -30.0,
+    150.0
+   ],
+   "fog_cap": 0.5,
+   "moon_rel_deg_U7b": 33.2,
+   "sag_keys": [
+    148.3,
+    1.0,
+    173.3,
+    0.72
+   ],
+   "sink_keys": [
+    154.3,
+    0.0,
+    179.3,
+    -455.274
+   ],
+   "alpha_keys": [
+    177.3,
+    1.0,
+    179.3,
+    0.0
+   ],
+   "hides": "Colossus_bg_03"
+  },
+  {
+   "id": "Tower_Colossus_bg_04",
+   "group": "tower",
+   "shape": "Congestus",
+   "position": [
+    2047.9,
+    -175.0,
+    1152.6
+   ],
+   "size": [
+    1122.6,
+    898.5
+   ],
+   "opacity": 0.92,
+   "gain": 1.0,
+   "mirror": 1.0,
+   "queue": 3000,
+   "melt": [
+    -30.0,
+    150.0
+   ],
+   "fog_cap": 0.5,
+   "moon_rel_deg_U7b": 50.3,
+   "sag_keys": [
+    148.3,
+    1.0,
+    173.3,
+    0.72
+   ],
+   "sink_keys": [
+    154.3,
+    0.0,
+    179.3,
+    -553.461
+   ],
+   "alpha_keys": [
+    177.3,
+    1.0,
+    179.3,
+    0.0
+   ],
+   "hides": "Colossus_bg_04"
+  },
+  {
+   "id": "Tower_Colossus_bg_05",
+   "group": "tower",
+   "shape": "Congestus",
+   "position": [
+    3018.3,
+    -175.0,
+    891.8
+   ],
+   "size": [
+    797.9,
+    638.6
+   ],
+   "opacity": 0.92,
+   "gain": 1.0,
+   "mirror": 1.0,
+   "queue": 3000,
+   "melt": [
+    -30.0,
+    150.0
+   ],
+   "fog_cap": 0.5,
+   "moon_rel_deg_U7b": 64.3,
+   "sag_keys": [
+    148.3,
+    1.0,
+    173.3,
+    0.72
+   ],
+   "sink_keys": [
+    154.3,
+    0.0,
+    179.3,
+    -393.341
+   ],
+   "alpha_keys": [
+    177.3,
+    1.0,
+    179.3,
+    0.0
+   ],
+   "hides": "Colossus_bg_05"
+  },
+  {
+   "id": "Tower_Colossus_1",
+   "group": "tower",
+   "shape": "Bank",
+   "position": [
+    1287.0,
+    -175.0,
+    1363.4
+   ],
+   "size": [
+    1958.9,
+    1746.8
+   ],
+   "opacity": 0.92,
+   "gain": 1.0,
+   "mirror": 1.0,
+   "queue": 3000,
+   "melt": [
+    -30.0,
+    150.0
+   ],
+   "fog_cap": 0.5,
+   "moon_rel_deg_U7b": 36.6,
+   "sag_keys": [
+    142.8,
+    1.0,
+    167.8,
+    0.72
+   ],
+   "sink_keys": [
+    148.8,
+    0.0,
+    173.8,
+    -582.055
+   ],
+   "alpha_keys": [
+    171.8,
+    1.0,
+    173.8,
+    0.0
+   ],
+   "hides": "Colossus_1"
+  },
+  {
+   "id": "Tower_Colossus_2",
+   "group": "tower",
+   "shape": "Congestus",
+   "position": [
+    -949.6,
+    -175.0,
+    1019.4
+   ],
+   "size": [
+    1096.0,
+    877.1
+   ],
+   "opacity": 0.92,
+   "gain": 1.0,
+   "mirror": 0.0,
+   "queue": 3000,
+   "melt": [
+    -30.0,
+    150.0
+   ],
+   "fog_cap": 0.5,
+   "moon_rel_deg_U7b": 9.1,
+   "sag_keys": [
+    141.8,
+    1.0,
+    166.8,
+    0.72
+   ],
+   "sink_keys": [
+    147.8,
+    0.0,
+    172.8,
+    -540.331
+   ],
+   "alpha_keys": [
+    170.8,
+    1.0,
+    172.8,
+    0.0
+   ],
+   "hides": "Colossus_2"
+  },
+  {
+   "id": "Far_00",
+   "group": "far",
+   "shape": "Congestus",
+   "position": [
+    -4819.3,
+    -410.0,
+    5193.0
+   ],
+   "size": [
+    3943.3,
+    3943.3
+   ],
+   "opacity": 0.8,
+   "gain": 0.6,
+   "mirror": 0.0,
+   "queue": 2990,
+   "melt": [
+    -10.0,
+    130.0
+   ],
+   "fog_cap": 0.7,
+   "moon_rel_deg_U7b": 24.0,
+   "sag_keys": [],
+   "sink_keys": [],
+   "alpha_keys": []
+  },
+  {
+   "id": "Far_01",
+   "group": "far",
+   "shape": "Congestus",
+   "position": [
+    5905.1,
+    -430.0,
+    5351.5
+   ],
+   "size": [
+    4436.2,
+    4436.2
+   ],
+   "opacity": 0.8,
+   "gain": 0.6,
+   "mirror": 1.0,
+   "queue": 2990,
+   "melt": [
+    -10.0,
+    130.0
+   ],
+   "fog_cap": 0.7,
+   "moon_rel_deg_U7b": 53.0,
+   "sag_keys": [],
+   "sink_keys": [],
+   "alpha_keys": []
+  },
+  {
+   "id": "Far_02",
+   "group": "far",
+   "shape": "Bank",
+   "position": [
+    -1741.3,
+    -350.0,
+    5545.2
+   ],
+   "size": [
+    3066.8,
+    1533.4
+   ],
+   "opacity": 0.8,
+   "gain": 0.6,
+   "mirror": 0.0,
+   "queue": 2990,
+   "melt": [
+    -10.0,
+    130.0
+   ],
+   "fog_cap": 0.7,
+   "moon_rel_deg_U7b": 2.0,
+   "sag_keys": [],
+   "sink_keys": [],
+   "alpha_keys": []
+  },
+  {
+   "id": "Far_03",
+   "group": "far",
+   "shape": "Bank",
+   "position": [
+    2222.6,
+    -350.0,
+    5827.0
+   ],
+   "size": [
+    3294.0,
+    1647.0
+   ],
+   "opacity": 0.8,
+   "gain": 0.6,
+   "mirror": 1.0,
+   "queue": 2990,
+   "melt": [
+    -10.0,
+    130.0
+   ],
+   "fog_cap": 0.7,
+   "moon_rel_deg_U7b": 29.0,
+   "sag_keys": [],
+   "sink_keys": [],
+   "alpha_keys": []
+  },
+  {
+   "id": "Horizon_00",
+   "group": "horizon",
+   "shape": "Strato",
+   "position": [
+    -4491.5,
+    -250.1,
+    6386.0
+   ],
+   "size": [
+    1440.6,
+    818.2
+   ],
+   "opacity": 0.9,
+   "gain": 0.6,
+   "mirror": 0.0,
+   "queue": 2990,
+   "melt": [
+    -10.0,
+    130.0
+   ],
+   "fog_cap": 0.7,
+   "moon_rel_deg_U7b": 17.9,
+   "sag_keys": [],
+   "sink_keys": [],
+   "alpha_keys": []
+  },
+  {
+   "id": "Horizon_01",
+   "group": "horizon",
+   "shape": "Strato",
+   "position": [
+    4455.9,
+    -234.4,
+    6301.8
+   ],
+   "size": [
+    1765.4,
+    742.9
+   ],
+   "opacity": 0.9,
+   "gain": 0.6,
+   "mirror": 1.0,
+   "queue": 2990,
+   "melt": [
+    -10.0,
+    130.0
+   ],
+   "fog_cap": 0.7,
+   "moon_rel_deg_U7b": 41.9,
+   "sag_keys": [],
+   "sink_keys": [],
+   "alpha_keys": []
+  },
+  {
+   "id": "Horizon_02",
+   "group": "horizon",
+   "shape": "Strato",
+   "position": [
+    -7763.3,
+    -212.5,
+    2893.4
+   ],
+   "size": [
+    1468.3,
+    833.2
+   ],
+   "opacity": 0.9,
+   "gain": 0.6,
+   "mirror": 0.0,
+   "queue": 2990,
+   "melt": [
+    -10.0,
+    130.0
+   ],
+   "fog_cap": 0.7,
+   "moon_rel_deg_U7b": 48.8,
+   "sag_keys": [],
+   "sink_keys": [],
+   "alpha_keys": []
+  },
+  {
+   "id": "Horizon_03",
+   "group": "horizon",
+   "shape": "Puff",
+   "position": [
+    2786.4,
+    -225.2,
+    7261.5
+   ],
+   "size": [
+    720.8,
+    899.2
+   ],
+   "opacity": 0.9,
+   "gain": 0.6,
+   "mirror": 1.0,
+   "queue": 2990,
+   "melt": [
+    -10.0,
+    130.0
+   ],
+   "fog_cap": 0.7,
+   "moon_rel_deg_U7b": 29.8,
+   "sag_keys": [],
+   "sink_keys": [],
+   "alpha_keys": []
+  },
+  {
+   "id": "Horizon_04",
+   "group": "horizon",
+   "shape": "Puff",
+   "position": [
+    -6648.4,
+    -246.9,
+    1078.9
+   ],
+   "size": [
+    984.5,
+    1255.9
+   ],
+   "opacity": 0.9,
+   "gain": 0.6,
+   "mirror": 0.0,
+   "queue": 2990,
+   "melt": [
+    -10.0,
+    130.0
+   ],
+   "fog_cap": 0.7,
+   "moon_rel_deg_U7b": 57.2,
+   "sag_keys": [],
+   "sink_keys": [],
+   "alpha_keys": []
+  },
+  {
+   "id": "Horizon_05",
+   "group": "horizon",
+   "shape": "Bank",
+   "position": [
+    4505.8,
+    -233.1,
+    3083.6
+   ],
+   "size": [
+    813.5,
+    424.4
+   ],
+   "opacity": 0.9,
+   "gain": 0.6,
+   "mirror": 1.0,
+   "queue": 2990,
+   "melt": [
+    -10.0,
+    130.0
+   ],
+   "fog_cap": 0.7,
+   "moon_rel_deg_U7b": 56.9,
+   "sag_keys": [],
+   "sink_keys": [],
+   "alpha_keys": []
+  },
+  {
+   "id": "Horizon_06",
+   "group": "horizon",
+   "shape": "Bank",
+   "position": [
+    -6039.3,
+    -247.9,
+    757.5
+   ],
+   "size": [
+    1184.9,
+    1009.7
+   ],
+   "opacity": 0.9,
+   "gain": 0.6,
+   "mirror": 0.0,
+   "queue": 2990,
+   "melt": [
+    -10.0,
+    130.0
+   ],
+   "fog_cap": 0.7,
+   "moon_rel_deg_U7b": 58.0,
+   "sag_keys": [],
+   "sink_keys": [],
+   "alpha_keys": []
+  },
+  {
+   "id": "Horizon_07",
+   "group": "horizon",
+   "shape": "Strato",
+   "position": [
+    2621.9,
+    -236.3,
+    4366.2
+   ],
+   "size": [
+    1689.6,
+    439.1
+   ],
+   "opacity": 0.9,
+   "gain": 0.6,
+   "mirror": 1.0,
+   "queue": 2990,
+   "melt": [
+    -10.0,
+    130.0
+   ],
+   "fog_cap": 0.7,
+   "moon_rel_deg_U7b": 36.3,
+   "sag_keys": [],
+   "sink_keys": [],
+   "alpha_keys": []
+  },
+  {
+   "id": "Horizon_08",
+   "group": "horizon",
+   "shape": "Strato",
+   "position": [
+    -8486.8,
+    -227.9,
+    2286.6
+   ],
+   "size": [
+    2380.8,
+    1485.6
+   ],
+   "opacity": 0.9,
+   "gain": 0.6,
+   "mirror": 0.0,
+   "queue": 2990,
+   "melt": [
+    -10.0,
+    130.0
+   ],
+   "fog_cap": 0.7,
+   "moon_rel_deg_U7b": 54.3,
+   "sag_keys": [],
+   "sink_keys": [],
+   "alpha_keys": []
+  },
+  {
+   "id": "Horizon_09",
+   "group": "horizon",
+   "shape": "Puff",
+   "position": [
+    3645.3,
+    -206.0,
+    999.0
+   ],
+   "size": [
+    962.1,
+    1047.6
+   ],
+   "opacity": 0.9,
+   "gain": 0.6,
+   "mirror": 1.0,
+   "queue": 2990,
+   "melt": [
+    -10.0,
+    130.0
+   ],
+   "fog_cap": 0.7,
+   "moon_rel_deg_U7b": 68.2,
+   "sag_keys": [],
+   "sink_keys": [],
+   "alpha_keys": []
+  },
+  {
+   "id": "Horizon_10",
+   "group": "horizon",
+   "shape": "Wisp",
+   "position": [
+    -4449.1,
+    -209.9,
+    6173.8
+   ],
+   "size": [
+    1155.6,
+    372.5
+   ],
+   "opacity": 0.9,
+   "gain": 0.6,
+   "mirror": 0.0,
+   "queue": 2990,
+   "melt": [
+    -10.0,
+    130.0
+   ],
+   "fog_cap": 0.7,
+   "moon_rel_deg_U7b": 18.3,
+   "sag_keys": [],
+   "sink_keys": [],
+   "alpha_keys": []
+  },
+  {
+   "id": "Horizon_11",
+   "group": "horizon",
+   "shape": "Puff",
+   "position": [
+    3738.1,
+    -242.3,
+    6577.7
+   ],
+   "size": [
+    1104.9,
+    639.1
+   ],
+   "opacity": 0.9,
+   "gain": 0.6,
+   "mirror": 1.0,
+   "queue": 2990,
+   "melt": [
+    -10.0,
+    130.0
+   ],
+   "fog_cap": 0.7,
+   "moon_rel_deg_U7b": 37.0,
+   "sag_keys": [],
+   "sink_keys": [],
+   "alpha_keys": []
+  },
+  {
+   "id": "Horizon_12",
+   "group": "horizon",
+   "shape": "Puff",
+   "position": [
+    -4588.9,
+    -217.9,
+    1787.9
+   ],
+   "size": [
+    595.1,
+    542.6
+   ],
+   "opacity": 0.9,
+   "gain": 0.6,
+   "mirror": 0.0,
+   "queue": 2990,
+   "melt": [
+    -10.0,
+    130.0
+   ],
+   "fog_cap": 0.7,
+   "moon_rel_deg_U7b": 42.9,
+   "sag_keys": [],
+   "sink_keys": [],
+   "alpha_keys": []
+  },
+  {
+   "id": "Horizon_13",
+   "group": "horizon",
+   "shape": "Strato",
+   "position": [
+    6632.4,
+    -234.9,
+    4726.6
+   ],
+   "size": [
+    1316.0,
+    856.0
+   ],
+   "opacity": 0.9,
+   "gain": 0.6,
+   "mirror": 1.0,
+   "queue": 2990,
+   "melt": [
+    -10.0,
+    130.0
+   ],
+   "fog_cap": 0.7,
+   "moon_rel_deg_U7b": 59.1,
+   "sag_keys": [],
+   "sink_keys": [],
+   "alpha_keys": []
+  },
+  {
+   "id": "Horizon_14",
+   "group": "horizon",
+   "shape": "Strato",
+   "position": [
+    -8572.1,
+    -234.8,
+    1906.8
+   ],
+   "size": [
+    1778.2,
+    1286.9
+   ],
+   "opacity": 0.9,
+   "gain": 0.6,
+   "mirror": 0.0,
+   "queue": 2990,
+   "melt": [
+    -10.0,
+    130.0
+   ],
+   "fog_cap": 0.7,
+   "moon_rel_deg_U7b": 56.7,
+   "sag_keys": [],
+   "sink_keys": [],
+   "alpha_keys": []
+  },
+  {
+   "id": "Horizon_15",
+   "group": "horizon",
+   "shape": "Strato",
+   "position": [
+    3651.8,
+    -237.2,
+    5183.3
+   ],
+   "size": [
+    1258.3,
+    744.8
+   ],
+   "opacity": 0.9,
+   "gain": 0.6,
+   "mirror": 1.0,
+   "queue": 2990,
+   "melt": [
+    -10.0,
+    130.0
+   ],
+   "fog_cap": 0.7,
+   "moon_rel_deg_U7b": 40.9,
+   "sag_keys": [],
+   "sink_keys": [],
+   "alpha_keys": []
+  },
+  {
+   "id": "Horizon_16",
+   "group": "horizon",
+   "shape": "Strato",
+   "position": [
+    -4367.9,
+    -223.5,
+    1522.2
+   ],
+   "size": [
+    1639.7,
+    998.5
+   ],
+   "opacity": 0.9,
+   "gain": 0.6,
+   "mirror": 0.0,
+   "queue": 2990,
+   "melt": [
+    -10.0,
+    130.0
+   ],
+   "fog_cap": 0.7,
+   "moon_rel_deg_U7b": 43.9,
+   "sag_keys": [],
+   "sink_keys": [],
+   "alpha_keys": []
+  },
+  {
+   "id": "Horizon_17",
+   "group": "horizon",
+   "shape": "Wisp",
+   "position": [
+    2427.2,
+    -210.8,
+    3722.1
+   ],
+   "size": [
+    1247.3,
+    519.0
+   ],
+   "opacity": 0.9,
+   "gain": 0.6,
+   "mirror": 1.0,
+   "queue": 2990,
+   "melt": [
+    -10.0,
+    130.0
+   ],
+   "fog_cap": 0.7,
+   "moon_rel_deg_U7b": 37.2,
+   "sag_keys": [],
+   "sink_keys": [],
+   "alpha_keys": []
+  },
+  {
+   "id": "Horizon_18",
+   "group": "horizon",
+   "shape": "Wisp",
+   "position": [
+    -6195.9,
+    -207.6,
+    2614.1
+   ],
+   "size": [
+    2242.8,
+    1420.5
+   ],
+   "opacity": 0.9,
+   "gain": 0.6,
+   "mirror": 0.0,
+   "queue": 2990,
+   "melt": [
+    -10.0,
+    130.0
+   ],
+   "fog_cap": 0.7,
+   "moon_rel_deg_U7b": 44.8,
+   "sag_keys": [],
+   "sink_keys": [],
+   "alpha_keys": []
+  },
+  {
+   "id": "Horizon_19",
+   "group": "horizon",
+   "shape": "Wisp",
+   "position": [
+    3142.8,
+    -215.5,
+    7482.1
+   ],
+   "size": [
+    2666.1,
+    1451.5
+   ],
+   "opacity": 0.9,
+   "gain": 0.6,
+   "mirror": 1.0,
+   "queue": 2990,
+   "melt": [
+    -10.0,
+    130.0
+   ],
+   "fog_cap": 0.7,
+   "moon_rel_deg_U7b": 31.4,
+   "sag_keys": [],
+   "sink_keys": [],
+   "alpha_keys": []
+  },
+  {
+   "id": "Horizon_20",
+   "group": "horizon",
+   "shape": "Wisp",
+   "position": [
+    -3823.2,
+    -242.3,
+    6008.2
+   ],
+   "size": [
+    2196.4,
+    920.5
+   ],
+   "opacity": 0.9,
+   "gain": 0.6,
+   "mirror": 0.0,
+   "queue": 2990,
+   "melt": [
+    -10.0,
+    130.0
+   ],
+   "fog_cap": 0.7,
+   "moon_rel_deg_U7b": 15.2,
+   "sag_keys": [],
+   "sink_keys": [],
+   "alpha_keys": []
+  },
+  {
+   "id": "Horizon_21",
+   "group": "horizon",
+   "shape": "Strato",
+   "position": [
+    6438.8,
+    -244.3,
+    3123.1
+   ],
+   "size": [
+    1293.4,
+    429.5
+   ],
+   "opacity": 0.9,
+   "gain": 0.6,
+   "mirror": 1.0,
+   "queue": 2990,
+   "melt": [
+    -10.0,
+    130.0
+   ],
+   "fog_cap": 0.7,
+   "moon_rel_deg_U7b": 66.7,
+   "sag_keys": [],
+   "sink_keys": [],
+   "alpha_keys": []
+  },
+  {
+   "id": "Mist_00",
+   "group": "mist",
+   "shape": "Wisp",
+   "position": [
+    -2430.8,
+    -142.0,
+    1076.8
+   ],
+   "size": [
+    2964.7,
+    1482.3
+   ],
+   "opacity": 0.45,
+   "gain": 1.0,
+   "mirror": 0.0,
+   "queue": 3000,
+   "melt": [
+    -10.0,
+    60.0
+   ],
+   "fog_cap": 0.7,
+   "moon_rel_deg_U7b": 32.0,
+   "sag_keys": [],
+   "sink_keys": [],
+   "alpha_keys": []
+  },
+  {
+   "id": "Mist_01",
+   "group": "mist",
+   "shape": "Wisp",
+   "position": [
+    2292.9,
+    -142.0,
+    932.9
+   ],
+   "size": [
+    2964.7,
+    1482.3
+   ],
+   "opacity": 0.45,
+   "gain": 1.0,
+   "mirror": 1.0,
+   "queue": 3000,
+   "melt": [
+    -10.0,
+    60.0
+   ],
+   "fog_cap": 0.7,
+   "moon_rel_deg_U7b": 56.0,
+   "sag_keys": [],
+   "sink_keys": [],
+   "alpha_keys": []
+  }
+ ],
+ "beams": [
+  {
+   "id": "Shaft_00",
+   "parent": "Tear_Root",
+   "mode": 0.0,
+   "start": [
+    38.56,
+    304.16,
+    8.0
+   ],
+   "axis": [
+    0.5281,
+    -0.0164,
+    0.849
+   ],
+   "half_width": 46.9,
+   "length": 3437.5,
+   "widen": 3.2,
+   "intensity": 0.35
+  },
+  {
+   "id": "Shaft_01",
+   "parent": "Tear_Root",
+   "mode": 0.0,
+   "start": [
+    -98.87,
+    354.85,
+    8.0
+   ],
+   "axis": [
+    -0.4544,
+    -0.0298,
+    0.8903
+   ],
+   "half_width": 40.6,
+   "length": 3437.5,
+   "widen": 3.2,
+   "intensity": 0.21
+  },
+  {
+   "id": "Wedge_Hand_L",
+   "parent": "GateRoot",
+   "mode": 1.0,
+   "start": [
+    -157.4,
+    15.4,
+    -241.3
+   ],
+   "axis": [
+    -0.0811,
+    0.0179,
+    -0.9965
+   ],
+   "half_width": 80.0,
+   "length": 900.0,
+   "widen": 2.5,
+   "intensity": 0.414
+  },
+  {
+   "id": "Wedge_Hand_R",
+   "parent": "GateRoot",
+   "mode": 1.0,
+   "start": [
+    219.3,
+    30.9,
+    -200.0
+   ],
+   "axis": [
+    0.0823,
+    0.0102,
+    -0.9966
+   ],
+   "half_width": 85.0,
+   "length": 900.0,
+   "widen": 2.5,
+   "intensity": 0.348
+  },
+  {
+   "id": "Wedge_Hand_R2",
+   "parent": "GateRoot",
+   "mode": 1.0,
+   "start": [
+    113.9,
+    -45.0,
+    -145.8
+   ],
+   "axis": [
+    0.0524,
+    -0.0243,
+    -0.9983
+   ],
+   "half_width": 60.0,
+   "length": 900.0,
+   "widen": 2.5,
+   "intensity": 0.302
+  },
+  {
+   "id": "Wedge_Engel",
+   "parent": "GateRoot",
+   "mode": 1.0,
+   "start": [
+    106.5,
+    172.0,
+    -95.1
+   ],
+   "axis": [
+    0.0979,
+    -0.1074,
+    -0.9894
+   ],
+   "half_width": 70.0,
+   "length": 900.0,
+   "widen": 2.5,
+   "intensity": 0.316
+  }
+ ],
+ "tide_material": {
+  "note": "gate_test §2.2 item 10: Lanbai_TentacleTide_v2.shader is now v2.3 (includes LanbaiGateSky.cginc; these are its new defaults). Existing materials M_TentacleTide_A / B keep their old values: set these on them (or reset the properties):",
+  "_HazeNear": [
+   0.1085,
+   0.113,
+   0.1641,
+   1.0
+  ],
+  "_HazeFar": [
+   0.0436,
+   0.0504,
+   0.0726,
+   1.0
+  ],
+  "_BandEl": [
+   6.0,
+   22.0,
+   2.0,
+   0.0
+  ]
+ }
+}
