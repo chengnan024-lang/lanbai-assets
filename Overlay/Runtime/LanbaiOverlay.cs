@@ -46,10 +46,14 @@ public class LanbaiOverlay : UdonSharpBehaviour
     private bool _ready;
     private VRCPlayerApi _local;
 
+    private bool _written;                       // somebody has set the overlay since load
+
     void Start()
     {
         Init();
-        Hide();
+        // 总导演终审 #9: no unconditional Hide() (an act that set the overlay before this Start, e.g. the spawn black,
+        // must keep it); only switch the sphere off if nobody has written yet
+        if (!_written && sphere != null) sphere.enabled = false;
     }
 
     private void Init()
@@ -114,6 +118,7 @@ public class LanbaiOverlay : UdonSharpBehaviour
     public void SetFlat(Color fillLinear, float alpha, float appliedDeltaEV)
     {
         Init();
+        _written = true;
         float k = FillScale(appliedDeltaEV);
         float a = Mathf.Clamp01(alpha);
         VRCShader.SetGlobalVector(_idColor, new Vector4(fillLinear.r * k, fillLinear.g * k, fillLinear.b * k, a));
@@ -124,6 +129,7 @@ public class LanbaiOverlay : UdonSharpBehaviour
     public void SetCurve(Color fillLinear, float appliedDeltaEV, float tau, float T, float Lfrom, float Lto, float Lscene, float Lover)
     {
         Init();
+        _written = true;
         float k = FillScale(appliedDeltaEV);
         VRCShader.SetGlobalVector(_idColor, new Vector4(fillLinear.r * k, fillLinear.g * k, fillLinear.b * k, 1f));
         VRCShader.SetGlobalVector(_idCurve, new Vector4(tau, Mathf.Max(T, 1e-3f), 1f, _breath));
@@ -166,6 +172,7 @@ public class LanbaiOverlay : UdonSharpBehaviour
     public void Hide()
     {
         Init();
+        ClearLobes();                            // 总导演终审 #9: the next owner starts without this one's lobes / leads
         VRCShader.SetGlobalVector(_idColor, new Vector4(0f, 0f, 0f, 0f));
         VRCShader.SetGlobalVector(_idCurve, new Vector4(0f, 1f, 0f, 0f));
         _breath = 0f;

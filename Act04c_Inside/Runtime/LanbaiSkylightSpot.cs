@@ -25,6 +25,7 @@ public class LanbaiSkylightSpot : UdonSharpBehaviour
     void Start()
     {
         Init();
+        _on = true;                 // 总导演终审 #8: force the first SetOn(false) through (the renderers start enabled)
         SetOn(false);
     }
 

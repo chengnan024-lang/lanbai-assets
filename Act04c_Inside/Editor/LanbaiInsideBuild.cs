@@ -27,7 +27,26 @@ namespace Lanbai.Inside.Editor
         public static void Build()
         {
             var old = GameObject.Find("Lanbai_Inside");
-            if (old != null) Undo.DestroyObjectImmediate(old);
+            // 总导演终审 #11: a rebuild keeps what was wired / tuned by hand on the old driver (the references and the
+            // dial time); the Director's wiring is re-run by hand afterwards (logged below)
+            UnityEngine.Object keepOverlay = null, keepExposure = null, keepLight = null;
+            float keepDial = float.NaN;
+            bool keepRS = false, keepML = false, hadOld = old != null;
+            if (old != null)
+            {
+                var oc = old.GetComponentInChildren(FindDriverType(), true);
+                if (oc != null)
+                {
+                    var os = new SerializedObject(oc);
+                    keepOverlay = os.FindProperty("overlay")?.objectReferenceValue;
+                    keepExposure = os.FindProperty("exposure")?.objectReferenceValue;
+                    keepLight = os.FindProperty("worldMainLight")?.objectReferenceValue;
+                    var pd = os.FindProperty("tLichtDial"); if (pd != null) keepDial = pd.floatValue;
+                    var p1 = os.FindProperty("writeRenderSettings"); if (p1 != null) keepRS = p1.boolValue;
+                    var p2 = os.FindProperty("writeMainLight"); if (p2 != null) keepML = p2.boolValue;
+                }
+                Undo.DestroyObjectImmediate(old);
+            }
             var shader = Shader.Find("Lanbai/InsideLip");
             if (shader == null) { Debug.LogError("[Lanbai 4c] shader Lanbai/InsideLip not found (did it compile? it needs Common/Shaders/LanbaiFog.cginc)"); return; }
             if (!AssetDatabase.IsValidFolder(MatDir)) AssetDatabase.CreateFolder(Root, "Materials");
@@ -88,11 +107,85 @@ namespace Lanbai.Inside.Editor
                     for (int i = 0; i < lipMats.Count; i++) pm.GetArrayElementAtIndex(i).objectReferenceValue = lipMats[i];
                 }
                 Fill(so, insideRoot, dot, lipMatLip.ToArray());
+                var pb = so.FindProperty("busAnchoredObject"); if (pb != null) pb.objectReferenceValue = busAnch;
+                if (hadOld)
+                {
+                    void R(string name, UnityEngine.Object v) { var q = so.FindProperty(name); if (q != null && v != null) q.objectReferenceValue = v; }
+                    R("overlay", keepOverlay); R("exposure", keepExposure); R("worldMainLight", keepLight);
+                    var pd = so.FindProperty("tLichtDial"); if (pd != null && !float.IsNaN(keepDial)) pd.floatValue = keepDial;
+                    var p1 = so.FindProperty("writeRenderSettings"); if (p1 != null) p1.boolValue = keepRS;
+                    var p2 = so.FindProperty("writeMainLight"); if (p2 != null) p2.boolValue = keepML;
+                }
+                so.ApplyModifiedPropertiesWithoutUndo();
             }
             insideRoot.SetActive(false);
+            busAnch.SetActive(false);                      // 总导演终审 #1: the dome / dot / loose threads start off
+            string sky = BuildSkylight(top.transform);
             AssetDatabase.SaveAssets();
-            Debug.Log("[Lanbai 4c] built Lanbai_Inside: " + n + " renderers. " + note +
-                      " Wire the driver's overlay (Lanbai_Overlay), exposure (Lanbai_Grades) and worldMainLight by hand, then add it to the Director.");
+            Debug.Log("[Lanbai 4c] built Lanbai_Inside: " + n + " renderers. " + note + " " + sky +
+                      (hadOld ? " Kept from the old build: overlay / exposure / worldMainLight / tLichtDial / write flags."
+                              : " Wire the driver's overlay (Lanbai_Overlay), exposure (Lanbai_Grades) and worldMainLight by hand.") +
+                      " Then re-run 蓝白/Director/2 Wire Scene (the driver and the skylight are new objects).");
+        }
+
+        static System.Type FindDriverType()
+        {
+            foreach (var a in System.AppDomain.CurrentDomain.GetAssemblies())
+            {
+                var t = a.GetType("LanbaiInsideDriver");
+                if (t != null) return t;
+            }
+            return typeof(MonoBehaviour);
+        }
+
+        /// <summary>总导演终审 #8: the skylight spot (act 4, U8 -> U9) built like the rest: FBX under the bus (bus space =
+        /// world), three materials (Lanbai/SkylightSpot, Part Spot / Beam / Dust), the LanbaiSkylightSpot U# with its
+        /// renderers; the renderers start off (the U# switches them). Bounds: set at import (LanbaiInsideImport).</summary>
+        static string BuildSkylight(Transform top)
+        {
+            var asset = AssetDatabase.LoadAssetAtPath<GameObject>(Root + "/FBX/Skylight_Spot.fbx");
+            var sh = Shader.Find("Lanbai/SkylightSpot");
+            if (asset == null || sh == null) return "(skylight spot NOT built: FBX or shader missing)";
+            var go = (GameObject)PrefabUtility.InstantiatePrefab(asset);
+            go.name = "Skylight_Spot";
+            go.transform.SetParent(top, false);
+            var rs = new List<Renderer>();
+            foreach (var r in go.GetComponentsInChildren<MeshRenderer>(true))
+            {
+                string part = r.name.Contains("Beam") ? "BEAM" : r.name.Contains("Dust") ? "DUST" : "SPOT";
+                string path = MatDir + "/M_04c_Skylight_" + part + ".mat";
+                var m = AssetDatabase.LoadAssetAtPath<Material>(path);
+                if (m == null) { m = new Material(sh); AssetDatabase.CreateAsset(m, path); }
+                m.shader = sh;
+                foreach (var kw in new[] { "SPOT", "BEAM", "DUST" }) m.DisableKeyword("_PART_" + kw);
+                m.EnableKeyword("_PART_" + part);
+                m.SetFloat("_Part", Array.IndexOf(new[] { "SPOT", "BEAM", "DUST" }, part));
+                EditorUtility.SetDirty(m);
+                r.sharedMaterial = m;
+                r.shadowCastingMode = ShadowCastingMode.Off;
+                r.receiveShadows = false;
+                r.lightProbeUsage = LightProbeUsage.Off;
+                r.reflectionProbeUsage = ReflectionProbeUsage.Off;
+                r.enabled = false;
+                rs.Add(r);
+            }
+            var u = new GameObject("LanbaiSkylightSpot");
+            u.transform.SetParent(top, false);
+            string note = Lanbai.Overlay.Editor.LanbaiOverlayBuild.AddUdonSharp(u, Root + "/Runtime/LanbaiSkylightSpot.cs",
+                Root + "/Runtime/LanbaiSkylightSpot.asset", "LanbaiSkylightSpot");
+            var c = u.GetComponent("LanbaiSkylightSpot");
+            if (c != null)
+            {
+                var so = new SerializedObject(c);
+                var p = so.FindProperty("renderers");
+                if (p != null)
+                {
+                    p.arraySize = rs.Count;
+                    for (int i = 0; i < rs.Count; i++) p.GetArrayElementAtIndex(i).objectReferenceValue = rs[i];
+                }
+                so.ApplyModifiedPropertiesWithoutUndo();
+            }
+            return "Skylight spot: " + rs.Count + " renderers. " + note;
         }
 
         static void Setup(MeshRenderer r, Material m)

@@ -37,7 +37,16 @@ namespace Lanbai.Inside.Editor
 
         void OnPostprocessModel(GameObject g)
         {
-            if (!assetPath.StartsWith(Root) || !assetPath.EndsWith("Inside_Extras.fbx")) return;
+            if (!assetPath.StartsWith(Root)) return;
+            if (assetPath.EndsWith("Skylight_Spot.fbx"))
+            {
+                // 总导演终审 #8: the spot / beam / dust are placed in the vertex shader from the tear: the modelled
+                // bounds are a point; give them the volume they can occupy (the aisle and the skylight shaft)
+                foreach (var mf in g.GetComponentsInChildren<MeshFilter>(true))
+                    if (mf.sharedMesh != null) mf.sharedMesh.bounds = new Bounds(new Vector3(0.5f, 1.6f, 1.0f), new Vector3(12f, 6f, 20f));
+                return;
+            }
+            if (!assetPath.EndsWith("Inside_Extras.fbx")) return;
             foreach (var mf in g.GetComponentsInChildren<MeshFilter>(true))
             {
                 if (mf.sharedMesh == null) continue;

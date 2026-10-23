@@ -21,6 +21,7 @@ FOG_AHEAD_M = 100.0                     # the fog ahead is the next zone's colou
 FOG_D0, FOG_D1 = 0.0006, D.FOG_DENSITY  # act 4's density -> the inside's, over U9 .. U9 + 2 s (smoothstep)
 NADIR_K = 0.80                          # darker below (review r1 / art review r03)
 SHEET_FOG_CAP, LIP8_HOLD_M, LIP8_RAMP_M = 0.25, 70.0, 60.0     # r09: cap 0.30 -> 0.25 (art review r08 B2-3; 0.28 lifted 200 by only 0.4 APL and the 197 near sheet to 41)
+CROSSED_FADE_M = 300.0
 SLEEVE_FOG_K = 0.72                                    # r07 / r09: the air inside the sleeve (forward APL; the side window barely depends on it)
 SLEEVE_INNER_CLOTH_K = 1.35                            # r09: the inner plies' cut faces (226 side APL)
 SLEEVE_LOOSE_K = 12.0                                  # r08: loose fibres pulled from the thick cloth, inside the sleeve
@@ -126,8 +127,9 @@ def lip_visibility(k, t):
     lip 7 is 70 m away and fades in over 60 m (~4 s), so it is never drawn inside lip 7 round the dot."""
     s = float(D.dist(t))
     S = [float(D.dist(x)) for x in D.LIP_T]
-    if s >= S[k - 1]:
-        return 1.0
+    if s >= S[k - 1]:                                # 总导演终审 #4: crossed lips fade out behind (D-02 looking back)
+        s_out = S[k - 1] + (D.SLEEVE_DEPTH if k == 8 else 0.0)      # lip 8: crossed once the sleeve's exit is
+        return 1.0 if s < s_out else 1.0 - float(D.ss(np.clip((s - s_out) / CROSSED_FADE_M, 0.0, 1.0)))
     ahead = [i for i in range(8) if S[i] > s]
     rank = ahead.index(k - 1)
     if rank <= 1:

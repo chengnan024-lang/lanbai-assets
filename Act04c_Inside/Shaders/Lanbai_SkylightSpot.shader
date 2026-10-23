@@ -143,6 +143,10 @@ Shader "Lanbai/SkylightSpot"
             #endif
                 o.wpos = wp;
                 o.pos = mul(UNITY_MATRIX_VP, float4(wp, 1.0));
+                // 总导演终审 #8: nobody has written the tear (w <= 0) or the envelope is 0: nothing (never a projection
+                // 19 km into the sky)
+                if (_Udon_TearPos.w <= 0.0 || _Udon_SkySpot.x <= 0.0)
+                    o.pos = float4(2.0, 2.0, 2.0, 1.0);
                 return o;
             }
 

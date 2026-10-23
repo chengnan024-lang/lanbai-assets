@@ -204,7 +204,9 @@ Shader "Lanbai/InsideLip"
                 o.pos = mul(UNITY_MATRIX_VP, float4(wp, 1.0));
                 // the portal: nothing of the inside exists until the eyes have passed the tear plane. Collapsed in the
                 // vertex stage (no discard: Early-Z stays on); the centre eye so both eyes switch in the same frame.
-                if (_Udon_InsidePortal.y > 0.5 && LanbaiCentreEyePos().z < _Udon_InsidePortal.x - 0.7)
+                // 总导演终审 #1: and nothing at all while the portal is not armed (outside 4c's window: a second guard
+                // besides the driver switching the roots off)
+                if (_Udon_InsidePortal.y < 0.5 || LanbaiCentreEyePos().z < _Udon_InsidePortal.x - 0.7)
                     o.pos = float4(2.0, 2.0, 2.0, 1.0);
                 return o;
             }

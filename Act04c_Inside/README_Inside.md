@@ -11,12 +11,13 @@
 3. 导入设置由 `Editor/LanbaiInsideImport.cs` 自动设（只管这个文件夹）：网格不压缩、不生成光照 UV、不导材质；贴图线性、BC7、毛边贴图 U 重复 V 夹住。
 4. 菜单 **蓝白/Build/Overlay**（如果还没建过遮罩），然后 **蓝白/Build/04c 门内**：建 `Lanbai_Inside`：
    - `InsideRoot`：8 重光唇 + 袖，`Lanbai/InsideLip`，开始时**不激活**，由驱动打开；
-   - `Inside_BusAnchored`：穹、松散的丝线、暖白点，跟着车；
+   - `Inside_BusAnchored`：穹、松散的丝线、暖白点，跟着车；**开始时也不激活**，和 `InsideRoot` 一起由驱动的 `LanbaiActivate` 开关（总导演终审 #1：2.4 km 的穹是不透明、写深度的，开着就把全片的天盖住）。shader 在门户没生效时也把它们塌缩（双保险）；
    - `LanbaiInsideDriver`（UdonSharp）和它的程序资产。字段由 `Editor/InsideLayoutData.cs` 填，这个文件由 `InsideLayout.json` 生成。
    搭完**手动**连三个引用：驱动的 `overlay`（场景里的 `Lanbai_Overlay`）、`exposure`（`Lanbai_Grades` 上的 `LanbaiExposure`）、`worldMainLight`（世界主光）。然后把驱动加进 Director 的分发层（它有 `LanbaiTick / LanbaiActivate / LanbaiWindow / LanbaiGrade`；闪光 FLASH_TEAR 走 `LanbaiGrade`，本地 `ApplyGrades` 里自己那份要删）。
+   **重新点搭建菜单**会保留旧驱动上手动接的 `overlay` / `exposure` / `worldMainLight`、`tLichtDial` 和两个开关；点完请重跑 **蓝白/Director/2 Wire Scene**（驱动和天窗光斑是新物体）。
    **`writeRenderSettings`、`writeMainLight` 默认关**：本地把第 4c、5 幕的窗口（177.55 → 252.64）加进 `extWindows`、勾上 `extAtmosphere` / `extSun` 以后再勾这两个，不然两边每帧写同一个量。环境光的三色写法要本地的环境光模式是 **Trilight**。
    窗口从 177.55 开始（门的窗口里）：那一帧 `InsideRoot` 打开，但车还在裂口平面前面，门内的一切在顶点阶段塌缩，画面不变。
-5. **天窗光斑（第 4 幕 U8 → U9）**：把 `FBX/Skylight_Spot.fbx` 放在车下（车坐标 = 世界坐标，位置 0、旋转 0）。三个物体 Spot / Beam / Dust 用 `Lanbai/SkylightSpot`，Part 分别选 Spot / Beam / Dust。网格 bounds 要设大（顶点每帧在 shader 里算；`LanbaiInsideImport` 没管这个 FBX 的 bounds，请在 Mesh Renderer 上勾 “Update When Offscreen” 或者手动把 bounds 设成 20 m）。加 `LanbaiSkylightSpot`（U#），`renderers` 填这三个。它读门每帧写的 `_Udon_TearPos`、`_Udon_TearH`。
+5. **天窗光斑（第 4 幕 U8 → U9）**：同一个搭建菜单一起建（`Skylight_Spot` + `LanbaiSkylightSpot`，三个材质 `M_04c_Skylight_*`，renderers 已填）。网格 bounds 由 `LanbaiInsideImport` 在导入时设成过道 + 天窗光柱的体积（顶点每帧在 shader 里算）。它读门写的 `_Udon_TearPos`、`_Udon_TearH`；门没写（w ≤ 0）或包络为 0 时 shader 什么都不画。renderers 开始时关，由 U# 开关。
 6. **截图推回来**（主座位，桌面 1920×1080、水平 90°，渲进 ARGBHalf 再过 PPv2；VR 用左眼另截一张量 APL）：
 
 | t | 机位 | 看什么、量什么 |
@@ -44,13 +45,13 @@
 - **闭式（门要照抄的那一行）**：τ = t − U9，T = U_voiceEnd − U9，x = τ/T：
   `s = v_g·τ + (12 − v_g)·T·(x³ − x⁴/2)`（τ ≤ T）；`s = v_g·T + (12 − v_g)·T/2 + 12·(τ − T)`（τ > T）；`s = v_g·τ`（τ < 0）。
 - `InsideRoot.localPosition = (0, 0, −s)`。**门：U9 以后 `GateRoot.z = −s(t)`（同一个式子），裂口和第 1 重焊在一起。**
-- 指尖卷回（归门）：第 1 重唇在 InsideRoot 本地 z = 0（世界 z = −s(t)），开口就是裂口透镜的轮廓（`tear_def.lips`，车在 15% 高度进入）；指尖贴在这个平面背后（z < 0 一侧）2–8 m，U9 → U9 + 6 s 卷回。
+- 指尖卷回：**待定（门第 10 轮，总导演 10-23 裁决这次不做）**。门内这边不为它留任何东西。
 
 ## 3. 八重光唇（数据：`InsideLayout.json` → `lips`、`sleeve`）
 
 见 `Docs~/DESIGN_4c.md` §2 的表（s、高度、网格、旋转、偏移、净空、暖白点的位置都由 `Tools~/inside_layout.py` 求解并核对）。三种开口都由“撕裂段”组成（沿纱线直走、跳纱错一步），没有椭圆、没有透镜形、没有星形。每一重 = 不透明的布（铺到 2.2 km，雾 0.0035 下边看不见）+ 一圈毛边 + 少数下垂的长纱 +（窄端的）横纱。撕边离开布面卷曲（沿边的多尺度噪声，环上无缝，幅度 1.6% H）。
 
-**同时看得见的光唇 ≤ 3（圣经，r06）**：最近的两重全显；第三重在“上一次穿越 → 下一次穿越”之间按 smoothstep 渐显；更远的光 × 0、布的雾封顶 → 1（完全融进雾）。穿过一重的那一刻，第三重正好到 1、变成第二重，所以没有跳变。驱动每帧对每重的材质写 `_Gain` 和（布）`_FogCap`，只写变了的（`LipVisible()`，和 `Tools~/inside_drive.lip_visibility` 同一个式子）。**注意：这是直接改共享材质，编辑器里 Play 过后材质资产上的值会留着；重新点一次搭建菜单就复原。**
+**同时看得见的光唇 ≤ 3（圣经，r06；回头看也成立：已穿过的光唇在身后 300 m 内淡出，第 8 重从袖的出口算起，总导演终审 #4）**：最近的两重全显；第三重在“上一次穿越 → 下一次穿越”之间按 smoothstep 渐显；更远的光 × 0、布的雾封顶 → 1（完全融进雾）。穿过一重的那一刻，第三重正好到 1、变成第二重，所以没有跳变。驱动每帧对每重的材质写 `_Gain` 和（布）`_FogCap`，只写变了的（`LipVisible()`，和 `Tools~/inside_drive.lip_visibility` 同一个式子）。**注意：这是直接改共享材质，编辑器里 Play 过后材质资产上的值会留着；重新点一次搭建菜单就复原。**
 
 | 部件 | 材质要点 |
 |---|---|
@@ -66,6 +67,8 @@
 纤维填色：第 1 重 `#DFCFFF @ +1.96`、第 4 重 `#CBD8FF @ +1.78`、第 8 重 `#BCEAFF @ +1.29`（圣经），中间按对数插值（JSON 里每一重都有线性值）。
 
 ## 4. 雾（天空的 `LanbaiFog` v1，“渐变”模型 B）
+
+**交接（D-22，总导演终审 #2、#3）**：门的驱动只在 [U6, U9) 写天、雾、月、星；从第一次 t ≥ U9 的 tick 起，这里每帧写整组：`_Udon_Fog` = (密度, 0, 0, 1)、`_Udon_FogModel` = (1, 0, 0, 1)（B 渐变）、`_Udon_FogBase` = 0（不设：按眼睛高度）、`_Udon_FogCubeParams` = 0、`_Udon_StarGain` / `_Udon_GalaxyGain` = (0, 0, 0, 1)（布里面没有星）。`LanbaiActivate(false)` 时交还：门户 = 0、暖白点 = 0、上面这些通道 w = 0（下一幕的写法或默认值生效）。
 
 驱动每帧写：`_Udon_FogDensity`（U9 → U9 + 2 s 从 0.0006 到 0.0035）、`_Udon_FogBandDir` = +Z、`_Udon_FogBandColor` = 前方的区色 × 1.0、`_Udon_HorizonColor` = (身后的区色 × 0.72, a = 2)、`_Udon_ZenithColor` = 当前 × 0.85、`_Udon_NadirColor` = 当前 × 0.80、`_Udon_FogBandWidth` = 100、`_Udon_FogShape` = (25, 90, 1, 0)、`_Udon_FogBelow` = (−90, −15, 1, 0)；`RenderSettings.fogColor` = 当前区色、`fogDensity` 同上。区色从 `#1D2336`（填 `#2A3347`）到 `#53606E`（填 `#6E808D`），在相邻两重之间按 s 平滑过渡（`InsideLayout.json` → `fog.zones`）。
 

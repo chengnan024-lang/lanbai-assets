@@ -109,6 +109,16 @@ Shader "Lanbai/Overlay"
                 return lead;
             }
 
+            float3 LinearToSrgb(float3 x)
+            {
+                x = max(x, 0.0);
+                return (x <= 0.0031308) ? 12.92 * x : 1.055 * pow(x, 1.0 / 2.4) - 0.055;
+            }
+            float3 SrgbToLinear(float3 x)
+            {
+                return (x <= 0.04045) ? x / 12.92 : pow((x + 0.055) / 1.055, 2.4);
+            }
+
             float4 frag(v2f i) : SV_Target
             {
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
@@ -124,7 +134,8 @@ Shader "Lanbai/Overlay"
                 float3 c = max(_Udon_OverlayColor.rgb, 0.0) * breath;
                 // object-space dither (same value in both eyes): +-_DitherLSB 8-bit codes, triangular
                 float n = LanbaiSkyDither(d) * (_DitherLSB / 255.0);
-                c = GammaToLinearSpace(max(LinearToGammaSpace(c) + n, 0.0));
+                // 总导演终审 #9: exact sRGB (UnityCG's fast gamma approximation crushed act 5's #030409 to #000000)
+                c = SrgbToLinear(max(LinearToSrgb(c) + n, 0.0));
                 return float4(c, saturate(alpha));
             }
             ENDCG
