@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import sys; sys.dont_write_bytecode = True
 """调色复核：场景线性（调色前）图 → PPv2 引擎（Neutral 路径、33^3 LUT、grades_engine.json）+ bloom → sRGB 8 位，
 和包交的 PNG 比较。这是 Unity 实际会显示的数学（Grading/verify.md）。
 用法: python3 regrade.py SCENE.(exr|npy) --profile S6 [--compare pkg.png] [--out regraded.png]
