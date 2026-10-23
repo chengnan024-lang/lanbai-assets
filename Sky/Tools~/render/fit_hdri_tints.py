@@ -72,7 +72,10 @@ def main(name):
     def params(p):
         return dict(_RotationA=rot, _SunGain=0, _ZenithTintA=(*np.exp(p[0:3]), 1), _HorizonTintA=(*np.exp(p[3:6]), 1),
                     _HorizonAntiTintA=(*np.exp(p[6:9]), 1), _MidTintA=(*np.exp(p[12:15]), 1),
-                    _TintElevation=(p[9], p[10], p[10] + p[11], 1.0), _SunDir=(*sun, 0))
+                    _TintElevation=(p[9], p[10], zen_end(p), 1.0), _SunDir=(*sun, 0))
+
+    def zen_end(p):   # the zenith zone always ends AT 90 (no cone, no flat cap with a ring): p[11] unused
+        return 90.0
 
     def resid(p):
         r = []
@@ -84,15 +87,20 @@ def main(name):
         r.extend(0.03 * np.r_[p[0:9], p[12:15]])   # and every tint near 1
         return np.array(r)
 
-    p0 = np.full(15, 0.01); p0[9] = 4.0; p0[10] = 30.0; p0[11] = 35.0
-    lo = np.r_[-np.ones(9) * 3, 1.0, 12.0, 30.0, -np.ones(3) * 3]   # mid -> zenith over >= 30 deg: no lid overhead
-    hi = np.r_[np.ones(9) * 3, 10.0, 50.0, 70.0, np.ones(3) * 3]
-    res = least_squares(resid, p0, bounds=(lo, hi), diff_step=1e-2, x_scale=np.r_[np.ones(9), 2.0, 10.0, 10.0, np.ones(3)])
+    lo = np.r_[-np.ones(9) * 3, 1.0, 12.0, 0.0, -np.ones(3) * 3]   # mid -> zenith over >= 30 deg: no lid overhead
+    hi = np.r_[np.ones(9) * 3, 10.0, 60.0, 1e-3, np.ones(3) * 3]   # mid <= 60: >= 30 deg to the zenith
+    res = None
+    for y0, f0 in ((30.0, 0.0), (20.0, 0.0), (45.0, 0.0), (55.0, 0.0)):   # a few starts: the elevations make it non-convex
+        p0 = np.full(15, 0.01); p0[9] = 4.0; p0[10] = y0; p0[11] = f0
+        r = least_squares(resid, p0, bounds=(lo, hi), diff_step=1e-2, x_scale=np.r_[np.ones(9), 2.0, 10.0, 0.3, np.ones(3)])
+        print('start', y0, f0, 'cost %.5f' % r.cost)
+        if res is None or r.cost < res.cost:
+            res = r
     P = params(res.x)
     out = {'act': name, 'hdri': c['hdri'], 'rotation': round(float(rot), 2), 'profile': c['sid'], 'tints': {}}
     for k in ('_ZenithTintA', '_MidTintA', '_HorizonTintA', '_HorizonAntiTintA'):
         out['tints'][k] = [round(float(v), 4) for v in P[k][:3]]
-    out['tints']['_TintElevation'] = [round(float(res.x[9]), 2), round(float(res.x[10]), 2), round(float(res.x[10] + res.x[11]), 2), 1.0]
+    out['tints']['_TintElevation'] = [round(float(res.x[9]), 2), round(float(res.x[10]), 2), round(float(zen_end(res.x)), 2), 1.0]
     out['check'] = {}
     for k, (d, f) in regions.items():
         m = S.render(d, P).mean(0)

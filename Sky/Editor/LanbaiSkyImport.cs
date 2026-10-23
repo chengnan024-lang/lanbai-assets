@@ -8,7 +8,7 @@ namespace Lanbai.Sky.EditorTools
 {
     public class LanbaiSkyImport : AssetPostprocessor
     {
-        public override uint GetVersion() { return 2; }   // bump when the settings change: Unity re-imports
+        public override uint GetVersion() { return 3; }   // bump when the settings change: Unity re-imports
 
         static bool Mine(string path)
         {
@@ -47,17 +47,18 @@ namespace Lanbai.Sky.EditorTools
             else if (f.StartsWith("StarSky_Glow"))
             {
                 // world-frame lat-long sampled by Lanbai/Sky with its own mapping (LanbaiGalaxyUV), always mip 0:
-                // no mips (no blur, bible §6·9), U repeats across the seam, V clamps at the poles
+                // no mips (no blur, bible §6·9), U repeats across the seam, V clamps at the poles.
+                // 8-bit sRGB PNG normalised to 1 (the material's _GlowScale = Sky/Data/StarSky.json glow_scale)
                 ti.textureType = TextureImporterType.Default;
                 ti.textureShape = TextureImporterShape.Texture2D;
-                ti.sRGBTexture = false;
+                ti.sRGBTexture = true;
                 ti.mipmapEnabled = false;
                 ti.wrapModeU = TextureWrapMode.Repeat;
                 ti.wrapModeV = TextureWrapMode.Clamp;
                 ti.filterMode = FilterMode.Bilinear;
                 ti.anisoLevel = 0;
                 ti.npotScale = TextureImporterNPOTScale.None;
-                Platform(ti, TextureImporterFormat.BC6H, 4096);
+                Platform(ti, TextureImporterFormat.BC7, 8192);
             }
             else if (f.StartsWith("Moon_Disc"))
             {

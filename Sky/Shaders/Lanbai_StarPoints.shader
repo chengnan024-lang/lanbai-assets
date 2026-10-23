@@ -25,10 +25,10 @@ Shader "Lanbai/StarPoints"
         _MagRef ("Reference magnitude", Float) = 0
         _MagSlope ("Magnitude slope (1 = physical; < 1 compresses)", Range(0.2, 1)) = 0.5
         _MagFloor ("Faintest magnitude drawn", Float) = 6.5
-        _FWHM ("FWHM px (>= 1.4)", Range(1.4, 4)) = 1.6
+        _FWHM ("FWHM px (>= 1.5, D-06)", Range(1.5, 4)) = 1.6
         _BrightCount ("Bright ranks boosted (count)", Float) = 50
         _BrightBoost ("Boost of the bright ranks", Float) = 4
-        _Gain ("Gain (global _Udon_StarGain.x wins when Use Global Gain is 1)", Float) = 1
+        _Gain ("Gain (global _Udon_StarGain.x wins when Use Global Gain is 1)", Float) = 0
         _UseGlobalGain ("Use Global Gain (0 = this material only, e.g. the first stars of act 8b)", Float) = 1
         _OrderFade ("Order fade  x threshold  y soft  z 1 = stars with order below x are OFF  0 = ON", Vector) = (0, 0.02, 0, 0)
         _Distance ("Draw distance m (inside the far clip 45 km)", Float) = 40000
@@ -36,7 +36,7 @@ Shader "Lanbai/StarPoints"
     }
     SubShader
     {
-        Tags { "Queue" = "Transparent-400" "RenderType" = "Transparent" "IgnoreProjector" = "True" "PreviewType" = "Plane" }
+        Tags { "Queue" = "Transparent-400" "RenderType" = "Transparent" "IgnoreProjector" = "True" "PreviewType" = "Plane" "DisableBatching" = "True" }
         Blend One One
         ZWrite Off
         Cull Off
@@ -48,13 +48,17 @@ Shader "Lanbai/StarPoints"
             #pragma fragment frag
             #pragma target 3.5
             #include "UnityCG.cginc"
-            #include "Assets/Lanbai/Common/Shaders/LanbaiVR.cginc"
+            #include "Assets/Lanbai/Common/Shaders/LanbaiSky.cginc"     // (+ LanbaiVR) the fog band geometry for _Udon_StarShape
 
             float _StarScale, _MagRef, _MagSlope, _MagFloor, _FWHM, _BrightCount, _BrightBoost, _Gain, _Distance, _UseGlobalGain;
             float4 _OrderFade, _Tint;
             #ifndef LANBAI_DECL__Udon_StarGain
             #define LANBAI_DECL__Udon_StarGain
             float4 _Udon_StarGain;     // x = gain, y = bright-rank boost (> 0 = set), z = bright-rank count (> 0 = set); w > 0 = set
+            #endif
+            #ifndef LANBAI_DECL__Udon_StarShape
+            #define LANBAI_DECL__Udon_StarShape
+            float4 _Udon_StarShape;    // x = faintest magnitude (overrides _MagFloor), y = EV inside the fog band (acts 3-4: -1), z = band half width deg (else _Udon_FogBandWidth); w > 0 = set
             #endif
 
             struct appdata
@@ -95,7 +99,15 @@ Shader "Lanbai/StarPoints"
                 float boost = (useG && _Udon_StarGain.y > 0.0) ? _Udon_StarGain.y : _BrightBoost;
                 float count = (useG && _Udon_StarGain.z > 0.0) ? _Udon_StarGain.z : _BrightCount;
                 flux *= lerp(1.0, boost, saturate((count - v.uv1.y) / 20.0));   // ranks fade in over 20: no star jumps x4
-                flux *= (m <= _MagFloor) ? 1.0 : 0.0;
+                bool shp = _Udon_StarShape.w > 0.0;
+                flux *= (m <= (shp ? _Udon_StarShape.x : _MagFloor)) ? 1.0 : 0.0;
+                if (shp && _Udon_StarShape.y != 0.0)
+                {   // D-06: the stars inside the act-4 haze band one EV darker (same band as the fog: _Udon_FogBandDir)
+                    float hw = (_Udon_StarShape.z > 0.0) ? _Udon_StarShape.z : max(_Udon_FogBandWidth, 1.0);
+                    float inBand = (1.0 - smoothstep(hw, hw + 10.0, LanbaiAzimuthDeg(D, LanbaiBandDir())))
+                                 * (1.0 - smoothstep(10.0, 25.0, LanbaiElevationDeg(D)));
+                    flux *= exp2(_Udon_StarShape.y * inBand);
+                }
                 float g = useG ? _Udon_StarGain.x : _Gain;
                 float ord = smoothstep(_OrderFade.x - _OrderFade.y, _OrderFade.x + _OrderFade.y, v.uv1.z);
                 float vis = (_OrderFade.z > 0.5) ? ord : 1.0;

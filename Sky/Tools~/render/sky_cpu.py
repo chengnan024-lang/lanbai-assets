@@ -28,7 +28,8 @@ DEFAULTS = dict(_CubeA_HDR=(1, 1, 0, 0), _CubeB_HDR=(1, 1, 0, 0), _RotationA=0, 
                 _SunDir=(0.7, 0.1, 0.7, 0), _SunColor=(5.86, 3.70, 1.98, 1), _SunShape=(0.45, 0.04, 0.55, 0), _SunGain=1,
                 _SunGlow=(0, 1.2, 0, 0.15), _SunGlowColor=(1, 0.6, 0.3, 1),
                 _MoonDir=(-0.206, 0.139, 0.969, 0), _MoonColor=(2.81, 2.97, 3.18, 1), _MoonRadius=0.6, _MoonGain=0,
-                _MoonGlow=(1.6, 0.9, 0.06, 0.32), _MoonGlowColor=(0.275, 0.366, 0.578, 1), _Exposure=0, _Dither=0, _PurpleGuard=(0, 0.86, 1.25, 0))
+                _MoonGlow=(1.6, 0.9, 0.06, 0.32), _MoonGlowColor=(0.275, 0.366, 0.578, 1), _Exposure=0, _Dither=0, _PurpleGuard=(0, 0.86, 1.25, 0),
+                _SunRemove=(0, 2.5, 0.25, 0.6), _GlowScale=1)
 
 
 def set_cube(slot_name, equirect):
@@ -48,6 +49,8 @@ def render(dirs, params=None, globs=None):
     u.update(globs or {})
     for name, s in SLOTS.items():
         u[name] = {'id': s if s in renderer().tex else -1}
+    # one-material mode (_Udon_SkyGlobals): the global cube textures are the same images as _CubeA / _CubeB here
+    u['_Udon_SkyCubeTexA'] = dict(u['_CubeA']); u['_Udon_SkyCubeTexB'] = dict(u['_CubeB'])
     u['_Udon_FogCube'] = {'id': -1}
     u.setdefault('unity_FogColor', (0.1, 0.1, 0.1, 1))
     u.setdefault('_WorldSpaceCameraPos', (0.55, 1.70, 2.05))
@@ -60,3 +63,20 @@ def render(dirs, params=None, globs=None):
 def load_hdr(path):
     from hdrio import read_hdr
     return read_hdr(path)
+
+
+def glow_scale():
+    import json
+    return float(json.load(open(os.path.join(REPO, 'Sky', 'Data', 'StarSky.json')))['glow_scale'])
+
+
+def load_glow(step=1):
+    """StarSky_Glow PNG -> linear float, NORMALISED (Lanbai/Sky multiplies by _GlowScale = glow_scale(), as in Unity
+    where the texture is imported sRGB and the material carries the scale)."""
+    from PIL import Image
+    Image.MAX_IMAGE_PIXELS = None
+    a = np.asarray(Image.open(os.path.join(REPO, 'Sky', 'Textures', 'StarSky_Glow_8192x4096.png')).convert('RGB'))
+    if step > 1:
+        a = a.reshape(a.shape[0] // step, step, a.shape[1] // step, step, 3).mean(axis=(1, 3))
+    c = a.astype(np.float32) / 255.0
+    return np.where(c <= 0.04045, c / 12.92, ((c + 0.055) / 1.055) ** 2.4).astype(np.float32)

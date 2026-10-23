@@ -73,8 +73,9 @@ Shader "Lanbai/Sky"
         _NightBlend ("Night weight (global _Udon_SkyBlend.z wins)", Range(0, 1)) = 0
         _NightColor ("Night floor before ignition, linear (fill #050000 under S9a)", Vector) = (0.0015, 0, 0, 1)
         _StarFloorAdd ("Star floor added at gain 1, linear (fill #0D0F23 minus the floor)", Vector) = (0.0025, 0.0048, 0.0170, 1)
-        [NoScaleOffset] _GlowTex ("Galaxy glow equirect (StarSky_Glow_4096x2048.exr)", 2D) = "black" {}
+        [NoScaleOffset] _GlowTex ("Galaxy glow equirect (StarSky_Glow_8192x4096.png, sRGB, x Glow Scale)", 2D) = "black" {}
         _GalaxyGain ("Galaxy glow gain (global _Udon_GalaxyGain.x wins)", Float) = 0
+        _GlowScale ("Galaxy glow scale (the PNG is normalised; Sky/Data/StarSky.json glow_scale)", Float) = 1
         _NightMaskDir ("Night delay  the front direction xyz (sun death azimuth)", Vector) = (0, 0, 1, 0)
         _NightMaskShape ("Night delay  x azimuth half width deg  y soft deg  z elevation top deg  w soft deg", Vector) = (30, 45, 6, 22)
         [Header(Sun)]
@@ -82,6 +83,7 @@ Shader "Lanbai/Sky"
         _SunColor ("Sun disc colour, linear HDR (dawn fill #FFCE9E x 2^2.55)", Vector) = (5.86, 3.70, 1.98, 1)
         _SunShape ("Sun  x radius deg  y soft edge deg  z limb darkening  w line half length deg", Vector) = (0.45, 0.04, 0.55, 0)
         _SunGain ("Sun gain (global _Udon_SunDisc.x wins)", Float) = 1
+        _SunRemove ("Remove the HDRI sun  x radius deg  y luminance cap  z aureole  w hue to sun", Vector) = (0, 2.5, 0.25, 0.6)
         _SunGlow ("Sun aureole  x gain  y falloff per deg  z wide gain  w wide falloff", Vector) = (0, 1.2, 0, 0.15)
         _SunGlowColor ("Sun aureole colour, linear", Vector) = (1, 0.6, 0.3, 1)
         [Header(Moon)]

@@ -28,7 +28,7 @@ float4 _NightColor, _StarFloorAdd;
 sampler2D _GlowTex;
 float _GalaxyGain;
 float4 _NightMaskDir, _NightMaskShape;
-float4 _SunDir, _SunColor, _SunShape, _SunGlow, _SunGlowColor;
+float4 _SunDir, _SunColor, _SunShape, _SunGlow, _SunGlowColor, _SunRemove;
 float _SunGain;
 sampler2D _MoonTex; float4 _MoonTex_TexelSize;
 float4 _MoonDir, _MoonColor, _MoonGlow, _MoonGlowColor;
@@ -50,6 +50,160 @@ float4 _Udon_SkyFx;        // x = other sky, y = band 1 gain, z unused (the sun 
 float4 _Udon_GalaxyGain;   // x = glow + star floor gain g(t); w > 0 = set
 #endif
 
+
+// ---- one material for the whole film (chief engineer r2 ruling): every per-preset property P above has a global
+// _Udon_Sky_P (P without its leading underscore; float4, float properties in x). _Udon_SkyGlobals: x > 0.5 = read ALL of them from the globals (the
+// presets / the driver write them; their values cross-fade), y > 0.5 = cube A from the global texture
+// _Udon_SkyCubeTexA, z > 0.5 = cube B from _Udon_SkyCubeTexB (BC6H / RGBAHalf cubes: decode (1, 1, 0, 0)).
+// The material values stay the defaults when nothing is set (editor preview, test scenes).
+#ifndef LANBAI_DECL__Udon_SkyGlobals
+#define LANBAI_DECL__Udon_SkyGlobals
+float4 _Udon_SkyGlobals;
+#endif
+samplerCUBE _Udon_SkyCubeTexA;
+samplerCUBE _Udon_SkyCubeTexB;
+float4 _Udon_Sky_ZenithTintA;
+float4 _Udon_Sky_MidTintA;
+float4 _Udon_Sky_HorizonTintA;
+float4 _Udon_Sky_HorizonAntiTintA;
+float4 _Udon_Sky_ZenithTintB;
+float4 _Udon_Sky_MidTintB;
+float4 _Udon_Sky_HorizonTintB;
+float4 _Udon_Sky_HorizonAntiTintB;
+float4 _Udon_Sky_TintElevation;
+float4 _Udon_Sky_NadirColor;
+float4 _Udon_Sky_BelowShape;
+float4 _Udon_Sky_Band1Color;
+float4 _Udon_Sky_Band1Shape;
+float4 _Udon_Sky_Band2Color;
+float4 _Udon_Sky_Band2Shape;
+float4 _Udon_Sky_OtherTint;
+float4 _Udon_Sky_NightColor;
+float4 _Udon_Sky_StarFloorAdd;
+float4 _Udon_Sky_NightMaskDir;
+float4 _Udon_Sky_NightMaskShape;
+float4 _Udon_Sky_SunDir;
+float4 _Udon_Sky_SunColor;
+float4 _Udon_Sky_SunShape;
+float4 _Udon_Sky_SunGlow;
+float4 _Udon_Sky_SunGlowColor;
+float4 _Udon_Sky_MoonDir;
+float4 _Udon_Sky_MoonColor;
+float4 _Udon_Sky_MoonGlow;
+float4 _Udon_Sky_MoonGlowColor;
+float4 _Udon_Sky_PurpleGuard;
+float4 _Udon_Sky_SunRemove;
+float4 _Udon_Sky_RotationA;
+float4 _Udon_Sky_ExposureA;
+float4 _Udon_Sky_ClampA;
+float4 _Udon_Sky_RotationB;
+float4 _Udon_Sky_ExposureB;
+float4 _Udon_Sky_ClampB;
+float4 _Udon_Sky_Band2Gain;
+float4 _Udon_Sky_OtherGain;
+float4 _Udon_Sky_OtherSeam;
+float4 _Udon_Sky_OtherFromB;
+float4 _Udon_Sky_HorizonLift;
+float4 _Udon_Sky_MoonRadius;
+float4 _Udon_Sky_Exposure;
+float4 _Udon_Sky_GlowScale;
+static float4 p_ZenithTintA;
+static float4 p_MidTintA;
+static float4 p_HorizonTintA;
+static float4 p_HorizonAntiTintA;
+static float4 p_ZenithTintB;
+static float4 p_MidTintB;
+static float4 p_HorizonTintB;
+static float4 p_HorizonAntiTintB;
+static float4 p_TintElevation;
+static float4 p_NadirColor;
+static float4 p_BelowShape;
+static float4 p_Band1Color;
+static float4 p_Band1Shape;
+static float4 p_Band2Color;
+static float4 p_Band2Shape;
+static float4 p_OtherTint;
+static float4 p_NightColor;
+static float4 p_StarFloorAdd;
+static float4 p_NightMaskDir;
+static float4 p_NightMaskShape;
+static float4 p_SunDir;
+static float4 p_SunColor;
+static float4 p_SunShape;
+static float4 p_SunGlow;
+static float4 p_SunGlowColor;
+static float4 p_MoonDir;
+static float4 p_MoonColor;
+static float4 p_MoonGlow;
+static float4 p_MoonGlowColor;
+static float4 p_PurpleGuard;
+static float4 p_SunRemove;
+static float p_RotationA;
+static float p_ExposureA;
+static float p_ClampA;
+static float p_RotationB;
+static float p_ExposureB;
+static float p_ClampB;
+static float p_Band2Gain;
+static float p_OtherGain;
+static float p_OtherSeam;
+static float p_OtherFromB;
+static float p_HorizonLift;
+static float p_MoonRadius;
+static float p_Exposure;
+static float p_GlowScale;
+float _GlowScale;
+void LanbaiSkyLoadParams()
+{
+    bool g = _Udon_SkyGlobals.x > 0.5;
+    p_ZenithTintA = g ? _Udon_Sky_ZenithTintA : _ZenithTintA;
+    p_MidTintA = g ? _Udon_Sky_MidTintA : _MidTintA;
+    p_HorizonTintA = g ? _Udon_Sky_HorizonTintA : _HorizonTintA;
+    p_HorizonAntiTintA = g ? _Udon_Sky_HorizonAntiTintA : _HorizonAntiTintA;
+    p_ZenithTintB = g ? _Udon_Sky_ZenithTintB : _ZenithTintB;
+    p_MidTintB = g ? _Udon_Sky_MidTintB : _MidTintB;
+    p_HorizonTintB = g ? _Udon_Sky_HorizonTintB : _HorizonTintB;
+    p_HorizonAntiTintB = g ? _Udon_Sky_HorizonAntiTintB : _HorizonAntiTintB;
+    p_TintElevation = g ? _Udon_Sky_TintElevation : _TintElevation;
+    p_NadirColor = g ? _Udon_Sky_NadirColor : _NadirColor;
+    p_BelowShape = g ? _Udon_Sky_BelowShape : _BelowShape;
+    p_Band1Color = g ? _Udon_Sky_Band1Color : _Band1Color;
+    p_Band1Shape = g ? _Udon_Sky_Band1Shape : _Band1Shape;
+    p_Band2Color = g ? _Udon_Sky_Band2Color : _Band2Color;
+    p_Band2Shape = g ? _Udon_Sky_Band2Shape : _Band2Shape;
+    p_OtherTint = g ? _Udon_Sky_OtherTint : _OtherTint;
+    p_NightColor = g ? _Udon_Sky_NightColor : _NightColor;
+    p_StarFloorAdd = g ? _Udon_Sky_StarFloorAdd : _StarFloorAdd;
+    p_NightMaskDir = g ? _Udon_Sky_NightMaskDir : _NightMaskDir;
+    p_NightMaskShape = g ? _Udon_Sky_NightMaskShape : _NightMaskShape;
+    p_SunDir = g ? _Udon_Sky_SunDir : _SunDir;
+    p_SunColor = g ? _Udon_Sky_SunColor : _SunColor;
+    p_SunShape = g ? _Udon_Sky_SunShape : _SunShape;
+    p_SunGlow = g ? _Udon_Sky_SunGlow : _SunGlow;
+    p_SunGlowColor = g ? _Udon_Sky_SunGlowColor : _SunGlowColor;
+    p_MoonDir = g ? _Udon_Sky_MoonDir : _MoonDir;
+    p_MoonColor = g ? _Udon_Sky_MoonColor : _MoonColor;
+    p_MoonGlow = g ? _Udon_Sky_MoonGlow : _MoonGlow;
+    p_MoonGlowColor = g ? _Udon_Sky_MoonGlowColor : _MoonGlowColor;
+    p_PurpleGuard = g ? _Udon_Sky_PurpleGuard : _PurpleGuard;
+    p_SunRemove = g ? _Udon_Sky_SunRemove : _SunRemove;
+    p_RotationA = g ? _Udon_Sky_RotationA.x : _RotationA;
+    p_ExposureA = g ? _Udon_Sky_ExposureA.x : _ExposureA;
+    p_ClampA = g ? _Udon_Sky_ClampA.x : _ClampA;
+    p_RotationB = g ? _Udon_Sky_RotationB.x : _RotationB;
+    p_ExposureB = g ? _Udon_Sky_ExposureB.x : _ExposureB;
+    p_ClampB = g ? _Udon_Sky_ClampB.x : _ClampB;
+    p_Band2Gain = g ? _Udon_Sky_Band2Gain.x : _Band2Gain;
+    p_OtherGain = g ? _Udon_Sky_OtherGain.x : _OtherGain;
+    p_OtherSeam = g ? _Udon_Sky_OtherSeam.x : _OtherSeam;
+    p_OtherFromB = g ? _Udon_Sky_OtherFromB.x : _OtherFromB;
+    p_HorizonLift = g ? _Udon_Sky_HorizonLift.x : _HorizonLift;
+    p_MoonRadius = g ? _Udon_Sky_MoonRadius.x : _MoonRadius;
+    p_Exposure = g ? _Udon_Sky_Exposure.x : _Exposure;
+    p_GlowScale = g ? _Udon_Sky_GlowScale.x : _GlowScale;
+    if (p_GlowScale <= 0.0) p_GlowScale = 1.0;
+}
+
 // the source direction to sample so that the content appears rotated by +deg in azimuth (clockwise from above)
 inline float3 LanbaiRotY(float3 V, float deg)
 {
@@ -66,60 +220,88 @@ inline float LanbaiSunward(float3 V, float3 S, float p)
 }
 
 // one HDRI layer for a direction in the UPPER hemisphere (Vs.y >= 0). Tints: horizon (toward / away from the sun,
-// azimuth weight ^ _TintElevation.w) -> mid over [0, _TintElevation.y], mid -> zenith over [_TintElevation.y,
-// _TintElevation.z]; the horizon tint is full below _TintElevation.x.
+// azimuth weight ^ p_TintElevation.w) -> mid over [0, p_TintElevation.y], mid -> zenith over [p_TintElevation.y,
+// p_TintElevation.z]; the horizon tint is full below p_TintElevation.x.
 float3 LanbaiCubeTint(float3 Vs, float3 zt, float3 mt, float3 ht, float3 hat, float3 S)
 {
     float el = LanbaiElevationDeg(Vs);
-    float3 hTint = lerp(hat, ht, LanbaiSunward(Vs, S, _TintElevation.w));
-    float t1 = smoothstep(_TintElevation.x, max(_TintElevation.y, _TintElevation.x + 0.1), el);
-    float t2 = smoothstep(_TintElevation.y, max(_TintElevation.z, _TintElevation.y + 0.1), el);
+    float3 hTint = lerp(hat, ht, LanbaiSunward(Vs, S, p_TintElevation.w));
+    float t1 = LanbaiUpStep(p_TintElevation.x, max(p_TintElevation.y, p_TintElevation.x + 0.1), el);
+    float t2 = LanbaiUpStep(p_TintElevation.y, max(p_TintElevation.z, p_TintElevation.y + 0.1), el);
     return lerp(lerp(hTint, mt, t1), zt, t2);
 }
 
 float3 LanbaiCubeUpper(samplerCUBE cube, half4 hdr, float3 Vs, float rot, float ev, float clampV,
                        float3 zt, float3 mt, float3 ht, float3 hat, float3 S, float lod)
 {
-    // the HDRI's own horizon (a dark haze / ground line in every 'pure sky') is never sampled: lift to _HorizonLift deg
+    // the HDRI's own horizon (a dark haze / ground line in every 'pure sky') is never sampled: lift to p_HorizonLift deg
     float3 Vl = Vs;
-    Vl.y = max(Vl.y, sin(radians(_HorizonLift)));
+    Vl.y = max(Vl.y, sin(radians(p_HorizonLift)));
     float3 d = LanbaiRotY(normalize(Vl), rot);
     half4 raw = texCUBElod(cube, float4(d, lod));
     float3 c = DecodeHDR(raw, hdr);
     c = min(c * exp2(ev), clampV);
-    return c * LanbaiCubeTint(Vs, zt, mt, ht, hat, S);
+    c *= LanbaiCubeTint(Vs, zt, mt, ht, hat, S);
+    // the HDRI's own sun (a flat blob ~3 deg wide where the HDRI clipped; the mips blur it further) is taken out
+    // (director r2 #3): within p_SunRemove.x deg of the sun the luminance is soft-capped (knee 4, hue kept) at
+    //   cap(a) = p_SunRemove.y x (max(a, 1.5) / x)^-z     (linear, after the tints; y ~ the sky at radius x; z = a gentle
+    //                                                       aureole so the cap is a glow, not a flat disc)
+    // and the clipped (whitish) blob's hue pulled toward the sun colour by w. 1.5x radius fade: monotone, no ring.
+    // The crisp procedural disc + the bloom are the sun.
+    [branch] if (p_SunRemove.x > 0.0)
+    {
+        float as = LanbaiAngleDeg(Vs, S);
+        float w = 1.0 - smoothstep(p_SunRemove.x, 1.5 * p_SunRemove.x, as);
+        float L = max(dot(c, float3(0.2126, 0.7152, 0.0722)), 1e-6);
+        float cap = max(p_SunRemove.y, 1e-4) * pow(max(as, 1.5) / p_SunRemove.x, -p_SunRemove.z);
+        float q = L / cap;
+        float3 capped = c * rsqrt(sqrt(1.0 + q * q * q * q));
+        float3 sunHue = p_SunColor.rgb / max(dot(p_SunColor.rgb, float3(0.2126, 0.7152, 0.0722)), 1e-4);
+        float k = p_SunRemove.w * saturate(q - 1.0);          // only where the cap actually bit
+        capped = lerp(capped, sunHue * dot(capped, float3(0.2126, 0.7152, 0.0722)), k);
+        c = lerp(c, capped, w);
+    }
+    return c;
 }
 
-// a full-sphere HDRI layer: upper = the tinted HDRI; lower = its horizon (clamped to _BelowShape.w so the sun does
-// not leak a column below it) -> _NadirColor
+// a full-sphere HDRI layer: upper = the tinted HDRI; lower = its horizon (clamped to p_BelowShape.w so the sun does
+// not leak a column below it) -> p_NadirColor
 float3 LanbaiCubeLayer(samplerCUBE cube, half4 hdr, float3 V, float rot, float ev, float clampV,
                        float3 zt, float3 mt, float3 ht, float3 hat, float3 S)
 {
     if (V.y >= 0.0)
         return LanbaiCubeUpper(cube, hdr, V, rot, ev, clampV, zt, mt, ht, hat, S, 0.0);
-    float3 H = normalize(float3(V.x, sin(radians(_BelowShape.z)), V.z));
-    float hc = (_BelowShape.w > 0.0) ? _BelowShape.w : clampV;
     float el = LanbaiElevationDeg(V);
+    float3 H = normalize(float3(V.x, sin(radians(p_BelowShape.z * smoothstep(0.0, 3.0, -el))), V.z));   // no step at 0
+    float hc = (p_BelowShape.w > 0.0) ? p_BelowShape.w : clampV;
     float3 hzSharp = LanbaiCubeUpper(cube, hdr, H, rot, ev, clampV, zt, mt, ht, hat, S, 0.0);
     float3 hzSoft = LanbaiCubeUpper(cube, hdr, H, rot, ev, hc, zt, mt, ht, hat, S, 3.0);
     float3 hz = lerp(hzSharp, hzSoft, smoothstep(0.0, 3.0, -el));          // continuous at the horizon, no streaks below
-    float t = smoothstep(0.0, 1.0, saturate(el / min(_BelowShape.x, -0.1)));
-    t = pow(t, max(_BelowShape.y, 0.01));
-    float3 c = lerp(hz, _NadirColor.rgb, t);
-    // the middle of a warm -> indigo gradient passes through mauve: desaturate it toward a cold grey (_NadirColor.a)
+    float t = LanbaiUpStep(0.0, max(-p_BelowShape.x, 0.1), -el);         // = the zenith rule at the nadir: no point, no ring
+    t = pow(t, max(p_BelowShape.y, 0.01));
+    float3 c = lerp(hz, p_NadirColor.rgb, t);
+    // the middle of a warm -> indigo gradient passes through mauve: desaturate it toward a cold grey (p_NadirColor.a)
     float lum = dot(c, float3(0.2126, 0.7152, 0.0722));
-    return lerp(c, lum * float3(0.90, 0.97, 1.13), saturate(_NadirColor.a * 4.0 * t * (1.0 - t)));
+    return lerp(c, lum * float3(0.90, 0.97, 1.13), saturate(p_NadirColor.a * 4.0 * t * (1.0 - t)));
 }
 
 float3 LanbaiCubes(float3 V, float3 S, float blend)
 {
     float3 c = 0;
-    [branch] if (blend < 0.999)
-        c = LanbaiCubeLayer(_CubeA, _CubeA_HDR, V, _RotationA, _ExposureA, _ClampA,
-                            _ZenithTintA.rgb, _MidTintA.rgb, _HorizonTintA.rgb, _HorizonAntiTintA.rgb, S) * (1.0 - blend);
-    [branch] if (blend > 0.001)
-        c += LanbaiCubeLayer(_CubeB, _CubeB_HDR, V, _RotationB, _ExposureB, _ClampB,
-                             _ZenithTintB.rgb, _MidTintB.rgb, _HorizonTintB.rgb, _HorizonAntiTintB.rgb, S) * blend;
+    half4 hdrA = (_Udon_SkyGlobals.y > 0.5) ? half4(1, 1, 0, 0) : _CubeA_HDR;
+    half4 hdrB = (_Udon_SkyGlobals.z > 0.5) ? half4(1, 1, 0, 0) : _CubeB_HDR;
+    [branch] if (blend < 0.999 && _Udon_SkyGlobals.y > 0.5)
+        c = LanbaiCubeLayer(_Udon_SkyCubeTexA, hdrA, V, p_RotationA, p_ExposureA, p_ClampA,
+                            p_ZenithTintA.rgb, p_MidTintA.rgb, p_HorizonTintA.rgb, p_HorizonAntiTintA.rgb, S) * (1.0 - blend);
+    else if (blend < 0.999)
+        c = LanbaiCubeLayer(_CubeA, hdrA, V, p_RotationA, p_ExposureA, p_ClampA,
+                            p_ZenithTintA.rgb, p_MidTintA.rgb, p_HorizonTintA.rgb, p_HorizonAntiTintA.rgb, S) * (1.0 - blend);
+    [branch] if (blend > 0.001 && _Udon_SkyGlobals.z > 0.5)
+        c += LanbaiCubeLayer(_Udon_SkyCubeTexB, hdrB, V, p_RotationB, p_ExposureB, p_ClampB,
+                             p_ZenithTintB.rgb, p_MidTintB.rgb, p_HorizonTintB.rgb, p_HorizonAntiTintB.rgb, S) * blend;
+    else if (blend > 0.001)
+        c += LanbaiCubeLayer(_CubeB, hdrB, V, p_RotationB, p_ExposureB, p_ClampB,
+                             p_ZenithTintB.rgb, p_MidTintB.rgb, p_HorizonTintB.rgb, p_HorizonAntiTintB.rgb, S) * blend;
     return c;
 }
 
@@ -139,20 +321,25 @@ float3 LanbaiSunTerm(float3 V, float3 S, float gain, float radius, float sunLine
     {
         a = LanbaiAngleDeg(V, S);
     }
-    float edge = smoothstep(radius + 0.5 * _SunShape.y, radius - 0.5 * _SunShape.y, a);
+    // the edge never narrower than 2 VR pixels; a disc much brighter than 1 clips to white far inside its soft edge,
+    // so the coverage is sharpened by the peak (otherwise the visible edge is ~0.1 px and crawls) (tech r2 #7)
+    float soft = max(p_SunShape.y, 2.0 * degrees(LanbaiPixelAngle()));
+    float edge = smoothstep(radius + 0.5 * soft, radius - 0.5 * soft, a);
+    float peak = max(max(p_SunColor.r, p_SunColor.g), p_SunColor.b) * gain;
+    edge = (peak > 1.0) ? pow(edge, log2(peak) + 1.0) : edge;
     float r = saturate(a / max(radius, 1e-3));
-    float limb = 1.0 - _SunShape.z * (1.0 - sqrt(saturate(1.0 - r * r)));
-    float3 c = _SunColor.rgb * (edge * limb);
-    c += _SunGlowColor.rgb * (_SunGlow.x * exp(-_SunGlow.y * a) + _SunGlow.z * exp(-_SunGlow.w * a));
+    float limb = 1.0 - p_SunShape.z * (1.0 - sqrt(saturate(1.0 - r * r)));
+    float3 c = p_SunColor.rgb * (edge * limb);
+    c += p_SunGlowColor.rgb * (p_SunGlow.x * exp(-p_SunGlow.y * a) + p_SunGlow.z * exp(-p_SunGlow.w * a));
     return c * gain;
 }
 
 float3 LanbaiMoonTerm(float3 V, float gain)
 {
-    float3 M = LanbaiSkyMoonDir(_MoonDir.xyz);
-    float radius = (_Udon_MoonDisc.w > 0.0) ? _Udon_MoonDisc.y : _MoonRadius;
+    float3 M = LanbaiSkyMoonDir(p_MoonDir.xyz);
+    float radius = (_Udon_MoonDisc.w > 0.0) ? _Udon_MoonDisc.y : p_MoonRadius;
     float am = LanbaiAngleDeg(V, M);
-    float3 c = _MoonGlowColor.rgb * (_MoonGlow.x * exp(-_MoonGlow.y * am) + _MoonGlow.z * exp(-_MoonGlow.w * am));
+    float3 c = p_MoonGlowColor.rgb * (p_MoonGlow.x * exp(-p_MoonGlow.y * am) + p_MoonGlow.z * exp(-p_MoonGlow.w * am));
     if (am < radius * 1.2 && dot(V, M) > 0.0)
     {
         float3 up = (abs(M.y) < 0.999) ? float3(0.0, 1.0, 0.0) : float3(0.0, 0.0, 1.0);   // the moon at the zenith
@@ -163,14 +350,14 @@ float3 LanbaiMoonTerm(float3 V, float gain)
         // the 1024 px disc covers ~20 screen px: pick the mip that matches one texel to one pixel (no shimmer in VR)
         float texPerPix = LanbaiPixelAngle() * k * max(_MoonTex_TexelSize.z, 1.0);
         float4 t = tex2Dlod(_MoonTex, float4(uv, 0.0, max(log2(max(texPerPix, 1e-4)), 0.0)));
-        c = lerp(c, t.rgb * _MoonColor.rgb, t.a);
+        c = lerp(c, t.rgb * p_MoonColor.rgb, t.a);
     }
     return c * gain;
 }
 
 float3 LanbaiGalaxy(float3 V)
 {
-    return tex2Dlod(_GlowTex, float4(LanbaiGalaxyUV(V), 0.0, 0.0)).rgb;
+    return tex2Dlod(_GlowTex, float4(LanbaiGalaxyUV(V), 0.0, 0.0)).rgb * p_GlowScale;     // the PNG is normalised
 }
 
 // two horizon bands (earth shadow / Venus belt at dawn; the blue-hour band; the waking line of act 12): the sky is
@@ -210,12 +397,12 @@ float3 LanbaiMonotonicBand(float3 c, float3 V, float3 S, float4 bandColor, float
 }
 float3 LanbaiApplyBands(float3 c, float3 V, float3 S, float band1Gain)
 {
-    [branch] if (band1Gain > 0.0 && _Band1Shape.y < 0.0)
-        c = LanbaiMonotonicBand(c, V, S, _Band1Color, _Band1Shape, band1Gain);
+    [branch] if (band1Gain > 0.0 && p_Band1Shape.y < 0.0)
+        c = LanbaiMonotonicBand(c, V, S, p_Band1Color, p_Band1Shape, band1Gain);
     else if (band1Gain > 0.0)
-        c = LanbaiBandBlend(c, _Band1Color, saturate(band1Gain * LanbaiBandWeight(V, S, _Band1Shape)));
-    [branch] if (_Band2Gain > 0.0)
-        c = LanbaiBandBlend(c, _Band2Color, saturate(_Band2Gain * LanbaiBandWeight(V, S, _Band2Shape)));
+        c = LanbaiBandBlend(c, p_Band1Color, saturate(band1Gain * LanbaiBandWeight(V, S, p_Band1Shape)));
+    [branch] if (p_Band2Gain > 0.0)
+        c = LanbaiBandBlend(c, p_Band2Color, saturate(p_Band2Gain * LanbaiBandWeight(V, S, p_Band2Shape)));
     return c;
 }
 
@@ -233,14 +420,14 @@ float3 LanbaiPurpleGuard(float3 c, float4 g)
 }
 
 // act 8b -> 9: per-direction night weight. x = 0..1 over the 8 s darkening; the back and the zenith reach 1 at
-// x = 0.75 (6 s), the front horizon band (|az| < 40 deg of _NightMaskDir, below ~12 deg) is still 50 % at 0.75 and
+// x = 0.75 (6 s), the front horizon band (|az| < 40 deg of p_NightMaskDir, below ~12 deg) is still 50 % at 0.75 and
 // reaches 1 at x = 1. (bible §6·8b: front band >= 50 % at 1007.2, black at 1009.21; elsewhere black in 6 s)
 float LanbaiNightWeight(float3 V, float x)
 {
-    float az = LanbaiAzimuthDeg(V, _NightMaskDir.xyz);
+    float az = LanbaiAzimuthDeg(V, p_NightMaskDir.xyz);
     float el = LanbaiElevationDeg(V);
-    float f = (1.0 - smoothstep(_NightMaskShape.x, _NightMaskShape.x + _NightMaskShape.y, az))
-            * (1.0 - smoothstep(_NightMaskShape.z, _NightMaskShape.z + _NightMaskShape.w, abs(el)));
+    float f = (1.0 - smoothstep(p_NightMaskShape.x, p_NightMaskShape.x + p_NightMaskShape.y, az))
+            * (1.0 - smoothstep(p_NightMaskShape.z, p_NightMaskShape.z + p_NightMaskShape.w, abs(el)));
     float d = 0.5 * f;
     float w = saturate((x - d) / (0.75 - 0.25 * f));
     return w * w * (3.0 - 2.0 * w);                       // eased: no visible edge where neighbouring directions differ
@@ -248,17 +435,18 @@ float LanbaiNightWeight(float3 V, float x)
 
 float3 LanbaiSkyColour(float3 V)
 {
+    LanbaiSkyLoadParams();
     float blend = (_Udon_SkyBlend.w > 0.0) ? _Udon_SkyBlend.x : _Blend;
     float proc  = (_Udon_SkyBlend.w > 0.0) ? _Udon_SkyBlend.y : _ProcWeight;
     float night = (_Udon_SkyBlend.w > 0.0) ? _Udon_SkyBlend.z : _NightBlend;
     float other = (_Udon_SkyFx.w > 0.0) ? _Udon_SkyFx.x : _OtherSky;
     float bandG = (_Udon_SkyFx.w > 0.0) ? _Udon_SkyFx.y : _Band1Gain;
-    float sunLine  = (_Udon_SunDisc.w > 0.0) ? _Udon_SunDisc.z : _SunShape.w;
+    float sunLine  = (_Udon_SunDisc.w > 0.0) ? _Udon_SunDisc.z : p_SunShape.w;
     float gal   = (_Udon_GalaxyGain.w > 0.0) ? _Udon_GalaxyGain.x : _GalaxyGain;
     float sunG  = (_Udon_SunDisc.w > 0.0) ? _Udon_SunDisc.x : _SunGain;
-    float sunR  = (_Udon_SunDisc.w > 0.0) ? _Udon_SunDisc.y : _SunShape.x;
+    float sunR  = (_Udon_SunDisc.w > 0.0) ? _Udon_SunDisc.y : p_SunShape.x;
     float moonG = (_Udon_MoonDisc.w > 0.0) ? _Udon_MoonDisc.x : _MoonGain;
-    float3 S = LanbaiSunDir(_SunDir.xyz);
+    float3 S = LanbaiSunDir(p_SunDir.xyz);
 
     // 1-2. cubes, procedural
     float3 c = 0;
@@ -273,22 +461,22 @@ float3 LanbaiSkyColour(float3 V)
     // 3. the other sky below the horizon (its own sun included: the burning line of two suns)
     [branch] if (other > 0.001 && V.y < 0.02)
     {
-        float w = other * LanbaiOtherSkyWeight(V, _OtherSeam);
+        float w = other * LanbaiOtherSkyWeight(V, p_OtherSeam);
         float3 Vo = LanbaiOtherSkyDir(V);
         Vo.y = abs(Vo.y);
-        // the other sky: the same cubes rotated 180 deg about +Z, or (_OtherFromB = 1) cube B: other air, other light
-        float3 o = (_OtherFromB > 0.5) ? LanbaiCubes(Vo, S, 1.0) : LanbaiCubes(Vo, S, blend);
+        // the other sky: the same cubes rotated 180 deg about +Z, or (p_OtherFromB = 1) cube B: other air, other light
+        float3 o = (p_OtherFromB > 0.5) ? LanbaiCubes(Vo, S, 1.0) : LanbaiCubes(Vo, S, blend);
         if (sunG > 0.0)
             o += LanbaiSunTerm(Vo, S, sunG, sunR, sunLine);
-        c = lerp(c, o * _OtherGain * _OtherTint.rgb, w);
+        c = lerp(c, o * p_OtherGain * p_OtherTint.rgb, w);
     }
 
-    c = LanbaiPurpleGuard(c, _PurpleGuard);
+    c = LanbaiPurpleGuard(c, p_PurpleGuard);
 
     // 4. night
     [branch] if (night > 0.001)
     {
-        float3 n = _NightColor.rgb + gal * (_StarFloorAdd.rgb + LanbaiGalaxy(V));
+        float3 n = p_NightColor.rgb + gal * (p_StarFloorAdd.rgb + LanbaiGalaxy(V));
         c = lerp(c, n, LanbaiNightWeight(V, night));
     }
 
@@ -296,7 +484,7 @@ float3 LanbaiSkyColour(float3 V)
     [branch] if (moonG > 0.0)
         c += LanbaiMoonTerm(V, moonG);
 
-    return max(c, 0.0) * exp2(_Exposure);
+    return max(c, 0.0) * exp2(p_Exposure);
 }
 
 #endif // LANBAI_SKY_LAYERS_INCLUDED

@@ -27,7 +27,7 @@
 |---|---|
 | `Shaders/Lanbai_Sky.shader` + `LanbaiSkyLayers.cginc` | 天空盒 `Lanbai/Sky`（§2）。逻辑全在 `.cginc` 里，CPU 参考渲染跑的就是它 |
 | `Shaders/Lanbai_StarPoints.shader` | 星点 `Lanbai/StarPoints`：每颗星一个高斯精灵（§4） |
-| `Textures/StarSky_Glow_4096x2048.exr` | 银河辉光（世界坐标的经纬图、线性、半浮点、**没有星**）（§4） |
+| `Textures/StarSky_Glow_8192x4096.exr` | 银河辉光（世界坐标的经纬图、线性、半浮点、**没有星**）（§4） |
 | `Textures/Sky_Overcast_Night_2048x1024.hdr`、`..._TownGlow_...hdr` | 阴云夜（第 1、2、11、12 幕）；带“镇子方向钠光照亮的云底”的变体 |
 | `Textures/Moon_Disc_1024.png` | 月面圆盘（NASA 照片，去饱和 70%，alpha = 圆盘） |
 | `Data/StarPoints_BSC5.csv` | 8 404 颗星（Yale BSC，≤ 6.5 等）：Unity 世界方向、星等、B−V、线性颜色、亮度排名 |
@@ -113,7 +113,7 @@
 
 展开（`Lanbai_StarPoints.shader` 的 vert）：中心 C = 两眼中点 + D × `_Distance`（40 km）；右 R = normalize(cross(up, D))（D 接近竖直时 up 换成 x）、上 U = cross(D, R)；半边长 h = 2 × FWHM 像素 × `LanbaiPixelAngle()` × `_Distance`；P = C + (R·uv0.x + U·uv0.y)·h。亮度 = `_StarScale`（1.6）× 10^(−0.4 × `_MagSlope`（0.5）× (m − `_MagRef`（0）))，排名在亮星个数以内的 × 亮星加成（按 20 个排名平滑过渡），`_UseGlobalGain` = 0 的材质不读全局增益，× `_Udon_StarGain.x`，× 顺序遮罩；片元是 exp(−4 ln2 r²)（r 以 FWHM 为单位），叠加混合。镜子在模板里画第二遍时，把 D 换成镜面反射后的方向即可（平面镜：D' = reflect(D, n)；凸 1.5% 的鱼眼在镜子 shader 里做）。
 
-**银河辉光**（`StarSky_Glow_4096x2048.exr`）：**不是 NASA 的星图**（NASA SVS 从云端连不上），是用三份真实数据生成的：J. R. Vieira 的银河轮廓表（5 级亮度，经 d3-celestial 的 `mw.json`，BSD-3）给形状、星云团和暗带；Hipparcos（ESA 1997，经 d3-celestial 的 `stars.14.json`）里 6.5–11 等的暗星给颗粒和宽的盘；银心 ±15° 染成暖尘色。多尺度（3° 的柔光 + 1° 的结构 + 0.25° 的颗粒）。数值是填值：最亮的漫射处 = S9a 填 `#6A758A`（屏幕 `#6F82A0`）、银心暖尘 = 填 `#CBAE82`（屏幕 `#C8B79A`）；星空底 `#0D0F23` 不在图里，`Lanbai/Sky` 加。
+**银河辉光**（`StarSky_Glow_8192x4096.exr`）：**不是 NASA 的星图**（NASA SVS 从云端连不上），是用三份真实数据生成的：J. R. Vieira 的银河轮廓表（5 级亮度，经 d3-celestial 的 `mw.json`，BSD-3）给形状、星云团和暗带；Hipparcos（ESA 1997，经 d3-celestial 的 `stars.14.json`）里 6.5–11 等的暗星给颗粒和宽的盘；银心 ±15° 染成暖尘色。多尺度（3° 的柔光 + 1° 的结构 + 0.25° 的颗粒）。数值是填值：最亮的漫射处 = S9a 填 `#6A758A`（屏幕 `#6F82A0`）、银心暖尘 = 填 `#CBAE82`（屏幕 `#C8B79A`）；星空底 `#0D0F23` 不在图里，`Lanbai/Sky` 加。
 映射（`LanbaiSky.cginc` 的 `LanbaiGalaxyUV`）：u = 0.5 + atan2(V.x, V.z) / 2π，v = 0.5 + asin(V.y) / π；不用 mip（圣经：任何模糊都不要）。
 
 **第 9 幕的全局量**（镜子读的）：`_Udon_GalaxyGain.x` = 银河辉光 + 星空底的增益（点燃的 g(t)，之后 x^2.5 曲线上 1.0 → 1.8）；`_Udon_StarGain.x` = 星点总增益（F13 一帧 0 → 1），`.y` = 亮星加成（×4 → ×8），`.z` = 亮星个数（50 → 200）；`_Udon_ZenithColor.rgb` = **当前的星空底**（= `_NightColor` + g × `_StarFloorAdd`，第 9 幕的驱动每帧写；雾是关的，所以它在 `LanbaiHorizon` 里也不会造成别的影响）。所以镜子反射的天 = `_Udon_ZenithColor` + `_Udon_GalaxyGain.x` × 辉光图（`LanbaiGalaxyUV(反射方向)`，材质上赋同一张 `StarSky_Glow`）+ 星点第二遍。（`_CubeB` 在 `Lanbai/Sky` 里是第二张 HDRI，不是银河。）

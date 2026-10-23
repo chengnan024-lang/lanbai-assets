@@ -177,13 +177,23 @@ float3 LanbaiHorizonBand(float3 V, float3 nearC, float3 farC, float3 voidC, floa
 
 // model B: a smooth sky gradient (no azimuth cut-off): near (toward the band dir) -> far over 0..bw deg of azimuth,
 // horizon -> zenith above, horizon -> nadir below
+// a transition toward the zenith with no point at the top (director r2 #2: "no hard shapes in the sky"): the upper end
+// is clamped to 90. A step still moving at the zenith (the dawn fit had its end at 94.5) makes a cone = a bullseye; one
+// ending AT 90 is a smooth paraboloid there. Presets whose gradient reaches the zenith end it at 90, not below (a step
+// ending at 85 leaves a flat disc with a curvature edge round it).
+inline float LanbaiUpStep(float lo, float hi, float el)
+{
+    float x = saturate((el - lo) / max(min(hi, 90.0) - lo, 1e-4));
+    return x * x * (3.0 - 2.0 * x);
+}
+
 float3 LanbaiHorizonGradient(float3 V, float3 nearC, float3 farC, float3 zenC, float3 nadC, float bw,
                              float4 shape, float4 below)
 {
     float el = LanbaiElevationDeg(V);
     float az = LanbaiAzimuthDeg(V, LanbaiBandDir());
     float3 hz = lerp(nearC, farC, smoothstep(0.0, max(bw, 1.0), az));
-    float up = smoothstep(shape.x, max(shape.y, shape.x + 0.1), el);
+    float up = LanbaiUpStep(shape.x, max(shape.y, shape.x + 0.1), el);
     up = pow(saturate(up), (shape.z > 0.0) ? shape.z : 1.0);
     float dn = smoothstep(below.y, min(below.x, below.y - 0.1), el);           // 0 at below.y .. 1 at below.x (both <= 0)
     dn = pow(saturate(dn), (below.z > 0.0) ? below.z : 1.0);
@@ -243,7 +253,7 @@ float3 LanbaiHorizon(float3 dirWS)
     return c;
 }
 
-// ---- act 9: the galaxy glow (Sky/Textures/StarSky_Glow_4096x2048.exr, a 2D lat-long in the WORLD frame, no mips):
+// ---- act 9: the galaxy glow (Sky/Textures/StarSky_Glow_8192x4096.exr, a 2D lat-long in the WORLD frame, no mips):
 // u = 0.5 + atan2(V.x, V.z) / 2pi, v = 0.5 + asin(V.y) / pi. Shared by Lanbai/Sky and the mirrors' reflection.
 inline float2 LanbaiGalaxyUV(float3 V)
 {

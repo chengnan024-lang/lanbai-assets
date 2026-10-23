@@ -9,7 +9,7 @@ Inputs (Sky/Source~/data/, all downloaded 2026-10-22; NASA SVS Deep Star Maps is
   mw_vieira_d3celestial.json             Milky Way Outline Catalog, J. R. Vieira (skymap.com), 5 brightness steps, as
                                          packaged by d3-celestial (BSD-3). -> the band, the star clouds, the Great Rift
 Outputs:
-  Sky/Textures/StarSky_Glow_4096x2048.exr   world-frame equirect, linear half float (see GLOW MAPPING); no stars in it
+  Sky/Textures/StarSky_Glow_8192x4096.png   world-frame equirect, 8-bit sRGB normalised (x _GlowScale); no catalogue stars in it
   Sky/Data/StarPoints_BSC5.csv              one row per star: Unity world direction, V mag, B-V, linear colour, rank
   Sky/Data/StarSky.json                     the orientation (equatorial -> Unity world), targets, counts
   Sky/Docs~/starsky_*.png                   previews
@@ -34,7 +34,10 @@ from scipy import ndimage
 HERE = os.path.dirname(os.path.abspath(__file__))
 SKY = os.path.dirname(HERE)
 D = os.path.join(HERE, 'data')
-W, H = 4096, 2048           # glow map
+W, H = (8192, 4096) if not os.environ.get('LANBAI_GLOW_QUICK') else (2048, 1024)   # glow map (director r1: >= 8K); QUICK = iteration only
+GAIA_WHITE_PCT = 99.9   # the brightest star clouds (Sgr, Scutum, Cygnus) reach the fill; the band's bulk sits well below
+GAIA_GAMMA = 1.6
+GLOW_SOURCE = 'gaia'        # 'gaia' = ESA Gaia EDR3 all-sky map (real); 'synthetic' = Vieira outlines + Hipparcos (v1)
 RW, RH = 8192, 4096         # equatorial raster for the outlines
 
 GC_AZ, GC_EL = -30.0, 12.0
@@ -247,19 +250,52 @@ cdiff = hexlin(GLOW_DIFFUSE_FILL); cdust = hexlin(GLOW_DUST_FILL)
 col = (1 - warm[..., None]) * cdiff + warm[..., None] * cdust
 bulge = 1.0 + 0.35 * warm                                 # the centre is the brightest part of the band
 glow = (g * bulge)[..., None] * col / bulge.max()
+
+if GLOW_SOURCE == 'gaia':
+    # ESA/Gaia/DPAC EDR3 all-sky colour map (CC BY-SA 3.0 IGO), plate carree in GALACTIC coordinates:
+    # x: l = +180 (left) .. 0 (centre) .. -180 (right); y: b = +90 (top) .. -90. Display-referred JPEG -> linear,
+    # minus the sky background, isolated point stars removed (the catalogue stars are sprites), luminance curve
+    # restored, recoloured into the bible's palette by its own warmth (bulge warm, arms cool).
+    from PIL import Image as _Im
+    _Im.MAX_IMAGE_PIXELS = None
+    gimg = np.asarray(_Im.open(os.path.join(D, 'Gaia_EDR3_allsky_ESA-Gaia-DPAC_via_mw_plot.jpg')).convert('RGB')).astype(np.float32) / 255.0
+    glin = np.where(gimg <= 0.04045, gimg / 12.92, ((gimg + 0.055) / 1.055) ** 2.4)
+    GH, GW = glin.shape[:2]
+    opened = np.stack([ndimage.grey_opening(glin[..., c], size=(3, 3)) for c in range(3)], -1)
+    glin = opened + 0.35 * np.clip(glin - opened, 0, None)          # point stars out, the fine granular light half kept
+    Yg = glin @ np.array([0.2126, 0.7152, 0.0722])
+    bl = np.abs(90.0 - (np.arange(GH) + 0.5) / GH * 180.0)
+    bg = np.percentile(Yg[bl > 45], 30)
+    Ve = unity_to_eq(Vu)
+    lgal = np.degrees(np.arctan2(Ve @ Y_EQ, Ve @ G_EQ)); bgal = np.degrees(np.arcsin(np.clip(Ve @ N_EQ, -1, 1)))
+    gx = ((180.0 - lgal) / 360.0 * GW - 0.5) % GW
+    gy = np.clip((90.0 - bgal) / 180.0 * GH - 0.5, 0, GH - 1)
+    samp = np.stack([ndimage.map_coordinates(glin[..., c], [gy, gx], order=3, mode='grid-wrap') for c in range(3)], -1)
+    Ys = np.maximum(samp @ np.array([0.2126, 0.7152, 0.0722]), 1e-6)
+    y = np.clip((Ys - bg) / (np.percentile(Ys, GAIA_WHITE_PCT) - bg), 0, None) ** GAIA_GAMMA
+    y = np.where(y < 0.8, y, 0.8 + 0.2 * np.tanh((y - 0.8) / 0.2))
+    # warm dust only in the bulge (bible §6·9: arms cool #6A758A, the centre warm #CBAE82); the map's own warmth
+    # modulates it inside the bulge. (r2: the map's R/B alone is warm across the whole inner disc = a cream stripe.)
+    rb = (samp[..., 0] - samp[..., 2]) / np.maximum(samp[..., 0] + samp[..., 2], 1e-5)
+    own = np.clip((rb - 0.02) / 0.10, 0, 1)
+    gc_ang = np.degrees(np.arccos(np.clip(Vu @ np.array([g_w[0], g_w[2], g_w[1]]), -1, 1)))
+    warmth = 0.8 * np.exp(-(gc_ang / 13.0) ** 2) * (0.75 + 0.25 * own) * np.clip(y * 1.6, 0, 1)
+    col = (1 - warmth[..., None]) * cdiff + warmth[..., None] * cdust
+    bulge = 1.0 + 0.35 * warmth
+    glow = (y * bulge / bulge.max())[..., None] * col
+    print('gaia glow: band median y %.3f  p90 %.3f' % (float(np.median(y[np.abs(bgal) < 10])), float(np.percentile(y[np.abs(bgal) < 10], 90))))
+    print('gaia glow: background %.4f, warm fraction %.3f' % (bg, float((warmth > 0.5).mean())))
 glow = glow.astype(np.float32)
 
 os.makedirs(os.path.join(SKY, 'Textures'), exist_ok=True)
-try:
-    import OpenEXR, Imath
-    hdr = OpenEXR.Header(W, H)
-    hdr['compression'] = Imath.Compression(Imath.Compression.ZIP_COMPRESSION)
-    hdr['channels'] = {c: Imath.Channel(Imath.PixelType(Imath.PixelType.HALF)) for c in 'RGB'}
-    o = OpenEXR.OutputFile(os.path.join(SKY, 'Textures', 'StarSky_Glow_4096x2048.exr'), hdr)
-    o.writePixels({c: glow[..., i].astype(np.float16).tobytes() for i, c in enumerate('RGB')})
-    o.close()
-except ImportError:
-    raise SystemExit('pip install OpenEXR')
+# 8-bit sRGB PNG, normalised to its maximum: a 16-bit / half EXR of 8192 x 4096 is > 95 MB (the repo's file limit);
+# sRGB 8-bit steps are finer than one display code in the dark band. Lanbai/Sky multiplies by _GlowScale = GLOW_SCALE.
+GLOW_SCALE = float(glow.max())
+gn = np.clip(glow / GLOW_SCALE, 0, 1)
+gs = np.where(gn <= 0.0031308, 12.92 * gn, 1.055 * gn ** (1 / 2.4) - 0.055)
+from PIL import Image as _Im2
+_Im2.fromarray((gs * 255.0 + 0.5).astype(np.uint8), 'RGB').save(os.path.join(SKY, 'Textures', 'StarSky_Glow_8192x4096.png'), optimize=True)
+print('glow scale', GLOW_SCALE)
 
 # ---- 5. json + previews ----------------------------------------------------------------------------------------
 stats = dict(
@@ -276,10 +312,12 @@ json.dump(dict(
     enu_to_unity='(x, y, z)_ENU -> (x, z, y)_Unity',
     galactic_centre_unity=gc_u.round(6).tolist(), galactic_centre_az_el=[GC_AZ, GC_EL],
     north_galactic_pole_unity=eq_to_unity(N_EQ).round(6).tolist(),
-    glow_texture='Textures/StarSky_Glow_4096x2048.exr', glow_mapping='u = 0.5 + atan2(V.x, V.z)/2pi, v = 0.5 + asin(V.y)/pi',
+    glow_texture='Textures/StarSky_Glow_8192x4096.png', glow_scale=GLOW_SCALE, glow_mapping='u = 0.5 + atan2(V.x, V.z)/2pi, v = 0.5 + asin(V.y)/pi',
     glow_fill_max={'diffuse': GLOW_DIFFUSE_FILL, 'dust': GLOW_DUST_FILL},
     stars_csv='Data/StarPoints_BSC5.csv', **stats,
+    glow_source=GLOW_SOURCE,
     sources={'stars': 'Yale Bright Star Catalogue 5th rev. ed. (Hoffleit & Warren 1991), NASA ADC, public domain; JSON github.com/brettonw/YaleBrightStarCatalog',
+             'glow': 'ESA/Gaia/DPAC, Gaia EDR3 all-sky colour map (CC BY-SA 3.0 IGO), as packaged in the mw_plot Python package (MIT, H. Leung); the derived StarSky_Glow texture is therefore CC BY-SA 3.0 IGO (credit ESA/Gaia/DPAC)',
              'faint_stars': 'Hipparcos main catalogue (ESA 1997) via d3-celestial stars.14.json (BSD-3-Clause)',
              'milky_way_outline': 'Milky Way Outline Catalog, Jose R. Vieira (skymap.com), via d3-celestial mw.json (BSD-3-Clause)'},
 ), open(os.path.join(SKY, 'Data', 'StarSky.json'), 'w'), indent=1, ensure_ascii=False)
@@ -293,9 +331,10 @@ def to8(x):
     return (np.clip(np.where(x <= 0.0031308, 12.92 * x, 1.055 * x ** (1 / 2.4) - 0.055), 0, 1) * 255).astype(np.uint8)
 
 
-prev = glow + hexlin('#0D0F23')                       # + the star floor
-img = to8(prev)
-im = Image.fromarray(img).resize((2048, 1024), Image.LANCZOS)
+del gn, gs
+small = glow.reshape(1024, glow.shape[0] // 1024, 2048, glow.shape[1] // 2048, 3).mean(axis=(1, 3))   # box down to 2048
+del glow
+im = Image.fromarray(to8(small + hexlin('#0D0F23')))   # + the star floor
 d = ImageDraw.Draw(im)
 for i in range(len(rows)):
     x = (0.5 + math.degrees(math.atan2(dirs[i, 0], dirs[i, 2])) / 360.0) * 2048

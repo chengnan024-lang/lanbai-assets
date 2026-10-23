@@ -22,10 +22,7 @@ T_IGN = 4.2
 
 
 def load_glow():
-    import OpenEXR, Imath
-    ex = OpenEXR.InputFile(os.path.join(REPO, 'Sky', 'Textures', 'StarSky_Glow_4096x2048.exr'))
-    dw = ex.header()['dataWindow']; w, h = dw.max.x + 1, dw.max.y + 1
-    return np.stack([np.frombuffer(ex.channel(c, Imath.PixelType(Imath.PixelType.FLOAT)), np.float32).reshape(h, w) for c in 'RGB'], -1)
+    return S.load_glow(1)     # normalised; the preset material carries _GlowScale
 
 
 def lum_display(codes):

@@ -5,29 +5,29 @@
  "profile": "S6",
  "tints": {
   "_ZenithTintA": [
-   0.8318,
-   1.1885,
-   2.5836
+   1.0261,
+   1.3193,
+   2.6225
   ],
   "_MidTintA": [
-   6.0395,
-   4.9739,
-   4.1958
+   7.1583,
+   6.0502,
+   5.0725
   ],
   "_HorizonTintA": [
-   0.5199,
-   0.1904,
-   0.1267
+   0.5422,
+   0.202,
+   0.1366
   ],
   "_HorizonAntiTintA": [
-   1.5912,
-   1.1386,
-   1.5689
+   1.7021,
+   1.2062,
+   1.6339
   ],
   "_TintElevation": [
    1.0,
-   50.0,
-   94.51,
+   59.6,
+   90.0,
    1.0
   ]
  },
@@ -38,27 +38,27 @@
   },
   "anti45": {
    "target": "#AFC4E0",
-   "got": "#9FBDDB"
+   "got": "#A2C2DF"
   },
   "sunhor": {
    "target": "#F2C79A",
-   "got": "#F3C99B"
+   "got": "#F4CA9C"
   },
   "sun30": {
    "target": "#B4C6D8",
-   "got": "#D8E0E7"
+   "got": "#D5DEE5"
   },
   "antihor": {
    "target": "#AEB8CC",
-   "got": "#BDC4D8"
+   "got": "#C0C6D9"
   },
   "sun12": {
    "target": "#E2D9CC",
-   "got": "#E3D8CE"
+   "got": "#E0D4CA"
   },
   "side15": {
    "target": "#B8C6D8",
-   "got": "#8EA2BD"
+   "got": "#8DA0BC"
   }
  }
 }

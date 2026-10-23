@@ -76,7 +76,8 @@ P['dawn'] = dict(acts='6（晨，F0 → F2h）', profile='S6', sunAz=45.0, cubeA
                   _SunDir=v4(SUN6, 0), _SunColor=v4(F('#FFCE9E @ +2.55')), _SunShape=[0.45, 0.04, 0.55, 0], _SunGain=1.0,
                   _Band1Color=v4(F('#B8C4F7'), 0.3), _Band1Shape=[2.0, 2.5, 180, 55], _Band1Gain=0.6,
                   _Band2Color=v4(F('#FFCFCB @ +0.61'), 0.3), _Band2Shape=[10.0, 4.0, 180, 50], _Band2Gain=0.3,
-                  _NadirColor=v4(F('#6F8FA8'), 0.5), _BelowShape=[-75, 1.0, 0.6, 2.0], _PurpleGuard=[1.0, 0.86, 1.25, 0]),
+                  _NadirColor=v4(F('#6F8FA8'), 0.5), _BelowShape=[-75, 1.0, 0.6, 2.0], _PurpleGuard=[1.0, 0.86, 1.25, 0],
+                  _SunRemove=[7.0, 2.4, 0.25, 0.6]),
     globals=dict(_Udon_SunDir=v4(SUN6, 1), _Udon_SunDisc=[1.0, 0.45, 0, 1], _Udon_FogDensity=0.00012),
     fog_from_sky=dict(near_az=45.0, width=70.0, zen_el=60.0, nadir=F('#6F8FA8')),
     notes='天顶 #3E64A6、背日 45° #AFC4E0、日侧地平线 #F2C79A、地影带 #8C98B8 + 很淡的金星带 #CFB7B7（HDRI 里没有，由两条地平线带给）、日盘 0.9° #FFF3DE（填 #FFCE9E @ +2.55）。太阳 方位 +45°、仰角 5.8°（HDRI 的太阳）。')
@@ -107,7 +108,7 @@ P['blue_hour'] = dict(acts='8b（蓝时，993.06 → 1001.21）+ 第 9 幕同一
                   _StarFloorAdd=v4(np.maximum(F('#0D0F23') - F('#050000'), 0)), _GalaxyGain=0.0, _PurpleGuard=[1.0, 0.86, 1.25, 0]),
     globals=dict(_Udon_HorizonColor=v4(F('#8093C2') * 0.80, 2.0), _Udon_FogBandColor=v4(F('#8093C2')), _Udon_FogBandDir=v4(dir_az_el(0, 0), 0),
                  _Udon_FogBandWidth=90.0, _Udon_ZenithColor=v4(bh_zen), _Udon_NadirColor=v4(F('#1A2A4E') * 1.3),
-                 _Udon_FogShape=[1.0, 85.0, 0.8, 0], _Udon_FogBelow=[-60, 0, 1.0, 0], _Udon_SkyBlend=[0, 1, 0, 1], _Udon_SkyFx=[0, 0.85, 0, 1],
+                 _Udon_FogShape=[1.0, 90.0, 0.8, 0], _Udon_FogBelow=[-60, 0, 1.0, 0], _Udon_SkyBlend=[0, 1, 0, 1], _Udon_SkyFx=[0, 0.85, 0, 1],
                  _Udon_FogDensity=0.0),
     notes='天缝 / 地平线 #6F86B0（填 #8093C2）、最纯的蓝带 #2E4F8A（填 #3F5790）、天顶 #16223F、另一片天的天底 #1A2A4E。程序化（LanbaiHorizon 模型 B + 地平线带 1），上下对称。987.06 → 993.06 由暮的立方图 6 秒过渡到这里（_Udon_SkyBlend.y 0 → 1，与日线收缩同步）。1001.21 → 1009.21：_Udon_SkyBlend.z 0 → 1（夜的定向遮罩：前方 ±40° 的地平线带最后暗）。')
 
@@ -156,16 +157,52 @@ def font(px):
     return ImageFont.load_default()
 
 
+def grad_codes(c, d, masks):
+    """|neighbour difference| of display luminance (0..255 codes) per pixel of a 480-wide 90-degree tile; pixels
+    within the masks (intended edges: the sun and moon discs) left out"""
+    L = c @ np.array([0.2126, 0.7152, 0.0722])
+    g = np.zeros_like(L)
+    g[:, :-1] = np.maximum(g[:, :-1], np.abs(np.diff(L, axis=1)))
+    g[:-1, :] = np.maximum(g[:-1, :], np.abs(np.diff(L, axis=0)))
+    keep = np.ones(L.shape, bool)
+    dd = d.reshape(L.shape + (3,))
+    for axis, deg in masks:
+        keep &= np.degrees(np.arccos(np.clip(dd @ axis, -1, 1))) > deg
+    return g[keep]
+
+
+GRAD_REF = {}
+
+
+def grad_reference():
+    """director r2 #2: no hard-edged shapes. Reference = the raw dawn / dusk HDRIs (no tints, no bands, no sun disc,
+    graded S6 / S8) in the six views: their p99.9 neighbour gradient. A preset's p99.9 must not exceed it; its max
+    may not exceed the HDRIs' max."""
+    if GRAD_REF:
+        return GRAD_REF
+    allg = []
+    for nm, prof in (('dawn', 'S6'), ('dusk_8i', 'S8')):
+        p = P[nm]
+        S.renderer().tex.clear(); S.set_cube('_CubeA', S.load_hdr(p['hdri_file']))
+        mat = dict(_RotationA=p['material']['_RotationA'], _SunGain=0.0, _HorizonLift=0.0, _BelowShape=[-35, 0.0, 0.0, 0.0])
+        for _, yaw, pitch in VIEWS:
+            d = camera_dirs(480, 270, 90, yaw, pitch).astype(np.float32)
+            c = np.clip(G.grade(S.render(d, mat).reshape(270, 480, 3), prof), 0, 255)
+            sun = np.array(p['material']['_SunDir'][:3]); sun /= np.linalg.norm(sun)
+            allg.append(grad_codes(c, d, [(sun, 8.0)]))
+    a = np.concatenate(allg)
+    GRAD_REF.update(p999=float(np.percentile(a, 99.9)), max=float(a.max()))
+    S.renderer().tex.clear()
+    print('gradient reference (raw HDRIs): p99.9 %.2f  max %.2f codes/px' % (GRAD_REF['p999'], GRAD_REF['max']))
+    return GRAD_REF
+
+
 def render_sheet(name, p, out_json):
     S.renderer().tex.clear()
     if p.get('hdri_file'):
         S.set_cube('_CubeA', S.load_hdr(p['hdri_file']))
     if p.get('glow'):
-        import OpenEXR, Imath
-        ex = OpenEXR.InputFile(os.path.join(REPO, 'Sky', 'Textures', 'StarSky_Glow_4096x2048.exr'))
-        dw = ex.header()['dataWindow']; w, h = dw.max.x + 1, dw.max.y + 1
-        img = np.stack([np.frombuffer(ex.channel(ch, Imath.PixelType(Imath.PixelType.FLOAT)), np.float32).reshape(h, w) for ch in 'RGB'], -1)
-        S.set_tex('_GlowTex', img[:, ::2][::2].copy())
+        S.set_tex('_GlowTex', S.load_glow(1))
     if p['material'].get('_MoonGain', 0) > 0:
         from PIL import Image as _I
         m = np.asarray(_I.open(os.path.join(REPO, 'Sky', 'Textures', 'Moon_Disc_1024.png')).convert('RGBA')).astype(np.float32) / 255.0
@@ -179,7 +216,21 @@ def render_sheet(name, p, out_json):
     tiles, meas = [], {}
     for label, yaw, pitch in VIEWS:
         d = camera_dirs(W, H, 90, yaw, pitch).astype(np.float32)
-        img = S.render(d, p['material'], globs).reshape(H, W, 3)
+        if p.get('glow'):   # the 8K glow has 0.044 deg texels: 4x4 supersampled (a pixel integrates; no preview aliasing)
+            img = S.render(camera_dirs(W * 4, H * 4, 90, yaw, pitch).astype(np.float32), p['material'], globs).reshape(H, 4, W, 4, 3).mean(axis=(1, 3))
+        else:
+            img = S.render(d, p['material'], globs).reshape(H, W, 3)
+        masks = []
+        mat_all = dict(S.DEFAULTS); mat_all.update(p['material'])
+        if mat_all['_SunGain'] > 0:
+            sd = np.array((globs.get('_Udon_SunDir') or mat_all['_SunDir'])[:3], float); masks.append((sd / np.linalg.norm(sd), mat_all['_SunShape'][0] + 1.5))
+        if mat_all['_MoonGain'] > 0:
+            md = np.array((globs.get('_Udon_MoonDir') or mat_all['_MoonDir'])[:3], float); masks.append((md / np.linalg.norm(md), mat_all['_MoonRadius'] + 1.5))
+        gr = grad_codes(np.clip(G.grade(img, p['profile']), 0, 255), d, masks)
+        gr_photo = None
+        if p.get('glow'):   # the galaxy's own structure is the Gaia photograph (recorded); the rule applies to the sky without it
+            gr_photo = gr
+            gr = grad_codes(np.clip(G.grade(S.render(d, p['material'], dict(globs, _Udon_GalaxyGain=[0.0, 0, 0, 1])).reshape(H, W, 3), p['profile']), 0, 255), d, masks)
         sg = globs.get('_Udon_StarGain', [0, 0, 0, 0])
         if sg[3] > 0 and sg[0] > 0:
             import stars_cpu as SC
@@ -189,7 +240,12 @@ def render_sheet(name, p, out_json):
         c = np.clip(G.grade(img, p['profile']), 0, 255)
         meas[label] = dict(APL=round(G.apl(c), 1), purple=round(G.purple_fraction(c), 4),
                            lavender_6=round(G.purple_fraction(c, 285, 330, 12), 4),
-                           p995=G.to_hex(np.percentile(c.reshape(-1, 3), 99.5, axis=0)), p50=G.to_hex(np.median(c.reshape(-1, 3), axis=0)))
+                           p995=G.to_hex(np.percentile(c.reshape(-1, 3), 99.5, axis=0)), p50=G.to_hex(np.median(c.reshape(-1, 3), axis=0)),
+                           grad_p999=round(float(np.percentile(gr, 99.9)), 2), grad_max=round(float(gr.max()), 2))
+        if gr_photo is not None:
+            meas[label]['grad_p999_with_galaxy_photo'] = round(float(np.percentile(gr_photo, 99.9)), 2)
+        ref = grad_reference()
+        meas[label]['grad_ok'] = bool(meas[label]['grad_p999'] <= ref['p999'] and meas[label]['grad_max'] <= ref['max'])
         t = Image.fromarray(c.astype(np.uint8))
         dr = ImageDraw.Draw(t)
         dr.text((8, 6), '%s  APL %.0f  紫 %.1f%%' % (label, meas[label]['APL'], 100 * meas[label]['purple']), fill=(255, 255, 255), font=font(15))
@@ -201,6 +257,42 @@ def render_sheet(name, p, out_json):
     sheet.save(os.path.join(OUT, 'preset_%s.png' % name))
     out_json[name] = meas
     print(name, json.dumps(meas, ensure_ascii=False))
+
+
+# one material for the whole film (chief engineer r2 #0): every preset carries the Lanbai/Sky values as globals
+# _Udon_Sky_<Prop> (floats in .x) + _Udon_SkyGlobals = (1, global cube A, global cube B, 1). Must match
+# LanbaiSkyLayers.cginc LanbaiSkyLoadParams(); the per-preset gains go to the existing act globals.
+SKY_V4 = ['_ZenithTintA', '_MidTintA', '_HorizonTintA', '_HorizonAntiTintA', '_ZenithTintB', '_MidTintB', '_HorizonTintB', '_HorizonAntiTintB',
+          '_TintElevation', '_NadirColor', '_BelowShape', '_Band1Color', '_Band1Shape', '_Band2Color', '_Band2Shape', '_OtherTint',
+          '_NightColor', '_StarFloorAdd', '_NightMaskDir', '_NightMaskShape', '_SunDir', '_SunColor', '_SunShape', '_SunGlow', '_SunGlowColor',
+          '_MoonDir', '_MoonColor', '_MoonGlow', '_MoonGlowColor', '_PurpleGuard', '_SunRemove']
+SKY_F1 = ['_RotationA', '_ExposureA', '_ClampA', '_RotationB', '_ExposureB', '_ClampB', '_Band2Gain', '_OtherGain', '_OtherSeam', '_OtherFromB',
+          '_HorizonLift', '_MoonRadius', '_Exposure', '_GlowScale']
+
+
+def sky_globals(p):
+    mat = dict(S.DEFAULTS); mat.update(p['material'])
+    g = {}
+    for k in SKY_V4:
+        g['_Udon_Sky' + k] = [float(x) for x in mat[k]]
+    for k in SKY_F1:
+        g['_Udon_Sky' + k] = [float(mat[k]), 0.0, 0.0, 0.0]
+    g['_Udon_SkyGlobals'] = [1.0, 1.0 if p.get('cubeA') else 0.0, 1.0 if p.get('cubeB') else 0.0, 1.0]
+    derived = dict(_Udon_SkyBlend=[float(mat['_Blend']), float(mat['_ProcWeight']), float(mat['_NightBlend']), 1.0],
+                   _Udon_SkyFx=[float(mat['_OtherSky']), float(mat['_Band1Gain']), 0.0, 1.0],
+                   _Udon_SunDisc=[float(mat['_SunGain']), float(mat['_SunShape'][0]), float(mat['_SunShape'][3]), 1.0],
+                   _Udon_MoonDisc=[float(mat['_MoonGain']), float(mat['_MoonRadius']), 0.0, 1.0],
+                   _Udon_GalaxyGain=[float(mat['_GalaxyGain']), 0.0, 0.0, 1.0])
+    for k, v in derived.items():
+        g.setdefault(k, v)
+    return g
+
+
+def add_sky_globals(p):
+    sg = sky_globals(p)
+    for k, v in sg.items():
+        if k.startswith('_Udon_Sky_') or k == '_Udon_SkyGlobals' or k not in p['globals']:
+            p['globals'][k] = v
 
 
 def normalise_globals(p):
@@ -250,10 +342,29 @@ def write_fog_presets():
     json.dump(out, open(os.path.join(REPO, 'Sky', 'FogPresets.json'), 'w'), indent=1, ensure_ascii=False, default=float)
 
 
+def check_one_material(name, p):
+    """the preset through the material (old path) vs the same preset through the globals on a DEFAULT material
+    (one-material path): must be the same picture"""
+    d = np.concatenate([camera_dirs(96, 54, 90, yaw, pitch) for _, yaw, pitch in VIEWS]).astype(np.float32)
+    a = S.render(d, p['material'], {k: v for k, v in p['globals'].items() if k in p['_own_globals']})
+    b = S.render(d, {}, p['globals'])
+    err = float(np.max(np.abs(a - b) / (np.abs(a) + 1e-3)))
+    print('one-material check %-26s max rel diff %.2e %s' % (name, err, 'OK' if err < 1e-4 else 'MISMATCH'))
+    if err >= 1e-4:
+        raise SystemExit('one-material mismatch in ' + name)
+
+
 def main():
     meas = {}
+    grad_reference()
+    gs = S.glow_scale()
     for name, p in P.items():
+        if p.get('glow'):
+            p['material']['_GlowScale'] = gs
         render_sheet(name, p, meas)
+        p['_own_globals'] = set(p['globals'].keys())
+        add_sky_globals(p)
+        check_one_material(name, p)
         normalise_globals(p)
     write_fog_presets()
     # JsonUtility-friendly export for the C# builder (flat lists)

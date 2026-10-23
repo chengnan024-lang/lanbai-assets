@@ -143,7 +143,7 @@ namespace Lanbai.Sky.EditorTools
             Shader sky = Shader.Find("Lanbai/Sky");
             if (sky == null) { Debug.LogError("[Lanbai/Sky] shader Lanbai/Sky not found (compile errors?)"); return; }
             SkyPresetFile pf = LoadPresets();
-            Texture glow = AssetDatabase.LoadAssetAtPath<Texture>(SkyRoot() + "/Textures/StarSky_Glow_4096x2048.exr");
+            Texture glow = AssetDatabase.LoadAssetAtPath<Texture>(SkyRoot() + "/Textures/StarSky_Glow_8192x4096.png");
             Texture moon = AssetDatabase.LoadAssetAtPath<Texture>(SkyRoot() + "/Textures/Moon_Disc_1024.png");
             foreach (SkyPreset p in pf.presets)
             {
