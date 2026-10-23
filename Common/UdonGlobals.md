@@ -21,10 +21,10 @@ VRChat 只允许 Udon 写 `_Udon_` 前缀的全局 shader 量（`VRCShader.SetGl
 | `_Udon_Wiper*`（Time、Pivot0/1、Axis0/1、Rest0/1） | 雨刮 | 雨驱动 | Rain |
 | `_Udon_Lamp0..7`、`_Udon_LampColor0..7`、`_Udon_LampDir0..7`、`_Udon_LampAxis0..7` | 解析 GGX 灯（最多 8 盏） | 当前幕的驱动 | Rain；海、宫殿、路灯都用这一套 |
 | `_Udon_ReflCube` / `_Udon_ReflCube_HDR` / `_Udon_ReflExposure` | 每幕烘好的反射立方图 | 当前幕的驱动 | Rain；海、星海、暮的天花 |
-| `_Udon_CabinLightmap` / `_Udon_CabinAmbient` / `_Udon_CabinBleach` / `_Udon_CabinFade` | 车厢管灯、环境色、漂白、侵蚀（圣经 §4.8） | 时间轴 / 车厢驱动 | 车厢 shader（总控在做）、Rain |
+| `_Udon_CabinLightmap` / `_Udon_CabinAmbient` / `_Udon_CabinBleach` / `_Udon_CabinFade` | 车厢管灯（float）、环境色（float4，rgb 线性）、漂白（float 0–1）、侵蚀（float 0–1）（圣经 §4.8） | 时间轴 / 车厢驱动 | 车厢 shader（总控在做）、Rain |
 | `_Udon_CaseLight` | 公告箱纸的发光 | 第 12 幕 | Rain |
 | `_Udon_Caustics` | float4：x 强度 0..1（已含深度衰减）、y 方向 +1 从上 / −1 从下（7c）、z 焦散的钟（秒）、w 平铺缩放（定义见 `Sea/README_Sea接口.md` §3） | 海驱动 | 车厢、海 |
-| `_Udon_CausticsColor` / `_Udon_CausticsTex` | 焦散的线性颜色 × E；焦散序列帧图集（全局纹理） | 海驱动 | 车厢、海 |
+| `_Udon_CausticsColor` / `_Udon_CausticsTex` | 焦散的线性颜色 × E（float4）；焦散序列帧图集（全局纹理，`sampler2D`） | 海驱动 | 车厢、海 |
 | `_Udon_SeaLevel` / `_Udon_SeaMode` | 当前海面世界 y；0 无、1 ABOVE、2 BELOW、3 CEILING、4 BELOW 翻转（7c） | 当前幕（6、8 = 云；7 = 海） | 海、车厢 |
 | `_Udon_SeaClock` | float4：x 浪的钟、yz 海水相对车的平移（世界 xz）、w > 0 已设 | 当前幕 | 海 |
 | `_Udon_Underwater` | 0..1：眼睛在水里 | 海 | `LanbaiFog`、海、车厢玻璃 |
@@ -34,10 +34,10 @@ VRChat 只允许 Udon 写 `_Udon_` 前缀的全局 shader 量（`VRCShader.SetGl
 | `_Udon_OverlayColor` | rgb 填色 × 2^(−ΔEV)，a FLAT 模式的 alpha | `LanbaiOverlay`（由当时拥有遮罩的幕调用） | `Lanbai/Overlay` |
 | `_Udon_OverlayCurve` / `_Udon_OverlayLum` | 曲线（tau、T、模式、呼吸）；(Lfrom, Lto, Lscene, Lover) | 同上 | 同上 |
 | `_Udon_OverlayLobe0..3` / `_Udon_OverlayLead` / `_Udon_OverlayLeadElse` | 方向领先瓣（方向、半角）；各瓣领先秒数；其余方向领先与软边 | 同上 | 同上 |
-| `_Udon_InsidePortal` | x 裂口平面世界 z，y = 1 门户生效 | 门内驱动 | 门内 shader、**门的 shader / 驱动** |
-| `_Udon_InsideDot` / `_Udon_InsideFibre` / `_Udon_InsideClock` / `_Udon_InsideFog` | 暖白点；纤维填色；丝线时钟；当前区雾色与密度 | 门内驱动 | `Lanbai/InsideLip` 等 |
+| `_Udon_InsidePortal` | float4：x 裂口平面世界 z，y = 1 门户生效 | 门内驱动 | 门内 shader、**门的 shader / 驱动** |
+| `_Udon_InsideDot` / `_Udon_InsideFibre` / `_Udon_InsideClock` / `_Udon_InsideFog` | 全部 float4：暖白点（核心直径°、辉光直径°、增益）；纤维填色（rgb）+ 增益（a）；丝线时钟（x）；当前区雾色（rgb）+ 密度（a） | 门内驱动 | `Lanbai/InsideLip` 等 |
 | `_Udon_CabinSlice` / `_Udon_CabinSliceColor` | 车厢穿越光带：前沿车坐标 z、软边、指数拖尾、覆盖；颜色 × E、窗形遮罩权重 | 门内驱动（第 9 幕镜子也用） | `Lanbai/Cabin` |
-| `_Udon_RadioDial` | 收音机表盘发光填值 | 时间轴 / 门内驱动（4c、5） | `Lanbai/Cabin` |
+| `_Udon_RadioDial` | float4：rgb 收音机表盘发光填值（线性） | 时间轴 / 门内驱动（4c、5） | `Lanbai/Cabin` |
 | `_Udon_SkyBlend` | float4：x 立方图 A → B、y 程序化权重、z 夜的权重（按方向延迟）、w > 0 已设 | 当前幕（6、8 = 云；9 = 天空） | `Lanbai/Sky` |
 | `_Udon_SkyFx` | float4：x 另一片天、y 地平线带 1 的增益、z 日线半长（度）、w > 0 已设 | 同上 | `Lanbai/Sky` |
 | `_Udon_SunDir` / `_Udon_SunDisc` | 指向日的单位向量（w > 0 已设）；x 增益、y 半径（度）、z 日线半长（度）、w > 0 已设 | 6、8 幕的驱动 | `Lanbai/Sky`、海 |
