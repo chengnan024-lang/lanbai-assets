@@ -84,8 +84,9 @@ def main(name):
         r.extend(0.03 * np.r_[p[0:9], p[12:15]])   # and every tint near 1
         return np.array(r)
 
-    p0 = np.full(15, 0.01); p0[9] = 4.0; p0[10] = 30.0; p0[11] = 30.0
-    lo = np.r_[-np.ones(9) * 3, 1.0, 12.0, 10.0, -np.ones(3) * 3]; hi = np.r_[np.ones(9) * 3, 10.0, 50.0, 50.0, np.ones(3) * 3]
+    p0 = np.full(15, 0.01); p0[9] = 4.0; p0[10] = 30.0; p0[11] = 35.0
+    lo = np.r_[-np.ones(9) * 3, 1.0, 12.0, 30.0, -np.ones(3) * 3]   # mid -> zenith over >= 30 deg: no lid overhead
+    hi = np.r_[np.ones(9) * 3, 10.0, 50.0, 70.0, np.ones(3) * 3]
     res = least_squares(resid, p0, bounds=(lo, hi), diff_step=1e-2, x_scale=np.r_[np.ones(9), 2.0, 10.0, 10.0, np.ones(3)])
     P = params(res.x)
     out = {'act': name, 'hdri': c['hdri'], 'rotation': round(float(rot), 2), 'profile': c['sid'], 'tints': {}}

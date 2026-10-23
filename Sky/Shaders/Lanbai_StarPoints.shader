@@ -11,7 +11,8 @@
 //     colour = linear rgb, luminance 1 (B-V blackbody, 45 % toward white).
 //  Each star is a Gaussian of constant FWHM in PIXELS (>= 1.4 px; default 1.6), so it neither shimmers nor grows with
 //  resolution; it never twinkles. Brightness = _StarScale x 10^(-0.4 _MagSlope (m - _MagRef)) x gain, the brightest
-//  _BrightCount ranks x _BrightBoost (bible: the brightest 50 x4 at ignition; 200 x4 -> x8 toward the white).
+//  _BrightCount ranks x _BrightBoost, blended over 20 ranks so a growing count never steps a star (bible: the
+//  brightest 50 x4 at ignition; 200 x4 -> x8 toward the white).
 //  Sky objects take no fog (_FogMode 2). Positioned from the centre eye (both eyes see the same star).
 //  Global _Udon_StarGain (w > 0): x multiplies everything (at F13 it jumps 0 -> 1 in one frame, bible E18); y = the
 //  bright-rank boost and z = how many ranks (bible: 50 x4 at ignition, 200 x4 -> x8 on the x^2.5 curve to the white).
@@ -20,16 +21,17 @@ Shader "Lanbai/StarPoints"
 {
     Properties
     {
-        _StarScale ("Star scale at the reference magnitude (linear peak)", Float) = 1.0
+        _StarScale ("Star scale at the reference magnitude (linear peak)", Float) = 1.6
         _MagRef ("Reference magnitude", Float) = 0
-        _MagSlope ("Magnitude slope (1 = physical; < 1 compresses)", Range(0.2, 1)) = 0.62
+        _MagSlope ("Magnitude slope (1 = physical; < 1 compresses)", Range(0.2, 1)) = 0.5
         _MagFloor ("Faintest magnitude drawn", Float) = 6.5
         _FWHM ("FWHM px (>= 1.4)", Range(1.4, 4)) = 1.6
         _BrightCount ("Bright ranks boosted (count)", Float) = 50
         _BrightBoost ("Boost of the bright ranks", Float) = 4
-        _Gain ("Gain (global _Udon_StarGain.x wins)", Float) = 1
+        _Gain ("Gain (global _Udon_StarGain.x wins when Use Global Gain is 1)", Float) = 1
+        _UseGlobalGain ("Use Global Gain (0 = this material only, e.g. the first stars of act 8b)", Float) = 1
         _OrderFade ("Order fade  x threshold  y soft  z 1 = stars with order below x are OFF  0 = ON", Vector) = (0, 0.02, 0, 0)
-        _Distance ("Draw distance m (inside the far clip)", Float) = 20000
+        _Distance ("Draw distance m (inside the far clip 45 km)", Float) = 40000
         _Tint ("Tint, linear", Vector) = (1, 1, 1, 1)
     }
     SubShader
@@ -48,7 +50,7 @@ Shader "Lanbai/StarPoints"
             #include "UnityCG.cginc"
             #include "Assets/Lanbai/Common/Shaders/LanbaiVR.cginc"
 
-            float _StarScale, _MagRef, _MagSlope, _MagFloor, _FWHM, _BrightCount, _BrightBoost, _Gain, _Distance;
+            float _StarScale, _MagRef, _MagSlope, _MagFloor, _FWHM, _BrightCount, _BrightBoost, _Gain, _Distance, _UseGlobalGain;
             float4 _OrderFade, _Tint;
             #ifndef LANBAI_DECL__Udon_StarGain
             #define LANBAI_DECL__Udon_StarGain
@@ -89,11 +91,12 @@ Shader "Lanbai/StarPoints"
                 o.q = v.uv0 * halfPx / _FWHM;                                  // distance from the centre in FWHMs
                 float m = v.uv1.x;
                 float flux = _StarScale * exp2(-1.3287712 * _MagSlope * (m - _MagRef));   // 10^(-0.4 s dm) = 2^(-1.3288 s dm)
-                float boost = (_Udon_StarGain.w > 0.0 && _Udon_StarGain.y > 0.0) ? _Udon_StarGain.y : _BrightBoost;
-                float count = (_Udon_StarGain.w > 0.0 && _Udon_StarGain.z > 0.0) ? _Udon_StarGain.z : _BrightCount;
-                flux *= (v.uv1.y < count) ? boost : 1.0;
+                bool useG = (_UseGlobalGain > 0.5) && (_Udon_StarGain.w > 0.0);
+                float boost = (useG && _Udon_StarGain.y > 0.0) ? _Udon_StarGain.y : _BrightBoost;
+                float count = (useG && _Udon_StarGain.z > 0.0) ? _Udon_StarGain.z : _BrightCount;
+                flux *= lerp(1.0, boost, saturate((count - v.uv1.y) / 20.0));   // ranks fade in over 20: no star jumps x4
                 flux *= (m <= _MagFloor) ? 1.0 : 0.0;
-                float g = (_Udon_StarGain.w > 0.0) ? _Udon_StarGain.x : _Gain;
+                float g = useG ? _Udon_StarGain.x : _Gain;
                 float ord = smoothstep(_OrderFade.x - _OrderFade.y, _OrderFade.x + _OrderFade.y, v.uv1.z);
                 float vis = (_OrderFade.z > 0.5) ? ord : 1.0;
                 o.col = v.color.rgb * _Tint.rgb * (flux * g * vis);

@@ -1,0 +1,133 @@
+// 蓝白 · 菜单 蓝白/Build/Act09：按 Act09_StarSea.json 搭第 9 幕的天（可重复运行：先删上一次搭的 R_StarSea）。
+// !!! NOT COMPILED IN UNITY: Roslyn type-check against UnityEditor 2021.1 only (Sky/Tools~/compile_check/check_cs.sh). !!!
+// Needs: 蓝白/Sky/Build Star Mesh + Build Preset Materials run first (they make the main star mesh and the materials).
+using System;
+using System.IO;
+using UnityEditor;
+using UnityEngine;
+using Lanbai.Sky.EditorTools;
+
+namespace Lanbai.Act09.EditorTools
+{
+    [Serializable] public class A9Labels { public float F12, F13, F14, F15, F16, blue_hour_start, act9_start, dark_end, ignition_full; }
+    [Serializable] public class A9Ignition { public float t0; public float seconds; public float table_step_s; public float[] g; }
+    [Serializable] public class A9First { public int hr; public float[] dir; public float mag; public float order; public float out_t; }
+    [Serializable] public class A9FirstStars { public A9First[] stars; public float[] appear; public float peak; public float out_s; }
+    [Serializable] public class A9Q { public string @char; public int strokes; public float[] dir; public float peak; }
+    [Serializable] public class A9QStars { public A9Q[] stars; }
+    [Serializable] public class A9Zenith { public float[] night; public float[] floor_add; }
+    [Serializable] public class A9Sky { public float band1_gain; public A9Zenith zenith_floor; }
+    [Serializable] public class A9File { public A9Labels labels; public A9Ignition ignition; public A9FirstStars first_stars; public A9QStars question_stars; public A9Sky sky; }
+
+    public static class LanbaiAct09Build
+    {
+        const float MagSlope = 0.5f;     // = Lanbai/StarPoints _MagSlope on the act's star materials
+
+        static string ActRoot()
+        {
+            foreach (string id in AssetDatabase.FindAssets("Act09_StarSea"))
+            {
+                string p = AssetDatabase.GUIDToAssetPath(id);
+                if (p.EndsWith("/Act09_StarSea/Act09_StarSea.json")) return p.Substring(0, p.Length - "/Act09_StarSea.json".Length);
+            }
+            return "Assets/Lanbai/Act09_StarSea";
+        }
+
+        // magnitude that gives a linear peak 'peak' with _StarScale 1.6, _MagRef 0, _MagSlope 0.5 (no rank boost)
+        static float MagForPeak(float peak) { return -Mathf.Log(Mathf.Max(peak, 1e-6f) / 1.6f, 2f) / (1.3287712f * MagSlope); }   // _StarScale 1.6
+
+        [MenuItem("蓝白/Build/Act09")]
+        public static void Build()
+        {
+            LanbaiSkyBuild.EnsureProgramAsset("LanbaiAct09Driver");
+            A9File d = JsonUtility.FromJson<A9File>(File.ReadAllText(ActRoot() + "/Act09_StarSea.json"));
+            string gen = LanbaiSkyBuild.GeneratedFolder();
+            Mesh main = AssetDatabase.LoadAssetAtPath<Mesh>(gen + "/StarPoints_BSC5.asset");
+            Material starMat = AssetDatabase.LoadAssetAtPath<Material>(gen + "/M_Sky_StarPoints.mat");
+            if (main == null || starMat == null) { Debug.LogError("[Act09] run 蓝白/Sky/Build Star Mesh and Build Preset Materials first"); return; }
+
+            // first stars (real stars around the zenith, their real magnitudes; order = the order they go out)
+            int nf = d.first_stars.stars.Length;
+            Vector3[] fd = new Vector3[nf]; float[] fm = new float[nf]; float[] fr = new float[nf]; float[] fo = new float[nf]; Color[] fc = new Color[nf];
+            for (int i = 0; i < nf; i++)
+            {
+                A9First s = d.first_stars.stars[i];
+                fd[i] = new Vector3(s.dir[0], s.dir[1], s.dir[2]); fm[i] = s.mag; fr[i] = 9999f; fo[i] = s.order; fc[i] = Color.white;
+            }
+            Mesh firstMesh = LanbaiSkyBuild.SaveStarMesh(ActRoot() + "/Generated_FirstStars.asset", "Act09_FirstStars", fd, fm, fr, fo, fc);
+            // question stars (one per character; the peak is encoded as a magnitude)
+            int nq = d.question_stars.stars.Length;
+            Vector3[] qd = new Vector3[nq]; float[] qm = new float[nq]; float[] qr = new float[nq]; float[] qo = new float[nq]; Color[] qc = new Color[nq];
+            for (int i = 0; i < nq; i++)
+            {
+                A9Q s = d.question_stars.stars[i];
+                qd[i] = new Vector3(s.dir[0], s.dir[1], s.dir[2]); qm[i] = MagForPeak(s.peak); qr[i] = 9999f; qo[i] = 1f; qc[i] = Color.white;
+            }
+            Mesh qMesh = LanbaiSkyBuild.SaveStarMesh(ActRoot() + "/Generated_QuestionStars.asset", "Act09_QuestionStars", qd, qm, qr, qo, qc);
+
+            Material firstMat = MatCopy(starMat, ActRoot() + "/M_Act09_FirstStars.mat");
+            firstMat.SetVector("_Tint", new Vector4(0.807f, 0.855f, 0.939f, 1f) / 0.855f);      // #E8EEF8, luminance ~1
+            firstMat.SetFloat("_BrightCount", 0f);
+            firstMat.SetFloat("_UseGlobalGain", 0f);          // the driver's MPB _Gain, not the act's global star gain
+            Material qMat = MatCopy(starMat, ActRoot() + "/M_Act09_QuestionStars.mat");
+            qMat.SetFloat("_BrightCount", 0f); qMat.SetFloat("_MagFloor", 99f);
+            starMat.SetFloat("_MagSlope", MagSlope);
+
+            GameObject old = GameObject.Find("R_StarSea");
+            if (old != null) UnityEngine.Object.DestroyImmediate(old);
+            GameObject root = new GameObject("R_StarSea");
+            Renderer rMain = MakeStarObject(root, "Stars_BSC5", main, starMat);
+            Renderer rFirst = MakeStarObject(root, "Stars_First", firstMesh, firstMat);
+            Renderer rQ = MakeStarObject(root, "Stars_Question", qMesh, qMat);
+
+            GameObject drv = new GameObject("LanbaiAct09Driver");
+            drv.transform.SetParent(root.transform, false);
+            LanbaiAct09Driver c = AddUdon(drv);
+            c.root = root; c.starsMain = rMain; c.firstStars = rFirst; c.questionStars = rQ;
+            c.tBlueHour = d.labels.blue_hour_start; c.tActStart = d.labels.act9_start; c.tDarkEnd = d.labels.dark_end;
+            c.tF13 = d.labels.F13; c.tF16 = d.labels.F16;
+            c.gTable = d.ignition.g; c.gStep = d.ignition.table_step_s;
+            c.band1Gain = d.sky.band1_gain;
+            c.nightColor = new Vector3(d.sky.zenith_floor.night[0], d.sky.zenith_floor.night[1], d.sky.zenith_floor.night[2]);
+            c.floorAdd = new Vector3(d.sky.zenith_floor.floor_add[0], d.sky.zenith_floor.floor_add[1], d.sky.zenith_floor.floor_add[2]);
+            c.firstAppear0 = d.first_stars.appear[0]; c.firstAppear1 = d.first_stars.appear[1];
+            c.firstPeak = d.first_stars.peak; c.firstOutSeconds = d.first_stars.out_s;
+            EditorUtility.SetDirty(c);
+            Debug.Log("[Act09] R_StarSea built: " + nf + " first stars, " + nq + " question stars, ignition " + d.ignition.seconds + " s (" + d.ignition.g.Length + " samples). Mirrors: add the kit from Mirrors/ when it arrives.");
+        }
+
+        static Material MatCopy(Material src, string path)
+        {
+            Material m = AssetDatabase.LoadAssetAtPath<Material>(path);
+            if (m == null) { m = new Material(src); AssetDatabase.CreateAsset(m, path); }
+            else m.CopyPropertiesFromMaterial(src);
+            EditorUtility.SetDirty(m);
+            return m;
+        }
+
+        static Renderer MakeStarObject(GameObject root, string name, Mesh mesh, Material mat)
+        {
+            GameObject go = new GameObject(name);
+            go.transform.SetParent(root.transform, false);
+            go.AddComponent<MeshFilter>().sharedMesh = mesh;
+            MeshRenderer r = go.AddComponent<MeshRenderer>();
+            r.sharedMaterial = mat;
+            r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            r.receiveShadows = false;
+            r.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
+            r.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
+            r.allowOcclusionWhenDynamic = false;
+            return r;
+        }
+
+        static LanbaiAct09Driver AddUdon(GameObject go)
+        {
+            Type addType = Type.GetType("UdonSharpEditor.UdonSharpUndo, UdonSharp.Editor");
+            if (addType != null)
+                foreach (System.Reflection.MethodInfo mi in addType.GetMethods())
+                    if (mi.Name == "AddComponent" && mi.IsGenericMethodDefinition)
+                        return (LanbaiAct09Driver)mi.MakeGenericMethod(typeof(LanbaiAct09Driver)).Invoke(null, new object[] { go });
+            return go.AddComponent<LanbaiAct09Driver>();
+        }
+    }
+}

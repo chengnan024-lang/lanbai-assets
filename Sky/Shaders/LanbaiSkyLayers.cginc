@@ -21,7 +21,7 @@ float4 _NadirColor, _BelowShape;
 float _ProcWeight;
 float4 _Band1Color, _Band1Shape, _Band2Color, _Band2Shape;
 float _Band1Gain, _Band2Gain;
-float _OtherSky, _OtherGain, _OtherSeam;
+float _OtherSky, _OtherGain, _OtherSeam, _OtherFromB, _HorizonLift;
 float4 _OtherTint;
 float _NightBlend;
 float4 _NightColor, _StarFloorAdd;
@@ -30,7 +30,7 @@ float _GalaxyGain;
 float4 _NightMaskDir, _NightMaskShape;
 float4 _SunDir, _SunColor, _SunShape, _SunGlow, _SunGlowColor;
 float _SunGain;
-sampler2D _MoonTex;
+sampler2D _MoonTex; float4 _MoonTex_TexelSize;
 float4 _MoonDir, _MoonColor, _MoonGlow, _MoonGlowColor;
 float _MoonRadius, _MoonGain;
 float _Exposure;
@@ -43,7 +43,7 @@ float4 _Udon_SkyBlend;     // x = cube A->B, y = procedural weight, z = night we
 #endif
 #ifndef LANBAI_DECL__Udon_SkyFx
 #define LANBAI_DECL__Udon_SkyFx
-float4 _Udon_SkyFx;        // x = other sky, y = band 1 gain, z = sun line half length deg; w > 0 = set
+float4 _Udon_SkyFx;        // x = other sky, y = band 1 gain, z unused (the sun line is _Udon_SunDisc.z); w > 0 = set
 #endif
 #ifndef LANBAI_DECL__Udon_GalaxyGain
 #define LANBAI_DECL__Udon_GalaxyGain
@@ -80,7 +80,10 @@ float3 LanbaiCubeTint(float3 Vs, float3 zt, float3 mt, float3 ht, float3 hat, fl
 float3 LanbaiCubeUpper(samplerCUBE cube, half4 hdr, float3 Vs, float rot, float ev, float clampV,
                        float3 zt, float3 mt, float3 ht, float3 hat, float3 S, float lod)
 {
-    float3 d = LanbaiRotY(Vs, rot);
+    // the HDRI's own horizon (a dark haze / ground line in every 'pure sky') is never sampled: lift to _HorizonLift deg
+    float3 Vl = Vs;
+    Vl.y = max(Vl.y, sin(radians(_HorizonLift)));
+    float3 d = LanbaiRotY(normalize(Vl), rot);
     half4 raw = texCUBElod(cube, float4(d, lod));
     float3 c = DecodeHDR(raw, hdr);
     c = min(c * exp2(ev), clampV);
@@ -152,11 +155,14 @@ float3 LanbaiMoonTerm(float3 V, float gain)
     float3 c = _MoonGlowColor.rgb * (_MoonGlow.x * exp(-_MoonGlow.y * am) + _MoonGlow.z * exp(-_MoonGlow.w * am));
     if (am < radius * 1.2 && dot(V, M) > 0.0)
     {
-        float3 R = normalize(cross(float3(0.0, 1.0, 0.0), M));
+        float3 up = (abs(M.y) < 0.999) ? float3(0.0, 1.0, 0.0) : float3(0.0, 0.0, 1.0);   // the moon at the zenith
+        float3 R = normalize(cross(up, M));
         float3 U = cross(M, R);
         float k = 0.5 / tan(radians(radius));
         float2 uv = 0.5 + float2(dot(V, R), dot(V, U)) / max(dot(V, M), 1e-4) * k;
-        float4 t = tex2Dlod(_MoonTex, float4(uv, 0.0, 0.0));
+        // the 1024 px disc covers ~20 screen px: pick the mip that matches one texel to one pixel (no shimmer in VR)
+        float texPerPix = LanbaiPixelAngle() * k * max(_MoonTex_TexelSize.z, 1.0);
+        float4 t = tex2Dlod(_MoonTex, float4(uv, 0.0, max(log2(max(texPerPix, 1e-4)), 0.0)));
         c = lerp(c, t.rgb * _MoonColor.rgb, t.a);
     }
     return c * gain;
@@ -175,8 +181,10 @@ float LanbaiBandWeight(float3 V, float3 S, float4 shape)
 {
     float el = LanbaiElevationDeg(V);
     float az = LanbaiAzimuthDeg(V, S);
-    float we = exp(-0.5 * pow((el - shape.x) / max(shape.y, 0.1), 2.0));
-    float wa = exp(-0.5 * pow((az - shape.z) / max(shape.w, 0.1), 2.0));
+    float de = (el - shape.x) / max(shape.y, 0.1);
+    float da = (az - shape.z) / max(shape.w, 0.1);
+    float we = exp(-0.5 * de * de);
+    float wa = exp(-0.5 * da * da);
     return we * wa;
 }
 // colour.a of a band = how much the middle of its transition is pulled to a cold grey: a warm band over an indigo sky
@@ -187,9 +195,24 @@ float3 LanbaiBandBlend(float3 c, float4 bandColor, float w)
     float lum = dot(o, float3(0.2126, 0.7152, 0.0722));
     return lerp(o, lum * float3(0.90, 0.97, 1.13), saturate(bandColor.a * 4.0 * w * (1.0 - w)));
 }
+// shape.y < 0 = a MONOTONIC band (the blue hour): below its centre a Gaussian of |y|, above it the band holds until
+// the sky itself is darker than the band (so the brightness only falls from the horizon to the zenith: no strip)
+float3 LanbaiMonotonicBand(float3 c, float3 V, float3 S, float4 bandColor, float4 shape, float gain)
+{
+    float el = LanbaiElevationDeg(V);
+    float4 sh = shape; sh.y = -shape.y;
+    float w = (el < shape.x) ? LanbaiBandWeight(V, S, sh) : LanbaiBandWeight(V, S, float4(el, 1.0, shape.z, shape.w));
+    float3 o = LanbaiBandBlend(c, bandColor, saturate(gain * w));
+    float lc = dot(c, float3(0.2126, 0.7152, 0.0722)), lo = dot(o, float3(0.2126, 0.7152, 0.0722));
+    // a soft minimum (over a 30 % luminance difference): a hard min() leaves a visible kink where the two cross
+    float k = saturate((lo - lc) / max(0.3 * lo, 1e-5));
+    return (el > shape.x) ? lerp(o, c, k * k * (3.0 - 2.0 * k)) : o;
+}
 float3 LanbaiApplyBands(float3 c, float3 V, float3 S, float band1Gain)
 {
-    [branch] if (band1Gain > 0.0)
+    [branch] if (band1Gain > 0.0 && _Band1Shape.y < 0.0)
+        c = LanbaiMonotonicBand(c, V, S, _Band1Color, _Band1Shape, band1Gain);
+    else if (band1Gain > 0.0)
         c = LanbaiBandBlend(c, _Band1Color, saturate(band1Gain * LanbaiBandWeight(V, S, _Band1Shape)));
     [branch] if (_Band2Gain > 0.0)
         c = LanbaiBandBlend(c, _Band2Color, saturate(_Band2Gain * LanbaiBandWeight(V, S, _Band2Shape)));
@@ -219,7 +242,8 @@ float LanbaiNightWeight(float3 V, float x)
     float f = (1.0 - smoothstep(_NightMaskShape.x, _NightMaskShape.x + _NightMaskShape.y, az))
             * (1.0 - smoothstep(_NightMaskShape.z, _NightMaskShape.z + _NightMaskShape.w, abs(el)));
     float d = 0.5 * f;
-    return saturate((x - d) / (0.75 - 0.25 * f));
+    float w = saturate((x - d) / (0.75 - 0.25 * f));
+    return w * w * (3.0 - 2.0 * w);                       // eased: no visible edge where neighbouring directions differ
 }
 
 float3 LanbaiSkyColour(float3 V)
@@ -229,7 +253,7 @@ float3 LanbaiSkyColour(float3 V)
     float night = (_Udon_SkyBlend.w > 0.0) ? _Udon_SkyBlend.z : _NightBlend;
     float other = (_Udon_SkyFx.w > 0.0) ? _Udon_SkyFx.x : _OtherSky;
     float bandG = (_Udon_SkyFx.w > 0.0) ? _Udon_SkyFx.y : _Band1Gain;
-    float sunLine  = (_Udon_SkyFx.w > 0.0) ? _Udon_SkyFx.z : _SunShape.w;
+    float sunLine  = (_Udon_SunDisc.w > 0.0) ? _Udon_SunDisc.z : _SunShape.w;
     float gal   = (_Udon_GalaxyGain.w > 0.0) ? _Udon_GalaxyGain.x : _GalaxyGain;
     float sunG  = (_Udon_SunDisc.w > 0.0) ? _Udon_SunDisc.x : _SunGain;
     float sunR  = (_Udon_SunDisc.w > 0.0) ? _Udon_SunDisc.y : _SunShape.x;
@@ -252,7 +276,8 @@ float3 LanbaiSkyColour(float3 V)
         float w = other * LanbaiOtherSkyWeight(V, _OtherSeam);
         float3 Vo = LanbaiOtherSkyDir(V);
         Vo.y = abs(Vo.y);
-        float3 o = LanbaiCubes(Vo, S, blend);
+        // the other sky: the same cubes rotated 180 deg about +Z, or (_OtherFromB = 1) cube B: other air, other light
+        float3 o = (_OtherFromB > 0.5) ? LanbaiCubes(Vo, S, 1.0) : LanbaiCubes(Vo, S, blend);
         if (sunG > 0.0)
             o += LanbaiSunTerm(Vo, S, sunG, sunR, sunLine);
         c = lerp(c, o * _OtherGain * _OtherTint.rgb, w);

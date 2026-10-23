@@ -22,7 +22,7 @@ DEFAULTS = dict(_CubeA_HDR=(1, 1, 0, 0), _CubeB_HDR=(1, 1, 0, 0), _RotationA=0, 
                 _RotationB=0, _ExposureB=0, _ClampB=16, _ZenithTintB=(1, 1, 1, 1), _MidTintB=(1, 1, 1, 1), _HorizonTintB=(1, 1, 1, 1), _HorizonAntiTintB=(1, 1, 1, 1),
                 _TintElevation=(2, 35, 75, 1), _Blend=0, _NadirColor=(0.16, 0.27, 0.39, 0), _BelowShape=(-35, 0.8, 0.6, 2),
                 _ProcWeight=0, _Band1Color=(0.05, 0.095, 0.278, 1), _Band1Shape=(14, 8, 0, 60), _Band1Gain=0, _Band2Color=(1, 1, 1, 1), _Band2Shape=(12, 5, 180, 55), _Band2Gain=0,
-                _OtherSky=0, _OtherGain=0.82, _OtherTint=(0.92, 0.95, 1.05, 1), _OtherSeam=1,
+                _OtherSky=0, _OtherGain=0.82, _OtherTint=(0.92, 0.95, 1.05, 1), _OtherSeam=1, _OtherFromB=0, _HorizonLift=0.8,
                 _NightBlend=0, _NightColor=(0.0015, 0, 0, 1), _StarFloorAdd=(0.0025, 0.0048, 0.017, 1), _GalaxyGain=0,
                 _NightMaskDir=(0, 0, 1, 0), _NightMaskShape=(40, 15, 12, 10),
                 _SunDir=(0.7, 0.1, 0.7, 0), _SunColor=(5.86, 3.70, 1.98, 1), _SunShape=(0.45, 0.04, 0.55, 0), _SunGain=1,
@@ -51,6 +51,9 @@ def render(dirs, params=None, globs=None):
     u['_Udon_FogCube'] = {'id': -1}
     u.setdefault('unity_FogColor', (0.1, 0.1, 0.1, 1))
     u.setdefault('_WorldSpaceCameraPos', (0.55, 1.70, 2.05))
+    u.setdefault('_ScreenParams', (480.0, 270.0, 1.0, 1.0))           # the preview tiles (LanbaiPixelAngle -> moon mip)
+    u.setdefault('UNITY_MATRIX_P', [[1.0, 0, 0, 0], [0, 1.0 / 0.5625, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0]])
+    u.setdefault('_MoonTex_TexelSize', (1 / 1024.0, 1 / 1024.0, 1024.0, 1024.0))
     return renderer().run(dirs, u)
 
 

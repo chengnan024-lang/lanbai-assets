@@ -94,8 +94,11 @@ class Renderer:
             elif np.ndim(v) == 0:
                 vars[k] = float(v)
             else:
-                v = list(map(float, v))
-                vars[k] = {2: spy.float2, 3: spy.float3, 4: spy.float4}[len(v)](*v)
+                v = list(map(float, np.ravel(v)))
+                if len(v) == 16:
+                    vars[k] = spy.float4x4(v)
+                else:
+                    vars[k] = {2: spy.float2, 3: spy.float3, 4: spy.float4}[len(v)](*v)
         vars['V'] = self.dev.create_buffer(element_count=n, struct_size=12, usage=spy.BufferUsage.shader_resource,
                                            data=np.ascontiguousarray(dirs, np.float32))
         ob = self.dev.create_buffer(element_count=n, struct_size=12, usage=spy.BufferUsage.unordered_access)

@@ -142,6 +142,7 @@ inline float LanbaiElevationDeg(float3 V)
 // horizontal azimuth (deg, 0..180) between V and T, exactly as LanbaiBand computes it
 inline float LanbaiAzimuthDeg(float3 V, float3 T)
 {
+    // + (1e-5, 0): looking straight up (V.xz = 0) the azimuth is defined (and equals the gate's LanbaiBand)
     float2 th = normalize(T.xz + float2(1e-5, 0.0));
     float2 vh = normalize(V.xz + float2(1e-5, 0.0));
     return degrees(acos(clamp(dot(th, vh), -1.0, 1.0)));
@@ -246,7 +247,8 @@ float3 LanbaiHorizon(float3 dirWS)
 // u = 0.5 + atan2(V.x, V.z) / 2pi, v = 0.5 + asin(V.y) / pi. Shared by Lanbai/Sky and the mirrors' reflection.
 inline float2 LanbaiGalaxyUV(float3 V)
 {
-    return float2(0.5 + atan2(V.x, V.z) * (0.5 / UNITY_PI), 0.5 + asin(clamp(V.y, -1.0, 1.0)) * (1.0 / UNITY_PI));
+    float zz = (abs(V.x) + abs(V.z) < 1e-6) ? 1.0 : V.z;          // straight up / down: atan2(0, 0) is undefined on some GPUs
+    return float2(0.5 + atan2(V.x, zz) * (0.5 / UNITY_PI), 0.5 + asin(clamp(V.y, -1.0, 1.0)) * (1.0 / UNITY_PI));
 }
 
 // ---- sun, moon -------------------------------------------------------------------------------------------------

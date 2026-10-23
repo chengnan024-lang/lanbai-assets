@@ -54,13 +54,21 @@ P['overcast_rain_night'] = dict(acts='1 · 2（×0.6）· 11（= 2）· 12 的�
                  _Udon_FogDensity=0.009),
     notes='天顶 #070B14（填 #09080D）、雾 = 地平线 #121A28（填 #161B27）。第 2 / 11 幕：_ExposureA −0.7 EV（S2 天 #05080F 填 #060405），雾填 #0D0F15，密度 0.008。偏航只在这种没有特征的天下允许。')
 
+P['overcast_rain_night_town'] = dict(acts='1（站牌：朝镇方向的地平线是钠光照亮的云底）', profile='S1',
+    cubeA='Sky_Overcast_Night_TownGlow_2048x1024', hdri_file=os.path.join(REPO, 'Sky', 'Textures', 'Sky_Overcast_Night_TownGlow_2048x1024.hdr'),
+    material=dict(_RotationA=-70.0, _ExposureA=0.0, _SunGain=0.0, _NadirColor=v4(F('#161B27'), 0.0), _BelowShape=[-30, 0.8, 0.6, 2.0]),
+    globals=dict(_Udon_HorizonColor=v4(F('#161B27'), 2.0), _Udon_FogBandColor=v4(F('#1E1C22')), _Udon_FogBandDir=v4(dir_az_el(-70, 0), 0), _Udon_FogBandWidth=60.0,
+                 _Udon_ZenithColor=v4(F('#09080D')), _Udon_NadirColor=v4(F('#161B27')), _Udon_FogShape=[0, 50, 0.6, 0], _Udon_FogBelow=[-30, 0, 1, 0],
+                 _Udon_FogDensity=0.009),
+    notes='= 阴云夜 + 镇子方向钠光照亮的云底 #241E22（填 #2A1F1E）。_RotationA = 镇子的方位（这里按 −70° 放，本地按车站布局改；雾的朝向 _Udon_FogBandDir 跟着改）。')
+
 P['moon_night'] = dict(acts='3（离地、月下云海）', profile='S3', cubeA=None,
     material=dict(_ProcWeight=1.0, _SunGain=0.0, _MoonGain=1.0, _MoonRadius=0.6, _MoonDir=v4(dir_az_el(-12, 8), 0),
-                  _MoonColor=v4(F('#F0F5FF @ +1.67')), _MoonGlow=[1.6, 0.9, 0.06, 0.32], _MoonGlowColor=v4(F('#8FA3C8'))),
+                  _MoonColor=v4(F('#F0F5FF @ +2.17')), _MoonGlow=[20.0, 1.5, 13.2, 0.43], _MoonGlowColor=[0.19, 0.21, 0.35, 1.0]),
     globals=dict(_Udon_HorizonColor=v4(F('#242A40'), 2.0), _Udon_FogBandColor=v4(F('#2E3753')), _Udon_FogBandDir=v4(dir_az_el(-12, 0), 0),
                  _Udon_FogBandWidth=120.0, _Udon_ZenithColor=v4(F('#151928')), _Udon_NadirColor=v4(F('#1A2034')), _Udon_FogShape=[0, 40, 1.5, 0.0], _Udon_FogBelow=[-40, 0, 1.0, 0],
-                 _Udon_MoonDir=v4(dir_az_el(-12, 8), 1), _Udon_MoonDisc=[1.0, 0.6, 0, 1], _Udon_FogDensity=0.00035),
-    notes='天顶 #08101F（填 #151928）、背月地平线 = 云上雾色 #111B30（填 #242A40）、月面 #EAEEF4（填 #F0F5FF @ +1.67）、月晕（门的公式）。月在 −12° / +8°、直径 1.2°。')
+                 _Udon_MoonDir=v4(dir_az_el(-12, 8), 1), _Udon_MoonDisc=[1.0, 0.6, 0, 1], _Udon_StarGain=[0.35, 1.0, 1, 1], _Udon_FogDensity=0.00035),
+    notes='天顶 #08101F（填 #151928）、背月地平线 = 云上雾色 #111B30（填 #242A40）、月面 #EAEEF4（填 #F0F5FF @ +1.67）、月晕按 calib S3 拟合（6° #5A6A88、10° #26344F）。月在 −12° / +8°、直径 1.2°。破云（U6k）起有星：星点 _Udon_StarGain.x 0.35（亮星读得出，暗星被月光天吃掉）。')
 
 P['dawn'] = dict(acts='6（晨，F0 → F2h）', profile='S6', sunAz=45.0, cubeA='syferfontein_6d_clear_puresky',
     hdri_file=os.path.join(HDRI, 'syferfontein_6d_clear_puresky_1k.hdr'),
@@ -75,9 +83,9 @@ P['dawn'] = dict(acts='6（晨，F0 → F2h）', profile='S6', sunAz=45.0, cubeA
 
 dusk_common = dict(_RotationA=fit['dusk']['rotation'], _ExposureA=0.0, _ClampA=16.0, **tints('dusk'),
                    _SunDir=v4(SUN8, 0), _SunColor=v4(F('#FF9167 @ +2.74')), _SunShape=[0.45, 0.04, 0.4, 0], _SunGain=1.0,
-                   _SunGlow=[0.35, 0.9, 0.12, 0.12], _SunGlowColor=v4(F('#FF855C')),
+                   _SunGlow=[0.25, 0.9, 0.06, 0.12], _SunGlowColor=v4(F('#FF855C')),
                    _Band2Color=v4(F('#FF9396 @ +0.92'), 0.25), _Band2Shape=[4.0, 3.0, 180, 55], _Band2Gain=0.6,
-                   _NadirColor=v4(F('#3B4A78'), 0.5), _BelowShape=[-75, 1.0, 0.6, 2.0], _PurpleGuard=[1.0, 0.82, 1.25, 0],
+                   _NadirColor=v4(F('#3B4A78'), 0.6), _BelowShape=[-60, 0.7, 0.6, 0.8], _PurpleGuard=[1.0, 0.82, 1.25, 0],
                    _OtherGain=0.82, _OtherTint=[0.92, 0.95, 1.05, 1], _OtherSeam=1.0)
 P['dusk_8i'] = dict(acts='8-i（出海 → F10e）', profile='S8', sunAz=0.0, cubeA='syferfontein_0d_clear_puresky',
     hdri_file=os.path.join(HDRI, 'syferfontein_0d_clear_puresky_1k.hdr'),
@@ -93,17 +101,17 @@ P['dusk_8ii'] = dict(acts='8-ii（另一片天，F10e → F12）', profile='S8',
     notes='_OtherSky 0 → 1（956.36 → 964.36，8 秒 smoothstep）：下半球按 (−x, −y, z) 取样，×0.82、染 (0.92, 0.95, 1.05)，1° 软接缝；两个太阳在接缝上熔成一条线。F12 起日线：_Udon_SunDisc.z（线的半长）10° → 0、增益 → 0（987.06 → 993.06）。')
 
 bh_zen = inv_screen('#16223F', 'S8b')
-P['blue_hour'] = dict(acts='8b（蓝时，993.06 → 1001.21）', profile='S8b', cubeA=None,
-    material=dict(_ProcWeight=1.0, _SunGain=0.0, _Band1Color=v4(F('#3F5790'), 0.0), _Band1Shape=[12.0, 7.0, 0, 100], _Band1Gain=0.9,
-                  _NightMaskDir=v4(dir_az_el(0, 0), 0), _NightMaskShape=[40, 15, 12, 10], _NightColor=v4(F('#050000')),
-                  _PurpleGuard=[1.0, 0.86, 1.25, 0]),
+P['blue_hour'] = dict(acts='8b（蓝时，993.06 → 1001.21）+ 第 9 幕同一个材质', profile='S8b', cubeA=None, glow=True,
+    material=dict(_ProcWeight=1.0, _SunGain=0.0, _Band1Color=v4(F('#3F5790'), 0.0), _Band1Shape=[14.0, -10.0, 0, 110], _Band1Gain=0.85,
+                  _NightMaskDir=v4(dir_az_el(0, 0), 0), _NightMaskShape=[30, 45, 6, 22], _NightColor=v4(F('#050000')),
+                  _StarFloorAdd=v4(np.maximum(F('#0D0F23') - F('#050000'), 0)), _GalaxyGain=0.0, _PurpleGuard=[1.0, 0.86, 1.25, 0]),
     globals=dict(_Udon_HorizonColor=v4(F('#8093C2') * 0.80, 2.0), _Udon_FogBandColor=v4(F('#8093C2')), _Udon_FogBandDir=v4(dir_az_el(0, 0), 0),
                  _Udon_FogBandWidth=90.0, _Udon_ZenithColor=v4(bh_zen), _Udon_NadirColor=v4(F('#1A2A4E') * 1.3),
-                 _Udon_FogShape=[1.0, 70.0, 0.7, 0], _Udon_FogBelow=[-60, 0, 0.8, 0], _Udon_SkyBlend=[0, 1, 0, 1], _Udon_SkyFx=[0, 0.9, 0, 1],
+                 _Udon_FogShape=[1.0, 85.0, 0.8, 0], _Udon_FogBelow=[-60, 0, 1.0, 0], _Udon_SkyBlend=[0, 1, 0, 1], _Udon_SkyFx=[0, 0.85, 0, 1],
                  _Udon_FogDensity=0.0),
     notes='天缝 / 地平线 #6F86B0（填 #8093C2）、最纯的蓝带 #2E4F8A（填 #3F5790）、天顶 #16223F、另一片天的天底 #1A2A4E。程序化（LanbaiHorizon 模型 B + 地平线带 1），上下对称。987.06 → 993.06 由暮的立方图 6 秒过渡到这里（_Udon_SkyBlend.y 0 → 1，与日线收缩同步）。1001.21 → 1009.21：_Udon_SkyBlend.z 0 → 1（夜的定向遮罩：前方 ±40° 的地平线带最后暗）。')
 
-night = F('#050000'); floor = F('#0D0F23')
+night = F('#050000'); floor = F('#0D0F23')   # (star_sea = the end state of the blue_hour material: night 1, glow 1)
 P['star_sea'] = dict(acts='9（星海，F13 起）', profile='S9a', cubeA=None, glow=True,
     material=dict(_ProcWeight=1.0, _NightBlend=1.0, _NightColor=v4(night), _StarFloorAdd=v4(np.maximum(floor - night, 0)),
                   _GalaxyGain=1.0, _SunGain=0.0),
@@ -158,6 +166,11 @@ def render_sheet(name, p, out_json):
         dw = ex.header()['dataWindow']; w, h = dw.max.x + 1, dw.max.y + 1
         img = np.stack([np.frombuffer(ex.channel(ch, Imath.PixelType(Imath.PixelType.FLOAT)), np.float32).reshape(h, w) for ch in 'RGB'], -1)
         S.set_tex('_GlowTex', img[:, ::2][::2].copy())
+    if p['material'].get('_MoonGain', 0) > 0:
+        from PIL import Image as _I
+        m = np.asarray(_I.open(os.path.join(REPO, 'Sky', 'Textures', 'Moon_Disc_1024.png')).convert('RGBA')).astype(np.float32) / 255.0
+        m[..., :3] = np.where(m[..., :3] <= 0.04045, m[..., :3] / 12.92, ((m[..., :3] + 0.055) / 1.055) ** 2.4)
+        S.renderer().set_texture(S.SLOTS['_MoonTex'], m)
     globs = dict(p['globals'])
     if p.get('fog_from_sky'):
         globs.update(fog_group(p))
@@ -167,6 +180,12 @@ def render_sheet(name, p, out_json):
     for label, yaw, pitch in VIEWS:
         d = camera_dirs(W, H, 90, yaw, pitch).astype(np.float32)
         img = S.render(d, p['material'], globs).reshape(H, W, 3)
+        sg = globs.get('_Udon_StarGain', [0, 0, 0, 0])
+        if sg[3] > 0 and sg[0] > 0:
+            import stars_cpu as SC
+            cat = SC.catalogue()
+            pk = SC.flux(cat['mag'], cat['rank'], 1.6, 0.0, 0.5, sg[2] or 50, sg[1] or 4) * sg[0]
+            SC.splat(img, W, H, 90, yaw, pitch, cat['dir'], pk, cat['col'], 1.6 * W / 1920.0)
         c = np.clip(G.grade(img, p['profile']), 0, 255)
         meas[label] = dict(APL=round(G.apl(c), 1), purple=round(G.purple_fraction(c), 4),
                            lavender_6=round(G.purple_fraction(c, 285, 330, 12), 4),
@@ -240,6 +259,16 @@ def main():
     # JsonUtility-friendly export for the C# builder (flat lists)
     out = {'about': '蓝白 · 每一幕的天空预设（Sky/Tools~/render/make_presets.py 生成，别手改）。颜色全是线性值。material = Lanbai/Sky 的属性；globals = 这一幕的驱动写的全局量。',
            'presets': []}
+    # every preset lists EVERY sky / fog global any preset uses (absent = 0 = 'not set'), so Apply() never leaves a
+    # previous act's value behind (tech review r1 must-fix 1: the act-3 moon would follow into dawn, the dusk sun disc
+    # into the blue hour)
+    allv = sorted({k for p in P.values() for k, v in p['globals'].items() if np.ndim(v) > 0})
+    allf = sorted({k for p in P.values() for k, v in p['globals'].items() if np.ndim(v) == 0})
+    for p in P.values():
+        for k in allv:
+            p['globals'].setdefault(k, [0.0, 0.0, 0.0, 0.0])
+        for k in allf:
+            p['globals'].setdefault(k, 0.0)
     for name, p in P.items():
         e = {'name': name, 'acts': p['acts'], 'profile': p['profile'], 'cubeA': p.get('cubeA') or '', 'glow': bool(p.get('glow')),
              'moon': bool(p['material'].get('_MoonGain', 0) > 0), 'sunAz': float(p.get('sunAz', -999.0)),

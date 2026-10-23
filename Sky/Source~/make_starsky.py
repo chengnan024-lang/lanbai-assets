@@ -214,7 +214,7 @@ def sphere_blur(img, sigma_deg):
 
 
 lv_soft = sphere_blur(levels, 3.0) / 5.0             # the wide glow: no edge anywhere
-lv_mid = sphere_blur(levels, 1.0) / 5.0              # the star clouds and the rift
+lv_mid = sphere_blur(levels, 0.6) / 5.0              # the star clouds and the rift
 fa_grain = sphere_blur(faint, 0.25)                  # granular light of the unresolved stars
 fa_grain /= np.percentile(fa_grain, 99.5)
 fa_wide = sphere_blur(faint, 2.0); fa_wide /= np.percentile(fa_wide, 99.7)
@@ -225,8 +225,8 @@ def tone(x, k=2.4):
 
 
 band = np.clip(lv_soft * 2.5, 0, 1)
-glow_eq = (0.33 * tone(lv_soft) + 0.44 * tone(lv_mid, 1.6) + 0.05 * np.clip(fa_wide, 0, 1.5)
-           + 0.18 * np.clip(fa_grain, 0, 2.0) * (0.04 + 0.96 * band))
+glow_eq = (0.15 * tone(lv_soft) + 0.50 * tone(lv_mid, 1.6) + 0.05 * np.clip(fa_wide, 0, 1.5)
+           + 0.30 * np.clip(fa_grain, 0, 2.0) * (0.04 + 0.96 * band))
 lv = lv_mid
 # ---- 4. resample to the world equirect and colour -----------------------------------------------------------------
 u = (np.arange(W) + 0.5) / W; v = (np.arange(H) + 0.5) / H
@@ -242,7 +242,7 @@ g0 = np.percentile(g, 35.0)                                   # the sky away fro
 g = np.clip((g - g0) / (np.percentile(g, 99.5) - g0), 0, None)
 g = np.where(g < 0.8, g, 0.8 + 0.2 * np.tanh((g - 0.8) / 0.2))      # soft knee: the brightest 0.5 % roll off to 1.0
 gc_ang = np.degrees(np.arccos(np.clip(Vu @ np.array([g_w[0], g_w[2], g_w[1]]), -1, 1)))
-warm = 0.75 * np.exp(-(gc_ang / 15.0) ** 2) * np.clip(g * 1.6, 0, 1)   # the bulge's warm dust: only where the band is bright, ~ +-15 deg
+warm = 0.65 * np.exp(-(gc_ang / 11.0) ** 2) * np.clip(g * 1.6, 0, 1)   # the bulge's warm dust: only where the band is bright, ~ +-15 deg
 cdiff = hexlin(GLOW_DIFFUSE_FILL); cdust = hexlin(GLOW_DUST_FILL)
 col = (1 - warm[..., None]) * cdiff + warm[..., None] * cdust
 bulge = 1.0 + 0.35 * warm                                 # the centre is the brightest part of the band

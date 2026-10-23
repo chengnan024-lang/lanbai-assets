@@ -101,6 +101,39 @@ namespace Lanbai.Sky.EditorTools
 
         static float F(string s) { return float.Parse(s, CultureInfo.InvariantCulture); }
 
+        // a star-point mesh in the Lanbai/StarPoints vertex format (README_Sky.md §4), saved / updated at assetPath
+        public static Mesh SaveStarMesh(string assetPath, string meshName, Vector3[] dirs, float[] mags, float[] ranks, float[] orders, Color[] cols)
+        {
+            int n = dirs.Length;
+            Vector3[] v = new Vector3[n * 4]; Vector2[] uv0 = new Vector2[n * 4]; Vector4[] uv1 = new Vector4[n * 4];
+            Color[] col = new Color[n * 4]; int[] idx = new int[n * 6];
+            Vector2[] corners = { new Vector2(-1, -1), new Vector2(1, -1), new Vector2(1, 1), new Vector2(-1, 1) };
+            for (int s = 0; s < n; s++)
+            {
+                for (int k = 0; k < 4; k++)
+                {
+                    v[s * 4 + k] = dirs[s].normalized; uv0[s * 4 + k] = corners[k];
+                    uv1[s * 4 + k] = new Vector4(mags[s], ranks[s], orders[s], 0f); col[s * 4 + k] = cols[s];
+                }
+                int b = s * 4;
+                idx[s * 6 + 0] = b; idx[s * 6 + 1] = b + 2; idx[s * 6 + 2] = b + 1;
+                idx[s * 6 + 3] = b; idx[s * 6 + 4] = b + 3; idx[s * 6 + 5] = b + 2;
+            }
+            Mesh m = new Mesh();
+            m.name = meshName;
+            m.indexFormat = (v.Length > 65000) ? UnityEngine.Rendering.IndexFormat.UInt32 : UnityEngine.Rendering.IndexFormat.UInt16;
+            m.vertices = v; m.SetUVs(0, new List<Vector2>(uv0)); m.SetUVs(1, new List<Vector4>(uv1)); m.colors = col; m.triangles = idx;
+            m.bounds = new Bounds(Vector3.zero, Vector3.one * 200000f);   // never frustum-culled: the shader places the stars
+            Mesh old = AssetDatabase.LoadAssetAtPath<Mesh>(assetPath);
+            if (old != null) { EditorUtility.CopySerialized(m, old); EditorUtility.SetDirty(old); AssetDatabase.SaveAssets(); return old; }
+            AssetDatabase.CreateAsset(m, assetPath);
+            AssetDatabase.SaveAssets();
+            return m;
+        }
+
+        public static string GeneratedFolder() { return Gen(); }
+        public static string RootFolder() { return SkyRoot(); }
+
         // ---------------------------------------------------------------------------------------------------------
         [MenuItem("蓝白/Sky/Build Preset Materials")]
         public static void BuildPresetMaterials()
@@ -258,9 +291,9 @@ namespace Lanbai.Sky.EditorTools
         {
             EnsureProgramAsset("LanbaiSkyPreset");
             SkyPresetFile pf = LoadPresets();
+            // updated in place (references from drivers to these objects survive a re-run); new presets are added
             GameObject root = GameObject.Find("Lanbai_SkyPresets");
-            if (root != null) UnityEngine.Object.DestroyImmediate(root);
-            root = new GameObject("Lanbai_SkyPresets");
+            if (root == null) root = new GameObject("Lanbai_SkyPresets");
             Type addType = Type.GetType("UdonSharpEditor.UdonSharpUndo, UdonSharp.Editor");
             System.Reflection.MethodInfo add = null;
             if (addType != null)
@@ -268,10 +301,13 @@ namespace Lanbai.Sky.EditorTools
                     if (mi.Name == "AddComponent" && mi.IsGenericMethodDefinition) { add = mi.MakeGenericMethod(typeof(Lanbai.Sky.LanbaiSkyPreset)); break; }
             foreach (SkyPreset p in pf.presets)
             {
-                GameObject go = new GameObject("SkyPreset_" + p.name);
+                Transform tr = root.transform.Find("SkyPreset_" + p.name);
+                GameObject go = (tr != null) ? tr.gameObject : new GameObject("SkyPreset_" + p.name);
                 go.transform.SetParent(root.transform, false);
-                Lanbai.Sky.LanbaiSkyPreset c = (add != null) ? (Lanbai.Sky.LanbaiSkyPreset)add.Invoke(null, new object[] { go })
-                                                              : go.AddComponent<Lanbai.Sky.LanbaiSkyPreset>();
+                Lanbai.Sky.LanbaiSkyPreset c = go.GetComponent<Lanbai.Sky.LanbaiSkyPreset>();
+                if (c == null)
+                    c = (add != null) ? (Lanbai.Sky.LanbaiSkyPreset)add.Invoke(null, new object[] { go })
+                                      : go.AddComponent<Lanbai.Sky.LanbaiSkyPreset>();
                 c.presetName = p.name;
                 c.skyMaterial = AssetDatabase.LoadAssetAtPath<Material>(Gen() + "/M_Sky_" + p.name + ".mat");
                 c.vectorNames = new string[p.globalVectors.Length]; c.vectorValues = new Vector4[p.globalVectors.Length];
@@ -283,7 +319,7 @@ namespace Lanbai.Sky.EditorTools
             Debug.Log("[Lanbai/Sky] preset objects under Lanbai_SkyPresets (" + pf.presets.Length + ")" + (add == null ? "  (UdonSharp editor not found: plain AddComponent used)" : ""));
         }
 
-        static void EnsureProgramAsset(string scriptName)
+        public static void EnsureProgramAsset(string scriptName)
         {
             Type progType = Type.GetType("UdonSharp.UdonSharpProgramAsset, UdonSharp.Editor");
             if (progType == null) { Debug.LogWarning("[Lanbai/Sky] UdonSharp not found: create the U# program asset for " + scriptName + " by hand"); return; }

@@ -50,6 +50,7 @@ Shader "Lanbai/Sky"
         _HorizonAntiTintB ("Cube B horizon tint away from the sun, linear", Vector) = (1, 1, 1, 1)
         _TintElevation ("Tints  x horizon full below deg  y mid full at deg  z zenith full above deg  w azimuth power", Vector) = (2, 35, 75, 1)
         _Blend ("Cube A to B (global _Udon_SkyBlend.x wins)", Range(0, 1)) = 0
+        _HorizonLift ("Never sample the HDRI below this elevation deg (its own horizon line)", Float) = 0.8
         [Header(Below the horizon)]
         _NadirColor ("Nadir colour, linear; a = desaturation in the middle of the gradient", Vector) = (0.16, 0.27, 0.39, 0)
         _BelowShape ("Below  x gradient end deg (negative)  y power  z horizon sample deg  w horizon sample clamp", Vector) = (-35, 0.8, 0.6, 2)
@@ -67,6 +68,7 @@ Shader "Lanbai/Sky"
         _OtherGain ("Other sky gain (bible x0.82 = -0.3 EV)", Float) = 0.82
         _OtherTint ("Other sky tint, linear", Vector) = (0.92, 0.95, 1.05, 1)
         _OtherSeam ("Other sky seam width deg", Float) = 1
+        _OtherFromB ("Other sky from cube B (1) instead of the same cubes (0)", Float) = 0
         [Header(Night  stars are Lanbai StarPoints)]
         _NightBlend ("Night weight (global _Udon_SkyBlend.z wins)", Range(0, 1)) = 0
         _NightColor ("Night floor before ignition, linear (fill #050000 under S9a)", Vector) = (0.0015, 0, 0, 1)
@@ -74,7 +76,7 @@ Shader "Lanbai/Sky"
         [NoScaleOffset] _GlowTex ("Galaxy glow equirect (StarSky_Glow_4096x2048.exr)", 2D) = "black" {}
         _GalaxyGain ("Galaxy glow gain (global _Udon_GalaxyGain.x wins)", Float) = 0
         _NightMaskDir ("Night delay  the front direction xyz (sun death azimuth)", Vector) = (0, 0, 1, 0)
-        _NightMaskShape ("Night delay  x azimuth half width deg  y soft deg  z elevation top deg  w soft deg", Vector) = (40, 15, 12, 10)
+        _NightMaskShape ("Night delay  x azimuth half width deg  y soft deg  z elevation top deg  w soft deg", Vector) = (30, 45, 6, 22)
         [Header(Sun)]
         _SunDir ("Sun direction fallback (global _Udon_SunDir wins)", Vector) = (0.7, 0.1, 0.7, 0)
         _SunColor ("Sun disc colour, linear HDR (dawn fill #FFCE9E x 2^2.55)", Vector) = (5.86, 3.70, 1.98, 1)

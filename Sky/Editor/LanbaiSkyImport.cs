@@ -8,6 +8,8 @@ namespace Lanbai.Sky.EditorTools
 {
     public class LanbaiSkyImport : AssetPostprocessor
     {
+        public override uint GetVersion() { return 2; }   // bump when the settings change: Unity re-imports
+
         static bool Mine(string path)
         {
             return path.Replace('\\', '/').Contains("/Lanbai/Sky/Textures/");
