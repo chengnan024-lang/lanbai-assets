@@ -6,7 +6,7 @@
 // ApplyBlend(other, t) for the visible transitions (dusk -> blue hour: same names in the same order, so the vectors
 // are lerped index by index; names that differ snap at t = 0.5). It writes:
 //   * every _Udon_ global of the preset (VRCShader.SetGlobalVector / SetGlobalFloat; all names carry _Udon_),
-//   * RenderSettings.fogDensity from _Udon_FogDensity (Built-in shaders use it; LanbaiFog reads the global),
+//   * RenderSettings.fogDensity from _Udon_Fog.x (Built-in shaders use it; LanbaiFog reads the global),
 //   * RenderSettings.skybox = skyMaterial when 'setSkybox' (verify that this setter is exposed to Udon in the SDK;
 //     if not, put every act's material on one skybox at build time and keep 'setSkybox' off).
 // Edit-mode values are lost on entering Play (gate test pitfall 9): that is why Apply() runs in Start().
@@ -54,7 +54,11 @@ namespace Lanbai.Sky
         {
             CacheIds();
             for (int i = 0; i < vecIds.Length; i++)
+            {
                 VRCShader.SetGlobalVector(vecIds[i], vectorValues[i]);
+                if (vectorNames[i] == "_Udon_Fog")
+                    RenderSettings.fogDensity = vectorValues[i].x;
+            }
             for (int i = 0; i < floatIds.Length; i++)
             {
                 VRCShader.SetGlobalFloat(floatIds[i], floatValues[i]);
@@ -81,7 +85,10 @@ namespace Lanbai.Sky
                 {
                     if (other.vectorNames[j] == vectorNames[i]) { b = other.vectorValues[j]; found = true; break; }
                 }
-                VRCShader.SetGlobalVector(vecIds[i], found ? Vector4.Lerp(a, b, t) : (t < 0.5f ? a : b));
+                Vector4 val = found ? Vector4.Lerp(a, b, t) : (t < 0.5f ? a : b);
+                VRCShader.SetGlobalVector(vecIds[i], val);
+                if (vectorNames[i] == "_Udon_Fog")
+                    RenderSettings.fogDensity = val.x;
             }
             for (int i = 0; i < floatIds.Length; i++)
             {

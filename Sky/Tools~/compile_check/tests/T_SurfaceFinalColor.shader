@@ -9,7 +9,14 @@ Shader "Hidden/LanbaiCheck/SurfaceFinalColor"
         half4 _Color;
         struct Input { float3 worldPos; };
         void surf(Input IN, inout SurfaceOutputStandard o) { o.Albedo = _Color.rgb; }
-        void lbfog(Input IN, SurfaceOutputStandard o, inout fixed4 color) { color.rgb = LanbaiApplyFog(color.rgb, IN.worldPos); }
+        void lbfog(Input IN, SurfaceOutputStandard o, inout fixed4 color)
+        {
+        #ifdef UNITY_PASS_FORWARDADD
+            color.rgb = LanbaiApplyFogAdditive(color.rgb, IN.worldPos);
+        #else
+            color.rgb = LanbaiApplyFog(color.rgb, IN.worldPos);
+        #endif
+        }
         ENDCG
     }
 }

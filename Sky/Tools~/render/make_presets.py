@@ -184,10 +184,59 @@ def render_sheet(name, p, out_json):
     print(name, json.dumps(meas, ensure_ascii=False))
 
 
+def normalise_globals(p):
+    """v1.1: density -> _Udon_Fog (x, w = 1: x = 0 is a real 'no fog'); the model -> _Udon_FogModel (continuous mix)."""
+    g = p['globals']
+    if '_Udon_FogDensity' in g:
+        g['_Udon_Fog'] = [float(g.pop('_Udon_FogDensity')), 0.0, 0.0, 1.0]
+    if '_Udon_HorizonColor' in g:
+        g['_Udon_FogModel'] = [1.0 if g['_Udon_HorizonColor'][3] > 1.5 else 0.0, 0.0, 0.0, 1.0]
+        g['_Udon_HorizonColor'][3] = 1.0
+
+
+GATE_ACT4 = dict(act='4（触手之门，U6 → U9）', model=0.0, near=[0.1085, 0.1130, 0.1641], far=[0.0436, 0.0504, 0.0726], zenith=[0.0021, 0.0030, 0.0070],
+                 nadir=None, band_dir='朝裂口（门的驱动写 _Udon_FogBandDir，或只写 _Udon_TearPos）', width=50.0, shape=[6, 22, 2, 0.55], below=[-25, 0, 0.55, 0.6],
+                 density=0.0006, note='= Gate/Shaders/LanbaiGateSky.cginc 的 LanbaiBand（GateLayout_v2.json sky_band 第 8 轮），逐方向相等。门的触手另外加 0.35 × 月晕 + 伤口空气（LanbaiApplyFogEx 可以加）。门的驱动至少写 _Udon_FogBandColor = (0.1085, 0.1130, 0.1641, 1) 或 _Udon_TearPos（w = 1）。')
+TRANSITIONS = [   # bible §6.x; t = timeline seconds computed from the labels (Director binds the labels)
+    dict(label='U1', t=[17.50, 37.50], what='雾 0.009 → 0.008（开车）', curve='smoothstep'),
+    dict(label='U2b', t=[39.10, 79.10], what='雾 0.008 → 0.0025（灯尽 → 离地）', curve='smoothstep'),
+    dict(label='U4h', t=[99.50, 107.50], what='雾 0 → 0.067（触云，云中雾色暖 #3A3530 → 冷 #4A5568 到 U5r）', curve='EV 线性'),
+    dict(label='U6k', t=[129.10, 131.60], what='雾 0.067 → 0.00035（破云）；月夜预设', curve='ease-out'),
+    dict(label='U6', t=[133.80, 163.80], what='→ 第 4 幕光带 0.0006；_Udon_FogModel 1 → 0（月夜的渐变 → 门的光带，同一段 smoothstep）', curve='smoothstep'),
+    dict(label='U9 → U12', t=[179.55, 248.64], what='门内（门内会话定）', curve='—'),
+    dict(label='剪 1', t=[248.64, 248.64], what='黑遮罩下硬切到晨：dawn 预设，0.00012，模型 B（A → B 在遮挡下）', curve='硬切'),
+    dict(label='F2h', t=[363.26, 365.40], what='入水：海的水下组（_Udon_Underwater 0 → 1），密度 0.040（海写）', curve='水线遮挡下'),
+    dict(label='出海 F9s+0.5', t=[922.36, 930.36], what='水 → 空气 0.00015、dusk_8i（_Udon_Underwater → 0）', curve='smoothstep 8 s'),
+    dict(label='F10e', t=[956.36, 964.36], what='0.00015 → 0.00025、雾色 → 8-ii（dusk_8ii）', curve='smoothstep 8 s'),
+    dict(label='F12', t=[987.06, 1017.06], what='雾 → 0（30 秒）；蓝时预设（雾色无所谓）', curve='线性（_Udon_Fog.x → 0，w 保持 1）'),
+]
+
+
+def write_fog_presets():
+    out = {'about': '蓝白 · 每一幕的雾（Sky/Tools~/render/make_presets.py 生成）。颜色线性。驱动在自己的时间窗开头把这一组全部写一遍（含 .a / .w 开关），淡变只动 rgb / x。',
+           'globals_order': ['_Udon_FogModel.x', '_Udon_FogBandColor (near)', '_Udon_HorizonColor (far)', '_Udon_ZenithColor', '_Udon_NadirColor',
+                             '_Udon_FogBandDir', '_Udon_FogBandWidth', '_Udon_FogShape', '_Udon_FogBelow', '_Udon_Fog.x (density)'],
+           'acts': [], 'transitions': TRANSITIONS}
+    order = ['overcast_rain_night', 'moon_night', None, 'dawn', 'dusk_8i', 'dusk_8ii', 'blue_hour', 'star_sea']
+    for name in order:
+        if name is None:
+            out['acts'].append(dict(preset='act4_gate', **GATE_ACT4)); continue
+        g = P[name]['globals']
+        out['acts'].append(dict(preset=name, act=P[name]['acts'], model=g.get('_Udon_FogModel', [None])[0],
+                                near=g.get('_Udon_FogBandColor', [None] * 4)[:3], far=g.get('_Udon_HorizonColor', [None] * 4)[:3],
+                                zenith=g.get('_Udon_ZenithColor', [None] * 4)[:3], nadir=g.get('_Udon_NadirColor', [None] * 4)[:3],
+                                band_dir=g.get('_Udon_FogBandDir'), width=g.get('_Udon_FogBandWidth'), shape=g.get('_Udon_FogShape'),
+                                below=g.get('_Udon_FogBelow'), density=g.get('_Udon_Fog', [None])[0],
+                                cap='材质 _FogCap（远处巨物用；默认 1 = 不封顶）', height='材质 _FogHeightFalloff + _Udon_FogBase（地面世界 = 地面高度；云上 = 云顶）'))
+    json.dump(out, open(os.path.join(REPO, 'Sky', 'FogPresets.json'), 'w'), indent=1, ensure_ascii=False, default=float)
+
+
 def main():
     meas = {}
     for name, p in P.items():
         render_sheet(name, p, meas)
+        normalise_globals(p)
+    write_fog_presets()
     # JsonUtility-friendly export for the C# builder (flat lists)
     out = {'about': '蓝白 · 每一幕的天空预设（Sky/Tools~/render/make_presets.py 生成，别手改）。颜色全是线性值。material = Lanbai/Sky 的属性；globals = 这一幕的驱动写的全局量。',
            'presets': []}

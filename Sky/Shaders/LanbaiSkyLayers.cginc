@@ -37,9 +37,18 @@ float _Exposure;
 float4 _PurpleGuard;
 float _Dither;
 
+#ifndef LANBAI_DECL__Udon_SkyBlend
+#define LANBAI_DECL__Udon_SkyBlend
 float4 _Udon_SkyBlend;     // x = cube A->B, y = procedural weight, z = night weight; w > 0 = set
-float4 _Udon_SkyFx;        // x = other sky, y = mid-band gain, z = sun line half length deg; w > 0 = set
+#endif
+#ifndef LANBAI_DECL__Udon_SkyFx
+#define LANBAI_DECL__Udon_SkyFx
+float4 _Udon_SkyFx;        // x = other sky, y = band 1 gain, z = sun line half length deg; w > 0 = set
+#endif
+#ifndef LANBAI_DECL__Udon_GalaxyGain
+#define LANBAI_DECL__Udon_GalaxyGain
 float4 _Udon_GalaxyGain;   // x = glow + star floor gain g(t); w > 0 = set
+#endif
 
 // the source direction to sample so that the content appears rotated by +deg in azimuth (clockwise from above)
 inline float3 LanbaiRotY(float3 V, float deg)

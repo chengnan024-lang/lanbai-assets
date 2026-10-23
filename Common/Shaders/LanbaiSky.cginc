@@ -1,5 +1,5 @@
 // =====================================================================================================
-//  Lanbai / LanbaiSky.cginc   v1 (2026-10-22, cloud sub-session "天空")      蓝白 · 天的共用函数
+//  Lanbai / LanbaiSky.cginc   v1.1 (2026-10-23; v1 2026-10-22, cloud sub-session "天空")      蓝白 · 天的共用函数
 //
 //  !!! WRITTEN WITHOUT A UNITY COMPILER. slang syntax / type check only (Sky/Tools~/compile_check). !!!
 //
@@ -11,9 +11,11 @@
 //  Every colour here is LINEAR. dirWS / V is a unit vector from the camera toward the pixel.
 //
 //  ---- LanbaiHorizon(V): three models, picked by which globals are set (Udon, VRCShader.SetGlobal*) ----------
-//   none set              -> unity_FogColor (RenderSettings.fogColor): identical to Unity's built-in fog.
-//   only _Udon_FogBand*   -> model A with the GATE defaults = Gate/Shaders/LanbaiGateSky.cginc LanbaiBand()
-//     set (act 4)            (GateLayout_v2.json 'sky_band', round 8). Same arithmetic, same numbers.
+//   none set              -> unity_FogColor (RenderSettings.fogColor): the built-in fog's colour.
+//   only _Udon_FogBand* or _Udon_TearPos set (act 4) -> model A with the GATE defaults = Gate/Shaders/LanbaiGateSky.cginc
+//                            LanbaiBand() (GateLayout_v2.json 'sky_band', round 8). Same arithmetic, same numbers.
+//   _Udon_FogModel.x      -> the mix of model A (0) and model B (1), continuous (cross-fade the fog in 2-6 s, bible §1.6);
+//                            unset: _Udon_HorizonColor.a = 2 picks B (v1 behaviour).
 //   _Udon_HorizonColor.a  -> 1: model A "band" (a coloured band toward _Udon_FogBandDir over a void/zenith colour;
 //                               acts 3, 4, 4c, night): near -> far over azimuth, gone above an elevation, back band,
 //                               below-horizon darkening + desaturation.
@@ -39,31 +41,91 @@
 
 #include "Assets/Lanbai/Common/Shaders/LanbaiVR.cginc"
 
-// ---- globals (declared once; never set = 0 and the defaults win) ---------------------------------------------
-#ifndef LANBAI_GATE_SKY_INCLUDED
-float4 _Udon_FogBandDir;      // xyz: world direction of the band / near lobe centre (tear, moon, sun); |xyz| < 0.5 = unset
-float4 _Udon_FogBandColor;    // rgb: horizon colour toward the band (linear); a > 0 = set
-float  _Udon_FogBandWidth;    // degrees: near -> far over 0..width of azimuth; > 0 = set
-float4 _Udon_TearPos;         // (gate) xyz = the tear core, w > 0 = set: default band direction in act 4
-float4 _Udon_MoonDir;         // xyz = world direction TO the moon, w > 0 = set
-float4 _Udon_MoonDisc;        // x = disc gain, y = disc radius deg; w > 0 = set
+// ---- globals. Never set = 0 and the defaults win. EVERY name has its own guard LANBAI_DECL_<name>: a shader that
+// declares one of them itself defines that macro before including this file (and declares it BEFORE the include).
+// Names also declared by Gate/Shaders/LanbaiGateSky.cginc are skipped when it was included first. Udon writes them
+// with VRCShader.SetGlobalVector / SetGlobalFloat (linear values as they are; never SetGlobalColor).
+// Fading: move only rgb / x toward the target; leave the a / w 'set' flags at 1 for the whole window.
+#if !defined(LANBAI_GATE_SKY_INCLUDED) && !defined(LANBAI_DECL__Udon_FogBandDir)
+#define LANBAI_DECL__Udon_FogBandDir
+float4 _Udon_FogBandDir;    // xyz: world direction of the band / near lobe centre (tear, moon, sun); |xyz| < 0.5 = unset
 #endif
-float4 _Udon_HorizonColor;    // rgb: horizon colour AWAY from the band (linear); a = model: 1 band, 2 gradient; 0 = unset
-float4 _Udon_ZenithColor;     // rgb: void / zenith colour (linear); a > 0 = set
-float4 _Udon_NadirColor;      // rgb: nadir colour for model B (linear); a > 0 = set (model A darkens instead)
-float4 _Udon_FogShape;        // x = elevation where the band / horizon is full (deg), y = where it is gone (deg, > 0 = set),
-                              // z = power of that ramp, w = back band gain (model A only; x far colour, |az| 65..120)
-float4 _Udon_FogBelow;        // x = from deg (< 0 = set), y = to deg, z = model A: darkest factor / model B: nadir ramp power,
-                              // w = below-horizon desaturation (model A)
-float4 _Udon_FogCubeParams;   // x = weight of the fog cube 0..1 (> 0 = used), y = mip, z = max elevation deg for the lookup,
-                              // w = exposure multiplier (0 = 1)
-samplerCUBE _Udon_FogCube;    // pre-tinted, pre-blurred sky (linear HDR; RGBM/dLDR decoded by the importer: use RGBAHalf / BC6H)
-float4 _Udon_SunDir;          // xyz = world direction TO the sun, w > 0 = set (the sea's ABOVE mode reads it too)
-float4 _Udon_SunDisc;         // x = disc gain, y = disc radius deg, z = sun line half length deg (act 8); w > 0 = set
-float  _Udon_Underwater;      // 0..1 the eye is under water (written by the sea driver)
-float4 _Udon_WaterFogUp;      // rgb: under-water fog colour looking up (linear)
-float4 _Udon_WaterFogMid;     // rgb: ... looking level
+#if !defined(LANBAI_GATE_SKY_INCLUDED) && !defined(LANBAI_DECL__Udon_FogBandColor)
+#define LANBAI_DECL__Udon_FogBandColor
+float4 _Udon_FogBandColor;    // rgb: horizon colour toward the band (linear); a > 0 = set
+#endif
+#if !defined(LANBAI_GATE_SKY_INCLUDED) && !defined(LANBAI_DECL__Udon_FogBandWidth)
+#define LANBAI_DECL__Udon_FogBandWidth
+float _Udon_FogBandWidth;    // degrees: near -> far over 0..width of azimuth; > 0 = set
+#endif
+#if !defined(LANBAI_GATE_SKY_INCLUDED) && !defined(LANBAI_DECL__Udon_TearPos)
+#define LANBAI_DECL__Udon_TearPos
+float4 _Udon_TearPos;    // (gate) xyz = the tear core, w > 0 = set: act 4 is recognised by it
+#endif
+#if !defined(LANBAI_GATE_SKY_INCLUDED) && !defined(LANBAI_DECL__Udon_MoonDir)
+#define LANBAI_DECL__Udon_MoonDir
+float4 _Udon_MoonDir;    // xyz = world direction TO the moon, w > 0 = set
+#endif
+#if !defined(LANBAI_GATE_SKY_INCLUDED) && !defined(LANBAI_DECL__Udon_MoonDisc)
+#define LANBAI_DECL__Udon_MoonDisc
+float4 _Udon_MoonDisc;    // x = disc gain, y = disc radius deg; w > 0 = set
+#endif
+#ifndef LANBAI_DECL__Udon_HorizonColor
+#define LANBAI_DECL__Udon_HorizonColor
+float4 _Udon_HorizonColor;    // rgb: horizon colour AWAY from the band (linear); a > 0 = set (a = 1 / 2: legacy model pick, see _Udon_FogModel)
+#endif
+#ifndef LANBAI_DECL__Udon_ZenithColor
+#define LANBAI_DECL__Udon_ZenithColor
+float4 _Udon_ZenithColor;    // rgb: void / zenith colour (linear); a > 0 = set. Act 9: the current star floor (the mirrors read it)
+#endif
+#ifndef LANBAI_DECL__Udon_NadirColor
+#define LANBAI_DECL__Udon_NadirColor
+float4 _Udon_NadirColor;    // rgb: nadir colour for model B (linear); a > 0 = set (model A darkens instead)
+#endif
+#ifndef LANBAI_DECL__Udon_FogShape
+#define LANBAI_DECL__Udon_FogShape
+float4 _Udon_FogShape;    // x = el where the band / horizon is full (deg), y = where it is gone (deg, > 0 = set), z = power, w = back band gain (A)
+#endif
+#ifndef LANBAI_DECL__Udon_FogBelow
+#define LANBAI_DECL__Udon_FogBelow
+float4 _Udon_FogBelow;    // x = from deg (< 0 = set), y = to deg, z = A: darkest factor / B: nadir ramp power, w = desaturation (A)
+#endif
+#ifndef LANBAI_DECL__Udon_FogModel
+#define LANBAI_DECL__Udon_FogModel
+float4 _Udon_FogModel;    // x = model mix 0 = A band .. 1 = B gradient (continuous: cross-fade models in 2-6 s); w > 0 = set
+#endif
+#ifndef LANBAI_DECL__Udon_FogCubeParams
+#define LANBAI_DECL__Udon_FogCubeParams
+float4 _Udon_FogCubeParams;    // x = fog cube weight 0..1 (> 0 = used), y = mip, z = max elevation deg of the lookup, w = exposure (0 = 1)
+#endif
+#ifndef LANBAI_DECL__Udon_SunDir
+#define LANBAI_DECL__Udon_SunDir
+float4 _Udon_SunDir;    // xyz = world direction TO the sun, w > 0 = set (the sea's ABOVE mode reads it too)
+#endif
+#ifndef LANBAI_DECL__Udon_SunDisc
+#define LANBAI_DECL__Udon_SunDisc
+float4 _Udon_SunDisc;    // x = disc gain, y = disc radius deg, z = sun line half length deg (act 8); w > 0 = set
+#endif
+#ifndef LANBAI_DECL__Udon_Underwater
+#define LANBAI_DECL__Udon_Underwater
+float _Udon_Underwater;    // 0..1 the eye is under water (the sea driver)
+#endif
+#ifndef LANBAI_DECL__Udon_WaterFogUp
+#define LANBAI_DECL__Udon_WaterFogUp
+float4 _Udon_WaterFogUp;    // rgb: under-water fog colour looking up (linear)
+#endif
+#ifndef LANBAI_DECL__Udon_WaterFogMid
+#define LANBAI_DECL__Udon_WaterFogMid
+float4 _Udon_WaterFogMid;    // rgb: ... looking level
+#endif
+#ifndef LANBAI_DECL__Udon_WaterFogDown
+#define LANBAI_DECL__Udon_WaterFogDown
 float4 _Udon_WaterFogDown;    // rgb: ... looking down
+#endif
+#ifndef LANBAI_DECL__Udon_FogCube
+#define LANBAI_DECL__Udon_FogCube
+samplerCUBE _Udon_FogCube;    // pre-tinted, pre-blurred sky (linear HDR: RGBAHalf / BC6H)
+#endif
 
 // ---- gate defaults (GateLayout_v2.json 'sky_band', round 8; = Lanbai_GateAirSky v3 material defaults) ---------
 #define LANBAI_GATE_NEAR    float3(0.1085, 0.1130, 0.1641)
@@ -91,7 +153,7 @@ inline float3 LanbaiBandDir()
     if (dot(_Udon_FogBandDir.xyz, _Udon_FogBandDir.xyz) > 0.25)
         return _Udon_FogBandDir.xyz;
     float3 tear = (_Udon_TearPos.w > 0.0) ? _Udon_TearPos.xyz : LANBAI_GATE_TEARPOS;
-    return tear - _WorldSpaceCameraPos;
+    return tear - LanbaiCentreEyePos();                 // both eyes the same band
 }
 
 // model A: the gate's haze band, generalised (the arithmetic of LanbaiGateSky.cginc LanbaiBand(), line for line)
@@ -101,14 +163,14 @@ float3 LanbaiHorizonBand(float3 V, float3 nearC, float3 farC, float3 voidC, floa
     float el = LanbaiElevationDeg(V);
     float az = LanbaiAzimuthDeg(V, LanbaiBandDir());
     float3 band = lerp(nearC, farC, smoothstep(0.0, bw, az));
-    float wel = 1.0 - smoothstep(shape.x, shape.y, el);
+    float wel = 1.0 - smoothstep(shape.x, max(shape.y, shape.x + 0.1), el);
     wel = pow(saturate(wel), (shape.z > 0.0) ? shape.z : 1.0);
-    float w = (1.0 - smoothstep(bw, bg, az)) * wel;
+    float w = (1.0 - smoothstep(bw, max(bg, bw + 0.1), az)) * wel;
     float3 sky = lerp(voidC, band, w);
     sky += farC * (shape.w * smoothstep(65.0, 120.0, az) * wel);
     float lum = dot(sky, float3(0.2126, 0.7152, 0.0722));
     sky = lerp(sky, lum * float3(0.92, 0.98, 1.12), below.w * smoothstep(0.0, -4.0, el));
-    float dark = lerp(below.z, 1.0, smoothstep(below.x, below.y, el));
+    float dark = lerp(below.z, 1.0, smoothstep(below.x, max(below.y, below.x + 0.1), el));
     return sky * dark;
 }
 
@@ -133,8 +195,9 @@ float3 LanbaiHorizon(float3 dirWS)
 {
     float3 V = normalize(dirWS);
     float3 c;
-    bool anySet = (_Udon_HorizonColor.a > 0.0) || (_Udon_FogBandColor.a > 0.0);
-    if (!anySet)
+    // act 4 is recognised by the band colour OR by the gate driver's tear position (it always writes _Udon_TearPos)
+    bool anySet = (_Udon_HorizonColor.a > 0.0) || (_Udon_FogBandColor.a > 0.0) || (_Udon_TearPos.w > 0.0);
+    [branch] if (!anySet)
     {
         c = unity_FogColor.rgb;
     }
@@ -147,17 +210,18 @@ float3 LanbaiHorizon(float3 dirWS)
         float bg = bw + 10.0;                                                    // gate: _BandAz (50, 60)
         float4 shape = (_Udon_FogShape.y > 0.0) ? _Udon_FogShape : float4(6.0, 22.0, 2.0, 0.55);
         float4 below = (_Udon_FogBelow.x < 0.0) ? _Udon_FogBelow : float4(-25.0, 0.0, 0.55, 0.6);
-        if (_Udon_HorizonColor.a > 1.5)
+        float mixB = (_Udon_FogModel.w > 0.0) ? saturate(_Udon_FogModel.x) : ((_Udon_HorizonColor.a > 1.5) ? 1.0 : 0.0);
+        float3 a = 0, b = 0;
+        [branch] if (mixB < 0.999)
+            a = LanbaiHorizonBand(V, nearC, farC, zenC, bw, bg, shape, below);
+        [branch] if (mixB > 0.001)
         {
             float3 nadC = (_Udon_NadirColor.a > 0.0) ? _Udon_NadirColor.rgb : farC;
-            c = LanbaiHorizonGradient(V, nearC, farC, zenC, nadC, bw, shape, below);
+            b = LanbaiHorizonGradient(V, nearC, farC, zenC, nadC, bw, shape, below);
         }
-        else
-        {
-            c = LanbaiHorizonBand(V, nearC, farC, zenC, bw, bg, shape, below);
-        }
+        c = lerp(a, b, mixB);
     }
-    if (_Udon_FogCubeParams.x > 0.0)
+    [branch] if (_Udon_FogCubeParams.x > 0.0)
     {
         float3 L = V;
         float maxEl = sin(radians((_Udon_FogCubeParams.z > 0.0) ? _Udon_FogCubeParams.z : 90.0));
@@ -168,7 +232,7 @@ float3 LanbaiHorizon(float3 dirWS)
         c = lerp(c, cube, saturate(_Udon_FogCubeParams.x));
     }
     // the sea's under-water group (Sea/README_Sea接口.md): bright up, dark down, uniform density
-    if (_Udon_Underwater > 0.0)
+    [branch] if (_Udon_Underwater > 0.0)
     {
         float y = V.y;
         float3 w = (y >= 0.0) ? lerp(_Udon_WaterFogMid.rgb, _Udon_WaterFogUp.rgb, smoothstep(0.0, 1.0, y))

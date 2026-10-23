@@ -50,7 +50,10 @@ Shader "Lanbai/StarPoints"
 
             float _StarScale, _MagRef, _MagSlope, _MagFloor, _FWHM, _BrightCount, _BrightBoost, _Gain, _Distance;
             float4 _OrderFade, _Tint;
+            #ifndef LANBAI_DECL__Udon_StarGain
+            #define LANBAI_DECL__Udon_StarGain
             float4 _Udon_StarGain;     // x = gain, y = bright-rank boost (> 0 = set), z = bright-rank count (> 0 = set); w > 0 = set
+            #endif
 
             struct appdata
             {

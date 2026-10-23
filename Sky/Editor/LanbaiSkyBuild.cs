@@ -314,13 +314,17 @@ namespace Lanbai.Sky.EditorTools
                 if (kv.k == "_Udon_FogDensity") RenderSettings.fogDensity = kv.v;
                 Shader.SetGlobalFloat(kv.k, kv.v);
             }
-            foreach (SkyKV4 kv in p.globalVectors) Shader.SetGlobalVector(kv.k, V4(kv.v));
+            foreach (SkyKV4 kv in p.globalVectors)
+            {
+                if (kv.k == "_Udon_Fog") RenderSettings.fogDensity = kv.v[0];
+                Shader.SetGlobalVector(kv.k, V4(kv.v));
+            }
             SceneView.RepaintAll();
         }
 
         static readonly string[] AllVec = { "_Udon_FogBandDir", "_Udon_FogBandColor", "_Udon_HorizonColor", "_Udon_ZenithColor", "_Udon_NadirColor",
             "_Udon_FogShape", "_Udon_FogBelow", "_Udon_FogCubeParams", "_Udon_FogBase", "_Udon_SunDir", "_Udon_SunDisc", "_Udon_MoonDir", "_Udon_MoonDisc",
-            "_Udon_SkyBlend", "_Udon_SkyFx", "_Udon_GalaxyGain", "_Udon_StarGain" };
+            "_Udon_SkyBlend", "_Udon_SkyFx", "_Udon_GalaxyGain", "_Udon_StarGain", "_Udon_Fog", "_Udon_FogModel" };
         static readonly string[] AllFloat = { "_Udon_FogBandWidth", "_Udon_FogDensity" };
 
         public static void ClearGlobals()

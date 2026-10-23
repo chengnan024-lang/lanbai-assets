@@ -29,6 +29,7 @@ def expand(text, seen, cur_dir):
             return '\n'           # the real file has an include guard; the second copy is empty
         seen.add(p)
         return '\n#line 1 "%s"\n' % os.path.relpath(p, REPO) + expand(open(p).read(), seen, os.path.dirname(p)) + '\n'
+    text = re.sub(r'//[^\n]*', '', text)                     # includes inside comments are not includes
     return re.sub(r'#include\s+"([^"]+)"', rep, text)
 
 
@@ -39,7 +40,7 @@ def keywords(block):
             if k != '_' and not k.startswith('__'):
                 kws.append(k)
     if re.search(r'#pragma\s+multi_compile_fog', block):
-        kws.append('FOG_EXP')
+        kws += ['FOG_EXP', 'FOG_EXP2', 'FOG_LINEAR']
     return kws
 
 
@@ -71,7 +72,12 @@ for path in files(sys.argv[1:]):
             vfn = re.search(r'#pragma\s+surface\s+\w+.*vertex:(\w+)', b)
             call_v = ('appdata_full vv = (appdata_full)0; Input vi; %s(vv, vi);' % vfn.group(1)) if vfn else ''
             body += '\nfloat4 LBCHECK_surface_entry() { %s Input IN = (Input)0; SurfaceOutputStandard o = (SurfaceOutputStandard)0; %s(IN, o); return float4(o.Albedo + o.Emission, o.Alpha); }\n' % (call_v, surf.group(1))
-        variants = [()] + [(k,) for k in kws] + ([tuple(kws)] if len(kws) > 1 else [])
+        fogs = [k for k in kws if k.startswith('FOG_')]
+        others = [k for k in kws if not k.startswith('FOG_')]
+        variants = [()] + [(k,) for k in kws] + ([tuple(others + fogs[:1])] if len(others + fogs[:1]) > 1 else [])
+        variants += [('USING_STEREO_MATRICES',) + tuple(fogs[:1])]          # SPS-I: LanbaiCentreEyePos's stereo branch
+        if surf:
+            variants += [('UNITY_PASS_FORWARDADD',) + tuple(fogs[:1])]      # the per-light additive pass
         for var in variants:
             n += 1
             name = '%s_%d_%s' % (os.path.basename(path).replace('.shader', ''), bi, '_'.join(var) or 'base')
