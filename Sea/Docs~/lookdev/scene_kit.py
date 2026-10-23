@@ -42,7 +42,7 @@ def env_dawn():
         e = S.equirect_from_hdr(h, 45.0)
         env = S.Env(e)
         k = float(lin('#5B7ED7') @ [0.2126, 0.7152, 0.0722]) / float(env.lookup(np.array([[0.0, 1.0, 0.0]]))[0] @ [0.2126, 0.7152, 0.0722])
-        _ENV['dawn'] = S.Env(np.minimum(e * k, 16.0))
+        _ENV['dawn'] = S.Env(S.clamp_max_channel(e * k, 16.0))
     return _ENV['dawn']
 
 
@@ -67,7 +67,15 @@ def env_dusk(kind):
             hor = base.lookup(S.normalize(d * np.array([1.0, 0.0, 1.0]) + np.array([0.0, 0.02, 0.0]))) * k
             w = S.smoothstep(0.0, 1.0, -d[..., 1:2])
             out = np.where(d[..., 1:2] >= 0, up, hor * (1 - w) + lin('#3B4A78') * w)
-        _ENV[key] = S.Env(np.minimum(out, 16.0).astype(np.float32))
+        # the bible's procedural sun (8: az 0, el +0.5, 0.9 deg, fill #FF9167 @ +2.74) and, below, its other self
+        sunc = lin('#FF9167', 2.74)
+        for el, g in ((0.5, 1.0), (-0.5, 0.82 if kind == 'lower' else 0.0)):
+            if g <= 0:
+                continue
+            c = np.clip(d @ dir_az_el(0.0, el), -1, 1)
+            ang = np.degrees(np.arccos(c))
+            out = out + sunc[None, None, :] * g * (1.0 - S.smoothstep(0.42, 0.48, ang))[..., None]
+        _ENV[key] = S.Env(S.clamp_max_channel(out, 16.0).astype(np.float32))
     return _ENV[key]
 
 
@@ -106,7 +114,7 @@ def frame_K1(rays, eye, t, a):
     env = env_dawn()
     sdir = dir_az_el(45, 6)
     sunc = lin('#FFCE9E', 2.55)
-    M = dict(SunColor=tuple(sunc), SunDir=tuple(sdir), CalmAll=float(a.get('calm', 0.85)), ReflClamp=float(a.get('clamp', sunc.max() * 2 ** -1.3)),
+    M = dict(SunColor=tuple(sunc), SunDir=tuple(sdir), CalmAll=float(a.get('calm', 0.85)), SunGlitterRough=float(a.get('glitter', 0.12)), ReflClamp=float(a.get('clamp', sunc.max() * 2 ** -1.3)),
              WaterColor=tuple(lin('#304F7A') * float(a.get('body', 0.55))))
     rgb, alpha, hit, P = S.shade_plane(eye, rays, eye[1] - h, 'above', t, M, env=env)
     sky = env.lookup(rays) + sun_disc(rays, sdir, sunc)
@@ -144,7 +152,9 @@ def frame_K3(rays, eye, t, a):
     pts = [(np.asarray(L['flame_pos']) - bus, fade) for L in PF['lamps']]
     fogc = lin('#3E2C2B')
     refl = env_lamps_above(pts, fogc * 0.6)
-    M = dict(AirSide=-1.0, WindowGain=float(a.get('wgain', 1.0)), TIRColor=tuple(fogc * 0.5), TIRCubeGain=1.0,
+    sunc = lin(a.get('wsuncol', '#FFB27A'), 2.74) * 0.82 * float(a.get('wsun', 1.0))      # rose-gold, the other sun (x0.82, bible 8-ii)
+    M = dict(WindowSunColor=tuple(sunc), WindowSunDir=tuple(dir_az_el(0.0, -float(a.get('wsundip', 3.0)))) + (float(a.get('wsunel', 1.2)),), WindowSunSpread=float(a.get('wsunaz', 14.0)),
+             AirSide=-1.0, WindowTint=tuple(float(x) for x in a.get('wtint', '1,1,1').split(',')), WindowGain=float(a.get('wgain', 1.0)), WindowRadial=tuple(float(x) for x in a.get('wradial', '1,2').split(',')), TIRColor=tuple(fogc * 0.5), TIRCubeGain=1.0,
              WaveAmp=float(a.get('wave', 0.3)), ReflClamp=float(a.get('clamp', 8.0)))
     rgb, alpha, hit, P = S.shade_plane(eye, rays, level, 'below', t, M, env=refl, window_env=env_dusk('lower'))
     fog_fn = S.water_horizon(fogc * 1.15, fogc, fogc * 0.9)

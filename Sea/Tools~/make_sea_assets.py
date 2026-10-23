@@ -73,7 +73,7 @@ def make_cubes():
     hd = os.path.join(REPO, 'FromLocal', 'hdri', 'hdr')
     dawn = S.Env(S.equirect_from_hdr(S.read_hdr(os.path.join(hd, 'syferfontein_6d_clear_puresky_1k.hdr')), 45.0))
     k = zenith_scale(dawn, '#5B7ED7')
-    strip = np.minimum(strip_from(lambda d: dawn.lookup(d)) * k, 16.0)
+    strip = S.clamp_max_channel(strip_from(lambda d: dawn.lookup(d)) * k, 16.0)
     # below the horizon: the bible's lower-hemisphere fog gradient (horizon colour -> nadir #6F8FA8), §6·6 大气
     write_exr(strip.astype(np.float32), os.path.join(out, 'Cube_Dawn_256.exr'))
     print('dawn scale', k)
@@ -86,7 +86,7 @@ def make_cubes():
         up = dusk.lookup(d) * kd
         mir = dusk.lookup(d * np.array([-1.0, -1.0, 1.0])) * kd * tint
         w = S.smoothstep(0.0, math.sin(math.radians(1.0)), -d[..., 1:2])        # 1 deg soft seam at the horizon
-        return np.minimum(up * (1 - w) + mir * w, 16.0)
+        return S.clamp_max_channel(up * (1 - w) + mir * w, 16.0)
     write_exr(strip_from(lower).astype(np.float32), os.path.join(out, 'Cube_DuskLower_256.exr'))
 
     nadir = srgb_to_lin('#3B4A78')
@@ -96,7 +96,7 @@ def make_cubes():
         hor = dusk.lookup(S.normalize(d * np.array([1.0, 0.0, 1.0]) + np.array([0.0, 0.02, 0.0]))) * kd
         w = S.smoothstep(0.0, 1.0, -d[..., 1:2])
         low = hor * (1 - w) + nadir * w
-        return np.minimum(np.where(d[..., 1:2] >= 0, up, low), 16.0)
+        return S.clamp_max_channel(np.where(d[..., 1:2] >= 0, up, low), 16.0)
     write_exr(strip_from(behind).astype(np.float32), os.path.join(out, 'Cube_Dusk_256.exr'))
     print('dusk scale', kd)
 

@@ -215,6 +215,11 @@ float4 _TIRColor;
 float  _TIRCubeGain;
 float  _AirSide;             // +1 air above the plane (7a), -1 air below (7c)
 float  _WindowEdgeSoft;      // deg
+float4 _WindowSunDir;        // the sun ON THE AIR SIDE (unit, world; 7c: the dusk sun's other self, az 0, el -0.5);
+                             // w = elevation half-width deg of the arc (the glow hugging the horizon)
+float  _WindowSunSpread;     // azimuth half-width deg of the arc (the sunset band along the window's rim)
+float4 _WindowSunColor;      // its radiance (linear, rose-gold); 0 = off. Bible 7c: '太阳被压扁成一道玫瑰金的弧，贴在窗的边缘'
+float  _WindowSunFloor;      // transmission floor for the sun term (Fresnel would erase a sun this close to the rim)
 float4 _WindowRadial;        // x = window multiplier AT the critical angle, y = power: lerp(1, x, (theta/theta_c)^y). (1, 2) = off.
                              // Bible target, not physics: a dawn sky is brightest at its horizon = the window's rim; the
                              // bible wants a near-white core (#E6F3F8) falling to L6 (#B4D6E3) at the edge (§6·7a 构图)
@@ -261,10 +266,23 @@ inline float3 LanbaiSeaBelow(float3 N, float3 I, float slopeVar)
     float th = acos(saturate(cosI));
     float edge = 1.0 - smoothstep(crit - radians(_WindowEdgeSoft), crit, th);
     edge *= lerp(1.0, _WindowRadial.x, pow(saturate(th / crit), max(_WindowRadial.y, 0.01)));
+    // the sun seen through the window: compressed against the rim by the refraction itself (T near the horizon)
+    float3 wsun = 0;
+    float wcover = 0.0;                                         // how much of the window the arc REPLACES (no rose-over-blue lavender)
+    [branch] if (max(_WindowSunColor.r, max(_WindowSunColor.g, _WindowSunColor.b)) > 0.0)
+    {
+        float3 sd = normalize(_WindowSunDir.xyz);
+        float dEl = degrees(asin(clamp(Tg.y, -1.0, 1.0)) - asin(clamp(sd.y, -1.0, 1.0)));
+        float dAz = degrees(acos(clamp(dot(normalize(Tg.xz + float2(1e-5, 0.0)), normalize(sd.xz + float2(1e-5, 0.0))), -1.0, 1.0)));
+        float re = max(_WindowSunDir.w, 0.05), ra = max(_WindowSunSpread, 0.05);
+        float arc = exp(-(dEl / re) * (dEl / re)) * (0.7 * exp(-(dAz / ra) * (dAz / ra)) + 0.3 * exp(-(dAz / (0.12 * ra)) * (dAz / (0.12 * ra))));
+        wsun = _WindowSunColor.rgb * (okG * arc * max(1.0 - F, _WindowSunFloor) * _WindowGain);
+        wcover = saturate(arc * 1.5);
+    }
     float3 R = reflect(I, Na);                                 // back into the water
     float pr = LanbaiSeaPerceptual(LanbaiSeaAlpha(slopeVar));
     float3 mirror = _TIRColor.rgb + (_TIRCubeGain > 0.0 ? LanbaiSeaCube(R, pr) * _TIRCubeGain : float3(0, 0, 0));
-    return mirror * F + win * ((1.0 - F) * edge);
+    return mirror * F + win * ((1.0 - F) * edge * (1.0 - wcover)) + wsun;
 }
 
 // ============================================================================================== CEILING

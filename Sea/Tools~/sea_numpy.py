@@ -35,6 +35,12 @@ def smoothstep(a, b, x):
     return t * t * (3.0 - 2.0 * t)
 
 
+def clamp_max_channel(c, m):
+    """clamp the brightest channel to m keeping the hue (a per-channel min() turns a sun into a rainbow ring)"""
+    mx = np.max(c, -1, keepdims=True)
+    return np.where(mx > m, c * (m / np.maximum(mx, 1e-9)), c).astype(np.float32)
+
+
 def saturate(x):
     return np.clip(x, 0.0, 1.0)
 
@@ -173,7 +179,7 @@ DEFAULTS = dict(LargeTile=64.0, SmallTile=9.0, LargeScroll=(0.9, 0.35), SmallScr
                 Smoothness=0.97, ReflGain=1.0, ReflClamp=2.4, WaterColor=(0.0156, 0.0484, 0.0954), DiscCenter=(0, 0, 0, 0),
                 SunColor=(0, 0, 0), SunDir=(0.703, 0.105, 0.703), SunGlitterRough=0.12, SunReflPeakEV=1.3, SunDiscDeg=0.9,
                 AirSide=1.0, WindowGain=1.0, WindowTint=(1, 1, 1), Dispersion=(1.331, 1.337), TIRColor=(0.0222, 0.0685, 0.1651),
-                TIRCubeGain=0.0, WindowEdgeSoft=0.6, WindowRadial=(1.0, 2.0), DissolveTime=-1.0, DissolveFront=4.0, DissolvePixel=5.0,
+                TIRCubeGain=0.0, WindowEdgeSoft=0.6, WindowRadial=(1.0, 2.0), WindowSunDir=(0.0, -0.0087, 1.0, 1.2), WindowSunSpread=14.0, WindowSunColor=(0, 0, 0), WindowSunFloor=0.35, DissolveTime=-1.0, DissolveFront=4.0, DissolvePixel=5.0,
                 FogMode=1, ReflExposure=1.0,
                 GerstnerLength=(60, 37, 23, 0.08), GerstnerAmp=(0, 0, 0), GerstnerDir=(0.94, 0.34, 0.5, 0.866), LampGlints=0.0, Lamps=())
 
@@ -334,11 +340,22 @@ def below(N, I, var, window_env, refl_env, M):
     edge = 1.0 - smoothstep(crit - math.radians(M['WindowEdgeSoft']), crit, th)
     wr = M['WindowRadial']
     edge = edge * (1.0 + (wr[0] - 1.0) * saturate(th / crit) ** max(wr[1], 0.01))
+    wsun = 0.0
+    wcover = 0.0
+    if max(M['WindowSunColor']) > 0:
+        sd = normalize(np.asarray(M['WindowSunDir'][:3], float))
+        dEl = np.degrees(np.arcsin(np.clip(Tg[..., 1], -1, 1)) - np.arcsin(np.clip(sd[1], -1, 1)))
+        th = normalize(Tg[..., [0, 2]] + np.array([1e-5, 0.0])); sh = normalize(sd[[0, 2]] + np.array([1e-5, 0.0]))
+        dAz = np.degrees(np.arccos(np.clip(th @ sh, -1, 1)))
+        re, ra = max(M['WindowSunDir'][3], 0.05), max(M['WindowSunSpread'], 0.05)
+        arc = np.exp(-(dEl / re) ** 2) * (0.7 * np.exp(-(dAz / ra) ** 2) + 0.3 * np.exp(-(dAz / (0.12 * ra)) ** 2))
+        wsun = np.asarray(M['WindowSunColor'])[None, None, :] * (okG * arc * np.maximum(1 - F, M['WindowSunFloor']) * M['WindowGain'])[..., None]
+        wcover = saturate(arc * 1.5)
     R = I - 2 * dot(I, Na)[..., None] * Na
     mirror = np.broadcast_to(np.asarray(M['TIRColor'], np.float32), win.shape).copy()
     if M['TIRCubeGain'] > 0 and refl_env is not None:
         mirror += cube(refl_env, R, np.sqrt(saturate(alpha_of(var, M))), M) * M['TIRCubeGain']
-    return mirror * F[..., None] + win * ((1 - F) * edge)[..., None]
+    return mirror * F[..., None] + win * ((1 - F) * edge * (1 - wcover))[..., None] + wsun
 
 
 def ceiling_progress(I, M):
