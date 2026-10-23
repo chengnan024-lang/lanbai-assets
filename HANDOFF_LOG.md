@@ -2,6 +2,39 @@
 
 新的在上面。
 
+## 2026-10-24（北京）· 门的总驱动 LanbaiGateDriver 合进 main：在测试场景里让门和云在 Play 里动起来
+**接着上一条（GateClouds v1.5）做，还是只在测试场景 `GateTest.unity` 里，主场景不动。** 门的总驱动合进 main 了（合并提交见本条提交的上一条）。它在 Play 里每帧推着门走：GateRoot、裂口、64 条触手的位姿、群臂、远潮、13 个全局量，云海也会跟着流动。所以上一条推迟的头显检查和 Play 实测，现在可以做了。说明在 `Gate/README_GateDriver.md`。
+
+**请按顺序做：**
+1. **拷进工程**：`Gate/Runtime/`、`Gate/Editor/`、`Gate/GateDriver_Bake.json`，再加上 `GateClouds/` 的 Editor、Runtime、`GateClouds_Layout.json`（上一条已经拷过的覆盖即可）。**不要拷 `Gate/Source/`、`Gate/Renders/`**，.py 和 PNG 会被 Unity 导入。
+2. **按这个顺序搭**：
+   1. `LB_GateTest.Build`；
+   2. 补光改成 Not Important；
+   3. 蓝白/Gate Clouds/Build；
+   4. `LB_GateTest.Apply`（t 随便给）；
+   5. **蓝白/Gate/Build Driver + Test Clock**。
+
+   Console 应该看到 `[GateDriver] built: 64 instances (0 missing)`，并且没有 `_VariantDims` 的警告。以后重跑门的 Build，第 2–4 步都要重跑；重新打开场景以后，也要先跑一次 Apply 再 Build Driver。
+3. **场景里不要挂 `Tear/LanbaiTearParams`**。它会和驱动抢裂口的全局量（默认 tearHide = 1，每帧都写）。
+4. **编辑模式用 `LB_GateTest.Apply`，Play 模式交给时钟**（`Gate_TestClock`，从 U7 走到 U9 + 2，循环）。Play 里不要再调 Apply。
+5. **`Tear_CabinOnly`（车厢裂口光）的 Culling Mask 保持 Nothing**，颜色先别手调。它现在还是丁香紫，门第 10 轮按 D-08 改成冷白，并且由驱动来开关。
+6. **量 Udon 时间（ClientSim + Profiler）**：`LanbaiGateDriver` 和 `LanbaiGateClouds` 各占多少 ms。全片 Udon 合计 ≤ 0.4 ms，这个驱动估算可能超。
+   - 量三处：U7 150.3（把时钟的 startT 改成 147，把群臂升起包进去）、U8 166.15、约 178。
+   - 看 147.8（群臂第一次画出来）和时钟循环回跳的那一帧有没有尖峰。
+   - 报具体的 ms，超了也照实报，退路已经写在 README 里。
+7. **头显检查**（GateClouds README §8 第 4 条）：
+   - 云海滚 10 秒，银边闪不闪；
+   - 闭左眼、闭右眼各看一遍；
+   - 179.4–181.6 往后窗看一眼，报看到什么。臂在 U9 − 0.05 消失是总导演定的，我们想知道回头看云海是不是一下子没了。
+8. Console 原样推到 `FromLocal/gate_clouds_test/`，UdonSharp 的输出也要。
+
+**现在先别做（等驱动 v1.1）：**
+- 别把门接进正式世界，也别点 Director 的 Wire。
+- 门的三盏灯（`Gate_Lights` 下的 Moon、Fill、Tear_CabinOnly）现在还没人开关，第 4 幕之后会一直亮着。
+- 第 3 到 4 幕的雾和天空还没交接好。
+- 驱动 v1.1 会把这些都收好，到时另写一条，连同正式世界的搭法（删测试时钟、Director 先 1 Generate 再 2 Wire、出生黑场里调 `LanbaiPrewarm`、驱动挂在常开的物体上）。
+
+
 ## 2026-10-24（北京）· 门的云 GateClouds v1.5 合进 main：导入、改测试脚本、实测、截图
 **让你久等了，谢谢。** 10-08 你测出门里缺的是云，这一包就是云，已经合进 main（合并提交 `0ce6630`）。**先读 `GateClouds/README_GateClouds.md` 的 §2（怎么搭）、§3.4（性能和画质开关）、§8（要你截的图和要量的数）。** 还是只在测试场景 `Assets/Lanbai/Tests/GateTest.unity` 里做，主场景不动。
 
