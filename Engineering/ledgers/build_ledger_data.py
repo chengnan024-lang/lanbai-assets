@@ -78,6 +78,11 @@ for asset in inv['global'].get('assets', []):
     items.append(dict(name=asset.get('name', '?'), owner=asset.get('owner', asset.get('act', '?')), kind='texture', active=[],
                       vram_mb=asset.get('vram_mb') or asset.get('vram_mb_derived'), download_mb=asset.get('download_mb'),
                       status='bible' if asset.get('vram_mb') else 'engineer-estimate', source=asset.get('source', ''), note=asset.get('derivation', asset.get('note', ''))))
+pk = os.path.join(HERE, 'ledger_package_items.json')
+if os.path.exists(pk):
+    extra = json.load(open(pk, encoding='utf-8'))['items']
+    rep = {it.get('replaces') for it in extra if it.get('replaces')}
+    items = [it for it in items if it['name'] not in rep] + extra
 D = dict(
     _about='全片账本的数据。每一项都有 source；status：bible（圣经写的数）/ bible-cap（圣经的上限，不是估计）/ package（包报的）/ measured（本地实测）/ engineer-estimate（总工程师估的，算法写在 source）/ unknown。',
     budgets=dict(world_ms=5.3, world_peak_ms=6.3, ppv2_ms=1.2, fse_sustained=4.0, fse_peak=7.0, layers_per_pixel=8, particles_per_act=5000,
