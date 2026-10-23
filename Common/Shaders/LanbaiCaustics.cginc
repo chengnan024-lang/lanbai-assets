@@ -10,7 +10,9 @@
 //    _Udon_Caustics       x = strength 0..1 (depth fade already in: 1 at the surface, 0 at 15 m; 7c 0 -> 1 F8c -> 921.4)
 //                         y = direction: +1 light from above (lights up-facing faces), -1 from below (7c: the undersides)
 //                         z = caustics clock (s),  w = tiling scale (1 = the bible's 0.6 m / 1.1 m)
-//    _Udon_CausticsColor  rgb = linear colour x illuminance of the bright net (S7a: seat caustic #ACD4ED <- fill #9FCBFF @ +1.46)
+//    _Udon_CausticsColor  rgb = linear colour x illuminance of the bright net (S7a: seat caustic #ACD4ED <- fill #9FCBFF @ +1.46;
+//                         7c (light from below, final review): GOLD, never rose -- screen #E2C08E (h_ab 75) under S7b, so the
+//                         blue cabin does not turn lilac (D-08); the value is in Sea/README_Sea接口.md §3)
 //    _Udon_CausticsTex    Sea/Textures/Caustics_8x8_2048.png (R8, sRGB OFF, wrap repeat, bilinear, mips on)
 //  Projection: world XZ (both directions). Two layers (0.6 m and 1.1 m tiles, different frames and drift, the second
 //  rotated 37 deg), MIN of the two (bible), renormalised so the mean is 1. Animation: 64-frame loop at 0.3 Hz,
@@ -19,11 +21,7 @@
 #ifndef LANBAI_CAUSTICS_INCLUDED
 #define LANBAI_CAUSTICS_INCLUDED
 
-#include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc"
-#ifndef LANBAI_DECL__Udon_Caustics
-#define LANBAI_DECL__Udon_Caustics
-float4 _Udon_Caustics;            // (not yet in LanbaiGlobals.cginc: Sea/给总控.md)
-#endif
+#include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc"     // _Udon_Caustics, _Udon_CausticsColor, _Udon_CausticsTex
 
 #define LANBAI_CAUSTICS_FRAMES 64.0
 #define LANBAI_CAUSTICS_GRID 8.0

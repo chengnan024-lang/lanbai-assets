@@ -2,7 +2,7 @@
 //  Lanbai/SeaWaterline   蓝白 · the waterline on the bus glass (bible §6 -> 7 入水: '一条水线在约 1 秒里沿车窗升上去';
 //                        §7 -> 8 出海: '水沿车窗向上流走（0.8 秒，从下往上的水线）')
 //
-//  !!! WRITTEN WITHOUT A UNITY COMPILER (cloud side). Syntax-checked with Slang against a Unity stub only. !!!
+//  !!! WRITTEN WITHOUT A UNITY COMPILER (cloud side). Checked with DXC + Unity 2022.3 CGIncludes (Common/Tools~/compile_check), never in Unity. !!!
 //
 //  Put this on a COPY of the window / windscreen / skylight glass meshes (same transform, rendered after the glass:
 //  Queue Transparent+20). It draws the thin water film on the glass on the water side of the line, plus the bright

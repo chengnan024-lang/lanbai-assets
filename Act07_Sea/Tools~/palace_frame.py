@@ -113,8 +113,9 @@ def main():
                   'the same mesh hangs in the act-8 ceiling (Sea README §4)', region=dict(x=[-650, -60], y=[0.5, 30], z=[-150, 900]))
 
     J = dict(
-        about='蓝白 · 第 7b 幕 河伯宫殿布局（圣经 v2.1 §6·7b；唯一的数据源）。坐标 = 宫殿系（见 frame）。由 Palace/Source/palace_layout.py 生成',
-        version=1,
+        about='蓝白 · 第 7b 幕：海一侧的约定（宫殿系、车的路径、海要的灯位与时刻、_Udon_PalaceVeil）。由 Act07_Sea/Tools~/palace_frame.py 生成。'
+              '宫殿布局的数据源是宫殿会话的 Palace/PalaceLayout.json；两者冲突时以 PalaceLayout.json 为准，海这边跟着改。',
+        version=2,
         frame=dict(origin='x = bus path, y = terrace top, z = bus origin at F5 (644.96)', axes='Unity: x right (seen from the bus), y up, z = bus heading',
                    bus_origin_y_stop=BUS_Y_STOP, terrace_top_depth_m=round(M.depth(L['F7']) + BUS_Y_STOP, 3),
                    placement='R_Palace.localPosition = -busPos(t) (relative to the bus origin; bus at the world origin)'),
@@ -123,7 +124,7 @@ def main():
         terrace=dict(top_y=0.0, edge_x=EDGE_X, lip_bottom_y=LIP_BOTTOM_Y, extent_x=[-260.0, EDGE_X], extent_z=[-120.0, 520.0],
                      note='the lip face (x = edge_x, y lip_bottom..0) is solid rock with seaweed; BELOW the lip the terrace has NO underside '
                           '(dream decision, README): from below, the palace lamps read as a constellation overhead (F7p); the buildings '
-                          'are veiled by fog from below (global _Udon_PalaceVeil)'),
+                          'are veiled by fog from below (global _Udon_PalaceVeil, see palace_veil)'),
         avenue=dict(axis_x=AXIS_X, columns_x=[COL_R, COL_L], pair_spacing_m=round(pairs[1] - pairs[0], 3), paving=dict(x=[COL_L - 1.5, COL_R + 0.5], z=[pairs[0] - 12.0, plat_front])),
         que=[dict(id='Que_R', pos=r3((COL_R - 3.0, 0.0, pairs[0] - 13.0)), footprint=r3((6.0, 10.0)), height_m=QUE_H, passed_at=668.6),
              dict(id='Que_L', pos=r3((COL_L + 3.0, 0.0, pairs[0] - 13.0)), footprint=r3((6.0, 10.0)), height_m=QUE_H)],
@@ -134,8 +135,22 @@ def main():
         door_azimuth_check={k: round(-math.degrees(math.atan2(-AXIS_X, z_door - M.fwd(t))), 2) for k, t in (('706', 706.0), ('F6', L['F6']), ('F7', L['F7']))},
         lamps=lamps,
         baked_lights=baked,
+        palace_veil=dict(
+            name='_Udon_PalaceVeil', type='float4',
+            components=dict(x='density per m inside the veil band (0 = none)', y='WORLD y of the band top (= R_Palace world y + top_offset_palace_y)',
+                            z='band thickness m (the band is y - z .. y)', w='> 0 = set (never set = no veil)'),
+            meaning='the fog that veils the palace buildings when seen from BELOW the terrace (the terrace has no underside, F7p). '
+                    'A fragment is veiled by the part of the eye->fragment segment that lies inside the horizontal band: '
+                    'veil = 1 - exp(-x * L_band), L_band = |segment| * clamp-overlap of [y_eye, y_frag] with [y - z, y] / |y_frag - y_eye|. '
+                    'From above the terrace (before F7s) the segment never crosses the band: no veil, automatically.',
+            shader='col = lerp(col, LanbaiHorizon(normalize(posWS - eye)), veil)   (the water fog colour of that direction; after LanbaiApplyFog). '
+                   'The lamp flames (_FogMode 2) do NOT take the veil: from below they are the constellation.',
+            top_offset_palace_y=0.0, thickness_m=13.0,
+            curve=[dict(t=L['F5'], x=0.0, note='7b-i: the bus is above the terrace'), dict(t=L['F7s'], x=0.0, note='descent past the lip begins'),
+                   dict(t=L['F7p'], x=0.25, note='F7p: from below, 13 m of band -> 96 % veiled'), dict(t=L['F8'], x=0.25, note='held through 7c')],
+            writer='the act-7 driver (sea), every frame from F5 to the exit 922.36; w = 1'),
         under_bus_light=dict(color='#FF5A2E', E_at_bus=0.15, follows='nearest avenue pair (by z), from below the floor', culling='Player, PlayerLocal + bus',
-                             render_mode='Important', window=[L['F5'], L['F7s'] + 8.0], then='7c rose light (Act07c)'),
+                             render_mode='Not Important (CONTROL: pixel-light budget; it is the only moving light under the floor)', window=[L['F5'], L['F7s'] + 8.0], then='7c rose light (Act07c)'),
         fish_houses=houses,
         seaweed=seaweed,
         fish=dict(count=1500, lite=700, centre=r3((-38.0, 14.0, z_door + 14.0)), torus_radius_m=35.0, tube_radius_m=9.0, rev_per_s=0.03,

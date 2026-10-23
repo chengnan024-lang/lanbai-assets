@@ -2,15 +2,19 @@
 //  Lanbai/SeaCausticsCookie   蓝白 · the moving caustic cookie of the underwater sun (bible §6·7a 光: '平行光自上 +
 //                             动态焦散 cookie（1.5 m 平铺）')
 //
-//  !!! WRITTEN WITHOUT A UNITY COMPILER (cloud side). Syntax-checked with Slang against a Unity stub only. !!!
+//  !!! WRITTEN WITHOUT A UNITY COMPILER (cloud side). Checked with DXC + Unity 2022.3 CGIncludes (Common/Tools~/compile_check), never in Unity. !!!
 //
 //  A Custom Render Texture shader. Setup (the Act07 builder does it):
-//    CustomRenderTexture 256 x 256, R8 (or RHalf), Wrap Repeat, Update Mode Realtime, Update Period 0, Material = this.
+//    CustomRenderTexture 256 x 256, format ARGBHalf (or Alpha8): the built-in pipeline reads a directional cookie's
+//    ALPHA, so the format must HAVE alpha -- an R8 / RHalf CRT reads alpha = 1 everywhere (= no cookie). The shader
+//    writes the cookie into all four channels. Wrap Repeat, Update Mode Realtime, Update Period 0, Material = this.
 //    Assign the CRT as the cookie of the 7a sun (directional light, Cookie Size 1.5 m).
 //  The cookie tile is 1.5 m, so the two layers tile at 0.75 m and 1.5 m (integer divisions: no seam); the pattern is
 //  the same atlas and clock as LanbaiCaustics.cginc. Values stay in 0.25..1 (a cookie can only take light away).
-//  If a Custom Render Texture cannot be used as a light cookie in your Unity/VRChat build, fall back to a static frame
-//  of Caustics_8x8_2048 (README_Sea: known weak points).
+//  FALLBACK (if a CRT cannot be a light cookie in your Unity / VRChat build): Sea/Textures/CausticsCookie_Static_256.png,
+//  the same pattern frozen (frame 0, same floor and gain), already imported as a Cookie with alpha from the grey
+//  (LanbaiSeaImport). Switch: drag it into the 7a sun's Cookie slot instead of the CRT (README_Sea §6). The light still
+//  moves across it with the bus, only the shimmer stops.
 // =====================================================================================================
 Shader "Lanbai/SeaCausticsCookie"
 {

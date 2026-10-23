@@ -1,0 +1,30 @@
+{
+ "APL": 78.3,
+ "mirror_band_el_2_7": {
+  "median": "#D3A284",
+  "Lstar": 70.4,
+  "h_ab": 58.0,
+  "C": 26.6,
+  "pct": 4.41
+ },
+ "ripple_right_over_left": 1.09,
+ "lamp_points": {
+  "n": 6,
+  "cores": [
+   "#6E6765",
+   "#A99279",
+   "#E0C197",
+   "#796D68",
+   "#D3B793",
+   "#D9BB95"
+  ],
+  "h_ab_range": [
+   41.7,
+   78.8
+  ],
+  "h_ab_median": 75.8,
+  "C_median": 19.8,
+  "Lstar_median": 69.0
+ },
+ "max_C_in_h290_330_above_horizon": 15.1
+}

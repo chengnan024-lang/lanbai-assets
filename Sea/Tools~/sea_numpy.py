@@ -174,13 +174,13 @@ def equirect_from_hdr(hdr, sun_target_az_deg=None, tint=None):
 
 
 # ------------------------------------------------------------------------------------------------ material
-DEFAULTS = dict(LargeTile=64.0, SmallTile=9.0, LargeScroll=(0.9, 0.35), SmallScroll=(-0.4, 0.7), NormalStrength=1.0,
+DEFAULTS = dict(LargeTile=64.0, SmallTile=9.0, LargeScroll=(0.9, 0.35), SmallScroll=(-0.4, 0.7), NormalStrength=1.0, WaveRotate=(0.0, 0.0),
                 WaveAmp=1.0, MacroTile=1500.0, CalmStrength=0.15, CalmAll=0.0, CalmPatch=(0, 0, 0, 0), IOR=1.333,
                 Smoothness=0.97, ReflGain=1.0, ReflClamp=2.4, WaterColor=(0.0156, 0.0484, 0.0954), DiscCenter=(0, 0, 0, 0),
-                SunColor=(0, 0, 0), SunDir=(0.703, 0.105, 0.703), SunGlitterRough=0.12, SunReflPeakEV=1.3, SunDiscDeg=0.9,
+                SunColor=(0, 0, 0), SunDir=(0.4973, 0.1045, 0.8613), SunGlitterRough=0.12, SunReflPeakEV=1.3, SunDiscDeg=0.53,
                 AirSide=1.0, WindowGain=1.0, WindowTint=(1, 1, 1), Dispersion=(1.331, 1.337), TIRColor=(0.0222, 0.0685, 0.1651),
-                TIRCubeGain=0.0, WindowEdgeSoft=0.6, WindowRadial=(1.0, 2.0), WindowSunDir=(0.0, -0.0087, 1.0, 1.2), WindowSunSpread=14.0, WindowSunColor=(0, 0, 0), WindowSunFloor=0.35, DissolveTime=-1.0, DissolveFront=4.0, DissolvePixel=5.0,
-                FogMode=1, ReflExposure=1.0, MirrorTint=(1.0, 1.0, 1.0), PurpleGuard=(1.0, 0.02, 252.0),
+                TIRCubeGain=0.0, WindowEdgeSoft=0.6, WindowRadial=(1.0, 2.0), WindowSunDir=(0.0, -0.0087, 1.0, 1.2), WindowSunSpread=14.0, WindowSunColor=(0, 0, 0), WindowSunFloor=0.35, WindowSunGain=1.0, WindowCore=(0.0, 0.5, 2.0, 0.0), DissolveTime=-1.0, DissolveFront=4.0, DissolvePixel=5.0,
+                FogMode=1, ReflExposure=1.0, MirrorTint=(1.0, 1.0, 1.0), PurpleGuard=(1.0,), PurpleMask=(1, 1, 1, 1), PurpleCeiling='main',
                 GerstnerLength=(60, 37, 23, 0.08), GerstnerAmp=(0, 0, 0), GerstnerDir=(0.94, 0.34, 0.5, 0.866), LampGlints=0.0, Lamps=())
 
 _TEX = {}
@@ -208,13 +208,21 @@ def unresolved(lod):
     return saturate(lod / 7.6) ** 1.15
 
 
+def rot2(v, deg):
+    c, s = math.cos(math.radians(deg)), math.sin(math.radians(deg))
+    return np.stack([v[..., 0] * c - v[..., 1] * s, v[..., 0] * s + v[..., 1] * c], -1)
+
+
 def sea_normal(q, worldXZ, t, M):
     T = textures()
-    uvL = (q + np.asarray(M['LargeScroll']) * t) / M['LargeTile']
-    uvS = (q + np.asarray(M['SmallScroll']) * t) / M['SmallTile']
+    rl, rsm = M['WaveRotate'][0], M['WaveRotate'][1]
+    uvL = rot2(q + np.asarray(M['LargeScroll']) * t, -rl) / M['LargeTile']
+    uvS = rot2(q + np.asarray(M['SmallScroll']) * t, -rsm) / M['SmallTile']
     lodL, lodS = lod_of(uvL), lod_of(uvS)
-    nL = T['L'].sample(uvL, lodL)
-    nS = T['S'].sample(uvS, lodS)
+    nL = T['L'].sample(uvL, lodL).copy()
+    nS = T['S'].sample(uvS, lodS).copy()
+    nL[..., :2] = rot2(nL[..., :2], rl)
+    nS[..., :2] = rot2(nS[..., :2], rsm)
     uvM = q / M['MacroTile']
     m = T['M'].sample(uvM, lod_of(uvM, 512.0))[..., 0]
     cp = M['CalmPatch']
@@ -303,7 +311,7 @@ def above(N, V, var, env, M):
         H = normalize(L + V)
         NdotL = saturate(dot(N, L))
         NdotH = saturate(dot(N, H))
-        omega = np.pi * math.radians(0.5 * M['SunDiscDeg']) ** 2
+        omega = np.pi * math.radians(M.get('SunDiscRadius', 0.5 * M['SunDiscDeg'])) ** 2      # _Udon_SunDisc.y when set
         Fs = fresnel(saturate(dot(V, H)), 1.0 / M['IOR'])
         sun = sunc * (omega * ggx_d(NdotH, ag) * smith_vis(NdotL, NdotV, ag) * NdotL * Fs)[..., None]
         sun = soft_cap(sun, sunc.max() * 2.0 ** (-M['SunReflPeakEV']))
@@ -334,22 +342,41 @@ def below(N, I, var, window_env, refl_env, M):
         m = np.max(rgb, -1, keepdims=True)
         return np.where(m > M['ReflClamp'], rgb * (M['ReflClamp'] / np.maximum(m, 1e-9)), rgb)
     win = np.stack([wc(Tr)[..., 0] * okR, wc(Tg)[..., 1] * okG, wc(Tb)[..., 2] * okB], -1)
-    win = win * np.asarray(M['WindowTint']) * (M['WindowGain'] * M['IOR'] ** 2)
+    win = win * np.asarray(M['WindowTint'][:3]) * (M['WindowGain'] * M['IOR'] ** 2)
     crit = math.asin(1.0 / M['IOR'])
     th = np.arccos(saturate(cosI))
+    thV = np.arccos(saturate(np.abs(I[..., 1])))
+    if len(M['WindowTint']) > 3 and M['WindowTint'][3] > 0:
+        wr = saturate(thV / crit)
+        win = win + (luma(win)[..., None] - win) * (min(M['WindowTint'][3], 1.0) * (1.0 - wr * wr))[..., None]
+    wc_ = M['WindowCore']
+    if wc_[3] > 0:
+        capL = wc_[0] * 2.0 ** (-wc_[1] * saturate(thV / crit) ** max(wc_[2], 0.01))
+        lw = luma(win)
+        win = win * np.where(lw > 1e-6, capL * np.tanh(np.minimum(lw / capL, 8.0)) / np.maximum(lw, 1e-9), 1.0)[..., None]
     edge = 1.0 - smoothstep(crit - math.radians(M['WindowEdgeSoft']), crit, th)
     wr = M['WindowRadial']
     edge = edge * (1.0 + (wr[0] - 1.0) * saturate(th / crit) ** max(wr[1], 0.01))
     wsun = 0.0
     wcover = 0.0
     if max(M['WindowSunColor']) > 0:
+        Nf = np.broadcast_to(np.array([0.0, side, 0.0]), I.shape)
+        Tf, okF = refract_out(I, Nf, M['IOR'])
+        cosF = dot(I, Nf)
+        Ff = fresnel(cosF, M['IOR'])
+        thF = np.arccos(saturate(cosF))
+        hor = normalize(I * np.array([1.0, 0.0, 1.0]) + np.array([0.0, side * 1e-3, 0.0]))
+        Tr2 = np.where(okF[..., None] > 0.5, Tf, hor)
         sd = normalize(np.asarray(M['WindowSunDir'][:3], float))
-        dEl = np.degrees(np.arcsin(np.clip(Tg[..., 1], -1, 1)) - np.arcsin(np.clip(sd[1], -1, 1)))
-        th = normalize(Tg[..., [0, 2]] + np.array([1e-5, 0.0])); sh = normalize(sd[[0, 2]] + np.array([1e-5, 0.0]))
-        dAz = np.degrees(np.arccos(np.clip(th @ sh, -1, 1)))
+        dEl = np.degrees(np.arcsin(np.clip(np.abs(Tr2[..., 1]), 0, 1)) - math.asin(min(abs(sd[1]), 1.0)))
+        th2 = normalize(Tr2[..., [0, 2]] + np.array([1e-5, 0.0])); sh = normalize(sd[[0, 2]] + np.array([1e-5, 0.0]))
+        dAz = np.degrees(np.arccos(np.clip(th2 @ sh, -1, 1)))
         re, ra = max(M['WindowSunDir'][3], 0.05), max(M['WindowSunSpread'], 0.05)
-        arc = np.exp(-(dEl / re) ** 2) * (0.7 * np.exp(-(dAz / ra) ** 2) + 0.3 * np.exp(-(dAz / (0.12 * ra)) ** 2))
-        wsun = np.asarray(M['WindowSunColor'])[None, None, :] * (okG * arc * np.maximum(1 - F, M['WindowSunFloor']) * M['WindowGain'])[..., None]
+        rim = np.exp(-(np.degrees(thF - crit) / max(M['WindowEdgeSoft'] * 1.5, 0.3)) ** 2)
+        e0 = math.degrees(math.asin(min(abs(sd[1]), 1.0))) / re
+        arc = np.where(okF > 0.5, np.exp(-(dEl / re) ** 2), rim * math.exp(-e0 * e0)) \
+            * (0.7 * np.exp(-(dAz / ra) ** 2) + 0.3 * np.exp(-(dAz / (0.12 * ra)) ** 2))
+        wsun = np.asarray(M['WindowSunColor'])[None, None, :] * (arc * np.maximum(1 - Ff, M['WindowSunFloor']) * M['WindowSunGain'])[..., None]
         wcover = saturate(arc * 1.5)
     R = I - 2 * dot(I, Na)[..., None] * Na
     mirror = np.broadcast_to(np.asarray(M['TIRColor'], np.float32), win.shape).copy()
@@ -370,24 +397,39 @@ def oklab_to_lin(L):
     return np.maximum((L @ M1.T) ** 3 @ M2.T, 0.0)
 
 
+_PC = {}
+
+
+def purple_ceiling(which='main'):
+    """Sea_PurpleCeiling.png (RGBA = S6, S7a, S7b, S8) or Sea_PurpleCeiling_S11.png; row 0 = L 0"""
+    if which not in _PC:
+        name = 'Sea_PurpleCeiling.png' if which == 'main' else 'Sea_PurpleCeiling_%s.png' % which
+        _PC[which] = np.flipud(np.asarray(Image.open(os.path.join(TEX, name)).convert('RGBA'), np.float64)) / 255.0 * 0.8
+    return _PC[which]
+
+
 def purple_guard(c, M):
-    """port of LanbaiPurpleGuard: rotate 258..300 deg (OKLab) toward ultramarine, desaturate 300..345 deg"""
-    g = M['PurpleGuard']
-    on, cmax = g[0], g[1]
-    hz = g[2] if len(g) > 2 and g[2] > 0 else 252.0
-    if on <= 0:
+    """port of LanbaiPurpleGuard: OKLab chroma scaled down to the baked ceiling s_max(hue, L) x L of the material's grades"""
+    M = dict(DEFAULTS, **M)
+    if M['PurpleGuard'][0] <= 0:
         return c
-    L = lin_to_oklab(np.asarray(c, np.float64))
-    C = np.hypot(L[..., 1], L[..., 2])
-    h = (np.degrees(np.arctan2(L[..., 2], L[..., 1])) + 360.0) % 360.0
-    rot = smoothstep(258.0, 266.0, h) * (1.0 - smoothstep(296.0, 304.0, h))
-    vio = smoothstep(296.0, 304.0, h) * (1.0 - smoothstep(335.0, 345.0, h))
-    h2 = h + ((hz + (h - hz) * 0.15) - h) * rot * on
-    C2 = C + (np.minimum(C, cmax) - C) * vio * on
-    r = np.radians(h2)
-    L[..., 1] = np.cos(r) * C2
-    L[..., 2] = np.sin(r) * C2
-    return np.where((C > 1e-4)[..., None], oklab_to_lin(L), c)
+    c = np.asarray(c, np.float64)
+    o = lin_to_oklab(c)
+    L = o[..., 0]
+    C = np.hypot(o[..., 1], o[..., 2])
+    t = purple_ceiling(M['PurpleCeiling'])
+    Ht, Wt = t.shape[:2]
+    u = (np.degrees(np.arctan2(o[..., 2], o[..., 1])) % 360.0) / 360.0 * Wt - 0.5
+    v = np.clip((L / 0.025 + 0.5) - 0.5, 0, Ht - 1)
+    i0 = np.floor(u).astype(np.int64); fu = (u - i0)[..., None]
+    j0 = np.clip(np.floor(v).astype(np.int64), 0, Ht - 2); fv = (v - j0)[..., None]
+    i0 %= Wt; i1 = (i0 + 1) % Wt
+    cap = (t[j0, i0] * (1 - fu) + t[j0, i1] * fu) * (1 - fv) + (t[j0 + 1, i0] * (1 - fu) + t[j0 + 1, i1] * fu) * fv
+    m = np.asarray(M['PurpleMask'], np.float64)
+    cap = np.where(m > 0, cap, 1e3).min(-1) * np.maximum(L, 0.0)
+    k = np.where((C > cap) & (C > 1e-6) & (L > 1e-5), cap / np.maximum(C, 1e-9), 1.0)
+    o[..., 1:] *= k[..., None]
+    return np.where((k < 1.0)[..., None], oklab_to_lin(o), c)
 
 
 def ceiling_progress(I, M):
@@ -409,16 +451,34 @@ def ev_linear_alpha(Lc, Ls, p):
 
 
 def ceiling_lamps(P, Nw, V, a, eta, M):
+    """port of LanbaiCeilingLamps (Rain's convention: E * NdotL * Vis * pi * D * F; tubes; cones)"""
     out = np.zeros(P.shape)
-    for pos, I0, col, rad in M['Lamps']:            # (xyz, intensity, linear rgb, radius)
-        toL = np.asarray(pos) - P
-        d2 = np.maximum(np.sum(toL * toL, -1), 1e-2)
-        L = toL / np.sqrt(d2)[..., None]
+    R = 2 * dot(Nw, V)[..., None] * Nw - V
+    for lamp in M['Lamps']:                         # (xyz, intensity, linear rgb, radius[, axis xyz, dir xyzw])
+        pos, I0, col, rad = lamp[:4]
+        axis = np.asarray(lamp[4] if len(lamp) > 4 else (0.0, 0.0, 0.0), np.float64)
+        dirw = np.asarray(lamp[5] if len(lamp) > 5 else (0.0, 0.0, 0.0, -1.0), np.float64)
+        toC = np.asarray(pos) - P
+        d2 = np.maximum(np.sum(toC * toC, -1), 1e-2)
+        Lvec = toC
+        seg = 2.0 * axis
+        sl2 = float(seg @ seg)
+        lineNorm = 1.0
+        if sl2 > 1e-6:
+            L0 = toC - axis
+            RoS = R @ seg
+            tt = saturate((dot(R, L0) * RoS - L0 @ seg) / np.maximum(sl2 - RoS * RoS, 1e-6))
+            Lvec = L0 + seg * tt[..., None]
+            lineNorm = a / saturate(a + 0.5 * math.sqrt(sl2) / (2.0 * np.sqrt(d2)))
+        L = normalize(Lvec)
         NdotL = saturate(dot(Nw, L)); NdotV = np.maximum(dot(Nw, V), 1e-4)
         aP = saturate(a + rad / (2 * np.sqrt(d2)))
         H = normalize(L + V)
         F = fresnel(saturate(dot(V, H)), eta)
-        out += np.asarray(col) * (I0 / d2 * NdotL * ggx_d(saturate(dot(Nw, H)), aP) * smith_vis(NdotL, NdotV, aP) * F * (a * a) / (aP * aP))[..., None]
+        cone = 1.0 if dirw[3] <= -0.999 else smoothstep(dirw[3] - 0.08, dirw[3] + 0.08, normalize(-toC) @ dirw[:3])
+        E = I0 / d2 * cone
+        out += np.asarray(col) * (E * NdotL * smith_vis(NdotL, NdotV, aP) * np.pi * ggx_d(saturate(dot(Nw, H)), aP) * F
+                                  * (a * a) / (aP * aP) * lineNorm)[..., None]
     return out
 
 

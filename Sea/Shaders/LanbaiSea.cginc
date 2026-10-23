@@ -1,7 +1,7 @@
 // =====================================================================================================
 //  Lanbai / LanbaiSea.cginc      蓝白 · the sea's maths (bible v2.1 §6·6 海镜, §6·7a/7c, §6·8 海之天花, §8.1 #7)
 //
-//  !!! WRITTEN WITHOUT A UNITY COMPILER (cloud side). Syntax-checked with Slang against a Unity stub only.
+//  !!! WRITTEN WITHOUT A UNITY COMPILER (cloud side). Checked with DXC + Unity 2022.3 CGIncludes (Common/Tools~/compile_check), never in Unity.
 //      The implementer compiles it in Unity 2022.3 and checks it in a headset (one eye, then the other). !!!
 //
 //  Sea/Tools~/sea_numpy.py is a line-by-line Python port of this file: the reference renders use THAT, so what the
@@ -105,13 +105,25 @@ inline float2 LanbaiGerstnerSlope(float2 q, float t)
     return s;                                           // dh/dx, dh/dz
 }
 
+float4 _WaveRotate;          // x = large map, y = small map: degrees the map is turned in world xz (x toward z). The act-8
+                             // ceiling turns both maps' wind onto the view axis (+z) so the ripple reads the same left and
+                             // right in the thesis frame (final review: large wind (1, 0.35) -> 70.7, small (0.7, 1) -> 35)
+inline float2 LanbaiRot(float2 v, float deg)
+{
+    float s, c;
+    sincos(radians(deg), s, c);
+    return float2(v.x * c - v.y * s, v.x * s + v.y * c);
+}
+
 inline float3 LanbaiSeaNormal(float2 q, float2 worldXZ, out float slopeVar)
 {
     float t = LanbaiSeaTime();
-    float2 uvL = (q + _LargeScroll.xy * t) / _LargeTile;
-    float2 uvS = (q + _SmallScroll.xy * t) / _SmallTile;
+    float2 uvL = LanbaiRot(q + _LargeScroll.xy * t, -_WaveRotate.x) / _LargeTile;
+    float2 uvS = LanbaiRot(q + _SmallScroll.xy * t, -_WaveRotate.y) / _SmallTile;
     float3 nL = UnpackNormal(tex2D(_NormalLarge, uvL));
     float3 nS = UnpackNormal(tex2D(_NormalSmall, uvS));
+    nL.xy = LanbaiRot(nL.xy, _WaveRotate.x);                 // the map's slopes back into world xz
+    nS.xy = LanbaiRot(nS.xy, _WaveRotate.y);
     // ripple mask: macro slicks, the calm patch under the bus (act 6, F1b2), the global calm (act 6, 337.0)
     float m = tex2D(_Macro, q / _MacroTile).r;
     float pd = length(worldXZ - _CalmPatch.xy);
@@ -158,6 +170,8 @@ inline float LanbaiSmithVis(float NdotL, float NdotV, float a)
     return 0.5 / (NdotL * (NdotV * (1.0 - a) + a) + NdotV * (NdotL * (1.0 - a) + a) + 1e-5);
 }
 
+inline float LanbaiLuma(float3 c) { return dot(c, float3(0.2126, 0.7152, 0.0722)); }
+
 // soft cap that keeps the hue (Rain kit's LanbaiSoftCap, repeated here so this file stands alone)
 inline float3 LanbaiSeaSoftCap(float3 c, float peak)
 {
@@ -170,7 +184,7 @@ float4 _SunColor;            // linear radiance of the sun DISC (the same number
 float4 _SunDir;              // to the sun (fallback for _Udon_SunDir)
 float  _SunGlitterRough;     // extra GGX alpha for the glitter path (sub-pixel wave facets that the maps do not hold)
 float  _SunReflPeakEV;       // every point of the glitter path is at least this many EV under the disc (bible E14: 1.3)
-float  _SunDiscDeg;          // disc angular diameter (0.9)
+float  _SunDiscDeg;          // disc angular diameter, fallback (D-18: 0.53); _Udon_SunDisc.y (radius deg) wins when set
 
 inline float3 LanbaiSeaSunDir()
 {
@@ -196,7 +210,8 @@ inline float3 LanbaiSeaAbove(float3 N, float3 V, float slopeVar)
         float3 H = normalize(L + V);
         float NdotL = saturate(dot(N, L));
         float NdotH = saturate(dot(N, H));
-        float omega = UNITY_PI * pow(radians(0.5 * _SunDiscDeg), 2.0);              // disc solid angle
+        float rDeg = _Udon_SunDisc.w > 0.0 ? _Udon_SunDisc.y : 0.5 * _SunDiscDeg;      // D-18: the Sky publishes the radius
+        float omega = UNITY_PI * pow(radians(rDeg), 2.0);                              // disc solid angle
         float Fs = LanbaiFresnel(saturate(dot(V, H)), 1.0 / _IOR);
         sun = _SunColor.rgb * (omega * LanbaiGGX_D(NdotH, ag) * LanbaiSmithVis(NdotL, NdotV, ag) * NdotL * Fs);
         // E14: the reflected sun is a glitter PATH, never a second disc: cap every pixel at disc x 2^-EV (soft, hue kept)
@@ -211,7 +226,7 @@ inline float3 LanbaiSeaAbove(float3 N, float3 V, float slopeVar)
 UNITY_DECLARE_TEXCUBE(_WindowCube);
 float4 _WindowCube_HDR;
 float  _WindowGain;
-float4 _WindowTint;
+float4 _WindowTint;          // rgb tint, w = desaturation 0..1
 float4 _Dispersion;          // x = n for red, y = n for blue (green = _IOR)
 float4 _TIRColor;
 float  _TIRCubeGain;
@@ -225,6 +240,10 @@ float  _WindowSunFloor;      // transmission floor for the sun term (Fresnel wou
 float4 _WindowRadial;        // x = window multiplier AT the critical angle, y = power: lerp(1, x, (theta/theta_c)^y). (1, 2) = off.
                              // Bible target, not physics: a dawn sky is brightest at its horizon = the window's rim; the
                              // bible wants a near-white core (#E6F3F8) falling to L6 (#B4D6E3) at the edge (§6·7a 构图)
+float4 _WindowCore;          // the window's luminance ceiling (final review #5: the CORE is the brightest thing, every
+                             // rim glint >= y EV under it): x = core ceiling (linear luma), y = EV drop at the rim,
+                             // z = profile power in theta/theta_c, w > 0 on. Soft (tanh): an over-bright core settles AT x.
+float  _WindowSunGain;       // the arc's own gain (NOT _WindowGain: dimming the window must not dim the sun)
 
 inline float3 LanbaiSeaWindowCube(float3 dir)
 {
@@ -263,22 +282,47 @@ inline float3 LanbaiSeaBelow(float3 N, float3 I, float slopeVar)
     win.b = LanbaiSeaWindowCube(Tb).b * okB;
     // radiance entering the denser medium is multiplied by n^2 (the window really is brighter than the sky)
     win *= _WindowTint.rgb * (_WindowGain * _IOR * _IOR);
-    // soft edge at the critical angle (the waves make it shimmer; this only removes the 1-px stair)
     float crit = asin(1.0 / _IOR);
     float th = acos(saturate(cosI));
+    float thV = acos(saturate(abs(I.y)));                       // the VIEW ray's angle from the plane normal (flat)
+    // w: desaturate toward the bible's near-white core (#E6F3F8); none at the rim, which keeps the sky's own blue / gold
+    float wr = saturate(thV / crit);
+    win = lerp(win, LanbaiLuma(win).xxx, saturate(_WindowTint.w) * (1.0 - wr * wr));
+    [branch] if (_WindowCore.w > 0.0)
+    {
+        // profile by the view ray's angle, not the facet's: a wave tilted toward the eye at the rim must not show the
+        // core's brightness there
+        float capL = _WindowCore.x * exp2(-_WindowCore.y * pow(saturate(thV / crit), max(_WindowCore.z, 0.01)));
+        float lw = LanbaiLuma(win);
+        win *= lw > 1e-6 ? capL * tanh(min(lw / capL, 8.0)) / lw : 1.0;
+    }
+    // soft edge at the critical angle (the waves make it shimmer; this only removes the 1-px stair)
     float edge = 1.0 - smoothstep(crit - radians(_WindowEdgeSoft), crit, th);
     edge *= lerp(1.0, _WindowRadial.x, pow(saturate(th / crit), max(_WindowRadial.y, 0.01)));
-    // the sun seen through the window: compressed against the rim by the refraction itself (T near the horizon)
+    // the sun seen through the window: compressed against the rim by the refraction itself (T near the horizon).
+    // Final review #6: the arc is ONE continuous rose-gold line hugging the rim, so it is computed through the FLAT plane
+    // (the waves would tear it into the TIR flicker of the rim) and with its own gain.
     float3 wsun = 0;
     float wcover = 0.0;                                         // how much of the window the arc REPLACES (no rose-over-blue lavender)
     [branch] if (max(_WindowSunColor.r, max(_WindowSunColor.g, _WindowSunColor.b)) > 0.0)
     {
+        float3 Nf = float3(0.0, side, 0.0);
+        float okF;
+        float3 Tf = LanbaiSeaRefractOut(I, Nf, _IOR, okF);
+        float cosF = dot(I, Nf);
+        float Ff = LanbaiFresnel(cosF, _IOR);
+        float thF = acos(saturate(cosF));
+        // past the critical angle the line stays ON the rim (it is the window's edge seen through a slight blur)
+        float3 Tr2 = okF > 0.5 ? Tf : normalize(float3(I.x, 0.0, I.z) + float3(0.0, side * 1e-3, 0.0));
         float3 sd = normalize(_WindowSunDir.xyz);
-        float dEl = degrees(asin(clamp(Tg.y, -1.0, 1.0)) - asin(clamp(sd.y, -1.0, 1.0)));
-        float dAz = degrees(acos(clamp(dot(normalize(Tg.xz + float2(1e-5, 0.0)), normalize(sd.xz + float2(1e-5, 0.0))), -1.0, 1.0)));
+        float dEl = degrees(asin(clamp(abs(Tr2.y), 0.0, 1.0)) - asin(clamp(abs(sd.y), 0.0, 1.0)));
+        float dAz = degrees(acos(clamp(dot(normalize(Tr2.xz + float2(1e-5, 0.0)), normalize(sd.xz + float2(1e-5, 0.0))), -1.0, 1.0)));
         float re = max(_WindowSunDir.w, 0.05), ra = max(_WindowSunSpread, 0.05);
-        float arc = exp(-(dEl / re) * (dEl / re)) * (0.7 * exp(-(dAz / ra) * (dAz / ra)) + 0.3 * exp(-(dAz / (0.12 * ra)) * (dAz / (0.12 * ra))));
-        wsun = _WindowSunColor.rgb * (okG * arc * max(1.0 - F, _WindowSunFloor) * _WindowGain);
+        float rim = exp(-pow(degrees(thF - crit) / max(_WindowEdgeSoft * 1.5, 0.3), 2.0));   // fades within ~1 deg outside the rim
+        float e0 = degrees(asin(clamp(abs(sd.y), 0.0, 1.0))) / re;              // the in-window value AT the rim (continuity)
+        float arc = (okF > 0.5 ? exp(-(dEl / re) * (dEl / re)) : rim * exp(-e0 * e0))
+                  * (0.7 * exp(-(dAz / ra) * (dAz / ra)) + 0.3 * exp(-(dAz / (0.12 * ra)) * (dAz / (0.12 * ra))));
+        wsun = _WindowSunColor.rgb * (arc * max(1.0 - Ff, _WindowSunFloor) * _WindowSunGain);
         wcover = saturate(arc * 1.5);
     }
     float3 R = reflect(I, Na);                                 // back into the water
@@ -308,7 +352,6 @@ inline float LanbaiCeilingLampProgress(float3 viewDir)
     return saturate((LanbaiCeilingProgress(viewDir) - 0.3) / 0.7);
 }
 
-inline float LanbaiLuma(float3 c) { return dot(c, float3(0.2126, 0.7152, 0.0722)); }
 
 // ---- OKLab (Ottosson 2020), linear sRGB in / out ------------------------------------------------------------------
 inline float3 LanbaiLinToOklab(float3 c)
@@ -332,28 +375,31 @@ inline float3 LanbaiOklabToLin(float3 L)
                      -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s), 0.0);
 }
 
-// Purple guard (Art/总导演裁决.md D-17; bible §1.3.4: outside acts 4 / 4c no region > 2 % may be h_ab 290-325 & C* > 15).
-// Measured (Sea/Docs~/review_r1_response.md): under the S7b / S8 grades the colours that DISPLAY as violet come from linear
-// OKLab hues ~260..335, which overlaps the bible's own blues (OKLab 253..273). So the guard does two things:
-//   * 258..300 deg: ROTATE the hue back toward ultramarine (_PurpleGuard.z, OKLab ~252), chroma kept: blues stay blue;
-//   * 300..345 deg: pull the chroma to <= _PurpleGuard.y (the true violets become a low-chroma neutral, D-17's 'C* <= 8').
-// Applied to the FINAL colour of every sea mode (after fog). x = 0 off / 1 on.
-float4 _PurpleGuard;         // x on, y max OKLab chroma for violets (0.02 ~ CIE C* 5), z target hue deg (252)
+// Purple guard (Art/总导演裁决.md D-17 + final review #7). Rule: after the guard and the grade of the material's act, no
+// colour DISPLAYS with CIELab h_ab 290..330 and C* > 8 (290, not the review's 285: the bible's own dusk sky lives at
+// 286-289, #2E3C66 / #3D4A80, and must stay untouched). Sea/Tools~/purple_scan.py scans OKLab hue x lightness x
+// saturation through Grading's engine model and bakes, per grade, the largest saturation s = C / L that is never
+// violet into Sea_PurpleCeiling.png (360 x 121, RGBA = S6, S7a, S7b, S8; Sea_PurpleCeiling_S11.png = S11): u = hue / 360
+// (repeat), v = (L / 0.025 + 0.5) / 121 (clamp), value x 0.8 = s_max; each texel is the minimum over its own bilinear
+// footprint, so the filtered lookup never exceeds the true ceiling. Proof: Sea/Docs~/purple_scan.json.
+// The guard only scales the OKLab chroma down to the ceiling (hue and lightness kept); anything under it is untouched.
+// Applied to the FINAL colour of every sea mode (after fog).
+float4 _PurpleGuard;         // x > 0 on
+float4 _PurpleMask;          // which grades this material lives in (1 = guard against it): R S6, G S7a, B S7b, A S8
+sampler2D _PurpleCeiling;    // Sea_PurpleCeiling.png (act 11: Sea_PurpleCeiling_S11.png with mask R)
 inline float3 LanbaiPurpleGuard(float3 c)
 {
     if (_PurpleGuard.x <= 0.0) return c;
     float3 L = LanbaiLinToOklab(c);
     float C = length(L.yz);
-    if (C <= 1e-4) return c;
-    float h = degrees(atan2(L.z, L.y));
-    h = h < 0.0 ? h + 360.0 : h;
-    float rot = smoothstep(258.0, 266.0, h) * (1.0 - smoothstep(296.0, 304.0, h));
-    float vio = smoothstep(296.0, 304.0, h) * (1.0 - smoothstep(335.0, 345.0, h));
-    float hz = _PurpleGuard.z > 0.0 ? _PurpleGuard.z : 252.0;
-    float h2 = lerp(h, hz + (h - hz) * 0.15, rot * _PurpleGuard.x);
-    float C2 = lerp(C, min(C, _PurpleGuard.y), vio * _PurpleGuard.x);
-    float r = radians(h2);
-    L.yz = float2(cos(r), sin(r)) * C2;
+    if (C <= 1e-6 || L.x <= 1e-5) return c;
+    float u = atan2(L.z, L.y) * (0.5 / UNITY_PI);
+    u = u < 0.0 ? u + 1.0 : u;
+    float4 cap = tex2Dlod(_PurpleCeiling, float4(u, (L.x / 0.025 + 0.5) / 121.0, 0.0, 0.0)) * 0.8;
+    cap = lerp(float4(1e3, 1e3, 1e3, 1e3), cap, saturate(_PurpleMask));
+    float cmax = min(min(cap.x, cap.y), min(cap.z, cap.w)) * L.x;
+    if (C <= cmax) return c;
+    L.yz *= cmax / C;
     return LanbaiOklabToLin(L);
 }
 
@@ -366,33 +412,54 @@ inline float LanbaiEvLinearAlpha(float Lc, float Ls, float p)
     return saturate((Lp - Ls) / (Lc - Ls));
 }
 
-// Act 11: the street lamps' GGX glints on the hanging sea (_Udon_Lamp0..7: xyz position, w intensity I with E = I / d^2;
-// _Udon_LampColor rgb linear, a = source radius m; omni). Smoothness 0.97 (alpha from LanbaiSeaAlpha + this).
-float  _LampGlints;          // 0..1 (0 = off: acts 6 / 8)
-inline float3 LanbaiCeilingLampOne(float4 lamp, float4 colR, float3 P, float3 Nw, float3 V, float a, float eta)
+// Act 11: the street lamps' GGX glints on the hanging sea, in the Rain kit's convention (Rain/Shaders/LanbaiLamps.cginc,
+// Unity Standard: specular = E * NdotL * Vis * PI * D * F, E = I / d^2 = the Inspector value, D-00):
+//   _Udon_Lamp{i} xyz position, w intensity I; _Udon_LampColor{i} rgb linear, a source radius m;
+//   _Udon_LampAxis{i} xyz half-length vector of a tube (0 = point); _Udon_LampDir{i} xyz emission axis, w cos half-angle
+//   (-1 = omni). Calibrate on screen with _LampGlints only: _Udon_Lamp*.w is shared with the road.
+float  _LampGlints;          // gain (0 = off: acts 6 / 8). Act 11: 6 -> the brightest glint at the bible's #D08A59 with the
+                             // stand-in lamps (I 15); the Lamps session calibrates THIS on screen, never _Udon_Lamp*.w
+inline float3 LanbaiCeilingLampOne(float4 lamp, float4 colR, float4 axis, float4 dirW, float3 P, float3 Nw, float3 V, float a, float eta)
 {
     if (lamp.w <= 0.0) return float3(0.0, 0.0, 0.0);
-    float3 toL = lamp.xyz - P;
-    float d2 = max(dot(toL, toL), 1e-2);
-    float3 L = toL * rsqrt(d2);
+    float3 toC = lamp.xyz - P;
+    float d2 = max(dot(toC, toC), 1e-2);
+    float3 R = reflect(-V, Nw);
+    // representative point on a tube (Karis 2013): the segment point closest to the reflection ray
+    float3 Lvec = toC;
+    float3 seg = 2.0 * axis.xyz;
+    float segLen2 = dot(seg, seg);
+    float lineNorm = 1.0;
+    if (segLen2 > 1e-6)
+    {
+        float3 L0 = toC - axis.xyz;
+        float RoS = dot(R, seg);
+        float tt = saturate((dot(R, L0) * RoS - dot(L0, seg)) / max(segLen2 - RoS * RoS, 1e-6));
+        Lvec = L0 + seg * tt;
+        lineNorm = a / saturate(a + 0.5 * sqrt(segLen2) / (2.0 * sqrt(d2)));
+    }
+    float3 L = normalize(Lvec);
     float NdotL = saturate(dot(Nw, L));
     float NdotV = max(dot(Nw, V), 1e-4);
     float aP = saturate(a + colR.a / (2.0 * sqrt(d2)));                       // sphere widening (Karis)
     float3 H = normalize(L + V);
     float F = LanbaiFresnel(saturate(dot(V, H)), eta);
-    return colR.rgb * (lamp.w / d2 * NdotL * LanbaiGGX_D(saturate(dot(Nw, H)), aP) * LanbaiSmithVis(NdotL, NdotV, aP) * F * (a * a) / (aP * aP));
+    float cone = dirW.w <= -0.999 ? 1.0 : smoothstep(dirW.w - 0.08, dirW.w + 0.08, dot(normalize(-toC), dirW.xyz));
+    float E = lamp.w / d2 * cone;
+    return colR.rgb * (E * NdotL * LanbaiSmithVis(NdotL, NdotV, aP) * UNITY_PI * LanbaiGGX_D(saturate(dot(Nw, H)), aP) * F
+                       * (a * a) / (aP * aP) * lineNorm);
 }
 inline float3 LanbaiCeilingLamps(float3 P, float3 Nw, float3 V, float a, float eta)
 {
     float3 s = 0;
-    s += LanbaiCeilingLampOne(_Udon_Lamp0, _Udon_LampColor0, P, Nw, V, a, eta);
-    s += LanbaiCeilingLampOne(_Udon_Lamp1, _Udon_LampColor1, P, Nw, V, a, eta);
-    s += LanbaiCeilingLampOne(_Udon_Lamp2, _Udon_LampColor2, P, Nw, V, a, eta);
-    s += LanbaiCeilingLampOne(_Udon_Lamp3, _Udon_LampColor3, P, Nw, V, a, eta);
-    s += LanbaiCeilingLampOne(_Udon_Lamp4, _Udon_LampColor4, P, Nw, V, a, eta);
-    s += LanbaiCeilingLampOne(_Udon_Lamp5, _Udon_LampColor5, P, Nw, V, a, eta);
-    s += LanbaiCeilingLampOne(_Udon_Lamp6, _Udon_LampColor6, P, Nw, V, a, eta);
-    s += LanbaiCeilingLampOne(_Udon_Lamp7, _Udon_LampColor7, P, Nw, V, a, eta);
+    s += LanbaiCeilingLampOne(_Udon_Lamp0, _Udon_LampColor0, _Udon_LampAxis0, _Udon_LampDir0, P, Nw, V, a, eta);
+    s += LanbaiCeilingLampOne(_Udon_Lamp1, _Udon_LampColor1, _Udon_LampAxis1, _Udon_LampDir1, P, Nw, V, a, eta);
+    s += LanbaiCeilingLampOne(_Udon_Lamp2, _Udon_LampColor2, _Udon_LampAxis2, _Udon_LampDir2, P, Nw, V, a, eta);
+    s += LanbaiCeilingLampOne(_Udon_Lamp3, _Udon_LampColor3, _Udon_LampAxis3, _Udon_LampDir3, P, Nw, V, a, eta);
+    s += LanbaiCeilingLampOne(_Udon_Lamp4, _Udon_LampColor4, _Udon_LampAxis4, _Udon_LampDir4, P, Nw, V, a, eta);
+    s += LanbaiCeilingLampOne(_Udon_Lamp5, _Udon_LampColor5, _Udon_LampAxis5, _Udon_LampDir5, P, Nw, V, a, eta);
+    s += LanbaiCeilingLampOne(_Udon_Lamp6, _Udon_LampColor6, _Udon_LampAxis6, _Udon_LampDir6, P, Nw, V, a, eta);
+    s += LanbaiCeilingLampOne(_Udon_Lamp7, _Udon_LampColor7, _Udon_LampAxis7, _Udon_LampDir7, P, Nw, V, a, eta);
     return s;
 }
 

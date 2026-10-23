@@ -1,0 +1,276 @@
+{
+ "rule": "after the guard, no colour displays h_ab 290..330 with C* > 8, under the grade(s) of its material",
+ "why_290_not_285": "bible S8 zenith #3D4A80 displays h_ab 289.2 C* 34 and the other-sky nadir / 7c window indigo #2E3C66 286.3 C* 28 (ART_BIBLE M5); guarding from 285 would grey the bible sky in the sea mirror",
+ "scan_margin": "baked against h_ab 289.7..330.5, C* > 7 (stricter than the rule)",
+ "texture": "Sea/Textures/Sea_PurpleCeiling_S11.png: the same, all four channels = S11 (act 11). Sea/Textures/Sea_PurpleCeiling.png 360x121 RGBA8 linear (R S6, G S7a, B S7b, A S8): value/255*0.8 = max OKLab C/L; u = hue/360 (repeat), v = (L/0.025 + 0.5)/121 (clamp)",
+ "materials": {
+  "M_06_Sea": {
+   "channels": "R",
+   "grades": [
+    "S6"
+   ]
+  },
+  "M_07a_SeaSurface": {
+   "channels": "GB",
+   "grades": [
+    "S7a",
+    "S7b"
+   ]
+  },
+  "M_07c_SeaMirror": {
+   "channels": "B",
+   "grades": [
+    "S7b"
+   ]
+  },
+  "M_08_SeaCeiling*": {
+   "channels": "A",
+   "grades": [
+    "S8"
+   ]
+  },
+  "M_11_SeaHanging": {
+   "channels": "R",
+   "grades": [
+    "S11"
+   ]
+  }
+ },
+ "verification": {
+  "M_06_Sea": {
+   "channels": "R",
+   "grades": [
+    "S6"
+   ],
+   "random_2M": {
+    "in_gamut": 811559,
+    "violet_left": {
+     "S6": 0
+    }
+   },
+   "offset_grid": {
+    "in_gamut": 14771280,
+    "hues": 284,
+    "violet_left": {
+     "S6": 0
+    }
+   }
+  },
+  "M_07a_SeaSurface": {
+   "channels": "GB",
+   "grades": [
+    "S7a",
+    "S7b"
+   ],
+   "random_2M": {
+    "in_gamut": 811198,
+    "violet_left": {
+     "S7a": 0,
+     "S7b": 0
+    }
+   },
+   "offset_grid": {
+    "in_gamut": 16770480,
+    "hues": 330,
+    "violet_left": {
+     "S7a": 0,
+     "S7b": 0
+    }
+   }
+  },
+  "M_07c_SeaMirror": {
+   "channels": "B",
+   "grades": [
+    "S7b"
+   ],
+   "random_2M": {
+    "in_gamut": 811403,
+    "violet_left": {
+     "S7b": 0
+    }
+   },
+   "offset_grid": {
+    "in_gamut": 16770480,
+    "hues": 330,
+    "violet_left": {
+     "S7b": 0
+    }
+   }
+  },
+  "M_08_SeaCeiling*": {
+   "channels": "A",
+   "grades": [
+    "S8"
+   ],
+   "random_2M": {
+    "in_gamut": 810851,
+    "violet_left": {
+     "S8": 0
+    }
+   },
+   "offset_grid": {
+    "in_gamut": 15254880,
+    "hues": 294,
+    "violet_left": {
+     "S8": 0
+    }
+   }
+  },
+  "M_11_SeaHanging": {
+   "channels": "R",
+   "grades": [
+    "S11"
+   ],
+   "random_2M": {
+    "in_gamut": 811307,
+    "violet_left": {
+     "S11": 0
+    }
+   },
+   "offset_grid": {
+    "in_gamut": 15468960,
+    "hues": 299,
+    "violet_left": {
+     "S11": 0
+    }
+   }
+  }
+ },
+ "bible_colours": {
+  "6 dawn zenith fill": {
+   "hex": "#5B7ED7",
+   "material": "M_06_Sea",
+   "grade": "S6",
+   "kind": "fill",
+   "screen_h_ab": 281.8,
+   "screen_C": 40.9,
+   "dE_by_guard": 0.0
+  },
+  "6 far sea fill": {
+   "hex": "#304F7A",
+   "material": "M_06_Sea",
+   "grade": "S6",
+   "kind": "fill",
+   "screen_h_ab": 274.4,
+   "screen_C": 26.1,
+   "dE_by_guard": 0.0
+  },
+  "7a dark mirror": {
+   "hex": "#11395E",
+   "material": "M_07a_SeaSurface",
+   "grade": "S7a",
+   "kind": "screen",
+   "screen_h_ab": 271.8,
+   "screen_C": 26.0,
+   "dE_by_guard": 0.0
+  },
+  "7a TIR fill": {
+   "hex": "#294B72",
+   "material": "M_07a_SeaSurface",
+   "grade": "S7a",
+   "kind": "fill",
+   "screen_h_ab": 271.8,
+   "screen_C": 26.1,
+   "dE_by_guard": 0.0
+  },
+  "7a fog fill": {
+   "hex": "#77A0D2",
+   "material": "M_07a_SeaSurface",
+   "grade": "S7a",
+   "kind": "fill",
+   "screen_h_ab": 261.7,
+   "screen_C": 26.9,
+   "dE_by_guard": 0.0
+  },
+  "7a window core": {
+   "hex": "#E6F3F8",
+   "material": "M_07a_SeaSurface",
+   "grade": "S7a",
+   "kind": "screen",
+   "screen_h_ab": 229.4,
+   "screen_C": 5.1,
+   "dE_by_guard": 0.0
+  },
+  "7c window indigo": {
+   "hex": "#2E3C66",
+   "material": "M_07c_SeaMirror",
+   "grade": "S7b",
+   "kind": "screen",
+   "screen_h_ab": 286.3,
+   "screen_C": 27.6,
+   "dE_by_guard": 0.0
+  },
+  "7c fog": {
+   "hex": "#2E2228",
+   "material": "M_07c_SeaMirror",
+   "grade": "S7b",
+   "kind": "screen",
+   "screen_h_ab": 345.5,
+   "screen_C": 7.2,
+   "dE_by_guard": 0.0
+  },
+  "8 zenith": {
+   "hex": "#3D4A80",
+   "material": "M_08_SeaCeiling*",
+   "grade": "S8",
+   "kind": "screen",
+   "screen_h_ab": 289.2,
+   "screen_C": 34.1,
+   "dE_by_guard": 1.9
+  },
+  "8 other-sky nadir": {
+   "hex": "#2E3C66",
+   "material": "M_08_SeaCeiling*",
+   "grade": "S8",
+   "kind": "screen",
+   "screen_h_ab": 286.3,
+   "screen_C": 27.6,
+   "dE_by_guard": 0.0
+  },
+  "8 mid sky": {
+   "hex": "#808AB2",
+   "material": "M_08_SeaCeiling*",
+   "grade": "S8",
+   "kind": "screen",
+   "screen_h_ab": 284.3,
+   "screen_C": 22.9,
+   "dE_by_guard": 0.0
+  },
+  "8 cabin": {
+   "hex": "#828BAA",
+   "material": "M_08_SeaCeiling*",
+   "grade": "S8",
+   "kind": "screen",
+   "screen_h_ab": 282.0,
+   "screen_C": 17.8,
+   "dE_by_guard": 0.0
+  },
+  "8 ceiling water": {
+   "hex": "#10263F",
+   "material": "M_08_SeaCeiling*",
+   "grade": "S8",
+   "kind": "screen",
+   "screen_h_ab": 273.1,
+   "screen_C": 18.5,
+   "dE_by_guard": 0.0
+  },
+  "8 ceiling water fill": {
+   "hex": "#1C304B",
+   "material": "M_08_SeaCeiling*",
+   "grade": "S8",
+   "kind": "fill",
+   "screen_h_ab": 273.7,
+   "screen_C": 18.4,
+   "dE_by_guard": 0.0
+  },
+  "11 water": {
+   "hex": "#0F283C",
+   "material": "M_11_SeaHanging",
+   "grade": "S11",
+   "kind": "fill",
+   "screen_h_ab": 269.5,
+   "screen_C": 15.3,
+   "dE_by_guard": 0.0
+  }
+ }
+}

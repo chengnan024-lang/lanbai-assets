@@ -1,7 +1,7 @@
 // =====================================================================================================
 //  Lanbai/Sea   蓝白 · the sea (ABOVE: act 6 mirror · BELOW: act 7 Snell's window / 7c inverted · CEILING: act 8-i)
 //
-//  !!! WRITTEN WITHOUT A UNITY COMPILER (cloud side). Syntax-checked with Slang against a Unity stub only. !!!
+//  !!! WRITTEN WITHOUT A UNITY COMPILER (cloud side). Checked with DXC + Unity 2022.3 CGIncludes (Common/Tools~/compile_check), never in Unity. !!!
 //  Interface (properties, modes, globals, who drives what): Sea/README_Sea接口.md. Maths: LanbaiSea.cginc.
 //
 //  Render state is per material (the builder sets it; see README_Sea §材质):
@@ -23,6 +23,7 @@ Shader "Lanbai/Sea"
         _LargeScroll ("Large drift m per s xz", Vector) = (0.9, 0.35, 0, 0)
         _SmallScroll ("Small drift m per s xz", Vector) = (-0.4, 0.7, 0, 0)
         _NormalStrength ("Normal strength", Range(0, 3)) = 1
+        _WaveRotate ("Wave maps turned deg  x large  y small", Vector) = (0, 0, 0, 0)
         _WaveAmp ("Wave amplitude  7c decays to 0.3", Range(0, 1)) = 1
         [NoScaleOffset] _Macro ("Macro mask  R rippled  G gust", 2D) = "white" {}
         _MacroTile ("Macro tile m", Float) = 1500
@@ -43,16 +44,16 @@ Shader "Lanbai/Sea"
 
         [Header(Above  sun glitter)]
         _SunColor ("Sun disc radiance  linear", Vector) = (0, 0, 0, 0)
-        _SunDir ("Sun direction  fallback for _Udon_SunDir", Vector) = (0.703, 0.105, 0.703, 0)
+        _SunDir ("Sun direction  fallback for _Udon_SunDir  D-12 az 30 el 6", Vector) = (0.4973, 0.1045, 0.8613, 0)
         _SunGlitterRough ("Glitter extra GGX alpha", Range(0, 0.5)) = 0.12
         _SunReflPeakEV ("Glint at least this many EV under the disc", Float) = 1.3
-        _SunDiscDeg ("Sun disc diameter deg", Float) = 0.9
+        _SunDiscDeg ("Sun disc diameter deg  fallback for _Udon_SunDisc  D-18", Float) = 0.53
 
         [Header(Below  Snell window)]
         _AirSide ("Air side  1 above  -1 below", Float) = 1
         [NoScaleOffset] _WindowCube ("Window cube  the sky on the other side", Cube) = "black" {}
         _WindowGain ("Window gain", Float) = 1
-        _WindowTint ("Window tint  linear", Vector) = (1, 1, 1, 0)
+        _WindowTint ("Window tint  linear  w desaturate", Vector) = (1, 1, 1, 0)
         _Dispersion ("Dispersion  x n red  y n blue", Vector) = (1.331, 1.337, 0, 0)
         _TIRColor ("Total internal reflection colour  linear", Vector) = (0.0222, 0.0685, 0.1651, 0)
         _TIRCubeGain ("TIR plus reflection cube", Float) = 0
@@ -62,11 +63,15 @@ Shader "Lanbai/Sea"
         _WindowSunColor ("Window sun radiance linear  0 off", Vector) = (0, 0, 0, 0)
         _WindowSunFloor ("Window sun transmission floor", Range(0, 1)) = 0.35
         _WindowRadial ("Window radial  x factor at the edge  y power  1 2 off", Vector) = (1, 2, 0, 0)
+        _WindowCore ("Window ceiling  x core luma  y EV drop at the rim  z power  w on", Vector) = (0, 0.5, 2, 0)
+        _WindowSunGain ("Window sun arc gain", Float) = 1
 
         [Header(Ceiling  act 8)]
         [NoScaleOffset] _SkyBehindCube ("Sky behind the ceiling", Cube) = "black" {}
         _MirrorTint ("Mirror band tint  D-17 toward gold", Vector) = (1, 1, 1, 0)
-        _PurpleGuard ("Purple guard  x on  y max OKLab chroma  z target hue", Vector) = (1, 0.02, 252, 0)
+        _PurpleGuard ("Purple guard  x on", Vector) = (1, 0, 0, 0)
+        _PurpleMask ("Purple guard grades  R S6  G S7a  B S7b  A S8", Vector) = (1, 1, 1, 1)
+        [NoScaleOffset] _PurpleCeiling ("Purple ceiling  Sea_PurpleCeiling", 2D) = "white" {}
         _DissolveTime ("Dissolve clock  t minus 956.36  negative whole", Float) = -1
         _DissolveFront ("Dissolve front s", Float) = 4
         _DissolvePixel ("Dissolve per pixel s", Float) = 5
@@ -75,7 +80,7 @@ Shader "Lanbai/Sea"
         _GerstnerLength ("Gerstner wavelengths m xyz  w Hz", Vector) = (60, 37, 23, 0.08)
         _GerstnerAmp ("Gerstner amplitudes m  0 off", Vector) = (0, 0, 0, 0)
         _GerstnerDir ("Gerstner directions  xy wave 1  zw wave 2", Vector) = (0.94, 0.34, 0.5, 0.866)
-        _LampGlints ("Lamp glints 0..1  udon lamps", Range(0, 1)) = 0
+        _LampGlints ("Lamp glints gain  udon lamps  act 11 6", Range(0, 16)) = 0
 
         [Header(Render state  set by the builder)]
         [Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend ("Src blend", Float) = 1
@@ -154,7 +159,7 @@ Shader "Lanbai/Sea"
             #endif
                 if (_FogMode > 0.5)
                     col.rgb = LanbaiApplyFog(col.rgb, P);
-                col.rgb = LanbaiPurpleGuard(col.rgb);                 // D-17: no sea colour ever reads violet
+                col.rgb = LanbaiPurpleGuard(col.rgb);                 // D-17: nothing displays h_ab 290-330 above C* 8 (proof: Docs~/purple_scan.json)
                 return col;
             }
             ENDCG

@@ -1,7 +1,7 @@
 // =====================================================================================================
 //  Lanbai/SeaDome   蓝白 · the 'sky' under water (bible §6·7: 天空盒不吃雾，必须替换)
 //
-//  !!! WRITTEN WITHOUT A UNITY COMPILER (cloud side). Syntax-checked with Slang against a Unity stub only. !!!
+//  !!! WRITTEN WITHOUT A UNITY COMPILER (cloud side). Checked with DXC + Unity 2022.3 CGIncludes (Common/Tools~/compile_check), never in Unity. !!!
 //
 //  A sphere that follows the centre eye (radius _Radius, default 1800 m) and draws the water's own colour in every
 //  direction: exactly LanbaiHorizon(dir) of LanbaiFog.cginc, i.e. the underwater fog colour, so anything that fogs out

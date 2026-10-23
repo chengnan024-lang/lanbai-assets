@@ -1,31 +1,52 @@
 {
  "0.25s": {
   "limit_EV": 0.5,
-  "worst_EV": 0.159,
+  "worst_EV": 0.143,
   "PASS": true,
-  "at_t": 959.9,
-  "at_el_deg": 41.2,
-  "at_az_deg": -80.0
+  "at_t": 963.05,
+  "at_el_deg": 44.2,
+  "at_az_deg": -115.0
  },
  "1s": {
   "limit_EV": 1.0,
-  "worst_EV": 0.636,
+  "worst_EV": 0.568,
   "PASS": true,
-  "at_t": 958.3,
-  "at_el_deg": 41.2,
-  "at_az_deg": -105.0
+  "at_t": 962.3,
+  "at_el_deg": 44.2,
+  "at_az_deg": -15.0
  },
  "2s": {
   "limit_EV": 1.8,
-  "worst_EV": 1.273,
+  "worst_EV": 1.127,
   "PASS": true,
-  "at_t": 958.25,
-  "at_el_deg": 41.2,
-  "at_az_deg": -105.0
+  "at_t": 961.3,
+  "at_el_deg": 44.2,
+  "at_az_deg": 65.0
+ },
+ "points": {
+  "about": "each of the 25 gold points: its own brightness factor (water x (1 - own progress)); must never rise",
+  "never_rises": true,
+  "all_25_at_full_until": 959.85,
+  "lit_above_half": {
+   "955.00": 25,
+   "956.00": 25,
+   "957.00": 25,
+   "958.00": 25,
+   "959.00": 25,
+   "960.00": 25,
+   "961.00": 25,
+   "962.00": 14,
+   "963.00": 1,
+   "964.00": 0,
+   "965.00": 0,
+   "966.00": 0,
+   "967.00": 0
+  },
+  "last_out": 964.85
  },
  "total_change_EV": {
-  "max": 3.178,
-  "min": -0.0
+  "max": 2.691,
+  "min": 0.0
  },
  "about": "K5 · the act-8 ceiling dissolve against the VR ramp law, PER PIXEL (bible §1.8: any brightening <= 0.5 EV in 0.25 s,"
 }

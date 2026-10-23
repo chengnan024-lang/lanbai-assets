@@ -2,7 +2,7 @@
 //  Lanbai/SeaShaft   蓝白 · underwater light shafts (bible §6·7a 大气: 光柱 ≤ 16 张, 1–4 m 宽, 20–40 m 长, 动态条纹,
 //                    屏幕 #90BFE9 填 #8AB2FF @ +1.30, α 0.04–0.08, 侧视淡出, 25 m 深处消失; F4p 汇成一束; F3e1 最后一道)
 //
-//  !!! WRITTEN WITHOUT A UNITY COMPILER (cloud side). Syntax-checked with Slang against a Unity stub only. !!!
+//  !!! WRITTEN WITHOUT A UNITY COMPILER (cloud side). Checked with DXC + Unity's CGIncludes (Common/Tools~/compile_check). !!!
 //
 //  MESH CONTRACT (the Act07 builder generates it from Act07_Layout.json 'shafts'): every shaft = one quad, 4 vertices
 //    POSITION  the shaft's centre point (object space; the object sits at the bus origin)
@@ -41,6 +41,7 @@ Shader "Lanbai/SeaShaft"
             #pragma fragment frag
             #pragma target 3.5
             #pragma multi_compile_instancing
+            #pragma multi_compile_fog
             #include "UnityCG.cginc"
             #include "Assets/Lanbai/Common/Shaders/LanbaiVR.cginc"
             #include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc"
@@ -106,8 +107,10 @@ Shader "Lanbai/SeaShaft"
                          + tex2D(_Streaks, su * float2(1.7, 1.0) + float2(_StreakScroll.y * t, 0.0)).g * 0.6;
                 float a = i.p.y * prof * ends * (0.35 + st) * i.p.z * _Gain;
                 a *= LanbaiNearFade(i.posWS, _NearFade.x, _NearFade.y);
-                float fogA = LanbaiFogAmount(i.posWS, LanbaiCentreEyePos());
+            #if defined(FOG_EXP) || defined(FOG_EXP2)
+                float fogA = LanbaiFogAmount(i.posWS, LanbaiCentreEyePos());   // same switch as Lanbai/Sea
                 a *= lerp(1.0, 1.0 - fogA, _FogKeep);
+            #endif
                 return float4(_Color.rgb * a, 0.0);
             }
             ENDCG

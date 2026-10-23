@@ -6,7 +6,7 @@
 //    TRAIL   船体生物荧光 300/s, life 1.5–3 s, 1–3 cm with a soft glow, along the hull (F4 on; §6·7a, §6·7b)
 //    BUBBLE  入水 120 bubbles on the glass (≤ 1.5 s, one-shot at F2h) and 40 bubbles from the seat seams (looping)
 //
-//  !!! WRITTEN WITHOUT A UNITY COMPILER (cloud side). Syntax-checked with Slang against a Unity stub only. !!!
+//  !!! WRITTEN WITHOUT A UNITY COMPILER (cloud side). Checked with DXC + Unity 2022.3 CGIncludes (Common/Tools~/compile_check), never in Unity. !!!
 //
 //  MESH CONTRACT (the Act07 builder generates the four meshes from Act07_Layout.json 'particles'; same idea as
 //  lens_tech's Lanbai_PointSprites): every particle = one quad = 4 vertices with the SAME POSITION, UV0 = corner (-1..1)
@@ -18,6 +18,11 @@
 //               TRAIL: x = phase 0..1 in the pool, y = life s · BUBBLE: x = delay s (one-shot) / phase 0..1 (loop), y = duration s
 //    COLOR      rgb = linear colour, a = alpha
 //  GLOBALS: _Udon_T (timeline s), _Udon_SeaBus (xyz = bus origin in the water frame), _Udon_SeaBusVel (xyz m/s, same frame)
+//  QUEUE: Transparent-10 (2990) for everything OUTSIDE the cabin. The seat-seam BUBBLE material (inside the flooded cabin,
+//  between the eye and the glass) sets renderQueue 3010: after the cabin glass (3000, whose Blend DstColor Zero tint
+//  pass must not tint it), before the waterline (3020).
+//  VERTEX COMPRESSION: UV0..UV2 carry seeds, radii and timeline seconds (SEED birth 558-645 s): Player Settings >
+//  Vertex Compression must NOT include TexCoord0..2 (a half has 0.5 s steps at 600 s). README_Sea §2.
 //  BOUNDS: the vertex shader moves every quad (snow wraps around the bus, seeds are fixed in the water frame), so the
 //  generated mesh MUST carry bounds that enclose where it draws (the Act07 builder sets a 4 km box), or Unity culls it.
 //  Billboards face the CENTRE eye; never narrower than _MinPx pixels (energy kept: alpha x coverage); nothing inside
@@ -59,11 +64,11 @@ Shader "Lanbai/SeaParticles"
             #pragma fragment frag
             #pragma target 3.5
             #pragma multi_compile_instancing
+            #pragma multi_compile_fog
             #pragma shader_feature_local _KIND_SNOW _KIND_SEED _KIND_TRAIL _KIND_BUBBLE
             #include "UnityCG.cginc"
             #include "Assets/Lanbai/Common/Shaders/LanbaiVR.cginc"
             #include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc"
-            #include "LanbaiSeaGlobals.cginc"
             #include "Assets/Lanbai/Common/Shaders/LanbaiFog.cginc"
 
             float4 _Tint, _NearFade;
@@ -172,7 +177,11 @@ Shader "Lanbai/SeaParticles"
             #endif
                 float a = i.col.a * shape * _Gain;
                 a *= LanbaiNearFade(i.posWS, _NearFade.x, _NearFade.y);
-                float fogA = LanbaiFogAmount(i.posWS, LanbaiCentreEyePos());
+            #if defined(FOG_EXP) || defined(FOG_EXP2)
+                float fogA = LanbaiFogAmount(i.posWS, LanbaiCentreEyePos());   // same switch as Lanbai/Sea (scene fog off = none)
+            #else
+                float fogA = 0.0;
+            #endif
                 float3 rgb = i.col.rgb;
             #if defined(_KIND_SEED) || defined(_KIND_TRAIL)
                 // emitters: their light is absorbed on the way, no fog colour added

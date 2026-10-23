@@ -2,8 +2,9 @@
 """Sea kit meshes + fallback cubemaps. Run with Blender-as-a-module:  ~/bpy/bin/python Sea/Tools~/make_sea_assets.py
 
   Models/Sea_Disc.fbx      flat disc, r 40 km, polar rings (dense at the centre), normal +Y      (ABOVE / BELOW)
-  Models/Sea_Ceiling.fbx   flat disc, r 3.2 km, faces DOWN (normal -Y)                          (CEILING)
-  Textures/Cube_Dawn_256.exr       act-6 sky (syferfontein_6d_clear_puresky), sun at azimuth +45 deg   (_WindowCube 7a; ABOVE test)
+  Models/Sea_Ceiling.fbx   Sea_Ceiling_Inner (disc r 2.3 km) + Sea_Ceiling_Edge (ring 2.3 .. 3.2 km), faces DOWN (normal -Y),
+                           sharing ONE ring of vertices at 2.3 km (192 segments both sides: no T-junction, no gap)  (CEILING)
+  Textures/Cube_Dawn_256.exr       act-6 sky (syferfontein_6d_clear_puresky), sun at azimuth +30 deg (D-12)  (_WindowCube 7a; ABOVE test)
   Textures/Cube_DuskLower_256.exr  act-8 sky (syferfontein_0d_clear_puresky), sun azimuth 0, LOWER hemisphere = the
                                    'other sky' (-x, -y, z) x 0.82 x (0.92, 0.95, 1.05) (bible §6·8 8-ii)     (_WindowCube 7c; ceiling reflection)
   Textures/Cube_Dusk_256.exr       act-8 sky, upper hemisphere; lower = horizon colour fading to the nadir #3B4A78 (fill)
@@ -71,7 +72,7 @@ def write_exr(arr, path):
 def make_cubes():
     out = os.path.join(KIT, 'Textures')
     hd = os.path.join(REPO, 'FromLocal', 'hdri', 'hdr')
-    dawn = S.Env(S.equirect_from_hdr(S.read_hdr(os.path.join(hd, 'syferfontein_6d_clear_puresky_1k.hdr')), 45.0))
+    dawn = S.Env(S.equirect_from_hdr(S.read_hdr(os.path.join(hd, 'syferfontein_6d_clear_puresky_1k.hdr')), 30.0))   # D-12
     k = zenith_scale(dawn, '#5B7ED7')
     strip = S.clamp_max_channel(strip_from(lambda d: dawn.lookup(d)) * k, 16.0)
     # below the horizon: the bible's lower-hemisphere fog gradient (horizon colour -> nadir #6F8FA8), §6·6 大气
@@ -173,10 +174,13 @@ def make_meshes():
     dome.name = 'Sea_Dome'
     export(dome, os.path.join(KIT, 'Models', 'Sea_Dome.fbx'))
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    # the act-8 ceiling in two pieces (README_Sea接口 §2.4, chief engineer #6): an OPAQUE inner disc r <= 2.4 km and a
-    # TRANSPARENT edge ring 2.4 .. 3.2 km that carries the soft edge (alpha 0.5 at 2.7 km, band 500 m)
-    inner = disc_mesh('Sea_Ceiling_Inner', 2400.0, 26, 96, down=True)
-    ring = ring_mesh('Sea_Ceiling_Edge', 2400.0, 3200.0, 9, 192, down=True)
+    # the act-8 ceiling in two pieces (README_Sea接口 §2.4, chief engineer #6): an OPAQUE inner disc r <= 2.3 km and a
+    # TRANSPARENT edge ring 2.3 .. 3.2 km that carries the soft edge (M_08_SeaCeilingEdge _DiscCenter (0, 0, 2700, 800):
+    # alpha 1 at 2.3 km = the inner disc's edge, 0.5 at 2.7 km, 0 at 3.1 km). The seam radius is where the edge
+    # material's fade STARTS, and both pieces use the same 192 angles there (final review #3: no alpha step, no gap).
+    SEAM, SEGS = 2300.0, 192
+    inner = disc_mesh('Sea_Ceiling_Inner', SEAM, 26, SEGS, down=True)
+    ring = ring_mesh('Sea_Ceiling_Edge', SEAM, 3200.0, 10, SEGS, down=True)
     from export_unity import export_fbx
     export_fbx(os.path.join(KIT, 'Models', 'Sea_Ceiling.fbx'), [inner, ring])
     print('wrote Sea_Ceiling.fbx (Inner + Edge)')

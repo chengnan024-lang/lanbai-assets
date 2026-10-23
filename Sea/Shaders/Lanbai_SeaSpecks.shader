@@ -2,18 +2,23 @@
 //  Lanbai/SeaSpecks   蓝白 · far lamp points in the sea (bible §6·7b '远处点点灯火 PalaceSpecks_Points.fbx') and the
 //                     20–30 golden palace points inside the act-8 sea ceiling (§6·8 构图 8-i; they go LAST, §6·8 8-ii)
 //
-//  !!! WRITTEN WITHOUT A UNITY COMPILER (cloud side). Syntax-checked with Slang against a Unity stub only. !!!
+//  !!! WRITTEN WITHOUT A UNITY COMPILER (cloud side). Checked with DXC + Unity 2022.3 CGIncludes (Common/Tools~/compile_check), never in Unity. !!!
 //
 //  MESH CONTRACT = lens_tech's Lanbai_PointSprites (finite mode): every point = 1 quad = 4 vertices with the SAME
 //  POSITION (object space, m) and UV0 = corner (-1..1); UV1.x = flux (linear peak at the minimum size), UV1.y = radius m;
 //  COLOR rgb = linear colour, a = flicker amount 0..1; UV2.x = flicker phase, UV2.y = flicker Hz (clamped <= 1.5 Hz).
 //  Light: no fog colour, own extinction exp(-d * _Atten) (bible: 灯焰与门光 '_FogMode 2, _Atten 0.004').
 //  Ceiling mode (_CeilingMode 1): each point fades with the ceiling's dissolve, LAST in its own pixel
-//  (LanbaiCeilingLampProgress, same _DissolveTime / _DissolveFront / _DissolvePixel as the ceiling material).
+//  (LanbaiCeilingLampProgress from LanbaiSea.cginc, same _DissolveTime / _DissolveFront / _DissolvePixel as the ceiling
+//  material). The points are ADDED ON TOP of the ceiling and fade only by their own progress (bible: 宫灯最后走).
 //  The points sit ABOVE the ceiling (in the water), but the ceiling's inner disc is opaque and writes depth: so in ceiling
-//  mode every point is moved along its own eye ray to _CeilingGap m BELOW the plane (_Udon_SeaLevel = the ceiling's y),
-//  its radius scaled to keep its angular size, and dimmed by the water it shines through (exp(-_WaterAtten x path)).
-//  Draw order: Transparent-20, after the opaque ceiling, before the cabin glass (3000).
+//  mode every point is moved along its own eye ray to max(_CeilingGap, _CeilingGapRel x distance) BELOW the plane
+//  (_Udon_SeaLevel = the ceiling's y; the relative gap beats 24-bit depth at 2 km), its radius scaled to keep its angular
+//  size, and dimmed by the water it shines through: exp(-_WaterAtten.rgb x path), red absorbed most, so a far lamp turns
+//  cooler and darker, never redder. Colour: the vertex colour is the lamp's SCREEN target in the dark (gold #E0A860,
+//  README_Sea接口 §2.6), not the full-flame fill.
+//  Draw order: Transparent-5 (2995): AFTER the ceiling's transparent edge / fade materials (2990), before the cabin
+//  glass (3000). (Final review BLOCKER: at 2980 the fading ceiling covered every point at 956.36.)
 //  The mesh's bounds must enclose the drawn positions (the builder sets 4 km bounds).
 // =====================================================================================================
 Shader "Lanbai/SeaSpecks"
@@ -26,15 +31,16 @@ Shader "Lanbai/SeaSpecks"
         _Atten ("Extinction per m", Float) = 0.004
         _Flicker ("Flicker amount", Range(0, 0.3)) = 0.06
         _CeilingMode ("Ceiling mode  act 8", Float) = 0
-        _CeilingGap ("Ceiling mode  m below the plane", Float) = 0.5
-        _WaterAtten ("Ceiling mode  water extinction per m", Float) = 0.02
+        _CeilingGap ("Ceiling mode  min m below the plane", Float) = 0.5
+        _CeilingGapRel ("Ceiling mode  gap as a fraction of the distance", Float) = 0.02
+        _WaterAtten ("Ceiling mode  water extinction per m  rgb", Vector) = (0.024, 0.020, 0.017, 0)
         _DissolveTime ("Dissolve clock", Float) = -1
         _DissolveFront ("Dissolve front s", Float) = 4
         _DissolvePixel ("Dissolve per pixel s", Float) = 5
     }
     SubShader
     {
-        Tags { "Queue" = "Transparent-20" "RenderType" = "Transparent" "IgnoreProjector" = "True" "ForceNoShadowCasting" = "True" }
+        Tags { "Queue" = "Transparent-5" "RenderType" = "Transparent" "IgnoreProjector" = "True" "ForceNoShadowCasting" = "True" }
         Blend One One
         ZWrite Off
         Cull Off
@@ -48,10 +54,10 @@ Shader "Lanbai/SeaSpecks"
             #include "UnityCG.cginc"
             #include "Assets/Lanbai/Common/Shaders/LanbaiVR.cginc"
             #include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc"
-            #include "LanbaiSeaGlobals.cginc"
+            #include "LanbaiSea.cginc"                   // LanbaiCeilingLampProgress (+ _DissolveTime / Front / Pixel)
 
-            float4 _Tint;
-            float _Gain, _MinFWHM, _Atten, _Flicker, _CeilingMode, _DissolveTime, _DissolveFront, _DissolvePixel, _CeilingGap, _WaterAtten;
+            float4 _Tint, _WaterAtten;
+            float _Gain, _MinFWHM, _Atten, _Flicker, _CeilingMode, _CeilingGap, _CeilingGapRel;
 
             struct appdata
             {
@@ -81,15 +87,17 @@ Shader "Lanbai/SeaSpecks"
                 float3 eye = LanbaiCentreEyePos();
                 float3 toP = P - eye;
                 float dist = length(toP);
-                float rScale = 1.0, waterT = 1.0;
+                float rScale = 1.0;
+                float3 waterT = 1.0;
                 if (_CeilingMode > 0.5)
                 {
                     float3 dirP = toP / max(dist, 1e-3);
-                    float plane = _Udon_SeaLevel - _CeilingGap;
-                    if (dirP.y > 1e-3 && P.y > plane)
+                    if (dirP.y > 1e-3 && P.y > _Udon_SeaLevel - _CeilingGap)
                     {
-                        float tp = (plane - eye.y) / dirP.y;
-                        waterT = exp(-_WaterAtten * max(dist - tp, 0.0));
+                        float tSurf = (_Udon_SeaLevel - eye.y) / dirP.y;            // where the ray meets the water
+                        float gap = max(_CeilingGap, _CeilingGapRel * tSurf);
+                        float tp = max(tSurf - gap / dirP.y, 0.05);
+                        waterT = exp(-_WaterAtten.rgb * max(dist - tSurf, 0.0));
                         rScale = tp / max(dist, 1e-3);
                         P = eye + dirP * tp;
                         toP = P - eye;
@@ -105,14 +113,10 @@ Shader "Lanbai/SeaSpecks"
                 o.uv = v.uv0;
                 float hz = min(v.uv2.y, 1.5);
                 float fl = 1.0 - _Flicker * v.color.a * (0.5 + 0.5 * sin(6.2831853 * (hz * t + v.uv2.x)));
-                float k = v.uv1.x * _Gain * fl * exp(-dist * _Atten) * waterT * cov * cov;
-                if (_CeilingMode > 0.5 && _DissolveTime >= 0.0)
-                {
-                    float el = degrees(asin(saturate(-fwd.y)));
-                    float p = saturate((_DissolveTime - _DissolveFront * el / 90.0) / max(_DissolvePixel, 0.01));
-                    k *= 1.0 - saturate((p - 0.3) / 0.7);
-                }
-                o.col = v.color.rgb * _Tint.rgb * k;
+                float k = v.uv1.x * _Gain * fl * exp(-dist * _Atten) * cov * cov;
+                if (_CeilingMode > 0.5)
+                    k *= 1.0 - LanbaiCeilingLampProgress(-fwd);
+                o.col = v.color.rgb * _Tint.rgb * waterT * k;
                 return o;
             }
 

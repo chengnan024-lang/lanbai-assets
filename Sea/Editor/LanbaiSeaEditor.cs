@@ -1,7 +1,9 @@
-// 蓝白 · Sea kit (bible §8.1 #7): import settings for Assets/Lanbai/Sea/ only, and the materials of the four sea surfaces.
+// 蓝白 · Sea kit (bible §8.1 #7): import settings for Assets/Lanbai/Sea/ only, and the materials of the sea surfaces.
 // !!! WRITTEN WITHOUT UNITY (cloud side). Type-checked with Roslyn against Unity reference assemblies only. !!!
-// Menu: 蓝白/Sea/Create Materials  (re-runnable: updates the materials in place)
+// Menu: 蓝白/Sea/Create Materials  (re-runnable: updates the materials in place). Every number comes from
+// Assets/Lanbai/Sea/SeaMaterials.json (the same file the reference frames read; README_Sea接口 §2.3 explains each).
 #if UNITY_EDITOR
+using System;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
@@ -44,6 +46,30 @@ namespace Lanbai.Sea.Editor
                 ti.textureCompression = TextureImporterCompression.Uncompressed;   // R8: the bright net is 1-2 texels wide
                 ti.anisoLevel = 2;
             }
+            else if (n.StartsWith("CausticsCookie_"))
+            {
+                // the static fallback cookie of the 7a sun: a built-in directional cookie reads ALPHA (the PNG carries it)
+                ti.textureType = TextureImporterType.Cookie;
+                ti.alphaSource = TextureImporterAlphaSource.FromInput;
+                ti.sRGBTexture = false;
+                ti.maxTextureSize = 256;
+                ti.textureCompression = TextureImporterCompression.Uncompressed;
+            }
+            else if (n.StartsWith("Sea_PurpleCeiling"))
+            {
+                // the purple guard's lookup (LanbaiSea.cginc): exact values, bilinear, no mips, hue wraps, lightness clamps
+                ti.textureType = TextureImporterType.Default;
+                ti.sRGBTexture = false;
+                ti.mipmapEnabled = false;
+                ti.alphaSource = TextureImporterAlphaSource.FromInput;
+                ti.filterMode = FilterMode.Bilinear;
+                ti.anisoLevel = 0;
+                ti.wrapModeU = TextureWrapMode.Repeat;
+                ti.wrapModeV = TextureWrapMode.Clamp;
+                ti.npotScale = TextureImporterNPOTScale.None;
+                ti.maxTextureSize = 512;
+                ti.textureCompression = TextureImporterCompression.Uncompressed;   // RGBA32: a compressed ceiling would let violet through
+            }
             else if (n.StartsWith("SeaMacro_") || n.StartsWith("ShaftStreaks_"))
             {
                 ti.textureType = TextureImporterType.Default;
@@ -62,10 +88,12 @@ namespace Lanbai.Sea.Editor
                 ti.sRGBTexture = false;
                 ti.wrapMode = TextureWrapMode.Clamp;
                 ti.anisoLevel = 0;
+                int face = n.EndsWith("_256") ? 256 : 2048;                            // the fallbacks are 256 per face
+                ti.maxTextureSize = face;
                 var pc = ti.GetPlatformTextureSettings("Standalone");
                 pc.overridden = true;
                 pc.format = TextureImporterFormat.BC6H;                                 // bible §1.6: BC6H, no crunch
-                pc.maxTextureSize = 1536;
+                pc.maxTextureSize = face;
                 ti.SetPlatformTextureSettings(pc);
             }
         }
@@ -86,22 +114,34 @@ namespace Lanbai.Sea.Editor
         }
     }
 
+    // ---- SeaMaterials.json (JsonUtility: arrays of small records, no dictionaries) ----
+    [Serializable] public class SeaSet { public string k; public float[] v; }
+    [Serializable] public class SeaTex { public string k; public string path; }
+    [Serializable] public class SeaMat
+    {
+        public string name; public int mode; public bool transparent; public string ceiling;
+        public SeaSet[] set; public SeaTex[] tex;
+    }
+    [Serializable] public class SeaCeilingCommon { public SeaSet[] set; public SeaSet[] inner; public SeaSet[] edge; public SeaTex[] tex; }
+    [Serializable] public class SeaMaterialsFile { public int version; public SeaMat[] materials; public SeaCeilingCommon ceiling_common; }
+
     public static class LanbaiSeaMaterials
     {
         public const string Root = "Assets/Lanbai/Sea";
 
-        static Color Lin(float r, float g, float b) { return new Color(r, g, b, 0f); }
+        static T Load<T>(string rel) where T : UnityEngine.Object { return AssetDatabase.LoadAssetAtPath<T>(Root + "/" + rel); }
 
-        static T Load<T>(string rel) where T : Object { return AssetDatabase.LoadAssetAtPath<T>(Root + "/" + rel); }
+        static void EnsureFolder()
+        {
+            if (!AssetDatabase.IsValidFolder(Root + "/Materials")) AssetDatabase.CreateFolder(Root, "Materials");
+        }
 
-        /// one material per surface; mode = 0 Above, 1 Below, 2 Ceiling. transparent: null = by mode (Ceiling transparent)
-        public static Material Make(string name, int mode) { return Make(name, mode, mode == 2); }
-
+        /// one material per surface; mode = 0 Above, 1 Below, 2 Ceiling
         public static Material Make(string name, int mode, bool transparent)
         {
             var sh = Shader.Find("Lanbai/Sea");
             if (sh == null) { Debug.LogError("[Lanbai Sea] shader Lanbai/Sea not found (did it compile?)"); return null; }
-            Directory.CreateDirectory(Root + "/Materials");
+            EnsureFolder();
             string path = Root + "/Materials/" + name + ".mat";
             var m = AssetDatabase.LoadAssetAtPath<Material>(path);
             if (m == null) { m = new Material(sh); AssetDatabase.CreateAsset(m, path); }
@@ -122,59 +162,103 @@ namespace Lanbai.Sea.Editor
             return m;
         }
 
+        static void Apply(Material m, SeaSet[] sets)
+        {
+            if (sets == null) return;
+            foreach (var s in sets)
+            {
+                if (s.v == null || s.v.Length == 0) continue;
+                if (!m.HasProperty(s.k)) { Debug.LogWarning("[Lanbai Sea] " + m.name + ": no property " + s.k); continue; }
+                if (s.v.Length == 1) m.SetFloat(s.k, s.v[0]);
+                else m.SetVector(s.k, new Vector4(s.v[0], s.v.Length > 1 ? s.v[1] : 0f, s.v.Length > 2 ? s.v[2] : 0f, s.v.Length > 3 ? s.v[3] : 0f));
+            }
+        }
+
+        static void ApplyTex(Material m, SeaTex[] texs)
+        {
+            if (texs == null) return;
+            foreach (var t in texs)
+            {
+                var tex = Load<Texture>(t.path);
+                if (tex == null) Debug.LogError("[Lanbai Sea] " + m.name + ": texture not found " + Root + "/" + t.path);
+                m.SetTexture(t.k, tex);
+            }
+        }
+
+        // ---- editor-only previews of the _Udon_ globals the drivers will write (README_Sea §0). Shader.SetGlobal* in edit
+        // mode lasts until the next domain reload / Play (CONTROL §6.9): click again after a recompile.
+        [MenuItem("蓝白/Sea/Preview Globals/A · 7a Snell window (underwater)")]
+        public static void PreviewA()
+        {
+            Shader.SetGlobalFloat("_Udon_Underwater", 1f);
+            Shader.SetGlobalVector("_Udon_WaterFogUp", new Vector4(0.0084f, 0.0267f, 0.0639f, 1f));      // #294B72 x 0.38
+            Shader.SetGlobalVector("_Udon_WaterFogMid", new Vector4(0.184f, 0.352f, 0.644f, 1f));       // #77A0D2 (bible 0-15 m)
+            Shader.SetGlobalVector("_Udon_WaterFogDown", new Vector4(0.0159f, 0.0733f, 0.1275f, 1f));
+            Shader.SetGlobalVector("_Udon_Fog", new Vector4(0.040f, 0f, 0f, 1f));                        // F2h..: 0.040 /m
+            Shader.SetGlobalVector("_Udon_FogBase", Vector4.zero);
+            Fog(0.040f, new Color(0.184f, 0.352f, 0.644f));
+            Debug.Log("[Lanbai Sea] preview A: underwater globals set (eye ~6.3 m under the plane, look up 60 deg; compare Docs~/iterations/29_K2_r06)");
+        }
+
+        [MenuItem("蓝白/Sea/Preview Globals/B · 6 sea mirror")]
+        public static void PreviewB()
+        {
+            Shader.SetGlobalFloat("_Udon_Underwater", 0f);
+            Shader.SetGlobalTexture("_Udon_ReflCube", Load<Cubemap>("Textures/Cube_Dawn_256.exr"));
+            Shader.SetGlobalVector("_Udon_ReflCube_HDR", new Vector4(1f, 1f, 0f, 0f));
+            Shader.SetGlobalFloat("_Udon_ReflExposure", 1f);
+            Shader.SetGlobalVector("_Udon_SunDir", new Vector4(0.4973f, 0.1045f, 0.8613f, 1f));          // D-12: az +30, el +6
+            Shader.SetGlobalVector("_Udon_SunDisc", new Vector4(1f, 0.265f, 0f, 1f));                    // D-18: 0.53 deg
+            Shader.SetGlobalVector("_Udon_Fog", new Vector4(0.00012f, 0f, 0f, 1f));                      // bible §6·6
+            Shader.SetGlobalVector("_Udon_FogBase", Vector4.zero);
+            Fog(0.00012f, new Color(1.0f, 0.776f, 0.871f) * 1.24f);                                     // #FFE4F0 @ +0.31
+            var cam = Camera.main;
+            if (cam != null) cam.farClipPlane = 45000f;                                                   // bible: 45 km
+            Debug.Log("[Lanbai Sea] preview B: dawn cube, sun, fog, far clip 45 km (eye 70 m over the plane, pitch -10; compare 33_K1_r05fwd)");
+        }
+
+        [MenuItem("蓝白/Sea/Preview Globals/Clear")]
+        public static void PreviewClear()
+        {
+            Shader.SetGlobalFloat("_Udon_Underwater", 0f);
+            Shader.SetGlobalVector("_Udon_Fog", Vector4.zero);
+            Shader.SetGlobalVector("_Udon_SunDir", Vector4.zero);
+            Shader.SetGlobalVector("_Udon_SunDisc", Vector4.zero);
+            Shader.SetGlobalVector("_Udon_ReflCube_HDR", Vector4.zero);
+        }
+
+        static void Fog(float density, Color c)
+        {
+            RenderSettings.fog = true;
+            RenderSettings.fogMode = FogMode.Exponential;
+            RenderSettings.fogDensity = density;
+            RenderSettings.fogColor = c;
+        }
+
         [MenuItem("蓝白/Sea/Create Materials")]
         public static void CreateAll()
         {
-            // act 6 · sea mirror (the Sky places it; README_Sea接口 §4)
-            var a = Make("M_06_Sea", 0);
-            if (a != null) { a.SetVector("_WaterColor", Lin(0.0156f, 0.0484f, 0.0954f)); }
-            // act 7a · the surface from below: Snell's window
-            var b = Make("M_07a_SeaSurface", 1);
-            if (b != null)
+            var ta = Load<TextAsset>("SeaMaterials.json");
+            if (ta == null) { Debug.LogError("[Lanbai Sea] " + Root + "/SeaMaterials.json not found"); return; }
+            var f = JsonUtility.FromJson<SeaMaterialsFile>(ta.text);
+            foreach (var e in f.materials)
             {
-                b.SetFloat("_AirSide", 1f);
-                b.SetTexture("_WindowCube", Load<Cubemap>("Textures/Cube_Dawn_256.exr"));
-                b.SetVector("_TIRColor", Lin(0.0222f, 0.0685f, 0.1651f));
-            }
-            // act 7c · the inverted window under the bus
-            var c = Make("M_07c_SeaMirror", 1);
-            if (c != null)
-            {
-                c.SetFloat("_AirSide", -1f);
-                c.SetTexture("_WindowCube", Load<Cubemap>("Textures/Cube_DuskLower_256.exr"));
-                c.SetFloat("_TIRCubeGain", 1f);
-                c.SetFloat("_WindowGain", 0f);       // the driver opens it (F8b -> 897.96)
-            }
-            // act 8 · the sea ceiling (the Clouds session places it): Sea_Ceiling.fbx = Sea_Ceiling_Inner (r <= 2.4 km) +
-            // Sea_Ceiling_Edge (2.4 .. 3.2 km). Inner = M_08_SeaCeiling (OPAQUE) until 956.36, then M_08_SeaCeilingFade;
-            // Edge = M_08_SeaCeilingEdge (transparent, the soft 2.7 km edge) throughout. README_Sea接口 §2.4.
-            CeilingCommon(Make("M_08_SeaCeiling", 2, false), false);
-            CeilingCommon(Make("M_08_SeaCeilingEdge", 2, true), true);
-            CeilingCommon(Make("M_08_SeaCeilingFade", 2, true), false);
-            // act 11 · the hanging sea 80 m over the road (the Lamps session places it; Lamps/总导演意见.md §2)
-            var h = Make("M_11_SeaHanging", 2, false);
-            if (h != null)
-            {
-                h.SetVector("_WaterColor", Lin(0.0116f, 0.0296f, 0.0683f));
-                h.SetVector("_DiscCenter", Vector4.zero);
-                h.SetVector("_GerstnerAmp", new Vector4(0.6f, 0.35f, 0.15f, 0f));
-                h.SetFloat("_LampGlints", 1f);
+                var m = Make(e.name, e.mode, e.transparent);
+                if (m == null) return;
+                if (!string.IsNullOrEmpty(e.ceiling) && f.ceiling_common != null)
+                {
+                    // act 8: Sea_Ceiling.fbx = Sea_Ceiling_Inner (r <= 2.3 km) + Sea_Ceiling_Edge (2.3 .. 3.2 km). Inner =
+                    // M_08_SeaCeiling (OPAQUE) until 956.36, then M_08_SeaCeilingFade; Edge = M_08_SeaCeilingEdge. §2.4
+                    Apply(m, f.ceiling_common.set);
+                    Apply(m, e.ceiling == "edge" ? f.ceiling_common.edge : f.ceiling_common.inner);
+                    ApplyTex(m, f.ceiling_common.tex);
+                }
+                Apply(m, e.set);
+                ApplyTex(m, e.tex);
+                EditorUtility.SetDirty(m);
             }
             AssetDatabase.SaveAssets();
-            Debug.Log("[Lanbai Sea] materials written to " + Root + "/Materials");
-        }
-
-        static void CeilingCommon(Material d, bool edge)
-        {
-            if (d == null) return;
-            d.SetVector("_WaterColor", Lin(0.0116f, 0.0296f, 0.0683f));                 // #10263F <- fill #1C304B (S8)
-            d.SetVector("_DiscCenter", edge ? new Vector4(0f, 0f, 2700f, 800f) : Vector4.zero);   // 2.7 km, 800 m band (>= 500, bible)
-            d.SetFloat("_FogHeightFalloff", 120f);                                        // the warm dusk fog must not tint the water overhead violet (D-17)
-            d.SetFloat("_NormalStrength", 0.25f);
-            d.SetVector("_MirrorTint", new Vector4(1f, 1.2f, 0.85f, 0f));               // D-17: the mirror band to gold (h_ab 62)
-            d.SetVector("_PurpleGuard", new Vector4(1f, 0.02f, 0f, 0f));
-            d.SetFloat("_ReflClamp", 8f);
-            d.SetTexture("_SkyBehindCube", Load<Cubemap>("Textures/Cube_Dusk_256.exr"));
+            Debug.Log("[Lanbai Sea] " + f.materials.Length + " materials written to " + Root + "/Materials (from SeaMaterials.json v" + f.version + ")");
         }
     }
 }
