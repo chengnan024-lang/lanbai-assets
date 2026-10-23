@@ -55,6 +55,7 @@ Shader "Lanbai/Sea"
         _TIRColor ("Total internal reflection colour  linear", Vector) = (0.0222, 0.0685, 0.1651, 0)
         _TIRCubeGain ("TIR plus reflection cube", Float) = 0
         _WindowEdgeSoft ("Window edge softness deg", Float) = 0.6
+        _WindowRadial ("Window radial  x factor at the edge  y power  1 2 off", Vector) = (1, 2, 0, 0)
 
         [Header(Ceiling  act 8)]
         [NoScaleOffset] _SkyBehindCube ("Sky behind the ceiling", Cube) = "black" {}

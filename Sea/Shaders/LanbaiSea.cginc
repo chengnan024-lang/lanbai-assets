@@ -215,6 +215,9 @@ float4 _TIRColor;
 float  _TIRCubeGain;
 float  _AirSide;             // +1 air above the plane (7a), -1 air below (7c)
 float  _WindowEdgeSoft;      // deg
+float4 _WindowRadial;        // x = window multiplier AT the critical angle, y = power: lerp(1, x, (theta/theta_c)^y). (1, 2) = off.
+                             // Bible target, not physics: a dawn sky is brightest at its horizon = the window's rim; the
+                             // bible wants a near-white core (#E6F3F8) falling to L6 (#B4D6E3) at the edge (§6·7a 构图)
 
 inline float3 LanbaiSeaWindowCube(float3 dir)
 {
@@ -257,6 +260,7 @@ inline float3 LanbaiSeaBelow(float3 N, float3 I, float slopeVar)
     float crit = asin(1.0 / _IOR);
     float th = acos(saturate(cosI));
     float edge = 1.0 - smoothstep(crit - radians(_WindowEdgeSoft), crit, th);
+    edge *= lerp(1.0, _WindowRadial.x, pow(saturate(th / crit), max(_WindowRadial.y, 0.01)));
     float3 R = reflect(I, Na);                                 // back into the water
     float pr = LanbaiSeaPerceptual(LanbaiSeaAlpha(slopeVar));
     float3 mirror = _TIRColor.rgb + (_TIRCubeGain > 0.0 ? LanbaiSeaCube(R, pr) * _TIRCubeGain : float3(0, 0, 0));

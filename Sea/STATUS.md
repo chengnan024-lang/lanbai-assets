@@ -1,4 +1,4 @@
-2026-10-23 06:40（UTC）· 海套件本体推上来：`Lanbai/Sea`（ABOVE / BELOW / CEILING + 第 11 幕变体）、穹顶、水线、光柱、粒子、灯点、焦散（`Common/Shaders/LanbaiCaustics.cginc`）、FFT 法线 ×2、宏遮罩、焦散序列帧（真的折射模拟）、备用立方图、网格、numpy 移植；Common 检查：除天空的 `_Udon_FogDensity` 重复声明和 CRT 的 SPS-I 误报外全过。下一步：在 Blender / numpy 里出套件的参考图并迭代，然后 7a 包。卡住：无（天空要修 FogDensity，见 给总控.md 第二批）。
+2026-10-23 07:30（UTC）· 海套件：按总工程师 8 条改完；加第 11 幕变体；用标准台迭代参考图（K2 斯涅尔之窗 3 轮，`Docs~/iterations/`）。下一步：K1 海镜、K3 倒置的窗、K4 天花，再开两个独立评审 + 陌生人测试。卡住：无。
 
 ---
 

@@ -173,7 +173,7 @@ DEFAULTS = dict(LargeTile=64.0, SmallTile=9.0, LargeScroll=(0.9, 0.35), SmallScr
                 Smoothness=0.97, ReflGain=1.0, ReflClamp=2.4, WaterColor=(0.0156, 0.0484, 0.0954), DiscCenter=(0, 0, 0, 0),
                 SunColor=(0, 0, 0), SunDir=(0.703, 0.105, 0.703), SunGlitterRough=0.12, SunReflPeakEV=1.3, SunDiscDeg=0.9,
                 AirSide=1.0, WindowGain=1.0, WindowTint=(1, 1, 1), Dispersion=(1.331, 1.337), TIRColor=(0.0222, 0.0685, 0.1651),
-                TIRCubeGain=0.0, WindowEdgeSoft=0.6, DissolveTime=-1.0, DissolveFront=4.0, DissolvePixel=5.0,
+                TIRCubeGain=0.0, WindowEdgeSoft=0.6, WindowRadial=(1.0, 2.0), DissolveTime=-1.0, DissolveFront=4.0, DissolvePixel=5.0,
                 FogMode=1, ReflExposure=1.0,
                 GerstnerLength=(60, 37, 23, 0.08), GerstnerAmp=(0, 0, 0), GerstnerDir=(0.94, 0.34, 0.5, 0.866), LampGlints=0.0, Lamps=())
 
@@ -332,6 +332,8 @@ def below(N, I, var, window_env, refl_env, M):
     crit = math.asin(1.0 / M['IOR'])
     th = np.arccos(saturate(cosI))
     edge = 1.0 - smoothstep(crit - math.radians(M['WindowEdgeSoft']), crit, th)
+    wr = M['WindowRadial']
+    edge = edge * (1.0 + (wr[0] - 1.0) * saturate(th / crit) ** max(wr[1], 0.01))
     R = I - 2 * dot(I, Na)[..., None] * Na
     mirror = np.broadcast_to(np.asarray(M['TIRColor'], np.float32), win.shape).copy()
     if M['TIRCubeGain'] > 0 and refl_env is not None:
