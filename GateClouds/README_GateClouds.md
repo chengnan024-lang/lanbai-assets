@@ -90,7 +90,7 @@
    - 按 U7b 预览一次。可以重复运行（先删上一次搭的）。
 6. **测试场景的 `FromLocal/gate_test/code/LB_GateTest_Run.cs` 第 123、124、127、134 行，再在第 174 行前插一行**（逐行的原文 / 改成：`给本地_补丁_LB_GateTest_Run.md`）：`SetPB(..., on = true)` 每次 Apply 都会把上面关掉的 `Tear_CloudGlow`、`Tear_CloudGlow_Additive`、`Tear_LightLane` 重新打开（光池画两遍、平面光池被云头切碎），`Shaft_00/01` 也每帧开着。**请把这几处改成 `on = false`（或删掉），否则 §8 的截图作废**（技术 r2 #2）。第 5 处就是在 `LB_GateTest.Apply` 的 `SceneView.RepaintAll()` 之前加 `LanbaiGateCloudsBuilder.Apply(t);`（编辑模式预览云塔和卡的 property block；Play / VRChat 里由驱动写）。
 7. 正式场景：分发层按 `LanbaiWindow()` 在窗口内每帧调 `LanbaiTick(t)`，在遮挡下调 `LanbaiActivate(on)`（CONTROL §5）。
-8. **上线前置条件（技术 r2 #4）**：云海依赖的 `_Udon_CloudTop`、`_Udon_GateOrigin`、`_Udon_TearFoot` 现在只有编辑器里的测试脚本写。正式世界里要由**门的总驱动**每帧写（`给总控.md` §3），否则云海不随 v_g 流动、云顶停在 −57.4、峡谷和光池固定不动。
+8. **门的总驱动 `LanbaiGateDriver`**（`Gate/README_GateDriver.md`）每帧写 GateRoot 和全局量。**上线前置条件（技术 r2 #4）**：云海依赖的 `_Udon_CloudTop`、`_Udon_GateOrigin`、`_Udon_TearFoot` 现在只有编辑器里的测试脚本写。正式世界里要由**门的总驱动**每帧写（`给总控.md` §3），否则云海不随 v_g 流动、云顶停在 −57.4、峡谷和光池固定不动。
 
 **读的全局量**（都已登记）：`_Udon_CloudTop`、`_Udon_GateOrigin`、`_Udon_MoonDir`、`_Udon_TearPos`、`_Udon_TearH`、`_Udon_TearFoot`，以及门内会话定义的 `_Udon_InsidePortal`（x = 裂口平面世界 z，y = 1 生效：U9 以后平面另一侧的云海、云卡、光束都不画）。**写的全局量**：`_Udon_FogBandColor = (0.1085, 0.1130, 0.1641, 1)`（第 4 幕的光雾带，给以后所有 `LanbaiFog` 用户；登记表里第 4 幕归门的驱动）。
 
@@ -222,7 +222,7 @@
 1. 用 `LB_GateTest.Shoot` 拍 keyart t = 154.50、U7 t = 155.10、U8 前方 t = 169.65、U8 侧窗 t = 166.45、后窗 t = 177.55。后窗那张：把天空盒、云海、云卡、触手材质的 `_BackBand` 都改成 1.25，拍完改回 0.55。每张配 `Docs~/compare_*.png` 的定稿，量 `gate_metrics.py` 那几项（或总工程师的 `Engineering/render_harness/lbh_grade.py --png`）。
 2. **帧时间**：按 §3.4 的方法（`LB_GateTest.Perf`，U7 / U8 前方，有云 / 没云：没云 = 关掉 `GateRoot/GateClouds` 和 `Tear_Root/GateBeam_Shaft_00/01`）；GPU Profiler / RenderDoc 最贵的几项。
 3. Console 原样（包括 UdonSharp 的）。
-4. **推迟到 `LanbaiGateDriver` 之后**（没有门的总驱动，Play 里云海不会动）：Play 模式 + 头显，云海滚动 10 秒看银边闪不闪；闭左眼、闭右眼各看一遍；车道读起来自然不自然。
+4. **Play 模式 + 头显**（门的总驱动已经有了：`Gate/README_GateDriver.md`；测试场景用 **蓝白/Gate/Build Driver + Test Clock**，进 Play 后云海按 v_g 流动）：云海滚动 10 秒看银边闪不闪；闭左眼、闭右眼各看一遍；车道读起来自然不自然。
 5. Frame Debugger 里确认 `UpdateDepthTexture` 画了云海（ShadowCaster pass）。
 
 ---

@@ -54,14 +54,17 @@ public class LanbaiGateClouds : UdonSharpBehaviour
     // act 4's haze band for every LanbaiFog user (Common/UdonGlobals.md: act 4 = the gate's driver): LANBAI_GATE_NEAR
     private float[] _window;
     private bool _warnedMissing;
-    private Vector4 _fogBand = new Vector4(0.1085f, 0.1130f, 0.1641f, 1f);
+    // act 4's light-fog band colour and until when this driver owns it (U9; then the inside driver): from
+    // GateClouds_Layout.json fog_band (written by the builder; the defaults are the same values)
+    public Vector4 fogBandColor = new Vector4(0.1085f, 0.1130f, 0.1641f, 1f);
+    public float fogBandUntil = 179.55f;
 
     public void LanbaiTick(float time)
     {
         if (_mpb == null) _Init();             // activated and ticked in the same frame: Start has not run yet (tech r1 #9)
         t = time;
         // act 4 only: from U9 the inside-the-gate driver owns the fog band (chief engineer 10-23 06:10, tech r3 #3)
-        if (time < 179.55f) VRCShader.SetGlobalVector(_idFogBand, _fogBand);
+        if (time < fogBandUntil) VRCShader.SetGlobalVector(_idFogBand, fogBandColor);
         Apply();
     }
 
