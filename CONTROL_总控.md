@@ -13,7 +13,7 @@
 | 会话 | 只改这些文件夹 | 分支 |
 |---|---|---|
 | 总导演（蓝白总控安排） | 根目录文档、`HANDOFF_LOG.md`、`Common/UdonGlobals.md`、`Common/Shaders/LanbaiVR.cginc` | `main` |
-| 总导演（车厢，和别的包一样要过审） | `Cabin/` | `pkg/cabin` |
+| **车**（10-23 起，D-10） | `Bus/`、`Cabin/` | `pkg/bus` |
 | 美术审片 | `Review/` | `pkg/review` |
 | 总工程师 | `Common/Tools~/`、`Common/Shaders/LanbaiGlobals.cginc`、`Director/`、`Engineering/`、`Grading/`（维护） | `pkg/engineering` |
 | 门（私密对话） | `GateClouds/`；修补时 `Gate/`、`Tear/`、`Tentacles/` | `pkg/gate-clouds` |

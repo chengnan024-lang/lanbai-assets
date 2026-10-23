@@ -98,7 +98,7 @@ def collect(paths):
             out.append(p)
             continue
         for root, dirs, files in os.walk(p):
-            dirs[:] = [d for d in dirs if not d.startswith('.') and d != '__pycache__']
+            dirs[:] = [d for d in dirs if not d.startswith('.') and not d.endswith('~') and d != '__pycache__']   # Unity ignores '~' folders
             for f in files:
                 if f.endswith(('.shader', '.cginc', '.hlsl')):
                     out.append(os.path.join(root, f))
@@ -134,7 +134,10 @@ def compile_tu(dxc, tu, stage, entry):
 
 def lint_program(rep, where, code, is_surface, frag_entry, vert_entry, prag, reg):
     clean = SL.blank_comments(code)
-    if not is_surface and vert_entry and frag_entry:
+    crt = (vert_entry or '').startswith('CustomRenderTexture') or 'UnityCustomRenderTexture.cginc' in clean
+    if crt:
+        rep.add('INFO', where, 'Custom Render Texture shader (renders into a texture, not to the eyes): SPS-I rules skipped')
+    if not is_surface and vert_entry and frag_entry and not crt:
         for macro in ('UNITY_VERTEX_INPUT_INSTANCE_ID', 'UNITY_VERTEX_OUTPUT_STEREO', 'UNITY_SETUP_INSTANCE_ID',
                       'UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO'):
             if macro not in clean and macro not in _includes_text(code):
