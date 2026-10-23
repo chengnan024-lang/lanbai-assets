@@ -36,12 +36,12 @@
 | `Docs~/compare_{key,U7,U8fwd,U8side,rear}.png` | 全尺寸（key 2560×1072，其余 1920×1080）：上 = 这一版，下 = 定稿 `Gate/Renders/` |
 | `Docs~/deck_only_*.png` | 只有云海（全尺寸），对定稿 |
 | `Docs~/deck_linear_{key,U7}.exr` | 云海的场景线性值（调色前），给审片按引擎复核 S4 |
-| `Docs~/deck_scroll_U7_60fps.mp4` + `Docs~/deck_scroll_frames/` | U7 机位 2 秒、60 fps 的云海滚动（只有云海，960×540），查闪烁用 |
+| `Docs~/deck_scroll_U7_60fps.mp4` + `Docs~/deck_scroll_frames/` | U7 机位 2 秒、60 fps 的云海滚动（只有云海，960×540，不含光池），查闪烁用。**是 v1.4 的代码出的**：v1.5 只挪了光池和脚下的光，没改步进和银边，闪烁的结论不变 |
 | `Docs~/cards_contact.jpg` | 5 张云卡的三个光照通道 |
 | `Docs~/fse_clouds.json` | 透明叠绘（§5.3） |
 | `Docs~/perf_options_crops.png` | 性能方案 B / C 和现在的 1:1 对比（`给总控.md` §1） |
-| `Docs~/iterations/` | 01–10 的迭代记录（每轮一张图一句话） |
-| `Docs~/r4_crops/` | 1:1 前后对比裁图（上 = 第 3 轮，下 = v1.4 终版）：边光碎块、U7 台阶、U8 前方、光池、云谷 |
+| `Docs~/iterations/` | 01–11 的迭代记录（每轮一张图一句话） |
+| `Docs~/r4_crops/` | 1:1 前后对比裁图（上 = 第 3 轮，下 = v1.5）：边光碎块、U7 台阶、U8 前方、光池、云谷 |
 
 ---
 

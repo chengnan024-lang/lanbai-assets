@@ -1,4 +1,4 @@
-2026-10-23 · **可以终审了** · v1.4：终审美术、技术都是有条件通过、没有 BLOCKER（Docs~/reviews/final.md）；共用编译检查 shader 8 文件 0 错 0 警告、C# OK；终版图、裁图、EXR、2 秒滚动 mp4 都是终版代码出的；画质开关（default / auto_lite）+ 本地实测请求；本地补丁 给本地_补丁_LB_GateTest_Run.md · 合并后：LanbaiGateDriver（D-15 第一件）、云塔视差卡、终审余项（README §10 第 10 条）
+2026-10-23 · **门 v1.5 可以合了** · 总导演 v1.4 终审意见的 A1–A6 和 B 全改：光池中心与条带图改到裂口坐标里（keyart 脚下 / 月光路 1.34，圣经 ≥ 1.33）、深度 pass 用 _Steps、Apply 遇空跳过并警告、一种测法、补丁第 5 处、先拷 Common/；终版图 / 裁图 / EXR 用 v1.5 代码重出；共用编译检查 shader 8 文件 0 错 0 警告、C# OK · 合并后：LanbaiGateDriver（D-15）、云塔视差卡、C 类余项
 
 ## 进度
 - [x] 云海 `Lanbai/GateCloudDeck` + `Deck_Detail_1024` / `Deck_Macro_512` + `Source/deck_ref.py`（逐行 numpy 移植）；独立技术审查一轮（移植对照），改完
