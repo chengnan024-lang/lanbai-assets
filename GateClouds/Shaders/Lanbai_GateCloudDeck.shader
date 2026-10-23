@@ -11,7 +11,7 @@
 //      the cauliflower as shading (the detail tile 5x smaller), troughs darker and filled with the haze
 //    * the SOFT SKIN over the heads: where a ray passes over a crest it crosses a thin lit skin -> the silver rims
 //      (forward-scattered moonlight, two-lobe HG); full strength only in the MOON PATH (+-7 deg under the moon,
-//      0.3-2.5 km, x 1.6) and near the tear's FOOT, 45 % elsewhere (art r1 B2); skin met while the ray sinks onto a top
+//      0.3-2.5 km, x 0.9) and near the tear's FOOT, 16 % elsewhere (art r1 B2, r2); skin met while the ray sinks onto a top
 //      it then hits does not count (dark tops, bright silhouettes, like the Blender finals)
 //    * the tear's light POOL x (1 + tint x weight x Tear_CloudLanes) (it was Tear_CloudGlow on the flat cloud-top
 //      plane, which the real billows would cut to pieces: the builder turns Tear_CloudGlow / _Additive / Tear_LightLane
@@ -67,10 +67,11 @@ Shader "Lanbai/GateCloudDeck"
         _Gain ("Gain", Range(0, 3)) = 0.9
 
         [Header(Pool and crevasse  GateLayout clouds.pool  tear.crevasse)]
-        _PoolTint ("Pool tint (dst x (1 + tint x weight)), linear; w = strength", Vector) = (0.607, 0.683, 1.144, 0.4)
+        _PoolTint ("Pool tint (dst x (1 + tint x weight)), linear; w = strength", Vector) = (0.607, 0.683, 1.144, 1.5)
+        _LanesRect ("Tear_CloudLanes rect in the tear frame: x0, x1, y0 (bus side), y1 (far) m", Vector) = (-2000, 2000, -2400, 1600)
         _Crev ("Crevasse: length x S (m), half width / white half width, depth (m), lip height (m)", Vector) = (230, 0.4, 25, 5)
         _CrevGlow ("Crevasse floor glow #C0B9E4 x 0.35, linear", Vector) = (0.184, 0.170, 0.272, 1)
-        _FootPool ("Foot pool: radius (m), offset toward the bus (m), strength, floor under the tops  (x S / 0.64)", Vector) = (120, 60, 2.0, 0.1)
+        _FootPool ("Foot light: radius (m), offset toward the bus (m, < 0 = beyond the foot), strength, floor under the tops  (x S / 0.64)", Vector) = (160, -100, 6.0, 0.1)
         _FootPoolColor ("Foot pool colour #E2E8F3, linear", Vector) = (0.7605, 0.8070, 0.8963, 1)
         _TearFootW ("Tear foot fallback: world xyz, w = white half width (global _Udon_TearFoot wins)", Vector) = (-0.3, -57.4, 1497.6, 76)
 
@@ -114,7 +115,7 @@ Shader "Lanbai/GateCloudDeck"
             float4 _Adapt, _MarchRange, _Comfort;
             float4 _MoonColor, _AmbColor, _Phase, _Skin, _Skin2, _Skin3, _RimWedge, _Surf, _Ms, _Trough;
             float _MoonE, _AmbK, _Gain, _RimVarScale;
-            float4 _PoolTint, _Crev, _CrevGlow, _TearFootW, _FootPool, _FootPoolColor;
+            float4 _PoolTint, _LanesRect, _Crev, _CrevGlow, _TearFootW, _FootPool, _FootPoolColor;
             float4 _FogDensity;
             float _CloudTopY;
             float4 _GateOrigin, _RimDir;
@@ -455,18 +456,22 @@ Shader "Lanbai/GateCloudDeck"
                 float fog = 1.0 - exp(-_FogDensity.x * _FogDensity.y * tHit);
                 float3 c = acc * _Gain * (1.0 - fog) + fogC * fog;
 
-                // the tear's light pool (GateLayout clouds.pool): about (0, 150 S toward the bus) of the foot,
-                // x Tear_CloudLanes (x0..x1 = -2000..2000 m across GateRoot, along = foot.z - z: -2400 (far) .. 1600)
-                float2 pc = float2(r.foot.x, r.foot.z - 180.0 * r.S);
-                float rr = length(ph.xz - pc) / max(r.S / 0.64, 1e-3);
+                // the tear's light pool (GateLayout clouds.pool) in the TEAR FRAME: origin = Tear_Root (the foot is its local
+                // (0.5, 0, -30), i.e. 30 S toward the bus), +y = away from the bus. Centre (0, 150 S) = BEYOND the root;
+                // x Tear_CloudLanes over _LanesRect (x0, x1, y0, y1), v = (y - y0) / (y1 - y0) exactly as Lanbai_Tear (v1.5,
+                // 总导演 A2: v1.4 had the centre on the bus side and the lanes ~800 m off)
+                float2 root = float2(r.foot.x + 0.5 * r.S, r.foot.z - 30.0 * r.S);
+                float2 cf = ph.xz - root;
+                float2 pcd = cf - float2(0.0, 150.0 * r.S);
+                float rr = length(pcd) / max(r.S / 0.64, 1e-3);
                 float wgt = 0.75 * exp(-(rr / 420.0) * (rr / 420.0)) + 0.25 * exp(-rr / 900.0);
-                float2 luv = float2((ph.x - r.O.x + 2000.0) / 4000.0, 1.0 - ((r.foot.z - ph.z) + 2400.0) / 4000.0);
+                float2 luv = float2((cf.x - _LanesRect.x) / (_LanesRect.y - _LanesRect.x), (cf.y - _LanesRect.z) / (_LanesRect.w - _LanesRect.z));
                 if (all(luv >= 0.0) && all(luv <= 1.0))
                     wgt *= tex2Dlod(_LanesTex, float4(luv, 0.0, 0.0)).r;
                 c *= 1.0 + _PoolTint.rgb * (_PoolTint.w * wgt);
 
                 // U9: the bus is through the tear: the deck beyond the tear plane is not drawn into act 4c
-                if (_Udon_InsidePortal.y > 0.5 && ph.z > _Udon_InsidePortal.x) discard;
+                if (_Udon_InsidePortal.y > 0.5 && _WorldSpaceCameraPos.z > _Udon_InsidePortal.x && ph.z > _Udon_InsidePortal.x) discard;
                 FOut o;
                 o.col = half4(c, 1.0);
                 o.depth = DeckDepth(r.ro, r.V, tHit);
@@ -506,10 +511,11 @@ Shader "Lanbai/GateCloudDeck"
                 float tCur = ts * (1.0 + _Adapt.x * (1.0 + 4.0 * jit)) + max(cPrev, 0.0) * _Adapt.z / (r.vy + _Adapt.w) * jit;
                 float tHit = 0.0;
                 bool hit = false;
+                int N = (int)_Steps;                                     // the same cap as the colour pass (v1.5, 总导演 A3)
                 [loop]
-                for (int s = 0; s < 48; s++)
+                for (int s = 0; s < 160; s++)
                 {
-                    if (tPrev >= tEnd) break;
+                    if (s >= N || tPrev >= tEnd) break;
                     float tm = min(tCur, tEnd);
                     DeckSample fs = Field(r, tm, false);
                     float c = fs.c;
@@ -534,7 +540,7 @@ Shader "Lanbai/GateCloudDeck"
                 }
                 // out of steps before tEnd (grazing rays use all 48): the last point marched, not the far plane (tech r3 #2)
                 if (!hit) tHit = (tPrev < tEnd) ? tPrev : clamp((r.ro.y - (r.top + _MarchRange.z)) / r.vy, tEnd, 16000.0);
-                if (_Udon_InsidePortal.y > 0.5 && r.ro.z + r.V.z * tHit > _Udon_InsidePortal.x) discard;
+                if (_Udon_InsidePortal.y > 0.5 && _WorldSpaceCameraPos.z > _Udon_InsidePortal.x && r.ro.z + r.V.z * tHit > _Udon_InsidePortal.x) discard;
                 depth = DeckDepth(r.ro, r.V, tHit);
                 return 0;
             }

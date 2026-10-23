@@ -98,7 +98,6 @@ Shader "Lanbai/TentacleTide"
             #include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc"
             float _FogDensity, _FogCap, _MoonAirFog;
             float4 _FogCapFrom, _FogBaseTip, _RimDir;
-            #include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc"
             float3 TearPosW() { return LanbaiTearPos(); }   // _Udon_TearPos / _TearPos: declared in LanbaiGateSky.cginc
 
             struct appdata

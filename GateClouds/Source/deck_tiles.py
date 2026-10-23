@@ -15,7 +15,7 @@ a moonlit deck), ray-marched per pixel. This script bakes the two periodic tiles
           _AmpRange 0.3 .. 0.8, the range the look was tuned with)
       A = brightness variation (0.75 .. 1.15)
 
-  /tmp/claude-0/venv/bin/python deck_tiles.py [--out ../Textures] [--seed 3]
+  python3 deck_tiles.py [--out ../Textures] [--seed 3]
 
 The numbers the shader needs are written to deck_tiles.json next to the PNGs (and are the shader defaults).
 """

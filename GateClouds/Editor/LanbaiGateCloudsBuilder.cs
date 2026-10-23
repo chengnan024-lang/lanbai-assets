@@ -207,7 +207,7 @@ public static class LanbaiGateCloudsBuilder
         deckMat.SetTexture("_DetailTex", AssetDatabase.LoadAssetAtPath<Texture2D>(kit + "/Textures/" + L.deck.detail));
         deckMat.SetTexture("_MacroTex", AssetDatabase.LoadAssetAtPath<Texture2D>(kit + "/Textures/" + L.deck.macro));
         string lanes = Path.GetDirectoryName(kit).Replace('\\', '/') + "/Gate/Textures/Tear_CloudLanes_1024.png";
-        SetupTexture(lanes, false, false, true);
+        // its import belongs to the gate's own import script (BC7, shared with Lanbai_Tear): not touched here (v1.5)
         deckMat.SetTexture("_LanesTex", AssetDatabase.LoadAssetAtPath<Texture2D>(lanes));
         // the quality tier named in the JSON (deck.quality: "default" | "auto_lite"); an unknown or empty name falls back to
         // "default" with a warning (the material is reused between builds: it must never keep the last build's tier)
@@ -490,8 +490,10 @@ public static class LanbaiGateCloudsBuilder
         var d = dg != null ? dg.GetComponent<LanbaiGateClouds>() : null;
         if (d == null) { Debug.LogWarning("[GateClouds] not built"); return; }
         var mpb = new MaterialPropertyBlock();
+        int missing = 0;                     // v1.5 (总导演 A4): the gate's Build ran after ours -> skip and say so, never throw
         for (int i = 0; i < d.cardRenderers.Length; i++)
         {
+            if (d.cardRenderers[i] == null) { missing++; continue; }
             mpb.Clear();
             mpb.SetFloat("_Mirror", d.cardMirror[i]); mpb.SetFloat("_Gain", d.cardGain[i]); mpb.SetFloat("_Alpha", d.cardOpacity[i]);
             d.cardRenderers[i].SetPropertyBlock(mpb);
@@ -503,6 +505,7 @@ public static class LanbaiGateCloudsBuilder
             float sink = Key(d.sinkKeys, d.sinkStart[i], d.sinkCount[i], t, 0f);
             float a = Key(d.alphaKeys, d.alphaStart[i], d.alphaCount[i], t, 1f);
             Transform tr = d.towers[i];
+            if (tr == null || d.towerRenderers[i] == null) { missing++; continue; }
             Vector3 s = tr.localScale; s.y = d.towerBaseScaleY[i] * sag; tr.localScale = s;
             Vector3 p = tr.localPosition; p.y = d.towerBaseY[i] + sink; tr.localPosition = p;
             d.towerRenderers[i].enabled = a > 0.001f;
@@ -510,5 +513,7 @@ public static class LanbaiGateCloudsBuilder
             mpb.SetFloat("_Mirror", d.towerMirror[i]); mpb.SetFloat("_Gain", d.towerGain[i]); mpb.SetFloat("_Alpha", d.towerOpacity[i] * a);
             d.towerRenderers[i].SetPropertyBlock(mpb);
         }
+        if (missing > 0)
+            Debug.LogWarning("[GateClouds] " + missing + " card / tower renderers are missing (the gate was rebuilt after the clouds): please re-run 蓝白/Gate Clouds/Build");
     }
 }

@@ -8,7 +8,7 @@
 
 可是 `LB_GateTest_Run` 每次 Apply 都用 `SetPB(..., on = true)` 把它们重新打开。不改的话，GateClouds 的截图和帧时间都作废（README_GateClouds §2 第 4 步）。
 
-**怎么改**：只改 `SetPB` 的第 4 个参数（`on`），别的不动，`_Intensity` 等照写（关着的 renderer 写了也无害）。行号按 main 上的版本。
+**怎么改**：前 4 处只改 `SetPB` 的第 4 个参数（`on`），别的不动，`_Intensity` 等照写（关着的 renderer 写了也无害）。行号按 main 上的版本。
 
 | 行 | 原文 | 改成 |
 |---|---|---|
@@ -17,6 +17,10 @@
 | 127 | `SetPB(tear, "Tear_LightLane", mpb, true, "_Intensity", kLane, null, 0f);` | `SetPB(tear, "Tear_LightLane", mpb, false, "_Intensity", kLane, null, 0f);   // GateClouds: the deck draws the pool` |
 | 134 | `if (st != null) SetPB(st, st.name, mpb, true, "_Intensity", F(G(OJ, "shaft"), 0.35f) * F(G(s, "gain"), 1f), null, 0f);` | `if (st != null) SetPB(st, st.name, mpb, false, "_Intensity", F(G(OJ, "shaft"), 0.35f) * F(G(s, "gain"), 1f), null, 0f);   // GateClouds: GateBeam_Shaft_* replace Shaft_00/01` |
 
+| 174 之前（插入一行） | `            SceneView.RepaintAll();` | `            LanbaiGateCloudsBuilder.Apply(t);   // GateClouds: 云塔 / 云卡的 property block，按同一个 t（v1.5）`<br>`            SceneView.RepaintAll();` |
+
+第 5 处在 `LB_GateTest.Apply(string arg)` 的末尾，`return "t = " + …` 之前。`t` 是这个函数开头 `float t = ParseT(arg, 155.10f);` 的那个 t。`LanbaiGateCloudsBuilder` 是全局命名空间里的 Editor 类，在 `Lanbai.Tests` 里可以直接调。`Perf` 和 `Shoot` 都先调 `Apply`，所以截图和帧时间都会带上云塔的状态。
+
 - **125、126 两行**（`Tear_SkyFolds`、`Tear_Halo`）**不改**：它们不归云。
 - `Tear_FootSkyline` / `Tear_FootSkylineIn`：Run 里没有打开它们的代码，Build 关掉就一直关着，**不用改**。
 - 之后的第 128–130 行（`lane.localScale`）照旧，没有影响。
@@ -24,3 +28,9 @@
 **改完以后检查**：
 - 进 Play 前、后各看一眼 Hierarchy：`Tear_Root` 下 `Tear_CloudGlow`、`Tear_CloudGlow_Additive`、`Tear_LightLane`、`Shaft_00`、`Shaft_01` 的 MeshRenderer 都是关的；
 - `GateBeam_Shaft_00/01` 是开的。
+
+**两个 Build 的顺序**（v1.5）：
+1. 先跑本地的 `LB_GateTest.Build`。它搭门，用 10-08 的灯。
+2. 再跑 `蓝白/Gate Clouds/Build`。
+
+以后**每次重跑门的 Build，都要再跑一次云的 Build**，因为门的 Build 会重建门下面的物体，云挂在上面的东西会丢。忘了也不会报错：`Apply` 发现云卡 / 云塔的 renderer 丢了，会跳过并警告"请重跑 Gate Clouds/Build"。

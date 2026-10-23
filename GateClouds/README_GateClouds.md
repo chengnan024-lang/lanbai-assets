@@ -1,4 +1,4 @@
-# 触手之门 · 云套件 GateClouds v1.4（云海、云塔、远云、地平线云团、越远越宽的光束、阴影楔）
+# 触手之门 · 云套件 GateClouds v1.5（云海、云塔、远云、地平线云团、越远越宽的光束、阴影楔）
 
 写的人：云端「门」会话（分支 `pkg/gate-clouds`）。对象：小楠电脑上 Unity 2022.3 那一侧的会话。2026-10-23。
 **这里的 shader 和 C# 都没有在 Unity 里编译过。**
@@ -29,6 +29,7 @@
 ## 0. 先看图
 
 `Docs~/` 里是 `Source/preview_gate.py` 合成的整帧：**云海 + 云卡 + 光束按 Unity shader 的同一套算法算出来**（`deck_ref.py` 是云海 shader 的逐行 numpy 移植），用调色套件的 PPv2 S4 引擎模型调色（`Grading/Tools~/engine/ppv2_engine.py`，无 bloom / 暗角）。触手和裂口不是我们算的，是从本地 10-08 的 Unity 截图贴回去的（只贴和"那张截图的天空 / 平雾"差 10 码以上的像素；裂口周围那圈椭圆是贴图接缝）。
+**合成造成、不是目标的东西**：画面里的平顶黑块（10-08 截图里的触手 / 石碑剪影）、压在云海前面的裂口尖端（截图里没有云海挡它，Unity 里会被云头挡住），以及星星（截图里的天空盒）。这些都不是云套件的画面，评审请不要按它们打分。U8 前方、U8 侧窗和后窗没有 Unity 截图可贴，所以画面里只有云。
 
 | 文件 | 是什么 |
 |---|---|
@@ -46,7 +47,9 @@
 
 ## 1. 交付清单（拷进 Unity 的是整个 `GateClouds/`）
 
-拷到 `Assets/Lanbai/GateClouds/`，和 `Assets/Lanbai/Gate/`、`Assets/Lanbai/Common/` 平级（两个云 shader `#include "Assets/Lanbai/Gate/Shaders/LanbaiGateSky.cginc"`，裂口 shader `#include "Assets/Lanbai/Common/Shaders/LanbaiVR.cginc"`）。`Source/` 是 Python，`Tools~/`、`Docs~/` 带 `~`，Unity 都不编译。
+拷到 `Assets/Lanbai/GateClouds/`，和 `Assets/Lanbai/Gate/`、`Assets/Lanbai/Common/` 平级。
+
+**先把仓库的整个 `Common/` 拷到 `Assets/Lanbai/Common/`**（v1.5，总导演 A1）。门、裂口、远潮、天空盒和三个云 shader 都 `#include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc"`（裂口还要 `LanbaiVR.cginc`），本地以前从来没收到过 `LanbaiGlobals.cginc`。**不拷的话 8 个 shader 全变粉。** 两个云 shader 另外 include `Assets/Lanbai/Gate/Shaders/LanbaiGateSky.cginc`。`Tear/` 旁边以前拷的那份 `LanbaiVR.cginc` 可以删，现在只用 `Common/` 里的。`Source/` 是 Python，`Tools~/`、`Docs~/` 带 `~`，Unity 都不编译。
 
 | 文件 | 是什么 |
 |---|---|
@@ -61,22 +64,33 @@
 | `Runtime/LanbaiGateClouds.cs` | U# 驱动（§6） |
 | `Source/*.py` | 生成器、参照渲染、测量（§9） |
 
+**贴图**（显存合计约 **19–20 MB**，带 mip）：
+| 贴图 | 尺寸 | 导入 / PC 格式 | 显存 |
+|---|---|---|---|
+| `Deck_Detail_1024.png` | 1024² RGBA | 线性（sRGB 关），**不压缩 RGBA32**（高度场压缩会出块） | 5.6 MB |
+| `Deck_Macro_512.png` | 512² RGBA | 同上 | 1.4 MB |
+| `GateCard_Bank / Strato / Wisp.png` | 2048×1024 RGBA | sRGB，BC7，Clamp | 2.8 MB × 3 |
+| `GateCard_Congestus / Puff.png` | 1024² RGBA | sRGB，BC7，Clamp | 1.4 MB × 2 |
+| `Gate/Textures/Tear_CloudLanes_1024.png`（云海读） | 1024² L | **以本地导入脚本为准（BC7）**，云的 Build 不改它的导入 | 1.4 MB |
+
 ---
 
 ## 2. 怎么搭（测试场景 `GateTest.unity` 里先做）
 
-1. 拷 `GateClouds/` 到 `Assets/Lanbai/GateClouds/`；确认 `Assets/Lanbai/Gate/Shaders/LanbaiGateSky.cginc` 和 `Assets/Lanbai/Common/Shaders/LanbaiVR.cginc` 在。把仓库里改过的 `Gate/Shaders/`（远潮 v2.3、TentacleSway v2.7d）和 `Tear/Lanbai_Tear.shader` 一起更新。
-2. **参考相机的 far plane ≥ 20 km**（云海四边形 40 km 见方，挂在 GateRoot 下；远处的平均云面回退到 16 km）。门本来要求 ≥ 14 km，测试场景配的是 45 km。
-3. 打开搭好门的场景（要有 `GateRoot`，裂口根 `Tear_Root` 或 `Tear_Kit` 在它下面）。菜单 **蓝白/Gate Clouds/Build**（或 `LanbaiGateCloudsBuilder.Build()`）。它会：
-   - 设贴图导入：云海两张和 `Gate/Textures/Tear_CloudLanes_1024.png` = sRGB 关、mip、各向异性 4、PC **不压缩 RGBA32**（高度场压缩会出块）；云卡 = sRGB 开、Clamp、mip、PC BC7、Alpha Is Transparency。
+1. **把仓库的整个 `Common/` 拷到 `Assets/Lanbai/Common/`**（没有 `LanbaiGlobals.cginc`，8 个 shader 全粉）；拷 `GateClouds/` 到 `Assets/Lanbai/GateClouds/`；确认 `Assets/Lanbai/Gate/Shaders/LanbaiGateSky.cginc` 在。把仓库里改过的 `Gate/Shaders/`（远潮 v2.3、TentacleSway v2.7d）和 `Tear/Lanbai_Tear.shader` 一起更新。
+2. **两个 Build 的顺序**：先跑本地的 `LB_GateTest.Build`（搭门，用 10-08 的灯），再跑 `蓝白/Gate Clouds/Build`。**以后每次重跑门的 Build，都要再跑一次云的 Build。** 忘了不会出错：`Apply`（编辑器和运行时）发现云卡 / 云塔的 renderer 丢了，会跳过并警告"请重跑 Gate Clouds/Build"。
+3. **远潮材质**：`M_TentacleTide_A / B` 照 §7 填三个值（`_HazeNear`、`_HazeFar`、`_BandEl`，JSON 的 `tide_material` 里也有），或者右键属性 Reset。云的 Build 不改它们。
+4. **参考相机的 far plane ≥ 20 km**（云海四边形 40 km 见方，挂在 GateRoot 下；远处的平均云面回退到 16 km）。门本来要求 ≥ 14 km，测试场景配的是 45 km。
+5. 打开搭好门的场景（要有 `GateRoot`，裂口根 `Tear_Root` 或 `Tear_Kit` 在它下面）。菜单 **蓝白/Gate Clouds/Build**（或 `LanbaiGateCloudsBuilder.Build()`）。它会：
+   - 设贴图导入（`Tear_CloudLanes_1024.png` 不动，归门的导入脚本）：云海两张 = sRGB 关、mip、各向异性 4、PC **不压缩 RGBA32**（高度场压缩会出块）；云卡 = sRGB 开、Clamp、mip、PC BC7、Alpha Is Transparency。
    - 建网格和材质（`GateClouds/Generated/`），在 `GateRoot/GateClouds/` 下建 `Deck`、`Cards/<id>`（37 张）、`Wedges/<id>`（4 道），裂口根下建 `GateBeam_Shaft_00/01`。
    - 关掉 `Tear_CloudGlow`、`Tear_CloudGlow_Additive`、`Tear_LightLane`（光池由云海画）、`Tear_FootSkyline`、`Tear_FootSkylineIn`（脚前的暗云唇：现在裂口脚落进云海真实的云头和峡谷里，美术 r2）以及测试场景的旧等宽光束 `Shaft_00/01`（和 `GateBeam_Shaft_*` 重复，技术 r2 #2）的 renderer。
    - 驱动 `LanbaiGateClouds` 挂在**常开的**物体 `GateClouds_Driver` 上（场景里有 `Director` 就挂在它下面），`root` = `GateRoot/GateClouds`。
    - UdonSharp（反射调用，没有 U# 也能编译）：没有程序资产就建 `Assets/Lanbai/UdonPrograms/LanbaiGateClouds.asset` 并编译；组件经 `UdonSharpUndo.AddComponent`（或 `AddComponent` + `RunBehaviourSetup`）加上；填完数组 `CopyProxyToUdon`；**没有底层 UdonBehaviour 就报错停下**，不会静默完成。
    - 按 U7b 预览一次。可以重复运行（先删上一次搭的）。
-4. **测试场景的 `FromLocal/gate_test/code/LB_GateTest_Run.cs` 第 123、124、127、134 行**（逐行的原文 / 改成：`给本地_补丁_LB_GateTest_Run.md`）：`SetPB(..., on = true)` 每次 Apply 都会把上面关掉的 `Tear_CloudGlow`、`Tear_CloudGlow_Additive`、`Tear_LightLane` 重新打开（光池画两遍、平面光池被云头切碎），`Shaft_00/01` 也每帧开着。**请把这几处改成 `on = false`（或删掉），否则 §8 的截图作废**（技术 r2 #2）。然后在 `LB_GateTest.Apply(t)` 里加一行 `LanbaiGateCloudsBuilder.Apply(t);`（编辑模式预览云塔和卡的 property block；Play / VRChat 里由驱动写）。
-5. 正式场景：分发层按 `LanbaiWindow()` 在窗口内每帧调 `LanbaiTick(t)`，在遮挡下调 `LanbaiActivate(on)`（CONTROL §5）。
-6. **上线前置条件（技术 r2 #4）**：云海依赖的 `_Udon_CloudTop`、`_Udon_GateOrigin`、`_Udon_TearFoot` 现在只有编辑器里的测试脚本写。正式世界里要由**门的总驱动**每帧写（`给总控.md` §3），否则云海不随 v_g 流动、云顶停在 −57.4、峡谷和光池固定不动。
+6. **测试场景的 `FromLocal/gate_test/code/LB_GateTest_Run.cs` 第 123、124、127、134 行，再在第 174 行前插一行**（逐行的原文 / 改成：`给本地_补丁_LB_GateTest_Run.md`）：`SetPB(..., on = true)` 每次 Apply 都会把上面关掉的 `Tear_CloudGlow`、`Tear_CloudGlow_Additive`、`Tear_LightLane` 重新打开（光池画两遍、平面光池被云头切碎），`Shaft_00/01` 也每帧开着。**请把这几处改成 `on = false`（或删掉），否则 §8 的截图作废**（技术 r2 #2）。第 5 处就是在 `LB_GateTest.Apply` 的 `SceneView.RepaintAll()` 之前加 `LanbaiGateCloudsBuilder.Apply(t);`（编辑模式预览云塔和卡的 property block；Play / VRChat 里由驱动写）。
+7. 正式场景：分发层按 `LanbaiWindow()` 在窗口内每帧调 `LanbaiTick(t)`，在遮挡下调 `LanbaiActivate(on)`（CONTROL §5）。
+8. **上线前置条件（技术 r2 #4）**：云海依赖的 `_Udon_CloudTop`、`_Udon_GateOrigin`、`_Udon_TearFoot` 现在只有编辑器里的测试脚本写。正式世界里要由**门的总驱动**每帧写（`给总控.md` §3），否则云海不随 v_g 流动、云顶停在 −57.4、峡谷和光池固定不动。
 
 **读的全局量**（都已登记）：`_Udon_CloudTop`、`_Udon_GateOrigin`、`_Udon_MoonDir`、`_Udon_TearPos`、`_Udon_TearH`、`_Udon_TearFoot`，以及门内会话定义的 `_Udon_InsidePortal`（x = 裂口平面世界 z，y = 1 生效：U9 以后平面另一侧的云海、云卡、光束都不画）。**写的全局量**：`_Udon_FogBandColor = (0.1085, 0.1130, 0.1641, 1)`（第 4 幕的光雾带，给以后所有 `LanbaiFog` 用户；登记表里第 4 幕归门的驱动）。
 
@@ -93,9 +107,9 @@
 - **银边 · 第 4 轮**（美术 r2 BLOCKER / MAJOR）：① 云皮要等离云面的高度**回升一个云皮厚度**才算"越过云顶"（以前任何一点回升都算，菜花噪声让半个顶盖被算成银边 = 撕碎的亮块）；② 撞上时"是不是轮廓"是平滑的斜坡（`_Skin3.xy`），不是开关；③ **每个云头自己的银边**：计入时乘 0.4–1.6（细节贴图换一个偏移和尺度的低频噪声，`_Skin3.zw`、`_RimVarScale`），宽窄亮暗各不相同；④ 越过云顶时离云面不到 1.5 像素的，那一部分像素算云头本身的暗面（`_Skin2.w`），轮廓不再是一阶一阶的亮台阶；⑤（美术 r3）撞上前离云面已经回升了一部分的视线，按回升的比例保留银边（不再被"计入门槛"切成方头的碎块）。
 - **VR 舒适（圣经 §1.8，v ≤ 1.05 d）**：云海以 59 m/s 沿 z 流过，只有车行进路径**横向 ±56 m 以内**的云头会贴近车。这条"车道"里的起伏**按比例压低**到眼下 57 m（形状保留），45 → 140 m 平滑放开。别处不受影响。
 - **峡谷**：从裂口脚朝车方向 230 m × S，宽从白的 20% 收到 0，刻下 25 m，两唇隆起 5 m，谷底 = 白的雾光 `#C0B9E4 × 0.35`。
-- **光池**：`× (1 + (0.607, 0.683, 1.144) × weight × Tear_CloudLanes)`，weight = 0.75 exp(−(r/420 S)²) + 0.25 exp(−r/900 S)，中心在脚朝车 180 S 处（`GateLayout clouds.pool`）。
-- **脚下的光**（第 4 轮，美术 r2 / r3）：裂口照在脚下云头上的光，加法，`#E2E8F3 × 2.0 × exp(−(r / 120 m)²) × lerp(0.1, 1, AO²)`（主要落在云头顶上），中心在脚朝车 60 m（× S / 0.64）；同样的光也算进"越过云顶的那部分像素"（否则被照亮的云头一圈黑描边，美术 r3 #1）。旧的乘法光池 `_PoolTint.w` 降到 0.4（两者叠起来读成一条水平光带，美术 r3 #3）。
-  - 半径为什么是 120 m：U8 时车离脚只有 600 m；250 m 的光池盖住整片近处云海，把它烧成白色泡沫（美术 r3 BLOCKER）。120 m 时 U8 前方画面下 40% 的 p50 / p95 = 36 / 96（第 4 轮初版 83 / 159）。
+- **光池**：`× (1 + (0.607, 0.683, 1.144) × weight × Tear_CloudLanes)`，weight = 0.75 exp(−(r/420 S)²) + 0.25 exp(−r/900 S)，按**裂口坐标**算：原点 = `Tear_Root`（脚在它的本地 (0.5, 0, −30)，即朝车 30 S），+y 背离车。中心在 (0, 150 S)，也就是**根的远侧**；条带图按 `_LanesRect` (−2000, 2000, −2400, 1600) 取，第 0 行 = 远处，和 `Lanbai_Tear` 的 CloudGlow 完全一样（`GateLayout clouds.pool`）。v1.4 把中心放到了车这一侧、条带错开约 800 m（总导演 A2），v1.5 改正。强度 `_PoolTint.w` = 1.5。
+- **脚下的光**（第 4 轮，美术 r2 / r3）：裂口照在脚下云头上的光，加法，`#E2E8F3 × 6.0 × exp(−(r / 160 m)²) × lerp(0.1, 1, AO²)`（主要落在云头顶上），中心在**脚的远侧 100 m**（× S / 0.64，和定稿一样光在白的后面）；同样的光也算进"越过云顶的那部分像素"（否则被照亮的云头一圈黑描边，美术 r3 #1）。v1.5 用这组值让 keyart "脚下中心 / 月光路"（p95，y 740–800）= **1.34**（圣经 ≥ 1.33；v1.4 是 0.79）；U8 前方画面下 40% p50 38、p95 142（D-15 的参照：定稿窗外 p50 63、p90 137）。
+  - 历史：v1.4 初版 250 m 朝车把 U8 前方烧成白泡沫（美术 r3 BLOCKER），v1.4 收到 120 m 朝车，脚下又不够亮（终审 0.79）；v1.5 把光池中心改到远侧（总导演 A2）以后，光放在白的后面，U8 前方（在脚前 600 m）只收到一点，keyart 的脚下才亮得过月光路。
 - **云槽**（第 4 轮）：天光 × AO 降到 0.35（× 0.7），槽里混雾的比例 0.75 → 0.4、强度 0.55 → 0.7（槽更暗、更深，不再被雾抬亮）。
 - **雾**：`LanbaiGateFogColour`（光雾带 + 0.35 月晕）在撞点距离 × 1.3 处混。远处 2.5 km 外用平均云面。
 - **深度图**：第二个 pass（`LightMode = ShadowCaster`，同一个高度场、≤ 48 步、无光照），云海进 `_CameraDepthTexture`：软粒子、裂口的光束 / 褶、云卡的深度淡化都看得到云头。renderer 的 Cast Shadows 仍是 Off。
@@ -121,7 +135,7 @@
 | 远处更快化进雾 | `_FogDensity.y`（1.3） |
 | 光池强弱 | `_PoolTint.w`（0.4） |
 | 云卡底边 | `_Feather`（底部 15% 羽化、天光通道底部 30% 淡掉） |
-| 省性能 | `_Steps`（128 是上限，平均只用 ~21）、`_Adapt.y`（0.05 → 0.09，= `auto_lite`）、`_MarchRange.y`（2500 → 1500） |
+| 省性能 | 只用 `auto_lite`（`_Adapt.y` 0.05 → 0.09，见 §3.4）。不要缩 `_MarchRange.y`：方案 B 在地平线前出一条亮带 |
 | 后窗视角 | 和天空盒一样，`_BackBand` 1.25 |
 
 ### 3.4 性能（**参照渲染里数的，必须在 Unity 实测**）
@@ -133,7 +147,7 @@
   | `default`（默认） | (0.004, **0.05**, 0.9, 0.6) | (12, 2500, 8, 3) | 128 | keyart 24.2、U7 16.4、U8 前方 15.6、U8 侧窗 20.3 |
   | `auto_lite` | (0.004, **0.09**, 0.9, 0.6) | 同上 | 128 | 少 9–16% 步；画面差平均 ≤ 0.08 码、p99 ≤ 1 码（`Docs~/perf_options_crops.png` 的 C） |
   切换：把 JSON 里的 `"quality": "default"` 改成 `"auto_lite"`，重新 Build（名字写错 = 用 `default` 并报警告）。直接在材质上改 `_Adapt.y` 也行，但下一次 Build 会被档位的值盖掉。
-- **请本地实测（推到 `FromLocal/gate_clouds_test/`）**：导入后，在 **U7（t = 155.10）和 U8 前方（t = 169.65）** 两个机位，用 **GPU Profiler** 量第 4 幕的帧时间，**有云海 / 没云海（关掉 `GateRoot/GateClouds/Deck`）各一次**；桌面 + VR 估算，方法同 10-08。有余力再用 `auto_lite` 量一次。附 GPU Profiler 或 RenderDoc 里最贵的几项。总导演拿到真数据以后再定砍哪里。
+- **请本地实测（推到 `FromLocal/gate_clouds_test/`）**：导入后，在 **U7（t = 155.10）和 U8 前方（t = 169.65）** 两个机位（必要时加 U8 侧窗）量第 4 幕的帧时间，**有云 / 没云各一次**。"没云"= 关掉 `GateRoot/GateClouds`（云海、云卡、楔）**和** `Tear_Root/GateBeam_Shaft_00/01`。**只用一种测法**：编辑模式的 `LB_GateTest.Perf` / `Shoot`（`cam=U7`、`cam=U8fwd`）。要看 GPU Profiler / Frame Debugger 时，先用 `StatsBegin("cam=…")` 摆好相机，再在 Game 视图里抓。有余力再用 `auto_lite` 量一次。附 GPU Profiler 或 RenderDoc 里最贵的几项。总导演拿到真数据以后再定砍哪里。
 
 ---
 
@@ -205,10 +219,10 @@
 
 ## 8. 请截图 / 实测（推到 `FromLocal/gate_clouds_test/`）
 和 10-08 同一个测试场景、同样的 HDR 截图方法：
-1. keyart t = 154.50、U7 t = 155.10、U8 前方 t = 169.65、U8 侧窗 t = 166.45、后窗 t = 177.55（后窗时天空盒和云海的 `_BackBand` = 1.25）。每张配 `Docs~/compare_*.png` 的定稿，量 `gate_metrics.py` 那几项（或总工程师的 `Engineering/render_harness/lbh_grade.py --png`）。
-2. **帧时间**：有 / 没有 `GateRoot/GateClouds/Deck`，以及有 / 没有整个 `GateClouds`，桌面 + VR 估算；GPU Profiler / RenderDoc 最贵的几项。
+1. 用 `LB_GateTest.Shoot` 拍 keyart t = 154.50、U7 t = 155.10、U8 前方 t = 169.65、U8 侧窗 t = 166.45、后窗 t = 177.55。后窗那张：把天空盒、云海、云卡、触手材质的 `_BackBand` 都改成 1.25，拍完改回 0.55。每张配 `Docs~/compare_*.png` 的定稿，量 `gate_metrics.py` 那几项（或总工程师的 `Engineering/render_harness/lbh_grade.py --png`）。
+2. **帧时间**：按 §3.4 的方法（`LB_GateTest.Perf`，U7 / U8 前方，有云 / 没云：没云 = 关掉 `GateRoot/GateClouds` 和 `Tear_Root/GateBeam_Shaft_00/01`）；GPU Profiler / RenderDoc 最贵的几项。
 3. Console 原样（包括 UdonSharp 的）。
-4. 头显里：云海滚动 10 秒看银边闪不闪；**闭左眼、闭右眼各看一遍**（抖动、银边、云卡两眼一致）；车道（车正下方压低的云）读起来自然不自然。
+4. **推迟到 `LanbaiGateDriver` 之后**（没有门的总驱动，Play 里云海不会动）：Play 模式 + 头显，云海滚动 10 秒看银边闪不闪；闭左眼、闭右眼各看一遍；车道读起来自然不自然。
 5. Frame Debugger 里确认 `UpdateDepthTexture` 画了云海（ShadowCaster pass）。
 
 ---

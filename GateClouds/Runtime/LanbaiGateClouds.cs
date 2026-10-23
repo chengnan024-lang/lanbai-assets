@@ -53,6 +53,7 @@ public class LanbaiGateClouds : UdonSharpBehaviour
     private int _idAlpha, _idMirror, _idGain, _idFogBand;
     // act 4's haze band for every LanbaiFog user (Common/UdonGlobals.md: act 4 = the gate's driver): LANBAI_GATE_NEAR
     private float[] _window;
+    private bool _warnedMissing;
     private Vector4 _fogBand = new Vector4(0.1085f, 0.1130f, 0.1641f, 1f);
 
     public void LanbaiTick(float time)
@@ -141,6 +142,13 @@ public class LanbaiGateClouds : UdonSharpBehaviour
             p.y = towerBaseY[i] + sink;
             tr.localPosition = p;
             Renderer r = towerRenderers[i];
+            if (r == null)
+            {
+                // the gate was rebuilt after the clouds: skip, warn once (v1.5, 总导演 A4)
+                if (!_warnedMissing) Debug.LogWarning("[GateClouds] a tower renderer is missing: please re-run 蓝白/Gate Clouds/Build");
+                _warnedMissing = true;
+                continue;
+            }
             bool on = a > 0.001f;
             if (r.enabled != on) r.enabled = on;
             if (!on) continue;

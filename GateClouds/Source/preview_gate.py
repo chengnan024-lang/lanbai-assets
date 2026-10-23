@@ -5,7 +5,7 @@ front with Lanbai_GateCloudCard's maths and the deck's depth, then the shafts / 
 a GateLayout_v2.json camera, and grades it with the PPv2 S4 engine model. No arms, no tear (those are Unity's):
 optionally pasted from a Unity screenshot where it shows sky or flat fog (--over).
 
-  /tmp/claude-0/venv/bin/python preview_gate.py key --w 1280 [--over ../../FromLocal/gate_test/keyart_unity_t154.50.png]
+  python3 preview_gate.py key --w 1280 [--over ../../FromLocal/gate_test/keyart_unity_t154.50.png]
 """
 import json
 import math
@@ -243,7 +243,7 @@ def main():
         mk = binary_dilation(mk, iterations=1).astype(float)
         mk = gaussian_filter(mk, 0.8)[..., None]
         img = img * (1 - mk) + ov * mk
-    out = a[a.index('--out') + 1] if '--out' in a else '/tmp/claude-0/gc/prev_%s.png' % camname
+    out = a[a.index('--out') + 1] if '--out' in a else 'prev_%s.png' % camname
     Image.fromarray(np.clip(img, 0, 255).astype(np.uint8)).save(out)
     print('wrote', out)
 

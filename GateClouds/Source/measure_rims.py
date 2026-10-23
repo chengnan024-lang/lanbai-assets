@@ -4,7 +4,7 @@ Deck region = the lowest 45 % of the frame. Rim pixels = brighter than their 15 
 Prints p5 / p50 / p95 / p99.5 of the deck and p95 / p99.5 of the rim pixels (codes, Rec.709 luma of the graded PNG).
 Art r2 targets: rim p99.5 <= 150, rim p95 >= 100, deck p5 ~ 20.
 
-  /tmp/claude-0/venv/bin/python measure_rims.py image.png [...]
+  python3 measure_rims.py image.png [...]
 """
 import sys
 

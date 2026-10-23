@@ -16,7 +16,7 @@ light each card for its own place in the gate:
 Uses the cloud workshop's shapes (Clouds/Source/make_clouds.py: same density builder as the v1 cards and the
 renders' deck).
 
-  /tmp/claude-0/venv/bin/python gate_cards.py [--only Congestus Bank] [--scale 0.5] [--samples 96] [--out ../Textures]
+  python3 gate_cards.py [--only Congestus Bank] [--scale 0.5] [--samples 96] [--out ../Textures]
 """
 import json
 import math

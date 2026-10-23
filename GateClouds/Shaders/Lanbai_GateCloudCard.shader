@@ -127,7 +127,7 @@ Shader "Lanbai/GateCloudCard"
             {
                 UNITY_SETUP_INSTANCE_ID(i);
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
-                if (_Udon_InsidePortal.y > 0.5 && i.wpos.z > _Udon_InsidePortal.x) discard;   // U9: not into act 4c
+                if (_Udon_InsidePortal.y > 0.5 && _WorldSpaceCameraPos.z > _Udon_InsidePortal.x && i.wpos.z > _Udon_InsidePortal.x) discard;   // U9: not into act 4c
                 float mir = UNITY_ACCESS_INSTANCED_PROP(Props, _Mirror);
                 float alphaK = UNITY_ACCESS_INSTANCED_PROP(Props, _Alpha);
                 float2 uv = float2(mir > 0.5 ? 1.0 - i.uv.x : i.uv.x, i.uv.y);

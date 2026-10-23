@@ -4,7 +4,7 @@ Renders the deck exactly as the shader does (same march, same mip choice, same l
 GateLayout_v2.json, then grades it with the engine model of PPv2 S4 (Grading/Tools~/engine/ppv2_engine.py), so the
 result can be compared with the Blender finals (Gate/Renders/*.png) and with the Unity screenshots in FromLocal/.
 
-  /tmp/claude-0/venv/bin/python deck_ref.py key  --w 960 [--tex ../Textures] [--set k=v,...] [--out x.png]
+  python3 deck_ref.py key  --w 960 [--tex ../Textures] [--set k=v,...] [--out x.png]
 
 If you change a number here, change it in the shader (DEFAULTS below = the shader's Properties defaults).
 """
@@ -55,7 +55,7 @@ DEFAULTS = dict(
     RimVarMin=0.4, RimVarMax=1.6, RimVarScale=0.37,
     # round 4 (art r2 MAJOR): the light the tear throws on the deck at its foot: additive, #E2E8F3, gaussian radius
     # FootPoolR m about FootPoolOff m toward the bus from the foot, x the sky-facing term (tops brighter than troughs)
-    FootPoolE=2.0, FootPoolR=120.0, FootPoolOff=60.0, FootPoolAO=0.1, FootPoolCol=(0.7605, 0.8070, 0.8963),
+    FootPoolE=6.0, FootPoolR=160.0, FootPoolOff=-100.0, FootPoolAO=0.1, FootPoolCol=(0.7605, 0.8070, 0.8963),
     # troughs darker and filled with the haze: depth under the local mean (a coarse mip) -> toward the fog colour
     TroughLod=3.5, TroughDepth=18.0, TroughK=0.7, TroughFog=0.4,
     DetailMin=-12.0, DetailMax=56.0, MacroMin=-12.0, MacroMax=12.0, TauMaxD=160.0, TauMaxM=400.0,
@@ -63,7 +63,8 @@ DEFAULTS = dict(
     PeriodD=1600.0, PeriodM=6400.0, MicroScale=5.0, MicroAmp=4.0, MicroEnv=0.35, MicroShade=0.9,
     Clearance=2.0, ComfortD=57.0, LaneW=(45.0, 140.0), Gain=0.9,
     CrevLen=230.0, CrevW=0.4, CrevDepth=25.0, CrevLip=5.0, CrevGlow=(0.184, 0.170, 0.272),
-    PoolTint=(0.607, 0.683, 1.144), PoolK=0.4,      # round 4 r3: x 0.4 (with the foot light it read as a horizontal band)
+    LanesRect=(-2000.0, 2000.0, -2400.0, 1600.0),   # Tear_CloudLanes in the tear frame: x0, x1, y0 (bus side), y1 (far)
+    PoolTint=(0.607, 0.683, 1.144), PoolK=1.5,      # v1.5: centre and lanes fixed (总导演 A2); x1.5 for foot / moon path >= 1.33
     TearH=640.0, TearOpen=0.48,     # reference only (Unity: _Udon_TearH / _Udon_TearFoot)
 )
 MOON_COL = np.array([0.6724, 0.7758, 1.0])                  # #D6E4FF linear
@@ -463,15 +464,18 @@ def render_deck(cam, t, w, h, tex_dir, P, pool=True):
     if pool:
         # round 2 (tech r1 #4): the tear's light POOL is part of the deck now (Tear_CloudGlow lay on the flat cloud-top
         # plane, and the deck's real billows would cut it to pieces): dst x (1 + tint x weight x lanes), weight =
-        # 0.75 exp(-(r/420 S)^2) + 0.25 exp(-r/900 S) about (0, 150 S toward the bus) of the foot (GateLayout clouds.pool)
+        # 0.75 exp(-(r/420 S)^2) + 0.25 exp(-r/900 S) about (0, 150 S) of the TEAR FRAME (GateLayout clouds.pool): origin =
+        # Tear_Root (the foot is at its local (0.5, 0, -30), i.e. 30 S toward the bus of the root), +y = AWAY from the bus.
+        # v1.5 (总导演 A2): the centre lies 150 S BEYOND the root, and the lanes rect is in the same frame (row 0 = y1 = far)
         ph = ro + Vh * thit[:, None]
-        cx, cz = foot_w[0], foot_w[2] - (30.0 + 150.0) * S_t
+        root_x, root_z = foot_w[0] + 0.5 * S_t, foot_w[2] - 30.0 * S_t
+        cx, cz = root_x, root_z + 150.0 * S_t
         r = np.hypot(ph[:, 0] - cx, ph[:, 2] - cz) / max(S_t / 0.64, 1e-3)
         wgt = 0.75 * np.exp(-(r / 420.0) ** 2) + 0.25 * np.exp(-r / 900.0)
         if LANES is not None:
-            u = (ph[:, 0] - O[0] + 2000.0) / 4000.0
-            along = foot_w[2] - ph[:, 2]                      # + toward the bus
-            v = (along + 2400.0) / 4000.0                     # row 0 of the PNG = far (beyond the tear)
+            x0, x1, y0, y1 = P['LanesRect']
+            u = (ph[:, 0] - root_x - x0) / (x1 - x0)
+            v = (y1 - (ph[:, 2] - root_z)) / (y1 - y0)       # PNG row fraction: 0 = far (y1)
             inb = (u >= 0) & (u <= 1) & (v >= 0) & (v <= 1)
             ln = np.ones_like(u)
             hh, ww = LANES.shape
@@ -500,7 +504,7 @@ def main():
     camname = a[0]
     w = int(a[a.index('--w') + 1]) if '--w' in a else 960
     tex = os.path.abspath(a[a.index('--tex') + 1]) if '--tex' in a else os.path.join(KIT, 'Textures')
-    out = a[a.index('--out') + 1] if '--out' in a else '/tmp/claude-0/gc/deck_%s.png' % camname
+    out = a[a.index('--out') + 1] if '--out' in a else 'deck_%s.png' % camname
     P = dict(DEFAULTS)
     if '--set' in a:
         for kv in a[a.index('--set') + 1].split(','):

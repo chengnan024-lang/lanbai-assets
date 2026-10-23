@@ -123,7 +123,7 @@ Shader "Lanbai/GateBeam"
             half4 frag(v2f i) : SV_Target
             {
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
-                if (_Udon_InsidePortal.y > 0.5 && i.wz > _Udon_InsidePortal.x) discard;   // U9: not into act 4c
+                if (_Udon_InsidePortal.y > 0.5 && _WorldSpaceCameraPos.z > _Udon_InsidePortal.x && i.wz > _Udon_InsidePortal.x) discard;   // U9: not into act 4c
                 float x = (i.uv.x * 2.0 - 1.0) * ((_Beam.w > 0.0) ? _Beam.w : 1.0);
                 float z = i.uv.y;
                 float lobe = exp(-_Lobe.x * x * x) * pow(saturate(1.0 - x * x), _Lobe.y);
