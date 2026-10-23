@@ -35,7 +35,7 @@ VRChat 只允许 Udon 写 `_Udon_` 前缀的全局 shader 量（`VRCShader.SetGl
 | `_Udon_OverlayCurve` / `_Udon_OverlayLum` | 曲线（tau、T、模式、呼吸）；(Lfrom, Lto, Lscene, Lover) | 同上 | 同上 |
 | `_Udon_OverlayLobe0..3` / `_Udon_OverlayLead` / `_Udon_OverlayLeadElse` | 方向领先瓣（方向、半角）；各瓣领先秒数；其余方向领先与软边 | 同上 | 同上 |
 | `_Udon_InsidePortal` | float4：x 裂口平面世界 z，y = 1 门户生效（门内驱动在 4c 之前就可能置 1）。**读的 shader 必须每只眼再判断 `_WorldSpaceCameraPos.z > x`，才裁掉 z > x 的东西**；只看 y 会让 U9 之前平面以远的云海、远云和光束整片消失 | 门内驱动 | 门内 shader、**门的 shader / 驱动** |
-| `_Udon_InsideDot` / `_Udon_InsideFibre` / `_Udon_InsideClock` / `_Udon_InsideFog` | 全部 float4：暖白点（核心直径°、辉光直径°、增益）；纤维填色（rgb）+ 增益（a）；丝线时钟（x）；当前区雾色（rgb）+ 密度（a） | 门内驱动 | `Lanbai/InsideLip` 等 |
+| `_Udon_InsideDot` / `_Udon_InsideFibre` / `_Udon_InsideClock` / `_Udon_InsideFog` | 全部 float4：暖白点（x 核心直径°、y 辉光**直径**°（≤ 12，D-20）、z 增益、w 第 5 幕闪光里的辉光倍数）；纤维填色（rgb）+ 增益（a）；丝线时钟（x）；当前区雾色（rgb）+ 密度（a） | 门内驱动 | `Lanbai/InsideLip` 等 |
 | `_Udon_CabinSlice` / `_Udon_CabinSliceColor` | 都是 float4：车厢穿越光带（x 前沿的车坐标 z、y 软边 m、z 指数拖尾长度 m、w 覆盖 0–1）；rgb 颜色 × E、a 窗形遮罩权重 | 门内驱动（第 9 幕镜子也用） | `Lanbai/Cabin` |
 | `_Udon_RadioDial` | float4：rgb 收音机表盘发光填值（线性） | 时间轴 / 门内驱动（4c、5） | `Lanbai/Cabin` |
 | `_Udon_SkyBlend` | float4：x 立方图 A → B、y 程序化权重、z 夜的权重（按方向延迟）、w > 0 已设 | 当前幕（6、8 = 云；9 = 天空） | `Lanbai/Sky` |
