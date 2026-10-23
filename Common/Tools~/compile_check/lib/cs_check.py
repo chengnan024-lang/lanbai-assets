@@ -465,6 +465,14 @@ def lint(files):
                 if code[m.start():m.start() + 9] != 'VRCShader':
                     continue                                    # inside a comment
                 if not name.startswith('_Udon_'):
+                    # only a GLOBAL needs the prefix: the id must reach a SetGlobal* call (directly or through a variable);
+                    # ids used for MaterialPropertyBlock / material properties are fine without it
+                    pre = code[max(0, m.start() - 160):m.start()]
+                    direct = re.search(r'SetGlobal\w*\s*\(\s*$', pre)
+                    var = re.search(r'(\w+)\s*=\s*$', pre)
+                    used_global = bool(direct) or (var is not None and re.search(r'SetGlobal\w*\s*\(\s*%s\b' % re.escape(var.group(1)), code))
+                    if not used_global:
+                        continue
                     msgs.append(('WARN', '%s:%d: VRCShader global "%s" lacks the _Udon_ prefix (VRChat rejects it; CONTROL §3)' % (rel(f), lineof(m.start()), name)))
                 elif not udon_name_ok(name, reg, concat):
                     msgs.append(('WARN', '%s:%d: global "%s%s" is not registered in Common/UdonGlobals.md' % (rel(f), lineof(m.start()), name, '...' if concat else '')))

@@ -1,0 +1,8 @@
+{
+  "_about": "蓝白/Director/Bake Reflection Cubes 的清单（LanbaiReflectionBaker.cs）。每条：name、t（时间轴秒）、eye（车局部坐标，m）、size（每面像素，圣经 §1.6：256）、excludeLayers（不进立方图的层：车、玩家……按本地工程的层名填）、hideSunDisc（太阳的闪光交给 shader 的解析项时为 true）、output。t / eye 是总工程师按圣经和各包的说明先填的，**每个包交付时按自己的需要改这一条并在 README 里写明**。",
+  "bakes": [
+    {"name": "ReflCube_Dawn", "t": 355.0, "eye": [0.55, 1.70, 2.05], "size": 256, "excludeLayers": ["Bus", "Player", "PlayerLocal", "UI"], "hideSunDisc": true, "output": "Assets/Lanbai/Director/ReflCubes", "note": "第 6 幕海镜（6d）：从海面附近看的晨天，含云盖底面（pkg/sea 的请求）；日盘去掉，闪光由 Lanbai/Sea 的解析项给"},
+    {"name": "Refl_S7c", "t": 880.0, "eye": [0.55, 0.30, 2.05], "size": 256, "excludeLayers": ["Bus", "Player", "PlayerLocal", "UI"], "hideSunDisc": false, "output": "Assets/Lanbai/Director/ReflCubes", "note": "7c：车下往上，含宫殿的灯焰（pkg/sea）"},
+    {"name": "ReflCube_DuskLower", "t": 950.0, "eye": [0.55, 1.70, 2.05], "size": 256, "excludeLayers": ["Bus", "Player", "PlayerLocal", "UI"], "hideSunDisc": true, "output": "Assets/Lanbai/Director/ReflCubes", "note": "第 8 幕海之天花反射的下半球暮天；7c 倒置斯涅尔之窗里也用（pkg/sea）"}
+  ]
+}
