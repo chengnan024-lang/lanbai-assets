@@ -67,7 +67,8 @@ def main():
            '//  !!! WRITTEN WITHOUT A UNITY COMPILER; checked with Common/Tools~/compile_check (DXC + Unity CGIncludes). !!!',
            '// =====================================================================================================',
            '#ifndef LANBAI_GLOBALS_INCLUDED', '#define LANBAI_GLOBALS_INCLUDED', '']
-    names = sorted(n for n in reg if not (n not in types and any(k != n and k.startswith(n) for k in reg)))   # drop bare prefixes (`_Udon_Wiper*`)
+    star = set(re.findall(r'`(_Udon_\w+)\*`', md))                                 # `_Udon_Wiper*` is a family, not a name
+    names = sorted(n for n in reg if n not in star)
     for n in names:
         guessed = n not in types and n not in KNOWN
         sib = re.sub(r'\d+$', '', n)

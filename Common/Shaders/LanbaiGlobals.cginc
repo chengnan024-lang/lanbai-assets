@@ -23,6 +23,10 @@ float4 _Udon_CabinFade;
 #define LANBAI_DECL__Udon_CabinLightmap
 float _Udon_CabinLightmap;
 #endif
+#ifndef LANBAI_DECL__Udon_CabinSlice
+#define LANBAI_DECL__Udon_CabinSlice
+float4 _Udon_CabinSlice; // type guessed from the registry row: confirm
+#endif
 #ifndef LANBAI_DECL__Udon_CabinSliceColor
 #define LANBAI_DECL__Udon_CabinSliceColor
 float4 _Udon_CabinSliceColor;
@@ -30,6 +34,10 @@ float4 _Udon_CabinSliceColor;
 #ifndef LANBAI_DECL__Udon_CaseLight
 #define LANBAI_DECL__Udon_CaseLight
 float _Udon_CaseLight;
+#endif
+#ifndef LANBAI_DECL__Udon_Caustics
+#define LANBAI_DECL__Udon_Caustics
+float4 _Udon_Caustics;
 #endif
 #ifndef LANBAI_DECL__Udon_CausticsColor
 #define LANBAI_DECL__Udon_CausticsColor
@@ -71,6 +79,10 @@ float4 _Udon_FlowDirB;
 #define LANBAI_DECL__Udon_FlowMix
 float _Udon_FlowMix;
 #endif
+#ifndef LANBAI_DECL__Udon_Fog
+#define LANBAI_DECL__Udon_Fog
+float4 _Udon_Fog;
+#endif
 #ifndef LANBAI_DECL__Udon_FogBandColor
 #define LANBAI_DECL__Udon_FogBandColor
 float4 _Udon_FogBandColor;
@@ -83,9 +95,33 @@ float4 _Udon_FogBandDir;
 #define LANBAI_DECL__Udon_FogBandWidth
 float _Udon_FogBandWidth;
 #endif
+#ifndef LANBAI_DECL__Udon_FogBase
+#define LANBAI_DECL__Udon_FogBase
+float4 _Udon_FogBase;
+#endif
+#ifndef LANBAI_DECL__Udon_FogBelow
+#define LANBAI_DECL__Udon_FogBelow
+float4 _Udon_FogBelow;
+#endif
+#ifndef LANBAI_DECL__Udon_FogCube
+#define LANBAI_DECL__Udon_FogCube
+samplerCUBE _Udon_FogCube;
+#endif
+#ifndef LANBAI_DECL__Udon_FogCubeParams
+#define LANBAI_DECL__Udon_FogCubeParams
+float4 _Udon_FogCubeParams;
+#endif
 #ifndef LANBAI_DECL__Udon_FogDensity
 #define LANBAI_DECL__Udon_FogDensity
 float _Udon_FogDensity;
+#endif
+#ifndef LANBAI_DECL__Udon_FogModel
+#define LANBAI_DECL__Udon_FogModel
+float4 _Udon_FogModel;
+#endif
+#ifndef LANBAI_DECL__Udon_FogShape
+#define LANBAI_DECL__Udon_FogShape
+float4 _Udon_FogShape;
 #endif
 #ifndef LANBAI_DECL__Udon_GalaxyGain
 #define LANBAI_DECL__Udon_GalaxyGain
@@ -271,6 +307,10 @@ float4 _Udon_MoonDisc;
 #define LANBAI_DECL__Udon_MultReveal
 float4 _Udon_MultReveal;
 #endif
+#ifndef LANBAI_DECL__Udon_NadirColor
+#define LANBAI_DECL__Udon_NadirColor
+float4 _Udon_NadirColor;
+#endif
 #ifndef LANBAI_DECL__Udon_OneDropA
 #define LANBAI_DECL__Udon_OneDropA
 float4 _Udon_OneDropA;
@@ -351,6 +391,14 @@ float4 _Udon_RunClock;
 #define LANBAI_DECL__Udon_RunStretch
 float _Udon_RunStretch;
 #endif
+#ifndef LANBAI_DECL__Udon_SeaBus
+#define LANBAI_DECL__Udon_SeaBus
+float4 _Udon_SeaBus;
+#endif
+#ifndef LANBAI_DECL__Udon_SeaBusVel
+#define LANBAI_DECL__Udon_SeaBusVel
+float4 _Udon_SeaBusVel;
+#endif
 #ifndef LANBAI_DECL__Udon_SeaClock
 #define LANBAI_DECL__Udon_SeaClock
 float4 _Udon_SeaClock;
@@ -386,6 +434,10 @@ float4 _Udon_SunDir;
 #ifndef LANBAI_DECL__Udon_SunDisc
 #define LANBAI_DECL__Udon_SunDisc
 float4 _Udon_SunDisc;
+#endif
+#ifndef LANBAI_DECL__Udon_T
+#define LANBAI_DECL__Udon_T
+float _Udon_T;
 #endif
 #ifndef LANBAI_DECL__Udon_TearBreath
 #define LANBAI_DECL__Udon_TearBreath
