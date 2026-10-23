@@ -67,10 +67,10 @@ Shader "Lanbai/GateCloudDeck"
         _Gain ("Gain", Range(0, 3)) = 0.9
 
         [Header(Pool and crevasse  GateLayout clouds.pool  tear.crevasse)]
-        _PoolTint ("Pool tint (dst x (1 + tint x weight)), linear; w = strength", Vector) = (0.607, 0.683, 1.144, 1)
+        _PoolTint ("Pool tint (dst x (1 + tint x weight)), linear; w = strength", Vector) = (0.607, 0.683, 1.144, 0.4)
         _Crev ("Crevasse: length x S (m), half width / white half width, depth (m), lip height (m)", Vector) = (230, 0.4, 25, 5)
         _CrevGlow ("Crevasse floor glow #C0B9E4 x 0.35, linear", Vector) = (0.184, 0.170, 0.272, 1)
-        _FootPool ("Foot pool: radius (m), offset toward the bus (m), strength, floor under the tops  (x S / 0.64)", Vector) = (250, 60, 1.5, 0.1)
+        _FootPool ("Foot pool: radius (m), offset toward the bus (m), strength, floor under the tops  (x S / 0.64)", Vector) = (120, 60, 2.0, 0.1)
         _FootPoolColor ("Foot pool colour #E2E8F3, linear", Vector) = (0.7605, 0.8070, 0.8963, 1)
         _TearFootW ("Tear foot fallback: world xyz, w = white half width (global _Udon_TearFoot wins)", Vector) = (-0.3, -57.4, 1497.6, 76)
 
@@ -236,6 +236,15 @@ Shader "Lanbai/GateCloudDeck"
                 return lerp(_Skin3.z, _Skin3.w, smoothstep(0.25, 0.75, nz));
             }
 
+            // the tear's light on the deck at its foot (round 4, art r2 / r3): additive, mostly on the tops (AO^2), a radial
+            // gaussian about _FootPool.y m toward the bus from the foot; also in the crest-cover shade (no dark outlines)
+            float3 FootLight(DeckRay r, float3 p, float ao)
+            {
+                float2 dp = p.xz - float2(r.foot.x, r.foot.z - _FootPool.y * r.S / 0.64);
+                float q = length(dp) / max(_FootPool.x * r.S / 0.64, 1e-3);
+                return (_FootPool.z * exp(-q * q) * lerp(_FootPool.w, 1.0, ao * ao)) * _FootPoolColor.rgb;
+            }
+
             float Hash3(float3 q) { return frac(sin(dot(q, float3(12.9898, 78.233, 37.719))) * 43758.5453); }
 
             #if defined(UNITY_REVERSED_Z)
@@ -296,7 +305,9 @@ Shader "Lanbai/GateCloudDeck"
                 float t0 = max((r.ro.y - yTop) / r.vy, 0.0);
                 float t1 = min((r.ro.y - yBot) / r.vy, 16000.0);
                 float tEnd = min(t1, _MarchRange.y);
-                float ts = max(max(t0, _MarchRange.x), 0.5 * (r.ro.y - r.top) / r.vy);
+                // where a head could first be met (tech r3 #1): inside the full comfort lane (|dx| < _Comfort.z) every head
+                // is _Comfort.y under the eye; outside it the march starts at _MarchRange.x (no near head skipped or cut flat)
+                float ts = max(max(t0, _MarchRange.x), min(0.98 * _Comfort.y / r.vy, _Comfort.z / max(abs(r.V.x), 1e-4)));
                 int N = (int)_Steps;
                 // jitter: a hash of the WORLD ray direction quantised at ~1.5 pixels (stereo-consistent, world-locked)
                 float jit = Hash3(floor(r.V / (r.pix * 1.5)));
@@ -312,6 +323,7 @@ Shader "Lanbai/GateCloudDeck"
                 float pendOd = 0.0;
                 float pendCmin = 1e9, pendTmin = 0.0;
                 float3 pendBody = 0.0;
+                float pendRise = 0.0;                                      // rise of the clearance since its minimum
                 float tPrev = ts;                                          // cPrev is taken at ts (tech r2 #1)
                 float tHit = t1;
                 bool hit = false;
@@ -348,12 +360,13 @@ Shader "Lanbai/GateCloudDeck"
                     float3 S = moon * _MoonColor.rgb + (_AmbK * f.d.b) * _AmbColor.rgb;
                     pendOd += od;
                     pendL += od * S;
+                    pendRise = max(pendRise, f.c - pendCmin);
                     if (cb < pendCmin)
                     {
-                        pendCmin = cb; pendTmin = tm;
+                        pendCmin = cb; pendTmin = tm; pendRise = 0.0;
                         // the head's body shade here (for the part of the pixel the crest covers)
                         pendBody = (_MoonE * _Surf.z * f.d.a * exp(-_Surf.x * MoonTauRaw(f) * _Surf.w)) * _MoonColor.rgb
-                                 + (_AmbK * f.d.b) * _AmbColor.rgb;
+                                 + (_AmbK * f.d.b) * _AmbColor.rgb + FootLight(r, r.ro + r.V * tm, f.d.b);
                     }
                     // passed over a crest (the clearance has risen _Skin2.z skins above its minimum): commit the rim
                     if (f.c > pendCmin + _Skin2.z * edge)
@@ -368,13 +381,16 @@ Shader "Lanbai/GateCloudDeck"
                         pendOd = 0.0;
                         pendL = 0.0;
                         pendCmin = 1e9;
+                        pendRise = 0.0;
                     }
                     cPrev = f.c;
                     if (f.c < 0.0)                                     // sank onto a surface
                     {
                         // a silhouette if the ray came closest well before the hit; a lid if right at it
                         float rel = (tm - pendTmin) / (_Skin2.x * max(pendTmin, 1e-3));
-                        float w = lerp(_Skin.z, 1.0, smoothstep(_Skin3.x, _Skin3.y, rel)) * RimVar(r, pendTmin);
+                        // ... or one that had almost passed over (risen most of the commit height): no square-ended rims
+                        float sil = max(smoothstep(_Skin3.x, _Skin3.y, rel), smoothstep(0.0, _Skin2.z * edge, pendRise));
+                        float w = lerp(_Skin.z, 1.0, sil) * RimVar(r, pendTmin);
                         float a = 1.0 - exp(-pendOd * w);
                         acc += T * a / max(pendOd, 1e-9) * pendL;
                         T *= 1.0 - a;
@@ -395,7 +411,9 @@ Shader "Lanbai/GateCloudDeck"
                         break;
                     }
                     tPrev = tm;
-                    tCur = tm + clamp(_Adapt.z * cb / (r.vy + _Adapt.w), _Adapt.x * tm, _Adapt.y * tm);
+                    // clearance-relaxed step, capped at _Adapt.y t except while > 4 skins above the field (no skin there)
+                    float dFree = _Adapt.z * cb / (r.vy + _Adapt.w);
+                    tCur = tm + clamp(dFree, _Adapt.x * tm, (f.c > 4.0 * edge) ? max(_Adapt.y * tm, dFree) : _Adapt.y * tm);
                 }
                 float farW = 0.0;
                 if (!hit)
@@ -423,11 +441,7 @@ Shader "Lanbai/GateCloudDeck"
                 float rim = _Ms.z * _MoonE * phase * exp(-_Skin.w * MoonTauRaw(h)) * farW;
                 float3 surf = ((moonS + rim) * _MoonColor.rgb + (_AmbK * h.d.b) * _AmbColor.rgb) * var
                             + _CrevGlow.rgb * h.crev;                  // the white's own mist on the crevasse floor
-                // the tear's light at its foot (round 4, art r2): additive, mostly on the tops (AO^2); strength matched to the
-                // final U8_forward (deck by the foot p50 / p90 / p99 = 63 / 137 / 183 codes)
-                float2 dp = ph.xz - float2(r.foot.x, r.foot.z - _FootPool.y * r.S / 0.64);
-                float rp = length(dp) / max(_FootPool.x * r.S / 0.64, 1e-3);
-                surf += (_FootPool.z * exp(-rp * rp) * lerp(_FootPool.w, 1.0, h.d.b * h.d.b)) * _FootPoolColor.rgb;
+                surf += FootLight(r, ph, h.d.b);
                 // troughs: how far the hit lies under the local mean surface (a coarse mip) -> toward the haze
                 float3 fogC = LanbaiGateFogColour(r.V, tHit, moonD, (half)_FogDensity.z, 0.0);
                 float lodT = max(log2(max(h.foot, 1e-3) / (_Periods.x * _DetailTex_TexelSize.x)) + _Trough.x, _Trough.x);
@@ -483,7 +497,9 @@ Shader "Lanbai/GateCloudDeck"
                 float t0 = max((r.ro.y - yTop) / r.vy, 0.0);
                 float t1 = min((r.ro.y - yBot) / r.vy, 16000.0);
                 float tEnd = min(t1, _MarchRange.y);
-                float ts = max(max(t0, _MarchRange.x), 0.5 * (r.ro.y - r.top) / r.vy);
+                // where a head could first be met (tech r3 #1): inside the full comfort lane (|dx| < _Comfort.z) every head
+                // is _Comfort.y under the eye; outside it the march starts at _MarchRange.x (no near head skipped or cut flat)
+                float ts = max(max(t0, _MarchRange.x), min(0.98 * _Comfort.y / r.vy, _Comfort.z / max(abs(r.V.x), 1e-4)));
                 float jit = Hash3(floor(r.V / (r.pix * 1.5)));
                 float cPrev = Field(r, ts, false).c;
                 float tPrev = ts;
@@ -495,7 +511,8 @@ Shader "Lanbai/GateCloudDeck"
                 {
                     if (tPrev >= tEnd) break;
                     float tm = min(tCur, tEnd);
-                    float c = Field(r, tm, false).c;
+                    DeckSample fs = Field(r, tm, false);
+                    float c = fs.c;
                     if (c < 0.0)
                     {
                         float lo = tPrev, hi = tm, clo = max(cPrev, 0.0), chi = c;
@@ -512,9 +529,11 @@ Shader "Lanbai/GateCloudDeck"
                     }
                     cPrev = c;
                     tPrev = tm;
-                    tCur = tm + clamp(_Adapt.z * c / (r.vy + _Adapt.w), _Adapt.x * tm, _Adapt.y * tm);
+                    float dFree = _Adapt.z * max(c, 0.0) / (r.vy + _Adapt.w);
+                    tCur = tm + clamp(dFree, _Adapt.x * tm, (c > 4.0 * (_Skin.y + 0.35 * fs.foot)) ? max(_Adapt.y * tm, dFree) : _Adapt.y * tm);
                 }
-                if (!hit) tHit = clamp((r.ro.y - (r.top + _MarchRange.z)) / r.vy, tEnd, 16000.0);   // as the main pass
+                // out of steps before tEnd (grazing rays use all 48): the last point marched, not the far plane (tech r3 #2)
+                if (!hit) tHit = (tPrev < tEnd) ? tPrev : clamp((r.ro.y - (r.top + _MarchRange.z)) / r.vy, tEnd, 16000.0);
                 if (_Udon_InsidePortal.y > 0.5 && r.ro.z + r.V.z * tHit > _Udon_InsidePortal.x) discard;
                 depth = DeckDepth(r.ro, r.V, tHit);
                 return 0;

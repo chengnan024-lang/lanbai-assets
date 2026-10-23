@@ -52,13 +52,15 @@ public class LanbaiGateClouds : UdonSharpBehaviour
     private MaterialPropertyBlock _mpb;
     private int _idAlpha, _idMirror, _idGain, _idFogBand;
     // act 4's haze band for every LanbaiFog user (Common/UdonGlobals.md: act 4 = the gate's driver): LANBAI_GATE_NEAR
+    private float[] _window;
     private Vector4 _fogBand = new Vector4(0.1085f, 0.1130f, 0.1641f, 1f);
 
     public void LanbaiTick(float time)
     {
         if (_mpb == null) _Init();             // activated and ticked in the same frame: Start has not run yet (tech r1 #9)
         t = time;
-        VRCShader.SetGlobalVector(_idFogBand, _fogBand);
+        // act 4 only: from U9 the inside-the-gate driver owns the fog band (chief engineer 10-23 06:10, tech r3 #3)
+        if (time < 179.55f) VRCShader.SetGlobalVector(_idFogBand, _fogBand);
         Apply();
     }
 
@@ -73,7 +75,8 @@ public class LanbaiGateClouds : UdonSharpBehaviour
 
     public float[] LanbaiWindow()
     {
-        return new float[] { windowStart, windowEnd };
+        if (_window == null) _window = new float[] { windowStart, windowEnd };   // no garbage per call
+        return _window;
     }
 
     void Start()
@@ -88,8 +91,7 @@ public class LanbaiGateClouds : UdonSharpBehaviour
         _idAlpha = VRCShader.PropertyToID("_Alpha");
         _idMirror = VRCShader.PropertyToID("_Mirror");
         _idGain = VRCShader.PropertyToID("_Gain");
-        _idFogBand = VRCShader.PropertyToID("_Udon_FogBandColor");
-        VRCShader.SetGlobalVector(_idFogBand, _fogBand);
+        _idFogBand = VRCShader.PropertyToID("_Udon_FogBandColor");     // written in LanbaiTick only (not at world load)
         for (int i = 0; i < cardRenderers.Length; i++)
         {
             if (cardRenderers[i] == null) continue;

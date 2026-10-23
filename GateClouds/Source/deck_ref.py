@@ -27,8 +27,8 @@ CUES = LAYOUT['timeline']['cues']
 
 # ---- the shader's Properties defaults (keep in sync with Lanbai_GateCloudDeck.shader) -------------------------------
 DEFAULTS = dict(
-    # march: exponential steps t_i = t_s (1 + k)^(i + jitter), t_s = max(slab entry, MarchMin, half the way to the
-    # cloud top); k = max(StepK, what reaches MarchMax in Steps); then 5 bisections at the crossing
+    # march: adaptive steps from t_s = max(slab entry, MarchMin, where the ray leaves the full comfort lane); Bisect
+    # bisections at the crossing, then the linear crossing (StepK / k: the old exponential schedule, now only a floor)
     Steps=128, StepK=0.018, KMin=0.004, KMax=0.05, StepC=0.9, Slope=0.6, MarchMin=12.0, MarchMax=2500.0, Bisect=3, LodBias=0.0, AnisoMax=4.0,
     # the soft skin over the heads (the silver rims): column density SkinSigma x exp(-clearance / edge),
     # edge = SkinEdge + 0.35 x footprint; skin met while sinking onto a surface counts SkinApproach
@@ -46,7 +46,7 @@ DEFAULTS = dict(
     RimFoot=3.0, MoonPathDeg=7.0, MoonPathGain=0.9, FootR=600.0, RimOut=0.16,
     # round 4 (art r2 BLOCKER): pending skin commits once the clearance has RISEN RiseK x edge above its minimum (not on any
     # uptick: micro noise committed half lids), and the silhouette test at a hit is a smooth ramp, not a step
-    RiseK=1.0, SilSoft=(0.5, 3.0),
+    RiseK=1.0, SilSoft=(0.5, 3.0), FreeK=4.0,
     # round 4: a ray that passes over a crest closer than CovK pixels (across) is partly covered by the head: that
     # fraction takes the head's body shade (stored at the closest sample) -> a 1-2 px ramp instead of a stair-step
     CovK=1.5,
@@ -55,7 +55,7 @@ DEFAULTS = dict(
     RimVarMin=0.4, RimVarMax=1.6, RimVarScale=0.37,
     # round 4 (art r2 MAJOR): the light the tear throws on the deck at its foot: additive, #E2E8F3, gaussian radius
     # FootPoolR m about FootPoolOff m toward the bus from the foot, x the sky-facing term (tops brighter than troughs)
-    FootPoolE=1.5, FootPoolR=250.0, FootPoolOff=60.0, FootPoolAO=0.1, FootPoolCol=(0.7605, 0.8070, 0.8963),
+    FootPoolE=2.0, FootPoolR=120.0, FootPoolOff=60.0, FootPoolAO=0.1, FootPoolCol=(0.7605, 0.8070, 0.8963),
     # troughs darker and filled with the haze: depth under the local mean (a coarse mip) -> toward the fog colour
     TroughLod=3.5, TroughDepth=18.0, TroughK=0.7, TroughFog=0.4,
     DetailMin=-12.0, DetailMax=56.0, MacroMin=-12.0, MacroMax=12.0, TauMaxD=160.0, TauMaxM=400.0,
@@ -63,7 +63,7 @@ DEFAULTS = dict(
     PeriodD=1600.0, PeriodM=6400.0, MicroScale=5.0, MicroAmp=4.0, MicroEnv=0.35, MicroShade=0.9,
     Clearance=2.0, ComfortD=57.0, LaneW=(45.0, 140.0), Gain=0.9,
     CrevLen=230.0, CrevW=0.4, CrevDepth=25.0, CrevLip=5.0, CrevGlow=(0.184, 0.170, 0.272),
-    PoolTint=(0.607, 0.683, 1.144), PoolK=1.0,
+    PoolTint=(0.607, 0.683, 1.144), PoolK=0.4,      # round 4 r3: x 0.4 (with the foot light it read as a horizontal band)
     TearH=640.0, TearOpen=0.48,     # reference only (Unity: _Udon_TearH / _Udon_TearFoot)
 )
 MOON_COL = np.array([0.6724, 0.7758, 1.0])                  # #D6E4FF linear
@@ -274,6 +274,13 @@ def render_deck(cam, t, w, h, tex_dir, P, pool=True):
     def moon_tau(dd, mm, amp):
         return P['SigmaL'] * (amp * dd[:, 1] * P['TauMaxD'] + mm[:, 1] * P['TauMaxM'])
 
+    def foot_light(pts, ao):
+        """the tear's light on the deck at its foot (round 4): additive, mostly on the tops (AO^2), a radial gaussian"""
+        rp = np.hypot(pts[:, 0] - foot_w[0], pts[:, 2] - (foot_w[2] - P['FootPoolOff'] * S_t / 0.64))
+        q = rp / (P['FootPoolR'] * S_t / 0.64)
+        k = P['FootPoolE'] * np.exp(-q * q) * (P['FootPoolAO'] + (1 - P['FootPoolAO']) * ao * ao)
+        return k[:, None] * np.array(P['FootPoolCol'])[None, :]
+
     def rim_var(tq, sel):
         """per head rim factor RimVarMin..RimVarMax at distance tq along rays sel (one fetch, at a commit)"""
         p = ro + Vh[sel] * tq[:, None]
@@ -288,7 +295,11 @@ def render_deck(cam, t, w, h, tex_dir, P, pool=True):
     thit = t1.copy()
     got = np.zeros(n, bool)
     t_end = np.minimum(t1, P['MarchMax'])
-    t_s = np.maximum(np.maximum(t0, P['MarchMin']), 0.5 * (ro[1] - cloud_top) / vyh)
+    # round 4 r3 (tech r3 #1): start where a head could first be met: while the ray is still inside the full comfort lane
+    # (|dx| < LaneW[0]) every head there is ComfortD under the eye, so nothing before min(ComfortD / vy, LaneW[0] / |Vx|)
+    # can be hit; outside the lane the march starts at MarchMin (no near head skipped, no flat cut at half eye height)
+    t_lane = np.minimum(0.98 * P['ComfortD'] / vyh, P['LaneW'][0] / np.maximum(np.abs(Vh[:, 0]), 1e-4))
+    t_s = np.maximum(np.maximum(t0, P['MarchMin']), t_lane)
     t_prev = t_s.copy()      # round 4 (tech r2 #1): c_prev is taken at t_s, so the bracket starts there too
     k = np.maximum(P['StepK'], (np.maximum(t_end / t_s, 1.0)) ** (1.0 / max(N - 1, 1)) - 1.0)     # reach t_end by step N-1
     # 1) coarse march, EXPONENTIAL steps t_i = t0 (1 + k)^(i + jitter): the vertical step ~ k x eye height everywhere;
@@ -306,6 +317,7 @@ def render_deck(cam, t, w, h, tex_dir, P, pool=True):
     pend_cmin = np.full(n, 1e9)
     pend_tmin = np.zeros(n)
     pend_body = np.zeros((n, 3))
+    pend_rise = np.zeros(n)        # how far the clearance has risen since its minimum (round 4 r3)
     for i in range(N):
         live = (~got) & (t_prev < t_end)
         steps_used[live] += 1
@@ -345,8 +357,9 @@ def render_deck(cam, t, w, h, tex_dir, P, pool=True):
         pend_cmin[idx] = np.where(closer, cb, pend_cmin[idx])
         pend_tmin[idx] = np.where(closer, tm, pend_tmin[idx])
         body = (P['MoonE'] * P['SurfLambert'] * dd[:, 3] * np.exp(-moon_tau(dd, mm, amp) * P['SurfShadow']))[:, None] * MOON_COL \
-            + (P['AmbK'] * dd[:, 2])[:, None] * AMB_COL
+            + (P['AmbK'] * dd[:, 2])[:, None] * AMB_COL + foot_light(ro + Vh[idx] * tm[:, None], dd[:, 2])
         pend_body[idx] = np.where(closer[:, None], body, pend_body[idx])
+        pend_rise[idx] = np.where(closer, 0.0, np.maximum(pend_rise[idx], c - pend_cmin[idx]))
         rising = c > pend_cmin[idx] + P['RiseK'] * edge
         ci = idx[rising]
         po = pend_od[ci]
@@ -359,6 +372,7 @@ def render_deck(cam, t, w, h, tex_dir, P, pool=True):
         pend_od[ci] = 0.0
         pend_L[ci] = 0.0
         pend_cmin[ci] = 1e9
+        pend_rise[ci] = 0.0
         c_prev[idx] = c
         under = c < 0
         hit_i = idx[under]
@@ -367,11 +381,14 @@ def render_deck(cam, t, w, h, tex_dir, P, pool=True):
         # SkinApproach counts
         rel = (tm[under] - pend_tmin[hit_i]) / (P['SilGap'] * np.maximum(pend_tmin[hit_i], 1e-3))
         sil = ss(P.get('SilSoft0', P['SilSoft'][0]), P.get('SilSoft1', P['SilSoft'][1]), rel)
+        # a ray that had almost passed over a crest (risen most of the commit height) keeps most of its rim: the commit
+        # threshold no longer cuts rims into square-ended blocks (art r3 #2)
+        sil = np.maximum(sil, ss(0.0, P['RiseK'] * (P['SkinEdge'] + 0.35 * foot[under]), pend_rise[hit_i]))
         po = pend_od[hit_i] * (P['SkinApproach'] + (1 - P['SkinApproach']) * sil) * rim_var(pend_tmin[hit_i], hit_i)
         a = 1 - np.exp(-po)
         acc[hit_i] += (T[hit_i] * a / np.maximum(pend_od[hit_i], 1e-9))[:, None] * pend_L[hit_i]
         T[hit_i] *= 1 - a
-        # 2) refine the crossing between the previous and this sample (5 bisections)
+        # 2) refine the crossing between the previous and this sample (Bisect bisections)
         lo, hi = t_prev[hit_i], tm[under]
         clo, chi = np.maximum(ca[under], 0.0), c[under]
         for _ in range(int(P['Bisect'])):
@@ -387,7 +404,10 @@ def render_deck(cam, t, w, h, tex_dir, P, pool=True):
         thit[hit_i] = lo + (hi - lo) * clo / np.maximum(clo - chi, 1e-6)
         got[hit_i] = True
         t_prev[idx] = tm
-        dtn = np.clip(P['StepC'] * np.maximum(c, 0) / (vyh[idx] + P['Slope']), P['KMin'] * tm, P['KMax'] * tm)
+        # the step: clearance-relaxed, capped at KMax t, but free of the cap while the ray is > 4 skins above the field
+        # (there the skin adds nothing; this keeps the step count with the earlier start)
+        dfree = P['StepC'] * np.maximum(c, 0) / (vyh[idx] + P['Slope'])
+        dtn = np.clip(dfree, P['KMin'] * tm, np.where(c > P['FreeK'] * edge, np.maximum(P['KMax'] * tm, dfree), P['KMax'] * tm))
         t_cur[idx] = tm + dtn
     # rays that leave the march range (or the slab) unhit: the far deck = the field at the mean-height plane, shaded
     # as a surface at its (heavily filtered) LOD
@@ -422,11 +442,7 @@ def render_deck(cam, t, w, h, tex_dir, P, pool=True):
     surf = ((moon + rim)[:, None] * MOON_COL + (P['AmbK'] * dd[:, 2])[:, None] * AMB_COL) * var[:, None] \
         + np.array(P['CrevGlow'])[None, :] * crev_last[0][:, None]
     # the tear's light at its foot (round 4): additive, x the sky-facing AO (tops catch it, troughs less)
-    if P['FootPoolE'] > 0:
-        php = ro + Vh[gi] * thit[gi][:, None]
-        rp = np.hypot(php[:, 0] - foot_w[0], php[:, 2] - (foot_w[2] - P['FootPoolOff'] * S_t / 0.64))
-        wp = np.exp(-(rp / (P['FootPoolR'] * S_t / 0.64)) ** 2)
-        surf = surf + (P['FootPoolE'] * wp * (P['FootPoolAO'] + (1 - P['FootPoolAO']) * dd[:, 2] ** 2))[:, None] * np.array(P['FootPoolCol'])[None, :]
+    surf = surf + foot_light(ro + Vh[gi] * thit[gi][:, None], dd[:, 2])
     # troughs (round 2): how far the hit lies under the local mean surface (the field at a coarse mip) -> the haze
     fogC = band(Vh, ro, tear) + moon_air(Vh) * P['MoonAirFog']
     ph = ro + Vh[gi] * thit[gi][:, None]

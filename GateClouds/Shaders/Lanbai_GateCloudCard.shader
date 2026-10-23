@@ -133,8 +133,8 @@ Shader "Lanbai/GateCloudCard"
                 float2 uv = float2(mir > 0.5 ? 1.0 - i.uv.x : i.uv.x, i.uv.y);
                 float4 tx = tex2D(_MainTex, uv);
                 // round 4 (art r2): the lowest 15 % of the card feathered, its sky channel over the lowest 30 % (no bright bottom edge)
-                tx.b *= smoothstep(0.0, _Feather.y, i.uv.z);
-                tx.a *= smoothstep(0.0, _Feather.x, i.uv.z);
+                tx.b *= smoothstep(0.0, max(_Feather.y, 1e-4), i.uv.z);
+                tx.a *= smoothstep(0.0, max(_Feather.x, 1e-4), i.uv.z);
 
                 float3 eye = _WorldSpaceCameraPos;
                 float3 V = i.wpos - eye;

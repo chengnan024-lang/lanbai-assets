@@ -62,7 +62,6 @@ Shader "Lanbai/GateBeam"
             float4 _Beam, _Tint, _Lobe, _NearFadeM, _FogDensity, _ViewCone, _TearPosB;
             #include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc"
             UNITY_DECLARE_DEPTH_TEXTURE(_CameraDepthTexture);
-            #include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc"
 
             struct appdata { float4 vertex : POSITION; float2 uv : TEXCOORD0; UNITY_VERTEX_INPUT_INSTANCE_ID };
             struct v2f
