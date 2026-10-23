@@ -216,7 +216,30 @@ def mat_sheet(name, P, fp):
     glow = N.math('MULTIPLY', N.math('ADD', lip, N.math('MULTIPLY', band, foldK)), gr)
     col = N.vmath('ADD', cloth, N.vmath('SCALE', N.rgb(P['fibre']), s=glow))
     col = N.mix(col, N.horizon(fp), N.math('MINIMUM', N.fog_amount(fp['density']), P['fog_cap_cloth']))
+    # r09 (art review r08 B2): cloth-only cues AFTER the fog (a texture-based fold was averaged away by mips and fog):
+    # tension folds radiating from the torn edge (procedural, +-amp) and, on ~15-20 % of the edge, the curled-back face:
+    # a darker band just behind the glowing rim
+    Hk = fo[0] / 0.08
+    tau = 2.0 * math.pi
+    # r10 (art review r09 B2: a phase that depended on the distance to the edge drew iso-lines = strata): the ridges
+    # run ACROSS the tear (constant along the edge normal: phase from u only), each fold 0.05-0.12 H long and tapering
+    ph = N.math('ADD', N.math('MULTIPLY', u_edge, tau / fo[0]),
+                N.math('MULTIPLY', N.math('SINE', N.math('MULTIPLY', u_edge, tau / (2.7 * fo[0]))), 1.7))
+    fold = N.math('ADD', N.math('MULTIPLY', N.math('SINE', ph), 0.65),
+                  N.math('MULTIPLY', N.math('SINE', N.math('ADD', N.math('MULTIPLY', ph, 2.3), 1.1)), 0.35))
+    flen = N.math('ADD', 0.085 * Hk, N.math('MULTIPLY', N.math('SINE', N.math('ADD', N.math('MULTIPLY', u_edge, tau / (0.31 * Hk)), 0.7)), 0.035 * Hk))
+    env = N.math('SUBTRACT', 1.0, N.smooth(0.0, 1.0, N.math('DIVIDE', d_edge, flen)))
+    fk = N.math('ADD', 1.0, N.math('MULTIPLY', N.math('MULTIPLY', fold, fo[2]), env))
+    lw = P['lip_w']
+    band_in = N.math('MULTIPLY', N.smooth(lw * 1.0, lw * 1.6, d_edge),
+                     N.math('SUBTRACT', 1.0, N.smooth(lw + 0.005 * Hk, lw + 0.009 * Hk, d_edge)))
+    cm = N.math('ADD', N.math('SINE', N.math('MULTIPLY', u_edge, tau / (0.05 * Hk))),
+                N.math('MULTIPLY', N.math('SINE', N.math('MULTIPLY', u_edge, tau / (0.017 * Hk))), 0.8))
+    curl = N.math('MULTIPLY', N.smooth(0.9, 1.3, cm), band_in)
+    dk = N.math('SUBTRACT', 1.0, N.math('MULTIPLY', curl, 0.40))
+    col = N.vmath('SCALE', col, s=N.math('MULTIPLY', fk, dk))
     # r07: a hidden / fading lip blends into the fog at infinity (the dome's colour) by its visibility: no pop, no ghost
+    # (r09: after the folds, so a hidden lip carries none)
     col = N.mix(N.horizon(fp), col, float(P.get('vis', 1.0)))
     N.done(N.emission(col))
     return m
@@ -374,6 +397,8 @@ def build(ctx):
                 if z < -400:
                     continue
                 Pp = dict(P, roll=p['roll'])
+                if 1 <= p['i'] <= 3:            # r09 (art review r08 B3): the sleeve's inner cut faces a little lighter
+                    Pp['cloth'] = tuple(np.asarray(P['cloth']) * DR.SLEEVE_INNER_CLOTH_K)
                 mesh(None, 'Ply%d_Sheet' % p['i'], objs['Lip8_Ply%d_Sheet' % p['i']], z, mat_sheet('Ply%d' % p['i'], Pp, fp))
                 if 'Lip8_Ply%d_Fringe' % p['i'] in objs:
                     mesh(None, 'Ply%d_Fringe' % p['i'], objs['Lip8_Ply%d_Fringe' % p['i']], z, mat_fringe('Ply%dF' % p['i'], Pp, fp))

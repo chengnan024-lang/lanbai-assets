@@ -17,12 +17,13 @@ import inside_def as D  # noqa: E402
 import lb_grade as LG  # noqa: E402
 
 OUT = os.path.join(D.HERE, 'out')
-FOG_AHEAD_M = 250.0                     # the fog ahead is the next zone's colour, behind the previous one's
+FOG_AHEAD_M = 100.0                     # the fog ahead is the next zone's colour, behind the previous one's
 FOG_D0, FOG_D1 = 0.0006, D.FOG_DENSITY  # act 4's density -> the inside's, over U9 .. U9 + 2 s (smoothstep)
 NADIR_K = 0.80                          # darker below (review r1 / art review r03)
-SHEET_FOG_CAP, LIP8_HOLD_M, LIP8_RAMP_M = 0.30, 70.0, 60.0
-SLEEVE_FOG_K = 0.75                                    # r07: the air inside the sleeve
-SLEEVE_LOOSE_K = 4.0                                   # r08: loose fibres pulled from the thick cloth, inside the sleeve
+SHEET_FOG_CAP, LIP8_HOLD_M, LIP8_RAMP_M = 0.25, 70.0, 60.0     # r09: cap 0.30 -> 0.25 (art review r08 B2-3; 0.28 lifted 200 by only 0.4 APL and the 197 near sheet to 41)
+SLEEVE_FOG_K = 0.72                                    # r07 / r09: the air inside the sleeve (forward APL; the side window barely depends on it)
+SLEEVE_INNER_CLOTH_K = 1.35                            # r09: the inner plies' cut faces (226 side APL)
+SLEEVE_LOOSE_K = 12.0                                  # r08: loose fibres pulled from the thick cloth, inside the sleeve
 LOOSE_GAIN = 0.25                                      # the shader's _LooseGain (x the current fibre colour)
 
 

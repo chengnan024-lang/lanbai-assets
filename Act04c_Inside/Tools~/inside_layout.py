@@ -97,6 +97,26 @@ def offset_min(poly_m, s_lip, t_cross):
     return worst
 
 
+# r09 (art review r08 B1): the best any lip 7 reaches at 200-210 is 0.68 (H 285 m, 40 m clearance, the dot's sightline
+# kept inside the opening): 0.75 and 0.8 have no solution. Kept as a report, not a constraint.
+LIP7_OFF_MIN = 0.0
+LIP7_SEEN = []
+
+
+def offset_at(poly_m, s_lip, times):
+    """the dot's off-centre fraction (of the half-size) at the given times, min (art review r08 B1 at 200 / 205 / 210)."""
+    pg = Polygon(poly_m)
+    c = np.array(pg.centroid.coords[0])
+    half = 0.5 * np.sqrt(pg.area)
+    d = D.dot_dir()
+    out = 9.0
+    for t in times:
+        dz = s_lip - float(D.dist(t)) - D.HERO_EYE[2]
+        hit = D.HERO_EYE[:2] + d[:2] / d[2] * dz
+        out = min(out, float(np.linalg.norm(hit - c) / half))
+    return out
+
+
 def framing_points(poly_m, s_lip, t_cross):
     t = t_cross - 6.0
     dz = s_lip - float(D.dist(t)) - D.HERO_EYE[2]
@@ -119,6 +139,10 @@ def ply_offsets(toward, seed=811):
         jit.append((float(drift[0] * f + rng.normal(0, 2.5)), float(drift[1] * f + rng.normal(0, 2.5)),
                     float(rng.normal(0, 5.0)), float(rng.uniform(1.0, 1.07))))
     return z, jit
+
+
+# D-16 (总导演裁决): lip 8 = seed 128 / roll 16.54 / offset (-44.69, 10.61) / clearance 52.5 m, approved; kept as is
+PINS = {8: dict(seed=128, roll=16.54, offset=(-44.69, 10.61))}
 
 
 def solve():
@@ -173,6 +197,11 @@ def solve():
                         continue
                     if k >= 5 and offset_min(P, D.S_LIP[k - 1], D.LIP_T[k - 1]) < 0.6:
                         continue
+                    if k == 7:
+                        o7 = offset_at(P, D.S_LIP[6], (200.0, 205.0, 210.0))
+                        LIP7_SEEN.append(o7)
+                        if o7 < LIP7_OFF_MIN:
+                            continue                                # r09 (art review r08 B1): lip 7 must not frame the dot
                     hit, cen = framing_points(P, D.S_LIP[k - 1], D.LIP_T[k - 1])
                     side = np.sign(hit[0] - cen[0])
                     if k > 2 and side == lips[-1].get('dot_side', 0):
@@ -181,8 +210,12 @@ def solve():
                 if best is None or score > best[0]:
                     best = (score, seed, roll, ox, oy, cl, dm, ang, off)
         if best is None:
-            raise SystemExit('lip %d: no layout satisfies the constraints' % k)
+            raise SystemExit('lip %d: no layout satisfies the constraints%s' % (k, (' (lip 7 off-centre at 200-210: best %.2f of %d candidates)' % (max(LIP7_SEEN), len(LIP7_SEEN))) if k == 7 and LIP7_SEEN else ''))
         score, seed, roll, ox, oy, cl, dm, ang, off = best
+        if k in PINS:                                     # D-16: the approved solution must come out unchanged
+            pn = PINS[k]
+            assert int(seed) == pn['seed'] and abs(roll - pn['roll']) < 0.01 and \
+                np.allclose([ox, oy], pn['offset'], atol=0.01), 'lip %d moved away from the approved solution' % k
         polys[k] = lip_polygon(kind, seed, H[k - 1], roll, (ox, oy))
         polys_k = polys[k]
         lips.append(dict(k=k, type=TYPES[k - 1], mesh_kind=kind, seed=int(seed), H=H[k - 1], roll=round(float(roll), 2),

@@ -114,7 +114,8 @@ namespace Lanbai.Inside.Editor
             return 0;
         }
 
-        const float SheetFogCap = 0.30f;
+        const float SheetFogCap = 0.25f;               // r09 (art review r08 B2-3)
+        const float SleeveInnerClothK = 1.35f;         // r09 (art review r08 B3): the sleeve's inner cut faces
 
         static Material MaterialFor(string objName, Shader shader)
         {
@@ -133,7 +134,8 @@ namespace Lanbai.Inside.Editor
             Color fib = InsideLayoutData.FibreFill[ki];
             float dotHaloR = InsideLayoutData.DotFill.r;
             Color cloth = InsideLayoutData.ClothFill;
-            m.SetVector("_ClothColor", new Vector4(cloth.r, cloth.g, cloth.b, 0f));
+            float ck = (objName.StartsWith("Lip8_Ply1") || objName.StartsWith("Lip8_Ply2") || objName.StartsWith("Lip8_Ply3")) ? SleeveInnerClothK : 1f;
+            m.SetVector("_ClothColor", new Vector4(cloth.r * ck, cloth.g * ck, cloth.b * ck, 0f));
             m.SetVector("_FibreColor", new Vector4(fib.r, fib.g, fib.b, 0f));
             m.SetFloat("_Gain", 1f);
             m.SetFloat("_FogCap", part == "SHEET" ? SheetFogCap : 1f);     // r06: the cloth stays 12-20 luma darker than the air beyond it

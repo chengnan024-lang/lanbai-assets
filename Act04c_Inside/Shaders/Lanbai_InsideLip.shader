@@ -233,7 +233,24 @@ Shader "Lanbai/InsideLip"
                 // r07: a hidden / fading lip (the driver's _Gain = visibility, bible "<= 3 lips at once") blends into the
                 // fog at infinity in this direction (the dome's colour): no pop when it appears, no ghost while hidden
                 float3 dirV = normalize(i.wpos - LanbaiCentreEyePos());
-                return float4(lerp(LanbaiHorizon(dirV) * gradeK, Fogged(c, i.wpos), saturate(_Gain)), 1.0);
+                float3 res = Fogged(c, i.wpos);
+                // r09 (art review r08 B2): cloth-only cues AFTER the fog (the texture fold above was averaged away by
+                // mips and fog): procedural tension folds radiating from the torn edge (+-_Folds.z) and, on ~15-20 % of
+                // the edge, the curled-back face: a darker band just behind the glowing rim. H from _Folds.x = 0.08 H.
+                float Hm = _Folds.x / 0.08;
+                // r10 (art review r09 B2): the ridges run ACROSS the tear (phase from u only; a d term drew iso-lines =
+                // strata), each fold 0.05-0.12 H long and tapering
+                float ph = uEdge * 6.2831853 / _Folds.x + 1.7 * sin(uEdge * 6.2831853 / (2.7 * _Folds.x));
+                float fold2 = 0.65 * sin(ph) + 0.35 * sin(2.3 * ph + 1.1);
+                float flen = 0.085 * Hm + 0.035 * Hm * sin(uEdge * 6.2831853 / (0.31 * Hm) + 0.7);
+                float fk = 1.0 + _Folds.z * fold2 * (1.0 - smoothstep(0.0, 1.0, dEdge / flen));
+                float lw = _LipGlowWidth;
+                float bandIn = smoothstep(lw, lw * 1.6, dEdge) * (1.0 - smoothstep(lw + 0.005 * Hm, lw + 0.009 * Hm, dEdge));
+                float cm = sin(uEdge * 6.2831853 / (0.05 * Hm)) + 0.8 * sin(uEdge * 6.2831853 / (0.017 * Hm));
+                float curl = smoothstep(0.9, 1.3, cm) * bandIn;
+                res *= fk * (1.0 - 0.40 * curl);
+                // the hidden / fading blend comes last, so a hidden lip carries no folds (r09)
+                return float4(lerp(LanbaiHorizon(dirV) * gradeK, res, saturate(_Gain)), 1.0);
             #elif defined(_PART_FRINGE)
                 float4 f = tex2D(_FringeTex, i.uv.xy);
                 float3 c = _FibreColor.rgb * f.r * (0.7 + 0.6 * f.b) * _FringeGain * g * i.col.g * gradeK;   // col.g: bundle gaps

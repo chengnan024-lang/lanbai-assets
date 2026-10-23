@@ -37,7 +37,7 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
 
     [Header("Fog (LanbaiFog model B 'gradient'; fills are linear)")]
     public Color[] zoneFill = new Color[8];       // zone k = the air between lip k and k+1 (zone 8 = the coda)
-    public float fogAheadM = 250f;
+    public float fogAheadM = 100f;                 // r09: 250 m brightened the frame too early (210 s +22 %)
     public float fogDensityGate = 0.0006f;
     public float fogDensityInside = 0.0035f;
     public float nadirK = 0.80f;
@@ -46,8 +46,8 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
     // r06 (art review r05 #6): after the sleeve the gradient turns toward the dot and narrows into a radial falloff
     public float codaBandWidthDeg = 40f, codaSideK = 0.45f, codaTopK = 0.38f;
     public float dotAzDeg = -6.5f;
-    public float sleeveFogK = 0.75f, sleeveDepth = 85.51f;     // r07: darker air inside lip 8's sleeve
-    public float sleeveLooseK = 4f;                             // r08: loose fibres x 4 inside the sleeve
+    public float sleeveFogK = 0.72f, sleeveDepth = 85.51f;     // r07 / r09: darker air inside lip 8's sleeve
+    public float sleeveLooseK = 12f;                            // r08-r10: loose fibres x 12 inside the sleeve
     // chief engineer r1 #2: off by default. Tick only after the local timeline has handed act 4c / 5's window
     // (177.55 -> 252.64) to the dispatcher (extWindows, extAtmosphere / extSun); otherwise LB_Journey writes these.
     public bool writeRenderSettings = false;
