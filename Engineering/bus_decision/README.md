@@ -14,6 +14,11 @@
 
 重跑：
 ```bash
-for bus in bible_v2 local_v1; do ...  # 见 Engineering/STATUS.md 10-23 那一行的命令；场景脚本 targets_scene.py，标注 annotate.py
-~/bpy/bin/python Engineering/bus_decision/annotate.py <渲染输出目录> Engineering/bus_decision/out
+H=Engineering/render_harness; B=Engineering/bus_decision
+for bus in bible_v2 local_v1; do cam=hero; [ $bus = local_v1 ] && cam=hero_journey
+  for v in "fwd 0 0 110" "up 0 45 100" "door 40 5 100"; do set -- $v
+    ~/bpy/bin/python $H/lbh_render.py --scene $B/targets_scene.py --cam $cam --bus $bus --yaw $2 --pitch $3 --hfov $4 \
+        --res 960x540 --samples 16 --grade S10 --interior-ambient 0.08,0.08,0.09 --out /tmp/busdec/${bus}_$1
+  done; done
+~/bpy/bin/python $B/annotate.py /tmp/busdec $B/out
 ```
