@@ -1,4 +1,4 @@
-2026-10-22 20:40（北京 10-23 04:40）· M-A 推了：十三面镜两段时间表 `MirrorSchedule.json`（+ 生成器与核对，全部 PASS）、白的曲线 `Act10_White/WhiteSchedule.json`、lookdev brief。下一步：镜子网格 + LOD、贴图、`Lanbai/BronzeMirror` shader 与 numpy 移植，Blender 第 1 轮。卡点：无（遮罩 v2、Director 的曝光归属、天空第 9 幕的全局量含义见 `给总控.md`）。
+2026-10-23 06:10 UTC · **已暂停**（总导演通知）。做到：时间表 + 白曲线已推（ad41f5c）；三个 shader 初稿（BronzeMirror / MirrorStars / MirrorDust + LanbaiMirror.cginc）、接口约定、形制考据、网格脚本半成品作为 WIP 推上。下一步见 `暂停总结.md`。卡点：额度（建模 / 贴图 / 星空环境三个 agent 因额度失败，没有产出）。
 
 # 镜与白 · 进度
 
