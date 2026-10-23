@@ -13,7 +13,9 @@
    - `InsideRoot`：8 重光唇 + 袖，`Lanbai/InsideLip`，开始时**不激活**，由驱动打开；
    - `Inside_BusAnchored`：穹、松散的丝线、暖白点，跟着车；
    - `LanbaiInsideDriver`（UdonSharp）和它的程序资产。字段由 `Editor/InsideLayoutData.cs` 填，这个文件由 `InsideLayout.json` 生成。
-   搭完**手动**连三个引用：驱动的 `overlay`（场景里的 `Lanbai_Overlay`）、`exposure`（`Lanbai_Grades` 上的 `LanbaiExposure`）、`worldMainLight`（世界主光）。然后把驱动加进 Director 的分发层。
+   搭完**手动**连三个引用：驱动的 `overlay`（场景里的 `Lanbai_Overlay`）、`exposure`（`Lanbai_Grades` 上的 `LanbaiExposure`）、`worldMainLight`（世界主光）。然后把驱动加进 Director 的分发层（它有 `LanbaiTick / LanbaiActivate / LanbaiWindow / LanbaiGrade`；闪光 FLASH_TEAR 走 `LanbaiGrade`，本地 `ApplyGrades` 里自己那份要删）。
+   **`writeRenderSettings`、`writeMainLight` 默认关**：本地把第 4c、5 幕的窗口（177.55 → 252.64）加进 `extWindows`、勾上 `extAtmosphere` / `extSun` 以后再勾这两个，不然两边每帧写同一个量。环境光的三色写法要本地的环境光模式是 **Trilight**。
+   窗口从 177.55 开始（门的窗口里）：那一帧 `InsideRoot` 打开，但车还在裂口平面前面，门内的一切在顶点阶段塌缩，画面不变。
 5. **天窗光斑（第 4 幕 U8 → U9）**：把 `FBX/Skylight_Spot.fbx` 放在车下（车坐标 = 世界坐标，位置 0、旋转 0）。三个物体 Spot / Beam / Dust 用 `Lanbai/SkylightSpot`，Part 分别选 Spot / Beam / Dust。网格 bounds 要设大（顶点每帧在 shader 里算；`LanbaiInsideImport` 没管这个 FBX 的 bounds，请在 Mesh Renderer 上勾 “Update When Offscreen” 或者手动把 bounds 设成 20 m）。加 `LanbaiSkylightSpot`（U#），`renderers` 填这三个。它读门每帧写的 `_Udon_TearPos`、`_Udon_TearH`。
 6. **截图推回来**（主座位，桌面 1920×1080、水平 90°，渲进 ARGBHalf 再过 PPv2；VR 用左眼另截一张量 APL）：
 
@@ -89,7 +91,9 @@
 
 | 检查 | 怎么跑 | 结果 |
 |---|---|---|
-| shader | `~/bpy/bin/python Tools~/compile_check/check_shaders.py` | slang：InsideLip 6 个 Part、SkylightSpot 3 个 Part、Overlay 全过；lint（Header、先用后声明）过 |
+| shader（全仓的检查） | `~/bpy/bin/python Common/Tools~/compile_check/check_shaders.py Act04c_Inside Overlay`（要先放进天空分支的 `LanbaiFog.cginc` / `LanbaiSky.cginc`） | `3 files, 38 translation units (DXC on, CGIncludes 2022.3.22f1): 0 errors, 4 warnings. NOT a Unity compile.` 警告：`_Udon_InsideGrade`、`_Udon_SkySpot` 还没登记；遮罩的 `ZTest Always`（允许的）；SkylightSpot 一条“自己声明 `_Udon_TearPos`”——文件里没有这个声明（已改成 include `LanbaiGlobals.cginc`），像是误报 |
+| shader（包里自己的） | `~/bpy/bin/python Tools~/compile_check/check_shaders.py` | slang：InsideLip 6 个 Part、SkylightSpot 3 个 Part、Overlay 全过 |
+| C#（全仓的检查） | `bash Common/Tools~/compile_check/check_cs.sh Act04c_Inside Overlay Grading/Runtime` | `C# CHECK OK (0 assembly error(s), 20 lint warning(s))`：20 条都是“全局量没登记”（门内、遮罩 v2、天空的雾名字） |
 | C# | `CSC=… Tools~/compile_check/check_cs.sh` | 运行时 5 个、编辑器 4 个文件过（C# 9，警告当错误） |
 | 布局 | `~/bpy/bin/python Tools~/inside_layout.py` | 净空、偏移、暖白点视线、框住、交替：全过（`Tools~/out/layout_solved.json`） |
 | FBX 读回 | `~/bpy/bin/python Tools~/inside_mesh.py` | 33 / 33 个网格位置一致 |
@@ -140,4 +144,21 @@
 - **“205 的第 7 重往外移 40%”（r05 #3、r06 B1a）**：求解器里第 7 重的偏心在暖白点可见的全程都 ≥ 0.68；画面上像同心，是因为第 8 重的圈正好在里面。选了评审给的方案 (b)：第 8 重延后出现。
 - **“内层布 ≤ 15% 的亮度”（设计评审 r1）vs “每一条边都要亮的纤维”（美术评审 r06 S3）**：取了中间，内层布边 0.30（唇光已 × 3，所以相对入口仍是 30%）。
 - **尾声 APL 与雾色**：r05 我说两者冲突；评审说用径向渐变就不冲突。评审对：r06 起正前方仍是 `#53606E`，APL 51.6 / 53。
+
+## 13. 总工程师意见第 1 轮的处理（`总工程师意见.md`）
+
+| # | 意见 | 处理 |
+|---|---|---|
+| 一.1 | 曝光接口名对不上 Director v1 | 加了 `public float[] LanbaiGrade(float t)`（{ΔEV, 0, 0, 1} 或 null）；`LanbaiDeltaEV` 留给遮罩补偿 |
+| 一.2 | RenderSettings / 主光默认就写 | `writeRenderSettings`、新加的 `writeMainLight` 默认 false；§0 第 4 条写了什么时候勾、Trilight 模式 |
+| 一.3 | U9 前后两个驱动都写雾带 | 我这边不变（U9 以前只写门户）；门那边 U9 以后不写，由总工程师协调 |
+| 一.4 | 全局量没登记 | `_Udon_SkySpot`、`_Udon_InsideGrade` 写进 `给总控.md` |
+| 一.5 | shader 自己声明 `_Udon_*` | 三个 shader 都改成 include `LanbaiGlobals.cginc`；还没登记的两个名字用同样的 `LANBAI_DECL_` 保护自己声明（生成的文件以后会先到）。另：天空的 `LanbaiFog.cginc` 对 `_Udon_FogDensity` 用的是 `LANBAI_FOG_OWN_DENSITY` 而不是 `LANBAI_DECL__Udon_FogDensity`，和 `LanbaiGlobals.cginc` 一起会重复定义；InsideLip 在 include 之前 `#define LANBAI_FOG_OWN_DENSITY` 绕过，已写进给总控 |
+| 二 | 透明叠绘没有数 | **还没量**（这一轮额度给了美术的阻断项）。§10 是估算 |
+| 二 | 跨类 static 调用 | 驱动里复制了一份 `EvOverlayAlpha` |
+| 二 | 遮罩补偿用自己的 ΔEV | 前提写在这里：248.39 → 248.64 只有 FLASH_TEAR 一个曝光事件，所以“自己的 = 这一帧全部”；以后别的包在这段加曝光事件，补偿要改成读分发层的 ΔEV |
+| 二 | S4c → S6 由谁切 | 注释改成“`LB_Journey.ApplyGrades` 在同一帧硬切” |
+| 二 | 177.55 激活 | §0 第 4 条写了 |
+| 三 | 用全仓检查 | 跑了，结果在 §8 |
+| 三 | `tLichtDial` 196.10 vs cues.json 193.1 | 用圣经的 196.10（“ein Lichtchen”的字在 196.1 唱出）；cues.json 的 193.1 是注释里的估计。请本地听一下，以本地为准时改驱动的 `tLichtDial` |
 

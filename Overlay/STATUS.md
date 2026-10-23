@@ -1,1 +1,1 @@
-2026-10-23 01:55（UTC）· `Lanbai_Overlay` v2 交了（shader + U# + 搭建菜单 + numpy 移植与检查 + README），没在 Unity 里编译过 · 下一步：等审；第 4c 幕继续 · 没有卡住
+2026-10-23 06:40（UTC）· 遮罩 v2：shader 改成 include `LanbaiGlobals.cginc`（总工程师第 1 轮 #5），全仓检查 0 错误 · 等登记 `_Udon_OverlayLobe0..3 / Lead / LeadElse / Curve / Lum` · 没有卡住

@@ -25,7 +25,7 @@ Shader "Lanbai/SkylightSpot"
         _SkyC ("Skylight centre (bus m), glass plane y", Vector) = (0.55, 2.55, 2.80, 0)
         _SkyHalf ("Skylight half size (m)", Float) = 0.30
         _FloorY ("Floor y (m)", Float) = 0.623
-        _CoreOfs ("Tear core offset from _Udon_TearPos per 1000 m of H", Vector) = (33.383, -0.378, 60.0, 0)
+        _CoreOfs ("Tear core offset from the gate tear position, per 1000 m of H", Vector) = (33.383, -0.378, 60.0, 0)
         _Penumbra ("Penumbra (m)", Float) = 0.22
     }
     SubShader
@@ -43,14 +43,17 @@ Shader "Lanbai/SkylightSpot"
             #pragma multi_compile_instancing
             #pragma shader_feature_local _PART_SPOT _PART_BEAM _PART_DUST
             #include "UnityCG.cginc"
+            #include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc"         // the gate tear position and H, declared once
             #include "Assets/Lanbai/Common/Shaders/LanbaiVR.cginc"
 
             float4 _Color;
             float _Gain, _BeamGain, _DustGain, _SkyHalf, _FloorY, _Penumbra;
             float4 _SkyC, _CoreOfs;
-            float4 _Udon_TearPos;
-            float4 _Udon_TearH;
+            // not yet in LanbaiGlobals.cginc (asked in 给总控.md): declared under the same guard so the generated file wins
+            #ifndef LANBAI_DECL__Udon_SkySpot
+            #define LANBAI_DECL__Udon_SkySpot
             float4 _Udon_SkySpot;
+            #endif
 
             struct appdata
             {

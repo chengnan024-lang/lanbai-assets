@@ -1,4 +1,4 @@
-2026-10-23 06:10（UTC）· r07 已推：按美术评审 r05、r06 改了两轮（≤ 3 重真的成立、纤维到 luma ~197、布比开口暗、205 不再像靶子、尾声径向雾 APL 52/53、暖白点眩光）；闪光 flashcheck PASS；README §8–12 写完 · 下一步：美术评审 r07 + 陌生人测试；进门 / 袖的 flashcheck 序列 · 没有卡住
+2026-10-23 06:40（UTC）· r07 + 总工程师第 1 轮已推：LanbaiGrade、RenderSettings / 主光默认不写、shader 改 include LanbaiGlobals（全仓 DXC 检查 0 错误、C# 0 错误）、美术 r06 的阻断按 r07 改完 · 下一步：美术评审 r07；透明叠绘 FSE 量表；进门 / 袖的 flashcheck 序列 · 没有卡住
 
 # 门内 · 进度
 

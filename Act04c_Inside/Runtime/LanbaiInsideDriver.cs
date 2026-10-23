@@ -9,7 +9,7 @@
 // (蓝白/Build/04c 门内) fills the arrays from InsideLayout.json; the Tools~ Python (inside_drive.py) computes the same.
 //
 // Director interface (CONTROL §5):   LanbaiTick(t) every frame inside LanbaiWindow(); LanbaiActivate(on) under cover;
-//                                    LanbaiDeltaEV(t) = this act's exposure event (FLASH_TEAR) for the dispatcher to sum.
+//                                    LanbaiGrade(t) = this act's grade event (FLASH_TEAR) for the dispatcher to sum.
 
 using UdonSharp;
 using UnityEngine;
@@ -46,7 +46,10 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
     // r06 (art review r05 #6): after the sleeve the gradient turns toward the dot and narrows into a radial falloff
     public float codaBandWidthDeg = 40f, codaSideK = 0.45f, codaTopK = 0.38f;
     public float dotAzDeg = -6.5f;
-    public bool writeRenderSettings = true;
+    // chief engineer r1 #2: off by default. Tick only after the local timeline has handed act 4c / 5's window
+    // (177.55 -> 252.64) to the dispatcher (extWindows, extAtmosphere / extSun); otherwise LB_Journey writes these.
+    public bool writeRenderSettings = false;
+    public bool writeMainLight = false;
 
     [Header("Lips visible (bible: <= 3 at once; r06)")]
     public Material[] lipMats;                    // every lip material (sheet, fringe, hang, threads, plies, wall)
@@ -139,6 +142,27 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
         if (insideRootObject != null) insideRootObject.SetActive(on);
     }
 
+    /// <summary>A copy of LanbaiOverlay.EvOverlayAlpha (bible §1.8 E17): UdonSharp 1.x may not call another U# class's
+    /// static method (chief engineer r1).</summary>
+    private static float EvOverlayAlpha(float x, float Lfrom, float Lto, float Ls, float Lo)
+    {
+        float a = Mathf.Max(Lfrom, 0.004f);
+        float b = Mathf.Max(Lto, 0.004f);
+        float L = a * Mathf.Pow(b / a, Mathf.Clamp01(x));
+        float den = Ls - Lo;
+        if (Mathf.Abs(den) < 1e-6f) return 1f;
+        return Mathf.Clamp01((Ls - L) / den);
+    }
+
+    /// <summary>Director v1 grade hook (README_Director §0.5): {dEV, WHITE_SAT, WHITE_BLOOM, desktop lens multiplier}, or
+    /// null when this act has no grade event at t. The dispatcher sums every act's events and writes EXPO once.</summary>
+    public float[] LanbaiGrade(float t)
+    {
+        float d = LanbaiDeltaEV(t);
+        return d != 0f ? new float[] { d, 0f, 0f, 1f } : null;
+    }
+
+    /// <summary>FLASH_TEAR (U12 - 0.75 .. U12): kept for the overlay's fill compensation (WriteBlack) and LanbaiGrade.</summary>
     public float LanbaiDeltaEV(float t)
     {
         float t0 = tU12 - 0.75f;
@@ -336,7 +360,7 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
             RenderSettings.ambientEquatorColor = Color.Lerp(triEquatorGate, triEquator, w);
             RenderSettings.ambientGroundColor = Color.Lerp(triGroundGate, triGround, w);
         }
-        if (worldMainLight != null) worldMainLight.intensity = Mathf.Lerp(mainLightGate, mainLightInside, w);
+        if (writeMainLight && worldMainLight != null) worldMainLight.intensity = Mathf.Lerp(mainLightGate, mainLightInside, w);
         // crossing bands: soft front + exponential tail, front -> back; lip 8 stays, then retreats from the rear
         Vector4 slice = new Vector4(0f, bandSoft, bandTail, 0f);
         Color sc = Color.black;
@@ -391,12 +415,12 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
             // EV-linear from the frame (APL ~90 at the flash's end) to #030409; darkening is free (bible §1.8)
             float Ls = 0.2f, Lb = 0.00129f;
             float x = (t - tb) / 0.25f;
-            float a = LanbaiOverlay.EvOverlayAlpha(x, Ls, Lb, Ls, Lb);
+            float a = EvOverlayAlpha(x, Ls, Lb, Ls, Lb);
             overlay.SetFlat(blackFillS4c, a, LanbaiDeltaEV(t));
         }
         else if (t < tU12 + 4.0f)
         {
-            overlay.SetFlat(blackFillS6, 1f, 0f);       // cut 1: the same frame S4c -> S6 (the dispatcher swaps the grade)
+            overlay.SetFlat(blackFillS6, 1f, 0f);       // cut 1: LB_Journey.ApplyGrades hard-cuts S4c -> S6 in the same frame
         }
     }
 }

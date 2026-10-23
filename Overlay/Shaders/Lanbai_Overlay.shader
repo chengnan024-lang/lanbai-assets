@@ -50,18 +50,10 @@ Shader "Lanbai/Overlay"
             #pragma target 3.0
             #pragma multi_compile_instancing
             #include "UnityCG.cginc"
+            #include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc"         // _Udon_Overlay*, declared once (chief engineer r1 #5)
             #include "Assets/Lanbai/Common/Shaders/LanbaiVR.cginc"
 
             float _DitherLSB;
-            float4 _Udon_OverlayColor;
-            float4 _Udon_OverlayCurve;
-            float4 _Udon_OverlayLum;
-            float4 _Udon_OverlayLobe0;
-            float4 _Udon_OverlayLobe1;
-            float4 _Udon_OverlayLobe2;
-            float4 _Udon_OverlayLobe3;
-            float4 _Udon_OverlayLead;
-            float4 _Udon_OverlayLeadElse;
 
             struct appdata
             {

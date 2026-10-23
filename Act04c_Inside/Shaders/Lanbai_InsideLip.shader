@@ -82,7 +82,11 @@ Shader "Lanbai/InsideLip"
             #pragma multi_compile_fog
             #pragma shader_feature_local _PART_SHEET _PART_FRINGE _PART_THREAD _PART_DOME _PART_DOT _PART_LOOSE
             #include "UnityCG.cginc"
+            #include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc"         // every _Udon_ global, declared once (chief engineer r1 #5)
             #include "Assets/Lanbai/Common/Shaders/LanbaiVR.cginc"
+            // LanbaiGlobals.cginc already declares _Udon_FogDensity; the sky's LanbaiFog guards its own copy with this switch
+            // (not with LANBAI_DECL__Udon_FogDensity; reported in 给总控.md)
+            #define LANBAI_FOG_OWN_DENSITY
             #include "Assets/Lanbai/Common/Shaders/LanbaiFog.cginc"
 
             float4 _ClothColor, _FibreColor;
@@ -99,12 +103,11 @@ Shader "Lanbai/InsideLip"
             float4 _DotCore;
             float _DotGlow, _DotDist, _LooseGain, _LooseWidth;
 
-            float4 _Udon_InsidePortal;
-            float4 _Udon_InsideFog;
-            float4 _Udon_InsideDot;
-            float4 _Udon_InsideFibre;
-            float4 _Udon_InsideClock;
+            // not yet in LanbaiGlobals.cginc (asked in 给总控.md): declared under the same guard so the generated file wins
+            #ifndef LANBAI_DECL__Udon_InsideGrade
+            #define LANBAI_DECL__Udon_InsideGrade
             float4 _Udon_InsideGrade;       // rgb = fill multiplier during the S4 -> S4c crossfade, a > 0 = set
+            #endif
 
             struct appdata
             {
