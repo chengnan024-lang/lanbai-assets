@@ -25,16 +25,38 @@ FRINGE_TILE = 64.0
 
 
 def curl_z(d_edge, u_edge, Hk, seed, perim):
-    """torn cloth turns out of its plane at the lip: +z = away from the bus. Fades in ~1.5 % H from the edge."""
+    """torn cloth turns out of its plane at the lip: +z = away from the bus. Fades in ~1.5 % H from the edge.
+    r04: three incommensurate wave counts (art review r03: one sinusoid read as a repeating silhouette)."""
     lam = 0.015 * Hk
-    amp = 0.022 * Hk
-    k = max(int(round(perim / (0.18 * Hk))), 3)              # a whole number of waves round the edge (seamless)
-    ph = u_edge / perim * k
-    c = 0.65 * np.sin(2 * np.pi * ph + seed) + 0.35 * np.sin(2 * np.pi * ph * 2.0 + 1.7 * seed)
+    amp = 0.016 * Hk
+    # r05: multi-scale wrapped noise along the edge (art review r03 / r04 and our own r05 side view: any sum of a few
+    # sines still reads as a regular wave edge-on). Seamless round the loop (mode='wrap'), irregular, with kinks.
+    from scipy.ndimage import gaussian_filter1d
+    rng = np.random.default_rng(int(seed) * 7 + 3)
+    m = max(int(perim / 0.5), 64)
+    c = np.zeros(m)
+    for sig_m, wgt in ((0.012 * Hk, 0.35), (0.04 * Hk, 0.6), (0.12 * Hk, 1.0)):
+        nz = gaussian_filter1d(rng.normal(size=m), sig_m / 0.5, mode='wrap')
+        c += wgt * nz / (nz.std() + 1e-9)
+    c /= 1.25
+    c = np.sign(c) * np.abs(c) ** 0.8                  # a little sharper at the turns
+    xs = np.linspace(0, perim, m, endpoint=False)
+    c = np.interp(np.mod(np.asarray(u_edge, float), perim), np.r_[xs, perim], np.r_[c, c[0]])
     return amp * c * np.exp(-np.asarray(d_edge) / lam)
 
 
-def sheet(contour, Hk, seed, gain=1.0, r_far=R_FAR, centre=(0.0, 0.0)):
+def billow_z(xy, seed, amp, scale):
+    """a slow 2-d sag of the whole sheet (r05: a perfectly flat ply seen edge-on in the sleeve is a ruled vertical line)."""
+    rng = np.random.default_rng(int(seed) * 13 + 11)
+    z = 0.0
+    for j in range(6):
+        a = rng.uniform(0, np.pi)
+        k = 2 * np.pi / (scale * rng.uniform(0.5, 1.6))
+        z = z + np.sin(k * (xy[:, 0] * np.cos(a) + xy[:, 1] * np.sin(a)) + rng.uniform(0, 6.283)) / (1.0 + 0.4 * j)
+    return amp * z / 2.3
+
+
+def sheet(contour, Hk, seed, gain=1.0, r_far=R_FAR, centre=(0.0, 0.0), billow=0.0):
     import triangle
     from shapely.geometry import Polygon
     C = np.asarray(contour, float)
@@ -72,6 +94,8 @@ def sheet(contour, Hk, seed, gain=1.0, r_far=R_FAR, centre=(0.0, 0.0)):
     # inside the opening the nearest-point distance is not "into the cloth": the triangulation has no such vertices
     u = arc[idx]
     z = curl_z(dd, u, Hk, seed, perim)
+    if billow > 0:
+        z = z + billow_z(V2, seed, billow, 45.0) * (1.0 - np.exp(-dd / 6.0))   # the edge keeps its curl, the cloth sags
     V = np.stack([V2[:, 0], V2[:, 1], z], -1)
     uv0 = V2 / 100.0
     uv1 = np.stack([dd, u], -1)
@@ -79,7 +103,9 @@ def sheet(contour, Hk, seed, gain=1.0, r_far=R_FAR, centre=(0.0, 0.0)):
     return dict(V=V, F=F, uv0=uv0, uv1=uv1, col=col, perim=perim)
 
 
-def fringe(contour, Hk, seed, L, gain=1.0):
+def fringe(contour, Hk, seed, L, gain=1.0, roll=0.0):
+    """r04 (art review r03: radial bristles read as fur): a torn weave frays along its warp or weft, so each fibre points
+    along whichever of the two (rotated with the lip's roll) runs more into the opening; most are short."""
     C = np.asarray(contour, float)
     seg = np.linalg.norm(np.roll(C, -1, 0) - C, axis=1)
     arc = np.concatenate([[0], np.cumsum(seg)])[:-1]
@@ -88,7 +114,16 @@ def fringe(contour, Hk, seed, L, gain=1.0):
     rng = np.random.default_rng(seed + 5)
     zb = curl_z(np.zeros(len(C)), arc, Hk, seed, perim)
     base = C + nrm * 0.4
-    tip = C - nrm * L
+    a = np.radians(roll)
+    warp = np.array([-np.sin(a), np.cos(a)])
+    weft = np.array([np.cos(a), np.sin(a)])
+    inward = -nrm
+    dw, df = inward @ warp, inward @ weft
+    dirs = np.where((np.abs(dw) >= np.abs(df))[:, None], np.sign(dw)[:, None] * warp[None], np.sign(df)[:, None] * weft[None])
+    from scipy.ndimage import gaussian_filter1d
+    dirs = np.stack([gaussian_filter1d(dirs[:, 0], 2, mode='wrap'), gaussian_filter1d(dirs[:, 1], 2, mode='wrap')], -1)
+    dirs /= np.linalg.norm(dirs, axis=1, keepdims=True) + 1e-9
+    tip = C + dirs * L
     zt = zb + L * (0.35 * D.fbm(arc / 37.0, seed + 6, 2))       # fibres stick out of the plane a little
     n = len(C)
     V = np.concatenate([np.c_[base, zb], np.c_[tip, zt]], 0)
@@ -222,7 +257,7 @@ def loose_threads(n=90, seg=8, seed=901):
                 uv3=np.array(uv3), col=np.array(col), bounds=60.0)
 
 
-def sleeve_wall(entry, exit_, dz, seed=313, n=38):
+def sleeve_wall(entry, exit_, dz, seed=313, n=90):
     """long dark strands of pulled warp running from the entry's torn edge to the exit's (the thick cloth's cut face):
     irregular spacing, widths 0.8-3 m, sagging, each slightly outside the opening (in the cloth), rim lit <= 15 %."""
     rng = np.random.default_rng(seed)
@@ -238,7 +273,7 @@ def sleeve_wall(entry, exit_, dz, seed=313, n=38):
             i = int(np.argmin(np.abs(np.angle(np.exp(1j * (th - a))))))
             return P[i] + (P[i] - c) / (np.linalg.norm(P[i] - c) + 1e-9) * rng.uniform(0.5, 4.0)
         p0, p1 = edge(E, ce), edge(X, cx)
-        w = rng.uniform(0.35, 1.4)                      # r04: thinner (r03 read as rods)
+        w = rng.uniform(0.12, 0.45) * (2.5 if rng.random() < 0.1 else 1.0)    # r05: hairs, a few thicker (r04 read as cables)
         m = 24
         f = np.linspace(0, 1, m)
         P = p0[None] + (p1 - p0)[None] * f[:, None]
@@ -257,7 +292,9 @@ def sleeve_wall(entry, exit_, dz, seed=313, n=38):
         for i in range(m - 1):
             Fs += [(k0 + i, k0 + i + 1, k0 + m + i + 1), (k0 + i, k0 + m + i + 1, k0 + m + i)]
     V = np.concatenate(Vs, 0)
-    return dict(V=V, F=np.array(Fs), uv0=np.concatenate(UVs, 0), col=np.tile([0.12, 1.0, 0, 1], (len(V), 1)))
+    g = np.repeat(rng.uniform(0.04, 0.14, len(Vs)), [len(q) for q in Vs])     # r05: dim, uneven
+    col = np.stack([g, np.ones_like(g), np.zeros_like(g), np.ones_like(g)], -1)
+    return dict(V=V, F=np.array(Fs), uv0=np.concatenate(UVs, 0), col=col)
 
 
 def cut_partial(sh, centre, start_deg, span_deg, r_min):
@@ -271,6 +308,45 @@ def cut_partial(sh, centre, start_deg, span_deg, r_min):
     sh = dict(sh)
     sh['F'] = F[keep]
     return sh
+
+
+def hanging(contour, Hk, seed, n=14, gain=1.0, need=40.0):
+    """a few long loose threads hanging under gravity from the upper edges (art review r03), thin additive ribbons with
+    the fringe texture's long-strand column (uv0.x fixed per thread)."""
+    rng = np.random.default_rng(seed + 61)
+    C = np.asarray(contour, float)
+    cy = C[:, 1].mean()
+    nrm = D.normals(C, smooth=4)
+    cand = np.where((C[:, 1] > cy) & (nrm[:, 1] > 0.3))[0]
+    if len(cand) == 0:
+        return None
+    V, F, uv = [], [], []
+    for j in range(n):
+        i = int(rng.choice(cand))
+        p0 = C[i]
+        L = rng.uniform(0.02, 0.05) * Hk
+        from shapely.geometry import box, LineString
+        bus = box(-D.BUS_HALF_W, D.BUS_Y0, D.BUS_HALF_W, D.BUS_Y1)
+        while L > 1.0 and LineString([p0, (p0[0], p0[1] - L)]).distance(bus) < need:
+            L *= 0.8                                       # the bus path keeps its clearance from every thread
+        if L <= 1.0:
+            continue
+        w = max(0.0012 * Hk, 0.15)
+        m = 10
+        f = np.linspace(0, 1, m)
+        drift = rng.normal(0, 0.12) * L
+        P = np.stack([p0[0] + drift * f ** 1.5, p0[1] - L * f], -1)
+        k = len(V)
+        for q in range(m):
+            V.append((P[q, 0] - w / 2, P[q, 1], 0.0))
+            V.append((P[q, 0] + w / 2, P[q, 1], 0.0))
+            col = rng.uniform(0.62, 0.9)
+            uv += [(col, 0.08 + 0.85 * f[q]), (col + 0.0004, 0.08 + 0.85 * f[q])]
+        for q in range(m - 1):
+            a = k + 2 * q
+            F += [(a, a + 2, a + 3), (a, a + 3, a + 1)]
+    V = np.array(V, float)
+    return dict(V=V, F=np.array(F), uv0=np.array(uv), col=np.tile([gain, 1.0, 0, 1], (len(V), 1)))
 
 
 def fringe_gaps(fr, perim, seed):
@@ -328,8 +404,11 @@ def build():
             C = LY.lip_polygon(L['mesh_kind'], seed, Hk, L['roll'], L['offset'])
         sh = sheet(C, Hk, seed, 1.0)
         fl = 4.0 if k == 1 else LY.fringe_len(Hk)
-        fr = fringe(C, Hk, seed, fl, 1.0)
+        fr = fringe(C, Hk, seed, fl, 1.0, L['roll'] if k > 1 else -4.0)
         fr = fringe_taper(fr, C, L['clearance_need'], Hk)
+        hg = hanging(C, Hk, seed, need=L['clearance_need'])
+        if hg:
+            objs['Lip%d_Hang' % k] = hg
         fr = fringe_gaps(fr, sh['perim'], seed)
         objs['Lip%d_Sheet' % k] = sh
         objs['Lip%d_Fringe' % k] = fr
@@ -358,12 +437,12 @@ def build():
         C = LY.lip_polygon('hole', p['seed'], 195.0 * p['scale'], p['roll'], p['offset'],
                            jag_seed=None)
         contours.append(C)
-        sh = sheet(C, 195.0, p['seed'] + 7 * i, p['gain'])
+        sh = sheet(C, 195.0, p['seed'] + 7 * i, p['gain'], billow=2.5 if p['fringe'] else 5.0)
         if p['partial']:
             sh = cut_partial(sh, np.asarray(C).mean(0), p['partial'][0], p['partial'][1], 18.0)
         objs['Lip8_Ply%d_Sheet' % i] = sh
         if p['fringe']:
-            fr = fringe(C, 195.0, p['seed'] + 7 * i, LY.fringe_len(195.0), p['gain'])
+            fr = fringe(C, 195.0, p['seed'] + 7 * i, LY.fringe_len(195.0), p['gain'], p['roll'])
             fr = fringe_taper(fr, C, 40.0, 195.0)
             objs['Lip8_Ply%d_Fringe' % i] = fringe_gaps(fr, sh['perim'], p['seed'] + i)
         meta['plies'].append(dict(i=i, z=l8['s'] + p['dz'], contour=np.asarray(C).tolist(), gain=p['gain'],

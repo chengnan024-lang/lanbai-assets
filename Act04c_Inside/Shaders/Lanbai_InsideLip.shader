@@ -40,14 +40,17 @@ Shader "Lanbai/InsideLip"
         _LipGlowWidth ("Lip glow width (m)", Float) = 2.5
         _LipGlowFar ("Translucency band (x gain, y width m)", Vector) = (0.08, 40, 0, 0)
         _GrainRoll ("Fibre grain roll (deg, = the lip's roll)", Float) = 0
+        _Folds ("Tension folds (x period along the edge m, y period away m, z amount, w falloff m)", Vector) = (30, 300, 0.12, 200)
         [Header(Fringe)]
         _FringeTex ("Fringe (R fibres, G coverage, B clump)", 2D) = "black" {}
         _FringeGain ("Fringe gain", Float) = 1
         [Header(Thread)]
         _ThreadRim ("Thread rim (x fibre colour)", Float) = 0.6
+        _ThreadCore ("Thread core lit by the fibres (0 = dark weft, 1 = fibre lit)", Range(0, 1)) = 0
         [Header(Dot)]
         _DotCore ("Dot core (linear HDR)", Vector) = (6.92, 3.66, 1.63, 0)
         _DotGlow ("Dot glow (x core)", Float) = 0.22
+        _DotHalo ("Dot halo colour (linear, less orange than the core)", Vector) = (6.92, 5.95, 4.84, 0)
         _DotDist ("Dot distance (m)", Float) = 2300
         [Header(Loose threads)]
         _LooseGain ("Loose threads (x fibre colour)", Float) = 0.25
@@ -88,6 +91,9 @@ Shader "Lanbai/InsideLip"
             float _WeaveScale, _WeaveAmount, _LipGlow, _LipGlowWidth;
             float4 _LipGlowFar;
             float _GrainRoll;
+            float4 _Folds;
+            float _ThreadCore;
+            float4 _DotHalo;
             sampler2D _FringeTex;
             float _FringeGain, _ThreadRim;
             float4 _DotCore;
@@ -205,13 +211,17 @@ Shader "Lanbai/InsideLip"
                 float4 w = tex2D(_WeaveTex, lp / _WeaveScale);
                 float4 w2 = tex2D(_WeaveTex, float2(lp.x * 3.1 + 0.37, lp.y * 0.9) / _WeaveScale);
                 float streak = (w.r - 0.5) * 1.6 + (w2.r - 0.5) * 0.6 + (w.g - 0.5) * 0.35;
-                float3 cloth = _ClothColor.rgb * saturate(1.0 + _WeaveAmount * streak + 0.25 * (w.b - 0.5));
+                // r04: tension folds radiating from the torn edge (cloth pulled apart wrinkles along the pull):
+                // the weave's warp streaks re-sampled along (edge, away from the edge), fading with the distance
+                float fold = tex2D(_WeaveTex, float2(uEdge / _Folds.x, dEdge / _Folds.y)).r - 0.5;
+                float foldK = 1.0 + 2.0 * _Folds.z * fold * exp(-dEdge / max(_Folds.w, 1.0));
+                float3 cloth = _ClothColor.rgb * saturate(1.0 + _WeaveAmount * streak + 0.25 * (w.b - 0.5)) * foldK;
                 // the light lives in the line: a tight glow on the cloth at the torn edge + a faint far tail
                 float comb = tex2D(_FringeTex, float2(uEdge / 64.0, 0.02)).r;
                 // + a faint wide band where the torn cloth thins and glows from inside (review r1: not a neon outline on
                 //   a black cut-out), broken up by the weave's blotches
                 float band = _LipGlowFar.x * exp(-dEdge / max(_LipGlowFar.y, 1.0)) * saturate(0.5 + 1.6 * (w.r - 0.5) + 0.3 * (w.g - 0.5));   // r02: along the warp, not blotches
-                float glow = _LipGlow * exp(-dEdge / _LipGlowWidth) * (0.55 + 0.45 * comb) + band;
+                float glow = _LipGlow * exp(-dEdge / _LipGlowWidth) * (0.55 + 0.45 * comb) + band * foldK;
                 float3 c = (cloth + _FibreColor.rgb * glow * g) * gradeK;
                 return float4(Fogged(c, i.wpos), 1.0);
             #elif defined(_PART_FRINGE)
@@ -222,7 +232,8 @@ Shader "Lanbai/InsideLip"
                 float v = i.uv.y;                    // 0 .. 1 across the thread
                 float edge = pow(saturate(abs(v * 2.0 - 1.0)), 6.0);
                 float a = smoothstep(1.0, 0.82, abs(v * 2.0 - 1.0));
-                float3 c = (_ClothColor.rgb * 0.8 + _FibreColor.rgb * _ThreadRim * edge * g) * gradeK;
+                float3 core = lerp(_ClothColor.rgb * 0.8, _FibreColor.rgb * g, _ThreadCore);
+                float3 c = (core + _FibreColor.rgb * _ThreadRim * edge * g) * gradeK;
                 c = Fogged(c, i.wpos);
                 return float4(c * a, a);
             #elif defined(_PART_DOME)
@@ -236,7 +247,7 @@ Shader "Lanbai/InsideLip"
                 float px = fwidth(r);
                 float core = 1.0 - smoothstep(rc - px, rc + px, r);
                 float halo = pow(saturate(1.0 - r), 2.6) * (1.0 - core);
-                float3 c = _DotCore.rgb * (core + _DotGlow * halo) * _Udon_InsideDot.z;
+                float3 c = (_DotCore.rgb * core + _DotHalo.rgb * _DotGlow * halo) * _Udon_InsideDot.z;
                 return float4(c, 0.0);
             #else   // _PART_LOOSE
                 float3 c = _Udon_InsideFibre.rgb * _Udon_InsideFibre.a * _LooseGain * i.aux.x;

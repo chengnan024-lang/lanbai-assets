@@ -452,7 +452,7 @@ def tear_outline_lip1(n=900):
 
 
 # the dot (bible §6·4c): a sky object fixed in bus coordinates
-DOT_AZ_DEG, DOT_EL_DEG = -5.0, 3.0
+DOT_AZ_DEG, DOT_EL_DEG = -6.5, 4.0
 DOT_DIST = 2300.0
 DOT_GLOW_DEG = (4.0, 12.0)
 DOT_CORE_DEG = (0.3, 0.9)

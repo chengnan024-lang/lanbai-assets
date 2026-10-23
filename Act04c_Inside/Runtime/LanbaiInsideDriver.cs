@@ -40,7 +40,9 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
     public float fogAheadM = 250f;
     public float fogDensityGate = 0.0006f;
     public float fogDensityInside = 0.0035f;
-    public float nadirK = 0.85f;
+    public float nadirK = 0.80f;
+    public float aheadK = 1.0f, behindK = 0.72f, zenithK = 0.85f;
+    public float bandWidthDeg = 100f;           // the fog falls off sideways: the frame's edges are darker than ahead
     public bool writeRenderSettings = true;
 
     [Header("Lichtchen ahead (sky object)")]
@@ -222,10 +224,10 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
         Color behind = ZoneAtS(s - fogAheadM);
         VRCShader.SetGlobalFloat(_idDensity, dens);
         VRCShader.SetGlobalVector(_idBandDir, new Vector4(0f, 0f, 1f, 1f));
-        VRCShader.SetGlobalVector(_idBandColor, new Vector4(ahead.r, ahead.g, ahead.b, 1f));
-        VRCShader.SetGlobalFloat(_idBandWidth, 180f);
-        VRCShader.SetGlobalVector(_idHorizon, new Vector4(behind.r, behind.g, behind.b, 2f));      // a = 2: model B
-        VRCShader.SetGlobalVector(_idZenith, new Vector4(mid.r, mid.g, mid.b, 1f));
+        VRCShader.SetGlobalVector(_idBandColor, new Vector4(ahead.r * aheadK, ahead.g * aheadK, ahead.b * aheadK, 1f));
+        VRCShader.SetGlobalFloat(_idBandWidth, bandWidthDeg);
+        VRCShader.SetGlobalVector(_idHorizon, new Vector4(behind.r * behindK, behind.g * behindK, behind.b * behindK, 2f));      // a = 2: model B
+        VRCShader.SetGlobalVector(_idZenith, new Vector4(mid.r * zenithK, mid.g * zenithK, mid.b * zenithK, 1f));
         VRCShader.SetGlobalVector(_idNadir, new Vector4(mid.r * nadirK, mid.g * nadirK, mid.b * nadirK, 1f));
         VRCShader.SetGlobalVector(_idShape, new Vector4(25f, 90f, 1f, 0f));
         VRCShader.SetGlobalVector(_idBelow, new Vector4(-90f, -15f, 1f, 0f));

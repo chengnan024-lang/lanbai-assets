@@ -35,7 +35,7 @@ N_PLY = 12
 
 
 def fringe_len(Hk):
-    return float(np.clip(0.009 * Hk, 2.5, 9.0))      # r02: 2 % read as fur at 240 m
+    return float(np.clip(0.005 * Hk, 1.5, 5.0))      # r04: 0.9 % still read as fur / whiskers (art review r03)
 
 
 def clearance_needed(k):
@@ -143,7 +143,7 @@ def solve():
                 cl = pg.exterior.distance(BUS) - fringe_len(H[k - 1])
                 if cl < clearance_needed(k):
                     continue
-                dm = dot_margin_ok(P, D.S_LIP[k - 1], D.DOT_APPEAR[0], D.LIP_T[k - 1])
+                dm = dot_margin_ok(P, D.S_LIP[k - 1], D.DOT_APPEAR[0] + 2.0, D.LIP_T[k - 1])      # r04: the first 2 s of the fade-in are below -1.2 EV
                 if dm < 0:
                     continue
                 ang, off, dz = framing(P, D.S_LIP[k - 1], D.LIP_T[k - 1])
@@ -153,8 +153,12 @@ def solve():
                         continue
                     score = -abs(off - 0.38) * 3
                 else:
-                    if off < 0.45:
+                    if off < 0.6:                                  # r04: well off-centre (art review r03: nesting)
                         continue
+                    hit, cen = framing_points(P, D.S_LIP[k - 1], D.LIP_T[k - 1])
+                    side = np.sign(hit[0] - cen[0])
+                    if k > 2 and side == lips[-1].get('dot_side', 0):
+                        continue                                    # the dot alternates left / right of the openings
                     score = 0.6 * min(off, 0.8) + 0.004 * np.linalg.norm(np.array([ox, oy]) - prev) + min(cl - clearance_needed(k), 30) / 60
                 if best is None or score > best[0]:
                     best = (score, seed, roll, ox, oy, cl, dm, ang, off)
@@ -162,11 +166,13 @@ def solve():
             raise SystemExit('lip %d: no layout satisfies the constraints' % k)
         score, seed, roll, ox, oy, cl, dm, ang, off = best
         polys[k] = lip_polygon(kind, seed, H[k - 1], roll, (ox, oy))
+        polys_k = polys[k]
         lips.append(dict(k=k, type=TYPES[k - 1], mesh_kind=kind, seed=int(seed), H=H[k - 1], roll=round(float(roll), 2),
                          offset=[round(float(ox), 2), round(float(oy), 2)], s=round(D.S_LIP[k - 1], 2), t=D.LIP_T[k - 1],
                          clearance_m=round(float(cl), 1), clearance_need=round(clearance_needed(k), 1),
                          dot_margin_m=round(float(dm), 1), dot_frame_edge_deg=round(float(ang), 1),
-                         dot_offcentre=round(float(off), 2), fringe_len_m=fringe_len(H[k - 1])))
+                         dot_offcentre=round(float(off), 2), fringe_len_m=fringe_len(H[k - 1]),
+                         dot_side=float(np.sign(framing_points(polys_k, D.S_LIP[k - 1], D.LIP_T[k - 1])[0][0] - framing_points(polys_k, D.S_LIP[k - 1], D.LIP_T[k - 1])[1][0]))))
     # the sleeve (review r1: 12 near-identical glowing rims strobe at ~2 Hz and read as a ring tunnel): ONE thick cloth =
     # 5 sheets. Entry and exit glow (6.25 s apart); the 3 inner plies are dark cut faces (glints <= 15 %, no fringe), each a
     # different torn outline and roll, centroids >= 15 m apart, gaps >= 12 m (a rim at most every 0.8 s at 15.5 m/s), two
@@ -198,7 +204,7 @@ def solve():
             c = np.array(pg.centroid.coords[0])
             if min(np.linalg.norm(c - u) for u in used) < 15.0:
                 continue
-            if dot_margin_ok(P, D.S_LIP[7] + z[i], D.DOT_APPEAR[0], D.LIP_T[7] + 6.25 * z[i] / D.SLEEVE_DEPTH + 2.0) < 0:
+            if dot_margin_ok(P, D.S_LIP[7] + z[i], D.DOT_APPEAR[0] + 2.0, D.LIP_T[7] + 6.25 * z[i] / D.SLEEVE_DEPTH + 2.0) < 0:
                 continue                                           # the Lichtchen must not blink behind an inner ply
             ok = (seed, roll, off, cl, c, P, sc)
             break
@@ -218,7 +224,7 @@ def solve():
         pg = Polygon(P)
         if pg.is_valid and pg.contains(BUS) and pg.exterior.distance(BUS) - fringe_len(195.0) >= 40.0 and \
                 min(np.linalg.norm(np.array(pg.centroid.coords[0]) - u) for u in used) >= 15.0 and \
-                dot_margin_ok(P, D.S_SLEEVE_EXIT, D.DOT_APPEAR[0], D.SLEEVE_EXIT_T) >= 0:
+                dot_margin_ok(P, D.S_SLEEVE_EXIT, D.DOT_APPEAR[0] + 2.0, D.SLEEVE_EXIT_T) >= 0:
             break
     else:
         raise SystemExit('sleeve exit: no outline keeps 40 m and the sightline')

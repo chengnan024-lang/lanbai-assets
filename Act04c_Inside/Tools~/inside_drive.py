@@ -19,7 +19,8 @@ import lb_grade as LG  # noqa: E402
 OUT = os.path.join(D.HERE, 'out')
 FOG_AHEAD_M = 250.0                     # the fog ahead is the next zone's colour, behind the previous one's
 FOG_D0, FOG_D1 = 0.0006, D.FOG_DENSITY  # act 4's density -> the inside's, over U9 .. U9 + 2 s (smoothstep)
-NADIR_K = 0.85                          # a little darker below (<= 6-8 L*, review r1)
+NADIR_K = 0.80                          # darker below (review r1 / art review r03)
+AHEAD_K, BEHIND_K, ZENITH_K = 1.0, 0.72, 0.85        # r05: the gradient falls off sideways (bw 100) instead of brightening ahead
 
 
 @functools.lru_cache(maxsize=None)
@@ -69,16 +70,18 @@ def fog_params(t):
     s = float(D.dist(t))
     dens = FOG_D0 + (FOG_D1 - FOG_D0) * float(D.ss((t - D.U9) / 2.0))
     mid = fog_colour_at_s(s)
-    return dict(model='B gradient', band_dir=(0.0, 0.0, 1.0), bw=180.0,
-                near=tuple(fog_colour_at_s(s + FOG_AHEAD_M)), far=tuple(fog_colour_at_s(s - FOG_AHEAD_M)),
-                zenith=tuple(mid), nadir=tuple(mid * NADIR_K), shape=(25.0, 90.0, 1.0, 0.0), below=(-90.0, -15.0, 1.0, 0.0),
+    # r04 (art review r03: the coda was a flat grey card): a little lighter ahead, darker behind and overhead / below
+    return dict(model='B gradient', band_dir=(0.0, 0.0, 1.0), bw=100.0,
+                near=tuple(fog_colour_at_s(s + FOG_AHEAD_M) * AHEAD_K), far=tuple(fog_colour_at_s(s - FOG_AHEAD_M) * BEHIND_K),
+                zenith=tuple(mid * ZENITH_K), nadir=tuple(mid * NADIR_K), shape=(25.0, 90.0, 1.0, 0.0), below=(-90.0, -15.0, 1.0, 0.0),
                 density=dens, unity_fog_colour=tuple(mid))
 
 
 def lip_material(k, st=None):
     Hk = [1000.0, 790.0, 940.0, 525.0, 615.0, 345.0, 285.0, 195.0][k - 1]
     return dict(cloth=fill_of(D.CLOTH_SCREEN), fibre=fibre_fill(k), roll=0.0, weave_scale=40.0, weave_amount=0.45,
-                lip_glow=0.35, lip_w=max(1.5, 0.006 * Hk), band=(0.08, 0.08 * Hk), fringe_gain=0.65, thread_rim=0.6)
+                lip_glow=1.0, lip_w=max(0.6, 0.0025 * Hk), band=(0.10, 0.08 * Hk), fringe_gain=1.0, thread_rim=0.6,
+                folds=(0.05 * Hk, 0.5 * Hk, 0.12, 0.35 * Hk), fog_cap_cloth=0.55)
 
 
 def delta_ev(t):

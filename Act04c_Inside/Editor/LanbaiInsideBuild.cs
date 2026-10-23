@@ -103,30 +103,36 @@ namespace Lanbai.Inside.Editor
             m.shader = shader;
             int k = LipIndex(objName);
             int ki = Mathf.Clamp(k, 1, 8) - 1;
-            string part = objName.EndsWith("_Sheet") ? "SHEET" : objName.EndsWith("_Fringe") ? "FRINGE" :
+            string part = objName.EndsWith("_Sheet") ? "SHEET" : (objName.EndsWith("_Fringe") || objName.EndsWith("_Hang")) ? "FRINGE" :
                 (objName.EndsWith("_Threads") || objName == "Lip8_Wall") ? "THREAD" :
                 objName == "Inside_Dome" ? "DOME" : objName == "Inside_Dot" ? "DOT" : objName == "Inside_Loose" ? "LOOSE" : "SHEET";
             foreach (var kw in new[] { "SHEET", "FRINGE", "THREAD", "DOME", "DOT", "LOOSE" }) m.DisableKeyword("_PART_" + kw);
             m.EnableKeyword("_PART_" + part);
             m.SetFloat("_Part", Array.IndexOf(new[] { "SHEET", "FRINGE", "THREAD", "DOME", "DOT", "LOOSE" }, part));
             Color fib = InsideLayoutData.FibreFill[ki];
+            float dotHaloR = InsideLayoutData.DotFill.r;
             Color cloth = InsideLayoutData.ClothFill;
             m.SetVector("_ClothColor", new Vector4(cloth.r, cloth.g, cloth.b, 0f));
             m.SetVector("_FibreColor", new Vector4(fib.r, fib.g, fib.b, 0f));
             m.SetFloat("_Gain", 1f);
-            m.SetFloat("_FogCap", 1f);
+            m.SetFloat("_FogCap", part == "SHEET" ? 0.55f : 1f);     // r04: the cloth stays darker than the air beyond it
+            float H = InsideLayoutData.LipH[ki];
+            m.SetFloat("_LipGlow", 1f);
+            m.SetVector("_Folds", new Vector4(0.05f * H, 0.5f * H, 0.12f, 0.35f * H));
+            m.SetFloat("_ThreadCore", objName == "Lip8_Wall" ? 1f : 0f);
+            m.SetVector("_DotHalo", new Vector4(dotHaloR, dotHaloR * 0.86f, dotHaloR * 0.70f, 0f));
             m.SetFloat("_FogHeightFalloff", 0f);
             float roll = InsideLayoutData.LipRoll[ki];
             if (objName.StartsWith("Lip8_Ply") && objName.Length > 8 && char.IsDigit(objName[8]))
                 roll = InsideLayoutData.PlyRoll[objName[8] - '0'];
             m.SetFloat("_GrainRoll", roll);
             m.SetFloat("_LipGlowWidth", InsideLayoutData.LipGlowWidth[ki]);
-            m.SetVector("_LipGlowFar", new Vector4(0.08f, InsideLayoutData.BandWidth[ki], 0f, 0f));
+            m.SetVector("_LipGlowFar", new Vector4(0.10f, InsideLayoutData.BandWidth[ki], 0f, 0f));
             var weave = AssetDatabase.LoadAssetAtPath<Texture2D>(Root + "/Textures/Inside_Weave_1024.png");
             var fringe = AssetDatabase.LoadAssetAtPath<Texture2D>(Root + "/Textures/Inside_Fringe_2048x256.png");
             if (weave != null) m.SetTexture("_WeaveTex", weave);
             if (fringe != null) m.SetTexture("_FringeTex", fringe);
-            m.SetFloat("_FringeGain", 0.65f);
+            m.SetFloat("_FringeGain", 1f);
             Color dot = InsideLayoutData.DotFill;
             m.SetVector("_DotCore", new Vector4(dot.r, dot.g, dot.b, 0f));
             m.SetFloat("_DotGlow", 0.22f);

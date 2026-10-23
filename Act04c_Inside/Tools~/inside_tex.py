@@ -60,7 +60,7 @@ def fringe(W=2048, Hh=256, seed=7):
                 cov = np.maximum(cov, prof)
         lo, hi = int(pos), int(min(W, pos + cw))
         clump_b[lo:hi] = cb
-        pos += cw + rng.uniform(12, 70)
+        pos += cw + rng.uniform(25, 140)       # r04: half the density
     # the cut weave at the edge: a dense, slightly broken band
     band = np.clip(1.0 - v / 0.07, 0, 1) ** 1.5 * (0.6 + 0.4 * np.clip(wrap_noise((1, W), (0, 3), seed + 1), -1, 1))
     img = np.maximum(img, band * 0.9)

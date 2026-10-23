@@ -197,8 +197,13 @@ def mat_sheet(name, P, fp):
                     N.math('ADD', N.math('MULTIPLY', N.math('SUBTRACT', w2r, 0.5), 0.6), N.math('MULTIPLY', N.math('SUBTRACT', wg, 0.5), 0.35)))
     k = N.math('ADD', N.math('ADD', 1.0, N.math('MULTIPLY', streak, P['weave_amount'])), N.math('MULTIPLY', N.math('SUBTRACT', wb, 0.5), 0.25))
     k = N.math('MINIMUM', N.math('MAXIMUM', k, 0.0), 1.0)
-    cloth = N.vmath('SCALE', N.rgb(P['cloth']), s=k)
     d_edge, u_edge, _ = N.sep(N.uv('UV1'))
+    fo = P['folds']
+    ft = N.img(os.path.join(TEX, 'Inside_Weave_1024.png'), N.comb(N.math('DIVIDE', u_edge, fo[0]), N.math('DIVIDE', d_edge, fo[1]), 0.0))
+    fr_, _, _ = N.sep(ft.outputs['Color'])
+    foldK = N.math('ADD', 1.0, N.math('MULTIPLY', N.math('MULTIPLY', N.math('SUBTRACT', fr_, 0.5), 2.0 * fo[2]),
+                                      N.math('EXPONENT', N.math('DIVIDE', d_edge, -fo[3]))))
+    cloth = N.vmath('SCALE', N.rgb(P['cloth']), s=N.math('MULTIPLY', k, foldK))
     comb = N.img(os.path.join(TEX, 'Inside_Fringe_2048x256.png'), N.comb(N.math('DIVIDE', u_edge, 64.0), 0.02, 0.0))
     cr_, _, _ = N.sep(comb.outputs['Color'])
     lip = N.math('MULTIPLY', N.math('MULTIPLY', P['lip_glow'], N.math('EXPONENT', N.math('DIVIDE', d_edge, -P['lip_w']))),
@@ -208,9 +213,9 @@ def mat_sheet(name, P, fp):
     band = N.math('MULTIPLY', N.math('MULTIPLY', P['band'][0], N.math('EXPONENT', N.math('DIVIDE', d_edge, -P['band'][1]))), bandmod)
     gain = N.attr('Col')
     gr, _, _ = N.sep(gain.outputs['Color'])
-    glow = N.math('MULTIPLY', N.math('ADD', lip, band), gr)
+    glow = N.math('MULTIPLY', N.math('ADD', lip, N.math('MULTIPLY', band, foldK)), gr)
     col = N.vmath('ADD', cloth, N.vmath('SCALE', N.rgb(P['fibre']), s=glow))
-    col = N.apply_fog(col, fp)
+    col = N.mix(col, N.horizon(fp), N.math('MINIMUM', N.fog_amount(fp['density']), P['fog_cap_cloth']))
     N.done(N.emission(col))
     return m
 
@@ -230,7 +235,7 @@ def mat_fringe(name, P, fp):
     return m
 
 
-def mat_thread(name, P, fp):
+def mat_thread(name, P, fp, core_lit=0.0):
     m = bpy.data.materials.new(name)
     N = NT(m)
     _, v, _ = N.sep(N.uv('UVMap'))
@@ -239,7 +244,8 @@ def mat_thread(name, P, fp):
     a = N.smooth(1.0, 0.82, x)
     cg = N.attr('Col')
     gr, _, _ = N.sep(cg.outputs['Color'])
-    col = N.vmath('ADD', N.rgb(np.asarray(P['cloth']) * 0.8), N.vmath('SCALE', N.rgb(P['fibre']), s=N.math('MULTIPLY', N.math('MULTIPLY', edge, P['thread_rim']), gr)))
+    core = N.mix(N.rgb(np.asarray(P['cloth']) * 0.8), N.vmath('SCALE', N.rgb(P['fibre']), s=gr), float(core_lit))
+    col = N.vmath('ADD', core, N.vmath('SCALE', N.rgb(P['fibre']), s=N.math('MULTIPLY', N.math('MULTIPLY', edge, P['thread_rim']), gr)))
     col = N.apply_fog(col, fp)
     N.done(N.mixs(N.transparent(), N.emission(col), a))
     return m
@@ -252,7 +258,7 @@ def mat_dome(fp):
     return m
 
 
-def mat_dot(core_lin, glow_k, core_frac, gain):
+def mat_dot(core_lin, glow_k, core_frac, gain, halo_lin=(6.92, 5.95, 4.84)):
     m = bpy.data.materials.new('Inside_Dot')
     N = NT(m)
     u, v, _ = N.sep(N.uv('UVMap'))
@@ -260,8 +266,8 @@ def mat_dot(core_lin, glow_k, core_frac, gain):
                                   N.math('MULTIPLY', N.math('MULTIPLY', v, 2.0), N.math('MULTIPLY', v, 2.0))))
     core = N.math('SUBTRACT', 1.0, N.smooth(core_frac * 0.92, core_frac * 1.08, r))
     halo = N.math('MULTIPLY', N.math('POWER', N.math('MAXIMUM', N.math('SUBTRACT', 1.0, r), 0.0), 2.6), N.math('SUBTRACT', 1.0, core))
-    k = N.math('MULTIPLY', N.math('ADD', core, N.math('MULTIPLY', halo, glow_k)), gain)
-    N.done(N.add(N.emission(N.vmath('SCALE', N.rgb(core_lin), s=k)), N.transparent()))
+    c = N.vmath('ADD', N.vmath('SCALE', N.rgb(core_lin), s=core), N.vmath('SCALE', N.rgb(halo_lin), s=N.math('MULTIPLY', halo, glow_k)))
+    N.done(N.add(N.emission(N.vmath('SCALE', c, s=float(gain))), N.transparent()))
     return m
 
 
@@ -331,10 +337,12 @@ def build(ctx):
                 if 'Lip8_Ply%d_Fringe' % p['i'] in objs:
                     mesh(None, 'Ply%d_Fringe' % p['i'], objs['Lip8_Ply%d_Fringe' % p['i']], z, mat_fringe('Ply%dF' % p['i'], Pp, fp))
                 made += 1
-            mesh(None, 'Lip8_Wall', objs['Lip8_Wall'], L['s'] - s, mat_thread('Wall', P, fp))
+            mesh(None, 'Lip8_Wall', objs['Lip8_Wall'], L['s'] - s, mat_thread('Wall', P, fp, core_lit=1.0))
             continue
         mesh(None, 'Lip%d_Sheet' % k, objs['Lip%d_Sheet' % k], zk, mat_sheet('Lip%d' % k, P, fp))
         mesh(None, 'Lip%d_Fringe' % k, objs['Lip%d_Fringe' % k], zk, mat_fringe('Lip%dF' % k, P, fp))
+        if 'Lip%d_Hang' % k in objs:
+            mesh(None, 'Lip%d_Hang' % k, objs['Lip%d_Hang' % k], zk, mat_fringe('Lip%dH' % k, P, fp))
         if 'Lip%d_Threads' % k in objs:
             mesh(None, 'Lip%d_Threads' % k, objs['Lip%d_Threads' % k], zk, mat_thread('Lip%dT' % k, P, fp))
         made += 1

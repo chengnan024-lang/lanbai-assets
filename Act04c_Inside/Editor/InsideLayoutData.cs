@@ -9,8 +9,8 @@ namespace Lanbai.Inside.Editor
         public static readonly float[] LipT = new float[] { 179.550000f, 182.900000f, 185.950000f, 193.900000f, 202.400000f, 207.150000f, 214.050000f, 224.750000f };
         public static readonly float[] LipS = new float[] { 0.000000f, 197.120000f, 373.760000f, 805.920000f, 1198.070000f, 1378.420000f, 1588.650000f, 1806.870000f };
         public static readonly float[] LipH = new float[] { 1000.000000f, 790.000000f, 940.000000f, 525.000000f, 615.000000f, 345.000000f, 285.000000f, 195.000000f };
-        public static readonly float[] LipRoll = new float[] { -4.000000f, 27.420000f, -29.970000f, 4.260000f, -26.000000f, 11.060000f, -24.670000f, 23.670000f };
-        public static readonly float[] LipGlowWidth = new float[] { 6.000000f, 4.740000f, 5.640000f, 3.150000f, 3.690000f, 2.070000f, 1.710000f, 1.500000f };
+        public static readonly float[] LipRoll = new float[] { -4.000000f, 28.850000f, -25.380000f, 4.260000f, -26.000000f, 11.060000f, -4.880000f, 16.540000f };
+        public static readonly float[] LipGlowWidth = new float[] { 2.500000f, 1.980000f, 2.350000f, 1.310000f, 1.540000f, 0.860000f, 0.710000f, 0.600000f };
         public static readonly float[] BandWidth = new float[] { 80.000000f, 63.200000f, 75.200000f, 42.000000f, 49.200000f, 27.600000f, 22.800000f, 15.600000f };
         public static readonly float[] BandStart = new float[] { 180.150000f, 182.900000f, 185.950000f, 193.900000f, 202.400000f, 207.150000f, 214.050000f, 224.750000f };
         public static readonly float[] BandSweep = new float[] { 1.200000f, 1.200000f, 1.300000f, 1.500000f, 1.700000f, 1.900000f, 2.100000f, 2.400000f };
@@ -21,8 +21,8 @@ namespace Lanbai.Inside.Editor
         public static readonly Color DotFill = new Color(6.916298f, 3.688298f, 1.675688f, 1f);
         public static readonly float[] PlyDz = new float[] { 0.000000f, 22.650000f, 38.700000f, 67.900000f, 85.510000f };
         public static readonly float[] PlyGain = new float[] { 1.000000f, 0.120000f, 0.120000f, 0.120000f, 0.900000f };
-        public static readonly float[] PlyRoll = new float[] { 23.670000f, 23.060000f, 39.980000f, 13.010000f, -7.150000f };
-        public const float DotAz = -5.000f, DotEl = 3.000f, DotDist = 2300.0f;
+        public static readonly float[] PlyRoll = new float[] { 16.540000f, 23.060000f, 22.110000f, -4.510000f, -27.250000f };
+        public const float DotAz = -6.500f, DotEl = 4.000f, DotDist = 2300.0f;
         public static readonly Vector3 HeroEye = new Vector3(0.550f, 1.700f, 2.050f);
     }
 }

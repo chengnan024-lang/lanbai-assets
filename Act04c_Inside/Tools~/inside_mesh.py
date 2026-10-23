@@ -49,6 +49,40 @@ def make(name, o, loc_unity=(0.0, 0.0, 0.0)):
     return ob
 
 
+def skylight_objects():
+    """the spot quad (uv0 picks the corner), the beam prism (uv0.x = side + a, uv0.y = 0 floor / 1 ceiling) and 300 dust
+    motes (uv0 = billboard corner, uv1 = (a, c) across the prism, uv2 = (height fraction, radius m)); the shader moves
+    every vertex, so positions here are placeholders (all at the skylight)."""
+    P = (0.55, 1.5, 2.8)
+    spot = dict(V=np.tile(P, (4, 1)), F=np.array([(0, 1, 2), (0, 2, 3)]), uv0=np.array([[0, 0], [1, 0], [1, 1], [0, 1]], float))
+    V, F, uv = [], [], []
+    for s in range(4):
+        for a in np.linspace(0, 1, 9):
+            for y in (0.0, 1.0):
+                V.append(P)
+                uv.append((s + min(a, 0.9999), y))
+        b = s * 18
+        for j in range(8):
+            q = b + 2 * j
+            F += [(q, q + 2, q + 3), (q, q + 3, q + 1)]
+    beam = dict(V=np.array(V, float), F=np.array(F), uv0=np.array(uv))
+    rng = np.random.default_rng(4)
+    V, F, u0, u1, u2 = [], [], [], [], []
+    for n in range(300):
+        a, c = rng.random(), rng.random()
+        f = rng.random() ** 0.45                         # denser near the skylight, only inside the beam
+        r = rng.uniform(0.0007, 0.0014)
+        k = len(V)
+        for cx, cy in ((-0.5, -0.5), (0.5, -0.5), (0.5, 0.5), (-0.5, 0.5)):
+            V.append(P)
+            u0.append((cx, cy))
+            u1.append((a, c))
+            u2.append((f, r))
+        F += [(k, k + 1, k + 2), (k, k + 2, k + 3)]
+    dust = dict(V=np.array(V, float), F=np.array(F), uv0=np.array(u0), uv1=np.array(u1), uv2=np.array(u2))
+    return [make('Skylight_Spot', spot), make('Skylight_Beam', beam), make('Skylight_Dust', dust)]
+
+
 def readback(path, expect):
     """import the FBX into an empty scene with the inverse settings and compare vertex counts and bounds (Blender
     space) with what was exported."""
@@ -115,6 +149,9 @@ def main():
     for e in empties:
         e.parent = root
     p3 = export_fbx(os.path.join(FBX, 'Inside_Layout.fbx'), [root] + empties)
+    for o in list(bpy.data.objects):
+        bpy.data.objects.remove(o, do_unlink=True)
+    export_fbx(os.path.join(FBX, 'Skylight_Spot.fbx'), skylight_objects())
     ver = readback(p1, expect)
     json.dump(dict(lips=ver, all_ok=all(v['ok'] for v in ver.values())), open(os.path.join(D.HERE, 'out', 'fbx_verify.json'), 'w'), indent=1)
     print('FBX:', p1, p2, p3, '| read-back ok:', all(v['ok'] for v in ver.values()), sum(1 for v in ver.values() if v['ok']), '/', len(ver))

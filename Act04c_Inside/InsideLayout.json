@@ -765,10 +765,10 @@
     3.8906
    ],
    "fringe_len_m": 4.0,
-   "lip_glow": 0.35,
-   "lip_glow_width_m": 6.0,
+   "lip_glow": 1.0,
+   "lip_glow_width_m": 2.5,
    "translucency_band": [
-    0.08,
+    0.1,
     80.0
    ],
    "band_colour_linear": [
@@ -787,12 +787,12 @@
    "H": 790.0,
    "mesh": "branched",
    "seed": 109,
-   "roll_deg": 27.42,
+   "roll_deg": 28.85,
    "offset_m": [
-    121.51,
-    -89.9
+    114.54,
+    -99.34
    ],
-   "clearance_m": 93.2,
+   "clearance_m": 110.8,
    "clearance_need_m": 60.7,
    "fibre_screen": "#E2E0F1",
    "fibre_fill_linear": [
@@ -800,11 +800,11 @@
     2.4043,
     3.7321
    ],
-   "fringe_len_m": 7.109999999999999,
-   "lip_glow": 0.35,
-   "lip_glow_width_m": 4.74,
+   "fringe_len_m": 3.95,
+   "lip_glow": 1.0,
+   "lip_glow_width_m": 1.98,
    "translucency_band": [
-    0.08,
+    0.1,
     63.2
    ],
    "band_colour_linear": [
@@ -823,12 +823,12 @@
    "H": 940.0,
    "mesh": "single",
    "seed": 113,
-   "roll_deg": -29.97,
+   "roll_deg": -25.38,
    "offset_m": [
-    -144.5,
-    -51.99
+    -151.72,
+    -64.93
    ],
-   "clearance_m": 93.1,
+   "clearance_m": 87.2,
    "clearance_need_m": 59.5,
    "fibre_screen": "#DDE0EF",
    "fibre_fill_linear": [
@@ -836,11 +836,11 @@
     2.3811,
     3.5801
    ],
-   "fringe_len_m": 8.459999999999999,
-   "lip_glow": 0.35,
-   "lip_glow_width_m": 5.64,
+   "fringe_len_m": 4.7,
+   "lip_glow": 1.0,
+   "lip_glow_width_m": 2.35,
    "translucency_band": [
-    0.08,
+    0.1,
     75.2
    ],
    "band_colour_linear": [
@@ -864,7 +864,7 @@
     154.22,
     53.55
    ],
-   "clearance_m": 83.4,
+   "clearance_m": 85.5,
    "clearance_need_m": 53.5,
    "fibre_screen": "#D9DFEE",
    "fibre_fill_linear": [
@@ -872,11 +872,11 @@
     2.3583,
     3.4343
    ],
-   "fringe_len_m": 4.725,
-   "lip_glow": 0.35,
-   "lip_glow_width_m": 3.15,
+   "fringe_len_m": 2.625,
+   "lip_glow": 1.0,
+   "lip_glow_width_m": 1.31,
    "translucency_band": [
-    0.08,
+    0.1,
     42.0
    ],
    "band_colour_linear": [
@@ -900,7 +900,7 @@
     -106.48,
     -113.43
    ],
-   "clearance_m": 79.6,
+   "clearance_m": 82.1,
    "clearance_need_m": 44.1,
    "fibre_screen": "#D3DDEB",
    "fibre_fill_linear": [
@@ -908,11 +908,11 @@
     2.2665,
     3.1547
    ],
-   "fringe_len_m": 5.534999999999999,
-   "lip_glow": 0.35,
-   "lip_glow_width_m": 3.69,
+   "fringe_len_m": 3.075,
+   "lip_glow": 1.0,
+   "lip_glow_width_m": 1.54,
    "translucency_band": [
-    0.08,
+    0.1,
     49.2
    ],
    "band_colour_linear": [
@@ -936,7 +936,7 @@
     -6.11,
     86.46
    ],
-   "clearance_m": 49.0,
+   "clearance_m": 50.4,
    "clearance_need_m": 40.0,
    "fibre_screen": "#CEDCE8",
    "fibre_fill_linear": [
@@ -944,11 +944,11 @@
     2.1782,
     2.8979
    ],
-   "fringe_len_m": 3.105,
-   "lip_glow": 0.35,
-   "lip_glow_width_m": 2.07,
+   "fringe_len_m": 1.725,
+   "lip_glow": 1.0,
+   "lip_glow_width_m": 0.86,
    "translucency_band": [
-    0.08,
+    0.1,
     27.6
    ],
    "band_colour_linear": [
@@ -966,13 +966,13 @@
    "s": 1588.65,
    "H": 285.0,
    "mesh": "hole",
-   "seed": 125,
-   "roll_deg": -24.67,
+   "seed": 129,
+   "roll_deg": -4.88,
    "offset_m": [
-    17.41,
-    -38.51
+    -50.57,
+    -56.77
    ],
-   "clearance_m": 71.6,
+   "clearance_m": 49.2,
    "clearance_need_m": 40.0,
    "fibre_screen": "#C8DAE5",
    "fibre_fill_linear": [
@@ -980,11 +980,11 @@
     2.0934,
     2.662
    ],
-   "fringe_len_m": 2.565,
-   "lip_glow": 0.35,
-   "lip_glow_width_m": 1.71,
+   "fringe_len_m": 1.5,
+   "lip_glow": 1.0,
+   "lip_glow_width_m": 0.71,
    "translucency_band": [
-    0.08,
+    0.1,
     22.8
    ],
    "band_colour_linear": [
@@ -1002,13 +1002,13 @@
    "s": 1806.87,
    "H": 195.0,
    "mesh": "hole",
-   "seed": 115,
-   "roll_deg": 23.67,
+   "seed": 128,
+   "roll_deg": 16.54,
    "offset_m": [
-    -44.11,
-    -2.28
+    -44.69,
+    10.61
    ],
-   "clearance_m": 40.2,
+   "clearance_m": 52.5,
    "clearance_need_m": 40.0,
    "fibre_screen": "#C2D8E2",
    "fibre_fill_linear": [
@@ -1016,11 +1016,11 @@
     2.0119,
     2.4453
    ],
-   "fringe_len_m": 2.5,
-   "lip_glow": 0.35,
-   "lip_glow_width_m": 1.5,
+   "fringe_len_m": 1.5,
+   "lip_glow": 1.0,
+   "lip_glow_width_m": 0.6,
    "translucency_band": [
-    0.08,
+    0.1,
     15.6
    ],
    "band_colour_linear": [
@@ -1037,16 +1037,16 @@
    {
     "i": 0,
     "dz": 0.0,
-    "seed": 115,
-    "roll": 23.67,
+    "seed": 128,
+    "roll": 16.54,
     "offset": [
-     -44.11,
-     -2.28
+     -44.69,
+     10.61
     ],
     "gain": 1.0,
     "fringe": true,
     "partial": null,
-    "clearance_m": 40.2,
+    "clearance_m": 52.5,
     "scale": 1.0
    },
    {
@@ -1070,49 +1070,49 @@
    {
     "i": 2,
     "dz": 38.7,
-    "seed": 147,
-    "roll": 39.98,
+    "seed": 128,
+    "roll": 22.11,
     "offset": [
-     -48.83,
-     0.85
+     -33.37,
+     22.18
     ],
     "gain": 0.12,
     "fringe": false,
     "partial": null,
-    "clearance_m": 42.8,
-    "scale": 1.036
+    "clearance_m": 56.4,
+    "scale": 1.0988
    },
    {
     "i": 3,
     "dz": 67.9,
-    "seed": 147,
-    "roll": 13.01,
+    "seed": 145,
+    "roll": -4.51,
     "offset": [
-     -41.88,
-     22.78
+     -61.26,
+     -9.59
     ],
     "gain": 0.12,
     "fringe": false,
     "partial": [
-     221.26758729513676,
-     239.2446532386311
+     47.09339740361518,
+     211.95238485721387
     ],
-    "clearance_m": 48.0,
-    "scale": 1.0804
+    "clearance_m": 42.5,
+    "scale": 1.0907
    },
    {
     "i": 4,
     "dz": 85.51,
-    "seed": 105,
-    "roll": -7.15,
+    "seed": 102,
+    "roll": -27.25,
     "offset": [
-     -25.9,
-     17.08
+     -43.63,
+     41.71
     ],
     "gain": 0.9,
     "fringe": true,
     "partial": null,
-    "clearance_m": 52.9,
+    "clearance_m": 41.2,
     "scale": 1.05
    }
   ],
@@ -1129,7 +1129,7 @@
   "density_inside": 0.0035,
   "density_ramp": "U9 .. U9 + 2 s smoothstep",
   "ahead_m": 250.0,
-  "nadir_k": 0.85,
+  "nadir_k": 0.8,
   "band_dir": [
    0,
    0,
@@ -1235,8 +1235,8 @@
   "weave_amount": 0.45
  },
  "dot": {
-  "az_deg": -5.0,
-  "el_deg": 3.0,
+  "az_deg": -6.5,
+  "el_deg": 4.0,
   "distance_m": 2300.0,
   "screen": "#FFF1DC",
   "fill": [

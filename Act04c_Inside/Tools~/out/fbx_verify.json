@@ -1,5 +1,10 @@
 {
  "lips": {
+  "Lip1_Hang": {
+   "ok": true,
+   "n": 280,
+   "uv_layers": 1
+  },
   "Lip1_Sheet": {
    "ok": true,
    "n": 4672,
@@ -8,6 +13,11 @@
   "Lip1_Fringe": {
    "ok": true,
    "n": 1450,
+   "uv_layers": 1
+  },
+  "Lip2_Hang": {
+   "ok": true,
+   "n": 280,
    "uv_layers": 1
   },
   "Lip2_Sheet": {
@@ -25,6 +35,11 @@
    "n": 28,
    "uv_layers": 1
   },
+  "Lip3_Hang": {
+   "ok": true,
+   "n": 280,
+   "uv_layers": 1
+  },
   "Lip3_Sheet": {
    "ok": true,
    "n": 4758,
@@ -40,6 +55,11 @@
    "n": 56,
    "uv_layers": 1
   },
+  "Lip4_Hang": {
+   "ok": true,
+   "n": 280,
+   "uv_layers": 1
+  },
   "Lip4_Sheet": {
    "ok": true,
    "n": 5604,
@@ -48,6 +68,11 @@
   "Lip4_Fringe": {
    "ok": true,
    "n": 2122,
+   "uv_layers": 1
+  },
+  "Lip5_Hang": {
+   "ok": true,
+   "n": 280,
    "uv_layers": 1
   },
   "Lip5_Sheet": {
@@ -65,6 +90,11 @@
    "n": 56,
    "uv_layers": 1
   },
+  "Lip6_Hang": {
+   "ok": true,
+   "n": 280,
+   "uv_layers": 1
+  },
   "Lip6_Sheet": {
    "ok": true,
    "n": 4106,
@@ -80,24 +110,29 @@
    "n": 56,
    "uv_layers": 1
   },
+  "Lip7_Hang": {
+   "ok": true,
+   "n": 280,
+   "uv_layers": 1
+  },
   "Lip7_Sheet": {
    "ok": true,
-   "n": 4542,
+   "n": 4401,
    "uv_layers": 2
   },
   "Lip7_Fringe": {
    "ok": true,
-   "n": 2122,
+   "n": 2056,
    "uv_layers": 1
   },
   "Lip8_Ply0_Sheet": {
    "ok": true,
-   "n": 3232,
+   "n": 3501,
    "uv_layers": 2
   },
   "Lip8_Ply0_Fringe": {
    "ok": true,
-   "n": 1554,
+   "n": 1674,
    "uv_layers": 1
   },
   "Lip8_Ply1_Sheet": {
@@ -107,27 +142,27 @@
   },
   "Lip8_Ply2_Sheet": {
    "ok": true,
-   "n": 3266,
+   "n": 3837,
    "uv_layers": 2
   },
   "Lip8_Ply3_Sheet": {
    "ok": true,
-   "n": 3404,
+   "n": 3689,
    "uv_layers": 2
   },
   "Lip8_Ply4_Sheet": {
    "ok": true,
-   "n": 3895,
+   "n": 3712,
    "uv_layers": 2
   },
   "Lip8_Ply4_Fringe": {
    "ok": true,
-   "n": 1890,
+   "n": 1784,
    "uv_layers": 1
   },
   "Lip8_Wall": {
    "ok": true,
-   "n": 1824,
+   "n": 4320,
    "uv_layers": 1
   }
  },
