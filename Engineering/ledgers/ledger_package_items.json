@@ -1,0 +1,9 @@
+{
+ "_about": "包交上来以后的开销项（手工维护，build_ledger_data.py 把它们追加到圣经清单生成的项后面）。status：package（包报的）/ engineer-estimate（总工程师估的，source 写算法）/ measured（本地实测）。replaces = 要替换掉的圣经项的 name（可选）。",
+ "items": [
+  {"name": "门 云海 Lanbai/GateCloudDeck（高度场步进，里程碑 1）", "owner": "门", "kind": "opaque", "active": [[133.8, 181.55]],
+   "gpu_ms": 4.5, "status": "engineer-estimate",
+   "source": "pkg/gate-clouds 6a7c85d 的技术审查（GateClouds/总工程师意见.md 一.1）：deck_ref.py 量的平均 25–30 步 × 每步 3 次各向异性采样 × 向下看的像素占 33–50%，按 9 MP 手数指令估 3–6 ms，取中间 4.5；砍法 1–4 之后目标 1–1.5 ms",
+   "note": "未计入“标定估计 10.0”（那一次门测试没有云）；第 4 幕实际 ≈ 10 + 4.5"}
+ ]
+}
