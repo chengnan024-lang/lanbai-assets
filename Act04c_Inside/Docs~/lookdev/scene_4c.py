@@ -230,20 +230,15 @@ def mat_sheet(name, P, fp):
     # a darker band just behind the glowing rim
     Hk = fo[0] / 0.08
     tau = 2.0 * math.pi
-    # r11 (art review r10 B2): discrete soft ridges ACROSS the tear (constant along the edge normal: from u only), one
-    # every 0.06 H where a slow gate lets it through (3-6 per sheet edge-run), each 0.016 H wide with a lit and a shadow
-    # flank (the derivative of a gaussian bump: +- ~8 luma on the cloth), 0.05-0.12 H long, tapering
-    P_ = 0.06 * Hk
-    xr = N.math('SUBTRACT', N.math('FRACT', N.math('DIVIDE', u_edge, P_)), 0.5)
-    w_ = 0.016 * Hk / P_
-    bump = N.math('MULTIPLY', N.math('MULTIPLY', xr, -2.0 / w_),
-                  N.math('EXPONENT', N.math('MULTIPLY', N.math('MULTIPLY', xr, xr), -1.0 / (w_ * w_))))
-    gate = N.smooth(0.25, 0.6, N.math('ADD', N.math('MULTIPLY', N.math('SINE', N.math('ADD', N.math('MULTIPLY', u_edge, tau / (0.41 * Hk)), 0.3)), 0.5),
-                                       N.math('MULTIPLY', N.math('SINE', N.math('MULTIPLY', u_edge, tau / (0.17 * Hk))), 0.35)))
-    fold = N.math('MULTIPLY', bump, gate)
-    flen = N.math('ADD', 0.085 * Hk, N.math('MULTIPLY', N.math('SINE', N.math('ADD', N.math('MULTIPLY', u_edge, tau / (0.31 * Hk)), 0.7)), 0.035 * Hk))
-    env = N.math('SUBTRACT', 1.0, N.smooth(0.0, 1.0, N.math('DIVIDE', d_edge, flen)))
-    fk = N.math('ADD', 1.0, N.math('MULTIPLY', N.math('MULTIPLY', fold, 0.42 * fo[2] / 0.25), env))
+    # r13 (总导演 D-19: the r11 ridges read as rock strata): soft DRAPE pleats that hang with gravity (vertical in the
+    # world, whatever the edge does), period ~0.035 H with a slow sway, +-12 %, fading 0.15 H from the torn edge
+    phx = N.math('ADD', N.math('MULTIPLY', bx, tau / (0.025 * Hk)),
+                 N.math('ADD', N.math('MULTIPLY', N.math('SINE', N.math('MULTIPLY', bz, tau / (0.2 * Hk))), 0.6),
+                        N.math('MULTIPLY', N.math('SINE', N.math('MULTIPLY', bx, tau / (0.13 * Hk))), 0.8)))
+    fold = N.math('ADD', N.math('MULTIPLY', N.math('SINE', phx), 0.6),
+                  N.math('MULTIPLY', N.math('SINE', N.math('ADD', N.math('MULTIPLY', phx, 2.1), 1.0)), 0.4))
+    env = N.math('EXPONENT', N.math('DIVIDE', d_edge, -0.15 * Hk))
+    fk = N.math('ADD', 1.0, N.math('MULTIPLY', N.math('MULTIPLY', fold, 0.16), env))
     lw = P['lip_w']
     band_in = N.math('MULTIPLY', N.smooth(lw * 1.0, lw * 1.6, d_edge),
                      N.math('SUBTRACT', 1.0, N.smooth(lw + 0.005 * Hk, lw + 0.009 * Hk, d_edge)))
@@ -271,6 +266,21 @@ def mat_fringe(name, P, fp):
     k = N.math('MULTIPLY', k, N.math('SUBTRACT', 1.0, N.fog_amount(fp['density'])))
     col = N.vmath('SCALE', N.rgb(P['fibre']), s=k)
     N.done(N.add(N.emission(col), N.transparent()))
+    return m
+
+
+def mat_hang(name, P, fp):
+    """r13 (总导演 D-19): a hanging thread is one solid strand (the fringe texture's strands are all short), tapering to
+    the tip: fibre colour x the fringe gain x 1.6 x (1 - 0.6 v^2), additive, fogged. Unity: the FRINGE part with _Sway > 0."""
+    m = bpy.data.materials.new(name)
+    N = NT(m)
+    _, v, _ = N.sep(N.uv('UVMap'))
+    cg = N.attr('Col')
+    gr, _, _ = N.sep(cg.outputs['Color'])
+    k = N.math('MULTIPLY', N.math('SUBTRACT', 1.0, N.math('MULTIPLY', N.math('MULTIPLY', v, v), 0.3)), gr)
+    k = N.math('MULTIPLY', k, P['fringe_gain'] * 1.6 * 0.35)
+    k = N.math('MULTIPLY', k, N.math('SUBTRACT', 1.0, N.fog_amount(fp['density'])))
+    N.done(N.add(N.emission(N.vmath('SCALE', N.rgb(P['fibre']), s=k)), N.transparent()))
     return m
 
 
@@ -422,7 +432,7 @@ def build(ctx):
         mesh(None, 'Lip%d_Sheet' % k, objs['Lip%d_Sheet' % k], zk, mat_sheet('Lip%d' % k, P, fp))
         mesh(None, 'Lip%d_Fringe' % k, objs['Lip%d_Fringe' % k], zk, mat_fringe('Lip%dF' % k, P, fp))
         if 'Lip%d_Hang' % k in objs:
-            mesh(None, 'Lip%d_Hang' % k, objs['Lip%d_Hang' % k], zk, mat_fringe('Lip%dH' % k, P, fp))
+            mesh(None, 'Lip%d_Hang' % k, objs['Lip%d_Hang' % k], zk, mat_hang('Lip%dH' % k, P, fp))   # r13: the hanging threads read
         if 'Lip%d_Threads' % k in objs:
             mesh(None, 'Lip%d_Threads' % k, objs['Lip%d_Threads' % k], zk, mat_thread('Lip%dT' % k, P, fp))
         made += 1

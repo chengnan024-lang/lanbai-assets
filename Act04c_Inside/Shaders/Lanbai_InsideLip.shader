@@ -44,6 +44,7 @@ Shader "Lanbai/InsideLip"
         [Header(Fringe)]
         _FringeTex ("Fringe (R fibres, G coverage, B clump)", 2D) = "black" {}
         _FringeGain ("Fringe gain", Float) = 2.75
+        _Sway ("Hanging threads: sway at the tip (m; 0 = none)", Float) = 0
         [Header(Thread)]
         _ThreadRim ("Thread rim (x fibre colour)", Float) = 0.6
         _ThreadCore ("Thread core lit by the fibres (0 = dark weft, 1 = fibre lit)", Range(0, 1)) = 0
@@ -96,7 +97,7 @@ Shader "Lanbai/InsideLip"
             float _ThreadCore;
             float4 _DotHalo;
             sampler2D _FringeTex;
-            float _FringeGain, _ThreadRim;
+            float _FringeGain, _ThreadRim, _Sway;
             float4 _DotCore;
             float _DotGlow, _DotDist, _LooseGain, _LooseWidth;
 
@@ -146,6 +147,14 @@ Shader "Lanbai/InsideLip"
                 o.uv = float4(v.uv0, v.uv1);
                 o.col = v.color;
                 o.aux = float4(v.uv2, v.uv3);
+            #if defined(_PART_FRINGE)
+                // r13 (总导演 D-19): the hanging threads (*_Hang materials, _Sway > 0) sway slowly in the bus's draught;
+                // uv0.y runs along the thread (0.08 top .. 0.93 tip), uv0.x is constant per thread (its phase). The clock
+                // eases to a stop by U12 - 2.25, so they come to rest with everything else.
+                float sw = _Sway * v.uv0.y * v.uv0.y;
+                wp.x += sw * sin(_Udon_InsideClock.x * 0.55 + v.uv0.x * 40.0);
+                wp.z += 0.5 * sw * sin(_Udon_InsideClock.x * 0.41 + v.uv0.x * 23.0);
+            #endif
             #if defined(_PART_DOT)
                 // billboard about the object origin. r07 (art review r06 S1): _Udon_InsideDot.y is the glow RADIUS (brief:
                 // 4 deg at LIP4 -> 12 deg), the core x stays a diameter; the halo is an exp tail with no hard edge
@@ -244,17 +253,12 @@ Shader "Lanbai/InsideLip"
                 // mips and fog): procedural tension folds radiating from the torn edge (+-_Folds.z) and, on ~15-20 % of
                 // the edge, the curled-back face: a darker band just behind the glowing rim. H from _Folds.x = 0.08 H.
                 float Hm = _Folds.x / 0.08;
-                // r11 (art review r10 B2): discrete soft ridges ACROSS the tear (from u only = constant along the edge
-                // normal), one every 0.06 H where a slow gate lets it through, 0.016 H wide with a lit and a shadow flank
-                // (a gaussian bump's derivative, +- ~8 luma), 0.05-0.12 H long and tapering
-                float Pr = 0.06 * Hm;
-                float xr = frac(uEdge / Pr) - 0.5;
-                float wr = 0.016 * Hm / Pr;
-                float bump = -2.0 / wr * xr * exp(-xr * xr / (wr * wr));
-                float gateR = smoothstep(0.25, 0.6, 0.5 * sin(uEdge * 6.2831853 / (0.41 * Hm) + 0.3) + 0.35 * sin(uEdge * 6.2831853 / (0.17 * Hm)));
-                float fold2 = bump * gateR;
-                float flen = 0.085 * Hm + 0.035 * Hm * sin(uEdge * 6.2831853 / (0.31 * Hm) + 0.7);
-                float fk = 1.0 + 1.68 * _Folds.z * fold2 * (1.0 - smoothstep(0.0, 1.0, dEdge / flen));
+                // r13 (总导演 D-19: the r11 ridges read as rock strata): soft DRAPE pleats hanging with gravity (vertical
+                // in the world), period ~0.025 H with a slow sway, +-16 %, fading 0.15 H from the torn edge
+                float phx = i.wpos.x * 6.2831853 / (0.025 * Hm) + 0.6 * sin(i.wpos.y * 6.2831853 / (0.2 * Hm))
+                          + 0.8 * sin(i.wpos.x * 6.2831853 / (0.13 * Hm));
+                float pleat = 0.6 * sin(phx) + 0.4 * sin(2.1 * phx + 1.0);
+                float fk = 1.0 + 0.16 * pleat * exp(-dEdge / (0.15 * Hm));
                 float lw = _LipGlowWidth;
                 float bandIn = smoothstep(lw, lw * 1.6, dEdge) * (1.0 - smoothstep(lw + 0.005 * Hm, lw + 0.009 * Hm, dEdge));
                 float cm = sin(uEdge * 6.2831853 / (0.05 * Hm)) + 0.8 * sin(uEdge * 6.2831853 / (0.017 * Hm));
@@ -264,6 +268,8 @@ Shader "Lanbai/InsideLip"
                 return float4(lerp(LanbaiHorizon(dirV) * gradeK, res, saturate(_Gain)), 1.0);
             #elif defined(_PART_FRINGE)
                 float4 f = tex2D(_FringeTex, i.uv.xy);
+                // r13: a hanging thread (_Sway > 0) is one solid strand tapering to the tip (the texture's strands are short)
+                if (_Sway > 0.0) f = float4(0.35 * (1.0 - 0.3 * i.uv.y * i.uv.y), 0.0, 0.5, 0.0);
                 float3 c = _FibreColor.rgb * f.r * (0.7 + 0.6 * f.b) * _FringeGain * g * i.col.g * gradeK;   // col.g: bundle gaps
                 return float4(LanbaiApplyFogAdditive(c, i.wpos), 0.0);     // additive: the fog only removes light
             #elif defined(_PART_THREAD)

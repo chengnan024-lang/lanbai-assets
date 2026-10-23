@@ -156,7 +156,8 @@ namespace Lanbai.Inside.Editor
             var fringe = AssetDatabase.LoadAssetAtPath<Texture2D>(Root + "/Textures/Inside_Fringe_2048x256.png");
             if (weave != null) m.SetTexture("_WeaveTex", weave);
             if (fringe != null) m.SetTexture("_FringeTex", fringe);
-            m.SetFloat("_FringeGain", 2.75f);
+            m.SetFloat("_FringeGain", objName.EndsWith("_Hang") ? 4.4f : 2.75f);   // r13: the hanging threads x 1.6
+            m.SetFloat("_Sway", objName.EndsWith("_Hang") ? 0.6f : 0f);   // r13: the hanging threads sway (D-19)
             Color dot = InsideLayoutData.DotFill;
             m.SetVector("_DotCore", new Vector4(dot.r, dot.g, dot.b, 0f));
             m.SetFloat("_DotGlow", 0.32f);

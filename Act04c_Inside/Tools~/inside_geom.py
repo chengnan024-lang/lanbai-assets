@@ -317,7 +317,7 @@ def cut_partial(sh, centre, start_deg, span_deg, r_min):
     return sh
 
 
-def hanging(contour, Hk, seed, n=14, gain=1.0, need=40.0):
+def hanging(contour, Hk, seed, n=20, gain=1.0, need=40.0):
     """a few long loose threads hanging under gravity from the upper edges (art review r03), thin additive ribbons with
     the fringe texture's long-strand column (uv0.x fixed per thread)."""
     rng = np.random.default_rng(seed + 61)
@@ -331,18 +331,20 @@ def hanging(contour, Hk, seed, n=14, gain=1.0, need=40.0):
     for j in range(n):
         i = int(rng.choice(cand))
         p0 = C[i]
-        L = rng.uniform(0.02, 0.05) * Hk
+        L = rng.uniform(0.04, 0.09) * Hk                   # r13: longer (D-19: threads that hang = cloth)
         from shapely.geometry import box, LineString
         bus = box(-D.BUS_HALF_W, D.BUS_Y0, D.BUS_HALF_W, D.BUS_Y1)
-        while L > 1.0 and LineString([p0, (p0[0], p0[1] - L)]).distance(bus) < need:
+        while L > 1.0 and LineString([p0, (p0[0], p0[1] - L)]).distance(bus) < need + 2.0:   # r13: + the sway
             L *= 0.8                                       # the bus path keeps its clearance from every thread
         if L <= 1.0:
             continue
-        w = max(0.0012 * Hk, 0.15)
-        m = 10
+        # r13 (D-19): threads, not icicles: thin, even width, a slight S-wave, uneven brightness
+        w = max(0.0016 * Hk, 0.2)
+        m = 16
         f = np.linspace(0, 1, m)
         drift = rng.normal(0, 0.12) * L
-        P = np.stack([p0[0] + drift * f ** 1.5, p0[1] - L * f], -1)
+        wav = rng.uniform(0.004, 0.012) * L * np.sin(f * np.pi * rng.uniform(1.5, 3.0) + rng.uniform(0, 6.28))
+        P = np.stack([p0[0] + drift * f ** 1.5 + wav, p0[1] - L * f], -1)
         k = len(V)
         for q in range(m):
             V.append((P[q, 0] - w / 2, P[q, 1], 0.0))
@@ -353,7 +355,8 @@ def hanging(contour, Hk, seed, n=14, gain=1.0, need=40.0):
             a = k + 2 * q
             F += [(a, a + 2, a + 3), (a, a + 3, a + 1)]
     V = np.array(V, float)
-    return dict(V=V, F=np.array(F), uv0=np.array(uv), col=np.tile([gain, 1.0, 0, 1], (len(V), 1)))
+    g = np.repeat(rng.uniform(0.4, 1.0, len(V) // (2 * 16)), 2 * 16) * gain if len(V) else np.zeros(0)
+    return dict(V=V, F=np.array(F), uv0=np.array(uv), col=np.stack([g, np.ones_like(g), np.zeros_like(g), np.ones_like(g)], -1))
 
 
 def fringe_gaps(fr, perim, seed):
@@ -393,6 +396,33 @@ def fringe_taper(fr, contour, need, Hk):
     return fr
 
 
+def sag(C, Hk, margin, seed):
+    """r13 (总导演 D-19: the cloth must read as cloth, not rock / ice): the upper edges of an opening (cloth above it)
+    sag under gravity in shallow scallops between pinch points every 0.06-0.10 H; depth <= 1.2 % H and never more than
+    80 % of this lip's spare clearance (margin = clearance - need), so the bus path keeps its clearance."""
+    C = np.asarray(C, float)
+    A = min(0.012 * Hk, 0.8 * max(margin, 0.0))
+    if A < 0.5:
+        return C
+    rng = np.random.default_rng(int(seed) + 4242)
+    nrm = D.normals(C, smooth=6)                       # points into the cloth
+    seg = np.linalg.norm(np.roll(C, -1, 0) - C, axis=1)
+    arc = np.concatenate([[0], np.cumsum(seg)])[:-1]
+    perim = float(seg.sum())
+    anchors = [0.0]
+    while anchors[-1] < perim:
+        anchors.append(anchors[-1] + rng.uniform(0.06, 0.10) * Hk)
+    anchors = np.array(anchors)
+    j = np.clip(np.searchsorted(anchors, arc, side='right') - 1, 0, len(anchors) - 2)
+    t = (arc - anchors[j]) / (anchors[j + 1] - anchors[j])
+    depth = A * rng.uniform(0.5, 1.0, len(anchors))[j]
+    w = np.clip((nrm[:, 1] - 0.3) / 0.5, 0.0, 1.0)
+    w = w * w * (3 - 2 * w)
+    out = C.copy()
+    out[:, 1] -= depth * np.sin(np.pi * t) ** 1.3 * w
+    return D.fix_polygon(out)                          # a sag can fold a narrow tooth over itself
+
+
 def build():
     rep = json.load(open(os.path.join(LY.OUT, 'layout_solved.json')))
     objs = {}
@@ -409,6 +439,7 @@ def build():
         else:
             seed = L['seed']
             C = LY.lip_polygon(L['mesh_kind'], seed, Hk, L['roll'], L['offset'])
+            C = sag(C, Hk, L['clearance_m'] - L['clearance_need'], seed)
         sh = sheet(C, Hk, seed, 1.0)
         fl = 4.0 if k == 1 else LY.fringe_len(Hk)
         fr = fringe(C, Hk, seed, fl, 1.0, L['roll'] if k > 1 else -4.0)
@@ -443,6 +474,7 @@ def build():
         i = p['i']
         C = LY.lip_polygon('hole', p['seed'], 195.0 * p['scale'], p['roll'], p['offset'],
                            jag_seed=None)
+        C = sag(C, 195.0, p['clearance_m'] - 40.0, p['seed'] + 7 * i)
         contours.append(C)
         sh = sheet(C, 195.0, p['seed'] + 7 * i, max(p['gain'], 0.30), billow=2.5 if p['fringe'] else 5.0)   # r07: inner plies' rims lit (art review r06 S3)
         if p['partial']:
