@@ -80,6 +80,8 @@ def table(D):
             cap_ms = hot[0]['world_ms'] + B['ppv2_ms']
         nmiss = sorted({n for k in ('gpu_ms', 'fse') for n in miss[k]})
         est = [it['est_total_ms'] for it in items if it.get('est_total_ms')]
+        if est:   # the calibration estimate covers the measured scene; package items measured / estimated on top of it add
+            est = [max(est) + sum(it['gpu_ms'] for it in items if it.get('gpu_ms') and it.get('status') in ('engineer-estimate', 'package', 'measured') and it.get('kind') != 'world')]
         if miss['gpu_ms']:
             gtxt = '? + %.1f（世界未知）' % s['gpu_ms']
         else:
