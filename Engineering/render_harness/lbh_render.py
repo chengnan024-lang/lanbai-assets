@@ -50,6 +50,7 @@ def grade_spec(args):
 
 def finish(lin, args, cam, out, scene_info=None, t_render=None):
     """grade + measure + write; shared by lbh_render and lbh_grade."""
+    G.BLOOM_TINT_MODE = args.bloom_tint
     spec = grade_spec(args)
     codes, st, bl = G.grade(lin, spec, bloom=not args.no_bloom, lens=(args.lens != 'none' and not args.vr))
     u8 = G.to_u8(codes)
@@ -66,6 +67,7 @@ def finish(lin, args, cam, out, scene_info=None, t_render=None):
     if t_render is not None:
         rec['render_seconds'] = round(t_render, 1)
     rec['lens'] = args.lens
+    rec['bloom_tint'] = args.bloom_tint
     rec['note'] = args.note or ''
     json.dump(rec, open(os.path.join(out, 'metrics.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     if args.note:
@@ -80,6 +82,8 @@ def common_args(ap):
     ap.add_argument('--lens', default='none', choices=['none', 'clean', 'archive'], help='桌面镜头层（暗角；颗粒不模拟）。和本地桌面截图比时用 clean')
     ap.add_argument('--vr', action='store_true', help='VR：不加任何镜头层')
     ap.add_argument('--no-bloom', action='store_true')
+    ap.add_argument('--bloom-tint', default='double', choices=['double', 'single'],
+                    help='double（默认）= Unity 实际：bloom 颜色被线性化两次；single = 设计值（Grading 做了补偿以后用这个）')
     ap.add_argument('--act', default=None, help='色板键：01 02 03 04 04c 05 06 07a 07b 08 08b 09 10 11 12')
     ap.add_argument('--t', type=float, default=None, help='时间轴秒（只用来查圣经 §2 的目标 APL；场景脚本自己用 ctx["t"]）')
     ap.add_argument('--note', default=None, help='这一轮的一句话（写进 note.txt，迭代总览会用）')
