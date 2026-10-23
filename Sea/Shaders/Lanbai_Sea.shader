@@ -160,7 +160,7 @@ Shader "Lanbai/Sea"
             #endif
                 if (_FogMode > 0.5)
                     col.rgb = LanbaiApplyFog(col.rgb, P);
-                col.rgb = LanbaiPurpleGuard(col.rgb);                 // D-17/D-21: nothing displays h_ab 285-330, C* > 8, L* > 40 (proof: Docs~/purple_scan.json)
+                col.rgb = LanbaiPurpleGuard(col.rgb);                 // D-17/D-21: nothing displays h_ab 290-330, C* > 8, L* > 40 (proof: Docs~/purple_scan.json)
                 return col;
             }
             ENDCG

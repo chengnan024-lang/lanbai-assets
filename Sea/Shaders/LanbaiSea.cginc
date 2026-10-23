@@ -376,8 +376,8 @@ inline float3 LanbaiOklabToLin(float3 L)
 }
 
 // Purple guard (Art/总导演裁决.md D-17 + D-21, final review #7). Rule: after the guard and the grade of the material's act,
-// no colour DISPLAYS with CIELab h_ab 285..330, C* > 8 and L* > 40 (D-21: the bible's deep indigo, L* <= 40 like the dusk
-// zenith #3D4A80 or #2E3C66, passes; the mid-tone lilac is stopped -- the same rule as the Sky).
+// no colour DISPLAYS with CIELab h_ab 290..330, C* > 8 and L* > 40 (D-21 revised: the bible's own palette -- mid sky
+// #808AB2, cabin #828BAA, zenith #3D4A80, #2E3C66, all under 290 -- passes untouched; so does deep indigo L* <= 40).
 // Sea/Tools~/purple_scan.py scans OKLab hue x lightness x saturation through Grading's engine model, per grade, and finds
 // along every saturation ray (s = C / L) the VIOLET BANDS: band 1 = (lo1, hi1], band 2 = (lo2, hi2] with a safe gap between
 // (under S8 the bible's mid sky #808AB2 lives in such a gap: its paler and its more saturated versions read lilac, it does

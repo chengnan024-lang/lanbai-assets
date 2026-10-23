@@ -2,13 +2,13 @@
 """Purple-guard ceiling (final review #7, D-17): bake + prove.
 
 Rule proved here (Art/总导演裁决.md D-17 + D-21): after LanbaiPurpleGuard, under the grade(s) each sea material lives
-in (Grading's PPv2 engine model, no bloom), NO colour displays with CIELab h_ab in [285, 330], C* > 8 and L* > 40.
-  D-21: the guard lets the bible's DEEP indigo through (L* <= 40: dusk zenith #3D4A80 L* 32.8 at h 289.2, other-sky
-  nadir / 7c window #2E3C66 L* 26.1 at h 286.3); it stops the mid-tone lilac. The same rule as the Sky.
+in (Grading's PPv2 engine model, no bloom), NO colour displays with CIELab h_ab in [290, 330], C* > 8 and L* > 40.
+  D-21 (revised, main 4dacb19): the bible's own palette always passes (mid sky #808AB2 h 284.3, cabin #828BAA, zenith
+  #3D4A80 h 289.2, #2E3C66 h 286.3 all sit under 290); the deep indigo L* <= 40 passes; the mid-tone lilac is stopped.
 
 How: for every OKLab hue (0.5 deg) and lightness L (0.0125, 0..3 = linear 0..27) and for each grade separately, the
 largest SATURATION s = C/L that never displays violet (first violet s along the ray, minus one 0.002 step), the scan
-using a slightly stricter test (h_ab 285..330.5, C* > 7.0, L* > 39: margin for bloom and 8-bit rounding) so thin violet islands between scan points are covered.
+using a slightly stricter test (h_ab 289.7..330.5, C* > 7.0, L* > 39: margin for bloom and 8-bit rounding) so thin violet islands between scan points are covered.
 Some rays leave the violet band again at higher saturation (under S8 the DESATURATED versions of the bible's mid sky
 #808AB2 read lilac, the colour itself does not), so each texel stores the band: lo = largest safe s below it, hi = top of it.
 A ray can even hold TWO violet bands with a safe gap between them (#808AB2 under S8: s 0.04-0.065 and 0.17-, the colour
@@ -43,8 +43,8 @@ import grade as G  # noqa: E402
 import sea_numpy as S  # noqa: E402
 
 CHANNELS = ('S6', 'S7a', 'S7b', 'S8', 'S11')      # the first four -> Sea_PurpleCeiling.png RGBA, S11 -> Sea_PurpleCeiling_S11.png
-H_LO, H_HI, CSTAR, LSTAR = 285.0, 330.0, 8.0, 40.0   # the rule (verification), D-21
-SCAN_LO, SCAN_HI, SCAN_C, SCAN_L = 285.0, 330.5, 7.0, 39.0   # the bake is stricter (margin for thin violet islands between scan points)
+H_LO, H_HI, CSTAR, LSTAR = 290.0, 330.0, 8.0, 40.0   # the rule (verification), D-21 revised (main 4dacb19)
+SCAN_LO, SCAN_HI, SCAN_C, SCAN_L = 289.7, 330.5, 7.0, 39.0   # the bake is stricter (margin for thin violet islands between scan points)
 W, H = 360, 121
 L_STEP, H_STEP = 0.025, 1.0
 S_MAX = 0.8
@@ -101,50 +101,52 @@ def runs(bad_row):
 
 
 def scan_hue(h):
-    """per grade and fine L at hue h, the violet bands along the saturation ray (one step of margin on every side):
-    band 1 = (lo1, hi1], band 2 = (lo2, hi2]. Between them the ray is safe (the bible's mid sky #808AB2 lives in such a
-    gap under S8: its desaturated AND its more saturated versions read lilac, it does not). No band: lo = S_MAX, hi = 0."""
+    """per grade and fine L at hue h: the violet samples along the saturation ray (bool [nL, grades, nS])"""
     LL, SS = np.meshgrid(FINE_L, S_STEPS, indexing='ij')
     lin = S.oklab_to_lin(lsh(LL.ravel(), SS.ravel(), np.full(LL.size, h)))
+    return np.stack([violet(lin, sid, SCAN_LO, SCAN_HI, SCAN_C, SCAN_L).reshape(LL.shape) for sid in CHANNELS], 1)
+
+
+def bands_of(union):
+    """violet samples of one texel (the UNION over its footprint) -> s of (lo1, hi1, lo2, hi2), one step of margin each
+    side; runs beyond the second merge into it; no violet = (S_MAX, 0, S_MAX, 0)"""
     n = len(S_STEPS)
-    out = np.zeros((len(FINE_L), len(CHANNELS), 4))
-    out[..., 0] = S_MAX; out[..., 2] = S_MAX
-    for g, sid in enumerate(CHANNELS):
-        bad = violet(lin, sid, SCAN_LO, SCAN_HI, SCAN_C, SCAN_L).reshape(LL.shape)
-        for j in range(len(FINE_L)):
-            r = runs(bad[j])
-            if r is None:
-                continue
-            f1, e1, f2, e2 = r
-            out[j, g, 0] = S_STEPS[max(f1 - 2, 0)] if f1 > 1 else 0.0
-            out[j, g, 1] = S_STEPS[min(e1 + 1, n - 1)]
-            if f2 is not None:
-                out[j, g, 2] = S_STEPS[max(f2 - 2, 0)]
-                out[j, g, 3] = S_STEPS[min(e2 + 1, n - 1)]
-                if out[j, g, 2] <= out[j, g, 1]:                   # the gap closed under the margin: one band
-                    out[j, g, 1] = out[j, g, 3]; out[j, g, 2] = S_MAX; out[j, g, 3] = 0.0
-    return out                                            # [nL, grades, 4]
+    r = runs(union)
+    if r is None:
+        return S_MAX, 0.0, S_MAX, 0.0
+    f1, e1, f2, e2 = r
+    lo1 = S_STEPS[max(f1 - 2, 0)] if f1 > 1 else 0.0
+    hi1 = S_STEPS[min(e1 + 1, n - 1)]
+    if f2 is None:
+        return lo1, hi1, S_MAX, 0.0
+    lo2 = S_STEPS[max(f2 - 2, 0)]
+    hi2 = S_STEPS[min(e2 + 1, n - 1)]
+    if lo2 <= hi1:
+        return lo1, hi2, S_MAX, 0.0
+    return lo1, hi1, lo2, hi2
 
 
-def bake(cap):
-    """cap [nH_fine, nL_fine, grades, 4] -> texture [4H, W, grades] uint8: quarters lo1, hi1, lo2, hi2. lo = footprint
-    MIN rounded down, hi = footprint MAX rounded up; where the two bands touch after that, they merge into one."""
-    nh = cap.shape[0]
-    q = np.zeros((4, H, W, cap.shape[2]))
+def bake(bad):
+    """bad [nH_fine, nL_fine, grades, nS] -> texture [4H, W, grades] uint8, quarters lo1, hi1, lo2, hi2. Each texel takes the
+    UNION of the violet samples over its own +-0.5 texel (+ one fine step) -- exact for point sampling -- and stores its
+    first two violet runs (lo rounded down, hi rounded up; a gap under one code merges the bands)."""
+    nh = bad.shape[0]
+    G_ = bad.shape[2]
+    q = np.zeros((4, H, W, G_))
     fh = np.arange(nh) * FH
     for i in range(W):
         hc = i + 0.5
         d = (fh - hc + 180) % 360 - 180
-        hm = np.abs(d) <= 0.5 * H_STEP + FH + 1e-9       # POINT sampling: the texel answers for +-0.5 texel (+ one fine step)
-        sub = cap[hm]
+        hm = np.abs(d) <= 0.5 * H_STEP + FH + 1e-9
+        sub = bad[hm].any(0)                              # [nL, grades, nS]
         for j in range(H):
             Lc = j * L_STEP
             lm = (FINE_L >= Lc - 0.5 * L_STEP - FL - 1e-9) & (FINE_L <= Lc + 0.5 * L_STEP + FL + 1e-9)
-            c = sub[:, lm].reshape(-1, cap.shape[2], 4)
-            q[0, j, i] = c[..., 0].min(0); q[1, j, i] = c[..., 1].max(0)
-            q[2, j, i] = c[..., 2].min(0); q[3, j, i] = c[..., 3].max(0)
+            un = sub[lm].any(0)                           # [grades, nS]
+            for g in range(G_):
+                q[:, j, i, g] = bands_of(un[g])
     lo1, hi1, lo2, hi2 = (np.floor(q[0] / S_MAX * 255), np.ceil(q[1] / S_MAX * 255), np.floor(q[2] / S_MAX * 255), np.ceil(q[3] / S_MAX * 255))
-    merge = (lo2 <= hi1 + 1) & (hi2 > 0)                   # no safe gap left (1 code of slack for the bilinear lookup)
+    merge = (lo2 <= hi1 + 1) & (hi2 > 0)
     hi1 = np.where(merge, np.maximum(hi1, hi2), hi1)
     lo2 = np.where(merge, 255, lo2); hi2 = np.where(merge, 0, hi2)
     return np.concatenate([lo1, hi1, lo2, hi2], 0).astype(np.uint8)
@@ -260,7 +262,7 @@ def bible_check(texs):
 def main():
     hues = np.arange(0, 360, FH)
     with Pool(4) as p:
-        cap = np.stack(p.map(scan_hue, hues))             # [720, nL, 4]
+        cap = np.stack(p.map(scan_hue, hues))             # [720, nL, grades, nS] violet samples
     tex = bake(cap)                                       # [4H, W, 5]
     texs = dict(main=tex[..., :4], S11=np.repeat(tex[..., 4:5], 4, -1))
     from PIL import Image

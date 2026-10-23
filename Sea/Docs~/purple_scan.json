@@ -1,7 +1,7 @@
 {
- "rule": "after the guard, no colour displays h_ab 285..330 with C* > 8 and L* > 40, under the grade(s) of its material (D-17 + D-21)",
+ "rule": "after the guard, no colour displays h_ab 290..330 with C* > 8 and L* > 40, under the grade(s) of its material (D-17 + D-21)",
  "d21": "the deep bible indigo (L* <= 40: #3D4A80, #2E3C66) passes; the mid-tone lilac is stopped -- the same rule as the Sky",
- "scan_margin": "baked against h_ab 285..330.5, C* > 7, L* > 39 (stricter than the rule)",
+ "scan_margin": "baked against h_ab 289.7..330.5, C* > 7, L* > 39 (stricter than the rule)",
  "texture": "Sea/Textures/Sea_PurpleCeiling.png 360x484 RGBA8 linear (R S6, G S7a, B S7b, A S8; Sea_PurpleCeiling_S11.png: all = S11): value/255*0.8 = OKLab C/L; quarters of 121 rows: lo1, hi1, lo2, hi2; u = hue/360 (repeat), v = (clamp(L/0.025, 0, 120) + 0.5 + q*121) / 484",
  "materials": {
   "M_06_Sea": {
@@ -49,8 +49,8 @@
     }
    },
    "offset_grid": {
-    "in_gamut": 13107600,
-    "hues": 246,
+    "in_gamut": 12682080,
+    "hues": 228,
     "violet_left": {
      "S6": 0
     }
@@ -70,8 +70,8 @@
     }
    },
    "offset_grid": {
-    "in_gamut": 15452880,
-    "hues": 302,
+    "in_gamut": 15281520,
+    "hues": 294,
     "violet_left": {
      "S7a": 0,
      "S7b": 0
@@ -90,8 +90,8 @@
     }
    },
    "offset_grid": {
-    "in_gamut": 15452880,
-    "hues": 302,
+    "in_gamut": 15281520,
+    "hues": 294,
     "violet_left": {
      "S7b": 0
     }
@@ -109,8 +109,8 @@
     }
    },
    "offset_grid": {
-    "in_gamut": 12527520,
-    "hues": 240,
+    "in_gamut": 12307920,
+    "hues": 230,
     "violet_left": {
      "S8": 0
     }
@@ -128,8 +128,8 @@
     }
    },
    "offset_grid": {
-    "in_gamut": 14505840,
-    "hues": 278,
+    "in_gamut": 14284560,
+    "hues": 268,
     "violet_left": {
      "S11": 0
     }
@@ -234,7 +234,7 @@
    "kind": "screen",
    "screen_h_ab": 284.3,
    "screen_C": 22.9,
-   "dE_by_guard": 17.09
+   "dE_by_guard": 0.0
   },
   "8 cabin": {
    "hex": "#828BAA",
@@ -243,7 +243,7 @@
    "kind": "screen",
    "screen_h_ab": 282.0,
    "screen_C": 17.8,
-   "dE_by_guard": 12.08
+   "dE_by_guard": 0.0
   },
   "8 ceiling water": {
    "hex": "#10263F",
