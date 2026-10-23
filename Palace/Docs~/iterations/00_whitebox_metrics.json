@@ -1,0 +1,42 @@
+{
+ "que_l": {
+  "APL": 13.64,
+  "max_luma": 194.1,
+  "brightest_xy_frac": [
+   0.946,
+   0.896
+  ],
+  "purple_frac": 0.0001,
+  "frac_luma_gt_200": 0.0
+ },
+ "proc_l": {
+  "APL": 13.18,
+  "max_luma": 225.6,
+  "brightest_xy_frac": [
+   0.34,
+   0.796
+  ],
+  "purple_frac": 0.0016,
+  "frac_luma_gt_200": 0.0001
+ },
+ "F7p": {
+  "APL": 17.73,
+  "max_luma": 204.9,
+  "brightest_xy_frac": [
+   0.477,
+   0.641
+  ],
+  "purple_frac": 0.0001,
+  "frac_luma_gt_200": 0.0
+ },
+ "hot": {
+  "APL": 19.31,
+  "max_luma": 28.0,
+  "brightest_xy_frac": [
+   0.5,
+   0.0
+  ],
+  "purple_frac": 0.0,
+  "frac_luma_gt_200": 0.0
+ }
+}
