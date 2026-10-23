@@ -12,6 +12,7 @@
   samples[]    要查的时刻（标签 + t）；另外自动加每一段（scene_data_v21.PHASES）的中点
 每一个数都要有 source。没有数的项写 null，表里显示“?”，不当 0 算进合计里（合计旁边标出缺了几项）。"""
 import json
+sys.dont_write_bytecode = True   # importing Art/tools/v21 must not leave __pycache__ in other folders
 import math
 import os
 import sys
