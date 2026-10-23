@@ -164,6 +164,13 @@ class MipTex:
         return out
 
 
+def hash13(p):
+    """LanbaiHash13 (Common/Shaders/LanbaiVR.cginc) in float64"""
+    p = np.mod(p * 0.1031, 1.0)
+    p = p + (p * (p[:, [2, 1, 0]] + 31.32)).sum(-1, keepdims=True)       # p += dot(p, p.zyx + 31.32)
+    return np.mod((p[:, 0] + p[:, 1]) * p[:, 2], 1.0)
+
+
 def hg(c, g):
     return (1 - g * g) / np.power(1 + g * g - 2 * g * c, 1.5)
 
@@ -214,8 +221,12 @@ def render_deck(cam, t, w, h, tex_dir, P, pool=True):
     yy, xx = np.nonzero(hit)
     # jitter: a hash of the ray's WORLD direction quantised at ~ the pixel angle (round 2, VR r1: screen-space IGN was
     # different in the two eyes and locked to the screen); both eyes see the same value for the same far point
-    q = np.floor(Vh / (pix_ang * 1.5))
-    jit = np.mod(np.sin(q @ np.array([12.9898, 78.233, 37.719])) * 43758.5453, 1.0)
+    # round 10: LanbaiHash13 (Common LanbaiVR) of the world point on the cloud-top plane (cloud-sea frame), quantised to
+    # ~1.5 pixel footprints: the same for both eyes and locked to the deck (shader MarchJitter)
+    tp = np.maximum(ro[1] - cloud_top, 1.0) / np.maximum(vyh, 1e-4)
+    pw = ro + Vh * tp[:, None] - gate_origin(t)
+    cell = np.maximum(tp * pix_ang * 1.5, 0.05)[:, None]
+    jit = hash13(np.floor(pw / cell) + 0.5)
     N = int(P['Steps'])
     cos_m = Vh @ MOON_DIR
     phase = P['GMix'] * hg(cos_m, P['G1']) + (1 - P['GMix']) * hg(cos_m, P['G2'])

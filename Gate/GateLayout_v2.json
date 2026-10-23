@@ -28766,5 +28766,11 @@
  },
  "near_root": "near arms (frame bus) are fixed to the bus, not to GateRoot; see instances[*].how",
  "hero_time": 155.1,
- "hero_tear_scale": 0.64
+ "hero_tear_scale": 0.64,
+ "stars": {
+  "material": "M_GateAirSky (Lanbai/GateAirSky)",
+  "_Stars": 0.055,
+  "rule": "D-06 / D-21: the brightest star at most 12 L* above the sky it sits in, after the S4 grade. Solved per elevation and azimuth (GateClouds/Source deck_ref band + moon air, graded): the dark sky above el 35 binds at 0.057; 0.055 is used. One EV darker low in the band (shader v3.1: inband 0.5 -> 1 over el 10..35). Footprint: one hash cell = 1/420 rad = 0.136 deg ~ 2.9 px at 1080p / ~2 px in the headset (>= 1.5 px). No galaxy.",
+  "note": "The sky kit (when merged) draws its own BSC5 stars from _Udon_StarGain / _Udon_StarShape, which the gate driver writes on [U6, U9) from FogPresets act4_gate; if the film keeps the sky kit's single skybox, M_GateAirSky and this value retire with it."
+ }
 }

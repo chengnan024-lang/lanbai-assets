@@ -53,6 +53,9 @@ GROUP = {
 }
 
 
+PARALLAX_N, PARALLAX_DEPTH = 2, 0.15     # round 10: the tower back layers (see main); 2: the keyart card overdraw stays <= 0.9 FSE (3 = 1.03)
+
+
 def card_entry(cid, group, src, keys=None):
     shp = shape_of(src['card'])
     m = CARDS[shp]
@@ -85,6 +88,31 @@ def main():
     cards = []
     for it in G['towers']['items']:
         cards.append(card_entry(it['id'], 'tower', it, it))
+    # round 10 (art r3 #5, stranger r2: "flat cardboard"; option A in 给总控 §7, 总导演 D-15): the PARALLAX_N towers nearest the
+    # U7b eye get a BACK LAYER: a second card 15 % of their distance further along the line of sight, offset sideways by a
+    # quarter of their width (alternating), another silhouette of the same aspect (Puff behind Congestus, Congestus behind Bank), 0.85 x the width (its own aspect), gain 0.8, opacity
+    # 0.9, the same sag / sink / alpha keys (it collapses with its tower). As the bus moves, the two layers slide past
+    # each other: parallax, and the crown reads layered instead of one flat silhouette
+    gr = gate_root(HERO_T)
+    def dist(it):
+        return math.hypot(gr[0] + it['position'][0] - EYE[0], gr[2] + it['position'][2] - EYE[2])
+    near = sorted(G['towers']['items'], key=dist)[:PARALLAX_N]
+    for k, it in enumerate(near):
+        px, pz = gr[0] + it['position'][0] - EYE[0], gr[2] + it['position'][2] - EYE[2]
+        d = math.hypot(px, pz)
+        fx, fz = px / d, pz / d
+        side = (1 if k % 2 == 0 else -1) * 0.25 * it['width_m']
+        back = dict(it)
+        back['position'] = [it['position'][0] + fx * PARALLAX_DEPTH * d + fz * side, it['position'][1],
+                            it['position'][2] + fz * PARALLAX_DEPTH * d - fx * side]
+        back['card'] = 'Puff' if shape_of(it['card']) == 'Congestus' else 'Congestus'      # same aspect, other silhouette
+        back['width_m'] = it['width_m'] * 0.85
+        back.pop('height_m', None)      # the back layer keeps its own shape's aspect (forcing the tower height stretches it)
+        back['gain'] = it.get('gain', 1.0) * 0.8
+        back['opacity'] = it.get('opacity', 1.0) * 0.9
+        e = card_entry(it['id'] + '_Back', 'tower', back, it)
+        e['parallax_of'] = it['id']
+        cards.append(e)
     for k, it in enumerate(G['clouds']['far']):
         cards.append(card_entry('Far_%02d' % k, 'far', it))
     # round 2 (art r1 #5): the horizon masses were near-symmetric islands of one height: widths x 0.8-1.3, heights
