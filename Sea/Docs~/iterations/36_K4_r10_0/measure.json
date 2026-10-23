@@ -1,0 +1,12 @@
+{
+ "APL": 102.1,
+ "mirror_band_el_2_7": {
+  "median": "#DFAD85",
+  "Lstar": 74.4,
+  "h_ab": 64.6,
+  "C": 30.5,
+  "pct": 8.96
+ },
+ "ripple_right_over_left": 1.16,
+ "max_C_in_h290_330_above_horizon": 20.0
+}

@@ -1,0 +1,1 @@
+K2 r04 (review r1): core brighter than the rim (gain 4, tint 1.7/1.35/1, rim x0.22), TIR ring: upward fog x0.75

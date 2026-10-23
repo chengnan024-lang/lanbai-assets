@@ -1,0 +1,204 @@
+{
+ "metrics": {
+  "size": [
+   960,
+   540
+  ],
+  "APL": 49.83,
+  "EV_display": -4.672,
+  "luma_lt12_pct": 0.0,
+  "Lstar_gt85_pct": 0.0,
+  "clip_black_pct": 0.0,
+  "clip_white_pct": 0.0,
+  "clip_black_largest_region_pct": 0.0,
+  "clip_white_largest_region_pct": 0.0,
+  "warm_shadow_pct": 0.06,
+  "purple_pct": 1.676,
+  "purple_largest_region_pct": 1.5,
+  "violet_strong_pct": 0.0,
+  "lavender_act6_pct": 33.115,
+  "brightest": {
+   "bbox": [
+    461,
+    232,
+    502,
+    270
+   ],
+   "centroid": [
+    480.9,
+    249.7
+   ],
+   "clusters": 1,
+   "clusters_ge5pct": 1,
+   "min_luma": 166.4,
+   "centroid_az_el": [
+    0.22,
+    -42.63
+   ]
+  },
+  "top25_Lstar": {
+   "mean": 14.82,
+   "p50": 14.83,
+   "p90": 14.83
+  },
+  "palette": {
+   "act": "07b",
+   "metric": "CIEDE2000 (as Review/Tools~/measure.py)",
+   "swatches": [
+    {
+     "hex": "#02070F",
+     "role": "深渊",
+     "nearest_dE2000_p01": 10.2,
+     "within_dE5_pct": 0.0
+    },
+    {
+     "hex": "#061A30",
+     "role": "深水 濃藍",
+     "nearest_dE2000_p01": 8.9,
+     "within_dE5_pct": 0.0
+    },
+    {
+     "hex": "#26496C",
+     "role": "灯光被水吃掉后的靛",
+     "nearest_dE2000_p01": 5.4,
+     "within_dE5_pct": 0.0
+    },
+    {
+     "hex": "#B52A1E",
+     "role": "朱漆（灯旁 3 m 内）",
+     "nearest_dE2000_p01": 20.7,
+     "within_dE5_pct": 0.0
+    },
+    {
+     "hex": "#FFC46A",
+     "role": "青铜灯焰",
+     "nearest_dE2000_p01": 14.5,
+     "within_dE5_pct": 0.0
+    },
+    {
+     "hex": "#D8CFE0",
+     "role": "鱼鳞屋 珍珠光",
+     "nearest_dE2000_p01": 20.3,
+     "within_dE5_pct": 0.0
+    },
+    {
+     "hex": "#7A4A6E",
+     "role": "紫贝阙（受光，小面积）",
+     "nearest_dE2000_p01": 11.9,
+     "within_dE5_pct": 0.0
+    },
+    {
+     "hex": "#8AC6FF",
+     "role": "船体生物光",
+     "nearest_dE2000_p01": 28.3,
+     "within_dE5_pct": 0.0
+    }
+   ],
+   "pixel_to_nearest_dE_median": 12.3,
+   "pixel_to_nearest_dE_p90": 12.7,
+   "pixels_within5_pct": 0.0
+  }
+ },
+ "cam": {
+  "eye": [
+   0.55,
+   1.7,
+   2.05
+  ],
+  "yaw_deg": 0,
+  "pitch_deg": -45.0,
+  "hfov_deg": 90,
+  "res": [
+   960,
+   540
+  ],
+  "note": "主座位眼位、正前、桌面 1920×1080、水平 90°（= 本地门测试 U7 截图的机位，Gate cameras.U7）。全片的“标准机位”。",
+  "source": "Engineering/render_harness",
+  "name": "hero"
+ },
+ "grade_spec": {
+  "S7b": 1.0
+ },
+ "grade_state": {
+  "postExposure": -0.4,
+  "temperature": -4.59,
+  "tint": 1.39,
+  "saturation": 5.96,
+  "contrast": 4.16,
+  "lift": [
+   0.9653,
+   0.9788,
+   1.0,
+   0.0224
+  ],
+  "gamma": [
+   0.9748,
+   0.9888,
+   1.0,
+   -0.1571
+  ],
+  "gain": [
+   0.9974,
+   1.0,
+   0.9978,
+   0.2687
+  ],
+  "mixer": [
+   99.76,
+   0.53,
+   -4.17,
+   -0.22,
+   101.35,
+   -0.9,
+   1.36,
+   1.47,
+   99.28
+  ],
+  "bloom": {
+   "intensity": 6.0,
+   "threshold": 1.85,
+   "softKnee": 0.6,
+   "diffusion": 7.0,
+   "color": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "clamp": 4.239999999997963
+  },
+  "vignette": {
+   "intensity": 0.0,
+   "smoothness": 0.2,
+   "roundness": 1.0,
+   "rounded": false,
+   "color": "#000000"
+  }
+ },
+ "bloom_share_of_APL": 0.0,
+ "t": 897.96,
+ "target": {
+  "phase": "倒置的窗",
+  "APL": 30.0,
+  "grade": "S7b",
+  "range": [
+   30,
+   34
+  ]
+ },
+ "scene": {
+  "what": "sea kit K3",
+  "frame": "K3",
+  "level": -36.6,
+  "bus": "none",
+  "glass": false,
+  "samples": 4,
+  "res": [
+   960,
+   540
+  ]
+ },
+ "render_seconds": 2.3,
+ "lens": "none",
+ "bloom_tint": "single",
+ "note": "K3 r11: the arc replaces the blue under it, gold #FFB27A (no lavender)"
+}

@@ -1,0 +1,210 @@
+{
+ "metrics": {
+  "size": [
+   960,
+   540
+  ],
+  "APL": 78.24,
+  "EV_display": -3.293,
+  "luma_lt12_pct": 0.0,
+  "Lstar_gt85_pct": 0.0,
+  "clip_black_pct": 0.0,
+  "clip_white_pct": 0.0,
+  "clip_black_largest_region_pct": 0.0,
+  "clip_white_largest_region_pct": 0.0,
+  "warm_shadow_pct": 0.0,
+  "purple_pct": 5.564,
+  "purple_largest_region_pct": 4.4,
+  "violet_strong_pct": 0.0,
+  "lavender_act6_pct": 25.091,
+  "brightest": {
+   "bbox": [
+    1,
+    111,
+    958,
+    538
+   ],
+   "centroid": [
+    515.8,
+    527.8
+   ],
+   "clusters": 14,
+   "clusters_ge5pct": 2,
+   "min_luma": 177.2,
+   "centroid_az_el": [
+    3.4,
+    5.55
+   ]
+  },
+  "top25_Lstar": {
+   "mean": 19.98,
+   "p50": 19.61,
+   "p90": 21.64
+  },
+  "palette": {
+   "act": "08",
+   "metric": "CIEDE2000 (as Review/Tools~/measure.py)",
+   "swatches": [
+    {
+     "hex": "#10263F",
+     "role": "头顶的海（天花）",
+     "nearest_dE2000_p01": 3.9,
+     "within_dE5_pct": 12.75
+    },
+    {
+     "hex": "#C98A7A",
+     "role": "天花近地平的镜光",
+     "nearest_dE2000_p01": 3.2,
+     "within_dE5_pct": 3.01
+    },
+    {
+     "hex": "#FFE2B0",
+     "role": "日线",
+     "nearest_dE2000_p01": 14.9,
+     "within_dE5_pct": 0.0
+    },
+    {
+     "hex": "#F2A56B",
+     "role": "天缝 琥珀",
+     "nearest_dE2000_p01": 6.7,
+     "within_dE5_pct": 0.0
+    },
+    {
+     "hex": "#E7A0A0",
+     "role": "玫瑰带",
+     "nearest_dE2000_p01": 9.3,
+     "within_dE5_pct": 0.0
+    },
+    {
+     "hex": "#808AB2",
+     "role": "中天 靛灰",
+     "nearest_dE2000_p01": 18.8,
+     "within_dE5_pct": 0.0
+    },
+    {
+     "hex": "#3D4A80",
+     "role": "天顶",
+     "nearest_dE2000_p01": 6.4,
+     "within_dE5_pct": 0.0
+    },
+    {
+     "hex": "#363D59",
+     "role": "云影 靛石（阴影里只有蓝）",
+     "nearest_dE2000_p01": 0.0,
+     "within_dE5_pct": 55.56
+    },
+    {
+     "hex": "#C3BAD2",
+     "role": "逆光窗帘之翼",
+     "nearest_dE2000_p01": 20.7,
+     "within_dE5_pct": 0.0
+    }
+   ],
+   "pixel_to_nearest_dE_median": 4.3,
+   "pixel_to_nearest_dE_p90": 14.7,
+   "pixels_within5_pct": 68.1
+  }
+ },
+ "cam": {
+  "eye": [
+   0.55,
+   1.7,
+   2.05
+  ],
+  "yaw_deg": 0,
+  "pitch_deg": 35.0,
+  "hfov_deg": 90,
+  "res": [
+   960,
+   540
+  ],
+  "note": "主座位眼位、正前、桌面 1920×1080、水平 90°（= 本地门测试 U7 截图的机位，Gate cameras.U7）。全片的“标准机位”。",
+  "source": "Engineering/render_harness",
+  "name": "hero"
+ },
+ "grade_spec": {
+  "S8": 1.0
+ },
+ "grade_state": {
+  "postExposure": -0.5,
+  "temperature": 4.86,
+  "tint": 3.32,
+  "saturation": 7.63,
+  "contrast": 7.86,
+  "lift": [
+   0.9731,
+   0.9871,
+   1.0,
+   0.0165
+  ],
+  "gamma": [
+   1.0,
+   0.9905,
+   0.9959,
+   -0.0449
+  ],
+  "gain": [
+   1.0,
+   0.9701,
+   0.9025,
+   0.064
+  ],
+  "mixer": [
+   99.01,
+   2.45,
+   -0.7,
+   0.1,
+   101.04,
+   -0.53,
+   0.44,
+   -0.57,
+   99.97
+  ],
+  "bloom": {
+   "intensity": 6.0,
+   "threshold": 2.02,
+   "softKnee": 0.6,
+   "diffusion": 9.0,
+   "color": [
+    1.0,
+    0.9019607843137255,
+    0.8
+   ],
+   "clamp": 4.239999999997963
+  },
+  "vignette": {
+   "intensity": 0.0,
+   "smoothness": 0.2,
+   "roundness": 1.0,
+   "rounded": false,
+   "color": "#000000"
+  }
+ },
+ "bloom_share_of_APL": 0.0,
+ "t": 940.36,
+ "target": {
+  "phase": "8 暮·天花",
+  "APL": 78.3,
+  "grade": "S8",
+  "range": [
+   80,
+   76
+  ]
+ },
+ "scene": {
+  "what": "sea kit K4",
+  "frame": "K4",
+  "h": 148.0,
+  "bus": "none",
+  "glass": false,
+  "samples": 48,
+  "res": [
+   960,
+   540
+  ]
+ },
+ "render_seconds": 8.6,
+ "lens": "none",
+ "bloom_tint": "single",
+ "note": "K4 r10 (final review #2/#3/§二): gold points #E0A860 (S8) x12 on top, mirror band pearl gold (tint 1.25/1.3/1.25, gain 1.5), waves turned onto the view axis (70.7/35), CalmStrength 1"
+}

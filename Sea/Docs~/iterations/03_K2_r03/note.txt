@@ -1,0 +1,1 @@
+K2 r03: gain 2.2, mild whitening (1.35, 1.2, 1), rim x0.55

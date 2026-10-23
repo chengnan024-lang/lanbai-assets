@@ -1,0 +1,1 @@
+K4 r03: bible fog fill #DE9692, lower sky fades to the nadir over 18 deg (pitch 35)

@@ -1,0 +1,1 @@
+K3 r16 (final review #6): window = the other sky (synthetic 8-i, mirrored) at gain 0.25, rim arc through the FLAT plane (WindowSunGain 1, colour 24/8.5/5, el half-width 3, az 30), waves 0.02 after F8b, palace lamps gold #E0A860 x14 at 0.25 deg
