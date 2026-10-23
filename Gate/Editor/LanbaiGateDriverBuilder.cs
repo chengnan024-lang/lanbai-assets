@@ -32,7 +32,7 @@ public static class LanbaiGateDriverBuilder
         public float[] track_t; public float[] track_q;
         public int close; public EaseDef close_ease; public float[] close_end;
         public float drift_v; public float drift_tref;
-        public float phase; public float fog_cap;
+        public float phase; public float fog_cap; public float pose_t0; public float pose_t1;
     }
     [Serializable] public class Bake
     {
@@ -40,6 +40,7 @@ public static class LanbaiGateDriverBuilder
         public float[] h_t, h_H, h_d, moon_dir, disc_t, disc_g, g0_t, g0_v, g1_t, g1_v, tide_t, tide_v, folds_t, folds_v;
         public float folds_gain, halo_gain;
         public float[] tear_foot_os, tear_top_os, eye_fallback;
+        public float v_end, decel_T;
         public InstDef[] inst;
     }
 
@@ -97,6 +98,7 @@ public static class LanbaiGateDriverBuilder
         d.discT = B.disc_t; d.discG = B.disc_g; d.g0T = B.g0_t; d.g0V = B.g0_v; d.g1T = B.g1_t; d.g1V = B.g1_v;
         d.tideT = B.tide_t; d.tideV = B.tide_v; d.foldsT = B.folds_t; d.foldsV = B.folds_v;
         d.foldsGain = B.folds_gain; d.haloGain = B.halo_gain;
+        d.vEnd = B.v_end; d.decelT = B.decel_T;
         d.tearFootOS = V3(B.tear_foot_os); d.tearTopOS = V3(B.tear_top_os); d.eyeFallback = V3(B.eye_fallback);
 
         // instances
@@ -110,6 +112,7 @@ public static class LanbaiGateDriverBuilder
         d.closeT0 = new float[n]; d.closeT1 = new float[n]; d.closeE = new float[n]; d.closeB = new float[n];
         d.riseStart = new Vector3[n]; d.leanStart = new Quaternion[n]; d.closeEnd = new Quaternion[n];
         d.trackStart = new int[n]; d.trackCount = new int[n]; d.driftV = new float[n]; d.driftTref = new float[n];
+        d.poseT0 = new float[n]; d.poseT1 = new float[n];
         d.instRendStart = new int[n]; d.instRendCount = new int[n];
         var revT = new List<float>(); var revV = new List<float>(); var trT = new List<float>(); var trQ = new List<Quaternion>();
         var rend = new List<Renderer>(); var rPhase = new List<float>(); var rFog = new List<float>(); var rHasFog = new List<bool>();
@@ -136,6 +139,7 @@ public static class LanbaiGateDriverBuilder
             d.trackStart[i] = trT.Count; d.trackCount[i] = it.track_t != null ? it.track_t.Length : 0;
             if (it.track_t != null) { trT.AddRange(it.track_t); for (int k = 0; k < it.track_t.Length; k++) trQ.Add(Q(it.track_q, 4 * k)); }
             d.driftV[i] = it.drift_v; d.driftTref[i] = it.drift_tref;
+            d.poseT0[i] = it.pose_t0; d.poseT1[i] = it.pose_t1;
             d.instRendStart[i] = rend.Count;
             if (tr != null)
                 foreach (Renderer r in tr.GetComponentsInChildren<Renderer>(true))
@@ -158,8 +162,14 @@ public static class LanbaiGateDriverBuilder
         if (missing > 0) Debug.LogWarning("[GateDriver] " + missing + " instances not found under GateRoot / NearRoot_bus");
         if (surgeNoDims > 0) Debug.LogWarning("[GateDriver] " + surgeNoDims + " multitude renderers have no _VariantDims: run LB_GateTest.Apply once, then Build Driver again");
 
+        // double writers (tech review driver #9): LanbaiTearParams writes the tear globals every frame, unwindowed
+        foreach (MonoBehaviour mb in UnityEngine.Object.FindObjectsOfType<MonoBehaviour>(true))
+            if (mb != null && mb.GetType().Name == "LanbaiTearParams")
+                Debug.LogWarning("[GateDriver] " + mb.name + " has LanbaiTearParams: remove it, LanbaiGateDriver writes the tear globals now");
         if (withClock)
         {
+            if (director != null)
+                Debug.LogWarning("[GateDriver] the scene has a Director: the test clock and the dispatcher would both tick the gate. Use the clock only in the test scene");
             var cg = new GameObject("Gate_TestClock");
             var clock = (LanbaiGateTestClock)LanbaiGateCloudsBuilder.AddUdonSharp(cg, typeof(LanbaiGateTestClock));
             clock.gate = d;

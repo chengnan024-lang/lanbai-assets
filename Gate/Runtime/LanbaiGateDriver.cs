@@ -14,14 +14,17 @@
 //     crosses 0), the tide's reveal, the tear's sky folds and halo distance fade, the cabin-only tear light, and the
 //     globals _Udon_CloudTop / TearPos / TearH / MoonDir / GateTime / GateOrigin / TearFoot / TearTop / MultReveal /
 //     MoonDisc / TearOpen / RipProgress / TearHide.
-//  U9 (the bus crosses the tear plane): from U9 + 0.15 s _Udon_TearHide = 1 and every arm renderer (instances, the
-//  multitude, the tide) is switched off: the arms behind the bus are retired, so they never meet act 4c's fog.
+//  U9 (the bus crosses the tear plane): every arm renderer (instances, the multitude, the tide) is switched off on the
+//  frame before the eye crosses the plane (the far side's renderers, 总导演 10-23 01:10; the arms behind the bus are
+//  retired, so they never meet act 4c's fog), and from U9 + 0.15 s _Udon_TearHide = 1. After U9 GateRoot.z = -s(t),
+//  the inside's decelerating closed form (GateRoot stays this driver's).
 //  NOT written here: _Udon_InsidePortal (the inside driver), _Udon_FogBand* (LanbaiGateClouds), the Tear kit's
 //  CloudGlow / LightLane / FootSkyline / old shafts (switched off for good by 蓝白/Gate Clouds/Build).
 //  All arrays are filled by 蓝白/Gate/Build Driver (Gate/Editor/LanbaiGateDriverBuilder.cs) from Gate/GateDriver_Bake.json
 //  and from the property blocks LB_GateTest left on the arms (phase, fog cap, group, variant dims, occlusion map).
-//  Cost per frame: 64 transforms, ~26 single arms x 3 LOD renderers of MPB writes while their reveal changes, 2 tear
-//  parts, 13 globals; the 36 x 3 multitude renderers only at the two crossings of 0.
+//  Cost per frame (README_GateDriver §2): only the instances inside their pose span are posed (each: <= 2 Ease, <= 2
+//  Slerp, 2 transform writes), the 3 near arms always; single arms write their blocks only while their reveal changes;
+//  2 tear parts while visible, 13 globals; the multitude's renderers only at the two crossings of 0.
 // =====================================================================================================
 using UdonSharp;
 using UnityEngine;
@@ -47,6 +50,7 @@ public class LanbaiGateDriver : UdonSharpBehaviour
     public float foldsGain = 1f, haloGain = 1f;
     public Vector3 tearFootOS = new Vector3(0.5f, 0f, -30f), tearTopOS = new Vector3(-59.14f, 920.36f, -30f);
     public Vector3 eyeFallback = new Vector3(0.55f, 1.7f, 2.05f);
+    public float vEnd = 12f, decelT = 54.25f;    // after U9: GateRoot.z = -s(t), the inside's closed form
 
     [Header("Instances (one entry per JSON instance)")]
     public Transform[] instTf;
@@ -65,6 +69,7 @@ public class LanbaiGateDriver : UdonSharpBehaviour
     public float[] trackT;
     public Quaternion[] trackQ;
     public float[] driftV, driftTref;
+    public float[] poseT0, poseT1;            // the span in which the pose changes
 
     [Header("Renderers (every LOD of every instance)")]
     public Renderer[] rend;
@@ -79,6 +84,7 @@ public class LanbaiGateDriver : UdonSharpBehaviour
     private int _idCloudTop, _idTearPos, _idTearH, _idMoonDir, _idGateTime, _idGateOrigin, _idTearFoot, _idTearTop;
     private int _idMult, _idDisc, _idOpen, _idRip, _idHide;
     private float[] _lastRv;
+    private int[] _poseState;                 // 0 = must pose, 1 = posed before the span, 2 = after it
     private bool _mult0, _mult1, _retired, _ready;
     private float[] _window;
     private bool _warned;
@@ -102,9 +108,11 @@ public class LanbaiGateDriver : UdonSharpBehaviour
         return _window;
     }
 
+    // CONTROL §5 / Director §3: blocks AND globals are written in Start (the warm-up frames run before the first tick)
     void Start()
     {
         if (!_ready) _Init();
+        Evaluate(windowStart);
     }
 
     // the property blocks are lost on entering Play / VRChat (CONTROL §5): every renderer's block is written here once
@@ -133,12 +141,15 @@ public class LanbaiGateDriver : UdonSharpBehaviour
         _idHide = VRCShader.PropertyToID("_Udon_TearHide");
         int n = instTf != null ? instTf.Length : 0;
         _lastRv = new float[n];
+        _poseState = new int[n];
         for (int i = 0; i < n; i++)
         {
             _lastRv[i] = -1f;
             WriteBlocks(i, 1f);                // the reveal itself follows on the first tick
         }
+        // the multitude's renderers: whatever the editor left, bring them to a known state (tech review driver #1)
         _mult0 = true; _mult1 = true; _retired = false;
+        SetGroup(0, true); SetGroup(1, true);
         _ready = true;
     }
 
@@ -146,12 +157,15 @@ public class LanbaiGateDriver : UdonSharpBehaviour
     void Evaluate(float t)
     {
         float hb = HBus(t);
-        Vector3 gate = new Vector3(0f, 150f - hb, vg * (U9 - t));
+        Vector3 gate = new Vector3(0f, 150f - hb, -TravelS(t));
         if (gateRoot != null) gateRoot.position = gate;
         float H = TearH(t), S = H / 1000f;
         float open = TearOpen(t), rip = SS((t - U7) / 16f);
         if (tearRoot != null) tearRoot.localScale = new Vector3(S, S, S);
-        bool retired = t >= U9 + 0.15f;
+        // the arms go on the frame before the eye (z ~ +2 m) crosses the tear plane; the tear itself 0.15 s after U9
+        bool retired = t >= U9 - 0.05f;
+        bool hidden = t >= U9 + 0.15f;
+        if (retired != _retired) for (int k = 0; k < _poseState.Length; k++) _poseState[k] = 0;
 
         float g0 = KeyAt(g0T, g0V, 0, g0T != null ? g0T.Length : 0, t);
         float g1 = KeyAt(g1T, g1V, 0, g1T != null ? g1T.Length : 0, t);
@@ -162,7 +176,13 @@ public class LanbaiGateDriver : UdonSharpBehaviour
         {
             Transform tr = instTf[i];
             if (tr == null) { Warn(); continue; }
-            Pose(i, t, hb, tr);
+            bool groupOff = revKind[i] == 2 && !((instGroup[i] == 0) ? _mult0 : _mult1);
+            if (!retired && !groupOff)
+            {
+                if (instBus[i] || (t >= poseT0[i] && t <= poseT1[i])) { Pose(i, t, hb, tr); _poseState[i] = 0; }
+                else if (t < poseT0[i]) { if (_poseState[i] != 1) { Pose(i, t, hb, tr); _poseState[i] = 1; } }
+                else if (_poseState[i] != 2) { Pose(i, t, hb, tr); _poseState[i] = 2; }
+            }
             if (revKind[i] == 2) continue;                       // the multitude: below, per group
             float rv = revKind[i] == 1 ? KeyAt(revT, revV, revStart[i], revCount[i], t) : 1f;
             if (retired) rv = 0f;
@@ -192,19 +212,21 @@ public class LanbaiGateDriver : UdonSharpBehaviour
         // the tear: folds, halo distance fade (README_GateLayout §2.2)
         Vector3 eye = eyeFallback;
         VRCPlayerApi lp = Networking.LocalPlayer;
-        if (lp != null) eye = lp.GetTrackingData(VRCPlayerApi.TrackingDataType.Head).position;
+        if (Utilities.IsValid(lp)) eye = lp.GetTrackingData(VRCPlayerApi.TrackingDataType.Head).position;
         if (foldsRenderer != null)
         {
             float fold = KeyAt(foldsT, foldsV, 0, foldsT != null ? foldsT.Length : 0, t) * foldsGain;
-            foldsRenderer.enabled = fold > 0f && !retired;
-            _mpb.Clear(); _mpb.SetFloat(_idIntensity, fold); foldsRenderer.SetPropertyBlock(_mpb);
+            bool on = fold > 0f && !hidden;
+            if (foldsRenderer.enabled != on) foldsRenderer.enabled = on;
+            if (on) { _mpb.Clear(); _mpb.SetFloat(_idIntensity, fold); foldsRenderer.SetPropertyBlock(_mpb); }
         }
         if (haloRenderer != null)
         {
             float D = Mathf.Abs(gate.z - eye.z);
             float halo = Mathf.Clamp01((SS((D - 250f) / 950f) - 0.25f) / 0.75f) * haloGain;
-            haloRenderer.enabled = halo >= 0.05f && !retired;
-            _mpb.Clear(); _mpb.SetFloat(_idIntensity, halo); haloRenderer.SetPropertyBlock(_mpb);
+            bool on = halo >= 0.05f && !hidden;
+            if (haloRenderer.enabled != on) haloRenderer.enabled = on;
+            if (on) { _mpb.Clear(); _mpb.SetFloat(_idIntensity, halo); haloRenderer.SetPropertyBlock(_mpb); }
         }
 
         // globals (§2.1)
@@ -222,7 +244,7 @@ public class LanbaiGateDriver : UdonSharpBehaviour
         VRCShader.SetGlobalVector(_idDisc, new Vector4(disc, 0.6f, 0f, 1f));
         VRCShader.SetGlobalFloat(_idOpen, open);
         VRCShader.SetGlobalFloat(_idRip, rip);
-        VRCShader.SetGlobalFloat(_idHide, retired ? 1f : 0f);
+        VRCShader.SetGlobalFloat(_idHide, hidden ? 1f : 0f);
         if (tearRoot != null)
         {
             Vector3 foot = tearRoot.TransformPoint(tearFootOS);
@@ -279,6 +301,20 @@ public class LanbaiGateDriver : UdonSharpBehaviour
 
     // ---- the timeline ------------------------------------------------------------------------------------------------
     float SS(float x) { x = Mathf.Clamp01(x); return x * x * (3f - 2f * x); }
+
+    // the distance the bus has travelled past the tear plane (negative before U9): v_g tau, then the inside's deceleration
+    float TravelS(float t)
+    {
+        float tau = t - U9;
+        if (tau <= 0f) return vg * tau;
+        float T = Mathf.Max(decelT, 1e-3f);
+        if (tau < T)
+        {
+            float x = tau / T;
+            return vg * tau + (vEnd - vg) * T * (x * x * x - 0.5f * x * x * x * x);
+        }
+        return vg * T + (vEnd - vg) * T * 0.5f + vEnd * (tau - T);
+    }
 
     float HBus(float t)
     {

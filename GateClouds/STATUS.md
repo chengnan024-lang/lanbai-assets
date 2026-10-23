@@ -1,4 +1,4 @@
-2026-10-23 · **门 v1.5 可以合了** · 总导演 v1.4 终审意见的 A1–A6 和 B 全改：光池中心与条带图改到裂口坐标里（keyart 脚下 / 月光路 1.34，圣经 ≥ 1.33）、深度 pass 用 _Steps、Apply 遇空跳过并警告、一种测法、补丁第 5 处、先拷 Common/；终版图 / 裁图 / EXR 用 v1.5 代码重出；共用编译检查 shader 8 文件 0 错 0 警告、C# OK · 合并后：LanbaiGateDriver（D-15）、云塔视差卡、C 类余项
+2026-10-23 · **驱动可以终审了** · LanbaiGateDriver（Gate/README_GateDriver.md）：GateRoot（U9 以后按门内的减速闭式）、裂口、64 个实例的位姿与显现、群臂两组、远潮、天褶 / 光晕、13 个全局量、U9 收臂、Play 模式测试时钟；技术评审有条件通过（三条 MAJOR 已改：群臂初始状态、只在动画区间里算位姿、U9 以后的 GateRoot）；C# 检查 OK · 要总导演定：指尖卷回做不做 · 之后：C 类美术项
 
 ## 进度
 - [x] 云海 `Lanbai/GateCloudDeck` + `Deck_Detail_1024` / `Deck_Macro_512` + `Source/deck_ref.py`（逐行 numpy 移植）；独立技术审查一轮（移植对照），改完

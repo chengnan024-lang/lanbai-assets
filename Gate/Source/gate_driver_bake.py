@@ -84,6 +84,10 @@ def main():
         folds_t=ft, folds_v=fv, folds_gain=float(ov.get('skyfolds', 1.0)), halo_gain=float(ov.get('halo_intensity', 1.0)),
         tear_foot_os=[0.5, 0.0, -30.0], tear_top_os=[-59.14, 920.36, -30.0],
         eye_fallback=[float(v) for v in eye],
+        # after U9 GateRoot.z = -s(t), the inside's closed form (总导演 10-23 01:10: GateRoot stays the gate driver's;
+        # origin/pkg/inside Act04c_Inside/InsideLayout.json motion): s = v_g tau + (v_end - v_g) T (x^3 - x^4 / 2),
+        # x = tau / T, tau = t - U9, T = U_voiceEnd - U9; after T: s(T) + v_end (tau - T); before U9: v_g tau
+        v_end=12.0, decel_T=round(233.8 - float(cues['U9']), 4),
         inst=[],
     )
     for it in J['instances']:
@@ -129,6 +133,14 @@ def main():
             elif ty == 'drift':
                 d['drift_v'] = float(a['v_rel_m_per_s'])
                 d['drift_tref'] = float(a['t_ref'])
+        # the span in which the pose changes (outside it the driver writes the pose once: tech review driver #2)
+        ts = []
+        for a in it.get('anim') or []:
+            if a['type'] in ('rise', 'lean', 'close'):
+                ts += [float(a['t0']), float(a['t1'])]
+            elif a['type'] == 'track':
+                ts += [float(k['t']) for k in a['keys']]
+        d['pose_t0'], d['pose_t1'] = (min(ts), max(ts)) if ts else (0.0, 0.0)
         order = [t for t in seen if t != 'drift']
         assert order == sorted(order, key=['rise', 'lean', 'track', 'close'].index), (it['id'], seen)
         out['inst'].append(d)
