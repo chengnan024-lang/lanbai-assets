@@ -114,10 +114,7 @@ Shader "Lanbai/GateCloudDeck"
             float4 _FogDensity;
             float _CloudTopY;
             float4 _GateOrigin, _RimDir;
-            float4 _Udon_CloudTop;
-            float4 _Udon_GateOrigin;
-            float4 _Udon_TearFoot;     // xyz = the tear's foot (world), w = half width of the white (m)
-            float4 _Udon_InsidePortal; // x = the tear plane's world z, y = 1 once the bus is through (act 4c): nothing beyond it
+            #include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc"
 
             struct appdata { float4 vertex : POSITION; UNITY_VERTEX_INPUT_INSTANCE_ID };
             struct v2f

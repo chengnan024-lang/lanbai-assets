@@ -27,14 +27,9 @@ float4 _MoonGlowShape;       // a1, k1, a2, k2                        default (1
 float4 _HaloColor;           // v6 #7A7B9C fill, linear               default (0.195, 0.199, 0.335)
 float4 _TearPos;             // fallback tear core (world)
 
-// Udon globals (VRCShader.SetGlobal*). Never set = 0 and the material values win.
-float4 _Udon_TearPos;        // xyz = the tear core this frame (hot spot height), w > 0 = set
-float4 _Udon_TearH;          // x = H(t) m, w > 0 = set
-float4 _Udon_MoonDir;        // xyz = world direction TO the moon, w > 0 = set
-float4 _Udon_MoonDisc;       // x = disc gain (moon.disc_gain_keys x the Udon fade), y = disc radius deg; w > 0 = set
-float4 _Udon_FogBandDir;     // xyz: world direction of the band centre; length < 0.5 = unset
-float4 _Udon_FogBandColor;   // rgb: band colour next to the tear; a > 0 = set
-float  _Udon_FogBandWidth;   // > 0 = set
+// Udon globals (VRCShader.SetGlobal*), declared once in the shared registry (no X3003 when two includes meet).
+// Never set = 0 and the material values win.
+#include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc"
 
 float3 LanbaiTearPos()
 {

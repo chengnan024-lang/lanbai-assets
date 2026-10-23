@@ -184,8 +184,7 @@ Shader "Lanbai/Tear"
     float _SoftFade, _EdgeFadePow; float4 _NearFadeM;
     float _DepthPrepass;
     float _CloudFadeM, _RimDesat; float4 _LanesRect; sampler2D _LanesTex;
-    float4 _Udon_CloudTop;     // global: x = world y of the cloud-sea top this frame; w > 0 = set
-    float4 _Udon_GateOrigin;   // v5 global: xyz = GateRoot.position this frame (noise in the cloud-sea frame)
+    #include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc"
     float4 _FlapEdge; float _FlapTrans;
     float4 _FootMist; float _FootMistM; float4 _FootCloudEdge, _FootCloudCore, _CardV; float _FootGlow; float4 _FootLobe;
     float4 _FootCut, _SkyCloud; float _SkyRim, _SkyNear; float4 _LaneW, _LaneFoot, _LaneNear; float _NearFootCut, _FootAddK;
@@ -219,8 +218,7 @@ Shader "Lanbai/Tear"
         return 1.0 - smoothstep(0.75, 1.0, e);
     }
 
-    // Udon globals (never set = 0)
-    float _Udon_TearOpen, _Udon_RipProgress, _Udon_TearHide, _Udon_TearBreath;
+    // Udon globals (never set = 0): _Udon_TearOpen / RipProgress / TearHide / TearBreath come from LanbaiGlobals.cginc above
 
     struct appdata
     {

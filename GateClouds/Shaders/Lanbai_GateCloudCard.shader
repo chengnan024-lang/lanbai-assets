@@ -70,8 +70,7 @@ Shader "Lanbai/GateCloudCard"
             sampler2D _MainTex;
             float4 _Scale, _MoonColor, _SkyColor, _Lining, _Melt, _FogDensity, _RimDir;
             float _MoonE, _SkyE, _SoftFade, _CloudTopY;
-            float4 _Udon_CloudTop;
-            float4 _Udon_InsidePortal;   // x = the tear plane's world z, y = 1 once the bus is through (act 4c)
+            #include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc"
             UNITY_DECLARE_DEPTH_TEXTURE(_CameraDepthTexture);
 
             UNITY_INSTANCING_BUFFER_START(Props)

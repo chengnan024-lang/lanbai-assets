@@ -60,9 +60,9 @@ Shader "Lanbai/GateBeam"
             #endif
             }
             float4 _Beam, _Tint, _Lobe, _NearFadeM, _FogDensity, _ViewCone, _TearPosB;
-            float4 _Udon_TearPos;
+            #include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc"
             UNITY_DECLARE_DEPTH_TEXTURE(_CameraDepthTexture);
-            float4 _Udon_InsidePortal;   // x = the tear plane's world z, y = 1 once the bus is through (act 4c)
+            #include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc"
 
             struct appdata { float4 vertex : POSITION; float2 uv : TEXCOORD0; UNITY_VERTEX_INPUT_INSTANCE_ID };
             struct v2f

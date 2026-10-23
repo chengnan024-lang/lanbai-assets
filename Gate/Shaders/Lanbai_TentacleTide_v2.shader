@@ -95,10 +95,10 @@ Shader "Lanbai/TentacleTide"
 
             sampler2D _MainTex;
             float _Opacity, _RimGain, _SwayAmp, _SwayPeriod, _AtlasGain, _Reveal;
-            float4 _Udon_CloudTop;     // global: x = cloud-sea top (world y); w > 0 = set
+            #include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc"
             float _FogDensity, _FogCap, _MoonAirFog;
             float4 _FogCapFrom, _FogBaseTip, _RimDir;
-            float _Udon_GateTime;      // global: timeline t (s); 0 = unset -> everything risen
+            #include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc"
             float3 TearPosW() { return LanbaiTearPos(); }   // _Udon_TearPos / _TearPos: declared in LanbaiGateSky.cginc
 
             struct appdata

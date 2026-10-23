@@ -4,6 +4,10 @@
 **这里的 shader 和 C# 都没有在 Unity 里编译过。**
 - shader：slangc 2025.6 做过语法 / 类型检查（`Tools~/slang_check.py`，三个新 shader 的每个 pass、每个关键字变体都过了，`Lanbai_Tear.shader` 和远潮也重新查过）。
 - C#：mono `mcs` 对一份按 Unity API 真实签名写的桩做过类型检查（`Tools~/cs_check/`）。这不是 Unity / UdonSharp 编译。
+- **共用检查**（`Common/Tools~/compile_check`，DXC + Unity 2022.3.22f1 CGIncludes / Roslyn），2026-10-23：
+  - `check_shaders.py GateClouds/Shaders Tear/Lanbai_Tear.shader Gate/Shaders` → `8 files, 58 translation units (DXC on, CGIncludes 2022.3.22f1): 0 errors, 0 warnings. NOT a Unity compile.`
+  - `check_cs.sh GateClouds` → `C# CHECK OK (0 assembly error(s), 0 lint warning(s)). Not a Unity compile`
+  - 为此把门 / 裂口 / 云的 shader 里自己声明的 `_Udon_` 全局量都换成 include `Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc`（`LanbaiGateSky.cginc` 也是），两个 include 碰头不再 X3003。
 - 第一次在 Unity 里跑，请把 Console 原样推到 `FromLocal/`。
 
 10-08 的门导入测试说：门在 Unity 里基本还原了定稿，看不到的是**我们漏交了云**。这个套件补这一块，并把门测试里提到的几件收尾一起做了：
