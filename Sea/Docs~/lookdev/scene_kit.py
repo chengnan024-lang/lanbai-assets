@@ -122,7 +122,7 @@ def env_dusk(kind):
 
 def env_lamps_above(points, base_rgb):
     """an 'up' environment for 7c's dark mirror: rose-dark water + the palace lamps (gaussian points, warm)"""
-    H, W = 512, 1024
+    H, W = 1024, 2048
     lat = (np.arange(H) + 0.5) / H * np.pi - np.pi / 2
     lon = (np.arange(W) + 0.5) / W * 2 * np.pi - np.pi
     LON, LAT = np.meshgrid(lon, lat)
@@ -131,7 +131,7 @@ def env_lamps_above(points, base_rgb):
     for p, gain in points:
         c = np.clip(d @ S.normalize(np.asarray(p, float)), -1, 1)
         ang = np.degrees(np.arccos(c))
-        out += (lin('#FF5E2A', 3.11) * gain)[None, None, :] * np.exp(-(ang / 0.35) ** 2)[..., None]
+        out += (lin('#FF5E2A', 3.11) * gain)[None, None, :] * np.exp(-(ang / float(_SYNTH.get('lamp_deg', 0.8))) ** 2)[..., None]
     return S.Env(out.astype(np.float32))
 
 
@@ -159,8 +159,10 @@ def frame_K1(rays, eye, t, a):
              WaterColor=tuple(lin('#304F7A') * float(a.get('body', 0.55))))
     rgb, alpha, hit, P = S.shade_plane(eye, rays, eye[1] - h, 'above', t, M, env=env)
     sky = env.lookup(rays) + sun_disc(rays, sdir, sunc)
-    fog_fn = horizon_fog_fn(env)
+    fogc = lin('#FFE4F0', 0.31)                              # bible §6·6 大气: Exp 0.00012, fill #FFE4F0 @ +0.31
+    fog_fn = (lambda d: np.broadcast_to(fogc, d.shape)) if a.get('fogsrc', 'bible') == 'bible' else horizon_fog_fn(env)
     rgb = S.fog(rgb, P, eye, 0.00012, fog_fn)
+    rgb = S.purple_guard(rgb, dict(S.DEFAULTS, **M))
     return np.where(hit[..., None], rgb, sky), dict(sea_level=eye[1] - h, sun_peak=float(sunc.max()))
 
 
@@ -175,10 +177,11 @@ def frame_K2(rays, eye, t, a):
              TIRColor=tuple(lin('#294B72')), ReflClamp=float(a.get('clamp', 2.4)),
              WindowRadial=tuple(float(x) for x in a.get('wradial', '1,2').split(',')))
     rgb, alpha, hit, P = S.shade_plane(eye, rays, level, 'below', t, M, window_env=env_dawn())
-    up = WATER['up'] * float(a.get('fogup', 1.0))
+    up = WATER['up'] * float(a.get('fogup', 0.75))
     fog_fn = S.water_horizon(up, WATER['mid'], WATER['down'])
     dens = float(a.get('fog', 0.040))
     rgb = S.fog(rgb, P, eye, dens, fog_fn)
+    rgb = S.purple_guard(rgb, dict(S.DEFAULTS, **M))
     return np.where(hit[..., None], rgb, fog_fn(rays)), dict(eye_depth=d_eye, level=level)
 
 
@@ -190,7 +193,12 @@ def frame_K3(rays, eye, t, a):
     PF = json.load(open(os.path.join(REPO, 'Act07_Sea', 'PalaceFrame_约定.json'), encoding='utf-8'))
     bus = np.array([0.0, PF['frame']['bus_origin_y_stop'] + (AM.depth(AM.L['F7']) - AM.depth(t)), AM.fwd(t)])
     fade = float(a.get('lampfade', 0.5))             # F8: the constellation dims lamp by lamp
+    _SYNTH['lamp_deg'] = float(a.get('lampdeg', 0.8))
     pts = [(np.asarray(L['flame_pos']) - bus, fade) for L in PF['lamps']]
+    rg = PF['specks']['region']; rs = np.random.default_rng(7)
+    for _ in range(int(a.get('specks', 240))):                 # the drowned city's far lights (PalaceSpecks), dim
+        q = np.array([rs.uniform(*rg['x']), rs.uniform(*rg['y']), rs.uniform(*rg['z'])])
+        pts.append((q - bus, 0.08 * rs.uniform(0.4, 1.0)))
     fogc = lin('#3E2C2B')
     refl = env_lamps_above(pts, fogc * 0.6)
     sunc = lin(a.get('wsuncol', '#FFB27A'), 2.74) * 0.82 * float(a.get('wsun', 1.0))      # rose-gold, the other sun (x0.82, bible 8-ii)
@@ -200,6 +208,7 @@ def frame_K3(rays, eye, t, a):
     rgb, alpha, hit, P = S.shade_plane(eye, rays, level, 'below', t, M, env=refl, window_env=env_dusk('lower'))
     fog_fn = S.water_horizon(fogc * 1.15, fogc, fogc * 0.9)
     rgb = S.fog(rgb, P, eye, float(a.get('fog', 0.018)), fog_fn)
+    rgb = S.purple_guard(rgb, dict(S.DEFAULTS, **M))
     return np.where(hit[..., None], rgb, fog_fn(rays)), dict(level=level)
 
 
@@ -208,13 +217,13 @@ def frame_K4(rays, eye, t, a):
     h = float(a.get('h', 148.0))
     sdir = dir_az_el(0.0, 0.5)
     sunc = lin('#FF9167', 2.74)
-    M = dict(WaterColor=(0.0116, 0.0296, 0.0683), DiscCenter=(0, 0, 2700, 500), NormalStrength=float(a.get('nstr', 0.25)),
+    M = dict(WaterColor=(0.0116, 0.0296, 0.0683), DiscCenter=(0, 0, 2700, float(a.get('band', 800.0))), NormalStrength=float(a.get('nstr', 0.25)),
              DissolveTime=float(a.get('dissolve', -1.0)), ReflClamp=float(a.get('clamp', 8.0)),
-             MirrorTint=tuple(float(x) for x in a.get('mtint', '1,1,1').split(',')), PurpleGuard=(float(a.get('guard', 1.0)), 0.02))
+             MirrorTint=tuple(float(x) for x in a.get('mtint', '1,1,1').split(',')), PurpleGuard=(float(a.get('guard', 1.0)), 0.02, 252.0))
     _SYNTH['below_deg'] = a.get('below', 5.0)
     E = env_dusk_synth if a.get('sky', 'synth') == 'synth' else env_dusk
     rgb, alpha, hit, P = S.shade_plane(eye, rays, eye[1] + h, 'ceiling', t, M, env=E('lower'), behind_env=E('upper'))
-    sky = S.purple_guard(E('upper').lookup(rays), dict(PurpleGuard=(1.0, 0.02)))   # stand-in sky: the bible's other-sky nadir #2E3C66 sits on the violet edge (Sky's call)
+    sky = S.purple_guard(E('upper').lookup(rays), dict(PurpleGuard=(1.0, 0.02, 252.0)))   # stand-in sky: the bible's other-sky nadir #2E3C66 sits on the violet edge (Sky's call)
     fogc = lin('#DE9692')                                    # bible §6·8 大气: Exp 0.00015, fill #DE9692
     # height falloff (LanbaiFog _FogHeightFalloff, metres): the fog thins above the eye, so the deep-blue water overhead
     # is not tinted by the warm horizon fog (2 % of #DE9692 over #10263F reads violet). Unity: the ceiling material's
@@ -225,8 +234,27 @@ def frame_K4(rays, eye, t, a):
     tau = 0.00015 * dist * np.where(dy > 1e-3, Hf * (1 - np.exp(-dy / Hf)) / np.maximum(dy, 1e-3), 1.0)
     f = (1.0 - np.exp(-tau))[..., None]
     rgb = rgb * (1 - f) + fogc * f
+    rgb = S.purple_guard(rgb, dict(S.DEFAULTS, **M))
+    # the palace's 20-30 golden points INSIDE the ceiling (bible 8-i), Lanbai/SeaSpecks: 25 lamps 40-200 m above the
+    # surface, seen through it (x (1 - F) ~ 0.98 overhead), absorbed by the water (exp(-0.02 d_water)), fading LAST in
+    # the dissolve (LanbaiCeilingLampProgress)
+    rs = np.random.default_rng(11)
+    lampc = lin('#FF5E2A', 3.11)
+    spk = np.zeros_like(rgb)
+    dmid = M['DissolveTime']
+    for _ in range(int(a.get('lamps', 25))):
+        q = np.array([rs.uniform(-260, 260), eye[1] + h + rs.uniform(40, 200), rs.uniform(-320, 220)])
+        v = q - eye; dist = np.linalg.norm(v); d = v / dist
+        dw = (q[1] - eye[1] - h) / max(d[1], 1e-3)
+        ang = np.degrees(np.arccos(np.clip(rays @ d, -1, 1)))
+        g = float(a.get('lampgain', 0.6)) * np.exp(-0.02 * dw) * np.exp(-(ang / float(a.get('lampdeg', 0.17))) ** 2)
+        if dmid >= 0:
+            el = math.degrees(math.asin(max(min(d[1], 1.0), 0.0)))
+            pp = min(max((dmid - 4.0 * el / 90.0) / 5.0, 0.0), 1.0)
+            g = g * (1.0 - min(max((pp - 0.3) / 0.7, 0.0), 1.0))
+        spk += lampc[None, None, :] * g[..., None]
     a_ = (alpha * hit)[..., None]
-    return rgb * a_ + sky * (1 - a_), dict(h=h)
+    return (rgb + spk) * a_ + sky * (1 - a_), dict(h=h)
 
 
 FRAMES = dict(K1=frame_K1, K2=frame_K2, K3=frame_K3, K4=frame_K4)

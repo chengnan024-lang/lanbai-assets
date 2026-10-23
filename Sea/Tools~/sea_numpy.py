@@ -180,7 +180,7 @@ DEFAULTS = dict(LargeTile=64.0, SmallTile=9.0, LargeScroll=(0.9, 0.35), SmallScr
                 SunColor=(0, 0, 0), SunDir=(0.703, 0.105, 0.703), SunGlitterRough=0.12, SunReflPeakEV=1.3, SunDiscDeg=0.9,
                 AirSide=1.0, WindowGain=1.0, WindowTint=(1, 1, 1), Dispersion=(1.331, 1.337), TIRColor=(0.0222, 0.0685, 0.1651),
                 TIRCubeGain=0.0, WindowEdgeSoft=0.6, WindowRadial=(1.0, 2.0), WindowSunDir=(0.0, -0.0087, 1.0, 1.2), WindowSunSpread=14.0, WindowSunColor=(0, 0, 0), WindowSunFloor=0.35, DissolveTime=-1.0, DissolveFront=4.0, DissolvePixel=5.0,
-                FogMode=1, ReflExposure=1.0, MirrorTint=(1.0, 1.0, 1.0), PurpleGuard=(1.0, 0.02),
+                FogMode=1, ReflExposure=1.0, MirrorTint=(1.0, 1.0, 1.0), PurpleGuard=(1.0, 0.02, 252.0),
                 GerstnerLength=(60, 37, 23, 0.08), GerstnerAmp=(0, 0, 0), GerstnerDir=(0.94, 0.34, 0.5, 0.866), LampGlints=0.0, Lamps=())
 
 _TEX = {}
@@ -371,16 +371,23 @@ def oklab_to_lin(L):
 
 
 def purple_guard(c, M):
-    on, cmax = M['PurpleGuard']
+    """port of LanbaiPurpleGuard: rotate 258..300 deg (OKLab) toward ultramarine, desaturate 300..345 deg"""
+    g = M['PurpleGuard']
+    on, cmax = g[0], g[1]
+    hz = g[2] if len(g) > 2 and g[2] > 0 else 252.0
     if on <= 0:
         return c
-    L = lin_to_oklab(c)
+    L = lin_to_oklab(np.asarray(c, np.float64))
     C = np.hypot(L[..., 1], L[..., 2])
     h = (np.degrees(np.arctan2(L[..., 2], L[..., 1])) + 360.0) % 360.0
-    band = smoothstep(265.0, 285.0, h) * (1.0 - smoothstep(330.0, 350.0, h))
-    Ct = np.where(C > cmax, C + (cmax - C) * band * on, C)
-    L[..., 1:] *= (Ct / np.maximum(C, 1e-9))[..., None]
-    return oklab_to_lin(L)
+    rot = smoothstep(258.0, 266.0, h) * (1.0 - smoothstep(296.0, 304.0, h))
+    vio = smoothstep(296.0, 304.0, h) * (1.0 - smoothstep(335.0, 345.0, h))
+    h2 = h + ((hz + (h - hz) * 0.15) - h) * rot * on
+    C2 = C + (np.minimum(C, cmax) - C) * vio * on
+    r = np.radians(h2)
+    L[..., 1] = np.cos(r) * C2
+    L[..., 2] = np.sin(r) * C2
+    return np.where((C > 1e-4)[..., None], oklab_to_lin(L), c)
 
 
 def ceiling_progress(I, M):
@@ -424,7 +431,6 @@ def ceiling(N, I, var, worldXZ, refl_env, behind_env, M, P=None):
     a = alpha_of(var, M)
     refl = cube(refl_env, R, np.sqrt(saturate(a)), M) * M['ReflGain'] * np.asarray(M['MirrorTint'])
     c = refl * F + np.asarray(M['WaterColor']) * (1 - F)
-    c = purple_guard(c, M)
     if M['LampGlints'] > 0:
         c = c + ceiling_lamps(P, Nw, -I, a, 1.0 / M['IOR'], M) * M['LampGlints']
     alpha = disc_alpha(worldXZ, M)

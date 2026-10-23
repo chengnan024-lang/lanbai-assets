@@ -1,0 +1,1 @@
+K3 r15: lamp sprites 0.9 deg in the mirror's environment (they survive the cube blur)

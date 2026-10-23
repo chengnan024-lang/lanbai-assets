@@ -331,20 +331,27 @@ inline float3 LanbaiOklabToLin(float3 L)
 }
 
 // Purple guard (Art/总导演裁决.md D-17; bible §1.3.4: outside acts 4 / 4c no region > 2 % may be h_ab 290-325 & C* > 15).
-// Any colour whose OKLab hue falls in the violet band is pulled toward the grey axis: chroma <= _PurpleGuard.y.
-// (OKLab hue of CIELab 290..325 is ~ 280..330 for these darks; the band is widened by 10 deg each side, soft edges.)
-float4 _PurpleGuard;         // x = 0 off / 1 on, y = max OKLab chroma inside the band (0.02 ~ CIE C* 5), zw unused
+// Measured (Sea/Docs~/review_r1_response.md): under the S7b / S8 grades the colours that DISPLAY as violet come from linear
+// OKLab hues ~260..335, which overlaps the bible's own blues (OKLab 253..273). So the guard does two things:
+//   * 258..300 deg: ROTATE the hue back toward ultramarine (_PurpleGuard.z, OKLab ~252), chroma kept: blues stay blue;
+//   * 300..345 deg: pull the chroma to <= _PurpleGuard.y (the true violets become a low-chroma neutral, D-17's 'C* <= 8').
+// Applied to the FINAL colour of every sea mode (after fog). x = 0 off / 1 on.
+float4 _PurpleGuard;         // x on, y max OKLab chroma for violets (0.02 ~ CIE C* 5), z target hue deg (252)
 inline float3 LanbaiPurpleGuard(float3 c)
 {
     if (_PurpleGuard.x <= 0.0) return c;
     float3 L = LanbaiLinToOklab(c);
     float C = length(L.yz);
-    if (C <= _PurpleGuard.y) return c;
+    if (C <= 1e-4) return c;
     float h = degrees(atan2(L.z, L.y));
     h = h < 0.0 ? h + 360.0 : h;
-    float band = smoothstep(265.0, 285.0, h) * (1.0 - smoothstep(330.0, 350.0, h));
-    float Ct = lerp(C, _PurpleGuard.y, band * _PurpleGuard.x);
-    L.yz *= Ct / C;
+    float rot = smoothstep(258.0, 266.0, h) * (1.0 - smoothstep(296.0, 304.0, h));
+    float vio = smoothstep(296.0, 304.0, h) * (1.0 - smoothstep(335.0, 345.0, h));
+    float hz = _PurpleGuard.z > 0.0 ? _PurpleGuard.z : 252.0;
+    float h2 = lerp(h, hz + (h - hz) * 0.15, rot * _PurpleGuard.x);
+    float C2 = lerp(C, min(C, _PurpleGuard.y), vio * _PurpleGuard.x);
+    float r = radians(h2);
+    L.yz = float2(cos(r), sin(r)) * C2;
     return LanbaiOklabToLin(L);
 }
 
@@ -398,7 +405,6 @@ inline float4 LanbaiSeaCeiling(float3 N, float3 I, float slopeVar, float2 worldX
     float a = LanbaiSeaAlpha(slopeVar);
     float3 refl = LanbaiSeaCube(R, LanbaiSeaPerceptual(a)) * _ReflGain * _MirrorTint.rgb;
     float3 c = refl * F + _WaterColor.rgb * (1.0 - F);
-    c = LanbaiPurpleGuard(c);                                  // D-17: the rose-gold -> deep-blue transition never passes violet
     [branch] if (_LampGlints > 0.0)
         c += LanbaiCeilingLamps(P, Nw, -I, a, 1.0 / _IOR) * _LampGlints;
     float alpha = LanbaiSeaDiscAlpha(worldXZ);
