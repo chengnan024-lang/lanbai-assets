@@ -105,6 +105,7 @@
 | 闪光（D-20 以后：245.9 → 249.3，60 fps；247.88 → 248.65 每帧单独渲（暖白点在放大），其余用冻住的一帧；× 2^ΔEV + 黑遮罩 + S4c → S6 硬切；`Tools~/flash_seq.py flashdyn`） | `Docs~/flashcheck/flash_dyn_245.9-249.3_60fps.json` | WCAG PASS、闪光规则 PASS（1 次）、上升 1.05 EV / 0.25 s、1.66 EV / 1 s（授权的 FLASH_TEAR）、峰值 APL 109（≤ 150） |
 | 闪光（D-20 以前） | `Tools~/flash_seq.py flash …` → `Art/tools/lens_tech/flashcheck.py` | WCAG 2.3.1 PASS；蓝白闪光规则 PASS（任一秒最多 1 次）；上升 0.92 EV / 0.25 s、1.45 EV / 1 s（授权的 FLASH_TEAR，ramp law 标 FAIL 是预期的）；峰值 APL luma 105（≤ 150） |
 | 进门 179.6–182.6（30 fps）、袖 224–232（15 fps） | `Tools~/render/seqs.sh`（320×180）→ flashcheck；`Docs~/flashcheck/` | 进门：WCAG PASS、蓝白闪光规则 PASS（任一秒 1.5 次）、ramp law PASS、峰值 APL 48；袖：WCAG PASS、闪光规则 PASS（1 次）、ramp law PASS（上升 0.33 EV / 1 s）、峰值 58。**注意**：这两段序列是在 r09 → r12 改材质的同时在后台渲的，前后帧不全是同一版外观（差别是布面的褶和透光，不影响闪光）；进门前半秒是门的画面，Blender 这边画不出来，只能从 U9 起 |
+| 第 2、3 重 182–187、第 4 重 193–195（60 fps，总导演终审要的补段） | `Tools~/render/seqs.sh` 同样做法；`Docs~/flashcheck/` | 182–187：WCAG PASS、闪光规则 PASS（任一秒 1 次）、ramp law PASS（上升 0.63 EV / 1 s）、峰值 APL 48；193–195：WCAG PASS、闪光规则 PASS（0 次）、ramp law PASS、峰值 44 |
 
 ## 9. 参考图（`Docs~/iterations/12_lock/`，PPv2 模拟调色后，960×540）
 
