@@ -1164,7 +1164,8 @@
   },
   "tear": {
    "type": "Directional (CABIN ONLY: culling mask = the bus layers, NOT the tentacles)",
-   "color": "#A99DE1",
+   "color": "#B9B6D6",
+   "inner_edge": "#A99DE1 (D-08: only the thin inner edge of the white, in Lanbai_Tear; the cabin is lit #B9B6D6)",
    "E": 0.8,
    "inspector": 0.8,
    "shadows": "none",

@@ -158,7 +158,7 @@ Shader "Lanbai/GateCloudCard"
 
                 // the gate's fog (no cap)
                 float3 fogC = LanbaiGateFogColour(V, dist, moonD, (half)_FogDensity.z, 0.0);
-                float fog = min(1.0 - exp(-_FogDensity.x * _FogDensity.y * dist), (_FogDensity.w > 0.0) ? _FogDensity.w : 1.0);
+                float fog = min(1.0 - exp(-LanbaiGateDensity(_FogDensity.x) * _FogDensity.y * dist), (_FogDensity.w > 0.0) ? _FogDensity.w : 1.0);
                 c = lerp(c, fogC, fog);
 
                 // base melting into the deck, + the soft depth fade where the billows cut the card

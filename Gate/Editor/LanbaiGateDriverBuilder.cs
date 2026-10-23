@@ -36,7 +36,7 @@ public static class LanbaiGateDriverBuilder
     }
     [Serializable] public class Bake
     {
-        public float U6, U7, U7b, U8, U9, vg;
+        public float U6k, U6, U7, U7b, U8, U9, vg;
         public float[] h_t, h_H, h_d, moon_dir, disc_t, disc_g, g0_t, g0_v, g1_t, g1_v, tide_t, tide_v, folds_t, folds_v;
         public float folds_gain, halo_gain;
         public float[] tear_foot_os, tear_top_os, eye_fallback;
@@ -239,7 +239,16 @@ public static class LanbaiGateDriverBuilder
         Transform fill = lights != null ? lights.Find("Fill_from_below") : null;
         d.fillLight = fill != null ? fill.GetComponent<Light>() : null;
         // D-08: the cabin's tear light #B9B6D6 (the lavender #A99DE1 only on the thin inner edge, in the Tear shader)
-        if (d.cabinLightL != null) { d.cabinLightL.color = new Color(0xB9 / 255f, 0xB6 / 255f, 0xD6 / 255f); d.cabinE = d.cabinLightL.intensity > 0f ? d.cabinLightL.intensity : 0.8f; }
+        Color tearCol = new Color(0xB9 / 255f, 0xB6 / 255f, 0xD6 / 255f);
+        string gj = FindAsset("GateLayout_v2", ".json");
+        if (gj != null)
+        {
+            var GJ = (Dictionary<string, object>)Json.Parse(File.ReadAllText(gj));
+            var te = (Dictionary<string, object>)((Dictionary<string, object>)GJ["lights"])["tear"];
+            Color c;
+            if (ColorUtility.TryParseHtmlString((string)te["color"], out c)) tearCol = c;   // D-08 lives in the JSON
+        }
+        if (d.cabinLightL != null) { d.cabinLightL.color = tearCol; d.cabinE = d.cabinLightL.intensity > 0f ? d.cabinLightL.intensity : 0.8f; }
         if (d.fillLight != null) d.fillE = d.fillLight.intensity > 0f ? d.fillLight.intensity : 0.24f;
         if (d.cabinLightL == null || d.fillLight == null) Debug.LogWarning("[GateDriver] Gate_Lights/Tear_CabinOnly or Fill_from_below not found: those lights are not driven");
         FillSky(d);
@@ -258,7 +267,7 @@ public static class LanbaiGateDriverBuilder
 
         // timeline
         d.windowStart = B.U6 - 20f; d.windowEnd = B.U9 + 2f;
-        d.U6 = B.U6; d.U7 = B.U7; d.U7b = B.U7b; d.U8 = B.U8; d.U9 = B.U9; d.vg = B.vg;
+        d.U6k = B.U6k; d.U6 = B.U6; d.U7 = B.U7; d.U7b = B.U7b; d.U8 = B.U8; d.U9 = B.U9; d.vg = B.vg;
         d.hT = B.h_t; d.hH = B.h_H; d.hD = B.h_d;
         d.moonDir = V3(B.moon_dir);
         d.discT = B.disc_t; d.discG = B.disc_g; d.g0T = B.g0_t; d.g0V = B.g0_v; d.g1T = B.g1_t; d.g1V = B.g1_v;
@@ -346,7 +355,7 @@ public static class LanbaiGateDriverBuilder
         }
         EditorUtility.SetDirty(d);
         UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(go.scene);
-        Debug.Log("[GateDriver] if the scene has a Director: re-run 蓝白/Director/2 Wire Scene (the driver object was rebuilt)");
+        if (director != null) Debug.LogWarning("[GateDriver] Gate_Driver was rebuilt: re-run 蓝白/Director/2 Wire Scene");
         Debug.Log(string.Format("[GateDriver] built: {0} instances ({1} missing), {2} renderers, {3} tide renderers, {4} track keys",
                                 n, missing, rend.Count, d.tideRenderers.Length, trT.Count));
         return d;
