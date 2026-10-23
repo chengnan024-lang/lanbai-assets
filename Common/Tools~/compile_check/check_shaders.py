@@ -158,6 +158,8 @@ def lint_program(rep, where, code, is_surface, frag_entry, vert_entry, prag, reg
             for m in re.finditer(r'^[ \t]*(?:uniform[ \t]+)?\w+[ \t]+(_Udon_\w+)', clean, re.M):
                 if not ok_fn(m.group(1), registry):
                     rep.add('WARN', where, '%s is not in Common/UdonGlobals.md (register it before use)' % m.group(1))
+                else:
+                    rep.add('WARN', where, '%s declared here: include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc" instead of declaring _Udon_ globals yourself (redefinition = X3003 when two includes meet; Common/Shaders/README_LanbaiGlobals.md)' % m.group(1))
 
 
 _INC_CACHE = {}
