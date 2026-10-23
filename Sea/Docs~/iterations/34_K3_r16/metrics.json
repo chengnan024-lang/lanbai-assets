@@ -4,8 +4,8 @@
    960,
    540
   ],
-  "APL": 51.87,
-  "EV_display": -4.722,
+  "APL": 51.61,
+  "EV_display": -4.729,
   "luma_lt12_pct": 0.0,
   "Lstar_gt85_pct": 0.003,
   "clip_black_pct": 0.0,
@@ -13,10 +13,10 @@
   "clip_black_largest_region_pct": 0.0,
   "clip_white_largest_region_pct": 0.0,
   "warm_shadow_pct": 0.27,
-  "purple_pct": 0.0,
-  "purple_largest_region_pct": 0.0,
+  "purple_pct": 36.323,
+  "purple_largest_region_pct": 36.26,
   "violet_strong_pct": 0.0,
-  "lavender_act6_pct": 33.068,
+  "lavender_act6_pct": 38.097,
   "brightest": {
    "bbox": [
     15,
@@ -25,14 +25,14 @@
     325
    ],
    "centroid": [
-    446.8,
+    446.4,
     247.2
    ],
-   "clusters": 9,
+   "clusters": 10,
    "clusters_ge5pct": 2,
    "min_luma": 175.8,
    "centroid_az_el": [
-    -4.49,
+    -4.56,
     -41.1
    ]
   },
@@ -54,13 +54,13 @@
     {
      "hex": "#061A30",
      "role": "深水 濃藍",
-     "nearest_dE2000_p01": 9.9,
+     "nearest_dE2000_p01": 10.9,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#26496C",
      "role": "灯光被水吃掉后的靛",
-     "nearest_dE2000_p01": 9.6,
+     "nearest_dE2000_p01": 9.9,
      "within_dE5_pct": 0.0
     },
     {
@@ -84,7 +84,7 @@
     {
      "hex": "#7A4A6E",
      "role": "紫贝阙（受光，小面积）",
-     "nearest_dE2000_p01": 12.0,
+     "nearest_dE2000_p01": 11.1,
      "within_dE5_pct": 0.0
     },
     {
@@ -174,7 +174,7 @@
    "color": "#000000"
   }
  },
- "bloom_share_of_APL": 0.01,
+ "bloom_share_of_APL": 0.0,
  "t": 897.96,
  "target": {
   "phase": "倒置的窗",
@@ -197,7 +197,7 @@
    540
   ]
  },
- "render_seconds": 3.7,
+ "render_seconds": 4.0,
  "lens": "none",
  "bloom_tint": "single",
  "note": "K3 r16 (final review #6): window = the other sky (synthetic 8-i, mirrored) at gain 0.25, rim arc through the FLAT plane (WindowSunGain 1, colour 24/8.5/5, el half-width 3, az 30), waves 0.02 after F8b, palace lamps gold #E0A860 x14 at 0.25 deg"

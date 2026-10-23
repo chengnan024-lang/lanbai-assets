@@ -57,12 +57,12 @@ namespace Lanbai.Sea.Editor
             }
             else if (n.StartsWith("Sea_PurpleCeiling"))
             {
-                // the purple guard's lookup (LanbaiSea.cginc): exact values, bilinear, no mips, hue wraps, lightness clamps
+                // the purple guard's lookup (LanbaiSea.cginc): exact values, POINT (no blending of two texels' bands), no mips
                 ti.textureType = TextureImporterType.Default;
                 ti.sRGBTexture = false;
                 ti.mipmapEnabled = false;
                 ti.alphaSource = TextureImporterAlphaSource.FromInput;
-                ti.filterMode = FilterMode.Bilinear;
+                ti.filterMode = FilterMode.Point;
                 ti.anisoLevel = 0;
                 ti.wrapModeU = TextureWrapMode.Repeat;
                 ti.wrapModeV = TextureWrapMode.Clamp;

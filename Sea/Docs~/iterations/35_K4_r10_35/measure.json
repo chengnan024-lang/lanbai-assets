@@ -1,5 +1,5 @@
 {
- "APL": 78.3,
+ "APL": 78.2,
  "mirror_band_el_2_7": {
   "median": "#D3A284",
   "Lstar": 70.4,
@@ -26,5 +26,5 @@
   "C_median": 19.8,
   "Lstar_median": 69.0
  },
- "max_C_in_h290_330_above_horizon": 15.1
+ "max_C_in_h290_330_above_horizon": 19.8
 }

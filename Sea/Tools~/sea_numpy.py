@@ -401,7 +401,7 @@ _PC = {}
 
 
 def purple_ceiling(which='main'):
-    """Sea_PurpleCeiling.png (RGBA = S6, S7a, S7b, S8) or Sea_PurpleCeiling_S11.png; row 0 = L 0"""
+    """Sea_PurpleCeiling.png (RGBA = S6, S7a, S7b, S8) or Sea_PurpleCeiling_S11.png; row 0 = L 0 of quarter lo1"""
     if which not in _PC:
         name = 'Sea_PurpleCeiling.png' if which == 'main' else 'Sea_PurpleCeiling_%s.png' % which
         _PC[which] = np.flipud(np.asarray(Image.open(os.path.join(TEX, name)).convert('RGBA'), np.float64)) / 255.0 * 0.8
@@ -409,7 +409,7 @@ def purple_ceiling(which='main'):
 
 
 def purple_guard(c, M):
-    """port of LanbaiPurpleGuard: OKLab chroma scaled down to the baked ceiling s_max(hue, L) x L of the material's grades"""
+    """port of LanbaiPurpleGuard: a colour inside violet band 1 goes down to s = lo1, inside band 2 to s = lo2 (D-17 + D-21)"""
     M = dict(DEFAULTS, **M)
     if M['PurpleGuard'][0] <= 0:
         return c
@@ -418,16 +418,22 @@ def purple_guard(c, M):
     L = o[..., 0]
     C = np.hypot(o[..., 1], o[..., 2])
     t = purple_ceiling(M['PurpleCeiling'])
-    Ht, Wt = t.shape[:2]
-    u = (np.degrees(np.arctan2(o[..., 2], o[..., 1])) % 360.0) / 360.0 * Wt - 0.5
-    v = np.clip((L / 0.025 + 0.5) - 0.5, 0, Ht - 1)
-    i0 = np.floor(u).astype(np.int64); fu = (u - i0)[..., None]
-    j0 = np.clip(np.floor(v).astype(np.int64), 0, Ht - 2); fv = (v - j0)[..., None]
-    i0 %= Wt; i1 = (i0 + 1) % Wt
-    cap = (t[j0, i0] * (1 - fu) + t[j0, i1] * fu) * (1 - fv) + (t[j0 + 1, i0] * (1 - fu) + t[j0 + 1, i1] * fu) * fv
-    m = np.asarray(M['PurpleMask'], np.float64)
-    cap = np.where(m > 0, cap, 1e3).min(-1) * np.maximum(L, 0.0)
-    k = np.where((C > cap) & (C > 1e-6) & (L > 1e-5), cap / np.maximum(C, 1e-9), 1.0)
+    Q = t.shape[0] // 4
+    Wt = t.shape[1]
+    col = np.floor((np.degrees(np.arctan2(o[..., 2], o[..., 1])) % 360.0) / 360.0 * Wt).astype(np.int64) % Wt
+    row = np.clip(np.floor(L / 0.025 + 0.5).astype(np.int64), 0, Q - 1)      # POINT sampling (the importer sets Point)
+    m = np.asarray(M['PurpleMask'], np.float64) > 0
+
+    def quarter(q, empty, red):
+        val = t[row + q * Q, col]
+        return red(np.where(m, val, empty), -1)
+    lo1, hi1 = quarter(0, 1e3, np.min), quarter(1, -1.0, np.max)
+    lo2, hi2 = quarter(2, 1e3, np.min), quarter(3, -1.0, np.max)
+    s = C / np.maximum(L, 1e-6)
+    in1 = (s > lo1) & ((s <= hi1 + 1e-4) | (hi1 >= 0.799))
+    in2 = (s > lo2) & ((s <= hi2 + 1e-4) | (hi2 >= 0.799))
+    tg = np.where(in1, lo1, np.where(in2, lo2, s))
+    k = np.where((L > 1e-5) & (C > 1e-6) & (tg < s), tg / np.maximum(s, 1e-9), 1.0)
     o[..., 1:] *= k[..., None]
     return np.where((k < 1.0)[..., None], oklab_to_lin(o), c)
 

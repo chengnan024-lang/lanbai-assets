@@ -35,7 +35,7 @@
 | `Textures/SeaMacro_512.png` | 平静 / 起纹宏遮罩（1.5 km） |
 | `Textures/Caustics_8x8_2048.png` | 64 帧循环焦散（0.3 Hz 一圈）：真的把阳光折射过动的水面、在 2.2 m 深处收集光子算的 |
 | `Textures/CausticsCookie_Static_256.png` | 焦散 cookie 的**静态退路**（CRT 当不了 cookie 时拖进太阳的 Cookie 槽；`Tools~/make_cookie.py`） |
-| `Textures/Sea_PurpleCeiling.png`、`Sea_PurpleCeiling_S11.png` | 紫色护栏的查找表（无压缩、无 mip、双线性；`Tools~/purple_scan.py` 烘，证明在 `Docs~/purple_scan.json`） |
+| `Textures/Sea_PurpleCeiling.png`、`Sea_PurpleCeiling_S11.png` | 紫色护栏的查找表（360 × 484，无压缩、无 mip、**点采样**；`Tools~/purple_scan.py` 烘，证明在 `Docs~/purple_scan.json`） |
 | `Textures/ShaftStreaks_256.png` | 光柱条纹 |
 | `Textures/Cube_Dawn_256.exr`、`Cube_DuskLower_256.exr`、`Cube_Dusk_256.exr` | **备用**立方图（晨 = Syferfontein HDRI，太阳在方位 +30°，D-12；暮 = 参考帧用的同一片按圣经填值合成的暮天；6 面横条、D3D 面方向、BC6H）：正式的由 `LanbaiReflectionBaker` 烘 |
 | `Models/Sea_Disc.fbx` | r 40 km 的圆盘（中心密） |
@@ -54,10 +54,10 @@
 - **斯涅尔之窗（7a）有意偏离物理**（D-17 批准）：真实的晨天从水下看，窗的边（地平线）比中心亮；圣经要窗心 `#E6F3F8`、往边落。做法是 **`_WindowCore`**：按**视线**的天顶角给窗一个亮度上限（窗心线性 4.45，到窗缘暗 3 EV），软钳、色相不变；窗心再去饱和到近白、窗缘留着天的蓝和向阳侧的金。换成正式的 `ReflCube_Dawn` 以后按截图校 `_WindowGain` 和 `_WindowCore.x`（窗心 `#E6F3F8`）。**VR 抬头另有一组数**（接口 §2.3 末）。
 - **7c 窗里的日弧**：物理上，地平线下的太阳被折射压在窗边不到一个像素、而且菲涅耳把它吃掉。圣经要它是最亮点、一道弧，所以有 `_WindowSun*`：按**平的水面**算（不被碎浪打碎），沿窗缘 ±30°、弧半高 3°，自己的增益，**替换**它下面的蓝（叠加会变成薰衣草紫）。
 - **第 8 幕天花（D-17）**：镜带“珍珠金”（`_MirrorTint (1.25, 1.3, 1.25)`、`_ReflGain 1.5`）；天花材质用 `LanbaiFog` 的高度衰减 120 m，暖色的雾不把头顶的深蓝水染紫。
-- **紫色护栏**：查找表做的“彩度天花板”，按每个材质所在幕的调色证明过不紫（接口 §2.7）。
+- **紫色护栏（D-17 + D-21）**：h_ab 285–330、C\* > 8、L\* > 40 的拦住，圣经深靛蓝（L\* ≤ 40）放过；查找表存每条饱和度射线上的两段紫区间，按每个材质所在幕的调色证明过（接口 §2.7）。
 - **天花溶化（K5）**：前沿 4 s 从地平线走到天顶，每个像素 5 s、亮度按 EV 线性（`_SkyBehindCube` 告诉 shader 后面那片天多亮）。逐像素核查（`Tools~/k5_dissolve_ramps.py`，前提已含雾、护栏、金点）：0.25 s 最坏 0.14 EV（≤ 0.5）、1 s 0.57（≤ 1.0）、2 s 1.13（≤ 1.8），**PASS**；25 个金点到 959.85 全亮、亮度从不上升、964.85 最后一个灭。
 - **依赖 UV 精度（CONTROL §6 第 8 条）**：粒子、灯点、光柱的网格把种子、半径、时间轴秒（播下的光的出生时刻 558–645 s）放在 UV0–UV2。**Player Settings → Vertex Compression 不能勾 TexCoord0–2**（half 在 600 s 的步长是 0.5 s）。模型导入器里海的网格压缩是关的。
-- **显存**（含 mip）：法线 2 × 1.33 MB（1024² BC5）、宏遮罩 0.33（512² BC7）、光柱条纹 0.09、焦散图集 5.33（2048² R8，不压缩：亮网只有 1–2 texel 宽）、备用立方图 3 × 0.5（6 × 256² BC6H）、紫色护栏表 2 × 0.17（RGBA32，不压缩）、焦散 cookie 的 CRT 0.5（256² ARGBHalf）= **约 10.8 MB**；退路 cookie 只在换上时 +0.33。不含总控烘的正式立方图。
+- **显存**（含 mip）：法线 2 × 1.33 MB（1024² BC5）、宏遮罩 0.33（512² BC7）、光柱条纹 0.09、焦散图集 5.33（2048² R8，不压缩：亮网只有 1–2 texel 宽）、备用立方图 3 × 0.5（6 × 256² BC6H）、紫色护栏表 2 × 0.70（360 × 484 RGBA32，不压缩）、焦散 cookie 的 CRT 0.5（256² ARGBHalf）= **约 11.9 MB**；退路 cookie 只在换上时 +0.33。不含总控烘的正式立方图。
 
 ---
 
@@ -93,7 +93,7 @@
 
 - shader：`python3 Common/Tools~/compile_check/check_shaders.py Sea/Shaders Common/Shaders/LanbaiCaustics.cginc` → **`9 files, 142 translation units (DXC on, CGIncludes 2022.3.22f1): 0 errors, 0 warnings. NOT a Unity compile.`**
 - C#：`bash Common/Tools~/compile_check/check_cs.sh Sea` → **`C# CHECK OK (0 assembly error(s), 0 lint warning(s))`**
-- 紫色护栏：`~/bpy/bin/python Sea/Tools~/purple_scan.py`（约 4 分钟）→ 每个材质剩下的紫 0。
+- 紫色护栏：`~/bpy/bin/python Sea/Tools~/purple_scan.py`（约 10 分钟）→ 每个材质剩下的紫 0。
 - 溶化：`~/bpy/bin/python Sea/Tools~/k5_dissolve_ramps.py` → PASS。
 - **没在 Unity 里编译过，没在头显里看过**（每个 shader 都要闭一只眼、再闭另一只各看一遍）。
 
@@ -112,5 +112,5 @@
 
 ## 7. 与评审的分歧
 
-- **紫色护栏从 290 不从 285**（终审 #7 写的是 285–330）：圣经的暮天 `#3D4A80`（289.2）、`#2E3C66`（286.3）就在 285–290，护栏从 285 开始就碰了圣经的蓝。见接口 §2.7，要 285 请裁。
+- （紫色护栏 285 / 290 的分歧已由 D-21 裁定：285–330，放过 L\* ≤ 40 的深靛蓝。照做了。）
 - 早先的：APL 目标是正前方的（特写帧不可比）；替身天的数不归海（`Docs~/review_r1_response.md` 末节）。

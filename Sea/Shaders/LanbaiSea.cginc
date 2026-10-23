@@ -375,18 +375,26 @@ inline float3 LanbaiOklabToLin(float3 L)
                      -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s), 0.0);
 }
 
-// Purple guard (Art/总导演裁决.md D-17 + final review #7). Rule: after the guard and the grade of the material's act, no
-// colour DISPLAYS with CIELab h_ab 290..330 and C* > 8 (290, not the review's 285: the bible's own dusk sky lives at
-// 286-289, #2E3C66 / #3D4A80, and must stay untouched). Sea/Tools~/purple_scan.py scans OKLab hue x lightness x
-// saturation through Grading's engine model and bakes, per grade, the largest saturation s = C / L that is never
-// violet into Sea_PurpleCeiling.png (360 x 121, RGBA = S6, S7a, S7b, S8; Sea_PurpleCeiling_S11.png = S11): u = hue / 360
-// (repeat), v = (L / 0.025 + 0.5) / 121 (clamp), value x 0.8 = s_max; each texel is the minimum over its own bilinear
-// footprint, so the filtered lookup never exceeds the true ceiling. Proof: Sea/Docs~/purple_scan.json.
-// The guard only scales the OKLab chroma down to the ceiling (hue and lightness kept); anything under it is untouched.
-// Applied to the FINAL colour of every sea mode (after fog).
+// Purple guard (Art/总导演裁决.md D-17 + D-21, final review #7). Rule: after the guard and the grade of the material's act,
+// no colour DISPLAYS with CIELab h_ab 285..330, C* > 8 and L* > 40 (D-21: the bible's deep indigo, L* <= 40 like the dusk
+// zenith #3D4A80 or #2E3C66, passes; the mid-tone lilac is stopped -- the same rule as the Sky).
+// Sea/Tools~/purple_scan.py scans OKLab hue x lightness x saturation through Grading's engine model, per grade, and finds
+// along every saturation ray (s = C / L) the VIOLET BANDS: band 1 = (lo1, hi1], band 2 = (lo2, hi2] with a safe gap between
+// (under S8 the bible's mid sky #808AB2 lives in such a gap: its paler and its more saturated versions read lilac, it does
+// not). Baked into Sea_PurpleCeiling.png (360 x 484, RGBA = S6, S7a, S7b, S8; Sea_PurpleCeiling_S11.png = S11): four
+// quarters of 121 rows lo1, hi1, lo2, hi2; POINT sampled (Filter Mode Point: blending two texels' bands would invent a
+// false safe gap): column = floor(hue), row = round(L / 0.025) clamped to 0..120; value x 0.8 = s; each texel holds the
+// min (lo) / max (hi) over its own +-0.5 texel. Proof: Sea/Docs~/purple_scan.json.
+// A colour inside band 1 goes down to s = lo1, inside band 2 down to s = lo2 (the top of the gap); hue and L kept;
+// anything outside both bands is untouched. Applied to the FINAL colour of every sea mode (after fog).
 float4 _PurpleGuard;         // x > 0 on
 float4 _PurpleMask;          // which grades this material lives in (1 = guard against it): R S6, G S7a, B S7b, A S8
 sampler2D _PurpleCeiling;    // Sea_PurpleCeiling.png (act 11: Sea_PurpleCeiling_S11.png with mask R)
+inline float4 LanbaiPurpleQuarter(float u, float row, float q)
+{
+    // texel centres: u -> (floor(360 u) + 0.5) / 360, row -> (row + 0.5 + 121 q) / 484 (row already rounded)
+    return tex2Dlod(_PurpleCeiling, float4((floor(u * 360.0) + 0.5) / 360.0, (row + 0.5 + 121.0 * q) / 484.0, 0.0, 0.0)) * 0.8;
+}
 inline float3 LanbaiPurpleGuard(float3 c)
 {
     if (_PurpleGuard.x <= 0.0) return c;
@@ -395,11 +403,20 @@ inline float3 LanbaiPurpleGuard(float3 c)
     if (C <= 1e-6 || L.x <= 1e-5) return c;
     float u = atan2(L.z, L.y) * (0.5 / UNITY_PI);
     u = u < 0.0 ? u + 1.0 : u;
-    float4 cap = tex2Dlod(_PurpleCeiling, float4(u, (L.x / 0.025 + 0.5) / 121.0, 0.0, 0.0)) * 0.8;
-    cap = lerp(float4(1e3, 1e3, 1e3, 1e3), cap, saturate(_PurpleMask));
-    float cmax = min(min(cap.x, cap.y), min(cap.z, cap.w)) * L.x;
-    if (C <= cmax) return c;
-    L.yz *= cmax / C;
+    float row = clamp(floor(L.x / 0.025 + 0.5), 0.0, 120.0);
+    float4 m = saturate(_PurpleMask);
+    float4 a = lerp(float4(1e3, 1e3, 1e3, 1e3), LanbaiPurpleQuarter(u, row, 0.0), m);
+    float4 b = lerp(float4(-1.0, -1.0, -1.0, -1.0), LanbaiPurpleQuarter(u, row, 1.0), m);
+    float4 d = lerp(float4(1e3, 1e3, 1e3, 1e3), LanbaiPurpleQuarter(u, row, 2.0), m);
+    float4 e = lerp(float4(-1.0, -1.0, -1.0, -1.0), LanbaiPurpleQuarter(u, row, 3.0), m);
+    float lo1 = min(min(a.x, a.y), min(a.z, a.w)), hi1 = max(max(b.x, b.y), max(b.z, b.w));
+    float lo2 = min(min(d.x, d.y), min(d.z, d.w)), hi2 = max(max(e.x, e.y), max(e.z, e.w));
+    float s = C / L.x;
+    bool in1 = s > lo1 && (s <= hi1 + 1e-4 || hi1 >= 0.799);
+    bool in2 = s > lo2 && (s <= hi2 + 1e-4 || hi2 >= 0.799);
+    float t = in1 ? lo1 : (in2 ? lo2 : s);
+    if (t >= s) return c;
+    L.yz *= t / s;
     return LanbaiOklabToLin(L);
 }
 

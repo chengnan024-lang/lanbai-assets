@@ -1,26 +1,29 @@
 # -*- coding: utf-8 -*-
 """Purple-guard ceiling (final review #7, D-17): bake + prove.
 
-Rule proved here: after LanbaiPurpleGuard, under the grade(s) each sea material lives in (Grading's PPv2 engine model,
-no bloom), NO colour displays with CIELab h_ab in [290, 330] and C* > 8.
-  The review asked for 285..330. 285..290 is where the bible's own dusk sky lives: S8 zenith #3D4A80 displays h_ab 289.2
-  C* 34, other-sky nadir / 7c window indigo #2E3C66 286.3 C* 28 (ART_BIBLE M5 put them there on purpose). Guarding
-  from 285 would grey the bible's sky in the sea mirror, which the same item forbids ("护栏只管紫，不碰圣经指定的蓝").
-  290 is the bible's own §1.3.4 violet edge. Everything 290..330 is held to C* <= 8 (D-17's number, stricter than §1.3.4's 15).
+Rule proved here (Art/总导演裁决.md D-17 + D-21): after LanbaiPurpleGuard, under the grade(s) each sea material lives
+in (Grading's PPv2 engine model, no bloom), NO colour displays with CIELab h_ab in [285, 330], C* > 8 and L* > 40.
+  D-21: the guard lets the bible's DEEP indigo through (L* <= 40: dusk zenith #3D4A80 L* 32.8 at h 289.2, other-sky
+  nadir / 7c window #2E3C66 L* 26.1 at h 286.3); it stops the mid-tone lilac. The same rule as the Sky.
 
 How: for every OKLab hue (0.5 deg) and lightness L (0.0125, 0..3 = linear 0..27) and for each grade separately, the
 largest SATURATION s = C/L that never displays violet (first violet s along the ray, minus one 0.002 step), the scan
-using a slightly stricter test (h_ab 289.7..330.5, C* > 7.0: margin for bloom and 8-bit rounding) so thin violet islands between scan points are covered.
-Baked into Sea/Textures/Sea_PurpleCeiling.png (360 x 121 RGBA8, linear): R = S6, G = S7a, B = S7b, A = S8;
-value / 255 * 0.8 = max s. Texel (i, j) is hue i + 0.5 deg, L 0.025 j; each texel holds the MINIMUM of the fine scan over
-its whole bilinear footprint (+-1 texel), rounded DOWN, so the GPU's bilinear lookup is never above the true ceiling.
+using a slightly stricter test (h_ab 285..330.5, C* > 7.0, L* > 39: margin for bloom and 8-bit rounding) so thin violet islands between scan points are covered.
+Some rays leave the violet band again at higher saturation (under S8 the DESATURATED versions of the bible's mid sky
+#808AB2 read lilac, the colour itself does not), so each texel stores the band: lo = largest safe s below it, hi = top of it.
+A ray can even hold TWO violet bands with a safe gap between them (#808AB2 under S8: s 0.04-0.065 and 0.17-, the colour
+itself at 0.12), so each texel stores both: band 1 = (lo1, hi1], band 2 = (lo2, hi2] (runs beyond the second merged in).
+Baked into Sea/Textures/Sea_PurpleCeiling.png (360 x 484 RGBA8, linear): R = S6, G = S7a, B = S7b, A = S8; four quarters of
+121 rows: lo1, hi1, lo2, hi2 (lo = footprint MIN rounded down, hi = footprint MAX rounded up; bands that touch merge);
+value / 255 * 0.8 = s. Texel (i, j) is hue i + 0.5 deg, L 0.025 j; POINT sampled (no blending between texels, so two
+bands never mix into a false gap), each texel answering for its own +-0.5 texel (+ one fine step).
 A material picks its grades with _PurpleGuard (x on, plus _PurpleMask = which channels; the minimum of the picked ones):
   act 6  (M_06_Sea)                           R         S6
   act 7a (M_07a_SeaSurface)                   G + B     S7a, and S7b because 7a cross-fades S7a -> S7b (474.36..558.86)
   7c     (M_07c_SeaMirror)                    B         S7b
   act 8  (M_08_*)                             A         S8   (the grade cuts S7b -> S8 at the exit 922.36, under the bus)
   act 11 (M_11_SeaHanging)                    R         S11 (= S2), from its own texture Sea_PurpleCeiling_S11.png
-The shader scales OKLab chroma down to s_max * L (hue and L kept): a colour under its ceiling is returned untouched.
+The shader scales a colour inside band 1 down to s = lo1, inside band 2 down to s = lo2 (hue and L kept); the rest is untouched.
 Proof (written to Sea/Docs~/purple_scan.json): per material, (1) 2 000 000 random in-gamut HDR colours, (2) a dense grid
 OFFSET half a step from the scan grid (0.5 deg x 0.0125 L x 0.002 s, hues where any ceiling binds), through a numpy copy of
 the exact shader path (bilinear on the 8-bit texture) and the material's grades -> violet count must be 0;
@@ -40,8 +43,8 @@ import grade as G  # noqa: E402
 import sea_numpy as S  # noqa: E402
 
 CHANNELS = ('S6', 'S7a', 'S7b', 'S8', 'S11')      # the first four -> Sea_PurpleCeiling.png RGBA, S11 -> Sea_PurpleCeiling_S11.png
-H_LO, H_HI, CSTAR = 290.0, 330.0, 8.0               # the rule (verification)
-SCAN_LO, SCAN_HI, SCAN_C = 289.7, 330.5, 7.0        # the bake is stricter (margin for thin violet islands between scan points)
+H_LO, H_HI, CSTAR, LSTAR = 285.0, 330.0, 8.0, 40.0   # the rule (verification), D-21
+SCAN_LO, SCAN_HI, SCAN_C, SCAN_L = 285.0, 330.5, 7.0, 39.0   # the bake is stricter (margin for thin violet islands between scan points)
 W, H = 360, 121
 L_STEP, H_STEP = 0.025, 1.0
 S_MAX = 0.8
@@ -64,11 +67,11 @@ def params(sid):
     return _P[sid]
 
 
-def violet(lin, sid, lo=H_LO, hi=H_HI, cs=CSTAR):
+def violet(lin, sid, lo=H_LO, hi=H_HI, cs=CSTAR, ls=LSTAR):
     codes = G.E.codes_direct(np.maximum(lin, 0.0), params(sid))
     L, a, b = G.lab(np.clip(codes, 0, 255))
     h = (np.degrees(np.arctan2(b, a)) + 360) % 360
-    return (h >= lo) & (h <= hi) & (np.hypot(a, b) > cs)
+    return (h >= lo) & (h <= hi) & (np.hypot(a, b) > cs) & (L > ls)
 
 
 def oklab_raw_to_lin(o):
@@ -85,75 +88,100 @@ def lsh(L, s, h):
 FINE_L = np.maximum(np.arange(0.0, 3.0 + 1e-9, FL), 0.004)
 
 
+def runs(bad_row):
+    """violet runs along one saturation ray -> (lo1, hi1, lo2, hi2) in step indices (None = absent)"""
+    idx = np.where(bad_row)[0]
+    if len(idx) == 0:
+        return None
+    breaks = np.where(np.diff(idx) > 1)[0]
+    r1_end = idx[breaks[0]] if len(breaks) else idx[-1]
+    if len(breaks) == 0:
+        return idx[0], r1_end, None, None
+    return idx[0], r1_end, idx[breaks[0] + 1], idx[-1]           # runs 2.. merged into one (conservative)
+
+
 def scan_hue(h):
-    """per grade: max safe s for every fine L at hue h"""
+    """per grade and fine L at hue h, the violet bands along the saturation ray (one step of margin on every side):
+    band 1 = (lo1, hi1], band 2 = (lo2, hi2]. Between them the ray is safe (the bible's mid sky #808AB2 lives in such a
+    gap under S8: its desaturated AND its more saturated versions read lilac, it does not). No band: lo = S_MAX, hi = 0."""
     LL, SS = np.meshgrid(FINE_L, S_STEPS, indexing='ij')
     lin = S.oklab_to_lin(lsh(LL.ravel(), SS.ravel(), np.full(LL.size, h)))
-    caps = []
-    for sid in CHANNELS:
-        bad = violet(lin, sid, SCAN_LO, SCAN_HI, SCAN_C).reshape(LL.shape)
-        first = np.where(bad.any(-1), np.argmax(bad, -1), len(S_STEPS))
-        c = S_STEPS[np.maximum(first - 2, 0)]            # one extra step of margin
-        c[first <= 1] = 0.0
-        caps.append(c)
-    return np.stack(caps, -1)                             # [nL, 4]
+    n = len(S_STEPS)
+    out = np.zeros((len(FINE_L), len(CHANNELS), 4))
+    out[..., 0] = S_MAX; out[..., 2] = S_MAX
+    for g, sid in enumerate(CHANNELS):
+        bad = violet(lin, sid, SCAN_LO, SCAN_HI, SCAN_C, SCAN_L).reshape(LL.shape)
+        for j in range(len(FINE_L)):
+            r = runs(bad[j])
+            if r is None:
+                continue
+            f1, e1, f2, e2 = r
+            out[j, g, 0] = S_STEPS[max(f1 - 2, 0)] if f1 > 1 else 0.0
+            out[j, g, 1] = S_STEPS[min(e1 + 1, n - 1)]
+            if f2 is not None:
+                out[j, g, 2] = S_STEPS[max(f2 - 2, 0)]
+                out[j, g, 3] = S_STEPS[min(e2 + 1, n - 1)]
+                if out[j, g, 2] <= out[j, g, 1]:                   # the gap closed under the margin: one band
+                    out[j, g, 1] = out[j, g, 3]; out[j, g, 2] = S_MAX; out[j, g, 3] = 0.0
+    return out                                            # [nL, grades, 4]
 
 
 def bake(cap):
-    """cap [nH_fine, nL_fine, 4] -> texture [H, W, 4] uint8"""
+    """cap [nH_fine, nL_fine, grades, 4] -> texture [4H, W, grades] uint8: quarters lo1, hi1, lo2, hi2. lo = footprint
+    MIN rounded down, hi = footprint MAX rounded up; where the two bands touch after that, they merge into one."""
     nh = cap.shape[0]
-    tex = np.zeros((H, W, cap.shape[-1]))
+    q = np.zeros((4, H, W, cap.shape[2]))
     fh = np.arange(nh) * FH
     for i in range(W):
         hc = i + 0.5
         d = (fh - hc + 180) % 360 - 180
-        hm = np.abs(d) <= H_STEP + 1e-9
-        sub = cap[hm].min(0)                              # [nL, 4]
+        hm = np.abs(d) <= 0.5 * H_STEP + FH + 1e-9       # POINT sampling: the texel answers for +-0.5 texel (+ one fine step)
+        sub = cap[hm]
         for j in range(H):
             Lc = j * L_STEP
-            lm = (FINE_L >= Lc - L_STEP - 1e-9) & (FINE_L <= Lc + L_STEP + 1e-9)
-            tex[j, i] = sub[lm].min(0)
-    return np.floor(tex / S_MAX * 255.0).astype(np.uint8)
+            lm = (FINE_L >= Lc - 0.5 * L_STEP - FL - 1e-9) & (FINE_L <= Lc + 0.5 * L_STEP + FL + 1e-9)
+            c = sub[:, lm].reshape(-1, cap.shape[2], 4)
+            q[0, j, i] = c[..., 0].min(0); q[1, j, i] = c[..., 1].max(0)
+            q[2, j, i] = c[..., 2].min(0); q[3, j, i] = c[..., 3].max(0)
+    lo1, hi1, lo2, hi2 = (np.floor(q[0] / S_MAX * 255), np.ceil(q[1] / S_MAX * 255), np.floor(q[2] / S_MAX * 255), np.ceil(q[3] / S_MAX * 255))
+    merge = (lo2 <= hi1 + 1) & (hi2 > 0)                   # no safe gap left (1 code of slack for the bilinear lookup)
+    hi1 = np.where(merge, np.maximum(hi1, hi2), hi1)
+    lo2 = np.where(merge, 255, lo2); hi2 = np.where(merge, 0, hi2)
+    return np.concatenate([lo1, hi1, lo2, hi2], 0).astype(np.uint8)
 
 
-def sample(tex8, L, h, mask):
-    """GPU bilinear: U wraps (hue), V clamps (L); texel i centre u = (i + 0.5) / W"""
+def bilinear(t, L, h, half):
+    """GPU POINT sampling of one quarter (the importer sets Point): texel i = floor(hue), row = round(L / 0.025) clamped"""
+    i = np.floor(h / H_STEP).astype(int) % W
+    j = np.clip(np.floor(L / L_STEP + 0.5).astype(int), 0, H - 1) + half * H
+    return t[j, i]
+
+
+def bands(tex8, L, h, mask):
+    """what the shader does: per quarter bilinear; lo = min of the picked grades, hi = max"""
     t = tex8.astype(np.float64) / 255.0 * S_MAX
     m = np.array(mask, bool)
-    t = np.where(m[None, None, :], t, np.inf).min(-1)
-    u = h / H_STEP - 0.5
-    v = np.clip(L / L_STEP, 0, H - 1)
-    i0 = np.floor(u).astype(int); fu = u - i0
-    j0 = np.clip(np.floor(v).astype(int), 0, H - 2); fv = v - j0
-    i0 %= W; i1 = (i0 + 1) % W
-    a = t[j0, i0] * (1 - fu) + t[j0, i1] * fu
-    b = t[j0 + 1, i0] * (1 - fu) + t[j0 + 1, i1] * fu
-    return a * (1 - fv) + b * fv
-
-
-def sample_gpu(tex8, L, h, mask):
-    """what the shader does: bilinear-filter each channel, THEN take the min of the picked channels (<= sample())"""
-    t = tex8.astype(np.float64) / 255.0 * S_MAX
-    u = h / H_STEP - 0.5
-    v = np.clip(L / L_STEP, 0, H - 1)
-    i0 = np.floor(u).astype(int); fu = (u - i0)[:, None]
-    j0 = np.clip(np.floor(v).astype(int), 0, H - 2); fv = (v - j0)[:, None]
-    i0 %= W; i1 = (i0 + 1) % W
-    a = t[j0, i0] * (1 - fu) + t[j0, i1] * fu
-    b = t[j0 + 1, i0] * (1 - fu) + t[j0 + 1, i1] * fu
-    c = a * (1 - fv) + b * fv
-    m = np.array(mask, bool)
-    return np.where(m[None, :], c, np.inf).min(-1)
+    lo1 = np.where(m[None, :], bilinear(t, L, h, 0), np.inf).min(-1)
+    hi1 = np.where(m[None, :], bilinear(t, L, h, 1), -np.inf).max(-1)
+    lo2 = np.where(m[None, :], bilinear(t, L, h, 2), np.inf).min(-1)
+    hi2 = np.where(m[None, :], bilinear(t, L, h, 3), -np.inf).max(-1)
+    return lo1, hi1, lo2, hi2
 
 
 def guard(lin, tex8, mask):
-    """numpy copy of LanbaiPurpleGuard"""
+    """numpy copy of LanbaiPurpleGuard: a colour inside band 1 goes down to s = lo1, inside band 2 down to s = lo2 (the top
+    of the safe gap); a band reaching the top of the table (hi >= 0.8) is open-ended; hue and L kept, the rest untouched"""
     o = S.lin_to_oklab(lin)
-    L = o[..., 0]
+    L = np.maximum(o[..., 0], 0.0)
     C = np.hypot(o[..., 1], o[..., 2])
     h = (np.degrees(np.arctan2(o[..., 2], o[..., 1])) + 360) % 360
-    cmax = sample_gpu(tex8, L, h, mask) * np.maximum(L, 0.0)
-    k = np.where(C > cmax, cmax / np.maximum(C, 1e-9), 1.0)
+    lo1, hi1, lo2, hi2 = bands(tex8, L, h, mask)
+    s = C / np.maximum(L, 1e-6)
+    top = S_MAX - 1e-3
+    in1 = (s > lo1) & ((s <= hi1 + 1e-4) | (hi1 >= top))
+    in2 = (s > lo2) & ((s <= hi2 + 1e-4) | (hi2 >= top))
+    tgt = np.where(in1, lo1, np.where(in2, lo2, s))
+    k = np.where((L > 1e-5) & (tgt < s), tgt / np.maximum(s, 1e-9), 1.0)
     o2 = o.copy(); o2[..., 1:] *= k[..., None]
     return S.oklab_to_lin(o2)
 
@@ -181,7 +209,7 @@ def verify(texs, pool):
     res = {}
     for name, (mask, grades) in MATERIALS.items():
         tex8 = texs[TEXTURE_OF.get(name, 'main')]
-        binding = [h for h in np.arange(FH / 2, 360, FH) if min(sample(tex8, np.array([L]), np.array([h]), mask)[0] for L in (0.2, 0.5, 0.9)) < S_MAX - 0.01]
+        binding = [h for h in np.arange(FH / 2, 360, FH) if min(bands(tex8, np.array([L]), np.array([h]), mask)[0][0] for L in (0.2, 0.5, 0.9)) < S_MAX - 0.01]
         n_tot, left = 0, {s: 0 for s in grades}
         for _ in range(5):
             N = 400000
@@ -233,7 +261,7 @@ def main():
     hues = np.arange(0, 360, FH)
     with Pool(4) as p:
         cap = np.stack(p.map(scan_hue, hues))             # [720, nL, 4]
-    tex = bake(cap)
+    tex = bake(cap)                                       # [4H, W, 5]
     texs = dict(main=tex[..., :4], S11=np.repeat(tex[..., 4:5], 4, -1))
     from PIL import Image
     Image.fromarray(np.flipud(texs['main']), 'RGBA').save(os.path.join(KIT, 'Textures', 'Sea_PurpleCeiling.png'))   # v = 0 (L = 0) at the bottom
@@ -241,12 +269,11 @@ def main():
     with Pool(4, initializer=_init, initargs=(texs,)) as p:
         ver = verify(texs, p)
     bib = bible_check(texs)
-    out = dict(rule='after the guard, no colour displays h_ab %g..%g with C* > %g, under the grade(s) of its material' % (H_LO, H_HI, CSTAR),
-               why_290_not_285='bible S8 zenith #3D4A80 displays h_ab 289.2 C* 34 and the other-sky nadir / 7c window indigo #2E3C66 286.3 C* 28 '
-                               '(ART_BIBLE M5); guarding from 285 would grey the bible sky in the sea mirror',
-               scan_margin='baked against h_ab %g..%g, C* > %g (stricter than the rule)' % (SCAN_LO, SCAN_HI, SCAN_C),
-               texture='Sea/Textures/Sea_PurpleCeiling_S11.png: the same, all four channels = S11 (act 11). Sea/Textures/Sea_PurpleCeiling.png %dx%d RGBA8 linear (R S6, G S7a, B S7b, A S8): value/255*%g = max OKLab C/L; '
-                       'u = hue/360 (repeat), v = (L/%g + 0.5)/%d (clamp)' % (W, H, S_MAX, L_STEP, H),
+    out = dict(rule='after the guard, no colour displays h_ab %g..%g with C* > %g and L* > %g, under the grade(s) of its material (D-17 + D-21)' % (H_LO, H_HI, CSTAR, LSTAR),
+               d21='the deep bible indigo (L* <= 40: #3D4A80, #2E3C66) passes; the mid-tone lilac is stopped -- the same rule as the Sky',
+               scan_margin='baked against h_ab %g..%g, C* > %g, L* > %g (stricter than the rule)' % (SCAN_LO, SCAN_HI, SCAN_C, SCAN_L),
+               texture='Sea/Textures/Sea_PurpleCeiling.png %dx%d RGBA8 linear (R S6, G S7a, B S7b, A S8; Sea_PurpleCeiling_S11.png: all = S11): '
+                       'value/255*%g = OKLab C/L; quarters of %d rows: lo1, hi1, lo2, hi2; u = hue/360 (repeat), v = (clamp(L/%g, 0, %d) + 0.5 + q*%d) / %d' % (W, 4 * H, S_MAX, H, L_STEP, H - 1, H, 4 * H),
                materials={k: dict(channels=''.join('RGBA'[i] for i in range(4) if v[0][i]), grades=v[1]) for k, v in MATERIALS.items()},
                verification=ver, bible_colours=bib)
     json.dump(out, open(os.path.join(KIT, 'Docs~', 'purple_scan.json'), 'w'), indent=1, ensure_ascii=False)
