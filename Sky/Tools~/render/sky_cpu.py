@@ -29,7 +29,7 @@ DEFAULTS = dict(_CubeA_HDR=(1, 1, 0, 0), _CubeB_HDR=(1, 1, 0, 0), _RotationA=0, 
                 _SunGlow=(0, 1.2, 0, 0.15), _SunGlowColor=(1, 0.6, 0.3, 1),
                 _MoonDir=(-0.206, 0.139, 0.969, 0), _MoonColor=(2.81, 2.97, 3.18, 1), _MoonRadius=0.6, _MoonGain=0,
                 _MoonGlow=(1.6, 0.9, 0.06, 0.32), _MoonGlowColor=(0.275, 0.366, 0.578, 1), _Exposure=0, _Dither=0, _PurpleGuard=(0, 0.86, 1.25, 0),
-                _SunRemove=(0, 2.5, 0.25, 0.6), _GlowScale=1)
+                _SunRemove=(0, 2.5, 0.25, 0.6), _GlowScale=1, _BelowMirror=0)
 
 
 def set_cube(slot_name, equirect):

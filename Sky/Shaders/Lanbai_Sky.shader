@@ -54,6 +54,7 @@ Shader "Lanbai/Sky"
         [Header(Below the horizon)]
         _NadirColor ("Nadir colour, linear; a = desaturation in the middle of the gradient", Vector) = (0.16, 0.27, 0.39, 0)
         _BelowShape ("Below  x gradient end deg (negative)  y power  z horizon sample deg  w horizon sample clamp", Vector) = (-35, 0.8, 0.6, 2)
+        _BelowMirror ("Below the horizon the sky continues mirrored  0 off  1 on", Range(0, 1)) = 0
         [Header(Procedural  LanbaiHorizon  the same function as the fog)]
         _ProcWeight ("Procedural weight (global _Udon_SkyBlend.y wins)", Range(0, 1)) = 0
         [Header(Horizon bands  earth shadow  Venus belt  blue hour  waking line)]

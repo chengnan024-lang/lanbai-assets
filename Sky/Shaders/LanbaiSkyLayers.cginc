@@ -244,6 +244,10 @@ float4 _Udon_Sky_MoonRadius;
 #define LANBAI_DECL__Udon_Sky_Exposure
 float4 _Udon_Sky_Exposure;
 #endif
+#ifndef LANBAI_DECL__Udon_Sky_BelowMirror
+#define LANBAI_DECL__Udon_Sky_BelowMirror
+float4 _Udon_Sky_BelowMirror;
+#endif
 #ifndef LANBAI_DECL__Udon_Sky_GlowScale
 #define LANBAI_DECL__Udon_Sky_GlowScale
 float4 _Udon_Sky_GlowScale;
@@ -293,7 +297,9 @@ static float p_HorizonLift;
 static float p_MoonRadius;
 static float p_Exposure;
 static float p_GlowScale;
+static float p_BelowMirror;
 float _GlowScale;
+float _BelowMirror;
 void LanbaiSkyLoadParams()
 {
     bool g = _Udon_SkyGlobals.x > 0.5;
@@ -343,6 +349,7 @@ void LanbaiSkyLoadParams()
     p_Exposure = g ? _Udon_Sky_Exposure.x : _Exposure;
     p_GlowScale = g ? _Udon_Sky_GlowScale.x : _GlowScale;
     if (p_GlowScale <= 0.0) p_GlowScale = 1.0;
+    p_BelowMirror = g ? _Udon_Sky_BelowMirror.x : _BelowMirror;
 }
 
 // the source direction to sample so that the content appears rotated by +deg in azimuth (clockwise from above)
@@ -414,7 +421,10 @@ float3 LanbaiCubeLayer(samplerCUBE cube, half4 hdr, float3 V, float rot, float e
     if (V.y >= 0.0)
         return LanbaiCubeUpper(cube, hdr, V, rot, ev, clampV, zt, mt, ht, hat, S, 0.0);
     float el = LanbaiElevationDeg(V);
-    float3 H = normalize(float3(V.x, sin(radians(p_BelowShape.z * smoothstep(0.0, 3.0, -el))), V.z));   // no step at 0
+    // p_BelowMirror = 1: below the horizon the sky continues (8-i, art r2 #1): sampled at the mirrored elevation
+    // (amber -> rose -> mid sky going down), darkened toward the nadir; 0: the horizon colour carried down (v1.1)
+    float sEl = lerp(p_BelowShape.z * smoothstep(0.0, 3.0, -el), max(-el, p_BelowShape.z), saturate(p_BelowMirror));
+    float3 H = normalize(float3(V.x, sin(radians(sEl)), V.z));   // no step at 0
     float hc = (p_BelowShape.w > 0.0) ? p_BelowShape.w : clampV;
     float3 hzSharp = LanbaiCubeUpper(cube, hdr, H, rot, ev, clampV, zt, mt, ht, hat, S, 0.0);
     float3 hzSoft = LanbaiCubeUpper(cube, hdr, H, rot, ev, hc, zt, mt, ht, hat, S, 3.0);

@@ -72,7 +72,9 @@ os.makedirs(os.path.join(SKY, 'Textures'), exist_ok=True)
 write_hdr(os.path.join(SKY, 'Textures', 'Sky_Overcast_Night_2048x1024.hdr'), img)
 # town glow variant: azimuth 0 (+Z) = phi 90 deg
 az = np.degrees(np.arctan2(dx, dz))
-lobe = np.exp(-(az / 28.0) ** 2) * np.exp(-np.clip(el, 0, None) / 9.0) * (el >= -1)
+# the sodium light is ON the cloud base (+2 .. +10 deg, peak +6), not on the horizon line: Lanbai/Sky carries the
+# horizon colour below the horizon, and a glow at 0 deg read as a lit ground at -4 (art review r2)
+lobe = np.exp(-(az / 28.0) ** 2) * np.where(el < 6.0, np.exp(-((el - 6.0) / 4.0) ** 2), np.exp(-(el - 6.0) / 9.0)) * (el >= 0)
 town = img + (TOWN - HOR)[None, None, :] * lobe[..., None] * deck[..., None]
 write_hdr(os.path.join(SKY, 'Textures', 'Sky_Overcast_Night_TownGlow_2048x1024.hdr'), np.maximum(town, 0))
 print('zenith mean', img[:20].reshape(-1, 3).mean(0), 'horizon', img[H // 2 - 3].mean(0))

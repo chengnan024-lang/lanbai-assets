@@ -95,7 +95,7 @@ dusk_common = dict(_RotationA=fit['dusk']['rotation'], _ExposureA=0.0, _ClampA=1
                    _OtherGain=0.82, _OtherTint=[0.92, 0.95, 1.05, 0.85], _OtherSeam=1.0)   # .a: the lower half darkens to the nadir (art r0 #1)
 P['dusk_8i'] = dict(acts='8-i（出海 → F10e）', profile='S8', sunAz=0.0, cubeA='syferfontein_0d_clear_puresky',
     hdri_file=os.path.join(HDRI, 'syferfontein_0d_clear_puresky_1k.hdr'),
-    material=dict(dusk_common, _OtherSky=0.0, _BelowShape=[-35, 0.8, 0.6, 0.8], _NadirColor=v4(F('#3B4A78'), 1.0)),   # half way to the nadir blue by -17 deg, no 'ground' under the sunset (art r0 #3); full mid desaturation: no mauve on the way
+    material=dict(dusk_common, _OtherSky=0.0, _BelowMirror=1.0, _BelowShape=[-45, 1.0, 0.6, 2.0], _NadirColor=v4(F('#3B4A78'), 0.0)),   # the sky continues below (mirrored elevation, log-darkened to the nadir): no 'ground' under the sunset (art r0 #3, r2 #1)
     globals=dict(_Udon_SunDir=v4(SUN8, 1), _Udon_SunDisc=[1.0, 0.265, 0, 1], _Udon_SkyFx=[0, 0, 0, 1], _Udon_FogDensity=0.00015),
     fog_from_sky=dict(near_az=0.0, width=80.0, zen_el=60.0, nadir=F('#3B4A78')),
     notes='日带 #FFB070、玫瑰带 #E7A0A0（填 #FF9396 @ +0.92）、中天 #808AB2、天顶 #3D4A80、日盘 #FFE2B0（填 #FF9167 @ +2.74）、天缝 #F2A56B（日晕）。太阳 方位 0°、仰角 +0.5°。紫护栏把 HDRI 背日的藍紫在 S8 的暖调色下拉回靛灰。')
@@ -276,7 +276,7 @@ SKY_V4 = ['_ZenithTintA', '_MidTintA', '_HorizonTintA', '_HorizonAntiTintA', '_Z
           '_NightColor', '_StarFloorAdd', '_NightMaskDir', '_NightMaskShape', '_SunDir', '_SunColor', '_SunShape', '_SunGlow', '_SunGlowColor',
           '_MoonDir', '_MoonColor', '_MoonGlow', '_MoonGlowColor', '_PurpleGuard', '_SunRemove']
 SKY_F1 = ['_RotationA', '_ExposureA', '_ClampA', '_RotationB', '_ExposureB', '_ClampB', '_Band2Gain', '_OtherGain', '_OtherSeam', '_OtherFromB',
-          '_HorizonLift', '_MoonRadius', '_Exposure', '_GlowScale']
+          '_HorizonLift', '_MoonRadius', '_Exposure', '_GlowScale', '_BelowMirror']
 
 
 def sky_globals(p):
