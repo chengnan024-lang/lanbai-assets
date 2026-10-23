@@ -35,17 +35,25 @@ class Act9Frame:
     def __init__(self):
         S.renderer().tex.clear()
         S.set_tex('_GlowTex', load_glow())
-        self.p = MP.P['star_sea']
+        self.p = dict(MP.P['star_sea'])
+        self.p['material'] = dict(self.p['material'], _GlowScale=S.glow_scale())   # the PNG glow is normalised (Sky v1.2)
         self.cat = SC.catalogue()
         self.dirs = {k: camera_dirs(W, H, 90, *v).astype(np.float32) for k, v in VIEWS.items()}
         self.base = {}
 
     def sky(self, view, g):
-        key = (view, round(g, 4))
-        if key not in self.base:
-            gl = dict(self.p['globals']); gl['_Udon_GalaxyGain'] = [g, 0, 0, 1]
-            self.base[key] = S.render(self.dirs[view], self.p['material'], gl).reshape(H, W, 3)
-        return self.base[key].copy()
+        # the sky is linear in the galaxy gain (night + g x (floor + glow), then a lerp): render g = 0 and g = 1 once,
+        # 2 x 2 supersampled (the 8K glow has 0.044 deg texels, a 960 px pixel is 0.094 deg), and interpolate
+        if view not in self.base:
+            yaw, pitch = VIEWS[view]
+            d2 = camera_dirs(W * 2, H * 2, 90, yaw, pitch).astype(np.float32)
+            ends = []
+            for gg in (0.0, 1.0):
+                gl = dict(self.p['globals']); gl['_Udon_GalaxyGain'] = [gg, 0, 0, 1]
+                ends.append(S.render(d2, self.p['material'], gl).reshape(H, 2, W, 2, 3).mean(axis=(1, 3)))
+            self.base[view] = ends
+        a, b = self.base[view]
+        return a + (b - a) * g
 
     def frame(self, view, g, star_gain, boost=4.0, count=50.0, profile='S9a', glow_mult=1.0):
         img = self.sky(view, g * glow_mult)

@@ -49,13 +49,13 @@ def state(t):
         prof = ('S8b', 'S8b', 0)
     else:
         prof = ('S8b', 'S9a', night)
-    return gl, p['material'], star, (a * fs['peak'], thr, soft), prof
+    return gl, dict(p['material'], _GlowScale=S.glow_scale()), star, (a * fs['peak'], thr, soft), prof   # the PNG glow is normalised
 
 
 def render(t, yaw, pitch):
     gl, mat, star, first, prof = state(t)
-    d = camera_dirs(W, H, 90, yaw, pitch).astype(np.float32)
-    img = S.render(d, mat, gl).reshape(H, W, 3)
+    d = camera_dirs(W * 2, H * 2, 90, yaw, pitch).astype(np.float32)   # 2 x 2 supersampled: the 8K glow
+    img = S.render(d, mat, gl).reshape(H, 2, W, 2, 3).mean(axis=(1, 3))
     c = SC.catalogue()
     if star['gain'] > 0:
         pk = SC.flux(c['mag'], c['rank'], 1.6, 0.0, 0.5, star['count'], star['boost']) * star['gain']
