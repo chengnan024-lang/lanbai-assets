@@ -15,6 +15,7 @@
    - `LanbaiInsideDriver`（UdonSharp）和它的程序资产。字段由 `Editor/InsideLayoutData.cs` 填，这个文件由 `InsideLayout.json` 生成。
    搭完**手动**连三个引用：驱动的 `overlay`（场景里的 `Lanbai_Overlay`）、`exposure`（`Lanbai_Grades` 上的 `LanbaiExposure`）、`worldMainLight`（世界主光）。然后把驱动加进 Director 的分发层（它有 `LanbaiTick / LanbaiActivate / LanbaiWindow / LanbaiGrade`；闪光 FLASH_TEAR 走 `LanbaiGrade`，本地 `ApplyGrades` 里自己那份要删）。
    **重新点搭建菜单**会保留旧驱动上手动接的 `overlay` / `exposure` / `worldMainLight`、`tLichtDial` 和两个开关；点完请重跑 **蓝白/Director/2 Wire Scene**（驱动和天窗光斑是新物体）。
+   **主光（D-24）**：搭建时 `worldMainLight` 为空就按名字接 `Gate_Lights/Moon`；本地把窗口加进 `extSun` 以后勾 `writeMainLight`。
    **`writeRenderSettings`、`writeMainLight` 默认关**：本地把第 4c、5 幕的窗口（177.55 → 252.64）加进 `extWindows`、勾上 `extAtmosphere` / `extSun` 以后再勾这两个，不然两边每帧写同一个量。环境光的三色写法要本地的环境光模式是 **Trilight**。
    窗口从 177.55 开始（门的窗口里）：那一帧 `InsideRoot` 打开，但车还在裂口平面前面，门内的一切在顶点阶段塌缩，画面不变。
 5. **天窗光斑（第 4 幕 U8 → U9）**：同一个搭建菜单一起建（`Skylight_Spot` + `LanbaiSkylightSpot`，三个材质 `M_04c_Skylight_*`，renderers 已填）。网格 bounds 由 `LanbaiInsideImport` 在导入时设成过道 + 天窗光柱的体积（顶点每帧在 shader 里算）。它读门写的 `_Udon_TearPos`、`_Udon_TearH`；门没写（w ≤ 0）或包络为 0 时 shader 什么都不画。renderers 开始时关，由 U# 开关。
@@ -51,7 +52,7 @@
 
 见 `Docs~/DESIGN_4c.md` §2 的表（s、高度、网格、旋转、偏移、净空、暖白点的位置都由 `Tools~/inside_layout.py` 求解并核对）。三种开口都由“撕裂段”组成（沿纱线直走、跳纱错一步），没有椭圆、没有透镜形、没有星形。每一重 = 不透明的布（铺到 2.2 km，雾 0.0035 下边看不见）+ 一圈毛边 + 少数下垂的长纱 +（窄端的）横纱。撕边离开布面卷曲（沿边的多尺度噪声，环上无缝，幅度 1.6% H）。
 
-**同时看得见的光唇 ≤ 3（圣经，r06；回头看也成立：已穿过的光唇在身后 300 m 内淡出，第 8 重从袖的出口算起，总导演终审 #4）**：最近的两重全显；第三重在“上一次穿越 → 下一次穿越”之间按 smoothstep 渐显；更远的光 × 0、布的雾封顶 → 1（完全融进雾）。穿过一重的那一刻，第三重正好到 1、变成第二重，所以没有跳变。驱动每帧对每重的材质写 `_Gain` 和（布）`_FogCap`，只写变了的（`LipVisible()`，和 `Tools~/inside_drive.lip_visibility` 同一个式子）。**注意：这是直接改共享材质，编辑器里 Play 过后材质资产上的值会留着；重新点一次搭建菜单就复原。**
+**同时看得见的光唇 ≤ 3（圣经，r06；回头看也成立：已穿过的光唇在身后 300 m 内淡出，第 8 重从袖的出口算起，总导演终审 #4）**：最近的两重全显；第三重在“上一次穿越 → 下一次穿越”之间按 smoothstep 渐显；更远的光 × 0、布按可见度混进穹的雾色（完全融进雾）。穿过一重的那一刻，第三重正好到 1、变成第二重，所以没有跳变。驱动每帧对每重的材质写 `_Gain`（= 可见度；布的雾封顶固定 0.25），只写变了的（`LipVisible()`，和 `Tools~/inside_drive.lip_visibility` 同一个式子）。**注意：这是直接改共享材质，编辑器里 Play 过后材质资产上的值会留着；重新点一次搭建菜单就复原。**
 
 | 部件 | 材质要点 |
 |---|---|
@@ -68,7 +69,7 @@
 
 ## 4. 雾（天空的 `LanbaiFog` v1，“渐变”模型 B）
 
-**交接（D-22，总导演终审 #2、#3）**：门的驱动只在 [U6, U9) 写天、雾、月、星；从第一次 t ≥ U9 的 tick 起，这里每帧写整组：`_Udon_Fog` = (密度, 0, 0, 1)、`_Udon_FogModel` = (1, 0, 0, 1)（B 渐变）、`_Udon_FogBase` = 0（不设：按眼睛高度）、`_Udon_FogCubeParams` = 0、`_Udon_StarGain` / `_Udon_GalaxyGain` = (0, 0, 0, 1)（布里面没有星）。`LanbaiActivate(false)` 时交还：门户 = 0、暖白点 = 0、上面这些通道 w = 0（下一幕的写法或默认值生效）。
+**交接（D-22，总导演终审 #2、#3）**：门的驱动只在 [U6, U9) 写天、雾、月、星；从门内露出来的那一帧起，这里每帧写整组：`_Udon_Fog` = (密度, 0, 0, 1)、`_Udon_FogModel` = (1, 0, 0, 1)（B 渐变）、`_Udon_FogBase` = 0（不设：按眼睛高度）、`_Udon_FogCubeParams` = 0、`_Udon_StarGain` / `_Udon_GalaxyGain` = (0, 0, 0, 1)（布里面没有星）。从“门内露出来的那一帧”（眼离裂口平面 ≤ 0.7 m，或 t ≥ U9）起写，U9 之前用 U9 的值；只写到剪 1（248.64，之后是第 6 幕的晨雾）。`LanbaiActivate(false)` 时只交还自己的量：门户 = 0、暖白点 = 0、旧的 `_Udon_FogDensity` = 0；共享的雾 / 天 / 星通道不清（D-22 补充）。
 
 驱动每帧写：`_Udon_FogDensity`（U9 → U9 + 2 s 从 0.0006 到 0.0035）、`_Udon_FogBandDir` = +Z、`_Udon_FogBandColor` = 前方的区色 × 1.0、`_Udon_HorizonColor` = (身后的区色 × 0.72, a = 2)、`_Udon_ZenithColor` = 当前 × 0.85、`_Udon_NadirColor` = 当前 × 0.80、`_Udon_FogBandWidth` = 100、`_Udon_FogShape` = (25, 90, 1, 0)、`_Udon_FogBelow` = (−90, −15, 1, 0)；`RenderSettings.fogColor` = 当前区色、`fogDensity` 同上。区色从 `#1D2336`（填 `#2A3347`）到 `#53606E`（填 `#6E808D`），在相邻两重之间按 s 平滑过渡（`InsideLayout.json` → `fog.zones`）。
 

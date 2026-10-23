@@ -17,7 +17,7 @@
 //    _Udon_InsidePortal   x = world z of the tear plane, y = 1 while the portal is armed. While the eye is still in front
 //                         of the plane every vertex of this shader is collapsed: the gate looks exactly as before U9.
 //    _Udon_InsideFog      rgb = the fog colour (linear fill) of the current zone (the dome draws it), a = density
-//    _Udon_InsideDot      x = core diameter (deg), y = glow diameter (deg), z = gain (0..1), w = 0
+//    _Udon_InsideDot      x = core diameter (deg), y = glow diameter (deg, <= 12), z = gain (0..1), w = glow scale in the flash (D-20; 1 otherwise)
 //    _Udon_InsideFibre    rgb = the current fibre colour (linear fill) for the loose threads, a = gain
 //    _Udon_InsideClock    x = clock (s) for the loose threads (the driver freezes it at U12 - 2.25)
 //  Fog: LanbaiFog.cginc (sky session; minimum interface CONTROL §4). In act 4c the driver keeps the fog band off, so

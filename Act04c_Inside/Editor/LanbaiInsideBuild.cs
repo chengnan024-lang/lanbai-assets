@@ -108,6 +108,13 @@ namespace Lanbai.Inside.Editor
                 }
                 Fill(so, insideRoot, dot, lipMatLip.ToArray());
                 var pb = so.FindProperty("busAnchoredObject"); if (pb != null) pb.objectReferenceValue = busAnch;
+                // D-24: the one shadowed main light is the gate test scene's Gate_Lights/Moon
+                var pl = so.FindProperty("worldMainLight");
+                if (pl != null && pl.objectReferenceValue == null && keepLight == null)
+                {
+                    var moon = GameObject.Find("Gate_Lights/Moon");
+                    if (moon != null) pl.objectReferenceValue = moon.GetComponent<Light>();
+                }
                 if (hadOld)
                 {
                     void R(string name, UnityEngine.Object v) { var q = so.FindProperty(name); if (q != null && v != null) q.objectReferenceValue = v; }
