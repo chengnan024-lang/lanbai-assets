@@ -420,7 +420,8 @@ def ceiling():
     smooth_by_angle(ob, 30)
     # front header (vertical panel above the windscreen, inside) with the blind box behind it
     box('Header', (-0.99, B.WS_TOP + 0.005, 3.14), (0.99, B.CEIL_Y + 0.01, 3.18), 'Int_Enamel')
-    box('HeaderLip', (-0.99, B.WS_TOP - 0.01, 3.14), (0.99, B.WS_TOP + 0.02, 3.47), 'Seal')
+    box('HeaderLip', (-0.99, B.WS_TOP - 0.012, 3.40), (0.99, B.WS_TOP + 0.02, 3.47), 'Seal')
+    box('HeaderShelf', (-0.99, B.WS_TOP + 0.005, 3.17), (0.99, B.WS_TOP + 0.02, 3.40), 'Int_Enamel')
     # the blind: back of the destination box seen through the gap above the header? no: behind the header (bible 4.7)
     box('DestBlind', (B.DEST_BOX[0], B.DEST_BOX[2] - 0.01, 3.44), (B.DEST_BOX[1], B.DEST_BOX[3] + 0.01, 3.452), 'Linen')
     # hatch well (4 walls from the ceiling up to the glass) + aluminium frame + glass at SKY_C.y
@@ -472,25 +473,64 @@ def floor():
                     tuple(max(a, b) for a, b in zip(lo, hi)), 'Int_Enamel', bevel=0.03)
 
 
+def pad(name, lo, hi, r, m, collection='Seats', crown=(0.0, 0.0, 0.0), cuts=8):
+    """upholstered pad: a properly rounded box (radius r) with a crown on +y (cushion) or -z/+z (backrest face).
+    crown = (top, front(+z), back(-z)) bulge in metres."""
+    lo, hi = Vector(lo), Vector(hi)
+    c, half = (lo + hi) / 2, (hi - lo) / 2
+    bm = bmesh.new()
+    bmesh.ops.create_cube(bm, size=2.0)
+    bmesh.ops.subdivide_edges(bm, edges=bm.edges[:], cuts=cuts, use_grid_fill=True)
+    for v in bm.verts:
+        p = Vector((v.co.x, v.co.y, v.co.z))           # here x, y, z are UNITY axes in [-1, 1]
+        ph = Vector((p.x * half.x, p.y * half.y, p.z * half.z))
+        inner = Vector((max(-(half.x - r), min(half.x - r, ph.x)), max(-(half.y - r), min(half.y - r, ph.y)),
+                        max(-(half.z - r), min(half.z - r, ph.z))))
+        d = ph - inner
+        q = inner + (d.normalized() * r if d.length > 1e-9 else d)
+        u2, w2, y2 = min(1, p.x * p.x), min(1, p.z * p.z), min(1, p.y * p.y)
+        if p.y > 0:
+            q.y += crown[0] * (1 - u2) * (1 - w2) * p.y
+        if p.z > 0:
+            q.z += crown[1] * (1 - u2) * (1 - y2) * p.z
+        if p.z < 0:
+            q.z -= crown[2] * (1 - u2) * (1 - y2) * (-p.z)
+        v.co = U2B(c + q)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    ob = obj_from_bm(name, bm, [m], collection)
+    for f in ob.data.polygons:
+        f.use_smooth = True
+    return ob
+
+
 def seat(name, x0, x1, back_z, double=False, worn=1.0, cushion_y=None, collection='Seats'):
-    """bus seat: cushion, reclined backrest, chrome grab rail on top, frame + legs. back_z = back face of the backrest."""
+    """bus seat: crowned cushion with piping, backrest reclined 12 deg (front face crowned, back panel flat),
+    chrome grab rail on top, steel frame + legs. back_z = back face of the backrest."""
     cy = cushion_y or (B.FLOOR_Y + B.SEAT_H)
     objs = []
-    objs.append(box(name + '_Cushion', (x0 + 0.01, cy - 0.10, back_z + 0.06), (x1 - 0.01, cy, back_z + 0.50), 'Vinyl', collection, bevel=0.035, segs=3))
-    # backrest: a slab tilted back 12 deg about its bottom edge
-    bk = box(name + '_Back', (x0 + 0.01, cy - 0.02, back_z), (x1 - 0.01, cy + 0.60, back_z + 0.10), 'Vinyl', collection, bevel=0.035, segs=3)
-    piv = U2B((0, cy, back_z + 0.08))
-    bk.matrix_world = Matrix.Translation(piv) @ Matrix.Rotation(math.radians(-12), 4, 'X') @ Matrix.Translation(-piv)
-    objs.append(bk)
-    top_y = cy + 0.60
-    tz = back_z + 0.08 - 0.60 * math.sin(math.radians(12))
-    ty = cy - 0.02 + 0.60 * math.cos(math.radians(12))
-    objs.append(tube(name + '_Rail', [(x0 + 0.04, ty - 0.02, tz - 0.02), (x0 + 0.04, ty + 0.04, tz - 0.04),
-                                      (x1 - 0.04, ty + 0.04, tz - 0.04), (x1 - 0.04, ty - 0.02, tz - 0.02)], 0.011, 'Chrome', collection))
-    objs.append(box(name + '_Frame', (x0 + 0.03, cy - 0.16, back_z + 0.10), (x1 - 0.03, cy - 0.10, back_z + 0.46), 'SeatFrame', collection))
+    objs.append(pad(name + '_Cushion', (x0 + 0.015, cy - 0.11, back_z + 0.07), (x1 - 0.015, cy - 0.01, back_z + 0.50), 0.035, 'Vinyl',
+                    collection, crown=(0.012, 0.0, 0.0)))
+    tilt = math.radians(12)
+    piv = Vector((0, cy - 0.02, back_z + 0.09))
+    bk = pad(name + '_Back', (x0 + 0.015, cy - 0.02, back_z + 0.02), (x1 - 0.015, cy + 0.60, back_z + 0.12), 0.04, 'Vinyl',
+             collection, crown=(0.0, 0.016, 0.0))
+    shell = box(name + '_BackShell', (x0 + 0.02, cy + 0.02, back_z), (x1 - 0.02, cy + 0.57, back_z + 0.025), 'SeatFrame', collection, bevel=0.02, segs=3)
+    pb = U2B(piv)
+    R = Matrix.Translation(pb) @ Matrix.Rotation(-tilt, 4, 'X') @ Matrix.Translation(-pb)
+    for o in (bk, shell):
+        o.matrix_world = R @ o.matrix_world
+    objs += [bk, shell]
+    # piping along the cushion's front-top edge
+    objs.append(tube(name + '_Piping', [(x0 + 0.05, cy - 0.012, back_z + 0.495), (x1 - 0.05, cy - 0.012, back_z + 0.495)], 0.005, 'Vinyl', collection))
+    ty = cy - 0.02 + 0.62 * math.cos(tilt)
+    tz = back_z + 0.07 - 0.62 * math.sin(tilt)
+    objs.append(tube(name + '_Rail', [(x0 + 0.05, ty - 0.03, tz + 0.01), (x0 + 0.05, ty + 0.03, tz - 0.01),
+                                      (x1 - 0.05, ty + 0.03, tz - 0.01), (x1 - 0.05, ty - 0.03, tz + 0.01)], 0.011, 'Chrome', collection))
+    objs.append(box(name + '_Frame', (x0 + 0.03, cy - 0.15, back_z + 0.10), (x1 - 0.03, cy - 0.11, back_z + 0.46), 'SeatFrame', collection))
     for xx in ((x0 + 0.08,) if not double else (x0 + 0.08, (x0 + x1) / 2)):
-        if cy - 0.16 > B.FLOOR_Y + 0.05:
-            objs.append(box(name + '_Leg%.2f' % xx, (xx, B.FLOOR_Y, back_z + 0.36), (xx + 0.04, cy - 0.16, back_z + 0.40), 'SeatFrame', collection))
+        if cy - 0.15 > B.FLOOR_Y + 0.05:
+            objs.append(tube(name + '_Leg%.2f' % xx, [(xx, B.FLOOR_Y, back_z + 0.40), (xx, cy - 0.15, back_z + 0.36)], 0.014, 'SeatFrame', collection))
+            objs.append(box(name + '_Foot%.2f' % xx, (xx - 0.03, B.FLOOR_Y, back_z + 0.36), (xx + 0.03, B.FLOOR_Y + 0.008, back_z + 0.44), 'SeatFrame', collection))
     return objs
 
 
@@ -576,6 +616,29 @@ def radio():
     tube('Radio_Bracket', [(cx, B.DASH_TOP + 0.01, cz + 0.12), (cx, cy - h / 2 - 0.03, cz + 0.06), (cx, cy - h / 2 - 0.005, cz)], 0.008, 'Steel', 'Cabin')
 
 
+def window_trim():
+    """inside: anodised alu frames round the side windows (25 mm), a sill ledge, sliding-window meeting rails."""
+    t = 0.025
+    for side, wins in ((1, B.WIN_R), (-1, B.WIN_L)):
+        for k, (z0, z1) in enumerate(wins):
+            nm = 'Trim%s%d' % ('R' if side > 0 else 'L', k)
+            xo = side * (B.W_HALF - SHELL_T - 0.002)
+            xi = side * (B.W_HALF - SHELL_T - 0.022)
+            lo_x, hi_x = min(xo, xi), max(xo, xi)
+            box(nm + 'Top', (lo_x, B.WIN_HEAD - 0.005, z0 - t), (hi_x, B.WIN_HEAD + t, z1 + t), 'Alu', 'Cabin')
+            box(nm + 'Bot', (lo_x, B.WIN_SILL - t, z0 - t), (hi_x, B.WIN_SILL + 0.005, z1 + t), 'Alu', 'Cabin')
+            box(nm + 'F', (lo_x, B.WIN_SILL, z1 - 0.005), (hi_x, B.WIN_HEAD, z1 + t), 'Alu', 'Cabin')
+            box(nm + 'B', (lo_x, B.WIN_SILL, z0 - t), (hi_x, B.WIN_HEAD, z0 + 0.005), 'Alu', 'Cabin')
+            # sill ledge (enamel) 6 cm deep
+            lx0 = side * (B.W_HALF - SHELL_T - 0.08)
+            box(nm + 'Sill', (min(lx0, xo), B.WIN_SILL - 0.05, z0 - t), (max(lx0, xo), B.WIN_SILL - t, z1 + t), 'Int_Enamel', 'Cabin', bevel=0.008)
+            # sliding windows: the upper 55 % slides; a meeting rail at mid-length (not on the hero window's front half)
+            if z1 - z0 > 0.9:
+                zm = (z0 + z1) / 2
+                box(nm + 'Rail', (lo_x, B.WIN_SILL, zm - 0.012), (hi_x, B.WIN_HEAD, zm + 0.012), 'Alu', 'Cabin')
+                box(nm + 'Latch', (min(xi, xi - side * 0.02), 1.72, zm - 0.03), (max(xi, xi - side * 0.02), 1.76, zm + 0.03), 'Chrome', 'Cabin', bevel=0.004)
+
+
 def poles_and_guard():
     # guard panel in front of the hero seat (knees behind it); lower enamel, upper rail
     gz = B.GUARD_Z
@@ -591,8 +654,6 @@ def poles_and_guard():
         tube('PoleR%d' % i, [(0.30, B.FLOOR_Y, bz - 0.03), (0.30, B.CEIL_Y, bz - 0.03)], 0.016, 'Steel', 'Cabin')
     for i, bz in enumerate(B.LEFT_ROWS[1::2]):
         tube('PoleL%d' % i, [(-0.10, B.FLOOR_Y, bz - 0.03), (-0.10, B.CEIL_Y, bz - 0.03)], 0.016, 'Steel', 'Cabin')
-    # the stanchion behind the driver (where the radio used to be in v1)
-    tube('PoleDriver', [(-0.12, B.FLOOR_Y, 2.20), (-0.12, B.CEIL_Y, 2.20)], 0.016, 'Steel', 'Cabin')
 
 
 def tubes():
@@ -619,7 +680,7 @@ def curtains():
         width = 0.34 if st == 'tied' else 0.42
         for end, zz in (('a', z0 + width / 2), ('b', z1 - width / 2)):
             bm = bmesh.new()
-            nU, nV = 16, 10
+            nU, nV = 32, 12
             ybot = 1.42 if st == 'tied' else 1.32
             V = []
             for i in range(nV + 1):
@@ -628,7 +689,7 @@ def curtains():
                 row = []
                 for j in range(nU + 1):
                     u = (j / nU - 0.5) * width * pinch
-                    pleat = 0.012 * math.sin(j * math.pi * 1.0) * (0.6 + 0.4 * pinch)
+                    pleat = 0.016 * math.sin(j * math.pi / 2) * (0.6 + 0.4 * pinch) * (0.7 + 0.3 * i / nV)
                     row.append(bm.verts.new(U2B((x - s * (0.015 + pleat), yy, zz + u))))
                 V.append(row)
             for i in range(nV):
@@ -715,6 +776,7 @@ def build(open_door=True, reset=True):
     driver_area()
     radio()
     poles_and_guard()
+    window_trim()
     tubes()
     curtains()
     exterior()

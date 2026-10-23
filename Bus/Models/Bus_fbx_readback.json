@@ -1,0 +1,270 @@
+{
+ "Cabin_Static": {
+  "verts": 28093,
+  "verts_expected": 28093,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Bus_Exterior_LOD0": {
+  "verts": 4168,
+  "verts_expected": 4168,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Cabin_Tubes": {
+  "verts": 960,
+  "verts_expected": 960,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Cabin_Radio": {
+  "verts": 224,
+  "verts_expected": 224,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Cabin_DestBlind": {
+  "verts": 8,
+  "verts_expected": 8,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Cabin_Curtains": {
+  "verts": 7778,
+  "verts_expected": 7778,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Bus_DoorLeaf": {
+  "verts": 92,
+  "verts_expected": 92,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Wheel_FL": {
+  "verts": 480,
+  "verts_expected": 480,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Wheel_FR": {
+  "verts": 480,
+  "verts_expected": 480,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Wheel_RL": {
+  "verts": 480,
+  "verts_expected": 480,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Wheel_RR": {
+  "verts": 480,
+  "verts_expected": 480,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Glass_DestWindow": {
+  "verts": 25,
+  "verts_expected": 25,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Glass_RearWindow": {
+  "verts": 45,
+  "verts_expected": 45,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Glass_Skylight": {
+  "verts": 4,
+  "verts_expected": 4,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Glass_Windscreen": {
+  "verts": 171,
+  "verts_expected": 171,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Glass_WinL0": {
+  "verts": 35,
+  "verts_expected": 35,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Glass_WinL1": {
+  "verts": 42,
+  "verts_expected": 42,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Glass_WinL2": {
+  "verts": 35,
+  "verts_expected": 35,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Glass_WinL3": {
+  "verts": 35,
+  "verts_expected": 35,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Glass_WinL4": {
+  "verts": 42,
+  "verts_expected": 42,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Glass_WinL5": {
+  "verts": 28,
+  "verts_expected": 28,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Glass_WinR1": {
+  "verts": 42,
+  "verts_expected": 42,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Glass_WinR2": {
+  "verts": 35,
+  "verts_expected": 35,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Glass_WinR3": {
+  "verts": 35,
+  "verts_expected": 35,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Glass_WinR4": {
+  "verts": 42,
+  "verts_expected": 42,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Glass_WinR5": {
+  "verts": 28,
+  "verts_expected": 28,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Bus_Exterior_LOD1": {
+  "verts": 1516,
+  "verts_expected": 1516,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "WiperPivot_L": "ok (empty)",
+ "WiperPivot_R": "ok (empty)",
+ "Wiper+0.06": {
+  "verts": 32,
+  "verts_expected": 32,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Wiper-0.90": {
+  "verts": 32,
+  "verts_expected": 32,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ }
+}
