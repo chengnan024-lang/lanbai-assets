@@ -31,7 +31,7 @@ Shader "Lanbai/GateCloudCard"
         _Alpha ("Alpha (JSON opacity x sink fade; MPB)", Range(0, 1)) = 1
         _Lining ("Lining near the moon: gain, width (deg), max angle (deg), -", Vector) = (0.9, 7, 15, 0)
         _Melt ("Base melt: from (m above the cloud top), over (m)", Vector) = (-20, 90, 0, 0)
-        _FogDensity ("Fog density, scale, moon air", Vector) = (0.0006, 1.0, 0.35, 0)
+        _FogDensity ("Fog density, scale, moon air, CAP (towers 0.5, far / horizon 0.62, mist 0.7)", Vector) = (0.0006, 1.0, 0.35, 0.5)
         _SoftFade ("Soft depth fade (m; 0 = off: turn on only when the camera has a depth texture)", Float) = 0
         _CloudTopY ("Cloud top world y (fallback; _Udon_CloudTop wins)", Float) = -57.4
         _RimDir ("Direction to the moon (fallback; _Udon_MoonDir wins)", Vector) = (-0.2059, 0.1392, 0.9686, 0)
@@ -152,7 +152,7 @@ Shader "Lanbai/GateCloudCard"
 
                 // the gate's fog (no cap)
                 float3 fogC = LanbaiGateFogColour(V, dist, moonD, (half)_FogDensity.z, 0.0);
-                float fog = 1.0 - exp(-_FogDensity.x * _FogDensity.y * dist);
+                float fog = min(1.0 - exp(-_FogDensity.x * _FogDensity.y * dist), (_FogDensity.w > 0.0) ? _FogDensity.w : 1.0);
                 c = lerp(c, fogC, fog);
 
                 // base melting into the deck, + the soft depth fade where the billows cut the card

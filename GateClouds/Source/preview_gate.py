@@ -16,13 +16,13 @@ import numpy as np
 from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-KIT = os.path.dirname(HERE)
+KIT = os.environ.get('GC_KIT', os.path.dirname(HERE))
 sys.path.insert(0, HERE)
 import deck_ref as D  # noqa: E402
 
 LAY = json.load(open(os.path.join(KIT, 'GateClouds_Layout.json')))
 SHAPES = {s['shape']: s for s in LAY['shapes']}
-CARD = dict(MoonE=0.09, SkyE=0.55, SkyColor=np.array([0.060, 0.064, 0.088]), Lining=(0.9, 7.0, 15.0),
+CARD = dict(FogCap=float(os.environ.get('FOGCAP', 1.0)), MoonE=0.09, SkyE=0.55, SkyColor=np.array([0.060, 0.064, 0.088]), Lining=(0.9, 7.0, 15.0),
             FogDensity=0.0006, FogScale=1.0, MoonAirFog=0.35)
 BEAM = dict(Tint=np.array([0.0362, 0.0343, 0.0873]), Lobe=(2.6, 1.0, 0.04, 1.3), EdgeFadePow=2.0,
             NearFadeM=(60.0, 460.0), FogDensity=0.0006, FogScale=0.5)
@@ -139,7 +139,7 @@ def main():
         cc *= c['gain']
         dd = tt[m]
         fogC = D.band(Vm, eye, tear) + D.moon_air(Vm) * CARD['MoonAirFog']
-        fo = 1 - np.exp(-CARD['FogDensity'] * CARD['FogScale'] * dd)
+        fo = np.minimum(1 - np.exp(-CARD['FogDensity'] * CARD['FogScale'] * dd), c.get('fog_cap', 1.0) * CARD['FogCap'])
         cc = cc * (1 - fo)[:, None] + fogC * fo[:, None]
         wy = P3[..., 1][m]
         aa = tx[:, 3] * c['opacity'] * al * D.ss(top + c['melt'][0], top + c['melt'][0] + c['melt'][1], wy)
@@ -189,14 +189,15 @@ def main():
             col[m] *= (1 - np.clip(k, 0, 1))[:, None]
     img = D.grade(col)
     if '--over' in a:
-        # paste the Unity screenshot where it is NOT sky / flat fog (arms, tear): pixels that differ from their row's
-        # median by > 6 codes
+        # paste the Unity screenshot where it is NOT its own sky / flat fog (the arms, the tear): compare it with what
+        # that background must be (the same band + moon air, graded) and keep the pixels that differ by > 10 codes
+        from scipy.ndimage import binary_dilation, gaussian_filter, median_filter, binary_opening
         ov = np.asarray(Image.open(a[a.index('--over') + 1]).convert('RGB').resize((w, h), Image.LANCZOS)).astype(float)
-        L = ov @ [0.2126, 0.7152, 0.0722]
-        med = np.median(L, axis=1, keepdims=True)
-        from scipy.ndimage import binary_dilation, gaussian_filter
-        mk = binary_dilation(np.abs(L - med) > 6, iterations=2).astype(float)
-        mk = gaussian_filter(mk, 1.0)[..., None]
+        bg = D.grade(D.band(V, eye, tear) + D.moon_air(V))
+        diff = np.abs(median_filter(ov @ [0.2126, 0.7152, 0.0722], 3) - bg @ [0.2126, 0.7152, 0.0722])
+        mk = binary_opening(diff > 10, iterations=1)
+        mk = binary_dilation(mk, iterations=1).astype(float)
+        mk = gaussian_filter(mk, 0.8)[..., None]
         img = img * (1 - mk) + ov * mk
     out = a[a.index('--out') + 1] if '--out' in a else '/tmp/claude-0/gc/prev_%s.png' % camname
     Image.fromarray(np.clip(img, 0, 255).astype(np.uint8)).save(out)

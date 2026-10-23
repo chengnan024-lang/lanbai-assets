@@ -26,7 +26,7 @@ public static class LanbaiGateCloudsBuilder
     [Serializable] public class CardDef
     {
         public string id; public string group; public string shape; public float[] position; public float[] size;
-        public float opacity; public float gain; public float mirror; public int queue; public float[] melt;
+        public float opacity; public float gain; public float mirror; public int queue; public float[] melt; public float fog_cap;
         public float[] sag_keys; public float[] sink_keys; public float[] alpha_keys; public string hides;
     }
     [Serializable] public class BeamDef { public string id; public string parent; public float mode; public float[] start; public float[] axis; public float half_width; public float length; public float widen; public float intensity; }
@@ -236,6 +236,7 @@ public static class LanbaiGateCloudsBuilder
                 m.SetTexture("_MainTex", AssetDatabase.LoadAssetAtPath<Texture2D>(kit + "/Textures/" + s.texture));
                 V(m, "_Scale", s.scale[0], s.scale[1], s.scale[2], 0);
                 V(m, "_Melt", c.melt[0], c.melt[1], 0, 0);
+                V(m, "_FogDensity", 0.0006f, 1f, 0.35f, c.fog_cap);
                 m.renderQueue = c.queue;
                 m.enableInstancing = true;
                 mats[key] = m;

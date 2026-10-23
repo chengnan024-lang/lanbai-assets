@@ -11,8 +11,8 @@ import math
 import os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-KIT = os.path.dirname(HERE)
-REPO = os.path.dirname(KIT)
+KIT = os.environ.get('GC_KIT', os.path.dirname(HERE))
+REPO = os.path.dirname(os.path.dirname(HERE))
 G = json.load(open(os.path.join(REPO, 'Gate', 'GateLayout_v2.json')))
 CARDS = json.load(open(os.path.join(KIT, 'Textures', 'gate_cards.json')))
 TILES = json.load(open(os.path.join(KIT, 'Textures', 'deck_tiles.json')))
@@ -44,10 +44,10 @@ def shape_of(card):
 
 
 GROUP = {
-    'tower': dict(queue=3000, melt=[-20.0, 90.0]),
-    'far': dict(queue=2990, melt=[-10.0, 130.0]),
-    'horizon': dict(queue=2990, melt=[-10.0, 130.0]),
-    'mist': dict(queue=3000, melt=[-10.0, 60.0]),
+    'tower': dict(queue=3000, melt=[-20.0, 90.0], fog_cap=0.5),
+    'far': dict(queue=2990, melt=[-10.0, 130.0], fog_cap=0.62),
+    'horizon': dict(queue=2990, melt=[-10.0, 130.0], fog_cap=0.62),
+    'mist': dict(queue=3000, melt=[-10.0, 60.0], fog_cap=0.7),
 }
 
 
@@ -57,6 +57,9 @@ def card_entry(cid, group, src, keys=None):
     bw = m['bbox_uv'][2] - m['bbox_uv'][0]
     qw = src['width_m'] / bw
     qh = qw * m['size'][1] / m['size'][0]
+    if src.get('height_m'):          # towers: the JSON height is the CLOUD's height (base -> top of the bbox)
+        bh = m['bbox_uv'][3] - m['cloud_base_v']
+        qh = src['height_m'] / max(bh, 1e-3)
     # mirror: the bake's moon is on the card's RIGHT; mirror when the gate moon is on its left at the hero time
     gr = gate_root(HERO_T)
     p = [gr[0] + src['position'][0], gr[1] + src['position'][1], gr[2] + src['position'][2]]
@@ -67,7 +70,7 @@ def card_entry(cid, group, src, keys=None):
     rel = abs(math.degrees(math.atan2(MOON[0], MOON[2]) - los))
     e = dict(id=cid, group=group, shape=shp, position=[round(v, 2) for v in src['position']],
              size=[round(qw, 1), round(qh, 1)], opacity=src.get('opacity', 1.0), gain=src.get('gain', 1.0),
-             mirror=0.0 if moon_right else 1.0, queue=GROUP[group]['queue'], melt=GROUP[group]['melt'],
+             mirror=0.0 if moon_right else 1.0, queue=GROUP[group]['queue'], melt=GROUP[group]['melt'], fog_cap=GROUP[group]['fog_cap'],
              moon_rel_deg_U7b=round(rel, 1), sag_keys=[], sink_keys=[], alpha_keys=[])
     if keys:
         for k in ('sag_keys', 'sink_keys', 'alpha_keys'):
