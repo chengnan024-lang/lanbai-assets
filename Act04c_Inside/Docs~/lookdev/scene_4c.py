@@ -277,7 +277,9 @@ def mat_hang(name, P, fp):
     _, v, _ = N.sep(N.uv('UVMap'))
     cg = N.attr('Col')
     gr, _, _ = N.sep(cg.outputs['Color'])
-    k = N.math('MULTIPLY', N.math('SUBTRACT', 1.0, N.math('MULTIPLY', N.math('MULTIPLY', v, v), 0.3)), gr)
+    cd = N.n('ShaderNodeCameraData')
+    near = N.smooth(10.0, 20.0, cd.outputs['View Distance'])          # r14 (art review r13 B1): no bar across the window
+    k = N.math('MULTIPLY', gr, near)
     k = N.math('MULTIPLY', k, P['fringe_gain'] * 1.6 * 0.35)
     k = N.math('MULTIPLY', k, N.math('SUBTRACT', 1.0, N.fog_amount(fp['density'])))
     N.done(N.add(N.emission(N.vmath('SCALE', N.rgb(P['fibre']), s=k)), N.transparent()))

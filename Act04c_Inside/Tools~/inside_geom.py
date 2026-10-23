@@ -317,9 +317,11 @@ def cut_partial(sh, centre, start_deg, span_deg, r_min):
     return sh
 
 
-def hanging(contour, Hk, seed, n=20, gain=1.0, need=40.0):
-    """a few long loose threads hanging under gravity from the upper edges (art review r03), thin additive ribbons with
-    the fringe texture's long-strand column (uv0.x fixed per thread)."""
+def hanging(contour, Hk, seed, n=24, gain=1.0, need=40.0):
+    """loose threads hanging under gravity from the upper edges. r14 (art review r13 B2: straight, even, blunt, long
+    strands read as icicles / rain; the short frayed fringe of 205 read as cloth): most are short (0.6-1.5 % H), at most
+    5 long ones (2-3.5 % H); each starts at the rim, tapers to 30 % width at the tip, fades from the root (1 -> 0.4) and
+    has a visible S (>= 2.5 widths). uv0 = (per-thread phase, along 0.08 .. 0.93); col.r = brightness per vertex."""
     rng = np.random.default_rng(seed + 61)
     C = np.asarray(contour, float)
     cy = C[:, 1].mean()
@@ -327,36 +329,42 @@ def hanging(contour, Hk, seed, n=20, gain=1.0, need=40.0):
     cand = np.where((C[:, 1] > cy) & (nrm[:, 1] > 0.3))[0]
     if len(cand) == 0:
         return None
-    V, F, uv = [], [], []
+    from shapely.geometry import box, LineString
+    bus = box(-D.BUS_HALF_W, D.BUS_Y0, D.BUS_HALF_W, D.BUS_Y1)
+    V, F, uv, G = [], [], [], []
+    n_long = 0
     for j in range(n):
         i = int(rng.choice(cand))
-        p0 = C[i]
-        L = rng.uniform(0.04, 0.09) * Hk                   # r13: longer (D-19: threads that hang = cloth)
-        from shapely.geometry import box, LineString
-        bus = box(-D.BUS_HALF_W, D.BUS_Y0, D.BUS_HALF_W, D.BUS_Y1)
-        while L > 1.0 and LineString([p0, (p0[0], p0[1] - L)]).distance(bus) < need + 2.0:   # r13: + the sway
+        p0 = C[i] - nrm[i] * 0.3                           # at the rim, just inside the opening (not across the glow)
+        long_ = n_long < 5 and rng.random() < 0.3
+        L = (rng.uniform(0.02, 0.035) if long_ else rng.uniform(0.006, 0.015)) * Hk
+        while L > 0.5 and LineString([p0, (p0[0], p0[1] - L)]).distance(bus) < need + 2.0:   # + the sway
             L *= 0.8                                       # the bus path keeps its clearance from every thread
-        if L <= 1.0:
+        if L <= 0.5:
             continue
-        # r13 (D-19): threads, not icicles: thin, even width, a slight S-wave, uneven brightness
-        w = max(0.0016 * Hk, 0.2)
+        n_long += int(long_)
+        w = max(0.0012 * Hk, 0.15)
         m = 16
         f = np.linspace(0, 1, m)
-        drift = rng.normal(0, 0.12) * L
-        wav = rng.uniform(0.004, 0.012) * L * np.sin(f * np.pi * rng.uniform(1.5, 3.0) + rng.uniform(0, 6.28))
+        drift = rng.normal(0, 0.1) * L
+        wav = max(2.5 * w, rng.uniform(0.01, 0.03) * L) * np.sin(f * np.pi * rng.uniform(1.5, 2.5) + rng.uniform(0, 6.28))
         P = np.stack([p0[0] + drift * f ** 1.5 + wav, p0[1] - L * f], -1)
+        ph = rng.uniform(0.0, 1.0)
+        g0 = rng.uniform(0.5, 1.0) * gain
         k = len(V)
         for q in range(m):
-            V.append((P[q, 0] - w / 2, P[q, 1], 0.0))
-            V.append((P[q, 0] + w / 2, P[q, 1], 0.0))
-            col = rng.uniform(0.62, 0.9)
-            uv += [(col, 0.08 + 0.85 * f[q]), (col + 0.0004, 0.08 + 0.85 * f[q])]
+            hw = 0.5 * w * (1.0 - 0.7 * f[q])
+            V.append((P[q, 0] - hw, P[q, 1], 0.0))
+            V.append((P[q, 0] + hw, P[q, 1], 0.0))
+            uv += [(ph, 0.08 + 0.85 * f[q]), (ph, 0.08 + 0.85 * f[q])]
+            G += [g0 * (1.0 - 0.6 * f[q])] * 2
         for q in range(m - 1):
             a = k + 2 * q
             F += [(a, a + 2, a + 3), (a, a + 3, a + 1)]
-    V = np.array(V, float)
-    g = np.repeat(rng.uniform(0.4, 1.0, len(V) // (2 * 16)), 2 * 16) * gain if len(V) else np.zeros(0)
-    return dict(V=V, F=np.array(F), uv0=np.array(uv), col=np.stack([g, np.ones_like(g), np.zeros_like(g), np.ones_like(g)], -1))
+    if not V:
+        return None
+    g = np.array(G)
+    return dict(V=np.array(V, float), F=np.array(F), uv0=np.array(uv), col=np.stack([g, np.ones_like(g), np.zeros_like(g), np.ones_like(g)], -1))
 
 
 def fringe_gaps(fr, perim, seed):

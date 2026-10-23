@@ -2,7 +2,7 @@
  "lips": {
   "Lip1_Hang": {
    "ok": true,
-   "n": 640,
+   "n": 768,
    "uv_layers": 1
   },
   "Lip1_Sheet": {
@@ -17,7 +17,7 @@
   },
   "Lip2_Hang": {
    "ok": true,
-   "n": 640,
+   "n": 768,
    "uv_layers": 1
   },
   "Lip2_Sheet": {
@@ -37,7 +37,7 @@
   },
   "Lip3_Hang": {
    "ok": true,
-   "n": 640,
+   "n": 768,
    "uv_layers": 1
   },
   "Lip3_Sheet": {
@@ -57,7 +57,7 @@
   },
   "Lip4_Hang": {
    "ok": true,
-   "n": 640,
+   "n": 768,
    "uv_layers": 1
   },
   "Lip4_Sheet": {
@@ -72,7 +72,7 @@
   },
   "Lip5_Hang": {
    "ok": true,
-   "n": 640,
+   "n": 768,
    "uv_layers": 1
   },
   "Lip5_Sheet": {
@@ -92,7 +92,7 @@
   },
   "Lip6_Hang": {
    "ok": true,
-   "n": 640,
+   "n": 768,
    "uv_layers": 1
   },
   "Lip6_Sheet": {
@@ -112,7 +112,7 @@
   },
   "Lip7_Hang": {
    "ok": true,
-   "n": 640,
+   "n": 768,
    "uv_layers": 1
   },
   "Lip7_Sheet": {

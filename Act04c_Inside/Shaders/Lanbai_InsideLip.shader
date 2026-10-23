@@ -269,7 +269,7 @@ Shader "Lanbai/InsideLip"
             #elif defined(_PART_FRINGE)
                 float4 f = tex2D(_FringeTex, i.uv.xy);
                 // r13: a hanging thread (_Sway > 0) is one solid strand tapering to the tip (the texture's strands are short)
-                if (_Sway > 0.0) f = float4(0.35 * (1.0 - 0.3 * i.uv.y * i.uv.y), 0.0, 0.5, 0.0);
+                if (_Sway > 0.0) f = float4(0.35 * smoothstep(10.0, 20.0, distance(i.wpos, LanbaiCentreEyePos())), 0.0, 0.5, 0.0);   // r14: brightness along the strand is in col.r; faded out within 10-20 m of the eye (no bar across a window)
                 float3 c = _FibreColor.rgb * f.r * (0.7 + 0.6 * f.b) * _FringeGain * g * i.col.g * gradeK;   // col.g: bundle gaps
                 return float4(LanbaiApplyFogAdditive(c, i.wpos), 0.0);     // additive: the fog only removes light
             #elif defined(_PART_THREAD)
