@@ -572,7 +572,23 @@ float3 LanbaiPurpleGuard(float3 c, float4 g)
         return c;
     float bg = c.b / c.g;
     float w = g.x * smoothstep(g.z, g.z + 0.3, bg);
-    c.r = lerp(c.r, min(c.r, c.g * g.y), w);
+    if (g.w < 0.0)
+    {
+        // two-sided mode (10-23: the rose -> indigo transitions keep C* <= 8 in h 285-330 after the grade):
+        //  * a strong blue (B / G >= 1.3): R <= 0.55 G turns it toward h 280 (it stays blue, it does not go grey);
+        //  * the weak-blue transition where the rose meets the blue (B / G 0.95 .. 1.25 with R near G): cutting R there
+        //    made it teal, so it goes toward a slightly cool grey of the same luminance by -g.w instead
+        float strong = smoothstep(1.15, 1.35, bg);
+        float rg = c.r / c.g;
+        float3 o = c;
+        float gg = min(c.g, c.b / 1.15);                         // and G below B: a cut blue never leans to teal
+        o.r = lerp(c.r, min(c.r, gg * 0.55), g.x * strong);
+        o.g = lerp(c.g, gg, g.x * strong);
+        float lav = g.x * smoothstep(g.z, g.z + 0.1, bg) * (1.0 - strong) * smoothstep(g.y - 0.15, g.y, rg);
+        float lum = dot(o, float3(0.2126, 0.7152, 0.0722));
+        return lerp(o, lum * float3(0.90, 0.97, 1.13), saturate(-g.w * lav));
+    }
+    c.r = lerp(c.r, min(c.r, c.g * g.y), w);                 // v1: R <= y G where blue leads
     return c;
 }
 

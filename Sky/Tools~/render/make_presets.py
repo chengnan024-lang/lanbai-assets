@@ -42,6 +42,9 @@ def tints(name):
 
 # ---------------------------------------------------------------------------------------------------------------
 # presets: material (Lanbai/Sky properties), globals (written by the act driver), meta
+# the rose -> indigo transitions keep C* <= 8 in h 285-330 (director 10-23, D-17's reasoning; sea's final review measured
+# #A69AA4 h 330 in the act-8 ceiling melt): the guard pulls R below 0.55 G wherever B > G
+LAV_GUARD = [1.0, 0.75, 0.95, -1.0]   # two-sided: strong blues R <= 0.55 G (stay blue); the rose -> blue transition (B / G 0.95..1.25, R / G > 0.6..0.75) toward a cool grey (no teal)
 SUN6 = dir_az_el(30.0, 5.8)      # dawn: D-12 az +30 (in the bus door); el = the HDRI sun 5.8 (D-12: +6); the real-time light aligns to it
 SUN8 = dir_az_el(0.0, 0.5)       # dusk: azimuth 0, elevation +0.5 deg, in the windscreen (bible §6·8)
 P = {}
@@ -64,7 +67,7 @@ P['overcast_rain_night_town'] = dict(acts='1（站牌：朝镇方向的地平线
 
 # D-06: acts 3 and 4 share the star set and the gain; only stars brighter than magnitude 3; L* <= 12 at 1080p
 # (check_stars.py --solve gives the largest passing gain; check_stars.py checks it)
-STAR_GAIN_MOON = 0.017   # check_stars.py --solve, 10-23: the largest gain with every star <= 12 L* above its sky
+STAR_GAIN_MOON = 0.015   # check_stars.py --solve, 10-23: the largest gain with every star <= 12 L* above its sky
 P['moon_night'] = dict(acts='3（离地、月下云海）', profile='S3', cubeA=None,
     material=dict(_ProcWeight=1.0, _SunGain=0.0, _MoonGain=1.0, _MoonRadius=0.6, _MoonDir=v4(dir_az_el(-12, 8), 0),
                   _MoonColor=v4(F('#F0F5FF @ +2.17')), _MoonGlow=[20.0, 1.5, 13.2, 0.43], _MoonGlowColor=[0.19, 0.21, 0.35, 1.0]),
@@ -81,7 +84,7 @@ P['dawn'] = dict(acts='6（晨，F0 → F2h）', profile='S6', sunAz=30.0, cubeA
                   _SunGlow=[0.35, 1.6, 0.0, 0.0], _SunGlowColor=v4(F('#FFCE9E')),   # D-18: 0.53 deg disc, the rest of the sun's weight in a tight aureole (+ bloom)
                   _Band1Color=v4(F('#B8C4F7'), 0.3), _Band1Shape=[2.0, 2.5, 180, 55], _Band1Gain=0.6,
                   _Band2Color=v4(F('#FFCFCB @ +0.61'), 0.3), _Band2Shape=[10.0, 4.0, 180, 50], _Band2Gain=0.3,
-                  _NadirColor=v4(F('#6F8FA8'), 0.5), _BelowShape=[-75, 1.0, 0.6, 2.0], _PurpleGuard=[1.0, 0.86, 1.25, 0],
+                  _NadirColor=v4(F('#6F8FA8'), 0.5), _BelowShape=[-75, 1.0, 0.6, 2.0], _PurpleGuard=LAV_GUARD,
                   _SunRemove=[7.0, 3.2, 0.25, 0.6]),
     globals=dict(_Udon_SunDir=v4(SUN6, 1), _Udon_SunDisc=[1.0, 0.265, 0, 1], _Udon_FogDensity=0.00012),
     fog_from_sky=dict(near_az=30.0, width=70.0, zen_el=60.0, nadir=F('#6F8FA8')),
@@ -91,7 +94,7 @@ dusk_common = dict(_RotationA=fit['dusk']['rotation'], _ExposureA=0.0, _ClampA=1
                    _SunDir=v4(SUN8, 0), _SunColor=v4(F('#FF9167 @ +2.74')), _SunShape=[0.265, 0.04, 0.4, 0], _SunGain=1.0,
                    _SunGlow=[0.25, 0.9, 0.06, 0.12], _SunGlowColor=v4(F('#FF855C')),
                    _Band2Color=v4(F('#FF9396 @ +0.92'), 0.25), _Band2Shape=[4.0, 3.0, 180, 55], _Band2Gain=0.6,
-                   _NadirColor=v4(F('#3B4A78'), 0.6), _BelowShape=[-60, 0.7, 0.6, 0.8], _PurpleGuard=[1.0, 0.82, 1.25, 0],
+                   _NadirColor=v4(F('#3B4A78'), 0.6), _BelowShape=[-60, 0.7, 0.6, 0.8], _PurpleGuard=LAV_GUARD,
                    _OtherGain=0.82, _OtherTint=[0.92, 0.95, 1.05, 0.85], _OtherSeam=1.0)   # .a: the lower half darkens to the nadir (art r0 #1)
 P['dusk_8i'] = dict(acts='8-i（出海 → F10e）', profile='S8', sunAz=0.0, cubeA='syferfontein_0d_clear_puresky',
     hdri_file=os.path.join(HDRI, 'syferfontein_0d_clear_puresky_1k.hdr'),
@@ -111,7 +114,7 @@ bh_zen = inv_screen('#16223F', 'S8b')
 P['blue_hour'] = dict(acts='8b（蓝时，993.06 → 1001.21）+ 第 9 幕同一个材质', profile='S8b', cubeA=None, glow=True,
     material=dict(_ProcWeight=1.0, _SunGain=0.0, _SunDir=v4(SUN8, 0), _Band1Color=v4(F('#3F5790'), 0.0), _Band1Shape=[14.0, -10.0, 0, 110], _Band1Gain=0.85,
                   _NightMaskDir=v4(dir_az_el(0, 0), 0), _NightMaskShape=[30, 45, 6, 22], _NightColor=v4(F('#050000')),
-                  _StarFloorAdd=v4(np.maximum(F('#0D0F23') - F('#050000'), 0)), _GalaxyGain=0.0, _PurpleGuard=[1.0, 0.86, 1.25, 0]),
+                  _StarFloorAdd=v4(np.maximum(F('#0D0F23') - F('#050000'), 0)), _GalaxyGain=0.0, _PurpleGuard=LAV_GUARD),
     globals=dict(_Udon_SunDir=v4(SUN8, 1), _Udon_HorizonColor=v4(F('#8093C2') * 0.80, 2.0), _Udon_FogBandColor=v4(F('#8093C2')), _Udon_FogBandDir=v4(dir_az_el(0, 0), 0),
                  _Udon_FogBandWidth=90.0, _Udon_ZenithColor=v4(bh_zen), _Udon_NadirColor=v4(F('#1A2A4E') * 1.3),
                  _Udon_FogShape=[1.0, 90.0, 0.8, 0], _Udon_FogBelow=[-60, 0, 1.0, 0], _Udon_SkyBlend=[0, 1, 0, 1], _Udon_SkyFx=[0, 0.85, 0, 1],
@@ -252,6 +255,10 @@ def render_sheet(name, p, out_json):
                            lavender_6=round(G.purple_fraction(c, 285, 330, 12), 4),
                            p995=G.to_hex(np.percentile(c.reshape(-1, 3), 99.5, axis=0)), p50=G.to_hex(np.median(c.reshape(-1, 3), axis=0)),
                            grad_p999=round(float(np.percentile(gr, 99.9)), 2), grad_max=round(float(gr.max()), 2))
+        Lc, ac, bc = G.lab(c); hc = np.degrees(np.arctan2(bc, ac)) % 360; Cc = np.hypot(ac, bc)
+        # the lavender band (director 10-23): h 285-330, C* > 8, lighter than the bible's own indigos (L* > 40; the
+        # zenith #3D4A80 / nadir #2E3C66 / blue-hour zenith #16223F sit at h 285-289, L* 14-33, and are bible targets)
+        meas[label]['lavender_band'] = round(float(((hc >= 285) & (hc <= 330) & (Cc > 8) & (Lc > 40)).mean()), 4)
         if gr_photo is not None:
             meas[label]['grad_p999_with_galaxy_photo'] = round(float(np.percentile(gr_photo, 99.9)), 2)
         ref = grad_reference()

@@ -803,6 +803,7 @@
      "p50": "#111927",
      "grad_p999": 0.49,
      "grad_max": 0.71,
+     "lavender_band": 0.0,
      "grad_ok": true
     },
     "车门 +45°": {
@@ -813,6 +814,7 @@
      "p50": "#111927",
      "grad_p999": 0.51,
      "grad_max": 0.85,
+     "lavender_band": 0.0,
      "grad_ok": true
     },
     "天窗（仰 70°）": {
@@ -823,6 +825,7 @@
      "p50": "#070B15",
      "grad_p999": 0.08,
      "grad_max": 0.1,
+     "lavender_band": 0.0,
      "grad_ok": true
     },
     "背后": {
@@ -833,6 +836,7 @@
      "p50": "#0F1624",
      "grad_p999": 0.51,
      "grad_max": 0.9,
+     "lavender_band": 0.0,
      "grad_ok": true
     },
     "左 −90°": {
@@ -843,6 +847,7 @@
      "p50": "#0F1725",
      "grad_p999": 0.49,
      "grad_max": 0.74,
+     "lavender_band": 0.0,
      "grad_ok": true
     },
     "向下 −35°": {
@@ -853,6 +858,7 @@
      "p50": "#121A29",
      "grad_p999": 0.01,
      "grad_max": 0.01,
+     "lavender_band": 0.0,
      "grad_ok": true
     }
    }
@@ -1659,6 +1665,7 @@
      "p50": "#111927",
      "grad_p999": 0.49,
      "grad_max": 0.82,
+     "lavender_band": 0.0,
      "grad_ok": true
     },
     "车门 +45°": {
@@ -1669,6 +1676,7 @@
      "p50": "#111927",
      "grad_p999": 0.49,
      "grad_max": 0.77,
+     "lavender_band": 0.0,
      "grad_ok": true
     },
     "天窗（仰 70°）": {
@@ -1679,6 +1687,7 @@
      "p50": "#070B15",
      "grad_p999": 0.08,
      "grad_max": 0.09,
+     "lavender_band": 0.0,
      "grad_ok": true
     },
     "背后": {
@@ -1689,6 +1698,7 @@
      "p50": "#0F1624",
      "grad_p999": 0.49,
      "grad_max": 0.74,
+     "lavender_band": 0.0,
      "grad_ok": true
     },
     "左 −90°": {
@@ -1699,6 +1709,7 @@
      "p50": "#121924",
      "grad_p999": 0.52,
      "grad_max": 0.82,
+     "lavender_band": 0.0,
      "grad_ok": true
     },
     "向下 −35°": {
@@ -1709,6 +1720,7 @@
      "p50": "#121A29",
      "grad_p999": 0.01,
      "grad_max": 0.01,
+     "lavender_band": 0.0,
      "grad_ok": true
     }
    }
@@ -2346,7 +2358,7 @@
     {
      "k": "_Udon_StarGain",
      "v": [
-      0.017,
+      0.015,
       1.0,
       1.0,
       1.0
@@ -2537,6 +2549,7 @@
      "p50": "#142038",
      "grad_p999": 6.6,
      "grad_max": 7.34,
+     "lavender_band": 0.0,
      "grad_ok": true
     },
     "车门 +45°": {
@@ -2547,6 +2560,7 @@
      "p50": "#121C33",
      "grad_p999": 0.33,
      "grad_max": 0.37,
+     "lavender_band": 0.0,
      "grad_ok": true
     },
     "天窗（仰 70°）": {
@@ -2557,6 +2571,7 @@
      "p50": "#081120",
      "grad_p999": 0.06,
      "grad_max": 0.07,
+     "lavender_band": 0.0,
      "grad_ok": true
     },
     "背后": {
@@ -2567,6 +2582,7 @@
      "p50": "#101A2E",
      "grad_p999": 0.11,
      "grad_max": 0.11,
+     "lavender_band": 0.0,
      "grad_ok": true
     },
     "左 −90°": {
@@ -2577,6 +2593,7 @@
      "p50": "#111B30",
      "grad_p999": 0.16,
      "grad_max": 0.16,
+     "lavender_band": 0.0,
      "grad_ok": true
     },
     "向下 −35°": {
@@ -2587,6 +2604,7 @@
      "p50": "#0D172C",
      "grad_p999": 0.28,
      "grad_max": 0.33,
+     "lavender_band": 0.0,
      "grad_ok": true
     }
    }
@@ -2775,9 +2793,9 @@
      "k": "_PurpleGuard",
      "v": [
       1.0,
-      0.86,
-      1.25,
-      0.0
+      0.75,
+      0.95,
+      -1.0
      ]
     },
     {
@@ -2881,9 +2899,9 @@
     {
      "k": "_Udon_HorizonColor",
      "v": [
-      0.690234,
-      0.615653,
-      0.781103,
+      0.489913,
+      0.602581,
+      0.743381,
       1.0
      ]
     },
@@ -3242,9 +3260,9 @@
      "k": "_Udon_Sky_PurpleGuard",
      "v": [
       1.0,
-      0.86,
-      1.25,
-      0.0
+      0.75,
+      0.95,
+      -1.0
      ]
     },
     {
@@ -3394,7 +3412,7 @@
     {
      "k": "_Udon_ZenithColor",
      "v": [
-      0.316802,
+      0.271899,
       0.494361,
       1.0348,
       1.0
@@ -3542,63 +3560,69 @@
    "blendSkip": [],
    "measured_views": {
     "前方": {
-     "APL": 170.0,
+     "APL": 169.2,
      "purple": 0.0,
      "lavender_6": 0.0,
-     "p995": "#FFFAEE",
-     "p50": "#B18E85",
+     "p995": "#FFFAF1",
+     "p50": "#AF8E87",
      "grad_p999": 8.18,
      "grad_max": 9.75,
+     "lavender_band": 0.0,
      "grad_ok": true
     },
     "车门 +45°": {
-     "APL": 171.8,
+     "APL": 171.2,
      "purple": 0.0,
      "lavender_6": 0.0,
-     "p995": "#FFF8EE",
-     "p50": "#B88F84",
+     "p995": "#FFF8F1",
+     "p50": "#B69085",
      "grad_p999": 8.72,
      "grad_max": 10.87,
+     "lavender_band": 0.0,
      "grad_ok": true
     },
     "天窗（仰 70°）": {
-     "APL": 158.2,
+     "APL": 155.5,
      "purple": 0.0,
      "lavender_6": 0.0,
-     "p995": "#D0DAE5",
-     "p50": "#87A3C6",
-     "grad_p999": 1.02,
-     "grad_max": 1.23,
+     "p995": "#CDD9E2",
+     "p50": "#79A3C6",
+     "grad_p999": 1.04,
+     "grad_max": 1.3,
+     "lavender_band": 0.0,
      "grad_ok": true
     },
     "背后": {
-     "APL": 172.1,
+     "APL": 168.6,
      "purple": 0.0,
      "lavender_6": 0.0,
-     "p995": "#BBC5DF",
-     "p50": "#A7AAC0",
-     "grad_p999": 1.66,
-     "grad_max": 1.9,
+     "p995": "#AAC5DF",
+     "p50": "#95ABBF",
+     "grad_p999": 1.76,
+     "grad_max": 2.03,
+     "lavender_band": 0.0,
      "grad_ok": true
     },
     "左 −90°": {
-     "APL": 163.1,
+     "APL": 160.0,
      "purple": 0.0,
      "lavender_6": 0.0,
-     "p995": "#B8C4DD",
-     "p50": "#9FA0AE",
-     "grad_p999": 1.62,
-     "grad_max": 2.52,
+     "p995": "#A5C4DD",
+     "p50": "#8DA3AF",
+     "grad_p999": 1.83,
+     "grad_max": 2.98,
+     "lavender_band": 0.0,
      "grad_ok": true
     },
     "向下 −35°": {
-     "APL": 131.1,
+     "APL": 130.0,
      "purple": 0.0,
      "lavender_6": 0.0,
-     "p995": "#BB8E89",
-     "p50": "#917F82",
-     "grad_p999": 0.22,
-     "grad_max": 0.23,
+     "p995": "#BB8E90",
+     "p50": "#808083",
+     "grad_p999": 0.26,
+     "grad_max": 0.27,
+     "lavender_band": 0.0,
      "grad_ok": true
     }
    }
@@ -3781,9 +3805,9 @@
      "k": "_PurpleGuard",
      "v": [
       1.0,
-      0.82,
-      1.25,
-      0.0
+      0.75,
+      0.95,
+      -1.0
      ]
     },
     {
@@ -3887,9 +3911,9 @@
     {
      "k": "_Udon_HorizonColor",
      "v": [
-      0.792566,
-      0.419119,
-      0.505936,
+      0.481892,
+      0.457302,
+      0.536284,
       1.0
      ]
     },
@@ -4248,9 +4272,9 @@
      "k": "_Udon_Sky_PurpleGuard",
      "v": [
       1.0,
-      0.82,
-      1.25,
-      0.0
+      0.75,
+      0.95,
+      -1.0
      ]
     },
     {
@@ -4400,7 +4424,7 @@
     {
      "k": "_Udon_ZenithColor",
      "v": [
-      0.12286,
+      0.098352,
       0.178821,
       0.44353,
       1.0
@@ -4548,63 +4572,69 @@
    "blendSkip": [],
    "measured_views": {
     "前方": {
-     "APL": 155.4,
+     "APL": 153.4,
      "purple": 0.0,
-     "lavender_6": 0.0084,
-     "p995": "#FFD5CA",
-     "p50": "#BA9395",
+     "lavender_6": 0.0,
+     "p995": "#FFD5CB",
+     "p50": "#B09496",
      "grad_p999": 20.39,
      "grad_max": 31.74,
+     "lavender_band": 0.0,
      "grad_ok": true
     },
     "车门 +45°": {
-     "APL": 147.0,
+     "APL": 144.4,
      "purple": 0.0,
-     "lavender_6": 0.1065,
+     "lavender_6": 0.0,
      "p995": "#FFD6C4",
-     "p50": "#AD8C9A",
+     "p50": "#8E8D9C",
      "grad_p999": 20.57,
      "grad_max": 27.49,
+     "lavender_band": 0.0,
      "grad_ok": true
     },
     "天窗（仰 70°）": {
-     "APL": 112.9,
-     "purple": 0.0039,
-     "lavender_6": 0.3502,
-     "p995": "#A2AACA",
-     "p50": "#5C6E9E",
-     "grad_p999": 0.96,
-     "grad_max": 10.96,
+     "APL": 110.5,
+     "purple": 0.0,
+     "lavender_6": 0.0785,
+     "p995": "#89AACA",
+     "p50": "#536E9E",
+     "grad_p999": 1.0,
+     "grad_max": 10.99,
+     "lavender_band": 0.0,
      "grad_ok": true
     },
     "背后": {
-     "APL": 138.7,
+     "APL": 134.4,
      "purple": 0.0,
-     "lavender_6": 0.1572,
-     "p995": "#CE9DB5",
-     "p50": "#8088A7",
-     "grad_p999": 2.29,
-     "grad_max": 2.67,
+     "lavender_6": 0.0,
+     "p995": "#ADA8B5",
+     "p50": "#6A88A7",
+     "grad_p999": 3.02,
+     "grad_max": 3.49,
+     "lavender_band": 0.0,
      "grad_ok": true
     },
     "左 −90°": {
-     "APL": 144.7,
+     "APL": 141.0,
      "purple": 0.0,
-     "lavender_6": 0.088,
-     "p995": "#F2BBBB",
-     "p50": "#888DA5",
+     "lavender_6": 0.0,
+     "p995": "#F2BBBC",
+     "p50": "#708EA5",
      "grad_p999": 4.77,
      "grad_max": 5.45,
+     "lavender_band": 0.0,
      "grad_ok": true
     },
     "向下 −35°": {
-     "APL": 99.8,
+     "APL": 98.1,
      "purple": 0.0,
-     "lavender_6": 0.5053,
+     "lavender_6": 0.0,
      "p995": "#C9939C",
-     "p50": "#5F6075",
-     "grad_p999": 1.3,
-     "grad_max": 1.38,
+     "p50": "#4E6075",
+     "grad_p999": 1.7,
+     "grad_max": 1.86,
+     "lavender_band": 0.0,
      "grad_ok": true
     }
    }
@@ -4783,9 +4813,9 @@
      "k": "_PurpleGuard",
      "v": [
       1.0,
-      0.82,
-      1.25,
-      0.0
+      0.75,
+      0.95,
+      -1.0
      ]
     },
     {
@@ -4889,9 +4919,9 @@
     {
      "k": "_Udon_HorizonColor",
      "v": [
-      0.792566,
-      0.419119,
-      0.505936,
+      0.481892,
+      0.457302,
+      0.536284,
       1.0
      ]
     },
@@ -5250,9 +5280,9 @@
      "k": "_Udon_Sky_PurpleGuard",
      "v": [
       1.0,
-      0.82,
-      1.25,
-      0.0
+      0.75,
+      0.95,
+      -1.0
      ]
     },
     {
@@ -5402,7 +5432,7 @@
     {
      "k": "_Udon_ZenithColor",
      "v": [
-      0.12286,
+      0.098352,
       0.178821,
       0.44353,
       1.0
@@ -5552,63 +5582,69 @@
    ],
    "measured_views": {
     "前方": {
-     "APL": 157.7,
+     "APL": 155.2,
      "purple": 0.0,
-     "lavender_6": 0.2292,
-     "p995": "#FFD5CA",
-     "p50": "#BF999B",
+     "lavender_6": 0.0,
+     "p995": "#FFD5CB",
+     "p50": "#949D9C",
      "grad_p999": 22.5,
      "grad_max": 31.43,
+     "lavender_band": 0.0,
      "grad_ok": true
     },
     "车门 +45°": {
-     "APL": 148.6,
+     "APL": 145.9,
      "purple": 0.0,
-     "lavender_6": 0.26,
+     "lavender_6": 0.0,
      "p995": "#FFD6C4",
-     "p50": "#9F8E9C",
+     "p50": "#7B909D",
      "grad_p999": 20.22,
      "grad_max": 27.38,
+     "lavender_band": 0.0,
      "grad_ok": true
     },
     "天窗（仰 70°）": {
-     "APL": 112.9,
-     "purple": 0.0039,
-     "lavender_6": 0.3502,
-     "p995": "#A2AACA",
-     "p50": "#5C6E9E",
-     "grad_p999": 0.96,
-     "grad_max": 10.96,
+     "APL": 110.5,
+     "purple": 0.0,
+     "lavender_6": 0.0785,
+     "p995": "#89AACA",
+     "p50": "#536E9E",
+     "grad_p999": 1.0,
+     "grad_max": 10.99,
+     "lavender_band": 0.0,
      "grad_ok": true
     },
     "背后": {
-     "APL": 133.1,
+     "APL": 129.2,
      "purple": 0.0,
-     "lavender_6": 0.2868,
-     "p995": "#CE9DB5",
-     "p50": "#7785A5",
-     "grad_p999": 13.02,
-     "grad_max": 15.81,
+     "lavender_6": 0.0,
+     "p995": "#ADA8B5",
+     "p50": "#6785A7",
+     "grad_p999": 14.22,
+     "grad_max": 16.19,
+     "lavender_band": 0.0,
      "grad_ok": true
     },
     "左 −90°": {
-     "APL": 137.2,
+     "APL": 133.5,
      "purple": 0.0,
-     "lavender_6": 0.2232,
-     "p995": "#F2BBBB",
-     "p50": "#8388A0",
-     "grad_p999": 9.75,
+     "lavender_6": 0.0,
+     "p995": "#F2BBBC",
+     "p50": "#6C89A1",
+     "grad_p999": 11.23,
      "grad_max": 15.73,
+     "lavender_band": 0.0,
      "grad_ok": true
     },
     "向下 −35°": {
-     "APL": 102.2,
+     "APL": 100.1,
      "purple": 0.0,
-     "lavender_6": 0.7259,
-     "p995": "#F1AC9F",
-     "p50": "#57638C",
-     "grad_p999": 1.78,
-     "grad_max": 3.51,
+     "lavender_6": 0.0987,
+     "p995": "#F1ACB0",
+     "p50": "#4A638E",
+     "grad_p999": 3.45,
+     "grad_max": 4.22,
+     "lavender_band": 0.0,
      "grad_ok": true
     }
    }
@@ -5712,9 +5748,9 @@
      "k": "_PurpleGuard",
      "v": [
       1.0,
-      0.86,
-      1.25,
-      0.0
+      0.75,
+      0.95,
+      -1.0
      ]
     }
    ],
@@ -6170,9 +6206,9 @@
      "k": "_Udon_Sky_PurpleGuard",
      "v": [
       1.0,
-      0.86,
-      1.25,
-      0.0
+      0.75,
+      0.95,
+      -1.0
      ]
     },
     {
@@ -6470,69 +6506,75 @@
    "blendSkip": [],
    "measured_views": {
     "前方": {
-     "APL": 104.1,
+     "APL": 102.0,
      "purple": 0.0,
      "lavender_6": 0.0,
-     "p995": "#6880AC",
-     "p50": "#576F9C",
-     "grad_p999": 0.79,
-     "grad_max": 0.8,
-     "grad_p999_with_galaxy_photo": 0.79,
+     "p995": "#5880AB",
+     "p50": "#4A6F9C",
+     "grad_p999": 0.76,
+     "grad_max": 0.79,
+     "lavender_band": 0.0,
+     "grad_p999_with_galaxy_photo": 0.76,
      "grad_ok": true
     },
     "车门 +45°": {
-     "APL": 102.9,
+     "APL": 100.8,
      "purple": 0.0,
      "lavender_6": 0.0,
-     "p995": "#6880AC",
-     "p50": "#546C99",
-     "grad_p999": 0.7,
-     "grad_max": 0.71,
-     "grad_p999_with_galaxy_photo": 0.7,
+     "p995": "#5880AC",
+     "p50": "#476C99",
+     "grad_p999": 0.67,
+     "grad_max": 0.69,
+     "lavender_band": 0.0,
+     "grad_p999_with_galaxy_photo": 0.67,
      "grad_ok": true
     },
     "天窗（仰 70°）": {
-     "APL": 53.0,
+     "APL": 51.7,
      "purple": 0.0,
-     "lavender_6": 0.1755,
-     "p995": "#334F88",
-     "p50": "#263558",
-     "grad_p999": 0.44,
-     "grad_max": 0.45,
-     "grad_p999_with_galaxy_photo": 0.44,
+     "lavender_6": 0.0,
+     "p995": "#314F88",
+     "p50": "#1F3558",
+     "grad_p999": 0.46,
+     "grad_max": 0.47,
+     "lavender_band": 0.0,
+     "grad_p999_with_galaxy_photo": 0.46,
      "grad_ok": true
     },
     "背后": {
-     "APL": 101.9,
+     "APL": 99.5,
      "purple": 0.0,
      "lavender_6": 0.0,
-     "p995": "#6077A2",
-     "p50": "#556C99",
-     "grad_p999": 0.36,
-     "grad_max": 0.36,
-     "grad_p999_with_galaxy_photo": 0.36,
+     "p995": "#5177A2",
+     "p50": "#486C99",
+     "grad_p999": 0.34,
+     "grad_max": 0.35,
+     "lavender_band": 0.0,
+     "grad_p999_with_galaxy_photo": 0.34,
      "grad_ok": true
     },
     "左 −90°": {
-     "APL": 100.5,
+     "APL": 98.4,
      "purple": 0.0,
      "lavender_6": 0.0,
-     "p995": "#637AA5",
-     "p50": "#526A97",
-     "grad_p999": 0.52,
-     "grad_max": 0.52,
-     "grad_p999_with_galaxy_photo": 0.52,
+     "p995": "#537AA5",
+     "p50": "#466A97",
+     "grad_p999": 0.47,
+     "grad_max": 0.47,
+     "lavender_band": 0.0,
+     "grad_p999_with_galaxy_photo": 0.47,
      "grad_ok": true
     },
     "向下 −35°": {
-     "APL": 92.2,
+     "APL": 90.2,
      "purple": 0.0,
      "lavender_6": 0.0689,
-     "p995": "#6880AC",
-     "p50": "#4D638F",
-     "grad_p999": 0.61,
-     "grad_max": 0.62,
-     "grad_p999_with_galaxy_photo": 0.61,
+     "p995": "#5880AC",
+     "p50": "#41638F",
+     "grad_p999": 0.6,
+     "grad_max": 0.61,
+     "lavender_band": 0.0,
+     "grad_p999_with_galaxy_photo": 0.6,
      "grad_ok": true
     }
    }
@@ -7347,6 +7389,7 @@
      "p50": "#0A132D",
      "grad_p999": 0.0,
      "grad_max": 0.0,
+     "lavender_band": 0.005,
      "grad_p999_with_galaxy_photo": 46.48,
      "grad_ok": true
     },
@@ -7358,6 +7401,7 @@
      "p50": "#09112B",
      "grad_p999": 0.0,
      "grad_max": 0.0,
+     "lavender_band": 0.0,
      "grad_p999_with_galaxy_photo": 1.47,
      "grad_ok": true
     },
@@ -7369,6 +7413,7 @@
      "p50": "#0D162F",
      "grad_p999": 0.0,
      "grad_max": 0.0,
+     "lavender_band": 0.0,
      "grad_p999_with_galaxy_photo": 20.2,
      "grad_ok": true
     },
@@ -7380,6 +7425,7 @@
      "p50": "#09122C",
      "grad_p999": 0.0,
      "grad_max": 0.0,
+     "lavender_band": 0.0,
      "grad_p999_with_galaxy_photo": 7.66,
      "grad_ok": true
     },
@@ -7391,6 +7437,7 @@
      "p50": "#09122B",
      "grad_p999": 0.0,
      "grad_max": 0.0,
+     "lavender_band": 0.0,
      "grad_p999_with_galaxy_photo": 7.03,
      "grad_ok": true
     },
@@ -7402,6 +7449,7 @@
      "p50": "#0B142E",
      "grad_p999": 0.0,
      "grad_max": 0.0,
+     "lavender_band": 0.0,
      "grad_p999_with_galaxy_photo": 23.46,
      "grad_ok": true
     }
