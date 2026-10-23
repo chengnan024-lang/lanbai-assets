@@ -1,0 +1,120 @@
+{
+ "月": {
+  "az": -12,
+  "el": 8,
+  "visible": true,
+  "through": [
+   "Windscreen"
+  ]
+ },
+ "暮日": {
+  "az": 0,
+  "el": 0.5,
+  "visible": true,
+  "through": [
+   "Windscreen"
+  ]
+ },
+ "唱词 4b": {
+  "az": 0,
+  "el": -6,
+  "visible": true,
+  "through": [
+   "Windscreen"
+  ]
+ },
+ "天问 / 庄子 11": {
+  "az": 0,
+  "el": 8,
+  "visible": true,
+  "through": [
+   "Windscreen"
+  ]
+ },
+ "河伯": {
+  "az": -25,
+  "el": 6,
+  "visible": true,
+  "through": [
+   "Windscreen"
+  ]
+ },
+ "裂口顶 U7": {
+  "az": 0,
+  "el": 18,
+  "visible": true,
+  "through": [
+   "Windscreen"
+  ]
+ },
+ "银心": {
+  "az": -30,
+  "el": 12,
+  "visible": true,
+  "through": [
+   "Windscreen"
+  ]
+ },
+ "收音机": {
+  "az": -20,
+  "el": -12,
+  "visible": true,
+  "hit": "Radio_Grille"
+ },
+ "坠入深海": {
+  "az": -15,
+  "el": -12,
+  "visible": true,
+  "through": [
+   "Windscreen"
+  ]
+ },
+ "里尔克": {
+  "az": 12,
+  "el": 3,
+  "visible": true,
+  "through": [
+   "Windscreen"
+  ]
+ },
+ "晨日": {
+  "az": 45,
+  "el": 6,
+  "visible": true,
+  "through": [
+   "WinR1"
+  ]
+ },
+ "庄子 8-ii": {
+  "az": 35,
+  "el": 0,
+  "visible": true,
+  "through": [
+   "open"
+  ]
+ },
+ "李白 3/12": {
+  "az": 50,
+  "el": -9,
+  "visible": true,
+  "through": [
+   "WinR1"
+  ]
+ },
+ "济慈": {
+  "az": 50,
+  "el": -14,
+  "visible": true,
+  "through": [
+   "WinR1"
+  ]
+ },
+ "天窗里的伤口 U8a": {
+  "az": 0,
+  "el": 49,
+  "visible": true,
+  "through": [
+   "Skylight"
+  ]
+ }
+}
