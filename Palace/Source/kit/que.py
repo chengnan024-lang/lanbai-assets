@@ -24,6 +24,7 @@ try:
 except ImportError:          # 直接当脚本 import
     from common import UB, TILE, auto_uv
 
+RIDGE_LIFT = 1.05
 QUE_POS = [(-12.0, 0.0, 41.39), (-24.0, 0.0, 41.39)]
 
 
@@ -171,7 +172,7 @@ def ngon_prism(ub, cx, cz, r0, r1, y0, y1, n, slot, a0=None, caps_slot=None):
             a = a0 + 2 * math.pi * i / n
             V.append((cx + r * math.cos(a), y, cz + r * math.sin(a)))
     F = [(i, (i + 1) % n, n + (i + 1) % n, n + i) for i in range(n)]
-    F += [tuple(range(n)), tuple(reversed(range(n, 2 * n)))]
+    F += [tuple(reversed(range(n))), tuple(range(n, 2 * n))]
     _emit(ub, V, F, [slot] * n + [caps_slot or slot] * 2)
 
 
@@ -213,7 +214,7 @@ def ridge(ub, c, axis, half, yb, h, thick, lift, slot='Tile', n_end=6):
         right = []
         right.append(((0.0, yb), (0.0, yb + h)))
         right.append(((u0, yb), (u0, yb + h)))
-        phimax = math.radians(72)
+        phimax = math.radians(62)
         for k in range(1, n_end + 1):
             ph = phimax * k / n_end
             cu, cv = u0 + R * math.sin(ph), yc + R * (1 - math.cos(ph))
@@ -226,7 +227,7 @@ def ridge(ub, c, axis, half, yb, h, thick, lift, slot='Tile', n_end=6):
         tu, tv = math.cos(ph), math.sin(ph)
         pu, pv = right[-1][0]
         qu, qv = right[-1][1]
-        right.append(((pu + tu * h * 0.45, pv + tv * h * 0.45), (qu + tu * h * 0.12, qv + tv * h * 0.12)))
+        right.append(((pu + tu * h * 0.3, pv + tv * h * 0.3), (qu + tu * h * 0.1, qv + tv * h * 0.1)))
         left = [((-p[0], p[1]), (-q[0], q[1])) for p, q in reversed(right[1:])]
         st = left + right
     else:
@@ -383,7 +384,6 @@ def _que_local(lod=0):
     ring(21.35, 22.0, 0.16)                      # 顶枋（石）
     if hi:
         ring(8.3, 8.7, 0.11)
-        ring(15.0, 15.35, 0.09)
     PC, PP = 0.62, 0.13                          # 角倚柱宽、凸出
     ya, yb = 3.6, 21.35
     for sx in (-1, 1):
@@ -392,14 +392,14 @@ def _que_local(lod=0):
                 lambda y, sz=sz: min(sz * (HZ(y) + PP), sz * (HZ(y) - PC)), lambda y, sz=sz: max(sz * (HZ(y) + PP), sz * (HZ(y) - PC)),
                 ya, yb, 'Stone')
     if hi:
-        # 长面（±x）中倚柱
+        # 长面（±x）中倚柱（只在下段，上段是一整片贴面）
         for sx in (-1, 1):
             tap(lambda y, sx=sx: min(sx * (HX(y) + 0.1), sx * (HX(y) - 0.3)), lambda y, sx=sx: max(sx * (HX(y) + 0.1), sx * (HX(y) - 0.3)),
-                lambda y: -0.27 * HZ(y) / 5.0, lambda y: 0.27 * HZ(y) / 5.0, ya, yb, 'Stone')
+                lambda y: -0.27 * HZ(y) / 5.0, lambda y: 0.27 * HZ(y) / 5.0, ya, 8.3, 'Stone')
         # 下段贴面的压边框（近景）：每块板一圈 0.14 宽、凸 0.06 的石条，离倚柱 / 枋 0.22
-        fy0, fy1, bw, bp = 3.6 + 0.22, 8.3 - 0.22, 0.14, 0.06
+        bw, bp = 0.14, 0.06
 
-        def frame_x(sx, za, zb):        # za, zb：在 y=3 时的 z 范围（随收分按比例缩）
+        def frame_x(sx, za, zb, fy0, fy1):        # za, zb：在 y=3 时的 z 范围（随收分按比例缩）
             def zf(v):
                 return lambda y: v * HZ(y) / 5.0
             xo = lambda y: max(sx * (HX(y) + bp), sx * (HX(y) - 0.08))
@@ -409,7 +409,7 @@ def _que_local(lod=0):
             tap(xi, xo, zf(za + bw), zf(zb - bw), fy0, fy0 + bw, 'Stone')
             tap(xi, xo, zf(za + bw), zf(zb - bw), fy1 - bw, fy1, 'Stone')
 
-        def frame_z(sz, xa, xb):
+        def frame_z(sz, xa, xb, fy0, fy1):
             def xf(v):
                 return lambda y: v * HX(y) / 3.0
             zo = lambda y: max(sz * (HZ(y) + bp), sz * (HZ(y) - 0.08))
@@ -421,10 +421,12 @@ def _que_local(lod=0):
 
         g = 0.22
         for sx in (-1, 1):
-            frame_x(sx, -5.0 + PC + g, -0.27 - g)
-            frame_x(sx, 0.27 + g, 5.0 - PC - g)
+            frame_x(sx, -5.0 + PC + g, -0.27 - g, 3.6 + g, 8.3 - g)
+            frame_x(sx, 0.27 + g, 5.0 - PC - g, 3.6 + g, 8.3 - g)
+            frame_x(sx, -5.0 + PC + g, 5.0 - PC - g, 8.7 + g, 21.35 - g)      # 上段整片的压边
         for sz in (-1, 1):
-            frame_z(sz, -3.0 + PC + g, 3.0 - PC - g)
+            frame_z(sz, -3.0 + PC + g, 3.0 - PC - g, 3.6 + g, 8.3 - g)
+            frame_z(sz, -3.0 + PC + g, 3.0 - PC - g, 8.7 + g, 21.35 - g)
 
     # ---------------- 阙楼 y 22–29.7
     course(ub, 2.88, 4.88, 22.0, 22.6)                                       # 枋 A
@@ -469,20 +471,18 @@ def _que_local(lod=0):
     # ---------------- 阙顶：重檐四阿 y 29.7–40
     low = hip_solid(ub, 0, 0, 5.4, 7.4, 29.7, 0.4, 28.0, inner=(2.7, 4.7))  # 腰檐
     y_core0 = low['y_top'] - 0.05
-    box(ub, (-2.7, y_core0, -4.7), (2.7, 34.0, 4.7), 'StoneDark')           # 上层阙楼
-    course(ub, 2.95, 4.95, 34.0, 34.6)                                      # 枋 D
+    box(ub, (-2.7, y_core0, -4.7), (2.7, 34.25, 4.7), 'StoneDark')           # 上层阙楼
+    course(ub, 2.95, 4.95, 34.25, 34.85)                                      # 枋 D
     for sx in (-1, 1):
         for sz in (-1, 1):
-            box(ub, (sx * 2.7 - 0.22, y_core0, sz * 4.7 - 0.22), (sx * 2.7 + 0.22, 34.0, sz * 4.7 + 0.22), 'Lacquer')
+            box(ub, (sx * 2.7 - 0.22, y_core0, sz * 4.7 - 0.22), (sx * 2.7 + 0.22, 34.25, sz * 4.7 + 0.22), 'Lacquer')
             if hi:   # 角上的小一斗二升（上层）
-                box(ub, (sx * 2.7 - 0.35, 33.55, sz * 4.7 - 0.35), (sx * 2.7 + 0.35, 34.0, sz * 4.7 + 0.35), 'Lacquer')
+                box(ub, (sx * 2.7 - 0.35, 33.8, sz * 4.7 - 0.35), (sx * 2.7 + 0.35, 34.25, sz * 4.7 + 0.35), 'Lacquer')
     if hi:
-        for sz in (-1, 1):                       # 上层长面中间的蜀柱
-            pass
         for sx in (-1, 1):
             for z in (-1.6, 0.0, 1.6):
-                box(ub, (min(sx * 2.6, sx * 2.82), y_core0, z - 0.17), (max(sx * 2.6, sx * 2.82), 34.0, z + 0.17), 'Lacquer')
-    top = hip_solid(ub, 0, 0, 4.7, 6.7, 34.6, 0.4, 33.0)                      # 上檐
+                box(ub, (min(sx * 2.6, sx * 2.82), y_core0, z - 0.17), (max(sx * 2.6, sx * 2.82), 34.25, z + 0.17), 'Lacquer')
+    top = hip_solid(ub, 0, 0, 4.9, 6.9, 34.85, 0.45, 36.0)                     # 上檐
     if hi:
         for sd in low['sides']:
             tile_rolls(ub, sd, 0.92, 0.2)
@@ -493,7 +493,7 @@ def _que_local(lod=0):
     else:
         hip_ridges(ub, top, 0.46, 0.4)
     yr = top['y_top']
-    ridge(ub, (0, 0, 0), 'z', 6.7 - 4.7 + 0.35, yr - 0.45, 1.25, 0.62, 1.1, n_end=6 if hi else 2)
+    ridge(ub, (0, 0, 0), 'z', 6.9 - 4.9 + 0.35, yr - 0.45, 1.45, 0.62, RIDGE_LIFT, n_end=6 if hi else 3)
     return ub
 
 

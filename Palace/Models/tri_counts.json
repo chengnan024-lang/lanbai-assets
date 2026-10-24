@@ -1,0 +1,33 @@
+{
+ "Palace_Terrace": {
+  "Terrace_LOD0": 5294,
+  "Terrace_LOD1": 1334
+ },
+ "Palace_Weeds": {
+  "Weeds_LOD0": 1200
+ },
+ "Palace_Lamps": {
+  "Lamps0_LOD0": 6660,
+  "Lamps0_LOD1": 2595,
+  "Lamps1_LOD0": 6660,
+  "Lamps1_LOD1": 2595,
+  "Lamps2_LOD0": 6660,
+  "Lamps2_LOD1": 2595,
+  "Lamps3_LOD0": 6660,
+  "Lamps3_LOD1": 2595,
+  "Lamps4_LOD0": 6660,
+  "Lamps4_LOD1": 2595,
+  "Lamps5_LOD0": 6660,
+  "Lamps5_LOD1": 2595
+ },
+ "Palace_Fish": {
+  "Fish_LOD0": 100500
+ },
+ "Palace_Flames": {
+  "Flames_LOD0": 120
+ },
+ "Palace_Door": {
+  "DoorGlow_LOD0": 2,
+  "DoorCones_LOD0": 6
+ }
+}

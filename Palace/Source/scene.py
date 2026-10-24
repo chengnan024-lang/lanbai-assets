@@ -22,7 +22,9 @@ import palace_layout as L  # noqa: E402
 from kit import fish, lamp, terrace, weed  # noqa: E402
 from kit.common import UB  # noqa: E402
 
-PARAMS = dict(warm_I=5.46, warm_r=4.0, indigo_I=4.0, indigo_r=12.0, door_W=900.0)
+import json as _json
+_T = _json.load(open(os.path.join(HERE, 'tuning.json')))
+PARAMS = dict(warm_I=_T['warm_I'], warm_r=_T['warm_range'], indigo_I=_T['indigo_I'], indigo_r=_T['indigo_range'], door_W=_T['door_area_I'])
 
 
 def try_kit(name):
@@ -86,10 +88,8 @@ def build(t_fish=748.26, lod_far=False):
 
 
 def poem_point():
-    e = L.eye(720.0)
-    az, el = math.radians(10.0), math.radians(6.0)
-    d = np.array([math.sin(az) * math.cos(el), math.sin(el), math.cos(az) * math.cos(el)])
-    return e + 8.0 * d
+    import scene_math
+    return np.array(scene_math.poem_point())
 
 
 def split_doorglow(col, M):
@@ -148,7 +148,8 @@ def setup_world():
 
 def add_bus():
     from lbh import scene as S
-    objs, eye = S.bus_shell('bible_v2', interior_ambient=None)
+    amb = tuple(0.3 * c for c in materials.s2l('#0F1E30'))          # 圣经 §6·7b：车厢环境 #0F1E30 × 0.3
+    objs, eye = S.bus_shell('bible_v2', interior_ambient=amb)
     R = Matrix.Rotation(math.pi, 4, 'Z')          # 标准台的轴 (x, z, y) → 本包的轴 (−x, −z, y)
     objs = [o for o in bpy.data.objects if o.name.startswith('Bus_')]   # 连同切窗的棱锥一起转（布尔按世界坐标算）
     for o in objs:

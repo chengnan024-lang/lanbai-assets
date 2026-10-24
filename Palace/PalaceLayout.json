@@ -1,0 +1,2297 @@
+{
+ "about": "蓝白 · 第 7b 幕河伯宫殿布局（宫殿出；内容与海的 Act07_Sea/PalaceFrame_约定.json 一致，那份是车路与构图的合同）。宫殿坐标：米，Unity 轴；x = 0 车路，y = 0 台地顶，z = 0 F5 时的车根。由 Palace/Source/gen_layout.py 生成。",
+ "version": 2,
+ "frame": {
+  "origin": "x = bus path, y = terrace top, z = bus origin at F5 (644.96)",
+  "axes": "Unity: x right (seen from the bus), y up, z = bus heading",
+  "bus_origin_y_stop": 2.5,
+  "terrace_top_depth_m": 250.335,
+  "placement": "R_Palace.localPosition = -busPos(t) (relative to the bus origin; bus at the world origin)",
+  "parent": "R_Sea",
+  "local_position_in_R_Sea": [
+   0.0,
+   -250.335,
+   0.0
+  ],
+  "note": "R_Palace 挂在 R_Sea 下（海的驱动让 R_Sea = (0, depth, −fwd)），局部位置是常数 → R_Palace 世界位置 = −busPos(t)。"
+ },
+ "labels_used": {
+  "F5": 644.96,
+  "F5p": 655.86,
+  "F5q": 675.36,
+  "F5r": 708.86,
+  "F6": 735.56,
+  "F7": 748.26,
+  "F7s": 796.86,
+  "F7p": 812.36,
+  "F8": 835.16
+ },
+ "sources": {
+  "sea_contract": "Act07_Sea/PalaceFrame_约定.json",
+  "rulings": "Art/总导演裁决.md D-17 D-24 D-27 D-28 D-29"
+ },
+ "terrace": {
+  "top_y": 0.0,
+  "edge_x": -8.0,
+  "lip_bottom_y": -13.0,
+  "extent_x": [
+   -260.0,
+   -8.0
+  ],
+  "extent_z": [
+   -120.0,
+   520.0
+  ],
+  "note": "the lip face (x = edge_x, y lip_bottom..0) is solid rock with seaweed; BELOW the lip the terrace has NO underside (dream decision, README): from below, the palace lamps read as a constellation overhead (F7p); the buildings are veiled by fog from below (global _Udon_PalaceVeil, see palace_veil)"
+ },
+ "avenue": {
+  "axis_x": -18.0,
+  "columns_x": [
+   -9.0,
+   -27.0
+  ],
+  "pair_spacing_m": 17.85,
+  "paving": {
+   "x": [
+    -28.5,
+    -8.5
+   ],
+   "z": [
+    42.38999999999987,
+    334.09999999999985
+   ]
+  }
+ },
+ "que": [
+  {
+   "id": "Que_R",
+   "pos": [
+    -12.0,
+    0.0,
+    41.39
+   ],
+   "footprint": [
+    6.0,
+    10.0
+   ],
+   "height_m": 40.0,
+   "passed_at": 668.6
+  },
+  {
+   "id": "Que_L",
+   "pos": [
+    -24.0,
+    0.0,
+    41.39
+   ],
+   "footprint": [
+    6.0,
+    10.0
+   ],
+   "height_m": 40.0
+  }
+ ],
+ "hall": {
+  "id": "Hall",
+  "x": [
+   -68.0,
+   -8.0
+  ],
+  "front_z": 342.6,
+  "depth_m": 28.0,
+  "height_m": 30.0,
+  "bays": 9,
+  "bay_m": 6.6667,
+  "open_door_bay": 8,
+  "door_x": -18.0,
+  "door_size": [
+   4.2,
+   7.5
+  ],
+  "platform": {
+   "height_m": 6.0,
+   "front_z": 334.1,
+   "x": [
+    -72.0,
+    -8.0
+   ],
+   "back_z": 376.6,
+   "stair": {
+    "x": [
+     -22.0,
+     -14.0
+    ],
+    "z": [
+     325.1,
+     334.1
+    ]
+   }
+  },
+  "interior_emission": {
+   "color": "#FFB74D",
+   "gain": 3.0
+  },
+  "door_cone_cards": {
+   "count": 3,
+   "length_m": 20.0,
+   "alpha": 0.06
+  }
+ },
+ "fish_houses": [
+  {
+   "id": "FishHouse_01",
+   "pos": [
+    -36.0,
+    0.0,
+    70.0
+   ],
+   "yaw_deg": 90.0,
+   "size": [
+    9.0,
+    4.8,
+    7.0
+   ]
+  },
+  {
+   "id": "FishHouse_02",
+   "pos": [
+    -52.0,
+    0.0,
+    76.0
+   ],
+   "yaw_deg": 90.0,
+   "size": [
+    9.0,
+    4.8,
+    7.0
+   ]
+  },
+  {
+   "id": "FishHouse_03",
+   "pos": [
+    -37.5,
+    0.0,
+    88.5
+   ],
+   "yaw_deg": 90.0,
+   "size": [
+    10.2,
+    5.2,
+    7.5
+   ]
+  },
+  {
+   "id": "FishHouse_04",
+   "pos": [
+    -53.5,
+    0.0,
+    94.5
+   ],
+   "yaw_deg": 94.0,
+   "size": [
+    10.2,
+    5.2,
+    7.5
+   ]
+  },
+  {
+   "id": "FishHouse_05",
+   "pos": [
+    -39.0,
+    0.0,
+    107.0
+   ],
+   "yaw_deg": 90.0,
+   "size": [
+    11.4,
+    5.6,
+    8.0
+   ]
+  },
+  {
+   "id": "FishHouse_06",
+   "pos": [
+    -55.0,
+    0.0,
+    113.0
+   ],
+   "yaw_deg": 90.0,
+   "size": [
+    11.4,
+    5.6,
+    8.0
+   ]
+  },
+  {
+   "id": "FishHouse_07",
+   "pos": [
+    -36.0,
+    0.0,
+    125.5
+   ],
+   "yaw_deg": 90.0,
+   "size": [
+    9.6,
+    4.8,
+    8.5
+   ]
+  },
+  {
+   "id": "FishHouse_08",
+   "pos": [
+    -37.5,
+    0.0,
+    144.0
+   ],
+   "yaw_deg": 90.0,
+   "size": [
+    10.8,
+    5.2,
+    7.0
+   ]
+  },
+  {
+   "id": "FishHouse_09",
+   "pos": [
+    -53.5,
+    0.0,
+    150.0
+   ],
+   "yaw_deg": 90.0,
+   "size": [
+    10.8,
+    5.2,
+    7.0
+   ]
+  },
+  {
+   "id": "FishHouse_10",
+   "pos": [
+    -39.0,
+    0.0,
+    162.5
+   ],
+   "yaw_deg": 90.0,
+   "size": [
+    9.0,
+    5.6,
+    7.5
+   ]
+  },
+  {
+   "id": "FishHouse_11",
+   "pos": [
+    -36.0,
+    0.0,
+    181.0
+   ],
+   "yaw_deg": 90.0,
+   "size": [
+    10.2,
+    4.8,
+    8.0
+   ]
+  },
+  {
+   "id": "FishHouse_12",
+   "pos": [
+    -52.0,
+    0.0,
+    187.0
+   ],
+   "yaw_deg": 90.0,
+   "size": [
+    10.2,
+    4.8,
+    8.0
+   ]
+  },
+  {
+   "id": "FishHouse_13",
+   "pos": [
+    -37.5,
+    0.0,
+    199.5
+   ],
+   "yaw_deg": 90.0,
+   "size": [
+    11.4,
+    5.2,
+    8.5
+   ]
+  },
+  {
+   "id": "FishHouse_14",
+   "pos": [
+    -39.0,
+    0.0,
+    218.0
+   ],
+   "yaw_deg": 90.0,
+   "size": [
+    9.6,
+    5.6,
+    7.0
+   ]
+  },
+  {
+   "id": "FishHouse_15",
+   "pos": [
+    -55.0,
+    0.0,
+    224.0
+   ],
+   "yaw_deg": 90.0,
+   "size": [
+    9.6,
+    5.6,
+    7.0
+   ]
+  },
+  {
+   "id": "FishHouse_16",
+   "pos": [
+    -36.0,
+    0.0,
+    236.5
+   ],
+   "yaw_deg": 90.0,
+   "size": [
+    10.8,
+    4.8,
+    7.5
+   ]
+  },
+  {
+   "id": "FishHouse_17",
+   "pos": [
+    -37.5,
+    0.0,
+    255.0
+   ],
+   "yaw_deg": 90.0,
+   "size": [
+    9.0,
+    5.2,
+    8.0
+   ]
+  },
+  {
+   "id": "FishHouse_18",
+   "pos": [
+    -53.5,
+    0.0,
+    261.0
+   ],
+   "yaw_deg": 90.0,
+   "size": [
+    9.0,
+    5.2,
+    8.0
+   ]
+  },
+  {
+   "id": "FishHouse_19",
+   "pos": [
+    -39.0,
+    0.0,
+    273.5
+   ],
+   "yaw_deg": 90.0,
+   "size": [
+    10.2,
+    5.6,
+    8.5
+   ]
+  },
+  {
+   "id": "FishHouse_20",
+   "pos": [
+    -36.0,
+    0.0,
+    292.0
+   ],
+   "yaw_deg": 90.0,
+   "size": [
+    11.4,
+    4.8,
+    7.0
+   ]
+  },
+  {
+   "id": "FishHouse_21",
+   "pos": [
+    -52.0,
+    0.0,
+    298.0
+   ],
+   "yaw_deg": 90.0,
+   "size": [
+    11.4,
+    4.8,
+    7.0
+   ]
+  },
+  {
+   "id": "FishHouse_22",
+   "pos": [
+    -37.5,
+    0.0,
+    310.5
+   ],
+   "yaw_deg": 90.0,
+   "size": [
+    9.6,
+    5.2,
+    7.5
+   ]
+  }
+ ],
+ "seaweed": [
+  {
+   "id": "Weed_01",
+   "pos": [
+    -8.4,
+    -2.0,
+    -20.0
+   ],
+   "height_m": 2.0
+  },
+  {
+   "id": "Weed_02",
+   "pos": [
+    -8.4,
+    -7.0,
+    5.0
+   ],
+   "height_m": 3.3
+  },
+  {
+   "id": "Weed_03",
+   "pos": [
+    -8.4,
+    -3.0,
+    30.0
+   ],
+   "height_m": 4.6
+  },
+  {
+   "id": "Weed_04",
+   "pos": [
+    -8.4,
+    -8.0,
+    44.0
+   ],
+   "height_m": 2.9
+  },
+  {
+   "id": "Weed_05",
+   "pos": [
+    -8.4,
+    -4.0,
+    69.0
+   ],
+   "height_m": 4.2
+  },
+  {
+   "id": "Weed_06",
+   "pos": [
+    -8.4,
+    -9.0,
+    94.0
+   ],
+   "height_m": 2.5
+  },
+  {
+   "id": "Weed_07",
+   "pos": [
+    -8.4,
+    -5.0,
+    108.0
+   ],
+   "height_m": 3.8
+  },
+  {
+   "id": "Weed_08",
+   "pos": [
+    -8.4,
+    -10.0,
+    133.0
+   ],
+   "height_m": 2.1
+  },
+  {
+   "id": "Weed_09",
+   "pos": [
+    -8.4,
+    -6.0,
+    158.0
+   ],
+   "height_m": 3.4
+  },
+  {
+   "id": "Weed_10",
+   "pos": [
+    -8.4,
+    -2.0,
+    172.0
+   ],
+   "height_m": 4.7
+  },
+  {
+   "id": "Weed_11",
+   "pos": [
+    -8.4,
+    -7.0,
+    197.0
+   ],
+   "height_m": 3.0
+  },
+  {
+   "id": "Weed_12",
+   "pos": [
+    -8.4,
+    -3.0,
+    211.0
+   ],
+   "height_m": 4.3
+  },
+  {
+   "id": "Weed_13",
+   "pos": [
+    -8.4,
+    -8.0,
+    236.0
+   ],
+   "height_m": 2.6
+  },
+  {
+   "id": "Weed_14",
+   "pos": [
+    -8.4,
+    -4.0,
+    261.0
+   ],
+   "height_m": 3.9
+  },
+  {
+   "id": "Weed_15",
+   "pos": [
+    -8.4,
+    -9.0,
+    275.0
+   ],
+   "height_m": 2.2
+  },
+  {
+   "id": "Weed_16",
+   "pos": [
+    -8.4,
+    -5.0,
+    300.0
+   ],
+   "height_m": 3.5
+  },
+  {
+   "id": "Weed_17",
+   "pos": [
+    -8.4,
+    -10.0,
+    325.0
+   ],
+   "height_m": 4.8
+  },
+  {
+   "id": "Weed_18",
+   "pos": [
+    -8.4,
+    -6.0,
+    339.0
+   ],
+   "height_m": 3.1
+  },
+  {
+   "id": "Weed_19",
+   "pos": [
+    -15.0,
+    0.0,
+    333.1
+   ],
+   "height_m": 2.6
+  },
+  {
+   "id": "Weed_20",
+   "pos": [
+    -22.0,
+    0.0,
+    333.1
+   ],
+   "height_m": 3.3
+  },
+  {
+   "id": "Weed_21",
+   "pos": [
+    -29.0,
+    0.0,
+    333.1
+   ],
+   "height_m": 4.0
+  },
+  {
+   "id": "Weed_22",
+   "pos": [
+    -36.0,
+    0.0,
+    333.1
+   ],
+   "height_m": 4.7
+  },
+  {
+   "id": "Weed_23",
+   "pos": [
+    -43.0,
+    0.0,
+    333.1
+   ],
+   "height_m": 2.4
+  },
+  {
+   "id": "Weed_24",
+   "pos": [
+    -50.0,
+    0.0,
+    333.1
+   ],
+   "height_m": 3.1
+  },
+  {
+   "id": "Weed_25",
+   "pos": [
+    -57.0,
+    0.0,
+    333.1
+   ],
+   "height_m": 3.8
+  },
+  {
+   "id": "Weed_26",
+   "pos": [
+    -64.0,
+    0.0,
+    333.1
+   ],
+   "height_m": 4.5
+  },
+  {
+   "id": "Weed_27",
+   "pos": [
+    -24.0,
+    0.0,
+    40.0
+   ],
+   "height_m": 2.2
+  },
+  {
+   "id": "Weed_28",
+   "pos": [
+    -12.0,
+    0.0,
+    40.0
+   ],
+   "height_m": 2.9
+  },
+  {
+   "id": "Weed_29",
+   "pos": [
+    -24.0,
+    0.0,
+    40.0
+   ],
+   "height_m": 3.6
+  },
+  {
+   "id": "Weed_30",
+   "pos": [
+    -12.0,
+    0.0,
+    40.0
+   ],
+   "height_m": 4.3
+  }
+ ],
+ "fish": {
+  "count": 1500,
+  "lite": 700,
+  "centre": [
+   -38.0,
+   14.0,
+   356.6
+  ],
+  "torus_radius_m": 35.0,
+  "tube_radius_m": 9.0,
+  "rev_per_s": 0.03,
+  "length_cm": [
+   12,
+   20
+  ],
+  "back": "#34444E",
+  "belly": "#B8C0C4",
+  "smoothness": 0.85,
+  "shader": "Lanbai/PalaceFish",
+  "b_school": {
+   "pass_t": 720.0,
+   "note": "河伯诗那一刻从诗前面游过一次"
+  }
+ },
+ "specks": {
+  "file": "PalaceSpecks_Points.fbx",
+  "count": 240,
+  "note": "far lights of the drowned city beyond the fog: points 140-650 m away on the terrace (left and ahead), fog-free with own attenuation (_FogMode 2, _Atten 0.004); the same mesh hangs in the act-8 ceiling (Sea README §4)",
+  "region": {
+   "x": [
+    -650,
+    -60
+   ],
+   "y": [
+    0.5,
+    30
+   ],
+   "z": [
+    -150,
+    900
+   ]
+  }
+ },
+ "palace_veil": {
+  "name": "_Udon_PalaceVeil",
+  "writer": "海（第 7 幕驱动）",
+  "readers": [
+   "Lanbai/Palace",
+   "Lanbai/PalaceGlow"
+  ],
+  "not_readers": [
+   "Lanbai/PalaceFlame（灯焰从下面看就是星座）",
+   "Lanbai/PalaceFish"
+  ]
+ },
+ "lamps": [
+  {
+   "id": "Lamp_R01",
+   "group": "avenue",
+   "pos": [
+    -9.0,
+    0.0,
+    54.39
+   ],
+   "height_m": 1.85,
+   "flame_pos": [
+    -9.0,
+    1.62,
+    54.39
+   ],
+   "abreast_t": 672.0,
+   "baked": [
+    {
+     "kind": "warm",
+     "pos": [
+      -9.0,
+      1.62,
+      54.39
+     ],
+     "color": "#FF9C2F",
+     "range_m": 4.0,
+     "intensity": 5.46,
+     "shadows": "soft",
+     "mode": "Baked"
+    },
+    {
+     "kind": "indigo",
+     "pos": [
+      -9.0,
+      1.92,
+      54.39
+     ],
+     "color": "#2A557B",
+     "range_m": 12.0,
+     "intensity": 4.0,
+     "shadows": "none",
+     "mode": "Baked"
+    }
+   ]
+  },
+  {
+   "id": "Lamp_L01",
+   "group": "avenue",
+   "pos": [
+    -27.0,
+    0.0,
+    54.39
+   ],
+   "height_m": 1.85,
+   "flame_pos": [
+    -27.0,
+    1.62,
+    54.39
+   ],
+   "abreast_t": 672.0,
+   "baked": [
+    {
+     "kind": "warm",
+     "pos": [
+      -27.0,
+      1.62,
+      54.39
+     ],
+     "color": "#FF9C2F",
+     "range_m": 4.0,
+     "intensity": 5.46,
+     "shadows": "soft",
+     "mode": "Baked"
+    },
+    {
+     "kind": "indigo",
+     "pos": [
+      -27.0,
+      1.92,
+      54.39
+     ],
+     "color": "#2A557B",
+     "range_m": 12.0,
+     "intensity": 4.0,
+     "shadows": "none",
+     "mode": "Baked"
+    }
+   ]
+  },
+  {
+   "id": "Lamp_R02",
+   "group": "avenue",
+   "pos": [
+    -9.0,
+    0.0,
+    72.24
+   ],
+   "height_m": 1.7,
+   "flame_pos": [
+    -9.0,
+    1.5,
+    72.24
+   ],
+   "abreast_t": 677.1,
+   "baked": [
+    {
+     "kind": "warm",
+     "pos": [
+      -9.0,
+      1.5,
+      72.24
+     ],
+     "color": "#FF9C2F",
+     "range_m": 4.0,
+     "intensity": 5.46,
+     "shadows": "soft",
+     "mode": "Baked"
+    },
+    {
+     "kind": "indigo",
+     "pos": [
+      -9.0,
+      1.8,
+      72.24
+     ],
+     "color": "#2A557B",
+     "range_m": 12.0,
+     "intensity": 4.0,
+     "shadows": "none",
+     "mode": "Baked"
+    }
+   ]
+  },
+  {
+   "id": "Lamp_L02",
+   "group": "avenue",
+   "pos": [
+    -27.0,
+    0.0,
+    72.24
+   ],
+   "height_m": 1.7,
+   "flame_pos": [
+    -27.0,
+    1.5,
+    72.24
+   ],
+   "abreast_t": 677.1,
+   "baked": [
+    {
+     "kind": "warm",
+     "pos": [
+      -27.0,
+      1.5,
+      72.24
+     ],
+     "color": "#FF9C2F",
+     "range_m": 4.0,
+     "intensity": 5.46,
+     "shadows": "soft",
+     "mode": "Baked"
+    },
+    {
+     "kind": "indigo",
+     "pos": [
+      -27.0,
+      1.8,
+      72.24
+     ],
+     "color": "#2A557B",
+     "range_m": 12.0,
+     "intensity": 4.0,
+     "shadows": "none",
+     "mode": "Baked"
+    }
+   ]
+  },
+  {
+   "id": "Lamp_R03",
+   "group": "avenue",
+   "pos": [
+    -9.0,
+    0.0,
+    90.44
+   ],
+   "height_m": 1.85,
+   "flame_pos": [
+    -9.0,
+    1.62,
+    90.44
+   ],
+   "abreast_t": 682.3,
+   "baked": [
+    {
+     "kind": "warm",
+     "pos": [
+      -9.0,
+      1.62,
+      90.44
+     ],
+     "color": "#FF9C2F",
+     "range_m": 4.0,
+     "intensity": 5.46,
+     "shadows": "soft",
+     "mode": "Baked"
+    },
+    {
+     "kind": "indigo",
+     "pos": [
+      -9.0,
+      1.92,
+      90.44
+     ],
+     "color": "#2A557B",
+     "range_m": 12.0,
+     "intensity": 4.0,
+     "shadows": "none",
+     "mode": "Baked"
+    }
+   ]
+  },
+  {
+   "id": "Lamp_L03",
+   "group": "avenue",
+   "pos": [
+    -27.0,
+    0.0,
+    90.44
+   ],
+   "height_m": 1.85,
+   "flame_pos": [
+    -27.0,
+    1.62,
+    90.44
+   ],
+   "abreast_t": 682.3,
+   "baked": [
+    {
+     "kind": "warm",
+     "pos": [
+      -27.0,
+      1.62,
+      90.44
+     ],
+     "color": "#FF9C2F",
+     "range_m": 4.0,
+     "intensity": 5.46,
+     "shadows": "soft",
+     "mode": "Baked"
+    },
+    {
+     "kind": "indigo",
+     "pos": [
+      -27.0,
+      1.92,
+      90.44
+     ],
+     "color": "#2A557B",
+     "range_m": 12.0,
+     "intensity": 4.0,
+     "shadows": "none",
+     "mode": "Baked"
+    }
+   ]
+  },
+  {
+   "id": "Lamp_R04",
+   "group": "avenue",
+   "pos": [
+    -9.0,
+    0.0,
+    108.29
+   ],
+   "height_m": 1.7,
+   "flame_pos": [
+    -9.0,
+    1.5,
+    108.29
+   ],
+   "abreast_t": 687.4,
+   "baked": [
+    {
+     "kind": "warm",
+     "pos": [
+      -9.0,
+      1.5,
+      108.29
+     ],
+     "color": "#FF9C2F",
+     "range_m": 4.0,
+     "intensity": 5.46,
+     "shadows": "soft",
+     "mode": "Baked"
+    },
+    {
+     "kind": "indigo",
+     "pos": [
+      -9.0,
+      1.8,
+      108.29
+     ],
+     "color": "#2A557B",
+     "range_m": 12.0,
+     "intensity": 4.0,
+     "shadows": "none",
+     "mode": "Baked"
+    }
+   ]
+  },
+  {
+   "id": "Lamp_L04",
+   "group": "avenue",
+   "pos": [
+    -27.0,
+    0.0,
+    108.29
+   ],
+   "height_m": 1.7,
+   "flame_pos": [
+    -27.0,
+    1.5,
+    108.29
+   ],
+   "abreast_t": 687.4,
+   "baked": [
+    {
+     "kind": "warm",
+     "pos": [
+      -27.0,
+      1.5,
+      108.29
+     ],
+     "color": "#FF9C2F",
+     "range_m": 4.0,
+     "intensity": 5.46,
+     "shadows": "soft",
+     "mode": "Baked"
+    },
+    {
+     "kind": "indigo",
+     "pos": [
+      -27.0,
+      1.8,
+      108.29
+     ],
+     "color": "#2A557B",
+     "range_m": 12.0,
+     "intensity": 4.0,
+     "shadows": "none",
+     "mode": "Baked"
+    }
+   ]
+  },
+  {
+   "id": "Lamp_R05",
+   "group": "avenue",
+   "pos": [
+    -9.0,
+    0.0,
+    126.49
+   ],
+   "height_m": 1.85,
+   "flame_pos": [
+    -9.0,
+    1.62,
+    126.49
+   ],
+   "abreast_t": 692.6,
+   "baked": [
+    {
+     "kind": "warm",
+     "pos": [
+      -9.0,
+      1.62,
+      126.49
+     ],
+     "color": "#FF9C2F",
+     "range_m": 4.0,
+     "intensity": 5.46,
+     "shadows": "soft",
+     "mode": "Baked"
+    },
+    {
+     "kind": "indigo",
+     "pos": [
+      -9.0,
+      1.92,
+      126.49
+     ],
+     "color": "#2A557B",
+     "range_m": 12.0,
+     "intensity": 4.0,
+     "shadows": "none",
+     "mode": "Baked"
+    }
+   ]
+  },
+  {
+   "id": "Lamp_L05",
+   "group": "avenue",
+   "pos": [
+    -27.0,
+    0.0,
+    126.49
+   ],
+   "height_m": 1.85,
+   "flame_pos": [
+    -27.0,
+    1.62,
+    126.49
+   ],
+   "abreast_t": 692.6,
+   "baked": [
+    {
+     "kind": "warm",
+     "pos": [
+      -27.0,
+      1.62,
+      126.49
+     ],
+     "color": "#FF9C2F",
+     "range_m": 4.0,
+     "intensity": 5.46,
+     "shadows": "soft",
+     "mode": "Baked"
+    },
+    {
+     "kind": "indigo",
+     "pos": [
+      -27.0,
+      1.92,
+      126.49
+     ],
+     "color": "#2A557B",
+     "range_m": 12.0,
+     "intensity": 4.0,
+     "shadows": "none",
+     "mode": "Baked"
+    }
+   ]
+  },
+  {
+   "id": "Lamp_R06",
+   "group": "avenue",
+   "pos": [
+    -9.0,
+    0.0,
+    144.34
+   ],
+   "height_m": 1.7,
+   "flame_pos": [
+    -9.0,
+    1.5,
+    144.34
+   ],
+   "abreast_t": 697.7,
+   "baked": [
+    {
+     "kind": "warm",
+     "pos": [
+      -9.0,
+      1.5,
+      144.34
+     ],
+     "color": "#FF9C2F",
+     "range_m": 4.0,
+     "intensity": 5.46,
+     "shadows": "soft",
+     "mode": "Baked"
+    },
+    {
+     "kind": "indigo",
+     "pos": [
+      -9.0,
+      1.8,
+      144.34
+     ],
+     "color": "#2A557B",
+     "range_m": 12.0,
+     "intensity": 4.0,
+     "shadows": "none",
+     "mode": "Baked"
+    }
+   ]
+  },
+  {
+   "id": "Lamp_L06",
+   "group": "avenue",
+   "pos": [
+    -27.0,
+    0.0,
+    144.34
+   ],
+   "height_m": 1.7,
+   "flame_pos": [
+    -27.0,
+    1.5,
+    144.34
+   ],
+   "abreast_t": 697.7,
+   "baked": [
+    {
+     "kind": "warm",
+     "pos": [
+      -27.0,
+      1.5,
+      144.34
+     ],
+     "color": "#FF9C2F",
+     "range_m": 4.0,
+     "intensity": 5.46,
+     "shadows": "soft",
+     "mode": "Baked"
+    },
+    {
+     "kind": "indigo",
+     "pos": [
+      -27.0,
+      1.8,
+      144.34
+     ],
+     "color": "#2A557B",
+     "range_m": 12.0,
+     "intensity": 4.0,
+     "shadows": "none",
+     "mode": "Baked"
+    }
+   ]
+  },
+  {
+   "id": "Lamp_R07",
+   "group": "avenue",
+   "pos": [
+    -9.0,
+    0.0,
+    162.19
+   ],
+   "height_m": 1.85,
+   "flame_pos": [
+    -9.0,
+    1.62,
+    162.19
+   ],
+   "abreast_t": 702.8,
+   "baked": [
+    {
+     "kind": "warm",
+     "pos": [
+      -9.0,
+      1.62,
+      162.19
+     ],
+     "color": "#FF9C2F",
+     "range_m": 4.0,
+     "intensity": 5.46,
+     "shadows": "soft",
+     "mode": "Baked"
+    },
+    {
+     "kind": "indigo",
+     "pos": [
+      -9.0,
+      1.92,
+      162.19
+     ],
+     "color": "#2A557B",
+     "range_m": 12.0,
+     "intensity": 4.0,
+     "shadows": "none",
+     "mode": "Baked"
+    }
+   ]
+  },
+  {
+   "id": "Lamp_L07",
+   "group": "avenue",
+   "pos": [
+    -27.0,
+    0.0,
+    162.19
+   ],
+   "height_m": 1.85,
+   "flame_pos": [
+    -27.0,
+    1.62,
+    162.19
+   ],
+   "abreast_t": 702.8,
+   "baked": [
+    {
+     "kind": "warm",
+     "pos": [
+      -27.0,
+      1.62,
+      162.19
+     ],
+     "color": "#FF9C2F",
+     "range_m": 4.0,
+     "intensity": 5.46,
+     "shadows": "soft",
+     "mode": "Baked"
+    },
+    {
+     "kind": "indigo",
+     "pos": [
+      -27.0,
+      1.92,
+      162.19
+     ],
+     "color": "#2A557B",
+     "range_m": 12.0,
+     "intensity": 4.0,
+     "shadows": "none",
+     "mode": "Baked"
+    }
+   ]
+  },
+  {
+   "id": "Lamp_R08",
+   "group": "avenue",
+   "pos": [
+    -9.0,
+    0.0,
+    180.39
+   ],
+   "height_m": 1.7,
+   "flame_pos": [
+    -9.0,
+    1.5,
+    180.39
+   ],
+   "abreast_t": 708.0,
+   "baked": [
+    {
+     "kind": "warm",
+     "pos": [
+      -9.0,
+      1.5,
+      180.39
+     ],
+     "color": "#FF9C2F",
+     "range_m": 4.0,
+     "intensity": 5.46,
+     "shadows": "soft",
+     "mode": "Baked"
+    },
+    {
+     "kind": "indigo",
+     "pos": [
+      -9.0,
+      1.8,
+      180.39
+     ],
+     "color": "#2A557B",
+     "range_m": 12.0,
+     "intensity": 4.0,
+     "shadows": "none",
+     "mode": "Baked"
+    }
+   ]
+  },
+  {
+   "id": "Lamp_L08",
+   "group": "avenue",
+   "pos": [
+    -27.0,
+    0.0,
+    180.39
+   ],
+   "height_m": 1.7,
+   "flame_pos": [
+    -27.0,
+    1.5,
+    180.39
+   ],
+   "abreast_t": 708.0,
+   "baked": [
+    {
+     "kind": "warm",
+     "pos": [
+      -27.0,
+      1.5,
+      180.39
+     ],
+     "color": "#FF9C2F",
+     "range_m": 4.0,
+     "intensity": 5.46,
+     "shadows": "soft",
+     "mode": "Baked"
+    },
+    {
+     "kind": "indigo",
+     "pos": [
+      -27.0,
+      1.8,
+      180.39
+     ],
+     "color": "#2A557B",
+     "range_m": 12.0,
+     "intensity": 4.0,
+     "shadows": "none",
+     "mode": "Baked"
+    }
+   ]
+  },
+  {
+   "id": "Lamp_R09",
+   "group": "avenue",
+   "pos": [
+    -9.0,
+    0.0,
+    198.24
+   ],
+   "height_m": 1.85,
+   "flame_pos": [
+    -9.0,
+    1.62,
+    198.24
+   ],
+   "abreast_t": 713.1,
+   "baked": [
+    {
+     "kind": "warm",
+     "pos": [
+      -9.0,
+      1.62,
+      198.24
+     ],
+     "color": "#FF9C2F",
+     "range_m": 4.0,
+     "intensity": 5.46,
+     "shadows": "soft",
+     "mode": "Baked"
+    },
+    {
+     "kind": "indigo",
+     "pos": [
+      -9.0,
+      1.92,
+      198.24
+     ],
+     "color": "#2A557B",
+     "range_m": 12.0,
+     "intensity": 4.0,
+     "shadows": "none",
+     "mode": "Baked"
+    }
+   ]
+  },
+  {
+   "id": "Lamp_L09",
+   "group": "avenue",
+   "pos": [
+    -27.0,
+    0.0,
+    198.24
+   ],
+   "height_m": 1.85,
+   "flame_pos": [
+    -27.0,
+    1.62,
+    198.24
+   ],
+   "abreast_t": 713.1,
+   "baked": [
+    {
+     "kind": "warm",
+     "pos": [
+      -27.0,
+      1.62,
+      198.24
+     ],
+     "color": "#FF9C2F",
+     "range_m": 4.0,
+     "intensity": 5.46,
+     "shadows": "soft",
+     "mode": "Baked"
+    },
+    {
+     "kind": "indigo",
+     "pos": [
+      -27.0,
+      1.92,
+      198.24
+     ],
+     "color": "#2A557B",
+     "range_m": 12.0,
+     "intensity": 4.0,
+     "shadows": "none",
+     "mode": "Baked"
+    }
+   ]
+  },
+  {
+   "id": "Lamp_R10",
+   "group": "avenue",
+   "pos": [
+    -9.0,
+    0.0,
+    216.44
+   ],
+   "height_m": 1.7,
+   "flame_pos": [
+    -9.0,
+    1.5,
+    216.44
+   ],
+   "abreast_t": 718.3,
+   "baked": [
+    {
+     "kind": "warm",
+     "pos": [
+      -9.0,
+      1.5,
+      216.44
+     ],
+     "color": "#FF9C2F",
+     "range_m": 4.0,
+     "intensity": 5.46,
+     "shadows": "soft",
+     "mode": "Baked"
+    },
+    {
+     "kind": "indigo",
+     "pos": [
+      -9.0,
+      1.8,
+      216.44
+     ],
+     "color": "#2A557B",
+     "range_m": 12.0,
+     "intensity": 4.0,
+     "shadows": "none",
+     "mode": "Baked"
+    }
+   ]
+  },
+  {
+   "id": "Lamp_L10",
+   "group": "avenue",
+   "pos": [
+    -27.0,
+    0.0,
+    216.44
+   ],
+   "height_m": 1.7,
+   "flame_pos": [
+    -27.0,
+    1.5,
+    216.44
+   ],
+   "abreast_t": 718.3,
+   "baked": [
+    {
+     "kind": "warm",
+     "pos": [
+      -27.0,
+      1.5,
+      216.44
+     ],
+     "color": "#FF9C2F",
+     "range_m": 4.0,
+     "intensity": 5.46,
+     "shadows": "soft",
+     "mode": "Baked"
+    },
+    {
+     "kind": "indigo",
+     "pos": [
+      -27.0,
+      1.8,
+      216.44
+     ],
+     "color": "#2A557B",
+     "range_m": 12.0,
+     "intensity": 4.0,
+     "shadows": "none",
+     "mode": "Baked"
+    }
+   ]
+  },
+  {
+   "id": "Lamp_R11",
+   "group": "avenue",
+   "pos": [
+    -9.0,
+    0.0,
+    234.29
+   ],
+   "height_m": 1.85,
+   "flame_pos": [
+    -9.0,
+    1.62,
+    234.29
+   ],
+   "abreast_t": 723.4,
+   "baked": [
+    {
+     "kind": "warm",
+     "pos": [
+      -9.0,
+      1.62,
+      234.29
+     ],
+     "color": "#FF9C2F",
+     "range_m": 4.0,
+     "intensity": 5.46,
+     "shadows": "soft",
+     "mode": "Baked"
+    },
+    {
+     "kind": "indigo",
+     "pos": [
+      -9.0,
+      1.92,
+      234.29
+     ],
+     "color": "#2A557B",
+     "range_m": 12.0,
+     "intensity": 4.0,
+     "shadows": "none",
+     "mode": "Baked"
+    }
+   ]
+  },
+  {
+   "id": "Lamp_L11",
+   "group": "avenue",
+   "pos": [
+    -27.0,
+    0.0,
+    234.29
+   ],
+   "height_m": 1.85,
+   "flame_pos": [
+    -27.0,
+    1.62,
+    234.29
+   ],
+   "abreast_t": 723.4,
+   "baked": [
+    {
+     "kind": "warm",
+     "pos": [
+      -27.0,
+      1.62,
+      234.29
+     ],
+     "color": "#FF9C2F",
+     "range_m": 4.0,
+     "intensity": 5.46,
+     "shadows": "soft",
+     "mode": "Baked"
+    },
+    {
+     "kind": "indigo",
+     "pos": [
+      -27.0,
+      1.92,
+      234.29
+     ],
+     "color": "#2A557B",
+     "range_m": 12.0,
+     "intensity": 4.0,
+     "shadows": "none",
+     "mode": "Baked"
+    }
+   ]
+  },
+  {
+   "id": "Lamp_R12",
+   "group": "avenue",
+   "pos": [
+    -9.0,
+    0.0,
+    252.49
+   ],
+   "height_m": 1.7,
+   "flame_pos": [
+    -9.0,
+    1.5,
+    252.49
+   ],
+   "abreast_t": 728.6,
+   "baked": [
+    {
+     "kind": "warm",
+     "pos": [
+      -9.0,
+      1.5,
+      252.49
+     ],
+     "color": "#FF9C2F",
+     "range_m": 4.0,
+     "intensity": 5.46,
+     "shadows": "soft",
+     "mode": "Baked"
+    },
+    {
+     "kind": "indigo",
+     "pos": [
+      -9.0,
+      1.8,
+      252.49
+     ],
+     "color": "#2A557B",
+     "range_m": 12.0,
+     "intensity": 4.0,
+     "shadows": "none",
+     "mode": "Baked"
+    }
+   ]
+  },
+  {
+   "id": "Lamp_L12",
+   "group": "avenue",
+   "pos": [
+    -27.0,
+    0.0,
+    252.49
+   ],
+   "height_m": 1.7,
+   "flame_pos": [
+    -27.0,
+    1.5,
+    252.49
+   ],
+   "abreast_t": 728.6,
+   "baked": [
+    {
+     "kind": "warm",
+     "pos": [
+      -27.0,
+      1.5,
+      252.49
+     ],
+     "color": "#FF9C2F",
+     "range_m": 4.0,
+     "intensity": 5.46,
+     "shadows": "soft",
+     "mode": "Baked"
+    },
+    {
+     "kind": "indigo",
+     "pos": [
+      -27.0,
+      1.8,
+      252.49
+     ],
+     "color": "#2A557B",
+     "range_m": 12.0,
+     "intensity": 4.0,
+     "shadows": "none",
+     "mode": "Baked"
+    }
+   ]
+  },
+  {
+   "id": "Lamp_P01",
+   "group": "platform",
+   "pos": [
+    -13.0,
+    6.0,
+    335.3
+   ],
+   "height_m": 1.9,
+   "flame_pos": [
+    -13.0,
+    7.66,
+    335.3
+   ],
+   "abreast_t": null,
+   "baked": [
+    {
+     "kind": "warm",
+     "pos": [
+      -13.0,
+      7.66,
+      335.3
+     ],
+     "color": "#FF9C2F",
+     "range_m": 4.0,
+     "intensity": 5.46,
+     "shadows": "soft",
+     "mode": "Baked"
+    },
+    {
+     "kind": "indigo",
+     "pos": [
+      -13.0,
+      7.96,
+      335.3
+     ],
+     "color": "#2A557B",
+     "range_m": 12.0,
+     "intensity": 4.0,
+     "shadows": "none",
+     "mode": "Baked"
+    }
+   ]
+  },
+  {
+   "id": "Lamp_P02",
+   "group": "platform",
+   "pos": [
+    -23.0,
+    6.0,
+    335.3
+   ],
+   "height_m": 1.9,
+   "flame_pos": [
+    -23.0,
+    7.66,
+    335.3
+   ],
+   "abreast_t": null,
+   "baked": [
+    {
+     "kind": "warm",
+     "pos": [
+      -23.0,
+      7.66,
+      335.3
+     ],
+     "color": "#FF9C2F",
+     "range_m": 4.0,
+     "intensity": 5.46,
+     "shadows": "soft",
+     "mode": "Baked"
+    },
+    {
+     "kind": "indigo",
+     "pos": [
+      -23.0,
+      7.96,
+      335.3
+     ],
+     "color": "#2A557B",
+     "range_m": 12.0,
+     "intensity": 4.0,
+     "shadows": "none",
+     "mode": "Baked"
+    }
+   ]
+  },
+  {
+   "id": "Lamp_P03",
+   "group": "platform",
+   "pos": [
+    -34.0,
+    6.0,
+    335.3
+   ],
+   "height_m": 1.9,
+   "flame_pos": [
+    -34.0,
+    7.66,
+    335.3
+   ],
+   "abreast_t": null,
+   "baked": [
+    {
+     "kind": "warm",
+     "pos": [
+      -34.0,
+      7.66,
+      335.3
+     ],
+     "color": "#FF9C2F",
+     "range_m": 4.0,
+     "intensity": 5.46,
+     "shadows": "soft",
+     "mode": "Baked"
+    },
+    {
+     "kind": "indigo",
+     "pos": [
+      -34.0,
+      7.96,
+      335.3
+     ],
+     "color": "#2A557B",
+     "range_m": 12.0,
+     "intensity": 4.0,
+     "shadows": "none",
+     "mode": "Baked"
+    }
+   ]
+  },
+  {
+   "id": "Lamp_P04",
+   "group": "platform",
+   "pos": [
+    -45.0,
+    6.0,
+    335.3
+   ],
+   "height_m": 1.9,
+   "flame_pos": [
+    -45.0,
+    7.66,
+    335.3
+   ],
+   "abreast_t": null,
+   "baked": [
+    {
+     "kind": "warm",
+     "pos": [
+      -45.0,
+      7.66,
+      335.3
+     ],
+     "color": "#FF9C2F",
+     "range_m": 4.0,
+     "intensity": 5.46,
+     "shadows": "soft",
+     "mode": "Baked"
+    },
+    {
+     "kind": "indigo",
+     "pos": [
+      -45.0,
+      7.96,
+      335.3
+     ],
+     "color": "#2A557B",
+     "range_m": 12.0,
+     "intensity": 4.0,
+     "shadows": "none",
+     "mode": "Baked"
+    }
+   ]
+  },
+  {
+   "id": "Lamp_P05",
+   "group": "platform",
+   "pos": [
+    -56.0,
+    6.0,
+    335.3
+   ],
+   "height_m": 1.9,
+   "flame_pos": [
+    -56.0,
+    7.66,
+    335.3
+   ],
+   "abreast_t": null,
+   "baked": [
+    {
+     "kind": "warm",
+     "pos": [
+      -56.0,
+      7.66,
+      335.3
+     ],
+     "color": "#FF9C2F",
+     "range_m": 4.0,
+     "intensity": 5.46,
+     "shadows": "soft",
+     "mode": "Baked"
+    },
+    {
+     "kind": "indigo",
+     "pos": [
+      -56.0,
+      7.96,
+      335.3
+     ],
+     "color": "#2A557B",
+     "range_m": 12.0,
+     "intensity": 4.0,
+     "shadows": "none",
+     "mode": "Baked"
+    }
+   ]
+  },
+  {
+   "id": "Lamp_P06",
+   "group": "platform",
+   "pos": [
+    -66.0,
+    6.0,
+    335.3
+   ],
+   "height_m": 1.9,
+   "flame_pos": [
+    -66.0,
+    7.66,
+    335.3
+   ],
+   "abreast_t": null,
+   "baked": [
+    {
+     "kind": "warm",
+     "pos": [
+      -66.0,
+      7.66,
+      335.3
+     ],
+     "color": "#FF9C2F",
+     "range_m": 4.0,
+     "intensity": 5.46,
+     "shadows": "soft",
+     "mode": "Baked"
+    },
+    {
+     "kind": "indigo",
+     "pos": [
+      -66.0,
+      7.96,
+      335.3
+     ],
+     "color": "#2A557B",
+     "range_m": 12.0,
+     "intensity": 4.0,
+     "shadows": "none",
+     "mode": "Baked"
+    }
+   ]
+  }
+ ],
+ "door_spill": {
+  "type": "Area (Baked)",
+  "shape": "rectangle",
+  "size": [
+   3.99,
+   7.12
+  ],
+  "pos": [
+   -18.0,
+   9.75,
+   343.2
+  ],
+  "facing": [
+   0,
+   0,
+   -1
+  ],
+  "color": "#FFB74D",
+  "intensity": 900.0,
+  "note": "Unity 面光的 Intensity：面光发出的辐亮度 = color × intensity（Inspector = E 的约定下按灰卡校：门前 6 m 灰卡读数见 README）"
+ },
+ "door_glow": {
+  "color": "#FFB74D",
+  "gain": 3.0,
+  "atten": 0.004,
+  "plane_z": 347.6,
+  "cones": {
+   "count": 3,
+   "length_m": 20.0,
+   "alpha": 0.06
+  }
+ },
+ "flames": {
+  "shader": "Lanbai/PalaceFlame",
+  "flame_fill": "#FF5E2A @ +3.11",
+  "flame_linear": [
+   8.6338,
+   0.9664,
+   0.1999
+  ],
+  "screen": "#FFC46A",
+  "halo_radius_m": 1.5,
+  "halo_mid_fill": "#446282",
+  "atten": 0.004,
+  "fps": 6,
+  "min_pixels": 1.2
+ },
+ "analytic_lamps": {
+  "globals": "_Udon_Lamp0..7 / LampColor / LampDir / LampAxis",
+  "writer": "LanbaiPalaceDriver（离主座位眼睛最近的 8 盏）",
+  "intensity": 5.46,
+  "color": "#FF9C2F",
+  "radius_m": 0.1
+ },
+ "ambient_for_bake": {
+  "mode": "Trilight",
+  "sky": "#0E3050",
+  "equator": "#0A2238",
+  "ground": "#1A1422",
+  "note": "圣经 §6·7b 的 Trilight；烘焙时设成这样（光照贴图里带着环境光），Udon 之后改环境色不影响宫殿"
+ },
+ "tuning": {
+  "warm_I": 5.46,
+  "warm_range": 4.0,
+  "indigo_I": 4.0,
+  "indigo_range": 12.0,
+  "door_area_I": 900.0,
+  "note": "第 0 轮的起点；按参考渲染的灯组增益调（post.py --gains），定了再写回这里并重跑 gen_layout.py"
+ },
+ "render": {
+  "fog_density": 0.018,
+  "fog_up_fill": "#182930",
+  "fog_mid_fill": "#0C171E",
+  "fog_down_fill": "#020302",
+  "note": "参考渲染的水色（屏幕 #06202C / #04121E / #02070F，按 S7b 引擎反解）；Unity 里由海的 LanbaiFog 水下参数组给"
+ },
+ "motion_samples": [
+  {
+   "t": 644.96,
+   "bus": [
+    0.0,
+    14.32,
+    0.0
+   ]
+  },
+  {
+   "t": 655.86,
+   "bus": [
+    0.0,
+    5.203,
+    6.538
+   ]
+  },
+  {
+   "t": 668.6,
+   "bus": [
+    0.0,
+    2.5,
+    42.49
+   ]
+  },
+  {
+   "t": 672.0,
+   "bus": [
+    0.0,
+    2.5,
+    54.39
+   ]
+  },
+  {
+   "t": 690.0,
+   "bus": [
+    0.0,
+    2.5,
+    117.39
+   ]
+  },
+  {
+   "t": 706.0,
+   "bus": [
+    0.0,
+    2.5,
+    173.39
+   ]
+  },
+  {
+   "t": 714.0,
+   "bus": [
+    0.0,
+    2.5,
+    201.39
+   ]
+  },
+  {
+   "t": 728.6,
+   "bus": [
+    0.0,
+    2.5,
+    252.49
+   ]
+  },
+  {
+   "t": 735.56,
+   "bus": [
+    0.0,
+    2.5,
+    276.85
+   ]
+  },
+  {
+   "t": 740.26,
+   "bus": [
+    0.0,
+    2.5,
+    293.3
+   ]
+  },
+  {
+   "t": 748.26,
+   "bus": [
+    0.0,
+    2.5,
+    307.3
+   ]
+  },
+  {
+   "t": 796.86,
+   "bus": [
+    0.0,
+    2.5,
+    307.3
+   ]
+  },
+  {
+   "t": 812.36,
+   "bus": [
+    0.0,
+    -14.75,
+    307.3
+   ]
+  },
+  {
+   "t": 835.16,
+   "bus": [
+    0.0,
+    -48.95,
+    307.3
+   ]
+  },
+  {
+   "t": 875.16,
+   "bus": [
+    0.0,
+    -108.95,
+    307.3
+   ]
+  }
+ ]
+}

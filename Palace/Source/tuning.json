@@ -1,0 +1,8 @@
+{
+ "warm_I": 5.46,
+ "warm_range": 4.0,
+ "indigo_I": 4.0,
+ "indigo_range": 12.0,
+ "door_area_I": 900.0,
+ "note": "第 0 轮的起点；按参考渲染的灯组增益调（post.py --gains），定了再写回这里并重跑 gen_layout.py"
+}
