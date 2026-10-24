@@ -1,0 +1,107 @@
+{
+ "format": "v2 channel cards: _K RGBA = sun 15/80/150 deg right of the view (white light, Unity E 1) + coverage, _S RG = uniform white upper / lower dome; stored sRGB(value / kscale or sscale). Colours per group in colours.<group> (linear; SunColor includes E). Shader Lanbai/CloudCard, numpy port Source/cardshade.py.",
+ "cards": {
+  "CloudV2_Cumulus_dawn": {
+   "set": "dawn",
+   "shape": "Cumulus",
+   "size": [
+    1024,
+    1024
+   ],
+   "cloud_base_v": 0.2705,
+   "opaque_bbox_uv": [
+    0.1074,
+    0.2705,
+    0.8877,
+    0.7197
+   ],
+   "kscale": 6.0,
+   "sscale": 1.5,
+   "key_angles": [
+    15.0,
+    80.0,
+    150.0
+   ],
+   "sun_el": 6.0,
+   "pitch": -3.0,
+   "clipped_K": 0.0,
+   "clipped_S": 0.0
+  }
+ },
+ "colours": {
+  "dawn": {
+   "set": "dawn",
+   "grade": "S6",
+   "solved_on": "CloudV2_Cumulus_dawn at rel 70.0",
+   "sun_K": 2400,
+   "sun_luminance": 3.1073,
+   "SunColor": [
+    6.57328,
+    2.35526,
+    0.35081
+   ],
+   "SkyUpColor": [
+    0.9995,
+    1.14931,
+    1.63362
+   ],
+   "GroundColor": [
+    0.84313,
+    1.07904,
+    1.58055
+   ],
+   "targets": {
+    "shadow": "#8593AA",
+    "top": "#F6DCC4"
+   },
+   "rel15": {
+    "shadow": "#8291A8",
+    "top": "#A3AFC2",
+    "shadow_hC": [
+     269.8,
+     14.0
+    ]
+   },
+   "rel45": {
+    "shadow": "#8492A8",
+    "top": "#E5CDC6",
+    "shadow_hC": [
+     270.6,
+     13.4
+    ]
+   },
+   "rel70": {
+    "shadow": "#8593A8",
+    "top": "#F5DCC9",
+    "shadow_hC": [
+     270.4,
+     13.0
+    ]
+   },
+   "rel110": {
+    "shadow": "#CDB1AC",
+    "top": "#F5DBC9",
+    "shadow_hC": [
+     35.5,
+     11.1
+    ]
+   },
+   "rel150": {
+    "shadow": "#EACAB0",
+    "top": "#EED5C7",
+    "shadow_hC": [
+     65.6,
+     18.5
+    ]
+   },
+   "rel170": {
+    "shadow": "#EACAB0",
+    "top": "#EED5C7",
+    "shadow_hC": [
+     65.6,
+     18.5
+    ]
+   }
+  }
+ }
+}

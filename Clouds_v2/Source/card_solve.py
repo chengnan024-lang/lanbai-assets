@@ -44,9 +44,12 @@ def colours_from_x(x, T):
 
 
 def measure(K, S, a, rel, cols, grade, sel):
-    c, _ = CS.shade(K, S, a, rel, cols['sun'], cols['sky'], cols['gnd'])
-    sh, tp = sel
-    m = np.stack([np.median(c[sh], 0), np.median(c[tp], 0)])
+    sh, tp = sel                                     # shade only the selected pixels (same maths as cardshade.shade)
+    m = []
+    for msk in (sh, tp):
+        c, _ = CS.shade(K[msk][None], S[msk][None], a[msk][None], rel, cols['sun'], cols['sky'], cols['gnd'])
+        m.append(np.median(c[0], 0))
+    m = np.stack(m)
     return C.grade(m[None], grade, bloom=False)[0]
 
 

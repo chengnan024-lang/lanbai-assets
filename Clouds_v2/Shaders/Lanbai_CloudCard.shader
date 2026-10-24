@@ -29,9 +29,9 @@ Shader "Lanbai/CloudCard"
         [NoScaleOffset] _SkyTex ("Sky - R upper dome G lower dome - sRGB on", 2D) = "black" {}
         _KScale ("Channel scales - x key - y sky", Vector) = (6, 1.5, 0, 0)
         _KeyAngles ("Key angles deg - x R - y G - z B", Vector) = (15, 80, 150, 0)
-        _SunColor ("Sun colour x E - linear", Vector) = (6.642, 2.380, 0.354, 0)
-        _SkyUpColor ("Upper dome light - linear", Vector) = (0.7196, 0.8086, 1.1381, 0)
-        _GroundColor ("Lower dome light - linear", Vector) = (1.0712, 1.3709, 2.0081, 0)
+        _SunColor ("Sun colour x E - linear", Vector) = (6.5733, 2.3553, 0.3508, 0)
+        _SkyUpColor ("Upper dome light - linear", Vector) = (0.9995, 1.1493, 1.6336, 0)
+        _GroundColor ("Lower dome light - linear", Vector) = (0.8431, 1.0790, 1.5806, 0)
         _SunDirFallback ("Direction to the sun - fallback when _Udon_SunDir is unset", Vector) = (0.5, 0.1045, 0.8597, 0)
         _Gain ("Gain - MPB", Range(0, 4)) = 1
         _Alpha ("Alpha - MPB", Range(0, 1)) = 1
