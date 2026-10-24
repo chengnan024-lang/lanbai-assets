@@ -167,7 +167,7 @@ def add_lights(p=PARAMS):
         co.visible_volume_scatter = False
         co.lightgroup = 'warm'
         bpy.context.scene.collection.objects.link(co)
-        if _T.get('nacre_lift', 0.0) > 0.0:             # Unity：珍珠母的解析高光只按挪高的灯算，不吃原位的灯
+        if _T.get('nacre_lift', 0.0) > 0.0 and 'HousesNacre' in bpy.data.objects:   # Unity：珍珠母的解析高光只按挪高的灯算
             xc = bpy.data.collections.get('LinkNotHouses')
             if xc is None:
                 xc = bpy.data.collections.new('LinkNotHouses')
@@ -176,7 +176,7 @@ def add_lights(p=PARAMS):
             co.light_linking.receiver_collection = xc
         # 珍珠母的高光 ×nacre_spec_gain（Unity：M_07b_FishScale 的 _LampGain）：同样的灯，灯光链接只照鱼鳞屋
         g = _T.get('nacre_spec_gain', 1.0)
-        if g > 1.0:
+        if g > 1.0 and 'HousesNacre' in bpy.data.objects:
             c2 = bpy.data.lights.new('Ln_' + l['id'], 'POINT')
             c2.color = lin('#FF9C2F')
             c2.energy = 4.0 * math.pi ** 2 * _T.get('spec_I', 5.46) * g     # 第 8 轮：珍珠母只吃这一盏（往上挪 nacre_lift 的“镜中灯”）
