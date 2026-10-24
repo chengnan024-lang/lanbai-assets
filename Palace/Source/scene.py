@@ -25,7 +25,7 @@ from kit.common import UB  # noqa: E402
 import json as _json
 _T = _json.load(open(os.path.join(HERE, 'tuning.json')))
 FISH_T = 748.26
-DOOR_SPILL_POS = np.array([L.HALL['door_x'], L.PLAT['height_m'] + L.HALL['door_size'][1] * 0.55, L.DOOR_Z + 0.5])
+DOOR_SPILL_POS = np.array([L.HALL['door_x'], L.PLAT['height_m'] + L.HALL['door_size'][1] * 0.55, L.DOOR_Z - 0.3])   # 门面外 0.3 m：门扇在它身后，不被照亮
 DOOR_ACCENT_POS = np.array([L.HALL['door_x'], L.PLAT['height_m'] + 5.0, L.DOOR_Z - 7.0])
 DOOR_ACCENT_TGT = np.array([L.HALL['door_x'], L.PLAT['height_m'] + 5.5, L.DOOR_Z])
 PARAMS = dict(warm_I=_T['warm_I'], warm_r=_T['warm_range'], indigo_I=_T['indigo_I'], indigo_r=_T['indigo_range'])
@@ -58,7 +58,7 @@ def build(t_fish=None, lod_far=False):
     # 灯
     lu = UB()
     for l in L.LAMPS:
-        yaw = 0.0
+        yaw = 90.0 if l['group'] == 'que' else 0.0     # 第 8 轮：阙前的灯转 90°，灯罩的两片挡板朝 ±x，开口朝阙面和神道
         lu.merge(place(lamp.build(l['height_m']), l['pos'], yaw))
     lu.build('Lamps', col, M)
     # 大殿、阙、鱼鳞屋（模块没交时用白模盒子）
@@ -149,8 +149,9 @@ def add_lights(p=PARAMS):
         a = bl.point_light_unity('Lw_' + l['id'], fp, lin('#FF9C2F'), p['warm_I'], p['warm_r'], radius=0.10)
         a.lightgroup = 'warm'
         a.visible_glossy = False                      # 烘焙的光只有漫反射；高光由下面的解析灯给（Unity：_Udon_Lamp）
-        b = bl.point_light_unity('Li_' + l['id'], (fp[0], fp[1] + _T.get('indigo_lift', 0.3), fp[2]), lin('#2A557B'),
-                                 0.0 if l['group'] == 'que' else p['indigo_I'], p['indigo_r'], radius=0.10)   # 阙前的灯不加靛光（第 5 轮）
+        # 第 8 轮：阙前的灯也加靛光，但不抬高、范围 5 m——暖 + 靛只在灯旁混成 #7A4A6E（“只在它的灯旁泛出”）
+        b = bl.point_light_unity('Li_' + l['id'], (fp[0], fp[1] + l.get('indigo_lift', _T.get('indigo_lift', 0.3)), fp[2]), lin('#2A557B'),
+                                 p['indigo_I'], l.get('indigo_range', p['indigo_r']), radius=0.10)
         b.lightgroup = 'indigo'
         b.data.use_shadow = False
         b.visible_glossy = False
@@ -220,7 +221,7 @@ def add_lights(p=PARAMS):
     o4 = bl.spot_light_unity('DoorAccent', ap, tgt - ap, lin('#FFD9A0'), _T['door_accent_I'], _T['door_accent_range'],
                              _T['door_accent_angle'], blend=0.6, radius=0.5)
     o4.visible_glossy = False
-    o4.lightgroup = 'door'
+    o4.lightgroup = 'accent'
 
 
 def setup_world():
@@ -228,7 +229,7 @@ def setup_world():
     w = bl.world_trilight(lin('#0E3050'), lin('#0A2238'), lin('#1A1422'))
     w.lightgroup = 'amb'
     vl = bpy.context.scene.view_layers[0]
-    for g in ('amb', 'warm', 'indigo', 'door', 'doorglow', 'bus'):
+    for g in ('amb', 'warm', 'indigo', 'door', 'accent', 'doorglow', 'bus'):
         if g not in vl.lightgroups:
             vl.lightgroups.add(name=g)
 

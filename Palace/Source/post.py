@@ -36,7 +36,7 @@ HALO_R = 1.5
 HALO_PULL = 4.0                                       # 第 8 轮（评审 r5 #2）：晕卡往眼睛挪的最大米数（≤ d/2）
 BELOW_PULL = 40.0                                     # 眼睛在台地顶面以下时的最大挪动（≤ 0.25 d）
 FLAME_PULL = 1.5                                      # 从下面陡着看时火往眼睛挪的米数
-GROUP_GAIN = {'amb': 1.0, 'warm': 1.0, 'indigo': 1.0, 'door': 1.0}
+GROUP_GAIN = {'amb': 1.0, 'warm': 1.0, 'indigo': 1.0, 'door': 1.0, 'accent': 1.0}
 
 
 def read_exr(path):
@@ -129,7 +129,7 @@ def composite(exr, shot, gains=None, halo=True, flame_scale=1.0):
     g = dict(GROUP_GAIN, **(gains or {}))
     C = exr['Combined'][..., :3].astype(np.float64)
     H, W = C.shape[:2]
-    groups = {k: exr['Combined_' + k][..., :3].astype(np.float64) for k in ('amb', 'warm', 'indigo', 'door', 'doorglow')
+    groups = {k: exr['Combined_' + k][..., :3].astype(np.float64) for k in ('amb', 'warm', 'indigo', 'door', 'accent', 'doorglow')
               if 'Combined_' + k in exr}
     # 没进任何灯组的自发光（防漏）：C 比各组之和多出来的部分算 doorglow
     if 'doorglow' in groups:

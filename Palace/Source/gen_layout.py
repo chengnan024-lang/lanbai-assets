@@ -30,11 +30,11 @@ def main():
                           abreast_t=l.get('abreast_t'),
                           baked=[dict(kind='warm', pos=fp, color='#FF9C2F', range_m=T['warm_range'], intensity=T['warm_I'],
                                       shadows='soft', mode='Baked'),
-                                 dict(kind='indigo', pos=[fp[0], round(fp[1] + T.get('indigo_lift', 0.3), 3), fp[2]], color='#2A557B', range_m=T['indigo_range'],
-                                      intensity=0.0 if l['group'] == 'que' else T['indigo_I'], shadows='none', mode='Baked')]))
+                                 dict(kind='indigo', pos=[fp[0], round(fp[1] + l.get('indigo_lift', T.get('indigo_lift', 0.3)), 3), fp[2]], color='#2A557B', range_m=l.get('indigo_range', T['indigo_range']),
+                                      intensity=T['indigo_I'], shadows='none', mode='Baked')]))
     H = F['hall']
     # 第 8 轮（评审 r5 #3）：门的两盏烘焙光都是聚光（InverseSquared + 范围窗），只照门这一开间和门槛；面光没有范围，把整面立面描红
-    sp = [H['door_x'], L.PLAT['height_m'] + H['door_size'][1] * 0.55, L.DOOR_Z + 0.5]
+    sp = [H['door_x'], L.PLAT['height_m'] + H['door_size'][1] * 0.55, L.DOOR_Z - 0.3]
     ap = [H['door_x'], L.PLAT['height_m'] + 5.0, L.DOOR_Z - 7.0]
     at = [H['door_x'], L.PLAT['height_m'] + 5.5, L.DOOR_Z]
     door_spill = dict(type='Spot (Baked)', pos=[round(v, 3) for v in sp], dir=[0, -0.35, -1], color='#FFB74D', intensity=T['door_spill_I'],
@@ -54,7 +54,7 @@ def main():
         specks=F['specks'], palace_veil=dict(name='_Udon_PalaceVeil', writer='海（第 7 幕驱动）', readers=['Lanbai/Palace', 'Lanbai/PalaceGlow'],
                                               not_readers=['Lanbai/PalaceFlame（灯焰从下面看就是星座）', 'Lanbai/PalaceFish']),
         lamps=lamps, door_spill=door_spill, door_accent=door_accent,
-        que_lamps_note='Lamp_Q1 / Lamp_Q2 是宫殿加的（海的约定里没有）：圣经“紫贝阙……宝贝壳贴面只在它的灯旁泛出 #7A4A6E”，每座阙前 1.6 m 一盏（第 4 轮，美术评审 r3 阻断 6）。头顶星座仍是神道 24 + 台基 6 = 30 盏（这两盏在阙前，F7p 时远在 260 m 后）',
+        que_lamps_note='Lamp_Q1 / Lamp_Q2 是宫殿加的（海的约定里没有）：圣经“紫贝阙……宝贝壳贴面只在它的灯旁泛出 #7A4A6E”，每座阙前 1.6 m 一盏（第 4 轮，美术评审 r3 阻断 6）；第 8 轮改成 3.85 m 的立灯（灯焰高过 3 m 的阙基）、加靛光。头顶星座仍是神道 24 + 台基 6 = 30 盏（这两盏在阙前，F7p 时远在 260 m 后）',
         door_analytic=dict(slot='_Udon_Lamp7', centre=[H['door_x'], round(L.PLAT['height_m'] + H['door_size'][1] / 2, 3), round(L.DOOR_Z + 0.9, 3)],
                            half_height=H['door_size'][1] / 2, intensity=T.get('door_spec_I', 60.0), color='#FFB74D', radius_m=0.6, dir=[0, 0, -1, 0],
                            note='门作为竖直线光源只出高光：湿石面（台基面、台阶）上的亮带。门的漫反射只留 ×0.35 的面光（阴影不发暖，§1.3 第 2 条）'),
@@ -82,10 +82,14 @@ def main():
     cs.append('{')
     cs.append('    public const float TerraceDepth = %.4ff;' % terrace_depth)
     cs.append('    public static readonly float[] Flames = %s;' % arr(flames))
-    cs.append('    public static readonly bool[] LampIndigo = { %s };   // 阙前的两盏不加靛光' % ', '.join('false' if l['group'] == 'que' else 'true' for l in L.LAMPS))
+    cs.append('    public static readonly bool[] LampIndigo = { %s };   // 第 8 轮：全部加靛光（阙前两盏也加）' % ', '.join('true' for l in L.LAMPS))
+    cs.append('    public static readonly float[] LampIndigoLift = { %s };   // 阙前两盏 0（不抬高）' % ', '.join('%.2ff' % l.get('indigo_lift', T.get('indigo_lift', 0.3)) for l in L.LAMPS))
+    cs.append('    public static readonly float[] LampIndigoRange = { %s };   // 阙前两盏 5 m' % ', '.join('%.2ff' % l.get('indigo_range', T['indigo_range']) for l in L.LAMPS))
     cs.append('    public static readonly string[] LampIds = { %s };' % ', '.join('"%s"' % l['id'] for l in L.LAMPS))
     cs.append('    public static readonly float[] DoorCentre = %s;' % arr([H['door_x'], L.PLAT['height_m'] + H['door_size'][1] / 2, L.DOOR_Z + 0.9]))
     cs.append('    public const float DoorHalfHeight = %.3ff, DoorSpecI = %.3ff, NacreLampGain = %.2ff;' % (H['door_size'][1] / 2, T.get('door_spec_I', 60.0), T.get('nacre_spec_gain', 1.0)))
+    # 第 8 轮：珍珠母的“镜中灯”往上挪 nacre_lift 米；瓣放宽 ≈ 参考图里 1.5 m 球光源在 12–15 m 处的放宽（0.5 r / d）
+    cs.append('    public const float NacreLift = %.2ff, NacreSpread = %.3ff;' % (T.get('nacre_lift', 0.0), 0.5 * T.get('nacre_radius', 0.1) / 12.5))
     cs.append('    public const float WarmI = %.4ff, WarmRange = %.3ff, IndigoI = %.4ff, IndigoRange = %.3ff, IndigoLift = %.2ff;' % (T['warm_I'], T['warm_range'], T['indigo_I'], T['indigo_range'], T.get('indigo_lift', 0.3)))
     cs.append('    public static readonly float[] WarmColor = %s;   // 线性 #FF9C2F' % arr(lin('#FF9C2F')))
     cs.append('    public static readonly float[] IndigoColor = %s;   // 线性 #2A557B' % arr(lin('#2A557B')))

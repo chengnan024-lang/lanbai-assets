@@ -82,7 +82,8 @@ def g_lamps(M):
         for lod in (0, 1):
             u = UB()
             for l in g:
-                u.merge(place(lamp.build(l['height_m'], lod), l['pos'], 90.0 if l['pos'][0] > L.AXIS_X else -90.0))
+                # 屏板的开口在模块里朝 ±x = 朝神道中线（与参考渲染一致；第 8 轮之前这里错转了 ±90°）；阙前两盏转 90°，开口朝阙面
+                u.merge(place(lamp.build(l['height_m'], lod), l['pos'], 90.0 if l['group'] == 'que' else 0.0))
             objs.append(u.build('Lamps%d_LOD%d' % (gi, lod), None, M))
     write('Palace_Lamps', objs)
 

@@ -2103,10 +2103,10 @@
     0.0,
     34.79
    ],
-   "height_m": 1.85,
+   "height_m": 3.85,
    "flame_pos": [
     -12.0,
-    1.62,
+    3.62,
     34.79
    ],
    "abreast_t": null,
@@ -2115,7 +2115,7 @@
      "kind": "warm",
      "pos": [
       -12.0,
-      1.62,
+      3.62,
       34.79
      ],
      "color": "#FF9C2F",
@@ -2128,12 +2128,12 @@
      "kind": "indigo",
      "pos": [
       -12.0,
-      5.62,
+      3.62,
       34.79
      ],
      "color": "#2A557B",
-     "range_m": 12.0,
-     "intensity": 0.0,
+     "range_m": 5.0,
+     "intensity": 28.0,
      "shadows": "none",
      "mode": "Baked"
     }
@@ -2147,10 +2147,10 @@
     0.0,
     34.79
    ],
-   "height_m": 1.85,
+   "height_m": 3.85,
    "flame_pos": [
     -24.0,
-    1.62,
+    3.62,
     34.79
    ],
    "abreast_t": null,
@@ -2159,7 +2159,7 @@
      "kind": "warm",
      "pos": [
       -24.0,
-      1.62,
+      3.62,
       34.79
      ],
      "color": "#FF9C2F",
@@ -2172,12 +2172,12 @@
      "kind": "indigo",
      "pos": [
       -24.0,
-      5.62,
+      3.62,
       34.79
      ],
      "color": "#2A557B",
-     "range_m": 12.0,
-     "intensity": 0.0,
+     "range_m": 5.0,
+     "intensity": 28.0,
      "shadows": "none",
      "mode": "Baked"
     }
@@ -2189,7 +2189,7 @@
   "pos": [
    -18.0,
    10.125,
-   343.1
+   342.3
   ],
   "dir": [
    0,
@@ -2198,8 +2198,8 @@
   ],
   "color": "#FFB74D",
   "intensity": 60.0,
-  "range": 6.0,
-  "spot_angle": 120.0,
+  "range": 4.0,
+  "spot_angle": 90.0,
   "shadows": "soft"
  },
  "door_accent": {
@@ -2220,7 +2220,7 @@
   "spot_angle": 70.0,
   "shadows": "soft"
  },
- "que_lamps_note": "Lamp_Q1 / Lamp_Q2 是宫殿加的（海的约定里没有）：圣经“紫贝阙……宝贝壳贴面只在它的灯旁泛出 #7A4A6E”，每座阙前 1.6 m 一盏（第 4 轮，美术评审 r3 阻断 6）。头顶星座仍是神道 24 + 台基 6 = 30 盏（这两盏在阙前，F7p 时远在 260 m 后）",
+ "que_lamps_note": "Lamp_Q1 / Lamp_Q2 是宫殿加的（海的约定里没有）：圣经“紫贝阙……宝贝壳贴面只在它的灯旁泛出 #7A4A6E”，每座阙前 1.6 m 一盏（第 4 轮，美术评审 r3 阻断 6）；第 8 轮改成 3.85 m 的立灯（灯焰高过 3 m 的阙基）、加靛光。头顶星座仍是神道 24 + 台基 6 = 30 盏（这两盏在阙前，F7p 时远在 260 m 后）",
  "door_analytic": {
   "slot": "_Udon_Lamp7",
   "centre": [
@@ -2289,14 +2289,16 @@
   "indigo_lift": 4.0,
   "spec_I": 5.46,
   "door_spec_I": 60.0,
-  "nacre_spec_gain": 6.0,
+  "nacre_spec_gain": 24.0,
   "door_accent_I": 70.0,
   "door_spill_I": 60.0,
-  "door_spill_range": 6.0,
-  "door_spill_angle": 120.0,
+  "door_spill_range": 4.0,
+  "door_spill_angle": 90.0,
   "door_accent_range": 11.0,
   "door_accent_angle": 70.0,
-  "note8": "第 8 轮（评审 r5 #3）：门的两盏面光换成烘焙聚光（有范围窗），只照门这一开间和门槛；去掉 door_area_I / pour_ratio"
+  "note8": "第 8 轮（评审 r5 #3）：门的两盏面光换成烘焙聚光（有范围窗），只照门这一开间和门槛；去掉 door_area_I / pour_ratio",
+  "nacre_lift": 12.0,
+  "nacre_radius": 1.5
  },
  "render": {
   "fog_density": 0.018,
