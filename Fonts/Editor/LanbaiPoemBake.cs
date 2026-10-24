@@ -65,7 +65,7 @@ namespace Lanbai.Fonts.Editor
             var pFixed = new bool[N]; var pGazeDeg = new float[N];
             var slotRoot = new Transform[N * K]; var slotObjStart = new int[N * K]; var slotObjCount = new int[N * K];
             var slotScrimStart = new int[N * K]; var slotScrimCount = new int[N * K];
-            var slotBlkW = new float[N * K]; var slotBlkEl0 = new float[N * K]; var slotBlkEl1 = new float[N * K];
+            var slotBlkEl0 = new float[N * K]; var slotBlkEl1 = new float[N * K];
             var oGo = new List<GameObject>(); var oRenderer = new List<MeshRenderer>(); var oTmp = new List<TextMeshPro>();
             var oFill = new List<Vector4>(); var oAlpha = new List<float>(); var oStart = new List<float>(); var oFocus = new List<float>();
             var oSoftEnd = new List<float>(); var oExitT = new List<float>(); var oExitS = new List<float>(); var oDrift = new List<float>();
@@ -100,7 +100,6 @@ namespace Lanbai.Fonts.Editor
                     var anchor = (List<object>)lay["anchor"];
                     pAzKey[slot] = F(anchor[0]);
                     var blk = (Dictionary<string, object>)lay["block"];
-                    slotBlkW[slot] = F(blk["width_deg"]);
                     slotBlkEl0[slot] = F(((List<object>)blk["el"])[0]);
                     slotBlkEl1[slot] = F(((List<object>)blk["el"])[1]);
                     var kGo = new GameObject(Keys[k]);
@@ -252,7 +251,7 @@ namespace Lanbai.Fonts.Editor
             Set(driver, "oCueStart", oCueStart.ToArray()); Set(driver, "oCueCount", oCueCount.ToArray()); Set(driver, "cueT", cueT.ToArray());
             Set(driver, "sRenderer", sRenderer.ToArray()); Set(driver, "sAlpha", sAlpha.ToArray()); Set(driver, "sStart", sStart.ToArray());
             Set(driver, "sExitT", sExitT.ToArray()); Set(driver, "sExitS", sExitS.ToArray());
-            Set(driver, "slotBlkW", slotBlkW); Set(driver, "slotBlkEl0", slotBlkEl0); Set(driver, "slotBlkEl1", slotBlkEl1);
+            Set(driver, "slotBlkEl0", slotBlkEl0); Set(driver, "slotBlkEl1", slotBlkEl1);
             string seatsNote = BakeSeats(driver);
             Set(driver, "boardRoot", boardRoot); Set(driver, "boardLine1", boardLine1);
             Set(driver, "boardPrefix", boardPrefix); Set(driver, "boardSuffix", boardSuffix);
@@ -293,32 +292,41 @@ namespace Lanbai.Fonts.Editor
             Debug.Log(report.ToString());
         }
 
-        // D-33 #7b: the bus's per-seat 1° occlusion grid (Bus/Docs~/viewcheck/seats_occlusion_1deg.json, found anywhere under
-        // the project folder, ~ folders included). Format (agreed with the bus): {"step": 1, "az0": -180, "el0": -25,
-        // "n_az": 360, "n_el": 46, "seats": [{"name": "...", "eye": [x, y, z], "occ": "0101..."}]}; occ = n_el rows from
-        // el0 upward, each n_az cells from az0, '1' = the ray from that seat's eye through the cell centre hits a bus part.
+        // D-37: the per-seat positions solved offline (Fonts/seat_positions.json, written by Tools~/build_fonts.py from the
+        // bus's seat grids): {seats[], eyes[[x,y,z]], poems[], keys[], facings, default[s][p][k] = [az, el, blocked],
+        // gaze[s][p][k][f] = [az, el, blocked] | null (poems that never move)}.
         static string BakeSeats(Component driver)
         {
-            string root = Path.GetDirectoryName(Application.dataPath);
-            string path = Directory.GetFiles(Path.Combine(root, "Assets"), "seats_occlusion_1deg.json", SearchOption.AllDirectories).FirstOrDefault();
-            if (path == null) return "Seat grids: Bus/Docs~/viewcheck/seats_occlusion_1deg.json not found: no avoidance (every seat uses the default positions).";
+            string path = AssetDatabase.FindAssets("seat_positions").Select(AssetDatabase.GUIDToAssetPath)
+                .FirstOrDefault(p => p.EndsWith("seat_positions.json", StringComparison.Ordinal));
+            if (path == null) return "Seat positions: Fonts/seat_positions.json not found: every seat uses D-33's default positions.";
             var J = (Dictionary<string, object>)MiniJson.Parse(File.ReadAllText(path));
-            int nAz = (int)F(J["n_az"]), nEl = (int)F(J["n_el"]);
             var seats = (List<object>)J["seats"];
-            var eyes = new Vector3[seats.Count];
-            var occ = new byte[seats.Count * nAz * nEl];
-            for (int s = 0; s < seats.Count; s++)
-            {
-                var S = (Dictionary<string, object>)seats[s];
-                var e = (List<object>)S["eye"];
-                eyes[s] = new Vector3(F(e[0]), F(e[1]), F(e[2]));
-                string bits = (string)S["occ"];
-                for (int i = 0; i < nAz * nEl && i < bits.Length; i++) occ[s * nAz * nEl + i] = (byte)(bits[i] == '1' ? 1 : 0);
-            }
-            Set(driver, "seatEye", eyes); Set(driver, "seatOcc", occ);
-            Set(driver, "occAz0", (int)F(J["az0"])); Set(driver, "occEl0", (int)F(J["el0"]));
-            Set(driver, "occNAz", nAz); Set(driver, "occNEl", nEl);
-            return "Seat grids: " + seats.Count + " seats from " + path + ".";
+            var eyesJ = (List<object>)J["eyes"];
+            int S = seats.Count, Pn = ((List<object>)J["poems"]).Count, K = ((List<object>)J["keys"]).Count, Fc = (int)F(J["facings"]);
+            var eyes = new Vector3[S];
+            for (int s = 0; s < S; s++) { var e = (List<object>)eyesJ[s]; eyes[s] = new Vector3(F(e[0]), F(e[1]), F(e[2])); }
+            var dAz = new float[S * Pn * K]; var dEl = new float[S * Pn * K];
+            var gAz = new float[S * Pn * K * Fc]; var gEl = new float[S * Pn * K * Fc];
+            var D = (List<object>)J["default"]; var G = (List<object>)J["gaze"];
+            for (int s = 0; s < S; s++)
+                for (int p = 0; p < Pn; p++)
+                    for (int k = 0; k < K; k++)
+                    {
+                        int i = (s * Pn + p) * K + k;
+                        var d = (List<object>)((List<object>)((List<object>)D[s])[p])[k];
+                        dAz[i] = F(d[0]); dEl[i] = F(d[1]);
+                        var gl = ((List<object>)((List<object>)G[s])[p])[k] as List<object>;
+                        for (int f = 0; f < Fc; f++)
+                        {
+                            var gf = gl != null ? (List<object>)gl[f] : d;
+                            gAz[i * Fc + f] = F(gf[0]); gEl[i * Fc + f] = F(gf[1]);
+                        }
+                    }
+            Set(driver, "seatEye", eyes);
+            Set(driver, "seatDefAz", dAz); Set(driver, "seatDefEl", dEl);
+            Set(driver, "seatGazeAz", gAz); Set(driver, "seatGazeEl", gEl);
+            return "Seat positions: " + S + " seats x " + Pn + " poems x " + K + " keys (+ " + Fc + " facings) from " + path + ".";
         }
 
         // as Sky/Editor/LanbaiSkyBuild.cs: a UdonSharpProgramAsset next to the script, if there is none

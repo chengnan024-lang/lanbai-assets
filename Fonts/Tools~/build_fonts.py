@@ -548,25 +548,33 @@ for pid, per in VIEW.items():
 view_ok = not view_fail
 view_lines.insert(1, 'viewcheck: %s%s' % ('PASS' if view_ok else 'FAIL', '' if view_ok else ' — ' + ', '.join(view_fail)))
 
-# D-33 #7b: every seat's 1° grid from the bus, the runtime's avoidance ported (seat_check.py); a report, never a failure
-import seat_check as SC
+# D-37: every seat's positions solved offline on the bus's 1° seat grids (seat_table.py) -> Fonts/seat_positions.json,
+# which 蓝白/Fonts/Build Poem Objects bakes into LanbaiPoemDriver; the runtime only looks up
+import seat_table as ST
 SEAT_GRID = os.path.join(BUS_DIR, 'Bus', 'Docs~', 'viewcheck', 'seats_occlusion_1deg.json')
-seat_lines = ['Every poem, every key, every seat at its default position, through the runtime avoidance (LanbaiPoemDriver: '
-              '> 10 %% blocked -> sideways 1° steps toward the default first, ±%d°). Grid: %s.' % (SC.SEARCH, BUS_SRC), '']
+seat_lines = ['D-37: every seat but the main one (which keeps D-33), every poem that may move, every key: block <= %d %% blocked, '
+              'centre elevation %d…%+d°, whole circle, nearest to the default (as seen from that seat), >= %.0f° from the focus '
+              'when it can; none -> the least blocked. Grid: %s.' % (100 * ST.LIMIT, ST.EL_MIN, ST.EL_MAX, ST.FOCUS_CLEAR, BUS_SRC), '']
 SEATS = None
 if os.path.exists(SEAT_GRID):
-    SEATS = SC.run(LAYOUTS, L.POEMS, SEAT_GRID)
-    sm = SEATS['summary']
-    seat_lines.append('seats %d, checks %d; moved %d (seats: %s; poems: %s); still > 10 %% after the search: %d %s' % (
-        sm['seats'], sm['checks'], sm['moved'], ', '.join(sm['moved_seats']) or '-', ', '.join(sm['moved_poems']) or '-',
-        sm['unresolved'], sm['unresolved_list'] or ''))
+    SEATS = ST.run(LAYOUTS, L.POEMS, SEAT_GRID, LY.PLAYERS)
+    sm = ST.summary(SEATS)
+    SEATS['summary'] = sm
+    with open(os.path.join(KIT, 'seat_positions.json'), 'w', encoding='utf-8') as f_:
+        json.dump({k: v for k, v in SEATS.items() if k not in ('rows', 'summary')}, f_, ensure_ascii=False, separators=(',', ':'))
+    seat_lines.append('mean blocked, every seat but the main one: %.1f %% (target <= 10 %%); checks over 10 %%: %d of %d; moved from the '
+                      'default: %d' % (100 * sm['mean_others'], sm['over_limit'], sm['checks_others'], sm['moved']))
+    seat_lines.append('table: %d default entries + %d gaze entries (%d facings) = %d floats (az, el) in LanbaiPoemDriver' % (
+        sm['table_entries']['default'], sm['table_entries']['gaze'], ST.FACINGS, sm['table_entries']['floats']))
+    seat_lines.append('mean by seat: ' + ', '.join('%s %.1f%%' % (k, 100 * v) for k, v in sm['mean_by_seat'].items()))
+    seat_lines.append('worst: ' + '; '.join('%s %s/%s %.0f%%' % (a_, b_, c_, 100 * d_) for a_, b_, c_, d_ in sm['worst']))
+    seat_lines.append('')
     for r in SEATS['rows']:
-        if r['moved'] or r['unresolved'] or (r['fixed'] and r['blocked_default'] > SC.LIMIT):
-            seat_lines.append('  %-24s %-3s %-8s default %+6.1f° blocked %.0f%% -> %+6.1f° (%+.0f°) blocked %.0f%%%s%s' % (
-                r['poem'], r['key'], r['seat_name'], r['default_az'], 100 * r['blocked_default'], r['az'], r['moved'],
-                100 * r['blocked'], '  FIXED (never moves)' if r['fixed'] else '', '  UNRESOLVED -> default' if r['unresolved'] and not r['fixed'] else ''))
+        seat_lines.append('  %-11s %-24s %-3s default %+6.1f° %+5.1f° blocked %3.0f%% -> %+6.1f° %+5.1f° blocked %3.0f%%%s' % (
+            r['seat'], r['poem'], r['key'], r['default_az'], r['default_el'], 100 * r['blocked_default'], r['az'], r['el'],
+            100 * r['blocked'], '  (fixed)' if r['fixed'] else ''))
 else:
-    seat_lines.append('no seat grid at %s: skipped' % SEAT_GRID)
+    seat_lines.append('no seat grid at %s: skipped (seat_positions.json not written)' % SEAT_GRID)
 
 # block table (D-30: each act package places the poem with it; the bus re-checks Rilke's D-13 position with it)
 block_rows = []
@@ -767,7 +775,7 @@ out['layout_model'] = LY.__doc__.strip()
 out['zhuangzi_rule'] = LY.zhuangzi_layout.__doc__.strip()
 out['charsets'] = charsets
 out['block_table'] = block_rows
-out['seat_check'] = SEATS['summary'] if SEATS else None
+out['seat_check'] = SEATS['summary'] if SEATS else None   # D-37 (the positions themselves: seat_positions.json)
 out['materials'] = list(materials.values())
 import gen_poem_materials as GPM
 print('wrote', GPM.write(out['materials']))
@@ -791,7 +799,7 @@ with open(os.path.join(DOCS, 'build_report.txt'), 'w', encoding='utf-8') as f:
     f.write('== SCRIM GEOMETRY ==\n' + '\n'.join(scr_lines) + '\n\n')
     f.write('== VERTICAL PLACEMENT ==\n' + '\n'.join(vert_lines) + '\n\n')
     f.write('== VIEWCHECK (D-33 #5) ==\n' + '\n'.join(view_lines) + '\n\n')
-    f.write('== SEATS (D-33 #7b) ==\n' + '\n'.join(seat_lines) + '\n\n')
+    f.write('== SEATS (D-37) ==\n' + '\n'.join(seat_lines) + '\n\n')
     f.write('== PLACEMENT (D-33) ==\n' + ('PASS' if not place_bad else '\n'.join('FAIL %s/%s: %s' % (r['poem'], r['player'], '; '.join(r['problems'])) for r in place_bad)) + '\n\n')
     f.write('== LINE WIDTHS ==\n' + '\n'.join(width_lines) + '\n\n')
     f.write('== BLOCKS (v4: width x height per poem and player) ==\n' + '\n'.join(
