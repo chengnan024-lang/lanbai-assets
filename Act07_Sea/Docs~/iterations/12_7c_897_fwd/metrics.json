@@ -4,36 +4,36 @@
    960,
    540
   ],
-  "APL": 29.86,
-  "EV_display": -6.062,
+  "APL": 29.98,
+  "EV_display": -6.039,
   "luma_lt12_pct": 22.54,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
   "clip_black_largest_region_pct": 0.0,
   "clip_white_largest_region_pct": 0.0,
-  "warm_shadow_pct": 0.12,
+  "warm_shadow_pct": 0.04,
   "purple_pct": 0.0,
   "purple_largest_region_pct": 0.0,
   "violet_strong_pct": 0.0,
   "lavender_act6_pct": 0.0,
   "brightest": {
    "bbox": [
-    1,
-    393,
+    0,
+    394,
     381,
-    454
+    455
    ],
    "centroid": [
-    203.7,
-    421.2
+    182.6,
+    421.3
    ],
-   "clusters": 18,
-   "clusters_ge5pct": 7,
-   "min_luma": 68.5,
+   "clusters": 19,
+   "clusters_ge5pct": 9,
+   "min_luma": 107.9,
    "centroid_az_el": [
-    -29.04,
-    -15.2
+    -30.81,
+    -14.93
    ]
   },
   "top25_Lstar": {
@@ -42,61 +42,55 @@
    "p90": 14.36
   },
   "palette": {
-   "act": "07b",
+   "act": "07a",
    "metric": "CIEDE2000 (as Review/Tools~/measure.py)",
    "swatches": [
     {
-     "hex": "#02070F",
-     "role": "深渊",
-     "nearest_dE2000_p01": 0.2,
-     "within_dE5_pct": 22.65
-    },
-    {
-     "hex": "#061A30",
-     "role": "深水 濃藍",
-     "nearest_dE2000_p01": 9.6,
+     "hex": "#E6F3F8",
+     "role": "斯涅尔窗 藍白",
+     "nearest_dE2000_p01": 42.6,
      "within_dE5_pct": 0.0
     },
     {
-     "hex": "#26496C",
-     "role": "灯光被水吃掉后的靛",
-     "nearest_dE2000_p01": 21.8,
+     "hex": "#ACD4ED",
+     "role": "座椅上的焦散",
+     "nearest_dE2000_p01": 41.6,
      "within_dE5_pct": 0.0
     },
     {
-     "hex": "#B52A1E",
-     "role": "朱漆（灯旁 3 m 内）",
-     "nearest_dE2000_p01": 19.6,
+     "hex": "#90BFE9",
+     "role": "光柱",
+     "nearest_dE2000_p01": 40.7,
      "within_dE5_pct": 0.0
     },
     {
-     "hex": "#FFC46A",
-     "role": "青铜灯焰",
-     "nearest_dE2000_p01": 53.2,
+     "hex": "#3876AB",
+     "role": "浅水 縹",
+     "nearest_dE2000_p01": 31.5,
      "within_dE5_pct": 0.0
     },
     {
-     "hex": "#D8CFE0",
-     "role": "鱼鳞屋 珍珠光",
-     "nearest_dE2000_p01": 53.1,
+     "hex": "#11395E",
+     "role": "窗外全反射的暗镜",
+     "nearest_dE2000_p01": 17.7,
      "within_dE5_pct": 0.0
     },
     {
-     "hex": "#7A4A6E",
-     "role": "紫贝阙（受光，小面积）",
-     "nearest_dE2000_p01": 19.7,
+     "hex": "#697987",
+     "role": "海雪",
+     "nearest_dE2000_p01": 23.1,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#8AC6FF",
-     "role": "船体生物光",
-     "nearest_dE2000_p01": 57.3,
+     "role": "生物荧光",
+     "nearest_dE2000_p01": 44.0,
      "within_dE5_pct": 0.0
     }
    ],
-   "pixel_to_nearest_dE_median": 12.2,
-   "pixel_to_nearest_dE_p90": 12.7,
-   "pixels_within5_pct": 22.7
+   "pixel_to_nearest_dE_median": 19.9,
+   "pixel_to_nearest_dE_p90": 20.2,
+   "pixels_within5_pct": 0.0
   }
  },
  "cam": {
@@ -186,9 +180,11 @@
   ]
  },
  "scene": {
-  "what": "sea kit K3",
-  "frame": "K3",
-  "level": -36.6,
+  "what": "act 7a",
+  "frame": "__7a__",
+  "depth": 393.48,
+  "fog": 0.01,
+  "erosion": 0.25,
   "bus": "bible_v2",
   "glass": false,
   "samples": 48,
@@ -197,7 +193,7 @@
    540
   ]
  },
- "render_seconds": 6.5,
+ "render_seconds": 16.3,
  "lens": "none",
  "bloom_tint": "single",
  "note": "D-23: 897.96 forward through the windscreen (7c, before surfacing): the dark dip must stay APL 30-34"

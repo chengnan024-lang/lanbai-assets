@@ -4,8 +4,8 @@
    960,
    540
   ],
-  "APL": 17.11,
-  "EV_display": -7.245,
+  "APL": 17.07,
+  "EV_display": -7.262,
   "luma_lt12_pct": 22.62,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
@@ -16,29 +16,29 @@
   "purple_pct": 0.0,
   "purple_largest_region_pct": 0.0,
   "violet_strong_pct": 0.0,
-  "lavender_act6_pct": 0.047,
+  "lavender_act6_pct": 0.024,
   "brightest": {
    "bbox": [
-    12,
-    0,
-    926,
-    367
+    39,
+    5,
+    923,
+    539
    ],
    "centroid": [
-    429.1,
-    149.2
+    425.5,
+    135.8
    ],
-   "clusters": 15,
+   "clusters": 37,
    "clusters_ge5pct": 6,
-   "min_luma": 33.2,
+   "min_luma": 28.6,
    "centroid_az_el": [
-    -4.34,
-    9.91
+    -5.64,
+    14.15
    ]
   },
   "top25_Lstar": {
-   "mean": 8.11,
-   "p50": 8.84,
+   "mean": 8.06,
+   "p50": 8.79,
    "p90": 10.9
   },
   "palette": {
@@ -48,43 +48,43 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 77.9,
+     "nearest_dE2000_p01": 81.1,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 68.9,
+     "nearest_dE2000_p01": 69.9,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 58.6,
+     "nearest_dE2000_p01": 59.4,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#3876AB",
      "role": "浅水 縹",
-     "nearest_dE2000_p01": 28.3,
+     "nearest_dE2000_p01": 29.2,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
      "nearest_dE2000_p01": 9.5,
-     "within_dE5_pct": 0.02
+     "within_dE5_pct": 0.01
     },
     {
      "hex": "#697987",
      "role": "海雪",
-     "nearest_dE2000_p01": 29.8,
+     "nearest_dE2000_p01": 30.0,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 62.2,
+     "nearest_dE2000_p01": 63.1,
      "within_dE5_pct": 0.0
     }
    ],
@@ -169,7 +169,7 @@
    "color": "#000000"
   }
  },
- "bloom_share_of_APL": 0.01,
+ "bloom_share_of_APL": 0.0,
  "t": 556.36,
  "target": {
   "phase": "藍熄灭",
@@ -194,7 +194,7 @@
    540
   ]
  },
- "render_seconds": 26.4,
+ "render_seconds": 33.7,
  "lens": "none",
  "bloom_tint": "single",
  "note": "F3e3 556.36: the last blue goes out (APL target 25)"

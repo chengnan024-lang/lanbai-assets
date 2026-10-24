@@ -244,6 +244,15 @@ float4 _WindowCore;          // the window's luminance ceiling (final review #5:
                              // rim glint >= y EV under it): x = core ceiling (linear luma), y = EV drop at the rim,
                              // z = profile power in theta/theta_c, w > 0 on. Soft (tanh): an over-bright core settles AT x.
 float  _WindowSunGain;       // the arc's own gain (NOT _WindowGain: dimming the window must not dim the sun)
+float4 _WindowRim;           // 7c (D-23): the window's outer ring. rgb = its colour in window-cube units (before the gain),
+                             // w = where it starts as a fraction of the window radius (0.70 = the outer 30 %), full AT the
+                             // rim and brightening toward it (x 0.7 -> 1.6), >= 1 off. By the VIEW ray's angle (flat), so the ring stays put while
+                             // the waves still ripple the sky
+float  _WindowRimSun;        // 7c: the ring is warmer toward the sun's azimuth (a dusk sky is): x lerp(1 - k, 1 + k, sun side)
+float  _MirrorWave;          // 7c: the waves x this for the dark MIRROR's reflection only (the palace lamps settle into clear
+                             // points at F8b while the window keeps the bible's 30 % waves). 1 = off
+float  _WindowWave;          // 7c (D-23 '窗里保留一层小浪'): the waves x this for the WINDOW's refraction only; the mirror (the
+                             // palace lamps) keeps the calm plane's normal, so the lamps stay clear points (bible F8b). 1 = off
 
 inline float3 LanbaiSeaWindowCube(float3 dir)
 {
@@ -273,19 +282,39 @@ inline float4 LanbaiSeaBelow(float3 N, float3 I, float slopeVar)
     if (dot(I, Na) <= 1e-4) Na = float3(0.0, side, 0.0);     // a facet seen from behind: use the flat plane
     float cosI = dot(I, Na);
     float F = LanbaiFresnel(cosI, _IOR);
+    // the window's own facet: the waves x _WindowWave (7c), the mirror keeps Na
+    float3 Nw = Na;
+    [branch] if (_WindowWave != 1.0)
+    {
+        Nw = normalize(float3(Na.x * _WindowWave, Na.y, Na.z * _WindowWave));
+        if (dot(I, Nw) <= 1e-4) Nw = Na;
+    }
     float okR, okG, okB;
-    float3 Tg = LanbaiSeaRefractOut(I, Na, _IOR, okG);
-    float3 Tr = LanbaiSeaRefractOut(I, Na, _Dispersion.x, okR);
-    float3 Tb = LanbaiSeaRefractOut(I, Na, _Dispersion.y, okB);
+    float3 Tg = LanbaiSeaRefractOut(I, Nw, _IOR, okG);
+    float3 Tr = LanbaiSeaRefractOut(I, Nw, _Dispersion.x, okR);
+    float3 Tb = LanbaiSeaRefractOut(I, Nw, _Dispersion.y, okB);
     float3 win;
     win.r = LanbaiSeaWindowCube(Tr).r * okR;
     win.g = LanbaiSeaWindowCube(Tg).g * okG;
     win.b = LanbaiSeaWindowCube(Tb).b * okB;
+    float thV = acos(saturate(abs(I.y)));                       // the VIEW ray's angle from the plane normal (flat)
+    [branch] if (_WindowRim.w < 1.0)
+    {
+        float2 az = normalize(I.xz + float2(1e-5, 0.0)), saz = normalize(_WindowSunDir.xz + float2(1e-5, 0.0));
+        float sunSide = 0.5 + 0.5 * dot(az, saz);
+        float k = smoothstep(_WindowRim.w, 1.0, thV / asin(1.0 / _IOR));
+        // a gradient over the outer ring, brightening toward the rim like a horizon (not a flat band: D-23 r17)
+        float3 rimC = _WindowRim.rgb * lerp(1.0 - _WindowRimSun, 1.0 + _WindowRimSun, sunSide * sunSide) * (0.7 + 0.9 * k);
+        // the middle of the blend goes through a warm neutral, not through lilac (indigo + rose = the D-17 lavender;
+        // the same move as the sky kit's seam between its rose and its blue)
+        float lw = dot(win, float3(0.2126, 0.7152, 0.0722));
+        win = lerp(win, lw * float3(1.0, 0.96, 0.9), 0.85 * 4.0 * k * (1.0 - k));
+        win = lerp(win, rimC, k);
+    }
     // radiance entering the denser medium is multiplied by n^2 (the window really is brighter than the sky)
     win *= _WindowTint.rgb * (_WindowGain * _IOR * _IOR);
     float crit = asin(1.0 / _IOR);
-    float th = acos(saturate(cosI));
-    float thV = acos(saturate(abs(I.y)));                       // the VIEW ray's angle from the plane normal (flat)
+    float th = acos(saturate(dot(I, Nw)));                      // the window's facet: with _WindowWave its edge shimmers
     // w: desaturate toward the bible's near-white core (#E6F3F8); none at the rim, which keeps the sky's own blue / gold
     float wr = saturate(thV / crit);
     win = lerp(win, LanbaiLuma(win).xxx, saturate(_WindowTint.w) * (1.0 - wr * wr));
@@ -326,7 +355,13 @@ inline float4 LanbaiSeaBelow(float3 N, float3 I, float slopeVar)
         wsun = _WindowSunColor.rgb * (arc * max(1.0 - Ff, _WindowSunFloor) * _WindowSunGain);
         wcover = saturate(arc * 1.5);
     }
-    float3 R = reflect(I, Na);                                 // back into the water
+    float3 Nm = Na;
+    [branch] if (_MirrorWave != 1.0)
+    {
+        Nm = normalize(float3(Na.x * _MirrorWave, Na.y, Na.z * _MirrorWave));
+        if (dot(I, Nm) <= 1e-4) Nm = Na;
+    }
+    float3 R = reflect(I, Nm);                                 // back into the water
     float pr = LanbaiSeaPerceptual(LanbaiSeaAlpha(slopeVar));
     float3 mirror = _TIRColor.rgb + (_TIRCubeGain > 0.0 ? LanbaiSeaCube(R, pr) * _TIRCubeGain : float3(0, 0, 0));
     return float4(mirror * F + win * ((1.0 - F) * edge * (1.0 - wcover)) + wsun, saturate((1.0 - F) * edge));

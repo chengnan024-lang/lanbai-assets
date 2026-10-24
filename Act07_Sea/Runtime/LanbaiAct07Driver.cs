@@ -95,10 +95,34 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
     [Header("Warm point (F5)")]
     public float warmFadeIn = 3f;
 
+    [Header("Act 7c (F8 -> exit; bible §6·7c, D-23): all by TIME")]
+    public float tF8 = 835.16f, tF8b = 877.96f, tF8c = 902.16f;
+    public Renderer mirrorRenderer;            // R_Sea/Sea_Mirror: the second Sea_Disc, M_07c_SeaMirror (BELOW flipped)
+    public float mirrorWaterY = -428.385f;     // its water y: the EYE crosses it at the exit
+    public float baseMirrorWindowGain = 0.25f;
+    public float[] c7WaveT, c7WaveV, c7WinT, c7WinV;
+    public float[] c7FogT, c7FogDens;
+    public Vector4[] c7FogUp, c7FogMid, c7FogDown;
+    public Color[] c7FogGamma;                 // RenderSettings.fogColor per key (sRGB of the mid)
+    public float c7CausT0 = 902.16f, c7CausRamp = 4f;
+    public Vector4 c7CausColor;
+    public Texture reflCube7c;                 // what the dark mirror reflects (the palace lamps): _Udon_ReflCube in 7c. Stand-in
+                                               // Sea/Textures/Cube_Refl7c_Standin_512.exr until Control bakes Refl_S7c (README §0 #12)
+    public Light[] roseLights;                 // R_Act07Bus/Act07_Rose*: rose point lights under the bus (bible §6·7c 光)
+    public float[] c7RoseT, c7RoseV;
+    public Color c7TriSky, c7TriEquator;       // sRGB
+    public float[] c7TriGroundT;
+    public Color[] c7TriGround;                // sRGB
+
+    [Header("Waterline on the glass (Lanbai/SeaWaterline on copies of the glass, wired locally)")]
+    public Renderer[] waterlines;
+    public float wlEntry0 = 362.76f, wlEntry1 = 365.26f, wlExit0 = 921.86f, wlExit1 = 923.36f;
+
     private MaterialPropertyBlock _mpb;
     private int _idSeaLevel, _idSeaMode, _idSeaClock, _idUnder, _idSeaBus, _idSeaBusVel, _idT, _idFog, _idFogBase;
     private int _idWUp, _idWMid, _idWDown, _idCaus, _idCausCol, _idCausTex;
     private int _idWindowGain, _idWindowCore, _idGain, _idGather, _idGatherPoint;
+    private int _idWaveAmp, _idWindowSunGain, _idActive, _idWaterBelow, _idRefl, _idReflHdr, _idReflExp;
     // _below starts true: the plane is BUILT with the BELOW material so the prewarm frames draw that variant too; the
     // first Tick at / after F2h swaps it to ABOVE (until the eye is under)
     private bool _ready, _vr, _below = true, _sunTaken;
@@ -115,7 +139,7 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
     {
         if (roots == null) return;
         for (int i = 0; i < roots.Length; i++) if (roots[i] != null) roots[i].SetActive(on);
-        if (!on && _ready) HandBack();
+        if (!on && _ready) { HandBack(); Waterlines(0f); }
     }
 
     // hand back only what is the sea's alone (裁决 20:40: shared channels -- fog, RenderSettings, sea level / mode, the
@@ -164,6 +188,13 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
         _idGain = VRCShader.PropertyToID("_Gain");
         _idGather = VRCShader.PropertyToID("_Gather");
         _idGatherPoint = VRCShader.PropertyToID("_GatherPoint");
+        _idWaveAmp = VRCShader.PropertyToID("_WaveAmp");
+        _idWindowSunGain = VRCShader.PropertyToID("_WindowSunGain");
+        _idActive = VRCShader.PropertyToID("_Active");
+        _idWaterBelow = VRCShader.PropertyToID("_WaterBelow");
+        _idRefl = VRCShader.PropertyToID("_Udon_ReflCube");
+        _idReflHdr = VRCShader.PropertyToID("_Udon_ReflCube_HDR");
+        _idReflExp = VRCShader.PropertyToID("_Udon_ReflExposure");
         VRCPlayerApi lp = Networking.LocalPlayer;
         _vr = lp != null && lp.IsUserInVR();
         if (causticsTex != null) VRCShader.SetGlobalTexture(_idCausTex, causticsTex);
@@ -228,6 +259,10 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
         float vFwd = t < fwdT0 ? 0f : ProfileV(t, fwdV0, fwdSegT0, fwdSegDur, fwdSegDv);
         if (rSea != null) rSea.localPosition = new Vector3(0f, depth, -fwd);
         bool under = t >= tEyeUnder;
+        bool c7 = t >= tF8;
+
+        // the waterline on the glass: rises at the entry (water below the line), runs off upward at the exit (water above)
+        Waterlines(t >= wlEntry0 && t < wlEntry1 ? 1f : (t >= wlExit0 && t < wlExit1 ? -1f : 0f));
 
         // out of the water (922.36): hand back the sea's own channels, switch our things off, write nothing shared
         if (t >= tExit)
@@ -244,7 +279,29 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
             AllOff();
             return;
         }
-        if (seaRenderer != null) seaRenderer.enabled = true;
+        if (seaRenderer != null) seaRenderer.enabled = !c7;          // 7c: the surface is 400 m up in the fog; the mirror below takes over
+
+        // ---- 7c: the mirror below (the inverted Snell window); its waves, window and arc by time
+        if (mirrorRenderer != null)
+        {
+            mirrorRenderer.enabled = c7;
+            if (c7)
+            {
+                // the reflection cube is the current act's (README_Sea接口 §2.1): in 7c the palace lamps above
+                if (reflCube7c != null)
+                {
+                    VRCShader.SetGlobalTexture(_idRefl, reflCube7c);
+                    VRCShader.SetGlobalVector(_idReflHdr, new Vector4(1f, 1f, 0f, 0f));   // linear float cube
+                    VRCShader.SetGlobalFloat(_idReflExp, 1f);
+                }
+                float w = Keys(t, c7WinT, c7WinV);
+                mirrorRenderer.GetPropertyBlock(_mpb);
+                _mpb.SetFloat(_idWaveAmp, Keys(t, c7WaveT, c7WaveV));
+                _mpb.SetFloat(_idWindowGain, baseMirrorWindowGain * w);
+                _mpb.SetFloat(_idWindowSunGain, w);
+                mirrorRenderer.SetPropertyBlock(_mpb);
+            }
+        }
 
         // ---- the plane: ABOVE until the eye is under (the Clouds' look, under the waterline), then BELOW
         if (seaRenderer != null)
@@ -278,15 +335,36 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
 
         // ---- globals
         VRCShader.SetGlobalFloat(_idT, t);
-        VRCShader.SetGlobalFloat(_idSeaLevel, depth);
-        VRCShader.SetGlobalFloat(_idSeaMode, under ? 2f : 1f);
+        VRCShader.SetGlobalFloat(_idSeaLevel, c7 ? depth + mirrorWaterY : depth);
+        VRCShader.SetGlobalFloat(_idSeaMode, c7 ? 4f : (under ? 2f : 1f));
         VRCShader.SetGlobalVector(_idSeaClock, new Vector4(t, 0f, fwd, 1f));
         VRCShader.SetGlobalFloat(_idUnder, under ? 1f : 0f);
         VRCShader.SetGlobalVector(_idSeaBus, new Vector4(0f, -depth, fwd, 1f));
         VRCShader.SetGlobalVector(_idSeaBusVel, new Vector4(0f, -vSink, vFwd, 1f));
 
         float dens = 0f;
-        if (under && wDepth != null && wDepth.Length > 1)
+        if (c7 && c7FogT != null && c7FogT.Length > 1)
+        {
+            // 7c: the fog by time (thinning, the bible's rose, layered: a dark neutral looking down, D-23)
+            TimeIndex(t, c7FogT);
+            dens = Mathf.Lerp(c7FogDens[_wi], c7FogDens[_wi + 1], _wf);
+            VRCShader.SetGlobalVector(_idWUp, Vector4.Lerp(c7FogUp[_wi], c7FogUp[_wi + 1], _wf));
+            VRCShader.SetGlobalVector(_idWMid, Vector4.Lerp(c7FogMid[_wi], c7FogMid[_wi + 1], _wf));
+            VRCShader.SetGlobalVector(_idWDown, Vector4.Lerp(c7FogDown[_wi], c7FogDown[_wi + 1], _wf));
+            VRCShader.SetGlobalVector(_idFog, new Vector4(dens, 0f, 0f, 1f));
+            VRCShader.SetGlobalVector(_idFogBase, new Vector4(depth + mirrorWaterY, 0f, 0f, 1f));
+            if (writeRenderSettings)
+            {
+                RenderSettings.fogDensity = dens;
+                RenderSettings.fogColor = Color.Lerp(c7FogGamma[_wi], c7FogGamma[_wi + 1], _wf);
+                RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Trilight;
+                RenderSettings.ambientSkyColor = c7TriSky;
+                RenderSettings.ambientEquatorColor = c7TriEquator;
+                TimeIndex(t, c7TriGroundT);
+                RenderSettings.ambientGroundColor = Color.Lerp(c7TriGround[_wi], c7TriGround[_wi + 1], _wf);
+            }
+        }
+        else if (under && wDepth != null && wDepth.Length > 1)
         {
             WaterIndex(depth);
             dens = Mathf.Lerp(wDensity[_wi], wDensity[_wi + 1], _wf);
@@ -312,8 +390,29 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
 
         // ---- caustics and the sun through the water (both fade to 0 by 15 m)
         float cs = 1f - Mathf.Clamp01((depth - causticsDepth0) / Mathf.Max(causticsDepth1 - causticsDepth0, 1e-3f));
-        VRCShader.SetGlobalVector(_idCaus, new Vector4(under ? cs : 0f, 1f, t, 1f));
-        VRCShader.SetGlobalVector(_idCausCol, causticsColor);
+        if (c7)
+        {
+            // 7c F8c: the caustics come from BELOW for the first time (bible §4.8), gold (D-08)
+            float c7s = Smooth((t - c7CausT0) / Mathf.Max(c7CausRamp, 1e-3f));
+            VRCShader.SetGlobalVector(_idCaus, new Vector4(c7s, -1f, t, 1f));
+            VRCShader.SetGlobalVector(_idCausCol, c7CausColor);
+        }
+        else
+        {
+            VRCShader.SetGlobalVector(_idCaus, new Vector4(under ? cs : 0f, 1f, t, 1f));
+            VRCShader.SetGlobalVector(_idCausCol, causticsColor);
+        }
+        // the rose lights under the bus (7c): following the window's arc
+        if (roseLights != null)
+        {
+            float re = c7 ? Keys(t, c7RoseT, c7RoseV) : 0f;
+            for (int i = 0; i < roseLights.Length; i++)
+            {
+                if (roseLights[i] == null) continue;
+                roseLights[i].enabled = re > 0.001f;
+                roseLights[i].intensity = re;  // Inspector = E (D-00)
+            }
+        }
         // the main light: taken over at the eye-under moment (the waterline covers the turn), never switched off
         // scrubbed back above the water (debug clock): the cookie is ours, take it off; the act-6 writer turns the light back
         if (!under && _sunTaken) { if (worldSun != null) worldSun.cookie = null; _sunTaken = false; }
@@ -404,16 +503,47 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
         // ---- particles: snow while under, seeds from F3i (the shader times each birth), trails from F4
         SetGain(snow, under ? 1f : 0f);
         SetGain(seeds, t >= tF3i - 0.1f ? 1f : 0f);
-        SetGain(trails, t >= tF4 ? 1f : 0f);
+        // the hull trails fade out as the rose comes up from below (F8b -> 897.96): blue light ADDED over the rose fog and the
+        // warm window rim reads violet (D-21: h 291-299, L* 41-65 measured), and no fill avoids it (blue + red = magenta)
+        float trailGain = t >= tF4 ? 1f - Smooth((t - tF8b) / 20f) : 0f;
+        SetGain(trails, trailGain);
         SetGain(bubblesGlass, t >= tEntry && t < tEntry + 4f ? 1f : 0f);
         SetGain(bubblesSeats, under ? 1f : 0f);
-        SetGain(ridge, t >= tF4 ? 1f : 0f);                        // its rim is the trails' light
+        SetGain(ridge, trailGain);                                 // its rim is the trails' light
         SetGain(warmPoint, Smooth((t - tF5) / Mathf.Max(warmFadeIn, 1e-3f)));
+    }
+
+    private void TimeIndex(float x, float[] xs)                 // linear between time keys (shares _wi / _wf)
+    {
+        int n = xs.Length;
+        if (x <= xs[0]) { _wi = 0; _wf = 0f; return; }
+        for (int i = 1; i < n; i++)
+            if (x < xs[i]) { _wi = i - 1; _wf = (x - xs[i - 1]) / Mathf.Max(xs[i] - xs[i - 1], 1e-4f); return; }
+        _wi = n - 2; _wf = 1f;
+    }
+
+    // the glass waterline copies: dir +1 = the entry (water below the line), -1 = the exit (water above), 0 = off
+    private void Waterlines(float dir)
+    {
+        if (waterlines == null) return;
+        for (int i = 0; i < waterlines.Length; i++)
+        {
+            Renderer r = waterlines[i];
+            if (r == null) continue;
+            r.enabled = dir != 0f;
+            if (dir == 0f) continue;
+            r.GetPropertyBlock(_mpb);
+            _mpb.SetFloat(_idActive, 1f);
+            _mpb.SetFloat(_idWaterBelow, dir);
+            r.SetPropertyBlock(_mpb);
+        }
     }
 
     private void AllOff()
     {
         if (seaRenderer != null) seaRenderer.enabled = false;
+        if (mirrorRenderer != null) mirrorRenderer.enabled = false;
+        if (roseLights != null) for (int i = 0; i < roseLights.Length; i++) if (roseLights[i] != null) roseLights[i].enabled = false;
         if (dome != null) dome.enabled = false;
         if (beam != null) beam.enabled = false;
         if (shafts != null) shafts.enabled = false;

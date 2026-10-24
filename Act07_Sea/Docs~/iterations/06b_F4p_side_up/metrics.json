@@ -4,8 +4,8 @@
    960,
    540
   ],
-  "APL": 66.16,
-  "EV_display": -3.728,
+  "APL": 66.19,
+  "EV_display": -3.726,
   "luma_lt12_pct": 0.01,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
@@ -19,27 +19,27 @@
   "lavender_act6_pct": 0.0,
   "brightest": {
    "bbox": [
-    39,
-    0,
-    955,
-    539
+    4,
+    41,
+    959,
+    515
    ],
    "centroid": [
-    495.5,
-    292.8
+    523.2,
+    289.4
    ],
-   "clusters": 25,
-   "clusters_ge5pct": 7,
-   "min_luma": 141.7,
+   "clusters": 24,
+   "clusters_ge5pct": 6,
+   "min_luma": 151.3,
    "centroid_az_el": [
-    85.73,
-    22.34
+    86.37,
+    23.49
    ]
   },
   "top25_Lstar": {
-   "mean": 14.12,
+   "mean": 14.1,
    "p50": 3.53,
-   "p90": 40.06
+   "p90": 39.66
   },
   "palette": {
    "act": "07a",
@@ -48,32 +48,32 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 28.6,
+     "nearest_dE2000_p01": 27.7,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 19.2,
+     "nearest_dE2000_p01": 16.4,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 13.1,
+     "nearest_dE2000_p01": 9.6,
      "within_dE5_pct": 0.04
     },
     {
      "hex": "#3876AB",
      "role": "浅水 縹",
-     "nearest_dE2000_p01": 3.9,
-     "within_dE5_pct": 1.24
+     "nearest_dE2000_p01": 3.8,
+     "within_dE5_pct": 1.17
     },
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
      "nearest_dE2000_p01": 3.0,
-     "within_dE5_pct": 0.28
+     "within_dE5_pct": 0.29
     },
     {
      "hex": "#697987",
@@ -84,8 +84,8 @@
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 14.3,
-     "within_dE5_pct": 0.04
+     "nearest_dE2000_p01": 10.5,
+     "within_dE5_pct": 0.05
     }
    ],
    "pixel_to_nearest_dE_median": 9.6,
@@ -193,7 +193,7 @@
    540
   ]
  },
- "render_seconds": 9.8,
+ "render_seconds": 7.7,
  "lens": "none",
  "bloom_tint": "single",
  "note": "F4p gathering (461, the gather ~97 %): from the right side window looking up, the shafts converge on the roof outside the bus"

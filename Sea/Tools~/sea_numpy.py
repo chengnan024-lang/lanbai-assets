@@ -179,7 +179,7 @@ DEFAULTS = dict(LargeTile=64.0, SmallTile=9.0, LargeScroll=(0.9, 0.35), SmallScr
                 Smoothness=0.97, ReflGain=1.0, ReflClamp=2.4, WaterColor=(0.0156, 0.0484, 0.0954), DiscCenter=(0, 0, 0, 0),
                 SunColor=(0, 0, 0), SunDir=(0.4973, 0.1045, 0.8613), SunGlitterRough=0.12, SunReflPeakEV=1.3, SunDiscDeg=0.53,
                 AirSide=1.0, WindowGain=1.0, WindowTint=(1, 1, 1, 0), Dispersion=(1.331, 1.337), TIRColor=(0.0222, 0.0685, 0.1651),
-                TIRCubeGain=0.0, WindowEdgeSoft=0.6, WindowRadial=(1.0, 2.0), WindowSunDir=(0.0, -0.0087, 1.0, 1.2), WindowSunSpread=14.0, WindowSunColor=(0, 0, 0), WindowSunFloor=0.35, WindowSunGain=1.0, WindowCore=(0.0, 0.5, 2.0, 0.0), DissolveTime=-1.0, DissolveFront=4.0, DissolvePixel=5.0,
+                TIRCubeGain=0.0, WindowEdgeSoft=0.6, WindowRadial=(1.0, 2.0), WindowSunDir=(0.0, -0.0087, 1.0, 1.2), WindowSunSpread=14.0, WindowSunColor=(0, 0, 0), WindowSunFloor=0.35, WindowSunGain=1.0, WindowCore=(0.0, 0.5, 2.0, 0.0), WindowRim=(0.0, 0.0, 0.0, 1.0), WindowWave=1.0, MirrorWave=1.0, WindowRimSun=0.0, FogChroma=(1.0, 1.0, 1.0), DissolveTime=-1.0, DissolveFront=4.0, DissolvePixel=5.0,
                 FogMode=1, ReflExposure=1.0, MirrorTint=(1.0, 1.0, 1.0), PurpleGuard=(1.0,), PurpleMask=(1, 1, 1, 1), PurpleCeiling='main',
                 GerstnerLength=(60, 37, 23, 0.08), GerstnerAmp=(0, 0, 0), GerstnerDir=(0.94, 0.34, 0.5, 0.866), LampGlints=0.0, Lamps=())
 
@@ -334,17 +334,31 @@ def below(N, I, var, window_env, refl_env, M):
     Na[bad] = np.array([0.0, side, 0.0])
     cosI = dot(I, Na)
     F = fresnel(cosI, M['IOR'])
-    Tg, okG = refract_out(I, Na, M['IOR'])
-    Tr, okR = refract_out(I, Na, M['Dispersion'][0])
-    Tb, okB = refract_out(I, Na, M['Dispersion'][1])
+    ww = M.get('WindowWave', 1.0)
+    Nw = Na
+    if ww != 1.0:                                      # the window's own facet (7c): the waves x WindowWave
+        Nw = normalize(Na * np.array([ww, 1.0, ww]))
+        Nw = np.where((dot(I, Nw) <= 1e-4)[..., None], Na, Nw)
+    Tg, okG = refract_out(I, Nw, M['IOR'])
+    Tr, okR = refract_out(I, Nw, M['Dispersion'][0])
+    Tb, okB = refract_out(I, Nw, M['Dispersion'][1])
     def wc(d):
         rgb = window_env.lookup(d)
         m = np.max(rgb, -1, keepdims=True)
         return np.where(m > M['ReflClamp'], rgb * (M['ReflClamp'] / np.maximum(m, 1e-9)), rgb)
     win = np.stack([wc(Tr)[..., 0] * okR, wc(Tg)[..., 1] * okG, wc(Tb)[..., 2] * okB], -1)
+    rim = M.get('WindowRim', (0, 0, 0, 1.0))
+    if rim[3] < 1.0:                                   # 7c's warm outer ring (D-23), by the flat view angle
+        k = smoothstep(rim[3], 1.0, np.arccos(saturate(np.abs(I[..., 1]))) / math.asin(1.0 / M['IOR']))[..., None]
+        az = normalize(I[..., [0, 2]] + np.array([1e-5, 0.0])); sd2 = np.asarray(M['WindowSunDir'][:3], float)[[0, 2]]
+        sun_side = 0.5 + 0.5 * (az @ (sd2 / max(np.linalg.norm(sd2), 1e-9)))
+        ks = M.get('WindowRimSun', 0.0)
+        rimc = np.asarray(rim[:3], np.float32) * (1.0 - ks + 2.0 * ks * sun_side ** 2)[..., None] * (0.7 + 0.9 * k)
+        win = win + (luma(win)[..., None] * np.array([1.0, 0.96, 0.9]) - win) * (0.85 * 4.0 * k * (1.0 - k))
+        win = win + (rimc - win) * k
     win = win * np.asarray(M['WindowTint'][:3]) * (M['WindowGain'] * M['IOR'] ** 2)
     crit = math.asin(1.0 / M['IOR'])
-    th = np.arccos(saturate(cosI))
+    th = np.arccos(saturate(dot(I, Nw)))               # the window's facet (with WindowWave its edge shimmers)
     thV = np.arccos(saturate(np.abs(I[..., 1])))
     if len(M['WindowTint']) > 3 and M['WindowTint'][3] > 0:
         wr = saturate(thV / crit)
@@ -378,7 +392,11 @@ def below(N, I, var, window_env, refl_env, M):
             * (0.7 * np.exp(-(dAz / ra) ** 2) + 0.3 * np.exp(-(dAz / (0.12 * ra)) ** 2))
         wsun = np.asarray(M['WindowSunColor'])[None, None, :] * (arc * np.maximum(1 - Ff, M['WindowSunFloor']) * M['WindowSunGain'])[..., None]
         wcover = saturate(arc * 1.5)
-    R = I - 2 * dot(I, Na)[..., None] * Na
+    mw = M.get('MirrorWave', 1.0)
+    Nm = normalize(Na * np.array([mw, 1.0, mw])) if mw != 1.0 else Na
+    if mw != 1.0:
+        Nm = np.where((dot(I, Nm) <= 1e-4)[..., None], Na, Nm)
+    R = I - 2 * dot(I, Nm)[..., None] * Nm
     mirror = np.broadcast_to(np.asarray(M['TIRColor'], np.float32), win.shape).copy()
     if M['TIRCubeGain'] > 0 and refl_env is not None:
         mirror += cube(refl_env, R, np.sqrt(saturate(alpha_of(var, M))), M) * M['TIRCubeGain']
@@ -511,11 +529,12 @@ def ceiling(N, I, var, worldXZ, refl_env, behind_env, M, P=None):
 
 
 # ------------------------------------------------------------------------------------------------ fog (LanbaiFog port)
-def fog(col, P, eye, density, horizon_fn, keep=None):
-    """LanbaiApplyFog; keep (BELOW mode): lerp(_TIRFog, 1, windowness) x the optical depth (Lanbai_Sea.shader frag)"""
+def fog(col, P, eye, density, horizon_fn, keep=None, chroma=None):
+    """LanbaiApplyFog; keep (BELOW mode): lerp(_TIRFog, 1, windowness) x the optical depth (Lanbai_Sea.shader frag);
+    chroma: _FogChroma, the optical depth per channel (7c: the water eats more red)"""
     d = np.linalg.norm(P - eye, axis=-1)
-    f = (1.0 - np.exp(-density * d * (1.0 if keep is None else keep)))     # keep scales the optical depth
-    f = f[..., None]
+    tau = density * d * (1.0 if keep is None else keep)                    # keep scales the optical depth
+    f = 1.0 - np.exp(-tau[..., None] * (np.ones(3) if chroma is None else np.asarray(chroma[:3], float)))
     return col * (1 - f) + horizon_fn(normalize(P - eye)) * f
 
 

@@ -4,7 +4,7 @@
    960,
    540
   ],
-  "APL": 78.64,
+  "APL": 78.63,
   "EV_display": -3.222,
   "luma_lt12_pct": 0.0,
   "Lstar_gt85_pct": 0.0,
@@ -19,21 +19,21 @@
   "lavender_act6_pct": 0.0,
   "brightest": {
    "bbox": [
-    350,
+    289,
     258,
     381,
     370
    ],
    "centroid": [
-    368.0,
-    298.5
+    367.6,
+    298.1
    ],
-   "clusters": 5,
+   "clusters": 6,
    "clusters_ge5pct": 2,
    "min_luma": 139.5,
    "centroid_az_el": [
-    -13.08,
-    -3.36
+    -13.12,
+    -3.31
    ]
   },
   "top25_Lstar": {
@@ -54,7 +54,7 @@
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 19.4,
+     "nearest_dE2000_p01": 19.3,
      "within_dE5_pct": 0.0
     },
     {
@@ -193,7 +193,7 @@
    540
   ]
  },
- "render_seconds": 16.1,
+ "render_seconds": 16.7,
  "lens": "none",
  "bloom_tint": "single",
  "note": "F3 367.21 forward: shafts slanting down, snow rising past (APL target 85)"

@@ -74,6 +74,23 @@ def env_dawn():
     return _ENV['dawn']
 
 
+def lower_clouds(LON, LAT):
+    """7c (D-23): the other sky below has CLOUDS, so the waves have something to ripple in the inverted window (the
+    stand-in for ReflCube_DuskLower until the real dusk HDRI is baked; the bible 8-ii: 'the other sky, other clouds').
+    A thin cirrus layer seen from above it: the direction projected on a plane below, streaks stretched across the sun
+    line, lit gold toward the sun (#F2A56B family, the slot) and the bible's cloud shadow indigo #363D59 (fill #424B6A)
+    away from it. Off within 4 deg of the horizon (act 8's mirror band keeps its look). Returns an ADDED radiance."""
+    dep = np.maximum(-LAT, 1e-3)
+    u = np.cos(LAT) * np.sin(LON) / np.sin(dep); v = np.cos(LAT) * np.cos(LON) / np.sin(dep)
+    n = (np.sin(4.1 * u + 1.2 * v + 0.7) * np.sin(1.1 * v - 0.6 * u + 1.9) * 0.50
+         + np.sin(9.3 * u - 2.7 * v + 2.3) * np.sin(2.7 * v + 0.9 * u) * 0.30
+         + np.sin(23.0 * u + 6.3 * v + 0.4) * 0.20)
+    dens = S.smoothstep(0.18, 0.55, n) * S.smoothstep(math.radians(4.0), math.radians(14.0), dep)
+    towards = (0.5 + 0.5 * np.cos(-LON)) ** 2
+    lit = lin('#F2A56B', -1.2) * towards[..., None] + lin('#424B6A', -0.6) * (1 - towards)[..., None]
+    return lit * (0.55 * dens)[..., None]
+
+
 def env_dusk_synth(kind):
     """the bible's 8-i dusk sky as fills (§6·8 大气 / 色板): sun band #FFB070, rose band (back to the sun) fill #FF9396 @ +0.92,
     mid-sky fill #92A3DF, zenith fill #4B5997; 'lower' = the other sky (-x, -y, z) x 0.82 x (0.92, 0.95, 1.05), 'upper' = below the
@@ -98,6 +115,7 @@ def env_dusk_synth(kind):
     up = sky(LON, np.maximum(LAT, 0.0))
     if kind == 'lower':
         mir = sky(-LON, np.maximum(-LAT, 0.0)) * np.array([0.92, 0.95, 1.05]) * 0.82
+        mir = mir + (lower_clouds(LON, LAT) if _SYNTH.get('clouds', 1) else 0.0)
         w = S.smoothstep(0.0, math.radians(1.0), -LAT)[..., None]
         out = up * (1 - w) + mir * w
     else:
@@ -224,6 +242,10 @@ def frame_K2(rays, eye, t, a):
 
 
 K3_FOG = dict(up=0.75, mid=1.0, down=1.45)     # 7c water fog around #3E2C2B: darker above, the rose glow from the window below
+# r17 (D-23 layering): looking DOWN the fog is a dark neutral (the window's indigo is not drowned in rose), level = the bible's
+# rose (#3E2C2B fill), up = x 0.75; the fog thins in 7c (bible F8c '雾在变薄'): 0.010 / m at 897.96 (it was 0.018)
+K3_FOG_DOWN = '#383545'
+K3_FOG_DENSITY = 0.010
 
 
 def frame_K3(rays, eye, t, a):
@@ -241,10 +263,13 @@ def frame_K3(rays, eye, t, a):
         pts.append((q - bus, float(a.get('speckgain', 0.5)) * rs.uniform(0.4, 1.0)))
     fogc = lin('#3E2C2B')
     refl = env_lamps_above(pts, fogc * 0.6, lamp_gold('S7b') * float(a.get('lampgain', 14.0)), float(a.get('lampdeg', 0.25)))
-    M = material('M_07c_SeaMirror', a, WaveAmp=float(a.get('wave', 0.02)), TIRColor=tuple(fogc * 0.5))
+    M = material('M_07c_SeaMirror', a, TIRColor=tuple(fogc * 0.5))
     rgb, alpha, hit, P = S.shade_plane(eye, rays, level, 'below', t, M, env=refl, window_env=env_dusk_synth('lower'))
-    fog_fn = S.water_horizon(fogc * K3_FOG['up'], fogc * K3_FOG['mid'], fogc * K3_FOG['down'])
-    rgb = S.fog(rgb, P, eye, float(a.get('fog', 0.018)), fog_fn, S.tir_keep(alpha, M))
+    fu, fm, fd = (float(a.get('fog' + k, K3_FOG[k])) for k in ('up', 'mid', 'down'))
+    fog_up = lin(a['fogupcol']) if 'fogupcol' in a else fogc * fu
+    fog_down = lin(a.get('fogdowncol', K3_FOG_DOWN)) if a.get('fogdowncol', K3_FOG_DOWN) != 'rose' else fogc * fd
+    fog_fn = S.water_horizon(fog_up, fogc * fm, fog_down)
+    rgb = S.fog(rgb, P, eye, float(a.get('fog', K3_FOG_DENSITY)), fog_fn, S.tir_keep(alpha, M), M.get('FogChroma'))
     rgb = S.purple_guard(rgb, M)
     return np.where(hit[..., None], rgb, fog_fn(rays)), dict(level=level)
 
