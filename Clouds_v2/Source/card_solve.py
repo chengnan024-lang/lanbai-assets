@@ -95,8 +95,13 @@ def solve(which, card='Cumulus'):
         pb = max(0.0, (((hb - h_t + 180) % 360) - 180) - 8.0) * min(cb / 8, 1)
         # (act 8) the backlit TOP must not show as lilac either (D-21: h 290-330, C* > 8, L* > 40): red rim light + blue
         # dome mixes there; penalised from h 285 / C* 7 / L* 38 (margin)
-        lt, ht, ct = C.hue_chroma(mb[1])
-        pt = (max(0.0, ct - 7.0) * max(0.0, lt - 38.0)) if 285.0 <= ht <= 335.0 else 0.0
+        # (act 8 review r1) swept over rel 15 .. 25 deg: the lilac passes through between the red rim and the warm tops
+        pt = 0.0
+        for rr in (15.0, 18.0, 20.0, 22.0, 25.0):
+            mt = mb[1] if rr == 15.0 else measure(K, S, a, rr, colours_from_x(x, T), T['grade'], sel)[1]
+            lt, ht, ct = C.hue_chroma(mt)
+            pt += (max(0.0, float(ct[0] if np.ndim(ct) else ct) - 7.0) * max(0.0, float(lt[0] if np.ndim(lt) else lt) - 38.0)) \
+                if 285.0 <= float(ht[0] if np.ndim(ht) else ht) <= 335.0 else 0.0
         # (act 6 window, review r2 leftover) the FRONT-lit flat base (rel 150) must not go pink-brown: chroma of warm
         # base pixels above 6 is penalised (bible 1.3 rule 2: no warm in the shadowed underside)
         cbase = measure_base(K, S, a, 150.0, colours_from_x(x, T), T['grade'], base)

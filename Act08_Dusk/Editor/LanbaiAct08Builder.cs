@@ -237,7 +237,7 @@ public static class LanbaiAct08Builder
         var lt = D(B["light"]); Color sc; ColorUtility.TryParseHtmlString((string)lt["colour_srgb"], out sc);
         d.sunColor = sc; d.sunE = F(lt["E"]); d.sunFloor = F(lt["floor"]);
         var rv = D(J["reveal"]); d.revealT0 = F(rv["t0"]); d.revealDt = F(rv["dt"]); d.reveal = FA(L(rv["frac"]));
-        var sl = D(B["sun_line"]); var gr = L(sl["grow"]); d.lineDeg = F(gr[2]); d.lineGrow = F(gr[1]) - F(gr[0]);
+        var sl = D(B["sun_line"]); var gr = L(sl["grow"]); d.lineDeg = F(gr[2]); d.lineGrow0 = F(gr[0]); d.lineGrow = F(gr[1]) - F(gr[0]);
         var cl = L(sl["collapse"]); d.lineCollapse = F(cl[1]) - F(cl[0]);
         var sk = D(B["sun_sink"]); var skt = L(sk["t"]); var ske = L(sk["el"]);
         d.sunEl0 = F(ske[0]); d.sunSinkDur = F(skt[1]) - F(skt[0]);

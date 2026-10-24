@@ -131,15 +131,15 @@ UPPER = [  # id, card, az, D, el_at_href, width, gain, from (8-i / 8-ii)
     ('U07', 'CloudV2_Cumulus_duskU', 75.0, 6500.0, 2.2, 850.0, 1.0, '8i'),
     ('U08', 'CloudV2_Cumulus_duskU', -20.0, 11000.0, 5.5, 900.0, 0.95, '8i'),
     ('U09', 'CloudV2_Strato_duskU', 60.0, 9000.0, 7.0, 1500.0, 1.0, '8i'),
-    ('U10', 'CloudV2_Cumulus_duskU', -95.0, 900.0, 1.5, 350.0, 1.0, '8ii'),     # the near ones read the rise
+    ('U10', 'CloudV2_Cumulus_duskU', -95.0, 900.0, 3.6, 350.0, 1.0, '8ii'),     # the near ones read the rise (r1: base stays above the horizon to 995)
     ('U11', 'CloudV2_Cumulus_duskU', 110.0, 1200.0, 3.0, 450.0, 1.0, '8ii'),
 ]
 LOWER = [  # the other sky's clouds: other variants, 70 % of the count, x 0.82 + tint (0.92, 0.95, 1.05); 8-ii only
     ('L01', 'CloudV2_Congestus_duskD', -50.0, 8000.0, -3.0, 1400.0),
-    ('L02', 'CloudV2_Cumulus_duskD', -100.0, 900.0, -2.0, 350.0),
+    ('L02', 'CloudV2_Cumulus_duskD', -100.0, 900.0, -4.0, 350.0),      # r1: its top stays under the horizon from 956
     ('L03', 'CloudV2_Puff_duskD', -140.0, 6000.0, -1.5, 500.0),
     ('L04', 'CloudV2_Strato_duskD', 150.0, 9000.0, -4.0, 1800.0),
-    ('L05', 'CloudV2_Cumulus_duskD', 95.0, 1300.0, -2.5, 450.0),
+    ('L05', 'CloudV2_Cumulus_duskD', 95.0, 1300.0, -3.0, 450.0),
     ('L06', 'CloudV2_Congestus_duskD', 70.0, 10000.0, -1.2, 1500.0),
     ('L07', 'CloudV2_Strato_duskD', -25.0, 12000.0, -6.0, 1600.0),
 ]
@@ -210,7 +210,7 @@ def fog_density(t):
 def sun_line(t):
     """_Udon_SunDisc: (gain, radius, line half-length deg, 1). The line grows with the other sky (F10e, 8 s: the sun and its
     other self melt into one line), F12 collapses to a point and goes out in 6 s (bible §6·8b)."""
-    z = 10.0 * ss((t - T['F10e']) / 8.0)
+    z = 10.0 * ss((t - T['F10e'] - 3.0) / 5.0)
     k = 1.0 - ss((t - T['F12']) / 6.0)
     return [k, DISC_R, z * k, 1.0]
 
@@ -240,10 +240,12 @@ def main():
              dict(t0=T['F12'], t1=T['F12'] + 6.0, op='ApplyBlend', preset='dusk_8ii', to='blue_hour', shape='smoothstep'),
              dict(t0=T['F12'] + 6.0, t1=END8, op='Apply', preset='blue_hour')],
         fog=dict(water=0.006, air=0.00015, ii=0.00025, note='see fog_density(): F12 -> 0 linear, 0 at 1001.21'),
-        sun_line=dict(grow=[T['F10e'], T['F10e'] + 8.0, 10.0], collapse=[T['F12'], T['F12'] + 6.0]),
+        # review r1 B1: the line only grows once the two discs touch (the sun sinks first, 3 s), else 957.5 -> 961.5 shows
+        # two parallel lines
+        sun_line=dict(grow=[T['F10e'] + 3.0, T['F10e'] + 8.0, 10.0], collapse=[T['F12'], T['F12'] + 6.0]),
         # D-39 #2: ONE line: the sun sinks +0.5 -> 0 deg with the other sky (956.36 -> 964.36, 0.06 deg/s): it touches its
         # other self on the seam (the other sky samples (-x, -y, z): its sun is at -el), the two lines melt into one
-        sun_sink=dict(t=[T['F10e'], T['F10e'] + 8.0], el=[SUN_EL, 0.0]),
+        sun_sink=dict(t=[T['F10e'], T['F10e'] + 3.0], el=[SUN_EL, 0.0]),
         cards=dict(upper_8ii_in=[T['F10e'], T['F10e'] + 8.0], lower_in=[T['F10e'], T['F10e'] + 8.0],
                    blue=[T['F12'], T['F12'] + 6.0], dark=[END8, END8 + 8.0], wisp_out=WISP_FADE),
         light=dict(colour_srgb='#FFA642', E=2.2, floor=0.001, collapse=[T['F12'], T['F12'] + 6.0],
@@ -286,6 +288,19 @@ def main():
     print('sun reveal first %.2f  half %.2f  full %.2f' % (first, half, full))
     print('gap at F9 %.2f  F9b %.2f  F10e %.2f deg' % (gap_deg(T['F9']), gap_deg(T['F9b']), gap_deg(T['F10e'])))
     bad = [(c['id'], c['keepout']) for c in cards if c['keepout']]
+    # review r1: a card never crosses the horizon (the seam of the two skies) while it shows: the upper cards' base and the
+    # lower cards' top (approx. top = base + 0.5 width for the cumulus shapes) over h(t) of their visible time
+    cross = []
+    for c in cards:
+        t0 = T['F10e']                    # the seam exists from 8-ii (in 8-i the lower half is the mirrored dusk: far cards may rise through it)
+        for t in np.arange(t0, END8, 0.5):
+            h = motion(t)[0]
+            y = c['position_local'][1] + h - EYE[1]
+            if c['group'] == 'upper' and y < 0:
+                cross.append((c['id'], round(float(t), 1))); break
+            if c['group'] == 'lower' and y > 0:
+                cross.append((c['id'], round(float(t), 1))); break
+    print('cards crossing the horizon', cross)
     print('keep-out violations', bad, ' nearest card', min(c['dist'] for c in cards), 'm, fastest rise',
           max(c['deg_per_s_rise'] for c in cards), 'deg/s')
 

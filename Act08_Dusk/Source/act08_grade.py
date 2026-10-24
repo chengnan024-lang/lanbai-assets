@@ -59,7 +59,7 @@ def main():
     out_t.append(t_end + 0.01); out_d.append(0.0)
     g = dict(t=out_t, dev=out_d, target_ev=line, scene_ev=[round(scene[t], 3) for t in KEYS], apl_pin=APL_PIN,
              pin_dev=round(dev_pin, 3), width=W, cam='hero', shell='bible_v2',
-             note='LanbaiGrade(t) = {dEV(t), 0, 0, 1}, linear between the keys; 0 outside 922.36 .. 933.11. Calibrate on the '
+             note='LanbaiGrade(t) = {dEV(t), 0, 0, 1}, linear between the keys (the exit 922.36 .. 933.11; the blue hour: --blue). Calibrate on the '
                   'real bus: README §5 (7c end 921 and 8 start 923 front screenshots)')
     json.dump(g, open(os.path.join(KIT, 'Act08_Grade.json'), 'w'), indent=1)
 

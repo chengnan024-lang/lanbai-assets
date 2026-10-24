@@ -630,13 +630,13 @@
    "group": "upper",
    "position_local": [
     -896.6,
-    -194.7,
+    -161.7,
     -78.4
    ],
    "width_m": 350.0,
    "gain": 1.0,
    "show_from": "8ii",
-   "el_at_href": 1.5,
+   "el_at_href": 3.6,
    "az": -95.0,
    "dist": 900.0,
    "keepout": null,
@@ -690,7 +690,7 @@
    "group": "lower",
    "position_local": [
     -886.3,
-    -249.7,
+    -281.2,
     -156.3
    ],
    "width_m": 350.0,
@@ -701,7 +701,7 @@
     1.05
    ],
    "show_from": "8ii",
-   "el_at_href": -2.0,
+   "el_at_href": -4.0,
    "az": -100.0,
    "dist": 900.0,
    "keepout": null,
@@ -762,7 +762,7 @@
    "group": "lower",
    "position_local": [
     1295.1,
-    -275.1,
+    -286.4,
     -113.3
    ],
    "width_m": 450.0,
@@ -773,7 +773,7 @@
     1.05
    ],
    "show_from": "8ii",
-   "el_at_href": -2.5,
+   "el_at_href": -3.0,
    "az": 95.0,
    "dist": 1300.0,
    "keepout": null,
@@ -969,7 +969,7 @@
   },
   "sun_line": {
    "grow": [
-    956.36,
+    959.36,
     964.36,
     10.0
    ],
@@ -981,7 +981,7 @@
   "sun_sink": {
    "t": [
     956.36,
-    964.36
+    959.36
    ],
    "el": [
     0.5,

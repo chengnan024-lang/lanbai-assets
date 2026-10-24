@@ -20,7 +20,8 @@
 //                              the ceiling, its edge and the palace points; renderers off at 965.36 (SeaMode 0: ours).
 //    the cards                 Lanbai/CloudCard (Clouds_v2): upper group, lower group (the other sky, 8-ii, x 0.82), wisps;
 //                              colours by MPB (D-25: dusk -> blue hour), alpha / gain by t; 9a: EV-linear to dark by 1009.21.
-//    exposure                  LanbaiGrade(t) = {dEV, 0, 0, 1}: the exit pin (APL 34) -> +0.5 EV at F9 -> 0 at 933.11 (the
+//    exposure                  LanbaiGrade(t) = {dEV, 0, 0, 1}: the exit pin (APL 34) -> +0.5 EV at F9 -> 0 at 933.11; the blue
+//                              hour 0 -> -1.5 EV (993.06 -> 1001.21, D-39 #1) -> 0 at 1009.21 (the
 //                              dispatcher sums it; this driver never touches PPv2).
 //  D-33 #6: LanbaiActivate(true) clears the 'applied' flags: the next tick rebuilds sky, fog, sun line, light, RenderSettings,
 //  ceiling, cards from t alone (an Apply before any blend). Hand-back: only our own channels (ceiling off, SeaMode 0).
@@ -69,8 +70,8 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
     public float sunE = 2.2f, sunFloor = 0.001f;
     public float revealT0 = 922.36f, revealDt = 0.1f;
     public float[] reveal;                     // the visible fraction of the disc under the ceiling edge (layout reveal)
-    public float discRadius = 0.265f, lineDeg = 10f, lineGrow = 8f, lineCollapse = 6f;
-    public float sunEl0 = 0.5f, sunSinkDur = 8f;  // D-39 #2: the sun sinks +0.5 -> 0 deg with the other sky: ONE line
+    public float discRadius = 0.265f, lineDeg = 10f, lineGrow0 = 959.36f, lineGrow = 5f, lineCollapse = 6f;
+    public float sunEl0 = 0.5f, sunSinkDur = 3f;  // D-39 #2: the sun sinks +0.5 -> 0 deg first (3 s), then the line grows: ONE line
 
     [Header("Fog (_Udon_Fog.x)")]
     public float fogWater = 0.006f, fogAir = 0.00015f, fogII = 0.00025f, fogAirDur = 8f;
@@ -99,7 +100,8 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
     private MaterialPropertyBlock _mpb;
     private int _idSeaLevel, _idSeaMode, _idSeaClock, _idRefl, _idDissolve, _idFog, _idSunDisc, _idSunDir;
     private int _idGain, _idAlpha, _idSunColor, _idSkyUp, _idGround;
-    private bool _ready, _ceilingFade, _ceilingOn, _seaModeOurs;
+    private bool _ready, _seaModeOurs;
+    private int _ceilingMat = -1, _ceilingOn = -1;   // -1 unknown (activation / backward jump: set from t), 0 / 1
     private int _skyStage = -1;                // 0 8-i applied, 1 blending to 8-ii, 2 8-ii applied, 3 blending to blue, 4 blue applied
     private float _lastT = -1f;
     private float[] _window;
@@ -110,7 +112,7 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
     {
         if (!_ready) _Init();
         if (t < windowStart || t > windowEnd) return;
-        if (t < _lastT - 0.25f) { _skyStage = -1; _ceilingFade = false; }   // a backward jump: rebuild from t
+        if (t < _lastT - 0.25f) { _skyStage = -1; _ceilingMat = -1; _ceilingOn = -1; }   // a backward jump: rebuild from t
         _lastT = t;
         Evaluate(t);
     }
@@ -121,7 +123,7 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
             for (int i = 0; i < roots.Length; i++) if (roots[i] != null) roots[i].SetActive(on);
         if (!on && _ready) HandBack();
         // D-33 #6: everything is rebuilt from t on the next tick (late joiners, timeline drags)
-        if (on) { _skyStage = -1; _ceilingFade = false; _lastT = -1f; }
+        if (on) { _skyStage = -1; _ceilingMat = -1; _ceilingOn = -1; _lastT = -1f; }
     }
 
     public float[] LanbaiWindow()
@@ -130,7 +132,7 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
         return _window;
     }
 
-    /// <summary>The exit exposure (README_集成 §8.4): {dEV, 0, 0, 1} on 922.36 .. 933.11, else null.</summary>
+    /// <summary>The exposure events (README_集成 §8.4): {dEV, 0, 0, 1} on 922.36 .. 1009.21 where non-zero, else null.</summary>
     public float[] LanbaiGrade(float t)
     {
         if (gradeT == null || gradeT.Length < 2 || t < gradeT[0] || t > gradeT[gradeT.Length - 1]) return null;
@@ -296,7 +298,7 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
         // over the presets: the fog density and the sun line (dusk_8ii lists _Udon_SunDisc in its blendSkip: ours)
         VRCShader.SetGlobalVector(_idFog, new Vector4(FogDensity(t), 0f, 0f, 1f));
         float k = 1f - Smooth((t - tF12) / lineCollapse);
-        float line = lineDeg * Smooth((t - tF10e) / lineGrow) * k;
+        float line = lineDeg * Smooth((t - lineGrow0) / lineGrow) * k;   // review r1 B1: only once the discs touch
         VRCShader.SetGlobalVector(_idSunDisc, new Vector4(k, discRadius, line, 1f));
         if (t >= tF10e)                                        // D-39 #2: the sun and its other self touch: one line
         {
@@ -308,12 +310,13 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
     private void Ceiling(float t, float h)
     {
         bool on = t >= tExit && t < tCeilingOff;
-        if (on != _ceilingOn || !on)
+        int onI = on ? 1 : 0;
+        if (onI != _ceilingOn)                                 // only on a change (review r1: not every frame after 965.36)
         {
             if (ceilingInner != null) ceilingInner.enabled = on;
             if (ceilingEdge != null) ceilingEdge.enabled = on;
             if (specks != null) specks.enabled = on;
-            _ceilingOn = on;
+            _ceilingOn = onI;
         }
         if (!on)
         {
@@ -321,10 +324,11 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
             return;
         }
         bool fade = t >= tF10e;
-        if (ceilingInner != null && fade != _ceilingFade)
+        int matI = fade ? 1 : 0;
+        if (ceilingInner != null && matI != _ceilingMat)       // review r1: unknown after a scrub -> always set from t
         {
             ceilingInner.sharedMaterial = fade ? matCeilingFade : matCeiling;
-            _ceilingFade = fade;
+            _ceilingMat = matI;
         }
         float tau = fade ? t - tF10e : -1f;
         SetDissolve(ceilingInner, tau);
@@ -347,14 +351,16 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
 
     private void Cards(float t, float w2, float wb)
     {
-        if (cards == null) return;
+        if (cards == null || cardGroup == null || cardGain == null) return;
+        int nW = wispBase == null ? 0 : Mathf.Min(wispBase.Length, Mathf.Min(wispTangent == null ? 0 : wispTangent.Length, wispDrift == null ? 0 : wispDrift.Length));
+        int nC = Mathf.Min(cards.Length, Mathf.Min(cardGroup.Length, cardGain.Length));   // review r1: no unchecked indexing
         float dark = Mathf.Pow(2f, -darkEV * Mathf.Clamp01((t - tEnd8) / darkDur));
         float inII = Smooth((t - cardsIn0) / Mathf.Max(cardsIn1 - cardsIn0, 1e-3f));
         float wisp = 1f - Smooth((t - wispOut0) / Mathf.Max(wispOut1 - wispOut0, 1e-3f));
         Vector4 uS = upSun * (1f - wb), uK = Vector4.Lerp(upSky, blueSky, wb), uG = Vector4.Lerp(upGround, blueGround, wb);
         Vector4 lS = loSun * (1f - wb), lK = Vector4.Lerp(loSky, blueSky, wb), lG = Vector4.Lerp(loGround, blueGround, wb);
         int wi = 0;
-        for (int i = 0; i < cards.Length; i++)
+        for (int i = 0; i < nC; i++)
         {
             Renderer r = cards[i];
             if (r == null) continue;
@@ -362,7 +368,7 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
             float a = g == 0 ? 1f : (g == 3 ? wisp : inII);
             if (g == 3)
             {
-                if (wispBase != null && wi < wispBase.Length)
+                if (wi < nW)
                     r.transform.localPosition = wispBase[wi] + wispTangent[wi] * (wispDrift[wi] * (t - tExit));
                 wi++;
             }
@@ -387,7 +393,7 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
         if (ceilingInner != null) ceilingInner.enabled = false;
         if (ceilingEdge != null) ceilingEdge.enabled = false;
         if (specks != null) specks.enabled = false;
-        _ceilingOn = false;
+        _ceilingOn = 0;
         if (_seaModeOurs) { VRCShader.SetGlobalFloat(_idSeaMode, 0f); _seaModeOurs = false; }
     }
 }

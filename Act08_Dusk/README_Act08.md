@@ -7,7 +7,8 @@
 
 1. **导入顺序**：`Common/` → `GateClouds/`（搭建脚本借它的 `LanbaiGateCloudsBuilder`）→ `Sky/`（跑 `蓝白/Sky/Build Sky`：场景里要有 `dusk_8i`、`dusk_8ii`、`blue_hour` 三个 `LanbaiSkyPreset`）→ `Sea/`（跑 `蓝白/Sea/Create Materials`：要有 `M_08_SeaCeiling`、`M_08_SeaCeilingEdge`、`M_08_SeaCeilingFade`；`Models/Sea_Ceiling.fbx`；`Textures/Cube_DuskLower_256.exr`）→ `Clouds_v2/`（暮组的卡：渲完、解完颜色以后，跑 `蓝白/Clouds v2/Build Materials`）→ 最后 `Act08_Dusk/`。
 2. 菜单 **蓝白/Build/Act08**：搭 `R_Dusk`（海之天花、宫殿金点、上下两组云卡、wisp）和 `Act08_Driver`（在 `Director` 下，有的话）。可以重复运行；驱动物体保留（分发层的引用、`worldSun`、两个接管开关不丢）。
-3. 接管开关（`README_集成.md` §8.2、§8.3）：`Act08_Driver.writeRenderSettings`、`writeMainLight` 打勾，同时 `LB_Journey` 的 `extAtmosphere`、`extSun` 填 **922.36 → 1149.31**（主光和环境光到 F16 都归第 8 幕：第 9 幕不写，靠这里留下的值；圣经 9a 的“Trilight 落到近零”也在这里做）。
+3. 接管开关（`README_集成.md` §3、§8.2、§8.3）：`Act08_Driver.writeRenderSettings`、`writeMainLight` 打勾；`LB_Journey` 勾 `extAtmosphere` / `extSun`。**Director v1.1 起不用手填窗口**：分发层按驱动的这两个开关算 `LanbaiCoversAtmosphere(t)` / `LanbaiCoversSun(t)`（这一幕 922.36 → 1149.31：主光和环境光到 F16 都归第 8 幕，第 9 幕不写；圣经 9a 的“Trilight 落到近零”也在这里做）。
+   - Director 的 “3 Report” 会在 **922.36 → 923.36** 报一条 `[atmosphere][sun]` 重叠：第 7 幕的窗口写到 923.36（水线流走），这一秒里海已经不写共享量（`README_Act07a` §93：922.36 起只交还独有的），分发层按类名排序第 8 幕后 tick，实际只有一个写的人。**这一条是预料中的**；要消掉就请海把窗口收到 922.36。
 4. 分发层把 `LanbaiGrade(t)` 加进 `gradeDEV`（出海的曝光线，§4）。**不要再在 `ApplyGrades` 里另写出海的 EXPO_DOWN / EXPO_UP**，不然算两次。
 5. 请截图（ARGBHalf → PPv2 → 8 位，CONTROL §6 #10），推到 `FromLocal/act08_test/`：
    | t | 机位 | 看什么 |
@@ -77,7 +78,7 @@
 ## 4. 曝光线（`LanbaiGrade`）：出海，和蓝时往下走
 
 圣经：“这条线写的是‘场景 + 曝光’的总亮度”。`Source/act08_grade.py` 在参考帧（正前、`bible_v2` 车壳、S7b → S8 调色 + bloom）上量：
-1. 出海那一帧压到 **APL 34**（7c 末）：要 ΔEV **−3.92**（圣经的仿真是 2.43 EV、w 0.68；参考帧的天比圣经仿真亮，所以钉得更多）。
+1. 出海那一帧压到 **APL 34**（7c 末）：要 ΔEV **−3.10**（`Act08_Grade.json` 的 `pin_dev`；圣经的仿真是 2.43 EV、w 0.68；参考帧的天比圣经仿真亮，所以钉得更多）。
 2. 总亮度 EV 线性放开 6.75 s，F9 顶到“场景 + 0.5 EV”：ΔEV **+0.65**。
 3. 4 s 线性回 0（933.11）。
 放开的速度约 0.68 EV/s；flashcheck 出海段 0.11 / 0.51 / 1.01 EV（0.25 / 1 / 2 秒窗，限 0.5 / 1.0 / 1.8；圣经的仿真 0.39 / 0.66 / 1.00）。**实机要标定**：§0 第 5 条（D-39 #4）。
@@ -129,3 +130,20 @@ APL 高于 §2.2 的部分来自天空预设本身（D-39 #1 接受，守 D-18�
 | 2 日线是一条 | 太阳和镜像贴在一起；956.36 → 964.36 长出来：批准 | 太阳在变形的 8 秒里沉到 0°（§3） |
 | 3 雾 F12 起线性、1001.21 到 0 | 批准 | 已是这样 |
 | 4 出海钉住量 | 等实机 921 / 923 截图标定 | §0 第 5 条 |
+
+## 8. 评审 r1 的回应（`Docs~/review_r1.md`）
+
+| 条 | 怎么处理 | 证据 |
+|---|---|---|
+| **B1** 变形前一半日线是两条 | 太阳先沉（956.36 → 959.36，3 s），**两个日盘贴上以后**日线才长（959.36 → 964.36，5 s）；另一片天仍是 8 s。用天空的 CPU shader 每 0.5 s 渲日线那一块（956.5 → 964.5，参数按驱动写的）：**每一帧都只有一条线**（线出现前是太阳和它的另一个自己两个点慢慢合拢） | `Docs~/iterations/02_sun_line_strip.png`、`Docs~/sun_strip.json`；`Tools~/sun_strip.py` |
+| S1 往回拖时内盘的材质 | 天花的材质 / 开关改成三态（−1 未知），激活和往回拖之后按 t 重设 | 驱动 |
+| S2 Director 报 922.36 → 923.36 重叠 | 预料中，README §0 第 3 条写明 | — |
+| S3 README 还要手填接管窗口 | 改成 Director v1.1 的说法 | §0 |
+| S4 蓝时 −1.5 EV 压暗第 9 幕的第一批星（994 → 997 约 35 %） | 保留（D-39 #1 要蓝时往下走）；**请第 9 幕开着调色复量星的可见度**；1000 → 1010 带第 9 幕夜遮罩的 flashcheck 要第 9 幕的东西，这一包做不了 | `给总控.md` #10 |
+| S5 钉住量数字不一致 | 统一成 −3.10（`pin_dev`）；驱动注释改成覆盖到 1009.21 | — |
+| S6 抬头看不见宫殿金点 | 参考帧的替身没有 ×12 flux；请在 Unity 截图里看（§0 第 5 条 940.36 抬头） | — |
+| S7 HDRI 太阳右边的亮度台阶在论点之帧正中 | 天空会话的；转给总控 | `给总控.md` #11 |
+| S8 duskU 逆光 18–25° 的顶过丁香 | 解色器的护栏扫到 rel 15–25°，duskU / duskD 都重解；整圈（rel 5 → 179°，每 2°）扫过：**没有**落进 D-21 的颜色。duskU 2412 K、阴影 `#393E54`、受光顶 `#E8B570`；duskD 2383 K、阴影 `#3C3F50` | `Clouds_v2/Textures/cards_v2.json` |
+| S9 两张近卡跨过地平线 | U10 仰角 1.5 → 3.6°、L02 −2 → −4°、L05 −2.5 → −3°；layout 加了检查：8-ii 起没有卡跨过接缝 | `act08_layout.py` 输出 |
+| S10 数组没检查长度 | 驱动按最短的那个数组走 | 驱动 |
+| S11 小项 | 天花的 `enabled` 只在变化时写；`_Udon_SunDir` 留在 0°（蓝时没有日盘，看不见）；`SeaClock.z` 的跳看不见 | — |
