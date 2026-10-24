@@ -77,6 +77,7 @@ def main():
     ap.add_argument('--name', default='hero')
     ap.add_argument('--step', type=float, default=0.5)
     ap.add_argument('--no-build', action='store_true')
+    ap.add_argument('--export-grid', type=float, default=0.0, help='also write <name>_occlusion.npz at this step (deg) for occlusion_lookup.py (D-33)')
     a = ap.parse_args()
     eye = tuple(float(v) for v in a.eye.split(','))
     if not a.no_build:
@@ -110,6 +111,25 @@ def main():
     if len(ii):
         win['(open: door / nothing)'] = dict(az=[float(azs[jj].min()), float(azs[jj].max())], el=[float(els[ii].min()), float(els[ii].max())], solid_angle_cells=int(len(ii)))
     json.dump(win, open(os.path.join(a.out, a.name + '_windows.json'), 'w'), ensure_ascii=False, indent=1)
+    if a.export_grid > 0:
+        st = a.export_grid
+        gaz = np.arange(-180, 180 + 1e-6, st)
+        gel = np.arange(-60, 80 + 1e-6, st)
+        ids = np.zeros((len(gel), len(gaz)), np.int16)
+        parts, wins = {}, {}
+        for i, el in enumerate(gel):
+            for j, az in enumerate(gaz):
+                passed, opq = cast(bvh, owner, eb, U2B(B.dir_az_el(az, el)))
+                if opq is not None:
+                    ids[i, j] = parts.setdefault(opq, len(parts))
+                elif passed:
+                    ids[i, j] = -2 - wins.setdefault(passed[0], len(wins))
+                else:
+                    ids[i, j] = -1
+        np.savez_compressed(os.path.join(a.out, a.name + '_occlusion.npz'), az=gaz, el=gel, ids=ids, eye=np.array(eye),
+                            parts=json.dumps(sorted(parts, key=parts.get), ensure_ascii=False),
+                            windows=json.dumps(sorted(wins, key=wins.get), ensure_ascii=False))
+        print('[viewcheck] occlusion grid %.2f deg -> %s_occlusion.npz (%d parts, %d windows)' % (st, a.name, len(parts), len(wins)))
     # ---- the targets
     res = {}
     for nm, az0, el0 in B.TARGETS:
