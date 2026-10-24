@@ -93,6 +93,9 @@ namespace VRC.SDKBase
         public void SetGravityStrength(float strength) { }
         public float GetAvatarEyeHeightAsMeters() { return 1.6f; }
         public static VRCPlayerApi GetPlayerById(int playerId) { return null; }
+        // SDK 3.2.3+ (RFC 5646 codes since client 2024.1.1): creators.vrchat.com/worlds/udon/players/#language
+        public static string GetCurrentLanguage() { return "en"; }
+        public static string[] GetAvailableLanguages() { return new string[] { "en" }; }
         public static int GetPlayerCount() { return 1; }
         public static VRCPlayerApi[] GetPlayers(VRCPlayerApi[] players) { return players; }
     }

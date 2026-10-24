@@ -46,12 +46,11 @@ Shader "Lanbai/OneDrop"
             #pragma multi_compile_fog
             #include "UnityCG.cginc"
             #include "LanbaiRain.cginc"
-            #include "LanbaiVR.cginc"
+            #include "Assets/Lanbai/Common/Shaders/LanbaiVR.cginc"
 
             sampler2D _Head, _Trail;
             float _Progress, _Slide, _Merge, _Visible, _DropOpacity, _TrailOpacity, _GlintLobe;
             half4 _CabinColour;
-            float _Udon_CabinLightmap;
 
             struct appdata
             {
