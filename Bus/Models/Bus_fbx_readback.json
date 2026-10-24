@@ -84,8 +84,8 @@
   "colours": []
  },
  "Cabin_Static": {
-  "verts": 34588,
-  "verts_expected": 34588,
+  "verts": 34750,
+  "verts_expected": 34750,
   "bbox_err_m": 0.0,
   "uv_layers": [
    "UVMap",
