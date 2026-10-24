@@ -577,5 +577,5 @@
   0,
   -12
  ],
- "note": "numpy port of the mirror shaders on the act 9 sky (no cabin); the white mask blended in display-linear toward #E8F1F5 with EvOverlayAlpha (Lscene 0.30); WHITE_SAT/BLOOM not simulated"
+ "note": "numpy port of the mirror shaders on the act 9 sky (no cabin); the white mask blended in display-linear toward #E8F1F5 with EvOverlayAlpha (Lscene 0.13); WHITE_SAT/BLOOM not simulated"
 }

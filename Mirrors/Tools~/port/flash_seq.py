@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.join(MP.REPO, 'Art', 'tools', 'lens_tech'))
 import flashcheck as FC
 
 CASES = dict(m1=(1029.4, 1035.4, 0, -12), m10=(1112.4, 1118.4, 0, -12), m11=(1122.5, 1128.5, 0, -12),
-             wf=(1137.0, 1149.31, 0, 6), wd=(1137.0, 1149.31, 0, -60), m13in=(1058.0, 1065.0, 0, -45))
+             wf=(1137.0, 1149.31, 0, 6), wd=(1137.0, 1149.31, 0, -60), wu=(1137.0, 1149.31, 0, 60), m13in=(1058.0, 1065.0, 0, -45))
 W = MP.WHITE
 FILL = np.array(W['overlay']['fills']['S9b_WHITESAT']['desktop']['linear_rgb'])
 LW = float(MP.G.hexlin('#E8F1F5') @ np.array([0.2126, 0.7152, 0.0722]))
