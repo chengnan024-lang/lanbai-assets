@@ -1,0 +1,380 @@
+// =====================================================================================================
+//  LanbaiAct08Driver  v1 (2026-10-24; cloud session "云", branch pkg/clouds)  — act 8: dusk 8-i -> 8-ii -> 8b blue hour
+//
+//  !!! WRITTEN WITHOUT A UNITY COMPILER !!!  Checked with Common/Tools~/compile_check (Roslyn + U# lint), never in Unity.
+//
+//  Window 922.36 (the exit: the bus falls out of the sea's underside) -> 1149.31 (the main light stays this act's until F16:
+//  act 9 writes no main light / ambient, Engineering/README_集成.md §8.2). Every number comes from Act08_Dusk/Act08_Layout.json,
+//  baked into the fields by 蓝白/Build/Act08.
+//  Writers (README_集成 §8, D-22, D-24, D-25, D-33 #6):
+//    sky / fog / moon / stars  922.36 -> 1001.21: the sky presets by t — dusk_8i.Apply(); F10e dusk_8i.ApplyBlend(dusk_8ii)
+//                              8 s; dusk_8ii.Apply(); F12 dusk_8ii.ApplyBlend(blue_hour) 6 s; blue_hour.Apply(). NOTHING through
+//                              Apply / ApplyBlend at t >= 1001.21 (act 9 is the writer from there). Over the presets: _Udon_Fog
+//                              (water -> air 8 s, 8-ii, F12 -> 0 linear by 1001.21) and _Udon_SunDisc (the sun line: grows to
+//                              +-10 deg with the other sky, F12 collapses to a point and goes out in 6 s).
+//    main light                922.36 -> 1149.31: the dusk sun (az 0, el +0.5, #FFA642, E 2.2: D-00) x the visible part of the
+//                              disc under the ceiling's soft edge (layout reveal table) x the F12 collapse; floor 0.001.
+//    RenderSettings            922.36 -> 1149.31: Trilight 8-i -> 8-ii -> 8b -> 9a near zero; fog density / colour.
+//    the sea ceiling           922.36 -> 965.36: Sea_Ceiling (Lanbai/Sea CEILING, the sea kit's M_08_* materials) under R_Dusk at
+//                              the exit plane; _Udon_SeaLevel / SeaMode 3 / SeaClock / ReflCube; _DissolveTime = t - 956.36 on
+//                              the ceiling, its edge and the palace points; renderers off at 965.36 (SeaMode 0: ours).
+//    the cards                 Lanbai/CloudCard (Clouds_v2): upper group, lower group (the other sky, 8-ii, x 0.82), wisps;
+//                              colours by MPB (D-25: dusk -> blue hour), alpha / gain by t; 9a: EV-linear to dark by 1009.21.
+//    exposure                  LanbaiGrade(t) = {dEV, 0, 0, 1}: the exit pin (APL 34) -> +0.5 EV at F9 -> 0 at 933.11 (the
+//                              dispatcher sums it; this driver never touches PPv2).
+//  D-33 #6: LanbaiActivate(true) clears the 'applied' flags: the next tick rebuilds sky, fog, sun line, light, RenderSettings,
+//  ceiling, cards from t alone (an Apply before any blend). Hand-back: only our own channels (ceiling off, SeaMode 0).
+//  NOT written here: PPv2 (LB_Journey), the cabin (erosion, the wings, the door group's erosion for the Zhuangzi text: D-33 #7a),
+//  the poem (LanbaiPoemDriver), act 9's first stars.
+// =====================================================================================================
+using UdonSharp;
+using UnityEngine;
+using VRC.SDKBase;
+using Lanbai.Sky;
+
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
+public class LanbaiAct08Driver : UdonSharpBehaviour
+{
+    [Header("Scene (filled by the builder)")]
+    public GameObject[] roots;
+    public Transform rDusk;                    // R_Dusk: vertical translation only, y = h(t)
+    public Renderer ceilingInner, ceilingEdge, specks;
+    public Material matCeiling, matCeilingFade; // M_08_SeaCeiling (opaque, until F10e), M_08_SeaCeilingFade
+    public Renderer[] cards;                   // Lanbai/CloudCard renderers: upper, lower, wisps
+    public int[] cardGroup;                    // 0 upper from 8-i, 1 upper from 8-ii, 2 lower (other sky, 8-ii), 3 wisp
+    public float[] cardGain;
+    public Vector3[] wispBase, wispTangent;    // wisps only (index = wisp order among cards with group 3)
+    public float[] wispDrift;
+    public Light worldSun;                     // THE main light (D-24)
+    public LanbaiSkyPreset dusk8i, dusk8ii, blueHour;
+    public bool writeRenderSettings = false;   // tick with LB_Journey.extAtmosphere 922.36 -> 1149.31 (README_集成 §8.3)
+    public bool writeMainLight = false;        // tick with LB_Journey.extSun 922.36 -> 1149.31
+    public Texture reflCube;                   // _Udon_ReflCube: ReflCube_DuskLower (stand-in: Sea/Textures/Cube_DuskLower_256)
+
+    [Header("Timeline (Act08_Layout.json)")]
+    public float windowStart = 922.36f, windowEnd = 1149.31f;
+    public float tExit = 922.36f, tF10e = 956.36f, tF12 = 987.06f, tEnd8 = 1001.21f, tCeilingOff = 965.36f;
+    public float blend8iiDur = 8f, blendBlueDur = 6f;
+    public float wispOut0 = 950.36f, wispOut1 = 956.36f;
+    public float cardsIn0 = 956.36f, cardsIn1 = 964.36f, darkDur = 8f, darkEV = 6f;
+
+    [Header("Motion (closed form, Act08_Layout motion)")]
+    public float v0 = -1.5f;
+    public float[] segT0, segDur, segV0, segV1;
+    public float ceilingLocalY = 1.7f;
+
+    [Header("Sun / light")]
+    public Vector3 sunDir = new Vector3(0f, 0.008727f, 0.999962f);
+    public Color sunColor = new Color(1f, 0.651f, 0.2588f, 1f);    // #FFA642 (sRGB; Unity linearises light colours)
+    public float sunE = 2.2f, sunFloor = 0.001f;
+    public float revealT0 = 922.36f, revealDt = 0.1f;
+    public float[] reveal;                     // the visible fraction of the disc under the ceiling edge (layout reveal)
+    public float discRadius = 0.265f, lineDeg = 10f, lineGrow = 8f, lineCollapse = 6f;
+
+    [Header("Fog (_Udon_Fog.x)")]
+    public float fogWater = 0.006f, fogAir = 0.00015f, fogII = 0.00025f, fogAirDur = 8f;
+
+    [Header("RenderSettings (sRGB)")]
+    public Color triSkyI = new Color(0.1098f, 0.2f, 0.3137f, 1f);      // #1C3350
+    public Color triSkyII = new Color(0.2745f, 0.3333f, 0.5098f, 1f);  // #465582
+    public Color triEquator = new Color(0.8157f, 0.5412f, 0.4392f, 1f); // #D08A70
+    public Color triGround = new Color(0.298f, 0.3333f, 0.4667f, 1f);  // #4C5577
+    public Color triSkyB = new Color(0.149f, 0.251f, 0.4314f, 1f);     // #26406E
+    public Color triEquatorB = new Color(0.2902f, 0.3686f, 0.5569f, 1f); // #4A5E8E
+    public Color triGroundB = new Color(0.1647f, 0.1882f, 0.3137f, 1f); // #2A3050
+    public float triBlueDur = 8f, triDarkK = 0.03f;
+    public Color fogColorI = new Color(0.871f, 0.588f, 0.573f, 1f);    // #DE9692 (bible fill)
+    public Color fogColorII = new Color(0.878f, 0.643f, 0.639f, 1f);   // #E0A4A3
+    public Color fogColorB = new Color(0.4353f, 0.5255f, 0.6902f, 1f); // #6F86B0
+
+    [Header("Card colours (linear, D-25: Clouds_v2 cards_v2.json colours)")]
+    public Vector4 upSun, upSky, upGround;     // duskU
+    public Vector4 loSun, loSky, loGround;     // duskD (x the other sky's tint, baked by the builder)
+    public Vector4 blueSky, blueGround;        // blue hour (no sun)
+
+    [Header("Exposure (LanbaiGrade)")]
+    public float[] gradeT, gradeDev;
+
+    private MaterialPropertyBlock _mpb;
+    private int _idSeaLevel, _idSeaMode, _idSeaClock, _idRefl, _idDissolve, _idFog, _idSunDisc;
+    private int _idGain, _idAlpha, _idSunColor, _idSkyUp, _idGround;
+    private bool _ready, _ceilingFade, _ceilingOn, _seaModeOurs;
+    private int _skyStage = -1;                // 0 8-i applied, 1 blending to 8-ii, 2 8-ii applied, 3 blending to blue, 4 blue applied
+    private float _lastT = -1f;
+    private float[] _window;
+    private float[] _grade;
+
+    // ---- CONTROL §5 ------------------------------------------------------------------------------------------------
+    public void LanbaiTick(float t)
+    {
+        if (!_ready) _Init();
+        if (t < windowStart || t > windowEnd) return;
+        if (t < _lastT - 0.25f) { _skyStage = -1; _ceilingFade = false; }   // a backward jump: rebuild from t
+        _lastT = t;
+        Evaluate(t);
+    }
+
+    public void LanbaiActivate(bool on)
+    {
+        if (roots != null)
+            for (int i = 0; i < roots.Length; i++) if (roots[i] != null) roots[i].SetActive(on);
+        if (!on && _ready) HandBack();
+        // D-33 #6: everything is rebuilt from t on the next tick (late joiners, timeline drags)
+        if (on) { _skyStage = -1; _ceilingFade = false; _lastT = -1f; }
+    }
+
+    public float[] LanbaiWindow()
+    {
+        if (_window == null) _window = new float[] { windowStart, windowEnd };
+        return _window;
+    }
+
+    /// <summary>The exit exposure (README_集成 §8.4): {dEV, 0, 0, 1} on 922.36 .. 933.11, else null.</summary>
+    public float[] LanbaiGrade(float t)
+    {
+        if (gradeT == null || gradeT.Length < 2 || t < gradeT[0] || t > gradeT[gradeT.Length - 1]) return null;
+        float d = Table(gradeT, gradeDev, t);
+        if (d == 0f) return null;
+        if (_grade == null) _grade = new float[4];
+        _grade[0] = d; _grade[1] = 0f; _grade[2] = 0f; _grade[3] = 1f;
+        return _grade;
+    }
+
+    void Start()
+    {
+        _Init();
+    }
+
+    public void _Init()
+    {
+        if (_ready) return;
+        _mpb = new MaterialPropertyBlock();
+        _idSeaLevel = VRCShader.PropertyToID("_Udon_SeaLevel");
+        _idSeaMode = VRCShader.PropertyToID("_Udon_SeaMode");
+        _idSeaClock = VRCShader.PropertyToID("_Udon_SeaClock");
+        _idRefl = VRCShader.PropertyToID("_Udon_ReflCube");
+        _idFog = VRCShader.PropertyToID("_Udon_Fog");
+        _idSunDisc = VRCShader.PropertyToID("_Udon_SunDisc");
+        _idDissolve = VRCShader.PropertyToID("_DissolveTime");
+        _idGain = VRCShader.PropertyToID("_Gain");
+        _idAlpha = VRCShader.PropertyToID("_Alpha");
+        _idSunColor = VRCShader.PropertyToID("_SunColor");
+        _idSkyUp = VRCShader.PropertyToID("_SkyUpColor");
+        _idGround = VRCShader.PropertyToID("_GroundColor");
+        _ready = true;
+    }
+
+    // ---- helpers ---------------------------------------------------------------------------------------------------
+    private float Smooth(float x)
+    {
+        x = Mathf.Clamp01(x);
+        return x * x * (3f - 2f * x);
+    }
+
+    private float Depth(float t)                               // h(t): the bus under the exit plane (m)
+    {
+        if (t <= tExit) return 0f;
+        float y = v0 * (t - tExit);
+        for (int i = 0; i < segT0.Length; i++)
+        {
+            if (t <= segT0[i]) break;
+            float x = Mathf.Min((t - segT0[i]) / segDur[i], 1f);
+            float s = x * x * x - 0.5f * x * x * x * x;
+            y += (segV1[i] - segV0[i]) * (segDur[i] * s + Mathf.Max(t - segT0[i] - segDur[i], 0f));
+        }
+        return -y;
+    }
+
+    private float Table(float[] ts, float[] vs, float t)      // piecewise linear over (ts, vs)
+    {
+        int n = ts.Length;
+        if (t <= ts[0]) return vs[0];
+        if (t >= ts[n - 1]) return vs[n - 1];
+        for (int i = 1; i < n; i++)
+            if (t < ts[i]) return Mathf.Lerp(vs[i - 1], vs[i], (t - ts[i - 1]) / Mathf.Max(ts[i] - ts[i - 1], 1e-5f));
+        return vs[n - 1];
+    }
+
+    private float Reveal(float t)
+    {
+        if (reveal == null || reveal.Length == 0) return 1f;
+        if (t >= tF10e) return 1f;
+        float x = (t - revealT0) / revealDt;
+        int i = Mathf.Clamp(Mathf.FloorToInt(x), 0, reveal.Length - 1);
+        int j = Mathf.Min(i + 1, reveal.Length - 1);
+        return Mathf.Lerp(reveal[i], reveal[j], Mathf.Clamp01(x - i));
+    }
+
+    private float FogDensity(float t)
+    {
+        if (t < tExit + fogAirDur) return Mathf.Lerp(fogWater, fogAir, Smooth((t - tExit) / fogAirDur));
+        if (t < tF10e) return fogAir;
+        if (t < tF12) return Mathf.Lerp(fogAir, fogII, Smooth((t - tF10e) / blend8iiDur));
+        return fogII * Mathf.Max(0f, 1f - (t - tF12) / (tEnd8 - tF12));   // 0 at 1001.21 (act 9 writes 0 from there)
+    }
+
+    // ---- per frame ---------------------------------------------------------------------------------------------------
+    public void Evaluate(float t)
+    {
+        float h = Depth(t);
+        if (rDusk != null) rDusk.localPosition = new Vector3(0f, h, 0f);
+        float w2 = Smooth((t - tF10e) / blend8iiDur);
+        float wb = Smooth((t - tF12) / blendBlueDur);
+        float collapse = Smooth((t - tF12) / lineCollapse);
+
+        // ---- the sky / fog / moon / stars (the presets), only before 1001.21
+        if (t < tEnd8) Sky(t);
+
+        // ---- the main light (D-24): the sun x the disc under the ceiling edge x the F12 collapse
+        if (writeMainLight && t < windowEnd)
+        {
+            if (worldSun == null) worldSun = RenderSettings.sun;
+            if (worldSun != null)
+            {
+                worldSun.transform.rotation = Quaternion.LookRotation(-sunDir);
+                worldSun.color = sunColor;
+                worldSun.intensity = Mathf.Max(sunE * Reveal(t) * (1f - collapse), sunFloor);
+            }
+        }
+
+        // ---- RenderSettings (Trilight; fog)
+        if (writeRenderSettings && t < windowEnd)
+        {
+            float wB = Smooth((t - tF12) / triBlueDur);
+            float dark = Mathf.Pow(triDarkK, Mathf.Clamp01((t - tEnd8) / darkDur));     // 9a: EV-linear to near zero
+            Color sky = Color.Lerp(Color.Lerp(triSkyI.linear, triSkyII.linear, w2), triSkyB.linear, wB) * dark;
+            Color eq = Color.Lerp(triEquator.linear, triEquatorB.linear, wB) * dark;
+            Color gr = Color.Lerp(triGround.linear, triGroundB.linear, wB) * dark;
+            RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Trilight;
+            RenderSettings.ambientSkyColor = sky.gamma;
+            RenderSettings.ambientEquatorColor = eq.gamma;
+            RenderSettings.ambientGroundColor = gr.gamma;
+            RenderSettings.fogColor = Color.Lerp(Color.Lerp(fogColorI, fogColorII, w2), fogColorB, wb);
+            RenderSettings.fogDensity = t < tEnd8 ? FogDensity(t) : 0f;
+        }
+
+        // ---- the sea ceiling (8-i; dissolves F10e -> 965.36)
+        Ceiling(t, h);
+
+        // ---- the cards
+        Cards(t, w2, wb);
+    }
+
+    private void Sky(float t)
+    {
+        if (dusk8i == null || dusk8ii == null || blueHour == null) return;
+        if (t < tF10e)
+        {
+            if (_skyStage != 0) { dusk8i.Apply(); _skyStage = 0; }
+        }
+        else if (t < tF10e + blend8iiDur)
+        {
+            if (_skyStage != 1) { dusk8i.Apply(); _skyStage = 1; }          // D-33 #6: a full write before the blend
+            dusk8i.ApplyBlend(dusk8ii, Smooth((t - tF10e) / blend8iiDur));
+        }
+        else if (t < tF12)
+        {
+            if (_skyStage != 2) { dusk8ii.Apply(); _skyStage = 2; }
+        }
+        else if (t < tF12 + blendBlueDur)
+        {
+            if (_skyStage != 3) { dusk8ii.Apply(); _skyStage = 3; }
+            dusk8ii.ApplyBlend(blueHour, Smooth((t - tF12) / blendBlueDur));
+        }
+        else
+        {
+            if (_skyStage != 4) { blueHour.Apply(); _skyStage = 4; }
+        }
+        // over the presets: the fog density and the sun line (dusk_8ii lists _Udon_SunDisc in its blendSkip: ours)
+        VRCShader.SetGlobalVector(_idFog, new Vector4(FogDensity(t), 0f, 0f, 1f));
+        float k = 1f - Smooth((t - tF12) / lineCollapse);
+        float line = lineDeg * Smooth((t - tF10e) / lineGrow) * k;
+        VRCShader.SetGlobalVector(_idSunDisc, new Vector4(k, discRadius, line, 1f));
+    }
+
+    private void Ceiling(float t, float h)
+    {
+        bool on = t >= tExit && t < tCeilingOff;
+        if (on != _ceilingOn || !on)
+        {
+            if (ceilingInner != null) ceilingInner.enabled = on;
+            if (ceilingEdge != null) ceilingEdge.enabled = on;
+            if (specks != null) specks.enabled = on;
+            _ceilingOn = on;
+        }
+        if (!on)
+        {
+            if (_seaModeOurs) { VRCShader.SetGlobalFloat(_idSeaMode, 0f); _seaModeOurs = false; }
+            return;
+        }
+        bool fade = t >= tF10e;
+        if (ceilingInner != null && fade != _ceilingFade)
+        {
+            ceilingInner.sharedMaterial = fade ? matCeilingFade : matCeiling;
+            _ceilingFade = fade;
+        }
+        float tau = fade ? t - tF10e : -1f;
+        SetDissolve(ceilingInner, tau);
+        SetDissolve(ceilingEdge, tau);
+        SetDissolve(specks, tau);
+        VRCShader.SetGlobalFloat(_idSeaLevel, ceilingLocalY + h);
+        VRCShader.SetGlobalFloat(_idSeaMode, 3f);
+        VRCShader.SetGlobalVector(_idSeaClock, new Vector4(t, 0f, 0f, 1f));
+        if (reflCube != null) VRCShader.SetGlobalTexture(_idRefl, reflCube);
+        _seaModeOurs = true;
+    }
+
+    private void SetDissolve(Renderer r, float tau)
+    {
+        if (r == null) return;
+        r.GetPropertyBlock(_mpb);
+        _mpb.SetFloat(_idDissolve, tau);
+        r.SetPropertyBlock(_mpb);
+    }
+
+    private void Cards(float t, float w2, float wb)
+    {
+        if (cards == null) return;
+        float dark = Mathf.Pow(2f, -darkEV * Mathf.Clamp01((t - tEnd8) / darkDur));
+        float inII = Smooth((t - cardsIn0) / Mathf.Max(cardsIn1 - cardsIn0, 1e-3f));
+        float wisp = 1f - Smooth((t - wispOut0) / Mathf.Max(wispOut1 - wispOut0, 1e-3f));
+        Vector4 uS = upSun * (1f - wb), uK = Vector4.Lerp(upSky, blueSky, wb), uG = Vector4.Lerp(upGround, blueGround, wb);
+        Vector4 lS = loSun * (1f - wb), lK = Vector4.Lerp(loSky, blueSky, wb), lG = Vector4.Lerp(loGround, blueGround, wb);
+        int wi = 0;
+        for (int i = 0; i < cards.Length; i++)
+        {
+            Renderer r = cards[i];
+            if (r == null) continue;
+            int g = cardGroup[i];
+            float a = g == 0 ? 1f : (g == 3 ? wisp : inII);
+            if (g == 3)
+            {
+                if (wispBase != null && wi < wispBase.Length)
+                    r.transform.localPosition = wispBase[wi] + wispTangent[wi] * (wispDrift[wi] * (t - tExit));
+                wi++;
+            }
+            if (t >= tEnd8 + darkDur) a = 0f;
+            bool vis = a > 0.001f;
+            if (r.enabled != vis) r.enabled = vis;
+            if (!vis) continue;
+            bool lower = g == 2;
+            r.GetPropertyBlock(_mpb);
+            _mpb.SetFloat(_idGain, cardGain[i] * dark);
+            _mpb.SetFloat(_idAlpha, a);
+            _mpb.SetVector(_idSunColor, lower ? lS : uS);
+            _mpb.SetVector(_idSkyUp, lower ? lK : uK);
+            _mpb.SetVector(_idGround, lower ? lG : uG);
+            r.SetPropertyBlock(_mpb);
+        }
+    }
+
+    private void HandBack()
+    {
+        // only our own channels (D-22): the ceiling and its SeaMode; the shared sky / fog / light are left for the next writer
+        if (ceilingInner != null) ceilingInner.enabled = false;
+        if (ceilingEdge != null) ceilingEdge.enabled = false;
+        if (specks != null) specks.enabled = false;
+        _ceilingOn = false;
+        if (_seaModeOurs) { VRCShader.SetGlobalFloat(_idSeaMode, 0f); _seaModeOurs = false; }
+    }
+}

@@ -1,0 +1,380 @@
+# -*- coding: utf-8 -*-
+"""第 8 幕参考帧（numpy）：天空会话的三个预设（CPU 版 Lanbai/Sky 渲成的等距柱状图：dusk_8i、dusk_8ii（日线 10°）、blue_hour，
+按驱动的时间表混合）+ 海之天花的替身（Lanbai/Sea CEILING 的算术：菲涅耳、玫瑰金镜、2.7 km 软边、溶化、宫殿金点）+ 云卡（cardshade）
++ 车壳（标准台 bible_v2 的角度窗；车顶与上墙按侵蚀打开）+ 雾（LanbaiFog 模型 B，预设的数），按 S7b → S8 → S8b 调色 + 驱动报的 ΔEV。
+用法：~/bpy/bin/python act08_ref.py --t 929.11 940.36 --cam hero door_d12 [--w 960] [--dev auto|0]
+暮组的卡没渲完之前，用晨组同形状的卡当替身（颜色仍是暮的），json 里记 cards_standin。"""
+import os
+import sys
+import json
+import math
+import argparse
+import numpy as np
+from PIL import Image
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+KIT = os.path.normpath(os.path.join(HERE, '..'))
+REPO = os.path.normpath(os.path.join(KIT, '..'))
+sys.path.insert(0, HERE)
+sys.path.insert(0, os.path.join(REPO, 'Clouds_v2', 'Source'))
+import lb_common as C  # noqa: E402
+import cardshade as CS  # noqa: E402
+import act08_layout as AL  # noqa: E402
+
+LAYOUT = json.load(open(os.path.join(KIT, 'Act08_Layout.json')))
+B = LAYOUT['beats']
+HARNESS = os.path.join(REPO, 'Engineering', 'render_harness')
+CAMS = json.load(open(os.path.join(HARNESS, 'cameras.json')))
+CAMS = CAMS.get('cameras', CAMS)
+CAMS['door_d12'] = dict(eye=[0.55, 1.7, 2.05], yaw_deg=30.0, pitch_deg=0.0, hfov_deg=90.0, res=[1920, 1080],
+                        note='the door view: the Zhuangzi block (+21.8 .. +48.2) and its mirror')
+CAMS['hero_up'] = dict(eye=[0.55, 1.7, 2.05], yaw_deg=0.0, pitch_deg=35.0, hfov_deg=90.0, res=[1920, 1080],
+                       note='the ceiling overhead (8-i) / the open sky (8-ii)')
+CAMS['hero_down'] = dict(eye=[0.55, 1.7, 2.05], yaw_deg=0.0, pitch_deg=-30.0, hfov_deg=90.0, res=[1920, 1080],
+                         note='the lower hemisphere: the mirrored dusk (8-i) / the other sky (8-ii)')
+CAMS['vr_up'] = dict(eye=[0.55, 1.7, 2.05], yaw_deg=0.0, pitch_deg=60.0, hfov_deg=97.3, res=[1832, 1920],
+                     note='D-09: VR single eye looking up (the roof is gone from ~950)')
+SHELL = json.load(open(os.path.join(HARNESS, 'bus_shell.json')))['presets']['bible_v2']
+WORK = os.environ.get('LB_WORK', '/tmp/lb/clouds')
+EYE = np.array(AL.EYE)
+CARDJ = json.load(open(os.path.join(REPO, 'Clouds_v2', 'Textures', 'cards_v2.json')))
+FOGP = {a['preset']: a for a in json.load(open(os.path.join(REPO, 'Sky', 'FogPresets.json')))['acts'] if 'preset' in a}
+SKYS = {}
+
+
+def ss(x):
+    x = np.clip(x, 0, 1)
+    return x * x * (3 - 2 * x)
+
+
+def sky_img(name):
+    if name not in SKYS:
+        SKYS[name] = C.read_hdr(os.path.join(WORK, f'sky_{name}_1024.hdr')).astype(np.float64)
+    return SKYS[name]
+
+
+def weights(t):
+    """(w8ii, wblue): the sky schedule (Apply / ApplyBlend smoothstep), as the driver"""
+    return float(ss((t - B['F10e']) / 8.0)), float(ss((t - B['F12']) / 6.0))
+
+
+def sky(V, t):
+    w2, wb = weights(t)
+    a = C.sample_equirect(sky_img('dusk_8i'), V, 0.0)
+    if w2 > 0:
+        a = a * (1 - w2) + C.sample_equirect(sky_img('dusk_8ii_line10'), V, 0.0) * w2
+    if wb > 0:
+        a = a * (1 - wb) + C.sample_equirect(sky_img('blue_hour'), V, 0.0) * wb
+    return a
+
+
+# ---- LanbaiFog model B with the presets' numbers (Common/Shaders/LanbaiSky.cginc LanbaiHorizonGradient)
+def fog_params(t):
+    w2, wb = weights(t)
+    keys = ('near', 'far', 'zenith', 'nadir', 'width', 'shape', 'below')
+    out = {}
+    for k in keys:
+        a = np.array(FOGP['dusk_8i'][k], float)
+        b = np.array(FOGP['dusk_8ii'][k], float)
+        c = np.array(FOGP['blue_hour'][k], float)
+        out[k] = (a * (1 - w2) + b * w2) * (1 - wb) + c * wb
+    out['band_dir'] = FOGP['dusk_8i']['band_dir']
+    return out
+
+
+def horizon_b(V, F):
+    near, far, zen, nad = F['near'], F['far'], F['zenith'], F['nadir']
+    el = np.degrees(np.arcsin(np.clip(V[:, 1], -1, 1)))
+    T = np.array(F['band_dir'][:3])
+    th = T[[0, 2]] + np.array([1e-5, 0.0]); th /= np.linalg.norm(th)
+    vh = V[:, [0, 2]] + np.array([1e-5, 0.0]); vh /= np.linalg.norm(vh, axis=-1, keepdims=True)
+    az = np.degrees(np.arccos(np.clip(vh @ th, -1, 1)))
+    hz = near[None] + (far - near)[None] * ss(az / max(float(F['width']), 1.0))[:, None]
+    sh, be = F['shape'], F['below']
+    lo, hi = sh[0], min(max(sh[1], sh[0] + 0.1), 90.0)
+    x = np.clip((el - lo) / max(hi - lo, 1e-4), 0, 1)
+    up = (x * x * (3 - 2 * x)) ** (sh[2] if sh[2] > 0 else 1.0)
+    dn = ss((el - be[1]) / (min(be[0], be[1] - 0.1) - be[1])) ** (be[2] if be[2] > 0 else 1.0)
+    fl = 1e-3 * np.maximum(hz.max(-1, keepdims=True), zen.max()) + 1e-7
+    c = np.exp2(np.log2(np.maximum(hz, fl)) * (1 - up)[:, None] + np.log2(np.maximum(zen[None], fl)) * up[:, None])
+    return c * (1 - dn)[:, None] + nad[None] * dn[:, None]
+
+
+def fog_apply(col, V, dist, t):
+    f = 1 - np.exp(-AL.fog_density(t) * dist)
+    return col * (1 - f)[:, None] + horizon_b(V, fog_params(t)) * f[:, None]
+
+
+# ---- the sea ceiling (Sea/README_Sea接口 §2.4: Lanbai/Sea CEILING; the arithmetic, not the shader)
+WATER = np.array([0.0116, 0.0296, 0.0683])
+MIRROR_TINT, REFL_GAIN = np.array([1.25, 1.3, 1.25]), 1.5
+
+
+def ceiling(V, t, h):
+    """colour (N,3), alpha (N,), distance (N,) of the ceiling (plane h above the eye, radius 2.7 km soft edge)"""
+    n = len(V)
+    col = np.zeros((n, 3)); al = np.zeros(n); dist = np.full(n, np.inf)
+    if t >= LAYOUT['ceiling']['dissolve_end'] or h <= 0.01:
+        return col, al, dist
+    up = V[:, 1] > 1e-5
+    tt = np.where(up, h / np.maximum(V[:, 1], 1e-5), np.inf)
+    p = EYE[None] + V * tt[:, None]
+    d = np.hypot(p[:, 0], p[:, 2])
+    a = np.where(up, AL.ceiling_alpha(d), 0.0)
+    F = 0.02 + 0.98 * (1 - np.clip(V[:, 1], 0, 1)) ** 5
+    refl = sky_lower(V * np.array([1, -1, 1]))
+    c = WATER[None] * (1 - F)[:, None] + refl * (MIRROR_TINT * REFL_GAIN)[None] * F[:, None]
+    c = fog_apply(c, V, np.where(up, tt, 0.0), t)
+    tau = t - B['F10e']
+    if tau > 0:
+        el = np.degrees(np.arcsin(np.clip(V[:, 1], -1, 1)))
+        pr = np.clip((tau - 4.0 * el / 90.0) / 5.0, 0, 1)
+        behind = sky(V, t)
+        c = np.exp2(np.log2(np.maximum(c, 1e-6)) * (1 - pr)[:, None] + np.log2(np.maximum(behind, 1e-6)) * pr[:, None])
+        a = np.where(pr >= 1, 0.0, a)          # the colour has walked to the sky behind it (EV-linear per pixel)
+    col[up] = c[up]; al[up] = a[up]; dist[up] = tt[up]
+    return col, al, dist
+
+
+def sky_lower(Vr):
+    """what ReflCube_DuskLower holds: the dusk sky's lower hemisphere (8-i, mirrored elevation)"""
+    return C.sample_equirect(sky_img('dusk_8i'), Vr, 0.0)
+
+
+SPK = None
+
+
+def specks(V, img, t, h, pix):
+    global SPK
+    S = LAYOUT['specks']
+    if SPK is None:
+        rng = np.random.default_rng(S['seed'])
+        r = S['r_max'] * np.sqrt(rng.random(S['count']))
+        th = rng.random(S['count']) * 2 * np.pi
+        y = rng.uniform(*S['y_above'], S['count'])
+        SPK = np.stack([r * np.sin(th), y, r * np.cos(th)], -1)
+    if t >= LAYOUT['ceiling']['dissolve_end'] or h <= 0.5:
+        return
+    P = SPK + np.array([0.0, h + AL.EYE[1], 0.0])            # world: above the ceiling plane
+    D = P - EYE[None]
+    dist = np.linalg.norm(D, axis=-1)
+    Dn = D / dist[:, None]
+    gold = np.array(S['colour_linear'])
+    tau = t - B['F10e']
+    for k in range(len(P)):
+        cosang = V @ Dn[k]
+        ang = np.arccos(np.clip(cosang, -1, 1))
+        sig = max(pix * 0.8, math.radians(0.02))
+        w = np.exp(-0.5 * (ang / sig) ** 2)
+        el = math.degrees(math.asin(Dn[k][1]))
+        pr = float(np.clip((tau - 4.0 * el / 90.0) / 5.0, 0, 1)) if tau > 0 else 0.0
+        pl = float(np.clip((pr - 0.3) / 0.7, 0, 1))
+        path = max(P[k][1] - (h + AL.EYE[1]), 0) / max(Dn[k][1], 0.05)
+        att = np.exp(-np.array([0.024, 0.020, 0.017]) * path)
+        img += (w * (1 - pl))[:, None] * (gold * att * 1.2)[None]
+
+
+# ---- cards
+_CARD = {}
+STANDIN = set()
+
+
+def card_tex(name):
+    real = name
+    if not os.path.exists(os.path.join(REPO, 'Clouds_v2', 'Textures', name + '_K.png')):
+        shape = name.split('_')[1]
+        real = 'CloudV2_%s_dawn' % shape
+        STANDIN.add(name)
+    if real not in _CARD:
+        cj = CARDJ['cards'][real]
+        k = np.asarray(Image.open(os.path.join(REPO, 'Clouds_v2', 'Textures', real + '_K.png')).convert('RGBA')).astype(np.float32) / 255
+        s = np.asarray(Image.open(os.path.join(REPO, 'Clouds_v2', 'Textures', real + '_S.png')).convert('RGB')).astype(np.float32) / 255
+        _CARD[real] = (C.srgb_dec(k[..., :3]) * cj['kscale'], C.srgb_dec(s[..., :2]) * cj['sscale'], k[..., 3], cj)
+    return _CARD[real]
+
+
+def colours(group, t):
+    """the cards' light (D-25: colours per act). Solved values from cards_v2.json colours.<set> when they exist, else the
+    design stand-in (sun = the preset's disc fill, sky / ground = the preset's zenith / nadir x 4, like the dawn solve)"""
+    key = 'duskD' if group == 'lower' else 'duskU'
+    c = CARDJ.get('colours', {}).get(key)
+    if c:
+        sc, sk, gd = np.array(c['SunColor']), np.array(c['SkyUpColor']), np.array(c['GroundColor'])
+    else:
+        sc = np.array([6.681, 1.892, 0.9061]) * 0.55
+        sk = np.array([0.1139, 0.178, 0.469]) * 4.0
+        gd = np.array([0.0437, 0.0685, 0.1878]) * 4.0
+    bh = LAYOUT['blue_colours']
+    wb = float(ss((t - B['F12']) / 6.0))
+    sc = sc * (1 - wb)
+    sk = sk * (1 - wb) + np.array(bh['SkyUpColor']) * wb
+    gd = gd * (1 - wb) + np.array(bh['GroundColor']) * wb
+    return sc, sk, gd
+
+
+def card_list(t, h):
+    out = []
+    w2 = float(ss((t - B['F10e']) / 8.0))
+    dark = 2.0 ** (-6.0 * float(np.clip((t - B['end8']) / 8.0, 0, 1)))
+    for c in LAYOUT['cards']:
+        a = 1.0 if c['show_from'] == '8i' else w2
+        if a <= 0:
+            continue
+        p = np.array(c['position_local'], float) + np.array([0.0, h, 0.0])
+        out.append(dict(c, pivot=p, gain_t=c['gain'] * dark, alpha_t=a))
+    wo = LAYOUT['beats']['cards']['wisp_out']
+    aw = 1.0 - float(ss((t - wo[0]) / (wo[1] - wo[0])))
+    if aw > 0:
+        for w in LAYOUT['wisps']:
+            p = np.array(w['position_local'], float) + np.array(w['tangent']) * w['drift'] * (t - B['exit']) + np.array([0.0, h, 0.0])
+            out.append(dict(w, pivot=p, gain_t=w['gain'], alpha_t=aw, show_from='8i'))
+    return out
+
+
+def draw_cards(V, img, depth, t, h, pix):
+    sun = np.array(LAYOUT['sun']['dir'])
+    cards = card_list(t, h)
+    cards.sort(key=lambda c: -np.linalg.norm(c['pivot'] - EYE))
+    for c in cards:
+        K, S, A, cj = card_tex(c['card'])
+        hgt, wid = A.shape
+        aspect = hgt / wid
+        W = c['width_m']
+        piv = c['pivot'].copy()
+        if c.get('group') == 'lower':
+            piv[1] -= (cj['opaque_bbox_uv'][3] - cj['cloud_base_v']) * aspect * W     # its top at the given elevation
+        f = EYE - piv
+        fxz = f[[0, 2]] / max(np.linalg.norm(f[[0, 2]]), 1e-6)
+        right = np.array([-fxz[1], 0.0, fxz[0]])
+        nrm = np.array([fxz[0], 0.0, fxz[1]])
+        denom = V @ nrm
+        with np.errstate(divide='ignore', invalid='ignore'):
+            tt = ((piv - EYE) @ nrm) / denom
+        ok = (tt > 0) & np.isfinite(tt)
+        P = EYE + V * np.where(ok, tt, 0)[:, None]
+        u = ((P - piv) @ right) / W + 0.5
+        v = (P[:, 1] - piv[1]) / (W * aspect) + cj['cloud_base_v']
+        bb = cj.get('bbox_uv', [0, 0, 1, 1])
+        ok &= (u >= bb[0]) & (u <= bb[2]) & (v >= bb[1]) & (v <= bb[3]) & (tt < depth)
+        if not ok.any():
+            continue
+        rel, left = CS.rel_angle(-f[[0, 2]], sun[[0, 2]])
+        uu = np.where(left, 1 - u[ok], u[ok])
+        xi = np.clip((uu * wid).astype(int), 0, wid - 1)
+        yi = np.clip(((1 - v[ok]) * hgt).astype(int), 0, hgt - 1)
+        w0, w1, w2 = CS.key_weights(rel)
+        k = K[yi, xi, 0] * w0 + K[yi, xi, 1] * w1 + K[yi, xi, 2] * w2
+        a = A[yi, xi]
+        sc, sk, gd = colours(c.get('group', 'upper'), t)
+        col = k[:, None] * sc + S[yi, xi, 0:1] * sk + S[yi, xi, 1:2] * gd
+        if c.get('tint'):
+            col = col * np.array(c['tint'])
+        col *= c['gain_t']
+        a = a * c['alpha_t'] * CS.melt(np.ones_like(a), v[ok], cj['cloud_base_v'])
+        col = fog_apply(col, V[ok], tt[ok], t)
+        idx = np.nonzero(ok)[0]
+        img[idx] = img[idx] * (1 - a)[:, None] + col * a[:, None]
+
+
+# ---- the cabin (bible_v2 angular shell); the roof and upper walls go with the erosion (0.25 -> 0.65, 922.36 -> 962.26)
+def window_mask(V, t, door='bible_v2'):
+    az, el = C.azel_from_dir(V)
+    m = np.zeros(len(V), bool)
+    for wdw in SHELL['windows']:
+        a0, a1 = wdw['az']
+        azz = az if a1 <= 180 else np.where(az < 0, az + 360, az)
+        m |= (azz >= a0) & (azz <= a1) & (el >= wdw['el'][0]) & (el <= wdw['el'][1])
+    for mu in SHELL.get('mullions', []):
+        m &= ~((np.abs(az - mu['az']) < mu['width_deg'] / 2) & (el >= mu['el'][0]) & (el <= mu['el'][1]))
+    e = float(np.clip((t - B['exit']) / (962.26 - B['exit']), 0, 1))
+    open_el = 60.0 - 48.0 * e                    # the roof (el > 60) is gone early, the upper walls down to +12 by 962
+    m |= el > open_el
+    return m
+
+
+def exposure(t):
+    g = LAYOUT.get('grade')
+    if not g:
+        return 0.0
+    return float(np.interp(t, g['t'], g['dev']))
+
+
+def grade_profile(t):
+    if t < B['exit'] + 8.0:
+        return C.lerp_profile('S7b', 'S8', float(ss((t - B['exit']) / 8.0)))
+    if t < B['F12']:
+        return 'S8'
+    if t < B['end8']:
+        return C.lerp_profile('S8', 'S8b', float(ss((t - B['F12']) / 8.0)))
+    return C.lerp_profile('S8b', 'S9a', float(ss((t - B['end8']) / 8.0)))
+
+
+def rays(cam, w):
+    hf = math.radians(cam['hfov_deg'])
+    rw, rh = cam['res']
+    hh = int(round(w * rh / rw))
+    tx = math.tan(hf / 2)
+    ty = tx * hh / w
+    xs = ((np.arange(w) + 0.5) / w * 2 - 1) * tx
+    ys = (1 - (np.arange(hh) + 0.5) / hh * 2) * ty
+    X, Y = np.meshgrid(xs, ys)
+    d = np.stack([X, Y, np.ones_like(X)], -1)
+    p, y = math.radians(cam['pitch_deg']), math.radians(cam['yaw_deg'])
+    Rx = np.array([[1, 0, 0], [0, math.cos(p), math.sin(p)], [0, -math.sin(p), math.cos(p)]])
+    Ry = np.array([[math.cos(y), 0, math.sin(y)], [0, 1, 0], [-math.sin(y), 0, math.cos(y)]])
+    d = d @ Rx.T @ Ry.T
+    d /= np.linalg.norm(d, axis=-1, keepdims=True)
+    return d.reshape(-1, 3), hh, 2 * tx / w
+
+
+def purple_share(codes):
+    """D-21: h_ab 290-330, C* > 8, L* > 40 (the bible's palette colours pass: they are all < 290 or L* <= 40)"""
+    L, hh, cc = C.hue_chroma(codes.reshape(-1, 3))
+    return float(((hh >= 290) & (hh <= 330) & (cc > 8) & (L > 40)).mean())
+
+
+def render(t, cam_name, w=960, door='bible_v2', out_dir=None, tag='', dev=None):
+    cam = dict(CAMS[cam_name])
+    V, hh, pix = rays(cam, w)
+    h = AL.motion(t)[0]
+    img = sky(V, t)
+    depth = np.full(len(V), np.inf)
+    cc, ca, cd = ceiling(V, t, h)
+    # cards first (behind the ceiling's opaque inner disc where it is nearer), then the ceiling over them
+    draw_cards(V, img, np.where(ca > 0.999, cd, depth), t, h, pix)
+    img = img * (1 - ca)[:, None] + cc * ca[:, None]
+    specks(V, img, t, h, pix)
+    win = window_mask(V, t, door)
+    interior = C.hex_lin('#1A1F2A')
+    img[~win] = interior
+    lin = img.reshape(hh, w, 3)
+    ev = exposure(t) if dev is None else dev
+    codes = C.grade(lin, grade_profile(t), bloom=True, ev=ev)
+    luma = codes @ C.LUMA
+    thr = np.percentile(luma, 99.9)
+    ys, xs = np.nonzero(luma >= thr)
+    m = dict(t=t, cam=cam_name, door=door, h=round(h, 1), dEV=round(ev, 3), APL=round(float(luma.mean()), 1),
+             purple_D21=round(purple_share(codes), 4), brightest_px=[round(float(xs.mean() / w), 3), round(float(ys.mean() / hh), 3)],
+             reveal=round(AL.disc_reveal(t), 3), cards_standin=sorted(STANDIN), width=w)
+    if out_dir:
+        os.makedirs(out_dir, exist_ok=True)
+        base = os.path.join(out_dir, f'{tag}{cam_name}_t{t:.2f}')
+        Image.fromarray(np.clip(codes, 0, 255).astype(np.uint8)).save(base + '.png')
+        json.dump(m, open(base + '.json', 'w'), indent=1)
+    return codes, m, lin
+
+
+if __name__ == '__main__':
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--t', type=float, nargs='+', default=[940.36])
+    ap.add_argument('--cam', nargs='+', default=['hero'])
+    ap.add_argument('--w', type=int, default=960)
+    ap.add_argument('--door', default='bible_v2')
+    ap.add_argument('--out', default='/tmp/lb/act08')
+    ap.add_argument('--tag', default='')
+    ap.add_argument('--dev', type=float, default=None)
+    a = ap.parse_args()
+    for t in a.t:
+        for c in a.cam:
+            _, m, _ = render(t, c, a.w, a.door, a.out, a.tag, a.dev)
+            print(json.dumps(m, ensure_ascii=False))
