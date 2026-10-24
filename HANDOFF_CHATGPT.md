@@ -37,7 +37,7 @@
 
 | 项 | 值 |
 |---|---|
-| 仓库 | `https://github.com/chengnan024-lang/lanbai-assets`（私有），默认分支 `main` |
+| 仓库 | `https://github.com/chengnan024-lang/lanbai-assets`，**公开**（任何人都能看到你推的东西，见 §F），默认分支 `main` |
 | 本机原 clone | `E:\IDMdownload\VRCC\lanbai-assets`（停在 `480e711`）。10-24 普通 pull 两次中断，**这个 clone 不动** |
 | 本机安全检出 | 阿白另建的浅克隆 + 部分检出（D-41 #5 批准）。以后都用它；路径以你的报告为准 |
 | Unity 工程 | `E:\IDMdownload\VRCC\dream`，**本身没有 git** |
@@ -302,6 +302,12 @@ git -C <检出> push origin HEAD:main
 - 没完成的 VR 测试，不许标成通过。
 - **资源**：启动 Unity 之前，先看 C 盘、E 盘的空间和可用内存。不够就停，告诉小楠（D-41 #6）。不关小楠的程序，不清理小楠的文件。
 - VRChat 登录、账号操作、上传世界：只由小楠做。
+- **仓库是公开的**（D-41 #7）。不推这些东西：
+  - 密码、令牌、登录状态；
+  - `UserSettings` 的内容（只记哈希，10-24 你就是这么做的）；
+  - 小楠的私人文件，以及与项目无关的本机信息；
+  - 别人有版权的图片（只写链接）。
+  路径、版本、硬件型号可以写。
 
 ---
 
