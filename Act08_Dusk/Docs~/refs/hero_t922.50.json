@@ -3,11 +3,12 @@
  "cam": "hero",
  "door": "bible_v2",
  "h": 0.2,
- "dEV": -3.669,
- "APL": 27.3,
+ "dEV": -3.024,
+ "APL": 34.9,
  "purple_D21": 0.0,
+ "purple_D21_no_ceiling": 0.0,
  "brightest_px": [
-  0.482,
+  0.477,
   0.483
  ],
  "reveal": 0.0,

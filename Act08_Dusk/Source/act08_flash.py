@@ -18,6 +18,7 @@ KIT = os.path.normpath(os.path.join(HERE, '..'))
 REPO = os.path.normpath(os.path.join(KIT, '..'))
 sys.path.insert(0, HERE)
 import act08_ref as R  # noqa: E402
+R.KEYED_NEAREST = False                    # smooth sky blends in sequences (EV law); stills use the nearest true blend
 import lb_common as C  # noqa: E402
 
 SEGS = dict(exit=(922.36, 936.0), dissolve=(955.0, 968.0), f12=(986.0, 1002.0))

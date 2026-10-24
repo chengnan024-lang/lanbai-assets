@@ -63,11 +63,37 @@ def weights(t):
 def sky(V, t):
     w2, wb = weights(t)
     a = C.sample_equirect(sky_img('dusk_8i'), V, 0.0)
-    if w2 > 0:
-        a = a * (1 - w2) + C.sample_equirect(sky_img('dusk_8ii_line10'), V, 0.0) * w2
+    if 0 < w2 < 1:
+        # dusk_8i.ApplyBlend(dusk_8ii) in parameter space too (the line grows with it), keys .25 / .5 / .75
+        keys = [(0.0, 'dusk_8i'), (0.25, 'dusk_8i_to_dusk_8ii_0.25'), (0.5, 'dusk_8i_to_dusk_8ii_0.50'),
+                (0.75, 'dusk_8i_to_dusk_8ii_0.75'), (1.0, 'dusk_8ii_line10')]
+        a = _keyed(keys, w2, V)
+    elif w2 >= 1:
+        a = C.sample_equirect(sky_img('dusk_8ii_line10'), V, 0.0)
     if wb > 0:
-        a = a * (1 - wb) + C.sample_equirect(sky_img('blue_hour'), V, 0.0) * wb
+        # dusk_8ii.ApplyBlend(blue_hour) in PARAMETER space (Tools~/sky_equirect.py --blend: the sky shader and its purple
+        # guard run on the blended numbers, as in Unity), keyed at w = 0, .25, .5, .75, 1; between keys an image lerp
+        keys = [(0.0, 'dusk_8ii_line10'), (0.25, 'dusk_8ii_to_blue_hour_0.25'), (0.5, 'dusk_8ii_to_blue_hour_0.50'),
+                (0.75, 'dusk_8ii_to_blue_hour_0.75'), (0.85, 'dusk_8ii_to_blue_hour_0.85'),
+                (0.95, 'dusk_8ii_to_blue_hour_0.95'), (1.0, 'blue_hour')]
+        return _keyed(keys, wb, V)
     return a
+
+
+def _keyed(keys, w, V):
+    """the nearest parameter-space blend key (an image lerp between two keys is NOT the blend: it made 4-9 % lilac
+    that the real blend does not have)"""
+    if KEYED_NEAREST:
+        best = min(keys, key=lambda k: abs(k[0] - w))
+        return C.sample_equirect(sky_img(best[1]), V, 0.0)
+    for (w0, n0), (w1, n1) in zip(keys[:-1], keys[1:]):     # sequences (flashcheck): smooth in time, colours approximate
+        if w <= w1:
+            x = (w - w0) / (w1 - w0)
+            return C.sample_equirect(sky_img(n0), V, 0.0) * (1 - x) + C.sample_equirect(sky_img(n1), V, 0.0) * x
+    return C.sample_equirect(sky_img(keys[-1][1]), V, 0.0)
+
+
+KEYED_NEAREST = True                       # stills: the nearest true blend; act08_flash.py sets False
 
 
 # ---- LanbaiFog model B with the presets' numbers (Common/Shaders/LanbaiSky.cginc LanbaiHorizonGradient)
