@@ -7,7 +7,7 @@
 >
 > 旧的第一版（读起来像“白色火焰 / 水晶片”，已被否决）整个挪到了 `_v1~/`，第二版在 `_v2~/`，v4 / v4.1 的贴图在 `_v4_textures~/` 与 `gate/_r3/deliver_Tear~/`（文件夹名带 `~`，Unity 不导入，避免两份 `Lanbai/Tear`）。不要用。
 >
-> **`LanbaiVR.cginc` 用哪一份（技术评审 r3 m11）**：项目里有两份同名文件，内容不同。**唯一正确的是 `art/lens_tech/shaders/LanbaiVR.cginc`**（它有本 shader 用到的 `LanbaiNearFade`）；`deliver2/Rain/Shaders/LanbaiVR.cginc` 是雨那一步的分支（多了 `LanbaiCentreEyePos`、没有 `LanbaiNearFade`）。把 lens_tech 那一份拷到 `Lanbai_Tear.shader` 同一个文件夹里（Unity 先找同目录的 include）；两份最好在 Unity 一侧合并成一份（取并集）。
+> **`LanbaiVR.cginc`（2026-10-23 改）**：shader 现在 include 工程根路径的 **`Assets/Lanbai/Common/Shaders/LanbaiVR.cginc`**（仓库 `Common/Shaders/`，总控放的规范版本，`LanbaiNearFade` 和 `LanbaiCentreEyePos` 都有）。不用再从 `lens_tech` 拷一份到 shader 旁边；以前拷过去的那份可以删掉（或留着，不再被用到）。
 
 ## v6.1（门第 9 轮，2026-10-02）——只改了两处，先读这一节
 
@@ -153,7 +153,7 @@ slang 语法 / 类型检查 **10 个部件全部通过**（仍未在 Unity 编�
 |---|---|
 | `FBX/Tear_Kit.fbx` | 整个套件：空物体 `Tear_Root` 下 **12 个网格（v6：透镜、2 片翻布、3 道撕裂、光晕、天之布褶、云海辉光、光束扇、`Tear_FootSkyline`、`Tear_LightLane`）**，全部在同一个物体空间里（子物体变换为单位变换）。用 `lib/export_unity.py` 导出：导入后旋转 0、缩放 1。 |
 | `FBX/Tear_ShaftCard.fbx` | 单张光束卡（给实现方在中层触手之间重新摆光束用）：轴 = 本地 +Z，长 1 m（把物体 Z 缩放成光束长度），半宽 40 m（UV2.x）。 |
-| `Lanbai_Tear.shader` | `Lanbai/Tear`：一个 shader 管所有部件，材质里用 **Part** 下拉选部件（关键字 `_PART_*`）。需要 `LanbaiVR.cginc`（已交付在 `art/lens_tech/shaders/`，放在 shader 同目录）。 |
+| `Lanbai_Tear.shader` | `Lanbai/Tear`：一个 shader 管所有部件，材质里用 **Part** 下拉选部件（关键字 `_PART_*`）。需要 `Assets/Lanbai/Common/Shaders/LanbaiVR.cginc`（仓库 `Common/`，拷到 `Assets/Lanbai/Common/`）。 |
 | `LanbaiTearParams.cs` | UdonSharp：把 4 个全局参数推给 GPU（§5）。 |
 | `Tear_Layout.json` | 机器可读：物体空间的轴向、各幕的尺寸 / 参数、分叉裂、翻卷布、光晕卡、12 张光束卡的位置、材质与渲染队列、网格面数、全部填色。 |
 | `Textures/Tear_Emission_2048x512.png` | 透镜 v5：RGB = 填色 ÷ 4（sRGB 编码），A = 这一点盖住了多少天（白 1、纤维带 / 散线部分、唇外 0：**v5 唇外不画辉光**）。 |
@@ -334,7 +334,7 @@ U8 正前方（俯仰 0）实测 overdraw（全屏等量，FSE）：透镜 0.12�
 
 ## 10. 还没做 / 需要实机确认
 
-- `LanbaiVR.cginc`：用 `art/lens_tech/shaders/` 那一份（见开头的说明）。
+- `LanbaiVR.cginc`：`Assets/Lanbai/Common/Shaders/LanbaiVR.cginc`（见开头的说明）。
 - **未编译**：shader、UdonSharp 都要编译；VR 双眼各看一遍；确认 MSAA 下翻卷布的 alpha-to-coverage；确认 `AlphaToMask [_AlphaToMask]` 这种属性写法在你们的 Unity 版本里可用（不行就给翻卷布单独复制一份 shader，写死 `AlphaToMask On`）。
 - `SOFTPARTICLES_ON` 依赖 `_CameraDepthTexture`（圣经 §1.6：常开的带阴影平行光保证它存在）。
 - 套件默认不吃雾（`_Atten` = 0，圣经“天上的东西不吃雾”）；`LanbaiFog.cginc` 交付后如需方向雾色，把 `_HazeColor` 换成 `LanbaiHorizon(viewDir)`。

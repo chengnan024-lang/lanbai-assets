@@ -1,0 +1,331 @@
+{
+ "preset": "dawn",
+ "hdri": "syferfontein_6d_clear_puresky_1k.hdr",
+ "grade": "S6",
+ "sun_az_deg": 45.0,
+ "sun_el_deg_in_hdri": 5.8,
+ "sun_el_deg_bible": 6.0,
+ "hdri_yaw_deg": -9.32,
+ "mapping": "equirect, column u = az/360 + 0.5 (az from +Z toward +X), row v = (90 - el)/180; Unity world",
+ "sun_removed_irradiance_rgb": [
+  9.8705,
+  8.0722,
+  2.962
+ ],
+ "tint_model": "log tint = cosine-blend over Δaz of three pchip-over-elevation curves (sun 0 / side 90 / anti 180); zenith shared",
+ "tint_curves": {
+  "0": {
+   "el": [
+    1.5,
+    6.0,
+    15.0,
+    30.0,
+    60.0,
+    90.0
+   ],
+   "log_rgb": [
+    [
+     0.0266,
+     -0.8106,
+     -0.985
+    ],
+    [
+     0.6446,
+     -0.1449,
+     -0.6642
+    ],
+    [
+     0.7733,
+     0.2065,
+     -0.2907
+    ],
+    [
+     0.6002,
+     0.4744,
+     0.5196
+    ],
+    [
+     0.6028,
+     0.6399,
+     0.9607
+    ],
+    [
+     0.1977,
+     0.37,
+     0.9713
+    ]
+   ]
+  },
+  "90": {
+   "el": [
+    1.5,
+    8.0,
+    25.0,
+    45.0,
+    90.0
+   ],
+   "log_rgb": [
+    [
+     0.9648,
+     0.6739,
+     0.7313
+    ],
+    [
+     1.2346,
+     0.7795,
+     0.661
+    ],
+    [
+     1.3992,
+     1.1046,
+     1.1509
+    ],
+    [
+     1.6375,
+     1.4105,
+     1.4899
+    ],
+    [
+     0.2366,
+     0.409,
+     1.0071
+    ]
+   ]
+  },
+  "180": {
+   "el": [
+    1.5,
+    7.0,
+    25.0,
+    45.0,
+    90.0
+   ],
+   "log_rgb": [
+    [
+     -0.4472,
+     -0.2679,
+     0.6059
+    ],
+    [
+     0.8871,
+     0.0056,
+     -0.1545
+    ],
+    [
+     1.1443,
+     0.84,
+     0.9379
+    ],
+    [
+     2.0402,
+     1.7016,
+     1.5271
+    ],
+    [
+     0.2588,
+     0.425,
+     1.0143
+    ]
+   ]
+  }
+ },
+ "control_points": [
+  {
+   "source": "bible",
+   "label": "天顶 zenith",
+   "d_az_from_sun": 0,
+   "el": 89.5,
+   "target": "#3E64A6",
+   "fill_linear": [
+    0.103,
+    0.2087,
+    0.6721
+   ],
+   "result": "#496DA5",
+   "err_codes": 11.5
+  },
+  {
+   "source": "bible",
+   "label": "日侧地平线 sun-side horizon",
+   "d_az_from_sun": 0,
+   "el": 1.5,
+   "target": "#F2C79A",
+   "fill_linear": [
+    3.4987,
+    1.2876,
+    0.5654
+   ],
+   "result": "#F4CB9D",
+   "err_codes": 3.9
+  },
+  {
+   "source": "设计值 design",
+   "label": "",
+   "d_az_from_sun": 0,
+   "el": 6.0,
+   "target": "#F6DDB8",
+   "fill_linear": [
+    3.9992,
+    2.0066,
+    0.948
+   ],
+   "result": "#F6DEBA",
+   "err_codes": 1.7
+  },
+  {
+   "source": "设计值 design",
+   "label": "",
+   "d_az_from_sun": 0,
+   "el": 15.0,
+   "target": "#E3D6C4",
+   "fill_linear": [
+    2.3741,
+    1.7121,
+    1.1664
+   ],
+   "result": "#E3D7C5",
+   "err_codes": 1.4
+  },
+  {
+   "source": "设计值 design",
+   "label": "",
+   "d_az_from_sun": 0,
+   "el": 30.0,
+   "target": "#B3C2D6",
+   "fill_linear": [
+    0.9514,
+    1.1512,
+    1.6504
+   ],
+   "result": "#B4C3D7",
+   "err_codes": 1.1
+  },
+  {
+   "source": "设计值 design",
+   "label": "",
+   "d_az_from_sun": 0,
+   "el": 60.0,
+   "target": "#6A8CC0",
+   "fill_linear": [
+    0.2733,
+    0.4464,
+    1.0651
+   ],
+   "result": "#6B8DC0",
+   "err_codes": 1.0
+  },
+  {
+   "source": "设计值 design",
+   "label": "",
+   "d_az_from_sun": 90,
+   "el": 1.5,
+   "target": "#D6CFC6",
+   "fill_linear": [
+    1.7828,
+    1.4797,
+    1.2069
+   ],
+   "result": "#D5CEC5",
+   "err_codes": 1.5
+  },
+  {
+   "source": "设计值 design",
+   "label": "",
+   "d_az_from_sun": 90,
+   "el": 8.0,
+   "target": "#C8CCD4",
+   "fill_linear": [
+    1.3644,
+    1.3881,
+    1.5773
+   ],
+   "result": "#C7CBD3",
+   "err_codes": 1.4
+  },
+  {
+   "source": "设计值 design",
+   "label": "",
+   "d_az_from_sun": 90,
+   "el": 25.0,
+   "target": "#9DB3D6",
+   "fill_linear": [
+    0.6638,
+    0.881,
+    1.6477
+   ],
+   "result": "#9CB2D5",
+   "err_codes": 0.8
+  },
+  {
+   "source": "设计值 design",
+   "label": "",
+   "d_az_from_sun": 90,
+   "el": 45.0,
+   "target": "#8EA9D4",
+   "fill_linear": [
+    0.5177,
+    0.7372,
+    1.5709
+   ],
+   "result": "#8DA8D3",
+   "err_codes": 0.7
+  },
+  {
+   "source": "bible",
+   "label": "地影带 earth shadow",
+   "d_az_from_sun": 180,
+   "el": 1.5,
+   "target": "#8C98B8",
+   "fill_linear": [
+    0.4841,
+    0.5497,
+    0.9235
+   ],
+   "result": "#939AB5",
+   "err_codes": 6.8
+  },
+  {
+   "source": "bible",
+   "label": "金星带 belt of Venus",
+   "d_az_from_sun": 180,
+   "el": 7.0,
+   "target": "#CFB7B7",
+   "fill_linear": [
+    1.5187,
+    0.9468,
+    0.914
+   ],
+   "result": "#CFB8B8",
+   "err_codes": 1.4
+  },
+  {
+   "source": "设计值 design",
+   "label": "背日 25° · 背日 25°（圣经：20–40° 调色后 ≥ #6F8FC0，h 255–275）",
+   "d_az_from_sun": 180,
+   "el": 25.0,
+   "target": "#9DB5DA",
+   "fill_linear": [
+    0.668,
+    0.9122,
+    1.7976
+   ],
+   "result": "#9DB5DA",
+   "err_codes": 0.4
+  },
+  {
+   "source": "bible",
+   "label": "背日 45°",
+   "d_az_from_sun": 180,
+   "el": 45.0,
+   "target": "#AFC4E0",
+   "fill_linear": [
+    0.9024,
+    1.1963,
+    2.0591
+   ],
+   "result": "#AEC4E0",
+   "err_codes": 0.6
+  }
+ ],
+ "nadir": "#6F8FA8"
+}

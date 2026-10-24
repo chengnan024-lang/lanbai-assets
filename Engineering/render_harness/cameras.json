@@ -1,0 +1,354 @@
+{
+ "_about": "渲染标准台的固定机位。eye = Unity 车局部坐标（米，x 右 y 上 z 前；车在原点车头朝 +Z）；yaw + = 向右（车门一侧），pitch + = 抬头，roll 永远 0；hfov = 水平视角；res = 输出像素。带 t 的是包自己定的“机位 + 时刻”。新增机位：写进这里（总工程师维护），不要在各包的脚本里另写一份。",
+ "unity_euler": "Unity 相机的 localEulerAngles = (−pitch, yaw, 0)；水平 90° 在 16:9 下 = 竖直 58.72°（Unity Camera 的 Field of View 填竖直角）",
+ "cameras": {
+  "hero": {
+   "eye": [
+    0.55,
+    1.7,
+    2.05
+   ],
+   "yaw_deg": 0,
+   "pitch_deg": 0,
+   "hfov_deg": 90,
+   "res": [
+    1920,
+    1080
+   ],
+   "note": "主座位眼位、正前、桌面 1920×1080、水平 90°（= 本地门测试 U7 截图的机位，Gate cameras.U7）。全片的“标准机位”。",
+   "source": "Engineering/render_harness"
+  },
+  "hero_up60": {
+   "eye": [
+    0.55,
+    1.7,
+    2.05
+   ],
+   "yaw_deg": 0,
+   "pitch_deg": 60,
+   "hfov_deg": 90,
+   "res": [
+    1920,
+    1080
+   ],
+   "note": "主座位抬头 +60°（圣经 §1.8 截图协议 f：F13 点燃）",
+   "source": "Engineering/render_harness"
+  },
+  "hero_galcore": {
+   "eye": [
+    0.55,
+    1.7,
+    2.05
+   ],
+   "yaw_deg": -30,
+   "pitch_deg": 12,
+   "hfov_deg": 90,
+   "res": [
+    1920,
+    1080
+   ],
+   "note": "银心方向 −30° / +12°（§1.8 截图协议 f）",
+   "source": "Engineering/render_harness"
+  },
+  "hero_down": {
+   "eye": [
+    0.55,
+    1.7,
+    2.05
+   ],
+   "yaw_deg": 0,
+   "pitch_deg": -45,
+   "hfov_deg": 90,
+   "res": [
+    1920,
+    1080
+   ],
+   "note": "向下看 −45°（§1.8 截图协议 g：第 9 幕最后 30 秒）",
+   "source": "Engineering/render_harness"
+  },
+  "hero_door": {
+   "eye": [
+    0.55,
+    1.7,
+    2.05
+   ],
+   "yaw_deg": 47,
+   "pitch_deg": 0,
+   "hfov_deg": 90,
+   "res": [
+    1920,
+    1080
+   ],
+   "note": "看车门（圣经门玻璃 +30..+65 的中间；§1.8 截图协议 b）。本地 v1 车的门洞在 +11..+23，用 local_v1 车壳时请改 yaw 17",
+   "source": "Engineering/render_harness"
+  },
+  "hero_side": {
+   "eye": [
+    0.55,
+    1.7,
+    2.05
+   ],
+   "yaw_deg": 90,
+   "pitch_deg": 0,
+   "hfov_deg": 90,
+   "res": [
+    1920,
+    1080
+   ],
+   "note": "右侧窗（§1.8 截图协议 h）",
+   "source": "Engineering/render_harness"
+  },
+  "hero_aisle_seat": {
+   "eye": [
+    0.55,
+    1.7,
+    2.05
+   ],
+   "yaw_deg": -90,
+   "pitch_deg": -20,
+   "hfov_deg": 90,
+   "res": [
+    1920,
+    1080
+   ],
+   "note": "看过道的座椅（F1b1 太阳重现，§1.8 截图协议 b）",
+   "source": "Engineering/render_harness"
+  },
+  "hero_rear": {
+   "eye": [
+    0.55,
+    1.7,
+    2.05
+   ],
+   "yaw_deg": 180,
+   "pitch_deg": 0,
+   "hfov_deg": 90,
+   "res": [
+    1920,
+    1080
+   ],
+   "note": "回头看后窗",
+   "source": "Engineering/render_harness"
+  },
+  "hero_skylight": {
+   "eye": [
+    0.55,
+    1.7,
+    2.05
+   ],
+   "yaw_deg": 0.0,
+   "pitch_deg": 49.0,
+   "hfov_deg": 50.0,
+   "res": [
+    1920,
+    1080
+   ],
+   "t": 174.15,
+   "cue": "U8 + 8.0 s (... Ich liess mich nicht abweisen), looking up through the skylight",
+   "bus_shell": true,
+   "source": "Gate/GateLayout_v2.json cameras.U8a",
+   "note": "天窗（= Gate cameras.U8a 的机位，不带时间）"
+  },
+  "hero_journey": {
+   "eye": [
+    0.7,
+    1.77,
+    0.2
+   ],
+   "yaw_deg": 0,
+   "pitch_deg": 0,
+   "hfov_deg": 90,
+   "res": [
+    1920,
+    1080
+   ],
+   "note": "LB_Journey.heroEye（本地 v1 车的主座位，视窗极限就是在这里量的）；诗句位置按这个眼位算",
+   "source": "Engineering/render_harness"
+  },
+  "vr_left_fwd": {
+   "eye": [
+    0.55,
+    1.7,
+    2.05
+   ],
+   "yaw_deg": 0,
+   "pitch_deg": 0,
+   "hfov_deg": 97.3,
+   "res": [
+    1832,
+    1920
+   ],
+   "note": "VR 单眼近似：Index 100% 1832×1920、竖直 100°（→ 水平 ≈ 97.3°），正前。用于 VR 下 APL ≤ 150 的检查；立体视差不模拟",
+   "source": "Engineering/render_harness"
+  },
+  "thumb_stranger": {
+   "eye": [
+    0.55,
+    1.7,
+    2.05
+   ],
+   "yaw_deg": 0,
+   "pitch_deg": 0,
+   "hfov_deg": 90,
+   "res": [
+    640,
+    360
+   ],
+   "note": "陌生人测试只用缩略图：一般直接缩 hero 的成片，这个机位是给快速预览用的",
+   "source": "Engineering/render_harness"
+  },
+  "gate_U6": {
+   "eye": [
+    0.55,
+    1.7,
+    2.05
+   ],
+   "yaw_deg": 0.0,
+   "pitch_deg": 0.0,
+   "hfov_deg": 90.0,
+   "res": [
+    1920,
+    1080
+   ],
+   "t": 146.8,
+   "cue": "U6 + 13 s (last second of the Rilke line; colossus 2 rising left of the moon)",
+   "source": "Gate/GateLayout_v2.json cameras.U6"
+  },
+  "gate_U7": {
+   "eye": [
+    0.55,
+    1.7,
+    2.05
+   ],
+   "yaw_deg": 0.0,
+   "pitch_deg": 0.0,
+   "hfov_deg": 90.0,
+   "res": [
+    1920,
+    1080
+   ],
+   "t": 155.1,
+   "cue": "U7b ...und wollt mich abweisen",
+   "source": "Gate/GateLayout_v2.json cameras.U7"
+  },
+  "gate_U8fwd": {
+   "eye": [
+    0.55,
+    1.7,
+    2.05
+   ],
+   "yaw_deg": 0.0,
+   "pitch_deg": 0.0,
+   "hfov_deg": 90.0,
+   "res": [
+    1920,
+    1080
+   ],
+   "t": 169.65,
+   "cue": "U8 + 3.5 s, straight ahead (bible acceptance frame)",
+   "source": "Gate/GateLayout_v2.json cameras.U8fwd"
+  },
+  "gate_U8a": {
+   "eye": [
+    0.55,
+    1.7,
+    2.05
+   ],
+   "yaw_deg": 0.0,
+   "pitch_deg": 49.0,
+   "hfov_deg": 50.0,
+   "res": [
+    1920,
+    1080
+   ],
+   "t": 174.15,
+   "cue": "U8 + 8.0 s (... Ich liess mich nicht abweisen), looking up through the skylight",
+   "source": "Gate/GateLayout_v2.json cameras.U8a"
+  },
+  "gate_U8b": {
+   "eye": [
+    0.05,
+    2.0,
+    -1.6
+   ],
+   "yaw_deg": 6.0,
+   "pitch_deg": -13.0,
+   "hfov_deg": 90.0,
+   "res": [
+    1920,
+    1080
+   ],
+   "t": 175.55,
+   "cue": "U9 - 4 s: the skylight spot has walked up the aisle to the seats",
+   "source": "Gate/GateLayout_v2.json cameras.U8b"
+  },
+  "gate_U8side": {
+   "eye": [
+    0.55,
+    1.7,
+    2.05
+   ],
+   "yaw_deg": 112.0,
+   "pitch_deg": 8.0,
+   "hfov_deg": 84.0,
+   "res": [
+    1920,
+    1080
+   ],
+   "t": 166.45,
+   "cue": "U8 + 0.3 s: the right gate pillar slides past the side windows (abeam)",
+   "source": "Gate/GateLayout_v2.json cameras.U8side"
+  },
+  "gate_U8near": {
+   "eye": [
+    0.55,
+    1.7,
+    2.05
+   ],
+   "yaw_deg": 100.0,
+   "pitch_deg": 4.0,
+   "hfov_deg": 84.0,
+   "res": [
+    1920,
+    1080
+   ],
+   "t": 167.75,
+   "cue": "U8 + 1.6 s: a near arm surges past the right side windows (11.5 m from the shell)",
+   "source": "Gate/GateLayout_v2.json cameras.U8near"
+  },
+  "gate_rear": {
+   "eye": [
+    0.0,
+    1.95,
+    -3.15
+   ],
+   "yaw_deg": 180.0,
+   "pitch_deg": 12.0,
+   "hfov_deg": 78.0,
+   "res": [
+    1920,
+    1080
+   ],
+   "t": 177.55,
+   "cue": "U9 - 2 s (just before Ich bin von Gott): the hand closes behind",
+   "source": "Gate/GateLayout_v2.json cameras.rear"
+  },
+  "gate_key": {
+   "eye": [
+    0.55,
+    1.7,
+    2.05
+   ],
+   "yaw_deg": 6.0,
+   "pitch_deg": 7.0,
+   "hfov_deg": 82.0,
+   "res": [
+    2560,
+    1072
+   ],
+   "t": 154.5,
+   "cue": "U7b - 0.6 s (key art: colossus 2 has taken ~80 % of the moon (ray-cast), a sliver remains)",
+   "source": "Gate/GateLayout_v2.json cameras.key"
+  }
+ }
+}

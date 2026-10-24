@@ -145,6 +145,7 @@
 
 **Built-in 灯光的三个陷阱：**
 1. **强度按 gamma 空间施加**（`lightsUseLinearIntensity = false`，VRChat 客户端如此）：线性照度 E = 颜色_线性 × 强度^2.2。本文给出 E，并给出平行光的 **Inspector 值 = E^(1/2.2)**。两盏同色灯要线性 2 倍，强度比是 ×1.37。
+   > ⚠ **这一条作废（总导演裁决 D-00 / D-07）。** VRChat SDK 强制 `lightsUseLinearIntensity = true`：**Inspector 值 = 线性照度 E**，不要开 1/2.2 次方。本文各幕灯光表里的 “Inspector” 一栏一律不用，只看 E。（10-08 本地门测试、10-24 第 7a 包都在这里踩过坑。）
 2. **烘焙点 / 聚光灯是平方反比衰减，实时的是 Unity 旧式 range 衰减。** 实时与烘焙的双胞胎不能照抄强度，各自用灰卡校。
 3. **天空是无光照贴图**，灯光与天空的相对关系只能靠灰卡与白卡确定。
 
@@ -697,7 +698,7 @@ APL = 桌面正前方画面平均 luma（含 bloom）；EV 相对第 3 幕月海
 
 ## 6. 每一幕
 
-**约定：** 方位 0° = 车头方向，+ = 右（车门一侧）；仰角 0° = 真地平线。“屏幕”= 截图目标值；“填”= Unity 里输入的值（`#RRGGBB @ +n` = HDR 取色器 Intensity +n）。E = 线性照度（灰卡正对灯），平行光 Inspector = E^(1/2.2)。所有“填”值都在该幕 profile 下求解，完整表见 `calib_final.md`（§B 还给出每个发光体的 ×T0）。每幕的色板图在 `palettes/`，前后对照在 `previews/`。
+**约定：** 方位 0° = 车头方向，+ = 右（车门一侧）；仰角 0° = 真地平线。“屏幕”= 截图目标值；“填”= Unity 里输入的值（`#RRGGBB @ +n` = HDR 取色器 Intensity +n）。E = 线性照度（灰卡正对灯），~~平行光 Inspector = E^(1/2.2)~~ **（作废，见 D-00：Inspector = E，表里的 Inspector 栏不用）**。所有“填”值都在该幕 profile 下求解，完整表见 `calib_final.md`（§B 还给出每个发光体的 ×T0）。每幕的色板图在 `palettes/`，前后对照在 `previews/`。
 
 ---
 

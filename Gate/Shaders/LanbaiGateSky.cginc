@@ -27,14 +27,12 @@ float4 _MoonGlowShape;       // a1, k1, a2, k2                        default (1
 float4 _HaloColor;           // v6 #7A7B9C fill, linear               default (0.195, 0.199, 0.335)
 float4 _TearPos;             // fallback tear core (world)
 
-// Udon globals (VRCShader.SetGlobal*). Never set = 0 and the material values win.
-float4 _Udon_TearPos;        // xyz = the tear core this frame (hot spot height), w > 0 = set
-float4 _Udon_TearH;          // x = H(t) m, w > 0 = set
-float4 _Udon_MoonDir;        // xyz = world direction TO the moon, w > 0 = set
-float4 _Udon_MoonDisc;       // x = disc gain (moon.disc_gain_keys x the Udon fade), y = disc radius deg; w > 0 = set
-float4 _Udon_FogBandDir;     // xyz: world direction of the band centre; length < 0.5 = unset
-float4 _Udon_FogBandColor;   // rgb: band colour next to the tear; a > 0 = set
-float  _Udon_FogBandWidth;   // > 0 = set
+// Udon globals (VRCShader.SetGlobal*), declared once in the shared registry (no X3003 when two includes meet).
+// Never set = 0 and the material values win.
+#include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc"
+// v2 (总导演 driver v1.1 review, D-22): the sky's own horizon model, so the arms, the tide and the clouds follow the sky
+// through the U6 transition (moon_night -> act4_gate, 133.8 -> 163.8). LanbaiSky skips every global declared above.
+#include "Assets/Lanbai/Common/Shaders/LanbaiSky.cginc"
 
 float3 LanbaiTearPos()
 {
@@ -50,6 +48,9 @@ float3 LanbaiMoonDir(float3 fallback)
 // camera -> tear (or _Udon_FogBandDir). Mirrors gate_scene.horizon_nodes() exactly (round 8: incl. the back band).
 half3 LanbaiBand(float3 V)
 {
+    // v2: whenever the sky's model globals are set (the gate driver writes them on [U6, U9), the sky before U6), the band
+    // IS the sky's horizon (identical in act 4 to 1.2e-7: Sky/README_Fog接口 §5); the material band below is the fallback
+    [branch] if (_Udon_FogModel.w > 0.0) return (half3)LanbaiHorizon(V);
     float el = degrees(asin(clamp(V.y, -1.0, 1.0)));
     float3 T = (dot(_Udon_FogBandDir.xyz, _Udon_FogBandDir.xyz) > 0.25) ? _Udon_FogBandDir.xyz
                                                                        : (LanbaiTearPos() - _WorldSpaceCameraPos);
@@ -69,6 +70,15 @@ half3 LanbaiBand(float3 V)
     sky = lerp(sky, lum * half3(0.92, 0.98, 1.12), _BelowDesat * smoothstep(0.0, -4.0, el));
     float below = lerp(_BelowHorizon.z, 1.0, smoothstep(_BelowHorizon.x, _BelowHorizon.y, el));
     return sky * below;
+}
+
+// the fog density this frame, the same precedence as LanbaiFog's LanbaiFogDensity(): _Udon_Fog (w > 0: the sky / the gate
+// driver's D-22 blend, 0.00035 -> 0.0006 over the U6 transition), then the legacy _Udon_FogDensity, then the material
+float LanbaiGateDensity(float materialDensity)
+{
+    if (_Udon_Fog.w > 0.0) return max(_Udon_Fog.x, 0.0);
+    if (_Udon_FogDensity > 0.0) return _Udon_FogDensity;
+    return materialDensity;
 }
 
 // the moon's air: #8FA3C8 x (a1 e^-k1 deg + a2 e^-k2 deg), deg = angle from the moon

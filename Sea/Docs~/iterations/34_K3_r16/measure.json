@@ -1,0 +1,14 @@
+{
+ "APL": 51.6,
+ "brightest_0.2pct": {
+  "median": "#E0A58B",
+  "Lstar": 72.6,
+  "h_ab": 50.0,
+  "C": 28.7,
+  "pct": 0.2
+ },
+ "brightest_luma": 213.7,
+ "arc_dE2000_to_C98A7A": 9.2,
+ "most_common_colour_pct": 21.1,
+ "most_common_colour": "#36262E"
+}

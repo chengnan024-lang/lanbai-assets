@@ -1,0 +1,40 @@
+{
+  "_about": "车壳占位（渲染标准台用）。坐标 = Unity 车局部（米，x 右、y 上、z 前；车在原点、车头朝 +Z）。窗洞按“从眼睛看的方位 / 仰角”定义，用从眼睛出发的棱锥把壳挖穿，所以不论壳的哪一面，窗的角度都正好是这里写的。方位 + = 右（车门一侧），仰角 + = 上。真车（总导演的 Cabin/）交了以后，用 --bus fbx:<路径> 换掉这个占位。",
+  "_sources": "外形尺寸：FromLocal/gate_context.md §0（长 7.0、宽 2.08、外壳 y 0.42–2.74、地板 0.62）。bible_v2 的窗角度：Gate/Source/gate_bus.py 头注（圣经 §4.1 / §4.6 的角度合同：挡风 az −50..+25 / el −15..+22，门玻璃 +30..+65，天窗 az −5..+25 / el +40..+68）。local_v1 的窗角度：FromLocal/shots/s9_2_view_limits/README.md（本地 v1 车实测，主座位 (0.70, 1.77, 0.20)）。",
+  "body": {"length": 7.0, "width": 2.08, "y_bottom": 0.42, "y_top": 2.74, "z_front": 3.5, "floor_y": 0.62, "ceiling_y": 2.45, "wall": 0.06},
+  "materials": {
+    "interior": {"albedo": "#2A2C30", "roughness": 0.6, "_note": "车厢内壁、立柱、顶棚：中性暗灰（反照率 ≈ 0.023 线性）；只为构图和遮挡，不代表车厢的颜色（车厢材质归总导演）"},
+    "floor": {"albedo": "#3A3530", "roughness": 0.7},
+    "glass": {"transmission_tint": "#E9EEF0", "reflect": 0.04, "_note": "可选（--glass）。0.04 是正入射的 F0；车厢玻璃在 Unity 里是 Lanbai/BusGlass，透明叠绘 0.7 FSE"}
+  },
+  "presets": {
+    "bible_v2": {
+      "eye": [0.55, 1.70, 2.05],
+      "windows": [
+        {"name": "windscreen", "az": [-50, 25], "el": [-15, 22]},
+        {"name": "door_glass", "az": [30, 65], "el": [-25, 30]},
+        {"name": "side_R1", "az": [70, 150], "el": [-40, 40]},
+        {"name": "side_L", "az": [-150, -60], "el": [-12, 16]},
+        {"name": "rear", "az": [160, 200], "el": [-4, 12]},
+        {"name": "skylight", "az": [-5, 25], "el": [40, 68]}
+      ],
+      "mullions": [{"name": "windscreen_centre_post", "az": -11.0, "el": [-15, 22], "width_deg": 0.9}]
+    },
+    "local_v1": {
+      "eye": [0.70, 1.77, 0.20],
+      "windows": [
+        {"name": "windscreen", "az": [-27.5, 2], "el": [-8.5, 10.5]},
+        {"name": "door_open", "az": [11, 15], "el": [-10.5, 28]},
+        {"name": "door_above_leaf", "az": [15, 23], "el": [16.5, 28]},
+        {"name": "front_R0", "az": [8.5, 9], "el": [-9, 13.5]},
+        {"name": "side_R1", "az": [32, 143.5], "el": [-45.5, 57]},
+        {"name": "side_L0", "az": [-71.5, -53], "el": [-10, 15]},
+        {"name": "side_L1", "az": [-116, -82.5], "el": [-10, 15]},
+        {"name": "side_L2", "az": [-137.5, -116.5], "el": [-10, 15]},
+        {"name": "side_L3", "az": [-151.5, -147], "el": [-10, 15]},
+        {"name": "rear", "az": [158, 202], "el": [-2, 7]}
+      ],
+      "mullions": [{"name": "windscreen_post", "az": -10.0, "el": [-8.5, 10.5], "width_deg": 1.0}]
+    }
+  }
+}

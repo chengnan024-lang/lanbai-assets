@@ -1,0 +1,79 @@
+{
+ "SeaN_Large_1024": {
+  "tile_m": 64.0,
+  "wind_ms": 7.5,
+  "wind_dir_xz": [
+   1.0,
+   0.35
+  ],
+  "rms_slope": 0.11,
+  "slope_var_total": 0.0121,
+  "unresolved_fraction_per_mip": [
+   2e-05,
+   0.07108,
+   0.18641,
+   0.31636,
+   0.45166,
+   0.58943,
+   0.73837,
+   0.8586,
+   0.99071,
+   1.0,
+   1.0
+  ],
+  "note": "slopes stored at x1 (n_ts = normalize(-sx, -sz, 1)); _NormalStrength scales them in the shader"
+ },
+ "SeaN_Small_1024": {
+  "tile_m": 9.0,
+  "wind_ms": 2.6,
+  "wind_dir_xz": [
+   0.7,
+   1.0
+  ],
+  "rms_slope": 0.09,
+  "slope_var_total": 0.0081,
+  "unresolved_fraction_per_mip": [
+   1e-05,
+   0.04675,
+   0.15979,
+   0.30497,
+   0.46049,
+   0.61761,
+   0.7741,
+   0.90579,
+   0.99527,
+   1.0,
+   1.0
+  ],
+  "note": "slopes stored at x1 (n_ts = normalize(-sx, -sz, 1)); _NormalStrength scales them in the shader"
+ },
+ "SeaMacro_512": {
+  "tile_m": 1500.0,
+  "R": "rippled 1 / calm 0",
+  "G": "gust variation 0..1",
+  "rippled_fraction": 0.693
+ },
+ "ShaftStreaks_256": {
+  "R": "coarse streaks across U (mean 0.36)",
+  "G": "fine streaks across U",
+  "V": "nearly constant (tile along the shaft)"
+ },
+ "Caustics_8x8_2048": {
+  "frames": 64,
+  "grid": [
+   8,
+   8
+  ],
+  "frame_px": 256,
+  "tile_m": 1.0,
+  "loop_s": 3.3333,
+  "floor_depth_m": 2.2,
+  "ripple_wavelength_m": 0.32,
+  "ripple_rms_slope": 0.065,
+  "encoding": "stored = tanh(I / 4), I = mean-1 caustic irradiance; decode I = 4 atanh(min(s, 0.999))",
+  "frame_uv": "frame f: u0 = (f % 8)/8, v0 = 1 - (f//8 + 1)/8 (Unity v up)",
+  "p999": 13.32,
+  "median": 0.419,
+  "sun_elevation_deg": 70
+ }
+}
