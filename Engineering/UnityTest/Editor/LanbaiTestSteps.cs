@@ -130,6 +130,8 @@ namespace Lanbai.Test
                     {
                         string p = TJson.S(TJson.G(st, "path"));
                         if (!EditorApplication.ExecuteMenuItem(p)) throw new StepException("菜单不存在或执行失败：" + p);
+                        if (Lanbai.Udon.LanbaiUdonPrograms.Busy)
+                            throw new StepException("菜单 " + p + " 在排队等 U# 程序资产初始化，没有马上搭：测试定义的 udon_programs 少列了它要的脚本（看 Console 里 [Lanbai U#] 那一条）");
                         return "执行了菜单 " + p;
                     }
                 case "method": return Method(ctx, st, t);

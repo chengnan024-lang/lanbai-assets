@@ -210,7 +210,13 @@ namespace Lanbai.Director.Editor
         {
             var dispType = FindType(DispatcherClass);
             if (dispType == null) { Debug.LogError("[Lanbai Director] " + DispatcherClass + " is not compiled yet"); return; }
-            EnsureProgramAsset(dispType);
+            // D-41：程序资产（脚本旁边）建好、等 SDK 初始化完再接线（Common/Editor/LanbaiUdonPrograms）
+            Lanbai.Udon.LanbaiUdonPrograms.RunWhenReady("蓝白/Director/2 Wire Scene", new[] { dispType }, () => Wire(dispType), Lanbai.Udon.LanbaiUdonPrograms.NextToScript);
+        }
+
+        static void Wire(Type dispType)
+        {
+            Lanbai.Udon.LanbaiUdonPrograms.RequireReady("蓝白/Director/2 Wire Scene", dispType);
             var comp = UnityEngine.Object.FindObjectsOfType(dispType, true).FirstOrDefault() as Component;
             if (comp == null)
             {
@@ -281,39 +287,10 @@ namespace Lanbai.Director.Editor
         }
 
         // ---- UdonSharp editor calls by reflection ----------------------------------------------------------------
-        static Component AddUdonSharpComponent(GameObject go, Type t)
-        {
-            var undo = FindType("UdonSharpEditor.UdonSharpUndo");
-            var m = undo != null ? undo.GetMethod("AddComponent", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(GameObject), typeof(Type) }, null) : null;
-            if (m != null) return m.Invoke(null, new object[] { go, t }) as Component;
-            return null;
-        }
+        static Component AddUdonSharpComponent(GameObject go, Type t) { return Lanbai.Udon.LanbaiUdonPrograms.AddComponent(go, t); }
 
-        static void CopyProxyToUdon(Component proxy)
-        {
-            var util = FindType("UdonSharpEditor.UdonSharpEditorUtility");
-            var m = util != null ? util.GetMethods(BindingFlags.Public | BindingFlags.Static).FirstOrDefault(x => x.Name == "CopyProxyToUdon" && x.GetParameters().Length == 1) : null;
-            if (m != null) { try { m.Invoke(null, new object[] { proxy }); } catch (Exception) { } }
-        }
-
-        static void EnsureProgramAsset(Type dispType)
-        {
-            var pa = FindType("UdonSharp.UdonSharpProgramAsset");
-            if (pa == null) return;
-            var script = AssetDatabase.LoadAssetAtPath<MonoScript>(DispatcherPath());
-            var srcField = pa.GetField("sourceCsScript", BindingFlags.Public | BindingFlags.Instance);
-            foreach (var guid in AssetDatabase.FindAssets("t:" + pa.Name))
-            {
-                var a = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guid), pa);
-                if (a != null && srcField != null && (UnityEngine.Object)srcField.GetValue(a) == script) return;
-            }
-            var asset = ScriptableObject.CreateInstance(pa);
-            if (srcField != null) srcField.SetValue(asset, script);
-            var p = Path.ChangeExtension(DispatcherPath(), ".asset");
-            AssetDatabase.CreateAsset(asset, p);
-            AssetDatabase.SaveAssets();
-            Debug.Log("[Lanbai Director] created the UdonSharp program asset " + p);
-        }
+        // D-41：SDK 抛的异常不再吞掉
+        static void CopyProxyToUdon(Component proxy) { Lanbai.Udon.LanbaiUdonPrograms.CopyProxyToUdon(proxy); }
     }
 }
 #endif

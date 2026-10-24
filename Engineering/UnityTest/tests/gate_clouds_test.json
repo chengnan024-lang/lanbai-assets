@@ -81,6 +81,12 @@
       "arg": "{t}"
     }
   ],
+  "udon_programs": [
+    "LanbaiGateClouds",
+    "LanbaiGateDriver",
+    "LanbaiGateTestClock"
+  ],
+  "udon_programs_why": "D-41：开搭之前用 Common/Editor/LanbaiUdonPrograms 建好这些 U# 程序资产、等 SDK 初始化完（2/2）；搭建菜单就不会在半路排队",
   "build": [
     {
       "type": "method",

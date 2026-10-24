@@ -45,18 +45,20 @@ namespace Lanbai.Test
         {
             if (!preflightOnly && !EditorUtility.DisplayDialog("蓝白测试 " + id,
                     "开始跑 " + id + "？\n会在 " + Sandbox.DIR + "/ 里建沙盒、按测试定义搭场景、截图、量性能，可能要几分钟，期间编辑器不响应。\n工具不保存场景。", "开始", "取消")) return;
-            string outDir;
-            int code = Runner.Run(id, null, preflightOnly, "menu", out outDir);
-            string msg;
-            switch (code)
+            // 要等 U# 程序资产初始化时（D-41），这里先返回，跑完再弹框
+            Runner.Start(id, null, preflightOnly, "menu", (code, outDir) =>
             {
-                case 0: msg = preflightOnly ? "预检通过。" : "跑完了，检查全过。"; break;
-                case 1: msg = "跑完了，有检查没过。"; break;
-                case 2: msg = "BLOCKED：预检或前置条件不满足，没跑。"; break;
-                default: msg = "工具自己出了异常。"; break;
-            }
-            if (outDir != null && EditorUtility.DisplayDialog("蓝白测试 " + id, msg + "（退出码 " + code + "）\n\n" + outDir + "\n\n看 summary.md。", "打开文件夹", "关闭"))
-                EditorUtility.RevealInFinder(Path.Combine(outDir, "summary.md"));
+                string msg;
+                switch (code)
+                {
+                    case 0: msg = preflightOnly ? "预检通过。" : "跑完了，检查全过。"; break;
+                    case 1: msg = "跑完了，有检查没过。"; break;
+                    case 2: msg = "BLOCKED：预检或前置条件不满足，没跑。"; break;
+                    default: msg = "工具自己出了异常。"; break;
+                }
+                if (outDir != null && EditorUtility.DisplayDialog("蓝白测试 " + id, msg + "（退出码 " + code + "）\n\n" + outDir + "\n\n看 summary.md。", "打开文件夹", "关闭"))
+                    EditorUtility.RevealInFinder(Path.Combine(outDir, "summary.md"));
+            });
         }
     }
 

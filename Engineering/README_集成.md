@@ -97,7 +97,7 @@ public float[] LanbaiWindow()         // {开始 t, 结束 t}，含预热
 
 ## 6. 全片导入顺序（随包更新）
 
-1. `Common/`（`LanbaiVR.cginc`、`LanbaiFog.cginc`、`LanbaiSky.cginc`、`LanbaiCaustics.cginc`、**`LanbaiGlobals.cginc`**）→ `Assets/Lanbai/Common/`。别的包的 shader 都 include 它们。`LanbaiGlobals.cginc` 是生成的（`Common/Tools~/globals/gen_globals.py`，按 `Common/UdonGlobals.md`，现在 182 个量），不要手改。
+1. `Common/`（含 `Common/Editor/`：U# 程序资产的共用工具，D-41；`LanbaiVR.cginc`、`LanbaiFog.cginc`、`LanbaiSky.cginc`、`LanbaiCaustics.cginc`、**`LanbaiGlobals.cginc`**）→ `Assets/Lanbai/Common/`。别的包的 shader 都 include 它们。`LanbaiGlobals.cginc` 是生成的（`Common/Tools~/globals/gen_globals.py`，按 `Common/UdonGlobals.md`，现在 182 个量），不要手改。
 2. `Grading/` → 跑 `蓝白/Grades/Build Profiles & Volumes`（已经做过）。
 3. `Director/` → 先拷，菜单等所有驱动拷完再点（§9.0）。
 4. 之后按 §9 一幕一幕来（= 旅程顺序）。每个包的 README 第一节写“拷哪些文件夹、点哪个菜单”，§9 只写它们之间怎么接、开关怎么勾。
@@ -164,6 +164,8 @@ Director v1.1 起没有要本地填的窗口：`LB_Journey` 勾 `extAtmosphere` 
 ---
 
 ## 9. 一幕一幕导入（拷什么、点什么、接什么、勾什么）
+
+**U# 程序资产（D-41）**：所有搭建菜单都用 `Common/Editor/LanbaiUdonPrograms.cs`（说明 `Common/Editor/README_UdonPrograms.md`）：按 Type 查已有的程序资产、缺了就建、等 SDK 初始化完（2/2）再加组件和 `CopyProxyToUdon`。所以 **`Common/` 要整个拷（含 `Common/Editor/`）**，各包的搭建脚本都依赖它。第一次点菜单时 Console 会先写 “等 SDK…”，之后自动接着搭，不用再点。
 
 每加一个包：拷 → 点包自己的搭建菜单 → **`蓝白/Director/1 Generate Dispatcher` → 等编译 → `2 Wire Scene` → `3 Report`**（打印每个驱动的窗口和重叠，§8 以外的重叠都是错）→ 按 §8.3 填接管开关 → 在包 README 写的机位 / 时刻截图推回 `FromLocal/`。
 

@@ -65,6 +65,10 @@
     }
   ],
   "time_why": "编辑模式里直接调 U# 驱动的 C# 方法（激活 + Evaluate(t)）。没在 Unity 里试过：驱动里如果用到只有 Udon 里才有的东西，会在这一步报错，报告里看得到",
+  "udon_programs": [
+    "LanbaiAct06Driver"
+  ],
+  "udon_programs_why": "D-41：开搭之前用 Common/Editor/LanbaiUdonPrograms 建好这些 U# 程序资产、等 SDK 初始化完（2/2）；搭建菜单就不会在半路排队",
   "build": [
     {
       "type": "call",

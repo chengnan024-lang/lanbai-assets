@@ -1,4 +1,4 @@
-2026-10-24（UTC）· 总工程师：🔧 D-40 Unity 测试工具写完、已推 `pkg/engineering`，等总导演审、合（`Engineering/UnityTest/`；**工具完成 ≠ 已验证**：没在 Unity 里编译过、没跑过，哪一项过了只看阿白跑出来的报告）。**等别人的**：① 阿白用它跑 `gate_clouds_test` → 结果到 `FromLocal/gate_clouds_test/`；② 车交切片（按 `tests/bus_slice.json` 的约定）；③ 车按 D-36 换完零件、座位网格更新 → 重跑 `Fonts/Tools~/build_fonts.py`；④ 车交 `paz672` → 渲染标准台换默认车壳；⑤ 门测试以后：门的技术终审、门内 r2、天空 r3、海套件本体、镜子时间表；⑥ 天空醒来时照集成说明 §9.5 改第 9 幕。**自己的待办（不急）**：注视规则挪过以后的诗位也过真车检查（总导演 D-40 回复）。
+2026-10-24（UTC）· 总工程师：🔧 D-41 U# 程序资产共用工具（`Common/Editor/LanbaiUdonPrograms.cs`）写完、main 上所有搭建脚本换完、四个分支的补丁在 `Engineering/D41_patches/`，已推 `pkg/engineering`，等总导演合；**没在 Unity 里编译过、跑过**，等阿白复测云 Build（gate_clouds_test-03）。D-40 测试工具在终审（同步脚本 3 条 MAJOR 等复核）。**等别人的**：① 阿白复测；② 车交切片（`tests/bus_slice.json` 的约定：搭建菜单 + `LanbaiBusSliceBuilder`）；③ 车按 D-36 换完零件 → 重跑 `build_fonts.py`；④ 车交 `paz672` → 渲染标准台换默认车壳；⑤ 门测试以后：门的技术终审、门内 r2、天空 r3、海套件本体、镜子时间表；⑥ 天空醒来时照集成说明 §9.5 改第 9 幕。**自己的待办（不急）**：注视规则挪过以后的诗位也过真车检查。
 
 # 总工程师 · 进度
 

@@ -31,7 +31,14 @@ namespace Lanbai.Fonts.Editor
         static readonly string[] Keys = { "zh", "zht", "ja", "en", "de" };
         static readonly string[] BoardKeys = { "zh", "zht", "ja", "en" };
 
+        // D-41：菜单先建 U# 程序资产（脚本旁边）、等 SDK 初始化完，再搭（Common/Editor/LanbaiUdonPrograms）
         [MenuItem("蓝白/Fonts/Build Poem Objects (v4.1 runtime)")]
+        public static void BuildMenu()
+        {
+            var types = new[] { FindType("LanbaiPoemDriver"), FindType("LanbaiLangButton") }.Where(t => t != null).ToArray();
+            Lanbai.Udon.LanbaiUdonPrograms.RunWhenReady("蓝白/Fonts/Build Poem Objects", types, Build, Lanbai.Udon.LanbaiUdonPrograms.NextToScript);
+        }
+
         public static void Build()
         {
             var report = new StringBuilder("[Lanbai Poems] ");
@@ -42,6 +49,8 @@ namespace Lanbai.Fonts.Editor
             var driverType = FindType("LanbaiPoemDriver");
             var buttonType = FindType("LanbaiLangButton");
             if (driverType == null) { Debug.LogError("[Lanbai Poems] LanbaiPoemDriver is not compiled yet (copy Fonts/Runtime/)"); return; }
+            if (buttonType != null) Lanbai.Udon.LanbaiUdonPrograms.RequireReady("蓝白/Fonts/Build Poem Objects", driverType, buttonType);
+            else Lanbai.Udon.LanbaiUdonPrograms.RequireReady("蓝白/Fonts/Build Poem Objects", driverType);
 
             foreach (var n in new[] { "Lanbai_Poems", "Lanbai_Board", "Lanbai_PoemDriver" })
                 foreach (var go in Resources.FindObjectsOfTypeAll<GameObject>().Where(g => g.name == n && g.scene.IsValid()).ToArray())
@@ -232,9 +241,7 @@ namespace Lanbai.Fonts.Editor
                 kGo.SetActive(false);
             }
 
-            // U# 1.x compiles only scripts that have a program asset (D-33 review #1): make them next to the scripts
-            EnsureProgramAsset("LanbaiPoemDriver");
-            EnsureProgramAsset("LanbaiLangButton");
+            // U# 1.x compiles only scripts that have a program asset (D-33 review #1): the menu made them next to the scripts and waited (D-41)
             var driver = AddUdonSharp(dGo, driverType);
             if (driver == null) { Debug.LogError("[Lanbai Poems] could not add LanbaiPoemDriver (UdonSharp editor not found): add it by hand to Lanbai_PoemDriver and run this menu again"); return; }
             Set(driver, "poemsRoot", root.transform);
@@ -329,28 +336,6 @@ namespace Lanbai.Fonts.Editor
             return "Seat positions: " + S + " seats x " + Pn + " poems x " + K + " keys (+ " + Fc + " facings) from " + path + ".";
         }
 
-        // as Sky/Editor/LanbaiSkyBuild.cs: a UdonSharpProgramAsset next to the script, if there is none
-        static void EnsureProgramAsset(string scriptName)
-        {
-            var progType = FindType("UdonSharp.UdonSharpProgramAsset");
-            if (progType == null) { Debug.LogWarning("[Lanbai Poems] UdonSharp not found: create the U# program asset for " + scriptName + " by hand"); return; }
-            foreach (string id in AssetDatabase.FindAssets(scriptName + " t:MonoScript"))
-            {
-                string sp = AssetDatabase.GUIDToAssetPath(id);
-                if (!sp.EndsWith("/" + scriptName + ".cs", StringComparison.Ordinal)) continue;
-                string ap = sp.Substring(0, sp.Length - 3) + ".asset";
-                if (AssetDatabase.LoadAssetAtPath<ScriptableObject>(ap) != null) return;
-                var prog = ScriptableObject.CreateInstance(progType);
-                var f = progType.GetField("sourceCsScript");
-                if (f != null) f.SetValue(prog, AssetDatabase.LoadAssetAtPath<MonoScript>(sp));
-                AssetDatabase.CreateAsset(prog, ap);
-                AssetDatabase.SaveAssets();
-                Debug.Log("[Lanbai Poems] created the U# program asset " + ap);
-                return;
-            }
-            Debug.LogWarning("[Lanbai Poems] " + scriptName + ".cs not found: copy Fonts/Runtime/ first");
-        }
-
         static string FontAssetOf(Dictionary<string, object> J, string fontKey)
         {
             var fonts = (Dictionary<string, object>)J["fonts"];
@@ -403,20 +388,10 @@ namespace Lanbai.Fonts.Editor
             return null;
         }
 
-        static Component AddUdonSharp(GameObject go, Type t)
-        {
-            var undo = FindType("UdonSharpEditor.UdonSharpUndo");
-            var m = undo != null ? undo.GetMethod("AddComponent", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(GameObject), typeof(Type) }, null) : null;
-            if (m != null) return m.Invoke(null, new object[] { go, t }) as Component;
-            return null;
-        }
+        static Component AddUdonSharp(GameObject go, Type t) { return Lanbai.Udon.LanbaiUdonPrograms.AddComponent(go, t); }
 
-        static void CopyProxyToUdon(Component proxy)
-        {
-            var util = FindType("UdonSharpEditor.UdonSharpEditorUtility");
-            var m = util != null ? util.GetMethods(BindingFlags.Public | BindingFlags.Static).FirstOrDefault(x => x.Name == "CopyProxyToUdon" && x.GetParameters().Length == 1) : null;
-            if (m != null) { try { m.Invoke(null, new object[] { proxy }); } catch (Exception) { } }
-        }
+        // D-41：SDK 抛的异常不再吞掉（以前 catch {} 把 “outdated script version” 藏起来了）
+        static void CopyProxyToUdon(Component proxy) { Lanbai.Udon.LanbaiUdonPrograms.CopyProxyToUdon(proxy); }
     }
 
     /// <summary>Minimal JSON reader (objects -> Dictionary, arrays -> List, numbers -> double / long, null, bool, string).</summary>

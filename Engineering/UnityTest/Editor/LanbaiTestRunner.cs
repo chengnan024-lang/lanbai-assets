@@ -109,7 +109,6 @@ namespace Lanbai.Test
         // ─────────────────────────────────────────────────────────────
         public static void RunCli()
         {
-            int code = 3;
             try
             {
                 var args = Environment.GetCommandLineArgs();
@@ -118,21 +117,18 @@ namespace Lanbai.Test
                 if (string.IsNullOrEmpty(id) && string.IsNullOrEmpty(file))
                 {
                     Final(new Dictionary<string, object> { { "exit", 3.0 }, { "status", "error" }, { "error", "缺 -lanbaiTest <id>" } });
-                    code = 3;
+                    EditorApplication.Exit(3);
+                    return;
                 }
-                else
-                {
-                    string outDir;
-                    code = Run(id, file, pre, "batch", out outDir);
-                }
+                // 可能要等 U# 程序资产初始化（D-41）：这时 RunCli 先返回，批处理的编辑器循环接着转，跑完由回调退出
+                Start(id, file, pre, "batch", (code, outDir) => EditorApplication.Exit(code));
             }
             catch (Exception e)
             {
                 Debug.LogException(e);
                 Final(new Dictionary<string, object> { { "exit", 3.0 }, { "status", "error" }, { "error", e.GetType().Name + ": " + e.Message } });
-                code = 3;
+                EditorApplication.Exit(3);
             }
-            EditorApplication.Exit(code);
         }
 
         static string Arg(string[] a, string k)
@@ -142,14 +138,15 @@ namespace Lanbai.Test
         }
 
         // ─────────────────────────────────────────────────────────────
-        //  一次运行（菜单和批处理共用）
+        //  一次运行（菜单和批处理共用）。done(退出码, 输出文件夹) 在跑完时调一次：
+        //  不用等 U# 程序资产时就在 Start 里面同步调；要等时（测试定义的 udon_programs 有没初始化完的）在之后的编辑器循环里调。
         // ─────────────────────────────────────────────────────────────
-        public static int Run(string testId, string testFile, bool preflightOnly, string mode, out string outDir)
+        public static void Start(string testId, string testFile, bool preflightOnly, string mode, Action<int, string> done)
         {
             var ctx = new Ctx { mode = mode, projectDir = Path.GetFullPath(Path.Combine(Application.dataPath, "..")) };
             ctx.log.Start();
             int exit = 3;
-            outDir = null;
+            bool deferred = false;
             try
             {
                 // 0) 测试定义和输出文件夹（输出文件夹在 Assets 外面，写它不算碰工程）
@@ -157,7 +154,6 @@ namespace Lanbai.Test
                 ctx.testId = testId ?? Path.GetFileNameWithoutExtension(ctx.testFile ?? "unknown");
                 ctx.runId = DateTime.Now.ToString("yyyyMMdd-HHmmss", IC);
                 ctx.outDir = NewOutDir(ctx);
-                outDir = ctx.outDir;
                 ctx.Info("测试 " + ctx.testId + "，输出 " + ctx.outDir);
                 if (ctx.testFile == null) throw new BlockedException("找不到测试定义 " + testId + ".json（应该在 " + TESTS_DIR + "/ 里；先跑同步脚本）");
                 string text = File.ReadAllText(ctx.testFile);
@@ -174,28 +170,72 @@ namespace Lanbai.Test
                 string placeholder = TJson.S(ctx.T("blocked"));
                 if (!string.IsNullOrEmpty(placeholder)) throw new BlockedException(placeholder);
                 if (preflightOnly) { ctx.Info("只做预检：通过"); exit = 0; }
-                else exit = Body(ctx);
+                else
+                {
+                    Prepare(ctx);
+                    // 2b) U# 程序资产（D-41）：测试要用到的先建好、等 SDK 初始化完（2/2），再搭。搭建菜单自己也会等，
+                    //     但工具是一口气跑完的，所以在这里统一等，不让菜单在半路排队
+                    var types = UdonTypes(ctx);
+                    string rep;
+                    if (types.Count > 0 && !Lanbai.Udon.LanbaiUdonPrograms.AllReady(types, out rep))
+                    {
+                        deferred = true;
+                        ctx.Info("等 U# 程序资产初始化完再搭（最多 " + Lanbai.Udon.LanbaiUdonPrograms.TimeoutSeconds.ToString("0", IC) + " 秒）：\n" + rep);
+                        Lanbai.Udon.LanbaiUdonPrograms.RunWhenReady("测试 " + ctx.testId, types,
+                            () => Finish(ctx, Guarded(ctx, () => Body(ctx)), done),
+                            null,
+                            msg => { ctx.blockedReason = "U# 程序资产没准备好：" + msg; Finish(ctx, 2, done); });
+                    }
+                    else exit = Body(ctx);
+                }
             }
-            catch (BlockedException b)
-            {
-                ctx.blockedReason = b.Message;
-                Debug.LogWarning(LogCapture.TAG + " BLOCKED：" + b.Message);
-                exit = 2;
-            }
-            catch (Exception e)
-            {
-                ctx.error = e.GetType().Name + ": " + e.Message;
-                ctx.errorStack = e.StackTrace;
-                Debug.LogError(LogCapture.TAG + " 工具异常：" + ctx.error + "\n" + e.StackTrace);
-                exit = 3;
-            }
-            finally
-            {
-                try { foreach (var e in ctx.undo.RollbackTo(0)) ctx.warnings.Add(e); } catch { }
-                try { EditorUtility.ClearProgressBar(); } catch { }
-            }
+            catch (BlockedException b) { exit = Blocked(ctx, b); }
+            catch (Exception e) { exit = ToolFailure(ctx, e); }
+            if (!deferred) Finish(ctx, exit, done);
+        }
 
-            // 7) 报告（报告写不出来也算工具异常）
+        static int Guarded(Ctx ctx, Func<int> f)
+        {
+            try { return f(); }
+            catch (BlockedException b) { return Blocked(ctx, b); }
+            catch (Exception e) { return ToolFailure(ctx, e); }
+        }
+
+        static int Blocked(Ctx ctx, BlockedException b)
+        {
+            ctx.blockedReason = b.Message;
+            Debug.LogWarning(LogCapture.TAG + " BLOCKED：" + b.Message);
+            return 2;
+        }
+
+        static int ToolFailure(Ctx ctx, Exception e)
+        {
+            ctx.error = e.GetType().Name + ": " + e.Message;
+            ctx.errorStack = e.StackTrace;
+            Debug.LogError(LogCapture.TAG + " 工具异常：" + ctx.error + "\n" + e.StackTrace);
+            return 3;
+        }
+
+        /// <summary>测试定义的 udon_programs（脚本名 / 类型名）→ 类型；找不到的算前置条件不满足。</summary>
+        static List<Type> UdonTypes(Ctx ctx)
+        {
+            var l = new List<Type>();
+            var miss = new List<string>();
+            foreach (var n in TJson.Sa(ctx.T("udon_programs")))
+            {
+                var t = Lanbai.Udon.LanbaiUdonPrograms.TypeOfScript(n) ?? Preflight.FindType(n);
+                if (t == null) miss.Add(n); else l.Add(t);
+            }
+            if (miss.Count > 0) throw new BlockedException("udon_programs 里的脚本不在或没编译：" + string.Join("、", miss.ToArray()));
+            return l;
+        }
+
+        /// <summary>收尾（只调一次）：改回、报告、结果行、回调。</summary>
+        static void Finish(Ctx ctx, int exit, Action<int, string> done)
+        {
+            try { foreach (var e in ctx.undo.RollbackTo(0)) ctx.warnings.Add(e); } catch { }
+            try { EditorUtility.ClearProgressBar(); } catch { }
+            // 报告（报告写不出来也算工具异常）
             try
             {
                 if (ctx.writes == null && ctx.before != null) ctx.writes = WriteGuard.Diff(ctx);
@@ -209,10 +249,10 @@ namespace Lanbai.Test
             }
             finally { ctx.log.Stop(); }
             Final(ResultLine(ctx, exit));
-            return exit;
+            if (done != null) done(exit, ctx.outDir);
         }
 
-        static int Body(Ctx ctx)
+        static void Prepare(Ctx ctx)
         {
             // 2) 沙盒、写入快照、场景
             Sandbox.Prepare(ctx);
@@ -220,7 +260,10 @@ namespace Lanbai.Test
             WriteGuard.BackupBefore(ctx);       // backup_before：会被搭建脚本改的文件，开搭之前原样拷一份进输出文件夹
             Scenes.Open(ctx);
             Preflight.ScenePreconditions(ctx);
+        }
 
+        static int Body(Ctx ctx)
+        {
             // 3) 搭建
             bool built = Steps.RunList(ctx, TJson.L(ctx.T("build")), "build", null, true);
             if (built) Steps.RunList(ctx, TJson.L(ctx.T("after_build")), "after_build", null, false);
