@@ -106,6 +106,8 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
     public Color[] c7FogGamma;                 // RenderSettings.fogColor per key (sRGB of the mid)
     public float c7CausT0 = 902.16f, c7CausRamp = 4f;
     public Vector4 c7CausColor;
+    public Texture reflCube7c;                 // what the dark mirror reflects (the palace lamps): _Udon_ReflCube in 7c. Stand-in
+                                               // Sea/Textures/Cube_Refl7c_Standin_512.exr until Control bakes Refl_S7c (README §0 #12)
     public Light[] roseLights;                 // R_Act07Bus/Act07_Rose*: rose point lights under the bus (bible §6·7c 光)
     public float[] c7RoseT, c7RoseV;
     public Color c7TriSky, c7TriEquator;       // sRGB
@@ -120,7 +122,7 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
     private int _idSeaLevel, _idSeaMode, _idSeaClock, _idUnder, _idSeaBus, _idSeaBusVel, _idT, _idFog, _idFogBase;
     private int _idWUp, _idWMid, _idWDown, _idCaus, _idCausCol, _idCausTex;
     private int _idWindowGain, _idWindowCore, _idGain, _idGather, _idGatherPoint;
-    private int _idWaveAmp, _idWindowSunGain, _idActive, _idWaterBelow;
+    private int _idWaveAmp, _idWindowSunGain, _idActive, _idWaterBelow, _idRefl, _idReflHdr, _idReflExp;
     // _below starts true: the plane is BUILT with the BELOW material so the prewarm frames draw that variant too; the
     // first Tick at / after F2h swaps it to ABOVE (until the eye is under)
     private bool _ready, _vr, _below = true, _sunTaken;
@@ -137,7 +139,7 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
     {
         if (roots == null) return;
         for (int i = 0; i < roots.Length; i++) if (roots[i] != null) roots[i].SetActive(on);
-        if (!on && _ready) { HandBack(); Waterlines(-1f); }
+        if (!on && _ready) { HandBack(); Waterlines(0f); }
     }
 
     // hand back only what is the sea's alone (裁决 20:40: shared channels -- fog, RenderSettings, sea level / mode, the
@@ -190,6 +192,9 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
         _idWindowSunGain = VRCShader.PropertyToID("_WindowSunGain");
         _idActive = VRCShader.PropertyToID("_Active");
         _idWaterBelow = VRCShader.PropertyToID("_WaterBelow");
+        _idRefl = VRCShader.PropertyToID("_Udon_ReflCube");
+        _idReflHdr = VRCShader.PropertyToID("_Udon_ReflCube_HDR");
+        _idReflExp = VRCShader.PropertyToID("_Udon_ReflExposure");
         VRCPlayerApi lp = Networking.LocalPlayer;
         _vr = lp != null && lp.IsUserInVR();
         if (causticsTex != null) VRCShader.SetGlobalTexture(_idCausTex, causticsTex);
@@ -282,6 +287,13 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
             mirrorRenderer.enabled = c7;
             if (c7)
             {
+                // the reflection cube is the current act's (README_Sea接口 §2.1): in 7c the palace lamps above
+                if (reflCube7c != null)
+                {
+                    VRCShader.SetGlobalTexture(_idRefl, reflCube7c);
+                    VRCShader.SetGlobalVector(_idReflHdr, new Vector4(1f, 1f, 0f, 0f));   // linear float cube
+                    VRCShader.SetGlobalFloat(_idReflExp, 1f);
+                }
                 float w = Keys(t, c7WinT, c7WinV);
                 mirrorRenderer.GetPropertyBlock(_mpb);
                 _mpb.SetFloat(_idWaveAmp, Keys(t, c7WaveT, c7WaveV));
@@ -493,10 +505,11 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
         SetGain(seeds, t >= tF3i - 0.1f ? 1f : 0f);
         // the hull trails fade out as the rose comes up from below (F8b -> 897.96): blue light ADDED over the rose fog and the
         // warm window rim reads violet (D-21: h 291-299, L* 41-65 measured), and no fill avoids it (blue + red = magenta)
-        SetGain(trails, t >= tF4 ? 1f - Smooth((t - tF8b) / 20f) : 0f);
+        float trailGain = t >= tF4 ? 1f - Smooth((t - tF8b) / 20f) : 0f;
+        SetGain(trails, trailGain);
         SetGain(bubblesGlass, t >= tEntry && t < tEntry + 4f ? 1f : 0f);
         SetGain(bubblesSeats, under ? 1f : 0f);
-        SetGain(ridge, t >= tF4 ? 1f : 0f);                        // its rim is the trails' light
+        SetGain(ridge, trailGain);                                 // its rim is the trails' light
         SetGain(warmPoint, Smooth((t - tF5) / Mathf.Max(warmFadeIn, 1e-3f)));
     }
 

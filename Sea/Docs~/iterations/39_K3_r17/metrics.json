@@ -4,36 +4,36 @@
    960,
    540
   ],
-  "APL": 52.91,
-  "EV_display": -4.641,
+  "APL": 52.85,
+  "EV_display": -4.648,
   "luma_lt12_pct": 0.0,
-  "Lstar_gt85_pct": 0.011,
+  "Lstar_gt85_pct": 0.013,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
   "clip_black_largest_region_pct": 0.0,
   "clip_white_largest_region_pct": 0.0,
-  "warm_shadow_pct": 0.14,
+  "warm_shadow_pct": 0.15,
   "purple_pct": 2.192,
   "purple_largest_region_pct": 2.14,
   "violet_strong_pct": 0.0,
-  "lavender_act6_pct": 16.133,
+  "lavender_act6_pct": 16.131,
   "brightest": {
    "bbox": [
     12,
-    96,
-    627,
+    26,
+    547,
     325
    ],
    "centroid": [
-    385.4,
-    241.7
+    352.1,
+    234.9
    ],
-   "clusters": 16,
+   "clusters": 17,
    "clusters_ge5pct": 3,
-   "min_luma": 179.1,
+   "min_luma": 173.3,
    "centroid_az_el": [
-    -12.05,
-    -38.95
+    -16.18,
+    -37.77
    ]
   },
   "top25_Lstar": {
@@ -66,7 +66,7 @@
     {
      "hex": "#B52A1E",
      "role": "朱漆（灯旁 3 m 内）",
-     "nearest_dE2000_p01": 18.3,
+     "nearest_dE2000_p01": 18.8,
      "within_dE5_pct": 0.0
     },
     {
@@ -78,23 +78,23 @@
     {
      "hex": "#D8CFE0",
      "role": "鱼鳞屋 珍珠光",
-     "nearest_dE2000_p01": 20.5,
+     "nearest_dE2000_p01": 25.6,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#7A4A6E",
      "role": "紫贝阙（受光，小面积）",
-     "nearest_dE2000_p01": 14.9,
+     "nearest_dE2000_p01": 15.2,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#8AC6FF",
      "role": "船体生物光",
-     "nearest_dE2000_p01": 34.7,
+     "nearest_dE2000_p01": 36.5,
      "within_dE5_pct": 0.0
     }
    ],
-   "pixel_to_nearest_dE_median": 12.1,
+   "pixel_to_nearest_dE_median": 12.0,
    "pixel_to_nearest_dE_p90": 17.0,
    "pixels_within5_pct": 0.0
   }
@@ -197,8 +197,8 @@
    540
   ]
  },
- "render_seconds": 4.4,
+ "render_seconds": 4.3,
  "lens": "none",
  "bloom_tint": "single",
- "note": "K3 r17 (D-23, 7c): core indigo, the outer 30 % goes warm through a neutral (no lilac), warmer toward the sun; waves at the bible's 30 % in the window (x2), the mirror calmed x0.25 so the lamps stay points; fog 0.010 thinning, layered (dark neutral below, rose level); the water eats red (FogChroma 1.4/1/0.75): far lamps yellow-grey; the stand-in DuskLower cube has cirrus"
+ "note": "K3 r17 (D-23, 7c): core indigo, the outer 30 % goes warm through a neutral (no lilac), warmer toward the sun; waves at the bible's 30 % in the window (x2), the mirror calmed x0.25 so the lamps stay points; fog 0.010 thinning, layered (dark neutral below, rose level); the water eats red (FogChroma 1.4/1/0.75): far lamps yellow-grey; the arc concentrated toward the sun (spread 12, 2.2 deg tall), rose-gold, the brightest; the stand-in DuskLower cube has cirrus"
 }

@@ -4,42 +4,42 @@
    960,
    540
   ],
-  "APL": 62.0,
-  "EV_display": -4.196,
+  "APL": 61.94,
+  "EV_display": -4.201,
   "luma_lt12_pct": 0.0,
-  "Lstar_gt85_pct": 0.069,
+  "Lstar_gt85_pct": 0.062,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
   "clip_black_largest_region_pct": 0.0,
   "clip_white_largest_region_pct": 0.0,
-  "warm_shadow_pct": 0.29,
+  "warm_shadow_pct": 0.33,
   "purple_pct": 5.987,
   "purple_largest_region_pct": 5.78,
   "violet_strong_pct": 0.75,
-  "lavender_act6_pct": 26.227,
+  "lavender_act6_pct": 26.228,
   "brightest": {
    "bbox": [
     15,
     3,
-    623,
-    180
+    549,
+    181
    ],
    "centroid": [
-    396.2,
-    113.0
+    376.5,
+    110.3
    ],
-   "clusters": 10,
-   "clusters_ge5pct": 3,
-   "min_luma": 203.9,
+   "clusters": 13,
+   "clusters_ge5pct": 5,
+   "min_luma": 198.4,
    "centroid_az_el": [
-    -10.73,
-    -39.74
+    -13.36,
+    -39.34
    ]
   },
   "top25_Lstar": {
-   "mean": 19.26,
+   "mean": 19.55,
    "p50": 17.27,
-   "p90": 19.0
+   "p90": 19.75
   },
   "palette": {
    "act": "07a",
@@ -48,19 +48,19 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 25.3,
+     "nearest_dE2000_p01": 26.2,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 32.9,
+     "nearest_dE2000_p01": 33.7,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 33.0,
+     "nearest_dE2000_p01": 33.6,
      "within_dE5_pct": 0.0
     },
     {
@@ -84,12 +84,12 @@
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 34.7,
+     "nearest_dE2000_p01": 35.8,
      "within_dE5_pct": 0.0
     }
    ],
    "pixel_to_nearest_dE_median": 19.1,
-   "pixel_to_nearest_dE_p90": 23.6,
+   "pixel_to_nearest_dE_p90": 23.7,
    "pixels_within5_pct": 0.0
   }
  },
@@ -168,7 +168,7 @@
    "color": "#000000"
   }
  },
- "bloom_share_of_APL": 0.01,
+ "bloom_share_of_APL": 0.02,
  "t": 910.0,
  "target": {
   "phase": "倒置的窗",
@@ -193,7 +193,7 @@
    540
   ]
  },
- "render_seconds": 13.5,
+ "render_seconds": 13.1,
  "lens": "none",
  "bloom_tint": "single",
  "note": "F8c+ 910: the fog thinning, the window clearer (no bus)"

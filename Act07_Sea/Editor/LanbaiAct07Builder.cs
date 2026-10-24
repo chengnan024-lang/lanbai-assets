@@ -397,6 +397,8 @@ public static class LanbaiAct07Builder
         // act 7c
         d.tF8 = u.F8; d.tF8b = u.F8b; d.tF8c = u.F8c;
         d.mirrorRenderer = mirror; d.mirrorWaterY = u.c7_mirror_y;
+        // the dark mirror's reflection cube: the stand-in until Control's Refl_S7c (README §0 #12); a hand-wired one survives
+        if (d.reflCube7c == null) d.reflCube7c = AssetDatabase.LoadAssetAtPath<Cubemap>(SeaRoot + "/Textures/Cube_Refl7c_Standin_512.exr");
         d.baseMirrorWindowGain = mirrorMat != null ? mirrorMat.GetFloat("_WindowGain") : 0.25f;
         d.c7WaveT = u.c7_wave_t; d.c7WaveV = u.c7_wave_v; d.c7WinT = u.c7_win_t; d.c7WinV = u.c7_win_v;
         int n7 = u.c7_fog_t.Length;

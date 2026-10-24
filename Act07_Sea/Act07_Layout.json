@@ -29512,14 +29512,14 @@
   "fog_note": "mid = the bible (#04121E -> #2E2228 fill #3E2C2B -> #3A2629 fill #4B312C), up = mid x 0.75, down = a dark neutral (D-23 layering: the window indigo is not drowned in rose); the fog thins (bible F8c 雾在变薄): 0.018 -> 0.006 / m",
   "caustics": {
    "t0": 902.16,
-   "ramp_s": 4.0,
+   "ramp_s": 19.24,
    "direction": -1.0,
    "colour": [
     1.4746,
     0.7793,
     0.3172
    ],
-   "note": "F8c: the caustics come from BELOW for the first time (bible §4.8), gold #E2C08E h 80 (D-08: never rose)"
+   "note": "F8c: the caustics come from BELOW for the first time (bible §4.8), strength 0 -> 1 with the window's dusk, F8c -> 921.4 (smoothstep; LanbaiCaustics.cginc header), gold #E2C08E h 80 (D-08: never rose)"
   },
   "rose_lights": {
    "positions_bus": [
@@ -30092,7 +30092,7 @@
    0.062
   ],
   "c7_caus_t0": 902.16,
-  "c7_caus_ramp": 4.0,
+  "c7_caus_ramp": 19.24,
   "c7_caus_colour": [
    1.4746,
    0.7793,

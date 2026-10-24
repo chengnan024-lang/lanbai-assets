@@ -297,12 +297,12 @@ inline float4 LanbaiSeaBelow(float3 N, float3 I, float slopeVar)
     win.r = LanbaiSeaWindowCube(Tr).r * okR;
     win.g = LanbaiSeaWindowCube(Tg).g * okG;
     win.b = LanbaiSeaWindowCube(Tb).b * okB;
-    float thV0 = acos(saturate(abs(I.y)));
+    float thV = acos(saturate(abs(I.y)));                       // the VIEW ray's angle from the plane normal (flat)
     [branch] if (_WindowRim.w < 1.0)
     {
         float2 az = normalize(I.xz + float2(1e-5, 0.0)), saz = normalize(_WindowSunDir.xz + float2(1e-5, 0.0));
         float sunSide = 0.5 + 0.5 * dot(az, saz);
-        float k = smoothstep(_WindowRim.w, 1.0, thV0 / asin(1.0 / _IOR));
+        float k = smoothstep(_WindowRim.w, 1.0, thV / asin(1.0 / _IOR));
         // a gradient over the outer ring, brightening toward the rim like a horizon (not a flat band: D-23 r17)
         float3 rimC = _WindowRim.rgb * lerp(1.0 - _WindowRimSun, 1.0 + _WindowRimSun, sunSide * sunSide) * (0.7 + 0.9 * k);
         // the middle of the blend goes through a warm neutral, not through lilac (indigo + rose = the D-17 lavender;
@@ -315,7 +315,6 @@ inline float4 LanbaiSeaBelow(float3 N, float3 I, float slopeVar)
     win *= _WindowTint.rgb * (_WindowGain * _IOR * _IOR);
     float crit = asin(1.0 / _IOR);
     float th = acos(saturate(dot(I, Nw)));                      // the window's facet: with _WindowWave its edge shimmers
-    float thV = acos(saturate(abs(I.y)));                       // the VIEW ray's angle from the plane normal (flat)
     // w: desaturate toward the bible's near-white core (#E6F3F8); none at the rim, which keeps the sky's own blue / gold
     float wr = saturate(thV / crit);
     win = lerp(win, LanbaiLuma(win).xxx, saturate(_WindowTint.w) * (1.0 - wr * wr));
@@ -358,7 +357,10 @@ inline float4 LanbaiSeaBelow(float3 N, float3 I, float slopeVar)
     }
     float3 Nm = Na;
     [branch] if (_MirrorWave != 1.0)
+    {
         Nm = normalize(float3(Na.x * _MirrorWave, Na.y, Na.z * _MirrorWave));
+        if (dot(I, Nm) <= 1e-4) Nm = Na;
+    }
     float3 R = reflect(I, Nm);                                 // back into the water
     float pr = LanbaiSeaPerceptual(LanbaiSeaAlpha(slopeVar));
     float3 mirror = _TIRColor.rgb + (_TIRCubeGain > 0.0 ? LanbaiSeaCube(R, pr) * _TIRCubeGain : float3(0, 0, 0));

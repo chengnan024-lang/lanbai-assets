@@ -25,15 +25,15 @@
     378
    ],
    "centroid": [
-    482.5,
-    271.2
+    483.7,
+    271.4
    ],
-   "clusters": 7,
+   "clusters": 6,
    "clusters_ge5pct": 2,
    "min_luma": 64.7,
    "centroid_az_el": [
-    86.91,
-    -39.31
+    87.08,
+    -39.35
    ]
   },
   "top25_Lstar": {
@@ -193,7 +193,7 @@
    540
   ]
  },
- "render_seconds": 16.6,
+ "render_seconds": 18.8,
  "lens": "none",
  "bloom_tint": "single",
  "note": "921.4 right side window down: the mirror 1.4 m below, the window under the bus"

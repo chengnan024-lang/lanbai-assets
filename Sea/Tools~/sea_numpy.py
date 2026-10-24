@@ -394,6 +394,8 @@ def below(N, I, var, window_env, refl_env, M):
         wcover = saturate(arc * 1.5)
     mw = M.get('MirrorWave', 1.0)
     Nm = normalize(Na * np.array([mw, 1.0, mw])) if mw != 1.0 else Na
+    if mw != 1.0:
+        Nm = np.where((dot(I, Nm) <= 1e-4)[..., None], Na, Nm)
     R = I - 2 * dot(I, Nm)[..., None] * Nm
     mirror = np.broadcast_to(np.asarray(M['TIRColor'], np.float32), win.shape).copy()
     if M['TIRCubeGain'] > 0 and refl_env is not None:

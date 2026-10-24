@@ -107,8 +107,9 @@ def act7c():
         fog=[dict(t=round(t, 2), density=d, up=R(u), mid=R(m), down=R(dn)) for t, d, u, m, dn in fog],
         fog_note='mid = the bible (#04121E -> #2E2228 fill #3E2C2B -> #3A2629 fill #4B312C), up = mid x 0.75, down = a dark neutral '
                  '(D-23 layering: the window indigo is not drowned in rose); the fog thins (bible F8c 雾在变薄): 0.018 -> 0.006 / m',
-        caustics=dict(t0=L['F8c'], ramp_s=4.0, direction=-1.0, colour=R(fill('#E2C08E', 'S7b')),
-                      note='F8c: the caustics come from BELOW for the first time (bible §4.8), gold #E2C08E h 80 (D-08: never rose)'),
+        caustics=dict(t0=L['F8c'], ramp_s=round(921.4 - L['F8c'], 2), direction=-1.0, colour=R(fill('#E2C08E', 'S7b')),
+                      note='F8c: the caustics come from BELOW for the first time (bible §4.8), strength 0 -> 1 with the window\'s dusk, '
+                           'F8c -> 921.4 (smoothstep; LanbaiCaustics.cginc header), gold #E2C08E h 80 (D-08: never rose)'),
         rose_lights=dict(positions_bus=[[0.0, 0.5, 4.6], [1.5, 0.3, 0.8]], colour_hex='#E7A0A0', range_m=7.0,
                          E=keys((L['F8b'], 0.0), (897.96, 0.8), (921.4, 1.1)),
                          culling='Bus + Player + PlayerLocal, no shadows, Not Important (folded into SH: free)',
