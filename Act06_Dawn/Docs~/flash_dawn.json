@@ -15,14 +15,14 @@
    ],
    "pass": true
   },
-  "apl_end": 125.2,
+  "apl_end": 125.3,
   "flashcheck_tail": [
-   "    main()",
-   "  File \"/home/user/lanbai-assets/Art/tools/lens_tech/flashcheck.py\", line 206, in main",
-   "    plot(ser, rep, a.out + \".png\")",
-   "  File \"/home/user/lanbai-assets/Art/tools/lens_tech/flashcheck.py\", line 155, in plot",
-   "    import matplotlib",
-   "ModuleNotFoundError: No module named 'matplotlib'"
+   " \"max_rise_ev_2s\": 1.75,",
+   " \"max_fall_ev_0.25s\": -0.0,",
+   " \"peak_apl_luma\": 149,",
+   " \"mean_apl_luma\": 79,",
+   " \"lanbai_ramp_law\": \"PASS\"",
+   "}"
   ]
  },
  "door_d12": {
@@ -32,23 +32,23 @@
     0.5
    ],
    "1.00s": [
-    0.858,
+    0.859,
     1.0
    ],
    "2.00s": [
-    1.709,
+    1.71,
     1.8
    ],
    "pass": true
   },
-  "apl_end": 105.6,
+  "apl_end": 105.9,
   "flashcheck_tail": [
-   "    main()",
-   "  File \"/home/user/lanbai-assets/Art/tools/lens_tech/flashcheck.py\", line 206, in main",
-   "    plot(ser, rep, a.out + \".png\")",
-   "  File \"/home/user/lanbai-assets/Art/tools/lens_tech/flashcheck.py\", line 155, in plot",
-   "    import matplotlib",
-   "ModuleNotFoundError: No module named 'matplotlib'"
+   " \"max_rise_ev_2s\": 1.73,",
+   " \"max_fall_ev_0.25s\": -0.0,",
+   " \"peak_apl_luma\": 137,",
+   " \"mean_apl_luma\": 70,",
+   " \"lanbai_ramp_law\": \"PASS\"",
+   "}"
   ]
  },
  "hero_skylight": {
@@ -88,12 +88,12 @@
     1.0
    ],
    "2.00s": [
-    1.654,
+    1.655,
     1.8
    ],
    "pass": true
   },
-  "apl_end": 82.9,
+  "apl_end": 83.1,
   "flashcheck_tail": [
    " \"max_rise_ev_2s\": 1.67,",
    " \"max_fall_ev_0.25s\": -0.0,",
