@@ -2,13 +2,15 @@
 //  LanbaiAct07Builder.cs   蓝白 · 第 7a 幕的搭建脚本（编辑器）
 //  !!! WRITTEN WITHOUT A UNITY COMPILER (cloud side). Checked with Common/Tools~/compile_check (Roslyn). !!!
 //
-//  菜单 蓝白/Build/Act07a（可以重复运行：先删上一次搭的 R_Act07 和 Act07_Driver）：
+//  菜单 蓝白/Build/Act07a（可以重复运行：先删上一次搭的 R_Act07；Act07_Driver 物体和组件**留着重用**——手接的 worldSun、
+//  两个接管开关、分发层里的引用都不丢（终审 7a 一 #3）。然后照 README §0：1 Generate → 等编译 → 2 Wire Scene → 3 Report）：
 //    1. 读 Assets/Lanbai/Act07_Sea/Act07_Layout.json 的 'unity'（光柱的数也在这里，平铺）/ 'particles' / 'ridge' 块（唯一的数据源）；
 //    2. 先跑 蓝白/Sea/Create Materials（海的材质），再在 Act07_Sea/Materials/ 建本幕的材质（光柱、粒子 ×5、石壁、暖点、穹顶）；
 //    3. 在 Act07_Sea/Meshes/ 生成网格（.asset）：光柱 16 条 + 最后一道、海雪 1 200、播下的光 200、船体荧光池 900、
 //       气泡 120 + 40、海脊石壁、暖点；网格的 bounds 按 shader 实际画到的地方给（粒子在顶点着色器里移动）；
-//    4. 场景：R_Act07 { R_Sea（跟水走：海面 Sea_Disc、光柱、石壁、暖点），R_Act07Bus（在原点：粒子、最后一道光柱、穹顶），
-//       Act07_Lights（水下的太阳：平行光 + 焦散 cookie CRT）}；
+//    4. 场景：R_Act07 { R_Sea（跟水走：海面 Sea_Disc、光柱、石壁、暖点），R_Act07Bus（在原点：粒子、最后一道光柱、穹顶、
+//       座椅上的聚光）}；水下的太阳不另建灯：驱动接管世界主光（D-24 唯一带阴影的那一盏 = RenderSettings.sun），焦散 cookie
+//       是 Act07_Sea/Materials/Act07_CausticsCookie.asset（CRT），水下由驱动挂到主光上；
 //    5. Act07_Driver（场景里有 Director 就挂在它下面）：LanbaiAct07Driver（U#），填好所有数组。U# 程序资产 / 编译 /
 //       CopyProxyToUdon 用 GateClouds 的同一套（LanbaiGateCloudsBuilder.AddUdonSharp / SetupUdonSharp）。
 //  不碰：车厢、PPv2、云的海（第 6 幕）、LB_Journey。RenderSettings 由驱动在第 7 幕窗口里写（README_集成 §3 的接管开关）。
@@ -29,7 +31,7 @@ public static class LanbaiAct07Builder
     // ---- the JSON (JsonUtility: flat arrays and arrays of records only) ----
     [Serializable] public class U
     {
-        public float window_t0, window_t1, entry, eye_under, F3i, F4, F5, D0;
+        public float window_t0, window_t1, entry, eye_under, exit, F3i, F4, F5, D0;
         public float sink_T0, sink_v0, fwd_T0, fwd_v0;
         public float[] sink_seg_t0, sink_seg_dur, sink_seg_dv, fwd_seg_t0, fwd_seg_dur, fwd_seg_dv;
         public float[] water_depth, water_density, water_up, water_mid, water_down;
@@ -43,7 +45,7 @@ public static class LanbaiAct07Builder
         public float[] last_from, last_to, last_target, last_target_to; public float last_top;
         public float beam_angle, beam_range, beam_gather_E, beam_last_E; public float[] beam_gather_pos, beam_gather_aim;
         public float snow_sphere, snow_box;
-        public float[] warm_position, warm_colour; public float warm_flux, warm_radius, warm_fade;
+        public float[] warm_position, warm_colour; public float warm_flux, warm_radius, warm_fade, warm_halo_flux, warm_halo_radius;
         public float[] ridge_base, ridge_rim; public float ridge_reach, ridge_near, ridge_wrap, ridge_face, ridge_edge;
     }
     [Serializable] public class Snow { public int count; public float[] colour, positions, radius, alpha, seed; }
@@ -58,6 +60,12 @@ public static class LanbaiAct07Builder
     static Vector3 V3(float[] a, int o = 0) { return new Vector3(a[o], a[o + 1], a[o + 2]); }
     static Vector4 V4(float[] a, int o = 0) { return new Vector4(a[o], a[o + 1], a[o + 2], 0f); }
     static Color C(float[] a) { return new Color(a[0], a[1], a[2], 1f); }
+    static int Mask(params string[] names)
+    {
+        int m = 0;
+        foreach (string n in names) { int l = LayerMask.NameToLayer(n); if (l >= 0) m |= 1 << l; else Debug.LogWarning("[Act07] layer '" + n + "' missing"); }
+        return m != 0 ? m : ~0;
+    }
     // Light.color and RenderSettings.ambient* / fogColor are sRGB (gamma) values in a linear project: Unity linearises them
     static Color Gamma(float[] lin) { return new Color(lin[0], lin[1], lin[2], 1f).gamma; }
 
@@ -185,13 +193,11 @@ public static class LanbaiAct07Builder
         // ---- clean
         Transform old = LanbaiGateCloudsBuilder.FindInScenePublic("R_Act07");
         if (old != null) UnityEngine.Object.DestroyImmediate(old.gameObject);
-        Transform oldD = LanbaiGateCloudsBuilder.FindInScenePublic("Act07_Driver");
-        if (oldD != null) UnityEngine.Object.DestroyImmediate(oldD.gameObject);
+        Transform oldD = LanbaiGateCloudsBuilder.FindInScenePublic("Act07_Driver");   // kept and reused (see the header)
 
         var root = new GameObject("R_Act07").transform;
         var rSea = Child(root, "R_Sea").transform;
         var rBus = Child(root, "R_Act07Bus").transform;
-        var lights = Child(root, "Act07_Lights").transform;
         Bounds near = new Bounds(new Vector3(0f, 1.2f, 0f), new Vector3(120f, 120f, 120f));
         Bounds far = new Bounds(Vector3.zero, new Vector3(4000f, 4000f, 4000f));
 
@@ -269,8 +275,10 @@ public static class LanbaiAct07Builder
         // ---- the warm point (WATER frame; the palace's own lamp replaces it)
         var mWarm = Mat("M_07_WarmPoint", "Lanbai/SeaSpecks");
         mWarm.SetFloat("_CeilingMode", 0f); mWarm.SetFloat("_Flicker", 0.05f);
-        var warm = Draw(rSea, "Act07_WarmPoint", SaveMesh(Points("Act07_WarmPoint", 1, i => V3(u.warm_position),
-            i => new Vector4(u.warm_flux, u.warm_radius, 0, 0), i => new Vector4(0.3f, 0.6f, 0, 0),
+        // two points at the same place: the lamp, and its soft halo (~1.6 deg, <= 2 deg) so it can be found (终审 7a 二)
+        var warm = Draw(rSea, "Act07_WarmPoint", SaveMesh(Points("Act07_WarmPoint", 2, i => V3(u.warm_position),
+            i => i == 0 ? new Vector4(u.warm_flux, u.warm_radius, 0, 0) : new Vector4(u.warm_halo_flux, u.warm_halo_radius, 0, 0),
+            i => new Vector4(0.3f, 0.6f, 0, 0),
             i => new Color(u.warm_colour[0], u.warm_colour[1], u.warm_colour[2], 0.5f), new Bounds(V3(u.warm_position), Vector3.one * 4f)),
             Root + "/Meshes/Act07_WarmPoint.asset"), mWarm);
 
@@ -285,14 +293,10 @@ public static class LanbaiAct07Builder
             if (dome != null) { dome.sharedMaterial = Mat("M_07_Dome", "Lanbai/SeaDome"); dome.shadowCastingMode = ShadowCastingMode.Off; }
         }
 
-        // ---- the sun through the water (directional, the caustic cookie)
-        var sunGo = Child(lights, "Act07_Sun");
-        var sun = sunGo.AddComponent<Light>();
-        sun.type = LightType.Directional; sun.shadows = LightShadows.None; sun.renderMode = LightRenderMode.ForcePixel;
-        sun.color = Gamma(u.sun_colour); sun.intensity = u.sun_E0;   // VRChat forces lightsUseLinearIntensity = true -> Inspector = E (D-00)
+        // ---- the sun through the water = the world's main light, driven (D-24): its rotation and the caustic cookie
         float el = u.sun_elevation * Mathf.Deg2Rad, az = u.sun_azimuth * Mathf.Deg2Rad;
         Vector3 toSun = new Vector3(Mathf.Cos(el) * Mathf.Sin(az), Mathf.Sin(el), Mathf.Cos(el) * Mathf.Cos(az));
-        sunGo.transform.rotation = Quaternion.LookRotation(-toSun, Vector3.up);
+        Quaternion sunRot = Quaternion.LookRotation(-toSun, Vector3.up);
         var cookieMat = Mat("M_07_CausticsCookie", "Lanbai/SeaCausticsCookie");
         string crtPath = Root + "/Materials/Act07_CausticsCookie.asset";
         var crt = AssetDatabase.LoadAssetAtPath<CustomRenderTexture>(crtPath);
@@ -304,29 +308,33 @@ public static class LanbaiAct07Builder
         crt.material = cookieMat; crt.updateMode = CustomRenderTextureUpdateMode.Realtime; crt.updatePeriod = 0f;
         crt.initializationMode = CustomRenderTextureUpdateMode.OnLoad; crt.wrapMode = TextureWrapMode.Repeat;
         EditorUtility.SetDirty(crt);
-        sun.cookie = crt; sun.cookieSize = 1.5f;
 
         // ---- the beam (F4p gather, F3e1 last shaft): a spot in the bus frame that lands on the seats and your hands
         var beamGo = Child(rBus, "Act07_Beam");
         var beam = beamGo.AddComponent<Light>();
         beam.type = LightType.Spot; beam.shadows = LightShadows.None; beam.renderMode = LightRenderMode.ForcePixel;
         beam.color = Gamma(u.sun_colour); beam.intensity = 0f; beam.spotAngle = u.beam_angle; beam.range = u.beam_range;
-        beam.cullingMask = ~0;                                   // Default + PlayerLocal (the light lands on your hands)
+        beam.cullingMask = Mask("Bus", "Player", "PlayerLocal");  // the seats and your hands (bible §1.6 culling)
         beam.enabled = false;
 
         // ---- the driver
-        var dGo = new GameObject("Act07_Driver");
+        // reuse the old driver object and component: the dispatcher's references, the hand-wired worldSun and the two
+        // takeover switches survive a rebuild (the switches default to false and are never touched here)
+        GameObject dGo = oldD != null ? oldD.gameObject : new GameObject("Act07_Driver");
         Transform director = LanbaiGateCloudsBuilder.FindInScenePublic("Director");
-        if (director != null) dGo.transform.SetParent(director, false);
-        var d = (LanbaiAct07Driver)LanbaiGateCloudsBuilder.AddUdonSharp(dGo, typeof(LanbaiAct07Driver));
-        d.roots = new[] { rSea.gameObject, rBus.gameObject, lights.gameObject };
+        if (oldD == null && director != null) dGo.transform.SetParent(director, false);
+        var d = dGo.GetComponent<LanbaiAct07Driver>();
+        if (d == null) d = (LanbaiAct07Driver)LanbaiGateCloudsBuilder.AddUdonSharp(dGo, typeof(LanbaiAct07Driver));
+        if (d.worldSun == null) d.worldSun = RenderSettings.sun;   // D-24: the one shadowed main light is RenderSettings.sun
+        if (d.worldSun == null) Debug.LogWarning("[Act07] RenderSettings.sun is empty: wire Act07_Driver.worldSun to the world's main light by hand");
+        d.roots = new[] { rSea.gameObject, rBus.gameObject };
         d.rSea = rSea; d.seaRenderer = sea; d.seaAbove = above; d.seaBelow = below;
         d.shafts = shafts; d.lastShaft = lastShaft; d.lastShaftTf = lastShaft.transform; d.ridge = ridge; d.warmPoint = warm;
         d.snow = snow; d.seeds = seeds; d.trails = trails; d.bubblesGlass = bGlass; d.bubblesSeats = bSeats; d.dome = dome;
-        d.sun = sun; d.beam = beam;
+        d.beam = beam; d.sunCookie = crt; d.sunCookieSize = 1.5f; d.sunRotation = sunRot;
         d.causticsTex = AssetDatabase.LoadAssetAtPath<Texture2D>(SeaRoot + "/Textures/Caustics_8x8_2048.png");
         d.windowStart = u.window_t0; d.windowEnd = u.window_t1;
-        d.tEntry = u.entry; d.tEyeUnder = u.eye_under; d.tF3i = u.F3i; d.tF4 = u.F4; d.tF5 = u.F5;
+        d.tEntry = u.entry; d.tEyeUnder = u.eye_under; d.tExit = u.exit; d.tF3i = u.F3i; d.tF4 = u.F4; d.tF5 = u.F5;
         d.D0 = u.D0;
         d.sinkT0 = u.sink_T0; d.sinkV0 = u.sink_v0; d.sinkSegT0 = u.sink_seg_t0; d.sinkSegDur = u.sink_seg_dur; d.sinkSegDv = u.sink_seg_dv;
         d.fwdT0 = u.fwd_T0; d.fwdV0 = u.fwd_v0; d.fwdSegT0 = u.fwd_seg_t0; d.fwdSegDur = u.fwd_seg_dur; d.fwdSegDv = u.fwd_seg_dv;

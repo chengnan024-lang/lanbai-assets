@@ -88,6 +88,13 @@ def shafts(rng):
     tilt = math.asin(math.sin(math.radians(20.0)) / 1.333)
     axis = np.array([-math.sin(tilt) * math.sin(sun_az), -math.cos(tilt), -math.sin(tilt) * math.cos(sun_az)])   # pointing DOWN, away from the sun
     out = []
+    # F3 forward (终审 7a 一 #5): three shafts in front of the windscreen, 7 / 10.5 / 14 m out, inside its azimuth range
+    # (bus_shell bible_v2: -50..25 from the main eye) and clear of the centre post (-11), at the eye's depth at F3 so the
+    # 'shafts slanting down past the windscreen' read in the first frame of 7a; alpha at the bible's top (0.08)
+    eye_y_F3 = -AM.depth(L['F3']) + EYE[1]
+    for dx, dz, hw, ln, al in ((-2.0, 7.0, 0.8, 28.0, 0.08), (1.6, 10.5, 1.1, 30.0, 0.075), (-0.6, 14.0, 0.7, 26.0, 0.08)):
+        out.append(dict(centre=R([EYE[0] + dx, eye_y_F3 - 2.0, EYE[2] + dz], 3), axis=R(axis, 5), half_width=hw, length=ln,
+                        seed=round(rng.uniform(), 4), alpha=al, note='F3 forward'))
     tries = 0
     while len(out) < 16 and tries < 5000:
         tries += 1
@@ -109,14 +116,20 @@ SNOW_LIT = 2.2
 
 def snow(rng, n=1200):
     """海雪: 1 200 (bible: in a 25 m sphere; here in the 2-10 m shell around the eye / 24 m wrap box: the bible's 25 m sphere gave ~2 flakes within
-    5 m of the eye and no sinking cue -- 给总控 第五批 #9), 0.8-2.5 cm, screen #697987,
+    5 m of the eye and no sinking cue -- 给总控 第五批 #9; 40 % toward the windscreen), 0.8-2.5 cm, screen #697987,
     alpha 0.3-0.6, sinking 1.5 cm/s (the bus sinks faster: they rise past the windows). WATER-frame positions around the
     bus at F3, never inside the cabin's 1.2 m around the eye (they are drawn outside the glass anyway)."""
     c = fill('#697987', 'S7a')
     # uniform DIRECTION, radius in the 2-10 m shell (not uniform-in-volume): the sinking cue has to read in every
     # direction (VR), so put the flakes where the eye can resolve them instead of mostly out at the sphere's rim
     dirs = rng.normal(size=(n, 3)); dirs /= np.linalg.norm(dirs, axis=1, keepdims=True)
-    r = rng.uniform(SNOW_NEAR, SNOW_SPHERE, n) ** 1.0
+    # 40 % of them toward the windscreen (bus_shell bible_v2 from the main eye: az -50..25, el -15..22): the first frame of
+    # 7a looks forward (终审 7a 一 #5). The bus does not move forward in 7a (fwd = 0 until F5), so the azimuth bias holds
+    # while the wrap box recycles them vertically
+    nf = int(0.4 * n)
+    az = np.radians(rng.uniform(-50.0, 25.0, nf)); el = np.radians(rng.uniform(-15.0, 22.0, nf))
+    dirs[:nf] = np.stack([np.cos(el) * np.sin(az), np.sin(el), np.cos(el) * np.cos(az)], -1)
+    r = rng.uniform(SNOW_NEAR, SNOW_SPHERE, n)
     pts = EYE[None, :] + dirs * r[:, None]
     pts = pts + np.array([0.0, -AM.depth(L['F3']), AM.fwd(L['F3'])])
     rad = rng.uniform(0.004, 0.0125, n)
@@ -174,8 +187,16 @@ def trails(rng):
     """船体生物荧光 (F4 on): 300 births / s, life 1.5-3 s, 1-3 cm with a soft glow, screen #8AC6FF (fill #5E7AFF @ +2.73);
     a pool of 900 quads at hull points (BUS frame); the shader streams them back with the water (-_Udon_SeaBusVel x age)"""
     n = 900
-    return dict(kind='TRAIL', count=n, colour=R(srgb_lin(BIO_FILL, 2.73)), positions=R(hull_points(rng, n), 3),
-                radius=R(rng.uniform(0.005, 0.015, n), 5), phase=R(rng.uniform(size=n), 4), life=R(rng.uniform(1.5, 3.0, n), 3),
+    pts = hull_points(rng, n)
+    ph = rng.uniform(size=n)
+    # the first 90 of the pool: three lines along the right side (y 0.9 / 1.55 / 2.2, 26 cm out), each born front -> back
+    # over 0.3 s, so 'the first bioluminescence lights up ALONG the hull' reads as lines, not stars (终审 7a 二)
+    for i in range(90):
+        line, j = divmod(i, 30)
+        pts[i] = [1.30, (0.9, 1.55, 2.2)[line], 3.5 - 7.0 * j / 29.0]
+        ph[i] = 0.1 * j / 29.0 + 0.33 * line
+    return dict(kind='TRAIL', count=n, colour=R(srgb_lin(BIO_FILL, 2.73)), positions=R(pts, 3),
+                radius=R(rng.uniform(0.005, 0.015, n), 5), phase=R(ph, 4), life=R(rng.uniform(1.5, 3.0, n), 3),
                 seed=R(rng.uniform(size=n), 4), T0=L['F4'], rate=300.0, pool=n, alpha=1.0)
 
 
@@ -211,9 +232,14 @@ def ridge(rng):
     ys = np.arange(-135.0, -79.99, 1.0)
     Z, Y = np.meshgrid(zs, ys)
     off = np.zeros_like(Z)
-    for k, amp in ((1 / 23.0, 1.6), (1 / 9.0, 0.7), (1 / 3.7, 0.25)):
+    for k, amp in ((1 / 23.0, 1.6), (1 / 9.0, 0.7), (1 / 3.7, 0.10)):          # the finest octave down (it read as veins)
         ph = rng.uniform(0, 2 * math.pi, 4)
         off += amp * (np.sin(2 * math.pi * k * Z + ph[0]) * np.sin(2 * math.pi * k * 1.3 * Y + ph[1]) + 0.5 * np.sin(2 * math.pi * k * (0.7 * Z + 0.9 * Y) + ph[2]))
+    # horizontal strata (终审 7a 二: 'only the outline and the horizontal bedding catch the light'): a ledge every 4 m, its lip
+    # sticking out 0.8 m, gently wavy along z so the bedding is rock, not a ruler
+    wav = 0.6 * np.sin(2 * math.pi * Z / 31.0 + 1.3)
+    tt = np.mod((Y + wav) / 4.0, 1.0)
+    off += 0.8 * np.clip((tt - 0.7) / 0.3, 0.0, 1.0) ** 2
     off = off - off.min() + 0.4
     # the face tilts back a little at the top and bottom (a ridge, not a wall of a box)
     tilt = 4.0 * (np.clip((Y + 107.0) / 28.0, -1, 1) ** 2)
@@ -251,7 +277,10 @@ def warm_point():
         if best is None or dist < best[0]:
             best = (dist, lp['id'], p)
     return dict(id=best[1], position_water=R(best[2], 3), distance_at_F5_m=round(best[0], 2), t_on=L['F5'], fade_in_s=3.0,
-                colour=R(fill('#E0A860', 'S7b')), flux=3.0, radius_m=0.25, replaced_by='Palace/PalaceLayout.json (the palace session)')
+                colour=R(fill('#E0A860', 'S7b')), flux=3.0, radius_m=0.25, halo_radius_m=0.85, halo_flux=0.25,
+                halo_note='a soft halo of ~1.6 deg (<= 2 deg) around the point so it can be found at 640 px (终审 7a 二): a second, wider and '
+                          'dimmer point in the same mesh',
+                replaced_by='Palace/PalaceLayout.json (the palace session)')
 
 
 # ---------------------------------------------------------------------------------------------------- curves
@@ -290,10 +319,14 @@ def main():
                                           'RenderSettings.fogDensity = density, _Udon_FogBase = 0, _Udon_WaterFog{Up,Mid,Down} = (rgb, 1)'),
         caustics=dict(colour=R(srgb_lin('#9FCBFF', 1.46)), strength_by_depth=[[0.0, 1.0], [15.0, 0.0]], direction=1.0, tiling=1.0,
                       texture='Sea/Textures/Caustics_8x8_2048.png', note='x = strength (cabin floor depth = bus origin depth), z = t'),
-        sun=dict(kind='Directional', elevation_deg=70.0, azimuth_deg=30.0, colour_hex='#B0D9F2', colour_linear=R(sun),
-                 E_by_depth=[[0.0, 1.6], [15.0, 0.0]], render_mode='Important (the one shadowless pixel light that carries the cookie)',
-                 culling='Default + PlayerLocal (F4p: the light lands on your hands)', cookie='CRT Lanbai/SeaCausticsCookie 256 ARGBHalf, size 1.5 m '
-                 '(fallback Sea/Textures/CausticsCookie_Static_256.png)'),
+        sun=dict(kind='the world main light (D-24: the one shadowed directional = RenderSettings.sun), driven, never switched off',
+                 elevation_deg=70.0, azimuth_deg=30.0, colour_hex='#B0D9F2', colour_linear=R(sun),
+                 E_by_depth=[[0.0, 1.6], [15.0, 0.001]], E_floor=0.001,
+                 takeover='writeMainLight (LB_Journey.extSun): at eye_under_t (the waterline covers the turn) the driver turns it to '
+                          'el 70 / az +30, #B0D9F2, E; its shadows and culling (bible §1.6: Bus + Tentacles + Player + PlayerLocal) '
+                          'are left as they are; from the exit (922.36) the next act writes it',
+                 cookie='CRT Lanbai/SeaCausticsCookie 256 ARGBHalf, size 1.5 m, put on the main light under water and taken off at the '
+                        'exit (fallback Sea/Textures/CausticsCookie_Static_256.png)'),
         ambient_trilight=dict(sky=R(srgb_lin('#8FB8DE')), equator=R(srgb_lin('#3876AB')), ground=R(srgb_lin('#0F2E4E')),
                               note='RenderSettings Trilight (bible §6·7a 补光); written by the owner of RenderSettings (给总控 第五批)'),
         cabin=dict(note='the timeline / cabin driver writes these (bible §4.8 table), listed so the reference frames use the same numbers',
@@ -319,18 +352,27 @@ def main():
                   note='Inspector intensity = E (D-00: VRChat forces lightsUseLinearIntensity = true; the bible §1.5 trap 1 is void). Spot lights use Unity\'s legacy range falloff (trap 2): '
                        'check against the grey card locally, the seats must stay <= luma 120 and <= 6 % of the frame. Expected (cloud estimate: Built-in diffuse = albedo x colour x E x atten + the cabin ambient of §cabin, legacy atten ~ 1 / (1 + 25 d^2 / range^2), graded): F4p the worn seat #6A3434 luma ~79, the base vinyl #5A2126 ~57, a mid-grey hand ~155; F3e1 (E 7.5) worn ~72, base ~52. Range 20 m so the falloff over the 4 m throw is 0.49, not 0.16 (range 9 needed E ~44)'),
         particles=dict(snow=snow(rng), seeds=seeds(rng), trails=trails(rng), bubbles=bubbles(rng),
-                       snow_sink=0.015, snow_sphere=SNOW_SPHERE, snow_box=SNOW_BOX, snow_lit=dict(gain=SNOW_LIT, depth_full=12.0, depth_none=30.0, note='sunlit flakes in the shallow water: the bible screen colour #697987 has the luma of the water behind it at F3 (both ~118) and the flakes vanish; x gain until 12 m, smoothstep to x 1 (the bible colour) by 30 m (给总控 第五批 #9)'), near_fade=[0.3, 0.8], min_px=1.2),
+                       snow_sink=0.015, snow_sphere=SNOW_SPHERE, snow_box=SNOW_BOX, snow_lit=dict(gain=SNOW_LIT, depth_full=12.0, depth_none=30.0, note='sunlit flakes in the shallow water: the bible screen colour #697987 has the luma of the water behind it at F3 (both ~118) and the flakes vanish; x gain until 12 m, smoothstep to x 1 (the bible colour) by 30 m (给总控 第五批 #9)'), near_fade=[0.3, 0.8], min_px=1.5),
         ridge=ridge(rng),
         warm_point=warm_point(),
-        grade=dict(note='S7a until F3e, then S7a -> S7b linear F3e -> F5 (LB_Journey.ApplyGrades owns the PPv2 weights; this driver reports no dEV)',
-                   ramp=[L['F3e'], L['F5']]),
+        grade=dict(note='LB_Journey.ApplyGrades owns the PPv2 weights; the driver writes none of them. These are the data for its '
+                        'table (README_集成 §2 / §5): one dEV per frame, all events summed (bible §1.4)',
+                   ramp=[L['F3e'], L['F5']],
+                   events=[
+                       dict(kind='EXPO', volume='EXPO_DOWN', at='F2h', t=L['F2h'], dEV=-0.5, down_s=0.3, up_s=1.0, shape='linear in EV down, linear back',
+                            w_peak=0.156, note='bible §6·7a 入水 / score 22: the first gulp of dark under the water'),
+                       dict(kind='GRADE', volumes=['S6', 'S7a'], at='the waterline over the window tops', t=363.9, dur_s=1.5, end_t=365.4,
+                            shape='smoothstep S6 -> S7a (colour change, hidden behind the waterline)', note='bible §6·7a / score 23'),
+                       dict(kind='GRADE', volumes=['S7a', 'S7b'], at='F3e', t=L['F3e'], dur_s=round(L['F5'] - L['F3e'], 2), end_t=L['F5'],
+                            shape='linear weight (an exposure change: constant EV / s)', note='the 7a cross-fade (purple guard S7a~)'),
+                   ]),
         apl_targets=dict(F3=85, F3e=60, F3e1=46, F3e2=35, F3e3=25, F5=16),
     )
     # ---- the same numbers, flat, for the Unity builder (JsonUtility reads no nested arrays): README_Act07a §2
     W = J['water']['keys']
     sh = J['shafts']; ls = sh['last_shaft']
     J['unity'] = dict(
-        window_t0=J['window']['t0'], window_t1=J['window']['t1'], entry=L['F2h'], eye_under=tu, F3i=L['F3i'], F4=L['F4'], F5=L['F5'],
+        window_t0=J['window']['t0'], window_t1=J['window']['t1'], entry=L['F2h'], eye_under=tu, exit=AM.EXIT, F3i=L['F3i'], F4=L['F4'], F5=L['F5'],
         D0=AM.D0, sink_T0=AM.SINK.T0, sink_v0=AM.SINK.v0, sink_seg_t0=[a for a, _, _ in AM.SINK.segs], sink_seg_dur=[b for _, b, _ in AM.SINK.segs],
         sink_seg_dv=[c for _, _, c in AM.SINK.segs], fwd_T0=AM.FWD.T0, fwd_v0=AM.FWD.v0, fwd_seg_t0=[a for a, _, _ in AM.FWD.segs],
         fwd_seg_dur=[b for _, b, _ in AM.FWD.segs], fwd_seg_dv=[c for _, _, c in AM.FWD.segs],
@@ -353,6 +395,7 @@ def main():
         snow_sphere=SNOW_SPHERE, snow_box=SNOW_BOX, snow_lit=SNOW_LIT, snow_lit_d0=12.0, snow_lit_d1=30.0,
         warm_position=J['warm_point']['position_water'], warm_colour=J['warm_point']['colour'], warm_flux=J['warm_point']['flux'],
         warm_radius=J['warm_point']['radius_m'], warm_fade=J['warm_point']['fade_in_s'],
+        warm_halo_radius=J['warm_point']['halo_radius_m'], warm_halo_flux=J['warm_point']['halo_flux'],
         ridge_base=J['ridge']['material']['base'], ridge_rim=J['ridge']['material']['rim'], ridge_reach=J['ridge']['material']['rim_reach_m'], ridge_near=J['ridge']['material']['rim_near_m'],
         ridge_wrap=J['ridge']['material']['rim_wrap'], ridge_face=J['ridge']['material']['rim_face'], ridge_edge=J['ridge']['material']['rim_edge'],
     )

@@ -4,8 +4,8 @@
    960,
    540
   ],
-  "APL": 15.53,
-  "EV_display": -7.43,
+  "APL": 15.62,
+  "EV_display": -7.385,
   "luma_lt12_pct": 23.04,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
@@ -16,28 +16,28 @@
   "purple_pct": 0.0,
   "purple_largest_region_pct": 0.0,
   "violet_strong_pct": 0.0,
-  "lavender_act6_pct": 0.064,
+  "lavender_act6_pct": 0.142,
   "brightest": {
    "bbox": [
-    90,
-    108,
-    953,
-    537
+    12,
+    66,
+    869,
+    508
    ],
    "centroid": [
-    745.2,
-    277.3
+    508.8,
+    248.1
    ],
-   "clusters": 25,
-   "clusters_ge5pct": 6,
-   "min_luma": 36.7,
+   "clusters": 17,
+   "clusters_ge5pct": 8,
+   "min_luma": 84.9,
    "centroid_az_el": [
-    27.22,
-    7.7
+    2.98,
+    10.46
    ]
   },
   "top25_Lstar": {
-   "mean": 4.09,
+   "mean": 4.13,
    "p50": 1.72,
    "p90": 9.41
   },
@@ -48,43 +48,43 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 78.1,
+     "nearest_dE2000_p01": 47.9,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 69.0,
+     "nearest_dE2000_p01": 38.9,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 58.6,
+     "nearest_dE2000_p01": 33.6,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#3876AB",
      "role": "浅水 縹",
-     "nearest_dE2000_p01": 28.7,
+     "nearest_dE2000_p01": 16.9,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
-     "nearest_dE2000_p01": 10.3,
-     "within_dE5_pct": 0.0
+     "nearest_dE2000_p01": 7.7,
+     "within_dE5_pct": 0.02
     },
     {
      "hex": "#697987",
      "role": "海雪",
-     "nearest_dE2000_p01": 29.9,
+     "nearest_dE2000_p01": 20.2,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 62.2,
+     "nearest_dE2000_p01": 35.3,
      "within_dE5_pct": 0.0
     }
    ],
@@ -194,7 +194,7 @@
    540
   ]
  },
- "render_seconds": 13.2,
+ "render_seconds": 12.4,
  "lens": "none",
  "bloom_tint": "single",
  "note": "seeding (F3i ->): cold lights sown one by one, fixed in the water"

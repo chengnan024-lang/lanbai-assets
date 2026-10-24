@@ -4,8 +4,8 @@
    960,
    540
   ],
-  "APL": 36.46,
-  "EV_display": -5.405,
+  "APL": 36.51,
+  "EV_display": -5.395,
   "luma_lt12_pct": 23.41,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
@@ -16,28 +16,28 @@
   "purple_pct": 0.0,
   "purple_largest_region_pct": 0.0,
   "violet_strong_pct": 0.0,
-  "lavender_act6_pct": 0.002,
+  "lavender_act6_pct": 0.006,
   "brightest": {
    "bbox": [
-    153,
-    3,
-    947,
-    470
+    1,
+    16,
+    842,
+    512
    ],
    "centroid": [
-    482.3,
-    143.9
+    497.0,
+    188.4
    ],
-   "clusters": 23,
-   "clusters_ge5pct": 6,
-   "min_luma": 75.1,
+   "clusters": 10,
+   "clusters_ge5pct": 10,
+   "min_luma": 92.9,
    "centroid_az_el": [
-    72.03,
-    31.84
+    74.87,
+    26.04
    ]
   },
   "top25_Lstar": {
-   "mean": 13.03,
+   "mean": 13.08,
    "p50": 2.19,
    "p90": 26.48
   },
@@ -48,32 +48,32 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 51.3,
+     "nearest_dE2000_p01": 46.4,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 44.1,
+     "nearest_dE2000_p01": 37.3,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 39.6,
+     "nearest_dE2000_p01": 31.8,
      "within_dE5_pct": 0.01
     },
     {
      "hex": "#3876AB",
      "role": "浅水 縹",
-     "nearest_dE2000_p01": 14.1,
+     "nearest_dE2000_p01": 13.8,
      "within_dE5_pct": 0.01
     },
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
      "nearest_dE2000_p01": 2.7,
-     "within_dE5_pct": 28.73
+     "within_dE5_pct": 28.83
     },
     {
      "hex": "#697987",
@@ -84,13 +84,13 @@
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 41.5,
-     "within_dE5_pct": 0.01
+     "nearest_dE2000_p01": 33.5,
+     "within_dE5_pct": 0.02
     }
    ],
    "pixel_to_nearest_dE_median": 7.7,
    "pixel_to_nearest_dE_p90": 19.5,
-   "pixels_within5_pct": 28.7
+   "pixels_within5_pct": 28.9
   }
  },
  "cam": {
@@ -194,7 +194,7 @@
    540
   ]
  },
- "render_seconds": 12.3,
+ "render_seconds": 26.6,
  "lens": "none",
  "bloom_tint": "single",
  "note": "F3e2 enters (520.36): the ridge top rising past the right window, el ~20 (review r1 #8)"

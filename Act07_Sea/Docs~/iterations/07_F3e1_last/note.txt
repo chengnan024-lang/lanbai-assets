@@ -1,1 +1,1 @@
-F3e1 506.36+: the window shrinks to a dark coin, the last wide shaft sweeps the seats
+F3e1 512.0: the window shrinking (gain x ~0.24 on the way to 0.04 at 514.36), the last wide shaft over the seats

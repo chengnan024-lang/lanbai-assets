@@ -4,9 +4,9 @@
    960,
    540
   ],
-  "APL": 49.03,
-  "EV_display": -4.108,
-  "luma_lt12_pct": 0.6,
+  "APL": 49.15,
+  "EV_display": -4.107,
+  "luma_lt12_pct": 0.61,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
@@ -16,30 +16,30 @@
   "purple_pct": 0.0,
   "purple_largest_region_pct": 0.0,
   "violet_strong_pct": 0.0,
-  "lavender_act6_pct": 0.0,
+  "lavender_act6_pct": 0.001,
   "brightest": {
    "bbox": [
     460,
     1,
-    893,
-    513
+    824,
+    464
    ],
    "centroid": [
-    501.2,
-    15.2
+    490.1,
+    8.4
    ],
-   "clusters": 4,
+   "clusters": 3,
    "clusters_ge5pct": 1,
-   "min_luma": 187.2,
+   "min_luma": 188.9,
    "centroid_az_el": [
-    3.94,
-    62.52
+    2.08,
+    63.36
    ]
   },
   "top25_Lstar": {
-   "mean": 14.02,
+   "mean": 13.94,
    "p50": 3.53,
-   "p90": 67.1
+   "p90": 66.49
   },
   "palette": {
    "act": "07a",
@@ -60,37 +60,37 @@
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 8.1,
+     "nearest_dE2000_p01": 8.3,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#3876AB",
      "role": "浅水 縹",
      "nearest_dE2000_p01": 7.2,
-     "within_dE5_pct": 0.01
+     "within_dE5_pct": 0.02
     },
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
-     "nearest_dE2000_p01": 3.0,
-     "within_dE5_pct": 0.64
+     "nearest_dE2000_p01": 2.4,
+     "within_dE5_pct": 1.98
     },
     {
      "hex": "#697987",
      "role": "海雪",
-     "nearest_dE2000_p01": 2.5,
-     "within_dE5_pct": 0.92
+     "nearest_dE2000_p01": 2.0,
+     "within_dE5_pct": 1.18
     },
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 11.2,
+     "nearest_dE2000_p01": 11.4,
      "within_dE5_pct": 0.0
     }
    ],
    "pixel_to_nearest_dE_median": 18.1,
    "pixel_to_nearest_dE_p90": 18.1,
-   "pixels_within5_pct": 1.6
+   "pixels_within5_pct": 3.2
   }
  },
  "cam": {
@@ -193,7 +193,7 @@
    540
   ]
  },
- "render_seconds": 17.3,
+ "render_seconds": 17.0,
  "lens": "none",
  "bloom_tint": "single",
  "note": "F4p 462.36: the shafts gathered into the skylight hole"

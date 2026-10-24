@@ -4,8 +4,8 @@
    960,
    540
   ],
-  "APL": 25.34,
-  "EV_display": -4.854,
+  "APL": 25.44,
+  "EV_display": -4.845,
   "luma_lt12_pct": 0.0,
   "Lstar_gt85_pct": 1.101,
   "clip_black_pct": 0.0,
@@ -19,20 +19,20 @@
   "lavender_act6_pct": 0.0,
   "brightest": {
    "bbox": [
-    466,
+    465,
     188,
     556,
     204
    ],
    "centroid": [
-    509.0,
-    197.8
+    510.5,
+    197.6
    ],
    "clusters": 1,
    "clusters_ge5pct": 1,
    "min_luma": 224.6,
    "centroid_az_el": [
-    9.39,
+    9.86,
     68.08
    ]
   },
@@ -66,20 +66,20 @@
     {
      "hex": "#3876AB",
      "role": "浅水 縹",
-     "nearest_dE2000_p01": 14.1,
+     "nearest_dE2000_p01": 12.0,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
      "nearest_dE2000_p01": 0.8,
-     "within_dE5_pct": 4.66
+     "within_dE5_pct": 4.48
     },
     {
      "hex": "#697987",
      "role": "海雪",
-     "nearest_dE2000_p01": 5.2,
-     "within_dE5_pct": 0.08
+     "nearest_dE2000_p01": 4.6,
+     "within_dE5_pct": 0.13
     },
     {
      "hex": "#8AC6FF",
@@ -90,7 +90,7 @@
    ],
    "pixel_to_nearest_dE_median": 17.5,
    "pixel_to_nearest_dE_p90": 17.5,
-   "pixels_within5_pct": 5.1
+   "pixels_within5_pct": 5.0
   }
  },
  "cam": {
@@ -193,7 +193,7 @@
    540
   ]
  },
- "render_seconds": 24.9,
+ "render_seconds": 24.4,
  "lens": "none",
  "bloom_tint": "single",
  "note": "F3 367.21: Snell's window through the skylight (roof still whole), hero eye, pitch 60"

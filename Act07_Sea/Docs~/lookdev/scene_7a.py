@@ -29,6 +29,7 @@ import act07_motion as AM  # noqa: E402
 
 LAY = json.load(open(os.path.join(PKG, 'Act07_Layout.json'), encoding='utf-8'))
 U = LAY['unity']
+P_LAY = LAY['particles']
 
 
 def smooth(x):
@@ -240,7 +241,7 @@ def hash11(x):
     return np.modf(np.sin(x * 127.1 + 311.7) * 43758.5453)[0] % 1.0
 
 
-def splat(img_add, img_over, rays_shape, cam, eye, P, radius, rgb, alpha, kind, water, zbuf, min_px=1.2):
+def splat(img_add, img_over, rays_shape, cam, eye, P, radius, rgb, alpha, kind, water, zbuf, min_px=None):
     """project point sprites (shader: quad facing the centre eye, inflated to min_px, coverage^2 energy) and accumulate.
     additive kinds: img_add += rgb * shape * cov^2 * (1 - fog); premultiplied: over-composite (in depth order, far first)."""
     H, W = rays_shape[:2]
@@ -258,6 +259,8 @@ def splat(img_add, img_over, rays_shape, cam, eye, P, radius, rgb, alpha, kind, 
     dist = np.linalg.norm(v, axis=-1)
     u = W / 2 + xc / np.maximum(zc, 1e-6) * f_px
     vv = H / 2 - yc / np.maximum(zc, 1e-6) * f_px
+    if min_px is None:
+        min_px = P_LAY['min_px']
     rmin = 0.5 * min_px * pix_ang * dist
     rdraw = np.maximum(radius, rmin)
     cov = radius / np.maximum(rdraw, 1e-6)
@@ -344,7 +347,9 @@ def particles(img, rays, cam, eye, t, depth, water, zbuf):
         dist = np.linalg.norm(p - eye)
         k = U['warm_flux'] * g * math.exp(-dist * 0.004)
         rgb = (np.asarray(U['warm_colour']) * k)[None, :]
-        add, img = splat(add, img, rays.shape, cam, eye, p[None, :], np.array([U['warm_radius']]), rgb, np.ones(1), 'SPECK', water, zbuf, min_px=1.4)
+        add, img = splat(add, img, rays.shape, cam, eye, p[None, :], np.array([U['warm_radius']]), rgb, np.ones(1), 'SPECK', water, zbuf, min_px=1.5)
+        rgbh = (np.asarray(U['warm_colour']) * U['warm_halo_flux'] * g * math.exp(-dist * 0.004))[None, :]
+        add, img = splat(add, img, rays.shape, cam, eye, p[None, :], np.array([U['warm_halo_radius']]), rgbh, np.ones(1), 'SPECK', water, zbuf, min_px=1.5)
     return img + add
 
 

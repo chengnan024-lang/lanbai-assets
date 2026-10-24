@@ -25,10 +25,15 @@ run 02_F3_fwd       367.21 --cam hero --pitch 0 --bus bible_v2 --note "F3 367.21
 run 03_387_vr_auto  387.0  --cam vr_left_fwd --pitch 90 --bus bible_v2 --vr --set vr=1 --set roofhole=auto --note "387 VR straight up, roof eroded by t (el >= 70 - 120 x erosion), VR window ceiling by erosion (D-23 #2)" &
 wait
 run 04_387_vr_worst 387.0  --cam vr_left_fwd --pitch 90 --bus bible_v2 --vr --set vr=1 --set roofhole=40 --note "387 VR straight up, WORST case: the whole roof above el 40 gone (az -180..180), VR ceiling: D-09 APL <= 150" &
-run 05_F4_trails    446.5  --cam hero --yaw 80 --pitch -10 --bus bible_v2 --note "F4 446.01+: the first bioluminescence along the hull (right window)" &
+run 05_F4_trails    448.2  --cam hero --yaw 115 --pitch -15 --bus bible_v2 --note "F4 446.01+: the first bioluminescence runs along the hull, three lines receding to the rear (right side window, looking back)" &
 run 06_F4p_gather   462.36 --cam hero --pitch 35 --bus bible_v2 --note "F4p 462.36: the shafts gathered into the skylight hole" &
 wait
-run 07_F3e1_last    512.0  --cam hero --pitch 40 --bus bible_v2 --note "F3e1 506.36+: the window shrinks to a dark coin, the last wide shaft sweeps the seats" &
+run 06b_F4p_side_up 458.0  --cam hero --yaw 80 --pitch 30 --bus bible_v2 --note "F4p gathering (458): from the right side window looking up, the shafts converge on the roof outside the bus" &
+wait
+run 07_F3e1_last    512.0  --cam hero --pitch 40 --bus bible_v2 --note "F3e1 512.0: the window shrinking (gain x ~0.24 on the way to 0.04 at 514.36), the last wide shaft over the seats" &
+run 07b_F3e1_509    509.0  --cam hero --yaw 60 --pitch 30 --bus bible_v2 --note "F3e1 509: the last wide shaft sweeping past, seen out of the right side window" &
+wait
+run 07c_F3e1_515    515.0  --cam hero --pitch 40 --bus bible_v2 --note "F3e1 515: the window is a dark coin (gain x 0.04)" &
 run 08_F3e2_ridge   532.36 --cam hero --yaw 75 --pitch 5 --bus bible_v2 --note "F3e2 532.36: the ridge wall rising past the right window, edged by the hull light" &
 run 08b_ridge_top   520.36 --cam hero --yaw 70 --pitch 20 --bus bible_v2 --note "F3e2 enters (520.36): the ridge top rising past the right window, el ~20 (review r1 #8)" &
 run 09_F3e3_dark    556.36 --cam hero --pitch 0 --bus bible_v2 --note "F3e3 556.36: the last blue goes out (APL target 25)" &

@@ -4,8 +4,8 @@
    960,
    540
   ],
-  "APL": 33.47,
-  "EV_display": -5.049,
+  "APL": 33.51,
+  "EV_display": -5.043,
   "luma_lt12_pct": 58.1,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
@@ -19,21 +19,21 @@
   "lavender_act6_pct": 0.0,
   "brightest": {
    "bbox": [
-    463,
+    461,
     1,
-    832,
-    378
+    919,
+    456
    ],
    "centroid": [
-    522.1,
-    31.8
+    591.0,
+    127.4
    ],
-   "clusters": 12,
-   "clusters_ge5pct": 4,
-   "min_luma": 131.0,
+   "clusters": 18,
+   "clusters_ge5pct": 6,
+   "min_luma": 129.2,
    "centroid_az_el": [
-    8.92,
-    65.4
+    14.91,
+    53.85
    ]
   },
   "top25_Lstar": {
@@ -48,20 +48,20 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 29.1,
+     "nearest_dE2000_p01": 29.0,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 21.4,
+     "nearest_dE2000_p01": 21.1,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
      "nearest_dE2000_p01": 16.9,
-     "within_dE5_pct": 0.0
+     "within_dE5_pct": 0.01
     },
     {
      "hex": "#3876AB",
@@ -72,8 +72,8 @@
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
-     "nearest_dE2000_p01": 2.4,
-     "within_dE5_pct": 32.66
+     "nearest_dE2000_p01": 2.3,
+     "within_dE5_pct": 32.58
     },
     {
      "hex": "#697987",
@@ -85,12 +85,12 @@
      "hex": "#8AC6FF",
      "role": "生物荧光",
      "nearest_dE2000_p01": 19.5,
-     "within_dE5_pct": 0.0
+     "within_dE5_pct": 0.01
     }
    ],
    "pixel_to_nearest_dE_median": 19.2,
    "pixel_to_nearest_dE_p90": 19.2,
-   "pixels_within5_pct": 34.5
+   "pixels_within5_pct": 34.4
   }
  },
  "cam": {
@@ -169,7 +169,7 @@
    "color": "#000000"
   }
  },
- "bloom_share_of_APL": 0.0,
+ "bloom_share_of_APL": 0.01,
  "t": 512.0,
  "target": {
   "phase": "最后一闪",
@@ -194,8 +194,8 @@
    540
   ]
  },
- "render_seconds": 23.1,
+ "render_seconds": 16.4,
  "lens": "none",
  "bloom_tint": "single",
- "note": "F3e1 506.36+: the window shrinks to a dark coin, the last wide shaft sweeps the seats"
+ "note": "F3e1 512.0: the window shrinking (gain x ~0.24 on the way to 0.04 at 514.36), the last wide shaft over the seats"
 }

@@ -4,10 +4,10 @@
    916,
    960
   ],
-  "APL": 121.64,
-  "EV_display": -1.816,
+  "APL": 122.26,
+  "EV_display": -1.806,
   "luma_lt12_pct": 0.0,
-  "Lstar_gt85_pct": 9.926,
+  "Lstar_gt85_pct": 9.935,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
   "clip_black_largest_region_pct": 0.0,
@@ -19,26 +19,26 @@
   "lavender_act6_pct": 0.0,
   "brightest": {
    "bbox": [
-    435,
-    485,
+    433,
+    461,
     490,
-    516
+    515
    ],
    "centroid": [
-    464.1,
-    496.1
+    460.4,
+    476.8
    ],
-   "clusters": 2,
+   "clusters": 3,
    "clusters_ge5pct": 2,
    "min_luma": 232.3,
    "centroid_az_el": [
-    14.74,
-    86.79
+    8.43,
+    87.45
    ]
   },
   "top25_Lstar": {
-   "mean": 34.41,
-   "p50": 29.05,
+   "mean": 34.67,
+   "p50": 30.38,
    "p90": 65.97
   },
   "palette": {
@@ -49,12 +49,12 @@
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
      "nearest_dE2000_p01": 3.6,
-     "within_dE5_pct": 5.29
+     "within_dE5_pct": 5.28
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 6.3,
+     "nearest_dE2000_p01": 6.2,
      "within_dE5_pct": 0.0
     },
     {
@@ -72,25 +72,25 @@
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
-     "nearest_dE2000_p01": 0.5,
-     "within_dE5_pct": 10.06
+     "nearest_dE2000_p01": 0.6,
+     "within_dE5_pct": 9.51
     },
     {
      "hex": "#697987",
      "role": "海雪",
-     "nearest_dE2000_p01": 2.2,
-     "within_dE5_pct": 4.01
+     "nearest_dE2000_p01": 2.3,
+     "within_dE5_pct": 3.2
     },
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 9.9,
+     "nearest_dE2000_p01": 9.8,
      "within_dE5_pct": 0.0
     }
    ],
    "pixel_to_nearest_dE_median": 7.6,
    "pixel_to_nearest_dE_p90": 17.7,
-   "pixels_within5_pct": 19.4
+   "pixels_within5_pct": 18.0
   }
  },
  "cam": {
@@ -168,7 +168,7 @@
    "color": "#000000"
   }
  },
- "bloom_share_of_APL": 0.01,
+ "bloom_share_of_APL": 0.0,
  "t": 387.0,
  "target": {
   "phase": "7a 被海接住",
@@ -193,7 +193,7 @@
    960
   ]
  },
- "render_seconds": 11.6,
+ "render_seconds": 10.4,
  "lens": "none",
  "bloom_tint": "single",
  "note": "387 VR straight up, WORST case: the whole roof above el 40 gone (az -180..180), VR ceiling: D-09 APL <= 150"

@@ -4,8 +4,8 @@
    960,
    540
   ],
-  "APL": 75.49,
-  "EV_display": -3.573,
+  "APL": 67.8,
+  "EV_display": -3.773,
   "luma_lt12_pct": 0.0,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
@@ -19,27 +19,27 @@
   "lavender_act6_pct": 0.0,
   "brightest": {
    "bbox": [
-    123,
-    0,
-    832,
-    481
+    76,
+    94,
+    807,
+    529
    ],
    "centroid": [
-    643.0,
-    255.5
+    427.8,
+    176.1
    ],
-   "clusters": 8,
-   "clusters_ge5pct": 6,
-   "min_luma": 100.4,
+   "clusters": 20,
+   "clusters_ge5pct": 9,
+   "min_luma": 134.4,
    "centroid_az_el": [
-    98.01,
-    -7.95
+    110.2,
+    -3.77
    ]
   },
   "top25_Lstar": {
-   "mean": 33.69,
-   "p50": 34.92,
-   "p90": 38.24
+   "mean": 33.32,
+   "p50": 37.02,
+   "p90": 40.17
   },
   "palette": {
    "act": "07a",
@@ -48,49 +48,49 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 42.6,
+     "nearest_dE2000_p01": 32.0,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 33.4,
+     "nearest_dE2000_p01": 21.2,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 27.8,
-     "within_dE5_pct": 0.01
+     "nearest_dE2000_p01": 14.7,
+     "within_dE5_pct": 0.03
     },
     {
      "hex": "#3876AB",
      "role": "浅水 縹",
-     "nearest_dE2000_p01": 6.6,
-     "within_dE5_pct": 0.04
+     "nearest_dE2000_p01": 4.8,
+     "within_dE5_pct": 0.11
     },
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
-     "nearest_dE2000_p01": 3.6,
-     "within_dE5_pct": 2.78
+     "nearest_dE2000_p01": 3.3,
+     "within_dE5_pct": 10.3
     },
     {
      "hex": "#697987",
      "role": "海雪",
-     "nearest_dE2000_p01": 11.7,
+     "nearest_dE2000_p01": 11.9,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 29.5,
-     "within_dE5_pct": 0.02
+     "nearest_dE2000_p01": 16.1,
+     "within_dE5_pct": 0.04
     }
    ],
-   "pixel_to_nearest_dE_median": 8.7,
+   "pixel_to_nearest_dE_median": 9.0,
    "pixel_to_nearest_dE_p90": 18.1,
-   "pixels_within5_pct": 2.8
+   "pixels_within5_pct": 10.4
   }
  },
  "cam": {
@@ -99,8 +99,8 @@
    1.7,
    2.05
   ],
-  "yaw_deg": 80.0,
-  "pitch_deg": -10.0,
+  "yaw_deg": 115.0,
+  "pitch_deg": -15.0,
   "hfov_deg": 90,
   "res": [
    960,
@@ -168,11 +168,11 @@
    "color": "#000000"
   }
  },
- "bloom_share_of_APL": 0.01,
- "t": 446.5,
+ "bloom_share_of_APL": 0.0,
+ "t": 448.2,
  "target": {
   "phase": "7a 被海接住",
-  "APL": 66.3,
+  "APL": 65.9,
   "grade": "S7a",
   "range": [
    85,
@@ -182,9 +182,9 @@
  "scene": {
   "what": "act 7a",
   "frame": "__7a__",
-  "depth": 22.74,
-  "fog": 0.0348,
-  "erosion": 0.074,
+  "depth": 22.99,
+  "fog": 0.0347,
+  "erosion": 0.075,
   "bus": "bible_v2",
   "glass": false,
   "samples": 48,
@@ -193,8 +193,8 @@
    540
   ]
  },
- "render_seconds": 13.2,
+ "render_seconds": 6.2,
  "lens": "none",
  "bloom_tint": "single",
- "note": "F4 446.01+: the first bioluminescence along the hull (right window)"
+ "note": "F4 446.01+: the first bioluminescence runs along the hull, three lines receding to the rear (right side window, looking back)"
 }

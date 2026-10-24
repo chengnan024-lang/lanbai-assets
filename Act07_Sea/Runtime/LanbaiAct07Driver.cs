@@ -4,8 +4,10 @@
 //
 //  CONTROL §5 interface (called by Director/LanbaiActDispatcher):
 //     LanbaiTick(t)        every frame inside LanbaiWindow() (t = timeline seconds)
-//     LanbaiActivate(on)   switches `roots` (R_Sea, R_Act07Bus, Act07_Lights), never this object
-//     LanbaiWindow()       {F2h - 1, exit + 1} = {362.26, 923.36}; after F5 the 7a end state is held until 7b / 7c arrive
+//     LanbaiActivate(on)   switches `roots` (R_Sea, R_Act07Bus), never this object
+//     LanbaiWindow()       {F2h - 1, exit + 1} = {362.26, 923.36}; after F5 the 7a end state is held until 7b / 7c arrive.
+//                          Gates: nothing of the sea before tEntry (F2h 363.26); from tExit (922.36, out of the water) only
+//                          the sea's own channels are handed back and nothing shared is written (终审 7a 一 #2)
 //  Every number comes from Act07_Sea/Act07_Layout.json, baked into the fields below by 蓝白/Build/Act07a
 //  (Act07_Sea/Editor/LanbaiAct07Builder.cs). Udon cannot read JSON at runtime (Engineering/README_集成.md §4).
 //
@@ -13,10 +15,13 @@
 //    motion   depth(t), fwd(t) (closed-form integrals of the smoothstep velocity profiles) -> R_Sea = (0, depth, -fwd)
 //    sea      the plane on from F2h with the ABOVE material (M_06_Sea, the Clouds' look), M_07a_SeaSurface from the
 //             eye-under moment; _WindowGain x the F3e1 'dark coin' curve; _WindowCore desktop / VR (D-23 #2)
-//    globals  _Udon_SeaLevel, SeaMode, SeaClock, Underwater, SeaBus, SeaBusVel, T, Fog (+ FogBase = 0),
+//    globals  _Udon_SeaLevel, SeaMode, SeaClock, Underwater, SeaBus, SeaBusVel, T, Fog (+ FogBase = (sea y, 0, 0, 1)),
 //             WaterFogUp / Mid / Down, Caustics (+ Color, Tex)
-//    takeover (README_集成 §2-3, LB_Journey.extAtmosphere / extSun): RenderSettings.fogDensity / fogColor / Trilight
-//             ambient; the act's own sun (directional, cookie) and the world sun off
+//    takeover (README_集成 §2-3; both switches default OFF, like 4c):
+//             writeRenderSettings (LB_Journey.extAtmosphere): RenderSettings.fogDensity / fogColor / Trilight ambient;
+//             writeMainLight (LB_Journey.extSun): the world's ONE shadowed main light (D-24, bible §1.6) is never switched
+//             off: at the eye-under moment (the waterline covers it) it turns to the sun through the water (el 70, az +30,
+//             #B0D9F2, E 1.6 -> 0.001 by 15 m, never 0, shadows untouched) and carries the caustic cookie
 //    beats    shafts (depth fade, F4p gather into the skylight, gone by 467.6), F3e1's last sweeping shaft, trails from
 //             F4, seeds from F3i, the ridge wall's rim, the warm point at F5
 //  NOT written here: PPv2 weights (LB_Journey.ApplyGrades: S7a -> S7b F3e -> F5), the cabin (_Udon_Cabin*), the
@@ -38,15 +43,17 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
     public Transform lastShaftTf;
     public Renderer snow, seeds, trails, bubblesGlass, bubblesSeats;
     public Renderer dome;                      // Lanbai/SeaDome: the 'sky' under water (on while the eye is under)
-    public Light sun;                          // Act07_Lights/Act07_Sun (directional, cookie)
     public Light beam;                         // R_Act07Bus/Act07_Beam (spot): F4p gather and F3e1's last shaft on the seats / hands
-    public Light worldSun;                     // the world's main sun (LB_Journey's): off inside the window (may be null)
+    public Light worldSun;                     // THE main light (D-24 = RenderSettings.sun; the builder wires it if empty)
+    public Texture sunCookie;                  // the caustic cookie (CRT Lanbai/SeaCausticsCookie), put on worldSun under water
+    public float sunCookieSize = 1.5f;
     public Texture causticsTex;
-    public bool writeRenderSettings = true;    // README_集成 §3: only if LB_Journey.extAtmosphere is ticked
+    public bool writeRenderSettings = false;   // README_集成 §3: tick only with LB_Journey.extAtmosphere
+    public bool writeMainLight = false;        // README_集成 §3: tick only with LB_Journey.extSun
 
     [Header("Timeline (Act07_Layout.json)")]
     public float windowStart = 362.26f, windowEnd = 923.36f;
-    public float tEntry = 363.26f, tEyeUnder = 363.615f, tF3i = 558.86f, tF4 = 446.01f, tF5 = 644.96f;
+    public float tEntry = 363.26f, tEyeUnder = 363.615f, tExit = 922.36f, tF3i = 558.86f, tF4 = 446.01f, tF5 = 644.96f;
 
     [Header("Motion (smoothstep velocity profiles)")]
     public float D0 = 1f;
@@ -66,7 +73,8 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
     // colours of lights and RenderSettings are sRGB values (Unity linearises them); intensity = linear E (D-00: VRChat forces
     // lightsUseLinearIntensity = true -> Inspector = E; the bible's §1.5 trap 1 is void)
     public Color sunColor = new Color(0.69f, 0.85f, 0.95f, 1f);
-    public float sunE0 = 1.6f, sunDepth1 = 15f;
+    public float sunE0 = 1.6f, sunDepth1 = 15f, sunFloor = 0.001f;   // below 15 m: 0.001, never off (bible §1.6)
+    public Quaternion sunRotation = Quaternion.identity;               // el 70, az +30 (builder)
     public Color ambSky, ambEquator, ambGround;
 
     [Header("Snell window")]
@@ -91,7 +99,7 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
     private int _idSeaLevel, _idSeaMode, _idSeaClock, _idUnder, _idSeaBus, _idSeaBusVel, _idT, _idFog, _idFogBase;
     private int _idWUp, _idWMid, _idWDown, _idCaus, _idCausCol, _idCausTex;
     private int _idWindowGain, _idWindowCore, _idGain, _idGather, _idGatherPoint;
-    private bool _ready, _vr, _below;
+    private bool _ready, _vr, _below, _sunTaken;
     private float[] _window;
 
     // ---- CONTROL §5 ----------------------------------------------------------------------------------------------
@@ -105,15 +113,17 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
     {
         if (roots == null) return;
         for (int i = 0; i < roots.Length; i++) if (roots[i] != null) roots[i].SetActive(on);
-        // the world sun goes off when the eye is under (Evaluate), not at activation: until F2h the act-6 sea and sun rule
-        if (!on && worldSun != null) worldSun.enabled = true;
-        // hand back only what is the sea's alone (裁决 20:40: shared channels -- fog, sea level / mode -- are never
-        // written w = 0 here; the next writer writes them in full)
-        if (!on && _ready)
-        {
-            VRCShader.SetGlobalFloat(_idUnder, 0f);
-            VRCShader.SetGlobalVector(_idCaus, new Vector4(0f, 1f, 0f, 1f));
-        }
+        if (!on && _ready) HandBack();
+    }
+
+    // hand back only what is the sea's alone (裁决 20:40: shared channels -- fog, RenderSettings, sea level / mode, the
+    // main light's direction / colour / intensity -- are never cleared here; the next writer writes them in full)
+    private void HandBack()
+    {
+        VRCShader.SetGlobalFloat(_idUnder, 0f);
+        VRCShader.SetGlobalVector(_idCaus, new Vector4(0f, 1f, 0f, 1f));
+        if (_sunTaken && worldSun != null) worldSun.cookie = null;    // the cookie is ours
+        _sunTaken = false;
     }
 
     public float[] LanbaiWindow()
@@ -122,11 +132,11 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
         return _window;
     }
 
-    // blocks and globals are written once in Start (CONTROL §5: what the editor wrote is lost on entering Play)
+    // Start only initialises: the renderers stay as built, so the dispatcher's 2 prewarm frames really draw every
+    // shader and mesh once (终审 7a 二: no hitch in the silence of 363.26-363.615); the first Tick applies the gates
     void Start()
     {
         if (!_ready) _Init();
-        Evaluate(windowStart);
     }
 
     public void _Init()
@@ -216,20 +226,20 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
         float vFwd = t < fwdT0 ? 0f : ProfileV(t, fwdV0, fwdSegT0, fwdSegDur, fwdSegDv);
         if (rSea != null) rSea.localPosition = new Vector3(0f, depth, -fwd);
         bool under = t >= tEyeUnder;
-        if (worldSun != null) worldSun.enabled = !under;
+
+        // out of the water (922.36): hand back the sea's own channels, switch our things off, write nothing shared
+        if (t >= tExit)
+        {
+            HandBack();
+            AllOff();
+            return;
+        }
 
         // before F2h (the window opens 1 s early, under the dispatcher's cover) nothing of the sea exists yet: the act-6 sea
         // plane and globals are still the Clouds' (README_Sea接口 §5: the two planes never coexist; the sea's globals from F2h)
         if (t < tEntry)
         {
-            if (seaRenderer != null) seaRenderer.enabled = false;
-            if (dome != null) dome.enabled = false;
-            if (sun != null) sun.enabled = false;
-            if (beam != null) beam.enabled = false;
-            if (shafts != null) shafts.enabled = false;
-            if (lastShaft != null) lastShaft.enabled = false;
-            SetGain(snow, 0f); SetGain(seeds, 0f); SetGain(trails, 0f); SetGain(bubblesGlass, 0f); SetGain(bubblesSeats, 0f);
-            SetGain(ridge, 0f); SetGain(warmPoint, 0f);
+            AllOff();
             return;
         }
         if (seaRenderer != null) seaRenderer.enabled = true;
@@ -286,7 +296,7 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
             VRCShader.SetGlobalVector(_idWDown, down);
             // _Udon_Fog wins over the legacy _Udon_FogDensity (LanbaiFog.cginc); act 6 left its own _Udon_Fog (w = 1)
             VRCShader.SetGlobalVector(_idFog, new Vector4(dens, 0f, 0f, 1f));
-            VRCShader.SetGlobalVector(_idFogBase, Vector4.zero);
+            VRCShader.SetGlobalVector(_idFogBase, new Vector4(depth, 0f, 0f, 1f));   // set (w 1); unused under water
             if (writeRenderSettings)
             {
                 RenderSettings.fogDensity = dens;
@@ -302,12 +312,19 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
         float cs = 1f - Mathf.Clamp01((depth - causticsDepth0) / Mathf.Max(causticsDepth1 - causticsDepth0, 1e-3f));
         VRCShader.SetGlobalVector(_idCaus, new Vector4(under ? cs : 0f, 1f, t, 1f));
         VRCShader.SetGlobalVector(_idCausCol, causticsColor);
-        if (sun != null)
+        // the main light: taken over at the eye-under moment (the waterline covers the turn), never switched off
+        if (writeMainLight && worldSun != null && under)
         {
-            float e = under ? sunE0 * (1f - Mathf.Clamp01(depth / Mathf.Max(sunDepth1, 1e-3f))) : 0f;
-            sun.intensity = e;                 // VRChat forces lightsUseLinearIntensity = true -> Inspector = E (D-00)
-            sun.color = sunColor;
-            sun.enabled = e > 0.001f;
+            float e = Mathf.Max(sunE0 * (1f - Mathf.Clamp01(depth / Mathf.Max(sunDepth1, 1e-3f))), sunFloor);
+            worldSun.transform.rotation = sunRotation;
+            worldSun.color = sunColor;
+            worldSun.intensity = e;            // VRChat forces lightsUseLinearIntensity = true -> Inspector = E (D-00)
+            if (!_sunTaken)
+            {
+                worldSun.cookie = sunCookie;
+                worldSun.cookieSize = sunCookieSize;
+                _sunTaken = true;
+            }
         }
 
         // ---- shafts: depth fade, F4p gather into the skylight, gone by 467.6
@@ -388,6 +405,17 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
         SetGain(bubblesSeats, under ? 1f : 0f);
         SetGain(ridge, t >= tF4 ? 1f : 0f);                        // its rim is the trails' light
         SetGain(warmPoint, Smooth((t - tF5) / Mathf.Max(warmFadeIn, 1e-3f)));
+    }
+
+    private void AllOff()
+    {
+        if (seaRenderer != null) seaRenderer.enabled = false;
+        if (dome != null) dome.enabled = false;
+        if (beam != null) beam.enabled = false;
+        if (shafts != null) shafts.enabled = false;
+        if (lastShaft != null) lastShaft.enabled = false;
+        SetGain(snow, 0f); SetGain(seeds, 0f); SetGain(trails, 0f); SetGain(bubblesGlass, 0f); SetGain(bubblesSeats, 0f);
+        SetGain(ridge, 0f); SetGain(warmPoint, 0f);
     }
 
     private void SetGain(Renderer r, float g)
