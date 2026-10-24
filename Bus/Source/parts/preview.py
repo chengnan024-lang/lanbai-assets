@@ -120,10 +120,10 @@ def camera(eye, target, hfov=64.0, res=(1280, 720)):
 PARTS = {
     # name: (builder, views {view: (eye, target)}, reference photos)
     'seat': dict(
-        build=lambda: SEAT.seat_module('SeatT', 0.12, 0.98, 1.0, double=False, wall_side=1)
-        + SEAT.seat_module('SeatD', -1.36, -0.40, 1.0, double=True, wall_side=-1)
-        + SEAT.seat_module('SeatB', 0.12, 0.98, 0.28, double=False, wall_side=1),
-        wall=1.0,
+        build=lambda: SEAT.seat_module('SeatT', 0.31, 0.79, 1.0, double=False, wall_side=1, wall_x=0.99)
+        + SEAT.seat_module('SeatD', -1.33, -0.43, 1.0, double=True, wall_side=-1, wall_x=-1.35)
+        + SEAT.seat_module('SeatB', 0.31, 0.79, 0.28, double=False, wall_side=1, wall_x=0.99),
+        wall=0.99,
         views={
             'overview_2m': ((-0.70, 1.75, 2.60), (0.20, 0.95, 0.90)),     # whole seats, for shape
             'back_0.7m': ((0.45, 1.70, 0.10), (0.55, 1.35, 0.80)),        # the seat back in front of you, 0.7 m

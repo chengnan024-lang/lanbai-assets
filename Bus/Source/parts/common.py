@@ -40,13 +40,17 @@ def apply_mods(ob):
 
 
 def cage_pad(name, lo, hi, m, collection='Seats', edge=0.03, n=(6, 3, 6), crown=(0.0, 0.0, 0.0, 0.0),
-             levels=2, roll_front=0.0, sag=0.0):
+             levels=2, roll_front=0.0, sag=0.0, lines=None, deform=None):
     """upholstered pad as a Catmull-Clark cage: a box lattice whose first interior lines sit 'edge' in from every face,
     so the subdivided surface rounds every edge with a radius of about 'edge' (a soft sewn edge, never a bevel facet).
     lo, hi: Unity box. n = interior divisions (x, y, z) of the middle span.
     crown = (top +y, front +z, back -z, sides +-x) bulges in metres (applied as a smooth bump on the cage).
     roll_front: the front-top edge rolls forward/down (a 'waterfall' cushion front), metres.
-    sag: the top dips in the middle of each half (worn seat), metres."""
+    sag: the top dips in the middle of each half (worn seat), metres.
+    lines: optional (X, Y, Z) explicit lattice coordinates (metres from the box centre, ascending, ends = +-half) -
+           extra lines where a seam / channel / dent needs them.
+    deform(face, i, j, k, x, y, z, half) -> (x, y, z): a last per-vertex shaping hook (metres from the centre);
+           face is a set of 'x-', 'x+', 'y-', 'y+', 'z-', 'z+' the vertex lies on."""
     lo, hi = np.array(lo, float), np.array(hi, float)
     c, half = (lo + hi) / 2, (hi - lo) / 2
 
@@ -55,9 +59,12 @@ def cage_pad(name, lo, hi, m, collection='Seats', edge=0.03, n=(6, 3, 6), crown=
         return np.concatenate([[-h], mid, [h]])
 
     ex, ey, ez = edge if isinstance(edge, (tuple, list)) else (edge, edge, edge)
-    X = axis_lines(half[0], n[0], min(ex, half[0] * 0.45))
-    Y = axis_lines(half[1], n[1], min(ey, half[1] * 0.45))
-    Z = axis_lines(half[2], n[2], min(ez, half[2] * 0.45))
+    if lines is not None:
+        X, Y, Z = (np.array(l, float) for l in lines)
+    else:
+        X = axis_lines(half[0], n[0], min(ex, half[0] * 0.45))
+        Y = axis_lines(half[1], n[1], min(ey, half[1] * 0.45))
+        Z = axis_lines(half[2], n[2], min(ez, half[2] * 0.45))
     bm = bmesh.new()
     vid = {}
 
@@ -78,6 +85,15 @@ def cage_pad(name, lo, hi, m, collection='Seats', edge=0.03, n=(6, 3, 6), crown=
             if roll_front and k >= len(Z) - 2 and j >= len(Y) - 2:
                 z += roll_front * 0.5
                 y -= roll_front
+            if deform is not None:
+                face = set()
+                if i == 0: face.add('x-')
+                if i == len(X) - 1: face.add('x+')
+                if j == 0: face.add('y-')
+                if j == len(Y) - 1: face.add('y+')
+                if k == 0: face.add('z-')
+                if k == len(Z) - 1: face.add('z+')
+                x, y, z = deform(face, i, j, k, x, y, z, half)
             vid[key] = bm.verts.new(BB.U2B(tuple(c + np.array([x, y, z]))))
         return vid[key]
 
@@ -207,3 +223,32 @@ def transform(objs, M):
     """apply a Blender-space 4x4 to objects (e.g. a backrest's recline)."""
     for o in objs:
         o.matrix_world = M @ o.matrix_world
+
+
+def resample(pts, step):
+    """a polyline resampled to ~'step' metre spacing (keeps the ends)."""
+    P = [np.array(p, float) for p in pts]
+    out = [P[0]]
+    for a, b in zip(P[:-1], P[1:]):
+        n = max(1, int(math.ceil(np.linalg.norm(b - a) / step)))
+        for k in range(1, n + 1):
+            out.append(a + (b - a) * k / n)
+    return out
+
+
+def drape(ob, pts, offset=0.0, from_y=3.0):
+    """drop each (x, ?, z) Unity point straight down onto the mesh 'ob' (its top surface); returns Unity points at the
+    hit + offset along y. Points that miss keep their y."""
+    from mathutils.bvhtree import BVHTree
+    M = ob.matrix_world
+    me = ob.data
+    bvh = BVHTree.FromPolygons([M @ v.co for v in me.vertices], [list(p.vertices) for p in me.polygons], all_triangles=False)
+    out = []
+    for p in pts:
+        o = Vector(BB.U2B((p[0], from_y, p[2])))
+        hit = bvh.ray_cast(o, Vector((0, 0, -1)), 10.0)
+        if hit[0] is None:
+            raise RuntimeError('drape: no surface under %s on %s' % (p, ob.name))
+        y = hit[0].z + offset
+        out.append((p[0], y, p[2]))
+    return out
