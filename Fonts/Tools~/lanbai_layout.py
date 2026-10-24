@@ -191,6 +191,10 @@ def block_box(objs, az):
                 el=[round(bot, 2), round(top, 2)], center=[az, round((top + bot) / 2, 2)])
 
 
+def hi_top(objs):
+    return max(o['top_el'] for o in objs)
+
+
 def block_layout(p, player, segs=None):
     """v4 (D-30): a poem shown as ONE single-language block at the main-line size (the original if it is in the player's
     language, else the translation into it). Exception Tianwen (picture): Han characters for everyone + the player's
@@ -234,6 +238,9 @@ def block_layout(p, player, segs=None):
         adj = EL_MAX - hi
     elif lo < EL_MIN:
         adj = EL_MIN - lo
+    if p.get('top_max') is not None and hi_top(build(shift + adj)) > p['top_max'] + 1e-9:
+        adj += p['top_max'] - hi_top(build(shift + adj))      # D-33 #2 (HeBo): a taller language moves down
+        objs = build(shift + adj)
     if adj and (p.get('picture') or p.get('anchor_top')):
         raise ValueError('%s/%s: the picture would have to move (%.2f°)' % (p['id'], player, adj))
     if adj:
@@ -515,6 +522,9 @@ def timing(p):
         t['line_cues'] = p['line_cues']
     if p.get('hold_note'):
         t['note'] = p['hold_note']
+    if p.get('bottom_min') is not None and str(p.get('exit', '')).upper().startswith('DOWN'):
+        t['exit_rule'] = ('D-33 #1：向下漂，漂到块底碰到挡风下沿（−15°）为止，在那之前淡尽；每个玩家的最大漂移 = '
+                          'block.el[0] − (−15°)（layout.exit_max_drift_deg）')
     if p['id'] == 'P09_Tianwen':
         # §7.4-4 / §7.5 #8: per-character focus, 0.6 s each, 120 ms apart over the 16 Han characters (punctuation
         # rides with the character before it) -> the main line is settled 2.4 s after t_appear
@@ -528,6 +538,8 @@ def timing(p):
 def poem_layout(p, player, segs=None):
     lay = zhuangzi_layout(p, player) if p.get('mirror') else block_layout(p, player, segs)
     lay['timing'] = timing(p)
+    if p.get('bottom_min') is not None:
+        lay['exit_max_drift_deg'] = round(lay['block']['el'][0] + 15.0, 2)
     return decorate(lay, p)
 
 
@@ -537,6 +549,33 @@ def all_layouts():
     for p in L.POEMS:
         out[p['id']] = {pl: poem_layout(p, pl) for pl in PLAYERS}
     return out
+
+
+def placement_check(layouts):
+    """D-33 constraints per poem (place_note): az_min / az_range / bottom_min / top_max / line_max_deg. Returns rows of
+    violations (empty = PASS). The real-bus ray check is block_viewcheck.py."""
+    bad = []
+    P = {p['id']: p for p in L.POEMS}
+    for pid, per in layouts.items():
+        p = P[pid]
+        for pl, lay in per.items():
+            b = lay['block']
+            msgs = []
+            if p.get('az_min') is not None and b['az'][0] < p['az_min'] - 1e-6:
+                msgs.append('left edge %+.2f° < %+.1f°' % (b['az'][0], p['az_min']))
+            if p.get('az_range') and (b['az'][0] < p['az_range'][0] - 1e-6 or b['az'][1] > p['az_range'][1] + 1e-6):
+                msgs.append('azimuth %s outside %s' % (b['az'], list(p['az_range'])))
+            if p.get('bottom_min') is not None and b['el'][0] < p['bottom_min'] - 1e-6:
+                msgs.append('bottom %+.2f° < %+.1f°' % (b['el'][0], p['bottom_min']))
+            if p.get('top_max') is not None and b['el'][1] > p['top_max'] + 1e-6:
+                msgs.append('top %+.2f° > %+.1f°' % (b['el'][1], p['top_max']))
+            if p.get('line_max_deg') is not None:
+                w = max(max(o['width_deg']) for o in lay['objects'])
+                if w > p['line_max_deg'] + 1e-6:
+                    msgs.append('line %.2f° > %.1f°' % (w, p['line_max_deg']))
+            if msgs:
+                bad.append(dict(poem=pid, player=pl, problems=msgs))
+    return bad
 
 
 def vertical_check(layouts):

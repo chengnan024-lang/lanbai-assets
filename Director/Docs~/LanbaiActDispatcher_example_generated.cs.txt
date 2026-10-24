@@ -37,7 +37,7 @@ using UnityEngine;
 [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class LanbaiActDispatcher : UdonSharpBehaviour
 {
-    [Header("Read by LB_Journey (extWindows): every driver window, flattened t0, t1, t0, t1, ...")]
+    [Header("Every driver window, flattened t0, t1, ...: for the old placeholder groups (LanbaiCovered). Takeover switches: v1.1 below")]
     public float[] windowsFlat = new float[0];
     [Header("v1.1: windows of the drivers that write RenderSettings (atmosphere) / the main light (sun); read by LB_Journey")]
     public float[] atmosphereWindowsFlat = new float[0];

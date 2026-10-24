@@ -507,6 +507,43 @@ for pid, per in LAYOUTS.items():
                 width_lines.append('  %5.1f°%s  %-4s %-11s %-5s %s' % (w, ' OVER' if w > 28.0 else '     ', o['lang'], o['role'], str(o['size_deg']) + '°', ln))
 width_lines.insert(1, 'widest line: %.1f° -> %s' % (worst, 'PASS' if worst <= 28.0 else 'FAIL'))
 
+# D-33 #5: placement constraints, then every block against the REAL bus (pkg/bus build_bus + viewcheck rays)
+place_bad = LY.placement_check(LAYOUTS)
+for r in place_bad:
+    print('PLACEMENT FAIL %s/%s: %s' % (r['poem'], r['player'], '; '.join(r['problems'])))
+import block_viewcheck as BV
+import subprocess, tempfile
+BUS_DIR = os.environ.get('LANBAI_BUS_DIR')
+BUS_REF = os.environ.get('LANBAI_BUS_REF', 'origin/pkg/bus')
+if not BUS_DIR:
+    # the bus's geometry is pkg/bus's latest (D-33 #5): export Bus/ from that ref of this repository
+    BUS_DIR = tempfile.mkdtemp(prefix='lanbai_bus_')
+    repo = os.path.normpath(os.path.join(KIT, '..'))
+    arch = subprocess.run(['git', '-C', repo, 'archive', BUS_REF, 'Bus'], capture_output=True)
+    if arch.returncode != 0:
+        sys.exit('VIEWCHECK: cannot read %s (git fetch origin pkg/bus, or set LANBAI_BUS_DIR): %s' % (BUS_REF, arch.stderr.decode()[:200]))
+    subprocess.run(['tar', '-x', '-C', BUS_DIR], input=arch.stdout, check=True)
+    BUS_SRC = '%s (%s)' % (BUS_REF, subprocess.run(['git', '-C', repo, 'rev-parse', '--short', BUS_REF], capture_output=True, text=True).stdout.strip())
+else:
+    BUS_SRC = BUS_DIR
+VIEW = BV.run(LAYOUTS, BUS_DIR)
+view_lines = ['Every block of every player against the real bus (%s; Bus/Source/build_bus.py + viewcheck.cast, rays every %.1f°, '
+              'clearance ring %.2f° steps up to %.1f°). FAIL = a ray inside the block hits an opaque part.' % (
+                  BUS_SRC, BV.STEP, BV.RING, BV.MAX_CLEAR), '']
+view_fail = []
+for pid, per in VIEW.items():
+    P_ = next(p for p in L.POEMS if p['id'] == pid)
+    ex = P_.get('viewcheck_exempt')
+    for pl, r in per.items():
+        r['exempt'] = ex if (ex and not r['ok']) else None
+        st = 'ok' if r['ok'] else ('EXEMPT' if ex else 'FAIL')
+        if st == 'FAIL':
+            view_fail.append('%s/%s' % (pid, pl))
+        view_lines.append('%-24s %-3s %-6s hits %-40s clearance %s%s' % (pid, pl, st, ','.join(r['hits'][:5]) or '-', r['clearance_deg'],
+                                                                      (' (%s)' % r['clear_hit']) if r['clear_hit'] else ''))
+view_ok = not view_fail
+view_lines.insert(1, 'viewcheck: %s%s' % ('PASS' if view_ok else 'FAIL', '' if view_ok else ' — ' + ', '.join(view_fail)))
+
 # block table (D-30: each act package places the poem with it; the bus re-checks Rilke's D-13 position with it)
 block_rows = []
 for q in poems_out:
@@ -514,7 +551,7 @@ for q in poems_out:
         b = lay['block']
         block_rows.append(dict(poem=q['id'], player=pl, shown=lay['shown'], shown_lang=lay['shown_lang'], sub_line=lay['translation'],
                                size_deg=lay['objects'][0]['size_deg'], lines=sum(len(o['lines']) for o in lay['objects'] if o['role'] != 'mirror'),
-                               **b))
+                               viewcheck=VIEW[q['id']][pl], **b))
 
 # ------------------------------------------------------------------ colour: screen target -> fill (verify r2 B.1)
 SIMINFO = LC.sim_info()
@@ -728,6 +765,8 @@ with open(os.path.join(DOCS, 'build_report.txt'), 'w', encoding='utf-8') as f:
     f.write('== TIMING (bible v2.1 §7.5) ==\n' + '\n'.join(time_lines) + '\n\n')
     f.write('== SCRIM GEOMETRY ==\n' + '\n'.join(scr_lines) + '\n\n')
     f.write('== VERTICAL PLACEMENT ==\n' + '\n'.join(vert_lines) + '\n\n')
+    f.write('== VIEWCHECK (D-33 #5) ==\n' + '\n'.join(view_lines) + '\n\n')
+    f.write('== PLACEMENT (D-33) ==\n' + ('PASS' if not place_bad else '\n'.join('FAIL %s/%s: %s' % (r['poem'], r['player'], '; '.join(r['problems'])) for r in place_bad)) + '\n\n')
     f.write('== LINE WIDTHS ==\n' + '\n'.join(width_lines) + '\n\n')
     f.write('== BLOCKS (v4: width x height per poem and player) ==\n' + '\n'.join(
         '%-24s %-3s %-5s %4.2f°  %2d lines  %6.2f° x %5.2f°  az %s  el %s' % (r['poem'], r['player'], r['shown'], r['size_deg'], r['lines'],
@@ -751,3 +790,7 @@ print('\n'.join(opt_lines))
 print('\n'.join(col_lines))
 print('\n'.join(time_lines))
 print('\n'.join(scr_lines))
+print('\n'.join(view_lines))
+if place_bad or not view_ok:
+    sys.exit('BUILD FAILED: %d placement problem(s), viewcheck %s (strings_all.json and the report are written so you can look)' % (
+        len(place_bad), 'PASS' if view_ok else 'FAIL: ' + ', '.join(view_fail)))

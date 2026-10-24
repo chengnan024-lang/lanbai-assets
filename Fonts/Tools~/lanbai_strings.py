@@ -163,7 +163,7 @@ POEMS = [
                  en=['I would dream my way to Wu and Yue,']),
              seg(['一夜飞度镜湖月'],
                  ja=['一夜飛んで度る鏡湖の月'],
-                 en=['and in one night fly across', 'the moon on Mirror Lake.']),
+                 en=['and in one night fly across', 'the moon on Mirror Lake']),
          ]),
     dict(id='P04a_Rilke', scene='3c', bible='§7.5 #2 / §6·4',
          source='Rainer Maria Rilke, Duineser Elegien I (1923)', source_en='Rilke, Duino Elegies I',
@@ -251,7 +251,7 @@ POEMS = [
              seg(['天之苍苍，其正色邪？'], ja=['天の蒼蒼たるは', '其れ正色なるか'],
                  en=['The sky, so blue, so blue —', 'is that its true colour?'], t='971.4', upright='above', label='L1'),
              seg(['其视下也，亦若是则已矣'], ja=['其の下を視るや', '亦た是くの若くならんのみ'],
-                 en=['Looking down from there,', 'it would be just the same.'], t='976.4', upright='below', label='L3',
+                 en=['Looking down from there,', 'it would be just the same'], t='976.4', upright='below', label='L3',
                  note='upright copy BELOW the horizon, mirror copy above'),
          ]),
     dict(id='P09_Tianwen', scene='9a', bible='§7.5 #8 / §6·9',
@@ -291,7 +291,7 @@ POEMS = [
          treatment='与第 3 幕李白同一处（一开一合）', staging='together',
          segments=[
              seg(['惟觉时之枕席'], ja=['惟だ覚めし時の枕席のみ'], en=['Only the pillow and mat of waking —']),
-             seg(['失向来之烟霞'], ja=['向来の煙霞を失ふ'], en=['lost, the mists and rosy clouds of before.']),
+             seg(['失向来之烟霞'], ja=['向来の煙霞を失ふ'], en=['lost, the mists and rosy clouds of before']),
          ]),
     dict(id='P12b_Keats', scene='12', bible='§7.5 #11 / §6·12',
          source='John Keats, Ode to a Nightingale (1819), last line', source_en='Keats, Ode to a Nightingale',
@@ -327,6 +327,44 @@ for p in POEMS:
     p['size_cjk'], p['size_lat'], note = V4[p['id']]
     if note:
         p['size_note'] = note
+    # D-33 (main b14e579): blocks measured against the REAL bus (block_viewcheck.py)
+    if p['id'] in ('P06_Dream_Dawn', 'P08a_Dream_Dusk'):
+        # #1: the two dream lines rhyme -> still one place: azimuth -2°, TOP edge at -4° (was -15° / -12°: radio, centre
+        # post, the ja third line under the windscreen's lower edge). Block bottom >= -14.5°; 6d's downward exit drifts
+        # until the bottom would touch -15° and is faded out before that (exit_max_drift_deg)
+        p['place'] = (-2, -4, p['place'][2])
+        p['anchor_top'] = True
+        p['place_note'] = 'D-33 #1：方位 −2°、顶边对齐在 −4°（两句同一处）；块底 ≥ −14.5°，离收音机 ≥ 1°'
+        p['bottom_min'] = -14.5
+        p['az_range'] = (-22.5, 16.5)
+    if p['id'] == 'P07_HeBo':
+        # #2: centre azimuth +6.5° (13.5° from the hall gate at -7°), every line <= 19.5° (right edge <= +16.5°),
+        # top <= +10° (the block moves down when a language is taller)
+        p['place'] = (6.5, p['place'][1], p['place'][2])
+        p['top_max'] = 10.0
+        p['line_max_deg'] = 19.5
+        p['az_range'] = (-22.5, 16.5)
+        p['place_note'] = 'D-33 #2：中心方位 +6.5°；每行 ≤ 19.5°；顶 ≤ +10°（高的语言整块往下挪）'
+    if p['id'] in ('P03_LiBai_Dream', 'P12a_LiBai_Wake', 'P12b_Keats'):
+        # #3: the side-window poems: centre azimuth +61°, elevation unchanged; block left edge >= +48.5° (door stack to
+        # +46.9°, door post +40.7…+43.3°, side window from +45.5°)
+        p['place'] = (61, p['place'][1], p['place'][2])
+        p['az_min'] = 48.5
+        p['place_note'] = 'D-33 #3：中心方位 +61°，仰角不变；左沿 ≥ +48.5°'
+    if p['id'] == 'P08b_Zhuangzi_Xiaoyao':
+        # #4: indigo ink #27304A (bible §6·8, AD 10-07), no dark scrim (#EADCD6 + dark scrim withdrawn)
+        p['color_target'] = '#27304A'
+        p['scrim'] = None
+        p['color_note'] = 'D-33 #4：靛墨 #27304A（圣经 §6·8，AD 10-07），不加暗衬；#EADCD6 + 暗衬作废'
+        # a dark ink over a bright sky at 90 % reads 39 codes too light in Unity's linear blend (luma 77 for 48): the same
+        # reason as 6d (verify r3 MAJOR 3, law 1) -> the upright lines at 1.00, the mirrors at 0.5 (half of it)
+        p['opacity'] = 1.00
+        p['opacity_note'] = ('不透明度 1.00（不是 §7.2 的 90%）：靛墨写在亮的暮天上，90% 时 Unity 线性混合读出 luma 77（目标 48，差 39 码），'
+                             '和晨句同一个道理（法律第 1 条）。镜像字 0.5')
+        # +35° / 0° / 60 m (the key frame, never follows the gaze) crosses the folded door stack (+36.4…+46.9°) of the
+        # INTACT bus; in 8-ii the cabin is eroded (bible §4.8). Not in D-33's list: reported, not moved, until the
+        # director / the bus say what is left of the door at 971 s
+        p['viewcheck_exempt'] = '待总导演 / 车定：8-ii 时车厢已侵蚀，门叠还剩多少（D-33 没列这首）'
     if p['id'] == 'P08b_Zhuangzi_Xiaoyao':
         # the ja column (2 + 2 lines, mirrored about the horizon) is 4.8 em from the horizon to L1's centre: at 2.2°
         # L1 would sit at +10.56°, over §7.3's "never above +10°". 2.08° puts it at +9.98°. 0.12° under D-30's 2.2°.
@@ -349,12 +387,14 @@ V4_LINES = {
     ('P03_LiBai_Dream', 1, 'ja'): ['一夜飛んで度る', '鏡湖の月'],
     ('P07_HeBo', 0, 'en'): ['Houses of fish-scale,', 'halls of dragons,'],
     ('P07_HeBo', 1, 'en'): ['purple-shell gates,', 'a vermilion palace —'],
-    ('P07_HeBo', 2, 'en'): ['O spirit, why do you dwell', 'in the water?'],
+    ('P07_HeBo', 2, 'en'): ['O spirit, why do you', 'dwell in the water?'],                   # D-33 #2: <= 19.5°
+    ('P07_HeBo', 0, 'ja'): ['魚鱗の屋、龍の堂'],
+    ('P07_HeBo', 2, 'ja'): ['霊何為れぞ', '水中にある'],                                       # D-33 #2
     ('P08a_Dream_Dusk', 0, 'ja'): ['深い海から', 'もうひとつの空へ', '墜ちた'],
     ('P08b_Zhuangzi_Xiaoyao', 1, 'ja'): ['其の下を視るや亦た', '是くの若くならんのみ'],
     ('P12a_LiBai_Wake', 0, 'ja'): ['惟だ覚めし時の', '枕席のみ'],
     ('P12a_LiBai_Wake', 0, 'en'): ['Only the pillow and mat', 'of waking —'],
-    ('P12a_LiBai_Wake', 1, 'en'): ['lost, the mists', 'and rosy clouds of before.'],
+    ('P12a_LiBai_Wake', 1, 'en'): ['lost, the mists', 'and rosy clouds of before'],
 }
 for (pid, i, key), lines in V4_LINES.items():
     p_ = next(q for q in POEMS if q['id'] == pid)

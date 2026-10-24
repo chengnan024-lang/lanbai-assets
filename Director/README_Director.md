@@ -16,7 +16,7 @@
    ```
    **接管开关（v1.1，2026-10-24）**：分发层按“这个驱动写什么”分开给窗口——
    ```csharp
-   bool atm = dispatcher != null && extAtmosphere && dispatcher.LanbaiCoversAtmosphere(t);  // 这一帧不写 RenderSettings 的雾 / 环境色
+   bool atm = extAtmosphere && dispatcher != null && dispatcher.LanbaiCoversAtmosphere(t);  // 这一帧不写 RenderSettings 的雾 / 环境色
    bool sun = dispatcher != null && extSun && dispatcher.LanbaiCoversSun(t);               // 这一帧不写主光
    ```
    （数组版：`atmosphereWindowsFlat`、`sunWindowsFlat`，t0, t1 成对。）**不要再用 `windowsFlat` / `LanbaiCovered(t)` 做接管开关**：那是所有驱动的窗口并起来，里面有不写 RenderSettings 的驱动（天空默认、门、第 9 幕），照它让出去那几段就没人写了（`Engineering/README_集成.md` §3）。它们只留给“关掉旧占位组”用。

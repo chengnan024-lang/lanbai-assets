@@ -786,11 +786,11 @@ def header(width, title, sub):
              'bloom 检查（圣经的 PPv2 bloom 模型，1080p）· 物体中心仰角（§7.3：+10° .. −15°）· 紫的面积（§1.3.4：第 4 幕以外 ≤ 2%）· 光学居中。']
     f = capfont(18)
     n = sum(len(wrap_text(t, f, width - 80)) for t in notes)
-    im = Image.new('RGB', (width, 130 + 28 * n + 12), (12, 14, 19))
+    im = Image.new('RGB', (width, 210 + 28 * n + 12), (12, 14, 19))
     d = ImageDraw.Draw(im)
-    d.text((40, 28), '蓝白 / Lanbai · 诗句校样第 4 版（D-30：只显示自己的语言）· ' + title, font=capfont(40), fill=(226, 230, 236))
-    d.text((40, 90), sub, font=capfont(20), fill=(170, 176, 188))
-    y = 126
+    y = draw_wrapped(d, 40, 22, '蓝白 / Lanbai · 诗句校样第 4 版（D-30 / D-33）· ' + title, capfont(36), (226, 230, 236), width - 80, 46)
+    y = draw_wrapped(d, 40, y + 6, sub, capfont(20), (170, 176, 188), width - 80, 28)
+    y += 6
     for t in notes:
         y = draw_wrapped(d, 40, y, t, f, (130, 138, 150), width - 80, 28)
     return im
@@ -854,21 +854,18 @@ def trilingual():
     times = (1.5, 5.5, t_fin, 19.6)
     strip = [zhuangzi_view(p, 'en', fppd, fw, t=tt, az_c=-14.0 + span / 2, half=15.5, label=True, annotate=True)
              for tt in times]
-    top = 230
+    top = 300
     H = (top + pano.height + 70 + finals[0][0].height + 70 + 2 * (strip[0][0].height + 66) + 150)
     sh = Image.new('RGB', (W, H), (12, 14, 19))
     d = ImageDraw.Draw(sh)
-    d.text((gap + 10, 30), '蓝白 · 全世界的论点之帧：庄子《逍遥游》在暮色的另一片天里（圣经 v2.1 §6·8、§7.3、§7.4-7、§7.5 #7）',
-           font=capfont(44), fill=(226, 230, 236))
-    y_ = 100
+    y_ = draw_wrapped(d, gap + 10, 26, '蓝白 · 全世界的论点之帧：庄子《逍遥游》在暮色的另一片天里（圣经 v2.1 §6·8、§7.3、§7.4-7、§7.5 #7；D-33）',
+                      capfont(40), (226, 230, 236), W - 2 * gap - 20, 50) + 10
     pmax = 100 * max(f[3] for f in finals + strip + [(0, 0, 0, pv_pano)])
     for t in ['v2.1：只出 L1「天之苍苍，其正色邪？」（971.4）与 L3「其视下也，亦若是则已矣」（976.4，正字在地平线下，低头读）；L2 不出。'
               '第 4 版（D-30）：镜像的是每位玩家自己的语言（中文玩家原文、日文玩家書き下し、其余英文）；一列等距，地平线在正中那道缝里——上：L1、L3′（倒）；下：L3、L1′。排版恰好在“往下看与往上看一样”这一行上翻转。'
               '不再有译文字幕位。两行一起保持到 989.0，989.0 → 993.0 与 F12 的日线收缩同步退场：线横着收拢，字竖着分开。',
-              '暖色细括号 = 日线 ±10°（§6·8b）；蓝色虚线 = 暗衬在 Unity 里的实际外缘（strings_all.json 的 azimuth_span_deg = 2·atan(width_m / 2d)），'
-              '英语玩家的外缘在方位 %.1f°，离日线端 %.1f°（三种语言里最近的是 %.1f°，规定 ≥ 2°）：没有任何衬底压到日线上（§6·8“永远不压在日线上”）。背景按 §1.3.4 去紫（全图最大紫 %.2f%%，上限 2%%）。' % (
-                  min(sc['azimuth_span_deg'][0] for sc in lay_p['scrims']), min(sc['azimuth_span_deg'][0] for sc in lay_p['scrims']) - 10.0,
-                  min(sc['azimuth_span_deg'][0] - 10.0 for f in finals for sc in f[1]['scrims']), pmax)]:
+              '第 4 版（D-33 #4）：字是靛墨 #27304A，不加暗衬（原来的 #EADCD6 + 暗衬作废）。暖色细括号 = 日线 ±10°（§6·8b）。'
+              '背景按 §1.3.4 去紫（全图最大紫 %.2f%%，上限 2%%）。' % pmax]:
         y_ = draw_wrapped(d, gap + 10, y_, t, capfont(22), (160, 168, 180), W - 2 * gap - 20, 34)
     y = top
     sh.paste(pano, (gap, y))

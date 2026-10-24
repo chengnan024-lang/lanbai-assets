@@ -1,4 +1,4 @@
-Lanbai Fonts kit build report  2026-10-24 06:35 UTC
+Lanbai Fonts kit build report  2026-10-24 10:55 UTC
 
 == SUBSETS (original -> subset) ==
 SourceHanSerifSC-Regular       SourceHanSerifCN-Regular.otf       11626108 B -> LanbaiSerifSC-Regular.otf                   77332 B  ( 0.67%)  glyphs 366  renamed Lanbai Serif SC (RFN Source); U+2014 -> full-width mid-line rule (glyph of U+2500)
@@ -76,7 +76,7 @@ Optical offsets (em, move the line RIGHT) where the ink centre is off the TMP bo
   +0.204 em  SourceHanSerifTW-Regular   我不肯被拒之門外！
   +0.181 em  SourceHanSerifJP-Regular   いいえ！
   +0.177 em  SourceHanSerifJP-Regular   わたしは引き下がらなかった！
-  +0.068 em  SourceHanSerifJP-Regular   霊何為れぞ水中にある
+  +0.076 em  SourceHanSerifJP-Regular   水中にある
   -0.082 em  SourceHanSerifSC-Regular   自深海坠入另一片天空
   -0.081 em  SourceHanSerifTW-Regular   自深海墜入另一片天空
   -0.070 em  SourceHanSerifJP-Regular   もうひとつの空へ
@@ -115,14 +115,13 @@ P06_Dream_Dawn           S6             target #1F2A3A (luma  40.8) -> fill #2F3
                          S6             scrim #E8F1F5 a0.25 -> fill #DFF4FF @ +1.90    -> screen #E8F1F5  x_T0 1.585  bloom share 0.03596 opaque / 0.00000@a0.25
 P07_HeBo                 S7b            target #D9E2E7 (luma 224.4) -> fill #F2FDFF @ +0.60    -> screen #D9E2E7  x_T0 0.976  bloom share 0.00000 / 0.00000@a0.90  ok   [naive: #C0C7CF luma 198]
 P08a_Dream_Dusk          S7b            target #EADCD6 (luma 222.5) -> fill #FFD9C4 @ +0.92    -> screen #EADCD6  x_T0 1.222  bloom share 0.00671 / 0.00151@a0.90  ok   [naive: #C5C6CB luma 198]
-P08b_Zhuangzi_Xiaoyao    S8             target #EADCD6 (luma 222.5) -> fill #FFE5E0 @ +1.00    -> screen #EADCD6  x_T0 1.064  bloom share 0.00064 / 0.00000@a0.90  ok   [naive: #C5BDB8 luma 190]
-                         S8             scrim #0E1A2F a0.30 -> fill #182238            -> screen #0E1A2F  x_T0 0.021  bloom share 0.00000 opaque / 0.00000@a0.30
+P08b_Zhuangzi_Xiaoyao    S8             target #27304A (luma  48.0) -> fill #333C58            -> screen #27304A  x_T0 0.052  bloom share 0.00000 / 0.00000@a1.00  ok   [naive: #5F667C luma 102]
 P09_Tianwen              S9a            target #D9E2E7 (luma 224.4) -> fill #EBF9FA            -> screen #D9E2E7  x_T0 0.963  bloom share 0.00000 / 0.00000@a0.90  ok   [naive: #DADFE5 luma 222]
 P11_Zhuangzi_Butterfly   S11            target #E0D6C4 (luma 214.8) -> fill #FFE1AE @ +0.50    -> screen #E0D6C4  x_T0 0.969  bloom share 0.00000 / 0.00000@a0.80  ok   [naive: #CBCAC9 luma 202]
 P12a_LiBai_Wake          S12            target #D9E2E7 (luma 224.4) -> fill #E6F9FF @ +0.40    -> screen #D9E2E7  x_T0 1.001  bloom share 0.00000 / 0.00000@a0.90  ok   [naive: #CED2D7 luma 210]
 P12b_Keats               S12            target #D9E2E7 (luma 224.4) -> fill #E6F9FF @ +0.40    -> screen #D9E2E7  x_T0 1.001  bloom share 0.00000 / 0.00000@a0.90  ok   [naive: #CED2D7 luma 210]
 
-materials (Editor/LanbaiPoemMaterials.cs builds them): 47
+materials (Editor/LanbaiPoemMaterials.cs builds them): 46
   Lanbai_SerifSC_Regular SDF - P03_LiBai_Dream               tmp_face  S2→S3@0.299    #E2DDD4 -> #FFEECE @ +0.73
   Lanbai_SerifTC_Regular SDF - P03_LiBai_Dream               tmp_face  S2→S3@0.299    #E2DDD4 -> #FFEECE @ +0.73
   Lanbai_SerifJP_Regular SDF - P03_LiBai_Dream               tmp_face  S2→S3@0.299    #E2DDD4 -> #FFEECE @ +0.73
@@ -150,11 +149,10 @@ materials (Editor/LanbaiPoemMaterials.cs builds them): 47
   Lanbai_SerifTC_Regular SDF - P08a_Dream_Dusk               tmp_face  S7b            #EADCD6 -> #FFD9C4 @ +0.92
   Lanbai_SerifJP_Regular SDF - P08a_Dream_Dusk               tmp_face  S7b            #EADCD6 -> #FFD9C4 @ +0.92
   Lanbai_Garamond_Regular SDF - P08a_Dream_Dusk              tmp_face  S7b            #EADCD6 -> #FFD9C4 @ +0.92
-  Lanbai_SerifSC_Regular SDF - P08b_Zhuangzi_Xiaoyao         tmp_face  S8             #EADCD6 -> #FFE5E0 @ +1.00
-  Lanbai_SerifTC_Regular SDF - P08b_Zhuangzi_Xiaoyao         tmp_face  S8             #EADCD6 -> #FFE5E0 @ +1.00
-  Lanbai_SerifJP_Regular SDF - P08b_Zhuangzi_Xiaoyao         tmp_face  S8             #EADCD6 -> #FFE5E0 @ +1.00
-  Lanbai_Garamond_Regular SDF - P08b_Zhuangzi_Xiaoyao        tmp_face  S8             #EADCD6 -> #FFE5E0 @ +1.00
-  Lanbai_Scrim_Dark_S8                                       scrim     S8             #0E1A2F -> #182238
+  Lanbai_SerifSC_Regular SDF - P08b_Zhuangzi_Xiaoyao         tmp_face  S8             #27304A -> #333C58
+  Lanbai_SerifTC_Regular SDF - P08b_Zhuangzi_Xiaoyao         tmp_face  S8             #27304A -> #333C58
+  Lanbai_SerifJP_Regular SDF - P08b_Zhuangzi_Xiaoyao         tmp_face  S8             #27304A -> #333C58
+  Lanbai_Garamond_Regular SDF - P08b_Zhuangzi_Xiaoyao        tmp_face  S8             #27304A -> #333C58
   Lanbai_SerifSC_Regular SDF - P09_Tianwen                   tmp_face  S9a            #D9E2E7 -> #EBF9FA
   Lanbai_SerifJP_Medium SDF - P09_Tianwen                    tmp_face  S9a            #D9E2E7 -> #EBF9FA
   Lanbai_Garamond_Regular SDF - P09_Tianwen                  tmp_face  S9a            #D9E2E7 -> #EBF9FA
@@ -181,8 +179,7 @@ cross-check 2 — every fill through the Grading kit's ENGINE model (real PPv2 N
   Lanbai_Scrim_Light_S6          S6               target #E8F1F5 -> engine #E8F1F5  0
   P07_HeBo                       S7b              target #D9E2E7 -> engine #DCE3E7  3
   P08a_Dream_Dusk                S7b              target #EADCD6 -> engine #ECDCD4  2
-  P08b_Zhuangzi_Xiaoyao          S8               target #EADCD6 -> engine #EADCD6  0
-  Lanbai_Scrim_Dark_S8           S8               target #0E1A2F -> engine #0E1A2F  0
+  P08b_Zhuangzi_Xiaoyao          S8               target #27304A -> engine #27304A  0
   P09_Tianwen                    S9a              target #D9E2E7 -> engine #DBE3E6  2
   P11_Zhuangzi_Butterfly         S11              target #E0D6C4 -> engine #E1D6C4  1
   P12a_LiBai_Wake                S12              target #D9E2E7 -> engine #DAE2E7  1
@@ -208,26 +205,14 @@ Scrim quads: width_m = 2 d tan(width_deg / 2) (was d tan(width_deg): 8-27 %% too
 Zhuangzi: outer edge >= 10° + 2° from the sun (az 0) so no scrim reaches the ±10° sun line (§6·8).
 scrim geometry: PASS
 
-P06_Dream_Dawn           zh     block  design  39.31° x  5.71°  ->   28.575 m x  3.991 m  ->  Unity  39.31° x  5.71°  az [-34.66, 4.66]  ok
-P06_Dream_Dawn           ja     block  design  34.56° x 12.24°  ->   24.887 m x  8.578 m  ->  Unity  34.56° x 12.24°  az [-32.28, 2.28]  ok
-P06_Dream_Dawn           en     block  design  28.17° x 10.35°  ->   20.072 m x  7.243 m  ->  Unity  28.17° x 10.35°  az [-29.08, -0.92]  ok
-P08b_Zhuangzi_Xiaoyao    zh     L1     design  45.20° x  7.04°  ->   49.951 m x  7.382 m  ->  Unity  45.20° x  7.04°  az [12.4, 57.6]  ok
-P08b_Zhuangzi_Xiaoyao    zh     L1′    design  45.20° x  7.04°  ->   49.951 m x  7.382 m  ->  Unity  45.20° x  7.04°  az [12.4, 57.6]  ok
-P08b_Zhuangzi_Xiaoyao    zh     L3     design  46.00° x  7.04°  ->   50.937 m x  7.382 m  ->  Unity  46.00° x  7.04°  az [12.0, 58.0]  ok  [width clamped 49.60° -> 46.00° so the outer edge stays 2° clear of the ±10° sun line (§6·8; verify r2 B.2); the text ends sit 0.55° into the taper (alpha x 0.993)]
-P08b_Zhuangzi_Xiaoyao    zh     L3′    design  46.00° x  7.04°  ->   50.937 m x  7.382 m  ->  Unity  46.00° x  7.04°  az [12.0, 58.0]  ok  [width clamped 49.60° -> 46.00° so the outer edge stays 2° clear of the ±10° sun line (§6·8; verify r2 B.2); the text ends sit 0.55° into the taper (alpha x 0.993)]
-P08b_Zhuangzi_Xiaoyao    ja     L1     design  30.25° x  9.98°  ->   32.440 m x 10.482 m  ->  Unity  30.25° x  9.98°  az [19.87, 50.13]  ok
-P08b_Zhuangzi_Xiaoyao    ja     L1′    design  30.25° x  9.98°  ->   32.440 m x 10.482 m  ->  Unity  30.25° x  9.98°  az [19.87, 50.13]  ok
-P08b_Zhuangzi_Xiaoyao    ja     L3     design  42.73° x  9.98°  ->   46.948 m x 10.482 m  ->  Unity  42.73° x  9.98°  az [13.63, 56.37]  ok
-P08b_Zhuangzi_Xiaoyao    ja     L3′    design  42.73° x  9.98°  ->   46.948 m x 10.482 m  ->  Unity  42.73° x  9.98°  az [13.63, 56.37]  ok
-P08b_Zhuangzi_Xiaoyao    en     L1     design  38.89° x  8.10°  ->   42.366 m x  8.496 m  ->  Unity  38.89° x  8.10°  az [15.55, 54.45]  ok
-P08b_Zhuangzi_Xiaoyao    en     L1′    design  38.89° x  8.10°  ->   42.366 m x  8.496 m  ->  Unity  38.89° x  8.10°  az [15.55, 54.45]  ok
-P08b_Zhuangzi_Xiaoyao    en     L3     design  38.30° x  8.10°  ->   41.673 m x  8.496 m  ->  Unity  38.30° x  8.10°  az [15.85, 54.15]  ok
-P08b_Zhuangzi_Xiaoyao    en     L3′    design  38.30° x  8.10°  ->   41.673 m x  8.496 m  ->  Unity  38.30° x  8.10°  az [15.85, 54.15]  ok
+P06_Dream_Dawn           zh     block  design  39.31° x  5.71°  ->   28.575 m x  3.991 m  ->  Unity  39.31° x  5.71°  az [-21.66, 17.66]  ok
+P06_Dream_Dawn           ja     block  design  34.56° x 12.24°  ->   24.887 m x  8.578 m  ->  Unity  34.56° x 12.24°  az [-19.28, 15.28]  ok
+P06_Dream_Dawn           en     block  design  28.17° x 10.35°  ->   20.072 m x  7.243 m  ->  Unity  28.17° x 10.35°  az [-16.08, 12.08]  ok
 
 == VERTICAL PLACEMENT ==
 Every text object's centre elevation (bible §7.3: never above +10°, never below -15°). Blocks sit at the §7.5 elevation unless that would push an object out of range; then shifted (shift column).
 vertical: PASS
-blocks shifted to respect the range: none
+blocks shifted to respect the range: P07_HeBo/de -3.73°, P07_HeBo/en -3.73°, P07_HeBo/ja -2.38°, P07_HeBo/zh -0.62°, P07_HeBo/zht -0.62°
 
 P03_LiBai_Dream
   zh           main         centre   -9.00°   top   -5.88°   bottom  -12.12°   shift +0.00°  ok
@@ -251,25 +236,25 @@ P04b_Urlicht
   de           main         centre   -8.00°   top   -5.90°   bottom  -10.10°   shift +0.00°  ok
 
 P06_Dream_Dawn
-  zh           main         centre  -12.00°   top  -10.80°   bottom  -13.20°   shift +0.00°  ok
-  zht          main         centre  -12.00°   top  -10.80°   bottom  -13.20°   shift +0.00°  ok
-  ja           main         centre  -12.00°   top   -8.88°   bottom  -15.12°   shift +0.00°  ok
-  en           main         centre  -12.00°   top   -9.44°   bottom  -14.56°   shift +0.00°  ok
-  de           main         centre  -12.00°   top   -9.44°   bottom  -14.56°   shift +0.00°  ok
+  zh           main         centre   -5.20°   top   -4.00°   bottom   -6.40°   shift +0.00°  ok
+  zht          main         centre   -5.20°   top   -4.00°   bottom   -6.40°   shift +0.00°  ok
+  ja           main         centre   -7.12°   top   -4.00°   bottom  -10.24°   shift +0.00°  ok
+  en           main         centre   -6.56°   top   -4.00°   bottom   -9.13°   shift +0.00°  ok
+  de           main         centre   -6.56°   top   -4.00°   bottom   -9.13°   shift +0.00°  ok
 
 P07_HeBo
-  zh           main         centre   +6.00°   top  +10.62°   bottom   +1.38°   shift +0.00°  ok
-  zht          main         centre   +6.00°   top  +10.62°   bottom   +1.38°   shift +0.00°  ok
-  ja           main         centre   +6.00°   top  +10.62°   bottom   +1.38°   shift +0.00°  ok
-  en           main         centre   +6.00°   top  +13.73°   bottom   -1.73°   shift +0.00°  ok
-  de           main         centre   +6.00°   top  +13.73°   bottom   -1.73°   shift +0.00°  ok
+  zh           main         centre   +5.38°   top  +10.00°   bottom   +0.76°   shift -0.62°  ok
+  zht          main         centre   +5.38°   top  +10.00°   bottom   +0.76°   shift -0.62°  ok
+  ja           main         centre   +3.62°   top  +10.00°   bottom   -2.76°   shift -2.38°  ok
+  en           main         centre   +2.27°   top  +10.00°   bottom   -5.46°   shift -3.73°  ok
+  de           main         centre   +2.27°   top  +10.00°   bottom   -5.46°   shift -3.73°  ok
 
 P08a_Dream_Dusk
-  zh           main         centre  -12.00°   top  -10.80°   bottom  -13.20°   shift +0.00°  ok
-  zht          main         centre  -12.00°   top  -10.80°   bottom  -13.20°   shift +0.00°  ok
-  ja           main         centre  -12.00°   top   -6.96°   bottom  -17.04°   shift +0.00°  ok
-  en           main         centre  -12.00°   top   -9.44°   bottom  -14.56°   shift +0.00°  ok
-  de           main         centre  -12.00°   top   -9.44°   bottom  -14.56°   shift +0.00°  ok
+  zh           main         centre   -5.20°   top   -4.00°   bottom   -6.40°   shift +0.00°  ok
+  zht          main         centre   -5.20°   top   -4.00°   bottom   -6.40°   shift +0.00°  ok
+  ja           main         centre   -9.04°   top   -4.00°   bottom  -14.08°   shift +0.00°  ok
+  en           main         centre   -6.56°   top   -4.00°   bottom   -9.13°   shift +0.00°  ok
+  de           main         centre   -6.56°   top   -4.00°   bottom   -9.13°   shift +0.00°  ok
 
 P08b_Zhuangzi_Xiaoyao
   zh           L1           centre   +5.28°   top   +6.38°   bottom   +4.18°   shift +0.00°  ok
@@ -324,6 +309,69 @@ P12b_Keats
   en           main         centre  -14.00°   top  -13.22°   bottom  -14.78°   shift +0.00°  ok
   de           main         centre  -14.00°   top  -13.22°   bottom  -14.78°   shift +0.00°  ok
 
+== VIEWCHECK (D-33 #5) ==
+Every block of every player against the real bus (origin/pkg/bus (949c09e); Bus/Source/build_bus.py + viewcheck.cast, rays every 0.5°, clearance ring 0.25° steps up to 4.0°). FAIL = a ray inside the block hits an opaque part.
+viewcheck: PASS
+
+P03_LiBai_Dream          zh  ok     hits -                                        clearance >= 4.0
+P03_LiBai_Dream          zht ok     hits -                                        clearance >= 4.0
+P03_LiBai_Dream          ja  ok     hits -                                        clearance 2.25 (Door3_Stile1)
+P03_LiBai_Dream          en  ok     hits -                                        clearance 3.0 (Door3_Stile1)
+P03_LiBai_Dream          de  ok     hits -                                        clearance 3.0 (Door3_Stile1)
+P04a_Rilke               zh  ok     hits -                                        clearance >= 4.0
+P04a_Rilke               zht ok     hits -                                        clearance >= 4.0
+P04a_Rilke               ja  ok     hits -                                        clearance 2.0 (Body)
+P04a_Rilke               en  ok     hits -                                        clearance 3.25 (Body)
+P04a_Rilke               de  ok     hits -                                        clearance 2.5 (Body)
+P04b_Urlicht             zh  ok     hits -                                        clearance >= 4.0
+P04b_Urlicht             zht ok     hits -                                        clearance >= 4.0
+P04b_Urlicht             ja  ok     hits -                                        clearance 2.25 (Radio_Strap)
+P04b_Urlicht             en  ok     hits -                                        clearance >= 4.0
+P04b_Urlicht             de  ok     hits -                                        clearance >= 4.0
+P06_Dream_Dawn           zh  ok     hits -                                        clearance 3.75 (Radio_Case)
+P06_Dream_Dawn           zht ok     hits -                                        clearance 3.75 (Radio_Case)
+P06_Dream_Dawn           ja  ok     hits -                                        clearance >= 4.0
+P06_Dream_Dawn           en  ok     hits -                                        clearance >= 4.0
+P06_Dream_Dawn           de  ok     hits -                                        clearance >= 4.0
+P07_HeBo                 zh  ok     hits -                                        clearance >= 4.0
+P07_HeBo                 zht ok     hits -                                        clearance >= 4.0
+P07_HeBo                 ja  ok     hits -                                        clearance 2.25 (Body)
+P07_HeBo                 en  ok     hits -                                        clearance 3.75 (Body)
+P07_HeBo                 de  ok     hits -                                        clearance 3.75 (Body)
+P08a_Dream_Dusk          zh  ok     hits -                                        clearance 1.75 (Radio_Strap)
+P08a_Dream_Dusk          zht ok     hits -                                        clearance 1.75 (Radio_Strap)
+P08a_Dream_Dusk          ja  ok     hits -                                        clearance 0.75 (Cowl)
+P08a_Dream_Dusk          en  ok     hits -                                        clearance >= 4.0
+P08a_Dream_Dusk          de  ok     hits -                                        clearance >= 4.0
+P08b_Zhuangzi_Xiaoyao    zh  EXEMPT hits Body,Door2_Stile1,Door3_Stile0,Door3_Stile1,DoorGrab clearance >= 4.0
+P08b_Zhuangzi_Xiaoyao    zht EXEMPT hits Body,Door2_Stile1,Door3_Stile0,Door3_Stile1,DoorGrab clearance >= 4.0
+P08b_Zhuangzi_Xiaoyao    ja  EXEMPT hits Body,Door2_Stile1,Door3_Stile0,Door3_Stile1,DoorGrab clearance >= 4.0
+P08b_Zhuangzi_Xiaoyao    en  EXEMPT hits Body,Door2_Stile1,Door3_Stile0,Door3_Stile1,DoorGrab clearance >= 4.0
+P08b_Zhuangzi_Xiaoyao    de  EXEMPT hits Body,Door2_Stile1,Door3_Stile0,Door3_Stile1,DoorGrab clearance >= 4.0
+P09_Tianwen              zh  ok     hits -                                        clearance >= 4.0
+P09_Tianwen              zht ok     hits -                                        clearance >= 4.0
+P09_Tianwen              ja  ok     hits -                                        clearance 3.25 (Radio_Strap)
+P09_Tianwen              en  ok     hits -                                        clearance 3.75 (Radio_Strap)
+P09_Tianwen              de  ok     hits -                                        clearance 3.75 (Radio_Strap)
+P11_Zhuangzi_Butterfly   zh  ok     hits -                                        clearance >= 4.0
+P11_Zhuangzi_Butterfly   zht ok     hits -                                        clearance >= 4.0
+P11_Zhuangzi_Butterfly   ja  ok     hits -                                        clearance >= 4.0
+P11_Zhuangzi_Butterfly   en  ok     hits -                                        clearance >= 4.0
+P11_Zhuangzi_Butterfly   de  ok     hits -                                        clearance >= 4.0
+P12a_LiBai_Wake          zh  ok     hits -                                        clearance >= 4.0
+P12a_LiBai_Wake          zht ok     hits -                                        clearance >= 4.0
+P12a_LiBai_Wake          ja  ok     hits -                                        clearance 3.5 (Door3_Stile1)
+P12a_LiBai_Wake          en  ok     hits -                                        clearance 3.5 (Door3_Stile1)
+P12a_LiBai_Wake          de  ok     hits -                                        clearance 3.5 (Door3_Stile1)
+P12b_Keats               zh  ok     hits -                                        clearance >= 4.0
+P12b_Keats               zht ok     hits -                                        clearance >= 4.0
+P12b_Keats               ja  ok     hits -                                        clearance 3.25 (Door3_Stile1)
+P12b_Keats               en  ok     hits -                                        clearance 2.25 (Door3_Stile1)
+P12b_Keats               de  ok     hits -                                        clearance 2.25 (Door3_Stile1)
+
+== PLACEMENT (D-33) ==
+PASS
+
 == LINE WIDTHS ==
 Line widths in degrees of visual angle at the v4 sizes (limit 28°, bible §7.3, D-30 #2). CJK tracking +0.10 em, Latin 0; kerning = injected kern table.
 widest line: 27.6° -> PASS
@@ -340,7 +388,7 @@ P03_LiBai_Dream
    19.0°       en   main        2.2°  I would dream my way
    13.2°       en   main        2.2°  to Wu and Yue,
    21.8°       en   main        2.2°  and in one night fly across
-   22.1°       en   main        2.2°  the moon on Mirror Lake.
+   21.6°       en   main        2.2°  the moon on Mirror Lake
 
 P04a_Rilke
    14.3°       zh   main        2.2°  因为美无非是
@@ -384,13 +432,14 @@ P07_HeBo
    14.3°       zht  main        2.2°  靈何為兮水中
    19.1°       ja   main        2.2°  魚鱗の屋、龍の堂
    19.1°       ja   main        2.2°  紫貝の闕、朱の宮
-   24.0°       ja   main        2.2°  霊何為れぞ水中にある
+   11.9°       ja   main        2.2°  霊何為れぞ
+   11.9°       ja   main        2.2°  水中にある
    15.6°       en   main        2.0°  Houses of fish-scale,
    12.4°       en   main        2.0°  halls of dragons,
    13.6°       en   main        2.0°  purple-shell gates,
    15.9°       en   main        2.0°  a vermilion palace —
-   20.1°       en   main        2.0°  O spirit, why do you dwell
-    9.8°       en   main        2.0°  in the water?
+   15.6°       en   main        2.0°  O spirit, why do you
+   14.2°       en   main        2.0°  dwell in the water?
 
 P08a_Dream_Dusk
    26.2°       zh   main        2.4°  自深海坠入另一片天空
@@ -413,7 +462,7 @@ P08b_Zhuangzi_Xiaoyao
    20.6°       en   main        2.0°  The sky, so blue, so blue —
    16.4°       en   main        2.0°  is that its true colour?
    20.3°       en   main        2.0°  Looking down from there,
-   19.2°       en   main        2.0°  it would be just the same.
+   18.8°       en   main        2.0°  it would be just the same
 
 P09_Tianwen
    24.0°       zh   main        2.2°  遂古之初，谁传道之？
@@ -449,7 +498,7 @@ P12a_LiBai_Wake
    20.5°       en   main        2.2°  Only the pillow and mat
    10.8°       en   main        2.2°  of waking —
    11.4°       en   main        2.2°  lost, the mists
-   21.5°       en   main        2.2°  and rosy clouds of before.
+   21.0°       en   main        2.2°  and rosy clouds of before
 
 P12b_Keats
    11.7°       zh   main        1.8°  那乐声已远去
@@ -462,11 +511,11 @@ P12b_Keats
    23.3°       en   main        1.6°  Fled is that music:—Do I wake or sleep?
 
 == BLOCKS (v4: width x height per poem and player) ==
-P03_LiBai_Dream          zh  main  2.40°   2 lines   18.24° x  6.24°  az [40.88, 59.12]  el [-12.12, -5.88]
-P03_LiBai_Dream          zht zht   2.40°   2 lines   18.24° x  6.24°  az [40.88, 59.12]  el [-12.12, -5.88]
-P03_LiBai_Dream          ja  ja    2.40°   4 lines   23.52° x 13.92°  az [38.24, 61.76]  el [-15.96, -2.04]
-P03_LiBai_Dream          en  en    2.20°   4 lines   22.12° x 11.07°  az [38.94, 61.06]  el [-14.53, -3.47]
-P03_LiBai_Dream          de  en    2.20°   4 lines   22.12° x 11.07°  az [38.94, 61.06]  el [-14.53, -3.47]
+P03_LiBai_Dream          zh  main  2.40°   2 lines   18.24° x  6.24°  az [51.88, 70.12]  el [-12.12, -5.88]
+P03_LiBai_Dream          zht zht   2.40°   2 lines   18.24° x  6.24°  az [51.88, 70.12]  el [-12.12, -5.88]
+P03_LiBai_Dream          ja  ja    2.40°   4 lines   23.52° x 13.92°  az [49.24, 72.76]  el [-15.96, -2.04]
+P03_LiBai_Dream          en  en    2.20°   4 lines   21.82° x 11.07°  az [50.09, 71.91]  el [-14.53, -3.47]
+P03_LiBai_Dream          de  en    2.20°   4 lines   21.82° x 11.07°  az [50.09, 71.91]  el [-14.53, -3.47]
 P04a_Rilke               zh  zh    2.20°   2 lines   14.30° x  5.72°  az [-1.65, 12.65]  el [-8.22, -2.5]
 P04a_Rilke               zht zht   2.20°   2 lines   14.30° x  5.72°  az [-1.65, 12.65]  el [-8.22, -2.5]
 P04a_Rilke               ja  ja    2.20°   3 lines   23.98° x  9.24°  az [-7.49, 16.49]  el [-11.74, -2.5]
@@ -477,21 +526,21 @@ P04b_Urlicht             zht zht   1.80°   2 lines   17.64° x  4.68°  az [-8.
 P04b_Urlicht             ja  ja    1.80°   2 lines   27.54° x  4.68°  az [-13.77, 13.77]  el [-10.34, -5.66]
 P04b_Urlicht             en  en    1.80°   2 lines   19.30° x  4.19°  az [-9.65, 9.65]  el [-10.1, -5.9]
 P04b_Urlicht             de  main  1.80°   2 lines   19.25° x  4.19°  az [-9.62, 9.62]  el [-10.1, -5.9]
-P06_Dream_Dawn           zh  main  2.40°   1 lines   20.88° x  2.40°  az [-25.44, -4.56]  el [-13.2, -10.8]
-P06_Dream_Dawn           zht zht   2.40°   1 lines   20.88° x  2.40°  az [-25.44, -4.56]  el [-13.2, -10.8]
-P06_Dream_Dawn           ja  ja    2.40°   2 lines   18.24° x  6.24°  az [-24.12, -5.88]  el [-15.12, -8.88]
-P06_Dream_Dawn           en  en    2.20°   2 lines   14.69° x  5.13°  az [-22.34, -7.66]  el [-14.56, -9.44]
-P06_Dream_Dawn           de  en    2.20°   2 lines   14.69° x  5.13°  az [-22.34, -7.66]  el [-14.56, -9.44]
-P07_HeBo                 zh  main  2.20°   3 lines   14.30° x  9.24°  az [2.85, 17.15]  el [1.38, 10.62]
-P07_HeBo                 zht zht   2.20°   3 lines   14.30° x  9.24°  az [2.85, 17.15]  el [1.38, 10.62]
-P07_HeBo                 ja  ja    2.20°   3 lines   23.98° x  9.24°  az [-1.99, 21.99]  el [1.38, 10.62]
-P07_HeBo                 en  en    2.00°   6 lines   20.09° x 15.46°  az [-0.04, 20.05]  el [-1.73, 13.73]
-P07_HeBo                 de  en    2.00°   6 lines   20.09° x 15.46°  az [-0.04, 20.05]  el [-1.73, 13.73]
-P08a_Dream_Dusk          zh  main  2.40°   1 lines   26.16° x  2.40°  az [-28.08, -1.92]  el [-13.2, -10.8]
-P08a_Dream_Dusk          zht zht   2.40°   1 lines   26.16° x  2.40°  az [-28.08, -1.92]  el [-13.2, -10.8]
-P08a_Dream_Dusk          ja  ja    2.40°   3 lines   20.88° x 10.08°  az [-25.44, -4.56]  el [-17.04, -6.96]
-P08a_Dream_Dusk          en  en    2.20°   2 lines   19.25° x  5.13°  az [-24.62, -5.38]  el [-14.56, -9.44]
-P08a_Dream_Dusk          de  en    2.20°   2 lines   19.25° x  5.13°  az [-24.62, -5.38]  el [-14.56, -9.44]
+P06_Dream_Dawn           zh  main  2.40°   1 lines   20.88° x  2.40°  az [-12.44, 8.44]  el [-6.4, -4.0]
+P06_Dream_Dawn           zht zht   2.40°   1 lines   20.88° x  2.40°  az [-12.44, 8.44]  el [-6.4, -4.0]
+P06_Dream_Dawn           ja  ja    2.40°   2 lines   18.24° x  6.24°  az [-11.12, 7.12]  el [-10.24, -4.0]
+P06_Dream_Dawn           en  en    2.20°   2 lines   14.69° x  5.13°  az [-9.34, 5.34]  el [-9.13, -4.0]
+P06_Dream_Dawn           de  en    2.20°   2 lines   14.69° x  5.13°  az [-9.34, 5.34]  el [-9.13, -4.0]
+P07_HeBo                 zh  main  2.20°   3 lines   14.30° x  9.24°  az [-0.65, 13.65]  el [0.76, 10.0]
+P07_HeBo                 zht zht   2.20°   3 lines   14.30° x  9.24°  az [-0.65, 13.65]  el [0.76, 10.0]
+P07_HeBo                 ja  ja    2.20°   4 lines   19.14° x 12.76°  az [-3.07, 16.07]  el [-2.76, 10.0]
+P07_HeBo                 en  en    2.00°   6 lines   15.86° x 15.46°  az [-1.43, 14.43]  el [-5.46, 10.0]
+P07_HeBo                 de  en    2.00°   6 lines   15.86° x 15.46°  az [-1.43, 14.43]  el [-5.46, 10.0]
+P08a_Dream_Dusk          zh  main  2.40°   1 lines   26.16° x  2.40°  az [-15.08, 11.08]  el [-6.4, -4.0]
+P08a_Dream_Dusk          zht zht   2.40°   1 lines   26.16° x  2.40°  az [-15.08, 11.08]  el [-6.4, -4.0]
+P08a_Dream_Dusk          ja  ja    2.40°   3 lines   20.88° x 10.08°  az [-12.44, 8.44]  el [-14.08, -4.0]
+P08a_Dream_Dusk          en  en    2.20°   2 lines   19.25° x  5.13°  az [-11.62, 7.62]  el [-9.13, -4.0]
+P08a_Dream_Dusk          de  en    2.20°   2 lines   19.25° x  5.13°  az [-11.62, 7.62]  el [-9.13, -4.0]
 P08b_Zhuangzi_Xiaoyao    zh  main  2.20°   2 lines   26.40° x 12.76°  az [21.8, 48.2]  el [-6.38, 6.38]
 P08b_Zhuangzi_Xiaoyao    zht zht   2.20°   2 lines   26.40° x 12.76°  az [21.8, 48.2]  el [-6.38, 6.38]
 P08b_Zhuangzi_Xiaoyao    ja  ja    2.08°   4 lines   22.67° x 25.38°  az [23.66, 46.34]  el [-12.69, 12.69]
@@ -507,13 +556,13 @@ P11_Zhuangzi_Butterfly   zht zht   2.00°   2 lines   19.60° x  5.20°  az [-9.
 P11_Zhuangzi_Butterfly   ja  ja    2.00°   3 lines   24.00° x  8.40°  az [-12.0, 12.0]  el [3.8, 12.2]
 P11_Zhuangzi_Butterfly   en  en    2.00°   3 lines   27.56° x  7.36°  az [-13.78, 13.78]  el [4.32, 11.68]
 P11_Zhuangzi_Butterfly   de  en    2.00°   3 lines   27.56° x  7.36°  az [-13.78, 13.78]  el [4.32, 11.68]
-P12a_LiBai_Wake          zh  main  2.40°   2 lines   15.60° x  6.24°  az [42.2, 57.8]  el [-12.12, -5.88]
-P12a_LiBai_Wake          zht zht   2.40°   2 lines   15.60° x  6.24°  az [42.2, 57.8]  el [-12.12, -5.88]
-P12a_LiBai_Wake          ja  ja    2.40°   3 lines   20.88° x 10.08°  az [39.56, 60.44]  el [-14.04, -3.96]
-P12a_LiBai_Wake          en  en    2.20°   4 lines   21.50° x 11.07°  az [39.25, 60.75]  el [-14.53, -3.47]
-P12a_LiBai_Wake          de  en    2.20°   4 lines   21.50° x 11.07°  az [39.25, 60.75]  el [-14.53, -3.47]
-P12b_Keats               zh  zh    1.80°   2 lines   19.62° x  4.68°  az [40.19, 59.81]  el [-16.34, -11.66]
-P12b_Keats               zht zht   1.80°   2 lines   19.62° x  4.68°  az [40.19, 59.81]  el [-16.34, -11.66]
-P12b_Keats               ja  ja    1.80°   3 lines   21.60° x  7.56°  az [39.2, 60.8]  el [-17.78, -10.22]
-P12b_Keats               en  main  1.60°   1 lines   23.30° x  1.57°  az [38.35, 61.65]  el [-14.78, -13.22]
-P12b_Keats               de  main  1.60°   1 lines   23.30° x  1.57°  az [38.35, 61.65]  el [-14.78, -13.22]
+P12a_LiBai_Wake          zh  main  2.40°   2 lines   15.60° x  6.24°  az [53.2, 68.8]  el [-12.12, -5.88]
+P12a_LiBai_Wake          zht zht   2.40°   2 lines   15.60° x  6.24°  az [53.2, 68.8]  el [-12.12, -5.88]
+P12a_LiBai_Wake          ja  ja    2.40°   3 lines   20.88° x 10.08°  az [50.56, 71.44]  el [-14.04, -3.96]
+P12a_LiBai_Wake          en  en    2.20°   4 lines   20.99° x 11.07°  az [50.51, 71.5]  el [-14.53, -3.47]
+P12a_LiBai_Wake          de  en    2.20°   4 lines   20.99° x 11.07°  az [50.51, 71.5]  el [-14.53, -3.47]
+P12b_Keats               zh  zh    1.80°   2 lines   19.62° x  4.68°  az [51.19, 70.81]  el [-16.34, -11.66]
+P12b_Keats               zht zht   1.80°   2 lines   19.62° x  4.68°  az [51.19, 70.81]  el [-16.34, -11.66]
+P12b_Keats               ja  ja    1.80°   3 lines   21.60° x  7.56°  az [50.2, 71.8]  el [-17.78, -10.22]
+P12b_Keats               en  main  1.60°   1 lines   23.30° x  1.57°  az [49.35, 72.65]  el [-14.78, -13.22]
+P12b_Keats               de  main  1.60°   1 lines   23.30° x  1.57°  az [49.35, 72.65]  el [-14.78, -13.22]
