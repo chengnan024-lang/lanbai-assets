@@ -230,7 +230,7 @@ Director v1.1 起没有要本地填的窗口：`LB_Journey` 勾 `extAtmosphere` 
 
 - **摆诗归 `LanbaiPoemDriver`**（`Fonts/Runtime/`，4.1，D-33 #5）：菜单 `蓝白/Fonts/Build Poem Objects (v4.1 runtime)` 读 `strings_all.json`，建 `Lanbai_Poems`（每首诗 × 每个玩家键一套 TMP，全关）、`Lanbai_Board`（发车提示 + 中 / 日 / EN 三个开关）、`Lanbai_PoemDriver`，字段全填好。前提：字体资产、诗句材质已经建好（`Fonts/README_Fonts.md` §3.2）。然后把 `busRoot` 拖成车的根（场景里有名为 `Bus` 的物体时自动接），公告板挪到站牌上，Director 1 Generate、2 Wire。
 - 它管：语言（客户端代码 → 键，`zh-HK` 先判；`OnLanguageChanged`；公告板开关只对本人）、注视规则（§7.4-6，庄子和天问固定）、出现 / 停留 / 退场（2.5 s 对焦、0.2° 漂移）、Urlicht 的行跟乐句、天问的 20 个单字物体、6d 的亮衬、公告板的倒计时（`LB_Journey` 发车前每帧调 `LanbaiBoard(离发车的秒数)`，发车后调一次 `LanbaiBoardHide()`）。只从 t 算，迟到的人、拖时间轴都对（D-33 #6）。
-- **`LB_Journey` 里的三组诗句数组退役**（`_poemIdx` / `_poemStage` 那一套和 `PickLanguage()` 一起）：本地删掉它们，不要两个系统同时摆诗。
+- **`LB_Journey` 里的三组诗句数组退役**（`_poemIdx` / `_poemStage` 那一套和 `PickLanguage()` 一起）：本地删掉它们，不要两个系统同时摆诗。本地还要在玩家坐下 / 换座位时调 `LanbaiPoemDriver.SetSeat(座位号)`（座位号按车导出遮挡网格的顺序，D-33 #7b）。
 - **天问的汉字对所有玩家都在同一个位置**（第 9 幕的 16 颗星按中文排版放），不是中文的玩家下面多一块自己语言的小字。时刻全部没变。
 - 没在 Unity 里编译过：TMP 3D 上用 MaterialPropertyBlock 写 `_FaceColor` / `_OutlineSoftness` / `_FaceDilate`、U# 里 `TextMeshPro.maxVisibleLines`，第一次导入请把 Console 推回来。
 

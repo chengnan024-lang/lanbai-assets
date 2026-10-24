@@ -364,7 +364,8 @@ for p in POEMS:
         # +35° / 0° / 60 m (the key frame, never follows the gaze) crosses the folded door stack (+36.4…+46.9°) of the
         # INTACT bus; in 8-ii the cabin is eroded (bible §4.8). Not in D-33's list: reported, not moved, until the
         # director / the bus say what is left of the door at 971 s
-        p['viewcheck_exempt'] = '待总导演 / 车定：8-ii 时车厢已侵蚀，门叠还剩多少（D-33 没列这首）'
+        p['viewcheck_exempt'] = ('由 D-33 #7a 保证：车厢驱动让门组（折门四片、门柱、门口扶杆、门框上半）在 965.4 之前侵蚀掉，'
+                                 '车来量（≤ 10%）；对完整的车，这一列压在门叠上')
     if p['id'] == 'P08b_Zhuangzi_Xiaoyao':
         # the ja column (2 + 2 lines, mirrored about the horizon) is 4.8 em from the horizon to L1's centre: at 2.2°
         # L1 would sit at +10.56°, over §7.3's "never above +10°". 2.08° puts it at +9.98°. 0.12° under D-30's 2.2°.

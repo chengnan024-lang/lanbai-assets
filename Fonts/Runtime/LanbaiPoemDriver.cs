@@ -21,6 +21,10 @@
 //  (-1) / none (0). Written with a MaterialPropertyBlock on the TMP MeshRenderer (_FaceColor = the solved linear fill
 //  with alpha, _OutlineSoftness, _FaceDilate 0.05 desktop / 0.10 VR), so no per-object material instance is needed.
 //  Urlicht's lines appear with their cues (TMP maxVisibleLines). Tianwen's Han line is 20 one-character objects.
+//  Seats (D-33 #7b): the bus exports a 1° occlusion grid per seat (from that seat's eye); the bake copies it into
+//  seatOcc. Placing a poem (default or moved by the gaze rule), the block is looked up for the LOCAL player's seat
+//  (SetSeat from LB_Journey): more than 10 % behind bus parts -> move it sideways 1° at a time, toward the default
+//  first, at most ±15°, the nearest position with ≤ 10 %; none -> the default. Fixed poems (Zhuangzi, Tianwen) never move.
 // =====================================================================================================
 using UdonSharp;
 using UnityEngine;
@@ -64,6 +68,13 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
     public GameObject[] boardRoot;
     public TextMeshPro[] boardLine1;
     public string[] boardPrefix, boardSuffix;        // line 1 = prefix + seconds + suffix (the {0} of strings_all.json ui)
+
+    [Header("Seats (D-33 #7b): 1° occlusion grid per seat from the bus, row-major el0 upward, az0 eastward")]
+    public Vector3[] seatEye;                        // bus space; empty -> eyeLocal
+    public byte[] seatOcc;                           // [seat * occNEl * occNAz + row * occNAz + col]: 1 = a bus part
+    public int occAz0 = -180, occEl0 = -25, occNAz = 360, occNEl = 46;
+    public float[] slotBlkW, slotBlkEl0, slotBlkEl1; // the block per slot (width deg, bottom / top elevation deg)
+    public int seat = 0;
 
     [Header("State (read only)")]
     public int key = 3;
@@ -176,9 +187,48 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
         for (int k = 0; k < K; k++)
         {
             // the per-key default (D-13: Rilke ja +4.5°) holds only where the gaze rule kept the default
-            float a = kept && pAzKey != null && pAzKey.Length > p * K + k ? pAzKey[p * K + k] : az;
+            float def = pAzKey != null && pAzKey.Length > p * K + k ? pAzKey[p * K + k] : pAz[p];
+            float a = kept ? def : az;
+            if (!pFixed[p]) a = Avoid(p * K + k, a, def);
             PlaceSlot(p, k, a);
         }
+    }
+
+    // D-33 #7b: blocked share of the block at azimuth a for the local player's seat (0 when there is no grid)
+    public float Blocked(int slot, float a)
+    {
+        int per = occNAz * occNEl;
+        if (seatOcc == null || seatOcc.Length < per * (seat + 1) || slotBlkW == null || slotBlkW.Length <= slot) return 0f;
+        float a0 = a - slotBlkW[slot] * 0.5f, a1 = a + slotBlkW[slot] * 0.5f;
+        int c0 = Mathf.FloorToInt(a0) - occAz0, c1 = Mathf.CeilToInt(a1) - occAz0;
+        int r0 = Mathf.Max(0, Mathf.FloorToInt(slotBlkEl0[slot]) - occEl0), r1 = Mathf.Min(occNEl, Mathf.CeilToInt(slotBlkEl1[slot]) - occEl0);
+        int n = 0, hit = 0, b = seat * per;
+        for (int r = r0; r < r1; r++)
+            for (int c = c0; c < c1; c++)
+            {
+                int cc = ((c % occNAz) + occNAz) % occNAz;
+                n++;
+                if (seatOcc[b + r * occNAz + cc] != 0) hit++;
+            }
+        return n > 0 ? (float)hit / n : 0f;
+    }
+
+    private float Avoid(int slot, float a, float def)
+    {
+        if (Blocked(slot, a) <= 0.1f) return a;
+        float dir = def > a ? 1f : -1f;                              // toward the default first
+        for (int d = 1; d <= 15; d++)
+        {
+            if (Blocked(slot, a + dir * d) <= 0.1f) return a + dir * d;
+            if (Blocked(slot, a - dir * d) <= 0.1f) return a - dir * d;
+        }
+        return def;
+    }
+
+    // LB_Journey: the local player's seat index (the bus's seat order, as the grid was exported)
+    public void SetSeat(int s)
+    {
+        seat = s;
     }
 
     private void PlaceSlotLikeOthers(int p)
@@ -195,7 +245,8 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
         if (r == null || busRoot == null) return;
         float ar = a * Mathf.Deg2Rad, er = pEl[p] * Mathf.Deg2Rad;
         Vector3 dir = new Vector3(Mathf.Cos(er) * Mathf.Sin(ar), Mathf.Sin(er), Mathf.Cos(er) * Mathf.Cos(ar));
-        Vector3 local = eyeLocal + dir * pDist[p];
+        Vector3 eye = seatEye != null && seatEye.Length > seat ? seatEye[seat] : eyeLocal;
+        Vector3 local = eye + dir * pDist[p];
         Vector3 world = busRoot.TransformPoint(local);
         Vector3 head = HeadPos();
         // +Z away from the viewer (TMP reads right only that way), Vector3.up of the bus: the line stays level (§1.3.6)
@@ -216,7 +267,7 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
     private Vector3 HeadPos()
     {
         VRCPlayerApi lp = Networking.LocalPlayer;
-        if (lp == null) return busRoot != null ? busRoot.TransformPoint(eyeLocal) : Vector3.zero;
+        if (lp == null) return busRoot != null ? busRoot.TransformPoint(seatEye != null && seatEye.Length > seat ? seatEye[seat] : eyeLocal) : Vector3.zero;
         return lp.GetTrackingData(VRCPlayerApi.TrackingDataType.Head).position;
     }
 

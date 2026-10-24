@@ -1,4 +1,4 @@
-Lanbai Fonts kit build report  2026-10-24 11:10 UTC
+Lanbai Fonts kit build report  2026-10-24 11:14 UTC
 
 == SUBSETS (original -> subset) ==
 SourceHanSerifSC-Regular       SourceHanSerifCN-Regular.otf       11626108 B -> LanbaiSerifSC-Regular.otf                   77332 B  ( 0.67%)  glyphs 366  renamed Lanbai Serif SC (RFN Source); U+2014 -> full-width mid-line rule (glyph of U+2500)
