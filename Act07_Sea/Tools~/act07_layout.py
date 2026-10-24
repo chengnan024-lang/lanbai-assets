@@ -32,6 +32,12 @@ EYE = np.array([0.55, 1.70, 2.05])          # main seat eye (Gate cameras.U7 = r
 R = lambda x, n=4: [round(float(v), n) for v in np.ravel(x)]   # noqa: E731
 
 
+# the bioluminescence fill: the bible's #5E7AFF @ +2.73 (screen #8AC6FF under S7a) crosses the D-21 line under S7b (seed
+# cores h_ab 291, L* 40.7, 11_F5_warm r1). #5E84FF @ +2.73: 0 pixels over the line from S7a through the blend to S7b (all
+# intensities 0.002-3 x, on black and on the 145 m water), screen #8AD1FF under S7a (dE small, same family)
+BIO_FILL = '#5E84FF'
+
+
 def srgb_lin(h, ev=0.0):
     c = np.array([int(h[i:i + 2], 16) for i in (1, 3, 5)], np.float64) / 255.0
     return np.where(c <= 0.04045, c / 12.92, ((c + 0.055) / 1.055) ** 2.4) * 2.0 ** ev
@@ -97,18 +103,22 @@ def shafts(rng):
 
 
 # ---------------------------------------------------------------------------------------------------- particles
+SNOW_NEAR, SNOW_SPHERE, SNOW_BOX = 2.0, 10.0, 24.0
+SNOW_LIT = 2.2
+
+
 def snow(rng, n=1200):
-    """海雪: 1 200 in a 25 m sphere (shader wraps them in a 50 m box riding with the bus), 0.8-2.5 cm, screen #697987,
+    """海雪: 1 200 (bible: in a 25 m sphere; here in the 2-10 m shell around the eye / 24 m wrap box: the bible's 25 m sphere gave ~2 flakes within
+    5 m of the eye and no sinking cue -- 给总控 第五批 #9), 0.8-2.5 cm, screen #697987,
     alpha 0.3-0.6, sinking 1.5 cm/s (the bus sinks faster: they rise past the windows). WATER-frame positions around the
     bus at F3, never inside the cabin's 1.2 m around the eye (they are drawn outside the glass anyway)."""
     c = fill('#697987', 'S7a')
-    pts = []
-    while len(pts) < n:
-        p = rng.uniform(-25, 25, 3)
-        if np.linalg.norm(p) > 25 or np.linalg.norm(p - (EYE - [0, 0, 0])) < 1.2:
-            continue
-        pts.append(p)
-    pts = np.array(pts) + np.array([0.0, -AM.depth(L['F3']), AM.fwd(L['F3'])])
+    # uniform DIRECTION, radius in the 2-10 m shell (not uniform-in-volume): the sinking cue has to read in every
+    # direction (VR), so put the flakes where the eye can resolve them instead of mostly out at the sphere's rim
+    dirs = rng.normal(size=(n, 3)); dirs /= np.linalg.norm(dirs, axis=1, keepdims=True)
+    r = rng.uniform(SNOW_NEAR, SNOW_SPHERE, n) ** 1.0
+    pts = EYE[None, :] + dirs * r[:, None]
+    pts = pts + np.array([0.0, -AM.depth(L['F3']), AM.fwd(L['F3'])])
     rad = rng.uniform(0.004, 0.0125, n)
     a = rng.uniform(0.3, 0.6, n)
     return dict(kind='SNOW', count=n, colour=R(c), positions=R(pts, 3), radius=R(rad, 5), alpha=R(a, 3), seed=R(rng.uniform(size=n), 4))
@@ -139,7 +149,7 @@ def seeds(rng, n=200):
         pos.append(busw + EYE + d * r)
     rad = rng.uniform(0.006, 0.015, n)
     steady = rng.uniform(0.12, 0.15, n)
-    return dict(kind='SEED', count=n, colour=R(srgb_lin('#5E7AFF', 2.73)), positions=R(np.array(pos), 3), radius=R(rad, 5),
+    return dict(kind='SEED', count=n, colour=R(srgb_lin(BIO_FILL, 2.73)), positions=R(np.array(pos), 3), radius=R(rad, 5),
                 birth_t=R(births, 3), steady=R(steady, 4), seed=R(rng.uniform(size=n), 4),
                 check=dict(min_birth_distance_m=5.5, cone_deg=5.0, flash_s=0.2))
 
@@ -164,7 +174,7 @@ def trails(rng):
     """船体生物荧光 (F4 on): 300 births / s, life 1.5-3 s, 1-3 cm with a soft glow, screen #8AC6FF (fill #5E7AFF @ +2.73);
     a pool of 900 quads at hull points (BUS frame); the shader streams them back with the water (-_Udon_SeaBusVel x age)"""
     n = 900
-    return dict(kind='TRAIL', count=n, colour=R(srgb_lin('#5E7AFF', 2.73)), positions=R(hull_points(rng, n), 3),
+    return dict(kind='TRAIL', count=n, colour=R(srgb_lin(BIO_FILL, 2.73)), positions=R(hull_points(rng, n), 3),
                 radius=R(rng.uniform(0.005, 0.015, n), 5), phase=R(rng.uniform(size=n), 4), life=R(rng.uniform(1.5, 3.0, n), 3),
                 seed=R(rng.uniform(size=n), 4), T0=L['F4'], rate=300.0, pool=n, alpha=1.0)
 
@@ -211,7 +221,7 @@ def ridge(rng):
     return dict(frame='WATER', x_min_m=round(float(X.min()), 3), grid=dict(z0=-45.0, dz=1.0, nz=len(zs), y0=-135.0, dy=1.0, ny=len(ys)),
                 x=R(X, 3), back_thickness_m=6.0,
                 material=dict(shader='Lanbai/SeaRidge', base=R(fill('#0B1A26', 'S7b') * 0.8), rim=R(srgb_lin('#8AC6FF') * 1.2),
-                              rim_reach_m=8.0, rim_near_m=12.0, rim_wrap=0.6, rim_face=0.08, rim_edge=3.0,
+                              rim_reach_m=8.0, rim_near_m=12.0, rim_wrap=0.55, rim_face=0.04, rim_edge=4.0,
                               note='low contrast: the faces sit just above the water fog of 105 m; only the silhouettes catch the '
                                    'hull bioluminescence #8AC6FF (bible: 只被船体生物荧光描出一道边), full strength out to rim_near_m, '
                                    'falling off over rim_reach_m beyond; wrap: the trails run along the whole hull'),
@@ -227,10 +237,17 @@ def warm_point():
     PF = json.load(open(os.path.join(PKG, 'PalaceFrame_约定.json'), encoding='utf-8'))
     td = PF['frame']['terrace_top_depth_m']
     busw = np.array([0.0, -AM.depth(L['F5']), AM.fwd(L['F5'])])
+    # the nearest lamp SEEN from the main seat: through the windscreen (bus_shell bible_v2: az -50..25, el -15..22) with
+    # 0.5 deg to spare at the lower edge, >= 2 deg off the centre post (az -11): Lamp_R01 (55 m) sits right behind the
+    # post and on the sill (review r1 #6), so it is Lamp_L01 (61 m, az -27.8, el -13.7)
     best = None
     for lp in PF['lamps']:
         p = np.array(lp['flame_pos']) + np.array([0.0, -td, AM.fwd(L['F5'])])
-        dist = np.linalg.norm(p - (busw + EYE))
+        dv = p - (busw + EYE)
+        dist = np.linalg.norm(dv)
+        az, el = math.degrees(math.atan2(dv[0], dv[2])), math.degrees(math.asin(dv[1] / dist))
+        if not (-50.0 < az < 25.0 and -14.5 < el < 22.0) or abs(az + 11.0) < 2.0:
+            continue
         if best is None or dist < best[0]:
             best = (dist, lp['id'], p)
     return dict(id=best[1], position_water=R(best[2], 3), distance_at_F5_m=round(best[0], 2), t_on=L['F5'], fade_in_s=3.0,
@@ -284,14 +301,25 @@ def main():
                    ambient=[[0.0, R(srgb_lin('#6186A7') * 0.6)], [60.0, R(srgb_lin('#0F1E30') * 0.3)]], ambient_by='depth m'),
         shafts=dict(items=shafts(rng), material=dict(colour=R(srgb_lin('#8AB2FF', 1.30)), streak_scroll=[0.02, -0.035]),
                     gain_by_depth=[[0.0, 1.0], [18.0, 1.0], [25.0, 0.0]],
+                    gain_law='g = depth fade until 453; 453 -> F4p: lerp(depth fade, 1, smoothstep) (they gather and brighten: F4p is their brightest); F4p -> 467.6: x (1 - smoothstep) to 0 (review r1 #1)',
                     gather=dict(t0=453.0, t1=L['F4p'], point_bus=[0.55, 2.74, 1.2], note='F4p: the shafts converge on the skylight hole in 9 s; the '
                                 'gather point is the skylight (bus frame); the driver writes _GatherPoint in R_Sea object space each frame'),
                     after_F4p_fade=[[L['F4p'], 1.0], [467.6, 0.0]],
                     last_shaft=dict(t_in=L['F3e1'], fade_in_s=2.0, sweep_s=4.0, fade_out_s=2.0, half_width=2.2, length=34.0, alpha=0.10,
-                                    from_bus=[3.0, 14.0, -2.0], to_bus=[-1.5, 14.0, 4.5], target_bus=[0.55, 1.0, 1.2],
-                                    note='F3e1: the last wide shaft sweeps across the seats (2 s in, 4 s sweep, 2 s out; seats <= luma 120), then all shafts are gone')),
+                                    from_bus=[3.0, 14.0, -2.0], to_bus=[-1.5, 14.0, 4.5], target_from_bus=[1.0, 0.95, -2.0], target_to_bus=[0.0, 0.95, 3.5],
+                                    top_above_centre_m=2.0,
+                                    note='F3e1: the last wide shaft sweeps across the seats (2 s in, 4 s sweep, 2 s out; seats <= luma 120): its '
+                                         'foot moves from target_from to target_to (past the main seat at ~0.58), the beam light rides with it; '
+                                         'the quad starts 2 m above its moving centre so the seats sit at uv.y ~0.45 (full strength), then all shafts are gone')),
+        beam=dict(kind='Spot (bus frame, under R_Act07Bus), culling Default + PlayerLocal: the light that lands on the seats and your hands',
+                  colour_hex='#B0D9F2', spot_angle_deg=28.0, range_m=9.0,
+                  gather=dict(pos_bus=[0.87, 5.16, 1.76], aim_bus=[0.55, 1.1, 1.75], E_peak=1.0,
+                              curve='smoothstep 0 -> 1 from 453 to F4p 462.36, then smoothstep 1 -> 0 to 467.6'),
+                  last=dict(E_peak=0.8, curve='the last shaft\'s alpha; position = the shaft centre, aim = its moving foot'),
+                  note='Inspector intensity = E^(1/2.2) (bible §1 trap 1). Spot lights use Unity\'s legacy range falloff (trap 2): '
+                       'check against the grey card locally, the seats must stay <= luma 120 and <= 6 % of the frame'),
         particles=dict(snow=snow(rng), seeds=seeds(rng), trails=trails(rng), bubbles=bubbles(rng),
-                       snow_sink=0.015, near_fade=[0.3, 0.8], min_px=1.2),
+                       snow_sink=0.015, snow_sphere=SNOW_SPHERE, snow_box=SNOW_BOX, snow_lit=dict(gain=SNOW_LIT, depth_full=12.0, depth_none=30.0, note='sunlit flakes in the shallow water: the bible screen colour #697987 has the luma of the water behind it at F3 (both ~118) and the flakes vanish; x gain until 12 m, smoothstep to x 1 (the bible colour) by 30 m (给总控 第五批 #9)'), near_fade=[0.3, 0.8], min_px=1.2),
         ridge=ridge(rng),
         warm_point=warm_point(),
         grade=dict(note='S7a until F3e, then S7a -> S7b linear F3e -> F5 (LB_Journey.ApplyGrades owns the PPv2 weights; this driver reports no dEV)',
@@ -319,7 +347,10 @@ def main():
         shaft_colour=sh['material']['colour'], shaft_depth_full=18.0, shaft_depth_gone=25.0,
         gather_t0=sh['gather']['t0'], gather_t1=sh['gather']['t1'], shafts_gone_t=467.6, gather_point_bus=sh['gather']['point_bus'],
         last_t0=ls['t_in'], last_in=ls['fade_in_s'], last_sweep=ls['sweep_s'], last_out=ls['fade_out_s'], last_half_width=ls['half_width'],
-        last_length=ls['length'], last_alpha=ls['alpha'], last_from=ls['from_bus'], last_to=ls['to_bus'], last_target=ls['target_bus'],
+        last_length=ls['length'], last_alpha=ls['alpha'], last_from=ls['from_bus'], last_to=ls['to_bus'], last_target=ls['target_from_bus'], last_target_to=ls['target_to_bus'], last_top=ls['top_above_centre_m'],
+        beam_angle=J['beam']['spot_angle_deg'], beam_range=J['beam']['range_m'], beam_gather_pos=J['beam']['gather']['pos_bus'],
+        beam_gather_aim=J['beam']['gather']['aim_bus'], beam_gather_E=J['beam']['gather']['E_peak'], beam_last_E=J['beam']['last']['E_peak'],
+        snow_sphere=SNOW_SPHERE, snow_box=SNOW_BOX, snow_lit=SNOW_LIT, snow_lit_d0=12.0, snow_lit_d1=30.0,
         warm_position=J['warm_point']['position_water'], warm_colour=J['warm_point']['colour'], warm_flux=J['warm_point']['flux'],
         warm_radius=J['warm_point']['radius_m'], warm_fade=J['warm_point']['fade_in_s'],
         ridge_base=J['ridge']['material']['base'], ridge_rim=J['ridge']['material']['rim'], ridge_reach=J['ridge']['material']['rim_reach_m'], ridge_near=J['ridge']['material']['rim_near_m'],

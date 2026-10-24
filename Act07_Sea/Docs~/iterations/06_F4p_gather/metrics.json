@@ -4,9 +4,9 @@
    960,
    540
   ],
-  "APL": 45.3,
-  "EV_display": -4.319,
-  "luma_lt12_pct": 0.59,
+  "APL": 49.03,
+  "EV_display": -4.108,
+  "luma_lt12_pct": 0.6,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
@@ -16,30 +16,30 @@
   "purple_pct": 0.0,
   "purple_largest_region_pct": 0.0,
   "violet_strong_pct": 0.0,
-  "lavender_act6_pct": 0.001,
+  "lavender_act6_pct": 0.0,
   "brightest": {
    "bbox": [
     460,
     1,
-    810,
-    241
+    893,
+    513
    ],
    "centroid": [
-    494.6,
-    5.0
+    501.2,
+    15.2
    ],
-   "clusters": 2,
+   "clusters": 4,
    "clusters_ge5pct": 1,
-   "min_luma": 186.2,
+   "min_luma": 187.2,
    "centroid_az_el": [
-    3.43,
-    63.69
+    3.94,
+    62.52
    ]
   },
   "top25_Lstar": {
-   "mean": 13.87,
+   "mean": 14.02,
    "p50": 3.53,
-   "p90": 66.01
+   "p90": 67.1
   },
   "palette": {
    "act": "07a",
@@ -48,49 +48,49 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 12.7,
+     "nearest_dE2000_p01": 12.4,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 8.0,
+     "nearest_dE2000_p01": 7.5,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 8.9,
+     "nearest_dE2000_p01": 8.1,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#3876AB",
      "role": "浅水 縹",
-     "nearest_dE2000_p01": 8.7,
-     "within_dE5_pct": 0.0
+     "nearest_dE2000_p01": 7.2,
+     "within_dE5_pct": 0.01
     },
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
-     "nearest_dE2000_p01": 2.2,
-     "within_dE5_pct": 14.97
+     "nearest_dE2000_p01": 3.0,
+     "within_dE5_pct": 0.64
     },
     {
      "hex": "#697987",
      "role": "海雪",
-     "nearest_dE2000_p01": 2.1,
-     "within_dE5_pct": 1.25
+     "nearest_dE2000_p01": 2.5,
+     "within_dE5_pct": 0.92
     },
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 12.0,
+     "nearest_dE2000_p01": 11.2,
      "within_dE5_pct": 0.0
     }
    ],
    "pixel_to_nearest_dE_median": 18.1,
    "pixel_to_nearest_dE_p90": 18.1,
-   "pixels_within5_pct": 16.2
+   "pixels_within5_pct": 1.6
   }
  },
  "cam": {
@@ -193,7 +193,7 @@
    540
   ]
  },
- "render_seconds": 19.5,
+ "render_seconds": 17.3,
  "lens": "none",
  "bloom_tint": "single",
  "note": "F4p 462.36: the shafts gathered into the skylight hole"

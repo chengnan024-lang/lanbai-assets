@@ -25,14 +25,14 @@
     204
    ],
    "centroid": [
-    509.4,
-    197.7
+    509.0,
+    197.8
    ],
    "clusters": 1,
    "clusters_ge5pct": 1,
    "min_luma": 224.6,
    "centroid_az_el": [
-    9.52,
+    9.39,
     68.08
    ]
   },
@@ -193,7 +193,7 @@
    540
   ]
  },
- "render_seconds": 27.0,
+ "render_seconds": 24.9,
  "lens": "none",
  "bloom_tint": "single",
  "note": "F3 367.21: Snell's window through the skylight (roof still whole), hero eye, pitch 60"

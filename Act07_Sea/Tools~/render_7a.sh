@@ -30,10 +30,11 @@ run 06_F4p_gather   462.36 --cam hero --pitch 35 --bus bible_v2 --note "F4p 462.
 wait
 run 07_F3e1_last    512.0  --cam hero --pitch 40 --bus bible_v2 --note "F3e1 506.36+: the window shrinks to a dark coin, the last wide shaft sweeps the seats" &
 run 08_F3e2_ridge   532.36 --cam hero --yaw 75 --pitch 5 --bus bible_v2 --note "F3e2 532.36: the ridge wall rising past the right window, edged by the hull light" &
+run 08b_ridge_top   520.36 --cam hero --yaw 70 --pitch 20 --bus bible_v2 --note "F3e2 enters (520.36): the ridge top rising past the right window, el ~20 (review r1 #8)" &
 run 09_F3e3_dark    556.36 --cam hero --pitch 0 --bus bible_v2 --note "F3e3 556.36: the last blue goes out (APL target 25)" &
 wait
 run 10_seeding      612.0  --cam hero --pitch 10 --bus bible_v2 --note "seeding (F3i ->): cold lights sown one by one, fixed in the water" &
-run 11_F5_warm      647.0  --cam hero --yaw -10 --pitch -12 --bus bible_v2 --note "F5 644.96: far below, one warm point among the cold seeds (APL target 16)" &
+run 11_F5_warm      647.0  --cam hero --yaw -22 --pitch -10 --bus bible_v2 --note "F5 644.96: far below, one warm point among the cold seeds (APL target 16)" &
 wait
 # D-23: 7c's dark dip before surfacing must still be APL 30-34 (forward, the bus shell; the Sea kit's K3 frame)
 K3() { n=12_7c_897_fwd; want "${ARGS[@]}" || return 0

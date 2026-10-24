@@ -4,8 +4,8 @@
    960,
    540
   ],
-  "APL": 75.44,
-  "EV_display": -3.575,
+  "APL": 75.49,
+  "EV_display": -3.573,
   "luma_lt12_pct": 0.0,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
@@ -19,25 +19,25 @@
   "lavender_act6_pct": 0.0,
   "brightest": {
    "bbox": [
-    31,
-    158,
-    910,
-    511
+    123,
+    0,
+    832,
+    481
    ],
    "centroid": [
-    495.9,
-    262.0
+    643.0,
+    255.5
    ],
-   "clusters": 10,
-   "clusters_ge5pct": 7,
-   "min_luma": 93.8,
+   "clusters": 8,
+   "clusters_ge5pct": 6,
+   "min_luma": 100.4,
    "centroid_az_el": [
-    82.06,
-    -8.03
+    98.01,
+    -7.95
    ]
   },
   "top25_Lstar": {
-   "mean": 33.67,
+   "mean": 33.69,
    "p50": 34.92,
    "p90": 38.24
   },
@@ -48,32 +48,32 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 44.0,
+     "nearest_dE2000_p01": 42.6,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 35.5,
+     "nearest_dE2000_p01": 33.4,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 30.3,
-     "within_dE5_pct": 0.0
+     "nearest_dE2000_p01": 27.8,
+     "within_dE5_pct": 0.01
     },
     {
      "hex": "#3876AB",
      "role": "浅水 縹",
      "nearest_dE2000_p01": 6.6,
-     "within_dE5_pct": 0.01
+     "within_dE5_pct": 0.04
     },
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
      "nearest_dE2000_p01": 3.6,
-     "within_dE5_pct": 2.75
+     "within_dE5_pct": 2.78
     },
     {
      "hex": "#697987",
@@ -84,8 +84,8 @@
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 32.1,
-     "within_dE5_pct": 0.0
+     "nearest_dE2000_p01": 29.5,
+     "within_dE5_pct": 0.02
     }
    ],
    "pixel_to_nearest_dE_median": 8.7,
@@ -168,7 +168,7 @@
    "color": "#000000"
   }
  },
- "bloom_share_of_APL": 0.0,
+ "bloom_share_of_APL": 0.01,
  "t": 446.5,
  "target": {
   "phase": "7a 被海接住",
@@ -193,7 +193,7 @@
    540
   ]
  },
- "render_seconds": 13.3,
+ "render_seconds": 13.2,
  "lens": "none",
  "bloom_tint": "single",
  "note": "F4 446.01+: the first bioluminescence along the hull (right window)"

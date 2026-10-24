@@ -3,7 +3,7 @@
 //  !!! WRITTEN WITHOUT A UNITY COMPILER (cloud side). Checked with Common/Tools~/compile_check (Roslyn). !!!
 //
 //  菜单 蓝白/Build/Act07a（可以重复运行：先删上一次搭的 R_Act07 和 Act07_Driver）：
-//    1. 读 Assets/Lanbai/Act07_Sea/Act07_Layout.json 的 'unity' / 'shafts' / 'particles' / 'ridge' 块（唯一的数据源）；
+//    1. 读 Assets/Lanbai/Act07_Sea/Act07_Layout.json 的 'unity'（光柱的数也在这里，平铺）/ 'particles' / 'ridge' 块（唯一的数据源）；
 //    2. 先跑 蓝白/Sea/Create Materials（海的材质），再在 Act07_Sea/Materials/ 建本幕的材质（光柱、粒子 ×5、石壁、暖点、穹顶）；
 //    3. 在 Act07_Sea/Meshes/ 生成网格（.asset）：光柱 16 条 + 最后一道、海雪 1 200、播下的光 200、船体荧光池 900、
 //       气泡 120 + 40、海脊石壁、暖点；网格的 bounds 按 shader 实际画到的地方给（粒子在顶点着色器里移动）；
@@ -40,7 +40,9 @@ public static class LanbaiAct07Builder
         public float[] shaft_centre, shaft_axis, shaft_half_width, shaft_length, shaft_seed, shaft_alpha, shaft_colour;
         public float shaft_depth_full, shaft_depth_gone, gather_t0, gather_t1, shafts_gone_t; public float[] gather_point_bus;
         public float last_t0, last_in, last_sweep, last_out, last_half_width, last_length, last_alpha;
-        public float[] last_from, last_to, last_target;
+        public float[] last_from, last_to, last_target, last_target_to; public float last_top;
+        public float beam_angle, beam_range, beam_gather_E, beam_last_E; public float[] beam_gather_pos, beam_gather_aim;
+        public float snow_sphere, snow_box;
         public float[] warm_position, warm_colour; public float warm_flux, warm_radius, warm_fade;
         public float[] ridge_base, ridge_rim; public float ridge_reach, ridge_near, ridge_wrap, ridge_face, ridge_edge;
     }
@@ -56,6 +58,8 @@ public static class LanbaiAct07Builder
     static Vector3 V3(float[] a, int o = 0) { return new Vector3(a[o], a[o + 1], a[o + 2]); }
     static Vector4 V4(float[] a, int o = 0) { return new Vector4(a[o], a[o + 1], a[o + 2], 0f); }
     static Color C(float[] a) { return new Color(a[0], a[1], a[2], 1f); }
+    // Light.color and RenderSettings.ambient* / fogColor are sRGB (gamma) values in a linear project: Unity linearises them
+    static Color Gamma(float[] lin) { return new Color(lin[0], lin[1], lin[2], 1f).gamma; }
 
     static void Folder(string parent, string name) { if (!AssetDatabase.IsValidFolder(parent + "/" + name)) AssetDatabase.CreateFolder(parent, name); }
 
@@ -214,7 +218,8 @@ public static class LanbaiAct07Builder
                                         i => new Vector4(u.shaft_half_width[i], u.shaft_length[i], u.shaft_seed[i], u.shaft_alpha[i]),
                                         new Bounds(new Vector3(0f, -150f, 0f), new Vector3(200f, 400f, 200f))), Root + "/Meshes/Act07_Shafts.asset");
         var shafts = Draw(rSea, "Act07_Shafts", shaftMesh, mShaft);
-        var lastMesh = SaveMesh(Shafts("Act07_ShaftLast", 1, i => Vector3.zero, i => Vector3.down,
+        // the quad's top sits last_top above the transform (the moving centre), so the seats ~13 m down sit at uv.y ~0.45
+        var lastMesh = SaveMesh(Shafts("Act07_ShaftLast", 1, i => Vector3.down * (0.5f * u.last_length - u.last_top), i => Vector3.down,
                                       i => new Vector4(u.last_half_width, u.last_length, 0.37f, u.last_alpha), new Bounds(Vector3.zero, Vector3.one * 80f)),
                                 Root + "/Meshes/Act07_ShaftLast.asset");
         var lastShaft = Draw(rBus, "Act07_ShaftLast", lastMesh, mShaft);
@@ -222,7 +227,7 @@ public static class LanbaiAct07Builder
         // ---- particles (objects at the world origin: the shader's bus origin)
         Particles P = J.particles;
         var mSnow = Mat("M_07_Snow", "Lanbai/SeaParticles"); ParticleMat(mSnow, "SNOW", false, 2990);
-        mSnow.SetFloat("_Sink", P.snow_sink); mSnow.SetFloat("_Sphere", 25f); mSnow.SetFloat("_Box", 50f);
+        mSnow.SetFloat("_Sink", P.snow_sink); mSnow.SetFloat("_Sphere", u.snow_sphere); mSnow.SetFloat("_Box", u.snow_box);
         mSnow.SetVector("_NearFade", new Vector4(P.near_fade[0], P.near_fade[1], 0, 0)); mSnow.SetFloat("_MinPx", P.min_px);
         Snow S = P.snow;
         var snow = Draw(rBus, "Act07_Snow", SaveMesh(Points("Act07_Snow", S.count, i => V3(S.positions, 3 * i),
@@ -284,7 +289,7 @@ public static class LanbaiAct07Builder
         var sunGo = Child(lights, "Act07_Sun");
         var sun = sunGo.AddComponent<Light>();
         sun.type = LightType.Directional; sun.shadows = LightShadows.None; sun.renderMode = LightRenderMode.ForcePixel;
-        sun.color = C(u.sun_colour); sun.intensity = u.sun_E0;
+        sun.color = Gamma(u.sun_colour); sun.intensity = Mathf.Pow(u.sun_E0, 1f / 2.2f);   // bible §1 trap 1: Inspector = E^(1/2.2)
         float el = u.sun_elevation * Mathf.Deg2Rad, az = u.sun_azimuth * Mathf.Deg2Rad;
         Vector3 toSun = new Vector3(Mathf.Cos(el) * Mathf.Sin(az), Mathf.Sin(el), Mathf.Cos(el) * Mathf.Cos(az));
         sunGo.transform.rotation = Quaternion.LookRotation(-toSun, Vector3.up);
@@ -301,6 +306,14 @@ public static class LanbaiAct07Builder
         EditorUtility.SetDirty(crt);
         sun.cookie = crt; sun.cookieSize = 1.5f;
 
+        // ---- the beam (F4p gather, F3e1 last shaft): a spot in the bus frame that lands on the seats and your hands
+        var beamGo = Child(rBus, "Act07_Beam");
+        var beam = beamGo.AddComponent<Light>();
+        beam.type = LightType.Spot; beam.shadows = LightShadows.None; beam.renderMode = LightRenderMode.ForcePixel;
+        beam.color = Gamma(u.sun_colour); beam.intensity = 0f; beam.spotAngle = u.beam_angle; beam.range = u.beam_range;
+        beam.cullingMask = ~0;                                   // Default + PlayerLocal (the light lands on your hands)
+        beam.enabled = false;
+
         // ---- the driver
         var dGo = new GameObject("Act07_Driver");
         Transform director = LanbaiGateCloudsBuilder.FindInScenePublic("Director");
@@ -310,7 +323,7 @@ public static class LanbaiAct07Builder
         d.rSea = rSea; d.seaRenderer = sea; d.seaAbove = above; d.seaBelow = below;
         d.shafts = shafts; d.lastShaft = lastShaft; d.lastShaftTf = lastShaft.transform; d.ridge = ridge; d.warmPoint = warm;
         d.snow = snow; d.seeds = seeds; d.trails = trails; d.bubblesGlass = bGlass; d.bubblesSeats = bSeats; d.dome = dome;
-        d.sun = sun;
+        d.sun = sun; d.beam = beam;
         d.causticsTex = AssetDatabase.LoadAssetAtPath<Texture2D>(SeaRoot + "/Textures/Caustics_8x8_2048.png");
         d.windowStart = u.window_t0; d.windowEnd = u.window_t1;
         d.tEntry = u.entry; d.tEyeUnder = u.eye_under; d.tF3i = u.F3i; d.tF4 = u.F4; d.tF5 = u.F5;
@@ -320,14 +333,16 @@ public static class LanbaiAct07Builder
         int nw = u.water_depth.Length;
         d.wDepth = u.water_depth; d.wDensity = u.water_density;
         d.wUp = new Vector4[nw]; d.wMid = new Vector4[nw]; d.wDown = new Vector4[nw];
+        d.wFogGamma = new Color[nw];
         for (int i = 0; i < nw; i++)
         {
             d.wUp[i] = V4(u.water_up, 3 * i) + new Vector4(0, 0, 0, 1); d.wMid[i] = V4(u.water_mid, 3 * i) + new Vector4(0, 0, 0, 1);
             d.wDown[i] = V4(u.water_down, 3 * i) + new Vector4(0, 0, 0, 1);
+            d.wFogGamma[i] = new Color(u.water_mid[3 * i], u.water_mid[3 * i + 1], u.water_mid[3 * i + 2], 1f).gamma;
         }
         d.causticsColor = V4(u.caustics_colour); d.causticsDepth0 = u.caustics_depth0; d.causticsDepth1 = u.caustics_depth1;
-        d.sunColor = C(u.sun_colour); d.sunE0 = u.sun_E0; d.sunDepth1 = u.sun_depth1;
-        d.ambSky = C(u.amb_sky); d.ambEquator = C(u.amb_equator); d.ambGround = C(u.amb_ground);
+        d.sunColor = Gamma(u.sun_colour); d.sunE0 = u.sun_E0; d.sunDepth1 = u.sun_depth1;
+        d.ambSky = Gamma(u.amb_sky); d.ambEquator = Gamma(u.amb_equator); d.ambGround = Gamma(u.amb_ground);
         d.winGainT = u.win_gain_t; d.winGainV = u.win_gain_v;
         d.baseWindowGain = below != null ? below.GetFloat("_WindowGain") : 18f;
         d.coreDesktop = new Vector4(u.core_desktop[0], u.core_desktop[1], u.core_desktop[2], u.core_desktop[3]);
@@ -336,7 +351,8 @@ public static class LanbaiAct07Builder
         d.shaftDepthFull = u.shaft_depth_full; d.shaftDepthGone = u.shaft_depth_gone;
         d.gatherT0 = u.gather_t0; d.gatherT1 = u.gather_t1; d.shaftsGoneT = u.shafts_gone_t; d.gatherPointBus = V3(u.gather_point_bus);
         d.lastT0 = u.last_t0; d.lastIn = u.last_in; d.lastSweep = u.last_sweep; d.lastOut = u.last_out;
-        d.lastFromBus = V3(u.last_from); d.lastToBus = V3(u.last_to); d.lastTargetBus = V3(u.last_target);
+        d.lastFromBus = V3(u.last_from); d.lastToBus = V3(u.last_to); d.lastTargetBus = V3(u.last_target); d.lastTargetToBus = V3(u.last_target_to);
+        d.beamGatherPos = V3(u.beam_gather_pos); d.beamGatherAim = V3(u.beam_gather_aim); d.beamGatherE = u.beam_gather_E; d.beamLastE = u.beam_last_E;
         d.warmFadeIn = u.warm_fade;
         LanbaiGateCloudsBuilder.SetupUdonSharp(d);
         EditorUtility.SetDirty(d);

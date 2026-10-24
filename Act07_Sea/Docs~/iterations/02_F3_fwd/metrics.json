@@ -19,21 +19,21 @@
   "lavender_act6_pct": 0.0,
   "brightest": {
    "bbox": [
-    391,
-    257,
-    678,
+    372,
+    211,
+    785,
     367
    ],
    "centroid": [
-    532.6,
-    314.1
+    531.3,
+    310.5
    ],
-   "clusters": 2,
+   "clusters": 7,
    "clusters_ge5pct": 2,
    "min_luma": 127.9,
    "centroid_az_el": [
-    5.82,
-    -5.12
+    5.66,
+    -4.73
    ]
   },
   "top25_Lstar": {
@@ -67,7 +67,7 @@
      "hex": "#3876AB",
      "role": "浅水 縹",
      "nearest_dE2000_p01": 2.3,
-     "within_dE5_pct": 38.03
+     "within_dE5_pct": 38.02
     },
     {
      "hex": "#11395E",
@@ -193,7 +193,7 @@
    540
   ]
  },
- "render_seconds": 17.8,
+ "render_seconds": 16.6,
  "lens": "none",
  "bloom_tint": "single",
  "note": "F3 367.21 forward: shafts slanting down, snow rising past (APL target 85)"

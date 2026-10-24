@@ -4,42 +4,42 @@
    960,
    540
   ],
-  "APL": 11.73,
-  "EV_display": -7.905,
-  "luma_lt12_pct": 45.8,
+  "APL": 11.93,
+  "EV_display": -7.9,
+  "luma_lt12_pct": 44.78,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
   "clip_black_largest_region_pct": 0.0,
   "clip_white_largest_region_pct": 0.0,
   "warm_shadow_pct": 0.0,
-  "purple_pct": 0.071,
-  "purple_largest_region_pct": 0.02,
-  "violet_strong_pct": 0.071,
-  "lavender_act6_pct": 0.127,
+  "purple_pct": 0.0,
+  "purple_largest_region_pct": 0.0,
+  "violet_strong_pct": 0.0,
+  "lavender_act6_pct": 0.037,
   "brightest": {
    "bbox": [
-    82,
-    7,
-    949,
-    427
+    14,
+    36,
+    955,
+    326
    ],
    "centroid": [
-    696.8,
-    238.4
+    207.9,
+    128.6
    ],
-   "clusters": 8,
+   "clusters": 35,
    "clusters_ge5pct": 6,
-   "min_luma": 44.7,
+   "min_luma": 22.6,
    "centroid_az_el": [
-    12.07,
-    -6.0
+    -48.46,
+    4.87
    ]
   },
   "top25_Lstar": {
-   "mean": 5.32,
+   "mean": 5.47,
    "p50": 5.75,
-   "p90": 6.52
+   "p90": 6.92
   },
   "palette": {
    "act": "07a",
@@ -48,47 +48,47 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 71.0,
+     "nearest_dE2000_p01": 85.8,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 64.0,
+     "nearest_dE2000_p01": 71.7,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 56.0,
+     "nearest_dE2000_p01": 61.3,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#3876AB",
      "role": "浅水 縹",
-     "nearest_dE2000_p01": 26.5,
+     "nearest_dE2000_p01": 32.0,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
-     "nearest_dE2000_p01": 11.3,
+     "nearest_dE2000_p01": 13.0,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#697987",
      "role": "海雪",
-     "nearest_dE2000_p01": 28.2,
+     "nearest_dE2000_p01": 32.4,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 59.4,
+     "nearest_dE2000_p01": 65.0,
      "within_dE5_pct": 0.0
     }
    ],
-   "pixel_to_nearest_dE_median": 15.3,
+   "pixel_to_nearest_dE_median": 15.0,
    "pixel_to_nearest_dE_p90": 19.0,
    "pixels_within5_pct": 0.0
   }
@@ -99,8 +99,8 @@
    1.7,
    2.05
   ],
-  "yaw_deg": -10.0,
-  "pitch_deg": -12.0,
+  "yaw_deg": -22.0,
+  "pitch_deg": -10.0,
   "hfov_deg": 90,
   "res": [
    960,
@@ -168,7 +168,7 @@
    "color": "#000000"
   }
  },
- "bloom_share_of_APL": 0.03,
+ "bloom_share_of_APL": 0.0,
  "t": 647.0,
  "target": {
   "phase": "7b 近",
@@ -193,7 +193,7 @@
    540
   ]
  },
- "render_seconds": 15.0,
+ "render_seconds": 15.6,
  "lens": "none",
  "bloom_tint": "single",
  "note": "F5 644.96: far below, one warm point among the cold seeds (APL target 16)"

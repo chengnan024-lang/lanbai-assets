@@ -4,10 +4,10 @@
    916,
    960
   ],
-  "APL": 121.63,
+  "APL": 121.64,
   "EV_display": -1.816,
   "luma_lt12_pct": 0.0,
-  "Lstar_gt85_pct": 9.927,
+  "Lstar_gt85_pct": 9.926,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
   "clip_black_largest_region_pct": 0.0,
@@ -19,21 +19,21 @@
   "lavender_act6_pct": 0.0,
   "brightest": {
    "bbox": [
-    433,
-    459,
+    435,
+    485,
     490,
-    513
+    516
    ],
    "centroid": [
-    462.3,
-    486.6
+    464.1,
+    496.1
    ],
-   "clusters": 5,
-   "clusters_ge5pct": 1,
+   "clusters": 2,
+   "clusters_ge5pct": 2,
    "min_luma": 232.3,
    "centroid_az_el": [
-    12.07,
-    87.58
+    14.74,
+    86.79
    ]
   },
   "top25_Lstar": {
@@ -49,7 +49,7 @@
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
      "nearest_dE2000_p01": 3.6,
-     "within_dE5_pct": 5.28
+     "within_dE5_pct": 5.29
     },
     {
      "hex": "#ACD4ED",
@@ -73,13 +73,13 @@
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
      "nearest_dE2000_p01": 0.5,
-     "within_dE5_pct": 10.07
+     "within_dE5_pct": 10.06
     },
     {
      "hex": "#697987",
      "role": "海雪",
      "nearest_dE2000_p01": 2.2,
-     "within_dE5_pct": 4.0
+     "within_dE5_pct": 4.01
     },
     {
      "hex": "#8AC6FF",
@@ -168,7 +168,7 @@
    "color": "#000000"
   }
  },
- "bloom_share_of_APL": 0.0,
+ "bloom_share_of_APL": 0.01,
  "t": 387.0,
  "target": {
   "phase": "7a 被海接住",
@@ -193,7 +193,7 @@
    960
   ]
  },
- "render_seconds": 13.8,
+ "render_seconds": 11.6,
  "lens": "none",
  "bloom_tint": "single",
  "note": "387 VR straight up, WORST case: the whole roof above el 40 gone (az -180..180), VR ceiling: D-09 APL <= 150"

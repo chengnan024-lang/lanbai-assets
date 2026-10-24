@@ -7,7 +7,7 @@
   "APL": 45.95,
   "EV_display": -3.338,
   "luma_lt12_pct": 0.0,
-  "Lstar_gt85_pct": 8.962,
+  "Lstar_gt85_pct": 8.961,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
   "clip_black_largest_region_pct": 0.0,
@@ -20,20 +20,20 @@
   "brightest": {
    "bbox": [
     433,
-    460,
-    490,
-    516
+    465,
+    489,
+    514
    ],
    "centroid": [
-    460.3,
-    477.2
+    460.4,
+    482.4
    ],
-   "clusters": 4,
-   "clusters_ge5pct": 3,
+   "clusters": 2,
+   "clusters_ge5pct": 2,
    "min_luma": 232.3,
    "centroid_az_el": [
-    9.82,
-    87.43
+    4.88,
+    87.39
    ]
   },
   "top25_Lstar": {
@@ -49,7 +49,7 @@
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
      "nearest_dE2000_p01": 3.6,
-     "within_dE5_pct": 5.35
+     "within_dE5_pct": 5.34
     },
     {
      "hex": "#ACD4ED",
@@ -79,7 +79,7 @@
      "hex": "#697987",
      "role": "海雪",
      "nearest_dE2000_p01": 2.2,
-     "within_dE5_pct": 1.65
+     "within_dE5_pct": 1.66
     },
     {
      "hex": "#8AC6FF",
@@ -193,7 +193,7 @@
    960
   ]
  },
- "render_seconds": 27.8,
+ "render_seconds": 21.8,
  "lens": "none",
  "bloom_tint": "single",
  "note": "387 VR straight up, roof eroded by t (el >= 70 - 120 x erosion), VR window ceiling by erosion (D-23 #2)"

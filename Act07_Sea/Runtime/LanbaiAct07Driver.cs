@@ -39,6 +39,7 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
     public Renderer snow, seeds, trails, bubblesGlass, bubblesSeats;
     public Renderer dome;                      // Lanbai/SeaDome: the 'sky' under water (on while the eye is under)
     public Light sun;                          // Act07_Lights/Act07_Sun (directional, cookie)
+    public Light beam;                         // R_Act07Bus/Act07_Beam (spot): F4p gather and F3e1's last shaft on the seats / hands
     public Light worldSun;                     // the world's main sun (LB_Journey's): off inside the window (may be null)
     public Texture causticsTex;
     public bool writeRenderSettings = true;    // README_集成 §3: only if LB_Journey.extAtmosphere is ticked
@@ -57,10 +58,12 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
     [Header("Water by depth")]
     public float[] wDepth, wDensity;
     public Vector4[] wUp, wMid, wDown;
+    public Color[] wFogGamma;                  // RenderSettings.fogColor per key: the mid colour in sRGB (gamma) space
     public Vector4 causticsColor;
     public float causticsDepth0 = 0f, causticsDepth1 = 15f;
 
     [Header("Light")]
+    // colours of lights and RenderSettings are sRGB values (Unity linearises them); intensity = E^(1/2.2) (bible §1 trap 1)
     public Color sunColor = new Color(0.69f, 0.85f, 0.95f, 1f);
     public float sunE0 = 1.6f, sunDepth1 = 15f;
     public Color ambSky, ambEquator, ambGround;
@@ -76,7 +79,9 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
     public float gatherT0 = 453f, gatherT1 = 462.36f, shaftsGoneT = 467.6f;
     public Vector3 gatherPointBus = new Vector3(0.55f, 2.74f, 1.2f);
     public float lastT0 = 506.36f, lastIn = 2f, lastSweep = 4f, lastOut = 2f;
-    public Vector3 lastFromBus = new Vector3(3f, 14f, -2f), lastToBus = new Vector3(-1.5f, 14f, 4.5f), lastTargetBus = new Vector3(0.55f, 1f, 1.2f);
+    public Vector3 lastFromBus = new Vector3(3f, 14f, -2f), lastToBus = new Vector3(-1.5f, 14f, 4.5f), lastTargetBus = new Vector3(1f, 0.95f, -2f), lastTargetToBus = new Vector3(0f, 0.95f, 3.5f);
+    public Vector3 beamGatherPos = new Vector3(0.87f, 5.16f, 1.76f), beamGatherAim = new Vector3(0.55f, 1.1f, 1.75f);
+    public float beamGatherE = 1f, beamLastE = 0.8f;
 
     [Header("Warm point (F5)")]
     public float warmFadeIn = 3f;
@@ -99,7 +104,8 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
     {
         if (roots == null) return;
         for (int i = 0; i < roots.Length; i++) if (roots[i] != null) roots[i].SetActive(on);
-        if (worldSun != null) worldSun.enabled = !on;
+        // the world sun goes off when the eye is under (Evaluate), not at activation: until F2h the act-6 sea and sun rule
+        if (!on && worldSun != null) worldSun.enabled = true;
         // hand back only what is the sea's alone (裁决 20:40: shared channels -- fog, sea level / mode -- are never
         // written w = 0 here; the next writer writes them in full)
         if (!on && _ready)
@@ -209,6 +215,23 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
         float vFwd = t < fwdT0 ? 0f : ProfileV(t, fwdV0, fwdSegT0, fwdSegDur, fwdSegDv);
         if (rSea != null) rSea.localPosition = new Vector3(0f, depth, -fwd);
         bool under = t >= tEyeUnder;
+        if (worldSun != null) worldSun.enabled = !under;
+
+        // before F2h (the window opens 1 s early, under the dispatcher's cover) nothing of the sea exists yet: the act-6 sea
+        // plane and globals are still the Clouds' (README_Sea接口 §5: the two planes never coexist; the sea's globals from F2h)
+        if (t < tEntry)
+        {
+            if (seaRenderer != null) seaRenderer.enabled = false;
+            if (dome != null) dome.enabled = false;
+            if (sun != null) sun.enabled = false;
+            if (beam != null) beam.enabled = false;
+            if (shafts != null) shafts.enabled = false;
+            if (lastShaft != null) lastShaft.enabled = false;
+            SetGain(snow, 0f); SetGain(seeds, 0f); SetGain(trails, 0f); SetGain(bubblesGlass, 0f); SetGain(bubblesSeats, 0f);
+            SetGain(ridge, 0f); SetGain(warmPoint, 0f);
+            return;
+        }
+        if (seaRenderer != null) seaRenderer.enabled = true;
 
         // ---- the plane: ABOVE until the eye is under (the Clouds' look, under the waterline), then BELOW
         if (seaRenderer != null)
@@ -266,7 +289,8 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
             if (writeRenderSettings)
             {
                 RenderSettings.fogDensity = dens;
-                RenderSettings.fogColor = new Color(mid.x, mid.y, mid.z, 1f);
+                RenderSettings.fogColor = Color.Lerp(wFogGamma[_wi], wFogGamma[_wi + 1], _wf);
+                RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Trilight;
                 RenderSettings.ambientSkyColor = ambSky;
                 RenderSettings.ambientEquatorColor = ambEquator;
                 RenderSettings.ambientGroundColor = ambGround;
@@ -280,7 +304,7 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
         if (sun != null)
         {
             float e = under ? sunE0 * (1f - Mathf.Clamp01(depth / Mathf.Max(sunDepth1, 1e-3f))) : 0f;
-            sun.intensity = e;                 // Inspector value = linear E (VRChat: lightsUseLinearIntensity)
+            sun.intensity = Mathf.Pow(e, 1f / 2.2f);   // VRChat: lightsUseLinearIntensity = false -> Inspector = E^(1/2.2)
             sun.color = sunColor;
             sun.enabled = e > 0.001f;
         }
@@ -288,10 +312,13 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
         // ---- shafts: depth fade, F4p gather into the skylight, gone by 467.6
         if (shafts != null)
         {
+            // F4p is their brightest (bible §6·7a): from 453 they gather AND come back up from the depth fade (lerp to 1),
+            // then fade out by 467.6; the depth fade alone would have them gone at 25 m, i.e. at F4p
             float g = 1f - Mathf.Clamp01((depth - shaftDepthFull) / Mathf.Max(shaftDepthGone - shaftDepthFull, 1e-3f));
+            float gather = Smooth((t - gatherT0) / Mathf.Max(gatherT1 - gatherT0, 1e-3f));
+            if (t > gatherT0) g = Mathf.Lerp(g, 1f, gather);
             if (t > gatherT1) g *= 1f - Smooth((t - gatherT1) / Mathf.Max(shaftsGoneT - gatherT1, 1e-3f));
             if (!under) g = 0f;
-            float gather = Smooth((t - gatherT0) / Mathf.Max(gatherT1 - gatherT0, 1e-3f));
             shafts.enabled = g > 0.001f;
             if (shafts.enabled)
             {
@@ -304,7 +331,17 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
                 shafts.SetPropertyBlock(_mpb);
             }
         }
-        // F3e1: the last wide shaft (2 s in, 4 s sweep across the seats, 2 s out); its quad lives in the BUS frame
+        // the beam light: F4p (the gathered shafts land on the seats and your hands), else the last shaft below
+        float beamE = 0f;
+        Vector3 beamPos = beamGatherPos, beamAim = beamGatherAim;
+        if (under && t > gatherT0 && t < shaftsGoneT)
+        {
+            float up = Smooth((t - gatherT0) / Mathf.Max(gatherT1 - gatherT0, 1e-3f));
+            float down = 1f - Smooth((t - gatherT1) / Mathf.Max(shaftsGoneT - gatherT1, 1e-3f));
+            beamE = beamGatherE * (t < gatherT1 ? up : down);
+        }
+        // F3e1: the last wide shaft (2 s in, 4 s sweep across the seats, 2 s out); its quad lives in the BUS frame,
+        // its foot moves across the seats (target from -> to), the beam rides with it
         if (lastShaft != null)
         {
             float u = t - lastT0;
@@ -316,14 +353,29 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
                 float a = Smooth(u / lastIn) * (1f - Smooth((u - lastIn - lastSweep) / lastOut));
                 float s = Smooth((u - lastIn * 0.5f) / (lastSweep + lastIn));
                 Vector3 c = Vector3.Lerp(lastFromBus, lastToBus, s);
+                Vector3 foot = Vector3.Lerp(lastTargetBus, lastTargetToBus, s);
                 if (lastShaftTf != null)
                 {
                     lastShaftTf.localPosition = c;
-                    lastShaftTf.localRotation = Quaternion.FromToRotation(Vector3.down, (lastTargetBus - c).normalized);
+                    lastShaftTf.localRotation = Quaternion.FromToRotation(Vector3.down, (foot - c).normalized);
                 }
+                beamE = beamLastE * a;
+                beamPos = foot + (c - foot).normalized * 4f;
+                beamAim = foot;
                 lastShaft.GetPropertyBlock(_mpb);
                 _mpb.SetFloat(_idGain, a);
                 lastShaft.SetPropertyBlock(_mpb);
+            }
+        }
+
+        if (beam != null)
+        {
+            beam.enabled = beamE > 0.001f;
+            if (beam.enabled)
+            {
+                beam.intensity = Mathf.Pow(beamE, 1f / 2.2f);
+                beam.transform.localPosition = beamPos;
+                beam.transform.localRotation = Quaternion.LookRotation((beamAim - beamPos).normalized, Vector3.forward);
             }
         }
 

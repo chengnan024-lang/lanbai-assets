@@ -4,8 +4,8 @@
    960,
    540
   ],
-  "APL": 17.08,
-  "EV_display": -7.256,
+  "APL": 17.17,
+  "EV_display": -7.242,
   "luma_lt12_pct": 22.62,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
@@ -13,32 +13,32 @@
   "clip_black_largest_region_pct": 0.0,
   "clip_white_largest_region_pct": 0.0,
   "warm_shadow_pct": 0.0,
-  "purple_pct": 0.011,
+  "purple_pct": 0.0,
   "purple_largest_region_pct": 0.0,
-  "violet_strong_pct": 0.011,
-  "lavender_act6_pct": 0.045,
+  "violet_strong_pct": 0.0,
+  "lavender_act6_pct": 0.035,
   "brightest": {
    "bbox": [
-    25,
-    10,
-    618,
-    356
+    46,
+    21,
+    932,
+    385
    ],
    "centroid": [
-    268.2,
-    95.3
+    596.1,
+    135.7
    ],
-   "clusters": 17,
+   "clusters": 27,
    "clusters_ge5pct": 5,
-   "min_luma": 29.1,
+   "min_luma": 31.5,
    "centroid_az_el": [
-    -21.97,
-    17.3
+    11.66,
+    12.25
    ]
   },
   "top25_Lstar": {
-   "mean": 8.13,
-   "p50": 8.69,
+   "mean": 8.25,
+   "p50": 8.9,
    "p90": 10.9
   },
   "palette": {
@@ -48,7 +48,7 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 81.0,
+     "nearest_dE2000_p01": 80.4,
      "within_dE5_pct": 0.0
     },
     {
@@ -72,8 +72,8 @@
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
-     "nearest_dE2000_p01": 9.4,
-     "within_dE5_pct": 0.0
+     "nearest_dE2000_p01": 9.5,
+     "within_dE5_pct": 0.01
     },
     {
      "hex": "#697987",
@@ -85,7 +85,7 @@
      "hex": "#8AC6FF",
      "role": "生物荧光",
      "nearest_dE2000_p01": 63.1,
-     "within_dE5_pct": 0.01
+     "within_dE5_pct": 0.0
     }
    ],
    "pixel_to_nearest_dE_median": 14.3,
@@ -194,7 +194,7 @@
    540
   ]
  },
- "render_seconds": 19.2,
+ "render_seconds": 20.4,
  "lens": "none",
  "bloom_tint": "single",
  "note": "F3e3 556.36: the last blue goes out (APL target 25)"

@@ -4,8 +4,8 @@
    960,
    540
   ],
-  "APL": 31.64,
-  "EV_display": -5.205,
+  "APL": 33.47,
+  "EV_display": -5.049,
   "luma_lt12_pct": 58.1,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
@@ -16,30 +16,30 @@
   "purple_pct": 0.0,
   "purple_largest_region_pct": 0.0,
   "violet_strong_pct": 0.0,
-  "lavender_act6_pct": 0.002,
+  "lavender_act6_pct": 0.0,
   "brightest": {
    "bbox": [
-    491,
+    463,
     1,
-    951,
-    489
+    832,
+    378
    ],
    "centroid": [
-    613.8,
-    89.7
+    522.1,
+    31.8
    ],
-   "clusters": 4,
+   "clusters": 12,
    "clusters_ge5pct": 4,
-   "min_luma": 128.3,
+   "min_luma": 131.0,
    "centroid_az_el": [
-    21.52,
-    57.44
+    8.92,
+    65.4
    ]
   },
   "top25_Lstar": {
-   "mean": 8.73,
+   "mean": 8.83,
    "p50": 2.19,
-   "p90": 48.45
+   "p90": 49.28
   },
   "palette": {
    "act": "07a",
@@ -48,49 +48,49 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 29.4,
+     "nearest_dE2000_p01": 29.1,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 21.7,
+     "nearest_dE2000_p01": 21.4,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 17.5,
-     "within_dE5_pct": 0.01
+     "nearest_dE2000_p01": 16.9,
+     "within_dE5_pct": 0.0
     },
     {
      "hex": "#3876AB",
      "role": "浅水 縹",
-     "nearest_dE2000_p01": 7.6,
-     "within_dE5_pct": 0.0
+     "nearest_dE2000_p01": 6.5,
+     "within_dE5_pct": 0.01
     },
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
-     "nearest_dE2000_p01": 2.6,
-     "within_dE5_pct": 34.18
+     "nearest_dE2000_p01": 2.4,
+     "within_dE5_pct": 32.66
     },
     {
      "hex": "#697987",
      "role": "海雪",
-     "nearest_dE2000_p01": 3.2,
-     "within_dE5_pct": 2.27
+     "nearest_dE2000_p01": 3.4,
+     "within_dE5_pct": 1.83
     },
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 20.2,
-     "within_dE5_pct": 0.01
+     "nearest_dE2000_p01": 19.5,
+     "within_dE5_pct": 0.0
     }
    ],
    "pixel_to_nearest_dE_median": 19.2,
    "pixel_to_nearest_dE_p90": 19.2,
-   "pixels_within5_pct": 36.5
+   "pixels_within5_pct": 34.5
   }
  },
  "cam": {
@@ -169,7 +169,7 @@
    "color": "#000000"
   }
  },
- "bloom_share_of_APL": 0.01,
+ "bloom_share_of_APL": 0.0,
  "t": 512.0,
  "target": {
   "phase": "最后一闪",
@@ -194,7 +194,7 @@
    540
   ]
  },
- "render_seconds": 21.8,
+ "render_seconds": 23.1,
  "lens": "none",
  "bloom_tint": "single",
  "note": "F3e1 506.36+: the window shrinks to a dark coin, the last wide shaft sweeps the seats"

@@ -208,9 +208,11 @@ def shafts(rays, eye, t, depth, water, zbuf):
     out = np.zeros(rays.shape)
     under = t >= U['eye_under']
     g = 1 - min(max((depth - U['shaft_depth_full']) / (U['shaft_depth_gone'] - U['shaft_depth_full']), 0), 1)
+    gather = float(smooth((t - U['gather_t0']) / (U['gather_t1'] - U['gather_t0'])))
+    if t > U['gather_t0']:
+        g = g + (1 - g) * gather                 # they gather and come back up: F4p is their brightest
     if t > U['gather_t1']:
         g *= 1 - float(smooth((t - U['gather_t1']) / (U['shafts_gone_t'] - U['gather_t1'])))
-    gather = float(smooth((t - U['gather_t0']) / (U['gather_t1'] - U['gather_t0'])))
     col = U['shaft_colour']
     if under and g > 1e-3:
         Rsea = np.array([0.0, depth, -AM.fwd(t)])
@@ -226,7 +228,9 @@ def shafts(rays, eye, t, depth, water, zbuf):
         aa = float(smooth(u / U['last_in']) * (1 - smooth((u - U['last_in'] - U['last_sweep']) / U['last_out'])))
         sw = float(smooth((u - U['last_in'] * 0.5) / (U['last_sweep'] + U['last_in'])))
         c = np.asarray(U['last_from']) * (1 - sw) + np.asarray(U['last_to']) * sw
-        ax = S.normalize((np.asarray(U['last_target']) - c)[None, :])[0]
+        foot = np.asarray(U['last_target']) * (1 - sw) + np.asarray(U['last_target_to']) * sw
+        ax = S.normalize((foot - c)[None, :])[0]
+        c = c + ax * (0.5 * U['last_length'] - U['last_top'])      # the quad's centre (its top is last_top above the moving point)
         out = out + one_shaft(rays, eye, c, ax, U['last_half_width'], U['last_length'], 0.37, U['last_alpha'], aa, t, water, zbuf, col)
     return out
 
@@ -304,9 +308,11 @@ def particles(img, rays, cam, eye, t, depth, water, zbuf):
         Sn = P_['snow']
         pw = np.asarray(Sn['positions']).reshape(-1, 3) - np.array([0.0, P_['snow_sink'] * t, 0.0])
         d = pw - busw
-        rel = (np.modf(d / 50.0 + 0.5)[0] % 1.0 - 0.5) * 50.0
-        a = np.asarray(Sn['alpha']) * (1 - smooth((np.linalg.norm(rel, axis=-1) - 20.0) / 5.0))
-        rgb = np.tile(np.asarray(Sn['colour']), (len(a), 1))
+        bx, sph = U['snow_box'], U['snow_sphere']
+        rel = (np.modf(d / bx + 0.5)[0] % 1.0 - 0.5) * bx
+        a = np.asarray(Sn['alpha']) * (1 - smooth((np.linalg.norm(rel, axis=-1) - 0.8 * sph) / (0.2 * sph)))
+        lit = 1.0 + (U['snow_lit'] - 1.0) * (1.0 - float(smooth((depth - U['snow_lit_d0']) / (U['snow_lit_d1'] - U['snow_lit_d0']))))
+        rgb = np.tile(np.asarray(Sn['colour']) * lit, (len(a), 1))
         add, img = splat(add, img, rays.shape, cam, eye, rel, np.asarray(Sn['radius']), rgb, a, 'SNOW', water, zbuf)
     if t >= U['F3i'] - 0.1:
         Sd = P_['seeds']
