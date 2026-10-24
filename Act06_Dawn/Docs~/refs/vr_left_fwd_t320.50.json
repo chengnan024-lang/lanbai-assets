@@ -3,11 +3,11 @@
  "cam": "vr_left_fwd",
  "door": "d12",
  "d": 1678.2,
- "APL": 63.3,
+ "APL": 59.1,
  "lavender": 0.0,
  "brightest_px": [
   0.756,
   0.45
  ],
- "width": 640
+ "width": 960
 }
