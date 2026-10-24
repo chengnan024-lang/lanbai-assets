@@ -1,0 +1,15 @@
+{
+    "id": "gate_20261024_cloudbuild",
+    "state": "failed",
+    "step": 0,
+    "total": 1,
+    "started": "2026-10-24 15:45:34",
+    "finished": "2026-10-24 15:45:37",
+    "error": "InvalidOperationException: Cannot run serialization on U# behaviour 'GateClouds_Driver (LanbaiGateClouds)' with outdated script version, wait until program assets have compiled.\n  at UdonSharpEditor.UdonSharpEditorUtility.CopyProxyToUdon (UdonSharp.UdonSharpBehaviour proxy, UdonSharpEditor.ProxySerializationPolicy serializationPolicy) [0x000bc] in .\\Packages\\com.vrchat.worlds\\Integrations\\UdonSharp\\Editor\\UdonSharpEditorUtility.cs:1198 \r\n  at UdonSharpEditor.UdonSharpEditorUtility.CopyProxyToUdon (UdonSharp.UdonSharpBehaviour proxy) [0x00000] in .\\Packages\\com.vrchat.worlds\\Integrations\\UdonSharp\\Editor\\UdonSharpEditorUtility.cs:1143 \r\n  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)\r\n  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <27124aa0e30a41659b903b822b959bc7>:0 ",
+    "log": [
+        "15:45:34 收到请求，共 1 步",
+        "15:45:34 调用 LanbaiGateCloudsBuilder.BuildMenu",
+        "15:45:37 出错：InvalidOperationException: Cannot run serialization on U# behaviour 'GateClouds_Driver (LanbaiGateClouds)' with outdated script version, wait until program assets have compiled."
+    ],
+    "files": []
+}

@@ -1,0 +1,273 @@
+remote: Enumerating objects: 5133, done.        
+remote: Counting objects:   0% (1/625)        
+remote: Counting objects:   1% (7/625)        
+remote: Counting objects:   2% (13/625)        
+remote: Counting objects:   3% (19/625)        
+remote: Counting objects:   4% (25/625)        
+remote: Counting objects:   5% (32/625)        
+remote: Counting objects:   6% (38/625)        
+remote: Counting objects:   7% (44/625)        
+remote: Counting objects:   8% (50/625)        
+remote: Counting objects:   9% (57/625)        
+remote: Counting objects:  10% (63/625)        
+remote: Counting objects:  11% (69/625)        
+remote: Counting objects:  12% (75/625)        
+remote: Counting objects:  13% (82/625)        
+remote: Counting objects:  14% (88/625)        
+remote: Counting objects:  15% (94/625)        
+remote: Counting objects:  16% (100/625)        
+remote: Counting objects:  17% (107/625)        
+remote: Counting objects:  18% (113/625)        
+remote: Counting objects:  19% (119/625)        
+remote: Counting objects:  20% (125/625)        
+remote: Counting objects:  21% (132/625)        
+remote: Counting objects:  22% (138/625)        
+remote: Counting objects:  23% (144/625)        
+remote: Counting objects:  24% (150/625)        
+remote: Counting objects:  25% (157/625)        
+remote: Counting objects:  26% (163/625)        
+remote: Counting objects:  27% (169/625)        
+remote: Counting objects:  28% (175/625)        
+remote: Counting objects:  29% (182/625)        
+remote: Counting objects:  30% (188/625)        
+remote: Counting objects:  31% (194/625)        
+remote: Counting objects:  32% (200/625)        
+remote: Counting objects:  33% (207/625)        
+remote: Counting objects:  34% (213/625)        
+remote: Counting objects:  35% (219/625)        
+remote: Counting objects:  36% (225/625)        
+remote: Counting objects:  37% (232/625)        
+remote: Counting objects:  38% (238/625)        
+remote: Counting objects:  39% (244/625)        
+remote: Counting objects:  40% (250/625)        
+remote: Counting objects:  41% (257/625)        
+remote: Counting objects:  42% (263/625)        
+remote: Counting objects:  43% (269/625)        
+remote: Counting objects:  44% (275/625)        
+remote: Counting objects:  45% (282/625)        
+remote: Counting objects:  46% (288/625)        
+remote: Counting objects:  47% (294/625)        
+remote: Counting objects:  48% (300/625)        
+remote: Counting objects:  49% (307/625)        
+remote: Counting objects:  50% (313/625)        
+remote: Counting objects:  51% (319/625)        
+remote: Counting objects:  52% (325/625)        
+remote: Counting objects:  53% (332/625)        
+remote: Counting objects:  54% (338/625)        
+remote: Counting objects:  55% (344/625)        
+remote: Counting objects:  56% (350/625)        
+remote: Counting objects:  57% (357/625)        
+remote: Counting objects:  58% (363/625)        
+remote: Counting objects:  59% (369/625)        
+remote: Counting objects:  60% (375/625)        
+remote: Counting objects:  61% (382/625)        
+remote: Counting objects:  62% (388/625)        
+remote: Counting objects:  63% (394/625)        
+remote: Counting objects:  64% (400/625)        
+remote: Counting objects:  65% (407/625)        
+remote: Counting objects:  66% (413/625)        
+remote: Counting objects:  67% (419/625)        
+remote: Counting objects:  68% (425/625)        
+remote: Counting objects:  69% (432/625)        
+remote: Counting objects:  70% (438/625)        
+remote: Counting objects:  71% (444/625)        
+remote: Counting objects:  72% (450/625)        
+remote: Counting objects:  73% (457/625)        
+remote: Counting objects:  74% (463/625)        
+remote: Counting objects:  75% (469/625)        
+remote: Counting objects:  76% (475/625)        
+remote: Counting objects:  77% (482/625)        
+remote: Counting objects:  78% (488/625)        
+remote: Counting objects:  79% (494/625)        
+remote: Counting objects:  80% (500/625)        
+remote: Counting objects:  81% (507/625)        
+remote: Counting objects:  82% (513/625)        
+remote: Counting objects:  83% (519/625)        
+remote: Counting objects:  84% (525/625)        
+remote: Counting objects:  85% (532/625)        
+remote: Counting objects:  86% (538/625)        
+remote: Counting objects:  87% (544/625)        
+remote: Counting objects:  88% (550/625)        
+remote: Counting objects:  89% (557/625)        
+remote: Counting objects:  90% (563/625)        
+remote: Counting objects:  91% (569/625)        
+remote: Counting objects:  92% (575/625)        
+remote: Counting objects:  93% (582/625)        
+remote: Counting objects:  94% (588/625)        
+remote: Counting objects:  95% (594/625)        
+remote: Counting objects:  96% (600/625)        
+remote: Counting objects:  97% (607/625)        
+remote: Counting objects:  98% (613/625)        
+remote: Counting objects:  99% (619/625)        
+remote: Counting objects: 100% (625/625)        
+remote: Counting objects: 100% (625/625), done.        
+remote: Compressing objects:   1% (1/62)        
+remote: Compressing objects:   3% (2/62)        
+remote: Compressing objects:   4% (3/62)        
+remote: Compressing objects:   6% (4/62)        
+remote: Compressing objects:   8% (5/62)        
+remote: Compressing objects:   9% (6/62)        
+remote: Compressing objects:  11% (7/62)        
+remote: Compressing objects:  12% (8/62)        
+remote: Compressing objects:  14% (9/62)        
+remote: Compressing objects:  16% (10/62)        
+remote: Compressing objects:  17% (11/62)        
+remote: Compressing objects:  19% (12/62)        
+remote: Compressing objects:  20% (13/62)        
+remote: Compressing objects:  22% (14/62)        
+remote: Compressing objects:  24% (15/62)        
+remote: Compressing objects:  25% (16/62)        
+remote: Compressing objects:  27% (17/62)        
+remote: Compressing objects:  29% (18/62)        
+remote: Compressing objects:  30% (19/62)        
+remote: Compressing objects:  32% (20/62)        
+remote: Compressing objects:  33% (21/62)        
+remote: Compressing objects:  35% (22/62)        
+remote: Compressing objects:  37% (23/62)        
+remote: Compressing objects:  38% (24/62)        
+remote: Compressing objects:  40% (25/62)        
+remote: Compressing objects:  41% (26/62)        
+remote: Compressing objects:  43% (27/62)        
+remote: Compressing objects:  45% (28/62)        
+remote: Compressing objects:  46% (29/62)        
+remote: Compressing objects:  48% (30/62)        
+remote: Compressing objects:  50% (31/62)        
+remote: Compressing objects:  51% (32/62)        
+remote: Compressing objects:  53% (33/62)        
+remote: Compressing objects:  54% (34/62)        
+remote: Compressing objects:  56% (35/62)        
+remote: Compressing objects:  58% (36/62)        
+remote: Compressing objects:  59% (37/62)        
+remote: Compressing objects:  61% (38/62)        
+remote: Compressing objects:  62% (39/62)        
+remote: Compressing objects:  64% (40/62)        
+remote: Compressing objects:  66% (41/62)        
+remote: Compressing objects:  67% (42/62)        
+remote: Compressing objects:  69% (43/62)        
+remote: Compressing objects:  70% (44/62)        
+remote: Compressing objects:  72% (45/62)        
+remote: Compressing objects:  74% (46/62)        
+remote: Compressing objects:  75% (47/62)        
+remote: Compressing objects:  77% (48/62)        
+remote: Compressing objects:  79% (49/62)        
+remote: Compressing objects:  80% (50/62)        
+remote: Compressing objects:  82% (51/62)        
+remote: Compressing objects:  83% (52/62)        
+remote: Compressing objects:  85% (53/62)        
+remote: Compressing objects:  87% (54/62)        
+remote: Compressing objects:  88% (55/62)        
+remote: Compressing objects:  90% (56/62)        
+remote: Compressing objects:  91% (57/62)        
+remote: Compressing objects:  93% (58/62)        
+remote: Compressing objects:  95% (59/62)        
+remote: Compressing objects:  96% (60/62)        
+remote: Compressing objects:  98% (61/62)        
+remote: Compressing objects: 100% (62/62)        
+remote: Compressing objects: 100% (62/62), done.        
+Receiving objects:   0% (1/5133)
+Receiving objects:   1% (52/5133)
+Receiving objects:   2% (103/5133), 192.00 KiB | 318.00 KiB/s
+Receiving objects:   3% (154/5133), 192.00 KiB | 318.00 KiB/s
+Receiving objects:   3% (173/5133), 192.00 KiB | 318.00 KiB/s
+Receiving objects:   4% (206/5133), 192.00 KiB | 318.00 KiB/s
+Receiving objects:   5% (257/5133), 1.74 MiB | 1.39 MiB/s    
+Receiving objects:   6% (308/5133), 1.74 MiB | 1.39 MiB/s
+Receiving objects:   6% (338/5133), 9.87 MiB | 4.37 MiB/s
+Receiving objects:   6% (339/5133), 15.87 MiB | 4.84 MiB/s
+Receiving objects:   6% (340/5133), 19.94 MiB | 4.65 MiB/s
+Receiving objects:   6% (341/5133), 21.76 MiB | 4.54 MiB/s
+Receiving objects:   6% (342/5133), 27.06 MiB | 5.52 MiB/s
+Receiving objects:   6% (343/5133), 35.67 MiB | 4.96 MiB/s
+Receiving objects:   7% (360/5133), 35.67 MiB | 4.96 MiB/s
+Receiving objects:   8% (411/5133), 35.67 MiB | 4.96 MiB/s
+Receiving objects:   8% (417/5133), 38.52 MiB | 4.95 MiB/s
+Receiving objects:   9% (462/5133), 38.52 MiB | 4.95 MiB/s
+Receiving objects:  10% (514/5133), 38.52 MiB | 4.95 MiB/s
+Receiving objects:  10% (535/5133), 47.93 MiB | 5.65 MiB/s
+Receiving objects:  10% (536/5133), 53.34 MiB | 5.72 MiB/s
+Receiving objects:  10% (537/5133), 58.72 MiB | 5.67 MiB/s
+Receiving objects:  10% (538/5133), 63.00 MiB | 5.19 MiB/s
+Receiving objects:  10% (539/5133), 68.99 MiB | 5.78 MiB/s
+Receiving objects:  11% (565/5133), 72.80 MiB | 6.26 MiB/s
+Receiving objects:  11% (586/5133), 76.34 MiB | 6.09 MiB/s
+Receiving objects:  11% (587/5133), 83.42 MiB | 6.45 MiB/s
+Receiving objects:  11% (588/5133), 88.70 MiB | 6.43 MiB/s
+Receiving objects:  11% (590/5133), 97.34 MiB | 7.60 MiB/s
+Receiving objects:  11% (591/5133), 106.73 MiB | 6.73 MiB/s
+Receiving objects:  11% (601/5133), 109.48 MiB | 5.78 MiB/s
+Receiving objects:  11% (602/5133), 111.96 MiB | 5.63 MiB/s
+Receiving objects:  12% (616/5133), 111.96 MiB | 5.63 MiB/s
+Receiving objects:  12% (632/5133), 119.55 MiB | 4.92 MiB/s
+Receiving objects:  12% (633/5133), 125.76 MiB | 4.92 MiB/s
+Receiving objects:  12% (635/5133), 128.83 MiB | 4.89 MiB/s
+Receiving objects:  12% (636/5133), 134.67 MiB | 5.57 MiB/s
+Receiving objects:  12% (637/5133), 137.42 MiB | 5.41 MiB/s
+Receiving objects:  13% (668/5133), 137.42 MiB | 5.41 MiB/s
+Receiving objects:  14% (719/5133), 137.42 MiB | 5.41 MiB/s
+Receiving objects:  15% (770/5133), 143.55 MiB | 6.18 MiB/s
+Receiving objects:  16% (822/5133), 146.53 MiB | 6.10 MiB/s
+Receiving objects:  16% (826/5133), 146.53 MiB | 6.10 MiB/s
+Receiving objects:  16% (836/5133), 154.16 MiB | 6.36 MiB/s
+Receiving objects:  16% (872/5133), 160.23 MiB | 6.25 MiB/s
+Receiving objects:  17% (873/5133), 160.23 MiB | 6.25 MiB/s
+Receiving objects:  18% (924/5133), 165.30 MiB | 6.57 MiB/s
+Receiving objects:  19% (976/5133), 165.30 MiB | 6.57 MiB/s
+Receiving objects:  20% (1027/5133), 165.30 MiB | 6.57 MiB/s
+Receiving objects:  21% (1078/5133), 165.30 MiB | 6.57 MiB/s
+Receiving objects:  21% (1105/5133), 168.03 MiB | 6.57 MiB/s
+Receiving objects:  22% (1130/5133), 168.03 MiB | 6.57 MiB/s
+Receiving objects:  23% (1181/5133), 168.03 MiB | 6.57 MiB/s
+Receiving objects:  24% (1232/5133), 168.03 MiB | 6.57 MiB/s
+Receiving objects:  25% (1284/5133), 172.78 MiB | 7.24 MiB/s
+Receiving objects:  25% (1304/5133), 175.09 MiB | 6.46 MiB/s
+Receiving objects:  26% (1335/5133), 175.09 MiB | 6.46 MiB/s
+Receiving objects:  27% (1386/5133), 175.09 MiB | 6.46 MiB/s
+Receiving objects:  27% (1413/5133), 182.52 MiB | 6.61 MiB/s
+Receiving objects:  27% (1413/5133), 186.88 MiB | 6.09 MiB/s
+Receiving objects:  28% (1438/5133), 190.17 MiB | 6.41 MiB/s
+Receiving objects:  28% (1454/5133), 190.17 MiB | 6.41 MiB/s
+Receiving objects:  29% (1489/5133), 195.22 MiB | 5.70 MiB/s
+Receiving objects:  29% (1496/5133), 195.22 MiB | 5.70 MiB/s
+Receiving objects:  30% (1540/5133), 197.68 MiB | 5.21 MiB/s
+Receiving objects:  30% (1565/5133), 201.52 MiB | 4.59 MiB/s
+Receiving objects:  30% (1565/5133), 205.52 MiB | 4.47 MiB/s
+Receiving objects:  30% (1565/5133), 209.12 MiB | 4.02 MiB/s
+Receiving objects:  30% (1566/5133), 211.25 MiB | 3.85 MiB/s
+Receiving objects:  31% (1592/5133), 211.25 MiB | 3.85 MiB/s
+Receiving objects:  31% (1642/5133), 215.16 MiB | 3.83 MiB/s
+Receiving objects:  32% (1643/5133), 215.16 MiB | 3.83 MiB/s
+Receiving objects:  32% (1671/5133), 219.29 MiB | 3.80 MiB/s
+Receiving objects:  32% (1676/5133), 224.09 MiB | 3.97 MiB/s
+Receiving objects:  32% (1684/5133), 228.20 MiB | 4.09 MiB/s
+Receiving objects:  32% (1686/5133), 232.92 MiB | 4.22 MiB/s
+Receiving objects:  32% (1686/5133), 236.81 MiB | 4.13 MiB/s
+Receiving objects:  32% (1686/5133), 241.19 MiB | 3.91 MiB/s
+Receiving objects:  32% (1686/5133), 244.65 MiB | 3.80 MiB/s
+Receiving objects:  32% (1686/5133), 247.87 MiB | 3.54 MiB/s
+Receiving objects:  32% (1686/5133), 251.01 MiB | 3.05 MiB/s
+Receiving objects:  32% (1686/5133), 253.62 MiB | 2.92 MiB/s
+Receiving objects:  32% (1686/5133), 254.98 MiB | 2.92 MiB/s
+Receiving objects:  33% (1694/5133), 254.98 MiB | 2.92 MiB/s
+Receiving objects:  34% (1746/5133), 254.98 MiB | 2.92 MiB/s
+Receiving objects:  34% (1768/5133), 257.87 MiB | 2.79 MiB/s
+Receiving objects:  34% (1768/5133), 261.34 MiB | 2.84 MiB/s
+Receiving objects:  34% (1768/5133), 265.08 MiB | 3.02 MiB/s
+Receiving objects:  34% (1769/5133), 267.37 MiB | 3.18 MiB/s
+Receiving objects:  35% (1797/5133), 267.37 MiB | 3.18 MiB/s
+Receiving objects:  35% (1838/5133), 273.48 MiB | 3.63 MiB/s
+Receiving objects:  35% (1838/5133), 279.13 MiB | 4.19 MiB/s
+Receiving objects:  35% (1838/5133), 283.45 MiB | 4.51 MiB/s
+Receiving objects:  36% (1848/5133), 283.45 MiB | 4.51 MiB/s
+Receiving objects:  37% (1900/5133), 285.87 MiB | 4.52 MiB/s
+Receiving objects:  37% (1950/5133), 287.63 MiB | 4.23 MiB/s
+Receiving objects:  38% (1951/5133), 287.63 MiB | 4.23 MiB/s
+Receiving objects:  39% (2002/5133), 287.63 MiB | 4.23 MiB/s
+Receiving objects:  40% (2054/5133), 287.63 MiB | 4.23 MiB/s
+Receiving objects:  41% (2105/5133), 287.63 MiB | 4.23 MiB/s
+Receiving objects:  42% (2156/5133), 287.63 MiB | 4.23 MiB/s
+Receiving objects:  43% (2208/5133), 287.63 MiB | 4.23 MiB/s
+error: RPC failed; curl 56 schannel: server closed abruptly (missing close_notify)
+error: 1785 bytes of body are still expected
+fetch-pack: unexpected disconnect while reading sideband packet
+fatal: early EOF
+fatal: fetch-pack: invalid index-pack output

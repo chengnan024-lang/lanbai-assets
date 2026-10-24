@@ -1,0 +1,17 @@
+Command: git -c core.longpaths=true -C E:\IDMdownload\VRCC\lanbai-assets pull --ff-only --no-stat --quiet origin main
+TEMP/TMP: E:\IDMdownload\VRCC\Backups\.work
+GIT_TERMINAL_PROMPT=0; GCM_INTERACTIVE=Never
+Exit code: 1
+Completed: 2026-10-24T17:51:24.1295052Z
+
+error: RPC failed; curl 56 schannel: server closed abruptly (missing close_notify)
+error: 5810 bytes of body are still expected
+fetch-pack: unexpected disconnect while reading sideband packet
+fatal: early EOF
+fatal: fetch-pack: invalid index-pack output
+
+C free after: 4714283008 bytes
+E free after: 111053946880 bytes
+HEAD before/after: 480e711657e9301372619ac766f36bb54a5c857b
+Remote main via connected GitHub (read only): f40f62c8370d34b53c1ce8a6815852b400d4896d
+No retry, import, compilation, scene edits, or Unity launch followed.

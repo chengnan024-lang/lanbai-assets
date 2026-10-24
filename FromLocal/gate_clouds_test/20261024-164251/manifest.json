@@ -1,0 +1,146 @@
+{
+  "test_id": "gate_clouds_test",
+  "run_id": "20261024-164251",
+  "reported_at": "2026-10-24T16:43:59.712183-04:00",
+  "reporter": "Lanbai-local (阿白)",
+  "status": "BLOCKED_UNITY_RESOURCE_CRASH",
+  "source_commit": "98b6dbd497f6887e2986b9affdbf1a6559e5f321",
+  "payload_commit_reused": "f40f62c8370d34b53c1ce8a6815852b400d4896d",
+  "payload_diff_to_latest_main": "No changes under Common, Gate, GateClouds, Grading, Tear or Fonts",
+  "new_subagents": false,
+  "unity": "2022.3.22f1 (887be4894c44)",
+  "sdk": {
+    "com.vrchat.base": "3.10.5",
+    "com.vrchat.worlds": "3.10.5",
+    "UdonSharp": "bundled with Worlds; independent semver not verified",
+    "ClientSim": "bundled with Worlds; independent semver not verified",
+    "PPv2": "3.4.0",
+    "TMP_requested": "2.1.6",
+    "TMP_resolved": "3.0.6",
+    "VPM_resolver": "0.1.29"
+  },
+  "machine": {
+    "os": "Windows 11 Home Chinese 10.0.26200 x64",
+    "cpu": "Intel Core i9-13980HX",
+    "ram_bytes": 33959809024,
+    "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "driver": "610.62",
+    "headset": "Quest 3",
+    "streaming": "Virtual Desktop"
+  },
+  "machine_details_source": "Prior report; disk/memory and running processes freshly measured this run",
+  "backup": {
+    "status": "verified",
+    "archive": "E:\\IDMdownload\\VRCC\\Backups\\dream_20261024-163541.zip",
+    "archive_bytes": 571820591,
+    "archive_sha256": "f2fbfbb11d23995fcf61e7b0682765f02e0b82a3288ccde4ee34c48f91128fda",
+    "source_logical_bytes": 738576158,
+    "file_count": 7590,
+    "meta_count": 3120,
+    "required_entries": [
+      "ProjectSettings/ProjectVersion.txt",
+      "ProjectSettings/ProjectSettings.asset",
+      "Packages/manifest.json",
+      "Packages/vpm-manifest.json",
+      "Assets/Lanbai/Scenes/Lanbai.unity",
+      "Assets/Lanbai/Scenes/Lanbai.unity.meta",
+      "Assets/Lanbai/Tests/GateTest.unity",
+      "Assets/Lanbai/Tests/GateTest.unity.meta",
+      "Assets/Lanbai/Scripts/LB_Journey.cs",
+      "Assets/Lanbai/UdonPrograms/LanbaiGateClouds.asset"
+    ],
+    "all_entries_crc_and_sha256_verified": true,
+    "source_metadata_unchanged": true,
+    "space_before": {
+      "C": 253898752,
+      "E": 110547816448
+    },
+    "space_after": {
+      "C": 252715008,
+      "E": 109973794816
+    },
+    "restore_test_performed": false,
+    "verified_at": "2026-10-24T16:36:33.162034-04:00"
+  },
+  "steps": [
+    {
+      "step": "local_takeover",
+      "status": "通过",
+      "evidence": "Actual E project reads, C/E free-space and local-process commands"
+    },
+    {
+      "step": "source_sync",
+      "status": "通过",
+      "evidence": "pull --ff-only origin main returned already up to date at 98b6dbd; interrupted original clone retained"
+    },
+    {
+      "step": "current_backup",
+      "status": "通过",
+      "evidence": "7590 entries, all CRC/SHA256 verified; no restore drill"
+    },
+    {
+      "step": "minimal_builder_patch_csharp_compile",
+      "status": "通过",
+      "evidence": "Two startup compiles succeeded; existing CS0162 warning"
+    },
+    {
+      "step": "udon_program_preparation",
+      "status": "部分完成",
+      "evidence": "Cloud existing 2/2 reused; driver/clock created at 0/0, SDK initialization and compile not finished"
+    },
+    {
+      "step": "cloud_build_retest",
+      "status": "未测",
+      "evidence": "Both new Unity runs crashed before builder; historical outdated-version issue remains open"
+    },
+    {
+      "step": "gate_driver_and_clock_build",
+      "status": "未测"
+    },
+    {
+      "step": "hdr_acceptance_shots",
+      "status": "未测"
+    },
+    {
+      "step": "play_performance_headset",
+      "status": "未测"
+    },
+    {
+      "step": "protected_files_audit",
+      "status": "通过",
+      "evidence": "All ProjectSettings/Packages plus formal world and LB_Journey unchanged; no missing project files"
+    }
+  ],
+  "layers": {
+    "blender_offline": "未测",
+    "unity_desktop": "不通过",
+    "vr_headset": "未测"
+  },
+  "stage": "No Unity Editor running; no new queued remote requests; saved GateTest remains historical door-only scene",
+  "crashes": [
+    {
+      "run": "interactive-1638",
+      "failure": "D3D11 texture allocation 0x8007000e, resource view 0x80070057, SIGSEGV during scene-view draw",
+      "log": "diagnostics/interactive-1638.log"
+    },
+    {
+      "run": "batch-nographics",
+      "failure": "SIGSEGV during memory allocation/GC after program-asset staging; shell also observed 0x800705AF paging-file-too-small",
+      "log": "diagnostics/batch-setup.log"
+    }
+  ],
+  "last_resource_measurement": {
+    "c_free_bytes": 234074112,
+    "e_free_bytes": 109966077952,
+    "free_physical_kib": 3351312,
+    "free_virtual_kib": 2776920,
+    "VRChat_private_bytes": 14776147968
+  },
+  "awaiting": "Explicit permission to normally exit VRChat; no process killed",
+  "schedules": {
+    "35_minute_check": "one future check; id35",
+    "95_minute_check": "one future check; id95",
+    "continuation": "160 minute heartbeat; id automation-4"
+  },
+  "rollback": "See README; preserve all new assets rather than delete; restore only touched source from verified backup after Editor closed"
+}
