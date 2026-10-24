@@ -48,7 +48,7 @@ float4 _Udon_SkyFx;        // x = other sky, y = band 1 gain, z unused (the sun 
 #endif
 #ifndef LANBAI_DECL__Udon_GalaxyGain
 #define LANBAI_DECL__Udon_GalaxyGain
-float4 _Udon_GalaxyGain;   // x = glow + star floor gain g(t); w > 0 = set
+float4 _Udon_GalaxyGain;   // x = glow + star floor gain g(t) (the arms), y = the core's gain, z = 1: y in use; w > 0 = set
 #endif
 
 
@@ -644,20 +644,29 @@ float3 LanbaiPurpleGuard(float3 c, float4 g)
 }
 
 // act 8b -> 9: per-direction night weight. x = 0..1 over the 8 s darkening; the back and the zenith reach 1 at
-// x = 0.75 (6 s), the front horizon band (|az| < 40 deg of p_NightMaskDir, below ~12 deg) is still 50 % at 0.75 and
-// reaches 1 at x = 1. (bible §6·8b: front band >= 50 % at 1007.2, black at 1009.21; elsewhere black in 6 s)
+// x = 0.75 (6 s), the front horizon band (|az| <= p_NightMaskShape.x = 40 deg of p_NightMaskDir, below ~6 deg) is still
+// 50 % at 0.75 and reaches 1 at x = 1. (bible §6·8b: front ±40° band >= 50 % at 1007.2, black at 1009.21; elsewhere
+// black in 6 s)
 inline float LanbaiSq(float x) { return x * x; }
 
 float LanbaiNightWeight(float3 V, float x)
 {
-    float az = LanbaiAzimuthDeg(V, p_NightMaskDir.xyz);
+    float az = abs(LanbaiAzimuthDeg(V, p_NightMaskDir.xyz));
     float el = LanbaiElevationDeg(V);
-    // an ELLIPSE in (azimuth, elevation), not two windows multiplied (that drew a glowing rounded rectangle as the sky
-    // went dark: art pre-review r0 #4). Inner ellipse (x, z) = full, outer (x + y, z + w) = none, each axis keeps its
-    // own soft width (tech r2 #8); along each ray from the centre the weight runs from the inner to the outer rim.
-    float e1 = sqrt(LanbaiSq(az / max(p_NightMaskShape.x, 0.1)) + LanbaiSq(el / max(p_NightMaskShape.z, 0.1)));
-    float e2 = sqrt(LanbaiSq(az / max(p_NightMaskShape.x + p_NightMaskShape.y, 0.2)) + LanbaiSq(el / max(p_NightMaskShape.z + p_NightMaskShape.w, 0.2)));
-    float f = 1.0 - smoothstep(1.0 / max(e1, 1e-4), 1.0 / max(e2, 1e-4), 1.0);
+    // the last light is a BAND lying on the horizon, not a shape (act 9 reviews: two windows multiplied drew a glowing
+    // rounded rectangle, an ellipse floated, then stood as a 15 deg dome / "flying saucer"):
+    //  - azimuth: full to x, gone at x + y (soft ends);
+    //  - its top is a superellipse in azimuth (exponent 4): flat across the plateau, pinching only at the ends;
+    //  - elevation: full to z, gone at z + w; the elevation axes close toward the horizon in the last part of the
+    //    darkening (x 0.7 -> 0.95: to a quarter), so the last light is a sliver a few degrees high;
+    //  - below the horizon the elevation counts 4x: the sky under the horizon goes dark first.
+    // f only ever falls as x rises, and a lower f only ever darkens (d(w)/d(f) < 0 for x < 1.5): monotone per direction.
+    float elq = (el >= 0.0) ? el : -4.0 * el;
+    float ao = max(p_NightMaskShape.x + p_NightMaskShape.y, 0.2);
+    float aw = 1.0 - smoothstep(p_NightMaskShape.x, ao, az);
+    float top = sqrt(saturate(1.0 - LanbaiSq(LanbaiSq(az / ao))));
+    float k = top * (1.0 - 0.75 * smoothstep(0.7, 0.95, x));
+    float f = aw * (1.0 - smoothstep(p_NightMaskShape.z * k, max((p_NightMaskShape.z + p_NightMaskShape.w) * k, p_NightMaskShape.z * k + 1e-3), elq));
     float d = 0.5 * f;
     float w = saturate((x - d) / (0.75 - 0.25 * f));
     return w * w * (3.0 - 2.0 * w);                       // eased: no visible edge where neighbouring directions differ
@@ -709,7 +718,8 @@ float3 LanbaiSkyColour(float3 V)
     // 4. night
     [branch] if (night > 0.001)
     {
-        float3 n = p_NightColor.rgb + gal * (p_StarFloorAdd.rgb + LanbaiGalaxy(V));
+        float galV = (_Udon_GalaxyGain.w > 0.0) ? LanbaiGalaxyGainAt(_Udon_GalaxyGain, V) : gal;   // the core may lead (act 9)
+        float3 n = p_NightColor.rgb + galV * (p_StarFloorAdd.rgb + LanbaiGalaxy(V));
         c = lerp(c, n, LanbaiNightWeight(V, night));
     }
 

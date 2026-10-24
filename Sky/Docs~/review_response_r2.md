@@ -99,4 +99,5 @@
 | 7 | STATUS 说实话 | **改了**：美术 r2 阻断 #2（暮日右边的竖台阶）写成“已查明是 HDRI 自己的、等本地 8K 截图” |
 | 8 | D-09 写进 README | **改了**：§8 第 9 条 + `SkyPresets.json` 的 `measured_views.vr_cabin_bible_v2`（按这一版重量） |
 | 二 | 顶点压缩、晨日仰角 5.8°、46 个、ApplyBlend 只写变的、雾立方图按预设名、旧注释、星的预览 | 都改了：README §0 第 7 条（Color、TexCoord1 关）；§8 第 5 条（仰角跟 HDRI 的太阳，差 0.2°）；46 个名单在 README §2；`ApplyBlend` 第一帧写全、之后两边相同的不写；`BakeFogCube` 按预览窗最后点的预设命名；`Lanbai_Sky.shader` / `Lanbai_StarPoints.shader` 的旧说法；`star_sea` 预览图的星用 1.5 px 高斯，全景预览按亮度画高斯精灵（`Source~/preview_starsky.py`） |
-| 自己发现的 | 第 9 幕 1008.6 最后的光是一块浮着的椭圆（遮罩关于地平线对称） | **还没改**：下一轮和第 9 幕一起（让遮罩贴着地平线、地平线以下先黑） |
+| 自己发现的 | 第 9 幕 1008.6 最后的光是一块浮着的椭圆（遮罩关于地平线对称） | **改了**（第 9 幕一轮）：地平线以下按 4 倍仰角算，最后的光是贴着地平线的一线余晖 |
+| 三（第 9 幕） | `LanbaiGeoLerp` 遇到 0 通道偏色；银河 LOD 在高仰角 | **改了**：对数混合的下限跟着两端的亮度走（1e-3 × 最亮通道）；`LanbaiGalaxySample` 的 LOD 按 cos(仰角) 修正。门光带等价核对仍是 1.2e-7（核对脚本改成按 Unity 的方式展开门新加的 include） |

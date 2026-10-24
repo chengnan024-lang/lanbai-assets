@@ -5736,7 +5736,7 @@
     {
      "k": "_NightMaskShape",
      "v": [
-      30.0,
+      40.0,
       45.0,
       6.0,
       22.0
@@ -6176,7 +6176,7 @@
     {
      "k": "_Udon_Sky_NightMaskShape",
      "v": [
-      30.0,
+      40.0,
       45.0,
       6.0,
       22.0
@@ -7398,22 +7398,22 @@
    "blendSkip": [],
    "measured_views": {
     "前方": {
-     "APL": 35.9,
+     "APL": 35.6,
      "purple": 0.0001,
-     "lavender_6": 0.656,
-     "p995": "#B5A79D",
+     "lavender_6": 0.6478,
+     "p995": "#B5A48D",
      "p50": "#0B132D",
      "grad_p999": 0.0,
      "grad_max": 0.0,
-     "lavender_band": 0.0022,
-     "grad_p999_with_galaxy_photo": 46.48,
+     "lavender_band": 0.0,
+     "grad_p999_with_galaxy_photo": 45.7,
      "grad_ok": true
     },
     "车门 +45°": {
-     "APL": 18.0,
-     "purple": 0.0005,
-     "lavender_6": 0.9981,
-     "p995": "#191F35",
+     "APL": 17.9,
+     "purple": 0.0003,
+     "lavender_6": 0.999,
+     "p995": "#171C32",
      "p50": "#09112B",
      "grad_p999": 0.0,
      "grad_max": 0.0,
@@ -7422,15 +7422,15 @@
      "grad_ok": true
     },
     "天窗（仰 70°）": {
-     "APL": 27.1,
+     "APL": 27.0,
      "purple": 0.0001,
-     "lavender_6": 0.7205,
-     "p995": "#4C5B78",
+     "lavender_6": 0.7199,
+     "p995": "#4C5A75",
      "p50": "#0D162F",
      "grad_p999": 0.0,
      "grad_max": 0.0,
      "lavender_band": 0.0,
-     "grad_p999_with_galaxy_photo": 20.2,
+     "grad_p999_with_galaxy_photo": 20.14,
      "grad_ok": true
     },
     "背后": {
@@ -7447,26 +7447,26 @@
     },
     "左 −90°": {
      "APL": 19.7,
-     "purple": 0.0002,
-     "lavender_6": 0.951,
-     "p995": "#1F2841",
+     "purple": 0.0003,
+     "lavender_6": 0.947,
+     "p995": "#20283E",
      "p50": "#09122B",
      "grad_p999": 0.0,
      "grad_max": 0.0,
      "lavender_band": 0.0,
-     "grad_p999_with_galaxy_photo": 7.03,
+     "grad_p999_with_galaxy_photo": 6.91,
      "grad_ok": true
     },
     "向下 −35°": {
      "APL": 29.1,
      "purple": 0.0001,
-     "lavender_6": 0.6839,
-     "p995": "#50607F",
-     "p50": "#0B152E",
+     "lavender_6": 0.6828,
+     "p995": "#51617F",
+     "p50": "#0B142E",
      "grad_p999": 0.0,
      "grad_max": 0.0,
      "lavender_band": 0.0,
-     "grad_p999_with_galaxy_photo": 23.46,
+     "grad_p999_with_galaxy_photo": 23.37,
      "grad_ok": true
     }
    }

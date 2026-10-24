@@ -113,7 +113,7 @@ P['dusk_8ii'] = dict(blend_skip=['_Udon_SunDisc'],   # F12 -> 8b: the clouds' dr
 bh_zen = inv_screen('#16223F', 'S8b')
 P['blue_hour'] = dict(acts='8b（蓝时，993.06 → 1001.21）+ 第 9 幕同一个材质', profile='S8b', cubeA=None, glow=True,
     material=dict(_ProcWeight=1.0, _SunGain=0.0, _SunDir=v4(SUN8, 0), _Band1Color=v4(F('#3F5790'), 0.0), _Band1Shape=[14.0, -10.0, 0, 110], _Band1Gain=0.85,
-                  _NightMaskDir=v4(dir_az_el(0, 0), 0), _NightMaskShape=[30, 45, 6, 22], _NightColor=v4(F('#050000')),
+                  _NightMaskDir=v4(dir_az_el(0, 0), 0), _NightMaskShape=[40, 45, 6, 22], _NightColor=v4(F('#050000')),
                   _StarFloorAdd=v4(np.maximum(F('#0D0F23') - F('#050000'), 0)), _GalaxyGain=0.0, _PurpleGuard=LAV_GUARD),
     globals=dict(_Udon_SunDir=v4(SUN8, 1), _Udon_HorizonColor=v4(F('#8093C2') * 0.80, 2.0), _Udon_FogBandColor=v4(F('#8093C2')), _Udon_FogBandDir=v4(dir_az_el(0, 0), 0),
                  _Udon_FogBandWidth=90.0, _Udon_ZenithColor=v4(bh_zen), _Udon_NadirColor=v4(F('#1A2A4E') * 1.3),
