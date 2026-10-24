@@ -23,7 +23,6 @@ NADIR_K = 0.80                          # darker below (review r1 / art review r
 SHEET_FOG_CAP, LIP8_HOLD_M, LIP8_RAMP_M = 0.25, 70.0, 60.0     # r09: cap 0.30 -> 0.25 (art review r08 B2-3; 0.28 lifted 200 by only 0.4 APL and the 197 near sheet to 41)
 CROSSED_FADE_M = 300.0
 SLEEVE_FOG_K = 0.72                                    # r07 / r09: the air inside the sleeve (forward APL; the side window barely depends on it)
-FLAP_SWAY_M, FLAP_PERIOD_S = 1.2, 7.0                    # r15: the tongues sway in the bus's draught (>= 6 s)
 SLEEVE_INNER_CLOTH_K = 1.35                            # r09: the inner plies' cut faces (226 side APL)
 SLEEVE_LOOSE_K = 12.0                                  # r08: loose fibres pulled from the thick cloth, inside the sleeve
 LOOSE_GAIN = 0.25                                      # the shader's _LooseGain (x the current fibre colour)

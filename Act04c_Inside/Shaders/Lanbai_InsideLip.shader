@@ -45,7 +45,6 @@ Shader "Lanbai/InsideLip"
         _FringeTex ("Fringe (R fibres, G coverage, B clump)", 2D) = "black" {}
         _FringeGain ("Fringe gain", Float) = 2.75
         _Sway ("Hanging threads: sway at the tip (m; 0 = none)", Float) = 0
-        _FlapSway ("Cloth tongues: sway at the tip (m; vertex colour g = weight, b = phase)", Float) = 0
         [Header(Thread)]
         _ThreadRim ("Thread rim (x fibre colour)", Float) = 0.6
         _ThreadCore ("Thread core lit by the fibres (0 = dark weft, 1 = fibre lit)", Range(0, 1)) = 0
@@ -98,7 +97,7 @@ Shader "Lanbai/InsideLip"
             float _ThreadCore;
             float4 _DotHalo;
             sampler2D _FringeTex;
-            float _FringeGain, _ThreadRim, _Sway, _FlapSway;
+            float _FringeGain, _ThreadRim, _Sway;
             float4 _DotCore;
             float _DotGlow, _DotDist, _LooseGain, _LooseWidth;
 
@@ -148,13 +147,6 @@ Shader "Lanbai/InsideLip"
                 o.uv = float4(v.uv0, v.uv1);
                 o.col = v.color;
                 o.aux = float4(v.uv2, v.uv3);
-            #if defined(_PART_SHEET)
-                // r15 (总导演 D-19): the tongues of cloth hanging from the upper edges sway slowly in the bus's draught
-                // (periods 7 / 9.3 s, never a flicker); the clock eases to a stop by U12 - 2.25 like everything else
-                float fw = _FlapSway * v.color.g;
-                wp.z += fw * sin(_Udon_InsideClock.x * 6.2831853 / 7.0 + v.color.b * 6.2831853);
-                wp.x += 0.4 * fw * sin(_Udon_InsideClock.x * 6.2831853 / 9.31 + v.color.b * 6.2831853 + 1.0);
-            #endif
             #if defined(_PART_FRINGE)
                 // r13 (总导演 D-19): the hanging threads (*_Hang materials, _Sway > 0) sway slowly in the bus's draught;
                 // uv0.y runs along the thread (0.08 top .. 0.93 tip), uv0.x is constant per thread (its phase). The clock
@@ -254,9 +246,6 @@ Shader "Lanbai/InsideLip"
                 float wu = uEdge * 6.2831853 / (0.03 * Hb) + 1.3 * sin(dEdge * 6.2831853 / (0.037 * Hb) + 0.4);
                 float wd = dEdge * 6.2831853 / (0.05 * Hb) + 1.6 * sin(uEdge * 6.2831853 / (0.043 * Hb) + 1.1);
                 float mott = 0.5 + 0.35 * sin(wu) * sin(wd) + 0.2 * sin(uEdge * 6.2831853 / (0.071 * Hb));
-                // r15.1 (art review r15 B5: two dark blobs on a tongue read as eye sockets): no mottle on the tongues
-                float tng = smoothstep(0.0, 0.04, i.col.g);
-                mott = lerp(mott, 0.5, tng);
                 float band = _LipGlowFar.x * exp(-dEdge / max(_LipGlowFar.y, 1.0)) * max(mott, 0.0);
                 float glow = _LipGlow * exp(-dEdge / _LipGlowWidth) * (0.55 + 0.45 * comb) + band * foldK;
                 float3 c = (cloth + _FibreColor.rgb * glow * g) * gradeK;
@@ -270,11 +259,10 @@ Shader "Lanbai/InsideLip"
                 float Hm = _Folds.x / 0.08;
                 // r13 (总导演 D-19: the r11 ridges read as rock strata): soft DRAPE pleats hanging with gravity (vertical
                 // in the world), period ~0.025 H with a slow sway, +-16 %, fading 0.15 H from the torn edge
-                // r15.1 (B5): on a tongue the pleats run straight down its whole length (no bend, no fade = no blobs)
-                float phx = i.wpos.x * 6.2831853 / (0.025 * Hm) + (1.0 - tng) * 0.6 * sin(i.wpos.y * 6.2831853 / (0.2 * Hm))
+                float phx = i.wpos.x * 6.2831853 / (0.025 * Hm) + 0.6 * sin(i.wpos.y * 6.2831853 / (0.2 * Hm))
                           + 0.8 * sin(i.wpos.x * 6.2831853 / (0.13 * Hm));
                 float pleat = 0.6 * sin(phx) + 0.4 * sin(2.1 * phx + 1.0);
-                float fk = 1.0 + 0.16 * pleat * lerp(exp(-dEdge / (0.15 * Hm)), 1.0, tng);
+                float fk = 1.0 + 0.16 * pleat * exp(-dEdge / (0.15 * Hm));
                 float lw = _LipGlowWidth;
                 float bandIn = smoothstep(lw, lw * 1.6, dEdge) * (1.0 - smoothstep(lw + 0.005 * Hm, lw + 0.009 * Hm, dEdge));
                 float cm = sin(uEdge * 6.2831853 / (0.05 * Hm)) + 0.8 * sin(uEdge * 6.2831853 / (0.017 * Hm));

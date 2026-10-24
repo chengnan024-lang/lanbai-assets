@@ -293,7 +293,6 @@ namespace Lanbai.Inside.Editor
             if (fringe != null) m.SetTexture("_FringeTex", fringe);
             m.SetFloat("_FringeGain", objName.EndsWith("_Hang") ? 4.4f : 2.75f);   // r13: the hanging threads x 1.6
             m.SetFloat("_Sway", objName.EndsWith("_Hang") ? 0.6f : 0f);   // r13: the hanging threads sway (D-19)
-            m.SetFloat("_FlapSway", part == "SHEET" ? 1.2f : 0f);           // r15: the cloth tongues sway (D-19)
             Color dot = InsideLayoutData.DotFill;
             m.SetVector("_DotCore", new Vector4(dot.r, dot.g, dot.b, 0f));
             m.SetFloat("_DotGlow", 0.32f);

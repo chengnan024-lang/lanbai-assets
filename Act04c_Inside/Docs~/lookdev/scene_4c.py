@@ -221,10 +221,7 @@ def mat_sheet(name, P, fp):
     mott = N.math('ADD', 0.5, N.math('ADD', N.math('MULTIPLY', N.math('MULTIPLY', N.math('SINE', wu), N.math('SINE', wd)), 0.35),
                                      N.math('MULTIPLY', N.math('SINE', N.math('MULTIPLY', u_edge, 2 * math.pi / (0.071 * Hb))), 0.2)))
     gain = N.attr('Col')
-    gr, gg, _ = N.sep(gain.outputs['Color'])
-    # r15.1 (art review r15 B5: two dark blobs on a tongue read as eye sockets): no mottle on the tongues
-    tng = N.smooth(0.0, 0.04, gg)
-    mott = N.math('ADD', N.math('MULTIPLY', mott, N.math('SUBTRACT', 1.0, tng)), N.math('MULTIPLY', tng, 0.5))
+    gr, _, _ = N.sep(gain.outputs['Color'])
     band = N.math('MULTIPLY', N.math('MULTIPLY', P['band'][0], N.math('EXPONENT', N.math('DIVIDE', d_edge, -P['band'][1]))), N.math('MAXIMUM', mott, 0.0))
     glow = N.math('MULTIPLY', N.math('ADD', lip, N.math('MULTIPLY', band, foldK)), gr)
     col = N.vmath('ADD', cloth, N.vmath('SCALE', N.rgb(P['fibre']), s=glow))
@@ -236,15 +233,12 @@ def mat_sheet(name, P, fp):
     tau = 2.0 * math.pi
     # r13 (总导演 D-19: the r11 ridges read as rock strata): soft DRAPE pleats that hang with gravity (vertical in the
     # world, whatever the edge does), period ~0.035 H with a slow sway, +-12 %, fading 0.15 H from the torn edge
-    # r15.1 (B5): on a tongue the pleats run straight down its whole length (no bend, no fade = no blobs)
     phx = N.math('ADD', N.math('MULTIPLY', bx, tau / (0.025 * Hk)),
-                 N.math('ADD', N.math('MULTIPLY', N.math('MULTIPLY', N.math('SINE', N.math('MULTIPLY', bz, tau / (0.2 * Hk))), 0.6),
-                                      N.math('SUBTRACT', 1.0, tng)),
+                 N.math('ADD', N.math('MULTIPLY', N.math('SINE', N.math('MULTIPLY', bz, tau / (0.2 * Hk))), 0.6),
                         N.math('MULTIPLY', N.math('SINE', N.math('MULTIPLY', bx, tau / (0.13 * Hk))), 0.8)))
     fold = N.math('ADD', N.math('MULTIPLY', N.math('SINE', phx), 0.6),
                   N.math('MULTIPLY', N.math('SINE', N.math('ADD', N.math('MULTIPLY', phx, 2.1), 1.0)), 0.4))
     env = N.math('EXPONENT', N.math('DIVIDE', d_edge, -0.15 * Hk))
-    env = N.math('ADD', N.math('MULTIPLY', env, N.math('SUBTRACT', 1.0, tng)), tng)
     fk = N.math('ADD', 1.0, N.math('MULTIPLY', N.math('MULTIPLY', fold, 0.16), env))
     lw = P['lip_w']
     band_in = N.math('MULTIPLY', N.smooth(lw * 1.0, lw * 1.6, d_edge),
@@ -372,17 +366,8 @@ def loose_mesh(o, clk, eye, width=0.008, px=math.radians(90.0) / 960.0):
 
 
 # ------------------------------------------------------------------------------------------------ meshes
-_SWAY_CLOCK = [None]
-
-
 def mesh(S, name, o, offset_z, mat):
     V = np.asarray(o['V'], float).copy()
-    if name.endswith('_Sheet') and 'col' in o and _SWAY_CLOCK[0] is not None:
-        # r15: the tongues sway (Lanbai/InsideLip SHEET vertex stage): col.g = weight, col.b = phase
-        c = np.asarray(o['col'], float)
-        clk = _SWAY_CLOCK[0]
-        V[:, 2] += DR.FLAP_SWAY_M * c[:, 1] * np.sin(clk * 2 * np.pi / DR.FLAP_PERIOD_S + c[:, 2] * 6.2832)
-        V[:, 0] += 0.4 * DR.FLAP_SWAY_M * c[:, 1] * np.sin(clk * 2 * np.pi / (DR.FLAP_PERIOD_S * 1.33) + c[:, 2] * 6.2832 + 1.0)
     V[:, 2] += offset_z
     Vb = np.stack([V[:, 0], V[:, 2], V[:, 1]], -1)                       # Unity -> Blender (x, z, y)
     F = np.asarray(o['F'], np.int32)
@@ -401,7 +386,6 @@ def mesh(S, name, o, offset_z, mat):
     bpy.context.scene.collection.objects.link(ob)
     if os.environ.get('LANBAI_DEBUG_HIDE') and re.search(os.environ['LANBAI_DEBUG_HIDE'], name):
         ob.hide_render = True                                            # debug: which object makes a shape
-
     ob.data.materials.append(mat)
     ob.visible_shadow = False
     return ob
@@ -428,7 +412,6 @@ def build(ctx):
     sc.cycles.transparent_max_bounces = 128
     sc.cycles.max_bounces = 0
     rep, objs, meta = geometry()
-    _SWAY_CLOCK[0] = DR.clock(t)
     s = float(D.dist(t))
     st = DR.state(t)
     fp = st['fog']
