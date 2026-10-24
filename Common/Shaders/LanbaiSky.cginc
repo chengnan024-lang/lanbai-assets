@@ -283,6 +283,20 @@ inline float LanbaiGalaxyScale()
     return (_Udon_Sky_GlowScale.x > 0.0) ? _Udon_Sky_GlowScale.x : 1.0;
 }
 
+// the core's colour (act 9 final review r1, minor 1): the baked map's bulge reads pink-grey after S9a (#A49995) and its
+// edge into the cool arms crossed the D-21 lavender band; this pulls it to the bible's warm dust #C8B79A, a Gaussian
+// of 18 deg around the galactic centre (a little wider than the bake's warmth, 13 deg), so warm -> cool passes through
+// neutral grey (S9a: core h 79-81, C* 15, the lavender band 0 in the sky alone at 1137).
+#ifndef LANBAI_GALAXY_CORE_TINT
+#define LANBAI_GALAXY_CORE_TINT float3(1.0, 0.95, 0.72)
+#endif
+inline float3 LanbaiGalaxyCoreTint(float3 V)
+{
+    const float3 gc = float3(-0.489074, 0.207912, 0.847101);   // Sky/Data/StarSky.json galactic_centre_unity
+    float a = degrees(acos(clamp(dot(V, gc), -1.0, 1.0))) / 18.0;
+    return lerp(float3(1.0, 1.0, 1.0), LANBAI_GALAXY_CORE_TINT, exp(-a * a));
+}
+
 // THE galaxy sample (the sky and the mirrors call this; final review 3: without the scale a mirror's galaxy came out
 // +1 EV over the sky's). glowTex = StarSky_Glow (sRGB, mips), texelSize = its _TexelSize, scale = LanbaiGalaxyScale()
 // (or a material value). LOD = one texel per pixel: the map's u texels shrink with cos(elevation) toward the poles, so
@@ -292,7 +306,27 @@ inline float3 LanbaiGalaxySample(sampler2D glowTex, float4 texelSize, float3 V, 
     float texelRad = 6.2831853 * max(texelSize.x, 1e-6);
     float cosEl = max(sqrt(saturate(1.0 - V.y * V.y)), 0.05);
     float lod = max(0.0, log2(LanbaiPixelAngle() / (texelRad * cosEl)));
-    return tex2Dlod(glowTex, float4(LanbaiGalaxyUV(V), 0.0, lod)).rgb * scale;
+    return tex2Dlod(glowTex, float4(LanbaiGalaxyUV(V), 0.0, lod)).rgb * scale * LanbaiGalaxyCoreTint(V);
+}
+
+// act 9 ignition: the galactic core lights a little before the arms and the light spreads ALONG the band (act 9 final
+// review r1 #1). gg = _Udon_GalaxyGain: x = the arms' gain, y = the core's gain, z = 1 when y is in use (0: x everywhere,
+// as every preset and the other acts' drivers write it). The core weight is 1 within 15 deg of galactic longitude of
+// the centre and 0 beyond 60 deg (a 45 deg soft edge), whatever the latitude: it follows the band, not a disc.
+// Directions = Sky/Data/StarSky.json galactic_centre_unity / north_galactic_pole_unity (the glow map is baked to them).
+// The sky and the mirrors call this with the same gg, so a mirror's galaxy keeps the sky's.
+inline float LanbaiGalaxyCoreWeight(float3 V)
+{
+    const float3 gc = float3(-0.489074, 0.207912, 0.847101);
+    const float3 ngp = float3(0.866025, 0.0, 0.5);
+    float3 p = V - dot(V, ngp) * ngp;                          // onto the galactic plane
+    float l = degrees(acos(clamp(dot(p, gc) * rsqrt(max(dot(p, p), 1e-8)), -1.0, 1.0)));
+    return 1.0 - smoothstep(15.0, 60.0, l);
+}
+
+inline float LanbaiGalaxyGainAt(float4 gg, float3 V)
+{
+    return (gg.z > 0.0) ? lerp(gg.x, gg.y, gg.z * LanbaiGalaxyCoreWeight(V)) : gg.x;
 }
 
 // ---- sun, moon -------------------------------------------------------------------------------------------------

@@ -42,7 +42,7 @@ VRChat 只允许 Udon 写 `_Udon_` 前缀的全局 shader 量（`VRCShader.SetGl
 | `_Udon_SkyFx` | float4：x 另一片天、y 地平线带 1 的增益、z 日线半长（度）、w > 0 已设 | 同上 | `Lanbai/Sky` |
 | `_Udon_SunDir` / `_Udon_SunDisc` | 指向日的单位向量（w > 0 已设）；x 增益、y 半径（度）、z 日线半长（度）、w > 0 已设 | 6、8 幕的驱动 | `Lanbai/Sky`、海 |
 | `_Udon_HorizonColor` / `_Udon_ZenithColor` | 地平线 / 天顶色（`LanbaiHorizon` 的底色）；第 9 幕的 `_Udon_ZenithColor` = 星空底 | 当前幕 | `LanbaiFog`、`Lanbai/Sky`、镜子 |
-| `_Udon_GalaxyGain` | float4：x 银河辉光 + 星空底的增益（含点燃线 g(t)）、w > 0 已设 | 第 9 幕（天空） | `Lanbai/Sky`、镜子 |
+| `_Udon_GalaxyGain` | float4：x 银河辉光 + 星空底的增益（含点燃线 g(t)；旋臂）、y 银心的增益、z = 1 时用 y（`LanbaiGalaxyGainAt`，`LanbaiSky.cginc`；别的写的人写 0 = 只用 x）、w > 0 已设 | 第 9 幕（天空） | `Lanbai/Sky`、镜子 |
 | `_Udon_StarGain` | float4：x 星点总增益、y 亮星加成、z 亮星个数、w > 0 已设 | 第 9 幕（天空） | `Lanbai/StarPoints`、镜子 |
 | `_Udon_Fog` / `_Udon_FogBase` | float4：x 指数雾密度 / m、w > 0 已设（x = 0 真的是无雾）；x 高度衰减的基准世界高度、w > 0 已设 | 当前幕 | `LanbaiFog` |
 | `_Udon_NadirColor` / `_Udon_FogShape` / `_Udon_FogBelow` / `_Udon_FogModel` | 天底色（模型 B）；带 / 地平线满和消失的仰角、幂、背带增益；地平线以下的暗化；A 带 ↔ B 渐变的混合（定义见 `Sky/README_Fog接口.md`） | 当前幕 | `LanbaiSky` / `LanbaiFog` |

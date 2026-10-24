@@ -79,7 +79,7 @@ Shader "Lanbai/Sky"
         _GalaxyGain ("Galaxy glow gain (global _Udon_GalaxyGain.x wins)", Float) = 0
         _GlowScale ("Galaxy glow scale (the PNG is normalised; Sky/Data/StarSky.json glow_scale)", Float) = 1
         _NightMaskDir ("Night delay  the front direction xyz (sun death azimuth)", Vector) = (0, 0, 1, 0)
-        _NightMaskShape ("Night mask ellipse  x az half axis  y its soft  z el half axis  w its soft", Vector) = (30, 45, 6, 22)
+        _NightMaskShape ("Night mask band  x az half width  y its soft  z el height  w its soft", Vector) = (40, 45, 6, 22)
         [Header(Sun)]
         _SunDir ("Sun direction fallback (global _Udon_SunDir wins)", Vector) = (0.7, 0.1, 0.7, 0)
         _SunColor ("Sun disc colour, linear HDR (dawn fill #FFCE9E x 2^2.55)", Vector) = (5.86, 3.70, 1.98, 1)

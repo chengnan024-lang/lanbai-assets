@@ -1,4 +1,5 @@
-// 蓝白 · 菜单 蓝白/Build/Act09：按 Act09_StarSea.json 搭第 9 幕的天（可重复运行：先删上一次搭的 R_StarSea）。
+// 蓝白 · 菜单 蓝白/Build/Act09：按 Act09_StarSea.json 搭第 9 幕的天（可重复运行：先删上一次搭的 R_StarSea 和 Lanbai_Act09Driver，含未激活的）。
+// 搭完要跑 蓝白/Director/1 Generate Dispatcher 和 2 Wire Scene（README_Act09 §0）。
 // !!! NOT COMPILED IN UNITY: Roslyn type-check against UnityEditor 2021.1 only (Sky/Tools~/compile_check/check_cs.sh). !!!
 // Needs: 蓝白/Sky/Build Star Mesh + Build Sky run first (they make the main star mesh, the one sky material and M_Sky_StarPoints.mat).
 using System;
@@ -10,7 +11,7 @@ using Lanbai.Sky.EditorTools;
 namespace Lanbai.Act09.EditorTools
 {
     [Serializable] public class A9Labels { public float F12, F13, F14, F15, F16, blue_hour_start, act9_start, dark_end, ignition_full; }
-    [Serializable] public class A9Ignition { public float t0; public float seconds; public float table_step_s; public float[] g; }
+    [Serializable] public class A9Ignition { public float t0; public float seconds; public float table_step_s; public float[] g; public float[] g_core; public float core_lead_s; }
     [Serializable] public class A9First { public int hr; public float[] dir; public float mag; public float order; public float out_t; }
     [Serializable] public class A9FirstStars { public A9First[] stars; public float[] appear; public float peak; public float out_s; }
     [Serializable] public class A9Q { public string @char; public int strokes; public float[] dir; public float peak; }
@@ -21,7 +22,8 @@ namespace Lanbai.Act09.EditorTools
 
     public static class LanbaiAct09Build
     {
-        const float MagSlope = 0.5f;     // = Lanbai/StarPoints _MagSlope on the act's star materials
+        const float MagSlope = 0.5f;     // = Lanbai/StarPoints _MagSlope (its default; Sky's material keeps it)
+        const string RootName = "R_StarSea", DriverName = "Lanbai_Act09Driver";
 
         static string ActRoot()
         {
@@ -71,33 +73,41 @@ namespace Lanbai.Act09.EditorTools
             firstMat.SetFloat("_UseGlobalGain", 0f);          // the driver's MPB _Gain, not the act's global star gain
             Material qMat = MatCopy(starMat, ActRoot() + "/M_Act09_QuestionStars.mat");
             qMat.SetFloat("_BrightCount", 0f); qMat.SetFloat("_MagFloor", 99f);
-            starMat.SetFloat("_MagSlope", MagSlope);
+            qMat.SetVector("_Tint", new Vector4(0.8879f, 0.9216f, 1.0f, 1f) / 0.9201f);      // #F2F6FF linear, luminance 1
 
-            GameObject old = GameObject.Find("R_StarSea");
-            if (old != null) UnityEngine.Object.DestroyImmediate(old);
-            GameObject root = new GameObject("R_StarSea");
+            // earlier builds: by name at the scene root (active or not: the reflection baker leaves R_StarSea off, and
+            // GameObject.Find does not see inactive objects) and any driver left anywhere (old builds put it inside R_StarSea)
+            foreach (GameObject g in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects())
+                if (g.name == RootName || g.name == DriverName) Undo.DestroyObjectImmediate(g);
+            foreach (LanbaiAct09Driver od in UnityEngine.Object.FindObjectsOfType<LanbaiAct09Driver>(true))
+                if (od != null) Undo.DestroyObjectImmediate(od.gameObject);
+            GameObject root = new GameObject(RootName);
+            Undo.RegisterCreatedObjectUndo(root, "蓝白 Act09 build");
             // the main stars are the film's ONE star object (Sky's Lanbai_Stars_BSC5, 蓝白/Sky/Build Sky): a second copy here drew
             // every star twice from F13 (+1 EV, tech review r2 #4). The driver does not switch it (gain 0 = culled in the
             // vertex shader), so seeking back to acts 3-4 never finds it disabled.
-            Renderer rMain = null;
             if (LanbaiSkyBuild.FindRoot("Lanbai_Stars_BSC5", false) == null) Debug.LogWarning("[Act09] no Lanbai_Stars_BSC5 in the scene: run 蓝白/Sky/Build Sky");
             Renderer rFirst = MakeStarObject(root, "Stars_First", firstMesh, firstMat);
             Renderer rQ = MakeStarObject(root, "Stars_Question", qMesh, qMat);
+            rFirst.enabled = false; rQ.enabled = false;      // the driver's Tick switches them on (never visible at activation)
 
-            GameObject drv = new GameObject("LanbaiAct09Driver");
-            drv.transform.SetParent(root.transform, false);
+            // the driver on its OWN always-active object (Director README §3.1): LanbaiActivate switches R_StarSea, which
+            // holds only the two renderers, so the driver never switches itself off
+            GameObject drv = new GameObject(DriverName);
+            Undo.RegisterCreatedObjectUndo(drv, "蓝白 Act09 build");
             LanbaiAct09Driver c = AddUdon(drv);
-            c.root = root; c.starsMain = rMain; c.firstStars = rFirst; c.questionStars = rQ;
+            c.root = root; c.firstStars = rFirst; c.questionStars = rQ;
             c.tBlueHour = d.labels.blue_hour_start; c.tActStart = d.labels.act9_start; c.tDarkEnd = d.labels.dark_end;
             c.tF13 = d.labels.F13; c.tF16 = d.labels.F16;
-            c.gTable = d.ignition.g; c.gStep = d.ignition.table_step_s;
+            c.gTable = d.ignition.g; c.gCoreTable = d.ignition.g_core; c.gStep = d.ignition.table_step_s;
             c.band1Gain = d.sky.band1_gain;
             c.nightColor = new Vector3(d.sky.zenith_floor.night[0], d.sky.zenith_floor.night[1], d.sky.zenith_floor.night[2]);
             c.floorAdd = new Vector3(d.sky.zenith_floor.floor_add[0], d.sky.zenith_floor.floor_add[1], d.sky.zenith_floor.floor_add[2]);
             c.firstAppear0 = d.first_stars.appear[0]; c.firstAppear1 = d.first_stars.appear[1];
             c.firstPeak = d.first_stars.peak; c.firstOutSeconds = d.first_stars.out_s;
             EditorUtility.SetDirty(c);
-            Debug.Log("[Act09] R_StarSea built: " + nf + " first stars, " + nq + " question stars, ignition " + d.ignition.seconds + " s (" + d.ignition.g.Length + " samples). Mirrors: add the kit from Mirrors/ when it arrives.");
+            root.SetActive(false);                            // off until the dispatcher's LanbaiActivate(true) at 992.06
+            Debug.Log("[Act09] R_StarSea + " + DriverName + " built: " + nf + " first stars, " + nq + " question stars, ignition " + d.ignition.seconds + " s (" + d.ignition.g.Length + " samples, core lead " + d.ignition.core_lead_s + " s). Now run 蓝白/Director/1 Generate Dispatcher and 2 Wire Scene. Mirrors: add the kit from Mirrors/ when it arrives.");
         }
 
         static Material MatCopy(Material src, string path)
@@ -112,6 +122,7 @@ namespace Lanbai.Act09.EditorTools
         static Renderer MakeStarObject(GameObject root, string name, Mesh mesh, Material mat)
         {
             GameObject go = new GameObject(name);
+            Undo.RegisterCreatedObjectUndo(go, "蓝白 Act09 build");
             go.transform.SetParent(root.transform, false);
             go.AddComponent<MeshFilter>().sharedMesh = mesh;
             MeshRenderer r = go.AddComponent<MeshRenderer>();

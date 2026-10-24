@@ -3,15 +3,20 @@
 //
 // Interface (CONTROL_总控.md §5): the Director's dispatcher calls LanbaiTick(t) every frame inside LanbaiWindow(),
 // LanbaiActivate(on) only under occlusion. Every number comes from Act09_StarSea/Act09_StarSea.json; the build menu
-// 蓝白/Build/Act09 fills these fields (do not hand-edit).
+// 蓝白/Build/Act09 fills these fields (do not hand-edit). This behaviour sits on its own always-active object
+// (Lanbai_Act09Driver); `root` (R_StarSea) holds only the two star renderers.
 // It writes, from the act's start (1001.21; before that the 8b driver owns them):
 //   _Udon_SkyBlend = (0, 1, night, 1)   night 0 -> 1 over 1001.21 -> 1009.21 (directional in the shader)
 //   _Udon_SkyFx    = (0, band1, 0, 1)   the blue-hour band stays, the night layer covers it
-//   _Udon_GalaxyGain = (g(t) x (1 + 0.8 x^2.5), 0, 0, 1)      g(t): the precomputed ignition table from F13
+//   _Udon_GalaxyGain = (g(s), gCore(s), 1, 1) x (1 + 0.8 x^2.5) on x and y: the arms and the galactic core
+//                      (LanbaiGalaxyGainAt; gCore = the same breath a little ahead, so the light spreads along the
+//                      band), s = t - F13
 //   _Udon_StarGain   = (F13 ? 1 : 0, 4 + 4 x^2.5, 50 + 150 x^2.5, 1)
-//   _Udon_ZenithColor = (night + gain x floorAdd, 1) from 1009.21 (the mirrors read it as the star floor)
 //   _Udon_Fog = (0, 0, 0, 1)
-// and the first stars' / question stars' MaterialPropertyBlocks (no globals).
+// and from 1009.21 the star floor (night + g x floorAdd, 1) into _Udon_ZenithColor (the mirrors read it),
+// _Udon_HorizonColor, _Udon_FogBandColor and _Udon_NadirColor (as the star_sea preset: LanbaiHorizon is the floor too);
+// plus the first stars' MaterialPropertyBlock (no globals). Per frame: 5 SetGlobalVector (9 from 1009.21), 1 MPB,
+// no loops, no allocation.
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
@@ -23,7 +28,6 @@ namespace Lanbai.Act09
     {
         [Header("Roots and renderers (filled by 蓝白/Build/Act09)")]
         public GameObject root;
-        public Renderer starsMain;
         public Renderer firstStars;
         public Renderer questionStars;
 
@@ -34,8 +38,9 @@ namespace Lanbai.Act09
         public float tF13 = 1018.21f;
         public float tF16 = 1149.31f;
 
-        [Header("Ignition table g(t) from F13, step 0.05 s")]
+        [Header("Ignition tables from F13, step 0.05 s: the arms (g) and the galactic core")]
         public float[] gTable;
+        public float[] gCoreTable;                        // empty = the core runs gTable (no lead)
         public float gStep = 0.05f;
 
         [Header("Sky")]
@@ -49,7 +54,7 @@ namespace Lanbai.Act09
         public float firstPeak = 0.55f;
         public float firstOutSeconds = 0.8f;
 
-        private int idSkyBlend, idSkyFx, idGalaxy, idStar, idZenith, idFog;
+        private int idSkyBlend, idSkyFx, idGalaxy, idStar, idZenith, idFog, idHorizon, idFogBand, idNadir;
         private int idGain, idOrderFade;
         private MaterialPropertyBlock mpb;
         private bool ready;
@@ -69,6 +74,9 @@ namespace Lanbai.Act09
             idStar = VRCShader.PropertyToID("_Udon_StarGain");
             idZenith = VRCShader.PropertyToID("_Udon_ZenithColor");
             idFog = VRCShader.PropertyToID("_Udon_Fog");
+            idHorizon = VRCShader.PropertyToID("_Udon_HorizonColor");
+            idFogBand = VRCShader.PropertyToID("_Udon_FogBandColor");
+            idNadir = VRCShader.PropertyToID("_Udon_NadirColor");
             idGain = VRCShader.PropertyToID("_Gain");
             idOrderFade = VRCShader.PropertyToID("_OrderFade");
             mpb = new MaterialPropertyBlock();
@@ -86,16 +94,21 @@ namespace Lanbai.Act09
                 root.SetActive(on);
         }
 
-        // g(t) for s = seconds after F13 (linear interpolation of the table; 1 after its end)
-        public float IgnitionGain(float s)
+        // a table at s = seconds after F13 (linear interpolation; 0 before F13, 1 after its end)
+        public float TableAt(float[] tab, float s)
         {
-            if (s <= 0f || gTable == null || gTable.Length == 0)
+            if (s <= 0f || tab == null || tab.Length == 0)
                 return 0f;
             float f = s / gStep;
             int i = (int)Mathf.Floor(f);
-            if (i >= gTable.Length - 1)
+            if (i >= tab.Length - 1)
                 return 1f;
-            return Mathf.Lerp(gTable[i], gTable[i + 1], f - i);
+            return Mathf.Lerp(tab[i], tab[i + 1], f - i);
+        }
+
+        public float IgnitionGain(float s)
+        {
+            return TableAt(gTable, s);
         }
 
         public void LanbaiTick(float t)
@@ -116,8 +129,11 @@ namespace Lanbai.Act09
                 // stars whose order is below the threshold are OFF (z = 1): threshold runs from -soft to 1 + soft
                 mpb.SetVector(idOrderFade, new Vector4(Mathf.Lerp(-soft, 1f + soft, sweep), soft, 1f, 0f));
                 firstStars.SetPropertyBlock(mpb);
-                firstStars.enabled = t < tDarkEnd + firstOutSeconds;
+                firstStars.enabled = t >= firstAppear0 && t < tDarkEnd + firstOutSeconds;   // built disabled
             }
+
+            if (questionStars != null)
+                questionStars.enabled = t >= tF13;        // built disabled; also off again when the timeline seeks back
 
             if (t < tActStart)
                 return;                                   // the 8b driver still owns the sky globals
@@ -127,19 +143,22 @@ namespace Lanbai.Act09
             VRCShader.SetGlobalVector(idSkyFx, new Vector4(0f, band1Gain, 0f, 1f));
             VRCShader.SetGlobalVector(idFog, new Vector4(0f, 0f, 0f, 1f));
 
-            float g = IgnitionGain(t - tF13) * (1f + 0.8f * x25);
-            VRCShader.SetGlobalVector(idGalaxy, new Vector4(g, 0f, 0f, 1f));
+            float s = t - tF13;
+            float climax = 1f + 0.8f * x25;
+            float g = TableAt(gTable, s) * climax;
+            float gc = (gCoreTable != null && gCoreTable.Length > 0) ? TableAt(gCoreTable, s) * climax : g;
+            VRCShader.SetGlobalVector(idGalaxy, new Vector4(g, gc, 1f, 1f));
             bool lit = t >= tF13;
             VRCShader.SetGlobalVector(idStar, new Vector4(lit ? 1f : 0f, 4f + 4f * x25, 50f + 150f * x25, 1f));
-            if (starsMain != null)
-                starsMain.enabled = lit;
-            if (questionStars != null)
-                questionStars.enabled = lit;
 
             if (t >= tDarkEnd)
             {
                 Vector3 z = nightColor + floorAdd * g;
-                VRCShader.SetGlobalVector(idZenith, new Vector4(z.x, z.y, z.z, 1f));
+                Vector4 floor = new Vector4(z.x, z.y, z.z, 1f);
+                VRCShader.SetGlobalVector(idZenith, floor);
+                VRCShader.SetGlobalVector(idHorizon, floor);
+                VRCShader.SetGlobalVector(idFogBand, floor);
+                VRCShader.SetGlobalVector(idNadir, floor);
             }
         }
     }

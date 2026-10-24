@@ -1,6 +1,6 @@
 # 蓝白 · 天空（`Lanbai/Sky`、真实星表的星、月、银河、每一幕的天空预设）v1.2
 
-> v1.2（10-23 恢复后）：**全片一个天空盒材质**（`Sky/Generated/M_Sky.mat`），预设之间的差别全走全局量（`_Udon_SkyGlobals` + `_Udon_Sky_*` 一族 + 全局立方图 `_Udon_SkyCubeTexA/B`）；新驱动 `LanbaiSkyDriver`；预设的所有权开关（`ownsAtmosphere / ownsSkybox`，默认关）；**银河换成 ESA Gaia EDR3 的照片**（8K）；天顶不再有靶心（渐变终点钳在 90°、天顶方向的混合改成对数空间）；晨的太阳 = 0.53° 程序化日盘（D-18）+ 软封顶掉 HDRI 自己的日斑 + 小光晕，方位 +30°（D-12）；星按 D-06（3 等以上、L\* ≤ 12、光雾带 −1 EV，`_Udon_StarShape`）；8-i 地平线以下 −18° 就转蓝、8-ii 下半球向天底渐暗、第 9 幕的夜遮罩是椭圆（不再是圆角矩形）。逐条见 §8 与 `Docs~/review_response_r2.md`。
+> v1.2（10-23 恢复后）：**全片一个天空盒材质**（`Sky/Generated/M_Sky.mat`），预设之间的差别全走全局量（`_Udon_SkyGlobals` + `_Udon_Sky_*` 一族 + 全局立方图 `_Udon_SkyCubeTexA/B`）；新驱动 `LanbaiSkyDriver`；预设的所有权开关（`ownsAtmosphere / ownsSkybox`，默认关）；**银河换成 ESA Gaia EDR3 的照片**（8K）；天顶不再有靶心（渐变终点钳在 90°、天顶方向的混合改成对数空间）；晨的太阳 = 0.53° 程序化日盘（D-18）+ 软封顶掉 HDRI 自己的日斑 + 小光晕，方位 +30°（D-12）；星按 D-06（3 等以上、L\* ≤ 12、光雾带 −1 EV，`_Udon_StarShape`）；8-i 地平线以下 −18° 就转蓝、8-ii 下半球向天底渐暗、第 9 幕的夜遮罩是贴着地平线的一条带（顶边平、两端收，合拢时压到几度高；不再是圆角矩形、椭圆或穹顶）。逐条见 §8 与 `Docs~/review_response_r2.md`。
 
 > v1.1（10-23）：按第 1 轮独立美术 / 技术评审改（逐条回应 `Docs~/review_response_r1.md`）：预设写全所有全局量、日线改读 `_Udon_SunDisc.z`、月盘按像素选 mip、`ApplyBlend` 重写、HDRI 地平线霾线不取样、另一片天可取第二张 HDRI、单调的蓝时带、8-i 下半球、8-ii 天顶过渡、月夜（月面贴图 + 月晕按 calib + 星）、第 1 幕的镇子钠光预设、星更亮（`_StarScale` 1.6、`_MagSlope` 0.5、40 km）。
 
@@ -63,7 +63,7 @@
 3. **两条地平线带**（`_Band1/2Color/Shape/Gain`）：按仰角和**相对太阳的方位**定位的高斯带，把天拉向某个颜色。晨：地影带 + 很淡的金星带（选定的 HDRI 里没有）；蓝时：最纯的蓝带；第 12 幕：天边那一线。`Color.a` 同样把带的边缘拉向冷灰。
 4. **另一片天**（第 8-ii 幕）：地平线以下按 (−x, −y, z) 取样立方图（绕前方轴转 180°，不是翻转）× `_OtherGain`（0.82）× `_OtherTint`，1° 软接缝；**它自己的太阳也画出来**，两个太阳在接缝上熔成一条线。
 5. **紫色护栏** `_PurpleGuard`：圣经 §1.3.4（第 4 幕以外紫 ≤ 2%），**10-23 总导演加：晨 / 暮 / 蓝时里玫瑰到靛蓝的过渡守 C\* ≤ 8，h 285–330 不许出现**（D-17 的道理）。晨、暮、蓝时用双向模式 `(1, 0.75, 0.95, −1)`（终审 2 改过）：①**强蓝**（B/G ≥ 1.3、蓝压过红）R 限在 0.64 G 以内：仍是蓝（中天前方约 `#7D95C3`，圣经 `#808AB2` 一带），不变青；②**玫瑰进蓝的那一段**（B 压过 G、R 接近 G、R/B 0.6–1.35）先把 R/B 往两头推一点（蓝的一侧只减红、粉的一侧只加红、中间连续），让颜色少在中间停留，再把**中间**一窄条往**淡金白**送（同亮度微提，靠蓝的一侧偏冷、靠粉的一侧偏暖，调色后 h 60–100、低彩度）：画面上是玫瑰和蓝之间一道细的淡色缝，不是一条灰带、也不是淡紫；③**红明显压过蓝的粉不碰**（R/B > 1.5：背日的玫瑰带留粉，`#C89EA7`）。**品红粉**（R/B 1.1–1.35）也算进中间：暮的调色下它是粉，蓝时较冷的调色下会变成淡紫，8-ii → 8b 的淡变里会露出来（`test_sequence` 查到的那段）。验收：**紫带**（**h 290–330**、C\* > 8、L\* > 40，D-21 修订：圣经色板里写明的颜色一律放过，中天 `#808AB2` 在 h 285.3、车厢 `#828BAA`、暮天顶 `#3D4A80` 都不归它管）六个视向都 0%，淡变里整球也查（`test_sequence.py`）。旧的单向模式（w ≥ 0：只压 R）还在，给别处用。偏蓝、红接近绿的天在 S8 的暖调色（色温 +3、色调 +1）下会变成淡紫；护栏在 B/G 高的地方把 R/G 限在 `y` 以下。暖色、玫瑰、真正的蓝不受影响。
-6. **夜**：`_NightColor` + 增益 g ×（星空底 `_StarFloorAdd` + 银河辉光 `_GlowTex`）；权重 `_NightBlend` **按方向延迟**（第 8b → 9 幕：背日和天顶先黑，前方 ±40° 的地平线带在 6 秒时仍 ≥ 50%，8 秒全黑；`_NightMaskDir/Shape`）。
+6. **夜**：`_NightColor` + 增益 g ×（星空底 `_StarFloorAdd` + 银河辉光 `_GlowTex`）；权重 `_NightBlend` **按方向延迟**（第 8b → 9 幕：背日和天顶先黑，前方 ±40° 的地平线带在 6 秒时仍 ≥ 50%，8 秒全黑；`_NightMaskDir/Shape` = (40, 45, 6, 22)：方位 ±40° 满、45° 软边，仰角 6° 满、22° 软边；带的顶边是方位上指数 4 的超椭圆，平着走、只在两端收；变暗的最后四分之一里仰角轴收到四分之一，最后一抹只有几度高、贴着地平线；地平线以下仰角按 4 倍算，先黑）。银河辉光在银心周围 18° 内往暖尘 `#C8B79A` 拉（`LanbaiGalaxyCoreTint`，`LanbaiSky.cginc`；烘好的图在 S9a 下偏粉灰）。
 7. **日盘 / 日线**（程序化，**直径 0.53°**（D-18，`_SunShape.x` = 半径 0.265），临边昏暗，软边 ≥ 2 个 VR 像素、峰值 > 1 时按峰值锐化覆盖率；`_Udon_SunDisc.z`（没设时 `_SunShape.w`）> 0 时变成水平的“日线”，第 8 幕 F12 的收缩）+ 可选的日晕；**月**（`_MoonTex` 圆盘，按像素大小选 mip；月晕 a1·e^(−k1·度) + a2·e^(−k2·度)）。
 9. **地平线霾线**：每张 pure-sky HDRI 在 0° 都有一道暗霾线，`_HorizonLift`（0.8°）以下永不取样它。**另一片天**可以取第二张 HDRI（`_OtherFromB` = 1、`_CubeB`），不再是同一张的旋转。地平线带 `Shape.y < 0` = 单调带（带中心以上取带色与天色中更暗的那个，蓝时用）。**地平线以下**：`_BelowMirror` = 1 时按镜像的仰角取这片天（天在下面继续，8-i 用），0 时把地平线的颜色带下去；两种都往 `_NadirColor` 走（`_BelowShape` = 天底在几度 / 幂 / 地平线取样的仰角 / 软样本的钳位）。
 10. **开销**：天空盒每像素约 0.3–0.6 ms @ 9 MP（一张立方图 + 程序化 + 两条带 + 护栏；另一片天和夜层各多一份，都在 `[branch]` 里）。
@@ -75,7 +75,7 @@
 |---|---|
 | `_Udon_SkyBlend` | x 立方图 A → B、y 程序化权重、z 夜的权重（按方向延迟）；w > 0 = 设了 |
 | `_Udon_SkyFx` | x 另一片天、y 地平线带 1 的增益、z 空着；w > 0 = 设了 |
-| `_Udon_GalaxyGain` | x 银河辉光与星空底的增益 g(t)（第 9 幕）；w > 0 = 设了 |
+| `_Udon_GalaxyGain` | x 银河辉光与星空底的增益 g(t)（第 9 幕；旋臂）；y 银心的增益、z = 1 时用 y（点燃时银心先亮，`LanbaiGalaxyGainAt`）；w > 0 = 设了 |
 | `_Udon_StarGain` | x 星点总增益（F13 那一帧 0 → 1）、y 亮星加成（> 0 = 用它）、z 亮星个数（> 0 = 用它）；w > 0 = 设了 |
 | `_Udon_SunDir` / `_Udon_SunDisc` | 指向太阳；x 日盘增益、y 半径（度）、z 日线半长（度）；w > 0 = 设了 |
 | `_Udon_MoonDir` / `_Udon_MoonDisc` | 指向月；x 月盘增益、y 半径（度）；w > 0 = 设了 |
@@ -126,7 +126,7 @@
 | 8-i（出海 922.36 →） | `dusk_8i` | **「云」**（第 8 幕的包） | 出海时 `Apply()`（水面下） |
 | 8-ii（F10e 956.36 → 964.36） | `dusk_8ii` | 「云」 | `dusk_8i.ApplyBlend(dusk_8ii, t)`，8 秒 smoothstep |
 | 8b（F12 987.06 → 993.06 → 1001.21） | `blue_hour` | 「云」 | `dusk_8ii.ApplyBlend(blue_hour, t)` 6 秒；日线另写 `_Udon_SunDisc.z` |
-| 9（1001.21 → F16 1149.31） | （从 `blue_hour` 接着） | **第 9 幕的驱动**（`Act09_StarSea/`） | 只写 `_Udon_SkyBlend / SkyFx / GalaxyGain / StarGain / ZenithColor / Fog`；`_Udon_Sky_*` 留着蓝时的值 |
+| 9（1001.21 → F16 1149.31） | （从 `blue_hour` 接着） | **第 9 幕的驱动**（`Act09_StarSea/`） | 1001.21 起写 `_Udon_SkyBlend / SkyFx / Fog / GalaxyGain / StarGain`，1009.21 起再加 `_Udon_ZenithColor / HorizonColor / FogBandColor / NadirColor`（= 星空底）；`_Udon_Sky_*` 留着蓝时的值。8b 的驱动在 t ≥ 1001.21 时不再 Apply / ApplyBlend |
 | 10（白） | — | 遮罩球（`Mirrors/`、`Overlay/`） | 天被遮住 |
 | 11、12 | `overcast_rain_night`（12 的开头） | `LanbaiSkyDriver` | 白遮罩下 `Apply()` |
 
@@ -158,7 +158,7 @@
 **第 3、4 幕的星（D-06）**：同一张星表、同一个增益（`moon_night` 的 `_Udon_StarGain.x` = 0.015，第 4 幕 `FogPresets.json` 的 `act4_gate.stars` 写同一个数），只留 **3 等以上**（`_Udon_StarShape.x` = 3，圣经 §6·4“只有 mag < 3 的星”），**没有银河**（`_Udon_GalaxyGain.x` = 0），第 4 幕光雾带里**再暗 1 EV**（`_Udon_StarShape.y` = −1，带 = `_Udon_FogBandDir` ± `_Udon_FogBandWidth`、仰角 10° 以下，软边 10° / 15°），FWHM 1.6 px（材质的范围 1.5–4，单像素的星在头显里会闪）。**L\* ≤ 12 我的读法**：1080p、水平 90°、调色之后，最亮那颗星**比它所在的天高出的 L\*** ≤ 12（绝对的 L\* ≤ 12 做不到：月夜朝月一侧的地平线天本身就超过 L\* 12，那里一颗星都不能有）；`Tools~/render/check_stars.py` 在四个视向、两幕各量一次（月盘 ±3° 除外），按**最坏情况**（每颗星正对像素中心，全峰值）量，结果第 3 幕最亮的星比它的天高 ΔL\* 11.6、第 4 幕 11.4（≤ 12，通过；0.015 是通过的最大增益）（`Data/stars_D06.json`）。读法不对请总导演改，脚本里改 `L_MAX` 和量法就行。
 **每个预设都写星**：阴云夜、晨、暮、蓝时 = 0；`star_sea` 也写 0（第 9 幕的驱动从 F13 起写），预览图画的是点燃后的状态。
 
-**第 9 幕的全局量**（镜子读的）：`_Udon_GalaxyGain.x` = 银河辉光 + 星空底的增益（点燃的 g(t)，之后 x^2.5 曲线上 1.0 → 1.8）；`_Udon_StarGain.x` = 星点总增益（F13 一帧 0 → 1），`.y` = 亮星加成（×4 → ×8），`.z` = 亮星个数（50 → 200）；`_Udon_ZenithColor.rgb` = **当前的星空底**（= `_NightColor` + g × `_StarFloorAdd`，第 9 幕的驱动每帧写；雾是关的，所以它在 `LanbaiHorizon` 里也不会造成别的影响）。所以镜子反射的天 = `_Udon_ZenithColor` + `_Udon_GalaxyGain.x` × `LanbaiGalaxySample(StarSky_Glow, 它的 _TexelSize, 反射方向, LanbaiGalaxyScale())`（`LanbaiSky.cginc` 的共用函数：乘 glow_scale、按像素大小选 LOD，图开了 mip）+ 星点第二遍。（`_CubeB` 在 `Lanbai/Sky` 里是第二张 HDRI，不是银河。）
+**第 9 幕的全局量**（镜子读的）：`_Udon_GalaxyGain.x` = 银河辉光 + 星空底的增益（点燃的 g(t)，之后 x^2.5 曲线上 1.0 → 1.8），`.y` = 银心的增益（点燃时比旋臂早一点，`.z` = 1 时用；按方向的增益 = `LanbaiGalaxyGainAt(_Udon_GalaxyGain, 方向)`）；`_Udon_StarGain.x` = 星点总增益（F13 一帧 0 → 1），`.y` = 亮星加成（×4 → ×8），`.z` = 亮星个数（50 → 200）；`_Udon_ZenithColor.rgb` = **当前的星空底**（= `_NightColor` + g × `_StarFloorAdd`，第 9 幕的驱动从 1009.21 起每帧写，`_Udon_HorizonColor / FogBandColor / NadirColor` 同值，所以 `LanbaiHorizon` 也落在星空底上）。所以镜子反射的天 = `_Udon_ZenithColor` + `LanbaiGalaxyGainAt(_Udon_GalaxyGain, 反射方向)` × `LanbaiGalaxySample(StarSky_Glow, 它的 _TexelSize, 反射方向, LanbaiGalaxyScale())`（`LanbaiSky.cginc` 的共用函数：乘 glow_scale、银心的暖色、按像素大小选 LOD，图开了 mip）+ 星点第二遍。（`_CubeB` 在 `Lanbai/Sky` 里是第二张 HDRI，不是银河。）
 
 ---
 
@@ -221,5 +221,4 @@ cd Sky/Tools~/render
 - 银河是 Gaia 的照片重新上色的；Gaia 图本身是“恒星的光”（不是天文摄影里那种把气体和尘一起拍进去的长曝光），所以银心比长曝光照片稍“干”。640 px 陌生人测试的结果在 `Docs~/review_art_r2.md`。
 - 晨的地平线以下是粉棕（h 40–58），有 HDRI 带来的淡竖纹，第 6 幕被云原盖住；8-i 地平线以下是这片天的镜像（暗一些），往天底变暗。
 - 暮日右边约 2° 的地平线上有一道 HDRI 自己的亮度边（余晖的核结束处），本地 8K 里看。
-- 第 9 幕的参考帧、g(t) 表还是旧银河算的（下一窗按新银河重标定，总导演排的顺序）。
 - 星点的亮度标定（`_StarScale`、`_MagSlope`）要等第 9 幕按 F13 那一帧的截图定。

@@ -27,7 +27,7 @@ def splat(img, w, h, hfov, yaw, pitch, dirs, peaks, cols, fwhm=1.6, snap=False):
     p, yw = np.radians(pitch), np.radians(yaw)
     Rx = np.array([[1, 0, 0], [0, np.cos(p), np.sin(p)], [0, -np.sin(p), np.cos(p)]])
     Ry = np.array([[np.cos(yw), 0, np.sin(yw)], [0, 1, 0], [-np.sin(yw), 0, np.cos(yw)]])
-    cam = dirs @ (Rx.T @ Ry.T)          # world -> camera (inverse of camera->world = transpose)
+    cam = dirs @ Ry @ Rx                # world -> camera: camera_dirs maps camera -> world as d @ Rx.T @ Ry.T, so the inverse is @ Ry @ Rx
     vis = cam[:, 2] > 1e-3
     x = cam[vis, 0] / cam[vis, 2] / t; y = cam[vis, 1] / cam[vis, 2] / (t * h / w)
     px = (x + 1) / 2 * w - 0.5; py = (1 - y) / 2 * h - 0.5

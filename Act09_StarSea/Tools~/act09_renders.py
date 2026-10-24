@@ -61,7 +61,7 @@ def render(t, yaw, pitch):
         pk = SC.flux(c['mag'], c['rank'], 1.6, 0.0, 0.5, star['count'], star['boost']) * star['gain']
         SC.splat(img, W, H, 90, yaw, pitch, c['dir'], pk, c['col'], FWHM)
         q = A['question_stars']['stars']
-        SC.splat(img, W, H, 90, yaw, pitch, np.array([s['dir'] for s in q]), np.array([s['peak'] for s in q]), np.tile([0.96, 0.98, 1.06], (len(q), 1)), FWHM)
+        SC.splat(img, W, H, 90, yaw, pitch, np.array([s['dir'] for s in q]), np.array([s['peak'] for s in q]), np.tile(np.array([0.8879, 0.9216, 1.0]) / 0.9201, (len(q), 1)), FWHM)
     gain, thr, soft = first
     if gain > 0 and t < L['dark_end'] + 0.8:
         fs = A['first_stars']['stars']
