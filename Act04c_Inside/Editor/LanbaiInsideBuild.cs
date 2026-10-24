@@ -128,11 +128,46 @@ namespace Lanbai.Inside.Editor
             insideRoot.SetActive(false);
             busAnch.SetActive(false);                      // 总导演终审 #1: the dome / dot / loose threads start off
             string sky = BuildSkylight(top.transform);
+            sky += " " + BuildTestClock(top.transform, comp);
             AssetDatabase.SaveAssets();
             Debug.Log("[Lanbai 4c] built Lanbai_Inside: " + n + " renderers. " + note + " " + sky +
                       (hadOld ? " Kept from the old build: overlay / exposure / worldMainLight / tLichtDial / write flags."
                               : " Wire the driver's overlay (Lanbai_Overlay), exposure (Lanbai_Grades) and worldMainLight by hand.") +
                       " Then re-run 蓝白/Director/2 Wire Scene (the driver and the skylight are new objects).");
+        }
+
+        /// <summary>The act 4 -> 5 test clock for the gate test scene (switched OFF; README §0): it stands in for the Director
+        /// from 166 to 252.64 and activates / ticks / deactivates the gate, its clouds, the skylight spot and the inside driver
+        /// by their own windows. Use it instead of Gate_TestClock.</summary>
+        static string BuildTestClock(Transform top, Component insideDriver)
+        {
+            var go = new GameObject("Inside_TestClock (test scene only)");
+            go.transform.SetParent(top, false);
+            string note = Lanbai.Overlay.Editor.LanbaiOverlayBuild.AddUdonSharp(go, Root + "/Runtime/LanbaiInsideTestClock.cs",
+                Root + "/Runtime/LanbaiInsideTestClock.asset", "LanbaiInsideTestClock");
+            var c = go.GetComponent("LanbaiInsideTestClock");
+            if (c != null)
+            {
+                var so = new SerializedObject(c);
+                void Ref(string field, string typeName)
+                {
+                    var p = so.FindProperty(field); if (p == null) return;
+                    foreach (var a in System.AppDomain.CurrentDomain.GetAssemblies())
+                    {
+                        var t = a.GetType(typeName);
+                        if (t == null) continue;
+                        var o = UnityEngine.Object.FindObjectOfType(t, true);
+                        if (o != null) { p.objectReferenceValue = o; return; }
+                    }
+                }
+                Ref("gate", "LanbaiGateDriver");
+                Ref("clouds", "LanbaiGateClouds");
+                Ref("skylight", "LanbaiSkylightSpot");
+                var pi = so.FindProperty("inside"); if (pi != null && insideDriver != null) pi.objectReferenceValue = insideDriver;
+                so.ApplyModifiedPropertiesWithoutUndo();
+            }
+            go.SetActive(false);
+            return "Test clock (off): " + note;
         }
 
         static System.Type FindDriverType()

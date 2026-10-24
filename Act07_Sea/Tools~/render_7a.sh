@@ -54,3 +54,7 @@ wait
 run 18_921_fwd       921.4  --cam hero --pitch 0 --bus bible_v2 --note "921.4 forward: the last of the dip, APL target 34 (bible: the dusk does not light up before the exit)" &
 run 19_921_side_down 921.4  --cam hero --yaw 90 --pitch -40 --bus bible_v2 --note "921.4 right side window down: the mirror 1.4 m below, the window under the bus" &
 wait
+# D-26: the floor hole in front of the main seat (README §9.1): az -22..22, el -70..-38 from the main eye
+run 20_897_floorhole 897.96 --cam hero --pitch -52 --bus bible_v2 --set floorhole=-22,22,-70,-38 --note "D-26 897.96: down through the eroded floor in front of the main seat (az -22..22, el -70..-38): the inverted window's warm ring and rose-gold arc ahead, the indigo core near the feet" &
+run 21_921_floorhole 921.4  --cam hero --pitch -52 --bus bible_v2 --set floorhole=-22,22,-70,-38 --note "D-26 921.4: the same hole, the mirror 1.4 m below the eye: the same angles (the window is a cone), the fog thinner" &
+wait

@@ -766,7 +766,7 @@
    ],
    "fringe_len_m": 4.0,
    "lip_glow": 3.15,
-   "lip_glow_width_m": 2.0,
+   "lip_glow_width_m": 1.2,
    "translucency_band": [
     0.07,
     40.0
@@ -802,7 +802,7 @@
    ],
    "fringe_len_m": 3.95,
    "lip_glow": 3.15,
-   "lip_glow_width_m": 1.58,
+   "lip_glow_width_m": 0.95,
    "translucency_band": [
     0.07,
     31.6
@@ -838,7 +838,7 @@
    ],
    "fringe_len_m": 4.7,
    "lip_glow": 3.15,
-   "lip_glow_width_m": 1.88,
+   "lip_glow_width_m": 1.13,
    "translucency_band": [
     0.07,
     37.6
@@ -874,7 +874,7 @@
    ],
    "fringe_len_m": 2.625,
    "lip_glow": 3.15,
-   "lip_glow_width_m": 1.05,
+   "lip_glow_width_m": 0.63,
    "translucency_band": [
     0.07,
     21.0
@@ -910,7 +910,7 @@
    ],
    "fringe_len_m": 3.075,
    "lip_glow": 3.15,
-   "lip_glow_width_m": 1.23,
+   "lip_glow_width_m": 0.74,
    "translucency_band": [
     0.07,
     24.6
@@ -946,7 +946,7 @@
    ],
    "fringe_len_m": 1.725,
    "lip_glow": 3.15,
-   "lip_glow_width_m": 0.69,
+   "lip_glow_width_m": 0.41,
    "translucency_band": [
     0.07,
     13.8
@@ -982,7 +982,7 @@
    ],
    "fringe_len_m": 1.5,
    "lip_glow": 3.15,
-   "lip_glow_width_m": 0.57,
+   "lip_glow_width_m": 0.34,
    "translucency_band": [
     0.07,
     11.4
@@ -1018,7 +1018,7 @@
    ],
    "fringe_len_m": 1.5,
    "lip_glow": 3.15,
-   "lip_glow_width_m": 0.5,
+   "lip_glow_width_m": 0.3,
    "translucency_band": [
     0.07,
     7.8

@@ -12,6 +12,7 @@ ctx['args']: lips=1,2,.. (subset), noloose=1, gain=<x>.
 """
 import math
 import os
+import re
 import sys
 
 import bpy
@@ -219,9 +220,9 @@ def mat_sheet(name, P, fp):
                 N.math('MULTIPLY', N.math('SINE', N.math('ADD', N.math('MULTIPLY', u_edge, 2 * math.pi / (0.043 * Hb)), 1.1)), 1.6))
     mott = N.math('ADD', 0.5, N.math('ADD', N.math('MULTIPLY', N.math('MULTIPLY', N.math('SINE', wu), N.math('SINE', wd)), 0.35),
                                      N.math('MULTIPLY', N.math('SINE', N.math('MULTIPLY', u_edge, 2 * math.pi / (0.071 * Hb))), 0.2)))
-    band = N.math('MULTIPLY', N.math('MULTIPLY', P['band'][0], N.math('EXPONENT', N.math('DIVIDE', d_edge, -P['band'][1]))), N.math('MAXIMUM', mott, 0.0))
     gain = N.attr('Col')
     gr, _, _ = N.sep(gain.outputs['Color'])
+    band = N.math('MULTIPLY', N.math('MULTIPLY', P['band'][0], N.math('EXPONENT', N.math('DIVIDE', d_edge, -P['band'][1]))), N.math('MAXIMUM', mott, 0.0))
     glow = N.math('MULTIPLY', N.math('ADD', lip, N.math('MULTIPLY', band, foldK)), gr)
     col = N.vmath('ADD', cloth, N.vmath('SCALE', N.rgb(P['fibre']), s=glow))
     col = N.mix(col, N.horizon(fp), N.math('MINIMUM', N.fog_amount(fp['density']), P['fog_cap_cloth']))
@@ -246,7 +247,10 @@ def mat_sheet(name, P, fp):
                 N.math('MULTIPLY', N.math('SINE', N.math('MULTIPLY', u_edge, tau / (0.017 * Hk))), 0.8))
     curl = N.math('MULTIPLY', N.smooth(0.9, 1.3, cm), band_in)
     dk = N.math('SUBTRACT', 1.0, N.math('MULTIPLY', curl, 0.40))
-    col = N.vmath('SCALE', col, s=N.math('MULTIPLY', fk, dk))
+    # r15: the rim brightens where a pleat turns toward the light and dims where it turns away (no constant bevel)
+    rimk = N.math('ADD', 1.0, N.math('MULTIPLY', N.math('MULTIPLY', fold, 0.35),
+                                      N.math('EXPONENT', N.math('DIVIDE', d_edge, -max(P['lip_w'] * 3.0, 0.5)))))
+    col = N.vmath('SCALE', col, s=N.math('MULTIPLY', N.math('MULTIPLY', fk, dk), rimk))
     # r07: a hidden / fading lip blends into the fog at infinity (the dome's colour) by its visibility: no pop, no ghost
     # (r09: after the folds, so a hidden lip carries none)
     col = N.mix(N.horizon(fp), col, float(P.get('vis', 1.0)))
@@ -380,6 +384,8 @@ def mesh(S, name, o, offset_z, mat):
         at.data.foreach_set('color', np.asarray(o['col'], np.float32).ravel())
     ob = bpy.data.objects.new(name, me)
     bpy.context.scene.collection.objects.link(ob)
+    if os.environ.get('LANBAI_DEBUG_HIDE') and re.search(os.environ['LANBAI_DEBUG_HIDE'], name):
+        ob.hide_render = True                                            # debug: which object makes a shape
     ob.data.materials.append(mat)
     ob.visible_shadow = False
     return ob
