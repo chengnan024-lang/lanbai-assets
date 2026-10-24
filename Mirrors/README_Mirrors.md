@@ -84,6 +84,17 @@
 - shader：`python3 Common/Tools~/compile_check/check_shaders.py Mirrors/Shaders` → `4 files, 40 translation units (DXC on, CGIncludes 2022.3.22f1): 0 errors, 0 warnings. NOT a Unity compile.`
 - C#：`bash Common/Tools~/compile_check/check_cs.sh Mirrors Act10_White` → `C# CHECK OK (0 assembly error(s), 0 lint warning(s))`。
 - 数据：`make_schedule.py` 全部 PASS；网格回读 PASS。
+- 光敏与爬升律（`Tools~/port/flash_seq.py`：numpy 移植逐帧，30 fps，192×108，过 `Art/tools/lens_tech/flashcheck.py`；结果 `Docs~/flashcheck/*.json`）：
+
+| 序列 | 闪烁 / 1 s（≤ 2） | 爬升 0.25 / 1 / 2 s（≤ 0.5 / 1.0 / 1.8） | 峰值 APL |
+|---|---|---|---|
+| 第 1 面穿越 1029.4 → 1035.4（正前方偏下） | 1.0 PASS | 0.27 / 0.26 / 0.39 PASS | 77 |
+| 第 10 面 1112.4 → 1118.4（加速的尾，脉冲最密） | 1.5 PASS | 0.32 / 0.70 / 0.90 PASS | 100 |
+| 第 11 面 1122.5 → 1128.5 | 1.0 PASS | 0.22 / 0.37 / 0.61 PASS | 107 |
+| 白 正前方（第 13 面方案 H / G） | 1.5 / 2.0 PASS | 0.21 / 0.70 / 1.00 · 0.23 / 0.75 / 1.01 PASS | 238 |
+| 白 向下看（H / G） | 1.0 / 2.0 PASS | 0.30 / 0.84 / 1.33 · 0.25 / 0.84 / 1.48 PASS | 241 |
+
+  白以外 VR 的全画面 APL 都 ≤ 150（D-09）。紫（D-21：h 290–330、C\* > 8、L\* > 40）：迭代 r4 各帧 ≤ 0.04 %；1142 向下看那一帧有 8 % 的像素落在 h 290–330，但都是镜子以外的深蓝天（L\* ≈ 21，不到 40），不算。
 
 ## 8. 诚实的已知弱点
 
