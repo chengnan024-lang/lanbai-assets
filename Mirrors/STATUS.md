@@ -1,4 +1,4 @@
-2026-10-23 06:10 UTC · **已暂停**（总导演通知）。做到：时间表 + 白曲线已推（ad41f5c）；三个 shader 初稿（BronzeMirror / MirrorStars / MirrorDust + LanbaiMirror.cginc）、接口约定、形制考据、网格脚本半成品作为 WIP 推上。下一步见 `暂停总结.md`。卡点：额度（建模 / 贴图 / 星空环境三个 agent 因额度失败，没有产出）。
+2026-10-24 05:55 UTC · 恢复（总导演 10-24）：网格 FBX（LOD0/1/2，回读检查 PASS）、镜背 40 m 博局格 / 镜面 / 字形贴图 v2、三个 shader 改用 LanbaiGlobals + 第 9 幕的天（`LanbaiGalaxyGainAt`、`_Udon_ZenithColor`），共用检查 0 错误。下一步：numpy 移植 + 渲染迭代（用 act09_renders 的天）+ 第 13 面对照图。卡点：无。
 
 # 镜与白 · 进度
 

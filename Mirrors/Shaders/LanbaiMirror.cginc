@@ -11,8 +11,7 @@
 //  the renderer is scaled uniformly by D = 2 * _RadiusM, so "metres" below = object units * D.
 //
 //  Include order: UnityCG.cginc -> LanbaiVR.cginc -> (LanbaiFog.cginc) -> this file.
-//  Uniforms that the sky also owns (_Udon_GalaxyGain, _Udon_StarGain) are declared here unless the sky's
-//  include says it declares them (#define LANBAI_SKY_DECLARES_STARSEA).
+//  No _Udon_ declarations here: they all live in Common/Shaders/LanbaiGlobals.cginc (ruling D-29).
 // =====================================================================================================
 #ifndef LANBAI_MIRROR_INCLUDED
 #define LANBAI_MIRROR_INCLUDED
@@ -28,12 +27,9 @@
 #define LM_BOSS_RAD    0.30        // metres
 #define LM_TLV_TILE    40.0        // metres (absolute): one 博局 cell
 
-// ---- globals ---------------------------------------------------------------------------------------------------
-#ifndef LANBAI_SKY_DECLARES_STARSEA
-float4 _Udon_GalaxyGain;           // x = Milky Way glow gain (ignition g(t), then 1.0 -> 1.8); w > 0 = set
-float4 _Udon_StarGain;             // x = star point gain; w > 0 = set
-#endif
-float4 _Udon_MirrorPlane;          // x = face height at the car (world y), y = line, z = index, w = phase (spec / 给总控)
+// ---- globals: declared ONCE in Common/Shaders/LanbaiGlobals.cginc (ruling D-29); act 9 sky helpers from LanbaiSky.cginc
+#include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc"
+#include "Assets/Lanbai/Common/Shaders/LanbaiSky.cginc"
 
 // ---------------------------------------------------------------------------------------------------------------
 // Face (spherical cap) height and normal in object space.  Same numbers as make_mesh.py.
@@ -53,13 +49,6 @@ inline float3 LanbaiSchlick(float3 f0, float cosT)
     float m = 1.0 - saturate(cosT);
     float m2 = m * m;
     return f0 + (1.0 - f0) * (m2 * m2 * m);
-}
-
-// ---- perceptual smoothness -> cube mip (Unity's own mapping, UNITY_SPECCUBE_LOD_STEPS = 6) ------------------------
-inline float LanbaiMirrorMip(float smoothness)
-{
-    float pr = 1.0 - smoothness;
-    return pr * (1.7 - 0.7 * pr) * 6.0;
 }
 
 // ---- value noise / FBM (object-anchored, in metres) --------------------------------------------------------------
@@ -156,27 +145,63 @@ inline float LanbaiMirrorBandHeight(float rM, float R, float th, float footprint
         h = smoothstep(0.45, 0.25, c) * saturate(1.5 - footprintM / 0.2);
         bandId = 2.0;
     }
-    // wide flat rim 0.85 .. 1.00: sawtooth | double zigzag | sawtooth, tooth 1.25 m
+    // wide flat rim 0.85 .. 1.00 (as Cleveland 1995.301): sawtooth 0.855 .. 0.89 (tooth 1.25 m), a fine ring, then the
+    // 流云纹 cloud-scroll band 0.905 .. 0.975 (one scroll every 3 m), plain outer lip
     else if (q >= 0.85)
     {
-        float sub = (q - 0.85) / 0.05;                           // 0..3
-        float vloc = frac(sub);                                  // 0..1 across the sub-band
-        float x = arcR / 1.25;
-        float tooth = LanbaiMirrorSaw(x);
-        float d = (floor(sub) == 1.0) ? abs(vloc - (0.25 + 0.5 * tooth)) : (vloc - tooth * 0.85);
-        float line = (floor(sub) == 1.0) ? smoothstep(0.10, 0.04, d) + smoothstep(0.10, 0.04, abs(d - 0.22)) : step(d, 0.0);
-        h = saturate(line) * saturate(1.5 - footprintM / 0.5);
+        float hh = 0.0;
+        if (q >= 0.855 && q < 0.89)
+        {
+            float vloc = (q - 0.855) / 0.035;                    // 0 inner .. 1 outer
+            hh = step(vloc, LanbaiMirrorSaw(arcR / 1.25) * 0.95) * saturate(1.5 - footprintM / 0.4);
+        }
+        else if (q >= 0.895 && q < 0.90)
+        {
+            hh = 1.0;
+        }
+        else if (q >= 0.905 && q < 0.975)
+        {
+            float vloc = (q - 0.905) / 0.07 * 2.0 - 1.0;         // -1 .. 1 across the band
+            float x = frac(arcR / 3.0);                          // one scroll per 3 m
+            float wave = 0.55 * sin(6.2831853 * x);
+            float dl = abs(vloc - wave);                         // the running wave
+            float2 c = float2(x - 0.25, vloc - 0.55);            // a curl at each crest
+            float rr = length(c * float2(3.0, 1.0));
+            float curl = abs(rr - 0.25 * (0.6 + 0.4 * frac(atan2(c.y, c.x) / 6.2831853)));
+            float strokeW = 0.11;
+            hh = max(smoothstep(strokeW, strokeW * 0.5, dl), smoothstep(strokeW * 0.8, strokeW * 0.4, curl) * step(rr, 0.3));
+            hh *= saturate(1.5 - footprintM / 0.6);
+        }
+        h = hh;
         bandId = 3.0;
     }
     return h;
 }
 
-// ---- reflected sky -----------------------------------------------------------------------------------------------
-// sky(dir, mip) = dark + lift * min(gain, 1) + cube(dir, mip) * gain.  The sky session owns these values; the material
-// carries copies (_SkyDark, _SkyLift, _SkyCube) so the mirror reflects the same sky the eye sees around it.
-inline float LanbaiMirrorGalaxyGain(float matDefault)
+// ---- reflected sky (act 9) -------------------------------------------------------------------------------------
+// The SAME sky the eye sees around the mirror (README_Act09 §4): star floor = _Udon_ZenithColor (night + g x floor add,
+// written by LanbaiAct09Driver from 1009.21), glow = the sky's shared galaxy map x the per-direction gain
+// (LanbaiGalaxyGainAt: the core may lead) x the glow scale x the core tint.  Roughness only blurs: extra LOD from the
+// smoothness, and the LOD never drops below one texel per pixel of the REFLECTED footprint (ddx/ddy of the reflection
+// vector), so the convex face's minification never shimmers.
+inline float3 LanbaiMirrorSkyFloor(float3 matFloor)
 {
-    return (_Udon_GalaxyGain.w > 0.0) ? _Udon_GalaxyGain.x : matDefault;
+    return (_Udon_ZenithColor.a > 0.0) ? _Udon_ZenithColor.rgb : matFloor;
+}
+inline float LanbaiMirrorGainAt(float3 R, float matDefault)
+{
+    return (_Udon_GalaxyGain.w > 0.0) ? LanbaiGalaxyGainAt(_Udon_GalaxyGain, R) : matDefault;
+}
+inline float3 LanbaiMirrorGalaxy(sampler2D glowTex, float4 texelSize, float3 R, float smoothness)
+{
+    float texelRad = 6.2831853 * max(texelSize.x, 1e-6);
+    float cosEl = max(sqrt(saturate(1.0 - R.y * R.y)), 0.05);
+    float foot = max(length(ddx(R)), length(ddy(R)));                       // radians of reflected sky per pixel
+    float lodPix = log2(max(foot, 1e-6) / (texelRad * cosEl));
+    float pr = 1.0 - smoothness;
+    float lodRough = log2(max(2.0 * pr * pr, 1e-6) / texelRad);            // GGX lobe width ~ 2 alpha (rad)
+    float lod = max(0.0, max(lodPix, lodRough));
+    return tex2Dlod(glowTex, float4(LanbaiGalaxyUV(R), 0.0, lod)).rgb * LanbaiGalaxyScale() * LanbaiGalaxyCoreTint(R);
 }
 inline float LanbaiMirrorStarGain(float matDefault)
 {

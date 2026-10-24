@@ -8,6 +8,8 @@
 //  Regions by vertex colour R (spec_conventions.md §1): 0 face · 0.25 face-side rim band · 0.5 outer wall ·
 //  0.75 back · 1.0 knob.
 //
+//  The reflected sky IS the act 9 sky (LanbaiSky.cginc: _Udon_ZenithColor star floor + LanbaiGalaxyGainAt x the shared
+//  galaxy map), so a mirror never shows a different Milky Way from the one around it (README_Act09 §4, ruling D-29).
 //  FACE   = reflected sky x Schlick(white bronze F0 #D6CCB4) + reflected sky x _EmissionK x _Visibility x 2^_EmitExtraEV
 //           (bible §6·9: 'face emission = reflected sky x (0.2 + 0.08 k)'; mirror 13 adds +3 EV over the white's swell).
 //           Convex 1.5 % (analytic sphere-cap normal), circular polish ripple +-0.02 smoothness, face texture.
@@ -60,9 +62,8 @@ Shader "Lanbai/BronzeMirror"
         _BackAmbientGain ("Back ambient gain", Range(0, 4)) = 1
 
         [Header(Sky reflected)]
-        _SkyCube ("Star sea glow cube (the sky CubeB)", Cube) = "black" {}
-        _SkyDark ("Sky black linear (#04060E scene value)", Vector) = (0.0012, 0.0018, 0.0043, 0)
-        _SkyLift ("Star floor lift linear (#08112A minus black)", Vector) = (0.0012, 0.0037, 0.0178, 0)
+        _GlowTex ("Galaxy glow map (Sky StarSky_Glow lat-long sRGB with mips)", 2D) = "black" {}
+        _SkyFloor ("Star floor if ZenithColor is not set (linear)", Vector) = (0.0027, 0.0055, 0.0205, 0)
         _GalaxyGainDefault ("Galaxy gain if the global is not set", Float) = 1
 
         [Header(Stencil)]
@@ -82,11 +83,11 @@ Shader "Lanbai/BronzeMirror"
         #include "LanbaiMirror.cginc"
 
         float _RadiusM, _MirrorK, _EmissionK, _Visibility, _EmitExtraEV, _Appear, _Dissolve, _BreakAmp, _EdgeWidth, _RimSoft;
-        float4 _EdgeColor, _FaceF0, _RimF0, _BackAlbedo, _SkyDark, _SkyLift;
+        float4 _EdgeColor, _FaceF0, _RimF0, _BackAlbedo, _SkyFloor;
         float _FaceSmooth, _PolishAmt, _PolishPeriodM, _RimSmooth, _BackSmooth, _BackBump, _BackAmbientGain, _GalaxyGainDefault;
         sampler2D _FaceTex, _BackNormal, _BackMask, _BackCentreNormal, _BackCentreMask, _Glyphs;
-        samplerCUBE _SkyCube;
-        half4 _SkyCube_HDR;
+        sampler2D _GlowTex;
+        float4 _GlowTex_TexelSize;
 
         struct appdata
         {
@@ -123,11 +124,10 @@ Shader "Lanbai/BronzeMirror"
         }
 
         // the reflected sky (no stars: those come from Lanbai/MirrorStars through the stencil)
-        float3 MirrorSky(float3 dir, float mip)
+        float3 MirrorSky(float3 dir, float smoothness)
         {
-            float g = LanbaiMirrorGalaxyGain(_GalaxyGainDefault);
-            float3 glow = DecodeHDR(texCUBElod(_SkyCube, float4(dir, mip)), _SkyCube_HDR);
-            return _SkyDark.rgb + _SkyLift.rgb * saturate(g) + glow * g;
+            float g = LanbaiMirrorGainAt(dir, _GalaxyGainDefault);
+            return LanbaiMirrorSkyFloor(_SkyFloor.rgb) + g * LanbaiMirrorGalaxy(_GlowTex, _GlowTex_TexelSize, dir, smoothness);
         }
 
         // breakup shared by both passes: signed distance (m) to the dissolve / appear front, + kept
@@ -180,7 +180,7 @@ Shader "Lanbai/BronzeMirror"
                     float s = _FaceSmooth + (ft.r - 0.5) * 0.04 + _PolishAmt * ripple + ft.a * 0.01;
                     s = LanbaiSpecAA(n, saturate(s));
                     float3 r = reflect(V, n);
-                    float3 sky = MirrorSky(r, LanbaiMirrorMip(s));
+                    float3 sky = MirrorSky(r, s);
                     float3 f0 = _FaceF0.rgb * (1.0 + (ft.g - 0.5) * float3(0.06, 0.0, -0.06)) * (1.0 - 0.25 * ft.b);
                     f0 = lerp(f0, f0 * float3(0.97, 1.0, 1.04), ft.a * 0.5);  // tin bloom: a touch cooler
                     float3 F = LanbaiSchlick(f0, dot(n, -V));
@@ -192,14 +192,14 @@ Shader "Lanbai/BronzeMirror"
                     float3 nOS = LanbaiMirrorBeadNormalOS(i.posOS, D, footprint, cover);
                     float3 n = normalize(mul(o2w, nOS));
                     float s = LanbaiSpecAA(n, lerp(_RimSmooth, _RimSmooth + 0.1, cover));
-                    float3 sky = MirrorSky(reflect(V, n), LanbaiMirrorMip(s));
+                    float3 sky = MirrorSky(reflect(V, n), s);
                     col = sky * LanbaiSchlick(_RimF0.rgb, dot(n, -V));
                 }
                 else if (i.region < 0.625)                                // ---- OUTER WALL
                 {
                     float3 n = normalize(i.nrmWS);
                     float s = LanbaiSpecAA(n, _RimSmooth);
-                    col = MirrorSky(reflect(V, n), LanbaiMirrorMip(s)) * LanbaiSchlick(_RimF0.rgb * 0.8, dot(n, -V));
+                    col = MirrorSky(reflect(V, n), s) * LanbaiSchlick(_RimF0.rgb * 0.8, dot(n, -V));
                 }
                 else                                                      // ---- BACK and KNOB
                 {
@@ -246,7 +246,7 @@ Shader "Lanbai/BronzeMirror"
                     float3 alb = _BackAlbedo.rgb * lerp(float3(0.85, 1.0, 1.05), float3(1.15, 0.92, 0.8), m.a)   // patina patches
                                  * lerp(1.0, 0.55, m.b);                                                         // worn ridges: dark bronze
                     float s = LanbaiSpecAA(n, lerp(_BackSmooth, 0.55, m.b));
-                    float3 spec = MirrorSky(reflect(V, n), LanbaiMirrorMip(s)) * LanbaiSchlick(lerp(float3(0.04, 0.04, 0.04), _RimF0.rgb * 0.35, m.b), dot(n, -V));
+                    float3 spec = MirrorSky(reflect(V, n), s) * LanbaiSchlick(lerp(float3(0.04, 0.04, 0.04), _RimF0.rgb * 0.35, m.b), dot(n, -V));
                     col = alb * amb * m.g + spec * m.g;
                 }
 
@@ -255,7 +255,7 @@ Shader "Lanbai/BronzeMirror"
                 if (_RimSoft > 0.0)
                 {
                     float soft = smoothstep(0.80, 1.0, rOS / 0.5) * _RimSoft;
-                    col = lerp(col, MirrorSky(V, 2.0), soft);
+                    col = lerp(col, MirrorSky(V, 0.6), soft);
                 }
                 col += _EdgeColor.rgb * glowEdge;
                 col = LanbaiApplyFog(col, i.posWS);
