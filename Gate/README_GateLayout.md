@@ -351,6 +351,7 @@ float lane = KeyAt(laneKeys, t);  laneMat.SetFloat(_idIntensity, lane);
 只做过 slang 的语法 / 类型检查（`Shaders/slang_check/`：`run_check27.py` = TentacleSway v2.7 的 base / SHADOWCASTER / FORWARDADD 三个组合；`run_check_sky.py` = GateAirSky v3；`run_check_tear6.py` = Tear v6 的 11 个 Part + 两种预深度 pass；**全部通过**）。这不是 Unity 编译：Unity 的内建函数来自 `unity_stub.slang`。
 
 ### 7.0 `LanbaiGateSky.cginc` v1（新，第 8 轮）
+**v2（门驱动 v1.2，D-22）**：include `LanbaiSky.cginc`；`_Udon_FogModel.w > 0` 时 `LanbaiBand(V)` = `LanbaiHorizon(V)`；新增 `LanbaiGateDensity(材质密度)`（`_Udon_Fog` 优先）。见 `README_GateDriver.md` §2。
 天空与雾色的唯一定义（§6）。放在两个 shader 同一个文件夹。属性（两个 shader 都暴露）：`_HazeNear _HazeFar _Void _BandAz _BandEl _BelowHorizon _BelowDesat _BackBand _MoonGlowColor _MoonGlowShape _HaloColor _TearPos`；全局：`_Udon_TearPos _Udon_TearH _Udon_MoonDir _Udon_MoonDisc _Udon_FogBandDir _Udon_FogBandColor _Udon_FogBandWidth`。
 
 ### 7.1 `Lanbai_TentacleSway.shader` **v2.7c**（相对 v2.6；v2.7c = 第 9 次运行加的 `_RimLadderFloor`，`_RimGain` 范围 0–4）

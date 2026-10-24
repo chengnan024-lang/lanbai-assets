@@ -1,0 +1,207 @@
+{
+ "metrics": {
+  "size": [
+   960,
+   540
+  ],
+  "APL": 34.31,
+  "EV_display": -5.391,
+  "luma_lt12_pct": 22.49,
+  "Lstar_gt85_pct": 0.055,
+  "clip_black_pct": 0.0,
+  "clip_white_pct": 0.0,
+  "clip_black_largest_region_pct": 0.0,
+  "clip_white_largest_region_pct": 0.0,
+  "warm_shadow_pct": 0.0,
+  "purple_pct": 0.0,
+  "purple_largest_region_pct": 0.0,
+  "violet_strong_pct": 0.0,
+  "lavender_act6_pct": 0.0,
+  "brightest": {
+   "bbox": [
+    298,
+    0,
+    946,
+    466
+   ],
+   "centroid": [
+    815.9,
+    284.5
+   ],
+   "clusters": 39,
+   "clusters_ge5pct": 4,
+   "min_luma": 207.7,
+   "centroid_az_el": [
+    32.55,
+    -1.84
+   ]
+  },
+  "top25_Lstar": {
+   "mean": 13.81,
+   "p50": 13.22,
+   "p90": 17.97
+  },
+  "palette": {
+   "act": "04c",
+   "metric": "CIEDE2000 (as Review/Tools~/measure.py)",
+   "swatches": [
+    {
+     "hex": "#0C0E14",
+     "role": "暗车厢剪影",
+     "nearest_dE2000_p01": 1.3,
+     "within_dE5_pct": 22.69
+    },
+    {
+     "hex": "#1D2336",
+     "role": "第一重光唇之间的雾",
+     "nearest_dE2000_p01": 1.6,
+     "within_dE5_pct": 63.41
+    },
+    {
+     "hex": "#53606E",
+     "role": "第八重光唇之间的雾",
+     "nearest_dE2000_p01": 3.1,
+     "within_dE5_pct": 0.59
+    },
+    {
+     "hex": "#E6E1F2",
+     "role": "光唇纤维 第 1 重（一丝紫）",
+     "nearest_dE2000_p01": 9.9,
+     "within_dE5_pct": 0.0
+    },
+    {
+     "hex": "#D9DFEE",
+     "role": "光唇纤维 第 4 重",
+     "nearest_dE2000_p01": 5.0,
+     "within_dE5_pct": 0.1
+    },
+    {
+     "hex": "#C2D8E2",
+     "role": "光唇纤维 第 8 重（瓶覗）",
+     "nearest_dE2000_p01": 4.8,
+     "within_dE5_pct": 0.12
+    },
+    {
+     "hex": "#F2B169",
+     "role": "收音机 = Lichtchen",
+     "nearest_dE2000_p01": 31.0,
+     "within_dE5_pct": 0.0
+    },
+    {
+     "hex": "#FFF1DC",
+     "role": "前方暖白光点",
+     "nearest_dE2000_p01": 19.3,
+     "within_dE5_pct": 0.0
+    }
+   ],
+   "pixel_to_nearest_dE_median": 2.4,
+   "pixel_to_nearest_dE_p90": 6.7,
+   "pixels_within5_pct": 86.9
+  }
+ },
+ "cam": {
+  "eye": [
+   0.55,
+   1.7,
+   2.05
+  ],
+  "yaw_deg": 0,
+  "pitch_deg": 0,
+  "hfov_deg": 90,
+  "res": [
+   960,
+   540
+  ],
+  "note": "主座位眼位、正前、桌面 1920×1080、水平 90°（= 本地门测试 U7 截图的机位，Gate cameras.U7）。全片的“标准机位”。",
+  "source": "Engineering/render_harness",
+  "name": "hero"
+ },
+ "grade_spec": {
+  "S4c": 1.0,
+  "LENS_CLEAN": 1.0
+ },
+ "grade_state": {
+  "postExposure": -0.9,
+  "temperature": -2.89,
+  "tint": 1.65,
+  "saturation": -13.56,
+  "contrast": 0.8,
+  "lift": [
+   0.9824,
+   0.9835,
+   1.0,
+   0.0061
+  ],
+  "gamma": [
+   0.9893,
+   0.9814,
+   1.0,
+   -0.0699
+  ],
+  "gain": [
+   0.9994,
+   0.991,
+   1.0,
+   0.1188
+  ],
+  "mixer": [
+   99.81,
+   0.11,
+   -1.08,
+   -0.73,
+   100.56,
+   -0.28,
+   0.08,
+   0.42,
+   99.86
+  ],
+  "bloom": {
+   "intensity": 6.0,
+   "threshold": 2.69,
+   "softKnee": 0.7,
+   "diffusion": 9.0,
+   "color": [
+    0.9490196078431372,
+    0.9529411764705882,
+    0.9647058823529412
+   ],
+   "clamp": 4.239999999997963
+  },
+  "vignette": {
+   "intensity": 0.2,
+   "smoothness": 0.4,
+   "roundness": 1.0,
+   "rounded": false,
+   "color": [
+    0.00784313725490196,
+    0.01568627450980392,
+    0.0392156862745098
+   ]
+  }
+ },
+ "bloom_share_of_APL": 0.0,
+ "t": 200.0,
+ "target": {
+  "phase": "4c 喉·Lichtchen",
+  "APL": 40.7,
+  "grade": "S4c",
+  "range": [
+   30,
+   42
+  ]
+ },
+ "scene": {
+  "what": "第 4c 幕 t=200.00 s=1096.0 lips=9 fog=#323A4A",
+  "bus": "bible_v2",
+  "glass": true,
+  "samples": 16,
+  "res": [
+   960,
+   540
+  ]
+ },
+ "render_seconds": 32.5,
+ "lens": "clean",
+ "bloom_tint": "single",
+ "note": "r11 per art review r10: discrete soft fold ridges across the tear with lit / shadow flanks, mottled light through the thin weave near the tear, weave streaks at 1/3"
+}

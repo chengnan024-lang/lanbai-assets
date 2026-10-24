@@ -1,4 +1,4 @@
-2026-10-23 · **驱动可以终审了** · LanbaiGateDriver（Gate/README_GateDriver.md）：GateRoot（U9 以后按门内的减速闭式）、裂口、64 个实例的位姿与显现、群臂两组、远潮、天褶 / 光晕、13 个全局量、U9 收臂、Play 模式测试时钟；技术评审有条件通过（三条 MAJOR 已改：群臂初始状态、只在动画区间里算位姿、U9 以后的 GateRoot）；C# 检查 OK · 要总导演定：指尖卷回做不做 · 之后：C 类美术项
+2026-10-23 · **驱动 v1.2 可以终审了** · LanbaiGateSky v2：光带 = LanbaiHorizon、密度 = _Udon_Fog（触手、远潮、云海、云卡跟着天走过 U6 过渡；check_d22_fog.py：140 时高处 −1.12 → −0.19 EV）；光带方向收臂后冻结；没有天空套件时 Start 警告；D-08 颜色进 GateLayout_v2.json / gate_export.py，Builder 从 JSON 读；裂口光从 U6k 随伤口渐亮、补光一起淡出；常量只写一次；Wire Scene 提示只在有 Director 时；shader 8 文件 0 错 0 警告、C# OK
 
 ## 进度
 - [x] 云海 `Lanbai/GateCloudDeck` + `Deck_Detail_1024` / `Deck_Macro_512` + `Source/deck_ref.py`（逐行 numpy 移植）；独立技术审查一轮（移植对照），改完

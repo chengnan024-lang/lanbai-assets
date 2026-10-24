@@ -50,21 +50,17 @@ public class LanbaiGateClouds : UdonSharpBehaviour
     public int[] alphaCount;
 
     private MaterialPropertyBlock _mpb;
-    private int _idAlpha, _idMirror, _idGain, _idFogBand;
+    private int _idAlpha, _idMirror, _idGain;
     // act 4's haze band for every LanbaiFog user (Common/UdonGlobals.md: act 4 = the gate's driver): LANBAI_GATE_NEAR
     private float[] _window;
     private bool _warnedMissing;
-    // act 4's light-fog band colour and until when this driver owns it (U9; then the inside driver): from
-    // GateClouds_Layout.json fog_band (written by the builder; the defaults are the same values)
-    public Vector4 fogBandColor = new Vector4(0.1085f, 0.1130f, 0.1641f, 1f);
-    public float fogBandUntil = 179.55f;
+    // the fog band (_Udon_FogBand*) is NOT written here any more: D-22 gives the whole fog / moon / star family on
+    // [U6, U9) to LanbaiGateDriver (one writer per global)
 
     public void LanbaiTick(float time)
     {
         if (_mpb == null) _Init();             // activated and ticked in the same frame: Start has not run yet (tech r1 #9)
         t = time;
-        // act 4 only: from U9 the inside-the-gate driver owns the fog band (chief engineer 10-23 06:10, tech r3 #3)
-        if (time < fogBandUntil) VRCShader.SetGlobalVector(_idFogBand, fogBandColor);
         Apply();
     }
 
@@ -95,7 +91,6 @@ public class LanbaiGateClouds : UdonSharpBehaviour
         _idAlpha = VRCShader.PropertyToID("_Alpha");
         _idMirror = VRCShader.PropertyToID("_Mirror");
         _idGain = VRCShader.PropertyToID("_Gain");
-        _idFogBand = VRCShader.PropertyToID("_Udon_FogBandColor");     // written in LanbaiTick only (not at world load)
         for (int i = 0; i < cardRenderers.Length; i++)
         {
             if (cardRenderers[i] == null) continue;

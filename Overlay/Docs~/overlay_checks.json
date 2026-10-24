@@ -1,0 +1,51 @@
+{
+ "no_lobe_equals_uniform": {
+  "passed": true
+ },
+ "soft_edges": {
+  "max_lead_change_per_deg": 0.0,
+  "limit": 0.16,
+  "passed": true
+ },
+ "dawn": {
+  "T": 8.647,
+  "worst_ev": [
+   0.213,
+   0.85,
+   1.7
+  ],
+  "limits": [
+   0.5,
+   1.0,
+   1.8
+  ],
+  "passed": true
+ },
+ "second_white": {
+  "T": 8.0,
+  "worst_ev": [
+   0.222,
+   0.847,
+   1.693
+  ],
+  "limits": [
+   0.5,
+   1.0,
+   1.8
+  ],
+  "passed": true
+ },
+ "white_mask": {
+  "worst_ev": [
+   1.379,
+   3.62,
+   5.782
+  ],
+  "note": "mask alone; the bible ramps the scene +2.4 EV first, so the mask covers the last ~2.6 EV over 3 s; see 镜与白 white_check for the full 11.73 s"
+ },
+ "shrink": {
+  "monotonic_darkening": true,
+  "passed": true
+ },
+ "figure": "Docs~/overlay_lobes.png"
+}

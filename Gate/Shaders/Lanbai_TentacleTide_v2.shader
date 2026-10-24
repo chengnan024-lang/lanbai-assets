@@ -165,7 +165,7 @@ Shader "Lanbai/TentacleTide"
                 c.rgb *= lerp(1.0, _RimGain, saturate(lum * 4.0)) * _AtlasGain;
                 float3 dv = i.wpos - _WorldSpaceCameraPos;
                 float dist = length(dv);
-                float fo = 1.0 - exp(-dist * _FogDensity);
+                float fo = 1.0 - exp(-dist * LanbaiGateDensity(_FogDensity));   // v2.4: D-22
                 fo = lerp(fo, min(fo, _FogCap), smoothstep(_FogCapFrom.x, _FogCapFrom.y, dist));
                 fo = min(fo, lerp(_FogBaseTip.x, _FogBaseTip.y, smoothstep(0.0, _FogBaseTip.z, i.hgt)));
                 fo = 1.0 - (1.0 - fo) * _Reveal;
