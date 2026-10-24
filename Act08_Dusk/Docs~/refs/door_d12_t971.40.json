@@ -4,23 +4,14 @@
  "door": "bible_v2",
  "h": 233.1,
  "dEV": 0.0,
- "APL": 134.6,
+ "APL": 134.3,
  "purple_D21": 0.0,
  "purple_D21_no_ceiling": 0.0,
  "brightest_px": [
-  0.189,
-  0.492
+  0.19,
+  0.499
  ],
  "reveal": 1.0,
- "cards_standin": [
-  "CloudV2_Bank_duskU",
-  "CloudV2_Congestus_duskD",
-  "CloudV2_Cumulus_duskD",
-  "CloudV2_Cumulus_duskU",
-  "CloudV2_Puff_duskD",
-  "CloudV2_Strato_duskD",
-  "CloudV2_Strato_duskU",
-  "CloudV2_Wisp_duskU"
- ],
+ "cards_standin": [],
  "width": 960
 }
