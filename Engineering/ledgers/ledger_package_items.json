@@ -1,5 +1,5 @@
 {
- "_about": "包交上来以后的开销项（手工维护，build_ledger_data.py 把它们追加到圣经清单生成的项后面）。status：package（包报的）/ engineer-estimate（总工程师估的，source 写算法）/ measured（本地实测）。replaces = 要替换掉的圣经项的 name（可选）。",
+ "_about": "包交上来以后的开销项（手工维护，build_ledger_data.py 把它们追加到圣经清单生成的项后面）。status：package（包报的）/ engineer-estimate（总工程师估的，source 写算法）/ measured（本地实测）。replaces = 要替换掉的圣经项的 name（可选）。 resident = 根物体开着的时间窗（D-27 #4：显存按常驻窗口算，没写 resident 的项按全片常驻算）。",
  "items": [
   {
    "name": "门 云海 Lanbai/GateCloudDeck（高度场步进，第 4 轮）",
@@ -15,6 +15,147 @@
    "status": "package",
    "source": "pkg/gate-clouds fc6f8b6 README_GateClouds.md §3.4：她按参照渲染数的取样 / ALU 估 1.5–2.5 ms（两只眼、early-Z 已恢复）+ 深度 pass 0.3–0.6 ms，取上沿 2.0 + 0.45；未实测。总工程师第 1 轮的估计是 3–6 ms（early-Z 恢复前）",
    "note": "目标 1–1.5 ms；砍法见她的 给总控.md，等总导演定 + 本地实测"
+  },
+  {
+   "name": "门 云海 + 云卡贴图（GateClouds，带 mip）",
+   "owner": "门",
+   "kind": "texture",
+   "active": [],
+   "resident": [
+    [
+     113.8,
+     248.64
+    ]
+   ],
+   "vram_mb": 20.0,
+   "status": "package",
+   "source": "GateClouds/README_GateClouds.md §贴图：显存合计约 19–20 MB，取上沿",
+   "note": "GateRoot 113.80 起开、248.64 才关（账本 §四 #11）"
+  },
+  {
+   "name": "天空 StarSky_Glow 8192×4096 BC7 + mip",
+   "owner": "天空",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 42.7,
+   "download_mb": 32.8,
+   "status": "package",
+   "replaces": "银河辉光立方图 _CubeB",
+   "source": "Sky/总导演终审.md:81、:101（8192×4096×1×1.33）；下载按 BC7 不 crunch、LZ4 ÷1.3"
+  },
+  {
+   "name": "天空 晨 HDRI 立方图（每面 2048 BC6H + mip）",
+   "owner": "天空",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 31.9,
+   "download_mb": 24.5,
+   "status": "package",
+   "replaces": "晨 HDRI ≥ 8K",
+   "source": "Sky/总导演终审.md:101"
+  },
+  {
+   "name": "天空 暮 HDRI 立方图（每面 2048 BC6H + mip）",
+   "owner": "天空",
+   "kind": "texture",
+   "active": [],
+   "vram_mb": 31.9,
+   "download_mb": 24.5,
+   "status": "package",
+   "replaces": "暮 HDRI ≥ 8K",
+   "source": "Sky/总导演终审.md:101"
+  },
+  {
+   "name": "海套件（FFT 法线、宏遮罩、光柱、焦散图集、备用立方图）",
+   "owner": "海",
+   "kind": "texture",
+   "active": [],
+   "resident": [
+    [
+     362.26,
+     923.36
+    ]
+   ],
+   "vram_mb": 11.9,
+   "status": "package",
+   "source": "Sea/给总控.md:38；Sea/README_Sea.md:60",
+   "note": "第 6、8、11 幕的海物体归云 / 灯，用同一批贴图：贴图本身按全片常驻更稳，这里先按第 7 幕记"
+  },
+  {
+   "name": "第 7a / 7c 幕包的贴图（Act07_Sea）",
+   "owner": "海",
+   "kind": "texture",
+   "active": [],
+   "resident": [
+    [
+     362.26,
+     923.36
+    ]
+   ],
+   "vram_mb": null,
+   "status": "unknown",
+   "source": "Act07_Sea/README_Act07a.md 没列显存：请海补（账本 §1.4）"
+  },
+  {
+   "name": "宫殿 5 套（第 7b，按第 7 幕常驻）",
+   "owner": "宫殿",
+   "kind": "texture",
+   "active": [],
+   "resident": [
+    [
+     362.26,
+     923.36
+    ]
+   ],
+   "vram_mb": 26.67,
+   "status": "bible",
+   "replaces": "宫殿 5 套",
+   "source": "圣经 §1.9 贴图表；D-27 #4：第 7 幕的常驻窗口里海、宫殿、鱼、海雪同时在"
+  },
+  {
+   "name": "鱼 1 500 + 海雪（第 7 幕）",
+   "owner": "宫殿",
+   "kind": "texture",
+   "active": [],
+   "resident": [
+    [
+     362.26,
+     923.36
+    ]
+   ],
+   "vram_mb": null,
+   "status": "unknown",
+   "source": "7b 包没交；圣经没给显存"
+  },
+  {
+   "name": "第 9 幕包（Act09_StarSea：第一批星、天问的星）",
+   "owner": "第 9 幕",
+   "kind": "texture",
+   "active": [],
+   "resident": [
+    [
+     992.06,
+     1149.31
+    ]
+   ],
+   "vram_mb": null,
+   "status": "unknown",
+   "source": "Act09_StarSea/README_Act09.md 没列显存（主星和银河图是天空的，已记）：请第 9 幕补"
+  },
+  {
+   "name": "门的驱动 LanbaiGateDriver（Udon，每帧）",
+   "owner": "门",
+   "kind": "udon",
+   "active": [
+    [
+     113.8,
+     181.55
+    ]
+   ],
+   "udon_ms": 0.8,
+   "status": "engineer-estimate",
+   "source": "总导演 10-24：估 0.5–0.8 ms，取上沿；要本地 Udon Profiler 实测",
+   "note": "预算 0.4 ms/帧（圣经 §1.9）→ 超；砍法：U6 前只做门禁早退、只给在位姿区间里的实例算"
   }
  ]
 }
