@@ -7,7 +7,7 @@ VRChat 只允许 Udon 写 `_Udon_` 前缀的全局 shader 量（`VRCShader.SetGl
 
 | 全局量 | 类型 / 含义 | 写的人 | 读的 |
 |---|---|---|---|
-| `_Udon_T` | 时间轴秒（部分 shader 用作动画时钟） | 时间轴 | Gate、Tear、Tentacles |
+| `_Udon_T` | 时间轴秒（部分 shader 用作动画时钟） | 时间轴（本地）；**第 7 幕 F2h → 922.36 由海的驱动 `LanbaiAct07Driver.LanbaiTick` 每帧写 `= t`**（海 `给总控.md` 第 6 / 37 行；分发层不写它） | Gate、Tear、Tentacles、SeaParticles、SeaSpecks |
 | `_Udon_GateTime` | 门里的时间轴秒 | 门驱动 | Gate |
 | `_Udon_GateOrigin` | xyz = GateRoot 本帧世界位置（云海坐标的原点） | 门驱动 | Gate、Tear、Tentacles |
 | `_Udon_CloudTop` | x = 门的云顶世界 y（= −h_bus(t)） | 门驱动 | Gate、Tear |
