@@ -138,7 +138,7 @@ VC = {
     'Int_Ceiling': dict(grime=('#D8CBA6', 1.0, 'abs')),
     'Dash': dict(wear=('#3E3F40', 1.0), grime=('#6A6355', 1.0)),
     'Alu': dict(grime=('#6B5A48', 1.0)),
-    'Bakelite': dict(wear=('#303030', 1.0)),
+    'Bakelite': dict(wear=('#2E2E2E', 1.0)),
     'RadioLeather': dict(wear=('#4A2E1F', 1.0)),
 }
 

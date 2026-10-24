@@ -55,7 +55,7 @@ public static class LanbaiBusBuild
         { "SeatFrame", new object[] { "#3C3E3D", 0.35f, 0f } }, { "Floor", new object[] { "#323634", 0.22f, 0f } },
         { "Alu", new object[] { "#B8BBBD", 0.45f, 1f } }, { "SafetyYellow", new object[] { "#C9A227", 0.40f, 0f } },
         { "Steel", new object[] { "#C0C3C4", 0.55f, 1f } }, { "TubeDiffuser", new object[] { "#D8DBD6", 0.60f, 0f } },
-        { "Dash", new object[] { "#353637", 0.30f, 0f } }, { "Bakelite", new object[] { "#303030", 0.45f, 0f } },
+        { "Dash", new object[] { "#353637", 0.30f, 0f } }, { "Bakelite", new object[] { "#2E2E2E", 0.45f, 0f } },
         { "RadioLeather", new object[] { "#4A2E1F", 0.45f, 0f } }, { "RadioGrille", new object[] { "#B8BBBD", 0.55f, 1f } },
         { "RadioDial", new object[] { "#E8DFC8", 0.50f, 0f } }, { "Curtain", new object[] { "#A9BCCB", 0.18f, 0f } },
         { "Linen", new object[] { "#262626", 0.10f, 0f } }, { "Glass", new object[] { "#E9EFEA", 0.97f, 0f } },
@@ -356,7 +356,7 @@ public static class LanbaiBusBuild
             case "Alu":        // window frames: dust / a little corrosion in the corners (vertex R)
                 m.SetColor("_GrimeColor", Hex("#6B5A48")); m.SetFloat("_GrimeAmount", 1f); break;
             case "Bakelite":
-                m.SetColor("_WearColor", Hex("#303030")); m.SetFloat("_WearSmooth", 0.72f); m.SetFloat("_WearAmount", 1f); break;
+                m.SetColor("_WearColor", Hex("#2E2E2E")); m.SetFloat("_WearSmooth", 0.72f); m.SetFloat("_WearAmount", 1f); break;
             case "RadioLeather":
                 Detail(m, "Cabin_RadioLeather_N_0.40m.jpg", 0.6f, 0.40f, null);   // CC0 Poly Haven brown_leather, 40 cm tile
                 m.SetColor("_WearColor", Hex("#4A2E1F")); m.SetFloat("_WearSmooth", 0.60f); m.SetFloat("_WearAmount", 1f); break;
