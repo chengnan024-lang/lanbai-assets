@@ -90,15 +90,20 @@ def solve(which, card='Cumulus'):
         h, c = C.hue_chroma(cs[0])[1:]
         dh = ((h - h_t + 180) % 360) - 180
         # review r1 R5: the BACKLIT shadow (rel 15) must stay blue too: penalise h beyond 280 (toward lilac)
-        hb, cb = C.hue_chroma(measure(K, S, a, 15.0, colours_from_x(x, T), T['grade'], sel)[0])[1:]
+        mb = measure(K, S, a, 15.0, colours_from_x(x, T), T['grade'], sel)
+        hb, cb = C.hue_chroma(mb[0])[1:]
         pb = max(0.0, (((hb - h_t + 180) % 360) - 180) - 8.0) * min(cb / 8, 1)
+        # (act 8) the backlit TOP must not show as lilac either (D-21: h 290-330, C* > 8, L* > 40): red rim light + blue
+        # dome mixes there; penalised from h 285 / C* 7 / L* 38 (margin)
+        lt, ht, ct = C.hue_chroma(mb[1])
+        pt = (max(0.0, ct - 7.0) * max(0.0, lt - 38.0)) if 285.0 <= ht <= 335.0 else 0.0
         # (act 6 window, review r2 leftover) the FRONT-lit flat base (rel 150) must not go pink-brown: chroma of warm
         # base pixels above 6 is penalised (bible 1.3 rule 2: no warm in the shadowed underside)
         cbase = measure_base(K, S, a, 150.0, colours_from_x(x, T), T['grade'], base)
         hz, cz = C.hue_chroma(cbase)[1:]
         pz = max(0.0, cz - 6.0) * (1.0 if (hz < 120 or hz > 340) else 0.0)
         return float(((cs[0] - tsh) ** 2).sum() + 0.5 * ((cs[1] - ttp) ** 2).sum() + 2 * dh ** 2 * min(c / 10, 1)
-                     + 20 * pb ** 2 + BASE_W * pz ** 2)
+                     + 20 * pb ** 2 + BASE_W * pz ** 2 + 50 * float(pt) ** 2)
     best = None
     for x0 in ([3.0, T['K0'], 1.0, 1.1, 1.6, 1.0], [5.0, T['K0'] + 600, 1.2, 1.3, 1.8, 0.6], [2.0, T['K0'] - 300, 0.8, 0.9, 1.3, 1.15]):
         r = minimize(f, x0, method='Nelder-Mead', options=dict(xatol=1e-4, fatol=1e-3, maxiter=4000))

@@ -624,80 +624,80 @@
    "set": "duskD",
    "grade": "S8",
    "solved_on": "CloudV2_Cumulus_duskD at rel 70.0",
-   "sun_K": 2025,
-   "sun_luminance": 1.56,
+   "sun_K": 2383,
+   "sun_luminance": 1.8004,
    "SunColor": [
-    3.82302,
-    1.04091,
-    0.0381
+    3.83163,
+    1.3586,
+    0.19569
    ],
    "SkyUpColor": [
-    0.16472,
-    0.23034,
-    0.47406
+    0.2411,
+    0.28019,
+    0.46548
    ],
    "GroundColor": [
-    0.08672,
-    0.109,
-    0.22135
+    0.0,
+    0.0,
+    0.0
    ],
    "targets": {
     "shadow": "#363D59",
     "top": "#F0A878"
    },
    "base_front_lit": {
-    "hex": "#CF8B64",
+    "hex": "#CC8E43",
     "hC": [
-     55.1,
-     37.9
+     71.0,
+     50.9
     ]
    },
    "rel15": {
-    "shadow": "#37415E",
-    "top": "#695D77",
+    "shadow": "#393D50",
+    "top": "#6A5C66",
     "shadow_hC": [
-     283.4,
-     19.2
+     284.5,
+     12.3
     ]
    },
    "rel45": {
-    "shadow": "#39425E",
-    "top": "#D29172",
+    "shadow": "#3C3F50",
+    "top": "#D39C69",
     "shadow_hC": [
-     283.9,
-     18.5
+     286.4,
+     11.3
     ]
    },
    "rel70": {
-    "shadow": "#39425E",
-    "top": "#EAAB6D",
+    "shadow": "#3C3F50",
+    "top": "#EAB76A",
     "shadow_hC": [
-     283.9,
-     18.3
+     286.2,
+     11.1
     ]
    },
    "rel110": {
-    "shadow": "#AF705B",
-    "top": "#E9A96D",
+    "shadow": "#B07953",
+    "top": "#E9B56A",
     "shadow_hC": [
-     44.7,
-     31.7
+     59.9,
+     33.9
     ]
    },
    "rel150": {
-    "shadow": "#DA9355",
-    "top": "#DC9B70",
+    "shadow": "#DAA056",
+    "top": "#DCA669",
     "shadow_hC": [
-     64.5,
-     47.8
+     73.5,
+     48.3
     ]
    },
    "rel170": {
-    "shadow": "#DA9355",
-    "top": "#DC9B70",
+    "shadow": "#DAA056",
+    "top": "#DCA669",
     "shadow_hC": [
-     64.5,
-     47.8
+     73.5,
+     48.3
     ]
    }
   }
