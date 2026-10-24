@@ -17,7 +17,7 @@
 - **放进仓库的**：只有 Wikimedia Commons 上自由授权的照片（CC BY / CC BY-SA / CC0），每张都写了作者和授权（第 4 节，以及 `sources.json`）。
 - **Flickr**：照片本身是 CC BY 2.0，允许转载，但 Flickr 的图片服务器不让我这边的程序下载。我没有去绕开它的限制。小楠在浏览器里打开链接、点“下载”就行，署名写 trolleway 即可。
 - **Kolesa、论坛、drom 等**：照片有版权，只给链接。
-- **Commons 还有几张在排队**（Wikimedia 对这台机器限流）：PAZ-3201 打开的机盖、车底和车轮、雪地里的车尾、切尔诺贝利那几辆废车的骨架。到了会再补一次提交。
+- **Commons 对这台机器限流**：车底、车身骨架、红车正脸是后来补进的（`D10`–`D12`）。还有三张没下下来，只给链接：PAZ-3201 打开的机盖（[Commons](https://commons.wikimedia.org/wiki/File%3A%D0%9F%D0%90%D0%97-3201_%D1%81_%D0%B2%D0%BE%D0%B5%D0%BD%D0%BD%D1%8B%D0%BC%D0%B8_%D0%BD%D0%BE%D0%BC%D0%B5%D1%80%D0%B0%D0%BC%D0%B8%2C_%D0%BA%D0%B0%D0%BF%D0%BE%D1%82_%D0%B4%D0%B2%D0%B8%D0%B3%D0%B0%D1%82%D0%B5%D0%BB%D1%8F_%D0%BE%D1%82%D0%BA%D1%80%D1%8B%D1%82.jpg)，CC BY-SA 3.0）、雪地里的车尾（[Commons](https://commons.wikimedia.org/wiki/File%3AUkrainian_bus_in_the_snow_%283676928222%29.jpg)，CC BY-SA 2.0）、切尔诺贝利另一辆废车（[Commons](https://commons.wikimedia.org/wiki/File%3AChernobyl_30_Years_after_%E2%80%93_Public_Domain_CC0_-_43026712310.jpg)，CC0）。
 
 ## 1. 车内（按总导演给的顺序）
 
@@ -94,11 +94,13 @@ Flickr `31583333525` 能看到门扇和门框。铰链和真空助力缸的特�
 
 | 看什么 | 仓库里的文件 | 另见 |
 |---|---|---|
-| **前脸**：两片前挡加中间立柱；上方眉窗和两个路牌盒；最上面车顶舱口；两块网格“眼睛”格栅外加镀铬圈；中间两小块格栅；成对的圆灯；白色保险杠和拖钩 | `D01`（正面）、`D02`（右前 3/4） | `../实物参考_车与车厢/PAZ_10`、`../车型_PAZ-672/ref/PAZ_06` |
+| **前脸**：两片前挡加中间立柱；上方眉窗和两个路牌盒；最上面车顶舱口；两块网格“眼睛”格栅外加镀铬圈；中间两小块格栅；成对的圆灯；白色保险杠和拖钩 | `D01`（正面）、`D02`（右前 3/4）、`D12`（红车正面，**公有领域，可以直接做贴图**） | `../实物参考_车与车厢/PAZ_10`、`../车型_PAZ-672/ref/PAZ_06` |
 | **灯**：每边一白一黄两盏圆灯；转向灯在翼子板角上（672M 起改成矩形，见第 3 节） | `D01`、`D03` | 夜里开灯：Flickr `31467412901`、`30773446133` |
 | **格栅**：网格后面就是散热器风扇，`D03` 左边格栅里看得见扇叶 | `D03` | |
 | **右侧机盖百叶**：前门前面、前轮上方的竖百叶板（发动机在车厢右前，这是它的散热口） | `D03`、`D04`、`D05` | |
-| **车轮**：轮毂、螺栓、轮拱边的锈 | `D04` | Commons 上那张车底照还在排队 |
+| **车轮**：轮毂、螺栓、轮拱边的锈 | `D04` | |
+| **车底**：前桥、板簧、转向拉杆、车架、轮胎花纹（从车头下面往里看） | `D10`（**CC0**） | |
+| **车身骨架**：蒙皮剥落以后看得见的立柱、窗间柱、车顶弧梁、车头框架。做车被侵蚀的那几幕时可以照着看 | `D11` | |
 | **门**：前门在前轮后面，双折门；单个踏步 | `D04`（开着）、`D05` | |
 | **车顶斜面窗**：从外面看是车顶两侧的一排小窗 | `D02`、`D05` | `../车型_PAZ-672/ref/PAZ_03` |
 | **侧面比例**：门、窗距、推拉气窗、轴距（PAZ-3201 是 672 的四驱版，车身一样） | `D05` | |
@@ -140,8 +142,11 @@ Flickr `31583333525` 能看到门扇和门框。铰链和真空助力缸的特�
 | `D07_司机区_方向盘与仪表台.jpg` | Nikolai Bulykin · CC BY-SA 4.0 | [Commons](https://commons.wikimedia.org/wiki/File%3A%D0%9A%D0%B0%D0%B4%D0%B6%D0%B8-%D0%A1%D0%B0%D0%B9%2C_%D0%9F%D0%90%D0%97-672_%285%29.jpg) |
 | `D08_车内_铭牌与内壁漆色.jpg` | Nataev · CC BY-SA 4.0 | [Commons](https://commons.wikimedia.org/wiki/File%3APAZ_672M_nameplate.jpg) |
 | `D09_车内_司机售票员证件框.jpg` | Nikolai Bulykin · CC BY-SA 4.0 | [Commons](https://commons.wikimedia.org/wiki/File%3A%D0%9A%D0%B0%D0%B4%D0%B6%D0%B8-%D0%A1%D0%B0%D0%B9%2C_%D0%9F%D0%90%D0%97-672_%283%29.jpg) |
+| `D10_车底_前桥_板簧_车轮.jpg` | Александр Сигачёв · **CC0** | [Commons](https://commons.wikimedia.org/wiki/File%3APAZ-672_in_Istra_2023-06-18.jpg) |
+| `D11_骨架_蒙皮剥落的车身框架.jpg` | Ian Bancroft · CC BY 2.0 | [Commons](https://commons.wikimedia.org/wiki/File%3AChernobyl_-_39484641685.jpg)（切尔诺贝利禁区里的一辆废车） |
+| `D12_正脸_红车_公有领域.jpg` | Bestalex · **公有领域** | [Commons](https://commons.wikimedia.org/wiki/File%3APAZ-672_3.jpg) |
 
-都缩到了 1280 像素宽。授权规则和前两批一样：**CC0 随便用；CC BY / CC BY-SA 只作造型参考**，真要把照片本身做成贴图或放进世界，就要在片尾署名（CC BY-SA 的衍生物也要用 CC BY-SA）。
+都缩到了 1280 像素宽。授权规则和前两批一样：**CC0 和公有领域随便用；CC BY / CC BY-SA 只作造型参考**，真要把照片本身做成贴图或放进世界，就要在片尾署名（CC BY-SA 的衍生物也要用 CC BY-SA）。
 
 ## 5. 现成的 PAZ-672 3D 模型
 
