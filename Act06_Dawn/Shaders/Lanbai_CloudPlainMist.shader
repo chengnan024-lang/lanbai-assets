@@ -33,7 +33,7 @@ Shader "Lanbai/CloudPlainMist"
         _MistRoll ("Roll - x period m", Vector) = (1800, 0, 0, 0)
         _MistWisp ("Wisps - x y lo - y y mid - z y hi - w density", Vector) = (-1000, -945, -880, 0.004)
         _MistWispB ("Wisps - x period m - y drift m/s - z w noise cut", Vector) = (900, 4, 0.55, 0.8)
-        _MistSteps ("March - x steps - y max length m", Vector) = (16, 6000, 0, 0)
+        _MistSteps ("March - x steps - y max length m - z wedge closes over m under the cover", Vector) = (16, 6000, 120, 0)
         _Slot ("Slot - x axis az - y half width - z s0 - w s1", Vector) = (18, 750, -2200, 4000)
         _SlotB ("Slot - x soft - y floor top - z centre q", Vector) = (60, -1134, 350, 0)
         _SunDirFallback ("Direction to the sun - fallback", Vector) = (0.4983, 0.1011, 0.8611, 0)
@@ -161,7 +161,7 @@ Shader "Lanbai/CloudPlainMist"
                 float3 sunD = LanbaiSunDir(_SunDirFallback.xyz);
                 float ph = _MistPhase.x + _MistPhase.y * exp((dot(V, sunD) - 1.0) * _MistPhase.z);
                 // the clear lane: rays at / above the horizon, and only while the eye is above the cover bottom
-                float gateV = smoothstep(_MistWedge.z, _MistWedge.w, V.y) * smoothstep(_Mist.z - 30.0, _Mist.z, ro.y);
+                float gateV = smoothstep(_MistWedge.z, _MistWedge.w, V.y) * smoothstep(_Mist.z - _MistSteps.z, _Mist.z, ro.y);
                 float texel = _DetailTex_TexelSize.x;
                 float T = 1.0;
                 float3 C = 0.0;

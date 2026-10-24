@@ -142,7 +142,7 @@ public static class LanbaiAct06Builder
         mMist.SetVector("_MistRoll", new Vector4(F(mist["roll_period"]), 0, 0, 0));
         mMist.SetVector("_MistWisp", new Vector4(F(mist["wisp_lo"]), F(mist["wisp_mid"]), F(mist["wisp_hi"]), F(mist["wisp_sigma"])));
         mMist.SetVector("_MistWispB", new Vector4(F(mist["wisp_period"]), F(mist["wisp_drift"]), F(mcut[0]), F(mcut[1])));
-        mMist.SetVector("_MistSteps", new Vector4(F(mist["steps"]), F(mist["max_len"]), 0, 0));
+        mMist.SetVector("_MistSteps", new Vector4(F(mist["steps"]), F(mist["max_len"]), F(mist["wedge_close_m"]), 0));
         mMist.SetVector("_Slot", mPlain.GetVector("_Slot"));
         mMist.SetVector("_SlotB", mPlain.GetVector("_SlotB"));
         mMist.SetVector("_SunDirFallback", mPlain.GetVector("_SunDirFallback"));

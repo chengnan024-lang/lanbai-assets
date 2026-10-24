@@ -102,6 +102,7 @@
     -0.03,
     0.02
    ],
+   "wedge_close_m": 120.0,
    "shade_dark": 0.45,
    "shade_pow": 0.7,
    "shade_depth": 80.0,

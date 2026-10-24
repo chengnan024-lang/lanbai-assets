@@ -245,7 +245,7 @@ def mist(eye_world, V, d_root, t_end, slot_open=1.0, clock=0.0):
     Vl, tin, Ll = V[live], t_in[live], L[live]
     Tl = np.ones(len(Vl)); Cl = np.zeros((len(Vl), 3))
     gate_v = ss(M['wedge_vy'][0], M['wedge_vy'][1], Vl[:, 1])      # the clear lane only for rays at / above the horizon
-    gate_v = gate_v * ss(M['y_bot'] - 30.0, M['y_bot'], ro[1])     # and only while the eye is above the cover bottom
+    gate_v = gate_v * ss(M['y_bot'] - M['wedge_close_m'], M['y_bot'], ro[1])   # closes over ~3 s once the eye is under the cover
     N = int(M['steps'])
     for i in range(N):
         # quadratic spacing: fine where the mist starts (what is seen), coarse deep inside it

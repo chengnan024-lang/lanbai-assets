@@ -81,7 +81,7 @@ SLOT = dict(axis_az=18.0, half_width=750.0, center_q=350.0, s0=-2200.0, s1=4000.
 MIST = dict(y_top=-960.0, y_peak=-1080.0, y_bot=BOTTOM, sigma=0.045, color_screen='#8593AA',
             # r3 (D-35 #1): a clear wedge toward the sun (from the bus, az 30 +-16 clear, +-28 full mist): the sun stays
             # in view through the slot until it sets behind the lip at 305.4; the door view is never one flat grey
-            wedge_full_deg=8.0, wedge_zero_deg=40.0, wedge_vy=[-0.03, 0.02],   # only rays at / above the horizon (the sea stays hidden)
+            wedge_full_deg=8.0, wedge_zero_deg=40.0, wedge_vy=[-0.03, 0.02], wedge_close_m=120.0,   # only rays at / above the horizon (the sea stays hidden)
             # r3 (D-35 #4): depth (darker downward), slow low-contrast undulation, a few drifting wisps above it
             shade_dark=0.45, shade_pow=0.7, shade_depth=80.0, und_period=2600.0, und_amp=0.45, und_col=0.22, und_drift=1.0, roll_amp=40.0, roll_period=1800.0,
             wisp_lo=-1000.0, wisp_mid=-945.0, wisp_hi=-880.0, wisp_sigma=0.004, wisp_period=900.0, wisp_drift=4.0,
