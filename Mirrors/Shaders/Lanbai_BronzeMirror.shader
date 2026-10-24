@@ -38,6 +38,7 @@ Shader "Lanbai/BronzeMirror"
         _EdgeWidth ("Glowing front width m", Float) = 0.3
         _EdgeColor ("Front glow linear rgb (#CDBF9C x 0.8)", Vector) = (0.488, 0.417, 0.266, 0)
         _RimSoft ("Far soft rim 0 to 1 (mirror 13 far)", Range(0, 1)) = 0
+        _RimSoftFrom ("Soft rim starts at this fraction of the radius", Range(0, 1)) = 0.8
 
         [Header(Face)]
         _FaceF0 ("Face F0 linear (#D6CCB4)", Vector) = (0.672, 0.604, 0.456, 0)
@@ -89,6 +90,7 @@ Shader "Lanbai/BronzeMirror"
         #include "Assets/Lanbai/Common/Shaders/LanbaiFog.cginc"
         #include "LanbaiMirror.cginc"
 
+        float _RimSoftFrom;
         float _RadiusM, _MirrorK, _EmissionK, _Visibility, _EmitExtraEV, _Appear, _Dissolve, _BreakAmp, _EdgeWidth, _RimSoft;
         float4 _EdgeColor, _FaceF0, _RimF0, _BackAlbedo, _SkyFloor, _BackFill;
         float _BronzeTone; float4 _ToneColor;
@@ -273,7 +275,7 @@ Shader "Lanbai/BronzeMirror"
                 // sky behind the pixel over the outer part of the disc
                 if (_RimSoft > 0.0)
                 {
-                    float soft = smoothstep(0.80, 1.0, rOS / 0.5) * _RimSoft;
+                    float soft = smoothstep(_RimSoftFrom, 1.0, rOS / 0.5) * _RimSoft;
                     col = lerp(col, MirrorSky(V, 0.6), soft);
                 }
                 // the glowing front fades out near the eye: a dissolving mirror just overhead is seen at grazing, where a

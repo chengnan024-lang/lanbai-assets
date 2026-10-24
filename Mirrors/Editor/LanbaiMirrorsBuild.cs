@@ -131,6 +131,7 @@ namespace Lanbai.Mirrors.EditorTools
             c2.knotT = LanbaiMirrorsData.KnotT; c2.knotY = LanbaiMirrorsData.KnotY; c2.knotV = LanbaiMirrorsData.KnotV;
             c2.visStart = LanbaiMirrorsData.VisStart; c2.visCount = LanbaiMirrorsData.VisCount;
             c2.visT = LanbaiMirrorsData.VisT; c2.visV = LanbaiMirrorsData.VisV;
+            c2.rimSoftStart = LanbaiMirrorsData.RimSoftStart; c2.rimSoftSeconds = LanbaiMirrorsData.RimSoftSeconds; c2.rimSoftFrom = LanbaiMirrorsData.RimSoftFrom;
             c2.eye = new Vector3(LanbaiMirrorsData.Eye[0], LanbaiMirrorsData.Eye[1], LanbaiMirrorsData.Eye[2]);
             EditorUtility.SetDirty(c2);
             root.SetActive(false);                      // the dispatcher's LanbaiActivate(true) at the window start (1010, in the black)

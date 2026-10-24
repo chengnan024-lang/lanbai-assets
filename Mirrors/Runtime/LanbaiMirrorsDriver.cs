@@ -55,6 +55,7 @@ namespace Lanbai.Mirrors
         public float[] extraV = new float[] { 0f, 3f };
         public float rimSoftStart = 1139.31f;       // F16 - 10: the far soft rim sharpens over 4 s
         public float rimSoftSeconds = 4f;
+        public float rimSoftFrom = 0.8f;            // MirrorSchedule.json mirrors[12].rim_soft.inner_frac
 
         [Header("Constants (spec_conventions.md)")]
         public Vector3 eye = new Vector3(0.55f, 1.70f, 2.05f);
@@ -68,7 +69,7 @@ namespace Lanbai.Mirrors
         private const float Rho = 7.6875f;
 
         private MaterialPropertyBlock mpb;
-        private int idRadius, idK, idEmK, idVis, idExtra, idAppear, idDissolve, idRimSoft;
+        private int idRadius, idK, idEmK, idVis, idExtra, idAppear, idDissolve, idRimSoft, idRimSoftFrom;
         private int idSphere, idAxis, idFaceK;
         private int idDustNow, idDustT0, idDustC, idDustCar, idDustOn;
         private int idPlane, idRimLight;
@@ -101,6 +102,7 @@ namespace Lanbai.Mirrors
             idAppear = VRCShader.PropertyToID("_Appear");
             idDissolve = VRCShader.PropertyToID("_Dissolve");
             idRimSoft = VRCShader.PropertyToID("_RimSoft");
+            idRimSoftFrom = VRCShader.PropertyToID("_RimSoftFrom");
             idSphere = VRCShader.PropertyToID("_SphereC");
             idAxis = VRCShader.PropertyToID("_Axis");
             idFaceK = VRCShader.PropertyToID("_FaceK");
@@ -183,6 +185,7 @@ namespace Lanbai.Mirrors
                 mpb.SetFloat(idAppear, appear);
                 mpb.SetFloat(idDissolve, dis);
                 mpb.SetFloat(idRimSoft, rimSoft);
+                mpb.SetFloat(idRimSoftFrom, rimSoftFrom);
                 for (int l = 0; l < 3; l++)
                 {
                     Renderer r = lodRenderers[3 * k + l];

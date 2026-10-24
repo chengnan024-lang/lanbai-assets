@@ -24,5 +24,7 @@ namespace Lanbai.Mirrors.EditorTools
         public static readonly int[] VisCount = new int[] { 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 };
         public static readonly float[] VisT = new float[] { 1018.21f, 1026.41f, 1030.41f, 1024.41f, 1027.41f, 1030.41f, 1032.41f, 1046.29f, 1049.29f, 1052.29f, 1054.29f, 1059.66f, 1062.66f, 1068.62f, 1070.62f, 1059.66f, 1062.66f, 1080.67f, 1082.67f, 1070.62f, 1073.62f, 1090.39f, 1092.39f, 1082.67f, 1085.67f, 1097.71f, 1099.71f, 1092.39f, 1095.39f, 1103.42f, 1105.42f, 1099.71f, 1102.71f, 1107.46f, 1109.46f, 1105.42f, 1108.42f, 1110.86f, 1112.86f, 1109.46f, 1112.46f, 1113.36f, 1115.36f, 1112.86f, 1115.86f, 1123.55f, 1125.55f, 1059.66f, 1063.66f, 1135.58f, 1137.58f };
         public static readonly float[] VisV = new float[] { 0.3f, 0.3f, 1f, 0f, 0.3f, 0.3f, 1f, 0f, 0.3f, 0.3f, 1f, 0f, 0.3f, 0.3f, 1f, 0f, 0.3f, 0.3f, 1f, 0f, 0.3f, 0.3f, 1f, 0f, 0.3f, 0.3f, 1f, 0f, 0.3f, 0.3f, 1f, 0f, 0.3f, 0.3f, 1f, 0f, 0.3f, 0.3f, 1f, 0f, 0.3f, 0.3f, 1f, 0f, 0.3f, 0.3f, 1f, 0f, 0.3f, 0.3f, 1f };
+        public static readonly float RimSoftStart = 1139.31f, RimSoftSeconds = 4f, RimSoftFrom = 0.8f;
+        public const string Scheme13 = "A";
     }
 }
