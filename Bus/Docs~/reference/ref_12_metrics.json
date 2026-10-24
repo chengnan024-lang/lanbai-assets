@@ -4,10 +4,10 @@
    1280,
    720
   ],
-  "APL": 54.18,
-  "EV_display": -4.14,
+  "APL": 51.84,
+  "EV_display": -4.277,
   "luma_lt12_pct": 0.4,
-  "Lstar_gt85_pct": 0.04,
+  "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
   "clip_black_largest_region_pct": 0.0,
@@ -20,26 +20,26 @@
   "brightest": {
    "bbox": [
     0,
-    60,
-    196,
+    45,
+    187,
     77
    ],
    "centroid": [
-    84.8,
-    73.9
+    85.5,
+    69.9
    ],
-   "clusters": 1,
+   "clusters": 2,
    "clusters_ge5pct": 1,
-   "min_luma": 207.4,
+   "min_luma": 195.4,
    "centroid_az_el": [
-    -40.82,
-    18.64
+    -40.81,
+    18.9
    ]
   },
   "top25_Lstar": {
-   "mean": 27.27,
+   "mean": 26.43,
    "p50": 21.91,
-   "p90": 68.28
+   "p90": 63.78
   },
   "palette": {
    "act": "12",
@@ -48,19 +48,19 @@
     {
      "hex": "#070B14",
      "role": "褐 夜",
-     "nearest_dE2000_p01": 1.5,
-     "within_dE5_pct": 2.96
+     "nearest_dE2000_p01": 1.4,
+     "within_dE5_pct": 4.68
     },
     {
      "hex": "#EEF5F7",
      "role": "灯白",
-     "nearest_dE2000_p01": 9.2,
+     "nearest_dE2000_p01": 11.9,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#D0DBDF",
      "role": "站牌 藍白",
-     "nearest_dE2000_p01": 6.2,
+     "nearest_dE2000_p01": 8.0,
      "within_dE5_pct": 0.0
     },
     {
@@ -72,37 +72,37 @@
     {
      "hex": "#DDE8EA",
      "role": "静水中的灯影",
-     "nearest_dE2000_p01": 7.4,
+     "nearest_dE2000_p01": 9.7,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#FCF5DA",
      "role": "Lichtchen（那一只）",
-     "nearest_dE2000_p01": 11.8,
+     "nearest_dE2000_p01": 13.8,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#DEEA88",
      "role": "田上的萤火虫",
-     "nearest_dE2000_p01": 22.0,
+     "nearest_dE2000_p01": 22.5,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#1B2431",
      "role": "天边藍白带（起）",
-     "nearest_dE2000_p01": 1.3,
-     "within_dE5_pct": 27.77
+     "nearest_dE2000_p01": 1.7,
+     "within_dE5_pct": 29.28
     },
     {
      "hex": "#33465B",
      "role": "天边藍白带（8 分钟后）",
-     "nearest_dE2000_p01": 5.1,
-     "within_dE5_pct": 0.08
+     "nearest_dE2000_p01": 5.2,
+     "within_dE5_pct": 0.03
     }
    ],
    "pixel_to_nearest_dE_median": 5.9,
-   "pixel_to_nearest_dE_p90": 10.4,
-   "pixels_within5_pct": 30.5
+   "pixel_to_nearest_dE_p90": 9.4,
+   "pixels_within5_pct": 33.4
   }
  },
  "cam": {
@@ -204,7 +204,7 @@
    720
   ]
  },
- "render_seconds": 79.2,
+ "render_seconds": 89.4,
  "lens": "none",
  "bloom_tint": "single",
  "note": ""

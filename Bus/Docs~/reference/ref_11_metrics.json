@@ -4,10 +4,10 @@
    1280,
    720
   ],
-  "APL": 33.57,
-  "EV_display": -4.682,
-  "luma_lt12_pct": 55.8,
-  "Lstar_gt85_pct": 0.003,
+  "APL": 30.95,
+  "EV_display": -4.878,
+  "luma_lt12_pct": 56.76,
+  "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
   "clip_black_largest_region_pct": 0.0,
@@ -20,26 +20,26 @@
   "brightest": {
    "bbox": [
     0,
-    38,
-    196,
+    44,
+    154,
     77
    ],
    "centroid": [
-    84.3,
-    73.7
+    85.7,
+    69.3
    ],
-   "clusters": 2,
+   "clusters": 1,
    "clusters_ge5pct": 1,
-   "min_luma": 200.6,
+   "min_luma": 188.6,
    "centroid_az_el": [
-    -40.86,
-    18.65
+    -40.8,
+    18.94
    ]
   },
   "top25_Lstar": {
-   "mean": 17.19,
-   "p50": 6.15,
-   "p90": 65.25
+   "mean": 16.27,
+   "p50": 5.38,
+   "p90": 60.75
   },
   "palette": {
    "act": "11",
@@ -49,48 +49,48 @@
      "hex": "#05080F",
      "role": "夜",
      "nearest_dE2000_p01": 0.4,
-     "within_dE5_pct": 60.69
+     "within_dE5_pct": 64.09
     },
     {
      "hex": "#0F2438",
      "role": "头顶的海（底面）",
-     "nearest_dE2000_p01": 8.2,
+     "nearest_dE2000_p01": 8.5,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#D08A59",
      "role": "海面上的钠灯闪光",
-     "nearest_dE2000_p01": 21.5,
+     "nearest_dE2000_p01": 21.7,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#F2B070",
      "role": "倒挂的灯头",
-     "nearest_dE2000_p01": 21.4,
+     "nearest_dE2000_p01": 21.8,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#C4CACA",
      "role": "车厢（完好、过于完好）",
-     "nearest_dE2000_p01": 3.7,
-     "within_dE5_pct": 0.9
+     "nearest_dE2000_p01": 4.9,
+     "within_dE5_pct": 0.11
     },
     {
      "hex": "#3B3029",
      "role": "干路上的灯池",
-     "nearest_dE2000_p01": 6.6,
+     "nearest_dE2000_p01": 6.4,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#C8CAC2",
      "role": "空白的目的地牌",
-     "nearest_dE2000_p01": 1.9,
-     "within_dE5_pct": 1.09
+     "nearest_dE2000_p01": 3.4,
+     "within_dE5_pct": 0.38
     }
    ],
    "pixel_to_nearest_dE_median": 1.1,
-   "pixel_to_nearest_dE_p90": 10.2,
-   "pixels_within5_pct": 61.8
+   "pixel_to_nearest_dE_p90": 10.0,
+   "pixels_within5_pct": 64.5
   }
  },
  "cam": {
@@ -192,7 +192,7 @@
    720
   ]
  },
- "render_seconds": 79.5,
+ "render_seconds": 85.1,
  "lens": "none",
  "bloom_tint": "single",
  "note": ""

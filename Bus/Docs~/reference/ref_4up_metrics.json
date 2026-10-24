@@ -4,9 +4,9 @@
    1280,
    720
   ],
-  "APL": 51.8,
-  "EV_display": -4.314,
-  "luma_lt12_pct": 6.48,
+  "APL": 48.56,
+  "EV_display": -4.485,
+  "luma_lt12_pct": 7.38,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
@@ -16,30 +16,30 @@
   "purple_pct": 0.0,
   "purple_largest_region_pct": 0.0,
   "violet_strong_pct": 0.0,
-  "lavender_act6_pct": 24.472,
+  "lavender_act6_pct": 24.379,
   "brightest": {
    "bbox": [
     0,
     0,
-    551,
-    495
+    550,
+    496
    ],
    "centroid": [
-    167.8,
-    331.0
+    183.7,
+    319.9
    ],
-   "clusters": 15,
-   "clusters_ge5pct": 4,
+   "clusters": 13,
+   "clusters_ge5pct": 3,
    "min_luma": 155.5,
    "centroid_az_el": [
-    -49.38,
-    42.99
+    -48.68,
+    44.33
    ]
   },
   "top25_Lstar": {
-   "mean": 28.9,
-   "p50": 30.59,
-   "p90": 44.94
+   "mean": 27.41,
+   "p50": 28.85,
+   "p90": 42.85
   },
   "palette": {
    "act": "04",
@@ -48,32 +48,32 @@
     {
      "hex": "#070A14",
      "role": "虚空（方位 >60° 或仰角 >35°）",
-     "nearest_dE2000_p01": 0.7,
-     "within_dE5_pct": 13.85
+     "nearest_dE2000_p01": 0.5,
+     "within_dE5_pct": 14.73
     },
     {
      "hex": "#484D63",
      "role": "光雾带 裂口旁（0–15°）",
-     "nearest_dE2000_p01": 9.6,
+     "nearest_dE2000_p01": 9.9,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#2A3041",
      "role": "光雾带 离裂口 50°",
-     "nearest_dE2000_p01": 5.5,
-     "within_dE5_pct": 0.03
+     "nearest_dE2000_p01": 6.3,
+     "within_dE5_pct": 0.02
     },
     {
      "hex": "#0F1116",
      "role": "近处触手本体",
-     "nearest_dE2000_p01": 0.5,
-     "within_dE5_pct": 13.13
+     "nearest_dE2000_p01": 0.6,
+     "within_dE5_pct": 14.68
     },
     {
      "hex": "#262B38",
      "role": "巨像冠部（雾中，头清脚没）",
-     "nearest_dE2000_p01": 3.4,
-     "within_dE5_pct": 1.51
+     "nearest_dE2000_p01": 4.0,
+     "within_dE5_pct": 0.46
     },
     {
      "hex": "#A9C2FF",
@@ -90,25 +90,25 @@
     {
      "hex": "#5B57A1",
      "role": "紫晕（黄昏靛紫，呼吸）",
-     "nearest_dE2000_p01": 18.3,
+     "nearest_dE2000_p01": 19.5,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#495270",
      "role": "裂口下的云海",
-     "nearest_dE2000_p01": 12.5,
+     "nearest_dE2000_p01": 12.6,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#F5F2EC",
      "role": "裂口核心：未染的白",
-     "nearest_dE2000_p01": 23.8,
+     "nearest_dE2000_p01": 23.7,
      "within_dE5_pct": 0.0
     }
    ],
-   "pixel_to_nearest_dE_median": 9.3,
-   "pixel_to_nearest_dE_p90": 13.3,
-   "pixels_within5_pct": 15.7
+   "pixel_to_nearest_dE_median": 8.9,
+   "pixel_to_nearest_dE_p90": 14.3,
+   "pixels_within5_pct": 15.6
   }
  },
  "cam": {
@@ -210,7 +210,7 @@
    720
   ]
  },
- "render_seconds": 128.7,
+ "render_seconds": 147.3,
  "lens": "none",
  "bloom_tint": "single",
  "note": ""

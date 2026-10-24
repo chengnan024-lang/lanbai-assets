@@ -4,10 +4,10 @@
    1280,
    720
   ],
-  "APL": 83.35,
-  "EV_display": -2.769,
-  "luma_lt12_pct": 2.41,
-  "Lstar_gt85_pct": 2.631,
+  "APL": 83.46,
+  "EV_display": -2.831,
+  "luma_lt12_pct": 2.48,
+  "Lstar_gt85_pct": 2.225,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
   "clip_black_largest_region_pct": 0.0,
@@ -19,27 +19,27 @@
   "lavender_act6_pct": 0.0,
   "brightest": {
    "bbox": [
-    471,
+    470,
     0,
-    1057,
+    1045,
     196
    ],
    "centroid": [
-    847.1,
-    67.0
+    823.4,
+    67.5
    ],
-   "clusters": 17,
+   "clusters": 25,
    "clusters_ge5pct": 4,
-   "min_luma": 240.2,
+   "min_luma": 239.9,
    "centroid_az_el": [
-    37.43,
-    22.93
+    35.41,
+    22.99
    ]
   },
   "top25_Lstar": {
-   "mean": 55.28,
-   "p50": 67.1,
-   "p90": 84.45
+   "mean": 53.54,
+   "p50": 64.71,
+   "p90": 82.64
   },
   "palette": {
    "act": "02",
@@ -49,48 +49,48 @@
      "hex": "#05080F",
      "role": "窗外夜",
      "nearest_dE2000_p01": 0.7,
-     "within_dE5_pct": 18.4
+     "within_dE5_pct": 19.35
     },
     {
      "hex": "#16191C",
      "role": "车厢暗部",
      "nearest_dE2000_p01": 0.3,
-     "within_dE5_pct": 19.6
+     "within_dE5_pct": 20.64
     },
     {
      "hex": "#C4CACA",
      "role": "灯管下天花",
-     "nearest_dE2000_p01": 2.2,
-     "within_dE5_pct": 4.46
+     "nearest_dE2000_p01": 3.1,
+     "within_dE5_pct": 2.5
     },
     {
      "hex": "#4A2229",
      "role": "牛血红座椅（灯管下）",
-     "nearest_dE2000_p01": 0.9,
-     "within_dE5_pct": 28.12
+     "nearest_dE2000_p01": 1.1,
+     "within_dE5_pct": 5.21
     },
     {
      "hex": "#B9773F",
      "role": "钠灯扫光峰值（座椅顶）",
-     "nearest_dE2000_p01": 20.5,
+     "nearest_dE2000_p01": 20.3,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#E19867",
      "role": "收音机表盘（档案 grade 压住饱和）",
-     "nearest_dE2000_p01": 20.8,
+     "nearest_dE2000_p01": 20.1,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#C8A878",
      "role": "车灯照湿路",
-     "nearest_dE2000_p01": 14.4,
+     "nearest_dE2000_p01": 13.4,
      "within_dE5_pct": 0.0
     }
    ],
-   "pixel_to_nearest_dE_median": 4.6,
-   "pixel_to_nearest_dE_p90": 23.5,
-   "pixels_within5_pct": 52.2
+   "pixel_to_nearest_dE_median": 7.5,
+   "pixel_to_nearest_dE_p90": 23.4,
+   "pixels_within5_pct": 28.4
   }
  },
  "cam": {
@@ -192,7 +192,7 @@
    720
   ]
  },
- "render_seconds": 149.5,
+ "render_seconds": 161.3,
  "lens": "none",
  "bloom_tint": "single",
  "note": ""

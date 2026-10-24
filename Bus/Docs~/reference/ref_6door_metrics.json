@@ -4,15 +4,15 @@
    1280,
    720
   ],
-  "APL": 101.33,
-  "EV_display": -2.687,
+  "APL": 101.52,
+  "EV_display": -2.686,
   "luma_lt12_pct": 0.29,
   "Lstar_gt85_pct": 0.0,
-  "clip_black_pct": 0.062,
+  "clip_black_pct": 0.069,
   "clip_white_pct": 0.0,
   "clip_black_largest_region_pct": 0.01,
   "clip_white_largest_region_pct": 0.0,
-  "warm_shadow_pct": 0.15,
+  "warm_shadow_pct": 0.24,
   "purple_pct": 0.0,
   "purple_largest_region_pct": 0.0,
   "violet_strong_pct": 0.0,
@@ -21,23 +21,23 @@
    "bbox": [
     538,
     1,
-    718,
+    723,
     395
    ],
    "centroid": [
-    639.0,
-    191.2
+    621.3,
+    170.3
    ],
-   "clusters": 25,
-   "clusters_ge5pct": 4,
+   "clusters": 27,
+   "clusters_ge5pct": 6,
    "min_luma": 144.4,
    "centroid_az_el": [
-    29.96,
-    17.2
+    28.35,
+    19.07
    ]
   },
   "top25_Lstar": {
-   "mean": 47.94,
+   "mean": 47.74,
    "p50": 58.28,
    "p90": 60.03
   },
@@ -48,7 +48,7 @@
     {
      "hex": "#3E64A6",
      "role": "天顶 藍",
-     "nearest_dE2000_p01": 11.3,
+     "nearest_dE2000_p01": 12.1,
      "within_dE5_pct": 0.0
     },
     {
@@ -79,7 +79,7 @@
      "hex": "#8593AA",
      "role": "云影 藍灰（绝不紫、绝不褐）",
      "nearest_dE2000_p01": 2.9,
-     "within_dE5_pct": 42.89
+     "within_dE5_pct": 43.13
     },
     {
      "hex": "#E8B878",
@@ -90,13 +90,13 @@
     {
      "hex": "#1C3D63",
      "role": "脚下远海",
-     "nearest_dE2000_p01": 11.4,
+     "nearest_dE2000_p01": 11.3,
      "within_dE5_pct": 0.0
     }
    ],
    "pixel_to_nearest_dE_median": 12.0,
-   "pixel_to_nearest_dE_p90": 17.1,
-   "pixels_within5_pct": 42.9
+   "pixel_to_nearest_dE_p90": 16.6,
+   "pixels_within5_pct": 43.1
   }
  },
  "cam": {
@@ -198,7 +198,7 @@
    720
   ]
  },
- "render_seconds": 53.5,
+ "render_seconds": 58.5,
  "lens": "none",
  "bloom_tint": "single",
  "note": ""

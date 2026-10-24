@@ -4,42 +4,42 @@
    1280,
    720
   ],
-  "APL": 134.76,
-  "EV_display": -1.928,
-  "luma_lt12_pct": 1.32,
-  "Lstar_gt85_pct": 0.078,
+  "APL": 144.07,
+  "EV_display": -1.797,
+  "luma_lt12_pct": 0.03,
+  "Lstar_gt85_pct": 0.083,
   "clip_black_pct": 0.0,
-  "clip_white_pct": 0.03,
+  "clip_white_pct": 0.0,
   "clip_black_largest_region_pct": 0.0,
-  "clip_white_largest_region_pct": 0.03,
-  "warm_shadow_pct": 0.02,
+  "clip_white_largest_region_pct": 0.0,
+  "warm_shadow_pct": 0.01,
   "purple_pct": 0.0,
   "purple_largest_region_pct": 0.0,
   "violet_strong_pct": 0.0,
-  "lavender_act6_pct": 3.353,
+  "lavender_act6_pct": 1.636,
   "brightest": {
    "bbox": [
-    511,
-    420,
-    543,
-    452
+    1158,
+    230,
+    1246,
+    565
    ],
    "centroid": [
-    527.1,
-    436.2
+    1211.3,
+    413.5
    ],
-   "clusters": 1,
+   "clusters": 3,
    "clusters_ge5pct": 1,
-   "min_luma": 205.0,
+   "min_luma": 208.0,
    "centroid_az_el": [
-    -9.99,
-    8.05
+    42.13,
+    7.67
    ]
   },
   "top25_Lstar": {
-   "mean": 59.16,
+   "mean": 61.59,
    "p50": 61.59,
-   "p90": 61.84
+   "p90": 61.59
   },
   "palette": {
    "act": "08",
@@ -48,60 +48,60 @@
     {
      "hex": "#10263F",
      "role": "头顶的海（天花）",
-     "nearest_dE2000_p01": 10.5,
+     "nearest_dE2000_p01": 11.0,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#C98A7A",
      "role": "天花近地平的镜光",
-     "nearest_dE2000_p01": 11.6,
+     "nearest_dE2000_p01": 8.8,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#FFE2B0",
      "role": "日线",
-     "nearest_dE2000_p01": 14.7,
+     "nearest_dE2000_p01": 13.1,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#F2A56B",
      "role": "天缝 琥珀",
-     "nearest_dE2000_p01": 17.3,
+     "nearest_dE2000_p01": 14.4,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#E7A0A0",
      "role": "玫瑰带",
-     "nearest_dE2000_p01": 12.6,
+     "nearest_dE2000_p01": 9.5,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#808AB2",
      "role": "中天 靛灰",
-     "nearest_dE2000_p01": 16.4,
+     "nearest_dE2000_p01": 16.5,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#3D4A80",
      "role": "天顶",
-     "nearest_dE2000_p01": 12.9,
+     "nearest_dE2000_p01": 13.6,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#363D59",
      "role": "云影 靛石（阴影里只有蓝）",
-     "nearest_dE2000_p01": 8.3,
+     "nearest_dE2000_p01": 6.3,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#C3BAD2",
      "role": "逆光窗帘之翼",
-     "nearest_dE2000_p01": 13.7,
+     "nearest_dE2000_p01": 15.1,
      "within_dE5_pct": 0.0
     }
    ],
    "pixel_to_nearest_dE_median": 12.7,
-   "pixel_to_nearest_dE_p90": 12.8,
+   "pixel_to_nearest_dE_p90": 12.7,
    "pixels_within5_pct": 0.0
   }
  },
@@ -180,7 +180,7 @@
    "color": "#000000"
   }
  },
- "bloom_share_of_APL": 0.85,
+ "bloom_share_of_APL": 0.02,
  "t": 955.0,
  "target": {
   "phase": "8 暮·天花",
@@ -204,7 +204,7 @@
    720
   ]
  },
- "render_seconds": 47.2,
+ "render_seconds": 28.8,
  "lens": "none",
  "bloom_tint": "single",
  "note": ""

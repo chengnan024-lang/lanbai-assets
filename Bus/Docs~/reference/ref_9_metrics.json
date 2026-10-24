@@ -4,9 +4,9 @@
    1280,
    720
   ],
-  "APL": 10.24,
+  "APL": 10.41,
   "EV_display": -7.966,
-  "luma_lt12_pct": 97.59,
+  "luma_lt12_pct": 98.58,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
@@ -19,25 +19,25 @@
   "lavender_act6_pct": 0.0,
   "brightest": {
    "bbox": [
-    0,
-    135,
-    51,
-    188
+    1193,
+    401,
+    1276,
+    526
    ],
    "centroid": [
-    19.4,
-    168.6
+    1234.1,
+    470.0
    ],
-   "clusters": 1,
-   "clusters_ge5pct": 1,
-   "min_luma": 32.4,
+   "clusters": 5,
+   "clusters_ge5pct": 3,
+   "min_luma": 13.1,
    "centroid_az_el": [
-    -51.15,
-    29.11
+    43.49,
+    11.2
    ]
   },
   "top25_Lstar": {
-   "mean": 3.02,
+   "mean": 2.99,
    "p50": 2.99,
    "p90": 2.99
   },
@@ -48,55 +48,55 @@
     {
      "hex": "#04060E",
      "role": "点燃之前的黑（天问）",
-     "nearest_dE2000_p01": 0.8,
-     "within_dE5_pct": 97.19
+     "nearest_dE2000_p01": 1.1,
+     "within_dE5_pct": 98.58
     },
     {
      "hex": "#08112A",
      "role": "紺 星空底",
-     "nearest_dE2000_p01": 4.9,
-     "within_dE5_pct": 2.08
+     "nearest_dE2000_p01": 4.4,
+     "within_dE5_pct": 1.35
     },
     {
      "hex": "#6F82A0",
      "role": "银河 漫射",
-     "nearest_dE2000_p01": 34.5,
+     "nearest_dE2000_p01": 38.4,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#C8B79A",
      "role": "银心 暖尘",
-     "nearest_dE2000_p01": 60.8,
+     "nearest_dE2000_p01": 65.3,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#F2F6FF",
      "role": "星",
-     "nearest_dE2000_p01": 80.3,
+     "nearest_dE2000_p01": 93.0,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#CDBF9C",
      "role": "白铜镜面里的银河 / 星尘",
-     "nearest_dE2000_p01": 64.6,
+     "nearest_dE2000_p01": 69.1,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#1E3B34",
      "role": "镜背 铜绿",
-     "nearest_dE2000_p01": 15.4,
+     "nearest_dE2000_p01": 19.6,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#DCE8FF",
      "role": "镜线",
-     "nearest_dE2000_p01": 78.4,
+     "nearest_dE2000_p01": 86.6,
      "within_dE5_pct": 0.0
     }
    ],
-   "pixel_to_nearest_dE_median": 3.2,
+   "pixel_to_nearest_dE_median": 3.7,
    "pixel_to_nearest_dE_p90": 3.7,
-   "pixels_within5_pct": 99.3
+   "pixels_within5_pct": 99.9
   }
  },
  "cam": {
@@ -198,7 +198,7 @@
    720
   ]
  },
- "render_seconds": 46.5,
+ "render_seconds": 28.1,
  "lens": "none",
  "bloom_tint": "single",
  "note": ""

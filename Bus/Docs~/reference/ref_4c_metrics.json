@@ -4,9 +4,9 @@
    1280,
    720
   ],
-  "APL": 98.57,
-  "EV_display": -2.594,
-  "luma_lt12_pct": 0.43,
+  "APL": 99.92,
+  "EV_display": -2.576,
+  "luma_lt12_pct": 0.47,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
@@ -21,24 +21,24 @@
    "bbox": [
     882,
     0,
-    1126,
+    1130,
     719
    ],
    "centroid": [
-    1008.2,
-    339.3
+    951.1,
+    376.8
    ],
-   "clusters": 35,
-   "clusters_ge5pct": 5,
-   "min_luma": 144.1,
+   "clusters": 32,
+   "clusters_ge5pct": 8,
+   "min_luma": 143.9,
    "centroid_az_el": [
-    29.43,
-    1.44
+    25.62,
+    -1.34
    ]
   },
   "top25_Lstar": {
-   "mean": 37.44,
-   "p50": 43.39,
+   "mean": 37.96,
+   "p50": 41.86,
    "p90": 59.79
   },
   "palette": {
@@ -48,55 +48,55 @@
     {
      "hex": "#0C0E14",
      "role": "暗车厢剪影",
-     "nearest_dE2000_p01": 0.6,
-     "within_dE5_pct": 20.33
+     "nearest_dE2000_p01": 0.8,
+     "within_dE5_pct": 17.57
     },
     {
      "hex": "#1D2336",
      "role": "第一重光唇之间的雾",
      "nearest_dE2000_p01": 4.5,
-     "within_dE5_pct": 2.65
+     "within_dE5_pct": 1.96
     },
     {
      "hex": "#53606E",
      "role": "第八重光唇之间的雾",
-     "nearest_dE2000_p01": 2.6,
-     "within_dE5_pct": 3.8
+     "nearest_dE2000_p01": 2.8,
+     "within_dE5_pct": 3.24
     },
     {
      "hex": "#E6E1F2",
      "role": "光唇纤维 第 1 重（一丝紫）",
-     "nearest_dE2000_p01": 22.7,
+     "nearest_dE2000_p01": 22.9,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#D9DFEE",
      "role": "光唇纤维 第 4 重",
-     "nearest_dE2000_p01": 21.3,
+     "nearest_dE2000_p01": 21.4,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#C2D8E2",
      "role": "光唇纤维 第 8 重（瓶覗）",
-     "nearest_dE2000_p01": 20.7,
+     "nearest_dE2000_p01": 20.6,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#F2B169",
      "role": "收音机 = Lichtchen",
-     "nearest_dE2000_p01": 33.5,
+     "nearest_dE2000_p01": 33.3,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#FFF1DC",
      "role": "前方暖白光点",
-     "nearest_dE2000_p01": 30.7,
+     "nearest_dE2000_p01": 30.6,
      "within_dE5_pct": 0.0
     }
    ],
    "pixel_to_nearest_dE_median": 18.1,
    "pixel_to_nearest_dE_p90": 20.0,
-   "pixels_within5_pct": 26.8
+   "pixels_within5_pct": 22.8
   }
  },
  "cam": {
@@ -198,7 +198,7 @@
    720
   ]
  },
- "render_seconds": 81.1,
+ "render_seconds": 88.7,
  "lens": "none",
  "bloom_tint": "single",
  "note": ""

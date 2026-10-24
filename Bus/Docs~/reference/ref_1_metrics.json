@@ -4,10 +4,10 @@
    1280,
    720
   ],
-  "APL": 36.46,
-  "EV_display": -4.539,
-  "luma_lt12_pct": 23.47,
-  "Lstar_gt85_pct": 0.051,
+  "APL": 33.76,
+  "EV_display": -4.73,
+  "luma_lt12_pct": 24.07,
+  "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
   "clip_black_largest_region_pct": 0.0,
@@ -20,26 +20,26 @@
   "brightest": {
    "bbox": [
     0,
-    38,
-    196,
+    43,
+    154,
     77
    ],
    "centroid": [
-    83.9,
-    73.6
+    85.9,
+    69.1
    ],
-   "clusters": 2,
+   "clusters": 1,
    "clusters_ge5pct": 1,
-   "min_luma": 208.3,
+   "min_luma": 196.3,
    "centroid_az_el": [
-    -40.87,
-    18.65
+    -40.79,
+    18.95
    ]
   },
   "top25_Lstar": {
-   "mean": 18.51,
-   "p50": 6.59,
-   "p90": 67.91
+   "mean": 17.58,
+   "p50": 5.72,
+   "p90": 63.39
   },
   "palette": {
    "act": "01",
@@ -49,36 +49,36 @@
      "hex": "#070B14",
      "role": "褐 夜底（天、深影）",
      "nearest_dE2000_p01": 0.7,
-     "within_dE5_pct": 59.97
+     "within_dE5_pct": 63.37
     },
     {
      "hex": "#121A28",
      "role": "濃藍 雾与远野",
      "nearest_dE2000_p01": 3.2,
-     "within_dE5_pct": 33.13
+     "within_dE5_pct": 33.18
     },
     {
      "hex": "#EEF5F7",
      "role": "灯白 灯管与路面光带",
-     "nearest_dE2000_p01": 9.2,
+     "nearest_dE2000_p01": 11.8,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#D0DBDF",
      "role": "站牌 藍白珐琅（受光）",
-     "nearest_dE2000_p01": 6.4,
+     "nearest_dE2000_p01": 8.1,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#16406A",
      "role": "站牌 靛蓝字",
-     "nearest_dE2000_p01": 14.1,
+     "nearest_dE2000_p01": 14.3,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#C9DCE0",
      "role": "车窗冷光",
-     "nearest_dE2000_p01": 8.3,
+     "nearest_dE2000_p01": 9.6,
      "within_dE5_pct": 0.0
     },
     {
@@ -90,13 +90,13 @@
     {
      "hex": "#DC8F51",
      "role": "远镇钠灯（小点）",
-     "nearest_dE2000_p01": 22.6,
+     "nearest_dE2000_p01": 22.7,
      "within_dE5_pct": 0.0
     }
    ],
-   "pixel_to_nearest_dE_median": 3.0,
-   "pixel_to_nearest_dE_p90": 13.0,
-   "pixels_within5_pct": 60.0
+   "pixel_to_nearest_dE_median": 2.8,
+   "pixel_to_nearest_dE_p90": 12.4,
+   "pixels_within5_pct": 63.4
   }
  },
  "cam": {
@@ -198,7 +198,7 @@
    720
   ]
  },
- "render_seconds": 79.0,
+ "render_seconds": 96.5,
  "lens": "none",
  "bloom_tint": "single",
  "note": ""

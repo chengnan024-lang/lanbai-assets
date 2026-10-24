@@ -293,6 +293,8 @@ def build(ctx):
         ctx['cam']['eye'] = [float(v) for v in a['eye'].split(',')]
         ctx['eye'] = ctx['cam']['eye']
     objs = SF.load_blend(a.get('blend', '/tmp/bus/bus_final_ext.blend'))
+    # eroded acts: a grazing ray crosses many cut-away (transparent) layers; Cycles' default 8 left black slivers
+    bpy.context.scene.cycles.transparent_max_bounces = 128
     for n, o in objs.items():
         if n.endswith('_LOD1'):
             o.hide_render = True

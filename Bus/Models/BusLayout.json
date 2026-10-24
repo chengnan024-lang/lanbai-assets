@@ -889,8 +889,8 @@
    "tris": 7573
   },
   "Cabin_Curtains": {
-   "verts": 7778,
-   "tris": 13932
+   "verts": 13286,
+   "tris": 24300
   },
   "Cabin_DestBlind": {
    "verts": 8,
@@ -901,8 +901,8 @@
    "tris": 356
   },
   "Cabin_Static": {
-   "verts": 37957,
-   "tris": 68483
+   "verts": 38694,
+   "tris": 69545
   },
   "Cabin_Tubes": {
    "verts": 960,
@@ -1049,5 +1049,5 @@
    "tris": 28
   }
  },
- "stats_total_tris": 121003
+ "stats_total_tris": 132433
 }

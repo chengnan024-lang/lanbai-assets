@@ -50,13 +50,14 @@
   "verts_expected": 5509,
   "bbox_err_m": 0.0,
   "uv_layers": [
-   "UVMap"
+   "UVMap",
+   "UVLightmap"
   ],
   "colours": []
  },
  "Cabin_Curtains": {
-  "verts": 7778,
-  "verts_expected": 7778,
+  "verts": 13286,
+  "verts_expected": 13286,
   "bbox_err_m": 0.0,
   "uv_layers": [
    "UVMap"
@@ -84,8 +85,8 @@
   "colours": []
  },
  "Cabin_Static": {
-  "verts": 37957,
-  "verts_expected": 37957,
+  "verts": 38694,
+  "verts_expected": 38694,
   "bbox_err_m": 0.0,
   "uv_layers": [
    "UVMap",

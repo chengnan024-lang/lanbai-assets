@@ -4,10 +4,10 @@
    1280,
    720
   ],
-  "APL": 18.37,
-  "EV_display": -6.277,
-  "luma_lt12_pct": 34.42,
-  "Lstar_gt85_pct": 0.107,
+  "APL": 18.18,
+  "EV_display": -6.322,
+  "luma_lt12_pct": 34.77,
+  "Lstar_gt85_pct": 0.06,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.014,
   "clip_black_largest_region_pct": 0.0,
@@ -20,20 +20,20 @@
   "brightest": {
    "bbox": [
     197,
-    219,
-    725,
+    218,
+    727,
     719
    ],
    "centroid": [
-    431.9,
-    323.5
+    506.6,
+    388.6
    ],
-   "clusters": 13,
-   "clusters_ge5pct": 7,
-   "min_luma": 213.0,
+   "clusters": 11,
+   "clusters_ge5pct": 8,
+   "min_luma": 208.9,
    "centroid_az_el": [
-    -17.57,
-    3.35
+    -12.69,
+    -0.83
    ]
   },
   "top25_Lstar": {
@@ -49,54 +49,54 @@
      "hex": "#070B14",
      "role": "褐 夜底（天、深影）",
      "nearest_dE2000_p01": 0.5,
-     "within_dE5_pct": 90.96
+     "within_dE5_pct": 91.2
     },
     {
      "hex": "#121A28",
      "role": "濃藍 雾与远野",
      "nearest_dE2000_p01": 1.6,
-     "within_dE5_pct": 54.19
+     "within_dE5_pct": 54.17
     },
     {
      "hex": "#EEF5F7",
      "role": "灯白 灯管与路面光带",
-     "nearest_dE2000_p01": 7.6,
+     "nearest_dE2000_p01": 9.0,
      "within_dE5_pct": 0.04
     },
     {
      "hex": "#D0DBDF",
      "role": "站牌 藍白珐琅（受光）",
-     "nearest_dE2000_p01": 4.8,
-     "within_dE5_pct": 0.11
+     "nearest_dE2000_p01": 5.0,
+     "within_dE5_pct": 0.1
     },
     {
      "hex": "#16406A",
      "role": "站牌 靛蓝字",
-     "nearest_dE2000_p01": 12.7,
+     "nearest_dE2000_p01": 12.8,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#C9DCE0",
      "role": "车窗冷光",
-     "nearest_dE2000_p01": 6.4,
+     "nearest_dE2000_p01": 6.5,
      "within_dE5_pct": 0.02
     },
     {
      "hex": "#B2252C",
      "role": "尾灯红（≤0.3% 画面）",
-     "nearest_dE2000_p01": 21.4,
+     "nearest_dE2000_p01": 20.2,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#DC8F51",
      "role": "远镇钠灯（小点）",
-     "nearest_dE2000_p01": 24.6,
+     "nearest_dE2000_p01": 23.6,
      "within_dE5_pct": 0.0
     }
    ],
    "pixel_to_nearest_dE_median": 2.9,
-   "pixel_to_nearest_dE_p90": 3.5,
-   "pixels_within5_pct": 91.9
+   "pixel_to_nearest_dE_p90": 3.3,
+   "pixels_within5_pct": 92.2
   }
  },
  "cam": {
@@ -198,7 +198,7 @@
    720
   ]
  },
- "render_seconds": 48.9,
+ "render_seconds": 36.2,
  "lens": "none",
  "bloom_tint": "single",
  "note": ""
