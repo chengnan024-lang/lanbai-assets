@@ -196,6 +196,8 @@ def beats():
         cabin_bleach=dict(t0=T['F0'], t1=T['F1'], v0=0.0, v1=0.10),
         slot_open=[SLOT['open_t0'], SLOT['open_t1']],
         ring_off=dict(t0=T['F1'] + 4.0, t1=T['F1'] + 8.0, note='fades as the slot walls rise past the windows (occluded)'),
+        fog_under_cover=dict(base=0.00012, under=0.00003, down_t0=305.4, up_t0=T['F1b1'], dur=4.0,
+                             note='the air under the cover is in shadow: thinner haze, the sea reads blue-grey (bible 6c APL dip)'),
         sea_on=300.0,               # the sea renderer: on only from inside the canyon (occluded); bible: no sea before 305.4
         sea_calm_patch=dict(t0=T['F1b2'], dur=6.0, radius=300.0),
         sea_calm_all=dict(t0=337.0, dur=8.0, v1=0.85),

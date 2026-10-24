@@ -78,7 +78,8 @@ public class LanbaiAct06Driver : UdonSharpBehaviour
     public Color triEquator = new Color(0.7843f, 0.7059f, 0.7216f, 1f);   // #C8B4B8
     public Color triGround = new Color(0.5608f, 0.6275f, 0.7451f, 1f);    // #8FA0BE
     public Color fogColorGamma = new Color(0.7686f, 0.7216f, 0.7529f, 1f); // #C4B8C0 (bible §6·6 雾)
-    public float fogDensity = 0.00012f;
+    public float fogDensity = 0.00012f;        // the dawn preset's _Udon_Fog.x
+    public float fogUnder = 0.00003f, fogDownT0 = 305.4f, fogUpT0 = 318.36f, fogDur = 4f;   // thinner haze under the cover
 
     [Header("Overlay (Overlay/README §3: 5 -> 6)")]
     public Color overlayFill = new Color(0.0027f, 0.0006f, 0f, 1f);       // S6 row #090200, linear
@@ -91,6 +92,7 @@ public class LanbaiAct06Driver : UdonSharpBehaviour
 
     private MaterialPropertyBlock _mpb;
     private int _idSeaLevel, _idSeaMode, _idSeaClock, _idSlotOpen, _idGain, _idAlpha, _idMirror;
+    private int _idFog;
     private int _idCalmAll, _idCalmPatch, _idSunColor, _idRefl, _idReflHdr, _idReflExp;
     private bool _ready, _skyApplied, _sunTaken, _overlayHidden, _lobesSet;
     private float _lastT = -1f;
@@ -139,6 +141,7 @@ public class LanbaiAct06Driver : UdonSharpBehaviour
         _idAlpha = VRCShader.PropertyToID("_Alpha");
         _idMirror = VRCShader.PropertyToID("_Mirror");
         _idCalmAll = VRCShader.PropertyToID("_CalmAll");
+        _idFog = VRCShader.PropertyToID("_Udon_Fog");
         _idCalmPatch = VRCShader.PropertyToID("_CalmPatch");
         _idSunColor = VRCShader.PropertyToID("_SunColor");
         // the cards' per-renderer values (edit-mode MPBs are lost on Play: gate test pitfall 9)
@@ -209,6 +212,12 @@ public class LanbaiAct06Driver : UdonSharpBehaviour
 
         float sunVis = SunVisible(t);
 
+        // the fog density (the sky / fog group is this act's from 248.64 to F2h: the preset's 0.00012, thinner under the
+        // cover). Written after Apply(); the colour stays the preset's (LanbaiHorizon model B)
+        float under = Smooth((t - fogDownT0) / fogDur) * (1f - Smooth((t - fogUpT0) / fogDur));
+        float fogD = Mathf.Lerp(fogDensity, fogUnder, under);
+        if (_skyApplied && t < tEntry) VRCShader.SetGlobalVector(_idFog, new Vector4(fogD, 0f, 0f, 1f));
+
         // the main light (D-24)
         if (writeMainLight && t >= tLight0 && t < tLight1)
         {
@@ -231,7 +240,7 @@ public class LanbaiAct06Driver : UdonSharpBehaviour
             RenderSettings.ambientEquatorColor = triEquator;
             RenderSettings.ambientGroundColor = triGround;
             RenderSettings.fogColor = fogColorGamma;
-            RenderSettings.fogDensity = fogDensity;
+            RenderSettings.fogDensity = fogD;
         }
 
         // the plain: the slot opens at F1 (6 s)

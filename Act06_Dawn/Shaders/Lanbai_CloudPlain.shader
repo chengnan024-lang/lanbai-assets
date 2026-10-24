@@ -37,7 +37,7 @@ Shader "Lanbai/CloudPlain"
         _MarchK ("March - x min k - y max k - z max dt - w bisections", Vector) = (0.004, 0.06, 250, 4)
         _Light ("Light - x sigma - y shadow - z ms k - w ms tau", Vector) = (0.012, 1.0, 0.004, 0.25)
         _Gains ("Gains - x sun - y sky - z ground - w wall slope", Vector) = (1, 0.35, 0.35, 1.5)
-        _Under ("Underside - x glow - y glow length m - z ground k - w sky k", Vector) = (0.9, 900, 0.55, 0.12)
+        _Under ("Underside - x glow - y glow length m - z ground k - w sky k", Vector) = (0.9, 900, 0.35, 0.06)
         _Trough ("Trough - x lod - y depth m - z k - w sky k", Vector) = (3.5, 30, 0.35, 0.6)
         _SunColor ("Sun colour x E - linear", Vector) = (6.3706, 2.2827, 0.3400, 0)
         _SkyUpColor ("Upper dome light - linear", Vector) = (1.5103, 1.8199, 2.5691, 0)

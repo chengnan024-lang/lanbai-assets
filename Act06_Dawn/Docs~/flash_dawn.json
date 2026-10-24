@@ -1,0 +1,106 @@
+{
+ "hero": {
+  "law": {
+   "0.25s": [
+    0.219,
+    0.5
+   ],
+   "1.00s": [
+    0.871,
+    1.0
+   ],
+   "2.00s": [
+    1.735,
+    1.8
+   ],
+   "pass": true
+  },
+  "apl_end": 125.2,
+  "flashcheck_tail": [
+   "    main()",
+   "  File \"/home/user/lanbai-assets/Art/tools/lens_tech/flashcheck.py\", line 206, in main",
+   "    plot(ser, rep, a.out + \".png\")",
+   "  File \"/home/user/lanbai-assets/Art/tools/lens_tech/flashcheck.py\", line 155, in plot",
+   "    import matplotlib",
+   "ModuleNotFoundError: No module named 'matplotlib'"
+  ]
+ },
+ "door_d12": {
+  "law": {
+   "0.25s": [
+    0.216,
+    0.5
+   ],
+   "1.00s": [
+    0.858,
+    1.0
+   ],
+   "2.00s": [
+    1.709,
+    1.8
+   ],
+   "pass": true
+  },
+  "apl_end": 105.6,
+  "flashcheck_tail": [
+   "    main()",
+   "  File \"/home/user/lanbai-assets/Art/tools/lens_tech/flashcheck.py\", line 206, in main",
+   "    plot(ser, rep, a.out + \".png\")",
+   "  File \"/home/user/lanbai-assets/Art/tools/lens_tech/flashcheck.py\", line 155, in plot",
+   "    import matplotlib",
+   "ModuleNotFoundError: No module named 'matplotlib'"
+  ]
+ },
+ "hero_skylight": {
+  "law": {
+   "0.25s": [
+    0.21,
+    0.5
+   ],
+   "1.00s": [
+    0.837,
+    1.0
+   ],
+   "2.00s": [
+    1.664,
+    1.8
+   ],
+   "pass": true
+  },
+  "apl_end": 71.2,
+  "flashcheck_tail": [
+   " \"max_rise_ev_2s\": 1.68,",
+   " \"max_fall_ev_0.25s\": -0.0,",
+   " \"peak_apl_luma\": 106,",
+   " \"mean_apl_luma\": 67,",
+   " \"lanbai_ramp_law\": \"PASS\"",
+   "}"
+  ]
+ },
+ "vr_door_d12": {
+  "law": {
+   "0.25s": [
+    0.209,
+    0.5
+   ],
+   "1.00s": [
+    0.832,
+    1.0
+   ],
+   "2.00s": [
+    1.654,
+    1.8
+   ],
+   "pass": true
+  },
+  "apl_end": 82.9,
+  "flashcheck_tail": [
+   " \"max_rise_ev_2s\": 1.67,",
+   " \"max_fall_ev_0.25s\": -0.0,",
+   " \"peak_apl_luma\": 117,",
+   " \"mean_apl_luma\": 63,",
+   " \"lanbai_ramp_law\": \"PASS\"",
+   "}"
+  ]
+ }
+}

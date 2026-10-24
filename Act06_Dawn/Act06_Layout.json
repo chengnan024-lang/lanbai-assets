@@ -1105,6 +1105,14 @@
    "t1": 289.86,
    "note": "fades as the slot walls rise past the windows (occluded)"
   },
+  "fog_under_cover": {
+   "base": 0.00012,
+   "under": 3e-05,
+   "down_t0": 305.4,
+   "up_t0": 318.36,
+   "dur": 4.0,
+   "note": "the air under the cover is in shadow: thinner haze, the sea reads blue-grey (bible 6c APL dip)"
+  },
   "sea_on": 300.0,
   "sea_calm_patch": {
    "t0": 328.36,

@@ -113,11 +113,25 @@ def region(x, z, slot_open, y=None, det=None, foot=None):
     return deck, slot, lip
 
 
+_FOGSKY = {}
+
+
+def fog_sky(sky_eq):
+    """the sky low-passed (~6 deg) with the sun disc clamped away: LanbaiHorizon is a smooth gradient, it has no disc"""
+    k = id(sky_eq)
+    if k not in _FOGSKY:
+        from scipy.ndimage import gaussian_filter
+        s = np.minimum(sky_eq, np.percentile(sky_eq, 99.0, axis=(0, 1)))
+        px = 6.0 / 360.0 * s.shape[1]
+        _FOGSKY[k] = np.stack([gaussian_filter(s[..., i], px, mode='wrap') for i in range(3)], -1)
+    return _FOGSKY[k]
+
+
 def fog_colour(sky_eq, V):
-    """LanbaiHorizon for the dawn preset (model B from the sky at 1 deg elevation, Sky/README_Sky §5): the sky at the
-    ray's azimuth, elevation max(el, 1 deg)."""
+    """LanbaiHorizon for the dawn preset (model B from the sky at 1 deg elevation, Sky/README_Sky §5): the smooth sky at
+    the ray's azimuth, elevation max(el, 1 deg)."""
     az, el = C.azel_from_dir(V)
-    return C.sample_equirect(sky_eq, C.dir_from_azel(az, np.maximum(el, 1.0)), 0.0)
+    return C.sample_equirect(fog_sky(sky_eq), C.dir_from_azel(az, np.maximum(el, 1.0)), 0.0)
 
 
 class Plain:
@@ -266,8 +280,8 @@ class Plain:
             R = E['r0'] + (E['r_sun'] - E['r0']) * np.exp(-(da / E['sun_lobe_deg']) ** 2)
             to_edge = np.maximum(R - r, 0.0)
             glow = P['EdgeGlow'] * np.exp(-to_edge / P['EdgeGlowLen']) * np.clip(np.cos(np.radians(da)), 0, 1)
-            surf[under] = (P['GroundGain'] * 0.55 * var[under])[:, None] * GND_COL + (glow * var[under])[:, None] * SUN_COL * 0.35 \
-                + (0.12 * var[under])[:, None] * SKY_COL
+            surf[under] = (P['GroundGain'] * 0.35 * var[under])[:, None] * GND_COL + (glow * var[under])[:, None] * SUN_COL * 0.35 \
+                + (0.06 * var[under])[:, None] * SKY_COL
         # troughs toward the haze (tops only)
         fogC = fog_colour(sky_eq, V[gi])
         lod_t = np.log2(np.maximum(foot, 1e-3) / self.texel_d) + P['TroughLod']

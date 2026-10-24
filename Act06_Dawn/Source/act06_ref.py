@@ -88,6 +88,12 @@ def fog_amount(dist):
     return 1 - np.exp(-FOG_D * dist)
 
 
+def fog_at(t):
+    f = LAYOUT['beats']['fog_under_cover']
+    x = smooth01((t - f['down_t0']) / f['dur']) * (1 - smooth01((t - f['up_t0']) / f['dur']))
+    return f['base'] + (f['under'] - f['base']) * x
+
+
 def smooth01(x):
     x = np.clip(x, 0, 1)
     return x * x * (3 - 2 * x)
@@ -183,8 +189,12 @@ def sea(V, t, d):
         cosi = np.clip(-Vh[:, 1], 0, 1)
         F = 0.02 + 0.98 * (1 - cosi) ** 5
         calm = smooth01((t - LAYOUT['beats']['sea_calm_all']['t0']) / LAYOUT['beats']['sea_calm_all']['dur'])
-        refl = C.sample_equirect(SKY, R, 0.0)
-        refl = np.minimum(refl, 8.0)
+        # what a reflection cube captured 2 m above the water sees (Unity: _Udon_ReflCube, 给总控 #2): the cover's
+        # underside where it is overhead, the sky beyond its edge; the sun disc is the sea shader's own clamped glint
+        refl = C.sample_equirect(PR.fog_sky(SKY), R, 0.0)
+        cap = np.array([0.0, level + 2.0, 0.0]) + np.array([0.0, 0.0, 0.0])
+        pc, ph, _ = PR.Plain().render(cap + np.array([EYE[0], 0.0, EYE[2]]), R, 0.004, d, SKY, slot_open=1.0)
+        refl[ph] = pc[ph]
         water = np.array([0.0156, 0.0484, 0.0954])
         c = water[None, :] * (1 - F)[:, None] + refl * F[:, None] * (0.6 + 0.4 * calm)
         fa = fog_amount(ts[hit])
@@ -203,6 +213,9 @@ def render(t, cam_name, w=960, door='bible_v2', out_dir=None, tag=''):
     cam = dict(CAMS[cam_name])
     V, h, pix = rays(cam, w)
     d, vdown = AL.descent(t)
+    global FOG_D
+    FOG_D = fog_at(t)
+    PR.P['FogDensity'] = FOG_D
     img = C.sample_equirect(SKY, V, 0.0)
     depth = np.full(len(V), np.inf)
     sc, sd = sea(V, t, d)

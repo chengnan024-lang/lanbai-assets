@@ -203,6 +203,8 @@ public static class LanbaiAct06Builder
         d.triSky = SRGB((string)tri["sky"]); d.triEquator = SRGB((string)tri["equator"]); d.triGround = SRGB((string)tri["ground"]);
         d.sunFloorOccluded = F(lt["sun_occluded_floor"]);
         d.fogDensity = F(D(J["fog"])["density"]);
+        var fu = D(B["fog_under_cover"]);
+        d.fogUnder = F(fu["under"]); d.fogDownT0 = F(fu["down_t0"]); d.fogUpT0 = F(fu["up_t0"]); d.fogDur = F(fu["dur"]);
         if (d.skyPreset != null) d.fogColorGamma = d.skyPreset.fogColor;
         LanbaiGateCloudsBuilder.SetupUdonSharp(d);
         EditorUtility.SetDirty(d);
