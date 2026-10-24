@@ -79,6 +79,52 @@ def water_keys():
     return keys
 
 
+# ---------------------------------------------------------------------------------------------------- act 7c
+def act7c():
+    """第 7c 幕 · 海底即天 (F8 835.16 -> exit 922.36; bible §6·7c, D-23). Everything by TIME (the 7a keys go by depth).
+    The mirror = the same Lanbai/Sea BELOW, flipped (M_07c_SeaMirror), a second Sea_Disc under R_Sea at the water y the EYE
+    crosses at the exit (README_Sea接口 §5), centred under the bus (fwd is constant in 7c)."""
+    tE = AM.EXIT
+    plane_y = -AM.depth(tE) + float(EYE[1])
+    deep = water_keys()[-1]
+    neutral_down = np.array([0.040, 0.035, 0.060])          # D-23 layering (Sea K3 r17): looking down, a dark neutral
+    fog = [
+        (L['F8'], deep['density'], np.asarray(deep['up']), np.asarray(deep['mid']), np.asarray(deep['down'])),
+        (L['F8b'], 0.018, fill('#04121E', 'S7b') * 0.75, fill('#04121E', 'S7b'), fill('#04121E', 'S7b')),
+        (897.96, 0.010, srgb_lin('#3E2C2B') * 0.75, srgb_lin('#3E2C2B'), neutral_down),
+        (L['F8c'], 0.009, srgb_lin('#3E2C2B') * 0.75, srgb_lin('#3E2C2B'), neutral_down),
+        (921.4, 0.006, srgb_lin('#4B312C') * 0.75, srgb_lin('#4B312C'), np.array([0.050, 0.040, 0.062])),
+    ]
+    return dict(
+        about='bible §6·7c + D-23; the sea kit look is M_07c_SeaMirror (Sea/SeaMaterials.json, K3 r17)',
+        mirror=dict(object='Sea_Disc.fbx, second instance under R_Sea', water_y=round(plane_y, 3), water_z=round(AM.fwd(L['F8']), 3),
+                    on_t=L['F8'], material='M_07c_SeaMirror', sea_mode=4,
+                    note='on from F8 (the fog hides it until ~F8a: 110 m below at 0.018 / m is 87 % fog); the 7a surface plane goes off at F8'),
+        wave_amp=keys((L['F8'], 0.3), (L['F8b'], 0.3), (L['F8b'] + 6.0, 0.09)),
+        wave_note='bible F8b: the waves decay to 30 % in 6 s; the mirror keeps them x _MirrorWave 0.25 (the lamps settle into points)',
+        window=keys((L['F8b'], 0.0), (897.96, 1.0)),
+        window_note='x the material _WindowGain (0.25) and _WindowSunGain: the window settles at 897.96',
+        fog=[dict(t=round(t, 2), density=d, up=R(u), mid=R(m), down=R(dn)) for t, d, u, m, dn in fog],
+        fog_note='mid = the bible (#04121E -> #2E2228 fill #3E2C2B -> #3A2629 fill #4B312C), up = mid x 0.75, down = a dark neutral '
+                 '(D-23 layering: the window indigo is not drowned in rose); the fog thins (bible F8c 雾在变薄): 0.018 -> 0.006 / m',
+        caustics=dict(t0=L['F8c'], ramp_s=4.0, direction=-1.0, colour=R(fill('#E2C08E', 'S7b')),
+                      note='F8c: the caustics come from BELOW for the first time (bible §4.8), gold #E2C08E h 80 (D-08: never rose)'),
+        rose_lights=dict(positions_bus=[[0.0, 0.5, 4.6], [1.5, 0.3, 0.8]], colour_hex='#E7A0A0', range_m=7.0,
+                         E=keys((L['F8b'], 0.0), (897.96, 0.8), (921.4, 1.1)),
+                         culling='Bus + Player + PlayerLocal, no shadows, Not Important (folded into SH: free)',
+                         note='bible: 1-2 realtime point lights under the bus turn rose, following the arc in the window (the arc is '
+                              'forward, az 0): one low ahead of the windscreen, one low on the right. Grey-card check locally'),
+        trilight=dict(sky=keys((L['F8'], 0.0), (921.4, 0.0)), sky_hex='#1A1C26', equator_hex='#2A2228',
+                      ground=[dict(t=L['F8'], hex='#1A1422'), dict(t=921.4, hex='#3A1C18')],
+                      note='bible §6·7c 光: Trilight ground #1A1422 -> #3A1C18 (7c end); sky / equator are not in the bible: a dark '
+                           'neutral and the fog\'s rose (sRGB values for RenderSettings)'),
+        apl_targets=dict(F8b=20, t897=30, t921_4=34),
+        waterline=dict(entry=[round(L['F2h'] - 0.5, 2), round(L['F2h'] + 2.0, 2)], exit=[round(tE - 0.5, 2), round(tE + 1.0, 2)],
+                       note='Lanbai/SeaWaterline on COPIES of the glass meshes (wired locally, README §0): on in these windows, '
+                            '_WaterBelow +1 at the entry, -1 at the exit; it reads _Udon_SeaLevel (the clouds write it after the exit)'),
+    )
+
+
 # ---------------------------------------------------------------------------------------------------- shafts
 def shafts(rng):
     """<= 16 light shafts fixed in the WATER frame (the surface makes them; the bus sinks past them), axis = the refracted
@@ -110,27 +156,22 @@ def shafts(rng):
 
 
 # ---------------------------------------------------------------------------------------------------- particles
-SNOW_NEAR, SNOW_SPHERE, SNOW_BOX = 2.0, 10.0, 24.0
+SNOW_NEAR, SNOW_SPHERE, SNOW_BOX = 2.0, 10.0, 20.0
 SNOW_LIT = 2.2
 
 
-def snow(rng, n=1200):
-    """海雪: 1 200 (bible: in a 25 m sphere; here in the 2-10 m shell around the eye / 24 m wrap box: the bible's 25 m sphere gave ~2 flakes within
-    5 m of the eye and no sinking cue -- 给总控 第五批 #9; 40 % toward the windscreen), 0.8-2.5 cm, screen #697987,
-    alpha 0.3-0.6, sinking 1.5 cm/s (the bus sinks faster: they rise past the windows). WATER-frame positions around the
-    bus at F3, never inside the cabin's 1.2 m around the eye (they are drawn outside the glass anyway)."""
+def snow(rng, n=2400):
+    """海雪: 2 400 (总导演 10-24: up to 2x the bible's 1 200 in the near shell and toward the windscreen, the first 'in the
+    sea' cue; min 1.5 px unchanged). Bible: 1 200 in a 25 m sphere (that gave ~2 flakes within 5 m of the eye and no sinking
+    cue); here uniform in a 20 m wrap box, faded out by 10 m (the shader's sphere); 0.8-2.5 cm, screen
+    #697987, alpha 0.3-0.6, sinking 1.5 cm/s (the bus sinks faster: they rise past the windows). WATER-frame positions at F3.
+    The cabin is flooded in act 7, so a flake drifting through it is right; the shader's near fade keeps them off the eye."""
     c = fill('#697987', 'S7a')
-    # uniform DIRECTION, radius in the 2-10 m shell (not uniform-in-volume): the sinking cue has to read in every
-    # direction (VR), so put the flakes where the eye can resolve them instead of mostly out at the sphere's rim
-    dirs = rng.normal(size=(n, 3)); dirs /= np.linalg.norm(dirs, axis=1, keepdims=True)
-    # 40 % of them toward the windscreen (bus_shell bible_v2 from the main eye: az -50..25, el -15..22): the first frame of
-    # 7a looks forward (终审 7a 一 #5). The bus does not move forward in 7a (fwd = 0 until F5), so the azimuth bias holds
-    # while the wrap box recycles them vertically
-    nf = int(0.4 * n)
-    az = np.radians(rng.uniform(-50.0, 25.0, nf)); el = np.radians(rng.uniform(-15.0, 22.0, nf))
-    dirs[:nf] = np.stack([np.cos(el) * np.sin(az), np.sin(el), np.cos(el) * np.cos(az)], -1)
-    r = rng.uniform(SNOW_NEAR, SNOW_SPHERE, n)
-    pts = EYE[None, :] + dirs * r[:, None]
+    # UNIFORM in the wrap box: the shader recycles every flake through a box that rides with the bus, so any bias around
+    # the eye slides away as the bus moves -- vertically every box height of descent, horizontally in 7b's 307 m forward
+    # (r1-r2 biased a shell / a column around the eye: 0 flakes in view at 560 s). The density comes from the count and
+    # the box: 2 400 in a 20 m box = 0.3 / m3 everywhere, at every moment (the bible's 1 200 in a 25 m sphere ~ 0.02)
+    pts = EYE[None, :] + rng.uniform(-0.5, 0.5, (n, 3)) * SNOW_BOX
     pts = pts + np.array([0.0, -AM.depth(L['F3']), AM.fwd(L['F3'])])
     rad = rng.uniform(0.004, 0.0125, n)
     a = rng.uniform(0.3, 0.6, n)
@@ -299,7 +340,7 @@ def main():
         frames=dict(world='Unity, bus fixed at the origin, heading +z', water='x right, y up from the sea surface (= -depth), z = bus heading',
                     bus_water='(0, -depth(t), fwd(t))', R_Sea_world='(0, depth(t), -fwd(t))', eye=R(EYE, 3),
                     eye_note='main seat eye = Gate cameras.U7 = render harness hero; LB_Journey.heroEye is (0.70, 1.77, 0.20)'),
-        labels={k: dict(t=L[k], source=AM.LSRC[k]) for k in ('F2h', 'F3', 'F4', 'F4p', 'F3e', 'F3e1', 'F3e2', 'F3e3', 'F3i', 'F5', 'F8', 'F9s')},
+        labels={k: dict(t=L[k], source=AM.LSRC[k]) for k in ('F2h', 'F3', 'F4', 'F4p', 'F3e', 'F3e1', 'F3e2', 'F3e3', 'F3i', 'F5', 'F8', 'F8a', 'F8b', 'F8c', 'F8r', 'F9s')},
         window=dict(t0=round(L['F2h'] - 1.0, 2), t1=round(AM.EXIT + 1.0, 2),
                     note='the act-7 driver owns F2h - 1 .. exit + 1; this package fills 7a (to F5) and holds the 7a end state after F5 until 7b / 7c arrive'),
         motion=dict(D0=AM.D0, sink=profile_json(AM.SINK), forward=profile_json(AM.FWD),
@@ -367,6 +408,7 @@ def main():
                             shape='linear weight (an exposure change: constant EV / s)', note='the 7a cross-fade (purple guard S7a~)'),
                    ]),
         apl_targets=dict(F3=85, F3e=60, F3e1=46, F3e2=35, F3e3=25, F5=16),
+        act7c=act7c(),
     )
     # ---- the same numbers, flat, for the Unity builder (JsonUtility reads no nested arrays): README_Act07a §2
     W = J['water']['keys']
@@ -392,7 +434,23 @@ def main():
         last_length=ls['length'], last_alpha=ls['alpha'], last_from=ls['from_bus'], last_to=ls['to_bus'], last_target=ls['target_from_bus'], last_target_to=ls['target_to_bus'], last_top=ls['top_above_centre_m'],
         beam_angle=J['beam']['spot_angle_deg'], beam_range=J['beam']['range_m'], beam_gather_pos=J['beam']['gather']['pos_bus'],
         beam_gather_aim=J['beam']['gather']['aim_bus'], beam_gather_E=J['beam']['gather']['E_peak'], beam_last_E=J['beam']['last']['E_peak'],
-        snow_sphere=SNOW_SPHERE, snow_box=SNOW_BOX, snow_lit=SNOW_LIT, snow_lit_d0=12.0, snow_lit_d1=30.0,
+        snow_sphere=SNOW_SPHERE, snow_box=SNOW_BOX,
+        # act 7c (README_Act07a §9)
+        F8=L['F8'], F8b=L['F8b'], F8c=L['F8c'],
+        c7_mirror_y=J['act7c']['mirror']['water_y'], c7_mirror_z=J['act7c']['mirror']['water_z'],
+        c7_wave_t=[k['t'] for k in J['act7c']['wave_amp']], c7_wave_v=[k['v'] for k in J['act7c']['wave_amp']],
+        c7_win_t=[k['t'] for k in J['act7c']['window']], c7_win_v=[k['v'] for k in J['act7c']['window']],
+        c7_fog_t=[k['t'] for k in J['act7c']['fog']], c7_fog_density=[k['density'] for k in J['act7c']['fog']],
+        c7_fog_up=sum([k['up'] for k in J['act7c']['fog']], []), c7_fog_mid=sum([k['mid'] for k in J['act7c']['fog']], []),
+        c7_fog_down=sum([k['down'] for k in J['act7c']['fog']], []),
+        c7_caus_t0=J['act7c']['caustics']['t0'], c7_caus_ramp=J['act7c']['caustics']['ramp_s'], c7_caus_colour=J['act7c']['caustics']['colour'],
+        c7_rose_pos=sum(J['act7c']['rose_lights']['positions_bus'], []), c7_rose_range=J['act7c']['rose_lights']['range_m'],
+        c7_rose_colour=R(srgb_lin(J['act7c']['rose_lights']['colour_hex'])),
+        c7_rose_t=[k['t'] for k in J['act7c']['rose_lights']['E']], c7_rose_v=[k['v'] for k in J['act7c']['rose_lights']['E']],
+        c7_tri_sky=R(srgb_lin(J['act7c']['trilight']['sky_hex'])), c7_tri_equator=R(srgb_lin(J['act7c']['trilight']['equator_hex'])),
+        c7_tri_ground_t=[k['t'] for k in J['act7c']['trilight']['ground']],
+        c7_tri_ground=sum([list(R(srgb_lin(k['hex']))) for k in J['act7c']['trilight']['ground']], []),
+        wl_entry=J['act7c']['waterline']['entry'], wl_exit=J['act7c']['waterline']['exit'], snow_lit=SNOW_LIT, snow_lit_d0=12.0, snow_lit_d1=30.0,
         warm_position=J['warm_point']['position_water'], warm_colour=J['warm_point']['colour'], warm_flux=J['warm_point']['flux'],
         warm_radius=J['warm_point']['radius_m'], warm_fade=J['warm_point']['fade_in_s'],
         warm_halo_radius=J['warm_point']['halo_radius_m'], warm_halo_flux=J['warm_point']['halo_flux'],

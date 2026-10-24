@@ -67,7 +67,62 @@ def erosion(t):
 
 
 # ------------------------------------------------------------------------------------------------ the sea + fog
+def keys_lin(t, kt, kv):
+    kv = np.asarray(kv, float)
+    if t <= kt[0]:
+        return kv[0]
+    for i in range(1, len(kt)):
+        if t < kt[i]:
+            return kv[i - 1] + (kv[i] - kv[i - 1]) * (t - kt[i - 1]) / max(kt[i] - kt[i - 1], 1e-4)
+    return kv[-1]
+
+
+_LAMPS = {}
+
+
+def lamps_env(t, a):
+    """7c: what the dark mirror reflects (stand-in for the baked _Udon_ReflCube Refl_S7c): the water above + the palace
+    lamps, as the Sea kit's K3 frame builds it (PalaceFrame_约定.json, gold #E0A860 under S7b x 14, 0.25 deg)"""
+    key = round(t, 1)
+    if key in _LAMPS:
+        return _LAMPS[key]
+    PF = json.load(open(os.path.join(PKG, 'PalaceFrame_约定.json'), encoding='utf-8'))
+    bus = np.array([0.0, PF['frame']['bus_origin_y_stop'] + (AM.depth(AM.L['F7']) - AM.depth(t)), AM.fwd(t)])
+    fade = float(a.get('lampfade', 0.5))
+    pts = [(np.asarray(L_['flame_pos']) - bus, fade) for L_ in PF['lamps']]
+    rg = PF['specks']['region']; rs = np.random.default_rng(7)
+    for _ in range(240):
+        q = np.array([rs.uniform(*rg['x']), rs.uniform(*rg['y']), rs.uniform(*rg['z'])])
+        pts.append((q - bus, 0.5 * rs.uniform(0.4, 1.0)))
+    env = SK.env_lamps_above(pts, SK.lin('#3E2C2B') * 0.6, SK.lamp_gold('S7b') * 14.0, 0.25)
+    _LAMPS.clear(); _LAMPS[key] = env
+    return env
+
+
+def sea_7c(rays, eye, t, a):
+    """7c (README §9): the mirror below (M_07c_SeaMirror at the water y the eye crosses at the exit), the fog by time"""
+    depth = AM.depth(t)
+    level = depth + U['c7_mirror_y']
+    w = float(keys_smooth(t, U['c7_win_t'], U['c7_win_v']))
+    M = SK.material('M_07c_SeaMirror', a, TIRColor=tuple(SK.lin('#3E2C2B') * 0.5))
+    M['WaveAmp'] = float(keys_smooth(t, U['c7_wave_t'], U['c7_wave_v']))
+    M['WindowGain'] = M['WindowGain'] * w
+    M['WindowSunGain'] = M['WindowSunGain'] * w
+    ft = U['c7_fog_t']
+    dens = float(keys_lin(t, ft, U['c7_fog_density']))
+    up, mid, down = (keys_lin(t, ft, np.asarray(U['c7_fog_' + k]).reshape(-1, 3)) for k in ('up', 'mid', 'down'))
+    rgb, alpha, hit, P = S.shade_plane(eye, rays, level, 'below', t, M, env=lamps_env(t, a), window_env=SK.env_dusk_synth('lower'))
+    fog_fn = S.water_horizon(up, mid, down)
+    rgb = S.fog(rgb, P, eye, dens, fog_fn, S.tir_keep(alpha, M), M.get('FogChroma'))
+    rgb = S.purple_guard(rgb, M)
+    dist = np.where(hit, np.linalg.norm(P - eye, axis=-1), np.inf)
+    out = np.where(hit[..., None], rgb, fog_fn(rays))
+    return out, dist, (dens, fog_fn), depth
+
+
 def sea_and_water(rays, eye, t, a):
+    if t >= U['F8']:
+        return sea_7c(rays, eye, t, a)
     depth = AM.depth(t)
     level = depth                                  # the plane's world y (bus origin at 0)
     M = SK.material('M_07a_SeaSurface', a)
@@ -339,7 +394,8 @@ def particles(img, rays, cam, eye, t, depth, water, zbuf):
         rel = np.asarray(Tr['positions']).reshape(-1, 3) + jit - vel[None, :] * age[:, None] + np.array([0.0, 0.02, 0.0]) * age[:, None]
         uu = age / np.maximum(life, 1e-3)
         bright = alive * np.where(age < life, smooth(uu / 0.08) * (1 - smooth((uu - 0.35) / 0.65)), 0.0)
-        rgb = np.asarray(Tr['colour'])[None, :] * bright[:, None]
+        tg = 1.0 - float(smooth((t - U['F8b']) / 20.0))     # the trails fade as the 7c rose comes up (driver: the same)
+        rgb = np.asarray(Tr['colour'])[None, :] * (bright * tg)[:, None]
         add, img = splat(add, img, rays.shape, cam, eye, rel, np.asarray(Tr['radius']), rgb, np.ones(len(bright)), 'TRAIL', water, zbuf)
     if t >= U['F5'] - 0.01:
         g = float(smooth((t - U['F5']) / U['warm_fade']))

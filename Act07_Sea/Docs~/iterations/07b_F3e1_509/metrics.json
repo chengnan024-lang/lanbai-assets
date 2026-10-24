@@ -4,7 +4,7 @@
    960,
    540
   ],
-  "APL": 57.14,
+  "APL": 57.12,
   "EV_display": -3.562,
   "luma_lt12_pct": 48.02,
   "Lstar_gt85_pct": 0.0,
@@ -19,27 +19,27 @@
   "lavender_act6_pct": 0.0,
   "brightest": {
    "bbox": [
-    107,
-    2,
-    556,
-    510
+    57,
+    1,
+    709,
+    526
    ],
    "centroid": [
-    413.9,
-    103.3
+    418.5,
+    70.8
    ],
-   "clusters": 36,
-   "clusters_ge5pct": 3,
-   "min_luma": 158.8,
+   "clusters": 31,
+   "clusters_ge5pct": 2,
+   "min_luma": 159.7,
    "centroid_az_el": [
-    130.77,
-    71.16
+    124.91,
+    74.3
    ]
   },
   "top25_Lstar": {
    "mean": 40.91,
    "p50": 54.37,
-   "p90": 65.31
+   "p90": 65.28
   },
   "palette": {
    "act": "07a",
@@ -73,24 +73,24 @@
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
      "nearest_dE2000_p01": 2.9,
-     "within_dE5_pct": 17.72
+     "within_dE5_pct": 17.76
     },
     {
      "hex": "#697987",
      "role": "海雪",
      "nearest_dE2000_p01": 3.8,
-     "within_dE5_pct": 4.48
+     "within_dE5_pct": 4.47
     },
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 13.3,
+     "nearest_dE2000_p01": 13.4,
      "within_dE5_pct": 0.02
     }
    ],
    "pixel_to_nearest_dE_median": 11.8,
    "pixel_to_nearest_dE_p90": 19.3,
-   "pixels_within5_pct": 22.2
+   "pixels_within5_pct": 22.3
   }
  },
  "cam": {
@@ -194,7 +194,7 @@
    540
   ]
  },
- "render_seconds": 8.3,
+ "render_seconds": 19.1,
  "lens": "none",
  "bloom_tint": "single",
  "note": "F3e1 509: the last wide shaft sweeping past overhead, up and back through the eroded roof (el >= 70 - 120 x erosion)"

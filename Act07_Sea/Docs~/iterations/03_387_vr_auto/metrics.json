@@ -4,7 +4,7 @@
    916,
    960
   ],
-  "APL": 46.23,
+  "APL": 46.24,
   "EV_display": -3.328,
   "luma_lt12_pct": 0.0,
   "Lstar_gt85_pct": 8.961,
@@ -20,20 +20,20 @@
   "brightest": {
    "bbox": [
     433,
-    459,
+    461,
     490,
-    511
+    508
    ],
    "centroid": [
-    461.4,
-    483.1
+    462.8,
+    488.6
    ],
-   "clusters": 4,
-   "clusters_ge5pct": 4,
+   "clusters": 3,
+   "clusters_ge5pct": 3,
    "min_luma": 232.3,
    "centroid_az_el": [
-    9.79,
-    87.55
+    10.91,
+    86.89
    ]
   },
   "top25_Lstar": {
@@ -48,7 +48,7 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 3.6,
+     "nearest_dE2000_p01": 3.5,
      "within_dE5_pct": 5.34
     },
     {
@@ -73,7 +73,7 @@
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
      "nearest_dE2000_p01": 0.6,
-     "within_dE5_pct": 4.07
+     "within_dE5_pct": 4.08
     },
     {
      "hex": "#697987",
@@ -90,7 +90,7 @@
    ],
    "pixel_to_nearest_dE_median": 17.7,
    "pixel_to_nearest_dE_p90": 17.7,
-   "pixels_within5_pct": 10.7
+   "pixels_within5_pct": 10.8
   }
  },
  "cam": {
@@ -168,7 +168,7 @@
    "color": "#000000"
   }
  },
- "bloom_share_of_APL": 0.01,
+ "bloom_share_of_APL": 0.02,
  "t": 387.0,
  "target": {
   "phase": "7a 被海接住",
@@ -193,7 +193,7 @@
    960
   ]
  },
- "render_seconds": 21.2,
+ "render_seconds": 25.7,
  "lens": "none",
  "bloom_tint": "single",
  "note": "387 VR straight up, roof eroded by t (el >= 70 - 120 x erosion), VR window ceiling by erosion (D-23 #2)"

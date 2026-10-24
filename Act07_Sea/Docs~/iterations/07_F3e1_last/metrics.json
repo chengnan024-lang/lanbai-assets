@@ -4,8 +4,8 @@
    960,
    540
   ],
-  "APL": 33.51,
-  "EV_display": -5.043,
+  "APL": 33.52,
+  "EV_display": -5.042,
   "luma_lt12_pct": 58.1,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
@@ -19,21 +19,21 @@
   "lavender_act6_pct": 0.0,
   "brightest": {
    "bbox": [
-    461,
+    107,
     1,
-    919,
-    456
+    923,
+    503
    ],
    "centroid": [
-    591.0,
-    127.4
+    594.4,
+    143.5
    ],
-   "clusters": 18,
+   "clusters": 15,
    "clusters_ge5pct": 6,
-   "min_luma": 129.2,
+   "min_luma": 129.1,
    "centroid_az_el": [
-    14.91,
-    53.85
+    15.04,
+    51.3
    ]
   },
   "top25_Lstar": {
@@ -60,7 +60,7 @@
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 16.9,
+     "nearest_dE2000_p01": 16.8,
      "within_dE5_pct": 0.01
     },
     {
@@ -72,8 +72,8 @@
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
-     "nearest_dE2000_p01": 2.3,
-     "within_dE5_pct": 32.58
+     "nearest_dE2000_p01": 2.4,
+     "within_dE5_pct": 32.55
     },
     {
      "hex": "#697987",
@@ -169,7 +169,7 @@
    "color": "#000000"
   }
  },
- "bloom_share_of_APL": 0.01,
+ "bloom_share_of_APL": 0.0,
  "t": 512.0,
  "target": {
   "phase": "最后一闪",
@@ -194,7 +194,7 @@
    540
   ]
  },
- "render_seconds": 16.4,
+ "render_seconds": 20.5,
  "lens": "none",
  "bloom_tint": "single",
  "note": "F3e1 512.0: the window shrinking (gain x ~0.24 on the way to 0.04 at 514.36), the last wide shaft over the seats"

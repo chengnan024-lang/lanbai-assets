@@ -4,10 +4,10 @@
    960,
    540
   ],
-  "APL": 15.62,
-  "EV_display": -7.385,
+  "APL": 15.61,
+  "EV_display": -7.39,
   "luma_lt12_pct": 23.04,
-  "Lstar_gt85_pct": 0.0,
+  "Lstar_gt85_pct": 0.001,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
   "clip_black_largest_region_pct": 0.0,
@@ -16,30 +16,30 @@
   "purple_pct": 0.0,
   "purple_largest_region_pct": 0.0,
   "violet_strong_pct": 0.0,
-  "lavender_act6_pct": 0.142,
+  "lavender_act6_pct": 0.109,
   "brightest": {
    "bbox": [
-    12,
-    66,
-    869,
-    508
+    57,
+    43,
+    927,
+    523
    ],
    "centroid": [
-    508.8,
-    248.1
+    733.7,
+    239.7
    ],
-   "clusters": 17,
-   "clusters_ge5pct": 8,
-   "min_luma": 84.9,
+   "clusters": 15,
+   "clusters_ge5pct": 9,
+   "min_luma": 76.0,
    "centroid_az_el": [
-    2.98,
-    10.46
+    27.42,
+    10.43
    ]
   },
   "top25_Lstar": {
-   "mean": 4.13,
+   "mean": 4.19,
    "p50": 1.72,
-   "p90": 9.41
+   "p90": 9.47
   },
   "palette": {
    "act": "07a",
@@ -48,43 +48,43 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 47.9,
+     "nearest_dE2000_p01": 53.4,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 38.9,
+     "nearest_dE2000_p01": 45.6,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 33.6,
+     "nearest_dE2000_p01": 40.7,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#3876AB",
      "role": "浅水 縹",
-     "nearest_dE2000_p01": 16.9,
+     "nearest_dE2000_p01": 19.3,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
-     "nearest_dE2000_p01": 7.7,
+     "nearest_dE2000_p01": 8.3,
      "within_dE5_pct": 0.02
     },
     {
      "hex": "#697987",
      "role": "海雪",
-     "nearest_dE2000_p01": 20.2,
+     "nearest_dE2000_p01": 22.0,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 35.3,
+     "nearest_dE2000_p01": 42.5,
      "within_dE5_pct": 0.0
     }
    ],
@@ -169,7 +169,7 @@
    "color": "#000000"
   }
  },
- "bloom_share_of_APL": 0.02,
+ "bloom_share_of_APL": 0.03,
  "t": 612.0,
  "target": {
   "phase": "播种",
@@ -194,7 +194,7 @@
    540
   ]
  },
- "render_seconds": 12.4,
+ "render_seconds": 14.3,
  "lens": "none",
  "bloom_tint": "single",
  "note": "seeding (F3i ->): cold lights sown one by one, fixed in the water"

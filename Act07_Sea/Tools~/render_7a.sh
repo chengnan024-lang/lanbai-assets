@@ -42,11 +42,15 @@ wait
 run 10_seeding      612.0  --cam hero --pitch 10 --bus bible_v2 --note "seeding (F3i ->): cold lights sown one by one, fixed in the water" &
 run 11_F5_warm      647.0  --cam hero --yaw -22 --pitch -10 --bus bible_v2 --note "F5 644.96: far below, one warm point among the cold seeds (APL target 16)" &
 wait
-# D-23: 7c's dark dip before surfacing must still be APL 30-34 (forward, the bus shell; the Sea kit's K3 frame)
-K3() { n=12_7c_897_fwd; want "${ARGS[@]}" || return 0
-  ~/bpy/bin/python Engineering/render_harness/lbh_render.py --scene "Sea/Docs~/lookdev/scene_kit.py" --set frame=K3 --cam hero --pitch 0 --t 897.96 \
-      --grade S7b --act 07b --bus bible_v2 --interior-ambient 0.0014,0.0039,0.0089 --out "$IT/$n" \
-      --note "D-23: 897.96 forward through the windscreen (7c, before surfacing): the dark dip must stay APL 30-34" > /tmp/act07_$n.log 2>&1
-  rm -rf "${IT:?}/${n:?}/linear.exr" "${IT:?}/${n:?}/linear.npy" "${IT:?}/${n:?}/stranger"
-  echo "$n $(grep -o 'APL [0-9.]* (target [0-9]*' /tmp/act07_$n.log)"; }
-CUR=12_7c_897_fwd; K3
+# ---- act 7c (README §9): the mirror below, the inverted window, the fog by time (scene_7a's 7c branch)
+run 13_F8a_down      848.86 --cam hero --yaw 90 --pitch -35 --bus bible_v2 --note "F8a 848.86: far below, the dark mirror appears (110 m, mostly fog), the palace lamps reflected in it" &
+run 14_F8b_fwd       877.96 --cam hero --pitch 0 --bus bible_v2 --note "F8b 877.96 forward: the trembling stops; APL target 20" &
+run 15_897_side_down 897.96 --cam hero --yaw 90 --pitch -35 --bus bible_v2 --note "897.96 out of the right side window, looking down: the dark mirror with the palace lamps, the window's rim at the bottom" &
+wait
+run 16_897_down_nobus 897.96 --cam hero --pitch -45 --bus none --note "897.96 straight-ish down, no bus (the D-23 stranger frame): the inverted window = a dusk sky in the water below" &
+run 12_7c_897_fwd    897.96 --cam hero --pitch 0 --bus bible_v2 --note "D-23: 897.96 forward through the windscreen (7c, before surfacing): the dark dip must stay APL 30-34" &
+run 17_910_down_nobus 910.0 --cam hero --pitch -60 --bus none --note "F8c+ 910: the fog thinning, the window clearer (no bus)" &
+wait
+run 18_921_fwd       921.4  --cam hero --pitch 0 --bus bible_v2 --note "921.4 forward: the last of the dip, APL target 34 (bible: the dusk does not light up before the exit)" &
+run 19_921_side_down 921.4  --cam hero --yaw 90 --pitch -40 --bus bible_v2 --note "921.4 right side window down: the mirror 1.4 m below, the window under the bus" &
+wait

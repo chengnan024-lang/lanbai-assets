@@ -45,6 +45,10 @@ public static class LanbaiAct07Builder
         public float[] last_from, last_to, last_target, last_target_to; public float last_top;
         public float beam_angle, beam_range, beam_gather_E, beam_last_E; public float[] beam_gather_pos, beam_gather_aim;
         public float snow_sphere, snow_box;
+        public float F8, F8b, F8c, c7_mirror_y, c7_mirror_z, c7_caus_t0, c7_caus_ramp, c7_rose_range;
+        public float[] c7_wave_t, c7_wave_v, c7_win_t, c7_win_v, c7_fog_t, c7_fog_density, c7_fog_up, c7_fog_mid, c7_fog_down;
+        public float[] c7_caus_colour, c7_rose_pos, c7_rose_colour, c7_rose_t, c7_rose_v, c7_tri_sky, c7_tri_equator, c7_tri_ground_t, c7_tri_ground;
+        public float[] wl_entry, wl_exit;
         public float[] warm_position, warm_colour; public float warm_flux, warm_radius, warm_fade, warm_halo_flux, warm_halo_radius;
         public float[] ridge_base, ridge_rim; public float ridge_reach, ridge_near, ridge_wrap, ridge_face, ridge_edge;
     }
@@ -216,6 +220,18 @@ public static class LanbaiAct07Builder
             if (sea != null) { sea.sharedMaterial = below; sea.shadowCastingMode = ShadowCastingMode.Off; sea.receiveShadows = false; }
         }
         else Debug.LogError("[Act07] " + SeaRoot + "/Models/Sea_Disc.fbx not found (copy Sea/ first)");
+        // 7c: the mirror below = a second disc at the water y the eye crosses at the exit, centred under the bus (README §9)
+        var mirrorMat = AssetDatabase.LoadAssetAtPath<Material>(SeaRoot + "/Materials/M_07c_SeaMirror.mat");
+        Renderer mirror = null;
+        if (disc != null)
+        {
+            var go = (GameObject)PrefabUtility.InstantiatePrefab(disc, rSea);
+            go.name = "Sea_Mirror";
+            go.transform.localPosition = new Vector3(0f, u.c7_mirror_y, u.c7_mirror_z);
+            mirror = go.GetComponentInChildren<Renderer>();
+            if (mirror != null) { mirror.sharedMaterial = mirrorMat; mirror.shadowCastingMode = ShadowCastingMode.Off; mirror.receiveShadows = false; }
+            if (mirrorMat == null) Debug.LogError("[Act07] M_07c_SeaMirror.mat missing (蓝白/Sea/Create Materials)");
+        }
 
         // ---- shafts (R_Sea object space = WATER frame); bounds cover the shafts and the gather point all the way down
         var mShaft = Mat("M_07_Shafts", "Lanbai/SeaShaft");
@@ -311,6 +327,20 @@ public static class LanbaiAct07Builder
         crt.initializationMode = CustomRenderTextureUpdateMode.OnLoad; crt.wrapMode = TextureWrapMode.Repeat;
         EditorUtility.SetDirty(crt);
 
+        // ---- 7c: the rose point lights under the bus (bible §6·7c 光), Not Important (SH: free), no shadows
+        var rose = new Light[u.c7_rose_pos.Length / 3];
+        for (int i = 0; i < rose.Length; i++)
+        {
+            var rg = Child(rBus, "Act07_Rose" + i);
+            rg.transform.localPosition = V3(u.c7_rose_pos, 3 * i);
+            var l = rg.AddComponent<Light>();
+            l.type = LightType.Point; l.shadows = LightShadows.None; l.renderMode = LightRenderMode.ForceVertex;
+            l.color = Gamma(u.c7_rose_colour); l.range = u.c7_rose_range; l.intensity = 0f;
+            l.cullingMask = Mask("Bus", "Player", "PlayerLocal");
+            l.enabled = false;
+            rose[i] = l;
+        }
+
         // ---- the beam (F4p gather, F3e1 last shaft): a spot in the bus frame that lands on the seats and your hands
         var beamGo = Child(rBus, "Act07_Beam");
         var beam = beamGo.AddComponent<Light>();
@@ -364,6 +394,27 @@ public static class LanbaiAct07Builder
         d.lastFromBus = V3(u.last_from); d.lastToBus = V3(u.last_to); d.lastTargetBus = V3(u.last_target); d.lastTargetToBus = V3(u.last_target_to);
         d.beamGatherPos = V3(u.beam_gather_pos); d.beamGatherAim = V3(u.beam_gather_aim); d.beamGatherE = u.beam_gather_E; d.beamLastE = u.beam_last_E;
         d.warmFadeIn = u.warm_fade;
+        // act 7c
+        d.tF8 = u.F8; d.tF8b = u.F8b; d.tF8c = u.F8c;
+        d.mirrorRenderer = mirror; d.mirrorWaterY = u.c7_mirror_y;
+        d.baseMirrorWindowGain = mirrorMat != null ? mirrorMat.GetFloat("_WindowGain") : 0.25f;
+        d.c7WaveT = u.c7_wave_t; d.c7WaveV = u.c7_wave_v; d.c7WinT = u.c7_win_t; d.c7WinV = u.c7_win_v;
+        int n7 = u.c7_fog_t.Length;
+        d.c7FogT = u.c7_fog_t; d.c7FogDens = u.c7_fog_density;
+        d.c7FogUp = new Vector4[n7]; d.c7FogMid = new Vector4[n7]; d.c7FogDown = new Vector4[n7]; d.c7FogGamma = new Color[n7];
+        for (int i = 0; i < n7; i++)
+        {
+            d.c7FogUp[i] = V4(u.c7_fog_up, 3 * i) + new Vector4(0, 0, 0, 1); d.c7FogMid[i] = V4(u.c7_fog_mid, 3 * i) + new Vector4(0, 0, 0, 1);
+            d.c7FogDown[i] = V4(u.c7_fog_down, 3 * i) + new Vector4(0, 0, 0, 1);
+            d.c7FogGamma[i] = new Color(u.c7_fog_mid[3 * i], u.c7_fog_mid[3 * i + 1], u.c7_fog_mid[3 * i + 2], 1f).gamma;
+        }
+        d.c7CausT0 = u.c7_caus_t0; d.c7CausRamp = u.c7_caus_ramp; d.c7CausColor = V4(u.c7_caus_colour);
+        d.roseLights = rose; d.c7RoseT = u.c7_rose_t; d.c7RoseV = u.c7_rose_v;
+        d.c7TriSky = Gamma(u.c7_tri_sky); d.c7TriEquator = Gamma(u.c7_tri_equator); d.c7TriGroundT = u.c7_tri_ground_t;
+        d.c7TriGround = new Color[u.c7_tri_ground_t.Length];
+        for (int i = 0; i < d.c7TriGround.Length; i++) d.c7TriGround[i] = Gamma(new[] { u.c7_tri_ground[3 * i], u.c7_tri_ground[3 * i + 1], u.c7_tri_ground[3 * i + 2] });
+        d.wlEntry0 = u.wl_entry[0]; d.wlEntry1 = u.wl_entry[1]; d.wlExit0 = u.wl_exit[0]; d.wlExit1 = u.wl_exit[1];
+        // d.waterlines: copies of the glass meshes with Lanbai/SeaWaterline, wired locally (README §0); kept across rebuilds
         LanbaiGateCloudsBuilder.SetupUdonSharp(d);
         EditorUtility.SetDirty(d);
         foreach (Material m in new[] { mShaft, mSnow, mSeed, mTrail, mRidge, mWarm, cookieMat }) EditorUtility.SetDirty(m);

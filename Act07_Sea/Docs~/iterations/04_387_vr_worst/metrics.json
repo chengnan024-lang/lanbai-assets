@@ -7,7 +7,7 @@
   "APL": 122.26,
   "EV_display": -1.806,
   "luma_lt12_pct": 0.0,
-  "Lstar_gt85_pct": 9.935,
+  "Lstar_gt85_pct": 9.933,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
   "clip_black_largest_region_pct": 0.0,
@@ -20,20 +20,20 @@
   "brightest": {
    "bbox": [
     433,
-    461,
+    462,
     490,
-    515
+    513
    ],
    "centroid": [
-    460.4,
-    476.8
+    461.8,
+    482.0
    ],
    "clusters": 3,
    "clusters_ge5pct": 2,
    "min_luma": 232.3,
    "centroid_az_el": [
-    8.43,
-    87.45
+    12.11,
+    87.18
    ]
   },
   "top25_Lstar": {
@@ -193,7 +193,7 @@
    960
   ]
  },
- "render_seconds": 10.4,
+ "render_seconds": 12.3,
  "lens": "none",
  "bloom_tint": "single",
  "note": "387 VR straight up, WORST case: the whole roof above el 40 gone (az -180..180), VR ceiling: D-09 APL <= 150"
