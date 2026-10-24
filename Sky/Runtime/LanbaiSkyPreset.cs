@@ -124,6 +124,7 @@ namespace Lanbai.Sky
         public void Apply()
         {
             CacheIds();
+            mapFor = null;   // the next ApplyBlend from this preset starts with a full write
             if (cubeA != null) VRCShader.SetGlobalTexture(idCubeA, cubeA);
             if (cubeB != null) VRCShader.SetGlobalTexture(idCubeB, cubeB);
             for (int i = 0; i < vecIds.Length; i++)
@@ -150,6 +151,9 @@ namespace Lanbai.Sky
         private LanbaiSkyPreset mapFor;
         private int[] vecMap;
         private int[] floatMap;
+        private bool[] vecSame;        // this name has the same value on both sides: written on the fade's first frame only
+        private bool[] floatSame;
+        private bool firstFrame;
 
         private int[] BuildMap(string[] mine, string[] theirs)
         {
@@ -189,7 +193,14 @@ namespace Lanbai.Sky
             {
                 vecMap = BuildMap(vectorNames, other.vectorNames);
                 floatMap = BuildMap(floatNames, other.floatNames);
+                vecSame = new bool[vecIds.Length];
+                for (int i = 0; i < vecIds.Length; i++)
+                    vecSame[i] = vecMap[i] >= 0 && vectorValues[i] == other.vectorValues[vecMap[i]];
+                floatSame = new bool[floatIds.Length];
+                for (int i = 0; i < floatIds.Length; i++)
+                    floatSame[i] = floatMap[i] >= 0 && floatValues[i] == other.floatValues[floatMap[i]];
                 mapFor = other;
+                firstFrame = true;
             }
             Vector4 fa = Flags();
             Vector4 fb = other.Flags();
@@ -210,6 +221,9 @@ namespace Lanbai.Sky
             for (int i = 0; i < vecIds.Length; i++)
             {
                 if (vecSkip[i]) continue;
+                // identical on both sides: nothing to fade (final review: ~30 of 67 change in the real fades); the cube-B
+                // slot and _Udon_SkyBlend are rewritten in a crossfade, and everything on the fade's first frame
+                if (vecSame[i] && !firstFrame && !(cross && (vecGroup[i] == 2 || vecGroup[i] == 3 || i == blendIndex))) continue;
                 Vector4 a = vectorValues[i];
                 Vector4 b = (vecMap[i] >= 0) ? ov[vecMap[i]] : Vector4.zero;
                 Vector4 val;
@@ -252,11 +266,12 @@ namespace Lanbai.Sky
             }
             for (int i = 0; i < floatIds.Length; i++)
             {
-                if (floatSkip[i]) continue;
+                if (floatSkip[i] || (floatSame[i] && !firstFrame)) continue;
                 float b = (floatMap[i] >= 0) ? of[floatMap[i]] : 0f;
                 VRCShader.SetGlobalFloat(floatIds[i], Mathf.Lerp(floatValues[i], b, t));
             }
             WriteAtmosphere(density, Color.Lerp(fogColor, other.fogColor, t), Color.Lerp(ambientColor, other.ambientColor, t));
+            firstFrame = false;
         }
     }
 }

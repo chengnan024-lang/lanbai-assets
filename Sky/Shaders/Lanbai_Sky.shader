@@ -1,10 +1,11 @@
 // =====================================================================================================
 //  Lanbai / Sky   v1 (2026-10-23, cloud sub-session "天空")      蓝白 · 全片的天空盒  Skybox, Built-in RP
 //
-//  !!! WRITTEN WITHOUT A UNITY COMPILER. slang syntax / type check only (Sky/Tools~/compile_check). !!!
+//  !!! WRITTEN WITHOUT A UNITY COMPILER. Checked with Common/Tools~/compile_check (DXC + Unity 2022.3 CGIncludes). !!!
 //
-//  ART BIBLE v2.1 §8.1 #8. One skybox for acts 1-3 and 6-12 (act 4 keeps Gate/Lanbai_GateAirSky, whose band
-//  LanbaiHorizon reproduces exactly). Layers, bottom to top (every colour LINEAR; colours are Vectors on purpose, so
+//  ART BIBLE v2.1 §8.1 #8. ONE skybox material for the whole film (Sky/Generated/M_Sky.mat); every per-act value comes
+//  as a global (_Udon_SkyGlobals + _Udon_Sky_*, Sky/README_Sky.md §2 / §3.1; act 4 = moon_night + the gate's fog band,
+//  which LanbaiHorizon reproduces exactly). Layers, bottom to top (every colour LINEAR; colours are Vectors on purpose, so
 //  nothing is converted twice):
 //    1. two cubemaps A / B (HDRIs), each with a fixed Y rotation, EV, clamp, and four tints (zenith, mid sky, horizon
 //       toward the sun, horizon away from the sun) that pull the HDRI onto the bible's screen targets; mixed by _Blend.
@@ -22,7 +23,7 @@
 //
 //  Udon globals (all optional; never set = the material values): see Sky/README_Sky.md §4.
 //    _Udon_SkyBlend   x = cube A->B, y = procedural weight, z = night weight (directional), w > 0 = set
-//    _Udon_SkyFx      x = other sky, y = mid-band gain, z = sun line half length deg, w > 0 = set
+//    _Udon_SkyFx      x = other sky, y = band 1 gain, z unused (the sun line is _Udon_SunDisc.z), w > 0 = set
 //    _Udon_GalaxyGain x = galaxy glow + star floor gain g(t), w > 0 = set
 //    _Udon_SunDir / _Udon_SunDisc, _Udon_MoonDir / _Udon_MoonDisc (LanbaiSky.cginc)
 // =====================================================================================================

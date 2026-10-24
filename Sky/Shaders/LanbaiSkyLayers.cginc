@@ -380,8 +380,9 @@ float3 LanbaiCubeTint(float3 Vs, float3 zt, float3 mt, float3 ht, float3 hat, fl
     return LanbaiGeoLerp(lerp(hTint, mt, t1), zt, t2);     // mid -> zenith in log space: even on screen, no dark disc overhead
 }
 
-float3 LanbaiCubeUpper(samplerCUBE cube, half4 hdr, float3 Vs, float rot, float ev, float clampV,
-                       float3 zt, float3 mt, float3 ht, float3 hat, float3 S, float lod)
+// the HDRI as it is (lifted off its own horizon line, rotated, exposed, clamped, tinted), no sun removal
+float3 LanbaiCubeRaw(samplerCUBE cube, half4 hdr, float3 Vs, float rot, float ev, float clampV,
+                     float3 zt, float3 mt, float3 ht, float3 hat, float3 S, float lod)
 {
     // the HDRI's own horizon (a dark haze / ground line in every 'pure sky') is never sampled: lift to p_HorizonLift deg
     float3 Vl = Vs;
@@ -390,26 +391,58 @@ float3 LanbaiCubeUpper(samplerCUBE cube, half4 hdr, float3 Vs, float rot, float 
     half4 raw = texCUBElod(cube, float4(d, lod));
     float3 c = DecodeHDR(raw, hdr);
     c = min(c * exp2(ev), clampV);
-    c *= LanbaiCubeTint(Vs, zt, mt, ht, hat, S);
-    // the HDRI's own sun (a flat blob ~3 deg wide where the HDRI clipped; the mips blur it further) is taken out
-    // (director r2 #3): within p_SunRemove.x deg of the sun the luminance is soft-capped (knee 8, hue kept) at
-    //   cap(a) = p_SunRemove.y x (max(a, 1.5) / x)^-z     (linear, after the tints; y ~ the sky at radius x; z = a gentle
-    //                                                       aureole so the cap is a glow, not a flat disc)
-    // and the clipped (whitish) blob's hue pulled toward the sun colour by w. 1.5x radius fade: monotone, no ring.
-    // The crisp procedural disc + the bloom are the sun.
+    return c * LanbaiCubeTint(Vs, zt, mt, ht, hat, S);
+}
+
+float3 LanbaiCubeUpper(samplerCUBE cube, half4 hdr, float3 Vs, float rot, float ev, float clampV,
+                       float3 zt, float3 mt, float3 ht, float3 hat, float3 S, float lod)
+{
+    float3 c = LanbaiCubeRaw(cube, hdr, Vs, rot, ev, clampV, zt, mt, ht, hat, S, lod);
+    // the HDRI's own sun (a clipped blob ~3 deg wide, blurred further by the mips) is taken out (director r2 #3,
+    // final review 1: the 0.53 deg disc must read at 1080p). Within p_SunRemove.x deg of the sun:
+    //  y <= 0 (inpaint mode, v1.2 final): the circle is rebuilt row by row from its own left and right edge at the same
+    //     elevation (the sky's warm-below / pale-above gradient stays; the same colour on the circle: no disc, no ring;
+    //     no rays, a radial rebuild drew a starburst), x (x / a)^z = a gentle aureole; weight 1 inside 0.6 x, 0 at x.
+    //     The procedural disc + the bloom are the sun.
+    //  y > 0 (cap mode, v1.2): luminance soft-capped at y (knee 8), hue pulled toward the sun colour by w.
     [branch] if (p_SunRemove.x > 0.0)
     {
         float as = LanbaiAngleDeg(Vs, S);
-        float w = 1.0 - smoothstep(p_SunRemove.x, 1.5 * p_SunRemove.x, as);
-        float L = max(dot(c, float3(0.2126, 0.7152, 0.0722)), 1e-6);
-        float cap = max(p_SunRemove.y, 1e-4) * pow(max(as, 1.5) / p_SunRemove.x, -p_SunRemove.z);
-        float q = min(L / cap, 1e4);   // q^8 stays finite
-        float q4 = q * q * q * q;
-        float3 capped = c * rsqrt(sqrt(sqrt(1.0 + q4 * q4)));   // knee 8: the sky below the cap is left alone (a knee 4 trimmed it and drew a ring where it let go)
-        float3 sunHue = p_SunColor.rgb / max(dot(p_SunColor.rgb, float3(0.2126, 0.7152, 0.0722)), 1e-4);
-        float k = p_SunRemove.w * saturate(q - 1.0);          // only where the cap actually bit
-        capped = lerp(capped, sunHue * dot(capped, float3(0.2126, 0.7152, 0.0722)), k);
-        c = lerp(c, capped, w);
+        [branch] if (p_SunRemove.y <= 0.0 && as < p_SunRemove.x)
+        {
+            // inpaint the circle row by row: each elevation is interpolated between the circle's left and right edge at
+            // that same elevation (the sky's vertical gradient stays, no rays, the same colour on the circle)
+            float elS = LanbaiElevationDeg(S), el = LanbaiElevationDeg(Vs);
+            float azS = degrees(atan2(S.x, S.z)), az = degrees(atan2(Vs.x, Vs.z + 1e-6));
+            float cosS = max(cos(radians(elS)), 0.05);
+            float dEl = el - elS;
+            float dAz = (frac((az - azS) / 360.0 + 0.5) - 0.5) * 360.0 * cosS;     // on the sky, deg
+            float R = p_SunRemove.x;
+            float hw = sqrt(max(R * R - dEl * dEl, 1e-4));
+            float ce = cos(radians(el)), se = sin(radians(el));
+            float azL = radians(azS - hw / cosS), azR = radians(azS + hw / cosS);
+            float3 VL = float3(sin(azL) * ce, se, cos(azL) * ce);
+            float3 VR = float3(sin(azR) * ce, se, cos(azR) * ce);
+            float3 fill = lerp(LanbaiCubeRaw(cube, hdr, VL, rot, ev, clampV, zt, mt, ht, hat, S, lod),
+                               LanbaiCubeRaw(cube, hdr, VR, rot, ev, clampV, zt, mt, ht, hat, S, lod),
+                               saturate((dAz + hw) / (2.0 * hw)))
+                        * pow(R / max(as, 0.5), p_SunRemove.z);
+            float w = 1.0 - smoothstep(0.6 * R, R, as);
+            c = lerp(c, fill, w);
+        }
+        else if (p_SunRemove.y > 0.0)
+        {
+            float w = 1.0 - smoothstep(p_SunRemove.x, 1.5 * p_SunRemove.x, as);
+            float L = max(dot(c, float3(0.2126, 0.7152, 0.0722)), 1e-6);
+            float cap = p_SunRemove.y * pow(max(as, 1.5) / p_SunRemove.x, -p_SunRemove.z);
+            float q = min(L / cap, 1e4);   // q^8 stays finite
+            float q4 = q * q * q * q;
+            float3 capped = c * rsqrt(sqrt(sqrt(1.0 + q4 * q4)));
+            float3 sunHue = p_SunColor.rgb / max(dot(p_SunColor.rgb, float3(0.2126, 0.7152, 0.0722)), 1e-4);
+            float k = p_SunRemove.w * saturate(q - 1.0);
+            capped = lerp(capped, sunHue * dot(capped, float3(0.2126, 0.7152, 0.0722)), k);
+            c = lerp(c, capped, w);
+        }
     }
     return c;
 }
@@ -510,11 +543,7 @@ float3 LanbaiMoonTerm(float3 V, float gain)
 
 float3 LanbaiGalaxy(float3 V)
 {
-    // explicit LOD (tech r2 #7): one texel per pixel. The 8K map is 0.044 deg / texel; a headset pixel is 0.06-0.1 deg,
-    // so mip 0 would shimmer with the head; on a 1080p desktop at 90 deg (0.047 deg / px) it stays mip 0, no blur.
-    float texelRad = 6.2831853 * max(_GlowTex_TexelSize.x, 1e-6);
-    float lod = max(0.0, log2(LanbaiPixelAngle() / texelRad));
-    return tex2Dlod(_GlowTex, float4(LanbaiGalaxyUV(V), 0.0, lod)).rgb * p_GlowScale;     // the PNG is normalised
+    return LanbaiGalaxySample(_GlowTex, _GlowTex_TexelSize, V, p_GlowScale);   // the shared sample (LanbaiSky.cginc)
 }
 
 // two horizon bands (earth shadow / Venus belt at dawn; the blue-hour band; the waking line of act 12): the sky is
@@ -574,19 +603,41 @@ float3 LanbaiPurpleGuard(float3 c, float4 g)
     float w = g.x * smoothstep(g.z, g.z + 0.3, bg);
     if (g.w < 0.0)
     {
-        // two-sided mode (10-23: the rose -> indigo transitions keep C* <= 8 in h 285-330 after the grade):
-        //  * a strong blue (B / G >= 1.3): R <= 0.55 G turns it toward h 280 (it stays blue, it does not go grey);
-        //  * the weak-blue transition where the rose meets the blue (B / G 0.95 .. 1.25 with R near G): cutting R there
-        //    made it teal, so it goes toward a slightly cool grey of the same luminance by -g.w instead
-        float strong = smoothstep(1.15, 1.35, bg);
+        // two-sided mode (D-21 rev.: after the grade nothing at h_ab 290-330 with C* > 8 and L* > 40; the bible's own
+        // colours, e.g. the mid sky #808AB2 at h 285, stay as they are):
+        //  * a strong blue (B / G >= 1.3) whose red would grade into lavender: R held at 0.64 G
+        //    (mild: it stays the bible's blue, not cyan);
+        //  * the weak-blue transition where the rose meets the blue (B / G 0.95 .. 1.25, R near G): toward a pale warm
+        //    white of the same luminance (h 60-100 once graded, final review 2: the low-chroma middle on the WARM side;
+        //    a cool grey there read as a grey haze band) by -g.w
         float rg = c.r / c.g;
+        // a lavender has red ~ blue (R / B ~0.7 .. 1.1); a pink (red clearly above blue: h 330-360 / 0-20, not in the
+        // band) is left alone, so the anti-sun rose belt stays pink (and the strong cut must not pull a magenta-pink
+        // down INTO lavender: it only touches colours where blue leads red)
+        float rb = c.r / max(c.b, 1e-6);
+        float strong = smoothstep(1.15, 1.35, bg) * (1.0 - smoothstep(0.9, 1.1, rb));
         float3 o = c;
-        float gg = min(c.g, c.b / 1.15);                         // and G below B: a cut blue never leans to teal
-        o.r = lerp(c.r, min(c.r, gg * 0.55), g.x * strong);
-        o.g = lerp(c.g, gg, g.x * strong);
-        float lav = g.x * smoothstep(g.z, g.z + 0.1, bg) * (1.0 - strong) * smoothstep(g.y - 0.15, g.y, rg);
+        o.r = lerp(c.r, min(c.r, c.g * 0.64), g.x * strong);
+        // ... and a lavender is also not a true blue: R / B above ~0.65 (the bible's mid sky #808AB2 is R / B ~0.5 and
+        // stays exactly as it is)
+        // where the rose meets the blue: steepen the crossing (the red / blue ratio through an S-curve over 0.6 .. 1.15:
+        // the colour spends little sky in between) and send only its middle to a pale warm white (final review 2: a
+        // 1-2 deg seam on the warm side, not a band)
+        float cap = g.x * smoothstep(g.z, g.z + 0.1, bg) * smoothstep(g.y - 0.08, g.y, rg)
+                  * smoothstep(0.5, 0.62, rb) * (1.0 - smoothstep(1.35, 1.5, rb));   // only inside the crossing (to 1.35: a magenta-pink
+                                                                            // grades to lavender under the cooler blue-hour grade)
+        float tr = saturate((rb - 0.6) / 0.8);
+        float ts = tr;
+        float tgt = o.b * lerp(0.5, 1.6, ts);                  // the ends graded: a true blue (h < 290) / a pink (h > 330)
+        tgt = lerp(min(o.r, tgt), max(o.r, tgt), smoothstep(0.3, 0.7, ts));   // the blue side only loses red, the pink side
+                                                                              // only gains it; blended across the middle (no step)
+        o.r = lerp(o.r, tgt, cap);
+        float mid = cap * smoothstep(0.25, 0.5, ts) * (1.0 - smoothstep(0.72, 0.95, ts));   // the middle, never the blue end (it would grey a blue into lavender)
         float lum = dot(o, float3(0.2126, 0.7152, 0.0722));
-        return lerp(o, lum * float3(0.90, 0.97, 1.13), saturate(-g.w * lav));
+        // a pale, slightly lifted white: warm (gold) toward the pink side, cool toward the blue side, so the blue half of the
+        // seam is never warmed into lavender
+        float3 tint = lerp(float3(1.02, 1.11, 1.20), float3(1.15, 1.12, 1.07), smoothstep(0.35, 0.6, ts));
+        return lerp(o, lum * tint, saturate(-g.w * mid));
     }
     c.r = lerp(c.r, min(c.r, c.g * g.y), w);                 // v1: R <= y G where blue leads
     return c;

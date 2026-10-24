@@ -9,7 +9,7 @@
 //                  fixed in the earth frame, never rotate), uv0.xy = quad corner (-1..1),
 //     uv1 = (V magnitude, rank (0 = brightest), order 0..1 (for scripted appear / fade orders), 0),
 //     colour = linear rgb, luminance 1 (B-V blackbody, 45 % toward white).
-//  Each star is a Gaussian of constant FWHM in PIXELS (>= 1.4 px; default 1.6), so it neither shimmers nor grows with
+//  Each star is a Gaussian of constant FWHM in PIXELS (>= 1.5 px, D-06; default 1.6), so it neither shimmers nor grows with
 //  resolution; it never twinkles. Brightness = _StarScale x 10^(-0.4 _MagSlope (m - _MagRef)) x gain, the brightest
 //  _BrightCount ranks x _BrightBoost, blended over 20 ranks so a growing count never steps a star (bible: the
 //  brightest 50 x4 at ignition; 200 x4 -> x8 toward the white).

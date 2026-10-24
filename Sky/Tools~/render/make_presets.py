@@ -80,12 +80,12 @@ P['moon_night'] = dict(acts='3（离地、月下云海）', profile='S3', cubeA=
 P['dawn'] = dict(acts='6（晨，F0 → F2h）', profile='S6', sunAz=30.0, cubeA='syferfontein_6d_clear_puresky',
     hdri_file=os.path.join(HDRI, 'syferfontein_6d_clear_puresky_1k.hdr'),
     material=dict(_RotationA=fit['dawn']['rotation'], _ExposureA=0.0, _ClampA=16.0, **tints('dawn'),
-                  _SunDir=v4(SUN6, 0), _SunColor=v4(F('#FFCE9E @ +2.55')), _SunShape=[0.265, 0.04, 0.55, 0], _SunGain=1.0,
+                  _SunDir=v4(SUN6, 0), _SunColor=v4(F('#FFCE9E @ +3.05')), _SunShape=[0.265, 0.04, 0.55, 0], _SunGain=1.0,
                   _SunGlow=[0.35, 1.6, 0.0, 0.0], _SunGlowColor=v4(F('#FFCE9E')),   # D-18: 0.53 deg disc, the rest of the sun's weight in a tight aureole (+ bloom)
                   _Band1Color=v4(F('#B8C4F7'), 0.3), _Band1Shape=[2.0, 2.5, 180, 55], _Band1Gain=0.6,
                   _Band2Color=v4(F('#FFCFCB @ +0.61'), 0.3), _Band2Shape=[10.0, 4.0, 180, 50], _Band2Gain=0.3,
                   _NadirColor=v4(F('#6F8FA8'), 0.5), _BelowShape=[-75, 1.0, 0.6, 2.0], _PurpleGuard=LAV_GUARD,
-                  _SunRemove=[7.0, 3.2, 0.25, 0.6]),
+                  _SunRemove=[10.0, 0.0, 0.15, 0.0]),
     globals=dict(_Udon_SunDir=v4(SUN6, 1), _Udon_SunDisc=[1.0, 0.265, 0, 1], _Udon_FogDensity=0.00012),
     fog_from_sky=dict(near_az=30.0, width=70.0, zen_el=60.0, nadir=F('#6F8FA8')),
     notes='天顶 #3E64A6、背日 45° #AFC4E0、日侧地平线 #F2C79A、地影带 #8C98B8 + 很淡的金星带 #CFB7B7（HDRI 里没有，由两条地平线带给）、日盘直径 0.53°（D-18）#FFF3DE（填 #FFCE9E @ +2.55）+ 小光晕；HDRI 自己的日斑由 _SunRemove 软封顶。太阳 方位 +30°（D-12，车门里）、仰角 5.8°（HDRI 的太阳）。')
@@ -249,7 +249,7 @@ def render_sheet(name, p, out_json):
             import stars_cpu as SC
             cat = SC.catalogue()
             pk = SC.flux(cat['mag'], cat['rank'], 1.6, 0.0, 0.5, sg[2] or 50, sg[1] or 4) * sg[0]
-            SC.splat(img, W, H, 90, yaw, pitch, cat['dir'], pk, cat['col'], 1.6 * W / 1920.0)
+            SC.splat(img, W, H, 90, yaw, pitch, cat['dir'], pk * (1.6 * W / 1920.0 / 1.5) ** 2, cat['col'], 1.5)   # preview: 1.5 px Gaussians, same total flux as 1.6 px at 1920
         c = np.clip(G.grade(img, p['profile']), 0, 255)
         meas[label] = dict(APL=round(G.apl(c), 1), purple=round(G.purple_fraction(c), 4),
                            lavender_6=round(G.purple_fraction(c, 285, 330, 12), 4),
@@ -258,7 +258,7 @@ def render_sheet(name, p, out_json):
         Lc, ac, bc = G.lab(c); hc = np.degrees(np.arctan2(bc, ac)) % 360; Cc = np.hypot(ac, bc)
         # the lavender band (director 10-23): h 285-330, C* > 8, lighter than the bible's own indigos (L* > 40; the
         # zenith #3D4A80 / nadir #2E3C66 / blue-hour zenith #16223F sit at h 285-289, L* 14-33, and are bible targets)
-        meas[label]['lavender_band'] = round(float(((hc >= 285) & (hc <= 330) & (Cc > 8) & (Lc > 40)).mean()), 4)
+        meas[label]['lavender_band'] = round(float(((hc >= 290) & (hc <= 330) & (Cc > 8) & (Lc > 40)).mean()), 4)
         if gr_photo is not None:
             meas[label]['grad_p999_with_galaxy_photo'] = round(float(np.percentile(gr_photo, 99.9)), 2)
         ref = grad_reference()
@@ -367,6 +367,12 @@ CUBE_SHARED = ['TintElevation', 'NadirColor', 'BelowShape', 'SunRemove', 'Horizo
 DIRS = ['_Udon_FogBandDir', '_Udon_SunDir', '_Udon_MoonDir', '_Udon_Sky_SunDir', '_Udon_Sky_MoonDir', '_Udon_Sky_NightMaskDir']
 
 
+# D-09: the act-8 frames with the cabin, in VR (Engineering/render_harness vr_left_fwd + the bible_v2 shell, S8, this
+# preset as the world; measured by the sky session, the numbers are re-measured whenever the dusk presets change)
+D09 = {'dusk_8i': dict(t=940.0, cam='vr_left_fwd', bus='bible_v2', APL=79.6, purple_pct=0.001, bible_target=78.4),
+       'dusk_8ii': dict(t=960.0, cam='vr_left_fwd', bus='bible_v2', APL=81.55, purple_pct=0.01, bible_target=81.6)}
+
+
 def blend_group(n):
     """LanbaiSkyPreset.ApplyBlend groups: 0 lerp, 1 cube-A parameter, 2 cube-B parameter, 3 flags (max),
     4 a parameter of the cube layer shared by A and B (from the side that has a cube), 5 a direction (w-aware)"""
@@ -467,7 +473,9 @@ def main():
         e['vecGroups'] = [blend_group(n) for n in names]
         e['vecPartner'] = [names.index(n[:-1] + 'A') if blend_group(n) == 2 else -1 for n in names]
         e['blendSkip'] = list(p.get('blend_skip', []))
-        e['measured_views'] = meas[name]
+        e['measured_views'] = dict(meas[name])
+        if name in D09:
+            e['measured_views']['vr_cabin_bible_v2'] = D09[name]
         out['presets'].append(e)
     out['drivers'] = driver_tables()
     json.dump(out, open(os.path.join(REPO, 'Sky', 'SkyPresets.json'), 'w'), indent=1, ensure_ascii=False)

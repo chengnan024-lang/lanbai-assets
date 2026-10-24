@@ -18,7 +18,7 @@ CFG = {
                      'sun12': ((-30, 30), (10, 16), '#E2D9CC'),   # no bible number: warm pearl-white above the gold (no mauve)
                      'side15': ((80, 100), (10, 20), '#B8C6D8'),  # no bible number: pale blue at the side windows
                  }),
-    'dusk': dict(hdri='syferfontein_0d_clear_puresky_1k.hdr', sid='S8', rot=None, sun_az=0.0, mid_hi=40.0,   # zenith darkening over >= 50 deg (art r0 #5)
+    'dusk': dict(hdri='syferfontein_0d_clear_puresky_1k.hdr', sid='S8', rot=None, sun_az=0.0, mid_hi=40.0, guard=(1.0, 0.75, 0.95, -1.0),   # = make_presets.LAV_GUARD: the fit sees the guard   # zenith darkening over >= 50 deg (art r0 #5)
                  targets={
                      'zenith': ((-180, 180), (80, 89.5), '#3D4A80'),
                      'midsky': ((-60, 60), (35, 55), '#808AB2'),
@@ -76,7 +76,7 @@ def main(name):
     def params(p):
         return dict(_RotationA=rot, _SunGain=0, _ZenithTintA=(*np.exp(p[0:3]), 1), _HorizonTintA=(*np.exp(p[3:6]), 1),
                     _HorizonAntiTintA=(*np.exp(p[6:9]), 1), _MidTintA=(*np.exp(p[12:15]), 1),
-                    _TintElevation=(p[9], p[10], zen_end(p), 1.0), _SunDir=(*sun, 0))
+                    _TintElevation=(p[9], p[10], zen_end(p), 1.0), _SunDir=(*sun, 0), _PurpleGuard=c.get('guard', (0, 0, 0, 0)))
 
     def zen_end(p):   # the zenith zone always ends AT 90 (no cone, no flat cap with a ring): p[11] unused
         return 90.0

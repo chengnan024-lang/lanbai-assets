@@ -260,12 +260,36 @@ float3 LanbaiHorizon(float3 dirWS)
     return c;
 }
 
-// ---- act 9: the galaxy glow (Sky/Textures/StarSky_Glow_8192x4096.png x _GlowScale, a 2D lat-long in the WORLD frame, no mips):
+// ---- act 9: the galaxy glow (Sky/Textures/StarSky_Glow_8192x4096.png: a 2D lat-long in the WORLD frame, 8-bit sRGB
+// NORMALISED to 1, with mips; the real level = x the glow scale, Sky/Data/StarSky.json glow_scale):
 // u = 0.5 + atan2(V.x, V.z) / 2pi, v = 0.5 + asin(V.y) / pi. Shared by Lanbai/Sky and the mirrors' reflection.
 inline float2 LanbaiGalaxyUV(float3 V)
 {
     float zz = (abs(V.x) + abs(V.z) < 1e-6) ? 1.0 : V.z;          // straight up / down: atan2(0, 0) is undefined on some GPUs
     return float2(0.5 + atan2(V.x, zz) * (0.5 / UNITY_PI), 0.5 + asin(clamp(V.y, -1.0, 1.0)) * (1.0 / UNITY_PI));
+}
+
+#ifndef LANBAI_DECL__Udon_Sky_GlowScale
+#define LANBAI_DECL__Udon_Sky_GlowScale
+float4 _Udon_Sky_GlowScale;    // x = the glow map's scale (the sky presets write it); 0 = not set
+#endif
+
+// the glow scale everyone uses: the sky presets' global (0 = not set -> 1)
+inline float LanbaiGalaxyScale()
+{
+    return (_Udon_Sky_GlowScale.x > 0.0) ? _Udon_Sky_GlowScale.x : 1.0;
+}
+
+// THE galaxy sample (the sky and the mirrors call this; final review 3: without the scale a mirror's galaxy came out
+// +1 EV over the sky's). glowTex = StarSky_Glow (sRGB, mips), texelSize = its _TexelSize, scale = LanbaiGalaxyScale()
+// (or a material value). LOD = one texel per pixel: the map's u texels shrink with cos(elevation) toward the poles, so
+// the footprint uses the narrower side (no shimmer looking up in a headset; 1080p desktop at 90 deg = mip 0).
+inline float3 LanbaiGalaxySample(sampler2D glowTex, float4 texelSize, float3 V, float scale)
+{
+    float texelRad = 6.2831853 * max(texelSize.x, 1e-6);
+    float cosEl = max(sqrt(saturate(1.0 - V.y * V.y)), 0.05);
+    float lod = max(0.0, log2(LanbaiPixelAngle() / (texelRad * cosEl)));
+    return tex2Dlod(glowTex, float4(LanbaiGalaxyUV(V), 0.0, lod)).rgb * scale;
 }
 
 // ---- sun, moon -------------------------------------------------------------------------------------------------

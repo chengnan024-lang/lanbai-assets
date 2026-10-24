@@ -431,7 +431,7 @@ namespace Lanbai.Sky.EditorTools
                     if (c.presets[i] == null) rep.AppendLine("  " + d.name + ": preset " + d.entries[i].preset + " NOT FOUND");
                     c.presetT0[i] = d.entries[i].t0; c.presetT1[i] = d.entries[i].t1; c.fadeSec[i] = d.entries[i].fade;
                 }
-                c.root = presetRoot;
+                c.root = null;   // the preset objects are shared by both drivers (and the clouds' driver): LanbaiActivate must not switch them (final review 4)
                 EditorUtility.SetDirty(c);
                 rep.AppendLine(string.Format(CultureInfo.InvariantCulture, "driver {0}: {1} entries, window {2:F2} .. {3:F2}", d.name, n, d.entries[0].t0, d.entries[n - 1].t1));
             }
@@ -481,8 +481,11 @@ namespace Lanbai.Sky.EditorTools
         }
 
         // ---------------------------------------------------------------------------------------------------------
+        public static string LastPreviewPreset;
+
         public static void ApplyPresetInEditor(SkyPreset p)
         {
+            LastPreviewPreset = p.name;
             Material mat = AssetDatabase.LoadAssetAtPath<Material>(Gen() + "/M_Sky.mat");
             if (mat != null) RenderSettings.skybox = mat;
             ClearGlobals();
@@ -527,7 +530,8 @@ namespace Lanbai.Sky.EditorTools
             UnityEngine.Object.DestroyImmediate(go);
             if (!ok) { Debug.LogError("[Lanbai/Sky] RenderToCubemap failed"); return; }
             cube.Apply(true);
-            string name = RenderSettings.skybox != null ? RenderSettings.skybox.name : "Sky";
+            // one material for the film: name the cube after the preset last applied in the preview window (final review)
+            string name = string.IsNullOrEmpty(LastPreviewPreset) ? (RenderSettings.skybox != null ? RenderSettings.skybox.name : "Sky") : LastPreviewPreset;
             string path = Gen() + "/FogCube_" + name + ".asset";
             AssetDatabase.CreateAsset(cube, path);
             AssetDatabase.SaveAssets();

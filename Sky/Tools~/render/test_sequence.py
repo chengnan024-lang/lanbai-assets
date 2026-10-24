@@ -8,7 +8,10 @@ come from the JSON, as in the runtime); keep the two in step.
   3. every visible fade, at t = 0.25 / 0.5 / 0.75: finite, no hole (>= half the darker end), the cube never turns
      (a cube's rotation in use is always one of the two ends' rotations);
   4. continuity: the frame at t = 0.999 and the frame after Apply(b) differ by < 1 display code (8 bit, graded);
-  5. at t = 0.5 the zenith (pitch 89 / 90) passes the gradient self-check (no cap with a rim).
+  5. at t = 0.5 the zenith (pitch 89 / 90) passes the gradient self-check (no cap with a rim);
+  6. the lavender band (D-21 rev.: h_ab 290-330, C* > 8, L* > 40) is 0 over the whole sphere (six cube faces) at
+     t = 0.25 / 0.5 / 0.75 of every fade, with the grade crossfading between the two acts' profiles as the timeline
+     does (approximated as the blend of the two graded images).
 Exit 1 on a failure."""
 import os, sys, json
 import numpy as np
@@ -137,7 +140,17 @@ def main():
             z_ok = zg <= ref['max']
             print('3/5: %s -> %s%s t %.2f  finite/no hole %s  rotation kept %s%s'
                   % (a, b, ' (crossfade A -> B)' if cross else '', t, ok, rot_ok, ('  zenith max gradient %.2f codes/px %s' % (zg, 'OK' if z_ok else 'FAIL')) if t == 0.5 else ''))
-            if not (ok and rot_ok and z_ok):
+            lav = 0.0
+            for yaw, pitch in ((0, 0), (90, 0), (180, 0), (-90, 0), (0, 90), (0, -90)):
+                df = camera_dirs(96, 96, 90, yaw, pitch).astype(np.float32)
+                lin = S.render(df, {}, g).reshape(96, 96, 3)
+                ca = np.clip(G.grade(lin, pa['profile']), 0, 255)
+                cb2 = np.clip(G.grade(lin, pb['profile']), 0, 255) if pb['profile'] != pa['profile'] else ca
+                cc = ca + (cb2 - ca) * t
+                Lq, aq, bq = G.lab(cc); hq = np.degrees(np.arctan2(bq, aq)) % 360; Cq = np.hypot(aq, bq)
+                lav = max(lav, float(((hq >= 290) & (hq <= 330) & (Cq > 8) & (Lq > 40)).mean()))
+            print('6: %s -> %s t %.2f  lavender band (whole sphere, worst face) %.2f%%' % (a, b, t, 100 * lav))
+            if not (ok and rot_ok and z_ok) or lav > 0:
                 fails.append('%s -> %s t %.2f' % (a, b, t))
         g, _, _, _ = blend(pa, pb, 0.999)
         c999 = np.clip(G.grade(S.render(d, {}, g)[None], prof, bloom=False), 0, 255)
