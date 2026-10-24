@@ -22,12 +22,12 @@
   },
   "Lip2_Sheet": {
    "ok": true,
-   "n": 5670,
+   "n": 5721,
    "uv_layers": 2
   },
   "Lip2_Fringe": {
    "ok": true,
-   "n": 1880,
+   "n": 1902,
    "uv_layers": 1
   },
   "Lip2_Threads": {
@@ -42,12 +42,12 @@
   },
   "Lip3_Sheet": {
    "ok": true,
-   "n": 4962,
+   "n": 4792,
    "uv_layers": 2
   },
   "Lip3_Fringe": {
    "ok": true,
-   "n": 1612,
+   "n": 1514,
    "uv_layers": 1
   },
   "Lip3_Threads": {
@@ -62,12 +62,12 @@
   },
   "Lip4_Sheet": {
    "ok": true,
-   "n": 6403,
+   "n": 6381,
    "uv_layers": 2
   },
   "Lip4_Fringe": {
    "ok": true,
-   "n": 2502,
+   "n": 2498,
    "uv_layers": 1
   },
   "Lip5_Hang": {
@@ -77,12 +77,12 @@
   },
   "Lip5_Sheet": {
    "ok": true,
-   "n": 4898,
+   "n": 4912,
    "uv_layers": 2
   },
   "Lip5_Fringe": {
    "ok": true,
-   "n": 1678,
+   "n": 1682,
    "uv_layers": 1
   },
   "Lip5_Threads": {
@@ -97,12 +97,12 @@
   },
   "Lip6_Sheet": {
    "ok": true,
-   "n": 4552,
+   "n": 4596,
    "uv_layers": 2
   },
   "Lip6_Fringe": {
    "ok": true,
-   "n": 1916,
+   "n": 1930,
    "uv_layers": 1
   },
   "Lip6_Threads": {
@@ -117,12 +117,12 @@
   },
   "Lip7_Sheet": {
    "ok": true,
-   "n": 4765,
+   "n": 4789,
    "uv_layers": 2
   },
   "Lip7_Fringe": {
    "ok": true,
-   "n": 2274,
+   "n": 2288,
    "uv_layers": 1
   },
   "Lip8_Ply0_Sheet": {

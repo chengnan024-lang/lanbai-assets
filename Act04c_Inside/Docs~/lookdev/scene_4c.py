@@ -12,6 +12,7 @@ ctx['args']: lips=1,2,.. (subset), noloose=1, gain=<x>.
 """
 import math
 import os
+import re
 import sys
 
 import bpy
@@ -398,6 +399,9 @@ def mesh(S, name, o, offset_z, mat):
         at.data.foreach_set('color', np.asarray(o['col'], np.float32).ravel())
     ob = bpy.data.objects.new(name, me)
     bpy.context.scene.collection.objects.link(ob)
+    if os.environ.get('LANBAI_DEBUG_HIDE') and re.search(os.environ['LANBAI_DEBUG_HIDE'], name):
+        ob.hide_render = True                                            # debug: which object makes a shape
+
     ob.data.materials.append(mat)
     ob.visible_shadow = False
     return ob

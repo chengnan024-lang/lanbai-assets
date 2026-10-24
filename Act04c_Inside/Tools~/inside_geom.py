@@ -538,34 +538,35 @@ def flaps(C, Hk, seed, need, roll=0.0, n_range=(2, 4), ok_fn=None):
         if not hit:
             return False
         xa, xb = min(h[0] for h in hit), max(h[1] for h in hit)
-        return xb - xa >= 2.5 * w0 and x0 - xa >= 0.5 * w0 and xb - x0 >= 0.5 * w0
+        return xb - xa >= 2.2 * w0 and x0 - xa >= 0.5 * w0 and xb - x0 >= 0.5 * w0
 
     picks = []
     for _ in range(300):
         if len(picks) >= want:
             break
         i = int(rng.choice(cand))
-        if all(np.linalg.norm(C[i] - C[j]) > 0.12 * Hk for j in picks) and roomy(C[i][0], C[i][1], 0.08 * Hk):
+        if all(np.linalg.norm(C[i] - C[j]) > 0.22 * Hk for j in picks) and roomy(C[i][0], C[i][1], 0.09 * Hk):
             picks.append(i)
     tongues = []
     fl = 0.005 * Hk
     for i in picks:
         x0, y0 = C[i]
-        w0 = rng.uniform(0.04, 0.08) * Hk
-        L = rng.uniform(0.07, 0.14) * Hk
+        # r15.1: broad flaps, never fangs (two narrow tongues at 205 read as teeth / stalactites): L <= 1.6 x width
+        w0 = rng.uniform(0.06, 0.11) * Hk
+        L = min(rng.uniform(0.07, 0.13) * Hk, 1.6 * w0)
         ph = rng.uniform(0, 6.28)
         # r15.1 (art review r15 B5: a tongue's side read as a head profile at 181 and as a skull at 200; B7: a stub
         # read as a crenellation at 205): each side tapers monotonically with its own curve (no notch, no bump at
         # mid-height, never mirror-symmetric), the tongue leans a little off the vertical, and the tip tears on a slant
         # into 2-3 uneven pointed shreds (never a square end). A tongue that has to shrink below 6 % H is dropped.
         aL, aR = rng.uniform(0.55, 1.5, 2)
-        tipL, tipR = rng.uniform(0.30, 0.65, 2)
+        tipL, tipR = rng.uniform(0.35, 0.65, 2)
         wR = rng.uniform(0.65, 1.0)
         lean = rng.uniform(-0.18, 0.18)
-        slant = rng.uniform(0.12, 0.35) * rng.choice([-1.0, 1.0])
+        slant = rng.uniform(0.25, 0.5) * rng.choice([-1.0, 1.0])
         nsh = int(rng.integers(2, 4))
         cuts = np.sort(rng.uniform(0.15, 0.85, nsh - 1))
-        shred = rng.uniform(0.04, 0.16, nsh)
+        shred = rng.uniform(0.08, 0.25, nsh)
         fray = rng.normal(0.0, 1.0, (2, 24))
         for _ in range(12):
             m = 24
@@ -602,7 +603,7 @@ def flaps(C, Hk, seed, need, roll=0.0, n_range=(2, 4), ok_fn=None):
                 tongues.append(dict(x0=float(x0), y0=float(y0), L=float(max(Ll, Lr) * 1.1), w=float(w0), ph=float(ph)))
                 break
             L *= 0.85
-            if L < 0.06 * Hk:
+            if L < max(0.05 * Hk, 0.6 * w0):
                 break
     if not tongues:
         return C, []
