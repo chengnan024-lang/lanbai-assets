@@ -6,25 +6,31 @@
     "folders": [
       "Assets/Lanbai/Common",
       "Assets/Lanbai/Bus",
-      "Assets/Lanbai/Bus/Slice"
+      "Assets/Lanbai/Bus/Editor"
     ],
-    "files": [
-      "Assets/Lanbai/Bus/Slice/BusSlice.unity"
+    "menus": [
+      "蓝白/Build/车 切片"
     ],
-    "scene_objects": [
-      "**/Slice_Seat",
-      "**/Slice_SideWindow",
-      "**/Slice_Pillar"
+    "types": [
+      "LanbaiBusSliceBuilder"
     ],
-    "why": "车的切片还没交（pkg/bus 第一轮在做座椅 → 侧窗 → 立柱）。约定：切片场景 Assets/Lanbai/Bus/Slice/BusSlice.unity，里面三件分别挂在 Slice_Seat、Slice_SideWindow、Slice_Pillar 下，场景带一台有 PostProcessLayer 的相机、烘好的光照图。车交切片时按这个约定，或者改这份测试定义"
+    "why": "车的切片还没交。约定（总导演 D-40 回复 #10）：仓库里没有 .meta，所以不交 .unity 场景，交一个搭建菜单 蓝白/Build/车 切片（类名 LanbaiBusSliceBuilder：工具靠这个类在不在来判断切片交没交，菜单在不在 Unity 没有可靠的读法），在本地现搭：它在当前场景（工具给它一个沙盒里的空场景）里建 Slice_Seat、Slice_SideWindow、Slice_Pillar 三件和一台带 PostProcessLayer 的相机；要写的生成物放 Assets/Lanbai/Bus/Generated/。光照图：本地烘就把烘焙设置写进车的 README；用预烘好的 _CabinTubeLM 贴图就照 D-32 从 uv1 读（那样场景里没有 Unity 的光照图，has_lightmaps 只警告）"
   },
   "scene": {
-    "path": "Assets/Lanbai/Bus/Slice/BusSlice.unity",
-    "mode": "copy"
+    "mode": "new",
+    "why": "沙盒里的空场景，搭建菜单往里搭"
   },
-  "allowed_writes": [],
+  "allowed_writes": [
+    "Assets/Lanbai/Bus/Generated/**",
+    "Assets/Lanbai/UdonPrograms/**"
+  ],
   "require_ppv2": true,
-  "build": [],
+  "build": [
+    {
+      "type": "menu",
+      "path": "蓝白/Build/车 切片"
+    }
+  ],
   "settings": {
     "vertex_compression_off": [
       "TexCoord0",
@@ -241,7 +247,8 @@
       "metric": "scene.lightmaps",
       "op": ">=",
       "value": 1,
-      "why": "光照图接缝那一项要先有光照图（D-40 #1 第 4 项）"
+      "why": "光照图接缝那一项要先有光照图（D-40 #1 第 4 项）。车用预烘的 _CabinTubeLM（D-32，uv1）时 Unity 的光照图是 0 张，所以只警告；接缝照样看近景图",
+      "gate": false
     },
     {
       "id": "pillar_shimmer",
@@ -294,5 +301,20 @@
   "manual": [
     "对照板五栏（D-40 #1）：真车照片 / Blender 中性光 / Blender 定稿 / Unity 截图（这次的 shots/）/ 头显里一句话",
     "Crunch 免不免由总导演定；免的话下载账总工程师重算（车的下载上限 75 MB）"
+  ],
+  "allowed_writes_why": "车的切片搭建菜单生成的网格、材质、贴图导入设置",
+  "after_build": [
+    {
+      "type": "assert_object",
+      "path": "**/Slice_Seat"
+    },
+    {
+      "type": "assert_object",
+      "path": "**/Slice_SideWindow"
+    },
+    {
+      "type": "assert_object",
+      "path": "**/Slice_Pillar"
+    }
   ]
 }

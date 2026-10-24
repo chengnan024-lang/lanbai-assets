@@ -495,6 +495,24 @@ namespace Lanbai.Test
             };
         }
 
+        /// <summary>测试定义的 backup_before（glob）：开搭之前把这些文件原样拷进输出的 backup_before/（门测试：Assets/Lanbai/Tests/**）。</summary>
+        public static void BackupBefore(Ctx ctx)
+        {
+            var globs = TJson.Sa(TJson.G(ctx.test, "backup_before")).Select(Glob).ToList();
+            if (globs.Count == 0) return;
+            int n = 0; long bytes = 0;
+            foreach (var kv in ctx.before.assets)
+            {
+                if (!globs.Any(r => r.IsMatch(kv.Key))) continue;
+                string dst = ctx.Out("backup_before/" + kv.Key);
+                File.Copy(Path.Combine(ctx.projectDir, kv.Key.Replace('/', Path.DirectorySeparatorChar)), dst, true);
+                n++; bytes += kv.Value.Key;
+            }
+            ctx.AddFile("backup_before/（" + n + " 个文件）");
+            ctx.Info("开搭之前备份了 " + n + " 个文件（" + (bytes / 1048576.0).ToString("0.0", CultureInfo.InvariantCulture) + " MB）到 backup_before/");
+            ctx.Metric("backup_before.files", n);
+        }
+
         static Regex Glob(string g)
         {
             var sb = new StringBuilder("^");

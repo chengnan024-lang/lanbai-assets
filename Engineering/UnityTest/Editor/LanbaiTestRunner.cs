@@ -217,6 +217,7 @@ namespace Lanbai.Test
             // 2) 沙盒、写入快照、场景
             Sandbox.Prepare(ctx);
             ctx.before = WriteGuard.Take(ctx.projectDir);
+            WriteGuard.BackupBefore(ctx);       // backup_before：会被搭建脚本改的文件，开搭之前原样拷一份进输出文件夹
             Scenes.Open(ctx);
             Preflight.ScenePreconditions(ctx);
 

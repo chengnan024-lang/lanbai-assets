@@ -118,6 +118,9 @@ namespace Lanbai.Test
             m["metrics"] = ctx.metrics.OrderBy(kv => kv.Key, StringComparer.Ordinal).ToDictionary(kv => kv.Key, kv => (object)kv.Value);
             m["metric_notes"] = ctx.metricNotes.ToDictionary(kv => kv.Key, kv => (object)kv.Value);
             m["writes"] = ctx.writes;
+            m["allowed_writes"] = TJson.Sa(TJson.G(ctx.test, "allowed_writes")).Cast<object>().ToList();   // 每次都写全（总导演 D-40 回复 #1）
+            m["allowed_writes_why"] = TJson.G(ctx.test, "allowed_writes_why");
+            m["backup_before"] = TJson.Sa(TJson.G(ctx.test, "backup_before")).Cast<object>().ToList();
             m["warnings"] = ctx.warnings.Cast<object>().ToList();
             return m;
         }
@@ -262,6 +265,11 @@ namespace Lanbai.Test
                 var und = (List<object>)ctx.writes["undeclared"];
                 var dec = (List<object>)ctx.writes["declared"];
                 sb.AppendLine("## 写入");
+                var aw = TJson.Sa(TJson.G(ctx.test, "allowed_writes"));
+                sb.AppendLine("- 允许搭建脚本写的地方（沙盒规则的例外，" + aw.Count + " 条）：" + (aw.Count == 0 ? "没有" : string.Join("、", aw.Select(x => "`" + x + "`").ToArray())) +
+                              (TJson.Has(ctx.test, "allowed_writes_why") ? "。为什么：" + Esc(TJson.S(TJson.G(ctx.test, "allowed_writes_why"))) : ""));
+                var bb = TJson.Sa(TJson.G(ctx.test, "backup_before"));
+                if (bb.Count > 0) sb.AppendLine("- 开搭之前原样备份进 `backup_before/` 的：" + string.Join("、", bb.Select(x => "`" + x + "`").ToArray()));
                 sb.AppendLine("- 沙盒 `" + Sandbox.DIR + "/`（下次跑会删掉重建，也可以手动删）");
                 sb.AppendLine("- 搭建脚本按测试定义允许写的地方：" + dec.Count + " 个文件（清单在 manifest.json 的 writes.declared）");
                 sb.AppendLine("- **没声明的写入：" + und.Count + "**" + (und.Count > 0 ? "：" + string.Join("；", und.Take(20).Select(x => (string)x).ToArray()) + (und.Count > 20 ? " …" : "") : ""));

@@ -11,7 +11,12 @@
 ## 0. 每次测试，阿白照这个做
 
 1. 仓库：在 `E:\IDMdownload\VRCC\lanbai-assets` 里 `git pull`（要在 `main` 上）。**第一次会很大**（本地停在 29fa6f2，main 领先近 500 个提交，约 1.1 GiB）：让它跑完，别中途关掉；中途断了、留下 `.git\index.lock` 的话，同步脚本会停下（§2），不自动修。
-2. 同步（§2）。先只列出，看一眼，再 `-Apply`：
+2. 同步（§2）。先只列出，看一眼，再 `-Apply`。**第一次同步（以及任何要 `-Force` 的时候）属于“批量替换”（`HANDOFF_CHATGPT.md` §F），三步缺一不可**：
+   1. 先把整个 Unity 工程打一个 zip 备份（关掉 Unity 再打）；
+   2. 把只列出的那份清单（屏幕上的输出，和 `<工程>\LanbaiReports\sync\<时间>_plan.json`）推到仓库的 `FromLocal/takeover/`，给小楠看；
+   3. 小楠确认以后，才跑 `-Apply -Force`。
+
+   平时（不用 `-Force`）：
    ```powershell
    cd E:\IDMdownload\VRCC\lanbai-assets
    powershell -ExecutionPolicy Bypass -File "Engineering\UnityTest\Tools~\lanbai_sync.ps1" -Project "<工程>"
@@ -55,6 +60,7 @@
 - 动手前，要覆盖的文件（连同 `.meta`）和上次的同步记录先打包进 `<工程>\LanbaiSyncBackup\<时间>.zip`。
 - 同步记录 `Assets\Lanbai\.lanbai_sync.json`：仓库路径、提交号、分支、条目标题、每个文件上次同步时的 SHA-256。测试工具从这里读提交号写进 `manifest.json`（点开头的文件 Unity 不导入）。
 - **本地改过的文件不覆盖、不删**（工程里的哈希和上次同步时的不一样，或者没有记录又和仓库不一样）：整次拒绝，退出码 2，什么都没改；确认要用仓库的版本就加 `-Force`（照样先进备份）。第一次同步时工程里已经有旧文件的，也会走到这一条。
+- 第一次同步时工程里已经有 10-08 以来的旧文件，没有同步记录、内容又和仓库不一样，一定会被拒绝：照 §0 第 2 条的三步做。
 - **从不自动删除。** 上次由它拷进去、现在仓库里没有了的文件只列出来（`?`），要删请在 Unity 的 Project 窗口里删（连 `.meta` 一起）。工程里本来就有的（各包的 `Generated/`、`UdonPrograms/*.asset`、本地自己加的）一概不动，只数一下。
 - 永远不同步：仓库根上的单个文件、`FromLocal/`、`Art/`；任何一层叫 `Source`、`Renders`、`__pycache__` 的文件夹；`.py .pyc .blend .blend1 .ps1 .sh`。
 - 每次的计划另存一份在 `<工程>\LanbaiReports\sync\<时间>_plan.json`。
@@ -151,6 +157,7 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json"
 | `requires` | 前置条件，缺一样就 BLOCKED：`unity`（默认 `2022.3.22f1`）、`packages`（默认 `com.vrchat.worlds` 3.10.5、`com.unity.postprocessing` 3.4.0）、`folders`、`files`、`types`（类型名，可以不带命名空间）、`menus`、`file_contains`（`{file 或 script, text: [...], absent: [...], why}`：脚本里有没有那几行补丁、JSON 里有没有新版本的标记）、`scene_objects`（打开场景以后查）、`scene_components` |
 | `scene` | `{path, mode}`：`copy`（默认：拷进沙盒再开，原场景不动）、`in_place`（就在原场景里：门测试的 `LB_GateTest` 写死了场景路径）、`new`（沙盒里的空场景） |
 | `allowed_writes` | 沙盒以外允许被改的地方（glob，`**` 跨文件夹）：只给现有搭建脚本本来就要写的地方 |
+| `backup_before` | 开搭之前原样拷进输出 `backup_before/` 的文件（glob） |
 | `camera_template` | 抄设置的参考相机（场景路径）；不写就用第一台带 PostProcessLayer 的相机 |
 | `time` | 怎么把场景定到时间 t 的步骤（`{t}` 换成数字），比如 `LB_GateTest.Apply("{t}")` |
 | `build`、`after_build` | 搭建步骤（§6.1）。`build` 一步失败，后面的标成 skipped，截图 / 序列 / 性能都不做 |
@@ -242,7 +249,8 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json"
 - 项目设置（顶点压缩、雾的变体剔除、光强）只查不改。
 - 工具临时改过又改回的（`set_material` 改过的材质、`edit_json` 写回的文件）：内容和原来一样、或者只是被后面搭建脚本的 `SaveAssets` 把改回后的值落了盘的，单独列在 `writes.tool_touched_restored`，不算没声明的写入。
 - 跑之前、跑之后各记一次 `Assets/`（大小 + 修改时间）和 `ProjectSettings/*.asset`（内容哈希）：沙盒和 `allowed_writes` 以外的每一处改动都列进 `writes.undeclared`，检查项 `no_undeclared_writes` 不过。
-- **例外，要总导演知道：** `gate_clouds_test` 在原场景 `Assets/Lanbai/Tests/GateTest.unity` 里跑（`in_place`），由门测试脚本和门的搭建菜单去写 `Tests/`、`GateClouds/Generated/`、贴图导入设置、`UdonPrograms/`——HANDOFF_LOG 那几条本来就要这样搭；`auto_lite` 那一档临时改 `GateClouds_Layout.json`，量完逐字节写回。这些都列在它的 `allowed_writes` 里。`act06_dawn` 把主场景拷进沙盒再搭，但第 6 幕的搭建脚本会写 `Act06_Dawn/Generated/`。
+- **例外（总导演已批准，条件是下面三样）：** 每次的 `summary.md` 和 `manifest.json` 都写全 `allowed_writes`；`edit_json` 改的文件在任何情况下都逐字节写回（改回栈在每一项的 `finally` 和整次运行的 `finally` 里都会跑；只有 Unity 本身崩掉时写不回，那就照 §9 第 4 条从 `backup/` 拷回）；测试定义的 `backup_before`（门测试：`Assets/Lanbai/Tests/**` 和 `GateClouds_Layout.json`）在开搭之前原样拷进本次输出的 `backup_before/`。
+- 例外的具体内容： `gate_clouds_test` 在原场景 `Assets/Lanbai/Tests/GateTest.unity` 里跑（`in_place`），由门测试脚本和门的搭建菜单去写 `Tests/`、`GateClouds/Generated/`、贴图导入设置、`UdonPrograms/`——HANDOFF_LOG 那几条本来就要这样搭；`auto_lite` 那一档临时改 `GateClouds_Layout.json`，量完逐字节写回。这些都列在它的 `allowed_writes` 里。`act06_dawn` 把主场景拷进沙盒再搭，但第 6 幕的搭建脚本会写 `Act06_Dawn/Generated/`。
 
 ---
 
