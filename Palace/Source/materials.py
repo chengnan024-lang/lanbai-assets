@@ -73,7 +73,7 @@ def silt_mask(b, coverage=0.55):
     return b.math('MULTIPLY', up, noisy, clamp=True)
 
 
-def standard(name, base, normal=None, mask=None, smooth=0.5, metallic=0.0, silt=0.0, nstr=1.0, irid=False, tint=None):
+def standard(name, base, normal=None, mask=None, smooth=0.5, metallic=0.0, silt=0.0, nstr=1.0, irid=False, tint=None, cull=True):
     b = NB(name)
     bs = b.n('ShaderNodeBsdfPrincipled')
     alb = b.tex(base) if base.endswith('.png') else None
@@ -133,7 +133,17 @@ def standard(name, base, normal=None, mask=None, smooth=0.5, metallic=0.0, silt=
         bs.inputs['Specular IOR Level'].default_value = 0.9
         bs.inputs['Coat Weight'].default_value = 0.4
         b.link(ramp.outputs[0], bs.inputs['Coat Tint'])
-    b.link(bs.outputs[0], b.out.inputs['Surface'])
+    out = bs.outputs[0]
+    if cull:
+        # Unity 剔背面（Cull Back）：Cycles 里背面换成全透明，从下面看台地 / 屋底时和 Unity 一样
+        geo = b.n('ShaderNodeNewGeometry')
+        tr = b.n('ShaderNodeBsdfTransparent')
+        mx = b.n('ShaderNodeMixShader')
+        b.link(geo.outputs['Backfacing'], mx.inputs[0])
+        b.link(out, mx.inputs[1])
+        b.link(tr.outputs[0], mx.inputs[2])
+        out = mx.outputs[0]
+    b.link(out, b.out.inputs['Surface'])
     return b.m
 
 
@@ -162,8 +172,30 @@ def build_all():
     M['Cowrie'] = standard('M_07b_Cowrie', T('Cowrie_Albedo'), T('Cowrie_Normal'), T('Cowrie_Mask'), silt=0.2, nstr=1.5)
     M['Tile'] = standard('M_07b_Tile', T('Stone_Albedo'), T('Stone_Normal'), None, smooth=0.35, silt=0.7, tint=(0.95, 0.98, 1.0))
     M['Wood'] = standard('M_07b_Wood', '#2C2522', smooth=0.35)
-    M['Rock'] = standard('M_07b_Rock', '#33362F', smooth=0.22, silt=0.0)
-    M['Weed'] = standard('M_07b_Weed', '#2E3A26', smooth=0.55)
+    M['Rock'] = standard('M_07b_Rock', T('Rock_Albedo'), T('Rock_Normal'), T('Rock_Mask'), silt=0.5)
+    M['Weed'] = standard('M_07b_Weed', '#2E3A26', smooth=0.55, cull=False)
     M['Fish'] = standard('M_07b_Fish', '#8A949A', smooth=0.85)
     M['DoorGlow'] = emission('M_07b_DoorGlow', tuple(3.0 * c for c in s2l('#FFB74D')))
     return M
+
+
+def cone_material(name, rgb_lin, alpha=0.06, atten_note=True):
+    """门口的锥形光卡：加色（= 自发光 × α × 沿锥衰减 × 横向 sin），只给相机看，post 里按 _FogMode 2 处理（进 doorglow 灯组）。"""
+    b = NB(name)
+    uv = b.n('ShaderNodeUVMap')
+    sep = b.n('ShaderNodeSeparateXYZ')
+    b.link(uv.outputs[0], sep.inputs[0])
+    along = b.math('SUBTRACT', 1.0, sep.outputs['Y'], clamp=True)
+    along2 = b.math('MULTIPLY', along, along)
+    across = b.math('SINE', b.math('MULTIPLY', sep.outputs['X'], 3.14159265))
+    a = b.math('MULTIPLY', b.math('MULTIPLY', along2, across), alpha)
+    e = b.n('ShaderNodeEmission')
+    e.inputs['Color'].default_value = (*rgb_lin, 1)
+    b.link(a, e.inputs['Strength'])
+    tr = b.n('ShaderNodeBsdfTransparent')
+    add = b.n('ShaderNodeAddShader')
+    b.link(e.outputs[0], add.inputs[0])
+    b.link(tr.outputs[0], add.inputs[1])
+    b.link(add.outputs[0], b.out.inputs['Surface'])
+    b.m.cycles.emission_sampling = 'NONE'
+    return b.m

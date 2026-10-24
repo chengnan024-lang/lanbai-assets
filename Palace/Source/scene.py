@@ -24,7 +24,7 @@ from kit.common import UB  # noqa: E402
 
 import json as _json
 _T = _json.load(open(os.path.join(HERE, 'tuning.json')))
-PARAMS = dict(warm_I=_T['warm_I'], warm_r=_T['warm_range'], indigo_I=_T['indigo_I'], indigo_r=_T['indigo_range'], door_W=_T['door_area_I'])
+PARAMS = dict(warm_I=_T['warm_I'], warm_r=_T['warm_range'], indigo_I=_T['indigo_I'], indigo_r=_T['indigo_range'], door_W=_T['door_area_I'], pour_ratio=_T.get('pour_ratio', 0.6))
 
 
 def try_kit(name):
@@ -84,7 +84,18 @@ def build(t_fish=748.26, lod_far=False):
     if fu.V:
         fu.build('Fish', col, M)
     split_doorglow(col, M)
+    add_cones(col)
     return M
+
+
+def add_cones(col):
+    """门口 3 张锥形光卡（与 export_fbx.g_door 同一几何）。"""
+    import export_fbx as X
+    u = X.door_cones_ub()
+    m = materials.cone_material('M_07b_DoorCone', tuple(3.0 * c for c in materials.s2l('#FFB74D')))
+    ob = u.build('DoorCones', col, {'DoorGlow': m})
+    ob.lightgroup = 'doorglow'
+    ob.visible_diffuse = ob.visible_glossy = ob.visible_transmission = ob.visible_volume_scatter = ob.visible_shadow = False
 
 
 def poem_point():
@@ -134,6 +145,18 @@ def add_lights(p=PARAMS):
     o.rotation_euler = Vector(bl.u2b((0, 0, -1))).to_track_quat('-Z', 'Y').to_euler()
     o.lightgroup = 'door'
     bpy.context.scene.collection.objects.link(o)
+    # 门光顺着台阶往下铺：门楣处一盏面光，朝外、向下 35°（Unity：第二盏 Baked 面光，README §4）
+    A2 = bpy.data.lights.new('DoorPour', 'AREA')
+    A2.shape = 'RECTANGLE'
+    A2.size, A2.size_y = hall['door_size'][0] * 0.9, 1.0
+    A2.color = lin('#FFB74D')
+    A2.energy = p['door_W'] * p.get('pour_ratio', 0.6)
+    o2 = bpy.data.objects.new('DoorPour', A2)
+    o2.location = Vector(bl.u2b((hall['door_x'], L.PLAT['height_m'] + hall['door_size'][1] - 0.6, L.DOOR_Z + 0.3)))
+    d = np.array([0.0, -math.sin(math.radians(35)), -math.cos(math.radians(35))])
+    o2.rotation_euler = Vector(bl.u2b(d)).to_track_quat('-Z', 'Y').to_euler()
+    o2.lightgroup = 'door'
+    bpy.context.scene.collection.objects.link(o2)
 
 
 def setup_world():

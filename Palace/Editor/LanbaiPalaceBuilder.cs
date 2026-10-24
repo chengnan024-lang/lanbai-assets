@@ -138,7 +138,7 @@ public static class LanbaiPalaceBuilder
         Std(d, pal, "Cowrie", "Cowrie", "Cowrie", "Cowrie", 3, 0.92f, 0f, 0.2f, "#FFFFFF");
         Std(d, pal, "Tile", "Stone", "Stone", null, 0, 0.35f, 0f, 0.7f, "#F2F8FF");
         Std(d, pal, "Wood", null, null, null, 0, 0.35f, 0f, 0.2f, "#2C2522");
-        Std(d, pal, "Rock", null, "Stone", null, 0, 0.22f, 0f, 0f, "#33362F");
+        Std(d, pal, "Rock", "Rock", "Rock", "Rock", 0, 0.22f, 0f, 0.5f, "#FFFFFF");
         Std(d, pal, "Weed", null, null, null, 0, 0.55f, 0f, 0f, "#2E3A26");
         d["Weed"].SetFloat("_SwayAmp", 0.25f);
         d["Weed"].SetFloat("_Cull", 0f);

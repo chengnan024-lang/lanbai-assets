@@ -31,7 +31,7 @@ SX0, SX1, SZ0, SZ1 = -22.0, -14.0, 325.1, 334.1           # 阶（墄）
 RIDGE_TOP = PY + H_TOTAL        # 36
 
 # ------------------------------------------------------------------ 设计取值
-T_IN, T_OUT = math.tan(math.radians(28.0)), math.tan(math.radians(23.0))   # 坡 28°，反宇段 23°
+T_IN, T_OUT = math.tan(math.radians(30.0)), math.tan(math.radians(25.0))   # 坡 30°，反宇段 25°（两层同坡）
 WALL_T = 0.8                    # 前墙厚
 COL_Z = ZF - 3.8                # 檐柱中线 338.8
 COL_INSET = 1.1                 # 两端柱内收（不然 x=−8 那根的柱础要悬出崖口）
@@ -41,9 +41,9 @@ ROOF_T = 0.45                   # 屋面板厚（竖向）
 # 下檐（腰檐，一圈）：外缘 = 前檐柱外 4.5 m、两侧及后墙外 4.5 m
 LO_RECT = (X0 - 4.5, X1 + 4.5, COL_Z - 4.5, ZB + 4.5)
 LO_BRK = 0.9                    # 反宇段平面长（出檐 4.5 的 1/5）
-LO_TIP = 18.3 - (LO_BRK * T_OUT + (4.5 - LO_BRK) * T_IN)   # 檐柱缝上屋面顶 = 18.3
-LO_TOPY = 20.5                  # 腰檐上缘（接上层殿身）
-LO_DTOP = LO_BRK + (LO_TOPY - LO_TIP - LO_BRK * T_OUT) / T_IN
+LO_TIP = 19.05 - (LO_BRK * T_OUT + (4.5 - LO_BRK) * T_IN)  # 檐柱缝上屋面顶 = 19.05
+LO_DTOP = 8.645                 # 腰檐上缘内收（上层殿身前墙 ≈ 下层前墙）
+LO_TOPY = LO_TIP + LO_BRK * T_OUT + (LO_DTOP - LO_BRK) * T_IN   # 腰檐上缘（接上层殿身）≈ 21.44
 # 上层殿身（重檐的上层墙）= 腰檐上缘内框
 UP_BODY = (LO_RECT[0] + LO_DTOP, LO_RECT[1] - LO_DTOP, LO_RECT[2] + LO_DTOP, LO_RECT[3] - LO_DTOP)
 UP_OUT = 4.0
@@ -301,7 +301,7 @@ def roof_slab(rect, tip, brk, dtop, ring, slot='Tile'):
     return solid(u)
 
 
-def roof_tiles(rect, tip, brk, dtop, parts):
+def roof_tiles(rect, tip, brk, dtop, parts, rows=True, nd=12):
     """筒瓦垄（中距 1.1）+ 檐口瓦当。"""
     x0, x1, z0, z1 = rect
     C = [(x0, z0), (x1, z0), (x1, z1), (x0, z1)]
@@ -328,14 +328,15 @@ def roof_tiles(rect, tip, brk, dtop, parts):
                 c = np.array([p[0], roof_h(d, tip, brk) - 0.08, p[1]])
                 rings.append([c + e3 * TILE_R * math.cos(math.pi * q / (nseg - 1)) +
                               np.array([0, 1, 0]) * TILE_R * math.sin(math.pi * q / (nseg - 1)) for q in range(nseg)])
-            parts.append(('tile', sweep(rings, 'Tile')))
+            if rows:
+                parts.append(('tile', sweep(rings, 'Tile')))
             # 瓦当：正对檐口的八边形圆盘
             p = a + e * s
             c = np.array([p[0], roof_h(0, tip, brk) - 0.08, p[1]])
             disc = []
             for dd in (-0.07, 0.04):
-                disc.append([c + nin3 * dd + e3 * 0.3 * math.cos(2 * math.pi * q / 12) +
-                             np.array([0, 1, 0]) * 0.3 * math.sin(2 * math.pi * q / 12) for q in range(12)])
+                disc.append([c + nin3 * dd + e3 * 0.3 * math.cos(2 * math.pi * q / nd) +
+                             np.array([0, 1, 0]) * 0.3 * math.sin(2 * math.pi * q / nd) for q in range(nd)])
             parts.append(('wadang', sweep(disc, 'Tile')))
 
 
@@ -394,6 +395,40 @@ def hip_ridges(rect, tip, brk, dtop, w=0.7, h=0.7):
     return out
 
 
+def _fin_map(o, sgn, u, v, w, k=0.9):
+    """鱼尾局部 (u 向外, v 向上, w 沿 z) → 世界；先向内弯（v 越高越往脊中收），再缩放。"""
+    u = u - 0.22 * (max(v, 0.0) / 1.5) ** 2
+    return o + np.array([sgn * u * k, v * k, w * k])
+
+
+def fish_tail(o, sgn):
+    out = []
+    # 鳍身：一层层水平透镜截面（内缘 / 外缘 / 半厚）
+    lv = [(-0.5, -1.9, 0.35, 0.20), (0.05, -1.9, 0.42, 0.20), (0.2, -1.15, 0.44, 0.19), (0.4, -0.72, 0.45, 0.17),
+          (0.6, -0.48, 0.43, 0.15), (0.85, -0.32, 0.46, 0.13), (1.1, -0.15, 0.52, 0.11)]
+    rings = []
+    for v, ui, uo, t in lv:
+        sp = uo - ui
+        sec = [(ui, 0), (ui + 0.3 * sp, t), (uo - 0.25 * sp, t), (uo, 0), (uo - 0.25 * sp, -t), (ui + 0.3 * sp, -t)]
+        rings.append([_fin_map(o, sgn, u, v, w) for u, w in sec])
+    out.append(sweep(rings, 'Tile'))
+    # 两叉：沿弯的中线，宽和厚都收到梢（梢全厚 0.08）
+    for path, hw in (([(0.28, 0.95), (0.48, 1.2), (0.66, 1.38), (0.84, 1.56)], [0.2, 0.16, 0.1, 0.035]),
+                     ([(-0.02, 0.95), (-0.1, 1.12), (-0.17, 1.27), (-0.22, 1.38)], [0.17, 0.13, 0.08, 0.03])):
+        ts = [0.11, 0.09, 0.065, 0.04]
+        rings = []
+        P = np.array(path)
+        for k in range(len(P)):
+            T = P[min(k + 1, len(P) - 1)] - P[max(k - 1, 0)]
+            T /= np.linalg.norm(T)
+            N = np.array([-T[1], T[0]])
+            p, h, t = P[k], hw[k], ts[k]
+            sec = [(p + N * h, 0), (p + N * h * 0.4, t), (p - N * h * 0.4, t), (p - N * h, 0), (p - N * h * 0.4, -t), (p + N * h * 0.4, -t)]
+            rings.append([_fin_map(o, sgn, q[0], q[1], w) for q, w in sec])
+        out.append(sweep(rings, 'Tile'))
+    return out
+
+
 def main_ridge(lod):
     """正脊：高 1.5，两端起翘约 1 m，端头一片克制的鱼尾。"""
     x0, x1, z0, z1 = UP_RECT
@@ -421,15 +456,10 @@ def main_ridge(lod):
         if not P or abs(p[0] - P[-1][0]) + abs(p[1] - P[-1][1]) > 1e-6:
             P.append(p)
     out.append(extrude(P, (0, 0, zc), (1, 0, 0), (0, 1, 0), (0, 0, 1), -0.45, 0.45, 'Tile'))
-    # 鱼尾：一片向上翻、尾端分叉的鳍（局部 u 向外、v 向上，基于脊端顶 top+rise）
-    fin = [(-1.9, -0.5), (0.35, -0.5), (0.42, 0.0), (0.45, 0.35), (0.42, 0.65), (0.48, 0.95), (0.62, 1.25),
-           (0.8, 1.5), (0.5, 1.28), (0.3, 1.12), (0.12, 1.1), (-0.05, 1.22), (-0.22, 1.42), (-0.25, 1.15),
-           (-0.32, 0.85), (-0.5, 0.55), (-0.8, 0.32), (-1.2, 0.17), (-1.9, 0.05)]
-    th = 0.42 if lod == 0 else 0.5
+    # 鱼尾：根部厚 0.4、梢 0.08 的透镜截面，梢部向内（朝脊中）微弯，尾端分两叉
     for sgn, xe, xr in ((1, xb + 0.6, xb), (-1, xa - 0.6, xa)):
-        P2 = [(u * 0.9, v * 0.9) for u, v in fin]
-        o = (xe - 0.35 * sgn, top + rise - 0.05, zc)
-        out.append(extrude(P2, o, (sgn, 0, 0), (0, 1, 0), (0, 0, 1), -th / 2, th / 2, 'Tile'))
+        o = np.array([xe - 0.35 * sgn, top + rise - 0.05, zc])
+        out.extend(fish_tail(o, sgn))
         # 脊头：堵住两条垂脊在正脊端头汇合处的缝
         lo_x, hi_x = sorted((xr - 1.2 * sgn, xr + 1.1 * sgn))
         out.append(box((lo_x, UP_APEX - 0.7, zc - 0.95), (hi_x, UP_APEX + 0.75, zc + 0.95), 'Tile'))
@@ -592,7 +622,15 @@ def _parts(lod=0):
                     add('platform', box((t - w / 2 if i else t, 0.4, PZ1), (t + w / 2, PY - 0.45, PZ1 + 0.25), 'Stone'))
                 else:
                     add('platform', box((PX0 - 0.25, 0.4, max(PZ0, t - w / 2)), (PX0, PY - 0.45, min(PZ1, t + w / 2)), 'Stone'))
-            # 横带
+            if f == 'f':      # 隔一格加浅浮石板（上下两块，被腰带隔开），不做花纹
+                for i in range(0, n, 2):
+                    ta, tb = a + (b - a) * i / n, a + (b - a) * (i + 1) / n
+                    if tb > SX0 - 0.5 and ta < SX1 + 0.5:
+                        continue
+                    xa_, xb_ = ta + 0.55 + (0.12 if i == 0 else 0.0), tb - 0.55
+                    for y0_, y1_ in ((0.75, 2.6), (3.5, PY - 0.75)):
+                        add('platform', box((xa_, y0_, PZ0 - 0.07), (xb_, y1_, PZ0), 'Stone'))
+        # 横带
         add('platform', box((PX0, 2.9, PZ0 - 0.12), (SX0, 3.2, PZ0), 'Stone'))
         add('platform', box((SX1, 2.9, PZ0 - 0.12), (PX1, 3.2, PZ0), 'Stone'))
         add('platform', box((PX0, 2.9, PZ1), (PX1, 3.2, PZ1 + 0.12), 'Stone'))
@@ -756,8 +794,9 @@ def _parts(lod=0):
     yg = COL_TOP + 0.85 + 0.45 + 0.45      # 升顶
     add('beam', beam_x(xs[0] - 0.6, xs[-1] + 0.6, ye0, ye1, COL_Z - 0.25, COL_Z + 0.25))           # 额枋
     add('beam', beam_x(xs[0] - 2.0, xs[-1] + 2.0, yg, yg + 1.15, COL_Z - 0.3, COL_Z + 0.3))         # 檐枋
+    add('beam', box((xs[0] - 2.0, yg + 1.15, COL_Z - 0.25), (xs[-1] + 2.0, yg + 1.8, COL_Z + 0.25), 'LacquerBlack'))  # 替木
     if D:
-        add('beam', beam_x(xs[0] - 1.6, xs[-1] + 1.6, COL_TOP + 1.3, COL_TOP + 1.75, COL_Z - 2.4 + 0.1, COL_Z - 2.4 + 0.6, 'Lacquer'))  # 撩檐枋
+        add('beam', beam_x(xs[0] - 1.6, xs[-1] + 1.6, COL_TOP + 1.3, COL_TOP + 2.3, COL_Z - 2.4 + 0.1, COL_Z - 2.4 + 0.6, 'Lacquer'))  # 撩檐枋
 
     # ---------------------------------------------------------- 腰檐（下檐）
     add('roof', roof_slab(LO_RECT, LO_TIP, LO_BRK, LO_DTOP, True))
@@ -765,6 +804,8 @@ def _parts(lod=0):
     if D:
         roof_tiles(LO_RECT, LO_TIP, LO_BRK, LO_DTOP, parts)
         rafters(LO_RECT, LO_TIP, LO_BRK, 4.6, parts)
+    else:
+        roof_tiles(LO_RECT, LO_TIP, LO_BRK, LO_DTOP, parts, rows=False, nd=6)
 
     # ---------------------------------------------------------- 上层殿身（重檐之间）
     bx0, bx1, bz0, bz1 = UP_BODY
@@ -810,6 +851,8 @@ def _parts(lod=0):
     if D:
         roof_tiles(UP_RECT, UP_TIP, UP_BRK, UP_DTOP, parts)
         rafters(UP_RECT, UP_TIP, UP_BRK, UP_OUT + 0.1, parts)
+    else:
+        roof_tiles(UP_RECT, UP_TIP, UP_BRK, UP_DTOP, parts, rows=False, nd=6)
     return parts
 
 

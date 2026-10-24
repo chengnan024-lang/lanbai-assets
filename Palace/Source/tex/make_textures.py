@@ -276,6 +276,26 @@ def bronze():
     save_rgba(np.stack([metal, 1 - 0.3 * verd, verd, sm], -1), 'T_07b_Bronze_Mask.png')
 
 
+# ------------------------------------------------------------------ 岩（台地崖壁、顶面的淤泥地：#33362F），8 m 平铺，层理 + 裂隙
+def rock():
+    n = S
+    big = tnoise(n, 3, 71, 6, 0.6)
+    yy = np.linspace(0, 1, n, endpoint=False)[:, None]
+    strata = np.sin((yy * 9 + 0.15 * big) * 2 * math.pi) * 0.5 + 0.5
+    crack = np.abs(tnoise(n, 5, 72, 4))
+    crack = np.clip(1 - crack / 0.12, 0, 1)
+    fine = tnoise(n, 50, 73, 3)
+    h = 0.6 * big + 0.35 * strata - 0.8 * crack + 0.08 * fine
+    alb = hexl('#33362F') * (1 + 0.10 * big[..., None] + 0.05 * fine[..., None] - 0.25 * crack[..., None])
+    alb = fit_mean(alb, '#33362F')
+    nrm = normal_from_height(gaussian_filter(h, 1.5, mode='wrap'), 3.0)
+    ao = 1 - 0.5 * crack
+    sm = np.clip(0.22 + 0.05 * fine, 0, 1)
+    save_rgb(alb, 'T_07b_Rock_Albedo.png')
+    save_normal(nrm, 'T_07b_Rock_Normal.png')
+    save_rgba(np.stack([np.zeros_like(ao), ao, 0.5 + 0.5 * np.tanh(big), sm], -1), 'T_07b_Rock_Mask.png')
+
+
 # ------------------------------------------------------------------ 灯焰 8 帧（4×2 图集，每帧 256×512）+ 灯晕
 def flame():
     fw, fh = 256, 512
@@ -307,7 +327,7 @@ def flame():
 
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
-    which = sys.argv[1:] or ['lacquer', 'lacquer_band', 'fishscale', 'cowrie', 'stone', 'bronze', 'flame']
+    which = sys.argv[1:] or ['lacquer', 'lacquer_band', 'fishscale', 'cowrie', 'stone', 'bronze', 'rock', 'flame']
     for w in which:
         globals()[w]()
         print('done', w)

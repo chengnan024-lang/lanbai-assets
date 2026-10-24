@@ -29,5 +29,23 @@
  "Palace_Door": {
   "DoorGlow_LOD0": 2,
   "DoorCones_LOD0": 6
+ },
+ "Palace_Hall": {
+  "Hall_LOD0": 62128,
+  "Hall_LOD1": 9684
+ },
+ "Palace_Que": {
+  "Que_LOD0": 13944,
+  "Que_LOD1": 1056
+ },
+ "Palace_Houses": {
+  "Houses0_LOD0": 20832,
+  "Houses0_LOD1": 2160,
+  "Houses1_LOD0": 20952,
+  "Houses1_LOD1": 2184,
+  "Houses2_LOD0": 20748,
+  "Houses2_LOD1": 2148,
+  "Houses3_LOD0": 14208,
+  "Houses3_LOD1": 1440
  }
 }

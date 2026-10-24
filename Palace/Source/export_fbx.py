@@ -148,7 +148,14 @@ def g_door(M):
     u = UB()
     u.quad((x0, y0, z), (x1, y0, z), (x1, y1, z), (x0, y1, z), 'DoorGlow')
     glow = u.build('DoorGlow_LOD0', None, M)
-    # 3 张门口的锥形光卡：从门口向外（−z）20 m，竖的一张、两张斜的，UV.y = 沿锥 0..1
+    cones = door_cones_ub().build('DoorCones_LOD0', None, M)
+    write('Palace_Door', [glow, cones])
+
+
+def door_cones_ub():
+    """3 张门口的锥形光卡：从门口向外（−z）20 m，顺着台阶往下铺；UV.y = 沿锥 0..1。"""
+    H = L.HALL
+    y0 = L.PLAT['height_m']
     c = UB()
     zc = L.DOOR_Z - 0.3
     for k, ang in enumerate((-18.0, 0.0, 18.0)):
@@ -165,8 +172,7 @@ def g_door(M):
         if k == 1:
             quad = [(H['door_x'] - w0, yt, zc), (H['door_x'] + w0, yt, zc), (H['door_x'] + w1, y0 - 3.0, zc - 20.0), (H['door_x'] - w1, y0 - 3.0, zc - 20.0)]
         c.add(quad, [(0, 1, 2, 3)], 'DoorGlow', [[(0, 0), (1, 0), (1, 1), (0, 1)]])
-    cones = c.build('DoorCones_LOD0', None, M)
-    write('Palace_Door', [glow, cones])
+    return c
 
 
 GROUPS = {'terrace': g_terrace, 'weeds': g_weeds, 'lamps': g_lamps, 'fish': g_fish, 'flames': g_flames, 'door': g_door,
