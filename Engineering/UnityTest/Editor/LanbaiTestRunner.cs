@@ -97,6 +97,7 @@ namespace Lanbai.Test
         }
     }
 
+    [InitializeOnLoad]
     public static class Runner
     {
         public const string VERSION = "1.0.0";
@@ -107,6 +108,41 @@ namespace Lanbai.Test
         // ─────────────────────────────────────────────────────────────
         //  批处理入口
         // ─────────────────────────────────────────────────────────────
+        // ── domain reload 时（等 U# 程序资产的时候编辑器 reload 了）：排着的“接着跑”丢了。记在 SessionState 里，
+        //    reload 以后从头再跑一次（新的输出文件夹，D-40a“重跑安全”）；再 reload 一次就算 BLOCKED（批处理照样退出）
+        const string PendingKey = "Lanbai.Test.Pending", ResumeKey = "Lanbai.Test.Resumed";
+
+        static Runner()
+        {
+            string p = SessionState.GetString(PendingKey, "");
+            if (string.IsNullOrEmpty(p)) return;
+            SessionState.EraseString(PendingKey);
+            var a = p.Split('\t');
+            if (a.Length < 4) return;
+            string id = a[0].Length > 0 ? a[0] : null, file = a[1].Length > 0 ? a[1] : null, mode = a[3];
+            bool pre = a[2] == "1";
+            Action<int, string> done = mode == "batch" ? (Action<int, string>)((code, o) => EditorApplication.Exit(code)) : null;
+            EditorApplication.delayCall += () =>
+            {
+                if (SessionState.GetBool(ResumeKey, false))
+                {
+                    SessionState.EraseBool(ResumeKey);
+                    Debug.LogError(LogCapture.TAG + " 等 U# 程序资产时编辑器 reload 了两次，测试 " + id + " 没跑完：BLOCKED。看 Console 里 [Lanbai U#] 和 UdonSharp 的报错，好了以后再跑");
+                    Final(new Dictionary<string, object> { { "test", id }, { "exit", 2.0 }, { "status", "blocked" }, { "blocked_reason", "domain reload twice while waiting for U# program assets" }, { "vr_headset", "not_tested" }, { "tool_version", VERSION } });
+                    if (done != null) done(2, null);
+                    return;
+                }
+                SessionState.SetBool(ResumeKey, true);
+                Debug.LogWarning(LogCapture.TAG + " 等 U# 程序资产时编辑器 reload 了：测试 " + id + " 从头再跑一次（新的输出文件夹；上一次的文件夹没有报告）");
+                Start(id, file, pre, mode, done ?? MenuDone(id, pre));
+            };
+        }
+
+        static Action<int, string> MenuDone(string id, bool pre)
+        {
+            return (code, outDir) => Debug.Log(LogCapture.TAG + " 测试 " + id + " 跑完（reload 以后续跑的），退出码 " + code + "，看 " + outDir + "/summary.md");
+        }
+
         public static void RunCli()
         {
             try
@@ -180,6 +216,7 @@ namespace Lanbai.Test
                     if (types.Count > 0 && !Lanbai.Udon.LanbaiUdonPrograms.AllReady(types, out rep))
                     {
                         deferred = true;
+                        SessionState.SetString(PendingKey, (testId ?? "") + "\t" + (testFile ?? "") + "\t" + (preflightOnly ? "1" : "0") + "\t" + mode);
                         ctx.Info("等 U# 程序资产初始化完再搭（最多 " + Lanbai.Udon.LanbaiUdonPrograms.TimeoutSeconds.ToString("0", IC) + " 秒）：\n" + rep);
                         Lanbai.Udon.LanbaiUdonPrograms.RunWhenReady("测试 " + ctx.testId, types,
                             () => Finish(ctx, Guarded(ctx, () => Body(ctx)), done),
@@ -233,6 +270,8 @@ namespace Lanbai.Test
         /// <summary>收尾（只调一次）：改回、报告、结果行、回调。</summary>
         static void Finish(Ctx ctx, int exit, Action<int, string> done)
         {
+            SessionState.EraseString(PendingKey);
+            SessionState.EraseBool(ResumeKey);
             try { foreach (var e in ctx.undo.RollbackTo(0)) ctx.warnings.Add(e); } catch { }
             try { EditorUtility.ClearProgressBar(); } catch { }
             // 报告（报告写不出来也算工具异常）

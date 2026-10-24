@@ -26,6 +26,15 @@
 
 全部走反射：没有 UdonSharp 的工程也编得过（`Available = false`，搭建脚本退回普通 `AddComponent` 并报警告）。有自己的 asmdef（`Lanbai.Common.Editor`，只在编辑器、自动引用）：没有 asmdef 的搭建脚本直接用得到，有 asmdef 的（字体的 `Lanbai.Fonts.Editor`）在 references 里加了它。
 
+## 编辑器 reload（domain reload）了怎么办
+
+排队等的搭建放在静态表里，编辑器一 reload（C# 编译完、某些导入）就没了。所以：
+
+- **排队时把菜单路径记进 `SessionState`**（编辑器开着就一直在，reload 也在；关掉编辑器才清）。reload 以后工具自动**再点一次那个菜单**，Console 写一条 `[Lanbai U#] 编辑器 reload 过……自动再点一次（第 n 次）`。每个菜单最多自动续 3 次，再多就报错、不续了。
+- **再点一次是安全的**：菜单是幂等的。程序资产已经建了，就按 Type 找到、复用，不会再建一个；还没初始化完，就再排一次队；已经 2/2 了，就直接搭。所以就算自动续没起作用（比如编辑器关掉又打开），**手动再点一次同一个菜单就能接上**。
+- 只在“请一次 U# 编译（CompileSync）”和建资产时可能引起 reload；U# 编译本身不编 C#，一般不会 reload。
+- 测试工具（`Engineering/UnityTest/`）自己排的队不是菜单：它也记在 `SessionState` 里，reload 以后**从头再跑一次**（新的输出文件夹，上一次的文件夹没有报告）；再 reload 一次就算 BLOCKED（退出码 2；批处理照样退出，不会挂住）。
+
 ## 谁换成了它
 
 main 上（这次一起改了）：

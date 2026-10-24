@@ -30,6 +30,7 @@ namespace Lanbai.Udon
 {
     public enum ProgramState { NoUdonSharp, NoScript, Missing, Initializing, Ready, Conflict }
 
+    [InitializeOnLoad]
     public static class LanbaiUdonPrograms
     {
         public const string DefaultFolder = "Assets/Lanbai/UdonPrograms";
@@ -223,6 +224,46 @@ namespace Lanbai.Udon
         }
         static readonly List<Job> _jobs = new List<Job>();
 
+        // ── domain reload：排着队的搭建会丢（静态表和委托都不活过 reload）──────────
+        // 所以排队时把菜单路径记进 SessionState（编辑器开着就一直在，reload 也在），reload 以后自动再点一次那个菜单；
+        // 菜单本身是幂等的：程序资产已经建了就复用，没初始化完就再排队。每个菜单最多自动续 3 次，免得来回转。
+        // 不是菜单的排队（测试工具自己的）由测试工具自己续（Engineering/UnityTest/Editor/LanbaiTestRunner.cs）。
+        const string PendingKey = "Lanbai.Udon.PendingMenus", ResumeKey = "Lanbai.Udon.ResumeCount.";
+
+        static LanbaiUdonPrograms()
+        {
+            string pending = SessionState.GetString(PendingKey, "");
+            if (string.IsNullOrEmpty(pending)) return;
+            SessionState.EraseString(PendingKey);
+            EditorApplication.delayCall += () =>
+            {
+                foreach (var menu in pending.Split('\n'))
+                {
+                    if (string.IsNullOrEmpty(menu)) continue;
+                    int n = SessionState.GetInt(ResumeKey + menu, 0) + 1;
+                    SessionState.SetInt(ResumeKey + menu, n);
+                    if (n > 3) { Debug.LogError(TAG + "domain reload 以后已经自动续了 3 次 “" + menu + "”，不再续：看 Console 里 UdonSharp 的报错，好了以后手动再点一次"); continue; }
+                    Debug.Log(TAG + "编辑器 reload 过（编译 / 导入），排着队的 “" + menu + "” 丢了：自动再点一次（第 " + n + " 次）");
+                    if (!EditorApplication.ExecuteMenuItem(menu)) Debug.LogError(TAG + "自动再点 “" + menu + "” 失败（菜单不在？）：请手动点一次");
+                }
+            };
+        }
+
+        static void RememberMenu(string who)
+        {
+            if (!who.StartsWith("蓝白/", StringComparison.Ordinal)) return;
+            var l = SessionState.GetString(PendingKey, "").Split('\n').Where(x => x.Length > 0).ToList();
+            if (!l.Contains(who)) l.Add(who);
+            SessionState.SetString(PendingKey, string.Join("\n", l.ToArray()));
+        }
+
+        static void ForgetMenu(string who, bool success)
+        {
+            var l = SessionState.GetString(PendingKey, "").Split('\n').Where(x => x.Length > 0 && x != who).ToList();
+            if (l.Count == 0) SessionState.EraseString(PendingKey); else SessionState.SetString(PendingKey, string.Join("\n", l.ToArray()));
+            if (success) SessionState.EraseInt(ResumeKey + who);
+        }
+
         /// <summary>有没有搭建在排队等程序资产。</summary>
         public static bool Busy { get { return _jobs.Count > 0; } }
 
@@ -241,11 +282,12 @@ namespace Lanbai.Udon
                 return true;
             }
             string rep;
-            if (AllReady(ts, out rep)) { build(); return true; }
+            if (AllReady(ts, out rep)) { ForgetMenu(who, true); build(); return true; }
             try { CreateMissing(who, ts, pathFor); }
             catch (Exception e) { fail(e.Message); return false; }
             double now = EditorApplication.timeSinceStartup;
             _jobs.Add(new Job { who = who, types = ts, build = build, fail = fail, deadline = now + TimeoutSeconds, created = now, nextTick = now + 0.5 });
+            RememberMenu(who);
             if (_jobs.Count == 1) EditorApplication.update += Tick;
             AllReady(ts, out rep);
             Debug.Log(TAG + who + "：程序资产还没初始化完，等 SDK（最多 " + TimeoutSeconds.ToString("0") + " 秒），初始化完自动接着搭：\n" + rep);
@@ -264,10 +306,11 @@ namespace Lanbai.Udon
                 string rep;
                 bool ready;
                 try { ready = AllReady(j.types, out rep); }
-                catch (Exception e) { Finish(i); j.fail(TAG + j.who + "：查程序资产时出错：" + e); continue; }
+                catch (Exception e) { Finish(i); ForgetMenu(j.who, false); j.fail(TAG + j.who + "：查程序资产时出错：" + e); continue; }
                 if (ready)
                 {
                     Finish(i);
+                    ForgetMenu(j.who, true);
                     Debug.Log(TAG + j.who + "：程序资产都初始化完了，接着搭");
                     try { j.build(); }
                     catch (Exception e) { j.fail(TAG + j.who + " 搭建失败：" + e); }
@@ -276,6 +319,7 @@ namespace Lanbai.Udon
                 if (now > j.deadline)
                 {
                     Finish(i);
+                    ForgetMenu(j.who, false);
                     j.fail(TAG + j.who + "：等了 " + TimeoutSeconds.ToString("0") + " 秒，程序资产还没初始化完，没搭。工具不手写版本号、不 Force Upgrade：" +
                            "把 Console 里 UdonSharp 的报错原样推回来（可能是 U# 编译不过）。现在的状态：\n" + rep);
                     continue;

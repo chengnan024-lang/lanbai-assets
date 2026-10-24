@@ -54,7 +54,7 @@ public static class LanbaiGateDriverBuilder
     [MenuItem("蓝白/Gate/Build Driver + Test Clock (Play mode only)")]
     public static void BuildClockMenu()
     {
-        Lanbai.Udon.LanbaiUdonPrograms.RunWhenReady("蓝白/Gate/Build Driver + Test Clock", new[] { typeof(LanbaiGateDriver), typeof(LanbaiGateTestClock) }, () => Build(true));
+        Lanbai.Udon.LanbaiUdonPrograms.RunWhenReady("蓝白/Gate/Build Driver + Test Clock (Play mode only)", new[] { typeof(LanbaiGateDriver), typeof(LanbaiGateTestClock) }, () => Build(true));
     }
 
     // ---- a tiny JSON reader (the sky's FogPresets.json mixes types under one key: JsonUtility cannot read it) ----------

@@ -36,7 +36,7 @@ namespace Lanbai.Fonts.Editor
         public static void BuildMenu()
         {
             var types = new[] { FindType("LanbaiPoemDriver"), FindType("LanbaiLangButton") }.Where(t => t != null).ToArray();
-            Lanbai.Udon.LanbaiUdonPrograms.RunWhenReady("蓝白/Fonts/Build Poem Objects", types, Build, Lanbai.Udon.LanbaiUdonPrograms.NextToScript);
+            Lanbai.Udon.LanbaiUdonPrograms.RunWhenReady("蓝白/Fonts/Build Poem Objects (v4.1 runtime)", types, Build, Lanbai.Udon.LanbaiUdonPrograms.NextToScript);
         }
 
         public static void Build()

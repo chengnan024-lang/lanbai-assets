@@ -148,7 +148,7 @@ namespace Lanbai.Sky.EditorTools
         public static void BuildSky()
         {
             // D-41：先等两个 U# 程序资产（脚本旁边）初始化完，再搭（Common/Editor/LanbaiUdonPrograms）
-            Lanbai.Udon.LanbaiUdonPrograms.RunWhenReady("蓝白/Sky/Build Sky", new[] { typeof(Lanbai.Sky.LanbaiSkyPreset), typeof(Lanbai.Sky.LanbaiSkyDriver) },
+            Lanbai.Udon.LanbaiUdonPrograms.RunWhenReady("蓝白/Sky/Build Sky (one material + preset objects)", new[] { typeof(Lanbai.Sky.LanbaiSkyPreset), typeof(Lanbai.Sky.LanbaiSkyDriver) },
                 BuildSkyNow, Lanbai.Udon.LanbaiUdonPrograms.NextToScript);
         }
 

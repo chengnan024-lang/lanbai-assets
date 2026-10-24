@@ -106,6 +106,9 @@ public class LanbaiAct06Driver : UdonSharpBehaviour
     private bool _ready, _skyApplied, _sunTaken, _overlayHidden, _lobesSet;
     private float _lastT = -1f;
     private float[] _window;
+    // Director v1.2（出生淡入优先）：LB_Journey 出生淡入结束了几秒（< 0 = 还在淡入；1e6 = 没有报，不限制）
+    private float _spawnSince = 1e6f;
+    private bool _spawnHeld;
 
     // ---- CONTROL §5 ------------------------------------------------------------------------------------------------
     public void LanbaiTick(float t)
@@ -117,6 +120,13 @@ public class LanbaiAct06Driver : UdonSharpBehaviour
         else if (t < _lastT && t < tOverlayOff) { _overlayHidden = false; _lobesSet = false; }   // r2 (S6): small drags too
         _lastT = t;
         Evaluate(t);
+    }
+
+    // Director v1.2：分发层每帧在 LanbaiTick 之前调。since < 0 时这一帧不碰遮罩球（出生淡入归 LB_Journey）；
+    // 淡入结束以后，如果那时遮罩球归我们（252.64 → 266.44），从黑按 ≤ 0.85 EV/s 追曲线（Evaluate 里的 catch-up）
+    public void LanbaiSpawnFade(float since)
+    {
+        _spawnSince = since;
     }
 
     public void LanbaiActivate(bool on)
@@ -331,7 +341,24 @@ public class LanbaiAct06Driver : UdonSharpBehaviour
         }
 
         // the overlay: black -> dawn (one curve built for the brightest view, per-direction starts; Overlay/README §3)
-        if (driveOverlay && overlay != null && !_overlayHidden && t >= tPreroll0)
+        // Director v1.2: the spawn fade wins. While LB_Journey fades a late joiner in (since < 0) this act does not touch
+        // the overlay. When the fade ends while the overlay is ours, the overlay starts again from black and climbs no
+        // faster than 0.85 EV/s (the same curve, started at the fade's end: tau = min(scheduled, since * k)); it catches
+        // up with the schedule or, if the joiner came in late, runs past 266.44 until its own curve is done, then hides.
+        bool held = _spawnSince < 0f;
+        if (held) _spawnHeld = true;
+        else if (_spawnHeld)
+        {
+            _spawnHeld = false;
+            _lobesSet = false;                                   // LB_Journey's fade may have cleared the lobes
+            if (t - _spawnSince < tOverlayOff) _overlayHidden = false;
+        }
+        bool catchUp = !held && _spawnSince < 1e5f && t - _spawnSince >= tPreroll0 - 1f && t - _spawnSince < tOverlayOff;
+        float floorL = 0.004f;
+        float rangeEV = Mathf.Log(Mathf.Max(lDawn, floorL) / Mathf.Max(lBlack, floorL), 2f);
+        float tauC = catchUp ? _spawnSince * 0.85f * dawnT / Mathf.Max(rangeEV, 1e-3f) : 1e6f;   // the curve's tau the 0.85 EV/s ramp has reached
+        float maxLead = Mathf.Max(Mathf.Max(leadZenith, leadBelow), Mathf.Max(leadSun, leadElse));
+        if (driveOverlay && overlay != null && !held && !_overlayHidden && t >= tPreroll0)
         {
             if (t < tDawn0)
             {
@@ -339,9 +366,10 @@ public class LanbaiAct06Driver : UdonSharpBehaviour
                 float x = (t - tPreroll0) / Mathf.Max(tDawn0 - tPreroll0, 1e-3f);
                 // EV-linear from the black to the curve's floor
                 float aCur = Mathf.Lerp(1f, a0, x);
+                if (catchUp) aCur = Mathf.Max(aCur, EvAlpha(tauC / Mathf.Max(dawnT, 1e-3f)));   // never brighter than the catch-up
                 overlay.SetFlat(overlayFill, aCur, 0f);
             }
-            else if (t < tOverlayOff)
+            else if (t < tOverlayOff || (catchUp && tauC < dawnT + maxLead))
             {
                 if (!_lobesSet)
                 {
@@ -352,7 +380,7 @@ public class LanbaiAct06Driver : UdonSharpBehaviour
                     overlay.SetLeadElse(leadElse, leadSoft);
                     _lobesSet = true;
                 }
-                overlay.SetCurve(overlayFill, 0f, t - tDawn0, dawnT, lBlack, lDawn, lDawn, lBlack);
+                overlay.SetCurve(overlayFill, 0f, Mathf.Min(t - tDawn0, tauC), dawnT, lBlack, lDawn, lDawn, lBlack);
             }
             else
             {
@@ -386,7 +414,7 @@ public class LanbaiAct06Driver : UdonSharpBehaviour
         if (_lastT < tEntry) VRCShader.SetGlobalFloat(_idSeaMode, 0f);
         // r2 (review r1 S6): the overlay is ours from the preroll to its end: leaving mid-curve (a seek, a scrub back
         // before 252.64) must not leave it half black over another act
-        if (driveOverlay && overlay != null && !_overlayHidden && _lastT >= tPreroll0)
+        if (driveOverlay && overlay != null && !_overlayHidden && _lastT >= tPreroll0 && _spawnSince >= 0f)   // v1.2: not under LB_Journey's spawn fade
         {
             overlay.Hide();
             _overlayHidden = true;

@@ -107,6 +107,7 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json"
 - **不要加 `-nographics`**：截图和性能要真的显卡（预检会因为没有显卡 BLOCKED）。不用加 `-quit`（工具自己退出）。
 - 只做预检：末尾加 `-lanbaiPreflightOnly`。用别的测试定义文件：`-lanbaiTestFile <路径>`（代替 `-lanbaiTest`）。
 - **PPv2 在批处理下生效没有，没验证过。** 工具每次第一张截图前自己查：同一机位开 / 关 PPv2 各渲一张小图，要不一样（检查项 `ppv2_effective`）。批处理下这一项没过的话，截图就是没调色的，**改用菜单跑**，其余照旧。
+- 等的过程中编辑器 reload 了（编译完之类）：工具从头再跑一次（新的输出文件夹，上一次那个没有报告）；再 reload 一次就 BLOCKED（退出码 2），批处理照样退出。
 - 要等 U# 程序资产初始化的时候（测试定义的 `udon_programs` 有新建的，D-41），`RunCli` 先返回，批处理的编辑器循环接着转，等好了再跑、跑完再退出；所以**别加 `-quit`**。菜单也一样：先返回，跑完再弹框。
 - 日志的最后几行可能是 Unity 自己退出时写的；结果那一行用上面的 `Select-String` 找，或直接读 `last_result.json`。
 
