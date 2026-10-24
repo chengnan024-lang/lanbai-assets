@@ -1128,10 +1128,11 @@ def exterior():
     xl = XC - B.W_HALF
     tube('MirrorStalkL', [(xl, 1.70, 3.30), (xl - 0.16, 1.72, 3.42), (xl - 0.22, 1.92, 3.56)], 0.012, 'Ext_Black', 'Exterior')
     box('MirrorHeadL', (xl - 0.22 - 0.09, 1.76, 3.54), (xl - 0.22 + 0.09, 2.04, 3.58), 'Ext_Black', 'Exterior', bevel=0.02)
-    # wipers parked on the cowl
+    # wipers parked BELOW the windscreen's lower edge, lying on the cowl (PAZ; D-13 A: from the hero seat they hide
+    # behind the skin under the glass, so they never cross the poem block)
     for x0, x1 in ((XC - 1.00, B.WS_POST[0] - 0.08), (B.WS_POST[1] + 0.06, 0.86)):
-        zc = max(front_z(x0, B.WS_BOT), front_z(x1, B.WS_BOT)) + 0.02
-        tube('Wiper%+.2f' % x0, [(x0, B.WS_BOT + 0.03, front_z(x0, B.WS_BOT) + 0.02), (x1, B.WS_BOT + 0.07, front_z(x1, B.WS_BOT) + 0.02)], 0.007, 'Ext_Black', 'Exterior')
+        y = B.WS_BOT - 0.022
+        tube('Wiper%+.2f' % x0, [(x0, y, front_z(x0, y) + 0.03), (x1, y + 0.006, front_z(x1, y) + 0.03)], 0.007, 'Ext_Black', 'Exterior')
     for s in (-1, 1):
         x = XC + s * (W_of(2.33) + 0.008)
         tube('DripRail%s' % ('R' if s > 0 else 'L'), [(x, 2.33, B.Z_REAR + 0.25), (x, 2.33, B.Z_FRONT - 0.25)], 0.008, 'Chrome', 'Exterior')

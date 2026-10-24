@@ -125,9 +125,13 @@ def poem_texture(path, em):
     return W / ppd, Hh / ppd, max(fde.getlength(s) for s in de) / ppd
 
 
-def poem(S, az, el, em, eye):
-    path = '/tmp/bus/poem_%.1f.png' % em
-    wdeg, hdeg, text_w = poem_texture(path, em)
+def poem(S, az, el, em, eye, img=None):
+    if img:
+        path, wdeg, hdeg = img
+        text_w = wdeg
+    else:
+        path = '/tmp/bus/poem_%.1f.png' % em
+        wdeg, hdeg, text_w = poem_texture(path, em)
     r = 60.0
     d = np.array(B.dir_az_el(az, el))
     c = np.array(eye) + r * d
@@ -163,6 +167,35 @@ def poem(S, az, el, em, eye):
     return dict(block_w_deg=round(text_w, 1), block_h_deg=round(hdeg, 1))
 
 
+LANG = {   # D-30: one language per player (Fonts/strings_all.json P04a_Rilke); ja re-broken to 3 lines to fit at A
+    'de': ('EBGaramond-Italic.ttf', 2.0, ['Denn das Schöne ist nichts', 'als des Schrecklichen Anfang']),
+    'en': ('EBGaramond-Regular.ttf', 2.0, ['For beauty is nothing but', 'the beginning of terror']),
+    'zh': ('SourceHanSerifCN-Medium.otf', 2.2, ['因为美无非是', '恐怖的开端']),
+    'ja': ('SourceHanSerifJP-Medium.otf', 2.2, ['美とは、', '恐ろしいものの', '始まりにほかならない']),
+}
+
+
+def poem_single(S, lang, az, top_el, eye, lh=1.25):
+    """one-language block (D-30), centred on az, its TOP edge at top_el (TMP: pivot top-centre)."""
+    from PIL import Image, ImageDraw, ImageFont
+    font, em, lines = LANG[lang]
+    ppd = 60
+    f = ImageFont.truetype(os.path.join(ROOT, 'Fonts', 'Originals~', font), int(em * ppd))
+    wmax = max(f.getlength(t) for t in lines) / ppd
+    W, Hh = int((wmax + 1.0) * ppd), int(len(lines) * em * lh * ppd)
+    im = Image.new('L', (W, Hh), 0)
+    d = ImageDraw.Draw(im)
+    for k, t in enumerate(lines):
+        d.text(((W - f.getlength(t)) / 2, k * em * lh * ppd), t, font=f, fill=255)
+    path = '/tmp/bus/poem_%s.png' % lang
+    im.save(path)
+    wdeg, hdeg = W / ppd, Hh / ppd
+    info = poem(S, az, top_el - hdeg / 2, em, eye, img=(path, wdeg, hdeg))
+    info.update(lang=lang, text_w_deg=round(wmax, 1), block_h_deg=round(hdeg, 1), left=round(az - wmax / 2, 1), right=round(az + wmax / 2, 1),
+                top=top_el, bottom=round(top_el - hdeg, 1))
+    return info
+
+
 def build(ctx):
     S = ctx['lbh_scene']
     a = ctx['args']
@@ -178,7 +211,10 @@ def build(ctx):
     info = lens(S, t, eye)
     disc(S, 'Moon', -12, 8, 1.2, emis('MoonMat', lin('#E8EEF8'), 6.0))
     em = float(a.get('em', 2.2))
-    if 'poem' in a:
+    if 'lang' in a:
+        az, top = (float(v) for v in a.get('anchor', '5.5,-2.5').split(','))
+        info.update(poem_single(S, a['lang'], az, top, eye))
+    elif 'poem' in a:
         az, el = (float(v) for v in a['poem'].split(','))
         info.update(poem(S, az, el, em, eye), poem_az=az, poem_el=el, em=em)
     return dict(what='D-13 Rilke candidate t=%.1f' % t, **{k: (round(v, 2) if isinstance(v, float) else v) for k, v in info.items()})

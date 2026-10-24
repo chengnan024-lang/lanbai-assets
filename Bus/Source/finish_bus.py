@@ -190,7 +190,7 @@ def wipers():
     for nm, px, d in (('L', B.XC - 1.00, 1.0), ('R', B.WS_POST[1] + 0.06, 1.0)):
         piv = bpy.data.objects.new('WiperPivot_' + nm, None)
         bpy.context.scene.collection.objects.link(piv)
-        loc = BB.U2B((px, B.WS_BOT + 0.03, B.Z_FRONT + 0.02))
+        loc = BB.U2B((px, B.WS_BOT - 0.022, BB.front_z(px, B.WS_BOT - 0.022) + 0.03))
         # Unity basis: Y' = (1,0,0) (parked arm along +x), Z' = (0,0,1) (axis out of the glass, forward), X' = Y' x Z'
         Yu, Zu = Vector((1, 0, 0)), Vector((0, 0, 1))
         # convert the Unity basis to Blender: columns are images of local x,y,z under U2B; local axes stay Unity-local
