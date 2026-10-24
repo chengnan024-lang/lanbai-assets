@@ -1,0 +1,106 @@
+{
+ "hero": {
+  "law": {
+   "0.25s": [
+    0.21,
+    0.5
+   ],
+   "1.00s": [
+    0.837,
+    1.0
+   ],
+   "2.00s": [
+    1.667,
+    1.8
+   ],
+   "pass": true
+  },
+  "apl_end": 124.9,
+  "flashcheck_tail": [
+   " \"max_rise_ev_2s\": 1.68,",
+   " \"max_fall_ev_0.25s\": -0.0,",
+   " \"peak_apl_luma\": 149,",
+   " \"mean_apl_luma\": 77,",
+   " \"lanbai_ramp_law\": \"PASS\"",
+   "}"
+  ]
+ },
+ "door_d12": {
+  "law": {
+   "0.25s": [
+    0.207,
+    0.5
+   ],
+   "1.00s": [
+    0.824,
+    1.0
+   ],
+   "2.00s": [
+    1.643,
+    1.8
+   ],
+   "pass": true
+  },
+  "apl_end": 105.3,
+  "flashcheck_tail": [
+   " \"max_rise_ev_2s\": 1.66,",
+   " \"max_fall_ev_0.25s\": -0.0,",
+   " \"peak_apl_luma\": 136,",
+   " \"mean_apl_luma\": 68,",
+   " \"lanbai_ramp_law\": \"PASS\"",
+   "}"
+  ]
+ },
+ "hero_skylight": {
+  "law": {
+   "0.25s": [
+    0.202,
+    0.5
+   ],
+   "1.00s": [
+    0.805,
+    1.0
+   ],
+   "2.00s": [
+    1.601,
+    1.8
+   ],
+   "pass": true
+  },
+  "apl_end": 71.2,
+  "flashcheck_tail": [
+   " \"max_rise_ev_2s\": 1.62,",
+   " \"max_fall_ev_0.25s\": -0.0,",
+   " \"peak_apl_luma\": 106,",
+   " \"mean_apl_luma\": 66,",
+   " \"lanbai_ramp_law\": \"PASS\"",
+   "}"
+  ]
+ },
+ "vr_door_d12": {
+  "law": {
+   "0.25s": [
+    0.201,
+    0.5
+   ],
+   "1.00s": [
+    0.801,
+    1.0
+   ],
+   "2.00s": [
+    1.593,
+    1.8
+   ],
+   "pass": true
+  },
+  "apl_end": 82.8,
+  "flashcheck_tail": [
+   " \"max_rise_ev_2s\": 1.61,",
+   " \"max_fall_ev_0.25s\": -0.0,",
+   " \"peak_apl_luma\": 117,",
+   " \"mean_apl_luma\": 62,",
+   " \"lanbai_ramp_law\": \"PASS\"",
+   "}"
+  ]
+ }
+}

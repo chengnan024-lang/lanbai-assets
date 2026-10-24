@@ -93,6 +93,9 @@ namespace VRC.SDKBase
         public void SetGravityStrength(float strength) { }
         public float GetAvatarEyeHeightAsMeters() { return 1.6f; }
         public static VRCPlayerApi GetPlayerById(int playerId) { return null; }
+        // SDK 3.2.3+ (RFC 5646 codes since client 2024.1.1): creators.vrchat.com/worlds/udon/players/#language
+        public static string GetCurrentLanguage() { return "en"; }
+        public static string[] GetAvailableLanguages() { return new string[] { "en" }; }
         public static int GetPlayerCount() { return 1; }
         public static VRCPlayerApi[] GetPlayers(VRCPlayerApi[] players) { return players; }
     }
@@ -115,5 +118,29 @@ namespace VRC.SDKBase
     public static class Utilities
     {
         public static bool IsValid(object obj) { return obj != null; }
+    }
+
+    // VRCStation (SDK 3.10.5 public members; the SDK3 component VRC.SDK3.Components.VRCStation derives from it). D-32 #10.
+    public abstract class VRCStation : MonoBehaviour
+    {
+        public enum Mobility { Mobile = 0, Immobilize = 1, ImmobilizeForVehicle = 2 }
+        public Mobility PlayerMobility = Mobility.Immobilize;
+        public bool canUseStationFromStation = true;
+        public RuntimeAnimatorController animatorController;
+        public bool disableStationExit;
+        public bool seated = true;
+        public Transform stationEnterPlayerLocation;
+        public Transform stationExitPlayerLocation;
+        public abstract void UseStation(VRCPlayerApi player);
+        public abstract void ExitStation(VRCPlayerApi player);
+    }
+}
+
+namespace VRC.SDK3.Components
+{
+    public class VRCStation : VRC.SDKBase.VRCStation
+    {
+        public override void UseStation(VRC.SDKBase.VRCPlayerApi player) { }
+        public override void ExitStation(VRC.SDKBase.VRCPlayerApi player) { }
     }
 }

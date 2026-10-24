@@ -87,7 +87,7 @@
 | `Lanbai_WetOverlay.shader` | `Lanbai/WetOverlay`：车门踏步上的湿斑。§7。 |
 | `LanbaiRain.cginc` | 共用的雨的数学：flipbook / 程序化雨纹 / 滴水环（含足迹低通）、玻璃上的水珠、流滴、雨刮、水滴光学。**所有常数都是生成贴图时用的，改了就要重生成贴图。** |
 | `LanbaiLamps.cginc` | 8 盏解析灯（`_Udon_Lamp0..7`）：GGX 镜面（湿路光带、水洼里的灯管，含“静水灯影上限”）、雨的散射、水滴里的小灯点。 |
-| `LanbaiVR.cginc` | 共用的 VR 小工具（几何镜面抗锯齿、两眼中点……）。与 `art/lens_tech/shaders/LanbaiVR.cginc` 相同，只多了 `LanbaiCentreEyePos()`；两份的立体注释都已改正（§10）。 |
+| ~~`LanbaiVR.cginc`~~ | **10-24 删掉**（总工程师，D-34 #7）：和 `Common/Shaders/LanbaiVR.cginc` 逐字相同，雨的 shader 改成 include `Assets/Lanbai/Common/Shaders/LanbaiVR.cginc`。`_Udon_` 全局量也不再自己声明：`LanbaiLamps.cginc` include `LanbaiGlobals.cginc`，`LanbaiRain.cginc` 和各 shader 里的声明都删了（`_Udon_ReflCube` 统一成 `samplerCUBE`，和海一样）。全仓编译检查 0 错；剩的一个警告是 `StencilWindow` 打开窗口那一遍的 `ZTest Always`（只在模板 128 里写深度，是有意的）。 |
 | **Runtime/**（UdonSharp，全部本地、不同步） | |
 | `LanbaiRainState.cs` | 雨与湿度的全局量、流向帧 A/B、流滴的距离时钟、每幕预设（§9）。 |
 | `LanbaiWipers.cs` | **v2 新增**：无人驾驶的雨刮（§5.5）。 |
