@@ -355,6 +355,13 @@ for p in POEMS:
         # or the right windscreen pane, then away from bus parts (#7b)
         p['gaze_deg'] = 75.0
         p['place_note'] = 'D-33 #3：中心方位 +61°，仰角不变；左沿 ≥ +48.5°'
+    # D-37: the act's focus (az, el from the main seat's eye), kept >= 12° clear when a seat's position is solved; only
+    # where the bible / rulings give the direction: 6d the dawn sun in the door (D-12 +30° / +6°), 7b the hall gate
+    # (-7…-12°, on the horizon)
+    if p['id'] == 'P06_Dream_Dawn':
+        p['focus'] = (30.0, 6.0)
+    if p['id'] == 'P07_HeBo':
+        p['focus'] = (-9.5, 0.0)
     if p['id'] == 'P08b_Zhuangzi_Xiaoyao':
         # #4: indigo ink #27304A (bible §6·8, AD 10-07), no dark scrim (#EADCD6 + dark scrim withdrawn)
         p['color_target'] = '#27304A'

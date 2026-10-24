@@ -21,10 +21,11 @@
 //  (-1) / none (0). Written with a MaterialPropertyBlock on the TMP MeshRenderer (_FaceColor = the solved linear fill
 //  with alpha, _OutlineSoftness, _FaceDilate 0.05 desktop / 0.10 VR), so no per-object material instance is needed.
 //  Urlicht's lines appear with their cues (TMP maxVisibleLines). Tianwen's Han line is 20 one-character objects.
-//  Seats (D-33 #7b): the bus exports a 1° occlusion grid per seat (from that seat's eye); the bake copies it into
-//  seatOcc. Placing a poem (default or moved by the gaze rule), the block is looked up for the LOCAL player's seat
-//  (SetSeat from LB_Journey): more than 10 % behind bus parts -> move it sideways 1° at a time, toward the default
-//  first, at most ±15°, the nearest position with ≤ 10 %; none -> the default. Fixed poems (Zhuangzi, Tianwen) never move.
+//  Seats (D-37): the main seat keeps D-33's positions. Every other seat (SetSeat from LB_Journey), and the main seat
+//  when the gaze rule moves a poem, looks the position up in tables solved OFFLINE on the bus's 1° seat grids
+//  (Tools~/seat_table.py: <= 10 % blocked, centre elevation -15…+10°, the whole circle, nearest to the default / gaze
+//  target, >= 12° from the act's focus when it can; none -> the least blocked). No search at runtime.
+//  Zhuangzi and Tianwen never move.
 // =====================================================================================================
 using UdonSharp;
 using UnityEngine;
@@ -48,8 +49,6 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
     public float[] pAzKey;
     public bool[] pFixed;                            // never follows the gaze (Zhuangzi, Tianwen)
     public float[] pGazeDeg;                         // gaze threshold per poem: 50°, the side-window poems 75° (D-33 #7c)
-    public Vector2 winRight = new Vector2(-22.5f, 16.5f);   // a moved block stays inside one of these azimuth spans
-    public Vector2 winSide = new Vector2(48.5f, 103f);
     public Transform[] slotRoot;                     // [p * K + k]: the anchor of that poem for that key
     public int[] slotObjStart, slotObjCount;         // text objects of the slot (contiguous)
     public int[] slotScrimStart, slotScrimCount;
@@ -73,11 +72,12 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
     public string[] boardPrefix, boardSuffix;        // line 1 = prefix + seconds + suffix (the {0} of strings_all.json ui)
     public GameObject boardButtons;                  // 中 / 日 / EN: on with the countdown, off after departure (§6·12)
 
-    [Header("Seats (D-33 #7b): 1° occlusion grid per seat from the bus, row-major el0 upward, az0 eastward")]
+    [Header("Seats (D-37): positions solved offline per seat (Tools~/seat_table.py -> Fonts/seat_positions.json)")]
     public Vector3[] seatEye;                        // bus space; empty -> eyeLocal
-    public byte[] seatOcc;                           // [seat * occNEl * occNAz + row * occNAz + col]: 1 = a bus part
-    public int occAz0 = -180, occEl0 = -25, occNAz = 360, occNEl = 46;
-    public float[] slotBlkW, slotBlkEl0, slotBlkEl1; // the block per slot (width deg, bottom / top elevation deg)
+    public float[] seatDefAz, seatDefEl;             // [(seat * nPoems + p) * K + k]: block centre for the default
+    public float[] seatGazeAz, seatGazeEl;           // [((seat * nPoems + p) * K + k) * FACINGS + facing]: when the gaze rule moves it
+    public float[] slotBlkEl0, slotBlkEl1;           // the default block per slot (bottom / top elevation deg)
+    public const int FACINGS = 24;                   // 15° cells of the player's yaw, from -180°
     public int seat = 0;
 
     [Header("State (read only)")]
@@ -186,72 +186,49 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
     {
         float az = pAz[p];
         bool kept = true;
+        float yaw = 0f;
         if (!pFixed[p])
         {
             // trigger: the player's yaw (in bus space) within the poem's gaze threshold of the default -> default (50°;
-            // the side-window poems 75°, D-33 #7c); else the player's yaw rounded to 15°, moved 20° toward the default,
-            // same elevation and distance
-            float yaw = HeadYaw();
+            // the side-window poems 75°, D-33 #7c); else moved (the gaze rule's position, solved offline per seat)
+            yaw = HeadYaw();
             float d = Mathf.DeltaAngle(yaw, az);
             float thr = pGazeDeg != null && pGazeDeg.Length > p ? pGazeDeg[p] : 50f;
             if (Mathf.Abs(d) > thr) { az = Mathf.Round(yaw / 15f) * 15f + (d > 0f ? 20f : -20f); kept = false; }
         }
-        // origin: the seat's eye for the default; the player's head (in bus space) for a gaze-moved poem (D-33 review #6)
         Vector3 origin = seatEye != null && seatEye.Length > seat ? seatEye[seat] : eyeLocal;
-        if (!kept && busRoot != null) origin = busRoot.InverseTransformPoint(HeadPos());
+        int nP = pId.Length;
+        int f = ((Mathf.RoundToInt((yaw + 180f) / 15f) % FACINGS) + FACINGS) % FACINGS;
         for (int k = 0; k < K; k++)
         {
-            // the per-key default (D-13: Rilke ja +4.5°) holds only where the gaze rule kept the default
             int slot = p * K + k;
             float def = pAzKey != null && pAzKey.Length > slot ? pAzKey[slot] : pAz[p];
-            float a = kept ? def : InWindows(slot, az);
-            if (!pFixed[p]) a = Avoid(slot, a, def);
-            PlaceSlot(p, k, a, origin);
-        }
-    }
-
-    // D-33 #7c: a moved poem stays inside the right windscreen pane or the side window (block edges inside
-    // winRight / winSide, bus README §2.2); the nearest allowed centre
-    private float InWindows(int slot, float a)
-    {
-        float h = slotBlkW != null && slotBlkW.Length > slot ? slotBlkW[slot] * 0.5f : 0f;
-        float l0 = winRight.x + h, l1 = winRight.y - h, s0 = winSide.x + h, s1 = winSide.y - h;
-        if ((a >= l0 && a <= l1) || (a >= s0 && a <= s1)) return a;
-        float best = a, bd = 1e9f;
-        if (l0 <= l1) { float c = Mathf.Clamp(a, l0, l1); if (Mathf.Abs(c - a) < bd) { bd = Mathf.Abs(c - a); best = c; } }
-        if (s0 <= s1) { float c = Mathf.Clamp(a, s0, s1); if (Mathf.Abs(c - a) < bd) { bd = Mathf.Abs(c - a); best = c; } }
-        return best;
-    }
-
-    // D-33 #7b: blocked share of the block at azimuth a for the local player's seat (0 when there is no grid)
-    public float Blocked(int slot, float a)
-    {
-        int per = occNAz * occNEl;
-        if (seatOcc == null || seatOcc.Length < per * (seat + 1) || slotBlkW == null || slotBlkW.Length <= slot) return 0f;
-        float a0 = a - slotBlkW[slot] * 0.5f, a1 = a + slotBlkW[slot] * 0.5f;
-        int c0 = Mathf.FloorToInt(a0) - occAz0, c1 = Mathf.CeilToInt(a1) - occAz0;
-        int r0 = Mathf.Max(0, Mathf.FloorToInt(slotBlkEl0[slot]) - occEl0), r1 = Mathf.Min(occNEl, Mathf.CeilToInt(slotBlkEl1[slot]) - occEl0);
-        int n = 0, hit = 0, b = seat * per;
-        for (int r = r0; r < r1; r++)
-            for (int c = c0; c < c1; c++)
+            float a = kept ? def : az;
+            float el = pEl[p];
+            // D-37: every seat but the main one (and the main one when the gaze rule moves the poem) looks its position
+            // up in the tables solved offline (Tools~/seat_table.py): block centre (az, el); the anchor moves by the same
+            // elevation as the block centre. Zhuangzi and Tianwen never move. No table -> D-33's default / gaze position.
+            if (!pFixed[p] && (seat != 0 || !kept))
             {
-                int cc = ((c % occNAz) + occNAz) % occNAz;
-                n++;
-                if (seatOcc[b + r * occNAz + cc] != 0) hit++;
+                int i = (seat * nP + p) * K + k;
+                if (kept && seatDefAz != null && seatDefAz.Length > i)
+                {
+                    a = seatDefAz[i];
+                    el = pEl[p] + seatDefEl[i] - BlockCentre(slot);
+                }
+                else if (!kept && seatGazeAz != null && seatGazeAz.Length > i * FACINGS + f)
+                {
+                    a = seatGazeAz[i * FACINGS + f];
+                    el = pEl[p] + seatGazeEl[i * FACINGS + f] - BlockCentre(slot);
+                }
             }
-        return n > 0 ? (float)hit / n : 0f;
+            PlaceSlot(p, k, a, el, origin);
+        }
     }
 
-    private float Avoid(int slot, float a, float def)
+    private float BlockCentre(int slot)
     {
-        if (Blocked(slot, a) <= 0.1f) return a;
-        float dir = def > a ? 1f : -1f;                              // toward the default first
-        for (int d = 1; d <= 15; d++)
-        {
-            if (Blocked(slot, a + dir * d) <= 0.1f) return a + dir * d;
-            if (Blocked(slot, a - dir * d) <= 0.1f) return a - dir * d;
-        }
-        return def;
+        return slotBlkEl0 != null && slotBlkEl0.Length > slot ? 0.5f * (slotBlkEl0[slot] + slotBlkEl1[slot]) : 0f;
     }
 
     // LB_Journey: the local player's seat index (the bus's seat order, as the grid was exported)
@@ -260,11 +237,11 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
         seat = s;
     }
 
-    private void PlaceSlot(int p, int k, float a, Vector3 origin)
+    private void PlaceSlot(int p, int k, float a, float el, Vector3 origin)
     {
         Transform r = slotRoot[p * K + k];
         if (r == null || busRoot == null) return;
-        float ar = a * Mathf.Deg2Rad, er = pEl[p] * Mathf.Deg2Rad;
+        float ar = a * Mathf.Deg2Rad, er = el * Mathf.Deg2Rad;
         Vector3 dir = new Vector3(Mathf.Cos(er) * Mathf.Sin(ar), Mathf.Sin(er), Mathf.Cos(er) * Mathf.Cos(ar));
         Vector3 local = origin + dir * pDist[p];
         Vector3 world = busRoot.TransformPoint(local);

@@ -237,7 +237,7 @@ Director v1.1 起没有要本地填的窗口：`LB_Journey` 勾 `extAtmosphere` 
 
 - **摆诗归 `LanbaiPoemDriver`**（`Fonts/Runtime/`，4.1，D-33 #5）：烘焙菜单会在 `Fonts/Runtime/` 里给 `LanbaiPoemDriver`、`LanbaiLangButton` 建 U# 程序资产（U# 1.x 没有 `.asset` 就不编译；菜单打印“created the U# program asset”就是建了）。菜单 `蓝白/Fonts/Build Poem Objects (v4.1 runtime)` 读 `strings_all.json`，建 `Lanbai_Poems`（每首诗 × 每个玩家键一套 TMP，全关）、`Lanbai_Board`（发车提示 + 中 / 日 / EN 三个开关）、`Lanbai_PoemDriver`，字段全填好。前提：字体资产、诗句材质已经建好（`Fonts/README_Fonts.md` §3.2）。然后把 `busRoot` 拖成车的根（场景里有名为 `Bus` 的物体时自动接），公告板挪到站牌上，Director 1 Generate、2 Wire。
 - 它管：语言（客户端代码 → 键，`zh-HK` 先判；`OnLanguageChanged`；公告板开关只对本人）、注视规则（§7.4-6，庄子和天问固定）、出现 / 停留 / 退场（2.5 s 对焦、0.2° 漂移）、Urlicht 的行跟乐句、天问的 20 个单字物体、6d 的亮衬、公告板的倒计时和中 / 日 / EN 三个开关（`LB_Journey` 发车前每帧调 `LanbaiBoard(离发车的秒数)`，发车后调一次 `LanbaiBoardHide()`：倒计时和开关一起关，发车以后世界里没有 UI 字）。侧窗三首（李白两首、济慈）的注视阈值是 75°，其余 50°；挪的时候只挪在挡风右片或侧窗里（D-33 #7c）。只从 t 算，迟到的人、拖时间轴都对（D-33 #6）。
-- **`LB_Journey` 里的三组诗句数组退役**（`_poemIdx` / `_poemStage` 那一套和 `PickLanguage()` 一起）：本地删掉它们，不要两个系统同时摆诗。本地还要在玩家坐下 / 换座位时调 `LanbaiPoemDriver.SetSeat(座位号)`（座位号按车导出遮挡网格的顺序，D-33 #7b）。
+- **`LB_Journey` 里的三组诗句数组退役**（`_poemIdx` / `_poemStage` 那一套和 `PickLanguage()` 一起）：本地删掉它们，不要两个系统同时摆诗。本地还要在玩家坐下 / 换座位时调 `LanbaiPoemDriver.SetSeat(座位号)`（座位号 = `BusLayout.json` 的 seats 顺序，主座位 SeatR0 = 0）。别的座位的诗位置是离线解好的表（D-37，`Fonts/seat_positions.json`），烘焙菜单读进驱动；车更新座位网格以后，总工程师重跑 `build_fonts.py`，本地重点一次烘焙菜单。
 - **天问的汉字对所有玩家都在同一个位置**（第 9 幕的 16 颗星按中文排版放），不是中文的玩家下面多一块自己语言的小字。时刻全部没变。
 - 没在 Unity 里编译过：TMP 3D 上用 MaterialPropertyBlock 写 `_FaceColor` / `_OutlineSoftness` / `_FaceDilate`、U# 里 `TextMeshPro.maxVisibleLines`，第一次导入请把 Console 推回来。
 
@@ -247,7 +247,7 @@ Director v1.1 起没有要本地填的窗口：`LB_Journey` 勾 `extAtmosphere` 
 2. **送回座位按根位置算**（D-31 #3）：车厢包围盒检查用 `VRCPlayerApi.GetPosition()`（脚底的根），**不用头**；头探出玻璃 ≤ 0.6 m 不许触发 0.5 秒遮罩送回。包围盒从车的 `BusLayout.json` 读（PAZ：车宽 2.44 m，车身中线 x = −0.18，眼位 (0.55, 1.70, 2.05) 不变）。这个检查归谁（Director 2 Hz 还是本地的 `busMin/busMax`）还没定，见 `Director/README_Director.md` §5；不管谁做，规则照这一条。
 3. **偏航（第 2、11 幕）转的是世界（路的根），永远不转车和座位**（D-31 #4）：参照系一转，同车人头像的头发和 PhysBones 会被甩。本地 `LB_Journey` 里凡是“转车”的偏航，改成反向转路的根。
 4. **发车提示 + 人数上限**（D-31 #5）：发车前公告板用玩家自己的语言显示 `ui` 里的两行（`{0}` = 离发车的秒数）；实例人数上限 = 车的座位数（「车」数）。发车以后不再有 UI 字。
-5. **世界说明写双语“请预载 / Please preload”**（D-31 #6）；第 4 幕、第 7b 幕两个热点，有条件的话在 RTX 3060 级的机器上实测一次（协议见账本 §三、§五）。
+5. **世界说明（上传时填，不进世界）**：双语“请预载 / Please preload”（D-31 #6）；再加一句最好的座位（D-37）——中：「最好的座位：右前排靠窗（车门后面那个）」，日：「いちばんの席：右側最前列の窓側（ドアのすぐ後ろ）」，英：“Best seat: front row on the right, by the window (just behind the door)”。第 4 幕、第 7b 幕两个热点，有条件的话在 RTX 3060 级的机器上实测一次（协议见账本 §三、§五）。
 6. **遮挡剔除只给静止的站台（第 1、12 幕）烘**（D-31 #7）：会动的外景（跑步机）一律不烘。账本从来没假设过遮挡剔除（账本 §六 末尾）。
 
 ### 9.7 还没交的（这几格在 §8 里写着“等包”）
