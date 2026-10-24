@@ -264,8 +264,8 @@ def build_all(ao_samples):
     out['Cabin_DestBlind'] = join('Cabin_DestBlind', groups['blind'])
     out['Cabin_Curtains'] = join('Cabin_Curtains', groups['curt'])
     # four folding-door panels (D-28d), each its own object (act 11 closes them under the white mask)
-    for pid in ('DoorF_A', 'DoorF_B', 'DoorR_A', 'DoorR_B'):
-        parts = [o for o in groups['door'] if pid in o.name]
+    door_parts = {pid: [o for o in groups['door'] if pid in o.name] for pid in ('DoorF_A', 'DoorF_B', 'DoorR_A', 'DoorR_B')}
+    for pid, parts in door_parts.items():
         if parts:
             d = join('Bus_' + pid, parts)
             bb = [d.matrix_world @ Vector(c) for c in d.bound_box]

@@ -15,18 +15,20 @@
   "half": 0.3
  },
  "door": {
-  "hinge": [
-   1.05,
-   0.0,
+  "kind": "two outward-folding glazed leaves, centre-opening, 2 panels each (D-28d)",
+  "panel_m": 0.14,
+  "jambs_m": {
+   "rear": 0.07,
+   "front": 0.02
+  },
+  "opening_z": [
+   2.62,
    3.27
   ],
-  "open_deg": 165.0,
-  "closed_deg": 0.0,
-  "axis": "+Y local",
-  "note": "第 11 幕在白的遮罩下关上（圣经 §6·11）；其余时间开着，从不关"
+  "note": "FBX 里是开着的状态（圣经：门从不关）；第 11 幕在白的遮罩下关上。关的状态的变换在完整的车里补（WIP）"
  },
  "wheels": {
-  "radius": 0.42,
+  "radius": 0.45,
   "names": [
    "Wheel_FR",
    "Wheel_FL",
@@ -37,22 +39,22 @@
   "centres": [
    [
     0.8200000000000001,
-    0.42,
+    0.45,
     2.05
    ],
    [
     -1.18,
-    0.42,
+    0.45,
     2.05
    ],
    [
     0.8200000000000001,
-    0.42,
+    0.45,
     -1.55
    ],
    [
     -1.18,
-    0.42,
+    0.45,
     -1.55
    ]
   ]
@@ -718,7 +720,10 @@
   }
  ],
  "objects": [
-  "Bus_DoorLeaf",
+  "Bus_DoorF_A",
+  "Bus_DoorF_B",
+  "Bus_DoorR_A",
+  "Bus_DoorR_B",
   "Bus_Exterior_LOD0",
   "Bus_Exterior_LOD1",
   "Cabin_Curtains",
@@ -762,12 +767,12 @@
  ],
  "stats": {
   "Cabin_Static": {
-   "verts": 33993,
-   "tris": 61065
+   "verts": 34366,
+   "tris": 62409
   },
   "Bus_Exterior_LOD0": {
-   "verts": 7558,
-   "tris": 13931
+   "verts": 14016,
+   "tris": 21357
   },
   "Cabin_Tubes": {
    "verts": 960,
@@ -785,9 +790,21 @@
    "verts": 7778,
    "tris": 13932
   },
-  "Bus_DoorLeaf": {
-   "verts": 92,
-   "tris": 158
+  "Bus_DoorF_A": {
+   "verts": 48,
+   "tris": 64
+  },
+  "Bus_DoorF_B": {
+   "verts": 48,
+   "tris": 64
+  },
+  "Bus_DoorR_A": {
+   "verts": 48,
+   "tris": 64
+  },
+  "Bus_DoorR_B": {
+   "verts": 48,
+   "tris": 64
   },
   "Wheel_FL": {
    "verts": 648,
@@ -922,10 +939,10 @@
    "tris": 72
   },
   "Bus_Exterior_LOD1": {
-   "verts": 2793,
-   "tris": 4875
+   "verts": 5413,
+   "tris": 7474
   },
-  "Wiper-0.12": {
+  "Wiper-0.14": {
    "verts": 32,
    "tris": 28
   },
@@ -934,5 +951,5 @@
    "tris": 28
   }
  },
- "stats_total_tris": 103079
+ "stats_total_tris": 114546
 }

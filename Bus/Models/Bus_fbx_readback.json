@@ -1,7 +1,7 @@
 {
  "Cabin_Static": {
-  "verts": 33993,
-  "verts_expected": 33993,
+  "verts": 34366,
+  "verts_expected": 34366,
   "bbox_err_m": 0.0,
   "uv_layers": [
    "UVMap",
@@ -12,8 +12,8 @@
   ]
  },
  "Bus_Exterior_LOD0": {
-  "verts": 7558,
-  "verts_expected": 7558,
+  "verts": 14016,
+  "verts_expected": 14016,
   "bbox_err_m": 0.0,
   "uv_layers": [
    "UVMap"
@@ -58,9 +58,36 @@
    "Col"
   ]
  },
- "Bus_DoorLeaf": {
-  "verts": 92,
-  "verts_expected": 92,
+ "Bus_DoorF_A": {
+  "verts": 48,
+  "verts_expected": 48,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Bus_DoorF_B": {
+  "verts": 48,
+  "verts_expected": 48,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Bus_DoorR_A": {
+  "verts": 48,
+  "verts_expected": 48,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Bus_DoorR_B": {
+  "verts": 48,
+  "verts_expected": 48,
   "bbox_err_m": 0.0,
   "uv_layers": [
    "UVMap"
@@ -365,8 +392,8 @@
   "colours": []
  },
  "Bus_Exterior_LOD1": {
-  "verts": 2793,
-  "verts_expected": 2793,
+  "verts": 5413,
+  "verts_expected": 5413,
   "bbox_err_m": 0.0,
   "uv_layers": [
    "UVMap"
@@ -375,7 +402,7 @@
  },
  "WiperPivot_L": "ok (empty)",
  "WiperPivot_R": "ok (empty)",
- "Wiper-0.12": {
+ "Wiper-0.14": {
   "verts": 32,
   "verts_expected": 32,
   "bbox_err_m": 0.0,
