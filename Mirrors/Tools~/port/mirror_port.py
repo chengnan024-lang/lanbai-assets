@@ -30,8 +30,8 @@ EDGE = G.hexlin('#CDBF9C') * 0.8
 BREAK_AMP, EDGE_W, APPEAR_S = 5.0, 0.3, 3.0
 TONE = np.array([1.262, 0.974, 0.484])     # solved so that S9a / S9b show #CDBF9C (review r1 #5)
 BRONZE_TONE = 1.0
-RIM_SCHEME = 'A'          # mirror 13 study (mirror13_study.py)
-RIM_SOFT_FROM = {'A': 0.80, 'C': 0.55, 'D': 0.55, 'E': 0.35, 'F': 0.25, 'G': 0.25}
+RIM_SCHEME = 'JSON'       # the schedule's rim_soft; mirror13_study.py overrides it for the comparison schemes
+RIM_SOFT_FROM = {'A': 0.80, 'C': 0.55, 'D': 0.55, 'E': 0.35, 'F': 0.25, 'G': 0.25, 'H': 0.80, 'JSON': 0.80}
 
 
 # ------------------------------------------------------------------------------------------------- driver logic
@@ -70,20 +70,23 @@ def mirror_state(m, t):
         extra = lin_knots(WHITE['mirror13_face_extra']['EV_knots'], t)
     rimsoft = 0.0
     if m['index'] == 13:
-        if RIM_SCHEME == 'H':      # slow everywhere: sharp from F16 - 10
+        rs = m.get('rim_soft') if RIM_SCHEME == 'JSON' else None
+        if rs is not None:         # the schedule's own (D-38: scheme H): soft while far, sharp from sharpen_from over `seconds`
+            rimsoft = 1.0 - min(max((t - rs['sharpen_from']) / rs['seconds'], 0), 1)
+        elif RIM_SCHEME == 'H':
             rimsoft = 1.0 - min(max((t - 1135.31) / 4.0, 0), 1)
-        elif RIM_SCHEME == 'G':      # recommended: one slow Hermite (<= 2.6 deg/s) from 1142.9, the rim soft until then
+        elif RIM_SCHEME == 'G':
             rimsoft = 1.0 - min(max((t - 1142.9) / 1.0, 0), 1)
-        elif RIM_SCHEME == 'F':      # E with the slow part at <= 2.6 deg/s and the soft rim held to 1143.6
+        elif RIM_SCHEME == 'F':
             rimsoft = 1.0 - min(max((t - 1143.6) / 1.0, 0), 1)
-        elif RIM_SCHEME == 'E':      # as D, the rim stays soft (wider feather) until the speed is under 3 deg/s
+        elif RIM_SCHEME == 'E':
             rimsoft = 1.0 - min(max((t - 1143.3) / 1.0, 0), 1)
-        elif RIM_SCHEME == 'D':      # fast rise only while soft (to 1142.9), then <= 3 deg/s and sharp
+        elif RIM_SCHEME == 'D':
             rimsoft = 1.0 - min(max((t - 1142.9) / 1.0, 0), 1)
-        elif RIM_SCHEME == 'C':      # keep the rim soft through the fast rise, sharpen only in the hush (rim then <= 1 deg/s)
+        elif RIM_SCHEME == 'C':
             rimsoft = 1.0 - min(max((t - 1145.5) / 2.0, 0), 1)
         else:
-            rimsoft = 1.0 - min(max((t - (m['t_cross'] - 10.0)) / 4.0, 0), 1)   # soft while far, sharp in the last 10 s
+            rimsoft = 1.0 - min(max((t - (m['t_cross'] - 10.0)) / 4.0, 0), 1)
     return dict(D=D, R=R, c=np.array([cx, y_edge, cz]), y_car=y_car, vis=vis, appear=appear, dissolve=dis, extra=extra,
                 k=m['emission_k'], index=m['index'], rimsoft=rimsoft)
 

@@ -77,7 +77,7 @@ assert all(abs(a - b) < 0.011 for a, b in zip(cross, BIBLE)), (cross, BIBLE)
 # mirror 13's last 10 s (总导演意见 #5): A = the first version; G = fast while the rim is soft, then <= 2.6 deg/s;
 # H = a 17 km mirror that already fills the down view, rim <= 1.4 deg/s throughout (Docs~/iterations/m13_*). Pick with
 # LANBAI_M13=A|G|H (the director's choice is recorded in the JSON as scheme13).
-SCHEME13 = os.environ.get('LANBAI_M13', 'A')
+SCHEME13 = os.environ.get('LANBAI_M13', 'H')        # D-38: the director picked H
 D13 = 17000.0 if SCHEME13 == 'H' else 2400.0
 D = [40.0 * 1.2 ** k for k in range(10)] + [360.0, 620.0, D13]
 EYE = np.array([0.55, 1.70, 2.05])             # Gate/GateLayout_v2.json cameras.U7 (CONTROL §3)
