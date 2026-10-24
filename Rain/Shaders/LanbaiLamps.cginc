@@ -26,10 +26,7 @@
 
 #include "UnityCG.cginc"
 
-float4 _Udon_Lamp0, _Udon_Lamp1, _Udon_Lamp2, _Udon_Lamp3, _Udon_Lamp4, _Udon_Lamp5, _Udon_Lamp6, _Udon_Lamp7;
-float4 _Udon_LampColor0, _Udon_LampColor1, _Udon_LampColor2, _Udon_LampColor3, _Udon_LampColor4, _Udon_LampColor5, _Udon_LampColor6, _Udon_LampColor7;
-float4 _Udon_LampAxis0, _Udon_LampAxis1, _Udon_LampAxis2, _Udon_LampAxis3, _Udon_LampAxis4, _Udon_LampAxis5, _Udon_LampAxis6, _Udon_LampAxis7;
-float4 _Udon_LampDir0, _Udon_LampDir1, _Udon_LampDir2, _Udon_LampDir3, _Udon_LampDir4, _Udon_LampDir5, _Udon_LampDir6, _Udon_LampDir7;
+#include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc"   // _Udon_Lamp0..7, _Udon_LampColor0..7, _Udon_LampAxis0..7, _Udon_LampDir0..7 (declared once there; D-34 #7)
 
 // cone / reflector term for a direction leaving the lamp (unit, lamp -> point)
 inline float LanbaiLampCone(float4 dirW, float3 lampToPoint)

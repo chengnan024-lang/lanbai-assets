@@ -42,13 +42,8 @@ def join_lines(segs, key):
 
 poems_out = []
 for p in L.POEMS:
-    of = p['original']['font']
-    for i, s in enumerate(p['segments']):
-        for ln in s['main']:
-            add(of, ln, p['id'])
-        for lang, tr in p['translations'].items():
-            for ln in s.get(lang, []):
-                add(tr['font'], ln, p['id'] + '/' + lang)
+    for fk, ln, ident in L.shown_strings(p):           # v4 (D-30): only what some player actually sees
+        add(fk, ln, ident)
     main_lines = join_lines(p['segments'], 'main')
     q = {k: v for k, v in p.items() if k not in ('segments', 'translations')}
     q['original'] = dict(p['original'], lines=main_lines, tmp_text='\n'.join(main_lines))
@@ -56,11 +51,11 @@ for p in L.POEMS:
     q['translations'] = {}
     for lang, tr in p['translations'].items():
         lines = join_lines(p['segments'], lang)
-        q['translations'][lang] = dict(font=tr['font'], lines=lines, tmp_text='\n'.join(lines))
+        q['translations'][lang] = dict(font=(L.SUB_FONT if p.get('picture') else L.TR_FONT)[lang], lines=lines, tmp_text='\n'.join(lines))
     q['display_by_player_language'] = {}
-    for pl in ('zh', 'ja', 'en', 'de', 'other'):
-        t = L.translation_for(p, pl)
-        q['display_by_player_language'][pl] = t
+    for pl in ('zh', 'zht', 'ja', 'en', 'de'):
+        q['display_by_player_language'][pl] = dict(shown='main' if p.get('picture') else L.shown_lang(p, pl),
+                                                   sub_line=L.translation_for(p, pl))
     poems_out.append(q)
 
 # credits (bible full text)
@@ -88,10 +83,6 @@ for ln in K['verse']['lines']:
 add(L.DESTINATION_ROLL['font'], L.DESTINATION_ROLL['text'], 'DEST_ROLL')
 for u in L.UI:
     add(u['font'], u['text'], u['id'])
-# optional JP Regular mirrors JP Medium
-for t, ids in by_font['SourceHanSerifJP-Medium'].items():
-    for i in ids:
-        add('SourceHanSerifJP-Regular', t, i + '(=JP Medium)')
 
 # --------------------------------------------------------------------------------------- charsets
 def charset_of(strings):
@@ -414,25 +405,6 @@ def line_width_em(k, s, tracking_em):
     return w / upm + tracking_em * max(0, n - 1)
 
 TRACK = lambda k: 0.10 if L.FONTS[k]['cjk'] else 0.0
-width_lines = ['Line widths in degrees of visual angle at the bible sizes (limit 28°, bible §7.3). CJK tracking +0.10 em, Latin 0; kerning = injected kern table.']
-worst = 0
-for p in L.POEMS:
-    width_lines.append('')
-    width_lines.append('%s  (%s)' % (p['id'], p['source']))
-    of = p['original']['font']
-    for s in p['segments']:
-        for ln in s['main']:
-            d = line_width_em(of, ln, TRACK(of)) * p['size_main']
-            worst = max(worst, d)
-            width_lines.append('  %5.1f°%s  main %-4s %s' % (d, ' OVER' if d > 28.0 else '     ', str(p['size_main']) + '°', ln))
-        for lang in ('zh', 'ja', 'en'):
-            if lang in p['translations']:
-                fk = p['translations'][lang]['font']
-                for ln in s.get(lang, []):
-                    d = line_width_em(fk, ln, TRACK(fk)) * p['size_tr']
-                    worst = max(worst, d)
-                    width_lines.append('  %5.1f°%s  %-4s %-4s %s' % (d, ' OVER' if d > 28.0 else '     ', lang, str(p['size_tr']) + '°', ln))
-width_lines.insert(1, 'widest line: %.1f° -> %s' % (worst, 'PASS' if worst <= 28.0 else 'FAIL'))
 
 
 def glyph_boxes(k, chars, px, pad):
@@ -516,6 +488,74 @@ LAYOUTS = LY.all_layouts()
 for q in poems_out:
     q['layout'] = LAYOUTS[q['id']]
 v_ok, v_rows = LY.vertical_check(LAYOUTS)
+
+# line widths (v4: every line some player sees, at the size it is shown; limit 28°, bible §7.3 / D-30 #2)
+width_lines = ['Line widths in degrees of visual angle at the v4 sizes (limit 28°, bible §7.3, D-30 #2). CJK tracking +0.10 em, Latin 0; kerning = injected kern table.']
+worst = 0
+seen_w = set()
+for pid, per in LAYOUTS.items():
+    width_lines.append('')
+    width_lines.append(pid)
+    for pl, lay in per.items():
+        for o in lay['objects']:
+            for ln, w in zip(o['lines'], o['width_deg']):
+                key = (pid, o['font'], o['size_deg'], ln)
+                if key in seen_w:
+                    continue
+                seen_w.add(key)
+                worst = max(worst, w)
+                width_lines.append('  %5.1f°%s  %-4s %-11s %-5s %s' % (w, ' OVER' if w > 28.0 else '     ', o['lang'], o['role'], str(o['size_deg']) + '°', ln))
+width_lines.insert(1, 'widest line: %.1f° -> %s' % (worst, 'PASS' if worst <= 28.0 else 'FAIL'))
+
+# D-33 #5: placement constraints, then every block against the REAL bus (pkg/bus build_bus + viewcheck rays)
+place_bad = LY.placement_check(LAYOUTS)
+for r in place_bad:
+    print('PLACEMENT FAIL %s/%s: %s' % (r['poem'], r['player'], '; '.join(r['problems'])))
+import block_viewcheck as BV
+import subprocess, tempfile
+BUS_DIR = os.environ.get('LANBAI_BUS_DIR')
+BUS_REF = os.environ.get('LANBAI_BUS_REF', 'origin/pkg/bus')
+if not BUS_DIR:
+    # the bus's geometry is pkg/bus's latest (D-33 #5): export Bus/ from that ref of this repository
+    BUS_DIR = tempfile.mkdtemp(prefix='lanbai_bus_')
+    repo = os.path.normpath(os.path.join(KIT, '..'))
+    arch = subprocess.run(['git', '-C', repo, 'archive', BUS_REF, 'Bus'], capture_output=True)
+    if arch.returncode != 0:
+        sys.exit('VIEWCHECK: cannot read %s (git fetch origin pkg/bus, or set LANBAI_BUS_DIR): %s' % (BUS_REF, arch.stderr.decode()[:200]))
+    subprocess.run(['tar', '-x', '-C', BUS_DIR], input=arch.stdout, check=True)
+    BUS_SRC = '%s (%s)' % (BUS_REF, subprocess.run(['git', '-C', repo, 'rev-parse', '--short', BUS_REF], capture_output=True, text=True).stdout.strip())
+else:
+    BUS_SRC = BUS_DIR
+if BV.lookup_available(BUS_DIR) and os.environ.get('LANBAI_VIEWCHECK') != 'rays':
+    VIEW = BV.run_lookup(LAYOUTS, BUS_DIR)
+    how = 'the bus\'s occlusion table Bus/Docs~/viewcheck/hero_occlusion.npz via Bus/Source/occlusion_lookup.py (0.25° grid)'
+else:
+    VIEW = BV.run(LAYOUTS, BUS_DIR)
+    how = 'rays cast here: Bus/Source/build_bus.py + viewcheck.cast, every %.1f°' % BV.STEP
+view_lines = ['Every block of every player against the real bus (%s; %s; clearance ring %.2f° steps up to %.1f°). '
+              'FAIL = some of the block is behind an opaque part (glass does not count).' % (BUS_SRC, how, BV.RING, BV.MAX_CLEAR), '']
+view_fail = []
+for pid, per in VIEW.items():
+    P_ = next(p for p in L.POEMS if p['id'] == pid)
+    ex = P_.get('viewcheck_exempt')
+    for pl, r in per.items():
+        r['exempt'] = ex if (ex and not r['ok']) else None
+        st = 'ok' if r['ok'] else ('EXEMPT' if ex else 'FAIL')
+        if st == 'FAIL':
+            view_fail.append('%s/%s' % (pid, pl))
+        view_lines.append('%-24s %-3s %-6s hits %-40s clearance %s%s' % (pid, pl, st, ','.join(r['hits'][:5]) or '-', r['clearance_deg'],
+                                                                      (' (%s)' % r['clear_hit']) if r['clear_hit'] else ''))
+view_ok = not view_fail
+view_lines.insert(1, 'viewcheck: %s%s' % ('PASS' if view_ok else 'FAIL', '' if view_ok else ' — ' + ', '.join(view_fail)))
+
+# block table (D-30: each act package places the poem with it; the bus re-checks Rilke's D-13 position with it)
+block_rows = []
+for q in poems_out:
+    for pl, lay in q['layout'].items():
+        b = lay['block']
+        block_rows.append(dict(poem=q['id'], player=pl, shown=lay['shown'], shown_lang=lay['shown_lang'], sub_line=lay['translation'],
+                               size_deg=lay['objects'][0]['size_deg'], lines=sum(len(o['lines']) for o in lay['objects'] if o['role'] != 'mirror'),
+                               viewcheck=VIEW[q['id']][pl], **b))
 
 # ------------------------------------------------------------------ colour: screen target -> fill (verify r2 B.1)
 SIMINFO = LC.sim_info()
@@ -685,10 +725,15 @@ out['_about'] = ('Every string the Lanbai world displays (art bible v2.1 §4.7, 
                  'Lines are pre-broken (TMP word wrap OFF). Sizes are em heights in degrees of visual angle; '
                  'place = [azimuth°, elevation°, distance m] in bus space.')
 out['generated'] = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')
-out['display_rule'] = ('Original is always the main line; the player\'s own language beneath (§7.4-7). Chinese poems: '
-                       'zh -> original alone; ja -> + ja (書き下し); others -> + en. German / English poems: same language as '
-                       'the original -> alone; zh -> + zh; ja -> + ja; others -> + en (an English original gets no en line). '
-                       'The user\'s dream lines: original + translation. See display_by_player_language per poem.')
+out['display_rule'] = ('v4 (D-30, 2026-10-24; overrides bible §7.4-7): every player sees ONE language. Player key from the '
+                       'VRChat client language: zh* -> zh, ja -> ja, de -> de, anything else -> en. The original is shown when it '
+                       'is in the player\'s language (a de player reads the German originals, English otherwise); otherwise the '
+                       'translation into it (Chinese poems for ja = 書き下し). One block at the main-line size (CJK 2.2–2.4°, Latin '
+                       '2.0–2.2° em; size_cjk / size_lat per poem), lines <= 28° (a language re-breaks its own lines: <key>_v4). '
+                       'Exception (D-30 #4): Tianwen is a picture in the sky: everyone sees the Han characters, a non-zh player also '
+                       'gets one 1.8° line of their language beneath (sub_line). Timing unchanged (§7.5, x1.3 kept). Zhuangzi: the '
+                       'shown language is mirrored, no caption. layout[player] per poem; block_table lists every block\'s size.')
+out['player_of_client_language'] = [dict(client_prefix=a, player=b) for a, b in L.PLAYER_OF_CLIENT]
 out['fonts'] = collections.OrderedDict((k, fontinfo(k)) for k in L.FONTS)
 out['by_font'] = collections.OrderedDict((k, [{'text': t, 'used_by': ids} for t, ids in d.items()]) for k, d in by_font.items())
 out['poems'] = poems_out
@@ -701,6 +746,7 @@ out['ui_note'] = L.UI_NOTE
 out['layout_model'] = LY.__doc__.strip()
 out['zhuangzi_rule'] = LY.zhuangzi_layout.__doc__.strip()
 out['charsets'] = charsets
+out['block_table'] = block_rows
 out['materials'] = list(materials.values())
 import gen_poem_materials as GPM
 print('wrote', GPM.write(out['materials']))
@@ -723,7 +769,12 @@ with open(os.path.join(DOCS, 'build_report.txt'), 'w', encoding='utf-8') as f:
     f.write('== TIMING (bible v2.1 §7.5) ==\n' + '\n'.join(time_lines) + '\n\n')
     f.write('== SCRIM GEOMETRY ==\n' + '\n'.join(scr_lines) + '\n\n')
     f.write('== VERTICAL PLACEMENT ==\n' + '\n'.join(vert_lines) + '\n\n')
-    f.write('== LINE WIDTHS ==\n' + '\n'.join(width_lines) + '\n')
+    f.write('== VIEWCHECK (D-33 #5) ==\n' + '\n'.join(view_lines) + '\n\n')
+    f.write('== PLACEMENT (D-33) ==\n' + ('PASS' if not place_bad else '\n'.join('FAIL %s/%s: %s' % (r['poem'], r['player'], '; '.join(r['problems'])) for r in place_bad)) + '\n\n')
+    f.write('== LINE WIDTHS ==\n' + '\n'.join(width_lines) + '\n\n')
+    f.write('== BLOCKS (v4: width x height per poem and player) ==\n' + '\n'.join(
+        '%-24s %-3s %-5s %4.2f°  %2d lines  %6.2f° x %5.2f°  az %s  el %s' % (r['poem'], r['player'], r['shown'], r['size_deg'], r['lines'],
+                                                                         r['width_deg'], r['height_deg'], r['az'], r['el']) for r in block_rows) + '\n')
 with open(os.path.join(DOCS, 'build_report.json'), 'w', encoding='utf-8') as f:
     json.dump(dict(subsets=subset_info, atlas=atlas_info, leading=lead_info, coverage_pass=ok_all, widest_line_deg=round(worst, 2),
                    vertical_pass=v_ok, vertical=v_rows, colour_pass=col_ok, scrim_geometry_pass=scr_ok,
@@ -743,3 +794,7 @@ print('\n'.join(opt_lines))
 print('\n'.join(col_lines))
 print('\n'.join(time_lines))
 print('\n'.join(scr_lines))
+print('\n'.join(view_lines))
+if place_bad or not view_ok:
+    sys.exit('BUILD FAILED: %d placement problem(s), viewcheck %s (strings_all.json and the report are written so you can look)' % (
+        len(place_bad), 'PASS' if view_ok else 'FAIL: ' + ', '.join(view_fail)))

@@ -15,7 +15,7 @@
 | 总导演（蓝白总控安排） | 根目录文档、`HANDOFF_LOG.md`、`Common/UdonGlobals.md`、`Common/Shaders/LanbaiVR.cginc` | `main` |
 | **车**（10-23 起，D-10） | `Bus/`、`Cabin/` | `pkg/bus` |
 | 美术审片 | `Review/` | `pkg/review` |
-| 总工程师 | `Common/Tools~/`、`Common/Shaders/LanbaiGlobals.cginc`、`Director/`、`Engineering/`、`Grading/`（维护） | `pkg/engineering` |
+| 总工程师 | `Common/Tools~/`、`Common/Shaders/LanbaiGlobals.cginc`、`Director/`、`Engineering/`、`Grading/`（维护）、**`Fonts/`（10-24 起，D-30 字体套件第 4 版）** | `pkg/engineering` |
 | 门（私密对话） | `GateClouds/`；修补时 `Gate/`、`Tear/`、`Tentacles/` | `pkg/gate-clouds` |
 | 天空 | `Common/Shaders/LanbaiFog.cginc`、`Common/Shaders/LanbaiSky.cginc`、`Sky/`、`Act09_StarSea/` | `pkg/sky` |
 | 云 | `Clouds_v2/`、`Act06_Dawn/`、`Act08_Dusk/` | `pkg/clouds` |
@@ -36,6 +36,7 @@
 ## 1. Git 协议
 
 - 每个会话**只推自己的分支**（上表），**不推 `main`**。总控审过以后合并进 `main`，并写 `HANDOFF_LOG.md`（本地只看 `main` 和这个日志）。
+- **例外（小楠授权，10-24）**：「理解 lanbai-assets 项目」会话可以往各包的分支上加**新的素材文件夹**（如 `Docs~/实物参考_*`、`Docs~/车型_*`；**不只是参考，合适就直接用**进贴图、进世界），只新建、不改已有文件、不碰 `STATUS.md`。包恢复时先 `git pull --rebase` 自己的分支就能拿到。
 - **只改自己的文件夹。** 要改别人的文件（包括 `Art/ART_BIBLE.md`、`HANDOFF_LOG.md`、`README.md`、`Common/` 里不归你的），写进 `<你的文件夹>/给总控.md`，总控来改。
 - 每到一个里程碑就推一次，并更新 `<你的主文件夹>/STATUS.md`（最上面一行：日期时间、做到哪、下一步、有没有卡住）。总控靠它看进度。
 - 大文件：PNG / FBX / blend 都直接提交（仓库已经这么做）；单个文件 < 95 MB。中间产物、wip、缓存**不提交**（放 `/tmp` 或 scratchpad）。

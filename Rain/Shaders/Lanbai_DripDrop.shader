@@ -43,7 +43,7 @@ Shader "Lanbai/DripDrop"
             #pragma multi_compile_fog
             #include "UnityCG.cginc"
             #include "LanbaiRain.cginc"
-            #include "LanbaiVR.cginc"
+            #include "Assets/Lanbai/Common/Shaders/LanbaiVR.cginc"
 
             sampler2D _MainTex;
             float _Frame, _Size, _Opacity, _GlintLobe, _Lens;
