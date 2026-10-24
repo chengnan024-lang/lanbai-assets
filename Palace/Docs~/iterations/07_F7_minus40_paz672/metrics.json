@@ -1,0 +1,13 @@
+{
+ "F7_40x": {
+  "APL": 12.52,
+  "max_luma": 241.4,
+  "brightest_xy_frac": [
+   0.101,
+   0.361
+  ],
+  "purple_frac": 0.0,
+  "purple_D21_frac": 0.0,
+  "frac_luma_gt_200": 0.0
+ }
+}

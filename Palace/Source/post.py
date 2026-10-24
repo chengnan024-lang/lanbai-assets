@@ -18,7 +18,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import palace_layout as L  # noqa: E402
 from grade import grade, srgb_to_lin  # noqa: E402
-from shots import SHOTS  # noqa: E402
+from shots import SHOTS, SHOT_DZ, SHOT_DX  # noqa: E402
 
 B2U = np.array([[-1.0, 0, 0], [0, 0, 1.0], [0, -1.0, 0]])
 
@@ -55,6 +55,10 @@ def cam_basis(yaw, pitch):
     return f, r, u
 
 
+def eye_of(shot):
+    return L.eye(SHOTS[shot][0]) + np.array([SHOT_DX.get(shot, 0.0), 0.0, SHOT_DZ.get(shot, 0.0)])
+
+
 def rays(shot, W, H):
     t, yaw, pitch, hfov, _ = SHOTS[shot]
     f, r, u = cam_basis(yaw, pitch)
@@ -69,7 +73,7 @@ def rays(shot, W, H):
 def project(shot, P, W, H):
     """Unity 宫殿坐标的点 → 像素 (x, y) 与沿视线的深度、距离。"""
     t, yaw, pitch, hfov, _ = SHOTS[shot]
-    e = L.eye(t)
+    e = eye_of(shot)
     f, r, u = cam_basis(yaw, pitch)
     v = np.asarray(P, float) - e
     zc = v @ f
@@ -133,7 +137,7 @@ def composite(exr, shot, gains=None, halo=True, flame_scale=1.0):
         surf += C * (gaussian_filter(G, (1.2, 1.2, 0)) / sb) * g.get(k, 1.0)
     glow = C * (gaussian_filter(groups['doorglow'], (1.2, 1.2, 0)) / sb) if 'doorglow' in groups else 0.0
     t = SHOTS[shot][0]
-    e = L.eye(t)
+    e = eye_of(shot)
     D = rays(shot, W, H)
     Pb = np.stack([exr['Position.X'], exr['Position.Y'], exr['Position.Z']], -1).astype(np.float64)
     Pu = Pb @ B2U.T
@@ -192,19 +196,19 @@ def draw_lamps(img, shot, dist, flame_scale=1.0):
         # 晕卡（第 4 轮）：暖芯很小、靛环从 0.15 r 才起，两者不重叠，免得加色混出丁香紫
         warm = np.exp(-(r / 0.08) ** 2)[..., None] * FLAME_FILL * 0.05
         ring = (np.clip((r - 0.12) / 0.28, 0, 1) ** 2 * (3 - 2 * np.clip((r - 0.12) / 0.28, 0, 1)) * np.clip(1 - r, 0, 1) ** 2)
-        ind = ring[..., None] * HALO_MID * 1.4
+        ind = ring[..., None] * HALO_MID * 1.4 * max(0.0, min(1.0, 1.25 - dd[i] / 120.0))   # 靛环 30 m 起淡、150 m 外没有（远处只剩暖点）
         add = (warm + ind) * att * (vis * soft)[..., None]
         # 灯焰：竖着的软椭圆，0.16 × 0.34 m
         # 灯焰 = shader 的式子：半尺寸 (0.09, 0.19) m，小于 _MinPixels（1.2 px）时放大 s 倍、亮度 / s（Lanbai/PalaceFlame）
         fw, fh = 0.09 * ppm / zc[i] * flame_scale, 0.19 * ppm / zc[i] * flame_scale
-        sc = max(1.0, 1.2 / max(fw, 1e-6))
+        sc = max(1.0, 2.0 / max(fw, 1e-6))            # 第 6 轮（D-34 #4）：最小 2 px，远处不压暗：稳定、分得清的暖点
         fw, fh = fw * sc, fh * sc
         # 从下面看（视线很陡）时 shader 把火转成球状公告板：屏幕上不再是竖的细条（这里用屏幕上的圆近似）
-        vdir = (P[i] - L.eye(SHOTS[shot][0]))
+        vdir = (P[i] - eye_of(shot))
         steep = min(1.0, max(0.0, (abs(vdir[1]) / (np.linalg.norm(vdir) + 1e-9) - 0.5) * 3.0))
         fh = fh * (1 - steep) + fw * steep
         fl = np.exp(-((sx / fw) ** 2 + ((sy + fh * 0.3) / fh) ** 2) * 2.0) * 0.6
-        add += (fl[..., None] * FLAME_FILL + (fl ** 4)[..., None] * FLAME_CORE * 4.0) * att / sc * vis[..., None]
+        add += (fl[..., None] * FLAME_FILL + (fl ** 4)[..., None] * FLAME_CORE * 4.0) * att * vis[..., None]
         img[y0:y1, x0:x1] += add
     return img
 

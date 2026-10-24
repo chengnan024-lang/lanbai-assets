@@ -238,8 +238,23 @@ def setup_world():
             vl.lightgroups.add(name=g)
 
 
+PAZ_SHELL = '/tmp/pal/bus/Bus_HarnessShell_paz672.fbx'     # pkg/bus 的 Bus/Models/Bus_HarnessShell_paz672.fbx（D-34 #5：用真车壳）
+
+
 def add_bus():
     from lbh import scene as S
+    if os.path.exists(PAZ_SHELL):
+        objs = S.import_unity_fbx(PAZ_SHELL)
+        R = Matrix.Rotation(math.pi, 4, 'Z')        # 标准台的轴 (x, z, y) → 本包的轴 (−x, −z, y)
+        dark = materials.standard('M_Bus_Interior', '#2A2C30', smooth=0.3, cull=False)
+        amb = tuple(0.3 * c for c in materials.s2l('#0F1E30'))
+        for o in objs:
+            o.matrix_world = R @ o.matrix_world
+            o['lb_bus'] = 1
+            if o.type == 'MESH':
+                o.data.materials.clear()
+                o.data.materials.append(dark)
+        return [o for o in objs if o.type == 'MESH']
     amb = tuple(0.3 * c for c in materials.s2l('#0F1E30'))          # 圣经 §6·7b：车厢环境 #0F1E30 × 0.3
     objs, eye = S.bus_shell('bible_v2', interior_ambient=amb)
     R = Matrix.Rotation(math.pi, 4, 'Z')          # 标准台的轴 (x, z, y) → 本包的轴 (−x, −z, y)
@@ -250,8 +265,8 @@ def add_bus():
     return objs
 
 
-def set_bus(objs, t, visible):
-    car = L.car(t)
+def set_bus(objs, t, visible, dz=0.0, dx=0.0):
+    car = L.car(t) + np.array([dx, 0.0, dz])
     T = Matrix.Translation(Vector(bl.u2b(car)))
     for o in objs:
         if 'base_mw' not in o:
@@ -261,11 +276,13 @@ def set_bus(objs, t, visible):
 
 
 def render_shot(name, out, res, spp, bus):
-    from shots import SHOTS, NO_BUS
+    from shots import SHOTS, NO_BUS, SHOT_DZ, SHOT_DX
     t, yaw, pitch, hfov, _ = SHOTS[name]
+    dz = SHOT_DZ.get(name, 0.0)
+    dx = SHOT_DX.get(name, 0.0)
     sc = bpy.context.scene
-    set_bus(bus, t, name not in NO_BUS)
-    cam = bl.camera_unity('Cam_' + name, L.eye(t), yaw, pitch, hfov)
+    set_bus(bus, t, name not in NO_BUS, dz, dx)
+    cam = bl.camera_unity('Cam_' + name, L.eye(t) + np.array([dx, 0, dz]), yaw, pitch, hfov)
     sc.camera = cam
     bl.render_setup(res, int(round(res * 9 / 16)), spp)
     sc.render.filepath = os.path.join(out, name + '.exr')
