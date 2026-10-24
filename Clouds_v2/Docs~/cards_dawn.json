@@ -1,0 +1,206 @@
+{
+ "CloudV2_Bank_dawn": {
+  "rel15": {
+   "purple_on_card": 0.0,
+   "shadow": "#9F99A9",
+   "top": "#F1DBD0",
+   "shadow_hC": [
+    304.3,
+    9.4
+   ],
+   "card_max_linear": 17.42
+  },
+  "rel80": {
+   "purple_on_card": 0.0,
+   "shadow": "#808EA5",
+   "top": "#FAE2CE",
+   "shadow_hC": [
+    270.1,
+    13.6
+   ],
+   "card_max_linear": 5.12
+  },
+  "rel150": {
+   "purple_on_card": 0.0,
+   "shadow": "#E9C8AE",
+   "top": "#EDD5CA",
+   "shadow_hC": [
+    65.9,
+    19.1
+   ],
+   "card_max_linear": 3.73
+  },
+  "clipped_K": 0.0,
+  "clipped_S": 0.0
+ },
+ "CloudV2_Congestus_dawn": {
+  "rel15": {
+   "purple_on_card": 0.0,
+   "shadow": "#8B93A7",
+   "top": "#E5D0CA",
+   "shadow_hC": [
+    275.9,
+    11.4
+   ],
+   "card_max_linear": 13.96
+  },
+  "rel80": {
+   "purple_on_card": 0.0,
+   "shadow": "#8390A6",
+   "top": "#FBE3CC",
+   "shadow_hC": [
+    270.8,
+    12.9
+   ],
+   "card_max_linear": 5.27
+  },
+  "rel150": {
+   "purple_on_card": 0.0,
+   "shadow": "#EAC9AF",
+   "top": "#F0D6C7",
+   "shadow_hC": [
+    66.2,
+    19.1
+   ],
+   "card_max_linear": 3.81
+  },
+  "clipped_K": 0.0,
+  "clipped_S": 0.0
+ },
+ "CloudV2_Cumulus_dawn": {
+  "rel15": {
+   "purple_on_card": 0.0,
+   "shadow": "#8E96AA",
+   "top": "#DFC8CA",
+   "shadow_hC": [
+    277.1,
+    11.4
+   ],
+   "card_max_linear": 14.95
+  },
+  "rel80": {
+   "purple_on_card": 0.0,
+   "shadow": "#8693A8",
+   "top": "#FBE3CE",
+   "shadow_hC": [
+    270.3,
+    12.9
+   ],
+   "card_max_linear": 5.17
+  },
+  "rel150": {
+   "purple_on_card": 0.0,
+   "shadow": "#EBCBB1",
+   "top": "#EFD6C9",
+   "shadow_hC": [
+    65.6,
+    18.4
+   ],
+   "card_max_linear": 3.86
+  },
+  "clipped_K": 0.0,
+  "clipped_S": 0.0
+ },
+ "CloudV2_Puff_dawn": {
+  "rel15": {
+   "purple_on_card": 0.0,
+   "shadow": "#9A9AAD",
+   "top": "#EDD6CE",
+   "shadow_hC": [
+    291.0,
+    10.1
+   ],
+   "card_max_linear": 14.96
+  },
+  "rel80": {
+   "purple_on_card": 0.0,
+   "shadow": "#8895AA",
+   "top": "#FAE2CF",
+   "shadow_hC": [
+    271.4,
+    12.7
+   ],
+   "card_max_linear": 4.93
+  },
+  "rel150": {
+   "purple_on_card": 0.0,
+   "shadow": "#EACAB2",
+   "top": "#EED5CA",
+   "shadow_hC": [
+    64.5,
+    17.7
+   ],
+   "card_max_linear": 3.72
+  },
+  "clipped_K": 0.0,
+  "clipped_S": 4.7173594108961565e-06
+ },
+ "CloudV2_Strato_dawn": {
+  "rel15": {
+   "purple_on_card": 0.0,
+   "shadow": "#D2C0C4",
+   "top": "#F0DBD4",
+   "shadow_hC": [
+    1.8,
+    6.9
+   ],
+   "card_max_linear": 12.36
+  },
+  "rel80": {
+   "purple_on_card": 0.0,
+   "shadow": "#A9AEC0",
+   "top": "#F6DFD1",
+   "shadow_hC": [
+    280.0,
+    9.5
+   ],
+   "card_max_linear": 4.35
+  },
+  "rel150": {
+   "purple_on_card": 0.0,
+   "shadow": "#D2BFC2",
+   "top": "#E7D2CD",
+   "shadow_hC": [
+    7.5,
+    7.3
+   ],
+   "card_max_linear": 3.38
+  },
+  "clipped_K": 0.0,
+  "clipped_S": 0.0
+ },
+ "CloudV2_Wisp_dawn": {
+  "rel15": {
+   "purple_on_card": 0.0,
+   "shadow": "#B8B4C2",
+   "top": "#FFF6E5",
+   "shadow_hC": [
+    301.7,
+    7.7
+   ],
+   "card_max_linear": 17.8
+  },
+  "rel80": {
+   "purple_on_card": 0.0,
+   "shadow": "#9FABC0",
+   "top": "#F0DCD7",
+   "shadow_hC": [
+    269.8,
+    12.1
+   ],
+   "card_max_linear": 3.96
+  },
+  "rel150": {
+   "purple_on_card": 0.0,
+   "shadow": "#E3CBC4",
+   "top": "#E4D3D5",
+   "shadow_hC": [
+    41.5,
+    9.8
+   ],
+   "card_max_linear": 3.25
+  },
+  "clipped_K": 0.0,
+  "clipped_S": 0.0
+ }
+}
