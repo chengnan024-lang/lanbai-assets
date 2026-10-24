@@ -1,0 +1,118 @@
+[Licensing::IpcConnector] Successfully connected to the License Client on channel: "LicenseClient-Kinzer" at "2026-10-24T20:37:35.151439Z"
+[Licensing::Client] Error: Code 10 while verifying Licensing Client signature (process Id: 74640, path: "E:/VRR/2022.3.22f1/Editor/Data/Resources/Licensing/Client/Unity.Licensing.Client.exe")
+[Licensing::Module] Error: LicensingClient has failed validation; ignoring
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.15.0+66d4389
+  Session Id:              77bf998d2fc1478fa81615d50ae40ab9
+  Correlation Id:          86bd1757e8f55b06e2351d1e43f7c8f6
+[Licensing::Module] Connected to LicensingClient (PId: 74640, launch time: 0.06, total connection time: 1.37s)
+[Licensing::Module] Error: Access token is unavailable; failed to update
+[Licensing::Client] Error: Code 500 while processing request (status: Unable to update licenses. Errors: Cannot load ULF license: Root element is missing.,Token not found in cache)
+[Licensing::Client] Error: Code 500 while updating license in client (status: Unable to update licenses. Errors: Cannot load ULF license: Root element is missing.,Token not found in cache)
+Built from '2022.3/staging' branch; Version is '2022.3.22f1 (887be4894c44) revision 8944612'; Using compiler version '192829333'; Build Type 'Release'
+OS: 'Windows 11  (10.0.26200) 64bit CoreCountrySpecific' Language: 'zh' Physical Memory: 32386 MB
+[Licensing::Client] Successfully resolved entitlements
+[Licensing::Module] Serial number assigned to: "18968344640327-UnityPersXXXX"
+BatchMode: 0, IsHumanControllingUs: 1, StartBugReporterOnCrash: 1, Is64bit: 1, IsPro: 0
+
+COMMAND LINE ARGUMENTS:
+E:\VRR\2022.3.22f1\Editor\Unity.exe
+-projectPath
+		SetupLoadedEditorAssemblies (298ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (8ms)
+			SetLoadedEditorAssemblies (8ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (2ms)
+[791/795    2s] Csc Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll (+2 others)
+Assets\Lanbai\Editor\LB_Builder_Road.cs(450,17): warning CS0162: Unreachable code detected
+[792/795    0s] ILPostProcess Library/Bee/artifacts/1900b0aE.dag/post-processed/Assembly-CSharp-Editor.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll, with 124 defines and 323 references
+
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+*** Tundra build success (3.36 seconds), 6 items updated, 795 evaluated
+Assets\Lanbai\Editor\LB_Builder_Road.cs(450,17): warning CS0162: Unreachable code detected
+AssetDatabase: script compilation time: 5.616064s
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  1.338 seconds
+Refreshing native plugins compatible for Editor in 19.07 ms, found 7 plugins.
+		SetupLoadedEditorAssemblies (4575ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (4ms)
+			SetLoadedEditorAssemblies (4ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (41ms)
+Asset Pipeline Refresh (id=b09bdcce9dcccb34d9e2cc61a47ccddd): Total: 0.045 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+d3d11: failed to create 2D texture id=812 width=2048 height=2048 mips=12 dxgifmt=99 [D3D error was 8007000e]
+d3d11: failed to create 2D texture shader resource view id=812 [D3D error was 80070057]
+d3d11: Failed to create 2D texture in GfxDeviceD3D11
+d3d11: failed to create 2D texture id=813 width=2048 height=2048 mips=12 dxgifmt=83 [D3D error was 8007000e]
+d3d11: failed to create 2D texture shader resource view id=813 [D3D error was 80070057]
+d3d11: Failed to create 2D texture in GfxDeviceD3D11
+d3d11: failed to create 2D texture id=814 width=1024 height=1024 mips=11 dxgifmt=83 [D3D error was 8007000e]
+d3d11: failed to create 2D texture shader resource view id=814 [D3D error was 80070057]
+d3d11: Failed to create 2D texture in GfxDeviceD3D11
+Received signal SIGSEGV
+Obtained 69 stack frames
+0x00007ff6ab722348 (Unity) 
+0x00007ff6ab730fec (Unity) 
+0x00007ff6ab722a61 (Unity) 
+0x0000021ceadff66b (Mono JIT Code) UnityEngine.UIElements.IMGUIContainer:DoIMGUIRepaint ()
+0x0000021ceadc9814 (Mono JIT Code) UnityEngine.UIElements.UIR.RenderChainCommand:ExecuteNonDrawMesh (UnityEngine.UIElements.UIR.DrawParams,single,System.Exception&)
+0x0000021ceadfd743 (Mono JIT Code) UnityEngine.UIElements.UIR.UIRenderDevice:EvaluateChain (UnityEngine.UIElements.UIR.RenderChainCommand,UnityEngine.Material,UnityEngine.Material,UnityEngine.Texture,UnityEngine.Texture,single,Unity.Collections.NativeSlice`1<UnityEngine.UIElements.UIR.Transform3x4>,Unity.Collections.NativeSlice`1<UnityEngine.Vector4>,UnityEngine.MaterialPropertyBlock,bool,System.Exception&)
+0x0000021ceadfa0b3 (Mono JIT Code) UnityEngine.UIElements.UIR.RenderChain:Render ()
+0x0000021cef0afe0b (Mono JIT Code) UnityEngine.UIElements.UIRRepaintUpdater:Update ()
+0x0000021cf83ae5b6 (Mono JIT Code) UnityEngine.UIElements.VisualTreeUpdater:UpdateVisualTreePhase (UnityEngine.UIElements.VisualTreeUpdatePhase)
+0x0000021cf56fd55b (Mono JIT Code) UnityEngine.UIElements.Panel:UpdateForRepaint ()
+[Licensing::IpcConnector] Successfully connected to the License Client on channel: "LicenseClient-Kinzer" at "2026-10-24T20:41:26.4996782Z"
+[Licensing::Client] Error: Code 10 while verifying Licensing Client signature (process Id: 60220, path: "E:/VRR/2022.3.22f1/Editor/Data/Resources/Licensing/Client/Unity.Licensing.Client.exe")
+[Licensing::Module] Error: LicensingClient has failed validation; ignoring
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.15.0+66d4389
+  Session Id:              10c46a1d151e4564817fe9b19145b0da
+  Correlation Id:          55387330a2f2ae8a82a65b69d5a14975
+[Licensing::Module] Connected to LicensingClient (PId: 60220, launch time: 0.08, total connection time: 1.62s)
+[Licensing::Module] Error: Access token is unavailable; failed to update
+[Licensing::Client] Error: Code 500 while processing request (status: Unable to update licenses. Errors: Cannot load ULF license: Root element is missing.,Token not found in cache)
+[Licensing::Client] Error: Code 500 while updating license in client (status: Unable to update licenses. Errors: Cannot load ULF license: Root element is missing.,Token not found in cache)
+Built from '2022.3/staging' branch; Version is '2022.3.22f1 (887be4894c44) revision 8944612'; Using compiler version '192829333'; Build Type 'Release'
+OS: 'Windows 11  (10.0.26200) 64bit CoreCountrySpecific' Language: 'zh' Physical Memory: 32386 MB
+[Licensing::Client] Successfully resolved entitlements
+[Licensing::Module] Serial number assigned to: "18968344640327-UnityPersXXXX"
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1, IsPro: 0
+
+COMMAND LINE ARGUMENTS:
+E:\VRR\2022.3.22f1\Editor\Unity.exe
+-batchmode
+		SetupLoadedEditorAssemblies (326ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (8ms)
+			SetLoadedEditorAssemblies (10ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (3ms)
+[791/795    0s] Csc Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll (+2 others)
+Assets\Lanbai\Editor\LB_Builder_Road.cs(450,17): warning CS0162: Unreachable code detected
+[792/795    1s] ILPostProcess Library/Bee/artifacts/1900b0aE.dag/post-processed/Assembly-CSharp-Editor.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll, with 124 defines and 323 references
+
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+*** Tundra build success (2.41 seconds), 5 items updated, 795 evaluated
+Assets\Lanbai\Editor\LB_Builder_Road.cs(450,17): warning CS0162: Unreachable code detected
+AssetDatabase: script compilation time: 5.102563s
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  1.648 seconds
+Refreshing native plugins compatible for Editor in 25.53 ms, found 7 plugins.
+		SetupLoadedEditorAssemblies (5556ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (5ms)
+			SetLoadedEditorAssemblies (5ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (85ms)
+gi::BakeBackendSwitch: switching bake backend from 3 to 1.
+GfxDevice renderer is null. Unity cannot update the Ambient Probe and Reflection Probes that the SkyManager generates. Run the Editor without the -nographics argument or generate lighting for your scene.
+Received signal SIGSEGV
+CheckDisalowAllocation. Allocating memory when it is not allowed to allocate memory. Label used for allocation: MemoryProfiler.
+Obtained 20 stack frames
+0x00007ff6ab722348 (Unity) 
+0x00007ff6ab729b2c (Unity) 
+0x00007fffc5799d6e (mono-2.0-bdwgc) 
