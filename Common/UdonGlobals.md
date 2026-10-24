@@ -13,9 +13,9 @@ VRChat 只允许 Udon 写 `_Udon_` 前缀的全局 shader 量（`VRCShader.SetGl
 | `_Udon_CloudTop` | x = 门的云顶世界 y（= −h_bus(t)） | 门驱动 | Gate、Tear |
 | `_Udon_TearPos` / `_Udon_TearH` / `_Udon_TearFoot` / `_Udon_TearTop` | 裂口位置、高度、脚（w = 白的半宽）、顶 | 门驱动 | Gate、Tear、Tentacles |
 | `_Udon_TearOpen` / `_Udon_RipProgress` / `_Udon_TearHide` / `_Udon_TearBreath` | 裂口张开、撕裂进度、隐藏、呼吸 | 门驱动 | Tear |
-| `_Udon_MoonDir` / `_Udon_MoonDisc` | 指向月的单位向量；月盘增益 | 门驱动（第 3–4 幕；之后归天空） | Gate、Tentacles |
+| `_Udon_MoonDir` / `_Udon_MoonDisc` | 指向月的单位向量；月盘增益 | 天空（U6 133.80 之前）→ 门驱动（133.80 → U9）→ 之后的幕（D-22） | Gate、Tentacles、`Lanbai/Sky` |
 | `_Udon_MultReveal` | 群臂两组显现 | 门驱动 | Gate |
-| `_Udon_FogBandDir` / `_Udon_FogBandColor` / `_Udon_FogBandWidth` / `_Udon_FogDensity` | 光雾带（`LanbaiHorizon` 的参数，圣经 §1.6） | 当前幕的驱动（第 4 幕 = 门） | Gate、Tentacles；**以后所有 `LanbaiFog` 用户** |
+| `_Udon_FogBandDir` / `_Udon_FogBandColor` / `_Udon_FogBandWidth` / `_Udon_FogDensity` | 光雾带（`LanbaiHorizon` 的参数，圣经 §1.6） | 当前幕的驱动：天空（< 133.80）→ 门驱动（133.80 → U9，含 U6 过渡）→ 门内（≥ U9）（D-22） | Gate、Tentacles；**以后所有 `LanbaiFog` 用户** |
 | `_Udon_Wetness` | 湿润 0–1（Lagarde） | 时间轴 | Rain |
 | `_Udon_RainAmount` / `_Udon_RainFall` / `_Udon_FlowDir` / `_Udon_FlowDirB` / `_Udon_FlowMix` / `_Udon_RunClock` / `_Udon_RunStretch` / `_Udon_StopOffset` / `_Udon_Drip0..3` / `_Udon_OneDropA/B` | 雨套件 | 雨驱动 | Rain |
 | `_Udon_Wiper*`（Time、Pivot0/1、Axis0/1、Rest0/1） | 雨刮 | 雨驱动 | Rain |
@@ -34,8 +34,8 @@ VRChat 只允许 Udon 写 `_Udon_` 前缀的全局 shader 量（`VRCShader.SetGl
 | `_Udon_OverlayColor` | rgb 填色 × 2^(−ΔEV)，a FLAT 模式的 alpha | `LanbaiOverlay`（由当时拥有遮罩的幕调用） | `Lanbai/Overlay` |
 | `_Udon_OverlayCurve` / `_Udon_OverlayLum` | 曲线（tau、T、模式、呼吸）；(Lfrom, Lto, Lscene, Lover) | 同上 | 同上 |
 | `_Udon_OverlayLobe0..3` / `_Udon_OverlayLead` / `_Udon_OverlayLeadElse` | 方向领先瓣（方向、半角）；各瓣领先秒数；其余方向领先与软边 | 同上 | 同上 |
-| `_Udon_InsidePortal` | float4：x 裂口平面世界 z，y = 1 门户生效 | 门内驱动 | 门内 shader、**门的 shader / 驱动** |
-| `_Udon_InsideDot` / `_Udon_InsideFibre` / `_Udon_InsideClock` / `_Udon_InsideFog` | 全部 float4：暖白点（核心直径°、辉光直径°、增益）；纤维填色（rgb）+ 增益（a）；丝线时钟（x）；当前区雾色（rgb）+ 密度（a） | 门内驱动 | `Lanbai/InsideLip` 等 |
+| `_Udon_InsidePortal` | float4：x 裂口平面世界 z，y = 1 门户生效（门内驱动在 4c 之前就可能置 1）。**读的 shader 必须每只眼再判断 `_WorldSpaceCameraPos.z > x`，才裁掉 z > x 的东西**；只看 y 会让 U9 之前平面以远的云海、远云和光束整片消失 | 门内驱动 | 门内 shader、**门的 shader / 驱动** |
+| `_Udon_InsideDot` / `_Udon_InsideFibre` / `_Udon_InsideClock` / `_Udon_InsideFog` | 全部 float4：暖白点（x 核心直径°、y 辉光**直径**°（≤ 12，D-20）、z 增益、w 第 5 幕闪光里的辉光倍数）；纤维填色（rgb）+ 增益（a）；丝线时钟（x）；当前区雾色（rgb）+ 密度（a） | 门内驱动 | `Lanbai/InsideLip` 等 |
 | `_Udon_CabinSlice` / `_Udon_CabinSliceColor` | 都是 float4：车厢穿越光带（x 前沿的车坐标 z、y 软边 m、z 指数拖尾长度 m、w 覆盖 0–1）；rgb 颜色 × E、a 窗形遮罩权重 | 门内驱动（第 9 幕镜子也用） | `Lanbai/Cabin` |
 | `_Udon_RadioDial` | float4：rgb 收音机表盘发光填值（线性） | 时间轴 / 门内驱动（4c、5） | `Lanbai/Cabin` |
 | `_Udon_SkyBlend` | float4：x 立方图 A → B、y 程序化权重、z 夜的权重（按方向延迟）、w > 0 已设 | 当前幕（6、8 = 云；9 = 天空） | `Lanbai/Sky` |
@@ -50,7 +50,7 @@ VRChat 只允许 Udon 写 `_Udon_` 前缀的全局 shader 量（`VRCShader.SetGl
 | `_Udon_SeaBus` / `_Udon_SeaBusVel` | float4：车的原点在水的坐标系里的位置（x、−深度、前进的路），w > 0 已设；它的速度 m/s | 第 7 幕驱动（海） | `Lanbai/SeaParticles`（海雪、播下的光、船体荧光） |
 | `_Udon_SkySpot` | float4：x 天窗光斑的亮度包络 0..1（U8 → ≈169.2 从 −5 EV 按 EV 线性升到 1，→ U9 平滑降到 0.6，U9 → U9 + 0.25 s 到 0），yzw 不用（D-16） | `LanbaiSkylightSpot`（门内） | `Lanbai/SkylightSpot` |
 | `_Udon_InsideGrade` | float4：rgb 第 4 → 4c 交叉淡化期间布的填色乘数，a > 0 有效（没人写时当 1）（D-16，预留） | 门内驱动 | `Lanbai/InsideLip` |
-| `_Udon_PalaceVeil` | 从台地下方罩住宫殿建筑的雾（第 7b 幕 F7p；定义见 `Act07_Sea/PalaceFrame_约定.json`）（D-17） | 第 7 幕驱动（海） | 宫殿 shader |
+| `_Udon_PalaceVeil` | float4：x 密度 /m、y 雾带上沿世界 y、z 厚度、w > 0 已设。从台地下方罩住宫殿建筑的雾（第 7b 幕 F7p；定义见 `Sea/README_Sea接口.md`、`Act07_Sea/PalaceFrame_约定.json` 的 `palace_veil`）（D-17） | 第 7 幕驱动（海） | 宫殿 shader |
 | `_Udon_SkyGlobals` / `_Udon_Sky_*`（一族，约 45 个） / `_Udon_SkyCubeTexA` / `_Udon_SkyCubeTexB` | 一个天空材质，各预设的差别全走全局量；`_Udon_Sky_<材质属性名>`；两张全局立方图（定义见 `Sky/README`）（D-18） | 天空预设 / `LanbaiSkyDriver` | `Lanbai/Sky` |
 | `_Udon_StarShape` | float4：x 最暗星等、y 雾带内的 EV、z 带半宽（D-18） | 天空预设 | `Lanbai/StarPoints` |
 | `_Udon_WorldS` | （本地的时间轴里用的，含义见 `FromLocal/code/timeline_v1/`） | 本地 | 本地 |

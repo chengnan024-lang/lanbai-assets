@@ -1,0 +1,1 @@
+K3 r13: window gain 0.2, tint 0.6,0.9,1.0 (ultramarine, away from the violet band)
