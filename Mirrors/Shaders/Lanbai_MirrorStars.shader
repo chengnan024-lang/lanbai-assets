@@ -10,7 +10,7 @@
 //  Because the face is CONVEX (sagitta 1.5 % of D), a flat-mirror copy (dir.y = -dir.y) would drift up to ~7 degrees
 //  away from the cube-reflected Milky Way near the rim.  So each star is placed where the convex mirror really shows
 //  it: the point P on the face sphere whose reflection of the star direction d reaches the eye E,
-//      v = reflect(d, n); P = (eye ray along v) on the face sphere; n = normal at P     (6 damped rounds from the flat mirror; p99 error 0.07 deg)
+//      v = reflect(d, n); P = (eye ray along v) on the face sphere; n = normal at P     (11 damped rounds from the flat mirror; images with > 1 deg error fade out)
 //  and the quad is drawn there (pulled 0.5 % toward the eye so it never z-fights with the face).
 //
 //  MESH CONTRACT = the sky's star mesh Sky/Generated/StarPoints_BSC5.asset (Lanbai/StarPoints): 4 vertices per star,
@@ -100,20 +100,26 @@ Shader "Lanbai/MirrorStars"
                 float3 oc = E - C;
                 float cc = dot(oc, oc) - rho * rho;
                 float3 P = C + rho * up;
-                [unroll] for (int k = 0; k < 7; k++)
+                [unroll] for (int k = 0; k < 12; k++)
                 {
                     float3 v = reflect(d, n0);
                     float b = dot(v, oc);
                     float tq = -b - sqrt(max(b * b - cc, 0.0));
                     P = E + v * tq;
-                    if (k < 6) n0 = normalize(0.5 * n0 + 0.5 * normalize(P - C));   // damped: the plain update oscillates near grazing
+                    if (k < 11) n0 = normalize(0.5 * n0 + 0.5 * normalize(P - C));   // damped: the plain update oscillates near grazing
                 }
                 float3 n = normalize(P - C);
                 float3 toE = normalize(E - P);
                 // visible only if the star is above the mirror's horizon and P lies on the face disc
                 float axial = length((P - C) - dot(P - C, up) * up);
                 float ok = step(0.0, dot(d, n)) * step(0.0, dot(toE, n)) * step(axial, _Axis.w * 1.02)
-                         * step(0.99996, dot(reflect(-toE, n), d));                        // not converged (> 0.5 deg): drop it
+;
+                // not converged near grazing: fade between 1.0 and 0.3 deg of error instead of dropping (a star that pops in and
+                // out frame to frame is a flash pair: white sequence wf_H at 480 px, 4.5 flashes / s)
+                ok *= saturate((dot(reflect(-toE, n), d) - 0.99984770) / (0.99998629 - 0.99984770));
+                // near grazing (view within ~9 deg of the face) the convex images crowd and swim as the mirror rises: they
+                // flickered tile by tile (4.5 flashes / s, wf_H). The cube-reflected Milky Way carries the grazing band alone.
+                ok *= smoothstep(0.03, 0.15, dot(toE, n));
                 // brightness: Lanbai/StarPoints' formula and gains
                 float m = v.uv1.x;
                 float flux = _StarScale * exp2(-1.3287712 * _MagSlope * (m - _MagRef)) * step(m, _MagFloor);

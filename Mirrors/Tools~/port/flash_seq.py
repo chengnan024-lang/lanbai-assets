@@ -41,6 +41,8 @@ def main():
     w = int(sys.argv[3]) if len(sys.argv) > 3 else 192
     h = int(sys.argv[4]) if len(sys.argv) > 4 else 108
     t0, t1, yaw, pitch = CASES[case]
+    if os.environ.get('T0'):
+        t0, t1 = float(os.environ['T0']), float(os.environ['T1'])
     ts = np.arange(t0, t1 + 1e-6, 1.0 / fps)
     frames = []
     for t in ts:
@@ -61,11 +63,13 @@ def main():
     apl = [float((np.clip(f, 0, 255) / 255.0) .mean()) for f in frames]
     L = [float(((np.clip(f, 0, 255) / 255.0) ** 2.2 @ np.array([0.2126, 0.7152, 0.0722])).mean()) for f in frames]
     rep['t_series'] = [round(float(t), 3) for t in ts]; rep['L_series'] = [round(x, 5) for x in L]
+    rep['flashes_1s_series'] = [round(float(x), 2) for x in series['flashes_1s']]
+    i = int(np.argmax(series['flashes_1s'])); rep['worst_flash_window_end_t'] = round(float(ts[i]), 3)
     out = os.path.join(MP.REPO, 'Mirrors', 'Docs~', 'flashcheck')
     os.makedirs(out, exist_ok=True)
     rep['case'] = case; rep['t'] = [t0, t1]; rep['fps'] = fps; rep['size'] = [w, h]; rep['view'] = [yaw, pitch]
     rep['note'] = 'numpy port of the mirror shaders on the act 9 sky (no cabin); the white mask blended in display-linear toward #E8F1F5 with EvOverlayAlpha (Lscene %.2f); WHITE_SAT/BLOOM not simulated' % LSCENE
-    json.dump(rep, open(os.path.join(out, case + (('_' + os.environ['MIRROR13']) if os.environ.get('MIRROR13') else '') + '.json'), 'w'), indent=1, default=float)
+    json.dump(rep, open(os.path.join(out, case + (('_' + os.environ['MIRROR13']) if os.environ.get('MIRROR13') else '') + ('_%dpx' % w if w != 192 else '') + '.json'), 'w'), indent=1, default=float)
     print(json.dumps({k: rep[k] for k in rep if k not in ('series',)}, default=float)[:1500])
 
 

@@ -232,32 +232,35 @@ def frame(t, yaw=0.0, pitch=0.0, w=960, h=540, ss=1, cabin=None, dust=True, extr
                                     appear=round(st['appear'], 3), dissolve=round(st['dissolve'], 3), extra_EV=round(st['extra'], 3)))
     # stars: the sky's own stars where the sky is visible, and their convex-mirror images inside each face (MirrorStars)
     cat = SC.catalogue()
-    fw = A9.FWHM * w / 960 * ss
+    fw = max(A9.FWHM * w / 960 * ss, 1.6)   # never sub-pixel: Unity draws every star at >= 1.6 px FWHM (a sub-pixel splat swings in brightness as it crosses pixels)
     if star['gain'] > 0:
         pk = SC.flux(cat['mag'], cat['rank'], 1.6, 0.0, 0.5, star['count'], star['boost']) * star['gain']
         sky_layer = np.zeros_like(img)
         SC.splat(sky_layer, W, H, 90, yaw, pitch, cat['dir'], pk, cat['col'], fw)
         img += sky_layer * (owner < 0)[..., None]
-        for idx, (st, Cs, rho) in face_mask.items():
+        for idx, (st, Cs, rho) in (face_mask.items() if not os.environ.get('NO_REFL_STARS') else []):
             dd = cat['dir']
             # convex-mirror image (same as Lanbai/MirrorStars): start from the flat mirror, then refine with the normal at
             # the hit point: v = reflect(d, n) is the look direction, P = ray(E, v) on the face sphere, n = normal at P
             n = np.broadcast_to(np.array([0, 1.0, 0]), dd.shape).copy()
             oc = EYE - Cs
             cc = (oc * oc).sum() - rho * rho
-            for k in range(7):
+            for k in range(12):
                 v = dd - 2 * (dd * n).sum(-1, keepdims=True) * n
                 b = (v * oc).sum(-1)
                 tq = -b - np.sqrt(np.maximum(b * b - cc, 0))
                 P = EYE + v * tq[:, None]
-                if k < 6:                                        # damped (the plain iteration oscillates near grazing)
+                if k < 11:                                       # damped (the plain iteration oscillates near grazing)
                     n = 0.5 * n + 0.5 * (P - Cs) / rho
                     n /= np.linalg.norm(n, axis=-1, keepdims=True)
             n = (P - Cs) / rho; toE = EYE - P; toE /= np.linalg.norm(toE, axis=-1, keepdims=True)
             rr_ = -toE - 2 * ((-toE) * n).sum(-1, keepdims=True) * n
-            ok = ((dd * n).sum(-1) > 0) & ((toE * n).sum(-1) > 0) & ((rr_ * dd).sum(-1) > math.cos(math.radians(0.5)))
+            ok = ((dd * n).sum(-1) > 0) & ((toE * n).sum(-1) > 0)
+            ce = (rr_ * dd).sum(-1)
+            conv = np.clip((ce - math.cos(math.radians(1.0))) / (math.cos(math.radians(0.3)) - math.cos(math.radians(1.0))), 0, 1)
             F = schlick(F0_FACE, (n * toE).sum(-1))
-            gain = (F + st['k'] * st['vis'] * 2 ** st['extra'])
+            graze = np.clip(((toE * n).sum(-1) - 0.03) / 0.12, 0, 1); graze = graze * graze * (3 - 2 * graze)
+            gain = (F + st['k'] * st['vis'] * 2 ** st['extra']) * (conv * graze)[:, None]   # unconverged / grazing images fade (flash sequence wf_H)
             gain = (gain @ np.array([0.2126, 0.7152, 0.0722]))[:, None] * (1 - BRONZE_TONE + BRONZE_TONE * TONE[None, :])
             appd = -toE                                          # the image's direction from the eye
             layer = np.zeros_like(img)
