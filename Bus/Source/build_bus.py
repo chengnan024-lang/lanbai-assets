@@ -531,6 +531,24 @@ def ceiling():
     # no header panel: from inside you see PAZ's three brow windows above the windscreen (the middle one is the back
     # of the destination blind); only the rubber lip of the windscreen and a narrow ledge under the brows
     box('HeaderLip', (B.X_IN_L, B.WS_TOP - 0.012, 3.40), (B.X_IN_R, B.WS_TOP + 0.02, 3.47), 'Seal')
+    # the header band between the windscreen and the brows (in view all film long, D-28 notes): a panel seam, a row of
+    # rivets every 15 cm (bible 4.2), anodised inner frames round the three brow windows
+    zin = lambda x, y: front_z(x, y) - SHELL_T - 0.002
+    for x in np.arange(B.X_IN_L + 0.06, B.X_IN_R - 0.05, 0.15):
+        cylinder('HeaderRivet%.2f' % x, (x, B.WS_TOP + 0.035, zin(x, B.WS_TOP + 0.035) - 0.002), 'z', 0.0045, 0.006, 'Int_Enamel', 'Cabin', segs=10)
+    xs_ = np.linspace(B.X_IN_L + 0.02, B.X_IN_R - 0.02, 48)
+    g = bmesh.new()
+    vt = [g.verts.new(U2B((x, B.WS_TOP + 0.062, zin(x, B.WS_TOP + 0.062) - 0.001))) for x in xs_]
+    vb = [g.verts.new(U2B((x, B.WS_TOP + 0.056, zin(x, B.WS_TOP + 0.056) - 0.001))) for x in xs_]
+    for k in range(len(xs_) - 1):
+        g.faces.new((vb[k], vb[k + 1], vt[k + 1], vt[k]))
+    obj_from_bm('HeaderSeam', g, ['Seal'], 'Cabin')
+    for k, (bx0, bx1) in enumerate(B.BROWS):
+        y0_, y1_ = B.BROW_Y
+        for nm, lo, hi in (('B', (bx0 - 0.02, y0_ - 0.02, 0), (bx1 + 0.02, y0_, 0)), ('T', (bx0 - 0.02, y1_, 0), (bx1 + 0.02, y1_ + 0.02, 0)),
+                           ('L', (bx0 - 0.02, y0_, 0), (bx0, y1_, 0)), ('R', (bx1, y0_, 0), (bx1 + 0.02, y1_, 0))):
+            zc = zin((lo[0] + hi[0]) / 2, (lo[1] + hi[1]) / 2)
+            box('BrowFrame%d%s' % (k, nm), (lo[0], lo[1], zc - 0.012), (hi[0], hi[1], zc), 'Alu', 'Cabin')
     box('BrowLedge', (B.X_IN_L, B.BROW_Y[0] - 0.035, 3.36), (B.X_IN_R, B.BROW_Y[0] - 0.02, 3.465), 'Int_Enamel', bevel=0.006)
     box('DestBlind', (B.DEST_BOX[0], B.DEST_BOX[2] - 0.01, 3.44), (B.DEST_BOX[1], B.DEST_BOX[3] + 0.01, 3.452), 'Linen')
     # hatch: aluminium frame flush in the liner, a short well up through the roof skin, glass at SKY_C.y
@@ -574,6 +592,21 @@ def floor():
             cut = cylinder('WellCutF', (B.XC, B.WHEEL_R, z), 'x', B.ARCH_R - 0.012, 3.2, 'Seal', segs=48)
             boolean(fl, cut)
             bpy.data.objects.remove(cut)
+    # the visible floor: a dense grid 1 mm above the slabs (8 cm cells) so the aisle / doorway wear and the edge dirt
+    # (vertex G / R) have vertices to live on
+    bm = bmesh.new()
+    xs = np.arange(xl, xr + 1e-6, 0.08)
+    zs = np.arange(B.Z_REAR + 0.06, B.DASH_Z0 + 0.02 + 1e-6, 0.08)
+    V = [[bm.verts.new(U2B((x, B.FLOOR_Y + 0.001, z))) for x in xs] for z in zs]
+    for i in range(len(zs) - 1):
+        for j in range(len(xs) - 1):
+            xm, zm = (xs[j] + xs[j + 1]) / 2, (zs[i] + zs[i + 1]) / 2
+            if xm > 0.58 and zm > B.DOOR[0]:
+                continue                      # the step well
+            if any(abs(zm - za) < B.ARCH_R + 0.02 and abs(xm - B.XC) > B.TRACK_HALF - 0.22 for za in B.AXLES):
+                continue                      # under the wheel boxes
+            bm.faces.new((V[i][j], V[i + 1][j], V[i + 1][j + 1], V[i][j + 1]))
+    obj_from_bm('FloorTop', bm, ['Floor'])
     z0, z1 = B.DOOR[0] + 0.01, B.DOOR[1] - 0.01
     box('StepLow', (0.80, 0.17, z0), (1.05, 0.23, z1), 'Floor')
     box('StepMid', (0.60, 0.40, z0), (1.02, 0.43, z1), 'Floor')
@@ -685,12 +718,13 @@ def driver_area():
     x0, x1 = B.X_IN_L, B.X_IN_R
     bm = bmesh.new()
     prof = [(B.DASH_Z0, 0.95), (B.DASH_Z0, B.DASH_TOP - 0.04), (B.DASH_Z0 + 0.06, B.DASH_TOP), (3.44, B.WS_BOT - 0.01), (3.44, 0.95)]
-    left = [bm.verts.new(U2B((x0, y, z))) for z, y in prof]
-    right = [bm.verts.new(U2B((x1, y, z))) for z, y in prof]
-    for k in range(len(prof) - 1):
-        bm.faces.new((left[k], left[k + 1], right[k + 1], right[k]))
-    bm.faces.new(list(reversed(left)))
-    bm.faces.new(right)
+    nx = 40                                    # dense along x: the hands' wear on the edge lives on the vertices
+    cols = [[bm.verts.new(U2B((x0 + (x1 - x0) * i / nx, y, z))) for z, y in prof] for i in range(nx + 1)]
+    for i in range(nx):
+        for k in range(len(prof) - 1):
+            bm.faces.new((cols[i][k], cols[i][k + 1], cols[i + 1][k + 1], cols[i + 1][k]))
+    bm.faces.new(list(reversed(cols[0])))
+    bm.faces.new(cols[-1])
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
     obj_from_bm('Dashboard', bm, ['Dash'], 'Cabin')
     box('DashLowerL', (x0, B.FLOOR_Y, B.DASH_Z0 + 0.04), (0.56, 0.95, 3.44), 'Dash', 'Cabin')
@@ -770,8 +804,9 @@ def poles_and_guard():
     gz = B.GUARD_Z
     box('GuardPanel', (0.56, B.FLOOR_Y, gz - 0.02), (0.99, 1.20, gz + 0.01), 'Int_Enamel', 'Cabin', bevel=0.005)
     tube('GuardRail', [(0.99, 1.24, gz), (0.58, 1.24, gz), (0.58, B.FLOOR_Y, gz)], 0.016, 'Steel', 'Cabin')
-    tube('DoorGrab', [(0.95, 0.95, B.DOOR_POST[0] - 0.02), (0.92, 1.0, B.DOOR_POST[0] - 0.05), (0.92, 1.90, B.DOOR_POST[0] - 0.05),
-                      (0.95, 1.95, B.DOOR_POST[0] - 0.02)], 0.016, 'Steel', 'Cabin')
+    # door grab: thin (25 mm) and set back behind the post so the doorway frame stays clean (director r03 note 4)
+    tube('DoorGrab', [(0.965, 0.95, B.DOOR_POST[0] - 0.06), (0.945, 1.0, B.DOOR_POST[0] - 0.10), (0.945, 1.90, B.DOOR_POST[0] - 0.10),
+                      (0.965, 1.95, B.DOOR_POST[0] - 0.06)], 0.0125, 'Steel', 'Cabin')
     for x in (-0.40, 0.29):
         tube('Rail%+.2f' % x, [(x, 2.30, -3.3), (x, 2.30, 1.95)], 0.016, 'Steel', 'Cabin')
         for z in (-3.3, -1.5, 0.3, 1.95):

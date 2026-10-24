@@ -109,51 +109,124 @@ def erosion_field(nt, fade, resist=0.0):
     return _m(nt, 'SUBTRACT', nr, tau)
 
 
+# per-surface vertex-colour looks: the same values the Unity build writes (Bus/Editor/LanbaiBusBuild.cs)
+#   wear (G): colour, amount; grime (R): colour (albedo x colour x 2), amount; fade (B <= 0.75) colour, amount
+VC = {
+    'Vinyl': dict(wear=('#6A3434', 1.0), fade=('#7A4A48', 1.0)),
+    'SeatFrame': dict(wear=('#3C3E3D', 1.0)),
+    'Floor': dict(wear=('#4A4B47', 1.0), grime=('#6E665A', 1.0)),
+    'Int_Enamel': dict(wear=('#5B5A55', 1.0), grime=('#8C8370', 1.0)),
+    'Int_Ceiling': dict(grime=('#CFC09A', 1.0)),
+    'Dash': dict(wear=('#3E3F40', 1.0), grime=('#6A6355', 1.0)),
+    'Alu': dict(grime=('#6B5A48', 1.0)),
+    'Bakelite': dict(wear=('#2E2E2E', 1.0)),
+    'RadioLeather': dict(wear=('#4A2E1F', 1.0)),
+}
+
+
+def _mixc(nt, fac, a, b):
+    n = nt.nodes.new('ShaderNodeMix')
+    n.data_type = 'RGBA'
+    for sock, v in ((0, fac), (6, a), (7, b)):
+        if isinstance(v, (int, float)):
+            n.inputs[sock].default_value = v
+        elif isinstance(v, tuple):
+            n.inputs[sock].default_value = (*v, 1)
+        else:
+            nt.links.new(v, n.inputs[sock])
+    return n.outputs[2]
+
+
+def _mulc(nt, a, b):
+    n = nt.nodes.new('ShaderNodeMix')
+    n.data_type = 'RGBA'
+    n.blend_type = 'MULTIPLY'
+    n.inputs[0].default_value = 1.0
+    for sock, v in ((6, a), (7, b)):
+        if isinstance(v, tuple):
+            n.inputs[sock].default_value = (*v, 1)
+        else:
+            nt.links.new(v, n.inputs[sock])
+    return n.outputs[2]
+
+
 def act_material(m_src, lm_img, P, ambient, tubes):
-    """the Lanbai/Cabin terms as an emission + the Principled lit by the sun only; bleach, erosion clip and rim."""
+    """the Lanbai/Cabin terms as an emission + the Principled lit by the sun only; vertex-colour wear / grime / fade,
+    bleach, erosion clip and rim."""
     m = m_src.copy()
     nt = m.node_tree
     bs = nt.nodes.get('Principled BSDF')
     out = [n for n in nt.nodes if n.type == 'OUTPUT_MATERIAL'][0]
-    c = list(bs.inputs['Base Color'].default_value)[:3]
-    # bleach: albedo -> luminance x 0.9 tinted by the ambient colour; smoothness -> 0.3
+    c = tuple(list(bs.inputs['Base Color'].default_value)[:3])
+    key = m_src.name.replace('M_Bus_', '').split('.')[0]
+    look = VC.get(key, {})
+    vc = nt.nodes.new('ShaderNodeVertexColor')
+    vc.layer_name = 'Col'
+    sep = nt.nodes.new('ShaderNodeSeparateColor')
+    nt.links.new(vc.outputs['Color'], sep.inputs[0])
+    alb = c
+    if 'wear' in look:
+        alb = _mixc(nt, _m(nt, 'MULTIPLY', sep.outputs[1], look['wear'][1]), alb, tuple(lin(look['wear'][0])))
+    if 'grime' in look:
+        g = tuple(2.0 * v for v in lin(look['grime'][0]))
+        dirty = _mulc(nt, alb if not isinstance(alb, tuple) else alb, g)
+        alb = _mixc(nt, _m(nt, 'MULTIPLY', sep.outputs[0], look['grime'][1]), alb, dirty)
+    if 'fade' in look:
+        f = _m(nt, 'MINIMUM', _m(nt, 'DIVIDE', sep.outputs[2], 0.75), 1.0)
+        alb = _mixc(nt, _m(nt, 'MULTIPLY', f, look['fade'][1]), alb, tuple(lin(look['fade'][0])))
+    # bleach: albedo -> luminance x 0.9 tinted by the ambient colour
     bl = P['bleach']
-    lum = 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]
-    an = max(1e-4, max(ambient))
-    tint = [v / an for v in ambient]
-    c = [ci * (1 - bl) + lum * 0.9 * ti * bl for ci, ti in zip(c, tint)]
-    bs.inputs['Base Color'].default_value = (*c, 1)
     if bl > 0:
+        bw = nt.nodes.new('ShaderNodeRGBToBW')
+        if isinstance(alb, tuple):
+            bw.inputs[0].default_value = (*alb, 1)
+        else:
+            nt.links.new(alb, bw.inputs[0])
+        an = max(1e-4, max(ambient))
+        tint = tuple(0.9 * v / an for v in ambient)
+        lum_t = _mulc(nt, (1.0, 1.0, 1.0), tint)
+        lum_c = nt.nodes.new('ShaderNodeCombineColor')
+        for k in range(3):
+            nt.links.new(bw.outputs[0], lum_c.inputs[k])
+        target = _mulc(nt, lum_c.outputs[0], tint)
+        alb = _mixc(nt, bl, alb, target)
         r = bs.inputs['Roughness'].default_value
         bs.inputs['Roughness'].default_value = r * (1 - bl) + 0.7 * bl
+    if isinstance(alb, tuple):
+        bs.inputs['Base Color'].default_value = (*alb, 1)
+        alb_sock = None
+    else:
+        nt.links.new(alb, bs.inputs['Base Color'])
+        alb_sock = alb
     t = nt.nodes.new('ShaderNodeTexImage')
     t.image = lm_img
     uv = nt.nodes.new('ShaderNodeUVMap')
     uv.uv_map = 'UVLightmap'
     nt.links.new(uv.outputs[0], t.inputs[0])
-    sep = nt.nodes.new('ShaderNodeSeparateColor')
-    nt.links.new(t.outputs['Color'], sep.inputs[0])
-    # E = LM.rgb x tubes + ambient x AO
+    sepl = nt.nodes.new('ShaderNodeSeparateColor')
+    nt.links.new(t.outputs['Color'], sepl.inputs[0])
+    # E = LM.rgb x tubes + ambient x AO ; emission = albedo x E
     comb = nt.nodes.new('ShaderNodeCombineColor')
     for k in range(3):
-        ch = _m(nt, 'ADD', _m(nt, 'MULTIPLY', sep.outputs[k], tubes), _m(nt, 'MULTIPLY', t.outputs['Alpha'], ambient[k]))
-        nt.links.new(_m(nt, 'MULTIPLY', ch, c[k]), comb.inputs[k])
+        ch = _m(nt, 'ADD', _m(nt, 'MULTIPLY', sepl.outputs[k], tubes), _m(nt, 'MULTIPLY', t.outputs['Alpha'], ambient[k]))
+        nt.links.new(ch, comb.inputs[k])
+    emc = _mulc(nt, comb.outputs[0], alb_sock if alb_sock is not None else alb)
     em = nt.nodes.new('ShaderNodeEmission')
-    nt.links.new(comb.outputs[0], em.inputs['Color'])
+    nt.links.new(emc, em.inputs['Color'])
     add = nt.nodes.new('ShaderNodeAddShader')
     nt.links.new(bs.outputs[0], add.inputs[0])
     nt.links.new(em.outputs[0], add.inputs[1])
     final = add.outputs[0]
     if P['fade'] > 0:
-        s = erosion_field(nt, P['fade'], 0.30 if 'Steel' in m_src.name else 0.0)
+        s_ = erosion_field(nt, P['fade'], 0.30 if 'Steel' in m_src.name else 0.0)
         rim = nt.nodes.new('ShaderNodeEmission')
         rim.inputs['Color'].default_value = (*[1.5 * v for v in ambient], 1)
-        isrim = _m(nt, 'LESS_THAN', s, 0.02)
+        isrim = _m(nt, 'LESS_THAN', s_, 0.02)
         mix_r = nt.nodes.new('ShaderNodeMixShader')
         nt.links.new(isrim, mix_r.inputs[0])
         nt.links.new(final, mix_r.inputs[1])
         nt.links.new(rim.outputs[0], mix_r.inputs[2])
-        keep = _m(nt, 'GREATER_THAN', s, 0.0)
+        keep = _m(nt, 'GREATER_THAN', s_, 0.0)
         tr = nt.nodes.new('ShaderNodeBsdfTransparent')
         mix = nt.nodes.new('ShaderNodeMixShader')
         nt.links.new(keep, mix.inputs[0])

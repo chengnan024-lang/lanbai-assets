@@ -38,9 +38,10 @@
 | `Models/Bus.fbx` | 整辆车（48 个物体，11.5 万三角形）。分组见 `Source/finish_bus.py` 头注；`Models/Bus_fbx_readback.json` 是读回核对 |
 | `Models/BusLayout.json` | 唯一给 Unity 的数据：眼位、天窗、门（四片的开 / 关位姿）、轮子、管灯、头像补光、收音机、23 个座位（station 位置、眼位）、碰撞体、车厢包围盒 |
 | `Models/Bus_HarnessShell_paz672.fbx` | 给总工程师的渲染标准台：`--bus fbx:Bus/Models/Bus_HarnessShell_paz672.fbx`（没有玻璃） |
-| `Textures/Cabin_TubeLM.exr` | `_CabinTubeLM`（1024²，uv1）：RGB = 管灯照度 E（线性，Unity 单位），A = AO（0.5 m）。在 Blender 里只开 10 根管灯烘的；中段座垫 E = 0.8（圣经 §4.3） |
+| `Textures/Cabin_TubeLM.exr` | `_CabinTubeLM`（1024²，uv1）：RGB = 管灯照度 E（线性，Unity 单位），A = AO（0.5 m）。在 Blender 里只开 10 根管灯烘的；**中段座垫 E = 0.6**（圣经 §4.3 写 0.8；0.8 时座椅顶显示约 (87, 46, 52)，比圣经的“座椅顶 ≈ #4A2229”亮约 18%、偏粉，所以整体 × 0.75，待总导演批） |
 | `Textures/Bus_Exterior_Albedo_2048.png` / `_Mask_2048.png` | 外观图集（uv1）：双色漆 + 做旧（轮拱 / 门槛 / 门边的锈、窗角雨痕、下 30 cm 泥点、门边掉漆、车顶氧化）；Mask：R 金属、G 光滑度、B 湿、A AO |
-| `Textures/Cabin_*` | 平铺细节：穿孔顶棚（Ø3 mm / 12 mm）、凸点橡胶（Ø25 / 50 mm）、皮纹、窗帘织纹、收音机刻度 |
+| `Textures/Cabin_*` | 平铺细节：穿孔顶棚（Ø3 mm / 12 mm）、凸点橡胶（Ø25 / 50 mm）、窗帘织纹、收音机刻度；座椅 / 仪表台 / 收音机皮套的法线是 Poly Haven 的 CC0 扫描皮（`leather_red_03`、`brown_leather`，Rob Tuytel） |
+| 顶点色（`Cabin_Static`） | R = 积灰 / 发黄（管灯周围的顶棚、窗框四角和窗台、地板贴墙的边、踢脚线），G = 磨亮（座垫中间和前沿、靠背顶边、司机座、门口和过道地板、仪表台前沿、低处鞋痕），B = 晒褪（靠窗的靠背顶边）+ 开裂点（B > 0.75） |
 | `Textures/Bus_DestBlind_1024x296.png` / `_Blank_` | 目的地牌：外看正字「蓝白」（思源黑体 Heavy，140 mm）；第 11 幕换空白 |
 | `Editor/LanbaiBusBuild.cs` | 菜单 `蓝白/Build/车` |
 | `Source/` | Blender 5.0.1 的全部脚本：`bus_spec.py`（唯一数据源）、`build_bus.py`（造车）、`finish_bus.py`（分组、UV、导出、读回、布局 JSON）、`bake_lightmap.py`、`weather_exterior.py`、`gen_textures.py`、`viewcheck.py`（视窗验证） |
@@ -109,7 +110,7 @@ occ.point(az, el)                                   # ('WindscreenR' | 'open' | 
 ## 4. 诚实的已知弱点
 
 1. **没在 Unity 里跑过**：材质参数、头像补光的强度（菜单给的是起始值 0.8 / 3 m，要用灰卡校）、雨刮枢轴的朝向、VRCStation 的坐姿高度都要本地看。
-2. **车厢太亮还是太暗，要和本地的画面对过才知道**：光照图按“中段座垫 E = 0.8”校（圣经 §4.3）；主座位自己的座垫只有 0.46（它在右排管灯的尽头、天窗旁边）。参考渲染里第 1、2 幕的 APL（只有车厢、窗外全黑）比目标高约 10–20，有了窗外的画面再定要不要整体降。
+2. **车厢的亮度**：光照图按“中段座垫 E = 0.6”校（圣经写 0.8；按座椅顶的显示目标 `#4A2229` 降了 0.75 倍）；主座位自己的座垫约 0.35（它在右排管灯的尽头、天窗旁边）。要和本地的画面对过再定。
 3. **侵蚀公式**：圣经 §4.8 的写法和它的下一句话打架，`Lanbai/Cabin` 默认按“下一句话”（`Cabin/给总控_shader.md` §1），等总导演批。
 4. **外观做旧是程序算的**（位置 + 噪声），还没用 PAZ 的照片（总导演说照片可以直接用；没来得及）。0.3 m 看锈和雨痕还偏规整。
 5. **玻璃的车厢立方图**要本地烘（第 0 节第 5 步）。

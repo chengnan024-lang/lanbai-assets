@@ -107,7 +107,7 @@ def main():
     ap.add_argument('--out', default=os.path.join(HERE, '..', 'Textures'))
     ap.add_argument('--res', type=int, default=1024)
     ap.add_argument('--samples', type=int, default=96)
-    ap.add_argument('--target-E', type=float, default=0.8)
+    ap.add_argument('--target-E', type=float, default=0.6)   # 0.8 x 0.75: the seat TOPS then read the bible's #4A2229 under S2 (measured: 0.8 gave ~#57 2E 34, pinkish); see Bus/README
     a = ap.parse_args()
     bpy.ops.wm.open_mainfile(filepath=a.blend)
     sc = bpy.context.scene

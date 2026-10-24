@@ -287,6 +287,7 @@ public static class LanbaiBusBuild
         m.SetVector("_HeightSmooth", new Vector4(1.62f, 2.42f, 0.80f, 0f)); m.SetFloat("_FadeResist", 0f);
         m.SetVector("_MaskAlbedoMul", new Vector4(1, 1, 1, 0)); m.SetVector("_MaskSmoothAdd", Vector4.zero);
         m.SetFloat("_WetDarken", 1f);
+        m.SetFloat("_GrimeAmount", 0f);
         switch (key)
         {
             case "Vinyl":
@@ -300,20 +301,27 @@ public static class LanbaiBusBuild
                 m.SetColor("_WearColor", Hex("#3C3E3D")); m.SetFloat("_WearSmooth", 0.50f); m.SetFloat("_WearAmount", 1f); break;
             case "Floor":
                 Detail(m, "Cabin_FloorStud_N_0.20m.png", 1f, 0.20f, "Cabin_FloorStud_M_0.20m.png");
+                m.SetColor("_GrimeColor", Hex("#6E665A")); m.SetFloat("_GrimeAmount", 1f);
                 m.SetVector("_MaskAlbedoMul", new Vector4(1f, 1.6f, 0.92f, 0f)); m.SetVector("_MaskSmoothAdd", new Vector4(0.05f, -0.05f, 0f, 0f));
                 m.SetColor("_WearColor", Hex("#4A4B47")); m.SetFloat("_WearSmooth", 0.35f); m.SetFloat("_WearAmount", 1f);
                 m.SetFloat("_WetDarken", 0.8f); break;
             case "Int_Ceiling":
                 Detail(m, "Cabin_CeilingPerf_N_0.12m.png", 1f, 0.12f, "Cabin_CeilingPerf_M_0.12m.png");
+                m.SetColor("_GrimeColor", Hex("#CFC09A")); m.SetFloat("_GrimeAmount", 1f);   // yellowed round the tubes (vertex R)
                 m.SetVector("_MaskAlbedoMul", new Vector4(0.15f, 1f, 1f, 0f)); break;
             case "Int_Enamel":
+                m.SetColor("_GrimeColor", Hex("#8C8370")); m.SetFloat("_GrimeAmount", 1f);
                 m.SetColor("_WearColor", Hex("#5B5A55")); m.SetFloat("_WearSmooth", 0.35f); m.SetFloat("_WearAmount", 1f); break;
             case "Steel":
                 m.SetVector("_HeightSmooth", new Vector4(1.62f, 2.42f, 0.80f, 1f)); m.SetFloat("_FadeResist", 0.3f); break;
             case "TubeDiffuser":
                 m.SetFloat("_EmitMode", 1f); m.SetColor("_EmissionColor", new Color(1.632f, 2.024f, 2.042f, 1f)); m.SetFloat("_BugDots", 1f); break;
-            case "Dash":
-                Detail(m, "Cabin_VinylGrain_N_0.25m.png", 0.2f, 0.25f, null); break;
+            case "Dash":       // textured vinyl dash (CC0 leather normal, finer), hands' wear on the edge (vertex G)
+                Detail(m, "Cabin_SeatLeather_N_0.30m.jpg", 0.4f, 0.15f, null);
+                m.SetColor("_WearColor", Hex("#3E3F40")); m.SetFloat("_WearSmooth", 0.45f); m.SetFloat("_WearAmount", 1f);
+                m.SetColor("_GrimeColor", Hex("#6A6355")); m.SetFloat("_GrimeAmount", 1f); break;
+            case "Alu":        // window frames: dust / a little corrosion in the corners (vertex R)
+                m.SetColor("_GrimeColor", Hex("#6B5A48")); m.SetFloat("_GrimeAmount", 1f); break;
             case "Bakelite":
                 m.SetColor("_WearColor", Hex("#2E2E2E")); m.SetFloat("_WearSmooth", 0.72f); m.SetFloat("_WearAmount", 1f); break;
             case "RadioLeather":

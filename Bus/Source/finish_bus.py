@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """把 build_bus 搭出来的零件整理成交给 Unity 的车：分组合并、UV0（米制盒投影）、UV1（车厢光照图集）、
-顶点色（R = 1（AO 在 _CabinTubeLM.a）、G = 磨亮、B = 晒褪 / 开裂）、LOD、雨刮枢轴、FBX 导出 + 读回核对、BusLayout.json。
+顶点色（R = 积灰 / 发黄、G = 磨亮、B = 晒褪 / 开裂）、LOD、雨刮枢轴、FBX 导出 + 读回核对、BusLayout.json。
 
     ~/bpy/bin/python Bus/Source/finish_bus.py --out Bus/Models [--ao-samples 32]
 
@@ -134,7 +134,8 @@ def uv1_lightmap(ob, margin=0.002):
 
 
 def vertex_colours(ob, ao_samples=32):
-    """R = 1 (AO is in _CabinTubeLM.a), G = wear / polish, B = sun-fade + crack mask."""
+    """R = grime (yellowed ceiling round the tubes, window-corner dust, floor edges), G = wear / polish, B = sun-fade +
+    crack seeds. AO is in _CabinTubeLM.a."""
     me = ob.data
     ca = me.color_attributes.new('Col', 'FLOAT_COLOR', 'POINT') if 'Col' not in me.color_attributes else me.color_attributes['Col']
     me.color_attributes.active_color = ca
@@ -171,21 +172,56 @@ def vertex_colours(ob, ao_samples=32):
         win_side = np.clip(0.5 + 0.5 * side * x / 0.9, 0, 1) if side else 0.5
         topband = np.clip((y - 1.55) / 0.12, 0, 1) * (np.abs(z - bz) < 0.25) * (np.abs(x - sx) < 0.45)
         fade = np.maximum(fade, topband * win_side)
-    # driver's seat is the oldest (bible 4.2): polish 1 on its cushion
-    # poles: grip zone 1.0-1.8 m
-    grip = np.clip(1 - np.abs(y - 1.4) / 0.4, 0, 1)
-    pole_like = (np.abs(N[:, 1]) < 0.3)
-    wear = np.maximum(wear, np.where(pole_like & (y > 1.0) & (y < 1.8), grip * 0.0, 0))
-    # floor: aisle wear band (x -0.10..0.30) and the door step
-    aisle = np.clip(1 - np.abs(x + 0.06) / 0.34, 0, 1) * (N[:, 1] > 0.9) * (np.abs(y - B.FLOOR_Y) < 0.02)
-    wear = np.maximum(wear, aisle * (0.6 + 0.4 * np.clip((z - B.Z_REAR) / 6.0, 0, 1)))
-    # crack seeds on the vinyl: 2-5 per seat -> random sparse points of the fade/crack mask (blue > 0.75 = crack)
-    crack = (rng.random(len(P)) < 0.004).astype(np.float32) * 0.9
-    fade = np.maximum(fade * 0.7, crack)
+    # seat edges polished by thirty years of passengers (bible 4.2 '#6A3434, 0.62-0.70'): the cushion's front edge and the
+    # backrest's top edge, where hands and knees go
+    for sx, bz in seat_c:
+        near = (np.abs(x - sx) < 0.45) & (np.abs(z - (bz + 0.25)) < 0.40)
+        front_edge = np.clip(1 - np.abs(z - (bz + 0.50)) / 0.05, 0, 1) * np.clip(1 - np.abs(y - 1.0) / 0.08, 0, 1)
+        top_edge = np.clip(1 - np.abs(y - 1.60) / 0.06, 0, 1) * (np.abs(z - bz) < 0.20)
+        wear = np.maximum(wear, near * np.maximum(front_edge * 0.9, top_edge * 0.75))
+    # the driver's seat is the oldest: polished all over its cushion
+    dx_, dz_ = B.DRIVER_SEAT
+    wear = np.maximum(wear, (np.abs(x - dx_) < 0.25) * (np.abs(z - dz_) < 0.25) * (N[:, 1] > 0.5) * (y > 0.9) * (y < 1.2) * 1.0)
+    on_floor = (N[:, 1] > 0.9) & (np.abs(y - B.FLOOR_Y) < 0.01)
+    # floor: the aisle band, worn most toward the door; the entry (door step top, between the guard panel and the dash)
+    aisle = np.clip(1 - np.abs(x + 0.06) / 0.34, 0, 1) * on_floor
+    wear = np.maximum(wear, aisle * (0.55 + 0.45 * np.clip((z - B.Z_REAR) / 6.0, 0, 1)))
+    entry = on_floor * np.clip(1 - np.hypot((x - 0.32) / 0.32, (z - 2.80) / 0.40), 0, 1)
+    wear = np.maximum(wear, entry)
+    # dash: the front edge where hands rest (right of the wheel, the radio side) and in front of the driver
+    on_dash = (y > 1.0) & (y < B.DASH_TOP + 0.02) & (z > B.DASH_Z0 - 0.02) & (z < B.DASH_Z0 + 0.12)
+    wear = np.maximum(wear, on_dash * np.clip(1 - np.abs(x - B.WHEEL_C[0]) / 0.45, 0, 1) * 0.8)
+    # lower walls: shoe scuffs (bible 4.2 '近地鞋痕 #5B5A55')
+    kick = (np.abs(N[:, 1]) < 0.3) & (y < B.FLOOR_Y + 0.25) & (y > B.FLOOR_Y + 0.01)
+    wear = np.maximum(wear, kick * np.clip(rng.random(len(P)) * 1.6 - 0.6, 0, 1) * 0.7)
+    # R = grime: ceiling yellowed round the tubes; dust in the window-frame corners and on the sills; dirt where the
+    # floor meets the walls and the seat feet
+    grime = np.zeros(len(P), np.float32)
+    on_ceil = (N[:, 1] < -0.6) & (y > 2.35)
+    for tx, zl in ((B.TUBE_X[0], B.TUBE_Z_L), (B.TUBE_X[1], B.TUBE_Z)):
+        z0_, z1_ = zl[0][0], zl[-1][1]
+        dz = np.maximum(0, np.maximum(z0_ - z, z - z1_))
+        d = np.hypot(np.abs(x - tx), dz)
+        grime = np.maximum(grime, on_ceil * np.exp(-d / 0.22) * 0.85)
+    for side, wins in ((1, B.WIN_R), (-1, B.WIN_L)):
+        xw = B.XC + side * (B.W_HALF - 0.04)
+        near_wall = np.abs(x - xw) < 0.10
+        for z0_, z1_ in wins:
+            for zc in (z0_, z1_):
+                for yc, k in ((B.WIN_SILL, 1.0), (B.WIN_HEAD, 0.5)):
+                    d = np.hypot(z - zc, y - yc)
+                    grime = np.maximum(grime, near_wall * np.clip(1 - d / 0.10, 0, 1) * k)
+            sill = near_wall * (np.abs(y - (B.WIN_SILL - 0.02)) < 0.035) * (z > z0_ - 0.03) * (z < z1_ + 0.03)
+            grime = np.maximum(grime, sill * 0.35)
+    xl_, xr_ = B.XC - B.W_HALF + 0.04, B.R_WALL - 0.04
+    edge = on_floor * np.clip(1 - np.minimum(np.abs(x - xl_), np.abs(x - xr_)) / 0.14, 0, 1)
+    grime = np.maximum(grime, edge * 0.8)
+    grime = np.maximum(grime, (y < B.FLOOR_Y + 0.06) * (np.abs(N[:, 1]) < 0.3) * 0.5)      # the skirting
+    ao = grime                                    # R channel (the name kept for the return value)
     col = np.stack([ao, wear, fade, np.ones_like(ao)], 1)
     for i, c in enumerate(ca.data):
         c.color = col[i].tolist()
-    return dict(ao_mean=float(ao.mean()))
+    return dict(grime_mean=float(grime.mean()), wear_mean=float(wear.mean()))
 
 
 def wipers():

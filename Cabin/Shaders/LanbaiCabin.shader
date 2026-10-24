@@ -39,7 +39,9 @@ Shader "Lanbai/Cabin"
         _MaskAlbedoMul ("Mask albedo multiplier at R G B = 1", Vector) = (1, 1, 1, 0)
         _MaskSmoothAdd ("Mask smoothness add at R G B = 1", Vector) = (0, 0, 0, 0)
 
-        [Header(Vertex colour  G wear  B sun fade and cracks)]
+        [Header(Vertex colour  R grime  G wear  B sun fade and cracks)]
+        _GrimeColor ("Grime colour  vertex R", Color) = (0.36, 0.33, 0.27, 1)
+        _GrimeAmount ("Grime amount", Range(0, 1)) = 0
         _WearColor ("Wear colour  vertex G", Color) = (0.416, 0.204, 0.204, 1)
         _WearSmooth ("Wear smoothness", Range(0, 1)) = 0.66
         _WearAmount ("Wear amount", Range(0, 1)) = 0
@@ -128,6 +130,8 @@ Shader "Lanbai/Cabin"
         float4 _MaskAlbedoMul, _MaskSmoothAdd;
         fixed4 _WearColor, _SunFadeColor, _CrackColor;
         half _WearSmooth, _WearAmount, _SunFadeSmooth, _SunFadeAmount, _CrackSmooth, _CrackAmount;
+        half4 _GrimeColor;
+        half _GrimeAmount;
         float _UseTubeLM;
         sampler2D _CabinTubeLM;
         float4 _TubeLMConst;
@@ -205,7 +209,11 @@ Shader "Lanbai/Cabin"
             albedo *= lerp(1.0, _MaskAlbedoMul.r, m.r) * lerp(1.0, _MaskAlbedoMul.g, m.g) * lerp(1.0, _MaskAlbedoMul.b, m.b);
             smooth += dot(m, _MaskSmoothAdd.rgb);
 
-            // vertex colour: G wear / polish, B sun fade (<= 0.75) and crack seeds (> 0.75)
+            // vertex colour: R grime (thirty years: yellowed ceiling round the tubes, dust in the window-frame corners and
+            // sills, dirt where the floor meets the walls), G wear / polish, B sun fade (<= 0.75) and crack seeds (> 0.75)
+            float grime = saturate(IN.color.r) * _GrimeAmount;
+            albedo = lerp(albedo, albedo * _GrimeColor.rgb * 2.0, grime);
+            smooth *= 1.0 - 0.5 * grime;
             float wear = saturate(IN.color.g) * _WearAmount;
             albedo = lerp(albedo, _WearColor.rgb, wear);
             smooth = lerp(smooth, _WearSmooth, wear);

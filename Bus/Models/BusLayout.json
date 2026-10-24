@@ -901,8 +901,8 @@
    "tris": 356
   },
   "Cabin_Static": {
-   "verts": 34750,
-   "tris": 63189
+   "verts": 37957,
+   "tris": 68483
   },
   "Cabin_Tubes": {
    "verts": 960,
@@ -1049,5 +1049,5 @@
    "tris": 28
   }
  },
- "stats_total_tris": 115709
+ "stats_total_tris": 121003
 }
