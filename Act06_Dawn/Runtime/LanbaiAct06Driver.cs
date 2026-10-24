@@ -116,6 +116,10 @@ public class LanbaiAct06Driver : UdonSharpBehaviour
         if (roots != null)
             for (int i = 0; i < roots.Length; i++) if (roots[i] != null) roots[i].SetActive(on);
         if (!on && _ready) HandBack();
+        // D-33 #6: on activation everything is rebuilt from t alone (late joiners, timeline drags): the next tick
+        // re-applies the dawn preset (sky / fog / moon / stars), re-arms the overlay and writes the main light,
+        // RenderSettings, the plain, the cards and the sea from t; nothing is taken from the door or left-over values
+        if (on) { _skyApplied = false; _overlayHidden = false; _lobesSet = false; _lastT = -1f; }
     }
 
     public float[] LanbaiWindow()
