@@ -26,6 +26,16 @@ def lin(h):
 class N:
     """tiny node-graph helper."""
 
+    def edges(self, radius=0.004):
+        """convex-edge mask that does not depend on mesh density: the Bevel node's rounded normal vs the true one."""
+        bv = self.new('ShaderNodeBevel', samples=8)
+        bv.inputs['Radius'].default_value = radius
+        geo = self.new('ShaderNodeNewGeometry')
+        dp = self.new('ShaderNodeVectorMath', operation='DOT_PRODUCT')
+        self.nt.links.new(bv.outputs['Normal'], dp.inputs[0])
+        self.nt.links.new(geo.outputs['Normal'], dp.inputs[1])
+        return self.ramp(self.math('SUBTRACT', 1.0, dp.outputs['Value']), 0.02, 0.12)
+
     def __init__(self, m):
         self.m = m
         self.nt = m.node_tree
@@ -119,8 +129,8 @@ def vinyl(worn=1.0, sun=0.0, name='M_Bus_Vinyl_Detail'):
     g = N(m)
     P = g.obj()
     geo = g.new('ShaderNodeNewGeometry')
-    # edge / seam closeness: Cycles pointiness (convex edges > 0.5, cavities < 0.5)
-    edge = g.ramp(geo.outputs['Pointiness'], 0.52, 0.60)
+    # edge / seam closeness: convex edges from the Bevel trick (density-independent), cavities from pointiness
+    edge = g.edges(0.012)
     cav = g.ramp(geo.outputs['Pointiness'], 0.48, 0.42)
     ao = g.new('ShaderNodeAmbientOcclusion', samples=8, only_local=True)
     ao.inputs['Distance'].default_value = 0.03
@@ -186,10 +196,9 @@ def painted_steel(hexc='#3C3E3D', name='M_Bus_SeatFrame_Detail', primer='#7A6E5A
     m, nt, bs = _fresh('SeatFrame', name)
     g = N(m)
     P = g.obj()
-    geo = g.new('ShaderNodeNewGeometry')
-    edge = g.ramp(geo.outputs['Pointiness'], 0.58, 0.68)
+    edge = g.edges(0.003)
     chipn = g.noise(P, 60.0, detail=6, rough=0.7)
-    chip = g.math('MULTIPLY', edge, g.ramp(chipn.outputs['Fac'], 0.60, 0.66))
+    chip = g.math('MULTIPLY', edge, g.ramp(chipn.outputs['Fac'], 0.56, 0.64))
     rustn = g.ramp(g.noise(P, 35.0, detail=4).outputs['Fac'], 0.5, 0.7)
     base = g.mix(chip, (*lin(hexc), 1), g.mix(rustn, (*lin(primer), 1), (*lin(rust), 1)))
     nt.links.new(base, bs.inputs['Base Color'])

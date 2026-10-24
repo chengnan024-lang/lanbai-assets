@@ -39,20 +39,20 @@ def seat_module(name, x0, x1, back_z, cushion_y=None, double=False, wall_side=1,
     hi = quality == 'high'
     lv = 3 if hi else 1
     sides = 24 if hi else 16
-    small = 12 if hi else 6                                   # piping / welts (4-5 mm: the normal map carries them)
-    frame_s = 16 if hi else 10
+    small = 12 if hi else 5                                   # piping / welts (4-5 mm: the normal map carries them)
+    frame_s = 16 if hi else 8
     objs = []
 
     # ---------------------------------------------------------------- cushion (not tilted)
     z0c, z1c = back_z + 0.085, back_z + 0.49
-    objs += _cushion(name, x0, x1, cx, cy, z0c, z1c, double, worn, wall_side, lv, small, collection)
+    objs += _cushion(name, x0, x1, cx, cy, z0c, z1c, double, worn, wall_side, lv, small, collection, hi)
     # pan under the cushion (rounded corners, folded lip) + the frame rectangle under it
     objs.append(BB.box(name + '_Pan', (x0 + 0.03, cy - 0.118, z0c + 0.01), (x1 - 0.03, cy - 0.094, z1c - 0.01), 'SeatFrame',
                        collection, bevel=0.008, segs=3))
     fy = cy - 0.135
     frame = [(x0 + 0.06, fy, z0c + 0.04), (x1 - 0.06, fy, z0c + 0.04), (x1 - 0.06, fy, z1c - 0.05), (x0 + 0.06, fy, z1c - 0.05)]
     objs.append(C.sweep(name + '_BaseFrame', frame + [frame[0]], 0.011, 'SeatFrame', collection, sides=frame_s, closed=True,
-                        bend=0.03))
+                        bend=0.03, seg_per_90=8 if hi else 3))
 
     # ---------------------------------------------------------------- legs / mounts
     xa = x0 + 0.08 if wall_side >= 0 else x1 - 0.08           # aisle side
@@ -113,7 +113,7 @@ def _sit_spots(x0, x1, double, wall_side):
     return list(zip(xs, w))
 
 
-def _cushion(name, x0, x1, cx, cy, z0c, z1c, double, worn, wall_side, lv, small, collection):
+def _cushion(name, x0, x1, cx, cy, z0c, z1c, double, worn, wall_side, lv, small, collection, hi=False):
     """a THIN bus cushion (7.5 cm): the top crowned, the front rolled over and tucked back under (the 'waterfall'
     edge of Fortepan 03), sat-in dents where people sit (Soviet foam goes flat in a few years)."""
     objs = []
@@ -121,10 +121,10 @@ def _cushion(name, x0, x1, cx, cy, z0c, z1c, double, worn, wall_side, lv, small,
     hi_ = (x1 - 0.018, cy, z1c)
     hx, hy, hz = (hi_[0] - lo[0]) / 2, (hi_[1] - lo[1]) / 2, (hi_[2] - lo[2]) / 2
     ccx, ccz = (lo[0] + hi_[0]) / 2, (lo[2] + hi_[2]) / 2
-    nmx = 11 if double else 7
+    nmx = (11 if double else 7) if hi else (7 if double else 4)       # the game mesh: the dents live in the normal map too
     X = np.concatenate([[-hx, -hx + 0.016], np.linspace(-hx + 0.05, hx - 0.05, nmx), [hx - 0.016, hx]])
     Y = np.array([-hy, -hy + 0.014, 0.0, hy - 0.028, hy])
-    Z = np.concatenate([[-hz, -hz + 0.016], np.linspace(-hz + 0.06, hz - 0.12, 6), [hz - 0.07, hz - 0.03, hz]])
+    Z = np.concatenate([[-hz, -hz + 0.016], np.linspace(-hz + 0.06, hz - 0.12, 6 if hi else 3), [hz - 0.07, hz - 0.03, hz]])
     spots = _sit_spots(x0, x1, double, wall_side)
 
     def deform(face, i, j, k, x, y, z, half):
@@ -154,7 +154,7 @@ def _cushion(name, x0, x1, cx, cy, z0c, z1c, double, worn, wall_side, lv, small,
     xl, xr = lo[0] + 0.013, hi_[0] - 0.013          # (the subdivided surface sits ~1 cm inside the cage box)
     zf = hi_[2] - 0.040
     path = C.fillet_path([(xl, 0, z0c + 0.03), (xl, 0, zf), (xr, 0, zf), (xr, 0, z0c + 0.03)], 0.03, 6)
-    path = C.drape(cu, [tuple(p) for p in C.resample(path, 0.02)], -0.0015)
+    path = C.drape(cu, [tuple(p) for p in C.resample(path, 0.02 if hi else 0.04)], -0.0015)
     objs.append(C.sweep(name + '_CushionPiping', path, 0.0045, 'Vinyl', collection, sides=small))
     if double:   # the bench's middle seam: a sunk welt across the top
         seam = C.drape(cu, [(cx, 0, z) for z in np.linspace(z0c + 0.05, z1c - 0.03, 12)], -0.002)
@@ -174,10 +174,10 @@ def _backrest(objs, name, x0, x1, cx, cy, back_z, double, lv, sides, small, hi, 
     seams_y = [-hyb + 0.20, -hyb + 0.38]                     # two stitched channels -> three bands (lumbar wider)
     Yb = [-hyb, -hyb + 0.03]
     for sy in seams_y:
-        Yb += [sy - 0.03, sy - 0.006, sy, sy + 0.006, sy + 0.03]
-    Yb += [hyb - 0.06, hyb - 0.03, hyb]
+        Yb += [sy - 0.03, sy - 0.006, sy, sy + 0.006, sy + 0.03] if hi else [sy - 0.008, sy, sy + 0.008]
+    Yb += [hyb - 0.06, hyb - 0.03, hyb] if hi else [hyb - 0.03, hyb]
     Yb = np.array(sorted(set(round(v, 5) for v in Yb)))
-    nmx = 8 if double else 5
+    nmx = (8 if double else 5) if hi else (5 if double else 3)
     Xb = np.concatenate([[-hxb, -hxb + 0.022], np.linspace(-hxb + 0.06, hxb - 0.06, nmx), [hxb - 0.022, hxb]])
     if double:
         Xb = np.array(sorted(set(list(np.round(Xb, 5)) + [-0.006, 0.0, 0.006])))
@@ -215,7 +215,7 @@ def _backrest(objs, name, x0, x1, cx, cy, back_z, double, lv, sides, small, hi, 
     for yy in (y0b + 0.05, y1b - 0.045):
         for xx in np.linspace(bx0 + 0.04, bx1 - 0.04, 4 if not double else 6):
             back.append(BB.cylinder(name + '_Screw%.2f_%.2f' % (xx, yy), (xx, yy, back_z - 0.0008), 'z', 0.0045, 0.0022,
-                                    'Alu', collection, segs=10 if not hi else 16, bevel=0.0008))
+                                    'Alu', collection, segs=16 if hi else 8, bevel=0.0008 if hi else 0.0))
     # the bent tube: up both sides of the back and across the top (chrome, §4.2), with clamps to the back board
     # (Fortepan 03: the tube is in plain sight along both sides of the back and ~5 cm over its top)
     rz = back_z + 0.047

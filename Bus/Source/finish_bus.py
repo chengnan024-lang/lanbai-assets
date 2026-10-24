@@ -309,6 +309,7 @@ def seat_parts(out, seat_groups, bake=True):
         for d, s_ in zip(lay.data, me.uv_layers['UVMap'].data):
             d.uv = s_.uv
         me.uv_layers.active = me.uv_layers['UVMap']
+        seat_wear(ob, inst)
         out[ob.name] = ob
         seats.append(ob)
         by_type.setdefault(ptype, []).append(ob)
@@ -339,6 +340,52 @@ def seat_parts(out, seat_groups, bake=True):
         PARTS_INFO[ptype] = dict(type=ptype, res=res, metres_per_uv=round(mpu, 5), instances=[o.name for o in obs],
                                  baked=bool(files))
     return seats
+
+
+def seat_wear(ob, inst):
+    """D-36 / 总导演: no two seats wear the same. Vertex colour on the seat object (Lanbai/Cabin part materials read it
+    on top of the shared atlas): G polish where people sit (aisle place > window place; the hero row and the row behind
+    the driver more), along the cushion's front roll (thighs) and the back's shoulder band; B sun-fade on the
+    window side of the back's top; R grime in the crease between cushion and back. A per-seat random strength."""
+    from parts import seat as SEAT
+    kw = BB.SEAT_INSTS[inst]
+    x0, x1, bz = kw['x0'], kw['x1'], kw['back_z']
+    cy = kw.get('cushion_y') or (B.FLOOR_Y + B.SEAT_H)
+    ws = kw.get('wall_side', 0)
+    rnd = np.random.default_rng(zlib.crc32(inst.encode()))
+    use = float(rnd.uniform(0.55, 1.15)) * (1.25 if inst in ('SeatR0', 'SeatR1', 'SeatL0', 'DriverSeat') else 1.0)
+    spots = SEAT._sit_spots(x0, x1, kw.get('double', False), ws)
+    spots = [(xs + float(rnd.normal(0, 0.03)), w * float(rnd.uniform(0.7, 1.2))) for xs, w in spots]
+    z0c, z1c = bz + 0.085, bz + 0.49
+    me = ob.data
+    ca = me.color_attributes.get('Col') or me.color_attributes.new('Col', 'FLOAT_COLOR', 'POINT')
+    M = ob.matrix_world
+    win_x = x1 if ws > 0 else x0
+    # only the vinyl wears / fades (the painted board, the frame and the chrome get none of it)
+    vinyl = np.zeros(len(me.vertices), bool)
+    slots = [m.name if m else '' for m in me.materials]
+    for p in me.polygons:
+        if 'Vinyl' in slots[p.material_index]:
+            vinyl[list(p.vertices)] = True
+    for vi, (v, c) in enumerate(zip(me.vertices, ca.data)):
+        if not vinyl[vi]:
+            c.color = (0.0, 0.0, 0.0, 1.0)
+            continue
+        x, y, z = U(M @ v.co)
+        g = r = b = 0.0
+        on_cushion = z0c - 0.01 < z < z1c + 0.03 and cy - 0.05 < y < cy + 0.03
+        if on_cushion:
+            for xs, w in spots:
+                g = max(g, w * math.exp(-((x - xs) / 0.13) ** 2 - ((z - (z0c + z1c) / 2 + 0.03) / 0.14) ** 2))
+            g = max(g, 0.8 * math.exp(-((z - z1c) / 0.035) ** 2) * max(math.exp(-((x - xs) / 0.18) ** 2) for xs, _ in spots))
+            r = max(r, math.exp(-((z - z0c) / 0.04) ** 2) * 0.8)          # the crease at the back of the cushion
+        on_back = bz - 0.02 < z < bz + 0.16 and y > cy
+        if on_back:
+            g = max(g, 0.5 * math.exp(-((y - (cy + 0.50)) / 0.06) ** 2))    # shoulders rub the top band
+            if ws != 0:
+                b = max(b, math.exp(-((x - win_x) / 0.10) ** 2) * math.exp(-((y - (cy + 0.58)) / 0.07) ** 2))
+            r = max(r, 0.6 * math.exp(-((y - cy) / 0.03) ** 2))
+        c.color = (min(1.0, r), min(1.0, g * use), min(0.75, b * 0.7 * use), 1.0)
 
 
 def build_all(ao_samples, bake_parts=True):

@@ -52,6 +52,7 @@ public static class LanbaiBusBuild
         { "Tyre", new object[] { "#2A2A2A", 0.55f, 0f } }, { "Rim", new object[] { "#D8D2C2", 0.45f, 0f } },
         { "Chrome", new object[] { "#CFD1D3", 0.85f, 1f } }, { "Lamp_Head", new object[] { "#EBE2CF", 0.90f, 0f } },
         { "Lamp_Tail", new object[] { "#8A1A1E", 0.80f, 0f } }, { "Lamp_Amber", new object[] { "#E3D69B", 0.80f, 0f } },
+        { "ButtonRed", new object[] { "#8A1A1E", 0.55f, 0f } },
         { "Int_Enamel", new object[] { "#D9D4C5", 0.45f, 0f } }, { "Int_Ceiling", new object[] { "#E2DDCF", 0.25f, 0f } },
         { "Seal", new object[] { "#2B2B2B", 0.30f, 0f } }, { "Vinyl", new object[] { "#5A2126", 0.45f, 0f } },
         { "SeatFrame", new object[] { "#3C3E3D", 0.35f, 0f } }, { "Floor", new object[] { "#323634", 0.22f, 0f } },
@@ -436,7 +437,12 @@ public static class LanbaiBusBuild
         m.SetTexture("_PartNormal", T(b + "Normal_" + pi.res + ".png"));
         m.SetTexture("_PartMask", T(b + "Mask_" + pi.res + ".png"));
         m.SetFloat("_PartNormalScale", 1f);
-        m.SetFloat("_WearAmount", 0f); m.SetFloat("_SunFadeAmount", 0f); m.SetFloat("_CrackAmount", 0f); m.SetFloat("_GrimeAmount", 0f);
+        // the atlas is the same for every seat of a type; the per-seat wear is in the vertex colours (finish_bus.seat_wear):
+        // G polish where people sit, B window sun-fade, R grime in the crease
+        m.SetColor("_WearColor", Hex("#6A3434")); m.SetFloat("_WearSmooth", 0.66f); m.SetFloat("_WearAmount", 0.8f);
+        m.SetColor("_SunFadeColor", Hex("#7A4A48")); m.SetFloat("_SunFadeSmooth", 0.40f); m.SetFloat("_SunFadeAmount", 0.8f);
+        m.SetColor("_GrimeColor", Hex("#5B524A")); m.SetFloat("_GrimeAbsolute", 1f); m.SetFloat("_GrimeAmount", 0.5f);
+        m.SetFloat("_CrackAmount", 0f);
         Detail(m, "Cabin_SeatLeather_N_0.30m.jpg", 0.30f, 0.30f / Mathf.Max(pi.metres_per_uv, 0.01f), null);
     }
 

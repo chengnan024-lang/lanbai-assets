@@ -205,7 +205,7 @@ def act_material(m_src, lm_img, P, ambient, tubes):
     out = [n for n in nt.nodes if n.type == 'OUTPUT_MATERIAL'][0]
     c = tuple(list(bs.inputs['Base Color'].default_value)[:3])
     key = m_src.name.replace('M_Bus_', '').split('.')[0]
-    look = VC.get(key, {})
+    look = VC.get('Vinyl' if key.startswith('Part_') else key, {})      # D-36 seats: per-seat wear in the vertex colours
     vc = nt.nodes.new('ShaderNodeVertexColor')
     vc.layer_name = 'Col'
     sep = nt.nodes.new('ShaderNodeSeparateColor')

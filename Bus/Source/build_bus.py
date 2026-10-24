@@ -41,7 +41,7 @@ MATS = {}
 MAT_TABLE = {
     'Ext_Indigo': ('#34506E', 0.50, 0), 'Ext_Cream': ('#D8D2C2', 0.55, 0), 'Ext_Silver': ('#BFC2C4', 0.70, 1),
     'Ext_Black': ('#26272A', 0.40, 0), 'Tyre': ('#2A2A2A', 0.55, 0), 'Rim': ('#D8D2C2', 0.45, 0),
-    'Chrome': ('#CFD1D3', 0.85, 1), 'Lamp_Head': ('#EBE2CF', 0.9, 0), 'Lamp_Tail': ('#8A1A1E', 0.8, 0),
+    'Chrome': ('#CFD1D3', 0.85, 1), 'Lamp_Head': ('#EBE2CF', 0.9, 0), 'Lamp_Tail': ('#8A1A1E', 0.8, 0), 'ButtonRed': ('#8A1A1E', 0.55, 0),
     'Lamp_Amber': ('#E3D69B', 0.8, 0),          # D-28e: pale yellow, an unlit lens (not orange)
     'Int_Enamel': ('#D9D4C5', 0.45, 0), 'Int_Ceiling': ('#E2DDCF', 0.25, 0), 'Seal': ('#2B2B2B', 0.30, 0),
     'Vinyl': ('#5A2126', 0.45, 0), 'SeatFrame': ('#3C3E3D', 0.35, 0), 'Floor': ('#323634', 0.22, 0),
@@ -678,6 +678,7 @@ def pad(name, lo, hi, r, m, collection='Seats', crown=(0.0, 0.0, 0.0), cuts=8):
 # D-36 A1: the seats are the parts/seat.py module. Every seat object is tagged with its part type (one shared atlas
 # per type, finish_bus.py unwraps / bakes the type's first seat and copies the uvs to the others) and its instance.
 SEAT_TYPES = {}          # type -> dict(params) of the canonical seat, for the bake
+SEAT_INSTS = {}          # instance -> dict(params, type), for the per-seat wear (finish_bus.seat_wear)
 
 
 def _seat(inst, ptype, **kw):
@@ -687,11 +688,13 @@ def _seat(inst, ptype, **kw):
         o['lb_part'] = ptype
         o['lb_inst'] = inst
     SEAT_TYPES.setdefault(ptype, dict(kw, inst=inst))
+    SEAT_INSTS[inst] = dict(kw, type=ptype)
     return objs
 
 
 def seats():
     SEAT_TYPES.clear()
+    SEAT_INSTS.clear()
     hero = None
     for i, bz in enumerate(B.RIGHT_ROWS):
         if i == 0:      # the hero seat sits on the front wheel box
@@ -779,40 +782,30 @@ def wall_x(side, inset):
 
 
 def window_trim():
-    """inside: anodised alu frames round the side windows (25 mm), a sill ledge, sliding-window meeting rails."""
-    t = 0.025
-    for side, wins in ((1, B.WIN_R), (-1, B.WIN_L)):
+    """inside of every side window: the D-36 A2 part module (parts/window.py) - profiled alu frame, lipped gasket,
+    transom track, two sliding upper sashes with the rotor latch, nosed sill."""
+    from parts import window as WIN
+    for side, seg, wins in ((1, 'R', B.WIN_R), (-1, 'L', B.WIN_L)):
         for k, (z0, z1) in enumerate(wins):
-            nm = 'Trim%s%d' % ('R' if side > 0 else 'L', k)
-            xo, xi = wall_x(side, SHELL_T + 0.002), wall_x(side, SHELL_T + 0.022)
-            lo_x, hi_x = min(xo, xi), max(xo, xi)
-            box(nm + 'Top', (lo_x, B.WIN_HEAD - 0.005, z0 - t), (hi_x, B.WIN_HEAD + t, z1 + t), 'Alu', 'Cabin')
-            box(nm + 'Bot', (lo_x, B.WIN_SILL - t, z0 - t), (hi_x, B.WIN_SILL + 0.005, z1 + t), 'Alu', 'Cabin')
-            box(nm + 'F', (lo_x, B.WIN_SILL, z1 - 0.005), (hi_x, B.WIN_HEAD, z1 + t), 'Alu', 'Cabin')
-            box(nm + 'B', (lo_x, B.WIN_SILL, z0 - t), (hi_x, B.WIN_HEAD, z0 + 0.005), 'Alu', 'Cabin')
-            lx0 = wall_x(side, SHELL_T + 0.08)
-            box(nm + 'Sill', (min(lx0, xo), B.WIN_SILL - 0.05, z0 - t), (max(lx0, xo), B.WIN_SILL - t, z1 + t), 'Int_Enamel', 'Cabin', bevel=0.008)
-            if z1 - z0 > 0.9:
-                zm = (z0 + z1) / 2
-                box(nm + 'Rail', (lo_x, B.WIN_SILL, zm - 0.012), (hi_x, B.WIN_HEAD, zm + 0.012), 'Alu', 'Cabin')
-                box(nm + 'Latch', (min(xi, xi - side * 0.02), 1.72, zm - 0.03), (max(xi, xi - side * 0.02), 1.76, zm + 0.03), 'Chrome', 'Cabin', bevel=0.004)
+            WIN.side_window(seg, k + 1 if side > 0 else k, z0, z1)
 
 
 def poles_and_guard():
+    """the stanchions, ceiling grab rails and the door grab: the D-36 A3 part module (parts/poles.py)."""
+    from parts import poles as PL
     gz = B.GUARD_Z
     box('GuardPanel', (0.56, B.FLOOR_Y, gz - 0.02), (0.99, 1.20, gz + 0.01), 'Int_Enamel', 'Cabin', bevel=0.005)
-    tube('GuardRail', [(0.99, 1.24, gz), (0.58, 1.24, gz), (0.58, B.FLOOR_Y, gz)], 0.016, 'Steel', 'Cabin')
+    PL.C.sweep('GuardRail', [(0.99, 1.24, gz), (0.58, 1.24, gz), (0.58, B.FLOOR_Y + 0.008, gz)], PL.R_POLE, 'Steel', 'Cabin',
+               sides=PL.SIDES, bend=0.05, seg_per_90=10)
+    PL.flange('GuardRail_Floor', (0.58, B.FLOOR_Y, gz), +1, 'Cabin')
     # door grab: thin (25 mm) and set back behind the post so the doorway frame stays clean (director r03 note 4)
-    tube('DoorGrab', [(0.965, 0.95, B.DOOR_POST[0] - 0.06), (0.945, 1.0, B.DOOR_POST[0] - 0.10), (0.945, 1.90, B.DOOR_POST[0] - 0.10),
-                      (0.965, 1.95, B.DOOR_POST[0] - 0.06)], 0.0125, 'Steel', 'Cabin')
+    PL.door_grab('DoorGrab', 0.99, B.DOOR_POST[0] - 0.10, 0.95, 1.95)
     for x in (-0.40, 0.29):
-        tube('Rail%+.2f' % x, [(x, 2.30, -3.3), (x, 2.30, 1.95)], 0.016, 'Steel', 'Cabin')
-        for z in (-3.3, -1.5, 0.3, 1.95):
-            tube('RailHanger%+.2f_%.1f' % (x, z), [(x, 2.30, z), (x, ceil_y(x), z)], 0.010, 'Steel', 'Cabin')
+        PL.ceiling_rail('Rail%+.2f' % x, x, -3.3, 1.95, 2.30, (-1.5, 0.3), ceil_y)
     for i, bz in enumerate(B.RIGHT_ROWS[1::2]):
-        tube('PoleR%d' % i, [(0.29, B.FLOOR_Y, bz - 0.03), (0.29, ceil_y(0.29), bz - 0.03)], 0.016, 'Steel', 'Cabin')
+        PL.pole('PoleR%d' % i, 0.29, bz - 0.03, B.FLOOR_Y, ceil_y(0.29), button=(i == 0))
     for i, bz in enumerate(B.LEFT_ROWS[1::2]):
-        tube('PoleL%d' % i, [(-0.41, B.FLOOR_Y, bz - 0.03), (-0.41, ceil_y(-0.41), bz - 0.03)], 0.016, 'Steel', 'Cabin')
+        PL.pole('PoleL%d' % i, -0.41, bz - 0.03, B.FLOOR_Y, ceil_y(-0.41), button=(i == 1))
 
 
 def tubes():

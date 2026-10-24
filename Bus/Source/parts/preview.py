@@ -72,7 +72,20 @@ def daylight(wall_x):
     bpy.context.scene.collection.objects.link(so)
 
 
-def stage(wall_x=1.0, floor=True, day=False):
+def stage(wall_x=1.0, floor=True, day=False, shell=False):
+    if shell:     # the real bus shell is in the scene (windows): sky + sun outside, the tube lights inside
+        sun = bpy.data.lights.new('Sun', 'SUN')
+        sun.energy, sun.angle = 3.0, 0.02
+        so = bpy.data.objects.new('Sun', sun)
+        so.rotation_euler = (0.85, 0.0, 2.0)
+        bpy.context.scene.collection.objects.link(so)
+        w = bpy.data.worlds.new('W')
+        w.use_nodes = True
+        w.node_tree.nodes['Background'].inputs[0].default_value = (*lin('#BCCADB'), 1)
+        w.node_tree.nodes['Background'].inputs[1].default_value = 1.2 if day else 0.02
+        bpy.context.scene.world = w
+        BB.box('PreviewGround', (-30, -0.02, -30), (30, 0.0, 30), 'Floor', 'Preview')
+        return
     if floor:
         BB.box('PreviewFloor', (-1.5, B.FLOOR_Y - 0.02, -2.0), (1.5, B.FLOOR_Y, 3.0), 'Floor', 'Preview')
     if day:   # the wall below the sill, a window band (open), the wall above
@@ -117,8 +130,47 @@ def camera(eye, target, hfov=64.0, res=(1280, 720)):
     return ob
 
 
+def _window_scene():
+    from parts import window as WIN
+    body, glass = BB.build_body()
+    BB.floor()
+    objs = []
+    for k, (z0, z1) in enumerate(B.WIN_R[:2]):
+        objs += WIN.side_window('R', k + 1, z0, z1)
+    return objs
+
+
+def _poles_scene():
+    body, glass = BB.build_body()
+    BB.ceiling()
+    BB.floor()
+    before = set(bpy.data.objects)
+    BB.poles_and_guard()
+    return [o for o in bpy.data.objects if o not in before]
+
+
 PARTS = {
     # name: (builder, views {view: (eye, target)}, reference photos)
+    'poles': dict(
+        build=_poles_scene, wall=None, shell=True,
+        views={
+            'aisle_2m': ((0.0, 1.65, 2.2), (-0.1, 1.55, -0.5)),             # down the aisle: stanchions + ceiling rails
+            'flange_0.8m': ((0.02, 1.20, 1.55), (0.29, 0.64, 1.07)),       # the floor flange of the first pole
+            'clamp_0.6m': ((0.10, 1.95, 0.70), (0.29, 2.30, 0.30)),        # a hanger clamp on the right ceiling rail
+            'button_0.6m': ((-0.10, 1.55, 0.60), (0.29, 1.50, 1.07)),      # the stop button on the first right pole
+        },
+        refs=['车厢_03_Fortepan.jpg', '车厢_01_Fortepan.jpg'],
+    ),
+    'window': dict(
+        build=_window_scene, wall=None, shell=True,
+        views={
+            'hero_61deg': ((0.55, 1.70, 2.05), (1.07, 1.60, 2.34)),       # the hero window, where the side poems sit
+            'latch_0.4m': ((0.70, 2.02, 1.98), (1.02, 2.07, 1.93)),        # the sash latch and the transom
+            'corner_0.5m': ((0.62, 1.55, 2.20), (1.05, 1.32, 2.50)),       # the frame corner, gasket and sill
+            'row_2m': ((0.20, 1.70, -0.20), (1.00, 1.75, 1.40)),           # the side windows down the row
+        },
+        refs=['车厢_01_Fortepan.jpg', '车厢_02_Fortepan.jpg'],
+    ),
     'seat': dict(
         build=lambda: SEAT.seat_module('SeatT', 0.31, 0.79, 1.0, double=False, wall_side=1, wall_x=0.99)
         + SEAT.seat_module('SeatD', -1.33, -0.43, 1.0, double=True, wall_side=-1, wall_x=-1.35)
@@ -156,7 +208,7 @@ def main():
     sc.view_settings.look = 'None'
     sc.view_settings.exposure = 0.0
     objs = P['build']()
-    stage(P['wall'], day=a.light == 'day')
+    stage(P['wall'], day=a.light == 'day', shell=P.get('shell', False))
     if not a.flat:
         from parts import materials as MATS
         MATS.apply_details(objs)
