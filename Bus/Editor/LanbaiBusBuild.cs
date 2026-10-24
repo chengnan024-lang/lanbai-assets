@@ -55,7 +55,7 @@ public static class LanbaiBusBuild
         { "SeatFrame", new object[] { "#3C3E3D", 0.35f, 0f } }, { "Floor", new object[] { "#323634", 0.22f, 0f } },
         { "Alu", new object[] { "#B8BBBD", 0.45f, 1f } }, { "SafetyYellow", new object[] { "#C9A227", 0.40f, 0f } },
         { "Steel", new object[] { "#C0C3C4", 0.55f, 1f } }, { "TubeDiffuser", new object[] { "#D8DBD6", 0.60f, 0f } },
-        { "Dash", new object[] { "#353637", 0.30f, 0f } }, { "Bakelite", new object[] { "#2E2E2E", 0.45f, 0f } },
+        { "Dash", new object[] { "#353637", 0.30f, 0f } }, { "Bakelite", new object[] { "#303030", 0.45f, 0f } },
         { "RadioLeather", new object[] { "#4A2E1F", 0.45f, 0f } }, { "RadioGrille", new object[] { "#B8BBBD", 0.55f, 1f } },
         { "RadioDial", new object[] { "#E8DFC8", 0.50f, 0f } }, { "Curtain", new object[] { "#A9BCCB", 0.18f, 0f } },
         { "Linen", new object[] { "#262626", 0.10f, 0f } }, { "Glass", new object[] { "#E9EFEA", 0.97f, 0f } },
@@ -87,6 +87,13 @@ public static class LanbaiBusBuild
         PrefabUtility.UnpackPrefabInstance(model, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
         model.transform.SetParent(root.transform, false);
         model.transform.localPosition = Vector3.zero; model.transform.localRotation = Quaternion.identity; model.transform.localScale = Vector3.one;
+
+        // 2b. door panes ride with their leaves (finish_bus.py exports Glass_DoorK separately: BusGlass, not Lanbai/Cabin)
+        for (int k = 0; k < 4; k++)
+        {
+            var leaf = FindDeep(model.transform, "Bus_Door" + k); var pane = FindDeep(model.transform, "Glass_Door" + k);
+            if (leaf != null && pane != null) pane.SetParent(leaf, true);
+        }
 
         // 3. materials
         Shader cabin = Shader.Find("Lanbai/Cabin"), cloth = Shader.Find("Lanbai/ThinCloth"), glass = Shader.Find("Lanbai/BusGlass");
@@ -216,7 +223,7 @@ public static class LanbaiBusBuild
                 var li = go.AddComponent<Light>();
                 li.type = LightType.Point; li.renderMode = LightRenderMode.ForceVertex; li.shadows = LightShadows.None;
                 li.color = Hex(string.IsNullOrEmpty(hl.colour) ? "#E4F1F3" : hl.colour);
-                li.intensity = 0.5f; li.range = 6.0f;   // range 6: one lamp per tube row reaches both ends of the 7.1 m cabin (calibrate on the #585F64 grey card) li.lightmapBakeType = LightmapBakeType.Realtime;
+                li.intensity = 0.5f; li.range = 6.0f; li.lightmapBakeType = LightmapBakeType.Realtime;   // range 6: one lamp per tube row reaches both ends of the 7.1 m cabin (calibrate on the #585F64 grey card)
                 li.cullingMask = playerMask;
             }
         if (playerMask == 0) _rep.AppendLine("WARNING: layers Player / PlayerLocal not found: set the head-fill culling by hand");
@@ -333,7 +340,7 @@ public static class LanbaiBusBuild
                 m.SetFloat("_WetDarken", 0.8f); break;
             case "Int_Ceiling":
                 Detail(m, "Cabin_CeilingPerf_N_0.12m.png", 1f, 0.12f, "Cabin_CeilingPerf_M_0.12m.png");
-                m.SetColor("_GrimeColor", Hex("#CFC09A")); m.SetFloat("_GrimeAmount", 1f);   // yellowed round the tubes (vertex R)
+                m.SetColor("_GrimeColor", Hex("#D8CBA6")); m.SetFloat("_GrimeAbsolute", 1f); m.SetFloat("_GrimeAmount", 1f);   // yellowed round the tubes (vertex R); absolute so it stays <= sRGB 231 (bible §1.6)
                 m.SetVector("_MaskAlbedoMul", new Vector4(0.15f, 1f, 1f, 0f)); break;
             case "Int_Enamel":
                 m.SetColor("_GrimeColor", Hex("#8C8370")); m.SetFloat("_GrimeAmount", 1f);
@@ -349,7 +356,7 @@ public static class LanbaiBusBuild
             case "Alu":        // window frames: dust / a little corrosion in the corners (vertex R)
                 m.SetColor("_GrimeColor", Hex("#6B5A48")); m.SetFloat("_GrimeAmount", 1f); break;
             case "Bakelite":
-                m.SetColor("_WearColor", Hex("#2E2E2E")); m.SetFloat("_WearSmooth", 0.72f); m.SetFloat("_WearAmount", 1f); break;
+                m.SetColor("_WearColor", Hex("#303030")); m.SetFloat("_WearSmooth", 0.72f); m.SetFloat("_WearAmount", 1f); break;
             case "RadioLeather":
                 Detail(m, "Cabin_RadioLeather_N_0.40m.jpg", 0.6f, 0.40f, null);   // CC0 Poly Haven brown_leather, 40 cm tile
                 m.SetColor("_WearColor", Hex("#4A2E1F")); m.SetFloat("_WearSmooth", 0.60f); m.SetFloat("_WearAmount", 1f); break;

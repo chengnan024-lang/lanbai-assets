@@ -72,6 +72,16 @@ def _m(nt, op, a, b=None):
     return n.outputs[0]
 
 
+DOOR_BIAS = [0.0]                 # set per act by build() (LanbaiCabinDriver.DoorBias at the act's t)
+
+
+def door_bias(t, start=957.40, end=965.40):
+    if t < start or t >= 1178.46:
+        return 0.0
+    x = min(max((t - start) / (end - start), 0.0), 1.0)
+    return x * x * (3 - 2 * x)
+
+
 def erosion_field(nt, fade, resist=0.0):
     """s = noise_range(noise) - tau(pos) (s < 0 = removed); the Lanbai/Cabin default form (_ErodeForm 0)."""
     geo = nt.nodes.new('ShaderNodeNewGeometry')
@@ -91,6 +101,7 @@ def erosion_field(nt, fade, resist=0.0):
     tau = _m(nt, 'SUBTRACT', tau, _m(nt, 'MULTIPLY', _m(nt, 'SUBTRACT', 1.0, fN), 0.25))
     tau = _m(nt, 'SUBTRACT', tau, _m(nt, 'MULTIPLY', _m(nt, 'SUBTRACT', 1.0, e), 0.35))
     tau = _m(nt, 'SUBTRACT', tau, resist)
+    tau_raw = tau
     # protections: the seat sphere (0.9 m round the hero seat) until 0.97; the floor patch until 0.65
     ex, ey, ez = B.EYE
     ds = _m(nt, 'SQRT', _m(nt, 'ADD', _m(nt, 'ADD', _m(nt, 'POWER', _m(nt, 'SUBTRACT', x, ex), 2.0),
@@ -100,6 +111,14 @@ def erosion_field(nt, fade, resist=0.0):
     if fade < 0.65:
         low = _m(nt, 'LESS_THAN', yu, B.FLOOR_Y + 0.08)
         tau = _m(nt, 'SUBTRACT', tau, _m(nt, 'MULTIPLY', low, 10.0))
+    if DOOR_BIAS[0] > 0:
+        # D-33 #7a (LanbaiCabinCommon.cginc): in the door box tau -> tau_raw + 1 + resist, after the protections
+        tau_door = _m(nt, 'ADD', tau_raw, 1.0 + resist)
+        inb = 1.0
+        for v, lo, hi in ((x, 0.80, 1.60), (yu, 0.45, 3.00), (zu, 2.38, 3.45)):
+            inb = _m(nt, 'MULTIPLY', inb, _m(nt, 'MULTIPLY', _m(nt, 'GREATER_THAN', v, lo), _m(nt, 'LESS_THAN', v, hi)))
+        k = _m(nt, 'MULTIPLY', inb, DOOR_BIAS[0])
+        tau = _m(nt, 'ADD', _m(nt, 'MULTIPLY', tau, _m(nt, 'SUBTRACT', 1.0, k)), _m(nt, 'MULTIPLY', tau_door, k))
     nz = nt.nodes.new('ShaderNodeTexNoise')
     nz.inputs['Scale'].default_value = 1.0 / 0.55
     nz.inputs['Detail'].default_value = 3.0
@@ -116,10 +135,10 @@ VC = {
     'SeatFrame': dict(wear=('#3C3E3D', 1.0)),
     'Floor': dict(wear=('#4A4B47', 1.0), grime=('#555550', 1.0, 'abs')),       # corner dust: lerp TO the colour
     'Int_Enamel': dict(wear=('#5B5A55', 1.0), grime=('#8C8370', 1.0)),
-    'Int_Ceiling': dict(grime=('#CFC09A', 1.0)),
+    'Int_Ceiling': dict(grime=('#D8CBA6', 1.0, 'abs')),
     'Dash': dict(wear=('#3E3F40', 1.0), grime=('#6A6355', 1.0)),
     'Alu': dict(grime=('#6B5A48', 1.0)),
-    'Bakelite': dict(wear=('#2E2E2E', 1.0)),
+    'Bakelite': dict(wear=('#303030', 1.0)),
     'RadioLeather': dict(wear=('#4A2E1F', 1.0)),
 }
 
@@ -224,7 +243,10 @@ def act_material(m_src, lm_img, P, ambient, tubes):
         s_ = erosion_field(nt, P['fade'], 0.30 if 'Steel' in m_src.name else 0.0)
         rim = nt.nodes.new('ShaderNodeEmission')
         rim.inputs['Color'].default_value = (*[1.5 * v for v in ambient], 1)
-        isrim = _m(nt, 'LESS_THAN', s_, 0.02)
+        # the shader's rim is 1 - smoothstep(0, 3 cm, s / |grad s|); Cycles nodes have no derivatives, so this is a
+        # soft falloff in noise units instead of the old hard band (review r2: rims read as thick cartoon outlines)
+        rw = _m(nt, 'MAXIMUM', _m(nt, 'SUBTRACT', 1.0, _m(nt, 'DIVIDE', s_, 0.02)), 0.0)
+        isrim = _m(nt, 'MULTIPLY', _m(nt, 'MULTIPLY', rw, rw), 0.8)
         mix_r = nt.nodes.new('ShaderNodeMixShader')
         nt.links.new(isrim, mix_r.inputs[0])
         nt.links.new(final, mix_r.inputs[1])
@@ -262,7 +284,7 @@ def erode_everything_else(objs, fade):
         if o.type != 'MESH' or o.hide_render or n.startswith(done):
             continue
         if n.startswith('Glass_'):
-            if fade >= pane_fade_at(o):
+            if fade >= pane_fade_at(o) or (n.startswith('Glass_Door') and DOOR_BIAS[0] >= 0.5):
                 o.hide_render = True
             continue
         resist = 0.30 if n.startswith('Cabin_Pole') else 0.0
@@ -292,6 +314,7 @@ def build(ctx):
     if 'eye' in a:
         ctx['cam']['eye'] = [float(v) for v in a['eye'].split(',')]
         ctx['eye'] = ctx['cam']['eye']
+    DOOR_BIAS[0] = door_bias(P['t'])
     objs = SF.load_blend(a.get('blend', '/tmp/bus/bus_final_ext.blend'))
     # eroded acts: a grazing ray crosses many cut-away (transparent) layers; Cycles' default 8 left black slivers
     bpy.context.scene.cycles.transparent_max_bounces = 128

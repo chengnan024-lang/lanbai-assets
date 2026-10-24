@@ -546,6 +546,14 @@ public class LanbaiCabinDriver : UdonSharpBehaviour
                 for (int it = 0; it < 30; it++) { float m = 0.5f * (lo + hi); if (Fade(m) >= thr) hi = m; else lo = m; }
                 _paneT[i] = hi;
             }
+            // D-33 #7a: a pane in the door box (the folding leaves' glass) goes with the door group, at half its bias
+            Renderer rb = glassRenderers[i];
+            if (rb != null)
+            {
+                Vector3 c = rb.bounds.center;
+                if (c.x > 0.80f && c.x < 1.60f && c.y > 0.45f && c.y < 3.00f && c.z > 2.38f && c.z < 3.45f)
+                    _paneT[i] = Mathf.Min(_paneT[i], doorGoneFrom + 0.5f * (doorGoneBy - doorGoneFrom));
+            }
             Renderer r = glassRenderers[i];
             Material m0 = r != null ? r.sharedMaterial : null;
             _paneBase[4 * i] = m0 != null ? m0.GetFloat(_idTintStrength) : 1f;

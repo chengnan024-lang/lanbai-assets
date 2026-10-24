@@ -46,7 +46,7 @@ MAT_TABLE = {
     'Int_Enamel': ('#D9D4C5', 0.45, 0), 'Int_Ceiling': ('#E2DDCF', 0.25, 0), 'Seal': ('#2B2B2B', 0.30, 0),
     'Vinyl': ('#5A2126', 0.45, 0), 'SeatFrame': ('#3C3E3D', 0.35, 0), 'Floor': ('#323634', 0.22, 0),
     'Alu': ('#B8BBBD', 0.45, 1), 'SafetyYellow': ('#C9A227', 0.40, 0), 'Steel': ('#C0C3C4', 0.55, 1),
-    'TubeDiffuser': ('#D8DBD6', 0.60, 0), 'Dash': ('#353637', 0.30, 0), 'Bakelite': ('#2E2E2E', 0.45, 0),
+    'TubeDiffuser': ('#D8DBD6', 0.60, 0), 'Dash': ('#353637', 0.30, 0), 'Bakelite': ('#303030', 0.45, 0),
     'RadioLeather': ('#4A2E1F', 0.45, 0), 'RadioGrille': ('#B8BBBD', 0.55, 1), 'RadioDial': ('#E8DFC8', 0.5, 0),
     'Curtain': ('#A9BCCB', 0.18, 0), 'Linen': ('#262626', 0.10, 0), 'Glass': ('#E9EFEA', 0.97, 0),
 }

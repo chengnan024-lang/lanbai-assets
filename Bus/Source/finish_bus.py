@@ -21,6 +21,7 @@ import json
 import math
 import os
 import sys
+import zlib
 
 import bpy
 import bmesh  # noqa: E402
@@ -296,6 +297,16 @@ def build_all(ao_samples):
             for li in p.loop_indices:
                 w = U(M @ me.vertices[me.loops[li].vertex_index].co)
                 uv[li].uv = (w[2], 2.20 - w[1])
+        # per-PANEL constants (review r2: a world-cell hash tore panels that crossed a cell): uv1 = rail midpoint
+        # (x, z), uv2 = (rail y, panel random 0..1). ThinCloth's phase, release spread and eye cap read these.
+        ws = np.array([U(M @ v.co) for v in me.vertices])
+        mid = (ws.min(0) + ws.max(0)) / 2
+        rnd = (zlib.crc32(o.name.encode()) % 10007) / 10007.0                 # deterministic (hash() is salted)
+        for nm_, val in (('UVPanel', (mid[0], mid[2])), ('UVPanel2', (2.20, rnd))):
+            lay = me.uv_layers.new(name=nm_)
+            for d_ in lay.data:
+                d_.uv = val
+        me.uv_layers.active = me.uv_layers['UVMap']
     out = {}
     out['Cabin_Static'] = join('Cabin_Static', groups['static'])
     out['Bus_Exterior_LOD0'] = join('Bus_Exterior_LOD0', groups['ext'])
@@ -306,6 +317,15 @@ def build_all(ao_samples):
     # four folding-door panels (D-28e: one leaf, all folding to the rear jamb), each its own object (act 11 closes them)
     door_parts = {pid: [o for o in groups['door'] if pid in o.name] for pid in ('Door0', 'Door1', 'Door2', 'Door3')}
     for pid, parts in door_parts.items():
+        # the panes are their own Glass_DoorK (Lanbai/BusGlass in Unity, review r2: joined in they became opaque
+        # Lanbai/Cabin slabs); the build script parents each to its Bus_DoorK so the act-11 close carries it
+        panes = [o for o in parts if o.name.startswith('Glass_')]
+        parts = [o for o in parts if not o.name.startswith('Glass_')]
+        if panes:
+            g = join('Glass_' + pid, panes)
+            bb = [g.matrix_world @ Vector(c) for c in g.bound_box]
+            set_origin(g, sum(bb, Vector()) / 8)
+            out[g.name] = g
         if parts:
             d = join('Bus_' + pid, parts)
             bb = [d.matrix_world @ Vector(c) for c in d.bound_box]
@@ -468,6 +488,13 @@ def main():
         bpy.ops.wm.save_as_mainfile(filepath=a.blend)
         objs = list(out.values()) + extra
     door_rows = door_pivots({o.name: o for o in objs})
+    # every mesh gets a vertex colour: without one Unity feeds white and Lanbai/Cabin reads full grime / wear / fade
+    # (review r2). Zero = clean; Cabin_Static and the curtains keep theirs.
+    for o in objs:
+        if o.type == 'MESH' and 'Col' not in o.data.color_attributes:
+            ca = o.data.color_attributes.new('Col', 'FLOAT_COLOR', 'POINT')
+            for c in ca.data:
+                c.color = (0.0, 0.0, 0.0, 1.0)
     if 'Cabin_DestBlind' in out:
         dest_blind_uv(out['Cabin_DestBlind'])
     fbx = os.path.join(a.out, 'Bus.fbx')

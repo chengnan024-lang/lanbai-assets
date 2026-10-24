@@ -115,7 +115,12 @@ Shader "Lanbai/ThinCloth"
             float w = saturate(v.color.r);                       // 0 at the rail -> 1 at the hem
             float t = _ClothClock;
             float3 posWS = mul(unity_ObjectToWorld, float4(v.vertex.xyz, 1.0)).xyz;
-            float ph = LanbaiHash13(floor(posWS * 0.8)) * 6.2832;                 // per-panel phase
+            // per-PANEL constants from finish_bus.py: uv1 = rail midpoint (x, z), uv2 = (rail y, panel random). Every
+            // vertex of a panel gets the same phase, release spread and eye distance, so panels never tear or shear.
+            bool hasPanel = v.texcoord2.x > 0.5;
+            float3 rail = hasPanel ? float3(v.texcoord1.x, v.texcoord2.x, v.texcoord1.y) : posWS;
+            float prand = hasPanel ? v.texcoord2.y : LanbaiHash13(floor(posWS * 0.8));
+            float ph = prand * 6.2832;                                            // per-panel phase
             float along = v.texcoord.x;                                           // across the panel, metres
             float sx = abs(_Inward) > 0.5 ? sign(_Inward) : (posWS.x > _CentreX ? -1.0 : 1.0);
             float3 inward = float3(sx, 0.0, 0.0);                                 // into the cabin (world, the bus never turns)
@@ -137,8 +142,8 @@ Shader "Lanbai/ThinCloth"
             // VR comfort (bible §1.8, review r1 #8): the local player's eye is the seat sphere centre + 0.68 m. A panel
             // next to that eye (within 0.4-0.9 m along z) may not swing in closer than 0.35 m to it.
             float3 eye = _SeatSphere.xyz + float3(0.0, 0.68, 0.0);
-            float gap = abs(posWS.x - eye.x);
-            float nearZ = (1.0 - smoothstep(0.4, 0.9, abs(posWS.z - eye.z))) * step(gap, 0.9);
+            float gap = abs(rail.x - eye.x);
+            float nearZ = (1.0 - smoothstep(0.4, 0.9, abs(rail.z - eye.z))) * step(gap, 0.9);
             float inAmt = dot(d, inward);
             float inMax = lerp(10.0, max(gap - 0.35, 0.0), nearZ);
             d -= inward * max(inAmt - inMax, 0.0);
@@ -157,10 +162,10 @@ Shader "Lanbai/ThinCloth"
                 float a = max(_Release.y, 0.01), vmax = max(_Release.z, 0.1);
                 float tA = vmax / a;                                              // time to reach vmax
                 float s = tr < tA ? 0.5 * a * tr * tr : 0.5 * a * tA * tA + vmax * (tr - tA);
-                float d0 = max(distance(posWS + d, eye), 0.2);
+                float d0 = max(distance(rail, eye), 0.2);                         // one value per panel
                 s = min(s, d0 * (exp(0.75 * tr) - 1.0));                          // v = 0.75 (d0 + s)
-                s *= 0.85 + 0.3 * frac(ph * 0.1591);                              // panels do not move as one block
-                float railY = posWS.y + v.texcoord.y;                             // uv0.y = metres below the rail
+                s *= 0.85 + 0.3 * prand;                                          // panels do not move as one block
+                float railY = hasPanel ? rail.y : posWS.y + v.texcoord.y;         // uv0.y = metres below the rail
                 float hUp = max(_RoofLine.x + _RoofLine.y - railY, 0.0);
                 float sv = min(s, hUp), sh = max(s - hUp, 0.0);
                 float L = max(_RoofLine.z, 0.05);
