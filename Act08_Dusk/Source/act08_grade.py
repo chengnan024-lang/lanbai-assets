@@ -64,5 +64,27 @@ def main():
     json.dump(g, open(os.path.join(KIT, 'Act08_Grade.json'), 'w'), indent=1)
 
 
+def blue():
+    """D-39 #1: the blue hour must really go down: at the hand-over to act 9 (1001.21) APL <= 55 (bible 88 -> 50). The sky
+    (blue_hour, the sky session's preset) is not dimmed; the drop is this act's own ΔEV, EV-linear 993.06 -> 1001.21, then
+    back to 0 by 1009.21 inside act 9's 6 EV darkening (so the frame still only gets darker)."""
+    g = json.load(open(os.path.join(KIT, 'Act08_Grade.json')))
+    t_end = 1001.21
+    d_end = solve(t_end, BLUE_APL, key='apl')
+    print('blue: dEV at %.2f = %.3f (APL %.1f at 0)' % (t_end, d_end, measure(t_end, 0.0)[1]), flush=True)
+    keep = [(t, d) for t, d in zip(g['t'], g['dev']) if t < 990.0]
+    keep += [(993.06, 0.0), (t_end, round(d_end, 3)), (1009.21, 0.0)]
+    g['t'] = [k[0] for k in keep]
+    g['dev'] = [k[1] for k in keep]
+    g['blue'] = dict(apl_target=BLUE_APL, dev_at_1001_21=round(d_end, 3), ramp=[993.06, t_end, 1009.21],
+                     note='D-39 #1: the blue hour comes down to APL <= 55 at 1001.21 by this act\'s ΔEV; back to 0 inside act 9\'s darkening')
+    json.dump(g, open(os.path.join(KIT, 'Act08_Grade.json'), 'w'), indent=1)
+
+
+BLUE_APL = 50.0
+
 if __name__ == '__main__':
-    main()
+    if '--blue' in sys.argv:
+        blue()
+    else:
+        main()

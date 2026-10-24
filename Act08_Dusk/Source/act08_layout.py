@@ -241,6 +241,9 @@ def main():
              dict(t0=T['F12'] + 6.0, t1=END8, op='Apply', preset='blue_hour')],
         fog=dict(water=0.006, air=0.00015, ii=0.00025, note='see fog_density(): F12 -> 0 linear, 0 at 1001.21'),
         sun_line=dict(grow=[T['F10e'], T['F10e'] + 8.0, 10.0], collapse=[T['F12'], T['F12'] + 6.0]),
+        # D-39 #2: ONE line: the sun sinks +0.5 -> 0 deg with the other sky (956.36 -> 964.36, 0.06 deg/s): it touches its
+        # other self on the seam (the other sky samples (-x, -y, z): its sun is at -el), the two lines melt into one
+        sun_sink=dict(t=[T['F10e'], T['F10e'] + 8.0], el=[SUN_EL, 0.0]),
         cards=dict(upper_8ii_in=[T['F10e'], T['F10e'] + 8.0], lower_in=[T['F10e'], T['F10e'] + 8.0],
                    blue=[T['F12'], T['F12'] + 6.0], dark=[END8, END8 + 8.0], wisp_out=WISP_FADE),
         light=dict(colour_srgb='#FFA642', E=2.2, floor=0.001, collapse=[T['F12'], T['F12'] + 6.0],

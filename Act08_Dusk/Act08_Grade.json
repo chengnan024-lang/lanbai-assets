@@ -15,7 +15,10 @@
   931.0,
   932.0,
   933.11,
-  933.12
+  933.12,
+  993.06,
+  1001.21,
+  1009.21
  ],
  "dev": [
   -3.105,
@@ -33,6 +36,9 @@
   0.342,
   0.178,
   0.0,
+  0.0,
+  0.0,
+  -1.502,
   0.0
  ],
  "target_ev": [
@@ -74,5 +80,15 @@
  "width": 320,
  "cam": "hero",
  "shell": "bible_v2",
- "note": "LanbaiGrade(t) = {dEV(t), 0, 0, 1}, linear between the keys; 0 outside 922.36 .. 933.11. Calibrate on the real bus: README \u00a75 (7c end 921 and 8 start 923 front screenshots)"
+ "note": "LanbaiGrade(t) = {dEV(t), 0, 0, 1}, linear between the keys; 0 outside 922.36 .. 933.11. Calibrate on the real bus: README \u00a75 (7c end 921 and 8 start 923 front screenshots)",
+ "blue": {
+  "apl_target": 50.0,
+  "dev_at_1001_21": -1.502,
+  "ramp": [
+   993.06,
+   1001.21,
+   1009.21
+  ],
+  "note": "D-39 #1: the blue hour comes down to APL <= 55 at 1001.21 by this act's \u0394EV; back to 0 inside act 9's darkening"
+ }
 }

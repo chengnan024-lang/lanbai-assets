@@ -50,7 +50,7 @@ def ss(x):
 def sky_img(name):
     if name not in SKYS:
         # the 8-ii line (_Udon_SunDisc.z 10 deg) is thinner than a 1024 px column: that one at 4096
-        W = 4096 if name.endswith('line10') and os.path.exists(os.path.join(WORK, f'sky_{name}_4096.hdr')) else 1024
+        W = 4096 if 'line10' in name and os.path.exists(os.path.join(WORK, f'sky_{name}_4096.hdr')) else 1024
         SKYS[name] = C.read_hdr(os.path.join(WORK, f'sky_{name}_{W}.hdr')).astype(np.float64)
     return SKYS[name]
 
@@ -66,14 +66,14 @@ def sky(V, t):
     if 0 < w2 < 1:
         # dusk_8i.ApplyBlend(dusk_8ii) in parameter space too (the line grows with it), keys .25 / .5 / .75
         keys = [(0.0, 'dusk_8i'), (0.25, 'dusk_8i_to_dusk_8ii_0.25'), (0.5, 'dusk_8i_to_dusk_8ii_0.50'),
-                (0.75, 'dusk_8i_to_dusk_8ii_0.75'), (1.0, 'dusk_8ii_line10')]
+                (0.75, 'dusk_8i_to_dusk_8ii_0.75'), (1.0, 'dusk_8ii_line10_el0')]
         a = _keyed(keys, w2, V)
     elif w2 >= 1:
-        a = C.sample_equirect(sky_img('dusk_8ii_line10'), V, 0.0)
+        a = C.sample_equirect(sky_img('dusk_8ii_line10_el0'), V, 0.0)
     if wb > 0:
         # dusk_8ii.ApplyBlend(blue_hour) in PARAMETER space (Tools~/sky_equirect.py --blend: the sky shader and its purple
         # guard run on the blended numbers, as in Unity), keyed at w = 0, .25, .5, .75, 1; between keys an image lerp
-        keys = [(0.0, 'dusk_8ii_line10'), (0.25, 'dusk_8ii_to_blue_hour_0.25'), (0.5, 'dusk_8ii_to_blue_hour_0.50'),
+        keys = [(0.0, 'dusk_8ii_line10_el0'), (0.25, 'dusk_8ii_to_blue_hour_0.25'), (0.5, 'dusk_8ii_to_blue_hour_0.50'),
                 (0.75, 'dusk_8ii_to_blue_hour_0.75'), (0.85, 'dusk_8ii_to_blue_hour_0.85'),
                 (0.95, 'dusk_8ii_to_blue_hour_0.95'), (1.0, 'blue_hour')]
         return _keyed(keys, wb, V)

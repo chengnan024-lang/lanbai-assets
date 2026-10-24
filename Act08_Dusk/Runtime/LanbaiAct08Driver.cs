@@ -70,6 +70,7 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
     public float revealT0 = 922.36f, revealDt = 0.1f;
     public float[] reveal;                     // the visible fraction of the disc under the ceiling edge (layout reveal)
     public float discRadius = 0.265f, lineDeg = 10f, lineGrow = 8f, lineCollapse = 6f;
+    public float sunEl0 = 0.5f, sunSinkDur = 8f;  // D-39 #2: the sun sinks +0.5 -> 0 deg with the other sky: ONE line
 
     [Header("Fog (_Udon_Fog.x)")]
     public float fogWater = 0.006f, fogAir = 0.00015f, fogII = 0.00025f, fogAirDur = 8f;
@@ -96,7 +97,7 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
     public float[] gradeT, gradeDev;
 
     private MaterialPropertyBlock _mpb;
-    private int _idSeaLevel, _idSeaMode, _idSeaClock, _idRefl, _idDissolve, _idFog, _idSunDisc;
+    private int _idSeaLevel, _idSeaMode, _idSeaClock, _idRefl, _idDissolve, _idFog, _idSunDisc, _idSunDir;
     private int _idGain, _idAlpha, _idSunColor, _idSkyUp, _idGround;
     private bool _ready, _ceilingFade, _ceilingOn, _seaModeOurs;
     private int _skyStage = -1;                // 0 8-i applied, 1 blending to 8-ii, 2 8-ii applied, 3 blending to blue, 4 blue applied
@@ -155,6 +156,7 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
         _idRefl = VRCShader.PropertyToID("_Udon_ReflCube");
         _idFog = VRCShader.PropertyToID("_Udon_Fog");
         _idSunDisc = VRCShader.PropertyToID("_Udon_SunDisc");
+        _idSunDir = VRCShader.PropertyToID("_Udon_SunDir");
         _idDissolve = VRCShader.PropertyToID("_DissolveTime");
         _idGain = VRCShader.PropertyToID("_Gain");
         _idAlpha = VRCShader.PropertyToID("_Alpha");
@@ -205,6 +207,12 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
         return Mathf.Lerp(reveal[i], reveal[j], Mathf.Clamp01(x - i));
     }
 
+    private Vector3 SunNow(float t)                            // az 0; el +0.5 -> 0 over the transform (956.36 -> 964.36)
+    {
+        float el = Mathf.Deg2Rad * sunEl0 * (1f - Smooth((t - tF10e) / sunSinkDur));
+        return new Vector3(sunDir.x * Mathf.Cos(el), Mathf.Sin(el), sunDir.z * Mathf.Cos(el)).normalized;
+    }
+
     private float FogDensity(float t)
     {
         if (t < tExit + fogAirDur) return Mathf.Lerp(fogWater, fogAir, Smooth((t - tExit) / fogAirDur));
@@ -231,7 +239,7 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
             if (worldSun == null) worldSun = RenderSettings.sun;
             if (worldSun != null)
             {
-                worldSun.transform.rotation = Quaternion.LookRotation(-sunDir);
+                worldSun.transform.rotation = Quaternion.LookRotation(-SunNow(t));
                 worldSun.color = sunColor;
                 worldSun.intensity = Mathf.Max(sunE * Reveal(t) * (1f - collapse), sunFloor);
             }
@@ -290,6 +298,11 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
         float k = 1f - Smooth((t - tF12) / lineCollapse);
         float line = lineDeg * Smooth((t - tF10e) / lineGrow) * k;
         VRCShader.SetGlobalVector(_idSunDisc, new Vector4(k, discRadius, line, 1f));
+        if (t >= tF10e)                                        // D-39 #2: the sun and its other self touch: one line
+        {
+            Vector3 sd = SunNow(t);
+            VRCShader.SetGlobalVector(_idSunDir, new Vector4(sd.x, sd.y, sd.z, 1f));
+        }
     }
 
     private void Ceiling(float t, float h)

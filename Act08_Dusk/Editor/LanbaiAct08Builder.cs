@@ -239,6 +239,8 @@ public static class LanbaiAct08Builder
         var rv = D(J["reveal"]); d.revealT0 = F(rv["t0"]); d.revealDt = F(rv["dt"]); d.reveal = FA(L(rv["frac"]));
         var sl = D(B["sun_line"]); var gr = L(sl["grow"]); d.lineDeg = F(gr[2]); d.lineGrow = F(gr[1]) - F(gr[0]);
         var cl = L(sl["collapse"]); d.lineCollapse = F(cl[1]) - F(cl[0]);
+        var sk = D(B["sun_sink"]); var skt = L(sk["t"]); var ske = L(sk["el"]);
+        d.sunEl0 = F(ske[0]); d.sunSinkDur = F(skt[1]) - F(skt[0]);
         var fg = D(B["fog"]); d.fogWater = F(fg["water"]); d.fogAir = F(fg["air"]); d.fogII = F(fg["ii"]);
         if (J.ContainsKey("grade")) { var g = D(J["grade"]); d.gradeT = FA(L(g["t"])); d.gradeDev = FA(L(g["dev"])); }
         else log += "\n[Act08] Act08_Layout.json has no grade table (Source/act08_grade.py): LanbaiGrade reports nothing";
