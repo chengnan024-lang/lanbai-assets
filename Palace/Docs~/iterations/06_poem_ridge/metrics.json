@@ -1,0 +1,24 @@
+{
+ "fishpass": {
+  "APL": 15.5,
+  "max_luma": 244.1,
+  "brightest_xy_frac": [
+   0.023,
+   0.731
+  ],
+  "purple_frac": 0.0,
+  "purple_D21_frac": 0.0,
+  "frac_luma_gt_200": 0.0002
+ },
+ "poem": {
+  "APL": 15.41,
+  "max_luma": 236.0,
+  "brightest_xy_frac": [
+   0.134,
+   0.682
+  ],
+  "purple_frac": 0.0,
+  "purple_D21_frac": 0.0,
+  "frac_luma_gt_200": 0.0001
+ }
+}
