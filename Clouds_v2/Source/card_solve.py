@@ -3,7 +3,7 @@
   阴影体（alpha > 0.97 里亮度 10–30 百分位的中位）→ 云影目标，受光顶（98 百分位）→ 云顶目标（调色后的屏幕码）。
 未知数：日色 = 黑体色温 K × 增益（Unity 的 E 叠在里面）、天光 RGB、地光 = 该幕 Trilight 地色 × 增益。
 同一组的所有卡用同一组颜色（光是一致的，不逐卡调）。结果写 Textures/cards_v2.json 的 colours.<组>。
-用法：python card_solve.py dawn | dusk"""
+用法：python card_solve.py dawn | duskU | duskD | --index"""
 import os
 import sys
 import json
@@ -25,7 +25,9 @@ BASE_W = 0.0
 TARGETS = {
     # shadow: bible; top: dawn = palette 06 'cloud tops peach'; dusk = 设计值 (between the slot amber and the rose band)
     'dawn': dict(set='dawn', grade='S6', shadow='#8593AA', top='#F6DCC4', ground='#8FA0BE', rel=70.0, K0=3000, Kmin=2400, Kmax=3600, gnd_max=1.2),
-    'dusk': dict(set='duskU', grade='S8', shadow='#363D59', top='#F0A878', ground='#4C5577', rel=70.0, K0=2400, Kmin=2000, Kmax=3000, gnd_max=1.2),
+    # act 8 (D-25: colours per act): the overhead group (duskU) and the other sky's group (duskD, solved on its own cards)
+    'duskU': dict(set='duskU', grade='S8', shadow='#363D59', top='#F0A878', ground='#4C5577', rel=70.0, K0=2400, Kmin=2000, Kmax=3000, gnd_max=1.2),
+    'duskD': dict(set='duskD', grade='S8', shadow='#363D59', top='#F0A878', ground='#4C5577', rel=70.0, K0=2400, Kmin=2000, Kmax=3000, gnd_max=1.2),
 }
 
 

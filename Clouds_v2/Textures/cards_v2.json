@@ -34,6 +34,39 @@
    ],
    "coverage_of_quad": 0.455
   },
+  "CloudSeaV2_2_dawn": {
+   "set": "dawn",
+   "shape": "2",
+   "size": [
+    2048,
+    512
+   ],
+   "cloud_base_v": 0.1289,
+   "opaque_bbox_uv": [
+    0.0566,
+    0.1289,
+    0.9434,
+    0.7793
+   ],
+   "kscale": 3.0,
+   "sscale": 1.1,
+   "key_angles": [
+    15.0,
+    80.0,
+    150.0
+   ],
+   "sun_el": 6.0,
+   "pitch": -6.0,
+   "clipped_K": 6.4231926303791314e-06,
+   "clipped_S": 0.0002461250630640731,
+   "bbox_uv": [
+    0.0161,
+    0.0312,
+    0.9761,
+    0.7969
+   ],
+   "coverage_of_quad": 0.463
+  },
   "CloudV2_Bank_dawn": {
    "set": "dawn",
    "shape": "Bank",
@@ -132,6 +165,39 @@
     0.7412
    ],
    "coverage_of_quad": 0.243
+  },
+  "CloudV2_Cumulus_duskU": {
+   "set": "duskU",
+   "shape": "Cumulus",
+   "size": [
+    1024,
+    1024
+   ],
+   "cloud_base_v": 0.2773,
+   "opaque_bbox_uv": [
+    0.1074,
+    0.2773,
+    0.8848,
+    0.7061
+   ],
+   "kscale": 3.0,
+   "sscale": 1.1,
+   "key_angles": [
+    15.0,
+    80.0,
+    150.0
+   ],
+   "sun_el": 1.0,
+   "pitch": 12.0,
+   "clipped_K": 0.0,
+   "clipped_S": 7.027999550208029e-05,
+   "bbox_uv": [
+    0.085,
+    0.2637,
+    0.9209,
+    0.7285
+   ],
+   "coverage_of_quad": 0.228
   },
   "CloudV2_Puff_dawn": {
    "set": "dawn",
@@ -305,6 +371,87 @@
     "shadow_hC": [
      66.3,
      18.3
+    ]
+   }
+  },
+  "duskU": {
+   "set": "duskU",
+   "grade": "S8",
+   "solved_on": "CloudV2_Cumulus_duskU at rel 70.0",
+   "sun_K": 2520,
+   "sun_luminance": 1.5269,
+   "SunColor": [
+    3.09852,
+    1.19174,
+    0.21903
+   ],
+   "SkyUpColor": [
+    0.1437,
+    0.19083,
+    0.40995
+   ],
+   "GroundColor": [
+    0.08669,
+    0.10897,
+    0.22128
+   ],
+   "targets": {
+    "shadow": "#363D59",
+    "top": "#F0A878"
+   },
+   "base_front_lit": {
+    "hex": "#785D68",
+    "hC": [
+     351.4,
+     13.3
+    ]
+   },
+   "rel15": {
+    "shadow": "#333B57",
+    "top": "#4D4F6E",
+    "shadow_hC": [
+     285.5,
+     19.0
+    ]
+   },
+   "rel45": {
+    "shadow": "#363C58",
+    "top": "#C79474",
+    "shadow_hC": [
+     286.0,
+     18.0
+    ]
+   },
+   "rel70": {
+    "shadow": "#373D58",
+    "top": "#E1B079",
+    "shadow_hC": [
+     286.3,
+     17.6
+    ]
+   },
+   "rel110": {
+    "shadow": "#A8765C",
+    "top": "#E1B079",
+    "shadow_hC": [
+     53.7,
+     27.4
+    ]
+   },
+   "rel150": {
+    "shadow": "#D49D62",
+    "top": "#D6A376",
+    "shadow_hC": [
+     70.7,
+     41.0
+    ]
+   },
+   "rel170": {
+    "shadow": "#D49D62",
+    "top": "#D6A376",
+    "shadow_hC": [
+     70.7,
+     41.0
     ]
    }
   }
