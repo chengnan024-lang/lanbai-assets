@@ -89,3 +89,30 @@
 ## 6. 参考渲染与量出的数
 
 `Docs~/iterations/NN_*/`：每轮的图（PPv2 S7b 调色后）、`metrics.json`、`note.txt`。渲染：`Source/scene.py`（Cycles，烘焙灯按 Unity 的 InverseSquared + 范围窗，灯组分开）→ `Source/post.py`（LanbaiFog 式 Exp 雾 0.018、方向水色、`_Udon_PalaceVeil`、崖口下缘的溶解、门光 / 灯焰 / 灯晕按 `_FogMode 2`，然后 S7b 引擎参数 + bloom，Grading 的 `ppv2_engine.py`）。车壳 = 渲染标准台的 `bible_v2`（D-28：PAZ-672 交了以后重渲）。
+
+## 7. 检查（不是 Unity 编译）
+
+- shader：`python3 Common/Tools~/compile_check/check_shaders.py Palace/Shaders` → `5 files, 102 translation units (DXC on, CGIncludes 2022.3.22f1): 0 errors, 0 warnings. NOT a Unity compile.`
+- C#：`bash Common/Tools~/compile_check/check_cs.sh Palace GateClouds`（搭建脚本借 GateClouds 的 U# 工具）→ `C# CHECK OK (0 assembly error(s), 0 lint warning(s)).`
+- 网格：每个模块的封闭 / 法线朝外测试（`kit/hall.py` 的 `check()`、`kit/que.py` 的 `check_closed_outward`）全过；唯一“不封闭”的是门后暗腔的发光内衬（故意朝里、前面敞开）。FBX 用 Blender 导回核对过 UV 层（海草 3 层、鱼 2 层、灯焰 2 层、远处灯点 3 层）。
+- **都没有在 Unity 里编译或运行过。** 第一次跑时请把 Console 的报错原样推回 `FromLocal/07b_test/`。
+
+## 8. 与评审的分歧（`Docs~/review_art_r3.md` 的 7 条阻断：第 4 轮逐条改，下面是没有照字面改的）
+
+1. **门扇**（阻断 1 说“门扇做成暗剪影”）：我们把门后整个暗腔做成发光内衬，门扇衬在光前面；向里开着的那扇朱漆门扇被门光照成暖红，读起来就是“门开着、里面亮着”，比纯黑剪影更像那辆车开着的门。门洞的其余部分是光（luma 200 上下）。
+2. **门口光卡**：圣经写 α 0.06，在这套光下（门光 ×1.6）读成一道实心的斜光柱，横穿柱廊；我们用 α 0.03。
+3. **F7p 的“30 盏灯同时在头顶”**：F7p 那一刻眼睛正好在下缘高度，石壁的最后一段还挡着；参考图取 F7p + 4 s，两列灯从左后上方排成一串，7c 越沉越高。从机位数不出 24 个分开的点：远处的灯在 250 m 外，小于一像素（shader 把它们放大到 ≥ 1.2 px，亮度按 1/s 补偿）。
+4. **APL**：照圣经的灯和水色量出 14–15（只算玻璃区更高），目标 16–20；没有为了 APL 把灯调过校准（`给总控.md` 第 9 条）。
+
+## 9. 诚实的已知弱点
+
+- **没在 Unity 里跑过**：烘焙结果、面光单位（Blender 的瓦和 Unity 面光的强度没有对上，按 §4 的灰卡校）、`Lanbai/PalaceFlame` 的最小像素放大、鱼的顶点运动，都只在云端模拟过。
+- **车厢是占位**（标准台 `bible_v2`）：F7 里“空着的司机座”和 PAZ-672 的中柱都要等车壳到了重渲、补审。
+- **APL 偏低**（见上），整幕偏暗；宫殿离灯 8 m 以外基本读不出形，只有屋脊剪影和灯——这是圣经“用灯来量尺度”的意思，但在头显里可能嫌太黑。
+- **宝贝贴面**只有贴图 + 视差，没有几何浮雕；阙身中段在远处是一块平的暗紫。
+- **鱼**：参考图里很小、几乎看不见（1 500 条 12–20 cm 在 35 m 外是亚像素）；“转身穿过灯光时闪”只有解析高光，没有专门的闪烁项。
+- **鳞片头**在 LOD1 去掉了，80 m 外屋檐读不出“鳞”。
+- **右平（坡道）没做**；台基面没有铺地砖纹。
+- **银鱼的 B 群**（720 s 从诗前面游过）是一条直线经过，之前和之后都在很远的雾里；没有和环面上的鱼群接起来。
+- **远处灯点** `PalaceSpecks_Points.fbx` 按海的 `Lanbai/SeaSpecks` 的网格约定做，搭建脚本不摆它（海摆，第 7、8 幕都用）。
+- `Rain/Shaders/LanbaiLamps.cginc` 与 `LanbaiGlobals.cginc` 冲突，宫殿自己写了一份解析灯（`给总控.md` 第 5 条）。
