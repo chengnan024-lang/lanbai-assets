@@ -267,10 +267,11 @@ def block_layout(p, player, segs=None):
                     k += 1
         o['star_points'] = pts
         o['char_objects'] = chars
-    return add_scrims(dict(player=player, shown=key, shown_lang=lang, translation=tr, anchor=[p['place'][0], el, d],
+    az = p.get('az_by_lang', {}).get(lang, p['place'][0])
+    return add_scrims(dict(player=player, shown=key, shown_lang=lang, translation=tr, anchor=[az, el, d],
                            anchor_mode='top' if p.get('anchor_top') else 'centre',
                            block_center_el=round(el + adj, 3), shift_deg=round(adj, 3), objects=objs,
-                           block=block_box(objs, p['place'][0])), p)
+                           block=block_box(objs, az)), p)
 
 
 # ------------------------------------------------------------------------------ Zhuangzi (§6·8)

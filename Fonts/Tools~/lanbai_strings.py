@@ -408,6 +408,9 @@ for p_ in POEMS:
         # azimuth +5.5°, elevation -2.5° (= the top edge of every language's block), 60 m
         p_['place'] = (5.5, -2.5, p_['place'][2])
         p_['anchor_top'] = True
+        # D-13 supplement (main a5d7470): the ja block (3 lines, widest 24.0° with the +0.10 em tracking) moves 1° left,
+        # centre +4.5°, so its right edge is +16.5° (4° from the A pillar); line breaks, size and tracking unchanged
+        p_['az_by_lang'] = {'ja': 4.5}
         p_['place_note'] = 'D-13 定稿（main cae5b7e）：单语块顶边对齐，TMP 轴心在上中，方位 +5.5°、仰角 −2.5°（块的顶边）、60 m'
 
 
@@ -496,7 +499,9 @@ CREDITS = {
         ]},
         {'role': 'Trees', 'names': [{'font': 'EBGaramond-Regular', 'text': '〔the user’s credit for the Linluo trees〕', 'placeholder': True}]},
         {'role': 'Built by', 'names': [{'font': 'EBGaramond-Regular', 'text': '〔names, as the dreamer wishes〕', 'placeholder': True}]},
-        {'role': 'Skies', 'names': [{'font': 'EBGaramond-Regular', 'text': 'Poly Haven (CC0) · NASA SVS Deep Star Maps'}]},
+        {'role': 'Skies', 'names': [{'font': 'EBGaramond-Regular', 'text': 'Poly Haven (CC0) · NASA SVS Deep Star Maps'},
+                                    {'font': 'EBGaramond-Regular', 'text': 'Milky Way: ESA/Gaia/DPAC (CC BY-SA 3.0 IGO)'}]},   # D-11
+        {'role': 'Photos', 'names': [{'font': 'EBGaramond-Regular', 'text': '〔PAZ photo authors and licences, as the bus README lists them〕', 'placeholder': True}]},
         {'role': 'Type', 'names': [{'font': 'EBGaramond-Regular', 'text': 'Source Han Serif · Source Han Sans'},
                                    {'font': 'EBGaramond-Regular', 'text': 'EB Garamond · Barlow · IM FELL English'},
                                    {'font': 'EBGaramond-Regular', 'text': '(SIL Open Font License)'}]},

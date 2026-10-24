@@ -177,10 +177,10 @@
   },
   "EBGaramond-Regular": {
    "exact": {
-    "glyphs": 71,
+    "glyphs": 73,
     "bible_atlas": "1024x1024",
     "fits_bible_atlas": true,
-    "fill_bible_atlas": 0.32,
+    "fill_bible_atlas": 0.326,
     "smallest_fit": "1024x512"
    },
    "+ascii": {
@@ -193,10 +193,10 @@
   },
   "EBGaramond-Italic": {
    "exact": {
-    "glyphs": 43,
+    "glyphs": 44,
     "bible_atlas": "1024x1024",
     "fits_bible_atlas": true,
-    "fill_bible_atlas": 0.214,
+    "fill_bible_atlas": 0.22,
     "smallest_fit": "1024x512"
    },
    "+ascii": {

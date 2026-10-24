@@ -1,4 +1,4 @@
-Lanbai Fonts kit build report  2026-10-24 06:29 UTC
+Lanbai Fonts kit build report  2026-10-24 06:35 UTC
 
 == SUBSETS (original -> subset) ==
 SourceHanSerifSC-Regular       SourceHanSerifCN-Regular.otf       11626108 B -> LanbaiSerifSC-Regular.otf                   77332 B  ( 0.67%)  glyphs 366  renamed Lanbai Serif SC (RFN Source); U+2014 -> full-width mid-line rule (glyph of U+2500)
@@ -25,8 +25,8 @@ SourceHanSerifSC-Medium          22 chars  Charsets/charset_SourceHanSerifSC-Med
 SourceHanSerifJP-Medium          29 chars  Charsets/charset_SourceHanSerifJP-Medium.txt
 SourceHanSerifJP-Regular        135 chars  Charsets/charset_SourceHanSerifJP-Regular.txt
 SourceHanSansSC-Heavy             2 chars  Charsets/charset_SourceHanSansSC-Heavy.txt
-EBGaramond-Regular               72 chars  Charsets/charset_EBGaramond-Regular.txt
-EBGaramond-Italic                44 chars  Charsets/charset_EBGaramond-Italic.txt
+EBGaramond-Regular               74 chars  Charsets/charset_EBGaramond-Regular.txt
+EBGaramond-Italic                45 chars  Charsets/charset_EBGaramond-Italic.txt
 BarlowSemiCondensed-SemiBold      5 chars  Charsets/charset_BarlowSemiCondensed-SemiBold.txt
 IMFellEnglish-Roman              37 chars  Charsets/charset_IMFellEnglish-Roman.txt
 IMFellEnglishSC                  16 chars  Charsets/charset_IMFellEnglishSC.txt
@@ -38,9 +38,9 @@ SourceHanSerifTW-Regular       exact   119 glyphs  bible atlas 2048x2048: FITS, 
 SourceHanSerifSC-Medium        exact    21 glyphs  bible atlas 2048x2048: FITS, area fill  4.5%   smallest shelf fit: 512x512
 SourceHanSerifJP-Medium        exact    29 glyphs  bible atlas 2048x2048: FITS, area fill  6.5%   smallest shelf fit: 1024x512
 SourceHanSerifJP-Regular       exact   134 glyphs  bible atlas 2048x2048: FITS, area fill 29.4%   smallest shelf fit: 2048x1024
-EBGaramond-Regular             exact    71 glyphs  bible atlas 1024x1024: FITS, area fill 32.0%   smallest shelf fit: 1024x512
+EBGaramond-Regular             exact    73 glyphs  bible atlas 1024x1024: FITS, area fill 32.6%   smallest shelf fit: 1024x512
 EBGaramond-Regular             +ascii   99 glyphs  bible atlas 1024x1024: FITS, area fill 42.6%   smallest shelf fit: 1024x1024
-EBGaramond-Italic              exact    43 glyphs  bible atlas 1024x1024: FITS, area fill 21.4%   smallest shelf fit: 1024x512
+EBGaramond-Italic              exact    44 glyphs  bible atlas 1024x1024: FITS, area fill 22.0%   smallest shelf fit: 1024x512
 EBGaramond-Italic              +ascii   97 glyphs  bible atlas 1024x1024: FITS, area fill 47.5%   smallest shelf fit: 1024x1024
 BarlowSemiCondensed-SemiBold   exact     5 glyphs  bible atlas 1024x1024: FITS, area fill  2.3%   smallest shelf fit: 512x512
 BarlowSemiCondensed-SemiBold   +ascii   94 glyphs  bible atlas 1024x1024: FITS, area fill 38.9%   smallest shelf fit: 1024x512
@@ -469,7 +469,7 @@ P03_LiBai_Dream          en  en    2.20°   4 lines   22.12° x 11.07°  az [38.
 P03_LiBai_Dream          de  en    2.20°   4 lines   22.12° x 11.07°  az [38.94, 61.06]  el [-14.53, -3.47]
 P04a_Rilke               zh  zh    2.20°   2 lines   14.30° x  5.72°  az [-1.65, 12.65]  el [-8.22, -2.5]
 P04a_Rilke               zht zht   2.20°   2 lines   14.30° x  5.72°  az [-1.65, 12.65]  el [-8.22, -2.5]
-P04a_Rilke               ja  ja    2.20°   3 lines   23.98° x  9.24°  az [-6.49, 17.49]  el [-11.74, -2.5]
+P04a_Rilke               ja  ja    2.20°   3 lines   23.98° x  9.24°  az [-7.49, 16.49]  el [-11.74, -2.5]
 P04a_Rilke               en  en    2.00°   2 lines   19.36° x  4.66°  az [-4.18, 15.18]  el [-7.16, -2.5]
 P04a_Rilke               de  main  2.00°   2 lines   21.09° x  4.66°  az [-5.04, 16.05]  el [-7.16, -2.5]
 P04b_Urlicht             zh  zh    1.80°   2 lines   17.64° x  4.68°  az [-8.82, 8.82]  el [-10.34, -5.66]
