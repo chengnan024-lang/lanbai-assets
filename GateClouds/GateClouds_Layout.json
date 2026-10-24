@@ -565,61 +565,17 @@
    "hides": "Colossus_2"
   },
   {
-   "id": "Tower_Colossus_3_Back",
-   "group": "tower",
-   "shape": "Puff",
-   "position": [
-    1450.88,
-    -175.0,
-    1098.0
-   ],
-   "size": [
-    1096.8,
-    1096.8
-   ],
-   "opacity": 0.8280000000000001,
-   "gain": 0.8,
-   "mirror": 1.0,
-   "queue": 3000,
-   "melt": [
-    -30.0,
-    150.0
-   ],
-   "fog_cap": 0.5,
-   "moon_rel_deg_U7b": 41.7,
-   "sag_keys": [
-    148.3,
-    1.0,
-    173.3,
-    0.72
-   ],
-   "sink_keys": [
-    154.3,
-    0.0,
-    179.3,
-    -644.475
-   ],
-   "alpha_keys": [
-    177.3,
-    1.0,
-    179.3,
-    0.0
-   ],
-   "hides": "Colossus_3",
-   "parallax_of": "Tower_Colossus_3"
-  },
-  {
    "id": "Tower_Colossus_2_Back",
    "group": "tower",
-   "shape": "Puff",
+   "shape": "Congestus",
    "position": [
-    -1299.54,
+    -801.74,
     -175.0,
-    1308.34
+    1500.59
    ],
    "size": [
-    919.5,
-    919.5
+    1096.0,
+    1140.3
    ],
    "opacity": 0.8280000000000001,
    "gain": 0.8,
@@ -630,7 +586,7 @@
     150.0
    ],
    "fog_cap": 0.5,
-   "moon_rel_deg_U7b": 13.3,
+   "moon_rel_deg_U7b": 3.3,
    "sag_keys": [
     141.8,
     1.0,
@@ -650,7 +606,8 @@
     0.0
    ],
    "hides": "Colossus_2",
-   "parallax_of": "Tower_Colossus_2"
+   "parallax_of": "Tower_Colossus_2",
+   "crop_bottom": 0.45
   },
   {
    "id": "Far_00",

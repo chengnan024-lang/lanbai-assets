@@ -123,7 +123,10 @@ def main():
         m = (tt > 0) & (u >= 0) & (u <= 1) & (v >= 0) & (v <= 1) & (tt < dist)
         bb = s['bbox_uv']
         uu_ = 1 - u if c['mirror'] > 0.5 else u
-        mr = (tt > 0) & (uu_ >= bb[0]) & (uu_ <= bb[2]) & (v >= min(bb[1], s['pivot_uv'][1])) & (v <= bb[3]) & (tt < dist)
+        vq0 = min(bb[1], s['pivot_uv'][1])
+        vq0 = vq0 + c.get('crop_bottom', 0.0) * (bb[3] - vq0)        # round 10: cropped back layers
+        mr = (tt > 0) & (uu_ >= bb[0]) & (uu_ <= bb[2]) & (v >= vq0) & (v <= bb[3]) & (tt < dist)
+        m = m & (v >= vq0)
         layers += mr
         fse['cards'] += mr.mean()
         if not m.any():
