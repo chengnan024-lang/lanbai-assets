@@ -1,0 +1,42 @@
+--- before/Assets/Lanbai/Tests/Editor/LB_GateTest_Run.cs
++++ after/Assets/Lanbai/Tests/Editor/LB_GateTest_Run.cs
+@@ -120,18 +120,18 @@
+                 float kHalo = Mathf.Clamp01((Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(250f, 1200f, D)) - 0.25f) / 0.75f) * F(G(OJ, "halo_intensity"), 1f);
+                 Vector3 foot = tear.TransformPoint(TEAR_FOOT_OS);
+                 float Df = Vector3.Distance(eye, foot);
+-                SetPB(tear, "Tear_CloudGlow_Additive", mpb, kAdd > 0f, "_Intensity", 0.25f * kAdd, "_FootGlow", 2.2f * kPool);
+-                SetPB(tear, "Tear_CloudGlow", mpb, true, "_Intensity", 1f * kPool, "_FootGlow", 0.98f * kPool);
++                SetPB(tear, "Tear_CloudGlow_Additive", mpb, false, "_Intensity", 0.25f * kAdd, "_FootGlow", 2.2f * kPool);
++                SetPB(tear, "Tear_CloudGlow", mpb, false, "_Intensity", 1f * kPool, "_FootGlow", 0.98f * kPool);
+                 SetPB(tear, "Tear_SkyFolds", mpb, kFold > 0f, "_Intensity", kFold, null, 0f);
+                 SetPB(tear, "Tear_Halo", mpb, kHalo >= 0.05f, "_Intensity", kHalo, null, 0f);
+-                SetPB(tear, "Tear_LightLane", mpb, true, "_Intensity", kLane, null, 0f);
++                SetPB(tear, "Tear_LightLane", mpb, false, "_Intensity", kLane, null, 0f);
+                 var lane = FindDeep(tear, "Tear_LightLane");
+                 float laneX = Mathf.Clamp(0.10f * Df / (kS * 420f), 0.15f, 1f);
+                 if (lane != null) lane.localScale = new Vector3(laneX, 1f, 1f);
+                 foreach (var s in L(G(G(J, "shafts"), "items")))
+                 {
+                     var st = tear.Find(S(G(s, "id")));
+-                    if (st != null) SetPB(st, st.name, mpb, true, "_Intensity", F(G(OJ, "shaft"), 0.35f) * F(G(s, "gain"), 1f), null, 0f);
++                    if (st != null) SetPB(st, st.name, mpb, false, "_Intensity", F(G(OJ, "shaft"), 0.35f) * F(G(s, "gain"), 1f), null, 0f);
+                 }
+                 tearInfo = "裂口 H " + Fs(H, "0.0") + " m（缩放 " + Fs(kS, "0.000") + "）、张开 " + Fs(open, "0.000") + "、撕裂 " + Fs(rip, "0.000") +
+                            "；叠加光池 ×" + Fs(kAdd, "0.00") + "、布褶 ×" + Fs(kFold, "0.00") + "、光晕 ×" + Fs(kHalo, "0.00") + "（D " + Fs(D, "0") + " m）、光路 ×" + Fs(kLane, "0.00") +
+@@ -171,6 +171,7 @@
+                 camGo.transform.rotation = Quaternion.LookRotation(seat.fwd, Vector3.up);
+                 camGo.GetComponent<Camera>().fieldOfView = VFov(seat.hfov, 16f / 9f);
+             }
++            LanbaiGateCloudsBuilder.Apply(t);
+             SceneView.RepaintAll();
+             return "t = " + Fs(t, "0.00") + "：GateRoot " + Vs(gate) + "，云顶 y " + Fs(-hb, "0.00") + "；臂 " + nOn + " 条显现、" + nOff + " 条关着" +
+                    (partial.Count > 0 ? "（半显现：" + string.Join("，", partial) + "）" : "") + "；群臂 group0 " + Fs(g0, "0.00") + " / group1 " + Fs(g1, "0.00") +
+@@ -286,7 +287,7 @@
+                     double y = 0.2126 * p.r + 0.7152 * p.g + 0.0722 * p.b;
+                     sum += y; if (y < 12) dark++;
+                 }
+-                return cn + " 截图 " + w + "×" + h + "（HDR 渲染，超采样 " + ss + "×，竖直视角 " + Fs(cam.fieldOfView, "0.00") + "°）→ " + file +
++                return cn + " 截图 " + w + "×" + h + "（HDR 渲染，超采样 " + ss + "×，竖直视角 " + Fs(cam.fieldOfView, "0.00") + "°）→ " + file + " [HDR target: " + big.format + " / " + big.graphicsFormat + "]" +
+                        "；平均亮度（sRGB 0–255，Rec.709 权重）" + Fs((float)(sum / px.Length), "0.0") + "，< 12 的像素 " + Fs(100f * dark / px.Length, "0.0") + "%\n" + ap;
+             }
+             finally

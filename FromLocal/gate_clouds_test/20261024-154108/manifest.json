@@ -1,0 +1,172 @@
+{
+  "test_id": "gate_clouds_test",
+  "run_id": "20261024-154108",
+  "started_utc": "2026-10-24T19:41:08Z",
+  "reported_utc": "2026-10-24T19:51:08.108495+00:00",
+  "timezone": "America/New_York",
+  "reporter": "Lanbai-local (阿白)",
+  "status": "BLOCKED_CLOUD_BUILDER_SERIALIZATION",
+  "source_commit": "f40f62c8370d34b53c1ce8a6815852b400d4896d",
+  "source_tree": "da52a8211bfdb936f81dc22e354b8ff7cda97171",
+  "source_clone": "E:\\IDMdownload\\VRCC\\lanbai-assets-gate-main-20261024",
+  "original_clone_retained_at": "480e711657e9301372619ac766f36bb54a5c857b",
+  "user_approval": "批准轻量同步，核验后继续首测（推荐）",
+  "new_subagents": false,
+  "unity": "2022.3.22f1 (887be4894c44)",
+  "sdk": {
+    "com.vrchat.base": "3.10.5",
+    "com.vrchat.worlds": "3.10.5",
+    "UdonSharp": "bundled with Worlds; independent semver not verified",
+    "ClientSim": "bundled with Worlds; independent semver not verified",
+    "PPv2": "3.4.0",
+    "TMP_requested": "2.1.6",
+    "TMP_resolved": "3.0.6",
+    "VPM_resolver": "0.1.29"
+  },
+  "machine": {
+    "os": "Windows 11 Home Chinese 10.0.26200 x64",
+    "cpu": "Intel Core i9-13980HX",
+    "ram_bytes": 33959809024,
+    "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "driver": "610.62",
+    "headset": "Quest 3",
+    "streaming": "Virtual Desktop"
+  },
+  "test_tools": {
+    "LB_Remote": "existing project helper, no edits",
+    "LB_GateTest": "existing project helper plus the two reported source patches",
+    "Engineering_UnityTest": "absent from checked main",
+    "code_hashes": {
+      "LB_GateTest_Build.cs": "9d876469c015ff37f9697e628f058ee9b19242dcb440d4d025c9381a8482f8a7",
+      "LB_GateTest_Run.cs": "b43e7c59c49b8b029213760cf0aa6d8bb84171e4a439d2165415bfc84df61edd"
+    }
+  },
+  "steps": [
+    {
+      "step": "source_sync",
+      "status": "通过",
+      "evidence": "239 imported files; raw Git blob hashes and SHA256 verified at f40f62c"
+    },
+    {
+      "step": "backup",
+      "status": "通过",
+      "evidence": "7233 files CRC/SHA256 verified; restore drill not performed"
+    },
+    {
+      "step": "approved_patches",
+      "status": "通过",
+      "evidence": "9 overwritten + 233 new; settings mask 4054 to 3846"
+    },
+    {
+      "step": "csharp_compile",
+      "status": "通过",
+      "evidence": "Tundra build success; one pre-existing CS0162 warning"
+    },
+    {
+      "step": "udon_compile",
+      "status": "通过",
+      "evidence": "13 scripts at startup; 14 after creating cloud program. This does not validate builder/serialization."
+    },
+    {
+      "step": "gate_build",
+      "status": "通过",
+      "evidence": "28 individual + 36 multitude = 64 LOD instances"
+    },
+    {
+      "step": "cloud_build",
+      "status": "不通过",
+      "evidence": "CopyProxyToUdon outdated script version, repeated twice"
+    },
+    {
+      "step": "apply_after_cloud_build",
+      "status": "未测",
+      "evidence": "Blocked by cloud builder"
+    },
+    {
+      "step": "gate_driver_and_clock",
+      "status": "未测",
+      "evidence": "Not invoked"
+    },
+    {
+      "step": "hdr_acceptance_shots",
+      "status": "未测",
+      "evidence": "No valid shots; diagnostic UI capture only"
+    },
+    {
+      "step": "perf_gpu_udon",
+      "status": "未测",
+      "evidence": "Blocked; no numeric budget conclusion"
+    },
+    {
+      "step": "headset",
+      "status": "未测",
+      "evidence": "Quest 3 + VD available per user; no actual headset test"
+    }
+  ],
+  "layers": {
+    "blender_offline": "通过",
+    "unity_desktop": "不通过",
+    "vr_headset": "未测"
+  },
+  "blender_offline_source": "HANDOFF_CHATGPT.md §B upstream status; not re-rendered locally",
+  "protected_unchanged": true,
+  "backup": {
+    "status": "verified",
+    "archive": "E:\\IDMdownload\\VRCC\\Backups\\dream_20261024-134728.zip",
+    "archive_bytes": 522183967,
+    "archive_sha256": "c960d93308580f4066d7db331ea91080b5f8ee1c118d752ccac094d878add7f8",
+    "source_logical_bytes": 692092091,
+    "file_count": 7233,
+    "meta_count": 3036,
+    "all_entries_crc_and_sha256_verified": true,
+    "required_entries": [
+      "ProjectSettings/ProjectVersion.txt",
+      "ProjectSettings/ProjectSettings.asset",
+      "Packages/manifest.json",
+      "Packages/vpm-manifest.json",
+      "Packages/packages-lock.json",
+      "Assets/Lanbai/Scenes/Lanbai.unity",
+      "Assets/Lanbai/Scenes/Lanbai.unity.meta",
+      "Assets/Lanbai/Tests/GateTest.unity",
+      "Assets/Lanbai/Tests/GateTest.unity.meta",
+      "Assets/Lanbai/Scripts/LB_Journey.cs"
+    ],
+    "source_metadata_unchanged": true,
+    "manifest": "E:\\IDMdownload\\VRCC\\Backups\\dream_20261024-134728.manifest.json",
+    "recovery": {
+      "source": "E:\\IDMdownload\\VRCC\\dream\\Temp\\__Backupscenes\\0.backup",
+      "path": "E:\\IDMdownload\\VRCC\\Backups\\dream_20261024-134728_recovery_0.backup",
+      "bytes": 207824,
+      "sha256": "df4dc50aebc50188a7c8746802ddc5b542207d652fa99db004d32ffdcae7ff84"
+    },
+    "c_free_before": 4713635840,
+    "e_free_before": 111776870400,
+    "c_free_after": 4575895552,
+    "e_free_after": 111252643840,
+    "verified_utc": "2026-10-24T17:48:28.889170+00:00",
+    "filename_timezone": "America/New_York",
+    "restore_test_performed": false
+  },
+  "remaining_editor_state": {
+    "time": "2026-10-24T15:51:08.9618446-04:00",
+    "editorTime": 599.4835551,
+    "focused": true,
+    "playing": false,
+    "compiling": false,
+    "updating": false,
+    "compileFailed": false,
+    "scene": "Assets/Lanbai/Tests/GateTest.unity",
+    "sceneDirty": true,
+    "request": "",
+    "step": 0,
+    "phase": 0,
+    "unity": "2022.3.22f1",
+    "note": "loaded"
+  },
+  "performance": {
+    "measured": false,
+    "reason": "S0 cloud builder failure; no edit-mode/Play/HMD metrics"
+  },
+  "project_git_initialized": false,
+  "rollback_performed": false
+}
