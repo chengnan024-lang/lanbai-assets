@@ -169,6 +169,33 @@ def _mulc(nt, a, b):
     return n.outputs[2]
 
 
+def part_textures(nt, bs, ptype):
+    """D-36 part atlas (Lanbai/Cabin _UsePart): albedo, normal, mask (R metal, G smoothness, A AO) on uv0 'UVMap'."""
+    import glob
+    d = os.path.join(ROOT, 'Bus', 'Textures', 'Parts')
+
+    def tex(kind, non_color):
+        f = sorted(glob.glob(os.path.join(d, 'Part_%s_%s_*.png' % (ptype, kind))))
+        t = nt.nodes.new('ShaderNodeTexImage')
+        t.image = bpy.data.images.load(f[-1], check_existing=True)
+        if non_color:
+            t.image.colorspace_settings.name = 'Non-Color'
+        uv = nt.nodes.new('ShaderNodeUVMap')
+        uv.uv_map = 'UVMap'
+        nt.links.new(uv.outputs[0], t.inputs[0])
+        return t
+    ta, tn, tm = tex('Albedo', False), tex('Normal', True), tex('Mask', True)
+    nm = nt.nodes.new('ShaderNodeNormalMap')
+    nm.uv_map = 'UVMap'
+    nt.links.new(tn.outputs['Color'], nm.inputs['Color'])
+    nt.links.new(nm.outputs['Normal'], bs.inputs['Normal'])
+    sp = nt.nodes.new('ShaderNodeSeparateColor')
+    nt.links.new(tm.outputs['Color'], sp.inputs[0])
+    nt.links.new(sp.outputs[0], bs.inputs['Metallic'])
+    nt.links.new(_m(nt, 'SUBTRACT', 1.0, sp.outputs[1]), bs.inputs['Roughness'])
+    return ta.outputs['Color']
+
+
 def act_material(m_src, lm_img, P, ambient, tubes):
     """the Lanbai/Cabin terms as an emission + the Principled lit by the sun only; vertex-colour wear / grime / fade,
     bleach, erosion clip and rim."""
@@ -184,6 +211,8 @@ def act_material(m_src, lm_img, P, ambient, tubes):
     sep = nt.nodes.new('ShaderNodeSeparateColor')
     nt.links.new(vc.outputs['Color'], sep.inputs[0])
     alb = c
+    if key.startswith('Part_'):
+        alb = part_textures(nt, bs, key[5:])
     if 'wear' in look:
         alb = _mixc(nt, _m(nt, 'MULTIPLY', sep.outputs[1], look['wear'][1]), alb, tuple(lin(look['wear'][0])))
     if 'grime' in look:
@@ -278,7 +307,7 @@ def pane_fade_at(o):
 def erode_everything_else(objs, fade):
     """in Unity every Lanbai/Cabin and ThinCloth renderer clips on the same field, and the driver switches the glass
     panes off as the fade passes them: do the same for the objects build() did not already erode."""
-    done = ('Cabin_Static', 'Bus_Exterior', 'Bus_Door')
+    done = ('Cabin_Static', 'Seat_', 'Bus_Exterior', 'Bus_Door')
     bpy.context.view_layer.update()                           # matrix_world of the appended objects (else identity)
     for n, o in objs.items():
         if o.type != 'MESH' or o.hide_render or n.startswith(done):
@@ -352,9 +381,10 @@ def build(ctx):
     amb = [P['amb'][1] * v for v in lin(P['amb'][0])]
     lm = bpy.data.images.load(os.path.join(tex, 'Cabin_TubeLM.exr'))
     lm.colorspace_settings.name = 'Non-Color'
-    cs = objs['Cabin_Static']
-    for i, m in enumerate(list(cs.data.materials)):
-        cs.data.materials[i] = act_material(m, lm, P, amb, P['tubes'])
+    for n_, cs in objs.items():
+        if n_ == 'Cabin_Static' or n_.startswith('Seat_'):          # D-36: the seats are their own objects
+            for i, m in enumerate(list(cs.data.materials)):
+                cs.data.materials[i] = act_material(m, lm, P, amb, P['tubes'])
     if 'Cabin_Tubes' in objs:
         e = bpy.data.materials.new('TubeGlow')
         e.use_nodes = True

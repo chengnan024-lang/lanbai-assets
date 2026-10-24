@@ -134,6 +134,35 @@ def uv1_lightmap(ob, margin=0.002):
     me.uv_layers['UVMap'].active_render = True
 
 
+def uv1_lightmap_multi(objs, margin=0.002):
+    """one _CabinTubeLM atlas over several objects (Cabin_Static + the seats): each object's uv1 starts from its metric
+    chart ('UVMetric' when its uv0 is a part atlas, else 'UVMap'), then all islands are packed together."""
+    for ob in objs:
+        me = ob.data
+        if 'UVLightmap' not in me.uv_layers:
+            me.uv_layers.new(name='UVLightmap')
+        srcname = 'UVMetric' if 'UVMetric' in me.uv_layers else 'UVMap'
+        src, dst = me.uv_layers[srcname].data, me.uv_layers['UVLightmap'].data
+        for i in range(len(src)):
+            dst[i].uv = src[i].uv
+        me.uv_layers.active = me.uv_layers['UVLightmap']
+    sel(objs)
+    bpy.ops.object.mode_set(mode='EDIT')
+    bpy.ops.mesh.select_all(action='SELECT')
+    bpy.context.scene.tool_settings.use_uv_select_sync = True
+    bpy.ops.uv.select_all(action='SELECT')
+    try:
+        bpy.ops.uv.pack_islands(rotate=True, rotate_method='ANY', scale=True, margin_method='FRACTION', margin=margin,
+                                shape_method='CONCAVE')
+    except TypeError:
+        bpy.ops.uv.pack_islands(margin=margin, rotate=True, scale=True)
+    bpy.ops.object.mode_set(mode='OBJECT')
+    for ob in objs:
+        me = ob.data
+        me.uv_layers.active = me.uv_layers['UVMap']
+        me.uv_layers['UVMap'].active_render = True
+
+
 def vertex_colours(ob, ao_samples=32):
     """R = grime (yellowed ceiling round the tubes, window-corner dust, floor edges), G = wear / polish, B = sun-fade +
     crack seeds. AO is in _CabinTubeLM.a."""
@@ -251,18 +280,82 @@ def wipers():
     return out
 
 
-def build_all(ao_samples):
+# D-36 part atlases: per seat type, the game mesh's uv0 = its own atlas (the same uvs on every instance of the type),
+# baked from a high-quality build of the same seat (parts/seat.py quality 'high' + parts/materials.py)
+PART_RES = {'SeatHero': 2048, 'SeatR': 2048, 'DriverSeat': 2048, 'SeatL': 1024, 'SeatLBox': 1024, 'RearBench': 1024}
+PARTS_INFO = {}
+
+
+def part_material(ptype):
+    m = bpy.data.materials.get('M_Bus_Part_' + ptype)
+    if m is None:
+        m = BB.mat('Vinyl').copy()
+        m.name = 'M_Bus_Part_' + ptype
+    return m
+
+
+def seat_parts(out, seat_groups, bake=True):
+    from parts import seat as SEAT, materials as MATS, texbake as TB
+    seats, by_type = [], {}
+    for inst, parts in seat_groups.items():
+        ptype = parts[0]['lb_part']
+        ob = join('Seat_' + inst, parts)
+        ob['lb_part'] = ptype
+        bb = [ob.matrix_world @ Vector(c) for c in ob.bound_box]
+        set_origin(ob, sum(bb, Vector()) / 8)
+        uv0_metric(ob)
+        me = ob.data
+        lay = me.uv_layers.new(name='UVMetric')
+        for d, s_ in zip(lay.data, me.uv_layers['UVMap'].data):
+            d.uv = s_.uv
+        me.uv_layers.active = me.uv_layers['UVMap']
+        out[ob.name] = ob
+        seats.append(ob)
+        by_type.setdefault(ptype, []).append(ob)
+    for ptype, obs in by_type.items():
+        canon = out['Seat_' + BB.SEAT_TYPES[ptype]['inst']]
+        res = PART_RES.get(ptype, 1024)
+        mpu = TB.unwrap(canon, res=res, keep_layers=True)
+        src = canon.data.uv_layers['UVMap'].data
+        for ob in obs:
+            if ob is canon:
+                continue
+            dst = ob.data.uv_layers['UVMap'].data
+            assert len(dst) == len(src), '%s: %d loops vs %d in %s' % (ob.name, len(dst), len(src), canon.name)
+            for d, s_ in zip(dst, src):
+                d.uv = s_.uv
+        pm = part_material(ptype)
+        for ob in obs:
+            ob.data.materials.clear()
+            ob.data.materials.append(pm)
+            for p in ob.data.polygons:
+                p.material_index = 0
+        files = None
+        if bake:
+            kw = {k: v for k, v in BB.SEAT_TYPES[ptype].items() if k != 'inst'}
+            high = SEAT.seat_module('High_' + ptype, quality='high', **kw)
+            MATS.apply_details(high)
+            files = TB.bake_onto(canon, high, ptype, res=res)
+        PARTS_INFO[ptype] = dict(type=ptype, res=res, metres_per_uv=round(mpu, 5), instances=[o.name for o in obs],
+                                 baked=bool(files))
+    return seats
+
+
+def build_all(ao_samples, bake_parts=True):
     BB.build(open_door=True)
     objs = {o.name: o for o in bpy.data.objects}
     body = objs['Body']
     outer, inner = split_body(body)
-    groups = {'ext': [], 'static': [], 'tubes': [], 'radio': [], 'blind': [], 'curt': [], 'door': [], 'glass': [], 'wheel': {}, 'wiper': []}
+    groups = {'ext': [], 'static': [], 'tubes': [], 'radio': [], 'blind': [], 'curt': [], 'door': [], 'glass': [], 'wheel': {}, 'wiper': [],
+              'seat': {}}
     for o in list(bpy.data.objects):
         if o.type != 'MESH':
             continue
         n = o.name
         cols = [c.name for c in o.users_collection]
-        if 'Door' in cols:
+        if 'lb_part' in o:                     # D-36 seat module: one object per seat, its own part atlas
+            groups['seat'].setdefault(o['lb_inst'], []).append(o)
+        elif 'Door' in cols:
             groups['door'].append(o)
         elif n.startswith('Glass_'):
             groups['glass'].append(o)
@@ -350,7 +443,9 @@ def build_all(ao_samples):
     for w in groups['wiper']:
         uv0_metric(w)
     info = {}
-    uv1_lightmap(out['Cabin_Static'])
+    seats = seat_parts(out, groups['seat'], bake_parts)
+    info['parts'] = PARTS_INFO
+    uv1_lightmap_multi([out['Cabin_Static']] + seats)
     info['vc'] = vertex_colours(out['Cabin_Static'], ao_samples)
     # LOD1 of the exterior (seen only from outside, acts 1 and 12)
     lod1 = out['Bus_Exterior_LOD0'].copy()
@@ -475,6 +570,8 @@ def main():
     ap.add_argument('--blend', default='/tmp/bus/bus_final.blend')
     ap.add_argument('--from-blend', default=None, help='export only: re-export the FBX from a finished .blend (after the '
                     'lightmap bake and the exterior weathering added their uv1 atlases)')
+    ap.add_argument('--no-part-bake', action='store_true', help='D-36: unwrap the part atlases but keep the textures '
+                    'already in Bus/Textures/Parts (the unwrap is deterministic)')
     a = ap.parse_args()
     os.makedirs(a.out, exist_ok=True)
     if a.from_blend:
@@ -483,7 +580,8 @@ def main():
         out = {o.name: o for o in objs if not o.name.startswith('Wiper')}
         info = {}
     else:
-        out, extra, info = build_all(a.ao_samples)
+        out, extra, info = build_all(a.ao_samples, bake_parts=not a.no_part_bake)
+        bpy.context.scene['lb_parts'] = json.dumps(PARTS_INFO)
         os.makedirs(os.path.dirname(a.blend), exist_ok=True)
         bpy.ops.wm.save_as_mainfile(filepath=a.blend)
         objs = list(out.values()) + extra
@@ -512,6 +610,9 @@ def main():
     export_fbx(os.path.join(a.out, 'Bus_HarnessShell_paz672.fbx'), shell)
     lay = layout(out)
     lay['door_panels'] = door_rows
+    # D-36 part atlases (LanbaiBusBuild: M_Bus_Part_<type> -> _UsePart, Textures/Parts/Part_<type>_*_<res>.png;
+    # the leather grain detail tiles at metres_per_uv / 0.30 on the atlas uv)
+    lay['parts'] = list(json.loads(bpy.context.scene.get('lb_parts', '{}')).values())
     lay['stats'] = {o.name: dict(verts=len(o.data.vertices), tris=sum(len(p.vertices) - 2 for p in o.data.polygons)) for o in objs if o.type == 'MESH'}
     lay['stats_total_tris'] = sum(v['tris'] for v in lay['stats'].values())
     json.dump(lay, open(os.path.join(a.out, 'BusLayout.json'), 'w'), ensure_ascii=False, indent=1)

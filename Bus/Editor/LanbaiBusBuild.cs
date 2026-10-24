@@ -35,10 +35,12 @@ public static class LanbaiBusBuild
     [Serializable] public class DoorPanel { public string name; public Pose open; public Pose closed; }
     [Serializable] public class FillLight { public float[] pos; public string colour; }
     [Serializable] public class BusBox { public float[] bounds_min; public float[] bounds_max; }
+    [Serializable] public class PartInfo { public string type; public int res; public float metres_per_uv; public string[] instances; }
     [Serializable] public class Layout
     {
         public float[] eye_hero; public float floor_y;
         public Seat[] seats; public Col[] colliders; public DoorPanel[] door_panels; public FillLight[] head_fill_lights; public BusBox bus;
+        public PartInfo[] parts;
     }
 
     // ------------------------------------------------------------------------------------------------ materials
@@ -64,6 +66,8 @@ public static class LanbaiBusBuild
     enum Mode { CabinLM, Cabin, ExteriorAtlas, Exterior }
 
     static StringBuilder _rep;
+    static Dictionary<string, PartInfo> _parts = new Dictionary<string, PartInfo>();
+    const string PartTex = Tex + "Parts/";
 
     [MenuItem("蓝白/Build/车")]
     public static void Build()
@@ -74,6 +78,8 @@ public static class LanbaiBusBuild
         var layoutText = AssetDatabase.LoadAssetAtPath<TextAsset>(LayoutPath);
         if (layoutText == null) { Debug.LogError("[Lanbai Bus] not found: " + LayoutPath); return; }
         Layout L = JsonUtility.FromJson<Layout>(layoutText.text);
+        _parts = new Dictionary<string, PartInfo>();
+        if (L.parts != null) foreach (var pi in L.parts) _parts[pi.type] = pi;
 
         // 1. delete the previous build
         var old = GameObject.Find(RootName);
@@ -117,7 +123,7 @@ public static class LanbaiBusBuild
                 curtains = r;
                 continue;
             }
-            Mode mode = n == "Cabin_Static" ? Mode.CabinLM
+            Mode mode = n == "Cabin_Static" || n.StartsWith("Seat_") ? Mode.CabinLM            // D-36 seats share the LM atlas
                       : n.StartsWith("Cabin_") || n.StartsWith("Bus_Door") ? Mode.Cabin
                       : n.StartsWith("Bus_Exterior") ? Mode.ExteriorAtlas
                       : Mode.Exterior;                                  // wheels, wipers
@@ -293,7 +299,9 @@ public static class LanbaiBusBuild
         if (key.StartsWith("M_Bus_")) key = key.Substring(6);
         int dot = key.IndexOf('.'); if (dot > 0) key = key.Substring(0, dot);          // Blender duplicates: Vinyl.001
         object[] v;
-        if (!MatTable.TryGetValue(key, out v)) { _rep.AppendLine("  unknown material " + importedName + " -> Alu values"); v = MatTable["Alu"]; }
+        bool part = key.StartsWith("Part_");                            // D-36 part atlas (Bus/Textures/Parts)
+        if (part) v = MatTable["Vinyl"];
+        else if (!MatTable.TryGetValue(key, out v)) { _rep.AppendLine("  unknown material " + importedName + " -> Alu values"); v = MatTable["Alu"]; }
         string suffix = mode == Mode.CabinLM ? "" : mode == Mode.Cabin ? "_NoLM" : mode == Mode.ExteriorAtlas ? "_ExtAtlas" : "_Ext";
         var m = GetOrCreate("M_Bus_" + key + suffix, sh);
         m.SetColor("_Color", Hex((string)v[0]));
@@ -375,6 +383,8 @@ public static class LanbaiBusBuild
                 else _rep.AppendLine("  destination blind: no *DestBlind* letters texture in Bus/Textures -> no backlit letters yet");
                 break;
         }
+        m.SetFloat("_UsePart", 0f);
+        if (part) PartMat(m, key.Substring(5));
         EditorUtility.SetDirty(m);
         return m;
     }
@@ -411,6 +421,23 @@ public static class LanbaiBusBuild
         if (m.GetTexture("_CabinCube") == null) _rep.AppendLine("  " + m.name + ": _CabinCube empty (bake the cabin cubemap, tubes on, and assign it)");
         EditorUtility.SetDirty(m);
         return m;
+    }
+
+    // D-36: the part's baked atlas on uv0 (albedo x _Color, normal, mask R metal G smooth B wear A AO); the thirty years
+    // are in the bake, so the vertex-colour wear / fade / crack layers are off; the scanned grain tiles on top.
+    static void PartMat(Material m, string ptype)
+    {
+        PartInfo pi;
+        if (!_parts.TryGetValue(ptype, out pi)) { _rep.AppendLine("  part " + ptype + ": not in BusLayout.json parts"); return; }
+        string b = PartTex + "Part_" + ptype + "_";
+        m.SetFloat("_UsePart", 1f);
+        m.SetColor("_Color", Color.white);
+        m.SetTexture("_PartAlbedo", T(b + "Albedo_" + pi.res + ".png"));
+        m.SetTexture("_PartNormal", T(b + "Normal_" + pi.res + ".png"));
+        m.SetTexture("_PartMask", T(b + "Mask_" + pi.res + ".png"));
+        m.SetFloat("_PartNormalScale", 1f);
+        m.SetFloat("_WearAmount", 0f); m.SetFloat("_SunFadeAmount", 0f); m.SetFloat("_CrackAmount", 0f); m.SetFloat("_GrimeAmount", 0f);
+        Detail(m, "Cabin_SeatLeather_N_0.30m.jpg", 0.30f, 0.30f / Mathf.Max(pi.metres_per_uv, 0.01f), null);
     }
 
     static void Detail(Material m, string normal, float strength, float tileM, string mask)

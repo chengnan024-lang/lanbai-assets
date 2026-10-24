@@ -29,12 +29,18 @@ def _hex_bolt(name, c, axis, r, h, m, collection):
 
 
 def seat_module(name, x0, x1, back_z, cushion_y=None, double=False, wall_side=1, on_box=False, worn=1.0,
-                collection='Seats', lod=0):
+                collection='Seats', quality='low', wall_x=None):
+    """wall_side +1 / -1: the wall is on +x / -x (bracket + arm to wall_x); 0: no wall (rear bench, driver).
+    quality 'high' = the bake source (subdivision 3, 24-sided tubes); 'low' = the game mesh (subdivision 1,
+    16-sided tubes: D-36 >= 16 within 2 m) that gets the high one's detail through the baked normal / AO."""
     cy = cushion_y or (B.FLOOR_Y + B.SEAT_H)
     W = x1 - x0
     cx = (x0 + x1) / 2
-    lv = 2 if lod == 0 else 1
-    sides = C.SIDES_NEAR if lod == 0 else C.SIDES_FAR
+    hi = quality == 'high'
+    lv = 3 if hi else 1
+    sides = 24 if hi else 16
+    small = 12 if hi else 6                                   # piping / welts (4-5 mm: the normal map carries them)
+    frame_s = 16 if hi else 10
     objs = []
 
     # ---------------------------------------------------------------- cushion (not tilted)
@@ -47,33 +53,37 @@ def seat_module(name, x0, x1, back_z, cushion_y=None, double=False, wall_side=1,
     # (on the rounded edge: ~4 mm in from the box side, ~6 mm below the top - where the top panel's seam is)
     hw, hd = (x1 - x0) / 2 - 0.018 - 0.004, (z1c - z0c) / 2 - 0.004
     ring = C.rrect_path(cx, (z0c + z1c) / 2, hw, hd, 0.030, cy - 0.006, n_arc=8)
-    objs.append(C.sweep(name + '_CushionPiping', ring + [ring[0]], 0.0045, 'Vinyl', collection, sides=10, closed=True))
+    objs.append(C.sweep(name + '_CushionPiping', ring + [ring[0]], 0.0045, 'Vinyl', collection, sides=small, closed=True))
     if double:   # the bench's middle seam: a sunk welt across the top
         objs.append(C.sweep(name + '_CushionSeam', [(cx, cy + 0.006, z0c + 0.05), (cx, cy + 0.009, (z0c + z1c) / 2),
-                                                     (cx, cy + 0.004, z1c - 0.04)], 0.0035, 'Vinyl', collection, sides=8))
+                                                     (cx, cy + 0.004, z1c - 0.04)], 0.0035, 'Vinyl', collection, sides=small))
     # pan under the cushion (rounded corners, folded lip) + the frame rectangle under it
     objs.append(BB.box(name + '_Pan', (x0 + 0.03, cy - 0.118, z0c + 0.01), (x1 - 0.03, cy - 0.094, z1c - 0.01), 'SeatFrame',
                        collection, bevel=0.008, segs=3))
     fy = cy - 0.135
     frame = [(x0 + 0.06, fy, z0c + 0.04), (x1 - 0.06, fy, z0c + 0.04), (x1 - 0.06, fy, z1c - 0.05), (x0 + 0.06, fy, z1c - 0.05)]
-    objs.append(C.sweep(name + '_BaseFrame', frame + [frame[0]], 0.011, 'SeatFrame', collection, sides=12, closed=True,
+    objs.append(C.sweep(name + '_BaseFrame', frame + [frame[0]], 0.011, 'SeatFrame', collection, sides=frame_s, closed=True,
                         bend=0.03))
 
     # ---------------------------------------------------------------- legs / mounts
-    xa = x0 + 0.08 if wall_side > 0 else x1 - 0.08            # aisle side
-    xw = x1 - 0.015 if wall_side > 0 else x0 + 0.015          # wall side
+    xa = x0 + 0.08 if wall_side >= 0 else x1 - 0.08           # aisle side
+    if wall_x is None:
+        wall_x = x1 if wall_side > 0 else x0
+    xw = wall_x - wall_side * 0.006                           # the bracket plate on the wall
     if not on_box:
-        # aisle leg: from the frame's aisle-front corner, slanting down and slightly forward, to a round foot
-        top = (xa, fy, z1c - 0.07)
-        foot = (xa, B.FLOOR_Y + 0.012, z1c - 0.01)
-        objs.append(C.sweep(name + '_Leg', [(xa, fy, z0c + 0.06), top, foot], 0.0125, 'SeatFrame', collection,
-                            sides=12, bend=0.05))
-        objs.append(BB.cylinder(name + '_Foot', (foot[0], B.FLOOR_Y + 0.004, foot[2]), 'y', 0.038, 0.008, 'SeatFrame',
-                                collection, segs=24, bevel=0.002))
-        for k in range(3):
-            a = 2 * math.pi * k / 3 + 0.4
-            _ = objs.append(_hex_bolt(name + '_FootBolt%d' % k, (foot[0] + 0.026 * math.cos(a), B.FLOOR_Y + 0.010,
-                                                              foot[2] + 0.026 * math.sin(a)), 'y', 0.0055, 0.004, 'Alu', collection))
+        # legs: one on the aisle side (wall seats); both ends + the middle when there is no wall (rear bench)
+        legs = [xa] if wall_side != 0 else [x0 + 0.08, (x0 + x1) / 2, x1 - 0.08]
+        for li, xl_ in enumerate(legs):
+            top = (xl_, fy, z1c - 0.07)
+            foot = (xl_, B.FLOOR_Y + 0.012, z1c - 0.01)
+            objs.append(C.sweep(name + '_Leg%d' % li, [(xl_, fy, z0c + 0.06), top, foot], 0.0125, 'SeatFrame', collection,
+                                sides=frame_s, bend=0.05))
+            objs.append(BB.cylinder(name + '_Foot%d' % li, (foot[0], B.FLOOR_Y + 0.004, foot[2]), 'y', 0.038, 0.008, 'SeatFrame',
+                                    collection, segs=24 if hi else 16, bevel=0.002))
+            for k in range(3):
+                a = 2 * math.pi * k / 3 + 0.4
+                objs.append(_hex_bolt(name + '_FootBolt%d_%d' % (li, k), (foot[0] + 0.026 * math.cos(a), B.FLOOR_Y + 0.010,
+                                                                       foot[2] + 0.026 * math.sin(a)), 'y', 0.0055, 0.004, 'Alu', collection))
     else:
         # the hero row sits on the wheel box: two angle brackets bolted to its top
         for zz in (z0c + 0.06, z1c - 0.06):
@@ -81,6 +91,13 @@ def seat_module(name, x0, x1, back_z, cushion_y=None, double=False, wall_side=1,
                                'SeatFrame', collection, bevel=0.003, segs=2))
     # wall bracket: a plate on the wall with two bolts, the frame tube runs into it
     wy = fy
+    if wall_side != 0:
+        objs += _wall_bracket(name, x0, x1, xw, wy, z0c, z1c, wall_side, fy, frame_s, collection)
+    return _backrest(objs, name, x0, x1, cx, cy, back_z, double, lv, sides, small, hi, collection)
+
+
+def _wall_bracket(name, x0, x1, xw, wy, z0c, z1c, wall_side, fy, frame_s, collection):
+    objs = []
     objs.append(BB.box(name + '_WallPlate', (xw - 0.006, wy - 0.05, (z0c + z1c) / 2 - 0.07),
                        (xw + 0.006, wy + 0.05, (z0c + z1c) / 2 + 0.07), 'SeatFrame', collection, bevel=0.004, segs=2))
     for dz in (-0.045, 0.045):
@@ -88,8 +105,11 @@ def seat_module(name, x0, x1, back_z, cushion_y=None, double=False, wall_side=1,
                               0.006, 0.005, 'Alu', collection))
     objs.append(C.sweep(name + '_WallArm', [(x1 - 0.06 if wall_side > 0 else x0 + 0.06, fy, (z0c + z1c) / 2),
                                            (xw - wall_side * 0.008, wy, (z0c + z1c) / 2)], 0.011, 'SeatFrame', collection,
-                        sides=12))
+                        sides=frame_s))
+    return objs
 
+
+def _backrest(objs, name, x0, x1, cx, cy, back_z, double, lv, sides, small, hi, collection):
     # ---------------------------------------------------------------- backrest (tilted 12 deg about the cushion's rear)
     back = []
     bx0, bx1 = x0 + 0.036, x1 - 0.036                        # the bent tube runs outside these, along the sides
@@ -106,10 +126,10 @@ def seat_module(name, x0, x1, back_z, cushion_y=None, double=False, wall_side=1,
         for k in range(9):
             a = math.radians(a0 + 90 * k / 8)
             pts.append((ccx_ + 0.036 * math.cos(a), ccy_ + 0.036 * math.sin(a), zf))
-    back.append(C.sweep(name + '_BackPiping', pts + [pts[0]], 0.0045, 'Vinyl', collection, sides=10, closed=True))
+    back.append(C.sweep(name + '_BackPiping', pts + [pts[0]], 0.0045, 'Vinyl', collection, sides=small, closed=True))
     if double:
         back.append(C.sweep(name + '_BackSeamF', [(cx, cy + 0.03, bz1 + 0.006), (cx, cy + 0.29, bz1 + 0.012),
-                                                  (cx, cy + 0.55, bz1 + 0.004)], 0.0035, 'Vinyl', collection, sides=8))
+                                                  (cx, cy + 0.55, bz1 + 0.004)], 0.0035, 'Vinyl', collection, sides=small))
     # rear panel: a thin upholstered board with a welt round it and a lumbar seam
     back.append(C.cage_pad(name + '_BackShell', (bx0 + 0.004, cy + 0.0, back_z), (bx1 - 0.004, cy + 0.575, back_z + 0.03),
                            'Vinyl', collection, edge=0.010, n=(3, 3, 1), crown=(0.0, 0.0, 0.004, 0.0), levels=lv))
@@ -121,16 +141,16 @@ def seat_module(name, x0, x1, back_z, cushion_y=None, double=False, wall_side=1,
         for k in range(7):
             a = math.radians(a0 + 90 * k / 6)
             welt.append((px + rr * math.cos(a), py + rr * math.sin(a), zb))
-    back.append(C.sweep(name + '_BackWelt', welt + [welt[0]], 0.0032, 'Vinyl', collection, sides=8, closed=True))
+    back.append(C.sweep(name + '_BackWelt', welt + [welt[0]], 0.0032, 'Vinyl', collection, sides=small, closed=True))
     back.append(C.sweep(name + '_BackSeam', [(xa_ + 0.004, cy + 0.24, zb), (xb_ - 0.004, cy + 0.24, zb)], 0.0026, 'Vinyl',
-                        collection, sides=8))
+                        collection, sides=small))
     # the bent tube: up both sides of the back and across the top (chrome, §4.2), with clamps to the back board
     # (Fortepan 03: the tube is in plain sight along both sides of the back and ~5 cm over its top)
     rz = back_z + 0.052
     ry_top = cy + 0.635
     xl, xr = x0 + 0.020, x1 - 0.020
     u_path = [(xl, cy - 0.02, rz), (xl, ry_top, rz), (xr, ry_top, rz), (xr, cy - 0.02, rz)]
-    back.append(C.sweep(name + '_Rail', u_path, 0.011, 'Chrome', collection, sides=sides, bend=0.055, seg_per_90=10))
+    back.append(C.sweep(name + '_Rail', u_path, 0.011, 'Chrome', collection, sides=sides, bend=0.055, seg_per_90=10 if hi else 6))
     for xx in (xl, xr):
         for yy in (cy + 0.12, cy + 0.45):
             sg = 1 if xx > cx else -1                         # a flat strap from the tube into the back's side

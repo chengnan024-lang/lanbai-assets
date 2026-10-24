@@ -675,57 +675,39 @@ def pad(name, lo, hi, r, m, collection='Seats', crown=(0.0, 0.0, 0.0), cuts=8):
     return ob
 
 
-def seat(name, x0, x1, back_z, double=False, worn=1.0, cushion_y=None, collection='Seats'):
-    """bus seat: crowned cushion with piping, backrest reclined 12 deg (front face crowned, back panel flat),
-    chrome grab rail on top, steel frame + legs. back_z = back face of the backrest."""
-    cy = cushion_y or (B.FLOOR_Y + B.SEAT_H)
-    objs = []
-    objs.append(pad(name + '_Cushion', (x0 + 0.015, cy - 0.11, back_z + 0.07), (x1 - 0.015, cy - 0.01, back_z + 0.50), 0.035, 'Vinyl',
-                    collection, crown=(0.012, 0.0, 0.0)))
-    tilt = math.radians(12)
-    piv = Vector((0, cy - 0.02, back_z + 0.09))
-    bk = pad(name + '_Back', (x0 + 0.015, cy - 0.02, back_z + 0.02), (x1 - 0.015, cy + 0.60, back_z + 0.12), 0.04, 'Vinyl',
-             collection, crown=(0.0, 0.016, 0.0))
-    shell = box(name + '_BackShell', (x0 + 0.02, cy + 0.02, back_z), (x1 - 0.02, cy + 0.57, back_z + 0.025), 'Vinyl', collection, bevel=0.02, segs=3)   # PAZ: upholstered backs
-    # seams on the upholstered back (review r1): a welt round the rear panel 2.5 cm in, and a cross seam where the
-    # lumbar panel meets the upper panel - the face the row behind looks at
-    zb = back_z - 0.003
-    xa, xb, ya, yb = x0 + 0.045, x1 - 0.045, cy + 0.045, cy + 0.545
-    welt = tube(name + '_BackWelt', [(xa, ya, zb), (xb, ya, zb), (xb, yb, zb), (xa, yb, zb)], 0.0035, 'Vinyl', collection, sides=8, closed=True)
-    seam = tube(name + '_BackSeam', [(xa, cy + 0.25, zb), (xb, cy + 0.25, zb)], 0.0028, 'Vinyl', collection, sides=8)
-    pb = U2B(piv)
-    R = Matrix.Translation(pb) @ Matrix.Rotation(-tilt, 4, 'X') @ Matrix.Translation(-pb)
-    for o in (bk, shell, welt, seam):
-        o.matrix_world = R @ o.matrix_world
-    objs += [bk, shell, welt, seam]
-    # piping along the cushion's front-top edge
-    objs.append(tube(name + '_Piping', [(x0 + 0.05, cy - 0.012, back_z + 0.495), (x1 - 0.05, cy - 0.012, back_z + 0.495)], 0.005, 'Vinyl', collection))
-    ty = cy - 0.02 + 0.62 * math.cos(tilt)
-    tz = back_z + 0.07 - 0.62 * math.sin(tilt)
-    objs.append(tube(name + '_Rail', [(x0 + 0.05, ty - 0.03, tz + 0.01), (x0 + 0.05, ty + 0.03, tz - 0.01),
-                                      (x1 - 0.05, ty + 0.03, tz - 0.01), (x1 - 0.05, ty - 0.03, tz + 0.01)], 0.011, 'Chrome', collection))
-    objs.append(box(name + '_Frame', (x0 + 0.03, cy - 0.15, back_z + 0.10), (x1 - 0.03, cy - 0.11, back_z + 0.46), 'SeatFrame', collection))
-    for xx in ((x0 + 0.08,) if not double else (x0 + 0.08, (x0 + x1) / 2)):
-        if cy - 0.15 > B.FLOOR_Y + 0.05:
-            objs.append(tube(name + '_Leg%.2f' % xx, [(xx, B.FLOOR_Y, back_z + 0.40), (xx, cy - 0.15, back_z + 0.36)], 0.014, 'SeatFrame', collection))
-            objs.append(box(name + '_Foot%.2f' % xx, (xx - 0.03, B.FLOOR_Y, back_z + 0.36), (xx + 0.03, B.FLOOR_Y + 0.008, back_z + 0.44), 'SeatFrame', collection))
+# D-36 A1: the seats are the parts/seat.py module. Every seat object is tagged with its part type (one shared atlas
+# per type, finish_bus.py unwraps / bakes the type's first seat and copies the uvs to the others) and its instance.
+SEAT_TYPES = {}          # type -> dict(params) of the canonical seat, for the bake
+
+
+def _seat(inst, ptype, **kw):
+    from parts import seat as SEAT
+    objs = SEAT.seat_module(inst, **kw)
+    for o in objs:
+        o['lb_part'] = ptype
+        o['lb_inst'] = inst
+    SEAT_TYPES.setdefault(ptype, dict(kw, inst=inst))
     return objs
 
 
 def seats():
+    SEAT_TYPES.clear()
     hero = None
     for i, bz in enumerate(B.RIGHT_ROWS):
-        cy = (1.00 + 0.04) if i == 0 else None        # the hero seat sits on the front wheel box
-        o = seat('SeatR%d' % i, B.SEAT_R_X[0], B.SEAT_R_X[1], bz, cushion_y=cy)
-        if i == 0:
-            hero = o
+        if i == 0:      # the hero seat sits on the front wheel box
+            hero = _seat('SeatR0', 'SeatHero', x0=B.SEAT_R_X[0], x1=B.SEAT_R_X[1], back_z=bz, cushion_y=1.00 + 0.04,
+                         wall_side=1, on_box=True, wall_x=B.X_IN_R)
+        else:
+            _seat('SeatR%d' % i, 'SeatR', x0=B.SEAT_R_X[0], x1=B.SEAT_R_X[1], back_z=bz, wall_side=1, wall_x=B.X_IN_R)
     for i, bz in enumerate(B.LEFT_ROWS):
         over_wheel = abs(bz + 0.30 - B.AXLES[1]) < 0.55
-        seat('SeatL%d' % i, B.SEAT_L_X[0], B.SEAT_L_X[1], bz, double=True, cushion_y=(1.00 + 0.04) if over_wheel else None)
-    seat('RearBench', B.X_IN_L + 0.03, B.X_IN_R - 0.03, B.REAR_BENCH_Z, double=True)
+        _seat('SeatL%d' % i, 'SeatLBox' if over_wheel else 'SeatL', x0=B.SEAT_L_X[0], x1=B.SEAT_L_X[1], back_z=bz,
+              double=True, wall_side=-1, wall_x=B.X_IN_L, on_box=over_wheel, cushion_y=(1.00 + 0.04) if over_wheel else None)
+    _seat('RearBench', 'RearBench', x0=B.X_IN_L + 0.03, x1=B.X_IN_R - 0.03, back_z=B.REAR_BENCH_Z, double=True, wall_side=0)
     dx, dz = B.DRIVER_SEAT
-    seat('DriverSeat', dx - 0.25, dx + 0.25, dz - 0.30, cushion_y=B.FLOOR_Y + 0.46)
-    box('DriverPedestal', (dx - 0.22, B.FLOOR_Y, dz - 0.20), (dx + 0.22, B.FLOOR_Y + 0.30, dz + 0.15), 'SeatFrame', 'Seats')
+    _seat('DriverSeat', 'DriverSeat', x0=dx - 0.25, x1=dx + 0.25, back_z=dz - 0.30, cushion_y=B.FLOOR_Y + 0.46, wall_side=0,
+          on_box=True, worn=1.4)
+    box('DriverPedestal', (dx - 0.22, B.FLOOR_Y, dz - 0.20), (dx + 0.22, B.FLOOR_Y + 0.30, dz + 0.15), 'SeatFrame', 'Seats', bevel=0.01, segs=3)
     return hero
 
 

@@ -750,6 +750,10 @@
   "Glass_Brow0",
   "Glass_Brow2",
   "Glass_DestWindow",
+  "Glass_Door0",
+  "Glass_Door1",
+  "Glass_Door2",
+  "Glass_Door3",
   "Glass_RearWindow",
   "Glass_Skylight",
   "Glass_SlopeL0",
@@ -865,20 +869,20 @@
  ],
  "stats": {
   "Bus_Door0": {
-   "verts": 48,
-   "tris": 64
+   "verts": 40,
+   "tris": 60
   },
   "Bus_Door1": {
-   "verts": 48,
-   "tris": 64
+   "verts": 40,
+   "tris": 60
   },
   "Bus_Door2": {
-   "verts": 48,
-   "tris": 64
+   "verts": 40,
+   "tris": 60
   },
   "Bus_Door3": {
-   "verts": 48,
-   "tris": 64
+   "verts": 40,
+   "tris": 60
   },
   "Bus_Exterior_LOD0": {
    "verts": 14216,
@@ -919,6 +923,22 @@
   "Glass_DestWindow": {
    "verts": 30,
    "tris": 40
+  },
+  "Glass_Door0": {
+   "verts": 8,
+   "tris": 4
+  },
+  "Glass_Door1": {
+   "verts": 8,
+   "tris": 4
+  },
+  "Glass_Door2": {
+   "verts": 8,
+   "tris": 4
+  },
+  "Glass_Door3": {
+   "verts": 8,
+   "tris": 4
   },
   "Glass_RearWindow": {
    "verts": 45,

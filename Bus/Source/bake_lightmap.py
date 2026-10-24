@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""烘 _CabinTubeLM（圣经 §1.6 / §4.3：只有车、只开 10 根灯管）到 Cabin_Static 的 uv1。
+"""烘 _CabinTubeLM（圣经 §1.6 / §4.3：只有车、只开 10 根灯管）到 Cabin_Static 和各个座位（D-36：Seat_*）的 uv1（同一张图）。
 RGB = 管灯照度 E（Unity 单位，线性；Lanbai/Cabin 里 albedo × LM.rgb × _Udon_CabinLightmap），A = AO（0.5 m）。
 校准：主座位座垫中心的 E = 0.8（圣经 §4.3，S2 下灰卡 #585F64）。光的传输对瓦数是线性的，所以烘一次、按座垫读数整体缩放。
 
@@ -50,24 +50,29 @@ def add_tubes(watts):
             bpy.context.scene.collection.objects.link(ou)
 
 
-def bake(ob, img, kind, samples, margin=4):
+def bake(objs, img, kind, samples, margin=4):
+    """bake into one image over several objects (Cabin_Static + the D-36 seats), each on its uv1 'UVLightmap'."""
     sc = bpy.context.scene
     sc.cycles.samples = samples
-    me = ob.data
-    me.uv_layers.active = me.uv_layers['UVLightmap']
-    for m in me.materials:
-        m.use_nodes = True
-        nt = m.node_tree
-        n = nt.nodes.get('LM_Target') or nt.nodes.new('ShaderNodeTexImage')
-        n.name = 'LM_Target'
-        n.image = img
-        nt.nodes.active = n
+    for ob in objs:
+        me = ob.data
+        me.uv_layers.active = me.uv_layers['UVLightmap']
+        for m in me.materials:
+            m.use_nodes = True
+            nt = m.node_tree
+            n = nt.nodes.get('LM_Target') or nt.nodes.new('ShaderNodeTexImage')
+            n.name = 'LM_Target'
+            n.image = img
+            nt.nodes.active = n
     for o in bpy.context.view_layer.objects:
         o.select_set(False)
-    ob.select_set(True)
-    bpy.context.view_layer.objects.active = ob
+    for ob in objs:
+        ob.select_set(True)
+    bpy.context.view_layer.objects.active = objs[0]
     sc.render.bake.margin = margin
     sc.render.bake.target = 'IMAGE_TEXTURES'
+    sc.render.bake.use_selected_to_active = False
+    sc.render.bake.use_clear = True
     if kind == 'DIFFUSE':
         sc.render.bake.use_pass_direct = True
         sc.render.bake.use_pass_indirect = True
@@ -78,27 +83,36 @@ def bake(ob, img, kind, samples, margin=4):
     return np.array(img.pixels[:], np.float32).reshape(img.size[1], img.size[0], 4)
 
 
-def sample_at(ob, img_arr, p_unity, n_unity=(0, 1, 0)):
-    """read the baked value where a ray from 0.4 m off the surface (along n) hits Cabin_Static: uv1 at the hit point
-    (barycentric), averaged over a 3 x 3 texel patch."""
-    me = ob.data
-    M = ob.matrix_world
-    verts = [M @ v.co for v in me.vertices]
-    bvh = BVHTree.FromPolygons(verts, [list(p.vertices) for p in me.polygons], all_triangles=False)
-    p, n = np.array(p_unity, float), np.array(n_unity, float)
-    o = Vector(U(p + 0.4 * n))
-    hit, nrm, idx, dist = bvh.ray_cast(o, Vector(U(-n)), 2.0)
-    if hit is None:
-        return np.zeros(4), -1.0
-    poly = me.polygons[idx]
-    uvl = me.uv_layers['UVLightmap'].data
-    from mathutils.interpolate import poly_3d_calc
-    w = poly_3d_calc([verts[i] for i in poly.vertices], hit)
-    u = sum(wi * uvl[li].uv[0] for wi, li in zip(w, poly.loop_indices))
-    v = sum(wi * uvl[li].uv[1] for wi, li in zip(w, poly.loop_indices))
-    H, W = img_arr.shape[:2]
-    i0, j0 = min(H - 2, max(1, int(v * H))), min(W - 2, max(1, int(u * W)))
-    return img_arr[i0 - 1:i0 + 2, j0 - 1:j0 + 2].reshape(-1, 4).mean(0), float(dist) - 0.4
+class Sampler:
+    """read the baked value where a ray from 0.4 m off the surface (along n) hits any of the baked objects: uv1 at the
+    hit point (barycentric), averaged over a 3 x 3 texel patch."""
+
+    def __init__(self, objs):
+        self.verts, polys, self.owner = [], [], []
+        for ob in objs:
+            M = ob.matrix_world
+            base = len(self.verts)
+            self.verts += [M @ v.co for v in ob.data.vertices]
+            for p in ob.data.polygons:
+                polys.append([base + i for i in p.vertices])
+                self.owner.append((ob, p.index, base))
+        self.bvh = BVHTree.FromPolygons(self.verts, polys, all_triangles=False)
+
+    def __call__(self, img_arr, p_unity, n_unity=(0, 1, 0)):
+        from mathutils.interpolate import poly_3d_calc
+        p, n = np.array(p_unity, float), np.array(n_unity, float)
+        hit, nrm, idx, dist = self.bvh.ray_cast(Vector(U(p + 0.4 * n)), Vector(U(-n)), 2.0)
+        if hit is None:
+            return np.zeros(4), -1.0
+        ob, pi, base = self.owner[idx]
+        poly = ob.data.polygons[pi]
+        uvl = ob.data.uv_layers['UVLightmap'].data
+        w = poly_3d_calc([self.verts[base + i] for i in poly.vertices], hit)
+        u = sum(wi * uvl[li].uv[0] for wi, li in zip(w, poly.loop_indices))
+        v = sum(wi * uvl[li].uv[1] for wi, li in zip(w, poly.loop_indices))
+        H, W = img_arr.shape[:2]
+        i0, j0 = min(H - 2, max(1, int(v * H))), min(W - 2, max(1, int(u * W)))
+        return img_arr[i0 - 1:i0 + 2, j0 - 1:j0 + 2].reshape(-1, 4).mean(0), float(dist) - 0.4
 
 
 def main():
@@ -122,20 +136,22 @@ def main():
         if o.name.startswith('Glass_') or o.name.startswith('Cabin_Tubes'):
             o.hide_render = True          # glass: no blocking; diffusers: the area lights stand in for them
     add_tubes(10.0)
-    ob = bpy.data.objects['Cabin_Static']
+    objs = [bpy.data.objects['Cabin_Static']] + sorted((o for o in bpy.data.objects if o.name.startswith('Seat_')
+                                                        and o.type == 'MESH'), key=lambda o: o.name)
+    sample_at = Sampler(objs)
     img = bpy.data.images.new('LM', a.res, a.res, alpha=True, float_buffer=True)
-    lm = bake(ob, img, 'DIFFUSE', a.samples)
+    lm = bake(objs, img, 'DIFFUSE', a.samples)
     img2 = bpy.data.images.new('AO', a.res, a.res, alpha=True, float_buffer=True)
     sc.world.node_tree.nodes['Background'].inputs[1].default_value = 1.0
-    ao = bake(ob, img2, 'AO', max(16, a.samples // 3))
+    ao = bake(objs, img2, 'AO', max(16, a.samples // 3))
     # calibrate on the MID-CABIN cushions (bible 4.3 'seat cushion E ~ 0.8'): the hero seat sits at the end of the
     # right tube row, beside the skylight, and is the darkest seat — calibrating on it would make the cabin 2-3x too bright
     mids = [(float(np.mean(B.SEAT_R_X)), 1.02, bz + 0.30) for bz in B.RIGHT_ROWS[2:5]] + \
            [(xx, 1.02, bz + 0.30) for bz in B.LEFT_ROWS[1:3] for xx in (-1.10, -0.66)]
-    vals = [float(np.mean(sample_at(ob, lm, p)[0][:3])) for p in mids]
+    vals = [float(np.mean(sample_at(lm, p)[0][:3])) for p in mids]
     k = a.target_E / max(1e-6, float(np.mean(vals)))
     cush = (float(np.mean(B.SEAT_R_X)), 1.04, B.HERO_BACK_Z + 0.30)
-    d = sample_at(ob, lm, cush)[1]
+    d = sample_at(lm, cush)[1]
     out = np.zeros_like(lm)
     out[..., :3] = lm[..., :3] * k
     out[..., 3] = ao[..., 0]
@@ -144,7 +160,7 @@ def main():
                ceiling_centre=((0.0, B.CEIL_Y, 0.0), (0, -1, 0)), lower_wall_R=((0.99 - 0.035, 0.9, 0.6), (-1, 0, 0)))
     rep = dict(watts_per_tube=10.0 * k, scale=k, calibrated_on='mean of 7 mid-cabin cushions = %.2f' % a.target_E)
     for nm, (p, n) in pts.items():
-        vv, dd = sample_at(ob, out, p, n)
+        vv, dd = sample_at(out, p, n)
         rep[nm] = dict(E=[round(float(x), 3) for x in vv[:3]], AO=round(float(vv[3]), 3), dist=round(dd, 3))
     os.makedirs(a.out, exist_ok=True)
     res = bpy.data.images.new('LMout', a.res, a.res, alpha=True, float_buffer=True)

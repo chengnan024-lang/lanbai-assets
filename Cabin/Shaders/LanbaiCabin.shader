@@ -65,6 +65,13 @@ Shader "Lanbai/Cabin"
         [NoScaleOffset] _AtlasAlbedo ("Atlas albedo  sRGB", 2D) = "white" {}
         [NoScaleOffset] _AtlasMask ("Atlas mask  R metal  G smoothness  B wet  A AO  linear", 2D) = "white" {}
 
+        [Header(D-36 part textures on uv0)]
+        _UsePart ("Use part textures  0 or 1", Float) = 0
+        [NoScaleOffset] _PartAlbedo ("Part albedo  sRGB (x _Color)", 2D) = "white" {}
+        [NoScaleOffset] _PartNormal ("Part normal  tangent space on uv0", 2D) = "bump" {}
+        _PartNormalScale ("Part normal scale", Range(0, 2)) = 1
+        [NoScaleOffset] _PartMask ("Part mask  R metal  G smoothness  B wear  A AO  linear", 2D) = "white" {}
+
         [Header(Emission)]
         [Enum(None,0,Tube,1,Radio,2,Gauge,3,DestBlind,4)] _EmitMode ("Emission mode", Float) = 0
         _EmissionColor ("Emission colour  linear x gain (Vector: set with SetVector)", Vector) = (0, 0, 0, 1)
@@ -141,6 +148,9 @@ Shader "Lanbai/Cabin"
         half _SHAmbientK, _CabinLight;
         float _UseAtlas;
         sampler2D _AtlasAlbedo, _AtlasMask;
+        float _UsePart;
+        sampler2D _PartAlbedo, _PartNormal, _PartMask;
+        half _PartNormalScale;
         float _EmitMode;
         float4 _EmissionColor;
         sampler2D _EmitTex;
@@ -206,6 +216,16 @@ Shader "Lanbai/Cabin"
                 smooth = lerp(am.g, max(am.g, 0.85), am.b * saturate(_Udon_Wetness));   // bible 4.9 wet facades 0.85
                 occl = am.a;
             }
+            half3 nPart = half3(0, 0, 1);
+            [branch] if (_UsePart > 0.5)
+            {   // D-36 parts: the baked thirty years (wrinkles, wear, chips, AO) on the part's own uv0 atlas
+                float4 pm = tex2D(_PartMask, uv0);
+                albedo = _Color.rgb * tex2D(_PartAlbedo, uv0).rgb;
+                metal = pm.r;
+                smooth = pm.g;
+                occl = pm.a;
+                nPart = UnpackScaleNormal(tex2D(_PartNormal, uv0), _PartNormalScale);
+            }
 
             // detail mask: per-channel albedo multiplier and smoothness add (ceiling holes, floor studs / dirt / mottling)
             float3 m = tex2D(_DetailMask, uvd).rgb;
@@ -247,7 +267,7 @@ Shader "Lanbai/Cabin"
 
             // detail normal
             half3 nT = UnpackScaleNormal(tex2D(_DetailNormal, uvd), _DetailNormalScale);
-            o.Normal = nT;
+            o.Normal = _UsePart > 0.5 ? BlendNormals(nPart, nT) : nT;
             float3 nWS = normalize(WorldNormalVector(IN, o.Normal));
 
             o.Albedo = albedo;
