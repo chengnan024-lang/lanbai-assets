@@ -265,7 +265,8 @@ inline float3 LanbaiSeaRefractOut(float3 I, float3 Na, float n, out float ok)
 
 // N: wave normal for an air-ABOVE plane (LanbaiSeaNormal); I: unit vector eye -> surface point.
 // tirFill: what the water itself looks like in the mirror (the fog colour of the reflected direction, or _TIRColor).
-inline float3 LanbaiSeaBelow(float3 N, float3 I, float slopeVar)
+// returns rgb + a = how much of this pixel is WINDOW (transmitted sky), 0 in the total-internal-reflection mirror
+inline float4 LanbaiSeaBelow(float3 N, float3 I, float slopeVar)
 {
     float side = _AirSide >= 0.0 ? 1.0 : -1.0;
     float3 Na = float3(N.x, N.y * side, N.z);                 // normal into the air
@@ -328,7 +329,7 @@ inline float3 LanbaiSeaBelow(float3 N, float3 I, float slopeVar)
     float3 R = reflect(I, Na);                                 // back into the water
     float pr = LanbaiSeaPerceptual(LanbaiSeaAlpha(slopeVar));
     float3 mirror = _TIRColor.rgb + (_TIRCubeGain > 0.0 ? LanbaiSeaCube(R, pr) * _TIRCubeGain : float3(0, 0, 0));
-    return mirror * F + win * ((1.0 - F) * edge * (1.0 - wcover)) + wsun;
+    return float4(mirror * F + win * ((1.0 - F) * edge * (1.0 - wcover)) + wsun, saturate((1.0 - F) * edge));
 }
 
 // ============================================================================================== CEILING

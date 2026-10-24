@@ -66,6 +66,7 @@ Shader "Lanbai/Sea"
         _WindowRadial ("Window radial  x factor at the edge  y power  1 2 off", Vector) = (1, 2, 0, 0)
         _WindowCore ("Window ceiling  x core luma  y EV drop at the rim  z power  w on", Vector) = (0, 0.5, 2, 0)
         _WindowSunGain ("Window sun arc gain", Float) = 1
+        _TIRFog ("Fog on the dark mirror  1 physical", Range(0, 1)) = 1
 
         [Header(Ceiling  act 8)]
         [NoScaleOffset] _SkyBehindCube ("Sky behind the ceiling", Cube) = "black" {}
@@ -113,7 +114,7 @@ Shader "Lanbai/Sea"
             #include "Assets/Lanbai/Common/Shaders/LanbaiFog.cginc"
             #include "LanbaiSea.cginc"
 
-            float _FogMode;
+            float _FogMode, _TIRFog;
 
             struct appdata
             {
@@ -150,8 +151,11 @@ Shader "Lanbai/Sea"
                 float slopeVar;
                 float3 N = LanbaiSeaNormal(q, P.xz, slopeVar);
                 float4 col = float4(0, 0, 0, 1);
+                float fogKeep = 1.0;
             #if defined(_SEA_BELOW)
-                col.rgb = LanbaiSeaBelow(N, I, slopeVar);
+                float4 below = LanbaiSeaBelow(N, I, slopeVar);
+                col.rgb = below.rgb;
+                fogKeep = lerp(_TIRFog, 1.0, below.a);        // the dark mirror keeps its own colour through the water (D-23)
             #elif defined(_SEA_CEILING)
                 col = LanbaiSeaCeiling(N, I, slopeVar, P.xz, P);
             #else
@@ -159,7 +163,14 @@ Shader "Lanbai/Sea"
                 col.a = LanbaiSeaDiscAlpha(P.xz);
             #endif
                 if (_FogMode > 0.5)
-                    col.rgb = LanbaiApplyFog(col.rgb, P);
+                {
+                    // fogKeep scales the OPTICAL DEPTH (1 - f' = (1 - f)^k): the near mirror stays dark, the far one still
+                    // vanishes into the water (scaling the amount would leave a hard dark horizon)
+                    float3 fogged = LanbaiApplyFog(col.rgb, P);
+                    float f = LanbaiFogAmount(P, LanbaiCentreEyePos());
+                    float f2 = 1.0 - pow(saturate(1.0 - f), fogKeep);
+                    col.rgb = f > 1e-4 ? lerp(col.rgb, fogged, f2 / f) : col.rgb;
+                }
                 col.rgb = LanbaiPurpleGuard(col.rgb);                 // D-17/D-21: nothing displays h_ab 290-330, C* > 8, L* > 40 (proof: Docs~/purple_scan.json)
                 return col;
             }

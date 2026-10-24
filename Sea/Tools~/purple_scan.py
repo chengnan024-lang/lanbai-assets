@@ -13,7 +13,7 @@ Some rays leave the violet band again at higher saturation (under S8 the DESATUR
 #808AB2 read lilac, the colour itself does not), so each texel stores the band: lo = largest safe s below it, hi = top of it.
 A ray can even hold TWO violet bands with a safe gap between them (#808AB2 under S8: s 0.04-0.065 and 0.17-, the colour
 itself at 0.12), so each texel stores both: band 1 = (lo1, hi1], band 2 = (lo2, hi2] (runs beyond the second merged in).
-Baked into Sea/Textures/Sea_PurpleCeiling.png (360 x 484 RGBA8, linear): R = S6, G = S7a, B = S7b, A = S8; four quarters of
+Baked into Sea/Textures/Sea_PurpleCeiling.png (360 x 484 RGBA8, linear): R = S6, G = S7a + the 7a cross-fade, B = S7b, A = S8; four quarters of
 121 rows: lo1, hi1, lo2, hi2 (lo = footprint MIN rounded down, hi = footprint MAX rounded up; bands that touch merge);
 value / 255 * 0.8 = s. Texel (i, j) is hue i + 0.5 deg, L 0.025 j; POINT sampled (no blending between texels, so two
 bands never mix into a false gap), each texel answering for its own +-0.5 texel (+ one fine step).
@@ -42,7 +42,10 @@ sys.path.insert(0, HERE)
 import grade as G  # noqa: E402
 import sea_numpy as S  # noqa: E402
 
-CHANNELS = ('S6', 'S7a', 'S7b', 'S8', 'S11')      # the first four -> Sea_PurpleCeiling.png RGBA, S11 -> Sea_PurpleCeiling_S11.png
+CHANNELS = ('S6', 'S7a~', 'S7b', 'S8', 'S11')     # the first four -> Sea_PurpleCeiling.png RGBA, S11 -> Sea_PurpleCeiling_S11.png
+# 'S7a~' = S7a AND the whole 7a cross-fade S7a -> S7b (F3e -> F5, PPv2 volume blending, weights 0.05 .. 0.95): the two ends
+# alone leave up to 0.27 % violet in the middle (Sea/Docs~/purple_transition.json, first run)
+BLEND_W = [round(w, 2) for w in np.arange(0.05, 0.96, 0.05)]
 H_LO, H_HI, CSTAR, LSTAR = 290.0, 330.0, 8.0, 40.0   # the rule (verification), D-21 revised (main 4dacb19)
 SCAN_LO, SCAN_HI, SCAN_C, SCAN_L = 289.7, 330.5, 7.0, 39.0   # the bake is stricter (margin for thin violet islands between scan points)
 W, H = 360, 121
@@ -52,7 +55,7 @@ FH, FL, FS = 0.5, 0.0125, 0.002
 S_STEPS = np.arange(0.0, S_MAX + 1e-9, FS)
 MATERIALS = {  # name: (channel mask, grades proved)
     'M_06_Sea': ((1, 0, 0, 0), ('S6',)),
-    'M_07a_SeaSurface': ((0, 1, 1, 0), ('S7a', 'S7b')),
+    'M_07a_SeaSurface': ((0, 1, 1, 0), ('S7a', 'S7a+S7b=0.25', 'S7a+S7b=0.50', 'S7a+S7b=0.75', 'S7b')),
     'M_07c_SeaMirror': ((0, 0, 1, 0), ('S7b',)),
     'M_08_SeaCeiling*': ((0, 0, 0, 1), ('S8',)),
     'M_11_SeaHanging': ((1, 0, 0, 0), ('S11',)),     # with Sea_PurpleCeiling_S11.png (R = S11)
@@ -63,11 +66,23 @@ _P = {}
 
 def params(sid):
     if sid not in _P:
-        _P[sid] = G.engine_params(sid)
+        if sid.startswith('S7a+S7b='):
+            sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'Engineering', 'render_harness'))
+            from lbh import grade as LG
+            st = LG.blend({'S7a': 1.0, 'S7b': float(sid.split('=')[1])})
+            st['colorFilter'] = G.GE['common']['colorFilter']; st['hueShift'] = G.GE['common']['hueShift']
+            _P[sid] = st
+        else:
+            _P[sid] = G.engine_params(sid)
     return _P[sid]
 
 
 def violet(lin, sid, lo=H_LO, hi=H_HI, cs=CSTAR, ls=LSTAR):
+    if sid == 'S7a~':
+        v = violet(lin, 'S7a', lo, hi, cs, ls)
+        for w in BLEND_W:
+            v |= violet(lin, 'S7a+S7b=%.2f' % w, lo, hi, cs, ls)
+        return v
     codes = G.E.codes_direct(np.maximum(lin, 0.0), params(sid))
     L, a, b = G.lab(np.clip(codes, 0, 255))
     h = (np.degrees(np.arctan2(b, a)) + 360) % 360

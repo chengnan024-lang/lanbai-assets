@@ -42,7 +42,7 @@ public static class LanbaiAct07Builder
         public float last_t0, last_in, last_sweep, last_out, last_half_width, last_length, last_alpha;
         public float[] last_from, last_to, last_target;
         public float[] warm_position, warm_colour; public float warm_flux, warm_radius, warm_fade;
-        public float[] ridge_base, ridge_rim; public float ridge_reach;
+        public float[] ridge_base, ridge_rim; public float ridge_reach, ridge_near, ridge_wrap, ridge_face, ridge_edge;
     }
     [Serializable] public class Snow { public int count; public float[] colour, positions, radius, alpha, seed; }
     [Serializable] public class Seeds { public int count; public float[] colour, positions, radius, birth_t, steady, seed; }
@@ -258,6 +258,7 @@ public static class LanbaiAct07Builder
         // ---- the ridge wall (WATER frame)
         var mRidge = Mat("M_07_Ridge", "Lanbai/SeaRidge");
         mRidge.SetVector("_Base", V4(u.ridge_base)); mRidge.SetVector("_Rim", V4(u.ridge_rim)); mRidge.SetFloat("_RimReach", u.ridge_reach);
+        mRidge.SetFloat("_RimNear", u.ridge_near); mRidge.SetFloat("_RimWrap", u.ridge_wrap); mRidge.SetFloat("_RimFace", u.ridge_face); mRidge.SetFloat("_RimEdge", u.ridge_edge);
         var ridge = Draw(rSea, "Act07_Ridge", SaveMesh(RidgeMesh(J.ridge), Root + "/Meshes/Act07_Ridge.asset"), mRidge);
 
         // ---- the warm point (WATER frame; the palace's own lamp replaces it)

@@ -66,7 +66,7 @@ def water_keys():
             (0.0, 0.040, srgb_lin('#77A0D2'), srgb_lin('#294B72') * 0.38, np.array([0.0159, 0.0733, 0.1275]), 'S7a'),
             (15.0, 0.040, srgb_lin('#77A0D2'), srgb_lin('#294B72') * 0.38, np.array([0.0159, 0.0733, 0.1275]), 'S7a'),
             (30.0, 0.030, srgb_lin('#334E69'), fill('#3E6486', 'S7a'), fill('#03101A', 'S7a'), 'S7a'),
-            (60.0, 0.030, srgb_lin('#334E69') * 0.55, fill('#3E6486', 'S7b') * 0.45, fill('#03101A', 'S7b'), 'S7b'),
+            (60.0, 0.030, srgb_lin('#334E69'), fill('#3E6486', 'S7b'), fill('#03101A', 'S7b'), 'S7b'),
             (145.0, 0.018, srgb_lin('#0D181F'), fill('#06202C', 'S7b'), fill('#010407', 'S7b'), 'S7b'),
             (250.0, 0.018, srgb_lin('#0D181F'), fill('#06202C', 'S7b'), fill('#010407', 'S7b'), 'S7b')):
         keys.append(dict(depth=dep, density=dens, up=R(up), mid=R(mid), down=R(down), grade=sid))
@@ -210,9 +210,11 @@ def ridge(rng):
     X = 12.0 + off + tilt
     return dict(frame='WATER', x_min_m=round(float(X.min()), 3), grid=dict(z0=-45.0, dz=1.0, nz=len(zs), y0=-135.0, dy=1.0, ny=len(ys)),
                 x=R(X, 3), back_thickness_m=6.0,
-                material=dict(shader='Lanbai/SeaRidge', base=R(fill('#0B1A26', 'S7b') * 0.8), rim=R(srgb_lin('#5E7AFF', 2.73) * 0.06),
-                              rim_reach_m=16.0, note='low contrast: the base sits just above the water fog of 105 m; the rim is the '
-                                                      'bioluminescence (the trails) reaching it, falling off over rim_reach_m'),
+                material=dict(shader='Lanbai/SeaRidge', base=R(fill('#0B1A26', 'S7b') * 0.8), rim=R(srgb_lin('#8AC6FF') * 1.2),
+                              rim_reach_m=8.0, rim_near_m=12.0, rim_wrap=0.6, rim_face=0.08, rim_edge=3.0,
+                              note='low contrast: the faces sit just above the water fog of 105 m; only the silhouettes catch the '
+                                   'hull bioluminescence #8AC6FF (bible: 只被船体生物荧光描出一道边), full strength out to rim_near_m, '
+                                   'falling off over rim_reach_m beyond; wrap: the trails run along the whole hull'),
                 passes=dict(enters_window_t=round(L['F3e2'] - 12.0, 2), centre_t=L['F3e2'], leaves_window_t=round(L['F3e2'] + 14.0, 2)))
 
 
@@ -320,7 +322,8 @@ def main():
         last_length=ls['length'], last_alpha=ls['alpha'], last_from=ls['from_bus'], last_to=ls['to_bus'], last_target=ls['target_bus'],
         warm_position=J['warm_point']['position_water'], warm_colour=J['warm_point']['colour'], warm_flux=J['warm_point']['flux'],
         warm_radius=J['warm_point']['radius_m'], warm_fade=J['warm_point']['fade_in_s'],
-        ridge_base=J['ridge']['material']['base'], ridge_rim=J['ridge']['material']['rim'], ridge_reach=J['ridge']['material']['rim_reach_m'],
+        ridge_base=J['ridge']['material']['base'], ridge_rim=J['ridge']['material']['rim'], ridge_reach=J['ridge']['material']['rim_reach_m'], ridge_near=J['ridge']['material']['rim_near_m'],
+        ridge_wrap=J['ridge']['material']['rim_wrap'], ridge_face=J['ridge']['material']['rim_face'], ridge_edge=J['ridge']['material']['rim_edge'],
     )
     out = os.path.join(PKG, 'Act07_Layout.json')
     json.dump(J, open(out, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)

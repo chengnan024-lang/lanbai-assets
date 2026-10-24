@@ -266,14 +266,14 @@
     "depth": 60.0,
     "density": 0.03,
     "up": [
-     0.0445,
-     0.0771,
-     0.1227
+     0.099,
+     0.1714,
+     0.2726
     ],
     "mid": [
-     0.0182,
-     0.0419,
-     0.0777
+     0.0331,
+     0.0762,
+     0.1413
     ],
     "down": [
      0.0026,
@@ -22022,12 +22022,16 @@
     0.0176
    ],
    "rim": [
-    0.0446,
-    0.0775,
-    0.3981
+    0.305,
+    0.6777,
+    1.2
    ],
-   "rim_reach_m": 16.0,
-   "note": "low contrast: the base sits just above the water fog of 105 m; the rim is the bioluminescence (the trails) reaching it, falling off over rim_reach_m"
+   "rim_reach_m": 8.0,
+   "rim_near_m": 12.0,
+   "rim_wrap": 0.6,
+   "rim_face": 0.08,
+   "rim_edge": 3.0,
+   "note": "low contrast: the faces sit just above the water fog of 105 m; only the silhouettes catch the hull bioluminescence #8AC6FF (bible: 只被船体生物荧光描出一道边), full strength out to rim_near_m, falling off over rim_reach_m beyond; wrap: the trails run along the whole hull"
   },
   "passes": {
    "enters_window_t": 520.36,
@@ -22141,9 +22145,9 @@
    0.118,
    0.2172,
    0.3726,
-   0.0445,
-   0.0771,
-   0.1227,
+   0.099,
+   0.1714,
+   0.2726,
    0.0068,
    0.0227,
    0.0298,
@@ -22161,9 +22165,9 @@
    0.0331,
    0.0762,
    0.1413,
-   0.0182,
-   0.0419,
-   0.0777,
+   0.0331,
+   0.0762,
+   0.1413,
    0.004,
    0.0091,
    0.0137,
@@ -22473,10 +22477,14 @@
    0.0176
   ],
   "ridge_rim": [
-   0.0446,
-   0.0775,
-   0.3981
+   0.305,
+   0.6777,
+   1.2
   ],
-  "ridge_reach": 16.0
+  "ridge_reach": 8.0,
+  "ridge_near": 12.0,
+  "ridge_wrap": 0.6,
+  "ridge_face": 0.08,
+  "ridge_edge": 3.0
  }
 }

@@ -24,7 +24,8 @@
     {"k": "_WindowRadial", "v": [1, 2, 0, 0]},
     {"k": "_WindowCore", "v": [4.45, 3, 2, 1]},
     {"k": "_ReflClamp", "v": [1.5]},
-    {"k": "_TIRColor", "v": [0.012, 0.037, 0.09, 0]},
+    {"k": "_TIRColor", "v": [0.018, 0.058, 0.14, 0]},
+    {"k": "_TIRFog", "v": [0.3]},
     {"k": "_PurpleMask", "v": [0, 1, 1, 0]}
    ],
    "tex": [{"k": "_WindowCube", "path": "Textures/Cube_Dawn_256.exr"}, {"k": "_PurpleCeiling", "path": "Textures/Sea_PurpleCeiling.png"}]

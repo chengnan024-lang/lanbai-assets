@@ -63,7 +63,7 @@
 - **第 11 幕灯闪的 π 和 `LampAxis` / `LampDir`**：`LanbaiCeilingLampOne` 改成 Rain 的约定（E · NdotL · Vis · π · D · F），读线光源和锥角。`_LampGlints` 的范围从 0..1 改成 0..16（原来只能调暗），按替身灯校到 5.4（球光源和 Rain 逐项一致：离反射线最近的点、D 和 Vis 用 α、× (α/α′)²）；README 改成“只用 `_LampGlints` 校，不动 `_Udon_Lamp*.w`”。
 - **车底补光** Not Important（`PalaceFrame_约定.json` 的 `under_bus_light.render_mode`）。
 - **D-12 / D-18**：备用晨立方图的太阳转到方位 +30°（重新生成），`_SunDir` 默认 (0.4973, 0.1045, 0.8613)，日盘读 `_Udon_SunDisc.y`（半径），默认 `_SunDiscDeg` 0.53。
-- **7c 焦散**：金，屏幕 `#E2C08E`（h_ab 75），S7b 下填 (1.475, 0.779, 0.317)；写进接口 §3、`LanbaiCaustics.cginc` 文件头、`给总控.md`。
+- **7c 焦散**：金，屏幕 `#E2C08E`（h_ab 80），S7b 下填 (1.475, 0.779, 0.317)；写进接口 §3、`LanbaiCaustics.cginc` 文件头、`给总控.md`。
 - **镜带“珍珠金”、波纹左右均匀**：`_MirrorTint (1.25, 1.3, 1.25)`、`_ReflGain 1.5` → 镜带 `#D3A284`、h_ab 58、L\* 70、C\* 27；新属性 `_WaveRotate` 把两张浪图的风向转到视轴上，`_CalmStrength 1`（天花不要随机的平静斑）→ 左右波纹比 1.09（原来 1.75），正前 1.16。
 - **显存报账**：约 10.8 MB（细表 README §2、`给总控.md` 第四批第 3 条）。**UV 精度**：README §2、粒子文件头、`给总控.md` 第四批第 4 条。
 - **过时的说法**：`给总控.md` 的 include 路径（会让车厢编译失败的那一处）改成 `Assets/Lanbai/Common/Shaders/LanbaiCaustics.cginc`；`LanbaiCeilingDissolve` → `LanbaiCeilingProgress`；`LanbaiSeaGlobals.cginc` 删了（三个量已登记），`LanbaiCaustics.cginc` 的备用声明删了；接口里“还没进 / 待登记”清了；README §6 第 5 条（暗镜）、§3 的 K4 “紫 6%” 都换成新数；shader 文件头“Slang 查过”改成实际用的 DXC 检查。

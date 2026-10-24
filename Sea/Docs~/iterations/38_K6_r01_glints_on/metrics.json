@@ -25,15 +25,15 @@
     387
    ],
    "centroid": [
-    489.8,
-    188.2
+    490.0,
+    188.4
    ],
    "clusters": 9,
    "clusters_ge5pct": 8,
    "min_luma": 62.1,
    "centroid_az_el": [
-    0.31,
-    68.87
+    0.39,
+    68.85
    ]
   },
   "top25_Lstar": {
@@ -78,7 +78,7 @@
     {
      "hex": "#3B3029",
      "role": "干路上的灯池",
-     "nearest_dE2000_p01": 11.5,
+     "nearest_dE2000_p01": 11.6,
      "within_dE5_pct": 0.0
     },
     {
@@ -192,8 +192,8 @@
    540
   ]
  },
- "render_seconds": 10.4,
+ "render_seconds": 12.5,
  "lens": "none",
  "bloom_tint": "single",
- "note": "K6 r01 act 11 looking up, lamp glints on: fill #0F283C, NormalStrength 0.1 + 3 Gerstner swells, _LampGlints 6 (Rain convention x pi; 8 stand-in sodium lamps I 15)"
+ "note": "K6 r01 act 11 looking up, lamp glints on: fill #0F283C, NormalStrength 0.1 + 3 Gerstner swells, _LampGlints 5.4 (Rain convention x pi; 8 stand-in sodium lamps I 15)"
 }
