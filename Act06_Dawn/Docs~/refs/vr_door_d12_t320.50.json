@@ -3,11 +3,11 @@
  "cam": "vr_door_d12",
  "door": "d12",
  "d": 1678.2,
- "APL": 64.1,
+ "APL": 67.0,
  "lavender": 0.0,
  "brightest_px": [
   0.499,
   0.457
  ],
- "width": 640
+ "width": 960
 }
