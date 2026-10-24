@@ -96,6 +96,8 @@ occ.point(az, el)                                   # ('WindscreenR' | 'open' | 
 命令行：`python3 Bus/Source/occlusion_lookup.py --rect=-1.1,12.1,-8.0,-2.5`（方位 0 = 车头、+ = 右；仰角 + = 上；度）。
 0.25° 的网格会漏掉比它细的东西（中柱连胶条约 2°，不会漏；4 mm 的雨刮杆远看会漏）。要精确就直接对网格打：`~/bpy/bin/python Bus/Source/viewcheck.py --out <目录> --step 0.1 --eye x,y,z --export-grid 0.1`（要 Blender 5.0.1 的 bpy；建车约 5 秒，0.1° 全景约 5 分钟）。车改了，车的会话会重出这张表。
 
+**每个座位（D-33 #7b）：** `Docs~/viewcheck/seats_occlusion_1deg.json`，格式按总工程师定的：`{"step":1,"az0":-180,"el0":-30,"n_az":360,"n_el":60,"seats":[{"name","eye","occ"}]}`。`occ` 是 `n_el` 行（从 `el0` 往上）× `n_az` 格（从 `az0` 往右）连成的串，`'1'` = 穿过格子中心的射线碰到不透明件（玻璃穿过去）。座位顺序就是 `BusLayout.json` 的 `seats` 顺序（= `SetSeat` 的号），主座位 `SeatR0` 在第 0 个、眼位用合同的 (0.55, 1.70, 2.05)；别的座位用 `eye_approx`。用完整、门开着、没侵蚀的车量。仰角放到 −30…+30°（诗的块顶不超过约 +17°）。重出：`~/bpy/bin/python Bus/Source/seat_occlusion.py`。主座位那一行和 0.25° 的 `hero_occlusion.npz` 对过，99.7% 一致（差的是边上的格子）。
+
 ### 2.2 主座位侧窗（WinR1）的真窗框（D-33：诗要放 +61° 附近）
 
 在方位 +61°，从下往上（仰角）：车身 / 窗台 … −35.5 · 胶条 −35.3 … −33.8 · **下扇玻璃 −33.8 … +20.8** · 推拉小窗的横档 +20.8 … +23.5 · **上扇（推拉小窗）+23.5 … +43.3** · 胶条、窗顶框、窗帘横杆 +43.3 … +49 · 车身 … +54.5 · 斜面窗 +54.5 … +66 · 顶棚。
