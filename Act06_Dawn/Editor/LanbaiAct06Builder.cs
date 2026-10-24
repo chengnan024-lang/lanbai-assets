@@ -88,6 +88,21 @@ public static class LanbaiAct06Builder
         Material mPlain = AssetDatabase.LoadAssetAtPath<Material>(matPath);
         if (mPlain == null) { mPlain = new Material(shPlain); AssetDatabase.CreateAsset(mPlain, matPath); }
         mPlain.shader = shPlain;
+        // r2 (review r1): the two tiles are DATA: sRGB off, RGBA32 uncompressed, Repeat, mips, aniso 16
+        foreach (string tp in new[] { Kit + "/Textures/Plain_Detail_1024.png", Kit + "/Textures/Plain_Macro_512.png" })
+        {
+            var ti = AssetImporter.GetAtPath(tp) as TextureImporter;
+            if (ti == null) { log += "\n[Act06] missing " + tp; continue; }
+            bool dirty = ti.sRGBTexture || ti.textureCompression != TextureImporterCompression.Uncompressed || ti.wrapMode != TextureWrapMode.Repeat
+                         || !ti.mipmapEnabled || ti.anisoLevel != 16;
+            if (dirty)
+            {
+                ti.sRGBTexture = false; ti.textureCompression = TextureImporterCompression.Uncompressed; ti.wrapMode = TextureWrapMode.Repeat;
+                ti.mipmapEnabled = true; ti.anisoLevel = 16; ti.filterMode = FilterMode.Trilinear;
+                var ps = ti.GetDefaultPlatformTextureSettings(); ps.format = TextureImporterFormat.RGBA32; ti.SetPlatformTextureSettings(ps);
+                ti.SaveAndReimport();
+            }
+        }
         mPlain.SetTexture("_DetailTex", AssetDatabase.LoadAssetAtPath<Texture2D>(Kit + "/Textures/Plain_Detail_1024.png"));
         mPlain.SetTexture("_MacroTex", AssetDatabase.LoadAssetAtPath<Texture2D>(Kit + "/Textures/Plain_Macro_512.png"));
         mPlain.SetVector("_Body", new Vector4(F(body["top"]), F(body["bottom"]), F(sun["az_deg"]), 0));

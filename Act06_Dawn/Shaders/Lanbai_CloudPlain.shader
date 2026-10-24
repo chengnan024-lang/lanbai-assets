@@ -37,6 +37,7 @@ Shader "Lanbai/CloudPlain"
         _Micro ("Micro - x amp m - y envelope - z shade", Vector) = (8, 0.35, 0.6, 0)
         _March ("March - x steps - y step k - z slope - w max t", Vector) = (96, 0.9, 0.35, 16000)
         _MarchK ("March - x min k - y max k - z max dt - w bisections", Vector) = (0.004, 0.06, 250, 4)
+        _MarchDepth ("Depth pass - x steps - y bisections", Vector) = (48, 2, 0, 0)
         _Light ("Light - x sigma - y shadow - z ms k - w ms tau", Vector) = (0.012, 1.0, 0.004, 0.25)
         _Gains ("Gains - x sun - y sky - z ground - w wall slope", Vector) = (1, 0.35, 0.35, 1.5)
         _WallN ("Wall light - x wrap - y normal px - z normal min m", Vector) = (0.35, 3, 20, 0)
@@ -70,7 +71,7 @@ Shader "Lanbai/CloudPlain"
             sampler2D _MacroTex;
             float4 _DetailTex_TexelSize, _MacroTex_TexelSize;
             float4 _Periods, _DetailRange, _TauMax, _AmpRange, _Micro, _March, _MarchK, _Light, _Gains, _Under, _Trough;
-            float4 _SunColor, _SkyUpColor, _GroundColor, _SunDirFallback, _Body, _Slot, _SlotB, _Lip, _Edge, _Wall, _WallN;
+            float4 _SunColor, _SkyUpColor, _GroundColor, _SunDirFallback, _Body, _Slot, _SlotB, _Lip, _Edge, _Wall, _WallN, _MarchDepth;
             float _SlotOpen;
 
             struct appdata { float4 vertex : POSITION; UNITY_VERTEX_INPUT_INSTANCE_ID };
@@ -156,7 +157,7 @@ Shader "Lanbai/CloudPlain"
             }
 
             // ---- the march: first point inside the body along ro + V t (local); returns t (or -1)
-            float March(float3 ro, float3 V, float pix)
+            float March(float3 ro, float3 V, float pix, int N, int nb)
             {
                 float yHi = _Body.x + _DetailRange.w + _DetailRange.y * _AmpRange.y + 10.0;
                 float yLo = _Body.y - 1.0;
@@ -172,7 +173,6 @@ Shader "Lanbai/CloudPlain"
                 t1 = min(t1, _March.w);
                 if (t1 <= t0) return -1.0;
                 float tPrev = t0, tCur = t0 + 0.5;
-                int N = (int)_March.x;
                 [loop]
                 for (int i = 0; i < 128; i++)
                 {
@@ -183,7 +183,6 @@ Shader "Lanbai/CloudPlain"
                     if (m > 0.0)
                     {
                         float lo = tPrev, hi = tm;
-                        int nb = (int)_MarchK.w;
                         [loop]
                         for (int b = 0; b < 6; b++)
                         {
@@ -250,7 +249,7 @@ Shader "Lanbai/CloudPlain"
                 float3 V = normalize(i.wpos - roW);
                 float3 ro = roW - i.origin;
                 float pix = 2.0 / (_ScreenParams.y * unity_CameraProjection._m11);
-                float tHit = March(ro, V, pix);
+                float tHit = March(ro, V, pix, (int)_March.x, (int)_MarchK.w);
                 if (tHit < 0.0) discard;
                 float3 sunD = LanbaiSunDir(_SunDirFallback.xyz);
 
@@ -332,7 +331,8 @@ Shader "Lanbai/CloudPlain"
                 float3 roW = _WorldSpaceCameraPos;
                 float3 V = normalize(i.wpos - roW);
                 float pix = 2.0 / (_ScreenParams.y * unity_CameraProjection._m11);
-                float tHit = March(roW - i.origin, V, pix);
+                // r2 (review r1 S7): the depth texture only feeds the cards' soft edges: half the steps, 2 bisections
+                float tHit = March(roW - i.origin, V, pix, (int)_MarchDepth.x, (int)_MarchDepth.y);
                 if (tHit < 0.0) discard;
                 depth = PlainDepth(roW, V, tHit);
                 return 0;
