@@ -1,4 +1,4 @@
-2026-10-23 · **驱动 v1.2 可以终审了** · LanbaiGateSky v2：光带 = LanbaiHorizon、密度 = _Udon_Fog（触手、远潮、云海、云卡跟着天走过 U6 过渡；check_d22_fog.py：140 时高处 −1.12 → −0.19 EV）；光带方向收臂后冻结；没有天空套件时 Start 警告；D-08 颜色进 GateLayout_v2.json / gate_export.py，Builder 从 JSON 读；裂口光从 U6k 随伤口渐亮、补光一起淡出；常量只写一次；Wire Scene 提示只在有 Director 时；shader 8 文件 0 错 0 警告、C# OK
+2026-10-24 · **第 10 轮（第 1 批）可以终审了** · 云塔背层（Colossus_2 一座，往背月侧错开、下沉跟着高度缩放；keyart 云卡叠绘 0.899 ≤ 0.9；对比图 Docs~/r10_towers_key.png + 3 张 1:1）；云海抖动 = LanbaiHash13（世界点，两眼一致）；D-06 星 _Stars 0.055（GateLayout_v2.json stars，比背后的天高 ≤ 12 L*）+ GateAirSky 带里暗 1 EV；U7 720p 60 fps 滚动 flashcheck 全 PASS；逐像素银边爬行 0.19% → 0.147%（_Skin2.y 3 → 1.5）；shader 0 错 0 警告、C# OK · 等本地截图再做：U8 前方暗心、keyart 脚下光复量、U7 多采样、指尖卷回（待定）
 
 ## 进度
 - [x] 云海 `Lanbai/GateCloudDeck` + `Deck_Detail_1024` / `Deck_Macro_512` + `Source/deck_ref.py`（逐行 numpy 移植）；独立技术审查一轮（移植对照），改完

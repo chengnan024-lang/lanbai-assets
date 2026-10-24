@@ -57,7 +57,7 @@ Shader "Lanbai/GateCloudDeck"
         _AmbK ("Sky ambient x AO (round 4: 0.35, deeper troughs)", Range(0, 2)) = 0.35
         _Phase ("HG g1, g2, mix, surface lobe softening", Vector) = (0.8, -0.18, 0.62, 0.35)
         _Skin ("Skin: sigma (1/m), edge (m), approach weight, sigma toward the moon", Vector) = (0.8, 0.5, 0.0, 0.12)
-        _Skin2 ("Skin: silhouette gap (x t), sub-pixel fade (x edge / footprint), commit rise (x edge), crest cover (px)", Vector) = (0.04, 3, 1, 1.5)
+        _Skin2 ("Skin: silhouette gap (x t), sub-pixel fade (x edge / footprint), commit rise (x edge), crest cover (px)", Vector) = (0.04, 1.5, 1, 1.5)
         _Skin3 ("Skin: silhouette ramp from, to (x gap); per-head rim min, max", Vector) = (0.5, 3, 0.4, 1.6)
         _RimVarScale ("Per-head rim noise scale (x detail period)", Float) = 0.37
         _RimWedge ("Rim wedges: moon path half angle (deg), moon path gain, foot radius (m), outside", Vector) = (7, 0.9, 600, 0.16)
@@ -246,7 +246,16 @@ Shader "Lanbai/GateCloudDeck"
                 return (_FootPool.z * exp(-q * q) * lerp(_FootPool.w, 1.0, ao * ao)) * _FootPoolColor.rgb;
             }
 
-            float Hash3(float3 q) { return frac(sin(dot(q, float3(12.9898, 78.233, 37.719))) * 43758.5453); }
+            // the march jitter (round 10, tech r3 #4 / 总导演): LanbaiHash13 (Common LanbaiVR, integer-free and stable on every
+            // GPU, unlike sin x 43758) of the WORLD point where the ray meets the cloud-top plane, quantised to ~1.5 pixel
+            // footprints: both eyes looking at the same patch of deck get the same jitter, and it is locked to the world
+            float MarchJitter(DeckRay r)
+            {
+                float tp = max(r.ro.y - r.top, 1.0) / max(r.vy, 1e-4);
+                float3 p = r.ro + r.V * tp - r.O;                         // in the cloud-sea frame (moves with the deck)
+                float cell = max(tp * r.pix * 1.5, 0.05);
+                return LanbaiHash13(floor(p / cell) + 0.5);
+            }
 
             #if defined(UNITY_REVERSED_Z)
                 #define DECK_DEPTH SV_DepthLessEqual
@@ -311,7 +320,7 @@ Shader "Lanbai/GateCloudDeck"
                 float ts = max(max(t0, _MarchRange.x), min(0.98 * _Comfort.y / r.vy, _Comfort.z / max(abs(r.V.x), 1e-4)));
                 int N = (int)_Steps;
                 // jitter: a hash of the WORLD ray direction quantised at ~1.5 pixels (stereo-consistent, world-locked)
-                float jit = Hash3(floor(r.V / (r.pix * 1.5)));
+                float jit = MarchJitter(r);
 
                 float cm = dot(r.V, moonD);
                 float phase = _Phase.z * HG(cm, _Phase.x) + (1.0 - _Phase.z) * HG(cm, _Phase.y);
@@ -505,7 +514,7 @@ Shader "Lanbai/GateCloudDeck"
                 // where a head could first be met (tech r3 #1): inside the full comfort lane (|dx| < _Comfort.z) every head
                 // is _Comfort.y under the eye; outside it the march starts at _MarchRange.x (no near head skipped or cut flat)
                 float ts = max(max(t0, _MarchRange.x), min(0.98 * _Comfort.y / r.vy, _Comfort.z / max(abs(r.V.x), 1e-4)));
-                float jit = Hash3(floor(r.V / (r.pix * 1.5)));
+                float jit = MarchJitter(r);
                 float cPrev = Field(r, ts, false).c;
                 float tPrev = ts;
                 float tCur = ts * (1.0 + _Adapt.x * (1.0 + 4.0 * jit)) + max(cPrev, 0.0) * _Adapt.z / (r.vy + _Adapt.w) * jit;

@@ -53,6 +53,13 @@ GROUP = {
 }
 
 
+PARALLAX_SIDE, PARALLAX_W, PARALLAX_H, PARALLAX_CROP = 0.35, 1.0, 1.25, 0.45
+PARALLAX_N, PARALLAX_DEPTH = 2, 0.15     # round 10: the tower back layers (see main)
+# only Colossus_2 (left of the tear, its crown clearly seen): with Colossus_3 too (right, mostly behind the near slab
+# and arms) the keyart card overdraw is 0.93-0.98 FSE even with the cropped quads (budget <= 0.9)
+PARALLAX_IDS = ('Tower_Colossus_2',)
+
+
 def card_entry(cid, group, src, keys=None):
     shp = shape_of(src['card'])
     m = CARDS[shp]
@@ -85,6 +92,43 @@ def main():
     cards = []
     for it in G['towers']['items']:
         cards.append(card_entry(it['id'], 'tower', it, it))
+    # round 10 (art r3 #5, stranger r2: "flat cardboard"; option A in 给总控 §7, 总导演 D-15): the PARALLAX_N towers nearest the
+    # U7b eye get a BACK LAYER: a second card 15 % of their distance further along the line of sight, offset sideways by a
+    # quarter of their width (alternating), another silhouette of the same aspect (Puff behind Congestus, Congestus behind Bank), 0.85 x the width (its own aspect), gain 0.8, opacity
+    # 0.9, the same sag / sink / alpha keys (it collapses with its tower). As the bus moves, the two layers slide past
+    # each other: parallax, and the crown reads layered instead of one flat silhouette
+    gr = gate_root(HERO_T)
+    def dist(it):
+        return math.hypot(gr[0] + it['position'][0] - EYE[0], gr[2] + it['position'][2] - EYE[2])
+    near = [it for it in sorted(G['towers']['items'], key=dist)[:PARALLAX_N] if it['id'] in PARALLAX_IDS]
+    for k, it in enumerate(near):
+        px, pz = gr[0] + it['position'][0] - EYE[0], gr[2] + it['position'][2] - EYE[2]
+        d = math.hypot(px, pz)
+        fx, fz = px / d, pz / d
+        # sideways AWAY from the moon (the crown of Colossus_2 crossing the moon at U7b is a designed moment: the back
+        # layer must not cover the disc)
+        moon_az = math.atan2(MOON[0], MOON[2])
+        az = math.atan2(px, pz)
+        side = (1 if az > moon_az else -1) * PARALLAX_SIDE * it['width_m']
+        back = dict(it)
+        back['position'] = [it['position'][0] + fx * PARALLAX_DEPTH * d + fz * side, it['position'][1],
+                            it['position'][2] + fz * PARALLAX_DEPTH * d - fx * side]
+        back['card'] = it['card']                 # only Congestus is tower-shaped (cloud h / w 1.0; Puff 0.41 hides behind)
+        back['width_m'] = it['width_m'] * PARALLAX_W
+        if it.get('height_m'):
+            back['height_m'] = it['height_m'] * PARALLAX_H     # the crown must rise above the front tower's to be seen
+        back['gain'] = it.get('gain', 1.0) * 0.8
+        back['opacity'] = it.get('opacity', 1.0) * 0.9
+        e = card_entry(it['id'] + '_Back', 'tower', back, it)
+        e['parallax_of'] = it['id']
+        e['crop_bottom'] = PARALLAX_CROP          # its lower part is always behind the front tower and the deck
+        # it sinks by its OWN height x the same fraction (the copied keys sink the front tower's metres: the taller back
+        # layer stayed standing while the front one had gone)
+        sk = e['sink_keys']
+        e['sink_keys'] = [round(v * PARALLAX_H, 3) if j % 2 == 1 else v for j, v in enumerate(sk)]
+        # not flipped: the mirror carries the moon side (a flipped back layer has its silver lining away from the moon);
+        # 1.3 x the height and the side offset make it read as another crown, not a copy
+        cards.append(e)
     for k, it in enumerate(G['clouds']['far']):
         cards.append(card_entry('Far_%02d' % k, 'far', it))
     # round 2 (art r1 #5): the horizon masses were near-symmetric islands of one height: widths x 0.8-1.3, heights

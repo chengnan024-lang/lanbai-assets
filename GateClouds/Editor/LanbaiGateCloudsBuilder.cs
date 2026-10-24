@@ -32,7 +32,7 @@ public static class LanbaiGateCloudsBuilder
     [Serializable] public class CardDef
     {
         public string id; public string group; public string shape; public float[] position; public float[] size;
-        public float opacity; public float gain; public float mirror; public int queue; public float[] melt; public float fog_cap;
+        public float opacity; public float gain; public float mirror; public int queue; public float[] melt; public float fog_cap; public float crop_bottom;
         public float[] sag_keys; public float[] sink_keys; public float[] alpha_keys; public string hides;
     }
     [Serializable] public class BeamDef { public string id; public string parent; public float mode; public float[] start; public float[] axis; public float half_width; public float length; public float widen; public float intensity; }
@@ -126,11 +126,12 @@ public static class LanbaiGateCloudsBuilder
         return m;
     }
 
-    static Mesh CardQuad(ShapeDef s)
+    static Mesh CardQuad(ShapeDef s, float cropBottom = 0f)
     {
         // the quad cropped to the cloud's alpha bbox (VR r1: ~32 % less overdraw); positions in card units (scale = size)
         float pu = s.pivot_uv[0], pv = s.pivot_uv[1];
         float u0 = s.bbox_uv[0], v0 = Mathf.Min(s.bbox_uv[1], pv), u1 = s.bbox_uv[2], v1 = s.bbox_uv[3];
+        v0 += Mathf.Clamp01(cropBottom) * (v1 - v0);   // round 10: the tower back layers drop their always-hidden lower part
         var m = new Mesh { name = "GateClouds_Card_" + s.shape };
         m.vertices = new[] { new Vector3(u0 - pu, v0 - pv, 0), new Vector3(u1 - pu, v0 - pv, 0), new Vector3(u1 - pu, v1 - pv, 0), new Vector3(u0 - pu, v1 - pv, 0) };
         m.uv = new[] { new Vector2(u0, v0), new Vector2(u1, v0), new Vector2(u1, v1), new Vector2(u0, v1) };
@@ -278,7 +279,9 @@ public static class LanbaiGateCloudsBuilder
             go.transform.SetParent(cardsRoot, false);
             go.transform.localPosition = new Vector3(c.position[0], c.position[1], c.position[2]);
             go.transform.localScale = new Vector3(c.size[0], c.size[1], c.size[0]);   // z = width: the bounds must hold the turning card
-            go.AddComponent<MeshFilter>().sharedMesh = meshes[c.shape];
+            string mk = c.crop_bottom > 0f ? c.shape + "_crop" + Mathf.RoundToInt(c.crop_bottom * 100f) : c.shape;
+            if (!meshes.ContainsKey(mk)) meshes[mk] = SaveMesh(CardQuad(s, c.crop_bottom), gen + "/GateClouds_Card_" + mk + ".asset");
+            go.AddComponent<MeshFilter>().sharedMesh = meshes[mk];
             var r = go.AddComponent<MeshRenderer>();
             r.sharedMaterial = m;
             r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
