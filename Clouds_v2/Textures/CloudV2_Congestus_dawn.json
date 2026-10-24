@@ -1,0 +1,33 @@
+{
+ "name": "CloudV2_Congestus_dawn",
+ "shape": "Congestus",
+ "set": "dawn",
+ "size": [
+  1024,
+  1024
+ ],
+ "sun_el": 6.0,
+ "key_angles": [
+  15.0,
+  80.0,
+  150.0
+ ],
+ "kscale": 6.0,
+ "sscale": 1.5,
+ "clipped_K": 0.0,
+ "clipped_S": 0.0,
+ "pitch": 0.0,
+ "lens": 50.0,
+ "k_p999": [
+  1.5395447995431104,
+  0.6328751405080161,
+  0.4860156377156582
+ ],
+ "cloud_base_v": 0.0938,
+ "opaque_bbox_uv": [
+  0.0977,
+  0.0938,
+  0.8926,
+  0.9033
+ ]
+}
