@@ -100,6 +100,39 @@
    ],
    "coverage_of_quad": 0.231
   },
+  "CloudV2_Bank_duskU": {
+   "set": "duskU",
+   "shape": "Bank",
+   "size": [
+    2048,
+    1024
+   ],
+   "cloud_base_v": 0.2646,
+   "opaque_bbox_uv": [
+    0.0605,
+    0.2646,
+    0.9336,
+    0.7256
+   ],
+   "kscale": 3.0,
+   "sscale": 1.1,
+   "key_angles": [
+    15.0,
+    80.0,
+    150.0
+   ],
+   "sun_el": 1.0,
+   "pitch": 12.0,
+   "clipped_K": 2.6413781126164765e-06,
+   "clipped_S": 0.0001257956326133597,
+   "bbox_uv": [
+    0.0513,
+    0.2529,
+    0.9482,
+    0.7461
+   ],
+   "coverage_of_quad": 0.231
+  },
   "CloudV2_Congestus_dawn": {
    "set": "dawn",
    "shape": "Congestus",
@@ -133,6 +166,39 @@
    ],
    "coverage_of_quad": 0.392
   },
+  "CloudV2_Congestus_duskD": {
+   "set": "duskD",
+   "shape": "Congestus",
+   "size": [
+    1024,
+    1024
+   ],
+   "cloud_base_v": 0.0898,
+   "opaque_bbox_uv": [
+    0.249,
+    0.0898,
+    0.749,
+    0.9072
+   ],
+   "kscale": 3.0,
+   "sscale": 1.1,
+   "key_angles": [
+    15.0,
+    80.0,
+    150.0
+   ],
+   "sun_el": 1.0,
+   "pitch": -12.0,
+   "clipped_K": 0.0,
+   "clipped_S": 1.465119890760661e-05,
+   "bbox_uv": [
+    0.2197,
+    0.0684,
+    0.7852,
+    0.9229
+   ],
+   "coverage_of_quad": 0.315
+  },
   "CloudV2_Cumulus_dawn": {
    "set": "dawn",
    "shape": "Cumulus",
@@ -165,6 +231,39 @@
     0.7412
    ],
    "coverage_of_quad": 0.243
+  },
+  "CloudV2_Cumulus_duskD": {
+   "set": "duskD",
+   "shape": "Cumulus",
+   "size": [
+    1024,
+    1024
+   ],
+   "cloud_base_v": 0.1895,
+   "opaque_bbox_uv": [
+    0.123,
+    0.1895,
+    0.8486,
+    0.8193
+   ],
+   "kscale": 3.0,
+   "sscale": 1.1,
+   "key_angles": [
+    15.0,
+    80.0,
+    150.0
+   ],
+   "sun_el": 1.0,
+   "pitch": -12.0,
+   "clipped_K": 0.0,
+   "clipped_S": 5.3375269805479685e-05,
+   "bbox_uv": [
+    0.0859,
+    0.1523,
+    0.9053,
+    0.8457
+   ],
+   "coverage_of_quad": 0.351
   },
   "CloudV2_Cumulus_duskU": {
    "set": "duskU",
@@ -265,6 +364,39 @@
    ],
    "coverage_of_quad": 0.161
   },
+  "CloudV2_Strato_duskU": {
+   "set": "duskU",
+   "shape": "Strato",
+   "size": [
+    2048,
+    1024
+   ],
+   "cloud_base_v": 0.3311,
+   "opaque_bbox_uv": [
+    0.0732,
+    0.3311,
+    0.9316,
+    0.6523
+   ],
+   "kscale": 3.0,
+   "sscale": 1.1,
+   "key_angles": [
+    15.0,
+    80.0,
+    150.0
+   ],
+   "sun_el": 1.0,
+   "pitch": 12.0,
+   "clipped_K": 0.0,
+   "clipped_S": 0.00031589367339214487,
+   "bbox_uv": [
+    0.0596,
+    0.3115,
+    0.9448,
+    0.6748
+   ],
+   "coverage_of_quad": 0.152
+  },
   "CloudV2_Wisp_dawn": {
    "set": "dawn",
    "shape": "Wisp",
@@ -297,6 +429,39 @@
     0.6631
    ],
    "coverage_of_quad": 0.107
+  },
+  "CloudV2_Wisp_duskU": {
+   "set": "duskU",
+   "shape": "Wisp",
+   "size": [
+    2048,
+    1024
+   ],
+   "cloud_base_v": 0.3555,
+   "opaque_bbox_uv": [
+    0.0645,
+    0.3555,
+    0.9326,
+    0.6514
+   ],
+   "kscale": 3.0,
+   "sscale": 1.1,
+   "key_angles": [
+    15.0,
+    80.0,
+    150.0
+   ],
+   "sun_el": 1.0,
+   "pitch": 12.0,
+   "clipped_K": 1.3235821427110331e-05,
+   "clipped_S": 0.0006082461574003884,
+   "bbox_uv": [
+    0.0576,
+    0.3359,
+    0.9404,
+    0.6631
+   ],
+   "coverage_of_quad": 0.115
   }
  },
  "colours": {
@@ -452,6 +617,87 @@
     "shadow_hC": [
      70.7,
      41.0
+    ]
+   }
+  },
+  "duskD": {
+   "set": "duskD",
+   "grade": "S8",
+   "solved_on": "CloudV2_Cumulus_duskD at rel 70.0",
+   "sun_K": 2025,
+   "sun_luminance": 1.56,
+   "SunColor": [
+    3.82302,
+    1.04091,
+    0.0381
+   ],
+   "SkyUpColor": [
+    0.16472,
+    0.23034,
+    0.47406
+   ],
+   "GroundColor": [
+    0.08672,
+    0.109,
+    0.22135
+   ],
+   "targets": {
+    "shadow": "#363D59",
+    "top": "#F0A878"
+   },
+   "base_front_lit": {
+    "hex": "#CF8B64",
+    "hC": [
+     55.1,
+     37.9
+    ]
+   },
+   "rel15": {
+    "shadow": "#37415E",
+    "top": "#695D77",
+    "shadow_hC": [
+     283.4,
+     19.2
+    ]
+   },
+   "rel45": {
+    "shadow": "#39425E",
+    "top": "#D29172",
+    "shadow_hC": [
+     283.9,
+     18.5
+    ]
+   },
+   "rel70": {
+    "shadow": "#39425E",
+    "top": "#EAAB6D",
+    "shadow_hC": [
+     283.9,
+     18.3
+    ]
+   },
+   "rel110": {
+    "shadow": "#AF705B",
+    "top": "#E9A96D",
+    "shadow_hC": [
+     44.7,
+     31.7
+    ]
+   },
+   "rel150": {
+    "shadow": "#DA9355",
+    "top": "#DC9B70",
+    "shadow_hC": [
+     64.5,
+     47.8
+    ]
+   },
+   "rel170": {
+    "shadow": "#DA9355",
+    "top": "#DC9B70",
+    "shadow_hC": [
+     64.5,
+     47.8
     ]
    }
   }
