@@ -232,14 +232,14 @@ def ridge(rng):
     ys = np.arange(-135.0, -79.99, 1.0)
     Z, Y = np.meshgrid(zs, ys)
     off = np.zeros_like(Z)
-    for k, amp in ((1 / 23.0, 1.6), (1 / 9.0, 0.7), (1 / 3.7, 0.10)):          # the finest octave down (it read as veins)
+    for k, amp in ((1 / 23.0, 1.6), (1 / 9.0, 0.4), (1 / 3.7, 0.10)):          # the finest octave down (it read as veins)
         ph = rng.uniform(0, 2 * math.pi, 4)
         off += amp * (np.sin(2 * math.pi * k * Z + ph[0]) * np.sin(2 * math.pi * k * 1.3 * Y + ph[1]) + 0.5 * np.sin(2 * math.pi * k * (0.7 * Z + 0.9 * Y) + ph[2]))
     # horizontal strata (终审 7a 二: 'only the outline and the horizontal bedding catch the light'): a ledge every 4 m, its lip
-    # sticking out 0.8 m, gently wavy along z so the bedding is rock, not a ruler
+    # sticking out 1.2 m, gently wavy along z so the bedding is rock, not a ruler
     wav = 0.6 * np.sin(2 * math.pi * Z / 31.0 + 1.3)
     tt = np.mod((Y + wav) / 4.0, 1.0)
-    off += 0.8 * np.clip((tt - 0.7) / 0.3, 0.0, 1.0) ** 2
+    off += 1.2 * np.clip((tt - 0.7) / 0.3, 0.0, 1.0) ** 2
     off = off - off.min() + 0.4
     # the face tilts back a little at the top and bottom (a ridge, not a wall of a box)
     tilt = 4.0 * (np.clip((Y + 107.0) / 28.0, -1, 1) ** 2)
@@ -277,7 +277,7 @@ def warm_point():
         if best is None or dist < best[0]:
             best = (dist, lp['id'], p)
     return dict(id=best[1], position_water=R(best[2], 3), distance_at_F5_m=round(best[0], 2), t_on=L['F5'], fade_in_s=3.0,
-                colour=R(fill('#E0A860', 'S7b')), flux=3.0, radius_m=0.25, halo_radius_m=0.85, halo_flux=0.25,
+                colour=R(fill('#E0A860', 'S7b')), flux=3.0, radius_m=0.25, halo_radius_m=0.85, halo_flux=0.7,
                 halo_note='a soft halo of ~1.6 deg (<= 2 deg) around the point so it can be found at 640 px (终审 7a 二): a second, wider and '
                           'dimmer point in the same mesh',
                 replaced_by='Palace/PalaceLayout.json (the palace session)')
@@ -344,7 +344,7 @@ def main():
                                     note='F3e1: the last wide shaft sweeps across the seats (2 s in, 4 s sweep, 2 s out; seats <= luma 120): its '
                                          'foot moves from target_from to target_to (past the main seat at ~0.58), the beam light rides with it; '
                                          'the quad starts 2 m above its moving centre so the seats sit at uv.y ~0.45 (full strength), then all shafts are gone')),
-        beam=dict(kind='Spot (bus frame, under R_Act07Bus), culling Default + PlayerLocal: the light that lands on the seats and your hands',
+        beam=dict(kind='Spot (bus frame, under R_Act07Bus), culling Bus + Player + PlayerLocal (no shadows): the light that lands on the seats and your hands',
                   colour_hex='#B0D9F2', spot_angle_deg=28.0, range_m=20.0,
                   gather=dict(pos_bus=[0.87, 5.16, 1.76], aim_bus=[0.55, 1.1, 1.75], E_peak=9.0,
                               curve='smoothstep 0 -> 1 from 453 to F4p 462.36, then smoothstep 1 -> 0 to 467.6'),

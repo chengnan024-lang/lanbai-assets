@@ -4,9 +4,9 @@
    960,
    540
   ],
-  "APL": 42.88,
-  "EV_display": -4.865,
-  "luma_lt12_pct": 33.1,
+  "APL": 57.14,
+  "EV_display": -3.562,
+  "luma_lt12_pct": 48.02,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
@@ -19,27 +19,27 @@
   "lavender_act6_pct": 0.0,
   "brightest": {
    "bbox": [
-    99,
-    1,
-    905,
-    507
+    107,
+    2,
+    556,
+    510
    ],
    "centroid": [
-    378.5,
-    198.8
+    413.9,
+    103.3
    ],
-   "clusters": 9,
-   "clusters_ge5pct": 7,
-   "min_luma": 99.3,
+   "clusters": 36,
+   "clusters_ge5pct": 3,
+   "min_luma": 158.8,
    "centroid_az_el": [
-    43.35,
-    33.97
+    130.77,
+    71.16
    ]
   },
   "top25_Lstar": {
-   "mean": 14.97,
-   "p50": 2.39,
-   "p90": 37.72
+   "mean": 40.91,
+   "p50": 54.37,
+   "p90": 65.31
   },
   "palette": {
    "act": "07a",
@@ -48,49 +48,49 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 40.4,
+     "nearest_dE2000_p01": 19.5,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 32.5,
+     "nearest_dE2000_p01": 13.0,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 27.9,
-     "within_dE5_pct": 0.01
+     "nearest_dE2000_p01": 10.3,
+     "within_dE5_pct": 0.02
     },
     {
      "hex": "#3876AB",
      "role": "浅水 縹",
-     "nearest_dE2000_p01": 8.5,
+     "nearest_dE2000_p01": 5.9,
      "within_dE5_pct": 0.01
     },
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
-     "nearest_dE2000_p01": 2.5,
-     "within_dE5_pct": 58.9
+     "nearest_dE2000_p01": 2.9,
+     "within_dE5_pct": 17.72
     },
     {
      "hex": "#697987",
      "role": "海雪",
-     "nearest_dE2000_p01": 7.2,
-     "within_dE5_pct": 0.0
+     "nearest_dE2000_p01": 3.8,
+     "within_dE5_pct": 4.48
     },
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 30.1,
+     "nearest_dE2000_p01": 13.3,
      "within_dE5_pct": 0.02
     }
    ],
-   "pixel_to_nearest_dE_median": 3.8,
+   "pixel_to_nearest_dE_median": 11.8,
    "pixel_to_nearest_dE_p90": 19.3,
-   "pixels_within5_pct": 58.9
+   "pixels_within5_pct": 22.2
   }
  },
  "cam": {
@@ -99,8 +99,8 @@
    1.7,
    2.05
   ],
-  "yaw_deg": 60.0,
-  "pitch_deg": 30.0,
+  "yaw_deg": 150.0,
+  "pitch_deg": 55.0,
   "hfov_deg": 90,
   "res": [
    960,
@@ -169,7 +169,7 @@
    "color": "#000000"
   }
  },
- "bloom_share_of_APL": 0.06,
+ "bloom_share_of_APL": 0.01,
  "t": 509.0,
  "target": {
   "phase": "最后一闪",
@@ -194,8 +194,8 @@
    540
   ]
  },
- "render_seconds": 14.8,
+ "render_seconds": 8.3,
  "lens": "none",
  "bloom_tint": "single",
- "note": "F3e1 509: the last wide shaft sweeping past, seen out of the right side window"
+ "note": "F3e1 509: the last wide shaft sweeping past overhead, up and back through the eroded roof (el >= 70 - 120 x erosion)"
 }

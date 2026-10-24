@@ -4,9 +4,9 @@
    960,
    540
   ],
-  "APL": 58.63,
-  "EV_display": -4.075,
-  "luma_lt12_pct": 0.0,
+  "APL": 66.16,
+  "EV_display": -3.728,
+  "luma_lt12_pct": 0.01,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
@@ -19,27 +19,27 @@
   "lavender_act6_pct": 0.0,
   "brightest": {
    "bbox": [
-    65,
-    23,
-    936,
-    522
+    39,
+    0,
+    955,
+    539
    ],
    "centroid": [
-    523.0,
-    271.1
+    495.5,
+    292.8
    ],
-   "clusters": 19,
+   "clusters": 25,
    "clusters_ge5pct": 7,
-   "min_luma": 129.2,
+   "min_luma": 141.7,
    "centroid_az_el": [
-    87.96,
-    23.98
+    85.73,
+    22.34
    ]
   },
   "top25_Lstar": {
-   "mean": 12.79,
+   "mean": 14.12,
    "p50": 3.53,
-   "p90": 42.4
+   "p90": 40.06
   },
   "palette": {
    "act": "07a",
@@ -48,49 +48,49 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 30.8,
+     "nearest_dE2000_p01": 28.6,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 21.9,
+     "nearest_dE2000_p01": 19.2,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 16.9,
-     "within_dE5_pct": 0.02
+     "nearest_dE2000_p01": 13.1,
+     "within_dE5_pct": 0.04
     },
     {
      "hex": "#3876AB",
      "role": "浅水 縹",
-     "nearest_dE2000_p01": 5.1,
-     "within_dE5_pct": 0.09
+     "nearest_dE2000_p01": 3.9,
+     "within_dE5_pct": 1.24
     },
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
-     "nearest_dE2000_p01": 2.1,
-     "within_dE5_pct": 19.42
+     "nearest_dE2000_p01": 3.0,
+     "within_dE5_pct": 0.28
     },
     {
      "hex": "#697987",
      "role": "海雪",
-     "nearest_dE2000_p01": 4.7,
-     "within_dE5_pct": 0.21
+     "nearest_dE2000_p01": 5.3,
+     "within_dE5_pct": 0.06
     },
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 18.3,
-     "within_dE5_pct": 0.03
+     "nearest_dE2000_p01": 14.3,
+     "within_dE5_pct": 0.04
     }
    ],
-   "pixel_to_nearest_dE_median": 8.6,
+   "pixel_to_nearest_dE_median": 9.6,
    "pixel_to_nearest_dE_p90": 18.1,
-   "pixels_within5_pct": 19.8
+   "pixels_within5_pct": 1.6
   }
  },
  "cam": {
@@ -169,10 +169,10 @@
   }
  },
  "bloom_share_of_APL": 0.01,
- "t": 458.0,
+ "t": 461.0,
  "target": {
   "phase": "7a 被海接住",
-  "APL": 63.7,
+  "APL": 63.0,
   "grade": "S7a",
   "range": [
    85,
@@ -182,9 +182,9 @@
  "scene": {
   "what": "act 7a",
   "frame": "__7a__",
-  "depth": 24.46,
-  "fog": 0.0337,
-  "erosion": 0.084,
+  "depth": 24.91,
+  "fog": 0.0334,
+  "erosion": 0.087,
   "bus": "bible_v2",
   "glass": false,
   "samples": 48,
@@ -193,8 +193,8 @@
    540
   ]
  },
- "render_seconds": 6.9,
+ "render_seconds": 9.8,
  "lens": "none",
  "bloom_tint": "single",
- "note": "F4p gathering (458): from the right side window looking up, the shafts converge on the roof outside the bus"
+ "note": "F4p gathering (461, the gather ~97 %): from the right side window looking up, the shafts converge on the roof outside the bus"
 }

@@ -4,9 +4,9 @@
    960,
    540
   ],
-  "APL": 29.97,
-  "EV_display": -5.436,
-  "luma_lt12_pct": 58.11,
+  "APL": 83.08,
+  "EV_display": -3.46,
+  "luma_lt12_pct": 0.0,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
@@ -19,27 +19,27 @@
   "lavender_act6_pct": 0.0,
   "brightest": {
    "bbox": [
-    476,
-    11,
-    879,
-    506
+    0,
+    2,
+    913,
+    536
    ],
    "centroid": [
-    655.8,
-    235.4
+    572.5,
+    311.3
    ],
-   "clusters": 28,
-   "clusters_ge5pct": 7,
-   "min_luma": 92.7,
+   "clusters": 68,
+   "clusters_ge5pct": 2,
+   "min_luma": 120.3,
    "centroid_az_el": [
-    24.67,
-    40.86
+    33.23,
+    53.52
    ]
   },
   "top25_Lstar": {
-   "mean": 7.17,
-   "p50": 2.19,
-   "p90": 38.8
+   "mean": 36.52,
+   "p50": 36.63,
+   "p90": 37.05
   },
   "palette": {
    "act": "07a",
@@ -48,49 +48,49 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 43.0,
+     "nearest_dE2000_p01": 36.6,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 35.4,
+     "nearest_dE2000_p01": 26.3,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 30.9,
-     "within_dE5_pct": 0.0
+     "nearest_dE2000_p01": 20.2,
+     "within_dE5_pct": 0.02
     },
     {
      "hex": "#3876AB",
      "role": "浅水 縹",
-     "nearest_dE2000_p01": 9.7,
-     "within_dE5_pct": 0.01
+     "nearest_dE2000_p01": 6.3,
+     "within_dE5_pct": 0.05
     },
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
-     "nearest_dE2000_p01": 2.7,
-     "within_dE5_pct": 34.3
+     "nearest_dE2000_p01": 3.0,
+     "within_dE5_pct": 9.32
     },
     {
      "hex": "#697987",
      "role": "海雪",
-     "nearest_dE2000_p01": 9.3,
+     "nearest_dE2000_p01": 8.6,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 33.0,
-     "within_dE5_pct": 0.01
+     "nearest_dE2000_p01": 21.8,
+     "within_dE5_pct": 0.03
     }
    ],
-   "pixel_to_nearest_dE_median": 19.2,
-   "pixel_to_nearest_dE_p90": 19.2,
-   "pixels_within5_pct": 34.3
+   "pixel_to_nearest_dE_median": 11.1,
+   "pixel_to_nearest_dE_p90": 11.7,
+   "pixels_within5_pct": 9.4
   }
  },
  "cam": {
@@ -100,7 +100,7 @@
    2.05
   ],
   "yaw_deg": 0,
-  "pitch_deg": 40.0,
+  "pitch_deg": 75.0,
   "hfov_deg": 90,
   "res": [
    960,
@@ -169,7 +169,7 @@
    "color": "#000000"
   }
  },
- "bloom_share_of_APL": 0.01,
+ "bloom_share_of_APL": 0.0,
  "t": 515.0,
  "target": {
   "phase": "最后一闪",
@@ -194,8 +194,8 @@
    540
   ]
  },
- "render_seconds": 30.0,
+ "render_seconds": 8.2,
  "lens": "none",
  "bloom_tint": "single",
- "note": "F3e1 515: the window is a dark coin (gain x 0.04)"
+ "note": "F3e1 515: straight up through the eroded roof, the Snell window is a dark coin (gain x 0.04)"
 }

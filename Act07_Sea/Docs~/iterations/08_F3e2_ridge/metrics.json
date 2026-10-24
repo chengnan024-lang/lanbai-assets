@@ -4,8 +4,8 @@
    960,
    540
   ],
-  "APL": 33.12,
-  "EV_display": -5.859,
+  "APL": 33.17,
+  "EV_display": -5.855,
   "luma_lt12_pct": 5.63,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
@@ -16,7 +16,7 @@
   "purple_pct": 0.0,
   "purple_largest_region_pct": 0.0,
   "violet_strong_pct": 0.0,
-  "lavender_act6_pct": 0.033,
+  "lavender_act6_pct": 0.031,
   "brightest": {
    "bbox": [
     125,
@@ -25,21 +25,21 @@
     469
    ],
    "centroid": [
-    595.9,
-    208.0
+    595.2,
+    207.7
    ],
    "clusters": 8,
    "clusters_ge5pct": 6,
-   "min_luma": 87.4,
+   "min_luma": 87.3,
    "centroid_az_el": [
-    85.79,
-    10.37
+    85.72,
+    10.41
    ]
   },
   "top25_Lstar": {
-   "mean": 14.56,
+   "mean": 14.53,
    "p50": 15.59,
-   "p90": 16.52
+   "p90": 16.47
   },
   "palette": {
    "act": "07a",
@@ -48,19 +48,19 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 48.8,
+     "nearest_dE2000_p01": 48.7,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 40.1,
+     "nearest_dE2000_p01": 39.7,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 34.9,
+     "nearest_dE2000_p01": 34.7,
      "within_dE5_pct": 0.0
     },
     {
@@ -72,24 +72,24 @@
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
-     "nearest_dE2000_p01": 3.9,
-     "within_dE5_pct": 0.26
+     "nearest_dE2000_p01": 3.6,
+     "within_dE5_pct": 0.31
     },
     {
      "hex": "#697987",
      "role": "海雪",
-     "nearest_dE2000_p01": 20.1,
+     "nearest_dE2000_p01": 20.0,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 37.0,
+     "nearest_dE2000_p01": 36.5,
      "within_dE5_pct": 0.02
     }
    ],
-   "pixel_to_nearest_dE_median": 8.7,
-   "pixel_to_nearest_dE_p90": 10.4,
+   "pixel_to_nearest_dE_median": 8.6,
+   "pixel_to_nearest_dE_p90": 10.3,
    "pixels_within5_pct": 0.3
   }
  },
@@ -169,7 +169,7 @@
    "color": "#000000"
   }
  },
- "bloom_share_of_APL": 0.03,
+ "bloom_share_of_APL": 0.02,
  "t": 532.36,
  "target": {
   "phase": "海脊",
@@ -194,7 +194,7 @@
    540
   ]
  },
- "render_seconds": 21.6,
+ "render_seconds": 9.2,
  "lens": "none",
  "bloom_tint": "single",
  "note": "F3e2 532.36: the ridge wall rising past the right window, edged by the hull light"

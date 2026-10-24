@@ -5,7 +5,7 @@
    540
   ],
   "APL": 11.95,
-  "EV_display": -7.888,
+  "EV_display": -7.887,
   "luma_lt12_pct": 44.78,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
@@ -25,15 +25,15 @@
     356
    ],
    "centroid": [
-    288.9,
-    171.4
+    289.6,
+    175.3
    ],
-   "clusters": 18,
+   "clusters": 17,
    "clusters_ge5pct": 6,
-   "min_luma": 30.1,
+   "min_luma": 32.7,
    "centroid_az_el": [
     -40.31,
-    0.98
+    0.53
    ]
   },
   "top25_Lstar": {
@@ -48,19 +48,19 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 80.8,
+     "nearest_dE2000_p01": 79.8,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 70.6,
+     "nearest_dE2000_p01": 70.0,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 60.1,
+     "nearest_dE2000_p01": 59.6,
      "within_dE5_pct": 0.0
     },
     {
@@ -78,13 +78,13 @@
     {
      "hex": "#697987",
      "role": "海雪",
-     "nearest_dE2000_p01": 31.7,
+     "nearest_dE2000_p01": 31.4,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 63.7,
+     "nearest_dE2000_p01": 63.2,
      "within_dE5_pct": 0.0
     }
    ],
@@ -168,7 +168,7 @@
    "color": "#000000"
   }
  },
- "bloom_share_of_APL": 0.01,
+ "bloom_share_of_APL": 0.0,
  "t": 647.0,
  "target": {
   "phase": "7b 近",
@@ -193,7 +193,7 @@
    540
   ]
  },
- "render_seconds": 14.6,
+ "render_seconds": 7.8,
  "lens": "none",
  "bloom_tint": "single",
  "note": "F5 644.96: far below, one warm point among the cold seeds (APL target 16)"

@@ -211,7 +211,9 @@ public static class LanbaiAct07Builder
             var go = (GameObject)PrefabUtility.InstantiatePrefab(disc, rSea);
             go.name = "Sea_Plane";
             sea = go.GetComponentInChildren<Renderer>();
-            if (sea != null) { sea.sharedMaterial = above; sea.shadowCastingMode = ShadowCastingMode.Off; sea.receiveShadows = false; }
+            // built with BELOW: the dispatcher's prewarm frames then draw the _SEA_BELOW variant once (first used at 363.615);
+            // the driver's first Tick swaps it to ABOVE until the eye is under
+            if (sea != null) { sea.sharedMaterial = below; sea.shadowCastingMode = ShadowCastingMode.Off; sea.receiveShadows = false; }
         }
         else Debug.LogError("[Act07] " + SeaRoot + "/Models/Sea_Disc.fbx not found (copy Sea/ first)");
 
@@ -274,7 +276,7 @@ public static class LanbaiAct07Builder
 
         // ---- the warm point (WATER frame; the palace's own lamp replaces it)
         var mWarm = Mat("M_07_WarmPoint", "Lanbai/SeaSpecks");
-        mWarm.SetFloat("_CeilingMode", 0f); mWarm.SetFloat("_Flicker", 0.05f);
+        mWarm.SetFloat("_CeilingMode", 0f); mWarm.SetFloat("_Flicker", 0.05f); mWarm.SetFloat("_MinFWHM", 1.5f);   // D-06
         // two points at the same place: the lamp, and its soft halo (~1.6 deg, <= 2 deg) so it can be found (终审 7a 二)
         var warm = Draw(rSea, "Act07_WarmPoint", SaveMesh(Points("Act07_WarmPoint", 2, i => V3(u.warm_position),
             i => i == 0 ? new Vector4(u.warm_flux, u.warm_radius, 0, 0) : new Vector4(u.warm_halo_flux, u.warm_halo_radius, 0, 0),

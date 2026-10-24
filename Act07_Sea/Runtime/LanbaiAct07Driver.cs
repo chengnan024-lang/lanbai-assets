@@ -99,7 +99,9 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
     private int _idSeaLevel, _idSeaMode, _idSeaClock, _idUnder, _idSeaBus, _idSeaBusVel, _idT, _idFog, _idFogBase;
     private int _idWUp, _idWMid, _idWDown, _idCaus, _idCausCol, _idCausTex;
     private int _idWindowGain, _idWindowCore, _idGain, _idGather, _idGatherPoint;
-    private bool _ready, _vr, _below, _sunTaken;
+    // _below starts true: the plane is BUILT with the BELOW material so the prewarm frames draw that variant too; the
+    // first Tick at / after F2h swaps it to ABOVE (until the eye is under)
+    private bool _ready, _vr, _below = true, _sunTaken;
     private float[] _window;
 
     // ---- CONTROL §5 ----------------------------------------------------------------------------------------------
@@ -247,7 +249,7 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
         // ---- the plane: ABOVE until the eye is under (the Clouds' look, under the waterline), then BELOW
         if (seaRenderer != null)
         {
-            if (under != _below || !_ready)
+            if (under != _below)
             {
                 seaRenderer.sharedMaterial = under ? seaBelow : seaAbove;
                 _below = under;
@@ -313,6 +315,8 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
         VRCShader.SetGlobalVector(_idCaus, new Vector4(under ? cs : 0f, 1f, t, 1f));
         VRCShader.SetGlobalVector(_idCausCol, causticsColor);
         // the main light: taken over at the eye-under moment (the waterline covers the turn), never switched off
+        // scrubbed back above the water (debug clock): the cookie is ours, take it off; the act-6 writer turns the light back
+        if (!under && _sunTaken) { if (worldSun != null) worldSun.cookie = null; _sunTaken = false; }
         if (writeMainLight && worldSun != null && under)
         {
             float e = Mathf.Max(sunE0 * (1f - Mathf.Clamp01(depth / Mathf.Max(sunDepth1, 1e-3f))), sunFloor);
