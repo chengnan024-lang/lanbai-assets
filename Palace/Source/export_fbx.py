@@ -177,7 +177,46 @@ def door_cones_ub():
     return c
 
 
-GROUPS = {'terrace': g_terrace, 'weeds': g_weeds, 'lamps': g_lamps, 'fish': g_fish, 'flames': g_flames, 'door': g_door,
+def g_specks(M):
+    """PalaceSpecks_Points：远处被淹没的城的灯点（海的约定 specks：240 个，x −650…−60、y 0.5…30、z −150…900）。
+    网格约定 = Lanbai/SeaSpecks（海的 shader 头注）：每点 4 个顶点同一位置、UV0 = 角（−1..1）；UV1 = (flux, 半径 m)；
+    COLOR rgb = 线性颜色、a = 闪烁量（0：远处的灯是稳的）；UV2 = (闪烁相位, Hz)。金 #E0A860 在 S7b 下的线性值 (1.396, 0.536, 0.142)
+    （海 README §2.6）：FBX 的顶点色进 Unity 会被夹到 1，所以颜色归一成 (1, 0.384, 0.102)、亮度 1.396 乘进 flux：12 × 1.396。"""
+    S = L.FRAME['specks']
+    rg = S['region']
+    rng = np.random.default_rng(97)
+    n = S['count']
+    pts = []
+    while len(pts) < n:
+        p = [rng.uniform(*rg['x']), rng.uniform(*rg['y']), rng.uniform(*rg['z'])]
+        # 小群：灯点三五成团（远处的街巷），不要均匀的雨
+        if rng.random() < 0.6 and pts:
+            q = pts[rng.integers(len(pts))]
+            p = [q[0] + rng.normal(0, 6), max(rg['y'][0], q[1] + rng.normal(0, 1.5)), q[2] + rng.normal(0, 6)]
+        pts.append(p)
+    V, F, uv0, uv1 = [], [], [], []
+    for k, c in enumerate(pts):
+        o = len(V)
+        V += [c, c, c, c]
+        F.append((o, o + 1, o + 2, o + 3))
+        uv0.append([(-1, -1), (1, -1), (1, 1), (-1, 1)])
+        uv1.append([(12.0 * 1.396, 0.3)] * 4)
+    u = UB()
+    u.add(V, F, 'DoorGlow', uv0)
+    ob = u.build('PalaceSpecks_Points', None, M)
+    add_uv(ob, 'UVFlux', [c for f in uv1 for c in reversed(f)])
+    add_uv(ob, 'UVFlicker', [((k // 4) * 0.618034 % 1.0, 0.0) for k in range(4 * len(F))])
+    me = ob.data
+    ca = me.color_attributes.new('Col', 'FLOAT_COLOR', 'CORNER')
+    gold = (1.0, 0.536 / 1.396, 0.142 / 1.396, 0.0)
+    ca.data.foreach_set('color', list(gold) * len(me.loops))
+    path = os.path.join(OUT, 'PalaceSpecks_Points.fbx')
+    export_fbx(path, [ob])
+    STATS['PalaceSpecks_Points'] = {ob.name: len(F) * 2}
+    print('wrote', path)
+
+
+GROUPS = {'specks': g_specks, 'terrace': g_terrace, 'weeds': g_weeds, 'lamps': g_lamps, 'fish': g_fish, 'flames': g_flames, 'door': g_door,
           'hall': lambda M: g_module(M, 'hall', 'Hall'), 'que': lambda M: g_module(M, 'que', 'Que'), 'houses': g_houses}
 
 if __name__ == '__main__':

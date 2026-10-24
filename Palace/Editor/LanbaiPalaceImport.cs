@@ -1,7 +1,7 @@
 // =====================================================================================================
 //  LanbaiPalaceImport.cs   蓝白 · 第 7b 幕宫殿的导入设置（AssetPostprocessor，只管 Assets/Lanbai/Palace/）
 //  !!! WRITTEN WITHOUT A UNITY COMPILER (cloud side). Checked with Common/Tools~/compile_check (Roslyn), never in Unity. !!!
-//  模型：米、材质留在模型里（只为了保住槽名）、关网格压缩；一般网格生成光照贴图 UV（uv2）；鱼和灯焰不生成（它们的 uv2 存着编号 / 种类）。
+//  模型：米、材质留在模型里（只为了保住槽名）、关网格压缩；一般网格生成光照贴图 UV（uv2）；鱼、灯焰、远处灯点不生成（它们的 uv2 存着编号 / 种类 / flux）。
 //        鱼、灯焰的包围盒放大（顶点在 shader 里移动：鱼绕大殿、灯焰展开成公告板），免得被视锥剔掉。
 //  贴图：_Albedo sRGB；_Normal = 法线贴图；_Mask / 灯焰 / 灯晕线性；灯焰、灯晕不要 mipmap 偏移、Clamp。
 //  CONTROL §6 第 8 条：Project Settings → Player → Vertex Compression 里 TexCoord0–3 的压缩要关（鱼的编号在 uv2 里）。
@@ -33,9 +33,10 @@ public class LanbaiPalaceImport : AssetPostprocessor
         mi.optimizeMeshVertices = true;
         mi.importNormals = ModelImporterNormals.Import;
         mi.importTangents = ModelImporterTangents.CalculateMikk;
-        bool noLightmapUV = assetPath.EndsWith("Palace_Fish.fbx") || assetPath.EndsWith("Palace_Flames.fbx");
+        bool special = assetPath.EndsWith("Palace_Fish.fbx") || assetPath.EndsWith("Palace_Flames.fbx") || assetPath.EndsWith("PalaceSpecks_Points.fbx");
+        bool noLightmapUV = special;
         mi.generateSecondaryUV = !noLightmapUV;
-        if (assetPath.EndsWith("Palace_Fish.fbx") || assetPath.EndsWith("Palace_Flames.fbx"))
+        if (special)
         {
             mi.optimizeMeshVertices = false;       // 鱼 / 灯焰：顶点顺序与编号对应，别重排（也别焊接：灯焰四个角在同一点）
             mi.weldVertices = false;

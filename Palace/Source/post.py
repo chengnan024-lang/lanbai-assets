@@ -214,12 +214,13 @@ def metrics(codes):
     C = np.hypot(a, b)
     h = np.degrees(np.arctan2(b, a)) % 360
     purple = ((h >= 290) & (h <= 325) & (C > 15)).mean()
+    d21 = ((h >= 290) & (h <= 330) & (C > 8) & (Lb > 40)).mean()        # D-21 修订的紫色护栏
     H, W = luma.shape
     sm = gaussian_filter(luma, 3)
     iy, ix = np.unravel_index(np.argmax(sm), sm.shape)
     return {'APL': round(float(luma.mean()), 2), 'max_luma': round(float(luma.max()), 1),
             'brightest_xy_frac': [round(ix / W, 3), round(iy / H, 3)],
-            'purple_frac': round(float(purple), 4), 'frac_luma_gt_200': round(float((luma > 200).mean()), 4)}
+            'purple_frac': round(float(purple), 4), 'purple_D21_frac': round(float(d21), 5), 'frac_luma_gt_200': round(float((luma > 200).mean()), 4)}
 
 
 def save_png(codes, path, scale=1):
