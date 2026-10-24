@@ -1,0 +1,154 @@
+[
+ {
+  "t": 1116.0,
+  "mirrors": [
+   {
+    "index": 10,
+    "y_car": 8.1,
+    "vis": 1.0,
+    "appear": 1,
+    "dissolve": 0.32,
+    "extra_EV": 0.0
+   },
+   {
+    "index": 11,
+    "y_car": -134.2,
+    "vis": 0.524,
+    "appear": 1,
+    "dissolve": 0,
+    "extra_EV": 0.0
+   },
+   {
+    "index": 12,
+    "y_car": -384.9,
+    "vis": 0.3,
+    "appear": 1,
+    "dissolve": 0,
+    "extra_EV": 0.0
+   },
+   {
+    "index": 13,
+    "y_car": -5205.11,
+    "vis": 0.3,
+    "appear": 1,
+    "dissolve": 0.0,
+    "extra_EV": 0.0
+   }
+  ],
+  "APL": 41.7,
+  "EV": 0.0,
+  "label": "1116.0 第 10 面穿过后 · 抬头（溶解 + 星尘）",
+  "file": "r1_04_1116.0_0_30.png",
+  "face_mean": null,
+  "face_p90": null,
+  "face_frac": 0.0
+ },
+ {
+  "t": 1123.5,
+  "mirrors": [
+   {
+    "index": 11,
+    "y_car": -11.35,
+    "vis": 1.0,
+    "appear": 1,
+    "dissolve": 0,
+    "extra_EV": 0.0
+   },
+   {
+    "index": 12,
+    "y_car": -234.9,
+    "vis": 0.3,
+    "appear": 1,
+    "dissolve": 0,
+    "extra_EV": 0.0
+   },
+   {
+    "index": 13,
+    "y_car": -5100.86,
+    "vis": 0.3,
+    "appear": 1,
+    "dissolve": 0.0,
+    "extra_EV": 0.0
+   }
+  ],
+  "APL": 50.2,
+  "EV": 0.0,
+  "label": "1123.5 第 11 面（尾声的第一声钟）",
+  "file": "r1_05_1123.5_0_-12.png",
+  "face_mean": [
+   48.5,
+   57.0,
+   84.2
+  ],
+  "face_p90": [
+   133.1,
+   131.5,
+   138.4
+  ],
+  "face_frac": 0.428
+ },
+ {
+  "t": 1136.6,
+  "mirrors": [
+   {
+    "index": 12,
+    "y_car": -3.2,
+    "vis": 1.0,
+    "appear": 1,
+    "dissolve": 0,
+    "extra_EV": 0.0
+   },
+   {
+    "index": 13,
+    "y_car": -5001.69,
+    "vis": 0.3,
+    "appear": 1,
+    "dissolve": 0.0,
+    "extra_EV": 0.0
+   }
+  ],
+  "APL": 58.9,
+  "EV": 0.0,
+  "label": "1136.6 第 12 面前 1 s",
+  "file": "r1_06_1136.6_0_-12.png",
+  "face_mean": [
+   56.9,
+   65.6,
+   94.0
+  ],
+  "face_p90": [
+   157.2,
+   153.3,
+   157.0
+  ],
+  "face_frac": 0.589
+ },
+ {
+  "t": 1142.0,
+  "mirrors": [
+   {
+    "index": 13,
+    "y_car": -806.16,
+    "vis": 1.0,
+    "appear": 1,
+    "dissolve": 0.0,
+    "extra_EV": 1.283
+   }
+  ],
+  "APL": 114.3,
+  "EV": 1.751,
+  "label": "1142.0 第 13 面 · 向下看（白的膨胀里）",
+  "file": "r1_07_1142.0_0_-60.png",
+  "face_mean": [
+   101.8,
+   127.2,
+   189.8
+  ],
+  "face_p90": [
+   165.8,
+   186.7,
+   222.9
+  ],
+  "face_frac": 0.78
+ }
+]

@@ -10,7 +10,7 @@
 //  Because the face is CONVEX (sagitta 1.5 % of D), a flat-mirror copy (dir.y = -dir.y) would drift up to ~7 degrees
 //  away from the cube-reflected Milky Way near the rim.  So each star is placed where the convex mirror really shows
 //  it: the point P on the face sphere whose reflection of the star direction d reaches the eye E,
-//      P = C + rho * normalize(d + normalize(E - P))           (fixed point, 4 iterations, converges for a convex face)
+//      v = reflect(d, n); P = (eye ray along v) on the face sphere; n = normal at P     (6 damped rounds from the flat mirror; p99 error 0.07 deg)
 //  and the quad is drawn there (pulled 0.5 % toward the eye so it never z-fights with the face).
 //
 //  MESH CONTRACT = Lanbai/PointSprites infinite mode (Art/tools/lens_tech/shaders/Lanbai_PointSprites.shader):
@@ -84,15 +84,27 @@ Shader "Lanbai/MirrorStars"
                 float3 C = _SphereC.xyz;
                 float rho = _SphereC.w;
                 float3 E = _WorldSpaceCameraPos;                                        // this eye (SPS-I: per eye)
-                // convex-mirror image point: start at the apex, iterate the bisector condition
+                // convex-mirror image point: start from the flat mirror, refine with the normal at the hit point.
+                // v = reflect(d, n) is the direction the eye looks along; P = the eye's ray along v hitting the face
+                // sphere; n = the sphere normal at P.  Damped; checked against the exact reflection in the numpy port.
+                float3 n0 = up;
+                float3 oc = E - C;
+                float cc = dot(oc, oc) - rho * rho;
                 float3 P = C + rho * up;
-                [unroll] for (int k = 0; k < 4; k++)
-                    P = C + rho * normalize(d + normalize(E - P));
+                [unroll] for (int k = 0; k < 7; k++)
+                {
+                    float3 v = reflect(d, n0);
+                    float b = dot(v, oc);
+                    float tq = -b - sqrt(max(b * b - cc, 0.0));
+                    P = E + v * tq;
+                    if (k < 6) n0 = normalize(0.5 * n0 + 0.5 * normalize(P - C));   // damped: the plain update oscillates near grazing
+                }
                 float3 n = normalize(P - C);
                 float3 toE = normalize(E - P);
                 // visible only if the star is above the mirror's horizon and P lies on the face disc
                 float axial = length((P - C) - dot(P - C, up) * up);
-                float ok = step(0.0, dot(d, n)) * step(0.0, dot(toE, n)) * step(axial, _Axis.w * 1.02);
+                float ok = step(0.0, dot(d, n)) * step(0.0, dot(toE, n)) * step(axial, _Axis.w * 1.02)
+                         * step(0.99996, dot(reflect(-toE, n), d));                        // not converged (> 0.5 deg): drop it
                 float g = LanbaiMirrorStarGain(_Gain);
                 float3 F = LanbaiSchlick(_FaceF0.rgb, dot(n, toE));
                 float flux = v.uv1.x * g * ok * step(_FluxCut, v.uv1.x * g);
