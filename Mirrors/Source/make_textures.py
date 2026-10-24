@@ -9,7 +9,7 @@
 """
 import math, os
 import numpy as np
-from PIL import Image, ImageDraw, ImageFont, ImageFilter
+from PIL import Image, ImageDraw, ImageFilter
 from scipy.ndimage import gaussian_filter, maximum_filter, minimum_filter, distance_transform_edt
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -18,7 +18,6 @@ REPO = os.path.dirname(ROOT)
 OUT = os.path.join(ROOT, 'Textures')
 DOC = os.path.join(ROOT, 'Docs~')
 os.makedirs(OUT, exist_ok=True)
-FONT = os.path.join(REPO, 'Fonts', 'Originals~', 'SourceHanSerifCN-Medium.otf')
 
 N = 2048                  # output
 SS = 2                    # supersampling for drawing
@@ -28,9 +27,21 @@ R_PX = M / 2.0            # canonical mirror radius (20 m) in canvas px
 PX_M = TILE_M / N         # metres per output pixel
 RELIEF_M = 0.016 * 40.0   # height 1.0 = 0.64 m (8 bosses)
 
-INSCRIPTION = '尚方作竟真大巧上有仙人不知老渴饮玉泉饥食枣浮游天下敖四海寿如金石为国保'
-BRANCHES = '子丑寅卯辰巳午未申酉戌亥'
-assert len(INSCRIPTION) == 35, len(INSCRIPTION)
+# 铭文与十二地支：直接取自克利夫兰美术馆的真镜照片（CC0，D-31：合适就直接用），不用字体。
+# 字形是两汉镜铭的隶变篆书（缪篆一路），繁体古字形；原文未逐字释读，按照片上的顺序（从正上方顺时针）放进字表。
+INSC_PHOTO = os.path.join(ROOT, 'Docs~', '实物参考_博局镜', 'CMA_1995.298.jpg')   # 1995.298 多乳钉博局镜，铭文带一圈 35 字
+INSC_C = (1656.0, 1465.0, 1072.0)        # 镜心 x, y 与半径（照片像素，照片正拍、镜是正圆）
+INSC_Q = (0.535, 0.655)                  # 铭文带 r/R（内线 .. 栉齿内线）
+# 35 个字的中心：从正上方顺时针，单位 = 一周 4000
+INSC_AT = [150, 290, 415, 540, 685, 840, 995, 1135, 1255, 1380, 1485, 1580, 1690, 1795, 1920, 2030, 2145, 2250,
+           2365, 2465, 2565, 2645, 2740, 2845, 2965, 3060, 3150, 3230, 3325, 3430, 3565, 3655, 3775, 3875, 4005]
+# 十二地支：1995.301 内方框里乳钉之间的 12 个字（照片像素中心，字头朝外；每边按顺时针）
+BRANCH_SITES = [((1460, 1365), (1690, 1365), (1920, 1365)),     # 北边，西 -> 东
+                ((2050, 1470), (2050, 1690), (2050, 1920)),     # 东边，北 -> 南
+                ((1940, 2040), (1700, 2040), (1470, 2040)),     # 南边，东 -> 西
+                ((1355, 1920), (1355, 1690), (1355, 1470))]     # 西边，南 -> 北
+N_INSC = len(INSC_AT)
+assert N_INSC == 35, N_INSC
 
 
 def P(u, v):
@@ -110,39 +121,125 @@ def dome(shape, centres, radius, power=1.0):
     return H
 
 
-def glyph_img(ch, px, heavy=True):
-    """one character, squared toward Han mirror script: bold, square strokes, square terminals."""
-    big = px * 4
-    im = Image.new('L', (big, big), 0)
-    f = ImageFont.truetype(FONT, int(big * 0.86))
-    d = ImageDraw.Draw(im)
-    bb = d.textbbox((0, 0), ch, font=f)
-    w, h = bb[2] - bb[0], bb[3] - bb[1]
-    # stretch to fill a near-square cell (mirror script fills its box)
-    tmp = Image.new('L', (w + 8, h + 8), 0)
-    ImageDraw.Draw(tmp).text((4 - bb[0], 4 - bb[1]), ch, font=f, fill=255)
-    tmp = tmp.resize((int(big * 0.84), int(big * 0.84)), Image.LANCZOS)
-    im.paste(tmp, ((big - tmp.width) // 2, (big - tmp.height) // 2))
-    a = np.asarray(im, np.float32) / 255.0
-    a = (a > 0.45).astype(np.float32)
-    # square the strokes: max over a square then min over a slightly smaller square (blocky, even weight)
-    k = max(5, big // 22)
-    a = minimum_filter(maximum_filter(a, size=k + 2), size=k)
-    a = gaussian_filter(a, big / 220)
-    out = Image.fromarray((np.clip(a, 0, 1) * 255).astype(np.uint8)).resize((px, px), Image.LANCZOS)
-    return np.asarray(out, np.float32) / 255.0
+def relief_mask(a, minA=60, keep_centre=0.36, rims=True):
+    """raised cast strokes in a museum photo (dome light: stroke tops bright, their feet in shadow) -> 0..1 mask.
+    band-pass of the luminance, threshold, drop specks, the band's rims and the neighbours' strokes reaching in."""
+    from scipy.ndimage import label, binary_opening, binary_closing
+    h = gaussian_filter(a, 2.5) - gaussian_filter(a, 18.0)
+    h = h / (np.std(h) + 1e-6)
+    b = binary_closing(binary_opening(h > 0.35, np.ones((3, 3))), np.ones((3, 3)))
+    edge = max(8, a.shape[0] // 7)                                  # the band's rims: nearly full rows near top / bottom
+    for rows in ((range(0, edge), range(a.shape[0] - edge, a.shape[0])) if rims else ()):
+        for y in rows:
+            if b[y].mean() > 0.45:
+                b[max(y - 2, 0):y + 3] = False
+    if rims:
+        b[:4] = False; b[-4:] = False
+    lab, n = label(b)
+    keep = np.zeros(n + 1, bool)
+    for i in range(1, n + 1):
+        ys, xs = np.nonzero(lab == i)
+        if len(xs) < minA or abs(xs.mean() / a.shape[1] - 0.5) >= keep_centre:
+            continue
+        if rims and ys.max() - ys.min() < 14 and xs.max() - xs.min() > 0.35 * a.shape[1]:   # a rim left over
+            continue
+        keep[i] = True
+    return gaussian_filter(keep[lab].astype(np.float32), 1.2)
 
 
-def paste_glyph(H, ch, c, size, ang, val):
-    """paste a glyph (size in canonical-R units) centred at c, top of the glyph toward angle ang (radians, 0 = north)."""
-    px = int(size * R_PX)
-    g = glyph_img(ch, px)
-    im = Image.fromarray((g * 255).astype(np.uint8)).rotate(math.degrees(ang), resample=Image.BICUBIC, expand=True)
+def fit_cell(m, px):
+    """centre a glyph mask in a px x px cell, keeping its proportions (largest side = 0.92 px)."""
+    ys, xs = np.nonzero(m > 0.3)
+    if len(xs) == 0:
+        return np.zeros((px, px), np.float32)
+    m = m[max(ys.min() - 3, 0):ys.max() + 4, max(xs.min() - 3, 0):xs.max() + 4]
+    s = 0.92 * px / max(m.shape)
+    im = Image.fromarray((np.clip(m, 0, 1) * 255).astype(np.uint8)).resize(
+        (max(1, int(m.shape[1] * s)), max(1, int(m.shape[0] * s))), Image.LANCZOS)
+    out = np.zeros((px, px), np.float32)
     g = np.asarray(im, np.float32) / 255.0
-    x, y = P(*c)
-    x0, y0 = int(x - g.shape[1] / 2), int(y - g.shape[0] / 2)
-    sl = H[y0:y0 + g.shape[0], x0:x0 + g.shape[1]]
-    H[y0:y0 + g.shape[0], x0:x0 + g.shape[1]] = np.maximum(sl, g[:sl.shape[0], :sl.shape[1]] * val)
+    y0, x0 = (px - g.shape[0]) // 2, (px - g.shape[1]) // 2
+    out[y0:y0 + g.shape[0], x0:x0 + g.shape[1]] = g
+    return out
+
+
+def photo_inscription():
+    """35 glyph masks (top of the glyph = outward, reading clockwise) and the matching photo crops (for the plate)."""
+    from scipy.ndimage import map_coordinates
+    L = np.asarray(Image.open(INSC_PHOTO).convert('L'), np.float32) / 255.0
+    cx, cy, R = INSC_C
+    W, Hh = 8000, 260
+    th = np.linspace(-np.pi / 2, 1.5 * np.pi, W, endpoint=False)
+    q = np.linspace(INSC_Q[1], INSC_Q[0], Hh)                     # row 0 = outer
+    T, Q = np.meshgrid(th, q)
+    st = map_coordinates(L, [cy + R * Q * np.sin(T), cx + R * Q * np.cos(T)], order=1)
+    ext = np.concatenate([st[:, -400:], st, st[:, :400]], 1)
+    masks, crops = [], []
+    for c in INSC_AT:
+        x = 2 * c + 400
+        a = ext[78:246, x - 95:x + 95]
+        masks.append(relief_mask(a)); crops.append(a)
+    return masks, crops
+
+
+def photo_branches():
+    """12 branch glyph masks from 1995.301 (index 0 = the middle of the north side, then clockwise), each turned so
+    its top (outward on the mirror) is up."""
+    L = np.asarray(Image.open(PHOTO).convert('L'), np.float32) / 255.0
+    out = [None] * 12
+    for k, side in enumerate(BRANCH_SITES):
+        for j, (x, y) in enumerate(side):
+            a = L[y - 62:y + 62, x - 62:x + 62]
+            a = np.rot90(a, k)                                      # east side: outward (+x) -> up, ...
+            out[(k * 3 + j - 1) % 12] = relief_mask(a, minA=40, keep_centre=0.40, rims=False)
+            PLATE_BRANCH.append((a, out[(k * 3 + j - 1) % 12]))
+    return out
+
+
+PLATE_BRANCH = []
+
+
+def relief_shade(h, strength=6.0, light=(-0.5, 0.6, 0.62)):
+    """the glyph heights lit like the photo plate (raking light from the upper left), bronze tone."""
+    h = gaussian_filter(h, 0.8)
+    gy, gx = np.gradient(h)
+    n = np.stack([-gx * strength, gy * strength, np.ones_like(h)], -1)
+    n /= np.linalg.norm(n, axis=-1, keepdims=True)
+    l = np.array(light); l = l / np.linalg.norm(l)
+    v = np.clip(n @ l, 0, 1) * (0.75 + 0.25 * h)
+    return v
+
+
+def inscription_plate(crops, G):
+    """Docs~/inscription_plate.png: each glyph next to the real one -- photo (top) / our relief (bottom), 12 a row;
+    the last block: the 12 branches from 1995.301."""
+    def norm(a):
+        lo, hi = np.percentile(a, 1), np.percentile(a, 99)
+        return np.clip((a - lo) / (hi - lo + 1e-6), 0, 1)
+    def cell(i):
+        r, c = divmod(i, 8)
+        return G[r * 128:(r + 1) * 128, c * 128:(c + 1) * 128]
+    def fit(a, h=128):
+        im = Image.fromarray((a * 255).astype(np.uint8))
+        im = im.resize((int(a.shape[1] * h / a.shape[0]), h), Image.LANCZOS)
+        return np.asarray(im, np.float32) / 255.0
+    def pad(a, w):
+        return np.pad(a, ((4, 4), (4, 4 + w - a.shape[1])), constant_values=1)
+    blocks = []
+    pairs = [(crops[i], cell(i)) for i in range(N_INSC)] + [(PLATE_BRANCH[k][0], cell(N_INSC + i)) for k, i in
+             enumerate([(k * 3 + j - 1) % 12 for k in range(4) for j in range(3)])]
+    for start, stop in ((0, 12), (12, 24), (24, 35), (35, 47)):
+        tops, bots = [], []
+        for a, g in pairs[start:stop]:
+            t = fit(norm(a)); b = relief_shade(g)
+            w = max(t.shape[1], b.shape[1])
+            tops.append(pad(t, w)); bots.append(pad(b, w))
+        blocks.append(np.concatenate([np.concatenate(tops, 1), np.concatenate(bots, 1)], 0))
+    W = max(b.shape[1] for b in blocks)
+    sheet = np.concatenate([np.pad(b, ((0, 12), (0, W - b.shape[1])), constant_values=1) for b in blocks], 0)
+    tone = np.array([0.84, 0.80, 0.70])
+    rgb = np.where(sheet[..., None] >= 0.999, 1.0, sheet[..., None] * tone)
+    Image.fromarray((rgb * 255).astype(np.uint8)).save(os.path.join(DOC, 'inscription_plate.png'), optimize=True)
 
 
 def back_cell(centre_boss):
@@ -177,12 +274,7 @@ def back_cell(centre_boss):
     Hseat = Layer()
     for c in small:
         Hseat.ring(c, 0.045, 0.006)
-    # branch characters at 0, +-2/3 of each side, top of the glyph toward the outside
-    for k in range(4):
-        for j, t in enumerate((-2 / 3, 0.0, 2 / 3)):
-            idx = (k * 3 + j - 1) % 12                         # 子 in the middle of the north side, clockwise
-            c = rot((t * hb, hb), -k * math.pi / 2)
-            paste_glyph(H, BRANCHES[idx], c, 0.085, -k * math.pi / 2, 0.22)
+    # the twelve branch characters: none drawn here, the photo field (r/R 0.15 .. 0.72) carries 1995.301's own
     # --- T, L, V (C4; the L's all turn the same way) ---------------------------------------------------------------
     def tlv(R, k):
         lines.line([R((0, 0.40)), R((0, 0.47))], 0.028)                  # T stem
@@ -405,13 +497,14 @@ def main():
     fb = sc.arr(0.6).reshape(N, SS, N, SS).mean((1, 3))
     fa = np.clip((periodic_noise(N, 160, 15) - 0.9) * 0.8, 0, 1)
     save(np.stack([fr, fg, fb, fa], -1), 'T_MirrorFace_2048.png')
-    # glyph atlas 8 x 8 x 128 px: inscription 0..34, branches 35..46
+    # glyph atlas 8 x 8 x 128 px: inscription 0..34 (1995.298), branches 35..46 (1995.301)
     G = np.zeros((1024, 1024), np.float32)
-    for i, ch in enumerate(INSCRIPTION + BRANCHES):
-        g = glyph_img(ch, 112)
+    im_masks, im_crops = photo_inscription()
+    for i, m in enumerate(im_masks + photo_branches()):
         r, c = divmod(i, 8)
-        G[r * 128 + 8:r * 128 + 120, c * 128 + 8:c * 128 + 120] = g
+        G[r * 128 + 8:r * 128 + 120, c * 128 + 8:c * 128 + 120] = fit_cell(m, 112)
     Image.fromarray((G * 255).astype(np.uint8)).save(os.path.join(OUT, 'T_MirrorGlyphs_1024.png'), optimize=True)
+    inscription_plate(im_crops, G)
     # preview: shaded cell, 3x3 tiling, mask channels, glyphs
     Hc = previews[0][1]
     sh = shade(Hc)

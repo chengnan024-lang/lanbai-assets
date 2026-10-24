@@ -236,8 +236,8 @@ Shader "Lanbai/BronzeMirror"
                         float row = floor((rM - 0.72 * _RadiusM) / rowH);
                         float vIn = frac((rM - 0.72 * _RadiusM) / rowH);
                         float arc = (th + 3.14159265) * rM;
-                        float idxF = floor(arc / 2.4);
-                        float uIn = frac(arc / 2.4);
+                        float idxF = floor(arc / rowH);            // square cells: pitch = row height, as on the real band (1995.298)
+                        float uIn = frac(arc / rowH);
                         float idx = fmod(idxF + row * 7.0, 35.0);
                         float2 gcell = float2(fmod(idx, 8.0), 7.0 - floor(idx / 8.0));
                         float2 guv = (gcell + float2(uIn, vIn) * 0.84 + 0.08) / 8.0;
