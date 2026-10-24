@@ -32,14 +32,22 @@ def rel_angle(los_xz, sun_xz):
     return rel, right < 0
 
 
-def shade(K, S, a, rel, sun_col, sky_col, gnd_col, gain=1.0, alpha=1.0, mirror=False):
-    """K (h,w,3) linear key channels (already x KScale), S (h,w,2) linear (x SScale), a (h,w) coverage."""
+def shade(K, S, a, rel, sun_col, sky_col, gnd_col, gain=1.0, alpha=1.0, mirror=False, tex_per_px=1.0, rim_tame=0.6):
+    """K (h,w,3) linear key channels (already x KScale), S (h,w,2) linear (x SScale), a (h,w) coverage.
+    tex_per_px: texels per screen pixel (the shader's fwidth footprint); > 1 calms the backlit channel's thin rims."""
     if mirror:
         K, S, a = K[:, ::-1], S[:, ::-1], a[:, ::-1]
     w0, w1, w2 = key_weights(rel)
     k = K[..., 0] * w0 + K[..., 1] * w1 + K[..., 2] * w2
+    k = k * (1 - rim_tame * w0 * (1 - a) * np.clip(tex_per_px - 1.0, 0, 1))
     c = (k[..., None] * np.asarray(sun_col) + S[..., 0:1] * np.asarray(sky_col) + S[..., 1:2] * np.asarray(gnd_col))
     return c * gain, a * alpha
+
+
+def melt(a, v, base_v, melt=(-0.02, 0.10)):
+    """Base melt, UV mode (w = 0): v = texture v (0 at the bottom) per pixel."""
+    t = np.clip((v - base_v - melt[0]) / max(melt[1], 1e-4), 0, 1)
+    return a * t * t * (3 - 2 * t)
 
 
 def load_card(npz):

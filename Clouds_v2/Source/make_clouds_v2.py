@@ -41,8 +41,8 @@ WORK = os.environ.get('LB_WORK', '/tmp/lb/clouds')
 M.CACHE = os.path.join(WORK, 'cache')
 
 KEY_ANGLES = (15.0, 80.0, 150.0)          # sun azimuth right of the view direction (0 = straight behind the cloud)
-KSCALE = 6.0                              # stored = sRGB(value / scale)
-SSCALE = 1.5
+KSCALE = 3.0                              # stored = sRGB(value / scale); review r1 R9 (6 wasted ~1.3 bit)
+SSCALE = 1.1
 SETS = {
     'dawn': dict(sun_el=6.0, pitch=None, seed=0),
     'duskU': dict(sun_el=1.0, pitch=12.0, seed=0),
@@ -117,10 +117,10 @@ def render_set(name, setname, samples=40, scale=1.0, bounces=14, cache=None, pas
         else:
             grid, fn, spec = shape_spec(name, setname, q)
         if S['seed']:
-            # 'the clouds below are other clouds': same family, other noise phase + mirrored blob layout
-            off = np.array([0.37, 0.71, 0.13], np.float32) * S['seed']
+            # duskD: the shape mirrored left-right (the shapes' blob layouts are seeded inside v1; a true re-seed needs
+            # v1's shape functions to take a seed). 'Other clouds' comes mostly from the other shape list (README §2).
             fn0 = fn
-            fn = lambda P, f=fn0, o=off: f(P * np.array([-1, 1, 1], np.float32) + o * 0)  # mirrored layout
+            fn = lambda P, f=fn0: f(P * np.array([-1, 1, 1], np.float32))
         dens = M.evaluate(grid, fn)
         cache[key] = (grid, dens, spec)
         print(f'[{name}/{setname}] density {tuple(grid.res)} {time.time() - t0:.1f}s', flush=True)

@@ -38,6 +38,13 @@ def backdrop(sky, view_az, h, w, el_top, el_bot, hfov):
     return C.sample_equirect(sky, C.dir_from_azel(A, E_), 0.0)
 
 
+def load_png_card(base):
+    J = json.load(open(os.path.join(KIT, 'Textures', 'cards_v2.json')))['cards'][base]
+    k = np.asarray(Image.open(os.path.join(KIT, 'Textures', base + '_K.png')).convert('RGBA')).astype(np.float64) / 255
+    s = np.asarray(Image.open(os.path.join(KIT, 'Textures', base + '_S.png')).convert('RGB')).astype(np.float64) / 255
+    return C.srgb_dec(k[..., :3]) * J['kscale'], C.srgb_dec(s[..., :2]) * J['sscale'], k[..., 3]
+
+
 def purple(codes, mask, strict):
     L, h, c = C.hue_chroma(codes[mask])
     if strict:
@@ -60,7 +67,7 @@ def main(group):
     rows, metrics = [], {}
     for npz in cards:
         base = os.path.basename(npz)[:-7]
-        K, S, a = CS.load_card(npz)
+        K, S, a = load_png_card(base)                  # review r1 S4: measure the shipped PNGs, not the float npz
         h, w = a.shape
         sc = min(TW / w, TH / h)
         tiles = []

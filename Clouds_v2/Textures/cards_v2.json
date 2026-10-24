@@ -1,6 +1,39 @@
 {
  "format": "v2 channel cards: _K RGBA = sun 15/80/150 deg right of the view (white light, Unity E 1) + coverage, _S RG = uniform white upper / lower dome; stored sRGB(value / kscale or sscale). Colours per group in colours.<group> (linear; SunColor includes E). Shader Lanbai/CloudCard, numpy port Source/cardshade.py.",
  "cards": {
+  "CloudSeaV2_1_dawn": {
+   "set": "dawn",
+   "shape": "1",
+   "size": [
+    2048,
+    512
+   ],
+   "cloud_base_v": 0.123,
+   "opaque_bbox_uv": [
+    0.0601,
+    0.123,
+    0.9429,
+    0.6953
+   ],
+   "kscale": 3.0,
+   "sscale": 1.1,
+   "key_angles": [
+    15.0,
+    80.0,
+    150.0
+   ],
+   "sun_el": 6.0,
+   "pitch": -6.0,
+   "clipped_K": 1.6202524353294242e-05,
+   "clipped_S": 0.00014222215821224946,
+   "bbox_uv": [
+    0.0215,
+    0.0332,
+    0.9834,
+    0.7109
+   ],
+   "coverage_of_quad": 0.455
+  },
   "CloudV2_Bank_dawn": {
    "set": "dawn",
    "shape": "Bank",
@@ -15,8 +48,8 @@
     0.9326,
     0.7236
    ],
-   "kscale": 6.0,
-   "sscale": 1.5,
+   "kscale": 3.0,
+   "sscale": 1.1,
    "key_angles": [
     15.0,
     80.0,
@@ -24,8 +57,15 @@
    ],
    "sun_el": 6.0,
    "pitch": -3.0,
-   "clipped_K": 0.0,
-   "clipped_S": 0.0
+   "clipped_K": 5.301566347777451e-06,
+   "clipped_S": 0.00011332098068374301,
+   "bbox_uv": [
+    0.0522,
+    0.2598,
+    0.9473,
+    0.7471
+   ],
+   "coverage_of_quad": 0.231
   },
   "CloudV2_Congestus_dawn": {
    "set": "dawn",
@@ -41,8 +81,8 @@
     0.8926,
     0.9033
    ],
-   "kscale": 6.0,
-   "sscale": 1.5,
+   "kscale": 3.0,
+   "sscale": 1.1,
    "key_angles": [
     15.0,
     80.0,
@@ -50,8 +90,15 @@
    ],
    "sun_el": 6.0,
    "pitch": 0.0,
-   "clipped_K": 0.0,
-   "clipped_S": 0.0
+   "clipped_K": 3.146435089044113e-06,
+   "clipped_S": 2.949782895978856e-05,
+   "bbox_uv": [
+    0.083,
+    0.0732,
+    0.9121,
+    0.9316
+   ],
+   "coverage_of_quad": 0.392
   },
   "CloudV2_Cumulus_dawn": {
    "set": "dawn",
@@ -67,8 +114,8 @@
     0.8877,
     0.7197
    ],
-   "kscale": 6.0,
-   "sscale": 1.5,
+   "kscale": 3.0,
+   "sscale": 1.1,
    "key_angles": [
     15.0,
     80.0,
@@ -77,7 +124,14 @@
    "sun_el": 6.0,
    "pitch": -3.0,
    "clipped_K": 0.0,
-   "clipped_S": 0.0
+   "clipped_S": 8.505201403169227e-05,
+   "bbox_uv": [
+    0.0811,
+    0.252,
+    0.916,
+    0.7412
+   ],
+   "coverage_of_quad": 0.243
   },
   "CloudV2_Puff_dawn": {
    "set": "dawn",
@@ -93,8 +147,8 @@
     0.8799,
     0.666
    ],
-   "kscale": 6.0,
-   "sscale": 1.5,
+   "kscale": 3.0,
+   "sscale": 1.1,
    "key_angles": [
     15.0,
     80.0,
@@ -103,7 +157,14 @@
    "sun_el": 6.0,
    "pitch": -4.0,
    "clipped_K": 0.0,
-   "clipped_S": 4.7173594108961565e-06
+   "clipped_S": 7.54777505743385e-05,
+   "bbox_uv": [
+    0.0781,
+    0.3047,
+    0.9248,
+    0.6904
+   ],
+   "coverage_of_quad": 0.19
   },
   "CloudV2_Strato_dawn": {
    "set": "dawn",
@@ -119,8 +180,8 @@
     0.9336,
     0.6963
    ],
-   "kscale": 6.0,
-   "sscale": 1.5,
+   "kscale": 3.0,
+   "sscale": 1.1,
    "key_angles": [
     15.0,
     80.0,
@@ -129,7 +190,14 @@
    "sun_el": 6.0,
    "pitch": -14.0,
    "clipped_K": 0.0,
-   "clipped_S": 0.0
+   "clipped_S": 3.255861908043607e-05,
+   "bbox_uv": [
+    0.0615,
+    0.2979,
+    0.9482,
+    0.7148
+   ],
+   "coverage_of_quad": 0.161
   },
   "CloudV2_Wisp_dawn": {
    "set": "dawn",
@@ -145,8 +213,8 @@
     0.9321,
     0.6387
    ],
-   "kscale": 6.0,
-   "sscale": 1.5,
+   "kscale": 3.0,
+   "sscale": 1.1,
    "key_angles": [
     15.0,
     80.0,
@@ -154,8 +222,15 @@
    ],
    "sun_el": 6.0,
    "pitch": -2.0,
-   "clipped_K": 0.0,
-   "clipped_S": 0.0
+   "clipped_K": 0.0002549245306332143,
+   "clipped_S": 0.00023801627094835828,
+   "bbox_uv": [
+    0.0586,
+    0.3389,
+    0.9399,
+    0.6631
+   ],
+   "coverage_of_quad": 0.107
   }
  },
  "colours": {
@@ -164,21 +239,21 @@
    "grade": "S6",
    "solved_on": "CloudV2_Cumulus_dawn at rel 70.0",
    "sun_K": 2400,
-   "sun_luminance": 3.1073,
+   "sun_luminance": 3.0115,
    "SunColor": [
-    6.57328,
-    2.35526,
-    0.35081
+    6.37064,
+    2.28265,
+    0.34
    ],
    "SkyUpColor": [
-    0.9995,
-    1.14931,
-    1.63362
+    1.51033,
+    1.81992,
+    2.56909
    ],
    "GroundColor": [
-    0.84313,
-    1.07904,
-    1.58055
+    0.32809,
+    0.41989,
+    0.61505
    ],
    "targets": {
     "shadow": "#8593AA",
@@ -186,50 +261,50 @@
    },
    "rel15": {
     "shadow": "#8291A8",
-    "top": "#A3AFC2",
+    "top": "#A7B2C4",
     "shadow_hC": [
-     269.8,
-     14.0
+     268.4,
+     13.7
     ]
    },
    "rel45": {
     "shadow": "#8492A8",
-    "top": "#E5CDC6",
+    "top": "#E5CEC8",
     "shadow_hC": [
-     270.6,
-     13.4
+     269.7,
+     13.2
     ]
    },
    "rel70": {
-    "shadow": "#8593A8",
-    "top": "#F5DCC9",
+    "shadow": "#8592A8",
+    "top": "#F5DCCA",
     "shadow_hC": [
      270.4,
-     13.0
+     12.8
     ]
    },
    "rel110": {
-    "shadow": "#CDB1AC",
-    "top": "#F5DBC9",
+    "shadow": "#CDB2AC",
+    "top": "#F5DCCA",
     "shadow_hC": [
-     35.5,
-     11.1
+     38.2,
+     10.8
     ]
    },
    "rel150": {
-    "shadow": "#EACAB0",
-    "top": "#EED5C7",
+    "shadow": "#E9CAB0",
+    "top": "#EDD5C9",
     "shadow_hC": [
-     65.6,
-     18.5
+     66.3,
+     18.3
     ]
    },
    "rel170": {
-    "shadow": "#EACAB0",
-    "top": "#EED5C7",
+    "shadow": "#E9CAB0",
+    "top": "#EDD5C9",
     "shadow_hC": [
-     65.6,
-     18.5
+     66.3,
+     18.3
     ]
    }
   }

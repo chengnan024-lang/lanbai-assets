@@ -16,10 +16,12 @@ import lb_common as C  # noqa: E402
 import cardshade as CS  # noqa: E402
 
 WORK = os.environ.get('LB_WORK', '/tmp/lb/clouds')
+# review r1 R4: the lower-dome light is capped at 1.2 x the act's Trilight ground colour (the solve had pushed it to 3.07 x,
+# lighting the flat bases from below as a pale blue line)
 TARGETS = {
     # shadow: bible; top: dawn = palette 06 'cloud tops peach'; dusk = 设计值 (between the slot amber and the rose band)
-    'dawn': dict(set='dawn', grade='S6', shadow='#8593AA', top='#F6DCC4', ground='#8FA0BE', rel=70.0, K0=3000, Kmin=2400, Kmax=3600),
-    'dusk': dict(set='duskU', grade='S8', shadow='#363D59', top='#F0A878', ground='#4C5577', rel=70.0, K0=2400, Kmin=2000, Kmax=3000),
+    'dawn': dict(set='dawn', grade='S6', shadow='#8593AA', top='#F6DCC4', ground='#8FA0BE', rel=70.0, K0=3000, Kmin=2400, Kmax=3600, gnd_max=1.2),
+    'dusk': dict(set='duskU', grade='S8', shadow='#363D59', top='#F0A878', ground='#4C5577', rel=70.0, K0=2400, Kmin=2000, Kmax=3000, gnd_max=1.2),
 }
 
 
@@ -61,14 +63,18 @@ def solve(which, card='Cumulus'):
     h_t = C.hue_chroma(tsh)[1]
 
     def f(x):
-        if x[0] <= 0 or not T['Kmin'] <= x[1] <= T['Kmax'] or (np.asarray(x[2:]) < 0).any():
+        if x[0] <= 0 or not T['Kmin'] <= x[1] <= T['Kmax'] or (np.asarray(x[2:]) < 0).any() or x[5] > T['gnd_max']:
             return 1e9
         cs = measure(K, S, a, T['rel'], colours_from_x(x, T), T['grade'], sel)
         h, c = C.hue_chroma(cs[0])[1:]
         dh = ((h - h_t + 180) % 360) - 180
-        return float(((cs[0] - tsh) ** 2).sum() + 0.5 * ((cs[1] - ttp) ** 2).sum() + 2 * dh ** 2 * min(c / 10, 1))
+        # review r1 R5: the BACKLIT shadow (rel 15) must stay blue too: penalise h beyond 280 (toward lilac)
+        hb, cb = C.hue_chroma(measure(K, S, a, 15.0, colours_from_x(x, T), T['grade'], sel)[0])[1:]
+        pb = max(0.0, (((hb - h_t + 180) % 360) - 180) - 8.0) * min(cb / 8, 1)
+        return float(((cs[0] - tsh) ** 2).sum() + 0.5 * ((cs[1] - ttp) ** 2).sum() + 2 * dh ** 2 * min(c / 10, 1)
+                     + 20 * pb ** 2)
     best = None
-    for x0 in ([3.0, T['K0'], 0.4, 0.5, 0.8, 0.5], [5.0, T['K0'] + 600, 0.3, 0.4, 0.7, 0.3], [2.0, T['K0'] - 300, 0.5, 0.6, 0.9, 0.8]):
+    for x0 in ([3.0, T['K0'], 1.0, 1.1, 1.6, 1.0], [5.0, T['K0'] + 600, 1.2, 1.3, 1.8, 0.6], [2.0, T['K0'] - 300, 0.8, 0.9, 1.3, 1.15]):
         r = minimize(f, x0, method='Nelder-Mead', options=dict(xatol=1e-4, fatol=1e-3, maxiter=4000))
         if best is None or r.fun < best.fun:
             best = r
@@ -96,8 +102,16 @@ def index_cards(J):
     cards = {}
     for f in sorted(glob.glob(os.path.join(HERE, '..', 'Textures', 'Cloud*V2_*.json'))):
         c = json.load(open(f))
+        from PIL import Image
+        al = np.asarray(Image.open(f[:-5] + '_K.png'))[..., 3].astype(np.float64) / 255.0
+        hh, ww = al.shape
+        ys, xs = np.nonzero(al > 1.5 / 255)
+        mg = 2                                              # texel margin (bilinear / mip footprint)
+        c['bbox_uv'] = [round(max(xs.min() - mg, 0) / ww, 4), round(max(1 - (ys.max() + 1 + mg) / hh, 0), 4),
+                        round(min((xs.max() + 1 + mg) / ww, 1), 4), round(min(1 - (ys.min() - mg) / hh, 1), 4)]
+        c['coverage_of_quad'] = round(float(al.mean()), 3)
         cards[c['name']] = {k: c[k] for k in ('set', 'shape', 'size', 'cloud_base_v', 'opaque_bbox_uv', 'kscale', 'sscale',
-                                              'key_angles', 'sun_el', 'pitch', 'clipped_K', 'clipped_S') if k in c}
+                                              'key_angles', 'sun_el', 'pitch', 'clipped_K', 'clipped_S', 'bbox_uv', 'coverage_of_quad') if k in c}
     J['cards'] = cards
 
 

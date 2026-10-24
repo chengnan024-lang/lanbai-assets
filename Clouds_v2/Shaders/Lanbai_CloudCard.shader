@@ -16,8 +16,9 @@
 //  then LanbaiFog (direction-dependent fog colour = the sky's horizon), the base melt, the near-eye fade, the soft
 //  depth fade (SOFTPARTICLES_ON; hard edge without it), and a sub-pixel calm-down of thin bright rims (D-25).
 //
-//  Mesh: a quad with its pivot on the card's flat cloud base (cards_v2.json cloud_base_v): x = -0.5..0.5,
-//  y = -base..1-base; transform scale = (width m, height m, 1). _Billboard 1 = yaw billboard about the pivot facing the
+//  Mesh (builder): the card's alpha box as a quad, pivot on the flat cloud base, the full texture spanning x -0.5..0.5
+//  and y -base*aspect..(1-base)*aspect (aspect = h / w); UVs = the box. Transform scale = UNIFORM (width m, width m,
+//  width m): height follows the texture's aspect, the bounds cover the turning card (review r1 B2, R1). _Billboard 1 = yaw billboard about the pivot facing the
 //  CENTRE eye (both eyes see the same card; vertical stays vertical). _Billboard 0 = the mesh's own orientation
 //  (world-fixed panels). Queue Transparent-10; straight alpha.
 // =====================================================================================================
@@ -27,17 +28,18 @@ Shader "Lanbai/CloudCard"
     {
         [NoScaleOffset] _KeyTex ("Key - R sun 15 G sun 80 B sun 150 A coverage - sRGB on", 2D) = "black" {}
         [NoScaleOffset] _SkyTex ("Sky - R upper dome G lower dome - sRGB on", 2D) = "black" {}
-        _KScale ("Channel scales - x key - y sky", Vector) = (6, 1.5, 0, 0)
+        _KScale ("Channel scales - x key - y sky", Vector) = (3, 1.1, 0, 0)
         _KeyAngles ("Key angles deg - x R - y G - z B", Vector) = (15, 80, 150, 0)
-        _SunColor ("Sun colour x E - linear", Vector) = (6.5733, 2.3553, 0.3508, 0)
-        _SkyUpColor ("Upper dome light - linear", Vector) = (0.9995, 1.1493, 1.6336, 0)
-        _GroundColor ("Lower dome light - linear", Vector) = (0.8431, 1.0790, 1.5806, 0)
-        _SunDirFallback ("Direction to the sun - fallback when _Udon_SunDir is unset", Vector) = (0.5, 0.1045, 0.8597, 0)
+        _SunColor ("Sun colour x E - linear", Vector) = (6.3706, 2.2827, 0.3400, 0)
+        _SkyUpColor ("Upper dome light - linear", Vector) = (1.5103, 1.8199, 2.5691, 0)
+        _GroundColor ("Lower dome light - linear", Vector) = (0.3281, 0.4199, 0.6151, 0)
+        _SunDirFallback ("Direction to the sun - fallback when _Udon_SunDir is unset", Vector) = (0.4973, 0.1045, 0.8613, 0)
         _Gain ("Gain - MPB", Range(0, 4)) = 1
         _Alpha ("Alpha - MPB", Range(0, 1)) = 1
         _Mirror ("Mirror - 0 off 1 on 2 auto - MPB", Float) = 2
         [Toggle] _Billboard ("Yaw billboard to the centre eye", Float) = 1
-        _Melt ("Base melt - x from m above the pivot - y over m - z plane y - w 1 uses plane", Vector) = (-10, 60, 0, 0)
+        _Melt ("Base melt - w0 x y in UV above the cloud base - w1 x y m above world plane z", Vector) = (-0.02, 0.10, 0, 0)
+        _BaseV ("Cloud base v - from cards_v2.json - set by the builder", Float) = 0.2
         _NearFade ("Near fade - x start m - y full m", Vector) = (30, 120, 0, 0)
         _SoftFade ("Soft depth fade m - needs SOFTPARTICLES_ON", Float) = 40
         _RimTame ("Thin rim calm-down - 0..1", Range(0, 1)) = 0.6
@@ -67,7 +69,7 @@ Shader "Lanbai/CloudCard"
             sampler2D _SkyTex;
             float4 _KeyTex_TexelSize;
             float4 _KScale, _KeyAngles, _SunColor, _SkyUpColor, _GroundColor, _SunDirFallback, _Melt, _NearFade;
-            float _Billboard, _SoftFade, _RimTame;
+            float _Billboard, _SoftFade, _RimTame, _BaseV;
             UNITY_DECLARE_DEPTH_TEXTURE(_CameraDepthTexture);
 
             UNITY_INSTANCING_BUFFER_START(Props)
@@ -102,7 +104,8 @@ Shader "Lanbai/CloudCard"
                     float sy = length(unity_ObjectToWorld._m01_m11_m21);
                     float3 toEye = LanbaiCentreEyePos() - pivot;
                     float2 f = normalize(toEye.xz + float2(1e-5, 0.0));
-                    float3 right = float3(f.y, 0.0, -f.x);                // card +x as seen from the eye: to the right
+                    float3 right = float3(-f.y, 0.0, f.x);                // card +x = the viewer's right (Unity is left-handed:
+                                                                          // looking along d = -f, right = (d.z, 0, -d.x)); review r1 B1
                     w = pivot + right * (v.vertex.x * sx) + float3(0.0, v.vertex.y * sy, 0.0);
                 }
                 else
@@ -145,15 +148,17 @@ Shader "Lanbai/CloudCard"
                 float2 fp = fwidth(i.uv * _KeyTex_TexelSize.zw);
                 float texPerPx = max(fp.x, fp.y);
                 float edge = 1.0 - kt.a;
-                key *= 1.0 - _RimTame * edge * saturate(texPerPx - 1.0);
+                key *= 1.0 - _RimTame * (1.0 - w1) * edge * saturate(texPerPx - 1.0);   // only the backlit channel's rim (review r1 R)
 
                 float3 c = _SunColor.rgb * key + (_SkyUpColor.rgb * st.r + _GroundColor.rgb * st.g) * _KScale.y;
                 c *= UNITY_ACCESS_INSTANCED_PROP(Props, _Gain);
                 c = LanbaiApplyFog(c, i.wpos);
 
                 float a = kt.a * UNITY_ACCESS_INSTANCED_PROP(Props, _Alpha);
-                float baseY = (_Melt.w > 0.5) ? _Melt.z : i.pivot.y;
-                a *= smoothstep(baseY + _Melt.x, baseY + _Melt.x + max(_Melt.y, 1e-3), i.wpos.y);
+                // base melt: w = 0 in UV above the card's own flat cloud base (scale-independent; review r1);
+                //            w = 1 in metres above a world plane (e.g. the cloud plain's top) at y = _Melt.z
+                float hm = (_Melt.w > 0.5) ? (i.wpos.y - _Melt.z) : (i.uv.y - _BaseV);
+                a *= smoothstep(_Melt.x, _Melt.x + max(_Melt.y, 1e-4), hm);
                 float d = distance(i.wpos, eye);
                 a *= smoothstep(_NearFade.x, max(_NearFade.y, _NearFade.x + 1e-3), d);
             #if defined(SOFTPARTICLES_ON)

@@ -12,10 +12,10 @@
   80.0,
   150.0
  ],
- "kscale": 6.0,
- "sscale": 1.5,
+ "kscale": 3.0,
+ "sscale": 1.1,
  "clipped_K": 0.0,
- "clipped_S": 0.0,
+ "clipped_S": 8.505201403169227e-05,
  "pitch": -3.0,
  "lens": 50.0,
  "k_p999": [

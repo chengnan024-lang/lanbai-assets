@@ -1,96 +1,96 @@
 {
- "CloudV2_Bank_dawn": {
+ "CloudSeaV2_1_dawn": {
   "rel15": {
    "purple_on_card": 0.0,
-   "shadow": "#9F99A9",
-   "top": "#F1DBD0",
+   "shadow": "#CEC9D5",
+   "top": "#E4D8DE",
    "shadow_hC": [
-    304.3,
-    9.4
+    306.2,
+    6.8
    ],
-   "card_max_linear": 17.42
+   "card_max_linear": 16.5
   },
   "rel80": {
    "purple_on_card": 0.0,
-   "shadow": "#808EA5",
-   "top": "#FAE2CE",
+   "shadow": "#BAC2D2",
+   "top": "#F8E6DF",
    "shadow_hC": [
-    270.1,
-    13.6
+    271.7,
+    9.1
    ],
-   "card_max_linear": 5.12
+   "card_max_linear": 5.59
   },
   "rel150": {
    "purple_on_card": 0.0,
-   "shadow": "#E9C8AE",
-   "top": "#EDD5CA",
+   "shadow": "#D6CCD3",
+   "top": "#EBDBDB",
    "shadow_hC": [
-    65.9,
-    19.1
+    333.3,
+    5.4
    ],
-   "card_max_linear": 3.73
+   "card_max_linear": 3.69
   },
-  "clipped_K": 0.0,
-  "clipped_S": 0.0
+  "clipped_K": 1.6202524353294242e-05,
+  "clipped_S": 0.00014222215821224946
+ },
+ "CloudV2_Bank_dawn": {
+  "rel15": {
+   "purple_on_card": 0.0,
+   "shadow": "#A09EAB",
+   "top": "#F2DED6",
+   "shadow_hC": [
+    297.2,
+    7.2
+   ],
+   "card_max_linear": 17.32
+  },
+  "rel80": {
+   "purple_on_card": 0.0,
+   "shadow": "#818FA5",
+   "top": "#FAE4D2",
+   "shadow_hC": [
+    269.4,
+    13.3
+   ],
+   "card_max_linear": 5.11
+  },
+  "rel150": {
+   "purple_on_card": 0.0,
+   "shadow": "#E8C8AE",
+   "top": "#EED7CE",
+   "shadow_hC": [
+    65.6,
+    18.6
+   ],
+   "card_max_linear": 3.71
+  },
+  "clipped_K": 5.301566347777451e-06,
+  "clipped_S": 0.00011332098068374301
  },
  "CloudV2_Congestus_dawn": {
   "rel15": {
    "purple_on_card": 0.0,
-   "shadow": "#8B93A7",
-   "top": "#E5D0CA",
+   "shadow": "#8F96A8",
+   "top": "#E5D2CD",
    "shadow_hC": [
-    275.9,
-    11.4
+    274.9,
+    10.0
    ],
-   "card_max_linear": 13.96
+   "card_max_linear": 13.73
   },
   "rel80": {
    "purple_on_card": 0.0,
-   "shadow": "#8390A6",
-   "top": "#FBE3CC",
-   "shadow_hC": [
-    270.8,
-    12.9
-   ],
-   "card_max_linear": 5.27
-  },
-  "rel150": {
-   "purple_on_card": 0.0,
-   "shadow": "#EAC9AF",
-   "top": "#F0D6C7",
-   "shadow_hC": [
-    66.2,
-    19.1
-   ],
-   "card_max_linear": 3.81
-  },
-  "clipped_K": 0.0,
-  "clipped_S": 0.0
- },
- "CloudV2_Cumulus_dawn": {
-  "rel15": {
-   "purple_on_card": 0.0,
-   "shadow": "#8E96AA",
-   "top": "#DFC8CA",
-   "shadow_hC": [
-    277.1,
-    11.4
-   ],
-   "card_max_linear": 14.95
-  },
-  "rel80": {
-   "purple_on_card": 0.0,
-   "shadow": "#8693A8",
+   "shadow": "#8692A7",
    "top": "#FBE3CE",
    "shadow_hC": [
-    270.3,
-    12.9
+    269.8,
+    12.1
    ],
-   "card_max_linear": 5.17
+   "card_max_linear": 5.13
   },
   "rel150": {
    "purple_on_card": 0.0,
-   "shadow": "#EBCBB1",
+   "shadow": "#E9C9B0",
    "top": "#EFD6C9",
    "shadow_hC": [
     65.6,
@@ -98,109 +98,143 @@
    ],
    "card_max_linear": 3.86
   },
+  "clipped_K": 3.146435089044113e-06,
+  "clipped_S": 2.949782895978856e-05
+ },
+ "CloudV2_Cumulus_dawn": {
+  "rel15": {
+   "purple_on_card": 0.0,
+   "shadow": "#9196A9",
+   "top": "#DECACC",
+   "shadow_hC": [
+    282.3,
+    10.8
+   ],
+   "card_max_linear": 14.78
+  },
+  "rel80": {
+   "purple_on_card": 0.0,
+   "shadow": "#8693A8",
+   "top": "#FAE3CF",
+   "shadow_hC": [
+    270.6,
+    12.6
+   ],
+   "card_max_linear": 5.02
+  },
+  "rel150": {
+   "purple_on_card": 0.0,
+   "shadow": "#EACBB1",
+   "top": "#EED6CA",
+   "shadow_hC": [
+    66.2,
+    18.1
+   ],
+   "card_max_linear": 3.81
+  },
   "clipped_K": 0.0,
-  "clipped_S": 0.0
+  "clipped_S": 8.505201403169227e-05
  },
  "CloudV2_Puff_dawn": {
   "rel15": {
    "purple_on_card": 0.0,
-   "shadow": "#9A9AAD",
-   "top": "#EDD6CE",
+   "shadow": "#A2A4B0",
+   "top": "#EDD8D2",
    "shadow_hC": [
-    291.0,
-    10.1
+    283.3,
+    6.7
    ],
-   "card_max_linear": 14.96
+   "card_max_linear": 14.82
   },
   "rel80": {
    "purple_on_card": 0.0,
-   "shadow": "#8895AA",
-   "top": "#FAE2CF",
+   "shadow": "#8C98AD",
+   "top": "#F9E3D1",
    "shadow_hC": [
-    271.4,
-    12.7
+    271.0,
+    12.3
    ],
    "card_max_linear": 4.93
   },
   "rel150": {
    "purple_on_card": 0.0,
-   "shadow": "#EACAB2",
-   "top": "#EED5CA",
+   "shadow": "#E9CBB5",
+   "top": "#EED6CC",
    "shadow_hC": [
-    64.5,
-    17.7
+    63.0,
+    16.4
    ],
-   "card_max_linear": 3.72
+   "card_max_linear": 3.74
   },
   "clipped_K": 0.0,
-  "clipped_S": 4.7173594108961565e-06
+  "clipped_S": 7.54777505743385e-05
  },
  "CloudV2_Strato_dawn": {
   "rel15": {
    "purple_on_card": 0.0,
-   "shadow": "#D2C0C4",
-   "top": "#F0DBD4",
+   "shadow": "#DACFD6",
+   "top": "#F0DDDA",
    "shadow_hC": [
-    1.8,
-    6.9
+    335.6,
+    5.4
    ],
-   "card_max_linear": 12.36
+   "card_max_linear": 12.38
   },
   "rel80": {
    "purple_on_card": 0.0,
-   "shadow": "#A9AEC0",
-   "top": "#F6DFD1",
+   "shadow": "#BAC2D2",
+   "top": "#F6E3DA",
    "shadow_hC": [
-    280.0,
-    9.5
+    272.5,
+    9.0
    ],
-   "card_max_linear": 4.35
+   "card_max_linear": 4.45
   },
   "rel150": {
    "purple_on_card": 0.0,
-   "shadow": "#D2BFC2",
-   "top": "#E7D2CD",
+   "shadow": "#D8CDD3",
+   "top": "#E8D7D6",
    "shadow_hC": [
-    7.5,
-    7.3
+    339.2,
+    5.4
    ],
-   "card_max_linear": 3.38
+   "card_max_linear": 3.49
   },
   "clipped_K": 0.0,
-  "clipped_S": 0.0
+  "clipped_S": 3.255861908043607e-05
  },
  "CloudV2_Wisp_dawn": {
   "rel15": {
    "purple_on_card": 0.0,
-   "shadow": "#B8B4C2",
-   "top": "#FFF6E5",
+   "shadow": "#B6AFBB",
+   "top": "#FFF6E6",
    "shadow_hC": [
-    301.7,
-    7.7
+    313.6,
+    7.2
    ],
-   "card_max_linear": 17.8
+   "card_max_linear": 17.55
   },
   "rel80": {
    "purple_on_card": 0.0,
-   "shadow": "#9FABC0",
-   "top": "#F0DCD7",
+   "shadow": "#9AA4B9",
+   "top": "#EFDCD7",
    "shadow_hC": [
-    269.8,
-    12.1
+    274.0,
+    12.2
    ],
-   "card_max_linear": 3.96
+   "card_max_linear": 4.06
   },
   "rel150": {
    "purple_on_card": 0.0,
-   "shadow": "#E3CBC4",
-   "top": "#E4D3D5",
+   "shadow": "#E1C8BE",
+   "top": "#E3D3D5",
    "shadow_hC": [
-    41.5,
-    9.8
+    48.3,
+    11.1
    ],
-   "card_max_linear": 3.25
+   "card_max_linear": 3.23
   },
-  "clipped_K": 0.0,
-  "clipped_S": 0.0
+  "clipped_K": 0.0002549245306332143,
+  "clipped_S": 0.00023801627094835828
  }
 }

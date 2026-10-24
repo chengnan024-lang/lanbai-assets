@@ -6,7 +6,9 @@
 //       *_K.png : sRGB on, Alpha Is Transparency on, Clamp, mips on (Preserve Coverage off), Trilinear, aniso 2, BC7
 //       *_S.png : sRGB on, no alpha, Clamp, mips on, Trilinear, BC7
 //  2. Build Materials: reads Textures/cards_v2.json and for every card writes
-//       Generated/Mesh_<card>.asset  : a quad with its pivot on the flat cloud base (x -0.5..0.5, y -base..1-base)
+//       Generated/Mesh_<card>.asset  : the card's alpha box (bbox_uv) as a quad; the full texture would span x -0.5..0.5,
+//                                      y -base*aspect..(1-base)*aspect; pivot on the flat cloud base. Place it with a
+//                                      UNIFORM scale = card width in metres (review r1 B2).
 //       Generated/M_CloudV2_<card>.mat: Lanbai/CloudCard, textures, scales, the group's solved colours
 //     Re-runnable: assets are updated in place. The act packages (Act06_Dawn, Act08_Dusk) place the cards; their
 //     drivers write _Gain / _Alpha / _Mirror per renderer with MaterialPropertyBlocks.
@@ -119,19 +121,28 @@ namespace Lanbai.CloudsV2
                 var size = c["size"] as List<object>;
                 float aspect = System.Convert.ToSingle(size[1]) / System.Convert.ToSingle(size[0]);
 
-                // mesh: unit width, height = aspect; pivot on the cloud base
+                // mesh: the alpha box of a unit-width card (full texture: x -0.5..0.5, y -baseV*aspect..(1-baseV)*aspect);
+                // cropping to the box saves 1.5-2.5x overdraw on the transparent margins (review r1)
+                float u0 = 0f, v0 = 0f, u1 = 1f, v1 = 1f;
+                if (c.ContainsKey("bbox_uv") && c["bbox_uv"] is List<object> bb)
+                {
+                    u0 = System.Convert.ToSingle(bb[0]); v0 = System.Convert.ToSingle(bb[1]);
+                    u1 = System.Convert.ToSingle(bb[2]); v1 = System.Convert.ToSingle(bb[3]);
+                }
                 string meshPath = genDir + "/Mesh_" + name + ".asset";
                 Mesh m = AssetDatabase.LoadAssetAtPath<Mesh>(meshPath);
                 bool newMesh = m == null;
                 if (newMesh)
                     m = new Mesh();
                 m.Clear();
-                float y0 = -baseV * aspect, y1 = (1f - baseV) * aspect;
-                m.vertices = new[] { new Vector3(-0.5f, y0, 0), new Vector3(0.5f, y0, 0), new Vector3(0.5f, y1, 0), new Vector3(-0.5f, y1, 0) };
-                m.uv = new[] { new Vector2(0, 0), new Vector2(1, 0), new Vector2(1, 1), new Vector2(0, 1) };
+                float x0 = u0 - 0.5f, x1 = u1 - 0.5f;
+                float y0 = (v0 - baseV) * aspect, y1 = (v1 - baseV) * aspect;
+                m.vertices = new[] { new Vector3(x0, y0, 0), new Vector3(x1, y0, 0), new Vector3(x1, y1, 0), new Vector3(x0, y1, 0) };
+                m.uv = new[] { new Vector2(u0, v0), new Vector2(u1, v0), new Vector2(u1, v1), new Vector2(u0, v1) };
                 m.triangles = new[] { 0, 2, 1, 0, 3, 2 };
                 m.RecalculateNormals();
-                m.bounds = new Bounds(new Vector3(0, 0.5f * (y0 + y1), 0), new Vector3(1.5f, 1.5f * (y1 - y0) + 0.5f, 1.5f));
+                // the billboard turns the quad about the pivot: bounds = a cylinder around it (radius 0.5)
+                m.bounds = new Bounds(new Vector3(0, 0.5f * (y0 + y1), 0), new Vector3(1.05f, (y1 - y0) + 0.05f, 1.05f));
                 if (newMesh)
                     AssetDatabase.CreateAsset(m, meshPath);
 
@@ -145,7 +156,13 @@ namespace Lanbai.CloudsV2
                 mat.shader = sh;
                 mat.SetTexture("_KeyTex", AssetDatabase.LoadAssetAtPath<Texture2D>(texDir + "/" + name + "_K.png"));
                 mat.SetTexture("_SkyTex", AssetDatabase.LoadAssetAtPath<Texture2D>(texDir + "/" + name + "_S.png"));
+                mat.SetFloat("_BaseV", baseV);
                 mat.SetVector("_KScale", new Vector4(System.Convert.ToSingle(c["kscale"]), System.Convert.ToSingle(c["sscale"]), 0, 0));
+                if (!colours.ContainsKey(Group(set)))
+                {
+                    log.AppendLine(name + "  SKIPPED: no colours for group '" + Group(set) + "' yet (run card_solve.py)");
+                    continue;
+                }
                 var col = colours[Group(set)] as Dictionary<string, object>;
                 mat.SetVector("_SunColor", Vec(col["SunColor"] as List<object>));
                 mat.SetVector("_SkyUpColor", Vec(col["SkyUpColor"] as List<object>));
