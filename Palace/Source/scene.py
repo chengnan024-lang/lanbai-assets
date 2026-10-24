@@ -24,7 +24,8 @@ from kit.common import UB  # noqa: E402
 
 import json as _json
 _T = _json.load(open(os.path.join(HERE, 'tuning.json')))
-PARAMS = dict(warm_I=_T['warm_I'], warm_r=_T['warm_range'], indigo_I=_T['indigo_I'], indigo_r=_T['indigo_range'], door_W=_T['door_area_I'], pour_ratio=_T.get('pour_ratio', 0.6))
+FISH_T = 748.26
+PARAMS = dict(warm_I=_T['warm_I'], warm_r=_T['warm_range'], indigo_I=_T['indigo_I'], indigo_r=_T['indigo_range'], door_W=_T['door_area_I'], pour_ratio=_T.get('pour_ratio', 0.0))
 
 
 def try_kit(name):
@@ -41,7 +42,7 @@ def place(ub, pos, yaw_deg=0.0):
     return ub.transformed(R, pos)
 
 
-def build(t_fish=748.26, lod_far=False):
+def build(t_fish=None, lod_far=False):
     sc = bl.reset()
     M = materials.build_all()
     col = bpy.data.collections.new('Palace')
@@ -81,7 +82,7 @@ def build(t_fish=748.26, lod_far=False):
             pass
     # 鱼
     poem = poem_point()
-    fu = fish.place(t_fish, L.FISH['centre'], poem)
+    fu = fish.place(t_fish if t_fish is not None else FISH_T, L.FISH['centre'], poem)
     if fu.V:
         fu.build('Fish', col, M)
     split_doorglow(col, M)
@@ -93,7 +94,7 @@ def add_cones(col):
     """门口 3 张锥形光卡（与 export_fbx.g_door 同一几何）。"""
     import export_fbx as X
     u = X.door_cones_ub()
-    m = materials.cone_material('M_07b_DoorCone', tuple(3.0 * c for c in materials.s2l('#FFB74D')))
+    m = materials.cone_material('M_07b_DoorCone', tuple(1.6 * c for c in materials.s2l('#FFB74D')), alpha=0.03)
     ob = u.build('DoorCones', col, {'DoorGlow': m})
     ob.lightgroup = 'doorglow'
     ob.visible_diffuse = ob.visible_glossy = ob.visible_transmission = ob.visible_volume_scatter = ob.visible_shadow = False
@@ -132,7 +133,8 @@ def add_lights(p=PARAMS):
         a = bl.point_light_unity('Lw_' + l['id'], fp, lin('#FF9C2F'), p['warm_I'], p['warm_r'], radius=0.10)
         a.lightgroup = 'warm'
         a.visible_glossy = False                      # 烘焙的光只有漫反射；高光由下面的解析灯给（Unity：_Udon_Lamp）
-        b = bl.point_light_unity('Li_' + l['id'], (fp[0], fp[1] + _T.get('indigo_lift', 0.3), fp[2]), lin('#2A557B'), p['indigo_I'], p['indigo_r'], radius=0.10)
+        b = bl.point_light_unity('Li_' + l['id'], (fp[0], fp[1] + _T.get('indigo_lift', 0.3), fp[2]), lin('#2A557B'),
+                                 0.0 if l['group'] == 'que' else p['indigo_I'], p['indigo_r'], radius=0.10)   # 阙前的灯不加靛光（第 5 轮）
         b.lightgroup = 'indigo'
         b.data.use_shadow = False
         b.visible_glossy = False
@@ -148,6 +150,25 @@ def add_lights(p=PARAMS):
         co.visible_volume_scatter = False
         co.lightgroup = 'warm'
         bpy.context.scene.collection.objects.link(co)
+        # 珍珠母的高光 ×nacre_spec_gain（Unity：M_07b_FishScale 的 _LampGain）：同样的灯，灯光链接只照鱼鳞屋
+        g = _T.get('nacre_spec_gain', 1.0)
+        if g > 1.0:
+            c2 = bpy.data.lights.new('Ln_' + l['id'], 'POINT')
+            c2.color = lin('#FF9C2F')
+            c2.energy = 4.0 * math.pi ** 2 * _T.get('spec_I', 5.46) * (g - 1.0)
+            c2.shadow_soft_size = 0.10
+            o4 = bpy.data.objects.new('Ln_' + l['id'], c2)
+            o4.location = Vector(bl.u2b(fp))
+            o4.visible_diffuse = False
+            o4.visible_transmission = False
+            o4.visible_volume_scatter = False
+            o4.lightgroup = 'warm'
+            bpy.context.scene.collection.objects.link(o4)
+            hc = bpy.data.collections.get('LinkHouses')
+            if hc is None:
+                hc = bpy.data.collections.new('LinkHouses')
+                hc.objects.link(bpy.data.objects['Houses'])
+            o4.light_linking.receiver_collection = hc
     # 门溢出的光：门洞里一盏面光朝外（−z）
     hall = L.HALL
     A = bpy.data.lights.new('DoorSpill', 'AREA')
@@ -161,7 +182,23 @@ def add_lights(p=PARAMS):
     o.lightgroup = 'door'
     o.visible_glossy = False
     bpy.context.scene.collection.objects.link(o)
-    # 门光顺着台阶往下铺：门楣处一盏面光，朝外、向下 35°（Unity：第二盏 Baked 面光，README §4）
+    # 门作为解析线光源（Unity：驱动写进 _Udon_Lamp7，竖直线光源 = 门洞高）：只进高光，湿石面上的亮带
+    A3 = bpy.data.lights.new('DoorSpec', 'AREA')
+    A3.shape = 'RECTANGLE'
+    A3.size, A3.size_y = 0.3, hall['door_size'][1]
+    A3.color = lin('#FFB74D')
+    A3.energy = 4.0 * math.pi ** 2 * _T.get('door_spec_I', 60.0) * 0.25
+    o3 = bpy.data.objects.new('DoorSpec', A3)
+    o3.location = Vector(bl.u2b((hall['door_x'], L.PLAT['height_m'] + hall['door_size'][1] / 2, L.DOOR_Z + 0.9)))
+    o3.rotation_euler = Vector(bl.u2b((0, 0, -1))).to_track_quat('-Z', 'Y').to_euler()
+    o3.visible_diffuse = False
+    o3.visible_transmission = False
+    o3.visible_volume_scatter = False
+    o3.lightgroup = 'door'
+    bpy.context.scene.collection.objects.link(o3)
+    if p.get('pour_ratio', 0.0) <= 0.0:
+        return
+    # 门光顺着台阶往下铺：门楣处一盏面光，朝外、向下 35°（第 3 轮；第 4 轮去掉：阴影发暖）
     A2 = bpy.data.lights.new('DoorPour', 'AREA')
     A2.shape = 'RECTANGLE'
     A2.size, A2.size_y = hall['door_size'][0] * 0.9, 1.0
@@ -229,7 +266,9 @@ if __name__ == '__main__':
     ap.add_argument('--save-blend', default='')
     a = ap.parse_args(sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else sys.argv[1:])
     os.makedirs(a.out, exist_ok=True)
-    build()
+    from shots import SHOTS as _S
+    FISH_T = _S[a.shots.split(',')[0]][0]          # 鱼按第一张机位的时刻摆
+    build(t_fish=FISH_T)
     setup_world()
     add_lights()
     bus = add_bus()

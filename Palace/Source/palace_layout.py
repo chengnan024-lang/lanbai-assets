@@ -31,7 +31,12 @@ HALL = FRAME['hall']
 PLAT = HALL['platform']
 DOOR_Z = HALL['front_z']
 QUE = FRAME['que']
-LAMPS = FRAME['lamps']
+LAMPS = list(FRAME['lamps'])
+# 第 4 轮（美术评审 r3 阻断 6）：圣经“紫贝阙……宝贝壳贴面只在它的灯旁泛出 #7A4A6E”——每座阙前各一盏“它的灯”（宫殿加的，海的约定里没有）
+QUE_LAMPS = [dict(id='Lamp_Q%d' % (k + 1), group='que', pos=[q['pos'][0], 0.0, round(q['pos'][2] - q['footprint'][1] / 2 - 1.6, 3)],
+                  yaw_deg=0.0, height_m=1.85, flame_pos=[q['pos'][0], 1.62, round(q['pos'][2] - q['footprint'][1] / 2 - 1.6, 3)])
+             for k, q in enumerate(FRAME['que'])]
+LAMPS += QUE_LAMPS
 HOUSES = FRAME['fish_houses']
 WEEDS = FRAME['seaweed']
 FISH = FRAME['fish']

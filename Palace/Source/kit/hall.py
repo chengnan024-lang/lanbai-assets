@@ -763,12 +763,19 @@ def _parts(lod=0):
             t = (dx1, PY, hz)
         for nm, u in lp:
             add(nm, solid(u.transformed(M, t)))
-    # 门里的暖光屏（不碰门扇：门扇最深到 ZF+0.42+2.1·sin70 ≈ ZF+2.4）
-    gz = ZF + 5.0
+    # 门里的暖光（第 4 轮，美术评审 r3 阻断 1）：整个门后暗腔的内衬都发光（背面、两侧、顶、地），朝里；
+    # 门扇在它前面读成暗剪影，从任何角度看门洞里都是光，看不见实体墙。UV0.y = (y − 台基面) / 门高（shader 的竖向渐变）。
+    lx0, lx1 = -21.0 + 0.02, -15.0 - 0.02
+    ly0, ly1 = PY + 0.02, PY + 8.5 - 0.02
+    lz0, lz1 = ZF + WALL_T + 0.02, 348.6 - 0.02
     g = UB()
-    g.box((dx0, PY, gz), (dx1, PY + DOOR_H, gz + 0.1), 'LacquerBlack', skip=('-z',))
-    g.quad((dx0, PY, gz), (dx0, PY + DOOR_H, gz), (dx1, PY + DOOR_H, gz), (dx1, PY, gz), 'DoorGlow')
-    add('doorglow', solid(g))
+    V = [(lx0, ly0, lz0), (lx1, ly0, lz0), (lx1, ly1, lz0), (lx0, ly1, lz0), (lx0, ly0, lz1), (lx1, ly0, lz1), (lx1, ly1, lz1), (lx0, ly1, lz1)]
+    faces = [(4, 7, 6, 5), (0, 4, 5, 1), (3, 2, 6, 7), (1, 5, 6, 2), (0, 3, 7, 4)]   # 朝里：后、地、顶、右、左（前面是门洞，不封）
+    for f in faces:
+        P = [V[i] for i in f]
+        uv = [((p[0] + p[2]) / 4.0, (p[1] - PY) / DOOR_H) for p in P]
+        g.add(P, [(0, 1, 2, 3)], 'DoorGlow', [uv])
+    add('doorglow', g)
 
     # ---------------------------------------------------------- 前檐柱廊
     xs = [X0 + i * BAY for i in range(BAYS + 1)]

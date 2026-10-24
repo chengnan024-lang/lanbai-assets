@@ -7,32 +7,31 @@
   "Weeds_LOD0": 1200
  },
  "Palace_Lamps": {
-  "Lamps0_LOD0": 6660,
-  "Lamps0_LOD1": 2595,
-  "Lamps1_LOD0": 6660,
-  "Lamps1_LOD1": 2595,
-  "Lamps2_LOD0": 6660,
-  "Lamps2_LOD1": 2595,
-  "Lamps3_LOD0": 6660,
-  "Lamps3_LOD1": 2595,
-  "Lamps4_LOD0": 6660,
-  "Lamps4_LOD1": 2595,
-  "Lamps5_LOD0": 6660,
-  "Lamps5_LOD1": 2595
+  "Lamps0_LOD0": 7992,
+  "Lamps0_LOD1": 3114,
+  "Lamps1_LOD0": 7992,
+  "Lamps1_LOD1": 3114,
+  "Lamps2_LOD0": 7992,
+  "Lamps2_LOD1": 3114,
+  "Lamps3_LOD0": 7992,
+  "Lamps3_LOD1": 3114,
+  "Lamps4_LOD0": 7992,
+  "Lamps4_LOD1": 3114,
+  "Lamps5_LOD0": 2664,
+  "Lamps5_LOD1": 1038
  },
  "Palace_Fish": {
   "Fish_LOD0": 100500
  },
  "Palace_Flames": {
-  "Flames_LOD0": 120
+  "Flames_LOD0": 128
  },
  "Palace_Door": {
-  "DoorGlow_LOD0": 2,
   "DoorCones_LOD0": 6
  },
  "Palace_Hall": {
-  "Hall_LOD0": 62128,
-  "Hall_LOD1": 9684
+  "Hall_LOD0": 62126,
+  "Hall_LOD1": 9682
  },
  "Palace_Que": {
   "Que_LOD0": 13944,

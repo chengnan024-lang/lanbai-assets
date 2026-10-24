@@ -6,6 +6,7 @@
 //  网格（Palace/Models/Palace_Flames.fbx，搭建脚本另建）：每盏灯两张四边形，四个顶点都在灯焰中心；
 //    UV0 = 角（−1..1），UV1.x = 0 火 / 1 晕，UV1.y = 每盏的相位 0..1。顶点 shader 把它们展开成朝两眼中点的公告板：
 //    火 = 竖直的柱状公告板（只绕 y 转），晕 = 球状公告板。**深度测试，ZWrite Off，加色**。
+//  颜色（第 4 轮）：焰身 = 金 #E0A860 在 S7b 下的线性值 × 2.2，芯 = 白热；不用 #FF5E2A @ +3.11（它远了、暗了会露出粉红）。
 //  _FogMode 2（圣经 §1.6“天上的东西不吃雾”，§6·7b 灯焰用无雾衰减）：颜色 × exp(−d · _Atten)，_Atten 0.004；不吃 _Udon_PalaceVeil
 //  （从下面看它们就是头顶的星座，D-17 / D-29）。远处的火小于 1.5 像素时按面积守恒放大（亮度 / 面积），
 //  亮度按 1/s 补偿（不是面积守恒的 1/s²：远处的灯焰要读成星），所以 30 盏灯在任何距离都是稳定、分得清的点，不会闪烁（D-29 第 4 条）。
@@ -16,10 +17,12 @@ Shader "Lanbai/PalaceFlame"
     Properties
     {
         _FlipTex ("Flame flipbook 4x2", 2D) = "black" {}
-        _FlameColor ("Flame colour linear  fill FF5E2A at plus 3.11", Vector) = (8.65, 1.00, 0.20, 0)
+        _FlameColor ("Flame body linear  gold E0A860 in S7b x 2.2", Vector) = (3.07, 1.18, 0.31, 0)
+        _FlameCore ("Flame core linear  white hot", Vector) = (2.6, 2.13, 1.43, 0)
         _FlameSize ("Flame half size m  x y", Vector) = (0.09, 0.19, 0, 0)
         _HaloRadius ("Halo radius m", Float) = 1.5
-        _HaloWarm ("Halo warm core gain", Float) = 0.06
+        _HaloWarm ("Halo warm core gain", Float) = 0.05
+        _SoftFade ("Soft particle fade m", Float) = 1.0
         _HaloMid ("Halo indigo mid linear  fill 446282", Vector) = (0.0578, 0.1221, 0.2232, 0)
         _Atten ("Attenuation per m  FogMode 2", Float) = 0.004
         _FPS ("Flipbook frames per second", Float) = 6
@@ -41,13 +44,15 @@ Shader "Lanbai/PalaceFlame"
             #pragma fragment frag
             #pragma target 3.5
             #pragma multi_compile_instancing
+            #pragma multi_compile _ SOFTPARTICLES_ON
             #include "UnityCG.cginc"
             #include "Assets/Lanbai/Common/Shaders/LanbaiVR.cginc"
             #include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc"
 
             sampler2D _FlipTex;
-            float4 _FlameColor, _FlameSize, _HaloMid;
-            float _HaloRadius, _HaloWarm, _Atten, _FPS, _MinPixels, _Gain;
+            float4 _FlameColor, _FlameCore, _FlameSize, _HaloMid;
+            float _HaloRadius, _HaloWarm, _Atten, _FPS, _MinPixels, _Gain, _SoftFade;
+            UNITY_DECLARE_DEPTH_TEXTURE(_CameraDepthTexture);
 
             struct appdata
             {
@@ -61,6 +66,7 @@ Shader "Lanbai/PalaceFlame"
                 float4 pos : SV_POSITION;
                 float2 corner : TEXCOORD0;
                 float4 info : TEXCOORD1;     // x 种类, y 相位, z 衰减 × 面积补偿, w —
+                float4 projPos : TEXCOORD2;
                 UNITY_VERTEX_OUTPUT_STEREO
             };
 
@@ -89,6 +95,8 @@ Shader "Lanbai/PalaceFlame"
                 size *= s;
                 float3 p = c + right * v.uv0.x * size.x + upB * v.uv0.y * size.y;
                 o.pos = UnityWorldToClipPos(p);
+                o.projPos = ComputeScreenPos(o.pos);
+                COMPUTE_EYEDEPTH(o.projPos.z);
                 o.corner = v.uv0;
                 o.info = float4(v.uv1.x, v.uv1.y, exp(-_Atten * d) / s, 0);     // 1/s 而不是 1/s²：远处的灯焰读成星（比面积守恒亮，D-29 第 4 条“稳定、分得清的点”）
                 return o;
@@ -101,10 +109,15 @@ Shader "Lanbai/PalaceFlame"
                 if (i.info.x > 0.5)
                 {
                     float r = length(i.corner);
-                    float warm = exp(-(r / 0.10) * (r / 0.10));
-                    float ind = saturate(1.0 - r);
-                    ind *= ind;
-                    col = warm * _FlameColor.rgb * _HaloWarm + ind * _HaloMid.rgb;
+                    // 第 4 轮：暖芯很小，靛环从 0.12 r 才起，两者不重叠（加色混出丁香紫，美术评审 r3 #4）
+                    float warm = exp(-(r / 0.08) * (r / 0.08));
+                    float ring = smoothstep(0.12, 0.40, r) * saturate(1.0 - r) * saturate(1.0 - r);
+                    col = warm * _FlameColor.rgb * _HaloWarm + ring * _HaloMid.rgb * 1.4;
+                    #if defined(SOFTPARTICLES_ON)
+                        // 软粒子：靠近别的面淡出，不在地面上切成半月（关掉时退回硬边，圣经 §1.6）
+                        float sceneZ = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE_PROJ(_CameraDepthTexture, UNITY_PROJ_COORD(i.projPos)));
+                        col *= saturate((sceneZ - i.projPos.z) / max(_SoftFade, 1e-3) + 0.6);
+                    #endif
                 }
                 else
                 {
@@ -116,8 +129,9 @@ Shader "Lanbai/PalaceFlame"
                     // 图集 4×2：帧 0–3 在图的上半（Unity 的 v 从下往上，所以 v 在 0.5..1），帧 4–7 在下半
                     float2 a0 = float2((fmod(k0, 4.0) + uvl.x) / 4.0, (uvl.y + (k0 < 4.0 ? 1.0 : 0.0)) * 0.5);
                     float2 a1 = float2((fmod(k1, 4.0) + uvl.x) / 4.0, (uvl.y + (k1 < 4.0 ? 1.0 : 0.0)) * 0.5);
-                    float m = lerp(tex2D(_FlipTex, a0).r, tex2D(_FlipTex, a1).r, w);
-                    col = m * _FlameColor.rgb;
+                    float m = lerp(tex2D(_FlipTex, a0).r, tex2D(_FlipTex, a1).r, w) * 0.6;
+                    float m2 = m * m;
+                    col = m * _FlameColor.rgb + m2 * m2 * 4.0 * _FlameCore.rgb;     // 金的焰身 + 白热的芯（不靠色调映射的肩部变金）
                 }
                 return float4(col * i.info.z * _Gain, 1.0);
             }

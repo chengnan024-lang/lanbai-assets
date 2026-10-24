@@ -3,7 +3,7 @@
 //
 //  !!! WRITTEN WITHOUT A UNITY COMPILER (cloud side). Checked with Common/Tools~/compile_check, never in Unity. !!!
 //
-//  _Additive 0：门里那块竖屏，不透明，颜色 × exp(−d · _Atten)（_FogMode 2：门光从神道起点就是两列灯汇聚的消失点，§6·7b）。
+//  _Additive 0：门后暗腔的发光内衬（第 4 轮：整腔都发光，门扇读成暗剪影），不透明，竖向渐变 _Grad，颜色 × exp(−d · _Atten)（_FogMode 2：门光从神道起点就是两列灯汇聚的消失点，§6·7b）。
 //  _Additive 1：门口的锥形光卡，加色；UV0.y = 沿锥 0（门口）..1（20 m 外），UV0.x = 横向 0..1；侧着看淡出。
 //  两种都吃 _Udon_PalaceVeil（门是建筑的一部分：从台地下面看，罩进雾里）。
 // =====================================================================================================
@@ -11,7 +11,8 @@ Shader "Lanbai/PalaceGlow"
 {
     Properties
     {
-        _Glow ("Glow linear  FFB74D x 3", Vector) = (3.0, 1.43, 0.22, 0)
+        _Glow ("Glow linear  FFB74D x 1.6", Vector) = (1.6, 0.76, 0.12, 0)
+        _Grad ("Vertical gradient  bottom top multipliers", Vector) = (1.15, 0.7, 0, 0)
         _Alpha ("Cone card alpha", Float) = 0.06
         _Atten ("Attenuation per m  FogMode 2", Float) = 0.004
         [Toggle] _Additive ("Additive cone card", Float) = 0
@@ -40,7 +41,7 @@ Shader "Lanbai/PalaceGlow"
             #include "Assets/Lanbai/Common/Shaders/LanbaiFog.cginc"
             #include "LanbaiPalace.cginc"
 
-            float4 _Glow;
+            float4 _Glow, _Grad;
             float _Alpha, _Atten, _Additive, _Gain;
 
             struct appdata
@@ -79,6 +80,8 @@ Shader "Lanbai/PalaceGlow"
                 float d = length(eye - i.posWS);
                 float veil = LanbaiPalaceVeil(i.posWS, eye);
                 float3 col = _Glow.rgb * exp(-_Atten * d) * _Gain;
+                if (_Additive < 0.5)
+                    col *= lerp(_Grad.x, _Grad.y, saturate(i.uv.y));     // 门里的光：下亮上暗（UV0.y = 高度 / 门高）
                 if (_Additive > 0.5)
                 {
                     float along = saturate(1.0 - i.uv.y);

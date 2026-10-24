@@ -210,4 +210,5 @@ def render_setup(w=960, h=540, samples=64, passes=True):
     vl.use_pass_z = True
     vl.use_pass_object_index = True
     vl.use_pass_diffuse_color = True
+    vl.use_pass_normal = True
     return sc

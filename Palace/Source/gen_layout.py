@@ -24,14 +24,14 @@ def main():
     T = TUNE
     terrace_depth = F['frame']['terrace_top_depth_m']
     lamps = []
-    for l in F['lamps']:
+    for l in L.LAMPS:
         fp = l['flame_pos']
         lamps.append(dict(id=l['id'], group=l['group'], pos=l['pos'], height_m=l['height_m'], flame_pos=fp,
                           abreast_t=l.get('abreast_t'),
                           baked=[dict(kind='warm', pos=fp, color='#FF9C2F', range_m=T['warm_range'], intensity=T['warm_I'],
                                       shadows='soft', mode='Baked'),
                                  dict(kind='indigo', pos=[fp[0], round(fp[1] + T.get('indigo_lift', 0.3), 3), fp[2]], color='#2A557B', range_m=T['indigo_range'],
-                                      intensity=T['indigo_I'], shadows='none', mode='Baked')]))
+                                      intensity=0.0 if l['group'] == 'que' else T['indigo_I'], shadows='none', mode='Baked')]))
     H = F['hall']
     door_spill = dict(type='Area (Baked)', shape='rectangle', size=[round(H['door_size'][0] * 0.95, 2), round(H['door_size'][1] * 0.95, 2)],
                       pos=[H['door_x'], round(L.PLAT['height_m'] + H['door_size'][1] / 2, 3), round(L.DOOR_Z + 0.6, 3)],
@@ -50,6 +50,10 @@ def main():
         specks=F['specks'], palace_veil=dict(name='_Udon_PalaceVeil', writer='海（第 7 幕驱动）', readers=['Lanbai/Palace', 'Lanbai/PalaceGlow'],
                                               not_readers=['Lanbai/PalaceFlame（灯焰从下面看就是星座）', 'Lanbai/PalaceFish']),
         lamps=lamps, door_spill=door_spill,
+        que_lamps_note='Lamp_Q1 / Lamp_Q2 是宫殿加的（海的约定里没有）：圣经“紫贝阙……宝贝壳贴面只在它的灯旁泛出 #7A4A6E”，每座阙前 1.6 m 一盏（第 4 轮，美术评审 r3 阻断 6）。头顶星座仍是神道 24 + 台基 6 = 30 盏（这两盏在阙前，F7p 时远在 260 m 后）',
+        door_analytic=dict(slot='_Udon_Lamp7', centre=[H['door_x'], round(L.PLAT['height_m'] + H['door_size'][1] / 2, 3), round(L.DOOR_Z + 0.9, 3)],
+                           half_height=H['door_size'][1] / 2, intensity=T.get('door_spec_I', 60.0), color='#FFB74D', radius_m=0.6, dir=[0, 0, -1, 0],
+                           note='门作为竖直线光源只出高光：湿石面（台基面、台阶）上的亮带。门的漫反射只留 ×0.35 的面光（阴影不发暖，§1.3 第 2 条）'),
         door_glow=dict(color='#FFB74D', gain=3.0, atten=0.004, plane_z=round(L.DOOR_Z + 5.0, 2), cones=dict(count=3, length_m=20.0, alpha=0.06)),
         flames=dict(shader='Lanbai/PalaceFlame', flame_fill='#FF5E2A @ +3.11', flame_linear=[round(c * 2 ** 3.11, 4) for c in lin('#FF5E2A')],
                     screen='#FFC46A', halo_radius_m=1.5, halo_mid_fill='#446282', atten=0.004, fps=6, min_pixels=1.2),
@@ -67,21 +71,24 @@ def main():
     # ---- C# 数据
     def arr(a):
         return '{ ' + ', '.join('%.5ff' % x for x in a) + ' }'
-    flames = [c for l in F['lamps'] for c in l['flame_pos']]
+    flames = [c for l in L.LAMPS for c in l['flame_pos']]
     cs = []
     cs.append('// 生成的（Palace/Source/gen_layout.py），不要手改。数据源 = Palace/PalaceLayout.json')
     cs.append('public static class LanbaiPalaceData')
     cs.append('{')
     cs.append('    public const float TerraceDepth = %.4ff;' % terrace_depth)
     cs.append('    public static readonly float[] Flames = %s;' % arr(flames))
-    cs.append('    public static readonly string[] LampIds = { %s };' % ', '.join('"%s"' % l['id'] for l in F['lamps']))
+    cs.append('    public static readonly bool[] LampIndigo = { %s };   // 阙前的两盏不加靛光' % ', '.join('false' if l['group'] == 'que' else 'true' for l in L.LAMPS))
+    cs.append('    public static readonly string[] LampIds = { %s };' % ', '.join('"%s"' % l['id'] for l in L.LAMPS))
+    cs.append('    public static readonly float[] DoorCentre = %s;' % arr([H['door_x'], L.PLAT['height_m'] + H['door_size'][1] / 2, L.DOOR_Z + 0.9]))
+    cs.append('    public const float DoorHalfHeight = %.3ff, DoorSpecI = %.3ff, NacreLampGain = %.2ff;' % (H['door_size'][1] / 2, T.get('door_spec_I', 60.0), T.get('nacre_spec_gain', 1.0)))
     cs.append('    public const float WarmI = %.4ff, WarmRange = %.3ff, IndigoI = %.4ff, IndigoRange = %.3ff, IndigoLift = %.2ff;' % (T['warm_I'], T['warm_range'], T['indigo_I'], T['indigo_range'], T.get('indigo_lift', 0.3)))
     cs.append('    public static readonly float[] WarmColor = %s;   // 线性 #FF9C2F' % arr(lin('#FF9C2F')))
     cs.append('    public static readonly float[] IndigoColor = %s;   // 线性 #2A557B' % arr(lin('#2A557B')))
     cs.append('    public static readonly float[] DoorSpillPos = %s;' % arr(door_spill['pos']))
     cs.append('    public static readonly float[] DoorSpillSize = %s;' % arr(door_spill['size']))
     cs.append('    public static readonly float[] DoorColor = %s;   // 线性 #FFB74D' % arr(lin('#FFB74D')))
-    cs.append('    public const float DoorAreaI = %.4ff, PourRatio = %.3ff;' % (T['door_area_I'], T.get('pour_ratio', 0.6)))
+    cs.append('    public static readonly float DoorAreaI = %.4ff, PourRatio = %.3ff;' % (T['door_area_I'], T.get('pour_ratio', 0.6)))
     pour = [H['door_x'], L.PLAT['height_m'] + H['door_size'][1] - 0.6, L.DOOR_Z + 0.3]
     cs.append('    public static readonly float[] DoorPourPos = %s;   // 门楣处，朝外向下 35°' % arr(pour))
     cs.append('    public static readonly float[] AmbSky = %s, AmbEquator = %s, AmbGround = %s;' % (arr(lin('#0E3050')), arr(lin('#0A2238')), arr(lin('#1A1422'))))

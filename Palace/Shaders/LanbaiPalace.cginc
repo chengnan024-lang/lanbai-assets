@@ -50,16 +50,35 @@ inline float LanbaiSilt(float3 posWS, float3 nWS, float coverage, float scale)
     return up * m;
 }
 
-// ---- 一盏点光的 GGX 高光（Unity Standard 约定：spec = D·Vis·F·π·E·NdotL）
-inline float3 LanbaiPalaceSpecOne(float4 lamp, float4 colR, float3 P, float3 N, float3 V, float alpha, float3 F0)
+// ---- 一盏解析灯的 GGX 高光（Unity Standard 约定：spec = D·Vis·F·π·E·NdotL）。点光，或 axis ≠ 0 时的线光源
+//      （Karis 2013：线段上离反射射线最近的点作代表点，瓣按半长放宽；与 Rain/Shaders/LanbaiLamps.cginc 同义）；
+//      dirW.w > −0.999 时只照 dirW 方向的锥（门：朝外的半球）。
+inline float3 LanbaiPalaceSpecOne(float4 lamp, float4 colR, float4 axis, float4 dirW, float3 P, float3 N, float3 V, float alpha, float3 F0)
 {
     if (lamp.w <= 0.0) return 0;
-    float3 Lv = lamp.xyz - P;
+    float3 toC = lamp.xyz - P;
+    float3 R = reflect(-V, N);
+    float3 Lv = toC;
+    float3 seg = 2.0 * axis.xyz;
+    float segLen2 = dot(seg, seg);
+    float lineNorm = 1.0;
+    float d2c = max(dot(toC, toC), 1e-4);
+    if (segLen2 > 1e-6)
+    {
+        float3 L0 = toC - axis.xyz;
+        float RoS = dot(R, seg);
+        float tt = saturate((dot(R, L0) * RoS - dot(L0, seg)) / max(segLen2 - RoS * RoS, 1e-6));
+        Lv = L0 + seg * tt;
+        lineNorm = alpha / saturate(alpha + 0.5 * sqrt(segLen2) / (2.0 * sqrt(d2c)));
+    }
     float d2 = max(dot(Lv, Lv), 1e-4);
     float3 L = Lv * rsqrt(d2);
     float NdotL = saturate(dot(N, L));
     if (NdotL <= 0.0) return 0;
-    float a = saturate(alpha + colR.a * 0.5 * rsqrt(d2));          // 球光源放宽（Karis 2013）
+    float cone = 1.0;
+    if (dirW.w > -0.999)
+        cone = smoothstep(dirW.w - 0.08, dirW.w + 0.08, dot(-L, dirW.xyz));
+    float a = saturate(alpha + colR.a * 0.5 * rsqrt(d2));          // 球光源放宽
     float a2 = a * a;
     float3 H = normalize(L + V);
     float NdotH = saturate(dot(N, H));
@@ -70,21 +89,21 @@ inline float3 LanbaiPalaceSpecOne(float4 lamp, float4 colR, float3 P, float3 N, 
     float k = a * 0.5;
     float Vis = 0.25 / ((NdotL * (1.0 - k) + k) * (NdotV * (1.0 - k) + k) + 1e-5);
     float3 F = F0 + (1.0 - F0) * pow(1.0 - LdotH, 5.0);
-    float E = lamp.w / d2;
-    return D * Vis * F * UNITY_PI * NdotL * E * colR.rgb;
+    float E = lamp.w / d2c;
+    return D * Vis * F * UNITY_PI * NdotL * E * colR.rgb * lineNorm * cone;
 }
 
 inline float3 LanbaiPalaceLamps(float3 P, float3 N, float3 V, float alpha, float3 F0)
 {
     float3 s = 0;
-    s += LanbaiPalaceSpecOne(_Udon_Lamp0, _Udon_LampColor0, P, N, V, alpha, F0);
-    s += LanbaiPalaceSpecOne(_Udon_Lamp1, _Udon_LampColor1, P, N, V, alpha, F0);
-    s += LanbaiPalaceSpecOne(_Udon_Lamp2, _Udon_LampColor2, P, N, V, alpha, F0);
-    s += LanbaiPalaceSpecOne(_Udon_Lamp3, _Udon_LampColor3, P, N, V, alpha, F0);
-    s += LanbaiPalaceSpecOne(_Udon_Lamp4, _Udon_LampColor4, P, N, V, alpha, F0);
-    s += LanbaiPalaceSpecOne(_Udon_Lamp5, _Udon_LampColor5, P, N, V, alpha, F0);
-    s += LanbaiPalaceSpecOne(_Udon_Lamp6, _Udon_LampColor6, P, N, V, alpha, F0);
-    s += LanbaiPalaceSpecOne(_Udon_Lamp7, _Udon_LampColor7, P, N, V, alpha, F0);
+    s += LanbaiPalaceSpecOne(_Udon_Lamp0, _Udon_LampColor0, _Udon_LampAxis0, _Udon_LampDir0, P, N, V, alpha, F0);
+    s += LanbaiPalaceSpecOne(_Udon_Lamp1, _Udon_LampColor1, _Udon_LampAxis1, _Udon_LampDir1, P, N, V, alpha, F0);
+    s += LanbaiPalaceSpecOne(_Udon_Lamp2, _Udon_LampColor2, _Udon_LampAxis2, _Udon_LampDir2, P, N, V, alpha, F0);
+    s += LanbaiPalaceSpecOne(_Udon_Lamp3, _Udon_LampColor3, _Udon_LampAxis3, _Udon_LampDir3, P, N, V, alpha, F0);
+    s += LanbaiPalaceSpecOne(_Udon_Lamp4, _Udon_LampColor4, _Udon_LampAxis4, _Udon_LampDir4, P, N, V, alpha, F0);
+    s += LanbaiPalaceSpecOne(_Udon_Lamp5, _Udon_LampColor5, _Udon_LampAxis5, _Udon_LampDir5, P, N, V, alpha, F0);
+    s += LanbaiPalaceSpecOne(_Udon_Lamp6, _Udon_LampColor6, _Udon_LampAxis6, _Udon_LampDir6, P, N, V, alpha, F0);
+    s += LanbaiPalaceSpecOne(_Udon_Lamp7, _Udon_LampColor7, _Udon_LampAxis7, _Udon_LampDir7, P, N, V, alpha, F0);
     return s;
 }
 

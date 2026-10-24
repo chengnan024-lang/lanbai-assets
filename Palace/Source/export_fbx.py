@@ -145,11 +145,9 @@ def g_door(M):
     y0 = L.PLAT['height_m']
     y1 = y0 + H['door_size'][1]
     z = L.DOOR_Z + 5.0
-    u = UB()
-    u.quad((x0, y0, z), (x1, y0, z), (x1, y1, z), (x0, y1, z), 'DoorGlow')
-    glow = u.build('DoorGlow_LOD0', None, M)
+    # 门里的光（第 4 轮）是大殿网格里 DoorGlow 槽的暗腔内衬，这里只导出门口的 3 张锥形光卡
     cones = door_cones_ub().build('DoorCones_LOD0', None, M)
-    write('Palace_Door', [glow, cones])
+    write('Palace_Door', [cones])
 
 
 def door_cones_ub():

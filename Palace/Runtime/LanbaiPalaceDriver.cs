@@ -7,7 +7,7 @@
 //     LanbaiActivate(on)   开关 R_Palace（只在遮挡下切；宫殿从 F5 起就在视野里，所以它在 7a 的黑里就开着，海的驱动管 R_Sea）
 //     LanbaiWindow()       {F5 − 1, F8 + 40 + 1} = {643.96, 876.16}（圣经 §1.9：宫殿热点一直到 7c 的前 40 秒）
 //  只写这些：
-//     _Udon_Lamp0..7 / _Udon_LampColor0..7 / _Udon_LampDir0..7 / _Udon_LampAxis0..7：离主座位眼睛最近的 8 盏宫灯
+//     _Udon_Lamp0..6：离主座位眼睛最近的 7 盏宫灯；_Udon_Lamp7：开着的殿门（竖直线光源，湿石面上的亮带，第 4 轮）
 //       （LanbaiPalace.cginc 的解析 GGX 高光；D-24：宫殿全烘焙，铜灯的高光走这里）。时间窗外写 w = 0（关）——只在
 //       离开时间窗的那一帧写一次，之后不再碰（D-22：同一时刻只有一个驱动写同一个全局量；第 1、2、11、12 幕的雨 / 路灯
 //       在别的时间窗里用同一套名字）。
@@ -39,6 +39,13 @@ public class LanbaiPalaceDriver : UdonSharpBehaviour
     public float lampRadius = 0.10f;
     public Vector3 eyeBusRelative = new Vector3(0.55f, 1.70f, 2.05f);
 
+    [Header("Door as an analytic line lamp (slot 7)")]
+    public Vector3 doorLocal;                  // 门洞中心（R_Palace 局部）
+    public float doorHalfHeight = 3.75f;       // 竖直线光源的半长（门高 / 2）
+    public float doorIntensity = 60f;          // 线光源的 I（湿石面上的高光亮带；第 4 轮，美术评审 r3 #3）
+    public Color doorColorLinear = new Color(1.0f, 0.473f, 0.074f, 1f);  // #FFB74D 线性
+    public float doorRadius = 0.6f;
+
     private int[] _idLamp, _idCol, _idDir, _idAxis;
     private int _idCount;
     private bool _wrote;
@@ -62,7 +69,7 @@ public class LanbaiPalaceDriver : UdonSharpBehaviour
         _idCount = VRCShader.PropertyToID("_Count");
         int n = lampLocal != null ? lampLocal.Length : 0;
         _d2 = new float[n];
-        _pick = new int[8];
+        _pick = new int[7];
         _mpb = new MaterialPropertyBlock();
         ApplyLite();
     }
@@ -100,8 +107,8 @@ public class LanbaiPalaceDriver : UdonSharpBehaviour
             Vector3 w = rPalaceTf.TransformPoint(lampLocal[i]);
             _d2[i] = (w - eye).sqrMagnitude;
         }
-        // 选最近的 8 盏（n = 30，直接选择排序的前 8 步）
-        for (int k = 0; k < 8; k++)
+        // 选最近的 7 盏（第 8 个位子留给门）
+        for (int k = 0; k < 7; k++)
         {
             int best = -1;
             float bd = float.MaxValue;
@@ -117,7 +124,7 @@ public class LanbaiPalaceDriver : UdonSharpBehaviour
             _pick[k] = best;
         }
         Vector4 col = new Vector4(lampColorLinear.r, lampColorLinear.g, lampColorLinear.b, lampRadius);
-        for (int k = 0; k < 8; k++)
+        for (int k = 0; k < 7; k++)
         {
             int i = _pick[k];
             if (i < 0)
@@ -131,6 +138,12 @@ public class LanbaiPalaceDriver : UdonSharpBehaviour
             VRCShader.SetGlobalVector(_idDir[k], new Vector4(0f, -1f, 0f, -1f));    // 全向
             VRCShader.SetGlobalVector(_idAxis[k], Vector4.zero);
         }
+        Vector3 dw = rPalaceTf.TransformPoint(doorLocal);
+        Vector3 ax = rPalaceTf.TransformVector(new Vector3(0f, doorHalfHeight, 0f));
+        VRCShader.SetGlobalVector(_idLamp[7], new Vector4(dw.x, dw.y, dw.z, doorIntensity));
+        VRCShader.SetGlobalVector(_idCol[7], new Vector4(doorColorLinear.r, doorColorLinear.g, doorColorLinear.b, doorRadius));
+        VRCShader.SetGlobalVector(_idDir[7], new Vector4(0f, 0f, -1f, 0f));          // 朝外的半球（cos 0）
+        VRCShader.SetGlobalVector(_idAxis[7], new Vector4(ax.x, ax.y, ax.z, 0f));
         _wrote = true;
     }
 

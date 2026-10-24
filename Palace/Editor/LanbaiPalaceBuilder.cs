@@ -87,7 +87,7 @@ public static class LanbaiPalaceBuilder
             var p = new Vector3(LanbaiPalaceData.Flames[3 * i], LanbaiPalaceData.Flames[3 * i + 1], LanbaiPalaceData.Flames[3 * i + 2]);
             lampLocal[i] = p;
             Baked(lights.transform, LanbaiPalaceData.LampIds[i] + "_Warm", p, LanbaiPalaceData.WarmColor, LanbaiPalaceData.WarmI, LanbaiPalaceData.WarmRange, true);
-            Baked(lights.transform, LanbaiPalaceData.LampIds[i] + "_Indigo", p + new Vector3(0f, LanbaiPalaceData.IndigoLift, 0f), LanbaiPalaceData.IndigoColor, LanbaiPalaceData.IndigoI, LanbaiPalaceData.IndigoRange, false);
+            if (LanbaiPalaceData.LampIndigo[i]) Baked(lights.transform, LanbaiPalaceData.LampIds[i] + "_Indigo", p + new Vector3(0f, LanbaiPalaceData.IndigoLift, 0f), LanbaiPalaceData.IndigoColor, LanbaiPalaceData.IndigoI, LanbaiPalaceData.IndigoRange, false);
         }
         var dg = new GameObject("DoorSpill");
         dg.transform.SetParent(lights.transform, false);
@@ -99,7 +99,8 @@ public static class LanbaiPalaceBuilder
         dl.areaSize = new Vector2(LanbaiPalaceData.DoorSpillSize[0], LanbaiPalaceData.DoorSpillSize[1]);
         dl.color = Lin(LanbaiPalaceData.DoorColor).gamma;
         dl.intensity = LanbaiPalaceData.DoorAreaI;
-        // 门光顺着台阶往下铺：门楣处第二盏面光，朝外、向下 35°
+        // （第 3 轮的“顺着台阶往下铺”的第二盏面光，第 4 轮去掉了：阴影发暖。PourRatio = 0 时不建）
+        if (LanbaiPalaceData.PourRatio > 0f) {
         var pg = new GameObject("DoorPour");
         pg.transform.SetParent(lights.transform, false);
         pg.transform.localPosition = V3(LanbaiPalaceData.DoorPourPos, 0);
@@ -110,6 +111,7 @@ public static class LanbaiPalaceBuilder
         pl.areaSize = new Vector2(LanbaiPalaceData.DoorSpillSize[0] * 0.95f, 1.0f);
         pl.color = dl.color;
         pl.intensity = LanbaiPalaceData.DoorAreaI * LanbaiPalaceData.PourRatio;
+        }
         // ---- 5. 驱动
         var oldD = GameObject.Find("LanbaiPalaceDriver");
         if (oldD != null) UnityEngine.Object.DestroyImmediate(oldD);
@@ -122,6 +124,10 @@ public static class LanbaiPalaceBuilder
         d.lampLocal = lampLocal;
         d.lampIntensity = LanbaiPalaceData.WarmI;
         d.lampColorLinear = Lin(LanbaiPalaceData.WarmColor);
+        d.doorLocal = V3(LanbaiPalaceData.DoorCentre, 0);
+        d.doorHalfHeight = LanbaiPalaceData.DoorHalfHeight;
+        d.doorIntensity = LanbaiPalaceData.DoorSpecI;
+        d.doorColorLinear = Lin(LanbaiPalaceData.DoorColor);
         LanbaiGateCloudsBuilder.SetupUdonSharp(d);
         EditorUtility.SetDirty(d);
         AssetDatabase.SaveAssets();
@@ -146,6 +152,7 @@ public static class LanbaiPalaceBuilder
         Std(d, pal, "Stone", "Stone", "Stone", "Stone", 0, 0.30f, 0f, 0.6f, "#FFFFFF");
         Std(d, pal, "StoneDark", "Stone", "Stone", "Stone", 0, 0.30f, 0f, 0.4f, "#CCCCCC");
         Std(d, pal, "FishScale", "FishScale", "FishScale", "FishScale", 2, 0.86f, 0f, 0.25f, "#FFFFFF");
+        d["FishScale"].SetFloat("_LampGain", LanbaiPalaceData.NacreLampGain);     // 珍珠光要“滚出来”（评审 r3 #7）
         Std(d, pal, "Cowrie", "Cowrie", "Cowrie", "Cowrie", 3, 0.92f, 0f, 0.2f, "#FFFFFF");
         Std(d, pal, "Tile", "Stone", "Stone", null, 0, 0.35f, 0f, 0.7f, "#F2F8FF");
         Std(d, pal, "Wood", null, null, null, 0, 0.35f, 0f, 0.2f, "#2C2522");
@@ -163,10 +170,11 @@ public static class LanbaiPalaceBuilder
         d["Fish"] = fish;
         // 门里的光（不透明）与门口的锥形光卡（加色）
         var glow = Mat("DoorGlow", Shader.Find("Lanbai/PalaceGlow"));
-        glow.SetVector("_Glow", new Vector4(3f * LanbaiPalaceData.DoorColor[0], 3f * LanbaiPalaceData.DoorColor[1], 3f * LanbaiPalaceData.DoorColor[2], 0f));
+        glow.SetVector("_Glow", new Vector4(1.6f * LanbaiPalaceData.DoorColor[0], 1.6f * LanbaiPalaceData.DoorColor[1], 1.6f * LanbaiPalaceData.DoorColor[2], 0f));   // 第 4 轮：×3 → ×1.6 + 竖向渐变
         d["DoorGlow"] = glow;
         var cone = Mat("DoorCone", Shader.Find("Lanbai/PalaceGlow"));
         cone.SetVector("_Glow", glow.GetVector("_Glow"));
+        cone.SetFloat("_Alpha", 0.03f);                  // 第 5 轮：圣经 0.06 在这套光下读成实心的光柱，减半
         cone.SetFloat("_Additive", 1f);
         cone.SetFloat("_SrcBlend", (float)BlendMode.One);
         cone.SetFloat("_DstBlend", (float)BlendMode.One);

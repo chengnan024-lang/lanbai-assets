@@ -175,7 +175,7 @@ def build_all():
     M['Rock'] = standard('M_07b_Rock', T('Rock_Albedo'), T('Rock_Normal'), T('Rock_Mask'), silt=0.5)
     M['Weed'] = standard('M_07b_Weed', '#2E3A26', smooth=0.55, cull=False)
     M['Fish'] = standard('M_07b_Fish', '#8A949A', smooth=0.85)
-    M['DoorGlow'] = emission('M_07b_DoorGlow', tuple(3.0 * c for c in s2l('#FFB74D')))
+    M['DoorGlow'] = glow_material('M_07b_DoorGlow', tuple(1.6 * c for c in s2l('#FFB74D')))
     return M
 
 
@@ -197,5 +197,21 @@ def cone_material(name, rgb_lin, alpha=0.06, atten_note=True):
     b.link(e.outputs[0], add.inputs[0])
     b.link(tr.outputs[0], add.inputs[1])
     b.link(add.outputs[0], b.out.inputs['Surface'])
+    b.m.cycles.emission_sampling = 'NONE'
+    return b.m
+
+
+def glow_material(name, rgb_lin, bottom=1.15, top=0.7):
+    """门里的光（Lanbai/PalaceGlow 不透明）：颜色 × lerp(bottom, top, UV.y)。"""
+    b = NB(name)
+    uv = b.n('ShaderNodeUVMap')
+    sep = b.n('ShaderNodeSeparateXYZ')
+    b.link(uv.outputs[0], sep.inputs[0])
+    y = b.math('MINIMUM', b.math('MAXIMUM', sep.outputs['Y'], 0.0), 1.0)
+    k = b.math('ADD', bottom, b.math('MULTIPLY', y, top - bottom))
+    e = b.n('ShaderNodeEmission')
+    e.inputs['Color'].default_value = (*rgb_lin, 1)
+    b.link(k, e.inputs['Strength'])
+    b.link(e.outputs[0], b.out.inputs['Surface'])
     b.m.cycles.emission_sampling = 'NONE'
     return b.m

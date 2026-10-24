@@ -3,9 +3,11 @@
  "warm_range": 4.0,
  "indigo_I": 28.0,
  "indigo_range": 12.0,
- "door_area_I": 2200.0,
- "note": "第 2 轮定的：暖光按校准（2 m 处 E 1.2）；靛光抬到灯焰上方 4 m（水体散射的近似），I 28；门光 ×2.4。高光走解析宫灯（无范围窗，与 Unity 的 _Udon_Lamp 一致）",
- "pour_ratio": 0.6,
+ "door_area_I": 770.0,
+ "note": "第 4 轮（评审 r3）：门的漫反射 ×0.35、去掉往台阶下铺的那盏（阴影发暖）；门改为解析线光源出高光（_Udon_Lamp7，湿石面上的亮带）；珍珠母的解析高光 ×6；阙前各加一盏灯",
+ "pour_ratio": 0.0,
  "indigo_lift": 4.0,
- "spec_I": 5.46
+ "spec_I": 5.46,
+ "door_spec_I": 60.0,
+ "nacre_spec_gain": 6.0
 }

@@ -41,7 +41,7 @@ Shader "Lanbai/Palace"
         _POMTile ("Texture tile m", Float) = 1
         _POMFade ("POM fade distance m", Float) = 40
         [Header(Lamps and water)]
-        _LampGain ("Analytic lamp specular gain", Float) = 1
+        _LampGain ("Analytic lamp specular gain  FishScale 6", Float) = 1
         _EnvSpec ("Ambient reflection of the water colour", Float) = 0.6
         [Header(Seaweed sway)]
         _SwayAmp ("Sway amplitude m at the tip  0 off", Float) = 0

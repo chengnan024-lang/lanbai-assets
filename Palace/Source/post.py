@@ -25,10 +25,12 @@ B2U = np.array([[-1.0, 0, 0], [0, 0, 1.0], [0, -1.0, 0]])
 # ---- 参数（全部写进 PalaceLayout.json 的 render 块）
 FOG_DENSITY = 0.018
 FOG_UP = srgb_to_lin('#182930')       # 屏幕 #06202C（填值由 grade.solve_fill 求）
-FOG_MID = srgb_to_lin('#0C171E')      # 屏幕 #04121E
+FOG_MID = srgb_to_lin('#0D1920')      # 屏幕 #04121E（第 4 轮：评审量到背景中位 #040F1B，抬 2–3 码）
 FOG_DOWN = srgb_to_lin('#020302')     # 屏幕 #02070F（深渊）
 FLAME_ATTEN = 0.004
-FLAME_FILL = srgb_to_lin('#FF5E2A') * 2 ** 3.11      # 屏幕 #FFC46A
+FLAME_GOLD = np.array([1.396, 0.536, 0.142])          # 金 #E0A860 在 S7b 下的线性值（海 README §2.6 的做法：不靠色调映射的肩部）
+FLAME_FILL = FLAME_GOLD * 2.2                         # 灯焰身：金
+FLAME_CORE = np.array([1.0, 0.82, 0.55]) * 2.6        # 灯焰芯：白热（m⁴ 加权），屏幕上核心到 255、外缘是金 #FFC46A 一带
 HALO_MID = srgb_to_lin('#446282')                    # 灯晕卡中段，屏幕 #2A557B
 HALO_R = 1.5
 GROUP_GAIN = {'amb': 1.0, 'warm': 1.0, 'indigo': 1.0, 'door': 1.0}
@@ -140,7 +142,11 @@ def composite(exr, shot, gains=None, halo=True, flame_scale=1.0):
     F = 1 - np.exp(-FOG_DENSITY * np.minimum(dist, 1e5))
     fc = fog_color(D)
     img = np.where(hit[..., None], surf * (1 - F[..., None]) + fc * F[..., None], fc)
-    img += glow * np.exp(-FLAME_ATTEN * np.minimum(dist, 1e5))[..., None]
+    # 门里的光（Lanbai/PalaceGlow，不透明、_FogMode 2）：那些像素就是 glow × exp(−d·0.004)，不混雾色
+    if 'Combined_doorglow' in exr:
+        gm = (groups['doorglow'].sum(-1) > 0.5 * S.sum(-1)) & hit
+        g2 = C * np.exp(-FLAME_ATTEN * np.minimum(dist, 1e5))[..., None]
+        img = np.where(gm[..., None], g2, img + glow * np.exp(-FLAME_ATTEN * np.minimum(dist, 1e5))[..., None] * (~gm)[..., None])
     vv = np.where(hit, veil(Pu, e, t), 0.0)
     if 'Object Index.X' in exr:                         # 台地（pass_index 3）：下缘的溶解（LanbaiPalaceLipVeil）
         rock = np.round(exr['Object Index.X']) == 3
@@ -151,7 +157,13 @@ def composite(exr, shot, gains=None, halo=True, flame_scale=1.0):
     vv = vv[..., None]
     img = img * (1 - vv) + fc * vv
     if halo:
-        img = draw_lamps(img, shot, dist, flame_scale)
+        dz = dist.copy()
+        if 'Normal.X' in exr:          # 背面（Unity 里被剔掉，不进深度缓冲）：灯晕的深度测试当它不存在
+            Nb = np.stack([exr['Normal.X'], exr['Normal.Y'], exr['Normal.Z']], -1)
+            Nu = Nb @ B2U.T
+            back = (np.sum(Nu * (Pu - e), -1) > 0) & hit
+            dz = np.where(back, 1e9, dz)
+        img = draw_lamps(img, shot, dz, flame_scale)
     return img, dict(dist=dist, hit=hit, D=D)
 
 
@@ -176,10 +188,12 @@ def draw_lamps(img, shot, dist, flame_scale=1.0):
         sx, sy = xx[y0:y1, x0:x1] - px[i], yy[y0:y1, x0:x1] - py[i]
         r = np.sqrt(sx ** 2 + sy ** 2) / max(rpx, 1e-6)                     # 0..1 在晕卡半径内
         vis = (dist[y0:y1, x0:x1] > dd[i] - 0.6).astype(float)              # 深度测试（卡在灯焰处）
-        # 晕卡：中心暖 → 中段靛 → 0（屏幕 #FFC46A → #2A557B → 0），加色
-        warm = np.exp(-(r / 0.10) ** 2)[..., None] * FLAME_FILL * 0.06
-        ind = (np.clip(1 - r, 0, 1) ** 2)[..., None] * HALO_MID * 1.0
-        add = (warm + ind) * att * vis[..., None]
+        soft = np.clip((dist[y0:y1, x0:x1] - dd[i]) / 1.0 + 0.6, 0, 1)        # 软粒子：靠近别的面时淡出（不切成半月）
+        # 晕卡（第 4 轮）：暖芯很小、靛环从 0.15 r 才起，两者不重叠，免得加色混出丁香紫
+        warm = np.exp(-(r / 0.08) ** 2)[..., None] * FLAME_FILL * 0.05
+        ring = (np.clip((r - 0.12) / 0.28, 0, 1) ** 2 * (3 - 2 * np.clip((r - 0.12) / 0.28, 0, 1)) * np.clip(1 - r, 0, 1) ** 2)
+        ind = ring[..., None] * HALO_MID * 1.4
+        add = (warm + ind) * att * (vis * soft)[..., None]
         # 灯焰：竖着的软椭圆，0.16 × 0.34 m
         # 灯焰 = shader 的式子：半尺寸 (0.09, 0.19) m，小于 _MinPixels（1.2 px）时放大 s 倍、亮度 / s（Lanbai/PalaceFlame）
         fw, fh = 0.09 * ppm / zc[i] * flame_scale, 0.19 * ppm / zc[i] * flame_scale
@@ -190,7 +204,7 @@ def draw_lamps(img, shot, dist, flame_scale=1.0):
         steep = min(1.0, max(0.0, (abs(vdir[1]) / (np.linalg.norm(vdir) + 1e-9) - 0.5) * 3.0))
         fh = fh * (1 - steep) + fw * steep
         fl = np.exp(-((sx / fw) ** 2 + ((sy + fh * 0.3) / fh) ** 2) * 2.0) * 0.6
-        add += fl[..., None] * FLAME_FILL * att / sc * vis[..., None]
+        add += (fl[..., None] * FLAME_FILL + (fl ** 4)[..., None] * FLAME_CORE * 4.0) * att / sc * vis[..., None]
         img[y0:y1, x0:x1] += add
     return img
 
