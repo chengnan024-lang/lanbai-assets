@@ -74,7 +74,7 @@ Act07_Driver             LanbaiAct07Driver（U#）
 
 **驱动 `LanbaiAct07Driver`**（CONTROL §5 的三个方法）：
 - `LanbaiWindow()` = {F2h − 1, 出海 + 1} = {362.26, 923.36}（整个第 7 幕；本包只做 7a，F5 以后保持 7a 的终态，7b / 7c 以后接在同一个驱动里）。
-- `LanbaiActivate(on)`：开关 `R_Sea`、`R_Act07Bus`、`Act07_Lights`；世界的主太阳（`worldSun`，可空）在窗口里关掉。
+- `LanbaiActivate(on)`：开关 `R_Sea`、`R_Act07Bus`、`Act07_Lights`；世界的主太阳（`worldSun`，可空）在窗口里关掉；关的时候只交还海独有的量（`_Udon_Underwater` = 0、`_Udon_Caustics.x` = 0），共享的雾、海面高度 / 模式不写 w = 0（裁决 20:40 补充）。
 - `LanbaiTick(t)` 每帧：`R_Sea` 的位置；平面的材质（ABOVE → BELOW）和 `_WindowGain` / `_WindowCore`（MPB）；全局量 `_Udon_T`、`SeaLevel`、`SeaMode`、`SeaClock`、`Underwater`、`SeaBus`、`SeaBusVel`、`Fog`（+ `FogBase` = 0）、`WaterFogUp/Mid/Down`、`Caustics`（+ `Color`、`Tex`）；**接管**（`Engineering/README_集成.md` §2–3：本地在 `LB_Journey` 勾上 `extAtmosphere`、`extSun`）：`RenderSettings.fogDensity / fogColor / ambient*`、本幕的太阳；光柱、最后一道光柱、粒子、石壁、暖点、穹顶的开关和 `_Gain`。
 - **不写**：PPv2（`LB_Journey`）、车厢（`_Udon_Cabin*`，车厢驱动）、F2h 之前云的海。
 - `writeRenderSettings`（默认开）：本地没勾 `extAtmosphere` 时请关掉，否则和 `LB_Journey` 抢写。

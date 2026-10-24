@@ -100,6 +100,13 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
         if (roots == null) return;
         for (int i = 0; i < roots.Length; i++) if (roots[i] != null) roots[i].SetActive(on);
         if (worldSun != null) worldSun.enabled = !on;
+        // hand back only what is the sea's alone (裁决 20:40: shared channels -- fog, sea level / mode -- are never
+        // written w = 0 here; the next writer writes them in full)
+        if (!on && _ready)
+        {
+            VRCShader.SetGlobalFloat(_idUnder, 0f);
+            VRCShader.SetGlobalVector(_idCaus, new Vector4(0f, 1f, 0f, 1f));
+        }
     }
 
     public float[] LanbaiWindow()
