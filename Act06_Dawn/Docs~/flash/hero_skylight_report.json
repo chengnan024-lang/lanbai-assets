@@ -8,10 +8,10 @@
  "wcag_2_3_1": "PASS",
  "lanbai_flash_rule": "PASS",
  "max_rise_ev_0.25s": 0.21,
- "max_rise_ev_1s": 0.85,
- "max_rise_ev_2s": 1.68,
+ "max_rise_ev_1s": 0.81,
+ "max_rise_ev_2s": 1.62,
  "max_fall_ev_0.25s": -0.0,
  "peak_apl_luma": 106,
- "mean_apl_luma": 67,
+ "mean_apl_luma": 66,
  "lanbai_ramp_law": "PASS"
 }
