@@ -45,6 +45,7 @@ Shader "Lanbai/InsideLip"
         _FringeTex ("Fringe (R fibres, G coverage, B clump)", 2D) = "black" {}
         _FringeGain ("Fringe gain", Float) = 2.75
         _Sway ("Hanging threads: sway at the tip (m; 0 = none)", Float) = 0
+        _FlapSway ("Cloth tongues: sway at the tip (m; vertex colour g = weight, b = phase)", Float) = 0
         [Header(Thread)]
         _ThreadRim ("Thread rim (x fibre colour)", Float) = 0.6
         _ThreadCore ("Thread core lit by the fibres (0 = dark weft, 1 = fibre lit)", Range(0, 1)) = 0
@@ -97,7 +98,7 @@ Shader "Lanbai/InsideLip"
             float _ThreadCore;
             float4 _DotHalo;
             sampler2D _FringeTex;
-            float _FringeGain, _ThreadRim, _Sway;
+            float _FringeGain, _ThreadRim, _Sway, _FlapSway;
             float4 _DotCore;
             float _DotGlow, _DotDist, _LooseGain, _LooseWidth;
 
@@ -147,6 +148,13 @@ Shader "Lanbai/InsideLip"
                 o.uv = float4(v.uv0, v.uv1);
                 o.col = v.color;
                 o.aux = float4(v.uv2, v.uv3);
+            #if defined(_PART_SHEET)
+                // r15 (总导演 D-19): the tongues of cloth hanging from the upper edges sway slowly in the bus's draught
+                // (periods 7 / 9.3 s, never a flicker); the clock eases to a stop by U12 - 2.25 like everything else
+                float fw = _FlapSway * v.color.g;
+                wp.z += fw * sin(_Udon_InsideClock.x * 6.2831853 / 7.0 + v.color.b * 6.2831853);
+                wp.x += 0.4 * fw * sin(_Udon_InsideClock.x * 6.2831853 / 9.31 + v.color.b * 6.2831853 + 1.0);
+            #endif
             #if defined(_PART_FRINGE)
                 // r13 (总导演 D-19): the hanging threads (*_Hang materials, _Sway > 0) sway slowly in the bus's draught;
                 // uv0.y runs along the thread (0.08 top .. 0.93 tip), uv0.x is constant per thread (its phase). The clock
@@ -267,7 +275,9 @@ Shader "Lanbai/InsideLip"
                 float bandIn = smoothstep(lw, lw * 1.6, dEdge) * (1.0 - smoothstep(lw + 0.005 * Hm, lw + 0.009 * Hm, dEdge));
                 float cm = sin(uEdge * 6.2831853 / (0.05 * Hm)) + 0.8 * sin(uEdge * 6.2831853 / (0.017 * Hm));
                 float curl = smoothstep(0.9, 1.3, cm) * bandIn;
-                res *= fk * (1.0 - 0.40 * curl);
+                // r15: the rim brightens / dims with the pleats (no constant bevel)
+                float rimk = 1.0 + 0.35 * pleat * exp(-dEdge / max(3.0 * _LipGlowWidth, 0.5));
+                res *= fk * (1.0 - 0.40 * curl) * rimk;
                 // the hidden / fading blend comes last, so a hidden lip carries no folds (r09)
                 return float4(lerp(LanbaiHorizon(dirV) * gradeK, res, saturate(_Gain)), 1.0);
             #elif defined(_PART_FRINGE)

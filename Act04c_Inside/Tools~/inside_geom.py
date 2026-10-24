@@ -28,7 +28,7 @@ def curl_z(d_edge, u_edge, Hk, seed, perim):
     """torn cloth turns out of its plane at the lip: +z = away from the bus. Fades in ~1.5 % H from the edge.
     r04: three incommensurate wave counts (art review r03: one sinusoid read as a repeating silhouette)."""
     lam = 0.015 * Hk
-    amp = 0.016 * Hk
+    amp = 0.006 * Hk                                  # r15: 0.016 -> 0.006 H (a thick curled lip read as a stone / ice lip)
     # r05: multi-scale wrapped noise along the edge (art review r03 / r04 and our own r05 side view: any sum of a few
     # sines still reads as a regular wave edge-on). Seamless round the loop (mode='wrap'), irregular, with kinks.
     from scipy.ndimage import gaussian_filter1d
@@ -56,7 +56,7 @@ def billow_z(xy, seed, amp, scale):
     return amp * z / 2.3
 
 
-def sheet(contour, Hk, seed, gain=1.0, r_far=R_FAR, centre=(0.0, 0.0), billow=0.0):
+def sheet(contour, Hk, seed, gain=1.0, r_far=R_FAR, centre=(0.0, 0.0), billow=0.0, tongues=None):
     import triangle
     from shapely.geometry import Polygon
     C = np.asarray(contour, float)
@@ -104,7 +104,11 @@ def sheet(contour, Hk, seed, gain=1.0, r_far=R_FAR, centre=(0.0, 0.0), billow=0.
     V = np.stack([V2[:, 0], V2[:, 1], z], -1)
     uv0 = V2 / 100.0
     uv1 = np.stack([dd, u], -1)
-    col = np.tile([gain, 0, 0, 1], (len(V), 1))
+    col = np.tile([gain, 0, 0, 1], (len(V), 1)).astype(float)
+    if tongues:                                      # r15: col.g = sway weight (root 0 .. tip 1), col.b = phase
+        w, ph = flap_weights(V2, tongues)
+        col[:, 1] = w
+        col[:, 2] = ph
     return dict(V=V, F=F, uv0=uv0, uv1=uv1, col=col, perim=perim)
 
 
@@ -404,6 +408,57 @@ def fringe_taper(fr, contour, need, Hk):
     return fr
 
 
+def grain_runs(C, Hk, roll, seed, margin):
+    """r15 (art review r14: isotropic fractal jaggedness reads as a fracture; woven cloth tears along its grain): the
+    outline is redrawn as a staircase of straight runs along the warp and weft (rotated with the lip's roll): the large
+    shape is kept (a smoothed copy, sigma 1.5 % H) and walked in chunks of 1.5-4 % H (never more than the lip's spare
+    clearance), each chunk = one run along the dominant axis + one along the other. Falls back to the input if the result
+    is invalid. The fringe and the threads follow the new outline."""
+    from scipy.ndimage import gaussian_filter1d
+    C = np.asarray(C, float)
+    rng = np.random.default_rng(int(seed) + 2626)
+    seg = np.linalg.norm(np.roll(C, -1, 0) - C, axis=1)
+    ds = float(np.median(seg))
+    sig = max(0.015 * Hk / max(ds, 1e-3), 1.0)
+    Cs = np.stack([gaussian_filter1d(C[:, 0], sig, mode='wrap'), gaussian_filter1d(C[:, 1], sig, mode='wrap')], -1)
+    a = np.radians(roll)
+    U = np.array([[np.cos(a), np.sin(a)], [-np.sin(a), np.cos(a)]])        # world -> weave frame
+    Q = Cs @ U.T
+    segq = np.linalg.norm(np.roll(Q, -1, 0) - Q, axis=1)
+    arc = np.concatenate([[0], np.cumsum(segq)])
+    perim = arc[-1]
+    # r15b: a hysteresis walk, not a fixed staircase (a regular sawtooth read as pixels / crystal): follow the smoothed
+    # outline along whichever weave axis it mostly runs on; step across only when the drift exceeds a random threshold
+    # (0.4-1.8 % H, never more than 60 % of the spare clearance), so runs are long and uneven and steps are rare
+    tmax = max(min(0.018 * Hk, 0.6 * max(margin, 0.0)), 0.3)
+    tmin = min(0.004 * Hk, tmax)
+    n = len(Q)
+    pts = [Q[0].copy()]
+    p = Q[0].copy()
+    thr = rng.uniform(tmin, tmax)
+    for j in range(1, n + 1):
+        q = Q[j % n]
+        d = q - p
+        if abs(d[0]) >= abs(d[1]):                   # running along the weave's x: hold y until the drift is too big
+            if abs(d[1]) > thr:
+                pts.append(np.array([p[0], q[1]]))
+                p = np.array([p[0], q[1]])
+                thr = rng.uniform(tmin, tmax)
+            p = np.array([q[0], p[1]])
+        else:
+            if abs(d[0]) > thr:
+                pts.append(np.array([q[0], p[1]]))
+                p = np.array([q[0], p[1]])
+                thr = rng.uniform(tmin, tmax)
+            p = np.array([p[0], q[1]])
+        pts.append(p.copy())
+    pts.append(Q[0].copy())
+    out = np.array(pts) @ U                                                 # back to world
+    out = D.fix_polygon(out)
+    out, _ = D.resample(out, max(ds, 0.5))
+    return out
+
+
 def sag(C, Hk, margin, seed):
     """r13 (总导演 D-19: the cloth must read as cloth, not rock / ice): the upper edges of an opening (cloth above it)
     sag under gravity in shallow scallops between pinch points every 0.06-0.10 H; depth <= 1.2 % H and never more than
@@ -431,6 +486,93 @@ def sag(C, Hk, margin, seed):
     return D.fix_polygon(out)                          # a sag can fold a narrow tooth over itself
 
 
+def flaps(C, Hk, seed, need, roll=0.0, n_range=(2, 4), ok_fn=None):
+    """r15 (总导演 D-19, art review r14: the read is decided by the sheet, not the threads): the upper edge of an opening
+    tears into 2-4 tongues of cloth that hang straight down under gravity. Each tongue is cut out of the opening
+    (cloth = outside the polygon), 4-8 % H wide at the root, 0.6 x narrower at the tip, 6-14 % H long, its sides folding
+    in vertical pleats (curtain), its tip torn along the weave (stepped, not fractal). Shortened until the bus path keeps
+    its clearance (need + the fringe + 2 m for the sway). Returns (new contour, [tongue dicts]) for the sway weights."""
+    from shapely.geometry import Polygon, box
+    rng = np.random.default_rng(int(seed) + 1515)
+    C = np.asarray(C, float)
+    pg = Polygon(C)
+    if not pg.is_valid:
+        pg = pg.buffer(0)
+    bus = box(-D.BUS_HALF_W, D.BUS_Y0, D.BUS_HALF_W, D.BUS_Y1)
+    nrm = D.normals(C, smooth=6)
+    cy = C[:, 1].mean()
+    cand = np.where((nrm[:, 1] > 0.55) & (C[:, 1] > cy))[0]
+    if len(cand) < 5:
+        return C, []
+    want = int(rng.integers(n_range[0], n_range[1] + 1))
+    picks = []
+    for _ in range(80):
+        if len(picks) >= want:
+            break
+        i = int(rng.choice(cand))
+        if all(np.linalg.norm(C[i] - C[j]) > 0.12 * Hk for j in picks):
+            picks.append(i)
+    tongues = []
+    fl = 0.005 * Hk
+    for i in picks:
+        x0, y0 = C[i]
+        w0 = rng.uniform(0.04, 0.08) * Hk
+        L = rng.uniform(0.06, 0.14) * Hk
+        ph = rng.uniform(0, 6.28)
+        for _ in range(12):
+            m = 24
+            f = np.linspace(0.0, 1.0, m)
+            half = 0.5 * w0 * (1.0 - 0.4 * f)
+            pleat = 0.012 * Hk * np.sin(f * np.pi * rng.uniform(2.0, 3.5) + ph) * f
+            drift = 0.02 * L * np.sin(f * np.pi * 0.8 + ph)
+            yy = y0 + 0.02 * Hk - (L + 0.02 * Hk) * f        # starts a little inside the cloth (overlap)
+            left = np.stack([x0 - half + pleat + drift, yy], -1)
+            right = np.stack([x0 + half + pleat * 0.7 + drift, yy], -1)
+            # the tip: torn along the weave = 3-5 straight steps (horizontal runs with vertical jumps)
+            k = int(rng.integers(3, 6))
+            xs = np.linspace(right[-1, 0], left[-1, 0], k + 1)
+            steps = []
+            yb = yy[-1]
+            for j in range(k):
+                dy = rng.uniform(-0.012, 0.012) * Hk
+                steps += [(xs[j], yb + dy), (xs[j + 1], yb + dy)]
+            tp = Polygon(np.concatenate([left, np.array(steps)[::-1], right[::-1]], 0)).buffer(0)
+            newp = pg.difference(tp)
+            if newp.geom_type == 'MultiPolygon':
+                newp = max(newp.geoms, key=lambda q: q.area)
+            ok = newp.contains(bus) and newp.exterior.distance(bus) - fl >= need + 2.0
+            if ok and ok_fn is not None:
+                ok = ok_fn(np.array(newp.exterior.coords)[:-1])     # e.g. the dot's sightline stays inside the opening
+            if ok:
+                pg = newp
+                tongues.append(dict(x0=float(x0), y0=float(y0), L=float(L), w=float(w0), ph=float(ph)))
+                break
+            L *= 0.8
+            if L < 0.03 * Hk:
+                break
+    if not tongues:
+        return C, []
+    out = np.array(pg.exterior.coords)[:-1]
+    out = D.fix_polygon(out)
+    out, _ = D.resample(out, max(np.median(np.linalg.norm(np.diff(C, axis=0), axis=1)), 0.5))
+    return out, tongues
+
+
+def flap_weights(V2, tongues):
+    """per-vertex sway weight (0 at the root .. 1 at the tip, squared) and phase for the cloth inside a tongue."""
+    w = np.zeros(len(V2))
+    ph = np.zeros(len(V2))
+    for t in tongues:
+        dx = np.abs(V2[:, 0] - t['x0'])
+        f = np.clip((t['y0'] - V2[:, 1]) / max(t['L'], 1e-3), 0.0, 1.0)
+        inside = (dx < 0.6 * t['w']) & (V2[:, 1] < t['y0'] + 0.01) & (V2[:, 1] > t['y0'] - 1.1 * t['L'])
+        ww = np.where(inside, f * f, 0.0)
+        sel = ww > w
+        w[sel] = ww[sel]
+        ph[sel] = t['ph'] / 6.2832
+    return w, ph
+
+
 def build():
     rep = json.load(open(os.path.join(LY.OUT, 'layout_solved.json')))
     objs = {}
@@ -444,11 +586,22 @@ def build():
             C = D.tear_outline_lip1()
             C, _ = D.resample(C, 3.5)
             seed = 101
+            tg = []                                      # lip 1 = the gate's tear outline: no flaps
         else:
             seed = L['seed']
             C = LY.lip_polygon(L['mesh_kind'], seed, Hk, L['roll'], L['offset'])
+            okf = None
+            if k >= 4:                                   # r15: a flap / a run must never cover the dot's sightline
+                okf = (lambda P, k=k: LY.dot_margin_ok(P, D.S_LIP[k - 1], D.DOT_APPEAR[0] + 2.0, D.LIP_T[k - 1]) >= 0)
+            margin = L['clearance_m'] - L['clearance_need']
+            Cg = grain_runs(C, Hk, L['roll'], seed, margin)
+            from shapely.geometry import Polygon as _P
+            _cl = _P(Cg).exterior.distance(LY.BUS) - LY.fringe_len(Hk) if _P(Cg).is_valid and _P(Cg).contains(LY.BUS) else -1.0
+            if _cl >= L['clearance_need'] and (okf is None or okf(Cg)):
+                C = Cg                                   # else keep the solved outline (clearance / dot first)
             C = sag(C, Hk, L['clearance_m'] - L['clearance_need'], seed)
-        sh = sheet(C, Hk, seed, 1.0)
+            C, tg = flaps(C, Hk, seed, L['clearance_need'], L['roll'], ok_fn=okf)
+        sh = sheet(C, Hk, seed, 1.0, tongues=tg)
         fl = 4.0 if k == 1 else LY.fringe_len(Hk)
         fr = fringe(C, Hk, seed, fl, 1.0, L['roll'] if k > 1 else -4.0)
         fr = fringe_taper(fr, C, L['clearance_need'], Hk)

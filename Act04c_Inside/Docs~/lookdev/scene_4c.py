@@ -246,7 +246,10 @@ def mat_sheet(name, P, fp):
                 N.math('MULTIPLY', N.math('SINE', N.math('MULTIPLY', u_edge, tau / (0.017 * Hk))), 0.8))
     curl = N.math('MULTIPLY', N.smooth(0.9, 1.3, cm), band_in)
     dk = N.math('SUBTRACT', 1.0, N.math('MULTIPLY', curl, 0.40))
-    col = N.vmath('SCALE', col, s=N.math('MULTIPLY', fk, dk))
+    # r15: the rim brightens where a pleat turns toward the light and dims where it turns away (no constant bevel)
+    rimk = N.math('ADD', 1.0, N.math('MULTIPLY', N.math('MULTIPLY', fold, 0.35),
+                                      N.math('EXPONENT', N.math('DIVIDE', d_edge, -max(P['lip_w'] * 3.0, 0.5)))))
+    col = N.vmath('SCALE', col, s=N.math('MULTIPLY', N.math('MULTIPLY', fk, dk), rimk))
     # r07: a hidden / fading lip blends into the fog at infinity (the dome's colour) by its visibility: no pop, no ghost
     # (r09: after the folds, so a hidden lip carries none)
     col = N.mix(N.horizon(fp), col, float(P.get('vis', 1.0)))
@@ -362,8 +365,17 @@ def loose_mesh(o, clk, eye, width=0.008, px=math.radians(90.0) / 960.0):
 
 
 # ------------------------------------------------------------------------------------------------ meshes
+_SWAY_CLOCK = [None]
+
+
 def mesh(S, name, o, offset_z, mat):
     V = np.asarray(o['V'], float).copy()
+    if name.endswith('_Sheet') and 'col' in o and _SWAY_CLOCK[0] is not None:
+        # r15: the tongues sway (Lanbai/InsideLip SHEET vertex stage): col.g = weight, col.b = phase
+        c = np.asarray(o['col'], float)
+        clk = _SWAY_CLOCK[0]
+        V[:, 2] += DR.FLAP_SWAY_M * c[:, 1] * np.sin(clk * 2 * np.pi / DR.FLAP_PERIOD_S + c[:, 2] * 6.2832)
+        V[:, 0] += 0.4 * DR.FLAP_SWAY_M * c[:, 1] * np.sin(clk * 2 * np.pi / (DR.FLAP_PERIOD_S * 1.33) + c[:, 2] * 6.2832 + 1.0)
     V[:, 2] += offset_z
     Vb = np.stack([V[:, 0], V[:, 2], V[:, 1]], -1)                       # Unity -> Blender (x, z, y)
     F = np.asarray(o['F'], np.int32)
@@ -406,6 +418,7 @@ def build(ctx):
     sc.cycles.transparent_max_bounces = 128
     sc.cycles.max_bounces = 0
     rep, objs, meta = geometry()
+    _SWAY_CLOCK[0] = DR.clock(t)
     s = float(D.dist(t))
     st = DR.state(t)
     fp = st['fog']

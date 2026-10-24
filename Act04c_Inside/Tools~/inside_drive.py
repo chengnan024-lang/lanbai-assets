@@ -23,6 +23,7 @@ NADIR_K = 0.80                          # darker below (review r1 / art review r
 SHEET_FOG_CAP, LIP8_HOLD_M, LIP8_RAMP_M = 0.25, 70.0, 60.0     # r09: cap 0.30 -> 0.25 (art review r08 B2-3; 0.28 lifted 200 by only 0.4 APL and the 197 near sheet to 41)
 CROSSED_FADE_M = 300.0
 SLEEVE_FOG_K = 0.72                                    # r07 / r09: the air inside the sleeve (forward APL; the side window barely depends on it)
+FLAP_SWAY_M, FLAP_PERIOD_S = 1.2, 7.0                    # r15: the tongues sway in the bus's draught (>= 6 s)
 SLEEVE_INNER_CLOTH_K = 1.35                            # r09: the inner plies' cut faces (226 side APL)
 SLEEVE_LOOSE_K = 12.0                                  # r08: loose fibres pulled from the thick cloth, inside the sleeve
 LOOSE_GAIN = 0.25                                      # the shader's _LooseGain (x the current fibre colour)
@@ -151,7 +152,7 @@ def lip_material(k, st=None):
     Hk = [1000.0, 790.0, 940.0, 525.0, 615.0, 345.0, 285.0, 195.0][k - 1]
     vis = 1.0 if st is None else lip_visibility(k, st['t'])
     return dict(cloth=fill_of(D.CLOTH_SCREEN), fibre=fibre_fill(k), roll=0.0, weave_scale=40.0, weave_amount=0.02,
-                lip_glow=3.15 * vis, lip_w=max(0.5, 0.002 * Hk), band=(0.07 * vis, 0.04 * Hk), fringe_gain=2.75 * vis,
+                lip_glow=3.15 * vis, lip_w=max(0.3, 0.0012 * Hk), band=(0.07 * vis, 0.04 * Hk), fringe_gain=2.75 * vis,
                 thread_rim=0.6 * vis, folds=(0.08 * Hk, 0.5 * Hk, 0.0, 0.35 * Hk), fog_cap_cloth=SHEET_FOG_CAP, vis=vis)
 
 
