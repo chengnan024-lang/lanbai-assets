@@ -196,6 +196,21 @@ def add_lights(p=PARAMS):
     o3.visible_volume_scatter = False
     o3.lightgroup = 'door'
     bpy.context.scene.collection.objects.link(o3)
+    # D-31（Fins 的 smoke and mirrors）：只参与烘焙、本身看不见的面光，把门那一开间（门两侧的柱、门楣、斗拱、门前的台基面）
+    # 托出来，让亮着的空门是眼睛第一个落上去的地方。门前 7 m、高 11 m，朝门，6 × 5 m，暖白偏金；只进漫反射（= 烘焙）。
+    A4 = bpy.data.lights.new('DoorAccent', 'AREA')
+    A4.shape = 'RECTANGLE'
+    A4.size, A4.size_y = 6.0, 5.0
+    A4.color = lin('#FFD9A0')
+    A4.energy = _T.get('door_accent_I', 500.0)
+    o4 = bpy.data.objects.new('DoorAccent', A4)
+    ap = np.array([hall['door_x'], L.PLAT['height_m'] + 5.0, L.DOOR_Z - 7.0])
+    o4.location = Vector(bl.u2b(ap))
+    tgt = np.array([hall['door_x'], L.PLAT['height_m'] + 5.5, L.DOOR_Z])
+    o4.rotation_euler = Vector(bl.u2b((tgt - ap) / np.linalg.norm(tgt - ap))).to_track_quat('-Z', 'Y').to_euler()
+    o4.visible_glossy = False
+    o4.lightgroup = 'door'
+    bpy.context.scene.collection.objects.link(o4)
     if p.get('pour_ratio', 0.0) <= 0.0:
         return
     # 门光顺着台阶往下铺：门楣处一盏面光，朝外、向下 35°（第 3 轮；第 4 轮去掉：阴影发暖）

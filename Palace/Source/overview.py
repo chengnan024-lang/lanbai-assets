@@ -13,6 +13,10 @@ FONT = '/home/user/lanbai-assets/Fonts'
 
 
 def font(px):
+    try:
+        return ImageFont.truetype('/home/user/lanbai-assets/Fonts/Originals~/SourceHanSerifCN-Regular.otf', px)
+    except Exception:
+        pass
     for p in glob.glob(FONT + '/**/SourceHanSans*Regular*.otf', recursive=True) + glob.glob(FONT + '/**/*.otf', recursive=True):
         try:
             return ImageFont.truetype(p, px)

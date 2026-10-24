@@ -30,6 +30,7 @@
 | `Editor/LanbaiPalaceData.cs` | 生成的数据（`Source/gen_layout.py`），不要手改 |
 | `Editor/LanbaiPalaceImport.cs` | 导入设置（只管 `Assets/Lanbai/Palace/`） |
 | `Runtime/LanbaiPalaceDriver.cs` | U# 驱动：最近的 8 盏宫灯写进 `_Udon_Lamp0..7`；鱼的 lite |
+| `Docs~/ref_boards/` | 分区参考板（屋顶、纹样、颜色）+ 出处 + 可能时代错位的清单（D-31 #2） |
 | `Source/` | 生成一切的 Python（bpy 5.0.1）：布局、模块、贴图、FBX、参考渲染与后期 |
 | `Docs~/` | 考据、lookdev brief、迭代图、评审稿 |
 
@@ -116,3 +117,9 @@
 - **银鱼的 B 群**（720 s 从诗前面游过）是一条直线经过，之前和之后都在很远的雾里；没有和环面上的鱼群接起来。
 - **远处灯点** `PalaceSpecks_Points.fbx` 按海的 `Lanbai/SeaSpecks` 的网格约定做，搭建脚本不摆它（海摆，第 7、8 幕都用）。
 - `Rain/Shaders/LanbaiLamps.cginc` 与 `LanbaiGlobals.cginc` 冲突，宫殿自己写了一份解析灯（`给总控.md` 第 5 条）。
+
+## 10. 素材来源（CC0，照小楠的话“合适直接用”）
+
+- 朱漆 `T_07b_Lacquer_*`：克利夫兰美术馆 **1969.129**（乐浪出土漆盘残片，新莽 9 CE）内面的一块，去光、无缝、均值校到圣经 `#A3201E`，剥落处做磨损遮罩（`Source/tex/from_photos.py`）。
+- 梁枋带的云纹按克利夫兰美术馆 **1991.7**（西汉漆耳杯）的笔意程序生成；照片里的纹样带是弯的，这一窗没拉直。
+- 屋顶的形制对照大都会博物馆 **49519、49520**、克利夫兰美术馆 **1989.71** 的东汉陶楼（`Docs~/ref_boards/01_roof.png`）。

@@ -9,5 +9,6 @@
  "indigo_lift": 4.0,
  "spec_I": 5.46,
  "door_spec_I": 60.0,
- "nacre_spec_gain": 6.0
+ "nacre_spec_gain": 6.0,
+ "door_accent_I": 500.0
 }
