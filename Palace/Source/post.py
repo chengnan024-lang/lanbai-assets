@@ -89,12 +89,31 @@ def smooth(x):
 
 
 def lamp_points():
-    pts = []
-    for z in L.lamp_z():
-        pts += [(L.COL_R_X, L.SHINDAO_Y + L.LAMP_FLAME_H, z), (L.COL_L_X, L.SHINDAO_Y + L.LAMP_FLAME_H, z)]
-    zp = L.DOOR_Z - 11.0
-    pts += [(x, L.SHINDAO_Y + L.PODIUM_H + L.LAMP_FLAME_H, zp) for x in (-43, -33, -23, -13, -3, 7)]
-    return np.array(pts)
+    return L.flame_points()
+
+
+VEIL = L.FRAME['palace_veil']
+
+
+def veil_density(t):
+    c = VEIL['curve']
+    ts = [p['t'] for p in c]
+    return float(np.interp(t, ts, [p['x'] for p in c]))
+
+
+def veil(Pu, e, t):
+    """_Udon_PalaceVeil（海的约定）：眼 → 片元的线段落在雾带 [top − th, top] 里的长度 → 1 − exp(−x·L)。"""
+    x = veil_density(t)
+    if x <= 0:
+        return np.zeros(Pu.shape[:2])
+    top = VEIL['top_offset_palace_y']
+    lo = top - VEIL['thickness_m']
+    y0, y1 = e[1], Pu[..., 1]
+    a, b = np.minimum(y0, y1), np.maximum(y0, y1)
+    ov = np.clip(np.minimum(b, top) - np.maximum(a, lo), 0, None)
+    seg = np.linalg.norm(Pu - e, axis=-1)
+    Lb = seg * ov / np.maximum(b - a, 1e-3)
+    return 1 - np.exp(-x * Lb)
 
 
 def composite(exr, shot, gains=None, halo=True, flame_scale=1.0):
@@ -122,6 +141,8 @@ def composite(exr, shot, gains=None, halo=True, flame_scale=1.0):
     fc = fog_color(D)
     img = np.where(hit[..., None], surf * (1 - F[..., None]) + fc * F[..., None], fc)
     img += glow * np.exp(-FLAME_ATTEN * np.minimum(dist, 1e5))[..., None]
+    vv = np.where(hit, veil(Pu, e, t), 0.0)[..., None]
+    img = img * (1 - vv) + fc * vv
     if halo:
         img = draw_lamps(img, shot, dist, flame_scale)
     return img, dict(dist=dist, hit=hit, D=D)
