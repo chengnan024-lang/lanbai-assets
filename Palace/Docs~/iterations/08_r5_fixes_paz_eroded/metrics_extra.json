@@ -1,64 +1,64 @@
 {
  "F5p": {
-  "warm_shadow_pct": 0.05,
-  "APL": 11.85,
-  "APL_outside_cabin_proxy": 16.55,
-  "dark_frac": 0.427,
-  "olive_pct": 0.001
+  "warm_shadow_pct": 0.04,
+  "APL": 12.14,
+  "APL_outside_cabin_proxy": 17.04,
+  "dark_frac": 0.426,
+  "olive_pct": 0.003
  },
  "que_l": {
-  "warm_shadow_pct": 0.036,
-  "APL": 18.61,
-  "APL_outside_cabin_proxy": 18.61,
+  "warm_shadow_pct": 0.03,
+  "APL": 18.79,
+  "APL_outside_cabin_proxy": 18.79,
   "dark_frac": 0.0,
   "olive_pct": 0.001
  },
  "que_lamp": {
-  "warm_shadow_pct": 0.107,
-  "APL": 15.27,
-  "APL_outside_cabin_proxy": 15.27,
+  "warm_shadow_pct": 0.091,
+  "APL": 15.79,
+  "APL_outside_cabin_proxy": 15.79,
   "dark_frac": 0.0,
-  "olive_pct": 0.0
+  "olive_pct": 0.002
  },
  "proc": {
-  "warm_shadow_pct": 0.048,
+  "warm_shadow_pct": 0.039,
   "APL": 12.31,
   "APL_outside_cabin_proxy": 17.41,
   "dark_frac": 0.43,
   "olive_pct": 0.0
  },
  "proc_l": {
-  "warm_shadow_pct": 0.305,
-  "APL": 14.17,
-  "APL_outside_cabin_proxy": 14.17,
+  "warm_shadow_pct": 0.301,
+  "APL": 14.18,
+  "APL_outside_cabin_proxy": 14.18,
   "dark_frac": 0.0,
-  "olive_pct": 0.015
+  "olive_pct": 0.016
  },
  "p706": {
-  "warm_shadow_pct": 0.052,
+  "warm_shadow_pct": 0.043,
   "APL": 12.3,
   "APL_outside_cabin_proxy": 17.39,
   "dark_frac": 0.43,
   "olive_pct": 0.0
  },
  "F6": {
-  "warm_shadow_pct": 0.154,
-  "APL": 12.08,
-  "APL_outside_cabin_proxy": 17.04,
+  "warm_shadow_pct": 0.14,
+  "APL": 12.07,
+  "APL_outside_cabin_proxy": 17.03,
   "dark_frac": 0.432,
   "olive_pct": 0.0
  },
  "F7": {
-  "warm_shadow_pct": 0.504,
+  "warm_shadow_pct": 0.502,
   "APL": 11.96,
   "APL_outside_cabin_proxy": 16.73,
   "dark_frac": 0.427,
   "olive_pct": 0.002
  },
  "F7_40x": {
-  "warm_shadow_pct": 0.198,
+  "warm_shadow_pct": 0.196,
   "APL": 12.14,
-  "APL_outside_cabin_proxy": 17.15,
+  "APL_outside_cabin_proxy": 17.16,
   "dark_frac": 0.433,
   "olive_pct": 0.001
  },
@@ -71,8 +71,8 @@
  },
  "F7pb": {
   "warm_shadow_pct": 0.015,
-  "APL": 20.9,
-  "APL_outside_cabin_proxy": 20.9,
+  "APL": 20.91,
+  "APL_outside_cabin_proxy": 20.91,
   "dark_frac": 0.0,
   "olive_pct": 0.0
  },

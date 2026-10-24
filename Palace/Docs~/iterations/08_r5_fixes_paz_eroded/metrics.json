@@ -1,18 +1,18 @@
 {
  "F5p": {
-  "APL": 11.86,
+  "APL": 12.15,
   "max_luma": 253.7,
   "brightest_xy_frac": [
    0.259,
    0.611
   ],
-  "purple_frac": 0.0043,
-  "purple_D21_frac": 0.0,
+  "purple_frac": 0.0057,
+  "purple_D21_frac": 3e-05,
   "frac_luma_gt_200": 0.0001
  },
  "F6": {
-  "APL": 12.09,
-  "max_luma": 238.0,
+  "APL": 12.08,
+  "max_luma": 229.5,
   "brightest_xy_frac": [
    0.357,
    0.458
@@ -23,7 +23,7 @@
  },
  "F7": {
   "APL": 11.96,
-  "max_luma": 249.5,
+  "max_luma": 249.6,
   "brightest_xy_frac": [
    0.225,
    0.383
@@ -34,7 +34,7 @@
  },
  "F7_40": {
   "APL": 11.96,
-  "max_luma": 242.8,
+  "max_luma": 242.7,
   "brightest_xy_frac": [
    0.047,
    0.292
@@ -45,7 +45,7 @@
  },
  "F7_40x": {
   "APL": 12.14,
-  "max_luma": 240.0,
+  "max_luma": 240.1,
   "brightest_xy_frac": [
    0.102,
    0.376
@@ -56,7 +56,7 @@
  },
  "F7pb": {
   "APL": 20.88,
-  "max_luma": 225.0,
+  "max_luma": 227.6,
   "brightest_xy_frac": [
    0.325,
    0.564
@@ -66,11 +66,11 @@
   "frac_luma_gt_200": 0.0
  },
  "hot": {
-  "APL": 25.55,
+  "APL": 25.54,
   "max_luma": 214.7,
   "brightest_xy_frac": [
-   0.0,
-   0.718
+   0.691,
+   0.054
   ],
   "purple_frac": 0.0,
   "purple_D21_frac": 0.0,
@@ -78,7 +78,7 @@
  },
  "p706": {
   "APL": 12.31,
-  "max_luma": 237.7,
+  "max_luma": 237.5,
   "brightest_xy_frac": [
    0.292,
    0.6
@@ -89,7 +89,7 @@
  },
  "proc": {
   "APL": 12.31,
-  "max_luma": 241.1,
+  "max_luma": 241.2,
   "brightest_xy_frac": [
    0.309,
    0.596
@@ -99,8 +99,8 @@
   "frac_luma_gt_200": 0.0001
  },
  "proc_l": {
-  "APL": 14.16,
-  "max_luma": 245.7,
+  "APL": 14.17,
+  "max_luma": 245.6,
   "brightest_xy_frac": [
    0.197,
    0.539
@@ -110,25 +110,25 @@
   "frac_luma_gt_200": 0.0004
  },
  "que_l": {
-  "APL": 18.6,
-  "max_luma": 250.6,
+  "APL": 18.78,
+  "max_luma": 254.0,
   "brightest_xy_frac": [
    0.554,
    0.897
   ],
-  "purple_frac": 0.003,
-  "purple_D21_frac": 0.0,
+  "purple_frac": 0.004,
+  "purple_D21_frac": 1e-05,
   "frac_luma_gt_200": 0.0001
  },
  "que_lamp": {
-  "APL": 15.27,
-  "max_luma": 237.0,
+  "APL": 15.78,
+  "max_luma": 247.5,
   "brightest_xy_frac": [
    0.291,
    0.61
   ],
-  "purple_frac": 0.0073,
-  "purple_D21_frac": 0.0,
+  "purple_frac": 0.0093,
+  "purple_D21_frac": 6e-05,
   "frac_luma_gt_200": 0.0001
  }
 }
