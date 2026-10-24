@@ -12,10 +12,10 @@
   samples[]    要查的时刻（标签 + t）；另外自动加每一段（scene_data_v21.PHASES）的中点
 每一个数都要有 source。没有数的项写 null，表里显示“?”，不当 0 算进合计里（合计旁边标出缺了几项）。"""
 import json
-sys.dont_write_bytecode = True   # importing Art/tools/v21 must not leave __pycache__ in other folders
 import math
 import os
 import sys
+sys.dont_write_bytecode = True   # importing Art/tools/v21 must not leave __pycache__ in other folders
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
@@ -128,6 +128,28 @@ def static(D):
     return rows
 
 
+def resident(D):
+    """D-27 #4: VRAM counts over each root's resident window (an item without `resident` is resident the whole film)."""
+    items = [it for it in D['items'] if it.get('kind') in ('texture', 'mesh', 'audio')]
+    edges = sorted({0.0} | {a for it in items for a, b in it.get('resident', [])} | {b for it in items for a, b in it.get('resident', [])})
+    B = D['budgets']
+    rows = ['| 从 t | 常驻显存 MB | 其中按窗口常驻的 | 缺数的项 |', '|---|---|---|---|']
+    peak = (0.0, 0.0)
+    for t in edges:
+        on = [it for it in items if not it.get('resident') or any(a <= t < b for a, b in it['resident'])]
+        mb = sum(it['vram_mb'] for it in on if it.get('vram_mb') is not None)
+        win = [it for it in on if it.get('resident')]
+        miss = [it['name'] for it in win if it.get('vram_mb') is None]
+        rows.append('| %.2f | %.0f %s | %s | %s |' % (t, mb, verdict(mb, B['vram_mb']),
+                    '、'.join('%s %s' % (it['name'].split('（')[0], '?' if it.get('vram_mb') is None else '%.1f' % it['vram_mb']) for it in win) or '—',
+                    '、'.join(m.split('（')[0] for m in miss)))
+        if mb > peak[1]:
+            peak = (t, mb)
+    rows.append('')
+    rows.append('峰值 **%.0f MB**（t = %.2f 起），预算 %d MB。没有 resident 的项（圣经清单里的贴图）按全片常驻算，偏保守。' % (peak[1], peak[0], B['vram_mb']))
+    return rows
+
+
 def chart(series, out):
     import matplotlib
     matplotlib.use('Agg')
@@ -161,7 +183,7 @@ def main():
     rows, series = table(D)
     srows = static(D)
     auto = ['<!-- AUTO:BEGIN（ledger.py 生成，别手改这一段） -->', '', '### 按时刻（9 MP、SPS-I、RTX 3060 级的估计）', ''] + rows + \
-           ['', '### 显存 / 下载（按包）', ''] + srows + ['', '![时间线](ledger_timeline.png)', '', '<!-- AUTO:END -->']
+           ['', '### 显存 / 下载（按包）', ''] + srows + ['', '### 显存按常驻窗口（D-27 #4）', ''] + resident(D) + ['', '![时间线](ledger_timeline.png)', '', '<!-- AUTO:END -->']
     p = os.path.join(HERE, 'README_账本.md')
     txt = open(p, encoding='utf-8').read() if os.path.exists(p) else '# 全片账本\n\n<!-- AUTO:BEGIN --><!-- AUTO:END -->\n'
     a = txt.index('<!-- AUTO:BEGIN')
