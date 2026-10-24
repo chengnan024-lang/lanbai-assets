@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """第 8 幕的爬升律 / 闪烁核查（圣经 §1.8、E2 / E17；D-09）：直接逐帧渲 act08_ref（含驱动报的 ΔEV、S7b → S8 → S8b 调色），三段：
-  exit     921.9 → 936.0   出海：钉住 → EV 线性放开 → F9 +0.5 EV → 4 s 回 0（圣经仿真 0.39 / 0.66 / 1.00 EV）
+  exit     922.36 → 936.0（之前是第 7 幕的画面）  出海：钉住 → EV 线性放开 → F9 +0.5 EV → 4 s 回 0（圣经仿真 0.39 / 0.66 / 1.00 EV）
   dissolve 955.0 → 968.0   天花溶化（每像素 5 s EV 线性）、另一片天淡入
   f12      986.0 → 1002.0  日线收缩、蓝时（变暗免费）
 每段量全画面 EV 的 0.25 / 1 / 2 秒窗最大爬升（限 0.5 / 1.0 / 1.8），再跑圣经的 lens_tech/flashcheck.py。
@@ -20,7 +20,7 @@ sys.path.insert(0, HERE)
 import act08_ref as R  # noqa: E402
 import lb_common as C  # noqa: E402
 
-SEGS = dict(exit=(921.9, 936.0), dissolve=(955.0, 968.0), f12=(986.0, 1002.0))
+SEGS = dict(exit=(922.36, 936.0), dissolve=(955.0, 968.0), f12=(986.0, 1002.0))
 
 
 def law(ts, Lmean):

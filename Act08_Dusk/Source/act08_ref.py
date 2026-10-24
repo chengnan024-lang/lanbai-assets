@@ -116,8 +116,9 @@ def ceiling(V, t, h):
     """colour (N,3), alpha (N,), distance (N,) of the ceiling (plane h above the eye, radius 2.7 km soft edge)"""
     n = len(V)
     col = np.zeros((n, 3)); al = np.zeros(n); dist = np.full(n, np.inf)
-    if t >= LAYOUT['ceiling']['dissolve_end'] or h <= 0.01:
+    if t >= LAYOUT['ceiling']['dissolve_end'] or t < B['exit']:
         return col, al, dist
+    h = max(h, 0.05)                         # the exit frame: the plane is at the eye, it already covers the upper half
     up = V[:, 1] > 1e-5
     tt = np.where(up, h / np.maximum(V[:, 1], 1e-5), np.inf)
     p = EYE[None] + V * tt[:, None]
@@ -155,7 +156,7 @@ def specks(V, img, t, h, pix):
         th = rng.random(S['count']) * 2 * np.pi
         y = rng.uniform(*S['y_above'], S['count'])
         SPK = np.stack([r * np.sin(th), y, r * np.cos(th)], -1)
-    if t >= LAYOUT['ceiling']['dissolve_end'] or h <= 0.5:
+    if t >= LAYOUT['ceiling']['dissolve_end'] or t < B['exit']:
         return
     P = SPK + np.array([0.0, h + AL.EYE[1], 0.0])            # world: above the ceiling plane
     D = P - EYE[None]
