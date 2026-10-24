@@ -655,8 +655,12 @@ float LanbaiNightWeight(float3 V, float x)
     // an ELLIPSE in (azimuth, elevation), not two windows multiplied (that drew a glowing rounded rectangle as the sky
     // went dark: art pre-review r0 #4). Inner ellipse (x, z) = full, outer (x + y, z + w) = none, each axis keeps its
     // own soft width (tech r2 #8); along each ray from the centre the weight runs from the inner to the outer rim.
-    float e1 = sqrt(LanbaiSq(az / max(p_NightMaskShape.x, 0.1)) + LanbaiSq(el / max(p_NightMaskShape.z, 0.1)));
-    float e2 = sqrt(LanbaiSq(az / max(p_NightMaskShape.x + p_NightMaskShape.y, 0.2)) + LanbaiSq(el / max(p_NightMaskShape.z + p_NightMaskShape.w, 0.2)));
+    // the last light HUGS the horizon (act 9 review: an ellipse symmetric about the horizon floated with its lower rim
+    // showing below it): below the horizon the elevation counts 4x, so the sky under the horizon goes dark first and
+    // the lit region is a low dome standing on the horizon
+    float elq = (el >= 0.0) ? el : -4.0 * el;
+    float e1 = sqrt(LanbaiSq(az / max(p_NightMaskShape.x, 0.1)) + LanbaiSq(elq / max(p_NightMaskShape.z, 0.1)));
+    float e2 = sqrt(LanbaiSq(az / max(p_NightMaskShape.x + p_NightMaskShape.y, 0.2)) + LanbaiSq(elq / max(p_NightMaskShape.z + p_NightMaskShape.w, 0.2)));
     float f = 1.0 - smoothstep(1.0 / max(e1, 1e-4), 1.0 / max(e2, 1e-4), 1.0);
     float d = 0.5 * f;
     float w = saturate((x - d) / (0.75 - 0.25 * f));

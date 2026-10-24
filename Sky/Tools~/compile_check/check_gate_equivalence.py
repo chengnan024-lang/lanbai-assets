@@ -9,7 +9,31 @@ import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from slang_cpu import run, read, stub, strip_includes
 
-gate = read('Gate/Shaders/LanbaiGateSky.cginc')
+SEEN = set()
+
+
+def expand(rel):
+    """the file with its Assets/Lanbai includes inlined once each, in place (as Unity compiles it; the gate's sky
+    include on main now pulls in LanbaiGlobals + LanbaiSky itself); other includes (UnityCG) dropped"""
+    if rel in SEEN:
+        return ''
+    SEEN.add(rel)
+    out = []
+    for line in read(rel).splitlines():
+        m = re.match(r'\s*#include\s+"Assets/Lanbai/([^"]+)"', line)
+        if m:
+            out.append(expand(m.group(1)))
+        elif re.match(r'\s*#include\s+"', line):
+            continue
+        else:
+            out.append(line)
+    return '\n'.join(out) + '\n'
+
+
+vr = expand('Common/Shaders/LanbaiVR.cginc')
+gate = expand('Gate/Shaders/LanbaiGateSky.cginc')
+sky = expand('Common/Shaders/LanbaiSky.cginc')       # '' when the gate's file already brought it in
+gate = gate + sky
 DEF = {'_HazeNear': '(0.1085, 0.1130, 0.1641, 1)', '_HazeFar': '(0.0436, 0.0504, 0.0726, 1)', '_Void': '(0.0021, 0.0030, 0.0070, 1)',
        '_BandAz': '(50, 60, 0, 0)', '_BandEl': '(6, 22, 2, 0)', '_BelowHorizon': '(-25, 0, 0.55, 0)', '_TearPos': '(0, 297, 1800, 0)'}
 for k, v in DEF.items():
@@ -18,7 +42,7 @@ gate = gate.replace('half   _BelowDesat;', 'static const half _BelowDesat = 0.6;
 for g in ('_Udon_FogBandDir', '_Udon_FogBandColor', '_Udon_TearPos', '_Udon_TearH', '_Udon_MoonDir', '_Udon_MoonDisc'):
     gate = re.sub(r'float4\s+%s;' % g, 'static float4 %s = float4(0, 0, 0, 0);' % g, gate)
 gate = re.sub(r'float\s+_Udon_FogBandWidth;', 'static float _Udon_FogBandWidth = 0;', gate)
-prelude = stub() + strip_includes(read('Common/Shaders/LanbaiVR.cginc')) + gate + strip_includes(read('Common/Shaders/LanbaiSky.cginc'))
+prelude = stub() + vr + gate
 body = r'''
  _WorldSpaceCameraPos = CAM[id]; _Udon_FogBandDir = BDIR[id]; _Udon_FogBandColor = BCOL[id]; _Udon_FogBandWidth = BW[id];
  GATE[id] = LanbaiBand(V[id]);

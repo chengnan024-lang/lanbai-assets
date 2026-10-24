@@ -185,7 +185,10 @@ float3 LanbaiHorizonBand(float3 V, float3 nearC, float3 farC, float3 voidC, floa
 // ~60 deg and then plunges = a dark disc overhead; the log blend darkens evenly in display terms (director r2 #2)
 inline float3 LanbaiGeoLerp(float3 a, float3 b, float t)
 {
-    return exp2(lerp(log2(max(a, 1e-6)), log2(max(b, 1e-6)), t));
+    // the floor follows the brighter end: a channel at 0 (act 9 writes the zenith (0.0015, 0, 0)) would otherwise be
+    // 1e-6 and the log blend would tint the middle ~30x toward the other channels (final review, act 9)
+    float fl = 1e-3 * max(max(max(a.r, a.g), max(a.b, b.r)), max(b.g, b.b)) + 1e-7;
+    return exp2(lerp(log2(max(a, fl)), log2(max(b, fl)), t));
 }
 
 inline float LanbaiUpStep(float lo, float hi, float el)
