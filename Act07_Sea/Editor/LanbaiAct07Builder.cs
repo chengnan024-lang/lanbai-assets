@@ -289,7 +289,7 @@ public static class LanbaiAct07Builder
         var sunGo = Child(lights, "Act07_Sun");
         var sun = sunGo.AddComponent<Light>();
         sun.type = LightType.Directional; sun.shadows = LightShadows.None; sun.renderMode = LightRenderMode.ForcePixel;
-        sun.color = Gamma(u.sun_colour); sun.intensity = Mathf.Pow(u.sun_E0, 1f / 2.2f);   // bible §1 trap 1: Inspector = E^(1/2.2)
+        sun.color = Gamma(u.sun_colour); sun.intensity = u.sun_E0;   // VRChat forces lightsUseLinearIntensity = true -> Inspector = E (D-00)
         float el = u.sun_elevation * Mathf.Deg2Rad, az = u.sun_azimuth * Mathf.Deg2Rad;
         Vector3 toSun = new Vector3(Mathf.Cos(el) * Mathf.Sin(az), Mathf.Sin(el), Mathf.Cos(el) * Mathf.Cos(az));
         sunGo.transform.rotation = Quaternion.LookRotation(-toSun, Vector3.up);

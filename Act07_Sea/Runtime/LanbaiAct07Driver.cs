@@ -63,7 +63,8 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
     public float causticsDepth0 = 0f, causticsDepth1 = 15f;
 
     [Header("Light")]
-    // colours of lights and RenderSettings are sRGB values (Unity linearises them); intensity = E^(1/2.2) (bible §1 trap 1)
+    // colours of lights and RenderSettings are sRGB values (Unity linearises them); intensity = linear E (D-00: VRChat forces
+    // lightsUseLinearIntensity = true -> Inspector = E; the bible's §1.5 trap 1 is void)
     public Color sunColor = new Color(0.69f, 0.85f, 0.95f, 1f);
     public float sunE0 = 1.6f, sunDepth1 = 15f;
     public Color ambSky, ambEquator, ambGround;
@@ -81,7 +82,7 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
     public float lastT0 = 506.36f, lastIn = 2f, lastSweep = 4f, lastOut = 2f;
     public Vector3 lastFromBus = new Vector3(3f, 14f, -2f), lastToBus = new Vector3(-1.5f, 14f, 4.5f), lastTargetBus = new Vector3(1f, 0.95f, -2f), lastTargetToBus = new Vector3(0f, 0.95f, 3.5f);
     public Vector3 beamGatherPos = new Vector3(0.87f, 5.16f, 1.76f), beamGatherAim = new Vector3(0.55f, 1.1f, 1.75f);
-    public float beamGatherE = 1f, beamLastE = 0.8f;
+    public float beamGatherE = 9f, beamLastE = 7.5f;
 
     [Header("Warm point (F5)")]
     public float warmFadeIn = 3f;
@@ -304,7 +305,7 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
         if (sun != null)
         {
             float e = under ? sunE0 * (1f - Mathf.Clamp01(depth / Mathf.Max(sunDepth1, 1e-3f))) : 0f;
-            sun.intensity = Mathf.Pow(e, 1f / 2.2f);   // VRChat: lightsUseLinearIntensity = false -> Inspector = E^(1/2.2)
+            sun.intensity = e;                 // VRChat forces lightsUseLinearIntensity = true -> Inspector = E (D-00)
             sun.color = sunColor;
             sun.enabled = e > 0.001f;
         }
@@ -373,7 +374,7 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
             beam.enabled = beamE > 0.001f;
             if (beam.enabled)
             {
-                beam.intensity = Mathf.Pow(beamE, 1f / 2.2f);
+                beam.intensity = beamE;              // Inspector = E (D-00)
                 beam.transform.localPosition = beamPos;
                 beam.transform.localRotation = Quaternion.LookRotation((beamAim - beamPos).normalized, Vector3.forward);
             }

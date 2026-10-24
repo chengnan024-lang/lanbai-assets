@@ -312,12 +312,12 @@ def main():
                                          'foot moves from target_from to target_to (past the main seat at ~0.58), the beam light rides with it; '
                                          'the quad starts 2 m above its moving centre so the seats sit at uv.y ~0.45 (full strength), then all shafts are gone')),
         beam=dict(kind='Spot (bus frame, under R_Act07Bus), culling Default + PlayerLocal: the light that lands on the seats and your hands',
-                  colour_hex='#B0D9F2', spot_angle_deg=28.0, range_m=9.0,
-                  gather=dict(pos_bus=[0.87, 5.16, 1.76], aim_bus=[0.55, 1.1, 1.75], E_peak=1.0,
+                  colour_hex='#B0D9F2', spot_angle_deg=28.0, range_m=20.0,
+                  gather=dict(pos_bus=[0.87, 5.16, 1.76], aim_bus=[0.55, 1.1, 1.75], E_peak=9.0,
                               curve='smoothstep 0 -> 1 from 453 to F4p 462.36, then smoothstep 1 -> 0 to 467.6'),
-                  last=dict(E_peak=0.8, curve='the last shaft\'s alpha; position = the shaft centre, aim = its moving foot'),
-                  note='Inspector intensity = E^(1/2.2) (bible §1 trap 1). Spot lights use Unity\'s legacy range falloff (trap 2): '
-                       'check against the grey card locally, the seats must stay <= luma 120 and <= 6 % of the frame'),
+                  last=dict(E_peak=7.5, curve='the last shaft\'s alpha; position = the shaft centre, aim = its moving foot'),
+                  note='Inspector intensity = E (D-00: VRChat forces lightsUseLinearIntensity = true; the bible §1.5 trap 1 is void). Spot lights use Unity\'s legacy range falloff (trap 2): '
+                       'check against the grey card locally, the seats must stay <= luma 120 and <= 6 % of the frame. Expected (cloud estimate: Built-in diffuse = albedo x colour x E x atten + the cabin ambient of §cabin, legacy atten ~ 1 / (1 + 25 d^2 / range^2), graded): F4p the worn seat #6A3434 luma ~79, the base vinyl #5A2126 ~57, a mid-grey hand ~155; F3e1 (E 7.5) worn ~72, base ~52. Range 20 m so the falloff over the 4 m throw is 0.49, not 0.16 (range 9 needed E ~44)'),
         particles=dict(snow=snow(rng), seeds=seeds(rng), trails=trails(rng), bubbles=bubbles(rng),
                        snow_sink=0.015, snow_sphere=SNOW_SPHERE, snow_box=SNOW_BOX, snow_lit=dict(gain=SNOW_LIT, depth_full=12.0, depth_none=30.0, note='sunlit flakes in the shallow water: the bible screen colour #697987 has the luma of the water behind it at F3 (both ~118) and the flakes vanish; x gain until 12 m, smoothstep to x 1 (the bible colour) by 30 m (给总控 第五批 #9)'), near_fade=[0.3, 0.8], min_px=1.2),
         ridge=ridge(rng),
