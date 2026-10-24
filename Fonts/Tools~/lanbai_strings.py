@@ -23,6 +23,12 @@ FONTS = {
         new_family='Lanbai Serif SC', style='Regular', rfn=True, rfn_names=('Source',), cjk=True, lang='zh-Hans',
         tmp_asset='Lanbai_SerifSC_Regular SDF', atlas=(2048, 2048), role='中文玩家看到的全部诗句（原文与德 / 英诗的中译）；天问的汉字；片尾中文姓名与书名',
         bible='§7.1 中文诗句 思源宋体 SC Regular；§5.5 原文姓名'),
+    'SourceHanSerifTW-Regular': dict(
+        original='SourceHanSerifTW-Regular.otf', subset='LanbaiSerifTC-Regular.otf',
+        new_family='Lanbai Serif TC', style='Regular', rfn=True, rfn_names=('Source',), cjk=True, lang='zh-Hant',
+        tmp_asset='Lanbai_SerifTC_Regular SDF', atlas=(2048, 2048),
+        role='第 4 版（D-31 #1 补充）：繁体中文玩家（客户端 zh-HK）看到的全部诗句与公告板字',
+        bible='§7.1 思源宋体（繁体用 TC，D-31）'),
     'SourceHanSerifSC-Medium': dict(
         original='SourceHanSerifCN-Medium.otf', subset='LanbaiSerifSC-Medium.otf',
         new_family='Lanbai Serif SC', style='Medium', rfn=True, rfn_names=('Source',), cjk=True, lang='zh-Hans',
@@ -86,13 +92,19 @@ SCRIM_LIGHT = ('#E8F1F5', 0.25)    # §7.2 亮衬 (scene 6d only)
 #   reads German originals and English for everything else. Chinese poems for ja players = 書き下し.
 #   Exception (D-30 #4): Tianwen (act 9) is a picture in the sky: everyone sees the Han characters; a non-zh player
 #   also gets one small line (1.8°) of their own language beneath.
-PLAYER_OF_CLIENT = (('zh', 'zh'), ('ja', 'ja'), ('de', 'de'), ('*', 'en'))
+#   D-31 #1 (supplement): Traditional Chinese = client code zh-HK (VRChat: zh-CN Simplified, zh-HK Traditional;
+#   VRCPlayerApi.GetCurrentLanguage() returns RFC 5646 codes since client 2024.1.1) -> player 'zht' (Source Han Serif
+#   TC, strings converted with OpenCC s2tw and checked by hand: 枕席 kept, not 枕蓆).
+#   First match wins, prefix compare, case-insensitive; empty / null -> 'en'.
+PLAYER_OF_CLIENT = (('zh-HK', 'zht'), ('zh-TW', 'zht'), ('zh-Hant', 'zht'), ('zh', 'zh'), ('ja', 'ja'), ('de', 'de'), ('*', 'en'))
 
 
 def shown_lang(item, player_lang):
     """v4: which text a player sees: 'main' (= the original) or a translation key."""
     if player_lang == item['original']['lang']:
         return 'main'
+    if player_lang == 'zht':
+        return 'zht'                          # Traditional: the original (zh poems) or the zh translation, converted
     want = player_lang if player_lang in ('zh', 'ja') else 'en'
     if want == item['original']['lang']:
         return 'main'
@@ -103,6 +115,8 @@ def translation_for(item, player_lang):
     """v4: only the Tianwen exception still has a second line (the player's language under the Han picture)."""
     if not item.get('picture'):
         return None
+    if player_lang in ('zh', 'zht'):
+        return None                           # a Chinese reader reads the picture itself
     k = shown_lang(item, player_lang)
     return None if k == 'main' else k
 
@@ -120,8 +134,8 @@ def seg(main, zh=None, ja=None, en=None, t=None, note=None, upright=None, label=
 
 # v4: a translation shown alone is the main line -> the main-line weights (§7.1: SC Regular, JP Regular, Garamond Regular).
 # Only the Tianwen sub-line (the one secondary line left) keeps the secondary weights (§7.3: Medium).
-TR_FONT = {'zh': 'SourceHanSerifSC-Regular', 'ja': 'SourceHanSerifJP-Regular', 'en': 'EBGaramond-Regular'}
-SUB_FONT = {'zh': 'SourceHanSerifSC-Medium', 'ja': 'SourceHanSerifJP-Medium', 'en': 'EBGaramond-Regular'}
+TR_FONT = {'zh': 'SourceHanSerifSC-Regular', 'zht': 'SourceHanSerifTW-Regular', 'ja': 'SourceHanSerifJP-Regular', 'en': 'EBGaramond-Regular'}
+SUB_FONT = {'zh': 'SourceHanSerifSC-Medium', 'zht': 'SourceHanSerifTW-Regular', 'ja': 'SourceHanSerifJP-Medium', 'en': 'EBGaramond-Regular'}
 # v4 sizes (D-30 #2): one block, main-line size for whichever script is shown: CJK 2.2–2.4°, Latin / German 2.0–2.2° em.
 # Per poem: size_cjk / size_lat. Latin = CJK − 0.2 (the bible's pairing, e.g. Rilke 2.0° em, D-13). Poems whose v3 size
 # was outside the range are clamped (size_note says so).
@@ -331,6 +345,7 @@ for p in POEMS:
 # v4 re-breaks (D-30 #2: a line <= 28° at the v4 size; break at the pause, never inside a word). Text unchanged.
 V4_LINES = {
     ('P03_LiBai_Dream', 0, 'en'): ['I would dream my way', 'to Wu and Yue,'],
+    ('P04a_Rilke', 0, 'ja'): ['美とは、', '恐ろしいものの', '始まりにほかならない'],   # D-13 (bus re-check, main cae5b7e)
     ('P03_LiBai_Dream', 1, 'ja'): ['一夜飛んで度る', '鏡湖の月'],
     ('P04b_Urlicht', 0, 'ja'): ['いいえ！', 'わたしは', '引き下がらなかった！'],
     ('P07_HeBo', 0, 'en'): ['Houses of fish-scale,', 'halls of dragons,'],
@@ -352,7 +367,7 @@ for (pid, i, key), lines in V4_LINES.items():
 for p_ in POEMS:
     if p_.get('line_cues'):
         p_['line_cues_by_shown'] = {}
-        for key in ['main'] + [l for l in ('zh', 'ja', 'en') if any(l in s_ for s_ in p_['segments'])]:
+        for key in ['main'] + [l for l in ('zh', 'zht', 'ja', 'en') if any(l in s_ for s_ in p_['segments'])]:
             idx = []
             for s_ in p_['segments']:
                 base = s_.get(key, [])
@@ -370,10 +385,38 @@ for p_ in POEMS:
                                              for ln, j in zip([l for s_ in p_['segments'] for l in s_.get(key + '_v4', s_.get(key, []))], idx)]
 
 
+# Traditional Chinese (zh-HK players, D-31 #1): OpenCC s2tw of the original (zh poems) or of the zh translation,
+# then checked by hand for the classical texts: 李白 枕席 (s2tw gives 枕蓆; the received text has 席). Same line breaks.
+ZHT = {
+    'P03_LiBai_Dream': [['我欲因之夢吳越'], ['一夜飛度鏡湖月']],
+    'P04a_Rilke': [['因為美無非是', '恐怖的開端']],
+    'P04b_Urlicht': [['啊，不！', '我不肯被拒之門外！']],
+    'P06_Dream_Dawn': [['我從天空墜入深海']],
+    'P07_HeBo': [['魚鱗屋兮龍堂'], ['紫貝闕兮朱宮'], ['靈何為兮水中']],
+    'P08a_Dream_Dusk': [['自深海墜入另一片天空']],
+    'P08b_Zhuangzi_Xiaoyao': [['天之蒼蒼，其正色邪？'], ['其視下也，亦若是則已矣']],
+    'P09_Tianwen': [['遂古之初，誰傳道之？'], ['上下未形，何由考之？']],
+    'P11_Zhuangzi_Butterfly': [['不知周之夢為胡蝶與'], ['胡蝶之夢為周與']],
+    'P12a_LiBai_Wake': [['惟覺時之枕席'], ['失向來之煙霞']],
+    'P12b_Keats': [['那樂聲已遠去', '我是醒著，還是睡著？']],
+}
+for p_ in POEMS:
+    for s_, lines in zip(p_['segments'], ZHT[p_['id']]):
+        src = s_['main'] if p_['original']['lang'] == 'zh' else s_['zh']
+        assert len(lines) == len(src) and all(len(a) == len(b) for a, b in zip(lines, src)), p_['id']
+        s_['zht'] = lines
+    if p_['id'] == 'P04a_Rilke':
+        # D-13 final (main cae5b7e, the bus's single-language check): block TOP-aligned, TMP pivot top-centre, at
+        # azimuth +5.5°, elevation -2.5° (= the top edge of every language's block), 60 m
+        p_['place'] = (5.5, -2.5, p_['place'][2])
+        p_['anchor_top'] = True
+        p_['place_note'] = 'D-13 定稿（main cae5b7e）：单语块顶边对齐，TMP 轴心在上中，方位 +5.5°、仰角 −2.5°（块的顶边）、60 m'
+
+
 def shown_strings(p):
     """v4: (font key, line, ident) of every line any player can see of poem p (charsets / subsets; no layout needed)."""
     out = []
-    for pl in ('zh', 'ja', 'en', 'de'):
+    for pl in ('zh', 'zht', 'ja', 'en', 'de'):
         k = 'main' if p.get('picture') else shown_lang(p, pl)
         fk = p['original']['font'] if k == 'main' else TR_FONT[k]
         for s_ in p['segments']:
@@ -418,7 +461,7 @@ for p in POEMS:
 
 # fill in translations dict per poem (fonts per language)
 for p in POEMS:
-    langs = [l for l in ('zh', 'ja', 'en') if any(l in s for s in p['segments'])]
+    langs = [l for l in ('zh', 'zht', 'ja', 'en') if any(l in s for s in p['segments'])]
     p['translations'] = {l: {'font': (SUB_FONT if p.get('picture') else TR_FONT)[l]} for l in langs}
 
 # ------------------------------------------------------------------------------------------ credits
@@ -504,9 +547,26 @@ DESTINATION_ROLL = {'font': 'SourceHanSansSC-Heavy', 'text': '蓝白', 'bible': 
 # bible §1.9: "公告板上也有手动开关" (auto-lite).  The bible gives it no label, and §6·12 bans UI prompts and any word
 # after Keats. So the switch carries NO TEXT: a small enamel toggle on the case, a warm-white pilot dot beside it
 # when on (art-team decision, v2 of this kit; the v1 proposal of a "LITE" plate is withdrawn). No UI strings exist.
-UI = []
-UI_NOTE = ('世界里没有任何 UI 文字。§1.9 的手动 auto-lite 开关做成无字的搪瓷拨钮，开着时旁边亮一粒暖白小灯'
-           '（§6·12：结尾不要 UI 提示，济慈之后不再有字）。')
+# D-31 (main 880a0f2): the notice board at the stop gets (1) the language switch 中 / 日 / EN (only for oneself; default
+# = client language) and (4) the departure notice in the player's own language, before the bus leaves. {0} = seconds
+# (digits are in every charset). Nothing after departure (§6·12: no UI prompt at the end, no word after Keats).
+UI_LANG = {'zh': 'SourceHanSerifSC-Regular', 'zht': 'SourceHanSerifTW-Regular', 'ja': 'SourceHanSerifJP-Regular', 'en': 'EBGaramond-Regular'}
+UI = [
+    dict(id='UI/lang/zh', lang='zh', font='SourceHanSerifSC-Regular', text='中', note='语言开关：中文（客户端 zh-HK 的人按它仍看繁体）'),
+    dict(id='UI/lang/ja', lang='ja', font='SourceHanSerifJP-Regular', text='日', note='语言开关：日本語'),
+    dict(id='UI/lang/en', lang='en', font='EBGaramond-Regular', text='EN', note='语言开关：English（其余语言）'),
+    dict(id='UI/depart/zh/1', lang='zh', font=UI_LANG['zh'], text='车将在 {0} 秒后开出'),
+    dict(id='UI/depart/zh/2', lang='zh', font=UI_LANG['zh'], text='之后上车的人会从路上加入'),
+    dict(id='UI/depart/zht/1', lang='zht', font=UI_LANG['zht'], text='車將在 {0} 秒後開出'),
+    dict(id='UI/depart/zht/2', lang='zht', font=UI_LANG['zht'], text='之後上車的人會從路上加入'),
+    dict(id='UI/depart/ja/1', lang='ja', font=UI_LANG['ja'], text='バスはあと {0} 秒で発車します'),
+    dict(id='UI/depart/ja/2', lang='ja', font=UI_LANG['ja'], text='そのあとに乗る人は、道の途中から合流します'),
+    dict(id='UI/depart/en/1', lang='en', font=UI_LANG['en'], text='The bus leaves in {0} seconds'),
+    dict(id='UI/depart/en/2', lang='en', font=UI_LANG['en'], text='Anyone who boards later joins from the road'),
+] + [dict(id='UI/digits/' + k, lang=k, font=f, text='0123456789') for k, f in UI_LANG.items()]
+UI_NOTE = ('D-31：公告板上有两样字——语言开关「中 / 日 / EN」（只对本人生效，默认按客户端语言）和发车提示'
+           '（发车前，用玩家自己的语言；{0} 换成秒数）。发车以后世界里没有任何 UI 字（§6·12）。§1.9 的手动 auto-lite '
+           '开关仍是无字的搪瓷拨钮。请日语母语者过目两句日文。')
 
 # Characters a Latin atlas should carry anyway (names typed later: 'Zoë', 'O’Neill', numbers …).
 ASCII = ''.join(chr(c) for c in range(0x20, 0x7F))

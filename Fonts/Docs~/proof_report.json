@@ -1,5 +1,5 @@
 {
- "glyphs_drawn": 6417,
+ "glyphs_drawn": 6756,
  "missing": [],
  "purple": [
   {
@@ -64,6 +64,72 @@
   },
   {
    "panel": "P12b_Keats/zh",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P03_LiBai_Dream/zht",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P04a_Rilke/zht",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P04b_Urlicht/zht",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": "n/a (scene 4)"
+  },
+  {
+   "panel": "P06_Dream_Dawn/zht",
+   "purple_share": 0.0,
+   "rule": "h285–330 C*>12",
+   "limit": 0.02
+  },
+  {
+   "panel": "P07_HeBo/zht",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P08a_Dream_Dusk/zht",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P08b_Zhuangzi/zht/t=12.0/w=1500",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P09_Tianwen/zht",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P11_Zhuangzi_Butterfly/zht",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P12a_LiBai_Wake/zht",
+   "purple_share": 0.0,
+   "rule": "h290–325 C*>15",
+   "limit": 0.02
+  },
+  {
+   "panel": "P12b_Keats/zht",
    "purple_share": 0.0,
    "rule": "h290–325 C*>15",
    "limit": 0.02
@@ -341,11 +407,11 @@
   },
   {
    "grade": "S3→S4@0.195",
-   "background": "#3E4358",
+   "background": "#3F4459",
    "scrim": null,
    "text_alpha": 0.9,
-   "under_text_unity": "#3E4358",
-   "under_text_proof": "#3E4358",
+   "under_text_unity": "#3F4459",
+   "under_text_proof": "#3F4459",
    "under_text_diff_codes": 0,
    "text_unity": "#D3D8E2",
    "text_proof": "#CFD4DD",
@@ -579,6 +645,267 @@
   },
   {
    "grade": "S2→S3@0.299",
+   "background": "#14141E",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#14141E",
+   "under_text_proof": "#14141E",
+   "under_text_diff_codes": 0,
+   "text_unity": "#DDD8CF",
+   "text_proof": "#D8D3CA",
+   "text_diff_codes": 5,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 216.4,
+   "target_luma": 221.4,
+   "bloom_share": 0.0,
+   "panel": "P03_LiBai_Dream/zht",
+   "poem": "P03_LiBai_Dream",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S3→S4@0.195",
+   "background": "#3F4459",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#3F4459",
+   "under_text_proof": "#3F4459",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D3D8E2",
+   "text_proof": "#CFD4DD",
+   "text_diff_codes": 5,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 215.7,
+   "target_luma": 220.6,
+   "bloom_share": 0.0,
+   "panel": "P04a_Rilke/zht",
+   "poem": "P04a_Rilke",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S4",
+   "background": "#414A66",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#414A66",
+   "under_text_proof": "#414A66",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D3D8E2",
+   "text_proof": "#CFD4DD",
+   "text_diff_codes": 5,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 215.7,
+   "target_luma": 220.6,
+   "bloom_share": 0.0,
+   "panel": "P04b_Urlicht/zht",
+   "poem": "P04b_Urlicht",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S6",
+   "background": "#767271",
+   "scrim": [
+    "#E8F1F5",
+    0.25,
+    0.116
+   ],
+   "text_alpha": 1.0,
+   "under_text_unity": "#9AA0A5",
+   "under_text_proof": "#9D9FA0",
+   "under_text_diff_codes": 5,
+   "text_unity": "#1F2A3A",
+   "text_proof": "#1F2A3A",
+   "text_diff_codes": 0,
+   "text_vs_target_codes": 0,
+   "text_luma_unity": 40.8,
+   "target_luma": 40.8,
+   "bloom_share": 0.0,
+   "panel": "P06_Dream_Dawn/zht",
+   "poem": "P06_Dream_Dawn",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S7b",
+   "background": "#082039",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#082039",
+   "under_text_proof": "#082039",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D4DDE3",
+   "text_proof": "#CFD8DD",
+   "text_diff_codes": 6,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 219.5,
+   "target_luma": 224.4,
+   "bloom_share": 0.0,
+   "panel": "P07_HeBo/zht",
+   "poem": "P07_HeBo",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S7b",
+   "background": "#2F2329",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#2F2329",
+   "under_text_proof": "#2F2329",
+   "under_text_diff_codes": 0,
+   "text_unity": "#E6D7D1",
+   "text_proof": "#E0D2CD",
+   "text_diff_codes": 6,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 217.8,
+   "target_luma": 222.5,
+   "bloom_share": 0.0016,
+   "panel": "P08a_Dream_Dusk/zht",
+   "poem": "P08a_Dream_Dusk",
+   "bloom": {
+    "halo_max_codes": 0.33,
+    "on_text_max_codes": 0.75,
+    "prefilter_max": 0.00273
+   }
+  },
+  {
+   "grade": "S8",
+   "background": "#C9B2A3",
+   "scrim": [
+    "#0E1A2F",
+    0.3,
+    0.367
+   ],
+   "text_alpha": 0.9,
+   "under_text_unity": "#AF978B",
+   "under_text_proof": "#AC988D",
+   "under_text_diff_codes": 3,
+   "text_unity": "#E7D9D2",
+   "text_proof": "#E5D6D0",
+   "text_diff_codes": 3,
+   "text_vs_target_codes": 4,
+   "text_luma_unity": 219.5,
+   "target_luma": 222.5,
+   "bloom_share": 0.0,
+   "panel": "P08b_Zhuangzi/zht/t=12.0/w=1500",
+   "poem": "P08b_Zhuangzi_Xiaoyao",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S9a",
+   "background": "#04060E",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#04060E",
+   "under_text_proof": "#04060E",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D4DDE3",
+   "text_proof": "#CFD8DD",
+   "text_diff_codes": 6,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 219.5,
+   "target_luma": 224.4,
+   "bloom_share": 0.0,
+   "panel": "P09_Tianwen/zht",
+   "poem": "P09_Tianwen",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S11",
+   "background": "#090D19",
+   "scrim": null,
+   "text_alpha": 0.8,
+   "under_text_unity": "#090D19",
+   "under_text_proof": "#090D19",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D6CBB8",
+   "text_proof": "#CBC2B2",
+   "text_diff_codes": 11,
+   "text_vs_target_codes": 12,
+   "text_luma_unity": 204.0,
+   "target_luma": 214.8,
+   "bloom_share": 0.0,
+   "panel": "P11_Zhuangzi_Butterfly/zht",
+   "poem": "P11_Zhuangzi_Butterfly",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S12",
+   "background": "#060A11",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#060A11",
+   "under_text_proof": "#060A11",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D4DDE3",
+   "text_proof": "#CFD8DD",
+   "text_diff_codes": 6,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 219.5,
+   "target_luma": 224.4,
+   "bloom_share": 0.0,
+   "panel": "P12a_LiBai_Wake/zht",
+   "poem": "P12a_LiBai_Wake",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S12",
+   "background": "#060910",
+   "scrim": null,
+   "text_alpha": 0.9,
+   "under_text_unity": "#060910",
+   "under_text_proof": "#060910",
+   "under_text_diff_codes": 0,
+   "text_unity": "#D4DDE3",
+   "text_proof": "#CFD8DD",
+   "text_diff_codes": 6,
+   "text_vs_target_codes": 5,
+   "text_luma_unity": 219.5,
+   "target_luma": 224.4,
+   "bloom_share": 0.0,
+   "panel": "P12b_Keats/zht",
+   "poem": "P12b_Keats",
+   "bloom": {
+    "halo_max_codes": 0,
+    "on_text_max_codes": 0,
+    "prefilter_max": 0.0
+   }
+  },
+  {
+   "grade": "S2→S3@0.299",
    "background": "#16151F",
    "scrim": null,
    "text_alpha": 0.9,
@@ -602,11 +929,11 @@
   },
   {
    "grade": "S3→S4@0.195",
-   "background": "#3E4359",
+   "background": "#3E4459",
    "scrim": null,
    "text_alpha": 0.9,
-   "under_text_unity": "#3E4359",
-   "under_text_proof": "#3E4359",
+   "under_text_unity": "#3E4459",
+   "under_text_proof": "#3E4459",
    "under_text_diff_codes": 0,
    "text_unity": "#D3D8E2",
    "text_proof": "#CFD4DD",
@@ -794,11 +1121,11 @@
   },
   {
    "grade": "S12",
-   "background": "#070A11",
+   "background": "#060A11",
    "scrim": null,
    "text_alpha": 0.9,
-   "under_text_unity": "#070A11",
-   "under_text_proof": "#070A11",
+   "under_text_unity": "#060A11",
+   "under_text_proof": "#060A11",
    "under_text_diff_codes": 0,
    "text_unity": "#D4DDE3",
    "text_proof": "#CFD8DD",
@@ -817,11 +1144,11 @@
   },
   {
    "grade": "S12",
-   "background": "#060910",
+   "background": "#060A10",
    "scrim": null,
    "text_alpha": 0.9,
-   "under_text_unity": "#060910",
-   "under_text_proof": "#060910",
+   "under_text_unity": "#060A10",
+   "under_text_proof": "#060A10",
    "under_text_diff_codes": 0,
    "text_unity": "#D4DDE3",
    "text_proof": "#CFD8DD",
@@ -863,11 +1190,11 @@
   },
   {
    "grade": "S3→S4@0.195",
-   "background": "#3E4358",
+   "background": "#3F455A",
    "scrim": null,
    "text_alpha": 0.9,
-   "under_text_unity": "#3E4358",
-   "under_text_proof": "#3E4358",
+   "under_text_unity": "#3F455A",
+   "under_text_proof": "#3F455A",
    "under_text_diff_codes": 0,
    "text_unity": "#D3D8E2",
    "text_proof": "#CFD4DD",
@@ -1078,11 +1405,11 @@
   },
   {
    "grade": "S12",
-   "background": "#060A10",
+   "background": "#060910",
    "scrim": null,
    "text_alpha": 0.9,
-   "under_text_unity": "#060A10",
-   "under_text_proof": "#060A10",
+   "under_text_unity": "#060910",
+   "under_text_proof": "#060910",
    "under_text_diff_codes": 0,
    "text_unity": "#D4DDE3",
    "text_proof": "#CFD8DD",
@@ -1124,11 +1451,11 @@
   },
   {
    "grade": "S3→S4@0.195",
-   "background": "#3E4359",
+   "background": "#3F455A",
    "scrim": null,
    "text_alpha": 0.9,
-   "under_text_unity": "#3E4359",
-   "under_text_proof": "#3E4359",
+   "under_text_unity": "#3F455A",
+   "under_text_proof": "#3F455A",
    "under_text_diff_codes": 0,
    "text_unity": "#D3D8E2",
    "text_proof": "#CFD4DD",
@@ -1339,11 +1666,11 @@
   },
   {
    "grade": "S12",
-   "background": "#060A10",
+   "background": "#060910",
    "scrim": null,
    "text_alpha": 0.9,
-   "under_text_unity": "#060A10",
-   "under_text_proof": "#060A10",
+   "under_text_unity": "#060910",
+   "under_text_proof": "#060910",
    "under_text_diff_codes": 0,
    "text_unity": "#D4DDE3",
    "text_proof": "#CFD8DD",
@@ -1586,5 +1913,5 @@
  "missing_count": 0,
  "verdict": "PASS: no missing glyph (no tofu)",
  "purple_verdict": "PASS: every panel outside scene 4 has <= 2 % purple (max 0.00 %)",
- "n_lines": 358
+ "n_lines": 404
 }

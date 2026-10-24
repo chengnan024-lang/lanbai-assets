@@ -48,6 +48,7 @@ namespace Lanbai.Fonts.EditorTools
         static readonly Spec[] Specs =
         {
             new Spec("SourceHanSerifSC-Regular", "LanbaiSerifSC-Regular.otf", "charset_SourceHanSerifSC-Regular.txt", "Lanbai_SerifSC_Regular SDF", 2048, 2048, false),
+            new Spec("SourceHanSerifTW-Regular", "LanbaiSerifTC-Regular.otf", "charset_SourceHanSerifTW-Regular.txt", "Lanbai_SerifTC_Regular SDF", 2048, 2048, false),   // v4: Traditional (zh-HK, D-31)
             new Spec("SourceHanSerifSC-Medium", "LanbaiSerifSC-Medium.otf", "charset_SourceHanSerifSC-Medium.txt", "Lanbai_SerifSC_Medium SDF", 2048, 2048, false),
             new Spec("SourceHanSerifJP-Regular", "LanbaiSerifJP-Regular.otf", "charset_SourceHanSerifJP-Regular.txt", "Lanbai_SerifJP_Regular SDF", 2048, 2048, false),   // v4: every Japanese poem line (D-30)
             new Spec("SourceHanSerifJP-Medium", "LanbaiSerifJP-Medium.otf", "charset_SourceHanSerifJP-Medium.txt", "Lanbai_SerifJP_Medium SDF", 2048, 2048, false),     // v4: only the Tianwen sub-line

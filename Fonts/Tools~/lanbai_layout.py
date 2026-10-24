@@ -28,7 +28,7 @@ LAT_TOP, LAT_BOT = 0.72, -0.26
 CJK_MID = (CJK_TOP + CJK_BOT) / 2            # 0.38 em above the baseline: optical centre of a Han character
 OPT_MIN_EM = 0.06                            # optical offsets below this are not worth a transform
 EL_MAX, EL_MIN = 10.0, -15.0                 # bible §7.3: a text's centre never above +10°, never below -15°
-PLAYERS = ('zh', 'ja', 'en', 'de')        # v4 (D-30): client language -> player key, L.PLAYER_OF_CLIENT
+PLAYERS = ('zh', 'zht', 'ja', 'en', 'de')        # v4 (D-30): client language -> player key, L.PLAYER_OF_CLIENT
 
 
 def is_cjk(fk):
@@ -213,6 +213,8 @@ def block_layout(p, player, segs=None):
         t_first = mb_last - (pitch_em(ft) * st + 0.35 * sm)
         bot = t_first - (len(trl) - 1) * pitch_em(ft) * st + bot_em(ft) * st
     shift = el - (top + bot) / 2.0
+    if p.get('anchor_top'):
+        shift = el - top                       # D-13 Rilke: the block's top edge sits on the anchor (TMP pivot top-centre)
     if p.get('picture'):
         # Tianwen: the Han characters ARE the picture (act 9 lights a star on each one at the zh layout's positions),
         # so they sit exactly where the zh player sees them; the player's line simply hangs beneath
@@ -232,7 +234,7 @@ def block_layout(p, player, segs=None):
         adj = EL_MAX - hi
     elif lo < EL_MIN:
         adj = EL_MIN - lo
-    if adj and p.get('picture'):
+    if adj and (p.get('picture') or p.get('anchor_top')):
         raise ValueError('%s/%s: the picture would have to move (%.2f°)' % (p['id'], player, adj))
     if adj:
         objs = build(shift + adj)
@@ -266,6 +268,7 @@ def block_layout(p, player, segs=None):
         o['star_points'] = pts
         o['char_objects'] = chars
     return add_scrims(dict(player=player, shown=key, shown_lang=lang, translation=tr, anchor=[p['place'][0], el, d],
+                           anchor_mode='top' if p.get('anchor_top') else 'centre',
                            block_center_el=round(el + adj, 3), shift_deg=round(adj, 3), objects=objs,
                            block=block_box(objs, p['place'][0])), p)
 

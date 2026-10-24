@@ -4,10 +4,22 @@
    "original": "SourceHanSerifCN-Regular.otf",
    "original_bytes": 11626108,
    "subset": "LanbaiSerifSC-Regular.otf",
-   "subset_bytes": 74628,
-   "subset_glyphs": 356,
+   "subset_bytes": 77332,
+   "subset_glyphs": 366,
    "notes": [
     "renamed Lanbai Serif SC (RFN Source)",
+    "U+2014 -> full-width mid-line rule (glyph of U+2500)"
+   ],
+   "missing": []
+  },
+  "SourceHanSerifTW-Regular": {
+   "original": "SourceHanSerifTW-Regular.otf",
+   "original_bytes": 7936412,
+   "subset": "LanbaiSerifTC-Regular.otf",
+   "subset_bytes": 73836,
+   "subset_glyphs": 335,
+   "notes": [
+    "renamed Lanbai Serif TC (RFN Source)",
     "U+2014 -> full-width mid-line rule (glyph of U+2500)"
    ],
    "missing": []
@@ -40,8 +52,8 @@
    "original": "SourceHanSerifJP-Regular.otf",
    "original_bytes": 6210796,
    "subset": "LanbaiSerifJP-Regular.otf",
-   "subset_bytes": 73068,
-   "subset_glyphs": 337,
+   "subset_bytes": 77456,
+   "subset_glyphs": 351,
    "notes": [
     "renamed Lanbai Serif JP (RFN Source)",
     "U+2014 -> full-width mid-line rule (glyph of U+2500)"
@@ -120,10 +132,19 @@
  "atlas": {
   "SourceHanSerifSC-Regular": {
    "exact": {
-    "glyphs": 133,
+    "glyphs": 155,
     "bible_atlas": "2048x2048",
     "fits_bible_atlas": true,
-    "fill_bible_atlas": 0.324,
+    "fill_bible_atlas": 0.365,
+    "smallest_fit": "2048x1024"
+   }
+  },
+  "SourceHanSerifTW-Regular": {
+   "exact": {
+    "glyphs": 119,
+    "bible_atlas": "2048x2048",
+    "fits_bible_atlas": true,
+    "fill_bible_atlas": 0.28,
     "smallest_fit": "2048x1024"
    }
   },
@@ -147,19 +168,19 @@
   },
   "SourceHanSerifJP-Regular": {
    "exact": {
-    "glyphs": 108,
+    "glyphs": 134,
     "bible_atlas": "2048x2048",
     "fits_bible_atlas": true,
-    "fill_bible_atlas": 0.245,
+    "fill_bible_atlas": 0.294,
     "smallest_fit": "2048x1024"
    }
   },
   "EBGaramond-Regular": {
    "exact": {
-    "glyphs": 65,
+    "glyphs": 71,
     "bible_atlas": "1024x1024",
     "fits_bible_atlas": true,
-    "fill_bible_atlas": 0.293,
+    "fill_bible_atlas": 0.32,
     "smallest_fit": "1024x512"
    },
    "+ascii": {
@@ -241,6 +262,11 @@
    "target_pitch_em": 1.6,
    "tmp_line_spacing": 16.3
   },
+  "SourceHanSerifTW-Regular": {
+   "font_line_height_em": 1.437,
+   "target_pitch_em": 1.6,
+   "tmp_line_spacing": 16.3
+  },
   "SourceHanSerifSC-Medium": {
    "font_line_height_em": 1.437,
    "target_pitch_em": 1.6,
@@ -304,6 +330,17 @@
   },
   {
    "poem": "P03_LiBai_Dream",
+   "player": "zht",
+   "card": null,
+   "obj": "main",
+   "center_el": -9.0,
+   "top_el": -5.88,
+   "bottom_el": -12.12,
+   "shift_deg": 0.0,
+   "ok": true
+  },
+  {
+   "poem": "P03_LiBai_Dream",
    "player": "ja",
    "card": null,
    "obj": "main",
@@ -340,9 +377,20 @@
    "player": "zh",
    "card": null,
    "obj": "main",
-   "center_el": -8.0,
-   "top_el": -5.14,
-   "bottom_el": -10.86,
+   "center_el": -5.36,
+   "top_el": -2.5,
+   "bottom_el": -8.22,
+   "shift_deg": 0.0,
+   "ok": true
+  },
+  {
+   "poem": "P04a_Rilke",
+   "player": "zht",
+   "card": null,
+   "obj": "main",
+   "center_el": -5.36,
+   "top_el": -2.5,
+   "bottom_el": -8.22,
    "shift_deg": 0.0,
    "ok": true
   },
@@ -351,9 +399,9 @@
    "player": "ja",
    "card": null,
    "obj": "main",
-   "center_el": -8.0,
-   "top_el": -5.14,
-   "bottom_el": -10.86,
+   "center_el": -7.12,
+   "top_el": -2.5,
+   "bottom_el": -11.74,
    "shift_deg": 0.0,
    "ok": true
   },
@@ -362,9 +410,9 @@
    "player": "en",
    "card": null,
    "obj": "main",
-   "center_el": -8.0,
-   "top_el": -5.67,
-   "bottom_el": -10.33,
+   "center_el": -4.83,
+   "top_el": -2.5,
+   "bottom_el": -7.16,
    "shift_deg": 0.0,
    "ok": true
   },
@@ -373,15 +421,26 @@
    "player": "de",
    "card": null,
    "obj": "main",
-   "center_el": -8.0,
-   "top_el": -5.67,
-   "bottom_el": -10.33,
+   "center_el": -4.83,
+   "top_el": -2.5,
+   "bottom_el": -7.16,
    "shift_deg": 0.0,
    "ok": true
   },
   {
    "poem": "P04b_Urlicht",
    "player": "zh",
+   "card": null,
+   "obj": "main",
+   "center_el": -8.0,
+   "top_el": -5.14,
+   "bottom_el": -10.86,
+   "shift_deg": 0.0,
+   "ok": true
+  },
+  {
+   "poem": "P04b_Urlicht",
+   "player": "zht",
    "card": null,
    "obj": "main",
    "center_el": -8.0,
@@ -436,6 +495,17 @@
   },
   {
    "poem": "P06_Dream_Dawn",
+   "player": "zht",
+   "card": null,
+   "obj": "main",
+   "center_el": -12.0,
+   "top_el": -10.8,
+   "bottom_el": -13.2,
+   "shift_deg": 0.0,
+   "ok": true
+  },
+  {
+   "poem": "P06_Dream_Dawn",
    "player": "ja",
    "card": null,
    "obj": "main",
@@ -480,6 +550,17 @@
   },
   {
    "poem": "P07_HeBo",
+   "player": "zht",
+   "card": null,
+   "obj": "main",
+   "center_el": 6.0,
+   "top_el": 10.62,
+   "bottom_el": 1.38,
+   "shift_deg": 0.0,
+   "ok": true
+  },
+  {
+   "poem": "P07_HeBo",
    "player": "ja",
    "card": null,
    "obj": "main",
@@ -514,6 +595,17 @@
   {
    "poem": "P08a_Dream_Dusk",
    "player": "zh",
+   "card": null,
+   "obj": "main",
+   "center_el": -12.0,
+   "top_el": -10.8,
+   "bottom_el": -13.2,
+   "shift_deg": 0.0,
+   "ok": true
+  },
+  {
+   "poem": "P08a_Dream_Dusk",
+   "player": "zht",
    "card": null,
    "obj": "main",
    "center_el": -12.0,
@@ -591,6 +683,50 @@
   {
    "poem": "P08b_Zhuangzi_Xiaoyao",
    "player": "zh",
+   "card": null,
+   "obj": "L3′",
+   "center_el": 1.76,
+   "top_el": 2.86,
+   "bottom_el": 0.66,
+   "shift_deg": 0.0,
+   "ok": true
+  },
+  {
+   "poem": "P08b_Zhuangzi_Xiaoyao",
+   "player": "zht",
+   "card": null,
+   "obj": "L1",
+   "center_el": 5.28,
+   "top_el": 6.38,
+   "bottom_el": 4.18,
+   "shift_deg": 0.0,
+   "ok": true
+  },
+  {
+   "poem": "P08b_Zhuangzi_Xiaoyao",
+   "player": "zht",
+   "card": null,
+   "obj": "L1′",
+   "center_el": -5.28,
+   "top_el": -4.18,
+   "bottom_el": -6.38,
+   "shift_deg": 0.0,
+   "ok": true
+  },
+  {
+   "poem": "P08b_Zhuangzi_Xiaoyao",
+   "player": "zht",
+   "card": null,
+   "obj": "L3",
+   "center_el": -1.76,
+   "top_el": -0.66,
+   "bottom_el": -2.86,
+   "shift_deg": 0.0,
+   "ok": true
+  },
+  {
+   "poem": "P08b_Zhuangzi_Xiaoyao",
+   "player": "zht",
    "card": null,
    "obj": "L3′",
    "center_el": 1.76,
@@ -744,6 +880,17 @@
   },
   {
    "poem": "P09_Tianwen",
+   "player": "zht",
+   "card": null,
+   "obj": "main",
+   "center_el": 8.0,
+   "top_el": 10.86,
+   "bottom_el": 5.14,
+   "shift_deg": 0.0,
+   "ok": true
+  },
+  {
+   "poem": "P09_Tianwen",
    "player": "ja",
    "card": null,
    "obj": "main",
@@ -821,6 +968,17 @@
   },
   {
    "poem": "P11_Zhuangzi_Butterfly",
+   "player": "zht",
+   "card": null,
+   "obj": "main",
+   "center_el": 8.0,
+   "top_el": 10.86,
+   "bottom_el": 5.14,
+   "shift_deg": 0.0,
+   "ok": true
+  },
+  {
+   "poem": "P11_Zhuangzi_Butterfly",
    "player": "ja",
    "card": null,
    "obj": "main",
@@ -865,6 +1023,17 @@
   },
   {
    "poem": "P12a_LiBai_Wake",
+   "player": "zht",
+   "card": null,
+   "obj": "main",
+   "center_el": -9.0,
+   "top_el": -5.88,
+   "bottom_el": -12.12,
+   "shift_deg": 0.0,
+   "ok": true
+  },
+  {
+   "poem": "P12a_LiBai_Wake",
    "player": "ja",
    "card": null,
    "obj": "main",
@@ -899,6 +1068,17 @@
   {
    "poem": "P12b_Keats",
    "player": "zh",
+   "card": null,
+   "obj": "main",
+   "center_el": -14.0,
+   "top_el": -11.14,
+   "bottom_el": -16.86,
+   "shift_deg": 0.0,
+   "ok": true
+  },
+  {
+   "poem": "P12b_Keats",
+   "player": "zht",
    "card": null,
    "obj": "main",
    "center_el": -14.0,
@@ -1440,6 +1620,20 @@
    ]
   },
   {
+   "name": "Lanbai_SerifTC_Regular SDF - P03_LiBai_Dream",
+   "kind": "tmp_face",
+   "tmp_asset": "Lanbai_SerifTC_Regular SDF",
+   "poem": "P03_LiBai_Dream",
+   "profile": "S2→S3@0.299",
+   "target": "#E2DDD4",
+   "fill_hdr": "#FFEECE @ +0.73",
+   "fill_linear": [
+    1.6629,
+    1.4163,
+    1.0219
+   ]
+  },
+  {
    "name": "Lanbai_SerifJP_Regular SDF - P03_LiBai_Dream",
    "kind": "tmp_face",
    "tmp_asset": "Lanbai_SerifJP_Regular SDF",
@@ -1471,6 +1665,20 @@
    "name": "Lanbai_SerifSC_Regular SDF - P04a_Rilke",
    "kind": "tmp_face",
    "tmp_asset": "Lanbai_SerifSC_Regular SDF",
+   "poem": "P04a_Rilke",
+   "profile": "S3→S4@0.195",
+   "target": "#D8DDE6",
+   "fill_hdr": "#EFF3FF @ +1.11",
+   "fill_linear": [
+    1.8523,
+    1.9239,
+    2.1559
+   ]
+  },
+  {
+   "name": "Lanbai_SerifTC_Regular SDF - P04a_Rilke",
+   "kind": "tmp_face",
+   "tmp_asset": "Lanbai_SerifTC_Regular SDF",
    "poem": "P04a_Rilke",
    "profile": "S3→S4@0.195",
    "target": "#D8DDE6",
@@ -1538,6 +1746,20 @@
    ]
   },
   {
+   "name": "Lanbai_SerifTC_Regular SDF - P04b_Urlicht",
+   "kind": "tmp_face",
+   "tmp_asset": "Lanbai_SerifTC_Regular SDF",
+   "poem": "P04b_Urlicht",
+   "profile": "S4",
+   "target": "#D8DDE6",
+   "fill_hdr": "#EEF1FF @ +1.05",
+   "fill_linear": [
+    1.7676,
+    1.8223,
+    2.066
+   ]
+  },
+  {
    "name": "Lanbai_SerifJP_Regular SDF - P04b_Urlicht",
    "kind": "tmp_face",
    "tmp_asset": "Lanbai_SerifJP_Regular SDF",
@@ -1583,6 +1805,20 @@
    "name": "Lanbai_SerifSC_Regular SDF - P06_Dream_Dawn",
    "kind": "tmp_face",
    "tmp_asset": "Lanbai_SerifSC_Regular SDF",
+   "poem": "P06_Dream_Dawn",
+   "profile": "S6",
+   "target": "#1F2A3A",
+   "fill_hdr": "#2F3848",
+   "fill_linear": [
+    0.0282,
+    0.0394,
+    0.0655
+   ]
+  },
+  {
+   "name": "Lanbai_SerifTC_Regular SDF - P06_Dream_Dawn",
+   "kind": "tmp_face",
+   "tmp_asset": "Lanbai_SerifTC_Regular SDF",
    "poem": "P06_Dream_Dawn",
    "profile": "S6",
    "target": "#1F2A3A",
@@ -1651,6 +1887,20 @@
    ]
   },
   {
+   "name": "Lanbai_SerifTC_Regular SDF - P07_HeBo",
+   "kind": "tmp_face",
+   "tmp_asset": "Lanbai_SerifTC_Regular SDF",
+   "poem": "P07_HeBo",
+   "profile": "S7b",
+   "target": "#D9E2E7",
+   "fill_hdr": "#F2FDFF @ +0.60",
+   "fill_linear": [
+    1.34,
+    1.4839,
+    1.5111
+   ]
+  },
+  {
    "name": "Lanbai_SerifJP_Regular SDF - P07_HeBo",
    "kind": "tmp_face",
    "tmp_asset": "Lanbai_SerifJP_Regular SDF",
@@ -1693,6 +1943,20 @@
    ]
   },
   {
+   "name": "Lanbai_SerifTC_Regular SDF - P08a_Dream_Dusk",
+   "kind": "tmp_face",
+   "tmp_asset": "Lanbai_SerifTC_Regular SDF",
+   "poem": "P08a_Dream_Dusk",
+   "profile": "S7b",
+   "target": "#EADCD6",
+   "fill_hdr": "#FFD9C4 @ +0.92",
+   "fill_linear": [
+    1.8917,
+    1.3078,
+    1.0413
+   ]
+  },
+  {
    "name": "Lanbai_SerifJP_Regular SDF - P08a_Dream_Dusk",
    "kind": "tmp_face",
    "tmp_asset": "Lanbai_SerifJP_Regular SDF",
@@ -1724,6 +1988,20 @@
    "name": "Lanbai_SerifSC_Regular SDF - P08b_Zhuangzi_Xiaoyao",
    "kind": "tmp_face",
    "tmp_asset": "Lanbai_SerifSC_Regular SDF",
+   "poem": "P08b_Zhuangzi_Xiaoyao",
+   "profile": "S8",
+   "target": "#EADCD6",
+   "fill_hdr": "#FFE5E0 @ +1.00",
+   "fill_linear": [
+    1.9987,
+    1.5691,
+    1.4909
+   ]
+  },
+  {
+   "name": "Lanbai_SerifTC_Regular SDF - P08b_Zhuangzi_Xiaoyao",
+   "kind": "tmp_face",
+   "tmp_asset": "Lanbai_SerifTC_Regular SDF",
    "poem": "P08b_Zhuangzi_Xiaoyao",
    "profile": "S8",
    "target": "#EADCD6",
@@ -1834,6 +2112,20 @@
    ]
   },
   {
+   "name": "Lanbai_SerifTC_Regular SDF - P11_Zhuangzi_Butterfly",
+   "kind": "tmp_face",
+   "tmp_asset": "Lanbai_SerifTC_Regular SDF",
+   "poem": "P11_Zhuangzi_Butterfly",
+   "profile": "S11",
+   "target": "#E0D6C4",
+   "fill_hdr": "#FFE1AE @ +0.50",
+   "fill_linear": [
+    1.412,
+    1.0613,
+    0.5973
+   ]
+  },
+  {
    "name": "Lanbai_SerifJP_Regular SDF - P11_Zhuangzi_Butterfly",
    "kind": "tmp_face",
    "tmp_asset": "Lanbai_SerifJP_Regular SDF",
@@ -1876,6 +2168,20 @@
    ]
   },
   {
+   "name": "Lanbai_SerifTC_Regular SDF - P12a_LiBai_Wake",
+   "kind": "tmp_face",
+   "tmp_asset": "Lanbai_SerifTC_Regular SDF",
+   "poem": "P12a_LiBai_Wake",
+   "profile": "S12",
+   "target": "#D9E2E7",
+   "fill_hdr": "#E6F9FF @ +0.40",
+   "fill_linear": [
+    1.0487,
+    1.2551,
+    1.3196
+   ]
+  },
+  {
    "name": "Lanbai_SerifJP_Regular SDF - P12a_LiBai_Wake",
    "kind": "tmp_face",
    "tmp_asset": "Lanbai_SerifJP_Regular SDF",
@@ -1907,6 +2213,20 @@
    "name": "Lanbai_SerifSC_Regular SDF - P12b_Keats",
    "kind": "tmp_face",
    "tmp_asset": "Lanbai_SerifSC_Regular SDF",
+   "poem": "P12b_Keats",
+   "profile": "S12",
+   "target": "#D9E2E7",
+   "fill_hdr": "#E6F9FF @ +0.40",
+   "fill_linear": [
+    1.0487,
+    1.2551,
+    1.3196
+   ]
+  },
+  {
+   "name": "Lanbai_SerifTC_Regular SDF - P12b_Keats",
+   "kind": "tmp_face",
+   "tmp_asset": "Lanbai_SerifTC_Regular SDF",
    "poem": "P12b_Keats",
    "profile": "S12",
    "target": "#D9E2E7",

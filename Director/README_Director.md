@@ -75,5 +75,5 @@ for 每个驱动（按类名、再按场景层级排序，固定顺序）：
 ## 5. 以后（Director 这一层还要做的）
 
 - `LanbaiReflectionBaker.cs`（圣经 §8.1 #14）：每幕一张 `_Udon_ReflCube`（256/面、BC6H、含天空与云卡）；第 7 幕的 `ReflCube_Dawn`、`Refl_S7c`、`ReflCube_DuskLower`。海现在自带的临时烘焙在它做好以后替换。
-- 离开车厢包围盒的人 0.5 秒遮罩下送回座位（圣经 §1.8，Director 2 Hz 检查）——和本地的 `busMin/busMax` 对一下谁做。
+- 离开车厢包围盒的人 0.5 秒遮罩下送回座位（圣经 §1.8，Director 2 Hz 检查）——和本地的 `busMin/busMax` 对一下谁做。**D-31 #3 定了规则**：按 `VRCPlayerApi.GetPosition()`（根）判断，不按头；头探出玻璃 ≤ 0.6 m 不触发；包围盒从「车」的 `BusLayout.json` 读（PAZ 车宽 2.44 m，中线 x = −0.18）。`BusLayout.json` 进 main 以后做。
 - auto-lite（圣经 §1.9：第 1 幕静止时测 10 秒帧时，超过 1.25 倍帧间隔就自动启用砍法）。

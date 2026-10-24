@@ -512,7 +512,7 @@ def caption_bar(width, lines):
     return im
 
 FONT_CN = {'SourceHanSerifSC-Regular': '思源宋体 SC Regular', 'SourceHanSerifSC-Medium': '思源宋体 SC Medium',
-           'SourceHanSerifJP-Medium': '源ノ明朝 JP Medium', 'SourceHanSerifJP-Regular': '源ノ明朝 JP Regular', 'EBGaramond-Regular': 'EB Garamond Regular',
+           'SourceHanSerifJP-Medium': '源ノ明朝 JP Medium', 'SourceHanSerifJP-Regular': '源ノ明朝 JP Regular', 'SourceHanSerifTW-Regular': '思源宋体 TC Regular', 'EBGaramond-Regular': 'EB Garamond Regular',
            'EBGaramond-Italic': 'EB Garamond Italic'}
 
 def fmt_place(pl):
@@ -670,7 +670,7 @@ def block_panel(p, player, ppd, width, lay, label_extra=''):
     out = Image.fromarray(u8)
     tr = lay['translation']
     m0 = objs[0]
-    shown_txt = ('原文' if lay['shown'] == 'main' else {'zh': '中译', 'ja': '日文（書き下し / 和訳）', 'en': '英译'}[lay['shown']])
+    shown_txt = ('原文' if lay['shown'] == 'main' else {'zh': '中译', 'zht': '繁体', 'ja': '日文（書き下し / 和訳）', 'en': '英译'}[lay['shown']])
     tr_txt = ('+ 下面一行 ' + FONT_CN[p['translations'][tr]['font']] + ' %.1f°（天问的例外，D-30 #4）' % p['size_tr']) if tr else '（只这一份，D-30）'
     cents = '  '.join('%s %+.1f°' % ({'main': '字块', 'translation': '小字'}[o['role']], o['center_el']) for o in objs)
     blk = lay['block']
@@ -771,6 +771,7 @@ def zhuangzi_view(p, player, ppd, width, t=None, az_c=None, half=ZH_HALF_DEG, la
 # ------------------------------------------------------------------------------------------ sheets
 PLAYER_TITLE = {   # v4 (D-30): one language per player
     'zh': ('中文玩家', '只看中文：中文诗看原文，德 / 英诗看中译（思源宋体 SC Regular，主行字号）；天问照常'),
+    'zht': ('繁體中文玩家（客戶端 zh-HK）', '只看中文（繁體）：中文詩看原文、德／英詩看中譯，思源宋體 TC Regular；天問照常（圖是同一幅）'),
     'ja': ('日本語のプレイヤー', '日本語だけ：漢詩は書き下し、独・英詩は和訳（源ノ明朝 JP Regular、主行の字号）。天問は漢字の下に一行（JP Medium 1.8°）'),
     'en': ('English-language players (and every other language)', 'English only: translations of the Chinese and German poems, Keats in the original (EB Garamond); Tianwen: the Han picture + one English line'),
     'de': ('Deutschsprachige Spieler', 'Rilke und Urlicht im Original, alles andere auf Englisch; Tianwen: das Bild in Han-Zeichen + eine englische Zeile'),
@@ -1082,10 +1083,10 @@ def credits_proof():
 
 
 if __name__ == '__main__':
-    which = sys.argv[1:] or ['zh', 'ja', 'en', 'de', 'tri', 'credits']
+    which = sys.argv[1:] or ['zh', 'zht', 'ja', 'en', 'de', 'tri', 'credits']
     made = []
     for w in which:
-        if w in ('zh', 'ja', 'en', 'de'):
+        if w in ('zh', 'zht', 'ja', 'en', 'de'):
             made.append(sheet(w))
         elif w == 'tri':
             made.append(trilingual())

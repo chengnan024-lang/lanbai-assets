@@ -1,10 +1,11 @@
-Lanbai Fonts kit build report  2026-10-24 06:03 UTC
+Lanbai Fonts kit build report  2026-10-24 06:19 UTC
 
 == SUBSETS (original -> subset) ==
-SourceHanSerifSC-Regular       SourceHanSerifCN-Regular.otf       11626108 B -> LanbaiSerifSC-Regular.otf                   74628 B  ( 0.64%)  glyphs 356  renamed Lanbai Serif SC (RFN Source); U+2014 -> full-width mid-line rule (glyph of U+2500)
+SourceHanSerifSC-Regular       SourceHanSerifCN-Regular.otf       11626108 B -> LanbaiSerifSC-Regular.otf                   77332 B  ( 0.67%)  glyphs 366  renamed Lanbai Serif SC (RFN Source); U+2014 -> full-width mid-line rule (glyph of U+2500)
+SourceHanSerifTW-Regular       SourceHanSerifTW-Regular.otf        7936412 B -> LanbaiSerifTC-Regular.otf                   73836 B  ( 0.93%)  glyphs 335  renamed Lanbai Serif TC (RFN Source); U+2014 -> full-width mid-line rule (glyph of U+2500)
 SourceHanSerifSC-Medium        SourceHanSerifCN-Medium.otf        11734704 B -> LanbaiSerifSC-Medium.otf                    40036 B  ( 0.34%)  glyphs 249  renamed Lanbai Serif SC (RFN Source); U+2014 -> full-width mid-line rule (glyph of U+2500)
 SourceHanSerifJP-Medium        SourceHanSerifJP-Medium.otf         6279840 B -> LanbaiSerifJP-Medium.otf                    44660 B  ( 0.71%)  glyphs 259  renamed Lanbai Serif JP (RFN Source); U+2014 -> full-width mid-line rule (glyph of U+2500)
-SourceHanSerifJP-Regular       SourceHanSerifJP-Regular.otf        6210796 B -> LanbaiSerifJP-Regular.otf                   73068 B  ( 1.18%)  glyphs 337  renamed Lanbai Serif JP (RFN Source); U+2014 -> full-width mid-line rule (glyph of U+2500)
+SourceHanSerifJP-Regular       SourceHanSerifJP-Regular.otf        6210796 B -> LanbaiSerifJP-Regular.otf                   77456 B  ( 1.25%)  glyphs 351  renamed Lanbai Serif JP (RFN Source); U+2014 -> full-width mid-line rule (glyph of U+2500)
 SourceHanSansSC-Heavy          SourceHanSansCN-Heavy.otf           8808068 B -> LanbaiSansSC-Heavy.otf                      27264 B  ( 0.31%)  glyphs 233  renamed Lanbai Sans SC (RFN Source)
 EBGaramond-Regular             EBGaramond[wght].ttf                 851176 B -> EBGaramond-Regular.Lanbai.ttf               56468 B  ( 6.63%)  glyphs 259  kern table injected from GPOS: 2518 pairs over 223 glyphs (Value2.XPlacement pairs ignored: 0)
 EBGaramond-Italic              EBGaramond-Italic[wght].ttf          754468 B -> EBGaramond-Italic.Lanbai.ttf                54164 B  ( 7.18%)  glyphs 255  kern table injected from GPOS: 2279 pairs over 220 glyphs (Value2.XPlacement pairs ignored: 0)
@@ -12,18 +13,19 @@ BarlowSemiCondensed-SemiBold   BarlowSemiCondensed-SemiBold.ttf     109772 B -> 
 IMFellEnglish-Roman            IMFeENrm28P.ttf                      194992 B -> LanbaiSlip-Regular.ttf                     110076 B  (56.45%)  glyphs 223  renamed Lanbai Slip (RFN IM FELL/IM_FELL/FELL English)
 IMFellEnglishSC                IMFeENsc28P.ttf                      183932 B -> LanbaiSlipSC-Regular.ttf                   112560 B  (61.20%)  glyphs 222  renamed Lanbai Slip SC (RFN IM FELL/IM_FELL/FELL English)
 
-total 46753856 B -> 660048 B (1.41%, saved 46.1 MB)
+total 54690268 B -> 740976 B (1.35%, saved 53.9 MB)
 
 == COVERAGE ==
 coverage: PASS — every character of every string is in its font (subset AND original)
 
 == CHARSETS ==
-SourceHanSerifSC-Regular        134 chars  Charsets/charset_SourceHanSerifSC-Regular.txt
+SourceHanSerifSC-Regular        157 chars  Charsets/charset_SourceHanSerifSC-Regular.txt
+SourceHanSerifTW-Regular        120 chars  Charsets/charset_SourceHanSerifTW-Regular.txt
 SourceHanSerifSC-Medium          22 chars  Charsets/charset_SourceHanSerifSC-Medium.txt
 SourceHanSerifJP-Medium          29 chars  Charsets/charset_SourceHanSerifJP-Medium.txt
-SourceHanSerifJP-Regular        108 chars  Charsets/charset_SourceHanSerifJP-Regular.txt
+SourceHanSerifJP-Regular        135 chars  Charsets/charset_SourceHanSerifJP-Regular.txt
 SourceHanSansSC-Heavy             2 chars  Charsets/charset_SourceHanSansSC-Heavy.txt
-EBGaramond-Regular               66 chars  Charsets/charset_EBGaramond-Regular.txt
+EBGaramond-Regular               72 chars  Charsets/charset_EBGaramond-Regular.txt
 EBGaramond-Italic                44 chars  Charsets/charset_EBGaramond-Italic.txt
 BarlowSemiCondensed-SemiBold      5 chars  Charsets/charset_BarlowSemiCondensed-SemiBold.txt
 IMFellEnglish-Roman              37 chars  Charsets/charset_IMFellEnglish-Roman.txt
@@ -31,11 +33,12 @@ IMFellEnglishSC                  16 chars  Charsets/charset_IMFellEnglishSC.txt
 
 == ATLAS ==
 TMP atlas fit at Sampling Point Size 90, Padding 10 (bible §7.2), shelf-packer check (conservative).
-SourceHanSerifSC-Regular       exact   133 glyphs  bible atlas 2048x2048: FITS, area fill 32.4%   smallest shelf fit: 2048x1024
+SourceHanSerifSC-Regular       exact   155 glyphs  bible atlas 2048x2048: FITS, area fill 36.5%   smallest shelf fit: 2048x1024
+SourceHanSerifTW-Regular       exact   119 glyphs  bible atlas 2048x2048: FITS, area fill 28.0%   smallest shelf fit: 2048x1024
 SourceHanSerifSC-Medium        exact    21 glyphs  bible atlas 2048x2048: FITS, area fill  4.5%   smallest shelf fit: 512x512
 SourceHanSerifJP-Medium        exact    29 glyphs  bible atlas 2048x2048: FITS, area fill  6.5%   smallest shelf fit: 1024x512
-SourceHanSerifJP-Regular       exact   108 glyphs  bible atlas 2048x2048: FITS, area fill 24.5%   smallest shelf fit: 2048x1024
-EBGaramond-Regular             exact    65 glyphs  bible atlas 1024x1024: FITS, area fill 29.3%   smallest shelf fit: 1024x512
+SourceHanSerifJP-Regular       exact   134 glyphs  bible atlas 2048x2048: FITS, area fill 29.4%   smallest shelf fit: 2048x1024
+EBGaramond-Regular             exact    71 glyphs  bible atlas 1024x1024: FITS, area fill 32.0%   smallest shelf fit: 1024x512
 EBGaramond-Regular             +ascii   99 glyphs  bible atlas 1024x1024: FITS, area fill 42.6%   smallest shelf fit: 1024x1024
 EBGaramond-Italic              exact    43 glyphs  bible atlas 1024x1024: FITS, area fill 21.4%   smallest shelf fit: 1024x512
 EBGaramond-Italic              +ascii   97 glyphs  bible atlas 1024x1024: FITS, area fill 47.5%   smallest shelf fit: 1024x1024
@@ -49,6 +52,7 @@ IMFellEnglishSC                +ascii   94 glyphs  bible atlas 1024x1024: FITS, 
 == LEADING ==
 TMP Line Spacing (units of 1/100 em, added to the font line height) to get the bible leading (§7.2):
 SourceHanSerifSC-Regular       font line height 1.437 em -> target 1.60 em -> TMP Line Spacing +16.3
+SourceHanSerifTW-Regular       font line height 1.437 em -> target 1.60 em -> TMP Line Spacing +16.3
 SourceHanSerifSC-Medium        font line height 1.437 em -> target 1.60 em -> TMP Line Spacing +16.3
 SourceHanSerifJP-Medium        font line height 1.437 em -> target 1.60 em -> TMP Line Spacing +16.3
 SourceHanSerifJP-Regular       font line height 1.437 em -> target 1.60 em -> TMP Line Spacing +16.3
@@ -62,20 +66,27 @@ IMFellEnglishSC                font line height 1.269 em -> target 1.22 em -> TM
 == OPTICAL OFFSETS ==
 Optical offsets (em, move the line RIGHT) where the ink centre is off the TMP box centre by >= 0.06 em (line-final ？！ in Chinese fonts sit in the left half of their em box). Applied in the proofs; in Unity use tmp_text_rich (<space> tag, Rich Text on) or per-line local x = line_local_x_m.
   +0.067 em  SourceHanSerifSC-Regular   一夜飞度镜湖月
+  +0.067 em  SourceHanSerifTW-Regular   一夜飛度鏡湖月
   +0.067 em  SourceHanSerifJP-Regular   一夜飛んで度る
   +0.082 em  SourceHanSerifJP-Regular   鏡湖の月
+  +0.337 em  SourceHanSerifJP-Regular   美とは、
   +0.310 em  SourceHanSerifSC-Regular   啊，不！
   +0.329 em  SourceHanSerifSC-Regular   我不肯被拒之门外！
+  +0.185 em  SourceHanSerifTW-Regular   啊，不！
+  +0.204 em  SourceHanSerifTW-Regular   我不肯被拒之門外！
   +0.181 em  SourceHanSerifJP-Regular   いいえ！
   +0.180 em  SourceHanSerifJP-Regular   引き下がらなかった！
   +0.068 em  SourceHanSerifJP-Regular   霊何為れぞ水中にある
   -0.082 em  SourceHanSerifSC-Regular   自深海坠入另一片天空
+  -0.081 em  SourceHanSerifTW-Regular   自深海墜入另一片天空
   -0.070 em  SourceHanSerifJP-Regular   もうひとつの空へ
   +0.253 em  SourceHanSerifSC-Regular   天之苍苍，其正色邪？
+  +0.123 em  SourceHanSerifTW-Regular   天之蒼蒼，其正色邪？
   +0.255 em  SourceHanSerifSC-Regular   遂古之初，谁传道之？
   +0.250 em  SourceHanSerifSC-Regular   上下未形，何由考之？
   +0.077 em  SourceHanSerifJP-Medium    何に由りて之を考ふる
   +0.251 em  SourceHanSerifSC-Regular   我是醒着，还是睡着？
+  +0.121 em  SourceHanSerifTW-Regular   我是醒著，還是睡著？
 
 == COLOUR (screen target -> fill) ==
 Bible law 1: §7.5 / §7.2 hexes are SCREEN targets. Each is solved with the bible look simulator
@@ -111,29 +122,36 @@ P11_Zhuangzi_Butterfly   S11            target #E0D6C4 (luma 214.8) -> fill #FFE
 P12a_LiBai_Wake          S12            target #D9E2E7 (luma 224.4) -> fill #E6F9FF @ +0.40    -> screen #D9E2E7  x_T0 1.001  bloom share 0.00000 / 0.00000@a0.90  ok   [naive: #CED2D7 luma 210]
 P12b_Keats               S12            target #D9E2E7 (luma 224.4) -> fill #E6F9FF @ +0.40    -> screen #D9E2E7  x_T0 1.001  bloom share 0.00000 / 0.00000@a0.90  ok   [naive: #CED2D7 luma 210]
 
-materials (Editor/LanbaiPoemMaterials.cs builds them): 37
+materials (Editor/LanbaiPoemMaterials.cs builds them): 47
   Lanbai_SerifSC_Regular SDF - P03_LiBai_Dream               tmp_face  S2→S3@0.299    #E2DDD4 -> #FFEECE @ +0.73
+  Lanbai_SerifTC_Regular SDF - P03_LiBai_Dream               tmp_face  S2→S3@0.299    #E2DDD4 -> #FFEECE @ +0.73
   Lanbai_SerifJP_Regular SDF - P03_LiBai_Dream               tmp_face  S2→S3@0.299    #E2DDD4 -> #FFEECE @ +0.73
   Lanbai_Garamond_Regular SDF - P03_LiBai_Dream              tmp_face  S2→S3@0.299    #E2DDD4 -> #FFEECE @ +0.73
   Lanbai_SerifSC_Regular SDF - P04a_Rilke                    tmp_face  S3→S4@0.195    #D8DDE6 -> #EFF3FF @ +1.11
+  Lanbai_SerifTC_Regular SDF - P04a_Rilke                    tmp_face  S3→S4@0.195    #D8DDE6 -> #EFF3FF @ +1.11
   Lanbai_SerifJP_Regular SDF - P04a_Rilke                    tmp_face  S3→S4@0.195    #D8DDE6 -> #EFF3FF @ +1.11
   Lanbai_Garamond_Regular SDF - P04a_Rilke                   tmp_face  S3→S4@0.195    #D8DDE6 -> #EFF3FF @ +1.11
   Lanbai_Garamond_Italic SDF - P04a_Rilke                    tmp_face  S3→S4@0.195    #D8DDE6 -> #EFF3FF @ +1.11
   Lanbai_SerifSC_Regular SDF - P04b_Urlicht                  tmp_face  S4             #D8DDE6 -> #EEF1FF @ +1.05
+  Lanbai_SerifTC_Regular SDF - P04b_Urlicht                  tmp_face  S4             #D8DDE6 -> #EEF1FF @ +1.05
   Lanbai_SerifJP_Regular SDF - P04b_Urlicht                  tmp_face  S4             #D8DDE6 -> #EEF1FF @ +1.05
   Lanbai_Garamond_Regular SDF - P04b_Urlicht                 tmp_face  S4             #D8DDE6 -> #EEF1FF @ +1.05
   Lanbai_Garamond_Italic SDF - P04b_Urlicht                  tmp_face  S4             #D8DDE6 -> #EEF1FF @ +1.05
   Lanbai_SerifSC_Regular SDF - P06_Dream_Dawn                tmp_face  S6             #1F2A3A -> #2F3848
+  Lanbai_SerifTC_Regular SDF - P06_Dream_Dawn                tmp_face  S6             #1F2A3A -> #2F3848
   Lanbai_SerifJP_Regular SDF - P06_Dream_Dawn                tmp_face  S6             #1F2A3A -> #2F3848
   Lanbai_Garamond_Regular SDF - P06_Dream_Dawn               tmp_face  S6             #1F2A3A -> #2F3848
   Lanbai_Scrim_Light_S6                                      scrim     S6             #E8F1F5 -> #DFF4FF @ +1.90
   Lanbai_SerifSC_Regular SDF - P07_HeBo                      tmp_face  S7b            #D9E2E7 -> #F2FDFF @ +0.60
+  Lanbai_SerifTC_Regular SDF - P07_HeBo                      tmp_face  S7b            #D9E2E7 -> #F2FDFF @ +0.60
   Lanbai_SerifJP_Regular SDF - P07_HeBo                      tmp_face  S7b            #D9E2E7 -> #F2FDFF @ +0.60
   Lanbai_Garamond_Regular SDF - P07_HeBo                     tmp_face  S7b            #D9E2E7 -> #F2FDFF @ +0.60
   Lanbai_SerifSC_Regular SDF - P08a_Dream_Dusk               tmp_face  S7b            #EADCD6 -> #FFD9C4 @ +0.92
+  Lanbai_SerifTC_Regular SDF - P08a_Dream_Dusk               tmp_face  S7b            #EADCD6 -> #FFD9C4 @ +0.92
   Lanbai_SerifJP_Regular SDF - P08a_Dream_Dusk               tmp_face  S7b            #EADCD6 -> #FFD9C4 @ +0.92
   Lanbai_Garamond_Regular SDF - P08a_Dream_Dusk              tmp_face  S7b            #EADCD6 -> #FFD9C4 @ +0.92
   Lanbai_SerifSC_Regular SDF - P08b_Zhuangzi_Xiaoyao         tmp_face  S8             #EADCD6 -> #FFE5E0 @ +1.00
+  Lanbai_SerifTC_Regular SDF - P08b_Zhuangzi_Xiaoyao         tmp_face  S8             #EADCD6 -> #FFE5E0 @ +1.00
   Lanbai_SerifJP_Regular SDF - P08b_Zhuangzi_Xiaoyao         tmp_face  S8             #EADCD6 -> #FFE5E0 @ +1.00
   Lanbai_Garamond_Regular SDF - P08b_Zhuangzi_Xiaoyao        tmp_face  S8             #EADCD6 -> #FFE5E0 @ +1.00
   Lanbai_Scrim_Dark_S8                                       scrim     S8             #0E1A2F -> #182238
@@ -141,12 +159,15 @@ materials (Editor/LanbaiPoemMaterials.cs builds them): 37
   Lanbai_SerifJP_Medium SDF - P09_Tianwen                    tmp_face  S9a            #D9E2E7 -> #EBF9FA
   Lanbai_Garamond_Regular SDF - P09_Tianwen                  tmp_face  S9a            #D9E2E7 -> #EBF9FA
   Lanbai_SerifSC_Regular SDF - P11_Zhuangzi_Butterfly        tmp_face  S11            #E0D6C4 -> #FFE1AE @ +0.50
+  Lanbai_SerifTC_Regular SDF - P11_Zhuangzi_Butterfly        tmp_face  S11            #E0D6C4 -> #FFE1AE @ +0.50
   Lanbai_SerifJP_Regular SDF - P11_Zhuangzi_Butterfly        tmp_face  S11            #E0D6C4 -> #FFE1AE @ +0.50
   Lanbai_Garamond_Regular SDF - P11_Zhuangzi_Butterfly       tmp_face  S11            #E0D6C4 -> #FFE1AE @ +0.50
   Lanbai_SerifSC_Regular SDF - P12a_LiBai_Wake               tmp_face  S12            #D9E2E7 -> #E6F9FF @ +0.40
+  Lanbai_SerifTC_Regular SDF - P12a_LiBai_Wake               tmp_face  S12            #D9E2E7 -> #E6F9FF @ +0.40
   Lanbai_SerifJP_Regular SDF - P12a_LiBai_Wake               tmp_face  S12            #D9E2E7 -> #E6F9FF @ +0.40
   Lanbai_Garamond_Regular SDF - P12a_LiBai_Wake              tmp_face  S12            #D9E2E7 -> #E6F9FF @ +0.40
   Lanbai_SerifSC_Regular SDF - P12b_Keats                    tmp_face  S12            #D9E2E7 -> #E6F9FF @ +0.40
+  Lanbai_SerifTC_Regular SDF - P12b_Keats                    tmp_face  S12            #D9E2E7 -> #E6F9FF @ +0.40
   Lanbai_SerifJP_Regular SDF - P12b_Keats                    tmp_face  S12            #D9E2E7 -> #E6F9FF @ +0.40
   Lanbai_Garamond_Italic SDF - P12b_Keats                    tmp_face  S12            #D9E2E7 -> #E6F9FF @ +0.40
 
@@ -210,36 +231,42 @@ blocks shifted to respect the range: none
 
 P03_LiBai_Dream
   zh           main         centre   -9.00°   top   -5.88°   bottom  -12.12°   shift +0.00°  ok
+  zht          main         centre   -9.00°   top   -5.88°   bottom  -12.12°   shift +0.00°  ok
   ja           main         centre   -9.00°   top   -2.04°   bottom  -15.96°   shift +0.00°  ok
   en           main         centre   -9.00°   top   -3.47°   bottom  -14.53°   shift +0.00°  ok
   de           main         centre   -9.00°   top   -3.47°   bottom  -14.53°   shift +0.00°  ok
 
 P04a_Rilke
-  zh           main         centre   -8.00°   top   -5.14°   bottom  -10.86°   shift +0.00°  ok
-  ja           main         centre   -8.00°   top   -5.14°   bottom  -10.86°   shift +0.00°  ok
-  en           main         centre   -8.00°   top   -5.67°   bottom  -10.33°   shift +0.00°  ok
-  de           main         centre   -8.00°   top   -5.67°   bottom  -10.33°   shift +0.00°  ok
+  zh           main         centre   -5.36°   top   -2.50°   bottom   -8.22°   shift +0.00°  ok
+  zht          main         centre   -5.36°   top   -2.50°   bottom   -8.22°   shift +0.00°  ok
+  ja           main         centre   -7.12°   top   -2.50°   bottom  -11.74°   shift +0.00°  ok
+  en           main         centre   -4.83°   top   -2.50°   bottom   -7.16°   shift +0.00°  ok
+  de           main         centre   -4.83°   top   -2.50°   bottom   -7.16°   shift +0.00°  ok
 
 P04b_Urlicht
   zh           main         centre   -8.00°   top   -5.14°   bottom  -10.86°   shift +0.00°  ok
+  zht          main         centre   -8.00°   top   -5.14°   bottom  -10.86°   shift +0.00°  ok
   ja           main         centre   -8.00°   top   -3.38°   bottom  -12.62°   shift +0.00°  ok
   en           main         centre   -8.00°   top   -5.67°   bottom  -10.33°   shift +0.00°  ok
   de           main         centre   -8.00°   top   -5.67°   bottom  -10.33°   shift +0.00°  ok
 
 P06_Dream_Dawn
   zh           main         centre  -12.00°   top  -10.80°   bottom  -13.20°   shift +0.00°  ok
+  zht          main         centre  -12.00°   top  -10.80°   bottom  -13.20°   shift +0.00°  ok
   ja           main         centre  -12.00°   top   -8.88°   bottom  -15.12°   shift +0.00°  ok
   en           main         centre  -12.00°   top   -9.44°   bottom  -14.56°   shift +0.00°  ok
   de           main         centre  -12.00°   top   -9.44°   bottom  -14.56°   shift +0.00°  ok
 
 P07_HeBo
   zh           main         centre   +6.00°   top  +10.62°   bottom   +1.38°   shift +0.00°  ok
+  zht          main         centre   +6.00°   top  +10.62°   bottom   +1.38°   shift +0.00°  ok
   ja           main         centre   +6.00°   top  +10.62°   bottom   +1.38°   shift +0.00°  ok
   en           main         centre   +6.00°   top  +13.73°   bottom   -1.73°   shift +0.00°  ok
   de           main         centre   +6.00°   top  +13.73°   bottom   -1.73°   shift +0.00°  ok
 
 P08a_Dream_Dusk
   zh           main         centre  -12.00°   top  -10.80°   bottom  -13.20°   shift +0.00°  ok
+  zht          main         centre  -12.00°   top  -10.80°   bottom  -13.20°   shift +0.00°  ok
   ja           main         centre  -12.00°   top   -6.96°   bottom  -17.04°   shift +0.00°  ok
   en           main         centre  -12.00°   top   -9.44°   bottom  -14.56°   shift +0.00°  ok
   de           main         centre  -12.00°   top   -9.44°   bottom  -14.56°   shift +0.00°  ok
@@ -249,6 +276,10 @@ P08b_Zhuangzi_Xiaoyao
   zh           L1′          centre   -5.28°   top   -4.18°   bottom   -6.38°   shift +0.00°  ok
   zh           L3           centre   -1.76°   top   -0.66°   bottom   -2.86°   shift +0.00°  ok
   zh           L3′          centre   +1.76°   top   +2.86°   bottom   +0.66°   shift +0.00°  ok
+  zht          L1           centre   +5.28°   top   +6.38°   bottom   +4.18°   shift +0.00°  ok
+  zht          L1′          centre   -5.28°   top   -4.18°   bottom   -6.38°   shift +0.00°  ok
+  zht          L3           centre   -1.76°   top   -0.66°   bottom   -2.86°   shift +0.00°  ok
+  zht          L3′          centre   +1.76°   top   +2.86°   bottom   +0.66°   shift +0.00°  ok
   ja           L1           centre   +9.98°   top  +12.69°   bottom   +7.28°   shift +0.00°  ok
   ja           L1′          centre   -9.98°   top   -7.28°   bottom  -12.69°   shift +0.00°  ok
   ja           L3           centre   -3.33°   top   -0.62°   bottom   -6.03°   shift +0.00°  ok
@@ -264,6 +295,7 @@ P08b_Zhuangzi_Xiaoyao
 
 P09_Tianwen
   zh           main         centre   +8.00°   top  +10.86°   bottom   +5.14°   shift +0.00°  ok
+  zht          main         centre   +8.00°   top  +10.86°   bottom   +5.14°   shift +0.00°  ok
   ja           main         centre   +8.00°   top  +10.86°   bottom   +5.14°   shift +0.00°  ok
   ja           translation  centre   -0.44°   top   +3.34°   bottom   -4.22°   shift +0.00°  ok
   en           main         centre   +8.00°   top  +10.86°   bottom   +5.14°   shift +0.00°  ok
@@ -273,18 +305,21 @@ P09_Tianwen
 
 P11_Zhuangzi_Butterfly
   zh           main         centre   +8.00°   top  +10.86°   bottom   +5.14°   shift +0.00°  ok
+  zht          main         centre   +8.00°   top  +10.86°   bottom   +5.14°   shift +0.00°  ok
   ja           main         centre   +8.00°   top  +12.62°   bottom   +3.38°   shift +0.00°  ok
   en           main         centre   +8.00°   top  +11.68°   bottom   +4.32°   shift +0.00°  ok
   de           main         centre   +8.00°   top  +11.68°   bottom   +4.32°   shift +0.00°  ok
 
 P12a_LiBai_Wake
   zh           main         centre   -9.00°   top   -5.88°   bottom  -12.12°   shift +0.00°  ok
+  zht          main         centre   -9.00°   top   -5.88°   bottom  -12.12°   shift +0.00°  ok
   ja           main         centre   -9.00°   top   -3.96°   bottom  -14.04°   shift +0.00°  ok
   en           main         centre   -9.00°   top   -3.47°   bottom  -14.53°   shift +0.00°  ok
   de           main         centre   -9.00°   top   -3.47°   bottom  -14.53°   shift +0.00°  ok
 
 P12b_Keats
   zh           main         centre  -14.00°   top  -11.14°   bottom  -16.86°   shift +0.00°  ok
+  zht          main         centre  -14.00°   top  -11.14°   bottom  -16.86°   shift +0.00°  ok
   ja           main         centre  -14.00°   top   -9.38°   bottom  -18.62°   shift +0.00°  ok
   en           main         centre  -14.00°   top  -11.67°   bottom  -16.33°   shift +0.00°  ok
   de           main         centre  -14.00°   top  -11.67°   bottom  -16.33°   shift +0.00°  ok
@@ -296,6 +331,8 @@ widest line: 27.6° -> PASS
 P03_LiBai_Dream
    18.2°       zh   main        2.4°  我欲因之梦吴越
    18.2°       zh   main        2.4°  一夜飞度镜湖月
+   18.2°       zht  main        2.4°  我欲因之夢吳越
+   18.2°       zht  main        2.4°  一夜飛度鏡湖月
    15.6°       ja   main        2.4°  我之に因りて
    23.5°       ja   main        2.4°  呉越を夢みんと欲し
    18.2°       ja   main        2.4°  一夜飛んで度る
@@ -308,7 +345,10 @@ P03_LiBai_Dream
 P04a_Rilke
    14.3°       zh   main        2.2°  因为美无非是
    11.9°       zh   main        2.2°  恐怖的开端
-   26.4°       ja   main        2.2°  美とは、恐ろしいものの
+   14.3°       zht  main        2.2°  因為美無非是
+   11.9°       zht  main        2.2°  恐怖的開端
+    9.5°       ja   main        2.2°  美とは、
+   16.7°       ja   main        2.2°  恐ろしいものの
    24.0°       ja   main        2.2°  始まりにほかならない
    19.4°       en   main        2.0°  For beauty is nothing but
    17.4°       en   main        2.0°  the beginning of terror
@@ -318,6 +358,8 @@ P04a_Rilke
 P04b_Urlicht
     9.5°       zh   main        2.2°  啊，不！
    21.6°       zh   main        2.2°  我不肯被拒之门外！
+    9.5°       zht  main        2.2°  啊，不！
+   21.6°       zht  main        2.2°  我不肯被拒之門外！
     9.5°       ja   main        2.2°  いいえ！
     9.5°       ja   main        2.2°  わたしは
    24.0°       ja   main        2.2°  引き下がらなかった！
@@ -328,6 +370,7 @@ P04b_Urlicht
 
 P06_Dream_Dawn
    20.9°       zh   main        2.4°  我从天空坠入深海
+   20.9°       zht  main        2.4°  我從天空墜入深海
    18.2°       ja   main        2.4°  わたしは空から
    18.2°       ja   main        2.4°  深い海へ墜ちた
    14.7°       en   main        2.2°  I fell from the sky
@@ -337,6 +380,9 @@ P07_HeBo
    14.3°       zh   main        2.2°  鱼鳞屋兮龙堂
    14.3°       zh   main        2.2°  紫贝阙兮朱宫
    14.3°       zh   main        2.2°  灵何为兮水中
+   14.3°       zht  main        2.2°  魚鱗屋兮龍堂
+   14.3°       zht  main        2.2°  紫貝闕兮朱宮
+   14.3°       zht  main        2.2°  靈何為兮水中
    19.1°       ja   main        2.2°  魚鱗の屋、龍の堂
    19.1°       ja   main        2.2°  紫貝の闕、朱の宮
    24.0°       ja   main        2.2°  霊何為れぞ水中にある
@@ -349,6 +395,7 @@ P07_HeBo
 
 P08a_Dream_Dusk
    26.2°       zh   main        2.4°  自深海坠入另一片天空
+   26.2°       zht  main        2.4°  自深海墜入另一片天空
    13.0°       ja   main        2.4°  深い海から
    20.9°       ja   main        2.4°  もうひとつの空へ
     7.7°       ja   main        2.4°  墜ちた
@@ -358,6 +405,8 @@ P08a_Dream_Dusk
 P08b_Zhuangzi_Xiaoyao
    24.0°       zh   main        2.2°  天之苍苍，其正色邪？
    26.4°       zh   main        2.2°  其视下也，亦若是则已矣
+   24.0°       zht  main        2.2°  天之蒼蒼，其正色邪？
+   26.4°       zht  main        2.2°  其視下也，亦若是則已矣
    15.8°       ja   main        2.08° 天の蒼蒼たるは
    15.8°       ja   main        2.08° 其れ正色なるか
    20.4°       ja   main        2.08° 其の下を視るや亦た
@@ -381,6 +430,8 @@ P09_Tianwen
 P11_Zhuangzi_Butterfly
    21.6°       zh   main        2.2°  不知周之梦为胡蝶与
    16.7°       zh   main        2.2°  胡蝶之梦为周与
+   21.6°       zht  main        2.2°  不知周之夢為胡蝶與
+   16.7°       zht  main        2.2°  胡蝶之夢為周與
     7.0°       ja   main        2.2°  知らず
    26.4°       ja   main        2.2°  周の夢に胡蝶と為れるか
    26.4°       ja   main        2.2°  胡蝶の夢に周と為れるか
@@ -391,6 +442,8 @@ P11_Zhuangzi_Butterfly
 P12a_LiBai_Wake
    15.6°       zh   main        2.4°  惟觉时之枕席
    15.6°       zh   main        2.4°  失向来之烟霞
+   15.6°       zht  main        2.4°  惟覺時之枕席
+   15.6°       zht  main        2.4°  失向來之煙霞
    18.2°       ja   main        2.4°  惟だ覚めし時の
    10.3°       ja   main        2.4°  枕席のみ
    20.9°       ja   main        2.4°  向来の煙霞を失ふ
@@ -402,6 +455,8 @@ P12a_LiBai_Wake
 P12b_Keats
    14.3°       zh   main        2.2°  那乐声已远去
    24.0°       zh   main        2.2°  我是醒着，还是睡着？
+   14.3°       zht  main        2.2°  那樂聲已遠去
+   24.0°       zht  main        2.2°  我是醒著，還是睡著？
    19.1°       ja   main        2.2°  あの調べは消えた
    26.4°       ja   main        2.2°  わたしは醒めているのか
    16.7°       ja   main        2.2°  眠っているのか
@@ -410,46 +465,57 @@ P12b_Keats
 
 == BLOCKS (v4: width x height per poem and player) ==
 P03_LiBai_Dream          zh  main  2.40°   2 lines   18.24° x  6.24°  az [40.88, 59.12]  el [-12.12, -5.88]
+P03_LiBai_Dream          zht zht   2.40°   2 lines   18.24° x  6.24°  az [40.88, 59.12]  el [-12.12, -5.88]
 P03_LiBai_Dream          ja  ja    2.40°   4 lines   23.52° x 13.92°  az [38.24, 61.76]  el [-15.96, -2.04]
 P03_LiBai_Dream          en  en    2.20°   4 lines   22.12° x 11.07°  az [38.94, 61.06]  el [-14.53, -3.47]
 P03_LiBai_Dream          de  en    2.20°   4 lines   22.12° x 11.07°  az [38.94, 61.06]  el [-14.53, -3.47]
-P04a_Rilke               zh  zh    2.20°   2 lines   14.30° x  5.72°  az [-1.65, 12.65]  el [-10.86, -5.14]
-P04a_Rilke               ja  ja    2.20°   2 lines   26.40° x  5.72°  az [-7.7, 18.7]  el [-10.86, -5.14]
-P04a_Rilke               en  en    2.00°   2 lines   19.36° x  4.66°  az [-4.18, 15.18]  el [-10.33, -5.67]
-P04a_Rilke               de  main  2.00°   2 lines   21.09° x  4.66°  az [-5.04, 16.05]  el [-10.33, -5.67]
+P04a_Rilke               zh  zh    2.20°   2 lines   14.30° x  5.72°  az [-1.65, 12.65]  el [-8.22, -2.5]
+P04a_Rilke               zht zht   2.20°   2 lines   14.30° x  5.72°  az [-1.65, 12.65]  el [-8.22, -2.5]
+P04a_Rilke               ja  ja    2.20°   3 lines   23.98° x  9.24°  az [-6.49, 17.49]  el [-11.74, -2.5]
+P04a_Rilke               en  en    2.00°   2 lines   19.36° x  4.66°  az [-4.18, 15.18]  el [-7.16, -2.5]
+P04a_Rilke               de  main  2.00°   2 lines   21.09° x  4.66°  az [-5.04, 16.05]  el [-7.16, -2.5]
 P04b_Urlicht             zh  zh    2.20°   2 lines   21.56° x  5.72°  az [-10.78, 10.78]  el [-10.86, -5.14]
+P04b_Urlicht             zht zht   2.20°   2 lines   21.56° x  5.72°  az [-10.78, 10.78]  el [-10.86, -5.14]
 P04b_Urlicht             ja  ja    2.20°   3 lines   23.98° x  9.24°  az [-11.99, 11.99]  el [-12.62, -3.38]
 P04b_Urlicht             en  en    2.00°   2 lines   21.45° x  4.66°  az [-10.72, 10.72]  el [-10.33, -5.67]
 P04b_Urlicht             de  main  2.00°   2 lines   21.39° x  4.66°  az [-10.7, 10.7]  el [-10.33, -5.67]
 P06_Dream_Dawn           zh  main  2.40°   1 lines   20.88° x  2.40°  az [-25.44, -4.56]  el [-13.2, -10.8]
+P06_Dream_Dawn           zht zht   2.40°   1 lines   20.88° x  2.40°  az [-25.44, -4.56]  el [-13.2, -10.8]
 P06_Dream_Dawn           ja  ja    2.40°   2 lines   18.24° x  6.24°  az [-24.12, -5.88]  el [-15.12, -8.88]
 P06_Dream_Dawn           en  en    2.20°   2 lines   14.69° x  5.13°  az [-22.34, -7.66]  el [-14.56, -9.44]
 P06_Dream_Dawn           de  en    2.20°   2 lines   14.69° x  5.13°  az [-22.34, -7.66]  el [-14.56, -9.44]
 P07_HeBo                 zh  main  2.20°   3 lines   14.30° x  9.24°  az [2.85, 17.15]  el [1.38, 10.62]
+P07_HeBo                 zht zht   2.20°   3 lines   14.30° x  9.24°  az [2.85, 17.15]  el [1.38, 10.62]
 P07_HeBo                 ja  ja    2.20°   3 lines   23.98° x  9.24°  az [-1.99, 21.99]  el [1.38, 10.62]
 P07_HeBo                 en  en    2.00°   6 lines   20.09° x 15.46°  az [-0.04, 20.05]  el [-1.73, 13.73]
 P07_HeBo                 de  en    2.00°   6 lines   20.09° x 15.46°  az [-0.04, 20.05]  el [-1.73, 13.73]
 P08a_Dream_Dusk          zh  main  2.40°   1 lines   26.16° x  2.40°  az [-28.08, -1.92]  el [-13.2, -10.8]
+P08a_Dream_Dusk          zht zht   2.40°   1 lines   26.16° x  2.40°  az [-28.08, -1.92]  el [-13.2, -10.8]
 P08a_Dream_Dusk          ja  ja    2.40°   3 lines   20.88° x 10.08°  az [-25.44, -4.56]  el [-17.04, -6.96]
 P08a_Dream_Dusk          en  en    2.20°   2 lines   19.25° x  5.13°  az [-24.62, -5.38]  el [-14.56, -9.44]
 P08a_Dream_Dusk          de  en    2.20°   2 lines   19.25° x  5.13°  az [-24.62, -5.38]  el [-14.56, -9.44]
 P08b_Zhuangzi_Xiaoyao    zh  main  2.20°   2 lines   26.40° x 12.76°  az [21.8, 48.2]  el [-6.38, 6.38]
+P08b_Zhuangzi_Xiaoyao    zht zht   2.20°   2 lines   26.40° x 12.76°  az [21.8, 48.2]  el [-6.38, 6.38]
 P08b_Zhuangzi_Xiaoyao    ja  ja    2.08°   4 lines   22.67° x 25.38°  az [23.66, 46.34]  el [-12.69, 12.69]
 P08b_Zhuangzi_Xiaoyao    en  en    2.00°   4 lines   20.59° x 20.86°  az [24.7, 45.3]  el [-10.43, 10.43]
 P08b_Zhuangzi_Xiaoyao    de  en    2.00°   4 lines   20.59° x 20.86°  az [24.7, 45.3]  el [-10.43, 10.43]
 P09_Tianwen              zh  main  2.20°   2 lines   23.98° x  5.72°  az [-11.99, 11.99]  el [5.14, 10.86]
+P09_Tianwen              zht main  2.20°   2 lines   23.98° x  5.72°  az [-11.99, 11.99]  el [5.14, 10.86]
 P09_Tianwen              ja  main  2.20°   5 lines   27.54° x 15.08°  az [-13.77, 13.77]  el [-4.22, 10.86]
 P09_Tianwen              en  main  2.20°   6 lines   25.31° x 16.41°  az [-12.65, 12.65]  el [-5.55, 10.86]
 P09_Tianwen              de  main  2.20°   6 lines   25.31° x 16.41°  az [-12.65, 12.65]  el [-5.55, 10.86]
 P11_Zhuangzi_Butterfly   zh  main  2.20°   2 lines   21.56° x  5.72°  az [-10.78, 10.78]  el [5.14, 10.86]
+P11_Zhuangzi_Butterfly   zht zht   2.20°   2 lines   21.56° x  5.72°  az [-10.78, 10.78]  el [5.14, 10.86]
 P11_Zhuangzi_Butterfly   ja  ja    2.20°   3 lines   26.40° x  9.24°  az [-13.2, 13.2]  el [3.38, 12.62]
 P11_Zhuangzi_Butterfly   en  en    2.00°   3 lines   27.56° x  7.36°  az [-13.78, 13.78]  el [4.32, 11.68]
 P11_Zhuangzi_Butterfly   de  en    2.00°   3 lines   27.56° x  7.36°  az [-13.78, 13.78]  el [4.32, 11.68]
 P12a_LiBai_Wake          zh  main  2.40°   2 lines   15.60° x  6.24°  az [42.2, 57.8]  el [-12.12, -5.88]
+P12a_LiBai_Wake          zht zht   2.40°   2 lines   15.60° x  6.24°  az [42.2, 57.8]  el [-12.12, -5.88]
 P12a_LiBai_Wake          ja  ja    2.40°   3 lines   20.88° x 10.08°  az [39.56, 60.44]  el [-14.04, -3.96]
 P12a_LiBai_Wake          en  en    2.20°   4 lines   21.50° x 11.07°  az [39.25, 60.75]  el [-14.53, -3.47]
 P12a_LiBai_Wake          de  en    2.20°   4 lines   21.50° x 11.07°  az [39.25, 60.75]  el [-14.53, -3.47]
 P12b_Keats               zh  zh    2.20°   2 lines   23.98° x  5.72°  az [38.01, 61.99]  el [-16.86, -11.14]
+P12b_Keats               zht zht   2.20°   2 lines   23.98° x  5.72°  az [38.01, 61.99]  el [-16.86, -11.14]
 P12b_Keats               ja  ja    2.20°   3 lines   26.40° x  9.24°  az [36.8, 63.2]  el [-18.62, -9.38]
 P12b_Keats               en  main  2.00°   2 lines   15.27° x  4.66°  az [42.37, 57.63]  el [-16.33, -11.67]
 P12b_Keats               de  main  2.00°   2 lines   15.27° x  4.66°  az [42.37, 57.63]  el [-16.33, -11.67]

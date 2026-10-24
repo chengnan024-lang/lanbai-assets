@@ -53,7 +53,7 @@ for p in L.POEMS:
         lines = join_lines(p['segments'], lang)
         q['translations'][lang] = dict(font=(L.SUB_FONT if p.get('picture') else L.TR_FONT)[lang], lines=lines, tmp_text='\n'.join(lines))
     q['display_by_player_language'] = {}
-    for pl in ('zh', 'ja', 'en', 'de'):
+    for pl in ('zh', 'zht', 'ja', 'en', 'de'):
         q['display_by_player_language'][pl] = dict(shown='main' if p.get('picture') else L.shown_lang(p, pl),
                                                    sub_line=L.translation_for(p, pl))
     poems_out.append(q)
