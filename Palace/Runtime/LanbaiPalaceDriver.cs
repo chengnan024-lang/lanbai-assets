@@ -12,6 +12,8 @@
 //       离开时间窗的那一帧写一次，之后不再碰（D-22：同一时刻只有一个驱动写同一个全局量；第 1、2、11、12 幕的雨 / 路灯
 //       在别的时间窗里用同一套名字）。
 //     鱼的材质：_Count（lite 700 / 全 1 500）。
+//  D-33 #6：没有跨帧的状态。LanbaiTick(t) 每帧整组重写 8 盏解析灯（位置取 R_Palace 的当前变换 = 海按 t 摆的），
+//  激活那一帧补写鱼的数量；鱼、灯焰、海草的动画只读 _Udon_T（海写），任意 t 跳进来画面都对。
 //  不写：R_Palace 的位置（它是 R_Sea 的子物体，局部位置是常数，搭建脚本放好）、_Udon_PalaceVeil（海写）、_Udon_T（海写）、
 //  PPv2（LB_Journey）、车厢。
 //  所有数来自 Palace/PalaceLayout.json，由 蓝白/Build/7b 宫殿（Palace/Editor/LanbaiPalaceBuilder.cs）写进下面的字段。
@@ -82,6 +84,9 @@ public class LanbaiPalaceDriver : UdonSharpBehaviour
     public void LanbaiActivate(bool on)
     {
         if (rPalace != null) rPalace.SetActive(on);
+        // D-33 #6：从 t 单独重建画面（拖时间轴、迟到的人）：激活的那一帧把自己的量写全，不靠前一个驱动留下的值。
+        // 解析灯每一帧都从 R_Palace 的当前位置（海按 t 摆好）整组重写，所以这里只补鱼的数量。
+        if (on) ApplyLite();
     }
 
     public void ApplyLite()

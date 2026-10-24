@@ -22,6 +22,6 @@ public static class LanbaiPalaceData
     public static readonly float[] HaloMid = { 0.05781f, 0.12214f, 0.22323f };
     public static readonly float[] FishCentre = { -38.00000f, 14.00000f, 356.60000f };
     public const float FishR = 35.00f, FishTube = 9.00f, FishRev = 0.0300f;
-    public static readonly float[] FishPassPoint = { 1.93200f, 5.03600f, 232.27500f, 720.00000f };
+    public static readonly float[] FishPassPoint = { 1.44900f, 5.13300f, 232.33400f, 720.00000f };
     public static readonly float[] FishPassVel = { -2.2f, 0.1f, 0.4f, 0f };
 }

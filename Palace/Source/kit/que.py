@@ -10,7 +10,7 @@
     阙楼   y 22–29.7  枋头层（两排出挑枋头，朱漆）+ 斗拱层（四角一斗二升、长面正中曲栱）；
                       三道 LacquerBand 枋（A、B、C），C 比阙身宽 1.8 m
     阙顶   y 29.7–40  重檐四阿：腰檐（出 2.7 m）+ 上层阙楼 + 上檐（出 2.0 m，自阙身顶算 ~2.1 / 3 m），
-                      直坡，筒瓦垄 + 瓦当，转角不起翘；正脊两端起翘 + 克制的鱼尾
+                      直坡，筒瓦垄 + 瓦当，转角不起翘；正脊两端只起翘（汉制）
 坐标：Unity 轴（x 右、y 上、z 前），两阙中心 (−12, 0, 41.39)、(−24, 0, 41.39)，阙身 6 (x) × 10 (z)。
 本文件里还有几个小几何工具（prism / extrude / sweep2d / ...），house.py 也用它们。
 每个部件都是封闭实体；_emit 按有符号体积统一翻正绕向，KB.parts 记录每个部件的面范围（给法线测试用）。
@@ -200,8 +200,8 @@ def sweep2d(ub, P, Q, origin, au, av, an, d0, d1, slot, faces=None):
 
 
 def ridge(ub, c, axis, half, yb, h, thick, lift, slot='Tile', n_end=6):
-    """正脊：沿 axis（'x' 或 'z'）长 2·half，底 yb、高 h、厚 thick；两端只起翘 + 克制的鱼尾
-    （端头沿一段圆弧向上弯约 70°，上沿内凹，尖向里收），lift ≈ 端头比脊顶高出的量。"""
+    """正脊：沿 axis（'x' 或 'z'）长 2·half，底 yb、高 h、厚 thick；两端只起翘（第 6 轮：考据核实，汉代无鸱尾）
+    （端头沿一段圆弧向上弯约 24°），lift ≈ 端头比脊顶高出的量。"""
     au = np.array([1.0, 0, 0]) if axis == 'x' else np.array([0, 0, 1.0])
     an = np.array([0, 0, 1.0]) if axis == 'x' else np.array([1.0, 0, 0])
     av = np.array([0, 1.0, 0])
@@ -214,20 +214,19 @@ def ridge(ub, c, axis, half, yb, h, thick, lift, slot='Tile', n_end=6):
         right = []
         right.append(((0.0, yb), (0.0, yb + h)))
         right.append(((u0, yb), (u0, yb + h)))
-        phimax = math.radians(62)
+        phimax = math.radians(24)          # 第 6 轮：只起翘（汉制“或翹起”），不再弯成内勾的鱼尾
         for k in range(1, n_end + 1):
             ph = phimax * k / n_end
             cu, cv = u0 + R * math.sin(ph), yc + R * (1 - math.cos(ph))
             nu, nv = -math.sin(ph), math.cos(ph)
-            hw = h / 2 * (1 - 0.45 * (k / n_end) ** 1.5)
-            # 上沿（Q，内侧）比下沿（P，外侧）收得快 → 上沿内凹，尖向里勾
-            right.append(((cu - nu * hw, cv - nv * hw), (cu + nu * hw * 0.8, cv + nv * hw * 0.8)))
+            hw = h / 2 * (1 - 0.15 * (k / n_end))
+            right.append(((cu - nu * hw, cv - nv * hw), (cu + nu * hw, cv + nv * hw)))
         # 尖：外沿再顺切线伸出一点
         ph = phimax
         tu, tv = math.cos(ph), math.sin(ph)
         pu, pv = right[-1][0]
         qu, qv = right[-1][1]
-        right.append(((pu + tu * h * 0.3, pv + tv * h * 0.3), (qu + tu * h * 0.1, qv + tv * h * 0.1)))
+        right.append(((pu + tu * h * 0.15, pv + tv * h * 0.15), (qu + tu * h * 0.15, qv + tv * h * 0.15)))
         left = [((-p[0], p[1]), (-q[0], q[1])) for p, q in reversed(right[1:])]
         st = left + right
     else:

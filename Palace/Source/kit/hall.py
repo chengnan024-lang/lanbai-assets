@@ -5,7 +5,7 @@
 build(lod=0) -> UB；不碰 bpy。
 
 形制（research_han.md + 总导演裁决）：汉制，直坡重檐四阿，檐口平直、转角不起翘，只在檐口最外 1/5 折缓 5°（反宇）；
-正脊两端起翘约 1 m + 克制的鱼尾；只在柱头放斗拱（栌斗 + 一斗二升 / 一斗三升，端柱曲栱）；八角柱、覆盆础；
+正脊两端起翘 + 瓦当相叠（第 6 轮：考据核实后去掉鱼尾，D-29 #3 / 总导演 10-24）；只在柱头放斗拱（栌斗 + 一斗二升 / 一斗三升，端柱曲栱）；八角柱、覆盆础；
 钩阑：望柱 + 寻杖 + 斜格 / 卧棂（相间）；板门双扇向里开 70°，铺首只留鎏金圆环。
 所有部件都是封闭实体（有底面）；check() 逐件验证流形 + 体积为正（法线朝外）。
 """
@@ -429,8 +429,19 @@ def fish_tail(o, sgn):
     return out
 
 
+def stacked_wadang(o, sgn, n=3, r=0.34, t=0.14):
+    """瓦当相叠：n 枚圆瓦当（半径 r、厚 t），面朝外（±x），竖着叠，每枚高 0.62 r·2、往外探 0.06。"""
+    out = []
+    Rm = np.array([[0, sgn, 0], [-sgn, 0, 0], [0, 0, 1.0]])       # lathe 的 y 轴（盘的法线）→ ±x
+    for k in range(n):
+        c = o + np.array([sgn * 0.06 * k, k * r * 1.25, 0.0])
+        disc = lathe_solid([(r, 0.0), (r, t), (r * 0.82, t + 0.03), (r * 0.25, t + 0.05)], 16, 'Tile', (0, 0, 0))
+        out.append(solid(disc.transformed(Rm, c)))
+    return out
+
+
 def main_ridge(lod):
-    """正脊：高 1.5，两端起翘约 1 m，端头一片克制的鱼尾。"""
+    """正脊：高 1.5，两端起翘约 0.75 m，端头三枚瓦当相叠（汉制；第 6 轮去掉了鱼尾）。"""
     x0, x1, z0, z1 = UP_RECT
     xa, xb = x0 + UP_DTOP, x1 - UP_DTOP
     zc = (z0 + z1) / 2
@@ -456,10 +467,11 @@ def main_ridge(lod):
         if not P or abs(p[0] - P[-1][0]) + abs(p[1] - P[-1][1]) > 1e-6:
             P.append(p)
     out.append(extrude(P, (0, 0, zc), (1, 0, 0), (0, 1, 0), (0, 0, 1), -0.45, 0.45, 'Tile'))
-    # 鱼尾：根部厚 0.4、梢 0.08 的透镜截面，梢部向内（朝脊中）微弯，尾端分两叉
+    # 脊端（第 6 轮，考据核实：汉代“脊端以瓦當相疊為飾，或翹起，或伸出，正式鴟尾則未見也”——梁思成；
+    # 鸱尾最早见于东晋 385 年）：正脊照旧起翘，端头叠三枚无字卷云瓦当，朝外，一枚比一枚高、略往外探
     for sgn, xe, xr in ((1, xb + 0.6, xb), (-1, xa - 0.6, xa)):
-        o = np.array([xe - 0.35 * sgn, top + rise - 0.05, zc])
-        out.extend(fish_tail(o, sgn))
+        o = np.array([xe - 0.25 * sgn, top + rise - 0.15, zc])
+        out.extend(stacked_wadang(o, sgn))
         # 脊头：堵住两条垂脊在正脊端头汇合处的缝
         lo_x, hi_x = sorted((xr - 1.2 * sgn, xr + 1.1 * sgn))
         out.append(box((lo_x, UP_APEX - 0.7, zc - 0.95), (hi_x, UP_APEX + 0.75, zc + 0.95), 'Tile'))
