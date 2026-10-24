@@ -1,0 +1,17 @@
+{
+ "label": "exit_door_d12",
+ "frames": 142,
+ "fps": 10.0,
+ "tile_px": 8,
+ "max_general_flashes_in_any_1s": 0.5,
+ "max_red_flashes_in_any_1s": 1.0,
+ "wcag_2_3_1": "PASS",
+ "lanbai_flash_rule": "FAIL",
+ "max_rise_ev_0.25s": 0.11,
+ "max_rise_ev_1s": 0.51,
+ "max_rise_ev_2s": 1.01,
+ "max_fall_ev_0.25s": 0.03,
+ "peak_apl_luma": 133,
+ "mean_apl_luma": 105,
+ "lanbai_ramp_law": "PASS"
+}
