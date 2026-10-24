@@ -526,10 +526,14 @@ if not BUS_DIR:
     BUS_SRC = '%s (%s)' % (BUS_REF, subprocess.run(['git', '-C', repo, 'rev-parse', '--short', BUS_REF], capture_output=True, text=True).stdout.strip())
 else:
     BUS_SRC = BUS_DIR
-VIEW = BV.run(LAYOUTS, BUS_DIR)
-view_lines = ['Every block of every player against the real bus (%s; Bus/Source/build_bus.py + viewcheck.cast, rays every %.1f°, '
-              'clearance ring %.2f° steps up to %.1f°). FAIL = a ray inside the block hits an opaque part.' % (
-                  BUS_SRC, BV.STEP, BV.RING, BV.MAX_CLEAR), '']
+if BV.lookup_available(BUS_DIR) and os.environ.get('LANBAI_VIEWCHECK') != 'rays':
+    VIEW = BV.run_lookup(LAYOUTS, BUS_DIR)
+    how = 'the bus\'s occlusion table Bus/Docs~/viewcheck/hero_occlusion.npz via Bus/Source/occlusion_lookup.py (0.25° grid)'
+else:
+    VIEW = BV.run(LAYOUTS, BUS_DIR)
+    how = 'rays cast here: Bus/Source/build_bus.py + viewcheck.cast, every %.1f°' % BV.STEP
+view_lines = ['Every block of every player against the real bus (%s; %s; clearance ring %.2f° steps up to %.1f°). '
+              'FAIL = some of the block is behind an opaque part (glass does not count).' % (BUS_SRC, how, BV.RING, BV.MAX_CLEAR), '']
 view_fail = []
 for pid, per in VIEW.items():
     P_ = next(p for p in L.POEMS if p['id'] == pid)

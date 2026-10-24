@@ -155,7 +155,7 @@ D-30 的例外只有天问，所以庄子也只显示自己的语言：中文玩
 
 ### 0.9 D-33：按真车的窗重新摆（字体第 4 版终审退回的改法，2026-10-24）
 
-**规矩**：每首诗、每种语言的**整个字块**都对「车」的真网格做射线检查（`Tools~/block_viewcheck.py`：用 `pkg/bus` 的 `Bus/Source/build_bus.py` 建车，`viewcheck.py` 的 `cast` 从眼位每 0.5° 打一条，穿玻璃、碰到不透明件就停）。块里有一条射线碰到不透明件就不过；**`build_fonts.py` 不过就报错**（`strings_all.json` 和报告照样写出来，方便看）。净空 = 块外第一圈碰到东西的距离（0.25° 一圈，看到 4°）。车的几何默认取 `origin/pkg/bus` 最新提交（`git archive`），也可以用 `LANBAI_BUS_DIR` 指一个 checkout。结果在上表最后一列、`block_table[].viewcheck`、`build_report.txt` 的 `== VIEWCHECK ==`。
+**规矩**：每首诗、每种语言的**整个字块**都对「车」的真网格查遮挡（`Tools~/block_viewcheck.py`）。默认用车给的表：`pkg/bus` 的 `Bus/Docs~/viewcheck/hero_occlusion.npz` + `Bus/Source/occlusion_lookup.py`（147be7c 起，0.25° 网格，玻璃不算遮挡；块里被挡的比例 > 0 就不过）；`LANBAI_VIEWCHECK=rays` 时改成自己用 bpy 建车、每 0.5° 打射线（比 0.25° 细的件也查得到）。两种方法这次结果一致。块里有一条射线碰到不透明件就不过；**`build_fonts.py` 不过就报错**（`strings_all.json` 和报告照样写出来，方便看）。净空 = 块外第一圈碰到东西的距离（0.25° 一圈，看到 4°）。车的几何默认取 `origin/pkg/bus` 最新提交（`git archive`），也可以用 `LANBAI_BUS_DIR` 指一个 checkout。结果在上表最后一列、`block_table[].viewcheck`、`build_report.txt` 的 `== VIEWCHECK ==`。
 
 | 诗 | 改了什么 | 依据 |
 |---|---|---|

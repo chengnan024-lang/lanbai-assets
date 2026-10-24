@@ -60,11 +60,10 @@ Shader "Lanbai/PuddleOverlay"
             #pragma shader_feature_local _RIPPLE_FLIPBOOK
             #include "UnityCG.cginc"
             #include "LanbaiRain.cginc"
-            #include "LanbaiVR.cginc"
+            #include "Assets/Lanbai/Common/Shaders/LanbaiVR.cginc"
 
             half4 _BottomColour;
             float _MirrorReflectance, _LampPeak, _BreakSlope, _RainRings, _RippleStrength, _DripStrength, _LampSpecular, _RippleDensity, _AnchorToStop;
-            float _Udon_RainFall;
 
             struct appdata
             {

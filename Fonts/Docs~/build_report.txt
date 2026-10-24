@@ -1,4 +1,4 @@
-Lanbai Fonts kit build report  2026-10-24 10:55 UTC
+Lanbai Fonts kit build report  2026-10-24 11:10 UTC
 
 == SUBSETS (original -> subset) ==
 SourceHanSerifSC-Regular       SourceHanSerifCN-Regular.otf       11626108 B -> LanbaiSerifSC-Regular.otf                   77332 B  ( 0.67%)  glyphs 366  renamed Lanbai Serif SC (RFN Source); U+2014 -> full-width mid-line rule (glyph of U+2500)
@@ -310,34 +310,34 @@ P12b_Keats
   de           main         centre  -14.00°   top  -13.22°   bottom  -14.78°   shift +0.00°  ok
 
 == VIEWCHECK (D-33 #5) ==
-Every block of every player against the real bus (origin/pkg/bus (949c09e); Bus/Source/build_bus.py + viewcheck.cast, rays every 0.5°, clearance ring 0.25° steps up to 4.0°). FAIL = a ray inside the block hits an opaque part.
+Every block of every player against the real bus (origin/pkg/bus (029e146); the bus's occlusion table Bus/Docs~/viewcheck/hero_occlusion.npz via Bus/Source/occlusion_lookup.py (0.25° grid); clearance ring 0.25° steps up to 4.0°). FAIL = some of the block is behind an opaque part (glass does not count).
 viewcheck: PASS
 
 P03_LiBai_Dream          zh  ok     hits -                                        clearance >= 4.0
 P03_LiBai_Dream          zht ok     hits -                                        clearance >= 4.0
 P03_LiBai_Dream          ja  ok     hits -                                        clearance 2.25 (Door3_Stile1)
-P03_LiBai_Dream          en  ok     hits -                                        clearance 3.0 (Door3_Stile1)
-P03_LiBai_Dream          de  ok     hits -                                        clearance 3.0 (Door3_Stile1)
+P03_LiBai_Dream          en  ok     hits -                                        clearance 3.25 (Door3_Stile1)
+P03_LiBai_Dream          de  ok     hits -                                        clearance 3.25 (Door3_Stile1)
 P04a_Rilke               zh  ok     hits -                                        clearance >= 4.0
 P04a_Rilke               zht ok     hits -                                        clearance >= 4.0
-P04a_Rilke               ja  ok     hits -                                        clearance 2.0 (Body)
-P04a_Rilke               en  ok     hits -                                        clearance 3.25 (Body)
+P04a_Rilke               ja  ok     hits -                                        clearance 2.25 (Body)
+P04a_Rilke               en  ok     hits -                                        clearance 3.5 (Body)
 P04a_Rilke               de  ok     hits -                                        clearance 2.5 (Body)
 P04b_Urlicht             zh  ok     hits -                                        clearance >= 4.0
 P04b_Urlicht             zht ok     hits -                                        clearance >= 4.0
-P04b_Urlicht             ja  ok     hits -                                        clearance 2.25 (Radio_Strap)
+P04b_Urlicht             ja  ok     hits -                                        clearance 2.5 (Radio_Case)
 P04b_Urlicht             en  ok     hits -                                        clearance >= 4.0
 P04b_Urlicht             de  ok     hits -                                        clearance >= 4.0
-P06_Dream_Dawn           zh  ok     hits -                                        clearance 3.75 (Radio_Case)
-P06_Dream_Dawn           zht ok     hits -                                        clearance 3.75 (Radio_Case)
+P06_Dream_Dawn           zh  ok     hits -                                        clearance >= 4.0
+P06_Dream_Dawn           zht ok     hits -                                        clearance >= 4.0
 P06_Dream_Dawn           ja  ok     hits -                                        clearance >= 4.0
 P06_Dream_Dawn           en  ok     hits -                                        clearance >= 4.0
 P06_Dream_Dawn           de  ok     hits -                                        clearance >= 4.0
 P07_HeBo                 zh  ok     hits -                                        clearance >= 4.0
 P07_HeBo                 zht ok     hits -                                        clearance >= 4.0
 P07_HeBo                 ja  ok     hits -                                        clearance 2.25 (Body)
-P07_HeBo                 en  ok     hits -                                        clearance 3.75 (Body)
-P07_HeBo                 de  ok     hits -                                        clearance 3.75 (Body)
+P07_HeBo                 en  ok     hits -                                        clearance >= 4.0
+P07_HeBo                 de  ok     hits -                                        clearance >= 4.0
 P08a_Dream_Dusk          zh  ok     hits -                                        clearance 1.75 (Radio_Strap)
 P08a_Dream_Dusk          zht ok     hits -                                        clearance 1.75 (Radio_Strap)
 P08a_Dream_Dusk          ja  ok     hits -                                        clearance 0.75 (Cowl)
@@ -360,14 +360,14 @@ P11_Zhuangzi_Butterfly   en  ok     hits -                                      
 P11_Zhuangzi_Butterfly   de  ok     hits -                                        clearance >= 4.0
 P12a_LiBai_Wake          zh  ok     hits -                                        clearance >= 4.0
 P12a_LiBai_Wake          zht ok     hits -                                        clearance >= 4.0
-P12a_LiBai_Wake          ja  ok     hits -                                        clearance 3.5 (Door3_Stile1)
-P12a_LiBai_Wake          en  ok     hits -                                        clearance 3.5 (Door3_Stile1)
-P12a_LiBai_Wake          de  ok     hits -                                        clearance 3.5 (Door3_Stile1)
+P12a_LiBai_Wake          ja  ok     hits -                                        clearance 3.75 (Door3_Stile1)
+P12a_LiBai_Wake          en  ok     hits -                                        clearance 3.75 (Door3_Stile1)
+P12a_LiBai_Wake          de  ok     hits -                                        clearance 3.75 (Door3_Stile1)
 P12b_Keats               zh  ok     hits -                                        clearance >= 4.0
 P12b_Keats               zht ok     hits -                                        clearance >= 4.0
 P12b_Keats               ja  ok     hits -                                        clearance 3.25 (Door3_Stile1)
-P12b_Keats               en  ok     hits -                                        clearance 2.25 (Door3_Stile1)
-P12b_Keats               de  ok     hits -                                        clearance 2.25 (Door3_Stile1)
+P12b_Keats               en  ok     hits -                                        clearance 2.5 (Door3_Stile1)
+P12b_Keats               de  ok     hits -                                        clearance 2.5 (Door3_Stile1)
 
 == PLACEMENT (D-33) ==
 PASS
