@@ -1,0 +1,25 @@
+{
+ "total": 0.032,
+ "layers": {
+  "(Fringe|Hang|Threads|Wall|Loose|Dot)": 0.0321
+ },
+ "objects": {
+  "Inside_Dot": 0.0137,
+  "Inside_Loose": 0.0006,
+  "Lip6_Fringe": 0.0,
+  "Lip6_Hang": 0.0,
+  "Lip6_Threads": 0.0,
+  "Lip7_Fringe": 0.0,
+  "Lip7_Hang": 0.0,
+  "Lip8_Wall": 0.0015,
+  "Ply0_Fringe": 0.0118,
+  "Ply4_Fringe": 0.0045
+ },
+ "max_layers_per_pixel": 2,
+ "pixels_over_8_layers_pct": 0.0,
+ "res": [
+  480,
+  270
+ ],
+ "method": "coverage of each transparent object, depth-tested against the opaque scene (holdouts), 1 spp"
+}

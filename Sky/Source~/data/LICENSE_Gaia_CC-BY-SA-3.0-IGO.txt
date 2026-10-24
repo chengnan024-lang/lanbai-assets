@@ -1,0 +1,9 @@
+Milky Way: ESA/Gaia/DPAC (CC BY-SA 3.0 IGO)
+
+Source: the ESA Gaia EDR3 all-sky colour map, ESA/Gaia/DPAC, licensed under the Creative Commons
+Attribution-ShareAlike 3.0 IGO licence:  https://creativecommons.org/licenses/by-sa/3.0/igo/
+(obtained through the mw_plot Python package, MIT, H. Leung; see LICENSE_mw_plot_MIT.txt)
+
+Derived work in this repository: Sky/Textures/StarSky_Glow_8192x4096.png (point stars removed, background subtracted,
+tone curve, recoloured to the film's palette; Sky/Source~/make_starsky.py). The derived texture is licensed under the
+same CC BY-SA 3.0 IGO licence. Credit line (D-11): "Milky Way: ESA/Gaia/DPAC (CC BY-SA 3.0 IGO)".
