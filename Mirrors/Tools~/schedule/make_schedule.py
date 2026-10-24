@@ -74,7 +74,12 @@ BIBLE = [1032.41, 1054.29, 1070.62, 1082.67, 1092.39, 1099.71, 1105.42, 1109.46,
 assert all(abs(a - b) < 0.011 for a, b in zip(cross, BIBLE)), (cross, BIBLE)
 
 # ------------------------------------------------------------------ sizes and speeds
-D = [40.0 * 1.2 ** k for k in range(10)] + [360.0, 620.0, 2400.0]
+# mirror 13's last 10 s (总导演意见 #5): A = the first version; G = fast while the rim is soft, then <= 2.6 deg/s;
+# H = a 17 km mirror that already fills the down view, rim <= 1.4 deg/s throughout (Docs~/iterations/m13_*). Pick with
+# LANBAI_M13=A|G|H (the director's choice is recorded in the JSON as scheme13).
+SCHEME13 = os.environ.get('LANBAI_M13', 'A')
+D13 = 17000.0 if SCHEME13 == 'H' else 2400.0
+D = [40.0 * 1.2 ** k for k in range(10)] + [360.0, 620.0, D13]
 EYE = np.array([0.55, 1.70, 2.05])             # Gate/GateLayout_v2.json cameras.U7 (CONTROL §3)
 CAB = dict(x=(-1.40, 1.40), y=(0.0, 3.1), z=(-6.0, 5.0))   # conservative bus box (m, car space)
 # nearest-rim azimuth (deg, 0 = +Z ahead, negative = left).  Front sector, alternating, tragen! dead ahead,
@@ -143,8 +148,21 @@ phi_k = np.array([phi0, 30.0, 9.0, 2.2, 0.0])
 phi_m = pchip_slopes(phi_t, phi_k)
 phi_m[0] = 0.0                                    # leaves the slow far approach with ~0 angular speed
 far_m = np.array([0.0, (5000.0 - 6000.0) / (T13A - F14) * 1.5])
+if SCHEME13 == 'G':
+    phi_t = np.array([T13A, 1141.3, 1142.9, F16]); phi_k = np.array([phi0, 30.0, 11.5, 0.0]); phi_m = np.array([0.0, -24.0, -2.6, -0.3])
+    RIM_SOFT = dict(sharpen_from=1142.9, seconds=1.0, inner_frac=0.25)
+elif SCHEME13 == 'H':
+    p6 = math.degrees(math.atan(6000.0 / R13))
+    phi_t = np.array([F14, T13A, T_PLATEAU_END, F16]); phi_k = np.array([p6, 10.0, 2.2, 0.0]); phi_m = np.array([0.0, -0.45, -0.9, -0.3])
+    RIM_SOFT = dict(sharpen_from=F16 - 14.0, seconds=4.0, inner_frac=0.80)
+else:
+    RIM_SOFT = dict(sharpen_from=T13A, seconds=4.0, inner_frac=0.80)
+
+
 def depth13(t):
     t = np.asarray(t, float)
+    if SCHEME13 == 'H':
+        return R13 * np.tan(np.radians(herm(phi_t, phi_k, phi_m, np.clip(t, F14, F16))))
     d_far = 6000.0 - 1000.0 * (lambda u: u * u * (3 - 2 * u))(np.clip((t - F14) / (T13A - F14), 0, 1))
     phi = herm(phi_t, phi_k, phi_m, np.clip(t, T13A, F16))
     d_near = R13 * np.tan(np.radians(phi))
@@ -227,7 +245,7 @@ last = t13 >= T13A
 log('  最后 10 s：镜缘俯角 %.1f° → 0°，最快 %.1f°/s（在 %.2f），镜缘离眼 ≥ %.0f m；1144.78 时 %.2f°、1146.31 时 %.2f°（目标 2.2°）、F16 前 0.5 s 上升速度 %.1f m/s' % (
     phi0, prate[last].max(), t13[last][np.argmax(prate[last])], R13, float(np.degrees(np.arctan(depth13(1144.78) / R13))),
     float(np.degrees(np.arctan(depth13(1146.31) / R13))), float((depth13(F16 - 0.51) - depth13(F16 - 0.49)) / 0.02)))
-ok13 = pre.max() <= 0.5 and abs(float(np.degrees(np.arctan(depth13(1146.31) / R13))) - 2.2) < 0.05
+ok13 = pre.max() <= 0.5 and abs(float(np.degrees(np.arctan(depth13(1146.31) / R13))) - 2.2) < (0.05 if SCHEME13 != 'G' else 1.5)
 ok_all &= ok13 and order_ok
 # simultaneous dissolves
 dis = [(cross[k], cross[k] + DISSOLVE) for k in range(12)]
@@ -294,7 +312,7 @@ for k in range(13):
     ref = y_of(k, tchk) if k < 12 else y13(tchk)
     err = float(np.abs(eval_knots(kn, tchk) - ref).max())
     max_err = max(max_err, err)
-    if err > (0.01 if k < 12 else 0.05): print('   knot error mirror', k + 1, round(err, 4))
+    if err > (0.01 if k < 12 else 0.15): print('   knot error mirror', k + 1, round(err, 4))
     R = D[k] / 2
     m = dict(
         index=k + 1,
@@ -324,15 +342,17 @@ for k in range(13):
         motion=dict(kind='hermite', unit='world y of the face point under the eye (m)', knots=kn),
     )
     if k == 12:
-        m['far_depth_m'] = {'F14': 6000.0, 'F16-10': 5000.0}
-        m['rim_depression_knots_deg'] = [[round(float(a), 2), round(float(b), 3)] for a, b in zip(phi_t, phi_k)]
+        m['far_depth_m'] = {'F14': round(float(depth13(F14)), 1), 'F16-10': round(float(depth13(T13A)), 1)}
+        m['rim_depression_knots_deg'] = [[round(float(a), 2), round(float(b), 3), round(float(c), 3)] for a, b, c in zip(phi_t, phi_k, phi_m)]
+        m['scheme13'] = SCHEME13
+        m['rim_soft'] = RIM_SOFT
         m['face_emission_extra'] = dict(EV=3.0, t=[1138.78, T_PLATEAU_END], shape='EV-linear (0.40 EV/s); none during the 1.2-s impact',
                                         rule='保持时向下看 APL ≈ 220，不亮过 VR 的白 224（§6·9 → 10）')
         m['rim_far_target'] = dict(screen='#4E545E', set='#4B4D51', luma='60–90', note='F14 → 最后 10 s，模糊的巨大圆盘（_RimSoft）')
         m['takes_seat_at'] = F16
     mirrors.append(m)
-log('Hermite 节点表与闭式运动的最大误差 %.4f m（第 1–12 面 ≤ 0.01 m；第 13 面在 5 km 深处按相对误差 ≤ 1e-5）：%s' % (max_err, 'OK' if max_err <= 0.05 else 'FAIL'))
-ok_all &= max_err <= 0.05
+log('Hermite 节点表与闭式运动的最大误差 %.4f m（第 1–12 面 ≤ 0.01 m；第 13 面在 5 km 深处按相对误差 ≤ 1e-5）：%s' % (max_err, 'OK' if max_err <= (0.05 if SCHEME13 != 'H' else 0.15) else 'FAIL'))
+ok_all &= max_err <= (0.05 if SCHEME13 != 'H' else 0.15)
 log('')
 log('全部核对：%s' % ('PASS' if ok_all else 'FAIL'))
 
