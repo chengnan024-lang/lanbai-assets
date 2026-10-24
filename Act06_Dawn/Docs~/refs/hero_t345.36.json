@@ -3,8 +3,8 @@
  "cam": "hero",
  "door": "d12",
  "d": 2456.7,
- "APL": 112.5,
- "lavender": 0.0,
+ "APL": 106.0,
+ "lavender": 0.0029,
  "brightest_px": [
   0.786,
   0.243

@@ -3,11 +3,11 @@
  "cam": "hero_skylight",
  "door": "d12",
  "d": 1372.2,
- "APL": 59.9,
+ "APL": 51.0,
  "lavender": 0.0,
  "brightest_px": [
-  0.844,
-  0.708
+  0.675,
+  0.761
  ],
  "width": 960
 }
