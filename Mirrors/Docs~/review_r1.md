@@ -42,3 +42,16 @@
 ---
 
 附注（不阻断，顺手改）：`README_Mirrors.md` §1 / §4 和 `README_Act10.md` §2 / §4 引用的 `Docs~/flashcheck/`（`wf.json`、`wd.json`）和 `WhiteSchedule.json` 里的 `Act10_White/Docs~/white_check.txt` 都不存在，`lSceneMask = 0.30` 目前没有证据，请在交本地前补上或删掉这些说法；`LanbaiWhiteDriver.cs:10` 提到的菜单 `蓝白/Build/Act10 White` 不存在；`spec_conventions.md` §6 把 `_StencilRef` 列成 MPB 参数（它是渲染状态，只能在材质上，搭建脚本是对的，文档改一下）。
+
+---
+
+## 作者的回应（镜与白，提交 0358a87 起）
+
+| # | 处理 |
+|---|---|
+| 1 穿越时镜子被剔掉 | **先照建议改了（`Cull Off` + `VFACE`，板的里面按镜背着色），又改回 `Cull Back`，理由写在 shader 里：** 第 10 面的板在车那里厚 6 m，10 m/s 穿过要 0.6 s，里面画暗色 = 每次穿越一次 0.6 s 的暗凹 = 一对闪烁（flash 序列 m10：每秒 2.5 次，> 2）。所以板的里面不画：镜面平面扫过眼睛时，向下看直接从这一面的镜面换到下一面的镜面（这就是圣经“镜面到达你眼睛时”的那一下），眼睛低于镜背以后头顶才出现镜背。这样“消失”不是 bug，是一个薄平面扫过你；镜背改成固定的剪影亮度 `_BackFill`（S9a/S9b 下 `#16302A`，圣经上限 `#1E3B34`，和星空自己的亮度接近），所以它出现、溶解都几乎不改亮度。numpy 移植同样处理（眼睛在镜面球里 = 看穿）。 |
+| 2 F16 以后没人画白 | **改了。** `LanbaiWhiteDriver` 在自己的窗口里拥有 `Lanbai_Overlay` v2：3 s 遮罩 `SetCurve`、29.15 s 白 `SetFlat` + 呼吸 0.02、10 → 11 `SetCurve` + 三个瓣（0 / 1.5 / 3 s，其余 3 s）、窗口外 `Hide()`；填色取 `WhiteSchedule.json` 的线性值，`PickFill` 选 VR 列。 |
+| 3 全局量卡住 | **改了。** `Start()`、`LanbaiActivate(false)`、窗口外都写 0；窗口结束挪到 F16 + 1 s（白遮罩下），F16 之后的那几帧把第 13 面关掉、全局量归零。 |
+| 4 公告板朝每只眼 | **改了。** 尘与反射的星都朝两眼中点（`LanbaiCentreEyePos()`）；星的像点仍逐眼解。 |
+| 5 镜面调色后不是 `#CDBF9C` | **改了。** `_ToneColor` 按引擎调色反解：(1.262, 0.974, 0.484)，`_BronzeTone` = 1（镜面颜色只取亮度 × 这个色调：r3 里蓝 + 暖的混合在第 13 面上变成了薰衣草，D-21 的紫带 8.9 %）。S9a / S9b 下正好显示 `#CDBF9C`。 |
+| 非阻断 | `flashcheck/` 的结果随这一轮推；`蓝白/Build/Act10 White` 的说法删了（白的驱动字段默认值就是 JSON 的数）；spec §6 改正 `_StencilRef` 只在材质上；`r2_sheet.png` 由 r4 取代。 |

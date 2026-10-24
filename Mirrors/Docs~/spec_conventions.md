@@ -56,4 +56,4 @@ R = 镜半径（米），r = 到镜心的水平距离（米），θ = atan2(z, x
 
 ## 6. 运行时参数（MaterialPropertyBlock，每面镜一组）
 
-`_RadiusM`（米）、`_MirrorK`（序号 1–13）、`_EmissionK`（0.2 + 0.08 k）、`_Visibility`（0–1）、`_EmitExtraEV`（第 13 面 0–3）、`_Appear`（0–1，凝聚）、`_Dissolve`（0–1，溶解）、`_RimSoft`（0–1）、`_StencilRef`（64 + 槽位）。全局：`_Udon_GalaxyGain`、`_Udon_StarGain`、`_Udon_MirrorPlane`。
+`_RadiusM`（米）、`_MirrorK`（序号 1–13）、`_EmissionK`（0.2 + 0.08 k）、`_Visibility`（0–1）、`_EmitExtraEV`（第 13 面 0–3）、`_Appear`（0–1，凝聚）、`_Dissolve`（0–1，溶解）、`_RimSoft`（0–1）。`_StencilRef`（64 + 槽位）是渲染状态，**只能在材质上**（每面镜一个材质，搭建脚本设好），不能用 MPB。全局：`_Udon_GalaxyGain`、`_Udon_StarGain`、`_Udon_MirrorPlane`。

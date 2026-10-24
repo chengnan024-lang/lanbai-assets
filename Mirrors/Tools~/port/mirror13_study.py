@@ -43,7 +43,7 @@ def main():
     w = int(sys.argv[2]) if len(sys.argv) > 2 else 480
     h = int(sys.argv[3]) if len(sys.argv) > 3 else 270
     MP.RIM_SCHEME = scheme
-    if scheme == 'D':
+    if scheme in ('D', 'E', 'F'):
         # rim depression: fast while the rim is soft (1139.31 -> 1142.9), then <= 3 deg/s (1142.9 -> F16)
         import importlib.util, io, contextlib
         spec = importlib.util.spec_from_file_location('ms', os.path.join(HERE, '..', 'schedule', 'make_schedule.py'))
@@ -54,7 +54,7 @@ def main():
             except SystemExit:
                 pass
         kt = np.array([ms.T13A, 1141.3, 1142.9, 1144.6, 1146.31, ms.F16]); kp = np.array([ms.phi0, 30, 11.5, 6.4, 2.2, 0])
-        km = np.array([0, -22, -2.9, -2.9, -1.6, -0.4])
+        km = np.array([0, -22, -2.9, -2.9, -1.6, -0.4]) if scheme == 'D' else (np.array([0, -22, -2.75, -2.75, -1.6, -0.4]) if scheme == 'E' else np.array([0, -24, -2.45, -2.45, -1.5, -0.4]))
         far = [k for k in M13['motion']['knots'] if k[0] < ms.T13A]
         tt = np.arange(ms.T13A, ms.F16 + 1e-6, 0.04)
         dep = R13 * np.tan(np.radians(ms.herm(kt, kp, km, tt)))

@@ -55,6 +55,9 @@ def main():
             c = np.where(disp <= 0.0031308, disp * 12.92, 1.055 * disp ** (1 / 2.4) - 0.055) * 255
         frames.append(np.clip(c, 0, 255).astype(np.uint8))
     rep, series = FC.analyze(frames, fps, hfov=90.0, label=case)
+    apl = [float((np.clip(f, 0, 255) / 255.0) .mean()) for f in frames]
+    L = [float(((np.clip(f, 0, 255) / 255.0) ** 2.2 @ np.array([0.2126, 0.7152, 0.0722])).mean()) for f in frames]
+    rep['t_series'] = [round(float(t), 3) for t in ts]; rep['L_series'] = [round(x, 5) for x in L]
     out = os.path.join(MP.REPO, 'Mirrors', 'Docs~', 'flashcheck')
     os.makedirs(out, exist_ok=True)
     rep['case'] = case; rep['t'] = [t0, t1]; rep['fps'] = fps; rep['size'] = [w, h]; rep['view'] = [yaw, pitch]

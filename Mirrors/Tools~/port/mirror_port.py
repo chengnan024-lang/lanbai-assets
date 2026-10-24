@@ -31,7 +31,7 @@ BREAK_AMP, EDGE_W, APPEAR_S = 5.0, 0.3, 3.0
 TONE = np.array([1.262, 0.974, 0.484])     # solved so that S9a / S9b show #CDBF9C (review r1 #5)
 BRONZE_TONE = 1.0
 RIM_SCHEME = 'A'          # mirror 13 study (mirror13_study.py)
-RIM_SOFT_FROM = {'A': 0.80, 'C': 0.55, 'D': 0.55}
+RIM_SOFT_FROM = {'A': 0.80, 'C': 0.55, 'D': 0.55, 'E': 0.35, 'F': 0.25}
 
 
 # ------------------------------------------------------------------------------------------------- driver logic
@@ -70,7 +70,11 @@ def mirror_state(m, t):
         extra = lin_knots(WHITE['mirror13_face_extra']['EV_knots'], t)
     rimsoft = 0.0
     if m['index'] == 13:
-        if RIM_SCHEME == 'D':      # fast rise only while soft (to 1142.9), then <= 3 deg/s and sharp
+        if RIM_SCHEME == 'F':      # E with the slow part at <= 2.6 deg/s and the soft rim held to 1143.6
+            rimsoft = 1.0 - min(max((t - 1143.6) / 1.0, 0), 1)
+        elif RIM_SCHEME == 'E':      # as D, the rim stays soft (wider feather) until the speed is under 3 deg/s
+            rimsoft = 1.0 - min(max((t - 1143.3) / 1.0, 0), 1)
+        elif RIM_SCHEME == 'D':      # fast rise only while soft (to 1142.9), then <= 3 deg/s and sharp
             rimsoft = 1.0 - min(max((t - 1142.9) / 1.0, 0), 1)
         elif RIM_SCHEME == 'C':      # keep the rim soft through the fast rise, sharpen only in the hush (rim then <= 1 deg/s)
             rimsoft = 1.0 - min(max((t - 1145.5) / 2.0, 0), 1)
@@ -158,7 +162,7 @@ def frame(t, yaw=0.0, pitch=0.0, w=960, h=540, ss=1, cabin=None, dust=True, extr
         tn = -b - sq
         under = tn <= 0                                          # the eye is inside the face sphere: the face is seen from below
         tt = np.where(under, -b + sq, tn)
-        hit = (disc > 0) & (tt > 0)
+        hit = (disc > 0) & (tt > 0) & ~under                     # Cull Back: inside the slab the eye sees through it
         P = EYE + d * tt[..., None]
         rr = np.hypot(P[..., 0] - c[0], P[..., 2] - c[2])
         face = hit & (rr <= FACE_R * D) & (P[..., 1] >= c[1] - 1e-6)
@@ -170,7 +174,7 @@ def frame(t, yaw=0.0, pitch=0.0, w=960, h=540, ss=1, cabin=None, dust=True, extr
         yk = c[1] - 0.015 * D
         tk = (yk - EYE[1]) / np.where(np.abs(d[..., 1]) > 1e-9, d[..., 1], 1e-9)
         Pk = EYE + d * tk[..., None]; rk = np.hypot(Pk[..., 0] - c[0], Pk[..., 2] - c[2])
-        back = (tk > 0) & (rk <= 0.5 * D)                       # from below, or from inside the slab (Cull Off: dark interior)
+        back = (tk > 0) & (rk <= 0.5 * D) & (EYE[1] < yk)       # only from below (Cull Back)
         # dissolve / appear front (object-anchored noise, metres)
         def keep(Pw, rM):
             pM = (Pw - c)                                       # object space x D (uniform scale, no rotation)
@@ -206,6 +210,9 @@ def frame(t, yaw=0.0, pitch=0.0, w=960, h=540, ss=1, cabin=None, dust=True, extr
                 col = sky(rdir, mat, gl) * schlick(F0_RIM, np.abs(dn[:, 1]))
             else:
                 col = np.broadcast_to(BACK_FILL + BACK_ALB * AMB_GND, dn.shape).copy()
+                if st['dissolve'] > 0:                           # breaking into light: the back goes 60 % -> 100 % toward the sky behind it
+                    bl = min(0.6 + 0.4 * st['dissolve'], 1.0)
+                    col = col * (1 - bl) + img[nearer] * bl
             near = np.clip((tdist[nearer] - 5.0) / 20.0, 0, 1)
             col = col + EDGE * (edge[idx] * near)[:, None]
             if st['rimsoft'] > 0:

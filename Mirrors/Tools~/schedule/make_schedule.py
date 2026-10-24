@@ -244,11 +244,14 @@ def queue_vis(k):
     if k < 12:
         # the visible column = the next three uncrossed mirrors, from F14 on (before F14 only the next one)
         if prev < F14:
-            join = prev
+            join = prev - 8.0          # appears (3 s condensing) while the previous mirror still covers most of it
         else:
             join = max(F14, cross[k - 3]) if k >= 3 else F14
-        a = round(join, 2); b = round(min(a + 3.0, prev), 2)
-        c0 = round(prev, 2); c1 = round(min(prev + 2.0, cross[k] - 0.3), 2)
+        # the face emission reaches 1 AT the previous crossing (r4: ramping it 0.3 -> 1 after the crossing made the lower view
+        # dip and climb back +1.3 EV in 1 s, flash sequence m10); a face at infinity-reflection is as bright far as near,
+        # so the swap from the previous face to this one is then nearly luminance-neutral
+        a = round(join, 2); b = round(min(a + 3.0, prev - 2.0), 2)
+        c0 = round(prev - 2.0, 2); c1 = round(prev, 2)
         out = [[a, 0.0]] + ([[b, 0.3]] if b > a else []) + [[c0, 0.3], [c1, 1.0]]
         # strictly increasing times
         clean = []
@@ -256,7 +259,7 @@ def queue_vis(k):
             if not clean or p[0] > clean[-1][0] + 1e-6:
                 clean.append(p)
         return clean
-    return [[round(F14, 2), 0.0], [round(F14 + 4.0, 2), 0.3], [round(cross[11], 2), 0.3], [round(cross[11] + 1.2, 2), 1.0]]
+    return [[round(F14, 2), 0.0], [round(F14 + 4.0, 2), 0.3], [round(cross[11] - 2.0, 2), 0.3], [round(cross[11], 2), 1.0]]   # done before the white's impact (no emission rises in the impact)
 
 def hermite_knots(k, dt):
     if k < 12:

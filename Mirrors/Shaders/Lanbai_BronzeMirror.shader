@@ -75,7 +75,11 @@ Shader "Lanbai/BronzeMirror"
     SubShader
     {
         Tags { "Queue" = "Geometry+20" "RenderType" = "Opaque" "IgnoreProjector" = "True" "ForceNoShadowCasting" = "True" }
-        Cull Off             // the eye passes THROUGH the slab at every crossing: back faces are shaded as the bronze underside (review r1 #1)
+        // The eye passes THROUGH the slab at every crossing. Its inside is NOT drawn: inside the slab the eye sees through it
+        // (a thin plane sweeping past: the lower view goes straight from this face to the next mirror's, the back appears
+        // overhead once the eye is below it, at the silhouette level #16302A, close to the sky's own). Shading the inside
+        // dark (review r1 #1's first fix) made a 0.6-s dark dip at every crossing = a flash pair (flash sequence m10, r4).
+        Cull Back
         ZWrite On
         ZTest LEqual
 
@@ -160,7 +164,7 @@ Shader "Lanbai/BronzeMirror"
             #pragma multi_compile_instancing
             #pragma multi_compile_fog
 
-            float4 frag(v2f i, float facing : VFACE) : SV_Target
+            float4 frag(v2f i) : SV_Target
             {
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
                 float glowEdge;
@@ -176,8 +180,7 @@ Shader "Lanbai/BronzeMirror"
                 float3x3 o2w = (float3x3)unity_ObjectToWorld;
                 float3 col;
 
-                bool under = facing < 0.0;                                // seen from inside the slab / from below
-                if (i.region < 0.125 && !under)                           // ---- FACE
+                if (i.region < 0.125)                           // ---- FACE
                 {
                     float3 n = normalize(mul(o2w, LanbaiMirrorFaceNormalOS(i.posOS)));
                     half4 ft = tex2D(_FaceTex, i.uv0);
@@ -193,7 +196,7 @@ Shader "Lanbai/BronzeMirror"
                     // the Milky Way in white bronze reads #CDBF9C (bible palette 09), warmer than any physical F0 makes it
                     col = dot(col, float3(0.2126, 0.7152, 0.0722)) * lerp(float3(1.0, 1.0, 1.0), _ToneColor.rgb, _BronzeTone);   // chroma from the tone only: a blue / warm mix went lavender (r3, D-21)
                 }
-                else if (i.region < 0.375 && !under)                      // ---- RIM BAND (beads)
+                else if (i.region < 0.375)                      // ---- RIM BAND (beads)
                 {
                     float cover;
                     float3 nOS = LanbaiMirrorBeadNormalOS(i.posOS, D, footprint, cover);
@@ -202,7 +205,7 @@ Shader "Lanbai/BronzeMirror"
                     float3 sky = MirrorSky(reflect(V, n), s);
                     col = sky * LanbaiSchlick(_RimF0.rgb, dot(n, -V));
                 }
-                else if (i.region < 0.625 && !under)                      // ---- OUTER WALL
+                else if (i.region < 0.625)                      // ---- OUTER WALL
                 {
                     float3 n = normalize(i.nrmWS);
                     float s = LanbaiSpecAA(n, _RimSmooth);
@@ -241,7 +244,6 @@ Shader "Lanbai/BronzeMirror"
                     }
                     if (q > 0.72) { m.r = hb * 0.4; m.g = lerp(1.0, 0.75, hb); m.b = hb; nOS = float3(0, -1, 0); }
                     if (i.region > 0.875) nOS = normalize(i.posOS - float3(0.0, -0.015, 0.0)); // knob: dome normal
-                    if (under && i.region < 0.625) nOS = float3(0.0, -1.0, 0.0);               // the face / rim seen from inside: bronze interior, dark
                     // screen-space bump of the band heights (detail that is not in the cell texture)
                     float3 n = normalize(mul(o2w, nOS));
                     float3 dpx = ddx(i.posWS), dpy = ddy(i.posWS);
@@ -260,6 +262,11 @@ Shader "Lanbai/BronzeMirror"
                     // close to the star sky's own level, so the 2-s dissolve is nearly luminance-neutral.
                     float3 rel = alb / max(_BackAlbedo.rgb, 1e-4);
                     col = (_BackFill.rgb * rel + alb * amb) * m.g + spec * m.g;
+                    // once it dissolves (it only ever shows its back after crossing, i.e. while dissolving) the back is
+                    // already breaking into light: 60 % -> 100 % toward the sky behind it, so the back appearing overhead
+                    // and then vanishing is not a dark dip + a climb (flash sequence m10, r4: -0.66 EV then +1.37 EV in 1 s)
+                    if (_Dissolve > 0.0)
+                        col = lerp(col, MirrorSky(V, 0.6), saturate(0.6 + 0.4 * _Dissolve));
                 }
 
                 // far soft rim (mirror 13 waiting 5-6 km below: 'a blurred giant disc'): fake transparency toward the
@@ -294,13 +301,12 @@ Shader "Lanbai/BronzeMirror"
             #pragma target 3.5
             #pragma multi_compile_instancing
 
-            float4 fragStencil(v2f i, float facing : VFACE) : SV_Target
+            float4 fragStencil(v2f i) : SV_Target
             {
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
                 float glowEdge;
                 clip(MirrorFront(i.posOS, glowEdge));
                 clip(0.125 - i.region);
-                clip(facing);                                             // front of the face only
                 return 0;
             }
             ENDCG
