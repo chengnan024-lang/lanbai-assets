@@ -14,8 +14,8 @@ import math
 import os
 import sys
 
+import bpy  # noqa: F401  (must come before bmesh in the pip bpy module)
 import bmesh
-import bpy
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)                         # .../Mirrors
