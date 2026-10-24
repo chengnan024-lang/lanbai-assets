@@ -47,7 +47,8 @@ def build(t_fish=748.26, lod_far=False):
     col = bpy.data.collections.new('Palace')
     sc.collection.children.link(col)
     # 台地 + 海草
-    terrace.build().build('Terrace', col, M)
+    tob = terrace.build().build('Terrace', col, M)
+    tob.pass_index = 3
     w, sway = weed.build(L.WEEDS)
     w.build('Weeds', col, M)
     # 灯
@@ -130,9 +131,23 @@ def add_lights(p=PARAMS):
         fp = l['flame_pos']
         a = bl.point_light_unity('Lw_' + l['id'], fp, lin('#FF9C2F'), p['warm_I'], p['warm_r'], radius=0.10)
         a.lightgroup = 'warm'
-        b = bl.point_light_unity('Li_' + l['id'], (fp[0], fp[1] + 0.3, fp[2]), lin('#2A557B'), p['indigo_I'], p['indigo_r'], radius=0.10)
+        a.visible_glossy = False                      # 烘焙的光只有漫反射；高光由下面的解析灯给（Unity：_Udon_Lamp）
+        b = bl.point_light_unity('Li_' + l['id'], (fp[0], fp[1] + _T.get('indigo_lift', 0.3), fp[2]), lin('#2A557B'), p['indigo_I'], p['indigo_r'], radius=0.10)
         b.lightgroup = 'indigo'
         b.data.use_shadow = False
+        b.visible_glossy = False
+        # 解析 GGX 宫灯：平方反比、没有范围窗、只进高光（Unity 里是离眼睛最近的 8 盏；参考图里 30 盏都算）
+        c = bpy.data.lights.new('Ls_' + l['id'], 'POINT')
+        c.color = lin('#FF9C2F')
+        c.energy = 4.0 * math.pi ** 2 * _T.get('spec_I', 5.46)
+        c.shadow_soft_size = 0.10
+        co = bpy.data.objects.new('Ls_' + l['id'], c)
+        co.location = Vector(bl.u2b(fp))
+        co.visible_diffuse = False
+        co.visible_transmission = False
+        co.visible_volume_scatter = False
+        co.lightgroup = 'warm'
+        bpy.context.scene.collection.objects.link(co)
     # 门溢出的光：门洞里一盏面光朝外（−z）
     hall = L.HALL
     A = bpy.data.lights.new('DoorSpill', 'AREA')
@@ -144,6 +159,7 @@ def add_lights(p=PARAMS):
     o.location = Vector(bl.u2b((hall['door_x'], L.PLAT['height_m'] + hall['door_size'][1] / 2, L.DOOR_Z + 0.6)))
     o.rotation_euler = Vector(bl.u2b((0, 0, -1))).to_track_quat('-Z', 'Y').to_euler()
     o.lightgroup = 'door'
+    o.visible_glossy = False
     bpy.context.scene.collection.objects.link(o)
     # 门光顺着台阶往下铺：门楣处一盏面光，朝外、向下 35°（Unity：第二盏 Baked 面光，README §4）
     A2 = bpy.data.lights.new('DoorPour', 'AREA')
@@ -156,6 +172,7 @@ def add_lights(p=PARAMS):
     d = np.array([0.0, -math.sin(math.radians(35)), -math.cos(math.radians(35))])
     o2.rotation_euler = Vector(bl.u2b(d)).to_track_quat('-Z', 'Y').to_euler()
     o2.lightgroup = 'door'
+    o2.visible_glossy = False
     bpy.context.scene.collection.objects.link(o2)
 
 

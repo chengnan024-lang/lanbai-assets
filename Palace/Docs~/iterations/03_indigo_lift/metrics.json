@@ -1,0 +1,32 @@
+{
+ "F7p": {
+  "APL": 20.22,
+  "max_luma": 136.2,
+  "brightest_xy_frac": [
+   0.329,
+   0.576
+  ],
+  "purple_frac": 0.0,
+  "frac_luma_gt_200": 0.0
+ },
+ "F7pb": {
+  "APL": 20.12,
+  "max_luma": 71.6,
+  "brightest_xy_frac": [
+   0.321,
+   0.559
+  ],
+  "purple_frac": 0.0,
+  "frac_luma_gt_200": 0.0
+ },
+ "hot": {
+  "APL": 25.29,
+  "max_luma": 132.1,
+  "brightest_xy_frac": [
+   0.351,
+   0.354
+  ],
+  "purple_frac": 0.0,
+  "frac_luma_gt_200": 0.0
+ }
+}

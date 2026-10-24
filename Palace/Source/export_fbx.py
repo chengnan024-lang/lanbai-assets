@@ -158,7 +158,7 @@ def door_cones_ub():
     y0 = L.PLAT['height_m']
     c = UB()
     zc = L.DOOR_Z - 0.3
-    for k, ang in enumerate((-18.0, 0.0, 18.0)):
+    for k, ang in enumerate((-7.0, 0.0, 7.0)):
         a = math.radians(ang)
         w0, w1 = H['door_size'][0] * 0.45, H['door_size'][0] * 1.6
         dirx, dirz = math.sin(a) * 0.35, -1.0
@@ -166,11 +166,13 @@ def door_cones_ub():
         dirx, dirz = dirx / n * 20.0, dirz / n * 20.0
         yb = y0 + 0.05
         yt = y0 + H['door_size'][1] * 0.9
-        quad = [(H['door_x'] - w0, yb + 0.02 * k, zc), (H['door_x'] + w0, yb + 0.02 * k, zc),
-                (H['door_x'] + dirx + w1, yb - 1.2, zc + dirz), (H['door_x'] + dirx - w1, yb - 1.2, zc + dirz)]
+        # 两张斜的：从门洞中部起，顺着台阶斜下来铺到阶前的地上（y 0），向两侧张开一点
+        ym = y0 + H['door_size'][1] * 0.45
+        quad = [(H['door_x'] - w0, ym, zc), (H['door_x'] + w0, ym, zc),
+                (H['door_x'] + dirx + w1, y0 - 5.6, zc + dirz), (H['door_x'] + dirx - w1, y0 - 5.6, zc + dirz)]
         # 竖的那张：从门洞的上沿斜下来铺到地上
         if k == 1:
-            quad = [(H['door_x'] - w0, yt, zc), (H['door_x'] + w0, yt, zc), (H['door_x'] + w1, y0 - 3.0, zc - 20.0), (H['door_x'] - w1, y0 - 3.0, zc - 20.0)]
+            quad = [(H['door_x'] - w0, yt, zc), (H['door_x'] + w0, yt, zc), (H['door_x'] + w1, y0 - 5.8, zc - 20.0), (H['door_x'] - w1, y0 - 5.8, zc - 20.0)]
         c.add(quad, [(0, 1, 2, 3)], 'DoorGlow', [[(0, 0), (1, 0), (1, 1), (0, 1)]])
     return c
 

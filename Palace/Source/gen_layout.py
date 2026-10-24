@@ -30,7 +30,7 @@ def main():
                           abreast_t=l.get('abreast_t'),
                           baked=[dict(kind='warm', pos=fp, color='#FF9C2F', range_m=T['warm_range'], intensity=T['warm_I'],
                                       shadows='soft', mode='Baked'),
-                                 dict(kind='indigo', pos=[fp[0], round(fp[1] + 0.3, 3), fp[2]], color='#2A557B', range_m=T['indigo_range'],
+                                 dict(kind='indigo', pos=[fp[0], round(fp[1] + T.get('indigo_lift', 0.3), 3), fp[2]], color='#2A557B', range_m=T['indigo_range'],
                                       intensity=T['indigo_I'], shadows='none', mode='Baked')]))
     H = F['hall']
     door_spill = dict(type='Area (Baked)', shape='rectangle', size=[round(H['door_size'][0] * 0.95, 2), round(H['door_size'][1] * 0.95, 2)],
@@ -75,13 +75,15 @@ def main():
     cs.append('    public const float TerraceDepth = %.4ff;' % terrace_depth)
     cs.append('    public static readonly float[] Flames = %s;' % arr(flames))
     cs.append('    public static readonly string[] LampIds = { %s };' % ', '.join('"%s"' % l['id'] for l in F['lamps']))
-    cs.append('    public const float WarmI = %.4ff, WarmRange = %.3ff, IndigoI = %.4ff, IndigoRange = %.3ff, IndigoLift = 0.3f;' % (T['warm_I'], T['warm_range'], T['indigo_I'], T['indigo_range']))
+    cs.append('    public const float WarmI = %.4ff, WarmRange = %.3ff, IndigoI = %.4ff, IndigoRange = %.3ff, IndigoLift = %.2ff;' % (T['warm_I'], T['warm_range'], T['indigo_I'], T['indigo_range'], T.get('indigo_lift', 0.3)))
     cs.append('    public static readonly float[] WarmColor = %s;   // 线性 #FF9C2F' % arr(lin('#FF9C2F')))
     cs.append('    public static readonly float[] IndigoColor = %s;   // 线性 #2A557B' % arr(lin('#2A557B')))
     cs.append('    public static readonly float[] DoorSpillPos = %s;' % arr(door_spill['pos']))
     cs.append('    public static readonly float[] DoorSpillSize = %s;' % arr(door_spill['size']))
     cs.append('    public static readonly float[] DoorColor = %s;   // 线性 #FFB74D' % arr(lin('#FFB74D')))
-    cs.append('    public const float DoorAreaI = %.4ff;' % T['door_area_I'])
+    cs.append('    public const float DoorAreaI = %.4ff, PourRatio = %.3ff;' % (T['door_area_I'], T.get('pour_ratio', 0.6)))
+    pour = [H['door_x'], L.PLAT['height_m'] + H['door_size'][1] - 0.6, L.DOOR_Z + 0.3]
+    cs.append('    public static readonly float[] DoorPourPos = %s;   // 门楣处，朝外向下 35°' % arr(pour))
     cs.append('    public static readonly float[] AmbSky = %s, AmbEquator = %s, AmbGround = %s;' % (arr(lin('#0E3050')), arr(lin('#0A2238')), arr(lin('#1A1422'))))
     cs.append('    public static readonly float[] FlameLinear = %s;' % arr(J['flames']['flame_linear']))
     cs.append('    public static readonly float[] HaloMid = %s;' % arr(lin('#446282')))

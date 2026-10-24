@@ -99,6 +99,17 @@ public static class LanbaiPalaceBuilder
         dl.areaSize = new Vector2(LanbaiPalaceData.DoorSpillSize[0], LanbaiPalaceData.DoorSpillSize[1]);
         dl.color = Lin(LanbaiPalaceData.DoorColor).gamma;
         dl.intensity = LanbaiPalaceData.DoorAreaI;
+        // 门光顺着台阶往下铺：门楣处第二盏面光，朝外、向下 35°
+        var pg = new GameObject("DoorPour");
+        pg.transform.SetParent(lights.transform, false);
+        pg.transform.localPosition = V3(LanbaiPalaceData.DoorPourPos, 0);
+        pg.transform.localRotation = Quaternion.LookRotation(new Vector3(0f, -Mathf.Sin(35f * Mathf.Deg2Rad), -Mathf.Cos(35f * Mathf.Deg2Rad)), Vector3.up);
+        var pl = pg.AddComponent<Light>();
+        pl.type = LightType.Rectangle;
+        pl.lightmapBakeType = LightmapBakeType.Baked;
+        pl.areaSize = new Vector2(LanbaiPalaceData.DoorSpillSize[0] * 0.95f, 1.0f);
+        pl.color = dl.color;
+        pl.intensity = LanbaiPalaceData.DoorAreaI * LanbaiPalaceData.PourRatio;
         // ---- 5. 驱动
         var oldD = GameObject.Find("LanbaiPalaceDriver");
         if (oldD != null) UnityEngine.Object.DestroyImmediate(oldD);
@@ -139,6 +150,7 @@ public static class LanbaiPalaceBuilder
         Std(d, pal, "Tile", "Stone", "Stone", null, 0, 0.35f, 0f, 0.7f, "#F2F8FF");
         Std(d, pal, "Wood", null, null, null, 0, 0.35f, 0f, 0.2f, "#2C2522");
         Std(d, pal, "Rock", "Rock", "Rock", "Rock", 0, 0.22f, 0f, 0.5f, "#FFFFFF");
+        d["Rock"].SetFloat("_LipFade", 5f);          // 台地崖壁：从下面看下缘溶进水色
         Std(d, pal, "Weed", null, null, null, 0, 0.55f, 0f, 0f, "#2E3A26");
         d["Weed"].SetFloat("_SwayAmp", 0.25f);
         d["Weed"].SetFloat("_Cull", 0f);

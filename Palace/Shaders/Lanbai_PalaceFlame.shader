@@ -8,7 +8,7 @@
 //    火 = 竖直的柱状公告板（只绕 y 转），晕 = 球状公告板。**深度测试，ZWrite Off，加色**。
 //  _FogMode 2（圣经 §1.6“天上的东西不吃雾”，§6·7b 灯焰用无雾衰减）：颜色 × exp(−d · _Atten)，_Atten 0.004；不吃 _Udon_PalaceVeil
 //  （从下面看它们就是头顶的星座，D-17 / D-29）。远处的火小于 1.5 像素时按面积守恒放大（亮度 / 面积），
-//  所以 30 盏灯在任何距离都是稳定、分得清的点，不会闪烁（D-29 第 4 条）。
+//  亮度按 1/s 补偿（不是面积守恒的 1/s²：远处的灯焰要读成星），所以 30 盏灯在任何距离都是稳定、分得清的点，不会闪烁（D-29 第 4 条）。
 //  火的呼吸：8 帧之间交叉淡化，每秒 _FPS 帧，每盏错开相位；时间 = _Udon_T。亮度本身不闪（只有形状变），§1.8。
 // =====================================================================================================
 Shader "Lanbai/PalaceFlame"
@@ -78,7 +78,10 @@ Shader "Lanbai/PalaceFlame"
                 bool halo = v.uv1.x > 0.5;
                 float3 up = float3(0, 1, 0);
                 float3 right = normalize(cross(up, fwd) + float3(1e-5, 0, 0));
-                float3 upB = halo ? normalize(cross(fwd, right)) : up;
+                // 火：竖直的柱状公告板；从很低 / 很高的角度看（|fwd.y| > 0.5）渐变成球状公告板，免得从下面看成一条细线
+                float3 upS = normalize(cross(fwd, right));
+                float sph = halo ? 1.0 : saturate((abs(fwd.y) - 0.5) * 3.0);
+                float3 upB = normalize(lerp(up, upS, sph));
                 float2 size = halo ? float2(_HaloRadius, _HaloRadius) : _FlameSize.xy;
                 // 最小像素：一个像素在 d 处的米数 = 2d / (P11 · 屏高)
                 float pix = 2.0 * d / (abs(unity_CameraProjection._m11) * _ScreenParams.y);
@@ -87,7 +90,7 @@ Shader "Lanbai/PalaceFlame"
                 float3 p = c + right * v.uv0.x * size.x + upB * v.uv0.y * size.y;
                 o.pos = UnityWorldToClipPos(p);
                 o.corner = v.uv0;
-                o.info = float4(v.uv1.x, v.uv1.y, exp(-_Atten * d) / (s * s), 0);
+                o.info = float4(v.uv1.x, v.uv1.y, exp(-_Atten * d) / s, 0);     // 1/s 而不是 1/s²：远处的灯焰读成星（比面积守恒亮，D-29 第 4 条“稳定、分得清的点”）
                 return o;
             }
 

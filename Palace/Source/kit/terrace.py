@@ -52,12 +52,16 @@ def build(lod=0, edge_x=-8.0, lip_y=-13.0, z0=-120.0, z1=520.0, x_far=-260.0):
             return edge_x
         a = 1.2 * _noise(y * 3.0, z, 7) + 0.6 * _noise(z, y * 5.0, 9)
         return edge_x + 0.25 + 0.45 * a        # 石壁略向外凸出、起伏（≥ 8 m 离眼睛：眼 x 0.55，石壁 ≤ −7）
-    curl = [(lip_y - 0.2, -1.5), (lip_y + 0.3, -3.5), (lip_y + 1.6, -5.5), (lip_y + 3.6, -6.5)]   # 下缘往里卷、往上收
+    curl = []        # 第 2 轮：下缘不往里卷（卷进去的面从下面挡住了宫灯）。下缘是参差的岩口，见下面 lip_jag
     Vw, Fw = [], []
     prof = [(y, None) for y in rows] + [(y, dx) for (y, dx) in curl]
     for (y, dx) in prof:
         for z in zw:
             x = wx(y, z) if dx is None else edge_x + dx + 0.3 * _noise(z, y, 11)
+            if y <= lip_y + 1e-3:
+                # 参差的岩口：下缘高度沿 z 起伏 ±1.2 m，并且往里收 0.6 m（不是一刀切的直边）
+                y = lip_y + 1.2 * _noise(z * 1.7, 3.0, 13)
+                x = x - 0.6
             Vw.append((min(x, edge_x + 0.9), y, z))
     m = len(zw)
     for i in range(len(prof) - 1):

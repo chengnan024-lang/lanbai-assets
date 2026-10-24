@@ -101,6 +101,18 @@ inline float LanbaiPalaceVeil(float3 posWS, float3 eyeWS)
     return 1.0 - exp(-pv.x * Lb);
 }
 
+// 台地崖壁的下缘：眼睛已经沉到雾带以下时，下缘附近的岩石溶进水色（D-29：从下面看不许有硬边）。
+// 下缘就是雾带的底（_Udon_PalaceVeil.y − z）。lipFade 米内从 1 降到 0；眼睛在下缘以上时为 0（下沉经过时石壁是清楚的）。
+inline float LanbaiPalaceLipVeil(float3 posWS, float3 eyeWS, float lipFade)
+{
+    float4 pv = _Udon_PalaceVeil;
+    if (pv.w <= 0.0 || lipFade <= 0.0) return 0.0;
+    float bottom = pv.y - pv.z;
+    float below = saturate((bottom - eyeWS.y) / 3.0);
+    float nearEdge = saturate(1.0 - (posWS.y - bottom) / lipFade);
+    return below * nearEdge;
+}
+
 // 珍珠母的虹彩：高光颜色 = f(N·V)：正面 → 中 → 掠射（圣经 §6·7b 鱼鳞屋）
 inline float3 LanbaiNacre(float NdotV, float3 cFace, float3 cMid, float3 cGraze, float thick)
 {

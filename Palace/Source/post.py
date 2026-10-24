@@ -141,7 +141,14 @@ def composite(exr, shot, gains=None, halo=True, flame_scale=1.0):
     fc = fog_color(D)
     img = np.where(hit[..., None], surf * (1 - F[..., None]) + fc * F[..., None], fc)
     img += glow * np.exp(-FLAME_ATTEN * np.minimum(dist, 1e5))[..., None]
-    vv = np.where(hit, veil(Pu, e, t), 0.0)[..., None]
+    vv = np.where(hit, veil(Pu, e, t), 0.0)
+    if 'Object Index.X' in exr:                         # 台地（pass_index 3）：下缘的溶解（LanbaiPalaceLipVeil）
+        rock = np.round(exr['Object Index.X']) == 3
+        bottom = VEIL['top_offset_palace_y'] - VEIL['thickness_m']
+        if veil_density(t) > 0:
+            lip = np.clip((bottom - e[1]) / 3.0, 0, 1) * np.clip(1 - (Pu[..., 1] - bottom) / 5.0, 0, 1)
+            vv = np.where(rock & hit, np.maximum(vv, lip), vv)
+    vv = vv[..., None]
     img = img * (1 - vv) + fc * vv
     if halo:
         img = draw_lamps(img, shot, dist, flame_scale)
@@ -174,11 +181,16 @@ def draw_lamps(img, shot, dist, flame_scale=1.0):
         ind = (np.clip(1 - r, 0, 1) ** 2)[..., None] * HALO_MID * 1.0
         add = (warm + ind) * att * vis[..., None]
         # 灯焰：竖着的软椭圆，0.16 × 0.34 m
-        fw, fh = 0.08 * ppm / zc[i] * flame_scale, 0.17 * ppm / zc[i] * flame_scale
-        fl = np.exp(-((sx / max(fw, 0.35)) ** 2 + ((sy + fh * 0.3) / max(fh, 0.5)) ** 2) * 2.0)
-        # 很远时灯焰小于一像素：按面积守恒把能量摊到一像素
-        cov = min(1.0, (math.pi * fw * fh) / 1.0)
-        add += fl[..., None] * FLAME_FILL * att * vis[..., None] * max(cov, 0.25 if fw < 0.35 else 1.0)
+        # 灯焰 = shader 的式子：半尺寸 (0.09, 0.19) m，小于 _MinPixels（1.2 px）时放大 s 倍、亮度 / s（Lanbai/PalaceFlame）
+        fw, fh = 0.09 * ppm / zc[i] * flame_scale, 0.19 * ppm / zc[i] * flame_scale
+        sc = max(1.0, 1.2 / max(fw, 1e-6))
+        fw, fh = fw * sc, fh * sc
+        # 从下面看（视线很陡）时 shader 把火转成球状公告板：屏幕上不再是竖的细条（这里用屏幕上的圆近似）
+        vdir = (P[i] - L.eye(SHOTS[shot][0]))
+        steep = min(1.0, max(0.0, (abs(vdir[1]) / (np.linalg.norm(vdir) + 1e-9) - 0.5) * 3.0))
+        fh = fh * (1 - steep) + fw * steep
+        fl = np.exp(-((sx / fw) ** 2 + ((sy + fh * 0.3) / fh) ** 2) * 2.0) * 0.6
+        add += fl[..., None] * FLAME_FILL * att / sc * vis[..., None]
         img[y0:y1, x0:x1] += add
     return img
 

@@ -46,6 +46,7 @@ Shader "Lanbai/Palace"
         [Header(Seaweed sway)]
         _SwayAmp ("Sway amplitude m at the tip  0 off", Float) = 0
         _SwayHz ("Sway frequency Hz", Float) = 0.15
+        _LipFade ("Lip fade m  terrace rock only  0 off", Float) = 0
         [Enum(UnityEngine.Rendering.CullMode)] _Cull ("Cull", Float) = 2
     }
     SubShader
@@ -72,7 +73,7 @@ Shader "Lanbai/Palace"
             sampler2D _MainTex, _BumpMap, _MaskMap;
             float4 _MainTex_ST, _Color, _WearColor, _SiltColor, _NacreFace, _NacreMid, _NacreGraze;
             float _BumpScale, _Smoothness, _SmoothnessConst, _UseMask, _Mode, _Metallic, _SiltAmount, _SiltSmooth, _SiltScale;
-            float _POMHeight, _POMTile, _POMFade, _LampGain, _EnvSpec, _SwayAmp, _SwayHz;
+            float _POMHeight, _POMTile, _POMFade, _LampGain, _EnvSpec, _SwayAmp, _SwayHz, _LipFade;
 
             struct appdata
             {
@@ -200,7 +201,7 @@ Shader "Lanbai/Palace"
                 float3 env = LanbaiHorizon(R) * Fr * _EnvSpec * occ * (1.0 - 0.7 * rough);
                 float3 col = diffColor * diffLight * occ + spec + env;
                 col = LanbaiApplyFog(col, i.posWS);
-                float veil = LanbaiPalaceVeil(i.posWS, eye);
+                float veil = max(LanbaiPalaceVeil(i.posWS, eye), LanbaiPalaceLipVeil(i.posWS, eye, _LipFade));
                 col = lerp(col, LanbaiHorizon(normalize(i.posWS - eye)), veil);
                 return float4(col, 1.0);
             }

@@ -1,9 +1,11 @@
 {
  "warm_I": 5.46,
  "warm_range": 4.0,
- "indigo_I": 4.0,
+ "indigo_I": 28.0,
  "indigo_range": 12.0,
- "door_area_I": 900.0,
- "note": "第 0 轮的起点；按参考渲染的灯组增益调（post.py --gains），定了再写回这里并重跑 gen_layout.py",
- "pour_ratio": 0.6
+ "door_area_I": 2200.0,
+ "note": "第 2 轮定的：暖光按校准（2 m 处 E 1.2）；靛光抬到灯焰上方 4 m（水体散射的近似），I 28；门光 ×2.4。高光走解析宫灯（无范围窗，与 Unity 的 _Udon_Lamp 一致）",
+ "pour_ratio": 0.6,
+ "indigo_lift": 4.0,
+ "spec_I": 5.46
 }
