@@ -267,7 +267,9 @@ Shader "Lanbai/InsideLip"
                 float bandIn = smoothstep(lw, lw * 1.6, dEdge) * (1.0 - smoothstep(lw + 0.005 * Hm, lw + 0.009 * Hm, dEdge));
                 float cm = sin(uEdge * 6.2831853 / (0.05 * Hm)) + 0.8 * sin(uEdge * 6.2831853 / (0.017 * Hm));
                 float curl = smoothstep(0.9, 1.3, cm) * bandIn;
-                res *= fk * (1.0 - 0.40 * curl);
+                // r15: the rim brightens / dims with the pleats (no constant bevel)
+                float rimk = 1.0 + 0.35 * pleat * exp(-dEdge / max(3.0 * _LipGlowWidth, 0.5));
+                res *= fk * (1.0 - 0.40 * curl) * rimk;
                 // the hidden / fading blend comes last, so a hidden lip carries no folds (r09)
                 return float4(lerp(LanbaiHorizon(dirV) * gradeK, res, saturate(_Gain)), 1.0);
             #elif defined(_PART_FRINGE)

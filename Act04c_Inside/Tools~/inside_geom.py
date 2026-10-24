@@ -28,7 +28,7 @@ def curl_z(d_edge, u_edge, Hk, seed, perim):
     """torn cloth turns out of its plane at the lip: +z = away from the bus. Fades in ~1.5 % H from the edge.
     r04: three incommensurate wave counts (art review r03: one sinusoid read as a repeating silhouette)."""
     lam = 0.015 * Hk
-    amp = 0.016 * Hk
+    amp = 0.006 * Hk                                  # r15: 0.016 -> 0.006 H (a thick curled lip read as a stone / ice lip)
     # r05: multi-scale wrapped noise along the edge (art review r03 / r04 and our own r05 side view: any sum of a few
     # sines still reads as a regular wave edge-on). Seamless round the loop (mode='wrap'), irregular, with kinks.
     from scipy.ndimage import gaussian_filter1d
