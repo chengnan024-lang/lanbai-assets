@@ -1,69 +1,124 @@
 {
- "Skylight": {
+ "SlopeR1": {
   "az": [
-   -24.5,
-   24.5
+   46.5,
+   155.0
   ],
   "el": [
-   44.5,
-   58.5
+   41.5,
+   71.0
   ],
-  "solid_angle_cells": 2147
+  "solid_angle_cells": 5825
+ },
+ "Skylight": {
+  "az": [
+   -31.0,
+   30.0
+  ],
+  "el": [
+   41.5,
+   63.5
+  ],
+  "solid_angle_cells": 3933
  },
  "WinR1": {
   "az": [
-   41.5,
-   145.0
+   42.0,
+   146.0
   ],
   "el": [
    -39.0,
-   48.5
+   48.0
   ],
-  "solid_angle_cells": 31060
+  "solid_angle_cells": 29577
+ },
+ "SlopeR2": {
+  "az": [
+   158.0,
+   170.5
+  ],
+  "el": [
+   20.5,
+   40.0
+  ],
+  "solid_angle_cells": 487
+ },
+ "SlopeL1": {
+  "az": [
+   -116.0,
+   -87.5
+  ],
+  "el": [
+   18.5,
+   27.0
+  ],
+  "solid_angle_cells": 819
+ },
+ "SlopeL0": {
+  "az": [
+   -79.5,
+   -60.0
+  ],
+  "el": [
+   17.5,
+   26.5
+  ],
+  "solid_angle_cells": 553
  },
  "WinR2": {
   "az": [
-   152.5,
+   154.0,
    166.5
   ],
   "el": [
-   -20.5,
-   26.5
+   -19.5,
+   26.0
   ],
-  "solid_angle_cells": 1177
+  "solid_angle_cells": 808
  },
- "Windscreen": {
+ "SlopeL2": {
   "az": [
-   -49.5,
+   -139.0,
+   -122.0
+  ],
+  "el": [
+   14.0,
+   23.0
+  ],
+  "solid_angle_cells": 386
+ },
+ "WindscreenR": {
+  "az": [
+   -26.5,
    19.0
   ],
   "el": [
    -16.0,
    20.5
   ],
-  "solid_angle_cells": 8746
+  "solid_angle_cells": 6223
  },
- "WinL0": {
+ "SlopeR3": {
   "az": [
-   -80.5,
-   -52.0
+   170.5,
+   174.0
   ],
   "el": [
-   -13.5,
+   13.5,
+   20.5
+  ],
+  "solid_angle_cells": 62
+ },
+ "WindscreenL": {
+  "az": [
+   -55.5,
+   -28.5
+  ],
+  "el": [
+   -14.0,
    18.0
   ],
-  "solid_angle_cells": 2457
- },
- "WinL1": {
-  "az": [
-   -109.5,
-   -100.5
-  ],
-  "el": [
-   -13.5,
-   17.5
-  ],
-  "solid_angle_cells": 993
+  "solid_angle_cells": 2903
  },
  "DoorLeaf": {
   "az": [
@@ -71,87 +126,131 @@
    21.5
   ],
   "el": [
-   -7.5,
+   -4.0,
    17.5
   ],
-  "solid_angle_cells": 70
+  "solid_angle_cells": 47
+ },
+ "SlopeL3": {
+  "az": [
+   -151.0,
+   -142.0
+  ],
+  "el": [
+   10.5,
+   16.0
+  ],
+  "solid_angle_cells": 123
+ },
+ "WinL1": {
+  "az": [
+   -106.0,
+   -98.5
+  ],
+  "el": [
+   -11.0,
+   14.5
+  ],
+  "solid_angle_cells": 634
+ },
+ "WinL0": {
+  "az": [
+   -82.0,
+   -57.5
+  ],
+  "el": [
+   -11.0,
+   14.5
+  ],
+  "solid_angle_cells": 1984
  },
  "WinL2": {
   "az": [
-   -141.5,
-   -124.5
+   -136.0,
+   -119.5
   ],
   "el": [
-   -11.5,
-   15.0
+   -10.0,
+   13.0
   ],
-  "solid_angle_cells": 751
+  "solid_angle_cells": 570
  },
- "WinR3": {
+ "SlopeR4": {
   "az": [
-   168.5,
-   171.5
+   174.0,
+   175.5
   ],
   "el": [
-   -3.5,
-   12.0
+   10.0,
+   13.0
   ],
-  "solid_angle_cells": 67
+  "solid_angle_cells": 14
+ },
+ "SlopeL4": {
+  "az": [
+   -157.5,
+   -153.0
+  ],
+  "el": [
+   8.5,
+   12.5
+  ],
+  "solid_angle_cells": 59
+ },
+ "SlopeR5": {
+  "az": [
+   176.5,
+   176.5
+  ],
+  "el": [
+   10.0,
+   10.0
+  ],
+  "solid_angle_cells": 1
+ },
+ "SlopeL5": {
+  "az": [
+   -161.5,
+   -159.5
+  ],
+  "el": [
+   7.0,
+   9.5
+  ],
+  "solid_angle_cells": 14
  },
  "WinL3": {
   "az": [
-   -153.0,
-   -146.0
+   -147.5,
+   -140.5
   ],
   "el": [
-   -2.0,
-   10.5
+   -1.5,
+   9.5
   ],
-  "solid_angle_cells": 129
+  "solid_angle_cells": 76
  },
- "WinR4": {
+ "WinR3": {
   "az": [
-   173.0,
-   174.0
+   169.0,
+   169.0
   ],
   "el": [
-   -3.0,
+   5.0,
    7.5
   ],
-  "solid_angle_cells": 26
+  "solid_angle_cells": 6
  },
  "WinL4": {
   "az": [
-   -160.0,
-   -156.5
+   -155.5,
+   -151.5
   ],
   "el": [
    -1.0,
    7.0
   ],
-  "solid_angle_cells": 61
- },
- "WinL5": {
-  "az": [
-   -162.0,
-   -162.0
-  ],
-  "el": [
-   -0.5,
-   5.5
-  ],
-  "solid_angle_cells": 13
- },
- "WinR5": {
-  "az": [
-   175.0,
-   175.0
-  ],
-  "el": [
-   1.5,
-   5.5
-  ],
-  "solid_angle_cells": 9
+  "solid_angle_cells": 45
  },
  "RearWindow": {
   "az": [
@@ -162,17 +261,17 @@
    -0.5,
    4.5
   ],
-  "solid_angle_cells": 341
+  "solid_angle_cells": 286
  },
  "(open: door / nothing)": {
   "az": [
-   20.5,
-   36.5
+   21.0,
+   37.0
   ],
   "el": [
    -42.0,
-   36.0
+   37.5
   ],
-  "solid_angle_cells": 3623
+  "solid_angle_cells": 3668
  }
 }

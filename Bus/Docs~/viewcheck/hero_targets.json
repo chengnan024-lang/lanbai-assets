@@ -4,7 +4,7 @@
   "el": 8,
   "visible": true,
   "through": [
-   "Windscreen"
+   "WindscreenR"
   ]
  },
  "暮日": {
@@ -12,7 +12,7 @@
   "el": 0.5,
   "visible": true,
   "through": [
-   "Windscreen"
+   "WindscreenR"
   ]
  },
  "唱词 4b": {
@@ -20,7 +20,7 @@
   "el": -6,
   "visible": true,
   "through": [
-   "Windscreen"
+   "WindscreenR"
   ]
  },
  "天问 / 庄子 11": {
@@ -28,7 +28,7 @@
   "el": 8,
   "visible": true,
   "through": [
-   "Windscreen"
+   "WindscreenR"
   ]
  },
  "河伯": {
@@ -36,7 +36,7 @@
   "el": 6,
   "visible": true,
   "through": [
-   "Windscreen"
+   "WindscreenR"
   ]
  },
  "裂口顶 U7": {
@@ -44,7 +44,7 @@
   "el": 18,
   "visible": true,
   "through": [
-   "Windscreen"
+   "WindscreenR"
   ]
  },
  "银心": {
@@ -52,7 +52,7 @@
   "el": 12,
   "visible": true,
   "through": [
-   "Windscreen"
+   "WindscreenL"
   ]
  },
  "收音机": {
@@ -66,7 +66,7 @@
   "el": -12,
   "visible": true,
   "through": [
-   "Windscreen"
+   "WindscreenR"
   ]
  },
  "里尔克": {
@@ -74,15 +74,15 @@
   "el": 3,
   "visible": true,
   "through": [
-   "Windscreen"
+   "WindscreenR"
   ]
  },
  "晨日": {
-  "az": 45,
+  "az": 30,
   "el": 6,
   "visible": true,
   "through": [
-   "WinR1"
+   "open"
   ]
  },
  "庄子 8-ii": {

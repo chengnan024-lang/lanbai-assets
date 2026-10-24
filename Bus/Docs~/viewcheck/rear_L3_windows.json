@@ -1,167 +1,277 @@
 {
- "WinL3": {
+ "SlopeL3": {
   "az": [
-   -151.5,
-   -124.5
+   -170.0,
+   -33.0
   ],
   "el": [
-   -36.5,
-   56.5
+   42.5,
+   80.0
   ],
-  "solid_angle_cells": 8963
+  "solid_angle_cells": 6524
+ },
+ "SlopeL2": {
+  "az": [
+   -24.0,
+   -5.5
+  ],
+  "el": [
+   27.5,
+   59.5
+  ],
+  "solid_angle_cells": 1136
+ },
+ "WinL3": {
+  "az": [
+   -154.5,
+   -129.0
+  ],
+  "el": [
+   -39.0,
+   56.0
+  ],
+  "solid_angle_cells": 6915
  },
  "WinL2": {
   "az": [
-   -37.0,
+   -31.0,
    -11.0
   ],
   "el": [
-   -37.0,
-   45.5
+   -34.5,
+   44.5
   ],
-  "solid_angle_cells": 3182
+  "solid_angle_cells": 2285
+ },
+ "SlopeL4": {
+  "az": [
+   -176.0,
+   -169.5
+  ],
+  "el": [
+   21.0,
+   37.5
+  ],
+  "solid_angle_cells": 272
+ },
+ "SlopeL1": {
+  "az": [
+   -6.5,
+   -3.0
+  ],
+  "el": [
+   16.0,
+   25.0
+  ],
+  "solid_angle_cells": 75
+ },
+ "SlopeR3": {
+  "az": [
+   79.5,
+   106.0
+  ],
+  "el": [
+   17.5,
+   24.5
+  ],
+  "solid_angle_cells": 561
+ },
+ "SlopeR2": {
+  "az": [
+   51.5,
+   72.5
+  ],
+  "el": [
+   15.0,
+   23.5
+  ],
+  "solid_angle_cells": 417
+ },
+ "SlopeR4": {
+  "az": [
+   112.5,
+   131.5
+  ],
+  "el": [
+   14.5,
+   22.5
+  ],
+  "solid_angle_cells": 361
  },
  "WinL4": {
   "az": [
-   -172.0,
-   -165.5
+   -168.0,
+   -168.0
   ],
   "el": [
-   -5.5,
-   24.5
+   20.0,
+   21.5
   ],
-  "solid_angle_cells": 251
+  "solid_angle_cells": 4
  },
- "WinR3": {
+ "SlopeL5": {
   "az": [
-   89.0,
-   97.5
+   -177.0,
+   -175.0
   ],
   "el": [
-   -12.5,
-   16.0
-  ],
-  "solid_angle_cells": 951
- },
- "WinL1": {
-  "az": [
-   -9.0,
-   -8.0
-  ],
-  "el": [
-   -3.0,
-   15.0
-  ],
-  "solid_angle_cells": 68
- },
- "WinR2": {
-  "az": [
-   49.5,
-   72.0
-  ],
-  "el": [
-   -12.0,
-   14.5
-  ],
-  "solid_angle_cells": 1263
- },
- "WinR4": {
-  "az": [
-   125.5,
-   130.5
-  ],
-  "el": [
-   -10.0,
-   13.5
-  ],
-  "solid_angle_cells": 387
- },
- "WinR1": {
-  "az": [
-   30.0,
-   44.0
-  ],
-  "el": [
-   -8.5,
-   11.5
-  ],
-  "solid_angle_cells": 509
- },
- "WinL5": {
-  "az": [
-   -174.0,
-   -174.0
-  ],
-  "el": [
-   3.5,
-   10.5
-  ],
-  "solid_angle_cells": 15
- },
- "WinR5": {
-  "az": [
-   139.0,
-   147.0
-  ],
-  "el": [
-   -8.0,
-   10.5
-  ],
-  "solid_angle_cells": 253
- },
- "RearWindow": {
-  "az": [
-   -180.0,
-   180.0
-  ],
-  "el": [
-   -1.5,
-   9.0
-  ],
-  "solid_angle_cells": 1201
- },
- "WinL0": {
-  "az": [
-   -4.5,
-   -4.5
-  ],
-  "el": [
-   3.5,
-   8.0
+   14.5,
+   19.0
   ],
   "solid_angle_cells": 10
  },
- "Windscreen": {
+ "SlopeR1": {
   "az": [
-   -4.0,
-   23.5
+   35.5,
+   47.0
   ],
   "el": [
-   -3.0,
-   7.5
+   11.0,
+   18.0
   ],
-  "solid_angle_cells": 990
+  "solid_angle_cells": 163
  },
- "DoorLeaf": {
+ "SlopeR5": {
   "az": [
-   25.0,
-   25.0
+   135.5,
+   145.5
   ],
   "el": [
-   0.5,
-   6.5
+   11.0,
+   17.0
   ],
-  "solid_angle_cells": 6
+  "solid_angle_cells": 142
  },
- "(open: door / nothing)": {
+ "SlopeL0": {
   "az": [
-   26.0,
-   28.5
+   -2.5,
+   -2.5
+  ],
+  "el": [
+   14.5,
+   14.5
+  ],
+  "solid_angle_cells": 1
+ },
+ "Skylight": {
+  "az": [
+   24.0,
+   28.0
+  ],
+  "el": [
+   14.5,
+   14.5
+  ],
+  "solid_angle_cells": 9
+ },
+ "WinR3": {
+  "az": [
+   83.5,
+   97.0
+  ],
+  "el": [
+   -10.5,
+   13.5
+  ],
+  "solid_angle_cells": 551
+ },
+ "WinR2": {
+  "az": [
+   52.0,
+   74.5
+  ],
+  "el": [
+   -10.0,
+   13.0
+  ],
+  "solid_angle_cells": 904
+ },
+ "WinR4": {
+  "az": [
+   120.5,
+   130.0
+  ],
+  "el": [
+   -9.0,
+   11.5
+  ],
+  "solid_angle_cells": 256
+ },
+ "WinR1": {
+  "az": [
+   35.0,
+   49.0
+  ],
+  "el": [
+   -8.0,
+   10.0
+  ],
+  "solid_angle_cells": 460
+ },
+ "WinR5": {
+  "az": [
+   134.5,
+   143.0
+  ],
+  "el": [
+   -7.0,
+   9.0
+  ],
+  "solid_angle_cells": 206
+ },
+ "RearWindow": {
+  "az": [
+   151.5,
+   178.0
   ],
   "el": [
    -1.5,
    8.5
   ],
-  "solid_angle_cells": 55
+  "solid_angle_cells": 960
+ },
+ "WindscreenL": {
+  "az": [
+   -3.0,
+   12.5
+  ],
+  "el": [
+   -1.5,
+   7.5
+  ],
+  "solid_angle_cells": 553
+ },
+ "WindscreenR": {
+  "az": [
+   13.5,
+   28.5
+  ],
+  "el": [
+   -5.0,
+   7.5
+  ],
+  "solid_angle_cells": 584
+ },
+ "DoorLeaf": {
+  "az": [
+   29.5,
+   29.5
+  ],
+  "el": [
+   5.5,
+   6.5
+  ],
+  "solid_angle_cells": 3
+ },
+ "(open: door / nothing)": {
+  "az": [
+   31.0,
+   33.5
+  ],
+  "el": [
+   -1.5,
+   8.0
+  ],
+  "solid_angle_cells": 105
  }
 }

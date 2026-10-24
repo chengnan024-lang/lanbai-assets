@@ -77,6 +77,9 @@ def build(ctx):
     S = ctx['lbh_scene']
     a = ctx['args']
     mode = a.get('mode', 'targets')
+    if 'eye' in a:      # a free eye (e.g. the act-1 spawn point): the harness builds the camera from this same dict
+        ctx['cam']['eye'] = [float(v) for v in a['eye'].split(',')]
+        ctx['eye'] = ctx['cam']['eye']
     build_bus.build(open_door=a.get('door', 'open') == 'open', reset=False)
     eye = ctx['eye']
     if mode == 'targets':
@@ -89,4 +92,14 @@ def build(ctx):
         road = S.mat_emission('RoadDark', hexlin('#0B0C0E'), 1.0)
         S.mesh_object('Road', [(-60, 0, -200), (60, 0, -200), (60, 0, 200), (-60, 0, 200)], [(0, 1, 2, 3)], road)
         tube_lights(S, scale=float(a.get('tubes', 1.0)), watts=float(a.get('watts', 7.0)))
+    elif mode == 'clay':
+        # neutral overcast + a low sun: only to read the form ("does it look like a PAZ"), not a lighting proposal
+        S.unity_ambient_flat((0.30, 0.31, 0.33))
+        S.unity_directional('Sun', 1.4, '#FFF3E2', (0.55, 0.45, 0.70))
+        ground = bpy.data.materials.new('Ground')
+        ground.use_nodes = True
+        ground.node_tree.nodes['Principled BSDF'].inputs['Base Color'].default_value = (0.08, 0.08, 0.085, 1)
+        ground.node_tree.nodes['Principled BSDF'].inputs['Roughness'].default_value = 0.8
+        S.mesh_object('Ground', [(-80, 0, -120), (80, 0, -120), (80, 0, 120), (-80, 0, 120)], [(0, 1, 2, 3)], ground)
+        tube_lights(S, scale=float(a.get('tubes', 0.6)), watts=float(a.get('watts', 7.0)))
     return dict(what='bus %s' % mode)

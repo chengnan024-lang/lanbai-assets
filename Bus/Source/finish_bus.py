@@ -153,7 +153,7 @@ def vertex_colours(ob, ao_samples=32):
     fade = np.zeros(len(P), np.float32)
     # seats: polish where people sit (cushion centre, upper back) — computed per seat row by distance to seat centres
     seat_c = [((B.SEAT_R_X[0] + B.SEAT_R_X[1]) / 2, bz) for bz in B.RIGHT_ROWS] + \
-             [(xx, bz) for bz in B.LEFT_ROWS for xx in (-0.75, -0.33)] + [(xx, B.REAR_BENCH_Z) for xx in (-0.7, -0.25, 0.25, 0.7)] + \
+             [(xx, bz) for bz in B.LEFT_ROWS for xx in (-1.10, -0.66)] + [(xx, B.REAR_BENCH_Z) for xx in (-1.05, -0.55, 0.0, 0.55)] + \
              [(B.DRIVER_SEAT[0], B.DRIVER_SEAT[1] - 0.30)]
     for sx, bz in seat_c:
         d_cush = np.sqrt(((x - sx) / 0.16) ** 2 + ((z - (bz + 0.30)) / 0.14) ** 2)
@@ -173,8 +173,8 @@ def vertex_colours(ob, ao_samples=32):
     pole_like = (np.abs(N[:, 1]) < 0.3)
     wear = np.maximum(wear, np.where(pole_like & (y > 1.0) & (y < 1.8), grip * 0.0, 0))
     # floor: aisle wear band (x -0.10..0.30) and the door step
-    aisle = np.clip(1 - np.abs(x - 0.10) / 0.28, 0, 1) * (N[:, 1] > 0.9) * (np.abs(y - B.FLOOR_Y) < 0.02)
-    wear = np.maximum(wear, aisle * (0.6 + 0.4 * np.clip((z + 3.4) / 6.0, 0, 1)))
+    aisle = np.clip(1 - np.abs(x + 0.06) / 0.34, 0, 1) * (N[:, 1] > 0.9) * (np.abs(y - B.FLOOR_Y) < 0.02)
+    wear = np.maximum(wear, aisle * (0.6 + 0.4 * np.clip((z - B.Z_REAR) / 6.0, 0, 1)))
     # crack seeds on the vinyl: 2-5 per seat -> random sparse points of the fade/crack mask (blue > 0.75 = crack)
     crack = (rng.random(len(P)) < 0.004).astype(np.float32) * 0.9
     fade = np.maximum(fade * 0.7, crack)
@@ -187,10 +187,10 @@ def vertex_colours(ob, ao_samples=32):
 def wipers():
     """two pivots on the windscreen bottom: local +Y = parked arm direction (along the glass bottom), +Z = axis."""
     out = []
-    for nm, px, d in (('L', -0.92, 1.0), ('R', 0.02, 1.0)):
+    for nm, px, d in (('L', B.XC - 1.00, 1.0), ('R', B.WS_POST[1] + 0.06, 1.0)):
         piv = bpy.data.objects.new('WiperPivot_' + nm, None)
         bpy.context.scene.collection.objects.link(piv)
-        loc = BB.U2B((px, B.WS_BOT + 0.03, B.L_HALF + 0.02))
+        loc = BB.U2B((px, B.WS_BOT + 0.03, B.Z_FRONT + 0.02))
         # Unity basis: Y' = (1,0,0) (parked arm along +x), Z' = (0,0,1) (axis out of the glass, forward), X' = Y' x Z'
         Yu, Zu = Vector((1, 0, 0)), Vector((0, 0, 1))
         # convert the Unity basis to Blender: columns are images of local x,y,z under U2B; local axes stay Unity-local
@@ -203,7 +203,7 @@ def wipers():
     for o in [o for o in bpy.data.objects if o.type == 'MESH' and o.name.startswith('Wiper')]:
         bb = [o.matrix_world @ Vector(c) for c in o.bound_box]
         cx = sum(v.x for v in bb) / 8
-        p = out[0] if cx < -0.4 else out[1]
+        p = out[0] if cx < B.WS_POST[0] else out[1]
         mw = o.matrix_world.copy()
         o.parent = p
         o.matrix_world = mw
@@ -264,13 +264,13 @@ def build_all(ao_samples):
     out['Cabin_DestBlind'] = join('Cabin_DestBlind', groups['blind'])
     out['Cabin_Curtains'] = join('Cabin_Curtains', groups['curt'])
     door = join('Bus_DoorLeaf', groups['door'])
-    set_origin(door, BB.U2B((B.W_HALF + 0.01, 0.0, B.DOOR[1])))
+    set_origin(door, BB.U2B((B.R_WALL + 0.01, 0.0, B.DOOR[1])))
     out['Bus_DoorLeaf'] = door
     for key, parts in groups['wheel'].items():
         nm = {'0R': 'Wheel_FR', '0L': 'Wheel_FL', '1R': 'Wheel_RR', '1L': 'Wheel_RL'}[key]
         w = join(nm, parts)
         ax = 0 if key[0] == '0' else 1
-        set_origin(w, BB.U2B(((1 if key[1] == 'R' else -1) * B.TRACK_HALF, B.WHEEL_R, B.AXLES[ax])))
+        set_origin(w, BB.U2B((B.XC + (1 if key[1] == "R" else -1) * B.TRACK_HALF, B.WHEEL_R, B.AXLES[ax])))
         out[nm] = w
     for g in groups['glass']:
         bb = [g.matrix_world @ Vector(c) for c in g.bound_box]
@@ -303,39 +303,45 @@ def layout(out):
     """BusLayout.json: every number the Unity build script needs (CONTROL §6 pitfall 13)."""
     seats = []
     for i, bz in enumerate(B.RIGHT_ROWS):
-        cy = (0.94 + 0.08) if i == 0 else B.FLOOR_Y + B.SEAT_H
+        cy = (0.96 + 0.07) if i == 0 else B.FLOOR_Y + B.SEAT_H
         seats.append(dict(name='SeatR%d' % i, hero=(i == 0), x=(B.SEAT_R_X[0] + B.SEAT_R_X[1]) / 2, cushion_y=cy, back_z=bz))
     for i, bz in enumerate(B.LEFT_ROWS):
-        for k, xx in enumerate((-0.75, -0.33)):
+        for k, xx in enumerate((-1.10, -0.66)):
             seats.append(dict(name='SeatL%d%s' % (i, 'w' if k == 0 else 'a'), hero=False, x=xx, cushion_y=B.FLOOR_Y + B.SEAT_H, back_z=bz))
-    for k, xx in enumerate((-0.72, -0.24, 0.24, 0.72)):
+    for k, xx in enumerate((-1.05, -0.55, 0.0, 0.55)):
         seats.append(dict(name='RearBench%d' % k, hero=False, x=xx, cushion_y=B.FLOOR_Y + B.SEAT_H, back_z=B.REAR_BENCH_Z))
     for s in seats:
         # VRCStation: the seat's 'Station Enter Player Location' at the cushion surface, facing +Z
         s['station_pos'] = [s['x'], s['cushion_y'], s['back_z'] + 0.30]
         s['eye_approx'] = [s['x'], s['cushion_y'] + 0.68, s['back_z'] + 0.23]
+    xl, xr, xm = B.XC - B.W_HALF + 0.03, B.R_WALL - 0.03, B.XC
+    W2, L2, zc = 2 * B.W_HALF - 0.06, B.Z_FRONT - B.Z_REAR - 0.12, (B.Z_FRONT + B.Z_REAR) / 2
     cols = [  # invisible colliders (BoxCollider centre / size, Unity)
-        dict(name='Col_Floor', c=[0, B.FLOOR_Y - 0.03, 0], s=[2.0, 0.06, 6.9]),
-        dict(name='Col_WallL', c=[-1.01, 1.5, 0], s=[0.06, 1.8, 6.9]),
-        dict(name='Col_WallR_rear', c=[1.01, 1.5, -0.45], s=[0.06, 1.8, 6.0]),
-        dict(name='Col_WallR_front', c=[1.01, 1.5, 3.36], s=[0.06, 1.8, 0.18]),
-        dict(name='Col_Front', c=[0, 1.5, 3.44], s=[2.0, 1.8, 0.06]),
-        dict(name='Col_Rear', c=[0, 1.5, -3.44], s=[2.0, 1.8, 0.06]),
-        dict(name='Col_Roof', c=[0, B.CEIL_Y + 0.03, 0], s=[2.0, 0.06, 6.9]),
-        dict(name='Col_Dash', c=[0, 0.95, 3.27], s=[2.0, 0.66, 0.38]),
+        dict(name='Col_Floor', c=[xm, B.FLOOR_Y - 0.03, zc], s=[W2, 0.06, L2]),
+        dict(name='Col_WallL', c=[xl, 1.5, zc], s=[0.06, 1.8, L2]),
+        dict(name='Col_WallR_rear', c=[xr, 1.5, (B.Z_REAR + B.DOOR[0]) / 2], s=[0.06, 1.8, B.DOOR[0] - B.Z_REAR]),
+        dict(name='Col_WallR_front', c=[xr, 1.5, 3.39], s=[0.06, 1.8, 0.24]),
+        dict(name='Col_Front', c=[xm, 1.5, B.Z_FRONT - 0.06], s=[W2, 1.8, 0.06]),
+        dict(name='Col_Rear', c=[xm, 1.5, B.Z_REAR + 0.06], s=[W2, 1.8, 0.06]),
+        dict(name='Col_Roof', c=[xm, B.CEIL_Y + 0.03, zc], s=[W2, 0.06, L2]),
+        dict(name='Col_Dash', c=[xm, 0.95, 3.27], s=[W2, 0.66, 0.38]),
+        dict(name='Col_EngineCover', c=[(B.ENGINE_COVER[0] + B.ENGINE_COVER[1]) / 2, (B.FLOOR_Y + B.ENGINE_COVER[4]) / 2, (B.ENGINE_COVER[2] + B.ENGINE_COVER[3]) / 2],
+             s=[B.ENGINE_COVER[1] - B.ENGINE_COVER[0], B.ENGINE_COVER[4] - B.FLOOR_Y, B.ENGINE_COVER[3] - B.ENGINE_COVER[2]]),
         dict(name='Col_Guard', c=[0.775, 0.93, B.GUARD_Z], s=[0.43, 0.62, 0.04]),
         dict(name='Col_Step', c=[0.82, 0.30, (B.DOOR[0] + B.DOOR[1]) / 2], s=[0.44, 0.60, B.DOOR[1] - B.DOOR[0]]),
     ]
     return dict(
         _about='车的布局（唯一数据源 Bus/Source/bus_spec.py，由 finish_bus.py 写出）。Unity 车局部坐标：米，x 右 y 上 z 前，车头 +Z，路面 y 0。',
         eye_hero=list(B.EYE), floor_y=B.FLOOR_Y, skylight=dict(centre=list(B.SKY_C), half=B.SKY_HALF),
-        door=dict(hinge=[B.W_HALF + 0.01, 0.0, B.DOOR[1]], open_deg=165.0, closed_deg=0.0, axis='+Y local',
+        door=dict(hinge=[B.R_WALL + 0.01, 0.0, B.DOOR[1]], open_deg=165.0, closed_deg=0.0, axis='+Y local',
                   note='第 11 幕在白的遮罩下关上（圣经 §6·11）；其余时间开着，从不关'),
         wheels=dict(radius=B.WHEEL_R, names=['Wheel_FR', 'Wheel_FL', 'Wheel_RR', 'Wheel_RL'], axis='local X',
-                    centres=[[s * B.TRACK_HALF, B.WHEEL_R, z] for z in B.AXLES for s in (1, -1)]),
+                    centres=[[B.XC + s * B.TRACK_HALF, B.WHEEL_R, z] for z in B.AXLES for s in (1, -1)]),
         tubes=[dict(row=r, x=x, z0=z0, z1=z1) for r, x, zl in (('L', B.TUBE_X[0], B.TUBE_Z_L), ('R', B.TUBE_X[1], B.TUBE_Z)) for z0, z1 in zl],
-        head_fill_lights=[dict(pos=[x, 2.30, 0.0], colour='#E4F1F3', render_mode='Not Important', culling='Player + PlayerLocal',
+        head_fill_lights=[dict(pos=[x, 2.45, 0.0], colour='#E4F1F3', render_mode='Not Important', culling='Player + PlayerLocal',
                                note='圣经 §4.3：座位处灰卡 #585F64，强度 × _Udon_CabinLightmap') for x in B.TUBE_X],
+        bus=dict(model='PAZ-672 (D-28)', centre_x=B.XC, width=2 * B.W_HALF, length=B.Z_FRONT - B.Z_REAR, height=B.Y_TOP,
+                 bounds_min=[B.XC - B.W_HALF, 0.0, B.Z_REAR], bounds_max=[B.R_WALL, 2.80, B.Z_FRONT + 0.12]),
         radio=dict(centre=list(B.RADIO_C), az_el=[-20, -12]), steering_wheel=dict(centre=list(B.WHEEL_C), tilt_deg=B.WHEEL_TILT),
         seats=seats, colliders=cols,
         objects=sorted(out.keys()),
