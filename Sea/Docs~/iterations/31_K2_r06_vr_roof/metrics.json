@@ -1,0 +1,199 @@
+{
+ "metrics": {
+  "size": [
+   916,
+   960
+  ],
+  "APL": 97.75,
+  "EV_display": -2.431,
+  "luma_lt12_pct": 20.32,
+  "Lstar_gt85_pct": 2.249,
+  "clip_black_pct": 0.0,
+  "clip_white_pct": 0.0,
+  "clip_black_largest_region_pct": 0.0,
+  "clip_white_largest_region_pct": 0.0,
+  "warm_shadow_pct": 0.0,
+  "purple_pct": 0.0,
+  "purple_largest_region_pct": 0.0,
+  "violet_strong_pct": 0.0,
+  "lavender_act6_pct": 0.0,
+  "brightest": {
+   "bbox": [
+    435,
+    461,
+    483,
+    504
+   ],
+   "centroid": [
+    457.8,
+    479.0
+   ],
+   "clusters": 2,
+   "clusters_ge5pct": 2,
+   "min_luma": 219.2,
+   "centroid_az_el": [
+    1.43,
+    87.55
+   ]
+  },
+  "top25_Lstar": {
+   "mean": 27.0,
+   "p50": 25.72,
+   "p90": 50.72
+  },
+  "palette": {
+   "act": "07a",
+   "metric": "CIEDE2000 (as Review/Tools~/measure.py)",
+   "swatches": [
+    {
+     "hex": "#E6F3F8",
+     "role": "斯涅尔窗 藍白",
+     "nearest_dE2000_p01": 5.4,
+     "within_dE5_pct": 0.0
+    },
+    {
+     "hex": "#ACD4ED",
+     "role": "座椅上的焦散",
+     "nearest_dE2000_p01": 8.1,
+     "within_dE5_pct": 0.0
+    },
+    {
+     "hex": "#90BFE9",
+     "role": "光柱",
+     "nearest_dE2000_p01": 8.8,
+     "within_dE5_pct": 0.0
+    },
+    {
+     "hex": "#3876AB",
+     "role": "浅水 縹",
+     "nearest_dE2000_p01": 6.5,
+     "within_dE5_pct": 0.0
+    },
+    {
+     "hex": "#11395E",
+     "role": "窗外全反射的暗镜",
+     "nearest_dE2000_p01": 0.6,
+     "within_dE5_pct": 12.03
+    },
+    {
+     "hex": "#697987",
+     "role": "海雪",
+     "nearest_dE2000_p01": 0.9,
+     "within_dE5_pct": 9.4
+    },
+    {
+     "hex": "#8AC6FF",
+     "role": "生物荧光",
+     "nearest_dE2000_p01": 11.9,
+     "within_dE5_pct": 0.0
+    }
+   ],
+   "pixel_to_nearest_dE_median": 9.0,
+   "pixel_to_nearest_dE_p90": 19.5,
+   "pixels_within5_pct": 21.4
+  }
+ },
+ "cam": {
+  "eye": [
+   0.55,
+   1.7,
+   2.05
+  ],
+  "yaw_deg": 0,
+  "pitch_deg": 90.0,
+  "hfov_deg": 97.3,
+  "res": [
+   916,
+   960
+  ],
+  "note": "VR 单眼近似：Index 100% 1832×1920、竖直 100°（→ 水平 ≈ 97.3°），正前。用于 VR 下 APL ≤ 150 的检查；立体视差不模拟",
+  "source": "Engineering/render_harness",
+  "name": "vr_left_fwd"
+ },
+ "grade_spec": {
+  "S7a": 1.0
+ },
+ "grade_state": {
+  "postExposure": -0.8,
+  "temperature": -2.15,
+  "tint": 1.43,
+  "saturation": 8.38,
+  "contrast": -12.2,
+  "lift": [
+   0.9619,
+   0.9898,
+   1.0,
+   0.0128
+  ],
+  "gamma": [
+   0.9738,
+   0.9878,
+   1.0,
+   -0.2499
+  ],
+  "gain": [
+   0.9855,
+   0.9957,
+   1.0,
+   0.4132
+  ],
+  "mixer": [
+   100.36,
+   0.67,
+   -2.61,
+   -0.16,
+   101.08,
+   0.47,
+   1.33,
+   2.13,
+   99.48
+  ],
+  "bloom": {
+   "intensity": 4.0,
+   "threshold": 2.24,
+   "softKnee": 0.6,
+   "diffusion": 8.0,
+   "color": [
+    0.9098039215686274,
+    0.9803921568627451,
+    1.0
+   ],
+   "clamp": 4.239999999997963
+  },
+  "vignette": {
+   "intensity": 0.0,
+   "smoothness": 0.2,
+   "roundness": 1.0,
+   "rounded": false,
+   "color": "#000000"
+  }
+ },
+ "bloom_share_of_APL": 0.0,
+ "t": 387.0,
+ "target": {
+  "phase": "7a 被海接住",
+  "APL": 79.7,
+  "grade": "S7a",
+  "range": [
+   85,
+   60
+  ]
+ },
+ "scene": {
+  "what": "sea kit K2",
+  "frame": "K2",
+  "eye_depth": 12.111,
+  "level": 13.811,
+  "bus": "bible_v2",
+  "glass": false,
+  "samples": 48,
+  "res": [
+   916,
+   960
+  ]
+ },
+ "render_seconds": 10.7,
+ "lens": "none",
+ "bloom_tint": "single",
+ "note": "K2 r06 VR straight up, bible_v2 shell with the roof eroded above el 40 (worst case), VR core ceiling (3.2, 4 EV, ^2): D-09 APL <= 150"
+}

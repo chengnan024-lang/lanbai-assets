@@ -1,0 +1,20 @@
+{
+ "_about": "包交上来以后的开销项（手工维护，build_ledger_data.py 把它们追加到圣经清单生成的项后面）。status：package（包报的）/ engineer-estimate（总工程师估的，source 写算法）/ measured（本地实测）。replaces = 要替换掉的圣经项的 name（可选）。",
+ "items": [
+  {
+   "name": "门 云海 Lanbai/GateCloudDeck（高度场步进，第 4 轮）",
+   "owner": "门",
+   "kind": "opaque",
+   "active": [
+    [
+     133.8,
+     181.55
+    ]
+   ],
+   "gpu_ms": 2.45,
+   "status": "package",
+   "source": "pkg/gate-clouds fc6f8b6 README_GateClouds.md §3.4：她按参照渲染数的取样 / ALU 估 1.5–2.5 ms（两只眼、early-Z 已恢复）+ 深度 pass 0.3–0.6 ms，取上沿 2.0 + 0.45；未实测。总工程师第 1 轮的估计是 3–6 ms（early-Z 恢复前）",
+   "note": "目标 1–1.5 ms；砍法见她的 给总控.md，等总导演定 + 本地实测"
+  }
+ ]
+}

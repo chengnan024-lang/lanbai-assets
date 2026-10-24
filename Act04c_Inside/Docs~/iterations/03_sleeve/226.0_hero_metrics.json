@@ -1,0 +1,201 @@
+{
+ "metrics": {
+  "size": [
+   960,
+   540
+  ],
+  "APL": 64.37,
+  "EV_display": -3.947,
+  "luma_lt12_pct": 17.25,
+  "Lstar_gt85_pct": 0.005,
+  "clip_black_pct": 0.0,
+  "clip_white_pct": 0.0,
+  "purple_pct": 0.0,
+  "violet_strong_pct": 0.0,
+  "lavender_act6_pct": 0.0,
+  "brightest": {
+   "bbox": [
+    425,
+    105,
+    931,
+    256
+   ],
+   "centroid": [
+    438.5,
+    243.9
+   ],
+   "clusters": 2,
+   "clusters_ge5pct": 1,
+   "min_luma": 129.3,
+   "centroid_az_el": [
+    -4.9,
+    3.03
+   ]
+  },
+  "top25_Lstar": {
+   "mean": 28.65,
+   "p50": 33.08,
+   "p90": 37.26
+  },
+  "palette": {
+   "act": "04c",
+   "swatches": [
+    {
+     "hex": "#0C0E14",
+     "role": "暗车厢剪影",
+     "closest_dE_p1": 2.0,
+     "within10_pct": 22.61
+    },
+    {
+     "hex": "#1D2336",
+     "role": "第一重光唇之间的雾",
+     "closest_dE_p1": 11.3,
+     "within10_pct": 0.74
+    },
+    {
+     "hex": "#53606E",
+     "role": "第八重光唇之间的雾",
+     "closest_dE_p1": 1.2,
+     "within10_pct": 75.1
+    },
+    {
+     "hex": "#E6E1F2",
+     "role": "光唇纤维 第 1 重（一丝紫）",
+     "closest_dE_p1": 51.8,
+     "within10_pct": 0.0
+    },
+    {
+     "hex": "#D9DFEE",
+     "role": "光唇纤维 第 4 重",
+     "closest_dE_p1": 49.9,
+     "within10_pct": 0.0
+    },
+    {
+     "hex": "#C2D8E2",
+     "role": "光唇纤维 第 8 重（瓶覗）",
+     "closest_dE_p1": 46.3,
+     "within10_pct": 0.0
+    },
+    {
+     "hex": "#F2B169",
+     "role": "收音机 = Lichtchen",
+     "closest_dE_p1": 69.2,
+     "within10_pct": 0.0
+    },
+    {
+     "hex": "#FFF1DC",
+     "role": "前方暖白光点",
+     "closest_dE_p1": 60.7,
+     "within10_pct": 0.0
+    }
+   ],
+   "pixel_to_nearest_dE_median": 4.6,
+   "pixel_to_nearest_dE_p90": 7.9,
+   "pixels_within10_pct": 98.2
+  }
+ },
+ "cam": {
+  "eye": [
+   0.55,
+   1.7,
+   2.05
+  ],
+  "yaw_deg": 0,
+  "pitch_deg": 0,
+  "hfov_deg": 90,
+  "res": [
+   960,
+   540
+  ],
+  "note": "主座位眼位、正前、桌面 1920×1080、水平 90°（= 本地门测试 U7 截图的机位，Gate cameras.U7）。全片的“标准机位”。",
+  "source": "Engineering/render_harness",
+  "name": "hero"
+ },
+ "grade_spec": {
+  "S4c": 1.0,
+  "LENS_CLEAN": 1.0
+ },
+ "grade_state": {
+  "postExposure": -0.9,
+  "temperature": -2.89,
+  "tint": 1.65,
+  "saturation": -13.56,
+  "contrast": 0.8,
+  "lift": [
+   0.9824,
+   0.9835,
+   1.0,
+   0.0061
+  ],
+  "gamma": [
+   0.9893,
+   0.9814,
+   1.0,
+   -0.0699
+  ],
+  "gain": [
+   0.9994,
+   0.991,
+   1.0,
+   0.1188
+  ],
+  "mixer": [
+   99.81,
+   0.11,
+   -1.08,
+   -0.73,
+   100.56,
+   -0.28,
+   0.08,
+   0.42,
+   99.86
+  ],
+  "bloom": {
+   "intensity": 6.0,
+   "threshold": 2.69,
+   "softKnee": 0.7,
+   "diffusion": 9.0,
+   "color": [
+    0.9490196078431372,
+    0.9529411764705882,
+    0.9647058823529412
+   ],
+   "clamp": 4.239999999997963
+  },
+  "vignette": {
+   "intensity": 0.2,
+   "smoothness": 0.4,
+   "roundness": 1.0,
+   "rounded": false,
+   "color": [
+    0.00784313725490196,
+    0.01568627450980392,
+    0.0392156862745098
+   ]
+  }
+ },
+ "bloom_share_of_APL": 0.0,
+ "t": 226.0,
+ "target": {
+  "phase": "4c selig Leben",
+  "APL": 48.6,
+  "grade": "S4c",
+  "range": [
+   42,
+   55
+  ]
+ },
+ "scene": {
+  "what": "第 4c 幕 t=226.00 s=1825.7 lips=6 fog=#53606E",
+  "bus": "bible_v2",
+  "glass": true,
+  "samples": 16,
+  "res": [
+   960,
+   540
+  ]
+ },
+ "render_seconds": 24.4,
+ "lens": "clean",
+ "note": "r03 short fibres, dark cabin silhouette, sleeve side views"
+}

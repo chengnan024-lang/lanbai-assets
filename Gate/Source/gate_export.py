@@ -454,7 +454,8 @@ def main(write_tex=True):
         lights=dict(
             moon=dict(type='Directional', color='#D6E4FF', E=1.0, inspector=1.0, shadows='soft',
                       direction_to_light_unity=r3(M_W @ G.L_MOON, 4), azimuth_deg=G.MOON_AZ, elevation_deg=G.MOON_EL),
-            tear=dict(type='Directional (CABIN ONLY: culling mask = the bus layers, NOT the tentacles)', color='#A99DE1',
+            tear=dict(type='Directional (CABIN ONLY: culling mask = the bus layers, NOT the tentacles)', color='#B9B6D6',
+                     inner_edge='#A99DE1 (D-08: only the thin inner edge of the white, in Lanbai_Tear; the cabin is lit #B9B6D6)',
                       E=0.8, inspector=0.8, shadows='none', direction='from _Udon_TearPos toward the bus each frame',
                       round4='the tentacles get the wound from TentacleSway v2.7 itself (v2.6 + the far scale / clamp '
                              '_WoundSpecFar / _WoundSpecMax, none above el +25 deg, OVER-THE-WHITE dimming): a LINE LIGHT on _Udon_TearFoot -> '

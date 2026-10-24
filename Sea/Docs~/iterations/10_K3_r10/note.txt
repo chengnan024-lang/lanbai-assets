@@ -1,0 +1,1 @@
+K3 r10: arc spans refracted elevations 0..-22 deg (the Snell compression makes that a thin band at the rim)

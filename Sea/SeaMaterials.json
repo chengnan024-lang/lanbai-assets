@@ -1,0 +1,95 @@
+{
+ "about": "蓝白 · 海套件的材质数值（唯一来源）。菜单 蓝白/Sea/Create Materials 读这个文件建材质；参考帧 Docs~/lookdev/scene_kit.py 也读它。每个数的来由见 README_Sea接口.md §2.3 的表。set: 1 个数 = float，4 个数 = Vector（线性）。tex: 相对 Assets/Lanbai/Sea/ 的路径。",
+ "version": 2,
+ "materials": [
+  {
+   "name": "M_06_Sea", "mode": 0, "transparent": false, "grade": "S6", "frame": "K1",
+   "set": [
+    {"k": "_WaterColor", "v": [0.0163, 0.043, 0.107, 0]},
+    {"k": "_CalmAll", "v": [0.85]},
+    {"k": "_ReflClamp", "v": [2.378]},
+    {"k": "_SunColor", "v": [5.8563, 3.6146, 2.0024, 0]},
+    {"k": "_SunDir", "v": [0.4973, 0.1045, 0.8613, 0]},
+    {"k": "_SunDiscDeg", "v": [0.53]},
+    {"k": "_PurpleMask", "v": [1, 0, 0, 0]}
+   ],
+   "tex": [{"k": "_PurpleCeiling", "path": "Textures/Sea_PurpleCeiling.png"}]
+  },
+  {
+   "name": "M_07a_SeaSurface", "mode": 1, "transparent": false, "grade": "S7a", "frame": "K2",
+   "set": [
+    {"k": "_AirSide", "v": [1]},
+    {"k": "_WindowGain", "v": [18]},
+    {"k": "_WindowTint", "v": [1.5, 1.3, 1, 0.85]},
+    {"k": "_WindowRadial", "v": [1, 2, 0, 0]},
+    {"k": "_WindowCore", "v": [4.45, 3, 2, 1]},
+    {"k": "_ReflClamp", "v": [1.5]},
+    {"k": "_TIRColor", "v": [0.018, 0.058, 0.14, 0]},
+    {"k": "_TIRFog", "v": [0.3]},
+    {"k": "_PurpleMask", "v": [0, 1, 1, 0]}
+   ],
+   "tex": [{"k": "_WindowCube", "path": "Textures/Cube_Dawn_256.exr"}, {"k": "_PurpleCeiling", "path": "Textures/Sea_PurpleCeiling.png"}]
+  },
+  {
+   "name": "M_07c_SeaMirror", "mode": 1, "transparent": false, "grade": "S7b", "frame": "K3",
+   "set": [
+    {"k": "_AirSide", "v": [-1]},
+    {"k": "_TIRCubeGain", "v": [1]},
+    {"k": "_TIRColor", "v": [0.0241, 0.0126, 0.0121, 0]},
+    {"k": "_WindowGain", "v": [0.25]},
+    {"k": "_WindowTint", "v": [1, 1, 1, 0]},
+    {"k": "_WindowSunColor", "v": [24, 8.5, 5, 0]},
+    {"k": "_WindowSunGain", "v": [1]},
+    {"k": "_WindowSunDir", "v": [0, -0.0523, 0.9986, 3]},
+    {"k": "_WindowSunSpread", "v": [30]},
+    {"k": "_WaveAmp", "v": [0.02]},
+    {"k": "_ReflClamp", "v": [8]},
+    {"k": "_PurpleMask", "v": [0, 0, 1, 0]}
+   ],
+   "tex": [{"k": "_WindowCube", "path": "Textures/Cube_DuskLower_256.exr"}, {"k": "_PurpleCeiling", "path": "Textures/Sea_PurpleCeiling.png"}]
+  },
+  {
+   "name": "M_08_SeaCeiling", "mode": 2, "transparent": false, "grade": "S8", "frame": "K4", "ceiling": "inner",
+   "set": [],
+   "tex": []
+  },
+  {
+   "name": "M_08_SeaCeilingEdge", "mode": 2, "transparent": true, "grade": "S8", "frame": "K4", "ceiling": "edge",
+   "set": [],
+   "tex": []
+  },
+  {
+   "name": "M_08_SeaCeilingFade", "mode": 2, "transparent": true, "grade": "S8", "frame": "K5", "ceiling": "inner",
+   "set": [],
+   "tex": []
+  },
+  {
+   "name": "M_11_SeaHanging", "mode": 2, "transparent": false, "grade": "S11", "frame": "K6",
+   "set": [
+    {"k": "_WaterColor", "v": [0.0048, 0.0212, 0.0452, 0]},
+    {"k": "_DiscCenter", "v": [0, 0, 0, 0]},
+    {"k": "_GerstnerAmp", "v": [0.6, 0.35, 0.15, 0]},
+    {"k": "_NormalStrength", "v": [0.1]},
+    {"k": "_LampGlints", "v": [5.4]},
+    {"k": "_PurpleMask", "v": [1, 0, 0, 0]}
+   ],
+   "tex": [{"k": "_PurpleCeiling", "path": "Textures/Sea_PurpleCeiling_S11.png"}]
+  }
+ ],
+ "ceiling_common": {
+  "set": [
+   {"k": "_WaterColor", "v": [0.0116, 0.0296, 0.0683, 0]},
+   {"k": "_FogHeightFalloff", "v": [120]},
+   {"k": "_NormalStrength", "v": [0.25]},
+   {"k": "_WaveRotate", "v": [70.7, 35, 0, 0]},
+   {"k": "_CalmStrength", "v": [1]},
+   {"k": "_MirrorTint", "v": [1.25, 1.3, 1.25, 0]},
+   {"k": "_ReflGain", "v": [1.5]},
+   {"k": "_ReflClamp", "v": [8]},
+   {"k": "_PurpleMask", "v": [0, 0, 0, 1]}
+  ],
+  "inner": [{"k": "_DiscCenter", "v": [0, 0, 0, 0]}],
+  "edge": [{"k": "_DiscCenter", "v": [0, 0, 2700, 800]}],
+  "tex": [{"k": "_SkyBehindCube", "path": "Textures/Cube_Dusk_256.exr"}, {"k": "_PurpleCeiling", "path": "Textures/Sea_PurpleCeiling.png"}]
+ }
+}

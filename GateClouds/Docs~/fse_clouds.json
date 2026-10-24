@@ -1,0 +1,117 @@
+{
+ "about": "GateClouds transparent overdraw (raster coverage after the deck depth, fullscreen-equivalent), preview_gate.py --fse at 640 px; budget (chief engineer / README_GateLayout \u00a79): cards <= 0.9, shafts + wedges <= 0.7, <= 8 layers per pixel; act-4 total 4.0 incl. the bus glass 0.7",
+ "rows": [
+  {
+   "cam": "U7",
+   "t": 155.1,
+   "w": 640,
+   "h": 360,
+   "fse": {
+    "cards": 0.593,
+    "shafts": 0.091,
+    "wedges": 0.419
+   },
+   "fse_total": 1.103,
+   "max_layers": 12,
+   "px_over_8": 0.0006380208333333333
+  },
+  {
+   "cam": "U7",
+   "t": 166.15,
+   "w": 640,
+   "h": 360,
+   "fse": {
+    "cards": 0.421,
+    "shafts": 0.136,
+    "wedges": 0.089
+   },
+   "fse_total": 0.646,
+   "max_layers": 10,
+   "px_over_8": 0.0001779513888888889
+  },
+  {
+   "cam": "U7",
+   "t": 169.65,
+   "w": 640,
+   "h": 360,
+   "fse": {
+    "cards": 0.341,
+    "shafts": 0.12,
+    "wedges": 0.0
+   },
+   "fse_total": 0.461,
+   "max_layers": 8,
+   "px_over_8": 0.0
+  },
+  {
+   "cam": "U7",
+   "t": 173.15,
+   "w": 640,
+   "h": 360,
+   "fse": {
+    "cards": 0.288,
+    "shafts": 0.055,
+    "wedges": 0.0
+   },
+   "fse_total": 0.343,
+   "max_layers": 5,
+   "px_over_8": 0.0
+  },
+  {
+   "cam": "U8fwd",
+   "t": 169.65,
+   "w": 640,
+   "h": 360,
+   "fse": {
+    "cards": 0.341,
+    "shafts": 0.12,
+    "wedges": 0.0
+   },
+   "fse_total": 0.461,
+   "max_layers": 8,
+   "px_over_8": 0.0
+  },
+  {
+   "cam": "U8side",
+   "t": 166.45,
+   "w": 640,
+   "h": 360,
+   "fse": {
+    "cards": 0.017,
+    "shafts": 0.151,
+    "wedges": 0.0
+   },
+   "fse_total": 0.168,
+   "max_layers": 1,
+   "px_over_8": 0.0
+  },
+  {
+   "cam": "key",
+   "t": 154.5,
+   "w": 640,
+   "h": 268,
+   "fse": {
+    "cards": 0.846,
+    "shafts": 0.124,
+    "wedges": 0.564
+   },
+   "fse_total": 1.534,
+   "max_layers": 12,
+   "px_over_8": 0.0012418376865671642
+  },
+  {
+   "cam": "rear",
+   "t": 177.55,
+   "w": 640,
+   "h": 360,
+   "fse": {
+    "cards": 0.0,
+    "shafts": 0.095,
+    "wedges": 0.0
+   },
+   "fse_total": 0.095,
+   "max_layers": 1,
+   "px_over_8": 0.0
+  }
+ ]
+}
