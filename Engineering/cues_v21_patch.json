@@ -1,0 +1,258 @@
+{
+ "_about": "cues.json 的 v2.1 子标签补丁（总工程师按总导演 10-23 的要求整理）。合并方法：把 U_sub / F_sub 里的键原样加进 FromLocal/cues.json 同名的组（已有的键不动），再跑本地的 tools/gen_cues.py 重新生成 LB_Cues.cs。t = 时间轴秒（Urlicht：文件秒 + 3.0；末乐章：文件秒 + 240.36）。conf 写了“波形”的是从响度曲线读的，±0.5–1 s，请小楠 / 本地用耳朵确认后改 t 和 file。",
+ "generated_from": "Art/tools/v21/cues_v21.py（圣经 v2.1 的时间轴就是它生成的）",
+ "bible_crosscheck_mismatches": [],
+ "U_sub": {
+  "U2b": {
+   "file": 36.1,
+   "t": 39.1,
+   "conf": "cues.md（本地自己的笔记）：请本地确认",
+   "event": "众赞歌第三句起",
+   "note": "v2.1 子标签；驱动：灯尽",
+   "source": "Art/tools/v21/cues_v21.py SUB（= 圣经 v2.1 §2.1）"
+  },
+  "U3b": {
+   "file": 57.7,
+   "t": 60.7,
+   "conf": "cues.md（本地自己的笔记）：请本地确认",
+   "event": "…in größter Pein!",
+   "note": "v2.1 子标签；驱动：灯海揭示完",
+   "source": "Art/tools/v21/cues_v21.py SUB（= 圣经 v2.1 §2.1）"
+  },
+  "U4b": {
+   "file": 88.6,
+   "t": 91.6,
+   "conf": "cues.md（本地自己的笔记）：请本地确认",
+   "event": "第二遍 Je lieber…",
+   "note": "v2.1 子标签；驱动：—",
+   "source": "Art/tools/v21/cues_v21.py SUB（= 圣经 v2.1 §2.1）"
+  },
+  "U4h": {
+   "file": 96.5,
+   "t": 99.5,
+   "conf": "cues.md（本地自己的笔记）：请本地确认",
+   "event": "第二遍 Himmel 高音（到 104.6）",
+   "note": "v2.1 子标签；驱动：触云",
+   "source": "Art/tools/v21/cues_v21.py SUB（= 圣经 v2.1 §2.1）"
+  },
+  "U5r": {
+   "file": 124.5,
+   "t": 127.5,
+   "conf": "cues.md（本地自己的笔记）：请本地确认",
+   "event": "全团休止（到 U6k）",
+   "note": "v2.1 子标签；驱动：第一次完全静止",
+   "source": "Art/tools/v21/cues_v21.py SUB（= 圣经 v2.1 §2.1）"
+  }
+ },
+ "F_sub": {
+  "F0s": {
+   "file": 26.0,
+   "t": 266.36,
+   "conf": "波形 ±0.5–1 s：请本地用耳朵在 Audacity 里确认",
+   "event": "召唤的膨胀（号角 + 小号，峰 ≈268.4）",
+   "note": "v2.1 子标签；驱动：云塔应答",
+   "source": "Art/tools/v21/cues_v21.py SUB（= 圣经 v2.1 §2.1）"
+  },
+  "F1c": {
+   "file": 51.5,
+   "t": 291.86,
+   "conf": "波形 ±0.5–1 s：请本地用耳朵在 Audacity 里确认",
+   "event": "全团渐强起",
+   "note": "v2.1 子标签；驱动：云墙升起",
+   "source": "Art/tools/v21/cues_v21.py SUB（= 圣经 v2.1 §2.1）"
+  },
+  "F1t": {
+   "file": 61.0,
+   "t": 301.36,
+   "conf": "cues.md（本地自己的笔记）：请本地确认",
+   "event": "定音鼓滚奏（到 303.4）",
+   "note": "v2.1 子标签；驱动：云墙最高",
+   "source": "Art/tools/v21/cues_v21.py SUB（= 圣经 v2.1 §2.1）"
+  },
+  "F1b1": {
+   "file": 78.0,
+   "t": 318.36,
+   "conf": "波形 ±0.5–1 s：请本地用耳朵在 Audacity 里确认",
+   "event": "远方铜管峰（这一段最响）",
+   "note": "v2.1 子标签；驱动：太阳重现",
+   "source": "Art/tools/v21/cues_v21.py SUB（= 圣经 v2.1 §2.1）"
+  },
+  "F1b2": {
+   "file": 88.0,
+   "t": 328.36,
+   "conf": "波形 ±0.5–1 s：请本地用耳朵在 Audacity 里确认",
+   "event": "第二次铜管峰（−30.5 dB；86.0 只有 −44）",
+   "note": "v2.1 子标签；驱动：海镜的第一块",
+   "source": "Art/tools/v21/cues_v21.py SUB（= 圣经 v2.1 §2.1）"
+  },
+  "F1z": {
+   "file": 105.0,
+   "t": 345.36,
+   "conf": "cues.md（本地自己的笔记）：请本地确认",
+   "event": "第二段鸟鸣（到 353.0）",
+   "note": "v2.1 子标签；驱动：用户之句（晨）",
+   "source": "Art/tools/v21/cues_v21.py SUB（= 圣经 v2.1 §2.1）"
+  },
+  "F3e": {
+   "file": 234.0,
+   "t": 474.36,
+   "conf": "波形 ±0.5–1 s：请本地用耳朵在 Audacity 里确认",
+   "event": "第一段合唱（含女高音）结束，管弦间奏起",
+   "note": "v2.1 子标签；驱动：开始下沉",
+   "source": "Art/tools/v21/cues_v21.py SUB（= 圣经 v2.1 §2.1）"
+  },
+  "F4p": {
+   "file": 222.0,
+   "t": 462.36,
+   "conf": "波形 ±0.5–1 s：请本地用耳朵在 Audacity 里确认",
+   "event": "第一段合唱的女高音峰（−24 dB）",
+   "note": "v2.1 子标签；驱动：光柱汇成一束落到手上",
+   "source": "Art/tools/v21/cues_v21.py SUB（= 圣经 v2.1 §2.1）"
+  },
+  "F3e1": {
+   "file": 266.0,
+   "t": 506.36,
+   "conf": "波形 ±0.5–1 s：请本地用耳朵在 Audacity 里确认",
+   "event": "间奏第一次膨胀（≈504–510，−24 dB）",
+   "note": "v2.1 子标签；驱动：斯涅尔之窗最后一闪",
+   "source": "Art/tools/v21/cues_v21.py SUB（= 圣经 v2.1 §2.1）"
+  },
+  "F3e2": {
+   "file": 292.0,
+   "t": 532.36,
+   "conf": "波形 ±0.5–1 s：请本地用耳朵在 Audacity 里确认",
+   "event": "间奏第二次膨胀（≈532–534，−24 dB）",
+   "note": "v2.1 子标签；驱动：海脊石壁",
+   "source": "Art/tools/v21/cues_v21.py SUB（= 圣经 v2.1 §2.1）"
+  },
+  "F3e3": {
+   "file": 316.0,
+   "t": 556.36,
+   "conf": "波形 ±0.5–1 s：请本地用耳朵在 Audacity 里确认",
+   "event": "间奏淡出（≈556–559，落到 −47 dB）",
+   "note": "v2.1 子标签；驱动：最后的藍熄灭",
+   "source": "Art/tools/v21/cues_v21.py SUB（= 圣经 v2.1 §2.1）"
+  },
+  "F3i": {
+   "file": 318.5,
+   "t": 558.86,
+   "conf": "波形 ±0.5–1 s：请本地用耳朵在 Audacity 里确认",
+   "event": "第二段合唱 Wieder aufzublühn ppp 起",
+   "note": "v2.1 子标签；驱动：播种",
+   "source": "Art/tools/v21/cues_v21.py SUB（= 圣经 v2.1 §2.1）"
+  },
+  "F5p": {
+   "file": 415.5,
+   "t": 655.86,
+   "conf": "波形 ±0.5–1 s：请本地用耳朵在 Audacity 里确认",
+   "event": "间奏膨胀之峰",
+   "note": "v2.1 子标签；驱动：整条神道可见",
+   "source": "Art/tools/v21/cues_v21.py SUB（= 圣经 v2.1 §2.1）"
+  },
+  "F5q": {
+   "file": 435.0,
+   "t": 675.36,
+   "conf": "波形 ±0.5–1 s：请本地用耳朵在 Audacity 里确认",
+   "event": "间奏安静的台地（到 ≈707）",
+   "note": "v2.1 子标签；驱动：行列",
+   "source": "Art/tools/v21/cues_v21.py SUB（= 圣经 v2.1 §2.1）"
+  },
+  "F5r": {
+   "file": 468.5,
+   "t": 708.86,
+   "conf": "波形 ±0.5–1 s：请本地用耳朵在 Audacity 里确认",
+   "event": "间奏第二次膨胀（到 ≈728）",
+   "note": "v2.1 子标签；驱动：河伯之问",
+   "source": "Art/tools/v21/cues_v21.py SUB（= 圣经 v2.1 §2.1）"
+  },
+  "F7e": {
+   "file": 537.0,
+   "t": 777.36,
+   "conf": "cues.md（本地自己的笔记）：请本地确认",
+   "event": "女低音乐句结束",
+   "note": "v2.1 子标签；驱动：—",
+   "source": "Art/tools/v21/cues_v21.py SUB（= 圣经 v2.1 §2.1）"
+  },
+  "F7s": {
+   "file": 556.5,
+   "t": 796.86,
+   "conf": "波形 ±0.5–1 s：请本地用耳朵在 Audacity 里确认",
+   "event": "女高音 O glaube: du wardst nicht umsonst geboren!",
+   "note": "v2.1 子标签；驱动：离开",
+   "source": "Art/tools/v21/cues_v21.py SUB（= 圣经 v2.1 §2.1）"
+  },
+  "F7p": {
+   "file": 572.0,
+   "t": 812.36,
+   "conf": "波形 ±0.5–1 s：请本地用耳朵在 Audacity 里确认",
+   "event": "女高音 …gelitten! 的峰（−20 dB，海里最响的独唱）",
+   "note": "v2.1 子标签；驱动：宫殿成了头顶的星座",
+   "source": "Art/tools/v21/cues_v21.py SUB（= 圣经 v2.1 §2.1）"
+  },
+  "F8a": {
+   "file": 608.5,
+   "t": 848.86,
+   "conf": "波形 ±0.5–1 s：请本地用耳朵在 Audacity 里确认",
+   "event": "合唱强起 Was vergangen, auferstehen!",
+   "note": "v2.1 子标签；驱动：宫灯在下面复活",
+   "source": "Art/tools/v21/cues_v21.py SUB（= 圣经 v2.1 §2.1）"
+  },
+  "F8b": {
+   "file": 637.6,
+   "t": 877.96,
+   "conf": "cues.md（本地自己的笔记）：请本地确认",
+   "event": "Hör' auf zu beben!",
+   "note": "v2.1 子标签；驱动：颤动停止，玫瑰光起",
+   "source": "Art/tools/v21/cues_v21.py SUB（= 圣经 v2.1 §2.1）"
+  },
+  "F8c": {
+   "file": 661.8,
+   "t": 902.16,
+   "conf": "cues.md（本地自己的笔记）：请本地确认",
+   "event": "Bereite dich zu leben!（到 921.66）",
+   "note": "v2.1 子标签；驱动：用户之句（暮）",
+   "source": "Art/tools/v21/cues_v21.py SUB（= 圣经 v2.1 §2.1）"
+  },
+  "F8r": {
+   "file": 681.3,
+   "t": 921.66,
+   "conf": "cues.md（本地自己的笔记）：请本地确认",
+   "event": "一口气的休止（Bereite dich zu leben! 唱完）",
+   "note": "v2.1 子标签；驱动：水里最后的静止",
+   "source": "Art/tools/v21/cues_v21.py SUB（= 圣经 v2.1 §2.1）"
+  },
+  "F9s": {
+   "file": 681.5,
+   "t": 921.86,
+   "conf": "波形 ±0.5–1 s：请本地用耳朵在 Audacity 里确认",
+   "event": "O Schmerz 之前的管弦膨胀（峰 ≈924.9）",
+   "note": "v2.1 子标签；驱动：出海 = F9s + 0.5",
+   "source": "Art/tools/v21/cues_v21.py SUB（= 圣经 v2.1 §2.1）"
+  },
+  "F9t": {
+   "file": 696.9,
+   "t": 937.26,
+   "conf": "cues.md（本地自己的笔记）：请本地确认",
+   "event": "O Tod! Du Allbezwinger!",
+   "note": "v2.1 子标签；驱动：—",
+   "source": "Art/tools/v21/cues_v21.py SUB（= 圣经 v2.1 §2.1）"
+  },
+  "F10e": {
+   "file": 716.0,
+   "t": 956.36,
+   "conf": "cues.md（本地自己的笔记）：请本地确认",
+   "event": "二重唱 werd' ich entschweben",
+   "note": "v2.1 子标签；驱动：唯一的变形",
+   "source": "Art/tools/v21/cues_v21.py SUB（= 圣经 v2.1 §2.1）"
+  },
+  "F10l": {
+   "file": 720.7,
+   "t": 961.06,
+   "conf": "cues.md（本地自己的笔记）：请本地确认",
+   "event": "zum Licht, zu dem kein Aug' gedrungen",
+   "note": "v2.1 子标签；驱动：翼入光",
+   "source": "Art/tools/v21/cues_v21.py SUB（= 圣经 v2.1 §2.1）"
+  }
+ },
+ "bible_crosscheck": "每个键的 t 和 file 都和圣经 v2.1 §2.1 表（第 283–376 行）逐个比过；不一致的列在 bible_crosscheck_mismatches（空 = 全部一致）"
+}

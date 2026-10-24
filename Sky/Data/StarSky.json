@@ -1,0 +1,53 @@
+{
+ "about": "蓝白 · 星海的朝向与数据（Sky/Source~/make_starsky.py 生成）。Unity 世界坐标，方位 = 从 +Z 顺时针到 +X。",
+ "equatorial_to_enu": [
+  [
+   -0.673217165,
+   0.209393386,
+   0.709177734
+  ],
+  [
+   -0.569285964,
+   -0.758832729,
+   -0.316364315
+  ],
+  [
+   0.471902681,
+   -0.616706817,
+   0.630063934
+  ]
+ ],
+ "enu_to_unity": "(x, y, z)_ENU -> (x, z, y)_Unity",
+ "galactic_centre_unity": [
+  -0.489074,
+  0.207912,
+  0.847101
+ ],
+ "galactic_centre_az_el": [
+  -30.0,
+  12.0
+ ],
+ "north_galactic_pole_unity": [
+  0.866025,
+  -0.0,
+  0.5
+ ],
+ "glow_texture": "Textures/StarSky_Glow_8192x4096.png",
+ "glow_scale": 0.5005989074707031,
+ "glow_mapping": "u = 0.5 + atan2(V.x, V.z)/2pi, v = 0.5 + asin(V.y)/pi",
+ "glow_fill_max": {
+  "diffuse": "#6A758A",
+  "dust": "#CBAE82"
+ },
+ "stars_csv": "Data/StarPoints_BSC5.csv",
+ "stars": 8404,
+ "mag_limit": 6.5,
+ "in_band_density_ratio": 1.67,
+ "glow_source": "gaia",
+ "sources": {
+  "stars": "Yale Bright Star Catalogue 5th rev. ed. (Hoffleit & Warren 1991), NASA ADC, public domain; JSON github.com/brettonw/YaleBrightStarCatalog",
+  "glow": "ESA/Gaia/DPAC, Gaia EDR3 all-sky colour map (CC BY-SA 3.0 IGO), as packaged in the mw_plot Python package (MIT, H. Leung); the derived StarSky_Glow texture is therefore CC BY-SA 3.0 IGO (credit ESA/Gaia/DPAC)",
+  "faint_stars": "Hipparcos main catalogue (ESA 1997) via d3-celestial stars.14.json (BSD-3-Clause)",
+  "milky_way_outline": "Milky Way Outline Catalog, Jose R. Vieira (skymap.com), via d3-celestial mw.json (BSD-3-Clause)"
+ }
+}

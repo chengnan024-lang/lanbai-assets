@@ -1,0 +1,42 @@
+{
+ "about": "The purple guard in the MIDDLE of 7a's grade cross-fade (S7a -> S7b linear F3e -> F5): purple_scan.py proves the two",
+ "rule": "h_ab 290..330, C* > 8, L* > 40 (D-21 revised)",
+ "weights": {
+  "0.1": {
+   "in_gamut": 811365,
+   "violet_left": 0
+  },
+  "0.2": {
+   "in_gamut": 811639,
+   "violet_left": 0
+  },
+  "0.3": {
+   "in_gamut": 811974,
+   "violet_left": 0
+  },
+  "0.4": {
+   "in_gamut": 811136,
+   "violet_left": 0
+  },
+  "0.5": {
+   "in_gamut": 811798,
+   "violet_left": 0
+  },
+  "0.6": {
+   "in_gamut": 811704,
+   "violet_left": 0
+  },
+  "0.7": {
+   "in_gamut": 812015,
+   "violet_left": 0
+  },
+  "0.8": {
+   "in_gamut": 811258,
+   "violet_left": 0
+  },
+  "0.9": {
+   "in_gamut": 810778,
+   "violet_left": 0
+  }
+ }
+}

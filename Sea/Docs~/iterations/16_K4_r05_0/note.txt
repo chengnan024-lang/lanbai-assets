@@ -1,0 +1,1 @@
+K4 r05: fog height falloff 120 m on the ceiling (no violet overhead) (pitch 0)

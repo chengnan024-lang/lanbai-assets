@@ -1234,7 +1234,7 @@
    }
   },
   "LENS_CLEAN": {
-   "priority": 201,
+   "priority": 199,
    "used_in": [
     "S3 after the break-out",
     "S4..S10",

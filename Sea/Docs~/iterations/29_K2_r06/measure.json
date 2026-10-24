@@ -1,0 +1,26 @@
+{
+ "APL": 137.4,
+ "regions": "core = within 15 deg of the zenith; rim = 38..50 deg from the zenith (critical angle 48.6)",
+ "core": {
+  "median": "#EBEFF4",
+  "Lstar": 94.3,
+  "h_ab": 261.8,
+  "C": 2.9,
+  "pct": 6.02
+ },
+ "core_dE2000_to_E6F3F8_median": 3.3,
+ "core_brightest_luma": 242.4,
+ "core_mean_lin": 0.8600743845225357,
+ "rim_brightest_luma": 179.0,
+ "rim_p99.9_minus_core_median_EV": -0.95,
+ "rim_peak_minus_core_peak_EV": -0.98,
+ "frame_brightest_zenith_deg": 1.1,
+ "dark_mirror": {
+  "median": "#163A5D",
+  "Lstar": 23.6,
+  "h_ab": 271.1,
+  "C": 24.6,
+  "pct": 21.97
+ },
+ "dark_mirror_dE2000_to_11395E_median": 0.6
+}
