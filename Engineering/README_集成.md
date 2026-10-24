@@ -159,7 +159,7 @@ Director v1.1 起没有要本地填的窗口：`LB_Journey` 勾 `extAtmosphere` 
 | 东西 | 写的人 | 驱动报什么 |
 |---|---|---|
 | PPv2 weight、ΔEV（一帧一个） | **只有 `LB_Journey.ApplyGrades`** | 有曝光事件的驱动实现 `float[] LanbaiGrade(t)`，分发层加起来放进 `dispatcher.gradeDEV`（`gradeOwned` = 有人报）。现在报的：门内的 `FLASH_TEAR`（247.89 起 0.4 s 升、0.1 保持、0.25 落）。**`ApplyGrades` 里自己那份 FLASH_TEAR 要删**（不然算两次）。门内的 `writeExposure` 一直不勾 |
-| 遮罩球 `Lanbai_Overlay` v2 | 248.39 → 252.64 **门内**（剪 1 的黑）；之后第 6 幕（252.64 `SetFlat` → 254.14 起 `SetCurve` 晨从黑里亮起 → 266.44 `Hide()`）；第 10 幕的白归镜与白 | 门内调 `overlay.SetFlat(…, LanbaiDeltaEV(t))` 自己补 ΔEV。场景里只放一个 |
+| 遮罩球 `Lanbai_Overlay` v2 | **出生淡入优先（v1.2）**：`LB_Journey` 的出生黑 / 淡入从 `dispatcher.LanbaiSpawnFadeBegin()` 到 `LanbaiSpawnFadeEnd()`，这段时间**任何驱动都不写遮罩球**。之后：248.39 → 252.64 **门内**（剪 1 的黑）；第 6 幕（252.64 `SetFlat` → 254.14 起 `SetCurve` 晨从黑里亮起 → 266.44 `Hide()`）；第 10 幕的白归镜与白 | 门内调 `overlay.SetFlat(…, LanbaiDeltaEV(t))` 自己补 ΔEV。场景里只放一个。拿遮罩球的驱动实现 `LanbaiSpawnFade(float since)`（Director v1.2，`README_Director.md` §3 第 8 条）：`since < 0` 不写；之后从黑按 ≤ 0.85 EV/s 升到自己的值（迟到的人在白里进来，由镜与白自己升） |
 
 ---
 

@@ -1,4 +1,4 @@
-// 蓝白 · Director · editor side. v1.1, 2026-10-24, 总工程师 (v1: 2026-10-23).
+// 蓝白 · Director · editor side. v1.2, 2026-10-24, 总工程师 (v1: 2026-10-23, v1.1 the same day).
 // !!! NOT COMPILED IN UNITY: Roslyn type-check only. !!!
 //
 // 蓝白/Director/1 Generate Dispatcher : finds every UdonSharpBehaviour class with the act interface (CONTROL_总控.md §5:
@@ -14,6 +14,9 @@
 // v1.1: a driver reports what it writes with public bool LanbaiWritesAtmosphere() / LanbaiWritesSun(), or through public
 //   bool fields writeRenderSettings / writeMainLight (WritesHow below); the generated Start() builds
 //   atmosphereWindowsFlat / sunWindowsFlat from them.
+// v1.2: a driver with public void LanbaiSpawnFade(float) gets the seconds since LB_Journey's spawn fade ended (-1 while it
+//   runs) before each LanbaiTick: the spawn fade wins over the overlay (the dispatcher's header). 3 Report warns about a
+//   driver that has an overlay field (type LanbaiOverlay) but no LanbaiSpawnFade.
 // UdonSharp editor APIs are reached by reflection so this file type-checks without the UdonSharp editor assembly; if a
 // call is not found, the menu says what to do by hand.
 #if UNITY_EDITOR
@@ -168,6 +171,8 @@ namespace Lanbai.Director.Editor
                       "                    gradeLensClean = Mathf.Min(gradeLensClean, g[3]);\n" +
                       "                }\n"
                     : "";
+                var sf = types[k].GetMethod("LanbaiSpawnFade", PF, null, new[] { typeof(float) }, null);
+                string fade = sf != null ? "                d.LanbaiSpawnFade(fadeSince);\n" : "";
                 disp.AppendFormat(
                     "        for (int i = 0; i < {0}.Length; i++)\n" +
                     "        {{\n" +
@@ -177,10 +182,11 @@ namespace Lanbai.Director.Editor
                     "            if (inside != {0}_on[i]) {{ d.LanbaiActivate(inside); {0}_on[i] = inside; }}\n" +
                     "            if (inside && !hold)\n" +
                     "            {{\n" +
+                    "{3}" +
                     "                d.LanbaiTick(t); act++;\n" +
                     "{2}" +
                     "            }}\n" +
-                    "        }}\n", d, c, grade);
+                    "        }}\n", d, c, grade, fade);
             }
             src = Replace(src, "LANBAI-GENERATED-FIELDS", fields.ToString());
             src = Replace(src, "LANBAI-GENERATED-START", start.ToString());
@@ -246,7 +252,7 @@ namespace Lanbai.Director.Editor
             }
             CopyProxyToUdon(comp);
             EditorUtility.SetDirty(comp);
-            Debug.Log(report.ToString() + "LB_Journey: call dispatcher.LanbaiDispatch(t) every frame and dispatcher.LanbaiPrewarm() at spawn.");
+            Debug.Log(report.ToString() + "LB_Journey: call dispatcher.LanbaiDispatch(t) every frame, dispatcher.LanbaiPrewarm() and LanbaiSpawnFadeBegin() at spawn, LanbaiSpawnFadeEnd() when the spawn fade-in is done (v1.2).");
         }
 
         [MenuItem("蓝白/Director/3 Report")]
@@ -275,7 +281,15 @@ namespace Lanbai.Director.Editor
                     sb.AppendFormat("  {0} {1:F2} .. {2:F2}: {3} / {4} ({5})\n", both ? "ERROR overlap" : "overlap", a, b, wins[i].Key, wins[j].Key,
                         both ? "both write RenderSettings or the main light: switch one off" : "must not write the same things");
                 }
-            sb.AppendLine("  LB_Journey: extAtmosphere where dispatcher.LanbaiCoversAtmosphere(t), extSun where dispatcher.LanbaiCoversSun(t) (v1.1).");
+            // v1.2: a driver that holds the overlay must yield to LB_Journey's spawn fade (LanbaiSpawnFade)
+            foreach (var t in DriverTypes())
+            {
+                bool overlay = t.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).Any(f => f.FieldType.Name == "LanbaiOverlay");
+                bool fade = t.GetMethod("LanbaiSpawnFade", BindingFlags.Public | BindingFlags.Instance, null, new[] { typeof(float) }, null) != null;
+                if (overlay && !fade)
+                    sb.AppendFormat("  WARNING {0} has a LanbaiOverlay field but no public void LanbaiSpawnFade(float): a late joiner can get its overlay under the spawn fade (README_集成 §8.4, v1.2)\n", t.Name);
+            }
+            sb.AppendLine("  LB_Journey: extAtmosphere where dispatcher.LanbaiCoversAtmosphere(t), extSun where dispatcher.LanbaiCoversSun(t) (v1.1); dispatcher.LanbaiSpawnFadeBegin() at spawn, LanbaiSpawnFadeEnd() when its fade-in is done (v1.2).");
             Debug.Log(sb.ToString());
         }
 
