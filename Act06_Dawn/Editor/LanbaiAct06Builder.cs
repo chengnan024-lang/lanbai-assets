@@ -92,7 +92,7 @@ public static class LanbaiAct06Builder
         mPlain.SetTexture("_MacroTex", AssetDatabase.LoadAssetAtPath<Texture2D>(Kit + "/Textures/Plain_Macro_512.png"));
         mPlain.SetVector("_Body", new Vector4(F(body["top"]), F(body["bottom"]), F(sun["az_deg"]), 0));
         mPlain.SetVector("_Slot", new Vector4(F(slot["axis_az"]), F(slot["half_width"]), F(slot["s0"]), F(slot["s1"])));
-        mPlain.SetVector("_SlotB", new Vector4(F(slot["soft"]), F(slot["floor_top"]), 0, 0));
+        mPlain.SetVector("_SlotB", new Vector4(F(slot["soft"]), F(slot["floor_top"]), F(slot["center_q"]), 0));
         mPlain.SetVector("_Lip", new Vector4(F(lip["top"]), F(lip["soft"]), 0, 0));
         mPlain.SetVector("_Edge", new Vector4(F(edge["r0"]), F(edge["r_sun"]), F(edge["sun_lobe_deg"]), F(edge["soft"])));
         mPlain.SetVector("_SunColor", V4(L(dawnCol["SunColor"])));
@@ -107,6 +107,26 @@ public static class LanbaiAct06Builder
         pR.sharedMaterial = mPlain;
         pR.shadowCastingMode = ShadowCastingMode.Off;          // its ShadowCaster pass serves the camera depth only
         pR.receiveShadows = false;
+
+        // ---- r2: the slot's mist (Lanbai/CloudPlainMist): the same proxy, a second renderer (Transparent-5)
+        var mist = D(body["mist"]);
+        Shader shMist = Shader.Find("Lanbai/CloudPlainMist");
+        string mistPath = Kit + "/Generated/M_06_PlainMist.mat";
+        Material mMist = AssetDatabase.LoadAssetAtPath<Material>(mistPath);
+        if (mMist == null) { mMist = new Material(shMist); AssetDatabase.CreateAsset(mMist, mistPath); }
+        mMist.shader = shMist;
+        mMist.SetVector("_Mist", new Vector4(F(mist["y_top"]), F(mist["y_peak"]), F(mist["y_bot"]), F(mist["sigma"])));
+        mMist.SetVector("_MistColor", V4(L(mist["color_linear"])));
+        mMist.SetVector("_Slot", mPlain.GetVector("_Slot"));
+        mMist.SetVector("_SlotB", mPlain.GetVector("_SlotB"));
+        mMist.SetVector("_SunDirFallback", mPlain.GetVector("_SunDirFallback"));
+        EditorUtility.SetDirty(mMist);
+        var mGo = Child(rDawn, "Act06_PlainMist");
+        mGo.AddComponent<MeshFilter>().sharedMesh = ProxyMesh();
+        var mR = mGo.AddComponent<MeshRenderer>();
+        mR.sharedMaterial = mMist;
+        mR.shadowCastingMode = ShadowCastingMode.Off;
+        mR.receiveShadows = false;
 
         // ---- the sea (ABOVE; the sea's own material)
         var seaJ = D(J["sea"]);
@@ -167,11 +187,35 @@ public static class LanbaiAct06Builder
         if (d.worldSun == null) d.worldSun = RenderSettings.sun;
         if (d.worldSun == null) log += "\n[Act06] RenderSettings.sun is empty: wire Act06_Driver.worldSun to the world's main light (D-24) by hand";
         d.roots = new[] { rDawn.gameObject, rRing.gameObject };
-        d.rDawn = rDawn; d.plain = pR; d.seaRenderer = seaR;
+        d.rDawn = rDawn; d.plain = pR; d.plainMist = mR; d.seaRenderer = seaR;
         d.cards = renderers.ToArray(); d.cardGain = gains.ToArray(); d.cardMirror = mirrors.ToArray(); d.cardIsRing = isRing.ToArray();
         foreach (var sp in Object.FindObjectsOfType<LanbaiSkyPreset>())
             if (sp.presetName == "dawn") d.skyPreset = sp;
         if (d.skyPreset == null) log += "\n[Act06] no LanbaiSkyPreset 'dawn' in the scene: run 蓝白/Sky/Build Sky";
+        // r2 (review r1 S5): the sea's mirror needs _Udon_ReflCube and has no fallback of its own. Until Control bakes
+        // Refl_S6, render a stand-in here: 2 m above the sea, under the cover (R_Dawn is at y = 0 while building, so
+        // the field's local = world), whatever sky the scene has now (apply the dawn preset first for the right one).
+        if (d.reflCube == null || d.reflCube.name == "Refl_S6_standin")
+        {
+            string cubePath = Kit + "/Generated/Refl_S6_standin.asset";
+            var cube = new Cubemap(256, TextureFormat.RGBAHalf, false);
+            var camGo = new GameObject("Act06_ReflCam");
+            var cam = camGo.AddComponent<Camera>();
+            cam.nearClipPlane = 0.5f; cam.farClipPlane = 30000f; cam.allowHDR = true;
+            camGo.transform.position = new Vector3(0f, F(seaJ["level_local"]) + 2f, 0f);
+            bool ok = cam.RenderToCubemap(cube);
+            Object.DestroyImmediate(camGo);
+            if (ok)
+            {
+                cube.name = "Refl_S6_standin";
+                var oldCube = AssetDatabase.LoadAssetAtPath<Cubemap>(cubePath);
+                if (oldCube != null) AssetDatabase.DeleteAsset(cubePath);
+                AssetDatabase.CreateAsset(cube, cubePath);
+                d.reflCube = cube;
+                log += "\n[Act06] _Udon_ReflCube: a stand-in cube (Generated/Refl_S6_standin), replace with Control's Refl_S6";
+            }
+            else log += "\n[Act06] RenderToCubemap failed: the sea mirror has no cube (assign Act06_Driver.reflCube by hand)";
+        }
         d.overlay = Object.FindObjectOfType<LanbaiOverlay>();
         if (d.overlay == null) log += "\n[Act06] no LanbaiOverlay in the scene: the dawn reveal will not be drawn (Overlay/)";
 
@@ -180,7 +224,10 @@ public static class LanbaiAct06Builder
         var labels = D(J["labels"]);
         d.tApplySky = F(B["apply_sky_t"]); d.tLight0 = F(B["main_light_t0"]); d.tLight1 = F(B["main_light_t1"]);
         d.tRS1 = F(B["render_settings_t1"]); d.tF0 = F(labels["F0"]); d.tSeaOn = F(B["sea_on"]); d.tEntry = F(B["entry"]);
-        d.tPreroll0 = F(B["preroll_t0"]); d.tDawn0 = F(B["dawn_t0"]); d.dawnT = 8.65f; d.tOverlayOff = F(B["dawn_t1"]) + 0.1f;
+        d.tPreroll0 = F(B["preroll_t0"]); d.tDawn0 = F(B["dawn_t0"]); d.dawnT = F(B["dawn_per_dir_s"]);
+        { var sg = D(B["stagger"]); var lb = D(B["lobes"]);
+          d.leadZenith = F(sg["skylight_zenith"]); d.leadBelow = F(sg["below"]); d.leadSun = F(sg["sun_sector"]); d.leadElse = F(sg["horizon"]);
+          d.lobeZenithDeg = F(lb["zenith_deg"]); d.lobeBelowDeg = F(lb["below_deg"]); d.lobeSunDeg = F(lb["sun_deg"]); d.leadSoft = F(lb["else_soft_deg"]); } d.tOverlayOff = F(B["dawn_t1"]) + 0.1f;
         var so = L(B["slot_open"]); d.slotOpen0 = F(so[0]); d.slotOpen1 = F(so[1]);
         var ro = D(B["ring_off"]); d.ringOff0 = F(ro["t0"]); d.ringOff1 = F(ro["t1"]);
         var ans = L(B["tower_answer"]);

@@ -35,7 +35,7 @@ P = dict(
     TauMaxD=160.0 * K_SCALE, TauMaxM=400.0 * K_SCALE, AmpMin=0.3, AmpMax=0.8, VarMin=0.85, VarMax=1.1,
     PeriodD=1600.0 * K_SCALE, PeriodM=6400.0 * K_SCALE, MicroScale=5.0, MicroAmp=4.0 * K_SCALE, MicroShade=0.6,
     SigmaL=0.012, SurfShadow=1.0, MsK=0.004, MsTau=0.25, SunGain=1.0, SkyGain=0.35, GroundGain=0.35,
-    WallSlope=1.5, ShadowSteps=16, ShadowLen=6000.0, EdgeGlow=0.9, EdgeGlowLen=900.0,
+    WallSlope=1.5, WallWrap=0.35, WallNormalPx=3.0, WallNormalMin=20.0, ShadowSteps=16, ShadowLen=6000.0, EdgeGlow=0.9, EdgeGlowLen=900.0,
     TroughLod=3.5, TroughDepth=30.0, TroughK=0.35, FogDensity=0.00012, FogCap=1.0,
 )
 SUN = np.array(LAYOUT['sun']['dir'], float)
@@ -99,7 +99,7 @@ def region(x, z, slot_open, y=None, det=None, foot=None):
     deck = sig((r - R) / (0.25 * E['soft']))
     a = math.radians(S['axis_az'])
     s = x * math.sin(a) + z * math.cos(a)
-    q = x * math.cos(a) - z * math.sin(a)
+    q = x * math.cos(a) - z * math.sin(a) - S.get('center_q', 0.0)
     hw = S['half_width'] * slot_open
     aq = np.abs(q)
     if det is not None and y is not None:
@@ -134,6 +134,54 @@ def fog_colour(sky_eq, V):
     return C.sample_equirect(fog_sky(sky_eq), C.dir_from_azel(az, np.maximum(el, 1.0)), 0.0)
 
 
+MIST = BODY.get('mist')
+MIST_K = (0.85, 0.7, 6.0)       # [Mist] colour x (k0 + k1 exp((V.L - 1) k2))
+
+
+def mist_cum(y):
+    """integral of the mist density from the cover bottom up to y (the tent profile), per metre of height"""
+    M = MIST
+    yb, yp, yt, sg = M['y_bot'], M['y_peak'], M['y_top'], M['sigma']
+    y = np.clip(y, yb, yt)
+    lo = np.minimum(y, yp) - yb
+    a = 0.5 * sg * lo * lo / (yp - yb)
+    hi = np.maximum(y - yp, 0.0)
+    b = sg * hi - 0.5 * sg * hi * hi / (yt - yp)
+    return a + b
+
+
+def mist_sigma(y):
+    M = MIST
+    up = M['sigma'] * (M['y_top'] - y) / (M['y_top'] - M['y_peak'])
+    dn = M['sigma'] * (y - M['y_bot']) / (M['y_peak'] - M['y_bot'])
+    return np.clip(np.where(y > M['y_peak'], up, dn), 0.0, None) * ((y < M['y_top']) & (y > M['y_bot']))
+
+
+def mist(eye_world, V, d_root, t_end, slot_open=1.0):
+    """[Mist] the slot's lower mist along eye -> eye + V t_end: transmittance (N,) and colour (3,) (linear).
+    Analytic: the density depends on height only; it exists only in the open slot (weight: the slot region where the
+    ray is at the mist's peak height, or at the eye)."""
+    ro = np.array(eye_world, float) - np.array([0.0, d_root, 0.0])
+    vy = V[:, 1]
+    te = np.minimum(t_end, P['MarchMax'])
+    y1 = ro[1] + vy * te
+    with np.errstate(divide='ignore', invalid='ignore'):
+        tau = np.abs(mist_cum(y1) - mist_cum(np.full(len(V), ro[1]))) / np.abs(vy)
+    flat = np.abs(vy) < 1e-3
+    tau = np.where(flat, mist_sigma(np.full(len(V), ro[1])) * te, tau)
+    # the weight where the segment is nearest the peak height (the eye, the peak crossing, or the segment's end)
+    yq = np.clip(MIST['y_peak'], np.minimum(ro[1], y1), np.maximum(ro[1], y1))
+    with np.errstate(divide='ignore', invalid='ignore'):
+        tp = np.where(np.abs(vy) > 1e-6, (yq - ro[1]) / vy, 0.0)
+    tp = np.clip(np.nan_to_num(tp), 0.0, te)
+    pp = ro[None, :] + V * tp[:, None]
+    w = region(pp[:, 0], pp[:, 2], slot_open)[1]
+    T = np.exp(-np.nan_to_num(tau) * w)
+    # colour: the shadow blue-grey, a little brighter toward the sun (forward scatter) - no flat plate
+    ph = MIST_K[0] + MIST_K[1] * np.exp((V @ SUN - 1.0) * MIST_K[2])
+    return T, np.array(MIST['color_linear'])[None, :] * ph[:, None]
+
+
 class Plain:
     def __init__(self, tex_dir=os.path.join(KIT, 'Textures')):
         self.det = MipTex(os.path.join(tex_dir, 'Plain_Detail_1024.png'))
@@ -161,7 +209,7 @@ class Plain:
         deck, slot, lip = region(x, z, slot_open, y, self.det, foot)
         top = BODY['top'] + rel
         top = top + (BODY['lip']['top'] + 0.3 * rel - top) * lip
-        top = top + (BODY['slot']['floor_top'] + 0.15 * rel - top) * slot
+        top = top + (BODY['slot']['floor_top'] - 50.0 - top) * slot      # r2: no floor (50 m under the bottom: open)
         bot = np.full(len(x), BODY['bottom'])
         top = bot + (top - bot) * ss(0.2, 0.8, deck)
         m = np.minimum(top - y, y - bot)
@@ -243,7 +291,10 @@ class Plain:
         foot = np.maximum(th * pix_ang, 1e-3)
         m, top, bot, dd, mm, amp, deck, slot, lip = self.field(p, foot, slot_open)
         # which surface: crossed the top (from above or through a wall) or the bottom (from below)
-        under = (np.abs(p[:, 1] - bot) < np.abs(top - p[:, 1])) & (V[gi, 1] > 0)
+        # r2 (review r1 S2): the underside by height above the bottom, soft (was a hard nearest-surface test: it flipped
+        # pixel by pixel where the bisection landed)
+        under_w = ss(40.0, 5.0, p[:, 1] - bot) * (V[gi, 1] > 0)
+        under = under_w > 0.0
         # geometric normal of the top surface (finite differences of Htop)
         h = np.maximum(foot * 2.0, 4.0)
         tx = self.field(p + np.c_[h, np.zeros(len(h)), np.zeros(len(h))], foot, slot_open)[1]
@@ -253,7 +304,21 @@ class Plain:
         nrm /= np.linalg.norm(nrm, axis=-1, keepdims=True)
         slope = np.hypot(gx, gz)
         wall = ss(P['WallSlope'] * 0.5, P['WallSlope'], slope)
-        lam_geo = np.clip(nrm @ SUN, 0, 1)
+        # r2 (review r1 B2): on the walls, the normal of the body's margin in 3-D (the bulges vary with height too),
+        # over >= 20 m / 3 px (no sub-pixel glints), and a wrapped N.L (a cauliflower wall scatters light round its heads)
+        wi = wall > 0.05
+        if wi.any():
+            e = np.maximum(foot[wi] * P['WallNormalPx'], P['WallNormalMin'])
+            pw = p[wi]
+            m0 = self.field(pw, e, slot_open)[0]
+            ez = np.zeros(len(e))
+            gm = np.stack([self.field(pw + np.c_[e, ez, ez], e, slot_open)[0] - m0,
+                           self.field(pw + np.c_[ez, e, ez], e, slot_open)[0] - m0,
+                           self.field(pw + np.c_[ez, ez, e], e, slot_open)[0] - m0], -1)
+            nw = -gm / np.maximum(np.linalg.norm(gm, axis=-1, keepdims=True), 1e-6)
+            nb = nrm[wi] * (1 - wall[wi])[:, None] + nw * wall[wi][:, None]
+            nrm[wi] = nb / np.maximum(np.linalg.norm(nb, axis=-1, keepdims=True), 1e-6)
+        lam_geo = np.clip((nrm @ SUN + P['WallWrap']) / (1 + P['WallWrap']), 0, 1)
         lam = dd[:, 3] * (1 - wall) + lam_geo * wall
         tau = self.tau(dd, mm, amp)
         shadow_baked = np.exp(-tau * P['SurfShadow'])
@@ -280,8 +345,10 @@ class Plain:
             R = E['r0'] + (E['r_sun'] - E['r0']) * np.exp(-(da / E['sun_lobe_deg']) ** 2)
             to_edge = np.maximum(R - r, 0.0)
             glow = P['EdgeGlow'] * np.exp(-to_edge / P['EdgeGlowLen']) * np.clip(np.cos(np.radians(da)), 0, 1)
-            surf[under] = (P['GroundGain'] * 0.35 * var[under])[:, None] * GND_COL + (glow * var[under])[:, None] * SUN_COL * 0.35 \
+            su = (P['GroundGain'] * 0.35 * var[under])[:, None] * GND_COL + (glow * var[under])[:, None] * SUN_COL * 0.35 \
                 + (0.06 * var[under])[:, None] * SKY_COL
+            wu = under_w[under][:, None]
+            surf[under] = surf[under] * (1 - wu) + su * wu
         # troughs toward the haze (tops only)
         fogC = fog_colour(sky_eq, V[gi])
         lod_t = np.log2(np.maximum(foot, 1e-3) / self.texel_d) + P['TroughLod']

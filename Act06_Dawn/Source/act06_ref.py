@@ -34,6 +34,8 @@ CAMS['door_d12'] = dict(eye=[0.55, 1.7, 2.05], yaw_deg=30.0, pitch_deg=0.0, hfov
                         note='D-12: the real door +22..+37 deg, the sun framed in it')
 CAMS['vr_door_d12'] = dict(eye=[0.55, 1.7, 2.05], yaw_deg=30.0, pitch_deg=0.0, hfov_deg=97.3, res=[1832, 1920],
                            note='D-09: VR single eye looking at the door (D-12)')
+CAMS['door_down_d12'] = dict(eye=[0.55, 1.7, 2.05], yaw_deg=18.0, pitch_deg=-14.0, hfov_deg=90.0, res=[1920, 1080],
+                             note='r2 (review r1 S8): out of the door, down at the sea mirror and the glitter path')
 SHELL = json.load(open(os.path.join(HARNESS, 'bus_shell.json')))['presets']['bible_v2']
 WORK = os.environ.get('LB_WORK', '/tmp/lb/clouds')
 EYE = np.array([0.55, 1.70, 2.05])
@@ -230,6 +232,9 @@ def render(t, cam_name, w=960, door='bible_v2', out_dir=None, tag=''):
     img[front] = pc[front]
     depth = np.where(front, pd, depth)
     draw_cards(V, img, depth, t, d, pix)
+    # r2: the slot's mist (analytic, see-through by depth: review r1 B1) over whatever is behind it
+    mT, mC = PR.mist(EYE, V, d, depth, slot_open=so)
+    img = img * mT[:, None] + mC * (1 - mT)[:, None]
     # the cabin (bible_v2 angular shell): the interior is dark, lit by the cabin ambient (#98A4B8 x 0.5) and the sky
     win = window_mask(V, door)
     interior = C.hex_lin('#2A2C30') * (C.hex_lin('#98A4B8') * 0.5 + 0.6)

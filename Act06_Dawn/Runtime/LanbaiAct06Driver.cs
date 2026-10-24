@@ -33,6 +33,7 @@ public class LanbaiAct06Driver : UdonSharpBehaviour
     public GameObject[] roots;
     public Transform rDawn;                    // R_Dawn: vertical translation only, y = d(t)
     public Renderer plain;                     // Lanbai/CloudPlain proxy
+    public Renderer plainMist;                 // Lanbai/CloudPlainMist (r2: the slot's mist; same proxy, same _SlotOpen)
     public Renderer seaRenderer;               // Sea_Disc with M_06_Sea (ABOVE)
     public Renderer[] cards;                   // Lanbai/CloudCard renderers (placed cards, then the ring)
     public float[] cardGain;
@@ -105,6 +106,7 @@ public class LanbaiAct06Driver : UdonSharpBehaviour
         if (t < windowStart || t > windowEnd) return;          // D-27 #4: nothing per frame outside the window
         // a backward jump (scrubbing) re-applies the sky; a jump back before the overlay's end re-arms it
         if (t < _lastT - 0.5f) { _skyApplied = false; _overlayHidden = false; _lobesSet = false; }
+        else if (t < _lastT && t < tOverlayOff) { _overlayHidden = false; _lobesSet = false; }   // r2 (S6): small drags too
         _lastT = t;
         Evaluate(t);
     }
@@ -250,6 +252,12 @@ public class LanbaiAct06Driver : UdonSharpBehaviour
             _mpb.SetFloat(_idSlotOpen, Smooth((t - slotOpen0) / Mathf.Max(slotOpen1 - slotOpen0, 1e-3f)));
             plain.SetPropertyBlock(_mpb);
         }
+        if (plainMist != null)
+        {
+            plainMist.GetPropertyBlock(_mpb);
+            _mpb.SetFloat(_idSlotOpen, Smooth((t - slotOpen0) / Mathf.Max(slotOpen1 - slotOpen0, 1e-3f)));
+            plainMist.SetPropertyBlock(_mpb);
+        }
 
         // the cards: the towers answer F0s, the ring fades as the slot walls rise past the windows
         if (cards != null)
@@ -347,6 +355,13 @@ public class LanbaiAct06Driver : UdonSharpBehaviour
         // only this act's own channels (D-22): the sea plane / mode while ours; never w = 0 on shared sky / fog
         if (seaRenderer != null) seaRenderer.enabled = false;
         if (_lastT < tEntry) VRCShader.SetGlobalFloat(_idSeaMode, 0f);
+        // r2 (review r1 S6): the overlay is ours from the preroll to its end: leaving mid-curve (a seek, a scrub back
+        // before 252.64) must not leave it half black over another act
+        if (driveOverlay && overlay != null && !_overlayHidden && _lastT >= tPreroll0)
+        {
+            overlay.Hide();
+            _overlayHidden = true;
+        }
         _sunTaken = false;
     }
 }

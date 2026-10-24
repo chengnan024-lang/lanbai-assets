@@ -1,5 +1,5 @@
 // =====================================================================================================
-//  Lanbai / CloudPlain  v1 (act 6 dawn, 2026-10-24; cloud session "云", branch pkg/clouds)   Built-in RP
+//  Lanbai / CloudPlain  v2 (act 6 dawn, 2026-10-24 r2; cloud session "云", branch pkg/clouds)   Built-in RP
 //
 //  !!! WRITTEN WITHOUT A UNITY COMPILER !!!  Checked with Common/Tools~/compile_check (DXC); compile in Unity 2022.3.
 //
@@ -7,9 +7,11 @@
 //    top  Htop(xz) = _Body.x (the plain's top, -533) + relief (the gate deck's two periodic tiles, re-baked for the
 //         dawn sun: Textures/Plain_Detail_1024 / Plain_Macro_512; x _Scale)
 //    bottom = _Body.y (the cloud cover's underside, -1134)
-//    regions: the deck's soft edge (sunward 4.58 km, elsewhere ~8.2 km), the 1 km slot along az 25 (opens over 6 s at
-//    F1, _SlotOpen; its floor is a thin mist layer at -1100), the lip at the slot's end (top -729: the sun sets behind it
-//    as the bus leaves the cover and comes back under the sunward edge at F1b1).
+//    regions: the deck's soft edge (sunward 4.58 km, elsewhere ~8.2 km), the 1.5 km slot along az 18 (centre line
+//    350 m right of the bus; opens over 6 s at F1, _SlotOpen; r2: it cuts through the whole cover, no floor: its lower
+//    part is a mist drawn by Lanbai/CloudPlainMist, see-through by depth), the lip at the slot's end (top -737).
+//    r2 (review r1): the left wall faces the sun (axis 12 deg off it); wall normals are the body's 3-D margin gradient
+//    over >= 20 m / 3 px with a wrapped N.L; the underside is chosen by height above the bottom (soft).
 //    cloud = { bottom < y < Htop }. A ray from the eye (down OR up) marches between the body's bounds to the first
 //    point inside. Shading: sun x N.L (tops: the baked N.L; walls: the field's own normal) x shadow (tops: the baked sun
 //    path; walls / slot / lip / underside: 16 steps toward the sun through the mean body) + sky x AO + ground light +
@@ -37,6 +39,7 @@ Shader "Lanbai/CloudPlain"
         _MarchK ("March - x min k - y max k - z max dt - w bisections", Vector) = (0.004, 0.06, 250, 4)
         _Light ("Light - x sigma - y shadow - z ms k - w ms tau", Vector) = (0.012, 1.0, 0.004, 0.25)
         _Gains ("Gains - x sun - y sky - z ground - w wall slope", Vector) = (1, 0.35, 0.35, 1.5)
+        _WallN ("Wall light - x wrap - y normal px - z normal min m", Vector) = (0.35, 3, 20, 0)
         _Under ("Underside - x glow - y glow length m - z ground k - w sky k", Vector) = (0.9, 900, 0.35, 0.06)
         _Trough ("Trough - x lod - y depth m - z k - w sky k", Vector) = (3.5, 30, 0.35, 0.6)
         _SunColor ("Sun colour x E - linear", Vector) = (6.3706, 2.2827, 0.3400, 0)
@@ -44,9 +47,9 @@ Shader "Lanbai/CloudPlain"
         _GroundColor ("Lower dome light - linear", Vector) = (0.3281, 0.4199, 0.6151, 0)
         _SunDirFallback ("Direction to the sun - fallback", Vector) = (0.4983, 0.1011, 0.8611, 0)
         _Body ("Body - x top - y bottom - z sun az deg", Vector) = (-533, -1134, 30, 0)
-        _Slot ("Slot - x axis az - y half width - z s0 - w s1", Vector) = (25, 500, -2200, 4000)
-        _SlotB ("Slot - x soft - y floor top", Vector) = (60, -1100, 0, 0)
-        _Lip ("Lip - x top - y soft", Vector) = (-729, 40, 0, 0)
+        _Slot ("Slot - x axis az - y half width - z s0 - w s1", Vector) = (18, 750, -2200, 4000)
+        _SlotB ("Slot - x soft - y floor top - z centre q", Vector) = (60, -1134, 350, 0)
+        _Lip ("Lip - x top - y soft", Vector) = (-737, 40, 0, 0)
         _Edge ("Edge - x r0 - y r sun - z lobe deg - w soft", Vector) = (8200, 4583, 45, 180)
         _Wall ("Wall bulge - x period m - y amplitude m", Vector) = (700, 110, 0, 0)
         _SlotOpen ("Slot open 0..1 - driver MPB", Range(0, 1)) = 1
@@ -67,7 +70,7 @@ Shader "Lanbai/CloudPlain"
             sampler2D _MacroTex;
             float4 _DetailTex_TexelSize, _MacroTex_TexelSize;
             float4 _Periods, _DetailRange, _TauMax, _AmpRange, _Micro, _March, _MarchK, _Light, _Gains, _Under, _Trough;
-            float4 _SunColor, _SkyUpColor, _GroundColor, _SunDirFallback, _Body, _Slot, _SlotB, _Lip, _Edge, _Wall;
+            float4 _SunColor, _SkyUpColor, _GroundColor, _SunDirFallback, _Body, _Slot, _SlotB, _Lip, _Edge, _Wall, _WallN;
             float _SlotOpen;
 
             struct appdata { float4 vertex : POSITION; UNITY_VERTEX_INPUT_INSTANCE_ID };
@@ -107,7 +110,7 @@ Shader "Lanbai/CloudPlain"
                 float deck = Sig((r - R) / (0.25 * _Edge.w));
                 float a = radians(_Slot.x);
                 float s = xz.x * sin(a) + xz.y * cos(a);
-                float q = xz.x * cos(a) - xz.y * sin(a);
+                float q = xz.x * cos(a) - xz.y * sin(a) - _SlotB.z;
                 float hw = _Slot.y * _SlotOpen;
                 float aq = abs(q);
                 if (bulge)
@@ -145,7 +148,7 @@ Shader "Lanbai/CloudPlain"
                 s.reg = Region(p.xz, p.y, foot, true);
                 float top = _Body.x + rel;
                 top += (_Lip.x + 0.3 * rel - top) * s.reg.z;
-                top += (_SlotB.y + 0.15 * rel - top) * s.reg.y;
+                top += (_SlotB.y - 50.0 - top) * s.reg.y;               // r2: no floor (open to the underside)
                 top = _Body.y + (top - _Body.y) * smoothstep(0.2, 0.8, s.reg.x);
                 s.top = top;
                 s.m = min(top - p.y, p.y - _Body.y);
@@ -255,17 +258,27 @@ Shader "Lanbai/CloudPlain"
                 float3 p = ro + V * tHit;
                 float foot = max(tHit * pix, 1e-3);
                 PSample h = Field(p, foot);
-                bool under = (abs(p.y - _Body.y) < abs(h.top - p.y)) && (V.y > 0.0);
+                float underW = (V.y > 0.0) ? smoothstep(40.0, 5.0, p.y - _Body.y) : 0.0;   // soft (r1 S2)
                 float e = max(foot * 2.0, 4.0);
                 float tx = Field(p + float3(e, 0, 0), foot).top;
                 float tz = Field(p + float3(0, 0, e), foot).top;
                 float gx = (tx - h.top) / e, gz = (tz - h.top) / e;
                 float3 n = normalize(float3(-gx, 1.0, -gz));
                 float wall = smoothstep(_Gains.w * 0.5, _Gains.w, length(float2(gx, gz)));
-                float lam = lerp(h.d.a, saturate(dot(n, sunD)), wall);
+                [branch] if (wall > 0.05)
+                {
+                    // the walls: the body's margin gradient in 3-D (bulges vary with height), over >= 20 m / 3 px
+                    float ew = max(foot * _WallN.y, _WallN.z);
+                    float m0 = Field(p, ew).m;
+                    float3 gm = float3(Field(p + float3(ew, 0, 0), ew).m - m0, Field(p + float3(0, ew, 0), ew).m - m0,
+                                       Field(p + float3(0, 0, ew), ew).m - m0);
+                    float3 nw = -gm / max(length(gm), 1e-6);
+                    n = normalize(lerp(n, nw, wall));
+                }
+                float lam = lerp(h.d.a, saturate((dot(n, sunD) + _WallN.x) / (1.0 + _WallN.x)), wall);
                 float tau = _Light.x * (h.amp * h.d.g * _TauMax.x + h.mm.g * _TauMax.y);
                 float sh = exp(-tau * _Light.y);
-                if (wall > 0.05 || h.reg.y > 0.05 || h.reg.z > 0.05 || under)
+                if (wall > 0.05 || h.reg.y > 0.05 || h.reg.z > 0.05 || underW > 0.0)
                     sh = min(sh, SunVis(p + n * 2.0, sunD));
                 float ms = _Light.z * exp(-tau * _Light.w);
                 float ao = lerp(h.d.b, 0.75, wall);
@@ -274,14 +287,15 @@ Shader "Lanbai/CloudPlain"
                 float3 c = (_Gains.x * (lam * sh + ms)) * _SunColor.rgb
                          + (_Gains.y * ao * (0.55 + 0.45 * up)) * _SkyUpColor.rgb + (_Gains.z * 0.25 * (1.0 - up)) * _GroundColor.rgb;
                 c *= var;
-                if (under)
+                [branch] if (underW > 0.0)
                 {
                     float r = length(p.xz);
                     float az = degrees(atan2(p.x, p.z));
                     float da = fmod(az - _Body.z + 540.0, 360.0) - 180.0;
                     float R = _Edge.x + (_Edge.y - _Edge.x) * exp(-(da / _Edge.z) * (da / _Edge.z));
                     float glow = _Under.x * exp(-max(R - r, 0.0) / _Under.y) * saturate(cos(radians(da)));
-                    c = (_Gains.z * _Under.z * var) * _GroundColor.rgb + (glow * var * 0.35) * _SunColor.rgb + (_Under.w * var) * _SkyUpColor.rgb;
+                    float3 cu = (_Gains.z * _Under.z * var) * _GroundColor.rgb + (glow * var * 0.35) * _SunColor.rgb + (_Under.w * var) * _SkyUpColor.rgb;
+                    c = lerp(c, cu, underW);
                 }
                 // troughs toward the deep sky light (tops only)
                 float texD = _Periods.x * _DetailTex_TexelSize.x;

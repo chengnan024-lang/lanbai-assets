@@ -67,9 +67,17 @@ def accel(t, h=0.01):
 
 # ---------------------------------------------------------------- the cloud body (R_Dawn local; one field: shader + numpy + sun table)
 TOP, BOTTOM = -533.0, -1134.0                 # bible §6·6
-SLOT = dict(axis_az=25.0, half_width=500.0, s0=-2200.0, s1=4000.0, soft=60.0,
-            floor_top=-1100.0,                # the slot's thin misty floor (34 m): hides the sea until the bus exits at 305.4
+# r2 (review r1 B2): the axis is 12 deg left of the sun, so the LEFT wall faces the sun (N.L ~ sin 12) and the right
+# wall is in its own shadow; the slot is 1.5 km wide and its centre line 350 m right of the bus, so the sun line from
+# the bus stays in the slot down to ~-1060 (then the right wall takes the sun, ~304.6). The slot cuts through the whole cover:
+# no hard floor (r1 B1); its lower part is filled by a mist (MIST below), analytic, see-through by depth.
+SLOT = dict(axis_az=18.0, half_width=750.0, center_q=350.0, s0=-2200.0, s1=4000.0, soft=60.0,
+            floor_top=BOTTOM,                 # no floor: the slot is open to the cover's underside (the mist fills it)
             open_t0=T['F1'], open_t1=T['F1'] + 6.0)   # 峡口张开 at F1: the slot's top opens over 6 s (closed before F1)
+# the mist in the slot's lower part: density (1/m) a tent in y: 0 at y_top, peak at y_peak, 0 at the cover bottom.
+# Vertical optical depth peak * (y_top - BOTTOM) / 2 = 0.045 * 87 = 3.9 (hides the sea from above, bible: no sea before
+# 305.4); the eye passes through it over ~5 s, so the frame changes by its depth, not in one frame.
+MIST = dict(y_top=-960.0, y_peak=-1080.0, y_bot=BOTTOM, sigma=0.045, color_screen='#8593AA')
 EDGE = dict(r0=8200.0, r_sun=None, sun_lobe_deg=45.0, soft=180.0, wobble=350.0)   # r_sun solved below (F1b1)
 LIP = dict(top=None, soft=40.0)               # solved below: the sun line from the slot floor at the slot's end
 
@@ -100,7 +108,7 @@ def region(x, z):
     deck = _sig((r - R) / (0.25 * EDGE['soft']))
     a = math.radians(SLOT['axis_az'])
     s = x * math.sin(a) + z * math.cos(a)             # along the axis
-    q = x * math.cos(a) - z * math.sin(a)             # across (+ = right of the axis)
+    q = x * math.cos(a) - z * math.sin(a) - SLOT['center_q']   # across the centre line (+ = right)
     inw = _sig((abs(q) - SLOT['half_width']) / (0.25 * SLOT['soft']))
     inl = _sig((SLOT['s0'] - s) / (0.25 * SLOT['soft']))
     slot = inw * inl * _sig((s - SLOT['s1']) / (0.25 * SLOT['soft']))
@@ -125,15 +133,25 @@ def sun_visible(t, step=10.0):
     """1 = the sun line from the eye is clear of the cloud body, 0 = blocked (mean body, no relief)."""
     d = descent(t)[0]
     eye = np.array([0.55, 1.70 - d, 2.05])            # in R_Dawn local
-    s = 0.0
+    s, tr = 0.0, 1.0
     while s < 30000.0:
         p = eye + SUN * s
         if p[1] > TOP + 50:
-            return 1.0
+            return round(tr, 3)
         if occupied(p):
             return 0.0
+        if region(p[0], p[2])[1] > 0.5:
+            tr *= math.exp(-mist_sigma(p[1]) * step)    # the slot's mist dims the sun before the wall takes it
         s += step
-    return 1.0
+    return round(tr, 3)
+
+
+def mist_sigma(y):
+    if y >= MIST['y_top'] or y <= MIST['y_bot']:
+        return 0.0
+    if y > MIST['y_peak']:
+        return MIST['sigma'] * (MIST['y_top'] - y) / (MIST['y_top'] - MIST['y_peak'])
+    return MIST['sigma'] * (y - MIST['y_bot']) / (MIST['y_peak'] - MIST['y_bot'])
 
 
 # ---------------------------------------------------------------- cards (Clouds_v2 v2 cards; billboards about the cloud base)
@@ -156,7 +174,10 @@ CARD_SETS = [
     ('Head_10', 'CloudV2_Bank_dawn', -100.0, 5200.0, 1300.0, TOP + 8.0, 1.0, 'head'),
 ]
 RING = dict(card='CloudSeaV2_1_dawn', alt_card='CloudSeaV2_2_dawn', count=10, radius=13000.0, width=9000.0,
-            top_el_deg=-0.4, gain=0.95)        # the horizon ring beyond the deck: the deck's far continuation, hides the far sea
+            top_el_deg=-0.4, gain=0.95,        # the horizon ring beyond the deck: the deck's far continuation, hides the far sea
+            # r2 (review r1 B3): a second ring half a step round and 600 m further out, same angular size: its card
+            # middles sit behind the first ring's seams (where both cards' ends thin out and the sky showed as brown)
+            back_radius=13600.0, back_offset_deg=18.0)
 
 
 def card_entries():
@@ -181,14 +202,25 @@ def ring_entries():
         out.append(dict(id='Ring_%02d' % i, card=RING['card'] if i % 2 == 0 else RING['alt_card'], role='ring',
                         position_local=[round(R * math.sin(a), 1), None, round(R * math.cos(a), 1)],
                         width_m=RING['width'], gain=RING['gain'], alpha=1.0, mirror=2, top_el_deg=RING['top_el_deg']))
+    for i in range(n):
+        az = i * 360.0 / n + RING['back_offset_deg']
+        a = math.radians(az)
+        R = RING['back_radius']
+        out.append(dict(id='RingB_%02d' % i, card=RING['alt_card'] if i % 2 == 0 else RING['card'], role='ring',
+                        position_local=[round(R * math.sin(a), 1), None, round(R * math.cos(a), 1)],
+                        width_m=round(RING['width'] * R / RING['radius'], 1), gain=RING['gain'], alpha=1.0, mirror=2,
+                        top_el_deg=RING['top_el_deg']))
     return out
 
 
 # ---------------------------------------------------------------- beats & curves (bible §6·6 节拍, §6.x #18–23)
 def beats():
     return dict(
-        apply_sky_t=CUT1, preroll_t0=T['F0'] + 1.0, dawn_t0=round(T['F0'] + 2.5, 2), dawn_t1=round(T['F0'] + 2.5 + 3.5 + 8.7, 2),
-        dawn_per_dir_s=8.7, stagger=dict(skylight_zenith=0.0, horizon=2.0, below=2.2, sun_sector=3.5),
+        # r2 (review r1 S4): 9.0 s per direction, the sun's sector +3.2 (more margin under the 1.8 EV / 2 s law); still
+        # settles at 266.34 (F0s). The driver / builder / act06_flash.py read these (one source, CONTROL §6 #13).
+        apply_sky_t=CUT1, preroll_t0=T['F0'] + 1.0, dawn_t0=round(T['F0'] + 2.5, 2), dawn_t1=round(T['F0'] + 2.5 + 3.2 + 9.0, 2),
+        dawn_per_dir_s=9.0, stagger=dict(skylight_zenith=0.0, horizon=2.0, below=2.2, sun_sector=3.2),
+        lobes=dict(zenith_deg=40.0, below_deg=60.0, sun_deg=30.0, else_soft_deg=30.0),
         sun_sector=dict(az=SUN_AZ, half_width_deg=30.0, soft_deg=30.0),
         main_light_t0=252.64, main_light_t1=363.615, render_settings_t0=252.64, render_settings_t1=362.26,
         tower_answer=[dict(id='Tower_A', t0=T['F0s'], dur=4.0, dev=0.7), dict(id='Tower_B', t0=round(T['F0s'] + 1.5, 2), dur=4.0, dev=0.7),
@@ -202,6 +234,15 @@ def beats():
         sea_calm_patch=dict(t0=T['F1b2'], dur=6.0, radius=300.0),
         sea_calm_all=dict(t0=337.0, dur=8.0, v1=0.85),
         entry=T['F2h'])
+
+
+def mist_entry():
+    import sys
+    sys.path.insert(0, os.path.join(REPO, 'Clouds_v2', 'Source'))
+    import lb_common as C
+    m = dict(MIST)
+    m['color_linear'] = [round(float(v), 5) for v in C.ungrade_hex(MIST['color_screen'], 'S6')]
+    return m
 
 
 def main():
@@ -223,10 +264,11 @@ def main():
         return round(0.5 * (lo + hi), 2)
     sun_tab_t = np.arange(CUT1, T['F2h'] + 0.4, 0.25)
     sun_tab = [sun_visible(t) for t in sun_tab_t]
-    changes = [(round(float(sun_tab_t[i]), 2), sun_tab[i]) for i in range(1, len(sun_tab)) if sun_tab[i] != sun_tab[i - 1]]
+    changes = [(round(float(sun_tab_t[i]), 2), sun_tab[i]) for i in range(1, len(sun_tab))
+               if (sun_tab[i] >= 0.5) != (sun_tab[i - 1] >= 0.5)]
     L = dict(
         about='蓝白 · 第 6 幕（晨）布局与时间（Act06_Dawn/Source/act06_layout.py 生成，别手改）。Unity 世界、米；R_Dawn 只做竖直平移 y = d(t)。',
-        version='v1 2026-10-24',
+        version='v2 2026-10-24 (review r1: slot axis 18, no floor, mist; second ring)',
         labels={k: T[k] for k in ('F0', 'F0s', 'F1', 'F1c', 'F1t', 'F1b1', 'F1b2', 'F1z', 'F2', 'F2h')}, cut1=CUT1,
         window=[CUT1, 363.62],
         eye=[0.55, 1.70, 2.05],
@@ -236,7 +278,7 @@ def main():
                     d_at=dict(F1=round(descent(T['F1'])[0], 2), F1b1=round(d_b1, 2), F2h=round(d_f2h, 2)),
                     peak_accel=round(float(np.abs(acc).max()), 3),
                     note='R_Dawn.y = d(t); closed form: d = v_start (t - F0) + sum (v1 - v0) (dur S(x) + max(t - t0 - dur, 0)), S(x) = x^3 - x^4 / 2'),
-        body=dict(top=TOP, bottom=BOTTOM, slot=SLOT, lip=LIP, edge=EDGE,
+        body=dict(top=TOP, bottom=BOTTOM, slot=SLOT, lip=LIP, edge=EDGE, mist=mist_entry(),
                   note='one field: Lanbai/CloudPlain (shader), Source/plain_ref.py (numpy), sun_visible() here'),
         sea=dict(level_local=round(sea_local, 3), entry_world_y=sea_entry_world_y, first_seen_t=t_at_depth(BOTTOM),
                  note='Sea_Disc under R_Dawn at y = level_local: world y = 1.0 exactly at F2h (Act07 handover)'),
