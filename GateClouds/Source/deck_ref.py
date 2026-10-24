@@ -43,7 +43,7 @@ DEFAULTS = dict(
     FogDensity=0.0006, FogScale=1.3, MoonAirFog=0.35,
     # round 2 (art r1 #2): rims only in two wedges: the moon path (+-MoonPathDeg under the moon, 0.3-2.5 km, x MoonPathGain)
     # and the tear's foot (within FootR of it); outside them RimOut of the rim
-    RimFoot=3.0, MoonPathDeg=7.0, MoonPathGain=0.9, FootR=600.0, RimOut=0.16,
+    RimFoot=1.5, MoonPathDeg=7.0, MoonPathGain=0.9, FootR=600.0, RimOut=0.16,
     # round 4 (art r2 BLOCKER): pending skin commits once the clearance has RISEN RiseK x edge above its minimum (not on any
     # uptick: micro noise committed half lids), and the silhouette test at a hit is a smooth ramp, not a step
     RiseK=1.0, SilSoft=(0.5, 3.0), FreeK=4.0,

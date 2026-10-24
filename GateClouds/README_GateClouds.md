@@ -39,6 +39,7 @@
 | `Docs~/deck_scroll_U7_60fps.mp4` + `Docs~/deck_scroll_frames/` | U7 机位 2 秒、60 fps 的云海滚动（只有云海，960×540，不含光池），查闪烁用。**是 v1.4 的代码出的**：v1.5 只挪了光池和脚下的光，没改步进和银边，闪烁的结论不变 |
 | `Docs~/cards_contact.jpg` | 5 张云卡的三个光照通道 |
 | `Docs~/fse_clouds.json` | 透明叠绘（§5.3） |
+| `Docs~/flashcheck_U7_720p.json`、`Docs~/crawl_map_U7_720p.png` | 第 10 轮：U7 2 秒 60 fps、1280×720 的滚动序列，跑了 `Art/tools/lens_tech/flashcheck.py` 和 `Source/measure_crawl.py` 的结果（§8 第 6 条） |
 | `Docs~/perf_options_crops.png` | 性能方案 B / C 和现在的 1:1 对比（`给总控.md` §1） |
 | `Docs~/iterations/` | 01–11 的迭代记录（每轮一张图一句话） |
 | `Docs~/r4_crops/` | 1:1 前后对比裁图（上 = 第 3 轮，下 = v1.5）：边光碎块、U7 台阶、U8 前方、光池、云谷 |
@@ -130,6 +131,7 @@
 | 月光路更宽 / 更亮 | `_RimWedge.x`（7°）、`_RimWedge.y`（0.9） |
 | 每个云头银边差多少 | `_Skin3.zw`（0.4–1.6）；噪声尺度 `_RimVarScale`（0.37） |
 | 轮廓台阶更软 | `_Skin2.w`（1.5 像素；再大银边会变细变暗） |
+| 远处细银边闪得少一点 | `_Skin2.y`（亚像素淡化，第 10 轮 3 → 1.5；再小远处的银边就淡没了） |
 | 脚下的光 | `_FootPool`（半径 120 m、朝车 60 m、强度 2.0、槽里的底 0.1）、`_FootPoolColor` |
 | 云槽深浅 | `_AmbK`（0.35）、`_Trough.z`（0.7）、`_Trough.w`（0.4） |
 | 侧窗 / 后窗的云更亮 | `_Surf.z`（朝月漫反射 0.8） |
@@ -231,6 +233,12 @@
 3. Console 原样（包括 UdonSharp 的）。
 4. **Play 模式 + 头显**（门的总驱动已经有了：`Gate/README_GateDriver.md`；测试场景用 **蓝白/Gate/Build Driver + Test Clock**，进 Play 后云海按 v_g 流动）：云海滚动 10 秒看银边闪不闪；闭左眼、闭右眼各看一遍；车道读起来自然不自然。
 5. Frame Debugger 里确认 `UpdateDepthTexture` 画了云海（ShadowCaster pass）。
+6. **（云端已做，第 10 轮）闪烁和银边爬行**：U7 机位 155.1 → 157.1 s，60 fps，1280 × 720，120 帧 PNG，参照渲染。
+   - **flashcheck**：一般闪烁 0、红闪 0，WCAG 2.3.1 PASS，蓝白闪烁规则 PASS，亮度爬升律 PASS（任意 1 s 最大升 0.04 EV，APL 42）。
+   - flashcheck 按 4.4° 的块量，看不到 1–2 px 的银边在滚动里闪。所以另用 `measure_crawl.py` 逐像素量：相邻帧差 > 12 码，并且 10 帧里正负翻转 ≥ 2 次，就算"爬"。
+     - 第 10 轮前，云海区里 0.19% 的像素在爬，集中在月光路和裂口脚下远处很细的银边上；
+     - 亚像素淡化 `_Skin2.y` 从 3 降到 1.5 以后是 0.147%（−23%）。银边 p95 / p99.5 从 135 / 155 变成 124 / 149，仍在美术 r2 的目标里。
+     - 图：`Docs~/crawl_map_U7_720p.png`，红色 = 在爬的像素。剩下的是远处一个像素宽的轮廓，头显里请照 §8 第 4 条确认。
 
 ---
 

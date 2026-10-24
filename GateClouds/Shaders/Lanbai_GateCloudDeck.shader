@@ -57,7 +57,7 @@ Shader "Lanbai/GateCloudDeck"
         _AmbK ("Sky ambient x AO (round 4: 0.35, deeper troughs)", Range(0, 2)) = 0.35
         _Phase ("HG g1, g2, mix, surface lobe softening", Vector) = (0.8, -0.18, 0.62, 0.35)
         _Skin ("Skin: sigma (1/m), edge (m), approach weight, sigma toward the moon", Vector) = (0.8, 0.5, 0.0, 0.12)
-        _Skin2 ("Skin: silhouette gap (x t), sub-pixel fade (x edge / footprint), commit rise (x edge), crest cover (px)", Vector) = (0.04, 3, 1, 1.5)
+        _Skin2 ("Skin: silhouette gap (x t), sub-pixel fade (x edge / footprint), commit rise (x edge), crest cover (px)", Vector) = (0.04, 1.5, 1, 1.5)
         _Skin3 ("Skin: silhouette ramp from, to (x gap); per-head rim min, max", Vector) = (0.5, 3, 0.4, 1.6)
         _RimVarScale ("Per-head rim noise scale (x detail period)", Float) = 0.37
         _RimWedge ("Rim wedges: moon path half angle (deg), moon path gain, foot radius (m), outside", Vector) = (7, 0.9, 600, 0.16)
