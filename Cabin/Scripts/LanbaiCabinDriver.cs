@@ -85,6 +85,11 @@ public class LanbaiCabinDriver : UdonSharpBehaviour
     public Vector3[] seatCentres;              // every seat cushion centre (world); empty = hero seat for everyone
     public float seatRadius = 0.9f;
 
+    [Header("Door  closed only in act 11  under the white")]
+    public Transform[] doorPanels;             // Bus_Door0..3 (FBX = open state; origin = hinge)
+    public Vector3[] doorClosedPos;            // BusLayout.json door_panels[k].closed.position (bus frame = world)
+    public float[] doorClosedYaw;              // closed.yaw_deg, about the panel's own +Y
+
     [Header("Glass")]
     public float reflGainNight = 1.0f;         // BusGlass _CabinReflGain (Rain README 5.2: night 1, day 0.25)
     public float reflGainDay = 0.25f;
@@ -99,6 +104,9 @@ public class LanbaiCabinDriver : UdonSharpBehaviour
     private int _glassOn = -1;
     private int _clothVisible = -1;
     private float _nextSeatCheck;
+    private Vector3[] _doorOpenPos;
+    private Quaternion[] _doorOpenRot;
+    private int _doorClosed = -1;
 
     // linear colours (bible sRGB hex -> linear x the bible's factor), filled in Init()
     private Vector4 _ambMoon, _ambInside, _ambDawn, _ambSeaShallow, _ambSeaDeep, _ambDusk, _ambNight9;
@@ -142,6 +150,11 @@ public class LanbaiCabinDriver : UdonSharpBehaviour
         _dialBase = Lin(0xFF, 0x77, 0x03, Mathf.Pow(2f, 0.71f));   // bible 4.4 act 2: fill #FF7703 @ +0.71
         _dialBright = Lin(0xFF, 0x7B, 0x00, Mathf.Pow(2f, 2.13f)); // 4c after ein Lichtchen: fill #FF7B00 @ +2.13
         _seat = new Vector4(heroSeat.x, heroSeat.y, heroSeat.z, seatRadius);
+        int nd = doorPanels == null ? 0 : doorPanels.Length;
+        _doorOpenPos = new Vector3[nd];
+        _doorOpenRot = new Quaternion[nd];
+        for (int i = 0; i < nd; i++)
+            if (doorPanels[i] != null) { _doorOpenPos[i] = doorPanels[i].localPosition; _doorOpenRot[i] = doorPanels[i].localRotation; }
         _ready = true;
     }
 
@@ -156,7 +169,7 @@ public class LanbaiCabinDriver : UdonSharpBehaviour
         Init();
         // the cabin root is never switched; entering the window (or a seek) re-writes everything once
         _lm = -1f; _bleach = -1f; _fade = -1f; _hole = -1f; _refl = -1f; _glassOn = -1; _clothVisible = -1;
-        _amb.x = -1f; _dial.x = -1f;
+        _amb.x = -1f; _dial.x = -1f; _doorClosed = -1;
     }
 
     public void LanbaiTick(float t)
@@ -206,6 +219,33 @@ public class LanbaiCabinDriver : UdonSharpBehaviour
         }
         WriteCloth(t, force || seatChanged);
         WriteGlass(t, force);
+        WriteDoor(t, force);
+    }
+
+    // bible §3 / D-28d: the door is never closed, except in act 11 (closed under the white at 1178.46, open again
+    // under the second white before act 12). Poses from BusLayout.json door_panels.
+    private void WriteDoor(float t, bool force)
+    {
+        if (doorPanels == null || _doorOpenPos == null) return;
+        int closed = (t >= tAct11 && t < tAct12) ? 1 : 0;
+        if (!force && closed == _doorClosed) return;
+        _doorClosed = closed;
+        for (int i = 0; i < doorPanels.Length && i < _doorOpenPos.Length; i++)
+        {
+            Transform d = doorPanels[i];
+            if (d == null) continue;
+            bool haveClosed = doorClosedPos != null && doorClosedYaw != null && i < doorClosedPos.Length && i < doorClosedYaw.Length;
+            if (closed == 1 && haveClosed)
+            {
+                d.localPosition = doorClosedPos[i];
+                d.localRotation = _doorOpenRot[i] * Quaternion.Euler(0f, doorClosedYaw[i], 0f);
+            }
+            else
+            {
+                d.localPosition = _doorOpenPos[i];
+                d.localRotation = _doorOpenRot[i];
+            }
+        }
     }
 
     /// <summary>bible 4.3 / 4.8 'tubes' column, 1 = full (seat cushion E 0.8).</summary>

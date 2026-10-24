@@ -1,46 +1,53 @@
 {
- "Cabin_Static": {
-  "verts": 34366,
-  "verts_expected": 34366,
+ "Bus_Door0": {
+  "verts": 48,
+  "verts_expected": 48,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Bus_Door1": {
+  "verts": 48,
+  "verts_expected": 48,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Bus_Door2": {
+  "verts": 48,
+  "verts_expected": 48,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Bus_Door3": {
+  "verts": 48,
+  "verts_expected": 48,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Bus_Exterior_LOD0": {
+  "verts": 14216,
+  "verts_expected": 14216,
   "bbox_err_m": 0.0,
   "uv_layers": [
    "UVMap",
    "UVLightmap"
   ],
-  "colours": [
-   "Col"
-  ]
- },
- "Bus_Exterior_LOD0": {
-  "verts": 14016,
-  "verts_expected": 14016,
-  "bbox_err_m": 0.0,
-  "uv_layers": [
-   "UVMap"
-  ],
   "colours": []
  },
- "Cabin_Tubes": {
-  "verts": 960,
-  "verts_expected": 960,
-  "bbox_err_m": 0.0,
-  "uv_layers": [
-   "UVMap"
-  ],
-  "colours": []
- },
- "Cabin_Radio": {
-  "verts": 224,
-  "verts_expected": 224,
-  "bbox_err_m": 0.0,
-  "uv_layers": [
-   "UVMap"
-  ],
-  "colours": []
- },
- "Cabin_DestBlind": {
-  "verts": 8,
-  "verts_expected": 8,
+ "Bus_Exterior_LOD1": {
+  "verts": 5509,
+  "verts_expected": 5509,
   "bbox_err_m": 0.0,
   "uv_layers": [
    "UVMap"
@@ -58,72 +65,39 @@
    "Col"
   ]
  },
- "Bus_DoorF_A": {
-  "verts": 48,
-  "verts_expected": 48,
+ "Cabin_DestBlind": {
+  "verts": 8,
+  "verts_expected": 8,
   "bbox_err_m": 0.0,
   "uv_layers": [
    "UVMap"
   ],
   "colours": []
  },
- "Bus_DoorF_B": {
-  "verts": 48,
-  "verts_expected": 48,
+ "Cabin_Radio": {
+  "verts": 224,
+  "verts_expected": 224,
   "bbox_err_m": 0.0,
   "uv_layers": [
    "UVMap"
   ],
   "colours": []
  },
- "Bus_DoorR_A": {
-  "verts": 48,
-  "verts_expected": 48,
+ "Cabin_Static": {
+  "verts": 34588,
+  "verts_expected": 34588,
   "bbox_err_m": 0.0,
   "uv_layers": [
-   "UVMap"
+   "UVMap",
+   "UVLightmap"
   ],
-  "colours": []
+  "colours": [
+   "Col"
+  ]
  },
- "Bus_DoorR_B": {
-  "verts": 48,
-  "verts_expected": 48,
-  "bbox_err_m": 0.0,
-  "uv_layers": [
-   "UVMap"
-  ],
-  "colours": []
- },
- "Wheel_FL": {
-  "verts": 648,
-  "verts_expected": 648,
-  "bbox_err_m": 0.0,
-  "uv_layers": [
-   "UVMap"
-  ],
-  "colours": []
- },
- "Wheel_FR": {
-  "verts": 648,
-  "verts_expected": 648,
-  "bbox_err_m": 0.0,
-  "uv_layers": [
-   "UVMap"
-  ],
-  "colours": []
- },
- "Wheel_RL": {
-  "verts": 648,
-  "verts_expected": 648,
-  "bbox_err_m": 0.0,
-  "uv_layers": [
-   "UVMap"
-  ],
-  "colours": []
- },
- "Wheel_RR": {
-  "verts": 648,
-  "verts_expected": 648,
+ "Cabin_Tubes": {
+  "verts": 960,
+  "verts_expected": 960,
   "bbox_err_m": 0.0,
   "uv_layers": [
    "UVMap"
@@ -391,17 +365,42 @@
   ],
   "colours": []
  },
- "Bus_Exterior_LOD1": {
-  "verts": 5413,
-  "verts_expected": 5413,
+ "Wheel_FL": {
+  "verts": 648,
+  "verts_expected": 648,
   "bbox_err_m": 0.0,
   "uv_layers": [
    "UVMap"
   ],
   "colours": []
  },
- "WiperPivot_L": "ok (empty)",
- "WiperPivot_R": "ok (empty)",
+ "Wheel_FR": {
+  "verts": 648,
+  "verts_expected": 648,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Wheel_RL": {
+  "verts": 648,
+  "verts_expected": 648,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
+ "Wheel_RR": {
+  "verts": 648,
+  "verts_expected": 648,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": []
+ },
  "Wiper-0.14": {
   "verts": 32,
   "verts_expected": 32,
@@ -419,5 +418,7 @@
    "UVMap"
   ],
   "colours": []
- }
+ },
+ "WiperPivot_L": "ok (empty)",
+ "WiperPivot_R": "ok (empty)"
 }

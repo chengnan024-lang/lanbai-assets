@@ -1,0 +1,235 @@
+# -*- coding: utf-8 -*-
+"""参考渲染：主座位在各幕里的车厢（圣经 §4.8 的表）。和 Lanbai/Cabin 同一套项：
+  车厢 = 反照率 ×（_CabinTubeLM.rgb × 管灯 + _Udon_CabinAmbient × AO）+ 实时光（太阳 / 月）；漂白、侵蚀（同一个阈值公式、
+  同一组系数、同一个噪声映射；噪声用 Blender 的 Noise 代替 shader 的哈希 FBM，统计上一样、图案不同）、侵蚀边 3 cm 发
+  _Udon_CabinAmbient × 1.5。天只给相机看（不照车厢）：Unity 里天光也不进车厢（车厢只吃 _Udon_CabinAmbient）。
+窗外是每幕的“天色占位”，不是那一幕的画面。
+    --set act=1|2|4|4c|6|7a|8|9|11|12  [--set blend=...] [--set eye=x,y,z]
+"""
+import math
+import os
+import sys
+
+import bpy
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.join(HERE, '..', '..', '..')
+sys.path.insert(0, os.path.join(HERE, '..', '..', 'Source'))
+sys.path.insert(0, HERE)
+import build_bus  # noqa: E402
+import bus_spec as B  # noqa: E402
+import scene_final as SF  # noqa: E402
+
+lin = build_bus.srgb2lin
+
+# bible §4.8 table (tubes, bleach, fade, ambient colour x k) + a sky placeholder + an optional sun (unity dir TO the sun,
+# E, colour). E for suns in Unity units (scene_harness: pi x E in Cycles).
+ACTS = {
+    '1': dict(t=-5, grade='S1', tubes=1.0, bleach=0, fade=0, amb=('#232A3A', 0.0), sky=('#0A0E18', 1.0), sun=None),
+    '2': dict(t=30, grade='S2', tubes=1.0, bleach=0, fade=0, amb=('#232A3A', 0.0), sky=('#0C1018', 1.0), sun=None),
+    '4': dict(t=150.3, grade='S4', tubes=0.31, bleach=0, fade=0, amb=('#232A3A', 0.3), sky=('#121630', 1.0), sun=None, tear=True),
+    '4c': dict(t=200, grade='S4c', tubes=0.0, bleach=0, fade=0, amb=('#B5C3DB', 0.30), sky=('#B9C2D6', 1.0), sun=None),
+    '6': dict(t=270, grade='S6', tubes=0.0, bleach=0.08, fade=0, amb=('#98A4B8', 0.5), sky=('#AEBBD0', 1.0),
+              sun=((30, 6), 2.5, '#FFD9A8')),
+    '7a': dict(t=500, grade='S7a', tubes=0.0, bleach=0.25, fade=0.25, amb=('#6186A7', 0.6), sky=('#2C5373', 1.0), sun=None),
+    '8': dict(t=955, grade='S8', tubes=0.0, bleach=0.48, fade=0.6, amb=('#828BAA', 0.45), sky=('#C7A9B4', 1.0),
+              sun=((-10, 8), 1.6, '#FFB38A')),
+    '9': dict(t=1100, grade='S9a', tubes=0.0, bleach=0.7, fade=0.86, amb=('#232A3A', 0.3), sky=('#05070E', 1.0), sun=None),
+    '11': dict(t=1200, grade='S11', tubes=1.0, bleach=0, fade=0, amb=('#232A3A', 0.0), sky=('#07080C', 1.0), sun=None),
+    '12': dict(t=1265, grade='S12', tubes=1.0, bleach=0, fade=0, amb=('#3A4250', 0.25), sky=('#30384A', 1.0), sun=None),
+}
+
+
+def camera_only_world(rgb):
+    w = bpy.context.scene.world
+    nt = w.node_tree
+    for n in list(nt.nodes):
+        nt.nodes.remove(n)
+    bg = nt.nodes.new('ShaderNodeBackground')
+    bg.inputs[0].default_value = (*rgb, 1)
+    lp = nt.nodes.new('ShaderNodeLightPath')
+    black = nt.nodes.new('ShaderNodeBackground')
+    black.inputs[0].default_value = (0, 0, 0, 1)
+    mix = nt.nodes.new('ShaderNodeMixShader')
+    out = nt.nodes.new('ShaderNodeOutputWorld')
+    # seen by camera, glass and glossy rays; never lights the cabin diffusely (Unity: the cabin only takes _Udon_CabinAmbient)
+    nt.links.new(lp.outputs['Is Diffuse Ray'], mix.inputs[0])
+    nt.links.new(bg.outputs[0], mix.inputs[1])
+    nt.links.new(black.outputs[0], mix.inputs[2])
+    nt.links.new(mix.outputs[0], out.inputs[0])
+
+
+def _m(nt, op, a, b=None):
+    n = nt.nodes.new('ShaderNodeMath')
+    n.operation = op
+    for k, v in enumerate((a, b)):
+        if v is None:
+            continue
+        if isinstance(v, (int, float)):
+            n.inputs[k].default_value = v
+        else:
+            nt.links.new(v, n.inputs[k])
+    return n.outputs[0]
+
+
+def erosion_field(nt, fade, resist=0.0):
+    """s = noise_range(noise) - tau(pos) (s < 0 = removed); the Lanbai/Cabin default form (_ErodeForm 0)."""
+    geo = nt.nodes.new('ShaderNodeNewGeometry')
+    sep = nt.nodes.new('ShaderNodeSeparateXYZ')
+    nt.links.new(geo.outputs['Position'], sep.inputs[0])
+    x, zu, yu = sep.outputs[0], sep.outputs[1], sep.outputs[2]          # blender (x, y, z) = unity (x, z, y)
+    y0, y1, z0, z1 = B.FLOOR_Y, B.CEIL_Y, B.Z_REAR, B.Z_FRONT
+    hN = _m(nt, 'MINIMUM', _m(nt, 'MAXIMUM', _m(nt, 'DIVIDE', _m(nt, 'SUBTRACT', yu, y0), y1 - y0), 0.0), 1.0)
+    fN = _m(nt, 'MINIMUM', _m(nt, 'MAXIMUM', _m(nt, 'DIVIDE', _m(nt, 'SUBTRACT', zu, z0), z1 - z0), 0.0), 1.0)
+    sx, sy, sz = B.SKY_C
+    qx = _m(nt, 'MAXIMUM', _m(nt, 'SUBTRACT', _m(nt, 'ABSOLUTE', _m(nt, 'SUBTRACT', x, sx)), B.SKY_HALF), 0.0)
+    qz = _m(nt, 'MAXIMUM', _m(nt, 'SUBTRACT', _m(nt, 'ABSOLUTE', _m(nt, 'SUBTRACT', zu, sz)), B.SKY_HALF), 0.0)
+    dy = _m(nt, 'SUBTRACT', yu, sy)
+    d = _m(nt, 'SQRT', _m(nt, 'ADD', _m(nt, 'ADD', _m(nt, 'MULTIPLY', qx, qx), _m(nt, 'MULTIPLY', qz, qz)), _m(nt, 'MULTIPLY', dy, dy)))
+    e = _m(nt, 'EXPONENT', _m(nt, 'DIVIDE', d, -0.8))
+    tau = _m(nt, 'SUBTRACT', fade, _m(nt, 'MULTIPLY', _m(nt, 'SUBTRACT', 1.0, hN), 0.45))
+    tau = _m(nt, 'SUBTRACT', tau, _m(nt, 'MULTIPLY', _m(nt, 'SUBTRACT', 1.0, fN), 0.25))
+    tau = _m(nt, 'SUBTRACT', tau, _m(nt, 'MULTIPLY', _m(nt, 'SUBTRACT', 1.0, e), 0.35))
+    tau = _m(nt, 'SUBTRACT', tau, resist)
+    # protections: the seat sphere (0.9 m round the hero seat) until 0.97; the floor patch until 0.65
+    ex, ey, ez = B.EYE
+    ds = _m(nt, 'SQRT', _m(nt, 'ADD', _m(nt, 'ADD', _m(nt, 'POWER', _m(nt, 'SUBTRACT', x, ex), 2.0),
+                                              _m(nt, 'POWER', _m(nt, 'SUBTRACT', yu, ey - 0.45), 2.0)), _m(nt, 'POWER', _m(nt, 'SUBTRACT', zu, ez), 2.0)))
+    if fade < 0.97:
+        tau = _m(nt, 'SUBTRACT', tau, _m(nt, 'MULTIPLY', _m(nt, 'LESS_THAN', ds, 0.9), 10.0))
+    if fade < 0.65:
+        low = _m(nt, 'LESS_THAN', yu, B.FLOOR_Y + 0.08)
+        tau = _m(nt, 'SUBTRACT', tau, _m(nt, 'MULTIPLY', low, 10.0))
+    nz = nt.nodes.new('ShaderNodeTexNoise')
+    nz.inputs['Scale'].default_value = 1.0 / 0.55
+    nz.inputs['Detail'].default_value = 3.0
+    nt.links.new(geo.outputs['Position'], nz.inputs['Vector'])
+    nu = _m(nt, 'MINIMUM', _m(nt, 'MAXIMUM', _m(nt, 'DIVIDE', _m(nt, 'SUBTRACT', nz.outputs['Fac'], 0.30), 0.40), 0.0), 1.0)
+    nr = _m(nt, 'ADD', -0.20, _m(nt, 'MULTIPLY', nu, 0.45))
+    return _m(nt, 'SUBTRACT', nr, tau)
+
+
+def act_material(m_src, lm_img, P, ambient, tubes):
+    """the Lanbai/Cabin terms as an emission + the Principled lit by the sun only; bleach, erosion clip and rim."""
+    m = m_src.copy()
+    nt = m.node_tree
+    bs = nt.nodes.get('Principled BSDF')
+    out = [n for n in nt.nodes if n.type == 'OUTPUT_MATERIAL'][0]
+    c = list(bs.inputs['Base Color'].default_value)[:3]
+    # bleach: albedo -> luminance x 0.9 tinted by the ambient colour; smoothness -> 0.3
+    bl = P['bleach']
+    lum = 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]
+    an = max(1e-4, max(ambient))
+    tint = [v / an for v in ambient]
+    c = [ci * (1 - bl) + lum * 0.9 * ti * bl for ci, ti in zip(c, tint)]
+    bs.inputs['Base Color'].default_value = (*c, 1)
+    if bl > 0:
+        r = bs.inputs['Roughness'].default_value
+        bs.inputs['Roughness'].default_value = r * (1 - bl) + 0.7 * bl
+    t = nt.nodes.new('ShaderNodeTexImage')
+    t.image = lm_img
+    uv = nt.nodes.new('ShaderNodeUVMap')
+    uv.uv_map = 'UVLightmap'
+    nt.links.new(uv.outputs[0], t.inputs[0])
+    sep = nt.nodes.new('ShaderNodeSeparateColor')
+    nt.links.new(t.outputs['Color'], sep.inputs[0])
+    # E = LM.rgb x tubes + ambient x AO
+    comb = nt.nodes.new('ShaderNodeCombineColor')
+    for k in range(3):
+        ch = _m(nt, 'ADD', _m(nt, 'MULTIPLY', sep.outputs[k], tubes), _m(nt, 'MULTIPLY', t.outputs['Alpha'], ambient[k]))
+        nt.links.new(_m(nt, 'MULTIPLY', ch, c[k]), comb.inputs[k])
+    em = nt.nodes.new('ShaderNodeEmission')
+    nt.links.new(comb.outputs[0], em.inputs['Color'])
+    add = nt.nodes.new('ShaderNodeAddShader')
+    nt.links.new(bs.outputs[0], add.inputs[0])
+    nt.links.new(em.outputs[0], add.inputs[1])
+    final = add.outputs[0]
+    if P['fade'] > 0:
+        s = erosion_field(nt, P['fade'], 0.30 if 'Steel' in m_src.name else 0.0)
+        rim = nt.nodes.new('ShaderNodeEmission')
+        rim.inputs['Color'].default_value = (*[1.5 * v for v in ambient], 1)
+        isrim = _m(nt, 'LESS_THAN', s, 0.02)
+        mix_r = nt.nodes.new('ShaderNodeMixShader')
+        nt.links.new(isrim, mix_r.inputs[0])
+        nt.links.new(final, mix_r.inputs[1])
+        nt.links.new(rim.outputs[0], mix_r.inputs[2])
+        keep = _m(nt, 'GREATER_THAN', s, 0.0)
+        tr = nt.nodes.new('ShaderNodeBsdfTransparent')
+        mix = nt.nodes.new('ShaderNodeMixShader')
+        nt.links.new(keep, mix.inputs[0])
+        nt.links.new(tr.outputs[0], mix.inputs[1])
+        nt.links.new(mix_r.outputs[0], mix.inputs[2])
+        final = mix.outputs[0]
+    nt.links.new(final, out.inputs[0])
+    return m
+
+
+def build(ctx):
+    S = ctx['lbh_scene']
+    a = ctx['args']
+    P = ACTS[a.get('act', '2')]
+    if 'eye' in a:
+        ctx['cam']['eye'] = [float(v) for v in a['eye'].split(',')]
+        ctx['eye'] = ctx['cam']['eye']
+    objs = SF.load_blend(a.get('blend', '/tmp/bus/bus_final_ext.blend'))
+    for n, o in objs.items():
+        if n.endswith('_LOD1'):
+            o.hide_render = True
+    tex = os.path.join(ROOT, 'Bus', 'Textures')
+    SF.exterior_material(objs['Bus_Exterior_LOD0'], tex, 2048)
+    camera_only_world(lin(P['sky'][0]))
+    # Unity culls back faces: the exterior skin is invisible from inside (so the cabin's erosion holes open to the sky)
+    for n, o in objs.items():
+        if o.type == 'MESH' and (n.startswith('Bus_Exterior') or n.startswith('Bus_Door')):
+            for i, m in enumerate(list(o.data.materials)):
+                mm = m.copy()
+                nt = mm.node_tree
+                outn = [x for x in nt.nodes if x.type == 'OUTPUT_MATERIAL'][0]
+                src = outn.inputs[0].links[0].from_socket
+                geo = nt.nodes.new('ShaderNodeNewGeometry')
+                tr = nt.nodes.new('ShaderNodeBsdfTransparent')
+                mx = nt.nodes.new('ShaderNodeMixShader')
+                nt.links.new(geo.outputs['Backfacing'], mx.inputs[0])
+                nt.links.new(src, mx.inputs[1])
+                nt.links.new(tr.outputs[0], mx.inputs[2])
+                res = mx.outputs[0]
+                if P['fade'] > 0:          # the exterior is Lanbai/Cabin too: it erodes with the same field
+                    keep = _m(nt, 'GREATER_THAN', erosion_field(nt, P['fade']), 0.0)
+                    tr2 = nt.nodes.new('ShaderNodeBsdfTransparent')
+                    mx2 = nt.nodes.new('ShaderNodeMixShader')
+                    nt.links.new(keep, mx2.inputs[0])
+                    nt.links.new(tr2.outputs[0], mx2.inputs[1])
+                    nt.links.new(res, mx2.inputs[2])
+                    res = mx2.outputs[0]
+                nt.links.new(res, outn.inputs[0])
+                o.data.materials[i] = mm
+    amb = [P['amb'][1] * v for v in lin(P['amb'][0])]
+    lm = bpy.data.images.load(os.path.join(tex, 'Cabin_TubeLM.exr'))
+    lm.colorspace_settings.name = 'Non-Color'
+    cs = objs['Cabin_Static']
+    for i, m in enumerate(list(cs.data.materials)):
+        cs.data.materials[i] = act_material(m, lm, P, amb, P['tubes'])
+    if 'Cabin_Tubes' in objs:
+        e = bpy.data.materials.new('TubeGlow')
+        e.use_nodes = True
+        nt = e.node_tree
+        for nd in list(nt.nodes):
+            nt.nodes.remove(nd)
+        em = nt.nodes.new('ShaderNodeEmission')
+        em.inputs[0].default_value = (*lin('#E7FEFF' if P['tubes'] > 0 else '#D8DBD6'), 1)
+        em.inputs[1].default_value = 2.04 * P['tubes'] if P['tubes'] > 0 else max(0.02, amb[1])
+        o_ = nt.nodes.new('ShaderNodeOutputMaterial')
+        nt.links.new(em.outputs[0], o_.inputs[0])
+        objs['Cabin_Tubes'].data.materials.clear()
+        objs['Cabin_Tubes'].data.materials.append(e)
+    if P['sun']:
+        (az, el), E, col = P['sun']
+        S.unity_directional('Sun', E, col, B.dir_az_el(az, el))
+    if P.get('tear'):
+        import scene_d13 as D13
+        D13.lens(S, P['t'], ctx['eye'])
+        D13.disc(S, 'Moon', -12, 8, 1.2, D13.emis('MoonMat', lin('#E8EEF8'), 6.0))
+    ground = S.mat_emission('Ground', [0.3 * v for v in lin(P['sky'][0])], 1.0)
+    if a.get('act') in ('1', '2', '11', '12', '6'):
+        S.mesh_object('Ground', [(-200, 0, -300), (200, 0, -300), (200, 0, 300), (-200, 0, 300)], [(0, 1, 2, 3)], ground)
+    return dict(what='act %s cabin reference' % a.get('act'), tubes=P['tubes'], bleach=P['bleach'], fade=P['fade'])

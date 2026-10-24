@@ -55,6 +55,12 @@ Shader "Lanbai/Cabin"
         [NoScaleOffset] _CabinTubeLM ("CabinTubeLM  RGB E linear HDR  A AO", 2D) = "black" {}
         _TubeLMConst ("Constant E when no uv1  rgb", Color) = (0.6, 0.66, 0.68, 1)
         _SHAmbientK ("Keep Unity SH ambient  0 = cabin ambient only", Range(0, 1)) = 0
+        _CabinLight ("Cabin light terms  1 cabin  0 exterior", Range(0, 1)) = 1
+
+        [Header(Exterior atlas on uv1)]
+        _UseAtlas ("Use uv1 atlas  0 or 1", Float) = 0
+        [NoScaleOffset] _AtlasAlbedo ("Atlas albedo  sRGB", 2D) = "white" {}
+        [NoScaleOffset] _AtlasMask ("Atlas mask  R metal  G smoothness  B wet  A AO  linear", 2D) = "white" {}
 
         [Header(Emission)]
         [Enum(None,0,Tube,1,Radio,2,Gauge,3,DestBlind,4)] _EmitMode ("Emission mode", Float) = 0
@@ -125,7 +131,9 @@ Shader "Lanbai/Cabin"
         float _UseTubeLM;
         sampler2D _CabinTubeLM;
         float4 _TubeLMConst;
-        half _SHAmbientK;
+        half _SHAmbientK, _CabinLight;
+        float _UseAtlas;
+        sampler2D _AtlasAlbedo, _AtlasMask;
         float _EmitMode;
         float4 _EmissionColor;
         sampler2D _EmitTex;
@@ -181,6 +189,16 @@ Shader "Lanbai/Cabin"
             fixed4 tex = tex2D(_MainTex, TRANSFORM_TEX(IN.uv_MainTex, _MainTex));
             float3 albedo = _Color.rgb * tex.rgb;
             float smooth = _Glossiness;
+            float metal = _Metallic;
+            float occl = 1.0;
+            [branch] if (_UseAtlas > 0.5)
+            {   // exterior (Bus_Exterior_LOD0/1): albedo + R metal, G smoothness, B wet, A AO on uv1
+                float4 am = tex2D(_AtlasMask, IN.cabinUV.zw);
+                albedo *= tex2D(_AtlasAlbedo, IN.cabinUV.zw).rgb;
+                metal = am.r;
+                smooth = lerp(am.g, max(am.g, 0.85), am.b * saturate(_Udon_Wetness));   // bible 4.9 wet facades 0.85
+                occl = am.a;
+            }
 
             // detail mask: per-channel albedo multiplier and smoothness add (ceiling holes, floor studs / dirt / mottling)
             float3 m = tex2D(_DetailMask, uvd).rgb;
@@ -222,15 +240,16 @@ Shader "Lanbai/Cabin"
             float3 nWS = normalize(WorldNormalVector(IN, o.Normal));
 
             o.Albedo = albedo;
-            o.Metallic = _Metallic;
+            o.Metallic = metal;
             o.Smoothness = saturate(smooth);
+            o.Occlusion = occl;
             o.Alpha = 1.0;
 
         #if !defined(UNITY_PASS_FORWARDADD) && !defined(UNITY_PASS_SHADOWCASTER)
             // ---- the baked tube light and the cabin ambient (diffuse; metals get them through 1 - metallic)
             float4 lm = _UseTubeLM > 0.5 ? tex2D(_CabinTubeLM, IN.cabinUV.zw) : float4(_TubeLMConst.rgb, 1.0);
             float ao = _UseTubeLM > 0.5 ? lm.a : 1.0;
-            float3 diffAlb = albedo * (1.0 - _Metallic * 0.96);
+            float3 diffAlb = albedo * (1.0 - metal * 0.96) * _CabinLight;          // exterior: no cabin light terms
             float3 light = lm.rgb * max(_Udon_CabinLightmap, 0.0) + _Udon_CabinAmbient.rgb * ao;
 
             // ---- caustics (sea): up-facing from above, down-facing from below in 7c (the include reads .y)

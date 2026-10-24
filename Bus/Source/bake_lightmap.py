@@ -40,6 +40,14 @@ def add_tubes(watts):
             o = bpy.data.objects.new(ld.name, ld)
             o.location = (x, (z0 + z1) / 2, B.CEIL_Y - 0.05)       # blender (x, z_unity, y_unity), facing down
             bpy.context.scene.collection.objects.link(o)
+            # the opal diffuser also throws light sideways / up onto the ceiling round it (bible 4.3: the ceiling next to
+            # the tubes reads 200-215): a weak up-facing twin, 12 % of the power
+            lu = bpy.data.lights.new(ld.name + '_up', 'AREA')
+            lu.shape, lu.size, lu.size_y, lu.energy, lu.color = 'RECTANGLE', 0.14, ld.size_y, watts * 0.12, col
+            ou = bpy.data.objects.new(lu.name, lu)
+            ou.location = (x, (z0 + z1) / 2, B.CEIL_Y - 0.04)
+            ou.rotation_euler = (math.pi, 0, 0)
+            bpy.context.scene.collection.objects.link(ou)
 
 
 def bake(ob, img, kind, samples, margin=4):
@@ -120,16 +128,21 @@ def main():
     img2 = bpy.data.images.new('AO', a.res, a.res, alpha=True, float_buffer=True)
     sc.world.node_tree.nodes['Background'].inputs[1].default_value = 1.0
     ao = bake(ob, img2, 'AO', max(16, a.samples // 3))
-    cush = (float(np.mean(B.SEAT_R_X)), 1.02, B.HERO_BACK_Z + 0.30)
-    v, d = sample_at(ob, lm, cush)
-    k = a.target_E / max(1e-6, float(np.mean(v[:3])))
+    # calibrate on the MID-CABIN cushions (bible 4.3 'seat cushion E ~ 0.8'): the hero seat sits at the end of the
+    # right tube row, beside the skylight, and is the darkest seat — calibrating on it would make the cabin 2-3x too bright
+    mids = [(float(np.mean(B.SEAT_R_X)), 1.02, bz + 0.30) for bz in B.RIGHT_ROWS[2:5]] + \
+           [(xx, 1.02, bz + 0.30) for bz in B.LEFT_ROWS[1:3] for xx in (-1.10, -0.66)]
+    vals = [float(np.mean(sample_at(ob, lm, p)[0][:3])) for p in mids]
+    k = a.target_E / max(1e-6, float(np.mean(vals)))
+    cush = (float(np.mean(B.SEAT_R_X)), 1.04, B.HERO_BACK_Z + 0.30)
+    d = sample_at(ob, lm, cush)[1]
     out = np.zeros_like(lm)
     out[..., :3] = lm[..., :3] * k
     out[..., 3] = ao[..., 0]
     # report a few gray-card points (bible 4.3: ceiling next to the tubes bright, aisle floor 30-40 display)
     pts = dict(hero_cushion=(cush, (0, 1, 0)), aisle_floor=((0.10, B.FLOOR_Y, 0.0), (0, 1, 0)),
                ceiling_centre=((0.0, B.CEIL_Y, 0.0), (0, -1, 0)), lower_wall_R=((0.99 - 0.035, 0.9, 0.6), (-1, 0, 0)))
-    rep = dict(watts_per_tube=10.0 * k, scale=k, cushion_dist=d)
+    rep = dict(watts_per_tube=10.0 * k, scale=k, calibrated_on='mean of 7 mid-cabin cushions = %.2f' % a.target_E)
     for nm, (p, n) in pts.items():
         vv, dd = sample_at(ob, out, p, n)
         rep[nm] = dict(E=[round(float(x), 3) for x in vv[:3]], AO=round(float(vv[3]), 3), dist=round(dd, 3))

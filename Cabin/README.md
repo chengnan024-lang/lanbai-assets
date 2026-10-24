@@ -10,8 +10,8 @@
 
 1. 拷 `Cabin/` → `Assets/Lanbai/Cabin/`（`Bus/` 和 `Common/` 照旧在 `Assets/Lanbai/` 下）。`Editor/LanbaiCabinImport.cs` 会重设 `Assets/Lanbai/Cabin/` 和 `Assets/Lanbai/Bus/` 里贴图和模型的导入（§5）；拷完对 `Bus/` 右键 Reimport 一次。
 2. **Project Settings → Player → Vertex Compression：TexCoord0–3 全部不勾**（CONTROL §6 第 8 条；uv0 是米制细节平铺、uv1 是 `_CabinTubeLM` 图集。脚本读不到这个设置，只能你来勾）。
-3. 按 §2 的表建材质（**这一版没有搭建菜单**，见 §8 弱点 1），挂到 `Bus.fbx` 里的 `Cabin_Static`（每个子网格一个材质）、`Cabin_Tubes`、`Cabin_Radio`、`Cabin_DestBlind`、`Cabin_Curtains`。`Cabin_Static` 的 `_CabinTubeLM` 指 `Bus/Textures/Cabin_TubeLM.exr`。车厢网格 **Contribute GI 关、不进 Unity 的光照烘焙**（`Editor/CabinTubeLM_说明.md`）。
-4. 场景里放一个常开的空物体挂 `LanbaiCabinDriver`（U# 程序资产要建，CONTROL §6 第 11 条），填：`journey` = `LB_Journey`；`cabinRenderers` = Cabin_Static / Tubes / Radio / DestBlind；`curtainRenderers` = Cabin_Curtains；`glassRenderers` = **所有** `Lanbai/BusGlass` 的 renderer（侧窗、车顶两侧斜面窗、挡风、天窗、门）；`seatCentres` = 每个座垫中心（可空：空就全按主座位）。分发层（`Director/`）重新生成一次，它会认出这个驱动。
+3. 点菜单 **`蓝白/Build/车`**（`Bus/Editor/LanbaiBusBuild.cs`，说明见 `Bus/Editor/README_Build.md`）：它按 §2 的表建好全部材质（`Assets/Lanbai/Bus/Materials/`）、挂到 `Bus.fbx` 的各个物体上（`Cabin_Static` 用 `_CabinTubeLM`，其余 `_UseTubeLM` 0；车外 `Bus_Exterior_LOD0/1` 用 uv1 图集、`_CabinLight` 0）。车厢网格不进 Unity 的光照烘焙（`Editor/CabinTubeLM_说明.md`）。
+4. 同一个菜单建 `LanbaiCabinDriver`（含程序资产）并填好引用：`cabinRenderers`（所有 `Lanbai/Cabin` 的 renderer，含车外——D-26 的洞要穿过车底）、`curtainRenderers`、`glassRenderers`（所有 `Glass_*`）、`seatCentres`、`doorPanels` + 关门位姿（第 11 幕在白里关门）、`journey`（场景里有 `LB_Journey` 时）。之后分发层（`Director/`）重新生成一次。
 5. `LB_Journey` 那边按 `给总控_shader.md` §3 清掉 `SetBusAlpha` 的占位（`busRenderers` / `glassRenderers` 置空）。
 6. 头显 / 桌面截图推回 `FromLocal/cabin_test/`（主座位眼位 (0.55, 1.70, 2.05)，桌面 1920×1080、水平 90°，ARGBHalf → PPv2 → 8 位）：
    - **t = 60**（第 2 幕，灯全亮）：正前、右转 90°、抬头 60°。看管灯 LM、天花孔、座椅磨亮、表盘。
@@ -44,6 +44,7 @@
 ## 2. 每个面的材质（圣经 §4.2；颜色是 Inspector 里填的 sRGB）
 
 通用：`_Metallic` 只取 0 / 1。细节图在 `Bus/Textures/`，`_DetailTile` = 1 / 贴图边长（米）。`_UseTubeLM` = 1 的用 uv1 采样 `_CabinTubeLM`；没有 uv1 的（灯罩、收音机、目的地牌）填 0 和 `_TubeLMConst`（该处的 E，目测取周围座椅的读数）。顶点色：G 磨亮（`_WearAmount` 1 时生效）、B ≤ 0.75 晒褪、B > 0.75 开裂种子。
+车外（`Bus_Exterior_LOD0/1`）：`_UseAtlas` 1，`_AtlasAlbedo` = `Bus_Exterior_Albedo_2048`（sRGB）、`_AtlasMask` = `Bus_Exterior_Mask_2048`（R 金属、G 光滑、B 湿（× `_Udon_Wetness` 把光滑推到 0.85）、A AO），都在 uv1；`_CabinLight` 0（不吃管灯 LM 和车厢环境色）、`_SHAmbientK` 1（用 Unity 的 Trilight）。轮子、雨刮同样 `_CabinLight` 0，但不用图集。
 
 | 材质 | `_Color` | 光滑 | 金属 | 细节 / 顶点色 / 其他 |
 |---|---|---|---|---|
@@ -67,7 +68,7 @@
 | 收音机旋钮 | `#CFD1D3` | 0.85 | 1 | — |
 | 收音机刻度窗 | 白 | 0.30 | 0 | `_MainTex` = `_EmitTex` = `Cabin_RadioDial_512x256`（RGB 刻度面、A 背光）；`_EmitMode` Radio（× `_Udon_RadioDial`） |
 | 目的地牌 | `#262626` | 0.30 | 0 | `_EmitMode` DestBlind、`_EmissionColor` (2.22, 2.28, 2.18)（`#F2F5F0` × 2.5）× `_Udon_CabinLightmap`；`_EmitTex` A = 镂空字（车内看是反字；字的贴图车包还没出） |
-| 窗帘（ThinCloth） | `#A9BCCB` | 0.18 | — | 下摆 `#8898A8`；`Cabin_CurtainWeave_N_0.05m` 0.3、tile 20；`_Inward` = 车内方向的世界 x 符号（右侧窗帘 −1、左侧 +1：**左右两侧要两个材质**） |
+| 窗帘（ThinCloth） | `#A9BCCB` | 0.18 | — | 下摆 `#8898A8`；`Cabin_CurtainWeave_N_0.05m` 0.3、tile 20；`_Inward` 0 = 按车身中线 x −0.18 自动判断朝车内的方向（一个材质管两侧） |
 
 所有材质：侵蚀的那一组参数用默认值（`_ErodeForm` 0 见 §4）。湿：`_WetDarken` 布 0.6、其余 1。
 
@@ -169,14 +170,14 @@ python3 Cabin/Tools~/cabin_numpy.py
 
 ## 8. 诚实的已知弱点
 
-1. **没有搭建菜单**（CONTROL §2.3 要 `蓝白/Build/<幕>`）。材质要按 §2 的表手建，驱动手挂。下一步应该由车包的 Unity 搭建脚本一起做（它知道 `Bus.fbx` 的子网格）。
+1. 搭建菜单 `蓝白/Build/车` 有了（`Bus/Editor/LanbaiBusBuild.cs`），但同样没在 Unity 里跑过；§2 表里“没有贴图”的几项（目的地牌的字、橘皮、坑点）菜单也补不上。
 2. **侵蚀公式等总导演定**（`给总控_shader.md` §1）；噪声范围 (−0.20, 0.25) 是我按 §4.8 表的几行对出来的，不是圣经给的。
 3. **3 cm 的边按屏幕导数估距离**：边很斜、离得很远时宽度会抖；斜看的大面上偶尔一像素的闪。没在头显里看过。
 4. **穿越光带的“窗形”是按法线朝向近似的**，没有窗的 cookie：光会落在两窗之间的墙上。要真的窗形，需要门内给一张车厢坐标的窗遮罩（或者把窗户的 z 区间编进 `_Udon_CabinSliceColor.a` 的定义）。
 5. **D-08 只管附加平行光**：裂口光如果被做成 Not Important（进球谐），限色器管不到（球谐那份被环境色替掉了，所以不会紫，但车厢也不会被它照亮）。窗帘被冷白照到 C\* 15.9（h 275，不紫，但超过 D-08 的 12），没压。
 6. **管灯罩的两端在跌落时发暗橙（§4.3 `#FF8A50` 5 %）没做**；第 12 幕“一根灯管的一端 3 % 微颤”也没做（一个 `_Udon_CabinLightmap` 管不到一根管子的一端）。死虫是程序生成的点，不是贴图。
 7. **扶手铬的坑点、仪表台的橘皮法线、窗帘的竖向晒褪条（`#C4D2DC`，独立 512² 遮罩）没有贴图**：材质参数留了位置（`_MainTex`、`_DetailNormal`），车包出图后填。
-8. 窗帘：每扇的“系起一半 / 松着 / 全开”只能在网格里做；飞走时每扇按世界位置的哈希错开，但仍是整扇平移（横杆不弯）。左右两侧要两个材质（`_Inward`）。
+8. 窗帘：每扇的“系起一半 / 松着 / 全开”只能在网格里做；飞走时每扇按世界位置的哈希错开，但仍是整扇平移（横杆不弯）。
 9. 环境色在 7a 是按时间不是按深度；7c 的“玫瑰光自下”没进环境色（理由见 `给总控_shader.md` §6）。
 10. 湿只看 `SeaMode` 1、2 和 `_Udon_Underwater`，没有水线本身的亮线。
 11. `_CabinTubeLM` 的主座位座垫只有 E ≈ 0.48（校准按中段座垫平均 0.8，`给总控_shader.md` §8）。

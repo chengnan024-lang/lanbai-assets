@@ -568,7 +568,11 @@ def floor():
     parts = [((xl, 0.56, B.Z_REAR + 0.06), (xr, B.FLOOR_Y, B.DOOR[0])),
              ((xl, 0.56, B.DOOR[0]), (0.58, B.FLOOR_Y, B.DASH_Z0 + 0.02))]
     for i, (lo, hi) in enumerate(parts):
-        box('Floor%d' % i, lo, hi, 'Floor')
+        fl = box('Floor%d' % i, lo, hi, 'Floor')
+        for z in B.AXLES:           # the floor stops at the wheel wells
+            cut = cylinder('WellCutF', (B.XC, B.WHEEL_R, z), 'x', B.ARCH_R - 0.012, 3.2, 'Seal', segs=48)
+            boolean(fl, cut)
+            bpy.data.objects.remove(cut)
     z0, z1 = B.DOOR[0] + 0.01, B.DOOR[1] - 0.01
     box('StepLow', (0.80, 0.17, z0), (1.05, 0.23, z1), 'Floor')
     box('StepMid', (0.60, 0.40, z0), (1.02, 0.43, z1), 'Floor')
@@ -588,7 +592,11 @@ def floor():
                 lo, hi = (0.56, B.FLOOR_Y, z - 0.56), (xo, 1.00, z + 0.45)
             else:
                 lo, hi = (min(xo, xi), B.FLOOR_Y, z - 0.56), (max(xo, xi), 1.00, z + 0.56)
-            box('WheelBox%d%s' % (i, 'R' if s > 0 else 'L'), lo, hi, 'Int_Enamel', bevel=0.04)
+            wb = box('WheelBox%d%s' % (i, 'R' if s > 0 else 'L'), lo, hi, 'Int_Enamel', bevel=0.04)
+            # hollow the box along the wheel well, so from outside the arch shows only the dark liner (not cream enamel)
+            cut = cylinder('WellCut', (B.XC, B.WHEEL_R, z), 'x', B.ARCH_R - 0.012, 3.2, 'Seal', segs=48)
+            boolean(wb, cut)
+            bpy.data.objects.remove(cut)
 
 
 def pad(name, lo, hi, r, m, collection='Seats', crown=(0.0, 0.0, 0.0), cuts=8):
@@ -615,6 +623,8 @@ def pad(name, lo, hi, r, m, collection='Seats', crown=(0.0, 0.0, 0.0), cuts=8):
             q.z -= crown[2] * (1 - u2) * (1 - y2) * (-p.z)
         v.co = U2B(c + q)
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    if bm.calc_volume(signed=True) < 0:          # U2B is a reflection: make sure the pad is not inside-out
+        bmesh.ops.reverse_faces(bm, faces=bm.faces)
     ob = obj_from_bm(name, bm, [m], collection)
     for f in ob.data.polygons:
         f.use_smooth = True
@@ -996,6 +1006,28 @@ def lamp(name, x, y, r, lens):
     cylinder(name + '_Lens', (x, y, z + 0.034), 'z', r, 0.012, lens, 'Exterior', segs=48)
 
 
+def arch_liners():
+    """dark wheel-arch liners (half shells under the skin) so the cream wheel boxes never show through the arches."""
+    for i, z in enumerate(B.AXLES):
+        for sgn in (-1, 1):
+            xo = B.XC + sgn * (B.W_HALF - 0.005)
+            xi = B.XC + sgn * (B.TRACK_HALF - 0.20)
+            r = B.ARCH_R - 0.01
+            bm = bmesh.new()
+            n = 24
+            ring_o, ring_i = [], []
+            for k in range(n + 1):
+                a = math.pi * k / n                      # upper half: from front (0) over the top to the back (pi)
+                yy, zz = B.WHEEL_R + r * math.sin(a), z + r * math.cos(a)
+                ring_o.append(bm.verts.new(U2B((xo, yy, zz))))
+                ring_i.append(bm.verts.new(U2B((xi, yy, zz))))
+            for k in range(n):
+                bm.faces.new((ring_o[k], ring_o[k + 1], ring_i[k + 1], ring_i[k]))
+            # the inner wall (wheel-box side seen through the arch)
+            bm.faces.new(ring_i[::-1])
+            obj_from_bm('ArchLiner%d%s' % (i, 'R' if sgn > 0 else 'L'), bm, ['Ext_Black'], 'Exterior')
+
+
 def chassis():
     """D-28a: 'a bus on a truck chassis' — frame rails, axles, diff, tank, exhaust, spare wheel, mud flaps under the body."""
     XC = B.XC
@@ -1137,6 +1169,7 @@ def exterior():
     dress_windows()
     cowl()
     chassis()
+    arch_liners()
     hatch_housing()
 
 
@@ -1168,7 +1201,25 @@ def build(open_door=True, reset=True):
     for ob in bpy.data.objects:
         if ob.type == 'MESH' and ob.modifiers:
             apply_mods(ob)
+    fix_inside_out()
     return dict(body=body, glass=glass)
+
+
+def fix_inside_out():
+    """closed meshes whose signed volume is negative are inside-out (the U2B reflection): flip them. Bakes and
+    single-sided shading need outward normals."""
+    n = 0
+    for ob in bpy.data.objects:
+        if ob.type != 'MESH':
+            continue
+        bm = bmesh.new()
+        bm.from_mesh(ob.data)
+        if all(e.is_manifold for e in bm.edges) and len(bm.faces) > 3 and bm.calc_volume(signed=True) < 0:
+            bmesh.ops.reverse_faces(bm, faces=bm.faces)
+            bm.to_mesh(ob.data)
+            n += 1
+        bm.free()
+    return n
 
 
 def main():

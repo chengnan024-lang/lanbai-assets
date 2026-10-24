@@ -15,10 +15,11 @@
   "half": 0.3
  },
  "door": {
-  "kind": "two outward-folding glazed leaves, centre-opening, 2 panels each (D-28d)",
-  "panel_m": 0.14,
+  "kind": "one glazed leaf of four panels, all folding outward onto the rear jamb (D-28e)",
+  "open_swing_deg": 60.0,
+  "panel_m": 0.15,
   "jambs_m": {
-   "rear": 0.07,
+   "rear": 0.03,
    "front": 0.02
   },
   "opening_z": [
@@ -574,6 +575,7 @@
    ]
   }
  ],
+ "seat_count": 23,
  "colliders": [
   {
    "name": "Col_Floor",
@@ -719,11 +721,25 @@
    ]
   }
  ],
+ "cabin_bounds": {
+  "min": [
+   -1.3499999999999999,
+   0.57,
+   -3.59
+  ],
+  "max": [
+   0.99,
+   2.62,
+   3.44
+  ],
+  "note": "D-31：车厢内部的范围（给 LB_Journey.busMin / busMax）；Director 按玩家根位置检查，头探出玻璃 ≤ 0.6 m 不算离开"
+ },
+ "instance_cap_note": "D-31：实例人数上限 = seat_count（不算司机座）",
  "objects": [
-  "Bus_DoorF_A",
-  "Bus_DoorF_B",
-  "Bus_DoorR_A",
-  "Bus_DoorR_B",
+  "Bus_Door0",
+  "Bus_Door1",
+  "Bus_Door2",
+  "Bus_Door3",
   "Bus_Exterior_LOD0",
   "Bus_Exterior_LOD1",
   "Cabin_Curtains",
@@ -765,62 +781,132 @@
   "Wheel_RL",
   "Wheel_RR"
  ],
+ "door_panels": [
+  {
+   "name": "Bus_Door0",
+   "open": {
+    "position": [
+     1.04,
+     0.0,
+     2.65
+    ],
+    "yaw_deg": 0.0
+   },
+   "closed": {
+    "position": [
+     1.04,
+     0.0,
+     2.65
+    ],
+    "yaw_deg": -60.0
+   },
+   "note": "FBX 里是开着的状态；关上 = 把物体移到 closed.position、绕自己的 +Y 转 closed.yaw_deg（第 11 幕，白遮罩下）"
+  },
+  {
+   "name": "Bus_Door1",
+   "open": {
+    "position": [
+     1.04,
+     0.0,
+     2.624
+    ],
+    "yaw_deg": 0.0
+   },
+   "closed": {
+    "position": [
+     1.04,
+     0.0,
+     2.8
+    ],
+    "yaw_deg": -60.0
+   },
+   "note": "FBX 里是开着的状态；关上 = 把物体移到 closed.position、绕自己的 +Y 转 closed.yaw_deg（第 11 幕，白遮罩下）"
+  },
+  {
+   "name": "Bus_Door2",
+   "open": {
+    "position": [
+     1.04,
+     0.0,
+     2.598
+    ],
+    "yaw_deg": 0.0
+   },
+   "closed": {
+    "position": [
+     1.04,
+     0.0,
+     2.9499999999999997
+    ],
+    "yaw_deg": -60.0
+   },
+   "note": "FBX 里是开着的状态；关上 = 把物体移到 closed.position、绕自己的 +Y 转 closed.yaw_deg（第 11 幕，白遮罩下）"
+  },
+  {
+   "name": "Bus_Door3",
+   "open": {
+    "position": [
+     1.04,
+     0.0,
+     2.572
+    ],
+    "yaw_deg": 0.0
+   },
+   "closed": {
+    "position": [
+     1.04,
+     0.0,
+     3.0999999999999996
+    ],
+    "yaw_deg": -60.0
+   },
+   "note": "FBX 里是开着的状态；关上 = 把物体移到 closed.position、绕自己的 +Y 转 closed.yaw_deg（第 11 幕，白遮罩下）"
+  }
+ ],
  "stats": {
-  "Cabin_Static": {
-   "verts": 34366,
-   "tris": 62409
+  "Bus_Door0": {
+   "verts": 48,
+   "tris": 64
+  },
+  "Bus_Door1": {
+   "verts": 48,
+   "tris": 64
+  },
+  "Bus_Door2": {
+   "verts": 48,
+   "tris": 64
+  },
+  "Bus_Door3": {
+   "verts": 48,
+   "tris": 64
   },
   "Bus_Exterior_LOD0": {
-   "verts": 14016,
-   "tris": 21357
+   "verts": 14216,
+   "tris": 21641
   },
-  "Cabin_Tubes": {
-   "verts": 960,
-   "tris": 1880
-  },
-  "Cabin_Radio": {
-   "verts": 224,
-   "tris": 356
-  },
-  "Cabin_DestBlind": {
-   "verts": 8,
-   "tris": 12
+  "Bus_Exterior_LOD1": {
+   "verts": 5509,
+   "tris": 7573
   },
   "Cabin_Curtains": {
    "verts": 7778,
    "tris": 13932
   },
-  "Bus_DoorF_A": {
-   "verts": 48,
-   "tris": 64
+  "Cabin_DestBlind": {
+   "verts": 8,
+   "tris": 12
   },
-  "Bus_DoorF_B": {
-   "verts": 48,
-   "tris": 64
+  "Cabin_Radio": {
+   "verts": 224,
+   "tris": 356
   },
-  "Bus_DoorR_A": {
-   "verts": 48,
-   "tris": 64
+  "Cabin_Static": {
+   "verts": 34588,
+   "tris": 62845
   },
-  "Bus_DoorR_B": {
-   "verts": 48,
-   "tris": 64
-  },
-  "Wheel_FL": {
-   "verts": 648,
-   "tris": 1284
-  },
-  "Wheel_FR": {
-   "verts": 648,
-   "tris": 1284
-  },
-  "Wheel_RL": {
-   "verts": 648,
-   "tris": 1284
-  },
-  "Wheel_RR": {
-   "verts": 648,
-   "tris": 1284
+  "Cabin_Tubes": {
+   "verts": 960,
+   "tris": 1880
   },
   "Glass_Brow0": {
    "verts": 15,
@@ -938,9 +1024,21 @@
    "verts": 49,
    "tris": 72
   },
-  "Bus_Exterior_LOD1": {
-   "verts": 5413,
-   "tris": 7474
+  "Wheel_FL": {
+   "verts": 648,
+   "tris": 1284
+  },
+  "Wheel_FR": {
+   "verts": 648,
+   "tris": 1284
+  },
+  "Wheel_RL": {
+   "verts": 648,
+   "tris": 1284
+  },
+  "Wheel_RR": {
+   "verts": 648,
+   "tris": 1284
   },
   "Wiper-0.14": {
    "verts": 32,
@@ -951,5 +1049,5 @@
    "tris": 28
   }
  },
- "stats_total_tris": 114546
+ "stats_total_tris": 115365
 }

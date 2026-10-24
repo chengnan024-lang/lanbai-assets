@@ -108,7 +108,7 @@ def uv0_metric(ob):
                 uv[li].uv = (v[0] * (-1 if n[2] > 0 else 1), v[1])
 
 
-def uv1_lightmap(ob, margin=0.003):
+def uv1_lightmap(ob, margin=0.002):
     """uv1 = the metric box-projection charts of uv0 (undistorted, uniform texel density), packed into 0..1.
     (smart_project shredded the rounded seat pads into one-texel islands.)"""
     me = ob.data
@@ -123,7 +123,11 @@ def uv1_lightmap(ob, margin=0.003):
     bpy.ops.mesh.select_all(action='SELECT')
     bpy.context.scene.tool_settings.use_uv_select_sync = True
     bpy.ops.uv.select_all(action='SELECT')
-    bpy.ops.uv.pack_islands(margin=margin, rotate=True, scale=True)
+    try:
+        bpy.ops.uv.pack_islands(rotate=True, rotate_method='ANY', scale=True, margin_method='FRACTION', margin=margin,
+                                shape_method='CONCAVE')
+    except TypeError:
+        bpy.ops.uv.pack_islands(margin=margin, rotate=True, scale=True)
     bpy.ops.object.mode_set(mode='OBJECT')
     me.uv_layers.active = me.uv_layers['UVMap']
     me.uv_layers['UVMap'].active_render = True
@@ -304,6 +308,24 @@ def build_all(ao_samples):
     return out, piv + groups['wiper'], info
 
 
+def door_pivots(objs):
+    """origin of each door panel = its hinge in the OPEN state (bus_spec: rear jamb, stacked rearward). Returns the
+    open / closed local transforms for the act-11 close (Unity: rotate about local +Y)."""
+    jr = B.DOOR[0] + B.DOOR_JAMB[0]
+    pitch = 0.026
+    rows = []
+    for k in range(4):
+        o = objs.get('Bus_Door%d' % k)
+        if o is None:
+            continue
+        hinge = (B.R_WALL, 0.0, jr - k * pitch)
+        set_origin(o, BB.U2B(hinge))
+        rows.append(dict(name=o.name, open=dict(position=list(hinge), yaw_deg=0.0),
+                         closed=dict(position=[B.R_WALL, 0.0, jr + k * B.DOOR_PANEL], yaw_deg=-B.DOOR_OPEN_SWING),
+                         note='FBX 里是开着的状态；关上 = 把物体移到 closed.position、绕自己的 +Y 转 closed.yaw_deg（第 11 幕，白遮罩下）'))
+    return rows
+
+
 def layout(out):
     """BusLayout.json: every number the Unity build script needs (CONTROL §6 pitfall 13)."""
     seats = []
@@ -349,7 +371,10 @@ def layout(out):
         bus=dict(model='PAZ-672 (D-28)', centre_x=B.XC, width=2 * B.W_HALF, length=B.Z_FRONT - B.Z_REAR, height=B.Y_TOP,
                  bounds_min=[B.XC - B.W_HALF, 0.0, B.Z_REAR], bounds_max=[B.R_WALL, 2.80, B.Z_FRONT + 0.12]),
         radio=dict(centre=list(B.RADIO_C), az_el=[-20, -12]), steering_wheel=dict(centre=list(B.WHEEL_C), tilt_deg=B.WHEEL_TILT),
-        seats=seats, colliders=cols,
+        seats=seats, seat_count=len(seats), colliders=cols,
+        cabin_bounds=dict(min=[B.XC - B.W_HALF + 0.05, B.FLOOR_Y - 0.05, B.Z_REAR + 0.06], max=[B.R_WALL - 0.05, B.CEIL_Y, B.Z_FRONT - 0.06],
+                          note='D-31：车厢内部的范围（给 LB_Journey.busMin / busMax）；Director 按玩家根位置检查，头探出玻璃 ≤ 0.6 m 不算离开'),
+        instance_cap_note='D-31：实例人数上限 = seat_count（不算司机座）',
         objects=sorted(out.keys()),
     )
 
@@ -382,12 +407,21 @@ def main():
     ap.add_argument('--out', default=os.path.join(HERE, '..', 'Models'))
     ap.add_argument('--ao-samples', type=int, default=32)
     ap.add_argument('--blend', default='/tmp/bus/bus_final.blend')
+    ap.add_argument('--from-blend', default=None, help='export only: re-export the FBX from a finished .blend (after the '
+                    'lightmap bake and the exterior weathering added their uv1 atlases)')
     a = ap.parse_args()
-    out, extra, info = build_all(a.ao_samples)
     os.makedirs(a.out, exist_ok=True)
-    os.makedirs(os.path.dirname(a.blend), exist_ok=True)
-    bpy.ops.wm.save_as_mainfile(filepath=a.blend)
-    objs = list(out.values()) + extra
+    if a.from_blend:
+        bpy.ops.wm.open_mainfile(filepath=a.from_blend)
+        objs = [o for o in bpy.data.objects if o.type == 'MESH' or o.name.startswith('WiperPivot')]
+        out = {o.name: o for o in objs if not o.name.startswith('Wiper')}
+        info = {}
+    else:
+        out, extra, info = build_all(a.ao_samples)
+        os.makedirs(os.path.dirname(a.blend), exist_ok=True)
+        bpy.ops.wm.save_as_mainfile(filepath=a.blend)
+        objs = list(out.values()) + extra
+    door_rows = door_pivots({o.name: o for o in objs})
     fbx = os.path.join(a.out, 'Bus.fbx')
     export_fbx(fbx, objs)
     expect = {}
@@ -397,7 +431,12 @@ def main():
             expect[o.name] = (len(o.data.vertices), (np.min(bbw, 0), np.max(bbw, 0)))
         else:
             expect[o.name] = (0, None)
+    # the render harness shell 'paz672' (Engineering/render_harness: --bus fbx:Bus/Models/Bus_HarnessShell_paz672.fbx):
+    # everything but the glass (an FBX glass imports opaque there) and the LOD1 copy
+    shell = [o for o in objs if o.type == 'MESH' and not o.name.startswith('Glass_') and not o.name.endswith('_LOD1')]
+    export_fbx(os.path.join(a.out, 'Bus_HarnessShell_paz672.fbx'), shell)
     lay = layout(out)
+    lay['door_panels'] = door_rows
     lay['stats'] = {o.name: dict(verts=len(o.data.vertices), tris=sum(len(p.vertices) - 2 for p in o.data.polygons)) for o in objs if o.type == 'MESH'}
     lay['stats_total_tris'] = sum(v['tris'] for v in lay['stats'].values())
     json.dump(lay, open(os.path.join(a.out, 'BusLayout.json'), 'w'), ensure_ascii=False, indent=1)

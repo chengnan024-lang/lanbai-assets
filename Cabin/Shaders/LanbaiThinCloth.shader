@@ -44,7 +44,8 @@ Shader "Lanbai/ThinCloth"
         _Wing ("Wing spread  m  freq Hz", Vector) = (0, 0.3, 0, 0)
         _Release ("Release  s since F10e  accel  vmax", Vector) = (0, 1.2, 6, 0)
         _FlyDir ("Fly direction fallback", Vector) = (0.5, 0.15, 0.85, 0)
-        _Inward ("Into the cabin  local  x sign", Float) = -1
+        _Inward ("Into the cabin  world x sign  0 = auto from the centre line", Float) = 0
+        _CentreX ("Body centre line x", Float) = -0.18
         _Dissolve ("Dissolve into light", Range(0, 1)) = 0
         [HDR] _DissolveGlow ("Dissolve edge glow  linear", Color) = (3.0, 2.2, 1.6, 1)
 
@@ -92,7 +93,7 @@ Shader "Lanbai/ThinCloth"
         sampler2D _WeaveNormal;
         float _WeaveTile, _HemHeight;
         float4 _TubeLMConst;
-        float _ClothClock, _Inward, _Dissolve;
+        float _ClothClock, _Inward, _CentreX, _Dissolve;
         float4 _Sway, _Float, _Wing, _Release, _FlyDir, _DissolveGlow;
 
         struct Input
@@ -112,7 +113,8 @@ Shader "Lanbai/ThinCloth"
             float3 posWS = mul(unity_ObjectToWorld, float4(v.vertex.xyz, 1.0)).xyz;
             float ph = LanbaiHash13(floor(posWS * 0.8)) * 6.2832;                 // per-panel phase
             float along = v.texcoord.x;                                           // across the panel, metres
-            float3 inward = float3(_Inward, 0.0, 0.0);                            // into the cabin (world, the bus never turns)
+            float sx = abs(_Inward) > 0.5 ? sign(_Inward) : (posWS.x > _CentreX ? -1.0 : 1.0);
+            float3 inward = float3(sx, 0.0, 0.0);                                 // into the cabin (world, the bus never turns)
 
             float3 d = 0;
             // sway: a pendulum, the hem moves most (w^1.5), a slow travelling wave across the panel
