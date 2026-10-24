@@ -34,6 +34,9 @@ def ev_alpha(x, lf, lt, ls, lo):
 
 def main():
     case = sys.argv[1]
+    if os.environ.get('MIRROR13'):
+        import mirror13_study as M13S
+        M13S.apply_scheme(os.environ['MIRROR13'])
     fps = float(sys.argv[2]) if len(sys.argv) > 2 else 30.0
     w = int(sys.argv[3]) if len(sys.argv) > 3 else 192
     h = int(sys.argv[4]) if len(sys.argv) > 4 else 108
@@ -62,7 +65,7 @@ def main():
     os.makedirs(out, exist_ok=True)
     rep['case'] = case; rep['t'] = [t0, t1]; rep['fps'] = fps; rep['size'] = [w, h]; rep['view'] = [yaw, pitch]
     rep['note'] = 'numpy port of the mirror shaders on the act 9 sky (no cabin); the white mask blended in display-linear toward #E8F1F5 with EvOverlayAlpha (Lscene %.2f); WHITE_SAT/BLOOM not simulated' % LSCENE
-    json.dump(rep, open(os.path.join(out, case + '.json'), 'w'), indent=1, default=float)
+    json.dump(rep, open(os.path.join(out, case + (('_' + os.environ['MIRROR13']) if os.environ.get('MIRROR13') else '') + '.json'), 'w'), indent=1, default=float)
     print(json.dumps({k: rep[k] for k in rep if k not in ('series',)}, default=float)[:1500])
 
 

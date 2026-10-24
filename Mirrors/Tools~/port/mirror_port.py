@@ -31,7 +31,7 @@ BREAK_AMP, EDGE_W, APPEAR_S = 5.0, 0.3, 3.0
 TONE = np.array([1.262, 0.974, 0.484])     # solved so that S9a / S9b show #CDBF9C (review r1 #5)
 BRONZE_TONE = 1.0
 RIM_SCHEME = 'A'          # mirror 13 study (mirror13_study.py)
-RIM_SOFT_FROM = {'A': 0.80, 'C': 0.55, 'D': 0.55, 'E': 0.35, 'F': 0.25}
+RIM_SOFT_FROM = {'A': 0.80, 'C': 0.55, 'D': 0.55, 'E': 0.35, 'F': 0.25, 'G': 0.25}
 
 
 # ------------------------------------------------------------------------------------------------- driver logic
@@ -70,7 +70,11 @@ def mirror_state(m, t):
         extra = lin_knots(WHITE['mirror13_face_extra']['EV_knots'], t)
     rimsoft = 0.0
     if m['index'] == 13:
-        if RIM_SCHEME == 'F':      # E with the slow part at <= 2.6 deg/s and the soft rim held to 1143.6
+        if RIM_SCHEME == 'H':      # slow everywhere: sharp from F16 - 10
+            rimsoft = 1.0 - min(max((t - 1135.31) / 4.0, 0), 1)
+        elif RIM_SCHEME == 'G':      # recommended: one slow Hermite (<= 2.6 deg/s) from 1142.9, the rim soft until then
+            rimsoft = 1.0 - min(max((t - 1142.9) / 1.0, 0), 1)
+        elif RIM_SCHEME == 'F':      # E with the slow part at <= 2.6 deg/s and the soft rim held to 1143.6
             rimsoft = 1.0 - min(max((t - 1143.6) / 1.0, 0), 1)
         elif RIM_SCHEME == 'E':      # as D, the rim stays soft (wider feather) until the speed is under 3 deg/s
             rimsoft = 1.0 - min(max((t - 1143.3) / 1.0, 0), 1)
