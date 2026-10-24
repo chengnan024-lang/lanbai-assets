@@ -132,6 +132,17 @@ public static class LanbaiAct06Builder
         mMist.shader = shMist;
         mMist.SetVector("_Mist", new Vector4(F(mist["y_top"]), F(mist["y_peak"]), F(mist["y_bot"]), F(mist["sigma"])));
         mMist.SetVector("_MistColor", V4(L(mist["color_linear"])));
+        // r3 (D-35 #1 / #4): the clear wedge toward the sun, depth, undulation, rolling top, wisps
+        var mvy = L(mist["wedge_vy"]); var mph = L(mist["phase"]); var mcut = L(mist["wisp_cut"]);
+        mMist.SetTexture("_DetailTex", AssetDatabase.LoadAssetAtPath<Texture2D>(Kit + "/Textures/Plain_Detail_1024.png"));
+        mMist.SetVector("_MistPhase", new Vector4(F(mph[0]), F(mph[1]), F(mph[2]), 0));
+        mMist.SetVector("_MistWedge", new Vector4(F(mist["wedge_full_deg"]), F(mist["wedge_zero_deg"]), F(mvy[0]), F(mvy[1])));
+        mMist.SetVector("_MistShade", new Vector4(F(mist["shade_dark"]), F(mist["shade_pow"]), F(mist["shade_depth"]), F(mist["roll_amp"])));
+        mMist.SetVector("_MistUnd", new Vector4(F(mist["und_period"]), F(mist["und_amp"]), F(mist["und_col"]), F(mist["und_drift"])));
+        mMist.SetVector("_MistRoll", new Vector4(F(mist["roll_period"]), 0, 0, 0));
+        mMist.SetVector("_MistWisp", new Vector4(F(mist["wisp_lo"]), F(mist["wisp_mid"]), F(mist["wisp_hi"]), F(mist["wisp_sigma"])));
+        mMist.SetVector("_MistWispB", new Vector4(F(mist["wisp_period"]), F(mist["wisp_drift"]), F(mcut[0]), F(mcut[1])));
+        mMist.SetVector("_MistSteps", new Vector4(F(mist["steps"]), F(mist["max_len"]), 0, 0));
         mMist.SetVector("_Slot", mPlain.GetVector("_Slot"));
         mMist.SetVector("_SlotB", mPlain.GetVector("_SlotB"));
         mMist.SetVector("_SunDirFallback", mPlain.GetVector("_SunDirFallback"));
@@ -265,9 +276,16 @@ public static class LanbaiAct06Builder
         d.triSky = SRGB((string)tri["sky"]); d.triEquator = SRGB((string)tri["equator"]); d.triGround = SRGB((string)tri["ground"]);
         d.sunFloorOccluded = F(lt["sun_occluded_floor"]);
         d.fogDensity = F(D(J["fog"])["density"]);
+        { var fb = D(D(J["fog"])["model_b"]); var fa = L(fb["far_act06"]); var na = L(fb["nadir_act06"]);
+          d.fogFarAct = new Vector4(F(fa[0]), F(fa[1]), F(fa[2]), 1f); d.fogNadirAct = new Vector4(F(na[0]), F(na[1]), F(na[2]), 1f);
+          d.fogWidthAct = F(fb["width_act06"]);
+          var ne = L(fb["near"]); var ze = L(fb["zenith"]);
+          d.fogNearAct = new Vector4(F(ne[0]), F(ne[1]), F(ne[2]), 1f); d.fogZenithAct = new Vector4(F(ze[0]), F(ze[1]), F(ze[2]), 1f);
+          d.fogColourK = F(D(B["fog_under_cover"])["colour_k"]);
+          d.fogColorGamma = new Color(F(fa[0]), F(fa[1]), F(fa[2])).gamma; }   // the built-in fog colour = the far horizon
         var fu = D(B["fog_under_cover"]);
         d.fogUnder = F(fu["under"]); d.fogDownT0 = F(fu["down_t0"]); d.fogUpT0 = F(fu["up_t0"]); d.fogDur = F(fu["dur"]);
-        if (d.skyPreset != null) d.fogColorGamma = d.skyPreset.fogColor;
+        // (r3: no longer the preset's fogColor: act 6 writes its own far horizon, D-35 #3)
         LanbaiGateCloudsBuilder.SetupUdonSharp(d);
         EditorUtility.SetDirty(d);
         AssetDatabase.SaveAssets();

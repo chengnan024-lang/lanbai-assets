@@ -36,6 +36,7 @@ P = dict(
     PeriodD=1600.0 * K_SCALE, PeriodM=6400.0 * K_SCALE, MicroScale=5.0, MicroAmp=4.0 * K_SCALE, MicroShade=0.6,
     SigmaL=0.012, SurfShadow=1.0, MsK=0.004, MsTau=0.25, SunGain=1.0, SkyGain=0.35, GroundGain=0.35,
     WallSlope=1.5, WallWrap=0.35, WallNormalPx=3.0, WallNormalMin=20.0, ShadowSteps=16, ShadowLen=6000.0, EdgeGlow=0.9, EdgeGlowLen=900.0,
+    RimK=250.0, RimGain=0.8, RimDepth=60.0, UnderGround=0.25, UnderSky=0.04,
     TroughLod=3.5, TroughDepth=30.0, TroughK=0.35, FogDensity=0.00012, FogCap=1.0,
 )
 SUN = np.array(LAYOUT['sun']['dir'], float)
@@ -127,15 +128,40 @@ def fog_sky(sky_eq):
     return _FOGSKY[k]
 
 
+FOGB = LAYOUT['fog']['model_b']           # the dawn preset (Sky/FogPresets.json) + act 6's own far / nadir (D-35 #3)
+FOG_K = 1.0                               # the fog colour scale (under the cover: < 1; act06_ref sets it per frame)
+FOG_USE_ACT = True                        # False: the preset as it is (for the comparison in the README)
+
+
+def horizon_b(V, F=None):
+    """LanbaiHorizon model B (Common/Shaders/LanbaiSky.cginc LanbaiHorizonGradient), line for line"""
+    F = F or FOGB
+    near, zen = np.array(F['near']), np.array(F['zenith'])
+    far = np.array(F['far_act06'] if FOG_USE_ACT else F['far'])
+    nad = np.array(F['nadir_act06'] if FOG_USE_ACT else F['nadir'])
+    el = np.degrees(np.arcsin(np.clip(V[:, 1], -1, 1)))
+    T = np.array(F['band_dir'][:3])
+    th = T[[0, 2]] + np.array([1e-5, 0.0]); th /= np.linalg.norm(th)
+    vh = V[:, [0, 2]] + np.array([1e-5, 0.0]); vh /= np.linalg.norm(vh, axis=-1, keepdims=True)
+    az = np.degrees(np.arccos(np.clip(vh @ th, -1, 1)))
+    wd = F['width_act06'] if FOG_USE_ACT else F['width']
+    hz = near[None] + (far - near)[None] * ss(0.0, max(wd, 1.0), az)[:, None]
+    sh, be = F['shape'], F['below']
+    lo, hi = sh[0], min(max(sh[1], sh[0] + 0.1), 90.0)
+    x = np.clip((el - lo) / max(hi - lo, 1e-4), 0, 1)
+    up = (x * x * (3 - 2 * x)) ** (sh[2] if sh[2] > 0 else 1.0)
+    dn = ss(be[1], min(be[0], be[1] - 0.1), el) ** (be[2] if be[2] > 0 else 1.0)
+    fl = 1e-3 * np.maximum(hz.max(-1, keepdims=True), zen.max()) + 1e-7
+    c = np.exp2(np.log2(np.maximum(hz, fl)) * (1 - up)[:, None] + np.log2(np.maximum(zen[None], fl)) * up[:, None])
+    return (c * (1 - dn)[:, None] + nad[None] * dn[:, None]) * FOG_K
+
+
 def fog_colour(sky_eq, V):
-    """LanbaiHorizon for the dawn preset (model B from the sky at 1 deg elevation, Sky/README_Sky §5): the smooth sky at
-    the ray's azimuth, elevation max(el, 1 deg)."""
-    az, el = C.azel_from_dir(V)
-    return C.sample_equirect(fog_sky(sky_eq), C.dir_from_azel(az, np.maximum(el, 1.0)), 0.0)
+    """r3: LanbaiHorizon model B exactly as Unity computes it (the dawn preset's numbers, with act 6's far / nadir)"""
+    return horizon_b(V)
 
 
 MIST = BODY.get('mist')
-MIST_K = (0.85, 0.7, 6.0)       # [Mist] colour x (k0 + k1 exp((V.L - 1) k2))
 
 
 def mist_cum(y):
@@ -157,29 +183,101 @@ def mist_sigma(y):
     return np.clip(np.where(y > M['y_peak'], up, dn), 0.0, None) * ((y < M['y_top']) & (y > M['y_bot']))
 
 
-def mist(eye_world, V, d_root, t_end, slot_open=1.0):
-    """[Mist] the slot's lower mist along eye -> eye + V t_end: transmittance (N,) and colour (3,) (linear).
-    Analytic: the density depends on height only; it exists only in the open slot (weight: the slot region where the
-    ray is at the mist's peak height, or at the eye)."""
+_MIST_TEX = {}
+
+
+def _mist_noise(x, z, period, drift_m, off, lod=3.0):
+    """the detail tile's height (R), low-passed (lod 3), at (xz - axis * drift) / period"""
+    if 'det' not in _MIST_TEX:
+        _MIST_TEX['det'] = MipTex(os.path.join(KIT, 'Textures', 'Plain_Detail_1024.png'))
+    a = math.radians(BODY['slot']['axis_az'])
+    u = (x - math.sin(a) * drift_m) / period + off
+    v = (z - math.cos(a) * drift_m) / period + off * 0.7
+    n = _MIST_TEX['det'].sample(u, v, np.broadcast_to(lod, np.shape(u)).astype(np.float64))[..., 0]
+    return np.clip((n - 0.1) / 0.45, 0.0, 1.0)            # the tile's R spans ~0.06 .. 0.59 at lod 3: to 0 .. 1
+
+
+def mist_wedge(x, z):
+    """the clear wedge toward the sun (from the bus): 1 = clear (D-35 #1)"""
+    r = np.hypot(x, z)
+    sx, sz = SUN[0], SUN[2]
+    c = (x * sx + z * sz) / np.maximum(r * math.hypot(sx, sz), 1e-6)
+    c0, c1 = math.cos(math.radians(MIST['wedge_zero_deg'])), math.cos(math.radians(MIST['wedge_full_deg']))
+    return ss(c0, c1, c) * (r >= 1.0)
+
+
+def mist_sigma_top(y, yt):
+    """the tent with a moving top yt (per sample)"""
+    M = MIST
+    up = M['sigma'] * (yt - y) / np.maximum(yt - M['y_peak'], 1.0)
+    dn = M['sigma'] * (y - M['y_bot']) / (M['y_peak'] - M['y_bot'])
+    return np.clip(np.where(y > M['y_peak'], up, dn), 0.0, None) * ((y < yt) & (y > M['y_bot']))
+
+
+def mist(eye_world, V, d_root, t_end, slot_open=1.0, clock=0.0):
+    """[Mist] r3 (D-35 #1 / #4): the slot's lower mist + drifting wisps, a 16-sample march over the part of the segment
+    eye -> eye + V t_end inside the mist's height band. Density: the tent in y x the slot x (1 - the clear wedge toward
+    the sun) x a slow low-contrast undulation; wisps: a thin layer above it, cut by a drifting noise. Colour: the shadow
+    blue-grey, darker downward, brighter toward the sun. Returns transmittance (N,) and premultiplied colour (N, 3)."""
+    M = MIST
     ro = np.array(eye_world, float) - np.array([0.0, d_root, 0.0])
+    n = len(V)
     vy = V[:, 1]
     te = np.minimum(t_end, P['MarchMax'])
-    y1 = ro[1] + vy * te
+    ylo, yhi = M['y_bot'], max(M['y_top'] + M['roll_amp'], M['wisp_hi'])
     with np.errstate(divide='ignore', invalid='ignore'):
-        tau = np.abs(mist_cum(y1) - mist_cum(np.full(len(V), ro[1]))) / np.abs(vy)
-    flat = np.abs(vy) < 1e-3
-    tau = np.where(flat, mist_sigma(np.full(len(V), ro[1])) * te, tau)
-    # the weight where the segment is nearest the peak height (the eye, the peak crossing, or the segment's end)
-    yq = np.clip(MIST['y_peak'], np.minimum(ro[1], y1), np.maximum(ro[1], y1))
-    with np.errstate(divide='ignore', invalid='ignore'):
-        tp = np.where(np.abs(vy) > 1e-6, (yq - ro[1]) / vy, 0.0)
-    tp = np.clip(np.nan_to_num(tp), 0.0, te)
-    pp = ro[None, :] + V * tp[:, None]
-    w = region(pp[:, 0], pp[:, 2], slot_open)[1]
-    T = np.exp(-np.nan_to_num(tau) * w)
-    # colour: the shadow blue-grey, a little brighter toward the sun (forward scatter) - no flat plate
-    ph = MIST_K[0] + MIST_K[1] * np.exp((V @ SUN - 1.0) * MIST_K[2])
-    return T, np.array(MIST['color_linear'])[None, :] * ph[:, None]
+        ta = (ylo - ro[1]) / vy
+        tb = (yhi - ro[1]) / vy
+    flat = np.abs(vy) < 1e-6
+    inband = (ro[1] > ylo) & (ro[1] < yhi)
+    t_in = np.where(flat, 0.0, np.maximum(np.minimum(ta, tb), 0.0))
+    t_out = np.where(flat, np.where(inband, te, 0.0), np.maximum(ta, tb))
+    t_out = np.minimum(np.minimum(t_out, te), t_in + M['max_len'])
+    L = np.maximum(t_out - t_in, 0.0)
+    T = np.ones(n)
+    col = np.zeros((n, 3))
+    live = L > 0
+    if not live.any():
+        return T, col
+    base = np.array(M['color_linear'])
+    k0, k1, k2 = M['phase']
+    ph = (k0 + k1 * np.exp((V @ SUN - 1.0) * k2))[live]
+    Vl, tin, Ll = V[live], t_in[live], L[live]
+    Tl = np.ones(len(Vl)); Cl = np.zeros((len(Vl), 3))
+    gate_v = ss(M['wedge_vy'][0], M['wedge_vy'][1], Vl[:, 1])      # the clear lane only for rays at / above the horizon
+    gate_v = gate_v * ss(M['y_bot'] - 30.0, M['y_bot'], ro[1])     # and only while the eye is above the cover bottom
+    N = int(M['steps'])
+    for i in range(N):
+        # quadratic spacing: fine where the mist starts (what is seen), coarse deep inside it
+        u = (i + 0.5) / N
+        t = tin + Ll * u * u
+        ds = Ll * 2.0 * u / N
+        # the noise is filtered to the sample spacing (no aliasing streaks on long, flat segments)
+        lod_u = np.maximum(4.0, np.log2(np.maximum(ds, 1e-3) / (M['und_period'] / 1024.0)))
+        lod_w = np.maximum(3.0, np.log2(np.maximum(ds, 1e-3) / (M['wisp_period'] / 1024.0)))
+        p = ro[None, :] + Vl * t[:, None]
+        y = p[:, 1]
+        w = region(p[:, 0], p[:, 2], slot_open)[1] * (1.0 - mist_wedge(p[:, 0], p[:, 2]) * gate_v)
+        und = 1.0 + M['und_amp'] * (2.0 * _mist_noise(p[:, 0], p[:, 2], M['und_period'], M['und_drift'] * clock, 0.13, lod_u) - 1.0)
+        # a rolling top (+-roll_amp m, slow): mounds above the mean top are lit, hollows below it are darker
+        roll = M['roll_amp'] * (2.0 * _mist_noise(p[:, 0], p[:, 2], M['roll_period'], M['und_drift'] * clock, 0.71,
+                                                 np.maximum(3.0, np.log2(np.maximum(ds, 1e-3) / (M['roll_period'] / 1024.0)))) - 1.0)
+        sg = mist_sigma_top(y, M['y_top'] + roll) * und
+        wn = ss(M['wisp_cut'][0], M['wisp_cut'][1], _mist_noise(p[:, 0], p[:, 2], M['wisp_period'], M['wisp_drift'] * clock, 0.41, lod_w))
+        wt = np.clip(np.where(y < M['wisp_mid'], (y - M['wisp_lo']) / (M['wisp_mid'] - M['wisp_lo']),
+                              (M['wisp_hi'] - y) / (M['wisp_hi'] - M['wisp_mid'])), 0, 1)
+        sw = M['wisp_sigma'] * wt * wn
+        sig = (sg + sw) * w
+        a = 1.0 - np.exp(-sig * ds)
+        f = np.clip((M['y_top'] + M['roll_amp'] - y) / M['shade_depth'], 0, 1)
+        shade = 1.0 - M['shade_dark'] * f ** M['shade_pow']
+        cm = shade * (1.0 + M['und_col'] * (und - 1.0) / M['und_amp'])
+        c = (cm * sg + 1.12 * sw) / np.maximum(sg + sw, 1e-9)            # wisps a little lighter
+        Cl += (Tl * a * c * ph)[:, None] * base[None, :]
+        Tl *= 1.0 - a
+    T[live] = Tl
+    col[live] = Cl
+    return T, col
 
 
 class Plain:
@@ -345,8 +443,9 @@ class Plain:
             R = E['r0'] + (E['r_sun'] - E['r0']) * np.exp(-(da / E['sun_lobe_deg']) ** 2)
             to_edge = np.maximum(R - r, 0.0)
             glow = P['EdgeGlow'] * np.exp(-to_edge / P['EdgeGlowLen']) * np.clip(np.cos(np.radians(da)), 0, 1)
-            su = (P['GroundGain'] * 0.35 * var[under])[:, None] * GND_COL + (glow * var[under])[:, None] * SUN_COL * 0.35 \
-                + (0.06 * var[under])[:, None] * SKY_COL
+            # r3 (D-35 #2): ground k 0.35 -> UnderGround, sky k 0.06 -> UnderSky (the cover's underside darker at 312)
+            su = (P['GroundGain'] * P['UnderGround'] * var[under])[:, None] * GND_COL + (glow * var[under])[:, None] * SUN_COL * 0.35 \
+                + (P['UnderSky'] * var[under])[:, None] * SKY_COL
             wu = under_w[under][:, None]
             surf[under] = surf[under] * (1 - wu) + su * wu
         # troughs toward the haze (tops only)
@@ -355,9 +454,13 @@ class Plain:
         dm = self.det.sample(p[:, 0] / P['PeriodD'], p[:, 2] / P['PeriodD'], np.maximum(lod_t, P['TroughLod']))
         hmean = BODY['top'] + P['MacroMin'] + mm[:, 0] * (P['MacroMax'] - P['MacroMin']) + amp * (
             P['DetailMin'] + dm[:, 0] * (P['DetailMax'] - P['DetailMin']))
-        trough = np.clip((hmean - p[:, 1]) / P['TroughDepth'], 0, 1) * P['TroughK'] * (1 - wall) * (1 - slot)
+        # r3 (D-35 #2): not on the underside (it switched with the relief's slope there: the streaks at 312)
+        trough = np.clip((hmean - p[:, 1]) / P['TroughDepth'], 0, 1) * P['TroughK'] * (1 - wall) * (1 - slot) * (1 - under_w)
         # (dawn) troughs go toward the deep sky light, not the horizon haze: shadows stay blue (bible 1.3 rule 2)
         surf = surf * (1 - trough)[:, None] + (P['SkyGain'] * 0.6) * SKY_COL[None, :] * trough[:, None]
+        # r3 (D-35 #1): the lip's top edge against the sun: a bright rim (forward scattering through the thin edge)
+        rim = lip * ss(P['RimDepth'], 0.0, top - p[:, 1]) * np.exp((V[gi] @ SUN - 1.0) * P['RimK']) * P['RimGain']
+        surf = surf + rim[:, None] * SUN_COL[None, :]
         # ---- [Fog] LanbaiApplyFog: exp density, colour = the sky in that direction (the dawn preset's horizon model)
         f = np.minimum(1 - np.exp(-P['FogDensity'] * th), P['FogCap'])
         col[gi] = surf * (1 - f)[:, None] + fogC * f[:, None]

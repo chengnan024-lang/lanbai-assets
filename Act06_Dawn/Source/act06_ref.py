@@ -96,6 +96,13 @@ def fog_at(t):
     return f['base'] + (f['under'] - f['base']) * x
 
 
+def fog_colour_k(t):
+    """r3 (D-35 #2): the haze under the cover is in shadow: the fog colour x (1 .. colour_k), same timing"""
+    f = LAYOUT['beats']['fog_under_cover']
+    x = smooth01((t - f['down_t0']) / f['dur']) * (1 - smooth01((t - f['up_t0']) / f['dur']))
+    return 1.0 + (f['colour_k'] - 1.0) * x
+
+
 def smooth01(x):
     x = np.clip(x, 0, 1)
     return x * x * (3 - 2 * x)
@@ -218,6 +225,7 @@ def render(t, cam_name, w=960, door='bible_v2', out_dir=None, tag=''):
     global FOG_D
     FOG_D = fog_at(t)
     PR.P['FogDensity'] = FOG_D
+    PR.FOG_K = fog_colour_k(t)
     img = C.sample_equirect(SKY, V, 0.0)
     depth = np.full(len(V), np.inf)
     sc, sd = sea(V, t, d)
@@ -233,8 +241,8 @@ def render(t, cam_name, w=960, door='bible_v2', out_dir=None, tag=''):
     depth = np.where(front, pd, depth)
     draw_cards(V, img, depth, t, d, pix)
     # r2: the slot's mist (analytic, see-through by depth: review r1 B1) over whatever is behind it
-    mT, mC = PR.mist(EYE, V, d, depth, slot_open=so)
-    img = img * mT[:, None] + mC * (1 - mT)[:, None]
+    mT, mC = PR.mist(EYE, V, d, depth, slot_open=so, clock=t)
+    img = img * mT[:, None] + mC
     # the cabin (bible_v2 angular shell): the interior is dark, lit by the cabin ambient (#98A4B8 x 0.5) and the sky
     win = window_mask(V, door)
     interior = C.hex_lin('#2A2C30') * (C.hex_lin('#98A4B8') * 0.5 + 0.6)

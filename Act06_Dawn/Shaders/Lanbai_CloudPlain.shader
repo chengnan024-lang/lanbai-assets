@@ -1,5 +1,5 @@
 // =====================================================================================================
-//  Lanbai / CloudPlain  v2 (act 6 dawn, 2026-10-24 r2; cloud session "云", branch pkg/clouds)   Built-in RP
+//  Lanbai / CloudPlain  v3 (act 6 dawn, 2026-10-24 r3; cloud session "云", branch pkg/clouds)   Built-in RP
 //
 //  !!! WRITTEN WITHOUT A UNITY COMPILER !!!  Checked with Common/Tools~/compile_check (DXC); compile in Unity 2022.3.
 //
@@ -12,6 +12,8 @@
 //    part is a mist drawn by Lanbai/CloudPlainMist, see-through by depth), the lip at the slot's end (top -737).
 //    r2 (review r1): the left wall faces the sun (axis 12 deg off it); wall normals are the body's 3-D margin gradient
 //    over >= 20 m / 3 px with a wrapped N.L; the underside is chosen by height above the bottom (soft).
+//    r3 (D-35): the lip's top edge gets a bright rim against the sun (the sun sets behind it 304.3 -> 305.4); the
+//    troughs no longer touch the underside (they made streaks there); the underside is darker (_Under.zw).
 //    cloud = { bottom < y < Htop }. A ray from the eye (down OR up) marches between the body's bounds to the first
 //    point inside. Shading: sun x N.L (tops: the baked N.L; walls: the field's own normal) x shadow (tops: the baked sun
 //    path; walls / slot / lip / underside: 16 steps toward the sun through the mean body) + sky x AO + ground light +
@@ -41,7 +43,8 @@ Shader "Lanbai/CloudPlain"
         _Light ("Light - x sigma - y shadow - z ms k - w ms tau", Vector) = (0.012, 1.0, 0.004, 0.25)
         _Gains ("Gains - x sun - y sky - z ground - w wall slope", Vector) = (1, 0.35, 0.35, 1.5)
         _WallN ("Wall light - x wrap - y normal px - z normal min m", Vector) = (0.35, 3, 20, 0)
-        _Under ("Underside - x glow - y glow length m - z ground k - w sky k", Vector) = (0.9, 900, 0.35, 0.06)
+        _Under ("Underside - x glow - y glow length m - z ground k - w sky k", Vector) = (0.9, 900, 0.25, 0.04)
+        _Rim ("Lip rim - x sharpness - y gain - z depth m", Vector) = (250, 0.8, 60, 0)
         _Trough ("Trough - x lod - y depth m - z k - w sky k", Vector) = (3.5, 30, 0.35, 0.6)
         _SunColor ("Sun colour x E - linear", Vector) = (6.3706, 2.2827, 0.3400, 0)
         _SkyUpColor ("Upper dome light - linear", Vector) = (1.5103, 1.8199, 2.5691, 0)
@@ -50,7 +53,7 @@ Shader "Lanbai/CloudPlain"
         _Body ("Body - x top - y bottom - z sun az deg", Vector) = (-533, -1134, 30, 0)
         _Slot ("Slot - x axis az - y half width - z s0 - w s1", Vector) = (18, 750, -2200, 4000)
         _SlotB ("Slot - x soft - y floor top - z centre q", Vector) = (60, -1134, 350, 0)
-        _Lip ("Lip - x top - y soft", Vector) = (-737, 40, 0, 0)
+        _Lip ("Lip - x top - y soft", Vector) = (-700, 40, 0, 0)
         _Edge ("Edge - x r0 - y r sun - z lobe deg - w soft", Vector) = (8200, 4583, 45, 180)
         _Wall ("Wall bulge - x period m - y amplitude m", Vector) = (700, 110, 0, 0)
         _SlotOpen ("Slot open 0..1 - driver MPB", Range(0, 1)) = 1
@@ -71,7 +74,7 @@ Shader "Lanbai/CloudPlain"
             sampler2D _MacroTex;
             float4 _DetailTex_TexelSize, _MacroTex_TexelSize;
             float4 _Periods, _DetailRange, _TauMax, _AmpRange, _Micro, _March, _MarchK, _Light, _Gains, _Under, _Trough;
-            float4 _SunColor, _SkyUpColor, _GroundColor, _SunDirFallback, _Body, _Slot, _SlotB, _Lip, _Edge, _Wall, _WallN, _MarchDepth;
+            float4 _SunColor, _SkyUpColor, _GroundColor, _SunDirFallback, _Body, _Slot, _SlotB, _Lip, _Edge, _Wall, _WallN, _MarchDepth, _Rim;
             float _SlotOpen;
 
             struct appdata { float4 vertex : POSITION; UNITY_VERTEX_INPUT_INSTANCE_ID };
@@ -301,8 +304,11 @@ Shader "Lanbai/CloudPlain"
                 float lodT = max(log2(max(foot, 1e-3) / texD) + _Trough.x, _Trough.x);
                 float dm = tex2Dlod(_DetailTex, float4(p.xz / _Periods.x, 0.0, lodT)).r;
                 float hMean = _Body.x + lerp(_DetailRange.z, _DetailRange.w, h.mm.r) + h.amp * lerp(_DetailRange.x, _DetailRange.y, dm);
-                float trough = saturate((hMean - p.y) / _Trough.y) * _Trough.z * (1.0 - wall) * (1.0 - h.reg.y);
+                float trough = saturate((hMean - p.y) / _Trough.y) * _Trough.z * (1.0 - wall) * (1.0 - h.reg.y) * (1.0 - underW);
                 c = lerp(c, (_Gains.y * _Trough.w) * _SkyUpColor.rgb, trough);
+                // the lip's top edge against the sun: a bright rim (forward scattering through the thin edge)
+                float rim = h.reg.z * smoothstep(_Rim.z, 0.0, h.top - p.y) * exp((dot(V, sunD) - 1.0) * _Rim.x) * _Rim.y;
+                c += rim * _SunColor.rgb;
 
                 // ---- [Fog]
                 float3 pw = roW + V * tHit;

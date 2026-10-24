@@ -25,6 +25,7 @@ CUT1 = 248.64
 
 # ---------------------------------------------------------------- sun (D-12; the sky preset's own elevation)
 SUN_AZ, SUN_EL = 30.0, 5.8
+SUN_DISC_R = 0.265                            # the dawn preset's disc radius (deg)
 
 
 def dir_az_el(az, el):
@@ -77,7 +78,14 @@ SLOT = dict(axis_az=18.0, half_width=750.0, center_q=350.0, s0=-2200.0, s1=4000.
 # the mist in the slot's lower part: density (1/m) a tent in y: 0 at y_top, peak at y_peak, 0 at the cover bottom.
 # Vertical optical depth peak * (y_top - BOTTOM) / 2 = 0.045 * 87 = 3.9 (hides the sea from above, bible: no sea before
 # 305.4); the eye passes through it over ~5 s, so the frame changes by its depth, not in one frame.
-MIST = dict(y_top=-960.0, y_peak=-1080.0, y_bot=BOTTOM, sigma=0.045, color_screen='#8593AA')
+MIST = dict(y_top=-960.0, y_peak=-1080.0, y_bot=BOTTOM, sigma=0.045, color_screen='#8593AA',
+            # r3 (D-35 #1): a clear wedge toward the sun (from the bus, az 30 +-16 clear, +-28 full mist): the sun stays
+            # in view through the slot until it sets behind the lip at 305.4; the door view is never one flat grey
+            wedge_full_deg=8.0, wedge_zero_deg=40.0, wedge_vy=[-0.03, 0.02],   # only rays at / above the horizon (the sea stays hidden)
+            # r3 (D-35 #4): depth (darker downward), slow low-contrast undulation, a few drifting wisps above it
+            shade_dark=0.45, shade_pow=0.7, shade_depth=80.0, und_period=2600.0, und_amp=0.45, und_col=0.22, und_drift=1.0, roll_amp=40.0, roll_period=1800.0,
+            wisp_lo=-1000.0, wisp_mid=-945.0, wisp_hi=-880.0, wisp_sigma=0.004, wisp_period=900.0, wisp_drift=4.0,
+            wisp_cut=[0.55, 0.8], steps=16, max_len=6000.0, phase=[0.85, 0.7, 6.0])
 EDGE = dict(r0=8200.0, r_sun=None, sun_lobe_deg=45.0, soft=180.0, wobble=350.0)   # r_sun solved below (F1b1)
 LIP = dict(top=None, soft=40.0)               # solved below: the sun line from the slot floor at the slot's end
 
@@ -89,7 +97,10 @@ def solve_edges():
     drop = BOTTOM - (1.70 - d_b1)                     # how far the EYE is under the deck bottom at F1b1 (> 0)
     tan_el = math.tan(math.radians(SUN_EL))
     EDGE['r_sun'] = round(drop / tan_el, 1)
-    LIP['top'] = round(BOTTOM + SLOT['s1'] * math.cos(math.radians(SUN_AZ - SLOT['axis_az'])) * tan_el, 1)
+    # r3: the sun line from the bus reaches the lip (s = s1) at r = s1 / cos(sun az - axis): it grazes the lip's top
+    # when the eye is at the cover bottom, so the sun sets behind the lip exactly as the bus leaves the cover (305.4)
+    # the disc's TOP limb (radius 0.265 deg, the preset's _SunShape.x) goes under at 305.43: it sets over ~1 s before
+    LIP['top'] = round(BOTTOM + SLOT['s1'] / math.cos(math.radians(SUN_AZ - SLOT['axis_az'])) * math.tan(math.radians(SUN_EL + SUN_DISC_R)), 1)
     return d_b1, drop
 
 
@@ -130,20 +141,36 @@ def occupied(p):
 
 
 def sun_visible(t, step=10.0):
-    """1 = the sun line from the eye is clear of the cloud body, 0 = blocked (mean body, no relief)."""
+    """r3: the visible fraction of the disc (5 lines across it, -r .. +r in elevation), each through the mean body and
+    the mist (cleared toward the sun)"""
+    return round(float(np.mean([_sun_line(t, de) for de in np.linspace(-SUN_DISC_R, SUN_DISC_R, 5)])), 3)
+
+
+def _sun_line(t, de, step=10.0):
+    SUNL = dir_az_el(SUN_AZ, SUN_EL + de)
     d = descent(t)[0]
     eye = np.array([0.55, 1.70 - d, 2.05])            # in R_Dawn local
     s, tr = 0.0, 1.0
     while s < 30000.0:
-        p = eye + SUN * s
+        p = eye + SUNL * s
         if p[1] > TOP + 50:
             return round(tr, 3)
         if occupied(p):
             return 0.0
         if region(p[0], p[2])[1] > 0.5:
-            tr *= math.exp(-mist_sigma(p[1]) * step)    # the slot's mist dims the sun before the wall takes it
+            tr *= math.exp(-mist_sigma(p[1]) * (1.0 - mist_wedge(p[0], p[2])) * step)   # the mist (cleared toward the sun)
         s += step
     return round(tr, 3)
+
+
+def mist_wedge(x, z):
+    r = math.hypot(x, z)
+    if r < 1.0:
+        return 1.0
+    c = (x * SUN[0] + z * SUN[2]) / (r * math.hypot(SUN[0], SUN[2]))
+    c0, c1 = math.cos(math.radians(MIST['wedge_zero_deg'])), math.cos(math.radians(MIST['wedge_full_deg']))
+    u = min(max((c - c0) / (c1 - c0), 0.0), 1.0)
+    return u * u * (3 - 2 * u)
 
 
 def mist_sigma(y):
@@ -228,12 +255,34 @@ def beats():
         cabin_bleach=dict(t0=T['F0'], t1=T['F1'], v0=0.0, v1=0.10),
         slot_open=[SLOT['open_t0'], SLOT['open_t1']],
         ring_off=dict(t0=T['F1'] + 4.0, t1=T['F1'] + 8.0, note='fades as the slot walls rise past the windows (occluded)'),
-        fog_under_cover=dict(base=0.00012, under=0.00003, down_t0=305.4, up_t0=T['F1b1'], dur=4.0,
+        fog_under_cover=dict(base=0.00012, under=0.00003, colour_k=0.7, down_t0=305.4, up_t0=T['F1b1'], dur=4.0,
                              note='the air under the cover is in shadow: thinner haze, the sea reads blue-grey (bible 6c APL dip)'),
         sea_on=300.0,               # the sea renderer: on only from inside the canyon (occluded); bible: no sea before 305.4
         sea_calm_patch=dict(t0=T['F1b2'], dur=6.0, radius=300.0),
         sea_calm_all=dict(t0=337.0, dur=8.0, v1=0.85),
         entry=T['F2h'])
+
+
+# D-35 #3: act 6 owns the sky / fog group in its window; it pulls the fog's far horizon and nadir toward the bible's
+# cloud-shadow blue-grey #8593AA (the distant cloud shadows read h 265-280, C* >= 10). The sky session merges it later.
+FOG_PULL = dict(far=1.0, nadir=1.0)          # 1 = the target hue at the preset's luminance (probe: /tmp, README §3)
+FOG_WIDTH_ACT06 = 40.0                       # the warm near-sun band 70 -> 40 deg: it no longer mixes into the cool shadows
+
+
+def fog_model_b():
+    import sys
+    sys.path.insert(0, os.path.join(REPO, 'Clouds_v2', 'Source'))
+    pre = [a for a in json.load(open(os.path.join(REPO, 'Sky', 'FogPresets.json')))['acts'] if a.get('preset') == 'dawn'][0]
+    tgt = np.array(mist_entry()['color_linear'])
+    out = {k: pre[k] for k in ('model', 'near', 'far', 'zenith', 'nadir', 'band_dir', 'width', 'shape', 'below', 'density')}
+    for k in ('far', 'nadir'):
+        c = np.array(pre[k])
+        lum = c @ np.array([0.2126, 0.7152, 0.0722])
+        t = tgt * lum / (tgt @ np.array([0.2126, 0.7152, 0.0722]))       # the target hue at the preset's luminance
+        out[k + '_act06'] = [round(float(v), 5) for v in c + (t - c) * FOG_PULL[k]]
+    out['pull'] = dict(FOG_PULL)
+    out['width_act06'] = FOG_WIDTH_ACT06
+    return out
 
 
 def mist_entry():
@@ -284,11 +333,12 @@ def main():
                  note='Sea_Disc under R_Dawn at y = level_local: world y = 1.0 exactly at F2h (Act07 handover)'),
         moments=dict(enter_plain_top=t_at_depth(TOP), leave_deck_bottom=t_at_depth(BOTTOM), sun_changes=changes),
         sun_table=dict(t0=float(sun_tab_t[0]), dt=0.25, vis=sun_tab,
-                       smoothing_s=2.2, note='driver: sun light x smoothstep over 2.2 s around each change (日盘约 2.2 秒露全)'),
+                       smoothing_s=0.6, note='r3: vis = the visible fraction of the disc (it sets over ~1.3 s); the driver averages it over 0.6 s'),
         cards=card_entries(), ring=ring_entries(), beats=beats(),
         light=dict(trilight_srgb=dict(sky='#5A78B8', equator='#C8B4B8', ground='#8FA0BE'), cabin_ambient='#98A4B8',
                    cabin_ambient_k=0.5, sun_occluded_floor=0.1),
-        fog=dict(density=0.00012, color_note='LanbaiFog from the dawn sky preset (Sky/FogPresets.json dawn)'),
+        fog=dict(density=0.00012, color_note='LanbaiFog model B: the dawn preset (Sky/FogPresets.json dawn), with act 6 own far / nadir',
+                 model_b=fog_model_b()),
     )
     out = os.path.join(KIT, 'Act06_Layout.json')
     json.dump(L, open(out, 'w'), indent=1, ensure_ascii=False)

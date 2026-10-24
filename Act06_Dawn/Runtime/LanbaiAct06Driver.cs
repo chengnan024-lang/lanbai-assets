@@ -80,6 +80,14 @@ public class LanbaiAct06Driver : UdonSharpBehaviour
     public Color triGround = new Color(0.5608f, 0.6275f, 0.7451f, 1f);    // #8FA0BE
     public Color fogColorGamma = new Color(0.7686f, 0.7216f, 0.7529f, 1f); // #C4B8C0 (bible §6·6 雾)
     public float fogDensity = 0.00012f;        // the dawn preset's _Udon_Fog.x
+    // D-35 #3: act 6 writes its own far horizon / nadir / band width over the dawn preset (pulled to #8593AA's hue)
+    public Vector4 fogFarAct = new Vector4(0.5319f, 0.6314f, 0.9037f, 1f);
+    public Vector4 fogNadirAct = new Vector4(0.2183f, 0.2591f, 0.3709f, 1f);
+    public float fogWidthAct = 40f;
+    public Vector4 fogNearAct = new Vector4(3.0907f, 0.8444f, 0.2586f, 1f);     // the preset's near / zenith (re-written x k)
+    public Vector4 fogZenithAct = new Vector4(0.3088f, 0.4944f, 1.0348f, 1f);
+    public float fogColourK = 0.7f;            // D-35 #2: under the cover the haze is in shadow (same timing as the density)
+    public float mistClockScale = 1f;          // _MistClock = t (the mist's undulation and wisps drift with the timeline)
     public float fogUnder = 0.00003f, fogDownT0 = 305.4f, fogUpT0 = 318.36f, fogDur = 4f;   // thinner haze under the cover
 
     [Header("Overlay (Overlay/README §3: 5 -> 6)")]
@@ -93,7 +101,7 @@ public class LanbaiAct06Driver : UdonSharpBehaviour
 
     private MaterialPropertyBlock _mpb;
     private int _idSeaLevel, _idSeaMode, _idSeaClock, _idSlotOpen, _idGain, _idAlpha, _idMirror;
-    private int _idFog;
+    private int _idFog, _idHorizonC, _idNadirC, _idBandW, _idNearC, _idZenithC, _idMistClock;
     private int _idCalmAll, _idCalmPatch, _idSunColor, _idRefl, _idReflHdr, _idReflExp;
     private bool _ready, _skyApplied, _sunTaken, _overlayHidden, _lobesSet;
     private float _lastT = -1f;
@@ -148,6 +156,12 @@ public class LanbaiAct06Driver : UdonSharpBehaviour
         _idMirror = VRCShader.PropertyToID("_Mirror");
         _idCalmAll = VRCShader.PropertyToID("_CalmAll");
         _idFog = VRCShader.PropertyToID("_Udon_Fog");
+        _idHorizonC = VRCShader.PropertyToID("_Udon_HorizonColor");
+        _idNadirC = VRCShader.PropertyToID("_Udon_NadirColor");
+        _idBandW = VRCShader.PropertyToID("_Udon_FogBandWidth");
+        _idNearC = VRCShader.PropertyToID("_Udon_FogBandColor");
+        _idZenithC = VRCShader.PropertyToID("_Udon_ZenithColor");
+        _idMistClock = VRCShader.PropertyToID("_MistClock");
         _idCalmPatch = VRCShader.PropertyToID("_CalmPatch");
         _idSunColor = VRCShader.PropertyToID("_SunColor");
         // the cards' per-renderer values (edit-mode MPBs are lost on Play: gate test pitfall 9)
@@ -222,7 +236,17 @@ public class LanbaiAct06Driver : UdonSharpBehaviour
         // cover). Written after Apply(); the colour stays the preset's (LanbaiHorizon model B)
         float under = Smooth((t - fogDownT0) / fogDur) * (1f - Smooth((t - fogUpT0) / fogDur));
         float fogD = Mathf.Lerp(fogDensity, fogUnder, under);
-        if (_skyApplied && t < tEntry) VRCShader.SetGlobalVector(_idFog, new Vector4(fogD, 0f, 0f, 1f));
+        if (_skyApplied && t < tEntry)
+        {
+            VRCShader.SetGlobalVector(_idFog, new Vector4(fogD, 0f, 0f, 1f));
+            // D-35 #3: the fog's cool side (README §3); D-35 #2: x k under the cover. The other fog globals stay the preset's
+            float k = Mathf.Lerp(1f, fogColourK, under);
+            VRCShader.SetGlobalVector(_idHorizonC, new Vector4(fogFarAct.x * k, fogFarAct.y * k, fogFarAct.z * k, 1f));
+            VRCShader.SetGlobalVector(_idNadirC, new Vector4(fogNadirAct.x * k, fogNadirAct.y * k, fogNadirAct.z * k, 1f));
+            VRCShader.SetGlobalVector(_idNearC, new Vector4(fogNearAct.x * k, fogNearAct.y * k, fogNearAct.z * k, 1f));
+            VRCShader.SetGlobalVector(_idZenithC, new Vector4(fogZenithAct.x * k, fogZenithAct.y * k, fogZenithAct.z * k, 1f));
+            VRCShader.SetGlobalFloat(_idBandW, fogWidthAct);
+        }
 
         // the main light (D-24)
         if (writeMainLight && t >= tLight0 && t < tLight1)
@@ -259,6 +283,7 @@ public class LanbaiAct06Driver : UdonSharpBehaviour
         if (plainMist != null)
         {
             plainMist.GetPropertyBlock(_mpb);
+            _mpb.SetFloat(_idMistClock, t * mistClockScale);
             _mpb.SetFloat(_idSlotOpen, Smooth((t - slotOpen0) / Mathf.Max(slotOpen1 - slotOpen0, 1e-3f)));
             plainMist.SetPropertyBlock(_mpb);
         }
