@@ -40,10 +40,16 @@ LB_Journey.Update()
 public bool extAtmosphere;   // 勾上：在有驱动接管的时间窗里，不写 RenderSettings.fog* / ambientLight
 public bool extSun;          //       不写 sun 的颜色 / 强度 / 方向
 public bool extSkybox;       //       不写天空盒材质
-public float[] extWindows;   // 成对的 {t0, t1}：哪些时间窗由驱动接管（分发层从各驱动的 LanbaiWindow() 汇总后写进来）
+// （v1.1 起不要 extWindows：用 dispatcher.LanbaiCoversAtmosphere(t) / LanbaiCoversSun(t)，见下）
 ```
 
-**`extWindows` 不能直接用分发层的 `windowsFlat`**：`windowsFlat` 是所有驱动的窗口并起来，里面有不写 `RenderSettings` / 主光的驱动（天空第 1–3 幕默认 `ownsAtmosphere` 关、门的驱动从来不写、第 9 幕不写），照它让出去，那几段就没人写了。**按 §8.3 的表一个开关一组窗口手填**（建议把 `extWindows` 拆成 `extAtmosphereWindows` / `extSunWindows` 两个数组；只留一个的话，填 §8.3 两列的交集，再按幕勾驱动的开关）。Director v1.1 会让每个驱动报“我写哪几样”，到时由分发层算，本地就不用手填了（还没做）。
+**`extWindows` 不能直接用分发层的 `windowsFlat`**：`windowsFlat` 是所有驱动的窗口并起来，里面有不写 `RenderSettings` / 主光的驱动（天空第 1–3 幕默认 `ownsAtmosphere` 关、门的驱动从来不写、第 9 幕不写），照它让出去，那几段就没人写了。
+**Director v1.1（2026-10-24）起不用手填**：分发层按每个驱动报的“我写什么”分开给窗口，`LB_Journey` 这样用（`Director/README_Director.md` §0）：
+```csharp
+if (!(extAtmosphere && dispatcher.LanbaiCoversAtmosphere(t))) { /* 照旧写 RenderSettings 的雾 / 环境色 */ }
+if (!(extSun && dispatcher.LanbaiCoversSun(t)))               { /* 照旧写主光 */ }
+```
+驱动上的 `writeRenderSettings` / `writeMainLight`（门内、海）勾上了，它的窗口才算进去；所以 §8.3 那张表现在是“该勾哪些驱动开关”，不是“该填哪些窗口”。天空的驱动还没有报（`LanbaiWritesAtmosphere()`），要它写 RenderSettings 的话先等天空加那一行。`extWindows` 这个数组不用加了。
 
 不勾的时候行为和现在完全一样，所以可以先加、后用。**这是对 `LB_Journey` 唯一的改动请求**（加上 §1 里调分发层的那一行）。
 
@@ -77,7 +83,7 @@ public float[] LanbaiWindow()         // {开始 t, 结束 t}，含预热
 
 规则：**新包接管一幕时，`LB_Journey` 里那一幕的旧占位整个让出去，不并存、不逐项混合。** 做法：
 1. 新包的驱动在 `LanbaiWindow()` 里报出自己的时间窗（含预热）。
-2. 分发层把所有已挂上的驱动的时间窗汇总，写进 `LB_Journey.extWindows`（§3）；`LB_Journey` 在这些窗口里不写 `RenderSettings` / `sun` / 天空盒（按接管开关），并把那一幕的旧占位组（`gateGroup`、`skyGroup`、`seaA/B`、`deepGroup`……）关掉。
+2. `LB_Journey` 按接管开关和 Director v1.1 的 `LanbaiCoversAtmosphere(t)` / `LanbaiCoversSun(t)` 让出 `RenderSettings` / 主光（§3）；旧占位组（`gateGroup`、`skyGroup`、`seaA/B`、`deepGroup`……）按 `dispatcher.LanbaiCovered(t)`（所有驱动的窗口）关掉。
 3. 旧占位在“哪个窗口里关”由本地在 Inspector 里给每个占位组填一个窗口（因为只有本地知道 `LB_Journey` 里哪个组对应哪一幕）；分发层只负责告诉它“哪些时间段已经有人接管”。
 4. 声音、运动这类“全片一条线”的东西不按幕切：运动差异（比如海的入水时刻）写进 §5 的差异表，本地改 `LB_Journey` 的数组，而不是让驱动去覆盖。
 
@@ -124,7 +130,7 @@ public float[] LanbaiWindow()         // {开始 t, 结束 t}，含预热
 
 ### 8.3 `RenderSettings`（内置 shader 的雾色 / 雾密度 / 环境色）和接管开关怎么填
 
-| t | 写的人 | 本地：`extAtmosphere` 窗口 | `extSun` 窗口 | 驱动上要勾的 |
+| t | 写的人 | `extAtmosphere` 下让出去？（v1.1 自动） | `extSun` 下让出去？ | 驱动上要勾的 |
 |---|---|---|---|---|
 | 0 → 133.80 | `LB_Journey`（或天空，勾 `ownsAtmosphere`） | 不填（要让天空写就填 0 → 133.80 并勾 `LanbaiSkyPreset.ownsAtmosphere`） | 不填 | — |
 | 133.80 → 177.55 | `LB_Journey` | 不填（门不写 RenderSettings） | 不填 | — |
@@ -186,12 +192,32 @@ public float[] LanbaiWindow()         // {开始 t, 结束 t}，含预热
 - 写 `_Udon_T`（这一段分发层不写它，登记表已改）。
 - **第 7 幕的常驻窗口里，海、宫殿、鱼、海雪要同时放得下**（账本 §6）；7c 的倒置窗按 D-26 从车厢地板的侵蚀洞里看（车厢包做）。
 
-### 9.5 第 9 幕：星海（`Act09_StarSea/`）
+### 9.5 第 9 幕：星海（`Act09_StarSea/` v1.3，`README_Act09.md`）
 
-- 依赖天空套件（主星是天空的 `Lanbai_Stars_BSC5`）。拷 → `蓝白/Build/Act09`。
-- 窗口 992.06 → 1149.31；1001.21 起接天雾星（§8.1）。**第 8 幕的驱动在 t ≥ 1001.21 不许再 `Apply`**——第 8 幕的包交来时要查。
-- 两个星的 renderer 搭建时关着，由 Tick 开。
+- **前提**：天空套件已经导入、点过 `Build Star Mesh` / `Build Sky`（主星是天空的 `Lanbai_Stars_BSC5`，银河图、`M_Sky.mat` 也是天空的）；`cues.json` 合过 v2.1 补丁（F12、F13、F16 等标签）。
+- **拷 / 点**：`Act09_StarSea/` → `Assets/Lanbai/Act09_StarSea/`，菜单 `蓝白/Build/Act09`：建 `R_StarSea`（第一批星、天问的 16 颗星，搭完关着，renderer 也关着）和常开的 `Lanbai_Act09Driver`（不在 `R_StarSea` 里面）。可以重复点。然后 Director 的 1 Generate、2 Wire、3 Report。
+- **窗口** 992.06 → 1149.31（F16）。**开窗在蓝时里，不在遮挡下**——这是 Director README §3.2 允许的例外：开的那一帧什么都看不见（两个 renderer 关着、第一批星增益 0、全局量 1001.21 前不写）。窗口的结束（F16 白）在遮挡下。
+- **写什么、从什么时候**（§8.1 的那一行展开）：
 
-### 9.6 还没交的（这几格在 §8 里写着“等包”）
+| t | 本驱动写 | 交接 |
+|---|---|---|
+| 994.06 → 1010.01 | 第一批星（12 颗真星）自己的材质和 MaterialPropertyBlock，**不碰全局量** | 这段天还是第 8b 幕（「云」）写 |
+| **1001.21** 起 | `_Udon_SkyBlend`、`SkyFx`、`Fog`（雾关）、`GalaxyGain`（银河点燃线 g(t)、银心早 0.3 s）、`StarGain` | **第 8b 幕的驱动在 t ≥ 1001.21 不许再调 `LanbaiSkyPreset.Apply / ApplyBlend`**（一次写全部 68 个名字，会成第二个写的人）。`blue_hour` 预设里这几个量和本驱动 1001.21 写的一样 |
+| **1009.21** 起 | 再加 `_Udon_ZenithColor / HorizonColor / FogBandColor / NadirColor`（四个同值 = 星空底；**镜子读 `ZenithColor` 当星空底**） | 天问对焦从这一刻开始（字体套件的时刻） |
+| F13 1018.21 | `StarGain.x` 0 → 1（8 404 颗星 + 天问的 16 颗星同一帧） | 天问的 16 颗星由本驱动开，字由诗句系统（下面 §9.6）淡掉 |
+| 1032.41 → 1149.31 | 十三面镜期间银河增益 × (1 + 0.8 x^2.5)、亮星加成 | 镜子的时间表由「镜与白」交；镜子读本幕的量，不写 |
+| **1149.31**（F16） | 停 | 天空 `Lanbai_SkyDriver_Acts11to12` 在白遮罩下写 `overcast_rain_night` 全部名字 |
+
+- **不写**：RenderSettings、主光（第 9 幕没有太阳；主光保持第 8 幕留下的值）、PPv2（点燃不用曝光，E18）、车厢。所以 §8.3 的接管开关这一段不用填。
+- **开销**：`LanbaiTick` 5 个 SetGlobalVector（1009.21 起 9 个）、1 个 MPB、两个 renderer 开关，没有循环、不分配内存；账本里按 < 0.1 ms 记（未实测）。
+- **截图**（主座位，桌面 1920×1080 / 90°，PPv2 开）：1001.21、1005.21、1008.6；**F13 那一帧和 1022.41**（正前方 / 抬头 +60° / 银心方向，用来在 Unity 里重标 g(t)，带车厢以后跨度会小）；1100、1137。1016–1030 s 的录像跑 `flashcheck.py`。
+
+### 9.6 诗句（`Fonts/` 第 4 版，D-30）
+
+- 每个玩家只看到自己语言的那一份：客户端语言 → 玩家键（zh / ja / de / 其余 en），然后取 `strings_all.json` 里每首诗的 `layout[键]`。规则和字块表在 `Fonts/README_Fonts.md` §0。
+- **天问的汉字对所有玩家都在同一个位置**（第 9 幕的 16 颗星按中文排版放，第 4 版核对过：四种玩家的 `star_points` 和第 3 版逐项相同），不是中文的玩家下面多一行小字。
+- 时刻全部没变；摆诗的驱动按 `layout[键].timing` 和 `objects` 做，不另算。
+
+### 9.7 还没交的（这几格在 §8 里写着“等包”）
 
 第 6 幕晨、第 8 幕暮（「云」）、7b 宫殿、第 10 幕白（镜与白）、第 11 幕灯与假醒、车厢。每个交来时总工程师照 §8 核一遍交接，再在这里加一节。

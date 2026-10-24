@@ -28,7 +28,7 @@ LAT_TOP, LAT_BOT = 0.72, -0.26
 CJK_MID = (CJK_TOP + CJK_BOT) / 2            # 0.38 em above the baseline: optical centre of a Han character
 OPT_MIN_EM = 0.06                            # optical offsets below this are not worth a transform
 EL_MAX, EL_MIN = 10.0, -15.0                 # bible §7.3: a text's centre never above +10°, never below -15°
-PLAYERS = ('zh', 'ja', 'en', 'de', 'other')
+PLAYERS = ('zh', 'ja', 'en', 'de')        # v4 (D-30): client language -> player key, L.PLAYER_OF_CLIENT
 
 
 def is_cjk(fk):
@@ -166,17 +166,43 @@ def _obj(role, lang, fk, size, lines, d, anchor_el, first_bl, extra=None):
     return o
 
 
+def seg_lines(s_, key):
+    """lines of one segment in one language; '<key>_v4' = that language re-broken for the v4 size (D-30 #2: <= 28°)."""
+    return s_.get(key + '_v4', s_.get(key, []))
+
+
+def shown_text(p, player):
+    """v4 (D-30): (key, lang, font, size) of the ONE text this player sees. key = 'main' (the original) or a language."""
+    k = 'main' if p.get('picture') else L.shown_lang(p, player)
+    if k == 'main':
+        fk, lang = p['original']['font'], p['original']['lang']
+    else:
+        fk, lang = L.TR_FONT[k], k
+    return k, lang, fk, L.size_for(p, fk, lang)
+
+
+def block_box(objs, az):
+    """the block a poem occupies for one player: width = widest line box, height = top of the first em box to the
+    bottom of the last (degrees of visual angle); the table the act packages and the bus's D-13 check use."""
+    w = max(max(o['width_deg']) for o in objs)
+    top = max(o['top_el'] for o in objs)
+    bot = min(o['bottom_el'] for o in objs)
+    return dict(width_deg=round(w, 2), height_deg=round(top - bot, 2), az=[round(az - w / 2, 2), round(az + w / 2, 2)],
+                el=[round(bot, 2), round(top, 2)], center=[az, round((top + bot) / 2, 2)])
+
+
 def block_layout(p, player, segs=None):
-    """A poem shown as one block: main object, then (optionally) the player's translation object beneath.
-    Block centre = the bible elevation (§7.5); if an object's centre would leave [-15°, +10°] (§7.3, 'never'),
-    the whole block is shifted by the minimum amount and the shift is reported."""
+    """v4 (D-30): a poem shown as ONE single-language block at the main-line size (the original if it is in the player's
+    language, else the translation into it). Exception Tianwen (picture): Han characters for everyone + the player's
+    language beneath at 1.8° (§7.3 secondary). Block centre = the bible elevation (§7.5); if an object's centre would
+    leave [-15°, +10°] (§7.3, 'never'), the whole block is shifted by the minimum amount and the shift is reported."""
     segs = p['segments'] if segs is None else segs
     d = p['place'][2]
     el = p['place'][1]
+    key, lang, fm, sm = shown_text(p, player)
     tr = L.translation_for(p, player)
-    fm, sm = p['original']['font'], p['size_main']
-    main = [t for s in segs for t in s['main']]
-    trl = [t for s in segs for t in s.get(tr, [])] if tr else []
+    main = [t for s in segs for t in seg_lines(s, key)]
+    trl = [t for s in segs for t in seg_lines(s, tr)] if tr else []
     # relative layout (first main baseline at 0)
     mb_last = -(len(main) - 1) * pitch_em(fm) * sm
     top = top_em(fm) * sm
@@ -187,9 +213,13 @@ def block_layout(p, player, segs=None):
         t_first = mb_last - (pitch_em(ft) * st + 0.35 * sm)
         bot = t_first - (len(trl) - 1) * pitch_em(ft) * st + bot_em(ft) * st
     shift = el - (top + bot) / 2.0
+    if p.get('picture'):
+        # Tianwen: the Han characters ARE the picture (act 9 lights a star on each one at the zh layout's positions),
+        # so they sit exactly where the zh player sees them; the player's line simply hangs beneath
+        shift = el - (top_em(fm) * sm + mb_last + bot_em(fm) * sm) / 2.0
 
     def build(sh):
-        objs = [_obj('main', p['original']['lang'], fm, sm, main, d, el, 0.0 + sh)]
+        objs = [_obj('main', lang, fm, sm, main, d, el, 0.0 + sh, dict(shown=key))]
         if trl:
             objs.append(_obj('translation', tr, p['translations'][tr]['font'], p['size_tr'], trl, d, el, t_first + sh))
         return objs
@@ -202,6 +232,8 @@ def block_layout(p, player, segs=None):
         adj = EL_MAX - hi
     elif lo < EL_MIN:
         adj = EL_MIN - lo
+    if adj and p.get('picture'):
+        raise ValueError('%s/%s: the picture would have to move (%.2f°)' % (p['id'], player, adj))
     if adj:
         objs = build(shift + adj)
     if p['id'] == 'P09_Tianwen':                      # §6·9: at F13 every Han character becomes a star
@@ -233,14 +265,13 @@ def block_layout(p, player, segs=None):
                     k += 1
         o['star_points'] = pts
         o['char_objects'] = chars
-    return add_scrims(dict(player=player, translation=tr, anchor=[p['place'][0], el, d], block_center_el=round(el + adj, 3),
-                shift_deg=round(adj, 3), objects=objs), p)
+    return add_scrims(dict(player=player, shown=key, shown_lang=lang, translation=tr, anchor=[p['place'][0], el, d],
+                           block_center_el=round(el + adj, 3), shift_deg=round(adj, 3), objects=objs,
+                           block=block_box(objs, p['place'][0])), p)
 
 
 # ------------------------------------------------------------------------------ Zhuangzi (§6·8)
-ZH_GAP_EM = 0.30        # horizon -> nearest em box; the column is then evenly spaced with the horizon in the middle
-ZH_CAPTION_GAP_EM = 0.40  # last mirrored line -> caption top, in main em
-ZH_CAPTION_TIMING = dict(fade_out_s=1.0, fade_in_delay_s=0.8, focus_s=2.5)
+ZH_GAP_EM = 0.30        # v3 constant (CJK): v4 derives the gap from the shown language's pitch (same 0.30 em for CJK)
 
 
 def zhuangzi_times(p):
@@ -251,51 +282,53 @@ def zhuangzi_times(p):
 
 
 def zhuangzi_layout(p, player, t_now=None):
-    """§6·8 mirror treatment, v3 of this kit (bible v2.1: only L1 and L3; L2 is not shown, E25):
-       * only the ORIGINAL is mirrored. Column (em boxes, from the top): L1, L3', | horizon |, L3, L1'.
-         The line whose upright copy is BELOW the horizon (L3, read looking down) sits next to the horizon, so the
-         typesetting flips exactly at "其视下也，亦若是则已矣"; L1 and its mirror frame the column. Pitch = the bible's
-         1.6 em everywhere, the horizon in the middle of the central 0.6 em gap: one evenly spaced block that
-         reflects onto itself (centres +5.28°, +1.76°, -1.76°, -5.28° at 2.2°);
-       * the player's translation is NOT mirrored: one 'caption slot' under the column shows the translation of the
-         newest line (T1 at 971.4, T3 at 976.4 + 0.8 s), so the stack never grows (§7.3: every centre in [-15, +10]);
+    """§6·8 mirror treatment, v4 of this kit (D-30: each player sees ONE language; bible v2.1: only L1 and L3):
+       * the player's text is mirrored (the original for zh players, 書き下し for ja, English for everyone else).
+         Column (from the top): L1, L3', | horizon |, L3, L1'. The line whose upright copy is BELOW the horizon
+         (L3, read looking down) sits next to the horizon, so the typesetting flips exactly at "其视下也，亦若是则已矣";
+         L1 and its mirror frame the column. A segment may have several lines (ja / en); the column keeps the
+         language's own pitch (1.6 em CJK, 1.35 em Latin) everywhere, the horizon in the middle of the central gap:
+         one evenly spaced block that reflects onto itself;
+       * no caption slot any more (v3 put the translation under the column);
        * everything leaves together at 989.0 for 4 s, in step with the F12 sun-line collapse: objects above the
          horizon drift up, objects below drift down (each upright / mirror pair separates, the reflection stays exact).
     t_now (s after L1): if given, only objects visible at that moment are returned (for the time strip)."""
     az, el0, d = p['place']
-    fm, sm = p['original']['font'], p['size_main']
+    key, lang, fm, sm = shown_text(p, player)
     segs = p['segments']
     times, t_exit, exit_s = zhuangzi_times(p)
-    tr = L.translation_for(p, player)
     objs = []
-    # slot k (1 = nearest the horizon) em box above: [g + (k-1)*1.6, g + (k-1)*1.6 + 1]; baseline = bottom + 0.12
-    def bl_above(k):
-        return (ZH_GAP_EM + (k - 1) * 1.6 + (-CJK_BOT)) * sm
-    def bl_below(k):
-        return -(ZH_GAP_EM + (k - 1) * 1.6 + 1.0) * sm + (-CJK_BOT) * sm
+    pitch = pitch_em(fm)
+    box = top_em(fm) - bot_em(fm)
+    gap_between = pitch - box                  # em between the em boxes of neighbouring lines
+    gap0 = gap_between / 2.0                   # horizon -> nearest em box (CJK: 0.30 em, as in v3)
+    lines_of = [seg_lines(s_, key) for s_ in segs]
     # the line flipped to read below the horizon goes next to it; the others stack outward in reading order
-    flipped = [i for i, s in enumerate(segs) if s.get('upright') == 'below']
-    normal = [i for i, s in enumerate(segs) if s.get('upright') != 'below']
-    slot_of = {}
-    for k, i in enumerate(flipped):
-        slot_of[i] = k + 1
-    for k, i in enumerate(reversed(normal)):
-        slot_of[i] = len(flipped) + k + 1
-    n_slots = len(segs)
+    flipped = [i for i, s_ in enumerate(segs) if s_.get('upright') == 'below']
+    normal = [i for i, s_ in enumerate(segs) if s_.get('upright') != 'below']
+    order = flipped + list(reversed(normal))   # slot 1, 2, ... outward from the horizon
+    off = {}
+    acc = gap0
+    for i in order:
+        off[i] = acc                           # em from the horizon to the near edge of this slot's em boxes
+        acc += (len(lines_of[i]) - 1) * pitch + box + gap_between
     lid = lambda i: s_id(segs[i], i)
-    for i, s in enumerate(segs):
-        k = slot_of[i]
-        text = s['main']
-        up_bl = bl_below(k) if s.get('upright') == 'below' else bl_above(k)
+    for i, s_ in enumerate(segs):
+        text = lines_of[i]
+        n = len(text)
+        if s_.get('upright') == 'below':
+            up_bl = (-off[i] - top_em(fm)) * sm                           # first line's em box touches -off
+        else:
+            up_bl = (off[i] - bot_em(fm) + (n - 1) * pitch) * sm          # last line's em box touches +off
         up_exit = 'up 0.2°' if up_bl > 0 else 'down 0.2°'
         mi_exit = 'down 0.2°' if up_bl > 0 else 'up 0.2°'
         common = dict(appear_s=times[i], appear_t=round(p['t_appear'] + times[i], 2), exit_at_s=t_exit,
-                      exit_t=round(p['t_appear'] + t_exit, 2), exit_s=exit_s)
-        o = _obj('main', 'zh', fm, sm, text, d, el0, up_bl,
+                      exit_t=round(p['t_appear'] + t_exit, 2), exit_s=exit_s, shown=key)
+        o = _obj('main', lang, fm, sm, text, d, el0, up_bl,
                  dict(id=lid(i), exit=up_exit, alpha=p['opacity'], **common))
         objs.append(o)
         # mirror: same object, transform at -baseline, localScale.y = -1 (exact reflection about the horizon plane)
-        mo = _obj('mirror', 'zh', fm, sm, text, d, el0, up_bl,
+        mo = _obj('mirror', lang, fm, sm, text, d, el0, up_bl,
                   dict(id=lid(i) + '′', exit=mi_exit, alpha=round(p['opacity'] * 0.5, 3), outline_softness=0.3, **common))
         mo['scale_y'] = -1
         mo['first_baseline_el'] = round(-up_bl, 3)
@@ -304,44 +337,16 @@ def zhuangzi_layout(p, player, t_now=None):
         mo['center_el'] = round(-o['center_el'], 3)
         mo['local_y_m'] = round(-o['local_y_m'], 4)
         objs.append(mo)
-    if tr:
-        ft, st = p['translations'][tr]['font'], p['size_tr']
-        col_bottom = -(ZH_GAP_EM + (n_slots - 1) * 1.6 + 1.0) * sm
-        cap_top = col_bottom - ZH_CAPTION_GAP_EM * sm
-        first = cap_top - top_em(ft) * st
-        T = ZH_CAPTION_TIMING
-        for i, s in enumerate(segs):
-            lines = s.get(tr, [])
-            t_in = times[i] + (T['fade_in_delay_s'] if i > 0 else 0.0)
-            last = i + 1 >= len(times)
-            t_out = t_exit if last else times[i + 1]
-            o = _obj('caption', tr, ft, st, lines, d, el0, first,
-                     dict(id='T' + lid(i)[1:], appear_s=t_in, appear_t=round(p['t_appear'] + t_in, 2),
-                          fade_out_at_s=t_out, fade_out_t=round(p['t_appear'] + t_out, 2),
-                          fade_out_s=exit_s if last else T['fade_out_s'],
-                          exit=('down 0.2° with the rest (%.1f s)' % exit_s) if last else
-                               ('fade %.1f s when %s appears' % (T['fade_out_s'], lid(i + 1))),
-                          alpha=p['opacity']))
-            objs.append(o)
     lay = add_scrims(dict(anchor=[az, el0, d], objects=objs), p)
     scr = lay['scrims']
+    blk = block_box(objs, az)
     if t_now is not None:
-        vis = []
-        for o in objs:
-            if o['appear_s'] > t_now:
-                continue
-            if o['role'] == 'caption' and o.get('fade_out_at_s', 99) + o.get('fade_out_s', 0) <= t_now:
-                continue
-            vis.append(o)
-        objs = vis
-    return dict(player=player, translation=tr, anchor=[az, el0, d], block_center_el=0.0, shift_deg=0.0,
-                objects=objs, scrims=scr,
-                rule='column: %s | horizon | %s (only the original is mirrored); translation in one caption slot under '
-                     'the column, changing with each line' % (
-                         ', '.join(o['id'] for o in sorted([o for o in objs if o['role'] in ('main', 'mirror') and o['center_el'] > 0],
-                                                           key=lambda o: -o['center_el'])),
-                         ', '.join(o['id'] for o in sorted([o for o in objs if o['role'] in ('main', 'mirror') and o['center_el'] < 0],
-                                                           key=lambda o: -o['center_el']))))
+        objs = [o for o in objs if o['appear_s'] <= t_now]
+    return dict(player=player, shown=key, shown_lang=lang, translation=None, anchor=[az, el0, d], block_center_el=0.0,
+                shift_deg=0.0, objects=objs, scrims=scr, block=blk,
+                rule='column: %s | horizon | %s (the player\'s own language, mirrored; no caption in v4)' % (
+                         ', '.join(o['id'] for o in sorted([o for o in objs if o['center_el'] > 0], key=lambda o: -o['center_el'])),
+                         ', '.join(o['id'] for o in sorted([o for o in objs if o['center_el'] < 0], key=lambda o: -o['center_el']))))
 
 
 def s_id(seg_, i):

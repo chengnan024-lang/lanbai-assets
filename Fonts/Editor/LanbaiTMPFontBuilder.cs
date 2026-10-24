@@ -49,14 +49,14 @@ namespace Lanbai.Fonts.EditorTools
         {
             new Spec("SourceHanSerifSC-Regular", "LanbaiSerifSC-Regular.otf", "charset_SourceHanSerifSC-Regular.txt", "Lanbai_SerifSC_Regular SDF", 2048, 2048, false),
             new Spec("SourceHanSerifSC-Medium", "LanbaiSerifSC-Medium.otf", "charset_SourceHanSerifSC-Medium.txt", "Lanbai_SerifSC_Medium SDF", 2048, 2048, false),
-            new Spec("SourceHanSerifJP-Medium", "LanbaiSerifJP-Medium.otf", "charset_SourceHanSerifJP-Medium.txt", "Lanbai_SerifJP_Medium SDF", 2048, 2048, false),
+            new Spec("SourceHanSerifJP-Regular", "LanbaiSerifJP-Regular.otf", "charset_SourceHanSerifJP-Regular.txt", "Lanbai_SerifJP_Regular SDF", 2048, 2048, false),   // v4: every Japanese poem line (D-30)
+            new Spec("SourceHanSerifJP-Medium", "LanbaiSerifJP-Medium.otf", "charset_SourceHanSerifJP-Medium.txt", "Lanbai_SerifJP_Medium SDF", 2048, 2048, false),     // v4: only the Tianwen sub-line
             new Spec("EBGaramond-Regular", "EBGaramond-Regular.Lanbai.ttf", "charset_EBGaramond-Regular+ascii.txt", "Lanbai_Garamond_Regular SDF", 1024, 1024, false),
             new Spec("EBGaramond-Italic", "EBGaramond-Italic.Lanbai.ttf", "charset_EBGaramond-Italic+ascii.txt", "Lanbai_Garamond_Italic SDF", 1024, 1024, false),
             new Spec("BarlowSemiCondensed-SemiBold", "BarlowSemiCondensed-SemiBold.Lanbai.ttf", "charset_BarlowSemiCondensed-SemiBold+ascii.txt", "Lanbai_Barlow_SemiBold SDF", 1024, 1024, false),
-            // optional: the Sign kit already bakes the credits / Coleridge slip, and all Japanese text is a Medium line
+            // optional: the Sign kit already bakes the credits / Coleridge slip
             new Spec("IMFellEnglish-Roman", "LanbaiSlip-Regular.ttf", "charset_IMFellEnglish-Roman+ascii.txt", "Lanbai_Slip_Roman SDF", 1024, 1024, true),
             new Spec("IMFellEnglishSC", "LanbaiSlipSC-Regular.ttf", "charset_IMFellEnglishSC+ascii.txt", "Lanbai_Slip_SC SDF", 1024, 1024, true),
-            new Spec("SourceHanSerifJP-Regular", "LanbaiSerifJP-Regular.otf", "charset_SourceHanSerifJP-Regular.txt", "Lanbai_SerifJP_Regular SDF", 2048, 2048, true),
         };
 
         // ------------------------------------------------------------------------------------------ menus
@@ -66,7 +66,7 @@ namespace Lanbai.Fonts.EditorTools
         [MenuItem("蓝白/Fonts/Build TMP Font Assets (SDFAA, fast fallback)")]
         static void MenuBuildFast() { Debug.Log(BuildAllFast()); }
 
-        [MenuItem("蓝白/Fonts/Build Optional Font Assets (Slip = IM FELL subsets, JP Regular)")]
+        [MenuItem("蓝白/Fonts/Build Optional Font Assets (Slip = IM FELL subsets)")]
         static void MenuBuildOptional() { Debug.Log(BuildOptional()); }
 
         [MenuItem("蓝白/Fonts/Verify TMP Font Assets")]
@@ -79,7 +79,7 @@ namespace Lanbai.Fonts.EditorTools
         /// <summary>Required assets, SDFAA (fast; use if SDF32 is too slow or fails on this machine).</summary>
         public static string BuildAllFast() { return Build(GlyphRenderMode.SDFAA, false); }
 
-        /// <summary>Only the optional assets (IM FELL for a TMP credits slip, JP Regular), SDF32.</summary>
+        /// <summary>Only the optional assets (IM FELL for a TMP credits slip), SDF32.</summary>
         public static string BuildOptional() { return Build(GlyphRenderMode.SDF32, true); }
 
         /// <summary>Build one asset by key, e.g. "SourceHanSerifSC-Regular"; mode "SDF32" or "SDFAA".</summary>

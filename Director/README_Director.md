@@ -1,4 +1,4 @@
-# Director · 分发层 v1（`Director/`）
+# Director · 分发层 v1.1（`Director/`）
 
 维护：总工程师。**没在 Unity 里编译过**：C# 用 `Common/Tools~/compile_check/check_cs.sh` 做了 Roslyn 类型检查（editor + player 两遍、U# 规则），生成器跑过一次真生成（对门的 `LanbaiGateClouds` + 一个假的海驱动），生成结果和门的驱动一起编译通过、重复生成不变（幂等）。
 
@@ -14,7 +14,12 @@
    // 出生的 3 秒黑场里调一次（圣经 §1.9：所有根物体在相机前激活 2 帧预热 shader）：
    if (dispatcher != null) dispatcher.LanbaiPrewarm();
    ```
-   接管开关要的“哪些时间段有驱动接管”：`dispatcher.windowsFlat`（t0, t1 成对）或 `dispatcher.LanbaiCovered(t)`。
+   **接管开关（v1.1，2026-10-24）**：分发层按“这个驱动写什么”分开给窗口——
+   ```csharp
+   bool atm = dispatcher != null && extAtmosphere && dispatcher.LanbaiCoversAtmosphere(t);  // 这一帧不写 RenderSettings 的雾 / 环境色
+   bool sun = dispatcher != null && extSun && dispatcher.LanbaiCoversSun(t);               // 这一帧不写主光
+   ```
+   （数组版：`atmosphereWindowsFlat`、`sunWindowsFlat`，t0, t1 成对。）**不要再用 `windowsFlat` / `LanbaiCovered(t)` 做接管开关**：那是所有驱动的窗口并起来，里面有不写 RenderSettings 的驱动（天空默认、门、第 9 幕），照它让出去那几段就没人写了（`Engineering/README_集成.md` §3）。它们只留给“关掉旧占位组”用。
 
 ## 0.5 曝光：驱动只算，`ApplyGrades` 唯一写（总导演 10-23 对镜子的裁决）
 
@@ -59,11 +64,13 @@ for 每个驱动（按类名、再按场景层级排序，固定顺序）：
 3. `Start()` 里写好 MaterialPropertyBlock 和全局量（`CONTROL_总控.md` §6 第 9 条）。
 4. 只写自己的东西（`Engineering/README_集成.md` §2）：不碰 PPv2、不写 `RenderSettings`（除非这一幕已经由接管开关交给你）、不碰车。两个窗口重叠的驱动不能写同一个全局量——**3 Report** 会列出所有重叠。
 5. 每个 U# 脚本要有程序资产（U# 1.x 只编有 `.asset` 的脚本）：各包的搭建脚本自己建。
+6. **（v1.1）报出自己写什么**：会在自己的窗口里写 `RenderSettings` 的雾 / 环境色的驱动，加 `public bool LanbaiWritesAtmosphere()`；写那一盏主光的，加 `public bool LanbaiWritesSun()`。已经有 `public bool writeRenderSettings` / `writeMainLight` 字段的驱动（门内、海）不用加，生成器直接读字段。分发层在 `Start()` 读一次（之后在 Inspector 里改开关要重进 Play）。**3 Report** 会在每个驱动后面标 `[atmosphere]` / `[sun]`，两个都写同一样的驱动窗口重叠时报 `ERROR`。
+   - 现在 main 上：门内、海按字段报（默认关，本地勾上才算）；门、第 9 幕不写；**天空的 `LanbaiSkyDriver` 还没有 `LanbaiWritesAtmosphere()`**——它的 `LanbaiSkyPreset.ownsAtmosphere` 打开时才写 RenderSettings，请天空下次醒来加一行（返回任一预设的 `ownsAtmosphere`），在那之前它被当成“不写”。
 
 ## 4. 已知的
 
 - 没在 Unity / UdonSharp 里编译过。U# 的“对带类型的数组里的元素调用带参数的方法”是 U# 1.x 支持的写法，但要本地编一次确认；如果报错，退路是驱动加一对 `public float lanbaiT; public void _LanbaiTickEv() { LanbaiTick(lanbaiT); }`，分发层改成 `SetProgramVariable` + `SendCustomEvent`（生成器里改三行）。
-- `Docs~/LanbaiActDispatcher_example_generated.cs.txt` 是生成结果的样子（门 + 一个假的海驱动）。
+- `Docs~/LanbaiActDispatcher_example_generated.cs.txt` 是生成结果的样子（v1.1：main 上的五个驱动——第 7 幕、第 9 幕、门、门内、天空；用和生成器同样的模板生成，和五个驱动的源码一起过了 Roslyn 检查，0 错 0 警告）。
 
 ## 5. 以后（Director 这一层还要做的）
 

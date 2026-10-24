@@ -1,4 +1,4 @@
-// 蓝白 · Director · editor side. v1, 2026-10-23, 总工程师.
+// 蓝白 · Director · editor side. v1.1, 2026-10-24, 总工程师 (v1: 2026-10-23).
 // !!! NOT COMPILED IN UNITY: Roslyn type-check only. !!!
 //
 // 蓝白/Director/1 Generate Dispatcher : finds every UdonSharpBehaviour class with the act interface (CONTROL_总控.md §5:
@@ -8,8 +8,12 @@
 // 蓝白/Director/2 Wire Scene        : (after the recompile) makes sure the scene has Lanbai/Director with the dispatcher
 //   (creates its UdonSharpProgramAsset next to the script if none exists, CONTROL §6 item 11), and fills every typed array
 //   with all instances of that class in the open scene (inactive ones too), in hierarchy order.
-// 蓝白/Director/3 Report            : prints every driver, its window, and the overlaps between windows (two drivers active
-//   at the same t must not write the same global / RenderSettings / renderer: Engineering/README_集成.md §2).
+// 蓝白/Director/3 Report            : prints every driver, its window, what it writes (v1.1: atmosphere / sun), and the
+//   overlaps between windows (two drivers active at the same t must not write the same global / RenderSettings / renderer:
+//   Engineering/README_集成.md §2); an overlap of two atmosphere (or two sun) writers is flagged as an ERROR.
+// v1.1: a driver reports what it writes with public bool LanbaiWritesAtmosphere() / LanbaiWritesSun(), or through public
+//   bool fields writeRenderSettings / writeMainLight (WritesHow below); the generated Start() builds
+//   atmosphereWindowsFlat / sunWindowsFlat from them.
 // UdonSharp editor APIs are reached by reflection so this file type-checks without the UdonSharp editor assembly; if a
 // call is not found, the menu says what to do by hand.
 #if UNITY_EDITOR
@@ -53,6 +57,31 @@ namespace Lanbai.Director.Editor
             var act = t.GetMethod("LanbaiActivate", F, null, new[] { typeof(bool) }, null);
             var win = t.GetMethod("LanbaiWindow", F, null, Type.EmptyTypes, null);
             return tick != null && act != null && win != null && win.ReturnType == typeof(float[]);
+        }
+
+        // v1.1: how a driver class reports what it writes. Returns the C# expression on instance `x` (null = never writes it).
+        public static string WritesHow(Type t, string method, string field)
+        {
+            const BindingFlags F = BindingFlags.Public | BindingFlags.Instance;
+            var m = t.GetMethod(method, F, null, Type.EmptyTypes, null);
+            if (m != null && m.ReturnType == typeof(bool)) return "{x}." + method + "()";
+            var f = t.GetField(field, F);
+            if (f != null && f.FieldType == typeof(bool)) return "{x}." + field;
+            return null;
+        }
+
+        static bool WritesNow(Type t, Component c, string method, string field)
+        {
+            const BindingFlags F = BindingFlags.Public | BindingFlags.Instance;
+            try
+            {
+                var m = t.GetMethod(method, F, null, Type.EmptyTypes, null);
+                if (m != null && m.ReturnType == typeof(bool)) return (bool)m.Invoke(c, null);
+                var f = t.GetField(field, F);
+                if (f != null && f.FieldType == typeof(bool)) return (bool)f.GetValue(c);
+            }
+            catch (Exception) { }
+            return false;
         }
 
         static Type FindType(string fullName)
@@ -107,9 +136,21 @@ namespace Lanbai.Director.Editor
                     "            float[] w = {0}[i].LanbaiWindow();\n" +
                     "            if (w != null && w.Length >= 2) {{ {0}_w[2 * i] = w[0]; {0}_w[2 * i + 1] = w[1]; n++; }}\n" +
                     "        }}\n", d, c);
+                string wa = WritesHow(types[k], "LanbaiWritesAtmosphere", "writeRenderSettings");
+                string ws = WritesHow(types[k], "LanbaiWritesSun", "writeMainLight");
                 wins.AppendFormat(
                     "        for (int i = 0; i < {0}.Length; i++)\n" +
-                    "            if ({0}_w[2 * i] <= {0}_w[2 * i + 1]) {{ windowsFlat[2 * n] = {0}_w[2 * i]; windowsFlat[2 * n + 1] = {0}_w[2 * i + 1]; n++; }}\n", d);
+                    "        {{\n" +
+                    "            if ({0}_w[2 * i] > {0}_w[2 * i + 1]) continue;\n" +
+                    "            windowsFlat[2 * n] = {0}_w[2 * i]; windowsFlat[2 * n + 1] = {0}_w[2 * i + 1]; n++;\n" +
+                    "{1}{2}" +
+                    "        }}\n", d,
+                    wa == null ? "" : string.Format(
+                        "            if ({0}[i] != null && {1}) {{ atmosphereWindowsFlat = Grow(atmosphereWindowsFlat, 2 * na + 2); atmosphereWindowsFlat[2 * na] = {0}_w[2 * i]; atmosphereWindowsFlat[2 * na + 1] = {0}_w[2 * i + 1]; na++; }}\n",
+                        d, wa.Replace("{x}", d + "[i]")),
+                    ws == null ? "" : string.Format(
+                        "            if ({0}[i] != null && {1}) {{ sunWindowsFlat = Grow(sunWindowsFlat, 2 * ns + 2); sunWindowsFlat[2 * ns] = {0}_w[2 * i]; sunWindowsFlat[2 * ns + 1] = {0}_w[2 * i + 1]; ns++; }}\n",
+                        d, ws.Replace("{x}", d + "[i]")));
                 var gm = types[k].GetMethod("LanbaiGrade", PF, null, new[] { typeof(float) }, null);
                 bool hasGrade = gm != null && gm.ReturnType == typeof(float[]);
                 string grade = hasGrade
@@ -207,15 +248,22 @@ namespace Lanbai.Director.Editor
                     float[] w = null;
                     try { w = (float[])t.GetMethod("LanbaiWindow").Invoke(c, null); } catch (Exception e) { sb.AppendLine("  " + t.Name + ": LanbaiWindow threw " + e.GetBaseException().Message); }
                     if (w == null || w.Length < 2) continue;
-                    wins.Add(new KeyValuePair<string, float[]>(t.Name + " (" + HierarchyPath(c.transform) + ")", w));
-                    sb.AppendFormat("  {0,8:F2} .. {1,8:F2}  {2}\n", w[0], w[1], t.Name + " @ " + HierarchyPath(c.transform));
+                    bool atm = WritesNow(t, c, "LanbaiWritesAtmosphere", "writeRenderSettings");
+                    bool sun = WritesNow(t, c, "LanbaiWritesSun", "writeMainLight");
+                    wins.Add(new KeyValuePair<string, float[]>(t.Name + " (" + HierarchyPath(c.transform) + ")", new[] { w[0], w[1], atm ? 1f : 0f, sun ? 1f : 0f }));
+                    sb.AppendFormat("  {0,8:F2} .. {1,8:F2}  {2}{3}{4}\n", w[0], w[1], t.Name + " @ " + HierarchyPath(c.transform),
+                        atm ? "  [atmosphere]" : "", sun ? "  [sun]" : "");
                 }
             for (int i = 0; i < wins.Count; i++)
                 for (int j = i + 1; j < wins.Count; j++)
                 {
                     float a = Mathf.Max(wins[i].Value[0], wins[j].Value[0]), b = Mathf.Min(wins[i].Value[1], wins[j].Value[1]);
-                    if (a < b) sb.AppendFormat("  overlap {0:F2} .. {1:F2}: {2} / {3} (must not write the same things)\n", a, b, wins[i].Key, wins[j].Key);
+                    if (!(a < b)) continue;
+                    bool both = (wins[i].Value[2] > 0 && wins[j].Value[2] > 0) || (wins[i].Value[3] > 0 && wins[j].Value[3] > 0);
+                    sb.AppendFormat("  {0} {1:F2} .. {2:F2}: {3} / {4} ({5})\n", both ? "ERROR overlap" : "overlap", a, b, wins[i].Key, wins[j].Key,
+                        both ? "both write RenderSettings or the main light: switch one off" : "must not write the same things");
                 }
+            sb.AppendLine("  LB_Journey: extAtmosphere where dispatcher.LanbaiCoversAtmosphere(t), extSun where dispatcher.LanbaiCoversSun(t) (v1.1).");
             Debug.Log(sb.ToString());
         }
 
