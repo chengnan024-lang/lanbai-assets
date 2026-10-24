@@ -1,4 +1,4 @@
-Lanbai Fonts kit build report  2026-10-24 06:19 UTC
+Lanbai Fonts kit build report  2026-10-24 06:29 UTC
 
 == SUBSETS (original -> subset) ==
 SourceHanSerifSC-Regular       SourceHanSerifCN-Regular.otf       11626108 B -> LanbaiSerifSC-Regular.otf                   77332 B  ( 0.67%)  glyphs 366  renamed Lanbai Serif SC (RFN Source); U+2014 -> full-width mid-line rule (glyph of U+2500)
@@ -75,7 +75,7 @@ Optical offsets (em, move the line RIGHT) where the ink centre is off the TMP bo
   +0.185 em  SourceHanSerifTW-Regular   啊，不！
   +0.204 em  SourceHanSerifTW-Regular   我不肯被拒之門外！
   +0.181 em  SourceHanSerifJP-Regular   いいえ！
-  +0.180 em  SourceHanSerifJP-Regular   引き下がらなかった！
+  +0.177 em  SourceHanSerifJP-Regular   わたしは引き下がらなかった！
   +0.068 em  SourceHanSerifJP-Regular   霊何為れぞ水中にある
   -0.082 em  SourceHanSerifSC-Regular   自深海坠入另一片天空
   -0.081 em  SourceHanSerifTW-Regular   自深海墜入另一片天空
@@ -244,11 +244,11 @@ P04a_Rilke
   de           main         centre   -4.83°   top   -2.50°   bottom   -7.16°   shift +0.00°  ok
 
 P04b_Urlicht
-  zh           main         centre   -8.00°   top   -5.14°   bottom  -10.86°   shift +0.00°  ok
-  zht          main         centre   -8.00°   top   -5.14°   bottom  -10.86°   shift +0.00°  ok
-  ja           main         centre   -8.00°   top   -3.38°   bottom  -12.62°   shift +0.00°  ok
-  en           main         centre   -8.00°   top   -5.67°   bottom  -10.33°   shift +0.00°  ok
-  de           main         centre   -8.00°   top   -5.67°   bottom  -10.33°   shift +0.00°  ok
+  zh           main         centre   -8.00°   top   -5.66°   bottom  -10.34°   shift +0.00°  ok
+  zht          main         centre   -8.00°   top   -5.66°   bottom  -10.34°   shift +0.00°  ok
+  ja           main         centre   -8.00°   top   -5.66°   bottom  -10.34°   shift +0.00°  ok
+  en           main         centre   -8.00°   top   -5.90°   bottom  -10.10°   shift +0.00°  ok
+  de           main         centre   -8.00°   top   -5.90°   bottom  -10.10°   shift +0.00°  ok
 
 P06_Dream_Dawn
   zh           main         centre  -12.00°   top  -10.80°   bottom  -13.20°   shift +0.00°  ok
@@ -304,9 +304,9 @@ P09_Tianwen
   de           translation  centre   -1.03°   top   +3.50°   bottom   -5.55°   shift +0.00°  ok
 
 P11_Zhuangzi_Butterfly
-  zh           main         centre   +8.00°   top  +10.86°   bottom   +5.14°   shift +0.00°  ok
-  zht          main         centre   +8.00°   top  +10.86°   bottom   +5.14°   shift +0.00°  ok
-  ja           main         centre   +8.00°   top  +12.62°   bottom   +3.38°   shift +0.00°  ok
+  zh           main         centre   +8.00°   top  +10.60°   bottom   +5.40°   shift +0.00°  ok
+  zht          main         centre   +8.00°   top  +10.60°   bottom   +5.40°   shift +0.00°  ok
+  ja           main         centre   +8.00°   top  +12.20°   bottom   +3.80°   shift +0.00°  ok
   en           main         centre   +8.00°   top  +11.68°   bottom   +4.32°   shift +0.00°  ok
   de           main         centre   +8.00°   top  +11.68°   bottom   +4.32°   shift +0.00°  ok
 
@@ -318,11 +318,11 @@ P12a_LiBai_Wake
   de           main         centre   -9.00°   top   -3.47°   bottom  -14.53°   shift +0.00°  ok
 
 P12b_Keats
-  zh           main         centre  -14.00°   top  -11.14°   bottom  -16.86°   shift +0.00°  ok
-  zht          main         centre  -14.00°   top  -11.14°   bottom  -16.86°   shift +0.00°  ok
-  ja           main         centre  -14.00°   top   -9.38°   bottom  -18.62°   shift +0.00°  ok
-  en           main         centre  -14.00°   top  -11.67°   bottom  -16.33°   shift +0.00°  ok
-  de           main         centre  -14.00°   top  -11.67°   bottom  -16.33°   shift +0.00°  ok
+  zh           main         centre  -14.00°   top  -11.66°   bottom  -16.34°   shift +0.00°  ok
+  zht          main         centre  -14.00°   top  -11.66°   bottom  -16.34°   shift +0.00°  ok
+  ja           main         centre  -14.00°   top  -10.22°   bottom  -17.78°   shift +0.00°  ok
+  en           main         centre  -14.00°   top  -13.22°   bottom  -14.78°   shift +0.00°  ok
+  de           main         centre  -14.00°   top  -13.22°   bottom  -14.78°   shift +0.00°  ok
 
 == LINE WIDTHS ==
 Line widths in degrees of visual angle at the v4 sizes (limit 28°, bible §7.3, D-30 #2). CJK tracking +0.10 em, Latin 0; kerning = injected kern table.
@@ -356,17 +356,16 @@ P04a_Rilke
    21.1°       de   main        2.0°  als des Schrecklichen Anfang
 
 P04b_Urlicht
-    9.5°       zh   main        2.2°  啊，不！
-   21.6°       zh   main        2.2°  我不肯被拒之门外！
-    9.5°       zht  main        2.2°  啊，不！
-   21.6°       zht  main        2.2°  我不肯被拒之門外！
-    9.5°       ja   main        2.2°  いいえ！
-    9.5°       ja   main        2.2°  わたしは
-   24.0°       ja   main        2.2°  引き下がらなかった！
-    5.4°       en   main        2.0°  Ah no!
-   21.4°       en   main        2.0°  I would not be turned away!
-    7.1°       de   main        2.0°  Ach nein!
-   21.4°       de   main        2.0°  Ich ließ mich nicht abweisen!
+    7.7°       zh   main        1.8°  啊，不！
+   17.6°       zh   main        1.8°  我不肯被拒之门外！
+    7.7°       zht  main        1.8°  啊，不！
+   17.6°       zht  main        1.8°  我不肯被拒之門外！
+    7.7°       ja   main        1.8°  いいえ！
+   27.5°       ja   main        1.8°  わたしは引き下がらなかった！
+    4.8°       en   main        1.8°  Ah no!
+   19.3°       en   main        1.8°  I would not be turned away!
+    6.4°       de   main        1.8°  Ach nein!
+   19.2°       de   main        1.8°  Ich ließ mich nicht abweisen!
 
 P06_Dream_Dawn
    20.9°       zh   main        2.4°  我从天空坠入深海
@@ -428,13 +427,13 @@ P09_Tianwen
    16.5°       en   translation 1.8°  how could it be known?
 
 P11_Zhuangzi_Butterfly
-   21.6°       zh   main        2.2°  不知周之梦为胡蝶与
-   16.7°       zh   main        2.2°  胡蝶之梦为周与
-   21.6°       zht  main        2.2°  不知周之夢為胡蝶與
-   16.7°       zht  main        2.2°  胡蝶之夢為周與
-    7.0°       ja   main        2.2°  知らず
-   26.4°       ja   main        2.2°  周の夢に胡蝶と為れるか
-   26.4°       ja   main        2.2°  胡蝶の夢に周と為れるか
+   19.6°       zh   main        2.0°  不知周之梦为胡蝶与
+   15.2°       zh   main        2.0°  胡蝶之梦为周与
+   19.6°       zht  main        2.0°  不知周之夢為胡蝶與
+   15.2°       zht  main        2.0°  胡蝶之夢為周與
+    6.4°       ja   main        2.0°  知らず
+   24.0°       ja   main        2.0°  周の夢に胡蝶と為れるか
+   24.0°       ja   main        2.0°  胡蝶の夢に周と為れるか
    11.5°       en   main        2.0°  I cannot tell —
    26.5°       en   main        2.0°  did Zhou dream he was a butterfly,
    27.6°       en   main        2.0°  or does a butterfly dream it is Zhou?
@@ -453,15 +452,14 @@ P12a_LiBai_Wake
    21.5°       en   main        2.2°  and rosy clouds of before.
 
 P12b_Keats
-   14.3°       zh   main        2.2°  那乐声已远去
-   24.0°       zh   main        2.2°  我是醒着，还是睡着？
-   14.3°       zht  main        2.2°  那樂聲已遠去
-   24.0°       zht  main        2.2°  我是醒著，還是睡著？
-   19.1°       ja   main        2.2°  あの調べは消えた
-   26.4°       ja   main        2.2°  わたしは醒めているのか
-   16.7°       ja   main        2.2°  眠っているのか
-   15.3°       en   main        2.0°  Fled is that music:—
-   13.8°       en   main        2.0°  Do I wake or sleep?
+   11.7°       zh   main        1.8°  那乐声已远去
+   19.6°       zh   main        1.8°  我是醒着，还是睡着？
+   11.7°       zht  main        1.8°  那樂聲已遠去
+   19.6°       zht  main        1.8°  我是醒著，還是睡著？
+   15.7°       ja   main        1.8°  あの調べは消えた
+   21.6°       ja   main        1.8°  わたしは醒めているのか
+   13.7°       ja   main        1.8°  眠っているのか
+   23.3°       en   main        1.6°  Fled is that music:—Do I wake or sleep?
 
 == BLOCKS (v4: width x height per poem and player) ==
 P03_LiBai_Dream          zh  main  2.40°   2 lines   18.24° x  6.24°  az [40.88, 59.12]  el [-12.12, -5.88]
@@ -474,11 +472,11 @@ P04a_Rilke               zht zht   2.20°   2 lines   14.30° x  5.72°  az [-1.
 P04a_Rilke               ja  ja    2.20°   3 lines   23.98° x  9.24°  az [-6.49, 17.49]  el [-11.74, -2.5]
 P04a_Rilke               en  en    2.00°   2 lines   19.36° x  4.66°  az [-4.18, 15.18]  el [-7.16, -2.5]
 P04a_Rilke               de  main  2.00°   2 lines   21.09° x  4.66°  az [-5.04, 16.05]  el [-7.16, -2.5]
-P04b_Urlicht             zh  zh    2.20°   2 lines   21.56° x  5.72°  az [-10.78, 10.78]  el [-10.86, -5.14]
-P04b_Urlicht             zht zht   2.20°   2 lines   21.56° x  5.72°  az [-10.78, 10.78]  el [-10.86, -5.14]
-P04b_Urlicht             ja  ja    2.20°   3 lines   23.98° x  9.24°  az [-11.99, 11.99]  el [-12.62, -3.38]
-P04b_Urlicht             en  en    2.00°   2 lines   21.45° x  4.66°  az [-10.72, 10.72]  el [-10.33, -5.67]
-P04b_Urlicht             de  main  2.00°   2 lines   21.39° x  4.66°  az [-10.7, 10.7]  el [-10.33, -5.67]
+P04b_Urlicht             zh  zh    1.80°   2 lines   17.64° x  4.68°  az [-8.82, 8.82]  el [-10.34, -5.66]
+P04b_Urlicht             zht zht   1.80°   2 lines   17.64° x  4.68°  az [-8.82, 8.82]  el [-10.34, -5.66]
+P04b_Urlicht             ja  ja    1.80°   2 lines   27.54° x  4.68°  az [-13.77, 13.77]  el [-10.34, -5.66]
+P04b_Urlicht             en  en    1.80°   2 lines   19.30° x  4.19°  az [-9.65, 9.65]  el [-10.1, -5.9]
+P04b_Urlicht             de  main  1.80°   2 lines   19.25° x  4.19°  az [-9.62, 9.62]  el [-10.1, -5.9]
 P06_Dream_Dawn           zh  main  2.40°   1 lines   20.88° x  2.40°  az [-25.44, -4.56]  el [-13.2, -10.8]
 P06_Dream_Dawn           zht zht   2.40°   1 lines   20.88° x  2.40°  az [-25.44, -4.56]  el [-13.2, -10.8]
 P06_Dream_Dawn           ja  ja    2.40°   2 lines   18.24° x  6.24°  az [-24.12, -5.88]  el [-15.12, -8.88]
@@ -504,9 +502,9 @@ P09_Tianwen              zht main  2.20°   2 lines   23.98° x  5.72°  az [-11
 P09_Tianwen              ja  main  2.20°   5 lines   27.54° x 15.08°  az [-13.77, 13.77]  el [-4.22, 10.86]
 P09_Tianwen              en  main  2.20°   6 lines   25.31° x 16.41°  az [-12.65, 12.65]  el [-5.55, 10.86]
 P09_Tianwen              de  main  2.20°   6 lines   25.31° x 16.41°  az [-12.65, 12.65]  el [-5.55, 10.86]
-P11_Zhuangzi_Butterfly   zh  main  2.20°   2 lines   21.56° x  5.72°  az [-10.78, 10.78]  el [5.14, 10.86]
-P11_Zhuangzi_Butterfly   zht zht   2.20°   2 lines   21.56° x  5.72°  az [-10.78, 10.78]  el [5.14, 10.86]
-P11_Zhuangzi_Butterfly   ja  ja    2.20°   3 lines   26.40° x  9.24°  az [-13.2, 13.2]  el [3.38, 12.62]
+P11_Zhuangzi_Butterfly   zh  main  2.00°   2 lines   19.60° x  5.20°  az [-9.8, 9.8]  el [5.4, 10.6]
+P11_Zhuangzi_Butterfly   zht zht   2.00°   2 lines   19.60° x  5.20°  az [-9.8, 9.8]  el [5.4, 10.6]
+P11_Zhuangzi_Butterfly   ja  ja    2.00°   3 lines   24.00° x  8.40°  az [-12.0, 12.0]  el [3.8, 12.2]
 P11_Zhuangzi_Butterfly   en  en    2.00°   3 lines   27.56° x  7.36°  az [-13.78, 13.78]  el [4.32, 11.68]
 P11_Zhuangzi_Butterfly   de  en    2.00°   3 lines   27.56° x  7.36°  az [-13.78, 13.78]  el [4.32, 11.68]
 P12a_LiBai_Wake          zh  main  2.40°   2 lines   15.60° x  6.24°  az [42.2, 57.8]  el [-12.12, -5.88]
@@ -514,8 +512,8 @@ P12a_LiBai_Wake          zht zht   2.40°   2 lines   15.60° x  6.24°  az [42.
 P12a_LiBai_Wake          ja  ja    2.40°   3 lines   20.88° x 10.08°  az [39.56, 60.44]  el [-14.04, -3.96]
 P12a_LiBai_Wake          en  en    2.20°   4 lines   21.50° x 11.07°  az [39.25, 60.75]  el [-14.53, -3.47]
 P12a_LiBai_Wake          de  en    2.20°   4 lines   21.50° x 11.07°  az [39.25, 60.75]  el [-14.53, -3.47]
-P12b_Keats               zh  zh    2.20°   2 lines   23.98° x  5.72°  az [38.01, 61.99]  el [-16.86, -11.14]
-P12b_Keats               zht zht   2.20°   2 lines   23.98° x  5.72°  az [38.01, 61.99]  el [-16.86, -11.14]
-P12b_Keats               ja  ja    2.20°   3 lines   26.40° x  9.24°  az [36.8, 63.2]  el [-18.62, -9.38]
-P12b_Keats               en  main  2.00°   2 lines   15.27° x  4.66°  az [42.37, 57.63]  el [-16.33, -11.67]
-P12b_Keats               de  main  2.00°   2 lines   15.27° x  4.66°  az [42.37, 57.63]  el [-16.33, -11.67]
+P12b_Keats               zh  zh    1.80°   2 lines   19.62° x  4.68°  az [40.19, 59.81]  el [-16.34, -11.66]
+P12b_Keats               zht zht   1.80°   2 lines   19.62° x  4.68°  az [40.19, 59.81]  el [-16.34, -11.66]
+P12b_Keats               ja  ja    1.80°   3 lines   21.60° x  7.56°  az [39.2, 60.8]  el [-17.78, -10.22]
+P12b_Keats               en  main  1.60°   1 lines   23.30° x  1.57°  az [38.35, 61.65]  el [-14.78, -13.22]
+P12b_Keats               de  main  1.60°   1 lines   23.30° x  1.57°  az [38.35, 61.65]  el [-14.78, -13.22]

@@ -75,38 +75,39 @@ def main():
         if fam:
             print('family %s*: %d names from shader declarations' % (pre, len(fam)))
     names = sorted(names)
+    unresolved = []
     for n in names:
         stated = re.search(r'`%s`[^|]*\|\s*(float4|float3|float2|float)\b' % re.escape(n), rowtext.get(n, ''))
-        guessed = n not in types and n not in KNOWN and not stated
+        pass
         sib = re.sub(r'\d+$', '', n)
         sib_t = {next(iter(types[k])) for k in types if re.sub(r'\d+$', '', k) == sib and k != n and re.search(r'\d$', k)}
         if n in types:
             t = next(iter(types[n]))
+            if stated and stated.group(1) != t:
+                unresolved.append((n, 'registry says %s, shaders declare %s' % (stated.group(1), t)))
+                continue
         elif n in KNOWN:
             t = KNOWN[n]
         elif stated:
             t = stated.group(1)
         elif re.search(r'\d$', n) and len(sib_t) == 1:
-            t, guessed = next(iter(sib_t)), False          # _Udon_Lamp3 = the type of the declared _Udon_Lamp0
+            t = next(iter(sib_t))                          # _Udon_Lamp3 = the type of the declared _Udon_Lamp0
         else:
-            row = rowtext.get(n, '')
-            if 'Cube' in n:
-                t = 'samplerCUBE'
-            elif n.endswith('Tex') or n.endswith('Texture'):
-                t = 'sampler2D'
-            elif re.search(r'`%s`[^|]*\|\s*float4\b|\|\s*float4\b' % re.escape(n), row) or re.search(r'xyz|rgb|float4', row):
-                t = 'float4'
-            elif re.search(r'\bfloat\b|0\.\.1|0–1|秒', row):
-                t = 'float'
-            else:
-                t = 'float4'
-        tag = (' // reserved' if n in reserved else '') + (' // type guessed from the registry row: confirm' if guessed else '')
+            unresolved.append((n, rowtext.get(n, '').strip()[:160]))      # D-32 #1: never guess a type
+            continue
+        tag = (' // reserved' if n in reserved else '') + ''
         out += ['#ifndef LANBAI_DECL_%s' % n, '#define LANBAI_DECL_%s' % n, '%s %s;%s' % (t, n, tag), '#endif']
+    if unresolved:
+        print('NO TYPE for %d registered name(s): declare it in a shader, or write its type in the registry row '
+              '(`_Udon_X` | float4 | ...), or add it to KNOWN. Nothing written.' % len(unresolved))
+        for n, row in unresolved:
+            print('  %s    <- %s' % (n, row))
+        sys.exit(2)
     out += ['', '#endif // LANBAI_GLOBALS_INCLUDED', '']
     txt = '\n'.join(out)
     if a.out:
         open(a.out, 'w', encoding='utf-8').write(txt)
-        print('wrote %s (%d globals, %d with a guessed type)' % (a.out, len(names), txt.count('type guessed')))
+        print('wrote %s (%d globals, every type from a declaration, the registry or KNOWN; none guessed)' % (a.out, len(names)))
     else:
         sys.stdout.write(txt)
 

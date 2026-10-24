@@ -117,6 +117,8 @@ public float[] LanbaiWindow()         // {开始 t, 结束 t}，含预热
 | 1001.21 → 1149.31 | 第 9 幕 → F16 | **第 9 幕** `LanbaiAct09Driver` | `SkyBlend`、`SkyFx`、`Fog`、`GalaxyGain`、`StarGain`；1009.21 起加 `Zenith/Horizon/FogBand/NadirColor` | 窗口 992.06 开（例外：开的时候什么都看不见）。`blue_hour` 里这几个量和 1001.21 写的一样，接得上 |
 | 1149.31 → 片尾 | F16 白 → 第 11、12 幕 | 天空 `Lanbai_SkyDriver_Acts11to12`（`overcast_rain_night`，白遮罩下） | 全部名字 | 第 10 幕的白里天被遮住，没人写也看不见 |
 
+**车厢的量在门内窗口里让出去（D-32 #2）**：车厢驱动在门内的窗口 **[177.55, 252.64]** 里不写 `_Udon_CabinAmbient`、`_Udon_RadioDial`、`_Udon_CabinSlice`、`_Udon_CabinSliceColor`（车厢驱动的 `yieldToInside`），这段由门内写（穿越光带、环境色从门的到门内、收音机表盘）。**Director 3 Report 会报车厢驱动和门内的窗口重叠：这处是有意的**，两个不写同一个量。窗口外（177.55 之前、252.64 之后）这几个量归车厢驱动。
+
 ### 8.2 主光（D-24：全片只有一盏带阴影的主光 = `RenderSettings.sun` = 门测试里的 `Gate_Lights/Moon`）
 
 | t | 写的人 | 写什么 | 备注 |

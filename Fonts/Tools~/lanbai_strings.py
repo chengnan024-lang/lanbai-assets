@@ -313,15 +313,15 @@ POEMS = [
 V4 = {   # poem id: (size_cjk, size_lat, note)
     'P03_LiBai_Dream':        (2.4, 2.2, None),
     'P04a_Rilke':             (2.2, 2.0, 'D-13：里尔克 2.0° em'),
-    'P04b_Urlicht':           (2.2, 2.0, 'v3 是 1.8°（“耳语”）；D-30 #2 只剩一份就用主行字号，夹到 2.0° em / CJK 2.2°'),
+    'P04b_Urlicht':           (1.8, 1.8, 'D-30a #2：原本就定得小，小是设计（“耳语”）：拉丁 / 德文 1.8° em、CJK 1.8°'),
     'P06_Dream_Dawn':         (2.4, 2.2, None),
     'P07_HeBo':               (2.2, 2.0, None),
     'P08a_Dream_Dusk':        (2.4, 2.2, None),
     'P08b_Zhuangzi_Xiaoyao':  (2.2, 2.0, None),
     'P09_Tianwen':            (2.2, 2.0, '例外（D-30 #4）：汉字 2.2° 给所有人；不是中文的玩家下面另有一行 1.8°'),
-    'P11_Zhuangzi_Butterfly': (2.2, 2.0, 'v3 是 2.0°（“小而安静”）；夹到 CJK 2.2°，安静靠 80% 不透明度'),
+    'P11_Zhuangzi_Butterfly': (2.0, 2.0, 'D-30a #2：原本就定得小（“小而安静”）：CJK 2.0°、拉丁 2.0° em'),
     'P12a_LiBai_Wake':        (2.4, 2.2, None),
-    'P12b_Keats':             (2.2, 2.0, 'v3 是 1.6°；夹到 2.0° em / CJK 2.2°'),
+    'P12b_Keats':             (1.8, 1.6, 'D-30a #2：原本就定得小：拉丁 1.6° em、CJK 1.8°'),
 }
 for p in POEMS:
     p['size_cjk'], p['size_lat'], note = V4[p['id']]
@@ -331,8 +331,8 @@ for p in POEMS:
         # the ja column (2 + 2 lines, mirrored about the horizon) is 4.8 em from the horizon to L1's centre: at 2.2°
         # L1 would sit at +10.56°, over §7.3's "never above +10°". 2.08° puts it at +9.98°. 0.12° under D-30's 2.2°.
         p['size_by_lang'] = {'ja': 2.08}
-        p['size_note'] = ('日文这一首 2.08°（不是 2.2°）：日文的镜像列 2 + 2 行，2.2° 时 L1 的中心在 +10.56°，'
-                          '超过 §7.3“中心永不高于 +10°”。请总导演定：2.08°，或者 2.2° 加例外')
+        p['size_note'] = ('日文这一首 2.08°（D-30a #1 批准）：日文的镜像列 2 + 2 行，2.2° 时 L1 的中心在 +10.56°，'
+                          '超过 §7.3“中心永不高于 +10°”')
     if p['id'] == 'P09_Tianwen':
         p['picture'] = True                  # D-30 #4: the Han characters are the picture; sub-line 1.8° (size_tr)
     if p['id'] == 'P04a_Rilke':
@@ -347,7 +347,6 @@ V4_LINES = {
     ('P03_LiBai_Dream', 0, 'en'): ['I would dream my way', 'to Wu and Yue,'],
     ('P04a_Rilke', 0, 'ja'): ['美とは、', '恐ろしいものの', '始まりにほかならない'],   # D-13 (bus re-check, main cae5b7e)
     ('P03_LiBai_Dream', 1, 'ja'): ['一夜飛んで度る', '鏡湖の月'],
-    ('P04b_Urlicht', 0, 'ja'): ['いいえ！', 'わたしは', '引き下がらなかった！'],
     ('P07_HeBo', 0, 'en'): ['Houses of fish-scale,', 'halls of dragons,'],
     ('P07_HeBo', 1, 'en'): ['purple-shell gates,', 'a vermilion palace —'],
     ('P07_HeBo', 2, 'en'): ['O spirit, why do you dwell', 'in the water?'],
@@ -356,7 +355,6 @@ V4_LINES = {
     ('P12a_LiBai_Wake', 0, 'ja'): ['惟だ覚めし時の', '枕席のみ'],
     ('P12a_LiBai_Wake', 0, 'en'): ['Only the pillow and mat', 'of waking —'],
     ('P12a_LiBai_Wake', 1, 'en'): ['lost, the mists', 'and rosy clouds of before.'],
-    ('P12b_Keats', 0, 'main'): ['Fled is that music:—', 'Do I wake or sleep?'],
 }
 for (pid, i, key), lines in V4_LINES.items():
     p_ = next(q for q in POEMS if q['id'] == pid)
