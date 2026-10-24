@@ -54,6 +54,7 @@ def main():
         door_analytic=dict(slot='_Udon_Lamp7', centre=[H['door_x'], round(L.PLAT['height_m'] + H['door_size'][1] / 2, 3), round(L.DOOR_Z + 0.9, 3)],
                            half_height=H['door_size'][1] / 2, intensity=T.get('door_spec_I', 60.0), color='#FFB74D', radius_m=0.6, dir=[0, 0, -1, 0],
                            note='门作为竖直线光源只出高光：湿石面（台基面、台阶）上的亮带。门的漫反射只留 ×0.35 的面光（阴影不发暖，§1.3 第 2 条）'),
+        door_accent=dict(type='Area (Baked)', size=[6.0, 5.0], pos=[H['door_x'], L.PLAT['height_m'] + 5.0, round(L.DOOR_Z - 7.0, 2)], color='#FFD9A0', aim=[H['door_x'], L.PLAT['height_m'] + 5.5, L.DOOR_Z], note='D-31：每个烘焙场景只提亮一个要读的东西 = 亮着的空门；只参与烘焙，本身看不见'),
         door_glow=dict(color='#FFB74D', gain=3.0, atten=0.004, plane_z=round(L.DOOR_Z + 5.0, 2), cones=dict(count=3, length_m=20.0, alpha=0.06)),
         flames=dict(shader='Lanbai/PalaceFlame', flame_fill='#FF5E2A @ +3.11', flame_linear=[round(c * 2 ** 3.11, 4) for c in lin('#FF5E2A')],
                     screen='#FFC46A', halo_radius_m=1.5, halo_mid_fill='#446282', atten=0.004, fps=6, min_pixels=1.2),
@@ -90,6 +91,9 @@ def main():
     cs.append('    public static readonly float[] DoorColor = %s;   // 线性 #FFB74D' % arr(lin('#FFB74D')))
     cs.append('    public static readonly float DoorAreaI = %.4ff, PourRatio = %.3ff;' % (T['door_area_I'], T.get('pour_ratio', 0.6)))
     pour = [H['door_x'], L.PLAT['height_m'] + H['door_size'][1] - 0.6, L.DOOR_Z + 0.3]
+    acc = [H['door_x'], L.PLAT['height_m'] + 5.0, L.DOOR_Z - 7.0]
+    cs.append('    public static readonly float[] DoorAccentPos = %s;   // D-31：只参与烘焙的面光，门前 7 m、朝门' % arr(acc))
+    cs.append('    public static readonly float DoorAccentI = %.3ff;   // 按灰卡校（README §4），单位没对过' % (T.get('door_accent_I', 500.0) / 4000.0))
     cs.append('    public static readonly float[] DoorPourPos = %s;   // 门楣处，朝外向下 35°' % arr(pour))
     cs.append('    public static readonly float[] AmbSky = %s, AmbEquator = %s, AmbGround = %s;' % (arr(lin('#0E3050')), arr(lin('#0A2238')), arr(lin('#1A1422'))))
     cs.append('    public static readonly float[] FlameLinear = %s;' % arr(J['flames']['flame_linear']))

@@ -66,7 +66,8 @@
 1. `蓝白/Build/7b 宫殿` 之后，`R_Palace/Palace_BakedLights` 下有 **60 盏 Baked 点光**（每盏宫灯一暖一靛）+ **2 盏 Baked 面光**（门里朝外一盏、门楣处向下 35° 一盏）。它们只照宫殿：烘焙时把别的幕的烘焙灯关掉，或用单独的烘焙场景。
    - 暖：`#FF9C2F`，range 4，**Inspector 强度 5.46**（D-00：Inspector = E；点光在 d 处 E = I × (1 − (d/r)⁴)² / d²，所以 2 m 处 E = 1.2，圣经 §6·7b 的校准），软阴影、半径 0.1。
    - 靛：`#2A557B`，range 12，强度 28，**放在灯焰上方 4 m**（水体散射的近似：灯旁仍读成金朱，8 m 外落到靛；第 3 轮定的），无阴影。
-   - 门：`#FFB74D` 的两盏面光（强度见 `PalaceLayout.json` 的 `door_spill`，单位按 Unity 面光，**按下表的灰卡校**——Blender 与 Unity 面光的单位没有对过）。
+   - **门的提亮光 `DoorAccent_BakeOnly`（D-31）**：门前 7 m、朝门的 6 × 5 m 面光，`#FFD9A0`，只参与烘焙。它把门那一开间（门两侧的柱、门楣、斗拱、门前台基面）托出来，让亮着的空门是眼睛第一个落上去的地方。烘焙完可以关掉或删掉（光照贴图里已经有了）。
+   - 门：`#FFB74D` 的面光（强度见 `PalaceLayout.json` 的 `door_spill`，单位按 Unity 面光，**按下表的灰卡校**——Blender 与 Unity 面光的单位没有对过）。
 2. Lighting → Environment：**Source = Gradient（Trilight）**：天 `#0E3050`、赤道 `#0A2238`、地 `#1A1422`（圣经 §6·7b；环境光因此在光照贴图里）。
 3. Lightmapping Settings：Progressive、Lightmap Resolution 4 texel/m（渲染器各自的比例已由搭建脚本设：灯 2、阙 0.8、殿 / 屋 0.6、海草 0.5、台地 0.25）、Bounces 2、Directional 可选。Falloff 用 **InverseSquared**；若你们的不是，按下表校。
 4. **灰卡核对**（0.5 m 方片，albedo `#767676`、smoothness 0，S7b 调色，雾关或在 1 m 内拍）：截图读数应在 ±10 码内。

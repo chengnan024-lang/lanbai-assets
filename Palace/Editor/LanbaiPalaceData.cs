@@ -14,6 +14,8 @@ public static class LanbaiPalaceData
     public static readonly float[] DoorSpillSize = { 3.99000f, 7.12000f };
     public static readonly float[] DoorColor = { 1.00000f, 0.47353f, 0.07421f };   // 线性 #FFB74D
     public static readonly float DoorAreaI = 770.0000f, PourRatio = 0.000f;
+    public static readonly float[] DoorAccentPos = { -18.00000f, 11.00000f, 335.60000f };   // D-31：只参与烘焙的面光，门前 7 m、朝门
+    public static readonly float DoorAccentI = 0.125f;   // 按灰卡校（README §4），单位没对过
     public static readonly float[] DoorPourPos = { -18.00000f, 12.90000f, 342.90000f };   // 门楣处，朝外向下 35°
     public static readonly float[] AmbSky = { 0.00439f, 0.02956f, 0.08022f }, AmbEquator = { 0.00304f, 0.01600f, 0.03955f }, AmbGround = { 0.01033f, 0.00700f, 0.01600f };
     public static readonly float[] FlameLinear = { 8.63380f, 0.96640f, 0.19990f };

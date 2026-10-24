@@ -99,6 +99,19 @@ public static class LanbaiPalaceBuilder
         dl.areaSize = new Vector2(LanbaiPalaceData.DoorSpillSize[0], LanbaiPalaceData.DoorSpillSize[1]);
         dl.color = Lin(LanbaiPalaceData.DoorColor).gamma;
         dl.intensity = LanbaiPalaceData.DoorAreaI;
+        // D-31：门这一开间的提亮光（只参与烘焙的面光，门前 7 m、朝门；Fins 的 smoke and mirrors）
+        var ag = new GameObject("DoorAccent_BakeOnly");
+        ag.transform.SetParent(lights.transform, false);
+        ag.transform.localPosition = V3(LanbaiPalaceData.DoorAccentPos, 0);
+        ag.transform.localRotation = Quaternion.LookRotation(new Vector3(0f, 0.5f, 7f).normalized, Vector3.up);
+        var al = ag.AddComponent<Light>();
+        al.type = LightType.Rectangle;
+        al.lightmapBakeType = LightmapBakeType.Baked;
+        al.areaSize = new Vector2(6f, 5f);
+        Color acc;
+        ColorUtility.TryParseHtmlString("#FFD9A0", out acc);
+        al.color = acc;
+        al.intensity = LanbaiPalaceData.DoorAccentI;
         // （第 3 轮的“顺着台阶往下铺”的第二盏面光，第 4 轮去掉了：阴影发暖。PourRatio = 0 时不建）
         if (LanbaiPalaceData.PourRatio > 0f) {
         var pg = new GameObject("DoorPour");
