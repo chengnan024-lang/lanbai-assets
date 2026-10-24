@@ -18,6 +18,10 @@ import cardshade as CS  # noqa: E402
 WORK = os.environ.get('LB_WORK', '/tmp/lb/clouds')
 # review r1 R4: the lower-dome light is capped at 1.2 x the act's Trilight ground colour (the solve had pushed it to 3.07 x,
 # lighting the flat bases from below as a pale blue line)
+# front-lit base term: TRIED in the act 6 window with weight 30 -> base #C5B4B0 (C* 6.7) but the tops fell to #E9DAD1
+# (sun 3111 K, the palette's peach #F6DCC4 lost). Under front light the base is SUNLIT, not a shadow (bible 1.3 rule 2
+# is about shadows), so the palette wins: weight 0 (README_CloudsV2 §7, Act06 README §6).
+BASE_W = 0.0
 TARGETS = {
     # shadow: bible; top: dawn = palette 06 'cloud tops peach'; dusk = 设计值 (between the slot amber and the rose band)
     'dawn': dict(set='dawn', grade='S6', shadow='#8593AA', top='#F6DCC4', ground='#8FA0BE', rel=70.0, K0=3000, Kmin=2400, Kmax=3600, gnd_max=1.2),
@@ -92,7 +96,7 @@ def solve(which, card='Cumulus'):
         hz, cz = C.hue_chroma(cbase)[1:]
         pz = max(0.0, cz - 6.0) * (1.0 if (hz < 120 or hz > 340) else 0.0)
         return float(((cs[0] - tsh) ** 2).sum() + 0.5 * ((cs[1] - ttp) ** 2).sum() + 2 * dh ** 2 * min(c / 10, 1)
-                     + 20 * pb ** 2 + 30 * pz ** 2)
+                     + 20 * pb ** 2 + BASE_W * pz ** 2)
     best = None
     for x0 in ([3.0, T['K0'], 1.0, 1.1, 1.6, 1.0], [5.0, T['K0'] + 600, 1.2, 1.3, 1.8, 0.6], [2.0, T['K0'] - 300, 0.8, 0.9, 1.3, 1.15]):
         r = minimize(f, x0, method='Nelder-Mead', options=dict(xatol=1e-4, fatol=1e-3, maxiter=4000))
