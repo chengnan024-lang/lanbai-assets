@@ -44,7 +44,7 @@ Shader "Lanbai/CloudPlain"
         _Gains ("Gains - x sun - y sky - z ground - w wall slope", Vector) = (1, 0.35, 0.35, 1.5)
         _WallN ("Wall light - x wrap - y normal px - z normal min m", Vector) = (0.35, 3, 20, 0)
         _Under ("Underside - x glow - y glow length m - z ground k - w sky k", Vector) = (0.9, 900, 0.25, 0.04)
-        _Rim ("Lip rim - x sharpness - y gain - z depth m", Vector) = (250, 0.8, 60, 0)
+        _Rim ("Lip rim - x sharpness - y gain - z depth m under the mean top", Vector) = (400, 2.5, 25, 0)
         _Trough ("Trough - x lod - y depth m - z k - w sky k", Vector) = (3.5, 30, 0.35, 0.6)
         _SunColor ("Sun colour x E - linear", Vector) = (6.3706, 2.2827, 0.3400, 0)
         _SkyUpColor ("Upper dome light - linear", Vector) = (1.5103, 1.8199, 2.5691, 0)
@@ -307,7 +307,7 @@ Shader "Lanbai/CloudPlain"
                 float trough = saturate((hMean - p.y) / _Trough.y) * _Trough.z * (1.0 - wall) * (1.0 - h.reg.y) * (1.0 - underW);
                 c = lerp(c, (_Gains.y * _Trough.w) * _SkyUpColor.rgb, trough);
                 // the lip's top edge against the sun: a bright rim (forward scattering through the thin edge)
-                float rim = h.reg.z * smoothstep(_Rim.z, 0.0, h.top - p.y) * exp((dot(V, sunD) - 1.0) * _Rim.x) * _Rim.y;
+                float rim = h.reg.z * smoothstep(_Rim.z, 0.0, _Lip.x - p.y) * exp((dot(V, sunD) - 1.0) * _Rim.x) * _Rim.y;
                 c += rim * _SunColor.rgb;
 
                 // ---- [Fog]

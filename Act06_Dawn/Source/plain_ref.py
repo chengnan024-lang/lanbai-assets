@@ -36,7 +36,7 @@ P = dict(
     PeriodD=1600.0 * K_SCALE, PeriodM=6400.0 * K_SCALE, MicroScale=5.0, MicroAmp=4.0 * K_SCALE, MicroShade=0.6,
     SigmaL=0.012, SurfShadow=1.0, MsK=0.004, MsTau=0.25, SunGain=1.0, SkyGain=0.35, GroundGain=0.35,
     WallSlope=1.5, WallWrap=0.35, WallNormalPx=3.0, WallNormalMin=20.0, ShadowSteps=16, ShadowLen=6000.0, EdgeGlow=0.9, EdgeGlowLen=900.0,
-    RimK=250.0, RimGain=0.8, RimDepth=60.0, UnderGround=0.25, UnderSky=0.04,
+    RimK=400.0, RimGain=2.5, RimDepth=25.0, UnderGround=0.25, UnderSky=0.04,
     TroughLod=3.5, TroughDepth=30.0, TroughK=0.35, FogDensity=0.00012, FogCap=1.0,
 )
 SUN = np.array(LAYOUT['sun']['dir'], float)
@@ -459,7 +459,8 @@ class Plain:
         # (dawn) troughs go toward the deep sky light, not the horizon haze: shadows stay blue (bible 1.3 rule 2)
         surf = surf * (1 - trough)[:, None] + (P['SkyGain'] * 0.6) * SKY_COL[None, :] * trough[:, None]
         # r3 (D-35 #1): the lip's top edge against the sun: a bright rim (forward scattering through the thin edge)
-        rim = lip * ss(P['RimDepth'], 0.0, top - p[:, 1]) * np.exp((V[gi] @ SUN - 1.0) * P['RimK']) * P['RimGain']
+        # depth under the lip's MEAN top (the relief makes terraces on its face: they showed as arcs round the sun)
+        rim = lip * ss(P['RimDepth'], 0.0, BODY['lip']['top'] - p[:, 1]) * np.exp((V[gi] @ SUN - 1.0) * P['RimK']) * P['RimGain']
         surf = surf + rim[:, None] * SUN_COL[None, :]
         # ---- [Fog] LanbaiApplyFog: exp density, colour = the sky in that direction (the dawn preset's horizon model)
         f = np.minimum(1 - np.exp(-P['FogDensity'] * th), P['FogCap'])
