@@ -2120,7 +2120,7 @@
      ],
      "color": "#FF9C2F",
      "range_m": 4.0,
-     "intensity": 5.46,
+     "intensity": 21.84,
      "shadows": "soft",
      "mode": "Baked"
     },
@@ -2133,7 +2133,7 @@
      ],
      "color": "#2A557B",
      "range_m": 5.0,
-     "intensity": 28.0,
+     "intensity": 56.0,
      "shadows": "none",
      "mode": "Baked"
     }
@@ -2164,7 +2164,7 @@
      ],
      "color": "#FF9C2F",
      "range_m": 4.0,
-     "intensity": 5.46,
+     "intensity": 21.84,
      "shadows": "soft",
      "mode": "Baked"
     },
@@ -2177,7 +2177,7 @@
      ],
      "color": "#2A557B",
      "range_m": 5.0,
-     "intensity": 28.0,
+     "intensity": 56.0,
      "shadows": "none",
      "mode": "Baked"
     }
@@ -2298,7 +2298,8 @@
   "door_accent_angle": 70.0,
   "note8": "第 8 轮（评审 r5 #3）：门的两盏面光换成烘焙聚光（有范围窗），只照门这一开间和门槛；去掉 door_area_I / pour_ratio",
   "nacre_lift": 12.0,
-  "nacre_radius": 1.5
+  "nacre_radius": 1.5,
+  "cowrie_spec_gain": 4.0
  },
  "render": {
   "fog_density": 0.018,

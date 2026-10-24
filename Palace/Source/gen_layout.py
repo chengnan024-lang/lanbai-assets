@@ -28,10 +28,10 @@ def main():
         fp = l['flame_pos']
         lamps.append(dict(id=l['id'], group=l['group'], pos=l['pos'], height_m=l['height_m'], flame_pos=fp,
                           abreast_t=l.get('abreast_t'),
-                          baked=[dict(kind='warm', pos=fp, color='#FF9C2F', range_m=T['warm_range'], intensity=T['warm_I'],
+                          baked=[dict(kind='warm', pos=fp, color='#FF9C2F', range_m=T['warm_range'], intensity=T['warm_I'] * l.get('gain', 1.0),
                                       shadows='soft', mode='Baked'),
                                  dict(kind='indigo', pos=[fp[0], round(fp[1] + l.get('indigo_lift', T.get('indigo_lift', 0.3)), 3), fp[2]], color='#2A557B', range_m=l.get('indigo_range', T['indigo_range']),
-                                      intensity=T['indigo_I'], shadows='none', mode='Baked')]))
+                                      intensity=T['indigo_I'] * l.get('indigo_gain', l.get('gain', 1.0)), shadows='none', mode='Baked')]))
     H = F['hall']
     # 第 8 轮（评审 r5 #3）：门的两盏烘焙光都是聚光（InverseSquared + 范围窗），只照门这一开间和门槛；面光没有范围，把整面立面描红
     sp = [H['door_x'], L.PLAT['height_m'] + H['door_size'][1] * 0.55, L.DOOR_Z - 0.3]
@@ -83,6 +83,9 @@ def main():
     cs.append('    public const float TerraceDepth = %.4ff;' % terrace_depth)
     cs.append('    public static readonly float[] Flames = %s;' % arr(flames))
     cs.append('    public static readonly bool[] LampIndigo = { %s };   // 第 8 轮：全部加靛光（阙前两盏也加）' % ', '.join('true' for l in L.LAMPS))
+    cs.append('    public static readonly float[] LampGain = { %s };   // 烘焙的暖 / 靛 × 这个（阙前两盏立灯 ×4，第 8 轮）' % ', '.join('%.2ff' % l.get('gain', 1.0) for l in L.LAMPS))
+    cs.append('    public static readonly float[] LampIndigoGain = { %s };' % ', '.join('%.2ff' % l.get('indigo_gain', l.get('gain', 1.0)) for l in L.LAMPS))
+    cs.append('    public const float CowrieLampGain = %.2ff;   // 宝贝贴面的解析高光增益' % T.get('cowrie_spec_gain', 1.0))
     cs.append('    public static readonly float[] LampIndigoLift = { %s };   // 阙前两盏 0（不抬高）' % ', '.join('%.2ff' % l.get('indigo_lift', T.get('indigo_lift', 0.3)) for l in L.LAMPS))
     cs.append('    public static readonly float[] LampIndigoRange = { %s };   // 阙前两盏 5 m' % ', '.join('%.2ff' % l.get('indigo_range', T['indigo_range']) for l in L.LAMPS))
     cs.append('    public static readonly string[] LampIds = { %s };' % ', '.join('"%s"' % l['id'] for l in L.LAMPS))

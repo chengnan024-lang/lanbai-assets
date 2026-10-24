@@ -45,6 +45,20 @@ def place(ub, pos, yaw_deg=0.0):
     return ub.transformed(R, pos)
 
 
+def split_slot(u, slot):
+    """把一个槽的面分出来（灯光链接按物体）。"""
+    from kit.common import SLOTS
+    a, b = UB(), UB()
+    for f, sl, uv in zip(u.F, u.S, u.UV):
+        dst = a if SLOTS[sl] == slot else b
+        o = len(dst.V)
+        dst.V.extend(u.V[i] for i in f)
+        dst.F.append(tuple(range(o, o + len(f))))
+        dst.S.append(sl)
+        dst.UV.append(uv)
+    return a, b
+
+
 def build(t_fish=None, lod_far=False):
     sc = bl.reset()
     M = materials.build_all()
@@ -67,7 +81,10 @@ def build(t_fish=None, lod_far=False):
         hall.build().build('Hall', col, M)
     que = try_kit('que')
     if que:
-        que.build().build('Que', col, M)
+        qu = que.build()
+        cw, rest_q = split_slot(qu, 'Cowrie')
+        rest_q.build('Que', col, M)
+        cw.build('QueCowrie', col, M)
     house = try_kit('house')
     hu = UB()
     for i, h in enumerate(L.HOUSES):
@@ -146,12 +163,13 @@ def add_lights(p=PARAMS):
     lin = materials.s2l
     for i, l in enumerate(L.LAMPS):
         fp = l['flame_pos']
-        a = bl.point_light_unity('Lw_' + l['id'], fp, lin('#FF9C2F'), p['warm_I'], p['warm_r'], radius=0.10)
+        gl = l.get('gain', 1.0)
+        a = bl.point_light_unity('Lw_' + l['id'], fp, lin('#FF9C2F'), p['warm_I'] * gl, p['warm_r'], radius=0.10)
         a.lightgroup = 'warm'
         a.visible_glossy = False                      # 烘焙的光只有漫反射；高光由下面的解析灯给（Unity：_Udon_Lamp）
         # 第 8 轮：阙前的灯也加靛光，但不抬高、范围 5 m——暖 + 靛只在灯旁混成 #7A4A6E（“只在它的灯旁泛出”）
         b = bl.point_light_unity('Li_' + l['id'], (fp[0], fp[1] + l.get('indigo_lift', _T.get('indigo_lift', 0.3)), fp[2]), lin('#2A557B'),
-                                 p['indigo_I'], l.get('indigo_range', p['indigo_r']), radius=0.10)
+                                 p['indigo_I'] * l.get('indigo_gain', gl), l.get('indigo_range', p['indigo_r']), radius=0.10)
         b.lightgroup = 'indigo'
         b.data.use_shadow = False
         b.visible_glossy = False
@@ -178,8 +196,8 @@ def add_lights(p=PARAMS):
         g = _T.get('nacre_spec_gain', 1.0)
         if g > 1.0 and 'HousesNacre' in bpy.data.objects:
             c2 = bpy.data.lights.new('Ln_' + l['id'], 'POINT')
-            c2.color = lin('#FF9C2F')
-            c2.energy = 4.0 * math.pi ** 2 * _T.get('spec_I', 5.46) * g     # 第 8 轮：珍珠母只吃这一盏（往上挪 nacre_lift 的“镜中灯”）
+            c2.color = (1.0, 1.0, 1.0)       # 第 8 轮 r6：珍珠母只取灯的亮度，颜色由虹彩给（Unity：spec 先取亮度再 × LanbaiNacre）
+            c2.energy = 4.0 * math.pi ** 2 * _T.get("spec_I", 5.46) * g * 0.45     # 第 8 轮：珍珠母只吃这一盏（往上挪 nacre_lift 的“镜中灯”）
             c2.shadow_soft_size = _T.get('nacre_radius', 0.10)     # 第 8 轮：珍珠母的高光瓣放宽（Unity：_NacreSpread）
             o4 = bpy.data.objects.new('Ln_' + l['id'], c2)
             o4.location = Vector(bl.u2b((fp[0], fp[1] + _T.get('nacre_lift', 0.0), fp[2])))
@@ -193,6 +211,22 @@ def add_lights(p=PARAMS):
                 hc = bpy.data.collections.new('LinkHouses')
                 hc.objects.link(bpy.data.objects['HousesNacre'])
             o4.light_linking.receiver_collection = hc
+        cg = _T.get('cowrie_spec_gain', 1.0)
+        if l['group'] == 'que' and cg > 1.0 and 'QueCowrie' in bpy.data.objects:   # 宝贝贴面的解析高光 ×cowrie_spec_gain（Unity：M_07b_Cowrie 的 _LampGain）
+            c3 = bpy.data.lights.new('Lc_' + l['id'], 'POINT')
+            c3.color = lin('#FF9C2F')
+            c3.energy = 4.0 * math.pi ** 2 * _T.get('spec_I', 5.46) * (cg - 1.0)
+            c3.shadow_soft_size = 0.10
+            o5 = bpy.data.objects.new('Lc_' + l['id'], c3)
+            o5.location = Vector(bl.u2b(fp))
+            o5.visible_diffuse = o5.visible_transmission = o5.visible_volume_scatter = False
+            o5.lightgroup = 'warm'
+            bpy.context.scene.collection.objects.link(o5)
+            qc = bpy.data.collections.get('LinkCowrie')
+            if qc is None:
+                qc = bpy.data.collections.new('LinkCowrie')
+                qc.objects.link(bpy.data.objects['QueCowrie'])
+            o5.light_linking.receiver_collection = qc
     # 门溢出的光（第 8 轮，评审 r5 #3）：门槛里一盏烘焙聚光朝外（−z），范围窗 door_spill_range —— 面光没有范围，
     # 会把整面立面描成朱红（阴影发暖）；聚光和宫灯一样是 InverseSquared + 范围窗，只照门槛、台阶顶和门框
     hall = L.HALL

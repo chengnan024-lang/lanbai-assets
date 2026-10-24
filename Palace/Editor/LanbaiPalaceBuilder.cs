@@ -86,8 +86,8 @@ public static class LanbaiPalaceBuilder
         {
             var p = new Vector3(LanbaiPalaceData.Flames[3 * i], LanbaiPalaceData.Flames[3 * i + 1], LanbaiPalaceData.Flames[3 * i + 2]);
             lampLocal[i] = p;
-            Baked(lights.transform, LanbaiPalaceData.LampIds[i] + "_Warm", p, LanbaiPalaceData.WarmColor, LanbaiPalaceData.WarmI, LanbaiPalaceData.WarmRange, true);
-            if (LanbaiPalaceData.LampIndigo[i]) Baked(lights.transform, LanbaiPalaceData.LampIds[i] + "_Indigo", p + new Vector3(0f, LanbaiPalaceData.LampIndigoLift[i], 0f), LanbaiPalaceData.IndigoColor, LanbaiPalaceData.IndigoI, LanbaiPalaceData.LampIndigoRange[i], false);
+            Baked(lights.transform, LanbaiPalaceData.LampIds[i] + "_Warm", p, LanbaiPalaceData.WarmColor, LanbaiPalaceData.WarmI * LanbaiPalaceData.LampGain[i], LanbaiPalaceData.WarmRange, true);
+            if (LanbaiPalaceData.LampIndigo[i]) Baked(lights.transform, LanbaiPalaceData.LampIds[i] + "_Indigo", p + new Vector3(0f, LanbaiPalaceData.LampIndigoLift[i], 0f), LanbaiPalaceData.IndigoColor, LanbaiPalaceData.IndigoI * LanbaiPalaceData.LampIndigoGain[i], LanbaiPalaceData.LampIndigoRange[i], false);
         }
         // 第 8 轮（评审 r5 #3）：门的两盏烘焙光都是聚光（InverseSquared + 范围窗），只照门这一开间和门槛。
         // 原来的面光没有范围，把整面立面描成朱红（阴影发暖）。
@@ -142,6 +142,7 @@ public static class LanbaiPalaceBuilder
         d["FishScale"].SetFloat("_LampGain", LanbaiPalaceData.NacreLampGain);     // 珍珠光要“滚出来”（评审 r3 #7）
         d["FishScale"].SetFloat("_NacreLift", LanbaiPalaceData.NacreLift);         // 第 8 轮：灯在檐下照不出镜面高光，按挪高的灯算（README §3）
         d["FishScale"].SetFloat("_NacreSpread", LanbaiPalaceData.NacreSpread);
+        d["Cowrie"].SetFloat("_LampGain", LanbaiPalaceData.CowrieLampGain);       // 第 8 轮 r6：贝壳上一串小高光
         Std(d, pal, "Cowrie", "Cowrie", "Cowrie", "Cowrie", 3, 0.92f, 0f, 0.2f, "#FFFFFF");
         Std(d, pal, "Tile", "Stone", "Stone", null, 0, 0.35f, 0f, 0.7f, "#F2F8FF");
         Std(d, pal, "Wood", null, null, null, 0, 0.35f, 0f, 0.2f, "#2C2522");

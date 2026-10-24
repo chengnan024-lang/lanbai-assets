@@ -198,7 +198,7 @@ Shader "Lanbai/Palace"
                 // 第 8 轮（评审 r5 #7）：珍珠母的灯高光按挪高 _NacreLift 的灯算、瓣放宽 _NacreSpread（smoke and mirrors，README §3）
                 float3 spec = LanbaiPalaceLampsLift(i.posWS, N, V, nacre ? alpha + _NacreSpread : alpha, F0, nacre ? _NacreLift : 0.0) * _LampGain;
                 if (_Mode > 1.5 && _Mode < 2.5)
-                    spec *= LanbaiNacre(NdotV, _NacreFace.rgb, _NacreMid.rgb, _NacreGraze.rgb, mask.b) * 1.6;
+                    spec = dot(spec, float3(0.2126, 0.7152, 0.0722)) * LanbaiNacre(NdotV, _NacreFace.rgb, _NacreMid.rgb, _NacreGraze.rgb, mask.b) * 1.6;
                 // 环境反射：反射方向的水色（LanbaiHorizon），按菲涅耳与粗糙度压
                 float3 R = reflect(-V, N);
                 float3 Fr = F0 + (1.0 - F0) * pow(1.0 - NdotV, 5.0) * (1.0 - rough);

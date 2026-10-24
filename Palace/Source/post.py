@@ -34,7 +34,7 @@ FLAME_CORE = np.array([1.0, 0.82, 0.55]) * 2.6        # 灯焰芯：白热（m�
 HALO_MID = srgb_to_lin('#446282')                    # 灯晕卡中段，屏幕 #2A557B
 HALO_R = 1.5
 HALO_PULL = 4.0                                       # 第 8 轮（评审 r5 #2）：晕卡往眼睛挪的最大米数（≤ d/2）
-BELOW_PULL = 40.0                                     # 眼睛在台地顶面以下时的最大挪动（≤ 0.25 d）
+BELOW_PULL = 200.0                                    # 眼睛在台地顶面以下时的最大挪动（≤ 0.75 d）
 FLAME_PULL = 1.5                                      # 从下面陡着看时火往眼睛挪的米数
 GROUP_GAIN = {'amb': 1.0, 'warm': 1.0, 'indigo': 1.0, 'door': 1.0, 'accent': 1.0}
 
@@ -194,8 +194,8 @@ def draw_lamps(img, shot, dist, flame_scale=1.0):
         hpull = min(HALO_PULL, 0.5 * dd[i])                       # 第 8 轮：晕往眼睛挪（水里的散射），角大小不变
         fpull = FLAME_PULL * min(1.0, max(0.0, (-fy - 0.26) / 0.16))
         below = min(1.0, max(0.0, (-eye_of(shot)[1] - 1.0) / 3.0))        # 眼睛在台地顶面以下（shader 同式）
-        fpull = max(fpull, below * min(0.25 * dd[i], BELOW_PULL))
-        hpull = max(hpull, below * min(0.25 * dd[i], BELOW_PULL))
+        fpull = max(fpull, below * min(0.75 * dd[i], BELOW_PULL))
+        hpull = max(hpull, below * min(0.75 * dd[i], BELOW_PULL))
         rpx = HALO_R * ppm / zc[i]
         if px[i] < -rpx or px[i] > W + rpx or py[i] < -rpx or py[i] > H + rpx:
             continue
@@ -219,7 +219,7 @@ def draw_lamps(img, shot, dist, flame_scale=1.0):
         sc = max(1.0, 2.0 / max(fw, 1e-6))            # 第 6 轮（D-34 #4）：最小 2 px，远处不压暗：稳定、分得清的暖点
         fw, fh = fw * sc, fh * sc
         # 从下面看（视线很陡）时 shader 把火转成球状公告板：屏幕上不再是竖的细条（这里用屏幕上的圆近似）
-        steep = min(1.0, max(0.0, (abs(fy) - 0.34) * 3.0))
+        steep = max(min(1.0, max(0.0, (abs(fy) - 0.34) * 3.0)), below)
         fh = fh * (1 - steep) + fw * steep
         fl = np.exp(-((sx / fw) ** 2 + ((sy + fh * 0.3) / fh) ** 2) * 2.0) * 0.6
         add += (fl[..., None] * FLAME_FILL + (fl ** 4)[..., None] * FLAME_CORE * 4.0) * att * vis[..., None]

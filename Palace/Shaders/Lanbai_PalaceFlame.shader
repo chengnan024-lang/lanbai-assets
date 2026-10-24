@@ -26,7 +26,7 @@ Shader "Lanbai/PalaceFlame"
         _RingGain ("Halo indigo ring gain", Float) = 0.9
         _HaloPull ("Halo pulled toward eye m  max, also <= d/2", Float) = 4.0
         _FlamePull ("Flame pulled toward eye m when seen steeply from below", Float) = 1.5
-        _BelowPull ("Max pull m when the eye is below the terrace top", Float) = 40.0
+        _BelowPull ("Max pull m when the eye is below the terrace top", Float) = 200.0
         _SoftFade ("Soft particle fade m", Float) = 1.0
         _HaloMid ("Halo indigo mid linear  fill 446282", Vector) = (0.0578, 0.1221, 0.2232, 0)
         _Atten ("Attenuation per m  FogMode 2", Float) = 0.004
@@ -92,7 +92,9 @@ Shader "Lanbai/PalaceFlame"
                 float3 right = normalize(cross(up, fwd) + float3(1e-5, 0, 0));
                 // 火：竖直的柱状公告板；从很低 / 很高的角度看（|fwd.y| > 0.5）渐变成球状公告板，免得从下面看成一条细线
                 float3 upS = normalize(cross(fwd, right));
-                float sph = halo ? 1.0 : saturate((abs(fwd.y) - 0.34) * 3.0);     // 第 8 轮：20° 起就变圆（评审 r5 #2：斜的细条）
+                float eyeY = mul(unity_WorldToObject, float4(eye, 1.0)).y;     // 物体空间 = 宫殿坐标（y = 0 台地顶）
+                float below = saturate((-eyeY - 1.0) / 3.0);
+                float sph = halo ? 1.0 : max(saturate((abs(fwd.y) - 0.34) * 3.0), below);   // 20° 起变圆；从台地下面看一律是圆点（第 8 轮）
                 float3 upB = normalize(lerp(up, upS, sph));
                 float2 size = halo ? float2(_HaloRadius, _HaloRadius) : _FlameSize.xy;
                 // 最小像素：一个像素在 d 处的米数 = 2d / (P11 · 屏高)
@@ -106,9 +108,7 @@ Shader "Lanbai/PalaceFlame"
                 // 眼睛在台地顶面以下（F7p 之后，D-17 / D-29“宫殿成了头顶的星座”）：灯排正好压在崖顶的剪影线上，几十厘米的
                 // 边沿会把火吃成断续的虚线。这时火和晕都往眼睛挪 min(0.25 d, _BelowPull)，沿崖边一串稳定的暖点；
                 // 远在台地后面的灯（挡住它的岩体比这更厚）照样被挡。物体空间 = 宫殿坐标（y = 0 台地顶）。
-                float eyeY = mul(unity_WorldToObject, float4(eye, 1.0)).y;
-                float below = saturate((-eyeY - 1.0) / 3.0);
-                pull = max(pull, below * min(0.25 * d, _BelowPull));
+                pull = max(pull, below * min(0.75 * d, _BelowPull));     // 第 8 轮 r6：0.25 d → 0.75 d，台地后面那一列也读成暖点（D-34 #4）
                 size *= (d - pull) / d;
                 float3 p = c + fwd * pull + right * v.uv0.x * size.x + upB * v.uv0.y * size.y;
                 o.pos = UnityWorldToClipPos(p);
