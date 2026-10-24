@@ -1,0 +1,26 @@
+{
+ "t": 995.0,
+ "cam": "hero_up",
+ "door": "bible_v2",
+ "h": 174.2,
+ "dEV": 0.0,
+ "APL": 74.0,
+ "purple_D21": 0.0,
+ "purple_D21_no_ceiling": 0.0,
+ "brightest_px": [
+  0.295,
+  0.981
+ ],
+ "reveal": 1.0,
+ "cards_standin": [
+  "CloudV2_Bank_duskU",
+  "CloudV2_Congestus_duskD",
+  "CloudV2_Cumulus_duskD",
+  "CloudV2_Cumulus_duskU",
+  "CloudV2_Puff_duskD",
+  "CloudV2_Strato_duskD",
+  "CloudV2_Strato_duskU",
+  "CloudV2_Wisp_duskU"
+ ],
+ "width": 960
+}
