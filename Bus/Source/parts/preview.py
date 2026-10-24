@@ -52,10 +52,35 @@ def detail_normal(m, img_name, tile_m, strength):
     nt.links.new(nm.outputs['Normal'], bs.inputs['Normal'])
 
 
-def stage(wall_x=1.0, floor=True):
+def daylight(wall_x):
+    """windows along the wall: a long bright panel just outside it (the wall gets a window cut) + a cool sky fill,
+    so the comparison with the daylight reference photos is fair."""
+    ld = bpy.data.lights.new('Window', 'AREA')
+    ld.shape = 'RECTANGLE'
+    ld.size, ld.size_y = 0.75, 4.0
+    ld.color = lin('#F2F4F6')
+    ld.energy = 900.0
+    lo = bpy.data.objects.new('Window', ld)
+    lo.location = BB.U2B((wall_x + 0.4, 1.75, 0.6))
+    lo.rotation_euler = (0, -1.5708 if wall_x > 0 else 1.5708, 0)
+    bpy.context.scene.collection.objects.link(lo)
+    sun = bpy.data.lights.new('Sun', 'SUN')
+    sun.energy = 2.5
+    sun.angle = 0.02
+    so = bpy.data.objects.new('Sun', sun)
+    so.rotation_euler = (0.9, 0.0, 2.2 if wall_x > 0 else -2.2)
+    bpy.context.scene.collection.objects.link(so)
+
+
+def stage(wall_x=1.0, floor=True, day=False):
     if floor:
         BB.box('PreviewFloor', (-1.5, B.FLOOR_Y - 0.02, -2.0), (1.5, B.FLOOR_Y, 3.0), 'Floor', 'Preview')
-    BB.box('PreviewWall', (wall_x, B.FLOOR_Y, -2.0), (wall_x + 0.02, 2.6, 3.0), 'Int_Enamel', 'Preview')
+    if day:   # the wall below the sill, a window band (open), the wall above
+        BB.box('PreviewWall', (wall_x, B.FLOOR_Y, -2.0), (wall_x + 0.02, 1.35, 3.0), 'Int_Enamel', 'Preview')
+        BB.box('PreviewWallTop', (wall_x, 2.15, -2.0), (wall_x + 0.02, 2.6, 3.0), 'Int_Enamel', 'Preview')
+        daylight(wall_x)
+    else:
+        BB.box('PreviewWall', (wall_x, B.FLOOR_Y, -2.0), (wall_x + 0.02, 2.6, 3.0), 'Int_Enamel', 'Preview')
     for k, x in enumerate((-0.73, 0.37)):
         ld = bpy.data.lights.new('Tube%d' % k, 'AREA')
         ld.shape = 'RECTANGLE'
@@ -118,6 +143,8 @@ def main():
     ap.add_argument('--views', default='')
     ap.add_argument('--samples', type=int, default=64)
     ap.add_argument('--out', default='/tmp/bus/parts')
+    ap.add_argument('--light', default='day', choices=['day', 'tubes'])
+    ap.add_argument('--flat', action='store_true', help='MAT_TABLE colours only (no detail materials)')
     a = ap.parse_args()
     P = PARTS[a.part]
     bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -129,9 +156,10 @@ def main():
     sc.view_settings.look = 'None'
     sc.view_settings.exposure = 0.0
     objs = P['build']()
-    stage(P['wall'])
-    if 'Vinyl' in BB.MATS:
-        detail_normal(BB.MATS['Vinyl'], 'Cabin_SeatLeather_N_0.30m.jpg', 0.30, 0.35)
+    stage(P['wall'], day=a.light == 'day')
+    if not a.flat:
+        from parts import materials as MATS
+        MATS.apply_details(objs)
     tris = sum(sum(len(p.vertices) - 2 for p in o.data.polygons) for o in bpy.data.objects
                if o.type == 'MESH' and not o.name.startswith('Preview'))
     os.makedirs(a.out, exist_ok=True)
@@ -140,7 +168,7 @@ def main():
     for v in views:
         eye, tgt = P['views'][v]
         cam = camera(eye, tgt)
-        sc.render.filepath = os.path.join(a.out, '%s_%s.png' % (a.part, v))
+        sc.render.filepath = os.path.join(a.out, '%s_%s_%s.png' % (a.part, v, a.light))
         bpy.ops.render.render(write_still=True)
         outs.append(sc.render.filepath)
         bpy.data.objects.remove(cam, do_unlink=True)
