@@ -254,6 +254,9 @@ Shader "Lanbai/InsideLip"
                 float wu = uEdge * 6.2831853 / (0.03 * Hb) + 1.3 * sin(dEdge * 6.2831853 / (0.037 * Hb) + 0.4);
                 float wd = dEdge * 6.2831853 / (0.05 * Hb) + 1.6 * sin(uEdge * 6.2831853 / (0.043 * Hb) + 1.1);
                 float mott = 0.5 + 0.35 * sin(wu) * sin(wd) + 0.2 * sin(uEdge * 6.2831853 / (0.071 * Hb));
+                // r15.1 (art review r15 B5: two dark blobs on a tongue read as eye sockets): no mottle on the tongues
+                float tng = smoothstep(0.0, 0.04, i.col.g);
+                mott = lerp(mott, 0.5, tng);
                 float band = _LipGlowFar.x * exp(-dEdge / max(_LipGlowFar.y, 1.0)) * max(mott, 0.0);
                 float glow = _LipGlow * exp(-dEdge / _LipGlowWidth) * (0.55 + 0.45 * comb) + band * foldK;
                 float3 c = (cloth + _FibreColor.rgb * glow * g) * gradeK;
@@ -267,10 +270,11 @@ Shader "Lanbai/InsideLip"
                 float Hm = _Folds.x / 0.08;
                 // r13 (总导演 D-19: the r11 ridges read as rock strata): soft DRAPE pleats hanging with gravity (vertical
                 // in the world), period ~0.025 H with a slow sway, +-16 %, fading 0.15 H from the torn edge
-                float phx = i.wpos.x * 6.2831853 / (0.025 * Hm) + 0.6 * sin(i.wpos.y * 6.2831853 / (0.2 * Hm))
+                // r15.1 (B5): on a tongue the pleats run straight down its whole length (no bend, no fade = no blobs)
+                float phx = i.wpos.x * 6.2831853 / (0.025 * Hm) + (1.0 - tng) * 0.6 * sin(i.wpos.y * 6.2831853 / (0.2 * Hm))
                           + 0.8 * sin(i.wpos.x * 6.2831853 / (0.13 * Hm));
                 float pleat = 0.6 * sin(phx) + 0.4 * sin(2.1 * phx + 1.0);
-                float fk = 1.0 + 0.16 * pleat * exp(-dEdge / (0.15 * Hm));
+                float fk = 1.0 + 0.16 * pleat * lerp(exp(-dEdge / (0.15 * Hm)), 1.0, tng);
                 float lw = _LipGlowWidth;
                 float bandIn = smoothstep(lw, lw * 1.6, dEdge) * (1.0 - smoothstep(lw + 0.005 * Hm, lw + 0.009 * Hm, dEdge));
                 float cm = sin(uEdge * 6.2831853 / (0.05 * Hm)) + 0.8 * sin(uEdge * 6.2831853 / (0.017 * Hm));
