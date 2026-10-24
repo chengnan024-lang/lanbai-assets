@@ -42,7 +42,7 @@ MAT_TABLE = {
     'Ext_Indigo': ('#34506E', 0.50, 0), 'Ext_Cream': ('#D8D2C2', 0.55, 0), 'Ext_Silver': ('#BFC2C4', 0.70, 1),
     'Ext_Black': ('#1E1F20', 0.40, 0), 'Tyre': ('#2A2A2A', 0.55, 0), 'Rim': ('#D8D2C2', 0.45, 0),
     'Chrome': ('#CFD1D3', 0.85, 1), 'Lamp_Head': ('#FFF4E0', 0.9, 0), 'Lamp_Tail': ('#8A1A1E', 0.8, 0),
-    'Lamp_Amber': ('#C9822A', 0.8, 0),
+    'Lamp_Amber': ('#E3D69B', 0.8, 0),          # D-28e: pale yellow, an unlit lens (not orange)
     'Int_Enamel': ('#D9D4C5', 0.45, 0), 'Int_Ceiling': ('#E2DDCF', 0.25, 0), 'Seal': ('#2B2B2B', 0.30, 0),
     'Vinyl': ('#5A2126', 0.45, 0), 'SeatFrame': ('#3C3E3D', 0.35, 0), 'Floor': ('#323634', 0.22, 0),
     'Alu': ('#B8BBBD', 0.45, 1), 'SafetyYellow': ('#C9A227', 0.40, 0), 'Steel': ('#C0C3C4', 0.55, 1),
@@ -1047,22 +1047,23 @@ def hatch_housing():
 
 
 def folding_door(open_=True):
-    """D-28d: two glazed jack-knife leaves (centre-opening), each two 14.3 cm panels, folding OUTWARD onto the jambs.
-    Open = the bible's face of this door (it never shuts but in act 11). Measured: the front stack sits at +22.4 .. +28.0 deg
-    from the hero seat (sun D-12 at +30 +- 1.5 clear), the rear stack at +40.7 .. +48.0 (behind the door post / clear of
-    李白 and 济慈 at +50); inward folding would cover the windscreen corner and the sun (lookdev_brief §7)."""
+    """D-28e: ONE glazed leaf of four 15 cm panels, all folding OUTWARD onto the REAR jamb (accordion). Open = the face of
+    this door (bible: it never shuts, except in act 11 under the white mask). Open, the stack swings 75 deg out from the
+    wall plane (leaning forward) and stacks rearward, outside the skin behind the door post: from the hero seat the stack
+    sits at about +38.5 .. +47.4 deg, so the doorway is clear from the A-pillar (+21.8) past 庄子 8-ii (+35), with the
+    dawn sun (D-12, +30) in the middle; 李白 / 济慈 (+50) stay clear."""
     xw = B.R_WALL
     p = B.DOOR_PANEL
     y0, y1 = 0.30, B.DOOR_HEAD - 0.03
-    jf, jr = B.DOOR[1] - B.DOOR_JAMB[1], B.DOOR[0] + B.DOOR_JAMB[0]
-    out = []
+    jr = B.DOOR[0] + B.DOOR_JAMB[0]
+    pitch = 0.026                     # the folded panels' spacing in the stack
+    swing = math.radians(B.DOOR_OPEN_SWING)
 
-    def panel(name, hinge, ang_deg, flip):
-        """a panel hinged at `hinge` (x, z); ang 0 = closed in the wall plane pointing toward the door centre."""
+    def panel(name, k):
         objs = []
-        d = -1 if flip else 1           # flip: points toward -z when closed (front leaf)
-        objs.append(box(name + '_Frame0', (xw - 0.012, y0, 0.0), (xw + 0.012, y1, 0.025), 'Ext_Cream', 'Door'))
-        objs.append(box(name + '_Frame1', (xw - 0.012, y0, p - 0.025), (xw + 0.012, y1, p), 'Ext_Cream', 'Door'))
+        # local panel: in the wall plane x = xw, from z 0 (its hinge edge) to z p
+        objs.append(box(name + '_Stile0', (xw - 0.012, y0, 0.0), (xw + 0.012, y1, 0.025), 'Ext_Cream', 'Door'))
+        objs.append(box(name + '_Stile1', (xw - 0.012, y0, p - 0.025), (xw + 0.012, y1, p), 'Ext_Cream', 'Door'))
         objs.append(box(name + '_Low', (xw - 0.012, y0, 0.0), (xw + 0.012, 0.62, p), 'Ext_Indigo', 'Door'))
         objs.append(box(name + '_Mid', (xw - 0.012, 1.26, 0.0), (xw + 0.012, 1.30, p), 'Ext_Silver', 'Door'))
         objs.append(box(name + '_Top', (xw - 0.012, y1 - 0.04, 0.0), (xw + 0.012, y1, p), 'Ext_Cream', 'Door'))
@@ -1073,25 +1074,20 @@ def folding_door(open_=True):
             gl = obj_from_bm('Glass_%s_%d' % (name, int(ya * 100)), g, ['Glass'], 'Door')
             gl['lb_fse'] = 'BusGlass'
             objs.append(gl)
-        # local frame: the panel spans z 0..p at x = xw; hinge at z 0. Place: mirror for the front leaf, rotate about y
-        M = Matrix.Translation(U2B((hinge[0], 0, hinge[1]))) @ Matrix.Rotation(math.radians(ang_deg) * (1 if flip else -1), 4, 'Z') \
-            @ (Matrix.Scale(-1, 4, Vector((0, 1, 0))) if flip else Matrix.Identity(4)) @ Matrix.Translation(U2B((-xw, 0, 0)))
+        if open_:
+            # stacked plates, each hinged on the jamb line (z = jr + k * pitch), turned so the panel's +z (unity) points
+            # outward and a little forward: unity (sin swing, 0, cos swing). Blender: rotate about z by -swing.
+            hz = jr - k * pitch           # stacked REARWARD, outside the skin behind the door post
+            M = Matrix.Translation(U2B((xw, 0, hz))) @ Matrix.Rotation(-swing, 4, 'Z') @ Matrix.Translation(U2B((-xw, 0, 0)))
+        else:
+            M = Matrix.Translation(U2B((0, 0, jr + k * p)))
         for o in objs:
             o.matrix_world = M @ o.matrix_world
         return objs
 
-    gap = 0.012
-    if open_:
-        # each leaf: panel A hinged on the jamb swings 90 deg out; panel B folds back against it (stack of two)
-        out += panel('DoorF_A', (xw, jf), 90, True)
-        out += panel('DoorF_B', (xw + p, jf - gap), 270 - 180 + 180, True)
-        out += panel('DoorR_A', (xw, jr), 90, False)
-        out += panel('DoorR_B', (xw + p, jr + gap), 270 - 180 + 180, False)
-    else:
-        out += panel('DoorF_A', (xw, jf), 0, True)
-        out += panel('DoorF_B', (xw, jf - p), 0, True)
-        out += panel('DoorR_A', (xw, jr), 0, False)
-        out += panel('DoorR_B', (xw, jr + p), 0, False)
+    out = []
+    for k in range(4):
+        out += panel('Door%d' % k, k)
     return out
 
 
@@ -1123,8 +1119,8 @@ def exterior():
         tube(nm, pts, 0.032, 'Ext_Indigo', 'Exterior')
     # mirrors: the right one LOW (D-28c: out of the door frame, el < -5 deg, behind the front door stack), the left one on a stalk
     xw = B.R_WALL
-    tube('MirrorStalkR', [(xw, 1.18, 3.30), (xw + 0.16, 1.20, 3.42), (xw + 0.24, 1.30, 3.50)], 0.012, 'Ext_Black', 'Exterior')
-    box('MirrorHeadR', (xw + 0.24 - 0.08, 1.24, 3.50), (xw + 0.24 + 0.08, 1.46, 3.54), 'Ext_Black', 'Exterior', bevel=0.02)
+    tube('MirrorStalkR', [(xw - 0.02, 0.86, 3.30), (xw + 0.06, 0.89, 3.62), (xw + 0.10, 0.94, 3.92)], 0.012, 'Ext_Black', 'Exterior')
+    box('MirrorHeadR', (xw + 0.10 - 0.08, 0.84, 3.92), (xw + 0.10 + 0.08, 1.08, 3.96), 'Ext_Black', 'Exterior', bevel=0.02)
     xl = XC - B.W_HALF
     tube('MirrorStalkL', [(xl, 1.70, 3.30), (xl - 0.16, 1.72, 3.42), (xl - 0.22, 1.92, 3.56)], 0.012, 'Ext_Black', 'Exterior')
     box('MirrorHeadL', (xl - 0.22 - 0.09, 1.76, 3.54), (xl - 0.22 + 0.09, 2.04, 3.58), 'Ext_Black', 'Exterior', bevel=0.02)

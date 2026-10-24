@@ -263,8 +263,8 @@ def build_all(ao_samples):
     out['Cabin_Radio'] = join('Cabin_Radio', groups['radio'])
     out['Cabin_DestBlind'] = join('Cabin_DestBlind', groups['blind'])
     out['Cabin_Curtains'] = join('Cabin_Curtains', groups['curt'])
-    # four folding-door panels (D-28d), each its own object (act 11 closes them under the white mask)
-    door_parts = {pid: [o for o in groups['door'] if pid in o.name] for pid in ('DoorF_A', 'DoorF_B', 'DoorR_A', 'DoorR_B')}
+    # four folding-door panels (D-28e: one leaf, all folding to the rear jamb), each its own object (act 11 closes them)
+    door_parts = {pid: [o for o in groups['door'] if pid in o.name] for pid in ('Door0', 'Door1', 'Door2', 'Door3')}
     for pid, parts in door_parts.items():
         if parts:
             d = join('Bus_' + pid, parts)
@@ -338,7 +338,7 @@ def layout(out):
     return dict(
         _about='车的布局（唯一数据源 Bus/Source/bus_spec.py，由 finish_bus.py 写出）。Unity 车局部坐标：米，x 右 y 上 z 前，车头 +Z，路面 y 0。',
         eye_hero=list(B.EYE), floor_y=B.FLOOR_Y, skylight=dict(centre=list(B.SKY_C), half=B.SKY_HALF),
-        door=dict(kind='two outward-folding glazed leaves, centre-opening, 2 panels each (D-28d)', panel_m=B.DOOR_PANEL,
+        door=dict(kind='one glazed leaf of four panels, all folding outward onto the rear jamb (D-28e)', open_swing_deg=B.DOOR_OPEN_SWING, panel_m=B.DOOR_PANEL,
                   jambs_m=dict(rear=B.DOOR_JAMB[0], front=B.DOOR_JAMB[1]), opening_z=list(B.DOOR),
                   note='FBX 里是开着的状态（圣经：门从不关）；第 11 幕在白的遮罩下关上。关的状态的变换在完整的车里补（WIP）'),
         wheels=dict(radius=B.WHEEL_R, names=['Wheel_FR', 'Wheel_FL', 'Wheel_RR', 'Wheel_RL'], axis='local X',

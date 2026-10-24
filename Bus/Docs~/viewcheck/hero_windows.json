@@ -23,14 +23,14 @@
  },
  "WinR1": {
   "az": [
-   42.0,
+   45.5,
    146.0
   ],
   "el": [
    -39.0,
    48.0
   ],
-  "solid_angle_cells": 26587
+  "solid_angle_cells": 26179
  },
  "SlopeR2": {
   "az": [
@@ -87,17 +87,6 @@
   ],
   "solid_angle_cells": 289
  },
- "DoorF_B_130": {
-  "az": [
-   24.0,
-   26.5
-  ],
-  "el": [
-   -16.5,
-   21.5
-  ],
-  "solid_angle_cells": 367
- },
  "WindscreenR": {
   "az": [
    -26.0,
@@ -107,7 +96,7 @@
    -15.0,
    20.5
   ],
-  "solid_angle_cells": 5914
+  "solid_angle_cells": 5970
  },
  "SlopeR3": {
   "az": [
@@ -129,7 +118,7 @@
    -13.0,
    17.5
   ],
-  "solid_angle_cells": 2771
+  "solid_angle_cells": 2800
  },
  "SlopeL3": {
   "az": [
@@ -252,17 +241,6 @@
   ],
   "solid_angle_cells": 284
  },
- "DoorF_B_62": {
-  "az": [
-   24.0,
-   26.5
-  ],
-  "el": [
-   -38.5,
-   -19.0
-  ],
-  "solid_angle_cells": 232
- },
  "(open: door / nothing)": {
   "az": [
    -92.0,
@@ -272,6 +250,6 @@
    -58.0,
    37.5
   ],
-  "solid_angle_cells": 2626
+  "solid_angle_cells": 4234
  }
 }
