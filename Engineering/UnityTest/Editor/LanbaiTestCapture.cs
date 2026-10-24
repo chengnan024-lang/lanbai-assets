@@ -171,6 +171,13 @@ namespace Lanbai.Test
             return any;
         }
 
+        static double VolumeLayer(Ctx ctx)
+        {
+            var t = Template(ctx);
+            var l = t != null ? t.GetComponent<PostProcessLayer>() : null;
+            return l != null ? (double)l.volumeLayer.value : -1;
+        }
+
         public static GameObject MakeCam(Ctx ctx, Cam c, int w, int h, bool withPP, out bool hasPP)
         {
             var tmpl = Template(ctx);
@@ -305,7 +312,7 @@ namespace Lanbai.Test
                     { "id", c.id + (suffix ?? "") }, { "file", rel }, { "w", (double)c.w }, { "h", (double)c.h }, { "ss", (double)c.ss },
                     { "eye", new List<object> { (double)c.eye.x, (double)c.eye.y, (double)c.eye.z } },
                     { "euler", new List<object> { (double)c.rot.eulerAngles.x, (double)c.rot.eulerAngles.y, (double)c.rot.eulerAngles.z } },
-                    { "hfov", (double)c.hfov }, { "vfov_used", (double)c.VFov }, { "ppv2", hasPP },
+                    { "hfov", (double)c.hfov }, { "vfov_used", (double)c.VFov }, { "ppv2", hasPP }, { "pp_volume_layer", VolumeLayer(ctx) },
                     { "apl", st[0] }, { "dark_pct", st[1] }, { "clip_pct", st[2] }, { "max_luma", st[3] }
                 };
                 if (c.t.HasValue) rec["t"] = (double)c.t.Value;

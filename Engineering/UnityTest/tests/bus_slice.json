@@ -2,7 +2,6 @@
   "id": "bus_slice",
   "title": "车的切片（座椅 + 侧窗 + 立柱）· 进引擎的五项检查",
   "source": "D-40 #1「车先出一个切片」；D-36 #1 近景按 VR 像素密度；D-40 #4 几何高光抗锯齿",
-  "gate": "bus_slice_test",
   "requires": {
     "folders": [
       "Assets/Lanbai/Common",

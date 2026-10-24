@@ -15,6 +15,10 @@
 //   assert_no_component {"component": "LanbaiTearParams"}（整个场景里不许有）
 //   assert_light  {"path": "...", "culling_mask": 0, "render_mode": "NotImportant", "enabled": true}
 //   collect       {"file": "LanbaiReports/xxx.md"} 或 {"script": "LB_GateTest_Run"}：把文件原样拷进输出的 collected/
+//   save_scene_copy {"name": "GateTest_play.unity"}：把当前场景另存一份到沙盒（原场景不存、不动）
+//   open_scene    {"path": "Assets/_LanbaiTest/GateTest_play.unity"}（只开沙盒里的）
+//   add_component {"object": "VRCWorld", "create": true, "component": "VRC.SDK3.Components.VRCSceneDescriptor", "position": [0,0,0]}（只在沙盒里的场景）
+//   save_scene    存当前场景（只存沙盒里的）
 //   refresh       AssetDatabase.Refresh
 //   log           {"text": "..."}
 // 共同字段：id、why（写进报告）、restore（true = 结束时改回；build 里默认不改回，截图 / 性能 / 序列的 before 里一律改回）、continue_on_error。
@@ -228,6 +232,48 @@ namespace Lanbai.Test
                         ctx.AddFile(rel);
                         return f + " → " + rel;
                     }
+                case "save_scene_copy":
+                    {
+                        string name = Path.GetFileName(TJson.S(TJson.G(st, "name"), "copy.unity"));
+                        string dst = Sandbox.DIR + "/" + name;
+                        var sc = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+                        if (!EditorSceneManager.SaveScene(sc, dst, true)) throw new StepException("另存到沙盒失败：" + dst);
+                        return sc.path + " 另存一份到 " + dst + "（原场景没存）";
+                    }
+                case "open_scene":
+                    {
+                        string p = TJson.S(TJson.G(st, "path"));
+                        if (p == null || !p.StartsWith(Sandbox.DIR + "/", StringComparison.Ordinal)) throw new StepException("open_scene 只开沙盒里的场景：" + p);
+                        var cur = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+                        // 当前场景的改动丢掉（工具不存场景；要留的已经另存进沙盒了）
+                        EditorSceneManager.OpenScene(p, OpenSceneMode.Single);
+                        ctx.scenePath = p;
+                        ctx.lastT = null;
+                        return "打开 " + p + "（" + cur.path + " 的改动没存）";
+                    }
+                case "add_component":
+                    {
+                        RequireSandboxScene("add_component");
+                        string on = TJson.S(TJson.G(st, "object"));
+                        var tr = Scenes.Find(on);
+                        if (tr == null && TJson.B(TJson.G(st, "create"))) tr = new GameObject(on).transform;
+                        if (tr == null) throw new StepException("场景里没有 " + on);
+                        var pos = TJson.Fa(TJson.G(st, "position"));
+                        if (pos != null && pos.Length == 3) tr.position = new Vector3(pos[0], pos[1], pos[2]);
+                        string cn = TJson.S(TJson.G(st, "component"));
+                        var ct = Preflight.FindType(cn);
+                        if (ct == null || !typeof(Component).IsAssignableFrom(ct)) throw new StepException("找不到组件类型 " + cn);
+                        if (tr.GetComponent(ct) != null) return Scenes.PathOf(tr) + " 上已经有 " + ct.Name;
+                        tr.gameObject.AddComponent(ct);
+                        return Scenes.PathOf(tr) + " 加了 " + ct.FullName;
+                    }
+                case "save_scene":
+                    {
+                        RequireSandboxScene("save_scene");
+                        var sc = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+                        if (!EditorSceneManager.SaveScene(sc)) throw new StepException("存不了 " + sc.path);
+                        return "存了 " + sc.path + "（沙盒里）";
+                    }
                 case "refresh":
                     AssetDatabase.Refresh();
                     return "AssetDatabase.Refresh";
@@ -237,6 +283,13 @@ namespace Lanbai.Test
                 default:
                     throw new StepException("不认识的步骤类型 " + type);
             }
+        }
+
+        static void RequireSandboxScene(string what)
+        {
+            var sc = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+            if (!sc.path.StartsWith(Sandbox.DIR + "/", StringComparison.Ordinal))
+                throw new StepException(what + " 只能在沙盒里的场景上做，当前场景是 " + (string.IsNullOrEmpty(sc.path) ? "（未命名）" : sc.path));
         }
 
         static Transform Need(string path)

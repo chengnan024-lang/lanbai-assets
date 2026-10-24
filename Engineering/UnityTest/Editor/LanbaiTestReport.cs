@@ -63,8 +63,7 @@ namespace Lanbai.Test
             m["tool_version"] = Runner.VERSION;
             m["test_id"] = ctx.testId;
             m["run_id"] = ctx.runId;
-            m["gate"] = TJson.S(TJson.G(ctx.test, "gate"), ctx.testId);
-            m["fromlocal"] = "FromLocal/" + TJson.S(TJson.G(ctx.test, "gate"), ctx.testId) + "/" + ctx.runId + "/";
+            m["fromlocal"] = "FromLocal/" + ctx.testId + "/" + ctx.runId + "/";   // HANDOFF_CHATGPT 的约定：FromLocal/<test-id>/<YYYYMMDD-HHMMSS>/
             m["test_file"] = ctx.testFile;
             m["test_sha256"] = ctx.testSha;
             m["mode"] = ctx.mode;
@@ -147,7 +146,7 @@ namespace Lanbai.Test
             var repo = TJson.M(m["repo"]);
             sb.AppendLine("- 仓库：" + (ctx.sync != null ? "提交 `" + TJson.S(TJson.G(repo, "repo_commit"), "?") + "`，" + TJson.S(TJson.G(repo, "synced_at"), "?") + " 同步，条目「" + TJson.S(TJson.G(repo, "entry"), "?") + "」" : "没有同步记录，提交号不明"));
             sb.AppendLine("- 场景：" + (ctx.scenePath ?? "（没打开）") + "；用时 " + m["duration_s"] + " s");
-            sb.AppendLine("- **交回**：把整个文件夹 `" + ctx.outDir + "` 拷到仓库的 `" + m["fromlocal"] + "`，再推。");
+            sb.AppendLine("- **交回**：把整个文件夹 `" + ctx.outDir + "` 拷到仓库的 `" + m["fromlocal"] + "`，再推。看到的问题写进 `FromLocal/" + ctx.testId + "/问题.md`，分级 S0 阻断 / S1 严重 / S2 一般 / S3 建议。");
             sb.AppendLine();
 
             if (ctx.checks.Count > 0)

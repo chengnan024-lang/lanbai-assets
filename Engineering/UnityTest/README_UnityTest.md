@@ -10,7 +10,7 @@
 
 ## 0. 每次测试，阿白照这个做
 
-1. 仓库：在 `E:\IDMdownload\VRCC\lanbai-assets` 里 `git pull`（要在 `main` 上）。
+1. 仓库：在 `E:\IDMdownload\VRCC\lanbai-assets` 里 `git pull`（要在 `main` 上）。**第一次会很大**（本地停在 29fa6f2，main 领先近 500 个提交，约 1.1 GiB）：让它跑完，别中途关掉；中途断了、留下 `.git\index.lock` 的话，同步脚本会停下（§2），不自动修。
 2. 同步（§2）。先只列出，看一眼，再 `-Apply`：
    ```powershell
    cd E:\IDMdownload\VRCC\lanbai-assets
@@ -20,7 +20,7 @@
 3. 打开 Unity，等导入、编译完。Console 里有编译错误就停：把 Console 原样推回来（工具的预检也会因为编译错误 BLOCKED）。
 4. 跑测试：菜单 **蓝白/Test/Run gate_clouds_test**，或者关掉 Unity 用批处理（§3）。
 5. 看退出码和 `summary.md`（§4）。
-6. 把整个输出文件夹 `<工程>\LanbaiReports\tests\<test-id>\<时间>\` 拷到仓库的 `FromLocal\<gate>\<时间>\`（`<gate>` 写在 `manifest.json` 的 `fromlocal` 一栏，`gate_clouds_test` 就是 `FromLocal\gate_clouds_test\<时间>\`），推。BLOCKED 的也推：报告里写着缺什么。
+6. 把整个输出文件夹 `<工程>\LanbaiReports\tests\<test-id>\<时间>\` 拷到仓库的 `FromLocal\<test-id>\<时间>\`（同名，`manifest.json` 的 `fromlocal` 一栏写着），推。看到的问题写进 `FromLocal\<test-id>\问题.md`，分级 S0 阻断 / S1 严重 / S2 一般 / S3 建议（`HANDOFF_CHATGPT.md` 的约定）。BLOCKED 的也推：报告里写着缺什么。
 7. 头显里的那几项（`summary.md` 末尾的清单）工具不测，要人戴头显看，写一句话。
 
 ---
@@ -49,11 +49,13 @@
 
 **只同步 HANDOFF_LOG 当前那一条点名的文件夹 / 文件。** 仓库里的 `X/...` 拷到工程的 `Assets/Lanbai/X/...`。
 
-- 默认只列出（新增 `+`、覆盖 `~`、删除 `-`、本地改过 `!`），什么都不改；加 `-Apply` 才动手。
-- 动手前，要覆盖或删除的文件（连同 `.meta`）和上次的同步记录先打包进 `<工程>\LanbaiSyncBackup\<时间>.zip`。
+- 默认只列出（新增 `+`、覆盖 `~`、本地改过 `!`、仓库里没有了 `?`），什么都不改；加 `-Apply` 才动手。
+- **原地覆盖**，从不删文件夹再拷：仓库里没有 `.meta`，资源的 GUID 在工程的 `.meta` 里，删了文件夹再拷 GUID 会变、引用会断。`.meta` 一概不碰。
+- 开始前先查仓库：`.git\index.lock` 在、git 用不了、有没提交的改动、不在 `main` 上，都停下（退出码 4），什么都不改，也不自动修。
+- 动手前，要覆盖的文件（连同 `.meta`）和上次的同步记录先打包进 `<工程>\LanbaiSyncBackup\<时间>.zip`。
 - 同步记录 `Assets\Lanbai\.lanbai_sync.json`：仓库路径、提交号、分支、条目标题、每个文件上次同步时的 SHA-256。测试工具从这里读提交号写进 `manifest.json`（点开头的文件 Unity 不导入）。
 - **本地改过的文件不覆盖、不删**（工程里的哈希和上次同步时的不一样，或者没有记录又和仓库不一样）：整次拒绝，退出码 2，什么都没改；确认要用仓库的版本就加 `-Force`（照样先进备份）。第一次同步时工程里已经有旧文件的，也会走到这一条。
-- **只删上次由它拷进去、现在仓库里没有了的文件。** 工程里本来就有的（搭建脚本生成的 `Generated/`、本地自己加的）一概不动，只数一下。
+- **从不自动删除。** 上次由它拷进去、现在仓库里没有了的文件只列出来（`?`），要删请在 Unity 的 Project 窗口里删（连 `.meta` 一起）。工程里本来就有的（各包的 `Generated/`、`UdonPrograms/*.asset`、本地自己加的）一概不动，只数一下。
 - 永远不同步：仓库根上的单个文件、`FromLocal/`、`Art/`；任何一层叫 `Source`、`Renders`、`__pycache__` 的文件夹；`.py .pyc .blend .blend1 .ps1 .sh`。
 - 每次的计划另存一份在 `<工程>\LanbaiReports\sync\<时间>_plan.json`。
 
@@ -73,7 +75,9 @@
 | `-Paths a/,b/c.json` | 不看 HANDOFF_LOG，直接指定。只在总导演 / 总工程师明说时用 |
 | `-Apply` / `-Force` / `-AcceptGuess` | 见上 |
 
-退出码：0 完成（或只列出）；1 没有可同步的（或猜的路径没加 `-AcceptGuess`）；2 本地改过的被拒绝；3 脚本出错。
+退出码：0 完成（或只列出）；1 没有可同步的（或猜的路径没加 `-AcceptGuess`）；2 本地改过的被拒绝；3 脚本出错；4 仓库状态不对（lock 文件、没提交的改动、不在 main）。
+
+同步时 Unity 开着也可以（文件是原地覆盖的），但最好先关掉，或者至少别在它导入的时候同步；同步完回到 Unity 等它导入、编译完。
 
 ---
 
@@ -82,7 +86,8 @@
 ### 菜单
 **蓝白/Test/Run gate_clouds_test**（以及 act06_dawn、bus_slice、act01_spawn、palace_hotspot）；**Run Other Test…** 列出 `tests/` 里所有的；**Preflight Only…** 只做预检。跑的时候编辑器不响应（几分钟），跑完弹一个框，可以直接打开输出文件夹。菜单跑完，测试场景留在打开的状态（没保存）；下次跑之前要么保存、要么点 **蓝白/Test/Discard Test Scene Changes**（只对沙盒里的拷贝和 `Assets/Lanbai/Tests/` 下的场景起作用），不然预检会因为“有没保存的改动”BLOCKED。
 
-### 批处理（要先关掉这个工程的 Unity 编辑器：同一个工程不能开两个）
+### 批处理（**要先关掉这个工程的 Unity 编辑器**）
+同一个工程同一时间只能有一个 Unity 打开（编辑器开着时，批处理会报工程被占用、直接退出，日志里没有 `LANBAI_TEST_RESULT`）。这一条没在阿白的机器上试过；不想关编辑器就用菜单。
 ```powershell
 $unity = "C:\Program Files\Unity\Hub\Editor\2022.3.22f1\Editor\Unity.exe"
 $proj  = "D:\Unity\Lanbai"
@@ -142,7 +147,6 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json"
 | 字段 | |
 |---|---|
 | `id`、`title`、`source` | 名字、给人看的标题、依据（HANDOFF_LOG 哪一条、哪条裁决） |
-| `gate` | 交回 `FromLocal/<gate>/` 的文件夹名 |
 | `blocked` | 写了就整个 BLOCKED（占位测试用），值是原因 |
 | `requires` | 前置条件，缺一样就 BLOCKED：`unity`（默认 `2022.3.22f1`）、`packages`（默认 `com.vrchat.worlds` 3.10.5、`com.unity.postprocessing` 3.4.0）、`folders`、`files`、`types`（类型名，可以不带命名空间）、`menus`、`file_contains`（`{file 或 script, text: [...], absent: [...], why}`：脚本里有没有那几行补丁、JSON 里有没有新版本的标记）、`scene_objects`（打开场景以后查）、`scene_components` |
 | `scene` | `{path, mode}`：`copy`（默认：拷进沙盒再开，原场景不动）、`in_place`（就在原场景里：门测试的 `LB_GateTest` 写死了场景路径）、`new`（沙盒里的空场景） |
@@ -150,6 +154,7 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json"
 | `camera_template` | 抄设置的参考相机（场景路径）；不写就用第一台带 PostProcessLayer 的相机 |
 | `time` | 怎么把场景定到时间 t 的步骤（`{t}` 换成数字），比如 `LB_GateTest.Apply("{t}")` |
 | `build`、`after_build` | 搭建步骤（§6.1）。`build` 一步失败，后面的标成 skipped，截图 / 序列 / 性能都不做 |
+| `post` | 截图、序列、性能都做完以后的步骤（比如把搭好的场景另存进沙盒、加 VRC 场景描述符，给 Play / ClientSim 用） |
 | `settings` | 只查不改的项目设置：`vertex_compression_off`（这些通道要关压缩）、`fog_modes_kept`（Linear / Exp / Exp2 要留）、`lights_linear_intensity`；`gate` 决定没过算失败还是警告 |
 | `cameras` | 机位表（§6.2），下面几项用 `"cam": "<名字>"` 引用，同名字段可以就地覆盖 |
 | `shots`、`stereo`、`sequences`、`texture_compare`、`perf` | §7 |
@@ -174,6 +179,10 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json"
 | `assert_log` | `contains`、`absent` | 这一组步骤开始以后的 Console 里有 / 没有这些字 |
 | `assert_object` / `assert_active` / `assert_renderer` / `assert_light` / `assert_no_component` | | 断言，不对就算这一步失败 |
 | `collect` | `file` 或 `script` | 把文件原样拷进输出的 `collected/` |
+| `save_scene_copy` | `name` | 把当前场景另存一份进沙盒（原场景不存） |
+| `open_scene` | `path` | 打开沙盒里的场景（只认沙盒里的；当前场景的改动丢掉） |
+| `add_component` | `object`、`create`、`component`、`position` | 只在沙盒里的场景上加组件（比如 VRC 场景描述符） |
+| `save_scene` | | 存当前场景：只存沙盒里的 |
 | `refresh`、`log` | | |
 
 每一步还可以有 `id`、`why`（写进报告）、`restore`（结束时改回；`build` 里默认不改回，截图 / 序列 / 性能里的 `before` 和性能的状态一律改回）、`continue_on_error`。
@@ -258,9 +267,12 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json"
   - 顶点压缩的掩码按 `1 << VertexAttribute` 读（先试 `PlayerSettings.vertexChannelCompressionMask`，读不到再读 `ProjectSettings.asset` 原文）；
   - 贴图存储大小用 `TextureUtil.GetStorageMemorySizeLong`（反射）。
 - **批处理下 PPv2 生效没有，不知道**：工具自己查（§3），不行就用菜单。
-- **Play 模式的东西工具不做**：Udon 时间（ClientSim + Profiler）、门的时钟在 Play 里走的画面、头显里的一切。都列在 `summary.md` 的手动项和头显清单里。
+- **Play 模式的东西工具不做**：Udon 时间（ClientSim + Profiler）、门的时钟在 Play 里走的画面、头显里的一切。都列在 `summary.md` 的手动项和头显清单里。`GateTest.unity` 没有 VRC 场景描述符，Play 时 ClientSim 起不来；所以 `gate_clouds_test` 最后把搭好的场景另存成 `Assets/_LanbaiTest/GateTest_play.unity`、只在这份拷贝上加描述符，量 Udon 时间就在它里面按 Play（手动项第 1 条）。
+- **工具不碰的两样**：不调 UdonSharp 的任何编译（U# 在 build 模式下编译会出几千条假 CS0518，还会改写程序资产；工具只用编辑器自己的编译）；不加 AssetPostprocessor（加一个全局的，全工程的模型都会重导入）。
+- 预检会报告工程里是不是有两套调色（旧的 `Assets/Lanbai/Grades/` + layer 4、套件的 `Assets/Lanbai/Grading/` + layer 22），只报告，不删；每张截图记下参考相机 PostProcessLayer 的 volumeLayer（`pp_volume_layer`）。
 - `act06_dawn` 在编辑模式里直接调 U# 驱动的 C# 方法（`LanbaiActivate`、`Evaluate(t)`）来定时间，没试过；驱动里用到只有 Udon 里才有的东西，会在那一步报错。主场景里车不在原点的话，机位的 `eye` 要改。
 - 闪烁、APL、PSNR 的阈值都是初值，第一次实测后定；性能的预算检查只报不卡（编辑器估算）。
+- `LB_GateTest.*` 本来没有菜单（以前是本地的远程小助手 `LB_Remote` 用反射调的，不在仓库里）：现在由这个工具的菜单和 `-executeMethod` 调。
 - 同步脚本只在 PowerShell 7.4（Linux）上测过，Windows PowerShell 5.1 没跑过；文件是带 BOM 的 UTF-8（5.1 读中文要 BOM）。
 
 ---
@@ -269,4 +281,4 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json"
 
 - C#：`bash Common/Tools~/compile_check/check_cs.sh Engineering/UnityTest` → `C# CHECK OK (0 assembly error(s), 0 lint warning(s))`（UnityEditor 2021.1 引用程序集 + PPv2 桩；不是 Unity 编译）。
 - 测试定义：5 个 `tests/*.json` 都是合法 JSON，`gate_clouds_test` 的机位、时间、文件名对过 `Gate/GateLayout_v2.json` 的 `cameras` 和 HANDOFF_LOG。
-- 同步脚本：PowerShell 7.4.6 上用一个假仓库 + 假工程走过：只列出、`-Apply`、第二次全部“一样”、本地改过被拒（退出码 2，什么都没改）、`-Force`（先备份再覆盖）、仓库删了的文件跟着删（连 `.meta`）、工程里多出来的不动、没有“同步：”行时猜路径并要求 `-AcceptGuess`；对真仓库的两条门的条目只列出过一次（猜到的路径见 `Engineering/给总导演.md`）。
+- 同步脚本：PowerShell 7.4.6 上用一个假仓库 + 假工程走过：只列出、`-Apply`、第二次全部“一样”、本地改过被拒（退出码 2，什么都没改）、`-Force`（先备份再覆盖）、仓库删了的文件只列出不删、工程里多出来的不动、没有“同步：”行时猜路径并要求 `-AcceptGuess`、`.git/index.lock` / 没提交的改动 / 不在 main 都停（退出码 4）；对真仓库的两条门的条目只列出过一次（猜到的路径见 `Engineering/给总导演.md`）。

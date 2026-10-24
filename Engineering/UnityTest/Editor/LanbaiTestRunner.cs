@@ -224,6 +224,8 @@ namespace Lanbai.Test
             {
                 Capture.All(ctx);
                 Perf.All(ctx);
+                // 最后（比如把搭好的场景另存进沙盒、加 VRC 场景描述符，给 Play / ClientSim 用）
+                Steps.RunList(ctx, TJson.L(ctx.T("post")), "post", null, true);
             }
             else ctx.Warn("搭建有一步失败，后面的截图、序列、性能都没做");
 

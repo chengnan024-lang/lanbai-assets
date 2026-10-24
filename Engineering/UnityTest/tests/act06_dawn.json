@@ -2,7 +2,6 @@
   "id": "act06_dawn",
   "title": "第 6 幕 · 晨（254–266 s 黑 → 晨，三个视向：正前 / 天窗 / 车门）",
   "source": "Act06_Dawn/README_Act06.md §0、§5（D-35 r3）；D-40 #8 标杆画面 C「晨光云海」",
-  "gate": "act06_test",
   "requires": {
     "folders": [
       "Assets/Lanbai/Common",
@@ -18,9 +17,19 @@
       "Assets/Lanbai/Act06_Dawn/Act06_Layout.json",
       "Assets/Lanbai/Sea/Materials/M_06_Sea.mat"
     ],
-    "types": ["LanbaiAct06Builder", "LanbaiAct06Driver", "Lanbai.Sky.LanbaiSkyPreset", "LanbaiOverlay", "LanbaiGateCloudsBuilder"],
-    "scene_objects": ["**/Lanbai_SkyPresets/dawn"],
-    "scene_components": ["LanbaiOverlay"],
+    "types": [
+      "LanbaiAct06Builder",
+      "LanbaiAct06Driver",
+      "Lanbai.Sky.LanbaiSkyPreset",
+      "LanbaiOverlay",
+      "LanbaiGateCloudsBuilder"
+    ],
+    "scene_objects": [
+      "**/Lanbai_SkyPresets/dawn"
+    ],
+    "scene_components": [
+      "LanbaiOverlay"
+    ],
     "why": "README_Act06 §0 第 1 条：先导入 Common、GateClouds、Sky（跑过 蓝白/Sky/Build Sky）、Sea（跑过海的搭建）、Overlay（场景里有 LanbaiOverlay）、Clouds_v2，最后 Act06_Dawn"
   },
   "scene": {
@@ -36,69 +45,346 @@
   "allowed_writes_why": "蓝白/Build/Act06 自己要写的：Generated/（网格、材质、临时反射立方图 Refl_S6_standin）、两张起伏贴图的导入设置、U# 程序资产",
   "camera_template_why": "不写 camera_template：用场景里第一台带 PostProcessLayer 的相机当参考（主场景的相机名没定）",
   "time": [
-    { "type": "call", "object": "**/Act06_Driver", "component": "LanbaiAct06Driver", "method": "LanbaiActivate", "args": [true] },
-    { "type": "call", "object": "**/Act06_Driver", "component": "LanbaiAct06Driver", "method": "Evaluate", "args": ["{t}"] }
+    {
+      "type": "call",
+      "object": "**/Act06_Driver",
+      "component": "LanbaiAct06Driver",
+      "method": "LanbaiActivate",
+      "args": [
+        true
+      ]
+    },
+    {
+      "type": "call",
+      "object": "**/Act06_Driver",
+      "component": "LanbaiAct06Driver",
+      "method": "Evaluate",
+      "args": [
+        "{t}"
+      ]
+    }
   ],
   "time_why": "编辑模式里直接调 U# 驱动的 C# 方法（激活 + Evaluate(t)）。没在 Unity 里试过：驱动里如果用到只有 Udon 里才有的东西，会在这一步报错，报告里看得到",
   "build": [
-    { "type": "call", "object": "**/Lanbai_SkyPresets/dawn", "component": "LanbaiSkyPreset", "method": "Apply", "why": "§0 第 3 条：先应用 dawn 预设再搭（海镜的临时反射立方图烘的是当时的天）" },
-    { "type": "menu", "path": "蓝白/Build/Act06" },
-    { "type": "assert_object", "path": "R_Dawn" },
-    { "type": "assert_object", "path": "R_DawnRing" },
-    { "type": "assert_object", "path": "**/Act06_Driver" },
-    { "type": "set_field", "object": "**/Act06_Driver", "component": "LanbaiAct06Driver", "field": "writeRenderSettings", "value": true, "why": "§0 第 4 条：接管开关" },
-    { "type": "set_field", "object": "**/Act06_Driver", "component": "LanbaiAct06Driver", "field": "writeMainLight", "value": true },
-    { "type": "call", "object": "**/Act06_Driver", "component": "LanbaiAct06Driver", "method": "_Init" }
+    {
+      "type": "call",
+      "object": "**/Lanbai_SkyPresets/dawn",
+      "component": "LanbaiSkyPreset",
+      "method": "Apply",
+      "why": "§0 第 3 条：先应用 dawn 预设再搭（海镜的临时反射立方图烘的是当时的天）"
+    },
+    {
+      "type": "menu",
+      "path": "蓝白/Build/Act06"
+    },
+    {
+      "type": "assert_object",
+      "path": "R_Dawn"
+    },
+    {
+      "type": "assert_object",
+      "path": "R_DawnRing"
+    },
+    {
+      "type": "assert_object",
+      "path": "**/Act06_Driver"
+    },
+    {
+      "type": "set_field",
+      "object": "**/Act06_Driver",
+      "component": "LanbaiAct06Driver",
+      "field": "writeRenderSettings",
+      "value": true,
+      "why": "§0 第 4 条：接管开关"
+    },
+    {
+      "type": "set_field",
+      "object": "**/Act06_Driver",
+      "component": "LanbaiAct06Driver",
+      "field": "writeMainLight",
+      "value": true
+    },
+    {
+      "type": "call",
+      "object": "**/Act06_Driver",
+      "component": "LanbaiAct06Driver",
+      "method": "_Init"
+    }
   ],
   "settings": {
-    "vertex_compression_off": ["TexCoord0", "TexCoord1", "TexCoord2", "TexCoord3", "Color"],
+    "vertex_compression_off": [
+      "TexCoord0",
+      "TexCoord1",
+      "TexCoord2",
+      "TexCoord3",
+      "Color"
+    ],
     "gate": true
   },
   "cameras": {
-    "hero":     { "eye": [0.55, 1.7, 2.05], "yaw": 0, "pitch": 0, "hfov": 90, "w": 1920, "h": 1080, "ss": 2 },
-    "skylight": { "eye": [0.55, 1.7, 2.05], "yaw": 0, "pitch": 49, "hfov": 50, "w": 1920, "h": 1080, "ss": 2 },
-    "door":     { "eye": [0.55, 1.7, 2.05], "yaw": 30, "pitch": 0, "hfov": 90, "w": 1920, "h": 1080, "ss": 2 },
-    "vr_door":  { "eye": [0.55, 1.7, 2.05], "yaw": 30, "pitch": 0, "hfov": 97.3, "w": 1832, "h": 1920, "ss": 2 }
+    "hero": {
+      "eye": [
+        0.55,
+        1.7,
+        2.05
+      ],
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 90,
+      "w": 1920,
+      "h": 1080,
+      "ss": 2
+    },
+    "skylight": {
+      "eye": [
+        0.55,
+        1.7,
+        2.05
+      ],
+      "yaw": 0,
+      "pitch": 49,
+      "hfov": 50,
+      "w": 1920,
+      "h": 1080,
+      "ss": 2
+    },
+    "door": {
+      "eye": [
+        0.55,
+        1.7,
+        2.05
+      ],
+      "yaw": 30,
+      "pitch": 0,
+      "hfov": 90,
+      "w": 1920,
+      "h": 1080,
+      "ss": 2
+    },
+    "vr_door": {
+      "eye": [
+        0.55,
+        1.7,
+        2.05
+      ],
+      "yaw": 30,
+      "pitch": 0,
+      "hfov": 97.3,
+      "w": 1832,
+      "h": 1920,
+      "ss": 2
+    }
   },
   "cameras_why": "Engineering/render_harness/cameras.json 的 hero、hero_skylight 和 act06_ref.py 的 door_d12 / vr_door_d12。假定车（主座位的眼）在场景原点附近，和参考帧一样；主场景里车不在原点的话，改这里的 eye",
   "shots": [
-    { "cam": "hero", "id": "hero", "t": 266.34, "file": "hero_unity_t266.34.png", "ref": "repo:Act06_Dawn/Docs~/refs/hero_t266.34.png" },
-    { "cam": "skylight", "id": "skylight", "t": 266.34, "file": "hero_skylight_unity_t266.34.png", "ref": "repo:Act06_Dawn/Docs~/refs/hero_skylight_t266.34.png" },
-    { "cam": "door", "id": "door", "t": 266.34, "file": "door_d12_unity_t266.34.png", "ref": "repo:Act06_Dawn/Docs~/refs/door_d12_t266.34.png" },
-    { "cam": "vr_door", "id": "vr_door", "t": 266.34, "file": "vr_door_d12_unity_t266.34.png" },
-    { "cam": "hero", "id": "hero_t258", "t": 258.0, "file": "hero_unity_t258.00.png" },
-    { "cam": "hero", "id": "hero_t262", "t": 262.0, "file": "hero_unity_t262.00.png" }
+    {
+      "cam": "hero",
+      "id": "hero",
+      "t": 266.34,
+      "file": "hero_unity_t266.34.png",
+      "ref": "repo:Act06_Dawn/Docs~/refs/hero_t266.34.png"
+    },
+    {
+      "cam": "skylight",
+      "id": "skylight",
+      "t": 266.34,
+      "file": "hero_skylight_unity_t266.34.png",
+      "ref": "repo:Act06_Dawn/Docs~/refs/hero_skylight_t266.34.png"
+    },
+    {
+      "cam": "door",
+      "id": "door",
+      "t": 266.34,
+      "file": "door_d12_unity_t266.34.png",
+      "ref": "repo:Act06_Dawn/Docs~/refs/door_d12_t266.34.png"
+    },
+    {
+      "cam": "vr_door",
+      "id": "vr_door",
+      "t": 266.34,
+      "file": "vr_door_d12_unity_t266.34.png"
+    },
+    {
+      "cam": "hero",
+      "id": "hero_t258",
+      "t": 258.0,
+      "file": "hero_unity_t258.00.png"
+    },
+    {
+      "cam": "hero",
+      "id": "hero_t262",
+      "t": 262.0,
+      "file": "hero_unity_t262.00.png"
+    }
   ],
   "stereo": [
-    { "cam": "door", "id": "door", "t": 266.34 }
+    {
+      "cam": "door",
+      "id": "door",
+      "t": 266.34
+    }
   ],
   "sequences": [
-    { "id": "dawn_hero", "cam": "hero", "kind": "time", "t0": 252.64, "t1": 266.64, "fps": 5, "w": 960, "h": 540, "ss": 1,
-      "why": "黑 → 晨的爬升（APL 每帧在 numbers.json；帧在 seq/，云端可以拿去跑 flashcheck.py）。5 fps 是为了省时间，不是 flashcheck 要的 60 fps" },
-    { "id": "dawn_skylight", "cam": "skylight", "kind": "time", "t0": 252.64, "t1": 266.64, "fps": 5, "w": 960, "h": 540, "ss": 1 },
-    { "id": "dawn_door", "cam": "door", "kind": "time", "t0": 252.64, "t1": 266.64, "fps": 5, "w": 960, "h": 540, "ss": 1 },
-    { "id": "hero_micro", "cam": "hero", "kind": "micro_motion", "t": 266.34, "fps": 90, "frames": 90, "w": 1280, "h": 720, "ss": 1 },
-    { "id": "door_micro", "cam": "door", "kind": "micro_motion", "t": 266.34, "fps": 90, "frames": 90, "w": 1280, "h": 720, "ss": 1 }
+    {
+      "id": "dawn_hero",
+      "cam": "hero",
+      "kind": "time",
+      "t0": 252.64,
+      "t1": 266.64,
+      "fps": 5,
+      "w": 960,
+      "h": 540,
+      "ss": 1,
+      "why": "黑 → 晨的爬升（APL 每帧在 numbers.json；帧在 seq/，云端可以拿去跑 flashcheck.py）。5 fps 是为了省时间，不是 flashcheck 要的 60 fps"
+    },
+    {
+      "id": "dawn_skylight",
+      "cam": "skylight",
+      "kind": "time",
+      "t0": 252.64,
+      "t1": 266.64,
+      "fps": 5,
+      "w": 960,
+      "h": 540,
+      "ss": 1
+    },
+    {
+      "id": "dawn_door",
+      "cam": "door",
+      "kind": "time",
+      "t0": 252.64,
+      "t1": 266.64,
+      "fps": 5,
+      "w": 960,
+      "h": 540,
+      "ss": 1
+    },
+    {
+      "id": "hero_micro",
+      "cam": "hero",
+      "kind": "micro_motion",
+      "t": 266.34,
+      "fps": 90,
+      "frames": 90,
+      "w": 1280,
+      "h": 720,
+      "ss": 1
+    },
+    {
+      "id": "door_micro",
+      "cam": "door",
+      "kind": "micro_motion",
+      "t": 266.34,
+      "fps": 90,
+      "frames": 90,
+      "w": 1280,
+      "h": 720,
+      "ss": 1
+    }
   ],
   "perf": [
-    { "id": "hero", "cam": "hero", "t": 266.34, "states": [
-      { "id": "all_on", "label": "全开" },
-      { "id": "plain_off", "label": "关掉 R_Dawn/Act06_Plain（README §6）",
-        "steps": [ { "type": "set_active", "path": "R_Dawn/Act06_Plain", "value": false } ] }
-    ] }
+    {
+      "id": "hero",
+      "cam": "hero",
+      "t": 266.34,
+      "states": [
+        {
+          "id": "all_on",
+          "label": "全开"
+        },
+        {
+          "id": "plain_off",
+          "label": "关掉 R_Dawn/Act06_Plain（README §6）",
+          "steps": [
+            {
+              "type": "set_active",
+              "path": "R_Dawn/Act06_Plain",
+              "value": false
+            }
+          ]
+        }
+      ]
+    }
   ],
   "checks": [
-    { "id": "hero_apl_cap", "metric": "shot.hero.apl", "op": "<=", "value": 210, "why": "D-18：桌面 APL ≤ 210" },
-    { "id": "door_apl_cap", "metric": "shot.door.apl", "op": "<=", "value": 210, "why": "D-18" },
-    { "id": "vr_door_apl_cap", "metric": "shot.vr_door.apl", "op": "<=", "value": 150, "why": "D-09：VR 看车门 APL ≤ 150" },
-    { "id": "hero_apl_vs_ref", "metric": "shot.hero.apl_ratio", "op": "between", "value": [0.85, 1.15], "gate": false,
-      "why": "和参考帧比（README §5：正前 124.4）；参考帧的车壳是暗灰占位，真车厢进来会再亮一点，所以只报不卡" },
-    { "id": "skylight_apl_vs_ref", "metric": "shot.skylight.apl_ratio", "op": "between", "value": [0.85, 1.15], "gate": false, "why": "参考 71.2" },
-    { "id": "door_apl_vs_ref", "metric": "shot.door.apl_ratio", "op": "between", "value": [0.85, 1.15], "gate": false, "why": "参考 104.7" },
-    { "id": "dawn_hero_no_jump", "metric": "seq.dawn_hero.apl_max_step", "op": "<=", "value": 12, "gate": false,
-      "why": "5 fps 下相邻两帧 APL 跳变（初值；正式的闪烁核查是云端的 flashcheck.py）" },
-    { "id": "hero_shimmer", "metric": "seq.hero_micro.hf_frac", "op": "<=", "value": 0.01, "gate": false, "why": "初值，第一次实测后定" },
-    { "id": "door_shimmer", "metric": "seq.door_micro.hf_frac", "op": "<=", "value": 0.01, "gate": false, "why": "初值" }
+    {
+      "id": "hero_apl_cap",
+      "metric": "shot.hero.apl",
+      "op": "<=",
+      "value": 210,
+      "why": "D-18：桌面 APL ≤ 210"
+    },
+    {
+      "id": "door_apl_cap",
+      "metric": "shot.door.apl",
+      "op": "<=",
+      "value": 210,
+      "why": "D-18"
+    },
+    {
+      "id": "vr_door_apl_cap",
+      "metric": "shot.vr_door.apl",
+      "op": "<=",
+      "value": 150,
+      "why": "D-09：VR 看车门 APL ≤ 150"
+    },
+    {
+      "id": "hero_apl_vs_ref",
+      "metric": "shot.hero.apl_ratio",
+      "op": "between",
+      "value": [
+        0.85,
+        1.15
+      ],
+      "gate": false,
+      "why": "和参考帧比（README §5：正前 124.4）；参考帧的车壳是暗灰占位，真车厢进来会再亮一点，所以只报不卡"
+    },
+    {
+      "id": "skylight_apl_vs_ref",
+      "metric": "shot.skylight.apl_ratio",
+      "op": "between",
+      "value": [
+        0.85,
+        1.15
+      ],
+      "gate": false,
+      "why": "参考 71.2"
+    },
+    {
+      "id": "door_apl_vs_ref",
+      "metric": "shot.door.apl_ratio",
+      "op": "between",
+      "value": [
+        0.85,
+        1.15
+      ],
+      "gate": false,
+      "why": "参考 104.7"
+    },
+    {
+      "id": "dawn_hero_no_jump",
+      "metric": "seq.dawn_hero.apl_max_step",
+      "op": "<=",
+      "value": 12,
+      "gate": false,
+      "why": "5 fps 下相邻两帧 APL 跳变（初值；正式的闪烁核查是云端的 flashcheck.py）"
+    },
+    {
+      "id": "hero_shimmer",
+      "metric": "seq.hero_micro.hf_frac",
+      "op": "<=",
+      "value": 0.01,
+      "gate": false,
+      "why": "初值，第一次实测后定"
+    },
+    {
+      "id": "door_shimmer",
+      "metric": "seq.door_micro.hf_frac",
+      "op": "<=",
+      "value": 0.01,
+      "gate": false,
+      "why": "初值"
+    }
   ],
   "headset_checklist": [
     "252 → 268 正前 / 车门 / 天窗各看一遍：黑 → 晨的爬升刺不刺眼（D-09）",

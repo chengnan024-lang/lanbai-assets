@@ -96,6 +96,13 @@ namespace Lanbai.Test
             Item(P, "sandbox", sbx && !mk ? "blocked" : "ok",
                 !sbx ? "没有遗留的沙盒" : (mk ? "有上次遗留的沙盒（有标记），开跑时删掉重建" : Sandbox.DIR + " 在，但没有标记文件 " + Sandbox.MARKER + "：不是本工具建的，不删。请人工看过再处理"));
 
+            // 两套调色：旧的 Assets/Lanbai/Grades/（layer 4）和套件的 Assets/Lanbai/Grading/（layer 22）。只报告，不删
+            bool oldG = Directory.Exists("Assets/Lanbai/Grades"), newG = Directory.Exists("Assets/Lanbai/Grading");
+            string l4 = LayerMask.LayerToName(4), l22 = LayerMask.LayerToName(22);
+            Item(P, "grading", oldG && newG ? "warn" : "info",
+                (oldG ? "有旧的 Assets/Lanbai/Grades/" : "没有旧的 Grades/") + "，" + (newG ? "有套件的 Assets/Lanbai/Grading/" : "没有套件的 Grading/") +
+                "；layer 4 =「" + l4 + "」，layer 22 =「" + l22 + "」" + (oldG && newG ? "。两套调色都在：工具不删，截图用的是参考相机上的那一套（PostProcessLayer 的 volumeLayer 写在 manifest 的截图记录里）" : ""));
+
             // 同步记录（仓库提交号从这里来）
             ctx.sync = null;
             if (File.Exists(SYNC_RECORD))

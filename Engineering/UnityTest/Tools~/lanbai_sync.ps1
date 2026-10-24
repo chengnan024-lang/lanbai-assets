@@ -4,7 +4,9 @@
   默认只列出要做什么（新增 / 覆盖 / 删除），不改任何东西；加 -Apply 才动手。
   动手之前：要覆盖或删除的文件先打包进 <工程>\LanbaiSyncBackup\<时间>.zip。
   上次同步时每个文件的哈希记在 Assets\Lanbai\.lanbai_sync.json；工程里的文件在那之后被本地改过的，不覆盖、不删，除非加 -Force。
-  只删上次由本脚本拷进去、现在仓库里没有了的文件；工程里本来就有的（搭建脚本生成的、本地自己加的）一概不动。.meta 不碰（删文件时连它的 .meta 一起删）。
+  原地覆盖文件，从不删文件夹再拷（仓库里没有 .meta，GUID 在工程的 .meta 里，删了引用就断）；.meta 一概不碰。
+  从不自动删除：仓库里没有了的文件只列出来，要删请人工删。工程里本来就有的（Generated/、UdonPrograms/*.asset、本地自己加的）一概不动。
+  开始前先查仓库：.git/index.lock 在、git 不能用、有没提交的改动、不在 main 上，都停下（退出码 4），不自动修。
 
 用法（PowerShell 5.1 或 7）：
   powershell -ExecutionPolicy Bypass -File lanbai_sync.ps1 -Project "D:\Unity\Lanbai"                 # 只列出（看当前那一条）
@@ -14,8 +16,8 @@
   -EntryMatch <字>    标题里含这几个字的那一条（比 -Entry 优先）
   -Paths a/,b/c.json  不看 HANDOFF_LOG，直接指定（只在总导演 / 总工程师明说时用）
   -AcceptGuess        这一条没有“同步：”行、路径是从反引号里猜的时候，确认按猜的做
-  -Force              本地改过的文件也覆盖 / 删除（照样先进备份）
-退出码：0 完成（或只列出）；1 没有可同步的；2 有本地改过的文件被拒绝（什么都没改）；3 脚本出错。
+  -Force              本地改过的文件也覆盖（照样先进备份）
+退出码：0 完成（或只列出）；1 没有可同步的；2 有本地改过的文件被拒绝（什么都没改）；3 脚本出错；4 仓库状态不对（什么都没改）。
 #>
 [CmdletBinding()]
 param(
@@ -132,11 +134,15 @@ try {
     if ($sel.Count -eq 0) { Say '没有要同步的路径。'; exit 1 }
 
     # ── 2. 仓库的状态 ───────────────────────────────────────────
+    $lock = Join-Path (Join-Path $Repo '.git') 'index.lock'
+    if (Test-Path -LiteralPath $lock) { Say "停：仓库里有 $lock（上一次 git 没正常结束，或者还有 git 在跑）。不自动删它：确认没有 git 在跑以后人工处理，再重跑。什么都没改。"; exit 4 }
     $commit = GitOut $Repo @('rev-parse', 'HEAD')
     $branch = GitOut $Repo @('rev-parse', '--abbrev-ref', 'HEAD')
     $dirty = GitOut $Repo @('status', '--porcelain')
     Say "  仓库提交 $(if ($commit) { $commit } else { '（读不到：没装 git 或不是 git 仓库）' })  分支 $branch$(if ($dirty) { '  ⚠ 仓库里有没提交的改动' } else { '' })"
-    if ($branch -and $branch -ne 'main') { Say "  ⚠ 仓库不在 main 上（$branch）：本地测试应该用 main" }
+    if (-not $commit) { Say '停：读不到仓库的提交号（没装 git，或者不是 git 仓库）。什么都没改。'; exit 4 }
+    if ($dirty) { Say "停：仓库里有没提交的改动（git status --porcelain 不是空的），同步的内容说不清是哪个提交。不自动处理：人工看过再重跑。什么都没改。"; Say $dirty; exit 4 }
+    if ($branch -ne 'main') { Say "停：仓库不在 main 上（$branch）。本地测试只用 main。什么都没改。"; exit 4 }
 
     # ── 3. 上次的记录 ───────────────────────────────────────────
     $rec = @{}
@@ -177,7 +183,7 @@ try {
         if ($r -ne $null -and $r.sha256 -eq $hd) { $plan.Add(@{ op = 'OVERWRITE'; key = $key; src = $src; dst = $dst; sha = $hs; repo = $rel }) }
         else { $plan.Add(@{ op = $LocalModified; key = $key; src = $src; dst = $dst; sha = $hs; repo = $rel; why = $(if ($r -eq $null) { '没有同步记录，和仓库不一样' } else { '上次同步以后在本地改过' }) }) }
     }
-    # 删除：上次由本脚本拷进去、在这次同步的路径下、现在仓库里没有了（或现在被排除）的文件
+    # 仓库里没有了的：上次由本脚本拷进去、在这次同步的路径下、现在仓库里没有了（或现在被排除）的文件。只列出，不删
     foreach ($key in @($rec.Keys)) {
         $rel = $key.Substring('Assets/Lanbai/'.Length)
         $under = $false
@@ -186,8 +192,7 @@ try {
         $dst = Join-Path $Lanbai ($rel -replace '/', [IO.Path]::DirectorySeparatorChar)
         if (-not (Test-Path -LiteralPath $dst)) { $plan.Add(@{ op = 'FORGET'; key = $key; dst = $dst }); continue }
         $hd = Sha $dst
-        if ($hd -eq $rec[$key].sha256) { $plan.Add(@{ op = 'DELETE'; key = $key; dst = $dst }) }
-        else { $plan.Add(@{ op = $LocalModified + '_DELETE'; key = $key; dst = $dst; why = '仓库里没有了，但本地改过' }) }
+        $plan.Add(@{ op = 'GONE'; key = $key; dst = $dst; why = $(if ($hd -eq $rec[$key].sha256) { '上次同步以后没改过' } else { '本地改过' }) })
     }
     # 工程里多出来的（不是本脚本拷的）：只数一下，不动
     $extra = 0
@@ -206,12 +211,11 @@ try {
     $count = @{}
     foreach ($p in $plan) { $count[$p.op] = 1 + [int]$count[$p.op] }
     Say ''
-    Say "计划：新增 $([int]$count['ADD'])，覆盖 $([int]$count['OVERWRITE'])，删除 $([int]$count['DELETE'])，一样的 $([int]$count['SAME'])，本地改过的 $([int]$count[$LocalModified] + [int]$count[$LocalModified + '_DELETE'])；工程里多出来的 $extra 个不动"
-    foreach ($op in @('ADD', 'OVERWRITE', 'DELETE', $LocalModified, ($LocalModified + '_DELETE'))) {
+    Say "计划：新增 $([int]$count['ADD'])，覆盖 $([int]$count['OVERWRITE'])，一样的 $([int]$count['SAME'])，本地改过的 $([int]$count[$LocalModified])；仓库里没有了的 $([int]$count['GONE']) 个只列出、不删；工程里多出来的 $extra 个不动"
+    foreach ($op in @('ADD', 'OVERWRITE', $LocalModified, 'GONE')) {
         foreach ($p in ($plan | Where-Object { $_.op -eq $op })) {
-            $tag = @{ 'ADD' = '  + 新增  '; 'OVERWRITE' = '  ~ 覆盖  '; 'DELETE' = '  - 删除  '
-                      $LocalModified = $(if ($Force) { '  ! 本地改过，-Force 照样覆盖 ' } else { '  ! 本地改过，不覆盖 ' })
-                      ($LocalModified + '_DELETE') = $(if ($Force) { '  ! 本地改过，-Force 照样删 ' } else { '  ! 本地改过，不删 ' }) }[$op]
+            $tag = @{ 'ADD' = '  + 新增  '; 'OVERWRITE' = '  ~ 覆盖  '; 'GONE' = '  ? 仓库里没有了（不自动删，要删请人工删）'
+                      $LocalModified = $(if ($Force) { '  ! 本地改过，-Force 照样覆盖 ' } else { '  ! 本地改过，不覆盖 ' }) }[$op]
             Say ("$tag$($p.key)" + $(if ($p.why) { "（$($p.why)）" } else { '' }))
         }
     }
@@ -223,7 +227,7 @@ try {
                   plan = @($plan | Where-Object { $_.op -ne 'SAME' } | ForEach-Object { @{ op = $_.op; file = $_.key; why = $_.why } }); same = [int]$count['SAME']; extra_untouched = $extra }
     [IO.File]::WriteAllText((Join-Path $repDir "$Stamp`_plan.json"), ($planOut | ConvertTo-Json -Depth 6), $Utf8NoBom)
 
-    $blocked = @($plan | Where-Object { $_.op -like ($LocalModified + '*') })
+    $blocked = @($plan | Where-Object { $_.op -eq $LocalModified })
     if (-not $Apply) {
         Say ''
         Say '只列出，没有改任何东西。照这个做：加 -Apply。'
@@ -235,7 +239,7 @@ try {
     if ($blocked.Count -gt 0 -and -not $Force) { Say "拒绝：$($blocked.Count) 个文件在本地改过（见上面的 !）。什么都没改。要盖掉就加 -Force。"; exit 2 }
 
     # ── 5. 备份要覆盖 / 删除的 ─────────────────────────────────
-    $touch = @($plan | Where-Object { $_.op -in @('OVERWRITE', 'DELETE', $LocalModified, ($LocalModified + '_DELETE')) })
+    $touch = @($plan | Where-Object { $_.op -in @('OVERWRITE', $LocalModified) })
     if ($touch.Count -gt 0 -or $recRaw) {
         Add-Type -AssemblyName System.IO.Compression -ErrorAction SilentlyContinue
         Add-Type -AssemblyName System.IO.Compression.FileSystem -ErrorAction SilentlyContinue
@@ -260,9 +264,7 @@ try {
             'ADD' { New-Item -ItemType Directory -Force -Path (Split-Path -Parent $p.dst) | Out-Null; Copy-Item -LiteralPath $p.src -Destination $p.dst -Force; $rec[$p.key] = @{ sha256 = $p.sha; repo = $p.repo; synced_at = $now } }
             'OVERWRITE' { Copy-Item -LiteralPath $p.src -Destination $p.dst -Force; $rec[$p.key] = @{ sha256 = $p.sha; repo = $p.repo; synced_at = $now } }
             'SAME' { $rec[$p.key] = @{ sha256 = $p.sha; repo = $p.repo; synced_at = $now } }
-            'DELETE' { Remove-Item -LiteralPath $p.dst -Force; if (Test-Path -LiteralPath ($p.dst + '.meta')) { Remove-Item -LiteralPath ($p.dst + '.meta') -Force }; $rec.Remove($p.key) }
             'FORGET' { $rec.Remove($p.key) }
-            ($LocalModified + '_DELETE') { Remove-Item -LiteralPath $p.dst -Force; if (Test-Path -LiteralPath ($p.dst + '.meta')) { Remove-Item -LiteralPath ($p.dst + '.meta') -Force }; $rec.Remove($p.key) }
             $LocalModified { Copy-Item -LiteralPath $p.src -Destination $p.dst -Force; $rec[$p.key] = @{ sha256 = $p.sha; repo = $p.repo; synced_at = $now } }
         }
     }
@@ -276,7 +278,8 @@ try {
     }
     New-Item -ItemType Directory -Force -Path $Lanbai | Out-Null
     [IO.File]::WriteAllText($RecordPath, ($out | ConvertTo-Json -Depth 6), $Utf8NoBom)
-    Say "完成：新增 $([int]$count['ADD'])，覆盖 $([int]$count['OVERWRITE'] + $(if ($Force) { [int]$count[$LocalModified] } else { 0 }))，删除 $([int]$count['DELETE'] + $(if ($Force) { [int]$count[$LocalModified + '_DELETE'] } else { 0 }))。记录：$RecordPath"
+    Say "完成：新增 $([int]$count['ADD'])，覆盖 $([int]$count['OVERWRITE'] + $(if ($Force) { [int]$count[$LocalModified] } else { 0 }))；仓库里没有了的 $([int]$count['GONE']) 个没删。记录：$RecordPath"
+    if ([int]$count['GONE'] -gt 0) { Say '仓库里没有了的文件还留在工程里：要删就在 Unity 的 Project 窗口里删（连 .meta 一起），别在资源管理器里只删一半。' }
     Say '回到 Unity，等它导入、编译完，再跑测试。'
     exit 0
 } catch {
