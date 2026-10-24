@@ -1,0 +1,201 @@
+{
+  "id": "gate_clouds_test",
+  "title": "门的云 GateClouds v1.5 + 门的总驱动 · 门测试场景",
+  "source": "HANDOFF_LOG 2026-10-24「门的云 GateClouds v1.5 合进 main」全条 + 「门的总驱动 LanbaiGateDriver 合进 main」+「门的云第 10 轮第 1 批」（_Stars 0.055、38 张云卡）",
+  "gate": "gate_clouds_test",
+  "requires": {
+    "folders": [
+      "Assets/Lanbai/Common",
+      "Assets/Lanbai/Gate",
+      "Assets/Lanbai/GateClouds",
+      "Assets/Lanbai/Tear",
+      "Assets/Lanbai/Tentacles",
+      "Assets/Lanbai/Tests"
+    ],
+    "files": [
+      "Assets/Lanbai/Tests/GateTest.unity",
+      "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc",
+      "Assets/Lanbai/Gate/GateLayout_v2.json",
+      "Assets/Lanbai/Gate/GateDriver_Bake.json",
+      "Assets/Lanbai/GateClouds/GateClouds_Layout.json"
+    ],
+    "types": [
+      "Lanbai.Tests.LB_GateTest",
+      "LanbaiGateCloudsBuilder",
+      "LanbaiGateDriverBuilder",
+      "LanbaiGateDriver",
+      "LanbaiGateClouds"
+    ],
+    "file_contains": [
+      {
+        "script": "LB_GateTest_Run",
+        "text": [
+          "LanbaiGateCloudsBuilder.Apply(t)",
+          "SetPB(tear, \"Tear_CloudGlow_Additive\", mpb, false",
+          "SetPB(tear, \"Tear_CloudGlow\", mpb, false",
+          "SetPB(tear, \"Tear_LightLane\", mpb, false",
+          "SetPB(st, st.name, mpb, false"
+        ],
+        "why": "HANDOFF v1.5 第 4 步：LB_GateTest_Run.cs 的 4 处 SetPB 第 4 个参数改成 false，Apply 里加 LanbaiGateCloudsBuilder.Apply(t)（逐行对照 GateClouds/给本地_补丁_LB_GateTest_Run.md）。不改的话截图和帧时间都作废"
+      },
+      {
+        "file": "Assets/Lanbai/GateClouds/GateClouds_Layout.json",
+        "text": ["Tower_Colossus_2_Back", "\"quality\": \"default\""],
+        "why": "第 10 轮第 1 批的云（38 张卡）；画质档要是 default（截图一律用 default）"
+      },
+      {
+        "file": "Assets/Lanbai/Gate/GateLayout_v2.json",
+        "text": ["\"_Stars\": 0.055"],
+        "why": "第 10 轮第 1 批的 GateLayout_v2.json（D-06：第 4 幕有星）"
+      }
+    ]
+  },
+  "scene": {
+    "path": "Assets/Lanbai/Tests/GateTest.unity",
+    "mode": "in_place",
+    "why": "LB_GateTest 写死了这个场景（RequireTestScene），不能拷进沙盒"
+  },
+  "allowed_writes": [
+    "Assets/Lanbai/Tests/**",
+    "Assets/Lanbai/GateClouds/Generated/**",
+    "Assets/Lanbai/GateClouds/Textures/**",
+    "Assets/Lanbai/GateClouds/GateClouds_Layout.json",
+    "Assets/Lanbai/UdonPrograms/**",
+    "Assets/Lanbai/Gate/Generated/**"
+  ],
+  "allowed_writes_why": "沙盒规则的例外：门测试本来就是这些搭建脚本搭的（LB_GateTest.Build 存 GateTest.unity 和 Tests/GateTest_Materials/；蓝白/Gate Clouds/Build 建 Generated/、设贴图导入、建 U# 程序资产；auto_lite 那一档临时改 GateClouds_Layout.json，量完逐字节写回）。别的地方被改就算没声明的写入",
+  "camera_template": "ReferenceCamera",
+  "time": [
+    { "type": "method", "name": "Lanbai.Tests.LB_GateTest.Apply", "arg": "{t}" }
+  ],
+  "build": [
+    { "type": "method", "name": "Lanbai.Tests.LB_GateTest.Build", "arg": "155.1", "why": "HANDOFF 6.1：用新的 JSON 和 shader 把门重搭一遍" },
+    { "type": "set_light", "path": "Gate_Lights/Fill_from_below", "render_mode": "NotImportant", "why": "D-07：补光一律 Not Important；Build 每次重建补光，每次都要设" },
+    { "type": "set_material", "asset": ["Assets/Lanbai/Tests/GateTest_Materials/M_TentacleTide_v3_A.mat", "Assets/Lanbai/Tests/GateTest_Materials/M_TentacleTide_v3_B.mat"],
+      "props": { "_HazeNear": [0.1085, 0.1130, 0.1641], "_HazeFar": [0.0436, 0.0504, 0.0726], "_BandEl": [6, 22, 2] }, "min_count": 6,
+      "why": "HANDOFF 6.1：远潮材质还是旧值，照 GateClouds_Layout.json 的 tide_material 填" },
+    { "type": "set_material", "asset": "Assets/Lanbai/Tests/GateTest_Materials/M_GateAirSky.mat", "props": { "_Stars": 0.055 },
+      "why": "第 10 轮第 1 批：_Stars 填 0.055（v1.5 那条说的 0 已作废，D-06）" },
+    { "type": "menu", "path": "蓝白/Gate Clouds/Build", "why": "HANDOFF 6.2" },
+    { "type": "assert_log", "contains": ["[GateClouds] deck quality: default", "[GateClouds] built: deck, 38 cards (10 towers), 6 beams"],
+      "why": "v1.5 那条写的是 37 张 / 9 座塔；第 10 轮加了 Tower_Colossus_2_Back，现在是 38 / 10" },
+    { "type": "method", "name": "Lanbai.Tests.LB_GateTest.Apply", "arg": "155.1", "why": "HANDOFF 6.3" },
+    { "type": "menu", "path": "蓝白/Gate/Build Driver + Test Clock (Play mode only)", "why": "门的总驱动那条，搭建顺序第 5 步（编辑模式里点；时钟只在 Play 里走）" },
+    { "type": "assert_log", "contains": ["[GateDriver] built: 64 instances (0 missing)"], "absent": ["_VariantDims"], "why": "门的总驱动那条第 2 步" }
+  ],
+  "after_build": [
+    { "type": "assert_no_component", "component": "LanbaiTearParams", "why": "门的总驱动那条第 3 步：它会和驱动抢裂口的全局量" },
+    { "type": "assert_renderer", "path": "**/Tear_CloudGlow", "value": false, "why": "HANDOFF 6.4：Build 关掉的几样要关着" },
+    { "type": "assert_renderer", "path": "**/Tear_CloudGlow_Additive", "value": false },
+    { "type": "assert_renderer", "path": "**/Tear_LightLane", "value": false },
+    { "type": "assert_renderer", "path": "**/Shaft_00", "value": false },
+    { "type": "assert_renderer", "path": "**/Shaft_01", "value": false },
+    { "type": "assert_renderer", "path": "**/GateBeam_Shaft_00", "value": true },
+    { "type": "assert_renderer", "path": "**/GateBeam_Shaft_01", "value": true },
+    { "type": "assert_light", "path": "Gate_Lights/Tear_CabinOnly", "culling_mask": 0, "why": "门的总驱动那条第 5 步：Culling Mask 保持 Nothing" },
+    { "type": "assert_light", "path": "Gate_Lights/Fill_from_below", "render_mode": "NotImportant" },
+    { "type": "collect", "script": "LB_GateTest", "why": "交回改过的测试脚本" },
+    { "type": "collect", "script": "LB_GateTest_Run" },
+    { "type": "collect", "script": "LB_GateTest_Build" }
+  ],
+  "settings": {
+    "vertex_compression_off": ["TexCoord0", "TexCoord1", "TexCoord2", "TexCoord3", "Color"],
+    "lights_linear_intensity": true,
+    "gate": true,
+    "why": "HANDOFF v1.5 第 3 步（TexCoord0–3）；天空、海那两条还要关 Color。只查不改"
+  },
+  "cameras": {
+    "key":    { "eye": [0.55, 1.7, 2.05], "euler": [-7, 6, 0], "hfov": 82, "w": 2560, "h": 1072, "ss": 2, "t": 154.5,
+                "ref": "repo:GateClouds/Docs~/compare_key.png", "ref_half": "top" },
+    "U7":     { "eye": [0.55, 1.7, 2.05], "euler": [0, 0, 0], "hfov": 90, "w": 1920, "h": 1080, "ss": 2, "t": 155.1,
+                "ref": "repo:GateClouds/Docs~/compare_U7.png", "ref_half": "top" },
+    "U8fwd":  { "eye": [0.55, 1.7, 2.05], "euler": [0, 0, 0], "hfov": 90, "w": 1920, "h": 1080, "ss": 2, "t": 169.65,
+                "ref": "repo:GateClouds/Docs~/compare_U8fwd.png", "ref_half": "top" },
+    "U8side": { "eye": [0.55, 1.7, 2.05], "euler": [-8, 112, 0], "hfov": 84, "w": 1920, "h": 1080, "ss": 2, "t": 166.45,
+                "ref": "repo:GateClouds/Docs~/compare_U8side.png", "ref_half": "top" },
+    "rear":   { "eye": [0.0, 1.95, -3.15], "euler": [-12, 180, 0], "hfov": 78, "w": 1920, "h": 1080, "ss": 2, "t": 177.55,
+                "ref": "repo:GateClouds/Docs~/compare_rear.png", "ref_half": "top" }
+  },
+  "cameras_why": "Gate/GateLayout_v2.json 的 cameras（eye_bus_relative、unity_euler_deg、hfov_deg、t）；测试场景里车在原点，和 LB_GateTest.Shoot 一样直接当世界坐标",
+  "shots": [
+    { "cam": "key" },
+    { "cam": "U7" },
+    { "cam": "U8fwd" },
+    { "cam": "U8side" },
+    { "cam": "rear",
+      "before": [
+        { "type": "set_material", "find": "M_GateAirSky", "under": "GateRoot/GateClouds", "renderer_name": "Rear_*", "props": { "_BackBand": 1.25 },
+          "why": "HANDOFF：拍 rear 之前天空盒、云海、云卡、后窗 8 条 Rear_* 臂的 _BackBand 设 1.25；拍完工具自动改回（原来是 0.55）" }
+      ] }
+  ],
+  "stereo": [
+    { "cam": "U7", "id": "U7", "ipd_mm": 64 },
+    { "cam": "U8fwd", "id": "U8fwd", "ipd_mm": 64 }
+  ],
+  "sequences": [
+    { "id": "U7_micro", "cam": "U7", "kind": "micro_motion", "fps": 90, "frames": 90, "amp_cm": 2, "amp_deg": 1, "w": 1280, "h": 720, "ss": 1 },
+    { "id": "U8fwd_micro", "cam": "U8fwd", "kind": "micro_motion", "fps": 90, "frames": 90, "amp_cm": 2, "amp_deg": 1, "w": 1280, "h": 720, "ss": 1 },
+    { "id": "deck_roll", "cam": "U8fwd", "kind": "time", "t0": 160.0, "t1": 162.0, "fps": 30, "w": 1280, "h": 720, "ss": 1,
+      "why": "云海往前滚 2 秒（用 Apply(t) 推时间，30 fps）：远处细银边爬不爬（头显里要滚 10 秒看，这里只是编辑器近似）" }
+  ],
+  "perf": [
+    { "id": "U7", "cam": "U7", "states": [
+      { "id": "all_on", "label": "全开" },
+      { "id": "deck_off", "label": "关掉 GateRoot/GateClouds/Deck",
+        "steps": [ { "type": "set_active", "path": "GateRoot/GateClouds/Deck", "value": false } ] },
+      { "id": "clouds_off", "label": "关掉整个 GateRoot/GateClouds + 两束 GateBeam_Shaft",
+        "steps": [ { "type": "set_active", "path": "GateRoot/GateClouds", "value": false },
+                   { "type": "set_active", "path": "**/GateBeam_Shaft_00", "value": false },
+                   { "type": "set_active", "path": "**/GateBeam_Shaft_01", "value": false } ] },
+      { "id": "auto_lite", "label": "画质档 auto_lite（只量帧时间）",
+        "steps": [ { "type": "edit_json", "asset": "Assets/Lanbai/GateClouds/GateClouds_Layout.json", "set": { "deck.quality": "auto_lite" } },
+                   { "type": "menu", "path": "蓝白/Gate Clouds/Build" },
+                   { "type": "assert_log", "contains": ["[GateClouds] deck quality: auto_lite"] } ],
+        "teardown": [ { "type": "menu", "path": "蓝白/Gate Clouds/Build" },
+                      { "type": "assert_log", "contains": ["[GateClouds] deck quality: default"] },
+                      { "type": "method", "name": "Lanbai.Tests.LB_GateTest.Apply", "arg": "155.1" },
+                      { "type": "menu", "path": "蓝白/Gate/Build Driver + Test Clock (Play mode only)" } ] }
+    ] },
+    { "id": "U8fwd", "cam": "U8fwd", "states": [
+      { "id": "all_on", "label": "全开" },
+      { "id": "deck_off", "label": "关掉 GateRoot/GateClouds/Deck",
+        "steps": [ { "type": "set_active", "path": "GateRoot/GateClouds/Deck", "value": false } ] },
+      { "id": "clouds_off", "label": "关掉整个 GateRoot/GateClouds + 两束 GateBeam_Shaft",
+        "steps": [ { "type": "set_active", "path": "GateRoot/GateClouds", "value": false },
+                   { "type": "set_active", "path": "**/GateBeam_Shaft_00", "value": false },
+                   { "type": "set_active", "path": "**/GateBeam_Shaft_01", "value": false } ] },
+      { "id": "auto_lite", "label": "画质档 auto_lite（只量帧时间）",
+        "steps": [ { "type": "edit_json", "asset": "Assets/Lanbai/GateClouds/GateClouds_Layout.json", "set": { "deck.quality": "auto_lite" } },
+                   { "type": "menu", "path": "蓝白/Gate Clouds/Build" },
+                   { "type": "assert_log", "contains": ["[GateClouds] deck quality: auto_lite"] } ],
+        "teardown": [ { "type": "menu", "path": "蓝白/Gate Clouds/Build" },
+                      { "type": "assert_log", "contains": ["[GateClouds] deck quality: default"] },
+                      { "type": "method", "name": "Lanbai.Tests.LB_GateTest.Apply", "arg": "155.1" },
+                      { "type": "menu", "path": "蓝白/Gate/Build Driver + Test Clock (Play mode only)" } ] }
+    ] }
+  ],
+  "checks": [
+    { "id": "U7_vr_budget", "metric": "perf.U7.all_on.vr_ms", "op": "<=", "value": 8.3, "gate": false,
+      "why": "第 4 幕预算 8.3 ms（10-08 不带云的 VR 估算已经是 10.3 ms）。编辑器估算只报不卡：超了照实推，总导演按圣经 §1.9 定砍什么" },
+    { "id": "U8fwd_vr_budget", "metric": "perf.U8fwd.all_on.vr_ms", "op": "<=", "value": 8.3, "gate": false, "why": "同上" },
+    { "id": "key_apl_vs_ref", "metric": "shot.key.apl_ratio", "op": "between", "value": [0.85, 1.15], "gate": false,
+      "why": "和 compare_key.png 上半张（这一版的参照）比 APL；参照是贴图合成的，只看大数，不卡" },
+    { "id": "U8fwd_apl_vs_ref", "metric": "shot.U8fwd.apl_ratio", "op": "between", "value": [0.85, 1.15], "gate": false, "why": "同上" },
+    { "id": "U7_shimmer", "metric": "seq.U7_micro.hf_frac", "op": "<=", "value": 0.01, "gate": false,
+      "why": "头部微动 1 秒里来回跳（hf > 6/255）的像素 ≤ 1%：初值，第一次实测后由总工程师定" },
+    { "id": "U8fwd_shimmer", "metric": "seq.U8fwd_micro.hf_frac", "op": "<=", "value": 0.01, "gate": false, "why": "同上" },
+    { "id": "deck_roll_shimmer", "metric": "seq.deck_roll.hf_frac", "op": "<=", "value": 0.01, "gate": false, "why": "云海滚动：同上" }
+  ],
+  "headset_checklist": [
+    "云海滚 10 秒（Play，时钟在走）：远处的细银边、月光路、裂口脚下一像素宽的细银边，爬不爬、闪不闪",
+    "闭左眼、闭右眼各看一遍（云海的抖动已改成两只眼一致、锁在世界上）",
+    "179.4–181.6 往后窗看一眼，报看到什么（臂在 U9 − 0.05 消失；回头看云海是不是一下子没了）"
+  ],
+  "manual": [
+    "Udon 时间（ClientSim + Profiler）：LanbaiGateDriver、LanbaiGateClouds 各占多少 ms；量 U7 150.3（时钟 startT 改 147）、U8 166.15、约 178；看 147.8 和时钟循环回跳那一帧有没有尖峰。工具在编辑模式下跑，量不了 Play 里的 Udon",
+    "GPU Profiler / Frame Debugger（或 RenderDoc）：U7 全开那一帧，最贵的几项、云海那一项各占多少 ms（编辑模式：先 LB_GateTest.StatsBegin(\"cam=U7\") 把参考相机摆好，在 Game 视图里抓，不要进 Play）",
+    "Frame Debugger 里看一眼 UpdateDepthTexture 有没有画云海（ShadowCaster pass）",
+    "蓝白/Grades/Probe Bloom Colour：要测试卡的场景，门测试场景里跑不了，单独跑一次，把 LanbaiReports/BloomColour_Report.md 一起推",
+    "每张图按 gate_metrics.py / lbh_grade.py 量的 metrics_unity_vs_render.json：云端拿到截图后做（Blender 离线那一层）"
+  ]
+}
