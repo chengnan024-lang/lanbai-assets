@@ -23,7 +23,7 @@ CASES = dict(m1=(1029.4, 1035.4, 0, -12), m10=(1112.4, 1118.4, 0, -12), m11=(112
 W = MP.WHITE
 FILL = np.array(W['overlay']['fills']['S9b_WHITESAT']['desktop']['linear_rgb'])
 LW = float(MP.G.hexlin('#E8F1F5') @ np.array([0.2126, 0.7152, 0.0722]))
-LSCENE = float(sys.argv[5]) if len(sys.argv) > 5 else 0.30
+LSCENE = float(sys.argv[5]) if len(sys.argv) > 5 else 0.13   # = LanbaiWhiteDriver.lSceneMask (darkest view)
 
 
 def ev_alpha(x, lf, lt, ls, lo):

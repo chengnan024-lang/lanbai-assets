@@ -71,7 +71,7 @@ out = dict(
     overlay=dict(
         shader='Lanbai_Overlay v2（会话「门内」，Overlay/；没推之前照圣经 §1.8 的接口：_Color rgb = HDR 填色、a = 不透明度；球跟头部位置；物体空间抖动）',
         mask_in=dict(t=[t_mask0, F16], curve='EvOverlayAlpha(x, Lscene, Lwhite, Lscene, Lwhite)', x='(t − 1146.31) / 3.0',
-                     Lscene='标量：按“极端视向”定（变白的遮罩按最暗的视向建，§1.8 E17）——数值见 Act10_White/Docs~/white_check.txt，由 check_white.py 仿真选出',
+                     Lscene='标量：按“极端视向”定（变白的遮罩按最暗的视向建，§1.8 E17）——数值见 Mirrors/Docs~/flashcheck/wf.json、wd.json（flash_seq.py）；取最暗的视向（抬头 APL ≈ 100 → L ≈ 0.13）',
                      fill_row='S9b_WHITESAT', fill_times_2pow_minus_dEV=True),
         hold=dict(t=[F16, t_sil_end], alpha=1.0, fill_row='S10', breath=dict(amount=0.02, hz=0.1, note='±2 %、0.1 Hz；乘在填色上'),
                   peak_hold_s=round(t_sil_end - F16, 2), rule='峰值保持 ≤ 30 s（只算 F16 → 静默结束）；本地若延长播放淡出，必须同步缩短 5 s 静默'),

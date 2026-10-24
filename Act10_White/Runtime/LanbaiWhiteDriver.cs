@@ -52,7 +52,7 @@ namespace Lanbai.Act10
         public Color fillShrinkVR = new Color(1.040287f, 1.442772f, 1.580083f, 1f);
         public float lWhite = 0.86f;                 // relative luminance of the white the mask goes to (#E8F1F5 desktop)
         public float lWhiteVR = 0.74f;               // #D7E3E8
-        public float lSceneMask = 0.30f;             // EvOverlayAlpha's scalar Lscene for the 3-s mask (darkest view, see README)
+        public float lSceneMask = 0.13f;             // EvOverlayAlpha's scalar Lscene for the 3-s mask: the DARKEST view (looking up, APL ~100; E17, review r2)
         public float lScene11 = 0.012f;              // act 11 APL 30 -> relative luminance
         public float breathAmount = 0.02f;
         public float breathHz = 0.1f;
@@ -72,16 +72,12 @@ namespace Lanbai.Act10
         public void LanbaiActivate(bool on)
         {
             lobesSet = false;                       // D-33 #6: everything is rebuilt from t on the next tick (late joiners, scrubbing)
-            if (!on && overlay != null)
-            {
-                overlay.ClearLobes();
-                overlay.Hide();
-            }
+            if (!on)
+                Release();                          // only if WE hold the overlay (review r2 #1: never clear the spawn black)
         }
 
         public void LanbaiTick(float t)
         {
-            DriveOverlay(t);
             if (!vrKnown)
             {
                 VRCPlayerApi lp = Networking.LocalPlayer;
@@ -91,6 +87,7 @@ namespace Lanbai.Act10
                     vrKnown = true;
                 }
             }
+            DriveOverlay(t);                        // after the VR check: the first frame already uses the right white
         }
 
         public float[] LanbaiGrade(float t)
@@ -121,6 +118,18 @@ namespace Lanbai.Act10
 
         // ---------------------------------------------------------------------------------------- overlay
         private bool lobesSet;
+        private bool ownsOverlay;                   // set by our own Set*; we Hide() only what we drew (review r2 #1)
+
+        private void Release()
+        {
+            if (!ownsOverlay || overlay == null)
+                return;
+            overlay.ClearLobes();
+            overlay.SetBreath(0f);
+            overlay.Hide();
+            ownsOverlay = false;
+            lobesSet = false;
+        }
 
         private void DriveOverlay(float t)
         {
@@ -129,11 +138,10 @@ namespace Lanbai.Act10
             float lw = isVR ? lWhiteVR : lWhite;
             if (t < tMaskStart || t >= tShrinkEnd)
             {
-                if (lobesSet) { overlay.ClearLobes(); lobesSet = false; }
-                overlay.SetBreath(0f);
-                overlay.Hide();
+                Release();                          // outside our three parts: write nothing unless we must let go
                 return;
             }
+            ownsOverlay = true;
             if (t < tF16)
             {
                 // 3-s mask, ONE curve built for the darkest view (E17); WHITE_BLOOM falls with it (LanbaiGrade)

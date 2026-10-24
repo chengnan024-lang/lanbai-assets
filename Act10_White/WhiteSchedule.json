@@ -165,7 +165,7 @@
    ],
    "curve": "EvOverlayAlpha(x, Lscene, Lwhite, Lscene, Lwhite)",
    "x": "(t − 1146.31) / 3.0",
-   "Lscene": "标量：按“极端视向”定（变白的遮罩按最暗的视向建，§1.8 E17）——数值见 Act10_White/Docs~/white_check.txt，由 check_white.py 仿真选出",
+   "Lscene": "标量：按“极端视向”定（变白的遮罩按最暗的视向建，§1.8 E17）——数值见 Mirrors/Docs~/flashcheck/wf.json、wd.json（flash_seq.py）；取最暗的视向（抬头 APL ≈ 100 → L ≈ 0.13）",
    "fill_row": "S9b_WHITESAT",
    "fill_times_2pow_minus_dEV": true
   },
