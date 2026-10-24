@@ -119,4 +119,28 @@ namespace VRC.SDKBase
     {
         public static bool IsValid(object obj) { return obj != null; }
     }
+
+    // VRCStation (SDK 3.10.5 public members; the SDK3 component VRC.SDK3.Components.VRCStation derives from it). D-32 #10.
+    public abstract class VRCStation : MonoBehaviour
+    {
+        public enum Mobility { Mobile = 0, Immobilize = 1, ImmobilizeForVehicle = 2 }
+        public Mobility PlayerMobility = Mobility.Immobilize;
+        public bool canUseStationFromStation = true;
+        public RuntimeAnimatorController animatorController;
+        public bool disableStationExit;
+        public bool seated = true;
+        public Transform stationEnterPlayerLocation;
+        public Transform stationExitPlayerLocation;
+        public abstract void UseStation(VRCPlayerApi player);
+        public abstract void ExitStation(VRCPlayerApi player);
+    }
+}
+
+namespace VRC.SDK3.Components
+{
+    public class VRCStation : VRC.SDKBase.VRCStation
+    {
+        public override void UseStation(VRC.SDKBase.VRCPlayerApi player) { }
+        public override void ExitStation(VRC.SDKBase.VRCPlayerApi player) { }
+    }
 }
