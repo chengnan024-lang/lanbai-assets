@@ -1,13 +1,13 @@
 {
  "metrics": {
   "size": [
-   960,
-   540
+   916,
+   960
   ],
-  "APL": 178.07,
-  "EV_display": -1.052,
-  "luma_lt12_pct": 0.28,
-  "Lstar_gt85_pct": 23.803,
+  "APL": 121.21,
+  "EV_display": -1.811,
+  "luma_lt12_pct": 20.32,
+  "Lstar_gt85_pct": 10.119,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
   "clip_black_largest_region_pct": 0.0,
@@ -19,27 +19,27 @@
   "lavender_act6_pct": 0.0,
   "brightest": {
    "bbox": [
-    457,
-    249,
-    517,
-    300
+    427,
+    454,
+    497,
+    516
    ],
    "centroid": [
-    487.6,
-    282.2
+    463.2,
+    494.0
    ],
-   "clusters": 3,
-   "clusters_ge5pct": 3,
+   "clusters": 5,
+   "clusters_ge5pct": 2,
    "min_luma": 232.3,
    "centroid_az_el": [
-    21.74,
-    87.08
+    15.67,
+    86.5
    ]
   },
   "top25_Lstar": {
-   "mean": 68.57,
-   "p50": 72.65,
-   "p90": 84.71
+   "mean": 34.3,
+   "p50": 29.1,
+   "p90": 66.28
   },
   "palette": {
    "act": "07a",
@@ -48,8 +48,8 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 3.3,
-     "within_dE5_pct": 12.57
+     "nearest_dE2000_p01": 3.6,
+     "within_dE5_pct": 5.45
     },
     {
      "hex": "#ACD4ED",
@@ -60,26 +60,26 @@
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 6.8,
+     "nearest_dE2000_p01": 6.7,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#3876AB",
      "role": "浅水 縹",
-     "nearest_dE2000_p01": 6.6,
+     "nearest_dE2000_p01": 6.2,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
-     "nearest_dE2000_p01": 1.4,
-     "within_dE5_pct": 3.45
+     "nearest_dE2000_p01": 0.6,
+     "within_dE5_pct": 10.31
     },
     {
      "hex": "#697987",
      "role": "海雪",
-     "nearest_dE2000_p01": 2.8,
-     "within_dE5_pct": 2.0
+     "nearest_dE2000_p01": 2.5,
+     "within_dE5_pct": 3.93
     },
     {
      "hex": "#8AC6FF",
@@ -88,9 +88,9 @@
      "within_dE5_pct": 0.0
     }
    ],
-   "pixel_to_nearest_dE_median": 7.1,
-   "pixel_to_nearest_dE_p90": 10.3,
-   "pixels_within5_pct": 18.0
+   "pixel_to_nearest_dE_median": 7.6,
+   "pixel_to_nearest_dE_p90": 19.5,
+   "pixels_within5_pct": 19.7
   }
  },
  "cam": {
@@ -101,14 +101,14 @@
   ],
   "yaw_deg": 0,
   "pitch_deg": 90.0,
-  "hfov_deg": 90,
+  "hfov_deg": 97.3,
   "res": [
-   960,
-   540
+   916,
+   960
   ],
-  "note": "主座位眼位、正前、桌面 1920×1080、水平 90°（= 本地门测试 U7 截图的机位，Gate cameras.U7）。全片的“标准机位”。",
+  "note": "VR 单眼近似：Index 100% 1832×1920、竖直 100°（→ 水平 ≈ 97.3°），正前。用于 VR 下 APL ≤ 150 的检查；立体视差不模拟",
   "source": "Engineering/render_harness",
-  "name": "hero"
+  "name": "vr_left_fwd"
  },
  "grade_spec": {
   "S7a": 1.0
@@ -168,7 +168,7 @@
    "color": "#000000"
   }
  },
- "bloom_share_of_APL": 0.02,
+ "bloom_share_of_APL": 0.01,
  "t": 387.0,
  "target": {
   "phase": "7a 被海接住",
@@ -188,11 +188,11 @@
   "glass": false,
   "samples": 48,
   "res": [
-   960,
-   540
+   916,
+   960
   ]
  },
- "render_seconds": 10.8,
+ "render_seconds": 10.9,
  "lens": "none",
  "bloom_tint": "single",
  "note": "the same with the DESKTOP core ceiling (4.45, 3, ^2): why VR needs its own value"

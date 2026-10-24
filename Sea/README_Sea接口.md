@@ -48,7 +48,7 @@
 | 材质 | 参考帧 | 和 shader 默认不同的数 | 驱动随时间改的 |
 |---|---|---|---|
 | `M_06_Sea`（ABOVE，S6） | `33_K1_r05fwd`（俯 10°）、`23_K1_r04`（俯 45°） | `_WaterColor` (0.0163, 0.0430, 0.1070) = `#304F7A` 的填值 × 0.55；`_CalmAll` 0.85；`_SunColor` (5.856, 3.615, 2.002) = 日盘 `#FFCE9E @ +2.55`；`_ReflClamp` 2.378 = 日盘最大通道 × 2^−1.3；`_SunDir` (0.4973, 0.1045, 0.8613) = 方位 +30°、仰角 +6°（D-12）；`_SunDiscDeg` 0.53（D-18，`_Udon_SunDisc` 设了就用它的）；`_PurpleMask` R | `_CalmPatch`、`_CalmAll`（§4）、`_SunColor` × 云盖遮挡 |
-| `M_07a_SeaSurface`（BELOW，S7a） | `29_K2_r06`（仰 60°）、`30_K2_r06_up90`（仰 90°）、`31_K2_r06_vr_roof`（VR） | `_WindowGain` **18**；`_WindowTint` (1.5, 1.3, 1, **0.85**)（w = 窗心的去饱和，到窗缘降到 0）；`_WindowCore` (**4.45, 3, 2, 1**)（窗心亮度上限 = 线性亮度 4.45，窗缘比窗心暗 3 EV，按视线天顶角的 2 次方走）；`_WindowRadial` (1, 2) = 关（被 `_WindowCore` 取代）；`_ReflClamp` 1.5（窗里立方图采样的上限）；`_TIRColor` (0.012, 0.037, 0.090)；`_PurpleMask` G+B | **VR**：`_WindowCore` = (3.2, 4, 2, 1)（§2.3 末） |
+| `M_07a_SeaSurface`（BELOW，S7a） | `29_K2_r06`（仰 60°）、`30_K2_r06_up90`（仰 90°）、`31_K2_r06_vr_roof`（VR） | `_WindowGain` **18**；`_WindowTint` (1.5, 1.3, 1, **0.85**)（w = 窗心的去饱和，到窗缘降到 0）；`_WindowCore` (**4.45, 3, 2, 1**)（窗心亮度上限 = 线性亮度 4.45，窗缘比窗心暗 3 EV，按视线天顶角的 2 次方走）；`_WindowRadial` (1, 2) = 关（被 `_WindowCore` 取代）；`_ReflClamp` 1.5（窗里立方图采样的上限）；`_TIRColor` (0.018, 0.058, 0.140)、**`_TIRFog` 0.3**（暗镜只吃三成的雾，D-23：暗镜 `#15395C`、对 `#11395E` ΔE 0.6）；`_PurpleMask` G+B | **VR**：`_WindowCore` = (3.2, 4, 2, 1)（§2.3 末） |
 | `M_07c_SeaMirror`（BELOW 翻转，S7b） | `34_K3_r16`（俯 45°，897.96） | `_AirSide` −1；`_WindowCube` = Cube_DuskLower；`_WindowGain` **0.25**（直接是 0.25，不是“× 0.12”）；`_WindowSunColor` (24, 8.5, 5)；`_WindowSunGain` 1；`_WindowSunDir` (0, −0.0523, 0.9986, **3**)（另一个太阳在方位 0、仰角 −3°，弧半高 3°）；`_WindowSunSpread` 30；`_TIRCubeGain` 1；`_TIRColor` (0.0241, 0.0126, 0.0121) = 雾 `#3E2C2B` × 0.5；`_WaveAmp` 0.02（897.96 那一刻）；`_ReflClamp` 8；`_PurpleMask` B | `_WaveAmp`：F8 起 0.3 → **0.02**（F8b 起 6 秒，圣经“颤动停止”）；`_WindowGain` 0 →（F8b → 897.96）0.25；`_WindowSunColor` × 同一条 0 → 1 |
 | `M_08_SeaCeiling` / `…Edge` / `…Fade`（CEILING，S8） | `35_K4_r10_35`、`36_K4_r10_0`、`K5_dissolve_series.png` | 共用：`_WaterColor` (0.0116, 0.0296, 0.0683)；`_FogHeightFalloff` 120；`_NormalStrength` 0.25；`_WaveRotate` (**70.7, 35**)（两张浪图的风向转到视轴上：左右均匀）；`_CalmStrength` 1（天花不要平静斑：左右一样）；`_MirrorTint` (**1.25, 1.3, 1.25**)、`_ReflGain` **1.5**（镜带“珍珠金”）；`_ReflClamp` 8；`_PurpleMask` A。Inner / Fade：`_DiscCenter` 0；Edge：`_DiscCenter` (0, 0, 2700, 800) | `_DissolveTime`（§2.4） |
 | `M_11_SeaHanging`（CEILING，S11） | `37_K6_r01_glints_off`、`38_K6_r01_glints_on` | `_WaterColor` (0.0048, 0.0212, 0.0452) = 圣经第 11 幕填 `#0F283C`；`_NormalStrength` 0.1；`_GerstnerAmp` (0.6, 0.35, 0.15)；`_LampGlints` **5.4**；`_PurpleCeiling` = `Sea_PurpleCeiling_S11.png`、`_PurpleMask` R | — |
@@ -104,8 +104,9 @@
 | `_WindowSunColor` / `_WindowSunGain` | 0 / 1 | 7c 的日弧（“玫瑰金的弧，贴在窗缘”）：线性颜色 × 自己的增益。**按平的水面算**（不吃浪的法线：一道连续的线，不会被全反射的碎浪打碎），过了临界角在 ~1° 里淡掉 |
 | `_WindowSunDir` / `_WindowSunSpread` | (0, −0.0087, 1, 1.2) / 14 | 空气那一侧的太阳方向；w = 弧的半高（度）。Spread = 弧沿窗缘的半宽（度） |
 | `_WindowSunFloor` | 0.35 | 日弧的透射下限（贴着临界角时菲涅耳会把它擦掉） |
+| `_TIRFog` | 1 | 全反射暗镜吃多少雾（1 = 物理；7a 0.3）。按窗 / 镜的比例在两者之间过渡（`LanbaiSeaBelow` 的 a = 窗的比例） |
 
-**VR 抬头（D-09：APL ≤ 150）**：用标准台 `bible_v2` 车壳、**车顶从仰角 40° 往上全被侵蚀掉**（最坏情况）、仰 90° 量（`Docs~/iterations/31_K2_r06_vr_roof`）。桌面的数（4.45, 3, 2）在 VR 里是 APL 178.1（`32_…desktopvalues`）；**VR 驱动写 `_WindowCore` = (3.2, 4, 2, 1)** → APL 147.8，窗心 L\* 85.2（`#CED6DD`）。也就是说：整片视野都是窗的时候，“窗心 L\* ≥ 90”和“APL ≤ 150”不能同时成立，VR 让亮度（安全）赢，窗心的相对关系（窗心最亮、窗缘暗 1.8 EV）不变。车顶只侵蚀到天窗附近时 APL 远低于 150（同一机位、不开顶：16.8）。
+**VR 抬头（D-09：APL ≤ 150；D-23 #2）**：用 `vr_left_fwd` 机位（Index 单眼近似）仰 90°、标准台 `bible_v2` 车壳、**车顶从仰角 40° 往上全被侵蚀掉**（方位 −180…180，最坏情况）量：桌面的数（4.45, 3, 2）APL 121.2、窗心 L\* 91.0（`32_…desktopvalues`）；VR 的数 (3.2, 4, 2, 1) APL 97.8（`31_K2_r06_vr_roof`）。第 7a 包的驱动在 VR 里按车厢侵蚀（F2h → F5：0 → 0.25）在两组数之间过渡：车顶还在时就是桌面的数。也就是说：整片视野都是窗的时候，“窗心 L\* ≥ 90”和“APL ≤ 150”不能同时成立，VR 让亮度（安全）赢，窗心的相对关系（窗心最亮、窗缘暗 1.8 EV）不变。车顶只侵蚀到天窗附近时 APL 远低于 150（同一机位、不开顶：16.8）。
 
 ### 2.4 CEILING（第 8 幕：海之天花）
 
@@ -157,6 +158,10 @@
 - **为什么要两段**：290 之下照样需要。比如 S8 下 `#808AB2` 旁边那一格里，饱和度 0.04 处有一条一步宽的紫（h 290.0、C\* 7.1，在烘焙的余量里），另一段从 0.24 起；只存一段就会把 0.04 到 0.56 当成一整段紫，把中天拉灰（ΔE 17）。所以每格取它管的那一片里所有紫样本的**并集**，再取前两段。
 - **证明**（`Docs~/purple_scan.json`）：每个材质 200 万个随机的色域内 HDR 颜色 + 一张**错开半格**的密网格（每个材质 1 230 万–1 530 万个色域内样本），过和 shader 一样的路径（8 位纹理、点采样）和它的调色：**剩下的紫全部是 0**。
 - **圣经的颜色过护栏**（15 个，各自的材质和调色下）：**全部 ΔE 0**，包括 `#808AB2`、`#828BAA`、`#3D4A80`、`#2E3C66`。
+- **证明管到哪里为止（D-23 #5，三条边界）**：
+  1. **护栏之后再混合的颜色不在证明里。** 证明的是“材质输出的那个颜色”；之后的透明叠加（光柱、海雪、气泡、车厢玻璃）、雾以外的后处理混合、bloom 的扩散都在护栏之后。叠的东西各自的颜色都在 290 以下（光柱 `#B0D9F2` 一族、粒子冷蓝 / 金），蓝和金线性相加不会穿过紫，但这一条没有逐像素证明；bloom 的余量就是烘焙时更严的阈值（285 / C\* 7.0 / L\* 39）。
+  2. **OKLab L > 3（线性亮度 > 27）的颜色用最后一行（L = 3）的区间**，那以上没有扫。海面在这么亮的地方只有太阳的高光（调色以后是白，C\* ≈ 0）。
+  3. **7a 的调色过渡（F3e → F5，S7a → S7b）**：以前只扫了两端，过渡中间（PPv2 两个 volume 线性混合）w = 0.6 处查出漏（每 81 万个里 2 223 个）。现在 G 通道 = `S7a~`：S7a 和过渡上 w = 0.05 … 0.95（步长 0.05）所有调色的并集，证明里也逐个 w 验过（`Sea/Tools~/purple_transition.py`、`Docs~/purple_transition.json`）。步长之间（比如 w = 0.625）没有逐个验，靠的是区间随 w 连续变化、加上烘焙的余量。
 ---
 
 ## 3. 全局量（新加的写进 `给总控.md` 请总控登记）
@@ -172,7 +177,7 @@
 | `_Udon_T`、`_Udon_SeaBus`、`_Udon_SeaBusVel`（已登记，D-17） | 时间轴秒；车的原点在水的坐标系里的位置（x, −深度, 前进）；它的速度 m/s。第 7 幕的分发层不写 `_Udon_T` 的话，海的驱动在 F2h → 922.36 写它（读：`Lanbai/SeaParticles`、`Lanbai/SeaSpecks`） | 海（第 7 幕） |
 | `_Udon_PalaceVeil` | **float4**：x = 雾带里的密度 /m，y = 雾带上沿的世界 y（R_Palace 的世界 y + 0），z = 雾带厚度 m（雾带 y − z … y），w > 0 已设。宫殿 shader：`veil = 1 − exp(−x · 视线在雾带里的长度)`，`col = lerp(col, LanbaiHorizon(视线), veil)`；灯焰不读。F5 → F7s x 0，F7s → F7p 0 → 0.25，保持到出海。全文：`Act07_Sea/PalaceFrame_约定.json` 的 `palace_veil` | 海（第 7 幕） |
 | `_Udon_Caustics` | float4：x = 强度 0..1（已含深度衰减），y = 方向 +1 光从上来 / −1 从下来（7c），z = 焦散的钟（秒），w = 平铺缩放（1） | 海 |
-| `_Udon_CausticsColor` | float4：rgb = 焦散的线性颜色 × E。7a：座椅上屏幕 `#ACD4ED`（填 `#9FCBFF @ +1.46`）。**7c（从下往上）：金，屏幕 `#E2C08E`（h_ab 75），S7b 下填 (1.475, 0.779, 0.317)**，不用玫瑰（D-08：蓝的车厢会被染成丁香紫） | 海 |
+| `_Udon_CausticsColor` | float4：rgb = 焦散的线性颜色 × E。7a：座椅上屏幕 `#ACD4ED`（填 `#9FCBFF @ +1.46`）。**7c（从下往上）：金，屏幕 `#E2C08E`（h_ab 80），S7b 下填 (1.475, 0.779, 0.317)**，不用玫瑰（D-08：蓝的车厢会被染成丁香紫） | 海 |
 | `_Udon_CausticsTex` | 焦散序列帧图集（全局纹理） | 海 |
 | `_Udon_SunDir` / `_Udon_SunDisc` | 天空写。ABOVE 读 `_Udon_SunDir`（w > 0 时）和 `_Udon_SunDisc.y`（日盘半径，度；w > 0 时） | 天空 |
 

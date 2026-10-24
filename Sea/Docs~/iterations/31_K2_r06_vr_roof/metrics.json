@@ -1,13 +1,13 @@
 {
  "metrics": {
   "size": [
-   960,
-   540
+   916,
+   960
   ],
-  "APL": 147.77,
-  "EV_display": -1.581,
-  "luma_lt12_pct": 0.28,
-  "Lstar_gt85_pct": 5.111,
+  "APL": 97.75,
+  "EV_display": -2.431,
+  "luma_lt12_pct": 20.32,
+  "Lstar_gt85_pct": 2.249,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
   "clip_black_largest_region_pct": 0.0,
@@ -19,27 +19,27 @@
   "lavender_act6_pct": 0.0,
   "brightest": {
    "bbox": [
-    460,
-    257,
-    500,
-    292
+    435,
+    461,
+    483,
+    504
    ],
    "centroid": [
-    480.3,
-    266.1
+    457.8,
+    479.0
    ],
    "clusters": 2,
-   "clusters_ge5pct": 1,
+   "clusters_ge5pct": 2,
    "min_luma": 219.2,
    "centroid_az_el": [
-    4.28,
-    88.6
+    1.43,
+    87.55
    ]
   },
   "top25_Lstar": {
-   "mean": 56.36,
-   "p50": 58.72,
-   "p90": 75.59
+   "mean": 27.0,
+   "p50": 25.72,
+   "p90": 50.72
   },
   "palette": {
    "act": "07a",
@@ -66,20 +66,20 @@
     {
      "hex": "#3876AB",
      "role": "浅水 縹",
-     "nearest_dE2000_p01": 6.6,
+     "nearest_dE2000_p01": 6.5,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
-     "nearest_dE2000_p01": 1.4,
-     "within_dE5_pct": 4.25
+     "nearest_dE2000_p01": 0.6,
+     "within_dE5_pct": 12.03
     },
     {
      "hex": "#697987",
      "role": "海雪",
-     "nearest_dE2000_p01": 1.0,
-     "within_dE5_pct": 10.54
+     "nearest_dE2000_p01": 0.9,
+     "within_dE5_pct": 9.4
     },
     {
      "hex": "#8AC6FF",
@@ -88,9 +88,9 @@
      "within_dE5_pct": 0.0
     }
    ],
-   "pixel_to_nearest_dE_median": 8.7,
-   "pixel_to_nearest_dE_p90": 11.1,
-   "pixels_within5_pct": 14.8
+   "pixel_to_nearest_dE_median": 9.0,
+   "pixel_to_nearest_dE_p90": 19.5,
+   "pixels_within5_pct": 21.4
   }
  },
  "cam": {
@@ -101,14 +101,14 @@
   ],
   "yaw_deg": 0,
   "pitch_deg": 90.0,
-  "hfov_deg": 90,
+  "hfov_deg": 97.3,
   "res": [
-   960,
-   540
+   916,
+   960
   ],
-  "note": "主座位眼位、正前、桌面 1920×1080、水平 90°（= 本地门测试 U7 截图的机位，Gate cameras.U7）。全片的“标准机位”。",
+  "note": "VR 单眼近似：Index 100% 1832×1920、竖直 100°（→ 水平 ≈ 97.3°），正前。用于 VR 下 APL ≤ 150 的检查；立体视差不模拟",
   "source": "Engineering/render_harness",
-  "name": "hero"
+  "name": "vr_left_fwd"
  },
  "grade_spec": {
   "S7a": 1.0
@@ -188,11 +188,11 @@
   "glass": false,
   "samples": 48,
   "res": [
-   960,
-   540
+   916,
+   960
   ]
  },
- "render_seconds": 13.2,
+ "render_seconds": 10.7,
  "lens": "none",
  "bloom_tint": "single",
  "note": "K2 r06 VR straight up, bible_v2 shell with the roof eroded above el 40 (worst case), VR core ceiling (3.2, 4 EV, ^2): D-09 APL <= 150"

@@ -11,9 +11,9 @@
 //                         y = direction: +1 light from above (lights up-facing faces), -1 from below (7c: the undersides)
 //                         z = caustics clock (s),  w = tiling scale (1 = the bible's 0.6 m / 1.1 m)
 //    _Udon_CausticsColor  rgb = linear colour x illuminance of the bright net (S7a: seat caustic #ACD4ED <- fill #9FCBFF @ +1.46;
-//                         7c (light from below, final review): GOLD, never rose -- screen #E2C08E (h_ab 75) under S7b, so the
+//                         7c (light from below, final review): GOLD, never rose -- screen #E2C08E (h_ab 80) under S7b, so the
 //                         blue cabin does not turn lilac (D-08); the value is in Sea/README_Sea接口.md §3)
-//    _Udon_CausticsTex    Sea/Textures/Caustics_8x8_2048.png (R8, sRGB OFF, wrap repeat, bilinear, mips on)
+//    _Udon_CausticsTex    Sea/Textures/Caustics_8x8_2048.png (R8, sRGB OFF, wrap repeat, trilinear + aniso 2, mips on: Sea/Editor importer)
 //  Projection: world XZ (both directions). Two layers (0.6 m and 1.1 m tiles, different frames and drift, the second
 //  rotated 37 deg), MIN of the two (bible), renormalised so the mean is 1. Animation: 64-frame loop at 0.3 Hz,
 //  frames blended. World-anchored: identical in both eyes.

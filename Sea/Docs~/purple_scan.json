@@ -14,6 +14,9 @@
    "channels": "GB",
    "grades": [
     "S7a",
+    "S7a+S7b=0.25",
+    "S7a+S7b=0.50",
+    "S7a+S7b=0.75",
     "S7b"
    ]
   },
@@ -60,12 +63,18 @@
    "channels": "GB",
    "grades": [
     "S7a",
+    "S7a+S7b=0.25",
+    "S7a+S7b=0.50",
+    "S7a+S7b=0.75",
     "S7b"
    ],
    "random_2M": {
     "in_gamut": 811198,
     "violet_left": {
      "S7a": 0,
+     "S7a+S7b=0.25": 0,
+     "S7a+S7b=0.50": 0,
+     "S7a+S7b=0.75": 0,
      "S7b": 0
     }
    },
@@ -74,6 +83,9 @@
     "hues": 294,
     "violet_left": {
      "S7a": 0,
+     "S7a+S7b=0.25": 0,
+     "S7a+S7b=0.50": 0,
+     "S7a+S7b=0.75": 0,
      "S7b": 0
     }
    }

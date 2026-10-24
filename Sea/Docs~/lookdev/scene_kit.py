@@ -218,7 +218,7 @@ def frame_K2(rays, eye, t, a):
     up = WATER['up'] * float(a.get('fogup', WATER_FOGUP))
     fog_fn = S.water_horizon(up, WATER['mid'], WATER['down'])
     dens = float(a.get('fog', 0.040))
-    rgb = S.fog(rgb, P, eye, dens, fog_fn)
+    rgb = S.fog(rgb, P, eye, dens, fog_fn, S.tir_keep(alpha, M))
     rgb = S.purple_guard(rgb, M)
     return np.where(hit[..., None], rgb, fog_fn(rays)), dict(eye_depth=d_eye, level=level)
 
@@ -244,7 +244,7 @@ def frame_K3(rays, eye, t, a):
     M = material('M_07c_SeaMirror', a, WaveAmp=float(a.get('wave', 0.02)), TIRColor=tuple(fogc * 0.5))
     rgb, alpha, hit, P = S.shade_plane(eye, rays, level, 'below', t, M, env=refl, window_env=env_dusk_synth('lower'))
     fog_fn = S.water_horizon(fogc * K3_FOG['up'], fogc * K3_FOG['mid'], fogc * K3_FOG['down'])
-    rgb = S.fog(rgb, P, eye, float(a.get('fog', 0.018)), fog_fn)
+    rgb = S.fog(rgb, P, eye, float(a.get('fog', 0.018)), fog_fn, S.tir_keep(alpha, M))
     rgb = S.purple_guard(rgb, M)
     return np.where(hit[..., None], rgb, fog_fn(rays)), dict(level=level)
 
@@ -332,7 +332,7 @@ def roof_hole(ctx, el0):
     import tempfile
     LS = ctx['lbh_scene']
     J = json.load(open(LS.paths.BUS_JSON, encoding='utf-8'))
-    J['presets']['bible_v2']['windows'].append(dict(name='roof_eroded', az=[-179.5, 179.5], el=[el0, 89.9], steps=8))
+    J['presets']['bible_v2']['windows'].append(dict(name='roof_eroded', az=[-180.0, 180.0], el=[el0, 89.9], steps=8))
     tmp = os.path.join(tempfile.gettempdir(), 'lanbai_sea_bus_roofhole_%d.json' % os.getpid())
     json.dump(J, open(tmp, 'w', encoding='utf-8'), ensure_ascii=False)
     LS.paths.BUS_JSON = tmp

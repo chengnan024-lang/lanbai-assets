@@ -382,7 +382,7 @@ def below(N, I, var, window_env, refl_env, M):
     mirror = np.broadcast_to(np.asarray(M['TIRColor'], np.float32), win.shape).copy()
     if M['TIRCubeGain'] > 0 and refl_env is not None:
         mirror += cube(refl_env, R, np.sqrt(saturate(alpha_of(var, M))), M) * M['TIRCubeGain']
-    return mirror * F[..., None] + win * ((1 - F) * edge * (1 - wcover))[..., None] + wsun
+    return mirror * F[..., None] + win * ((1 - F) * edge * (1 - wcover))[..., None] + wsun, saturate((1 - F) * edge)
 
 
 def lin_to_oklab(c):
@@ -511,10 +511,16 @@ def ceiling(N, I, var, worldXZ, refl_env, behind_env, M, P=None):
 
 
 # ------------------------------------------------------------------------------------------------ fog (LanbaiFog port)
-def fog(col, P, eye, density, horizon_fn):
+def fog(col, P, eye, density, horizon_fn, keep=None):
+    """LanbaiApplyFog; keep (BELOW mode): lerp(_TIRFog, 1, windowness) x the optical depth (Lanbai_Sea.shader frag)"""
     d = np.linalg.norm(P - eye, axis=-1)
-    f = (1.0 - np.exp(-density * d))[..., None]
+    f = (1.0 - np.exp(-density * d * (1.0 if keep is None else keep)))     # keep scales the optical depth
+    f = f[..., None]
     return col * (1 - f) + horizon_fn(normalize(P - eye)) * f
+
+
+def tir_keep(alpha, M):
+    return M.get('TIRFog', 1.0) + (1.0 - M.get('TIRFog', 1.0)) * alpha
 
 
 def water_horizon(up, mid, down):
@@ -558,8 +564,7 @@ def shade_plane(eye, rays, level, mode, t, M, env=None, window_env=None, behind_
         rgb = above(N, -I, var, env, M)
         alpha = disc_alpha(P[..., [0, 2]], M)
     elif mode == 'below':
-        rgb = below(N, I, var, window_env, env, M)
-        alpha = np.ones(rgb.shape[:-1])
+        rgb, alpha = below(N, I, var, window_env, env, M)     # alpha = how much is WINDOW (0 in the dark mirror)
     else:
         rgb, alpha = ceiling(N, I, var, P[..., [0, 2]], env, behind_env, M, P)
     return rgb, alpha, hit, P

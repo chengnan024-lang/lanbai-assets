@@ -4,10 +4,10 @@
    960,
    540
   ],
-  "APL": 186.66,
-  "EV_display": -0.872,
+  "APL": 187.53,
+  "EV_display": -0.863,
   "luma_lt12_pct": 0.0,
-  "Lstar_gt85_pct": 38.098,
+  "Lstar_gt85_pct": 38.451,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
   "clip_black_largest_region_pct": 0.0,
@@ -19,27 +19,27 @@
   "lavender_act6_pct": 0.0,
   "brightest": {
    "bbox": [
-    451,
-    245,
-    516,
-    313
+    463,
+    258,
+    503,
+    300
    ],
    "centroid": [
-    484.2,
-    278.4
+    482.7,
+    283.7
    ],
-   "clusters": 8,
-   "clusters_ge5pct": 2,
-   "min_luma": 241.4,
+   "clusters": 3,
+   "clusters_ge5pct": 1,
+   "min_luma": 242.2,
    "centroid_az_el": [
-    12.0,
-    87.66
+    8.06,
+    87.84
    ]
   },
   "top25_Lstar": {
-   "mean": 72.84,
-   "p50": 78.14,
-   "p90": 88.99
+   "mean": 73.2,
+   "p50": 78.43,
+   "p90": 89.06
   },
   "palette": {
    "act": "07a",
@@ -49,7 +49,7 @@
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
      "nearest_dE2000_p01": 2.7,
-     "within_dE5_pct": 26.34
+     "within_dE5_pct": 26.59
     },
     {
      "hex": "#ACD4ED",
@@ -66,20 +66,20 @@
     {
      "hex": "#3876AB",
      "role": "浅水 縹",
-     "nearest_dE2000_p01": 8.4,
+     "nearest_dE2000_p01": 8.1,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
-     "nearest_dE2000_p01": 2.2,
-     "within_dE5_pct": 6.81
+     "nearest_dE2000_p01": 1.0,
+     "within_dE5_pct": 6.68
     },
     {
      "hex": "#697987",
      "role": "海雪",
-     "nearest_dE2000_p01": 3.4,
-     "within_dE5_pct": 0.88
+     "nearest_dE2000_p01": 3.7,
+     "within_dE5_pct": 0.65
     },
     {
      "hex": "#8AC6FF",
@@ -89,8 +89,8 @@
     }
    ],
    "pixel_to_nearest_dE_median": 6.1,
-   "pixel_to_nearest_dE_p90": 9.7,
-   "pixels_within5_pct": 34.0
+   "pixel_to_nearest_dE_p90": 9.6,
+   "pixels_within5_pct": 33.9
   }
  },
  "cam": {
@@ -168,7 +168,7 @@
    "color": "#000000"
   }
  },
- "bloom_share_of_APL": 0.16,
+ "bloom_share_of_APL": 0.17,
  "t": 367.21,
  "target": {
   "phase": "7a 被海接住",
@@ -192,7 +192,7 @@
    540
   ]
  },
- "render_seconds": 12.0,
+ "render_seconds": 14.1,
  "lens": "none",
  "bloom_tint": "single",
  "note": "K2 r06 looking straight up (final review #5), no shell"
