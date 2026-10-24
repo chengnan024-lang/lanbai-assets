@@ -125,10 +125,10 @@ Shader "Lanbai/MirrorDust"
                 float rDraw = max(_SizeM, rMin);
                 float peak = _Flux * (_SizeM / rDraw) * (_SizeM / rDraw);            // flux-conserving when inflated
                 float near = LanbaiNearFade(p, 0.3, 1.0);                            // nothing inside 0.3 m of the eye
-                float3 billboardEye = LanbaiCentreEyePos();
-                float4 vc = mul(UNITY_MATRIX_V, float4(p, 1.0));
-                vc.xy += v.uv0 * (2.0 * rDraw) * alive;
-                o.pos = mul(UNITY_MATRIX_P, vc);
+                float3 toC = normalize(LanbaiCentreEyePos() - p);                   // faces the centre eye (CONTROL §3)
+                float3 Rb = normalize(cross(abs(toC.y) < 0.99 ? float3(0.0, 1.0, 0.0) : float3(1.0, 0.0, 0.0), toC));
+                float3 Ub = cross(toC, Rb);
+                o.pos = UnityWorldToClipPos(p + (Rb * v.uv0.x + Ub * v.uv0.y) * (2.0 * rDraw * alive));
                 o.corner = v.uv0;
                 o.col = (half3)(col * peak * near);
                 o.posWS = p;

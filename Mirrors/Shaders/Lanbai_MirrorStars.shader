@@ -29,8 +29,8 @@ Shader "Lanbai/MirrorStars"
         _Axis ("Mirror up xyz and face radius w (m)", Vector) = (0, 1, 0, 19.2)
         _FaceF0 ("Face F0 linear (#D6CCB4)", Vector) = (0.672, 0.604, 0.456, 0)
         _FaceK ("x unused, y emission k times visibility times 2 pow extra", Vector) = (1, 0.28, 0, 0)
-        _BronzeTone ("White bronze tone 0 to 1 (as the face)", Range(0, 1)) = 0.65
-        _ToneColor ("Tone colour linear luminance 1 (#CDBF9C)", Vector) = (1.158, 0.989, 0.630, 0)
+        _BronzeTone ("White bronze tone 0 to 1 (as the face)", Range(0, 1)) = 1
+        _ToneColor ("Tone colour linear luminance 1 (solved so S9a and S9b show #CDBF9C)", Vector) = (1.262, 0.974, 0.484, 0)
         _Gain ("Star gain if the global is not set", Float) = 1
         _StarScale ("Star scale at the reference magnitude (as Lanbai/StarPoints)", Float) = 1.6
         _MagRef ("Reference magnitude", Float) = 0
@@ -124,11 +124,13 @@ Shader "Lanbai/MirrorStars"
                 float g = useG ? _Udon_StarGain.x : _Gain;
                 float3 F = LanbaiSchlick(_FaceF0.rgb, dot(n, toE));
                 float3 col = v.color.rgb * (flux * g * ok) * (F + _FaceK.y);
-                col = lerp(col, dot(col, float3(0.2126, 0.7152, 0.0722)) * _ToneColor.rgb, _BronzeTone);
+                col = dot(col, float3(0.2126, 0.7152, 0.0722)) * lerp(float3(1.0, 1.0, 1.0), _ToneColor.rgb, _BronzeTone);   // chroma from the tone only: a blue / warm mix went lavender (r3, D-21)
 
                 float3 centre = lerp(P, E, 0.005);
-                float3 R = normalize(cross(abs(d.y) < 0.99 ? float3(0.0, 1.0, 0.0) : float3(1.0, 0.0, 0.0), toE));
-                float3 U = cross(toE, R);
+                // the image point is solved per eye (correct stereo depth); the quad faces the CENTRE eye (CONTROL §3)
+                float3 toC = normalize(LanbaiCentreEyePos() - P);
+                float3 R = normalize(cross(abs(toC.y) < 0.99 ? float3(0.0, 1.0, 0.0) : float3(1.0, 0.0, 0.0), toC));
+                float3 U = cross(toC, R);
                 float halfPx = 2.0 * _FWHM;
                 float h = halfPx * LanbaiPixelAngle() * distance(centre, E);
                 float3 Pq = centre + (R * v.uv0.x + U * v.uv0.y) * h;

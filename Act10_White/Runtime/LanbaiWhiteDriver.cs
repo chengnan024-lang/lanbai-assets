@@ -1,13 +1,15 @@
 // 蓝白 · 第 12 面 → 白 → 第 10 幕 → 白收缩进灯里：驱动（UdonSharp）。
 // !!! NOT COMPILED IN UNITY / UdonSharp: Roslyn type-check (Common/Tools~/compile_check/check_cs.sh) + U# stubs only. !!!
 //
-// Compute-only (总工程师意见 第 1 轮 + 总导演 10-23): this driver never writes PPv2 volumes and never colours the overlay
-// itself.  The Director's dispatcher calls LanbaiTick(t) / LanbaiGrade(t); LB_Journey.ApplyGrades is the one writer of
-// exposure and of the overlay fill compensation (overlay.rgb = fill x 2^-dEV).  What this driver gives it:
-//   LanbaiGrade(t) = {dEV on EXPO_UP, WHITE_SAT weight, WHITE_BLOOM weight, desktop lens multiplier}
-//   OverlayAlpha(t), OverlayFillRow(t) (0 = S9b+WHITE_SAT row, 1 = S10, 2 = S11 of calib_final §D), OverlayBreath(t)
-//   ShrinkProgress(t, lead) for Lanbai_Overlay v2's direction lobes (10 -> 11: the tubes first, the lamps, the sea).
-// Every number comes from Act10_White/WhiteSchedule.json (bible §6·9→10, §6·10, §6·10→11), baked by 蓝白/Build/Act10 White.
+// Exposure: compute-only (总工程师意见 第 1 轮 + 总导演 10-23). This driver never writes PPv2 volumes:
+//   LanbaiGrade(t) = {dEV on EXPO_UP, WHITE_SAT weight, WHITE_BLOOM weight, desktop lens multiplier}, summed by the
+//   dispatcher; LB_Journey.ApplyGrades is the one writer of exposure.
+// Overlay: this driver OWNS Lanbai_Overlay v2 inside its window (Overlay/README_Overlay.md §2-§3: each act's driver calls
+//   Set* every frame, Hide() when done; review r1 #2): the 3-s mask, the 29.15-s white with its breath, the shrink into
+//   the lamps (lobes: tubes 0 s, street lamps +1.5 s, the sea +3 s; the rest +3 s).  The fill compensation 2^-dEV is
+//   done by the overlay component from the dEV passed in, which is this driver's own dEV (in this window the white is
+//   the only exposure event).
+// Every number comes from Act10_White/WhiteSchedule.json (bible §6·9→10, §6·10, §6·10→11): the field defaults ARE those numbers.
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
@@ -36,7 +38,18 @@ namespace Lanbai.Act10
         public float lensFadeStart = 1138.78f;
         public float lensFadeEnd = 1144.78f;
 
-        [Header("Overlay")]
+        [Header("Overlay (Lanbai_Overlay v2; directions of the 10 -> 11 lobes come from act 11's layout)")]
+        public LanbaiOverlay overlay;
+        public Vector3[] lobeDir = new Vector3[] { new Vector3(0f, 0.6f, 0.8f), new Vector3(1f, 0.15f, 0f), new Vector3(0f, 1f, 0f) };
+        public float[] lobeHalfAngle = new float[] { 30f, 40f, 35f };
+        public float[] lobeLead = new float[] { 0f, 1.5f, 3f };
+        public float leadElse = 3f;
+        public Color fillMaskDesktop = new Color(0.998257f, 1.355517f, 1.484524f, 1f);
+        public Color fillMaskVR = new Color(0.693643f, 0.960718f, 1.042466f, 1f);
+        public Color fillWhiteDesktop = new Color(1.780479f, 2.331652f, 2.675855f, 1f);
+        public Color fillWhiteVR = new Color(1.157995f, 1.549016f, 1.777685f, 1f);
+        public Color fillShrinkDesktop = new Color(1.528658f, 2.078365f, 2.297397f, 1f);
+        public Color fillShrinkVR = new Color(1.040287f, 1.442772f, 1.580083f, 1f);
         public float lWhite = 0.86f;                 // relative luminance of the white the mask goes to (#E8F1F5 desktop)
         public float lWhiteVR = 0.74f;               // #D7E3E8
         public float lSceneMask = 0.30f;             // EvOverlayAlpha's scalar Lscene for the 3-s mask (darkest view, see README)
@@ -58,10 +71,16 @@ namespace Lanbai.Act10
 
         public void LanbaiActivate(bool on)
         {
+            if (!on && overlay != null)
+            {
+                overlay.ClearLobes();
+                overlay.Hide();
+            }
         }
 
         public void LanbaiTick(float t)
         {
+            DriveOverlay(t);
             if (!vrKnown)
             {
                 VRCPlayerApi lp = Networking.LocalPlayer;
@@ -100,6 +119,46 @@ namespace Lanbai.Act10
         }
 
         // ---------------------------------------------------------------------------------------- overlay
+        private bool lobesSet;
+
+        private void DriveOverlay(float t)
+        {
+            if (overlay == null)
+                return;
+            float lw = isVR ? lWhiteVR : lWhite;
+            if (t < tMaskStart || t >= tShrinkEnd)
+            {
+                if (lobesSet) { overlay.ClearLobes(); lobesSet = false; }
+                overlay.SetBreath(0f);
+                overlay.Hide();
+                return;
+            }
+            if (t < tF16)
+            {
+                // 3-s mask, ONE curve built for the darkest view (E17); WHITE_BLOOM falls with it (LanbaiGrade)
+                overlay.SetBreath(0f);
+                overlay.SetCurve(overlay.PickFill(fillMaskDesktop, fillMaskVR), Lin(evT, evV, t), t - tMaskStart, tF16 - tMaskStart, lSceneMask, lw, lSceneMask, lw);
+            }
+            else if (t < tSilenceEnd)
+            {
+                overlay.SetBreath(breathAmount);
+                overlay.SetFlat(overlay.PickFill(fillWhiteDesktop, fillWhiteVR), 1f, 0f);
+            }
+            else
+            {
+                if (!lobesSet)
+                {
+                    overlay.ClearLobes();
+                    for (int i = 0; i < 3 && i < lobeDir.Length; i++)
+                        overlay.SetLobe(i, lobeDir[i].normalized, lobeHalfAngle[i], lobeLead[i]);
+                    overlay.SetLeadElse(leadElse, 30f);
+                    lobesSet = true;
+                }
+                overlay.SetBreath(0f);
+                float dEV = afterSilenceEV * Mathf.Clamp01(1f - (t - tSilenceEnd) / afterSilenceDecay);
+                overlay.SetCurve(overlay.PickFill(fillShrinkDesktop, fillShrinkVR), dEV, t - tSilenceEnd, shrinkSeconds, lw, lScene11, lScene11, lw);
+            }
+        }
         public static float EvOverlayAlpha(float x, float lFrom, float lTo, float ls, float lo)
         {
             const float Floor = 0.004f;

@@ -44,8 +44,8 @@ Shader "Lanbai/BronzeMirror"
         _FaceSmooth ("Face smoothness", Range(0, 1)) = 0.94
         _PolishAmt ("Polish ripple smoothness amplitude", Range(0, 0.05)) = 0.02
         _PolishPeriodM ("Polish ripple period m", Float) = 0.35
-        _BronzeTone ("White bronze tone toward #CDBF9C 0 to 1", Range(0, 1)) = 0.65
-        _ToneColor ("Tone colour linear luminance 1 (#CDBF9C)", Vector) = (1.158, 0.989, 0.630, 0)
+        _BronzeTone ("White bronze tone toward #CDBF9C 0 to 1", Range(0, 1)) = 1
+        _ToneColor ("Tone colour linear luminance 1 (solved so S9a and S9b show #CDBF9C)", Vector) = (1.262, 0.974, 0.484, 0)
         _FaceTex ("Face texture (R smooth, G tint, B scratches, A tin bloom)", 2D) = "gray" {}
 
         [Header(Rim)]
@@ -62,6 +62,7 @@ Shader "Lanbai/BronzeMirror"
         _Glyphs ("Inscription glyph atlas 8 x 8", 2D) = "black" {}
         _BackBump ("Back band bump strength", Range(0, 2)) = 1
         _BackAmbientGain ("Back ambient gain", Range(0, 4)) = 1
+        _BackFill ("Back silhouette radiance linear (S9a/S9b show #16302A; bible max #1E3B34)", Vector) = (0.0105, 0.027, 0.0164, 0)
 
         [Header(Sky reflected)]
         _GlowTex ("Galaxy glow map (Sky StarSky_Glow lat-long sRGB with mips)", 2D) = "black" {}
@@ -74,7 +75,7 @@ Shader "Lanbai/BronzeMirror"
     SubShader
     {
         Tags { "Queue" = "Geometry+20" "RenderType" = "Opaque" "IgnoreProjector" = "True" "ForceNoShadowCasting" = "True" }
-        Cull Back
+        Cull Off             // the eye passes THROUGH the slab at every crossing: back faces are shaded as the bronze underside (review r1 #1)
         ZWrite On
         ZTest LEqual
 
@@ -85,7 +86,7 @@ Shader "Lanbai/BronzeMirror"
         #include "LanbaiMirror.cginc"
 
         float _RadiusM, _MirrorK, _EmissionK, _Visibility, _EmitExtraEV, _Appear, _Dissolve, _BreakAmp, _EdgeWidth, _RimSoft;
-        float4 _EdgeColor, _FaceF0, _RimF0, _BackAlbedo, _SkyFloor;
+        float4 _EdgeColor, _FaceF0, _RimF0, _BackAlbedo, _SkyFloor, _BackFill;
         float _BronzeTone; float4 _ToneColor;
         float _FaceSmooth, _PolishAmt, _PolishPeriodM, _RimSmooth, _BackSmooth, _BackBump, _BackAmbientGain, _GalaxyGainDefault;
         sampler2D _FaceTex, _BackNormal, _BackMask, _BackCentreNormal, _BackCentreMask, _Glyphs;
@@ -159,7 +160,7 @@ Shader "Lanbai/BronzeMirror"
             #pragma multi_compile_instancing
             #pragma multi_compile_fog
 
-            float4 frag(v2f i) : SV_Target
+            float4 frag(v2f i, float facing : VFACE) : SV_Target
             {
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
                 float glowEdge;
@@ -175,7 +176,8 @@ Shader "Lanbai/BronzeMirror"
                 float3x3 o2w = (float3x3)unity_ObjectToWorld;
                 float3 col;
 
-                if (i.region < 0.125)                                     // ---- FACE
+                bool under = facing < 0.0;                                // seen from inside the slab / from below
+                if (i.region < 0.125 && !under)                           // ---- FACE
                 {
                     float3 n = normalize(mul(o2w, LanbaiMirrorFaceNormalOS(i.posOS)));
                     half4 ft = tex2D(_FaceTex, i.uv0);
@@ -189,9 +191,9 @@ Shader "Lanbai/BronzeMirror"
                     float3 F = LanbaiSchlick(f0, dot(n, -V));
                     col = sky * F + sky * (_EmissionK * _Visibility * exp2(_EmitExtraEV));
                     // the Milky Way in white bronze reads #CDBF9C (bible palette 09), warmer than any physical F0 makes it
-                    col = lerp(col, dot(col, float3(0.2126, 0.7152, 0.0722)) * _ToneColor.rgb, _BronzeTone);
+                    col = dot(col, float3(0.2126, 0.7152, 0.0722)) * lerp(float3(1.0, 1.0, 1.0), _ToneColor.rgb, _BronzeTone);   // chroma from the tone only: a blue / warm mix went lavender (r3, D-21)
                 }
-                else if (i.region < 0.375)                                // ---- RIM BAND (beads)
+                else if (i.region < 0.375 && !under)                      // ---- RIM BAND (beads)
                 {
                     float cover;
                     float3 nOS = LanbaiMirrorBeadNormalOS(i.posOS, D, footprint, cover);
@@ -200,7 +202,7 @@ Shader "Lanbai/BronzeMirror"
                     float3 sky = MirrorSky(reflect(V, n), s);
                     col = sky * LanbaiSchlick(_RimF0.rgb, dot(n, -V));
                 }
-                else if (i.region < 0.625)                                // ---- OUTER WALL
+                else if (i.region < 0.625 && !under)                      // ---- OUTER WALL
                 {
                     float3 n = normalize(i.nrmWS);
                     float s = LanbaiSpecAA(n, _RimSmooth);
@@ -239,6 +241,7 @@ Shader "Lanbai/BronzeMirror"
                     }
                     if (q > 0.72) { m.r = hb * 0.4; m.g = lerp(1.0, 0.75, hb); m.b = hb; nOS = float3(0, -1, 0); }
                     if (i.region > 0.875) nOS = normalize(i.posOS - float3(0.0, -0.015, 0.0)); // knob: dome normal
+                    if (under && i.region < 0.625) nOS = float3(0.0, -1.0, 0.0);               // the face / rim seen from inside: bronze interior, dark
                     // screen-space bump of the band heights (detail that is not in the cell texture)
                     float3 n = normalize(mul(o2w, nOS));
                     float3 dpx = ddx(i.posWS), dpy = ddy(i.posWS);
@@ -252,7 +255,11 @@ Shader "Lanbai/BronzeMirror"
                                  * lerp(1.0, 0.55, m.b);                                                         // worn ridges: dark bronze
                     float s = LanbaiSpecAA(n, lerp(_BackSmooth, 0.55, m.b));
                     float3 spec = MirrorSky(reflect(V, n), s) * LanbaiSchlick(lerp(float3(0.04, 0.04, 0.04), _RimF0.rgb * 0.35, m.b), dot(n, -V));
-                    col = alb * amb * m.g + spec * m.g;
+                    // the silhouette is not black: a near-black underside overhead that dissolves into the sky would be a
+                    // +3 EV brightening in under a second (flash sequence m10, r3). Held at #16302A (bible: at most #1E3B34),
+                    // close to the star sky's own level, so the 2-s dissolve is nearly luminance-neutral.
+                    float3 rel = alb / max(_BackAlbedo.rgb, 1e-4);
+                    col = (_BackFill.rgb * rel + alb * amb) * m.g + spec * m.g;
                 }
 
                 // far soft rim (mirror 13 waiting 5-6 km below: 'a blurred giant disc'): fake transparency toward the
@@ -287,12 +294,13 @@ Shader "Lanbai/BronzeMirror"
             #pragma target 3.5
             #pragma multi_compile_instancing
 
-            float4 fragStencil(v2f i) : SV_Target
+            float4 fragStencil(v2f i, float facing : VFACE) : SV_Target
             {
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
                 float glowEdge;
                 clip(MirrorFront(i.posOS, glowEdge));
                 clip(0.125 - i.region);
+                clip(facing);                                             // front of the face only
                 return 0;
             }
             ENDCG

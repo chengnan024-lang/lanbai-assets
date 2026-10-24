@@ -43,7 +43,27 @@ def main():
     w = int(sys.argv[2]) if len(sys.argv) > 2 else 480
     h = int(sys.argv[3]) if len(sys.argv) > 3 else 270
     MP.RIM_SCHEME = scheme
+    if scheme == 'D':
+        # rim depression: fast while the rim is soft (1139.31 -> 1142.9), then <= 3 deg/s (1142.9 -> F16)
+        import importlib.util, io, contextlib
+        spec = importlib.util.spec_from_file_location('ms', os.path.join(HERE, '..', 'schedule', 'make_schedule.py'))
+        ms = importlib.util.module_from_spec(spec)
+        with contextlib.redirect_stdout(io.StringIO()):
+            try:
+                spec.loader.exec_module(ms)
+            except SystemExit:
+                pass
+        kt = np.array([ms.T13A, 1141.3, 1142.9, 1144.6, 1146.31, ms.F16]); kp = np.array([ms.phi0, 30, 11.5, 6.4, 2.2, 0])
+        km = np.array([0, -22, -2.9, -2.9, -1.6, -0.4])
+        far = [k for k in M13['motion']['knots'] if k[0] < ms.T13A]
+        tt = np.arange(ms.T13A, ms.F16 + 1e-6, 0.04)
+        dep = R13 * np.tan(np.radians(ms.herm(kt, kp, km, tt)))
+        y = MP.EYE[1] - dep
+        v = np.gradient(y, tt)
+        M13['motion']['knots'] = far + [[float(a), float(b), float(c)] for a, b, c in zip(tt, y, v)]
     ts = [round(1137.58 + 0.5 * i, 2) for i in range(24)] + [1149.30]
+    if len(sys.argv) > 4:
+        ts = [t for t in ts if float(sys.argv[4]) <= t <= float(sys.argv[5])]
     rows = []
     frames = []
     for t in ts:

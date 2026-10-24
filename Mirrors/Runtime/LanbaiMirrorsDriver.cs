@@ -27,7 +27,7 @@ namespace Lanbai.Mirrors
 
         [Header("Window (timeline s)")]
         public float windowStart = 1010.0f;         // in act 9's black (天问), before any mirror is lit
-        public float windowEnd = 1149.31f;          // F16: cut 2 under the full white
+        public float windowEnd = 1150.31f;          // F16 + 1 s, under the full white: the ticks after F16 switch mirror 13 off and zero the globals
 
         [Header("Per mirror (13), from MirrorSchedule.json")]
         public float[] tCross;
@@ -78,6 +78,14 @@ namespace Lanbai.Mirrors
         void Start()
         {
             Init();
+            ClearGlobals();                         // CONTROL §5: globals written in Start (editor values are lost on Play)
+        }
+
+        // review r1 #3: outside the window nothing may keep an eye-height mirror line or a rim light alive
+        private void ClearGlobals()
+        {
+            VRCShader.SetGlobalVector(idPlane, Vector4.zero);
+            VRCShader.SetGlobalVector(idRimLight, Vector4.zero);
         }
 
         private void Init()
@@ -114,8 +122,11 @@ namespace Lanbai.Mirrors
 
         public void LanbaiActivate(bool on)
         {
+            Init();
             if (root != null)
                 root.SetActive(on);
+            if (!on)
+                ClearGlobals();
         }
 
         public float[] LanbaiGrade(float t)
@@ -130,8 +141,14 @@ namespace Lanbai.Mirrors
         public void LanbaiTick(float t)
         {
             Init();
-            if (t < windowStart || t > windowEnd + 1f)
+            if (t < windowStart || t >= windowEnd || t >= tCross[tCross.Length - 1])
+            {
+                for (int k = 0; k < mirrors.Length; k++)
+                    if (mirrors[k] != null && mirrors[k].gameObject.activeSelf && (t < activeStart[k] || t > activeEnd[k]))
+                        mirrors[k].gameObject.SetActive(false);
+                ClearGlobals();
                 return;
+            }
             int n = tCross.Length;
             float planeY = 0f, planeLine = 0f, planeIdx = 0f, planePhase = 0f, bestAbs = 1e9f;
             Vector3 rim = Vector3.zero;
