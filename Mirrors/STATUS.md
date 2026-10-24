@@ -1,4 +1,4 @@
-2026-10-24 07:20 UTC · 迭代 r1→r2（白铜色调、溶解边近眼淡出）；驱动 `LanbaiMirrorsDriver` / `LanbaiWhiteDriver`（只算，`LanbaiGrade`）、搭建菜单 `蓝白/Build/Mirrors` + 导入设置、星点副本改按天空的 `StarPoints_BSC5` 网格格式；shader 检查 0 错误、C# 检查 OK。在跑：第 13 面最后 10 秒的两套方案对照（A / C）。下一步：对照图 + flashcheck + README。卡点：无。
+2026-10-24 05:46 UTC · 迭代 r1→r2、驱动（只算，`LanbaiGrade`）、搭建菜单 + 导入设置、两份 README 已推；shader 0 错误、C# OK。在跑：第 13 面对照（A / C）、一个评审 agent（只查阻断项）。下一步：flashcheck 序列（第 1/10/11 面、白）、按评审改。卡点：无。
 
 # 镜与白 · 进度
 
