@@ -423,6 +423,18 @@ def frame(rays, eye, t, a, cam):
 def build(ctx):
     a = ctx['args']
     t = float(ctx['t'])
+    fh = a.get('floorhole')
+    if fh is not None:
+        # D-26: the cabin floor in front of the main seat erodes from F8b (README §9.1); the hole as a window cut from the
+        # eye, like the roof hole: 'az0,az1,el0,el1' (deg, from the main eye; el negative = below the horizon)
+        az0, az1, el0, el1 = (float(x) for x in str(fh).split(','))
+        import tempfile
+        LS = ctx['lbh_scene']
+        J = json.load(open(LS.paths.BUS_JSON, encoding='utf-8'))
+        J['presets']['bible_v2']['windows'].append(dict(name='floor_eroded', az=[az0, az1], el=[el0, el1], steps=8))
+        tmp = os.path.join(tempfile.gettempdir(), 'lanbai_sea_bus_floorhole_%d.json' % os.getpid())
+        json.dump(J, open(tmp, 'w', encoding='utf-8'), ensure_ascii=False)
+        LS.paths.BUS_JSON = tmp
     rh = a.get('roofhole')
     if rh is not None:
         el0 = (70.0 - 120.0 * erosion(t)) if rh == 'auto' else float(rh)
@@ -433,7 +445,7 @@ def build(ctx):
     rays = S.camera_rays(W, H, cam['hfov_deg'], cam.get('yaw_deg', 0.0) or 0.0, cam.get('pitch_deg', 0.0) or 0.0)
     img, info = frame(rays, eye, t, a, cam)
     ctx2 = dict(ctx)
-    ctx2['args'] = dict({k: v for k, v in a.items() if k != 'roofhole'}, frame='__7a__')
+    ctx2['args'] = dict({k: v for k, v in a.items() if k not in ('roofhole', 'floorhole')}, frame='__7a__')
     SK.FRAMES['__7a__'] = lambda r, e, tt, aa: (img, info)
     out = SK.build(ctx2)
     out.update(what='act 7a', **info)
