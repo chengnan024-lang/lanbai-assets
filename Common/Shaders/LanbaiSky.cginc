@@ -177,17 +177,34 @@ float3 LanbaiHorizonBand(float3 V, float3 nearC, float3 farC, float3 voidC, floa
 
 // model B: a smooth sky gradient (no azimuth cut-off): near (toward the band dir) -> far over 0..bw deg of azimuth,
 // horizon -> zenith above, horizon -> nadir below
+// a transition toward the zenith with no point at the top (director r2 #2: "no hard shapes in the sky"): the upper end
+// is clamped to 90. A step still moving at the zenith (the dawn fit had its end at 94.5) makes a cone = a bullseye; one
+// ending AT 90 is a smooth paraboloid there. Presets whose gradient reaches the zenith end it at 90, not below (a step
+// ending at 85 leaves a flat disc with a curvature edge round it).
+// geometric (log-space) blend: a linear-light lerp between a bright horizon and a dark zenith stays bright on screen to
+// ~60 deg and then plunges = a dark disc overhead; the log blend darkens evenly in display terms (director r2 #2)
+inline float3 LanbaiGeoLerp(float3 a, float3 b, float t)
+{
+    return exp2(lerp(log2(max(a, 1e-6)), log2(max(b, 1e-6)), t));
+}
+
+inline float LanbaiUpStep(float lo, float hi, float el)
+{
+    float x = saturate((el - lo) / max(min(hi, 90.0) - lo, 1e-4));
+    return x * x * (3.0 - 2.0 * x);
+}
+
 float3 LanbaiHorizonGradient(float3 V, float3 nearC, float3 farC, float3 zenC, float3 nadC, float bw,
                              float4 shape, float4 below)
 {
     float el = LanbaiElevationDeg(V);
     float az = LanbaiAzimuthDeg(V, LanbaiBandDir());
     float3 hz = lerp(nearC, farC, smoothstep(0.0, max(bw, 1.0), az));
-    float up = smoothstep(shape.x, max(shape.y, shape.x + 0.1), el);
+    float up = LanbaiUpStep(shape.x, max(shape.y, shape.x + 0.1), el);
     up = pow(saturate(up), (shape.z > 0.0) ? shape.z : 1.0);
     float dn = smoothstep(below.y, min(below.x, below.y - 0.1), el);           // 0 at below.y .. 1 at below.x (both <= 0)
     dn = pow(saturate(dn), (below.z > 0.0) ? below.z : 1.0);
-    float3 c = lerp(hz, zenC, up);
+    float3 c = LanbaiGeoLerp(hz, zenC, up);
     return lerp(c, nadC, dn);
 }
 
@@ -243,12 +260,36 @@ float3 LanbaiHorizon(float3 dirWS)
     return c;
 }
 
-// ---- act 9: the galaxy glow (Sky/Textures/StarSky_Glow_4096x2048.exr, a 2D lat-long in the WORLD frame, no mips):
+// ---- act 9: the galaxy glow (Sky/Textures/StarSky_Glow_8192x4096.png: a 2D lat-long in the WORLD frame, 8-bit sRGB
+// NORMALISED to 1, with mips; the real level = x the glow scale, Sky/Data/StarSky.json glow_scale):
 // u = 0.5 + atan2(V.x, V.z) / 2pi, v = 0.5 + asin(V.y) / pi. Shared by Lanbai/Sky and the mirrors' reflection.
 inline float2 LanbaiGalaxyUV(float3 V)
 {
     float zz = (abs(V.x) + abs(V.z) < 1e-6) ? 1.0 : V.z;          // straight up / down: atan2(0, 0) is undefined on some GPUs
     return float2(0.5 + atan2(V.x, zz) * (0.5 / UNITY_PI), 0.5 + asin(clamp(V.y, -1.0, 1.0)) * (1.0 / UNITY_PI));
+}
+
+#ifndef LANBAI_DECL__Udon_Sky_GlowScale
+#define LANBAI_DECL__Udon_Sky_GlowScale
+float4 _Udon_Sky_GlowScale;    // x = the glow map's scale (the sky presets write it); 0 = not set
+#endif
+
+// the glow scale everyone uses: the sky presets' global (0 = not set -> 1)
+inline float LanbaiGalaxyScale()
+{
+    return (_Udon_Sky_GlowScale.x > 0.0) ? _Udon_Sky_GlowScale.x : 1.0;
+}
+
+// THE galaxy sample (the sky and the mirrors call this; final review 3: without the scale a mirror's galaxy came out
+// +1 EV over the sky's). glowTex = StarSky_Glow (sRGB, mips), texelSize = its _TexelSize, scale = LanbaiGalaxyScale()
+// (or a material value). LOD = one texel per pixel: the map's u texels shrink with cos(elevation) toward the poles, so
+// the footprint uses the narrower side (no shimmer looking up in a headset; 1080p desktop at 90 deg = mip 0).
+inline float3 LanbaiGalaxySample(sampler2D glowTex, float4 texelSize, float3 V, float scale)
+{
+    float texelRad = 6.2831853 * max(texelSize.x, 1e-6);
+    float cosEl = max(sqrt(saturate(1.0 - V.y * V.y)), 0.05);
+    float lod = max(0.0, log2(LanbaiPixelAngle() / (texelRad * cosEl)));
+    return tex2Dlod(glowTex, float4(LanbaiGalaxyUV(V), 0.0, lod)).rgb * scale;
 }
 
 // ---- sun, moon -------------------------------------------------------------------------------------------------
