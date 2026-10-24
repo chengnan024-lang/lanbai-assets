@@ -33,6 +33,8 @@ FLOOR_PATCH = (-0.16, 1.04, 0.85, 2.45)
 HOLE_FULL = (0.55, 2.925, 0.45, 0.475)
 HOLE_MIN = (0.55, 3.04, 0.30, 0.26)
 HOLE_SHAPE = (0.22, 0.10, 0.70)
+DOOR_BOX_MIN = (0.80, 0.45, 2.38, 0.15)       # D-33 #7a: xyz min, w soft margin
+DOOR_BOX_MAX = (1.60, 3.00, 3.45)
 
 
 def srgb2lin(h):
@@ -178,7 +180,7 @@ def sky_dist(pos):
     return np.hypot(dxz, pos[..., 1] - SKY_RECT[1])
 
 
-def erode_field(pos, fade, form=0, resist=0.0, hole_open=0.0, coef=ERODE_COEF, noise_range=NOISE_RANGE):
+def erode_field(pos, fade, form=0, resist=0.0, hole_open=0.0, coef=ERODE_COEF, noise_range=NOISE_RANGE, door_bias=0.0):
     """s = noise - tau (< 0 removed). Mirrors LanbaiCabinErodeField."""
     pos = np.asarray(pos, float)
     hN = np.clip((pos[..., 1] - CABIN_BOX[0]) / (CABIN_BOX[1] - CABIN_BOX[0]), 0, 1)
@@ -197,7 +199,12 @@ def erode_field(pos, fade, form=0, resist=0.0, hole_open=0.0, coef=ERODE_COEF, n
     ph = np.array([(FLOOR_PATCH[1] - FLOOR_PATCH[0]) / 2, (FLOOR_PATCH[3] - FLOOR_PATCH[2]) / 2])
     in_patch = ((rect_sd(pos[..., [0, 2]], pc, ph, 0.02) < 0) & (pos[..., 1] < CABIN_BOX[0] + 0.08)).astype(float)
     prot = np.maximum(in_sphere * (1 - seat_rel), in_patch * (1 - patch_rel))
+    tau_raw = tau
     tau = tau + (-10.0 - tau) * prot
+    if fade > 0 and door_bias > 0:                  # D-33 #7a, after the protections (as the shader)
+        dq = np.maximum(np.array(DOOR_BOX_MIN[:3]) - pos, pos - np.array(DOOR_BOX_MAX))
+        in_door = 1 - smoothstep(0.0, DOOR_BOX_MIN[3], np.max(dq, -1))
+        tau = tau + ((tau_raw + 1.0 + resist) - tau) * np.clip(door_bias, 0, 1) * in_door
     n = fbm(pos)
     nu = np.clip((n - ERODE_NOISE[1]) / (ERODE_NOISE[2] - ERODE_NOISE[1]), 0, 1)
     s = noise_range[0] + (noise_range[1] - noise_range[0]) * nu - tau
@@ -278,6 +285,13 @@ def fade(t):
         return 0.25 + 0.40 * ss((t - L['EXIT']) / (L['RISE'] - L['EXIT']))
     f = 0.65 + 0.027 * mirror_steps(t)
     return f + (1 - f) * ss((t - L['F16']) / 1.2)
+
+
+def door_bias(t, start=957.40, end=965.40):
+    """LanbaiCabinDriver.DoorBias (D-33 #7a)."""
+    if t < start or t >= L['W11']:
+        return 0.0
+    return float(ss((t - start) / (end - start)))
 
 
 def hole(t):

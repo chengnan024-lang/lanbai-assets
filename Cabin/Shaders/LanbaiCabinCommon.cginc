@@ -38,6 +38,9 @@ float4 _SeatSphere;           // xyz local seat centre (world), w radius 0.9  (d
 float4 _FloorPatch;           // x0 x1 z0 z1 of the patch kept to act 9 (>= 1.2 x 1.6 m)
 float4 _HoleFull;             // D-26 full hole: centre x, centre z, half x, half z (0.55, 2.925, 0.45, 0.475)
 float4 _HoleMin;              // D-26 minimum hole (0.55, 3.04, 0.30, 0.26)
+float4 _DoorBoxMin;           // D-33 #7a door group box (world): xyz min, w soft margin m
+float4 _DoorBoxMax;           // xyz max
+float  _DoorBias;             // 0..1, driver MPB: 1 = everything in the door box is gone (by 965.4)
 float4 _HoleShape;            // x corner radius m, y edge noise amplitude m, z max surface y for the hole (floor + 0.08), w unused
 float  _HoleOpen;             // 0 none, 0.5 = min hole, 1 = full hole (driver writes via MPB; F8b -> 897.96)
 
@@ -113,6 +116,13 @@ inline float LanbaiCabinErodeField(float3 posWS, out float nUniform)
     float skyTerm = _ErodeForm > 0.5 ? e : 1.0 - e;
     float tau = fade - _ErodeCoef.x * (1.0 - hN) - _ErodeCoef.y * frontTerm - _ErodeCoef.z * skyTerm - _FadeResist;
     tau = fade > 0.0 ? tau : -10.0;                                  // fade 0 = nothing, exactly
+    // D-33 #7a: the door group (folding leaves, door post, door grab, upper frame, the WinR1 front gasket) goes
+    // before 965.4 so Zhuangzi's horizon column is clear. Inside a soft box, tau is pulled toward tau + 1 (+ the
+    // stanchion resist back: the door grab does not get it) by _DoorBias - AFTER the protections, so the seat
+    // sphere does not hold the door post.
+    float3 dq = max(_DoorBoxMin.xyz - posWS, posWS - _DoorBoxMax.xyz);
+    float inDoor = 1.0 - smoothstep(0.0, max(_DoorBoxMin.w, 0.01), max(max(dq.x, dq.y), dq.z));
+    float tauDoor = tau + 1.0 + _FadeResist;
 
     // protections (bible §4.8 + §1.8 '休息参照'): seat sphere until the last step, floor patch until act 9
     float seatRelease = saturate((fade - 0.97) / 0.03);              // the 13th mirror: 0.97 -> 1
@@ -123,6 +133,7 @@ inline float LanbaiCabinErodeField(float3 posWS, out float nUniform)
     float inPatch = (LanbaiRectSD(posWS.xz, pc, ph, 0.02) < 0.0 && posWS.y < _CabinBox.x + 0.08) ? 1.0 : 0.0;
     float prot = max(inSphere * (1.0 - seatRelease), inPatch * (1.0 - patchRelease));
     tau = lerp(tau, -10.0, prot);
+    tau = fade > 0.0 ? lerp(tau, tauDoor, saturate(_DoorBias) * inDoor) : tau;
 
     float n = LanbaiCabinFBM(posWS, _ErodeNoise.x);
     nUniform = saturate((n - _ErodeNoise.y) / max(_ErodeNoise.z - _ErodeNoise.y, 1e-3));

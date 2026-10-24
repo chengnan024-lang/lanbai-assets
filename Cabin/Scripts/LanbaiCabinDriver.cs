@@ -97,21 +97,24 @@ public class LanbaiCabinDriver : UdonSharpBehaviour
     // threshold at its centre (same tau as LanbaiCabinCommon.cginc, _ErodeForm 0 / D-32, default coefficients) plus
     // the median of the noise range, i.e. when about half its frame has gone. Numbers from bus_spec.py.
     public float glassErodeMedian = 0.025f;    // mid of _ErodeNoiseRange (-0.20, 0.25)
-    public float glassFadeSeconds = 1.5f;      // D-32 #8: each pane fades out over this, no broken edge
+    public float glassFadeSeconds = 1.5f;
+    [Header("D-33 #7a door group")]
+    public float doorGoneFrom = 957.40f;       // the door group starts to go (F10e + 1 s)
+    public float doorGoneBy = 965.40f;         // ... and is gone (the zenith gone; Zhuangzi from 971.4)      // D-32 #8: each pane fades out over this, no broken edge
 
     // ------------------------------------------------------------------------------------------------ state
     private int _idLightmap, _idAmbient, _idBleach, _idFade, _idDial, _idSlice, _idSliceColor;
     private int _idSeat, _idHole, _idClock, _idSway, _idFloat, _idWing, _idRelease, _idDissolve, _idReflGain;
     private MaterialPropertyBlock _mpb;
     private bool _ready;
-    private float _lm = -1f, _bleach = -1f, _fade = -1f, _hole = -1f, _refl = -1f;
+    private float _lm = -1f, _bleach = -1f, _fade = -1f, _hole = -1f, _refl = -1f, _door = -1f;
     private Vector4 _amb = new Vector4(-1f, 0f, 0f, 0f), _dial = new Vector4(-1f, 0f, 0f, 0f), _seat;
     private int _glassOn = -1;
     private float[] _paneFadeAt;               // per pane: fade at which it goes (computed once from its bounds)
     private float[] _paneT;                    // per pane: timeline second the fade passes it (1e9 = never)
     private float[] _paneBase;                 // per pane: material _TintStrength, _BaseAlpha, _DropOpacity, (spare)
     private bool _paneFading;
-    private int _idTintStrength, _idBaseAlpha, _idDropOpacity;
+    private int _idTintStrength, _idBaseAlpha, _idDropOpacity, _idDoorBias;
     private int _panesGone = -1;               // how many panes are off for erosion (re-write when it changes)
     private int _clothVisible = -1;
     private float _nextSeatCheck;
@@ -143,6 +146,7 @@ public class LanbaiCabinDriver : UdonSharpBehaviour
         _idSliceColor = VRCShader.PropertyToID("_Udon_CabinSliceColor");
         _idSeat = VRCShader.PropertyToID("_SeatSphere");          // material properties (MPB), not globals
         _idHole = VRCShader.PropertyToID("_HoleOpen");
+        _idDoorBias = VRCShader.PropertyToID("_DoorBias");
         _idClock = VRCShader.PropertyToID("_ClothClock");
         _idSway = VRCShader.PropertyToID("_Sway");
         _idFloat = VRCShader.PropertyToID("_Float");
@@ -182,7 +186,7 @@ public class LanbaiCabinDriver : UdonSharpBehaviour
     {
         Init();
         // the cabin root is never switched; entering the window (or a seek) re-writes everything once
-        _lm = -1f; _bleach = -1f; _fade = -1f; _hole = -1f; _refl = -1f; _glassOn = -1; _clothVisible = -1; _panesGone = -1;
+        _lm = -1f; _bleach = -1f; _fade = -1f; _hole = -1f; _refl = -1f; _door = -1f; _glassOn = -1; _clothVisible = -1; _panesGone = -1;
         _amb.x = -1f; _dial.x = -1f; _doorClosed = -1;
     }
 
@@ -226,9 +230,10 @@ public class LanbaiCabinDriver : UdonSharpBehaviour
         // per-client seat sphere (1 Hz), D-26 hole -> MPB on the cabin and curtain renderers
         bool seatChanged = UpdateSeat(t, force);
         float h = Hole(t);
-        if (force || seatChanged || Mathf.Abs(h - _hole) > 1e-4f)
+        float db = DoorBias(t);
+        if (force || seatChanged || Mathf.Abs(h - _hole) > 1e-4f || Mathf.Abs(db - _door) > 1e-4f)
         {
-            _hole = h;
+            _hole = h; _door = db;
             WriteCabinMPB(cabinRenderers);
         }
         WriteCloth(t, force || seatChanged);
@@ -325,6 +330,14 @@ public class LanbaiCabinDriver : UdonSharpBehaviour
         if (t < tRise) return 0.25f + 0.40f * SS((t - exitT) / (tRise - exitT));
         float f = 0.65f + 0.027f * MirrorSteps(t);                              // mirrors 1-12, 1.2 s each
         return f + (1f - f) * SS((t - tF16) / 1.2f);                            // the 13th takes your seat
+    }
+
+    /// <summary>D-33 #7a: the door group erodes away between doorGoneFrom and doorGoneBy (965.4, the zenith gone,
+    /// before Zhuangzi at 971.4). 0 again from act 11 (the fade is 0 there anyway: the bus is whole at the stop).</summary>
+    private float DoorBias(float t)
+    {
+        if (t < doorGoneFrom || t >= tAct11) return 0f;
+        return SS((t - doorGoneFrom) / Mathf.Max(doorGoneBy - doorGoneFrom, 0.1f));
     }
 
     /// <summary>D-26 (Act07a §9.1): 0 shut, 0.5 the minimum hole (F8b + 6 s, the waves calm), 1 the full hole
@@ -449,6 +462,7 @@ public class LanbaiCabinDriver : UdonSharpBehaviour
             _mpb.SetFloat(_idDissolve, dis);
             _mpb.SetVector(_idSeat, _seat);
             _mpb.SetFloat(_idHole, _hole);
+            _mpb.SetFloat(_idDoorBias, _door);
             r.SetPropertyBlock(_mpb);
         }
     }
@@ -575,6 +589,7 @@ public class LanbaiCabinDriver : UdonSharpBehaviour
             r.GetPropertyBlock(_mpb);
             _mpb.SetVector(_idSeat, _seat);
             _mpb.SetFloat(_idHole, _hole);
+            _mpb.SetFloat(_idDoorBias, _door);
             r.SetPropertyBlock(_mpb);
         }
     }

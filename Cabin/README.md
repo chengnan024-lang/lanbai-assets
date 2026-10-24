@@ -93,7 +93,7 @@
 | `_Udon_SunDir` | 窗帘飞走的方向（w > 0 才用） |
 | `_Udon_Fog*` 等 | 经 `LanbaiFog.cginc` |
 
-**写**（`LanbaiCabinDriver`，`VRCShader.PropertyToID` + `SetGlobalFloat` / `SetGlobalVector`，值变了才写）：`_Udon_CabinLightmap`、`_Udon_CabinBleach`、`_Udon_CabinFade`，门内窗口 [177.55, 252.64] 之外还写 `_Udon_CabinAmbient`、`_Udon_RadioDial`（`_Udon_CabinSlice*` 只在 `Start()` 清零一次）。材质属性（MPB）：`_SeatSphere`、`_HoleOpen`（车厢、窗帘），`_ClothClock`、`_Sway`、`_Float`、`_Wing`、`_Release`、`_Dissolve`（窗帘），`_CabinReflGain`、`_TintStrength`、`_BaseAlpha`、`_DropOpacity`（玻璃：每块在侵蚀走过它时 1.5 秒淡掉，D-32 #8）；玻璃和窗帘的 `Renderer.enabled`。
+**写**（`LanbaiCabinDriver`，`VRCShader.PropertyToID` + `SetGlobalFloat` / `SetGlobalVector`，值变了才写）：`_Udon_CabinLightmap`、`_Udon_CabinBleach`、`_Udon_CabinFade`，门内窗口 [177.55, 252.64] 之外还写 `_Udon_CabinAmbient`、`_Udon_RadioDial`（`_Udon_CabinSlice*` 只在 `Start()` 清零一次）。材质属性（MPB）：`_SeatSphere`、`_HoleOpen`、`_DoorBias`（车厢、窗帘；`_DoorBias` 是 D-33 #7a 的门组，957.4 → 965.4 从 0 到 1），`_ClothClock`、`_Sway`、`_Float`、`_Wing`、`_Release`、`_Dissolve`（窗帘），`_CabinReflGain`、`_TintStrength`、`_BaseAlpha`、`_DropOpacity`（玻璃：每块在侵蚀走过它时 1.5 秒淡掉，D-32 #8）；玻璃和窗帘的 `Renderer.enabled`。
 **没有新的全局量。** 两处类型要登记表写清（`给总控_shader.md` §2）。
 
 ---

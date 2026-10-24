@@ -96,6 +96,9 @@ Shader "Lanbai/Cabin"
         _FloorPatch ("Floor patch  x0 x1 z0 z1", Vector) = (-0.16, 1.04, 0.85, 2.45)
         _HoleFull ("D-26 hole full  cx cz hx hz", Vector) = (0.55, 2.925, 0.45, 0.475)
         _HoleMin ("D-26 hole minimum  cx cz hx hz", Vector) = (0.55, 3.04, 0.30, 0.26)
+        _DoorBoxMin ("D-33 #7a door group box min xyz, w soft margin m", Vector) = (0.80, 0.45, 2.38, 0.15)
+        _DoorBoxMax ("D-33 #7a door group box max xyz", Vector) = (1.60, 3.00, 3.45, 0)
+        [HideInInspector] _DoorBias ("D-33 #7a door bias (driver MPB)", Float) = 0
         _HoleShape ("D-26 hole  corner  edge noise  max y", Vector) = (0.22, 0.10, 0.70, 0)
         _HoleOpen ("D-26 hole open  driver MPB", Range(0, 1)) = 0
 
