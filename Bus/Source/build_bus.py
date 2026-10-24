@@ -40,8 +40,8 @@ MATS = {}
 # 名字: (反照率 sRGB, 光滑度, 金属)；圣经 §4.2 / §4.9。Unity 里由 Lanbai/Cabin、Lanbai/BusGlass 接手，这里只为白模和取景。
 MAT_TABLE = {
     'Ext_Indigo': ('#34506E', 0.50, 0), 'Ext_Cream': ('#D8D2C2', 0.55, 0), 'Ext_Silver': ('#BFC2C4', 0.70, 1),
-    'Ext_Black': ('#1E1F20', 0.40, 0), 'Tyre': ('#2A2A2A', 0.55, 0), 'Rim': ('#D8D2C2', 0.45, 0),
-    'Chrome': ('#CFD1D3', 0.85, 1), 'Lamp_Head': ('#FFF4E0', 0.9, 0), 'Lamp_Tail': ('#8A1A1E', 0.8, 0),
+    'Ext_Black': ('#26272A', 0.40, 0), 'Tyre': ('#2A2A2A', 0.55, 0), 'Rim': ('#D8D2C2', 0.45, 0),
+    'Chrome': ('#CFD1D3', 0.85, 1), 'Lamp_Head': ('#EBE2CF', 0.9, 0), 'Lamp_Tail': ('#8A1A1E', 0.8, 0),
     'Lamp_Amber': ('#E3D69B', 0.8, 0),          # D-28e: pale yellow, an unlit lens (not orange)
     'Int_Enamel': ('#D9D4C5', 0.45, 0), 'Int_Ceiling': ('#E2DDCF', 0.25, 0), 'Seal': ('#2B2B2B', 0.30, 0),
     'Vinyl': ('#5A2126', 0.45, 0), 'SeatFrame': ('#3C3E3D', 0.35, 0), 'Floor': ('#323634', 0.22, 0),
@@ -582,6 +582,13 @@ def ceiling():
     box('RoofVent', (B.XC - 0.30, B.Y_TOP - 0.01, -1.20), (B.XC + 0.30, B.Y_TOP + 0.07, -0.70), 'Ext_Cream', bevel=0.02)
 
 
+def well_cut(name, z, side, inner):
+    """the wheel-well cylinder (axis x), from 'inner' metres off the centre line (side +-1) out past the skin."""
+    a, b = inner, B.W_HALF + 0.30
+    cx = B.XC + side * (a + b) / 2
+    return cylinder(name, (cx, B.WHEEL_R, z), 'x', B.ARCH_R - 0.012, b - a, 'Seal', segs=48)
+
+
 def floor():
     xl, xr = B.XC - B.W_HALF + 0.04, B.XC + B.W_HALF - 0.04
     parts = [((xl, 0.56, B.Z_REAR + 0.06), (xr, B.FLOOR_Y, B.DOOR[0])),
@@ -589,9 +596,10 @@ def floor():
     for i, (lo, hi) in enumerate(parts):
         fl = box('Floor%d' % i, lo, hi, 'Floor')
         for z in B.AXLES:           # the floor stops at the wheel wells
-            cut = cylinder('WellCutF', (B.XC, B.WHEEL_R, z), 'x', B.ARCH_R - 0.012, 3.2, 'Seal', segs=48)
-            boolean(fl, cut)
-            bpy.data.objects.remove(cut)
+            for sd in (-1, 1):      # only outboard of the wheel boxes' inner walls (a full-width cut holed the aisle)
+                cut = well_cut('WellCutF', z, sd, B.TRACK_HALF - 0.22)
+                boolean(fl, cut)
+                bpy.data.objects.remove(cut)
     # the visible floor: a dense grid 1 mm above the slabs (8 cm cells) so the aisle / doorway wear and the edge dirt
     # (vertex G / R) have vertices to live on
     bm = bmesh.new()
@@ -605,7 +613,7 @@ def floor():
                 continue                      # the step well
             if any(abs(zm - za) < B.ARCH_R + 0.02 and abs(xm - B.XC) > B.TRACK_HALF - 0.22 for za in B.AXLES):
                 continue                      # under the wheel boxes
-            bm.faces.new((V[i][j], V[i + 1][j], V[i + 1][j + 1], V[i][j + 1]))
+            bm.faces.new((V[i][j], V[i][j + 1], V[i + 1][j + 1], V[i + 1][j]))     # wound so the normal is +Y (U2B mirrors)
     obj_from_bm('FloorTop', bm, ['Floor'])
     z0, z1 = B.DOOR[0] + 0.01, B.DOOR[1] - 0.01
     box('StepLow', (0.80, 0.17, z0), (1.05, 0.23, z1), 'Floor')
@@ -628,7 +636,9 @@ def floor():
                 lo, hi = (min(xo, xi), B.FLOOR_Y, z - 0.56), (max(xo, xi), 1.00, z + 0.56)
             wb = box('WheelBox%d%s' % (i, 'R' if s > 0 else 'L'), lo, hi, 'Int_Enamel', bevel=0.04)
             # hollow the box along the wheel well, so from outside the arch shows only the dark liner (not cream enamel)
-            cut = cylinder('WellCut', (B.XC, B.WHEEL_R, z), 'x', B.ARCH_R - 0.012, 3.2, 'Seal', segs=48)
+            # (outboard only: the box keeps a 3 cm inner wall facing the aisle, review r2 - a full-width cut showed
+            # the dark liner through the aisle side of the box)
+            cut = well_cut('WellCut', z, s, abs(min(abs(lo[0] - B.XC), abs(hi[0] - B.XC))) + 0.03)
             boolean(wb, cut)
             bpy.data.objects.remove(cut)
 
@@ -677,11 +687,17 @@ def seat(name, x0, x1, back_z, double=False, worn=1.0, cushion_y=None, collectio
     bk = pad(name + '_Back', (x0 + 0.015, cy - 0.02, back_z + 0.02), (x1 - 0.015, cy + 0.60, back_z + 0.12), 0.04, 'Vinyl',
              collection, crown=(0.0, 0.016, 0.0))
     shell = box(name + '_BackShell', (x0 + 0.02, cy + 0.02, back_z), (x1 - 0.02, cy + 0.57, back_z + 0.025), 'Vinyl', collection, bevel=0.02, segs=3)   # PAZ: upholstered backs
+    # seams on the upholstered back (review r1): a welt round the rear panel 2.5 cm in, and a cross seam where the
+    # lumbar panel meets the upper panel - the face the row behind looks at
+    zb = back_z - 0.003
+    xa, xb, ya, yb = x0 + 0.045, x1 - 0.045, cy + 0.045, cy + 0.545
+    welt = tube(name + '_BackWelt', [(xa, ya, zb), (xb, ya, zb), (xb, yb, zb), (xa, yb, zb)], 0.0035, 'Vinyl', collection, sides=8, closed=True)
+    seam = tube(name + '_BackSeam', [(xa, cy + 0.25, zb), (xb, cy + 0.25, zb)], 0.0028, 'Vinyl', collection, sides=8)
     pb = U2B(piv)
     R = Matrix.Translation(pb) @ Matrix.Rotation(-tilt, 4, 'X') @ Matrix.Translation(-pb)
-    for o in (bk, shell):
+    for o in (bk, shell, welt, seam):
         o.matrix_world = R @ o.matrix_world
-    objs += [bk, shell]
+    objs += [bk, shell, welt, seam]
     # piping along the cushion's front-top edge
     objs.append(tube(name + '_Piping', [(x0 + 0.05, cy - 0.012, back_z + 0.495), (x1 - 0.05, cy - 0.012, back_z + 0.495)], 0.005, 'Vinyl', collection))
     ty = cy - 0.02 + 0.62 * math.cos(tilt)
@@ -840,7 +856,7 @@ def curtains():
         width = 0.34 if st == 'tied' else 0.42
         for end, zz in (('a', z0 + width / 2), ('b', z1 - width / 2)):
             bm = bmesh.new()
-            nU, nV = 32, 12
+            nU, nV = 48, 14                    # 6 verts per pleat + smooth shading (review r1: faceted)
             ybot = 1.42 if st == 'tied' else 1.32
             V = []
             for i in range(nV + 1):
@@ -849,13 +865,18 @@ def curtains():
                 row = []
                 for j in range(nU + 1):
                     u = (j / nU - 0.5) * width * pinch
-                    pleat = 0.016 * math.sin(j * math.pi / 2) * (0.6 + 0.4 * pinch) * (0.7 + 0.3 * i / nV)
+                    # 8 pleats, a little uneven (cloth never folds the same twice), deeper toward the hem
+                    ph = j * 2 * math.pi / 6 + 0.35 * math.sin(j * 0.7 + k * 1.3)
+                    pleat = 0.016 * (0.5 + 0.5 * math.sin(ph)) * 2 - 0.016
+                    pleat *= (0.6 + 0.4 * pinch) * (0.7 + 0.3 * i / nV) * (0.85 + 0.15 * math.sin(j * 0.37 + i * 0.5 + k))
                     row.append(bm.verts.new(U2B((x - s * (0.015 + pleat), yy, zz + u))))
                 V.append(row)
             for i in range(nV):
                 for j in range(nU):
                     bm.faces.new((V[i][j], V[i][j + 1], V[i + 1][j + 1], V[i + 1][j]))
             ob = obj_from_bm('Curtain%s%d%s' % (side, k, end), bm, ['Curtain'], 'Curtains')
+            for poly in ob.data.polygons:
+                poly.use_smooth = True
             ob['lb_curtain_state'] = st
     z0, z1 = B.WIN_R[0]
     x = wall_x(1, SHELL_T + 0.05)

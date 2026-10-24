@@ -9,8 +9,10 @@
 
 1. **拷文件夹**：`Bus/` → `Assets/Lanbai/Bus/`，`Cabin/` → `Assets/Lanbai/Cabin/`（`Common/`、`Rain/` 已有，要用 main 上最新的）。
 2. **Project Settings → Player → Vertex Compression**：TexCoord0–3 **不压缩**（CONTROL §6 第 8 条；车厢光照图在 uv1，外观做旧图集也在 uv1）。
-3. 等脚本编完，点菜单 **`蓝白/Build/车`**。它会删掉上一次的 `Lanbai_Bus`，重新搭：模型、材质、外观 LOD、23 个座位的 `VRCStation`、不可见碰撞体、两盏头像补光、`LanbaiCabinDriver`、雨刮。第一次点可能报“class not compiled yet”，再点一次。点完看 Console 的 `[Lanbai Bus]` 报告。细节：`Editor/README_Build.md`。
-4. **换掉本地的 v1 车**（不删，关掉）：
+3. **Project Settings → Tags and Layers**：要有 **`Bus`** 和 **`BusExterior`** 两个层（圣经 §1.6 / §4.3：世界主光、钠灯扫光、Act07 的灯按 `Bus` 照车厢；站灯按 `BusExterior` 照外壳）。没有就先加，否则搭建菜单只报警告、物体留在 Default。
+   搭完：车厢、玻璃、窗帘、门在 `Bus`；外壳两级 LOD、四个轮子、雨刮在 `BusExterior`。
+4. 等脚本编完，点菜单 **`蓝白/Build/车`**。它会删掉上一次的 `Lanbai_Bus`，重新搭：模型、材质、外观 LOD、23 个座位的 `VRCStation`、不可见碰撞体、两盏头像补光、`LanbaiCabinDriver`、雨刮。第一次点可能报“class not compiled yet”，再点一次。点完看 Console 的 `[Lanbai Bus]` 报告。细节：`Editor/README_Build.md`。
+5. **换掉本地的 v1 车**（不删，关掉）：
    - 本地 v1 车的根物体关掉；`LB_Journey.busRoot` 指向 `Lanbai_Bus`。
    - `LB_Journey.heroEye` 改成 **(0.55, 1.70, 2.05)**（诗句按它摆；门、标准台、所有包都用这个）。
    - `LB_Journey.busMin / busMax` 照 `Models/BusLayout.json` 的 `cabin_bounds`：**min (−1.35, 0.57, −3.59)、max (0.99, 2.62, 3.44)**（D-31：车厢内部；Director 按玩家根位置查，头探出玻璃 ≤ 0.6 m 不算离开）。
@@ -20,8 +22,9 @@
    - `cabinLights` 拖进 `HeadFill_0 / HeadFill_1`；`cabinTubes` 拖进 `Cabin_Tubes`。
    - `fan`、`pendant`：新车没有（圣经：除了收音机和空司机座，没有道具）。清空。
    - 实例人数上限 = **23**（D-31，`seat_count`，不算司机座）。
-5. **烘一张车厢立方图**给玻璃（`_CabinCube`）：只开管灯，在主座位眼位，不要在门附近烘、不要实时探针（门内 181 s 的教训）。三个 `M_Bus_Glass_*` 都填上。
-6. **截图推回来**（`FromLocal/bus_test/`，桌面 1920×1080、水平 90°、PPv2 开、ARGBHalf 渲完再调色）：
+   - **座位交互**：每个 `Station_*` 上搭建菜单挂了 `Bus/Scripts/LanbaiBusSeat.cs`（Interact → `UseStation`，提示“坐下”、2 m）。如果想继续用本地 v1 的 `LB_Seat`，把它指到这些 `Station_*` 上，再删掉 `LanbaiBusSeat`，两个只留一个。
+6. **烘一张车厢立方图**给玻璃（`_CabinCube`）：只开管灯，在主座位眼位，不要在门附近烘、不要实时探针（门内 181 s 的教训）。三个 `M_Bus_Glass_*` 都填上。
+7. **截图推回来**（`FromLocal/bus_test/`，桌面 1920×1080、水平 90°、PPv2 开、ARGBHalf 渲完再调色）：
    - 主座位正前，t = 30（夜路，管灯 1）、t = 150.30（U7）、t = 270（晨）；
    - 主座位朝门（yaw +25°）t = 270：晨日应该在门洞正中；
    - 主座位抬头 +52°，t = 169.2（天窗里的伤口）；
@@ -109,11 +112,14 @@ occ.point(az, el)                                   # ('WindscreenR' | 'open' | 
 
 ## 4. 诚实的已知弱点
 
-1. **没在 Unity 里跑过**：材质参数、头像补光的强度（菜单给的是起始值 0.8 / 3 m，要用灰卡校）、雨刮枢轴的朝向、VRCStation 的坐姿高度都要本地看。
+1. **没在 Unity 里跑过**：材质参数、头像补光的强度（菜单给的是起始值 0.5 / 6 m，每排一盏在 z 0，6 m 才够到车头车尾；要用灰卡 `#585F64` 在座位处校）、雨刮枢轴的朝向、VRCStation 的坐姿高度都要本地看。
 2. **车厢的亮度**：光照图按“中段座垫 E = 0.6”校（圣经写 0.8；按座椅顶的显示目标 `#4A2229` 降了 0.75 倍）；主座位自己的座垫约 0.35（它在右排管灯的尽头、天窗旁边）。要和本地的画面对过再定。
 3. **侵蚀公式**：圣经 §4.8 的写法和它的下一句话打架，`Lanbai/Cabin` 默认按“下一句话”（`Cabin/给总控_shader.md` §1），等总导演批。
 4. **外观做旧是程序算的**（位置 + 噪声），还没用 PAZ 的照片（总导演说照片可以直接用；没来得及）。0.3 m 看锈和雨痕还偏规整。
-5. **玻璃的车厢立方图**要本地烘（第 0 节第 5 步）。
+5. **玻璃的车厢立方图**要本地烘（第 0 节第 6 步）。
 6. 门的“关”只在第 11 幕用，是四片平移到门框里（没有做折叠的动画）；白遮罩下看不见过程。
 7. 车高 2.74 m（原车 2.95 m），因为天窗玻璃 2.62 要和顶棚齐平（D-28a）。
 8. `Cabin_Static` 一个物体 2.8 万顶点、十几种材质：draw call 是材质数。要省的话按材质合并贴图图集（没做）。
+9. **玻璃不跟着侵蚀一点点消失**：`Lanbai/BusGlass` 是雨包的 shader，没有侵蚀裁剪。`LanbaiCabinDriver` 按每块玻璃中心的侵蚀阈值（和 `Lanbai/Cabin` 同一个公式，加噪声中值 0.025）在侵蚀走过它时把那块玻璃关掉：天窗最先（fade ≈ 0.05），后窗下扇最后（≈ 0.85）。一块一块地走，不是像墙那样一片一片地走。参考渲染也是这样做的。
+10. **窗帘第 10 幕飞走**改成**直着往上**从已经没了的车顶出去（稍微偏向太阳），速度不超过“0.75 × 离眼睛的距离”（任何路线下 ≤ 1.05 × 真距离，圣经 §1.8）；主座位旁边那幅不往里翻、离眼睛至少 0.35 m。眼睛按本地玩家座位球心 + 0.68 m 算。
+11. 头像补光、座位交互（`LanbaiBusSeat`）没在 VRChat 里试过。`Common/Tools~/compile_check` 的 SDK 桩没有 `VRCStation`，我是加了一个临时桩（不在仓库里）检查过的。

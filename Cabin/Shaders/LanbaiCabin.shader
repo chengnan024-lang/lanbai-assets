@@ -42,6 +42,7 @@ Shader "Lanbai/Cabin"
         [Header(Vertex colour  R grime  G wear  B sun fade and cracks)]
         _GrimeColor ("Grime colour  vertex R", Color) = (0.36, 0.33, 0.27, 1)
         _GrimeAmount ("Grime amount", Range(0, 1)) = 0
+        [Toggle] _GrimeAbsolute ("Grime is the colour itself (dust on a dark floor), not albedo x colour x 2", Float) = 0
         _WearColor ("Wear colour  vertex G", Color) = (0.416, 0.204, 0.204, 1)
         _WearSmooth ("Wear smoothness", Range(0, 1)) = 0.66
         _WearAmount ("Wear amount", Range(0, 1)) = 0
@@ -55,7 +56,7 @@ Shader "Lanbai/Cabin"
         [Header(Tube light map  uv1)]
         _UseTubeLM ("Use CabinTubeLM  needs uv1  0 or 1", Float) = 1
         [NoScaleOffset] _CabinTubeLM ("CabinTubeLM  RGB E linear HDR  A AO", 2D) = "black" {}
-        _TubeLMConst ("Constant E when no uv1  rgb", Color) = (0.6, 0.66, 0.68, 1)
+        _TubeLMConst ("Constant E when no uv1  rgb (linear, Vector: no gamma conversion)", Vector) = (0.6, 0.66, 0.68, 1)
         _SHAmbientK ("Keep Unity SH ambient  0 = cabin ambient only", Range(0, 1)) = 0
         _CabinLight ("Cabin light terms  1 cabin  0 exterior", Range(0, 1)) = 1
 
@@ -66,16 +67,16 @@ Shader "Lanbai/Cabin"
 
         [Header(Emission)]
         [Enum(None,0,Tube,1,Radio,2,Gauge,3,DestBlind,4)] _EmitMode ("Emission mode", Float) = 0
-        [HDR] _EmissionColor ("Emission colour  linear x gain", Color) = (0, 0, 0, 1)
+        _EmissionColor ("Emission colour  linear x gain (Vector: set with SetVector)", Vector) = (0, 0, 0, 1)
         [NoScaleOffset] _EmitTex ("Emission texture  RGB colour  A mask", 2D) = "white" {}
         _BugDots ("Tube  dead insect dots", Range(0, 1)) = 1
 
         [Header(Lights and fields)]
         _CausticsGain ("Caustics gain", Range(0, 2)) = 1
         _SliceGain ("Light band gain", Range(0, 2)) = 1
-        [HDR] _MirrorLineColor ("Mirror line fill  linear", Color) = (0.99, 1.12, 3.71, 1)
+        _MirrorLineColor ("Mirror line fill  linear (Vector)", Vector) = (0.99, 1.12, 3.71, 1)
         _MirrorLineWidth ("Mirror line width m", Float) = 0.02
-        _MirrorRimColor ("Mirror rim light colour 8000K linear", Color) = (0.77, 0.81, 1.0, 1)
+        _MirrorRimColor ("Mirror rim light colour 8000K linear (Vector)", Vector) = (0.77, 0.81, 1.0, 1)
         _WetSmooth ("Wet film smoothness below the sea level", Range(0, 1)) = 0.85
         _WetDarken ("Wet albedo multiplier  porous 0.6  non porous 1", Range(0, 1)) = 1
         _WoundGuard ("D-08 wound light limiter", Range(0, 1)) = 1
@@ -120,7 +121,6 @@ Shader "Lanbai/Cabin"
         #include "Assets/Lanbai/Common/Shaders/LanbaiFog.cginc"
 
         sampler2D _MainTex;
-        float4 _MainTex_ST;
         fixed4 _Color;
         half _Glossiness, _Metallic;
         float4 _HeightSmooth;
@@ -131,7 +131,7 @@ Shader "Lanbai/Cabin"
         fixed4 _WearColor, _SunFadeColor, _CrackColor;
         half _WearSmooth, _WearAmount, _SunFadeSmooth, _SunFadeAmount, _CrackSmooth, _CrackAmount;
         half4 _GrimeColor;
-        half _GrimeAmount;
+        half _GrimeAmount, _GrimeAbsolute;
         float _UseTubeLM;
         sampler2D _CabinTubeLM;
         float4 _TubeLMConst;
@@ -190,7 +190,7 @@ Shader "Lanbai/Cabin"
 
             float2 uv0 = IN.cabinUV.xy;
             float2 uvd = uv0 * _DetailTile;
-            fixed4 tex = tex2D(_MainTex, TRANSFORM_TEX(IN.uv_MainTex, _MainTex));
+            fixed4 tex = tex2D(_MainTex, IN.uv_MainTex);                 // surface shader already applies _MainTex_ST
             float3 albedo = _Color.rgb * tex.rgb;
             float smooth = _Glossiness;
             float metal = _Metallic;
@@ -212,7 +212,7 @@ Shader "Lanbai/Cabin"
             // vertex colour: R grime (thirty years: yellowed ceiling round the tubes, dust in the window-frame corners and
             // sills, dirt where the floor meets the walls), G wear / polish, B sun fade (<= 0.75) and crack seeds (> 0.75)
             float grime = saturate(IN.color.r) * _GrimeAmount;
-            albedo = lerp(albedo, albedo * _GrimeColor.rgb * 2.0, grime);
+            albedo = lerp(albedo, _GrimeAbsolute > 0.5 ? _GrimeColor.rgb : albedo * _GrimeColor.rgb * 2.0, grime);
             smooth *= 1.0 - 0.5 * grime;
             float wear = saturate(IN.color.g) * _WearAmount;
             albedo = lerp(albedo, _WearColor.rgb, wear);

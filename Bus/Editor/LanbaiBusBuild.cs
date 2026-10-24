@@ -46,9 +46,9 @@ public static class LanbaiBusBuild
     static readonly Dictionary<string, object[]> MatTable = new Dictionary<string, object[]>
     {
         { "Ext_Indigo", new object[] { "#34506E", 0.50f, 0f } }, { "Ext_Cream", new object[] { "#D8D2C2", 0.55f, 0f } },
-        { "Ext_Silver", new object[] { "#BFC2C4", 0.70f, 1f } }, { "Ext_Black", new object[] { "#1E1F20", 0.40f, 0f } },
+        { "Ext_Silver", new object[] { "#BFC2C4", 0.70f, 1f } }, { "Ext_Black", new object[] { "#26272A", 0.40f, 0f } },
         { "Tyre", new object[] { "#2A2A2A", 0.55f, 0f } }, { "Rim", new object[] { "#D8D2C2", 0.45f, 0f } },
-        { "Chrome", new object[] { "#CFD1D3", 0.85f, 1f } }, { "Lamp_Head", new object[] { "#FFF4E0", 0.90f, 0f } },
+        { "Chrome", new object[] { "#CFD1D3", 0.85f, 1f } }, { "Lamp_Head", new object[] { "#EBE2CF", 0.90f, 0f } },
         { "Lamp_Tail", new object[] { "#8A1A1E", 0.80f, 0f } }, { "Lamp_Amber", new object[] { "#E3D69B", 0.80f, 0f } },
         { "Int_Enamel", new object[] { "#D9D4C5", 0.45f, 0f } }, { "Int_Ceiling", new object[] { "#E2DDCF", 0.25f, 0f } },
         { "Seal", new object[] { "#2B2B2B", 0.30f, 0f } }, { "Vinyl", new object[] { "#5A2126", 0.45f, 0f } },
@@ -122,6 +122,21 @@ public static class LanbaiBusBuild
             GameObjectUtility.SetStaticEditorFlags(r.gameObject, 0);
             r.reflectionProbeUsage = ReflectionProbeUsage.BlendProbes;
         }
+        // render layers (bible §1.6 / §4.3): the cabin, its glass and the curtains on Bus (world key light, sodium sweep,
+        // Act07 lights cull to it); the outside skin, wheels and wipers on BusExterior (the stop lamp in acts 1 and 12)
+        int layerBus = LayerMask.NameToLayer("Bus"), layerExt = LayerMask.NameToLayer("BusExterior");
+        if (layerBus < 0 || layerExt < 0) _rep.AppendLine("WARNING: layer Bus (" + layerBus + ") / BusExterior (" + layerExt + ") missing: add them in Project Settings > Tags and Layers and build again (README §1)");
+        int nBus = 0, nExt = 0;
+        foreach (var r in model.GetComponentsInChildren<Renderer>(true))
+        {
+            string n = r.gameObject.name;
+            bool ext = n.StartsWith("Bus_Exterior") || n.StartsWith("Wheel_") || n.StartsWith("Wiper");
+            int l = ext ? layerExt : layerBus;
+            if (l < 0) continue;
+            r.gameObject.layer = l;
+            if (ext) nExt++; else nBus++;
+        }
+        _rep.AppendLine("layers: Bus " + nBus + " renderers, BusExterior " + nExt);
         _rep.AppendLine("materials -> " + MatDir + "; glass panes " + glassRenderers.Count + "; Lanbai/Cabin renderers " + cabinRenderers.Count + "; curtains " + (curtains != null));
 
         // 4. exterior LODGroup (CONTROL §6 pitfall 4: the importer does not group <name>_LOD0/1)
@@ -165,6 +180,17 @@ public static class LanbaiBusBuild
                     SetInt(so, "PlayerMobility", 1);                          // Immobilize
                     SetBool(so, "seated", true);
                     so.ApplyModifiedPropertiesWithoutUndo();
+                    // the sit interaction (review r1 #6): Bus/Scripts/LanbaiBusSeat.cs, Interact -> UseStation
+                    string sr = AddUdonSharp(go, "LanbaiBusSeat");
+                    var seatB = go.GetComponent("LanbaiBusSeat");
+                    if (seatB != null)
+                    {
+                        var sso = new SerializedObject(seatB);
+                        SetRef(sso, "station", st);
+                        sso.ApplyModifiedPropertiesWithoutUndo();
+                        InteractText(seatB, "坐下", 2f);
+                    }
+                    else if (s.hero) _rep.AppendLine("  LanbaiBusSeat: " + sr);
                 }
             }
         if (stationType == null) _rep.AppendLine("WARNING: VRCStation type not found (VRChat SDK?): stations not added, only their transforms");
@@ -190,7 +216,7 @@ public static class LanbaiBusBuild
                 var li = go.AddComponent<Light>();
                 li.type = LightType.Point; li.renderMode = LightRenderMode.ForceVertex; li.shadows = LightShadows.None;
                 li.color = Hex(string.IsNullOrEmpty(hl.colour) ? "#E4F1F3" : hl.colour);
-                li.intensity = 0.8f; li.range = 3.0f; li.lightmapBakeType = LightmapBakeType.Realtime;
+                li.intensity = 0.5f; li.range = 6.0f;   // range 6: one lamp per tube row reaches both ends of the 7.1 m cabin (calibrate on the #585F64 grey card) li.lightmapBakeType = LightmapBakeType.Realtime;
                 li.cullingMask = playerMask;
             }
         if (playerMask == 0) _rep.AppendLine("WARNING: layers Player / PlayerLocal not found: set the head-fill culling by hand");
@@ -272,7 +298,7 @@ public static class LanbaiBusBuild
         bool inCabin = mode == Mode.CabinLM || mode == Mode.Cabin;
         m.SetFloat("_CabinLight", inCabin ? 1f : 0f);
         m.SetFloat("_SHAmbientK", inCabin ? 0f : 1f);                  // outside: Unity's Trilight is the ambient
-        m.SetColor("_TubeLMConst", new Color(0.6f, 0.66f, 0.68f, 1f));
+        m.SetVector("_TubeLMConst", new Vector4(0.6f, 0.66f, 0.68f, 1f));   // linear: SetVector, no gamma step
         bool atlas = mode == Mode.ExteriorAtlas;
         m.SetFloat("_UseAtlas", atlas ? 1f : 0f);
         if (atlas)
@@ -287,7 +313,7 @@ public static class LanbaiBusBuild
         m.SetVector("_HeightSmooth", new Vector4(1.62f, 2.42f, 0.80f, 0f)); m.SetFloat("_FadeResist", 0f);
         m.SetVector("_MaskAlbedoMul", new Vector4(1, 1, 1, 0)); m.SetVector("_MaskSmoothAdd", Vector4.zero);
         m.SetFloat("_WetDarken", 1f);
-        m.SetFloat("_GrimeAmount", 0f);
+        m.SetFloat("_GrimeAmount", 0f); m.SetFloat("_GrimeAbsolute", 0f);
         switch (key)
         {
             case "Vinyl":
@@ -301,7 +327,7 @@ public static class LanbaiBusBuild
                 m.SetColor("_WearColor", Hex("#3C3E3D")); m.SetFloat("_WearSmooth", 0.50f); m.SetFloat("_WearAmount", 1f); break;
             case "Floor":
                 Detail(m, "Cabin_FloorStud_N_0.20m.png", 1f, 0.20f, "Cabin_FloorStud_M_0.20m.png");
-                m.SetColor("_GrimeColor", Hex("#6E665A")); m.SetFloat("_GrimeAmount", 1f);
+                m.SetColor("_GrimeColor", Hex("#555550")); m.SetFloat("_GrimeAbsolute", 1f); m.SetFloat("_GrimeAmount", 1f);   // corner dust, lighter than the floor (bible §1.6)
                 m.SetVector("_MaskAlbedoMul", new Vector4(1f, 1.6f, 0.92f, 0f)); m.SetVector("_MaskSmoothAdd", new Vector4(0.05f, -0.05f, 0f, 0f));
                 m.SetColor("_WearColor", Hex("#4A4B47")); m.SetFloat("_WearSmooth", 0.35f); m.SetFloat("_WearAmount", 1f);
                 m.SetFloat("_WetDarken", 0.8f); break;
@@ -315,7 +341,7 @@ public static class LanbaiBusBuild
             case "Steel":
                 m.SetVector("_HeightSmooth", new Vector4(1.62f, 2.42f, 0.80f, 1f)); m.SetFloat("_FadeResist", 0.3f); break;
             case "TubeDiffuser":
-                m.SetFloat("_EmitMode", 1f); m.SetColor("_EmissionColor", new Color(1.632f, 2.024f, 2.042f, 1f)); m.SetFloat("_BugDots", 1f); break;
+                m.SetFloat("_EmitMode", 1f); m.SetVector("_EmissionColor", new Vector4(1.632f, 2.024f, 2.042f, 1f)); m.SetFloat("_BugDots", 1f); break;
             case "Dash":       // textured vinyl dash (CC0 leather normal, finer), hands' wear on the edge (vertex G)
                 Detail(m, "Cabin_SeatLeather_N_0.30m.jpg", 0.4f, 0.15f, null);
                 m.SetColor("_WearColor", Hex("#3E3F40")); m.SetFloat("_WearSmooth", 0.45f); m.SetFloat("_WearAmount", 1f);
@@ -329,16 +355,16 @@ public static class LanbaiBusBuild
                 m.SetColor("_WearColor", Hex("#4A2E1F")); m.SetFloat("_WearSmooth", 0.60f); m.SetFloat("_WearAmount", 1f); break;
             case "Lamp_Tail":     // bible 4.9: screen #B2252C (fill #CB1500); constant emission (gauge mode, white _EmitTex)
                 m.SetFloat("_EmitMode", 3f); m.SetTexture("_EmitTex", Texture2D.whiteTexture);
-                m.SetColor("_EmissionColor", Hex("#CB1500")); break;
+                m.SetVector("_EmissionColor", Lin(Hex("#CB1500"), 1f)); break;
             case "Lamp_Head":     // bible 4.9: halogen 3200 K #FFC47A, the headlights are on ('this is what is uncanny')
                 m.SetFloat("_EmitMode", 3f); m.SetTexture("_EmitTex", Texture2D.whiteTexture);
-                m.SetColor("_EmissionColor", Hex("#FFC47A") * 4f); break;
+                m.SetVector("_EmissionColor", Lin(Hex("#FFC47A"), 4f)); break;   // x4 in linear, not in sRGB
             case "RadioDial":
                 var dial = T(Tex + "Cabin_RadioDial_512x256.png");
                 m.SetColor("_Color", Color.white); m.SetTexture("_MainTex", dial); m.SetTexture("_EmitTex", dial); m.SetFloat("_EmitMode", 2f); break;
             case "Linen":
                 var letters = FindTexture("Bus_DestBlind_1024x296");   // the lettered one (not ..._Blank_..., act 11)
-                if (letters != null) { m.SetFloat("_EmitMode", 4f); m.SetTexture("_EmitTex", letters); m.SetColor("_EmissionColor", new Color(2.22f, 2.283f, 2.178f, 1f)); }
+                if (letters != null) { m.SetFloat("_EmitMode", 4f); m.SetTexture("_EmitTex", letters); m.SetVector("_EmissionColor", new Vector4(2.22f, 2.283f, 2.178f, 1f)); }
                 else _rep.AppendLine("  destination blind: no *DestBlind* letters texture in Bus/Textures -> no backlit letters yet");
                 break;
         }
@@ -419,6 +445,19 @@ public static class LanbaiBusBuild
                                 : "added with Undo.AddComponent: select it once so UdonSharp creates its UdonBehaviour";
     }
 
+    // the backing UdonBehaviour's interactText / proximity (as LB_Udon.Commit does), by reflection
+    static void InteractText(Component usb, string text, float proximity)
+    {
+        Type u = FindType("UdonSharpEditor.UdonSharpEditorUtility");
+        MethodInfo get = u == null ? null : u.GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .FirstOrDefault(m => m.Name == "GetBackingUdonBehaviour" && m.GetParameters().Length == 1);
+        object ub = get == null ? null : get.Invoke(null, new object[] { usb });
+        if (ub == null) { _rep.AppendLine("  " + usb.name + ": no backing UdonBehaviour yet (interact text left default)"); return; }
+        var ft = ub.GetType().GetField("interactText"); if (ft != null) ft.SetValue(ub, text);
+        var fp = ub.GetType().GetField("proximity"); if (fp != null) fp.SetValue(ub, proximity);
+        EditorUtility.SetDirty((UnityEngine.Object)ub);
+    }
+
     static Type FindType(string fullName)
     {
         foreach (var a in AppDomain.CurrentDomain.GetAssemblies())
@@ -442,6 +481,12 @@ public static class LanbaiBusBuild
     static Color Hex(string h)
     {
         Color c; return ColorUtility.TryParseHtmlString(h, out c) ? c : Color.magenta;   // sRGB, as typed in the Inspector
+    }
+
+    // sRGB hex -> linear x gain, for Vector properties (SetVector writes the numbers as they are; VRChat projects are linear)
+    static Vector4 Lin(Color srgb, float gain)
+    {
+        Color l = srgb.linear; return new Vector4(l.r * gain, l.g * gain, l.b * gain, 1f);
     }
 
     static Texture T(string path)

@@ -114,7 +114,7 @@ def erosion_field(nt, fade, resist=0.0):
 VC = {
     'Vinyl': dict(wear=('#6A3434', 1.0), fade=('#7A4A48', 1.0)),
     'SeatFrame': dict(wear=('#3C3E3D', 1.0)),
-    'Floor': dict(wear=('#4A4B47', 1.0), grime=('#6E665A', 1.0)),
+    'Floor': dict(wear=('#4A4B47', 1.0), grime=('#555550', 1.0, 'abs')),       # corner dust: lerp TO the colour
     'Int_Enamel': dict(wear=('#5B5A55', 1.0), grime=('#8C8370', 1.0)),
     'Int_Ceiling': dict(grime=('#CFC09A', 1.0)),
     'Dash': dict(wear=('#3E3F40', 1.0), grime=('#6A6355', 1.0)),
@@ -168,8 +168,11 @@ def act_material(m_src, lm_img, P, ambient, tubes):
     if 'wear' in look:
         alb = _mixc(nt, _m(nt, 'MULTIPLY', sep.outputs[1], look['wear'][1]), alb, tuple(lin(look['wear'][0])))
     if 'grime' in look:
-        g = tuple(2.0 * v for v in lin(look['grime'][0]))
-        dirty = _mulc(nt, alb if not isinstance(alb, tuple) else alb, g)
+        if len(look['grime']) > 2:           # _GrimeAbsolute 1
+            dirty = tuple(lin(look['grime'][0]))
+        else:
+            g = tuple(2.0 * v for v in lin(look['grime'][0]))
+            dirty = _mulc(nt, alb if not isinstance(alb, tuple) else alb, g)
         alb = _mixc(nt, _m(nt, 'MULTIPLY', sep.outputs[0], look['grime'][1]), alb, dirty)
     if 'fade' in look:
         f = _m(nt, 'MINIMUM', _m(nt, 'DIVIDE', sep.outputs[2], 0.75), 1.0)
@@ -237,6 +240,51 @@ def act_material(m_src, lm_img, P, ambient, tubes):
     return m
 
 
+def pane_fade_at(o):
+    """LanbaiCabinDriver.PaneThresholds: the fade at which a BusGlass pane is switched off (tau at its centre > median)."""
+    from mathutils import Vector
+    vs = [o.matrix_world @ v.co for v in o.data.vertices]
+    c = sum(vs, Vector()) / max(len(vs), 1)
+    x, y, z = c.x, c.z, c.y                                   # blender -> unity
+    hN = min(max((y - 0.62) / 2.00, 0.0), 1.0)
+    fN = min(max((z + 3.65) / 7.15, 0.0), 1.0)
+    qx, qz = max(abs(x - 0.55) - 0.30, 0.0), max(abs(z - 2.80) - 0.30, 0.0)
+    e = math.exp(-math.sqrt(qx * qx + qz * qz + (y - 2.62) ** 2) / 0.8)
+    return 0.025 + 0.45 * (1 - hN) + 0.25 * (1 - fN) + 0.35 * (1 - e)
+
+
+def erode_everything_else(objs, fade):
+    """in Unity every Lanbai/Cabin and ThinCloth renderer clips on the same field, and the driver switches the glass
+    panes off as the fade passes them: do the same for the objects build() did not already erode."""
+    done = ('Cabin_Static', 'Bus_Exterior', 'Bus_Door')
+    bpy.context.view_layer.update()                           # matrix_world of the appended objects (else identity)
+    for n, o in objs.items():
+        if o.type != 'MESH' or o.hide_render or n.startswith(done):
+            continue
+        if n.startswith('Glass_'):
+            if fade >= pane_fade_at(o):
+                o.hide_render = True
+            continue
+        resist = 0.30 if n.startswith('Cabin_Pole') else 0.0
+        for i, m in enumerate(list(o.data.materials)):
+            if m is None or not m.use_nodes:
+                continue
+            mm = m.copy()
+            nt = mm.node_tree
+            outn = [x for x in nt.nodes if x.type == 'OUTPUT_MATERIAL'][0]
+            if not outn.inputs[0].links:
+                continue
+            src = outn.inputs[0].links[0].from_socket
+            keep = _m(nt, 'GREATER_THAN', erosion_field(nt, fade, resist), 0.0)
+            tr = nt.nodes.new('ShaderNodeBsdfTransparent')
+            mx = nt.nodes.new('ShaderNodeMixShader')
+            nt.links.new(keep, mx.inputs[0])
+            nt.links.new(tr.outputs[0], mx.inputs[1])
+            nt.links.new(src, mx.inputs[2])
+            nt.links.new(mx.outputs[0], outn.inputs[0])
+            o.data.materials[i] = mm
+
+
 def build(ctx):
     S = ctx['lbh_scene']
     a = ctx['args']
@@ -295,6 +343,8 @@ def build(ctx):
         nt.links.new(em.outputs[0], o_.inputs[0])
         objs['Cabin_Tubes'].data.materials.clear()
         objs['Cabin_Tubes'].data.materials.append(e)
+    if P['fade'] > 0:
+        erode_everything_else(objs, P['fade'])
     if P['sun']:
         (az, el), E, col = P['sun']
         S.unity_directional('Sun', E, col, B.dir_az_el(az, el))

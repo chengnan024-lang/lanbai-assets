@@ -34,7 +34,7 @@ Shader "Lanbai/ThinCloth"
         _HemHeight ("Hem band  fraction of vertex R", Float) = 0.12
         _Wrap ("Wrap diffuse", Range(0, 1)) = 0.35
         _Transmission ("Transmission", Range(0, 1)) = 0.45
-        _TubeLMConst ("Tube light E at lm 1  rgb", Color) = (0.55, 0.62, 0.64, 1)
+        _TubeLMConst ("Tube light E at lm 1  rgb (linear, Vector)", Vector) = (0.55, 0.62, 0.64, 1)
         _SHAmbientK ("Keep Unity SH ambient  0 = cabin ambient only", Range(0, 1)) = 0
 
         [Header(Motion  driver MPB)]
@@ -47,7 +47,7 @@ Shader "Lanbai/ThinCloth"
         _Inward ("Into the cabin  world x sign  0 = auto from the centre line", Float) = 0
         _CentreX ("Body centre line x", Float) = -0.18
         _Dissolve ("Dissolve into light", Range(0, 1)) = 0
-        [HDR] _DissolveGlow ("Dissolve edge glow  linear", Color) = (3.0, 2.2, 1.6, 1)
+        _DissolveGlow ("Dissolve edge glow  linear (Vector)", Vector) = (3.0, 2.2, 1.6, 1)
 
         [Header(Erosion  same as Lanbai Cabin)]
         _ErodeEnable ("Erosion on", Float) = 1
@@ -130,18 +130,32 @@ Shader "Lanbai/ThinCloth"
             d += inward * (_Wing.x * w * wb);
             d.y += _Wing.x * 0.35 * w * (wb - 0.6);
 
-            // release (F10e): the whole panel, rail included, accelerates toward the sun and up
+            // VR comfort (bible §1.8, review r1 #8): the local player's eye is the seat sphere centre + 0.68 m. A panel
+            // next to that eye (within 0.4-0.9 m along z) may not swing in closer than 0.35 m to it.
+            float3 eye = _SeatSphere.xyz + float3(0.0, 0.68, 0.0);
+            float gap = abs(posWS.x - eye.x);
+            float nearZ = (1.0 - smoothstep(0.4, 0.9, abs(posWS.z - eye.z))) * step(gap, 0.9);
+            float inAmt = dot(d, inward);
+            float inMax = lerp(10.0, max(gap - 0.35, 0.0), nearZ);
+            d -= inward * max(inAmt - inMax, 0.0);
+
+            // release (F10e): the whole panel, rail included, leaves STRAIGHT UP through the open roof (a small lean
+            // toward the sun), never across the cabin. Speed: accelerate at _Release.y up to _Release.z, and never
+            // faster than 0.75 x (distance from the eye at let-go + distance flown) - that is <= 1.05 x the true
+            // distance to the eye on any path (sqrt 2 x 0.75), the §1.8 limit for things moving near your head.
             float tr = _Release.x;
             [branch] if (tr > 0.0)
             {
-                float3 dir = _Udon_SunDir.w > 0.0 ? _Udon_SunDir.xyz : _FlyDir.xyz;
-                dir = normalize(dir + float3(0.0, 0.35, 0.0));
+                float3 sd = _Udon_SunDir.w > 0.0 ? _Udon_SunDir.xyz : _FlyDir.xyz;
+                float3 dir = normalize(float3(0.0, 1.0, 0.0) + 0.2 * normalize(float3(sd.x, 0.0, sd.z) + 1e-4));
                 float a = max(_Release.y, 0.01), vmax = max(_Release.z, 0.1);
                 float tA = vmax / a;                                              // time to reach vmax
                 float s = tr < tA ? 0.5 * a * tr * tr : 0.5 * a * tA * tA + vmax * (tr - tA);
+                float d0 = max(distance(posWS + d, eye), 0.2);
+                s = min(s, d0 * (exp(0.75 * tr) - 1.0));                          // v = 0.75 (d0 + s)
                 s *= 0.85 + 0.3 * frac(ph * 0.1591);                              // panels do not move as one block
                 d += dir * s;
-                d += inward * (0.25 * w * sin(6.2832 * 0.6 * t + ph));            // still beating while it goes
+                d += inward * (0.25 * w * sin(6.2832 * 0.6 * t + ph) * (1.0 - nearZ));   // still beating while it goes
             }
             v.vertex.xyz += mul((float3x3)unity_WorldToObject, d);
             o.clothData = float4(w, v.texcoord.y, v.texcoord.x, 0.0);

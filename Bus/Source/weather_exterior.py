@@ -162,7 +162,7 @@ def weather(pos_b, nrm_b, base, rough):
     corner_lo = np.clip(1 - (y - B.Y_BOT) / 0.25, 0, 1) * np.clip((z - 3.2) / 0.3, 0, 1) * (z < B.Z_FRONT + 0.03)   # not the bumper bar
     blob = np.clip((fbm(P, 9.0, 11) - 0.45) * 4.0, 0, 1)
     rust = np.clip((0.9 * r_arch + 0.7 * sill + 0.6 * door_edge + 0.5 * corner_lo) * blob * 1.4, 0, 1)
-    rust *= (alb.mean(-1) > 0.02)               # not on the black rubber
+    rust *= (alb.mean(-1) > 0.035)              # not on the black rubber (Ext_Black #26272A, tyres #2A2A2A: linear ~0.022)
     rust *= ((z < B.Z_FRONT + 0.03) & (z > B.Z_REAR - 0.03)).astype(np.float32) * 0.85 + 0.15   # bumpers: a few spots only
     # --- rain streaks below every window's lower corners
     streak = np.zeros_like(x)
@@ -206,6 +206,27 @@ def weather(pos_b, nrm_b, base, rough):
                                                         streak_frac=float(streak[valid].mean()))
 
 
+def rebuild_lod1(lod0, ratio=0.35):
+    """LOD1 again, from LOD0 now that LOD0 has its uv1 atlas: decimate keeps the UVs, so LOD1 can use the same atlas."""
+    old = bpy.data.objects.get('Bus_Exterior_LOD1')
+    cols = list(old.users_collection) if old else list(lod0.users_collection)
+    if old:
+        bpy.data.objects.remove(old, do_unlink=True)
+    lod1 = lod0.copy()
+    lod1.data = lod0.data.copy()
+    lod1.name = 'Bus_Exterior_LOD1'
+    for c in cols:
+        c.objects.link(lod1)
+    md = lod1.modifiers.new('dec', 'DECIMATE')
+    md.ratio = ratio
+    bpy.ops.object.select_all(action='DESELECT')
+    bpy.context.view_layer.objects.active = lod1
+    lod1.select_set(True)
+    bpy.ops.object.modifier_apply(modifier=md.name)
+    assert 'UVLightmap' in lod1.data.uv_layers
+    return lod1
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--blend', default='/tmp/bus/bus_final.blend')
@@ -216,6 +237,7 @@ def main():
     bpy.ops.wm.open_mainfile(filepath=a.blend)
     ob = bpy.data.objects['Bus_Exterior_LOD0']
     ensure_uv1(ob)
+    rebuild_lod1(ob)
     pos = bake_emit(ob, a.res, 'pos')
     nrm = bake_emit(ob, a.res, 'nrm')
     base = bake_emit(ob, a.res, 'base')

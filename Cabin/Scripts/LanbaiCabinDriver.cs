@@ -93,6 +93,10 @@ public class LanbaiCabinDriver : UdonSharpBehaviour
     [Header("Glass")]
     public float reflGainNight = 1.0f;         // BusGlass _CabinReflGain (Rain README 5.2: night 1, day 0.25)
     public float reflGainDay = 0.25f;
+    // BusGlass does not clip on the erosion field: each pane is switched off when _Udon_CabinFade passes the erosion
+    // threshold at its centre (same tau as LanbaiCabinCommon.cginc, _ErodeForm 0 / D-32, default coefficients) plus
+    // the median of the noise range, i.e. when about half its frame has gone. Numbers from bus_spec.py.
+    public float glassErodeMedian = 0.025f;    // mid of _ErodeNoiseRange (-0.20, 0.25)
 
     // ------------------------------------------------------------------------------------------------ state
     private int _idLightmap, _idAmbient, _idBleach, _idFade, _idDial, _idSlice, _idSliceColor;
@@ -102,6 +106,8 @@ public class LanbaiCabinDriver : UdonSharpBehaviour
     private float _lm = -1f, _bleach = -1f, _fade = -1f, _hole = -1f, _refl = -1f;
     private Vector4 _amb = new Vector4(-1f, 0f, 0f, 0f), _dial = new Vector4(-1f, 0f, 0f, 0f), _seat;
     private int _glassOn = -1;
+    private float[] _paneFadeAt;               // per pane: fade at which it goes (computed once from its bounds)
+    private int _panesGone = -1;               // how many panes are off for erosion (re-write when it changes)
     private int _clothVisible = -1;
     private float _nextSeatCheck;
     private Vector3[] _doorOpenPos;
@@ -168,7 +174,7 @@ public class LanbaiCabinDriver : UdonSharpBehaviour
     {
         Init();
         // the cabin root is never switched; entering the window (or a seek) re-writes everything once
-        _lm = -1f; _bleach = -1f; _fade = -1f; _hole = -1f; _refl = -1f; _glassOn = -1; _clothVisible = -1;
+        _lm = -1f; _bleach = -1f; _fade = -1f; _hole = -1f; _refl = -1f; _glassOn = -1; _clothVisible = -1; _panesGone = -1;
         _amb.x = -1f; _dial.x = -1f; _doorClosed = -1;
     }
 
@@ -390,7 +396,7 @@ public class LanbaiCabinDriver : UdonSharpBehaviour
             float k = SS((t - tF10) / (tF10e - tF10));
             wing = Mathf.Lerp(0.30f, 0.60f, k); wingHz = Mathf.Lerp(0.3f, 0.5f, k);
             sway = 0.04f * (1f - SS((t - tF10) / 3f)); swayHz = 0.5f;
-            if (t >= tF10e) rel = t - tF10e;                                    // let go of the rail, fly to the sun
+            if (t >= tF10e) rel = t - tF10e;                                    // let go of the rail, straight up through the open roof (ThinCloth caps the speed near the eye)
             dis = Mathf.Clamp01((t - tF10l) / 8f);                              // into the light by F10l + 8 s
         }
         else if (t >= exitT)
@@ -449,11 +455,16 @@ public class LanbaiCabinDriver : UdonSharpBehaviour
         // inside window. (BusGlass's inside reflection is cube x _Udon_CabinLightmap x gain and the tubes are 0 from
         // U9 anyway; this is the belt to that brace, and it also covers the roof-slope windows, D-28 #5.)
         float g = (t >= insideFrom && t < tU12) ? 0f : ((t >= tF0 && t < tDark9) ? reflGainDay : reflGainNight);
-        if (force || on != _glassOn)
+        if (_paneFadeAt == null || _paneFadeAt.Length != glassRenderers.Length) PaneThresholds();
+        int gone = 0;
+        float fade = Mathf.Max(_fade, 0f);
+        for (int i = 0; i < _paneFadeAt.Length; i++) if (fade > 0f && fade >= _paneFadeAt[i]) gone++;
+        if (force || on != _glassOn || gone != _panesGone)
         {
-            _glassOn = on;
+            _glassOn = on; _panesGone = gone;
             for (int i = 0; i < glassRenderers.Length; i++)
-                if (glassRenderers[i] != null) glassRenderers[i].enabled = on == 1;
+                if (glassRenderers[i] != null)
+                    glassRenderers[i].enabled = on == 1 && !(fade > 0f && fade >= _paneFadeAt[i]);
         }
         if (force || Mathf.Abs(g - _refl) > 1e-4f)
         {
@@ -466,6 +477,24 @@ public class LanbaiCabinDriver : UdonSharpBehaviour
                 _mpb.SetFloat(_idReflGain, g);
                 r.SetPropertyBlock(_mpb);
             }
+        }
+    }
+
+    // tau(P) = fade - 0.45 (1 - hN) - 0.25 (1 - fN) - 0.35 (1 - exp(-d_sky / 0.8)); the pane goes when tau > median
+    private void PaneThresholds()
+    {
+        _paneFadeAt = new float[glassRenderers.Length];
+        for (int i = 0; i < glassRenderers.Length; i++)
+        {
+            Renderer r = glassRenderers[i];
+            if (r == null) { _paneFadeAt[i] = 9f; continue; }
+            Vector3 p = r.bounds.center;
+            float hN = Mathf.Clamp01((p.y - 0.62f) / 2.00f);              // _CabinBox x 0.62, y 2.62
+            float fN = Mathf.Clamp01((p.z + 3.65f) / 7.15f);              // z -3.65 .. 3.50
+            float qx = Mathf.Max(Mathf.Abs(p.x - 0.55f) - 0.30f, 0f), qz = Mathf.Max(Mathf.Abs(p.z - 2.80f) - 0.30f, 0f);
+            float dSky = Mathf.Sqrt(qx * qx + qz * qz + (p.y - 2.62f) * (p.y - 2.62f));
+            float e = Mathf.Exp(-dSky / 0.8f);
+            _paneFadeAt[i] = glassErodeMedian + 0.45f * (1f - hN) + 0.25f * (1f - fN) + 0.35f * (1f - e);
         }
     }
 
