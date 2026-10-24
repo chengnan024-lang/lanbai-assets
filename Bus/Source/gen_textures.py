@@ -114,7 +114,7 @@ def radio_dial(out, n=512):
 
 def dest_blind(out):
     """bible 4.7: black linen #262626, 「蓝白」 cut out (lit from behind by the tubes), Source Han Sans Heavy, 140 mm high,
-    no route number. 1024 x 296 for the 0.76 x 0.22 m blind. R = letter mask (light), G = linen weave, B = 0, A = 1.
+    no route number. 1024 x 296 for the 0.76 x 0.22 m blind. R = A = letter mask (light), G = linen weave, B = 0.
     Reads correctly from OUTSIDE (uv u runs left -> right as seen from the front); from inside it is the back of the
     blind (D-08 era: blank, see Gate README 8.5). Act 11 swaps in the blank one."""
     W, H = 1024, 296
@@ -128,7 +128,8 @@ def dest_blind(out):
     weave = tile_noise(256, 3, 31, base=40)
     weave = np.tile(weave, (2, 4))[:H, :W]
     for name, mask in (('Bus_DestBlind_1024x296.png', np.asarray(m, np.float32) / 255.0), ('Bus_DestBlind_Blank_1024x296.png', np.zeros((H, W), np.float32))):
-        img = np.stack([mask, 0.75 + 0.25 * weave, np.zeros((H, W)), np.ones((H, W))], -1)
+        # A = the letter mask too: Lanbai/Cabin's DestBlind emission mode reads the letters from A (_EmitTex.a)
+        img = np.stack([mask, 0.75 + 0.25 * weave, np.zeros((H, W)), mask], -1)
         Image.fromarray((np.clip(img, 0, 1) * 255 + 0.5).astype(np.uint8), 'RGBA').save(os.path.join(out, name))
 
 

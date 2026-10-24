@@ -236,7 +236,7 @@ def build(ctx):
         ld.energy, ld.spot_size, ld.color, ld.use_shadow = 900.0, math.radians(35), lin('#FFC47A'), False
         lo = bpy.data.objects.new('Headlights', ld)
         lo.location = S.U2B((B.XC, 0.70, B.Z_FRONT + 0.1))
-        lo.rotation_euler = (math.radians(95), 0, math.radians(180))
+        lo.rotation_euler = (math.radians(85), 0, 0)          # blender spot looks down -Z: tilt it to unity +Z (forward), 5 deg down
         bpy.context.scene.collection.objects.link(lo)
         lamp = bpy.data.lights.new('StopLamp', 'POINT')
         lamp.energy, lamp.color, lamp.shadow_soft_size = 300.0, lin('#E4F1F3'), 0.1

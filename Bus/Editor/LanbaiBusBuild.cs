@@ -290,7 +290,8 @@ public static class LanbaiBusBuild
         switch (key)
         {
             case "Vinyl":
-                Detail(m, "Cabin_VinylGrain_N_0.25m.png", 0.35f, 0.25f, null);
+                // CC0 scanned leather (Poly Haven leather_red_03, 30 cm tile): its normal only; colour stays the bible's
+                Detail(m, "Cabin_SeatLeather_N_0.30m.jpg", 0.35f, 0.30f, null);
                 m.SetColor("_WearColor", Hex("#6A3434")); m.SetFloat("_WearSmooth", 0.66f); m.SetFloat("_WearAmount", 1f);
                 m.SetColor("_SunFadeColor", Hex("#7A4A48")); m.SetFloat("_SunFadeSmooth", 0.40f); m.SetFloat("_SunFadeAmount", 1f);
                 m.SetColor("_CrackColor", Hex("#8A6A60")); m.SetFloat("_CrackSmooth", 0.20f); m.SetFloat("_CrackAmount", 1f);
@@ -316,7 +317,14 @@ public static class LanbaiBusBuild
             case "Bakelite":
                 m.SetColor("_WearColor", Hex("#2E2E2E")); m.SetFloat("_WearSmooth", 0.72f); m.SetFloat("_WearAmount", 1f); break;
             case "RadioLeather":
+                Detail(m, "Cabin_RadioLeather_N_0.40m.jpg", 0.6f, 0.40f, null);   // CC0 Poly Haven brown_leather, 40 cm tile
                 m.SetColor("_WearColor", Hex("#4A2E1F")); m.SetFloat("_WearSmooth", 0.60f); m.SetFloat("_WearAmount", 1f); break;
+            case "Lamp_Tail":     // bible 4.9: screen #B2252C (fill #CB1500); constant emission (gauge mode, white _EmitTex)
+                m.SetFloat("_EmitMode", 3f); m.SetTexture("_EmitTex", Texture2D.whiteTexture);
+                m.SetColor("_EmissionColor", Hex("#CB1500")); break;
+            case "Lamp_Head":     // bible 4.9: halogen 3200 K #FFC47A, the headlights are on ('this is what is uncanny')
+                m.SetFloat("_EmitMode", 3f); m.SetTexture("_EmitTex", Texture2D.whiteTexture);
+                m.SetColor("_EmissionColor", Hex("#FFC47A") * 4f); break;
             case "RadioDial":
                 var dial = T(Tex + "Cabin_RadioDial_512x256.png");
                 m.SetColor("_Color", Color.white); m.SetTexture("_MainTex", dial); m.SetTexture("_EmitTex", dial); m.SetFloat("_EmitMode", 2f); break;

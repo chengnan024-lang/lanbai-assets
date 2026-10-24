@@ -4,36 +4,36 @@
    1280,
    720
   ],
-  "APL": 20.02,
-  "EV_display": -6.036,
-  "luma_lt12_pct": 31.56,
-  "Lstar_gt85_pct": 0.162,
+  "APL": 18.37,
+  "EV_display": -6.277,
+  "luma_lt12_pct": 34.42,
+  "Lstar_gt85_pct": 0.107,
   "clip_black_pct": 0.0,
-  "clip_white_pct": 0.016,
+  "clip_white_pct": 0.014,
   "clip_black_largest_region_pct": 0.0,
   "clip_white_largest_region_pct": 0.01,
-  "warm_shadow_pct": 0.56,
+  "warm_shadow_pct": 0.0,
   "purple_pct": 0.0,
   "purple_largest_region_pct": 0.0,
   "violet_strong_pct": 0.0,
   "lavender_act6_pct": 0.0,
   "brightest": {
    "bbox": [
-    196,
+    197,
     219,
     725,
-    329
+    719
    ],
    "centroid": [
-    400.1,
-    292.3
+    431.9,
+    323.5
    ],
-   "clusters": 10,
-   "clusters_ge5pct": 4,
-   "min_luma": 216.1,
+   "clusters": 13,
+   "clusters_ge5pct": 7,
+   "min_luma": 213.0,
    "centroid_az_el": [
-    -19.61,
-    5.36
+    -17.57,
+    3.35
    ]
   },
   "top25_Lstar": {
@@ -48,14 +48,14 @@
     {
      "hex": "#070B14",
      "role": "褐 夜底（天、深影）",
-     "nearest_dE2000_p01": 0.4,
-     "within_dE5_pct": 88.8
+     "nearest_dE2000_p01": 0.5,
+     "within_dE5_pct": 90.96
     },
     {
      "hex": "#121A28",
      "role": "濃藍 雾与远野",
      "nearest_dE2000_p01": 1.6,
-     "within_dE5_pct": 53.82
+     "within_dE5_pct": 54.19
     },
     {
      "hex": "#EEF5F7",
@@ -67,12 +67,12 @@
      "hex": "#D0DBDF",
      "role": "站牌 藍白珐琅（受光）",
      "nearest_dE2000_p01": 4.8,
-     "within_dE5_pct": 0.1
+     "within_dE5_pct": 0.11
     },
     {
      "hex": "#16406A",
      "role": "站牌 靛蓝字",
-     "nearest_dE2000_p01": 12.8,
+     "nearest_dE2000_p01": 12.7,
      "within_dE5_pct": 0.0
     },
     {
@@ -84,19 +84,19 @@
     {
      "hex": "#B2252C",
      "role": "尾灯红（≤0.3% 画面）",
-     "nearest_dE2000_p01": 19.3,
+     "nearest_dE2000_p01": 21.4,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#DC8F51",
      "role": "远镇钠灯（小点）",
-     "nearest_dE2000_p01": 13.5,
+     "nearest_dE2000_p01": 24.6,
      "within_dE5_pct": 0.0
     }
    ],
    "pixel_to_nearest_dE_median": 2.9,
-   "pixel_to_nearest_dE_p90": 5.2,
-   "pixels_within5_pct": 89.7
+   "pixel_to_nearest_dE_p90": 3.5,
+   "pixels_within5_pct": 91.9
   }
  },
  "cam": {
@@ -198,7 +198,7 @@
    720
   ]
  },
- "render_seconds": 34.3,
+ "render_seconds": 48.9,
  "lens": "none",
  "bloom_tint": "single",
  "note": ""
