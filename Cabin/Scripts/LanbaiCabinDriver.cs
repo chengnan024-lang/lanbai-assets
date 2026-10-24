@@ -97,6 +97,7 @@ public class LanbaiCabinDriver : UdonSharpBehaviour
     // threshold at its centre (same tau as LanbaiCabinCommon.cginc, _ErodeForm 0 / D-32, default coefficients) plus
     // the median of the noise range, i.e. when about half its frame has gone. Numbers from bus_spec.py.
     public float glassErodeMedian = 0.025f;    // mid of _ErodeNoiseRange (-0.20, 0.25)
+    public float glassFadeSeconds = 1.5f;      // D-32 #8: each pane fades out over this, no broken edge
 
     // ------------------------------------------------------------------------------------------------ state
     private int _idLightmap, _idAmbient, _idBleach, _idFade, _idDial, _idSlice, _idSliceColor;
@@ -107,6 +108,10 @@ public class LanbaiCabinDriver : UdonSharpBehaviour
     private Vector4 _amb = new Vector4(-1f, 0f, 0f, 0f), _dial = new Vector4(-1f, 0f, 0f, 0f), _seat;
     private int _glassOn = -1;
     private float[] _paneFadeAt;               // per pane: fade at which it goes (computed once from its bounds)
+    private float[] _paneT;                    // per pane: timeline second the fade passes it (1e9 = never)
+    private float[] _paneBase;                 // per pane: material _TintStrength, _BaseAlpha, _DropOpacity, (spare)
+    private bool _paneFading;
+    private int _idTintStrength, _idBaseAlpha, _idDropOpacity;
     private int _panesGone = -1;               // how many panes are off for erosion (re-write when it changes)
     private int _clothVisible = -1;
     private float _nextSeatCheck;
@@ -145,6 +150,9 @@ public class LanbaiCabinDriver : UdonSharpBehaviour
         _idRelease = VRCShader.PropertyToID("_Release");
         _idDissolve = VRCShader.PropertyToID("_Dissolve");
         _idReflGain = VRCShader.PropertyToID("_CabinReflGain");
+        _idTintStrength = VRCShader.PropertyToID("_TintStrength");
+        _idBaseAlpha = VRCShader.PropertyToID("_BaseAlpha");
+        _idDropOpacity = VRCShader.PropertyToID("_DropOpacity");
 
         _ambMoon = Lin(0x23, 0x2A, 0x3A, 0.30f);       // bible 4.8 act 4: moon #232A3A x 0.3
         _ambInside = Lin(0xB5, 0xC3, 0xDB, 0.30f);     // 4c: #B5C3DB x 0.30 (fallback only; the inside driver owns it)
@@ -396,7 +404,7 @@ public class LanbaiCabinDriver : UdonSharpBehaviour
             float k = SS((t - tF10) / (tF10e - tF10));
             wing = Mathf.Lerp(0.30f, 0.60f, k); wingHz = Mathf.Lerp(0.3f, 0.5f, k);
             sway = 0.04f * (1f - SS((t - tF10) / 3f)); swayHz = 0.5f;
-            if (t >= tF10e) rel = t - tF10e;                                    // let go of the rail, straight up through the open roof (ThinCloth caps the speed near the eye)
+            if (t >= tF10e) rel = t - tF10e;                                    // let go: straight up past the roof line, then a turn toward the sun (ThinCloth, D-32 #9)
             dis = Mathf.Clamp01((t - tF10l) / 8f);                              // into the light by F10l + 8 s
         }
         else if (t >= exitT)
@@ -456,28 +464,43 @@ public class LanbaiCabinDriver : UdonSharpBehaviour
         // U9 anyway; this is the belt to that brace, and it also covers the roof-slope windows, D-28 #5.)
         float g = (t >= insideFrom && t < tU12) ? 0f : ((t >= tF0 && t < tDark9) ? reflGainDay : reflGainNight);
         if (_paneFadeAt == null || _paneFadeAt.Length != glassRenderers.Length) PaneThresholds();
+        // D-32 #8: a pane fades out over glassFadeSeconds (tint, base alpha, drops and reflection together) from the
+        // moment the fade passes its threshold. The moment is a function of t (bisection on the monotonic Fade curve,
+        // done once), so a seek / late join rebuilds the same state (D-33 #6).
         int gone = 0;
-        float fade = Mathf.Max(_fade, 0f);
-        for (int i = 0; i < _paneFadeAt.Length; i++) if (fade > 0f && fade >= _paneFadeAt[i]) gone++;
+        for (int i = 0; i < _paneT.Length; i++) if (PaneK(i, t) <= 0f) gone++;
         if (force || on != _glassOn || gone != _panesGone)
         {
             _glassOn = on; _panesGone = gone;
             for (int i = 0; i < glassRenderers.Length; i++)
-                if (glassRenderers[i] != null)
-                    glassRenderers[i].enabled = on == 1 && !(fade > 0f && fade >= _paneFadeAt[i]);
+                if (glassRenderers[i] != null) glassRenderers[i].enabled = on == 1 && PaneK(i, t) > 0f;
         }
-        if (force || Mathf.Abs(g - _refl) > 1e-4f)
+        bool fading = false;
+        for (int i = 0; i < _paneT.Length; i++) { float k = PaneK(i, t); if (k > 0f && k < 1f) fading = true; }
+        if (force || fading || _paneFading || Mathf.Abs(g - _refl) > 1e-4f)
         {
-            _refl = g;
+            _refl = g; _paneFading = fading;
             for (int i = 0; i < glassRenderers.Length; i++)
             {
                 Renderer r = glassRenderers[i];
                 if (r == null) continue;
+                float k = PaneK(i, t);
                 r.GetPropertyBlock(_mpb);
-                _mpb.SetFloat(_idReflGain, g);
+                _mpb.SetFloat(_idReflGain, g * k);
+                _mpb.SetFloat(_idTintStrength, _paneBase[4 * i] * k);
+                _mpb.SetFloat(_idBaseAlpha, _paneBase[4 * i + 1] * k);
+                _mpb.SetFloat(_idDropOpacity, _paneBase[4 * i + 2] * k);
                 r.SetPropertyBlock(_mpb);
             }
         }
+    }
+
+    // 1 = the pane is whole, 0 = gone; linear over glassFadeSeconds after its crossing time
+    private float PaneK(int i, float t)
+    {
+        float t0 = _paneT[i];
+        if (t < t0 || t >= tAct11) return 1f;
+        return 1f - Mathf.Clamp01((t - t0) / Mathf.Max(glassFadeSeconds, 0.01f));
     }
 
     // tau(P) = fade - 0.45 (1 - hN) - 0.25 (1 - fN) - 0.35 (1 - exp(-d_sky / 0.8)); the pane goes when tau > median
@@ -495,6 +518,25 @@ public class LanbaiCabinDriver : UdonSharpBehaviour
             float dSky = Mathf.Sqrt(qx * qx + qz * qz + (p.y - 2.62f) * (p.y - 2.62f));
             float e = Mathf.Exp(-dSky / 0.8f);
             _paneFadeAt[i] = glassErodeMedian + 0.45f * (1f - hN) + 0.25f * (1f - fN) + 0.35f * (1f - e);
+        }
+        // the time each threshold is crossed: Fade is 0 before F2h, non-decreasing to act 11 (then 0 again)
+        _paneT = new float[glassRenderers.Length];
+        _paneBase = new float[4 * glassRenderers.Length];
+        for (int i = 0; i < glassRenderers.Length; i++)
+        {
+            float thr = _paneFadeAt[i];
+            float lo = tF2h, hi = tAct11 - 0.001f;
+            if (Fade(hi) < thr) { _paneT[i] = 1e9f; }
+            else
+            {
+                for (int it = 0; it < 30; it++) { float m = 0.5f * (lo + hi); if (Fade(m) >= thr) hi = m; else lo = m; }
+                _paneT[i] = hi;
+            }
+            Renderer r = glassRenderers[i];
+            Material m0 = r != null ? r.sharedMaterial : null;
+            _paneBase[4 * i] = m0 != null ? m0.GetFloat(_idTintStrength) : 1f;
+            _paneBase[4 * i + 1] = m0 != null ? m0.GetFloat(_idBaseAlpha) : 0.06f;
+            _paneBase[4 * i + 2] = m0 != null ? m0.GetFloat(_idDropOpacity) : 0.92f;
         }
     }
 

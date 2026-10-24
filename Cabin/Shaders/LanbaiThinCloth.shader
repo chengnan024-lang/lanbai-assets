@@ -47,6 +47,7 @@ Shader "Lanbai/ThinCloth"
         _Inward ("Into the cabin  world x sign  0 = auto from the centre line", Float) = 0
         _CentreX ("Body centre line x", Float) = -0.18
         _Dissolve ("Dissolve into light", Range(0, 1)) = 0
+        _RoofLine ("Release: x roof line y (m), y clearance above it before turning, z turn radius", Vector) = (2.74, 0.35, 0.6, 0)
         _DissolveGlow ("Dissolve edge glow  linear (Vector)", Vector) = (3.0, 2.2, 1.6, 1)
 
         [Header(Erosion  same as Lanbai Cabin)]
@@ -94,7 +95,7 @@ Shader "Lanbai/ThinCloth"
         float _WeaveTile, _HemHeight;
         float4 _TubeLMConst;
         float _ClothClock, _Inward, _CentreX, _Dissolve;
-        float4 _Sway, _Float, _Wing, _Release, _FlyDir, _DissolveGlow;
+        float4 _Sway, _Float, _Wing, _Release, _FlyDir, _DissolveGlow, _RoofLine;
 
         struct Input
         {
@@ -139,22 +140,29 @@ Shader "Lanbai/ThinCloth"
             float inMax = lerp(10.0, max(gap - 0.35, 0.0), nearZ);
             d -= inward * max(inAmt - inMax, 0.0);
 
-            // release (F10e): the whole panel, rail included, leaves STRAIGHT UP through the open roof (a small lean
-            // toward the sun), never across the cabin. Speed: accelerate at _Release.y up to _Release.z, and never
-            // faster than 0.75 x (distance from the eye at let-go + distance flown) - that is <= 1.05 x the true
-            // distance to the eye on any path (sqrt 2 x 0.75), the §1.8 limit for things moving near your head.
+            // release (F10e, D-32 #9): the whole panel, rail included, first rises STRAIGHT UP through the open roof
+            // until its rail is _RoofLine.y above the roof line _RoofLine.x, then bends toward the sun (a tangent-
+            // continuous turn, radius ~ _RoofLine.z) and goes into the light (the driver dissolves it from F10l).
+            // Speed: accelerate at _Release.y up to _Release.z, never faster than 0.75 x (distance from the eye at
+            // let-go + distance flown) - that is <= 1.05 x the true distance to the eye on any path (sqrt 2 x 0.75),
+            // the §1.8 limit for things moving near your head.
             float tr = _Release.x;
             [branch] if (tr > 0.0)
             {
                 float3 sd = _Udon_SunDir.w > 0.0 ? _Udon_SunDir.xyz : _FlyDir.xyz;
-                float3 dir = normalize(float3(0.0, 1.0, 0.0) + 0.2 * normalize(float3(sd.x, 0.0, sd.z) + 1e-4));
+                float3 sunD = normalize(sd + float3(0.0, 0.15, 0.0));            // toward the sun, a little up
                 float a = max(_Release.y, 0.01), vmax = max(_Release.z, 0.1);
                 float tA = vmax / a;                                              // time to reach vmax
                 float s = tr < tA ? 0.5 * a * tr * tr : 0.5 * a * tA * tA + vmax * (tr - tA);
                 float d0 = max(distance(posWS + d, eye), 0.2);
                 s = min(s, d0 * (exp(0.75 * tr) - 1.0));                          // v = 0.75 (d0 + s)
                 s *= 0.85 + 0.3 * frac(ph * 0.1591);                              // panels do not move as one block
-                d += dir * s;
+                float railY = posWS.y + v.texcoord.y;                             // uv0.y = metres below the rail
+                float hUp = max(_RoofLine.x + _RoofLine.y - railY, 0.0);
+                float sv = min(s, hUp), sh = max(s - hUp, 0.0);
+                float L = max(_RoofLine.z, 0.05);
+                float eb = 1.0 - exp(-sh / L);                                    // direction blend up -> sun
+                d += float3(0.0, 1.0, 0.0) * (sv + L * eb) + sunD * (sh - L * eb);
                 d += inward * (0.25 * w * sin(6.2832 * 0.6 * t + ph) * (1.0 - nearZ));   // still beating while it goes
             }
             v.vertex.xyz += mul((float3x3)unity_WorldToObject, d);

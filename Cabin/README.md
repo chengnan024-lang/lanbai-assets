@@ -93,7 +93,7 @@
 | `_Udon_SunDir` | 窗帘飞走的方向（w > 0 才用） |
 | `_Udon_Fog*` 等 | 经 `LanbaiFog.cginc` |
 
-**写**（`LanbaiCabinDriver`，`VRCShader.PropertyToID` + `SetGlobalFloat` / `SetGlobalVector`，值变了才写）：`_Udon_CabinLightmap`、`_Udon_CabinBleach`、`_Udon_CabinFade`，门内窗口 [177.55, 252.64] 之外还写 `_Udon_CabinAmbient`、`_Udon_RadioDial`（`_Udon_CabinSlice*` 只在 `Start()` 清零一次）。材质属性（MPB）：`_SeatSphere`、`_HoleOpen`（车厢、窗帘），`_ClothClock`、`_Sway`、`_Float`、`_Wing`、`_Release`、`_Dissolve`（窗帘），`_CabinReflGain`（玻璃）；玻璃和窗帘的 `Renderer.enabled`。
+**写**（`LanbaiCabinDriver`，`VRCShader.PropertyToID` + `SetGlobalFloat` / `SetGlobalVector`，值变了才写）：`_Udon_CabinLightmap`、`_Udon_CabinBleach`、`_Udon_CabinFade`，门内窗口 [177.55, 252.64] 之外还写 `_Udon_CabinAmbient`、`_Udon_RadioDial`（`_Udon_CabinSlice*` 只在 `Start()` 清零一次）。材质属性（MPB）：`_SeatSphere`、`_HoleOpen`（车厢、窗帘），`_ClothClock`、`_Sway`、`_Float`、`_Wing`、`_Release`、`_Dissolve`（窗帘），`_CabinReflGain`、`_TintStrength`、`_BaseAlpha`、`_DropOpacity`（玻璃：每块在侵蚀走过它时 1.5 秒淡掉，D-32 #8）；玻璃和窗帘的 `Renderer.enabled`。
 **没有新的全局量。** 两处类型要登记表写清（`给总控_shader.md` §2）。
 
 ---
@@ -136,7 +136,7 @@
 | F3e 474.36 → F3e3 556.36 | | | | → 深海 `#0F1E30 × 0.3`（EV 线性） | | | |
 | F9s 921.86 → 出海 922.36 | | 0.25 → 0.5（→ 962.26） | 0.25 → 0.65（→ 962.26） | 1.5 s 到暮 `#828BAA × 0.45` | | 3 s 内漂浮停、4 cm / 0.5 Hz | |
 | F10 942.26 → F10e 956.36 | | | | | | 翼 0.30 → 0.60 m、0.3 → 0.5 Hz | |
-| F10e 956.36 | | | | | | 松开横杆，朝 `_Udon_SunDir` 飞（1.2 m/s²，≤ 6 m/s） | |
+| F10e 956.36 | | | | | | 松开横杆，先直着往上过车顶线 + 0.35 m，再平滑地弯向 `_Udon_SunDir`（1.2 m/s²，≤ 6 m/s；离眼近时 ≤ 0.75 ×（离眼距离 + 已飞距离），D-32 #9） | |
 | F10l 961.06 → 969.06 | | | | | | 溶进光，之后 renderer 关 | |
 | F12 987.06 → 1009.21 | | | | → `#232A3A × 0.3`（EV 线性） | | | 反射回 1（1009.21） |
 | 镜 1–12（1032.41 … 1125.55） | | 每面 +0.025（0.5 → 0.8） | 每面 +0.027（1.2 s，0.65 → 0.97） | | | | |
