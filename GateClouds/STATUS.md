@@ -1,4 +1,4 @@
-2026-10-24 · **第 10 轮（第 1 批）可以终审了** · 云塔背层（最近 2 座，视差；keyart 云卡叠绘 0.89 ≤ 0.9）；云海抖动 = LanbaiHash13（世界点，两眼一致）；D-06 星 _Stars 0.055（GateLayout_v2.json stars，比背后的天高 ≤ 12 L*）+ GateAirSky 带里暗 1 EV；U7 720p 60 fps 滚动 flashcheck 全 PASS；逐像素银边爬行 0.19% → 0.147%（_Skin2.y 3 → 1.5）；shader 0 错 0 警告、C# OK · 等本地截图再做：U8 前方暗心、keyart 脚下光复量、U7 多采样、指尖卷回（待定）
+2026-10-24 · **第 10 轮（第 1 批）可以终审了** · 云塔背层（Colossus_2 一座，往背月侧错开、下沉跟着高度缩放；keyart 云卡叠绘 0.899 ≤ 0.9；对比图 Docs~/r10_towers_key.png + 3 张 1:1）；云海抖动 = LanbaiHash13（世界点，两眼一致）；D-06 星 _Stars 0.055（GateLayout_v2.json stars，比背后的天高 ≤ 12 L*）+ GateAirSky 带里暗 1 EV；U7 720p 60 fps 滚动 flashcheck 全 PASS；逐像素银边爬行 0.19% → 0.147%（_Skin2.y 3 → 1.5）；shader 0 错 0 警告、C# OK · 等本地截图再做：U8 前方暗心、keyart 脚下光复量、U7 多采样、指尖卷回（待定）
 
 ## 进度
 - [x] 云海 `Lanbai/GateCloudDeck` + `Deck_Detail_1024` / `Deck_Macro_512` + `Source/deck_ref.py`（逐行 numpy 移植）；独立技术审查一轮（移植对照），改完
