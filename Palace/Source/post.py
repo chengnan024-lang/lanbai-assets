@@ -33,6 +33,9 @@ FLAME_FILL = FLAME_GOLD * 2.2                         # 灯焰身：金
 FLAME_CORE = np.array([1.0, 0.82, 0.55]) * 2.6        # 灯焰芯：白热（m⁴ 加权），屏幕上核心到 255、外缘是金 #FFC46A 一带
 HALO_MID = srgb_to_lin('#446282')                    # 灯晕卡中段，屏幕 #2A557B
 HALO_R = 1.5
+HALO_PULL = 4.0                                       # 第 8 轮（评审 r5 #2）：晕卡往眼睛挪的最大米数（≤ d/2）
+BELOW_PULL = 40.0                                     # 眼睛在台地顶面以下时的最大挪动（≤ 0.25 d）
+FLAME_PULL = 1.5                                      # 从下面陡着看时火往眼睛挪的米数
 GROUP_GAIN = {'amb': 1.0, 'warm': 1.0, 'indigo': 1.0, 'door': 1.0}
 
 
@@ -128,6 +131,11 @@ def composite(exr, shot, gains=None, halo=True, flame_scale=1.0):
     H, W = C.shape[:2]
     groups = {k: exr['Combined_' + k][..., :3].astype(np.float64) for k in ('amb', 'warm', 'indigo', 'door', 'doorglow')
               if 'Combined_' + k in exr}
+    # 没进任何灯组的自发光（防漏）：C 比各组之和多出来的部分算 doorglow
+    if 'doorglow' in groups:
+        busg = exr['Combined_bus'][..., :3] if 'Combined_bus' in exr else 0.0
+        rest = np.clip(C - sum(groups.values()) - busg, 0, None)
+        groups['doorglow'] = groups['doorglow'] + np.where((rest.sum(-1) > 0.05)[..., None], rest, 0.0)
     S = sum(groups.values()) + 1e-9
     sb = gaussian_filter(S, (1.2, 1.2, 0)) + 1e-9
     surf = np.zeros_like(C)
@@ -181,6 +189,13 @@ def draw_lamps(img, shot, dist, flame_scale=1.0):
     for i in range(len(P)):
         if zc[i] < 0.3:
             continue
+        vdir = (P[i] - eye_of(shot))
+        fy = -vdir[1] / (np.linalg.norm(vdir) + 1e-9)            # shader 的 fwd.y（灯 → 眼）
+        hpull = min(HALO_PULL, 0.5 * dd[i])                       # 第 8 轮：晕往眼睛挪（水里的散射），角大小不变
+        fpull = FLAME_PULL * min(1.0, max(0.0, (-fy - 0.26) / 0.16))
+        below = min(1.0, max(0.0, (-eye_of(shot)[1] - 1.0) / 3.0))        # 眼睛在台地顶面以下（shader 同式）
+        fpull = max(fpull, below * min(0.25 * dd[i], BELOW_PULL))
+        hpull = max(hpull, below * min(0.25 * dd[i], BELOW_PULL))
         rpx = HALO_R * ppm / zc[i]
         if px[i] < -rpx or px[i] > W + rpx or py[i] < -rpx or py[i] > H + rpx:
             continue
@@ -191,21 +206,20 @@ def draw_lamps(img, shot, dist, flame_scale=1.0):
             continue
         sx, sy = xx[y0:y1, x0:x1] - px[i], yy[y0:y1, x0:x1] - py[i]
         r = np.sqrt(sx ** 2 + sy ** 2) / max(rpx, 1e-6)                     # 0..1 在晕卡半径内
-        vis = (dist[y0:y1, x0:x1] > dd[i] - 0.6).astype(float)              # 深度测试（卡在灯焰处）
-        soft = np.clip((dist[y0:y1, x0:x1] - dd[i]) / 1.0 + 0.6, 0, 1)        # 软粒子：靠近别的面时淡出（不切成半月）
+        vis = (dist[y0:y1, x0:x1] > dd[i] - fpull - 0.6).astype(float)      # 火的深度测试（从下面陡着看时往前挪 fpull）
+        soft = np.clip((dist[y0:y1, x0:x1] - (dd[i] - hpull)) / 1.0 + 0.6, 0, 1)   # 晕：在 d − hpull 处深度测试 + 软粒子
         # 晕卡（第 4 轮）：暖芯很小、靛环从 0.15 r 才起，两者不重叠，免得加色混出丁香紫
-        warm = np.exp(-(r / 0.08) ** 2)[..., None] * FLAME_FILL * 0.05
-        ring = (np.clip((r - 0.12) / 0.28, 0, 1) ** 2 * (3 - 2 * np.clip((r - 0.12) / 0.28, 0, 1)) * np.clip(1 - r, 0, 1) ** 2)
-        ind = ring[..., None] * HALO_MID * 1.4 * max(0.0, min(1.0, 1.25 - dd[i] / 120.0))   # 靛环 30 m 起淡、150 m 外没有（远处只剩暖点）
-        add = (warm + ind) * att * (vis * soft)[..., None]
+        warm = np.exp(-(r / 0.14) ** 2)[..., None] * FLAME_FILL * 0.08     # 第 8 轮：暖芯 0.14 r、×0.08；靛环 0.25 r 起、×0.9
+        ring = (np.clip((r - 0.25) / 0.25, 0, 1) ** 2 * (3 - 2 * np.clip((r - 0.25) / 0.25, 0, 1)) * np.clip(1 - r, 0, 1) ** 2)
+        ind = ring[..., None] * HALO_MID * 0.9 * max(0.0, min(1.0, 1.25 - dd[i] / 120.0)) * (1.0 - below)   # 靛环 30 m 起淡、150 m 外没有（远处只剩暖点）
+        add = (warm + ind) * att * soft[..., None]
         # 灯焰：竖着的软椭圆，0.16 × 0.34 m
         # 灯焰 = shader 的式子：半尺寸 (0.09, 0.19) m，小于 _MinPixels（1.2 px）时放大 s 倍、亮度 / s（Lanbai/PalaceFlame）
         fw, fh = 0.09 * ppm / zc[i] * flame_scale, 0.19 * ppm / zc[i] * flame_scale
         sc = max(1.0, 2.0 / max(fw, 1e-6))            # 第 6 轮（D-34 #4）：最小 2 px，远处不压暗：稳定、分得清的暖点
         fw, fh = fw * sc, fh * sc
         # 从下面看（视线很陡）时 shader 把火转成球状公告板：屏幕上不再是竖的细条（这里用屏幕上的圆近似）
-        vdir = (P[i] - eye_of(shot))
-        steep = min(1.0, max(0.0, (abs(vdir[1]) / (np.linalg.norm(vdir) + 1e-9) - 0.5) * 3.0))
+        steep = min(1.0, max(0.0, (abs(fy) - 0.34) * 3.0))
         fh = fh * (1 - steep) + fw * steep
         fl = np.exp(-((sx / fw) ** 2 + ((sy + fh * 0.3) / fh) ** 2) * 2.0) * 0.6
         add += (fl[..., None] * FLAME_FILL + (fl ** 4)[..., None] * FLAME_CORE * 4.0) * att * vis[..., None]

@@ -153,6 +153,9 @@ def lacquer_band():
 
 
 # ------------------------------------------------------------------ 2. 鱼鳞瓦（珍珠母）：交叠的圆头鳞，2 m 平铺 → 每行 6 片（约 0.33 m）
+FS_STRENGTH = 60.0
+
+
 def fishscale():
     n = S
     rows, cols = 8, 6
@@ -180,7 +183,9 @@ def fishscale():
     fine = tnoise(n, 24, 31, 3)
     alb = hexl('#CFCBC4') * (1 + 0.03 * fine[..., None] - 0.10 * edge[..., None])
     alb = fit_mean(alb, '#C9C5BE')
-    nrm = normal_from_height(gaussian_filter(h * 1.0 + 0.02 * fine, 1.5, mode='wrap'), 4.0)
+    # 第 8 轮（评审 r5 #7）：原来的 4.0 是按像素算的坡度，鳞几乎是平的（中位倾角 0°）。按鳞半径 ≈ 0.21 m、拱高 ≈ 0.04 m 换算：
+    # strength = 拱高 / 0.8 × (像素/米)，鳞的下缘倾到 50–70°，在各个角度都有一小片朝着灯
+    nrm = normal_from_height(gaussian_filter(h * 1.0 + 0.02 * fine, 2.0, mode="wrap"), FS_STRENGTH * n / 2048)
     thick = np.clip(0.5 + 0.25 * tnoise(n, 3, 32, 3) + 0.2 * h, 0, 1)        # 虹彩的“膜厚”变化（B 通道）
     ao = 1 - 0.45 * edge
     sm = np.clip(0.86 - 0.12 * edge, 0, 1)

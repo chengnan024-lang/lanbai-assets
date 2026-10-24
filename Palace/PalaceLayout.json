@@ -2185,25 +2185,40 @@
   }
  ],
  "door_spill": {
-  "type": "Area (Baked)",
-  "shape": "rectangle",
-  "size": [
-   3.99,
-   7.12
-  ],
+  "type": "Spot (Baked)",
   "pos": [
    -18.0,
-   9.75,
-   343.2
+   10.125,
+   343.1
   ],
-  "facing": [
+  "dir": [
    0,
-   0,
+   -0.35,
    -1
   ],
   "color": "#FFB74D",
-  "intensity": 770.0,
-  "note": "Unity 面光的 Intensity：面光发出的辐亮度 = color × intensity（Inspector = E 的约定下按灰卡校：门前 6 m 灰卡读数见 README）"
+  "intensity": 60.0,
+  "range": 6.0,
+  "spot_angle": 120.0,
+  "shadows": "soft"
+ },
+ "door_accent": {
+  "type": "Spot (Baked, D-31 bake-only)",
+  "pos": [
+   -18.0,
+   11.0,
+   335.6
+  ],
+  "target": [
+   -18.0,
+   11.5,
+   342.6
+  ],
+  "color": "#FFD9A0",
+  "intensity": 70.0,
+  "range": 11.0,
+  "spot_angle": 70.0,
+  "shadows": "soft"
  },
  "que_lamps_note": "Lamp_Q1 / Lamp_Q2 是宫殿加的（海的约定里没有）：圣经“紫贝阙……宝贝壳贴面只在它的灯旁泛出 #7A4A6E”，每座阙前 1.6 m 一盏（第 4 轮，美术评审 r3 阻断 6）。头顶星座仍是神道 24 + 台基 6 = 30 盏（这两盏在阙前，F7p 时远在 260 m 后）",
  "door_analytic": {
@@ -2224,25 +2239,6 @@
    0
   ],
   "note": "门作为竖直线光源只出高光：湿石面（台基面、台阶）上的亮带。门的漫反射只留 ×0.35 的面光（阴影不发暖，§1.3 第 2 条）"
- },
- "door_accent": {
-  "type": "Area (Baked)",
-  "size": [
-   6.0,
-   5.0
-  ],
-  "pos": [
-   -18.0,
-   11.0,
-   335.6
-  ],
-  "color": "#FFD9A0",
-  "aim": [
-   -18.0,
-   11.5,
-   342.6
-  ],
-  "note": "D-31：每个烘焙场景只提亮一个要读的东西 = 亮着的空门；只参与烘焙，本身看不见"
  },
  "door_glow": {
   "color": "#FFB74D",
@@ -2289,14 +2285,18 @@
   "warm_range": 4.0,
   "indigo_I": 28.0,
   "indigo_range": 12.0,
-  "door_area_I": 770.0,
   "note": "第 4 轮（评审 r3）：门的漫反射 ×0.35、去掉往台阶下铺的那盏（阴影发暖）；门改为解析线光源出高光（_Udon_Lamp7，湿石面上的亮带）；珍珠母的解析高光 ×6；阙前各加一盏灯",
-  "pour_ratio": 0.0,
   "indigo_lift": 4.0,
   "spec_I": 5.46,
   "door_spec_I": 60.0,
   "nacre_spec_gain": 6.0,
-  "door_accent_I": 500.0
+  "door_accent_I": 70.0,
+  "door_spill_I": 60.0,
+  "door_spill_range": 6.0,
+  "door_spill_angle": 120.0,
+  "door_accent_range": 11.0,
+  "door_accent_angle": 70.0,
+  "note8": "第 8 轮（评审 r5 #3）：门的两盏面光换成烘焙聚光（有范围窗），只照门这一开间和门槛；去掉 door_area_I / pour_ratio"
  },
  "render": {
   "fog_density": 0.018,

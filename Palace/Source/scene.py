@@ -25,7 +25,10 @@ from kit.common import UB  # noqa: E402
 import json as _json
 _T = _json.load(open(os.path.join(HERE, 'tuning.json')))
 FISH_T = 748.26
-PARAMS = dict(warm_I=_T['warm_I'], warm_r=_T['warm_range'], indigo_I=_T['indigo_I'], indigo_r=_T['indigo_range'], door_W=_T['door_area_I'], pour_ratio=_T.get('pour_ratio', 0.0))
+DOOR_SPILL_POS = np.array([L.HALL['door_x'], L.PLAT['height_m'] + L.HALL['door_size'][1] * 0.55, L.DOOR_Z + 0.5])
+DOOR_ACCENT_POS = np.array([L.HALL['door_x'], L.PLAT['height_m'] + 5.0, L.DOOR_Z - 7.0])
+DOOR_ACCENT_TGT = np.array([L.HALL['door_x'], L.PLAT['height_m'] + 5.5, L.DOOR_Z])
+PARAMS = dict(warm_I=_T['warm_I'], warm_r=_T['warm_range'], indigo_I=_T['indigo_I'], indigo_r=_T['indigo_range'])
 
 
 def try_kit(name):
@@ -75,7 +78,18 @@ def build(t_fish=None, lod_far=False):
             m = UB()
             m.box((-wdt / 2, 0, -dep / 2), (wdt / 2, hh, dep / 2), 'StoneDark')
         hu.merge(place(m, h['pos'], h['yaw_deg'] + 180.0))     # 模块正面朝 −z；转到朝神道（+x）
-    hu.build('Houses', col, M)
+    # 第 8 轮：鱼鳞屋面单独一个物体（灯光链接按物体：挪高的“镜中灯”只照珍珠母，Unity 里是 _NacreLift 只进 M_07b_FishScale）
+    from kit.common import SLOTS
+    nac, rest = UB(), UB()
+    for f, sl, uv in zip(hu.F, hu.S, hu.UV):
+        dst = nac if SLOTS[sl] == 'FishScale' else rest
+        o = len(dst.V)
+        dst.V.extend(hu.V[i] for i in f)
+        dst.F.append(tuple(range(o, o + len(f))))
+        dst.S.append(sl)
+        dst.UV.append(uv)
+    rest.build('Houses', col, M)
+    nac.build('HousesNacre', col, M)
     # 门里的光（若大殿模块没有 DoorGlow 槽，补一块）
     for ob in col.objects:
         if 'M_07b_DoorGlow' in [m.name for m in ob.data.materials]:
@@ -121,7 +135,9 @@ def split_doorglow(col, M):
         bpy.ops.mesh.separate(type='SELECTED')
         bpy.ops.object.mode_set(mode='OBJECT')
     for ob in col.objects:
-        if [m.name for m in ob.data.materials] == ['M_07b_DoorGlow'] or (ob.data.materials and all(m.name == 'M_07b_DoorGlow' for m in ob.data.materials if m)):
+        # 第 8 轮：按面实际用的材质判断（separate 以后新物体保留全部材质槽，按槽名判断会漏掉一半内衬 → 不进灯组 → post 里被涂黑）
+        used = {ob.data.materials[pl.material_index].name for pl in ob.data.polygons if ob.data.materials}
+        if used == {'M_07b_DoorGlow'}:
             ob.lightgroup = 'doorglow'
             ob.visible_diffuse = ob.visible_glossy = ob.visible_transmission = ob.visible_volume_scatter = ob.visible_shadow = False
 
@@ -150,15 +166,22 @@ def add_lights(p=PARAMS):
         co.visible_volume_scatter = False
         co.lightgroup = 'warm'
         bpy.context.scene.collection.objects.link(co)
+        if _T.get('nacre_lift', 0.0) > 0.0:             # Unity：珍珠母的解析高光只按挪高的灯算，不吃原位的灯
+            xc = bpy.data.collections.get('LinkNotHouses')
+            if xc is None:
+                xc = bpy.data.collections.new('LinkNotHouses')
+                xc.objects.link(bpy.data.objects['HousesNacre'])
+                xc.collection_objects[0].light_linking.link_state = 'EXCLUDE'
+            co.light_linking.receiver_collection = xc
         # 珍珠母的高光 ×nacre_spec_gain（Unity：M_07b_FishScale 的 _LampGain）：同样的灯，灯光链接只照鱼鳞屋
         g = _T.get('nacre_spec_gain', 1.0)
         if g > 1.0:
             c2 = bpy.data.lights.new('Ln_' + l['id'], 'POINT')
             c2.color = lin('#FF9C2F')
-            c2.energy = 4.0 * math.pi ** 2 * _T.get('spec_I', 5.46) * (g - 1.0)
-            c2.shadow_soft_size = 0.10
+            c2.energy = 4.0 * math.pi ** 2 * _T.get('spec_I', 5.46) * g     # 第 8 轮：珍珠母只吃这一盏（往上挪 nacre_lift 的“镜中灯”）
+            c2.shadow_soft_size = _T.get('nacre_radius', 0.10)     # 第 8 轮：珍珠母的高光瓣放宽（Unity：_NacreSpread）
             o4 = bpy.data.objects.new('Ln_' + l['id'], c2)
-            o4.location = Vector(bl.u2b(fp))
+            o4.location = Vector(bl.u2b((fp[0], fp[1] + _T.get('nacre_lift', 0.0), fp[2])))
             o4.visible_diffuse = False
             o4.visible_transmission = False
             o4.visible_volume_scatter = False
@@ -167,21 +190,15 @@ def add_lights(p=PARAMS):
             hc = bpy.data.collections.get('LinkHouses')
             if hc is None:
                 hc = bpy.data.collections.new('LinkHouses')
-                hc.objects.link(bpy.data.objects['Houses'])
+                hc.objects.link(bpy.data.objects['HousesNacre'])
             o4.light_linking.receiver_collection = hc
-    # 门溢出的光：门洞里一盏面光朝外（−z）
+    # 门溢出的光（第 8 轮，评审 r5 #3）：门槛里一盏烘焙聚光朝外（−z），范围窗 door_spill_range —— 面光没有范围，
+    # 会把整面立面描成朱红（阴影发暖）；聚光和宫灯一样是 InverseSquared + 范围窗，只照门槛、台阶顶和门框
     hall = L.HALL
-    A = bpy.data.lights.new('DoorSpill', 'AREA')
-    A.shape = 'RECTANGLE'
-    A.size, A.size_y = hall['door_size'][0] * 0.95, hall['door_size'][1] * 0.95
-    A.color = lin('#FFB74D')
-    A.energy = p['door_W']
-    o = bpy.data.objects.new('DoorSpill', A)
-    o.location = Vector(bl.u2b((hall['door_x'], L.PLAT['height_m'] + hall['door_size'][1] / 2, L.DOOR_Z + 0.6)))
-    o.rotation_euler = Vector(bl.u2b((0, 0, -1))).to_track_quat('-Z', 'Y').to_euler()
+    o = bl.spot_light_unity('DoorSpill', DOOR_SPILL_POS, (0, -0.35, -1), lin('#FFB74D'), _T['door_spill_I'], _T['door_spill_range'],
+                            _T['door_spill_angle'], blend=0.5, radius=0.4)
     o.lightgroup = 'door'
     o.visible_glossy = False
-    bpy.context.scene.collection.objects.link(o)
     # 门作为解析线光源（Unity：驱动写进 _Udon_Lamp7，竖直线光源 = 门洞高）：只进高光，湿石面上的亮带
     A3 = bpy.data.lights.new('DoorSpec', 'AREA')
     A3.shape = 'RECTANGLE'
@@ -198,34 +215,12 @@ def add_lights(p=PARAMS):
     bpy.context.scene.collection.objects.link(o3)
     # D-31（Fins 的 smoke and mirrors）：只参与烘焙、本身看不见的面光，把门那一开间（门两侧的柱、门楣、斗拱、门前的台基面）
     # 托出来，让亮着的空门是眼睛第一个落上去的地方。门前 7 m、高 11 m，朝门，6 × 5 m，暖白偏金；只进漫反射（= 烘焙）。
-    A4 = bpy.data.lights.new('DoorAccent', 'AREA')
-    A4.shape = 'RECTANGLE'
-    A4.size, A4.size_y = 6.0, 5.0
-    A4.color = lin('#FFD9A0')
-    A4.energy = _T.get('door_accent_I', 500.0)
-    o4 = bpy.data.objects.new('DoorAccent', A4)
-    ap = np.array([hall['door_x'], L.PLAT['height_m'] + 5.0, L.DOOR_Z - 7.0])
-    o4.location = Vector(bl.u2b(ap))
-    tgt = np.array([hall['door_x'], L.PLAT['height_m'] + 5.5, L.DOOR_Z])
-    o4.rotation_euler = Vector(bl.u2b((tgt - ap) / np.linalg.norm(tgt - ap))).to_track_quat('-Z', 'Y').to_euler()
+    # 第 8 轮：面光 → 烘焙聚光（范围窗 door_accent_range），只托门这一开间，不再照到别的开间
+    ap, tgt = DOOR_ACCENT_POS, DOOR_ACCENT_TGT
+    o4 = bl.spot_light_unity('DoorAccent', ap, tgt - ap, lin('#FFD9A0'), _T['door_accent_I'], _T['door_accent_range'],
+                             _T['door_accent_angle'], blend=0.6, radius=0.5)
     o4.visible_glossy = False
     o4.lightgroup = 'door'
-    bpy.context.scene.collection.objects.link(o4)
-    if p.get('pour_ratio', 0.0) <= 0.0:
-        return
-    # 门光顺着台阶往下铺：门楣处一盏面光，朝外、向下 35°（第 3 轮；第 4 轮去掉：阴影发暖）
-    A2 = bpy.data.lights.new('DoorPour', 'AREA')
-    A2.shape = 'RECTANGLE'
-    A2.size, A2.size_y = hall['door_size'][0] * 0.9, 1.0
-    A2.color = lin('#FFB74D')
-    A2.energy = p['door_W'] * p.get('pour_ratio', 0.6)
-    o2 = bpy.data.objects.new('DoorPour', A2)
-    o2.location = Vector(bl.u2b((hall['door_x'], L.PLAT['height_m'] + hall['door_size'][1] - 0.6, L.DOOR_Z + 0.3)))
-    d = np.array([0.0, -math.sin(math.radians(35)), -math.cos(math.radians(35))])
-    o2.rotation_euler = Vector(bl.u2b(d)).to_track_quat('-Z', 'Y').to_euler()
-    o2.lightgroup = 'door'
-    o2.visible_glossy = False
-    bpy.context.scene.collection.objects.link(o2)
 
 
 def setup_world():
@@ -246,15 +241,23 @@ def add_bus():
     if os.path.exists(PAZ_SHELL):
         objs = S.import_unity_fbx(PAZ_SHELL)
         R = Matrix.Rotation(math.pi, 4, 'Z')        # 标准台的轴 (x, z, y) → 本包的轴 (−x, −z, y)
-        dark = materials.standard('M_Bus_Interior', '#2A2C30', smooth=0.3, cull=False)
+        import bus_erosion
         amb = tuple(0.3 * c for c in materials.s2l('#0F1E30'))
+        # 第 8 轮（评审 r5 新阻断 1）：车厢 = Lanbai/Cabin 在 7b 的样子——侵蚀 0.25、只吃车厢环境 #0F1E30 × 0.3（圣经 §6·7b）。
+        # 第 7 轮用的是没侵蚀、被宫殿的光照着的整壳，把窗框以外全压黑，APL 掉到 12
+        frame = bpy.data.objects.new('BusFrame', None)
+        bpy.context.scene.collection.objects.link(frame)
+        frame.matrix_world = R
+        frame['lb_bus'] = 1
+        dark = bus_erosion.cabin_material('M_Bus_Cabin7b', materials.s2l('#2A2C30'), amb, frame)
         for o in objs:
             o.matrix_world = R @ o.matrix_world
             o['lb_bus'] = 1
             if o.type == 'MESH':
                 o.data.materials.clear()
                 o.data.materials.append(dark)
-        return [o for o in objs if o.type == 'MESH']
+                o.visible_diffuse = o.visible_glossy = o.visible_shadow = False   # 车厢不挡宫殿的光（参考图里车只给相机看）
+        return [o for o in objs if o.type == 'MESH'] + [frame]
     amb = tuple(0.3 * c for c in materials.s2l('#0F1E30'))          # 圣经 §6·7b：车厢环境 #0F1E30 × 0.3
     objs, eye = S.bus_shell('bible_v2', interior_ambient=amb)
     R = Matrix.Rotation(math.pi, 4, 'Z')          # 标准台的轴 (x, z, y) → 本包的轴 (−x, −z, y)

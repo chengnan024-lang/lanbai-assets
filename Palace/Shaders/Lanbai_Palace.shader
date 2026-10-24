@@ -42,6 +42,8 @@ Shader "Lanbai/Palace"
         _POMFade ("POM fade distance m", Float) = 40
         [Header(Lamps and water)]
         _LampGain ("Analytic lamp specular gain  FishScale 6", Float) = 1
+        _NacreLift ("Nacre: lamps treated as this many m higher  smoke and mirrors", Float) = 0
+        _NacreSpread ("Nacre: added GGX alpha  wider glints", Float) = 0
         _EnvSpec ("Ambient reflection of the water colour", Float) = 0.6
         [Header(Seaweed sway)]
         _SwayAmp ("Sway amplitude m at the tip  0 off", Float) = 0
@@ -73,7 +75,7 @@ Shader "Lanbai/Palace"
             sampler2D _MainTex, _BumpMap, _MaskMap;
             float4 _MainTex_ST, _Color, _WearColor, _SiltColor, _NacreFace, _NacreMid, _NacreGraze;
             float _BumpScale, _Smoothness, _SmoothnessConst, _UseMask, _Mode, _Metallic, _SiltAmount, _SiltSmooth, _SiltScale;
-            float _POMHeight, _POMTile, _POMFade, _LampGain, _EnvSpec, _SwayAmp, _SwayHz, _LipFade;
+            float _POMHeight, _POMTile, _POMFade, _LampGain, _NacreLift, _NacreSpread, _EnvSpec, _SwayAmp, _SwayHz, _LipFade;
 
             struct appdata
             {
@@ -192,7 +194,9 @@ Shader "Lanbai/Palace"
                     F0 = 0.08 * LanbaiNacre(NdotV, _NacreFace.rgb, _NacreMid.rgb, _NacreGraze.rgb, mask.b) / 0.85 * (1.0 - silt) + 0.04 * silt;
                 float rough = 1.0 - smooth;
                 float alpha = max(rough * rough, 0.002);
-                float3 spec = LanbaiPalaceLamps(i.posWS, N, V, alpha, F0) * _LampGain;
+                bool nacre = _Mode > 1.5 && _Mode < 2.5;
+                // 第 8 轮（评审 r5 #7）：珍珠母的灯高光按挪高 _NacreLift 的灯算、瓣放宽 _NacreSpread（smoke and mirrors，README §3）
+                float3 spec = LanbaiPalaceLampsLift(i.posWS, N, V, nacre ? alpha + _NacreSpread : alpha, F0, nacre ? _NacreLift : 0.0) * _LampGain;
                 if (_Mode > 1.5 && _Mode < 2.5)
                     spec *= LanbaiNacre(NdotV, _NacreFace.rgb, _NacreMid.rgb, _NacreGraze.rgb, mask.b) * 1.6;
                 // 环境反射：反射方向的水色（LanbaiHorizon），按菲涅耳与粗糙度压

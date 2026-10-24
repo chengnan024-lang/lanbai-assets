@@ -139,6 +139,17 @@ def point_light_unity(name, pos_u, color_lin, intensity, rng, collection=None, r
     return ob
 
 
+def spot_light_unity(name, pos_u, dir_u, color_lin, intensity, rng, angle_deg, blend=0.3, radius=0.05):
+    """Unity 烘焙聚光（同点光的 InverseSquared + 范围窗，外加锥）。dir_u = Unity 方向。"""
+    ob = point_light_unity(name, pos_u, color_lin, intensity, rng, radius=radius)
+    ob.data.type = 'SPOT'
+    ob.data.spot_size = math.radians(angle_deg)
+    ob.data.spot_blend = blend
+    d = np.asarray(dir_u, float)
+    ob.rotation_euler = Vector(u2b(d / np.linalg.norm(d))).to_track_quat('-Z', 'Y').to_euler()
+    return ob
+
+
 def camera_unity(name, eye_u, yaw_deg=0.0, pitch_deg=0.0, hfov=90.0, aspect=16 / 9):
     cam = bpy.data.cameras.new(name)
     cam.sensor_fit = 'HORIZONTAL'

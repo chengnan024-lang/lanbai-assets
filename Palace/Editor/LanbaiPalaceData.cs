@@ -10,13 +10,12 @@ public static class LanbaiPalaceData
     public const float WarmI = 5.4600f, WarmRange = 4.000f, IndigoI = 28.0000f, IndigoRange = 12.000f, IndigoLift = 4.00f;
     public static readonly float[] WarmColor = { 1.00000f, 0.33245f, 0.02843f };   // 线性 #FF9C2F
     public static readonly float[] IndigoColor = { 0.02315f, 0.09084f, 0.19807f };   // 线性 #2A557B
-    public static readonly float[] DoorSpillPos = { -18.00000f, 9.75000f, 343.20000f };
-    public static readonly float[] DoorSpillSize = { 3.99000f, 7.12000f };
     public static readonly float[] DoorColor = { 1.00000f, 0.47353f, 0.07421f };   // 线性 #FFB74D
-    public static readonly float DoorAreaI = 770.0000f, PourRatio = 0.000f;
-    public static readonly float[] DoorAccentPos = { -18.00000f, 11.00000f, 335.60000f };   // D-31：只参与烘焙的面光，门前 7 m、朝门
-    public static readonly float DoorAccentI = 0.125f;   // 按灰卡校（README §4），单位没对过
-    public static readonly float[] DoorPourPos = { -18.00000f, 12.90000f, 342.90000f };   // 门楣处，朝外向下 35°
+    // 第 8 轮：门的两盏烘焙聚光（有范围窗）
+    public static readonly float[] DoorSpillPos = { -18.00000f, 10.12500f, 343.10000f }, DoorSpillDir = { 0.00000f, -0.35000f, -1.00000f };
+    public static readonly float DoorSpillI = 60.000f, DoorSpillRange = 6.00f, DoorSpillAngle = 120.0f;
+    public static readonly float[] DoorAccentPos = { -18.00000f, 11.00000f, 335.60000f }, DoorAccentTarget = { -18.00000f, 11.50000f, 342.60000f };   // D-31：只参与烘焙，门前 7 m、朝门
+    public static readonly float DoorAccentI = 70.000f, DoorAccentRange = 11.00f, DoorAccentAngle = 70.0f;
     public static readonly float[] AmbSky = { 0.00439f, 0.02956f, 0.08022f }, AmbEquator = { 0.00304f, 0.01600f, 0.03955f }, AmbGround = { 0.01033f, 0.00700f, 0.01600f };
     public static readonly float[] FlameLinear = { 8.63380f, 0.96640f, 0.19990f };
     public static readonly float[] HaloMid = { 0.05781f, 0.12214f, 0.22323f };

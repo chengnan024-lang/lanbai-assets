@@ -7,7 +7,7 @@
 //      没有 R_Sea 时放在场景根上并警告（单独看宫殿用）。会移动的根：Batching Static / Occlusion Static 关、Contribute GI 开（圣经 §1.6）。
 //   2. Palace/Models/*.fbx 实例化在 R_Palace 下（局部变换为单位：顶点就是宫殿坐标）；<名>_LOD0 / _LOD1 自己建 LODGroup（CONTROL §6 第 4 条）。
 //   3. 材质 Palace/Materials/M_07b_*.mat（Lanbai/Palace 等），按网格里的槽名（M_07b_<槽>）挂上。
-//   4. 烘焙灯：每盏宫灯两盏 Baked 点光（暖 #FF9C2F range 4、软阴影；靛 #2A557B range 12、无阴影），门里一盏 Baked 面光。
+//   4. 烘焙灯：每盏宫灯两盏 Baked 点光（暖 #FF9C2F range 4、软阴影；靛 #2A557B range 12、无阴影），门槛里一盏、门前 7 m 一盏 Baked 聚光（有范围窗，第 8 轮）。
 //      Inspector 强度 = PalaceLayout.json 的 intensity（D-00：Inspector = E；点光在 d 处 E = I / d² × 范围窗，按灰卡校，README §4）。
 //   5. 驱动 LanbaiPalaceDriver（U#，CONTROL §5），程序资产按 GateClouds 的做法建。
 //  不做：烘焙本身（README §4 的步骤，本地做）、R_Sea 的运动（海）、_Udon_PalaceVeil（海）。
@@ -89,42 +89,16 @@ public static class LanbaiPalaceBuilder
             Baked(lights.transform, LanbaiPalaceData.LampIds[i] + "_Warm", p, LanbaiPalaceData.WarmColor, LanbaiPalaceData.WarmI, LanbaiPalaceData.WarmRange, true);
             if (LanbaiPalaceData.LampIndigo[i]) Baked(lights.transform, LanbaiPalaceData.LampIds[i] + "_Indigo", p + new Vector3(0f, LanbaiPalaceData.IndigoLift, 0f), LanbaiPalaceData.IndigoColor, LanbaiPalaceData.IndigoI, LanbaiPalaceData.IndigoRange, false);
         }
-        var dg = new GameObject("DoorSpill");
-        dg.transform.SetParent(lights.transform, false);
-        dg.transform.localPosition = V3(LanbaiPalaceData.DoorSpillPos, 0);
-        dg.transform.localRotation = Quaternion.LookRotation(Vector3.back, Vector3.up);   // 面光朝 −z（朝外）
-        var dl = dg.AddComponent<Light>();
-        dl.type = LightType.Rectangle;
-        dl.lightmapBakeType = LightmapBakeType.Baked;
-        dl.areaSize = new Vector2(LanbaiPalaceData.DoorSpillSize[0], LanbaiPalaceData.DoorSpillSize[1]);
-        dl.color = Lin(LanbaiPalaceData.DoorColor).gamma;
-        dl.intensity = LanbaiPalaceData.DoorAreaI;
-        // D-31：门这一开间的提亮光（只参与烘焙的面光，门前 7 m、朝门；Fins 的 smoke and mirrors）
-        var ag = new GameObject("DoorAccent_BakeOnly");
-        ag.transform.SetParent(lights.transform, false);
-        ag.transform.localPosition = V3(LanbaiPalaceData.DoorAccentPos, 0);
-        ag.transform.localRotation = Quaternion.LookRotation(new Vector3(0f, 0.5f, 7f).normalized, Vector3.up);
-        var al = ag.AddComponent<Light>();
-        al.type = LightType.Rectangle;
-        al.lightmapBakeType = LightmapBakeType.Baked;
-        al.areaSize = new Vector2(6f, 5f);
+        // 第 8 轮（评审 r5 #3）：门的两盏烘焙光都是聚光（InverseSquared + 范围窗），只照门这一开间和门槛。
+        // 原来的面光没有范围，把整面立面描成朱红（阴影发暖）。
+        BakedSpot(lights.transform, "DoorSpill", V3(LanbaiPalaceData.DoorSpillPos, 0), V3(LanbaiPalaceData.DoorSpillDir, 0),
+            Lin(LanbaiPalaceData.DoorColor).gamma, LanbaiPalaceData.DoorSpillI, LanbaiPalaceData.DoorSpillRange, LanbaiPalaceData.DoorSpillAngle, 0.4f);
+        // D-31：门这一开间的提亮光（只参与烘焙，门前 7 m、朝门；Fins 的 smoke and mirrors）
         Color acc;
         ColorUtility.TryParseHtmlString("#FFD9A0", out acc);
-        al.color = acc;
-        al.intensity = LanbaiPalaceData.DoorAccentI;
-        // （第 3 轮的“顺着台阶往下铺”的第二盏面光，第 4 轮去掉了：阴影发暖。PourRatio = 0 时不建）
-        if (LanbaiPalaceData.PourRatio > 0f) {
-        var pg = new GameObject("DoorPour");
-        pg.transform.SetParent(lights.transform, false);
-        pg.transform.localPosition = V3(LanbaiPalaceData.DoorPourPos, 0);
-        pg.transform.localRotation = Quaternion.LookRotation(new Vector3(0f, -Mathf.Sin(35f * Mathf.Deg2Rad), -Mathf.Cos(35f * Mathf.Deg2Rad)), Vector3.up);
-        var pl = pg.AddComponent<Light>();
-        pl.type = LightType.Rectangle;
-        pl.lightmapBakeType = LightmapBakeType.Baked;
-        pl.areaSize = new Vector2(LanbaiPalaceData.DoorSpillSize[0] * 0.95f, 1.0f);
-        pl.color = dl.color;
-        pl.intensity = LanbaiPalaceData.DoorAreaI * LanbaiPalaceData.PourRatio;
-        }
+        var ap = V3(LanbaiPalaceData.DoorAccentPos, 0);
+        BakedSpot(lights.transform, "DoorAccent_BakeOnly", ap, V3(LanbaiPalaceData.DoorAccentTarget, 0) - ap,
+            acc, LanbaiPalaceData.DoorAccentI, LanbaiPalaceData.DoorAccentRange, LanbaiPalaceData.DoorAccentAngle, 0.5f);
         // ---- 5. 驱动
         var oldD = GameObject.Find("LanbaiPalaceDriver");
         if (oldD != null) UnityEngine.Object.DestroyImmediate(oldD);
@@ -321,6 +295,25 @@ public static class LanbaiPalaceBuilder
         l.shadows = shadows ? LightShadows.Soft : LightShadows.None;
         l.shadowRadius = 0.10f;
         l.renderMode = LightRenderMode.ForceVertex;
+    }
+
+    static Light BakedSpot(Transform parent, string name, Vector3 p, Vector3 dir, Color col, float intensity, float range, float angle, float radius)
+    {
+        var go = new GameObject(name);
+        go.transform.SetParent(parent, false);
+        go.transform.localPosition = p;
+        go.transform.localRotation = Quaternion.LookRotation(dir.normalized, Vector3.up);
+        var l = go.AddComponent<Light>();
+        l.type = LightType.Spot;
+        l.lightmapBakeType = LightmapBakeType.Baked;
+        l.color = col;
+        l.intensity = intensity;
+        l.range = range;
+        l.spotAngle = angle;
+        l.innerSpotAngle = angle * 0.5f;
+        l.shadows = LightShadows.Soft;
+        l.shadowRadius = radius;
+        return l;
     }
 
     static Color Lin(float[] c) { return new Color(c[0], c[1], c[2], 1f); }

@@ -21,7 +21,12 @@ Shader "Lanbai/PalaceFlame"
         _FlameCore ("Flame core linear  white hot", Vector) = (2.6, 2.13, 1.43, 0)
         _FlameSize ("Flame half size m  x y", Vector) = (0.09, 0.19, 0, 0)
         _HaloRadius ("Halo radius m", Float) = 1.5
-        _HaloWarm ("Halo warm core gain", Float) = 0.05
+        _HaloWarm ("Halo warm core gain", Float) = 0.08
+        _HaloWarmR ("Halo warm core radius  fraction of r", Float) = 0.14
+        _RingGain ("Halo indigo ring gain", Float) = 0.9
+        _HaloPull ("Halo pulled toward eye m  max, also <= d/2", Float) = 4.0
+        _FlamePull ("Flame pulled toward eye m when seen steeply from below", Float) = 1.5
+        _BelowPull ("Max pull m when the eye is below the terrace top", Float) = 40.0
         _SoftFade ("Soft particle fade m", Float) = 1.0
         _HaloMid ("Halo indigo mid linear  fill 446282", Vector) = (0.0578, 0.1221, 0.2232, 0)
         _Atten ("Attenuation per m  FogMode 2", Float) = 0.004
@@ -52,7 +57,7 @@ Shader "Lanbai/PalaceFlame"
 
             sampler2D _FlipTex;
             float4 _FlameColor, _FlameCore, _FlameSize, _HaloMid;
-            float _HaloRadius, _HaloWarm, _Atten, _FPS, _MinPixels, _Gain, _SoftFade, _RingFar;
+            float _HaloRadius, _HaloWarm, _HaloWarmR, _RingGain, _HaloPull, _FlamePull, _BelowPull, _Atten, _FPS, _MinPixels, _Gain, _SoftFade, _RingFar;
             UNITY_DECLARE_DEPTH_TEXTURE(_CameraDepthTexture);
 
             struct appdata
@@ -87,19 +92,30 @@ Shader "Lanbai/PalaceFlame"
                 float3 right = normalize(cross(up, fwd) + float3(1e-5, 0, 0));
                 // 火：竖直的柱状公告板；从很低 / 很高的角度看（|fwd.y| > 0.5）渐变成球状公告板，免得从下面看成一条细线
                 float3 upS = normalize(cross(fwd, right));
-                float sph = halo ? 1.0 : saturate((abs(fwd.y) - 0.5) * 3.0);
+                float sph = halo ? 1.0 : saturate((abs(fwd.y) - 0.34) * 3.0);     // 第 8 轮：20° 起就变圆（评审 r5 #2：斜的细条）
                 float3 upB = normalize(lerp(up, upS, sph));
                 float2 size = halo ? float2(_HaloRadius, _HaloRadius) : _FlameSize.xy;
                 // 最小像素：一个像素在 d 处的米数 = 2d / (P11 · 屏高)
                 float pix = 2.0 * d / (abs(unity_CameraProjection._m11) * _ScreenParams.y);
                 float s = halo ? 1.0 : max(1.0, _MinPixels * pix / max(size.x, 1e-4));
                 size *= s;
-                float3 p = c + right * v.uv0.x * size.x + upB * v.uv0.y * size.y;
+                // 第 8 轮（评审 r5 #2）：晕是灯和眼睛之间那段水的散射，不是灯焰处的一张卡——往眼睛方向挪 min(_HaloPull, d/2)，
+                // 角大小不变；这样台地的崖边、栏杆不会把它切成半月。火只在从下面陡着看（仰角 15–25° 以上）时往前挪 _FlamePull，
+                // 让贴着崖边的灯焰不被几十厘米的边沿吃掉（平视时不挪，不会透过柱子看见火）。
+                float pull = halo ? min(_HaloPull, 0.5 * d) : _FlamePull * saturate((-fwd.y - 0.26) / 0.16);
+                // 眼睛在台地顶面以下（F7p 之后，D-17 / D-29“宫殿成了头顶的星座”）：灯排正好压在崖顶的剪影线上，几十厘米的
+                // 边沿会把火吃成断续的虚线。这时火和晕都往眼睛挪 min(0.25 d, _BelowPull)，沿崖边一串稳定的暖点；
+                // 远在台地后面的灯（挡住它的岩体比这更厚）照样被挡。物体空间 = 宫殿坐标（y = 0 台地顶）。
+                float eyeY = mul(unity_WorldToObject, float4(eye, 1.0)).y;
+                float below = saturate((-eyeY - 1.0) / 3.0);
+                pull = max(pull, below * min(0.25 * d, _BelowPull));
+                size *= (d - pull) / d;
+                float3 p = c + fwd * pull + right * v.uv0.x * size.x + upB * v.uv0.y * size.y;
                 o.pos = UnityWorldToClipPos(p);
                 o.projPos = ComputeScreenPos(o.pos);
                 COMPUTE_EYEDEPTH(o.projPos.z);
                 o.corner = v.uv0;
-                o.info = float4(v.uv1.x, v.uv1.y, exp(-_Atten * d), saturate(1.25 - d / max(_RingFar * 0.8, 1.0)));   // 第 6 轮（D-34 #4）：远处的灯焰放大到 ≥ 2 px 且不压暗——稳定、分得清的暖点；w = 靛环的距离淡出
+                o.info = float4(v.uv1.x, v.uv1.y, exp(-_Atten * d), saturate(1.25 - d / max(_RingFar * 0.8, 1.0)) * (1.0 - below));   // 第 6 轮（D-34 #4）：远处的灯焰放大到 ≥ 2 px 且不压暗——稳定、分得清的暖点；w = 靛环的距离淡出；眼睛在台地以下时没有靛环（第 8 轮：被崖边切开的靛环读成半月）
                 return o;
             }
 
@@ -111,9 +127,11 @@ Shader "Lanbai/PalaceFlame"
                 {
                     float r = length(i.corner);
                     // 第 4 轮：暖芯很小，靛环从 0.12 r 才起，两者不重叠（加色混出丁香紫，美术评审 r3 #4）
-                    float warm = exp(-(r / 0.08) * (r / 0.08));
-                    float ring = smoothstep(0.12, 0.40, r) * saturate(1.0 - r) * saturate(1.0 - r);
-                    col = warm * _FlameColor.rgb * _HaloWarm + ring * _HaloMid.rgb * 1.4 * i.info.w;     // 靛环远了淡出：远处只剩暖点，不读成雾里的蓝虚线
+                    // 第 8 轮（评审 r5 #2、D-34 #4）：暖芯放大（0.14 r），靛环往外挪（0.25 r 起）、减到 0.9——晕以暖为主，两者仍不重叠
+                    float wr = r / _HaloWarmR;
+                    float warm = exp(-wr * wr);
+                    float ring = smoothstep(0.25, 0.50, r) * saturate(1.0 - r) * saturate(1.0 - r);
+                    col = warm * _FlameColor.rgb * _HaloWarm + ring * _HaloMid.rgb * _RingGain * i.info.w;     // 靛环远了淡出：远处只剩暖点，不读成雾里的蓝虚线
                     #if defined(SOFTPARTICLES_ON)
                         // 软粒子：靠近别的面淡出，不在地面上切成半月（关掉时退回硬边，圣经 §1.6）
                         float sceneZ = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE_PROJ(_CameraDepthTexture, UNITY_PROJ_COORD(i.projPos)));

@@ -93,9 +93,12 @@ inline float3 LanbaiPalaceSpecOne(float4 lamp, float4 colR, float4 axis, float4 
     return D * Vis * F * UNITY_PI * NdotL * E * colR.rgb * lineNorm * cone;
 }
 
-inline float3 LanbaiPalaceLamps(float3 P, float3 N, float3 V, float alpha, float3 F0)
+// lift：只给珍珠母用（第 8 轮，评审 r5 #7，smoke and mirrors）——灯在檐下、相机在屋面高度，屋面不可能镜面反射到灯；
+// 把灯当成在它上方 lift 米处来算高光，灯经过时鳞片上滚过一串珍珠光。别的材质 lift = 0。
+inline float3 LanbaiPalaceLampsLift(float3 P, float3 N, float3 V, float alpha, float3 F0, float lift)
 {
     float3 s = 0;
+    P.y -= lift;          // 等价于所有灯往上挪 lift
     s += LanbaiPalaceSpecOne(_Udon_Lamp0, _Udon_LampColor0, _Udon_LampAxis0, _Udon_LampDir0, P, N, V, alpha, F0);
     s += LanbaiPalaceSpecOne(_Udon_Lamp1, _Udon_LampColor1, _Udon_LampAxis1, _Udon_LampDir1, P, N, V, alpha, F0);
     s += LanbaiPalaceSpecOne(_Udon_Lamp2, _Udon_LampColor2, _Udon_LampAxis2, _Udon_LampDir2, P, N, V, alpha, F0);
@@ -105,6 +108,11 @@ inline float3 LanbaiPalaceLamps(float3 P, float3 N, float3 V, float alpha, float
     s += LanbaiPalaceSpecOne(_Udon_Lamp6, _Udon_LampColor6, _Udon_LampAxis6, _Udon_LampDir6, P, N, V, alpha, F0);
     s += LanbaiPalaceSpecOne(_Udon_Lamp7, _Udon_LampColor7, _Udon_LampAxis7, _Udon_LampDir7, P, N, V, alpha, F0);
     return s;
+}
+
+inline float3 LanbaiPalaceLamps(float3 P, float3 N, float3 V, float alpha, float3 F0)
+{
+    return LanbaiPalaceLampsLift(P, N, V, alpha, F0, 0.0);
 }
 
 // ---- _Udon_PalaceVeil：眼 → 片元的线段落在水平雾带 [y − z, y] 里的长度 L，veil = 1 − exp(−x·L)
