@@ -1,6 +1,58 @@
 {
  "format": "v2 channel cards: _K RGBA = sun 15/80/150 deg right of the view (white light, Unity E 1) + coverage, _S RG = uniform white upper / lower dome; stored sRGB(value / kscale or sscale). Colours per group in colours.<group> (linear; SunColor includes E). Shader Lanbai/CloudCard, numpy port Source/cardshade.py.",
  "cards": {
+  "CloudV2_Bank_dawn": {
+   "set": "dawn",
+   "shape": "Bank",
+   "size": [
+    2048,
+    1024
+   ],
+   "cloud_base_v": 0.2793,
+   "opaque_bbox_uv": [
+    0.062,
+    0.2793,
+    0.9326,
+    0.7236
+   ],
+   "kscale": 6.0,
+   "sscale": 1.5,
+   "key_angles": [
+    15.0,
+    80.0,
+    150.0
+   ],
+   "sun_el": 6.0,
+   "pitch": -3.0,
+   "clipped_K": 0.0,
+   "clipped_S": 0.0
+  },
+  "CloudV2_Congestus_dawn": {
+   "set": "dawn",
+   "shape": "Congestus",
+   "size": [
+    1024,
+    1024
+   ],
+   "cloud_base_v": 0.0938,
+   "opaque_bbox_uv": [
+    0.0977,
+    0.0938,
+    0.8926,
+    0.9033
+   ],
+   "kscale": 6.0,
+   "sscale": 1.5,
+   "key_angles": [
+    15.0,
+    80.0,
+    150.0
+   ],
+   "sun_el": 6.0,
+   "pitch": 0.0,
+   "clipped_K": 0.0,
+   "clipped_S": 0.0
+  },
   "CloudV2_Cumulus_dawn": {
    "set": "dawn",
    "shape": "Cumulus",
@@ -24,6 +76,84 @@
    ],
    "sun_el": 6.0,
    "pitch": -3.0,
+   "clipped_K": 0.0,
+   "clipped_S": 0.0
+  },
+  "CloudV2_Puff_dawn": {
+   "set": "dawn",
+   "shape": "Puff",
+   "size": [
+    1024,
+    1024
+   ],
+   "cloud_base_v": 0.334,
+   "opaque_bbox_uv": [
+    0.1123,
+    0.334,
+    0.8799,
+    0.666
+   ],
+   "kscale": 6.0,
+   "sscale": 1.5,
+   "key_angles": [
+    15.0,
+    80.0,
+    150.0
+   ],
+   "sun_el": 6.0,
+   "pitch": -4.0,
+   "clipped_K": 0.0,
+   "clipped_S": 4.7173594108961565e-06
+  },
+  "CloudV2_Strato_dawn": {
+   "set": "dawn",
+   "shape": "Strato",
+   "size": [
+    2048,
+    1024
+   ],
+   "cloud_base_v": 0.3203,
+   "opaque_bbox_uv": [
+    0.0728,
+    0.3203,
+    0.9336,
+    0.6963
+   ],
+   "kscale": 6.0,
+   "sscale": 1.5,
+   "key_angles": [
+    15.0,
+    80.0,
+    150.0
+   ],
+   "sun_el": 6.0,
+   "pitch": -14.0,
+   "clipped_K": 0.0,
+   "clipped_S": 0.0
+  },
+  "CloudV2_Wisp_dawn": {
+   "set": "dawn",
+   "shape": "Wisp",
+   "size": [
+    2048,
+    1024
+   ],
+   "cloud_base_v": 0.3623,
+   "opaque_bbox_uv": [
+    0.064,
+    0.3623,
+    0.9321,
+    0.6387
+   ],
+   "kscale": 6.0,
+   "sscale": 1.5,
+   "key_angles": [
+    15.0,
+    80.0,
+    150.0
+   ],
+   "sun_el": 6.0,
+   "pitch": -2.0,
    "clipped_K": 0.0,
    "clipped_S": 0.0
   }
