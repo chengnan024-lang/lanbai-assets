@@ -32,6 +32,8 @@
 - `EvOverlayAlpha` 的标量 `Lscene`（3 秒遮罩那一段）= `lSceneMask` 0.30：变白的遮罩按**最暗的视向**建（§1.8 E17），数值由 `Mirrors/Tools~/port/flash_seq.py` 的白序列选（`Mirrors/Docs~/flashcheck/wf.json`、`wd.json`）。
 - 方向瓣的方向（管灯、路灯、海）属于第 11 幕的布局（「灯与假醒」），v2 推出来以后在 Wire Scene 里填；没有瓣时退路 = 全方向同一条曲线（变暗免费）。
 
+**从 t 重建（D-33 #6）**：`LanbaiGrade(t)`、遮罩的每一种状态都只由 t 决定；唯一缓存的是“方向瓣已经设过”，`LanbaiActivate` 时清掉，下一帧按 t 重设。
+
 ## 3. VR 与桌面
 
 - 峰值：桌面 `#E8F1F5`（luma 239）、VR `#D7E3E8`（luma ≈ 224），由 `IsUserInVR()` 选填值列。VR 里没有镜头层（`LanbaiExposure` 在 VR 关掉 `Lens_DesktopOnly`）。

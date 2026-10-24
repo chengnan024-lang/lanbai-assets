@@ -312,6 +312,31 @@ def back_cell(centre_boss):
     return H
 
 
+PHOTO = os.path.join(ROOT, 'Docs~', '实物参考_博局镜', 'CMA_1995.301.jpg')   # Cleveland Museum of Art 1995.301, CC0
+PHOTO_C = (1714.0, 1641.0, 1320.0)                                              # mirror centre x, y and radius in the photo (fitted)
+
+
+def photo_field(n=N):
+    """the main field (r/R 0.15 .. 0.72) of a real 四神博局镜 as a relief layer: luminance, the museum lighting and the
+    patina blotches removed with a large high-pass and a local contrast normalisation (the photo is CC0: 小楠 10-24,
+    '并不是参考，如果合适直接用')."""
+    from scipy.ndimage import map_coordinates
+    im = np.asarray(Image.open(PHOTO).convert('RGB'), np.float32) / 255.0
+    L = im @ np.array([0.2126, 0.7152, 0.0722], np.float32)
+    hp = L - gaussian_filter(L, 18)
+    sd = np.sqrt(gaussian_filter(hp * hp, 40)) + 1e-3
+    rel = np.clip(hp / sd / 2.5, -1, 1)
+    cx, cy, r = PHOTO_C
+    yy, xx = np.mgrid[0:n, 0:n].astype(np.float32)
+    k = r / (n / 2.0)
+    px = cx + (xx + 0.5 - n / 2.0) * k
+    py = cy + (yy + 0.5 - n / 2.0) * k
+    f = map_coordinates(rel, [py, px], order=1, mode='nearest')
+    q = np.hypot(xx + 0.5 - n / 2.0, yy + 0.5 - n / 2.0) / (n / 2.0)
+    w = np.clip((q - 0.15) / 0.04, 0, 1) * np.clip((0.73 - q) / 0.04, 0, 1)
+    return np.clip(0.5 + 0.5 * f, 0, 1), w
+
+
 def periodic_noise(n, period_px, seed):
     rng = np.random.default_rng(seed)
     f = np.fft.fft2(rng.standard_normal((n, n)))
@@ -357,8 +382,12 @@ def shade(H, light=(-0.6, 0.5, 0.45)):
 
 def main():
     previews = []
+    pf, pw = photo_field()
     for centre, tag in ((True, ''), (False, 'Centre')):
         H = back_cell(centre_boss=centre)
+        # the real mirror's field replaces the procedural one inside r/R 0.15 .. 0.72 (relief 0..0.5: its bosses and
+        # lines stand out of the field as in the photo); the procedural cell keeps the seat, the corners and the tiling
+        H = H * (1 - pw) + np.clip((pf - 0.45) * 0.9, 0, 0.5) * pw    # the field sits at 0 like the rest of the cell
         nrm, mask = maps_from_height(H)
         pre = 'T_MirrorBack_' + (tag + '_' if tag else '')
         save(nrm, pre + 'Normal_2048.png')

@@ -71,6 +71,7 @@ namespace Lanbai.Act10
 
         public void LanbaiActivate(bool on)
         {
+            lobesSet = false;                       // D-33 #6: everything is rebuilt from t on the next tick (late joiners, scrubbing)
             if (!on && overlay != null)
             {
                 overlay.ClearLobes();
