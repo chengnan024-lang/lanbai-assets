@@ -321,7 +321,7 @@ public static class LanbaiBusBuild
                 var dial = T(Tex + "Cabin_RadioDial_512x256.png");
                 m.SetColor("_Color", Color.white); m.SetTexture("_MainTex", dial); m.SetTexture("_EmitTex", dial); m.SetFloat("_EmitMode", 2f); break;
             case "Linen":
-                var letters = FindTexture("DestBlind");
+                var letters = FindTexture("Bus_DestBlind_1024x296");   // the lettered one (not ..._Blank_..., act 11)
                 if (letters != null) { m.SetFloat("_EmitMode", 4f); m.SetTexture("_EmitTex", letters); m.SetColor("_EmissionColor", new Color(2.22f, 2.283f, 2.178f, 1f)); }
                 else _rep.AppendLine("  destination blind: no *DestBlind* letters texture in Bus/Textures -> no backlit letters yet");
                 break;

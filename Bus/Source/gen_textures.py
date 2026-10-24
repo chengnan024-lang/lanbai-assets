@@ -112,6 +112,26 @@ def radio_dial(out, n=512):
     Image.fromarray(a.astype(np.uint8), 'RGBA').save(os.path.join(out, 'Cabin_RadioDial_512x256.png'))
 
 
+def dest_blind(out):
+    """bible 4.7: black linen #262626, 「蓝白」 cut out (lit from behind by the tubes), Source Han Sans Heavy, 140 mm high,
+    no route number. 1024 x 296 for the 0.76 x 0.22 m blind. R = letter mask (light), G = linen weave, B = 0, A = 1.
+    Reads correctly from OUTSIDE (uv u runs left -> right as seen from the front); from inside it is the back of the
+    blind (D-08 era: blank, see Gate README 8.5). Act 11 swaps in the blank one."""
+    W, H = 1024, 296
+    px_m = W / 0.76
+    font = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'Fonts', 'Originals~', 'SourceHanSansCN-Heavy.otf')
+    m = Image.new('L', (W, H), 0)
+    d = ImageDraw.Draw(m)
+    f = ImageFont.truetype(font, int(0.140 * px_m * 1.12))
+    bb = d.textbbox((0, 0), '蓝白', font=f)
+    d.text(((W - (bb[2] - bb[0])) / 2 - bb[0], (H - (bb[3] - bb[1])) / 2 - bb[1]), '蓝白', font=f, fill=255)
+    weave = tile_noise(256, 3, 31, base=40)
+    weave = np.tile(weave, (2, 4))[:H, :W]
+    for name, mask in (('Bus_DestBlind_1024x296.png', np.asarray(m, np.float32) / 255.0), ('Bus_DestBlind_Blank_1024x296.png', np.zeros((H, W), np.float32))):
+        img = np.stack([mask, 0.75 + 0.25 * weave, np.zeros((H, W)), np.ones((H, W))], -1)
+        Image.fromarray((np.clip(img, 0, 1) * 255 + 0.5).astype(np.uint8), 'RGBA').save(os.path.join(out, name))
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--out', default=os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'Textures'))
@@ -122,6 +142,7 @@ def main():
     vinyl(a.out)
     weave(a.out)
     radio_dial(a.out)
+    dest_blind(a.out)
     print('textures ->', a.out, sorted(os.listdir(a.out)))
 
 

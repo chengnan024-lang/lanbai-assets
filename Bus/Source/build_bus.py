@@ -493,9 +493,9 @@ def slope_hole(x, z):
 def ceiling():
     x0, x1 = B.XC - (B.W_TOPSIDE - LINER_IN), B.XC + (B.W_TOPSIDE - LINER_IN)
     xs = sorted(set([x0 + (x1 - x0) * k / 60 for k in range(61)]))
-    zs = sorted(set([B.Z_REAR + 0.06 + (3.16 - B.Z_REAR - 0.06) * k / 84 for k in range(85)] +
+    zs = sorted(set([B.Z_REAR + 0.06 + (3.40 - B.Z_REAR - 0.06) * k / 86 for k in range(87)] +
                     [z for w in B.SLOPE_R + B.SLOPE_L for z in w] + [B.SKY_C[2] - B.SKY_HALF, B.SKY_C[2] + B.SKY_HALF]))
-    zs = [z for z in zs if B.Z_REAR + 0.06 <= z <= 3.16]
+    zs = [z for z in zs if B.Z_REAR + 0.06 <= z <= 3.40]
     bm = bmesh.new()
     V = [[bm.verts.new(U2B((x, ceil_y(x), z))) for x in xs] for z in zs]
     sx, _, sz = B.SKY_C
@@ -528,9 +528,10 @@ def ceiling():
                     g.faces.new((vs_o[t], vs_o[t + 1], vs_i[t + 1], vs_i[t]))
                 obj_from_bm('SlopeReveal%s%d_%.2f' % ('R' if side > 0 else 'L', k, z), g, ['Int_Enamel'], 'Cabin')
     # front header above the windscreen, the blind box behind it
-    box('Header', (B.X_IN_L, B.WS_TOP + 0.005, 3.14), (B.X_IN_R, B.CEIL_Y + 0.01, 3.18), 'Int_Enamel')
+    # no header panel: from inside you see PAZ's three brow windows above the windscreen (the middle one is the back
+    # of the destination blind); only the rubber lip of the windscreen and a narrow ledge under the brows
     box('HeaderLip', (B.X_IN_L, B.WS_TOP - 0.012, 3.40), (B.X_IN_R, B.WS_TOP + 0.02, 3.47), 'Seal')
-    box('HeaderShelf', (B.X_IN_L, B.WS_TOP + 0.005, 3.17), (B.X_IN_R, B.WS_TOP + 0.02, 3.40), 'Int_Enamel')
+    box('BrowLedge', (B.X_IN_L, B.BROW_Y[0] - 0.035, 3.36), (B.X_IN_R, B.BROW_Y[0] - 0.02, 3.465), 'Int_Enamel', bevel=0.006)
     box('DestBlind', (B.DEST_BOX[0], B.DEST_BOX[2] - 0.01, 3.44), (B.DEST_BOX[1], B.DEST_BOX[3] + 0.01, 3.452), 'Linen')
     # hatch: aluminium frame flush in the liner, a short well up through the roof skin, glass at SKY_C.y
     fw = 0.04
@@ -642,7 +643,7 @@ def seat(name, x0, x1, back_z, double=False, worn=1.0, cushion_y=None, collectio
     piv = Vector((0, cy - 0.02, back_z + 0.09))
     bk = pad(name + '_Back', (x0 + 0.015, cy - 0.02, back_z + 0.02), (x1 - 0.015, cy + 0.60, back_z + 0.12), 0.04, 'Vinyl',
              collection, crown=(0.0, 0.016, 0.0))
-    shell = box(name + '_BackShell', (x0 + 0.02, cy + 0.02, back_z), (x1 - 0.02, cy + 0.57, back_z + 0.025), 'SeatFrame', collection, bevel=0.02, segs=3)
+    shell = box(name + '_BackShell', (x0 + 0.02, cy + 0.02, back_z), (x1 - 0.02, cy + 0.57, back_z + 0.025), 'Vinyl', collection, bevel=0.02, segs=3)   # PAZ: upholstered backs
     pb = U2B(piv)
     R = Matrix.Translation(pb) @ Matrix.Rotation(-tilt, 4, 'X') @ Matrix.Translation(-pb)
     for o in (bk, shell):

@@ -1,0 +1,99 @@
+# 车（PAZ-672）· `Bus/` + `Cabin/`
+
+写的人：会话「车」（`pkg/bus`）。车型：PAZ-672（小楠 10-24 定；总导演 D-28…D-31）。
+**没在 Unity 里编译、导入、运行过。** shader 和 C# 只过了 `Common/Tools~/compile_check/`（着色器 0 错 0 警告；C# OK），模型只在 Blender 里读回核对过。
+
+---
+
+## 0. 本地先做这几步
+
+1. **拷文件夹**：`Bus/` → `Assets/Lanbai/Bus/`，`Cabin/` → `Assets/Lanbai/Cabin/`（`Common/`、`Rain/` 已有，要用 main 上最新的）。
+2. **Project Settings → Player → Vertex Compression**：TexCoord0–3 **不压缩**（CONTROL §6 第 8 条；车厢光照图在 uv1，外观做旧图集也在 uv1）。
+3. 等脚本编完，点菜单 **`蓝白/Build/车`**。它会删掉上一次的 `Lanbai_Bus`，重新搭：模型、材质、外观 LOD、23 个座位的 `VRCStation`、不可见碰撞体、两盏头像补光、`LanbaiCabinDriver`、雨刮。第一次点可能报“class not compiled yet”，再点一次。点完看 Console 的 `[Lanbai Bus]` 报告。细节：`Editor/README_Build.md`。
+4. **换掉本地的 v1 车**（不删，关掉）：
+   - 本地 v1 车的根物体关掉；`LB_Journey.busRoot` 指向 `Lanbai_Bus`。
+   - `LB_Journey.heroEye` 改成 **(0.55, 1.70, 2.05)**（诗句按它摆；门、标准台、所有包都用这个）。
+   - `LB_Journey.busMin / busMax` 照 `Models/BusLayout.json` 的 `cabin_bounds`：**min (−1.35, 0.57, −3.59)、max (0.99, 2.62, 3.44)**（D-31：车厢内部；Director 按玩家根位置查，头探出玻璃 ≤ 0.6 m 不算离开）。
+   - `wheels` = `Wheel_FR / FL / RR / RL`（原点在轮心，绕本地 X 转），`wheelRadius` = **0.45**。
+   - `doorPivot` / `doorPivot2` **清空**：门是一扇四片的折门，开着的状态就是它的正脸（圣经：门从不关）；第 11 幕在白遮罩下关、第 12 幕前打开，都由 `LanbaiCabinDriver` 做（`BusLayout.json` 的 `door_panels`）。
+   - `busRenderers` / `glassRenderers` **清空**（它们是侵蚀 shader 之前的占位，会和车厢驱动打架，见 `Cabin/给总控_shader.md` §3）。
+   - `cabinLights` 拖进 `HeadFill_0 / HeadFill_1`；`cabinTubes` 拖进 `Cabin_Tubes`。
+   - `fan`、`pendant`：新车没有（圣经：除了收音机和空司机座，没有道具）。清空。
+   - 实例人数上限 = **23**（D-31，`seat_count`，不算司机座）。
+5. **烘一张车厢立方图**给玻璃（`_CabinCube`）：只开管灯，在主座位眼位，不要在门附近烘、不要实时探针（门内 181 s 的教训）。三个 `M_Bus_Glass_*` 都填上。
+6. **截图推回来**（`FromLocal/bus_test/`，桌面 1920×1080、水平 90°、PPv2 开、ARGBHalf 渲完再调色）：
+   - 主座位正前，t = 30（夜路，管灯 1）、t = 150.30（U7）、t = 270（晨）；
+   - 主座位朝门（yaw +25°）t = 270：晨日应该在门洞正中；
+   - 主座位抬头 +52°，t = 169.2（天窗里的伤口）；
+   - 后排左侧靠窗（眼 (−1.10, 1.70, −0.47)）正前，t = 30；
+   - 第 1 幕出生点（右路肩、站牌后 14 m）看车，t = −5。
+   和 `Docs~/reference/` 里的同名图并排比。
+
+---
+
+## 1. 有什么
+
+| 路径 | 是什么 |
+|---|---|
+| `Models/Bus.fbx` | 整辆车（48 个物体，11.5 万三角形）。分组见 `Source/finish_bus.py` 头注；`Models/Bus_fbx_readback.json` 是读回核对 |
+| `Models/BusLayout.json` | 唯一给 Unity 的数据：眼位、天窗、门（四片的开 / 关位姿）、轮子、管灯、头像补光、收音机、23 个座位（station 位置、眼位）、碰撞体、车厢包围盒 |
+| `Models/Bus_HarnessShell_paz672.fbx` | 给总工程师的渲染标准台：`--bus fbx:Bus/Models/Bus_HarnessShell_paz672.fbx`（没有玻璃） |
+| `Textures/Cabin_TubeLM.exr` | `_CabinTubeLM`（1024²，uv1）：RGB = 管灯照度 E（线性，Unity 单位），A = AO（0.5 m）。在 Blender 里只开 10 根管灯烘的；中段座垫 E = 0.8（圣经 §4.3） |
+| `Textures/Bus_Exterior_Albedo_2048.png` / `_Mask_2048.png` | 外观图集（uv1）：双色漆 + 做旧（轮拱 / 门槛 / 门边的锈、窗角雨痕、下 30 cm 泥点、门边掉漆、车顶氧化）；Mask：R 金属、G 光滑度、B 湿、A AO |
+| `Textures/Cabin_*` | 平铺细节：穿孔顶棚（Ø3 mm / 12 mm）、凸点橡胶（Ø25 / 50 mm）、皮纹、窗帘织纹、收音机刻度 |
+| `Textures/Bus_DestBlind_1024x296.png` / `_Blank_` | 目的地牌：外看正字「蓝白」（思源黑体 Heavy，140 mm）；第 11 幕换空白 |
+| `Editor/LanbaiBusBuild.cs` | 菜单 `蓝白/Build/车` |
+| `Source/` | Blender 5.0.1 的全部脚本：`bus_spec.py`（唯一数据源）、`build_bus.py`（造车）、`finish_bus.py`（分组、UV、导出、读回、布局 JSON）、`bake_lightmap.py`、`weather_exterior.py`、`gen_textures.py`、`viewcheck.py`（视窗验证） |
+| `Docs~/` | 简报 `lookdev_brief.md`、视窗图、迭代图、D-13 里尔克、参考渲染 |
+| `../Cabin/` | 车厢 shader（`Lanbai/Cabin`、`Lanbai/ThinCloth`）、`LanbaiCabinDriver`、numpy 移植、导入设置。见 `Cabin/README.md` |
+
+重做一遍（Blender 5.0.1 的 bpy 模块）：
+```bash
+~/bpy/bin/python Bus/Source/gen_textures.py
+~/bpy/bin/python Bus/Source/finish_bus.py --out /tmp/bus/models          # 造车 + 存 /tmp/bus/bus_final.blend
+~/bpy/bin/python Bus/Source/bake_lightmap.py --res 1024 --samples 96      # _CabinTubeLM
+~/bpy/bin/python Bus/Source/weather_exterior.py --res 2048                # 外观图集，存 /tmp/bus/bus_final_ext.blend
+~/bpy/bin/python Bus/Source/finish_bus.py --out Bus/Models --from-blend /tmp/bus/bus_final_ext.blend   # 导出 + 读回
+~/bpy/bin/python Bus/Source/viewcheck.py --out Bus/Docs~/viewcheck       # 15 个目标
+```
+
+---
+
+## 2. 视窗（主座位 (0.55, 1.70, 2.05)）
+
+**15 / 15 个取景目标看得见**（`Docs~/viewcheck/hero_map.png`，0.5° 网格对真网格打射线，每个目标 9 条）。车型、门、挡风的来龙去脉见 `Docs~/lookdev_brief.md` §2、§6–8。
+
+| 窗 | 方位 | 仰角 |
+|---|---|---|
+| 挡风左片 / 中柱 / 右片 | −55.5 … −28.5 / **−28.30 … −26.35** / −26.5 … +20.5 | −16 … +20.5 |
+| 右 A 柱 | +20.5 … +21.8 | |
+| 门洞（开着） | +21.8 … +38.4（折门的后叠在 +38.4 … +46.9，躲在门后柱后面） | −42 … +36 |
+| 主座位侧窗 | +42 … +146 | −39 … +48 |
+| 天窗 | ±31 | +41.5 … +63.5 |
+| 右侧第一扇斜面窗 | +44 … +155 | +41.5 … +71 |
+
+- 晨日（D-12，+30° / +6°）在门洞正中，±1.5° 全清，头往左 5 cm 也清。
+- 里尔克（D-13 A，D-30 单语块）：+5.5°、顶边 −2.5°、60 m，四种语言块里都没有遮挡（`Docs~/D-13_里尔克候选.md`）。
+- 收音机（D-14）：仪表台上、方向盘右边，正好在 −20° / −12°。
+- **头左右各移 5 cm**（总导演要的检查，`viewcheck.py --eye`）：头往左时河伯滑到中柱后、坠入深海滑到收音机后；头往右时银心滑到中柱后、庄子 8-ii 碰到门把手 / 窗框。都是细件扫过，不是整块盖住。
+- 云唇的路径（「云」的 `lip_path_v1`）：只被 A 柱挡（+18.4 … +21.1°）；太阳的两次出入都在门洞正中。
+- 右外后视镜从主座位看不见（D-28e）。
+
+---
+
+## 3. 参考渲染
+
+`Docs~/reference/`：主座位在第 1、2、4（U7、U8 抬头看天窗）、4c、6（正前、朝门）、7a、8、9、11、12 幕，后排左侧靠窗座（D-31），第 1 幕出生点看车外。场景脚本 `Docs~/lookdev/scene_acts.py`：车厢的项和 `Lanbai/Cabin` 一样（反照率 ×（光照图 × 管灯 + 环境色 × AO）、漂白、侵蚀用同一个阈值公式和系数）；**窗外是每幕的天色占位，不是那一幕的画面**，所以 APL 只能看车厢那一部分。每张的 `metrics.json` 在旁边。
+
+---
+
+## 4. 诚实的已知弱点
+
+1. **没在 Unity 里跑过**：材质参数、头像补光的强度（菜单给的是起始值 0.8 / 3 m，要用灰卡校）、雨刮枢轴的朝向、VRCStation 的坐姿高度都要本地看。
+2. **车厢太亮还是太暗，要和本地的画面对过才知道**：光照图按“中段座垫 E = 0.8”校（圣经 §4.3）；主座位自己的座垫只有 0.46（它在右排管灯的尽头、天窗旁边）。参考渲染里第 1、2 幕的 APL（只有车厢、窗外全黑）比目标高约 10–20，有了窗外的画面再定要不要整体降。
+3. **侵蚀公式**：圣经 §4.8 的写法和它的下一句话打架，`Lanbai/Cabin` 默认按“下一句话”（`Cabin/给总控_shader.md` §1），等总导演批。
+4. **外观做旧是程序算的**（位置 + 噪声），还没用 PAZ 的照片（总导演说照片可以直接用；没来得及）。0.3 m 看锈和雨痕还偏规整。
+5. **玻璃的车厢立方图**要本地烘（第 0 节第 5 步）。
+6. 门的“关”只在第 11 幕用，是四片平移到门框里（没有做折叠的动画）；白遮罩下看不见过程。
+7. 车高 2.74 m（原车 2.95 m），因为天窗玻璃 2.62 要和顶棚齐平（D-28a）。
+8. `Cabin_Static` 一个物体 2.8 万顶点、十几种材质：draw call 是材质数。要省的话按材质合并贴图图集（没做）。

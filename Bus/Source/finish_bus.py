@@ -308,6 +308,16 @@ def build_all(ao_samples):
     return out, piv + groups['wiper'], info
 
 
+def dest_blind_uv(db):
+    # the destination blind: uv0 = 0..1 over the blind, u left -> right as seen from OUTSIDE (Bus_DestBlind_1024x296.png)
+    uvl = db.data.uv_layers['UVMap'].data
+    x0, x1, y0, y1 = B.DEST_BOX
+    for p in db.data.polygons:
+        for li in p.loop_indices:
+            w = U(db.matrix_world @ db.data.vertices[db.data.loops[li].vertex_index].co)
+            uvl[li].uv = ((x1 - w[0]) / (x1 - x0), (w[1] - y0) / (y1 - y0))
+
+
 def door_pivots(objs):
     """origin of each door panel = its hinge in the OPEN state (bus_spec: rear jamb, stacked rearward). Returns the
     open / closed local transforms for the act-11 close (Unity: rotate about local +Y)."""
@@ -422,6 +432,8 @@ def main():
         bpy.ops.wm.save_as_mainfile(filepath=a.blend)
         objs = list(out.values()) + extra
     door_rows = door_pivots({o.name: o for o in objs})
+    if 'Cabin_DestBlind' in out:
+        dest_blind_uv(out['Cabin_DestBlind'])
     fbx = os.path.join(a.out, 'Bus.fbx')
     export_fbx(fbx, objs)
     expect = {}

@@ -229,7 +229,29 @@ def build(ctx):
         import scene_d13 as D13
         D13.lens(S, P['t'], ctx['eye'])
         D13.disc(S, 'Moon', -12, 8, 1.2, D13.emis('MoonMat', lin('#E8EEF8'), 6.0))
+    if a.get('exterior'):
+        # act 1 from the spawn point (bible 6.1): one headlight spot for both lamps (3200 K, 35 deg, no shadow), the
+        # tubes glowing through the windows; a cold stand-in for the stop lamp 14 m ahead of the spawn (not the stop kit)
+        ld = bpy.data.lights.new('Headlights', 'SPOT')
+        ld.energy, ld.spot_size, ld.color, ld.use_shadow = 900.0, math.radians(35), lin('#FFC47A'), False
+        lo = bpy.data.objects.new('Headlights', ld)
+        lo.location = S.U2B((B.XC, 0.70, B.Z_FRONT + 0.1))
+        lo.rotation_euler = (math.radians(95), 0, math.radians(180))
+        bpy.context.scene.collection.objects.link(lo)
+        lamp = bpy.data.lights.new('StopLamp', 'POINT')
+        lamp.energy, lamp.color, lamp.shadow_soft_size = 300.0, lin('#E4F1F3'), 0.1
+        lp_ = bpy.data.objects.new('StopLamp', lamp)
+        lp_.location = S.U2B((3.6, 4.2, 4.0))
+        bpy.context.scene.collection.objects.link(lp_)
+        glow = S.mat_emission('StopLampGlow', lin('#EEF5F7'), 8.0)
+        S.mesh_object('StopLampHead', [(3.45, 4.15, 4.0), (3.75, 4.15, 4.0), (3.75, 4.25, 4.0), (3.45, 4.25, 4.0)], [(0, 1, 2, 3)], glow)
     ground = S.mat_emission('Ground', [0.3 * v for v in lin(P['sky'][0])], 1.0)
+    if a.get('exterior'):
+        ground = bpy.data.materials.new('WetRoad')
+        ground.use_nodes = True
+        bsdf = ground.node_tree.nodes['Principled BSDF']
+        bsdf.inputs['Base Color'].default_value = (*lin('#1E1F21'), 1)
+        bsdf.inputs['Roughness'].default_value = 0.25
     if a.get('act') in ('1', '2', '11', '12', '6'):
         S.mesh_object('Ground', [(-200, 0, -300), (200, 0, -300), (200, 0, 300), (-200, 0, 300)], [(0, 1, 2, 3)], ground)
     return dict(what='act %s cabin reference' % a.get('act'), tubes=P['tubes'], bleach=P['bleach'], fade=P['fade'])
