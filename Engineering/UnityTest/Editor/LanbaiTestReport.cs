@@ -75,6 +75,7 @@ namespace Lanbai.Test
             m["blocked_reason"] = ctx.blockedReason;
             m["error"] = ctx.error;
             if (ctx.errorStack != null) m["error_stack"] = ctx.errorStack;
+            if (ctx.toolErrors.Count > 0) m["tool_errors"] = ctx.toolErrors.Cast<object>().ToList();
 
             var repo = new Dictionary<string, object>();
             if (ctx.sync != null)
@@ -266,6 +267,8 @@ namespace Lanbai.Test
                 sb.AppendLine("- **没声明的写入：" + und.Count + "**" + (und.Count > 0 ? "：" + string.Join("；", und.Take(20).Select(x => (string)x).ToArray()) + (und.Count > 20 ? " …" : "") : ""));
                 var ps = (List<object>)ctx.writes["project_settings_changed"];
                 if (ps.Count > 0) sb.AppendLine("- **ProjectSettings 被改了**：" + string.Join("、", ps.Select(x => (string)x).ToArray()));
+                var tt = ctx.writes.ContainsKey("tool_touched_restored") ? (List<object>)ctx.writes["tool_touched_restored"] : new List<object>();
+                if (tt.Count > 0) sb.AppendLine("- 工具临时改过、已改回的（不算没声明的写入）：" + tt.Count + " 个（清单在 manifest.json 的 writes.tool_touched_restored）");
                 sb.AppendLine("- 工具不保存场景。");
                 sb.AppendLine();
             }

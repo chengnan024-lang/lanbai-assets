@@ -49,6 +49,9 @@ namespace Lanbai.Test
         public WriteGuard.Snapshot before;
         public Dictionary<string, object> writes;
         public string blockedReason, error, errorStack, scenePath;
+        public readonly List<string> toolErrors = new List<string>();            // 工具自己代码里的异常（不是被调的脚本、不是步骤判的失败）→ 退出码 3
+        public readonly List<string> toolTouched = new List<string>();           // 工具临时改过、又改回去的资产（材质、JSON）
+        public readonly Dictionary<string, byte[]> restoredBytes = new Dictionary<string, byte[]>();
         public bool sandboxReady;
         public float? lastT;
         public readonly DateTime started = DateTime.UtcNow;
@@ -65,6 +68,11 @@ namespace Lanbai.Test
             return p;
         }
         public void AddFile(string rel) { if (!files.Contains(rel)) files.Add(rel); }
+        public void ToolError(string where, Exception e)
+        {
+            toolErrors.Add(where + "：" + e.GetType().Name + ": " + e.Message + "\n" + e.StackTrace);
+            Debug.LogError(LogCapture.TAG + " 工具自己的异常（" + where + "）：" + e);
+        }
         public void Warn(string w) { warnings.Add(w); Debug.LogWarning(LogCapture.TAG + " " + w); }
         public void Info(string s) { Debug.Log(LogCapture.TAG + " " + s); }
         public object T(string key) { return TJson.G(test, key); }
@@ -199,6 +207,7 @@ namespace Lanbai.Test
                 Debug.LogError(LogCapture.TAG + " 报告写不出来：" + e);
                 exit = 3;
             }
+            finally { ctx.log.Stop(); }
             Final(ResultLine(ctx, exit));
             return exit;
         }
@@ -234,6 +243,11 @@ namespace Lanbai.Test
             ctx.writes = WriteGuard.Diff(ctx);
             Checks.Evaluate(ctx);
             int failed = ctx.checks.Count(c => (string)c["status"] == "fail");
+            if (ctx.toolErrors.Count > 0)
+            {
+                ctx.error = "工具自己的代码出了 " + ctx.toolErrors.Count + " 次异常（详情在 manifest 的 tool_errors）：" + ctx.toolErrors[0].Split('\n')[0];
+                return 3;
+            }
             return failed > 0 ? 1 : 0;
         }
 

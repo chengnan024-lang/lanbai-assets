@@ -74,11 +74,12 @@ namespace Lanbai.Test
 
             // 编译：开跑前 Console 里的编译错误、scriptCompilationFailed
             int snap = ctx.log.SnapshotConsole();
-            int compileErr = ctx.log.CountWhere(r => LogCapture.Source(r) == "console_snapshot" && LogCapture.Type(r) == "CompileError");
+            // UdonSharp 的编译错误走 Debug.LogError（Console 里是 Error，不是 CompileError），scriptCompilationFailed 也不管它：带 U# 标记的 Error 一并算
+            int compileErr = ctx.log.CountWhere(r => LogCapture.Source(r) == "console_snapshot" && (LogCapture.Type(r) == "CompileError" || (LogCapture.Type(r) == "Error" && r.ContainsKey("udonsharp"))));
             ctx.Metric("console.compile_errors_at_start", compileErr);
             bool failed = EditorUtility.scriptCompilationFailed;
             Item(P, "compile", failed || compileErr > 0 ? "blocked" : "ok",
-                "scriptCompilationFailed " + failed + "，Console 里的编译错误 " + compileErr + " 条" + (snap < 0 ? "（Console 读不到，只看 scriptCompilationFailed）" : "（Console 共 " + snap + " 条，原样在 console.jsonl）"));
+                "scriptCompilationFailed " + failed + "，Console 里的编译错误（含 UdonSharp 的）" + compileErr + " 条" + (snap < 0 ? "（Console 读不到，只看 scriptCompilationFailed）" : "（Console 共 " + snap + " 条，原样在 console.jsonl）"));
 
             // 打开的场景：有没保存的改动就停，不替人保存也不丢掉
             var dirty = new List<string>();
@@ -407,8 +408,10 @@ namespace Lanbai.Test
         {
             if (!Directory.Exists(DIR)) return true;
             if (!File.Exists(MarkerPath)) throw new BlockedException(DIR + " 没有标记文件，不删");
-            var open = SceneManager.GetActiveScene();
-            if (open.path.StartsWith(DIR + "/", StringComparison.Ordinal))
+            bool sandboxOpen = false;
+            for (int i = 0; i < SceneManager.sceneCount; i++)
+                if (SceneManager.GetSceneAt(i).path.StartsWith(DIR + "/", StringComparison.Ordinal)) sandboxOpen = true;
+            if (sandboxOpen)   // 沙盒里的场景开着（哪怕不是当前场景）：先换成空场景，再删
                 UnityEditor.SceneManagement.EditorSceneManager.NewScene(UnityEditor.SceneManagement.NewSceneSetup.EmptyScene, UnityEditor.SceneManagement.NewSceneMode.Single);
             AssetDatabase.DeleteAsset(DIR);
             if (Directory.Exists(DIR)) Directory.Delete(DIR, true);
@@ -454,11 +457,19 @@ namespace Lanbai.Test
             // 工具自己不 SaveAssets：只比搭建脚本自己存下来的。工具在内存里改的材质值不落盘（改回去以后也不落盘）
             var after = Take(ctx.projectDir);
             var allowed = TJson.Sa(TJson.G(ctx.test, "allowed_writes")).Select(Glob).ToList();
-            var declared = new List<object>(); var undeclared = new List<object>(); var ps = new List<object>();
+            var declared = new List<object>(); var undeclared = new List<object>(); var ps = new List<object>(); var touched = new List<object>();
             Action<string, string> classify = (path, what) =>
             {
                 string p = path.EndsWith(".meta", StringComparison.Ordinal) ? path.Substring(0, path.Length - 5) : path;
+                // 工具逐字节写回去的文件（edit_json），内容和原来一样就不算改动
+                byte[] orig;
+                if (what == "改了" && ctx.restoredBytes.TryGetValue(path, out orig))
+                {
+                    try { if (File.ReadAllBytes(path).SequenceEqual(orig)) { touched.Add("写回了、内容和原来一样 " + path); return; } } catch { }
+                }
                 bool ok = allowed.Any(r => r.IsMatch(path) || r.IsMatch(p));
+                // 工具临时改过又改回的材质：之后别的搭建脚本 SaveAssets 时会把它（改回后的值）落盘，单独列出来，不算没声明的写入
+                if (!ok && what == "改了" && ctx.toolTouched.Contains(p)) { touched.Add("工具临时改过、已改回，被搭建脚本的 SaveAssets 落了盘 " + path); return; }
                 (ok ? declared : undeclared).Add(what + " " + path);
             };
             foreach (var kv in after.assets)
@@ -479,7 +490,7 @@ namespace Lanbai.Test
             return new Dictionary<string, object>
             {
                 { "sandbox", Sandbox.DIR }, { "allowed_writes", TJson.Sa(TJson.G(ctx.test, "allowed_writes")).Cast<object>().ToList() },
-                { "declared", declared }, { "undeclared", undeclared }, { "project_settings_changed", ps },
+                { "declared", declared }, { "undeclared", undeclared }, { "project_settings_changed", ps }, { "tool_touched_restored", touched },
                 { "note", "按文件大小和修改时间比的：搭建脚本存了但内容没变的文件也算“改了”；只在内存里改、没存盘的不算" }
             };
         }
@@ -521,7 +532,7 @@ namespace Lanbai.Test
         public static void Evaluate(Ctx ctx)
         {
             // 跑的过程中的 Console（开跑前的那些算预检）
-            ctx.Metric("console.compile_errors", ctx.log.CountWhere(r => LogCapture.Type(r) == "CompileError" && LogCapture.Source(r) != "console_snapshot"));
+            ctx.Metric("console.compile_errors", ctx.log.CountWhere(r => LogCapture.Source(r) != "console_snapshot" && (LogCapture.Type(r) == "CompileError" || (LogCapture.Type(r) == "Error" && r.ContainsKey("udonsharp")))));
             ctx.Metric("console.exceptions", ctx.log.CountWhere(r => LogCapture.Type(r) == "Exception" && LogCapture.Source(r) == "live" && !LogCapture.IsTool(r)));
             ctx.Metric("console.errors", ctx.log.CountWhere(r => (LogCapture.Type(r) == "Error" || LogCapture.Type(r) == "Assert") && LogCapture.Source(r) == "live" && !LogCapture.IsTool(r)));
             ctx.Metric("console.warnings", ctx.log.CountWhere(r => LogCapture.Type(r) == "Warning" && LogCapture.Source(r) == "live" && !LogCapture.IsTool(r)));
@@ -587,9 +598,10 @@ namespace Lanbai.Test
                 case ">=": ok = m >= TJson.D(v); expect = "≥ " + TJson.S(v); break;
                 case "between":
                     {
-                        var a = TJson.Fa(v);
-                        ok = a != null && a.Length == 2 && m >= a[0] && m <= a[1];
-                        expect = a != null && a.Length == 2 ? a[0].ToString(IC) + " … " + a[1].ToString(IC) : "?";
+                        var a = TJson.L(v);
+                        double lo = a.Count == 2 ? TJson.D(a[0]) : double.NaN, hi = a.Count == 2 ? TJson.D(a[1]) : double.NaN;
+                        ok = a.Count == 2 && m >= lo && m <= hi;
+                        expect = a.Count == 2 ? lo.ToString(IC) + " … " + hi.ToString(IC) : "?";
                         break;
                     }
                 case "within_pct":

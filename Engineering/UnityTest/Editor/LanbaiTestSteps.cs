@@ -74,6 +74,8 @@ namespace Lanbai.Test
                 catch (Exception e)
                 {
                     var inner = e is TargetInvocationException && e.InnerException != null ? e.InnerException : e;
+                    // 被调的搭建脚本 / 菜单抛的异常（经过反射）和步骤自己判的失败，都算“这一步没过”；工具自己代码里的异常算工具 bug（退出码 3）
+                    if (!(inner is StepException) && !(e is TargetInvocationException) && !(e is ArgumentException) && !(e is FormatException)) ctx.ToolError("步骤 " + type, inner);
                     rec["status"] = "error";
                     rec["error"] = (inner is StepException ? "" : inner.GetType().Name + ": ") + inner.Message;
                     if (!(inner is StepException)) rec["stack"] = Trim(inner.StackTrace ?? "", 4000);
@@ -353,7 +355,11 @@ namespace Lanbai.Test
         static List<object> Args(Dictionary<string, object> st, float? t)
         {
             var l = new List<object>();
-            if (TJson.Has(st, "arg")) l.Add(Fmt(TJson.S(TJson.G(st, "arg")), t));
+            if (TJson.Has(st, "arg"))
+            {
+                var a = TJson.G(st, "arg");
+                l.Add(a is double ? ((double)a).ToString("R", IC) : Fmt(TJson.S(a), t));
+            }
             else foreach (var a in TJson.L(TJson.G(st, "args"))) l.Add(a is string ? (object)Fmt((string)a, t) : a);
             return l;
         }
@@ -425,6 +431,8 @@ namespace Lanbai.Test
             var said = new List<string>();
             foreach (var m in mats)
             {
+                string ap = AssetDatabase.GetAssetPath(m);
+                if (!string.IsNullOrEmpty(ap) && !ctx.toolTouched.Contains(ap)) ctx.toolTouched.Add(ap);
                 foreach (var kv in props)
                 {
                     if (!m.HasProperty(kv.Key)) continue;
@@ -514,8 +522,10 @@ namespace Lanbai.Test
             }
             File.WriteAllText(path, TJson.Write(root, true) + "\n", new System.Text.UTF8Encoding(false));
             AssetDatabase.ImportAsset(path);
+            if (!ctx.toolTouched.Contains(path)) ctx.toolTouched.Add(path);
             if (restore)
                 ctx.undo.Push("JSON " + path, () => { File.WriteAllBytes(path, orig); AssetDatabase.ImportAsset(path); });
+            ctx.restoredBytes[path] = orig;
             return path + "：" + string.Join("，", said.ToArray()) + (restore ? "（结束时逐字节写回；原文件备份在 backup/）" : "（不写回）");
         }
     }

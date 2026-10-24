@@ -34,7 +34,16 @@ namespace Lanbai.Test
                     Capture.Guard(ctx, "perf", new Dictionary<string, object> { { "id", TJson.S(TJson.G(item, "id")) + "/" + TJson.S(TJson.G(st, "id")) } }, () => One(ctx, item, st));
                     // 状态里重搭过的（比如 auto_lite 档），改回以后按 teardown 再搭一次
                     var td = TJson.L(TJson.G(st, "teardown"));
-                    if (td.Count > 0) { ctx.lastT = null; Steps.RunList(ctx, td, "perf_teardown", null, true); }
+                    if (td.Count > 0)
+                    {
+                        ctx.lastT = null;
+                        if (!Steps.RunList(ctx, td, "perf_teardown", null, true))
+                        {
+                            // 没搭回去：后面量的就不是测试定义说的那个场景了，停掉剩下的性能项
+                            ctx.Warn("性能状态 " + TJson.S(TJson.G(st, "id")) + " 的 teardown 失败，剩下的性能项不量了（量出来的会贴错标签）");
+                            return;
+                        }
+                    }
                 }
             }
         }

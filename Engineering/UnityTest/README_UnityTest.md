@@ -112,7 +112,7 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json"
 | **0** | 全部跑完，检查全过 | 拷输出文件夹到 `FromLocal/`、推；头显清单另外看 |
 | **1** | 跑完了，有检查没过（或有一步失败了） | 照样拷、推。**不要自己改数值、不要自己修**：`summary.md` 的“检查项”和“步骤”写着哪里没过，云端看了再定 |
 | **2** | BLOCKED：预检或前置条件不满足，什么都没搭 | 看 `summary.md` 第一段的原因。能自己补的补上再跑（没同步的同步、Unity / 包版本不对的装对、有没保存的场景先存或放弃）；补不了的（比如车的切片还没交、占位测试）照样推报告 |
-| **3** | 工具自己出了异常 | 推 `manifest.json`（`error`、`error_stack`）、`console.jsonl` 和 `-logFile` 的日志；照 §9 恢复后可以重跑一次。这是总工程师的 bug |
+| **3** | 工具自己出了异常（工具自己代码里的异常，哪怕只在一张截图里，也算 3；被调的搭建脚本抛的、步骤判的失败算 1） | 推 `manifest.json`（`error`、`error_stack`）、`console.jsonl` 和 `-logFile` 的日志；照 §9 恢复后可以重跑一次。这是总工程师的 bug |
 | 日志里**没有** `LANBAI_TEST_RESULT` | Unity 没走到工具：多半是启动时就有编译错误（`-executeMethod` 根本没执行），或者工程被另一个 Unity 开着 | 打开编辑器看 Console；把 `-logFile` 的日志原样推回来。按 BLOCKED 处理 |
 
 `summary.md` 里“三层状态”：Blender 离线（云端填）、Unity 桌面（工具填，就是这个退出码）、头显（固定 `not_tested`，工具从不标成过）。
@@ -191,7 +191,7 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json"
 
 ### 6.2 机位
 
-`eye [x,y,z]`；朝向 `euler [x,y,z]`（Unity 的 localEulerAngles）或 `yaw`、`pitch`、`roll`（= `(−pitch, yaw, roll)`，和渲染夹具一样）；`hfov`（水平视角，默认 90）或 `vfov`；`w`、`h`（默认 1920×1080）、`ss`（超采样，默认 2）；`t`；`ref`（参考图：`repo:<仓库里的路径>` 按同步记录的仓库路径找，或工程里的路径）、`ref_half`（`top` / `bottom`：`compare_*.png` 上半张是这一版的参照）；`before` / `after`（这一张前后的步骤，结束改回）。
+`eye [x,y,z]`；朝向 `euler [x,y,z]`（Unity 的 localEulerAngles）或 `yaw`、`pitch`、`roll`（= `(−pitch, yaw, roll)`，和渲染夹具一样）；`hfov`（水平视角，默认 90）或 `vfov`；`w`、`h`（默认 1920×1080）、`ss`（超采样，默认 2）；`t`；`ref`（参考图：`repo:<仓库里的路径>` 按同步记录的仓库路径找，或工程里的路径）、`ref_half`（`top` / `bottom`：`compare_*.png` 上半张是这一版的参照）；`before`（定好时间以后、拍之前的步骤，拍完改回）/ `after`（拍完以后的步骤，不登记改回）。
 
 近景：`look_at [x,y,z]` 或 `look_at_object`（场景路径，取包围盒中心）+ `distance`（米）+ `toward [x,y,z]`（相机退向这个点，比如主座位的眼）；`crop_deg [宽, 高]` + `ppd`（每度像素，默认 20：D-36 #1 的 Index 密度）时，尺寸按画面中心每度 `ppd` 个像素算。
 
@@ -240,6 +240,7 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json"
 - 工具只往 **`Assets/_LanbaiTest/`**（带标记文件 `.lanbai_test_sandbox`）和输出文件夹写。开跑时删掉上次遗留的沙盒：**只删带标记的**；`Assets/_LanbaiTest/` 在、却没有标记，预检 BLOCKED。
 - **工具从不保存场景**，也不 `SaveAssets`；材质值、物体开关这些在内存里改，结束时改回。
 - 项目设置（顶点压缩、雾的变体剔除、光强）只查不改。
+- 工具临时改过又改回的（`set_material` 改过的材质、`edit_json` 写回的文件）：内容和原来一样、或者只是被后面搭建脚本的 `SaveAssets` 把改回后的值落了盘的，单独列在 `writes.tool_touched_restored`，不算没声明的写入。
 - 跑之前、跑之后各记一次 `Assets/`（大小 + 修改时间）和 `ProjectSettings/*.asset`（内容哈希）：沙盒和 `allowed_writes` 以外的每一处改动都列进 `writes.undeclared`，检查项 `no_undeclared_writes` 不过。
 - **例外，要总导演知道：** `gate_clouds_test` 在原场景 `Assets/Lanbai/Tests/GateTest.unity` 里跑（`in_place`），由门测试脚本和门的搭建菜单去写 `Tests/`、`GateClouds/Generated/`、贴图导入设置、`UdonPrograms/`——HANDOFF_LOG 那几条本来就要这样搭；`auto_lite` 那一档临时改 `GateClouds_Layout.json`，量完逐字节写回。这些都列在它的 `allowed_writes` 里。`act06_dawn` 把主场景拷进沙盒再搭，但第 6 幕的搭建脚本会写 `Act06_Dawn/Generated/`。
 

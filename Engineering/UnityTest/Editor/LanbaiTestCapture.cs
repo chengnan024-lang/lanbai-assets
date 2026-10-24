@@ -48,6 +48,7 @@ namespace Lanbai.Test
             catch (Exception e)
             {
                 var inner = e is TargetInvocationException && e.InnerException != null ? e.InnerException : e;
+                if (!(inner is StepException) && !(e is TargetInvocationException)) ctx.ToolError(what, inner);
                 ctx.steps.Add(new Dictionary<string, object>
                 {
                     { "phase", what }, { "type", what }, { "desc", TJson.S(TJson.G(item, "id"), "?") }, { "status", "error" },
@@ -84,8 +85,8 @@ namespace Lanbai.Test
                 // 看一个物体：取它（和子物体）所有 renderer 包围盒的中心
                 var tr = Scenes.Find(lookObj);
                 if (tr == null) throw new StepException("机位 " + c.id + " 要看的物体不在：" + lookObj);
-                var rs = tr.GetComponentsInChildren<Renderer>(true);
-                if (rs.Length == 0) throw new StepException(lookObj + " 下面没有 renderer");
+                var rs = tr.GetComponentsInChildren<Renderer>(true).Where(r => r.enabled && r.gameObject.activeInHierarchy).ToArray();
+                if (rs.Length == 0) throw new StepException(lookObj + " 下面没有开着的 renderer");
                 var b = rs[0].bounds;
                 foreach (var r in rs) b.Encapsulate(r.bounds);
                 look = new[] { b.center.x, b.center.y, b.center.z };
@@ -116,7 +117,16 @@ namespace Lanbai.Test
             c.h = TJson.I(TJson.G(d, "h"), 1080);
             c.ss = Math.Max(1, TJson.I(TJson.G(d, "ss"), 2));
             var crop = TJson.Fa(TJson.G(d, "crop_deg"));
-            if (crop != null && crop.Length == 2) { c.hfov = crop[0]; c.vfov = crop[1]; }
+            if (crop != null && crop.Length == 2)
+            {
+                c.hfov = crop[0]; c.vfov = crop[1];
+                if (!TJson.Has(d, "ppd"))
+                {
+                    // 没给 ppd：宽高比跟着裁的角度走（高不变），渲出来的水平视角才等于 crop_deg[0]
+                    float a = Mathf.Tan(0.5f * c.hfov * Mathf.Deg2Rad) / Mathf.Tan(0.5f * c.vfov * Mathf.Deg2Rad);
+                    c.w = Mathf.Max(16, Mathf.RoundToInt(c.h * a));
+                }
+            }
             if (TJson.Has(d, "ppd"))
             {
                 // 按 VR 像素密度出近景（D-36 #1：Index 约 20 px/°）：画面中心每度 ppd 个像素
@@ -147,6 +157,15 @@ namespace Lanbai.Test
             if (l.Count == 0) return;
             ctx.lastT = null;   // before / after 可能动了场景，下一次照样重新定时间
             if (!Steps.RunList(ctx, l, key, null, true, true)) throw new StepException(key + " 的步骤失败");
+        }
+
+        /// <summary>after：拍完以后的步骤，默认不登记改回（它本来就是用来改回 / 收尾的）。</summary>
+        static void RunAfter(Ctx ctx, Dictionary<string, object> d)
+        {
+            var l = TJson.L(TJson.G(d, "after"));
+            if (l.Count == 0) return;
+            ctx.lastT = null;
+            if (!Steps.RunList(ctx, l, "after", null, true, false)) throw new StepException("after 的步骤失败");
         }
 
         // ── 相机 ────────────────────────────────────────────────────
@@ -291,8 +310,8 @@ namespace Lanbai.Test
             int mark = ctx.undo.Mark();
             try
             {
+                ApplyTime(ctx, c.t, false);         // 先定时间，再做 before（before 改的东西不会被定时间的步骤盖掉）
                 RunBefore(ctx, c.def, "before");
-                ApplyTime(ctx, c.t, false);
                 PPv2Probe(ctx, c);
                 bool hasPP;
                 var px = RenderOnce(ctx, c, c.w, c.h, c.ss, true, out hasPP);
@@ -318,7 +337,7 @@ namespace Lanbai.Test
                 if (c.t.HasValue) rec["t"] = (double)c.t.Value;
                 if (TJson.Has(c.def, "label")) rec["label"] = TJson.G(c.def, "label");
                 if (TJson.Has(c.def, "ref")) Compare(ctx, c, px, key, rec, folder);
-                RunBefore(ctx, c.def, "after");
+                RunAfter(ctx, c.def);
                 ctx.shots.Add(rec);
                 return rec;
             }
@@ -398,8 +417,8 @@ namespace Lanbai.Test
             int mark = ctx.undo.Mark();
             try
             {
+                ApplyTime(ctx, c.t, false);         // 先定时间，再做 before（before 改的东西不会被定时间的步骤盖掉）
                 RunBefore(ctx, c.def, "before");
-                ApplyTime(ctx, c.t, false);
                 float half = TJson.F(TJson.G(c.def, "ipd_mm"), 64f) * 0.0005f;
                 var right = c.rot * Vector3.right;
                 var eyes = new Color32[2][];
@@ -446,20 +465,26 @@ namespace Lanbai.Test
             float eyeOff = TJson.F(TJson.G(d, "eye_offset_mm"), 0f) * 0.001f;
             bool save = TJson.B(TJson.G(d, "save_frames"), true);
             float thr = TJson.F(TJson.G(d, "hf_threshold"), 6f), scale = TJson.F(TJson.G(d, "heat_scale"), 24f);
-            float t0 = c.t ?? TJson.F(TJson.G(d, "t0"), 0f);
+            // t0 写了就用 t0（机位自己的 t 只是截图用的时刻）；没写 t0 才用机位的 t
+            float t0 = TJson.Has(d, "t0") ? TJson.F(TJson.G(d, "t0")) : (c.t ?? 0f);
             float t1 = TJson.F(TJson.G(d, "t1"), t0 + n / fps);
             bool advance = kind == "time" || TJson.B(TJson.G(d, "advance_time"));
-            if (kind == "time") n = Math.Max(2, Mathf.RoundToInt((t1 - t0) * fps) + 1);
-            if (n < 3) throw new StepException("序列至少 3 帧");
             bool hasTime = TJson.Has(d, "t") || TJson.Has(d, "t0");
+            if (kind == "time")
+            {
+                if (!hasTime) throw new StepException("序列 " + c.id + "：kind = time 要写 t0（和 t1）");
+                if (t1 <= t0) throw new StepException("序列 " + c.id + "：t1 (" + t1.ToString("0.###", IC) + ") 要大于 t0 (" + t0.ToString("0.###", IC) + ")");
+                n = Math.Max(2, Mathf.RoundToInt((t1 - t0) * fps) + 1);
+            }
+            if (n < 3) throw new StepException("序列至少 3 帧");
 
             int mark = ctx.undo.Mark();
             Renderer2 r = null;
             string dir = "seq/" + c.id;
             try
             {
-                RunBefore(ctx, d, "before");
                 if (hasTime) ApplyTime(ctx, t0, false);
+                RunBefore(ctx, d, "before");
                 r = new Renderer2(ctx, c, w, h, ss, true);
                 int N = w * h;
                 var sum = new double[N]; var sum2 = new double[N]; var hf2 = new double[N];
@@ -565,7 +590,8 @@ namespace Lanbai.Test
             if (mats.Count == 0) throw new StepException("texture_compare " + id + "：没选到材质");
             var variants = TJson.Sa(TJson.G(item, "variants"));
             if (variants.Count == 0) variants = new List<string> { "raw", "bc7", "crunch" };
-            if (!variants.Contains("raw")) variants.Insert(0, "raw");          // 不压缩的那张是比较的基准
+            variants.Remove("raw");
+            variants.Insert(0, "raw");          // 不压缩的那张是比较的基准，永远先拍
             int quality = TJson.I(TJson.G(item, "crunch_quality"), 50);
             var shots = TJson.Sa(TJson.G(item, "shots"));
 
@@ -579,7 +605,8 @@ namespace Lanbai.Test
                 foreach (var pn in m.GetTexturePropertyNames())
                 {
                     var t2 = m.GetTexture(pn) as Texture2D;
-                    if (t2 == null || string.IsNullOrEmpty(AssetDatabase.GetAssetPath(t2))) continue;
+                    string tp = t2 != null ? AssetDatabase.GetAssetPath(t2) : null;
+                    if (string.IsNullOrEmpty(tp) || !tp.StartsWith("Assets/", StringComparison.Ordinal)) continue;   // 内置贴图（unity_builtin_extra）、包里的不拷
                     l.Add(new KeyValuePair<string, Texture2D>(pn, t2));
                     if (seen.Add(t2))
                     {
@@ -608,7 +635,7 @@ namespace Lanbai.Test
                 foreach (var t2 in seen)
                 {
                     string src = AssetDatabase.GetAssetPath(t2);
-                    string dst = tdir + "/" + Path.GetFileName(src);
+                    string dst = AssetDatabase.GenerateUniqueAssetPath(tdir + "/" + Path.GetFileName(src));
                     if (!AssetDatabase.CopyAsset(src, dst)) throw new StepException("拷贝贴图失败 " + src);
                     var ti = (TextureImporter)AssetImporter.GetAtPath(dst);
                     var pc = ti.GetPlatformTextureSettings("Standalone");
@@ -630,7 +657,7 @@ namespace Lanbai.Test
                 {
                     var cm = new Material(m) { name = m.name + "_" + v };
                     foreach (var kv in texProps[m]) cm.SetTexture(kv.Key, map[kv.Value]);
-                    AssetDatabase.CreateAsset(cm, tdir + "/" + m.name + "_" + v + ".mat");
+                    AssetDatabase.CreateAsset(cm, AssetDatabase.GenerateUniqueAssetPath(tdir + "/" + m.name + "_" + v + ".mat"));
                     clone[m] = cm;
                 }
                 // 3) 场景里用到这些材质的 renderer 临时换成拷贝（结束时换回；场景不存）
@@ -754,7 +781,7 @@ namespace Lanbai.Test
             var o = new Color32[v.Length];
             for (int i = 0; i < v.Length; i++)
             {
-                float x = Mathf.Clamp01(v[i] / scale);
+                float x = Mathf.Clamp01(v[i] / Mathf.Max(1e-3f, scale));
                 if (x < 0.04f) { byte g = (byte)(mean[i] * 0.35f); o[i] = new Color32(g, g, g, 255); continue; }
                 float f = x * (RAMP.Length - 1);
                 int k = Math.Min(RAMP.Length - 2, (int)f);
