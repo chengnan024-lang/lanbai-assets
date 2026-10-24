@@ -71,8 +71,8 @@ def mirror_state(m, t):
     rimsoft = 0.0
     if m['index'] == 13:
         rs = m.get('rim_soft') if RIM_SCHEME == 'JSON' else None
-        if rs is not None:         # the schedule's own (D-38: scheme H): soft while far, sharp from sharpen_from over `seconds`
-            rimsoft = 1.0 - min(max((t - rs['sharpen_from']) / rs['seconds'], 0), 1)
+        if RIM_SCHEME == 'JSON':   # the schedule's own: none since review r3 C4 (D-38: the rim is always clear)
+            rimsoft = 0.0 if rs is None else 1.0 - min(max((t - rs['sharpen_from']) / rs['seconds'], 0), 1)
         elif RIM_SCHEME == 'H':
             rimsoft = 1.0 - min(max((t - 1135.31) / 4.0, 0), 1)
         elif RIM_SCHEME == 'G':

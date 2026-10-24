@@ -132,28 +132,70 @@ inline float LanbaiMirrorSaw(float x)              // triangle teeth 0..1 along 
 {
     return 1.0 - abs(frac(x) * 2.0 - 1.0);
 }
-inline float LanbaiMirrorBandHeight(float rM, float R, float th, float footprintM, out float bandId)
+// Polar bands as strings of beads (review r3 #1): each band is split into rows of about rowTarget metres; every row
+// uses ONE radius (its centre) and an INTEGER number of cells, so a cell is not sheared across the row and the ring
+// closes on itself at theta = +-pi (no seam).  period = absolute cell length (m), or aspect * row height if aspect > 0;
+// the cell count is a multiple of 'multiple' (35 for the inscription: the text closes on itself).
+struct LanbaiBandCell
+{
+    float s;        // cell coordinate along the ring: floor = cell index, frac = position in the cell
+    float v;        // 0 at the row's inner edge .. 1 at its outer edge
+    float row;      // row index from the inside
+    float rows;
+    float rowH;     // metres
+    float n;        // cells in this row
+};
+inline LanbaiBandCell LanbaiMirrorBandCell(float rM, float th, float r0, float r1, float rowTarget, float period,
+                                           float aspect, float multiple)
+{
+    LanbaiBandCell c;
+    float w = r1 - r0;
+    c.rows = max(floor(w / rowTarget), 1.0);
+    c.rowH = w / c.rows;
+    float y = (rM - r0) / c.rowH;
+    c.row = clamp(floor(y), 0.0, c.rows - 1.0);
+    c.v = saturate(y - c.row);
+    float rRow = r0 + (c.row + 0.5) * c.rowH;
+    float p = (aspect > 0.0) ? aspect * c.rowH : period;
+    c.n = multiple * max(round(6.2831853 * rRow / p / multiple), 1.0);
+    c.s = (th + 3.14159265) * (c.n / 6.2831853);
+    return c;
+}
+// screen derivatives of theta without the 2 pi jump at the seam (for tex2Dgrad: F9)
+inline float2 LanbaiWrapDTheta(float th)
+{
+    float2 d = float2(ddx(th), ddy(th));
+    return d - 6.2831853 * round(d / 6.2831853);
+}
+
+#define LM_CLOUD_ASPECT 5.246      // the rim cloud strip (2 units of 1995.301 band): tile length / band height (make_textures.py prints it)
+
+// Height 0..1 of the back's outer bands at rM / R, theta.  footprintM fades periodic detail below ~2 px.
+// cloudTex: T_MirrorRimCloud (Repeat in u), two units of the real 流云纹 band unwrapped from 1995.301.
+inline float LanbaiMirrorBandHeight(float rM, float R, float th, float2 dth, float2 drM, float footprintM,
+                                    sampler2D cloudTex, out float bandId)
 {
     float q = rM / R;
     float h = 0.0;
     bandId = 0.0;
-    float arcR = th * rM;                                        // arc length at this radius, metres
-    // comb (栉齿) 0.80 .. 0.83, period 0.5 m
+    // comb (栉齿) 0.80 .. 0.83, a line every 0.5 m, rows of ~1 m
     if (q >= 0.80 && q < 0.83)
     {
-        float c = abs(frac(arcR / 0.5 + 0.5) - 0.5) * 2.0;       // 0 at line centre
-        h = smoothstep(0.45, 0.25, c) * saturate(1.5 - footprintM / 0.2);
+        LanbaiBandCell b = LanbaiMirrorBandCell(rM, th, 0.80 * R, 0.83 * R, 1.0, 0.5, 0.0, 1.0);
+        float c = abs(frac(b.s + 0.5) - 0.5) * 2.0;             // 0 at line centre
+        float gap = (b.rows > 1.0) ? smoothstep(0.0, 0.08, b.v) * smoothstep(1.0, 0.92, b.v) : 1.0;
+        h = smoothstep(0.45, 0.25, c) * gap * saturate(1.5 - footprintM / 0.2);
         bandId = 2.0;
     }
-    // wide flat rim 0.85 .. 1.00 (as Cleveland 1995.301): sawtooth 0.855 .. 0.89 (tooth 1.25 m), a fine ring, then the
-    // 流云纹 cloud-scroll band 0.905 .. 0.975 (one scroll every 3 m), plain outer lip
+    // wide flat rim 0.85 .. 1.00 (as Cleveland 1995.301): sawtooth 0.855 .. 0.89 (tooth 1.25 m, rows of ~1.1 m),
+    // a fine ring, then the 流云纹 band 0.905 .. 0.975 (the real one, rows of ~1.4 m), plain outer lip
     else if (q >= 0.85)
     {
         float hh = 0.0;
         if (q >= 0.855 && q < 0.89)
         {
-            float vloc = (q - 0.855) / 0.035;                    // 0 inner .. 1 outer
-            hh = step(vloc, LanbaiMirrorSaw(arcR / 1.25) * 0.95) * saturate(1.5 - footprintM / 0.4);
+            LanbaiBandCell b = LanbaiMirrorBandCell(rM, th, 0.855 * R, 0.89 * R, 1.1, 1.25, 0.0, 1.0);
+            hh = step(b.v, LanbaiMirrorSaw(b.s) * 0.95) * saturate(1.5 - footprintM / 0.4);
         }
         else if (q >= 0.895 && q < 0.90)
         {
@@ -161,16 +203,11 @@ inline float LanbaiMirrorBandHeight(float rM, float R, float th, float footprint
         }
         else if (q >= 0.905 && q < 0.975)
         {
-            float vloc = (q - 0.905) / 0.07 * 2.0 - 1.0;         // -1 .. 1 across the band
-            float x = frac(arcR / 3.0);                          // one scroll per 3 m
-            float wave = 0.55 * sin(6.2831853 * x);
-            float dl = abs(vloc - wave);                         // the running wave
-            float2 c = float2(x - 0.25, vloc - 0.55);            // a curl at each crest
-            float rr = length(c * float2(3.0, 1.0));
-            float curl = abs(rr - 0.25 * (0.6 + 0.4 * frac(atan2(c.y, c.x) / 6.2831853)));
-            float strokeW = 0.11;
-            hh = max(smoothstep(strokeW, strokeW * 0.5, dl), smoothstep(strokeW * 0.8, strokeW * 0.4, curl) * step(rr, 0.3));
-            hh *= saturate(1.5 - footprintM / 0.6);
+            LanbaiBandCell b = LanbaiMirrorBandCell(rM, th, 0.905 * R, 0.975 * R, 1.4, 0.0, LM_CLOUD_ASPECT, 1.0);
+            float k = b.n / 6.2831853;
+            float2 uv = float2(frac(b.s), b.v);
+            hh = tex2Dgrad(cloudTex, uv, float2(dth.x * k, drM.x / b.rowH), float2(dth.y * k, drM.y / b.rowH)).r;
+            hh *= saturate(1.5 - footprintM / 0.3);
         }
         h = hh;
         bandId = 3.0;

@@ -131,7 +131,7 @@ namespace Lanbai.Mirrors.EditorTools
             c2.knotT = LanbaiMirrorsData.KnotT; c2.knotY = LanbaiMirrorsData.KnotY; c2.knotV = LanbaiMirrorsData.KnotV;
             c2.visStart = LanbaiMirrorsData.VisStart; c2.visCount = LanbaiMirrorsData.VisCount;
             c2.visT = LanbaiMirrorsData.VisT; c2.visV = LanbaiMirrorsData.VisV;
-            c2.rimSoftStart = LanbaiMirrorsData.RimSoftStart; c2.rimSoftSeconds = LanbaiMirrorsData.RimSoftSeconds; c2.rimSoftFrom = LanbaiMirrorsData.RimSoftFrom;
+           
             c2.eye = new Vector3(LanbaiMirrorsData.Eye[0], LanbaiMirrorsData.Eye[1], LanbaiMirrorsData.Eye[2]);
             EditorUtility.SetDirty(c2);
             root.SetActive(false);                      // the dispatcher's LanbaiActivate(true) at the window start (1010, in the black)
@@ -152,6 +152,7 @@ namespace Lanbai.Mirrors.EditorTools
             m.SetTexture("_BackCentreNormal", AssetDatabase.LoadAssetAtPath<Texture>(kit + "/Textures/T_MirrorBack_Centre_Normal_2048.png"));
             m.SetTexture("_BackCentreMask", AssetDatabase.LoadAssetAtPath<Texture>(kit + "/Textures/T_MirrorBack_Centre_Mask_2048.png"));
             m.SetTexture("_Glyphs", AssetDatabase.LoadAssetAtPath<Texture>(kit + "/Textures/T_MirrorGlyphs_1024.png"));
+            m.SetTexture("_RimCloud", AssetDatabase.LoadAssetAtPath<Texture>(kit + "/Textures/T_MirrorRimCloud_2048x256.png"));
             if (glow != null) m.SetTexture("_GlowTex", glow);
             EditorUtility.SetDirty(m);
             return m;
@@ -226,7 +227,9 @@ namespace Lanbai.Mirrors.EditorTools
             return go.AddComponent<LanbaiMirrorsDriver>();
         }
 
-        // U# 1.x only compiles scripts that have a program asset (CONTROL §6 pitfall 11)
+        // U# 1.x only compiles scripts that have a program asset (CONTROL §6 pitfall 11).
+        // D-41 CALL POINT: the chief engineer's shared tool replaces this body; the mirrors and act 10 builders both come
+        // through here and nowhere else.
         public static void EnsureProgramAsset(string scriptName)
         {
             Type progType = Type.GetType("UdonSharp.UdonSharpProgramAsset, UdonSharp.Editor");
@@ -261,6 +264,7 @@ namespace Lanbai.Mirrors.EditorTools
             ti.mipmapEnabled = true;
             ti.anisoLevel = 4;
             ti.wrapMode = f.StartsWith("T_MirrorBack") ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
+            if (f.StartsWith("T_MirrorRimCloud")) { ti.wrapModeU = TextureWrapMode.Repeat; ti.wrapModeV = TextureWrapMode.Clamp; }   // a ring: repeats along u
             if (f.Contains("_Normal_"))
             {
                 ti.textureType = TextureImporterType.NormalMap;

@@ -27,19 +27,15 @@ R_PX = M / 2.0            # canonical mirror radius (20 m) in canvas px
 PX_M = TILE_M / N         # metres per output pixel
 RELIEF_M = 0.016 * 40.0   # height 1.0 = 0.64 m (8 bosses)
 
-# 铭文与十二地支：直接取自克利夫兰美术馆的真镜照片（CC0，D-31：合适就直接用），不用字体。
+# 铭文：照克利夫兰 1995.298（CC0，D-31）铭文带描的笔画中线（Source/glyph_traces/），不用字体、不用阈值。
 # 字形是两汉镜铭的隶变篆书（缪篆一路），繁体古字形；原文未逐字释读，按照片上的顺序（从正上方顺时针）放进字表。
+# 十二地支在镜背主区的照片里（1995.301），不在字表。
 INSC_PHOTO = os.path.join(ROOT, 'Docs~', '实物参考_博局镜', 'CMA_1995.298.jpg')   # 1995.298 多乳钉博局镜，铭文带一圈 35 字
 INSC_C = (1656.0, 1465.0, 1072.0)        # 镜心 x, y 与半径（照片像素，照片正拍、镜是正圆）
 INSC_Q = (0.535, 0.655)                  # 铭文带 r/R（内线 .. 栉齿内线）
 # 35 个字的中心：从正上方顺时针，单位 = 一周 4000
 INSC_AT = [150, 290, 415, 540, 685, 840, 995, 1135, 1255, 1380, 1485, 1580, 1690, 1795, 1920, 2030, 2145, 2250,
            2365, 2465, 2565, 2645, 2740, 2845, 2965, 3060, 3150, 3230, 3325, 3430, 3565, 3655, 3775, 3875, 4005]
-# 十二地支：1995.301 内方框里乳钉之间的 12 个字（照片像素中心，字头朝外；每边按顺时针）
-BRANCH_SITES = [((1460, 1365), (1690, 1365), (1920, 1365)),     # 北边，西 -> 东
-                ((2050, 1470), (2050, 1690), (2050, 1920)),     # 东边，北 -> 南
-                ((1940, 2040), (1700, 2040), (1470, 2040)),     # 南边，东 -> 西
-                ((1355, 1920), (1355, 1690), (1355, 1470))]     # 西边，南 -> 北
 N_INSC = len(INSC_AT)
 assert N_INSC == 35, N_INSC
 
@@ -121,51 +117,39 @@ def dome(shape, centres, radius, power=1.0):
     return H
 
 
-def relief_mask(a, minA=60, keep_centre=0.36, rims=True):
-    """raised cast strokes in a museum photo (dome light: stroke tops bright, their feet in shadow) -> 0..1 mask.
-    band-pass of the luminance, threshold, drop specks, the band's rims and the neighbours' strokes reaching in."""
-    from scipy.ndimage import label, binary_opening, binary_closing
-    h = gaussian_filter(a, 2.5) - gaussian_filter(a, 18.0)
-    h = h / (np.std(h) + 1e-6)
-    b = binary_closing(binary_opening(h > 0.35, np.ones((3, 3))), np.ones((3, 3)))
-    edge = max(8, a.shape[0] // 7)                                  # the band's rims: nearly full rows near top / bottom
-    for rows in ((range(0, edge), range(a.shape[0] - edge, a.shape[0])) if rims else ()):
-        for y in rows:
-            if b[y].mean() > 0.45:
-                b[max(y - 2, 0):y + 3] = False
-    if rims:
-        b[:4] = False; b[-4:] = False
-    lab, n = label(b)
-    keep = np.zeros(n + 1, bool)
-    for i in range(1, n + 1):
-        ys, xs = np.nonzero(lab == i)
-        if len(xs) < minA or abs(xs.mean() / a.shape[1] - 0.5) >= keep_centre:
-            continue
-        if rims and ys.max() - ys.min() < 14 and xs.max() - xs.min() > 0.35 * a.shape[1]:   # a rim left over
-            continue
-        keep[i] = True
-    return gaussian_filter(keep[lab].astype(np.float32), 1.2)
+INSC_TRACE = os.path.join(HERE, 'glyph_traces', 'inscription_1995.298.json')
+INSC_BOX = (19.0, 16.8)                  # trace units of one crop (x, y)
+INSC_STROKE = 1.05                       # stroke width, trace units (the real band's strokes: ~10 px of the 2x unwrap)
 
 
-def fit_cell(m, px):
-    """centre a glyph mask in a px x px cell, keeping its proportions (largest side = 0.92 px)."""
-    ys, xs = np.nonzero(m > 0.3)
-    if len(xs) == 0:
-        return np.zeros((px, px), np.float32)
-    m = m[max(ys.min() - 3, 0):ys.max() + 4, max(xs.min() - 3, 0):xs.max() + 4]
-    s = 0.92 * px / max(m.shape)
-    im = Image.fromarray((np.clip(m, 0, 1) * 255).astype(np.uint8)).resize(
-        (max(1, int(m.shape[1] * s)), max(1, int(m.shape[0] * s))), Image.LANCZOS)
-    out = np.zeros((px, px), np.float32)
-    g = np.asarray(im, np.float32) / 255.0
-    y0, x0 = (px - g.shape[0]) // 2, (px - g.shape[1]) // 2
-    out[y0:y0 + g.shape[0], x0:x0 + g.shape[1]] = g
-    return out
+def traced_glyph(polys, px):
+    """one traced character -> px x px relief, the SAME scale and stroke width for every character (review r3 #2):
+    the crop (19 x 16.8 units) is centred in the cell at px / 19.5 per unit; strokes are cast ridges with a round
+    profile, continuous wherever the trace is."""
+    k = 4
+    big = px * k
+    sc = big / 19.5
+    ox = (big - INSC_BOX[0] * sc) / 2.0; oy = (big - INSC_BOX[1] * sc) / 2.0
+    im = Image.new('L', (big, big), 0)
+    d = ImageDraw.Draw(im)
+    w = INSC_STROKE * sc
+    for pl in polys:
+        pts = [(ox + x * sc, oy + y * sc) for x, y in pl]
+        d.line(pts, fill=255, width=int(round(w)), joint='curve')
+        for x, y in pts:
+            d.ellipse((x - w / 2, y - w / 2, x + w / 2, y + w / 2), fill=255)
+    a = np.asarray(im, np.float32) / 255.0 > 0.5
+    dist = distance_transform_edt(a) / (w / 2)                     # 0 at the edge .. 1 on the centre line
+    h = np.sqrt(np.clip(dist * (2 - dist), 0, 1))                  # round ridge
+    out = Image.fromarray((h * 255).astype(np.uint8)).resize((px, px), Image.LANCZOS)
+    return np.asarray(out, np.float32) / 255.0
 
 
 def photo_inscription():
-    """35 glyph masks (top of the glyph = outward, reading clockwise) and the matching photo crops (for the plate)."""
+    """35 traced glyphs (top of the glyph = outward, reading clockwise) and the matching photo crops (for the plate)."""
+    import json
     from scipy.ndimage import map_coordinates
+    tr = json.load(open(INSC_TRACE, encoding='utf-8'))
     L = np.asarray(Image.open(INSC_PHOTO).convert('L'), np.float32) / 255.0
     cx, cy, R = INSC_C
     W, Hh = 8000, 260
@@ -174,29 +158,11 @@ def photo_inscription():
     T, Q = np.meshgrid(th, q)
     st = map_coordinates(L, [cy + R * Q * np.sin(T), cx + R * Q * np.cos(T)], order=1)
     ext = np.concatenate([st[:, -400:], st, st[:, :400]], 1)
-    masks, crops = [], []
+    crops = []
     for c in INSC_AT:
         x = 2 * c + 400
-        a = ext[78:246, x - 95:x + 95]
-        masks.append(relief_mask(a)); crops.append(a)
-    return masks, crops
-
-
-def photo_branches():
-    """12 branch glyph masks from 1995.301 (index 0 = the middle of the north side, then clockwise), each turned so
-    its top (outward on the mirror) is up."""
-    L = np.asarray(Image.open(PHOTO).convert('L'), np.float32) / 255.0
-    out = [None] * 12
-    for k, side in enumerate(BRANCH_SITES):
-        for j, (x, y) in enumerate(side):
-            a = L[y - 62:y + 62, x - 62:x + 62]
-            a = np.rot90(a, k)                                      # east side: outward (+x) -> up, ...
-            out[(k * 3 + j - 1) % 12] = relief_mask(a, minA=40, keep_centre=0.40, rims=False)
-            PLATE_BRANCH.append((a, out[(k * 3 + j - 1) % 12]))
-    return out
-
-
-PLATE_BRANCH = []
+        crops.append(ext[78:246, x - 95:x + 95])
+    return [tr[str(i)] for i in range(N_INSC)], crops
 
 
 def relief_shade(h, strength=6.0, light=(-0.5, 0.6, 0.62)):
@@ -210,36 +176,35 @@ def relief_shade(h, strength=6.0, light=(-0.5, 0.6, 0.62)):
     return v
 
 
-def inscription_plate(crops, G):
-    """Docs~/inscription_plate.png: each glyph next to the real one -- photo (top) / our relief (bottom), 12 a row;
-    the last block: the 12 branches from 1995.301."""
+def inscription_plate(crops, traces, G):
+    """Docs~/inscription_plate.png: every character three times -- the real one (photo), the photo with our stroke
+    centre lines on it, and our relief as the atlas has it -- 9 a row."""
     def norm(a):
-        lo, hi = np.percentile(a, 1), np.percentile(a, 99)
+        lo, hi = np.percentile(a, 1), np.percentile(a, 99.5)
         return np.clip((a - lo) / (hi - lo + 1e-6), 0, 1)
-    def cell(i):
+    Z = 1.0
+    cells = []
+    for i in range(N_INSC):
+        ph = Image.fromarray((norm(crops[i]) * 255).astype(np.uint8)).convert('RGB')
+        ov = ph.copy(); d = ImageDraw.Draw(ov)
+        for pl in traces[i]:
+            d.line([(x * 10, y * 10) for x, y in pl], fill=(200, 30, 30), width=3, joint='curve')
         r, c = divmod(i, 8)
-        return G[r * 128:(r + 1) * 128, c * 128:(c + 1) * 128]
-    def fit(a, h=128):
-        im = Image.fromarray((a * 255).astype(np.uint8))
-        im = im.resize((int(a.shape[1] * h / a.shape[0]), h), Image.LANCZOS)
-        return np.asarray(im, np.float32) / 255.0
-    def pad(a, w):
-        return np.pad(a, ((4, 4), (4, 4 + w - a.shape[1])), constant_values=1)
-    blocks = []
-    pairs = [(crops[i], cell(i)) for i in range(N_INSC)] + [(PLATE_BRANCH[k][0], cell(N_INSC + i)) for k, i in
-             enumerate([(k * 3 + j - 1) % 12 for k in range(4) for j in range(3)])]
-    for start, stop in ((0, 12), (12, 24), (24, 35), (35, 47)):
-        tops, bots = [], []
-        for a, g in pairs[start:stop]:
-            t = fit(norm(a)); b = relief_shade(g)
-            w = max(t.shape[1], b.shape[1])
-            tops.append(pad(t, w)); bots.append(pad(b, w))
-        blocks.append(np.concatenate([np.concatenate(tops, 1), np.concatenate(bots, 1)], 0))
-    W = max(b.shape[1] for b in blocks)
-    sheet = np.concatenate([np.pad(b, ((0, 12), (0, W - b.shape[1])), constant_values=1) for b in blocks], 0)
-    tone = np.array([0.84, 0.80, 0.70])
-    rgb = np.where(sheet[..., None] >= 0.999, 1.0, sheet[..., None] * tone)
-    Image.fromarray((rgb * 255).astype(np.uint8)).save(os.path.join(DOC, 'inscription_plate.png'), optimize=True)
+        g = G[r * 128:(r + 1) * 128, c * 128:(c + 1) * 128]
+        sh = relief_shade(g)
+        tone = np.array([0.84, 0.80, 0.70])
+        rl = Image.fromarray((sh[..., None] * tone * 255).astype(np.uint8)).resize((190, 190), Image.LANCZOS)
+        col = Image.new('RGB', (190, 168 * 2 + 190 + 8), 'white')
+        col.paste(ph, (0, 0)); col.paste(ov, (0, 168 + 4)); col.paste(rl, (0, 2 * 168 + 8))
+        dd = ImageDraw.Draw(col); dd.text((4, 4), '#%d' % i, fill=(255, 220, 0))
+        cells.append(col)
+    per = 9
+    rows = (len(cells) + per - 1) // per
+    sheet = Image.new('RGB', (per * 196, rows * (cells[0].height + 14)), 'white')
+    for i, cimg in enumerate(cells):
+        sheet.paste(cimg, ((i % per) * 196, (i // per) * (cells[0].height + 14)))
+    sheet.save(os.path.join(DOC, 'inscription_plate.png'), optimize=True)
+
 
 
 def back_cell(centre_boss):
@@ -346,51 +311,44 @@ def back_cell(centre_boss):
     C4(creature)
     # --- outer circle of the main field (r 0.72) and the corner fill so the cell tiles ------------------------------
     lines.ring((0, 0), 0.72, 0.012)
+    # the corners between the inscribed mirrors (review r3 #7): no random hooks.  One ornament, identical at every
+    # corner (translation only, so the cell tiles): the corner boss, two rings, a closed stem round it with eight
+    # C-curls turning alternately in and out, and four S-tendrils running into the cusps between the mirrors, all
+    # strokes tapering head to tail (Han cloud-scroll drawing).
+    def taper(pts, w0, w1, layer):
+        n = len(pts) - 1
+        for j in range(n):
+            w = w0 + (w1 - w0) * (j + 0.5) / n
+            layer.line([pts[j], pts[j + 1]], w)
     def corner(cx, cy):
-        # cloud scrolls and a boss round the cell corner (shared by four cells)
+        fine.ring((cx, cy), 0.095, 0.012)
+        fine.ring((cx, cy), 0.30, 0.011)
+        stem = [(cx + 0.20 * math.cos(2 * math.pi * j / 160), cy + 0.20 * math.sin(2 * math.pi * j / 160)) for j in range(161)]
+        taper(stem, 0.010, 0.010, fine)
         for j in range(8):
-            a = j * math.pi / 4 + math.pi / 8
-            c = (cx + 0.18 * math.cos(a), cy + 0.18 * math.sin(a))
-            fine.line([(lambda p: p)(p) for p in spiral(c, 0.05, 1.2, 1 if j % 2 else -1)], 0.009)
-        fine.ring((cx, cy), 0.10, 0.012)
-        fine.ring((cx, cy), 0.28, 0.010)
+            a = 2 * math.pi * j / 8 + math.pi / 8
+            sgn = 1 if j % 2 else -1                                   # in / out
+            p0 = (cx + 0.20 * math.cos(a), cy + 0.20 * math.sin(a))
+            tang = (-math.sin(a), math.cos(a)); rad = (math.cos(a), math.sin(a))
+            p1 = (p0[0] + 0.035 * tang[0] + sgn * 0.03 * rad[0], p0[1] + 0.035 * tang[1] + sgn * 0.03 * rad[1])
+            c = (p0[0] + 0.05 * tang[0] + sgn * 0.055 * rad[0], p0[1] + 0.05 * tang[1] + sgn * 0.055 * rad[1])
+            arm = bezier(p0, p1, (c[0] - 0.02 * tang[0], c[1] - 0.02 * tang[1]), (c[0] - 0.025 * rad[0] * sgn, c[1] - 0.025 * rad[1] * sgn), 16)
+            curl = spiral(c, 0.025, 1.15, sgn, 30)
+            taper(arm + curl[1:], 0.010, 0.0035, fine)
+        for (dx, dy) in ((1, 0), (-1, 0), (0, 1), (0, -1)):        # same four at every corner: the cell tiles
+            pts = []
+            for j in range(41):
+                t = j / 40.0
+                d = 0.31 + 0.34 * t                                    # along the edge, into the cusp
+                half = math.hypot(1.0, 1.0 - d) - 1.0                  # half-width of the cusp between two mirrors
+                amp = 0.55 * half * math.sin(2 * math.pi * 1.5 * t)
+                pts.append((cx + dx * d - dy * amp, cy + dy * d + dx * amp))
+            taper(pts, 0.010, 0.003, fine)
+            taper(spiral(pts[-1], 0.018, 1.0, 1, 20), 0.004, 0.0025, fine)
     for cx in (-1, 1):
         for cy in (-1, 1):
             corner(cx, cy)
     Hc = dome((M, M), [(1, 1)], 0.05, 0.8)
-    # --- 云气纹 fill: the real mirrors' field is dense with scrolls (克利夫兰 1995.301); fill every free gap --------
-    occ = np.maximum.reduce([lines.arr(), seat.arr(), Hseat.arr(), fine.arr(), (Hs > 0).astype(np.float32),
-                             (Hb > 0).astype(np.float32), (Hc > 0).astype(np.float32), (H > 0.02).astype(np.float32)])
-    occ = occ.reshape(512, M // 512, 512, M // 512).max((1, 3)) > 0.05
-    cell = M / 512 / R_PX                                        # canonical units per occupancy cell
-    free = distance_transform_edt(~occ) * cell                   # distance to the nearest feature
-    rng = np.random.default_rng(7)
-    placed = 0
-    for _ in range(6000):
-        u, v = rng.uniform(-1, 1, 2)
-        r = math.hypot(u, v)
-        inner = r < 0.70
-        size = rng.uniform(0.035, 0.055) if inner else rng.uniform(0.05, 0.08)
-        if (0.69 < r < 0.75) or (inner and r < 0.42):
-            continue
-        iy = int((1 - (v + 1) / 2) * 511); ix = int((u + 1) / 2 * 511)
-        if free[iy, ix] < size * 1.15:
-            continue
-        a = rng.uniform(0, 2 * math.pi)
-        ccw = 1 if rng.random() < 0.5 else -1
-        # a C / S scroll: a short arc ending in a spiral, the other end a hook
-        p0 = (u - size * math.cos(a), v - size * math.sin(a)); p3 = (u + size * math.cos(a), v + size * math.sin(a))
-        mid = (u + 0.6 * size * math.cos(a + ccw * math.pi / 2), v + 0.6 * size * math.sin(a + ccw * math.pi / 2))
-        fine.line(bezier(p0, mid, mid, p3, 20), 0.008)
-        fine.line(spiral(p3, size * 0.45, 1.1, ccw, 40), 0.008)
-        if rng.random() < 0.5:
-            fine.line(spiral(p0, size * 0.3, 0.8, -ccw, 30), 0.007)
-        # mark occupied
-        yy0 = max(0, iy - int(size * 1.6 / cell)); yy1 = min(512, iy + int(size * 1.6 / cell) + 1)
-        xx0 = max(0, ix - int(size * 1.6 / cell)); xx1 = min(512, ix + int(size * 1.6 / cell) + 1)
-        free[yy0:yy1, xx0:xx1] = 0
-        placed += 1
-    print('cloud scrolls placed', placed)
     # --- combine ----------------------------------------------------------------------------------------------
     H = np.maximum(H, lines.arr(1.2 * SS) * 0.25)
     H = np.maximum(H, seat.arr(1.0 * SS) * 0.30)
@@ -406,10 +364,16 @@ def back_cell(centre_boss):
 
 PHOTO = os.path.join(ROOT, 'Docs~', '实物参考_博局镜', 'CMA_1995.301.jpg')   # Cleveland Museum of Art 1995.301, CC0
 PHOTO_C = (1714.0, 1641.0, 1320.0)                                              # mirror centre x, y and radius in the photo (fitted)
+# the photo's own bosses (read off the photo, px): the relief clip would press them into flat coins (r3 A7), so each
+# gets back a dome of its real size
+_K = 3400.0 / 1100.0
+PHOTO_BOSS_BIG = [(x * _K, y * _K) for x, y in ((483, 348), (619, 348), (358, 473), (740, 473), (360, 607), (740, 607), (480, 730), (620, 730))]
+PHOTO_BOSS_SMALL = [(x * _K, y * _K) for x, y in ((437, 428), (512, 428), (587, 428), (660, 428), (437, 505), (660, 505),
+                                                   (437, 578), (660, 578), (437, 652), (512, 652), (590, 652), (660, 652))]
 
 
 def photo_field(n=N):
-    """the main field (r/R 0.15 .. 0.72) of a real 四神博局镜 as a relief layer: luminance, the museum lighting and the
+    """the back (r/R 0.15 .. 0.985: field, inscription-free 1995.301's comb, sawtooth and cloud bands) of a real 四神博局镜 as a relief layer: luminance, the museum lighting and the
     patina blotches removed with a large high-pass and a local contrast normalisation (the photo is CC0: 小楠 10-24,
     '并不是参考，如果合适直接用')."""
     from scipy.ndimage import map_coordinates
@@ -425,8 +389,43 @@ def photo_field(n=N):
     py = cy + (yy + 0.5 - n / 2.0) * k
     f = map_coordinates(rel, [py, px], order=1, mode='nearest')
     q = np.hypot(xx + 0.5 - n / 2.0, yy + 0.5 - n / 2.0) / (n / 2.0)
-    w = np.clip((q - 0.15) / 0.04, 0, 1) * np.clip((0.73 - q) / 0.04, 0, 1)
+    w = np.clip((q - 0.15) / 0.04, 0, 1) * np.clip((0.985 - q) / 0.02, 0, 1)   # the whole real back out to its rim (r3 #7)
     return np.clip(0.5 + 0.5 * f, 0, 1), w
+
+
+RIM_C = (1725.4, 1653.9, 1320.0)        # 1995.301 centre refitted on the rim band's own edge line (the field's PHOTO_C is
+                                        # 12 px off for the outer rim)
+RIM_Q = (1.0 - 0.25 * 92 / 329, 1.0 - 0.25 * 273 / 329)   # the 流云纹 band: outer .. inner edge, r/R 0.930 .. 0.793
+RIM_UNITS = 15                          # the real band has 15 wave units (one up-scroll + one down-scroll) round the rim
+RIM_X0 = 470 / 8000.0                   # the tile starts here (fraction of the turn from the top, clockwise): the cleanest
+                                        # stretch of the band that is still level (perspective + corrosion elsewhere)
+
+
+def photo_rim_cloud(w=2048, h=256):
+    """the rim's 流云纹 band of 1995.301, unwrapped, two wave units as a seamless strip (Repeat in u): relief by the same
+    band-pass + local normalisation as the field.  Also returns tile length / band height for the shader."""
+    from scipy.ndimage import map_coordinates
+    L = np.asarray(Image.open(PHOTO).convert('L'), np.float32) / 255.0
+    cx, cy, R = RIM_C
+    P = 2.0 / RIM_UNITS                                        # tile = 2 units (fraction of the turn)
+    D = 64.0 / w * P                                           # seam cross-fade
+    u = np.linspace(0.0, P, w, endpoint=False)
+    def sample(u):
+        th = -np.pi / 2 + 2 * np.pi * (RIM_X0 + u)
+        q = np.linspace(RIM_Q[0], RIM_Q[1], h)                  # row 0 = outer (image top = band outer edge)
+        T, Q = np.meshgrid(th, q)
+        return map_coordinates(L, [cy + R * Q * np.sin(T), cx + R * Q * np.cos(T)], order=1)
+    a0, a1 = sample(u), sample(u + P)
+    wgt = np.clip(u / D, 0, 1)[None, :]
+    tile = wgt * a0 + (1 - wgt) * a1                           # continuous across the wrap
+    t3 = np.concatenate([tile] * 3, 1)
+    hp = t3 - gaussian_filter(t3, 18 * h / 181.0)
+    sd = np.sqrt(gaussian_filter(hp * hp, 40 * h / 181.0)) + 1e-3
+    rel = np.clip(hp / sd / 2.5, -1, 1)[:, w:2 * w]
+    qm = 0.5 * (RIM_Q[0] + RIM_Q[1])
+    aspect = (P * 2 * np.pi * qm) / (RIM_Q[0] - RIM_Q[1])
+    hgt = np.clip((rel + 0.6) / 1.5, 0, 1)
+    return hgt * hgt * (3 - 2 * hgt), aspect
 
 
 def periodic_noise(n, period_px, seed):
@@ -480,6 +479,11 @@ def main():
         # the real mirror's field replaces the procedural one inside r/R 0.15 .. 0.72 (relief 0..0.5: its bosses and
         # lines stand out of the field as in the photo); the procedural cell keeps the seat, the corners and the tiling
         H = H * (1 - pw) + np.clip((pf - 0.45) * 0.9, 0, 0.5) * pw    # the field sits at 0 like the rest of the cell
+        cx, cy, r = PHOTO_C
+        uv = lambda pts: [((x - cx) / r, -(y - cy) / r) for x, y in pts]
+        Hd = np.maximum(dome((M, M), uv(PHOTO_BOSS_BIG), 0.034, 0.8) * 0.9, dome((M, M), uv(PHOTO_BOSS_SMALL), 0.026, 0.8) * 0.65)
+        Hd = Hd.reshape(N, SS, N, SS).mean((1, 3))
+        H = np.maximum(H, Hd)                                          # round bosses with a real highlight (A7)
         nrm, mask = maps_from_height(H)
         pre = 'T_MirrorBack_' + (tag + '_' if tag else '')
         save(nrm, pre + 'Normal_2048.png')
@@ -497,14 +501,19 @@ def main():
     fb = sc.arr(0.6).reshape(N, SS, N, SS).mean((1, 3))
     fa = np.clip((periodic_noise(N, 160, 15) - 0.9) * 0.8, 0, 1)
     save(np.stack([fr, fg, fb, fa], -1), 'T_MirrorFace_2048.png')
-    # glyph atlas 8 x 8 x 128 px: inscription 0..34 (1995.298), branches 35..46 (1995.301)
+    # rim cloud band (1995.301)
+    rc, rc_aspect = photo_rim_cloud()
+    Image.fromarray((rc * 255 + 0.5).astype(np.uint8)).save(os.path.join(OUT, 'T_MirrorRimCloud_2048x256.png'), optimize=True)
+    print('rim cloud strip: tile length / band height = %.3f (LM_CLOUD_ASPECT)' % rc_aspect)
+    # glyph atlas 8 x 8 x 128 px: the 35 traced inscription characters (1995.298); the twelve branches are in the
+    # photo field itself (1995.301), not in the atlas
     G = np.zeros((1024, 1024), np.float32)
-    im_masks, im_crops = photo_inscription()
-    for i, m in enumerate(im_masks + photo_branches()):
+    traces, im_crops = photo_inscription()
+    for i, polys in enumerate(traces):
         r, c = divmod(i, 8)
-        G[r * 128 + 8:r * 128 + 120, c * 128 + 8:c * 128 + 120] = fit_cell(m, 112)
+        G[r * 128:(r + 1) * 128, c * 128:(c + 1) * 128] = traced_glyph(polys, 128)
     Image.fromarray((G * 255).astype(np.uint8)).save(os.path.join(OUT, 'T_MirrorGlyphs_1024.png'), optimize=True)
-    inscription_plate(im_crops, G)
+    inscription_plate(im_crops, traces, G)
     # preview: shaded cell, 3x3 tiling, mask channels, glyphs
     Hc = previews[0][1]
     sh = shade(Hc)

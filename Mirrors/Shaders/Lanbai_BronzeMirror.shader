@@ -37,8 +37,6 @@ Shader "Lanbai/BronzeMirror"
         _BreakAmp ("Breakup amplitude m", Float) = 5
         _EdgeWidth ("Glowing front width m", Float) = 0.3
         _EdgeColor ("Front glow linear rgb (#CDBF9C x 0.8)", Vector) = (0.488, 0.417, 0.266, 0)
-        _RimSoft ("Far soft rim 0 to 1 (mirror 13 far)", Range(0, 1)) = 0
-        _RimSoftFrom ("Soft rim starts at this fraction of the radius", Range(0, 1)) = 0.8
 
         [Header(Face)]
         _FaceF0 ("Face F0 linear (#D6CCB4)", Vector) = (0.672, 0.604, 0.456, 0)
@@ -55,15 +53,15 @@ Shader "Lanbai/BronzeMirror"
 
         [Header(Back)]
         _BackAlbedo ("Back albedo linear (#4F7A66)", Vector) = (0.078, 0.195, 0.133, 0)
-        _BackSmooth ("Back smoothness", Range(0, 1)) = 0.35
         _BackNormal ("Back 40 m cell normal", 2D) = "bump" {}
         _BackMask ("Back 40 m cell mask (R height, G AO, B worn, A patina)", 2D) = "white" {}
         _BackCentreNormal ("Back centre cell normal (no boss)", 2D) = "bump" {}
         _BackCentreMask ("Back centre cell mask", 2D) = "white" {}
         _Glyphs ("Inscription glyph atlas 8 x 8", 2D) = "black" {}
+        _RimCloud ("Rim cloud band strip (1995.301), Repeat u", 2D) = "black" {}
+        _BackRelief ("Back relief shading strength", Range(0, 3)) = 1.4
+        _BackLumK ("Back luminance / sky luminance behind it", Range(0, 2)) = 1
         _BackBump ("Back band bump strength", Range(0, 2)) = 1
-        _BackAmbientGain ("Back ambient gain", Range(0, 4)) = 1
-        _BackFill ("Back silhouette radiance linear (S9a/S9b show #16302A; bible max #1E3B34)", Vector) = (0.0105, 0.027, 0.0164, 0)
 
         [Header(Sky reflected)]
         _GlowTex ("Galaxy glow map (Sky StarSky_Glow lat-long sRGB with mips)", 2D) = "black" {}
@@ -90,12 +88,12 @@ Shader "Lanbai/BronzeMirror"
         #include "Assets/Lanbai/Common/Shaders/LanbaiFog.cginc"
         #include "LanbaiMirror.cginc"
 
-        float _RimSoftFrom;
-        float _RadiusM, _MirrorK, _EmissionK, _Visibility, _EmitExtraEV, _Appear, _Dissolve, _BreakAmp, _EdgeWidth, _RimSoft;
-        float4 _EdgeColor, _FaceF0, _RimF0, _BackAlbedo, _SkyFloor, _BackFill;
+        float _RadiusM, _MirrorK, _EmissionK, _Visibility, _EmitExtraEV, _Appear, _Dissolve, _BreakAmp, _EdgeWidth;
+        float4 _EdgeColor, _FaceF0, _RimF0, _BackAlbedo, _SkyFloor;
         float _BronzeTone; float4 _ToneColor;
-        float _FaceSmooth, _PolishAmt, _PolishPeriodM, _RimSmooth, _BackSmooth, _BackBump, _BackAmbientGain, _GalaxyGainDefault;
-        sampler2D _FaceTex, _BackNormal, _BackMask, _BackCentreNormal, _BackCentreMask, _Glyphs;
+        float _FaceSmooth, _PolishAmt, _PolishPeriodM, _RimSmooth, _BackBump, _GalaxyGainDefault;
+        sampler2D _FaceTex, _BackNormal, _BackMask, _BackCentreNormal, _BackCentreMask, _Glyphs, _RimCloud;
+        float _BackRelief, _BackLumK;
         sampler2D _GlowTex;
         float4 _GlowTex_TexelSize;
 
@@ -143,11 +141,18 @@ Shader "Lanbai/BronzeMirror"
         // breakup shared by both passes: signed distance (m) to the dissolve / appear front, + kept
         float MirrorFront(float3 posOS, out float glowEdge)
         {
+            // whole and still (most of the time): one uniform branch, no noise (F10)
+            if (_Appear >= 0.9995 && _Dissolve <= 0.0005) { glowEdge = 0.0; return 1e4; }
             float D = 2.0 * _RadiusM;
             float rM = length(posOS.xz) * D;
-            float3 pM = posOS * D;
-            float sdD = LanbaiMirrorDissolveSD(rM, _RadiusM, LanbaiMirrorFBM(pM), _Dissolve, _BreakAmp);
-            float sdA = LanbaiMirrorAppearSD(rM, _RadiusM, LanbaiMirrorFBM(pM + 71.3), _Appear, _BreakAmp);
+            // the breakup grows with the mirror (amplitude and noise periods x R / 40 m, at least 1): a 300 m front
+            // still breaks into pieces you can see; scaled by the radius, not by the distance to the eye, so the
+            // front does not crawl while the bus moves (review r3 #5)
+            float sc = max(1.0, _RadiusM / 40.0);
+            float3 pM = posOS * (D / sc);
+            float amp = _BreakAmp * sc;
+            float sdD = LanbaiMirrorDissolveSD(rM, _RadiusM, LanbaiMirrorFBM(pM), _Dissolve, amp);
+            float sdA = LanbaiMirrorAppearSD(rM, _RadiusM, LanbaiMirrorFBM(pM + 71.3), _Appear, amp);
             float sd = min(sdD, sdA);
             float active = step(0.0005, _Dissolve) + step(_Appear, 0.9995);
             glowEdge = saturate(1.0 - sd / max(_EdgeWidth, 1e-3)) * saturate(active);
@@ -215,38 +220,36 @@ Shader "Lanbai/BronzeMirror"
                 }
                 else                                                      // ---- BACK and KNOB
                 {
-                    // 40 m 博局 cells, absolute; the centre cell has no boss (the knob is mesh)
+                    // 40 m 博局 cells, absolute; the centre cell has no boss (the knob is mesh).  Sampled with the
+                    // unwrapped cell coordinate (textures Repeat): no frac() seam in the mip selection (F9)
                     float2 cellF = i.posOS.xz * (D / LM_TLV_TILE) + 0.5;
-                    float2 cuv = frac(cellF);
                     bool centre = all(floor(cellF) == float2(0.0, 0.0));
-                    half4 m = centre ? tex2D(_BackCentreMask, cuv) : tex2D(_BackMask, cuv);
-                    float3 tn = UnpackNormal(centre ? tex2D(_BackCentreNormal, cuv) : tex2D(_BackNormal, cuv));
+                    half4 m = centre ? tex2D(_BackCentreMask, cellF) : tex2D(_BackMask, cellF);
+                    float3 tn = UnpackNormal(centre ? tex2D(_BackCentreNormal, cellF) : tex2D(_BackNormal, cellF));
                     // the cell is drawn looking at the back from below: tangent = object +X, bitangent = object +Z, normal -Y
                     float3 nOS = normalize(float3(tn.x, -tn.z, tn.y));
-                    // outer polar bands: comb + rim teeth (absolute periods), and the inscription ring
+                    // outer polar bands (bead strings: one radius and an integer cell count per row) and the inscription
+                    float2 dth = LanbaiWrapDTheta(th);
+                    float2 drM = float2(ddx(rM), ddy(rM));
                     float bandId;
-                    float hb = LanbaiMirrorBandHeight(rM, _RadiusM, th, footprint, bandId);
+                    float hb = LanbaiMirrorBandHeight(rM, _RadiusM, th, dth, drM, footprint, _RimCloud, bandId);
                     float q = rM / _RadiusM;
-                    float glyph = 0.0;
                     if (q >= 0.72 && q < 0.80)
                     {
-                        float rowsF = floor((0.08 * _RadiusM) / 2.6);
-                        float rows = max(rowsF, 1.0);
-                        float rowH = (0.08 * _RadiusM) / rows;
-                        float row = floor((rM - 0.72 * _RadiusM) / rowH);
-                        float vIn = frac((rM - 0.72 * _RadiusM) / rowH);
-                        float arc = (th + 3.14159265) * rM;
-                        float idxF = floor(arc / rowH);            // square cells: pitch = row height, as on the real band (1995.298)
-                        float uIn = frac(arc / rowH);
-                        float idx = fmod(idxF + row * 7.0, 35.0);
+                        // rows of 2.6-5.2 m (one row below that), square cells, 35 x k cells per row: the 35 characters
+                        // close on themselves; each inner row starts 7 characters on
+                        LanbaiBandCell b = LanbaiMirrorBandCell(rM, th, 0.72 * _RadiusM, 0.80 * _RadiusM, 2.6, 0.0, 1.0, 35.0);
+                        float idx = fmod(floor(b.s) + b.row * 7.0, 35.0);
                         float2 gcell = float2(fmod(idx, 8.0), 7.0 - floor(idx / 8.0));
-                        float2 guv = (gcell + float2(uIn, vIn) * 0.84 + 0.08) / 8.0;
-                        glyph = tex2D(_Glyphs, guv).r * saturate(1.5 - footprint / 0.6);
-                        hb = max(hb, glyph);
+                        float2 guv = (gcell + float2(frac(b.s), b.v) * 0.84 + 0.08) / 8.0;
+                        float k = b.n / 6.2831853 * 0.84 / 8.0, kv = 0.84 / 8.0 / b.rowH;
+                        float glyph = tex2Dgrad(_Glyphs, guv, float2(dth.x * k, drM.x * kv), float2(dth.y * k, drM.y * kv)).r;
+                        hb = max(hb, glyph * saturate(1.5 - footprint / 0.4));
                     }
                     if (q > 0.72) { m.r = hb * 0.4; m.g = lerp(1.0, 0.75, hb); m.b = hb; nOS = float3(0, -1, 0); }
                     if (i.region > 0.875) nOS = normalize(i.posOS - float3(0.0, -0.015, 0.0)); // knob: dome normal
                     // screen-space bump of the band heights (detail that is not in the cell texture)
+                    float3 nFlat = normalize(mul(o2w, float3(0.0, -1.0, 0.0)));
                     float3 n = normalize(mul(o2w, nOS));
                     float3 dpx = ddx(i.posWS), dpy = ddy(i.posWS);
                     float dhx = ddx(hb), dhy = ddy(hb);
@@ -254,30 +257,19 @@ Shader "Lanbai/BronzeMirror"
                     float det = dot(dpx, rx);
                     float3 grad = (dhx * rx + dhy * ry) / (abs(det) > 1e-12 ? det : 1e-12);
                     n = normalize(n - _BackBump * 0.02 * D * grad * saturate(1.5 - footprint / 0.5));
-                    float3 amb = max(ShadeSH9(float4(n, 1.0)), 0.0) * _BackAmbientGain;
-                    float3 alb = _BackAlbedo.rgb * lerp(float3(0.85, 1.0, 1.05), float3(1.15, 0.92, 0.8), m.a)   // patina patches
-                                 * lerp(1.0, 0.55, m.b);                                                         // worn ridges: dark bronze
-                    float s = LanbaiSpecAA(n, lerp(_BackSmooth, 0.55, m.b));
-                    float3 spec = MirrorSky(reflect(V, n), s) * LanbaiSchlick(lerp(float3(0.04, 0.04, 0.04), _RimF0.rgb * 0.35, m.b), dot(n, -V));
-                    // the silhouette is not black: a near-black underside overhead that dissolves into the sky would be a
-                    // +3 EV brightening in under a second (flash sequence m10, r3). Held at #16302A (bible: at most #1E3B34),
-                    // close to the star sky's own level, so the 2-s dissolve is nearly luminance-neutral.
-                    float3 rel = alb / max(_BackAlbedo.rgb, 1e-4);
-                    col = (_BackFill.rgb * rel + alb * amb) * m.g + spec * m.g;
-                    // once it dissolves (it only ever shows its back after crossing, i.e. while dissolving) the back is
-                    // already breaking into light: 60 % -> 100 % toward the sky behind it, so the back appearing overhead
-                    // and then vanishing is not a dark dip + a climb (flash sequence m10, r4: -0.66 EV then +1.37 EV in 1 s)
-                    if (_Dissolve > 0.0)
-                        col = lerp(col, MirrorSky(V, 0.6), saturate(0.6 + 0.4 * _Dissolve));
+                    // The back is opaque bronze up to the dissolve front (review r3 #5), and it never makes a dark dip
+                    // or a jump: its luminance FOLLOWS the sky right behind it (x _BackLumK), and it reads by hue (the
+                    // patina, normalised to luminance 1) and by relief (a key from below-left, mean 1 over the relief,
+                    // times the cell AO).  Worn ridges turn toward bare bronze.
+                    float3 luma = float3(0.2126, 0.7152, 0.0722);
+                    float Lsky = dot(MirrorSky(V, 0.6), luma);
+                    float3 pat = _BackAlbedo.rgb * lerp(float3(0.85, 1.0, 1.05), float3(1.15, 0.92, 0.8), m.a);
+                    float3 tint = lerp(pat / max(dot(pat, luma), 1e-4), _RimF0.rgb / dot(_RimF0.rgb, luma), 0.45 * m.b);
+                    float3 key = normalize(float3(-0.45, -0.75, 0.48));
+                    float shade = max(1.0 + _BackRelief * (dot(n, key) - dot(nFlat, key)), 0.15) * (m.g / 0.92);
+                    col = Lsky * _BackLumK * tint * shade;
                 }
 
-                // far soft rim (mirror 13 waiting 5-6 km below: 'a blurred giant disc'): fake transparency toward the
-                // sky behind the pixel over the outer part of the disc
-                if (_RimSoft > 0.0)
-                {
-                    float soft = smoothstep(_RimSoftFrom, 1.0, rOS / 0.5) * _RimSoft;
-                    col = lerp(col, MirrorSky(V, 0.6), soft);
-                }
                 // the glowing front fades out near the eye: a dissolving mirror just overhead is seen at grazing, where a
                 // 0.3 m front would smear into a wide bright ribbon (iteration r2)
                 col += _EdgeColor.rgb * glowEdge * saturate((distance(i.posWS, _WorldSpaceCameraPos) - 5.0) / 20.0);

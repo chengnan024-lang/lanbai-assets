@@ -60,9 +60,24 @@ namespace Lanbai.Act10
         public float afterSilenceEV = 1f;
         public float afterSilenceDecay = 4f;
 
+        [Header("Late joiners (总导演终审 r3 #4: the spawn fade first, then black -> white at <= 0.85 EV/s)")]
+        public float spawnFadeSeconds = 3f;          // used only until the dispatcher reports the local spawn fade's end
+        public float joinFromL = 0.004f;             // the black the joiner's ramp starts from (EvOverlayAlpha's floor)
+        public float joinMaxEVps = 0.85f;            // -> log2(0.86 / 0.004) / 0.85 = 9.1 s on desktop
+
         private float[] grade = new float[4];
         private bool isVR;
         private bool vrKnown;
+        private float tJoinReady = -1f;              // timeline t at which the local spawn fade has ended (-1 = not known yet)
+        private bool joinReported;
+
+        // Director dispatcher: the local player's spawn fade ended at timeline t (r3 #4; the chief engineer adds the call).
+        // Until then this driver writes no overlay: the spawn fade owns it.
+        public void LanbaiSpawnFadeEnd(float t)
+        {
+            tJoinReady = t;
+            joinReported = true;
+        }
 
         public float[] LanbaiWindow()
         {
@@ -78,6 +93,8 @@ namespace Lanbai.Act10
 
         public void LanbaiTick(float t)
         {
+            if (!joinReported && tJoinReady < 0f)
+                tJoinReady = t - Time.timeSinceLevelLoad + spawnFadeSeconds;   // fallback: the session started timeSinceLevelLoad ago
             if (!vrKnown)
             {
                 VRCPlayerApi lp = Networking.LocalPlayer;
@@ -136,22 +153,42 @@ namespace Lanbai.Act10
             if (overlay == null)
                 return;
             float lw = isVR ? lWhiteVR : lWhite;
-            if (t < tMaskStart || t >= tShrinkEnd)
+            if (t < tMaskStart || t >= tShrinkEnd || tJoinReady < 0f || t < tJoinReady)
             {
-                Release();                          // outside our three parts: write nothing unless we must let go
+                Release();                          // outside our three parts, or the spawn fade still runs: write nothing
                 return;
             }
+            // joined inside the mask or the white: from black to white, EV-linear, at <= joinMaxEVps (r3 #4); the normal
+            // state is reached once the ramp ends. Joined in the shrink: nothing (the spawn fade already shows act 11).
+            bool joinedLate = tJoinReady > tMaskStart;
+            if (joinedLate && tJoinReady >= tSilenceEnd)
+            {
+                Release();
+                return;
+            }
+            float rampT = Mathf.Log(lw / joinFromL, 2f) / joinMaxEVps;
+            bool ramping = joinedLate && t < tJoinReady + rampT;
             ownsOverlay = true;
-            if (t < tF16)
+            if (t < tSilenceEnd && lobesSet)
+            {
+                overlay.ClearLobes();               // scrubbed back from the shrink (F5)
+                lobesSet = false;
+            }
+            overlay.SetBreath(0f);                  // the breath is applied here, phased by t, not by the shader's _Time (F5)
+            if (ramping)
+            {
+                bool inMask = t < tF16;
+                Color f = inMask ? overlay.PickFill(fillMaskDesktop, fillMaskVR) : overlay.PickFill(fillWhiteDesktop, fillWhiteVR);
+                overlay.SetCurve(f * Breath(t), inMask ? Lin(evT, evV, t) : 0f, t - tJoinReady, rampT, joinFromL, lw, joinFromL, lw);
+            }
+            else if (t < tF16)
             {
                 // 3-s mask, ONE curve built for the darkest view (E17); WHITE_BLOOM falls with it (LanbaiGrade)
-                overlay.SetBreath(0f);
                 overlay.SetCurve(overlay.PickFill(fillMaskDesktop, fillMaskVR), Lin(evT, evV, t), t - tMaskStart, tF16 - tMaskStart, lSceneMask, lw, lSceneMask, lw);
             }
             else if (t < tSilenceEnd)
             {
-                overlay.SetBreath(breathAmount);
-                overlay.SetFlat(overlay.PickFill(fillWhiteDesktop, fillWhiteVR), 1f, 0f);
+                overlay.SetFlat(overlay.PickFill(fillWhiteDesktop, fillWhiteVR) * Breath(t), 1f, 0f);
             }
             else
             {
@@ -163,11 +200,16 @@ namespace Lanbai.Act10
                     overlay.SetLeadElse(leadElse, 30f);
                     lobesSet = true;
                 }
-                overlay.SetBreath(0f);
                 float dEV = afterSilenceEV * Mathf.Clamp01(1f - (t - tSilenceEnd) / afterSilenceDecay);
                 overlay.SetCurve(overlay.PickFill(fillShrinkDesktop, fillShrinkVR), dEV, t - tSilenceEnd, shrinkSeconds, lw, lScene11, lScene11, lw);
             }
         }
+
+        private float Breath(float t)
+        {
+            return 1f + breathAmount * Mathf.Sin(6.2831853f * breathHz * (t - tF16));
+        }
+
         public static float EvOverlayAlpha(float x, float lFrom, float lTo, float ls, float lo)
         {
             const float Floor = 0.004f;
