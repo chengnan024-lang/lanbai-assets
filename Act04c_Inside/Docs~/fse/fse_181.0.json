@@ -1,0 +1,37 @@
+{
+ "total": 0.02,
+ "layers": {
+  "(Fringe|Hang|Threads|Wall|Loose|Dot)": 0.0201
+ },
+ "objects": {
+  "Inside_Loose": 0.0009,
+  "Lip1_Fringe": 0.0,
+  "Lip1_Hang": 0.0,
+  "Lip2_Fringe": 0.0022,
+  "Lip2_Hang": 0.0,
+  "Lip2_Threads": 0.0,
+  "Lip3_Fringe": 0.0108,
+  "Lip3_Hang": 0.002,
+  "Lip3_Threads": 0.0,
+  "Lip4_Fringe": 0.0028,
+  "Lip4_Hang": 0.0001,
+  "Lip5_Fringe": 0.0007,
+  "Lip5_Hang": 0.0001,
+  "Lip5_Threads": 0.0,
+  "Lip6_Fringe": 0.0003,
+  "Lip6_Hang": 0.0,
+  "Lip6_Threads": 0.0,
+  "Lip7_Fringe": 0.0001,
+  "Lip7_Hang": 0.0,
+  "Lip8_Wall": 0.0,
+  "Ply0_Fringe": 0.0001,
+  "Ply4_Fringe": 0.0
+ },
+ "max_layers_per_pixel": 2,
+ "pixels_over_8_layers_pct": 0.0,
+ "res": [
+  480,
+  270
+ ],
+ "method": "coverage of each transparent object, depth-tested against the opaque scene (holdouts), 1 spp"
+}

@@ -67,16 +67,25 @@ def main():
            '//  !!! WRITTEN WITHOUT A UNITY COMPILER; checked with Common/Tools~/compile_check (DXC + Unity CGIncludes). !!!',
            '// =====================================================================================================',
            '#ifndef LANBAI_GLOBALS_INCLUDED', '#define LANBAI_GLOBALS_INCLUDED', '']
-    star = set(re.findall(r'`(_Udon_\w+)\*`', md))                                 # `_Udon_Wiper*` is a family, not a name
-    names = sorted(n for n in reg if n not in star)
+    star = set(re.findall(r'`(_Udon_\w+?)\*`', md))                                # `_Udon_Sky_*` is a family, not a name
+    names = set(n for n in reg if n not in star)
+    for pre in star:                                   # a family = every name with that prefix declared in any shader
+        fam = [n for n in types if n.startswith(pre)]
+        names |= set(fam)
+        if fam:
+            print('family %s*: %d names from shader declarations' % (pre, len(fam)))
+    names = sorted(names)
     for n in names:
-        guessed = n not in types and n not in KNOWN
+        stated = re.search(r'`%s`[^|]*\|\s*(float4|float3|float2|float)\b' % re.escape(n), rowtext.get(n, ''))
+        guessed = n not in types and n not in KNOWN and not stated
         sib = re.sub(r'\d+$', '', n)
         sib_t = {next(iter(types[k])) for k in types if re.sub(r'\d+$', '', k) == sib and k != n and re.search(r'\d$', k)}
         if n in types:
             t = next(iter(types[n]))
         elif n in KNOWN:
             t = KNOWN[n]
+        elif stated:
+            t = stated.group(1)
         elif re.search(r'\d$', n) and len(sib_t) == 1:
             t, guessed = next(iter(sib_t)), False          # _Udon_Lamp3 = the type of the declared _Udon_Lamp0
         else:

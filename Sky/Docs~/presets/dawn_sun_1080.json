@@ -1,0 +1,7 @@
+{
+ "what": "dawn sun at 1080p, 90 deg, camera aimed at the sun (az 30, el 5.8), S6 grade with bloom; 1:1 crops dawn_sun_1080_0EV.png / dawn_sun_1080_VR-0.6EV.png (400 x 240 px around the sun). Profile = mean display luminance (codes) on rings at 0 / 0.25 / 0.5 / 1 / 2 / 3 / 5 / 8 / 12 deg, upper half (the horizon below is its own thing).",
+ "preset": {"_SunColor": "#FFCE9E @ +3.05", "_SunShape": [0.265, 0.04, 0.55, 0], "_SunGlow": [0.35, 1.6, 0, 0], "_SunRemove": [10.0, 0.0, 0.15, 0.0]},
+ "0 EV": {"profile": [254.7, 246.2, 234.0, 228.5, 225.5, 225.2, 226.0, 233.0, 227.5], "disc_minus_0.5deg": 20.7, "white_blob_deg": 0.38},
+ "VR -0.6 EV": {"profile": [253.9, 235.5, 217.1, 210.4, 206.8, 206.3, 207.3, 216.0, 209.3], "disc_minus_0.5deg": 36.8, "white_blob_deg": 0.38},
+ "note": "monotone out to ~5 deg; from 5 to 8 deg the sky above the sun brightens again by ~8 codes (0 EV): that is the HDRI's own sky above the sun (the inpaint keeps the vertical gradient), spread over 3 deg, no ring edge. Before (9def000): disc minus 0.5 deg = 0.6 codes, white blob 6.6 deg."
+}

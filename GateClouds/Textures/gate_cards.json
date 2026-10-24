@@ -1,0 +1,103 @@
+{
+ "_about": "Gate cloud cards v2: R = moon behind-right 35 deg, G = 70 deg, B = sky; each = sRGB(linear / scale); A = straight alpha. moon el 8, sun strength 4.0 (= MoonE 1 in the shader is this light), sky = luminance gradient (horizon 1, zenith 0.12, deck 0.55). cloud_base_v: v of the flat cloud base (v = 0 bottom).",
+ "Congestus": {
+  "file": "GateCard_Congestus.png",
+  "size": [
+   1024,
+   1024
+  ],
+  "scale": [
+   1.572581,
+   0.816692,
+   0.478829
+  ],
+  "bbox_uv": [
+   0.0908,
+   0.084,
+   0.9023,
+   0.9219
+  ],
+  "cloud_base_v": 0.1006,
+  "render_s": 1029.8
+ },
+ "Bank": {
+  "file": "GateCard_Bank.png",
+  "size": [
+   2048,
+   1024
+  ],
+  "scale": [
+   1.615894,
+   0.828333,
+   0.492378
+  ],
+  "bbox_uv": [
+   0.0586,
+   0.2676,
+   0.939,
+   0.7295
+  ],
+  "cloud_base_v": 0.2852,
+  "render_s": 1233.8
+ },
+ "Strato": {
+  "file": "GateCard_Strato.png",
+  "size": [
+   2048,
+   1024
+  ],
+  "scale": [
+   1.473594,
+   0.688009,
+   0.508595
+  ],
+  "bbox_uv": [
+   0.0693,
+   0.3027,
+   0.9355,
+   0.6963
+  ],
+  "cloud_base_v": 0.3857,
+  "render_s": 678.3
+ },
+ "Puff": {
+  "file": "GateCard_Puff.png",
+  "size": [
+   1024,
+   1024
+  ],
+  "scale": [
+   1.593094,
+   0.791675,
+   0.490465
+  ],
+  "bbox_uv": [
+   0.0938,
+   0.3213,
+   0.916,
+   0.6738
+  ],
+  "cloud_base_v": 0.3408,
+  "render_s": 435.8
+ },
+ "Wisp": {
+  "file": "GateCard_Wisp.png",
+  "size": [
+   2048,
+   1024
+  ],
+  "scale": [
+   1.557305,
+   0.583563,
+   0.557525
+  ],
+  "bbox_uv": [
+   0.0605,
+   0.3447,
+   0.9375,
+   0.6582
+  ],
+  "cloud_base_v": 0.4375,
+  "render_s": 545.7
+ }
+}
