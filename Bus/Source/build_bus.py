@@ -15,6 +15,7 @@ import sys
 
 import bpy
 import bmesh  # noqa: E402  (bmesh only imports after bpy)
+import numpy as np
 from mathutils import Matrix, Vector
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -174,31 +175,115 @@ def smooth_by_angle(ob, deg=35):
 # ------------------------------------------------------------------------------------------------ shell profile
 def W_of(y):
     """outer half-width (from the centre line XC) at height y: bottom rounding, side wall with tumblehome,
-    then the PAZ shoulder (a quarter ellipse) up to the flat crown."""
-    if y <= 0.50:
-        t = (0.50 - y) / 0.08
+    then the PAZ shoulder (a full superellipse quadrant, D-28a: 'make the shoulders full') up to the flat crown."""
+    yb = B.Y_BOT + 0.08
+    if y <= yb:
+        t = (yb - y) / 0.08
         return B.W_HALF - 0.04 * t * t
     if y <= B.Y_SIDE_ROOF:
         return B.W_HALF - (B.W_HALF - B.W_TOPSIDE) * max(0.0, (y - B.Y_BELT)) / (B.Y_SIDE_ROOF - B.Y_BELT)
     v = min(1.0, (y - B.Y_SIDE_ROOF) / (B.Y_TOP - B.Y_SIDE_ROOF))
-    return B.CROWN_HALF + (B.W_TOPSIDE - B.CROWN_HALF) * math.sqrt(max(0.0, 1.0 - v * v))
+    return B.CROWN_HALF + (B.W_TOPSIDE - B.CROWN_HALF) * max(0.0, 1.0 - v ** B.SHOULDER_N) ** (1.0 / B.SHOULDER_N)
 
 
 def Zf_of(y):
-    if y <= 0.50:
-        t = (0.50 - y) / 0.08
+    yb = B.Y_BOT + 0.08
+    if y <= yb:
+        t = (yb - y) / 0.08
         return B.Z_FRONT - 0.05 * t * t
     if y <= B.Y_FRONT_ROOF:
         return B.Z_FRONT
     t = min(1.0, (y - B.Y_FRONT_ROOF) / (B.Y_TOP - B.Y_FRONT_ROOF))
-    return B.Z_FRONT - B.FRONT_DOME * (1.0 - math.sqrt(max(0.0, 1.0 - t * t)))
+    return B.Z_FRONT - B.FRONT_DOME * (1.0 - max(0.0, 1.0 - t ** B.SHOULDER_N) ** (1.0 / B.SHOULDER_N))
 
 
 def Zr_of(y):
     return B.Z_REAR + (B.Z_FRONT - Zf_of(y))
 
 
-ROWS = sorted(set([0.42, 0.45, 0.50, 0.62, 0.80, 1.00, 1.15, 1.26, 1.28, 1.30, 1.36, 1.55, 1.80, 2.00, 2.18, 2.22, 2.25,
+def front_bulge(x_rel, xs, y):
+    """D-28b: the PAZ front is round in plan (the face curves back into both corners) and the lower half swells
+    forward a little. 0 at the corner tangents, so the corner arcs join smoothly."""
+    if xs <= 1e-6:
+        return 0.0
+    k = max(0.0, 1.0 - (x_rel / xs) ** 2)
+    low = 1.0 - min(1.0, max(0.0, (y - 1.05) / 0.20))
+    dome = min(1.0, max(0.0, (Zf_of(y) - (B.Z_FRONT - B.FRONT_DOME)) / B.FRONT_DOME))
+    return (B.FRONT_BULGE + B.FRONT_SWELL * low) * k * dome
+
+
+def shell_point(col, y):
+    """a point of the outer skin: col = (segment, belt-level parameter) as in build_shell."""
+    seg, v = col
+    XC = B.XC
+    W, Zf, Zr = W_of(y), Zf_of(y), Zr_of(y)
+    Rc = min(B.RC, W * 0.6)
+    zs0, zs1 = Zr + Rc, Zf - Rc
+    xs = W - Rc
+    xs_belt = B.W_HALF - B.RC
+    if seg == 'R':
+        return (XC + W, y, zs0 + (v - SIDE0) / (SIDE1 - SIDE0) * (zs1 - zs0))
+    if seg == 'L':
+        return (XC - W, y, zs0 + (v - SIDE0) / (SIDE1 - SIDE0) * (zs1 - zs0))
+    if seg == 'F':
+        xr = (v - XC) / xs_belt * xs
+        return (XC + xr, y, Zf + front_bulge(xr, xs, y))
+    if seg == 'Bk':
+        return (XC + (v - XC) / xs_belt * xs, y, Zr)
+    a = v * math.pi / 2
+    if seg == 'RF':
+        return (XC + xs + Rc * math.cos(a), y, zs1 + Rc * math.sin(a))
+    if seg == 'LF':
+        return (XC - xs - Rc * math.sin(a), y, zs1 + Rc * math.cos(a))
+    if seg == 'LR':
+        return (XC - xs - Rc * math.cos(a), y, zs0 - Rc * math.sin(a))
+    if seg == 'RR':
+        return (XC + xs + Rc * math.sin(a), y, zs0 - Rc * math.cos(a))
+
+
+# a continuous perimeter parameter u (arc length at the belt), so overlays (rounded window corners, gaskets, the
+# cowl) can be sampled on the same surface as the skin: R (rear->front), RF, F (right->left), LF, L, LR, Bk, RR
+def _segs():
+    xs = B.W_HALF - B.RC
+    q = math.pi / 2 * B.RC
+    return [('R', SIDE0, SIDE1, SIDE1 - SIDE0), ('RF', 0.0, 1.0, q), ('F', B.XC + xs, B.XC - xs, 2 * xs), ('LF', 0.0, 1.0, q),
+            ('L', SIDE1, SIDE0, SIDE1 - SIDE0), ('LR', 0.0, 1.0, q), ('Bk', B.XC - xs, B.XC + xs, 2 * xs), ('RR', 0.0, 1.0, q)]
+
+
+def perim(u):
+    for seg, a, b, L in _segs():
+        if u <= L + 1e-9:
+            return (seg, a + (b - a) * max(0.0, u) / L)
+        u -= L
+    seg, a, b, L = _segs()[-1]
+    return (seg, b)
+
+
+def perim_u(seg, v):
+    u = 0.0
+    for s_, a, b, L in _segs():
+        if s_ == seg:
+            return u + (v - a) / (b - a) * L
+        u += L
+    raise KeyError(seg)
+
+
+def surf(u, y):
+    return shell_point(perim(u), y)
+
+
+def surf_n(u, y, d=0.004):
+    p0, p1 = np.array(surf(u - d, y)), np.array(surf(u + d, y))
+    q0, q1 = np.array(surf(u, y - d)), np.array(surf(u, y + d))
+    n = np.cross(q1 - q0, p1 - p0)           # unity left-handed: (dy x du) points out for u running counter-clockwise
+    n = n / (np.linalg.norm(n) + 1e-12)
+    c = np.array(surf(u, y))
+    if np.dot(n, c - np.array([B.XC, c[1], (B.Z_FRONT + B.Z_REAR) / 2])) < 0:
+        n = -n
+    return n
+
+
+ROWS = sorted(set([B.Y_BOT, B.Y_BOT + 0.03, B.Y_BOT + 0.08, 0.62, 0.66, 1.05, 1.20, 0.80, 1.00, 1.15, 1.26, 1.28, 1.30, 1.36, 1.55, 1.80, 2.00, 2.18, 2.22, 2.25,
                    2.30, 2.31, 2.34, 2.38, 2.45, 2.53, 2.58, 2.64, 2.68, 2.705, 2.722, 2.733, 2.739, 2.74]))
 SIDE0, SIDE1 = B.Z_REAR + B.RC, B.Z_FRONT - B.RC           # straight side span at the belt
 
@@ -253,35 +338,7 @@ def build_shell():
         cols.append(('Bk', x))
     for k in range(1, NC):
         cols.append(('RR', k / NC))
-    XC = B.XC
-
-    def point(col, y):
-        seg, v = col
-        W, Zf, Zr = W_of(y), Zf_of(y), Zr_of(y)
-        Rc = min(B.RC, W * 0.6)
-        zs0, zs1 = Zr + Rc, Zf - Rc
-        xs = W - Rc
-        xs_belt = B.W_HALF - B.RC
-
-        def side_z(z):
-            return zs0 + (z - SIDE0) / (SIDE1 - SIDE0) * (zs1 - zs0)
-        if seg == 'R':
-            return (XC + W, y, side_z(v))
-        if seg == 'L':
-            return (XC - W, y, side_z(v))
-        if seg == 'F':
-            return (XC + (v - XC) / xs_belt * xs, y, Zf)
-        if seg == 'Bk':
-            return (XC + (v - XC) / xs_belt * xs, y, Zr)
-        a = v * math.pi / 2
-        if seg == 'RF':
-            return (XC + xs + Rc * math.cos(a), y, zs1 + Rc * math.sin(a))
-        if seg == 'LF':
-            return (XC - xs - Rc * math.sin(a), y, zs1 + Rc * math.cos(a))
-        if seg == 'LR':
-            return (XC - xs - Rc * math.cos(a), y, zs0 - Rc * math.sin(a))
-        if seg == 'RR':
-            return (XC + xs + Rc * math.sin(a), y, zs0 - Rc * math.cos(a))
+    point = shell_point
 
     bm = bmesh.new()
     grid = []
@@ -344,7 +401,7 @@ def build_shell():
             ym = (ROWS[i] + ROWS[i + 1]) / 2
             on_front = cols[j][0] in front and cols[j1][0] in front
             if on_front:      # PAZ front (ref PAZ_02): cream face, an indigo skirt below 0.62
-                f.material_index = 0 if ym < 0.62 else (2 if 1.26 < ym < 1.28 else 1)
+                f.material_index = 0 if ym < 0.66 else (2 if 1.26 < ym < 1.28 else 1)
             else:
                 f.material_index = 0 if ym < 1.26 else (2 if ym < 1.28 else 1)
             if op:
@@ -491,11 +548,7 @@ def ceiling():
     sg['lb_fse'] = 'BusGlass'
     # outside: the raised hatch housing (PAZ's front roof hatch, glazed) — a low coaming round the glass
     hz0, hz1, hx0, hx1 = sz - h - 0.06, sz + h + 0.20, sx - h - 0.05, sx + h + 0.05
-    for nm, lo, hi in (('HatchOut0', (hx0 - 0.04, 2.55, hz0 - 0.04), (hx1 + 0.04, 2.77, hz0)),
-                       ('HatchOut1', (hx0 - 0.04, 2.55, hz1), (hx1 + 0.04, 2.77, hz1 + 0.04)),
-                       ('HatchOut2', (hx0 - 0.04, 2.55, hz0), (hx0, 2.77, hz1)),
-                       ('HatchOut3', (hx1, 2.55, hz0), (hx1 + 0.04, 2.77, hz1))):
-        box(nm, lo, (hi[0], 2.765, hi[2]), 'Alu', bevel=0.012)
+    hz0, hz1, hx0, hx1 = sz - h - 0.06, sz + h + 0.20, sx - h - 0.05, sx + h + 0.05
     # splayed well: four sloped enamel panels from the glass edges out to the skin opening
     for (a0, a1, b0, b1) in (((sx - h, sz - h), (sx + h, sz - h), (hx1, hz0), (hx0, hz0)),
                              ((sx + h, sz + h), (sx - h, sz + h), (hx0, hz1), (hx1, hz1)),
@@ -521,8 +574,8 @@ def floor():
     box('StepMid', (0.60, 0.40, z0), (1.02, 0.43, z1), 'Floor')
     box('StepRiser0', (0.80, 0.23, z0), (0.82, 0.42, z1), 'Int_Enamel')
     box('StepRiser1', (0.58, 0.43, z0), (0.60, B.FLOOR_Y, z1), 'Int_Enamel')
-    box('StepWallR', (0.58, 0.17, z0 - 0.02), (1.02, B.FLOOR_Y, z0), 'Int_Enamel')
-    box('StepWallF', (0.58, 0.17, z1), (1.02, B.FLOOR_Y, z1 + 0.02), 'Int_Enamel')
+    box('StepWallR', (0.58, 0.17, z0 - 0.02), (1.02, B.FLOOR_Y, z0), 'Ext_Indigo')
+    box('StepWallF', (0.58, 0.17, z1), (1.02, B.FLOOR_Y, z1 + 0.02), 'Ext_Indigo')
     for nm, x, y in (('NosingLow', 0.80, 0.23), ('NosingMid', 0.60, 0.43), ('NosingTop', 0.58, B.FLOOR_Y)):
         box(nm, (x - 0.005, y - 0.005, z0), (x + 0.045, y + 0.004, z1), 'Alu')
         box(nm + 'Strip', (x + 0.005, y + 0.004, z0 + 0.01), (x + 0.035, y + 0.006, z1 - 0.01), 'SafetyYellow')
@@ -532,9 +585,9 @@ def floor():
             xo = B.XC + s * (B.W_HALF - 0.04)
             xi = B.XC + s * (B.TRACK_HALF - 0.22)
             if s > 0 and i == 0:
-                lo, hi = (0.56, B.FLOOR_Y, z - 0.52), (xo, 0.96, z + 0.45)
+                lo, hi = (0.56, B.FLOOR_Y, z - 0.56), (xo, 1.00, z + 0.45)
             else:
-                lo, hi = (min(xo, xi), B.FLOOR_Y, z - 0.52), (max(xo, xi), 0.96, z + 0.52)
+                lo, hi = (min(xo, xi), B.FLOOR_Y, z - 0.56), (max(xo, xi), 1.00, z + 0.56)
             box('WheelBox%d%s' % (i, 'R' if s > 0 else 'L'), lo, hi, 'Int_Enamel', bevel=0.04)
 
 
@@ -602,13 +655,13 @@ def seat(name, x0, x1, back_z, double=False, worn=1.0, cushion_y=None, collectio
 def seats():
     hero = None
     for i, bz in enumerate(B.RIGHT_ROWS):
-        cy = (0.96 + 0.07) if i == 0 else None        # the hero seat sits on the front wheel box
+        cy = (1.00 + 0.04) if i == 0 else None        # the hero seat sits on the front wheel box
         o = seat('SeatR%d' % i, B.SEAT_R_X[0], B.SEAT_R_X[1], bz, cushion_y=cy)
         if i == 0:
             hero = o
     for i, bz in enumerate(B.LEFT_ROWS):
         over_wheel = abs(bz + 0.30 - B.AXLES[1]) < 0.55
-        seat('SeatL%d' % i, B.SEAT_L_X[0], B.SEAT_L_X[1], bz, double=True, cushion_y=(0.96 + 0.07) if over_wheel else None)
+        seat('SeatL%d' % i, B.SEAT_L_X[0], B.SEAT_L_X[1], bz, double=True, cushion_y=(1.00 + 0.04) if over_wheel else None)
     seat('RearBench', B.X_IN_L + 0.03, B.X_IN_R - 0.03, B.REAR_BENCH_Z, double=True)
     dx, dz = B.DRIVER_SEAT
     seat('DriverSeat', dx - 0.25, dx + 0.25, dz - 0.30, cushion_y=B.FLOOR_Y + 0.46)
@@ -765,17 +818,285 @@ def curtains():
 
 
 # ------------------------------------------------------------------------------------------------ exterior
-def framed(name, cx, cy, w, h, z, ring=0.035, slats=5):
-    """a PAZ 'eye' grille: indigo outline ring (ref PAZ_02), dark recessed mesh, thin horizontal slats."""
-    box(name + '_Ring', (cx - w / 2 - ring, cy - h / 2 - ring, z - 0.01), (cx + w / 2 + ring, cy + h / 2 + ring, z + 0.012), 'Ext_Indigo', 'Exterior', bevel=min(0.08, h / 3), segs=6)
-    box(name + '_Mesh', (cx - w / 2, cy - h / 2, z + 0.005), (cx + w / 2, cy + h / 2, z + 0.016), 'Ext_Black', 'Exterior', bevel=min(0.06, h / 3.5), segs=5)
-    for k in range(slats):
-        yy = cy - h / 2 + h * (k + 0.5) / slats
-        box(name + '_Slat%d' % k, (cx - w / 2 + 0.02, yy - 0.006, z + 0.016), (cx + w / 2 - 0.02, yy + 0.006, z + 0.024), 'Chrome', 'Exterior')
+# ------------------------------------------------------------------------------------------------ overlays on the skin
+def _corner_patch(bm, u0, y0, du, dy, r, off, n_arc=8):
+    """the bit of skin between a square window corner (u0, y0) and its rounded outline: a fan from the corner.
+    du, dy = +-1: the direction from the corner into the opening."""
+    cu, cy = u0 + du * r, y0 + dy * r
+    pts = [(u0 + du * r, y0)]
+    for k in range(n_arc + 1):
+        a = math.pi / 2 * k / n_arc
+        pts.append((cu - du * r * math.cos(a) if False else cu - du * r * math.sin(a), cy - dy * r * math.cos(a)))
+    pts.append((u0, y0 + dy * r))
+    corner = bm.verts.new(U2B(np.array(surf(u0, y0)) + surf_n(u0, y0) * off))
+    vs = [bm.verts.new(U2B(np.array(surf(u, y)) + surf_n(u, y) * off)) for u, y in pts]
+    for a_, b_ in zip(vs[:-1], vs[1:]):
+        try:
+            bm.faces.new((corner, a_, b_))
+        except ValueError:
+            pass
+
+
+def _outline(u0, u1, y0, y1, r, n_arc=8, step=0.04):
+    """rounded-rectangle outline in (u, y), counter-clockwise. r = dict of corner radii keyed '00','10','11','01'."""
+    out = []
+
+    def edge(pa, pb):
+        L = math.hypot(pb[0] - pa[0], pb[1] - pa[1])
+        n = max(1, int(L / step))
+        for k in range(n):
+            out.append((pa[0] + (pb[0] - pa[0]) * k / n, pa[1] + (pb[1] - pa[1]) * k / n))
+
+    def arc(cu, cy, rr, a0):
+        for k in range(n_arc):
+            a = a0 + math.pi / 2 * k / n_arc
+            out.append((cu + rr * math.cos(a), cy + rr * math.sin(a)))
+    r00, r10, r11, r01 = r['00'], r['10'], r['11'], r['01']
+    edge((u0 + r00, y0), (u1 - r10, y0))
+    arc(u1 - r10, y0 + r10, r10, -math.pi / 2)
+    edge((u1, y0 + r10), (u1, y1 - r11))
+    arc(u1 - r11, y1 - r11, r11, 0.0)
+    edge((u1 - r11, y1), (u0 + r01, y1))
+    arc(u0 + r01, y1 - r01, r01, math.pi / 2)
+    edge((u0, y1 - r01), (u0, y0 + r00))
+    arc(u0 + r00, y0 + r00, r00, math.pi)
+    return out
+
+
+def window_dress(name, u0, u1, y0, y1, r, skin='Ext_Cream', gasket=0.022):
+    """rounded window corners on the rectangular cut: skin-coloured corner fillets just proud of the skin, and a black
+    rubber gasket along the rounded outline (bible 4.2: seal #2B2B2B). PAZ windows all have big round corners."""
+    if u0 > u1:
+        u0, u1 = u1, u0
+    bm = bmesh.new()
+    for (uc, yc, du, dy, key) in ((u0, y0, 1, 1, '00'), (u1, y0, -1, 1, '10'), (u1, y1, -1, -1, '11'), (u0, y1, 1, -1, '01')):
+        if r[key] > 0.005:
+            _corner_patch(bm, uc, yc, du, dy, r[key], 0.002)
+    if len(bm.faces):
+        obj_from_bm(name + '_Fillet', bm, [skin], 'Exterior')
+    else:
+        bm.free()
+    # gasket: a ring from the outline inward by `gasket`
+    o = _outline(u0, u1, y0, y1, r)
+    ri = {k: max(0.0, v - gasket) for k, v in r.items()}
+    i_ = _outline(u0 + gasket, u1 - gasket, y0 + gasket, y1 - gasket, ri)
+    if len(o) != len(i_):
+        return
+    g = bmesh.new()
+    vo = [g.verts.new(U2B(np.array(surf(u, y)) + surf_n(u, y) * 0.004)) for u, y in o]
+    vi = [g.verts.new(U2B(np.array(surf(u, y)) + surf_n(u, y) * 0.002)) for u, y in i_]
+    n = len(vo)
+    for k in range(n):
+        g.faces.new((vo[k], vo[(k + 1) % n], vi[(k + 1) % n], vi[k]))
+    obj_from_bm(name + '_Gasket', g, ['Seal'], 'Exterior')
+
+
+def dress_windows():
+    rr = lambda a, b=None, c=None, d=None: dict(zip(('00', '10', '11', '01'), (a, b if b is not None else a, c if c is not None else a, d if d is not None else a)))
+    for k, (z0, z1) in enumerate(B.WIN_R):
+        window_dress('WinR%d' % (k + 1), perim_u('R', z0), perim_u('R', z1), B.WIN_SILL, B.WIN_HEAD, rr(0.07))
+    for k, (z0, z1) in enumerate(B.WIN_L):
+        window_dress('WinL%d' % k, perim_u('L', z1), perim_u('L', z0), B.WIN_SILL, B.WIN_HEAD, rr(0.07))
+    # windscreen panes: big round OUTER top corners (D-28b), smaller elsewhere. u runs R side -> F (right to left) -> L side
+    uR0, uR1 = perim_u('R', B.A_PILLAR_R[1]), perim_u('F', B.WS_POST[1])
+    window_dress('WsR', uR0, uR1, B.WS_BOT, B.WS_TOP, dict(zip(('00', '10', '11', '01'), (0.10, 0.05, 0.06, 0.30))), gasket=0.008)
+    uL0, uL1 = perim_u('F', B.WS_POST[0]), perim_u('L', B.A_PILLAR_L[1])
+    window_dress('WsL', uL0, uL1, B.WS_BOT, B.WS_TOP, dict(zip(('00', '10', '11', '01'), (0.05, 0.10, 0.30, 0.06))), gasket=0.008)
+    for k, (x0, x1) in enumerate(B.BROWS):
+        window_dress('Brow%d' % k, perim_u('F', x1), perim_u('F', x0), B.BROW_Y[0], B.BROW_Y[1], rr(0.05))
+    window_dress('RearWin', perim_u('Bk', B.REAR_WIN[0]), perim_u('Bk', B.REAR_WIN[1]), B.REAR_WIN[2], B.REAR_WIN[3], rr(0.12))
+    # the sliding upper panes (D-28b #6): a horizontal transom at 1.92 and a vertical meeting rail above it, outside
+    for side, wins in (('R', B.WIN_R), ('L', B.WIN_L)):
+        for k, (z0, z1) in enumerate(wins):
+            ua, ub = sorted((perim_u(side, z0), perim_u(side, z1)))
+            g = bmesh.new()
+            pts = [(u, y) for u in np.linspace(ua + 0.02, ub - 0.02, 12) for y in (1.905, 1.935)]
+            V = [g.verts.new(U2B(np.array(surf(u, y)) + surf_n(u, y) * 0.006)) for u, y in pts]
+            for j in range(11):
+                g.faces.new((V[2 * j], V[2 * j + 2], V[2 * j + 3], V[2 * j + 1]))
+            um = (ua + ub) / 2
+            for y_ in (1.935,):
+                q = [g.verts.new(U2B(np.array(surf(u, y)) + surf_n(u, y) * 0.006)) for u, y in ((um - 0.012, y_), (um + 0.012, y_), (um + 0.012, B.WIN_HEAD - 0.02), (um - 0.012, B.WIN_HEAD - 0.02))]
+                g.faces.new(q)
+            obj_from_bm('Transom%s%d' % (side, k), g, ['Alu'], 'Exterior')
+
+
+def cowl():
+    """D-28b: a horizontal ledge under the windscreen (the wipers park on it), wrapping both front corners."""
+    u0, u1 = perim_u('R', B.A_PILLAR_R[0]), perim_u('L', B.A_PILLAR_L[0])
+    us = np.linspace(u0, u1, 90)
+    bm = bmesh.new()
+    rows = []
+    for (y, off) in ((B.WS_BOT - 0.005, 0.0), (B.WS_BOT - 0.005, 0.065), (B.WS_BOT - 0.05, 0.075), (B.WS_BOT - 0.09, 0.0)):
+        rows.append([bm.verts.new(U2B(np.array(surf(u, y)) + surf_n(u, y) * off)) for u in us])
+    for a_, b_ in zip(rows[:-1], rows[1:]):
+        for j in range(len(us) - 1):
+            bm.faces.new((a_[j], a_[j + 1], b_[j + 1], b_[j]))
+    ob = obj_from_bm('Cowl', bm, ['Ext_Cream'], 'Exterior')
+    smooth_by_angle(ob, 40)
+
+
+def front_z(x, y):
+    xs = W_of(y) - B.RC
+    xr = x - B.XC
+    return Zf_of(y) + front_bulge(xr, xs, y)
+
+
+def rrect(cx, cy, w, h, r, n=10):
+    """rounded rectangle, counter-clockwise, 4 (n + 1) points (same count for any size: frames can be bridged)."""
+    r = min(r, w / 2 - 1e-4, h / 2 - 1e-4)
+    out = []
+    for (ox, oy, a0) in ((cx + w / 2 - r, cy - h / 2 + r, -math.pi / 2), (cx + w / 2 - r, cy + h / 2 - r, 0.0),
+                         (cx - w / 2 + r, cy + h / 2 - r, math.pi / 2), (cx - w / 2 + r, cy - h / 2 + r, math.pi)):
+        for k in range(n + 1):
+            a = a0 + math.pi / 2 * k / n
+            out.append((ox + r * math.cos(a), oy + r * math.sin(a)))
+    return out
+
+
+def face_plate(name, pts_xy, z_of, dz, m, collection='Exterior', ring_inner=None):
+    """a flat plate on the front face: outline pts (x, y), at z = z_of(x, y) + dz; with ring_inner = a frame."""
+    bm = bmesh.new()
+    vo = [bm.verts.new(U2B((x, y, z_of(x, y) + dz))) for x, y in pts_xy]
+    if ring_inner is None:
+        bm.faces.new(vo)
+    else:
+        vi = [bm.verts.new(U2B((x, y, z_of(x, y) + dz))) for x, y in ring_inner]
+        n = len(vo)
+        for k in range(n):
+            bm.faces.new((vo[k], vo[(k + 1) % n], vi[(k + 1) % n], vi[k]))
+    ob = obj_from_bm(name, bm, [m], collection)
+    md = ob.modifiers.new('solid', 'SOLIDIFY')
+    md.thickness = 0.012
+    md.offset = 1.0
+    return ob
+
+
+def mesh_grille(name, cx, cy, w, h, ring=0.045, pitch=0.026, r=0.10):
+    """D-28b #2: a PAZ 'eye': a big round-cornered rectangle of wire mesh in an indigo outline, set into the face."""
+    face_plate(name + '_Ring', rrect(cx, cy, w + 2 * ring, h + 2 * ring, r + ring), front_z, 0.004, 'Ext_Indigo',
+               ring_inner=rrect(cx, cy, w, h, r))
+    face_plate(name + '_Back', rrect(cx, cy, w, h, r), front_z, -0.002, 'Ext_Black')
+    z = front_z(cx, cy)
+
+    def half_extent(d, half_main, half_other):
+        e = max(0.0, abs(d) - (half_other - r))
+        return half_main - r + math.sqrt(max(0.0, r * r - e * e)) if e > 0 else half_main
+    for x in np.arange(cx - w / 2 + pitch / 2, cx + w / 2, pitch):
+        dy = half_extent(x - cx, h / 2, w / 2) - 0.004
+        box(name + '_V%.3f' % x, (x - 0.0025, cy - dy, z + 0.004), (x + 0.0025, cy + dy, z + 0.009), 'SeatFrame', 'Exterior')
+    for y in np.arange(cy - h / 2 + pitch / 2, cy + h / 2, pitch):
+        dx = half_extent(y - cy, w / 2, h / 2) - 0.004
+        box(name + '_H%.3f' % y, (cx - dx, y - 0.0025, z + 0.008), (cx + dx, y + 0.0025, z + 0.012), 'SeatFrame', 'Exterior')
+
+
+def lamp(name, x, y, r, lens):
+    z = front_z(x, y)
+    cylinder(name + '_Bezel', (x, y, z + 0.015), 'z', r + 0.012, 0.04, 'Chrome', 'Exterior', segs=48, bevel=0.01)
+    cylinder(name + '_Lens', (x, y, z + 0.034), 'z', r, 0.012, lens, 'Exterior', segs=48)
+
+
+def chassis():
+    """D-28a: 'a bus on a truck chassis' — frame rails, axles, diff, tank, exhaust, spare wheel, mud flaps under the body."""
+    XC = B.XC
+    for s in (-1, 1):
+        box('FrameRail%s' % ('R' if s > 0 else 'L'), (XC + s * 0.43 - 0.04, 0.36, B.Z_REAR + 0.5), (XC + s * 0.43 + 0.04, 0.54, B.Z_FRONT - 0.15), 'Ext_Black', 'Exterior')
+    for z in (2.6, 0.8, -0.6, -2.4):
+        box('CrossMember%.1f' % z, (XC - 0.43, 0.40, z - 0.03), (XC + 0.43, 0.50, z + 0.03), 'Ext_Black', 'Exterior')
+    zf, zr = B.AXLES
+    box('FrontAxle', (XC - B.TRACK_HALF + 0.10, B.WHEEL_R - 0.06, zf - 0.04), (XC + B.TRACK_HALF - 0.10, B.WHEEL_R + 0.02, zf + 0.04), 'Ext_Black', 'Exterior')
+    cylinder('RearAxle', (XC, B.WHEEL_R, zr), 'x', 0.06, 2 * B.TRACK_HALF - 0.2, 'Ext_Black', 'Exterior', segs=16)
+    cylinder('Diff', (XC, B.WHEEL_R, zr), 'z', 0.17, 0.26, 'Ext_Black', 'Exterior', segs=24, bevel=0.02)
+    tube('PropShaft', [(XC, B.WHEEL_R + 0.02, zr + 0.13), (XC, 0.50, 2.2)], 0.035, 'Ext_Black', 'Exterior')
+    for s in (-1, 1):
+        for z in (zf, zr):
+            box('Spring%s%.1f' % ('R' if s > 0 else 'L', z), (XC + s * 0.43 - 0.035, B.WHEEL_R + 0.03, z - 0.55), (XC + s * 0.43 + 0.035, B.WHEEL_R + 0.10, z + 0.55), 'Ext_Black', 'Exterior', bevel=0.01)
+    box('FuelTank', (XC - 1.02, 0.30, -0.70), (XC - 0.55, 0.52, 0.30), 'Ext_Black', 'Exterior', bevel=0.04, segs=3)
+    tube('Exhaust', [(XC + 0.25, 0.42, 2.4), (XC + 0.55, 0.32, 0.5), (XC + 0.75, 0.30, -2.8), (XC + 0.85, 0.28, B.Z_REAR - 0.05)], 0.03, 'Ext_Black', 'Exterior')
+    cylinder('SpareWheel', (XC, 0.36, -2.85), 'y', 0.40, 0.22, 'Tyre', 'Exterior', segs=40, bevel=0.06)
+    for s in (-1, 1):
+        for z in (zf, zr):
+            box('MudFlap%s%.1f' % ('R' if s > 0 else 'L', z), (XC + s * B.TRACK_HALF - 0.13, 0.18, z - B.ARCH_R - 0.02), (XC + s * B.TRACK_HALF + 0.13, B.Y_BOT + 0.05, z - B.ARCH_R + 0.0), 'Tyre', 'Exterior')
+
+
+def hatch_housing():
+    """D-28b #4: the skylight's housing is low and round-edged, hugging the roof curve, ≤ 8 cm above the skin
+    (PAZ_04 / PAZ_05). The opening in the skin is splayed; the glass stays at SKY_C.y (contract)."""
+    sx, _, sz = B.SKY_C
+    h = B.SKY_HALF
+    x0, x1, z0, z1 = sx - h - 0.05, sx + h + 0.05, sz - h - 0.06, sz + h + 0.20
+    rr = 0.07
+    loop = _outline(x0, x1, z0, z1, dict(zip(('00', '10', '11', '01'), (rr,) * 4)), n_arc=6, step=0.05)
+    bm = bmesh.new()
+    rings = []
+    for (dxz, dy) in ((0.0, -0.02), (0.0, 0.055), (0.03, 0.07), (0.075, 0.035), (0.10, -0.015)):
+        ring = []
+        for (x, z) in loop:
+            cx, cz = (x0 + x1) / 2, (z0 + z1) / 2
+            vx, vz = x - cx, z - cz
+            L = math.hypot(vx, vz) + 1e-9
+            px, pz = x + vx / L * dxz, z + vz / L * dxz
+            ring.append(bm.verts.new(U2B((px, B.roof_y(px - B.XC) + dy, pz))))
+        rings.append(ring)
+    n = len(loop)
+    for a_, b_ in zip(rings[:-1], rings[1:]):
+        for k in range(n):
+            bm.faces.new((a_[k], a_[(k + 1) % n], b_[(k + 1) % n], b_[k]))
+    ob = obj_from_bm('HatchHousing', bm, ['Ext_Cream'], 'Exterior')
+    smooth_by_angle(ob, 50)
+
+
+def folding_door(open_=True):
+    """D-28d: two glazed jack-knife leaves (centre-opening), each two 14.3 cm panels, folding OUTWARD onto the jambs.
+    Open = the bible's face of this door (it never shuts but in act 11). Measured: the front stack sits at +22.4 .. +28.0 deg
+    from the hero seat (sun D-12 at +30 +- 1.5 clear), the rear stack at +40.7 .. +48.0 (behind the door post / clear of
+    李白 and 济慈 at +50); inward folding would cover the windscreen corner and the sun (lookdev_brief §7)."""
+    xw = B.R_WALL
+    p = B.DOOR_PANEL
+    y0, y1 = 0.30, B.DOOR_HEAD - 0.03
+    jf, jr = B.DOOR[1] - B.DOOR_JAMB[1], B.DOOR[0] + B.DOOR_JAMB[0]
+    out = []
+
+    def panel(name, hinge, ang_deg, flip):
+        """a panel hinged at `hinge` (x, z); ang 0 = closed in the wall plane pointing toward the door centre."""
+        objs = []
+        d = -1 if flip else 1           # flip: points toward -z when closed (front leaf)
+        objs.append(box(name + '_Frame0', (xw - 0.012, y0, 0.0), (xw + 0.012, y1, 0.025), 'Ext_Cream', 'Door'))
+        objs.append(box(name + '_Frame1', (xw - 0.012, y0, p - 0.025), (xw + 0.012, y1, p), 'Ext_Cream', 'Door'))
+        objs.append(box(name + '_Low', (xw - 0.012, y0, 0.0), (xw + 0.012, 0.62, p), 'Ext_Indigo', 'Door'))
+        objs.append(box(name + '_Mid', (xw - 0.012, 1.26, 0.0), (xw + 0.012, 1.30, p), 'Ext_Silver', 'Door'))
+        objs.append(box(name + '_Top', (xw - 0.012, y1 - 0.04, 0.0), (xw + 0.012, y1, p), 'Ext_Cream', 'Door'))
+        for (ya, yb) in ((0.62, 1.26), (1.30, y1 - 0.04)):
+            g = bmesh.new()
+            vs = [g.verts.new(U2B(q)) for q in ((xw + 0.002, ya, 0.025), (xw + 0.002, ya, p - 0.025), (xw + 0.002, yb, p - 0.025), (xw + 0.002, yb, 0.025))]
+            g.faces.new(vs)
+            gl = obj_from_bm('Glass_%s_%d' % (name, int(ya * 100)), g, ['Glass'], 'Door')
+            gl['lb_fse'] = 'BusGlass'
+            objs.append(gl)
+        # local frame: the panel spans z 0..p at x = xw; hinge at z 0. Place: mirror for the front leaf, rotate about y
+        M = Matrix.Translation(U2B((hinge[0], 0, hinge[1]))) @ Matrix.Rotation(math.radians(ang_deg) * (1 if flip else -1), 4, 'Z') \
+            @ (Matrix.Scale(-1, 4, Vector((0, 1, 0))) if flip else Matrix.Identity(4)) @ Matrix.Translation(U2B((-xw, 0, 0)))
+        for o in objs:
+            o.matrix_world = M @ o.matrix_world
+        return objs
+
+    gap = 0.012
+    if open_:
+        # each leaf: panel A hinged on the jamb swings 90 deg out; panel B folds back against it (stack of two)
+        out += panel('DoorF_A', (xw, jf), 90, True)
+        out += panel('DoorF_B', (xw + p, jf - gap), 270 - 180 + 180, True)
+        out += panel('DoorR_A', (xw, jr), 90, False)
+        out += panel('DoorR_B', (xw + p, jr + gap), 270 - 180 + 180, False)
+    else:
+        out += panel('DoorF_A', (xw, jf), 0, True)
+        out += panel('DoorF_B', (xw, jf - p), 0, True)
+        out += panel('DoorR_A', (xw, jr), 0, False)
+        out += panel('DoorR_B', (xw, jr + p), 0, False)
+    return out
 
 
 def exterior():
-    XC, zf = B.XC, B.Z_FRONT
+    XC = B.XC
     for i, z in enumerate(B.AXLES):
         for s in (-1, 1):
             x = XC + s * B.TRACK_HALF
@@ -786,62 +1107,40 @@ def exterior():
             for k in range(6 if i == 0 else 8):
                 a = 2 * math.pi * k / (6 if i == 0 else 8)
                 cylinder('Nut%d%s%d' % (i, t, k), (x + s * 0.155, B.WHEEL_R + 0.065 * math.sin(a), z + 0.065 * math.cos(a)), 'x', 0.012, 0.025, 'Chrome', 'Exterior', segs=6)
-    # the PAZ face: two 'eye' grilles with an indigo outline, a small centre grille, paired round lamps (white lit +
-    # amber unlit, D-28), a cream bumper. No badge, no plate, no letters (D-28 / bible 6.1).
+    # the PAZ face (PAZ_02 / 05 / 06, D-28b): two big mesh 'eyes' toward the corners in an indigo outline, a plain centre
+    # panel with one small mesh strip, 18 cm round lamps under the eyes (white lit, amber an unlit lens), a thin bumper.
     for s in (-1, 1):
         t = 'R' if s > 0 else 'L'
-        framed('EyeGrille' + t, XC + s * 0.68, 1.00, 0.52, 0.44, zf, ring=0.045, slats=7)
-        cylinder('HeadRing' + t, (XC + s * 0.88, 0.66, zf + 0.012), 'z', 0.095, 0.03, 'Chrome', 'Exterior', segs=40, bevel=0.008)
-        cylinder('Headlight' + t, (XC + s * 0.88, 0.66, zf + 0.026), 'z', 0.082, 0.012, 'Lamp_Head', 'Exterior', segs=40)
-        cylinder('AmberRing' + t, (XC + s * 0.66, 0.66, zf + 0.012), 'z', 0.075, 0.03, 'Chrome', 'Exterior', segs=36, bevel=0.008)
-        cylinder('AmberLens' + t, (XC + s * 0.66, 0.66, zf + 0.026), 'z', 0.064, 0.012, 'Lamp_Amber', 'Exterior', segs=36)
-        box('TailLight' + t, (XC + s * 1.02 - 0.06, 0.70, B.Z_REAR - 0.02), (XC + s * 1.02 + 0.06, 1.00, B.Z_REAR + 0.005), 'Lamp_Tail', 'Exterior', bevel=0.01)
-        box('SideMarker' + t, (XC + s * B.W_HALF - 0.005, 0.80, 0.40), (XC + s * B.W_HALF + 0.005, 0.84, 0.50), 'Lamp_Amber', 'Exterior')
-    framed('CentreGrille', XC, 0.72, 0.42, 0.12, zf, ring=0.025, slats=2)
-    box('BumperF', (XC - 1.18, 0.34, zf - 0.02), (XC + 1.18, 0.50, zf + 0.12), 'Rim', 'Exterior', bevel=0.04, segs=3)
-    box('BumperR', (XC - 1.18, 0.34, B.Z_REAR - 0.12), (XC + 1.18, 0.50, B.Z_REAR + 0.02), 'Rim', 'Exterior', bevel=0.04, segs=3)
-    # mirrors on long stalks from the A-pillars
-    for s in (-1, 1):
-        t = 'R' if s > 0 else 'L'
-        xw = XC + s * B.W_HALF
-        tube('MirrorStalk' + t, [(xw, 1.70, 3.30), (xw + s * 0.16, 1.72, 3.42), (xw + s * 0.22, 1.92, 3.56)], 0.012, 'Ext_Black', 'Exterior')
-        box('MirrorHead' + t, (xw + s * 0.22 - 0.09, 1.76, 3.54), (xw + s * 0.22 + 0.09, 2.04, 3.58), 'Ext_Black', 'Exterior', bevel=0.02)
-    # wipers parked along the bottom of each pane (outside)
+        mesh_grille('EyeGrille' + t, XC + s * 0.70, 1.00, 0.54, 0.40, r=0.12)
+        lamp('Headlight' + t, XC + s * 0.88, 0.70, 0.09, 'Lamp_Head')
+        lamp('AmberLamp' + t, XC + s * 0.64, 0.70, 0.075, 'Lamp_Amber')
+        box('TailLight' + t, (XC + s * 1.02 - 0.06, 0.78, B.Z_REAR - 0.02), (XC + s * 1.02 + 0.06, 1.06, B.Z_REAR + 0.005), 'Lamp_Tail', 'Exterior', bevel=0.01)
+        box('SideMarker' + t, (XC + s * B.W_HALF - 0.005, 0.86, 0.40), (XC + s * B.W_HALF + 0.005, 0.90, 0.50), 'Lamp_Amber', 'Exterior')
+    mesh_grille('CentreStrip', XC, 0.86, 0.36, 0.09, ring=0.02, pitch=0.022, r=0.03)
+    # thin steel bumpers, painted (PAZ_02: blue)
+    for nm, z, d in (('BumperF', B.Z_FRONT + 0.05, 1), ('BumperR', B.Z_REAR - 0.05, -1)):
+        pts = [(XC + s * 1.18, 0.47, z - d * 0.16) for s in (-1,)] + [(XC + x, 0.47, z + d * 0.01 * (1 - (x / 1.15) ** 2)) for x in np.linspace(-1.12, 1.12, 9)] + [(XC + 1.18, 0.47, z - d * 0.16)]
+        tube(nm, pts, 0.032, 'Ext_Indigo', 'Exterior')
+    # mirrors: the right one LOW (D-28c: out of the door frame, el < -5 deg, behind the front door stack), the left one on a stalk
+    xw = B.R_WALL
+    tube('MirrorStalkR', [(xw, 1.18, 3.30), (xw + 0.16, 1.20, 3.42), (xw + 0.24, 1.30, 3.50)], 0.012, 'Ext_Black', 'Exterior')
+    box('MirrorHeadR', (xw + 0.24 - 0.08, 1.24, 3.50), (xw + 0.24 + 0.08, 1.46, 3.54), 'Ext_Black', 'Exterior', bevel=0.02)
+    xl = XC - B.W_HALF
+    tube('MirrorStalkL', [(xl, 1.70, 3.30), (xl - 0.16, 1.72, 3.42), (xl - 0.22, 1.92, 3.56)], 0.012, 'Ext_Black', 'Exterior')
+    box('MirrorHeadL', (xl - 0.22 - 0.09, 1.76, 3.54), (xl - 0.22 + 0.09, 2.04, 3.58), 'Ext_Black', 'Exterior', bevel=0.02)
+    # wipers parked on the cowl
     for x0, x1 in ((XC - 1.00, B.WS_POST[0] - 0.08), (B.WS_POST[1] + 0.06, 0.86)):
-        tube('Wiper%+.2f' % x0, [(x0, B.WS_BOT + 0.04, zf + 0.015), (x1, B.WS_BOT + 0.09, zf + 0.015)], 0.007, 'Ext_Black', 'Exterior')
-    # drip rail along the roof edge (PAZ: a thin bright gutter over the windows)
+        zc = max(front_z(x0, B.WS_BOT), front_z(x1, B.WS_BOT)) + 0.02
+        tube('Wiper%+.2f' % x0, [(x0, B.WS_BOT + 0.03, front_z(x0, B.WS_BOT) + 0.02), (x1, B.WS_BOT + 0.07, front_z(x1, B.WS_BOT) + 0.02)], 0.007, 'Ext_Black', 'Exterior')
     for s in (-1, 1):
         x = XC + s * (W_of(2.33) + 0.008)
         tube('DripRail%s' % ('R' if s > 0 else 'L'), [(x, 2.33, B.Z_REAR + 0.25), (x, 2.33, B.Z_FRONT - 0.25)], 0.008, 'Chrome', 'Exterior')
-    # interior rear-view mirror on its stalk
     tube('RVMStalk', [(-0.05, B.WS_TOP + 0.01, 3.40), (-0.05, 2.15, 3.36)], 0.008, 'Bakelite', 'Cabin')
     box('RVMirror', (-0.16, 2.08, 3.34), (0.06, 2.15, 3.36), 'Bakelite', 'Cabin', bevel=0.01)
-
-
-def door_leaf(angle_deg=165.0):
-    """front-hinged outward swing door (glazed upper + lower panel). Pivot = hinge at the front jamb. Open = 165 deg."""
-    z0, z1 = B.DOOR
-    w = z1 - z0 - 0.01
-    hinge = (B.R_WALL + 0.01, 0.0, z1)
-    objs = []
-    objs.append(box('DoorLeaf_Low', (B.R_WALL - 0.01, 0.30, z1 - w), (B.R_WALL + 0.02, 1.15, z1), 'Ext_Indigo', 'Door', bevel=0.008))
-    objs.append(box('DoorLeaf_Frame', (B.R_WALL - 0.01, 1.15, z1 - w), (B.R_WALL + 0.02, B.DOOR_HEAD - 0.02, z1 - w + 0.05), 'Ext_Cream', 'Door'))
-    objs.append(box('DoorLeaf_Frame2', (B.R_WALL - 0.01, 1.15, z1 - 0.05), (B.R_WALL + 0.02, B.DOOR_HEAD - 0.02, z1), 'Ext_Cream', 'Door'))
-    objs.append(box('DoorLeaf_Head', (B.R_WALL - 0.01, B.DOOR_HEAD - 0.07, z1 - w), (B.R_WALL + 0.02, B.DOOR_HEAD - 0.02, z1), 'Ext_Cream', 'Door'))
-    objs.append(box('DoorLeaf_Mid', (B.R_WALL - 0.01, 1.15, z1 - w), (B.R_WALL + 0.02, 1.20, z1), 'Ext_Silver', 'Door'))
-    g = bmesh.new()
-    vs = [g.verts.new(U2B(p)) for p in ((B.R_WALL + 0.005, 1.20, z1 - w + 0.05), (B.R_WALL + 0.005, 1.20, z1 - 0.05),
-                                        (B.R_WALL + 0.005, B.DOOR_HEAD - 0.07, z1 - 0.05), (B.R_WALL + 0.005, B.DOOR_HEAD - 0.07, z1 - w + 0.05))]
-    g.faces.new(vs)
-    gl = obj_from_bm('Glass_DoorLeaf', g, ['Glass'], 'Door')
-    gl['lb_fse'] = 'BusGlass'
-    objs.append(gl)
-    piv = U2B(hinge)
-    # the leaf points to unity -z from the hinge; +angle about blender z swings it outward (+x) and forward
-    R = Matrix.Translation(piv) @ Matrix.Rotation(math.radians(angle_deg), 4, 'Z') @ Matrix.Translation(-piv)
-    for o in objs:
-        o.matrix_world = R @ o.matrix_world
-    return objs
+    dress_windows()
+    cowl()
+    chassis()
+    hatch_housing()
 
 
 def build(open_door=True, reset=True):
@@ -860,7 +1159,7 @@ def build(open_door=True, reset=True):
     tubes()
     curtains()
     exterior()
-    door_leaf(165.0 if open_door else 0.0)
+    folding_door(open_door)
     # convert curves to meshes so everything is a mesh (FBX, BVH)
     for ob in list(bpy.data.objects):
         if ob.type == 'CURVE':

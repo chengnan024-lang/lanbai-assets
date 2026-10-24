@@ -221,7 +221,7 @@ def build_all(ao_samples):
             continue
         n = o.name
         cols = [c.name for c in o.users_collection]
-        if n.startswith('Glass_DoorLeaf') or 'Door' in cols:
+        if 'Door' in cols:
             groups['door'].append(o)
         elif n.startswith('Glass_'):
             groups['glass'].append(o)
@@ -263,9 +263,14 @@ def build_all(ao_samples):
     out['Cabin_Radio'] = join('Cabin_Radio', groups['radio'])
     out['Cabin_DestBlind'] = join('Cabin_DestBlind', groups['blind'])
     out['Cabin_Curtains'] = join('Cabin_Curtains', groups['curt'])
-    door = join('Bus_DoorLeaf', groups['door'])
-    set_origin(door, BB.U2B((B.R_WALL + 0.01, 0.0, B.DOOR[1])))
-    out['Bus_DoorLeaf'] = door
+    # four folding-door panels (D-28d), each its own object (act 11 closes them under the white mask)
+    for pid in ('DoorF_A', 'DoorF_B', 'DoorR_A', 'DoorR_B'):
+        parts = [o for o in groups['door'] if pid in o.name]
+        if parts:
+            d = join('Bus_' + pid, parts)
+            bb = [d.matrix_world @ Vector(c) for c in d.bound_box]
+            set_origin(d, sum(bb, Vector()) / 8)
+            out['Bus_' + pid] = d
     for key, parts in groups['wheel'].items():
         nm = {'0R': 'Wheel_FR', '0L': 'Wheel_FL', '1R': 'Wheel_RR', '1L': 'Wheel_RL'}[key]
         w = join(nm, parts)
@@ -333,8 +338,9 @@ def layout(out):
     return dict(
         _about='车的布局（唯一数据源 Bus/Source/bus_spec.py，由 finish_bus.py 写出）。Unity 车局部坐标：米，x 右 y 上 z 前，车头 +Z，路面 y 0。',
         eye_hero=list(B.EYE), floor_y=B.FLOOR_Y, skylight=dict(centre=list(B.SKY_C), half=B.SKY_HALF),
-        door=dict(hinge=[B.R_WALL + 0.01, 0.0, B.DOOR[1]], open_deg=165.0, closed_deg=0.0, axis='+Y local',
-                  note='第 11 幕在白的遮罩下关上（圣经 §6·11）；其余时间开着，从不关'),
+        door=dict(kind='two outward-folding glazed leaves, centre-opening, 2 panels each (D-28d)', panel_m=B.DOOR_PANEL,
+                  jambs_m=dict(rear=B.DOOR_JAMB[0], front=B.DOOR_JAMB[1]), opening_z=list(B.DOOR),
+                  note='FBX 里是开着的状态（圣经：门从不关）；第 11 幕在白的遮罩下关上。关的状态的变换在完整的车里补（WIP）'),
         wheels=dict(radius=B.WHEEL_R, names=['Wheel_FR', 'Wheel_FL', 'Wheel_RR', 'Wheel_RL'], axis='local X',
                     centres=[[B.XC + s * B.TRACK_HALF, B.WHEEL_R, z] for z in B.AXLES for s in (1, -1)]),
         tubes=[dict(row=r, x=x, z0=z0, z1=z1) for r, x, zl in (('L', B.TUBE_X[0], B.TUBE_Z_L), ('R', B.TUBE_X[1], B.TUBE_Z)) for z0, z1 in zl],

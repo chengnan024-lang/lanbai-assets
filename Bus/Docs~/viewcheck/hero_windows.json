@@ -1,25 +1,25 @@
 {
  "SlopeR1": {
   "az": [
-   46.5,
-   155.0
+   49.5,
+   151.5
   ],
   "el": [
    41.5,
-   71.0
+   68.5
   ],
-  "solid_angle_cells": 5825
+  "solid_angle_cells": 4524
  },
  "Skylight": {
   "az": [
    -31.0,
-   30.0
+   31.5
   ],
   "el": [
    41.5,
    63.5
   ],
-  "solid_angle_cells": 3933
+  "solid_angle_cells": 3957
  },
  "WinR1": {
   "az": [
@@ -30,40 +30,40 @@
    -39.0,
    48.0
   ],
-  "solid_angle_cells": 29577
+  "solid_angle_cells": 26587
  },
  "SlopeR2": {
   "az": [
-   158.0,
-   170.5
+   157.5,
+   169.0
   ],
   "el": [
-   20.5,
-   40.0
+   21.0,
+   38.0
   ],
-  "solid_angle_cells": 487
+  "solid_angle_cells": 368
  },
  "SlopeL1": {
   "az": [
-   -116.0,
+   -115.0,
    -87.5
   ],
   "el": [
    18.5,
-   27.0
+   25.0
   ],
-  "solid_angle_cells": 819
+  "solid_angle_cells": 602
  },
  "SlopeL0": {
   "az": [
    -79.5,
-   -60.0
+   -60.5
   ],
   "el": [
    17.5,
-   26.5
+   25.0
   ],
-  "solid_angle_cells": 553
+  "solid_angle_cells": 418
  },
  "WinR2": {
   "az": [
@@ -71,43 +71,54 @@
    166.5
   ],
   "el": [
-   -19.5,
-   26.0
+   -19.0,
+   25.0
   ],
-  "solid_angle_cells": 808
+  "solid_angle_cells": 714
  },
  "SlopeL2": {
   "az": [
-   -139.0,
+   -138.0,
    -122.0
   ],
   "el": [
    14.0,
-   23.0
+   21.5
   ],
-  "solid_angle_cells": 386
+  "solid_angle_cells": 289
+ },
+ "DoorF_B_130": {
+  "az": [
+   24.0,
+   26.5
+  ],
+  "el": [
+   -16.5,
+   21.5
+  ],
+  "solid_angle_cells": 367
  },
  "WindscreenR": {
   "az": [
-   -26.5,
+   -26.0,
    19.0
   ],
   "el": [
-   -16.0,
+   -15.0,
    20.5
   ],
-  "solid_angle_cells": 6223
+  "solid_angle_cells": 5914
  },
  "SlopeR3": {
   "az": [
-   170.5,
-   174.0
+   170.0,
+   173.0
   ],
   "el": [
    13.5,
-   20.5
+   19.5
   ],
-  "solid_angle_cells": 62
+  "solid_angle_cells": 42
  },
  "WindscreenL": {
   "az": [
@@ -115,43 +126,21 @@
    -28.5
   ],
   "el": [
-   -14.0,
-   18.0
-  ],
-  "solid_angle_cells": 2903
- },
- "DoorLeaf": {
-  "az": [
-   21.0,
-   21.5
-  ],
-  "el": [
-   -4.0,
+   -13.0,
    17.5
   ],
-  "solid_angle_cells": 47
+  "solid_angle_cells": 2771
  },
  "SlopeL3": {
   "az": [
-   -151.0,
-   -142.0
+   -150.0,
+   -142.5
   ],
   "el": [
    10.5,
-   16.0
+   15.5
   ],
-  "solid_angle_cells": 123
- },
- "WinL1": {
-  "az": [
-   -106.0,
-   -98.5
-  ],
-  "el": [
-   -11.0,
-   14.5
-  ],
-  "solid_angle_cells": 634
+  "solid_angle_cells": 88
  },
  "WinL0": {
   "az": [
@@ -159,65 +148,65 @@
    -57.5
   ],
   "el": [
-   -11.0,
+   -10.5,
    14.5
   ],
-  "solid_angle_cells": 1984
+  "solid_angle_cells": 1761
  },
- "WinL2": {
+ "WinL1": {
   "az": [
-   -136.0,
-   -119.5
+   -106.0,
+   -98.5
   ],
   "el": [
-   -10.0,
-   13.0
+   -10.5,
+   14.0
   ],
-  "solid_angle_cells": 570
+  "solid_angle_cells": 569
  },
  "SlopeR4": {
   "az": [
    174.0,
-   175.5
+   175.0
   ],
   "el": [
    10.0,
-   13.0
+   12.5
   ],
-  "solid_angle_cells": 14
+  "solid_angle_cells": 6
+ },
+ "WinL2": {
+  "az": [
+   -135.5,
+   -119.5
+  ],
+  "el": [
+   -9.5,
+   12.0
+  ],
+  "solid_angle_cells": 505
  },
  "SlopeL4": {
   "az": [
-   -157.5,
+   -157.0,
    -153.0
   ],
   "el": [
    8.5,
-   12.5
+   11.5
   ],
-  "solid_angle_cells": 59
- },
- "SlopeR5": {
-  "az": [
-   176.5,
-   176.5
-  ],
-  "el": [
-   10.0,
-   10.0
-  ],
-  "solid_angle_cells": 1
+  "solid_angle_cells": 43
  },
  "SlopeL5": {
   "az": [
-   -161.5,
+   -160.5,
    -159.5
   ],
   "el": [
    7.0,
-   9.5
+   9.0
   ],
-  "solid_angle_cells": 14
+  "solid_angle_cells": 12
  },
  "WinL3": {
   "az": [
@@ -226,9 +215,9 @@
   ],
   "el": [
    -1.5,
-   9.5
+   9.0
   ],
-  "solid_angle_cells": 76
+  "solid_angle_cells": 70
  },
  "WinR3": {
   "az": [
@@ -236,10 +225,10 @@
    169.0
   ],
   "el": [
-   5.0,
+   5.5,
    7.5
   ],
-  "solid_angle_cells": 6
+  "solid_angle_cells": 5
  },
  "WinL4": {
   "az": [
@@ -250,7 +239,7 @@
    -1.0,
    7.0
   ],
-  "solid_angle_cells": 45
+  "solid_angle_cells": 43
  },
  "RearWindow": {
   "az": [
@@ -261,17 +250,28 @@
    -0.5,
    4.5
   ],
-  "solid_angle_cells": 286
+  "solid_angle_cells": 284
+ },
+ "DoorF_B_62": {
+  "az": [
+   24.0,
+   26.5
+  ],
+  "el": [
+   -38.5,
+   -19.0
+  ],
+  "solid_angle_cells": 232
  },
  "(open: door / nothing)": {
   "az": [
-   21.0,
-   37.0
+   -92.0,
+   84.5
   ],
   "el": [
-   -42.0,
+   -58.0,
    37.5
   ],
-  "solid_angle_cells": 3668
+  "solid_angle_cells": 2626
  }
 }

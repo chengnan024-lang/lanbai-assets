@@ -23,31 +23,36 @@ XC = -0.18                          # 车身中线（D-28 A）
 W_HALF = 1.22                       # 外皮半宽：右壁 x = XC + 1.22 = 1.04
 Z_FRONT = 3.50
 Z_REAR = -3.65                      # 长 7.15
-Y_BOT = 0.42
+Y_BOT = 0.52                        # D-28a：裙边往上收，多露轮胎和车底（地板 0.62 不动）
 Y_TOP = 2.74                        # 车顶平冠（见头注）
 Y_BELT = 1.28                       # 腰线 = 双色分界，银线 20 mm 在 1.26–1.28
 Y_SIDE_ROOF = 2.30                  # 侧壁开始弯进圆肩
 W_TOPSIDE = 1.19                    # 窗带内收 3 cm
-CROWN_HALF = 0.80                   # 车顶平冠的半宽；圆肩 = 从 (1.19, 2.30) 到 (0.80, 2.74) 的四分之一椭圆
+CROWN_HALF = 0.80                   # 车顶平冠的半宽；圆肩 = 从 (1.19, 2.30) 到 (0.80, 2.74) 的超椭圆象限
+SHOULDER_N = 2.6                    # D-28a：圆肩做饱满（> 2 比椭圆更鼓）
+FRONT_BULGE = 0.04                  # D-28b：前脸平面上的弧（中间比两角往前 4 cm）
+FRONT_SWELL = 0.03                  # 前脸下半再往前鼓 3 cm
 Y_FRONT_ROOF = 2.58                 # 前后脸开始弯进车顶（眉窗在前脸 2.31..2.53）
 FRONT_DOME = 0.26
 RC = 0.14                           # 平面圆角半径（挡风玻璃包过这个圆角）
 
 # 轮：前轴在主座位下面；PAZ 轴距 3.60
-WHEEL_R = 0.42
+WHEEL_R = 0.45                      # 8.25-20 级卡车胎（GAZ-53 底盘）
 WHEEL_W = 0.24
 AXLES = (2.05, -1.55)
 TRACK_HALF = 1.00                   # 轮胎中心离车中线
-ARCH_R = 0.50
+ARCH_R = 0.54
 
 # ---------------------------------------------------------------- 开口（侧面 z 范围；前后脸 x 是车局部绝对坐标）
 WIN_SILL = 1.30
 WIN_HEAD = 2.22
 WS_BOT = 1.28                       # 挡风下沿（坠入深海 −15°/−12°）
 WS_TOP = 2.25                       # 挡风上沿（裂口顶 0°/+18°）
-WS_POST = (-0.218, -0.178)          # 两片挡风之间的中柱（4 cm）：从主座位看 −28.3 … −26.6°（连胶条），夹在河伯 −25° 和银心 −30° 之间
+WS_POST = (-0.236, -0.196)          # 两片挡风之间的中柱（4 cm）：从主座位看约 −28.5 … −26.5°（连胶条），夹在河伯 −25° 和银心 −30° 之间
 DOOR = (2.62, 3.27)                 # 门洞
 DOOR_HEAD = 2.30
+DOOR_PANEL = 0.140                   # D-28d：两扇折门，每扇两片 14 cm 的玻璃门板，向外折到门框两边
+DOOR_JAMB = (0.07, 0.02)            # 门框（后, 前）：前门框细，前门扇折叠后才不进晨日 ±1.5°
 DOOR_POST = (2.57, 2.62)
 A_PILLAR_R = (3.27, 3.36)
 A_PILLAR_L = (3.28, 3.36)
@@ -98,7 +103,7 @@ def roof_y(x_rel):
     if a >= W_TOPSIDE:
         return Y_SIDE_ROOF
     u = (a - CROWN_HALF) / (W_TOPSIDE - CROWN_HALF)
-    return Y_SIDE_ROOF + (Y_TOP - Y_SIDE_ROOF) * math.sqrt(max(0.0, 1.0 - u * u))
+    return Y_SIDE_ROOF + (Y_TOP - Y_SIDE_ROOF) * max(0.0, 1.0 - u ** SHOULDER_N) ** (1.0 / SHOULDER_N)
 
 
 def az_el(p, eye=EYE):

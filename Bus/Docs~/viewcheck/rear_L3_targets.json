@@ -2,8 +2,9 @@
  "月": {
   "az": -12,
   "el": 8,
-  "visible": true,
+  "visible": false,
   "through": [
+   "TransomL2",
    "WinL2"
   ]
  },
@@ -79,7 +80,8 @@
   "visible": false,
   "through": [
    "Body",
-   "WindscreenL"
+   "WindscreenL",
+   "WindscreenR"
   ]
  },
  "晨日": {
@@ -96,8 +98,9 @@
   "el": 0,
   "visible": false,
   "through": [
-   "Body",
    "DoorGrab",
+   "DoorR_A_Frame1",
+   "SeatR0_Rail",
    "TrimR0F",
    "WinR1"
   ]
