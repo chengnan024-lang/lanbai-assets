@@ -49,7 +49,9 @@ def ss(x):
 
 def sky_img(name):
     if name not in SKYS:
-        SKYS[name] = C.read_hdr(os.path.join(WORK, f'sky_{name}_1024.hdr')).astype(np.float64)
+        # the 8-ii line (_Udon_SunDisc.z 10 deg) is thinner than a 1024 px column: that one at 4096
+        W = 4096 if name.endswith('line10') and os.path.exists(os.path.join(WORK, f'sky_{name}_4096.hdr')) else 1024
+        SKYS[name] = C.read_hdr(os.path.join(WORK, f'sky_{name}_{W}.hdr')).astype(np.float64)
     return SKYS[name]
 
 
@@ -353,8 +355,12 @@ def render(t, cam_name, w=960, door='bible_v2', out_dir=None, tag='', dev=None):
     luma = codes @ C.LUMA
     thr = np.percentile(luma, 99.9)
     ys, xs = np.nonzero(luma >= thr)
+    # the ceiling pixels carry the sea's own purple guard in Unity (Lanbai/Sea, D-17 / D-21, README_Sea接口 §2.7), which
+    # this stand-in does not model: the D-21 share is also given without them
+    nc = (ca.reshape(hh, w) < 0.5) & win.reshape(hh, w)
     m = dict(t=t, cam=cam_name, door=door, h=round(h, 1), dEV=round(ev, 3), APL=round(float(luma.mean()), 1),
-             purple_D21=round(purple_share(codes), 4), brightest_px=[round(float(xs.mean() / w), 3), round(float(ys.mean() / hh), 3)],
+             purple_D21=round(purple_share(codes), 4),
+             purple_D21_no_ceiling=round(purple_share(codes[nc]) * float(nc.mean()), 4) if nc.any() else 0.0, brightest_px=[round(float(xs.mean() / w), 3), round(float(ys.mean() / hh), 3)],
              reveal=round(AL.disc_reveal(t), 3), cards_standin=sorted(STANDIN), width=w)
     if out_dir:
         os.makedirs(out_dir, exist_ok=True)
