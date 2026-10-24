@@ -62,7 +62,7 @@ namespace Lanbai.Fonts.Editor
             int N = poems.Count, K = Keys.Length;
             var pId = new string[N]; var pT0 = new float[N]; var pTgone = new float[N];
             var pAz = new float[N]; var pEl = new float[N]; var pDist = new float[N]; var pAzKey = new float[N * K];
-            var pFixed = new bool[N];
+            var pFixed = new bool[N]; var pGazeDeg = new float[N];
             var slotRoot = new Transform[N * K]; var slotObjStart = new int[N * K]; var slotObjCount = new int[N * K];
             var slotScrimStart = new int[N * K]; var slotScrimCount = new int[N * K];
             var slotBlkW = new float[N * K]; var slotBlkEl0 = new float[N * K]; var slotBlkEl1 = new float[N * K];
@@ -83,6 +83,7 @@ namespace Lanbai.Fonts.Editor
                 pAz[p] = F(place[0]); pEl[p] = F(place[1]); pDist[p] = F(place[2]);
                 pT0[p] = F(P["t_appear"]); pTgone[p] = F(P["t_gone"]);
                 pFixed[p] = P.ContainsKey("mirror") && P["mirror"] is bool mb && mb || P.ContainsKey("picture");
+                pGazeDeg[p] = P.ContainsKey("gaze_deg") ? F(P["gaze_deg"]) : 50f;
                 float holdS = P.ContainsKey("hold_s") && P["hold_s"] != null ? F(P["hold_s"]) : -1f;
                 string exit = P.ContainsKey("exit") ? (string)P["exit"] : "";
                 // default exit: drift 0.2° up / DOWN over t_exit .. t_gone; Tianwen: dim at F13; Urlicht: fade in the last 1.5 s
@@ -232,13 +233,16 @@ namespace Lanbai.Fonts.Editor
                 kGo.SetActive(false);
             }
 
+            // U# 1.x compiles only scripts that have a program asset (D-33 review #1): make them next to the scripts
+            EnsureProgramAsset("LanbaiPoemDriver");
+            EnsureProgramAsset("LanbaiLangButton");
             var driver = AddUdonSharp(dGo, driverType);
             if (driver == null) { Debug.LogError("[Lanbai Poems] could not add LanbaiPoemDriver (UdonSharp editor not found): add it by hand to Lanbai_PoemDriver and run this menu again"); return; }
             Set(driver, "poemsRoot", root.transform);
             var bus = GameObject.Find("Bus");
             if (bus != null) Set(driver, "busRoot", bus.transform);
             Set(driver, "pId", pId); Set(driver, "pT0", pT0); Set(driver, "pTgone", pTgone);
-            Set(driver, "pAz", pAz); Set(driver, "pEl", pEl); Set(driver, "pDist", pDist); Set(driver, "pAzKey", pAzKey); Set(driver, "pFixed", pFixed);
+            Set(driver, "pAz", pAz); Set(driver, "pEl", pEl); Set(driver, "pDist", pDist); Set(driver, "pAzKey", pAzKey); Set(driver, "pFixed", pFixed); Set(driver, "pGazeDeg", pGazeDeg);
             Set(driver, "slotRoot", slotRoot); Set(driver, "slotObjStart", slotObjStart); Set(driver, "slotObjCount", slotObjCount);
             Set(driver, "slotScrimStart", slotScrimStart); Set(driver, "slotScrimCount", slotScrimCount);
             Set(driver, "oGo", oGo.ToArray()); Set(driver, "oRenderer", oRenderer.ToArray()); Set(driver, "oTmp", oTmp.ToArray());
@@ -255,6 +259,11 @@ namespace Lanbai.Fonts.Editor
             CopyProxyToUdon(driver);
 
             // the three switch buttons (中 / 日 / EN): a label + a BoxCollider + LanbaiLangButton
+            var buttons = new GameObject("Buttons");
+            buttons.transform.SetParent(board.transform, false);
+            buttons.SetActive(false);                              // on with the countdown, off after departure
+            Set(driver, "boardButtons", buttons);
+            CopyProxyToUdon(driver);
             if (buttonType != null)
             {
                 string[] labels = { "UI/lang/zh", "UI/lang/ja", "UI/lang/en" };
@@ -263,7 +272,7 @@ namespace Lanbai.Fonts.Editor
                 {
                     var row = ui.Cast<Dictionary<string, object>>().First(u => (string)u["id"] == labels[i]);
                     var go = new GameObject("Lang_" + events[i].Substring(5));
-                    go.transform.SetParent(board.transform, false);
+                    go.transform.SetParent(buttons.transform, false);
                     go.transform.localPosition = new Vector3(-0.12f + 0.12f * i, -0.10f, 0f);
                     var tmp = go.AddComponent<TextMeshPro>();
                     var fa = FindAsset<TMP_FontAsset>(FontAssetOf(J, (string)row["font"]));
@@ -310,6 +319,28 @@ namespace Lanbai.Fonts.Editor
             Set(driver, "occAz0", (int)F(J["az0"])); Set(driver, "occEl0", (int)F(J["el0"]));
             Set(driver, "occNAz", nAz); Set(driver, "occNEl", nEl);
             return "Seat grids: " + seats.Count + " seats from " + path + ".";
+        }
+
+        // as Sky/Editor/LanbaiSkyBuild.cs: a UdonSharpProgramAsset next to the script, if there is none
+        static void EnsureProgramAsset(string scriptName)
+        {
+            var progType = FindType("UdonSharp.UdonSharpProgramAsset");
+            if (progType == null) { Debug.LogWarning("[Lanbai Poems] UdonSharp not found: create the U# program asset for " + scriptName + " by hand"); return; }
+            foreach (string id in AssetDatabase.FindAssets(scriptName + " t:MonoScript"))
+            {
+                string sp = AssetDatabase.GUIDToAssetPath(id);
+                if (!sp.EndsWith("/" + scriptName + ".cs", StringComparison.Ordinal)) continue;
+                string ap = sp.Substring(0, sp.Length - 3) + ".asset";
+                if (AssetDatabase.LoadAssetAtPath<ScriptableObject>(ap) != null) return;
+                var prog = ScriptableObject.CreateInstance(progType);
+                var f = progType.GetField("sourceCsScript");
+                if (f != null) f.SetValue(prog, AssetDatabase.LoadAssetAtPath<MonoScript>(sp));
+                AssetDatabase.CreateAsset(prog, ap);
+                AssetDatabase.SaveAssets();
+                Debug.Log("[Lanbai Poems] created the U# program asset " + ap);
+                return;
+            }
+            Debug.LogWarning("[Lanbai Poems] " + scriptName + ".cs not found: copy Fonts/Runtime/ first");
         }
 
         static string FontAssetOf(Dictionary<string, object> J, string fontKey)

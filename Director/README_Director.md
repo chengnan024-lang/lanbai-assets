@@ -65,6 +65,7 @@ for 每个驱动（按类名、再按场景层级排序，固定顺序）：
 4. 只写自己的东西（`Engineering/README_集成.md` §2）：不碰 PPv2、不写 `RenderSettings`（除非这一幕已经由接管开关交给你）、不碰车。两个窗口重叠的驱动不能写同一个全局量——**3 Report** 会列出所有重叠。
 5. 每个 U# 脚本要有程序资产（U# 1.x 只编有 `.asset` 的脚本）：各包的搭建脚本自己建。
 6. **（v1.1）报出自己写什么**：会在自己的窗口里写 `RenderSettings` 的雾 / 环境色的驱动，加 `public bool LanbaiWritesAtmosphere()`；写那一盏主光的，加 `public bool LanbaiWritesSun()`。已经有 `public bool writeRenderSettings` / `writeMainLight` 字段的驱动（门内、海）不用加，生成器直接读字段。分发层在 `Start()` 读一次（之后在 Inspector 里改开关要重进 Play）。**3 Report** 会在每个驱动后面标 `[atmosphere]` / `[sun]`，两个都写同一样的驱动窗口重叠时报 `ERROR`。
+7. **（v1.1）不接管任何占位组的驱动**（比如摆诗的 `LanbaiPoemDriver`，窗口是全片）：加 `public bool LanbaiTakesOverNothing()` 返回 true。分发层照样调它，但它的窗口**不进** `windowsFlat` / `LanbaiCovered(t)`——不然 `LanbaiCovered(t)` 处处为真，`LB_Journey` 会在第 6、7b、8、10、11 幕还是占位的时候把占位组全关掉（D-33 评审 #2）。
    - 现在 main 上：门内、海按字段报（默认关，本地勾上才算）；门、第 9 幕不写；**天空的 `LanbaiSkyDriver` 还没有 `LanbaiWritesAtmosphere()`**——它的 `LanbaiSkyPreset.ownsAtmosphere` 打开时才写 RenderSettings，请天空下次醒来加一行（返回任一预设的 `ownsAtmosphere`），在那之前它被当成“不写”。
 
 ## 4. 已知的

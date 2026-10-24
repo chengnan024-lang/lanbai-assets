@@ -47,6 +47,9 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
     public float[] pAz, pEl, pDist;                  // default anchor (deg, deg, m); pAzKey[p * K + k] overrides per key
     public float[] pAzKey;
     public bool[] pFixed;                            // never follows the gaze (Zhuangzi, Tianwen)
+    public float[] pGazeDeg;                         // gaze threshold per poem: 50°, the side-window poems 75° (D-33 #7c)
+    public Vector2 winRight = new Vector2(-22.5f, 16.5f);   // a moved block stays inside one of these azimuth spans
+    public Vector2 winSide = new Vector2(48.5f, 103f);
     public Transform[] slotRoot;                     // [p * K + k]: the anchor of that poem for that key
     public int[] slotObjStart, slotObjCount;         // text objects of the slot (contiguous)
     public int[] slotScrimStart, slotScrimCount;
@@ -68,6 +71,7 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
     public GameObject[] boardRoot;
     public TextMeshPro[] boardLine1;
     public string[] boardPrefix, boardSuffix;        // line 1 = prefix + seconds + suffix (the {0} of strings_all.json ui)
+    public GameObject boardButtons;                  // 中 / 日 / EN: on with the countdown, off after departure (§6·12)
 
     [Header("Seats (D-33 #7b): 1° occlusion grid per seat from the bus, row-major el0 upward, az0 eastward")]
     public Vector3[] seatEye;                        // bus space; empty -> eyeLocal
@@ -139,6 +143,13 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
     public void _LangEn() { overrideKey = 3; key = 3; }
 
     // ------------------------------------------------------------------------------------------ Director
+    // Director v1.1: this driver runs the whole film but takes over no placeholder group: its window must not go into
+    // windowsFlat / LanbaiCovered(t) (D-33 review #2)
+    public bool LanbaiTakesOverNothing()
+    {
+        return true;
+    }
+
     public float[] LanbaiWindow()
     {
         return new float[] { -100000f, 100000f };
@@ -164,7 +175,6 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
             }
             if (_shown[p] && _shownKey[p] != key) HideSlot(p * K + _shownKey[p]);
             if (!_placed[p]) { Place(p); _placed[p] = true; }
-            else if (!_shown[p] || _shownKey[p] != key) PlaceSlotLikeOthers(p);
             DrawSlot(slot, pDist[p], t);
             _shown[p] = true;
             _shownKey[p] = key;
@@ -178,20 +188,39 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
         bool kept = true;
         if (!pFixed[p])
         {
-            // trigger: the player's yaw (in bus space) within 50° of the default -> default; else the player's yaw
-            // rounded to 15°, moved 20° toward the default, same elevation and distance
+            // trigger: the player's yaw (in bus space) within the poem's gaze threshold of the default -> default (50°;
+            // the side-window poems 75°, D-33 #7c); else the player's yaw rounded to 15°, moved 20° toward the default,
+            // same elevation and distance
             float yaw = HeadYaw();
             float d = Mathf.DeltaAngle(yaw, az);
-            if (Mathf.Abs(d) > 50f) { az = Mathf.Round(yaw / 15f) * 15f + (d > 0f ? 20f : -20f); kept = false; }
+            float thr = pGazeDeg != null && pGazeDeg.Length > p ? pGazeDeg[p] : 50f;
+            if (Mathf.Abs(d) > thr) { az = Mathf.Round(yaw / 15f) * 15f + (d > 0f ? 20f : -20f); kept = false; }
         }
+        // origin: the seat's eye for the default; the player's head (in bus space) for a gaze-moved poem (D-33 review #6)
+        Vector3 origin = seatEye != null && seatEye.Length > seat ? seatEye[seat] : eyeLocal;
+        if (!kept && busRoot != null) origin = busRoot.InverseTransformPoint(HeadPos());
         for (int k = 0; k < K; k++)
         {
             // the per-key default (D-13: Rilke ja +4.5°) holds only where the gaze rule kept the default
-            float def = pAzKey != null && pAzKey.Length > p * K + k ? pAzKey[p * K + k] : pAz[p];
-            float a = kept ? def : az;
-            if (!pFixed[p]) a = Avoid(p * K + k, a, def);
-            PlaceSlot(p, k, a);
+            int slot = p * K + k;
+            float def = pAzKey != null && pAzKey.Length > slot ? pAzKey[slot] : pAz[p];
+            float a = kept ? def : InWindows(slot, az);
+            if (!pFixed[p]) a = Avoid(slot, a, def);
+            PlaceSlot(p, k, a, origin);
         }
+    }
+
+    // D-33 #7c: a moved poem stays inside the right windscreen pane or the side window (block edges inside
+    // winRight / winSide, bus README §2.2); the nearest allowed centre
+    private float InWindows(int slot, float a)
+    {
+        float h = slotBlkW != null && slotBlkW.Length > slot ? slotBlkW[slot] * 0.5f : 0f;
+        float l0 = winRight.x + h, l1 = winRight.y - h, s0 = winSide.x + h, s1 = winSide.y - h;
+        if ((a >= l0 && a <= l1) || (a >= s0 && a <= s1)) return a;
+        float best = a, bd = 1e9f;
+        if (l0 <= l1) { float c = Mathf.Clamp(a, l0, l1); if (Mathf.Abs(c - a) < bd) { bd = Mathf.Abs(c - a); best = c; } }
+        if (s0 <= s1) { float c = Mathf.Clamp(a, s0, s1); if (Mathf.Abs(c - a) < bd) { bd = Mathf.Abs(c - a); best = c; } }
+        return best;
     }
 
     // D-33 #7b: blocked share of the block at azimuth a for the local player's seat (0 when there is no grid)
@@ -231,22 +260,13 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
         seat = s;
     }
 
-    private void PlaceSlotLikeOthers(int p)
-    {
-        // a key switch while the poem is up: put the new key's anchor where the poem already is
-        Transform r = slotRoot[p * K + _shownKey[p]];
-        Transform n = slotRoot[p * K + key];
-        if (r != null && n != null) { n.localPosition = r.localPosition; n.localRotation = r.localRotation; }
-    }
-
-    private void PlaceSlot(int p, int k, float a)
+    private void PlaceSlot(int p, int k, float a, Vector3 origin)
     {
         Transform r = slotRoot[p * K + k];
         if (r == null || busRoot == null) return;
         float ar = a * Mathf.Deg2Rad, er = pEl[p] * Mathf.Deg2Rad;
         Vector3 dir = new Vector3(Mathf.Cos(er) * Mathf.Sin(ar), Mathf.Sin(er), Mathf.Cos(er) * Mathf.Cos(ar));
-        Vector3 eye = seatEye != null && seatEye.Length > seat ? seatEye[seat] : eyeLocal;
-        Vector3 local = eye + dir * pDist[p];
+        Vector3 local = origin + dir * pDist[p];
         Vector3 world = busRoot.TransformPoint(local);
         Vector3 head = HeadPos();
         // +Z away from the viewer (TMP reads right only that way), Vector3.up of the bus: the line stays level (§1.3.6)
@@ -333,6 +353,7 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
     {
         int k = key == 4 ? 3 : key;                                  // de -> the English board
         if (boardRoot == null || k >= boardRoot.Length) return;
+        if (boardButtons != null && !boardButtons.activeSelf) boardButtons.SetActive(true);
         if (_boardKey != k)
         {
             for (int i = 0; i < boardRoot.Length; i++) if (boardRoot[i] != null) boardRoot[i].SetActive(i == k);
@@ -345,6 +366,7 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
 
     public void LanbaiBoardHide()
     {
+        if (boardButtons != null) boardButtons.SetActive(false);
         if (boardRoot == null) return;
         for (int i = 0; i < boardRoot.Length; i++) if (boardRoot[i] != null) boardRoot[i].SetActive(false);
         _boardKey = -1;

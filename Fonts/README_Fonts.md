@@ -173,9 +173,11 @@ D-30 的例外只有天问，所以庄子也只显示自己的语言：中文玩
 - 驱动是 Director 的一个驱动（`LanbaiTick / LanbaiActivate / LanbaiWindow`，窗口是全片）。**只从 t 算**（D-33 #6）：迟到的人、拖时间轴都对；唯一记住的是这首诗出现时按注视规则放在了哪里，诗退场后就忘掉。
 - 语言：`GetCurrentLanguage()` → 键（`zh-HK` / `zh-TW` / `zh-Hant` 先判，旧的英文名也认）；`OnLanguageChanged` 重新映射；公告板开关只对本人覆盖（按“中”时繁体客户端仍看繁体）。诗显示到一半换语言，换的是同一时刻的另一套。
 - 每个文本物体：2.5 s 对焦（ease-out，`_OutlineSoftness` 0.9 → 终值，alpha 0 → 物体的 alpha），退场 alpha → 0 并按 0.2° 上 / 下漂（庄子按物体各自的方向，天问和 Urlicht 只淡不漂）。颜色、软度、Face Dilate（桌面 0.05 / VR 0.10）用 MaterialPropertyBlock 写在 TMP 的 MeshRenderer 上，不用每个物体一个材质实例。Urlicht 的行跟乐句（`maxVisibleLines`），天问的 20 个单字各自错开对焦。
-- 注视规则（§7.4-6）：出现那一刻，玩家在车里的朝向和默认方位差 ≤ 50° 就用默认（含里尔克日文的 +4.5° 这种按语言的默认）；否则放在玩家朝向（按 15° 取整）朝默认偏 20°。庄子、天问固定不动。
+- 注视规则（§7.4-6）：出现那一刻，玩家在车里的朝向和默认方位差 ≤ 阈值就用默认（含里尔克日文的 +4.5° 这种按语言的默认）；否则放在玩家朝向（按 15° 取整）朝默认偏 20°，**只挪在挡风右片（−22.5…+16.5°）或侧窗（+48.5…+103°）里**（整块的左右沿都在里面）。阈值 50°；**侧窗三首（李白两首、济慈）75°**（D-33 #7c：50° 时主座位往前看的人会被挪到 +20° / +35°，正好压在 A 柱或门叠上；`poems[i].gaze_deg`）。默认位置以那个座位的眼睛为原点，挪过的位置以玩家的头（换到车坐标）为原点。庄子、天问固定不动。诗在屏幕上时换语言，新语言用它自己的锚点（出现时每种语言都摆好了），里尔克日文仍在 +4.5°。
 - **躲车的部件（D-33 #7b）**：车给每个座位导出 1° 遮挡网格（`Bus/Docs~/viewcheck/seats_occlusion_1deg.json`，格式见 `Editor/LanbaiPoemBake.cs` 的 `BakeSeats`：`{step, az0, el0, n_az, n_el, seats: [{name, eye, occ: "0101…"}]}`，行从 el0 往上、每行从 az0 往右，'1' = 那个座位的眼睛穿过格子中心的射线碰到车的部件），烘进 `seatOcc`。摆诗（默认位置或按注视挪过的位置）时按本地玩家的座位（`LB_Journey` 调 `SetSeat(座位号)`，座位号 = 车导出的顺序）查整个字块：被挡 > 10% 就横向每次挪 1°，先往默认方向，最多 ±15°，取最近的 ≤ 10%；都不行用默认位置。位置也从那个座位的眼睛算。庄子、天问不挪。网格文件还没到时烘焙会说一声，所有座位都用默认位置。
-- 公告板：`LB_Journey` 发车前每帧调 `LanbaiBoard(离发车的秒数)`，发车后调一次 `LanbaiBoardHide()`。板上字的字号、位置是占位，等站牌 / 车定。
+- 公告板：`LB_Journey` 发车前每帧调 `LanbaiBoard(离发车的秒数)`，发车后调一次 `LanbaiBoardHide()`；中 / 日 / EN 三个开关在 `Lanbai_Board/Buttons` 下，跟着倒计时开、跟着 Hide 关。板上字的字号、位置是占位，等站牌 / 车定。
+- 烘焙会给 `LanbaiPoemDriver`、`LanbaiLangButton` 建 U# 程序资产（照天空的 `EnsureProgramAsset`）。驱动报 `LanbaiTakesOverNothing()`：它的全片窗口不进 Director 的 `windowsFlat`。
+- Urlicht 的逐行出字对繁体玩家也有（`line_cues_by_shown.zht`，D-33 评审 #3 修好）。
 - `LB_Journey` 里自己的诗句数组和 `PickLanguage()` 退役（`Engineering/README_集成.md` §9.6）。
 - **没在 Unity 里编译过**：C# 过了 `check_cs.sh`（editor + player 两遍，player 用真的 TMP DLL）。要本地确认的：U# 里 `TextMeshPro.maxVisibleLines`、TMP 3D 的 MeshRenderer 上用 MaterialPropertyBlock 改 `_FaceColor`（线性值，用 `SetVector` 写，不经过颜色空间换算）是否生效。
 

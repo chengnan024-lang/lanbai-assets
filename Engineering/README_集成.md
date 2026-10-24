@@ -89,7 +89,7 @@ public float[] LanbaiWindow()         // {开始 t, 结束 t}，含预热
 
 规则：**新包接管一幕时，`LB_Journey` 里那一幕的旧占位整个让出去，不并存、不逐项混合。** 做法：
 1. 新包的驱动在 `LanbaiWindow()` 里报出自己的时间窗（含预热）。
-2. `LB_Journey` 按接管开关和 Director v1.1 的 `LanbaiCoversAtmosphere(t)` / `LanbaiCoversSun(t)` 让出 `RenderSettings` / 主光（§3）；旧占位组（`gateGroup`、`skyGroup`、`seaA/B`、`deepGroup`……）按 `dispatcher.LanbaiCovered(t)`（所有驱动的窗口）关掉。
+2. `LB_Journey` 按接管开关和 Director v1.1 的 `LanbaiCoversAtmosphere(t)` / `LanbaiCoversSun(t)` 让出 `RenderSettings` / 主光（§3）；旧占位组（`gateGroup`、`skyGroup`、`seaA/B`、`deepGroup`……）按 `dispatcher.LanbaiCovered(t)` 关掉。`LanbaiCovered(t)` 只算接管某一幕的驱动：报了 `LanbaiTakesOverNothing()` 的驱动（摆诗，全片窗口）不算进去，不然它处处为真。
 3. 旧占位在“哪个窗口里关”由本地在 Inspector 里给每个占位组填一个窗口（因为只有本地知道 `LB_Journey` 里哪个组对应哪一幕）；分发层只负责告诉它“哪些时间段已经有人接管”。
 4. 声音、运动这类“全片一条线”的东西不按幕切：运动差异（比如海的入水时刻）写进 §5 的差异表，本地改 `LB_Journey` 的数组，而不是让驱动去覆盖。
 
@@ -228,8 +228,8 @@ Director v1.1 起没有要本地填的窗口：`LB_Journey` 勾 `extAtmosphere` 
 
 ### 9.6 诗句（`Fonts/` 第 4 版 + 4.1 的运行时，D-30 / D-33）
 
-- **摆诗归 `LanbaiPoemDriver`**（`Fonts/Runtime/`，4.1，D-33 #5）：菜单 `蓝白/Fonts/Build Poem Objects (v4.1 runtime)` 读 `strings_all.json`，建 `Lanbai_Poems`（每首诗 × 每个玩家键一套 TMP，全关）、`Lanbai_Board`（发车提示 + 中 / 日 / EN 三个开关）、`Lanbai_PoemDriver`，字段全填好。前提：字体资产、诗句材质已经建好（`Fonts/README_Fonts.md` §3.2）。然后把 `busRoot` 拖成车的根（场景里有名为 `Bus` 的物体时自动接），公告板挪到站牌上，Director 1 Generate、2 Wire。
-- 它管：语言（客户端代码 → 键，`zh-HK` 先判；`OnLanguageChanged`；公告板开关只对本人）、注视规则（§7.4-6，庄子和天问固定）、出现 / 停留 / 退场（2.5 s 对焦、0.2° 漂移）、Urlicht 的行跟乐句、天问的 20 个单字物体、6d 的亮衬、公告板的倒计时（`LB_Journey` 发车前每帧调 `LanbaiBoard(离发车的秒数)`，发车后调一次 `LanbaiBoardHide()`）。只从 t 算，迟到的人、拖时间轴都对（D-33 #6）。
+- **摆诗归 `LanbaiPoemDriver`**（`Fonts/Runtime/`，4.1，D-33 #5）：烘焙菜单会在 `Fonts/Runtime/` 里给 `LanbaiPoemDriver`、`LanbaiLangButton` 建 U# 程序资产（U# 1.x 没有 `.asset` 就不编译；菜单打印“created the U# program asset”就是建了）。菜单 `蓝白/Fonts/Build Poem Objects (v4.1 runtime)` 读 `strings_all.json`，建 `Lanbai_Poems`（每首诗 × 每个玩家键一套 TMP，全关）、`Lanbai_Board`（发车提示 + 中 / 日 / EN 三个开关）、`Lanbai_PoemDriver`，字段全填好。前提：字体资产、诗句材质已经建好（`Fonts/README_Fonts.md` §3.2）。然后把 `busRoot` 拖成车的根（场景里有名为 `Bus` 的物体时自动接），公告板挪到站牌上，Director 1 Generate、2 Wire。
+- 它管：语言（客户端代码 → 键，`zh-HK` 先判；`OnLanguageChanged`；公告板开关只对本人）、注视规则（§7.4-6，庄子和天问固定）、出现 / 停留 / 退场（2.5 s 对焦、0.2° 漂移）、Urlicht 的行跟乐句、天问的 20 个单字物体、6d 的亮衬、公告板的倒计时和中 / 日 / EN 三个开关（`LB_Journey` 发车前每帧调 `LanbaiBoard(离发车的秒数)`，发车后调一次 `LanbaiBoardHide()`：倒计时和开关一起关，发车以后世界里没有 UI 字）。侧窗三首（李白两首、济慈）的注视阈值是 75°，其余 50°；挪的时候只挪在挡风右片或侧窗里（D-33 #7c）。只从 t 算，迟到的人、拖时间轴都对（D-33 #6）。
 - **`LB_Journey` 里的三组诗句数组退役**（`_poemIdx` / `_poemStage` 那一套和 `PickLanguage()` 一起）：本地删掉它们，不要两个系统同时摆诗。本地还要在玩家坐下 / 换座位时调 `LanbaiPoemDriver.SetSeat(座位号)`（座位号按车导出遮挡网格的顺序，D-33 #7b）。
 - **天问的汉字对所有玩家都在同一个位置**（第 9 幕的 16 颗星按中文排版放），不是中文的玩家下面多一块自己语言的小字。时刻全部没变。
 - 没在 Unity 里编译过：TMP 3D 上用 MaterialPropertyBlock 写 `_FaceColor` / `_OutlineSoftness` / `_FaceDilate`、U# 里 `TextMeshPro.maxVisibleLines`，第一次导入请把 Console 推回来。

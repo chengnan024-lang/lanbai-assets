@@ -30,7 +30,8 @@
 //     atmosphereWindowsFlat / sunWindowsFlat  (t0, t1 pairs), LanbaiCoversAtmosphere(t) / LanbaiCoversSun(t)
 //   LB_Journey skips its own RenderSettings writes where LanbaiCoversAtmosphere(t), its own sun writes where
 //   LanbaiCoversSun(t). windowsFlat / LanbaiCovered(t) stay (every window, whatever the driver writes) for the old
-//   placeholder groups.
+//   placeholder groups. A driver with public bool LanbaiTakesOverNothing() returning true (the poems: whole film) is
+//   dispatched as usual but its window is left out of windowsFlat / LanbaiCovered(t).
 using UdonSharp;
 using UnityEngine;
 
@@ -71,6 +72,9 @@ public class LanbaiActDispatcher : UdonSharpBehaviour
     public LanbaiInsideDriver[] d4;          // LanbaiInsideDriver
     private bool[] d4_on;
     private float[] d4_w;
+    public LanbaiPoemDriver[] d5;          // LanbaiPoemDriver
+    private bool[] d5_on;
+    private float[] d5_w;
     // </LANBAI-GENERATED-FIELDS>
 
     void Start()
@@ -127,6 +131,16 @@ public class LanbaiActDispatcher : UdonSharpBehaviour
             float[] w = d4[i].LanbaiWindow();
             if (w != null && w.Length >= 2) { d4_w[2 * i] = w[0]; d4_w[2 * i + 1] = w[1]; n++; }
         }
+        if (d5 == null) d5 = new LanbaiPoemDriver[0];
+        d5_on = new bool[d5.Length];
+        d5_w = new float[2 * d5.Length];
+        for (int i = 0; i < d5.Length; i++)
+        {
+            d5_w[2 * i] = 1e9f; d5_w[2 * i + 1] = -1e9f;
+            if (d5[i] == null) continue;
+            float[] w = d5[i].LanbaiWindow();
+            if (w != null && w.Length >= 2) { d5_w[2 * i] = w[0]; d5_w[2 * i + 1] = w[1]; n++; }
+        }
         // </LANBAI-GENERATED-START>
         windowsFlat = new float[2 * n];
         n = 0;
@@ -161,7 +175,13 @@ public class LanbaiActDispatcher : UdonSharpBehaviour
             if (d4[i] != null && d4[i].writeRenderSettings) { atmosphereWindowsFlat = Grow(atmosphereWindowsFlat, 2 * na + 2); atmosphereWindowsFlat[2 * na] = d4_w[2 * i]; atmosphereWindowsFlat[2 * na + 1] = d4_w[2 * i + 1]; na++; }
             if (d4[i] != null && d4[i].writeMainLight) { sunWindowsFlat = Grow(sunWindowsFlat, 2 * ns + 2); sunWindowsFlat[2 * ns] = d4_w[2 * i]; sunWindowsFlat[2 * ns + 1] = d4_w[2 * i + 1]; ns++; }
         }
+        for (int i = 0; i < d5.Length; i++)
+        {
+            if (d5_w[2 * i] > d5_w[2 * i + 1]) continue;
+            if (!d5[i].LanbaiTakesOverNothing()) { windowsFlat[2 * n] = d5_w[2 * i]; windowsFlat[2 * n + 1] = d5_w[2 * i + 1]; n++; }
+        }
         // </LANBAI-GENERATED-WINDOWS>
+        windowsFlat = Trim(windowsFlat, 2 * n);          // drivers that take over nothing left their slots unused
         atmosphereWindowsFlat = Trim(atmosphereWindowsFlat, 2 * na);
         sunWindowsFlat = Trim(sunWindowsFlat, 2 * ns);
     }
@@ -258,6 +278,17 @@ public class LanbaiActDispatcher : UdonSharpBehaviour
                     gradeWhiteSat = Mathf.Max(gradeWhiteSat, g[1]); gradeWhiteBloom = Mathf.Max(gradeWhiteBloom, g[2]);
                     gradeLensClean = Mathf.Min(gradeLensClean, g[3]);
                 }
+            }
+        }
+        for (int i = 0; i < d5.Length; i++)
+        {
+            LanbaiPoemDriver d = d5[i];
+            if (d == null) continue;
+            bool inside = hold || (t >= d5_w[2 * i] && t < d5_w[2 * i + 1]);
+            if (inside != d5_on[i]) { d.LanbaiActivate(inside); d5_on[i] = inside; }
+            if (inside && !hold)
+            {
+                d.LanbaiTick(t); act++;
             }
         }
         // </LANBAI-GENERATED-DISPATCH>

@@ -350,6 +350,10 @@ for p in POEMS:
         # +46.9°, door post +40.7…+43.3°, side window from +45.5°)
         p['place'] = (61, p['place'][1], p['place'][2])
         p['az_min'] = 48.5
+        # D-33 #7c (main 3d2d953): gaze threshold 75° (not 50°): at 50° a main-seat player looking ahead would get the
+        # poem moved to +20° / +35°, onto the A pillar or the door stack; when it does move, only inside the side window
+        # or the right windscreen pane, then away from bus parts (#7b)
+        p['gaze_deg'] = 75.0
         p['place_note'] = 'D-33 #3：中心方位 +61°，仰角不变；左沿 ≥ +48.5°'
     if p['id'] == 'P08b_Zhuangzi_Xiaoyao':
         # #4: indigo ink #27304A (bible §6·8, AD 10-07), no dark scrim (#EADCD6 + dark scrim withdrawn)
@@ -402,28 +406,6 @@ for (pid, i, key), lines in V4_LINES.items():
     old = p_['segments'][i][key]
     assert ''.join(lines).replace(' ', '') == ''.join(old).replace(' ', ''), (pid, i, key)   # same words, new breaks
     p_['segments'][i][key + '_v4'] = lines
-# Urlicht is word-synced (line_cues): which cue each displayed line belongs to, per shown language
-for p_ in POEMS:
-    if p_.get('line_cues'):
-        p_['line_cues_by_shown'] = {}
-        for key in ['main'] + [l for l in ('zh', 'zht', 'ja', 'en') if any(l in s_ for s_ in p_['segments'])]:
-            idx = []
-            for s_ in p_['segments']:
-                base = s_.get(key, [])
-                v4 = s_.get(key + '_v4', base)
-                # a re-broken line inherits the cue of the line it came from (Urlicht ja: 'わたしは' + '引き下がらなかった！' = U8b)
-                k = 0
-                acc = ''
-                for ln in v4:
-                    idx.append(k)
-                    acc += ln
-                    if k < len(base) and acc.replace(' ', '') == base[k].replace(' ', ''):
-                        k += 1
-                        acc = ''
-            p_['line_cues_by_shown'][key] = [dict(line=ln, cue=p_['line_cues'][j]['cue'], t=p_['line_cues'][j]['t'])
-                                             for ln, j in zip([l for s_ in p_['segments'] for l in s_.get(key + '_v4', s_.get(key, []))], idx)]
-
-
 # Traditional Chinese (zh-HK players, D-31 #1): OpenCC s2tw of the original (zh poems) or of the zh translation,
 # then checked by hand for the classical texts: 李白 枕席 (s2tw gives 枕蓆; the received text has 席). Same line breaks.
 ZHT = {
@@ -453,6 +435,28 @@ for p_ in POEMS:
         # centre +4.5°, so its right edge is +16.5° (4° from the A pillar); line breaks, size and tracking unchanged
         p_['az_by_lang'] = {'ja': 4.5}
         p_['place_note'] = 'D-13 定稿（main cae5b7e）：单语块顶边对齐，TMP 轴心在上中，方位 +5.5°、仰角 −2.5°（块的顶边）、60 m'
+
+
+# Urlicht is word-synced (line_cues): which cue each displayed line belongs to, per shown language
+for p_ in POEMS:
+    if p_.get('line_cues'):
+        p_['line_cues_by_shown'] = {}
+        for key in ['main'] + [l for l in ('zh', 'zht', 'ja', 'en') if any(l in s_ for s_ in p_['segments'])]:
+            idx = []
+            for s_ in p_['segments']:
+                base = s_.get(key, [])
+                v4 = s_.get(key + '_v4', base)
+                # a re-broken line inherits the cue of the line it came from (Urlicht ja: 'わたしは' + '引き下がらなかった！' = U8b)
+                k = 0
+                acc = ''
+                for ln in v4:
+                    idx.append(k)
+                    acc += ln
+                    if k < len(base) and acc.replace(' ', '') == base[k].replace(' ', ''):
+                        k += 1
+                        acc = ''
+            p_['line_cues_by_shown'][key] = [dict(line=ln, cue=p_['line_cues'][j]['cue'], t=p_['line_cues'][j]['t'])
+                                             for ln, j in zip([l for s_ in p_['segments'] for l in s_.get(key + '_v4', s_.get(key, []))], idx)]
 
 
 def shown_strings(p):

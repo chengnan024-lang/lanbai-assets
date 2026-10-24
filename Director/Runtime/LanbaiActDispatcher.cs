@@ -30,7 +30,8 @@
 //     atmosphereWindowsFlat / sunWindowsFlat  (t0, t1 pairs), LanbaiCoversAtmosphere(t) / LanbaiCoversSun(t)
 //   LB_Journey skips its own RenderSettings writes where LanbaiCoversAtmosphere(t), its own sun writes where
 //   LanbaiCoversSun(t). windowsFlat / LanbaiCovered(t) stay (every window, whatever the driver writes) for the old
-//   placeholder groups.
+//   placeholder groups. A driver with public bool LanbaiTakesOverNothing() returning true (the poems: whole film) is
+//   dispatched as usual but its window is left out of windowsFlat / LanbaiCovered(t).
 using UdonSharp;
 using UnityEngine;
 
@@ -68,6 +69,7 @@ public class LanbaiActDispatcher : UdonSharpBehaviour
         int na = 0, ns = 0;
         // <LANBAI-GENERATED-WINDOWS>
         // </LANBAI-GENERATED-WINDOWS>
+        windowsFlat = Trim(windowsFlat, 2 * n);          // drivers that take over nothing left their slots unused
         atmosphereWindowsFlat = Trim(atmosphereWindowsFlat, 2 * na);
         sunWindowsFlat = Trim(sunWindowsFlat, 2 * ns);
     }

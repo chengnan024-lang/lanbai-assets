@@ -136,13 +136,19 @@ namespace Lanbai.Director.Editor
                     "            float[] w = {0}[i].LanbaiWindow();\n" +
                     "            if (w != null && w.Length >= 2) {{ {0}_w[2 * i] = w[0]; {0}_w[2 * i + 1] = w[1]; n++; }}\n" +
                     "        }}\n", d, c);
+                // a driver with public bool LanbaiTakesOverNothing() (e.g. the poems, whole film) is dispatched but its window
+                // does not go into windowsFlat / LanbaiCovered(t) (D-33 review #2)
+                var ton = types[k].GetMethod("LanbaiTakesOverNothing", PF, null, Type.EmptyTypes, null);
+                string flat = ton != null && ton.ReturnType == typeof(bool)
+                    ? "            if (!{0}[i].LanbaiTakesOverNothing()) {{ windowsFlat[2 * n] = {0}_w[2 * i]; windowsFlat[2 * n + 1] = {0}_w[2 * i + 1]; n++; }}\n"
+                    : "            windowsFlat[2 * n] = {0}_w[2 * i]; windowsFlat[2 * n + 1] = {0}_w[2 * i + 1]; n++;\n";
                 string wa = WritesHow(types[k], "LanbaiWritesAtmosphere", "writeRenderSettings");
                 string ws = WritesHow(types[k], "LanbaiWritesSun", "writeMainLight");
                 wins.AppendFormat(
                     "        for (int i = 0; i < {0}.Length; i++)\n" +
                     "        {{\n" +
                     "            if ({0}_w[2 * i] > {0}_w[2 * i + 1]) continue;\n" +
-                    "            windowsFlat[2 * n] = {0}_w[2 * i]; windowsFlat[2 * n + 1] = {0}_w[2 * i + 1]; n++;\n" +
+                    flat +
                     "{1}{2}" +
                     "        }}\n", d,
                     wa == null ? "" : string.Format(
