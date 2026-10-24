@@ -54,7 +54,6 @@ Shader "Lanbai/MirrorCopy"
             float4 _Lit;
             half _EmissionByCaseLight, _MirrorGain;
             float _WaterY, _AnchorToStop;
-            float _Udon_CaseLight;
 
             struct appdata { float4 vertex : POSITION; float2 uv : TEXCOORD0; UNITY_VERTEX_INPUT_INSTANCE_ID };
             struct v2f

@@ -1,0 +1,15 @@
+{
+    "id": "gate_20261024_1547_open",
+    "state": "done",
+    "step": 1,
+    "total": 1,
+    "started": "2026-10-24 15:45:02",
+    "finished": "2026-10-24 15:45:03",
+    "error": "",
+    "log": [
+        "15:45:02 收到请求，共 1 步",
+        "15:45:03 打开场景 Assets/Lanbai/Tests/GateTest.unity",
+        "15:45:03 全部完成"
+    ],
+    "files": []
+}

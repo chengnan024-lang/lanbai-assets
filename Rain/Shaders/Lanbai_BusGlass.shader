@@ -119,7 +119,7 @@ Shader "Lanbai/BusGlass"
             #pragma multi_compile_fog
             #include "UnityCG.cginc"
             #include "LanbaiRain.cginc"
-            #include "LanbaiVR.cginc"
+            #include "Assets/Lanbai/Common/Shaders/LanbaiVR.cginc"
 
             sampler2D _DirtTex;
             float4 _DirtTex_ST;
@@ -135,8 +135,6 @@ Shader "Lanbai/BusGlass"
             float _BeadTile, _RunSpeedStill, _RunSpeedDrive, _RunDensityStill, _RunDensityDrive, _RunSize, _TrailLife, _StickSlip;
             float _PaneFaceWind, _DropOpacity, _GlintLobe, _DetailFade, _Wipers, _WipeRefill;
             float4 _PivotOffset;
-            float _Udon_CabinLightmap;        // bible §4.3: 1 = tubes on (unset = 0 -> no cabin reflection)
-            float _Udon_CaseLight;            // bible §6·12: the notice case's tube, 0..1
 
             struct appdata
             {

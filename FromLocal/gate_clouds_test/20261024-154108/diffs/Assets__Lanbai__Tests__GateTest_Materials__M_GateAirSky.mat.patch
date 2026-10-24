@@ -1,0 +1,11 @@
+--- backup/Assets/Lanbai/Tests/GateTest_Materials/M_GateAirSky.mat
++++ after/Assets/Lanbai/Tests/GateTest_Materials/M_GateAirSky.mat
+@@ -28,7 +28,7 @@
+     - _AureoleGain: 1
+     - _BackBand: 0.55
+     - _BelowDesat: 0.6
+-    - _Stars: 1
++    - _Stars: 0.055
+     m_Colors:
+     - _BandAz: {r: 50, g: 60, b: 0, a: 0}
+     - _BandEl: {r: 6, g: 22, b: 2, a: 0}

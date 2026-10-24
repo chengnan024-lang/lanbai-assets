@@ -1,4 +1,4 @@
-# 蓝白 / Lanbai · 字体与 TextMeshPro 字符表套件（Fonts）· 第 3 版（按圣经 v2.1）
+# 蓝白 / Lanbai · 字体与 TextMeshPro 字符表套件（Fonts）· 第 4 版（D-30：只显示自己的语言；圣经 v2.1）
 
 这个套件落实美术圣经 **v2.1** 的 **§7 字体与诗句排版（全部）**，以及 **§5.5 / §7.6 片尾公告板与 Coleridge 纸条**、§4.7 目的地牌的字。
 
@@ -17,9 +17,182 @@
 
 ---
 
-## 0. 第 3 版改了什么
+## 0. 第 4 版改了什么（2026-10-24，总工程师；D-30、D-13）
 
-### 0.1 圣经升到 v2.1（10-02），诗句数据全部按新版重做
+> 第 4 版起 `Fonts/` 归总工程师（CONTROL，main 18d4dee）。第 3 版的记录在下面 §0′，原样保留。
+> **还是没有在 Unity 里编译过**：三个 C# 文件过了 `Common/Tools~/compile_check/check_cs.sh`（Roslyn + TMP 桩，0 错 0 警告），不是 Unity 编译。
+
+### 0.1 规则：每个玩家只看到自己语言的那一份（D-30，压过圣经 §7.4-7）
+
+| 客户端语言（`GetCurrentLanguage()` 的返回值） | 玩家键 | 中文诗、梦中两句 | 里尔克、Urlicht（德） | 济慈（英） |
+|---|---|---|---|---|
+| `zh-CN`（简体） | `zh` | 原文 | 中译 | 中译 |
+| `zh-HK`（繁体；也认 `zh-TW`、`zh-Hant`） | `zht` | 原文的繁体 | 中译的繁体 | 中译的繁体 |
+| `ja` | `ja` | 書き下し / 日译 | 日译 | 日译 |
+| `de` | `de` | 英译 | **原文** | 原文（英） |
+| 其他一切（含 `en`、空、取不到） | `en` | 英译 | 英译 | 原文 |
+
+- 原文的语言和玩家的语言相同时显示原文；不同时显示译成玩家语言的那一份。日文玩家看中文诗看書き下し。D-30 写的是“其他一律 → 英文”，又写了“德文诗给德语玩家看原文”，所以保留 `de` 这个键：德语玩家看里尔克和 Urlicht 的原文，其余看英文。
+- **繁体（D-31 #1 补充）**：`zh-HK` 的玩家看繁体，字体思源宋体 TC（`Lanbai_SerifTC_Regular SDF`，源字体 Adobe 的 TW 区域子集）。字串用 OpenCC `s2tw` 转，再人工过一遍古诗：李白「惟覺時之枕席」保留“席”（`s2tw` 给的是“蓆”）；其余与转换结果一致（“為”取台湾通行字形，不用“爲”）。数据在 `segments[i].zht`，`lanbai_strings.py` 的 `ZHT` 表。**请繁体母语者过目一遍**。
+- **例外：天问**（D-30 #4）。天上的字是图：所有人都看到同一幅简体汉字（落在 16 颗星的位置上，不随语言移动；繁体玩家也看这一幅，不另排）；不是中文的玩家，汉字下面另有自己语言的译文小字（1.8°，次行字体；日文 3 行、英文 4 行，D-30 说的“一行”是这一块）。
+- **目的地牌**（§4.7）用同一个玩家键选语言变体。贴图在站牌套件里，这个套件不出贴图。
+- **取语言（「网络搜索协助」查的官方原文，2026-10-24）**：
+  - `public static string VRCPlayerApi.GetCurrentLanguage()`（`VRC.SDKBase`，SDK 3.10.5 里是静态方法）。返回 **RFC 5646 代码**（`en`、`ja`、`zh-CN`、`zh-HK`……；客户端 2024.1.1 起，之前返回英文语言名）。VRChat 现在的语言表：en fr es it ko de ja pl ru pt-BR zh-CN zh-HK he tok uk th id。出处：creators.vrchat.com/worlds/udon/players/#language、docs.vrchat.com/docs/vrchat-202411。
+  - 事件：U# `public override void OnLanguageChanged(string language)`（SDK 3.7.0 起）：**进世界时触发一次**，以后玩家每改一次显示语言再触发。
+  - ClientSim：Player Settings 里的 “Current Language” 下拉框，默认 `en`，进 Play 以后改不了；`OnLanguageChanged` 只在加入时触发一次。
+  - 退路：官方没有写。我们的规则：空或 null → `en`；按前缀、不分大小写匹配（`player_of_client_language`，先匹配 `zh-HK` 再匹配 `zh`）；旧格式的英文名（`Japanese`、`Chinese Simplified` / `Chinese Traditional`）也认一下最稳。
+  - **本地 `LB_Journey.PickLanguage()` 要改两处**：① 现在用 `StartsWith("zh")`，会把 `zh-HK` 也分到简体，要先判 `zh-HK`；② 它会把正在显示的诗的状态（`_poemIdx`、`_poemStage`）重置成 −1，玩家旅途中改语言时那一句会断掉——建议只换 `layout` 的键，正在显示的那一句照它的时刻继续（或者等它退场后再换）。
+  - **手动开关（D-31 #1）**：公告板上「中 / 日 / EN」三选一，只对本人生效，默认按客户端语言。按“中”时：客户端是 `zh-HK` 的人仍看繁体，其余看简体。开关和发车提示的字串在 `strings_all.json` 的 `ui`（§0.8）。
+
+### 0.2 字号：只剩一份，就用主行的字号（D-30 #2）
+
+CJK 2.2–2.4°，拉丁 / 德文 2.0–2.2° em；不再有 1.8° 的次行（天问那一块除外）。每首诗有 `size_cjk` 和 `size_lat`，拉丁 = CJK − 0.2°（圣经原来的配对，里尔克 2.0° em = D-13）。**例外（D-30a #2：原本就定得小的三首，小是设计）**：
+
+| 诗 | CJK | 拉丁 / 德文 | 说明 |
+|---|---|---|---|
+| Urlicht | 1.8° | 1.8° em | “耳语” |
+| 齐物论 | 2.0° | 2.0° em | “小而安静” |
+| 济慈 | 1.8° | 1.6° em | 世界里最后的字 |
+| 庄子《逍遥游》**日文** | **2.08°**（D-30a #1 批准） | — | 日文镜像列 2 + 2 行，2.2° 时 L1 中心 +10.56°，越过 §7.3 的 +10° |
+
+字体跟着改：译文单独出现就是主行，所以用主行的字重：中译用 **SC Regular**（原来 Medium），日文用 **JP Regular**（原来 Medium；`Lanbai_SerifJP_Regular SDF` 从“可选”改成必做）。SC Medium 只剩片尾，JP Medium 只剩天问下面那一行日文。
+
+### 0.3 行长 ≤ 28°：放不下的语言自己重新断行
+
+只改断行，不改字（脚本逐条核对去掉空格后的文字和原来一样）。断在停顿处，不断在词中间。数据在 `segments[i].<语言>_v4`：
+
+| 诗 | 语言 | 第 3 版 | 第 4 版 |
+|---|---|---|---|
+| 李白「我欲因之梦吴越」 | en | I would dream my way to Wu and Yue, | I would dream my way / to Wu and Yue, |
+| 同上 | ja | 一夜飛んで度る鏡湖の月 | 一夜飛んで度る / 鏡湖の月 |
+| 里尔克 | ja | 美とは、恐ろしいものの / 始まりにほかならない | 美とは、/ 恐ろしいものの / 始まりにほかならない（D-13 定稿） |
+| 河伯 | en | 三行 | 七行（D-33：每行 ≤ 19.5°；末句「O spirit, why do you / dwell in the water?」） |
+| 河伯 | ja | 三行 | 四行（D-33：「魚鱗の屋、龍の堂 / 紫貝の闕、朱の宮 / 霊何為れぞ / 水中にある」） |
+| 自深海坠入另一片天空 | ja | もうひとつの空へ墜ちた | もうひとつの空へ / 墜ちた |
+| 庄子《逍遥游》 | ja | 亦た是くの若くならんのみ | 其の下を視るや亦た / 是くの若くならんのみ（**断在“亦た”后面，请母语者看**；为了让日文的列不超过 +10°，见 §0.2） |
+| 李白「惟觉时之枕席」 | ja、en | 一行 | 两行 |
+
+最宽的一行 27.6°，全部 ≤ 28°；所有物体的中心都在 [−15°, +10°] 里，**没有一块需要上下移**（第 3 版有四首要移）。
+
+### 0.4 庄子《逍遥游》：镜像的是玩家自己的语言
+
+D-30 的例外只有天问，所以庄子也只显示自己的语言：中文玩家镜像原文，日文玩家镜像書き下し，其余镜像英文。**字幕位取消**。列的规则不变（上：L1、L3′ | 地平线 | 下：L3、L1′，L3 贴着地平线），每种语言用自己的行距（CJK 1.6 em、拉丁 1.35 em），地平线两侧各留半个行间。一段可以有多行（日文、英文都是两行一段）。衬底照旧每个物体一条，外缘离日线 ≥ 2°。
+
+### 0.5 里尔克的位置：D-13 定稿
+
+**单语块顶边对齐，TMP 轴心在上中，摆在方位 +5.5°、仰角 −2.5°（块的顶边）、60 m**（D-13，main cae5b7e，「车」按四种单语块量过：`pkg/bus` `Bus/Docs~/D-13_里尔克候选.md`）。原来的 `place [20, 3, 60]` 作废。`layout[玩家].anchor_mode = 'top'`：父物体放在顶边的方向上，文字的第一行基线在它下面 `top_em × 字号` 处（CJK 0.88 em、拉丁 0.72 em）。
+- 日文断成三行：「美とは、/ 恐ろしいものの / 始まりにほかならない」。按 CJK 主行 2.2°、字距 +0.10 em，最长一行 24.0°。**日文块往左挪 1°，中心 +4.5°**（D-13 补充，main a5d7470），右沿 **+16.49°**（A 柱 4° 线是 +16.5°）；断行、字号、字距都不变。数据：`az_by_lang = {ja: 4.5}`，`layout.ja.anchor[0]` = 4.5。各语言的右沿：中 / 繁 +12.65°、日 +16.49°、英 +15.18°、德 +16.05°。
+- 拉丁 / 德文 2.0° em；中文、繁体 2.2°。
+
+### 0.6 每首诗每种语言的字块（各幕包摆诗用；「车」复核里尔克用）
+
+块宽 = 最宽一行的 TMP 框；块高 = 第一行 em 框的顶到最后一行 em 框的底（度）。方位 / 仰角是在 §7.5 默认位置上的范围（注视规则 §4.2 第 4 条会把整块平移）。`strings_all.json` 的 `block_table` 是同一张表，`Docs~/build_report.txt` 的 `== BLOCKS ==` 也是。**每首诗的位置要对它所有的行都放得下**（D-30 #2）。
+
+| 诗 | 玩家 | 看到的 | 字号 | 行数 | 块宽 × 块高 | 方位（左沿 … 右沿） | 仰角 | 重新断行 | 真车检查（净空、最近的件） |
+|---|---|---|---|---|---|---|---|---|---|
+| `P03_LiBai_Dream` | zh | 原文 | 2.40° | 2 | **18.2° × 6.2°** | +51.88 … +70.12 | -12.1 … -5.9 |  | 过，>= 4.0° |
+|  | zht | 繁体 | 2.40° | 2 | **18.2° × 6.2°** | +51.88 … +70.12 | -12.1 … -5.9 |  | 过，>= 4.0° |
+|  | ja | 日文 | 2.40° | 4 | **23.5° × 13.9°** | +49.24 … +72.76 | -16.0 … -2.0 | 是 | 过，2.25°（Door3_Stile1） |
+|  | en | 英译 | 2.20° | 4 | **21.8° × 11.1°** | +50.09 … +71.91 | -14.5 … -3.5 | 是 | 过，3.0°（Door3_Stile1） |
+|  | de | 英译 | 2.20° | 4 | **21.8° × 11.1°** | +50.09 … +71.91 | -14.5 … -3.5 | 是 | 过，3.0°（Door3_Stile1） |
+| `P04a_Rilke` | zh | 中译 | 2.20° | 2 | **14.3° × 5.7°** | -1.65 … +12.65 | -8.2 … -2.5 |  | 过，>= 4.0° |
+|  | zht | 繁体 | 2.20° | 2 | **14.3° × 5.7°** | -1.65 … +12.65 | -8.2 … -2.5 |  | 过，>= 4.0° |
+|  | ja | 日文 | 2.20° | 3 | **24.0° × 9.2°** | -7.49 … +16.49 | -11.7 … -2.5 | 是 | 过，2.0°（Body） |
+|  | en | 英译 | 2.00° | 2 | **19.4° × 4.7°** | -4.18 … +15.18 | -7.2 … -2.5 |  | 过，3.25°（Body） |
+|  | de | 原文 | 2.00° | 2 | **21.1° × 4.7°** | -5.04 … +16.05 | -7.2 … -2.5 |  | 过，2.5°（Body） |
+| `P04b_Urlicht` | zh | 中译 | 1.80° | 2 | **17.6° × 4.7°** | -8.82 … +8.82 | -10.3 … -5.7 |  | 过，>= 4.0° |
+|  | zht | 繁体 | 1.80° | 2 | **17.6° × 4.7°** | -8.82 … +8.82 | -10.3 … -5.7 |  | 过，>= 4.0° |
+|  | ja | 日文 | 1.80° | 2 | **27.5° × 4.7°** | -13.77 … +13.77 | -10.3 … -5.7 |  | 过，2.25°（Radio_Strap） |
+|  | en | 英译 | 1.80° | 2 | **19.3° × 4.2°** | -9.65 … +9.65 | -10.1 … -5.9 |  | 过，>= 4.0° |
+|  | de | 原文 | 1.80° | 2 | **19.2° × 4.2°** | -9.62 … +9.62 | -10.1 … -5.9 |  | 过，>= 4.0° |
+| `P06_Dream_Dawn` | zh | 原文 | 2.40° | 1 | **20.9° × 2.4°** | -12.44 … +8.44 | -6.4 … -4.0 |  | 过，3.75°（Radio_Case） |
+|  | zht | 繁体 | 2.40° | 1 | **20.9° × 2.4°** | -12.44 … +8.44 | -6.4 … -4.0 |  | 过，3.75°（Radio_Case） |
+|  | ja | 日文 | 2.40° | 2 | **18.2° × 6.2°** | -11.12 … +7.12 | -10.2 … -4.0 |  | 过，>= 4.0° |
+|  | en | 英译 | 2.20° | 2 | **14.7° × 5.1°** | -9.34 … +5.34 | -9.1 … -4.0 |  | 过，>= 4.0° |
+|  | de | 英译 | 2.20° | 2 | **14.7° × 5.1°** | -9.34 … +5.34 | -9.1 … -4.0 |  | 过，>= 4.0° |
+| `P07_HeBo` | zh | 原文 | 2.20° | 3 | **14.3° × 9.2°** | -0.65 … +13.65 | +0.8 … +10.0 |  | 过，>= 4.0° |
+|  | zht | 繁体 | 2.20° | 3 | **14.3° × 9.2°** | -0.65 … +13.65 | +0.8 … +10.0 |  | 过，>= 4.0° |
+|  | ja | 日文 | 2.20° | 4 | **19.1° × 12.8°** | -3.07 … +16.07 | -2.8 … +10.0 | 是 | 过，2.25°（Body） |
+|  | en | 英译 | 2.00° | 6 | **15.9° × 15.5°** | -1.43 … +14.43 | -5.5 … +10.0 | 是 | 过，3.75°（Body） |
+|  | de | 英译 | 2.00° | 6 | **15.9° × 15.5°** | -1.43 … +14.43 | -5.5 … +10.0 | 是 | 过，3.75°（Body） |
+| `P08a_Dream_Dusk` | zh | 原文 | 2.40° | 1 | **26.2° × 2.4°** | -15.08 … +11.08 | -6.4 … -4.0 |  | 过，1.75°（Radio_Strap） |
+|  | zht | 繁体 | 2.40° | 1 | **26.2° × 2.4°** | -15.08 … +11.08 | -6.4 … -4.0 |  | 过，1.75°（Radio_Strap） |
+|  | ja | 日文 | 2.40° | 3 | **20.9° × 10.1°** | -12.44 … +8.44 | -14.1 … -4.0 | 是 | 过，0.75°（Cowl） |
+|  | en | 英译 | 2.20° | 2 | **19.2° × 5.1°** | -11.62 … +7.62 | -9.1 … -4.0 |  | 过，>= 4.0° |
+|  | de | 英译 | 2.20° | 2 | **19.2° × 5.1°** | -11.62 … +7.62 | -9.1 … -4.0 |  | 过，>= 4.0° |
+| `P08b_Zhuangzi_Xiaoyao` | zh | 原文 | 2.20° | 2 | **26.4° × 12.8°** | +21.80 … +48.20 | -6.4 … +6.4 |  | 由 D-33 #7a 保证（完整车上压门叠；门组 965.4 前侵蚀） |
+|  | zht | 繁体 | 2.20° | 2 | **26.4° × 12.8°** | +21.80 … +48.20 | -6.4 … +6.4 |  | 由 D-33 #7a 保证（完整车上压门叠；门组 965.4 前侵蚀） |
+|  | ja | 日文 | 2.08° | 4 | **22.7° × 25.4°** | +23.66 … +46.34 | -12.7 … +12.7 | 是 | 由 D-33 #7a 保证（完整车上压门叠；门组 965.4 前侵蚀） |
+|  | en | 英译 | 2.00° | 4 | **20.6° × 20.9°** | +24.70 … +45.30 | -10.4 … +10.4 |  | 由 D-33 #7a 保证（完整车上压门叠；门组 965.4 前侵蚀） |
+|  | de | 英译 | 2.00° | 4 | **20.6° × 20.9°** | +24.70 … +45.30 | -10.4 … +10.4 |  | 由 D-33 #7a 保证（完整车上压门叠；门组 965.4 前侵蚀） |
+| `P09_Tianwen` | zh | 原文 | 2.20° | 2 | **24.0° × 5.7°** | -11.99 … +11.99 | +5.1 … +10.9 |  | 过，>= 4.0° |
+|  | zht | 原文 | 2.20° | 2 | **24.0° × 5.7°** | -11.99 … +11.99 | +5.1 … +10.9 |  | 过，>= 4.0° |
+|  | ja | 原文 + 下面 ja 1.8° | 2.20° | 5 | **27.5° × 15.1°** | -13.77 … +13.77 | -4.2 … +10.9 |  | 过，3.25°（Radio_Strap） |
+|  | en | 原文 + 下面 en 1.8° | 2.20° | 6 | **25.3° × 16.4°** | -12.65 … +12.65 | -5.5 … +10.9 |  | 过，3.75°（Radio_Strap） |
+|  | de | 原文 + 下面 en 1.8° | 2.20° | 6 | **25.3° × 16.4°** | -12.65 … +12.65 | -5.5 … +10.9 |  | 过，3.75°（Radio_Strap） |
+| `P11_Zhuangzi_Butterfly` | zh | 原文 | 2.00° | 2 | **19.6° × 5.2°** | -9.80 … +9.80 | +5.4 … +10.6 |  | 过，>= 4.0° |
+|  | zht | 繁体 | 2.00° | 2 | **19.6° × 5.2°** | -9.80 … +9.80 | +5.4 … +10.6 |  | 过，>= 4.0° |
+|  | ja | 日文 | 2.00° | 3 | **24.0° × 8.4°** | -12.00 … +12.00 | +3.8 … +12.2 |  | 过，>= 4.0° |
+|  | en | 英译 | 2.00° | 3 | **27.6° × 7.4°** | -13.78 … +13.78 | +4.3 … +11.7 |  | 过，>= 4.0° |
+|  | de | 英译 | 2.00° | 3 | **27.6° × 7.4°** | -13.78 … +13.78 | +4.3 … +11.7 |  | 过，>= 4.0° |
+| `P12a_LiBai_Wake` | zh | 原文 | 2.40° | 2 | **15.6° × 6.2°** | +53.20 … +68.80 | -12.1 … -5.9 |  | 过，>= 4.0° |
+|  | zht | 繁体 | 2.40° | 2 | **15.6° × 6.2°** | +53.20 … +68.80 | -12.1 … -5.9 |  | 过，>= 4.0° |
+|  | ja | 日文 | 2.40° | 3 | **20.9° × 10.1°** | +50.56 … +71.44 | -14.0 … -4.0 | 是 | 过，3.5°（Door3_Stile1） |
+|  | en | 英译 | 2.20° | 4 | **21.0° × 11.1°** | +50.51 … +71.50 | -14.5 … -3.5 | 是 | 过，3.5°（Door3_Stile1） |
+|  | de | 英译 | 2.20° | 4 | **21.0° × 11.1°** | +50.51 … +71.50 | -14.5 … -3.5 | 是 | 过，3.5°（Door3_Stile1） |
+| `P12b_Keats` | zh | 中译 | 1.80° | 2 | **19.6° × 4.7°** | +51.19 … +70.81 | -16.3 … -11.7 |  | 过，>= 4.0° |
+|  | zht | 繁体 | 1.80° | 2 | **19.6° × 4.7°** | +51.19 … +70.81 | -16.3 … -11.7 |  | 过，>= 4.0° |
+|  | ja | 日文 | 1.80° | 3 | **21.6° × 7.6°** | +50.20 … +71.80 | -17.8 … -10.2 |  | 过，3.25°（Door3_Stile1） |
+|  | en | 原文 | 1.60° | 1 | **23.3° × 1.6°** | +49.35 … +72.65 | -14.8 … -13.2 |  | 过，2.25°（Door3_Stile1） |
+|  | de | 原文 | 1.60° | 1 | **23.3° × 1.6°** | +49.35 … +72.65 | -14.8 … -13.2 |  | 过，2.25°（Door3_Stile1） |
+
+### 0.8 D-31 带来的（2026-10-24 第二批）
+
+- **繁体中文**：见 §0.1。新字体 `Lanbai_SerifTC_Regular SDF`（`Subset/LanbaiSerifTC-Regular.otf`，按 OFL 改名为 Lanbai Serif TC；原件 `Originals~/SourceHanSerifTW-Regular.otf`，`fetch_fonts.sh` 已加），每首诗多一个 `zht` 玩家；材质预设 37 → 47 个。
+- **公告板的字**（`strings_all.json` 的 `ui`，`ui_note`）：语言开关「中」「日」「EN」，发车提示两行 × 四种（简、繁、日、英），`{0}` 换成秒数；四种字体都带 0–9。日文两句请母语者看：「バスはあと {0} 秒で発車します」「そのあとに乗る人は、道の途中から合流します」。发车以后没有任何 UI 字（§6·12）。
+- **片尾补了两行**：Skies 下加 “Milky Way: ESA/Gaia/DPAC (CC BY-SA 3.0 IGO)”（D-11）；新角色 Photos 留一个占位（PAZ 照片的作者和许可，等「车」的 README 定了用哪几张）。
+- 公告板上字的摆法（字号、位置）等「车」/ 站牌定了公告板的样子再给，这里只给字和字体。
+
+### 0.9 D-33：按真车的窗重新摆（字体第 4 版终审退回的改法，2026-10-24）
+
+**规矩**：每首诗、每种语言的**整个字块**都对「车」的真网格查遮挡（`Tools~/block_viewcheck.py`）。默认用车给的表：`pkg/bus` 的 `Bus/Docs~/viewcheck/hero_occlusion.npz` + `Bus/Source/occlusion_lookup.py`（147be7c 起，0.25° 网格，玻璃不算遮挡；块里被挡的比例 > 0 就不过）；`LANBAI_VIEWCHECK=rays` 时改成自己用 bpy 建车、每 0.5° 打射线（比 0.25° 细的件也查得到）。两种方法这次结果一致。块里有一条射线碰到不透明件就不过；**`build_fonts.py` 不过就报错**（`strings_all.json` 和报告照样写出来，方便看）。净空 = 块外第一圈碰到东西的距离（0.25° 一圈，看到 4°）。车的几何默认取 `origin/pkg/bus` 最新提交（`git archive`），也可以用 `LANBAI_BUS_DIR` 指一个 checkout。结果在上表最后一列、`block_table[].viewcheck`、`build_report.txt` 的 `== VIEWCHECK ==`。
+
+| 诗 | 改了什么 | 依据 |
+|---|---|---|
+| 6d 我从天空坠入深海、7c 自深海坠入另一片天空 | 两句仍同一处：**方位 −2°，顶边对齐在 −4°**（原 −15° / −12°，被收音机挡 5–7°，7c 中文骑在中柱上，日文第三行掉到挡风下沿以下）。块底 ≥ −14.5°（最低是 7c 日文 −14.08°）。6d 的退场向下漂：`layout.exit_max_drift_deg` = 块底 − (−15°)，漂移 0.2° 远小于它，淡尽在先 | D-33 #1 |
+| 河伯 | **中心方位 +6.5°**；每行 ≤ 19.5°：日文「魚鱗の屋、龍の堂 / 紫貝の闕、朱の宮 / 霊何為れぞ / 水中にある」，英文末句断成「O spirit, why do you / dwell in the water?」；顶 ≤ +10°，高的语言整块往下挪（英文 7 行、日文 4 行） | D-33 #2 |
+| 李白两首、济慈 | **中心方位 +61°**，仰角不变；左沿 ≥ +48.5°（门叠到 +46.9°、门柱 +40.7…+43.3°） | D-33 #3 |
+| 庄子《逍遥游》 | **靛墨 `#27304A`**，不加暗衬（`#EADCD6` + 暗衬作废），S8 下重求填值（`#333C58`），材质重出。**不透明度 1.00**：暗字写在亮的暮天上，90% 时 Unity 读出 luma 77（目标 48，差 39 码），和晨句同一个道理；镜像字 0.5 | D-33 #4 |
+| 英文译文句末的“.” | 去掉三处（李白 I、庄子 L3、李白 II） | D-33 #7 |
+
+**庄子《逍遥游》**：+35° / 0° / 60 m（论点之帧，不跟注视）对完整的车压在折门叠上。**不挪诗，挪车厢**（D-33 #7a，main cf85d11）：车厢驱动让门组（折门四片、门柱、门口扶杆、门框上半）在 965.4 之前侵蚀掉，由车量到 ≤ 10%。检查里这一首标成“由 D-33 #7a 保证”（`viewcheck_exempt`）。
+
+### 0.10 第 4.1 版：摆诗的运行时（D-33 #5）
+
+- `Runtime/LanbaiPoemDriver.cs`（UdonSharp）+ `Runtime/LanbaiLangButton.cs` + `Editor/LanbaiPoemBake.cs`（菜单 **蓝白/Fonts/Build Poem Objects (v4.1 runtime)**）。烘焙读 `strings_all.json`，在场景里建每首诗 × 每个玩家键（zh、zht、ja、en、de）一套 TMP（全关）、公告板（发车提示四种 + 中 / 日 / EN 三个开关），再填驱动的字段。
+- 驱动是 Director 的一个驱动（`LanbaiTick / LanbaiActivate / LanbaiWindow`，窗口是全片）。**只从 t 算**（D-33 #6）：迟到的人、拖时间轴都对；唯一记住的是这首诗出现时按注视规则放在了哪里，诗退场后就忘掉。
+- 语言：`GetCurrentLanguage()` → 键（`zh-HK` / `zh-TW` / `zh-Hant` 先判，旧的英文名也认）；`OnLanguageChanged` 重新映射；公告板开关只对本人覆盖（按“中”时繁体客户端仍看繁体）。诗显示到一半换语言，换的是同一时刻的另一套。
+- 每个文本物体：2.5 s 对焦（ease-out，`_OutlineSoftness` 0.9 → 终值，alpha 0 → 物体的 alpha），退场 alpha → 0 并按 0.2° 上 / 下漂（庄子按物体各自的方向，天问和 Urlicht 只淡不漂）。颜色、软度、Face Dilate（桌面 0.05 / VR 0.10）用 MaterialPropertyBlock 写在 TMP 的 MeshRenderer 上，不用每个物体一个材质实例。Urlicht 的行跟乐句（`maxVisibleLines`），天问的 20 个单字各自错开对焦。
+- 注视规则（§7.4-6）：出现那一刻，玩家在车里的朝向和默认方位差 ≤ 阈值就用默认（含里尔克日文的 +4.5° 这种按语言的默认）；否则放在玩家朝向（按 15° 取整）朝默认偏 20°，**只挪在挡风右片（−22.5…+16.5°）或侧窗（+48.5…+103°）里**（整块的左右沿都在里面）。阈值 50°；**侧窗三首（李白两首、济慈）75°**（D-33 #7c：50° 时主座位往前看的人会被挪到 +20° / +35°，正好压在 A 柱或门叠上；`poems[i].gaze_deg`）。默认位置以那个座位的眼睛为原点，挪过的位置以玩家的头（换到车坐标）为原点。庄子、天问固定不动。诗在屏幕上时换语言，新语言用它自己的锚点（出现时每种语言都摆好了），里尔克日文仍在 +4.5°。
+- **每个座位的位置（D-37，main f0fea3f）**：主座位用 D-33 的位置（全片构图的一部分）。别的座位**离线解好、运行时只查表**：`Tools~/seat_table.py` 在车的每个座位 1° 遮挡网格（`pkg/bus` `Bus/Docs~/viewcheck/seats_occlusion_1deg.json`）上，对每首会挪的诗、每种语言，整圈搜块中心（方位每 1°、仰角 −15…+10° 每 1°）：被挡 ≤ 10% 的位置里，尽量离那一幕的焦点 ≥ 12°（6d 的晨日 +30° / +6°、7b 的殿门 −9.5° / 0°，其余没有焦点数据），取离默认方向最近的；整圈都没有就取挡得最少的（不退回默认）。注视规则挪诗时的位置也按玩家朝向每 15° 一格（24 格）预先解好。写进 `Fonts/seat_positions.json`，烘焙菜单读进 `LanbaiPoemDriver` 的 `seatDefAz/El`、`seatGazeAz/El`（表的大小：1 265 + 30 360 组，63 250 个 float）。庄子、天问不挪。车更新网格以后重跑 `build_fonts.py` 再点烘焙菜单。
+- **结果**（`build_report.txt` 的 `== SEATS ==`，每个座位、每首诗、每种语言一行）：主座位以外平均被挡 **8.5%**（目标 ≤ 10%）；990 组里 52 组仍 > 10%，最坏的是 L3a 李白 I 日文 29%、L3w / L4w 河伯日 / 英 25–26%、R3 李白 I 日文 24%。按座位平均：R1 3.8%、R2 6.5%、R3 10.8%、L3w 11.4%、L3a 10.3%，其余 6–9%。
+- 公告板：`LB_Journey` 发车前每帧调 `LanbaiBoard(离发车的秒数)`，发车后调一次 `LanbaiBoardHide()`；中 / 日 / EN 三个开关在 `Lanbai_Board/Buttons` 下，跟着倒计时开、跟着 Hide 关。板上字的字号、位置是占位，等站牌 / 车定。
+- 烘焙会给 `LanbaiPoemDriver`、`LanbaiLangButton` 建 U# 程序资产（照天空的 `EnsureProgramAsset`）。驱动报 `LanbaiTakesOverNothing()`：它的全片窗口不进 Director 的 `windowsFlat`。
+- Urlicht 的逐行出字对繁体玩家也有（`line_cues_by_shown.zht`，D-33 评审 #3 修好）。
+- `LB_Journey` 里自己的诗句数组和 `PickLanguage()` 退役（`Engineering/README_集成.md` §9.6）。
+- **没在 Unity 里编译过**：C# 过了 `check_cs.sh`（editor + player 两遍，player 用真的 TMP DLL）。要本地确认的：U# 里 `TextMeshPro.maxVisibleLines`、TMP 3D 的 MeshRenderer 上用 MaterialPropertyBlock 改 `_FaceColor`（线性值，用 `SetVector` 写，不经过颜色空间换算）是否生效。
+
+### 0.7 改了哪些文件
+
+`Tools~/lanbai_strings.py`（规则、字号、重新断行、里尔克位置）、`Tools~/lanbai_layout.py`（单语块、天问例外、庄子的多行镜像列、`block`）、`Tools~/build_fonts.py`（只收玩家真能看到的字、行长和字块的报告、`display_rule`）、`Tools~/make_proofs.py`（第 4 版的说明栏）；重新生成：`strings_all.json`、`Charsets/`（SC / JP 四个）、`Subset/`（同四个）、`Editor/LanbaiPoemMaterials.cs`、`Editor/LanbaiTMPFontBuilder.cs`（JP Regular 改必做）、`Docs~/` 的报告和校样。拉丁字体的字表没有变，子集保持原样。
+
+**颜色**：填值按诗求，和字体无关，所以没有变（`colour: PASS`；调色套件引擎复核最差 3 码，和第 3 版一样）。材质预设仍是 37 个（名字里的字体资产换了几个：中译、日文的预设现在挂在 Regular 上）。
+
+---
+
+## 0′. 第 3 版改了什么（存档）
+
+### 0′.1 圣经升到 v2.1（10-02），诗句数据全部按新版重做
 
 第 3 轮验收是按 v2 做的；验收之后圣经换成了 **v2.1（按实测乐句重排）**。§7.5 改了不少，所以这一版先把数据层整体对齐 v2.1，再处理验收意见。逐首的变化：
 
@@ -35,7 +208,7 @@
 | 8 | 天问 | 1009.21（第 9 幕第 8.0 s），到 F13（9.0 s） | 写进 `timing` |
 | 9–11 | 齐物论、李白 II、济慈 | 1206.46 / 1270.96 / **1320.96**（济慈从第 70 s 改到第 66 s）；停留按 §7.4 公式 ×1.3 | 写进 `timing`，`hold_formula_s` 逐首复算（§4.10） |
 
-### 0.2 对第 3 轮验收（`Docs~/verify_round3.md`）的逐条处理
+### 0′.2 对第 3 轮验收（`Docs~/verify_round3.md`）的逐条处理
 
 | # | 问题 | 处理 |
 |---|---|---|
@@ -51,13 +224,13 @@
 | m7 | `__pycache__` 打包进了套件 | 已删，`Tools~/.gitignore` 忽略 `__pycache__/`、`*.pyc`；脚本运行时建议 `PYTHONDONTWRITEBYTECODE=1`。 |
 | m8 | 构建报告过期 | 文件清单（§1）和交付报告已更新：三个 C# 文件、`lanbai_color.py`、`gen_poem_materials.py`、`colour_sim/` 都在。 |
 
-### 0.3 这一版另外改的（看校样时发现的）
+### 0′.3 这一版另外改的（看校样时发现的）
 
 - **衬底在 Unity 里的强度（§4.5）。** 圣经写的“亮衬 `#E8F1F5` α 0.25、暗衬 `#0E1A2F` α 0.30”是屏幕上的样子。Unity 在色调映射之前、在场景线性光里混合衬底，同样的 α 读出来不一样：亮衬的填值是 HDR（线性约 3.7），α 0.25 时会把海镜提亮将近一倍（`#B6BFC4`，目标 `#A3A3A3`）；暗衬 α 0.30 在亮天上又压得不够。按法律第 1 条，**SpriteRenderer 的 α 另外求解**：亮衬 **0.116**、暗衬 **0.367**。这样 Unity 里的读数与圣经的样子差 ≤ 5 码。JSON 里 `alpha` 仍是圣经的值，`sprite_color` 的 alpha 是 `alpha_unity`。
 - **晨句的亮衬改成没有直边的“光”**（`Lanbai_Scrim_Block.png` 换成超椭圆）。旧的矩形衬底在亮海镜上读成一张卡片。
 - **校样背景**：6d 海镜（物理菲涅尔，倒映被低日照金的云盖底面）、7c 暗水、7b 门与宫殿正面都按 v2.1 的构图重画。
 
-### 0.4 10-07 复核时另外改的
+### 0′.4 10-07 复核时另外改的
 
 第 3 轮的修复在 10-02 做完后，10-07 又逐项复核了一遍：三个 major、八个 minor 都按 §0.2 对照了磁盘上的文件；6 张校样全部切块重看；`build_fonts.py` 在有 `art/` 和没有 `art/` 的两个副本里各重跑一次，JSON（除生成时间）、字表、衬底贴图、C# 全部逐字节相同，子集除 `head` / `name` 的时间戳外逐表相同；三个 C# 文件重新做了 Roslyn 类型检查（0 警告）。另外改了四处：
 - **天问的逐字对焦对齐圣经的“≈1011.6 就位”（§4.8）。** 原来 4 个标点也各占一个 120 ms 的错开位，20 个物体要 2.88 s，1012.09 才就位。现在标点与它前面那个字一起对焦，16 个汉字 × 120 ms：15 × 0.12 + 0.6 = **2.4 s，1011.61 就位**，与圣经 §7.5 #8 一致。`timing` 里天问的 `focus_s` 改为 2.4，并新增 `t_settled`、`focus_note`。JSON 只有这些字段变了。
@@ -85,6 +258,9 @@
 | `Textures/Lanbai_Scrim_Line.png`、`Lanbai_Scrim_Block.png` | 诗句衬底的 alpha 贴图（RGB 白色）。导入设置由 `Editor/LanbaiScrimTextureImport.cs` 自动设置（§3.1）。 |
 | `Editor/LanbaiTMPFontBuilder.cs` + `Lanbai.Fonts.Editor.asmdef` | **（未编译）** 菜单 `蓝白/Fonts/…`：一键生成、重建、校验全部 TMP 字体资产。 |
 | `Editor/LanbaiPoemMaterials.cs` | **（未编译，由脚本生成）** 菜单 `蓝白/Fonts/Build Poem Materials (solved fills)`：为每首诗生成 TMP 材质预设（HDR `_FaceColor` = 求解的填值），以及两个衬底材质（`Sprites/Default`，`_Color` = 填值）。 |
+| `Runtime/LanbaiPoemDriver.cs`、`Runtime/LanbaiLangButton.cs` | **（未编译，第 4.1 版）** 摆诗的运行时与公告板的语言开关（§0.10） |
+| `Editor/LanbaiPoemBake.cs` | **（未编译，第 4.1 版）** 菜单 `蓝白/Fonts/Build Poem Objects (v4.1 runtime)`（§0.10） |
+| `Tools~/block_viewcheck.py` | D-33 的真车射线检查（`build_fonts.py` 调用，§0.9） |
 | `Editor/LanbaiScrimTextureImport.cs` | **（未编译）** AssetPostprocessor，给两张衬底贴图设好 Sprite 导入参数。 |
 | `Originals~/` | 下载来的原件（Adobe 按地区的 SubsetOTF、Google Fonts 的 TTF），以及 EB Garamond 可变字体实例化出来的静态 `EBGaramond-Regular.ttf` / `EBGaramond-Italic.ttf`。 |
 | `Licenses/` | 每个字体的许可全文。**要和字体放在一起进仓库。** |
@@ -113,18 +289,19 @@
 
 | TMP 字体资产（建议名） | 源字体（`Subset/`） | 用在 | 字表 | 圣经 |
 |---|---|---|---|---|
-| `Lanbai_SerifSC_Regular SDF` | `LanbaiSerifSC-Regular.otf`（思源宋体 CN/SC Regular） | **所有中文诗句的主行**：李白 ×2、梦中两句、河伯、庄子 ×2、天问；片尾中文姓名与书名 | 110 字 | §7.1 |
-| `Lanbai_SerifSC_Medium SDF` | `LanbaiSerifSC-Medium.otf` | **中文次行**：里尔克、Urlicht、济慈的中译；片尾「蓝白」、题记、「——梦中得句」 | 53 字 | §7.1 / §5.5 |
-| `Lanbai_SerifJP_Medium SDF` | `LanbaiSerifJP-Medium.otf`（源ノ明朝 JP Medium） | **日文次行**：汉诗的書き下し；德、英诗和梦中两句的日译 | 119 字 | §7.1 / §7.3 |
-| `Lanbai_Garamond_Regular SDF` | `EBGaramond-Regular.Lanbai.ttf` | **英文次行**；片尾姓名 | 66（+ascii 100） | §7.1 / §5.5 |
+| `Lanbai_SerifSC_Regular SDF` | `LanbaiSerifSC-Regular.otf`（思源宋体 CN/SC Regular） | **中文玩家看到的全部诗句**：中文诗原文，里尔克、Urlicht、济慈的中译（第 4 版）；天问的汉字（所有人）；片尾中文姓名与书名 | 134 字 | §7.1 |
+| `Lanbai_SerifTC_Regular SDF`（第 4 版新增） | `LanbaiSerifTC-Regular.otf`（思源宋体 TW Regular，改名 Lanbai Serif TC） | **繁体中文玩家（zh-HK）看到的全部诗句**和公告板的繁体字 | 见 `build_report.txt` | §7.1 / D-31 |
+| `Lanbai_SerifSC_Medium SDF` | `LanbaiSerifSC-Medium.otf` | 片尾「蓝白」、题记、「——梦中得句」（第 4 版：中译单独显示，改用 Regular） | 22 字 | §7.1 / §5.5 |
+| `Lanbai_SerifJP_Medium SDF` | `LanbaiSerifJP-Medium.otf`（源ノ明朝 JP Medium） | 第 4 版只剩**天问下面那一行日文**（1.8°） | 29 字 | §7.1 / §7.3 |
+| `Lanbai_Garamond_Regular SDF` | `EBGaramond-Regular.Lanbai.ttf` | **英文玩家（和其他语言）看到的译文**；天问下面的英文；片尾姓名 | 66（+ascii 100） | §7.1 / §5.5 |
 | `Lanbai_Garamond_Italic SDF` | `EBGaramond-Italic.Lanbai.ttf` | **德文原文**（里尔克、Urlicht）、**济慈原文**；片尾角色名与西文作品名 | 44（+ascii 98） | §7.1 / §7.5 / §5.5 |
 | `Lanbai_Barlow_SemiBold SDF` | `BarlowSemiCondensed-SemiBold.Lanbai.ttf` | 片尾标题 `LANBAI`（字距 +0.3 em） | 5（+ascii 95） | §5.5 |
 | （可选）`Lanbai_Slip_Roman SDF` / `Lanbai_Slip_SC SDF` | `LanbaiSlip-Regular.ttf` / `LanbaiSlipSC-Regular.ttf`（IM FELL English Roman / SC 的子集，已改名） | Coleridge 纸条正文和标题。站牌套件已经把纸条烘成贴图了，只有想用 TMP 另排一张时才需要 | 37 / 16 | §5.5 |
-| （可选）`Lanbai_SerifJP_Regular SDF` | `LanbaiSerifJP-Regular.otf` | 字表与 JP Medium 相同。日文永远是次行，按 §7.3 用 Medium | 119 字 | §7.1 |
+| `Lanbai_SerifJP_Regular SDF`（第 4 版：必做） | `LanbaiSerifJP-Regular.otf`（源ノ明朝 JP Regular） | **日文玩家看到的全部诗句**：書き下し与日译（单独一份 = 主行，D-30） | 108 字 | §7.1 |
 | —（不做 TMP） | `LanbaiSansSC-Heavy.otf`（思源黑体 CN/SC Heavy） | 目的地牌「蓝白」：站牌套件已经做成贴图 | 2 字 | §4.7 |
 
 - **片尾公告板和 Coleridge 纸条**的正式版本是站牌套件烘好的贴图（精简措辞，两栏）。本套件的字表同时覆盖圣经全文版和站牌精简版。
-- **世界里没有 UI 字**：§1.9 的手动开关是无字拨钮，开着时旁边亮一粒暖白小灯。
+- **UI 字只在公告板上、发车以前**（D-31，§0.8）：语言开关和发车提示。§1.9 的手动 auto-lite 开关仍是无字拨钮，开着时旁边亮一粒暖白小灯。
 - **用户要填的占位**（梦者的名字、临落树的署名、Built by）不算显示文本，没有进字表。填好后按 §6 加字。
 
 ### 2b. 许可（全部 SIL Open Font License 1.1）
@@ -159,7 +336,7 @@
 | ② | `蓝白/Fonts/Build Poem Materials (solved fills)` = `Lanbai.Fonts.EditorTools.LanbaiPoemMaterials.BuildAll()` | 在 `<套件>/FontAssets/PoemMaterials/` 生成 **35 个诗句预设**（`<字体资产名> - <诗 id>`，复制字体资产的材质，`_FaceColor` 写入求解的 HDR 填值，Render Queue 3010）和 **2 个衬底材质**（`Lanbai_Scrim_Dark_S8`、`Lanbai_Scrim_Light_S6`，`Sprites/Default`，`_Color` = 填值，Queue 3009）。写完逐个回读校验 | 每行 `OK`，最后 `POEM MATERIALS PASS (37)`（35 + 2）；字体资产还没生成时，诗句预设那几行是 `SKIP`，结尾是 `… ok, … not built`；若项目不是 Linear 会有 WARNING |
 | ③ | 手动 / Director | 每个 TMP 物体：`tmp.fontSharedMaterial = <它那首诗、那个字体的预设>`（JSON 每个物体的 `material` 字段就是预设名）；动画一律改 `tmp.fontMaterial`（§4.1） | — |
 
-- 其他入口：`BuildAllFast()`（SDFAA，快的备用）、`BuildOptional()`（Slip ×2、JP Regular）、`BuildOne("EBGaramond-Italic", "SDF32")`、`VerifyAll()`。
+- 其他入口：`BuildAllFast()`（SDFAA，快的备用）、`BuildOptional()`（Slip ×2）、`BuildOne("EBGaramond-Italic", "SDF32")`、`VerifyAll()`。
 - **再跑一次会原地重建，GUID 不变**：字体资产先写入新的尺寸和模式再 `ClearFontAssetData`；诗句材质用 `CopyPropertiesFromMaterial` 跟上新图集，再写一次颜色。字体资产重建后**一定要再跑一次 ②**。
 - 如果 Console 出现 “no UpdateGlyphAdjustmentRecords we can call” 而且字距对数是 0，三个拉丁资产按 §3.3 手动做一次，勾上 Get Kerning Pairs。
 
@@ -191,7 +368,7 @@ Missing Characters 必须为 0。存成 `Lanbai_…SDF.asset` 后：Atlas Popula
 ## 4. 每句诗在 TMP 里怎么摆（数值全部在 `strings_all.json` → `poems[i].layout[玩家语言]`）
 
 ### 4.1 组件与通用设置
-- 世界空间的 **`TextMeshPro`**（3D 版，不是 UGUI）。**每个“文本物体”一个组件**：一般的诗是主行一个、译文一个；庄子是 4 行加 1 个字幕位（§4.7）；天问的逐字对焦要拆成单字物体（§4.8）。
+- 世界空间的 **`TextMeshPro`**（3D 版，不是 UGUI）。**每个“文本物体”一个组件**：第 4 版一般的诗只有一个（玩家那种语言的整块）；天问是汉字一个、不是中文的玩家下面再一个；庄子是 4 个（§4.7）；天问的逐字对焦要拆成单字物体（§4.8）。
 - **对齐：`TextAlignmentOptions.Baseline`**（水平居中，**第一行的基线**落在物体位置上）。RectTransform pivot (0.5, 0.5)。Wrapping 关（断行已写在字符串里），Overflow = Overflow，Extra Padding 开。第一次做好后请在物体位置放一个 1 cm 的小方块，第一行的基线应正好穿过它。
 - **字号：`font_size` = 10 × 距离(m) × tan(字高°)**（TMP 3D 模式 1 em = 0.1 × fontSize 世界单位，localScale = 1）。
 - **字距：** `character_spacing` = CJK 10（+0.10 em）、拉丁 0。**行距：** `line_spacing` = 思源 +16.3、EB Garamond +4.5，得到圣经的 1.6 em / 1.35 em。
@@ -218,16 +395,7 @@ Missing Characters 必须为 0。存成 `Lanbai_…SDF.asset` 后：Atlas Popula
 JSON 同时给出每个物体的 `first_baseline_el`、`line_baselines_el`、`top_el` / `bottom_el` / `center_el`（em 框，单位度）。
 
 ### 4.3 仰角铁律（§7.3：文本中心永不高于 +10°、永不低于 −15°）
-整块的中心放在 §7.5 的仰角上；**某个物体的中心会越界时，整块按最小的量移动**，`shift_deg` 写着移了多少：
-
-| 诗 | 移动 |
-|---|---|
-| 河伯 | de / en / other −0.13°，ja −0.68° |
-| 天问 | de / en / other −3.35°，ja −2.68° |
-| 齐物论 | de / en / other −2.11°，ja −2.66° |
-| 济慈 | zh / ja +0.50° |
-
-§7.3 是“永不”，优先于 §7.5 的位置。只看原文的玩家都不移动。全部物体 PASS（`build_report.txt` 的 `== VERTICAL PLACEMENT ==`）。
+整块的中心放在 §7.5 的仰角上；**某个物体的中心会越界时，整块按最小的量移动**，`shift_deg` 写着移了多少。第 4 版每人只有一块，**没有一块需要移**（第 3 版河伯、天问、齐物论、济慈要移）。天问的汉字永远不移（它是图），不是中文的玩家那一行小字挂在下面。庄子日文为此用 2.08°（§0.2）。全部物体 PASS（`build_report.txt` 的 `== VERTICAL PLACEMENT ==`）。
 
 ### 4.4 光学居中
 思源宋体 SC 的「？」「！」墨迹只占字身左半边，行末有这两个字的行居中时会向左偏。`optical_offsets_em` 给出每一行要向右移多少 em（只列 ≥ 0.06 em 的）：
@@ -252,52 +420,54 @@ v2.1 里只有两处有衬底：**晨句（6d）的亮衬 `#E8F1F5` α 0.25**，
 - **渲染顺序：** 车窗玻璃 3000 → 衬底 3009 → 诗句 3010。玻璃不写深度，所以画在后面的衬底和字不会被挡掉。
 - **亮衬的 `_Color` 大于 1**（线性约 2.8 / 3.4 / 3.7）。`Sprites/Default` 的 `_Color` 不是 `[HDR]` 属性，不要在 Inspector 里改它：非 HDR 取色器一改就把值钳到 1。改坏了重跑 §3.2 ② 就能恢复。脚本写入的值会存在 `.mat` 里，渲染时照常生效。PC 显卡把 shader 里的 `fixed` 当 float 处理，所以没有问题。如果以后出 Quest 版，`fixed` 会被钳到 2，那时要换一个 half 精度的 shader。
 
-### 4.6 字号表（localScale = 1 时的 fontSize）
+### 4.6 字号表（localScale = 1 时的 fontSize，第 4 版）
 
-| 诗 | 距离 | 主行 | fontSize | 次行（译文） | fontSize |
-|---|---|---|---|---|---|
-| 3 李白（我欲因之梦吴越） | 40 m | 2.4° | 16.76 | 1.8° | 12.57 |
-| 3c 里尔克 | 60 m | 2.2° 德文斜体 | 23.05 | 1.8° | 18.86 |
-| 4 Urlicht（一联，逐词） | 30 m | 1.8° 德文斜体 | 9.43 | 1.8° | 9.43 |
-| 6d 我从天空坠入深海 | 40 m | 2.4° | 16.76 | 1.8° | 12.57 |
-| 7b 河伯 | 15 m | 2.2° | 5.76 | 1.8° | 4.71 |
-| 7c 自深海坠入另一片天空 | 40 m | 2.4° | 16.76 | 1.8° | 12.57 |
-| 8-ii 庄子《逍遥游》 | 60 m | 2.2° | 23.05 | 字幕 1.8° | 18.86 |
-| 9a 天问 | 50 m | 2.2° | 19.21 | 1.8° | 15.71 |
-| 11 庄子《齐物论》 | 10 m | 2.0° | 3.49 | 1.8° | 3.14 |
-| 12 李白（惟觉时之枕席） | 40 m | 2.4° | 16.76 | 1.8° | 12.57 |
-| 12 济慈 | 25 m | 1.6° 斜体 | 6.98 | 1.8° | 7.86 |
+每位玩家只有一份：显示的是 CJK 就用 CJK 那一列，是拉丁 / 德文就用拉丁那一列。
 
-济慈的译文（1.8°）比原文（1.6°）大，这是圣经的规定（中日文次行不能小于 1.8°）。最宽的一行 27.5°，全部 ≤ 28°。
+| 诗 | 距离 | CJK | fontSize | 拉丁 / 德文 | fontSize | 说明 |
+|---|---|---|---|---|---|---|
+| 3 李白（我欲因之梦吴越） | 40 m | 2.4° | 16.76 | 2.2° | 15.37 | |
+| 3c 里尔克 | 60 m | 2.2° | 23.05 | 2.0° | 20.95 | D-13 |
+| 4 Urlicht | 30 m | 1.8° | 9.43 | 1.8° | 9.43 | D-30a |
+| 6d 我从天空坠入深海 | 40 m | 2.4° | 16.76 | 2.2° | 15.37 | |
+| 7b 河伯 | 15 m | 2.2° | 5.76 | 2.0° | 5.24 | |
+| 7c 自深海坠入另一片天空 | 40 m | 2.4° | 16.76 | 2.2° | 15.37 | |
+| 8-ii 庄子《逍遥游》 | 60 m | 2.2°（日文 2.08°，21.79） | 23.05 | 2.0° | 20.95 | §0.2 |
+| 9a 天问 | 50 m | 2.2°（汉字，所有人） | 19.21 | — | — | 下面一行 1.8°（15.71） |
+| 11 庄子《齐物论》 | 10 m | 2.0° | 3.49 | 2.0° | 3.49 | D-30a |
+| 12 李白（惟觉时之枕席） | 40 m | 2.4° | 16.76 | 2.2° | 15.37 | |
+| 12 济慈 | 25 m | 1.8° | 7.86 | 1.6° | 6.98 | D-30a |
 
 ### 4.7 庄子《逍遥游》：全世界的论点之帧（§6·8、§7.5 #7；看 `Docs~/Proof_Trilingual_Zhuangzi.png`）
-父物体在 **+35° / 0° / 60 m**，不跟随注视。v2.1 **只出 L1 和 L3**（L2「其远而无所至极邪？」不出）。`layout[语言].objects`：
+父物体在 **+35° / 0° / 60 m**，不跟随注视。v2.1 **只出 L1 和 L3**（L2「其远而无所至极邪？」不出）。**第 4 版：镜像的是玩家自己的语言，没有字幕位**（§0.4）。`layout[玩家].objects`：
 
-| 物体 | 内容 | 基线仰角 | 中心仰角 | local_y_m | scale.y | 出现 | 退场（989.0 起 4 s） |
+| 玩家 | 物体 | 内容 | 第一行基线仰角 | 中心仰角 | local_y_m | scale.y | 出现 |
 |---|---|---|---|---|---|---|---|
-| L1 | 天之苍苍，其正色邪？ | +4.444° | +5.28° | +4.6631 | 1 | **971.4**（+0 s） | 向上漂 0.2° |
-| L3′ | （L3 的镜像，地平线上） | +2.596° | +1.76° | +2.7204 | **−1** | **976.4**（+5 s） | 向上漂 |
-| L3 | 其视下也，亦若是则已矣（**正字在地平线下，低头读**） | −2.596° | −1.76° | −2.7204 | 1 | 976.4 | **向下**漂 |
-| L1′ | （L1 的镜像，地平线下） | −4.444° | −5.28° | −4.6631 | −1 | 971.4 | 向下漂 |
-| T1 / T3 | 本玩家语言的译文（中文玩家没有） | 英 −8.556°，日 −8.844° | 英 −9.36°，日 −9.60° | 英 −9.0270，日 −9.3357 | 1 | T1 971.4；T3 **977.2**（+5.8 s） | T1 在 976.4 起 1 s 淡出；T3 与全体一起 989.0 → 993.0 |
+| zh | L1 / L1′ | 天之苍苍，其正色邪？ | ±4.444° | ±5.28° | ±4.6631 | 1 / −1 | 971.4 |
+| zh | L3 / L3′ | 其视下也，亦若是则已矣（**正字在地平线下**） | ∓2.596° | ∓1.76° | ∓2.7204 | 1 / −1 | 976.4 |
+| ja | L1 / L1′ | 天の蒼蒼たるは / 其れ正色なるか | ±10.858° | ±9.984° | ±11.5081 | 1 / −1 | 971.4 |
+| ja | L3 / L3′ | 其の下を視るや亦た / 是くの若くならんのみ | ∓2.454° | ∓3.328° | ∓2.5718 | 1 / −1 | 976.4 |
+| en、de | L1 / L1′ | The sky, so blue, so blue — / is that its true colour? | ±8.99° | ±8.10° | ±9.4923 | 1 / −1 | 971.4 |
+| en、de | L3 / L3′ | Looking down from there, / it would be just the same. | ∓1.81° | ∓2.70° | ∓1.8961 | 1 / −1 | 976.4 |
 
-- **一列等距的四行，地平线在正中那道缝里：** 从上到下 L1、L3′ | 地平线 | L3、L1′。行距全部 1.6 em，地平线两侧各留 0.3 em。翻转的那一行（L3）贴着地平线，排版恰好在“往下看与往上看一样”上翻转；L1 和它的镜像在外侧框住整列。
-- **镜像字**：同一段文字，`localScale.y = −1`，放在正字基线的相反仰角上，是以地平线为轴的精确反射。镜像字 alpha 0.45（0.5 × 0.9），`_OutlineSoftness` 终值 0.3。光学居中偏移与正字相同。
-- **退场方向：** 地平线上的物体向上漂，地平线下的向下漂。每一对正字 / 镜像字都上下分开，反射关系保持精确。这就是 §7.4-4“庄子的镜像字两向分开”和 §6·8“线横着收拢，字竖着分开”；§7.5 表里“正字向上漂、镜像字向下漂”是按正字在上的 L1 写的，对 L3（正字在下）照字面做会让两行往地平线靠拢。
-- **字幕位**（译文不进镜像）：顶边在 −7.26°（字列底边之下 0.4 em）。T1 只显示 5 s（971.4 → 976.4 → 1 s 淡出），这是圣经两行相隔 5 s 定下的；T3 一直保持到退场。不叠成两块字幕，是为了不在“最静的画面”里加字块（E25：字块从 6 块减到 4 块）。
-- **衬底**：每行一条暗衬带（4 条），各自跟着自己的行淡入；外缘离日线 ≥ 2°（§4.5）。字幕位没有衬底。
-- **日线**：F12（987.06）起 6 s 从 ±10° 收成一点；庄子 989.0 → 993.0 的退场与它是同一个动作，993.06 之前字完全离开，蓝时是空的。
+（上面的符号：L1 正字在上、L3 正字在下；镜像字取相反的号。）
+
+- **一列等距，地平线在正中那道缝里：** 从上到下 L1、L3′ | 地平线 | L3、L1′。行距是这种语言自己的（CJK 1.6 em、拉丁 1.35 em），地平线两侧各留半个行间（CJK 0.3 em）。翻转的那一行（L3）贴着地平线。
+- **镜像字**：同一个文本物体，`localScale.y = −1`，变换放在正字第一行基线的相反仰角上，是以地平线为轴的精确反射（多行时行序也反过来）。D-33 起字是靛墨 `#27304A`、正字不透明度 1.00，镜像字 alpha 0.5，`_OutlineSoftness` 终值 0.3。
+- **退场方向：** 989.0 起 4 s，地平线上的物体向上漂，地平线下的向下漂。
+- **衬底**：D-33 起不加（暗衬作废）。
+- **日线**：F12（987.06）起 6 s 从 ±10° 收成一点；993.06 之前字完全离开。
 
 ### 4.8 天问：逐字对焦与 16 颗星（§6·9、§7.4-4）
 `_OutlineSoftness` 是材质属性，一个 TMP 物体做不了逐字对焦。主行物体里有：
 - **`char_objects`（20 个）**：每个字一个 TMP 单字物体（Baseline 对齐时单字以自身 advance 居中，所以与整行完全重合，字距与 kern 已含在坐标里）。字段：`char`、`line`、`local_x_m`、`local_y_m`、`baseline_el`、`focus_delay_s`、`focus_s` 0.6、`star`（16 个汉字为 true，4 个标点为 false）。每个单字物体用自己的材质实例（§4.1）。
 - **错开：** 16 个汉字依次错开 120 ms（`focus_delay_s` = 0、0.12 … 1.80），**标点与它前面那个字同时对焦**（「初」与「，」都是 0.36）。最后一个字在 1.80 + 0.6 = 2.4 s 就位，也就是 **1009.21 + 2.4 = 1011.61**（圣经 §7.5 #8 “≈1011.6 就位”）。`timing.focus_s` = 2.4、`timing.t_settled` = 1011.61。每个字照 §7.4-4：`_OutlineSoftness` 0.9 → 0、alpha 0 → 0.9，0.6 s ease-out。
 - **`star_points`**：16 个汉字的字心（`x_em` 相对行中心、已含光学居中；y = 基线上方 0.38 em）。乘以 `em_m = 0.1 × fontSize` 就是局部坐标。F13（1018.21）那一帧在这些点上点燃 16 颗星，字 1.2 s 内暗下。
-- 译文物体照常是一整块，与主行一起出现。
+- 第 4 版：不是中文的玩家，汉字下面另有一个物体（`role: translation`，1.8°，SC / JP Medium 或 Garamond Regular），整块出现、照常 2.5 s 对焦。汉字的位置对所有玩家都一样（星落在它上面）。
 
 ### 4.9 Urlicht：一联，逐词与歌声同步（§6·4、§7.5 #3）
 - 只出 *Ach nein! / Ich ließ mich nicht abweisen!*。`timing.line_cues`：第一行绑 **U8**（166.15），第二行绑 **U8b**（167.90）。
-- 逐词出现不需要额外材质：Vertex Color 是白色、只带 alpha，所以可以直接改 `textInfo.meshInfo[0].colors32` 里每个字的 alpha（或者用 `maxVisibleCharacters` 逐词推进）。译文行跟着它的原文行出现。
+- 逐词出现不需要额外材质：Vertex Color 是白色、只带 alpha，所以可以直接改 `textInfo.meshInfo[0].colors32` 里每个字的 alpha（或者用 `maxVisibleCharacters` 逐词推进）。第 4 版每位玩家只有自己语言的那两行（日文三行）；每一行绑哪个乐句在 `line_cues_by_shown[显示的键]`。
 - 第一遍唱完后 1.5 s 内淡出（≈171.5），U8c 第二遍不出字。
 
 ### 4.10 时间表（圣经 v2.1 §7.5；每个 layout 的 `timing`）
@@ -379,10 +549,10 @@ Unity 模型 = 背景、衬底、字按交付的填值和 α 在场景线性光�
 
 | 文件 | 字数 | 给哪个资产 |
 |---|---|---|
-| `charset_SourceHanSerifSC-Regular.txt` | 110 | SC Regular |
-| `charset_SourceHanSerifSC-Medium.txt` | 53 | SC Medium |
-| `charset_SourceHanSerifJP-Medium.txt` | 119 | JP Medium |
-| `charset_SourceHanSerifJP-Regular.txt` | 119 | （可选）JP Regular，与 Medium 相同 |
+| `charset_SourceHanSerifSC-Regular.txt` | 134 | SC Regular（第 4 版加了中译的字） |
+| `charset_SourceHanSerifSC-Medium.txt` | 22 | SC Medium（只剩片尾） |
+| `charset_SourceHanSerifJP-Medium.txt` | 29 | JP Medium（只剩天问那一行） |
+| `charset_SourceHanSerifJP-Regular.txt` | 108 | JP Regular（第 4 版：全部日文诗句） |
 | `charset_EBGaramond-Regular.txt` / `+ascii` | 66 / 100 | Garamond Regular（推荐 +ascii） |
 | `charset_EBGaramond-Italic.txt` / `+ascii` | 44 / 98 | Garamond Italic（推荐 +ascii） |
 | `charset_BarlowSemiCondensed-SemiBold.txt` / `+ascii` | 5 / 95 | Barlow（推荐 +ascii） |
@@ -417,18 +587,21 @@ poems[]                 id, scene, bible, source, source_en, size_main, size_tr�
                         naive_vertex_colour_screen / _luma（照字面填 Vertex Color 会读成什么）, grade_note, screen_over_hold[] 与
                         single_profile_fill_would_be（李白 I、里尔克）}, scrim_fill{同上},
                         original{lang, font, lines[], tmp_text}, translations{zh|ja|en}{font, lines[], tmp_text},
-                        segments[]{main[], zh[], ja[], en[], t, label, upright}, display_by_player_language{zh, ja, en, de, other}
-  layout{zh|ja|en|de|other}       ← 这个玩家语言下的完整摆法（每首诗一张卡）
-    player, anchor[方位, 仰角, 距离], block_center_el, shift_deg, translation, rule（庄子：字列规则的文字版）
+                        segments[]{main[], zh[], ja[], en[], <键>_v4[]（第 4 版重新断行）, t, label, upright},
+                        size_cjk, size_lat, size_by_lang?, size_note?, place_note?, picture?（天问）, line_cues_by_shown?（Urlicht）,
+                        display_by_player_language{zh|zht|ja|en|de: {shown, sub_line}}
+  layout{zh|zht|ja|en|de}       ← 这个玩家下的完整摆法（第 4 版：一块单语字块）
+    player, shown（'main' = 原文，或 zh / zht / ja / en）, shown_lang, anchor[方位, 仰角, 距离], anchor_mode（'centre' | 'top'：里尔克）, block_center_el, shift_deg,
+    translation（只有天问：下面那一行的语言）, block{width_deg, height_deg, az[2], el[2], center[2]}, rule（庄子）
     timing{cue, t_appear, focus_s, hold_s, t_exit, t_gone, exit, hold_formula_s, line_cues?, note?,
            t_settled? / focus_note?（天问：逐字对焦 2.4 s，1011.61 就位，§4.8）}
-    objects[]  role(main|translation|mirror|caption), id（庄子）, lang, font, tmp_asset, size_deg, font_size,
+    objects[]  role(main|translation|mirror), shown, id（庄子）, lang, font, tmp_asset, size_deg, font_size,
                character_spacing, line_spacing, alignment='Baseline', lines[], tmp_text, tmp_text_rich,
                optical_offsets_em[], line_local_x_m[], first_baseline_el, line_baselines_el[], top_el, bottom_el, center_el,
                width_deg[], local_y_m, scale_y,
                alpha, vertex_color[1,1,1,alpha], material（预设名）, material_instance='own',
                outline_softness_anim[0.9, 终值], face_dilate{desktop, vr},
-               （庄子另有）appear_s, appear_t, exit_at_s, exit_t, exit_s, fade_out_at_s, fade_out_t, fade_out_s, exit, outline_softness
+               （庄子另有）appear_s, appear_t, exit_at_s, exit_t, exit_s, exit, outline_softness
                （天问另有）star_points[], char_objects[]
     scrims[]   style(block|line), texture, kind(light|dark), color_target, alpha（圣经）, alpha_unity, alpha_note,
                material, sprite_color[1,1,1,alpha_unity], for_object, appear_s, center_el, width_deg, height_deg,
@@ -437,10 +610,13 @@ materials[]             name, kind(tmp_face|scrim), tmp_asset, poem, profile, ta
                         render_queue、alpha（圣经）（LanbaiPoemMaterials 的表）
 colour_rule             颜色规则的文字说明
 credits / credits_signkit_variant / coleridge_slip / destination_roll / ui（空）/ ui_note / charsets
+block_table[]           第 4 版：每首诗、每个玩家的字块（§0.6）
+player_of_client_language[]  客户端语言前缀 → 玩家键（zh-HK / zh-TW / zh-Hant → zht，zh → zh，ja，de，* → en；先到先得）
+ui[] / ui_note            公告板：语言开关、发车提示（id, lang, font, text；{0} = 秒数），D-31
 layout_model / zhuangzi_rule   排版模型与庄子规则的文字说明
 ```
 
-**显示规则（§7.4-7）：** 原文永远是主行，玩家自己的语言在下面。中文诗和梦中两句：中文玩家只看原文，日文玩家加書き下し或日译，其他人加英文。德文诗：德语玩家只看原文，中、日玩家加中译、日译，其他人加英文。济慈：英语、德语和“其他”只看原文，中、日玩家加中译、日译。玩家语言用 `VRCPlayerApi.GetCurrentLanguage()` 取，映射到 zh / ja / en / de / other，然后直接取 `layout[那个值]`。
+**显示规则（第 4 版，D-30）：** 见 §0.1。玩家语言取到以后按 `player_of_client_language` 映射到 zh / ja / de / en（取不到 → en），然后直接取 `layout[那个键]`（简体 zh、繁体 zht）。第 3 版的“原文作主行、自己的语言在下面”和 `other` 键都取消了。
 
 ---
 
@@ -469,11 +645,13 @@ v2.1 不再显示的（已从字表和 JSON 删除）：Urlicht 的 *Da kam ein 
 
 ---
 
-## 9. 校样（`Docs~/`），每一张都逐块看过
-- **`Proof_zh / ja / en / de.png`**：这四种语言的玩家在整趟旅程里看到的每一句，按圣经的视角比例（1° = 26 px），**全部取自这一版的 JSON**。每块说明栏：v2.1 的时刻、屏幕目标与填值（以及求解用的调色）、**Unity 模型读数**、bloom 检查、每个物体的中心仰角、紫的面积、光学居中。字和衬底按屏幕目标、不透明度和圣经的衬底强度在显示线性光里画——这就是 Unity 里应当得到的样子，说明栏里的 Unity 读数说明它确实会得到（§5.3）。背景是按各幕色板值画的示意，不是渲染。
-- **`Proof_Trilingual_Zhuangzi.png`**：见 §4.7。大图和 2 × 2 时间条上都标了**日线 ±10°**和**暗衬在 Unity 里的实际外缘**（方位 12.0°，离日线端 2.0°）；最后一格是 991.0，日线收到 ±3.4°、字在分开。
-- **`Proof_Credits.png`**：片尾和纸条的全部字符串（不是版式）。全文版片尾按 §5.5 下限字号要 3 196 mm 长，圣经允许的纸最长 1 400 mm，所以公告板只能用站牌套件的精简版。纸条的尺寸与算法见 §10-7。
-- **检查结果**（`proof_report.json`）：画出 6 398 个字形，**0 缺字，没有豆腐块**；`build_fonts.py` 另外逐字对照了子集和原件的 cmap（PASS）。紫：第 4 幕以外所有面板 0.00%（上限 2%）；6d 按更严的规则（h 285–330、C\* > 12）也是 0%。
+## 9. 校样（`Docs~/`），每一张都逐块看过（第 4 版，D-33 以后重出）
+
+- **`Proof_zh / zht / ja / en / de.png`**：五种玩家在整趟旅程里看到的每一句（每人只有自己那一份），按圣经的视角比例（1° = 26 px），**全部取自这一版的 JSON**。每块说明栏：v2.1 的时刻、看到的是哪一份和字体字号、位置、最宽行和字块大小、屏幕目标与填值、Unity 模型读数、bloom 检查、物体中心仰角、紫的面积、光学居中。
+- **`Proof_Trilingual_Zhuangzi.png`**：庄子（§4.7）：英语玩家的整个画面（日线 ±10° 标出）、中 / 日 / 英三栏、2 × 2 时间条（+1.5 s、+5.5 s、+12 s、991.0 退场中）。D-33 起字是靛墨，没有衬底。
+- **`Proof_Credits.png`**：片尾和纸条的全部字符串（不是版式），含 D-33 补的 Gaia 一行。
+- **检查结果**（`proof_report.json`）：画出 6 772 个字形，**0 缺字**；`build_fonts.py` 另外逐字对照了子集和原件的 cmap（PASS）。紫：第 4 幕以外所有面板 0.00%（上限 2%）。Unity 模型读数：晨句和庄子（暗字、不透明度 1.00）差 0 码；90% 的亮字差 4–5 码，齐物论 80% 差 12 码（§5.3，都是 §7.2 的不透明度本身的效果）。
+- 真车检查（D-33）不在校样里画，在 `build_report.txt` 的 `== VIEWCHECK ==` 和 §0.6 表的最后一列。
 
 ---
 
@@ -485,4 +663,5 @@ v2.1 不再显示的（已从字表和 JSON 删除）：Urlicht 的 *Da kam ein 
 5. **颜色依赖调色：** 填值是按圣经 `grades_final.json` 的外观模型求的，并已用调色套件的引擎模型核对（≤ 3 码，§5.3）。调色参数一改，就重跑 `build_fonts.py` 和 §3.2 ②。请在第一次实机截图时用取色器读一下李白 I（≈71.8 s 后）和晨句的字心：应为 `#DDD8CF` 左右（luma ≈ 216）和 `#1F2A3A`。
 6. **需要核对的文本（圣经 §9-16）：** 片尾的演出者信息（Ferrier / Klemperer 1951；Walter / NYP 1958 等）请对照实际音源；Coleridge 纸条的文字请对照 1816 年 *Christabel* 那一卷的扫描件。書き下し与译文请母语者过目（§8）。
 7. **请转告站牌套件：** ① 「——梦中得句」的破折号用全宽、居中、首尾相接的写法，这一行字距 0；② 片尾建议加 Type 一行；③ **纸条尺寸**与圣经 120 × 170 mm 不符，需要美术总监决定：IM FELL 7 mm、行距 1.22 时，最长诗行 143.5 mm，纸按“左边距 11 + 诗行缩进 9 + 最长诗行 143.5 + 余量 1 + 右边距 9”= **173.5 mm** 宽、151 mm 高；要放进 120 mm 宽，字得降到 7 × (120 − 29) / 143.5 ≈ **4.4 mm**。
-8. **我们对圣经的延伸**（理由都在上文）：晨句不透明度 1.00（§0.2 MAJOR 3）；衬底的 SpriteRenderer α 另外求解（§0.3）；行末逗号去掉；庄子只镜像原文、译文进字幕位、上下分开退场（§4.7）；块超出 §7.3 范围时整块平移（§4.3）；衬底羽化比 40 px 宽、晨句衬底是超椭圆；世界里没有 UI 字。
+9. **第 4 版还要人看的**：①（已定，D-30a）；②（已定，D-30a：三首回到小）；③ 庄子日文的断行「其の下を視るや亦た / 是くの若くならんのみ」和 Urlicht 日文的「わたしは / 引き下がらなかった！」请日语母语者看；④ 德语玩家保留 `de` 键（§0.1）。
+8. **我们对圣经的延伸**（理由都在上文）：晨句不透明度 1.00（§0.2 MAJOR 3）；衬底的 SpriteRenderer α 另外求解（§0.3）；行末逗号去掉；庄子镜像玩家自己的语言、上下分开退场（§4.7）；块超出 §7.3 范围时整块平移（§4.3，第 4 版没有一块要移）；庄子日文 2.08°（§0.2，待总导演定）；衬底羽化比 40 px 宽、晨句衬底是超椭圆；世界里没有 UI 字。

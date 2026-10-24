@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Proof sheets for the Lanbai poems (v3 of this kit: art bible v2.1, after verify round 3).
+"""Proof sheets for the Lanbai poems (v4 of this kit: D-30, one language per player; art bible v2.1).
 
 Every line is drawn from lanbai_layout.py — the SAME objects, baselines, optical offsets and mirror transforms that
 strings_all.json hands to the Director — using the SUBSET fonts the way TMP lays them out (advance + kern table +
@@ -512,12 +512,12 @@ def caption_bar(width, lines):
     return im
 
 FONT_CN = {'SourceHanSerifSC-Regular': '思源宋体 SC Regular', 'SourceHanSerifSC-Medium': '思源宋体 SC Medium',
-           'SourceHanSerifJP-Medium': '源ノ明朝 JP Medium', 'EBGaramond-Regular': 'EB Garamond Regular',
+           'SourceHanSerifJP-Medium': '源ノ明朝 JP Medium', 'SourceHanSerifJP-Regular': '源ノ明朝 JP Regular', 'SourceHanSerifTW-Regular': '思源宋体 TC Regular', 'EBGaramond-Regular': 'EB Garamond Regular',
            'EBGaramond-Italic': 'EB Garamond Italic'}
 
 def fmt_place(pl):
     a, e, d = pl
-    return '%+d° / %+d° / %d m' % (a, e, d)
+    return '%+g° / %+g° / %g m' % (a, e, d)
 
 SCENE_BG = {'3': '3', '3c': '4a', '4': '4b', '6d': '6d', '7b': '7', '7c': '7c', '8-ii': '8-ii', '9a': '9a', '11': '11', '12': '12'}
 
@@ -669,13 +669,16 @@ def block_panel(p, player, ppd, width, lay, label_extra=''):
                              'rule': plim, 'limit': 'n/a (scene 4)' if p['scene'] == '4' else 0.02})
     out = Image.fromarray(u8)
     tr = lay['translation']
-    tr_txt = ('+ ' + FONT_CN[p['translations'][tr]['font']] + ' %.1f°' % p['size_tr']) if tr else '（无译文：本语言玩家只看原文）'
-    cents = '  '.join('%s %+.1f°' % ({'main': '主行', 'translation': '译文'}[o['role']], o['center_el']) for o in objs)
+    m0 = objs[0]
+    shown_txt = ('原文' if lay['shown'] == 'main' else {'zh': '中译', 'zht': '繁体', 'ja': '日文（書き下し / 和訳）', 'en': '英译'}[lay['shown']])
+    tr_txt = ('+ 下面一行 ' + FONT_CN[p['translations'][tr]['font']] + ' %.1f°（天问的例外，D-30 #4）' % p['size_tr']) if tr else '（只这一份，D-30）'
+    cents = '  '.join('%s %+.1f°' % ({'main': '字块', 'translation': '小字'}[o['role']], o['center_el']) for o in objs)
+    blk = lay['block']
     offs = [(t, x) for o in objs for t, x in zip(o['lines'], o['optical_offsets_em']) if x]
     cap = caption_bar(width, [
         '第 %s 幕 · %s%s   ·   %s' % (p['scene'], p['source'], label_extra, timing_line(p)),
-        '主行 %s %.1f°  %s   ·   %s   ·   最宽行 %.1f°' % (
-            FONT_CN[p['original']['font']], p['size_main'], tr_txt, fmt_place(p['place']), widest),
+        '%s · %s %.2f°  %s   ·   %s   ·   最宽行 %.1f°   ·   字块 %.1f° × %.1f°' % (
+            shown_txt, FONT_CN[m0['font']], m0['size_deg'], tr_txt, fmt_place(p['place']), widest, blk['width_deg'], blk['height_deg']),
         colour_line(p),
         check_text(chk),
         '物体中心仰角：%s%s   ·   紫 %.1f%%%s' % (
@@ -689,7 +692,7 @@ def block_panel(p, player, ppd, width, lay, label_extra=''):
     return panel
 
 ZH_HALF_DEG = 17.0            # Zhuangzi views: horizon in the middle, ±17° (covers +9.9° .. -15.0°)
-ZH_FINAL_T = 12.0             # s after L1: both lines and the caption T3 fully focused
+ZH_FINAL_T = 12.0             # s after L1: both lines (and their mirrors) fully focused
 SUN_COLLAPSE = (987.06, 6.0)  # F12: the sun line shrinks from ±10° to a point in 6 s (§6·8b)
 
 
@@ -749,7 +752,7 @@ def zhuangzi_view(p, player, ppd, width, t=None, az_c=None, half=ZH_HALF_DEG, la
     sh = sun_half_at(p, t)
     img, els = bg_scene('8-ii', width, H, el_top, 1.0 / ppd, az_c=az_c, line_half=sh)
     cx = width / 2 + (p['place'][0] - az_c) * ppd
-    lay['_check'] = unity_check(p, img, [o for o in objs if o['role'] != 'caption'], cx, el_top, ppd,
+    lay['_check'] = unity_check(p, img, objs, cx, el_top, ppd,
                                 'P08b_Zhuangzi/%s/t=%s/w=%d' % (player, t, width))
     img, widest = render_objects(img, objs, cx, el_top, ppd, p['color_target'], p['opacity'], lay['scrims'],
                                  t=t, horizon_row=H / 2)
@@ -766,26 +769,28 @@ def zhuangzi_view(p, player, ppd, width, t=None, az_c=None, half=ZH_HALF_DEG, la
 
 
 # ------------------------------------------------------------------------------------------ sheets
-PLAYER_TITLE = {
-    'zh': ('中文玩家', '原文作主行；中文诗只看原文，德 / 英诗下面是中译（思源宋体 SC Medium）'),
-    'ja': ('日本語のプレイヤー', '原文が主行。漢詩の下に書き下し、独・英詩の下に和訳（源ノ明朝 JP Medium）'),
-    'en': ('English-language players', 'original as the main line; English beneath Chinese and German poems (EB Garamond Regular)'),
-    'de': ('Deutschsprachige Spieler', 'Original als Hauptzeile; deutsche und englische Gedichte ohne Übersetzung, chinesische mit Englisch'),
+PLAYER_TITLE = {   # v4 (D-30): one language per player
+    'zh': ('中文玩家', '只看中文：中文诗看原文，德 / 英诗看中译（思源宋体 SC Regular，主行字号）；天问照常'),
+    'zht': ('繁體中文玩家（客戶端 zh-HK）', '只看中文（繁體）：中文詩看原文、德／英詩看中譯，思源宋體 TC Regular；天問照常（圖是同一幅）'),
+    'ja': ('日本語のプレイヤー', '日本語だけ：漢詩は書き下し、独・英詩は和訳（源ノ明朝 JP Regular、主行の字号）。天問は漢字の下に一行（JP Medium 1.8°）'),
+    'en': ('English-language players (and every other language)', 'English only: translations of the Chinese and German poems, Keats in the original (EB Garamond); Tianwen: the Han picture + one English line'),
+    'de': ('Deutschsprachige Spieler', 'Rilke und Urlicht im Original, alles andere auf Englisch; Tianwen: das Bild in Han-Zeichen + eine englische Zeile'),
 }
 
 def header(width, title, sub):
     notes = ['字号 = 圣经 §7.3 视角（1° = %d px）；字距 CJK +0.10 em、拉丁 0；行距 1.6 / 1.35 em；按 TMP 的排法（advance + kern，无连字、无 GPOS）；'
              '每一行的位置、光学居中、衬底都取自 strings_all.json 的 layout。' % PPD,
              '底部细括号 = 28° 行长上限（§7.3）；背景是用各幕色板值画的示意，不是渲染；字与衬底按屏幕目标、不透明度与圣经的衬底强度在显示线性光里混合（这就是要在 Unity 里得到的样子）。',
+             '第 4 版：每位玩家只看到一份（D-30）——原文是自己的语言就看原文，否则看译成自己语言的那一份；只剩一份就用主行字号（CJK 2.2–2.4°、拉丁 2.0–2.2° em），放不下 28° 的那种语言自己重新断行；时刻不变。',
              '每块说明栏：圣经 v2.1 §7.5 的时间 · 屏幕目标与填值（按诗句在屏幕上时实际起作用的调色求解）· Unity 模型读数（场景线性混合 → 调色，用交付的填值与衬底 α）· '
              'bloom 检查（圣经的 PPv2 bloom 模型，1080p）· 物体中心仰角（§7.3：+10° .. −15°）· 紫的面积（§1.3.4：第 4 幕以外 ≤ 2%）· 光学居中。']
     f = capfont(18)
     n = sum(len(wrap_text(t, f, width - 80)) for t in notes)
-    im = Image.new('RGB', (width, 130 + 28 * n + 12), (12, 14, 19))
+    im = Image.new('RGB', (width, 210 + 28 * n + 12), (12, 14, 19))
     d = ImageDraw.Draw(im)
-    d.text((40, 28), '蓝白 / Lanbai · 诗句校样（圣经 v2.1）· ' + title, font=capfont(40), fill=(226, 230, 236))
-    d.text((40, 90), sub, font=capfont(20), fill=(170, 176, 188))
-    y = 126
+    y = draw_wrapped(d, 40, 22, '蓝白 / Lanbai · 诗句校样第 4 版（D-30 / D-33）· ' + title, capfont(36), (226, 230, 236), width - 80, 46)
+    y = draw_wrapped(d, 40, y + 6, sub, capfont(20), (170, 176, 188), width - 80, 28)
+    y += 6
     for t in notes:
         y = draw_wrapped(d, 40, y, t, f, (130, 138, 150), width - 80, 28)
     return im
@@ -798,15 +803,16 @@ def sheet(player):
     for p in L.POEMS:
         if p.get('mirror'):
             im, lay, widest, pv = zhuangzi_view(p, player, PPD, WIDTH, t=ZH_FINAL_T)
-            tr = lay['translation']
-            tr_txt = ('+ 译文字幕位 ' + FONT_CN[p['translations'][tr]['font']] + ' %.1f°' % p['size_tr']) if tr else '（无译文）'
-            cents = '  '.join('%s %+.2f°' % (o['id'], o['center_el']) for o in lay['objects'] if o['role'] != 'caption' or o['id'] == 'T3')
+            m0 = lay['objects'][0]
+            cents = '  '.join('%s %+.2f°' % (o['id'], o['center_el']) for o in lay['objects'])
+            blk = lay['block']
             cap = caption_bar(WIDTH, [
-                '第 8 幕 · 庄子《逍遥游》· 镜像处理（L1 + %.0f s：两行都在，字幕位显示 L3 的译文）   ·   %s' % (ZH_FINAL_T, timing_line(p)),
-                '主行 思源宋体 SC Regular 2.2°  %s   ·   L2 不出（E25）   ·   每行一条暗衬带（Hann 拼成一整列）   ·   镜像字 α0.45（0.5 × 0.9）softness 0.3   ·   +35° / 0° / 60 m   ·   最宽行 %.1f°' % (tr_txt, widest),
+                '第 8 幕 · 庄子《逍遥游》· 镜像处理（L1 + %.0f s：两行都在）   ·   %s' % (ZH_FINAL_T, timing_line(p)),
+                '镜像的是这位玩家自己的语言（D-30）· %s %.2f°   ·   L2 不出（E25）   ·   每行一条暗衬带（Hann 拼成一整列）   ·   镜像字 α0.45（0.5 × 0.9）softness 0.3   ·   +35° / 0° / 60 m   ·   最宽行 %.1f°   ·   列 %.1f° × %.1f°' % (
+                    FONT_CN[m0['font']], m0['size_deg'], widest, blk['width_deg'], blk['height_deg']),
                 colour_line(p),
                 check_text(lay['_check']),
-                '物体中心仰角：%s   ·   紫 %.1f%%   ·   光学居中：L1 +0.25 em（行末「？」）' % (cents, 100 * pv),
+                '物体中心仰角：%s   ·   紫 %.1f%%' % (cents, 100 * pv),
             ])
             pn = Image.new('RGB', (WIDTH, im.height + cap.height))
             pn.paste(im, (0, 0)); pn.paste(cap, (0, im.height))
@@ -848,19 +854,18 @@ def trilingual():
     times = (1.5, 5.5, t_fin, 19.6)
     strip = [zhuangzi_view(p, 'en', fppd, fw, t=tt, az_c=-14.0 + span / 2, half=15.5, label=True, annotate=True)
              for tt in times]
-    top = 230
+    top = 300
     H = (top + pano.height + 70 + finals[0][0].height + 70 + 2 * (strip[0][0].height + 66) + 150)
     sh = Image.new('RGB', (W, H), (12, 14, 19))
     d = ImageDraw.Draw(sh)
-    d.text((gap + 10, 30), '蓝白 · 全世界的论点之帧：庄子《逍遥游》在暮色的另一片天里（圣经 v2.1 §6·8、§7.3、§7.4-7、§7.5 #7）',
-           font=capfont(44), fill=(226, 230, 236))
-    y_ = 100
+    y_ = draw_wrapped(d, gap + 10, 26, '蓝白 · 全世界的论点之帧：庄子《逍遥游》在暮色的另一片天里（圣经 v2.1 §6·8、§7.3、§7.4-7、§7.5 #7；D-33）',
+                      capfont(40), (226, 230, 236), W - 2 * gap - 20, 50) + 10
     pmax = 100 * max(f[3] for f in finals + strip + [(0, 0, 0, pv_pano)])
     for t in ['v2.1：只出 L1「天之苍苍，其正色邪？」（971.4）与 L3「其视下也，亦若是则已矣」（976.4，正字在地平线下，低头读）；L2 不出。'
-              '只镜像原文：一列等距的四行，地平线在正中那道缝里——上：L1、L3′（倒）；下：L3、L1′。排版恰好在“往下看与往上看一样”这一行上翻转。'
-              '译文不进镜像，放在整列下方的“译文字幕位”，随每一行更换（T1 → T3）。两行一起保持到 989.0，989.0 → 993.0 与 F12 的日线收缩同步退场：线横着收拢，字竖着分开。',
-              '暖色细括号 = 日线 ±10°（§6·8b）；蓝色虚线 = 暗衬在 Unity 里的实际外缘（strings_all.json 的 azimuth_span_deg = 2·atan(width_m / 2d)），'
-              '方位 12.0°，离日线端 2.0°：没有任何衬底压到日线上（§6·8“永远不压在日线上”）。背景按 §1.3.4 去紫（全图最大紫 %.2f%%，上限 2%%）。' % pmax]:
+              '第 4 版（D-30）：镜像的是每位玩家自己的语言（中文玩家原文、日文玩家書き下し、其余英文）；一列等距，地平线在正中那道缝里——上：L1、L3′（倒）；下：L3、L1′。排版恰好在“往下看与往上看一样”这一行上翻转。'
+              '不再有译文字幕位。两行一起保持到 989.0，989.0 → 993.0 与 F12 的日线收缩同步退场：线横着收拢，字竖着分开。',
+              '第 4 版（D-33 #4）：字是靛墨 #27304A，不加暗衬（原来的 #EADCD6 + 暗衬作废）。暖色细括号 = 日线 ±10°（§6·8b）。'
+              '背景按 §1.3.4 去紫（全图最大紫 %.2f%%，上限 2%%）。' % pmax]:
         y_ = draw_wrapped(d, gap + 10, y_, t, capfont(22), (160, 168, 180), W - 2 * gap - 20, 34)
     y = top
     sh.paste(pano, (gap, y))
@@ -868,16 +873,16 @@ def trilingual():
                                              'the column on the horizon at az +35°, 60 m   ·   英语玩家的整个画面（方位 −18° .. +85°）' % t_fin,
            font=capfont(22), fill=(200, 206, 214))
     y += pano.height + 70
-    labels = ['中文玩家 · 只看原文', '日本語 · 原文 + 書き下し（源ノ明朝 JP Medium 1.8°，字幕位）',
-              'English and others · original + English (EB Garamond 1.8°, caption slot)']
+    labels = ['中文玩家 · 原文', '日本語 · 書き下しだけ（源ノ明朝 JP Regular 2.08°）',
+              'English and others · English only (EB Garamond 2.0°)']
     for i, (im, lay, widest, pv) in enumerate(finals):
         x = gap + i * (colw + gap)
         sh.paste(im, (x, y))
         d.text((x + 6, y + im.height + 14), labels[i] + '   ·   L1 + %.0f s' % t_fin, font=capfont(22), fill=(200, 206, 214))
     y += finals[0][0].height + 70
-    tl = ['971.4 + %.1f s · L1 与它的镜像对焦中，字幕 T1 同时对焦' % times[0],
-          '971.4 + %.1f s · L3 在地平线下对焦（低头读）、L3′ 在地平线上；T1 正在淡出，T3 在 +5.8 s 起对焦' % times[1],
-          '971.4 + %.0f s · 四行都就位，字幕位是 T3；最静的画面' % times[2],
+    tl = ['971.4 + %.1f s · L1 与它的镜像对焦中' % times[0],
+          '971.4 + %.1f s · L3 在地平线下对焦（低头读）、L3′ 在地平线上' % times[1],
+          '971.4 + %.0f s · 四块都就位；最静的画面' % times[2],
           '991.0（退场第 2 s）· 日线收到 ±%.1f°：线横着收拢，字竖着分开（地平线上的向上、下的向下）' % sun_half_at(p, times[3])]
     for i, (im, lay, widest, pv) in enumerate(strip):
         x = gap + (i % 2) * (fw + gap)
@@ -886,8 +891,8 @@ def trilingual():
         d.text((x + 6, yy + im.height + 14), 'English · ' + tl[i], font=capfont(22), fill=(200, 206, 214))
     lay = LY.zhuangzi_layout(p, 'en')
     y += 2 * (strip[0][0].height + 66) + 10
-    d.text((gap + 10, y), '中心仰角（英语玩家）：' + '   '.join('%s %+.2f°' % (o['id'], o['center_el']) for o in lay['objects'] if o['id'] in ('L1', 'L3′', 'L3', 'L1′', 'T1'))
-           + '（T1、T3 同一位置）   ·   字号：主行 2.2°（fontSize 23.05 @ 60 m），字幕 1.8°（18.86）', font=capfont(22), fill=(150, 158, 170))
+    d.text((gap + 10, y), '中心仰角（英语玩家）：' + '   '.join('%s %+.2f°' % (o['id'], o['center_el']) for o in lay['objects'] if o['id'] in ('L1', 'L3′', 'L3', 'L1′'))
+           + '   ·   字号：英文 2.0° em（fontSize %.2f @ 60 m）' % lay['objects'][0]['font_size'], font=capfont(22), fill=(150, 158, 170))
     d.text((gap + 10, y + 40), '时间条每格方位 −14° .. +60°（1° = %.1f px），上方大图与三栏 1° = %d px。' % (fppd, ppd), font=capfont(22), fill=(150, 158, 170))
     path = os.path.join(DOCS, 'Proof_Trilingual_Zhuangzi.png')
     sh.save(path, optimize=True)
@@ -1075,10 +1080,10 @@ def credits_proof():
 
 
 if __name__ == '__main__':
-    which = sys.argv[1:] or ['zh', 'ja', 'en', 'de', 'tri', 'credits']
+    which = sys.argv[1:] or ['zh', 'zht', 'ja', 'en', 'de', 'tri', 'credits']
     made = []
     for w in which:
-        if w in ('zh', 'ja', 'en', 'de'):
+        if w in ('zh', 'zht', 'ja', 'en', 'de'):
             made.append(sheet(w))
         elif w == 'tri':
             made.append(trilingual())

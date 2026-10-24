@@ -1,0 +1,13 @@
+--- before/Assets/Lanbai/GateClouds/Editor/LanbaiGateCloudsBuilder.cs
++++ after/Assets/Lanbai/GateClouds/Editor/LanbaiGateCloudsBuilder.cs
+@@ -425,7 +425,9 @@
+             if (cand != null && cand.GetClass() == type) { ms = cand; break; }
+         }
+         if (ms == null) throw new Exception("[GateClouds] " + type.Name + ".cs not found in the project");
+-        UnityEngine.Object asset = CallStatic(utT, "GetUdonSharpProgramAsset", ms) as UnityEngine.Object;
++        // SDK 3.10.5 exposes the Type overload; its MonoScript overload is private.
++        // Using MonoScript here silently misses an existing asset and recreates it.
++        UnityEngine.Object asset = CallStatic(utT, "GetUdonSharpProgramAsset", type) as UnityEngine.Object;
+         FieldInfo src = paT.GetField("sourceCsScript");
+         if (asset == null && src != null)
+         {

@@ -1,0 +1,9 @@
+{
+  "id": "gate_20261024_cloudbuild",
+  "steps": [
+    {
+      "op": "call",
+      "target": "LanbaiGateCloudsBuilder.BuildMenu"
+    }
+  ]
+}
