@@ -1,4 +1,4 @@
-2026-10-24 05:55 UTC · 恢复（总导演 10-24）：网格 FBX（LOD0/1/2，回读检查 PASS）、镜背 40 m 博局格 / 镜面 / 字形贴图 v2、三个 shader 改用 LanbaiGlobals + 第 9 幕的天（`LanbaiGalaxyGainAt`、`_Udon_ZenithColor`），共用检查 0 错误。下一步：numpy 移植 + 渲染迭代（用 act09_renders 的天）+ 第 13 面对照图。卡点：无。
+2026-10-24 07:20 UTC · 迭代 r1→r2（白铜色调、溶解边近眼淡出）；驱动 `LanbaiMirrorsDriver` / `LanbaiWhiteDriver`（只算，`LanbaiGrade`）、搭建菜单 `蓝白/Build/Mirrors` + 导入设置、星点副本改按天空的 `StarPoints_BSC5` 网格格式；shader 检查 0 错误、C# 检查 OK。在跑：第 13 面最后 10 秒的两套方案对照（A / C）。下一步：对照图 + flashcheck + README。卡点：无。
 
 # 镜与白 · 进度
 

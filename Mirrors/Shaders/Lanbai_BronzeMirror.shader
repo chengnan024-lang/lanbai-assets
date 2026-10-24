@@ -35,8 +35,8 @@ Shader "Lanbai/BronzeMirror"
         _Appear ("Appear 0 to 1 (centre to rim)", Range(0, 1)) = 1
         _Dissolve ("Dissolve 0 to 1 (rim to centre)", Range(0, 1)) = 0
         _BreakAmp ("Breakup amplitude m", Float) = 5
-        _EdgeWidth ("Glowing front width m", Float) = 0.4
-        _EdgeColor ("Front glow linear rgb x gain", Vector) = (2.4, 2.07, 1.43, 0)
+        _EdgeWidth ("Glowing front width m", Float) = 0.3
+        _EdgeColor ("Front glow linear rgb (#CDBF9C x 0.8)", Vector) = (0.488, 0.417, 0.266, 0)
         _RimSoft ("Far soft rim 0 to 1 (mirror 13 far)", Range(0, 1)) = 0
 
         [Header(Face)]
@@ -44,6 +44,8 @@ Shader "Lanbai/BronzeMirror"
         _FaceSmooth ("Face smoothness", Range(0, 1)) = 0.94
         _PolishAmt ("Polish ripple smoothness amplitude", Range(0, 0.05)) = 0.02
         _PolishPeriodM ("Polish ripple period m", Float) = 0.35
+        _BronzeTone ("White bronze tone toward #CDBF9C 0 to 1", Range(0, 1)) = 0.65
+        _ToneColor ("Tone colour linear luminance 1 (#CDBF9C)", Vector) = (1.158, 0.989, 0.630, 0)
         _FaceTex ("Face texture (R smooth, G tint, B scratches, A tin bloom)", 2D) = "gray" {}
 
         [Header(Rim)]
@@ -84,6 +86,7 @@ Shader "Lanbai/BronzeMirror"
 
         float _RadiusM, _MirrorK, _EmissionK, _Visibility, _EmitExtraEV, _Appear, _Dissolve, _BreakAmp, _EdgeWidth, _RimSoft;
         float4 _EdgeColor, _FaceF0, _RimF0, _BackAlbedo, _SkyFloor;
+        float _BronzeTone; float4 _ToneColor;
         float _FaceSmooth, _PolishAmt, _PolishPeriodM, _RimSmooth, _BackSmooth, _BackBump, _BackAmbientGain, _GalaxyGainDefault;
         sampler2D _FaceTex, _BackNormal, _BackMask, _BackCentreNormal, _BackCentreMask, _Glyphs;
         sampler2D _GlowTex;
@@ -185,6 +188,8 @@ Shader "Lanbai/BronzeMirror"
                     f0 = lerp(f0, f0 * float3(0.97, 1.0, 1.04), ft.a * 0.5);  // tin bloom: a touch cooler
                     float3 F = LanbaiSchlick(f0, dot(n, -V));
                     col = sky * F + sky * (_EmissionK * _Visibility * exp2(_EmitExtraEV));
+                    // the Milky Way in white bronze reads #CDBF9C (bible palette 09), warmer than any physical F0 makes it
+                    col = lerp(col, dot(col, float3(0.2126, 0.7152, 0.0722)) * _ToneColor.rgb, _BronzeTone);
                 }
                 else if (i.region < 0.375)                                // ---- RIM BAND (beads)
                 {
@@ -257,7 +262,9 @@ Shader "Lanbai/BronzeMirror"
                     float soft = smoothstep(0.80, 1.0, rOS / 0.5) * _RimSoft;
                     col = lerp(col, MirrorSky(V, 0.6), soft);
                 }
-                col += _EdgeColor.rgb * glowEdge;
+                // the glowing front fades out near the eye: a dissolving mirror just overhead is seen at grazing, where a
+                // 0.3 m front would smear into a wide bright ribbon (iteration r2)
+                col += _EdgeColor.rgb * glowEdge * saturate((distance(i.posWS, _WorldSpaceCameraPos) - 5.0) / 20.0);
                 col = LanbaiApplyFog(col, i.posWS);
                 return float4(col, 1.0);
             }

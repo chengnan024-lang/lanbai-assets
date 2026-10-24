@@ -25,8 +25,12 @@ EYE = np.array(SCH['conventions']['eye'])
 FACE_R, SAG, RHO = 0.48, 0.015, 7.6875
 F0_FACE = G.hexlin('#D6CCB4'); F0_RIM = G.hexlin('#C9A873')
 BACK_ALB = G.hexlin('#4F7A66'); AMB_GND = G.hexlin('#0E1830')
-EDGE = np.array([2.4, 2.07, 1.43])
-BREAK_AMP, EDGE_W, APPEAR_S = 5.0, 0.4, 3.0
+EDGE = G.hexlin('#CDBF9C') * 0.8
+BREAK_AMP, EDGE_W, APPEAR_S = 5.0, 0.3, 3.0
+TONE = G.hexlin('#CDBF9C') / float(G.hexlin('#CDBF9C') @ np.array([0.2126, 0.7152, 0.0722]))
+BRONZE_TONE = 0.65
+RIM_SCHEME = 'A'          # mirror 13 study (mirror13_study.py)
+RIM_SOFT_FROM = {'A': 0.80, 'C': 0.55}
 
 
 # ------------------------------------------------------------------------------------------------- driver logic
@@ -65,7 +69,10 @@ def mirror_state(m, t):
         extra = lin_knots(WHITE['mirror13_face_extra']['EV_knots'], t)
     rimsoft = 0.0
     if m['index'] == 13:
-        rimsoft = 1.0 - min(max((t - (m['t_cross'] - 10.0)) / 4.0, 0), 1)   # soft while far, sharp in the last 10 s
+        if RIM_SCHEME == 'C':      # keep the rim soft through the fast rise, sharpen only in the hush (rim then <= 1 deg/s)
+            rimsoft = 1.0 - min(max((t - 1145.5) / 2.0, 0), 1)
+        else:
+            rimsoft = 1.0 - min(max((t - (m['t_cross'] - 10.0)) / 4.0, 0), 1)   # soft while far, sharp in the last 10 s
     return dict(D=D, R=R, c=np.array([cx, y_edge, cz]), y_car=y_car, vis=vis, appear=appear, dissolve=dis, extra=extra,
                 k=m['emission_k'], index=m['index'], rimsoft=rimsoft)
 
@@ -183,15 +190,19 @@ def frame(t, yaw=0.0, pitch=0.0, w=960, h=540, ss=1, cabin=None, dust=True, extr
                 sk = sky(rdir, mat, gl)
                 F = schlick(F0_FACE, -(dn * n).sum(-1))
                 col = sk * F + sk * (st['k'] * st['vis'] * 2 ** st['extra'])
+                lum = col @ np.array([0.2126, 0.7152, 0.0722])
+                col = col * (1 - BRONZE_TONE) + lum[:, None] * TONE[None, :] * BRONZE_TONE     # white-bronze tone (#CDBF9C)
             elif kind == 'band':
                 n = np.array([0, 1.0, 0])
                 rdir = dn * np.array([1, -1, 1])
                 col = sky(rdir, mat, gl) * schlick(F0_RIM, np.abs(dn[:, 1]))
             else:
                 col = np.broadcast_to(BACK_ALB * AMB_GND, dn.shape).copy()
-            col = col + EDGE * edge[idx][:, None]
+            near = np.clip((tdist[nearer] - 5.0) / 20.0, 0, 1)
+            col = col + EDGE * (edge[idx] * near)[:, None]
             if st['rimsoft'] > 0:
-                soft = np.clip((rM[nearer] / (0.5 * D) - 0.80) / 0.20, 0, 1)
+                s0 = RIM_SOFT_FROM.get(RIM_SCHEME, 0.80)
+                soft = np.clip((rM[nearer] / (0.5 * D) - s0) / (1.0 - s0), 0, 1)
                 soft = soft * soft * (3 - 2 * soft) * st['rimsoft']
                 col = col * (1 - soft[:, None]) + img[nearer] * soft[:, None]
             img[nearer] = col
@@ -228,6 +239,7 @@ def frame(t, yaw=0.0, pitch=0.0, w=960, h=540, ss=1, cabin=None, dust=True, extr
             ok = ((dd * n).sum(-1) > 0) & ((toE * n).sum(-1) > 0) & ((rr_ * dd).sum(-1) > math.cos(math.radians(0.5)))
             F = schlick(F0_FACE, (n * toE).sum(-1))
             gain = (F + st['k'] * st['vis'] * 2 ** st['extra'])
+            gain = gain * (1 - BRONZE_TONE) + (gain @ np.array([0.2126, 0.7152, 0.0722]))[:, None] * TONE[None, :] * BRONZE_TONE
             appd = -toE                                          # the image's direction from the eye
             layer = np.zeros_like(img)
             SC.splat(layer, W, H, 90, yaw, pitch, appd[ok], pk[ok], cat['col'][ok] * gain[ok], fw)
