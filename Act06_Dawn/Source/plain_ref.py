@@ -87,7 +87,10 @@ def sig(x):
 
 
 # ---- [Region] (shader: Region())
-def region(x, z, slot_open):
+WALL_P, WALL_AMP = 700.0, 110.0      # the slot walls bulge: the detail tile over (along the axis, height), +-110 m
+
+
+def region(x, z, slot_open, y=None, det=None, foot=None):
     S, E, Lp = BODY['slot'], BODY['edge'], BODY['lip']
     r = np.hypot(x, z)
     az = np.degrees(np.arctan2(x, z))
@@ -98,7 +101,13 @@ def region(x, z, slot_open):
     s = x * math.sin(a) + z * math.cos(a)
     q = x * math.cos(a) - z * math.sin(a)
     hw = S['half_width'] * slot_open
-    inw = sig((np.abs(q) - hw) / (0.25 * S['soft'])) * (slot_open > 1e-3)
+    aq = np.abs(q)
+    if det is not None and y is not None:
+        # [WallBulge] cauliflower walls: a 2-D sample of the detail tile at (along, height), mirrored per side
+        lod = np.log2(np.maximum(foot, 1e-3) / (WALL_P / det.n))
+        nz = det.sample(s / WALL_P + np.where(q > 0, 0.31, 0.0), y / WALL_P, lod)[:, 0]
+        aq = aq + WALL_AMP * (nz - 0.5) * 2.0 * slot_open
+    inw = sig((aq - hw) / (0.25 * S['soft'])) * (slot_open > 1e-3)
     slot = inw * sig((S['s0'] - s) / (0.25 * S['soft'])) * sig((s - S['s1']) / (0.25 * S['soft']))
     lip = inw * sig((S['s1'] - s) / (0.25 * Lp['soft']))
     return deck, slot, lip
@@ -135,7 +144,7 @@ class Plain:
         fade = 1 - ss(1.0, 3.5, lod_u)
         micro = P['MicroAmp'] * ((mu - 0.45) * fade + 0.35 * (1 - fade))
         rel = hm + amp * (hd + micro)
-        deck, slot, lip = region(x, z, slot_open)
+        deck, slot, lip = region(x, z, slot_open, y, self.det, foot)
         top = BODY['top'] + rel
         top = top + (BODY['lip']['top'] + 0.3 * rel - top) * lip
         top = top + (BODY['slot']['floor_top'] + 0.15 * rel - top) * slot
@@ -150,15 +159,15 @@ class Plain:
     def sun_shadow(self, p, slot_open):
         """coarse: fraction of the sun line (16 steps, exponential) clear of the MEAN body (no relief)"""
         vis = np.ones(len(p))
-        s = 20.0
+        s = 120.0                                   # beyond the wall bulges (WALL_AMP): no self-speckle
         for _ in range(P['ShadowSteps']):
             q = p + SUN[None, :] * s
             deck, slot, lip = region(q[:, 0], q[:, 2], slot_open)
             top = BODY['top'] + (BODY['lip']['top'] - BODY['top']) * lip
             top = top + (BODY['slot']['floor_top'] - top) * slot
             inside = (q[:, 1] < top) & (q[:, 1] > BODY['bottom']) & (deck > 0.5)
-            vis = vis * np.where(inside, 0.0, 1.0)
-            s *= (P['ShadowLen'] / 20.0) ** (1.0 / P['ShadowSteps'])
+            vis = vis * np.where(inside, 0.55, 1.0)  # soft: each occupied sample takes 45 % (transmittance-like)
+            s *= (P['ShadowLen'] / 120.0) ** (1.0 / P['ShadowSteps'])
         return vis
 
     def render(self, eye_world, V, pix_ang, d_root, sky_eq, slot_open=1.0):

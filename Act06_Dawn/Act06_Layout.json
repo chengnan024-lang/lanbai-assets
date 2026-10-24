@@ -1105,6 +1105,7 @@
    "t1": 289.86,
    "note": "fades as the slot walls rise past the windows (occluded)"
   },
+  "sea_on": 300.0,
   "sea_calm_patch": {
    "t0": 328.36,
    "dur": 6.0,

@@ -48,6 +48,7 @@ Shader "Lanbai/CloudPlain"
         _SlotB ("Slot - x soft - y floor top", Vector) = (60, -1100, 0, 0)
         _Lip ("Lip - x top - y soft", Vector) = (-729, 40, 0, 0)
         _Edge ("Edge - x r0 - y r sun - z lobe deg - w soft", Vector) = (8200, 4583, 45, 180)
+        _Wall ("Wall bulge - x period m - y amplitude m", Vector) = (700, 110, 0, 0)
         _SlotOpen ("Slot open 0..1 - driver MPB", Range(0, 1)) = 1
         _FogCap ("Fog Cap", Range(0, 1)) = 1
         _FogHeightFalloff ("Fog Height Scale m - 0 none", Float) = 0
@@ -66,7 +67,7 @@ Shader "Lanbai/CloudPlain"
             sampler2D _MacroTex;
             float4 _DetailTex_TexelSize, _MacroTex_TexelSize;
             float4 _Periods, _DetailRange, _TauMax, _AmpRange, _Micro, _March, _MarchK, _Light, _Gains, _Under, _Trough;
-            float4 _SunColor, _SkyUpColor, _GroundColor, _SunDirFallback, _Body, _Slot, _SlotB, _Lip, _Edge;
+            float4 _SunColor, _SkyUpColor, _GroundColor, _SunDirFallback, _Body, _Slot, _SlotB, _Lip, _Edge, _Wall;
             float _SlotOpen;
 
             struct appdata { float4 vertex : POSITION; UNITY_VERTEX_INPUT_INSTANCE_ID };
@@ -95,8 +96,9 @@ Shader "Lanbai/CloudPlain"
 
             float Sig(float x) { return 1.0 / (1.0 + exp(clamp(x, -60.0, 60.0))); }
 
-            // ---- [Region]: x deck, y slot, z lip (soft 0..1) at local xz
-            float3 Region(float2 xz)
+            // ---- [Region]: x deck, y slot, z lip (soft 0..1) at local xz; bulge: the slot walls' cauliflower
+            // ([WallBulge]: the detail tile over (along the axis, height), +-_Wall.y m, mirrored per side)
+            float3 Region(float2 xz, float y, float foot, bool bulge)
             {
                 float r = length(xz);
                 float az = degrees(atan2(xz.x, xz.y));
@@ -107,7 +109,14 @@ Shader "Lanbai/CloudPlain"
                 float s = xz.x * sin(a) + xz.y * cos(a);
                 float q = xz.x * cos(a) - xz.y * sin(a);
                 float hw = _Slot.y * _SlotOpen;
-                float inw = (_SlotOpen > 1e-3) ? Sig((abs(q) - hw) / (0.25 * _SlotB.x)) : 0.0;
+                float aq = abs(q);
+                if (bulge)
+                {
+                    float lodW = log2(max(foot / (_Wall.x * _DetailTex_TexelSize.x), 1e-4));
+                    float nz = tex2Dlod(_DetailTex, float4(s / _Wall.x + (q > 0.0 ? 0.31 : 0.0), y / _Wall.x, 0.0, lodW)).r;
+                    aq += _Wall.y * (nz - 0.5) * 2.0 * _SlotOpen;
+                }
+                float inw = (_SlotOpen > 1e-3) ? Sig((aq - hw) / (0.25 * _SlotB.x)) : 0.0;
                 float slot = inw * Sig((_Slot.z - s) / (0.25 * _SlotB.x)) * Sig((s - _Slot.w) / (0.25 * _SlotB.x));
                 float lip = inw * Sig((_Slot.w - s) / (0.25 * _Lip.y));
                 return float3(deck, slot, lip);
@@ -133,7 +142,7 @@ Shader "Lanbai/CloudPlain"
                 float fade = 1.0 - smoothstep(1.0, 3.5, lodU);
                 float micro = _Micro.x * ((mu - 0.45) * fade + _Micro.y * (1.0 - fade));
                 float rel = hm + s.amp * (hd + micro);
-                s.reg = Region(p.xz);
+                s.reg = Region(p.xz, p.y, foot, true);
                 float top = _Body.x + rel;
                 top += (_Lip.x + 0.3 * rel - top) * s.reg.z;
                 top += (_SlotB.y + 0.15 * rel - top) * s.reg.y;
@@ -187,19 +196,19 @@ Shader "Lanbai/CloudPlain"
                 return -1.0;
             }
 
-            // coarse sun visibility through the MEAN body (no relief): 16 steps, exponential from 20 m to 6 km
+            // coarse sun visibility through the MEAN body (no relief): 16 steps, exponential from 120 m to 6 km
             float SunVis(float3 p, float3 sunD)
             {
-                float vis = 1.0, s = 20.0;
-                float k = pow(6000.0 / 20.0, 1.0 / 16.0);
+                float vis = 1.0, s = 120.0;                               // beyond the wall bulges: no self-speckle
+                float k = pow(6000.0 / 120.0, 1.0 / 16.0);
                 [loop]
                 for (int i = 0; i < 16; i++)
                 {
                     float3 q = p + sunD * s;
-                    float3 reg = Region(q.xz);
+                    float3 reg = Region(q.xz, q.y, 1.0, false);
                     float top = _Body.x + (_Lip.x - _Body.x) * reg.z;
                     top += (_SlotB.y - top) * reg.y;
-                    if (q.y < top && q.y > _Body.y && reg.x > 0.5) vis = 0.0;
+                    if (q.y < top && q.y > _Body.y && reg.x > 0.5) vis *= 0.55;   // soft, transmittance-like
                     s *= k;
                 }
                 return vis;
