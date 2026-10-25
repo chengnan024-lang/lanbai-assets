@@ -63,6 +63,29 @@
 
 **不写的**：PPv2（`LB_Journey.ApplyGrades`：S6 在剪 1 的黑下硬切）；车厢的漂白 0 → 0.10（F0 → F1）是车厢的写的人（`给总控.md`）；诗句「我从天空坠入深海」（345.36）归 `LB_Journey`。
 
+## 2b. 云海重做：体积云（D-44 #2，设计板 v3 批准；2026-10-25）
+
+**没在 Unity 里编译过、没在 Unity 里看过。** shader 过了 DXC（0 错），C# 过了 Roslyn（0 错）。按 D-44 / D-46，要阿白在 Unity 里动态看过、量过才算。
+设计、画面、性能预算在 `Docs~/design_v3/设计板_v3.md`。
+
+- **怎么搭**：有 `Act06_Volume.json` 时，菜单 **蓝白/Build/Act06** 搭体积云，旧的 `CloudPlain` / 薄雾 / 卡 / 地平线环都不搭。
+  - 一个代理（`Act06_CloudVolume`，在 R_Dawn 下）+ 材质 `M_06_CloudVolume`（`Lanbai/CloudVolume`，`Clouds_v2/Volume/Shaders/`）。
+  - 密度体 `Clouds_v2/Volume/Generated/CloudVolume128.asset`：搭建器从 `Clouds_v2/Volume/Textures/CloudVolume128.bytes` 建，那个文件由 `vol_density.py` 生成。
+  - 覆盖率图 `Textures/Act06_CloudCoverage.png`（`Source/act06_cov_bake.py`）：线性、镜像平铺、不压缩，导入设置由搭建器设。
+  - 删掉 `Act06_Volume.json`，就搭回旧的。
+- **驱动每帧写**：
+  - `_Udon_CloudClock`（时间轴秒；这一幕 248.64 → 363.62 一个写的人；要登记，给总控 #8）；
+  - 体积云 MPB 的 `_Origin`（R_Dawn 在上移）、`_CovOpen`（谷 281.86 → 287.86，下层 305.4 → 311）、`_TowerGain`（云塔应答 +0.7 EV）。
+  - 主光按 `Act06_Volume.json` 的 `sun_table` 走（再平滑 2.2 s）：从主座位沿太阳在体积里量的透过率，302 → 318 被挡，318.1 → 318.9 出来。
+  - 云盖下雾的浓度不再变稀，雾色 × 0.25（在云盖的影子里）。
+- **四条必须改的（总导演批设计板时给的）**：
+  1. **云塔**：用球堆起来，大团套小团，边用两个尺度的 Worley 侵蚀成圆的头，底平，自阴影。没有竖直的平面和条纹。
+  2. **方块**：根子是 Perlin-Worley 原始值只在 0.55–0.79 之间，按覆盖率取阈值时三维噪声几乎不动，形状全由二维覆盖率决定，等于往上挤出来的方块。现在按 p10–p90 归一化，下层再把噪声尺度缩到比层厚小（600 m）、密度圆角、底和顶起伏。
+  3. **云盖下的曝光**：靠场景的光，不靠调色。上层沿日光的长阴影、上层挡住的天光、来自下面的光减弱、云盖影子里的雾色。参考帧正前 APL 305.4 → 316 从约 101 降到 79，318.36 以后回到 95–106。圣经 96 → 74，差约 0.1 EV。
+  4. **云底**：上下两层的底和顶都随低频噪声起伏（层厚的 ±15 % / ±30 %）。
+- **和门对齐**：共用 shader 不读门的 `_Udon_CloudVolume*`。那几个是给读云密度的东西（门的触手）用的，这一幕没有，所以不写，避免第二个写的人。时钟用公共的 `_Udon_CloudClock`，`Clouds_v2/Volume/README_Volume.md` §4、§5。
+- **要阿白在 Unity 里看的**：`act06_test` 录 251 → 363 的主座位、车门、抬头三条，跑 flashcheck；285 → 320 开 profiler 量体积云这一遍，预算 ≤ 1.8 ms；看方块、云塔、穿云那三下的亮度、318.36 太阳出来。
+
 ## 3. 云体：一个场（`Lanbai/CloudPlain`）
 
 门的 `Lanbai/GateCloudDeck`（「私密对话」做的云海：周期贴图的高度场、自适应步进、烘好的光路径和 N·L）在这里推广成**一整块云**，所以云原、峡谷的墙、谷底、云唇、云盖的底面都来自同一个几何，太阳的遮挡表也是用它算的：
