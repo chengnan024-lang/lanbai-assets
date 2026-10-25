@@ -139,9 +139,132 @@ def uv1_lightmap(ob, margin=0.002):
     me.uv_layers['UVMap'].active_render = True
 
 
-def uv1_lightmap_multi(objs, margin=0.002):
+# the joint _CabinTubeLM atlas (D-40 #1 seam check, Docs~/slice/光照图接缝检查.md): with ~7 500 box-projection islands the
+# margin, not the packer, set the density (0.002 -> 29 % of the atlas used, 80 texel/m at 2048; 0.001 -> 43 %, 96).
+# 0.001 = 2 texels a side at 2048: bake_lightmap.fill_black's 2-texel ring and the bilinear footprint stay inside it.
+LM_MARGIN = 0.001
+LM_MIN_TEXELS = 2.5          # no island narrower than this (2 x area / perimeter; lands at >= ~2 true width) (seat piping, seal lips, the stop button were 0.1-0.4 texel)
+LM_EXPECT_DENSITY = 95.0     # texel / m at 2048 after the pack (measured), to turn LM_MIN_TEXELS into metres
+LM_NEAR = {'Seat_SeatR0': 1.75, 'Window_R1': 1.75, 'Pole_R0': 1.75}   # next to the hero eye: 1.75 x the texel density
+
+
+def _uv_islands(me, layer):
+    """the uv islands of one mesh in a uv layer: lists of loop indices (faces joined where an edge has the same uvs on
+    both sides)."""
+    uv = np.empty(2 * len(me.loops), np.float32)
+    me.uv_layers[layer].data.foreach_get('uv', uv)
+    uv = uv.reshape(-1, 2)
+    parent = list(range(len(me.polygons)))
+
+    def find(a):
+        while parent[a] != a:
+            parent[a] = parent[parent[a]]
+            a = parent[a]
+        return a
+    edge_side = {}
+    for p in me.polygons:
+        li = list(p.loop_indices)
+        for k in range(len(li)):
+            a_, b_ = li[k], li[(k + 1) % len(li)]
+            va, vb = me.loops[a_].vertex_index, me.loops[b_].vertex_index
+            key = (min(va, vb), max(va, vb))
+            ua = tuple(np.round(uv[a_], 6)) if va < vb else tuple(np.round(uv[b_], 6))
+            ub = tuple(np.round(uv[b_], 6)) if va < vb else tuple(np.round(uv[a_], 6))
+            prev = edge_side.get(key)
+            if prev is None:
+                edge_side[key] = (p.index, ua, ub)
+            elif prev[1] == ua and prev[2] == ub:
+                ra, rb = find(prev[0]), find(p.index)
+                if ra != rb:
+                    parent[ra] = rb
+    groups = {}
+    for p in me.polygons:
+        groups.setdefault(find(p.index), []).extend(p.loop_indices)
+    return list(groups.values()), uv
+
+
+def _lm_widen(me, scale=1.0):
+    """scale the object's uv1 (metric) by 'scale', then give every island narrower than LM_MIN_TEXELS (at the expected
+    density; width = 2 x area / perimeter, so a curved strip - the seat piping, a seal lip - counts as thin) that width
+    by pushing its outline outward along the outline's normals. Returns how many islands were widened."""
+    islands, uv = _uv_islands(me, 'UVLightmap')
+    uv = uv * scale
+    wmin = LM_MIN_TEXELS / LM_EXPECT_DENSITY
+    loop_vert = np.empty(len(me.loops), np.int64)
+    me.loops.foreach_get('vertex_index', loop_vert)
+    face_of = np.empty(len(me.loops), np.int64)
+    for p in me.polygons:
+        face_of[p.loop_start:p.loop_start + p.loop_total] = p.index
+    n = 0
+    for loops in islands:
+        q = uv[loops]
+        # key each uv corner by (vertex, rounded uv): the island's uv vertices
+        keys = {}
+        for li in loops:
+            keys.setdefault((int(loop_vert[li]), round(float(uv[li, 0]), 7), round(float(uv[li, 1]), 7)), []).append(li)
+        # area and boundary (edges used once inside the island, in uv)
+        area = 0.0
+        edges = {}
+        faces = sorted(set(int(face_of[li]) for li in loops))
+        for fi in faces:
+            p = me.polygons[fi]
+            li = list(p.loop_indices)
+            pts = uv[li]
+            sa = 0.5 * float(np.sum(pts[:, 0] * np.roll(pts[:, 1], -1) - np.roll(pts[:, 0], -1) * pts[:, 1]))
+            area += abs(sa)
+            for k in range(len(li)):
+                a_, b_ = li[k], li[(k + 1) % len(li)]
+                ka = (int(loop_vert[a_]), round(float(uv[a_, 0]), 7), round(float(uv[a_, 1]), 7))
+                kb = (int(loop_vert[b_]), round(float(uv[b_, 0]), 7), round(float(uv[b_, 1]), 7))
+                e = (min(ka, kb), max(ka, kb))
+                edges.setdefault(e, []).append((ka, kb, 1.0 if sa >= 0 else -1.0))
+        bound = [v[0] for v in edges.values() if len(v) == 1]
+        perim = sum(float(np.hypot(kb[1] - ka[1], kb[2] - ka[2])) for ka, kb, _ in bound)
+        if perim <= 1e-9:
+            continue
+        wid = 2.0 * area / perim
+        if wid >= wmin:
+            continue
+        delta = 0.5 * (wmin - wid)
+        normals = {}
+        for ka, kb, sg in bound:
+            dx, dy = kb[1] - ka[1], kb[2] - ka[2]
+            L = float(np.hypot(dx, dy))
+            if L < 1e-12:
+                continue
+            nrm = np.array((dy, -dx)) / L * sg          # outward for a counter-clockwise face
+            for k_ in (ka, kb):
+                normals.setdefault(k_, []).append(nrm)
+        for k_, ns in normals.items():
+            if len(ns) == 2:                            # a mitre: both edges move out by exactly delta (capped at 3x)
+                c_ = 1.0 + float(ns[0] @ ns[1])
+                off = (ns[0] + ns[1]) / max(c_, 1.0 / 3.0) * delta
+            else:
+                v = np.sum(ns, 0)
+                L = float(np.hypot(*v))
+                off = v / L * delta if L > 1e-9 else np.zeros(2)
+            for li in keys.get(k_, []):
+                uv[li] += off
+        # slivers the mitre cannot open (a quad folded or squashed flat in the box projection): stretch across the island's
+        # narrow axis to the width instead
+        d_ = uv[loops] - uv[loops].mean(0)
+        if len(loops) >= 3:
+            _, vecs = np.linalg.eigh(d_.T @ d_)
+            t_ = d_ @ vecs[:, 0]
+            ext = float(t_.max() - t_.min())
+            if ext < wmin:
+                k = wmin / max(ext, wmin / 25.0)
+                uv[loops] = uv[loops].mean(0) + d_ + np.outer(t_ * (k - 1.0), vecs[:, 0])
+        n += 1
+    me.uv_layers['UVLightmap'].data.foreach_set('uv', uv.reshape(-1).astype(np.float32))
+    return n
+
+
+def uv1_lightmap_multi(objs, margin=LM_MARGIN):
     """one _CabinTubeLM atlas over several objects (Cabin_Static + the seats): each object's uv1 starts from its metric
-    chart ('UVMetric' when its uv0 is a part atlas, else 'UVMap'), then all islands are packed together."""
+    chart ('UVMetric' when its uv0 is a part atlas, else 'UVMap'), the pieces next to the hero eye get a denser chart
+    (LM_NEAR), no island stays narrower than LM_MIN_TEXELS, then all islands are packed together."""
+    widened = {}
     for ob in objs:
         me = ob.data
         if 'UVLightmap' not in me.uv_layers:
@@ -150,7 +273,10 @@ def uv1_lightmap_multi(objs, margin=0.002):
         src, dst = me.uv_layers[srcname].data, me.uv_layers['UVLightmap'].data
         for i in range(len(src)):
             dst[i].uv = src[i].uv
+        widened[ob.name] = _lm_widen(me, LM_NEAR.get(ob.name, 1.0))
         me.uv_layers.active = me.uv_layers['UVLightmap']
+    print('[finish] uv1: islands widened to %.0f texels: %d (%s)' % (LM_MIN_TEXELS, sum(widened.values()),
+          ', '.join('%s %d' % kv for kv in widened.items() if kv[1])))
     sel(objs)
     bpy.ops.object.mode_set(mode='EDIT')
     bpy.ops.mesh.select_all(action='SELECT')

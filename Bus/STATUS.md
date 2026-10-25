@@ -1,4 +1,4 @@
-2026-10-25 UTC · 切片收尾 + D-44 先交版 + D-46 抬头图推了。先交版：菜单 蓝白/Build/车厢（先交），说明 Bus/Docs~/D44_车厢先交.md（给总控的 HANDOFF_LOG 草稿在 §8）。抬头 60° 改前 / 改后：Bus/Docs~/viewcheck/d46_up60/up60_sheet.png（387 s 33.2%、446 s 45.6%、506 s 50.9%，天顶 20° 以内 66.7%；Glass_SlopeR1 约 507 s 关）。切片：菜单和测试合同可以终审；光照图有黑 texel（座椅近景 3–4% 像素），整车重出时修（回填 + 岛最小宽度），修完重跑接缝检查再出终审图（Bus/Docs~/slice/光照图接缝检查.md）。管灯定 A2、皮纹去掉（D-47）。**Bus/Models 还是上一版（59.5 万三角形，没重出）**。下一步：光照图修法 + 整车重出（侧窗 r2、座椅减面 + LOD、A2 管灯、无皮纹图集），然后 D-45 字幕深度表。没在 Unity 里编译过。卡点：无。
+2026-10-25 UTC · 整车重出在跑（侧窗 r2、座椅减面 + LOD、A2 管灯、无皮纹图集、光照图修法），跑完重跑 viewcheck / 座位遮挡 / 庄子 / 斯涅尔 / 接缝检查再推模型。光照图修法的代码先推了：图集留边减半（密度约 80 → 95 texel/m）、每个岛至少 2.5 texel 宽、主座位 / 侧窗 / 立柱三件密度 ×1.75、烘完回填黑 texel（岛里 + 外圈 2 texel）。D-45 字幕深度表的代码（seat_occlusion.py --subtitle-depth → Bus/Docs~/viewcheck/subtitle_depth.json）也推了，表在算。上一次推的：切片、D-44 先交版、D-46 抬头图（Bus/Docs~/viewcheck/d46_up60/up60_sheet.png）。**Bus/Models 还是上一版。** 没在 Unity 里编译过。卡点：无。
 
 # 车 · 状态
 
