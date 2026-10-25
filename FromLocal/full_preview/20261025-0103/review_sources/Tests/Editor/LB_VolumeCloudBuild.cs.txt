@@ -1,0 +1,39 @@
+#if UNITY_EDITOR
+using System;
+using System.Linq;
+using System.IO;
+using UnityEngine;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+namespace Lanbai.Tests {
+ public static partial class LB_FullAssembly {
+  public static string BuildVolumeClouds() {
+   Guard();
+   string dir="Assets/Lanbai/LocalIntegration/Textures";
+   string texPath=dir+"/CloudDensity128.asset";
+   var texture=AssetDatabase.LoadAssetAtPath<Texture3D>(texPath);
+   if(texture==null) {
+    texture=new Texture3D(128,128,128,TextureFormat.RGBA32,true){name="CloudDensity128",wrapMode=TextureWrapMode.Repeat,filterMode=FilterMode.Trilinear};
+    texture.SetPixelData(File.ReadAllBytes(dir+"/CloudDensity128.bytes"),0);texture.Apply(true,false);AssetDatabase.CreateAsset(texture,texPath);
+   }
+   var shader=Shader.Find("Lanbai/Local/VolumeCloudDeck");if(shader==null||ShaderUtil.ShaderHasError(shader))throw new Exception("Volume cloud shader failed");
+   int count=0;
+   foreach(var r in UnityEngine.Object.FindObjectsOfType<Renderer>(true)) {
+    var mats=r.sharedMaterials;bool changed=false;
+    for(int i=0;i<mats.Length;i++) {
+     var old=mats[i];if(old==null||!(old.shader.name.Contains("CloudDeck")))continue;
+     string path="Assets/Lanbai/LocalIntegration/Materials/VolumeCloudSea.mat";
+     var m=AssetDatabase.LoadAssetAtPath<Material>(path);if(m==null){m=new Material(old);AssetDatabase.CreateAsset(m,path);}
+     m.shader=shader;m.renderQueue=2980;m.SetTexture("_NoiseVolume",texture);m.SetFloat("_Density",.036f);m.SetVector("_CloudWind",new Vector4(8,3,-2,1));
+     m.SetFloat("_MoonE",.38f);m.SetFloat("_Gain",.95f);EditorUtility.SetDirty(m);mats[i]=m;count++;changed=true;
+    }
+    if(changed){r.sharedMaterials=mats;r.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;}
+   }
+   foreach(var c in UnityEngine.Object.FindObjectsOfType<Camera>(true)) c.depthTextureMode|=DepthTextureMode.Depth;
+   if(count!=1)throw new Exception("Expected one cloud deck, got "+count);
+   EditorSceneManager.MarkSceneDirty(UnityEngine.SceneManagement.SceneManager.GetActiveScene());
+   return "One cloud deck replaced with a 3D density volume, 56 bounded integration steps, transparent wisps and two self-shadow samples; baseline retained.";
+  }
+ }
+}
+#endif

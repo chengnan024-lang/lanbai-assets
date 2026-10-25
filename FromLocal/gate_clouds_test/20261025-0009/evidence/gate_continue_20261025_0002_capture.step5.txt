@@ -1,0 +1,2 @@
+U8side 截图 1920×1080（HDR 渲染，超采样 2×，竖直视角 53.72°）→ <asset-checkout>/FromLocal/gate_clouds_test/20261025-0002/shots/U8side_unity_t166.45.png [HDR target: ARGBHalf / R16G16B16A16_SFloat]；平均亮度（sRGB 0–255，Rec.709 权重）18.9，< 12 的像素 37.2%
+t = 166.45：GateRoot (0, 69.15, 773.12)，云顶 y -80.85；臂 56 条显现、8 条关着；群臂 group0 1.00 / group1 0.05；远潮 _Reveal 0.00；月盘增益 0.00；裂口 H 803.5 m（缩放 0.803）、张开 1.000、撕裂 1.000；叠加光池 ×0.00、布褶 ×1.00、光晕 ×0.43（D 771 m）、光路 ×0.66（x 缩放 0.237）、光池 ×0.63

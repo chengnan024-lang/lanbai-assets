@@ -1,0 +1,22 @@
+[
+  {
+    "path": "Assets/Lanbai/Scenes/Lanbai.unity",
+    "sha256": "16f5d9d7d2fda794cbd6353038037c493367285bc128f341bdf45762f25c5af0",
+    "matches_preassembly_backup": true
+  },
+  {
+    "path": "Packages/manifest.json",
+    "sha256": "a0c0eb0533c3fba508981fad9396c4937f1e46a5fe99bd98765c6be030967f48",
+    "matches_preassembly_backup": true
+  },
+  {
+    "path": "Packages/packages-lock.json",
+    "sha256": "f70aff7c28a1867d57a5153be1c026e939f2ead5ba18fbf5f2add04b8b27422d",
+    "matches_preassembly_backup": true
+  },
+  {
+    "path": "ProjectSettings/ProjectVersion.txt",
+    "sha256": "d6cda959d0ccbec5a76077324f3794a8f74675bdd3be51e80da0609e855e37f3",
+    "matches_preassembly_backup": true
+  }
+]

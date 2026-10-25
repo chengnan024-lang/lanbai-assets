@@ -1,0 +1,38 @@
+{
+  "id": "full_20261025_play_retry",
+  "steps": [
+    {
+      "op": "refresh"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.CheckAllPrograms"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Save"
+    },
+    {
+      "op": "play",
+      "seconds": 7
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.RuntimeState"
+    },
+    {
+      "arg": "145",
+      "target": "Lanbai.Tests.LB_FullAssembly.Seek",
+      "op": "call"
+    },
+    {
+      "op": "wait",
+      "seconds": 2
+    },
+    {
+      "arg": "云海_145秒",
+      "target": "Lanbai.Tests.LB_FullAssembly.Capture",
+      "op": "call"
+    }
+  ]
+}

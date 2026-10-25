@@ -1,0 +1,73 @@
+{
+  "test_id": "gate_clouds_test",
+  "scene": "Assets/Lanbai/Tests/GateTest.unity",
+  "scene_mode": "in_place",
+  "source_commit": "f703a951cbadf0eb6bc4df263f6d315e298dd0fc",
+  "handoff_entries": [
+    "门的云 GateClouds v1.5 合进 main",
+    "门的总驱动 LanbaiGateDriver 合进 main",
+    "门的云第 10 轮第 1 批",
+    "D-41 共用 Udon 程序资产修复与 UnityTest"
+  ],
+  "copied": "See synced_sources.json: only listed files copied at f703a951; other gate assets inherited from 20261024 deployment, not reimported this run.",
+  "unity": "2022.3.22f1",
+  "sdk": {
+    "com.vrchat.base": "3.10.5",
+    "com.vrchat.worlds": "3.10.5",
+    "com.vrchat.core.vpm-resolver": "0.1.29",
+    "com.unity.postprocessing": "3.4.0"
+  },
+  "machine": {
+    "cpu": "Intel Core i9-13980HX",
+    "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "ram_mb": 32386,
+    "api": "Direct3D11",
+    "os": "Windows 11 64-bit"
+  },
+  "tool_version": "1.0.0 (unmodified upstream); LB_FormalTestEntry is a local guarded invocation/finalization adapter",
+  "steps": {
+    "foreground_repair": "done",
+    "verified_backup": "done",
+    "formal_import_and_compile": "done",
+    "formal_cloud_and_gate_build": "done",
+    "five_hdr_shots": "done",
+    "official_preflight": "done",
+    "official_full_test": "done",
+    "tool_post_run_exception": "failed: one delayed SDK MissingReferenceException outside the official log capture; see issue 06",
+    "duplicate_descriptor_finalization": "done",
+    "final_runtime_preview": "done",
+    "headset": "skipped: requires human in Quest 3 + Virtual Desktop"
+  },
+  "official_result": {
+    "run": "20261025-001346",
+    "exit": 0,
+    "status": "pass",
+    "checks_total": 16,
+    "checks_failed": 0,
+    "interpretation": "Tool checks only; post-run exception, visual warnings and unmeasured headset/Udon timing remain."
+  },
+  "layers": {
+    "blender_offline": "未测",
+    "unity_desktop": "未测",
+    "vr_headset": "未测"
+  },
+  "layers_note": "本轮未重做 Blender；Unity 总体验收待总导演看图，不把工具 pass 写成整体通过。头显未测。",
+  "static": {
+    "five_hdr_shots": "done",
+    "stereo_approximation": "done; not SPS-I or headset",
+    "visual_review": "pending director"
+  },
+  "dynamic": {
+    "client_sim": "done",
+    "synchronized_clocks": true,
+    "hide_observed": true,
+    "loop_observed": true,
+    "micro_motion_sequences": "done, 286 frames; editor approximation",
+    "udon_ms": "not_measured",
+    "headset": "not_tested"
+  },
+  "final_state": "Unity foreground, Game view scale 1x, GateTest saved; left in Play for continuous preview.",
+  "backup": "dream_20261025-000405.zip; full verification in backup_verification.json",
+  "guard_audit": "audit.json",
+  "official_report": "../20261025-001346/summary.md"
+}

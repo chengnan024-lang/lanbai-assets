@@ -1,0 +1,4 @@
+Journey.segStart = Single[14]
+Journey.dbgT = 1025
+Journey.dbgSeg = 9
+物体 Lake：没找到
