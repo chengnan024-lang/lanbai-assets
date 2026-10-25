@@ -1,0 +1,33 @@
+{
+  "status": "verified",
+  "archive": "E:\\IDMdownload\\VRCC\\Backups\\dream_20261025-000405.zip",
+  "archive_bytes": 571971007,
+  "archive_sha256": "ca979bd23208ab9f349972c2702ecab065c13edf22e0b4982d0dd2d723acec3e",
+  "source_logical_bytes": 739293453,
+  "file_count": 7658,
+  "meta_count": 3127,
+  "required_entries": [
+    "ProjectSettings/ProjectVersion.txt",
+    "ProjectSettings/ProjectSettings.asset",
+    "Packages/manifest.json",
+    "Packages/vpm-manifest.json",
+    "Assets/Lanbai/Scenes/Lanbai.unity",
+    "Assets/Lanbai/Scenes/Lanbai.unity.meta",
+    "Assets/Lanbai/Tests/GateTest.unity",
+    "Assets/Lanbai/Tests/GateTest.unity.meta",
+    "Assets/Lanbai/Scripts/LB_Journey.cs",
+    "Assets/Lanbai/UdonPrograms/LanbaiGateClouds.asset"
+  ],
+  "all_entries_crc_and_sha256_verified": true,
+  "source_metadata_unchanged": true,
+  "space_before": {
+    "C": 2528673792,
+    "E": 93491818496
+  },
+  "space_after": {
+    "C": 2528579584,
+    "E": 92917780480
+  },
+  "restore_test_performed": false,
+  "verified_at": "2026-10-25T00:04:31.661290-04:00"
+}

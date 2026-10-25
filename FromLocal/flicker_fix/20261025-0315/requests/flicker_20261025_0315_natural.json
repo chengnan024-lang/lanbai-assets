@@ -1,0 +1,29 @@
+{
+  "id": "flicker_20261025_0315_natural",
+  "steps": [
+    {
+      "op": "refresh"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FlickerDiagnostic.Inspect"
+    },
+    {
+      "seconds": 6,
+      "op": "play"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FlickerDiagnostic.Begin",
+      "arg": "baseline_natural|baseline|1009|32|0"
+    },
+    {
+      "seconds": 33,
+      "op": "wait"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FlickerDiagnostic.Status"
+    }
+  ]
+}

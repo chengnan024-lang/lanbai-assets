@@ -1,0 +1,352 @@
+[
+  {
+    "path": "checks/cloud_image_change.json",
+    "bytes": 423,
+    "sha256": "d5fd0adf04141e32d3746398120d6cc3eaabae06429e79721f74248c21cd7935"
+  },
+  {
+    "path": "checks/final_console.txt",
+    "bytes": 1740,
+    "sha256": "7faa513e91b3c3e46d4aeb456b631a643fd84261c8e3fce0b98d22c173bdd282"
+  },
+  {
+    "path": "checks/full_20261025_act_checks.json",
+    "bytes": 2995,
+    "sha256": "f289c05b53684d9cb708942e5c2d58cd28a2c0f90a4c027068d8b4fa1558cb00"
+  },
+  {
+    "path": "checks/full_20261025_act_checks.step12.txt",
+    "bytes": 1359,
+    "sha256": "21f0b01aad6241198d1355a06cc60531d00caf3e0177cd698b75de09926479f0"
+  },
+  {
+    "path": "checks/full_20261025_act_checks.step15.txt",
+    "bytes": 1356,
+    "sha256": "1aed4c49e2797a42761891e0dcbb3bb1629d7b59d53a74d8dea8e2daf1698463"
+  },
+  {
+    "path": "checks/full_20261025_act_checks.step18.txt",
+    "bytes": 1358,
+    "sha256": "1756a7a94e94cb33239ab67fffc9fabdfd403936c091b4fe221ba80625a7444b"
+  },
+  {
+    "path": "checks/full_20261025_act_checks.step3.txt",
+    "bytes": 1358,
+    "sha256": "cb42138952d6b7a16fcdb380e772db3a11e25f92fae47ff38c6ba1210fb7dad6"
+  },
+  {
+    "path": "checks/full_20261025_act_checks.step6.txt",
+    "bytes": 1351,
+    "sha256": "baaee7f3e26674aefa6ccac503eed3118cfe3b9231968a35ab8366d716ef943f"
+  },
+  {
+    "path": "checks/full_20261025_act_checks.step9.txt",
+    "bytes": 1354,
+    "sha256": "0aeaacf77795f0767ace2b9c111acc6e1a4db2673d759800206a5e7f47011a6d"
+  },
+  {
+    "path": "checks/full_20261025_final_checks.json",
+    "bytes": 8070,
+    "sha256": "423c1bae8329e4a87ce1bd32b60ddcad05909772817ed5076c9ea101bbd9f2eb"
+  },
+  {
+    "path": "checks/full_20261025_final_checks.step10.txt",
+    "bytes": 1225,
+    "sha256": "6e5bff9ec6e03d068ee9a876b8a5b110aec86bb52e22273b028d66c2539a44db"
+  },
+  {
+    "path": "checks/full_20261025_final_checks.step13.txt",
+    "bytes": 1239,
+    "sha256": "9b59f583d57f65e5c04f31cf100e7b43d4af03fcdb73a58c07430055adbc495d"
+  },
+  {
+    "path": "checks/full_20261025_final_checks.step16.txt",
+    "bytes": 1241,
+    "sha256": "21fc864c79ed7ab034c9357f0c98a388ace6ecdc9a69234990034c71f7ee2917"
+  },
+  {
+    "path": "checks/full_20261025_final_checks.step19.txt",
+    "bytes": 1241,
+    "sha256": "c77b2ec9a2aafd6efbba15a6a41a0e20bc334290b786f31bcfffb4588fcf2d8f"
+  },
+  {
+    "path": "checks/full_20261025_final_checks.step2.txt",
+    "bytes": 5319,
+    "sha256": "02021c7550a8b5f8c737ba3b712502f66b4279867a032d14219b526d7b52e893"
+  },
+  {
+    "path": "checks/full_20261025_final_checks.step22.txt",
+    "bytes": 1241,
+    "sha256": "bc408e70274a0abbd424449559fe56c092dbb6e6c7b4083236fd2df64a25c8a9"
+  },
+  {
+    "path": "checks/full_20261025_final_checks.step25.txt",
+    "bytes": 1241,
+    "sha256": "12435804932a1fd5addb79155997737b342e9dc9fdf413f4d477cbb883ba18be"
+  },
+  {
+    "path": "checks/full_20261025_final_checks.step28.txt",
+    "bytes": 1244,
+    "sha256": "5e98ceed9f3a45011452f654f63c531246b22ebabb1608b78a37fc2855808c78"
+  },
+  {
+    "path": "checks/full_20261025_final_checks.step3.txt",
+    "bytes": 5170,
+    "sha256": "dfd8a3bd336aca5e0bbc5c680c4ca3e8f47edbe2df682401fe863b26db3cf195"
+  },
+  {
+    "path": "checks/full_20261025_final_checks.step31.txt",
+    "bytes": 1244,
+    "sha256": "1662a76992a7d907b8f025d56cd5ea46fdd943150d89d655d70f1d91f14e7acb"
+  },
+  {
+    "path": "checks/full_20261025_final_checks.step34.txt",
+    "bytes": 1246,
+    "sha256": "34144bdd31bcdfe1df0bf718d45d6e8cb5abfba014a813366699e70b3ad3b495"
+  },
+  {
+    "path": "checks/full_20261025_final_checks.step37.txt",
+    "bytes": 1243,
+    "sha256": "097fb5ee6184dd6f37054454607b2ca14b56e7c235b6f8a628aade148cbc9ffe"
+  },
+  {
+    "path": "checks/full_20261025_final_checks.step40.txt",
+    "bytes": 1239,
+    "sha256": "0b4efe9d403f5ef8517808d5885c9bce8527148a85704570584f665386470ae6"
+  },
+  {
+    "path": "checks/full_20261025_final_checks.step43.txt",
+    "bytes": 1243,
+    "sha256": "a800a20b2ff6499d47f0953d86535508b82baa8b3c95a553ecef1f2e7a19f461"
+  },
+  {
+    "path": "checks/full_20261025_final_checks.step46.txt",
+    "bytes": 1396,
+    "sha256": "7cd2ba2efca5394e62c6a0bb809ccc121609db792ae73db86fb2bdfb425a450e"
+  },
+  {
+    "path": "checks/full_20261025_final_checks.step48.txt",
+    "bytes": 1395,
+    "sha256": "675262db9851180d162b9773290b44604a3a47cdaac0fd426dc6959555e9219a"
+  },
+  {
+    "path": "checks/full_20261025_final_checks.step49.txt",
+    "bytes": 1399,
+    "sha256": "d74d152cb89beaa7eca1f51212c0c54e0c68c604ddde771e23e2db8b219c0c54"
+  },
+  {
+    "path": "checks/full_20261025_final_checks.step7.txt",
+    "bytes": 1241,
+    "sha256": "7f6c5b355bd02d39962bb38f85eeace114ba3baa9795082ab0143606c1e72142"
+  },
+  {
+    "path": "checks/full_20261025_play_retry.json",
+    "bytes": 1875,
+    "sha256": "e7948eb2d32ca7c2ebdcc8f28e075413ab77b7ac92aca3ede7c9834a85d1ba20"
+  },
+  {
+    "path": "checks/full_20261025_play_retry.step2.txt",
+    "bytes": 3341,
+    "sha256": "596f2dde8ada32f3012ec3560f9bd8d8687a9cd67a887649a29aad39126c22d7"
+  },
+  {
+    "path": "checks/full_20261025_play_retry.step3.txt",
+    "bytes": 5170,
+    "sha256": "dfd8a3bd336aca5e0bbc5c680c4ca3e8f47edbe2df682401fe863b26db3cf195"
+  },
+  {
+    "path": "checks/full_20261025_play_retry.step5.txt",
+    "bytes": 1202,
+    "sha256": "faac8cf2defa54a55411ee15a1faac9285ffe0aed58db52df6376b67e3b50f4f"
+  },
+  {
+    "path": "checks/full_20261025_play_retry.step8.txt",
+    "bytes": 1366,
+    "sha256": "ddc5b451d1c02d6fdd750387cf29c7e7901dd281f5a69fe98013c4c475dd9663"
+  },
+  {
+    "path": "checks/preserved_files.json",
+    "bytes": 702,
+    "sha256": "338763a57600ff79fe0b2f89d45a1b90fd90b3a38cc9cc7f87aa03ed75919eb2"
+  },
+  {
+    "path": "images/云体_最终_1.png",
+    "bytes": 1456009,
+    "sha256": "aa00b8bdf7622852be30159dcf915b73c4f6f9f635b474ff75844494b3dff7fd"
+  },
+  {
+    "path": "images/云体_最终_1.txt",
+    "bytes": 1343,
+    "sha256": "ecc2af8a24596940d8d7352800de8a98e3c964a8ff368d02fb73b6df8d819015"
+  },
+  {
+    "path": "images/云体_最终_2.png",
+    "bytes": 1471613,
+    "sha256": "440fce93d796e6a62e4698349345c30ef2494ffdc2fea89a6bdee2f090424097"
+  },
+  {
+    "path": "images/云体_最终_2.txt",
+    "bytes": 1342,
+    "sha256": "1ce03e3182ab0191cc29c847741a4d5f069c5a3f576f9344ac43869e5c37494a"
+  },
+  {
+    "path": "images/假醒.png",
+    "bytes": 1955628,
+    "sha256": "acb459314e654488082b905b49420b0b9d82e07915ad68a360b43d3ad81fb3dc"
+  },
+  {
+    "path": "images/假醒.txt",
+    "bytes": 1314,
+    "sha256": "3458874c5535ba848f7888de9bc678a0e4ced2ddc0b14ff75bf1f0670394530f"
+  },
+  {
+    "path": "images/星海.png",
+    "bytes": 2936779,
+    "sha256": "825e540f6bda81e09dbdeb258ddaeb410c167d3f2a108eab549b9e4105d38353"
+  },
+  {
+    "path": "images/星海.txt",
+    "bytes": 1312,
+    "sha256": "c842fd9d089e7152d1352104474e371a119abd458ecf63c3c151b7c26daa43d9"
+  },
+  {
+    "path": "images/晨景.png",
+    "bytes": 1656087,
+    "sha256": "c59b6729da65420b062ef011426b9261f46c11b256e824ec8ad00654865a77b7"
+  },
+  {
+    "path": "images/晨景.txt",
+    "bytes": 1307,
+    "sha256": "3b30f8c285f0681c633d93ccc8b8a56dd07b8e852a6af40e12841d319e667059"
+  },
+  {
+    "path": "images/暮景.png",
+    "bytes": 2531198,
+    "sha256": "f82437ef80a52e4cad1ec8df16ab8601d80e39dcd23a6891cab9ca775f9e8d4b"
+  },
+  {
+    "path": "images/暮景.txt",
+    "bytes": 1315,
+    "sha256": "075463fb32b0fd00a75a31288242e76d12d67460286113ce64c2f6e4fe7702d9"
+  },
+  {
+    "path": "images/海中.png",
+    "bytes": 1834706,
+    "sha256": "8b1a34c1800fa328f4e5dadec4e7030e28d9a84d8666c484f26384c90b2cf075"
+  },
+  {
+    "path": "images/海中.txt",
+    "bytes": 1310,
+    "sha256": "3c32eab4828aff018cb917b04094e71b073b1b34cb29123a4538f1627ea2f31f"
+  },
+  {
+    "path": "images/车内云海_最终.png",
+    "bytes": 1457070,
+    "sha256": "adbb74571b3381264bcf440f3ae7d97823257b5fc921c202d04bd4def5331fb7"
+  },
+  {
+    "path": "images/车内云海_最终.txt",
+    "bytes": 1342,
+    "sha256": "fa0a1e726f63ddff52b043ad3247559a6fbb0cdb6f9f5ec67e0d29a3f1512ba5"
+  },
+  {
+    "path": "images/门内.png",
+    "bytes": 1269299,
+    "sha256": "119312a9b7440911443ab8818077fa4d98578c5659eb6ed2332ec44a43bdb85c"
+  },
+  {
+    "path": "images/门内.txt",
+    "bytes": 1314,
+    "sha256": "fce1854c9d43d0e7510d0830d29ab52722a1b7fb51eb942a4f9fc39839a38da3"
+  },
+  {
+    "path": "local_source_hashes.json",
+    "bytes": 1689,
+    "sha256": "f0472796fd7d5017696134ce31dc74857bde3428ebdb550d9d2ff2e46e456887"
+  },
+  {
+    "path": "public_export.json",
+    "bytes": 306,
+    "sha256": "d5076004df0b2b647153baf4b95b51cf5c6ae37fa59959cfc0393115546d8a42"
+  },
+  {
+    "path": "README_说明.md",
+    "bytes": 4016,
+    "sha256": "3e9185e472248836c78615006e0891a5e95bd3576f95399920cf1fd00e0d8cb3"
+  },
+  {
+    "path": "requests/full_20261025_act_checks.json",
+    "bytes": 1697,
+    "sha256": "6427488177dc897441873d8b14dc6b064156579411d0f1a94d1b9e6f86179c74"
+  },
+  {
+    "path": "requests/full_20261025_final_checks.json",
+    "bytes": 4293,
+    "sha256": "4144b221ea3d917a5fed88de1f755ec6610d47dd7ec686f6b33caad4b910a7c0"
+  },
+  {
+    "path": "requests/full_20261025_play_retry.json",
+    "bytes": 692,
+    "sha256": "7455c4582127eeb9f70d1b7aabd57410303389b009d7e9342bedfd521ccc8f25"
+  },
+  {
+    "path": "review_sources/Delivered/lens_tech/Lanbai_Overlay.shader.txt",
+    "bytes": 3322,
+    "sha256": "b5d5c89d955f47dafd3d7e79a82810b2cc9690d0e908740054bafe4ab797545b"
+  },
+  {
+    "path": "review_sources/Director/Runtime/LanbaiActDispatcher.cs.txt",
+    "bytes": 24802,
+    "sha256": "7d8998f64a06dad8de190cfc37b90702f51d02007b4f1e69007ce54fcbff8c3d"
+  },
+  {
+    "path": "review_sources/Fonts/Editor/LanbaiPoemBake.cs.txt",
+    "bytes": 29308,
+    "sha256": "6a487cc68b5b9b1fc038c83fad2e188a6ada282111f4a23eedd9efc1e73b1f62"
+  },
+  {
+    "path": "review_sources/Fonts/Runtime/LanbaiPoemDriver.cs.txt",
+    "bytes": 18145,
+    "sha256": "ff931628c8e5e2b44cd712f92461be09a9de42202138eba192b26538154b9ce0"
+  },
+  {
+    "path": "review_sources/generate_density_only.py",
+    "bytes": 1038,
+    "sha256": "5b99422e7ce1c3fde6accdd834e376321cefc0261784b5c67c51c762fe7620d2"
+  },
+  {
+    "path": "review_sources/LocalIntegration/Shaders/VolumeCloudDeck.shader.txt",
+    "bytes": 10028,
+    "sha256": "ee03ff9e169d7764c68a17f8415bf726bb425cd818d2de480da7310273779d51"
+  },
+  {
+    "path": "review_sources/Scripts/LB_Journey.cs.txt",
+    "bytes": 88059,
+    "sha256": "31b5810791dc5a054fdd440f50319df984ca5005c2ac3575420cee1ed6b74066"
+  },
+  {
+    "path": "review_sources/Scripts/LB_Seat.cs.txt",
+    "bytes": 763,
+    "sha256": "160b7f9e33d9cc22566f3fb951534959ddfff5b673d76745490fffa4849fde0f"
+  },
+  {
+    "path": "review_sources/Tests/Editor/LanbaiPreviewPanel.cs.txt",
+    "bytes": 3456,
+    "sha256": "3fd19b22157d0dbf42ea5109fc4f578c4e51d886392490a6e0415c5eee46451d"
+  },
+  {
+    "path": "review_sources/Tests/Editor/LB_FullAssembly.cs.txt",
+    "bytes": 7175,
+    "sha256": "6e08383cfc083c527320066fc2960ced0529996e1721c50b5cfe55788455a9f7"
+  },
+  {
+    "path": "review_sources/Tests/Editor/LB_FullAssemblyBinding.cs.txt",
+    "bytes": 16052,
+    "sha256": "722147d6c30e51129fe7e8ac01664044efbddd398bae63aed44cc83caeae034e"
+  },
+  {
+    "path": "review_sources/Tests/Editor/LB_VolumeCloudBuild.cs.txt",
+    "bytes": 2247,
+    "sha256": "6af9464d8cc73c323b73d99b804381edf825280a7a3dd366dfc01d924f12d708"
+  }
+]

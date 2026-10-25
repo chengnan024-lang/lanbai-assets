@@ -1,0 +1,40 @@
+{
+    "id": "full_20261025_play_retry",
+    "state": "done",
+    "step": 8,
+    "total": 8,
+    "started": "2026-10-25 00:56:08",
+    "finished": "2026-10-25 00:56:33",
+    "error": "",
+    "log": [
+        "00:56:08 收到请求，共 8 步",
+        "00:56:08 刷新导入（AssetDatabase.Refresh）",
+        "00:56:13 （脚本重新加载，接着做第 1 步）",
+        "00:56:15 导入和编译完成",
+        "00:56:16 调用 Lanbai.Tests.LB_FullAssembly.CheckAllPrograms",
+        "00:56:17   用时 1.0 秒",
+        "00:56:17   返回内容写在 LanbaiRemote/results/full_20261025_play_retry.step2.txt",
+        "00:56:17 调用 Lanbai.Tests.LB_FullAssembly.Save",
+        "00:56:17   用时 0.6 秒",
+        "00:56:17   返回内容写在 LanbaiRemote/results/full_20261025_play_retry.step3.txt",
+        "00:56:17 进入 Play",
+        "00:56:19 （脚本重新加载，接着做第 4 步）",
+        "00:56:22 已经在 Play 里，等 7 秒",
+        "00:56:30 调用 Lanbai.Tests.LB_FullAssembly.RuntimeState",
+        "00:56:30   用时 0.0 秒",
+        "00:56:30   返回内容写在 LanbaiRemote/results/full_20261025_play_retry.step5.txt",
+        "00:56:30 调用 Lanbai.Tests.LB_FullAssembly.Seek（145）",
+        "00:56:30   用时 0.0 秒",
+        "00:56:30   返回：Runtime timeline seek 145",
+        "00:56:33 调用 Lanbai.Tests.LB_FullAssembly.Capture（云海_145秒）",
+        "00:56:33   用时 0.1 秒",
+        "00:56:33   返回内容写在 LanbaiRemote/results/full_20261025_play_retry.step8.txt",
+        "00:56:33 全部完成"
+    ],
+    "files": [
+        "LanbaiRemote/results/full_20261025_play_retry.step2.txt",
+        "LanbaiRemote/results/full_20261025_play_retry.step3.txt",
+        "LanbaiRemote/results/full_20261025_play_retry.step5.txt",
+        "LanbaiRemote/results/full_20261025_play_retry.step8.txt"
+    ]
+}

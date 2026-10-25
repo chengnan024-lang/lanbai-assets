@@ -1,0 +1,20 @@
+{
+    "id": "white_handoff_20261025_0658_dirty",
+    "state": "done",
+    "step": 2,
+    "total": 2,
+    "started": "2026-10-25 06:58:06",
+    "finished": "2026-10-25 06:58:12",
+    "error": "",
+    "log": [
+        "06:58:06 收到请求，共 2 步",
+        "06:58:06 刷新导入（AssetDatabase.Refresh）",
+        "06:58:09 （脚本重新加载，接着做第 1 步）",
+        "06:58:11 导入和编译完成",
+        "06:58:11 调用 Lanbai.Tests.LB_WhiteHandoffAudit.PreserveDirtyPreview",
+        "06:58:12   用时 0.5 秒",
+        "06:58:12   返回：Unsaved snapshot byte-identical to disk; flushed deferred Undo dirtiness and saved FullPreview only",
+        "06:58:12 全部完成"
+    ],
+    "files": []
+}

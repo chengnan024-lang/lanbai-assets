@@ -1,0 +1,46 @@
+[
+  {
+    "path": "Assets/Lanbai/Scripts/LB_Journey.cs",
+    "sha256": "9654e3490724ba196a04796bfae797f8c894b9efb8cf9755bd00988a702f1334"
+  },
+  {
+    "path": "Assets/Lanbai/Scripts/LB_Seat.cs",
+    "sha256": "5a43807bcc9dec717298a83c9692efddcb6f6d171705af54ce19f683a6d8fd40"
+  },
+  {
+    "path": "Assets/Lanbai/Director/Runtime/LanbaiActDispatcher.cs",
+    "sha256": "7d8998f64a06dad8de190cfc37b90702f51d02007b4f1e69007ce54fcbff8c3d"
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Runtime/LanbaiPoemDriver.cs",
+    "sha256": "60c644b8e7c67c8b358fcbb445c889c2295a9dd47fae4d3fe868a0c5596c6764"
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Editor/LanbaiPoemBake.cs",
+    "sha256": "0ca384271e4e6f3d973225c43e40c674bc5cef0f8634bad63ecb6369cb5f0439"
+  },
+  {
+    "path": "Assets/Lanbai/Delivered/lens_tech/Lanbai_Overlay.shader",
+    "sha256": "b5d5c89d955f47dafd3d7e79a82810b2cc9690d0e908740054bafe4ab797545b"
+  },
+  {
+    "path": "Assets/Lanbai/Tests/Editor/LB_FullAssembly.cs",
+    "sha256": "6e08383cfc083c527320066fc2960ced0529996e1721c50b5cfe55788455a9f7"
+  },
+  {
+    "path": "Assets/Lanbai/Tests/Editor/LB_FullAssemblyBinding.cs",
+    "sha256": "b08f3f2454f7aa30b617a73777c306ad13e0de433758c0c8cd49d02529ade5b8"
+  },
+  {
+    "path": "Assets/Lanbai/Tests/Editor/LB_VolumeCloudBuild.cs",
+    "sha256": "6af9464d8cc73c323b73d99b804381edf825280a7a3dd366dfc01d924f12d708"
+  },
+  {
+    "path": "Assets/Lanbai/Tests/Editor/LanbaiPreviewPanel.cs",
+    "sha256": "3fd19b22157d0dbf42ea5109fc4f578c4e51d886392490a6e0415c5eee46451d"
+  },
+  {
+    "path": "Assets/Lanbai/LocalIntegration/Shaders/VolumeCloudDeck.shader",
+    "sha256": "26fc6633c9d7543ddfcaf01c96824b1f4bd852b1a151a2fc47feeaa2ebe49c54"
+  }
+]
