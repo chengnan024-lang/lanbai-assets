@@ -85,6 +85,7 @@ namespace Lanbai.Test
                     repo[k] = TJson.G(ctx.sync, k);
             else repo["status"] = "没有同步记录（" + Preflight.SYNC_RECORD + "），提交号不明";
             m["repo"] = repo;
+            m["copied"] = Copied(ctx);   // D-43 #6：每个文件夹拷进来时的提交（从同步记录汇总）
 
             var pk = new Dictionary<string, object>();
             foreach (var n in new[] { "com.vrchat.worlds", "com.vrchat.base", "com.vrchat.udonsharp", "com.unity.postprocessing", "com.unity.textmeshpro", "com.vrchat.clientsim" })
@@ -128,6 +129,41 @@ namespace Lanbai.Test
             return m;
         }
 
+        // D-43 #6：同步记录（Assets/Lanbai/.lanbai_sync.json 的 files）按 Assets/Lanbai/ 下的第一层文件夹汇总：每个文件夹
+        // 的文件来自哪些提交、各几个。一个文件夹混了多个提交（只同步了一部分、或者 v1 的记录没有提交号）要警告
+        static string Short(string commit)
+        {
+            return commit.Length == 40 ? commit.Substring(0, 7) : commit;
+        }
+
+        static Dictionary<string, object> Copied(Ctx ctx)
+        {
+            var r = new SortedDictionary<string, SortedDictionary<string, int>>(StringComparer.Ordinal);
+            var files = TJson.M(TJson.G(ctx.sync, "files"));
+            if (files == null) return null;
+            const string P = "Assets/Lanbai/";
+            foreach (var kv in files)
+            {
+                string k = kv.Key.Replace('\\', '/');
+                string rel = k.StartsWith(P, StringComparison.Ordinal) ? k.Substring(P.Length) : k;
+                int i = rel.IndexOf('/');
+                string folder = i > 0 ? rel.Substring(0, i) : "(根)";
+                string commit = TJson.S(TJson.G(kv.Value, "commit"), "");
+                if (string.IsNullOrEmpty(commit)) commit = "(没有提交号)";
+                if (!r.TryGetValue(folder, out var c)) r[folder] = c = new SortedDictionary<string, int>(StringComparer.Ordinal);
+                c[commit] = (c.TryGetValue(commit, out var n) ? n : 0) + 1;
+            }
+            var o = new Dictionary<string, object>();
+            foreach (var kv in r)
+                o[kv.Key] = new Dictionary<string, object>
+                {
+                    { "commits", kv.Value.ToDictionary(x => x.Key, x => (object)x.Value) },
+                    { "files", kv.Value.Values.Sum() },
+                    { "mixed", kv.Value.Count > 1 },
+                };
+            return o;
+        }
+
         // ─────────────────────────────────────────────────────────────
         static string Summary(Ctx ctx, int exit, Dictionary<string, object> m)
         {
@@ -152,6 +188,21 @@ namespace Lanbai.Test
             sb.AppendLine("- 工具 " + Runner.VERSION + "，Unity " + Application.unityVersion + (Application.isBatchMode ? "（批处理）" : "（菜单）") + "，显卡 " + SystemInfo.graphicsDeviceName + "（" + SystemInfo.graphicsDeviceType + "）");
             var repo = TJson.M(m["repo"]);
             sb.AppendLine("- 仓库：" + (ctx.sync != null ? "提交 `" + TJson.S(TJson.G(repo, "repo_commit"), "?") + "`，" + TJson.S(TJson.G(repo, "synced_at"), "?") + " 同步，条目「" + TJson.S(TJson.G(repo, "entry"), "?") + "」" : "没有同步记录，提交号不明"));
+            var cp = m.ContainsKey("copied") ? m["copied"] as Dictionary<string, object> : null;
+            if (cp != null && cp.Count > 0)
+            {
+                // D-43 #6：每个文件夹拷进来时的提交
+                var parts = new List<string>(); var mixed = new List<string>();
+                foreach (var kv in cp.OrderBy(x => x.Key, StringComparer.Ordinal))
+                {
+                    var f = (Dictionary<string, object>)kv.Value;
+                    var cs = (Dictionary<string, object>)f["commits"];
+                    parts.Add("`" + kv.Key + "` " + string.Join(" + ", cs.Select(x => Short(x.Key) + (cs.Count > 1 ? "×" + x.Value : "")).ToArray()));
+                    if ((bool)f["mixed"]) mixed.Add(kv.Key);
+                }
+                sb.AppendLine("- 拷进来时的提交（按文件夹）：" + string.Join("；", parts.ToArray()));
+                if (mixed.Count > 0) sb.AppendLine("- ⚠️ **这些文件夹混了不止一个提交**：" + string.Join("、", mixed.Select(x => "`" + x + "`").ToArray()) + "。可能只同步了一部分，或者有文件是旧的记录（没有提交号）；照 HANDOFF_LOG 的“同步：”行整条重新同步一次再跑");
+            }
             sb.AppendLine("- 场景：" + (ctx.scenePath ?? "（没打开）") + "；用时 " + m["duration_s"] + " s");
             sb.AppendLine("- **交回**：把整个文件夹 `" + ctx.outDir + "` 拷到仓库的 `" + m["fromlocal"] + "`，再推。看到的问题写进 `FromLocal/" + ctx.testId + "/问题.md`，分级 S0 阻断 / S1 严重 / S2 一般 / S3 建议。");
             sb.AppendLine();

@@ -15,6 +15,8 @@
 //                                       0.001 that act 4c leaves; handed to the sea at the eye-under moment (363.615)
 //     252.64 -> 362.26                 RenderSettings (writeRenderSettings, LB_Journey.extAtmosphere): Trilight, fog
 //     252.64 -> 266.4                  the overlay (Lanbai_Overlay v2): pre-roll, then the per-direction dawn curve
+//                                       (Director v1.3: a late joiner handed over anywhere in 252.64 .. window end - rise is
+//                                       brought up from black here, past 266.4 if need be, then Hide)
 //     300.0 -> 363.26                  the sea (ABOVE, M_06_Sea): _Udon_SeaLevel / SeaMode 1 / SeaClock; off at F2h (the sea's
 //                                       driver switches its own plane on, same y: Act07_Layout handover)
 //  Every number comes from Act06_Dawn/Act06_Layout.json, baked into the fields by 蓝白/Build/Act06.
@@ -129,10 +131,33 @@ public class LanbaiAct06Driver : UdonSharpBehaviour
         _spawnSince = since;
     }
 
-    // Director v1.2：遮罩球归第 6 幕的那一段（预滚到 Hide），不是整个窗口；LB_Journey 在这一段里出生时不做淡入、保持黑
+    // Director v1.3（D-43 #1）：从开始写遮罩球（预滚 252.64）一直到“还来得及在窗口里把一个人从黑升起来”的最后一刻
+    // （窗口结束 − 一次完整的爬升）。在这一段里黑场结束的人，都由这里从黑往上升（266.4 以后亮着的那一段也算）；
+    // 再晚的人，升到一半窗口就结束了（363.62 交给海），所以那一段归 LB_Journey 自己的淡入（LanbaiSpawnFadeLength）
     public float[] LanbaiOverlayWindow()
     {
-        return new float[] { tPreroll0, tOverlayOff };
+        return new float[] { tPreroll0, OverlayHandEnd() };
+    }
+
+    // Director v1.3（D-43 #3）：这一幕里最亮的非白视向的亮度（遮罩球的 L 单位）；LB_Journey 在遮罩窗口之外
+    // （窗口的最后约 12 秒）用它定自己的出生淡入有多长
+    public float LanbaiBrightestL(float t)
+    {
+        return lDawn;
+    }
+
+    // 一次完整的爬升（≤ 0.85 EV/s 从黑到 lDawn，再加最晚的方向的提前量）
+    public float RiseSeconds()
+    {
+        float floorL = 0.004f;
+        float rangeEV = Mathf.Log(Mathf.Max(lDawn, floorL) / Mathf.Max(lBlack, floorL), 2f);
+        float maxLead = Mathf.Max(Mathf.Max(leadZenith, leadBelow), Mathf.Max(leadSun, leadElse));
+        return rangeEV / 0.85f + maxLead;
+    }
+
+    private float OverlayHandEnd()
+    {
+        return Mathf.Max(tOverlayOff, windowEnd - RiseSeconds() - 0.5f);
     }
 
     public void LanbaiActivate(bool on)
@@ -357,9 +382,11 @@ public class LanbaiAct06Driver : UdonSharpBehaviour
         {
             _spawnHeld = false;
             _lobesSet = false;                                   // LB_Journey's fade may have cleared the lobes
-            if (t - _spawnSince < tOverlayOff) _overlayHidden = false;
+            if (t - _spawnSince < OverlayHandEnd()) _overlayHidden = false;   // v1.3: the whole overlay window, not just to 266.4
         }
-        bool catchUp = !held && _spawnSince < 1e5f && t - _spawnSince >= tPreroll0 && t - _spawnSince < tOverlayOff;   // the fade ended inside LanbaiOverlayWindow
+        // v1.3 (D-43 #1): the fade ended anywhere inside LanbaiOverlayWindow (no longer only before 266.4: a joiner who comes
+        // out of the black at 263.4-266.4, or later while the dawn is already up, is brought up from black here too)
+        bool catchUp = !held && _spawnSince < 1e5f && t - _spawnSince >= tPreroll0 && t - _spawnSince < OverlayHandEnd();
         float floorL = 0.004f;
         float rangeEV = Mathf.Log(Mathf.Max(lDawn, floorL) / Mathf.Max(lBlack, floorL), 2f);
         float tauC = catchUp ? _spawnSince * 0.85f * dawnT / Mathf.Max(rangeEV, 1e-3f) : 1e6f;   // the curve's tau the 0.85 EV/s ramp has reached

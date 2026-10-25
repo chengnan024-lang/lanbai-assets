@@ -159,7 +159,7 @@ Director v1.1 起没有要本地填的窗口：`LB_Journey` 勾 `extAtmosphere` 
 | 东西 | 写的人 | 驱动报什么 |
 |---|---|---|
 | PPv2 weight、ΔEV（一帧一个） | **只有 `LB_Journey.ApplyGrades`** | 有曝光事件的驱动实现 `float[] LanbaiGrade(t)`，分发层加起来放进 `dispatcher.gradeDEV`（`gradeOwned` = 有人报）。现在报的：门内的 `FLASH_TEAR`（247.89 起 0.4 s 升、0.1 保持、0.25 落）。**`ApplyGrades` 里自己那份 FLASH_TEAR 要删**（不然算两次）。门内的 `writeExposure` 一直不勾 |
-| 遮罩球 `Lanbai_Overlay` v2 | **出生淡入优先（v1.2）**：`LB_Journey` 的出生黑 / 淡入从 `dispatcher.LanbaiSpawnFadeBegin()` 到 `LanbaiSpawnFadeEnd()`，这段时间**任何驱动都不碰遮罩球**。出生时 `dispatcher.LanbaiCoversOverlay(t)`（或 t + 淡入时长）为真（有驱动拿着遮罩球）：`LB_Journey` **不做淡入**，出生的黑保持黑，黑结束那一帧调 End，之后只有驱动那一次从黑升起来；为假：照常淡入、淡入结束调 End。End 只认第一次；Begin 后 10 秒没有 End 当作已结束。之后：248.39 → 252.64 **门内**（剪 1 的黑）；第 6 幕（252.64 `SetFlat` → 254.14 起 `SetCurve` 晨从黑里亮起 → 266.44 `Hide()`）；第 10 幕的白归镜与白 | 门内调 `overlay.SetFlat(…, LanbaiDeltaEV(t))` 自己补 ΔEV。场景里只放一个。拿遮罩球的驱动实现 `LanbaiSpawnFade(float since)`（Director v1.2，`README_Director.md` §3 第 8 条）：`since < 0` 不写；之后从黑按 ≤ 0.85 EV/s 升到自己的值（迟到的人在白里进来，由镜与白自己升） |
+| 遮罩球 `Lanbai_Overlay` v2 | **出生淡入（Director v1.3，D-43）**：`LB_Journey` 的出生黑 / 淡入从 `dispatcher.LanbaiSpawnFadeBegin()` 到 `LanbaiSpawnFadeEnd()`，这段时间**任何驱动都不碰遮罩球**。黑结束时问 `dispatcher.LanbaiOverlayHandoverAt(t, t + T)`：≥ 0（淡入期间有驱动的遮罩窗口）→ **不做淡入**，保持黑到那一刻，调 End，之后只有驱动那一次从黑升起来；< 0 → 自己淡入，EV 线性，T = `LanbaiSpawnFadeLength`（按场景，最长 9 秒；站台出发前 3 秒），淡入结束调 End。End 只认第一次；Begin 后 15 秒没有 End 当作已结束（`README_Director.md` §0）。之后：248.39 → 252.64 **门内**（剪 1 的黑）；第 6 幕（252.64 `SetFlat` → 254.14 起 `SetCurve` 晨从黑里亮起 → 266.44 `Hide()`）；第 10 幕的白归镜与白 | 门内调 `overlay.SetFlat(…, LanbaiDeltaEV(t))` 自己补 ΔEV。场景里只放一个。拿遮罩球的驱动实现 `LanbaiSpawnFade(float since)`（Director v1.2，`README_Director.md` §3 第 8 条）：`since < 0` 不写；之后从黑按 ≤ 0.85 EV/s 升到自己的值（迟到的人在白里进来，由镜与白自己升） |
 
 ---
 
@@ -205,7 +205,7 @@ Director v1.1 起没有要本地填的窗口：`LB_Journey` 勾 `extAtmosphere` 
 - **导入顺序**（`README_Act06.md` §0）：`Common/`、`GateClouds/`（搭建脚本借它的 U# 小工具 `LanbaiGateCloudsBuilder`，没有它 `蓝白/Build/Act06` 编不过）、`Sky/`（跑过 `蓝白/Sky/Build Sky`，场景里有 `Lanbai_SkyPresets/dawn`）、`Sea/`（跑过 `蓝白/Sea/Create Materials`，`Sea/Materials/M_06_Sea.mat` 在）、`Overlay/`（场景里只有一个 `LanbaiOverlay`）、`Clouds_v2/`，最后 `Act06_Dawn/`。
 - **先应用 `dawn` 预设，再点 `蓝白/Build/Act06`**：搭建脚本在海面上方 2 m 现烘临时反射立方图 `Generated/Refl_S6_standin`，烘的是当时的天；总控的 `Refl_S6` 来了就换（`Act06_Driver.reflCube`）。可以重复点，`Act06_Driver` 和手接的引用保留。点完 → `蓝白/Director/1 Generate` → 等编译 → `2 Wire Scene` → `3 Report`。
 - **接管**：勾 `Act06_Driver.writeRenderSettings`、`writeMainLight`，`LB_Journey` 勾 `extAtmosphere` / `extSun`（窗口自动，§3；`README_Act06.md` §0 第 4 条的手填窗口作废）。环境光 Trilight。
-- 窗口 248.64 → 363.62：248.64 起写天雾月星（§8.1），252.64 起写 RenderSettings（到 362.26）和主光（到 363.615，§8.2），遮罩 252.64 → 266.44（§8.4），海的全局量 300 → 363.26（入水那一帧海的驱动在同一个 y 接手）。
+- 窗口 248.64 → 363.62：248.64 起写天雾月星（§8.1），252.64 起写 RenderSettings（到 362.26）和主光（到 363.615，§8.2），遮罩 252.64 → 266.44（§8.4；迟到的人在 252.64 → 351.2 之间交接过来的，从黑升完才 `Hide()`，可以过 266.44，Director v1.3），海的全局量 300 → 363.26（入水那一帧海的驱动在同一个 y 接手）。
 - 车厢漂白 251.64 → 281.86 归车厢驱动（圣经 §4.8 的表，D-35），不归第 6 幕。
 - 截图和量数：`README_Act06.md` §0 第 5 条；标杆画面 C（254–266 s 三个视向）用测试工具跑 `act06_test`（`Engineering/UnityTest/`）。
 
