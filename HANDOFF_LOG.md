@@ -4,6 +4,37 @@
 
 > **2026-10-24 起，读这份日志的本地是 ChatGPT「阿白」**（10-24 已接管，D-40a #8、D-41）。先读根目录的 `HANDOFF_CHATGPT.md`：协作边界、第一次接管的步骤、回传协议都在那里。下面各条里的“你”指本地，现在就是阿白。旧条里“技术上怎么实现由你决定”（09-28）作废：技术架构归总工程师，高风险改动先备份并经小楠确认（`HANDOFF_CHATGPT.md` §F）。
 
+## 2026-10-25（北京 22:50）· 🔧 Director v1.3 r2 + 测试工具 1.2.1 进 main；本地修复已收回（Dispatcher）
+同步：`Director/` `Engineering/UnityTest/` `Common/` `Overlay/` `Act06_Dawn/Runtime/` `Act04c_Inside/Runtime/`
+不同步：`Fonts/Runtime/LanbaiPoemDriver.cs` `Fonts/Editor/LanbaiPoemBake.cs`（仓库版还在用 maxVisibleLines，你本地的逐行烘焙要留着，等 D-45 重写诗句）
+
+**这一包是纯技术，技术验收全归你（D-46）。** 我只核对过：工具不保存场景、不改资产，只删它自己输出目录里的东西。
+
+1. **已收回（D-44 #7）：** 你本地给 Dispatcher 加的三处保护（Start 幂等、首次分发保护、旅程等待初始化），v1.3 的懒构建都包含了，范围还更大。所以 `Director/` 可以让同步覆盖，演练时列成“本地改过”的 Dispatcher 这次可以 `-Force`。照 §F，先备份，并经小楠同意。覆盖以后在 FullPreview 里重新点 `蓝白/Director/1`、`2`。**正式场景不点。**
+2. **Overlay 同名的事：** 你改的名字（`Lanbai/Legacy/Overlay_v1`、保留旧 GUID）是对的，仓库里的 lens_tech 也改成了同一个名字（d2621db）。
+3. **Director v1.3 r2：** 迟到进场的人只看到一次变亮。
+   - 改动按 D-43 #7：驱动的窗口只报到还能把人完整升起来的那一刻；`LB_Journey` 自己淡入时，限的是看到的亮度（场景 × 2^dEV）。
+   - **要改你本地的 `LB_Journey`**：完整的出生状态机写在 `Director/README_Director.md` §0 第 4 条，照抄。按 §F，改 `LB_Journey` 属于高风险，**先备份、经小楠确认**。
+4. **测试工具 1.2.1：** 之前说的毛病都修了：
+   - 闪烁探测的变体之间会还原开关；
+   - 进 Play 以后先等准备好再跳转；
+   - 漏帧有门槛，超过就算失败；
+   - 相机在 D-28 主座位，ClientSim 玩家坐到主座位；
+   - 会核对 PPv2 有没有生效。
+   - `transitions_sweep`、`flicker_probe` **现在可以用了**。总工程师照实说：Play 阶段第一次跑大概要改一两处，Console 请原样推回来。
+   - `CONSENT.json` 要写 `"tool_version": "1.2.1"`，`tests[]` 里写要跑的测试，例如 `["transitions_sweep", "flicker_probe"]`。格式以 `Engineering/UnityTest/README_UnityTest.md` 为准。
+5. **建议的顺序**（你按手上的情况排）：
+   1. 同步、备份；
+   2. 改 `LB_Journey`（要小楠确认）；
+   3. Director 的 1、2；
+   4. `flicker_probe`（1016–1042，对照你 0315 那次）；
+   5. `transitions_sweep`（全片约 10 分钟）。
+   - 结果放 `FromLocal/<test-id>/<时间>/`，问题写 `问题.md`。
+   - 转场的结果出来以后，“哪些是有意的硬切、哪些是技术跳变”由我来判断。
+
+**问题处理：**
+- 问题处理：gate_clouds_test-04 → 云端已修（ac4f6a0），等你复测。这一条以前就写过，提醒一下。
+
 ## 2026-10-25（北京 22:30）· 🌊 7a 前方视野的改法进 main：接入、重拍同 12 个时刻、技术验收
 同步：`Act07_Sea/`
 不同步：`Sea/Docs~/`（参考照片和文档，Unity 用不到）
