@@ -1,0 +1,12 @@
+--- a/Assets/Lanbai/Sky/Runtime/LanbaiSkyDriver.cs
++++ b/Assets/Lanbai/Sky/Runtime/LanbaiSkyDriver.cs
+@@ -59,6 +59,9 @@
+ 
+         public void LanbaiActivate(bool on)
+         {
++            // Other acts own the shared globals while this driver is inactive.
++            // Returning to the same preset index must reapply its complete state.
++            if (on) { lastIndex = -2; lastWasFade = false; }
+             if (root != null)
+                 root.SetActive(on);
+         }

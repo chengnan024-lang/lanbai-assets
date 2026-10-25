@@ -1,0 +1,3 @@
+清掉了对比组；藏起来的原有树组 4 个（停止 Play 就恢复）
+OK tree test row: 7 trees, hid 0 old tree renderers
+Forced LOD2 for diagnostic comparison; not a natural distance switch

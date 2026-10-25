@@ -1,0 +1,98 @@
+{
+  "status": "PREPARED_NOT_APPLIED",
+  "main": "09164c99f2c222d33752720d754211d3029e3a94",
+  "files": [
+    {
+      "path": "Act04c_Inside/Runtime/LanbaiInsideDriver.cs",
+      "source_sha256": "085ad6fada7b53beadd6ce883204a12445d5bd9af0aed3064c5f171725e37284",
+      "target_sha256": "e2eddcd255d05b853f1bc06c874ca5c35d31cbdedd0921258efb48ce504fb273",
+      "action": "update",
+      "matches_previous_main": true
+    },
+    {
+      "path": "Act06_Dawn/Runtime/LanbaiAct06Driver.cs",
+      "source_sha256": "343c7bd50ec66187679005de7a1774eb3ca39b66e420dd938f9b4f61a4e7bc28",
+      "target_sha256": "0f5a50bceac42daad6b7416f0afbe464d59ffe2c9a868466069fe6cb953fcda9",
+      "action": "update",
+      "matches_previous_main": true
+    },
+    {
+      "path": "Director/Editor/LanbaiDirectorGen.cs",
+      "source_sha256": "3d68bf6cf95e1859f951cff16f17cc7280e6740df9e35ee318e856a85a6d00ee",
+      "target_sha256": "127ca85770d82af853f5c28d27c959484a21604fc47c1077c019ce90f68968cd",
+      "action": "update",
+      "matches_previous_main": true
+    },
+    {
+      "path": "Director/README_Director.md",
+      "source_sha256": "b6d8b2e11ff8d4619498ad1decbc63e616215774e147dc7184e835ac0aec46e7",
+      "target_sha256": "a40ea9f89d8b72cbae0e19fcfbd015c5364e690e47202c61751872f2a6768e84",
+      "action": "update",
+      "matches_previous_main": true
+    },
+    {
+      "path": "Director/Runtime/LanbaiActDispatcher.cs",
+      "source_sha256": "163b2723ab627fb8748a9254f9a603c568f8a03c6c7b41e2261dab67462d001d",
+      "target_sha256": "7d8998f64a06dad8de190cfc37b90702f51d02007b4f1e69007ce54fcbff8c3d",
+      "action": "CONFLICT",
+      "matches_previous_main": false
+    },
+    {
+      "path": "Overlay/Editor/LanbaiOverlayBuild.cs",
+      "source_sha256": "5063532da315c8c74f6f7d25cadd5c330d6c828ac5ce4923f6054f2c48f8fdd2",
+      "target_sha256": "6a105db5722b46cc0d4e543b6645d31704f6b6b7bb8fb8c22b95a18dcf235697",
+      "action": "update",
+      "matches_previous_main": true
+    },
+    {
+      "path": "Overlay/README_Overlay.md",
+      "source_sha256": "26836d15dd93d00861f547815a223bf29c2c8f4979d21724c432101c6d7e9fe9",
+      "target_sha256": "bee2b5cace5247a51274d1b19494d8ca084334208a451e988e7593586e4c6aa9",
+      "action": "update",
+      "matches_previous_main": true
+    }
+  ],
+  "backups": [
+    {
+      "path": "Assets/Lanbai/Scripts/LB_Journey.cs",
+      "sha256": "c07741a51a7c197e93da4b8d4f6590f86aff207b31989cd01718d4fbd962eac9"
+    },
+    {
+      "path": "Assets/Lanbai/Act04c_Inside/Runtime/LanbaiInsideDriver.cs",
+      "sha256": "e2eddcd255d05b853f1bc06c874ca5c35d31cbdedd0921258efb48ce504fb273"
+    },
+    {
+      "path": "Assets/Lanbai/Act06_Dawn/Runtime/LanbaiAct06Driver.cs",
+      "sha256": "0f5a50bceac42daad6b7416f0afbe464d59ffe2c9a868466069fe6cb953fcda9"
+    },
+    {
+      "path": "Assets/Lanbai/Director/Editor/LanbaiDirectorGen.cs",
+      "sha256": "127ca85770d82af853f5c28d27c959484a21604fc47c1077c019ce90f68968cd"
+    },
+    {
+      "path": "Assets/Lanbai/Director/README_Director.md",
+      "sha256": "a40ea9f89d8b72cbae0e19fcfbd015c5364e690e47202c61751872f2a6768e84"
+    },
+    {
+      "path": "Assets/Lanbai/Director/Runtime/LanbaiActDispatcher.cs",
+      "sha256": "7d8998f64a06dad8de190cfc37b90702f51d02007b4f1e69007ce54fcbff8c3d"
+    },
+    {
+      "path": "Assets/Lanbai/Overlay/Editor/LanbaiOverlayBuild.cs",
+      "sha256": "6a105db5722b46cc0d4e543b6645d31704f6b6b7bb8fb8c22b95a18dcf235697"
+    },
+    {
+      "path": "Assets/Lanbai/Overlay/README_Overlay.md",
+      "sha256": "bee2b5cace5247a51274d1b19494d8ca084334208a451e988e7593586e4c6aa9"
+    },
+    {
+      "path": "Assets/Lanbai/Scenes/Lanbai_FullPreview.unity",
+      "sha256": "57d1ee304bbe50243191b0eac6faf7909efc48711c3d771ef5193e93690abdc6"
+    }
+  ],
+  "excluded_local_unknown": "Common/UdonGlobals.md",
+  "excluded_fonts": [
+    "Fonts/Runtime/LanbaiPoemDriver.cs",
+    "Fonts/Editor/LanbaiPoemBake.cs"
+  ]
+}

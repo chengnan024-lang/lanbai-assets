@@ -1,0 +1,14 @@
+target=446 actual=446.008 eyeLocal=(0.70,1.77,0.20) source=LB_Udon.HERO_EYE; front=0deg up=60deg; both views use same rendered runtime state
+seaLevel=22.66222 underwater=1 seaMode=2
+R_Act07/R_Sea/Sea_Plane active=True enabled=True forcedOff=False material=M_07a_SeaSurface _Gain(block)=0 _WindowGain(block)=18 position=(0.00, 22.66, 0.00)
+R_Act07/R_Sea/Act07_Shafts active=True enabled=True forcedOff=False material=M_07_Shafts _Gain(block)=0.3339691 _WindowGain(block)=0 position=(0.00, 22.66, 0.00)
+R_Act07/R_Act07Bus/Act07_ShaftLast active=True enabled=False forcedOff=False material=M_07_Shafts _Gain(block)=0 _WindowGain(block)=0 position=(0.00, 0.00, 0.00)
+R_Act07/R_Act07Bus/Act07_Snow active=True enabled=True forcedOff=False material=M_07_Snow _Gain(block)=1 _WindowGain(block)=0 position=(0.00, 0.00, 0.00)
+R_Act07/R_Act07Bus/Act07_Seeds active=True enabled=False forcedOff=False material=M_07_Seeds _Gain(block)=0 _WindowGain(block)=0 position=(0.00, 0.00, 0.00)
+R_Act07/R_Act07Bus/Act07_Trails active=True enabled=False forcedOff=False material=M_07_Trails _Gain(block)=0 _WindowGain(block)=0 position=(0.00, 0.00, 0.00)
+R_Act07/R_Act07Bus/Act07_TrailsFront active=False enabled=False forcedOff=False material=M_07_TrailsFront _Gain(block)=0 _WindowGain(block)=0 position=(0.00, 0.00, 0.00)
+R_Act07/R_Sea/Act07_Ridge active=True enabled=False forcedOff=False material=M_07_Ridge _Gain(block)=0 _WindowGain(block)=0 position=(0.00, 22.66, 0.00)
+R_Act07/R_Sea/Act07_WarmPoint active=True enabled=False forcedOff=False material=M_07_WarmPoint _Gain(block)=0 _WindowGain(block)=0 position=(0.00, 22.66, 0.00)
+R_Act07/R_Act07Bus/Sea_Dome active=True enabled=True forcedOff=False material=M_07_Dome _Gain(block)=0 _WindowGain(block)=0 position=(0.00, 0.00, 0.00)
+R_Act07/R_Sea/Sea_Mirror active=True enabled=False forcedOff=False material=M_07c_SeaMirror _Gain(block)=0 _WindowGain(block)=0 position=(0.00, -405.72, 307.30)
+beam=True/False E=0
