@@ -6624,7 +6624,7 @@
    "blendSkip": [],
    "measured_views": {
     "前方": {
-     "APL": 85.0,
+     "APL": 85.2,
      "purple": 0.0,
      "lavender_6": 0.0,
      "p995": "#607FAA",
@@ -6636,15 +6636,15 @@
      "grad_ok": true
     },
     "车门 +45°": {
-     "APL": 81.2,
+     "APL": 81.5,
      "purple": 0.0,
      "lavender_6": 0.0,
      "p995": "#607FAA",
-     "p50": "#395080",
-     "grad_p999": 5.43,
-     "grad_max": 6.28,
+     "p50": "#395081",
+     "grad_p999": 3.17,
+     "grad_max": 3.28,
      "lavender_band": 0.0,
-     "grad_p999_with_galaxy_photo": 3.66,
+     "grad_p999_with_galaxy_photo": 3.31,
      "grad_ok": true
     },
     "天窗（仰 70°）": {
@@ -6660,7 +6660,7 @@
      "grad_ok": true
     },
     "背后": {
-     "APL": 72.4,
+     "APL": 72.5,
      "purple": 0.0,
      "lavender_6": 0.0,
      "p995": "#4E6A93",
@@ -6672,15 +6672,15 @@
      "grad_ok": true
     },
     "左 −90°": {
-     "APL": 74.8,
+     "APL": 75.1,
      "purple": 0.0,
      "lavender_6": 0.0,
      "p995": "#54719C",
-     "p50": "#354D7A",
-     "grad_p999": 5.27,
-     "grad_max": 6.39,
+     "p50": "#354D7B",
+     "grad_p999": 2.57,
+     "grad_max": 2.81,
      "lavender_band": 0.0,
-     "grad_p999_with_galaxy_photo": 4.02,
+     "grad_p999_with_galaxy_photo": 2.67,
      "grad_ok": true
     },
     "向下 −35°": {
