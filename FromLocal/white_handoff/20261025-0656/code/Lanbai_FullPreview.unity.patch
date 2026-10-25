@@ -1,0 +1,11 @@
+--- a/Assets/Lanbai/Scenes/Lanbai_FullPreview.unity
++++ b/Assets/Lanbai/Scenes/Lanbai_FullPreview.unity
+@@ -113124,7 +113124,7 @@
+   isGlobal: 1
+   blendDistance: 0
+   weight: 0
+-  priority: 2
++  priority: 150
+ --- !u!4 &1198555040
+ Transform:
+   m_ObjectHideFlags: 0
