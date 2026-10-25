@@ -133,6 +133,20 @@ namespace Lanbai.Mirrors.EditorTools
             c2.visT = LanbaiMirrorsData.VisT; c2.visV = LanbaiMirrorsData.VisV;
            
             c2.eye = new Vector3(LanbaiMirrorsData.Eye[0], LanbaiMirrorsData.Eye[1], LanbaiMirrorsData.Eye[2]);
+            // F7 (总导演 10-24): the rim light, one point light, no shadows, Not Important (vertex), lighting only the
+            // players (VRChat layers 9 Player + 10 PlayerLocal), 8000 K, driven by the envelope (off when 0)
+            GameObject lgo = new GameObject("MirrorRimLight");
+            lgo.transform.SetParent(root.transform, false);
+            Light rl = lgo.AddComponent<Light>();
+            rl.type = LightType.Point;
+            rl.shadows = LightShadows.None;
+            rl.renderMode = LightRenderMode.ForceVertex;
+            rl.cullingMask = (1 << 9) | (1 << 10);
+            rl.color = Mathf.CorrelatedColorTemperatureToRGB(8000f);
+            rl.intensity = 0f;
+            rl.range = 12f;
+            rl.enabled = false;
+            c2.rimLight = rl;
             EditorUtility.SetDirty(c2);
             root.SetActive(false);                      // the dispatcher's LanbaiActivate(true) at the window start (1010, in the black)
             AssetDatabase.SaveAssets();

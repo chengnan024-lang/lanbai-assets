@@ -7,7 +7,7 @@ case: m1   第 1 面穿越 1029.4 → 1035.4（正前方偏下）
       wf   白：1137.0 → 1149.31 正前方（+6°）
       wd   白：1137.0 → 1149.31 向下看（−60°，整个视野是第 13 面）
 白的遮罩（1146.31 → F16）在场景线性里合成（遮罩在 PPv2 之前画：rgb = 填值 × 2^−ΔEV，alpha = EvOverlayAlpha），
-调色用 S9b + ΔEV；WHITE_SAT / WHITE_BLOOM 没有模拟（它们只降饱和、加 bloom，不改爬升的方向）。
+调色用 S9b + ΔEV + WHITE_SAT / WHITE_BLOOM（按权重混进 PPv2 参数，r3 C3）；星点按通量守恒（r3 C2）。
 -> Mirrors/Docs~/flashcheck/<case>.json
 """
 import json, math, os, sys
@@ -20,6 +20,11 @@ import flashcheck as FC
 
 CASES = dict(m1=(1029.4, 1035.4, 0, -12), m10=(1112.4, 1118.4, 0, -12), m11=(1122.5, 1128.5, 0, -12),
              wf=(1137.0, 1149.31, 0, 6), wd=(1137.0, 1149.31, 0, -60), wu=(1137.0, 1149.31, 0, 60), m13in=(1058.0, 1065.0, 0, -45))
+for _k, _m in enumerate(MP.SCH['mirrors'][:12]):          # C6: every crossing, forward-low / up / down
+    _tc = _m['t_cross']
+    CASES.setdefault('m%d' % (_k + 1), (_tc - 3.0, _tc + 3.0, 0, -12))
+    CASES['m%du' % (_k + 1)] = (_tc - 3.0, _tc + 3.0, 0, 60)
+    CASES['m%dd' % (_k + 1)] = (_tc - 3.0, _tc + 3.0, 0, -60)
 W = MP.WHITE
 FILL = np.array(W['overlay']['fills']['S9b_WHITESAT']['desktop']['linear_rgb'])
 LW = float(MP.G.hexlin('#E8F1F5') @ np.array([0.2126, 0.7152, 0.0722]))
@@ -47,7 +52,7 @@ def main():
     frames = []
     for t in ts:
         c, info = MP.frame(float(t), yaw, pitch, w, h, dust=True)
-        if case in ('wf', 'wd') and t >= W['labels']['mask_start']:
+        if case in ('wf', 'wd', 'wu') and t >= W['labels']['mask_start']:
             # redo in linear with the overlay composited before the grade
             x = (t - W['labels']['mask_start']) / (W['labels']['F16_cut2'] - W['labels']['mask_start'])
             a = ev_alpha(x, LSCENE, LW, LSCENE, LW)
@@ -68,7 +73,7 @@ def main():
     out = os.path.join(MP.REPO, 'Mirrors', 'Docs~', 'flashcheck')
     os.makedirs(out, exist_ok=True)
     rep['case'] = case; rep['t'] = [t0, t1]; rep['fps'] = fps; rep['size'] = [w, h]; rep['view'] = [yaw, pitch]
-    rep['note'] = 'numpy port of the mirror shaders on the act 9 sky (no cabin); the white mask blended in display-linear toward #E8F1F5 with EvOverlayAlpha (Lscene %.2f); WHITE_SAT/BLOOM not simulated' % LSCENE
+    rep['note'] = 'numpy port of the mirror shaders on the act 9 sky (no cabin); the white mask blended in display-linear toward #E8F1F5 with EvOverlayAlpha (Lscene %.2f); WHITE_SAT/BLOOM blended into the PPv2 parameters; star flux conserved below 1.6 px (r3 C2)' % LSCENE
     json.dump(rep, open(os.path.join(out, case + (('_' + os.environ['MIRROR13']) if os.environ.get('MIRROR13') else '') + ('_%dpx' % w if w != 192 else '') + '.json'), 'w'), indent=1, default=float)
     print(json.dumps({k: rep[k] for k in rep if k not in ('series',)}, default=float)[:1500])
 
