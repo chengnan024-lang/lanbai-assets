@@ -268,7 +268,7 @@ def setup_world():
             vl.lightgroups.add(name=g)
 
 
-PAZ_SHELL = '/tmp/pal/bus/Bus_HarnessShell_paz672.fbx'     # pkg/bus 的 Bus/Models/Bus_HarnessShell_paz672.fbx（D-34 #5：用真车壳）
+PAZ_SHELL = '/tmp/pal/bus/Bus_HarnessShell_new.fbx'     # main 的 Bus/Models/Bus_HarnessShell_paz672.fbx（10-25 新车厢，玻璃范围比旧车大；总导演：前方视野按新车核）
 
 
 def add_bus():
