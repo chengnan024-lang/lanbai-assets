@@ -625,3 +625,83 @@ UI_NOTE = ('D-31：公告板上有两样字——语言开关「中 / 日 / EN�
 
 # Characters a Latin atlas should carry anyway (names typed later: 'Zoë', 'O’Neill', numbers …).
 ASCII = ''.join(chr(c) for c in range(0x20, 0x7F))
+
+
+# ==================================================================================================== v5 (D-45)
+# 诗句改成 Fins 式字幕（D-45，2026-10-25；方案 Art/字幕方案_D-45.md B.8 / D.3，小楠拍板见裁决 D-45 第 15 条）。
+# Every key's pages, exactly as B.8: a page = (t, [≤ 2 lines]); t = the moment the page starts fading in. Text is the
+# v4 text re-broken at the pause, punctuation per B.7 (CJK: in-line ，、 -> U+3000, no line-final ，。、; Latin: no
+# sentence-final '.'): lanbai_subtitles.py checks "same words, new breaks" against the segments above.
+# zht pages are derived from zh by the character map of the ZHT pairs above (checked: no conflicting mapping).
+# de = en except where de has its own pages (Rilke, Urlicht: the German originals). Fonts: SC / TC / JP Regular,
+# Garamond Regular; Garamond Italic only for the sung Urlicht (B.1).
+# Tianwen: no zh / zht subtitle (they read the sky). Zhuangzi (15.4): zh / zht read the column (kept, two sets),
+# ja / en / de get subtitle pages.
+SUB_FONT_V5 = {'zh': 'SourceHanSerifSC-Regular', 'zht': 'SourceHanSerifTW-Regular', 'ja': 'SourceHanSerifJP-Regular',
+               'en': 'EBGaramond-Regular', 'de': 'EBGaramond-Regular'}
+SUB_TIER_HEX = {'standard': '#D0DBDF', 'night': '#B3BCC0'}       # B.3
+S3 = '　'
+SUBS = [
+    dict(poem='P03_LiBai_Dream', t_in=71.80, t_end=86.80, tier='night', halo=0.0, sync=[],
+         keys=dict(zh=[(71.80, ['我欲因之梦吴越', '一夜飞度镜湖月'])],
+                   ja=[(71.80, ['我之に因りて', '呉越を夢みんと欲し']), (79.30, ['一夜飛んで度る鏡湖の月'])],
+                   en=[(71.80, ['I would dream my way', 'to Wu and Yue,']), (79.30, ['and in one night fly across', 'the moon on Mirror Lake'])])),
+    dict(poem='P04a_Rilke', t_in=137.30, t_end=150.30, tier='standard', halo=0.30, sync=[],
+         keys=dict(zh=[(137.30, ['因为美无非是', '恐怖的开端'])],
+                   ja=[(137.30, ['美とは' + S3 + '恐ろしいものの', '始まりにほかならない'])],
+                   en=[(137.30, ['For beauty is nothing but', 'the beginning of terror'])],
+                   de=[(137.30, ['Denn das Schöne ist nichts', 'als des Schrecklichen Anfang'])])),
+    dict(poem='P04b_Urlicht', t_in=166.10, t_end=171.40, tier='standard', halo=0.30, sync=[], italic=('en', 'de'),
+         line_t=[166.10, 167.85], line_in=0.20,
+         keys=dict(zh=[(166.10, ['啊' + S3 + '不！', '我不肯被拒之门外！'])],
+                   ja=[(166.10, ['いいえ！' + S3 + 'わたしは', '引き下がらなかった！'])],
+                   en=[(166.10, ['Ah no!', 'I would not be turned away!'])],
+                   de=[(166.10, ['Ach nein!', 'Ich ließ mich nicht abweisen!'])])),
+    dict(poem='P06_Dream_Dawn', t_in=345.36, t_end=357.96, tier='standard', halo=0.35, sync=[],
+         keys=dict(zh=[(345.36, ['我从天空坠入深海'])],
+                   ja=[(345.36, ['わたしは空から', '深い海へ墜ちた'])],
+                   en=[(345.36, ['I fell from the sky', 'into the deep sea'])])),
+    dict(poem='P07_HeBo', t_in=714.00, t_end=730.50, tier='night', halo=0.0, sync=[723.50],
+         keys=dict(zh=[(714.00, ['鱼鳞屋兮龙堂', '紫贝阙兮朱宫']), (723.50, ['灵何为兮水中'])],
+                   ja=[(714.00, ['魚鱗の屋' + S3 + '龍の堂', '紫貝の闕' + S3 + '朱の宮']), (723.50, ['霊何為れぞ水中にある'])],
+                   en=[(714.00, ['Houses of fish-scale,', 'halls of dragons,']), (718.75, ['purple-shell gates,', 'a vermilion palace —']),
+                       (723.50, ['O spirit, why do you', 'dwell in the water?'])])),
+    dict(poem='P08a_Dream_Dusk', t_in=903.00, t_end=916.40, tier='night', halo=0.0, sync=[],
+         keys=dict(zh=[(903.00, ['自深海坠入另一片天空'])],
+                   ja=[(903.00, ['深い海から', 'もうひとつの空へ墜ちた'])],
+                   en=[(903.00, ['From the deep sea I fell', 'into another sky'])])),
+    dict(poem='P08b_Zhuangzi_Xiaoyao', t_in=971.40, t_end=993.00, out_last=4.0, tier='standard', halo=0.35, sync=[976.40],
+         column_keys=('zh', 'zht'),
+         keys=dict(ja=[(971.40, ['天の蒼蒼たるは', '其れ正色なるか']), (976.40, ['其の下を視るや', '亦た是くの若くならんのみ'])],
+                   en=[(971.40, ['The sky, so blue, so blue —', 'is that its true colour?']), (976.40, ['Looking down from there,', 'it would be just the same'])])),
+    dict(poem='P09_Tianwen', t_in=1009.21, t_end=1018.11, tier='night', halo=0.0, sync=[1013.30], base_bottom_el=-9.4,
+         sky_keys=('zh', 'zht'),
+         keys=dict(ja=[(1009.21, ['遂古の初め', '誰か之を伝へ道ふ']), (1013.30, ['上下未だ形あらず', '何に由りて之を考ふる'])],
+                   en=[(1009.21, ['At the far beginning of things,', 'who was there to tell of it?']),
+                       (1013.30, ['When above and below had no form,', 'how could it be known?'])])),
+    dict(poem='P11_Zhuangzi_Butterfly', t_in=1206.46, t_end=1222.16, tier='standard', halo=0.20, sync=[],
+         keys=dict(zh=[(1206.46, ['不知周之梦为胡蝶与', '胡蝶之梦为周与'])],
+                   ja=[(1206.46, ['知らず']), (1209.70, ['周の夢に胡蝶と為れるか', '胡蝶の夢に周と為れるか'])],
+                   en=[(1206.46, ['I cannot tell —']), (1209.70, ['did Zhou dream he was a butterfly,', 'or does a butterfly dream it is Zhou?'])])),
+    dict(poem='P12a_LiBai_Wake', t_in=1270.96, t_end=1285.16, tier='night', halo=0.0, sync=[],
+         keys=dict(zh=[(1270.96, ['惟觉时之枕席', '失向来之烟霞'])],
+                   ja=[(1270.96, ['惟だ覚めし時の枕席のみ', '向来の煙霞を失ふ'])],
+                   en=[(1270.96, ['Only the pillow and mat', 'of waking —']), (1278.06, ['lost, the mists', 'and rosy clouds of before'])])),
+    dict(poem='P12b_Keats', t_in=1320.96, t_end=1334.56, out_last=3.0, tier='night', halo=0.0, sync=[],
+         keys=dict(zh=[(1320.96, ['那乐声已远去', '我是醒着' + S3 + '还是睡着？'])],
+                   ja=[(1320.96, ['あの調べは消えた']), (1325.14, ['わたしは醒めているのか', '眠っているのか'])],
+                   en=[(1320.96, ['Fled is that music:—', 'Do I wake or sleep?'])])),
+]
+
+# F.3: the settings card on the stop's notice board (new ui strings; the old 中 / 日 / EN buttons retire)
+UI_V5 = [
+    ('UI/subs/lang_head', {'zh': '字幕语言', 'zht': '字幕語言', 'ja': '字幕の言語', 'en': 'Subtitle language'}),
+    ('UI/subs/head', {'zh': '字幕', 'zht': '字幕', 'ja': '字幕', 'en': 'Subtitles'}),
+    ('UI/subs/follow', {'zh': '跟随视线', 'zht': '跟隨視線', 'ja': '視線についてくる', 'en': 'Follow my view'}),
+    ('UI/subs/stay', {'zh': '留在原处', 'zht': '留在原處', 'ja': 'その場に留まる', 'en': 'Stay in place'}),
+    ('UI/subs/off', {'zh': '关', 'zht': '關', 'ja': 'オフ', 'en': 'Off'}),
+    ('UI/subs/local', {'zh': '这些设置只对你自己有效。', 'zht': '這些設定只對你自己有效。', 'ja': 'この設定はあなたにだけ反映されます。', 'en': 'These settings only affect you.'}),
+    ('UI/subs/lock', {'zh': '开车以后就不能再改。', 'zht': '開車以後就不能再改。', 'ja': '発車後は変更できません。', 'en': 'They can’t be changed once the bus leaves.'}),
+]
+UI_LANG_NAMES = [('UI/lang/zhs', 'zh', '简体中文'), ('UI/lang/zht', 'zht', '繁體中文'), ('UI/lang/ja', 'ja', '日本語'), ('UI/lang/en', 'en', 'English'),
+                 ('UI/lang/de_note', 'en', 'Deutsch')]
