@@ -137,3 +137,50 @@ occ.point(az, el)                                   # ('WindscreenR' | 'open' | 
 12. **折门的玻璃**单独导出成 `Glass_Door0…3`（`Lanbai/BusGlass`），搭建菜单把它们挂到各自的 `Bus_Door0…3` 下面，第 11 幕关门时跟着走；侵蚀时跟门组一起走（门组偏置过半时 1.5 秒淡掉）。折门本身在 `Bus` 层：从外面看（第 1、12 幕）站灯照不到它，车厢管灯的常量照得到。
 13. **顶点色**：没有顶点色的网格（外壳、轮子、收音机、灯管、门、玻璃）导出时补一层全 0 的 `Col`，免得 Unity 当成白色、整块读成满磨损 / 满积灰。
 14. 后排左侧（`ref_rearL3`）：座椅顶上的扶杆穿进了贴墙的窗帘，D-36 重做座椅和侧窗时一起改。
+
+---
+
+## 5. 车厢切片（D-40 #1：座椅 + 侧窗 + 立柱，给本地的 Unity 测试）
+
+**没在 Unity 里编译、导入、运行过。** C# 只过了 `bash Common/Tools~/compile_check/check_cs.sh Cabin Bus`（Roslyn：0 错误、0 警告、lint 干净）；Blender 那边只在 Blender 里读回核对过。
+
+**是什么。** 整车之前先单独进 Unity 的三件：主座位的座椅、主座位那扇侧窗（车厢里那一半 + 玻璃）、右边第一根立柱。总工程师的测试 `Engineering/UnityTest/tests/bus_slice.json`（`pkg/engineering`）用它查 D-40 #1 的五项：贴图压缩、mip、高光闪烁、光照图接缝、法线强度。
+
+**菜单 `蓝白/Build/车 切片`**（`Editor/LanbaiBusSliceBuilder.cs`；类名就是 `LanbaiBusSliceBuilder`，测试工具靠这个类名判断切片交没交）。在**当前场景**里搭（测试工具给的是沙盒里的空场景）；可以反复点，先删掉上一次的 `Lanbai_BusSlice`（没激活的也删）。整个搭建是**一步 Undo**：按一次 Ctrl+Z，新切片没了、旧切片回来、关掉的灯重新开。也可以当静态方法调：`LanbaiBusSliceBuilder.Build()` 返回一行 `OK …` / `ERROR …`。报告在 Console 的 `[Lanbai Bus Slice]`。
+
+搭出来的东西都在根物体 `Lanbai_BusSlice` 下面，根在原点、不旋转，所以和整车是同一个坐标系（车在原点、车头 +Z）。三件从 `Models/Bus.fbx` 里拿出来、世界变换不变，FBX 实例剩下的部分删掉。
+
+| 物体 | 里面是 | 材质 |
+|---|---|---|
+| `Slice_Seat` | `Seat_SeatR0`（D-36 主座位：uv0 零件图集，uv1 `_CabinTubeLM`） | `M_Bus_Part_SeatHero`（`Lanbai/Cabin`，零件图集 `Textures/Parts/Part_SeatHero_*`） |
+| `Slice_SideWindow` | `Window_R1`（窗框、内胶条、横档、窗台、两扇推拉小窗、窗扣）+ `Glass_WinR1` | `Lanbai/Cabin`（`_CabinTubeLM`）；玻璃 `M_Bus_Glass_Side`（`Lanbai/BusGlass`） |
+| `Slice_Pillar` | `Pole_R0`（立柱、上下法兰和螺钉、停车按钮盒） | `Lanbai/Cabin`（`_CabinTubeLM`） |
+| `Slice_Globals` | `LanbaiBusSliceGlobals`（见下） | |
+| `Slice_Camera` | 主座位眼位 (0.55, 1.70, 2.05)，朝 +Z；16:9 下水平 90°（竖直 58.7°），near 0.02，HDR，背景纯黑（切片外面什么都没有，按夜路算）；`PostProcessLayer`：体积层 = `PostProcessing` 层（没有这一层就警告，体积层留空），AA 关，Stop NaN 开 | |
+| `Slice_Grade_S2` | 只在项目里有调色套件的 `Lanbai_PP_S2`（夜路）、也有 `PostProcessing` 层时才建：全局 PPv2 体积，权重 1。没有就警告，截图不调色 | |
+
+- **材质和整车菜单是同一套代码**（`LanbaiBusBuild.CabinMat / GlassMat / PartMat`，用哪种由 `LanbaiBusBuild.ModeFor` 定），只是写到 `Assets/Lanbai/Bus/Generated/Materials/`。层：`Bus`（没有这一层就警告）。
+- **只写 `Assets/Lanbai/Bus/Generated/`**（`bus_slice.json` 的 `allowed_writes`）：`Materials/`，只有旧 FBX 时才有 `Meshes/`（见下面 uv1 那条）。它只存自己写的那几个资源（`AssetDatabase.SaveAssetIfDirty`，一个一个存，路径不在 `Generated/` 下的不存），**不调 `AssetDatabase.SaveAssets`**：那个会把工程里所有没存的改动一起落盘（比如 U# 的程序资产、`Assets/SerializedUdonPrograms/`），测试工具会把它们算成这次搭建的写入。不建 UdonSharp 程序资产（D-41），不挂 VRChat 组件，不改导入设置，不存场景。
+- **第一次在一个工程里点**会新建 `Assets/Lanbai/Bus/Generated/` 这个文件夹，连带 `Assets/Lanbai/Bus/Generated.meta`。这个 `.meta` 不在 `Generated/**` 里面，总工程师的写入核对（`writes.undeclared`）会把它算成没声明的写入，`no_undeclared_writes` 不过；第二次跑就没有了。要么 `bus_slice.json` 的 `allowed_writes` 加一条 `Assets/Lanbai/Bus/Generated.meta`，要么测试工具把 `X/**` 也算上 `X.meta`（都归总工程师改，这里改不了）。
+- **Bus.fbx 的导入设置 Generate Lightmap UVs 要关着**（默认就是关的）。开着的话 Unity 自己展的 uv1 会盖掉 `_CabinTubeLM` 的图集，而且它也在 0…1 里、下面的 uv1 检查看不出来，所以菜单单独查这一项，开着就报错（只报，不改：改了要写 `Bus.fbx.meta`）。
+- 场景里别的灯（沙盒默认的 Directional Light）会被**关掉**（可以 Undo），切片只吃管灯的光照图。铬件、立柱的高光来自场景默认的反射（天空盒），不是车厢里的反射探针。
+- 缺物体（旧的 FBX）时 Console 报错、点名缺哪个，其余照搭。
+
+**全局量组件 `Scripts/LanbaiBusSliceGlobals.cs`。** 世界里车厢 shader 读的全局量由 `LanbaiCabinDriver`（U#）每帧写；切片里没有驱动，`_Udon_CabinLightmap` 是 0，整个车厢就是黑的。这个组件是普通的 MonoBehaviour（不是 UdonSharp：切片场景是本地测试场景，不上传），`[ExecuteAlways]`，在 OnEnable / Update 里写，类型和驱动一样（`Common/UdonGlobals.md`）：`_Udon_CabinLightmap` = 1（管灯开，`SetGlobalFloat`）；`_Udon_CabinAmbient` = (0, 0, 0, 1)（夜路 t = 30，线性）；`_Udon_CabinBleach`、`_Udon_CabinFade` = (0, 0, 0, 1)（float4，只读 .x）；穿越光带 `_Udon_CabinSlice` / `_Udon_CabinSliceColor` 关。数值可以在组件上改。**不要把它放进世界场景**：会和车厢驱动每帧打架。
+
+**FBX 要先重导出。** `Window_R1`、`Pole_R0` 是这次才从 `Cabin_Static` 里分出来的（`Source/finish_bus.py` 的 `SEPARATE`；`BusLayout.json` 多了一项 `slice`，列出切片要的物体名，`missing` 不空就是 FBX 旧了）。旧的 `Bus.fbx` 里侧窗和立柱还合在 `Cabin_Static` 里，菜单会报这两件缺，只搭出座椅和玻璃。车厢光照图的 uv1 是全车一起排的，分出来以后整张图集都重排了，所以要按第 1 节“重做一遍”的顺序**全部重跑**：`finish_bus.py` → `bake_lightmap.py`（烘的物体已经加上 `Window_*`、`Pole_*`）→ `weather_exterior.py` → `finish_bus.py --from-blend`。只换 FBX、不重烘 `Cabin_TubeLM.exr`，整个车厢的光照图都会错位。
+
+**uv 层的顺序（座椅的 uv1，已修）。** `Lanbai/Cabin` 从 uv1 读 `_CabinTubeLM`，FBX 的 uv 按 Blender 里 uv 层的顺序进 Unity（第一层 uv0、第二层 uv1、第三层 uv2）。以前 D-36 的座椅导出的是 `UVMap, UVMetric, UVLightmap`：Unity 里座椅的 uv1 是米制的盒投影（约 −2.3…2.3），光照图在 uv2，整车和切片的 15 个座位都把 `_CabinTubeLM` 采错。现在 `finish_bus.py` 的 `lm_uv_order` 把每个进光照图的单独物体（`Seat_*`、`Window_*`、`Pole_*`）都排成 **`UVMap, UVLightmap, UVMetric`**（`Cabin_Static` 本来就是 `UVMap, UVLightmap`）：
+- 正常导出时在存 `.blend` 之前排（`bake_lightmap.py`、`weather_exterior.py` 读到的就是排好的）；`--from-blend` 导出时再排一次，所以拿修之前存的 `.blend` 重导出也对。只是换层的顺序，uv 的数一个不变（层按名字读、删掉、按顺序加回去），所以已经烘好的 `Cabin_TubeLM.exr` 不用为这个重烘。
+- `bake_lightmap.py`、`parts/texbake.py`、材质节点都按**名字**找 uv 层（`'UVLightmap'`、`'UVMap'`），不受顺序影响。
+- 导出后按读回的 FBX 再查一遍：这三类物体的 uv 层不是正好这三层、这个顺序，就进 `readback problems`。
+- 切片菜单还会查每件的 uv1，**对新导出的 FBX 什么都不做**（uv1 在 0…1 里，报告里写一句“uv1 = the _CabinTubeLM atlas”，不复制、不写文件）。它只是给旧 FBX 留的保险：uv1 出了 0…1、而 uv2 在 0…1 里，说明这个 `Bus.fbx` 是修之前导出的，切片就复制一份网格、把 uv1 和 uv2 对调，存到 `Generated/Meshes/<名>_uv1LM.asset`，并报一条警告：整车菜单用这个 FBX 会采错，要重导出。
+
+**整车菜单的改动。** `Editor/LanbaiBusBuild.cs` 只改了可见性（`internal`）、材质文件夹参数（默认还是 `Bus/Materials`），外加一处：`Window_*`、`Pole_*` 和 `Cabin_Static`、`Seat_*` 一样用带管灯光照图的材质（`ModeFor`）。不加这一处，重导出 FBX 以后这两件在整车里会掉成“车外”的材质。别的物体的材质、层、组件都和原来一样。
+
+**Blender 那边的核对**（10-25，在 `HEAD` 的 `Bus/Source` 快照上、换进这次的 `finish_bus.py` 和 `bake_lightmap.py` 跑的；输出都在临时目录，没写 `Models/`、`Textures/`）：
+- `~/bpy/bin/python -I <快照>/Bus/Source/finish_bus.py --out <临时>/slicecheck --blend <临时>/slicecheck/bus_final.blend --no-part-bake`：69 个物体，读回没有问题。`Bus_fbx_readback.json` 里 `Seat_SeatR0`、`Window_R1`、`Pole_R0`（以及另外 14 个座位）的 uv 层都是 `UVMap, UVLightmap, UVMetric`，`Cabin_Static` 是 `UVMap, UVLightmap`。把读回的 FBX 按层的**序号**查：三件的第二层（Unity 的 uv1）都在 0…1 里，第三层是米制坐标（座椅约 −2.3…2.3）。15 个座位被重排了，`Window_R1`、`Pole_R0` 本来就是对的。
+- `Window_R1` 14 556 顶点、28 044 三角形，`Pole_R0` 2 040 顶点、4 020 三角形，`Seat_SeatR0` 3 506 顶点、6 912 三角形（这是 `HEAD` 的座椅，还不是在重做的 672M 座椅）；顶点色照旧按位置算；外面的 `WinR1_Fillet`、`WinR1_Gasket` 留在 `Bus_Exterior_LOD0`。
+- 单独测 `lm_uv_order`：把 17 件的层顺序打乱（座椅改回修之前的顺序，另外两件让 `UVMap` 不在第一层），排回来以后顺序对，每一层的 uv 和打乱前逐个相等，再调一次什么都不改。
+- 用打乱后存的 `.blend` 跑 `finish_bus.py --from-blend`：17 件读回都是 `UVMap, UVLightmap, UVMetric`。
+- 用排好的 `.blend` 跑 `bake_lightmap.py --res 256 --samples 4`（只是看它能不能跑）：`Cabin_Static` + 15 个座位 + `Window_R1` + `Pole_R0` 都按名字找到 `UVLightmap`，烘完了。正式的 1024²、96 采样没跑。

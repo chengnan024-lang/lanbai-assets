@@ -45,6 +45,10 @@ MAT_TABLE = {
     'Lamp_Amber': ('#E3D69B', 0.8, 0),          # D-28e: pale yellow, an unlit lens (not orange)
     'Int_Enamel': ('#D9D4C5', 0.45, 0), 'Int_Ceiling': ('#E2DDCF', 0.25, 0), 'Seal': ('#2B2B2B', 0.30, 0),
     'Vinyl': ('#5A2126', 0.45, 0), 'SeatFrame': ('#3C3E3D', 0.35, 0), 'Floor': ('#323634', 0.22, 0),
+    # 672M (总导演 10-25, 实物参考_PAZ细节 §6): the cream piping round cushion and back, the black leatherette sleeve on
+    # the seat-back top tube. Not in the bible's §4.2 table (给总控 D-36 r5); names avoid 'Vinyl' so the per-seat red wear
+    # tint (finish_bus.seat_wear, vinyl faces only) never lands on them.
+    'Piping': ('#C8BC9E', 0.40, 0), 'Sleeve': ('#2E2E2E', 0.45, 0),
     'Alu': ('#B8BBBD', 0.45, 1), 'SafetyYellow': ('#C9A227', 0.40, 0), 'Steel': ('#C0C3C4', 0.55, 1),
     'TubeDiffuser': ('#D8DBD6', 0.60, 0), 'Dash': ('#353637', 0.30, 0), 'Bakelite': ('#2E2E2E', 0.45, 0),
     'RadioLeather': ('#4A2E1F', 0.45, 0), 'RadioGrille': ('#B8BBBD', 0.55, 1), 'RadioDial': ('#E8DFC8', 0.5, 0),
@@ -704,12 +708,16 @@ def seats():
             _seat('SeatR%d' % i, 'SeatR', x0=B.SEAT_R_X[0], x1=B.SEAT_R_X[1], back_z=bz, wall_side=1, wall_x=B.X_IN_R)
     for i, bz in enumerate(B.LEFT_ROWS):
         over_wheel = abs(bz + 0.30 - B.AXLES[1]) < 0.55
+        # the seat over the wheel box has no top tube (trolleway F04: a square back, no rail, no sleeve)
+        kw = dict(on_box=True, cushion_y=1.00 + 0.04, top_tube=False) if over_wheel else {}
         _seat('SeatL%d' % i, 'SeatLBox' if over_wheel else 'SeatL', x0=B.SEAT_L_X[0], x1=B.SEAT_L_X[1], back_z=bz,
-              double=True, wall_side=-1, wall_x=B.X_IN_L, on_box=over_wheel, cushion_y=(1.00 + 0.04) if over_wheel else None)
-    _seat('RearBench', 'RearBench', x0=B.X_IN_L + 0.03, x1=B.X_IN_R - 0.03, back_z=B.REAR_BENCH_Z, double=True, wall_side=0)
+              double=True, wall_side=-1, wall_x=B.X_IN_L, **kw)
+    # the five-seat bench across the back: one long back against the rear wall, one long cushion (F03), no top tube
+    _seat('RearBench', 'RearBench', x0=B.X_IN_L + 0.03, x1=B.X_IN_R - 0.03, back_z=B.REAR_BENCH_Z, double=True, wall_side=0,
+          wall_back=True, places=5, cushion_split=(2, 1, 2))
     dx, dz = B.DRIVER_SEAT
     _seat('DriverSeat', 'DriverSeat', x0=dx - 0.25, x1=dx + 0.25, back_z=dz - 0.30, cushion_y=B.FLOOR_Y + 0.46, wall_side=0,
-          on_box=True, worn=1.4)
+          on_box=True, worn=1.4, top_tube=False, back_top=B.FLOOR_Y + 0.46 + 0.50)
     box('DriverPedestal', (dx - 0.22, B.FLOOR_Y, dz - 0.20), (dx + 0.22, B.FLOOR_Y + 0.30, dz + 0.15), 'SeatFrame', 'Seats', bevel=0.01, segs=3)
     return hero
 

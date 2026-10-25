@@ -18,6 +18,9 @@
 //              3 gauges (#5FA89A x 0.3), 4 destination blind letters x _Udon_CabinLightmap
 //  Bleach / erosion / 3 cm rim / seat sphere / floor patch / D-26 hole: LanbaiCabinCommon.cginc. The shadow caster
 //  (addshadow) runs the same clip.
+//  D-40 #4 geometric specular AA (LanbaiCabinSpecAA, Tokuyoshi & Kaplanyan 2019): the final smoothness is widened by the
+//  screen-space change of the normal (_SpecAAVariance 0.15, _SpecAAThreshold 0.2; variance 0 = off exactly;
+//  _SpecAAMapNormal 1 = the shading normal with the normal maps, 0 = the vertex normal only). Not in the shadow caster.
 //  Fog: LanbaiFog (finalcolor + nofog); ForwardAdd attenuates only.
 // =====================================================================================================
 Shader "Lanbai/Cabin"
@@ -89,6 +92,11 @@ Shader "Lanbai/Cabin"
         _WoundGuard ("D-08 wound light limiter", Range(0, 1)) = 1
         _PurpleGuard ("D-21 band guard on added lights", Range(0, 1)) = 1
 
+        [Header(Geometric specular AA  D-40 no. 4)]
+        _SpecAAVariance ("Spec AA pixel variance sigma2  0 = off  (Tokuyoshi 2019 uses 1 over 2pi)", Range(0, 0.5)) = 0.15
+        _SpecAAThreshold ("Spec AA threshold kappa  max roughness2 added", Range(0, 1)) = 0.2
+        _SpecAAMapNormal ("Spec AA normal  1 shading normal with normal maps  0 vertex normal only", Float) = 1
+
         [Header(Erosion  bible 4.8)]
         _ErodeEnable ("Erosion on", Float) = 1
         [Enum(Prose,0,Literal,1)] _ErodeForm ("Threshold form", Float) = 0
@@ -159,6 +167,7 @@ Shader "Lanbai/Cabin"
         float4 _MirrorLineColor, _MirrorRimColor;
         float _MirrorLineWidth;
         half _WetSmooth, _WetDarken, _WoundGuard, _PurpleGuard, _RimGain;
+        float _SpecAAVariance, _SpecAAThreshold, _SpecAAMapNormal;   // D-40 #4 (LanbaiCabinSpecAA, LanbaiCabinCommon.cginc)
 
         struct Input
         {
@@ -269,6 +278,17 @@ Shader "Lanbai/Cabin"
             half3 nT = UnpackScaleNormal(tex2D(_DetailNormal, uvd), _DetailNormalScale);
             o.Normal = _UsePart > 0.5 ? BlendNormals(nPart, nT) : nT;
             float3 nWS = normalize(WorldNormalVector(IN, o.Normal));
+
+        #ifndef UNITY_PASS_SHADOWCASTER
+            // D-40 #4 geometric specular AA: the LAST smoothness edit (after the part mask, detail mask, grime, wear,
+            // sun fade, cracks, height band, wet and bleach), so ForwardBase (main light + reflection probe mip) and
+            // ForwardAdd (wound light, sodium sweep, mirror rim) all shade with the filtered value. Top level of surf:
+            // no divergent branch around the ddx / ddy (the [branch] blocks above are closed; the lerp is not a
+            // branch). The shadow caster writes depth only, so it skips this.
+            float3 nGeo = normalize(WorldNormalVector(IN, float3(0, 0, 1)));      // interpolated vertex normal
+            float3 nAA = lerp(nGeo, nWS, saturate(_SpecAAMapNormal));
+            smooth = LanbaiCabinSpecAA(smooth, nAA, _SpecAAVariance, _SpecAAThreshold);
+        #endif
 
             o.Albedo = albedo;
             o.Metallic = metal;

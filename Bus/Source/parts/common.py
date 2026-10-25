@@ -40,7 +40,7 @@ def apply_mods(ob):
 
 
 def cage_pad(name, lo, hi, m, collection='Seats', edge=0.03, n=(6, 3, 6), crown=(0.0, 0.0, 0.0, 0.0),
-             levels=2, roll_front=0.0, sag=0.0, lines=None, deform=None):
+             levels=2, roll_front=0.0, sag=0.0, lines=None, deform=None, round_plan=None):
     """upholstered pad as a Catmull-Clark cage: a box lattice whose first interior lines sit 'edge' in from every face,
     so the subdivided surface rounds every edge with a radius of about 'edge' (a soft sewn edge, never a bevel facet).
     lo, hi: Unity box. n = interior divisions (x, y, z) of the middle span.
@@ -50,7 +50,10 @@ def cage_pad(name, lo, hi, m, collection='Seats', edge=0.03, n=(6, 3, 6), crown=
     lines: optional (X, Y, Z) explicit lattice coordinates (metres from the box centre, ascending, ends = +-half) -
            extra lines where a seam / channel / dent needs them.
     deform(face, i, j, k, x, y, z, half) -> (x, y, z): a last per-vertex shaping hook (metres from the centre);
-           face is a set of 'x-', 'x+', 'y-', 'y+', 'z-', 'z+' the vertex lies on."""
+           face is a set of 'x-', 'x+', 'y-', 'y+', 'z-', 'z+' the vertex lies on.
+    round_plan = ('xz' | 'xy', R): round the four corners of the pad in that plane with radius R (a cut panel is never
+           a square box in plan): the lattice inside each R x R corner square is mapped concentrically onto the quarter
+           disc, so put the same edge lines on both axes for a round arc."""
     lo, hi = np.array(lo, float), np.array(hi, float)
     c, half = (lo + hi) / 2, (hi - lo) / 2
 
@@ -72,6 +75,18 @@ def cage_pad(name, lo, hi, m, collection='Seats', edge=0.03, n=(6, 3, 6), crown=
         key = (i, j, k)
         if key not in vid:
             x, y, z = X[i], Y[j], Z[k]
+            if round_plan is not None:
+                pl, R = round_plan
+                a, b = (x, z) if pl == 'xz' else (x, y)
+                ha, hb = (half[0], half[2]) if pl == 'xz' else (half[0], half[1])
+                if abs(a) > ha - R + 1e-9 and abs(b) > hb - R + 1e-9:
+                    ca, cb = math.copysign(ha - R, a), math.copysign(hb - R, b)
+                    da, db = a - ca, b - cb
+                    mm, L = max(abs(da), abs(db)), math.hypot(da, db)
+                    a, b = ca + da / L * mm, cb + db / L * mm
+                x, z = (a, b) if pl == 'xz' else (a, z)
+                if pl == 'xy':
+                    y = b
             ux, uy, uz = x / half[0], y / half[1], z / half[2]
             fx, fz, fy = 1 - min(1, ux * ux), 1 - min(1, uz * uz), 1 - min(1, uy * uy)
             if j == len(Y) - 1:
@@ -127,13 +142,20 @@ def cage_pad(name, lo, hi, m, collection='Seats', edge=0.03, n=(6, 3, 6), crown=
 # ------------------------------------------------------------------------------------------------ tubes
 def fillet_path(pts, radius, seg_per_90=8):
     """polyline (Unity points) -> the same path with every interior corner rounded by an arc of 'radius'
-    (a real tube bender: the bend radius is ~2-3 x the tube diameter)."""
+    (a real tube bender: the bend radius is ~2-3 x the tube diameter). radius and seg_per_90 may be lists: one per
+    interior corner (len(pts) - 2 values)."""
     P = [np.array(p, float) for p in pts]
-    if len(P) < 3 or radius <= 0:
+    radii = list(radius) if isinstance(radius, (list, tuple)) else [radius] * max(0, len(P) - 2)
+    segs = list(seg_per_90) if isinstance(seg_per_90, (list, tuple)) else [seg_per_90] * max(0, len(P) - 2)
+    if len(P) < 3 or max(radii) <= 0:
         return P
     out = [P[0]]
     for i in range(1, len(P) - 1):
+        radius = radii[i - 1]
         a, b, c = P[i - 1], P[i], P[i + 1]
+        if radius <= 0:
+            out.append(b)
+            continue
         d0, d1 = (a - b), (c - b)
         l0, l1 = np.linalg.norm(d0), np.linalg.norm(d1)
         d0, d1 = d0 / l0, d1 / l1
@@ -151,7 +173,7 @@ def fillet_path(pts, radius, seg_per_90=8):
         cen = b + bis * (r / math.sin(ang / 2))
         v0, v1 = p0 - cen, p1 - cen
         turn = math.pi - ang
-        n = max(2, int(math.ceil(seg_per_90 * turn / (math.pi / 2))))
+        n = max(2, int(math.ceil(segs[i - 1] * turn / (math.pi / 2))))
         # slerp v0 -> v1 about the centre
         for k in range(n + 1):
             s = k / n
@@ -166,7 +188,18 @@ def sweep(name, pts, r, m, collection='Seats', sides=SIDES_NEAR, closed=False, c
     """sweep a circle (or a 'profile' list of (x, y) in the tube's normal plane, metres) along a Unity path with
     parallel-transport frames. bend > 0 fillets the corners first. Smooth-shaded, capped with a small dome-less
     round cap (a bevelled disc)."""
-    P = fillet_path(pts, bend, seg_per_90) if bend > 0 else [np.array(p, float) for p in pts]
+    has_bend = (max(bend) if isinstance(bend, (list, tuple)) else bend) > 0
+    if closed and has_bend:
+        # start half way along the first side so the start / end corner gets its fillet too
+        Q = [np.array(p, float) for p in pts]
+        if np.linalg.norm(Q[0] - Q[-1]) < 1e-6:
+            Q = Q[:-1]
+        mid = (Q[0] + Q[1]) / 2
+        rb = (list(bend[1:]) + [bend[0]]) if isinstance(bend, (list, tuple)) else bend
+        sq = (list(seg_per_90[1:]) + [seg_per_90[0]]) if isinstance(seg_per_90, (list, tuple)) else seg_per_90
+        P = fillet_path([mid] + Q[1:] + [Q[0], mid], rb, sq)
+    else:
+        P = fillet_path(pts, bend, seg_per_90) if has_bend else [np.array(p, float) for p in pts]
     if closed and np.linalg.norm(P[0] - P[-1]) < 1e-6:
         P = P[:-1]
     n = len(P)
@@ -252,3 +285,49 @@ def drape(ob, pts, offset=0.0, from_y=3.0):
         y = hit[0].z + offset
         out.append((p[0], y, p[2]))
     return out
+
+
+def welt(ob, probes, r, embed=0.0006, smooth=3, closed=False):
+    """a piping cord sewn into the seam where a pad's panel meets its boxing (director r4 #1: a real welt).
+    probes: Unity points just OUTSIDE the rounded seam - simply points on the pad's box edge (the cage's outer corner
+    line), or on its plan outline at the panel's height. Each cord centre goes out from the nearest surface point by
+    r - embed (so the cord sits on the seam, sunk 'embed' into it)."""
+    from mathutils.bvhtree import BVHTree
+    M = ob.matrix_world
+    me = ob.data
+    bvh = BVHTree.FromPolygons([M @ v.co for v in me.vertices], [list(p.vertices) for p in me.polygons], all_triangles=False)
+    out = []
+    for p in probes:
+        pb = Vector(BB.U2B(tuple(p)))
+        co, nrm, _, _ = bvh.find_nearest(pb)
+        dv = pb - co
+        dirn = dv.normalized() if dv.length > 1e-6 and dv.dot(nrm) > 0 else nrm.normalized()
+        c = co + dirn * (r - embed)
+        out.append(np.array((c.x, c.z, c.y)))
+    n = len(out)
+    for _ in range(smooth):
+        if closed:
+            out = [(out[i - 1] + 2 * out[i] + out[(i + 1) % n]) / 4 for i in range(n)]
+        else:
+            out = [out[0]] + [(out[i - 1] + 2 * out[i] + out[i + 1]) / 4 for i in range(1, n - 1)] + [out[-1]]
+    return [tuple(p) for p in out]
+
+
+def lathe_x(name, prof, yc, zc, m, collection='Seats', sides=24):
+    """a surface of revolution round a line parallel to Unity x through (y=yc, z=zc): prof = [(x, r), ...] along x.
+    Both ends closed with a disc (an end radius of 0 makes a pole). Smooth-shaded."""
+    bm = bmesh.new()
+    rings = []
+    for x, r in prof:
+        rings.append([bm.verts.new(BB.U2B((x, yc + r * math.cos(2 * math.pi * k / sides), zc + r * math.sin(2 * math.pi * k / sides))))
+                      for k in range(sides)])
+    for a, b in zip(rings[:-1], rings[1:]):
+        for k in range(sides):
+            bm.faces.new((a[k], a[(k + 1) % sides], b[(k + 1) % sides], b[k]))
+    bm.faces.new(list(reversed(rings[0])))
+    bm.faces.new(rings[-1])
+    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-7)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    if bm.calc_volume(signed=True) < 0:
+        bmesh.ops.reverse_faces(bm, faces=bm.faces)
+    return finish(BB.obj_from_bm(name, bm, [m], collection))

@@ -7,6 +7,10 @@
 物体（FBX 里的名字 = Unity 里的名字）：
   Bus_Exterior_LOD0 / _LOD1   车身外皮 + 外部件（灯、保险杠、镜、雨刮以外）            Lanbai/Cabin（外观参数）
   Cabin_Static                车厢里所有不动的东西（内壁、顶棚、地板、座椅、仪表台…） Lanbai/Cabin，uv1 = _CabinTubeLM
+  Seat_*                      D-36 每个座位一个物体（uv0 = 零件图集，uv1 = _CabinTubeLM，和 Cabin_Static 同一张）
+  Window_R1 / Pole_R0         D-40 #1 切片用：主座位侧窗的车厢里那一半（WinR1_*）、右边第一根立柱（PoleR0*），
+                              从 Cabin_Static 里分出来（SEPARATE），uv1 = _CabinTubeLM（同一张）
+                              这三类的 uv 层顺序都是 UVMap, UVLightmap, UVMetric（lm_uv_order；Unity 按层的顺序当 uv0/1/2）
   Cabin_Tubes                 10 个灯罩（发光 × _Udon_CabinLightmap）
   Cabin_Radio                 收音机（表盘发光 × _Udon_RadioDial）
   Cabin_DestBlind             目的地牌（第 11 幕换贴图）
@@ -334,6 +338,9 @@ def seat_parts(out, seat_groups, bake=True):
         files = None
         if bake:
             kw = {k: v for k, v in BB.SEAT_TYPES[ptype].items() if k != 'inst'}
+            # the shared atlas gets a light wear (0.6): seat_wear's per-seat vertex colour adds each seat's own, so a
+            # little-used seat can stay lighter than the type (D-36: no two seats alike)
+            kw['worn'] = kw.get('worn', 1.0) * 0.6
             high = SEAT.seat_module('High_' + ptype, quality='high', **kw)
             MATS.apply_details(high)
             files = TB.bake_onto(canon, high, ptype, res=res)
@@ -343,49 +350,163 @@ def seat_parts(out, seat_groups, bake=True):
 
 
 def seat_wear(ob, inst):
-    """D-36 / 总导演: no two seats wear the same. Vertex colour on the seat object (Lanbai/Cabin part materials read it
-    on top of the shared atlas): G polish where people sit (aisle place > window place; the hero row and the row behind
-    the driver more), along the cushion's front roll (thighs) and the back's shoulder band; B sun-fade on the
-    window side of the back's top; R grime in the crease between cushion and back. A per-seat random strength."""
+    """D-36 / 总导演 / D-40 #3: no two seats wear the same, and wear only comes from what touches the seat. Vertex colour
+    on the seat object, read by Lanbai/Cabin's part materials on top of the shared type atlas (the atlas is baked with
+    a light wear only, seat_parts): G polish where people sit (per-seat jittered places, the aisle place more than the
+    window place, the hero row and the row behind the driver more), along the cushion's front roll (thighs) and the
+    back's shoulder band; B sun-fade on the window side of the back's top and the cushion's window edge; R grime in the
+    crease between cushion and back (crumbs and dust collect there - not a random dirt overlay); A which of the type's
+    seam-crack candidates are open on this seat (2-5 of them, parts/seat.crack_on; the atlas mask B has their shapes).
+    RGB only on the red vinyl (the cream piping, the black sleeve, the painted frame and board get no red tint); A on
+    vinyl, piping and sleeve."""
     from parts import seat as SEAT
     kw = BB.SEAT_INSTS[inst]
-    x0, x1, bz = kw['x0'], kw['x1'], kw['back_z']
-    cy = kw.get('cushion_y') or (B.FLOOR_Y + B.SEAT_H)
+    g = SEAT._geom(**kw)
+    x0, x1 = kw['x0'], kw['x1']
+    cy, z0c, z1c, H = g['cy'], g['z0c'], g['z1c'], g['H']
+    O, Uax, Wax = g['F']
     ws = kw.get('wall_side', 0)
     rnd = np.random.default_rng(zlib.crc32(inst.encode()))
     use = float(rnd.uniform(0.55, 1.15)) * (1.25 if inst in ('SeatR0', 'SeatR1', 'SeatL0', 'DriverSeat') else 1.0)
-    spots = SEAT._sit_spots(x0, x1, kw.get('double', False), ws)
+    spots = SEAT._sit_spots(x0, x1, kw.get('double', False), ws, kw.get('places'))
     spots = [(xs + float(rnd.normal(0, 0.03)), w * float(rnd.uniform(0.7, 1.2))) for xs, w in spots]
-    z0c, z1c = bz + 0.085, bz + 0.49
+    sites = SEAT.crack_sites(**{k: v for k, v in kw.items() if k != 'type'})
+    open_ = [np.array(sites[i]) for i in SEAT.crack_on(inst, len(sites))]
     me = ob.data
     ca = me.color_attributes.get('Col') or me.color_attributes.new('Col', 'FLOAT_COLOR', 'POINT')
     M = ob.matrix_world
     win_x = x1 if ws > 0 else x0
-    # only the vinyl wears / fades (the painted board, the frame and the chrome get none of it)
-    vinyl = np.zeros(len(me.vertices), bool)
     slots = [m.name if m else '' for m in me.materials]
+    red = np.zeros(len(me.vertices), bool)
+    soft = np.zeros(len(me.vertices), bool)              # every leatherette: red vinyl, piping, sleeve (cracks)
     for p in me.polygons:
-        if 'Vinyl' in slots[p.material_index]:
-            vinyl[list(p.vertices)] = True
+        nm = slots[p.material_index]
+        if 'Vinyl' in nm:
+            red[list(p.vertices)] = True
+        if 'Vinyl' in nm or 'Piping' in nm or 'Sleeve' in nm:
+            soft[list(p.vertices)] = True
+    zm = (z0c + z1c) / 2
     for vi, (v, c) in enumerate(zip(me.vertices, ca.data)):
-        if not vinyl[vi]:
-            c.color = (0.0, 0.0, 0.0, 1.0)
+        if not soft[vi]:
+            c.color = (0.0, 0.0, 0.0, 0.0)
             continue
-        x, y, z = U(M @ v.co)
-        g = r = b = 0.0
-        on_cushion = z0c - 0.01 < z < z1c + 0.03 and cy - 0.05 < y < cy + 0.03
-        if on_cushion:
+        q = np.array(U(M @ v.co))
+        a = 0.0
+        for sp in open_:
+            d2 = float(np.dot(q - sp, q - sp))
+            if d2 < 0.0225:
+                a = max(a, math.exp(-d2 / 0.05 ** 2))     # wide: it only gates the atlas's crack shape
+        if not red[vi]:
+            c.color = (0.0, 0.0, 0.0, a)
+            continue
+        x, y, z = q
+        gp = r = b = 0.0
+        if z0c - 0.01 < z < z1c + 0.03 and cy - SEAT.CUSH_T - 0.01 < y < cy + 0.03:          # the cushion
             for xs, w in spots:
-                g = max(g, w * math.exp(-((x - xs) / 0.13) ** 2 - ((z - (z0c + z1c) / 2 + 0.03) / 0.14) ** 2))
-            g = max(g, 0.8 * math.exp(-((z - z1c) / 0.035) ** 2) * max(math.exp(-((x - xs) / 0.18) ** 2) for xs, _ in spots))
-            r = max(r, math.exp(-((z - z0c) / 0.04) ** 2) * 0.8)          # the crease at the back of the cushion
-        on_back = bz - 0.02 < z < bz + 0.16 and y > cy
-        if on_back:
-            g = max(g, 0.5 * math.exp(-((y - (cy + 0.50)) / 0.06) ** 2))    # shoulders rub the top band
+                gp = max(gp, w * math.exp(-((x - xs) / 0.13) ** 2 - ((z - zm + 0.03) / 0.14) ** 2))
+            gp = max(gp, 0.8 * math.exp(-((z - z1c) / 0.035) ** 2) * max(math.exp(-((x - xs) / 0.18) ** 2) for xs, _ in spots))
+            r = max(r, 0.6 * math.exp(-((z - z0c) / 0.03) ** 2) * (1.0 if y > cy - 0.025 else 0.3))
             if ws != 0:
-                b = max(b, math.exp(-((x - win_x) / 0.10) ** 2) * math.exp(-((y - (cy + 0.58)) / 0.07) ** 2))
-            r = max(r, 0.6 * math.exp(-((y - cy) / 0.03) ** 2))
-        c.color = (min(1.0, r), min(1.0, g * use), min(0.75, b * 0.7 * use), 1.0)
+                b = max(b, 0.5 * math.exp(-((x - win_x) / 0.06) ** 2) * (1.0 if y > cy - 0.02 else 0.3))
+        rel = q - O
+        u, w_ = float(np.dot(rel, Uax)), float(np.dot(rel, Wax))
+        if -0.04 < u < H + 0.03 and -0.02 < w_ < SEAT.BACK_D + 0.03:                        # the back
+            gp = max(gp, 0.5 * math.exp(-((u - 0.82 * H) / 0.06) ** 2))                      # shoulders
+            if ws != 0:
+                b = max(b, math.exp(-((x - win_x) / 0.10) ** 2) * math.exp(-((u - H) / 0.07) ** 2))
+            r = max(r, 0.5 * math.exp(-(u / 0.03) ** 2))                                      # the crease at its foot
+        c.color = (min(1.0, r), min(1.0, gp * use), min(0.75, b * 0.7 * use), a)
+
+
+# D-40 #1 the Unity slice (Bus/Editor/LanbaiBusSliceBuilder.cs: hero seat + hero side window + first right stanchion):
+# like the D-36 seats, these leave Cabin_Static and are exported as their own objects. Only parts in the 'Cabin'
+# collection: the exterior WinR1_Fillet / WinR1_Gasket ('Exterior') stay on the skin. (name, prefixes, exact names)
+SEPARATE = (('Window_R1', ('WinR1_',), ()),                      # parts/window.py via build_bus.window_trim
+            ('Pole_R0', ('PoleR0_',), ('PoleR0',)))              # parts/poles.py via build_bus.poles_and_guard
+# BusLayout.json 'slice': what LanbaiBusSliceBuilder takes out of Bus.fbx (lists of FBX object names)
+SLICE = dict(seat=['Seat_SeatR0'], window=['Window_R1', 'Glass_WinR1'], pillar=['Pole_R0'])
+
+
+def separate_of(n, cols):
+    if 'Cabin' not in cols:
+        return None
+    for name, prefixes, exact in SEPARATE:
+        if n in exact or n.startswith(prefixes):
+            return name
+    return None
+
+
+def separate_parts(out, sep_groups):
+    """the SEPARATE objects: joined, origin at the bbox centre, uv0 = metric box projection (as in Cabin_Static).
+    The 'UVMetric' copy is added after uv1_lightmap_multi (separate_metric_copy); lm_uv_order then checks the order
+    Unity needs (UVLightmap second)."""
+    obs = []
+    for name, _, _ in SEPARATE:
+        parts = sep_groups.get(name)
+        if not parts:
+            print('[finish] WARNING: no parts for %s (window_trim / poles_and_guard renamed?)' % name)
+            continue
+        ob = join(name, parts)
+        bb = [ob.matrix_world @ Vector(c) for c in ob.bound_box]
+        set_origin(ob, sum(bb, Vector()) / 8)
+        uv0_metric(ob)
+        out[name] = ob
+        obs.append(ob)
+    return obs
+
+
+def separate_metric_copy(obs):
+    for ob in obs:
+        me = ob.data
+        lay = me.uv_layers.get('UVMetric') or me.uv_layers.new(name='UVMetric')
+        for d, s_ in zip(lay.data, me.uv_layers['UVMap'].data):
+            d.uv = s_.uv
+        me.uv_layers.active = me.uv_layers['UVMap']
+        me.uv_layers['UVMap'].active_render = True
+
+
+# Unity takes the FBX uv sets in Blender's layer order (uv0, uv1, uv2) and Lanbai/Cabin reads _CabinTubeLM from uv1,
+# so every lightmapped separate object (on the joint pack with Cabin_Static, baked by bake_lightmap.py) carries its
+# layers in this order. The D-36 seats get UVMetric before the pack (seat_parts: UVMap, UVMetric, UVLightmap = the
+# metric chart on uv1, the bug the slice builder found); lm_uv_order puts them right. Cabin_Static has UVMap, UVLightmap.
+LM_UV_ORDER = ('UVMap', 'UVLightmap', 'UVMetric')
+LM_SEPARATE = ('Seat_', 'Window_', 'Pole_')
+
+
+def lm_uv_order(objs):
+    """Seat_* / Window_* / Pole_*: uv layers in LM_UV_ORDER (any other layer after those three, with a warning).
+    Blender cannot move a uv layer, so from the first layer out of place on, the layers are read by name, removed and
+    added again in order with the same uvs. Every script reads them by name (bake_lightmap.py 'UVLightmap', texbake
+    'UVMap', the material nodes), so only the FBX order changes. Idempotent. Returns the names of the objects changed."""
+    changed = []
+    for ob in objs:
+        if ob.type != 'MESH' or not ob.name.startswith(LM_SEPARATE):
+            continue
+        me = ob.data
+        names = [l.name for l in me.uv_layers]
+        if 'UVLightmap' not in names or 'UVMap' not in names:
+            print('[finish] WARNING: %s has uv layers %s: no UVMap / UVLightmap, not on _CabinTubeLM' % (ob.name, names))
+            continue
+        want = [n for n in LM_UV_ORDER if n in names] + [n for n in names if n not in LM_UV_ORDER]
+        if want[:3] != list(LM_UV_ORDER) or len(want) > 3:
+            print('[finish] WARNING: %s has uv layers %s, wants exactly %s' % (ob.name, names, list(LM_UV_ORDER)))
+        if names != want:
+            k = next(i for i, (a, b) in enumerate(zip(names, want)) if a != b)
+            uvs = {}
+            for n in names[k:]:
+                a = np.empty(2 * len(me.loops), np.float32)
+                me.uv_layers[n].data.foreach_get('uv', a)
+                uvs[n] = a
+            for n in names[k:]:
+                me.uv_layers.remove(me.uv_layers[n])
+            for n in want[k:]:
+                me.uv_layers.new(name=n, do_init=False).data.foreach_set('uv', uvs[n])
+            got = [l.name for l in me.uv_layers]
+            assert got == want, '%s: uv layers %s after the reorder, wanted %s' % (ob.name, got, want)
+            changed.append(ob.name)
+        me.uv_layers.active = me.uv_layers['UVMap']
+        me.uv_layers['UVMap'].active_render = True
+    return changed
 
 
 def build_all(ao_samples, bake_parts=True):
@@ -394,7 +515,7 @@ def build_all(ao_samples, bake_parts=True):
     body = objs['Body']
     outer, inner = split_body(body)
     groups = {'ext': [], 'static': [], 'tubes': [], 'radio': [], 'blind': [], 'curt': [], 'door': [], 'glass': [], 'wheel': {}, 'wiper': [],
-              'seat': {}}
+              'seat': {}, 'sep': {}}
     for o in list(bpy.data.objects):
         if o.type != 'MESH':
             continue
@@ -421,6 +542,8 @@ def build_all(ao_samples, bake_parts=True):
             groups['blind'].append(o)
         elif 'Curtains' in cols and n.startswith('Curtain') and not n.startswith('CurtainRail'):
             groups['curt'].append(o)
+        elif separate_of(n, cols):             # D-40 #1 slice pieces (were part of Cabin_Static)
+            groups['sep'].setdefault(separate_of(n, cols), []).append(o)
         else:
             groups['static'].append(o)
     # curtains: uv0 = (across m, down from rail m), vertex colour R = 0 rail -> 1 hem
@@ -492,8 +615,14 @@ def build_all(ao_samples, bake_parts=True):
     info = {}
     seats = seat_parts(out, groups['seat'], bake_parts)
     info['parts'] = PARTS_INFO
-    uv1_lightmap_multi([out['Cabin_Static']] + seats)
+    sep = separate_parts(out, groups['sep'])
+    uv1_lightmap_multi([out['Cabin_Static']] + seats + sep)
+    separate_metric_copy(sep)
+    info['uv_order_fixed'] = lm_uv_order(seats + sep)      # before the .blend is saved: the bake and --from-blend see it
     info['vc'] = vertex_colours(out['Cabin_Static'], ao_samples)
+    # the separate pieces get the same position-driven vertex colours they had inside Cabin_Static (window-corner
+    # dust on the frame, wear by the seats)
+    info['vc_separate'] = {ob.name: vertex_colours(ob, ao_samples) for ob in sep}
     # LOD1 of the exterior (seen only from outside, acts 1 and 12)
     lod1 = out['Bus_Exterior_LOD0'].copy()
     lod1.data = out['Bus_Exterior_LOD0'].data.copy()
@@ -584,6 +713,9 @@ def layout(out):
                           note='D-31：车厢内部的范围（给 LB_Journey.busMin / busMax）；Director 按玩家根位置检查，头探出玻璃 ≤ 0.6 m 不算离开'),
         instance_cap_note='D-31：实例人数上限 = seat_count（不算司机座）',
         objects=sorted(out.keys()),
+        slice=dict(SLICE, missing=[n for v in SLICE.values() for n in v if n not in out],
+                   note='D-40 #1：菜单「蓝白/Build/车 切片」（Bus/Editor/LanbaiBusSliceBuilder.cs）从 Bus.fbx 里取这几个物体，'
+                        '车局部坐标不变（车在原点）。missing 不空 = 这个 FBX 是旧的，要重跑 finish_bus.py'),
     )
 
 
@@ -625,7 +757,9 @@ def main():
         bpy.ops.wm.open_mainfile(filepath=a.from_blend)
         objs = [o for o in bpy.data.objects if o.type == 'MESH' or o.name.startswith('WiperPivot')]
         out = {o.name: o for o in objs if not o.name.startswith('Wiper')}
-        info = {}
+        # a .blend saved before the uv order fix (seats UVMap, UVMetric, UVLightmap): same uvs, only the order changes,
+        # so the light map baked from it stays valid
+        info = dict(uv_order_fixed=lm_uv_order(objs))
     else:
         out, extra, info = build_all(a.ao_samples, bake_parts=not a.no_part_bake)
         bpy.context.scene['lb_parts'] = json.dumps(PARTS_INFO)
@@ -666,6 +800,9 @@ def main():
     rep = readback(fbx, expect)
     json.dump(rep, open(os.path.join(a.out, 'Bus_fbx_readback.json'), 'w'), ensure_ascii=False, indent=1)
     bad = [k for k, v in rep.items() if v == 'MISSING' or (isinstance(v, dict) and (v['bbox_err_m'] > 0.002 or v['verts'] < v['verts_expected']))]
+    # what Unity will see: uv1 = UVLightmap on every lightmapped separate object (read back from the FBX)
+    bad += ['%s uv %s' % (k, v['uv_layers']) for k, v in rep.items()
+            if k.startswith(LM_SEPARATE) and isinstance(v, dict) and v['uv_layers'] != list(LM_UV_ORDER)]
     print('[finish] %d objects, %d tris total, readback problems: %s, %s' % (len(objs), lay['stats_total_tris'], bad or 'none', info))
 
 

@@ -3,7 +3,7 @@
 //
 //  !!! WRITTEN WITHOUT A UNITY COMPILER. Checked with Common/Tools~/compile_check (DXC + Unity 2022.3.22f1
 //      CGIncludes), never compiled in Unity. Cabin/Tools~/cabin_numpy.py is a 1:1 numpy port of the colour maths
-//      here (bleach, erosion threshold + rim, D-08 / D-21 limiter); change both together. !!!
+//      here (bleach, erosion threshold + rim, D-08 / D-21 limiter, D-40 #4 specular AA); change both together. !!!
 //
 //  Bible §4.8 '慢慢消失': bleach (_Udon_CabinBleach) then erosion (_Udon_CabinFade, clip on world-space 3D FBM,
 //  0.3-0.8 m patches). Threshold structure is the bible's:
@@ -59,6 +59,41 @@ inline float3 LanbaiCabinBleachAlbedo(float3 albedo, float bleach)
     return lerp(albedo, target, saturate(bleach));
 }
 inline float LanbaiCabinBleachSmooth(float s, float bleach) { return lerp(s, 0.3, saturate(bleach)); }
+
+// ---------------------------------------------------------------------------------------------------
+// D-40 #4 geometric specular anti-aliasing (VR, ~20 px/deg: the painted seat tube, the Ø32 stanchions, the window
+// alu frame's 1.2 mm rounded edges at 1-2 m).
+// Tokuyoshi & Kaplanyan 2019, "Improved Geometric Specular Antialiasing", I3D '19, the normal-derivative ("deferred")
+// listing, itself the screen-space form of Kaplanyan, Hill, Patney & Lefohn 2016 (HPG '16):
+//     kernelRoughness2   = 2 sigma2 (dot(dndx, dndx) + dot(dndy, dndy))      sigma2: pixel filter variance (paper 1/2pi)
+//     filteredRoughness2 = saturate(roughness2 + min(kernelRoughness2, kappa)) kappa: threshold (paper 0.18)
+// 'roughness2' is the GGX alpha squared. Filament (surface_shading_lit.fs: computeKernelRoughness + normalFiltering,
+// MaterialBuilder defaults variance 0.15 / threshold 0.2) is the same maths. Unity Standard: perceptualRoughness =
+// 1 - smoothness, alpha = perceptualRoughness^2 (GGXTerm squares it again), so roughness2 = (1 - s)^4 and
+// s' = 1 - filteredRoughness2^(1/4). (Adding the kernel to alpha instead of alpha^2 would be a much weaker filter:
+// slope variances add in alpha^2.)
+// Which normal: the CALLER picks. Filament reads the geometric (vertex) normal; the paper's deferred listing reads the
+// G-buffer normal, i.e. the shading normal with the normal maps. Lanbai/Cabin defaults to the shading normal
+// (_SpecAAMapNormal 1): Unity's BC5 / DXT5nm normal maps rebuild z, so a mip keeps no normal variance (no Toksvig),
+// and the D-36 part masks carry no roughness-from-normal prefilter - the derivative is the only place the baked
+// piping, seams and rounded edges get filtered. _SpecAAMapNormal 0 = Filament's choice.
+// Isotropic (Unity Standard GGX has no anisotropy): on a thin tube the widening along its axis is wasted, so the
+// highlight gets wider AND dimmer (cabin_numpy specaa: a Ø32 pole at 0.80 seen at 2 m keeps ~51 % of its energy,
+// its flicker drops ~4x). Hard edges with split normals are not seen (a quad never spans two triangles).
+// sigma2 = 0 returns the input exactly (off). ~15 ALU: 2 derivative ops, 2 dp3, 2 sqrt, a few mad / min / saturate.
+// Call it at the top level of the fragment code (no divergent branch around it: ddx / ddy). Cabin/Tools~/cabin_numpy.py
+// spec_aa() is the CPU port (self-test: python3 Cabin/Tools~/cabin_numpy.py specaa).
+inline float LanbaiCabinSpecAA(float smoothness, float3 nWS, float sigma2, float kappa)
+{
+    float3 dndx = ddx(nWS);
+    float3 dndy = ddy(nWS);
+    float kernelRoughness2 = min(2.0 * sigma2 * (dot(dndx, dndx) + dot(dndy, dndy)), kappa);
+    float pr = 1.0 - saturate(smoothness);                            // perceptual roughness
+    float roughness2 = pr * pr;
+    roughness2 *= roughness2;                                         // alpha^2 = pr^4
+    float filtered = 1.0 - sqrt(sqrt(saturate(roughness2 + kernelRoughness2)));
+    return sigma2 > 0.0 ? filtered : smoothness;                      // select, not a branch
+}
 
 // ---------------------------------------------------------------------------------------------------
 // world-space 3D value-noise FBM (4 octaves). Same in both eyes (world anchored).

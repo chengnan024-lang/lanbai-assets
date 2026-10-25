@@ -19,12 +19,13 @@ using UnityEngine.Rendering;
 
 public static class LanbaiBusBuild
 {
-    const string Root = "Assets/Lanbai/";
-    const string FbxPath = Root + "Bus/Models/Bus.fbx";
-    const string LayoutPath = Root + "Bus/Models/BusLayout.json";
-    const string MatDir = Root + "Bus/Materials";
+    // internal: shared with LanbaiBusSliceBuilder (蓝白/Build/车 切片, same folder / assembly)
+    internal const string Root = "Assets/Lanbai/";
+    internal const string FbxPath = Root + "Bus/Models/Bus.fbx";
+    internal const string LayoutPath = Root + "Bus/Models/BusLayout.json";
+    internal const string MatDir = Root + "Bus/Materials";
     const string ProgDir = Root + "Bus/Programs";
-    const string Tex = Root + "Bus/Textures/";
+    internal const string Tex = Root + "Bus/Textures/";
     const string RainGlass = Root + "Rain/Textures/Glass/";
     const string RootName = "Lanbai_Bus";
 
@@ -64,11 +65,30 @@ public static class LanbaiBusBuild
         { "Linen", new object[] { "#262626", 0.10f, 0f } }, { "Glass", new object[] { "#E9EFEA", 0.97f, 0f } },
     };
 
-    enum Mode { CabinLM, Cabin, ExteriorAtlas, Exterior }
+    internal enum Mode { CabinLM, Cabin, ExteriorAtlas, Exterior }
 
     static StringBuilder _rep;
     static Dictionary<string, PartInfo> _parts = new Dictionary<string, PartInfo>();
     const string PartTex = Tex + "Parts/";
+
+    // for LanbaiBusSliceBuilder: the report the material makers write into, and the D-36 part table PartMat reads
+    // (Build() sets both itself)
+    internal static void BeginShared(StringBuilder rep, Layout L)
+    {
+        _rep = rep;
+        _parts = new Dictionary<string, PartInfo>();
+        if (L != null && L.parts != null) foreach (var pi in L.parts) _parts[pi.type] = pi;
+    }
+
+    // which Lanbai/Cabin variant an FBX object gets. Window_* / Pole_* are the D-40 #1 slice pieces that finish_bus.py
+    // now exports on their own (Window_R1, Pole_R0): they were part of Cabin_Static and stay on its tube light map.
+    internal static Mode ModeFor(string n)
+    {
+        return n == "Cabin_Static" || n.StartsWith("Seat_") || n.StartsWith("Window_") || n.StartsWith("Pole_") ? Mode.CabinLM  // D-36 seats share the LM atlas
+             : n.StartsWith("Cabin_") || n.StartsWith("Bus_Door") ? Mode.Cabin
+             : n.StartsWith("Bus_Exterior") ? Mode.ExteriorAtlas
+             : Mode.Exterior;                                  // wheels, wipers
+    }
 
     [MenuItem("蓝白/Build/车")]
     public static void Build()
@@ -124,10 +144,7 @@ public static class LanbaiBusBuild
                 curtains = r;
                 continue;
             }
-            Mode mode = n == "Cabin_Static" || n.StartsWith("Seat_") ? Mode.CabinLM            // D-36 seats share the LM atlas
-                      : n.StartsWith("Cabin_") || n.StartsWith("Bus_Door") ? Mode.Cabin
-                      : n.StartsWith("Bus_Exterior") ? Mode.ExteriorAtlas
-                      : Mode.Exterior;                                  // wheels, wipers
+            Mode mode = ModeFor(n);
             var mats = r.sharedMaterials;
             for (int i = 0; i < mats.Length; i++) mats[i] = CabinMat(cabin, mats[i] != null ? mats[i].name : "Alu", mode);
             r.sharedMaterials = mats;
@@ -285,16 +302,17 @@ public static class LanbaiBusBuild
     }
 
     // ------------------------------------------------------------------------------------------------ material makers
-    static Material GetOrCreate(string name, Shader sh)
+    // folder: where the .mat goes (null = Bus/Materials, the full build; the slice passes Bus/Generated/Materials)
+    internal static Material GetOrCreate(string name, Shader sh, string folder = null)
     {
-        string path = MatDir + "/" + name + ".mat";
+        string path = (folder ?? MatDir) + "/" + name + ".mat";
         var m = AssetDatabase.LoadAssetAtPath<Material>(path);
         if (m == null) { m = new Material(sh != null ? sh : Shader.Find("Standard")); AssetDatabase.CreateAsset(m, path); }
         else if (sh != null && m.shader != sh) m.shader = sh;
         return m;
     }
 
-    static Material CabinMat(Shader sh, string importedName, Mode mode)
+    internal static Material CabinMat(Shader sh, string importedName, Mode mode, string folder = null)
     {
         string key = importedName.Replace(" (Instance)", "");
         if (key.StartsWith("M_Bus_")) key = key.Substring(6);
@@ -304,7 +322,7 @@ public static class LanbaiBusBuild
         if (part) v = MatTable["Vinyl"];
         else if (!MatTable.TryGetValue(key, out v)) { _rep.AppendLine("  unknown material " + importedName + " -> Alu values"); v = MatTable["Alu"]; }
         string suffix = mode == Mode.CabinLM ? "" : mode == Mode.Cabin ? "_NoLM" : mode == Mode.ExteriorAtlas ? "_ExtAtlas" : "_Ext";
-        var m = GetOrCreate("M_Bus_" + key + suffix, sh);
+        var m = GetOrCreate("M_Bus_" + key + suffix, sh, folder);
         m.SetColor("_Color", Hex((string)v[0]));
         m.SetFloat("_Glossiness", (float)v[1]);
         m.SetFloat("_Metallic", (float)v[2]);
@@ -402,10 +420,10 @@ public static class LanbaiBusBuild
 
     // Rain/README_Rain.md §5.2: windscreen (face wind + wipers), skylight (horizontal beads, alpha 0.08), everything else
     // (side, roof-slope, rear, brow, destination window, door panes) vertical beads, alpha 0.06.
-    static Material GlassMat(Shader sh, string pane)
+    internal static Material GlassMat(Shader sh, string pane, string folder = null)
     {
         string kind = pane.StartsWith("Glass_Windscreen") ? "Windscreen" : pane == "Glass_Skylight" ? "Skylight" : "Side";
-        var m = GetOrCreate("M_Bus_Glass_" + kind, sh);
+        var m = GetOrCreate("M_Bus_Glass_" + kind, sh, folder);
         bool horiz = kind == "Skylight";
         string o = horiz ? "Horizontal" : "Vertical";
         m.SetTexture("_BeadNormal", T(RainGlass + "RainBeads_" + o + "_Normal_1024.png"));
@@ -426,7 +444,7 @@ public static class LanbaiBusBuild
 
     // D-36: the part's baked atlas on uv0 (albedo x _Color, normal, mask R metal G smooth B wear A AO); the thirty years
     // are in the bake, so the vertex-colour wear / fade / crack layers are off; the scanned grain tiles on top.
-    static void PartMat(Material m, string ptype)
+    internal static void PartMat(Material m, string ptype)
     {
         PartInfo pi;
         if (!_parts.TryGetValue(ptype, out pi)) { _rep.AppendLine("  part " + ptype + ": not in BusLayout.json parts"); return; }
@@ -509,7 +527,7 @@ public static class LanbaiBusBuild
     }
 
     // ------------------------------------------------------------------------------------------------ helpers
-    static Transform FindDeep(Transform t, string name)
+    internal static Transform FindDeep(Transform t, string name)
     {
         if (t.name == name) return t;
         for (int i = 0; i < t.childCount; i++) { var r = FindDeep(t.GetChild(i), name); if (r != null) return r; }
@@ -518,7 +536,7 @@ public static class LanbaiBusBuild
 
     static Vector3 V(float[] a) { return a != null && a.Length >= 3 ? new Vector3(a[0], a[1], a[2]) : Vector3.zero; }
 
-    static Color Hex(string h)
+    internal static Color Hex(string h)
     {
         Color c; return ColorUtility.TryParseHtmlString(h, out c) ? c : Color.magenta;   // sRGB, as typed in the Inspector
     }
@@ -529,7 +547,7 @@ public static class LanbaiBusBuild
         Color l = srgb.linear; return new Vector4(l.r * gain, l.g * gain, l.b * gain, 1f);
     }
 
-    static Texture T(string path)
+    internal static Texture T(string path)
     {
         var t = AssetDatabase.LoadAssetAtPath<Texture>(path);
         if (t == null) _rep.AppendLine("  texture missing: " + path);
@@ -546,7 +564,7 @@ public static class LanbaiBusBuild
         return null;
     }
 
-    static void EnsureFolder(string path)
+    internal static void EnsureFolder(string path)
     {
         if (AssetDatabase.IsValidFolder(path)) return;
         string parent = Path.GetDirectoryName(path).Replace('\\', '/');

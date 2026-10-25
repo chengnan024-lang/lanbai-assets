@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-"""烘 _CabinTubeLM（圣经 §1.6 / §4.3：只有车、只开 10 根灯管）到 Cabin_Static 和各个座位（D-36：Seat_*）的 uv1（同一张图）。
+"""烘 _CabinTubeLM（圣经 §1.6 / §4.3：只有车、只开 10 根灯管）到 Cabin_Static、各个座位（D-36：Seat_*）和切片的两件
+（D-40 #1：Window_R1、Pole_R0，finish_bus.SEPARATE）的 uv1（同一张图）。
 RGB = 管灯照度 E（Unity 单位，线性；Lanbai/Cabin 里 albedo × LM.rgb × _Udon_CabinLightmap），A = AO（0.5 m）。
 校准：主座位座垫中心的 E = 0.8（圣经 §4.3，S2 下灰卡 #585F64）。光的传输对瓦数是线性的，所以烘一次、按座垫读数整体缩放。
 
@@ -136,7 +137,9 @@ def main():
         if o.name.startswith('Glass_') or o.name.startswith('Cabin_Tubes'):
             o.hide_render = True          # glass: no blocking; diffusers: the area lights stand in for them
     add_tubes(10.0)
-    objs = [bpy.data.objects['Cabin_Static']] + sorted((o for o in bpy.data.objects if o.name.startswith('Seat_')
+    # everything on the joint _CabinTubeLM pack (finish_bus.uv1_lightmap_multi): Cabin_Static, the D-36 seats and the
+    # D-40 #1 slice pieces finish_bus exports on their own (Window_R1, Pole_R0)
+    objs = [bpy.data.objects['Cabin_Static']] + sorted((o for o in bpy.data.objects if o.name.startswith(('Seat_', 'Window_', 'Pole_'))
                                                         and o.type == 'MESH'), key=lambda o: o.name)
     sample_at = Sampler(objs)
     img = bpy.data.images.new('LM', a.res, a.res, alpha=True, float_buffer=True)

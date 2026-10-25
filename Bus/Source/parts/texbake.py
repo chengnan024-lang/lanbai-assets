@@ -7,7 +7,7 @@
      写成 uv0（Unity 只按 uv0 算切线，法线图必须在 uv0 上）。
   2. 用 Cycles 烘：底色（DIFFUSE color）、法线（切线空间，含材质里的 bump / 皮纹）、粗糙度、AO、金属（发射法）。
   3. 合成：<name>_Albedo（sRGB）、<name>_Normal（OpenGL，Unity 当 Normal map 导入）、
-     <name>_Mask（R 金属、G 光滑、B 磨损（暂空）、A AO）——和外观图集的遮罩同一个约定。
+     <name>_Mask（R 金属、G 光滑、B 接缝开裂的候选形状（座椅：每座用顶点色 alpha 挑开哪几处，圣经 §4.2）、A AO）——和外观图集的遮罩同一个约定。
 贴图写进 Bus/Textures/Parts/。烘的时候不需要任何灯（这些通道都和光无关）。
 """
 import math
@@ -137,6 +137,31 @@ def _emit_socket(ob, socket='Metallic', colour=False):
     return saved
 
 
+def _emit_node(ob, node_name):
+    """like _emit_socket, but emit the first output of the node called node_name (black where a material has none)."""
+    saved = []
+    for m in ob.data.materials:
+        nt = m.node_tree
+        out = [n for n in nt.nodes if n.type == 'OUTPUT_MATERIAL'][0]
+        old = out.inputs[0].links[0].from_socket if out.inputs[0].links else None
+        em = nt.nodes.new('ShaderNodeEmission')
+        src = nt.nodes.get(node_name)
+        if src is not None:
+            nt.links.new(src.outputs[0], em.inputs['Color'])
+        else:
+            em.inputs['Color'].default_value = (0.0, 0.0, 0.0, 1.0)
+        nt.links.new(em.outputs[0], out.inputs[0])
+        saved.append((nt, out, old, em))
+    return saved
+
+
+def _set_value_nodes(ob, node_name, v):
+    for m in ob.data.materials:
+        n = m.node_tree.nodes.get(node_name)
+        if n is not None:
+            n.outputs[0].default_value = v
+
+
 def _emit_metal(ob):
     return _emit_socket(ob, 'Metallic')
 
@@ -189,7 +214,7 @@ def bake_part(objs, name, res=2048, samples=32, out_dir=OUT, high=None):
     p = os.path.join(out_dir, 'Part_%s_Normal_%d.png' % (name, res))
     Image.fromarray((np.clip(flip(nrm)[..., :3], 0, 1) * 255 + 0.5).astype(np.uint8)).save(p)
     files['normal'] = p
-    mask = np.stack([flip(met)[..., 0], 1.0 - flip(rgh)[..., 0], np.zeros_like(rgh[..., 0]), flip(ao)[..., 0]], -1)
+    mask = np.stack([flip(met)[..., 0], 1.0 - flip(rgh)[..., 0], flip(crk)[..., 0], flip(ao)[..., 0]], -1)
     p = os.path.join(out_dir, 'Part_%s_Mask_%d.png' % (name, res))
     Image.fromarray((np.clip(mask, 0, 1) * 255 + 0.5).astype(np.uint8), 'RGBA').save(p)
     files['mask'] = p
@@ -209,12 +234,19 @@ def bake_onto(target, high, name, res=2048, samples=16, out_dir=OUT):
     me = target.data
     me.uv_layers.active = me.uv_layers['UVMap']
     sc.cycles.samples = 1
+    _set_value_nodes(hs, 'crack_show', 0.0)    # seam cracks: colour + gloss per seat in Unity (mask.b x vertex alpha)
     saved = _emit_socket(hs, 'Base Color', colour=True)
     alb = _bake(target, _image(name + '_alb', res, non_color=False), 'EMIT', src=hs)
     _restore(saved)
     sc.cycles.samples = samples
     nrm = _bake(target, _image(name + '_nrm', res), 'NORMAL', src=hs, normal_space='TANGENT')
     rgh = _bake(target, _image(name + '_rgh', res), 'ROUGHNESS', src=hs)
+    _set_value_nodes(hs, 'crack_show', 1.0)
+    sc.cycles.samples = 1
+    saved = _emit_node(hs, 'crack_mask')
+    crk = _bake(target, _image(name + '_crk', res), 'EMIT', src=hs)
+    _restore(saved)
+    sc.cycles.samples = samples
     sc.cycles.samples = max(samples, 64)
     ao = _bake(target, _image(name + '_ao', res), 'AO', src=hs)
     sc.cycles.samples = 1

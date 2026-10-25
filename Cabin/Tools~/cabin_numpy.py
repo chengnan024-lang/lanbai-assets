@@ -3,8 +3,10 @@
 #  Cabin/Tools~/cabin_numpy.py   蓝白 · Lanbai/Cabin 的颜色数学的 numpy 版（与 LanbaiCabinCommon.cginc 1:1）
 #
 #  Ports: tube LM term, cabin ambient x AO, bleach, erosion threshold (prose / literal) + noise remap + 3 cm rim,
-#  seat sphere / floor patch / D-26 hole, D-08 wound-light limiter and the D-21 band guard (CIE Lab, D65).
-#  Self-test (python3 Cabin/Tools~/cabin_numpy.py): asserts + writes PNGs into Cabin/Docs~/:
+#  seat sphere / floor patch / D-26 hole, D-08 wound-light limiter and the D-21 band guard (CIE Lab, D65),
+#  D-40 #4 geometric specular AA (spec_aa = LanbaiCabinSpecAA).
+#  python3 Cabin/Tools~/cabin_numpy.py specaa   only the specular AA self-test (asserts + a table; writes no file)
+#  Self-test (python3 Cabin/Tools~/cabin_numpy.py): the specaa test, then asserts + writes PNGs into Cabin/Docs~/:
 #    swatch_d08_limiter.png    cabin surfaces under the raw wound light vs. the limited one (+ Lab numbers)
 #    swatch_bleach.png         each surface at bleach 0 / 0.10 / 0.25 / 0.5 / 0.8 / 1 under the act's ambient
 #    curve_cabin_timeline.png  tubes / bleach / fade / hole curves of LanbaiCabinDriver over t
@@ -112,6 +114,203 @@ def wound_light_limit(lc):
     r = np.radians(hn)
     out = lab2lin(np.array([lab[0], np.cos(r) * Cn, np.sin(r) * Cn]))
     return out * (Y / 0.5)
+
+
+# ---------------------------------------------------------------------------------------------------
+# D-40 #4 geometric specular AA (= LanbaiCabinSpecAA; Tokuyoshi & Kaplanyan 2019 deferred listing, Filament defaults)
+SPEC_AA_VARIANCE = 0.15       # _SpecAAVariance  sigma2 (paper 1 / 2 pi = 0.159)
+SPEC_AA_THRESHOLD = 0.2       # _SpecAAThreshold kappa  (paper 0.18)
+PX_PER_DEG = 20.0             # D-40a #6: Index ~20 px/deg
+
+
+def spec_aa(smoothness, dndx, dndy, sigma2=SPEC_AA_VARIANCE, kappa=SPEC_AA_THRESHOLD):
+    """LanbaiCabinSpecAA, 1:1 (float32 like the GPU). dndx / dndy (..., 3): screen derivatives of the world normal."""
+    f = np.float32
+    s = np.asarray(smoothness, f)
+    dndx = np.asarray(dndx, f)
+    dndy = np.asarray(dndy, f)
+    k2 = np.minimum(f(2.0) * f(sigma2) * (np.sum(dndx * dndx, -1) + np.sum(dndy * dndy, -1)), f(kappa))
+    pr = f(1.0) - np.clip(s, 0, 1)
+    r2 = pr * pr
+    r2 = r2 * r2                                           # alpha^2 = pr^4
+    filtered = f(1.0) - np.sqrt(np.sqrt(np.clip(r2 + k2, 0, 1)))
+    return np.where(f(sigma2) > 0, filtered, s)
+
+
+def spec_aa_filament(smoothness, dndx, dndy, sigma2=SPEC_AA_VARIANCE, kappa=SPEC_AA_THRESHOLD):
+    """the same filter written the way Filament does it (computeKernelRoughness + normalFiltering), float64, through
+    Unity's mapping (perceptualRoughness = 1 - smoothness, roughness = perceptualRoughness^2) - an independent check."""
+    du, dv = np.asarray(dndx, float), np.asarray(dndy, float)
+    kernel = np.minimum(2.0 * sigma2 * (np.sum(du * du, -1) + np.sum(dv * dv, -1)), kappa)
+    perceptual = 1.0 - np.clip(np.asarray(smoothness, float), 0, 1)
+    roughness = perceptual ** 2
+    square = np.clip(roughness ** 2 + kernel, 0, 1)
+    return 1.0 - np.sqrt(np.sqrt(square))                  # roughnessToPerceptualRoughness(sqrt(square))
+
+
+def turn(deg, axis=0):
+    """the change of a unit normal that turns 'deg' degrees between two pixels (chord, length 2 sin(deg / 2))."""
+    v = np.zeros(3)
+    v[axis] = 2.0 * np.sin(np.radians(deg) / 2.0)
+    return v
+
+
+def pixel_m(d):
+    """pixel footprint in metres at distance d (D-40a #6 density)."""
+    return d * np.tan(np.radians(1.0 / PX_PER_DEG))
+
+
+def _ggx(ndoth, a2):
+    d = (ndoth * a2 - ndoth) * ndoth + 1.0                 # Unity GGXTerm
+    return a2 / (np.pi * (d * d + 1e-7))
+
+
+def pole_row(r, d, smooth, shift, mode, ss=64, phi=30.0, sigma2=SPEC_AA_VARIANCE, kappa=SPEC_AA_THRESHOLD, sr=1):
+    """one pixel row across a vertical tube of radius r at distance d (orthographic, PX_PER_DEG), view along -z, a
+    directional light placed so the mirror normal sits phi deg off the view. Per pixel: GGX D x N.L (no F, no V: a
+    highlight proxy). mode 'off' = 1 sample per pixel, 'on' = 1 sample + spec_aa with one ddx per 2x2 quad (coarse,
+    as d3d11), 'ref' = ss samples per pixel, unfiltered (the box-filtered truth). sr = shading samples per output
+    pixel for 'off' / 'on' (sr 2 = the bus_slice cameras' "ss": 2, shaded at 2x then box-averaged; the quads and their
+    ddx are on the 2x grid, so the derivative is half the headset's). Only pixels whose centre is within 75 deg of
+    the view count (keeps the silhouette's coverage changes out of the measure)."""
+    p = pixel_m(d)
+    n = int(np.ceil(2.0 * r / p)) + 6
+    n += n % 2
+    x0 = (np.arange(n) - n // 2 + shift) * p               # left edge of each pixel (the quad grid stays put)
+    h = np.array([np.sin(np.radians(phi)), 0.0, np.cos(np.radians(phi))])
+    l = np.array([np.sin(np.radians(2 * phi)), 0.0, np.cos(np.radians(2 * phi))])
+
+    def nrm(x):
+        st = np.clip(x / r, -0.999, 0.999)
+        return np.stack([st, np.zeros_like(st), np.sqrt(1.0 - st * st)], -1)
+
+    def shade(nv, s):
+        a2 = (1.0 - np.asarray(s, float)) ** 4
+        return _ggx(nv @ h, a2) * np.maximum(nv @ l, 0.0)
+
+    xc = x0 + 0.5 * p
+    win = np.abs(xc) < r * np.sin(np.radians(75.0))
+    if mode == 'ref':
+        xs = x0[:, None] + (np.arange(ss) + 0.5) / ss * p
+        val = shade(nrm(xs), smooth).mean(1)
+    else:
+        assert sr == 1 or sr % 2 == 0
+        xs = (x0[:, None] + (np.arange(sr) + 0.5) / sr * p).ravel()   # sr 1: the pixel centres
+        nc = nrm(xs)
+        s = np.full(len(xs), float(smooth))
+        if mode == 'on':
+            dndx = np.repeat(nc[1::2] - nc[0::2], 2, axis=0)
+            s = spec_aa(s, dndx, np.zeros_like(dndx), sigma2, kappa).astype(float)
+        val = shade(nc, s).reshape(n, sr).mean(1)
+    return val * win, p
+
+
+def pole_flicker(r, d, smooth, shifts=32, **kw):
+    """the highlight under sub-pixel motion (0 .. 2 px, both quad parities): coefficient of variation of the row's
+    energy (sum x pixel) and of its brightest pixel, and the mean energy relative to the supersampled truth."""
+    out = {}
+    for mode in ('ref', 'off', 'on'):
+        E, P = [], []
+        for k in range(shifts):
+            v, p = pole_row(r, d, smooth, 2.0 * k / shifts, mode, **kw)
+            E.append(v.sum() * p)
+            P.append(v.max())
+        E, P = np.array(E), np.array(P)
+        out[mode] = dict(cvE=E.std() / E.mean(), cvP=P.std() / P.mean(), E=E.mean(), P=P.mean())
+    for mode in out:
+        out[mode]['E_rel'] = out[mode]['E'] / out['ref']['E']
+        out[mode]['P_rel'] = out[mode]['P'] / out['ref']['P']
+    return out
+
+
+# the D-40 #4 headset targets (what, radius m, smoothness, tube). Seat tube r from Bus/Source/parts/seat.py HEAD
+# (0.011), painted #3C3E3D 0.35 / worn bends 0.50 (LanbaiBusBuild SeatFrame + _WearSmooth); GEOMETRY ONLY: the seat is
+# a D-36 part material (PartMat: baked _PartNormal + the leather grain on the whole part), so with _SpecAAMapNormal 1
+# the tube's kernel is bigger than this (at most kappa). Ø32 pole bible §4.2 / parts/poles.py; window alu frame
+# profile rounded 1.2 mm (parts/window.py FRAME); chrome 0.85: the stop-button ring on the pole (poles.py _Ring,
+# bevel 0.0012) and the window latch / keeper (window.py, bevel 0.0012), the driver's door lever Ø12 (driver.py
+# DoorCtl_Lever, r 0.006). tube False = a 1-3 px rounded edge: not in the flicker rows (the row's coverage of a
+# 1-3 px edge would dominate the CV).
+SPEC_AA_TARGETS = [
+    ('seat tube painted Ø22', 0.011, 0.35, True), ('seat tube worn Ø22', 0.011, 0.50, True),
+    ('pole Ø32', 0.016, 0.55, True), ('pole Ø32 hand height', 0.016, 0.80, True),
+    ('window frame edge r1.2mm', 0.0012, 0.45, False),
+    ('chrome ring / latch r1.2mm', 0.0012, 0.85, False), ('chrome door lever Ø12', 0.006, 0.85, True)]
+
+
+def specaa_selftest():
+    z = np.zeros(3)
+    S = np.array([0.0, 0.2, 0.35, 0.45, 0.55, 0.8, 0.85, 1.0])
+    # 1. flat normal (no screen change) -> unchanged
+    assert np.allclose(spec_aa(S, np.tile(z, (8, 1)), np.tile(z, (8, 1))), S, atol=2e-6)
+    # 2. variance 0 -> exactly the input, whatever the derivatives
+    big = np.tile(turn(60.0), (8, 1))
+    assert np.array_equal(spec_aa(S, big, big, sigma2=0.0), S.astype(np.float32))
+    # 3. a normal that turns 10 deg per pixel (in x) -> smoothness drops; never rises; stays in [0, 1]
+    t10 = np.tile(turn(10.0), (8, 1))
+    s10 = spec_aa(S, t10, np.tile(z, (8, 1)))
+    assert np.all(s10[:-1] <= S[:-1] + 1e-6) and np.all(s10[1:] < S[1:] - 1e-3) and np.all((s10 >= 0) & (s10 <= 1))
+    k10 = 2 * SPEC_AA_VARIANCE * (2 * np.sin(np.radians(5.0))) ** 2
+    assert abs(s10[6] - (1 - ((1 - 0.85) ** 4 + k10) ** 0.25)) < 1e-5            # 0.85 by hand
+    # 4. same filter as Filament's code path (float64, independent of the float32 port)
+    rng = np.random.default_rng(7)
+    sr = rng.uniform(0, 1, 2000)
+    dx, dy = rng.normal(0, 0.2, (2000, 3)), rng.normal(0, 0.2, (2000, 3))
+    for sg, kp in ((0.15, 0.2), (0.159, 0.18), (0.5, 1.0)):
+        assert np.max(np.abs(spec_aa(sr, dx, dy, sg, kp) - spec_aa_filament(sr, dx, dy, sg, kp))) < 2e-5
+    # 5. monotonic: non-increasing in kappa, in sigma2 and in the turn per pixel; kappa caps the kernel
+    kap = np.linspace(0, 1, 41)
+    for s0 in (0.35, 0.55, 0.85):
+        sk = np.array([spec_aa(s0, turn(45.0), z, kappa=k) for k in kap])
+        assert np.all(np.diff(sk) <= 1e-6) and np.any(np.diff(sk) < -1e-4), (s0, sk)
+        assert abs(sk[0] - s0) < 2e-6                                             # kappa 0 = nothing added
+        sv = np.array([spec_aa(s0, turn(10.0), z, sigma2=v) for v in np.linspace(0, 0.5, 26)])
+        assert np.all(np.diff(sv) <= 1e-6)
+        st = np.array([spec_aa(s0, turn(a), z) for a in np.linspace(0, 90, 46)])
+        assert np.all(np.diff(st) <= 1e-6)
+        cap = 1 - ((1 - s0) ** 4 + SPEC_AA_THRESHOLD) ** 0.25
+        assert abs(spec_aa(s0, turn(179.0), turn(179.0, 1)) - cap) < 1e-5
+    # 6. the y derivative counts the same as x (isotropic kernel)
+    assert abs(spec_aa(0.8, turn(10.0), z) - spec_aa(0.8, z, turn(10.0, 1))) < 1e-7
+    # 7. sub-pixel motion of a Ø32 pole's highlight at 2 m, hand-height 0.80: the filter cuts the flicker
+    fl = pole_flicker(0.016, 2.0, 0.80)
+    assert fl['on']['cvE'] < 0.5 * fl['off']['cvE'] and fl['on']['cvP'] < fl['off']['cvP'], fl
+
+    print('spec AA  sigma2 %.3f  kappa %.2f  (%d px/deg)' % (SPEC_AA_VARIANCE, SPEC_AA_THRESHOLD, PX_PER_DEG))
+    print('  normal turning 10 deg / px:  ' + '  '.join('%.2f->%.3f' % (a, b) for a, b in zip(S, s10)))
+    print('  targets: smoothness at the tube centre / 60 deg off it (turn per px in brackets)')
+    rows = []
+    for name, r, s0, _tube in SPEC_AA_TARGETS:
+        cells = []
+        for d in (1.0, 2.0):
+            for th in (0.0, 60.0):
+                a = min(np.degrees(pixel_m(d) / (r * np.cos(np.radians(th)))), 120.0)
+                v = float(spec_aa(s0, turn(a), z))
+                cells.append((a, v))
+            rows.append((name, s0, d, cells[-2:]))
+        print('  %-26s s %.2f   1 m: %.3f (%4.1f deg) / %.3f (%4.1f deg)   2 m: %.3f (%4.1f deg) / %.3f (%4.1f deg)'
+              % (name, s0, cells[0][1], cells[0][0], cells[1][1], cells[1][0], cells[2][1], cells[2][0], cells[3][1], cells[3][0]))
+    print('  seat (part material, _SpecAAMapNormal 1): baked part normal + grain add to the kernel; worst case (kappa cap): '
+          + '  '.join('%.2f->%.3f' % (s0, 1 - ((1 - s0) ** 4 + SPEC_AA_THRESHOLD) ** 0.25) for s0 in (0.35, 0.50, 0.55)))
+    print('  sub-pixel motion (0..2 px, 32 steps), highlight 30 deg off the view; CV = std / mean over the steps')
+    fmt = ('  %-26s s %.2f %.0f m%s  energy CV ref %.3f off %.3f on %.3f   peak CV off %.3f on %.3f   '
+           'energy vs ref off %.2f on %.2f')
+    for name, r, s0, tube in SPEC_AA_TARGETS:
+        if not tube:
+            continue
+        for d in (1.0, 2.0):
+            fl = pole_flicker(r, d, s0)
+            print(fmt % (name, s0, d, '      ', fl['ref']['cvE'], fl['off']['cvE'], fl['on']['cvE'],
+                         fl['off']['cvP'], fl['on']['cvP'], fl['off']['E_rel'], fl['on']['E_rel']))
+    print('  the bus_slice micro-motion cameras (pillar_10m / window_10m / seat_10m: 1.0 m, "ss": 2 = shaded at 2x, '
+          'box-averaged; ddx on the 2x grid)')
+    for name, r, s0, tube in SPEC_AA_TARGETS:
+        if tube:
+            fl = pole_flicker(r, 1.0, s0, sr=2)
+            print(fmt % (name, s0, 1.0, ' ss 2', fl['ref']['cvE'], fl['off']['cvE'], fl['on']['cvE'],
+                         fl['off']['cvP'], fl['on']['cvP'], fl['off']['E_rel'], fl['on']['E_rel']))
+    print('specaa OK')
+    return rows
 
 
 # ---------------------------------------------------------------------------------------------------
@@ -420,6 +619,8 @@ def floor_plan():
 
 
 def selftest():
+    # 0. D-40 #4 specular AA (no files)
+    specaa_selftest()
     # 1. Lab round trip
     c = np.array([0.3, 0.2, 0.6])
     assert np.allclose(lab2lin(lin2lab(c)), c, atol=1e-3)
@@ -467,4 +668,7 @@ def selftest():
 
 
 if __name__ == '__main__':
+    if sys.argv[1:] == ['specaa']:
+        specaa_selftest()
+        sys.exit(0)
     sys.exit(selftest())

@@ -26,7 +26,7 @@ import bus_spec as B  # noqa: E402
 from parts import seat as SEAT  # noqa: E402
 
 TEX = os.path.join(ROOT, 'Bus', 'Textures')
-REF = os.path.join(ROOT, 'Bus', 'Docs~', '实物参考_车与车厢')
+REF = os.path.join(ROOT, 'Bus', 'Docs~')          # PARTS[*]['refs'] are relative to this
 
 
 def lin(h):
@@ -140,6 +140,13 @@ def _window_scene():
     return objs
 
 
+def _cabin_scene():
+    """the whole bus as built (seats, poles, windows, ceiling, curtains), for the views that match the real-cabin
+    photos (trolleway F02 / F03: down the aisle)."""
+    BB.build(open_door=True, reset=False)
+    return [o for o in bpy.data.objects if o.type == 'MESH']
+
+
 def _poles_scene():
     body, glass = BB.build_body()
     BB.ceiling()
@@ -159,7 +166,7 @@ PARTS = {
             'clamp_0.6m': ((0.10, 1.95, 0.70), (0.29, 2.30, 0.30)),        # a hanger clamp on the right ceiling rail
             'button_0.6m': ((-0.10, 1.55, 0.60), (0.29, 1.50, 1.07)),      # the stop button on the first right pole
         },
-        refs=['车厢_03_Fortepan.jpg', '车厢_01_Fortepan.jpg'],
+        refs=['实物参考_车与车厢/车厢_03_Fortepan.jpg', '实物参考_车与车厢/车厢_01_Fortepan.jpg'],
     ),
     'window': dict(
         build=_window_scene, wall=None, shell=True,
@@ -169,22 +176,36 @@ PARTS = {
             'corner_0.5m': ((0.62, 1.55, 2.20), (1.05, 1.32, 2.50)),       # the frame corner, gasket and sill
             'row_2m': ((0.20, 1.70, -0.20), (1.00, 1.75, 1.40)),           # the side windows down the row
         },
-        refs=['车厢_01_Fortepan.jpg', '车厢_02_Fortepan.jpg'],
+        refs=['实物参考_车与车厢/车厢_01_Fortepan.jpg', '实物参考_车与车厢/车厢_02_Fortepan.jpg'],
+    ),
+    'cabin': dict(
+        build=_cabin_scene, wall=None, shell=True,
+        views={
+            'f03_rear': ((-0.06, 2.15, 2.20), (-0.06, 1.55, -3.50)),      # standing in the aisle at the front, facing rear (F03)
+            'f02_front': ((-0.06, 2.15, -2.90), (-0.06, 1.70, 3.40)),     # standing at the rear, facing the front (F02)
+            'seated_rear': ((0.55, 1.70, 2.05), (0.00, 1.40, -3.50)),     # the hero eye turned round to the rear
+        },
+        refs=['实物参考_PAZ细节/flickr/F03_过道全景_朝车尾_座椅正面_车尾长椅_后门_31436723382.jpg',
+              '实物参考_PAZ细节/flickr/F02_过道全景_朝车头_座椅_立柱_顶棚风口_斜面窗_31436639042.jpg'],
+        hfov=84,
     ),
     'seat': dict(
-        build=lambda: SEAT.seat_module('SeatT', 0.31, 0.79, 1.0, double=False, wall_side=1, wall_x=0.99)
-        + SEAT.seat_module('SeatD', -1.33, -0.43, 1.0, double=True, wall_side=-1, wall_x=-1.35)
-        + SEAT.seat_module('SeatB', 0.31, 0.79, 0.28, double=False, wall_side=1, wall_x=0.99),
-        wall=0.99,
+        build=lambda q='low': SEAT.seat_module('SeatT', 0.31, 0.79, 1.0, double=False, wall_side=1, wall_x=0.99, quality=q)
+        + SEAT.seat_module('SeatD', -1.33, -0.43, 1.0, double=True, wall_side=-1, wall_x=-1.35, quality=q)
+        + SEAT.seat_module('SeatB', 0.31, 0.79, 0.28, double=False, wall_side=1, wall_x=0.99, quality=q),
+        wall=0.99, quality=True, view_hfov={'side_0.7m': 90.0},
         views={
-            'overview_2m': ((-0.70, 1.75, 2.60), (0.20, 0.95, 0.90)),     # whole seats, for shape
-            'back_0.7m': ((0.45, 1.70, 0.10), (0.55, 1.35, 0.80)),        # the seat back in front of you, 0.7 m
-            'front34_1.0m': ((0.05, 1.45, 2.25), (0.60, 0.95, 1.40)),     # cushion + back from the front, 3/4
-            'aisle_1.2m': ((-0.25, 1.20, 1.70), (0.55, 0.85, 1.25)),      # legs, foot, frame from the aisle
+            'overview_2m': ((-0.55, 1.75, 2.25), (0.45, 1.05, 0.95)),     # whole seats, for shape
+            'back_0.7m': ((0.52, 1.62, 0.55), (0.56, 1.18, 1.00)),        # the seat in front, from the seat behind (knees, board)
+            'front34_1.0m': ((0.05, 1.50, 2.05), (0.58, 1.05, 1.30)),     # cushion + back from the front, 3/4
+            'side_0.7m': ((-0.32, 1.00, 1.24), (0.40, 0.98, 1.20)),       # the frame's path from the aisle (F04), 90 deg
             'double_1.0m': ((-0.40, 1.50, 2.30), (-0.90, 0.95, 1.30)),    # the double seat
-            'rail_0.5m': ((0.35, 1.75, 0.80), (0.60, 1.62, 1.05)),        # the grab rail and clamps up close
+            'sleeve_0.4m': ((0.12, 1.47, 1.22), (0.37, 1.27, 0.97)),      # the sleeve's aisle end and the bare bend (672M)
+            'corner_0.35m': ((0.20, 1.18, 1.62), (0.33, 1.01, 1.44)),     # the cushion's front corner: welt, crease, pan
         },
-        refs=['车厢_03_Fortepan.jpg', '车厢_01_Fortepan.jpg', '车厢_02_Fortepan.jpg'],
+        refs=['实物参考_PAZ细节/flickr/F01_座椅背面_靠背顶整条软套_白背板_铆钉_31583330165.jpg',
+              '实物参考_PAZ细节/flickr/F04_后轮罩_双人座侧面弯管框_单座_立柱横杆_31211178060.jpg',
+              '实物参考_PAZ细节/flickr/F03_过道全景_朝车尾_座椅正面_车尾长椅_后门_31436723382.jpg'],
     ),
 }
 
@@ -197,6 +218,8 @@ def main():
     ap.add_argument('--out', default='/tmp/bus/parts')
     ap.add_argument('--light', default='day', choices=['day', 'tubes'])
     ap.add_argument('--flat', action='store_true', help='MAT_TABLE colours only (no detail materials)')
+    ap.add_argument('--quality', default='low', choices=['low', 'high'],
+                    help="parts that have it (seat): 'high' = the bake source the atlas comes from")
     a = ap.parse_args()
     P = PARTS[a.part]
     bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -207,7 +230,7 @@ def main():
     sc.view_settings.view_transform = 'Standard'
     sc.view_settings.look = 'None'
     sc.view_settings.exposure = 0.0
-    objs = P['build']()
+    objs = P['build'](a.quality) if P.get('quality') else P['build']()
     stage(P['wall'], day=a.light == 'day', shell=P.get('shell', False))
     if not a.flat:
         from parts import materials as MATS
@@ -219,8 +242,9 @@ def main():
     outs = []
     for v in views:
         eye, tgt = P['views'][v]
-        cam = camera(eye, tgt)
-        sc.render.filepath = os.path.join(a.out, '%s_%s_%s.png' % (a.part, v, a.light))
+        cam = camera(eye, tgt, hfov=P.get('view_hfov', {}).get(v, P.get('hfov', 64.0)))
+        tag = a.light + ('_high' if a.quality == 'high' and P.get('quality') else '')
+        sc.render.filepath = os.path.join(a.out, '%s_%s_%s.png' % (a.part, v, tag))
         bpy.ops.render.render(write_still=True)
         outs.append(sc.render.filepath)
         bpy.data.objects.remove(cam, do_unlink=True)
