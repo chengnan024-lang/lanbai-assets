@@ -62,7 +62,8 @@ namespace Lanbai.Act10
 
         [Header("Late joiners (总导演终审 r3 #4: the spawn fade first, then black -> white at <= 0.85 EV/s)")]
         public float joinFromL = 0.004f;             // the black the joiner's ramp starts from (EvOverlayAlpha's floor)
-        public float joinMaxEVps = 0.85f;            // -> log2(0.86 / 0.004) / 0.85 = 9.1 s on desktop
+        public float joinMaxEVps = 0.8f;             // <= 0.85 (D-43) with margin: log2(0.86 / 0.004) / 0.8 = 9.7 s on desktop
+        public float joinTail = 2.5f;                // D-43: the window runs on past the shrink so a joiner held black there can rise to act 11
 
         private float[] grade = new float[4];
         private bool isVR;
@@ -79,7 +80,14 @@ namespace Lanbai.Act10
 
         public float[] LanbaiWindow()
         {
-            return new float[] { tMirror12 - 1f, tShrinkEnd + 1f };
+            return new float[] { tMirror12 - 1f, tShrinkEnd + joinTail };
+        }
+
+        // D-43: the span in which this driver owns the overlay and lifts late joiners from black (from the mask's start to the
+        // end of the whole window). Whoever's spawn black ends inside it is brought up by this driver, never by LB_Journey.
+        public float[] LanbaiOverlayWindow()
+        {
+            return new float[] { tMaskStart, tShrinkEnd + joinTail };
         }
 
         public void LanbaiActivate(bool on)
@@ -150,20 +158,30 @@ namespace Lanbai.Act10
                 return;
             float lw = isVR ? lWhiteVR : lWhite;
             float tJoinReady = t - spawnSince;      // the latched end of the spawn fade, on the timeline
-            if (t < tMaskStart || t >= tShrinkEnd || spawnSince < 0f)
-            {
-                Release();                          // outside our three parts, or the spawn fade still runs: write nothing
-                return;
-            }
-            // joined inside the mask or the white: from black to white, EV-linear, at <= joinMaxEVps (r3 #4); the normal
-            // state is reached once the ramp ends. Joined in the shrink: nothing (the spawn fade already shows act 11).
-            bool joinedLate = tJoinReady > tMaskStart;
-            if (joinedLate && tJoinReady >= tSilenceEnd)
-            {
-                Release();
-                return;
-            }
+            bool joinedLate = tJoinReady >= tMaskStart;
             float rampT = Mathf.Log(lw / joinFromL, 2f) / joinMaxEVps;
+            // D-43: a joiner whose rise to the white would run into the shrink (or who joined in it) stays black until the
+            // shrink is over, then rises EV-linearly from black to act 11: ONE brightening, never white then a drop
+            bool toScene = joinedLate && tJoinReady + rampT > tSilenceEnd;
+            float sceneRampT = Mathf.Log(Mathf.Max(lScene11, joinFromL * 1.01f) / joinFromL, 2f) / joinMaxEVps;
+            if (spawnSince < 0f || t < tMaskStart || (!toScene && t >= tShrinkEnd) || (toScene && t >= tShrinkEnd + sceneRampT))
+            {
+                Release();                          // outside our parts, or the spawn fade still runs: write nothing
+                return;
+            }
+            if (toScene)
+            {
+                ownsOverlay = true;
+                if (lobesSet) { overlay.ClearLobes(); lobesSet = false; }
+                overlay.SetBreath(0f);
+                // fully black while the white / the shrink is behind it; from the shrink's end a black veil that starts at the
+                // floor (0.004) and lets act 11 up EV-linearly at <= joinMaxEVps (every view rises by the same EV)
+                if (t < tShrinkEnd)
+                    overlay.SetFlat(Color.black, 1f, 0f);
+                else
+                    overlay.SetCurve(Color.black, 0f, t - tShrinkEnd, sceneRampT, joinFromL, lScene11, lScene11, 0f);
+                return;
+            }
             bool ramping = joinedLate && t < tJoinReady + rampT;
             ownsOverlay = true;
             if (t < tSilenceEnd && lobesSet)
@@ -174,9 +192,14 @@ namespace Lanbai.Act10
             overlay.SetBreath(0f);                  // the breath is applied here, phased by t, not by the shader's _Time (F5)
             if (ramping)
             {
+                // opaque the whole time (whatever is behind stays hidden); the FILL goes from black to the white,
+                // EV-linear: fill x (floor / white)^(1 - x). The rise is >= 8.9 s, so it always ends after F16, where the
+                // normal state is the flat white at alpha 1: no seam.
                 bool inMask = t < tF16;
                 Color f = inMask ? overlay.PickFill(fillMaskDesktop, fillMaskVR) : overlay.PickFill(fillWhiteDesktop, fillWhiteVR);
-                overlay.SetCurve(f * Breath(t), inMask ? Lin(evT, evV, t) : 0f, t - tJoinReady, rampT, joinFromL, lw, joinFromL, lw);
+                float x = Mathf.Clamp01((t - tJoinReady) / rampT);
+                float k = Mathf.Pow(joinFromL / lw, 1f - x);
+                overlay.SetFlat(f * (Breath(t) * k), 1f, inMask ? Lin(evT, evV, t) : 0f);
             }
             else if (t < tF16)
             {

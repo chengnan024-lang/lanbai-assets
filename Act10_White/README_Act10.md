@@ -6,7 +6,7 @@
 
 1. **拷**：`Act10_White/` → `Assets/Lanbai/Act10_White/`（`Tools~` 不导入）。
 2. **搭**：先跑 `蓝白/Build/Overlay`，再跑 **`蓝白/Build/Act10 White`**（`Editor/LanbaiWhiteBuild.cs`，终审 r3 #3）：建 `LanbaiWhiteDriver` 的 U# 程序资产（走 `LanbaiMirrorsBuild.EnsureProgramAsset` 这一个调用点，D-41 总工程师的共用工具会换掉它的内容）、建常开的 `Lanbai_WhiteDriver`、挂组件、连 `Lanbai_Overlay`；场景里没有遮罩球就报错、什么都不建。可重复运行。字段的默认值 = `WhiteSchedule.json` 的数，不用改。
-3. **接 Director**：分发层在窗口 {1136.58, 1187.46} 里调 `LanbaiTick(t)` 与 `LanbaiGrade(t)`；`LB_Journey.ApplyGrades` 读汇总值写 EXPO_UP / WHITE_SAT / WHITE_BLOOM / 桌面镜头层；遮罩由本驱动自己画（§2）。**`LB_Journey` 里现在的白（冲击 / 膨胀）那一段要删掉**，换成这里的（`Engineering/README_集成.md` §5）。
+3. **接 Director**：分发层在窗口 {1136.58, 1188.96} 里调 `LanbaiTick(t)` 与 `LanbaiGrade(t)`；`LB_Journey.ApplyGrades` 读汇总值写 EXPO_UP / WHITE_SAT / WHITE_BLOOM / 桌面镜头层；遮罩由本驱动自己画（§2）。**`LB_Journey` 里现在的白（冲击 / 膨胀）那一段要删掉**，换成这里的（`Engineering/README_集成.md` §5）。
 4. **截图推回**（`FromLocal/white_test/`）：1137.58 → 1150 与 1178 → 1190 两段 60 fps PNG 序列，正前方与向下看各一次（§1.8 录像窗口 (g)(h)），跑 `flashcheck.py`；再截 1160 一帧（桌面、VR 各一）量白的码值（桌面 `#E8F1F5`、VR `#D7E3E8`，±2 码，§1.8）。
 
 ## 1. 时间（全部由标签算，`WhiteSchedule.json`）
@@ -33,7 +33,12 @@
 - 方向瓣的方向（管灯、路灯、海）属于第 11 幕的布局（「灯与假醒」），v2 推出来以后在 Wire Scene 里填；没有瓣时退路 = 全方向同一条曲线（变暗免费）。
 
 - **呼吸按 t 算**（F5）：Overlay v2 的 shader 用 `_Time` 算呼吸的相位，倒放 / 迟到的人相位不对；所以本驱动 `SetBreath(0)`，自己把 `1 + 0.02 sin(2π·0.1·(t − F16))` 乘进填色。从收缩倒回白或遮罩时清掉方向瓣（F5）。
-- **迟到的人**（终审 r3 #4，裁决：出生淡入优先）：本地玩家的出生淡入结束之前，本驱动不写遮罩：分发层（Director v1.2）每帧在 `LanbaiTick` 之前调 `LanbaiSpawnFade(since)`，since = 离分发层锁存的“淡入结束时刻”过了几秒，淡入进行中为 −1（和门内、第 6 幕同一个接口，总导演 10-25；没有别的兜底）。在遮罩或白里（1146.31 → 1178.46）进来的人：从黑（L 0.004）按 ≤ 0.85 EV/s 的 EV 线性曲线升到白（桌面 log2(0.86/0.004)/0.85 = 9.1 s，VR 8.9 s），之后接正常的状态；在收缩里（≥ 1178.46）进来的人：本驱动不写（出生淡入已经淡到第 11 幕）。被遮罩覆盖的时段，分发层让出生一直保持黑、不淡入，结束那一帧交给本驱动（总工程师在改）。
+- **迟到的人**（终审 r3 #4、D-43）：
+  - 分发层（Director v1.2）每帧在 `LanbaiTick` 之前调 `LanbaiSpawnFade(since)`：since = 离分发层锁存的“黑场结束时刻”过了几秒，黑场里为 −1；那时本驱动不写遮罩。
+  - **`LanbaiOverlayWindow()` = {1146.31, 1188.96}**（遮罩开始 → 整个窗口结束；窗口为此延到收缩结束后 2.5 s）：在这个时段里任何时刻结束黑场的人，都由本驱动从黑升起，**只亮一次**，≤ 0.8 EV/s（D-43 限 0.85，留余量）：
+    - 黑场在 1146.31 → 1168.8 之间结束：遮罩不透明，填色从黑（0.004）按 EV 线性升到白（桌面 9.7 s、VR 9.5 s）；升完已经过了 F16，接上正常的白（同为不透明白，没有缝）。
+    - 黑场结束得更晚（升到白会撞上 1178.46 的收缩）或者在收缩里：保持全黑到收缩结束（1186.46），再用黑纱按 EV 线性放出第 11 幕（约 2 s）。不会先白再暗。
+  - 核对（D-43 #5 的 1140 / 1150 / 1180 及边界 1146.31、1160、1169、1169.5、1175、1178.46、1186，桌面与 VR，三种视向）：全部 PASS，最坏 0.31 / 0.91 / 1.70 EV（0.25 / 1 / 2 s）。`Tools~/join_check.py` → `Mirrors/Docs~/flashcheck/join_white.json`。1140 进来的人由分发层按 D-43 #4 保持黑、1146.31 交给本驱动。
 
 **从 t 重建（D-33 #6）**：`LanbaiGrade(t)`、遮罩的每一种状态都只由 t 决定；唯一缓存的是“方向瓣已经设过”，`LanbaiActivate` 时清掉，下一帧按 t 重设。
 
