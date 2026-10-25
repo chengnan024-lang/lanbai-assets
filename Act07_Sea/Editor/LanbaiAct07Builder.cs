@@ -44,7 +44,7 @@ public static class LanbaiAct07Builder
         public float last_t0, last_in, last_sweep, last_out, last_half_width, last_length, last_alpha;
         public float[] last_from, last_to, last_target, last_target_to; public float last_top;
         public float beam_angle, beam_range, beam_gather_E, beam_last_E; public float[] beam_gather_pos, beam_gather_aim;
-        public float snow_sphere, snow_box;
+        public float snow_sphere, snow_box, snow_lit, snow_lit_d0, snow_lit_d1, snow_lit_deep, ridge_yaw; public float[] trails_front_fade;
         public float F8, F8b, F8c, c7_mirror_y, c7_mirror_z, c7_caus_t0, c7_caus_ramp, c7_rose_range;
         public float[] c7_wave_t, c7_wave_v, c7_win_t, c7_win_v, c7_fog_t, c7_fog_density, c7_fog_up, c7_fog_mid, c7_fog_down;
         public float[] c7_caus_colour, c7_rose_pos, c7_rose_colour, c7_rose_t, c7_rose_v, c7_tri_sky, c7_tri_equator, c7_tri_ground_t, c7_tri_ground;
@@ -56,9 +56,9 @@ public static class LanbaiAct07Builder
     [Serializable] public class Seeds { public int count; public float[] colour, positions, radius, birth_t, steady, seed; }
     [Serializable] public class Trails { public int count; public float[] colour, positions, radius, phase, life, seed; public float T0, rate, pool; }
     [Serializable] public class Bubbles { public string name; public int count, queue; public float[] positions, radius, delay, duration, colour, seed; public float alpha, T0, loop, rise; }
-    [Serializable] public class Particles { public Snow snow; public Seeds seeds; public Trails trails; public Bubbles[] bubbles; public float snow_sink; public float[] near_fade; public float min_px; }
+    [Serializable] public class Particles { public Snow snow; public Seeds seeds; public Trails trails, trails_front; public Bubbles[] bubbles; public float snow_sink; public float[] near_fade; public float min_px; }
     [Serializable] public class Grid { public float z0, dz, y0, dy; public int nz, ny; }
-    [Serializable] public class Ridge { public Grid grid; public float[] x; }
+    [Serializable] public class Ridge { public Grid grid; public float[] x; public float yaw_deg; }
     [Serializable] public class Layout { public U unity; public Particles particles; public Ridge ridge; }
 
     static Vector3 V3(float[] a, int o = 0) { return new Vector3(a[o], a[o + 1], a[o + 2]); }
@@ -149,6 +149,10 @@ public static class LanbaiAct07Builder
                 if (Vector3.Cross(v[b] - v[a], v[c] - v[a]).x < 0f) { idx.Add(a); idx.Add(b); idx.Add(c); idx.Add(b); idx.Add(d); idx.Add(c); }
                 else { idx.Add(a); idx.Add(c); idx.Add(b); idx.Add(b); idx.Add(c); idx.Add(d); }
             }
+        // D-44 #5 P3: turned about the bus's vertical axis (water x = z = 0), AFTER the winding test (which is in the grid's frame):
+        // x' = x cos(yaw) + z sin(yaw), z' = -x sin(yaw) + z cos(yaw) (Act07_Layout.json ridge.yaw_note)
+        float cy = Mathf.Cos(r.yaw_deg * Mathf.Deg2Rad), sy = Mathf.Sin(r.yaw_deg * Mathf.Deg2Rad);
+        for (int k = 0; k < v.Length; k++) v[k] = new Vector3(v[k].x * cy + v[k].z * sy, v[k].y, -v[k].x * sy + v[k].z * cy);
         var m = new Mesh { name = "Act07_Ridge", indexFormat = v.Length > 65000 ? IndexFormat.UInt32 : IndexFormat.UInt16 };
         m.vertices = v; m.triangles = idx.ToArray();
         m.RecalculateNormals(); m.RecalculateBounds();
@@ -278,6 +282,18 @@ public static class LanbaiAct07Builder
         var trails = Draw(rBus, "Act07_Trails", SaveMesh(Points("Act07_Trails", T.count, i => V3(T.positions, 3 * i),
             i => new Vector4(T.seed[i], T.radius[i], 0, 0), i => new Vector4(T.phase[i], T.life[i], 0, 0),
             i => new Color(T.colour[0], T.colour[1], T.colour[2], 1f), near), Root + "/Meshes/Act07_Trails.asset"), mTrail);
+        // D-44 #5 P5: the front of the bus (flows up the windscreen); its own pool rate, its own renderer (faded out before F5)
+        Trails TF = P.trails_front;
+        Renderer trailsFront = null;
+        Material mTrailF = null;
+        if (TF != null && TF.count > 0)
+        {
+            mTrailF = Mat("M_07_TrailsFront", "Lanbai/SeaParticles"); ParticleMat(mTrailF, "TRAIL", true, 2990);
+            mTrailF.SetFloat("_T0", TF.T0); mTrailF.SetFloat("_PoolRate", TF.rate); mTrailF.SetFloat("_PoolCount", TF.pool); mTrailF.SetFloat("_MinPx", P.min_px);
+            trailsFront = Draw(rBus, "Act07_TrailsFront", SaveMesh(Points("Act07_TrailsFront", TF.count, i => V3(TF.positions, 3 * i),
+                i => new Vector4(TF.seed[i], TF.radius[i], 0, 0), i => new Vector4(TF.phase[i], TF.life[i], 0, 0),
+                i => new Color(TF.colour[0], TF.colour[1], TF.colour[2], 1f), near), Root + "/Meshes/Act07_TrailsFront.asset"), mTrailF);
+        }
 
         Renderer bGlass = null, bSeats = null;
         foreach (Bubbles B in P.bubbles)
@@ -369,7 +385,8 @@ public static class LanbaiAct07Builder
         d.roots = new[] { rSea.gameObject, rBus.gameObject };
         d.rSea = rSea; d.seaRenderer = sea; d.seaAbove = above; d.seaBelow = below;
         d.shafts = shafts; d.lastShaft = lastShaft; d.lastShaftTf = lastShaft.transform; d.ridge = ridge; d.warmPoint = warm;
-        d.snow = snow; d.seeds = seeds; d.trails = trails; d.bubblesGlass = bGlass; d.bubblesSeats = bSeats; d.dome = dome;
+        d.snow = snow; d.seeds = seeds; d.trails = trails; d.trailsFront = trailsFront; d.trailsFrontFade0 = u.trails_front_fade[0]; d.trailsFrontFade1 = u.trails_front_fade[1];
+        d.snowLit = u.snow_lit; d.snowLitD0 = u.snow_lit_d0; d.snowLitD1 = u.snow_lit_d1; d.snowLitDeep = u.snow_lit_deep; d.bubblesGlass = bGlass; d.bubblesSeats = bSeats; d.dome = dome;
         d.beam = beam; d.sunCookie = crt; d.sunCookieSize = 1.5f; d.sunRotation = sunRot;
         d.causticsTex = AssetDatabase.LoadAssetAtPath<Texture2D>(SeaRoot + "/Textures/Caustics_8x8_2048.png");
         d.windowStart = u.window_t0; d.windowEnd = u.window_t1;
@@ -426,7 +443,7 @@ public static class LanbaiAct07Builder
         // d.waterlines: copies of the glass meshes with Lanbai/SeaWaterline, wired locally (README §0); kept across rebuilds
         LanbaiGateCloudsBuilder.SetupUdonSharp(d);
         EditorUtility.SetDirty(d);
-        foreach (Material m in new[] { mShaft, mSnow, mSeed, mTrail, mRidge, mWarm, cookieMat }) EditorUtility.SetDirty(m);
+        foreach (Material m in new[] { mShaft, mSnow, mSeed, mTrail, mRidge, mWarm, cookieMat, mTrailF }) if (m != null) EditorUtility.SetDirty(m);
         AssetDatabase.SaveAssets();
         UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(root.gameObject.scene);
         Debug.Log(string.Format("[Act07] built: {0} shafts, {1} snow, {2} seeds, {3} trail quads, ridge {4}x{5}; driver window {6}..{7}",

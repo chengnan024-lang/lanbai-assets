@@ -147,6 +147,18 @@ def fog_amount(dist, dens):
 # ------------------------------------------------------------------------------------------------ the ridge (Lanbai/SeaRidge)
 def ridge(rays, eye, t, depth, water, zbuf, img):
     R = LAY['ridge']; g = R['grid']
+    # D-44 #5 P3: the mesh is the grid turned by yaw about the bus's vertical axis (x' = x cos + z sin, z' = -x sin + z cos);
+    # march in the GRID's frame: turn the eye and the rays back (the bus axis is the pivot: the bus point stays put)
+    yaw = math.radians(R.get('yaw_deg', 0.0))
+    if yaw != 0.0:
+        cy, sy = math.cos(yaw), math.sin(yaw)
+        pz = -AM.fwd(t)                               # the water origin's z in the bus frame (0 in 7a)
+
+        def back(v, pivot):
+            x, z = v[..., 0], v[..., 2] - pivot
+            return np.stack([x * cy - z * sy, v[..., 1], x * sy + z * cy + pivot], -1)
+        eye = back(np.asarray(eye, float), pz)
+        rays = back(rays, 0.0)
     X = np.asarray(R['x']).reshape(g['ny'], g['nz'])
     fwd = AM.fwd(t)
 
@@ -369,7 +381,7 @@ def particles(img, rays, cam, eye, t, depth, water, zbuf):
         bx, sph = U['snow_box'], U['snow_sphere']
         rel = (np.modf(d / bx + 0.5)[0] % 1.0 - 0.5) * bx
         a = np.asarray(Sn['alpha']) * (1 - smooth((np.linalg.norm(rel, axis=-1) - 0.8 * sph) / (0.2 * sph)))
-        lit = 1.0 + (U['snow_lit'] - 1.0) * (1.0 - float(smooth((depth - U['snow_lit_d0']) / (U['snow_lit_d1'] - U['snow_lit_d0']))))
+        lit = U['snow_lit_deep'] + (U['snow_lit'] - U['snow_lit_deep']) * (1.0 - float(smooth((depth - U['snow_lit_d0']) / (U['snow_lit_d1'] - U['snow_lit_d0']))))
         rgb = np.tile(np.asarray(Sn['colour']) * lit, (len(a), 1))
         add, img = splat(add, img, rays.shape, cam, eye, rel, np.asarray(Sn['radius']), rgb, a, 'SNOW', water, zbuf)
     if t >= U['F3i'] - 0.1:
@@ -382,21 +394,25 @@ def particles(img, rays, cam, eye, t, depth, water, zbuf):
         rgb = np.asarray(Sd['colour'])[None, :] * bright[:, None]
         add, img = splat(add, img, rays.shape, cam, eye, rel, np.asarray(Sd['radius']), rgb, np.ones(len(bright)), 'SEED', water, zbuf)
     if t >= U['F4']:
-        Tr = P_['trails']
-        period = Tr['pool'] / Tr['rate']
-        ph = np.asarray(Tr['phase']); life = np.asarray(Tr['life']); seed = np.asarray(Tr['seed'])
-        x = (t - Tr['T0']) / period - ph
-        cyc = np.floor(x); age = (x - cyc) * period
-        alive = (t >= Tr['T0'] + ph * period).astype(float)
-        h = hash11(seed * 91.7 + cyc * 1.31)
-        jit = (np.stack([hash11(h * 13.1), hash11(h * 17.9), hash11(h * 23.3)], -1) - 0.5) * 0.25
-        vel = np.array([0.0, -AM.SINK.v(t), AM.FWD.v(t) if t > AM.FWD.T0 else 0.0])
-        rel = np.asarray(Tr['positions']).reshape(-1, 3) + jit - vel[None, :] * age[:, None] + np.array([0.0, 0.02, 0.0]) * age[:, None]
-        uu = age / np.maximum(life, 1e-3)
-        bright = alive * np.where(age < life, smooth(uu / 0.08) * (1 - smooth((uu - 0.35) / 0.65)), 0.0)
-        tg = 1.0 - float(smooth((t - U['F8b']) / 20.0))     # the trails fade as the 7c rose comes up (driver: the same)
-        rgb = np.asarray(Tr['colour'])[None, :] * (bright * tg)[:, None]
-        add, img = splat(add, img, rays.shape, cam, eye, rel, np.asarray(Tr['radius']), rgb, np.ones(len(bright)), 'TRAIL', water, zbuf)
+        f0, f1 = U['trails_front_fade']
+        sets = [(P_['trails'], 1.0 - float(smooth((t - U['F8b']) / 20.0))),       # the sides: fade as the 7c rose comes up
+                (P_.get('trails_front'), 1.0 - float(smooth((t - f0) / (f1 - f0))))]  # the front (D-44 #5 P5): out before F5
+        for Tr, tg in sets:
+            if Tr is None or tg <= 0.0:
+                continue
+            period = Tr['pool'] / Tr['rate']
+            ph = np.asarray(Tr['phase']); life = np.asarray(Tr['life']); seed = np.asarray(Tr['seed'])
+            x = (t - Tr['T0']) / period - ph
+            cyc = np.floor(x); age = (x - cyc) * period
+            alive = (t >= Tr['T0'] + ph * period).astype(float)
+            h = hash11(seed * 91.7 + cyc * 1.31)
+            jit = (np.stack([hash11(h * 13.1), hash11(h * 17.9), hash11(h * 23.3)], -1) - 0.5) * 0.25
+            vel = np.array([0.0, -AM.SINK.v(t), AM.FWD.v(t) if t > AM.FWD.T0 else 0.0])
+            rel = np.asarray(Tr['positions']).reshape(-1, 3) + jit - vel[None, :] * age[:, None] + np.array([0.0, 0.02, 0.0]) * age[:, None]
+            uu = age / np.maximum(life, 1e-3)
+            bright = alive * np.where(age < life, smooth(uu / 0.08) * (1 - smooth((uu - 0.35) / 0.65)), 0.0)
+            rgb = np.asarray(Tr['colour'])[None, :] * (bright * tg)[:, None]
+            add, img = splat(add, img, rays.shape, cam, eye, rel, np.asarray(Tr['radius']), rgb, np.ones(len(bright)), 'TRAIL', water, zbuf)
     if t >= U['F5'] - 0.01:
         g = float(smooth((t - U['F5']) / U['warm_fade']))
         p = np.asarray(U['warm_position']) - busw

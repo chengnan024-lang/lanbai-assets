@@ -1,0 +1,563 @@
+{
+ "field": {
+  "az": [
+   -35.0,
+   35.0
+  ],
+  "el": [
+   -10.0,
+   25.0
+  ],
+  "eye": [
+   0.55,
+   1.7,
+   2.05
+  ]
+ },
+ "beats": [
+  {
+   "t": 363.3,
+   "beat": "F2h 入水",
+   "depth": 1.1,
+   "fog_per_m": 0.04,
+   "see_10m": 0.67,
+   "see_30m": 0.3,
+   "shafts": {
+    "gain": 1,
+    "in_view": 5,
+    "best_transmittance": 0.7
+   },
+   "window": {
+    "in_view": false,
+    "el_min": 41.4,
+    "roof": "whole"
+   },
+   "ridge": {
+    "in_view_pct": 0.0,
+    "visible_any_dir": false,
+    "az_range_visible": null
+   },
+   "warm": {
+    "on": false
+   },
+   "snow": {
+    "in_view": 31,
+    "within_5m": 5
+   },
+   "seeds": {
+    "born": 0,
+    "in_view": 0,
+    "births_last_10s_in_view": 0
+   },
+   "trails": {
+    "pool_in_view": 0,
+    "note": "before F4"
+   },
+   "last_shaft": "off"
+  },
+  {
+   "t": 367.2,
+   "beat": "F3 斯涅尔之窗",
+   "depth": 8.0,
+   "fog_per_m": 0.04,
+   "see_10m": 0.67,
+   "see_30m": 0.3,
+   "shafts": {
+    "gain": 1,
+    "in_view": 11,
+    "best_transmittance": 0.74
+   },
+   "window": {
+    "in_view": false,
+    "el_min": 41.4,
+    "roof": "whole"
+   },
+   "ridge": {
+    "in_view_pct": 0.0,
+    "visible_any_dir": false,
+    "az_range_visible": null
+   },
+   "warm": {
+    "on": false
+   },
+   "snow": {
+    "in_view": 38,
+    "within_5m": 12
+   },
+   "seeds": {
+    "born": 0,
+    "in_view": 0,
+    "births_last_10s_in_view": 0
+   },
+   "trails": {
+    "pool_in_view": 0,
+    "note": "before F4"
+   },
+   "last_shaft": "off"
+  },
+  {
+   "t": 387.0,
+   "beat": "车顶破洞见窗",
+   "depth": 13.8,
+   "fog_per_m": 0.04,
+   "see_10m": 0.67,
+   "see_30m": 0.3,
+   "shafts": {
+    "gain": 1,
+    "in_view": 12,
+    "best_transmittance": 0.77
+   },
+   "window": {
+    "in_view": false,
+    "el_min": 41.4,
+    "roof": "eroding from the skylight edge"
+   },
+   "ridge": {
+    "in_view_pct": 0.0,
+    "visible_any_dir": false,
+    "az_range_visible": null
+   },
+   "warm": {
+    "on": false
+   },
+   "snow": {
+    "in_view": 31,
+    "within_5m": 6
+   },
+   "seeds": {
+    "born": 0,
+    "in_view": 0,
+    "births_last_10s_in_view": 0
+   },
+   "trails": {
+    "pool_in_view": 0,
+    "note": "before F4"
+   },
+   "last_shaft": "off"
+  },
+  {
+   "t": 446.0,
+   "beat": "F4 船体荧光",
+   "depth": 22.7,
+   "fog_per_m": 0.0349,
+   "see_10m": 0.71,
+   "see_30m": 0.35,
+   "shafts": {
+    "gain": 0.334,
+    "in_view": 11,
+    "best_transmittance": 0.77
+   },
+   "window": {
+    "in_view": false,
+    "el_min": 41.4,
+    "roof": "eroding from the skylight edge"
+   },
+   "ridge": {
+    "in_view_pct": 0.0,
+    "visible_any_dir": false,
+    "az_range_visible": null
+   },
+   "warm": {
+    "on": false
+   },
+   "snow": {
+    "in_view": 29,
+    "within_5m": 4
+   },
+   "seeds": {
+    "born": 0,
+    "in_view": 0,
+    "births_last_10s_in_view": 0
+   },
+   "trails": {
+    "pool_in_view": 0,
+    "note": "before F4"
+   },
+   "last_shaft": "off"
+  },
+  {
+   "t": 462.4,
+   "beat": "F4p 光柱汇聚",
+   "depth": 25.1,
+   "fog_per_m": 0.0333,
+   "see_10m": 0.72,
+   "see_30m": 0.37,
+   "shafts": {
+    "gain": 1.0,
+    "in_view": 5,
+    "best_transmittance": 0.97
+   },
+   "window": {
+    "in_view": false,
+    "el_min": 41.4,
+    "roof": "eroding from the skylight edge"
+   },
+   "ridge": {
+    "in_view_pct": 0.0,
+    "visible_any_dir": false,
+    "az_range_visible": null
+   },
+   "warm": {
+    "on": false
+   },
+   "snow": {
+    "in_view": 25,
+    "within_5m": 6
+   },
+   "seeds": {
+    "born": 0,
+    "in_view": 0,
+    "births_last_10s_in_view": 0
+   },
+   "trails": {
+    "pool_in_view": 12,
+    "of": 630,
+    "note": "the hull points are beside / under the bus: through the windscreen only the ones ahead of the eye"
+   },
+   "trails_front": {
+    "pool_in_view": 207,
+    "of": 270,
+    "gain": 1.0
+   },
+   "last_shaft": "off"
+  },
+  {
+   "t": 474.4,
+   "beat": "F3e 间奏",
+   "depth": 26.9,
+   "fog_per_m": 0.0321,
+   "see_10m": 0.73,
+   "see_30m": 0.38,
+   "shafts": {
+    "gain": 0.0,
+    "in_view": 0,
+    "note": "off"
+   },
+   "window": {
+    "in_view": false,
+    "el_min": 41.4,
+    "roof": "eroding from the skylight edge"
+   },
+   "ridge": {
+    "in_view_pct": 0.0,
+    "visible_any_dir": false,
+    "az_range_visible": null
+   },
+   "warm": {
+    "on": false
+   },
+   "snow": {
+    "in_view": 32,
+    "within_5m": 9
+   },
+   "seeds": {
+    "born": 0,
+    "in_view": 0,
+    "births_last_10s_in_view": 0
+   },
+   "trails": {
+    "pool_in_view": 12,
+    "of": 630,
+    "note": "the hull points are beside / under the bus: through the windscreen only the ones ahead of the eye"
+   },
+   "trails_front": {
+    "pool_in_view": 207,
+    "of": 270,
+    "gain": 1.0
+   },
+   "last_shaft": "off"
+  },
+  {
+   "t": 506.4,
+   "beat": "F3e1 最后一闪",
+   "depth": 68.2,
+   "fog_per_m": 0.0288,
+   "see_10m": 0.75,
+   "see_30m": 0.42,
+   "shafts": {
+    "gain": 0.0,
+    "in_view": 0,
+    "note": "off"
+   },
+   "window": {
+    "in_view": false,
+    "el_min": 41.4,
+    "roof": "eroding from the skylight edge"
+   },
+   "ridge": {
+    "in_view_pct": 0.0,
+    "visible_any_dir": true,
+    "az_range_visible": [
+     -37.8,
+     109.6
+    ]
+   },
+   "warm": {
+    "on": false
+   },
+   "snow": {
+    "in_view": 44,
+    "within_5m": 16
+   },
+   "seeds": {
+    "born": 0,
+    "in_view": 0,
+    "births_last_10s_in_view": 0
+   },
+   "trails": {
+    "pool_in_view": 12,
+    "of": 630,
+    "note": "the hull points are beside / under the bus: through the windscreen only the ones ahead of the eye"
+   },
+   "trails_front": {
+    "pool_in_view": 207,
+    "of": 270,
+    "gain": 1.0
+   },
+   "last_shaft": "sweeping overhead (bus frame from (3,14,-2) to (-1.5,14,4.5)): above the windscreen"
+  },
+  {
+   "t": 532.4,
+   "beat": "F3e2 海脊",
+   "depth": 107.2,
+   "fog_per_m": 0.0233,
+   "see_10m": 0.79,
+   "see_30m": 0.5,
+   "shafts": {
+    "gain": 0.0,
+    "in_view": 0,
+    "note": "off"
+   },
+   "window": {
+    "in_view": false,
+    "el_min": 41.4,
+    "roof": "eroding from the skylight edge"
+   },
+   "ridge": {
+    "in_view_pct": 13.25,
+    "visible_any_dir": true,
+    "az_range_visible": [
+     -39.9,
+     109.6
+    ]
+   },
+   "warm": {
+    "on": false
+   },
+   "snow": {
+    "in_view": 33,
+    "within_5m": 10
+   },
+   "seeds": {
+    "born": 0,
+    "in_view": 0,
+    "births_last_10s_in_view": 0
+   },
+   "trails": {
+    "pool_in_view": 12,
+    "of": 630,
+    "note": "the hull points are beside / under the bus: through the windscreen only the ones ahead of the eye"
+   },
+   "trails_front": {
+    "pool_in_view": 207,
+    "of": 270,
+    "gain": 1.0
+   },
+   "last_shaft": "off"
+  },
+  {
+   "t": 556.4,
+   "beat": "F3e3 蓝熄灭",
+   "depth": 143.2,
+   "fog_per_m": 0.0183,
+   "see_10m": 0.83,
+   "see_30m": 0.58,
+   "shafts": {
+    "gain": 0.0,
+    "in_view": 0,
+    "note": "off"
+   },
+   "window": {
+    "in_view": false,
+    "el_min": 41.4,
+    "roof": "eroding from the skylight edge"
+   },
+   "ridge": {
+    "in_view_pct": 6.59,
+    "visible_any_dir": true,
+    "az_range_visible": [
+     -39.9,
+     109.5
+    ]
+   },
+   "warm": {
+    "on": false
+   },
+   "snow": {
+    "in_view": 35,
+    "within_5m": 8
+   },
+   "seeds": {
+    "born": 0,
+    "in_view": 0,
+    "births_last_10s_in_view": 0
+   },
+   "trails": {
+    "pool_in_view": 12,
+    "of": 630,
+    "note": "the hull points are beside / under the bus: through the windscreen only the ones ahead of the eye"
+   },
+   "trails_front": {
+    "pool_in_view": 207,
+    "of": 270,
+    "gain": 1.0
+   },
+   "last_shaft": "off"
+  },
+  {
+   "t": 559.0,
+   "beat": "F3i 播种开始",
+   "depth": 147.1,
+   "fog_per_m": 0.018,
+   "see_10m": 0.84,
+   "see_30m": 0.58,
+   "shafts": {
+    "gain": 0.0,
+    "in_view": 0,
+    "note": "off"
+   },
+   "window": {
+    "in_view": false,
+    "el_min": 41.4,
+    "roof": "eroding from the skylight edge"
+   },
+   "ridge": {
+    "in_view_pct": 3.65,
+    "visible_any_dir": true,
+    "az_range_visible": [
+     -39.9,
+     109.5
+    ]
+   },
+   "warm": {
+    "on": false
+   },
+   "snow": {
+    "in_view": 27,
+    "within_5m": 8
+   },
+   "seeds": {
+    "born": 0,
+    "in_view": 0,
+    "births_last_10s_in_view": 0
+   },
+   "trails": {
+    "pool_in_view": 12,
+    "of": 630,
+    "note": "the hull points are beside / under the bus: through the windscreen only the ones ahead of the eye"
+   },
+   "trails_front": {
+    "pool_in_view": 207,
+    "of": 270,
+    "gain": 1.0
+   },
+   "last_shaft": "off"
+  },
+  {
+   "t": 630.0,
+   "beat": "播种最密",
+   "depth": 221.1,
+   "fog_per_m": 0.018,
+   "see_10m": 0.84,
+   "see_30m": 0.58,
+   "shafts": {
+    "gain": 0.0,
+    "in_view": 0,
+    "note": "off"
+   },
+   "window": {
+    "in_view": false,
+    "el_min": 41.4,
+    "roof": "eroding from the skylight edge"
+   },
+   "ridge": {
+    "in_view_pct": 0.0,
+    "visible_any_dir": false,
+    "az_range_visible": null
+   },
+   "warm": {
+    "on": false
+   },
+   "snow": {
+    "in_view": 31,
+    "within_5m": 6
+   },
+   "seeds": {
+    "born": 195,
+    "in_view": 12,
+    "births_last_10s_in_view": 12
+   },
+   "trails": {
+    "pool_in_view": 12,
+    "of": 630,
+    "note": "the hull points are beside / under the bus: through the windscreen only the ones ahead of the eye"
+   },
+   "trails_front": {
+    "pool_in_view": 207,
+    "of": 270,
+    "gain": 1.0
+   },
+   "last_shaft": "off"
+  },
+  {
+   "t": 645.0,
+   "beat": "F5 暖点",
+   "depth": 236.1,
+   "fog_per_m": 0.018,
+   "see_10m": 0.84,
+   "see_30m": 0.58,
+   "shafts": {
+    "gain": 0.0,
+    "in_view": 0,
+    "note": "off"
+   },
+   "window": {
+    "in_view": false,
+    "el_min": 41.4,
+    "roof": "eroding from the skylight edge"
+   },
+   "ridge": {
+    "in_view_pct": 0.0,
+    "visible_any_dir": false,
+    "az_range_visible": null
+   },
+   "warm": {
+    "on": true,
+    "az": -27.8,
+    "el": -13.6,
+    "dist": 60.9,
+    "in_view": false
+   },
+   "snow": {
+    "in_view": 39,
+    "within_5m": 7
+   },
+   "seeds": {
+    "born": 200,
+    "in_view": 3,
+    "births_last_10s_in_view": 2
+   },
+   "trails": {
+    "pool_in_view": 12,
+    "of": 630,
+    "note": "the hull points are beside / under the bus: through the windscreen only the ones ahead of the eye"
+   },
+   "trails_front": {
+    "pool_in_view": 0,
+    "of": 270,
+    "gain": 0.0
+   },
+   "last_shaft": "off"
+  }
+ ]
+}

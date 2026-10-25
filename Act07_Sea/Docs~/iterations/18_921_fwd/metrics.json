@@ -5,7 +5,7 @@
    540
   ],
   "APL": 33.19,
-  "EV_display": -5.727,
+  "EV_display": -5.726,
   "luma_lt12_pct": 22.5,
   "Lstar_gt85_pct": 0.04,
   "clip_black_pct": 0.0,
@@ -78,7 +78,7 @@
     {
      "hex": "#697987",
      "role": "海雪",
-     "nearest_dE2000_p01": 29.4,
+     "nearest_dE2000_p01": 29.3,
      "within_dE5_pct": 0.0
     },
     {
@@ -193,7 +193,7 @@
    540
   ]
  },
- "render_seconds": 15.9,
+ "render_seconds": 12.3,
  "lens": "none",
  "bloom_tint": "single",
  "note": "921.4 forward: the last of the dip, APL target 34 (bible: the dusk does not light up before the exit)"

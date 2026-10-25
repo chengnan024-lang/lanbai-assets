@@ -21,19 +21,19 @@
    "bbox": [
     90,
     19,
-    944,
+    945,
     378
    ],
    "centroid": [
-    483.7,
-    271.4
+    494.2,
+    265.7
    ],
-   "clusters": 6,
+   "clusters": 7,
    "clusters_ge5pct": 2,
    "min_luma": 64.7,
    "centroid_az_el": [
-    87.08,
-    -39.35
+    88.14,
+    -38.59
    ]
   },
   "top25_Lstar": {
@@ -84,7 +84,7 @@
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 57.1,
+     "nearest_dE2000_p01": 57.0,
      "within_dE5_pct": 0.0
     }
    ],
@@ -193,7 +193,7 @@
    540
   ]
  },
- "render_seconds": 18.8,
+ "render_seconds": 14.6,
  "lens": "none",
  "bloom_tint": "single",
  "note": "921.4 right side window down: the mirror 1.4 m below, the window under the bus"
