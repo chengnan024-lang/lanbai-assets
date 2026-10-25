@@ -64,6 +64,7 @@ namespace Lanbai.Mirrors
         public float appearSeconds = 3f;
         public float pulseIn = 0.08f;
         public float pulseOut = 0.35f;
+        public float dustGainImpact = 0.5f;         // mirror 12's dust is born in the white's impact (1137.58 -> 1138.78): half (flash wsu: 1 s <= 1.0 EV)
         public float rimLightE = 0.3f;
         [Header("Rim light (总导演 F7, 10-24: one point light, no shadows, Not Important, culling Player + PlayerLocal)")]
         public Light rimLight;                      // built by 蓝白/Build/Mirrors; driven by the envelope, off at 0
@@ -396,7 +397,7 @@ namespace Lanbai.Mirrors
                     continue;
                 mpb.Clear();
                 mpb.SetFloat(idDustNow, t);
-                mpb.SetFloat(idDustOn, 1f);
+                mpb.SetFloat(idDustOn, kk == n - 2 ? dustGainImpact : 1f);
                 mpb.SetFloat(idDustT0, tCross[kk]);
                 mpb.SetVector(idDustC, dustC[kk]);
                 mpb.SetVector(idDustCar, dustCar[kk]);
