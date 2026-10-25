@@ -11,6 +11,8 @@
 //  LanbaiCloudShape (or keep it identical), (2) add the lines marked [D-44], (3) leave _Udon_CloudVolume* to the gate
 //  clouds driver (which copies THIS material's _NoiseVolume / _Density / _CloudWind into the globals, so the arms and the
 //  deck cannot disagree). Reference render: GateClouds/Source/seam_ref.py.
+//  [D-44] also: an eye UNDER the deck's floor (top - 170) sees it from below (upward rays, no comfort cut), for the
+//  acceptance view of the roots from under the cloud (阿白's original draws only downward rays).
 // =====================================================================================================
 Shader "Lanbai/GateVolumeDeck"
 {
@@ -104,7 +106,9 @@ Shader "Lanbai/GateVolumeDeck"
         v2f vert(appdata v) {
           v2f o; UNITY_SETUP_INSTANCE_ID(v); UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
           float3 p=mul(unity_ObjectToWorld,v.vertex).xyz;
-          p.y=_WorldSpaceCameraPos.y-1.5;
+          // [D-44] under the deck's floor the plane sits just ABOVE the eye (the roots seen from below; the bus never is)
+          float topV=_Udon_CloudTop.w>0?_Udon_CloudTop.x:_CloudTopY;
+          p.y=_WorldSpaceCameraPos.y<topV-170.0?_WorldSpaceCameraPos.y+1.5:_WorldSpaceCameraPos.y-1.5;
           o.wpos=p;o.pos=UnityWorldToClipPos(p);o.screen=ComputeScreenPos(o.pos);return o;
         }
         float density(float3 p,float top,float3 origin,LanbaiSkirtSet sk) {
@@ -112,19 +116,21 @@ Shader "Lanbai/GateVolumeDeck"
           float shape=LanbaiCloudShape(_NoiseVolume,p,top,origin,_CloudWind.xy,_Udon_GateTime,float2(520.0,260.0),nrg);
           shape=max(shape,LanbaiGateSkirtSet(p,top,nrg,sk));                                  // [D-44] the root skirts
           // Soft comfort envelope: there are no dense billows next to the viewer's face.
-          float comfort=1.0-smoothstep(_WorldSpaceCameraPos.y-40.0,_WorldSpaceCameraPos.y-18.0,p.y);
+          // [D-44] only for an eye above the deck's floor (under it the cut would erase the whole deck)
+          float comfort=_WorldSpaceCameraPos.y<top-170.0?1.0:1.0-smoothstep(_WorldSpaceCameraPos.y-40.0,_WorldSpaceCameraPos.y-18.0,p.y);
           return shape*comfort*_Density;
         }
         half4 frag(v2f i):SV_Target {
           UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
           float3 eye=_WorldSpaceCameraPos;
           float3 ray=normalize(i.wpos-eye);
-          if(ray.y>=-0.0005)discard;
           float top=_Udon_CloudTop.w>0?_Udon_CloudTop.x:_CloudTopY;
           float3 origin=_Udon_GateOrigin.w>0?_Udon_GateOrigin.xyz:_GateOrigin.xyz;
-          float upper=min(top+30.0,eye.y-18.0),lower=top-170.0;
-          float start=max(0.0,(upper-eye.y)/ray.y);
-          float end=min(4200.0,(lower-eye.y)/ray.y);
+          bool below=eye.y<top-170.0;                                                    // [D-44] the view from under the deck
+          if(below?ray.y<=0.0005:ray.y>=-0.0005)discard;
+          float upper=below?top+30.0:min(top+30.0,eye.y-18.0),lower=top-170.0;
+          float start=below?(lower-eye.y)/ray.y:max(0.0,(upper-eye.y)/ray.y);
+          float end=min(4200.0,((below?upper:lower)-eye.y)/ray.y);
           float2 uv=UnityStereoTransformScreenSpaceTex(i.screen.xy/i.screen.w);
           float sceneEye=LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture,uv));
           float eyeRate=max(0.0001,-mul((float3x3)UNITY_MATRIX_V,ray).z);

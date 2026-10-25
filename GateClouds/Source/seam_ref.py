@@ -42,7 +42,7 @@ ss = D.ss
 VOL = dict(Density=0.036, Wind=(8.0, 3.0), XZ=520.0, Y=260.0, MoonE=0.38, MoonColor=np.array([0.6724, 0.7758, 1.0]),
            Amb=np.array([0.0436, 0.0504, 0.0726]), Gain=0.9, Fog=0.0006, FootPoolColor=np.array([0.7605, 0.8070, 0.8963]))
 # ---- AFTER: the shared skirt + the arm's v2.8 terms (= LanbaiCloudVolume.cginc / TentacleSway v2.8 defaults) --------
-NEW = dict(RootReach=150.0, RootSpan=60.0, RootClip=160.0,
+NEW = dict(RootReach=150.0, RootSpan=60.0, RootClip=2010.0, RootDeep=2000.0, UnderDark=0.15,
            # skirt: x width (x r, min SkirtWmin m), climb above the top at the arm (m), soft top (m), strength
            SkirtW=1.3, SkirtWmin=22.0, SkirtClimb=26.0, SkirtBase=-24.0, SkirtSoft=18.0, SkirtK=2.2, SkirtLump=40.0,
            # wet: optical depth from the three density taps -> wet, max wet
@@ -147,7 +147,7 @@ def density(p, c, new):
     s, n = vol_shape(p, c)
     if new and c.skirts:
         s = np.maximum(s, skirt(p, c, n))
-    comfort = 1.0 - ss(c.eye[1] - 40.0, c.eye[1] - 18.0, p[..., 1])
+    comfort = 1.0 if c.eye[1] < c.top - 170.0 else 1.0 - ss(c.eye[1] - 40.0, c.eye[1] - 18.0, p[..., 1])
     return s * comfort * VOL['Density']
 
 
@@ -172,12 +172,17 @@ def march(V, c, scene_d, new, tear, seed=0):
     eye = c.eye
     out = np.zeros((N, 3))
     trans = np.ones(N)
-    ok = V[:, 1] < -0.0005
-    upper = min(c.top + 30.0, eye[1] - 18.0)
     lower = c.top - 170.0
+    below = eye[1] < lower                       # the deck seen from under its floor (GateVolumeDeck [D-44])
+    ok = V[:, 1] > 0.0005 if below else V[:, 1] < -0.0005
+    upper = c.top + 30.0 if below else min(c.top + 30.0, eye[1] - 18.0)
     with np.errstate(divide='ignore', invalid='ignore'):
-        start = np.maximum(0.0, (upper - eye[1]) / V[:, 1])
-        end = np.minimum(4200.0, (lower - eye[1]) / V[:, 1])
+        if below:
+            start = (lower - eye[1]) / V[:, 1]
+            end = np.minimum(4200.0, (upper - eye[1]) / V[:, 1])
+        else:
+            start = np.maximum(0.0, (upper - eye[1]) / V[:, 1])
+            end = np.minimum(4200.0, (lower - eye[1]) / V[:, 1])
     end = np.minimum(end, scene_d)
     ok &= end > start
     idx = np.nonzero(ok)[0]
@@ -312,11 +317,16 @@ def arm_meshes(t, new):
         if V[:, 1].max() < top - 40.0:
             continue
         if new:
+            V = V.copy()
             need = p[1] - (top - NEW['RootReach'])
             if need > 0:
                 s = np.clip((V[:, 1] - p[1]) / NEW['RootSpan'], 0, 1)
-                V = V.copy()
                 V[:, 1] -= need * (1 - s) ** 2
+            rootY = p[1] - max(need, 0.0)
+            L, target = top - 100.0, top - NEW['RootDeep']
+            if target < rootY < L - 1.0:
+                m = V[:, 1] < L
+                V[m, 1] = L - (L - V[m, 1]) * (L - target) / (L - rootY)
         out.append((name, V, ARMS[name + '_f'], p, R, sc))
     return out
 
@@ -557,6 +567,7 @@ def shade_arm(P, N, c, tear, new):
         wet = NEW['WetMax'] * (1.0 - np.exp(-tau))
         facing = np.clip(V @ MOON, 0, 1) ** 5
         tgt = cloud_light(pout, c, tear, True, facing) * VOL['Gain']
+        col = col * (1.0 + (NEW['UnderDark'] - 1.0) * ss(top - 160.0, top - 220.0, P[:, 1]))[:, None]
         col = col + (tgt - col) * wet[:, None]
     # LanbaiFog (the cloud-top extra; AFTER: the extra fades where the arm is wet, the cloud fogs itself)
     h = np.maximum(P[:, 1] - top, 0.0)
@@ -621,12 +632,63 @@ def render(shot, w, outdir):
     return A, B
 
 
+# ---- the continuous views (总导演 / 阿白: in the bus, beside it, from under the cloud) ----------------------------------
+def seq_cam(name, f, n):
+    """frame f of n: (cam dict) -- t runs on, so the cloud's wind and the bus move as in Unity"""
+    u = f / max(n - 1, 1)
+    if name == 'seat_pan':          # the main seat's eye, panning from the left window to the right one
+        t = 165.0 + 3.0 * u
+        return dict(t=t, pos=[0.55, 1.7, 2.05], look_yaw_deg=-85.0 + 170.0 * u, look_pitch_deg=-12.0, hfov_deg=90.0)
+    if name == 'side_out':          # outside, beside the bus (left), tracking forward past the near arms
+        t = 166.0 + 4.0 * u
+        return dict(t=t, pos=[-130.0, -45.0, -110.0 + 180.0 * u], look_yaw_deg=75.0, look_pitch_deg=-9.0, hfov_deg=80.0)
+    if name == 'below':             # under the deck's floor, looking up at the roots, panning
+        t = 166.0 + 4.0 * u
+        top = -D.h_bus(t)
+        return dict(t=t, pos=[-90.0, top - 300.0, -60.0], look_yaw_deg=10.0 + 100.0 * u, look_pitch_deg=38.0, hfov_deg=90.0)
+    raise KeyError(name)
+
+
+def render_seq(name, n, w, outdir):
+    import shutil
+    import subprocess
+    os.makedirs(outdir, exist_ok=True)
+    for f in range(n):
+        SHOTS['_seq'] = seq_cam(name, f, n)
+        render('_seq', w, outdir)
+        for k in ('before', 'after'):
+            shutil.move(os.path.join(outdir, 'seam__seq_%s.png' % k), os.path.join(outdir, '%s_%s_%03d.png' % (name, k, f)))
+        os.remove(os.path.join(outdir, 'seam__seq_lin.npy'))
+    # side by side (left = now, right = D-44 #3) at 8 fps, and a contact strip of every 4th frame
+    for f in range(n):
+        A = Image.open(os.path.join(outdir, '%s_before_%03d.png' % (name, f)))
+        B = Image.open(os.path.join(outdir, '%s_after_%03d.png' % (name, f)))
+        o = Image.new('RGB', (A.width * 2 + 4, A.height), (255, 0, 0))
+        o.paste(A, (0, 0))
+        o.paste(B, (A.width + 4, 0))
+        o.save(os.path.join(outdir, '%s_sbs_%03d.png' % (name, f)))
+    subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-framerate', '8', '-i', os.path.join(outdir, name + '_sbs_%03d.png'),
+                    '-vf', 'pad=ceil(iw/2)*2:ceil(ih/2)*2', '-pix_fmt', 'yuv420p', '-crf', '18',
+                    os.path.join(outdir, name + '.mp4')], check=True)
+    pick = list(range(0, n, 4))
+    A = Image.open(os.path.join(outdir, '%s_sbs_%03d.png' % (name, 0)))
+    strip = Image.new('RGB', (A.width, (A.height + 4) * len(pick)), (255, 0, 0))
+    for i, f in enumerate(pick):
+        strip.paste(Image.open(os.path.join(outdir, '%s_sbs_%03d.png' % (name, f))), (0, i * (A.height + 4)))
+    strip.save(os.path.join(outdir, name + '_strip.png'))
+    print('seq', name, n, 'frames ->', os.path.join(outdir, name + '.mp4'))
+
+
 if __name__ == '__main__':
     a = sys.argv[1:]
     w = int(a[a.index('--w') + 1]) if '--w' in a else 960
     outdir = a[a.index('--out') + 1] if '--out' in a else '/tmp/claude-0/seam/out'
     for k, v in (x.split('=') for x in (a[a.index('--set') + 1].split(',') if '--set' in a else [])):
         NEW[k] = float(v)
+    if a[0] == 'seq':                 # seq <name> [--n 24]
+        n = int(a[a.index('--n') + 1]) if '--n' in a else 24
+        render_seq(a[1], n, w, outdir)
+        sys.exit(0)
     if a[0] == 'bake':
         bake_skirts()
         sys.exit(0)

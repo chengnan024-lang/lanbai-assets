@@ -2,9 +2,10 @@
 //    volume deck (Lanbai/GateVolumeDeck; the gate clouds driver sets _Udon_CloudVolume.x = 1) the visible cloud surface
 //    is 50-90 m under the nominal top (its threshold is 0.75 there), so v2.7's clip at top - 5 and the ragged fade to
 //    _CloudTopColor left a flat-cut dark stump standing on thin cloud ("a hard horizontal line"). In volume mode:
-//    * the arm is clipped only at top - _RootClip (160 m: the deck's floor is top - 170), the dissolve is off;
 //    * roots shallower than top - _RootReach (150 m; the near arms stand at top - 35) are stretched down to it over the
-//      lowest _RootSpan m (vertex; every pass, so the shadow / depth agree): no open root ring above the dense floor;
+//      lowest _RootSpan m, then EVERY arm's part below top - 100 (inside the dense cloud) is stretched so its root lands
+//      at top - _RootDeep (2000): from under the cloud the stems go on down into the dark, x _UnderDark below the deck's
+//      floor (vertex; every pass, so the shadow / depth agree); clip only at top - _RootClip (2010), no dissolve;
 //    * the surface is WET into the cloud: wet = _CloudWet.y (1 - exp(-k tau)), tau from three taps of the deck's own
 //      density IN FRONT of the skin (toward the eye: 3, 15, 40 m; LanbaiCloudVolume.cginc, skirts included), toward the
 //      deck's own lit colour there (ambient x height + moon x its self-shadow, x the deck gain); the cloud-top fog extra
@@ -234,9 +235,11 @@ Shader "Lanbai/TentacleSway"
         _GirthFalloff ("Girth Falloff (power of 1 - t)", Range(0.5, 4)) = 1.5
         [Toggle] _ClipBelowCloud ("Clip Below The Cloud-Sea Top", Float) = 1
         [Header(v2.8 the volume cloud  only when _Udon_CloudVolume.x is 1)]
-        _RootClip ("v2.8: clip this far under the cloud top (m)", Float) = 160
+        _RootClip ("v2.8: clip this far under the cloud top (m)", Float) = 2010
         _RootReach ("v2.8: roots shallower than this under the top (m) are stretched down to it", Float) = 150
         _RootSpan ("v2.8: the stretch runs over this much of the arm above the root (m)", Float) = 60
+        _RootDeep ("v2.8: every root goes on down to this far under the top (m; the deck's floor is 170; deep, so no root end is ever in view)", Float) = 2000
+        _UnderDark ("v2.8: under the deck's floor the arm is in the cloud's shadow: x this", Range(0, 1)) = 0.15
         _CloudWet ("v2.8 wet: k, max, near tap, far tap toward the eye (m; the middle one is 15)", Vector) = (1.5, 0.95, 3, 40)
         _CloudLit ("v2.8 the deck's light: moon E (deck _MoonE), gain (deck _Gain), -, -", Vector) = (0.38, 0.9, 0, 0)
         _CloudMoonColor ("v2.8 the deck's _MoonColor, linear", Vector) = (0.6724, 0.7758, 1.0, 1)
@@ -362,7 +365,7 @@ Shader "Lanbai/TentacleSway"
         half _ReflectionScale;
         #include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc"
         #include "Assets/Lanbai/GateClouds/Shaders/LanbaiCloudVolume.cginc"     // v2.8: the volume cloud's density
-        float _RootClip, _RootReach, _RootSpan;
+        float _RootClip, _RootReach, _RootSpan, _RootDeep, _UnderDark;
         float4 _CloudWet, _CloudLit, _CloudMoonColor, _CloudAmbColor;
 
         half _RimGain;
@@ -583,14 +586,25 @@ Shader "Lanbai/TentacleSway"
             // lowest _RootSpan m of the arm, (1 - s)^2; the near arms' roots stand at top - 35 m, above the dense floor)
             if (LanbaiCloudVolumeOn() && _ClipBelowCloud > 0.5)
             {
+                float top = CloudTop();
                 float3 rootW = mul(unity_ObjectToWorld, float4(0.0, 0.0, 0.0, 1.0)).xyz;
-                float need = rootW.y - (CloudTop() - _RootReach);
+                float wy = mul(unity_ObjectToWorld, float4(v.vertex.xyz, 1.0)).y;
+                float need = rootW.y - (top - _RootReach);
+                float dy = 0.0;
                 if (need > 0.0)
                 {
-                    float wy = mul(unity_ObjectToWorld, float4(v.vertex.xyz, 1.0)).y;
                     float s = saturate((wy - rootW.y) / max(_RootSpan, 1.0));
-                    v.vertex.xyz += mul((float3x3)unity_WorldToObject, float3(0.0, -need * (1.0 - s) * (1.0 - s), 0.0));
+                    dy = -need * (1.0 - s) * (1.0 - s);
                 }
+                // and EVERY arm goes on down under the deck's floor to top - _RootDeep: the part below top - 100 m (inside
+                // the dense cloud, never seen from above) is stretched by k so its root lands there (seen from under
+                // the cloud: stems going down into the dark, no root ring at the floor)
+                float rootY = rootW.y - max(need, 0.0);
+                float L = top - 100.0, target = top - _RootDeep;
+                float y1 = wy + dy;
+                if (rootY < L - 1.0 && rootY > target && y1 < L)
+                    dy += (L - (L - y1) * (L - target) / (L - rootY)) - y1;
+                v.vertex.xyz += mul((float3x3)unity_WorldToObject, float3(0.0, dy, 0.0));
             }
         }
 
@@ -827,7 +841,11 @@ Shader "Lanbai/TentacleSway"
             color.rgb *= (1.0 - f) * (1.0 - cf);
         #else
             if (volCloud)
+            {
+                // v2.8: under the deck's floor (top - 160 .. - 220) the arm is in the cloud's shadow
+                color.rgb *= lerp(1.0, _UnderDark, smoothstep(CloudTop() - 160.0, CloudTop() - 220.0, IN.worldPos.y));
                 color.rgb = lerp(color.rgb, (half3)wetCol, (half)wet);           // v2.8: no dark cloud-top band
+            }
             else
                 color.rgb = lerp(color.rgb, (half3)_CloudTopColor.rgb, cf);
             color.rgb = lerp(color.rgb, LanbaiFogColour(V, dist, ovr), f);

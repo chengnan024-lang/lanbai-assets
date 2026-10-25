@@ -179,7 +179,8 @@ float LanbaiCloudDensityAt(float3 p, float top, float3 origin, float time)
     float2 nrg;
     float s = LanbaiCloudShape(_Udon_CloudVolumeTex, p, top, origin, _Udon_CloudVolumeWind.xy, time, _Udon_CloudVolume.zw, nrg);
     s = max(s, LanbaiGateSkirtAll(p, top, nrg));
-    float comfort = 1.0 - smoothstep(_WorldSpaceCameraPos.y - 40.0, _WorldSpaceCameraPos.y - 18.0, p.y);
+    float comfort = _WorldSpaceCameraPos.y < top - 170.0 ? 1.0                // under the deck: no cut (the deck's rule)
+                  : 1.0 - smoothstep(_WorldSpaceCameraPos.y - 40.0, _WorldSpaceCameraPos.y - 18.0, p.y);
     return s * comfort * _Udon_CloudVolume.y;
 }
 
