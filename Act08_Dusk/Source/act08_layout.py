@@ -143,12 +143,12 @@ LOWER = [  # the other sky's clouds: other variants, 70 % of the count, x 0.82 +
     ('L06', 'CloudV2_Congestus_duskD', 70.0, 10000.0, -1.2, 1500.0),
     ('L07', 'CloudV2_Strato_duskD', -25.0, 12000.0, -6.0, 1600.0),
 ]
-BLUE_FADE = (0.4, 0.55)        # (final review A5) gain at the end, and the wb where it gets there (act08_blue.py)
-BLUE_DESAT = 1.0               # chroma of the blue-hour card light (act08_blue.py)
+BLUE_FADE = (0.595, 0.55)        # (final review A5) gain at the end, and the wb where it gets there (act08_blue.py)
+BLUE_DESAT = 0.656               # chroma of the blue-hour card light (act08_blue.py)
 
 
 def _desat(c, k):
-    m = sum(c) / 3.0
+    m = 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]       # about the luminance: desat keeps L*, changes C* only
     return [round(m + (v - m) * k, 5) for v in c]
 
 

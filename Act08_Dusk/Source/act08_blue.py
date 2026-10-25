@@ -25,7 +25,7 @@ BASE_BLUE = {k: list(R.LAYOUT['blue_colours'][k]) for k in ('SkyUpColor', 'Groun
 def set_blue(g, desat):
     R.BLUE_FADE[0] = g
     for k, v in BASE_BLUE.items():
-        m = sum(v) / 3.0
+        m = 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2]      # about the luminance (= act08_layout._desat)
         R.LAYOUT['blue_colours'][k] = [m + (x - m) * desat for x in v]
 
 
@@ -64,8 +64,8 @@ def main():
     set_blue(g, desat)
     dL0, dC0, rows0 = measure()
     print('start: worst dL %.1f dC %.1f' % (dL0, dC0), flush=True)
-    lo, hi = 0.05, 1.0
-    for _ in range(9):
+    lo, hi = 0.5, 0.8
+    for _ in range(6):
         g = 0.5 * (lo + hi)
         set_blue(g, desat)
         dL, dC, _ = measure()
@@ -76,16 +76,23 @@ def main():
             hi = g
     g = lo
     lo, hi = 0.0, 1.0
-    for _ in range(7):
+    for _ in range(6):
         desat = 0.5 * (lo + hi)
         set_blue(g, desat)
         dL, dC, _ = measure()
         print('desat %.3f dL %.1f dC %.1f' % (desat, dL, dC), flush=True)
-        if dC <= 0.0 and dL <= -1.0:
+        if dC <= 0.0:
             lo = desat
         else:
             hi = desat
     desat = lo
+    for _ in range(4):                          # the grade is not linear: put L back under the sky if desat moved it
+        set_blue(g, desat)
+        dL, dC, _ = measure()
+        print('touch-up g %.3f dL %.1f' % (g, dL), flush=True)
+        if dL <= -1.0:
+            break
+        g *= 0.95
     set_blue(g, desat)
     dL, dC, rows = measure()
     res = dict(blue_fade_gain=round(g, 3), desat=round(desat, 3), worst_dL=round(dL, 1), worst_dC=round(dC, 1),

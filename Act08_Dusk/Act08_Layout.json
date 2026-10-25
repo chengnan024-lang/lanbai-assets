@@ -1530,7 +1530,7 @@
     956.36
    ],
    "blue_fade": [
-    0.4,
+    0.595,
     0.55
    ]
   },
@@ -1597,16 +1597,16 @@
  },
  "blue_colours": {
   "SkyUpColor": [
-   0.0846,
-   0.1188,
-   0.306
+   0.09851,
+   0.12095,
+   0.24375
   ],
   "GroundColor": [
-   0.0804,
-   0.1806,
-   0.594
+   0.11781,
+   0.18354,
+   0.45473
   ],
-  "desat": 1.0,
+  "desat": 0.656,
   "note": "blue_hour zenith / nadir x 6, chroma x desat (final review A5: C* <= the sky)"
  },
  "tables": {
