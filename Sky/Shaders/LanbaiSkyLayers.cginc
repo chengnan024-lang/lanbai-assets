@@ -650,6 +650,9 @@ float3 LanbaiApplyBands(float3 c, float3 V, float3 S, float band1Gain)
 // tint, COOL / WARM = that tint on the blue / the pink side (a pale silver-blue / a peach-cream: the rose pales out
 // into the blue instead of passing a grey-khaki band), TW = where it turns from one to the other; PINK = a rose keeps
 // green >= z x blue once red leads green by x .. y (no mauve, also not under the cooler blue-hour grade)
+#ifndef LANBAI_FADE_CYAN
+#define LANBAI_FADE_CYAN float2(1.6, 2.1)
+#endif
 #ifndef LANBAI_GUARD_MID
 #define LANBAI_GUARD_MID float4(0.28, 0.45, 0.65, 0.88)
 #endif
@@ -844,7 +847,14 @@ float3 LanbaiSkyColour(float3 V)
         float3 a = LanbaiSkyDay(V, S, blend, 0.0, 0.0, b2, saturate(other / max(1.0 - procIn, 1e-3)), sunG, sunR, sunLine, false);
         float3 b = LanbaiSkyDay(V, S, blend, 1.0, bandG / procIn, 0.0, 0.0, sunG, sunR, sunLine, true);
         c = LanbaiGeoLerp(a, b, pd);
-        c = lerp(c, LanbaiPurpleGuardSoft(c, p_PurpleGuard), saturate(8.0 * pd * (1.0 - pd)));
+        float fadeW = saturate(8.0 * pd * (1.0 - pd));
+        c = lerp(c, LanbaiPurpleGuardSoft(c, p_PurpleGuard), fadeW);
+        // ... and not cyan either (act 8 final review, 990-991.5: the in-between showed a green-cyan grey over the rose):
+        // where green leads red and blue leads green by less than the blue hour's own blue does (= graded h < ~262, the
+        // cyan side), toward a low-chroma neutral grey-blue of the same luminance
+        float lumF = max(dot(c, float3(0.2126, 0.7152, 0.0722)), 1e-6);
+        float cyan = smoothstep(0.0, 0.12, (c.g - c.r) / lumF) * (1.0 - smoothstep(LANBAI_FADE_CYAN.x, LANBAI_FADE_CYAN.y, c.b / max(c.g, 1e-6)));
+        c = lerp(c, lumF * float3(0.93, 1.0, 1.10), fadeW * cyan);
     }
     else
     {
