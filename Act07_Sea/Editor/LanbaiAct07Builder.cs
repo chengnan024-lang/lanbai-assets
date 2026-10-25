@@ -184,9 +184,16 @@ public static class LanbaiAct07Builder
         m.renderQueue = queue;
     }
 
+    // D-41：菜单先等 U# 程序资产初始化完再搭；直接调 Build() 时没初始化完就不动场景（Common/Editor/LanbaiUdonPrograms）
     [MenuItem("蓝白/Build/Act07a")]
+    public static void BuildMenu()
+    {
+        Lanbai.Udon.LanbaiUdonPrograms.RunWhenReady("蓝白/Build/Act07a", new[] { typeof(LanbaiAct07Driver) }, Build);
+    }
+
     public static void Build()
     {
+        Lanbai.Udon.LanbaiUdonPrograms.RequireReady("蓝白/Build/Act07a", typeof(LanbaiAct07Driver));
         string path = Root + "/Act07_Layout.json";
         if (!File.Exists(path)) throw new Exception("[Act07] " + path + " not found (copy Act07_Sea/ to Assets/Lanbai/Act07_Sea/)");
         Layout J = JsonUtility.FromJson<Layout>(File.ReadAllText(path));

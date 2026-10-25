@@ -1,0 +1,17 @@
+{
+    "id": "gate_continue_20261025_tool_full",
+    "state": "done",
+    "step": 1,
+    "total": 1,
+    "started": "2026-10-25 00:13:46",
+    "finished": "2026-10-25 00:15:04",
+    "error": "",
+    "log": [
+        "00:13:46 收到请求，共 1 步",
+        "00:13:46 调用 Lanbai.Tests.LB_FormalTestEntry.Run（run）",
+        "00:15:04   用时 78.5 秒",
+        "00:15:04   返回：Official Runner invoked; use this run's result.json and completion record, not this adapter return value.",
+        "00:15:04 全部完成"
+    ],
+    "files": []
+}

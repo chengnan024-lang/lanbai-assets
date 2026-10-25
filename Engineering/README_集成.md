@@ -51,6 +51,8 @@ if (!(extSun && dispatcher != null && dispatcher.LanbaiCoversSun(t)))           
 ```
 驱动上的 `writeRenderSettings` / `writeMainLight`（门内、海）勾上了，它的窗口才算进去；所以 §8.3 那张表是“该勾哪些驱动开关”，没有要本地填的窗口。**天空的驱动还没有报 `LanbaiWritesAtmosphere()`：在它报之前，不许勾 `LanbaiSkyPreset.ownsAtmosphere`**（勾了它会写 RenderSettings，分发层却不知道，`LB_Journey` 也照写，两个写的人）。`extWindows` 这个数组不用加。
 
+**各包 README 里旧的手填接管窗口一律作废，以这一节（Director v1.1）为准**：`Act06_Dawn/README_Act06.md` §0 第 4 条（`extAtmosphere` 填 252.64 → 362.26、`extSun` 填 252.64 → 363.62）、`Act07_Sea/README_Act07a.md` 第 7 步（把 {362.26, 923.36} 加进接管表 / `extWindows`）、`Act04c_Inside/README_Inside.md`（把 177.55 → 252.64 加进 `extWindows`）。本地只勾 `LB_Journey` 的 `extAtmosphere` / `extSun` 和驱动上的 `writeRenderSettings` / `writeMainLight`，窗口由分发层按驱动自己算。
+
 不勾的时候行为和现在完全一样，所以可以先加、后用。**这是对 `LB_Journey` 唯一的改动请求**（加上 §1 里调分发层的那一行）。
 
 ## 4. 驱动的接口（`CONTROL_总控.md` §5）
@@ -95,7 +97,7 @@ public float[] LanbaiWindow()         // {开始 t, 结束 t}，含预热
 
 ## 6. 全片导入顺序（随包更新）
 
-1. `Common/`（`LanbaiVR.cginc`、`LanbaiFog.cginc`、`LanbaiSky.cginc`、`LanbaiCaustics.cginc`、**`LanbaiGlobals.cginc`**）→ `Assets/Lanbai/Common/`。别的包的 shader 都 include 它们。`LanbaiGlobals.cginc` 是生成的（`Common/Tools~/globals/gen_globals.py`，按 `Common/UdonGlobals.md`，现在 182 个量），不要手改。
+1. `Common/`（含 `Common/Editor/`：U# 程序资产的共用工具，D-41；`LanbaiVR.cginc`、`LanbaiFog.cginc`、`LanbaiSky.cginc`、`LanbaiCaustics.cginc`、**`LanbaiGlobals.cginc`**）→ `Assets/Lanbai/Common/`。别的包的 shader 都 include 它们。`LanbaiGlobals.cginc` 是生成的（`Common/Tools~/globals/gen_globals.py`，按 `Common/UdonGlobals.md`，现在 182 个量），不要手改。
 2. `Grading/` → 跑 `蓝白/Grades/Build Profiles & Volumes`（已经做过）。
 3. `Director/` → 先拷，菜单等所有驱动拷完再点（§9.0）。
 4. 之后按 §9 一幕一幕来（= 旅程顺序）。每个包的 README 第一节写“拷哪些文件夹、点哪个菜单”，§9 只写它们之间怎么接、开关怎么勾。
@@ -117,7 +119,7 @@ public float[] LanbaiWindow()         // {开始 t, 结束 t}，含预热
 | 129.10 → 133.80 | U6k 破云 → U6 | 同上（`moon_night`，在云里切） | 同上 | **133.80 天空停写**。门的窗口 113.80 开，但 113.80 → 133.80 门不写这几组 |
 | 133.80 → 179.55 | U6 → U9 | **门的驱动** `LanbaiGateDriver` | 天雾组 + 月 + 星（`StarShape` −1 EV），133.8 → 163.8 从 `moon_night` smoothstep 混到 `act4_gate`；混完常量只写一次，之后只写光带方向 | 数值只从 `Sky/SkyPresets.json`、`Sky/FogPresets.json` 读（Build Driver 时烘进去）。U9 − 0.05 起只写光带方向（冻住） |
 | “门内露出来的那一帧”（眼离裂口平面 ≤ 0.7 m，或 t ≥ 179.55）→ 248.64 | U9 → 剪 1 | **门内** `LanbaiInsideDriver` | 天雾组整组（`_Udon_FogModel` = B 渐变，`StarGain` / `GalaxyGain` = (0,0,0,1)），U9 之前用 U9 的值 | 和门重叠的几帧门内后 tick，稳赢。**248.64 停写**；`LanbaiActivate(false)` 只清 `_Udon_InsidePortal`、`InsideDot`、旧的 `_Udon_FogDensity` = 0。**门内不写月**：月盘停在门最后写的值，第 6 幕要写全 |
-| 248.64 → 363.26 | 剪 1 → F2h | **「云」第 6 幕**（`dawn`，黑遮罩下 `Apply`） | 天雾组 + 月 + 星，写全 | **包还没交**（D-25：只交还自己的量） |
+| 248.64 → 363.26 | 剪 1 → F2h | **「云」第 6 幕** `LanbaiAct06Driver`（`dawn`，黑遮罩下 `Apply`） | 天雾组 + 月 + 星，写全 | 已进 main（c468254，D-35 r3）。248.64 在黑里 `Apply` 一次（门留下的月在这里被写掉）；雾色在 `dawn` 之上改三样（远色、天底色换 `#8593AA` 的色相，近 → 远色方位宽 40°，D-35 #3）。D-25：只交还自己的量 |
 | 363.26 → 922.36 | F2h 入水 → 出海 | **海** `LanbaiAct07Driver`（7a + 7c 一个驱动） | `_Udon_Fog`、`FogBase`、`WaterFog*`、`Underwater`、`SeaLevel`、`SeaMode`、`SeaClock`、`SeaBus*`、`Caustics*`、`ReflCube*`、**`_Udon_T`** | 363.26 之前什么都不写（云的海还在，两块水面永不并存）。**922.36 只交还海独有的**（`Underwater` = 0、`Caustics.x` = 0、主光 cookie 摘掉），雾不清零，交给第 8 幕 |
 | 922.36 → 1001.21 | 出海 → 8b 末 | **「云」第 8 幕**（`dusk_8i` → `dusk_8ii` → `blue_hour`） | 天雾组 + 月 + 星 | **包还没交**。**1001.21 起归第 9 幕**：t ≥ 1001.21 不许再调 `Apply` / `ApplyBlend`**（会成第二个写的人） |
 | 1001.21 → 1149.31 | 第 9 幕 → F16 | **第 9 幕** `LanbaiAct09Driver` | `SkyBlend`、`SkyFx`、`Fog`、`GalaxyGain`、`StarGain`；1009.21 起加 `Zenith/Horizon/FogBand/NadirColor` | 窗口 992.06 开（例外：开的时候什么都看不见）。`blue_hour` 里这几个量和 1001.21 写的一样，接得上 |
@@ -131,7 +133,7 @@ public float[] LanbaiWindow()         // {开始 t, 结束 t}，含预热
 |---|---|---|---|
 | 0 → 180.05 | **`LB_Journey`**（按 `SKY_*` 预设）或场景里的值 | 方向、颜色、强度 | **门的驱动 v1.2 其实不写主光**（只写车厢裂口光 `Tear_CabinOnly` 和补光 `Fill_from_below`，窗口外关）。D-24 说“U9 之前归门”，代码里是“保持场景值”。所以第 4 幕这段 `extSun` 不勾；本地要保证 177.55 那一帧主光强度 = 门内的 `mainLightGate`（1.0），不然 180.05 会跳 |
 | 180.05 → 188.05 → 252.64 | **门内**（`writeMainLight`） | 只写强度：1.0 → 0.001（和 S4 → S4c 同一条 smoothstep） | 不改方向、颜色 |
-| 252.64 → 363.62 | **「云」第 6 幕** | 主光转成晨日（D-24 / D-25；方位 +30°、仰角 +6° 在车门里） | 包没交 |
+| 252.64 → 363.615 | **「云」第 6 幕**（`writeMainLight`） | 主光转成晨日（D-24 / D-25）：方位 +30°、仰角 5.8°（D-12 写的 +6°，差 0.2° 是为了和日盘同心）、`#FFC47A`、E 3；304.3 → 305.4 落到云唇后面（× `sun_table`），317.8 → 319.1 回来 | 363.615 眼睛下水，交给海 |
 | 363.62（眼下水）→ 922.36 | **海**（`writeMainLight`） | 方向（仰角 70°、方位 +30°）、颜色 `#B0D9F2`、强度、焦散 cookie | 主光从不关；出海摘 cookie。往回拖到下水之前也摘 cookie、交还第 6 幕 |
 | 922.36 → 1149.31 | **「云」第 8 幕**；第 9 幕不写 | 暮日 → 蓝时 | 包没交；第 9 幕要的话由第 8 幕留下的值 |
 | 1149.31 → 片尾 | `LB_Journey` | — | |
@@ -145,7 +147,7 @@ Director v1.1 起没有要本地填的窗口：`LB_Journey` 勾 `extAtmosphere` 
 | 0 → 133.80 | `LB_Journey` | 否（天空报 `LanbaiWritesAtmosphere()` 之前不许勾 `ownsAtmosphere`） | 否 | — |
 | 133.80 → 177.55 | `LB_Journey` | 否（门不写 RenderSettings） | 否 | — |
 | 177.55 → 252.64 | 门内 | 是（自动） | 是（自动） | 门内 `writeRenderSettings`、`writeMainLight`；环境光模式 **Trilight** |
-| 252.64 → 362.26 | 「云」第 6 幕 | 等包 | 等包 | — |
+| 252.64 → 362.26 | 「云」第 6 幕 | 是（自动） | 是（自动，到 363.615） | `Act06_Driver` 的 `writeRenderSettings`、`writeMainLight`；Trilight |
 | 362.26 → 923.36 | 海 | 是（自动） | 是（自动） | 海 `writeRenderSettings`、`writeMainLight`；Trilight |
 | 923.36 → 片尾 | `LB_Journey` / 「云」/ 天空 11–12 | 等包 | 等包 | — |
 
@@ -157,11 +159,13 @@ Director v1.1 起没有要本地填的窗口：`LB_Journey` 勾 `extAtmosphere` 
 | 东西 | 写的人 | 驱动报什么 |
 |---|---|---|
 | PPv2 weight、ΔEV（一帧一个） | **只有 `LB_Journey.ApplyGrades`** | 有曝光事件的驱动实现 `float[] LanbaiGrade(t)`，分发层加起来放进 `dispatcher.gradeDEV`（`gradeOwned` = 有人报）。现在报的：门内的 `FLASH_TEAR`（247.89 起 0.4 s 升、0.1 保持、0.25 落）。**`ApplyGrades` 里自己那份 FLASH_TEAR 要删**（不然算两次）。门内的 `writeExposure` 一直不勾 |
-| 遮罩球 `Lanbai_Overlay` v2 | 248.39 → 252.64 **门内**（剪 1 的黑）；之后第 6 幕（晨从黑里亮起，包没交）；第 10 幕的白归镜与白 | 门内调 `overlay.SetFlat(…, LanbaiDeltaEV(t))` 自己补 ΔEV。场景里只放一个 |
+| 遮罩球 `Lanbai_Overlay` v2 | **出生淡入优先（v1.2）**：`LB_Journey` 的出生黑 / 淡入从 `dispatcher.LanbaiSpawnFadeBegin()` 到 `LanbaiSpawnFadeEnd()`，这段时间**任何驱动都不碰遮罩球**。出生时 `dispatcher.LanbaiCoversOverlay(t)`（或 t + 淡入时长）为真（有驱动拿着遮罩球）：`LB_Journey` **不做淡入**，出生的黑保持黑，黑结束那一帧调 End，之后只有驱动那一次从黑升起来；为假：照常淡入、淡入结束调 End。End 只认第一次；Begin 后 10 秒没有 End 当作已结束。之后：248.39 → 252.64 **门内**（剪 1 的黑）；第 6 幕（252.64 `SetFlat` → 254.14 起 `SetCurve` 晨从黑里亮起 → 266.44 `Hide()`）；第 10 幕的白归镜与白 | 门内调 `overlay.SetFlat(…, LanbaiDeltaEV(t))` 自己补 ΔEV。场景里只放一个。拿遮罩球的驱动实现 `LanbaiSpawnFade(float since)`（Director v1.2，`README_Director.md` §3 第 8 条）：`since < 0` 不写；之后从黑按 ≤ 0.85 EV/s 升到自己的值（迟到的人在白里进来，由镜与白自己升） |
 
 ---
 
 ## 9. 一幕一幕导入（拷什么、点什么、接什么、勾什么）
+
+**U# 程序资产（D-41）**：所有搭建菜单都用 `Common/Editor/LanbaiUdonPrograms.cs`（说明 `Common/Editor/README_UdonPrograms.md`）：按 Type 查已有的程序资产、缺了就建、等 SDK 初始化完（2/2）再加组件和 `CopyProxyToUdon`。所以 **`Common/` 要整个拷（含 `Common/Editor/`）**，各包的搭建脚本都依赖它。第一次点菜单时 Console 会先写 “等 SDK…”，之后自动接着搭，不用再点。
 
 每加一个包：拷 → 点包自己的搭建菜单 → **`蓝白/Director/1 Generate Dispatcher` → 等编译 → `2 Wire Scene` → `3 Report`**（打印每个驱动的窗口和重叠，§8 以外的重叠都是错）→ 按 §8.3 填接管开关 → 在包 README 写的机位 / 时刻截图推回 `FromLocal/`。
 
@@ -174,7 +178,8 @@ Director v1.1 起没有要本地填的窗口：`LB_Journey` 勾 `extAtmosphere` 
 ### 9.1 天空套件（`Sky/`，第 1–3、11–12 幕，也给别的幕供预设）
 
 - 拷 `Sky/`；`蓝白/Sky/Build Star Mesh` → `蓝白/Sky/Build Sky (one material + preset objects)`：一个天空盒材质 + 预设物体 + 两个驱动实例（`Lanbai_SkyDriver_Acts1to3`、`_Acts11to12`）。
-- 门、门内、第 9 幕都从 `SkyPresets.json` / `FogPresets.json` 读数，**天空要先拷**，不然门的 Build Driver 会警告、只写一条光带色。
+- **什么时候导入照 HANDOFF_LOG：门的测试做完再导入天空**（10-24「天空套件合进 main」那一条）。门测试的时候没有天空，门的 Build Driver 会警告、只写一条光带色，这是预期的；导入天空以后重跑一次 `蓝白/Gate/Build Driver`，警告就没了。
+- 门（133.8 起）、门内、第 6 幕、第 9 幕都从 `SkyPresets.json` / `FogPresets.json` 读数：所以门内、第 6 幕、第 9 幕都排在天空之后，也就是门测试之后。
 - `ownsAtmosphere` / `ownsSkybox` 默认关，**`ownsAtmosphere` 在天空报 `LanbaiWritesAtmosphere()` 之前不许勾**（§3）。
 - 显存：星图 BC7 42.7 MB、HDRI 立方图每张 31.9 MB（账本 §6）。
 
@@ -193,6 +198,16 @@ Director v1.1 起没有要本地填的窗口：`LB_Journey` 勾 `extAtmosphere` 
 - 窗口 177.55 → 252.64；从 177.55 起 `InsideRoot` 就开着，但在顶点阶段塌缩，画面不变。
 - 勾 `writeRenderSettings`、`writeMainLight` 的前提：`LB_Journey` 已经按 §3 用 `LanbaiCoversAtmosphere(t)` / `LanbaiCoversSun(t)` 让出（Director v1.1 自动算窗口，不用填）。
 - `ApplyGrades` 里删掉 FLASH_TEAR 自算（§8.4）。天窗光斑（U8 → U9）同一个菜单建。
+
+### 9.3a 第 6 幕：晨（`Act06_Dawn/`，`README_Act06.md`；已进 main c468254，D-35 r3）
+
+- **什么时候导入**：门测试做完以后（HANDOFF_LOG 10-24 20:00 那一条：先别导入）。它要天空，天空也排在门测试之后（§9.1）。
+- **导入顺序**（`README_Act06.md` §0）：`Common/`、`GateClouds/`（搭建脚本借它的 U# 小工具 `LanbaiGateCloudsBuilder`，没有它 `蓝白/Build/Act06` 编不过）、`Sky/`（跑过 `蓝白/Sky/Build Sky`，场景里有 `Lanbai_SkyPresets/dawn`）、`Sea/`（跑过 `蓝白/Sea/Create Materials`，`Sea/Materials/M_06_Sea.mat` 在）、`Overlay/`（场景里只有一个 `LanbaiOverlay`）、`Clouds_v2/`，最后 `Act06_Dawn/`。
+- **先应用 `dawn` 预设，再点 `蓝白/Build/Act06`**：搭建脚本在海面上方 2 m 现烘临时反射立方图 `Generated/Refl_S6_standin`，烘的是当时的天；总控的 `Refl_S6` 来了就换（`Act06_Driver.reflCube`）。可以重复点，`Act06_Driver` 和手接的引用保留。点完 → `蓝白/Director/1 Generate` → 等编译 → `2 Wire Scene` → `3 Report`。
+- **接管**：勾 `Act06_Driver.writeRenderSettings`、`writeMainLight`，`LB_Journey` 勾 `extAtmosphere` / `extSun`（窗口自动，§3；`README_Act06.md` §0 第 4 条的手填窗口作废）。环境光 Trilight。
+- 窗口 248.64 → 363.62：248.64 起写天雾月星（§8.1），252.64 起写 RenderSettings（到 362.26）和主光（到 363.615，§8.2），遮罩 252.64 → 266.44（§8.4），海的全局量 300 → 363.26（入水那一帧海的驱动在同一个 y 接手）。
+- 车厢漂白 251.64 → 281.86 归车厢驱动（圣经 §4.8 的表，D-35），不归第 6 幕。
+- 截图和量数：`README_Act06.md` §0 第 5 条；标杆画面 C（254–266 s 三个视向）用测试工具跑 `act06_test`（`Engineering/UnityTest/`）。
 
 ### 9.4 第 7 幕：7a + 7c（`Sea/`、`Act07_Sea/`；7b 宫殿还没交）
 
@@ -252,4 +267,4 @@ Director v1.1 起没有要本地填的窗口：`LB_Journey` 勾 `extAtmosphere` 
 
 ### 9.7 还没交的（这几格在 §8 里写着“等包”）
 
-第 6 幕晨、第 8 幕暮（「云」）、7b 宫殿、第 10 幕白（镜与白）、第 11 幕灯与假醒、车厢。每个交来时总工程师照 §8 核一遍交接，再在这里加一节。
+第 8 幕暮（「云」）、7b 宫殿、第 10 幕白（镜与白）、第 11 幕灯与假醒、车厢。每个交来时总工程师照 §8 核一遍交接，再在这里加一节。

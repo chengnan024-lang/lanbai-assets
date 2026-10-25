@@ -1,0 +1,17 @@
+{
+ "shot": "hero",
+ "frames": 12,
+ "size": [
+  800,
+  600
+ ],
+ "shimmer_mean": 6.892392158508301,
+ "shimmer_p99": 35.908531188964844,
+ "shimmer_frac_gt4": 0.4604229166666667,
+ "edge_px_frac": 0.5706020833333333,
+ "shimmer_mean_on_edges": 11.913018226623535,
+ "night_shimmer_mean": 0.14950731483924934,
+ "night_shimmer_p99": 1.3539563362043507,
+ "night_shimmer_frac_gt4": 0.0012604166666666666,
+ "night_contrast_p50_on_edges": 4.0762
+}

@@ -1,0 +1,13 @@
+{
+  "id": "palace_hotspot",
+  "title": "宫殿热点（第 7b 幕殿门）",
+  "source": "D-27 宫殿热点例外、D-34 #5 殿门 F7 构图",
+  "blocked": "占位：宫殿第 8 轮和第 7b 幕组装还没进 main；进了以后由总工程师补完机位（F7 殿门、F7p 星座）、性能（D-27 热点例外的预算）和步骤",
+  "requires": {
+    "folders": [
+      "Assets/Lanbai/Common"
+    ]
+  },
+  "shots": [],
+  "checks": []
+}

@@ -1,0 +1,33 @@
+{
+  "steps": [
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_WhiteHandoffAudit.QuietNextPlay"
+    },
+    {
+      "op": "play",
+      "seconds": 4
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FlickerDiagnostic.Begin",
+      "arg": "white_handoff_0659_exit|baseline|1177|14|0"
+    },
+    {
+      "op": "wait",
+      "seconds": 15
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FlickerDiagnostic.Status"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_WhiteHandoffAudit.Inspect"
+    },
+    {
+      "op": "stop"
+    }
+  ],
+  "id": "white_handoff_20261025_0659_exit"
+}

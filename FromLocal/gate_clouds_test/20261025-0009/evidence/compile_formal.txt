@@ -1,0 +1,16 @@
+══ 2026-10-25 00:08:48 开始编译 ══
+Assembly-CSharp-Editor.dll：通过，1 个警告
+  [警告] Assets\Lanbai\Editor\LB_Builder_Road.cs(450,17): Assets\Lanbai\Editor\LB_Builder_Road.cs(450,17): warning CS0162: Unreachable code detected
+Assembly-CSharp.dll：通过
+Lanbai.Common.Editor.dll：通过
+══ 2026-10-25 00:08:52 编译结束 ══
+
+══ 2026-10-25 00:13:20 开始编译 ══
+Assembly-CSharp-Editor.dll：通过，1 个警告
+  [警告] Assets\Lanbai\Editor\LB_Builder_Road.cs(450,17): Assets\Lanbai\Editor\LB_Builder_Road.cs(450,17): warning CS0162: Unreachable code detected
+══ 2026-10-25 00:13:21 编译结束 ══
+
+══ 2026-10-25 00:15:56 开始编译 ══
+Assembly-CSharp-Editor.dll：通过，1 个警告
+  [警告] Assets\Lanbai\Editor\LB_Builder_Road.cs(450,17): Assets\Lanbai\Editor\LB_Builder_Road.cs(450,17): warning CS0162: Unreachable code detected
+══ 2026-10-25 00:15:57 编译结束 ══

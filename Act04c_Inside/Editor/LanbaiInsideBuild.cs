@@ -23,9 +23,23 @@ namespace Lanbai.Inside.Editor
         const string Root = "Assets/Lanbai/Act04c_Inside";
         const string MatDir = Root + "/Materials";
 
+        // D-41：菜单先建三个 U# 程序资产（脚本旁边）、等 SDK 初始化完，再搭（Common/Editor/LanbaiUdonPrograms）
         [MenuItem("蓝白/Build/04c 门内")]
+        public static void BuildMenu()
+        {
+            var types = new[] { "LanbaiInsideDriver", "LanbaiInsideTestClock", "LanbaiSkylightSpot" }
+                .Select(Lanbai.Udon.LanbaiUdonPrograms.TypeOfScript).Where(t => t != null).ToArray();
+            if (types.Length < 3) { Debug.LogError("[Lanbai 4c] Act04c_Inside/Runtime/ 的脚本没编译完（要 LanbaiInsideDriver、LanbaiInsideTestClock、LanbaiSkylightSpot）"); return; }
+            Lanbai.Udon.LanbaiUdonPrograms.RunWhenReady("蓝白/Build/04c 门内", types, Build, Lanbai.Udon.LanbaiUdonPrograms.NextToScript);
+        }
+
         public static void Build()
         {
+            foreach (var sn in new[] { "LanbaiInsideDriver", "LanbaiInsideTestClock", "LanbaiSkylightSpot" })
+            {
+                var st = Lanbai.Udon.LanbaiUdonPrograms.TypeOfScript(sn);
+                if (st != null) Lanbai.Udon.LanbaiUdonPrograms.RequireReady("蓝白/Build/04c 门内", st);
+            }
             var old = GameObject.Find("Lanbai_Inside");
             // 总导演终审 #11: a rebuild keeps what was wired / tuned by hand on the old driver (the references and the
             // dial time); the Director's wiring is re-run by hand afterwards (logged below)

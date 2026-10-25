@@ -1,0 +1,21 @@
+{
+  "steps": [
+    {
+      "target": "Lanbai.Tests.LB_FlickerDiagnostic.Begin",
+      "op": "call",
+      "arg": "fix_all_crossings|baseline|995|175|1"
+    },
+    {
+      "seconds": 176,
+      "op": "wait"
+    },
+    {
+      "target": "Lanbai.Tests.LB_FlickerDiagnostic.Status",
+      "op": "call"
+    },
+    {
+      "op": "stop"
+    }
+  ],
+  "id": "flicker_20261025_0331_allcross"
+}
