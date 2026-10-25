@@ -577,6 +577,17 @@ def shade_arm(P, N, c, tear, new):
     f = f + (fc - f) * ss(ARM['CapFrom'][0], ARM['CapFrom'][1], dist)
     fcol = fog_colour(V, c, tear)
     col = col * (1 - f)[:, None] + fcol * f[:, None]
+    if new:                                   # under the deck's flat floor: fade into the floor behind (the shader, v2.8)
+        m = 0.95 * ss(top - 290.0, top - 170.0, P[:, 1]) * (V[:, 1] > 0.02)
+        if (m > 0.002).any():
+            k = np.nonzero(m > 0.002)[0]
+            tq = (top - 110.0 - eye[1]) / V[k, 1]
+            q = eye + V[k] * tq[:, None]
+            facing = np.clip(V[k] @ MOON, 0, 1) ** 5
+            lc = cloud_light(q, c, tear, True, facing) * VOL['Gain']
+            fq = (1.0 - np.exp(-VOL['Fog'] * tq))[:, None]
+            lc = lc * (1 - fq) + fcol[k] * fq
+            col[k] = col[k] + (lc - col[k]) * m[k, None]
     return col, keep, dist
 
 

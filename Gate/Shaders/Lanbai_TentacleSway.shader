@@ -5,7 +5,8 @@
 //    * roots shallower than top - _RootReach (150 m; the near arms stand at top - 35) are stretched down to it over the
 //      lowest _RootSpan m, then EVERY arm's part below top - 100 (inside the dense cloud) is stretched so its root lands
 //      at top - _RootDeep (2000): from under the cloud the stems go on down into the dark, x _UnderDark below the deck's
-//      floor (vertex; every pass, so the shadow / depth agree); clip only at top - _RootClip (2010), no dissolve;
+//      floor and fading into the floor behind it over the 120 m under it (vertex; every pass, so the shadow / depth
+//      agree); clip only at top - _RootClip (2010), no dissolve;
 //    * the surface is WET into the cloud: wet = _CloudWet.y (1 - exp(-k tau)), tau from three taps of the deck's own
 //      density IN FRONT of the skin (toward the eye: 3, 15, 40 m; LanbaiCloudVolume.cginc, skirts included), toward the
 //      deck's own lit colour there (ambient x height + moon x its self-shadow, x the deck gain); the cloud-top fog extra
@@ -849,6 +850,24 @@ Shader "Lanbai/TentacleSway"
             else
                 color.rgb = lerp(color.rgb, (half3)_CloudTopColor.rgb, cf);
             color.rgb = lerp(color.rgb, LanbaiFogColour(V, dist, ovr), f);
+            // v2.8: under the deck's flat floor (top - 170) the stem fades, over the 120 m below it, into what the eye
+            // sees of the floor behind it: the deck's lit colour 60 m inside the floor along this ray, fogged by its
+            // distance (from under the cloud it was a dark block cut by the floor's level edge; never seen from above)
+            if (volCloud && V.y > 0.02)
+            {
+                float top = CloudTop();
+                float m = 0.95 * smoothstep(top - 290.0, top - 170.0, IN.worldPos.y);
+                if (m > 0.002)
+                {
+                    float tq = (top - 110.0 - _WorldSpaceCameraPos.y) / V.y;
+                    float3 q = _WorldSpaceCameraPos + V * tq;
+                    float3 md = LanbaiMoonDir(_RimDir.xyz);
+                    float3 lc = LanbaiCloudLitAt(q, top, _Udon_GateOrigin.xyz, _Udon_GateTime, md, pow(saturate(dot(V, md)), 5.0),
+                                                 _CloudAmbColor.rgb, _CloudMoonColor.rgb, _CloudLit.x) * _CloudLit.y;
+                    lc = lerp(lc, LanbaiFogColour(V, tq, ovr), 1.0 - exp(-dens * tq));
+                    color.rgb = lerp(color.rgb, (half3)lc, (half)m);
+                }
+            }
         #endif
             color.a = 1.0;
         }
