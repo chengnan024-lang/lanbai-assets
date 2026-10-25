@@ -5,11 +5,11 @@
 
 ## 0. 先做这几步（拷什么、点什么、截什么图）
 
-1. 把 `Palace/` 拷到 `Assets/Lanbai/Palace/`（要有 `Assets/Lanbai/Common/`、`Assets/Lanbai/GateClouds/`（搭建脚本借它的 U# 工具）、`Assets/Lanbai/Act07_Sea/`）。
+1. 把 `Palace/` 拷到 `Assets/Lanbai/Palace/`（要有 `Assets/Lanbai/Common/`——**含 D-41 的 `Common/Editor/LanbaiUdonPrograms.cs`**，总工程师的共用 U# 程序资产工具，现在在 `pkg/engineering`，合 main 之前要从那里拷——和 `Assets/Lanbai/Act07_Sea/`；不再依赖 GateClouds）。
    `Source/`、`Docs~/` 不需要进 Unity（`Docs~` 本来就被忽略；`Source/` 是 Python，可以不拷）。
 2. Project Settings → Player → **Vertex Compression：TexCoord0–3 不压缩**（鱼的编号在 uv2 里，CONTROL §6 第 8 条）。
 3. 先跑 `蓝白/Build/Act07a`（海），再跑 **`蓝白/Build/7b 宫殿`**：`R_Palace` 会挂在 `R_Sea` 下（局部位置 (0, −250.335, 0)），驱动 `LanbaiPalaceDriver` 放在场景根上。
-4. **烘焙**（§4）：只开宫殿的烘焙灯，Environment Lighting = Trilight 7b 的三个色，Bake。
+4. **烘焙**（§4）：**只在宫殿自己的测试场景里烘**（只有 R_Sea + R_Palace），不要在全片场景里点 Bake——会覆盖整个场景的光照贴图。全片怎么烘归总工程师（终审 10-25）。
 5. Director 的分发表里加 `LanbaiPalaceDriver`（时间窗 643.96 → 876.16）。
 6. 截图推回 `FromLocal/07b_test/`：主座位 (0.55, 1.70, 2.05)、桌面 1920×1080、水平 90°、PPv2 开（S7b）：
    **t = 655.86（F5p）、690、706、735.56（F6）、748.26（F7）**；另 F7p **812.36** 抬头向左上（yaw −25°、pitch +42°）一张。
@@ -63,7 +63,7 @@
 
 ## 4. 烘焙（本地做）
 
-1. `蓝白/Build/7b 宫殿` 之后，`R_Palace/Palace_BakedLights` 下有 **62 盏 Baked 点光**（每盏宫灯一暖、林荫道的灯另加一靛）+ **2 盏 Baked 聚光**（门口朝外一盏、门前 7 m 朝门一盏，第 8 轮从面光改来：面光没有范围，把整面立面描成朱红，阴影发暖）。它们只照宫殿：烘焙时把别的幕的烘焙灯关掉，或用单独的烘焙场景。
+1. `蓝白/Build/7b 宫殿` 之后，`R_Palace/Palace_BakedLights` 下有 **62 盏 Baked 点光**（每盏宫灯一暖、林荫道的灯另加一靛）+ **2 盏 Baked 聚光**（门口朝外一盏、门前 7 m 朝门一盏，第 8 轮从面光改来：面光没有范围，把整面立面描成朱红，阴影发暖）。它们只照宫殿。**只在宫殿的测试场景里烘**（见 §0 第 4 条）。
    - 暖：`#FF9C2F`，range 4，**Inspector 强度 5.46**（D-00：Inspector = E；点光在 d 处 E = I × (1 − (d/r)⁴)² / d²，所以 2 m 处 E = 1.2，圣经 §6·7b 的校准），软阴影、半径 0.1。
    - 靛：`#2A557B`，range 12，强度 28，**放在灯焰上方 4 m**（水体散射的近似：灯旁仍读成金朱，8 m 外落到靛；第 3 轮定的），无阴影。
    - **门的提亮光 `DoorAccent_BakeOnly`（D-31）**：门前 7 m、朝门的聚光（70°、range 11、强度 70），`#FFD9A0`，只参与烘焙。它把门那一开间（门两侧的柱、门楣、斗拱、门前台基面）托出来，让亮着的空门是眼睛第一个落上去的地方。烘焙完可以关掉或删掉（光照贴图里已经有了）。
@@ -95,6 +95,8 @@
 `Docs~/iterations/NN_*/`：每轮的图（PPv2 S7b 调色后）、`metrics.json`、`note.txt`。渲染：`Source/scene.py`（Cycles，烘焙灯按 Unity 的 InverseSquared + 范围窗，灯组分开）→ `Source/post.py`（LanbaiFog 式 Exp 雾 0.018、方向水色、`_Udon_PalaceVeil`、崖口下缘的溶解、门光 / 灯焰 / 灯晕按 `_FogMode 2`，然后 S7b 引擎参数 + bloom，Grading 的 `ppv2_engine.py`）。车壳 = `pkg/bus` 的 `Bus_HarnessShell_paz672.fbx`（第 7 轮起；拿不到时退回标准台 `bible_v2`）。
 
 ## 7. 检查（不是 Unity 编译）
+
+- `python3 Palace/Tools~/builder_lint.py`：搭建脚本的静态自查（材质字典先建后读；终审查到的 KeyNotFound 就是这一类）。**搭建器还没在 Unity 里真正跑过**：要等阿白用总工程师的测试工具（`Engineering/UnityTest/`，`palace_hotspot`）跑一次，Console 里出现 `[Palace] built: …` 才算。
 
 - shader：`python3 Common/Tools~/compile_check/check_shaders.py Palace/Shaders` → `5 files, 102 translation units (DXC on, CGIncludes 2022.3.22f1): 0 errors, 0 warnings. NOT a Unity compile.`
 - C#：`bash Common/Tools~/compile_check/check_cs.sh Palace GateClouds`（搭建脚本借 GateClouds 的 U# 工具）→ `C# CHECK OK (0 assembly error(s), 0 lint warning(s)).`

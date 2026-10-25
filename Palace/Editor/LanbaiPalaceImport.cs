@@ -25,6 +25,7 @@ public class LanbaiPalaceImport : AssetPostprocessor
         mi.materialImportMode = ModelImporterMaterialImportMode.ImportViaMaterialDescription;
         mi.materialLocation = ModelImporterMaterialLocation.InPrefab;
         mi.meshCompression = ModelImporterMeshCompression.Off;
+        mi.preserveHierarchy = true;          // CONTROL §6 #5：只有一个物体的 FBX 也保留根，不把根合并进那个物体（终审）
         mi.isReadable = false;
         mi.importAnimation = false;
         mi.importBlendShapes = false;

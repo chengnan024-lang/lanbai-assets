@@ -38,9 +38,16 @@ public static class LanbaiPalaceBuilder
         { "Terrace", 0.25f }, { "Weeds", 0.5f }, { "Lamps", 2.0f }, { "Hall", 0.6f }, { "Que", 0.8f }, { "Houses", 0.6f },
     };
 
+    // D-41：菜单先等 U# 程序资产初始化完再搭；直接调 Build() 时没初始化完就不动场景（Common/Editor/LanbaiUdonPrograms）
     [MenuItem("蓝白/Build/7b 宫殿")]
+    public static void BuildMenu()
+    {
+        Lanbai.Udon.LanbaiUdonPrograms.RunWhenReady("蓝白/Build/7b 宫殿", new[] { typeof(LanbaiPalaceDriver) }, Build);
+    }
+
     public static void Build()
     {
+        Lanbai.Udon.LanbaiUdonPrograms.RequireReady("蓝白/Build/7b 宫殿", typeof(LanbaiPalaceDriver));
         // ---- 1. 根
         Transform rSea = FindInScene("R_Sea");
         var old = rSea != null ? rSea.Find("R_Palace") : null;
@@ -57,6 +64,7 @@ public static class LanbaiPalaceBuilder
         var mats = BuildMaterials();
         // ---- 3. 模型
         var renderers = new List<Renderer>();
+        var rendererModel = new Dictionary<Renderer, string>();
         Renderer fishR = null;
         foreach (string m in Models)
         {
@@ -72,11 +80,12 @@ public static class LanbaiPalaceBuilder
             {
                 AssignMaterials(r, m, mats);
                 renderers.Add(r);
+                rendererModel[r] = m;
                 if (m == "Palace_Fish") fishR = r;
             }
             MakeLods(inst.transform);
         }
-        foreach (var r in renderers) SetupStatic(r);
+        foreach (var r in renderers) SetupStatic(r, rendererModel[r]);
         // ---- 4. 灯
         var lights = new GameObject("Palace_BakedLights");
         lights.transform.SetParent(root.transform, false);
@@ -104,7 +113,7 @@ public static class LanbaiPalaceBuilder
         if (oldD != null) UnityEngine.Object.DestroyImmediate(oldD);
         var dGo = new GameObject("LanbaiPalaceDriver");
         // 驱动放在场景根上：R_Sea / R_Palace 关着时它也要能被 Dispatcher 调到
-        var d = (LanbaiPalaceDriver)LanbaiGateCloudsBuilder.AddUdonSharp(dGo, typeof(LanbaiPalaceDriver));
+        var d = (LanbaiPalaceDriver)Lanbai.Udon.LanbaiUdonPrograms.AddComponent(dGo, typeof(LanbaiPalaceDriver));   // D-41 共用工具
         d.rPalace = root;
         d.rPalaceTf = root.transform;
         d.fish = fishR;
@@ -115,7 +124,7 @@ public static class LanbaiPalaceBuilder
         d.doorHalfHeight = LanbaiPalaceData.DoorHalfHeight;
         d.doorIntensity = LanbaiPalaceData.DoorSpecI;
         d.doorColorLinear = Lin(LanbaiPalaceData.DoorColor);
-        LanbaiGateCloudsBuilder.SetupUdonSharp(d);
+        Lanbai.Udon.LanbaiUdonPrograms.CopyProxyToUdon(d);
         EditorUtility.SetDirty(d);
         AssetDatabase.SaveAssets();
         UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(root.scene);
@@ -142,8 +151,8 @@ public static class LanbaiPalaceBuilder
         d["FishScale"].SetFloat("_LampGain", LanbaiPalaceData.NacreLampGain);     // 珍珠光要“滚出来”（评审 r3 #7）
         d["FishScale"].SetFloat("_NacreLift", LanbaiPalaceData.NacreLift);         // 第 8 轮：灯在檐下照不出镜面高光，按挪高的灯算（README §3）
         d["FishScale"].SetFloat("_NacreSpread", LanbaiPalaceData.NacreSpread);
-        d["Cowrie"].SetFloat("_LampGain", LanbaiPalaceData.CowrieLampGain);       // 第 8 轮 r6：贝壳上一串小高光
         Std(d, pal, "Cowrie", "Cowrie", "Cowrie", "Cowrie", 3, 0.92f, 0f, 0.2f, "#FFFFFF");
+        d["Cowrie"].SetFloat("_LampGain", LanbaiPalaceData.CowrieLampGain);       // 第 8 轮 r6：贝壳上一串小高光（终审：之前写在 Std 前面，KeyNotFound）
         Std(d, pal, "Tile", "Stone", "Stone", null, 0, 0.35f, 0f, 0.7f, "#F2F8FF");
         Std(d, pal, "Wood", null, null, null, 0, 0.35f, 0f, 0.2f, "#2C2522");
         Std(d, pal, "Rock", "Rock", "Rock", "Rock", 0, 0.22f, 0f, 0.5f, "#FFFFFF");
@@ -222,7 +231,9 @@ public static class LanbaiPalaceBuilder
         {
             string slot = src[i] != null ? src[i].name.Replace("M_07b_", "") : "";
             if (model == "Palace_Flames") slot = "Flame";
-            if (model == "Palace_Door" && r.name.StartsWith("DoorCones")) slot = "DoorCone";
+            // Palace_Door.fbx 里只有门口的光锥卡（门内衬在 Palace_Hall 里）。终审：只有一个物体的 FBX 根会被合并、渲染器改名成
+            // Palace_Door，按 “DoorCones” 名字认不出来，光锥卡拿到了不透明的 DoorGlow。按模型认。
+            if (model == "Palace_Door") slot = "DoorCone";
             if (model == "Palace_Fish") slot = "Fish";
             Material m;
             if (!mats.TryGetValue(slot, out m))
@@ -239,10 +250,12 @@ public static class LanbaiPalaceBuilder
         r.reflectionProbeUsage = ReflectionProbeUsage.Off;
     }
 
-    static void SetupStatic(Renderer r)
+    static void SetupStatic(Renderer r, string model)
     {
         string key = null;
         foreach (var k in LmScale.Keys) if (r.name.StartsWith(k)) key = k;
+        // 终审：单个物体的 FBX（Palace_Weeds、Palace_Terrace）根被合并，渲染器叫模型名——按模型名再认一次（海草没进光照图）
+        if (key == null && model != null && LmScale.ContainsKey(model.Replace("Palace_", ""))) key = model.Replace("Palace_", "");
         bool lightmapped = key != null;
         var flags = lightmapped ? StaticEditorFlags.ContributeGI : 0;      // 会移动的根：不批处理、不遮挡剔除（圣经 §1.6）
         GameObjectUtility.SetStaticEditorFlags(r.gameObject, flags);
