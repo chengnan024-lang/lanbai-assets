@@ -1,0 +1,9 @@
+{
+  "steps": [
+    {
+      "target": "LanbaiGateCloudsBuilder.BuildMenu",
+      "op": "call"
+    }
+  ],
+  "id": "gate_20261024_cloudbuild_retry"
+}

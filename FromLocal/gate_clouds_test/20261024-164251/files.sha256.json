@@ -1,0 +1,20 @@
+{
+  "console_errors_warnings.txt": "7c422a0b3d2715f57337c34c67bf3f99b8138ef001c778b51739161dee891ffe",
+  "console_full.txt": "1212292feed58c47d313cf96042078586cd77564a75104350a7e48a54849d797",
+  "manifest.json": "14727ef2838fb69b5b56a283355cc119a99cd53c16fb07db8c1c64b47ab024d8",
+  "README_说明.md": "b924a5fb8b3e47843da2c4c206aea84b8a98004c57f9baccc1c3dee0e61780a3",
+  "diagnostics/batch-setup.log": "2c131d3277e76749204fd71529f1e407417fbe01898b56661488e4a059aa69a5",
+  "diagnostics/batch-steps.txt": "fe91de06016da6bd3f93af690da40caebc3c1826cbac12d84edf81520d3d10ca",
+  "diagnostics/current_backup_verification.json": "16d6839d8e9377d40e5b0fbcdda539e911529eb797bbad62b3fcd06832b52eec",
+  "diagnostics/final_heartbeat.json": "4e17ae912a8dc94d0fcfa291694a01522b7ea9a3e6c34e73c14e91a1dc3533b0",
+  "diagnostics/heartbeat_before_backup.json": "a860ac619a0f61342f824be87c0d4ecf0637ee203e073de0f9aaa232fc828b4f",
+  "diagnostics/interactive-1638.log": "9213c2bfedd73a666142328ad4a791e04d7f34ce956a605d16f716648399b6a3",
+  "diagnostics/project_audit.json": "d668cdcdfafe85d6dbcbf4fa721f82bb0fbf60ea82b553fa063d6c741475f43a",
+  "diffs/Assets__Lanbai__GateClouds__Editor__LanbaiGateCloudsBuilder.cs.patch": "80922f7ea87a3509a639edfd262299e20ff0650b7558cac5be85ffa5df5561ea",
+  "diffs/Assets__Lanbai__Tests__Editor__LB_GateContinuation.cs.meta.patch": "836aad541023de93a1f2c31455f2ed8ff877d79713f91574d60f097677293de0",
+  "diffs/Assets__Lanbai__Tests__Editor__LB_GateContinuation.cs.patch": "931ef41b65a1ef408a7757a4a6626347715574145feff4d6f0ce5db07b31b3d1",
+  "diffs/Assets__Lanbai__UdonPrograms__LanbaiGateDriver.asset.meta.patch": "dcf757fc2c4fd950ae9812f7c1eb4de3a6fda37d2b7bd46df94a4fa81cfeac2a",
+  "diffs/Assets__Lanbai__UdonPrograms__LanbaiGateDriver.asset.patch": "71db41cc95cb3f23e2086949fd8b0307d3c6b998a9c6805fd8eac25d7e99591e",
+  "diffs/Assets__Lanbai__UdonPrograms__LanbaiGateTestClock.asset.meta.patch": "8b6bf0e8ba0f931a8fbde7d94e1d470a6b88cb8ccccbd49fbe29dee7b11c6aaa",
+  "diffs/Assets__Lanbai__UdonPrograms__LanbaiGateTestClock.asset.patch": "c5960531c4ce890ac3952383c15a8887b540d0458b91d706ba0f84f63e852395"
+}

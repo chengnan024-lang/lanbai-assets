@@ -1,0 +1,37 @@
+{
+  "status": "verified",
+  "archive": "E:\\IDMdownload\\VRCC\\Backups\\dream_20261024-134728.zip",
+  "archive_bytes": 522183967,
+  "archive_sha256": "c960d93308580f4066d7db331ea91080b5f8ee1c118d752ccac094d878add7f8",
+  "source_logical_bytes": 692092091,
+  "file_count": 7233,
+  "meta_count": 3036,
+  "all_entries_crc_and_sha256_verified": true,
+  "required_entries": [
+    "ProjectSettings/ProjectVersion.txt",
+    "ProjectSettings/ProjectSettings.asset",
+    "Packages/manifest.json",
+    "Packages/vpm-manifest.json",
+    "Packages/packages-lock.json",
+    "Assets/Lanbai/Scenes/Lanbai.unity",
+    "Assets/Lanbai/Scenes/Lanbai.unity.meta",
+    "Assets/Lanbai/Tests/GateTest.unity",
+    "Assets/Lanbai/Tests/GateTest.unity.meta",
+    "Assets/Lanbai/Scripts/LB_Journey.cs"
+  ],
+  "source_metadata_unchanged": true,
+  "manifest": "E:\\IDMdownload\\VRCC\\Backups\\dream_20261024-134728.manifest.json",
+  "recovery": {
+    "source": "E:\\IDMdownload\\VRCC\\dream\\Temp\\__Backupscenes\\0.backup",
+    "path": "E:\\IDMdownload\\VRCC\\Backups\\dream_20261024-134728_recovery_0.backup",
+    "bytes": 207824,
+    "sha256": "df4dc50aebc50188a7c8746802ddc5b542207d652fa99db004d32ffdcae7ff84"
+  },
+  "c_free_before": 4713635840,
+  "e_free_before": 111776870400,
+  "c_free_after": 4575895552,
+  "e_free_after": 111252643840,
+  "verified_utc": "2026-10-24T17:48:28.889170+00:00",
+  "filename_timezone": "America/New_York",
+  "restore_test_performed": false
+}

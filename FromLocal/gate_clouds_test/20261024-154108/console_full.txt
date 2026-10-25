@@ -1,0 +1,28 @@
+[15:42:00.498] ══ 远程小助手已加载 · Unity 2022.3.22f1 · 编辑模式 ══
+[15:42:27.124] [信息] [<color=#0c824c>UdonSharp</color>] Compile of 13 scripts finished in 00:24.630
+[15:42:28.238] [信息] [<color=#0c824c>UdonSharp</color>] Compile of 13 scripts finished in 00:01.113
+[15:45:02.512] [远程小助手] 开始处理请求 gate_20261024_1547_open
+[15:45:03.067] [远程小助手] 请求 gate_20261024_1547_open 完成
+[15:45:19.499] [远程小助手] 开始处理请求 gate_20261024_build
+[15:45:20.192] [警告] [GateClouds] not built
+[15:45:20.338] [远程小助手] 请求 gate_20261024_build 完成
+[15:45:34.035] [远程小助手] 开始处理请求 gate_20261024_cloudbuild
+[15:45:35.157] [信息] [GateClouds] deck quality: default
+[15:45:36.375] [信息] [GateClouds] created Assets/Lanbai/UdonPrograms/LanbaiGateClouds.asset
+[15:45:37.173] [信息] [<color=#0c824c>UdonSharp</color>] Compile of 14 scripts finished in 00:00.629
+[15:45:37.187] [远程小助手] 请求失败：InvalidOperationException: Cannot run serialization on U# behaviour 'GateClouds_Driver (LanbaiGateClouds)' with outdated script version, wait until program assets have compiled.
+  at UdonSharpEditor.UdonSharpEditorUtility.CopyProxyToUdon (UdonSharp.UdonSharpBehaviour proxy, UdonSharpEditor.ProxySerializationPolicy serializationPolicy) [0x000bc] in .\Packages\com.vrchat.worlds\Integrations\UdonSharp\Editor\UdonSharpEditorUtility.cs:1198 
+  at UdonSharpEditor.UdonSharpEditorUtility.CopyProxyToUdon (UdonSharp.UdonSharpBehaviour proxy) [0x00000] in .\Packages\com.vrchat.worlds\Integrations\UdonSharp\Editor\UdonSharpEditorUtility.cs:1143 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <27124aa0e30a41659b903b822b959bc7>:0 
+[15:45:37.869] [信息] [<color=#0c824c>UdonSharp</color>] Compile of 14 scripts finished in 00:00.553
+[15:46:01.766] [远程小助手] 开始处理请求 gate_20261024_cloudbuild_retry
+[15:46:02.680] [信息] [GateClouds] deck quality: default
+[15:46:02.919] [警告] Main Object Name 'GateClouds_Card_Congestus' does not match filename 'GateClouds_Card_Congestus_crop45'
+[15:46:03.025] [信息] [GateClouds] created Assets/Lanbai/UdonPrograms/LanbaiGateClouds.asset
+[15:46:03.610] [信息] [<color=#0c824c>UdonSharp</color>] Compile of 14 scripts finished in 00:00.546
+[15:46:03.612] [远程小助手] 请求失败：InvalidOperationException: Cannot run serialization on U# behaviour 'GateClouds_Driver (LanbaiGateClouds)' with outdated script version, wait until program assets have compiled.
+  at UdonSharpEditor.UdonSharpEditorUtility.CopyProxyToUdon (UdonSharp.UdonSharpBehaviour proxy, UdonSharpEditor.ProxySerializationPolicy serializationPolicy) [0x000bc] in .\Packages\com.vrchat.worlds\Integrations\UdonSharp\Editor\UdonSharpEditorUtility.cs:1198 
+  at UdonSharpEditor.UdonSharpEditorUtility.CopyProxyToUdon (UdonSharp.UdonSharpBehaviour proxy) [0x00000] in .\Packages\com.vrchat.worlds\Integrations\UdonSharp\Editor\UdonSharpEditorUtility.cs:1143 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <27124aa0e30a41659b903b822b959bc7>:0 

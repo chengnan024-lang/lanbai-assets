@@ -15,7 +15,7 @@
 | 总导演（蓝白总控安排） | 根目录文档、`HANDOFF_LOG.md`、`Common/UdonGlobals.md`、`Common/Shaders/LanbaiVR.cginc` | `main` |
 | **车**（10-23 起，D-10） | `Bus/`、`Cabin/` | `pkg/bus` |
 | 美术审片 | `Review/` | `pkg/review` |
-| 总工程师 | `Common/Tools~/`、`Common/Shaders/LanbaiGlobals.cginc`、`Director/`、`Engineering/`、`Grading/`（维护） | `pkg/engineering` |
+| 总工程师 | `Common/Tools~/`、`Common/Shaders/LanbaiGlobals.cginc`、`Director/`、`Engineering/`、`Grading/`（维护）、**`Fonts/`（10-24 起，D-30 字体套件第 4 版）** | `pkg/engineering` |
 | 门（私密对话） | `GateClouds/`；修补时 `Gate/`、`Tear/`、`Tentacles/` | `pkg/gate-clouds` |
 | 天空 | `Common/Shaders/LanbaiFog.cginc`、`Common/Shaders/LanbaiSky.cginc`、`Sky/`、`Act09_StarSea/` | `pkg/sky` |
 | 云 | `Clouds_v2/`、`Act06_Dawn/`、`Act08_Dusk/` | `pkg/clouds` |
@@ -24,8 +24,11 @@
 | 门内 | `Act04c_Inside/`、`Overlay/` | `pkg/inside` |
 | 镜与白 | `Mirrors/`、`Act10_White/` | `pkg/mirrors` |
 | 灯与假醒 | `Lamps/`、`Act11_FalseWake/` | `pkg/lamps` |
+| 「网络搜索协助」（能上网） | 只在各包分支上**新建**素材文件夹（见 §1 的例外） | 推到要用它的包的分支 |
+| **本地集成：ChatGPT「阿白」（10-24 已接管，D-40a #8、D-41）** | 本地 Unity 工程 `dream`（唯一的写入者）；仓库里只写 `FromLocal/` | `main`（只提交 `FromLocal/`）|
 
-- **站牌套件不做**（小楠说先不做）。第 1、2、12 幕的路、车、站由本地做；圣经是美术依据。
+- **本地 = ChatGPT「阿白」**（10-24 小楠定，替代以前的本地 Claude 会话「世界创建」）。入口是根目录的 `HANDOFF_CHATGPT.md`：分工、协作边界、第一次接管的步骤、三层验收状态表、回传协议都在那里。（10-24 阿白已确认，状态“已接管”；各项测试的三层状态见 `HANDOFF_CHATGPT.md` §B。）云端写给本地的东西照旧写进 `HANDOFF_LOG.md`；各包 README 里的“本地”都指阿白。
+- **站牌套件有条件恢复**（D-40a #1）：车的切片和门测试做完才开工，之前只做参考板和美术需求。车归云端（D-10）；第 1、2、12 幕的路和组装仍由本地做；圣经是美术依据。
 - **第 3 幕**待定（门交了以后再定）。
 - 分工表没写到的东西，写进自己文件夹的 `给总控.md`，总导演来分。
 - **例外**：总导演、总工程师、美术审片可以往任何包的分支推 `<包>/总导演意见.md`、`<包>/总工程师意见.md`、`<包>/美术审片意见.md` 这三个文件（只有这三个）。**美术审片的意见和总导演的意见一样要逐条回应**（改，或者在 README 的“与评审的分歧”里写明理由）。所以每个会话**推之前先 `git pull --rebase origin <自己的分支>`**。
@@ -36,6 +39,7 @@
 ## 1. Git 协议
 
 - 每个会话**只推自己的分支**（上表），**不推 `main`**。总控审过以后合并进 `main`，并写 `HANDOFF_LOG.md`（本地只看 `main` 和这个日志）。
+- **例外（小楠授权，10-24）**：「理解 lanbai-assets 项目」会话可以往各包的分支上加**新的素材文件夹**（如 `Docs~/实物参考_*`、`Docs~/车型_*`；**不只是参考，合适就直接用**进贴图、进世界），只新建、不改已有文件、不碰 `STATUS.md`。包恢复时先 `git pull --rebase` 自己的分支就能拿到。
 - **只改自己的文件夹。** 要改别人的文件（包括 `Art/ART_BIBLE.md`、`HANDOFF_LOG.md`、`README.md`、`Common/` 里不归你的），写进 `<你的文件夹>/给总控.md`，总控来改。
 - 每到一个里程碑就推一次，并更新 `<你的主文件夹>/STATUS.md`（最上面一行：日期时间、做到哪、下一步、有没有卡住）。总控靠它看进度。
 - 大文件：PNG / FBX / blend 都直接提交（仓库已经这么做）；单个文件 < 95 MB。中间产物、wip、缓存**不提交**（放 `/tmp` 或 scratchpad）。
@@ -60,7 +64,7 @@
 
 ## 3. 共同约定（数值和坐标）
 
-- **坐标**：Unity 世界，米，Y 上。**车固定在原点、车头朝 +Z，世界往车后移（跑步机）。** 车厢地板 y = 0.62；主座位眼位见 `Gate/GateLayout_v2.json` 的 `cameras.U7`（约 (0.55, 1.70, 2.05)）；`LB_Journey.heroEye` 是 (0.70, 1.77, 0.20)，两者不同，**以本地最新的为准，在 README 里写清你用的哪一个**。
+- **坐标**：Unity 世界，米，Y 上。**车固定在原点、车头朝 +Z，世界往车后移（跑步机）。** 车厢地板 y = 0.62；主座位眼位见 `Gate/GateLayout_v2.json` 的 `cameras.U7`（约 (0.55, 1.70, 2.05)）；`LB_Journey.heroEye` 里的旧值 (0.70, 1.77, 0.20) 作废，**以 D-28 的 (0.55, 1.70, 2.05) 为准**（D-40b #1）。
 - **时间**：时间轴秒 t（出发 = 0）。所有时刻引用 `FromLocal/cues.json` 的标签（U0–U12、F0–F16 和子标签），不写死数字；圣经 v2.1 §2 是乐句表。圣经 v2.1 晚于本地的 `timeline_v1.md`，两者冲突时**以圣经 v2.1 为准**，并在 README 里列出差异给本地。
 - **圣经的修订**：`Art/总导演裁决.md` 的每一条压过 `ART_BIBLE.md` 原文。
 - **调色**：PPv2 HDR + Neutral，每幕一个 profile（`Grading/` 已经生成），永不 ACES；只让发光体 bloom。无光照资产以**场景线性**值进入调色。
@@ -124,9 +128,9 @@ float3 LanbaiApplyFog(float3 colLinear, float3 posWS);     // 用 LanbaiCentreEy
 7. **灯的 Inspector 值 = E**（§3）。门的补光多亮了 2.2 倍就是这个原因。
 8. **Vertex Compression**：TexCoord0–3 的压缩要关（触手摆动靠 UV2 的浮点）。所有依赖 UV 精度的包都在 README 里写明。
 9. 编辑器里写的 MPB / 全局量**进 Play 就丢**，正式版由驱动在 `Start()` 写。
-10. 截图要渲进 **ARGBHalf** 再过 PPv2 再转 8 位，否则 HDR 在调色前被夹到 1（本地的小助手截图以前都有这个问题，本地在修）。
+10. 截图要渲进 **ARGBHalf** 再过 PPv2 再转 8 位，否则 HDR 在调色前被夹到 1（本地以前的远程小助手 `LB_Remote` 截图有这个问题，修没修好没有记录；它的旧截图不能当数据用）。
 11. U# 1.x 只编译有程序资产（`.asset`）的脚本 → 每个 U# 脚本要有程序资产；搭建脚本可以顺手建。
-12. 本地环境：**Unity 2022.3.22f1、VRChat SDK Worlds 3.10.5、PPv2 3.4.0、UdonSharp（SDK 自带）**，RTX 4060 Laptop。以前的 C# 检查对的是 Unity 2021.1 的引用程序集，有差别时以 2022.3 为准。
+12. 本地环境（10-08 的快照，阿白接管时重新核对，见 `HANDOFF_CHATGPT.md` §A）：**Unity 2022.3.22f1、VRChat SDK Worlds 3.10.5、PPv2 3.4.0、UdonSharp（SDK 自带）**，RTX 4060 Laptop。以前的 C# 检查对的是 Unity 2021.1 的引用程序集，有差别时以 2022.3 为准。
 13. JSON 里没给的值，本地会**自己推**并写进报告（门测试里推了光束宽度、平铺、补光方向等）。所以：**本地需要的每一个数都要写进 JSON 或 README**，不要只存在渲染脚本里。
 
 ---
@@ -135,4 +139,4 @@ float3 LanbaiApplyFog(float3 colLinear, float3 posWS);     // 用 LanbaiCentreEy
 
 - 子会话每推一次，总控读 `STATUS.md`、看渲染和量出的数、抽查代码；有意见写进该文件夹的 `总控意见.md` 推到你的分支（或发消息），你改完再推。
 - 一幕的包过了，总控合并进 `main`，在 `HANDOFF_LOG.md` 写一条给本地：拷什么、点什么、在哪一秒截什么图推回来。
-- 本地推回 `FromLocal/<幕>_test/` 以后，总控把对照意见转给做这一幕的会话。
+- 本地推回 `FromLocal/<test-id>/<运行时间>/` 以后（格式、问题分级、复测流程见 `HANDOFF_CHATGPT.md` §E），总控把对照意见转给做这一幕的会话。

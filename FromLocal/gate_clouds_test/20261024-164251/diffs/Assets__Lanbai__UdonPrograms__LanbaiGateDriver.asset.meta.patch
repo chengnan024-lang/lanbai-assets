@@ -1,0 +1,11 @@
+--- /dev/null
++++ after/Assets/Lanbai/UdonPrograms/LanbaiGateDriver.asset.meta
+@@ -0,0 +1,8 @@
++fileFormatVersion: 2
++guid: 3332603cf086aa24fb365792b61e7e48
++NativeFormatImporter:
++  externalObjects: {}
++  mainObjectFileID: 11400000
++  userData: 
++  assetBundleName: 
++  assetBundleVariant: 

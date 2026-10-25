@@ -39,7 +39,7 @@ Shader "Lanbai/WetOverlay"
             #pragma multi_compile_fog
             #include "UnityCG.cginc"
             #include "LanbaiRain.cginc"
-            #include "LanbaiVR.cginc"
+            #include "Assets/Lanbai/Common/Shaders/LanbaiVR.cginc"
 
             sampler2D _MainTex;
             float4 _MainTex_TexelSize;

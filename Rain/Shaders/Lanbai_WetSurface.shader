@@ -19,7 +19,7 @@ Shader "Lanbai/WetSurface"
 {
     Properties
     {
-        [Header(Base (dry) material  e.g. Poly Haven asphalt 2K  3 m per tile)]
+        [Header(Base dry material  e.g. Poly Haven asphalt 2K  3 m per tile)]
         _MainTex ("Albedo (sRGB)", 2D) = "white" {}
         _Color ("Albedo tint", Color) = (1, 1, 1, 1)
         [Normal] _BumpMap ("Normal", 2D) = "bump" {}
@@ -88,7 +88,7 @@ Shader "Lanbai/WetSurface"
         #pragma shader_feature_local _RIPPLE_FLIPBOOK
 
         #include "LanbaiRain.cginc"
-        #include "LanbaiVR.cginc"
+        #include "Assets/Lanbai/Common/Shaders/LanbaiVR.cginc"
 
         sampler2D _MainTex, _BumpMap, _RoughnessMap, _HeightMap, _OcclusionMap, _WetMask, _RoadMask;
         half4 _Color, _PaintColor;
@@ -99,7 +99,6 @@ Shader "Lanbai/WetSurface"
         half _PuddleAlbedoMul, _PuddleSmoothness, _PuddleNormalMul, _PuddleEdge, _PuddleDetail, _PuddleMirror, _LampPeak;
         half _ShelterAlbedoMul, _ShelterSmooth, _PaintSmoothWet;
         half _RippleStrength, _RippleLayer2, _RippleDensity, _DripStrength, _DripOnFilm, _LampSpecular, _DryLampFloor;
-        float _Udon_RainFall;        // 0..1 rain still FALLING (scene 1: 1, scene 12: 0 -> only drips ring)
 
         struct Input
         {

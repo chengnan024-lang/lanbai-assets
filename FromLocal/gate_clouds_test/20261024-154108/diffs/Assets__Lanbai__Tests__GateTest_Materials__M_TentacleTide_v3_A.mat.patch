@@ -1,0 +1,34 @@
+--- backup/Assets/Lanbai/Tests/GateTest_Materials/M_TentacleTide_v3_A.mat
++++ after/Assets/Lanbai/Tests/GateTest_Materials/M_TentacleTide_v3_A.mat
+@@ -30,8 +30,11 @@
+     m_Ints: []
+     m_Floats:
+     - _AtlasGain: 0.3
++    - _BackBand: 0.55
++    - _BelowDesat: 0.6
+     - _FogCap: 0.92
+     - _FogDensity: 0.0006
++    - _MoonAirFog: 0.35
+     - _Opacity: 1
+     - _Reveal: 1
+     - _RimGain: 1
+@@ -39,12 +42,16 @@
+     - _SwayPeriod: 6
+     m_Colors:
+     - _BandAz: {r: 50, g: 60, b: 0, a: 0}
+-    - _BandEl: {r: 12, g: 34, b: 5, a: 0}
++    - _BandEl: {r: 6, g: 22, b: 2, a: 0}
+     - _BelowHorizon: {r: -25, g: 0, b: 0.55, a: 0}
+     - _FogBaseTip: {r: 0.58, g: 0.48, b: 400, a: 0}
+     - _FogCapFrom: {r: 1300, g: 1700, b: 0, a: 0}
+-    - _HazeFar: {r: 0.0232, g: 0.0296, b: 0.0512, a: 1}
+-    - _HazeNear: {r: 0.0648, g: 0.0742, b: 0.1248, a: 1}
++    - _HaloColor: {r: 0.195, g: 0.198, b: 0.332, a: 1}
++    - _HazeFar: {r: 0.0436, g: 0.0504, b: 0.0726, a: 1}
++    - _HazeNear: {r: 0.1085, g: 0.113, b: 0.1641, a: 1}
++    - _MoonGlowColor: {r: 0.275, g: 0.366, b: 0.578, a: 1}
++    - _MoonGlowShape: {r: 1.6, g: 0.9, b: 0.06, a: 0.32}
++    - _RimDir: {r: -0.2059, g: 0.1392, b: 0.9686, a: 0}
+     - _TearPos: {r: 0, g: 297, b: 1800, a: 0}
+     - _Void: {r: 0.0021, g: 0.003, b: 0.007, a: 1}
+   m_BuildTextureStacks: []

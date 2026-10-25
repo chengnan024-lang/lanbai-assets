@@ -21,24 +21,24 @@
 
 // ---------------------------------------------------------------------------------------------------
 // globals driven by Udon (bible §1.6 / §4.6). Unset -> 0.
-float _Udon_Wetness;          // 0..1 global wetness (Lagarde model)
-float _Udon_RainAmount;       // 0..1 rain on glass (station 1.0, night road 1.0, lift-off 1->0, wake 0.4)
-float4 _Udon_FlowDir;         // flow FRAME A: xyz = WORLD direction of the air drag on drops (= -bus velocity dir
+// float _Udon_Wetness: declared in LanbaiGlobals.cginc // 0..1 global wetness (Lagarde model)
+// float _Udon_RainAmount: declared in LanbaiGlobals.cginc // 0..1 rain on glass (station 1.0, night road 1.0, lift-off 1->0, wake 0.4)
+// float4 _Udon_FlowDir: declared in LanbaiGlobals.cginc // flow FRAME A: xyz = WORLD direction of the air drag on drops (= -bus velocity dir
                               //   + up at lift-off), w = drag 0..1
-float4 _Udon_FlowDirB;        // flow frame B (the frame being faded in while the flow changes), same layout
-float _Udon_FlowMix;          // 0 = frame A only, 1 = frame B only; LanbaiRainState snaps A := B when the fade ends
-float4 _Udon_RunClock;        // x = integral of drag dt (s), y = drag averaged over the last ~4 s (0..1)
-float _Udon_RunStretch;       // 0..2 extra elongation of running drops (lift-off: 'drops streak up and back')
-float4 _Udon_StopOffset;      // xyz = R_Stop world position - its home position (treadmill); 0 at home
-float4 _Udon_OneDropA;        // 'that one raindrop': xyz = world start of its path, w = half-width of the swept strip (m)
-float4 _Udon_OneDropB;        // xyz = world position of its head now, w = 1 while the path exists (0 = none / hidden)
-float4 _Udon_Drip0, _Udon_Drip1, _Udon_Drip2, _Udon_Drip3;   // xyz = impact point in R_STOP-LOCAL world space
+// float4 _Udon_FlowDirB: declared in LanbaiGlobals.cginc // flow frame B (the frame being faded in while the flow changes), same layout
+// float _Udon_FlowMix: declared in LanbaiGlobals.cginc // 0 = frame A only, 1 = frame B only; LanbaiRainState snaps A := B when the fade ends
+// float4 _Udon_RunClock: declared in LanbaiGlobals.cginc // x = integral of drag dt (s), y = drag averaged over the last ~4 s (0..1)
+// float _Udon_RunStretch: declared in LanbaiGlobals.cginc // 0..2 extra elongation of running drops (lift-off: 'drops streak up and back')
+// float4 _Udon_StopOffset: declared in LanbaiGlobals.cginc // xyz = R_Stop world position - its home position (treadmill); 0 at home
+// float4 _Udon_OneDropA: declared in LanbaiGlobals.cginc // 'that one raindrop': xyz = world start of its path, w = half-width of the swept strip (m)
+// float4 _Udon_OneDropB: declared in LanbaiGlobals.cginc // xyz = world position of its head now, w = 1 while the path exists (0 = none / hidden)
+// float4 _Udon_Drip0, _Udon_Drip1, _Udon_Drip2, _Udon_Drip3: declared in LanbaiGlobals.cginc // xyz = impact point in R_STOP-LOCAL world space
                               // (world point - _Udon_StopOffset at detach), w = impact time (_Time.y); w <= 0 : none
 // windscreen wipers (Runtime/LanbaiWipers.cs). Two blades, tandem (same timing).
-float4 _Udon_WiperPivot0, _Udon_WiperPivot1;   // xyz = pivot (world), w = blade reach r_max (m); w <= 0 : no wiper
-float4 _Udon_WiperRest0, _Udon_WiperRest1;     // xyz = unit direction of the blade at rest (world), w = sweep (rad)
-float4 _Udon_WiperAxis0, _Udon_WiperAxis1;     // xyz = unit rotation axis (rest turns toward +sweep about it), w = r_min (m)
-float4 _Udon_WiperTime;       // x = start time of the latest cycle (_Time.y), y = one stroke (s), z = period (s),
+// float4 _Udon_WiperPivot0, _Udon_WiperPivot1: declared in LanbaiGlobals.cginc // xyz = pivot (world), w = blade reach r_max (m); w <= 0 : no wiper
+// float4 _Udon_WiperRest0, _Udon_WiperRest1: declared in LanbaiGlobals.cginc // xyz = unit direction of the blade at rest (world), w = sweep (rad)
+// float4 _Udon_WiperAxis0, _Udon_WiperAxis1: declared in LanbaiGlobals.cginc // xyz = unit rotation axis (rest turns toward +sweep about it), w = r_min (m)
+// float4 _Udon_WiperTime: declared in LanbaiGlobals.cginc // x = start time of the latest cycle (_Time.y), y = one stroke (s), z = period (s),
                               // w = 1 if the cycle before it also ran (0 for the first cycle)
 
 // how much of the hero drop's swept path covers P (0..1). Big beads are gone there; the mist stays.
@@ -529,13 +529,13 @@ inline LanbaiGlassWater LanbaiGlassRain(float2 pPane, float2 dBx, float2 dBy, fl
 //     then leaves through the curved drop surface into the air (TIR possible only there).
 //     Returns the radiance the drop shows (linear) for viewerInside; see LanbaiDropOutside for the other side.
 // =====================================================================================================
-UNITY_DECLARE_TEXCUBE(_Udon_ReflCube);
-float4 _Udon_ReflCube_HDR;
-float _Udon_ReflExposure;     // multiplier for the cube (Udon; 0 -> treated as 1)
+// samplerCUBE _Udon_ReflCube: declared in LanbaiGlobals.cginc (one type for the whole film, as the sea reads it)
+// float4 _Udon_ReflCube_HDR: declared in LanbaiGlobals.cginc
+// float _Udon_ReflExposure: declared in LanbaiGlobals.cginc // multiplier for the cube (Udon; 0 -> treated as 1)
 
 inline float3 LanbaiReflCube(float3 dir, float lod)
 {
-    float4 c = UNITY_SAMPLE_TEXCUBE_LOD(_Udon_ReflCube, dir, lod);
+    float4 c = texCUBElod(_Udon_ReflCube, float4(dir, lod));
     float e = _Udon_ReflExposure > 0.0 ? _Udon_ReflExposure : 1.0;
     return DecodeHDR(c, _Udon_ReflCube_HDR) * e;
 }

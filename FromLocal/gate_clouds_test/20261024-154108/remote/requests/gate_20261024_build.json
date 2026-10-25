@@ -1,0 +1,10 @@
+{
+  "id": "gate_20261024_build",
+  "steps": [
+    {
+      "op": "call",
+      "arg": "155.1",
+      "target": "Lanbai.Tests.LB_GateTest.Build"
+    }
+  ]
+}

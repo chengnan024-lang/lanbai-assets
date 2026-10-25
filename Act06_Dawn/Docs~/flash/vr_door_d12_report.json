@@ -1,0 +1,17 @@
+{
+ "label": "vr_door_d12",
+ "frames": 912,
+ "fps": 60.0,
+ "tile_px": 15,
+ "max_general_flashes_in_any_1s": 0.5,
+ "max_red_flashes_in_any_1s": 0.0,
+ "wcag_2_3_1": "PASS",
+ "lanbai_flash_rule": "PASS",
+ "max_rise_ev_0.25s": 0.21,
+ "max_rise_ev_1s": 0.81,
+ "max_rise_ev_2s": 1.61,
+ "max_fall_ev_0.25s": -0.0,
+ "peak_apl_luma": 117,
+ "mean_apl_luma": 62,
+ "lanbai_ramp_law": "PASS"
+}

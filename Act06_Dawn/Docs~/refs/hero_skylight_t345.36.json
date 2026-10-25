@@ -1,0 +1,13 @@
+{
+ "t": 345.36,
+ "cam": "hero_skylight",
+ "door": "d12",
+ "d": 2456.7,
+ "APL": 50.8,
+ "lavender": 0.0004,
+ "brightest_px": [
+  0.494,
+  0.548
+ ],
+ "width": 960
+}

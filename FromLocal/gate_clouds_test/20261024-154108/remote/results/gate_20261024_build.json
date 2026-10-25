@@ -1,0 +1,19 @@
+{
+    "id": "gate_20261024_build",
+    "state": "done",
+    "step": 1,
+    "total": 1,
+    "started": "2026-10-24 15:45:19",
+    "finished": "2026-10-24 15:45:20",
+    "error": "",
+    "log": [
+        "15:45:19 收到请求，共 1 步",
+        "15:45:19 调用 Lanbai.Tests.LB_GateTest.Build（155.1）",
+        "15:45:20   用时 0.8 秒",
+        "15:45:20   返回内容写在 LanbaiRemote/results/gate_20261024_build.step1.txt",
+        "15:45:20 全部完成"
+    ],
+    "files": [
+        "LanbaiRemote/results/gate_20261024_build.step1.txt"
+    ]
+}

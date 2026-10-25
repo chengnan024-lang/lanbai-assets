@@ -41,9 +41,17 @@ namespace TMPro
         public float characterSpacing { get { return 0f; } set { } }
         public float lineSpacing { get { return 0f; } set { } }
         public bool enableWordWrapping { get { return true; } set { } }
+        public int maxVisibleLines { get { return 99999; } set { } }
+        public bool richText { get { return true; } set { } }
+        public TextAlignmentOptions alignment { get { return default; } set { } }
+        public TextOverflowModes overflowMode { get { return default; } set { } }
+        public bool extraPadding { get { return false; } set { } }
+        public RectTransform rectTransform { get { return null; } }
         public void ForceMeshUpdate(bool ignoreActiveState = false, bool forceTextReparsing = false) { }
         public void SetText(string sourceText) { }
     }
+    public enum TextAlignmentOptions { TopLeft = 257, Top = 258, Center = 514, Baseline = 4098, BaselineLeft = 4097 }
+    public enum TextOverflowModes { Overflow = 0, Ellipsis = 1, Masking = 2, Truncate = 3 }
     public class TextMeshPro : TMP_Text { }
     public class TextMeshProUGUI : TMP_Text { }
 }
