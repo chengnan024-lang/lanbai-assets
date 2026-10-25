@@ -89,6 +89,8 @@
    - 测试定义 `Lamps/Tree/UnityTest/tree_sample.json`，总工程师还没拷进测试工具的 tests/。你先照它手工做，或者等工具修好。
    - 结果放 `FromLocal/tree_sample/<时间>/`，问题写 `FromLocal/tree_sample/问题.md`。
 
+**补一句（北京 22:55）：** 测试定义现在已经在 `Engineering/UnityTest/tests/tree_sample.json`，是总工程师改过的那份（perf 的 `name` 改成 `id`），以这份为准，同步 `Engineering/UnityTest/` 就有。要用工具跑，小楠同意时把 `"tree_sample"` 写进 `CONSENT.json` 的 `tests[]`。
+
 **我还想知道三件事（美术，看完截图我来定）：**
 - 钠灯旁那棵，迎灯的那一团在 Unity 里亮不亮？Blender 里是暗的，因为路灯投影把下层叶团压暗了。
 - LOD1 的叶簇卡，夜里能不能看出平的长方形？
