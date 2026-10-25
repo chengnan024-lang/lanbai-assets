@@ -266,7 +266,10 @@ Shader "Lanbai/BronzeMirror"
                     float3 pat = _BackAlbedo.rgb * lerp(float3(0.85, 1.0, 1.05), float3(1.15, 0.92, 0.8), m.a);
                     float3 tint = lerp(pat / max(dot(pat, luma), 1e-4), _RimF0.rgb / dot(_RimF0.rgb, luma), 0.45 * m.b);
                     float3 key = normalize(float3(-0.45, -0.75, -0.48));   // from behind a rider looking up: lit from the top of the screen (r6: +z read as pits)
-                    float shade = max(1.0 + _BackRelief * (dot(n, key) - dot(nFlat, key)), 0.15) * (m.g / 0.92);
+                    // relief and AO only where the cell texture is not magnified (footprint >= one texel, 2 cm): a magnified
+                    // patch is a few metres of relief filling the screen, whose own mean is not 1 (r6: -1.3 EV dip overhead)
+                    float mag = saturate(footprint / (LM_TLV_TILE / 2048.0));
+                    float shade = max(1.0 + _BackRelief * mag * (dot(n, key) - dot(nFlat, key)), 0.15) * lerp(1.0, m.g / 0.92, mag);
                     col = Lsky * _BackLumK * tint * shade;
                 }
 

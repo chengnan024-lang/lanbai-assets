@@ -119,7 +119,10 @@ def back_color(Pl, D, fp, Lsky):
     t2 = RIM_F0 / (RIM_F0 @ LUMA)
     tint = t1 + (t2[None, :] - t1) * (0.45 * msk[:, 2:3])
     key = np.array([-0.45, -0.75, -0.48]); key /= np.linalg.norm(key)
-    shade = np.maximum(1.0 + BACK_RELIEF * (n @ key - np.array([0, -1.0, 0]) @ key), 0.15) * (msk[:, 1] / 0.92)
+    # relief and AO only where the cell texture is not magnified (footprint >= 1 texel = 2 cm): a magnified patch is a few
+    # metres of the relief filling the screen, whose own mean is not 1 (r6: a dark patch overhead read as a -1.3 EV dip)
+    mag = np.clip(fp / (TLV_TILE / 2048.0), 0, 1)
+    shade = np.maximum(1.0 + BACK_RELIEF * mag * (n @ key - np.array([0, -1.0, 0]) @ key), 0.15) * (1.0 + mag * (msk[:, 1] / 0.92 - 1.0))
     return (Lsky * BACK_LUMK * shade)[:, None] * tint
 
 
