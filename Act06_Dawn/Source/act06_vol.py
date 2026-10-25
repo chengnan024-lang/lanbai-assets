@@ -53,6 +53,7 @@ GEO = dict(
     B=dict(y0=-1950.0, y1=-1700.0, base=0.88, far_r=12000.0, open=[305.4, 325.0],
            column=dict(a=(-1300.0, 1300.0), hw=(1100.0, 1100.0), c_off=0.0, warp=380.0, soft=300.0, end_warp=500.0),
            bay=dict(a=(1500.0, 12500.0), hw=(900.0, 3600.0), c_off=0.0, warp=650.0, soft=350.0, end_warp=900.0)),
+    P=[(291.0, (4.0, 0.0, 1.5), 260.0, 110.0), (299.0, (-3.0, 0.0, 3.0), 300.0, 140.0), (326.0, (3.0, 0.0, 2.5), 320.0, 120.0)],
     T=[dict(az=-25.0, r=7500.0, rad=1300.0, top=1500.0), dict(az=75.0, r=9000.0, rad=1100.0, top=1200.0),
        dict(az=120.0, r=10000.0, rad=1000.0, top=1300.0)],
 )
@@ -60,6 +61,10 @@ GEO = dict(
 
 def ss(e0, e1, x):
     return VR.ss(e0, e1, x)
+
+
+def AV_descent(t):
+    return AL.descent(t)
 
 
 class Act06Scene:
@@ -121,8 +126,25 @@ class Act06Scene:
                 c = np.maximum(c, ss(rad, rad * 0.35, d + 350.0 * (n2(x, z, 1200.0, 0, 81.0) - 0.5)))
             return c * 0.8              # never solid: the noise carves the heads (cauliflower, not a dome)
 
+        # P: three drifting puffs the bus really goes into and out of (D-44 #2 "近处的云团，车会进去，也会出来"): each moves
+        # with its wind and crosses the bus column at t_c, when the eye is at y_c; thin (sigma 0.012: a veil, not a white-out)
+        puffs = []
+        for (t_c, wind, rad, thick) in g['P']:
+            d_c, _ = AV_descent(t_c)
+            puffs.append((t_c, A6.EYE[1] - d_c, np.array(wind, float), rad, thick))
+
+        def covP_for(pf):
+            t_c, y_c, wind, rad, thick = pf
+
+            def cov(x, z, t):
+                cx, cz = wind[0] * (t - t_c), wind[2] * (t - t_c)
+                dd = np.hypot(x - cx, z - cz) + 0.35 * rad * 2 * (n2(x, z, 600.0, 0, 91.0 + t_c) - 0.5)
+                return ss(rad, rad * 0.3, dd) * 0.75
+            return cov
+
         top_t = max(tw['top'] for tw in g['T'])
-        self.layers = [
+        self.layers = [VR.Layer('P%d' % k, pf[1] - pf[4] * 0.5, pf[1] + pf[4] * 0.5, covP_for(pf), scale=900.0, wind=tuple(pf[2]),
+                                sigma=0.012, erode=0.45, base_soft=0.2) for k, pf in enumerate(puffs)] + [
             VR.Layer('A', g['A']['y0'], g['A']['y1'], covA, scale=1700.0, wind=(4.0, 0.0, 1.5), sigma=0.05, erode=0.5),
             VR.Layer('B', g['B']['y0'], g['B']['y1'], covB, scale=1800.0, wind=(3.0, 0.0, 2.5), sigma=0.04, kind='cumulus',
                      erode=0.42, base_soft=0.1),
@@ -155,13 +177,13 @@ def scene():
     return _SC
 
 
-def render(t, cam_name='hero', w=640, out=None, tag='', look=None, cabin=True):
+def render(t, cam_name='hero', w=640, out=None, tag='', look=None, cabin=True, t_bus=None):
     S = scene()
     cam = dict(A6.CAMS[cam_name])
     if look:
         cam.update(look)
     V, hh, pix = A6.rays(cam, w)
-    d, _ = AL.descent(t)
+    d, _ = AL.descent(t if t_bus is None else t_bus)     # t_bus: freeze the bus there while the clouds run on (flow)
     A6.FOG_D = A6.fog_at(t)
     PR.FOG_K = A6.fog_colour_k(t)
     eye = np.array([A6.EYE[0], A6.EYE[1] - d, A6.EYE[2]])
