@@ -1,0 +1,121 @@
+#if UNITY_EDITOR
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UdonSharp;
+using UdonSharpEditor;
+
+namespace Lanbai.Tests
+{
+    public static partial class LB_FullAssembly
+    {
+        public const string Preview = "Assets/Lanbai/Scenes/Lanbai_FullPreview.unity";
+        static void Guard()
+        {
+            if (EditorApplication.isPlayingOrWillChangePlaymode || SceneManager.GetActiveScene().path != Preview)
+                throw new InvalidOperationException("FullPreview edit mode required");
+        }
+        static void Folder(string path)
+        {
+            if (AssetDatabase.IsValidFolder(path)) return;
+            var parent=Path.GetDirectoryName(path).Replace('\\','/'); Folder(parent);
+            AssetDatabase.CreateFolder(parent,Path.GetFileName(path));
+        }
+        public static string PreserveAndOpen()
+        {
+            if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Stop Play first");
+            var scene=SceneManager.GetActiveScene();
+            if(scene.path != "Assets/Lanbai/Tests/GateTest.unity") throw new InvalidOperationException("Unexpected scene");
+            Folder("Assets/_LanbaiWork");
+            var snapshot="Assets/_LanbaiWork/GateBeforeAssembly_20261025.unity";
+            if(File.Exists(snapshot) || File.Exists(Preview)) throw new InvalidOperationException("Preview or snapshot already exists");
+            if(!EditorSceneManager.SaveScene(scene,snapshot,true)) throw new Exception("Snapshot failed");
+            if(!AssetDatabase.CopyAsset("Assets/Lanbai/Scenes/Lanbai.unity",Preview)) throw new Exception("Scene copy failed");
+            EditorSceneManager.OpenScene(Preview,OpenSceneMode.Single);
+            return "Preserved current gate in-memory state as a separate snapshot; opened a copy of the existing full journey. " + Inspect();
+        }
+        public static string Inspect()
+        {
+            var scene=SceneManager.GetActiveScene();
+            var all=scene.GetRootGameObjects().SelectMany(r=>r.GetComponentsInChildren<Transform>(true)).ToArray();
+            var sb=new System.Text.StringBuilder();
+            sb.AppendLine("Scene="+scene.path+" dirty="+scene.isDirty);
+            sb.AppendLine("Roots="+string.Join(", ",scene.GetRootGameObjects().Select(r=>r.name)));
+            sb.AppendLine("Objects="+all.Length+" Renderers="+all.Sum(t=>t.GetComponents<Renderer>().Length));
+            foreach(var t in all) foreach(var b in t.GetComponents<UdonSharpBehaviour>())
+                sb.AppendLine("U# "+b.GetType().FullName+" @ "+PathOf(t));
+            foreach(var c in all.SelectMany(t=>t.GetComponents<Camera>())) sb.AppendLine("Camera "+PathOf(c.transform)+" enabled="+c.enabled+" xyz="+c.transform.position);
+            foreach(var l in all.SelectMany(t=>t.GetComponents<Light>())) if(l.type==LightType.Directional) sb.AppendLine("Light "+PathOf(l.transform)+" enabled="+l.enabled+" intensity="+l.intensity);
+            var journey=all.SelectMany(t=>t.GetComponents<Lanbai.LB_Journey>()).SingleOrDefault();
+            if(journey!=null) foreach(var f in typeof(Lanbai.LB_Journey).GetFields())
+            {
+                var o=f.GetValue(journey) as UnityEngine.Object;
+                if(o is Component c) sb.AppendLine("Journey."+f.Name+"="+PathOf(c.transform));
+                else if(o is GameObject go) sb.AppendLine("Journey."+f.Name+"="+PathOf(go.transform));
+            }
+            return sb.ToString();
+        }
+        static string PathOf(Transform t) { return t.parent==null?t.name:PathOf(t.parent)+"/"+t.name; }
+        public static string AttachGate()
+        {
+            Guard(); var current=SceneManager.GetActiveScene();
+            if(GameObject.Find("DeliveredGate")!=null) throw new InvalidOperationException("Gate already attached");
+            var journey=UnityEngine.Object.FindObjectOfType<Lanbai.LB_Journey>(true);
+            journey.gateRoot.name="Legacy_GateRoot"; journey.gateGroup.name="Legacy_Gate";
+            journey.gateGroup.SetActive(false);
+            var source=EditorSceneManager.OpenScene("Assets/Lanbai/Tests/GateTest.unity",OpenSceneMode.Additive);
+            var container=new GameObject("DeliveredGate"); SceneManager.MoveGameObjectToScene(container,source);
+            var names=new[]{"GateRoot","NearRoot_bus","Gate_Lights","GateClouds_Driver","Gate_Driver"};
+            foreach(var name in names) source.GetRootGameObjects().Single(g=>g.name==name).transform.SetParent(container.transform,true);
+            var clone=UnityEngine.Object.Instantiate(container); clone.name="DeliveredGate";
+            SceneManager.MoveGameObjectToScene(clone,current);
+            EditorSceneManager.CloseScene(source,true); SceneManager.SetActiveScene(current);
+            if(journey.sun!=null) journey.sun.enabled=false;
+            var moon=clone.GetComponentsInChildren<Light>(true).Single(l=>l.name=="Moon");
+            moon.enabled=true; journey.sun=moon; RenderSettings.sun=moon;
+            Lanbai.Udon.LanbaiUdonPrograms.CopyProxyToUdon(journey);
+            EditorSceneManager.MarkSceneDirty(current);
+            return "Attached gate and cloud bundle with internal references preserved, one main directional light. "+Inspect();
+        }
+        static Type[] ProgramTypes()
+        {
+            return AssetDatabase.FindAssets("t:MonoScript",new[]{"Assets/Lanbai"})
+                .Select(AssetDatabase.GUIDToAssetPath).Select(p=>AssetDatabase.LoadAssetAtPath<MonoScript>(p)?.GetClass())
+                .Where(t=>t!=null && !t.IsAbstract && typeof(UdonSharpBehaviour).IsAssignableFrom(t)).Distinct().ToArray();
+        }
+        public static string PrepareAllPrograms()
+        {
+            Guard(); var types=ProgramTypes();
+            Lanbai.Udon.LanbaiUdonPrograms.RunWhenReady("FullPreview programs",types,()=>Debug.Log("[FullPreview] All Udon program assets ready"));
+            return "Preparing "+types.Length+" Udon programs through the shared readiness gate";
+        }
+        public static string CheckAllPrograms()
+        {
+            Guard(); string report;
+            if(!Lanbai.Udon.LanbaiUdonPrograms.AllReady(ProgramTypes(),out report)) throw new InvalidOperationException(report);
+            return report;
+        }
+        public static string DawnForBuild()
+        {
+            Guard();
+            var build=Lanbai.Sky.EditorTools.LanbaiSkyBuild.LoadPresets();
+            Lanbai.Sky.EditorTools.LanbaiSkyBuild.ApplyPresetInEditor(build.presets.Single(p=>p.name=="dawn"));
+            var j=UnityEngine.Object.FindObjectOfType<Lanbai.LB_Journey>(true);
+            if(j.skyDome!=null) j.skyDome.enabled=false;
+            return "Dawn sky applied before reflection capture";
+        }
+        public static string Save()
+        {
+            Guard(); AssetDatabase.SaveAssets();
+            if(!EditorSceneManager.SaveScene(SceneManager.GetActiveScene(),Preview)) throw new Exception("Save failed");
+            return Inspect();
+        }
+    }
+}
+#endif
