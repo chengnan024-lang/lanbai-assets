@@ -57,7 +57,7 @@ namespace Lanbai.Mirrors
         public float farUntil = 1135.31f;           // far = 1 before this ...
         public float farSeconds = 4f;               // ... -> 0 at F16 - 10 (1139.31): sharp and full from then on (D-38)
         public float farDim = 0.6f;                 // face x 0.6 while far: under the column mirrors (r7 port: see README §9 M-4)
-        public Color rimGlow = new Color(0.04f, 0.045f, 0.05f, 1f);   // the far ring (linear): bible 镜缘 screen luma 60-90, #4E545E (r7 port: 66-76)
+        public Color rimGlow = new Color(0.048f, 0.054f, 0.06f, 1f);  // the far ring (linear): bible 镜缘 screen luma 60-90, #4E545E (r7 port: see README §10 M-4)
 
         [Header("Constants (spec_conventions.md)")]
         public Vector3 eye = new Vector3(0.55f, 1.70f, 2.05f);

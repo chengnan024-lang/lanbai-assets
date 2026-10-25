@@ -39,7 +39,7 @@ Shader "Lanbai/BronzeMirror"
         _RimSoftFrom ("Far: soft rim starts at this fraction of the radius", Range(0, 1)) = 0.35
         _FaceSoft ("Far: blurred reflection 0 to 1", Range(0, 1)) = 0
         _FarDim ("Far: face brightness multiplier", Range(0, 1)) = 1
-        _RimGlow ("Far: rim ring glow (linear; bible 镜缘 #4E545E)", Color) = (0.04, 0.045, 0.05, 1)
+        _RimGlow ("Far: rim ring glow (linear; bible 镜缘 #4E545E)", Color) = (0.048, 0.054, 0.06, 1)
         _RimGlowAmt ("Far: rim ring glow amount 0 to 1", Range(0, 1)) = 0
         _EdgeWidth ("Glowing front width m", Float) = 0.3
         _EdgeColor ("Front glow linear rgb (#CDBF9C x 0.8)", Vector) = (0.488, 0.417, 0.266, 0)

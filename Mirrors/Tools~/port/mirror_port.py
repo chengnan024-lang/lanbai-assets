@@ -35,7 +35,7 @@ BRONZE_TONE = 1.0
 RIM_SCHEME = 'JSON'       # the schedule's rim_soft; mirror13_study.py overrides it for the comparison schemes
 RIM_SOFT_FROM = {'A': 0.80, 'C': 0.55, 'D': 0.55, 'E': 0.35, 'F': 0.25, 'G': 0.25, 'H': 0.80, 'JSON': 0.35}
 FAR_UNTIL, FAR_SECONDS, FAR_DIM = 1135.31, 4.0, float(os.environ.get('FAR_DIM', 0.6))   # = LanbaiMirrorsDriver farUntil / farSeconds / farDim (M-4)
-RIM_GLOW = float(os.environ.get('RIM_GLOW', 0.05)) * np.array([0.8, 0.9, 1.0])   # = LanbaiMirrorsDriver rimGlow: mirror 13's ring while far (bible: rim screen luma 60-90, #4E545E)
+RIM_GLOW = float(os.environ.get('RIM_GLOW', 0.06)) * np.array([0.8, 0.9, 1.0])   # = LanbaiMirrorsDriver rimGlow: mirror 13's ring while far (bible: rim screen luma 60-90, #4E545E)
 
 
 # ------------------------------------------------------------------------------------------------- driver logic

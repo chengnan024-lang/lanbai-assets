@@ -22,7 +22,7 @@
 | `MirrorSchedule.json` | **唯一数据源**：十三面镜的两段时间表（圣经 §6·9 定稿 E20）、每面镜的穿越时刻 / 直径 / 方位 / 镜心 / 最近镜缘距离 / 行进与穿越速度 / Hermite 运动节点 / 可见度 / 溶解 / 脉冲。生成器 `Tools~/schedule/make_schedule.py`（从 `FromLocal/cues.json` 算），核对 `Docs~/schedule_check.txt`（全部 PASS）、图 `Docs~/schedule.png` |
 | `Models/BronzeMirror.fbx` | 单位直径的博局镜（根 `BronzeMirror` + `_LOD0/1/2`，51 k / 14 k / 4.7 k 三角形；球冠镜面矢高 1.5 % D、镜缘带、外侧壁、宽平缘、斜坡、主区、带穿孔的半球钮）。顶点色 R = 区号。回读检查 `Docs~/mesh_check.txt`（PASS）。生成 `Source/make_mesh.py`、检查 `Source/verify_mesh.py` |
 | `Textures/` | 镜背一格 40 m 博局（`T_MirrorBack_Normal/Mask_2048`，格心带大乳；`T_MirrorBack_Centre_*` 格心不带乳：镜心那一格的钮是网格）、镜面数据图 `T_MirrorFace_2048`、铭文与十二地支字形 `T_MirrorGlyphs_1024`。生成 `Source/make_textures.py`，预览 `Docs~/textures_preview.png` |
-| `Shaders/Lanbai_BronzeMirror.shader` | 镜子：镜面（反射第 9 幕的天 × 白铜菲涅耳 + 镜面自发光，白铜色调）、镜缘连珠乳钉（1.5 m 一颗，绝对尺寸）、外壁、镜背（40 m 博局格、绝对周期的栉齿 / 锯齿 / 流云纹 / 铭文带）、凝聚与溶解（FBM clip，米为单位）、第 13 面的远处柔化镜缘；第二个 pass 只在镜面写模板 |
+| `Shaders/Lanbai_BronzeMirror.shader` | 镜子：镜面（反射第 9 幕的天 × 白铜菲涅耳 + 镜面自发光，白铜色调）、镜缘连珠乳钉（1.5 m 一颗，绝对尺寸）、外壁、镜背（40 m 博局格、绝对周期的栉齿 / 锯齿 / 流云纹 / 铭文带）、凝聚与溶解（FBM clip，米为单位；溶解前沿后面一条碎块带，终审 M-3）、第 13 面在远处时的模糊盘与亮环（终审 M-4）；第二个 pass 只在镜面写模板 |
 | `Shaders/Lanbai_MirrorStars.shader` | 镜子里的星：天空的星点网格再画一遍，只在该镜的模板里；每颗星按**凸面镜**解出它的像点（不是平面镜的 y 翻转），所以星和反射的银河对得上 |
 | `Shaders/Lanbai_MirrorDust.shader` | 星尘：每槽 250 个四边形的静态网格，每颗尘的一生都是时间的闭式函数（不用粒子系统 API；倒放、跳转都对） |
 | `Shaders/LanbaiMirror.cginc` | 共用数学（剖面、菲涅耳、噪声、溶解、乳钉、纹带、反射的天）。**和 numpy 移植 `Tools~/port/mirror_port.py` 同名同数** |
@@ -48,16 +48,16 @@
 ## 3. 运行时（`LanbaiMirrorsDriver`，挂在常开的 `Lanbai_MirrorsDriver` 上）
 
 - `LanbaiWindow()` = {1010.0, 1150.31}：开始在天问的黑里（镜子此时都在下面、天是黑的），结束在 F16 + 1 s（白遮罩全满之下：F16 以后的几帧把第 13 面关掉、两个全局量归零）。`LanbaiActivate(on)` 只开关 `R_Mirrors`，关的时候全局量也归零；`Start()` 里写 0。
-- `LanbaiTick(t)`：每面镜在自己的活动窗口里打开，算镜面在车正下方那一点的高度（Hermite 节点）、镜缘平面、位置与缩放；写每面镜的 MPB（`_RadiusM _MirrorK _EmissionK _Visibility _EmitExtraEV _Appear _Dissolve`，三个 LOD renderer 各一份；`_RimSoft` 已删：D-38 镜缘一直清楚，r3 C4）、星点副本的 MPB（凸面球心与半径、镜面自发光）、星尘槽的 MPB；两个全局量：
+- `LanbaiTick(t)`：每面镜在自己的活动窗口里打开，算镜面在车正下方那一点的高度（Hermite 节点）、镜缘平面、位置与缩放；写每面镜的 MPB（`_RadiusM _MirrorK _EmissionK _Visibility _EmitExtraEV _Appear _Dissolve`，第 13 面另有 `_FaceSoft _FarDim _RimGlow _RimGlowAmt`（终审 M-4），三个 LOD renderer 各一份，**只在这些值变了的那一帧写**；`_RimSoft` 不写：D-38 镜缘一直清楚）、星点副本的 MPB（凸面球心与半径、镜面自发光）、星尘槽的 MPB；两个全局量：
   - `_Udon_MirrorPlane` = (最近一面镜在车正下方的镜面世界 y, 镜线强度 0–1（穿越前 0.3 s → 穿越后 0.9 s）, 镜序号, 穿越进度 −1…1)：**车厢 shader 用它画 2 cm 的镜线、按它推进侵蚀**（总导演）。
   - `_Udon_MirrorRimLight` = (镜缘点 xyz, 目标照度 E 0–0.3)：取**包络最大**的那面镜子（r3 C8：两次穿越挨得近时不跳），第 13 面不打。
   - **镜缘点光**（F7，总导演 10-24 裁决“做”）：`R_Mirrors/MirrorRimLight`，一盏不投影的点光，8000 K，Render Mode = Not Important，culling 只有 Player（9）+ PlayerLocal（10），位置与强度由驱动按同一个包络连续地写，包络为 0 时关掉。
 - `LanbaiGrade(t)` = {镜子脉冲 ΔEV（第 1–11 面，+0.35 EV，0.08 s 入 / 0.35 s 出）, 0, 0, 1}，没有脉冲时返回 null。**驱动不碰 PPv2**：`LB_Journey.ApplyGrades` 是唯一写曝光的（总工程师意见第 1 轮）；它现在自己算的前 9 面脉冲要删掉，换成这里的 11 面（`Engineering/README_集成.md` §5）。
-- 每帧开销：活动的镜子最多 5–6 面 × 4 个 MPB，7 个星点副本、3 个尘槽的开关与 MPB，2 个 SetGlobalVector，一盏灯；没有分配。
+- **每帧开销（终审 M1，诚实版）**：UdonSharp 里每个运算、比较、数组读写、属性读写都是一次外部调用（extern）。按代码手数（不是实测）：每面活动的镜子每帧约 150–200 次（Hermite 二分查找约 90、可见度线性插值约 15、位置约 10、appear / 溶解 / 白 / 远的判断约 30、星点副本的 MPB 约 20、穿越与镜缘光约 15），值变的那一帧再加约 60 次（三个 LOD 的 MPB）；活动的镜子最多 5–6 面，加上尘槽（每个在用的槽约 10）、两个全局量、灯，**合计约 1 000–1 500 次 / 帧，按 Udon 每次约 0.5–1 µs 估 0.5–1.5 ms（桌面），没在头显里量过，请本地用 Profiler 实测后写进账本**。r3 版每帧扫 13 面 × 7 个星点槽的嵌套、每帧重写全部 MPB，约 3 000–4 000 次；现在：数组长度在 Init 里一次查完（M2），镜子半径、镜缘点、尘的中心等在 Init 里预算好，活动的镜子 / 星点槽 / 尘槽只在事件时刻（开、关、穿越、溶解结束）或往回跳时重建（`RebuildActive`），每帧只扫活动的镜子，MPB 只在值变时写。没有分配。
 - **激活 = 预热**（F8）：分发层的出生预热只调 `LanbaiActivate(true)`、不调 Tick；所以激活时驱动把 13 面镜整面摆到眼下 2 m 处、星点副本和尘槽全开，黑幕下的那几帧三个 shader 都真画一次；下一个 Tick 从 t 重建真实状态。关掉时（窗外）镜子、星点副本、尘、点光全关（F6）。
 - 镜子的模板：第 1–12 面用槽 (k−1) mod 6，第 13 面用槽 6，模板值 = 64 + 槽（写掩码 127，避开水洼的 128）。同时看得见的镜子不超过 5 面相邻的，所以 6 个槽不会撞。
 
-**从 t 重建（D-33 #6）**：驱动没有跨帧的状态。每一帧（包括激活的那一帧、拖时间轴、迟到的人）都只从 t 算出每面镜的开关、位置、MPB、星点副本、尘槽和两个全局量，所以哪一帧醒来画面都是完整的。
+**从 t 重建（D-33 #6）**：画面状态只由 t 决定。驱动的缓存（活动镜子表、上一次写的 MPB 值、开关状态）只用来省掉重复的调用：t 走出当前事件段（包括往回拖）就整个重建，激活的那一帧强制重写，所以哪一帧醒来、拖到哪里，画面都是完整的。
 
 ## 4. 时间表（摘要；全部在 JSON）
 
@@ -93,7 +93,7 @@
 ## 7. 检查（不是 Unity 编译）
 
 - shader：`python3 Common/Tools~/compile_check/check_shaders.py Mirrors/Shaders` → `4 files, 40 translation units (DXC on, CGIncludes 2022.3.22f1): 0 errors, 0 warnings. NOT a Unity compile.`
-- C#：`bash Common/Tools~/compile_check/check_cs.sh Mirrors Act10_White` → `C# CHECK OK (0 assembly error(s), 0 lint warning(s))`。
+- C#：`bash Common/Tools~/compile_check/check_cs.sh Mirrors Act10_White Overlay Common` → `C# CHECK OK (0 assembly error(s), 0 lint warning(s))`。
 - 数据：`make_schedule.py` 全部 PASS；网格回读 PASS。
 - 光敏与爬升律（`Tools~/port/flash_seq.py`：numpy 移植逐帧，30 fps，192×108，星点按通量守恒（r3 C2：1920×1080 实测差 < 4 %），调色含 WHITE_SAT / WHITE_BLOOM（r3 C3），过 `Art/tools/lens_tech/flashcheck.py`；结果 `Docs~/flashcheck/*.json`；终审 r3 定稿的镜背、+2.7 EV 之后全部重跑）：
 
@@ -129,7 +129,7 @@
 
 - **没在 Unity 里编译过、没进过头显**。FXC 独有的诊断（如分支里的梯度指令 X3570：镜面 / 镜缘 / 镜背三个区的反射在 `if` 里用 `ddx`）检查工具抓不到。
 - 迭代图没有车厢（标准台的车壳还没合成进来）；numpy 移植的反射没有粗糙度模糊（抛光纹在 shader 里只改光滑度，图上看不出来）；APL 是“天 + 镜子”的数，不能直接和圣经 §2.2 的整帧比。
-- **开销是估算，没在头显里量过**（F10）：显存约 31 MB（BC7 带 mip：镜背 4 张 2048² ≈ 22 MB、镜面 2048² ≈ 5.6 MB、字形 1024² ≈ 1.4 MB、流云 2048×256 ≈ 0.7 MB；网格三级 LOD 约 2 MB；星点副本共用天空的网格）；GPU 在 VR 分辨率下估 0.5–0.9 ms（第 13 面占满下半视野时最重：每像素一次银河查表 + 模板里的星；溶解时多两次 3 层噪声；整面静止时 `MirrorFront` 直接返回）；Udon 每帧约 300 次外部调用，估 0.1–0.3 ms。请本地实测后写进账本。
+- **开销是估算，没在头显里量过**（F10、终审 M1）：显存约 31 MB（BC7 带 mip：镜背 4 张 2048² ≈ 22 MB、镜面 2048² ≈ 5.6 MB、字形 1024² ≈ 1.4 MB、流云 2048×256 ≈ 0.7 MB；网格三级 LOD 约 2 MB；星点副本共用天空的网格）；GPU 在 VR 分辨率下估 0.5–0.9 ms（第 13 面占满下半视野时最重：每像素一次银河查表 + 模板里的星；溶解时多两次 3 层噪声；整面静止时 `MirrorFront` 直接返回）；Udon 每帧约 1 000–1 500 次外部调用（§3 的手数），估 0.5–1.5 ms（r3 写的“约 300 次、0.1–0.3 ms”低估了：那时没把算术和数组读写算成外部调用）。请本地实测后写进账本。
 - 铭文是照照片手描的笔画中线（再吸附到照片的脊线上），不是自动提取：我看得见的每一笔都描了，第 28、29 字在真镜上就磨损得很重，只描了能确认的笔画；笔画统一宽度、圆脊，比真镜的“头粗尾尖”规整。原文没有逐字释读（不是“尚方作竟”那首），按照片上的顺序从正上方顺时针放。十二地支在镜背主区的照片里（1995.301），不另做字形。
 - **第 1 面的铭文带在旅程里看不到**：镜背只在过镜后、从下面看得到，而溶解从镜缘往里走，第 1 面的铭文带（r 14.4–16 m）在镜背越过眼睛（过镜后 0.68 s）之前就溶解完了；大镜子的铭文带过镜时在几十米外、接近掠射。镜背的设计在 `r6_lookdev_*`（溶解冻结、从下方 22 m 仰视）里看。
 - 过镜后 0.3 s 眼还在第 1 面 1.2 m 厚的板里（薄平面：看穿），所以“过镜后 0.3 s 的镜背”是一张天（`r6_m1_back_+0.3s`），镜背从 0.68 s 起才在头顶。
@@ -155,3 +155,20 @@
 | C4 rim_soft | 删掉（D-38 镜缘一直清楚） | `MirrorSchedule.json`、驱动、shader |
 | F5 – F10、A7、C5 – C8、F7 | 收缩回倒清瓣、呼吸按 t；窗外全关；预热真画；`tex2Dgrad` / 无 frac 接缝；账本估算；`MirrorFront` 早返回；第 13 面 ≤ 0.45°/s 检查（节点斜率改 −0.44）；m2 – m12 与上下视向序列；收缩检查；镜缘光取包络最大；镜缘点光 | §3、§7、§8 |
 | A6 | 复核否决，不改 | — |
+
+## 10. 终审（总导演 10-25 13:13，对 fa6ae23）逐条
+
+D-46：云端只交美术和自查；Unity 里的技术验收由阿白做。下面每条的“自查”都是本仓库里能跑的（numpy 移植、`flashcheck.py`、`join_check.py`、`Director/Tools~/spawn_fade_sim.py`、C# / shader 检查），不是 Unity。
+
+| # | 改了什么 | 在哪看 / 自查 |
+|---|---|---|
+| M-1 钮穿过车厢 | `make_schedule.py` 加钮的检查（钮按 0.065 D 的椭球算，离车厢包围盒 ≥ 1 m）；第 1、2 面重新定方位（`AZ[0] = −62°`、`AZ[1] = 45°`），镜心在车旁边、镜缘离车 ≥ 10 m：第 1 面钮离车厢 1.85 m、镜缘 10.74 m，第 2 面钮 2.71 m；全部 PASS。移植里加了钮（`owner = k·10 + 3`） | `Docs~/schedule_check.txt`、`r7_M1_knob_*` |
+| M-2 镜背天顶的放射锥 | 镜背的“身后的天”改从一张 64 px 的无极点小立方体图读（`T_MirrorBackSky_Cube`：增益 1 的整片天、σ 0.2 rad 模糊、sqrt 编码，`bake_back_sky.py`；和高斯平均对得上：天顶 0.0158 / 0.0163），不再用等距柱状图的粗 mip；移植同一张图 | `r7_M2_m1_back_+0.8s / +1.0s`；m*u 序列（§7） |
+| M-3 溶解像一道平滑后退的脊 | 前沿后面一条碎块带：第二层高频 Voronoi 噪声，块（1.2 m × max(1, R/40)）各自带亮边、按 id 先后掉；250 颗尘 90 % 撒在车附近 60 m 内、看得见的前沿上 | `LanbaiMirror.cginc` `LanbaiMirrorBreakup`；`r7_M3_m1_*`、`r7_M3_m10_*` |
+| M-4 第 13 面在 F16−10 前要退远、模糊成圣经的“模糊的巨大圆盘” | 圣经（ART_BIBLE 1476 行）的“镜缘屏幕 luma 60–90，`#4E545E`”是**镜缘那一圈**：r7 第一版把外圈往天上淡（rim soft），镜缘反而成了暗圈、盘面还是清楚的银河（m13 盘面 luma 18–27）。改成：F14 → 1135.31 盘面只反射宽的天（`_FaceSoft`：背面同一张无极点立方体图的亮度，保留色度，没有银河细节；反射的星的像也关掉）、× 0.6（`_FarDim`）；镜缘带和外壁加一圈冷灰的亮（`_RimGlow` (0.04, 0.045, 0.05) × far）；1135.31 → 1139.31 线性回到清楚的镜子（D-38）。实测（移植，960×540）：**镜缘 luma 64–66**（1065 / 1076 / 1095 各三个视向）；盘面 22–25；柱上的镜面 27–41：1076、1095 比盘亮 1.5–1.7 档，1065 时柱上只有第 3 面、它反射的是天的暗处，只亮 0.5 档 | `r7_M4_*`（每格写着环 / 盘 / 柱的 luma）；`r7.json` |
+| M-5 座上的花瓣被剪 | 照片场的混合从 q 0.235 起，柿蒂纹座的四瓣完整 | `textures_preview.png` |
+| M-6 照片左右反了（地支逆读） | 照片场按 u 镜像（从下面看镜背），钮的 uv 同 | 同上 |
+| M-7 铭文笔画错、断、粗细一样 | 手描回到原始描线（吸附只许 ±0.4 单位）；`weld()` 接上断笔；笔宽从头 1.3 到尾 0.7 | `Docs~/inscription_plate.png` |
+| M-8 第 1 面 1024.41 开始凝聚 | 可见度 [[1024.41, 0], [1027.41, 0.3], [1030.41, 1]] | `MirrorSchedule.json`；m1in / m1ind 序列 |
+| M-11 21 px/° | `visibility_21ppd.py` 按时间表算每处细节在 1920 px / 90° 下的像素数（溶解前沿、镜背何时在眼上方、掠射缩短都算）：镜缘连珠乳钉、钮看得出；外圈各带（铭文、栉齿、锯齿、流云）在镜背到眼上方之前就溶解了，旅程里**没机会**看到；第 10 面铭文勉强。关键帧 1920×1080 | `Docs~/visibility_21ppd.md`、`r7_key_*.png` |
+| W1 – W5、M1、M2、G1、M-9、M-10 | 见 `Act10_White/README_Act10.md` 与本文 §3 / §8 | — |
