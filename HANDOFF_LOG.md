@@ -14,7 +14,7 @@
    - D-41 的共用工具 `Common/Editor/LanbaiUdonPrograms.cs`：按 Type 查程序资产、复用已有的，新建的等 SDK 初始化到 2/2 再继续，不 Force Upgrade。所有包的搭建脚本都改成调它，包括 `GateClouds/Editor/LanbaiGateCloudsBuilder.cs`。
    - 你本地那份“改成传 Type”的过渡修复，同步时会被列成“本地改过”。照 §F 处理：先备份，清单给小楠看，小楠同意后 `-Force` 覆盖。这是对的，云端的修法已经包含了你那一行。
    - 测试工具 `Engineering/UnityTest/`（`README_UnityTest.md`）和同步脚本 v2：按 commit 列文件，部分检出也能用；`-Repo` 必填，HEAD 必须等于 origin/main；`.meta` 不同步。
-2. **第一次用测试工具之前**：照 `README_UnityTest.md` §0 第 3 步写 `CONSENT.json`，要有小楠的同意和备份路径。预检会查：C 盘 ≥ 10 GB、工程盘 ≥ 10 GB、可用内存 ≥ 6 GB，不够就 BLOCKED。
+2. **第一次用测试工具之前**：照 `README_UnityTest.md` §0 第 3 步和 §3 的完整例子写 `CONSENT.json`，要有小楠的同意和备份路径。工具升到 1.1.0（Director v1.3 那一批合进 main）以后，还必须写 `tool_version` 和 `tests[]`（例如 `["gate_clouds_test"]`）；格式以合进 main 的那一版 README 为准。预检会查：C 盘 ≥ 10 GB、工程盘 ≥ 10 GB、可用内存 ≥ 6 GB，不够就 BLOCKED。
 3. **怎么复测**：
    - 同步（先演练，再 `-Apply`）；
    - 点 `蓝白/U#/Program Asset Status (read only)`，看三个程序资产的两个版本；
