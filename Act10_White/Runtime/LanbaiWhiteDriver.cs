@@ -61,22 +61,20 @@ namespace Lanbai.Act10
         public float afterSilenceDecay = 4f;
 
         [Header("Late joiners (总导演终审 r3 #4: the spawn fade first, then black -> white at <= 0.85 EV/s)")]
-        public float spawnFadeSeconds = 3f;          // used only until the dispatcher reports the local spawn fade's end
         public float joinFromL = 0.004f;             // the black the joiner's ramp starts from (EvOverlayAlpha's floor)
         public float joinMaxEVps = 0.85f;            // -> log2(0.86 / 0.004) / 0.85 = 9.1 s on desktop
 
         private float[] grade = new float[4];
         private bool isVR;
         private bool vrKnown;
-        private float tJoinReady = -1f;              // timeline t at which the local spawn fade has ended (-1 = not known yet)
-        private bool joinReported;
+        private float spawnSince = 1e6f;             // seconds since the local spawn fade ended (-1 while it runs); no call = long ago
 
-        // Director dispatcher: the local player's spawn fade ended at timeline t (r3 #4; the chief engineer adds the call).
-        // Until then this driver writes no overlay: the spawn fade owns it.
-        public void LanbaiSpawnFadeEnd(float t)
+        // Director v1.2 (总导演 10-25, like 门内 and act 6): the dispatcher calls this before every LanbaiTick with the
+        // seconds since LB_Journey's spawn fade ended, latched by the dispatcher; -1 while it runs. While it runs this
+        // driver writes no overlay (the spawn fade owns it; under our overlay the dispatcher holds the spawn black).
+        public void LanbaiSpawnFade(float since)
         {
-            tJoinReady = t;
-            joinReported = true;
+            spawnSince = since;
         }
 
         public float[] LanbaiWindow()
@@ -93,8 +91,6 @@ namespace Lanbai.Act10
 
         public void LanbaiTick(float t)
         {
-            if (!joinReported && tJoinReady < 0f)
-                tJoinReady = t - Time.timeSinceLevelLoad + spawnFadeSeconds;   // fallback: the session started timeSinceLevelLoad ago
             if (!vrKnown)
             {
                 VRCPlayerApi lp = Networking.LocalPlayer;
@@ -153,7 +149,8 @@ namespace Lanbai.Act10
             if (overlay == null)
                 return;
             float lw = isVR ? lWhiteVR : lWhite;
-            if (t < tMaskStart || t >= tShrinkEnd || tJoinReady < 0f || t < tJoinReady)
+            float tJoinReady = t - spawnSince;      // the latched end of the spawn fade, on the timeline
+            if (t < tMaskStart || t >= tShrinkEnd || spawnSince < 0f)
             {
                 Release();                          // outside our three parts, or the spawn fade still runs: write nothing
                 return;
