@@ -162,6 +162,13 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
         _spawnSince = since;
     }
 
+    /// <summary>Director v1.3（复核 DIR13-6）：这一段最亮的非白视向的亮度（遮罩的 L 单位）= WriteBlack 的 Ls 0.2（门内 APL 约 90）；
+    /// LB_Journey 在门内窗口之外、门内画面里自己淡入时按它定时长。</summary>
+    public float LanbaiBrightestL(float t)
+    {
+        return 0.2f;
+    }
+
     /// <summary>Director v1.2：遮罩球归门内的那一段（剪 1 前 0.25 s 的变暗到第 6 幕的预滚）。</summary>
     public float[] LanbaiOverlayWindow()
     {
@@ -236,12 +243,14 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
     /// 闪光的 dEV 记 0（遮罩球的补偿也用 0，两边一致）。</summary>
     private float FlashFor(float t)
     {
-        if (_spawnSince < 0f) return 0f;
-        if (_spawnSince < 1e5f)
+        // v1.3 r2：出生的黑 / LB_Journey 自己淡入的时候不压（黑里看不见；LB_Journey 的淡入限的是“看到的亮度”，闪光
+        // 已经算在 gradeDEV 里）。只压“交给我、正从黑往上升”的人：不然淡入一结束，压着的闪光一帧冒出来
+        if (_spawnSince < 1e5f && _spawnSince >= 0f)
         {
             float te = t - _spawnSince;
             float range = Mathf.Log(0.2f / 0.004f, 2f);   // WriteBlack's catch-up range (Ls 0.2 over the 0.004 floor)
-            if (te >= tU12 - 0.25f && te < tU12 + 4.0f && _spawnSince * 0.85f < range) return 0f;   // still catching up
+            // v1.3 r2（复核 DIR13-3）：从 FLASH_TEAR 开始（U12 − 0.75）就算：淡入结束在闪光当中的，闪光也不冒出来
+            if (te >= tU12 - 0.75f && te < tU12 + 4.0f && _spawnSince * 0.85f < range) return 0f;   // still catching up
         }
         return LanbaiDeltaEV(t);
     }

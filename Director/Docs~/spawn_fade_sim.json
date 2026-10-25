@@ -1,215 +1,443 @@
 {
- "v13": [
+ "joins": [
   {
-   "join": 238,
    "converged_at": 247.64,
-   "hitch": false,
-   "v12": false,
+   "ok": true,
    "w025": 0.208,
    "w1": 0.85,
    "w2": 1.7,
+   "rate": -0.05,
    "frame": 0.009,
-   "ok": true
+   "join": 238,
+   "case": ""
   },
   {
+   "converged_at": 248.64,
+   "ok": true,
+   "w025": 0.179,
+   "w1": 0.179,
+   "w2": 0.179,
+   "rate": -0.721,
+   "frame": 0.009,
    "join": 244,
-   "converged_at": 248.64,
-   "hitch": false,
-   "v12": false,
-   "w025": 0.189,
-   "w1": 0.189,
-   "w2": 0.189,
-   "frame": 0.009,
-   "ok": true
+   "case": ""
   },
   {
+   "converged_at": 248.64,
+   "ok": true,
+   "w025": 0.104,
+   "w1": 0.104,
+   "w2": 0.104,
+   "rate": -0.796,
+   "frame": 0.009,
    "join": 245.5,
-   "converged_at": 248.64,
-   "hitch": false,
-   "v12": false,
-   "w025": 0.113,
-   "w1": 0.113,
-   "w2": 0.113,
-   "frame": 0.009,
-   "ok": true
+   "case": ""
   },
   {
-   "join": 249,
    "converged_at": 252.0,
-   "hitch": false,
-   "v12": false,
+   "ok": true,
    "w025": 0.0,
    "w1": 0.0,
    "w2": 0.0,
+   "rate": -0.9,
    "frame": 0.0,
-   "ok": true
+   "join": 249,
+   "case": ""
   },
   {
+   "converged_at": 269.93,
+   "ok": true,
+   "w025": 0.208,
+   "w1": 0.85,
+   "w2": 1.7,
+   "rate": -0.05,
+   "frame": 0.009,
    "join": 255,
-   "converged_at": 269.92,
-   "hitch": false,
-   "v12": false,
+   "case": ""
+  },
+  {
+   "converged_at": 274.93,
+   "ok": true,
    "w025": 0.208,
    "w1": 0.85,
    "w2": 1.7,
+   "rate": -0.05,
    "frame": 0.009,
-   "ok": true
-  },
-  {
    "join": 260,
-   "converged_at": 274.92,
-   "hitch": false,
-   "v12": false,
+   "case": ""
+  },
+  {
+   "converged_at": 278.43,
+   "ok": true,
    "w025": 0.208,
    "w1": 0.85,
    "w2": 1.7,
+   "rate": -0.05,
    "frame": 0.009,
-   "ok": true
-  },
-  {
    "join": 263.5,
-   "converged_at": 278.42,
-   "hitch": false,
-   "v12": false,
+   "case": ""
+  },
+  {
+   "converged_at": 280.93,
+   "ok": true,
    "w025": 0.208,
    "w1": 0.85,
    "w2": 1.7,
+   "rate": -0.05,
    "frame": 0.009,
-   "ok": true
-  },
-  {
    "join": 266,
-   "converged_at": 280.92,
-   "hitch": false,
-   "v12": false,
+   "case": ""
+  },
+  {
+   "converged_at": 281.93,
+   "ok": true,
    "w025": 0.208,
    "w1": 0.85,
    "w2": 1.7,
+   "rate": -0.05,
    "frame": 0.009,
-   "ok": true
-  },
-  {
    "join": 267,
-   "converged_at": 281.92,
-   "hitch": false,
-   "v12": false,
+   "case": ""
+  },
+  {
+   "converged_at": 284.93,
+   "ok": true,
    "w025": 0.208,
    "w1": 0.85,
    "w2": 1.7,
+   "rate": -0.05,
    "frame": 0.009,
-   "ok": true
-  },
-  {
    "join": 270,
-   "converged_at": 284.92,
-   "hitch": false,
-   "v12": false,
-   "w025": 0.208,
-   "w1": 0.85,
-   "w2": 1.7,
-   "frame": 0.009,
-   "ok": true
+   "case": ""
   },
   {
+   "converged_at": 1139.49,
+   "ok": true,
+   "w025": 0.207,
+   "w1": 0.845,
+   "w2": 1.687,
+   "rate": -0.055,
+   "frame": 0.009,
+   "join": 1125.75,
+   "case": ""
+  },
+  {
+   "converged_at": 1153.79,
+   "ok": true,
+   "w025": 0.2,
+   "w1": 0.817,
+   "w2": 1.627,
+   "rate": -0.083,
+   "frame": 0.009,
+   "join": 1130,
+   "case": ""
+  },
+  {
+   "converged_at": 1153.79,
+   "ok": true,
+   "w025": 0.2,
+   "w1": 0.817,
+   "w2": 1.627,
+   "rate": -0.083,
+   "frame": 0.009,
+   "join": 1134.25,
+   "case": ""
+  },
+  {
+   "converged_at": 1153.79,
+   "ok": true,
+   "w025": 0.2,
+   "w1": 0.817,
+   "w2": 1.627,
+   "rate": -0.083,
+   "frame": 0.009,
    "join": 1140,
-   "converged_at": 1155.37,
-   "hitch": false,
-   "v12": false,
-   "w025": 0.208,
-   "w1": 0.85,
-   "w2": 1.7,
-   "frame": 0.009,
-   "ok": true
+   "case": ""
   },
   {
-   "join": 1150,
-   "converged_at": 1162.06,
-   "hitch": false,
-   "v12": false,
-   "w025": 0.208,
-   "w1": 0.85,
-   "w2": 1.7,
-   "frame": 0.009,
-   "ok": true
-  },
-  {
-   "join": 1180,
-   "converged_at": 1192.0,
-   "hitch": false,
-   "v12": false,
+   "converged_at": 1162.68,
+   "ok": true,
    "w025": 0.204,
-   "w1": 0.829,
-   "w2": 1.636,
+   "w1": 0.818,
+   "w2": 1.634,
+   "rate": -0.082,
+   "frame": 0.021,
+   "join": 1150,
+   "case": ""
+  },
+  {
+   "converged_at": 1188.42,
+   "ok": true,
+   "w025": 0.196,
+   "w1": 0.8,
+   "w2": 1.57,
+   "rate": -0.1,
    "frame": 0.009,
-   "ok": true
+   "join": 1180,
+   "case": ""
   },
   {
-   "join": 263.5,
-   "converged_at": 278.42,
-   "hitch": true,
-   "v12": false,
+   "converged_at": 278.43,
+   "ok": true,
    "w025": 0.208,
    "w1": 0.85,
    "w2": 1.7,
+   "rate": -0.05,
    "frame": 0.425,
-   "ok": true
+   "join": 263.5,
+   "case": "hitch 0.5 s"
   },
   {
+   "converged_at": 284.93,
+   "ok": true,
+   "w025": 0.208,
+   "w1": 0.85,
+   "w2": 1.7,
+   "rate": -0.05,
+   "frame": 0.425,
    "join": 270,
-   "converged_at": 284.92,
-   "hitch": true,
-   "v12": false,
+   "case": "hitch 0.5 s"
+  },
+  {
+   "converged_at": 248.64,
+   "ok": true,
    "w025": 0.208,
    "w1": 0.85,
    "w2": 1.7,
-   "frame": 0.425,
-   "ok": true
+   "rate": -0.05,
+   "frame": 0.009,
+   "join": 238.36016918850032,
+   "case": "r1 的其余部分 + 只改 FlashFor 到 U12 − 0.75（DIR13-3 单独够不够）"
   }
  ],
- "negative_control_v12": [
+ "scrub": {
+  "case": "scrub 285 -> 255",
+  "join": 270,
+  "max_dev_from_reference_ev": 0.0,
+  "ok": true
+ },
+ "dense": [
   {
+   "white": "—",
+   "from": 175.0,
+   "to": 372.0,
+   "step": 0.1,
+   "fps": 30,
+   "joins": 1971,
+   "fails": 0,
+   "worst": {
+    "w025": 0.198,
+    "w1": 0.85,
+    "w2": 1.7,
+    "rate": -0.05
+   },
+   "first_fails": []
+  },
+  {
+   "white": "pkg/mirrors 962567b",
+   "from": 1120.0,
+   "to": 1200.0,
+   "step": 0.1,
+   "fps": 30,
+   "joins": 801,
+   "fails": 24,
+   "worst": {
+    "w025": 1.579,
+    "w1": 1.579,
+    "w2": 1.687,
+    "rate": 0.679
+   },
+   "first_fails": [
+    {
+     "converged_at": 1188.43,
+     "ok": false,
+     "w025": 0.325,
+     "w1": 0.939,
+     "w2": 1.579,
+     "rate": 0.039,
+     "frame": 0.165,
+     "join": 1183.6,
+     "case": ""
+    },
+    {
+     "converged_at": 1188.43,
+     "ok": false,
+     "w025": 0.405,
+     "w1": 1.019,
+     "w2": 1.579,
+     "rate": 0.119,
+     "frame": 0.245,
+     "join": 1183.7,
+     "case": ""
+    },
+    {
+     "converged_at": 1188.43,
+     "ok": false,
+     "w025": 0.485,
+     "w1": 1.099,
+     "w2": 1.579,
+     "rate": 0.199,
+     "frame": 0.325,
+     "join": 1183.8,
+     "case": ""
+    },
+    {
+     "converged_at": 1188.43,
+     "ok": false,
+     "w025": 0.565,
+     "w1": 1.179,
+     "w2": 1.579,
+     "rate": 0.279,
+     "frame": 0.405,
+     "join": 1183.9,
+     "case": ""
+    },
+    {
+     "converged_at": 1188.43,
+     "ok": false,
+     "w025": 0.645,
+     "w1": 1.259,
+     "w2": 1.579,
+     "rate": 0.359,
+     "frame": 0.485,
+     "join": 1184.0,
+     "case": ""
+    },
+    {
+     "converged_at": 1188.43,
+     "ok": false,
+     "w025": 0.725,
+     "w1": 1.339,
+     "w2": 1.579,
+     "rate": 0.439,
+     "frame": 0.565,
+     "join": 1184.1,
+     "case": ""
+    },
+    {
+     "converged_at": 1188.43,
+     "ok": false,
+     "w025": 0.805,
+     "w1": 1.419,
+     "w2": 1.579,
+     "rate": 0.519,
+     "frame": 0.645,
+     "join": 1184.2,
+     "case": ""
+    },
+    {
+     "converged_at": 1188.43,
+     "ok": false,
+     "w025": 0.885,
+     "w1": 1.499,
+     "w2": 1.579,
+     "rate": 0.599,
+     "frame": 0.725,
+     "join": 1184.3,
+     "case": ""
+    },
+    {
+     "converged_at": 1188.43,
+     "ok": false,
+     "w025": 0.965,
+     "w1": 1.579,
+     "w2": 1.579,
+     "rate": 0.679,
+     "frame": 0.805,
+     "join": 1184.4,
+     "case": ""
+    },
+    {
+     "converged_at": 1188.43,
+     "ok": false,
+     "w025": 1.045,
+     "w1": 1.579,
+     "w2": 1.579,
+     "rate": 0.679,
+     "frame": 0.885,
+     "join": 1184.5,
+     "case": ""
+    }
+   ]
+  },
+  {
+   "white": "pkg/mirrors 962567b + 建议的修改",
+   "from": 1120.0,
+   "to": 1200.0,
+   "step": 0.1,
+   "fps": 30,
+   "joins": 801,
+   "fails": 0,
+   "worst": {
+    "w025": 0.198,
+    "w1": 0.85,
+    "w2": 1.687,
+    "rate": -0.05
+   },
+   "first_fails": []
+  }
+ ],
+ "negative_controls": [
+  {
+   "converged_at": 266.51,
+   "ok": false,
+   "w025": 7.349,
+   "w1": 7.349,
+   "w2": 7.349,
+   "rate": 6.449,
+   "frame": 7.349,
    "join": 263.5,
-   "converged_at": 266.5,
-   "hitch": false,
-   "v12": true,
+   "case": "v1.2"
+  },
+  {
+   "converged_at": 269.01,
+   "ok": false,
    "w025": 7.349,
    "w1": 7.349,
    "w2": 7.349,
+   "rate": 6.449,
    "frame": 7.349,
-   "ok": false
-  },
-  {
    "join": 266,
-   "converged_at": 269.0,
-   "hitch": false,
-   "v12": true,
-   "w025": 7.349,
-   "w1": 7.349,
-   "w2": 7.349,
-   "frame": 7.349,
+   "case": "v1.2"
+  },
+  {
+   "case": "scrub 285 -> 255 (no rewind rule)",
+   "join": 270,
+   "max_dev_from_reference_ev": 7.349,
    "ok": false
   },
   {
-   "join": 1140,
-   "converged_at": 1146.0,
-   "hitch": false,
-   "v12": true,
-   "w025": 0.629,
-   "w1": 2.478,
-   "w2": 3.644,
-   "frame": 0.029,
-   "ok": false
+   "converged_at": 1142.38,
+   "ok": false,
+   "w025": 0.376,
+   "w1": 1.456,
+   "w2": 2.531,
+   "rate": 1.204,
+   "frame": 0.017,
+   "join": 1130,
+   "case": "r1 fixed-T fade, no look-ahead (DIR13-4)"
+  },
+  {
+   "converged_at": 248.64,
+   "ok": false,
+   "w025": 0.569,
+   "w1": 0.569,
+   "w2": 0.569,
+   "rate": -0.331,
+   "frame": 0.569,
+   "join": 245.5,
+   "case": "FLASH_TEAR not suppressed"
+  },
+  {
+   "converged_at": 248.02,
+   "ok": false,
+   "w025": 0.666,
+   "w1": 1.308,
+   "w2": 2.158,
+   "rate": 0.408,
+   "frame": 0.471,
+   "join": 238.36016918850032,
+   "case": "r1 whole (FlashFor U12 - 0.25)"
   }
- ],
- "negative_control_flash": {
-  "join": 245.5,
-  "converged_at": 248.64,
-  "hitch": false,
-  "v12": false,
-  "w025": 0.622,
-  "w1": 0.622,
-  "w2": 0.622,
-  "frame": 0.622,
-  "ok": false
- }
+ ]
 }
