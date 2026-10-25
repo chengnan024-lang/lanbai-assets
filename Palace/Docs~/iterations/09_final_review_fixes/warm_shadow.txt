@@ -1,0 +1,8 @@
+F5p all 0.053% outside halo discs 0.009%
+F6 all 0.161% outside halo discs 0.147%
+F7_40x all 0.225% outside halo discs 0.169%
+proc all 0.046% outside halo discs 0.005%
+proc_l all 0.477% outside halo discs 0.159%
+que_lamp all 0.100% outside halo discs 0.006%
+h722 all 0.053% outside halo discs 0.028%
+h728 all 0.060% outside halo discs 0.056%
