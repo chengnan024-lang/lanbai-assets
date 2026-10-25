@@ -1,0 +1,37 @@
+{
+  "id": "white_handoff_20261025_0654_freshtrial",
+  "steps": [
+    {
+      "target": "Lanbai.Tests.LB_WhiteHandoffAudit.QuietNextPlay",
+      "op": "call"
+    },
+    {
+      "seconds": 4,
+      "op": "play"
+    },
+    {
+      "target": "Lanbai.Tests.LB_WhiteHandoffAudit.TrialMaskPriority",
+      "op": "call"
+    },
+    {
+      "arg": "white_handoff_0654_freshtrial|baseline|1139|17|0",
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FlickerDiagnostic.Begin"
+    },
+    {
+      "seconds": 18,
+      "op": "wait"
+    },
+    {
+      "target": "Lanbai.Tests.LB_FlickerDiagnostic.Status",
+      "op": "call"
+    },
+    {
+      "target": "Lanbai.Tests.LB_WhiteHandoffAudit.Inspect",
+      "op": "call"
+    },
+    {
+      "op": "stop"
+    }
+  ]
+}
