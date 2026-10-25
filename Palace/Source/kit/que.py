@@ -5,12 +5,12 @@
 
 形制（research_han.md §1、§4–6，高颐阙 / 冯焕阙的分段，按 40 m 放大）：
     阙基   y 0–3      石，比阙身各边宽 0.8 m；壁柱 + 凹板 + 压顶石
-    阙身   y 3–22     紫贝贴面（Cowrie），每侧收 0.4 m；石的角倚柱、中倚柱（长面）、横枋带；
-                      下段（3.6–8.3，近景）每块贴面有一道石的压边框
-    阙楼   y 22–29.7  枋头层（两排出挑枋头，朱漆）+ 斗拱层（四角一斗二升、长面正中曲栱）；
-                      三道 LacquerBand 枋（A、B、C），C 比阙身宽 1.8 m
-    阙顶   y 29.7–40  重檐四阿：腰檐（出 2.7 m）+ 上层阙楼 + 上檐（出 2.0 m，自阙身顶算 ~2.1 / 3 m），
-                      直坡，筒瓦垄 + 瓦当，转角不起翘；正脊两端只起翘（汉制）
+    阙身   y 3–22     紫贝贴面（Cowrie）一整片连续，每侧收 0.4 m；只有四角的石倚柱 + 上下石枋（第 10 轮去掉压边框、
+                      中倚柱、横枋带）；顶上一道 Ø0.2 的串珠
+    阙楼   y 22–29.6  枋头层（一排小梁头藏在枋 B 底下）+ 斗拱层（黑漆墙缩到枋 C 里 1.4 m，四角一斗二升、长面正中曲栱）
+                      —— 读成檐下一道暗影带（高颐阙）；枋 A、B、C
+    阙顶   y 29.6–40  重檐四阿：腰檐（半宽 5.5 / 7.5，出枋 C 1.8 m、出斗拱墙 3.2 m）+ 上层阙楼 + 上檐（5.6 / 7.6，33°），
+                      直坡，筒瓦垄停在檐口内 0.3 m，檐口一道 Ø0.2 串珠（不再有六角瓦当的齿），转角不起翘；正脊两端只起翘（汉制）
 坐标：Unity 轴（x 右、y 上、z 前），两阙中心 (−12, 0, 41.39)、(−24, 0, 41.39)，阙身 6 (x) × 10 (z)。
 本文件里还有几个小几何工具（prism / extrude / sweep2d / ...），house.py 也用它们。
 每个部件都是封闭实体；_emit 按有符号体积统一翻正绕向，KB.parts 记录每个部件的面范围（给法线测试用）。
@@ -26,6 +26,7 @@ except ImportError:          # 直接当脚本 import
 
 RIDGE_LIFT = 1.05
 QUE_POS = [(-12.0, 0.0, 41.39), (-24.0, 0.0, 41.39)]
+EAVE_X = 5.5                 # 腰檐半宽（x）；z 向 = EAVE_X + 2（第 10 轮）
 
 
 # ===================================================================== 几何工具
@@ -381,9 +382,8 @@ def _que_local(lod=0):
 
     ring(3.0, 3.6, 0.16)                         # 地栿
     ring(21.35, 22.0, 0.16)                      # 顶枋（石）
-    if hi:
-        ring(8.3, 8.7, 0.11)
-    PC, PP = 0.62, 0.13                          # 角倚柱宽、凸出
+    # 第 10 轮（终审）：贴面一整片连续——去掉下段每块板的石压边框、中倚柱和 8.3 m 的横枋带，亮处交给阙前那盏灯
+    PC, PP = 0.62, 0.13                          # 角倚柱宽、凸出（只在四角，不切贴面）
     ya, yb = 3.6, 21.35
     for sx in (-1, 1):
         for sz in (-1, 1):
@@ -391,171 +391,179 @@ def _que_local(lod=0):
                 lambda y, sz=sz: min(sz * (HZ(y) + PP), sz * (HZ(y) - PC)), lambda y, sz=sz: max(sz * (HZ(y) + PP), sz * (HZ(y) - PC)),
                 ya, yb, 'Stone')
     if hi:
-        # 长面（±x）中倚柱（只在下段，上段是一整片贴面）
-        for sx in (-1, 1):
-            tap(lambda y, sx=sx: min(sx * (HX(y) + 0.1), sx * (HX(y) - 0.3)), lambda y, sx=sx: max(sx * (HX(y) + 0.1), sx * (HX(y) - 0.3)),
-                lambda y: -0.27 * HZ(y) / 5.0, lambda y: 0.27 * HZ(y) / 5.0, ya, 8.3, 'Stone')
-        # 下段贴面的压边框（近景）：每块板一圈 0.14 宽、凸 0.06 的石条，离倚柱 / 枋 0.22
-        bw, bp = 0.14, 0.06
+        bead_rect(ub, HX(22.0) + 0.16, HZ(22.0) + 0.16, 22.0, 0.1, 'Stone')     # 串珠：阙身顶的一道细珠（Ø0.2）
 
-        def frame_x(sx, za, zb, fy0, fy1):        # za, zb：在 y=3 时的 z 范围（随收分按比例缩）
-            def zf(v):
-                return lambda y: v * HZ(y) / 5.0
-            xo = lambda y: max(sx * (HX(y) + bp), sx * (HX(y) - 0.08))
-            xi = lambda y: min(sx * (HX(y) + bp), sx * (HX(y) - 0.08))
-            tap(xi, xo, zf(za), zf(za + bw), fy0, fy1, 'Stone')
-            tap(xi, xo, zf(zb - bw), zf(zb), fy0, fy1, 'Stone')
-            tap(xi, xo, zf(za + bw), zf(zb - bw), fy0, fy0 + bw, 'Stone')
-            tap(xi, xo, zf(za + bw), zf(zb - bw), fy1 - bw, fy1, 'Stone')
-
-        def frame_z(sz, xa, xb, fy0, fy1):
-            def xf(v):
-                return lambda y: v * HX(y) / 3.0
-            zo = lambda y: max(sz * (HZ(y) + bp), sz * (HZ(y) - 0.08))
-            zi = lambda y: min(sz * (HZ(y) + bp), sz * (HZ(y) - 0.08))
-            tap(xf(xa), xf(xa + bw), zi, zo, fy0, fy1, 'Stone')
-            tap(xf(xb - bw), xf(xb), zi, zo, fy0, fy1, 'Stone')
-            tap(xf(xa + bw), xf(xb - bw), zi, zo, fy0, fy0 + bw, 'Stone')
-            tap(xf(xa + bw), xf(xb - bw), zi, zo, fy1 - bw, fy1, 'Stone')
-
-        g = 0.22
-        for sx in (-1, 1):
-            frame_x(sx, -5.0 + PC + g, -0.27 - g, 3.6 + g, 8.3 - g)
-            frame_x(sx, 0.27 + g, 5.0 - PC - g, 3.6 + g, 8.3 - g)
-            frame_x(sx, -5.0 + PC + g, 5.0 - PC - g, 8.7 + g, 21.35 - g)      # 上段整片的压边
-        for sz in (-1, 1):
-            frame_z(sz, -3.0 + PC + g, 3.0 - PC - g, 3.6 + g, 8.3 - g)
-            frame_z(sz, -3.0 + PC + g, 3.0 - PC - g, 8.7 + g, 21.35 - g)
-
-    # ---------------- 阙楼 y 22–29.7
+    # ---------------- 阙楼 y 22–29.6（第 10 轮：整层往里收，读成檐下一道暗影带，高颐阙的样子）
     course(ub, 2.88, 4.88, 22.0, 22.6)                                       # 枋 A
-    box(ub, (-2.7, 22.6, -4.7), (2.7, 24.6, 4.7), 'StoneDark')              # 枋头层的墙
+    WX, WZ = 2.35, 4.35                                                      # 枋头层的墙（缩到阙身顶以内）
+    box(ub, (-WX, 22.6, -WZ), (WX, 24.6, WZ), 'StoneDark')
     if hi:
-        # 两排枋头（井干式的梁头），上排挑得远，下排错半格
-        for row, (y0, y1, out, off) in enumerate(((23.0, 23.5, 0.75, 0.5), (24.0, 24.6, 1.15, 0.0))):
-            bwid, pitch = 0.42, 0.95
-            for sx in (-1, 1):                     # ±x 面：沿 z 排
-                k = int((2 * 4.7 - 1.0) / pitch)
-                for i in range(k + 1):
-                    z = -4.7 + 0.5 + (i + off) * (2 * 4.7 - 1.0) / k
-                    if z > 4.7 - 0.45:
-                        continue
-                    xa, xb = sx * 2.4, sx * (2.7 + out)
-                    box(ub, (min(xa, xb), y0, z - bwid / 2), (max(xa, xb), y1, z + bwid / 2), 'Lacquer')
-            for sz in (-1, 1):                     # ±z 面：沿 x 排
-                k = int((2 * 2.7 - 1.0) / pitch)
-                for i in range(k + 1):
-                    x = -2.7 + 0.5 + (i + off) * (2 * 2.7 - 1.0) / k
-                    if x > 2.7 - 0.45:
-                        continue
-                    za, zb = sz * 4.4, sz * (4.7 + out)
-                    box(ub, (x - bwid / 2, y0, min(za, zb)), (x + bwid / 2, y1, max(za, zb)), 'Lacquer')
-            # 转角：两向的梁头十字出头
-            for sx in (-1, 1):
-                for sz in (-1, 1):
-                    x, z = sx * (2.7 - 0.25), sz * (4.7 - 0.25)
-                    box(ub, (min(sx * 2.0, sx * (2.7 + out)), y0, z - bwid / 2), (max(sx * 2.0, sx * (2.7 + out)), y1, z + bwid / 2), 'Lacquer')
-                    box(ub, (x - bwid / 2, y0, min(sz * 4.0, sz * (4.7 + out))), (x + bwid / 2, y1, max(sz * 4.0, sz * (4.7 + out))), 'Lacquer')
-    course(ub, 3.65, 5.65, 24.6, 25.2)                                      # 枋 B
-    box(ub, (-3.1, 25.2, -5.1), (3.1, 29.0, 5.1), 'StoneDark')              # 斗拱层的墙
+        # 枋头：一排小梁头贴在枋 B 底下，比枋 B 外皮缩 0.15 —— 剪影是枋 B 的直线，梁头只在阴影里读成一串细齿
+        bwid, pitch, y0, y1 = 0.22, 0.55, 24.3, 24.6
+        for ax, half, wall, reach in (('x', WZ, WX, 3.25), ('z', WX, WZ, 5.25)):
+            k = max(1, int(round((2 * half - 0.4) / pitch)))
+            for i in range(k + 1):
+                u = -half + 0.2 + (2 * half - 0.4) * i / k
+                for sg in (-1, 1):
+                    a_, b_ = sg * (wall - 0.1), sg * reach
+                    if ax == 'x':
+                        box(ub, (min(a_, b_), y0, u - bwid / 2), (max(a_, b_), y1, u + bwid / 2), 'Lacquer')
+                    else:
+                        box(ub, (u - bwid / 2, y0, min(a_, b_)), (u + bwid / 2, y1, max(a_, b_)), 'Lacquer')
+    course(ub, 3.4, 5.4, 24.6, 25.0)                                        # 枋 B（压住枋头）
+    BWX, BWZ = 2.3, 4.3                                                      # 斗拱层的墙：比枋 C 外皮深 1.4 m，黑漆 = 暗影带
+    box(ub, (-BWX, 25.0, -BWZ), (BWX, 29.0, BWZ), 'LacquerBlack')
     if hi:
-        _brackets(ub)
+        _brackets_deep(ub, BWX, BWZ, 1.3)
     else:
-        for sx in (-1, 1):                         # 远看：只留斗拱的大块
+        for sx in (-1, 1):                         # 远看：只留斗拱的大块（也缩在枋 C 里面）
             for sz in (-1, 1):
-                box(ub, (min(sx * 3.0, sx * 4.15), 27.2, min(sz * 3.2, sz * 4.4)), (max(sx * 3.0, sx * 4.15), 29.0, max(sz * 3.2, sz * 4.4)), 'Lacquer')
-                box(ub, (min(sx * 1.6, sx * 2.8), 27.2, min(sz * 5.0, sz * 6.15)), (max(sx * 1.6, sx * 2.8), 29.0, max(sz * 5.0, sz * 6.15)), 'Lacquer')
-    course(ub, 4.4, 6.4, 29.0, 29.7)                                        # 枋 C（比阙身顶宽 1.8 m）
+                box(ub, (min(sx * 2.1, sx * 3.55), 27.4, min(sz * 2.4, sz * 3.6)), (max(sx * 2.1, sx * 3.55), 29.0, max(sz * 2.4, sz * 3.6)), 'Lacquer')
+                box(ub, (min(sx * 0.2, sx * 2.2), 27.4, min(sz * 4.1, sz * 5.55)), (max(sx * 0.2, sx * 2.2), 29.0, max(sz * 4.1, sz * 5.55)), 'Lacquer')
+    course(ub, 3.7, 5.7, 29.0, 29.6)                                        # 枋 C（第 10 轮：从 4.4 / 6.4 收到 3.7 / 5.7，让檐出得深）
 
-    # ---------------- 阙顶：重檐四阿 y 29.7–40
-    low = hip_solid(ub, 0, 0, 5.4, 7.4, 29.7, 0.4, 28.0, inner=(2.7, 4.7))  # 腰檐
+    # ---------------- 阙顶：重檐四阿 y 29.6–40（第 10 轮：腰檐 5.5 / 7.5、上檐 5.6 / 7.6，出檐加深）
+    # 腰檐半宽受两阙间距限制（中距 12 m → 两檐之间留 1.0 m）；左阙若移到 x −40，EAVE_X 可再放到 ~6.5
+    low = hip_solid(ub, 0, 0, EAVE_X, EAVE_X + 2.0, 29.6, 0.4, 28.0, inner=(2.5, 4.5))  # 腰檐
     y_core0 = low['y_top'] - 0.05
-    box(ub, (-2.7, y_core0, -4.7), (2.7, 34.25, 4.7), 'StoneDark')           # 上层阙楼
-    course(ub, 2.95, 4.95, 34.25, 34.85)                                      # 枋 D
+    box(ub, (-2.5, y_core0, -4.5), (2.5, 34.25, 4.5), 'StoneDark')           # 上层阙楼
+    course(ub, 2.8, 4.8, 34.25, 34.85)                                        # 枋 D
     for sx in (-1, 1):
         for sz in (-1, 1):
-            box(ub, (sx * 2.7 - 0.22, y_core0, sz * 4.7 - 0.22), (sx * 2.7 + 0.22, 34.25, sz * 4.7 + 0.22), 'Lacquer')
+            box(ub, (sx * 2.5 - 0.22, y_core0, sz * 4.5 - 0.22), (sx * 2.5 + 0.22, 34.25, sz * 4.5 + 0.22), 'Lacquer')
             if hi:   # 角上的小一斗二升（上层）
-                box(ub, (sx * 2.7 - 0.35, 33.8, sz * 4.7 - 0.35), (sx * 2.7 + 0.35, 34.25, sz * 4.7 + 0.35), 'Lacquer')
+                box(ub, (sx * 2.5 - 0.35, 33.8, sz * 4.5 - 0.35), (sx * 2.5 + 0.35, 34.25, sz * 4.5 + 0.35), 'Lacquer')
     if hi:
         for sx in (-1, 1):
             for z in (-1.6, 0.0, 1.6):
-                box(ub, (min(sx * 2.6, sx * 2.82), y_core0, z - 0.17), (max(sx * 2.6, sx * 2.82), 34.25, z + 0.17), 'Lacquer')
-    top = hip_solid(ub, 0, 0, 4.9, 6.9, 34.85, 0.45, 36.0)                     # 上檐
+                box(ub, (min(sx * 2.4, sx * 2.62), y_core0, z - 0.17), (max(sx * 2.4, sx * 2.62), 34.25, z + 0.17), 'Lacquer')
+    top = hip_solid(ub, 0, 0, 5.6, 7.6, 34.85, 0.45, 33.0)                     # 上檐（33°，脊顶仍在 ~40 m）
     if hi:
+        # 第 10 轮（终审 #1）：筒瓦垄停在檐口内 0.3 m、降到 Ø0.26，不再带六角瓦当；檐口是一道 Ø0.2 的串珠
         for sd in low['sides']:
-            tile_rolls(ub, sd, 0.92, 0.2)
+            tile_rolls_inset(ub, sd, 0.92, 0.13, 0.3)
         for sd in top['sides']:
-            tile_rolls(ub, sd, 0.92, 0.2)
+            tile_rolls_inset(ub, sd, 0.92, 0.13, 0.3)
+        bead_lip(ub, low, 0.1, 0.46)
+        bead_lip(ub, top, 0.1, 0.46)
         hip_ridges(ub, low, 0.42, 0.34)
         hip_ridges(ub, top, 0.46, 0.4)
     else:
         hip_ridges(ub, top, 0.46, 0.4)
     yr = top['y_top']
-    ridge(ub, (0, 0, 0), 'z', 6.9 - 4.9 + 0.35, yr - 0.45, 1.45, 0.62, RIDGE_LIFT, n_end=6 if hi else 3)
+    ridge(ub, (0, 0, 0), 'z', 7.6 - 5.6 + 0.35, yr - 0.45, 1.45, 0.62, RIDGE_LIFT, n_end=6 if hi else 3)
     return ub
 
 
-def _brackets(ub):
-    """斗拱层：四角一斗二升（每个面两朵，离角 1.3 m），长面（±x）正中一朵曲栱。
-    构件从墙里（面内 0.15）挑到外面；墙面 X=3.1 / Z=5.1，枋 C 外皮 4.4 / 6.4。"""
-    y_post, y_dou, y_gong, y_sheng, y_top = 25.2, 27.2, 27.9, 28.5, 29.0
+def tile_rolls_inset(ub, side, pitch, rr, inset, n_sec=3):
+    """第 10 轮：筒瓦垄（不带瓦当），下端停在檐口内 inset 米（沿坡），剪影上不出齿；两端按 45° 戗截短。"""
+    W, depth = side['W'], side['depth']
+    e, s, n, T0 = side['e'], side['s'], side['n'], side['T0']
+    k = max(1, int(round(W / pitch)))
+    step = W / k
+    sec = [(rr * math.cos(math.pi * i / n_sec), rr * math.sin(math.pi * i / n_sec)) for i in range(n_sec + 1)]
+    sec = [(sec[0][0], -0.04)] + sec[1:-1] + [(sec[-1][0], -0.04)]
+    for i in range(k):
+        t = step * (i + 0.5)
+        plan = min(t, W - t, depth) - (rr * 0.6 if min(t, W - t) < depth else 0.0)
+        L = plan / side['cos'] - inset
+        if L < 0.35:
+            continue
+        p0 = T0 + e * t + s * inset
+        extrude(ub, p0, p0 + s * L, n, sec, 'Tile')
 
-    def face_sets():
-        # (法线轴, 符号, 面半长, 墙面位置, 沿面的轴)
-        for sx in (-1, 1):
-            yield ('x', sx, 5.1, 3.1)
-        for sz in (-1, 1):
-            yield ('z', sz, 3.1, 5.1)
 
-    for ax, sg, half, wall in face_sets():
+def _bead_line(ub, a, b, c_off, r, pitch, slot):
+    """一根串珠：a→b 一条 Ø2r·0.8 的六棱细杆，杆上每 pitch 一颗 Ø2r 的六棱珠（沿杆长 1.4r）。"""
+    a, b = np.asarray(a, float), np.asarray(b, float)
+    d = b - a
+    L = float(np.linalg.norm(d))
+    d /= L
+    up = np.array([0, 1.0, 0])
+    hexa = lambda rad: [(rad * math.cos(math.pi / 3 * j), rad * math.sin(math.pi / 3 * j)) for j in range(6)]
+    extrude(ub, a + c_off, b + c_off, up, hexa(r * 0.8), slot)
+    m = max(1, int(L / pitch))
+    for i in range(m):
+        c = a + c_off + d * (L * (i + 0.5) / m)
+        extrude(ub, c - d * r * 0.7, c + d * r * 0.7, up, hexa(r), slot)
+
+
+def bead_lip(ub, roof, r, pitch, slot='Tile'):
+    """檐口串珠：沿 hip_solid 檐口四边（T 点 = 檐口上沿），珠心在檐口上沿往里 0.6r、往上 0.85r；两端各伸出 r 在角上搭接。"""
+    T = roof['T']
+    for i in range(4):
+        a, b = T[i], T[(i + 1) % 4]
+        e = (b - a) / np.linalg.norm(b - a)
+        inward = roof['sides'][i]['s'].copy()
+        inward[1] = 0.0
+        inward /= np.linalg.norm(inward)
+        off = inward * r * 0.6 + np.array([0, r * 0.85, 0])
+        _bead_line(ub, a - e * r, b + e * r, off, r, pitch, slot)
+
+
+def bead_rect(ub, X, Z, y, r, slot, pitch=0.46):
+    """水平一圈串珠（矩形 ±X、±Z，珠心在 y + r，贴在外皮上）。"""
+    C = [(-X, -Z), (X, -Z), (X, Z), (-X, Z)]
+    for i in range(4):
+        (x0, z0), (x1, z1) = C[i], C[(i + 1) % 4]
+        a, b = np.array([x0, y, z0]), np.array([x1, y, z1])
+        e = (b - a) / np.linalg.norm(b - a)
+        out = np.array([e[2], 0, -e[0]])            # 逆时针走，右手边朝外
+        if np.dot(out, (a + b) / 2) < 0:
+            out = -out
+        _bead_line(ub, a - e * r, b + e * r, out * (-r * 0.2) + np.array([0, r, 0]), r, pitch, slot)
+
+
+def _brackets_deep(ub, wx, wz, reach):
+    """第 10 轮：斗拱层缩进去（墙 ±wx / ±wz），构件挑出 reach 米，托住枋 C；墙是黑漆，读成一道暗影带。
+    形制同旧版：四角一斗二升（每面两朵），长面（±x）正中一朵曲栱。"""
+    y_post, y_dou, y_gong, y_sheng, y_top = 25.0, 27.2, 27.9, 28.5, 29.0
+    kd = reach / 1.05                              # 旧版挑出 1.05 m，按比例放深
+
+    for ax, sg, half, wall in [('x', sx, wz, wx) for sx in (-1, 1)] + [('z', sz, wx, wz) for sz in (-1, 1)]:
         an = np.array([sg, 0, 0.0]) if ax == 'x' else np.array([0, 0, sg * 1.0])
         au = np.array([0, 0, sg * 1.0]) if ax == 'x' else np.array([-sg * 1.0, 0, 0])   # 从外看向右
         av = np.array([0, 1.0, 0])
         o = an * wall
 
         def blk(u0, u1, y0, y1, d0, d1, slot='Lacquer', taper=0.0):
-            """面坐标的小块：u 沿面，d 出墙距离；taper>0 时底比顶窄（斗欹）。"""
-            P = [(u0 + taper, y0), (u1 - taper, y0)]
-            Q = [(u0, y1), (u1, y1)]
-            # 用 sweep2d：两站（左、右）
-            sweep2d(ub, [P[0], P[1]], [Q[0], Q[1]], o, au, av, an, d0, d1, slot)
+            sweep2d(ub, [(u0 + taper, y0), (u1 - taper, y0)], [(u0, y1), (u1, y1)], o, au, av, an, d0, d1 * kd, slot)
 
-        corners = (-(half - 1.3), half - 1.3)
+        L = 1.25 if half > 3.0 else 1.05           # 短面窄，栱也短一点（两朵不相碰）
+        ci = L + 0.1
+        corners = (-(half - ci), half - ci)
         mids = (0.0,) if ax == 'x' else ()
         for uc in corners:
-            blk(uc - 0.28, uc + 0.28, y_post, y_dou, -0.15, 0.48)                         # 短倚柱
-            blk(uc - 0.55, uc + 0.55, y_dou, y_dou + 0.32, -0.15, 0.92, taper=0.17)        # 栌斗：斗欹
-            blk(uc - 0.55, uc + 0.55, y_dou + 0.32, y_gong, -0.15, 0.92)                   # 斗耳
-            # 栱：两端下沿卷杀（向上收成弧）
-            L, hgt = 1.25, y_sheng - y_gong
+            blk(uc - 0.24, uc + 0.24, y_post, y_dou, -0.15, 0.48, 'LacquerBand')          # 短倚柱（细、暗，墙露得多）
+            blk(uc - 0.5, uc + 0.5, y_dou, y_dou + 0.32, -0.15, 0.92, taper=0.16)          # 栌斗：斗欹
+            blk(uc - 0.5, uc + 0.5, y_dou + 0.32, y_gong, -0.15, 0.92)                     # 斗耳
+            hgt = y_sheng - y_gong
             us = np.linspace(-L, L, 13)
             P = []
             for u in us:
-                k = max(0.0, (abs(u) - (L - 0.55)) / 0.55)
+                k = max(0.0, (abs(u) - (L - 0.5)) / 0.5)
                 P.append((uc + u, y_gong + hgt * 0.55 * (1 - math.sqrt(max(0.0, 1 - k * k)))))
             Q = [(uc + u, y_sheng) for u in us]
-            sweep2d(ub, P, Q, o, au, av, an, -0.15, 1.0, 'Lacquer')
+            sweep2d(ub, P, Q, o, au, av, an, -0.15, 1.0 * kd, 'Lacquer')                 # 栱：两端卷杀
             for su in (-1, 1):                                                          # 两升
-                uu = uc + su * (L - 0.3)
-                blk(uu - 0.3, uu + 0.3, y_sheng, y_sheng + 0.2, -0.15, 1.05, taper=0.08)
-                blk(uu - 0.3, uu + 0.3, y_sheng + 0.2, y_top, -0.15, 1.05)
+                uu = uc + su * (L - 0.28)
+                blk(uu - 0.27, uu + 0.27, y_sheng, y_sheng + 0.2, -0.15, 1.05, taper=0.07)
+                blk(uu - 0.27, uu + 0.27, y_sheng + 0.2, y_top, -0.15, 1.05)
         for uc in mids:                                                                 # 曲栱
-            blk(uc - 0.25, uc + 0.25, y_post, y_dou + 0.1, -0.15, 0.45)
-            blk(uc - 0.5, uc + 0.5, y_dou + 0.1, y_dou + 0.4, -0.15, 0.85, taper=0.15)
-            blk(uc - 0.5, uc + 0.5, y_dou + 0.4, y_dou + 0.68, -0.15, 0.85)
-            L, th = 1.75, 0.36
-            us = np.linspace(-L, L, 17)
+            blk(uc - 0.22, uc + 0.22, y_post, y_dou + 0.1, -0.15, 0.45, 'LacquerBand')
+            blk(uc - 0.45, uc + 0.45, y_dou + 0.1, y_dou + 0.4, -0.15, 0.85, taper=0.14)
+            blk(uc - 0.45, uc + 0.45, y_dou + 0.4, y_dou + 0.68, -0.15, 0.85)
+            Lm, th = 1.5, 0.34
+            us = np.linspace(-Lm, Lm, 17)
             P, Q = [], []
             for u in us:
-                yc = y_dou + 0.55 + 0.95 * (abs(u) / L) ** 1.6
+                yc = y_dou + 0.55 + 0.95 * (abs(u) / Lm) ** 1.6
                 P.append((uc + u, yc - th / 2))
                 Q.append((uc + u, min(yc + th / 2, y_top + 0.05)))
-            # 中段压在栌斗上：P 不低于斗耳顶
-            sweep2d(ub, P, Q, o, au, av, an, -0.15, 0.95, 'Lacquer')
+            sweep2d(ub, P, Q, o, au, av, an, -0.15, 0.95 * kd, 'Lacquer')
             for su in (-1, 1):
-                uu = uc + su * (L - 0.15)
-                blk(uu - 0.22, uu + 0.22, y_top - 0.42, y_top, -0.15, 1.0)
+                uu = uc + su * (Lm - 0.15)
+                blk(uu - 0.2, uu + 0.2, y_top - 0.42, y_top, -0.15, 1.0)
 
 
 def build(lod=0):
