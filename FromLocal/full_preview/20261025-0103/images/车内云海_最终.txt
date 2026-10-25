@@ -1,0 +1,31 @@
+Journey t=152.243 seg=3
+Dispatcher t=152.243 active=3
+Cloud clock=152.243 origin=(0.00, 94.56, 1611.56, 1.00)
+Sky cube=Sky_Overcast_Night_2048x1024 (UnityEngine.Cubemap) stars=0
+Overlay=(0.00, 0.00, 0.00, 0.00) sea=5.116325
+Editor smooth frame ms=11.16
+Camera FullPreview_Capture enabled=False pos=(0.55, 1.70, 2.05)
+Camera [1] Local Player/PlayerController/DestkopTrackingData/Head/PlayerCamera/StackedCamera : Cam_InternalUI enabled=True pos=(0.20, 2.38, -2.30)
+Camera [1] Local Player/PlayerController/DestkopTrackingData/Head/PlayerCamera enabled=True pos=(0.20, 2.38, -2.30)
+Camera Lanbai/VRCWorld/ReferenceCamera enabled=False pos=(0.20, 2.24, -1.40)
+Root ClientSimPlayerData(Clone) active=True
+Root Lanbai active=True
+Root DeliveredGate active=True
+Root Lanbai_SkyPresets active=True
+Root Lanbai_SkyDriver_Acts1to3 active=True
+Root Lanbai_SkyDriver_Acts11to12 active=True
+Root Lanbai_Stars_BSC5 active=True
+Root Lanbai_Overlay active=True
+Root Lanbai_Inside active=True
+Root Act06_Driver active=True
+Root R_Act07 active=True
+Root Act07_Driver active=True
+Root R_StarSea active=False
+Root Lanbai_Act09Driver active=True
+Root Lanbai_Grades active=True
+Root Gate_Driver active=True
+Root R_Dawn active=False
+Root R_DawnRing active=False
+Root Lanbai_PoemDriver active=True
+Root Lanbai_Board active=True
+Root FullPreview_Capture active=True

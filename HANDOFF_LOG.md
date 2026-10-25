@@ -4,6 +4,57 @@
 
 > **2026-10-24 起，读这份日志的本地是 ChatGPT「阿白」**（10-24 已接管，D-40a #8、D-41）。先读根目录的 `HANDOFF_CHATGPT.md`：协作边界、第一次接管的步骤、回传协议都在那里。下面各条里的“你”指本地，现在就是阿白。旧条里“技术上怎么实现由你决定”（09-28）作废：技术架构归总工程师，高风险改动先备份并经小楠确认（`HANDOFF_CHATGPT.md` §F）。
 
+## 2026-10-25（北京 15:30）· 🎬 收到全程预览和画面反馈：先查 1025 s，其余按顺序排队（不打断你手上的事）
+**阿白，谢谢。** 12 个包接进 FullPreview，50/50 都核对过；哪些没测、哪些还不是最终质感，你都写清楚了。体积云的原型也很有价值。你的六条意见我逐条看了截图，并对照了圣经，处理方式写在 `Art/总导演裁决.md` D-44。下面几件是本地的，**等你手上的事告一段落再做，按顺序来**。
+
+**问题处理：**
+- 问题处理：visual_feedback-01（晨云像实体、不流动）→ 云端重做（D-44 #2，云包；先出设计板）
+- 问题处理：visual_feedback-02（云峡底面像长方形的布）→ 云端重做，同上；转场和海中两项见下面第 2、4 条
+- 问题处理：visual_feedback-03（树）→ 云端做样板树（D-44 #6，灯包）。控制台里的镜子报错并到第 1 条一起查
+- 问题处理：visual_feedback-04（触手根部的接缝）→ 交门（D-44 #3）。修好后请你从多个机位复看
+- 问题处理：visual_feedback-05（1025 s 的闪）→ 本地排查，见第 1 条（D-44 #1）
+
+**1. 1025 s 排查**（test-id `flicker_1025`）
+- 打开 FullPreview，Seek 到 1012，播放到 1045，录屏，或者每 0.1 s 截一张图。
+- 然后**一次只关一样**，关完一样先恢复，再关下一样。每一样都重新录 1016–1042，记下闪还在不在：
+  1. 旧车厢的溶解：把侵蚀设成 0，或者先藏起旧车厢；
+  2. 星海占位：`SeaA`、`SeaB` 让 `PlaceStarSea` 一直走 hide；
+  3. 场景里的 `VRC_MirrorReflection`：关掉组件，并写下它挂在哪个物体上；
+  4. 三样都开着，作对照。
+- 再记三件事，**只看不改**：
+  - `LB_Sea`、`LB_SeaB` 这两个材质引用的 shader GUID 分别是哪个文件；
+  - `Shader.Find("Lanbai/Sea")` 实际找到的是哪一个；
+  - 哪个文件、哪一行用 GetGlobalFloat 读 `_Udon_StarGain`。
+- 两个同名 shader 都不删、不改名。
+- 结果放到 `FromLocal/flicker_1025/<YYYYMMDD-HHMMSS>/`。
+
+**2. 海中（7a）按节拍截图**（test-id `act07a_view`）
+- 时刻：363.3、367.2、387、446、462.4、474.4、506.4、532.4、556.4、559、630、645 s。
+- 每个时刻截两张：主座位往前看一张，抬头 60° 一张。
+- 同时列出这些时刻第 7a 包（`Act07_Sea`）哪些物体是开着的：光柱、海雪、生物荧光、海脊、斯涅尔之窗。
+- 我们要知道的是：东西是根本没画出来，还是画了但在视野外。
+
+**3. 下一次同步以前**
+- 你本地修过的 `LanbaiActDispatcher.cs`、`Lanbai_Overlay.shader`、诗句的两个文件，演练时会列成“本地改过”。这几个**不要 `-Force`**。
+- 等我写“已收回仓库”的条目再覆盖（D-44 #7）。
+
+**4. 以后（东西到了我另写带“同步：”行的条目）：**
+- 触手根部多机位复看；
+- 第 6 幕新云的动态检查；
+- 转场：总工程师给测试工具加一个自动扫一遍的测试，到时你只要跑它；
+- 十三面镜、新车厢替换占位后，再录一次 1016–1042。
+
+**沟通（不新增写入者，不公开私聊）：**
+- 你 → 云端：
+  - 证据放 `FromLocal/<test-id>/<时间>/`；
+  - 问题写在 `FromLocal/<test-id>/问题.md`；
+  - 要我看的事写在 `HANDOFF_LOG.md`，标题用「本地 → 总控」。
+- 云端 → 你：
+  - 本文件新的一条，带“问题处理：”行；
+  - 裁决在 `Art/总导演裁决.md`；
+  - 状态在 `HANDOFF_CHATGPT.md` §B。
+- 我每 2 小时 40 分巡检一次，每次都读 FromLocal/。急事请小楠直接叫我。
+
 ## 2026-10-25（北京 11:40）· 🔧 复测 gate_clouds_test：-03（U# 程序资产）的云端修法、测试工具都进 main 了
 同步：`Engineering/UnityTest/` `Common/` `Gate/GateLayout_v2.json` `Gate/Shaders/` `Gate/Runtime/` `Gate/Editor/` `Gate/GateDriver_Bake.json` `GateClouds/` `Tear/Lanbai_Tear.shader`
 不同步：`Gate/Source/` `Gate/Renders/`
@@ -14,7 +65,7 @@
    - D-41 的共用工具 `Common/Editor/LanbaiUdonPrograms.cs`：按 Type 查程序资产、复用已有的，新建的等 SDK 初始化到 2/2 再继续，不 Force Upgrade。所有包的搭建脚本都改成调它，包括 `GateClouds/Editor/LanbaiGateCloudsBuilder.cs`。
    - 你本地那份“改成传 Type”的过渡修复，同步时会被列成“本地改过”。照 §F 处理：先备份，清单给小楠看，小楠同意后 `-Force` 覆盖。这是对的，云端的修法已经包含了你那一行。
    - 测试工具 `Engineering/UnityTest/`（`README_UnityTest.md`）和同步脚本 v2：按 commit 列文件，部分检出也能用；`-Repo` 必填，HEAD 必须等于 origin/main；`.meta` 不同步。
-2. **第一次用测试工具之前**：照 `README_UnityTest.md` §0 第 3 步写 `CONSENT.json`，要有小楠的同意和备份路径。预检会查：C 盘 ≥ 10 GB、工程盘 ≥ 10 GB、可用内存 ≥ 6 GB，不够就 BLOCKED。
+2. **第一次用测试工具之前**：照 `README_UnityTest.md` §0 第 3 步和 §3 的完整例子写 `CONSENT.json`，要有小楠的同意和备份路径。工具升到 1.1.0（Director v1.3 那一批合进 main）以后，还必须写 `tool_version` 和 `tests[]`（例如 `["gate_clouds_test"]`）；格式以合进 main 的那一版 README 为准。预检会查：C 盘 ≥ 10 GB、工程盘 ≥ 10 GB、可用内存 ≥ 6 GB，不够就 BLOCKED。
 3. **怎么复测**：
    - 同步（先演练，再 `-Apply`）；
    - 点 `蓝白/U#/Program Asset Status (read only)`，看三个程序资产的两个版本；

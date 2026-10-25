@@ -1,0 +1,11 @@
+{
+    "realtime": 45.148284912109378,
+    "clockT": 160.36695861816407,
+    "cloudT": 160.36695861816407,
+    "shaderT": 160.36695861816407,
+    "gateZ": 1132.1142578125,
+    "tearHide": 0.0,
+    "localPlayer": true,
+    "skyFromSky": true,
+    "enabledArmRenderers": 168
+}

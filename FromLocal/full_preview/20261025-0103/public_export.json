@@ -1,0 +1,13 @@
+{
+  "source_head": "d52385d2cbb83a2cfb01b9c6a62f1819902140d2",
+  "image_pixels_changed": false,
+  "text_normalized": "UTF-8 LF; local paths redacted",
+  "excluded": [
+    "private settings",
+    "credentials",
+    "complete scenes",
+    "HDRI",
+    "Library"
+  ],
+  "created": "2026-10-25T01:09:00-04:00"
+}

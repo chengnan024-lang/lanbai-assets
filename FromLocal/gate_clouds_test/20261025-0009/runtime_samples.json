@@ -1,0 +1,85 @@
+{
+  "request": "gate_continue_20261025_final_preview",
+  "samples": [
+    {
+      "realtime": 9.510316848754883,
+      "clockT": 155.89602661132812,
+      "cloudT": 155.89602661132812,
+      "shaderT": 155.89602661132812,
+      "gateZ": 1395.9725341796875,
+      "tearHide": 0.0,
+      "localPlayer": true,
+      "skyFromSky": true,
+      "enabledArmRenderers": 168
+    },
+    {
+      "realtime": 30.599058151245117,
+      "clockT": 175.2808380126953,
+      "cloudT": 175.2808380126953,
+      "shaderT": 175.2808380126953,
+      "gateZ": 251.95074462890625,
+      "tearHide": 0.0,
+      "localPlayer": true,
+      "skyFromSky": true,
+      "enabledArmRenderers": 192
+    },
+    {
+      "realtime": 33.40873718261719,
+      "clockT": 178.08908081054688,
+      "cloudT": 178.08908081054688,
+      "shaderT": 178.08908081054688,
+      "gateZ": 86.21836853027344,
+      "tearHide": 0.0,
+      "localPlayer": true,
+      "skyFromSky": true,
+      "enabledArmRenderers": 192
+    },
+    {
+      "realtime": 36.216861724853516,
+      "clockT": 180.90078735351562,
+      "cloudT": 180.90078735351562,
+      "shaderT": 180.90078735351562,
+      "gateZ": -79.6795425415039,
+      "tearHide": 1.0,
+      "localPlayer": true,
+      "skyFromSky": true,
+      "enabledArmRenderers": 0
+    },
+    {
+      "realtime": 39.027103424072266,
+      "clockT": 152.44454956054688,
+      "cloudT": 152.44454956054688,
+      "shaderT": 152.44454956054688,
+      "gateZ": 1599.666259765625,
+      "tearHide": 0.0,
+      "localPlayer": true,
+      "skyFromSky": true,
+      "enabledArmRenderers": 168
+    },
+    {
+      "realtime": 41.8419075012207,
+      "clockT": 155.26683044433594,
+      "cloudT": 155.26683044433594,
+      "shaderT": 155.26683044433594,
+      "gateZ": 1433.10546875,
+      "tearHide": 0.0,
+      "localPlayer": true,
+      "skyFromSky": true,
+      "enabledArmRenderers": 168
+    },
+    {
+      "realtime": 44.67040252685547,
+      "clockT": 158.06680297851562,
+      "cloudT": 158.06680297851562,
+      "shaderT": 158.06680297851562,
+      "gateZ": 1267.861083984375,
+      "tearHide": 0.0,
+      "localPlayer": true,
+      "skyFromSky": true,
+      "enabledArmRenderers": 168
+    }
+  ],
+  "clocks_synchronized": true,
+  "hidden_sample_observed": true,
+  "loop_observed": true
+}

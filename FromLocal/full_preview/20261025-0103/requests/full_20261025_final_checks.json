@@ -1,0 +1,221 @@
+{
+  "steps": [
+    {
+      "op": "refresh"
+    },
+    {
+      "target": "Lanbai.Tests.LB_FullAssembly.Validate",
+      "op": "call"
+    },
+    {
+      "target": "Lanbai.Tests.LB_FullAssembly.Save",
+      "op": "call"
+    },
+    {
+      "seconds": 6,
+      "op": "play"
+    },
+    {
+      "arg": "113.8",
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Seek"
+    },
+    {
+      "seconds": 0.25,
+      "op": "wait"
+    },
+    {
+      "target": "Lanbai.Tests.LB_FullAssembly.RuntimeState",
+      "op": "call"
+    },
+    {
+      "arg": "177.8",
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Seek"
+    },
+    {
+      "seconds": 0.25,
+      "op": "wait"
+    },
+    {
+      "target": "Lanbai.Tests.LB_FullAssembly.RuntimeState",
+      "op": "call"
+    },
+    {
+      "arg": "180.1",
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Seek"
+    },
+    {
+      "seconds": 0.25,
+      "op": "wait"
+    },
+    {
+      "target": "Lanbai.Tests.LB_FullAssembly.RuntimeState",
+      "op": "call"
+    },
+    {
+      "arg": "248.4",
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Seek"
+    },
+    {
+      "seconds": 0.25,
+      "op": "wait"
+    },
+    {
+      "target": "Lanbai.Tests.LB_FullAssembly.RuntimeState",
+      "op": "call"
+    },
+    {
+      "arg": "250",
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Seek"
+    },
+    {
+      "seconds": 0.25,
+      "op": "wait"
+    },
+    {
+      "target": "Lanbai.Tests.LB_FullAssembly.RuntimeState",
+      "op": "call"
+    },
+    {
+      "arg": "254",
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Seek"
+    },
+    {
+      "seconds": 0.25,
+      "op": "wait"
+    },
+    {
+      "target": "Lanbai.Tests.LB_FullAssembly.RuntimeState",
+      "op": "call"
+    },
+    {
+      "arg": "260",
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Seek"
+    },
+    {
+      "seconds": 0.25,
+      "op": "wait"
+    },
+    {
+      "target": "Lanbai.Tests.LB_FullAssembly.RuntimeState",
+      "op": "call"
+    },
+    {
+      "arg": "363.3",
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Seek"
+    },
+    {
+      "seconds": 0.25,
+      "op": "wait"
+    },
+    {
+      "target": "Lanbai.Tests.LB_FullAssembly.RuntimeState",
+      "op": "call"
+    },
+    {
+      "arg": "363.8",
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Seek"
+    },
+    {
+      "seconds": 0.25,
+      "op": "wait"
+    },
+    {
+      "target": "Lanbai.Tests.LB_FullAssembly.RuntimeState",
+      "op": "call"
+    },
+    {
+      "arg": "922.4",
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Seek"
+    },
+    {
+      "seconds": 0.25,
+      "op": "wait"
+    },
+    {
+      "target": "Lanbai.Tests.LB_FullAssembly.RuntimeState",
+      "op": "call"
+    },
+    {
+      "arg": "992.1",
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Seek"
+    },
+    {
+      "seconds": 0.25,
+      "op": "wait"
+    },
+    {
+      "target": "Lanbai.Tests.LB_FullAssembly.RuntimeState",
+      "op": "call"
+    },
+    {
+      "arg": "1149.4",
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Seek"
+    },
+    {
+      "seconds": 0.25,
+      "op": "wait"
+    },
+    {
+      "target": "Lanbai.Tests.LB_FullAssembly.RuntimeState",
+      "op": "call"
+    },
+    {
+      "arg": "1240",
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Seek"
+    },
+    {
+      "seconds": 0.25,
+      "op": "wait"
+    },
+    {
+      "target": "Lanbai.Tests.LB_FullAssembly.RuntimeState",
+      "op": "call"
+    },
+    {
+      "arg": "145",
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Seek"
+    },
+    {
+      "seconds": 1,
+      "op": "wait"
+    },
+    {
+      "arg": "云体_最终_1",
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Capture"
+    },
+    {
+      "seconds": 4,
+      "op": "wait"
+    },
+    {
+      "arg": "云体_最终_2",
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Capture"
+    },
+    {
+      "arg": "车内云海_最终",
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Capture"
+    },
+    {
+      "target": "Lanbai.Tests.LanbaiPreviewPanel.CloudLoop",
+      "op": "call"
+    }
+  ],
+  "id": "full_20261025_final_checks"
+}

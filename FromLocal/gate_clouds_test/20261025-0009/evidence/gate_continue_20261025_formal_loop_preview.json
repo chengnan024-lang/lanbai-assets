@@ -1,0 +1,42 @@
+{
+    "id": "gate_continue_20261025_formal_loop_preview",
+    "state": "done",
+    "step": 13,
+    "total": 13,
+    "started": "2026-10-25 00:11:44",
+    "finished": "2026-10-25 00:12:30",
+    "error": "",
+    "log": [
+        "00:11:44 收到请求，共 13 步",
+        "00:11:44 进入 Play",
+        "00:11:46 （脚本重新加载，接着做第 1 步）",
+        "00:11:48 已经在 Play 里，等 5 秒",
+        "00:12:16 调用 Lanbai.Tests.LB_GateContinuation.ReadPlayState",
+        "00:12:16   用时 0.0 秒",
+        "00:12:16   返回内容写在 LanbaiRemote/results/gate_continue_20261025_formal_loop_preview.step3.txt",
+        "00:12:18 调用 Lanbai.Tests.LB_GateContinuation.ReadPlayState",
+        "00:12:18   用时 0.0 秒",
+        "00:12:18   返回内容写在 LanbaiRemote/results/gate_continue_20261025_formal_loop_preview.step5.txt",
+        "00:12:21 调用 Lanbai.Tests.LB_GateContinuation.ReadPlayState",
+        "00:12:21   用时 0.0 秒",
+        "00:12:21   返回内容写在 LanbaiRemote/results/gate_continue_20261025_formal_loop_preview.step7.txt",
+        "00:12:24 调用 Lanbai.Tests.LB_GateContinuation.ReadPlayState",
+        "00:12:24   用时 0.0 秒",
+        "00:12:24   返回内容写在 LanbaiRemote/results/gate_continue_20261025_formal_loop_preview.step9.txt",
+        "00:12:27 调用 Lanbai.Tests.LB_GateContinuation.ReadPlayState",
+        "00:12:27   用时 0.0 秒",
+        "00:12:27   返回内容写在 LanbaiRemote/results/gate_continue_20261025_formal_loop_preview.step11.txt",
+        "00:12:30 调用 Lanbai.Tests.LB_GateContinuation.ReadPlayState",
+        "00:12:30   用时 0.0 秒",
+        "00:12:30   返回内容写在 LanbaiRemote/results/gate_continue_20261025_formal_loop_preview.step13.txt",
+        "00:12:30 全部完成"
+    ],
+    "files": [
+        "LanbaiRemote/results/gate_continue_20261025_formal_loop_preview.step3.txt",
+        "LanbaiRemote/results/gate_continue_20261025_formal_loop_preview.step5.txt",
+        "LanbaiRemote/results/gate_continue_20261025_formal_loop_preview.step7.txt",
+        "LanbaiRemote/results/gate_continue_20261025_formal_loop_preview.step9.txt",
+        "LanbaiRemote/results/gate_continue_20261025_formal_loop_preview.step11.txt",
+        "LanbaiRemote/results/gate_continue_20261025_formal_loop_preview.step13.txt"
+    ]
+}

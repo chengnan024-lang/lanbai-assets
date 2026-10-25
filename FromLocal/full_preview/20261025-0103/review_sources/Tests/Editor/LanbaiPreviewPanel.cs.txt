@@ -1,0 +1,55 @@
+#if UNITY_EDITOR
+using System;
+using UnityEngine;
+using UnityEditor;
+using UdonSharpEditor;
+namespace Lanbai.Tests {
+ public class LanbaiPreviewPanel:EditorWindow {
+  float seek=145, current=-1; bool loop; double next; float pending=-1; double pendingAt;
+  [MenuItem("蓝白/完整旅程预览")]
+  public static void Open() {
+   var all=Resources.FindObjectsOfTypeAll<LanbaiPreviewPanel>();
+   var w=all.Length>0?all[0]:CreateInstance<LanbaiPreviewPanel>();
+   w.titleContent=new GUIContent("蓝白 · 旅程进度");w.minSize=new Vector2(310,360);
+   w.position=new Rect(1950,110,390,420);w.ShowUtility();
+  }
+  public static void CloudLoop() { Open();var w=Resources.FindObjectsOfTypeAll<LanbaiPreviewPanel>()[0];w.Jump(140);w.loop=true;LB_FullAssembly.Overview(); }
+  void Update() {
+   if(EditorApplication.timeSinceStartup<next)return;next=EditorApplication.timeSinceStartup+.25;
+   if(EditorApplication.isPlaying) {
+    var j=UnityEngine.Object.FindObjectOfType<Lanbai.LB_Journey>();
+    if(j!=null) {
+     var u=UdonSharpEditorUtility.GetBackingUdonBehaviour(j);var v=u.GetProgramVariable("dbgT");if(v is float f)current=f;
+     if(pending>=0 && EditorApplication.timeSinceStartup>pendingAt){LB_FullAssembly.Seek(pending.ToString(System.Globalization.CultureInfo.InvariantCulture));pending=-1;}
+     if(loop && current>173)LB_FullAssembly.Seek("140");
+    }
+   }else current=-1;
+   Repaint();
+  }
+  void Jump(float t) {
+   seek=t;loop=false;
+   if(EditorApplication.isPlaying)LB_FullAssembly.Seek(t.ToString(System.Globalization.CultureInfo.InvariantCulture));
+   else {pending=t;pendingAt=EditorApplication.timeSinceStartup+5;EditorApplication.isPlaying=true;}
+  }
+  void OnGUI() {
+   EditorGUILayout.LabelField("蓝白 · 完整旅程预览",EditorStyles.boldLabel);
+   EditorGUILayout.LabelField(EditorApplication.isCompiling?"正在编译…":EditorApplication.isPlaying?"播放中 · "+Mathf.Max(0,current).ToString("F1")+" 秒":"已组装 · 可开始播放");
+   EditorGUILayout.HelpBox("已接入门、门内、晨景、海中、星海、天空和多语言字幕。云海使用独立流动与柔和材质。",MessageType.Info);
+   EditorGUILayout.HelpBox("最终公交、宫殿、暮景及镜面白段资源尚未交付；这些段落保留已有简版。",MessageType.None);
+   GUI.enabled=!EditorApplication.isCompiling;
+   EditorGUILayout.BeginHorizontal();if(GUILayout.Button("从头播放",GUILayout.Height(28)))Jump(.1f);if(GUILayout.Button("停止",GUILayout.Height(28)))EditorApplication.isPlaying=false;EditorGUILayout.EndHorizontal();
+   EditorGUILayout.BeginHorizontal();if(GUILayout.Button("云海与门"))Jump(145);if(GUILayout.Button("门内"))Jump(200);if(GUILayout.Button("晨景"))Jump(280);EditorGUILayout.EndHorizontal();
+   EditorGUILayout.BeginHorizontal();if(GUILayout.Button("海中"))Jump(400);if(GUILayout.Button("暮景"))Jump(950);if(GUILayout.Button("星海"))Jump(1030);EditorGUILayout.EndHorizontal();
+   seek=EditorGUILayout.Slider("跳到（秒）",seek,0,1245);
+   if(GUILayout.Button("播放这一段"))Jump(seek);
+   EditorGUILayout.BeginHorizontal();
+   if(GUILayout.Button("车外视角"))LB_FullAssembly.Overview();
+   if(GUILayout.Button("回到车内"))LB_FullAssembly.InsideView();
+   EditorGUILayout.EndHorizontal();
+   bool newLoop=EditorGUILayout.Toggle("循环看云海（140–173秒）",loop);
+   if(newLoop&&!loop){Jump(140);loop=true;}else loop=newLoop;
+   GUI.enabled=true;
+  }
+ }
+}
+#endif

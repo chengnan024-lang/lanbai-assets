@@ -1,0 +1,17 @@
+[01:03:09.093] [远程小助手] 开始处理请求 full_20261025_final_checks
+[01:03:12.370] ══ 远程小助手已加载 · Unity 2022.3.22f1 · 编辑模式 ══
+[01:03:18.263] ══ 远程小助手已加载 · Unity 2022.3.22f1 · 编辑模式 ══
+[01:03:19.782] [信息] [01:03:19.782][ClientSimMain] Starting ClientSim
+[01:03:19.834] [信息] [01:03:19.834][ClientSimPlayerManager] Assigning player id 1
+[01:03:19.835] [信息] [01:03:19.835][ClientSimPlayerManager] Player 1 is now master
+[01:03:20.766] [信息] UdonManager.OnSceneLoaded took '0.153'
+[01:03:20.796] [信息] There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+[01:03:20.933] [信息] There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+[01:03:21.412] [信息] There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+[01:03:21.422] [信息] [01:03:21.422][ClientSimPlayerController] Moving player to (0.200, 0.640, -2.400) and rotation (0.000, 0.000, 0.000) (fromPlaySpace=False)
+[01:03:21.562] [警告] The character used for Underline is not available in font asset [Lanbai_SerifSC_Regular SDF].
+[01:03:21.563] [警告] The character used for Underline is not available in font asset [Lanbai_SerifJP_Regular SDF].
+[01:03:21.612] [信息] [01:03:21.612][ClientSimMain] ClientSim Initialized
+[01:03:56.371] [远程小助手] 请求 full_20261025_final_checks 完成
+[01:03:56.378] [警告] The character used for Underline is not available in font asset [Lanbai_SerifSC_Regular SDF].
+[01:04:22.481] [警告] The character used for Underline is not available in font asset [Lanbai_SerifSC_Regular SDF].

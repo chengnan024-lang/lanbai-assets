@@ -1,0 +1,2 @@
+Scene bindings valid: 64 gate instances, 38 cards, 10 tower layers, all 3 backing Udon behaviours, legacy renderers disabled; HDR reference camera. skyFromSky=True; sceneDirty=True
+Saved GateTest only.
