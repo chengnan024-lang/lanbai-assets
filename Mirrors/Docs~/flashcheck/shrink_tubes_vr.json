@@ -1,0 +1,29 @@
+{
+ "label": "tubes_vr",
+ "frames": 300,
+ "fps": 30.0,
+ "tile_px": 9,
+ "max_general_flashes_in_any_1s": 0.5,
+ "max_red_flashes_in_any_1s": 0.0,
+ "wcag_2_3_1": "PASS",
+ "lanbai_flash_rule": "PASS",
+ "max_rise_ev_0.25s": 0.0,
+ "max_rise_ev_1s": 0.0,
+ "max_rise_ev_2s": -0.27,
+ "max_fall_ev_0.25s": 0.32,
+ "peak_apl_luma": 222,
+ "mean_apl_luma": 141,
+ "lanbai_ramp_law": "PASS",
+ "case": "tubes_vr",
+ "view": [
+  0,
+  37
+ ],
+ "Lwhite": 0.74,
+ "L11": 0.012,
+ "t": [
+  1177.46,
+  1187.4266666666576
+ ],
+ "note": "synthetic act 11 (uniform L 0.012) under the driver shrink lobes; Overlay v2 LeadAt maths"
+}

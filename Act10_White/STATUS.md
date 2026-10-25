@@ -1,0 +1,1 @@
+2026-10-25 · 终审 W1–W5、M-9、M-10 改完：LanbaiOverlayWindow {1144.11, 1186.46}（W1，请重新 Generate Dispatcher），黑纱按 Lb 1.0 建（W2），W3 / W5，需要 Director v1.3（W4）；`join_check.py` 全 PASS；main 上的 `spawn_fade_sim.py` 换成本驱动逻辑后 1120–1200 s 801 个进场 0 个不过。详情 `README_Act10.md` §2。
