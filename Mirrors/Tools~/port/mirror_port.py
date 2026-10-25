@@ -5,7 +5,8 @@ Lanbai/BronzeMirror、Lanbai/MirrorStars、Lanbai/MirrorDust 的数学（同名�
     from mirror_port import frame
     codes, info = frame(t, yaw, pitch, w=960, h=540)       # sRGB 码值 (h, w, 3)，info = 量出的数
 
-不是 Unity：没有车厢（标准台的车壳另合成）、镜面没有抛光纹和贴图、镜背只有剪影（它在星空前本来就是暗剪影）。
+不是 Unity：没有车厢（标准台的车壳另合成）、反射没有粗糙度模糊（抛光纹在 Unity 里只改光滑度）。
+镜背、镜缘乳钉、铭文 / 栉齿 / 锯齿 / 流云带读真贴图（back_port.py，r3 #6）。
 """
 import json, math, os, sys
 import numpy as np
@@ -17,6 +18,7 @@ sys.path.insert(0, os.path.join(REPO, 'Sky', 'Tools~', 'render'))
 import act09_renders as A9                      # noqa: E402  (state(t), the sky material and globals)
 import sky_cpu as S, grade as G, stars_cpu as SC   # noqa: E402
 from shader_cpu import camera_dirs              # noqa: E402
+import back_port as BP                           # noqa: E402
 
 SCH = json.load(open(os.path.join(REPO, 'Mirrors', 'MirrorSchedule.json'), encoding='utf-8'))
 WHITE = json.load(open(os.path.join(REPO, 'Act10_White', 'WhiteSchedule.json'), encoding='utf-8'))
@@ -52,6 +54,17 @@ def lin_knots(kn, t):
 
 def mirror_state(m, t):
     """what LanbaiMirrorsDriver computes for mirror m at time t (None = renderer off)."""
+    ov = OVERRIDE.get(m['index'])                                # lookdev only (render_r6.py): freeze dissolve / appear
+    st = _mirror_state(m, t)
+    if st is not None and ov:
+        st.update(ov)
+    return st
+
+
+OVERRIDE = {}
+
+
+def _mirror_state(m, t):
     a0, a1 = m['active']
     if not (a0 <= t <= a1):
         return None
@@ -104,6 +117,41 @@ def pulse_ev(t):
     return ev
 
 
+def white_sat(t):
+    if not (WHITE['labels']['mirror12'] <= t < WHITE['labels']['F16_cut2']):
+        return 0.0
+    return lin_knots(WHITE['white_sat']['knots'], t)
+
+
+def white_bloom(t):
+    if not (WHITE['labels']['mirror12'] <= t < WHITE['labels']['F16_cut2']):
+        return 0.0
+    return lin_knots(WHITE['white_bloom']['knots'], t)
+
+
+_GD = None
+
+
+def grade_white(img, sid, ev, sat_w, bloom_w):
+    """G.grade with the WHITE_SAT (saturation -30) and WHITE_BLOOM (intensity 12, threshold 0.8, knee 0.8, diffusion 9)
+    helper volumes blended in by weight, the way PPv2 interpolates a global volume's overridden parameters (r3 C3)."""
+    global _GD
+    if _GD is None:
+        _GD = {e['id']: e for e in json.load(open(os.path.join(REPO, 'Grading', 'Tools~', 'compile_check', 'dump.json'), encoding='utf-8'))['entries']}
+    if sat_w <= 0 and bloom_w <= 0:
+        return G.grade(img, sid, ev=ev)
+    p = G.profile(sid)
+    p['postExposure'] = p.get('postExposure', 0) + ev
+    p['saturation'] = p.get('saturation', 0) * (1 - sat_w) + _GD['WHITE_SAT']['saturation'] * sat_w
+    bp = G.bloom_params(sid)
+    wb = _GD['WHITE_BLOOM']
+    for k, kk in (('bloomIntensity', 'intensity'), ('bloomThreshold', 'threshold'), ('bloomSoftKnee', 'softKnee'), ('bloomDiffusion', 'diffusion')):
+        bp['bloom'][kk] = bp['bloom'][kk] * (1 - bloom_w) + wb[k] * bloom_w
+    x = img.astype(np.float64)
+    x = x + G.LD.bloom_layer(x, G.LD.full(bp))
+    return G.E.codes(x, p, G.E.bake_lut(p))
+
+
 def white_ev(t):
     return lin_knots(WHITE['exposure']['dEV_knots'], t) if t < WHITE['labels']['F16_cut2'] else 0.0
 
@@ -144,17 +192,40 @@ def sky(dirs, mat, gl):
     return S.render(dirs.reshape(-1, 3).astype(np.float32), mat, gl).reshape(dirs.shape)
 
 
+_BLUR = {}
+
+
+def sky_broad(dirs, mat, gl, key):
+    """MirrorSky(V, 0.0): the roughest lobe (~2 rad) = a heavily blurred sky (64 x 32 equirect, sigma 0.6 rad)."""
+    if key not in _BLUR:
+        from scipy.ndimage import gaussian_filter
+        Wq, Hq = 64, 32
+        lon = (np.arange(Wq) + 0.5) / Wq * 2 * np.pi - np.pi; lat = np.pi / 2 - (np.arange(Hq) + 0.5) / Hq * np.pi
+        LO, LA = np.meshgrid(lon, lat)
+        dd = np.stack([np.cos(LA) * np.sin(LO), np.sin(LA), np.cos(LA) * np.cos(LO)], -1)
+        L = sky(dd, mat, gl) @ np.array([0.2126, 0.7152, 0.0722])
+        sg = 0.6 / (2 * np.pi) * Wq
+        _BLUR.clear(); _BLUR[key] = gaussian_filter(np.pad(L, ((0, 0), (Wq, Wq)), mode='wrap'), sg, mode='nearest')[:, Wq:2 * Wq]
+    Lm = _BLUR[key]; Hq, Wq = Lm.shape
+    lon = np.arctan2(dirs[:, 0], dirs[:, 2]); lat = np.arcsin(np.clip(dirs[:, 1], -1, 1))
+    x = np.clip(((lon + np.pi) / (2 * np.pi) * Wq - 0.5).astype(int) % Wq, 0, Wq - 1)
+    y = np.clip(((np.pi / 2 - lat) / np.pi * Hq - 0.5).astype(int), 0, Hq - 1)
+    return Lm[y, x]
+
+
 # ------------------------------------------------------------------------------------------------- the frame
-def frame(t, yaw=0.0, pitch=0.0, w=960, h=540, ss=1, cabin=None, dust=True, extra_ev=None):
+def frame(t, yaw=0.0, pitch=0.0, w=960, h=540, ss=1, cabin=None, dust=True, extra_ev=None, eye=None, fov=90.0, white=True):
+    EYE = np.array(eye, float) if eye is not None else globals()['EYE']
     gl, mat, star, first, prof = A9.state(t)
     W, H = w * ss, h * ss
-    d = camera_dirs(W, H, 90, yaw, pitch).reshape(H, W, 3).astype(np.float64)
+    d = camera_dirs(W, H, fov, yaw, pitch).reshape(H, W, 3).astype(np.float64)
     img = sky(d, mat, gl)
     depth = np.full((H, W), np.inf)
     owner = np.full((H, W), -1)
     face_mask = {}
     info = dict(t=t, mirrors=[])
     states = [(m, mirror_state(m, t)) for m in SCH['mirrors']]
+    pxang = math.radians(fov) / W
     for m, st in states:
         if st is None:
             continue
@@ -184,10 +255,12 @@ def frame(t, yaw=0.0, pitch=0.0, w=960, h=540, ss=1, cabin=None, dust=True, extr
         back = (tk > 0) & (rk <= 0.5 * D) & (EYE[1] < yk)       # only from below (Cull Back)
         # dissolve / appear front (object-anchored noise, metres)
         def keep(Pw, rM):
-            pM = (Pw - c)                                       # object space x D (uniform scale, no rotation)
+            sc = max(1.0, R / 40.0)                             # the breakup grows with the mirror (shader MirrorFront, r3 #5)
+            pM = (Pw - c) / sc
+            amp = BREAK_AMP * sc
             n1 = fbm(pM); n2 = fbm(pM + 71.3)
-            sdD = (R + BREAK_AMP - st['dissolve'] * (R + 2 * BREAK_AMP)) - (rM + BREAK_AMP * n1)
-            sdA = (-BREAK_AMP + st['appear'] * (R + 2 * BREAK_AMP)) - (rM + BREAK_AMP * n2)
+            sdD = (R + amp - st['dissolve'] * (R + 2 * amp)) - (rM + amp * n1)
+            sdA = (-amp + st['appear'] * (R + 2 * amp)) - (rM + amp * n2)
             sd = np.minimum(sdD, sdA)
             act = float(st['dissolve'] > 0.0005 or st['appear'] < 0.9995)
             return sd > 0, np.clip(1 - sd / EDGE_W, 0, 1) * act
@@ -211,18 +284,18 @@ def frame(t, yaw=0.0, pitch=0.0, w=960, h=540, ss=1, cabin=None, dust=True, extr
                 col = sk * F + sk * (st['k'] * st['vis'] * 2 ** st['extra'])
                 lum = col @ np.array([0.2126, 0.7152, 0.0722])
                 col = lum[:, None] * (1 - BRONZE_TONE + BRONZE_TONE * TONE[None, :])   # white-bronze tone (#CDBF9C), chroma from the tone only (r3: a blue/warm mix went lavender)
-            elif kind == 'band':
-                n = np.array([0, 1.0, 0])
-                rdir = dn * np.array([1, -1, 1])
-                col = sky(rdir, mat, gl) * schlick(F0_RIM, np.abs(dn[:, 1]))
-            else:
-                col = np.broadcast_to(BACK_FILL + BACK_ALB * AMB_GND, dn.shape).copy()
-                if st['dissolve'] > 0:                           # breaking into light: the back goes 60 % -> 100 % toward the sky behind it
-                    bl = min(0.6 + 0.4 * st['dissolve'], 1.0)
-                    col = col * (1 - bl) + img[nearer] * bl
+            elif kind == 'band':                                  # 连珠乳钉: LanbaiMirrorBeadNormalOS
+                fp = tdist[nearer] * pxang / np.maximum(np.abs(dn[:, 1]), 0.05)
+                n, cover = BP.bead_normal(Pn - c, D, fp)
+                rdir = dn - 2 * (dn * n).sum(-1, keepdims=True) * n
+                col = sky(rdir, mat, gl) * schlick(F0_RIM, -(dn * n).sum(-1))
+            else:                                                 # opaque bronze, luminance following the sky behind (r3 #5)
+                fp = tdist[nearer] * pxang / np.maximum(np.abs(dn[:, 1]), 0.05)
+                Lsky = sky_broad(dn, mat, gl, round(t, 3))
+                col = BP.back_color(Pn - c, D, fp, Lsky)
             near = np.clip((tdist[nearer] - 5.0) / 20.0, 0, 1)
             col = col + EDGE * (edge[idx] * near)[:, None]
-            if st['rimsoft'] > 0:
+            if st['rimsoft'] > 0:                                # only the comparison schemes (D-38 / r3 C4: none in the schedule)
                 s0 = RIM_SOFT_FROM.get(RIM_SCHEME, 0.80)
                 soft = np.clip((rM[nearer] / (0.5 * D) - s0) / (1.0 - s0), 0, 1)
                 soft = soft * soft * (3 - 2 * soft) * st['rimsoft']
@@ -235,11 +308,13 @@ def frame(t, yaw=0.0, pitch=0.0, w=960, h=540, ss=1, cabin=None, dust=True, extr
                                     appear=round(st['appear'], 3), dissolve=round(st['dissolve'], 3), extra_EV=round(st['extra'], 3)))
     # stars: the sky's own stars where the sky is visible, and their convex-mirror images inside each face (MirrorStars)
     cat = SC.catalogue()
-    fw = max(A9.FWHM * w / 960 * ss, 1.6)   # never sub-pixel: Unity draws every star at >= 1.6 px FWHM (a sub-pixel splat swings in brightness as it crosses pixels)
+    fw_true = A9.FWHM * w / 960 * ss * 90.0 / fov
+    fw = max(fw_true, 1.6)                  # never sub-pixel (a sub-pixel splat swings in brightness as it crosses pixels) ...
+    flux_k = (fw_true / fw) ** 2            # ... but the FLUX is kept: a star blown up to 1.6 px is dimmer by the area (r3 C2)
     if star['gain'] > 0:
-        pk = SC.flux(cat['mag'], cat['rank'], 1.6, 0.0, 0.5, star['count'], star['boost']) * star['gain']
+        pk = SC.flux(cat['mag'], cat['rank'], 1.6, 0.0, 0.5, star['count'], star['boost']) * star['gain'] * flux_k
         sky_layer = np.zeros_like(img)
-        SC.splat(sky_layer, W, H, 90, yaw, pitch, cat['dir'], pk, cat['col'], fw)
+        SC.splat(sky_layer, W, H, fov, yaw, pitch, cat['dir'], pk, cat['col'], fw)
         img += sky_layer * (owner < 0)[..., None]
         for idx, (st, Cs, rho) in (face_mask.items() if not os.environ.get('NO_REFL_STARS') else []):
             dd = cat['dir']
@@ -267,7 +342,7 @@ def frame(t, yaw=0.0, pitch=0.0, w=960, h=540, ss=1, cabin=None, dust=True, extr
             gain = (gain @ np.array([0.2126, 0.7152, 0.0722]))[:, None] * (1 - BRONZE_TONE + BRONZE_TONE * TONE[None, :])
             appd = -toE                                          # the image's direction from the eye
             layer = np.zeros_like(img)
-            SC.splat(layer, W, H, 90, yaw, pitch, appd[ok], pk[ok], cat['col'][ok] * gain[ok], fw)
+            SC.splat(layer, W, H, fov, yaw, pitch, appd[ok], pk[ok], cat['col'][ok] * gain[ok], fw)
             img += layer * (owner == idx * 10)[..., None]
     # dust (Lanbai/MirrorDust, closed form)
     if dust:
@@ -294,11 +369,10 @@ def frame(t, yaw=0.0, pitch=0.0, w=960, h=540, ss=1, cabin=None, dust=True, extr
             br = np.clip(age / 0.25, 0, 1) * (1 - xx) ** 2
             col = G.hexlin('#CDBF9C')[None, :] * (1 - xx[:, None]) + G.hexlin('#F2F6FF')[None, :] * xx[:, None]
             dirs = pos - EYE; dist = np.linalg.norm(dirs, axis=-1); dirs /= dist[:, None]
-            pxang = math.radians(90) / W
             rmin = 1.4 / 1.4133 * pxang * dist
             peak = 6.0 * np.minimum(0.05 / rmin, 1) ** 2 * br * alive * np.clip((dist - 0.3) / 0.7, 0, 1)
             layer = np.zeros_like(img)
-            SC.splat(layer, W, H, 90, yaw, pitch, dirs, peak, col, fw)
+            SC.splat(layer, W, H, fov, yaw, pitch, dirs, peak, col, fw)
             img += layer
     if cabin is not None:
         img = cabin(img, d, yaw, pitch)
@@ -306,8 +380,10 @@ def frame(t, yaw=0.0, pitch=0.0, w=960, h=540, ss=1, cabin=None, dust=True, extr
         img = img.reshape(h, ss, w, ss, 3).mean((1, 3))
     ev = (pulse_ev(t) + white_ev(t)) if extra_ev is None else extra_ev
     a, b, wgt = prof
-    ca = np.clip(G.grade(img, a, ev=ev), 0, 255)
-    cb = ca if b == a else np.clip(G.grade(img, b, ev=ev), 0, 255)
+    sw, bw = (white_sat(t), white_bloom(t)) if white else (0.0, 0.0)
+    ca = np.clip(grade_white(img, a, ev, sw, bw), 0, 255)
+    cb = ca if b == a else np.clip(grade_white(img, b, ev, sw, bw), 0, 255)
+    info['WHITE_SAT'] = round(sw, 3); info['WHITE_BLOOM'] = round(bw, 3)
     codes = ca * (1 - wgt) + cb * wgt
     info['APL'] = round(G.apl(codes), 1)
     info['EV'] = round(ev, 3)

@@ -347,7 +347,7 @@ for k in range(13):
         m['scheme13'] = SCHEME13
         if RIM_SOFT is not None:
             m['rim_soft'] = RIM_SOFT
-        m['face_emission_extra'] = dict(EV=3.0, t=[1138.78, T_PLATEAU_END], shape='EV-linear (0.40 EV/s); none during the 1.2-s impact',
+        m['face_emission_extra'] = dict(EV=2.7, t=[1138.78, T_PLATEAU_END], shape='EV-linear (0.36 EV/s; r3 C3: +3 -> +2.7); none during the 1.2-s impact',
                                         rule='保持时向下看 APL ≈ 220，不亮过 VR 的白 224（§6·9 → 10）')
         m['takes_seat_at'] = F16
     mirrors.append(m)

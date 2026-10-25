@@ -149,10 +149,10 @@
    ],
    [
     1146.31,
-    3.0
+    2.7
    ]
   ],
-  "shape": "EV 线性 0.40 EV/s；冲击的 1.2 s 里不升",
+  "shape": "EV 线性 0.36 EV/s（r3 C3：+3 → +2.7，含 WHITE_BLOOM 的向下看 ≤ 220）；冲击的 1.2 s 里不升",
   "multiplier": "镜面自发光 × 2^EV（只乘第 13 面的自发光项，不乘反射项）",
   "see": "Mirrors/MirrorSchedule.json mirrors[12].face_emission_extra"
  },

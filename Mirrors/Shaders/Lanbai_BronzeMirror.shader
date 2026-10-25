@@ -11,7 +11,7 @@
 //  The reflected sky IS the act 9 sky (LanbaiSky.cginc: _Udon_ZenithColor star floor + LanbaiGalaxyGainAt x the shared
 //  galaxy map), so a mirror never shows a different Milky Way from the one around it (README_Act09 §4, ruling D-29).
 //  FACE   = reflected sky x Schlick(white bronze F0 #D6CCB4) + reflected sky x _EmissionK x _Visibility x 2^_EmitExtraEV
-//           (bible §6·9: 'face emission = reflected sky x (0.2 + 0.08 k)'; mirror 13 adds +3 EV over the white's swell).
+//           (bible §6·9: 'face emission = reflected sky x (0.2 + 0.08 k)'; mirror 13 adds +2.7 EV over the white's swell (r3 C3)).
 //           Convex 1.5 % (analytic sphere-cap normal), circular polish ripple +-0.02 smoothness, face texture.
 //  RIM    = reflected sky x F0 #C9A873, smoothness 0.75, rim beads every 1.5 m (absolute) with footprint AA.
 //  BACK   = patina #4F7A66 (dielectric, smoothness 0.35) lit only by the ambient SH (Trilight), 40 m 博局 cells
@@ -258,14 +258,14 @@ Shader "Lanbai/BronzeMirror"
                     float3 grad = (dhx * rx + dhy * ry) / (abs(det) > 1e-12 ? det : 1e-12);
                     n = normalize(n - _BackBump * 0.02 * D * grad * saturate(1.5 - footprint / 0.5));
                     // The back is opaque bronze up to the dissolve front (review r3 #5), and it never makes a dark dip
-                    // or a jump: its luminance FOLLOWS the sky right behind it (x _BackLumK), and it reads by hue (the
+                    // or a jump: its luminance FOLLOWS the broad sky level behind it (x _BackLumK), and it reads by hue (the
                     // patina, normalised to luminance 1) and by relief (a key from below-left, mean 1 over the relief,
                     // times the cell AO).  Worn ridges turn toward bare bronze.
                     float3 luma = float3(0.2126, 0.7152, 0.0722);
-                    float Lsky = dot(MirrorSky(V, 0.6), luma);
+                    float Lsky = dot(MirrorSky(V, 0.0), luma);          // the roughest lobe (~2 rad): the sky's broad level, no galaxy ghost (r6)
                     float3 pat = _BackAlbedo.rgb * lerp(float3(0.85, 1.0, 1.05), float3(1.15, 0.92, 0.8), m.a);
                     float3 tint = lerp(pat / max(dot(pat, luma), 1e-4), _RimF0.rgb / dot(_RimF0.rgb, luma), 0.45 * m.b);
-                    float3 key = normalize(float3(-0.45, -0.75, 0.48));
+                    float3 key = normalize(float3(-0.45, -0.75, -0.48));   // from behind a rider looking up: lit from the top of the screen (r6: +z read as pits)
                     float shade = max(1.0 + _BackRelief * (dot(n, key) - dot(nFlat, key)), 0.15) * (m.g / 0.92);
                     col = Lsky * _BackLumK * tint * shade;
                 }

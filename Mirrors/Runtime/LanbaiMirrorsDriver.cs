@@ -52,7 +52,7 @@ namespace Lanbai.Mirrors
 
         [Header("Mirror 13: extra face emission EV (WhiteSchedule.json mirror13_face_extra, linear)")]
         public float[] extraT = new float[] { 1138.78f, 1146.31f };
-        public float[] extraV = new float[] { 0f, 3f };
+        public float[] extraV = new float[] { 0f, 2.7f };     // r3 C3: +2.7 EV (looking down with WHITE_BLOOM <= 220)
 
         [Header("Constants (spec_conventions.md)")]
         public Vector3 eye = new Vector3(0.55f, 1.70f, 2.05f);
@@ -60,6 +60,9 @@ namespace Lanbai.Mirrors
         public float pulseIn = 0.08f;
         public float pulseOut = 0.35f;
         public float rimLightE = 0.3f;
+        [Header("Rim light (总导演 F7, 10-24: one point light, no shadows, Not Important, culling Player + PlayerLocal)")]
+        public Light rimLight;                      // built by 蓝白/Build/Mirrors; driven by the envelope, off at 0
+        public float rimLightIntensity = 1.2f;      // intensity at the envelope peak (rimLightE)
 
         private const float FaceR = 0.48f;
         private const float Sag = 0.015f;
@@ -122,8 +125,74 @@ namespace Lanbai.Mirrors
             Init();
             if (root != null)
                 root.SetActive(on);
-            if (!on)
+            if (on)
+                PrewarmPose();                      // F8: the spawn prewarm only activates; draw all three shaders once
+            else
+            {
                 ClearGlobals();
+                AllOff();
+            }
+        }
+
+        // every mirror whole, just below the eye, star copies and dust on: whatever frames run before the next Tick
+        // (the dispatcher's spawn prewarm, under the black) upload and draw Lanbai/BronzeMirror, MirrorStars and
+        // MirrorDust once. The next Tick rebuilds the real state from t (D-33 #6).
+        private void PrewarmPose()
+        {
+            for (int k = 0; k < mirrors.Length; k++)
+            {
+                if (mirrors[k] == null)
+                    continue;
+                mirrors[k].gameObject.SetActive(true);
+                mirrors[k].localPosition = new Vector3(eye.x, eye.y - 2f - 0.05f * k, eye.z + 10f);
+                mirrors[k].localScale = new Vector3(40f, 40f, 40f);
+                mpb.Clear();
+                mpb.SetFloat(idRadius, 20f);
+                mpb.SetFloat(idK, k + 1);
+                mpb.SetFloat(idEmK, emissionK[k]);
+                mpb.SetFloat(idVis, 1f);
+                mpb.SetFloat(idExtra, 0f);
+                mpb.SetFloat(idAppear, 1f);
+                mpb.SetFloat(idDissolve, 0.5f);   // the noise / clip path too
+                for (int l = 0; l < 3; l++)
+                {
+                    Renderer r = lodRenderers[3 * k + l];
+                    if (r != null)
+                        r.SetPropertyBlock(mpb);
+                }
+            }
+            for (int s = 0; s < starCopies.Length; s++)
+                if (starCopies[s] != null)
+                    starCopies[s].enabled = true;
+            for (int s = 0; s < dustSlots.Length; s++)
+            {
+                if (dustSlots[s] == null)
+                    continue;
+                mpb.Clear();
+                mpb.SetFloat(idDustOn, 1f);
+                mpb.SetFloat(idDustNow, 1f);
+                mpb.SetFloat(idDustT0, 0f);
+                mpb.SetVector(idDustC, new Vector4(eye.x, eye.y - 2f, eye.z + 10f, 20f));
+                mpb.SetVector(idDustCar, new Vector4(0f, -10f, 1f, 40f));
+                dustSlots[s].SetPropertyBlock(mpb);
+                dustSlots[s].enabled = true;
+            }
+        }
+
+        // F6: outside the window nothing of ours draws or lights
+        private void AllOff()
+        {
+            for (int k = 0; k < mirrors.Length; k++)
+                if (mirrors[k] != null && mirrors[k].gameObject.activeSelf)
+                    mirrors[k].gameObject.SetActive(false);
+            for (int s = 0; s < starCopies.Length; s++)
+                if (starCopies[s] != null && starCopies[s].enabled)
+                    starCopies[s].enabled = false;
+            for (int s = 0; s < dustSlots.Length; s++)
+                if (dustSlots[s] != null && dustSlots[s].enabled)
+                    dustSlots[s].enabled = false;
+            if (rimLight != null && rimLight.enabled)
+                rimLight.enabled = false;
         }
 
         public float[] LanbaiGrade(float t)
@@ -143,6 +212,17 @@ namespace Lanbai.Mirrors
                 for (int k = 0; k < mirrors.Length; k++)
                     if (mirrors[k] != null && mirrors[k].gameObject.activeSelf && (t < activeStart[k] || t > activeEnd[k]))
                         mirrors[k].gameObject.SetActive(false);
+                if (t < windowStart || t >= windowEnd)
+                    AllOff();
+                else
+                {
+                    // mirror 13 alone after F16 - 0: its stars and dust slots are not ours to keep (F6)
+                    for (int s = 0; s < dustSlots.Length; s++)
+                        if (dustSlots[s] != null && dustSlots[s].enabled)
+                            dustSlots[s].enabled = false;
+                    if (rimLight != null && rimLight.enabled)
+                        rimLight.enabled = false;
+                }
                 ClearGlobals();
                 return;
             }
@@ -150,6 +230,7 @@ namespace Lanbai.Mirrors
             float planeY = 0f, planeLine = 0f, planeIdx = 0f, planePhase = 0f, bestAbs = 1e9f;
             Vector3 rim = Vector3.zero;
             float rimE = 0f;
+            float rimDist = 0f;
             for (int k = 0; k < n; k++)
             {
                 bool on = t >= activeStart[k] && t <= activeEnd[k];
@@ -197,7 +278,7 @@ namespace Lanbai.Mirrors
                     sc.SetPropertyBlock(mpb);
                 }
 
-                // the nearest crossing drives the cabin line and the rim light
+                // the nearest crossing drives the cabin line
                 float dt = t - tCross[k];
                 if (dt > -2f && dt < 2f && Mathf.Abs(dt) < bestAbs)
                 {
@@ -206,10 +287,20 @@ namespace Lanbai.Mirrors
                     planeIdx = k + 1;
                     planePhase = Mathf.Clamp(dt * 0.5f, -1f, 1f);
                     planeLine = dt < 0f ? Mathf.Clamp01(1f + dt / 0.3f) : Mathf.Clamp01(1f - (dt - 0.6f) / 0.3f);
-                    float dx = eye.x - centreX[k], dz = eye.z - centreZ[k];
-                    float l2 = Mathf.Max(Mathf.Sqrt(dx * dx + dz * dz), 1e-3f);
-                    rim = new Vector3(centreX[k] + dx / l2 * 0.5f * D, yEdge, centreZ[k] + dz / l2 * 0.5f * D);
-                    rimE = rimLightE * (dt < 0f ? Mathf.SmoothStep(0f, 1f, 1f + dt / 2f) : Mathf.SmoothStep(0f, 1f, 1f - dt));
+                }
+                // the rim light: the mirror with the LARGEST envelope (C8: two close crossings never jump a frame);
+                // mirror 13 is not lit (its rim is kilometres away)
+                if (k < n - 1 && dt > -2f && dt < 1f)
+                {
+                    float e = rimLightE * (dt < 0f ? Mathf.SmoothStep(0f, 1f, 1f + dt / 2f) : Mathf.SmoothStep(0f, 1f, 1f - dt));
+                    if (e > rimE)
+                    {
+                        float dx = eye.x - centreX[k], dz = eye.z - centreZ[k];
+                        float l2 = Mathf.Max(Mathf.Sqrt(dx * dx + dz * dz), 1e-3f);
+                        rim = new Vector3(centreX[k] + dx / l2 * 0.5f * D, yEdge, centreZ[k] + dz / l2 * 0.5f * D);
+                        rimE = e;
+                        rimDist = Mathf.Abs(0.5f * D - l2);
+                    }
                 }
             }
             // star copies of slots with no active mirror: collapse (gain 0)
@@ -252,6 +343,18 @@ namespace Lanbai.Mirrors
             }
             VRCShader.SetGlobalVector(idPlane, new Vector4(planeY, planeLine, planeIdx, planePhase));
             VRCShader.SetGlobalVector(idRimLight, new Vector4(rim.x, rim.y, rim.z, rimE));
+            if (rimLight != null)
+            {
+                bool lit = rimE > 1e-4f;
+                if (rimLight.enabled != lit)
+                    rimLight.enabled = lit;
+                if (lit)
+                {
+                    rimLight.transform.localPosition = rim;     // a child of R_Mirrors, same frame as the mirrors
+                    rimLight.intensity = rimLightIntensity * rimE / Mathf.Max(rimLightE, 1e-4f);
+                    rimLight.range = Mathf.Max(rimDist + 8f, 12f);
+                }
+            }
         }
 
         // ---------------------------------------------------------------------------------------- maths

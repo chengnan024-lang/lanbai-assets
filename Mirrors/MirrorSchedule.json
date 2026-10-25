@@ -9038,12 +9038,12 @@
    ],
    "scheme13": "H",
    "face_emission_extra": {
-    "EV": 3.0,
+    "EV": 2.7,
     "t": [
      1138.78,
      1146.31
     ],
-    "shape": "EV-linear (0.40 EV/s); none during the 1.2-s impact",
+    "shape": "EV-linear (0.36 EV/s; r3 C3: +3 -> +2.7); none during the 1.2-s impact",
     "rule": "保持时向下看 APL ≈ 220，不亮过 VR 的白 224（§6·9 → 10）"
    },
    "takes_seat_at": 1149.31

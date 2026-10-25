@@ -66,7 +66,7 @@ out = dict(
                       LENS_ARCHIVE=[[t_sil_end - 1e-3, 0.0], [t_sil_end, 1.0]],
                       note='白不是被拍下来的，没有暗角：两层在膨胀的 6 s 里降到 0（LENS_ARCHIVE 此时本来就是 0）。10 → 11 在遮罩全满下同帧回到 1（假醒是档案）。'
                            'LENS_CLEAN 回到 1 的时刻圣经没写（§1.4 只说桌面恒为 1、白的膨胀里降到 0），这里取遮罩下的 1178.46。VR 里两层不存在。'),
-    mirror13_face_extra=dict(EV_knots=[[t_imp_end, 0.0], [t_mask0, 3.0]], shape='EV 线性 0.40 EV/s；冲击的 1.2 s 里不升',
+    mirror13_face_extra=dict(EV_knots=[[t_imp_end, 0.0], [t_mask0, 2.7]], shape='EV 线性 0.36 EV/s（r3 C3：+3 → +2.7，含 WHITE_BLOOM 的向下看 ≤ 220）；冲击的 1.2 s 里不升',
                              multiplier='镜面自发光 × 2^EV（只乘第 13 面的自发光项，不乘反射项）', see='Mirrors/MirrorSchedule.json mirrors[12].face_emission_extra'),
     overlay=dict(
         shader='Lanbai_Overlay v2（会话「门内」，Overlay/；没推之前照圣经 §1.8 的接口：_Color rgb = HDR 填色、a = 不透明度；球跟头部位置；物体空间抖动）',
