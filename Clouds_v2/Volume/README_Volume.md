@@ -69,3 +69,21 @@
 - **门（阿白的 VolumeCloudDeck）**：风是 `_Udon_GateTime × _CloudWind`。`_Udon_GateTime` 由 `Gate/Runtime/LanbaiGateDriver.cs:276` 每帧写成 `LanbaiTick(t)` 的 t，就是分发层给的时间轴秒，不是本地的 `Time.time`。只要分发层的 t 在多人之间是同步的，风就同步。阿白说多人同步还没测；要测的其实是 t 本身（`LB_Journey` 的同步时钟）。
 - **第 6 幕（计划）**：同一个做法，驱动每帧写一个公共的 `_Udon_CloudClock = t`（要登记到 `Common/UdonGlobals.md`），shader 只读它。门以后也可以改读它，免得两个名字。
 - **不许用** `_Time`、`Time.time` 或本地累加的时钟：每个人进房间的时刻不同，云会不一样。
+
+## 5. 和门的接口对齐（总导演 2026-10-25；门 pkg/gate-clouds 38c1954）
+
+门已经把阿白的 VolumeCloudDeck 做成 `Lanbai/GateVolumeDeck`，接口在 `GateClouds/Shaders/LanbaiCloudVolume.cginc`（`GateClouds/给总控.md` §9、README §12.3）。共用版本**不另起一套**，按下面的做：
+
+- **全局量用门的名字**：`_Udon_CloudVolume`（x 开、y 消光 / m、z 水平周期、w 垂直周期）、`_Udon_CloudVolumeWind`、`_Udon_CloudVolumeTex`。
+  - 门的驱动在门的窗口里写；第 6 幕的驱动在 251.64 → 363.26 写；两段不重叠，同一时刻只有一个写的人（D-22）。登记时写清这两段。
+  - 时钟：门的风是 `× _Udon_GateTime`，第 6 幕同样用时间轴秒（§4）。共用 shader 读一个时钟；建议门也改读公共的 `_Udon_CloudClock`，名字由总工程师登记时定。
+- **形状函数**：
+  - 共用 shader 的密度在门的 `LanbaiCloudShape(...)` 上面加层：二维覆盖率（第 6 幕的谷、湾、下层）、层的高度剖面、穿过车的云团。
+  - 门那一段照旧用它自己的形状，触手的“湿”就对得上。
+- **云底不是平的**：门发现阿白的云底在 −170 → −138 m 线性起来，从云下看是一条水平的软边。第 6 幕的参考步进里同样的问题（下层像一块块方砖），解法是三样一起：
+  - 云底和云顶的高度随低频噪声起伏（`vol_ref.Layer.hvar`，层厚的 ±30 %）；
+  - 密度在阈值附近平方（`soft_pow`），云团的边是圆的；
+  - 薄层的噪声尺度要比层厚小（下层 250 m 厚，用 600 m 周期）。
+  
+  建议把“底和顶起伏”放进共用的形状函数，门和第 6 幕都用。
+- **密度体**：门现在用阿白的 `CloudDensity128`（值噪声）。共用版本用 `vol_density.py` 的 Perlin-Worley（更像积云的头），两边用同一张，要等门看过触手的“湿”对得上才换。在那之前，第 6 幕自己带一张，通过同一个全局量槽在自己的窗口里设。
