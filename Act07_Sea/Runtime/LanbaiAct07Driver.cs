@@ -42,6 +42,9 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
     public Renderer shafts, lastShaft, ridge, warmPoint;
     public Transform lastShaftTf;
     public Renderer snow, seeds, trails, bubblesGlass, bubblesSeats;
+    public Renderer trailsFront;               // D-44 #5 P5: the front of the bus (up the windscreen); out over the 5 s before F5
+    public float trailsFrontFade0 = 639.96f, trailsFrontFade1 = 644.96f;
+    public float snowLit = 2.2f, snowLitD0 = 12f, snowLitD1 = 30f, snowLitDeep = 1.3f;   // the flakes' sunlit gain by depth (_Tint)
     public Renderer dome;                      // Lanbai/SeaDome: the 'sky' under water (on while the eye is under)
     public Light beam;                         // R_Act07Bus/Act07_Beam (spot): F4p gather and F3e1's last shaft on the seats / hands
     public Light worldSun;                     // THE main light (D-24 = RenderSettings.sun; the builder wires it if empty)
@@ -122,7 +125,7 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
     private int _idSeaLevel, _idSeaMode, _idSeaClock, _idUnder, _idSeaBus, _idSeaBusVel, _idT, _idFog, _idFogBase;
     private int _idWUp, _idWMid, _idWDown, _idCaus, _idCausCol, _idCausTex;
     private int _idWindowGain, _idWindowCore, _idGain, _idGather, _idGatherPoint;
-    private int _idWaveAmp, _idWindowSunGain, _idActive, _idWaterBelow, _idRefl, _idReflHdr, _idReflExp;
+    private int _idWaveAmp, _idWindowSunGain, _idActive, _idWaterBelow, _idRefl, _idReflHdr, _idReflExp, _idTint;
     // _below starts true: the plane is BUILT with the BELOW material so the prewarm frames draw that variant too; the
     // first Tick at / after F2h swaps it to ABOVE (until the eye is under)
     private bool _ready, _vr, _below = true, _sunTaken;
@@ -192,6 +195,7 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
         _idWindowSunGain = VRCShader.PropertyToID("_WindowSunGain");
         _idActive = VRCShader.PropertyToID("_Active");
         _idWaterBelow = VRCShader.PropertyToID("_WaterBelow");
+        _idTint = VRCShader.PropertyToID("_Tint");
         _idRefl = VRCShader.PropertyToID("_Udon_ReflCube");
         _idReflHdr = VRCShader.PropertyToID("_Udon_ReflCube_HDR");
         _idReflExp = VRCShader.PropertyToID("_Udon_ReflExposure");
@@ -502,11 +506,20 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
 
         // ---- particles: snow while under, seeds from F3i (the shader times each birth), trails from F4
         SetGain(snow, under ? 1f : 0f);
+        if (under && snow != null)
+        {
+            // sunlit flakes in the shallows (x snowLit to 12 m), x snowLitDeep below 30 m (D-44 #5 P6): the reference frames' law
+            float lit = Mathf.Lerp(snowLit, snowLitDeep, Smooth((depth - snowLitD0) / Mathf.Max(snowLitD1 - snowLitD0, 1e-3f)));
+            snow.GetPropertyBlock(_mpb);
+            _mpb.SetVector(_idTint, new Vector4(lit, lit, lit, 1f));
+            snow.SetPropertyBlock(_mpb);
+        }
         SetGain(seeds, t >= tF3i - 0.1f ? 1f : 0f);
         // the hull trails fade out as the rose comes up from below (F8b -> 897.96): blue light ADDED over the rose fog and the
         // warm window rim reads violet (D-21: h 291-299, L* 41-65 measured), and no fill avoids it (blue + red = magenta)
         float trailGain = t >= tF4 ? 1f - Smooth((t - tF8b) / 20f) : 0f;
         SetGain(trails, trailGain);
+        SetGain(trailsFront, t >= tF4 ? 1f - Smooth((t - trailsFrontFade0) / Mathf.Max(trailsFrontFade1 - trailsFrontFade0, 1e-3f)) : 0f);
         SetGain(bubblesGlass, t >= tEntry && t < tEntry + 4f ? 1f : 0f);
         SetGain(bubblesSeats, under ? 1f : 0f);
         SetGain(ridge, trailGain);                                 // its rim is the trails' light
@@ -548,7 +561,7 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
         if (beam != null) beam.enabled = false;
         if (shafts != null) shafts.enabled = false;
         if (lastShaft != null) lastShaft.enabled = false;
-        SetGain(snow, 0f); SetGain(seeds, 0f); SetGain(trails, 0f); SetGain(bubblesGlass, 0f); SetGain(bubblesSeats, 0f);
+        SetGain(snow, 0f); SetGain(seeds, 0f); SetGain(trails, 0f); SetGain(trailsFront, 0f); SetGain(bubblesGlass, 0f); SetGain(bubblesSeats, 0f);
         SetGain(ridge, 0f); SetGain(warmPoint, 0f);
     }
 

@@ -4,42 +4,42 @@
    960,
    540
   ],
-  "APL": 61.94,
-  "EV_display": -4.201,
+  "APL": 61.53,
+  "EV_display": -4.221,
   "luma_lt12_pct": 0.0,
-  "Lstar_gt85_pct": 0.062,
+  "Lstar_gt85_pct": 0.057,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
   "clip_black_largest_region_pct": 0.0,
   "clip_white_largest_region_pct": 0.0,
   "warm_shadow_pct": 0.33,
-  "purple_pct": 5.987,
+  "purple_pct": 5.989,
   "purple_largest_region_pct": 5.78,
-  "violet_strong_pct": 0.75,
-  "lavender_act6_pct": 26.228,
+  "violet_strong_pct": 0.752,
+  "lavender_act6_pct": 26.893,
   "brightest": {
    "bbox": [
-    15,
+    1,
     3,
     549,
     181
    ],
    "centroid": [
-    376.5,
-    110.3
+    366.5,
+    109.8
    ],
-   "clusters": 13,
+   "clusters": 16,
    "clusters_ge5pct": 5,
-   "min_luma": 198.4,
+   "min_luma": 196.6,
    "centroid_az_el": [
-    -13.36,
-    -39.34
+    -14.53,
+    -39.0
    ]
   },
   "top25_Lstar": {
-   "mean": 19.55,
+   "mean": 19.36,
    "p50": 17.27,
-   "p90": 19.75
+   "p90": 18.84
   },
   "palette": {
    "act": "07a",
@@ -48,19 +48,19 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 26.2,
+     "nearest_dE2000_p01": 26.7,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 33.7,
+     "nearest_dE2000_p01": 34.2,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 33.6,
+     "nearest_dE2000_p01": 33.8,
      "within_dE5_pct": 0.0
     },
     {
@@ -84,12 +84,12 @@
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 35.8,
+     "nearest_dE2000_p01": 36.0,
      "within_dE5_pct": 0.0
     }
    ],
    "pixel_to_nearest_dE_median": 19.1,
-   "pixel_to_nearest_dE_p90": 23.7,
+   "pixel_to_nearest_dE_p90": 23.5,
    "pixels_within5_pct": 0.0
   }
  },
@@ -193,7 +193,7 @@
    540
   ]
  },
- "render_seconds": 13.1,
+ "render_seconds": 10.8,
  "lens": "none",
  "bloom_tint": "single",
  "note": "F8c+ 910: the fog thinning, the window clearer (no bus)"

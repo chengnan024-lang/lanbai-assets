@@ -23,7 +23,10 @@
   -Paths a/,b/c.json  不看 HANDOFF_LOG，直接指定（只在总导演 / 总工程师明说时用）
   -AcceptGuess        这一条没有“同步：”行、路径是从反引号里猜的时候，确认按猜的做
   -Force              本地改过的文件也覆盖（照样先进备份；见上面 §F）
-退出码：0 完成（或只列出）；1 没有可同步的；2 有本地改过的文件被拒绝（什么都没改）；3 脚本出错；4 仓库状态不对（什么都没改）。
+退出码：0 完成（或只列出）；1 没有可同步的 / 点名的路径在 HEAD 里没有文件 / 路径是猜的没确认；2 有本地改过的文件被拒绝
+（什么都没改）；3 脚本出错；4 仓库或工程的状态不对（什么都没改）。最后一行总是 LANBAI_SYNC_RESULT {json}（退出码、状态、各类个数）。
+v2.1（2026-10-25，复核的次要项）：EXCLUDED（这次排除了的，工程里的不动）和 GONE（仓库里没有了）分开；点名的路径在 HEAD 里
+一个文件都没有就报错退出；跳过规则和 HANDOFF_CHATGPT §A 的 robocopy 对齐；工程里没有 Assets/Lanbai 就拒绝。
 #>
 [CmdletBinding()]
 param(
@@ -38,19 +41,30 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$ToolVersion = '2.0.0'
+$ToolVersion = '2.1.0'
 try { [Console]::OutputEncoding = [Text.Encoding]::UTF8 } catch { }
 $Utf8NoBom = New-Object Text.UTF8Encoding $false
 
-# 永远不同步的：顶层的这些、任何一层叫这些名字的文件夹、这些扩展名
+# 永远不同步的：顶层的这些、任何一层叫这些名字的文件夹、这些扩展名、这些文件名
+# （和 HANDOFF_CHATGPT §A 的 robocopy 一样：/XD Source Renders __pycache__ Docs~ Tools~ Source~ Originals~
+#  /XF *.py *.pyc *.blend *.blend1 *.ps1 *.sh .gitignore；另加 .meta：GUID 在工程的 .meta 里）
 $SkipTop = @('FromLocal', 'Art', '.git', '.github', '.claude')
-$SkipDirs = @('Source', 'Renders', '__pycache__', '.git')
+$SkipDirs = @('Source', 'Renders', '__pycache__', '.git', 'Docs~', 'Tools~', 'Source~', 'Originals~')
 $SkipExt = @('.py', '.pyc', '.blend', '.blend1', '.ps1', '.sh', '.meta')
+$SkipNames = @('.gitignore')
 $LocalModified = 'LOCAL_MODIFIED'
 
 function Say([string]$s) { Write-Host $s }
 function Norm([string]$p) { return ($p -replace '\\', '/').Trim('/') }
-function Stop4([string]$msg) { Say ("停：" + $msg + " 什么都没改。"); exit 4 }
+# 最后一行总是 LANBAI_SYNC_RESULT {json}（v2.1）：本地的脚本 / 人按这一行判断，不靠屏幕上的中文
+$Result = [ordered]@{ tool = 'lanbai_sync.ps1'; tool_version = $ToolVersion; exit = $null; status = $null; applied = $false; repo_commit = $null; counts = @{}; message = $null }
+function Done([int]$code, [string]$status, [string]$msg = $null) {
+    $Result.exit = $code; $Result.status = $status
+    if ($msg) { $Result.message = $msg }
+    Write-Host ('LANBAI_SYNC_RESULT ' + ($Result | ConvertTo-Json -Compress -Depth 4))
+    exit $code
+}
+function Stop4([string]$msg) { Say ("停：" + $msg + " 什么都没改。"); Done 4 'stopped' $msg }
 
 # git：用 Process 跑，stdout / stderr 分开读（PowerShell 5.1 下 `& git ... 2>$null` 会把 stderr 变成异常或吞掉）
 function GitRun([string[]]$gitArgs, [string]$outFile = $null) {
@@ -102,6 +116,7 @@ function Skip([string]$rel) {
     for ($i = 0; $i -lt $parts.Count - 1; $i++) { if ($SkipDirs -contains $parts[$i]) { return $true } }
     $ext = [IO.Path]::GetExtension($rel).ToLowerInvariant()
     if ($SkipExt -contains $ext) { return $true }
+    if ($SkipNames -contains $parts[$parts.Count - 1]) { return $true }
     return $false
 }
 
@@ -109,8 +124,10 @@ try {
     if (-not (Test-Path -LiteralPath $Repo)) { Stop4 "仓库不在：$Repo" }
     $Repo = (Resolve-Path -LiteralPath $Repo).Path
     $Project = (Resolve-Path -LiteralPath $Project).Path
-    if (-not (Test-Path -LiteralPath (Join-Path $Project 'Assets'))) { throw "不是 Unity 工程（没有 Assets 文件夹）：$Project" }
+    if (-not (Test-Path -LiteralPath (Join-Path $Project 'Assets'))) { Stop4 "不是 Unity 工程（没有 Assets 文件夹）：$Project" }
     $Lanbai = Join-Path (Join-Path $Project 'Assets') 'Lanbai'
+    # v2.1：工程里没有 Assets/Lanbai 就拒绝（-Project 指错了，或者不是接管过的那个工程；不替人新建）
+    if (-not (Test-Path -LiteralPath $Lanbai -PathType Container)) { Stop4 "工程里没有 Assets\Lanbai：$Project 不是蓝白的工程，或者 -Project 指错了（HANDOFF_CHATGPT §A 的工程路径）。不替人新建。" }
     $RecordPath = Join-Path $Lanbai '.lanbai_sync.json'
     $Stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 
@@ -118,6 +135,7 @@ try {
     $lock = Join-Path (Join-Path $Repo '.git') 'index.lock'
     if (Test-Path -LiteralPath $lock) { Stop4 "仓库里有 $lock（上一次 git 没正常结束，或者还有 git 在跑）。不自动删它：确认没有 git 在跑以后人工处理，再重跑。" }
     $commit = (GitText @('rev-parse', 'HEAD') '读 HEAD').Trim()
+    $Result.repo_commit = $commit
     $branch = (GitText @('rev-parse', '--abbrev-ref', 'HEAD') '读分支').Trim()
     $originMain = (GitText @('rev-parse', 'origin/main') '读 origin/main').Trim()
     $status = GitText @('status', '--porcelain') 'git status'
@@ -179,14 +197,15 @@ try {
     Say "  条目「$entryTitle」（$(if ($mode -eq 'guess') { '没有“同步：”行，路径是猜的' } elseif ($mode -eq 'paths') { '-Paths 指定' } else { '按“同步：”行' })）"
     Say "  同步：$(if ($sel.Count) { $sel -join '  ' } else { '（没有）' })"
     if ($excl.Count) { Say "  不同步：$($excl -join '  ')" }
-    if ($sel.Count -eq 0) { Say '没有要同步的路径。'; exit 1 }
+    if ($sel.Count -eq 0) { Say '没有要同步的路径。'; Done 1 'nothing_to_sync' '没有要同步的路径' }
 
     # ── 3. 从 commit 列文件（git ls-tree -r HEAD）───────────────
     $repoFiles = @{}          # 相对路径 → blob 哈希
+    $missing = New-Object System.Collections.Generic.List[string]
     foreach ($s in $sel) {
         if ($SkipTop -contains $s.Split('/')[0]) { Say "  跳过 $s（这个文件夹从不进工程）"; continue }
         $lt = GitText @('ls-tree', '-r', '-z', '--full-tree', 'HEAD', '--', $s) "列 HEAD 里的 $s"
-        $n = 0
+        $n = 0; $raw = 0
         foreach ($rec in ($lt -split [char]0)) {
             if (-not $rec) { continue }
             $tab = $rec.IndexOf("`t")
@@ -195,6 +214,7 @@ try {
             $rel = Norm $rec.Substring($tab + 1)
             if ($meta.Count -lt 3 -or $meta[1] -ne 'blob' -or $meta[0] -eq '120000') { continue }   # 只要普通文件（不要子模块、软链接）
             if ($rel -ne $s -and -not $rel.StartsWith($s.TrimEnd('/') + '/')) { continue }
+            $raw++
             if (Skip $rel) { continue }
             $ex = $false
             foreach ($x in $excl) { if ($rel -eq $x -or $rel.StartsWith($x.TrimEnd('/') + '/')) { $ex = $true; break } }
@@ -202,8 +222,11 @@ try {
             $repoFiles[$rel] = $meta[2]
             $n++
         }
-        if ($n -eq 0) { Say "  ⚠ HEAD 里没有 $s 下的文件（或全被排除了）" }
+        if ($raw -eq 0) { Say "  ✗ HEAD 里没有 $s（路径拼错了，或者还没合进 main）"; $missing.Add($s) }
+        elseif ($n -eq 0) { Say "  ⚠ $s 下的 $raw 个文件全被跳过规则或排除项挡掉了" }
     }
+    # v2.1：点名的路径在 HEAD 里一个文件都没有：不是“没东西要拷”，是条目或路径错了。报错退出，什么都不改
+    if ($missing.Count -gt 0) { Say ('停：HEAD 里没有这些点名的路径：' + ($missing -join '  ') + '。核对 HANDOFF_LOG 的“同步：”行（或 -Paths），什么都没改。'); Done 1 'path_not_in_head' ('HEAD 里没有：' + ($missing -join ', ')) }
 
     # ── 4. 上次的记录 ───────────────────────────────────────────
     $rec = @{}
@@ -239,6 +262,10 @@ try {
         if (-not $under -or $repoFiles.ContainsKey($rel)) { continue }
         $dst = Join-Path $Lanbai ($rel -replace '/', [IO.Path]::DirectorySeparatorChar)
         if (-not (Test-Path -LiteralPath $dst)) { $plan.Add(@{ op = 'FORGET'; key = $key; dst = $dst }); continue }
+        # v2.1：这次被排除项 / 跳过规则挡掉的，不是“仓库里没有了”：工程里的照旧不动，记录也留着
+        $ex = (Skip $rel)
+        foreach ($x in $excl) { if ($rel -eq $x -or $rel.StartsWith($x.TrimEnd('/') + '/')) { $ex = $true; break } }
+        if ($ex) { $plan.Add(@{ op = 'EXCLUDED'; key = $key; dst = $dst; why = '这次被排除了（排除项或跳过规则），工程里的不动' }); continue }
         $plan.Add(@{ op = 'GONE'; key = $key; dst = $dst; why = $(if (SameAsRecord $rec[$key] $dst) { '上次同步以后没改过' } else { '本地改过' }) })
     }
     $extra = 0
@@ -255,11 +282,12 @@ try {
 
     $count = @{}
     foreach ($p in $plan) { $count[$p.op] = 1 + [int]$count[$p.op] }
+    $Result.counts = [ordered]@{ add = [int]$count['ADD']; overwrite = [int]$count['OVERWRITE']; same = [int]$count['SAME']; local_modified = [int]$count[$LocalModified]; gone = [int]$count['GONE']; excluded = [int]$count['EXCLUDED']; extra_untouched = $extra }
     Say ''
-    Say "计划：新增 $([int]$count['ADD'])，覆盖 $([int]$count['OVERWRITE'])，一样的 $([int]$count['SAME'])，本地改过的 $([int]$count[$LocalModified])；仓库里没有了的 $([int]$count['GONE']) 个只列出、不删；工程里多出来的 $extra 个不动"
-    foreach ($op in @('ADD', 'OVERWRITE', $LocalModified, 'GONE')) {
+    Say "计划：新增 $([int]$count['ADD'])，覆盖 $([int]$count['OVERWRITE'])，一样的 $([int]$count['SAME'])，本地改过的 $([int]$count[$LocalModified])；仓库里没有了的 $([int]$count['GONE']) 个只列出、不删；这次排除了的 $([int]$count['EXCLUDED']) 个不动；工程里多出来的 $extra 个不动"
+    foreach ($op in @('ADD', 'OVERWRITE', $LocalModified, 'GONE', 'EXCLUDED')) {
         foreach ($p in ($plan | Where-Object { $_.op -eq $op })) {
-            $tag = @{ 'ADD' = '  + 新增  '; 'OVERWRITE' = '  ~ 覆盖  '; 'GONE' = '  ? 仓库里没有了（不自动删）'
+            $tag = @{ 'ADD' = '  + 新增  '; 'OVERWRITE' = '  ~ 覆盖  '; 'GONE' = '  ? 仓库里没有了（不自动删）'; 'EXCLUDED' = '  - 这次排除了（不动）'
                       $LocalModified = $(if ($Force) { '  ! 本地改过，-Force 照样覆盖 ' } else { '  ! 本地改过，不覆盖 ' }) }[$op]
             Say ("$tag$($p.key)" + $(if ($p.why) { "（$($p.why)）" } else { '' }))
         }
@@ -276,10 +304,10 @@ try {
         Say '只列出，没有改任何东西。照这个做：加 -Apply。'
         if ($blocked.Count -gt 0 -and -not $Force) { Say "有 $($blocked.Count) 个本地改过的文件：-Apply 时会整个拒绝。-Force 属于批量替换（HANDOFF_CHATGPT §F）：先整工程备份、把这份清单推到 FromLocal/takeover/、小楠确认以后才用。" }
         if ($mode -eq 'guess') { Say '这一条没有“同步：”行，路径是猜的：核对上面的“同步：”一行，对的话 -Apply 时再加 -AcceptGuess。' }
-        exit 0
+        Done 0 'listed'
     }
-    if ($mode -eq 'guess' -and -not $AcceptGuess) { Say '这一条没有“同步：”行，路径是猜的；核对过就加 -AcceptGuess 再跑。什么都没改。'; exit 1 }
-    if ($blocked.Count -gt 0 -and -not $Force) { Say "拒绝：$($blocked.Count) 个文件在本地改过（见上面的 !）。什么都没改。停，告诉小楠；要用仓库的版本盖掉，照 §F 先备份、推清单、经小楠确认再加 -Force。"; exit 2 }
+    if ($mode -eq 'guess' -and -not $AcceptGuess) { Say '这一条没有“同步：”行，路径是猜的；核对过就加 -AcceptGuess 再跑。什么都没改。'; Done 1 'guess_not_accepted' }
+    if ($blocked.Count -gt 0 -and -not $Force) { Say "拒绝：$($blocked.Count) 个文件在本地改过（见上面的 !）。什么都没改。停，告诉小楠；要用仓库的版本盖掉，照 §F 先备份、推清单、经小楠确认再加 -Force。"; Done 2 'refused_local_modified' }
 
     # ── 6. 备份要覆盖的 ─────────────────────────────────────────
     $touch = @($plan | Where-Object { $_.op -in @('OVERWRITE', $LocalModified) })
@@ -332,9 +360,12 @@ try {
     Say "完成：新增 $([int]$count['ADD'])，覆盖 $([int]$count['OVERWRITE'] + $(if ($Force) { [int]$count[$LocalModified] } else { 0 }))（都从提交 $commit 取）；仓库里没有了的 $([int]$count['GONE']) 个没删。记录：$RecordPath"
     if ([int]$count['GONE'] -gt 0) { Say '仓库里没有了的文件还留在工程里：要删照 HANDOFF_CHATGPT §F（挪到 _to_delete、连 .meta、经小楠确认）。' }
     Say '回到 Unity，等它导入、编译完，再跑测试。'
-    exit 0
+    $Result.applied = $true
+    Done 0 'applied'
 } catch {
     Write-Host "同步脚本出错：$($_.Exception.Message)"
     Write-Host $_.ScriptStackTrace
+    $Result.exit = 3; $Result.status = 'error'; $Result.message = $_.Exception.Message
+    Write-Host ('LANBAI_SYNC_RESULT ' + ($Result | ConvertTo-Json -Compress -Depth 4))
     exit 3
 }

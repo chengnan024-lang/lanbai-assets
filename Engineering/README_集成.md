@@ -67,7 +67,7 @@ public float[] LanbaiWindow()         // {开始 t, 结束 t}，含预热
 - 时间只用 t 和 cues 标签（驱动里的标签数组由搭建脚本从 `FromLocal/cues.json` 烘进去：**Udon 运行时读不了 JSON**，所有表都要由编辑器脚本烘成 `float[]` 字段）。
 - 不写 PPv2，不写 `RenderSettings`（除非这一幕已经按 §3 接管），不碰车。
 - **从 t 单独重建自己的画面（D-33 #6）**：迟到的人从路上加入、调试时拖时间轴，驱动在任何 t 被激活的那一帧，都要把它这一段要的共享量写全，不能指望前一个驱动留下的值。现在还靠“前一个留下的值”的：
-  - **第 9 幕**（`LanbaiAct09Driver`）：只写 5–9 个量，其余 59 个靠第 8b 幕 `Apply(blue_hour)` 留下；天空下次醒来时照 §9.5 “接手时写全 `blue_hour`”改。
+  - **第 9 幕**（`LanbaiAct09Driver`）：只写 5–9 个量，其余靠接手那一帧的 `Apply(blue_hour)`（§9.5 “接手时写全 `blue_hour`”，天空已做）。
   - **第 9 幕的主光和环境光**：没人写，靠第 8 幕留下（§9.5：`LB_Journey` 保持不动）；第 8 幕的包交来时要能从 t 重建它们。
   - **门的驱动在 [U6, U9) 之前（113.80 → 133.80）的天、雾、月**：归天空（`Lanbai_SkyDriver_Acts1to3` 每帧按 t 写，可以重建）；门自己在 [U6, U9) 里重进时会写全（`_skyFull` 复位），已经满足。
   - **133.80 → 180.05 的主光**：门不写，靠 `LB_Journey` / 场景值（§8.2）。
@@ -159,7 +159,7 @@ Director v1.1 起没有要本地填的窗口：`LB_Journey` 勾 `extAtmosphere` 
 | 东西 | 写的人 | 驱动报什么 |
 |---|---|---|
 | PPv2 weight、ΔEV（一帧一个） | **只有 `LB_Journey.ApplyGrades`** | 有曝光事件的驱动实现 `float[] LanbaiGrade(t)`，分发层加起来放进 `dispatcher.gradeDEV`（`gradeOwned` = 有人报）。现在报的：门内的 `FLASH_TEAR`（247.89 起 0.4 s 升、0.1 保持、0.25 落）。**`ApplyGrades` 里自己那份 FLASH_TEAR 要删**（不然算两次）。门内的 `writeExposure` 一直不勾 |
-| 遮罩球 `Lanbai_Overlay` v2 | **出生淡入优先（v1.2）**：`LB_Journey` 的出生黑 / 淡入从 `dispatcher.LanbaiSpawnFadeBegin()` 到 `LanbaiSpawnFadeEnd()`，这段时间**任何驱动都不碰遮罩球**。出生时 `dispatcher.LanbaiCoversOverlay(t)`（或 t + 淡入时长）为真（有驱动拿着遮罩球）：`LB_Journey` **不做淡入**，出生的黑保持黑，黑结束那一帧调 End，之后只有驱动那一次从黑升起来；为假：照常淡入、淡入结束调 End。End 只认第一次；Begin 后 10 秒没有 End 当作已结束。之后：248.39 → 252.64 **门内**（剪 1 的黑）；第 6 幕（252.64 `SetFlat` → 254.14 起 `SetCurve` 晨从黑里亮起 → 266.44 `Hide()`）；第 10 幕的白归镜与白 | 门内调 `overlay.SetFlat(…, LanbaiDeltaEV(t))` 自己补 ΔEV。场景里只放一个。拿遮罩球的驱动实现 `LanbaiSpawnFade(float since)`（Director v1.2，`README_Director.md` §3 第 8 条）：`since < 0` 不写；之后从黑按 ≤ 0.85 EV/s 升到自己的值（迟到的人在白里进来，由镜与白自己升） |
+| 遮罩球 `Lanbai_Overlay` v2 | **出生淡入（Director v1.3，D-43）**：`LB_Journey` 的出生黑 / 淡入从 `dispatcher.LanbaiSpawnFadeBegin()` 到 `LanbaiSpawnFadeEnd()`，这段时间**任何驱动都不碰遮罩球**。黑结束时问 `dispatcher.LanbaiOverlayHandoverAt(t, t + T)`：≥ 0（淡入期间有驱动的遮罩窗口）→ **不做淡入**，保持黑到那一刻，调 End，之后只有驱动那一次从黑升起来；< 0 → 自己淡入：从地板起 0.85 EV/s，**限的是看到的亮度**（场景 × 2^dEV，驱动的曝光爬升算进去，D-43 #7），追上了才 Hide 并调 End（站台出发前照旧 3 秒）。`LanbaiSpawnFadeLength` 往前看驱动的曝光事件，所以“淡入期间有没有窗口”问的是真的时长。End 只认第一次；Begin 后 25 秒没有 End 当作已结束；完整的状态机在 `README_Director.md` §0 第 4 条（v1.3 r2）。之后：248.39 → 252.64 **门内**（剪 1 的黑）；第 6 幕（252.64 `SetFlat` → 254.14 起 `SetCurve` 晨从黑里亮起 → 266.44 `Hide()`）；第 10 幕的白归镜与白 | 门内调 `overlay.SetFlat(…, LanbaiDeltaEV(t))` 自己补 ΔEV。场景里只放一个。拿遮罩球的驱动实现 `LanbaiSpawnFade(float since)`（Director v1.2，`README_Director.md` §3 第 8 条）：`since < 0` 不写；之后从黑按 ≤ 0.85 EV/s 升到自己的值（迟到的人在白里进来，由镜与白自己升） |
 
 ---
 
@@ -205,7 +205,7 @@ Director v1.1 起没有要本地填的窗口：`LB_Journey` 勾 `extAtmosphere` 
 - **导入顺序**（`README_Act06.md` §0）：`Common/`、`GateClouds/`（搭建脚本借它的 U# 小工具 `LanbaiGateCloudsBuilder`，没有它 `蓝白/Build/Act06` 编不过）、`Sky/`（跑过 `蓝白/Sky/Build Sky`，场景里有 `Lanbai_SkyPresets/dawn`）、`Sea/`（跑过 `蓝白/Sea/Create Materials`，`Sea/Materials/M_06_Sea.mat` 在）、`Overlay/`（场景里只有一个 `LanbaiOverlay`）、`Clouds_v2/`，最后 `Act06_Dawn/`。
 - **先应用 `dawn` 预设，再点 `蓝白/Build/Act06`**：搭建脚本在海面上方 2 m 现烘临时反射立方图 `Generated/Refl_S6_standin`，烘的是当时的天；总控的 `Refl_S6` 来了就换（`Act06_Driver.reflCube`）。可以重复点，`Act06_Driver` 和手接的引用保留。点完 → `蓝白/Director/1 Generate` → 等编译 → `2 Wire Scene` → `3 Report`。
 - **接管**：勾 `Act06_Driver.writeRenderSettings`、`writeMainLight`，`LB_Journey` 勾 `extAtmosphere` / `extSun`（窗口自动，§3；`README_Act06.md` §0 第 4 条的手填窗口作废）。环境光 Trilight。
-- 窗口 248.64 → 363.62：248.64 起写天雾月星（§8.1），252.64 起写 RenderSettings（到 362.26）和主光（到 363.615，§8.2），遮罩 252.64 → 266.44（§8.4），海的全局量 300 → 363.26（入水那一帧海的驱动在同一个 y 接手）。
+- 窗口 248.64 → 363.62：248.64 起写天雾月星（§8.1），252.64 起写 RenderSettings（到 362.26）和主光（到 363.615，§8.2），遮罩 252.64 → 266.44（§8.4；迟到的人在 252.64 → 351.2 之间交接过来的，从黑升完才 `Hide()`，可以过 266.44，Director v1.3），海的全局量 300 → 363.26（入水那一帧海的驱动在同一个 y 接手）。
 - 车厢漂白 251.64 → 281.86 归车厢驱动（圣经 §4.8 的表，D-35），不归第 6 幕。
 - 截图和量数：`README_Act06.md` §0 第 5 条；标杆画面 C（254–266 s 三个视向）用测试工具跑 `act06_test`（`Engineering/UnityTest/`）。
 
@@ -238,13 +238,13 @@ Director v1.1 起没有要本地填的窗口：`LB_Journey` 勾 `extAtmosphere` 
   - **主光和环境光保持不动**（第 8 幕留下的值；`LB_Journey` 不按它的 `SKY_*` 预设在这一段改主光 / RenderSettings）；
   - **去掉它自己的 F13 “重燃”**（星、银河的点燃全归本驱动；`LB_Journey` 里任何在 F13 改星 / 天 / 曝光的代码删掉）；
   - **在黑里关掉占位**：`skyDome` 等第 9 幕的旧占位组，在进第 9 幕之前的黑 / 遮挡里关（不在蓝时里关）。
-- **接手时写全 `blue_hour`（D-33 #6，给天空照做；还没做）**：现在本驱动只写 5–9 个量，其余 59 个靠第 8b 幕留下。迟到的人在 1050 s 进来、或调试时从 1100 往回拖到 1005，第 8b 幕没跑过，那 59 个量是错的。改法：
+- **接手时写全 `blue_hour`（D-33 #6，天空已照做：pkg/sky，第 9 幕 v1.4；往回跳也会重写，见第 6 条）**：现在本驱动只写 5–9 个量，其余 59 个靠第 8b 幕留下。迟到的人在 1050 s 进来、或调试时从 1100 往回拖到 1005，第 8b 幕没跑过，那 59 个量是错的。改法：
   1. `LanbaiAct09Driver` 加两个字段：`public Lanbai.Sky.LanbaiSkyPreset handoffPreset;`（`蓝白/Build/Act09` 按名字接场景里的 `SkyPreset_blue_hour`，接不到就在 Console 里说）和 `private bool _full;`。
   2. `LanbaiActivate(on)`：`_full = false;`（开、关都清）。
   3. `LanbaiTick(t)` 的开头：`if (t >= tActStart && !_full) { if (handoffPreset != null) handoffPreset.Apply(); _full = true; }`，然后照旧写自己的 5–9 个量（它们压在 `Apply` 写的值上面，同一帧）。`t < tActStart` 时 `_full = false`（往回拖过 1001.21 再往前，会再写一次）。
   4. 为什么是 `blue_hour` 而且只在 ≥ 1001.21：992.06 → 1001.21 这一段天还归第 8b 幕（它在 987.06 → 993.06 从 `dusk_8ii` 混到 `blue_hour`），这时写会成第二个写的人；1001.21 起其余 59 个量本来就等于 `blue_hour` 的值（第 9 幕只改那 5–9 个），所以先 `Apply` 再写自己的，结果和正常从头看完全一样。
   5. `Apply()` 只在 `ownsAtmosphere` 打开时才写 RenderSettings；预设默认关，所以这一步不碰 RenderSettings / 主光（§8.3）。一帧写 68 个量，只发生一次，不算进每帧开销。
-  6. 验收：分别从 990、1005、1050、1140 起播（和从头播到这几个时刻比），`_Udon_*` 的值逐个相同。
+  6. 验收：分别从 990、1005、1050、1140 起播（和从头播到这几个时刻比），`_Udon_*` 的值逐个相同。 **再加往回拖**：从 1100 拖回 1005（和从头播到 1005 比），以及从 1009.21 以后拖回 1001.21 … 1009.21 里的任何一刻：驱动发现时间往回跳就清掉 `_full`，下一帧先 `Apply(blue_hour)` 再写自己的（第 8 幕终审 F2：以前天顶 / 地平线 / 雾带 / 天底四个颜色会停在星空底）。
 - **开销**：`LanbaiTick` 5 个 SetGlobalVector（1009.21 起 9 个）、1 个 MPB、两个 renderer 开关，没有循环、不分配内存；账本里按 < 0.1 ms 记（未实测）。
 - **截图**（主座位，桌面 1920×1080 / 90°，PPv2 开）：1001.21、1005.21、1008.6；**F13 那一帧、1020.24、1021.29、1021.95 和 1022.41**（正前方 / 抬头 +60° / 银心方向，用来在 Unity 里重标 g(t)：中间三帧是 g = 0.25 / 0.5 / 0.75 附近，带车厢以后跨度会小）；1100、1137。1016–1030 s 的录像跑 `flashcheck.py`。
 

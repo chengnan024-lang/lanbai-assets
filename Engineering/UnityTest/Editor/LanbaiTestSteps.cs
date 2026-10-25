@@ -491,6 +491,9 @@ namespace Lanbai.Test
             {
                 string ap = AssetDatabase.GetAssetPath(m);
                 if (!string.IsNullOrEmpty(ap) && !ctx.toolTouched.Contains(ap)) ctx.toolTouched.Add(ap);
+                // 复核的次要项：豁免按字节核对：记下磁盘上原来的字节，结束时落了盘的内容和它一样才不算写入
+                if (!string.IsNullOrEmpty(ap) && !ctx.restoredBytes.ContainsKey(ap) && File.Exists(ap))
+                    try { ctx.restoredBytes[ap] = File.ReadAllBytes(ap); } catch (Exception) { }
                 foreach (var kv in props)
                 {
                     if (!m.HasProperty(kv.Key)) continue;
@@ -583,7 +586,7 @@ namespace Lanbai.Test
             if (!ctx.toolTouched.Contains(path)) ctx.toolTouched.Add(path);
             if (restore)
                 ctx.undo.Push("JSON " + path, () => { File.WriteAllBytes(path, orig); AssetDatabase.ImportAsset(path); });
-            ctx.restoredBytes[path] = orig;
+            if (!ctx.restoredBytes.ContainsKey(path)) ctx.restoredBytes[path] = orig;   // 同一个文件改两次：比的是第一次之前的
             return path + "：" + string.Join("，", said.ToArray()) + (restore ? "（结束时逐字节写回；原文件备份在 backup/）" : "（不写回）");
         }
     }

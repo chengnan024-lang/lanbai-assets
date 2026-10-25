@@ -1,0 +1,56 @@
+[
+ {
+  "t": 940.36,
+  "APL": 160.6,
+  "red_clip_pct": 5.73,
+  "lavender_pct": 0.0
+ },
+ {
+  "t": 964.4,
+  "APL": 151.8,
+  "red_clip_pct": 3.97,
+  "lavender_pct": 0.0
+ },
+ {
+  "t": 971.4,
+  "APL": 151.8,
+  "red_clip_pct": 3.97,
+  "lavender_pct": 0.0
+ },
+ {
+  "t": 987.06,
+  "APL": 151.8,
+  "red_clip_pct": 3.97,
+  "lavender_pct": 0.0
+ },
+ {
+  "t": 988.5,
+  "APL": 152.9,
+  "red_clip_pct": 3.93,
+  "lavender_pct": 0.0
+ },
+ {
+  "t": 990.0,
+  "APL": 138.6,
+  "red_clip_pct": 0.0,
+  "lavender_pct": 0.0
+ },
+ {
+  "t": 991.5,
+  "APL": 106.8,
+  "red_clip_pct": 0.0,
+  "lavender_pct": 0.0
+ },
+ {
+  "t": 993.06,
+  "APL": 85.2,
+  "red_clip_pct": 0.0,
+  "lavender_pct": 0.0
+ },
+ {
+  "t": 1001.21,
+  "APL": 49.7,
+  "red_clip_pct": 0.0,
+  "lavender_pct": 0.0
+ }
+]
