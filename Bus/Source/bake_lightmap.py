@@ -51,7 +51,7 @@ def add_tubes(watts):
             bpy.context.scene.collection.objects.link(ou)
 
 
-def bake(objs, img, kind, samples, margin=4):
+def bake(objs, img, kind, samples, margin=2):     # = finish_bus.LM_MARGIN (2 texels a side at 2048)
     """bake into one image over several objects (Cabin_Static + the D-36 seats), each on its uv1 'UVLightmap'."""
     sc = bpy.context.scene
     sc.cycles.samples = samples
@@ -82,6 +82,62 @@ def bake(objs, img, kind, samples, margin=4):
     else:
         bpy.ops.object.bake(type='AO')
     return np.array(img.pixels[:], np.float32).reshape(img.size[1], img.size[0], 4)
+
+
+def island_mask(objs, res):
+    """the texels the objects' 'UVLightmap' triangles cover (row 0 = v 0, like img.pixels)."""
+    from PIL import Image, ImageDraw
+    im = Image.new('L', (res, res), 0)
+    d = ImageDraw.Draw(im)
+    for ob in objs:
+        me = ob.data
+        me.calc_loop_triangles()
+        uv = np.empty(2 * len(me.loops), np.float32)
+        me.uv_layers['UVLightmap'].data.foreach_get('uv', uv)
+        uv = uv.reshape(-1, 2) * res - 0.5                    # texel centres at (i + 0.5) / res
+        tri = np.empty(3 * len(me.loop_triangles), np.int64)
+        me.loop_triangles.foreach_get('loops', tri)
+        for t in uv[tri].reshape(-1, 3, 2):
+            d.polygon([tuple(p) for p in t], fill=255, outline=255)
+    return np.asarray(im) > 0
+
+
+def _shift(a, dy, dx):
+    out = np.zeros_like(a)
+    H, W = a.shape[:2]
+    ys, yd = (slice(dy, H), slice(0, H - dy)) if dy >= 0 else (slice(0, H + dy), slice(-dy, H))
+    xs, xd = (slice(dx, W), slice(0, W - dx)) if dx >= 0 else (slice(0, W + dx), slice(-dx, W))
+    out[ys, xs] = a[yd, xd]
+    return out
+
+
+def fill_black(arr, mask, ring=2, passes=3):
+    """D-40 #1 seam check (Docs~/slice/光照图接缝检查.md, fix 1): texels the bake left black (E = 0 and AO = 0: faces
+    thinner than a texel, texels under an attached part, the bake margin copied from them) inside the islands and in a
+    ring of 'ring' texels round them take the mean of their non-black 3 x 3 neighbours, 'passes' times. A texel a
+    bilinear lookup on a visible face can reach is then never black. Returns the number of texels filled."""
+    m = mask.copy()
+    for _ in range(ring):
+        m = m | _shift(m, 1, 0) | _shift(m, -1, 0) | _shift(m, 0, 1) | _shift(m, 0, -1)
+    filled = 0
+    for _ in range(passes):
+        black = ~np.any(arr != 0, axis=-1)
+        todo = black & m
+        if not todo.any():
+            break
+        acc = np.zeros_like(arr)
+        cnt = np.zeros(arr.shape[:2], np.float32)
+        for dy in (-1, 0, 1):
+            for dx in (-1, 0, 1):
+                if dy == 0 and dx == 0:
+                    continue
+                ok = _shift(~black, dy, dx)
+                acc += _shift(arr, dy, dx) * ok[..., None]
+                cnt += ok
+        sel = todo & (cnt > 0)
+        arr[sel] = acc[sel] / cnt[sel][:, None]
+        filled += int(sel.sum())
+    return filled
 
 
 class Sampler:
@@ -158,10 +214,16 @@ def main():
     out = np.zeros_like(lm)
     out[..., :3] = lm[..., :3] * k
     out[..., 3] = ao[..., 0]
+    mask = island_mask(objs, a.res)
+    black0 = int((~np.any(out != 0, axis=-1) & mask).sum())
+    nfill = fill_black(out, mask)
+    print('[bake] black texels inside islands %d (%.2f %% of the island texels); filled %d (islands + 2-texel ring)'
+          % (black0, 100.0 * black0 / max(1, int(mask.sum())), nfill))
     # report a few gray-card points (bible 4.3: ceiling next to the tubes bright, aisle floor 30-40 display)
     pts = dict(hero_cushion=(cush, (0, 1, 0)), aisle_floor=((0.10, B.FLOOR_Y, 0.0), (0, 1, 0)),
                ceiling_centre=((0.0, B.CEIL_Y, 0.0), (0, -1, 0)), lower_wall_R=((0.99 - 0.035, 0.9, 0.6), (-1, 0, 0)))
-    rep = dict(watts_per_tube=10.0 * k, scale=k, calibrated_on='mean of 7 mid-cabin cushions = %.2f' % a.target_E)
+    rep = dict(watts_per_tube=10.0 * k, scale=k, calibrated_on='mean of 7 mid-cabin cushions = %.2f' % a.target_E,
+               black_in_islands=black0, filled=nfill, island_texels=int(mask.sum()))
     for nm, (p, n) in pts.items():
         vv, dd = sample_at(out, p, n)
         rep[nm] = dict(E=[round(float(x), 3) for x in vv[:3]], AO=round(float(vv[3]), 3), dist=round(dd, 3))
