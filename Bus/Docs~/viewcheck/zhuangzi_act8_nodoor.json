@@ -1,0 +1,111 @@
+{
+ "_about": "D-33 #7a: Zhuangzi block occlusion with the act-8 erosion (zhuangzi_check.py)",
+ "eye": [
+  0.55,
+  1.7,
+  2.05
+ ],
+ "result": {
+  "zh": {
+   "971.4": {
+    "blocked": 0.109,
+    "by": {
+     "DoorGrab": 0.0943,
+     "TrimR0F": 0.0141,
+     "Body": 0.0006
+    }
+   },
+   "700.0": {
+    "blocked": 0.3491,
+    "by": {
+     "TrimR0F": 0.1132,
+     "DoorGrab": 0.0943,
+     "Door3_Stile1": 0.0755,
+     "Body": 0.0566,
+     "Door2_Stile1": 0.0094
+    }
+   }
+  },
+  "zht": {
+   "971.4": {
+    "blocked": 0.109,
+    "by": {
+     "DoorGrab": 0.0943,
+     "TrimR0F": 0.0141,
+     "Body": 0.0006
+    }
+   },
+   "700.0": {
+    "blocked": 0.3491,
+    "by": {
+     "TrimR0F": 0.1132,
+     "DoorGrab": 0.0943,
+     "Door3_Stile1": 0.0755,
+     "Body": 0.0566,
+     "Door2_Stile1": 0.0094
+    }
+   }
+  },
+  "ja": {
+   "971.4": {
+    "blocked": 0.1564,
+    "by": {
+     "DoorGrab": 0.0989,
+     "TrimR0F": 0.0376,
+     "Body": 0.0189,
+     "Door3_Stile0": 0.0011
+    }
+   },
+   "700.0": {
+    "blocked": 0.3847,
+    "by": {
+     "TrimR0F": 0.1209,
+     "DoorGrab": 0.0989,
+     "Body": 0.077,
+     "Door3_Stile1": 0.0659,
+     "Door3_Stile0": 0.011
+    }
+   }
+  },
+  "en": {
+   "971.4": {
+    "blocked": 0.175,
+    "by": {
+     "DoorGrab": 0.122,
+     "TrimR0F": 0.0394,
+     "Body": 0.0137
+    }
+   },
+   "700.0": {
+    "blocked": 0.378,
+    "by": {
+     "TrimR0F": 0.1463,
+     "DoorGrab": 0.122,
+     "Body": 0.0732,
+     "Door3_Stile0": 0.0122,
+     "Door2_Stile1": 0.0122
+    }
+   }
+  },
+  "de": {
+   "971.4": {
+    "blocked": 0.175,
+    "by": {
+     "DoorGrab": 0.122,
+     "TrimR0F": 0.0394,
+     "Body": 0.0137
+    }
+   },
+   "700.0": {
+    "blocked": 0.378,
+    "by": {
+     "TrimR0F": 0.1463,
+     "DoorGrab": 0.122,
+     "Body": 0.0732,
+     "Door3_Stile0": 0.0122,
+     "Door2_Stile1": 0.0122
+    }
+   }
+  }
+ }
+}
