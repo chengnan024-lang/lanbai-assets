@@ -171,26 +171,30 @@ inline float LanbaiPalaceLipVeil(float3 posWS, float3 eyeWS, float lipFade)
 // 终审 10-25 #5：珍珠光带。鳞默认是暗的；灯经过时，屋面上沿檐口方向、和灯同一位置的那一条（宽约 bandW）亮起来，
 // 灯往前走它就顺着檐口扫过去。这是写明的效果项（smoke and mirrors），不是镜面反射——檐下的灯在物理上照不出屋面的镜面高光。
 // 返回亮度（乘灯色、虹彩色在调用处做）。只用 0..6 号槽（7 号是殿门）。
-inline float LanbaiNacreBandOne(float4 lamp, float3 P, float3 Te, float bandW, float reach)
+inline float LanbaiNacreBandOne(float4 lamp, float3 P, float3 Te, float bandW, float reach, inout float2 hueAcc)
 {
     if (lamp.w <= 0.0) return 0;
     float3 dp = P - lamp.xyz;
     float de = dot(dp, Te);
     float dh2 = dot(dp.xz, dp.xz);
-    return lamp.w * exp(-de * de / (bandW * bandW)) / (1.0 + dh2 / (reach * reach));
+    float w = lamp.w * exp(-de * de / (bandW * bandW)) / (1.0 + dh2 / (reach * reach));
+    hueAcc += float2(w * saturate(abs(de) / (1.6 * bandW)), w);       // 带心 0 → 带边 1：色相在带的宽度上走一遍（终审 #5）
+    return w;
 }
 
-inline float3 LanbaiNacreBand(float3 P, float3 Ng, float bandW, float reach)
+inline float3 LanbaiNacreBand(float3 P, float3 Ng, float bandW, float reach, out float hue01)
 {
+    float2 hueAcc = 0;
     float3 Te = normalize(cross(float3(0, 1, 0), Ng) + float3(1e-4, 0, 0));    // 檐口方向（水平、贴着屋面）
     float3 s = 0;
-    s += LanbaiNacreBandOne(_Udon_Lamp0, P, Te, bandW, reach) * _Udon_LampColor0.rgb;
-    s += LanbaiNacreBandOne(_Udon_Lamp1, P, Te, bandW, reach) * _Udon_LampColor1.rgb;
-    s += LanbaiNacreBandOne(_Udon_Lamp2, P, Te, bandW, reach) * _Udon_LampColor2.rgb;
-    s += LanbaiNacreBandOne(_Udon_Lamp3, P, Te, bandW, reach) * _Udon_LampColor3.rgb;
-    s += LanbaiNacreBandOne(_Udon_Lamp4, P, Te, bandW, reach) * _Udon_LampColor4.rgb;
-    s += LanbaiNacreBandOne(_Udon_Lamp5, P, Te, bandW, reach) * _Udon_LampColor5.rgb;
-    s += LanbaiNacreBandOne(_Udon_Lamp6, P, Te, bandW, reach) * _Udon_LampColor6.rgb;
+    s += LanbaiNacreBandOne(_Udon_Lamp0, P, Te, bandW, reach, hueAcc) * _Udon_LampColor0.rgb;
+    s += LanbaiNacreBandOne(_Udon_Lamp1, P, Te, bandW, reach, hueAcc) * _Udon_LampColor1.rgb;
+    s += LanbaiNacreBandOne(_Udon_Lamp2, P, Te, bandW, reach, hueAcc) * _Udon_LampColor2.rgb;
+    s += LanbaiNacreBandOne(_Udon_Lamp3, P, Te, bandW, reach, hueAcc) * _Udon_LampColor3.rgb;
+    s += LanbaiNacreBandOne(_Udon_Lamp4, P, Te, bandW, reach, hueAcc) * _Udon_LampColor4.rgb;
+    s += LanbaiNacreBandOne(_Udon_Lamp5, P, Te, bandW, reach, hueAcc) * _Udon_LampColor5.rgb;
+    s += LanbaiNacreBandOne(_Udon_Lamp6, P, Te, bandW, reach, hueAcc) * _Udon_LampColor6.rgb;
+    hue01 = hueAcc.x / max(hueAcc.y, 1e-6);
     return s;
 }
 

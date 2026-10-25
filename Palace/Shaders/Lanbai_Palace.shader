@@ -212,9 +212,12 @@ Shader "Lanbai/Palace"
                 {
                     // 珍珠光带：灯的亮度 × 虹彩色（随 N·V 走 #E7C9D5 → #C3E3D5 → #B9C6EA）× 鳞的闪（鳞片法线朝向的起伏）
                     float glint = 0.3 + 0.7 * pow(saturate(dot(N, Ng)), 6.0);
-                    float3 bandL = LanbaiNacreBand(i.posWS, Ng, _BandWidth, _BandReach);
-                    spec = dot(bandL, float3(0.2126, 0.7152, 0.0722)) * _BandGain * glint
-                         * LanbaiNacre(NdotV, _NacreFace.rgb, _NacreMid.rgb, _NacreGraze.rgb, mask.b);
+                    float hue01;
+                    float3 bandL = LanbaiNacreBand(i.posWS, Ng, _BandWidth, _BandReach, hue01);
+                    // 色相沿带的宽度走 #E7C9D5 → #C3E3D5 → #B9C6EA（带心粉、带边蓝），膜厚再加一点起伏
+                    float hx = saturate(hue01 + (mask.b - 0.5) * 0.2);
+                    float3 hueC = hx < 0.5 ? lerp(_NacreFace.rgb, _NacreMid.rgb, hx * 2.0) : lerp(_NacreMid.rgb, _NacreGraze.rgb, hx * 2.0 - 1.0);
+                    spec = dot(bandL, float3(0.2126, 0.7152, 0.0722)) * _BandGain * glint * hueC;
                 }
                 // 环境反射：反射方向的水色（LanbaiHorizon），按菲涅耳与粗糙度压
                 float3 R = reflect(-V, N);

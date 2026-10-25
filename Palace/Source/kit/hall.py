@@ -26,6 +26,7 @@ H_TOTAL = 30.0
 BAYS = 9
 BAY = (X1 - X0) / BAYS          # 6.667
 DOOR_X, DOOR_W, DOOR_H = -18.0, 4.2, 7.5
+LEAF_OPEN = 92.0                # 门扇向里开的角度（终审 10-25 #4：70° 时从 −40° 斜看，门扇挡掉半个门洞；开到贴着暗腔侧壁）
 MINGJIAN = 11.5                 # 门廊明间宽（终审 10-25 #4；原来是一个开间 6.67）
 PX0, PX1, PZ0, PZ1, PY = -72.0, -8.0, 334.1, 376.6, 6.0   # 台基
 SX0, SX1, SZ0, SZ1 = -22.0, -14.0, 325.1, 334.1           # 阶（墄）
@@ -751,12 +752,14 @@ def _parts(lod=0):
     add('door', box((dx0 - fr, ylow, ZF - 0.15), (dx1 + fr, ylow + 0.5, ZF + 0.1), 'LacquerBlack'))
     add('door', box((dx0, PY, ZF - 0.1), (dx1, PY + 0.22, ZF + 0.25), 'LacquerBlack'))      # 门槛（低）
     lw, lt, hz = DOOR_W / 2, 0.16, ZF + 0.42
-    th = math.radians(70.0)
+    th = math.radians(LEAF_OPEN)
     c, s = math.cos(th), math.sin(th)
     for side in ('L', 'R'):
         leaf = UB()
-        leaf.box((0, 0, -lt / 2), (lw - 0.02, DOOR_H - 0.03, lt / 2), 'Wood', skip=('-z',))
-        leaf.quad((0, 0, -lt / 2), (0, DOOR_H - 0.03, -lt / 2), (lw - 0.02, DOOR_H - 0.03, -lt / 2), (lw - 0.02, 0, -lt / 2), 'Lacquer')
+        # 终审 10-25 #4：门扇在发光的暗腔里，被里面的光照着——板面用 DoorGlow（略暗的那一档由竖向渐变给），
+        # 朱漆横带和鎏金衔环仍是暗的细节；这样 −40° 斜看时整个门洞都是亮的（≥ 3°），门扇读成光里的门扇
+        leaf.box((0, 0, -lt / 2), (lw - 0.02, DOOR_H - 0.03, lt / 2), 'DoorGlow', skip=('-z',))
+        leaf.quad((0, 0, -lt / 2), (0, DOOR_H - 0.03, -lt / 2), (lw - 0.02, DOOR_H - 0.03, -lt / 2), (lw - 0.02, 0, -lt / 2), 'DoorGlow')
         lp = [('door', solid(leaf))]
         if D:
             # 两道朱漆横带（门板加固的“楅”）

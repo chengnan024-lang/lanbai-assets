@@ -206,6 +206,7 @@ def nacre_band(exr, Pu, e, t):
     Te /= np.linalg.norm(Te, axis=-1, keepdims=True) + 1e-9
     lamp_col = srgb_to_lin('#FF9C2F')
     lum = 0.0
+    hacc = 0.0
     for i, fp in enumerate(lamp_points()):
         ph = (i * 0.618034) % 1.0
         xf = min(1.0, max(0.0, (t - (835.16 + ph * 36.0)) / 4.0))
@@ -213,11 +214,13 @@ def nacre_band(exr, Pu, e, t):
         dp = P - fp
         de = np.sum(dp * Te, -1)
         dh2 = dp[:, 0] ** 2 + dp[:, 2] ** 2
-        lum = lum + w * np.exp(-de * de / B_['width'] ** 2) / (1 + dh2 / B_['reach'] ** 2)
+        wk = w * np.exp(-de * de / B_['width'] ** 2) / (1 + dh2 / B_['reach'] ** 2)
+        lum = lum + wk
+        hacc = hacc + wk * np.clip(np.abs(de) / (1.6 * B_['width']), 0, 1)
     lum = lum * float(lamp_col @ np.array([0.2126, 0.7152, 0.0722]))
     V = e - P
     V /= np.linalg.norm(V, axis=-1, keepdims=True)
-    x = np.clip(1 - np.abs(np.sum(N * V, -1)), 0, 1)                   # LanbaiNacre（膜厚取 0.5）
+    x = np.clip(hacc / np.maximum(lum, 1e-9), 0, 1)                 # 色相沿带的宽度：带心粉 → 带边蓝（shader 同式）
     c0, c1, c2 = NACRE_COLS
     col = np.where((x < 0.5)[:, None], c0 + (c1 - c0) * (x * 2)[:, None], c1 + (c2 - c1) * (x * 2 - 1)[:, None])
     cell = np.floor(P * 3.0)                                                   # 每片鳞（约 0.33 m）一个伪随机的朝向

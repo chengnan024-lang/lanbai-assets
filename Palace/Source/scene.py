@@ -185,7 +185,7 @@ def add_lights(p=PARAMS):
         co.visible_volume_scatter = False
         co.lightgroup = 'warm'
         bpy.context.scene.collection.objects.link(co)
-        if _T.get('nacre_lift', 0.0) > 0.0 and 'HousesNacre' in bpy.data.objects:   # Unity：珍珠母的解析高光只按挪高的灯算
+        if 'HousesNacre' in bpy.data.objects:   # Unity：珍珠母的灯高光只有珍珠光带（LanbaiNacreBand），不吃普通的解析灯
             xc = bpy.data.collections.get('LinkNotHouses')
             if xc is None:
                 xc = bpy.data.collections.new('LinkNotHouses')
