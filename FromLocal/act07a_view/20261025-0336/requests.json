@@ -1,0 +1,27 @@
+{
+  "steps": [
+    {
+      "op": "refresh"
+    },
+    {
+      "op": "play",
+      "seconds": 5
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_SeaViewAudit.Begin"
+    },
+    {
+      "op": "wait",
+      "seconds": 35
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_SeaViewAudit.Status"
+    },
+    {
+      "op": "stop"
+    }
+  ],
+  "id": "act07a_view_20261025_0336"
+}

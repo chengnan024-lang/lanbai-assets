@@ -1,0 +1,17 @@
+{
+    "id": "flicker_20261025_0327_fix",
+    "state": "failed",
+    "step": 1,
+    "total": 4,
+    "started": "2026-10-25 03:25:02",
+    "finished": "2026-10-25 03:25:10",
+    "error": "Exception: 没找到静态方法 Lanbai.Tests.LB_FullAssembly.Programs()\n  at Lanbai.Remote.LB_Remote.StepCall (Lanbai.Remote.RStep s) [0x000af] in E:\\IDMdownload\\VRCC\\dream\\Assets\\Lanbai\\Editor\\Remote\\LB_Remote.cs:543 \r\n  at Lanbai.Remote.LB_Remote.Advance (System.Double now) [0x0027f] in E:\\IDMdownload\\VRCC\\dream\\Assets\\Lanbai\\Editor\\Remote\\LB_Remote.cs:445 \r\n  at Lanbai.Remote.LB_Remote.Tick () [0x00061] in E:\\IDMdownload\\VRCC\\dream\\Assets\\Lanbai\\Editor\\Remote\\LB_Remote.cs:313 ",
+    "log": [
+        "03:25:02 收到请求，共 4 步",
+        "03:25:02 刷新导入（AssetDatabase.Refresh）",
+        "03:25:07 （脚本重新加载，接着做第 1 步）",
+        "03:25:09 导入和编译完成",
+        "03:25:10 出错：Exception: 没找到静态方法 Lanbai.Tests.LB_FullAssembly.Programs()"
+    ],
+    "files": []
+}
