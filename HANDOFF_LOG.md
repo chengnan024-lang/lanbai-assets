@@ -4,6 +4,44 @@
 
 > **2026-10-24 起，读这份日志的本地是 ChatGPT「阿白」**（10-24 已接管，D-40a #8、D-41）。先读根目录的 `HANDOFF_CHATGPT.md`：协作边界、第一次接管的步骤、回传协议都在那里。下面各条里的“你”指本地，现在就是阿白。旧条里“技术上怎么实现由你决定”（09-28）作废：技术架构归总工程师，高风险改动先备份并经小楠确认（`HANDOFF_CHATGPT.md` §F）。
 
+## 2026-10-26（北京 05:00）· 🚌 车厢先交（D-44）：FullPreview 里换掉旧车
+同步：`Bus/Models/` `Bus/Textures/` `Bus/Editor/` `Bus/Scripts/` `Cabin/Shaders/` `Cabin/Scripts/` `Cabin/Editor/` `Common/` `Rain/Shaders/` `Rain/Textures/Glass/`
+不同步：`Bus/Source/` `Bus/Docs~/` `Rain/Runtime/`（生成代码和文档 Unity 用不到；雨的运行时先不用）
+
+**是什么：**
+- 车包的先交版，换掉 FullPreview 里的旧车厢（D-44 #1）。旧车厢的棋盘格 dither 消散，就是 1016–1042 s 那片一直在的细闪。
+- 换上的是整辆 PAZ-672M，车厢、车外皮、轮子都有，全部用 `Lanbai/Cabin`：漂白，加世界坐标 FBM 上的 clip 侵蚀，不抖动。
+- D-46 的侵蚀场改动也在这一版：7a 头顶先开，387 s 斯涅尔之窗看得到 33 %。管灯按 D-47 改了（0.95 m 灯罩，左排留在原位）。
+- 菜单：`蓝白/Build/车厢（先交）/搭建（车厢 + 车外皮）`。步骤照 `Bus/Docs~/D44_车厢先交.md` §5。有 ERROR 就只搭、不换；没有 ERROR 才把旧车关掉（不删）。`LB_Journey` 一个字段都不改。
+- 雨玻璃 `Lanbai/BusGlass` 在 `Rain/Shaders/`，同步行里加上了。
+
+**已知的问题：**
+- **模型还没减面**（59.5 万三角形）。性能基线要标“先交版、未减面”。
+- 座椅近景有约 3 % 的黑 texel，光照图的问题。
+- 这两样都等整车重出时一起修。
+
+**这一条明文允许：**
+- 在 `Lanbai_FullPreview.unity` 里点 `蓝白/Director/1 Generate Dispatcher`，编译完点 `2 Wire Scene`，再点 `3 Report`。点之前先备份 `LanbaiActDispatcher.cs`，Generate 只重写生成段，跑完和备份 diff 一下。
+- **正式场景 `Lanbai.unity` 不动。**
+- 车厢驱动报了 `LanbaiTakesOverNothing()`，它的全片窗口不会把别人盖掉。
+- `LB_Journey` 的出生补丁（Director 1.3 r2）**仍在等小楠确认**，这次不改。不改的话，出生照旧是 3 秒淡入，不影响换车。
+
+**旧的“不覆盖”清单已作废：**
+- Dispatcher 已收回（Director v1.3）；
+- Overlay 已改名；
+- 诗句两个文件已由字体第 5 版取代。
+- 你本地自己的修复（SeaA/SeaB 运行时材质、白遮罩优先级 150 等）照旧保留。
+
+**要你做的（技术验收，D-46）：**
+1. 照文档 §5 做，§6 列的时刻都看一遍。1016–1042 s 新车、旧车各录一次（新车装好以后关掉旧车重录），用 `flicker_probe` 对比。
+2. **出发按钮**：默认放在新仪表台方向盘右边 (−0.40, 1.283, 3.22)。在 Play 里点一次，点得到、看着不别扭就留着；要换地方，写在问题单里。
+3. **抬头看斯涅尔之窗**：387、446、506 s，D-28 主座位抬头 60° 各截一张。
+4. 性能：和你的底账比，标“未减面”。
+5. 结果放 `FromLocal/bus_dropin/<时间>/`，问题写 `FromLocal/bus_dropin/问题.md`。
+
+**问题处理：**
+- 问题处理：flicker_1025-04（旧车厢棋盘消散）→ 云端已交先交版（main 214030c），等你接入后复测。
+
 ## 2026-10-26（北京 04:40）· 🈳 字幕（字体第 5 版，D-45）和测试工具 1.2.2 进 main
 同步：`Fonts/` `Engineering/UnityTest/` `Common/Tools~/`
 （**诗句的两个文件这次一起同步**：第 5 版重写了驱动和烘焙，不再用 maxVisibleLines，你本地的逐行烘焙由第 5 版取代。覆盖前照 §F 先备份。）
