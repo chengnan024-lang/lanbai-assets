@@ -1,0 +1,404 @@
+{
+ "F5p": {
+  "hall_upper": {
+   "weber": -0.072,
+   "weber_median": -0.073,
+   "px": 2285
+  },
+  "hall": {
+   "weber": 0.829,
+   "weber_median": -0.073,
+   "px": 6409
+  },
+  "que": {
+   "weber": -0.409,
+   "weber_median": -0.537,
+   "px": 170125
+  },
+  "houses": {
+   "weber": 1.94,
+   "weber_median": -0.176,
+   "px": 1855
+  },
+  "house_roofs": {
+   "weber": -0.098,
+   "weber_median": -0.126,
+   "px": 441
+  }
+ },
+ "F6": {
+  "hall_upper": {
+   "weber": -0.541,
+   "weber_median": -0.542,
+   "px": 26762
+  },
+  "hall": {
+   "weber": 0.244,
+   "weber_median": -0.483,
+   "px": 152190
+  }
+ },
+ "F7_40x": {
+  "hall_upper": {
+   "weber": -0.577,
+   "weber_median": -0.571,
+   "px": 1519
+  },
+  "hall": {
+   "weber": 1.097,
+   "weber_median": -0.536,
+   "px": 143072
+  }
+ },
+ "F7_vr": {
+  "hall_upper": {
+   "weber": -0.536,
+   "weber_median": -0.483,
+   "px": 3543
+  },
+  "hall": {
+   "weber": 0.306,
+   "weber_median": -0.555,
+   "px": 118583
+  }
+ },
+ "F7pb": {
+  "que": {
+   "weber": 0.251,
+   "weber_median": 0.0,
+   "px": 2646
+  },
+  "que_top": {
+   "weber": -0.02,
+   "weber_median": 0.0,
+   "px": 1037
+  },
+  "houses": {
+   "weber": 0.01,
+   "weber_median": 0.06,
+   "px": 73435
+  },
+  "house_roofs": {
+   "weber": 0.056,
+   "weber_median": 0.067,
+   "px": 4471
+  }
+ },
+ "F7pbL": {
+  "que": {
+   "weber": 0.227,
+   "weber_median": 0.0,
+   "px": 2659
+  },
+  "que_top": {
+   "weber": -0.038,
+   "weber_median": 0.0,
+   "px": 1043
+  },
+  "houses": {
+   "weber": 0.011,
+   "weber_median": 0.06,
+   "px": 73310
+  },
+  "house_roofs": {
+   "weber": 0.056,
+   "weber_median": 0.067,
+   "px": 4474
+  }
+ },
+ "F7pbR": {
+  "que": {
+   "weber": 0.241,
+   "weber_median": 0.0,
+   "px": 2647
+  },
+  "que_top": {
+   "weber": -0.021,
+   "weber_median": 0.0,
+   "px": 1039
+  },
+  "houses": {
+   "weber": 0.009,
+   "weber_median": 0.06,
+   "px": 73534
+  },
+  "house_roofs": {
+   "weber": 0.055,
+   "weber_median": 0.067,
+   "px": 4474
+  }
+ },
+ "h722": {
+  "hall_upper": {
+   "weber": -0.394,
+   "weber_median": -0.428,
+   "px": 16946
+  },
+  "hall": {
+   "weber": 0.293,
+   "weber_median": -0.315,
+   "px": 56545
+  },
+  "houses": {
+   "weber": -0.444,
+   "weber_median": -0.46,
+   "px": 22326
+  },
+  "house_roofs": {
+   "weber": -0.392,
+   "weber_median": -0.373,
+   "px": 8090
+  }
+ },
+ "h728": {
+  "hall_upper": {
+   "weber": -0.42,
+   "weber_median": -0.465,
+   "px": 23791
+  },
+  "hall": {
+   "weber": 0.236,
+   "weber_median": -0.358,
+   "px": 84825
+  },
+  "houses": {
+   "weber": -0.524,
+   "weber_median": -0.46,
+   "px": 20025
+  },
+  "house_roofs": {
+   "weber": -0.437,
+   "weber_median": -0.414,
+   "px": 5486
+  }
+ },
+ "hot": {
+  "hall": {
+   "weber": -0.004,
+   "weber_median": -0.042,
+   "px": 99434
+  },
+  "houses": {
+   "weber": -0.002,
+   "weber_median": 0.045,
+   "px": 45004
+  },
+  "house_roofs": {
+   "weber": -0.116,
+   "weber_median": -0.193,
+   "px": 318
+  }
+ },
+ "hot840": {
+  "hall": {
+   "weber": 0.014,
+   "weber_median": 0.0,
+   "px": 109281
+  },
+  "houses": {
+   "weber": 0.003,
+   "weber_median": 0.047,
+   "px": 58525
+  },
+  "house_roofs": {
+   "weber": -0.108,
+   "weber_median": -0.188,
+   "px": 572
+  }
+ },
+ "hot860": {
+  "hall": {
+   "weber": -0.008,
+   "weber_median": 0.0,
+   "px": 93285
+  },
+  "houses": {
+   "weber": -0.007,
+   "weber_median": 0.052,
+   "px": 41819
+  },
+  "house_roofs": {
+   "weber": -0.124,
+   "weber_median": -0.203,
+   "px": 315
+  }
+ },
+ "hot875": {
+  "hall": {
+   "weber": -0.008,
+   "weber_median": 0.0,
+   "px": 65558
+  },
+  "houses": {
+   "weber": -0.01,
+   "weber_median": 0.0,
+   "px": 34161
+  },
+  "house_roofs": {
+   "weber": -0.084,
+   "weber_median": -0.146,
+   "px": 172
+  }
+ },
+ "p706": {
+  "hall_upper": {
+   "weber": -0.201,
+   "weber_median": -0.234,
+   "px": 8610
+  },
+  "hall": {
+   "weber": 0.521,
+   "weber_median": -0.198,
+   "px": 25743
+  },
+  "houses": {
+   "weber": -0.283,
+   "weber_median": -0.414,
+   "px": 22837
+  },
+  "house_roofs": {
+   "weber": -0.058,
+   "weber_median": -0.303,
+   "px": 5411
+  }
+ },
+ "poem": {
+  "hall_upper": {
+   "weber": -0.352,
+   "weber_median": -0.338,
+   "px": 11997
+  },
+  "hall": {
+   "weber": 0.285,
+   "weber_median": -0.385,
+   "px": 37531
+  },
+  "houses": {
+   "weber": -0.297,
+   "weber_median": -0.414,
+   "px": 24377
+  },
+  "house_roofs": {
+   "weber": -0.276,
+   "weber_median": -0.362,
+   "px": 6957
+  }
+ },
+ "proc": {
+  "hall_upper": {
+   "weber": -0.136,
+   "weber_median": -0.133,
+   "px": 4978
+  },
+  "hall": {
+   "weber": 0.651,
+   "weber_median": -0.141,
+   "px": 14191
+  },
+  "houses": {
+   "weber": -0.195,
+   "weber_median": -0.414,
+   "px": 29057
+  },
+  "house_roofs": {
+   "weber": -0.12,
+   "weber_median": -0.31,
+   "px": 8648
+  }
+ },
+ "proc_l": {
+  "houses": {
+   "weber": -0.316,
+   "weber_median": -0.463,
+   "px": 85350
+  },
+  "house_roofs": {
+   "weber": -0.085,
+   "weber_median": -0.414,
+   "px": 29388
+  }
+ },
+ "que_l": {
+  "hall_upper": {
+   "weber": -0.071,
+   "weber_median": -0.073,
+   "px": 2872
+  },
+  "hall": {
+   "weber": 0.717,
+   "weber_median": -0.073,
+   "px": 8397
+  },
+  "que": {
+   "weber": -0.507,
+   "weber_median": -0.585,
+   "px": 197980
+  },
+  "que_top": {
+   "weber": -0.594,
+   "weber_median": -0.593,
+   "px": 30139
+  },
+  "houses": {
+   "weber": 0.439,
+   "weber_median": -0.184,
+   "px": 2595
+  },
+  "house_roofs": {
+   "weber": -0.027,
+   "weber_median": -0.184,
+   "px": 786
+  }
+ },
+ "que_lamp": {
+  "hall_upper": {
+   "weber": -0.077,
+   "weber_median": -0.073,
+   "px": 4579
+  },
+  "hall": {
+   "weber": 0.755,
+   "weber_median": -0.081,
+   "px": 13056
+  },
+  "que": {
+   "weber": -0.523,
+   "weber_median": -0.63,
+   "px": 353334
+  },
+  "houses": {
+   "weber": 0.278,
+   "weber_median": -0.247,
+   "px": 9835
+  },
+  "house_roofs": {
+   "weber": -0.104,
+   "weber_median": -0.24,
+   "px": 2150
+  }
+ },
+ "s806": {
+  "que": {
+   "weber": 0.477,
+   "weber_median": 0.0,
+   "px": 4797
+  },
+  "que_top": {
+   "weber": -0.024,
+   "weber_median": 0.0,
+   "px": 1352
+  }
+ },
+ "s809": {
+  "que": {
+   "weber": 0.463,
+   "weber_median": 0.0,
+   "px": 4143
+  },
+  "que_top": {
+   "weber": -0.025,
+   "weber_median": 0.0,
+   "px": 1324
+  }
+ }
+}

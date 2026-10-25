@@ -176,7 +176,7 @@ public static class LanbaiPalaceBuilder
         // 门里的光（不透明）与门口的锥形光卡（加色）
         var glow = Mat("DoorGlow", Shader.Find("Lanbai/PalaceGlow"));
         glow.SetVector("_Glow", new Vector4(1.6f * LanbaiPalaceData.DoorColor[0], 1.6f * LanbaiPalaceData.DoorColor[1], 1.6f * LanbaiPalaceData.DoorColor[2], 0f));   // 第 4 轮：×3 → ×1.6 + 竖向渐变
-        glow.SetFloat("_Atten", 0.0025f);      // 第 10 轮（终审 #2）：门光衰减比灯焰慢（0.004 → 0.0025），F5p 335 m 外门芯 ≥ 150
+        glow.SetFloat("_Atten", 0.0023f);      // 第 10 轮（终审 #2）：门光衰减比灯焰慢（0.004 → 0.0023），F5p 335 m 外门芯 ≥ 150
         d["DoorGlow"] = glow;
         var cone = Mat("DoorCone", Shader.Find("Lanbai/PalaceGlow"));
         cone.SetVector("_Glow", glow.GetVector("_Glow"));

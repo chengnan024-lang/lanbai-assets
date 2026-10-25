@@ -1,0 +1,11 @@
+F5p all 0.099% outside halo discs 0.024%
+F6 all 0.159% outside halo discs 0.144%
+F7_40x all 0.342% outside halo discs 0.287%
+proc all 0.044% outside halo discs 0.006%
+proc_l all 0.491% outside halo discs 0.171%
+que_lamp all 0.215% outside halo discs 0.061%
+h722 all 0.056% outside halo discs 0.029%
+h728 all 0.061% outside halo discs 0.056%
+proc_l roof px 29388 frac >2x water 0.084 frac >1x 0.168
+h722 roof px 8090 frac >2x water 0.000 frac >1x 0.000
+h728 roof px 5486 frac >2x water 0.000 frac >1x 0.000
