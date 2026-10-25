@@ -7,7 +7,7 @@
  "indigo_lift": 4.0,
  "spec_I": 5.46,
  "door_spec_I": 60.0,
- "nacre_spec_gain": 8.0,
+ "nacre_spec_gain": 24.0,
  "door_accent_I": 70.0,
  "door_spill_I": 60.0,
  "door_spill_range": 4.0,
@@ -34,6 +34,10 @@
    0.0038,
    0.0052
   ],
-  "note": "终审 10-25 #1(2)：大殿后 45 m 的竖直加法卡（Lanbai/PalaceGlow _Wash），屋顶挡住它"
+  "note": "终审 10-25 #1(2)：大殿后 45 m 的竖直加法卡（Lanbai/PalaceGlow _Wash），屋顶挡住它",
+  "ramp": [
+   706.0,
+   718.0
+  ]
  }
 }

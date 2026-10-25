@@ -158,7 +158,9 @@ def composite(exr, shot, gains=None, halo=True, flame_scale=1.0):
     fc = fog_color(D)
     img = np.where(hit[..., None], surf * (1 - F[..., None]) + fc * F[..., None], fc)
     if WASH:
-        img = img + wash_card(D, e, dist, hit)[..., None] * np.array(WASH['rgb_lin'])
+        r0, r1 = WASH.get('ramp', [0.0, 0.0])
+        x = min(1.0, max(0.0, (t - r0) / max(r1 - r0, 0.01)))     # 驱动按 t 写 _Gain：706 → 718 淡入
+        img = img + wash_card(D, e, dist, hit)[..., None] * np.array(WASH['rgb_lin']) * (x * x * (3 - 2 * x))
     # 门里的光（Lanbai/PalaceGlow，不透明、_FogMode 2）：那些像素就是 glow × exp(−d·0.004)，不混雾色
     if 'Combined_doorglow' in exr:
         gm = (groups['doorglow'].sum(-1) > 0.5 * S.sum(-1)) & hit

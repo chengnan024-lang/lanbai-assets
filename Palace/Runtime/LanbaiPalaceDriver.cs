@@ -47,6 +47,11 @@ public class LanbaiPalaceDriver : UdonSharpBehaviour
     public float doorIntensity = 60f;          // 线光源的 I（湿石面上的高光亮带；第 4 轮，美术评审 r3 #3）
     public Color doorColorLinear = new Color(1.0f, 0.473f, 0.074f, 1f);  // #FFB74D 线性
     public float doorRadius = 0.6f;
+    [Header("上方微光卡（终审 10-25 #1）：706 → 718 从 0 淡到 1，殿是“慢慢显出来”的")]
+    public Renderer wash;
+    public float washFrom = 706f, washTo = 718f;
+    [Header("解析灯换位子不“啪”一下（终审 10-25）：第 7 近的灯按离第 8 近的距离差淡进淡出")]
+    public float slotFadeM = 3f;
 
     private int[] _idLamp, _idCol, _idDir, _idAxis;
     private int _idCount;
@@ -54,6 +59,8 @@ public class LanbaiPalaceDriver : UdonSharpBehaviour
     private float[] _d2;
     private int[] _pick;
     private MaterialPropertyBlock _mpb;
+    private MaterialPropertyBlock _mpbW;
+    private int _idGain;
 
     void Start()
     {
@@ -73,6 +80,8 @@ public class LanbaiPalaceDriver : UdonSharpBehaviour
         _d2 = new float[n];
         _pick = new int[7];
         _mpb = new MaterialPropertyBlock();
+        _mpbW = new MaterialPropertyBlock();
+        _idGain = VRCShader.PropertyToID("_Gain");
         ApplyLite();
     }
 
@@ -105,6 +114,13 @@ public class LanbaiPalaceDriver : UdonSharpBehaviour
             return;
         }
         if (rPalaceTf == null || lampLocal == null) return;
+        if (wash != null)
+        {
+            float x = Mathf.Clamp01((t - washFrom) / Mathf.Max(washTo - washFrom, 0.01f));
+            wash.GetPropertyBlock(_mpbW);
+            _mpbW.SetFloat(_idGain, x * x * (3f - 2f * x));     // 只按 t（D-33 #6）
+            wash.SetPropertyBlock(_mpbW);
+        }
         int n = lampLocal.Length;
         Vector3 eye = eyeBusRelative;                      // 车在世界原点（跑步机）
         for (int i = 0; i < n; i++)
@@ -128,6 +144,15 @@ public class LanbaiPalaceDriver : UdonSharpBehaviour
             }
             _pick[k] = best;
         }
+        // 第 8 近的那盏（第一盏没进位子的）离眼睛多远：位子里的灯按离它的距离差淡出，换位子时没有跳变
+        float cut = float.MaxValue;
+        for (int i = 0; i < n; i++)
+        {
+            bool used = false;
+            for (int j = 0; j < 7; j++) if (_pick[j] == i) used = true;
+            if (!used && _d2[i] < cut) cut = _d2[i];
+        }
+        float cutD = cut < float.MaxValue ? Mathf.Sqrt(cut) : float.MaxValue;
         Vector4 col = new Vector4(lampColorLinear.r, lampColorLinear.g, lampColorLinear.b, lampRadius);
         for (int k = 0; k < 7; k++)
         {
@@ -138,7 +163,8 @@ public class LanbaiPalaceDriver : UdonSharpBehaviour
                 continue;
             }
             Vector3 w = rPalaceTf.TransformPoint(lampLocal[i]);
-            VRCShader.SetGlobalVector(_idLamp[k], new Vector4(w.x, w.y, w.z, lampIntensity));
+            float fade = cutD < float.MaxValue ? Mathf.Clamp01((cutD - Mathf.Sqrt(_d2[i])) / Mathf.Max(slotFadeM, 0.01f)) : 1f;
+            VRCShader.SetGlobalVector(_idLamp[k], new Vector4(w.x, w.y, w.z, lampIntensity * fade));
             VRCShader.SetGlobalVector(_idCol[k], col);
             VRCShader.SetGlobalVector(_idDir[k], new Vector4(0f, -1f, 0f, -1f));    // 全向
             VRCShader.SetGlobalVector(_idAxis[k], Vector4.zero);

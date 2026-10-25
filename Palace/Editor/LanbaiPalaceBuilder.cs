@@ -124,6 +124,7 @@ public static class LanbaiPalaceBuilder
         d.doorHalfHeight = LanbaiPalaceData.DoorHalfHeight;
         d.doorIntensity = LanbaiPalaceData.DoorSpecI;
         d.doorColorLinear = Lin(LanbaiPalaceData.DoorColor);
+        foreach (var r in renderers) if (r.name.StartsWith("BackWash")) d.wash = r;      // 上方微光卡（706 → 718 淡入）
         Lanbai.Udon.LanbaiUdonPrograms.CopyProxyToUdon(d);
         EditorUtility.SetDirty(d);
         AssetDatabase.SaveAssets();
@@ -147,10 +148,11 @@ public static class LanbaiPalaceBuilder
         Std(d, pal, "Verdigris", null, null, null, 0, 0.32f, 0f, 0.3f, "#3E7A68");
         Std(d, pal, "Stone", "Stone", "Stone", "Stone", 0, 0.30f, 0f, 0.6f, "#FFFFFF");
         Std(d, pal, "StoneDark", "Stone", "Stone", "Stone", 0, 0.30f, 0f, 0.4f, "#CCCCCC");
-        Std(d, pal, "FishScale", "FishScale", "FishScale", "FishScale", 2, 0.86f, 0f, 0.25f, "#616161");   // 终审 #1(3)：漫反射 ×0.12（线性）
+        Std(d, pal, "FishScale", "FishScale", "FishScale", "FishScale", 2, 0.86f, 0f, 0.1f, "#454545");   // 终审 #1(3)：漫反射 ×0.06（线性）、淤泥 0.1
         d["FishScale"].SetFloat("_LampGain", LanbaiPalaceData.NacreLampGain);     // 珍珠光要“滚出来”（评审 r3 #7）
         d["FishScale"].SetFloat("_NacreLift", LanbaiPalaceData.NacreLift);         // 第 8 轮：灯在檐下照不出镜面高光，按挪高的灯算（README §3）
         d["FishScale"].SetFloat("_NacreSpread", LanbaiPalaceData.NacreSpread);
+        d["FishScale"].SetFloat("_EnvSpec", 0.15f);        // 终审 10-25 #1/#5：鳞默认是暗的，不整片反射上方的亮水
         Std(d, pal, "Cowrie", "Cowrie", "Cowrie", "Cowrie", 3, 0.92f, 0f, 0.2f, "#FFFFFF");
         d["Cowrie"].SetFloat("_LampGain", LanbaiPalaceData.CowrieLampGain);       // 第 8 轮 r6：贝壳上一串小高光（终审：之前写在 Std 前面，KeyNotFound）
         Std(d, pal, "Tile", "Stone", "Stone", null, 0, 0.35f, 0f, 0.7f, "#929495");   // 终审 #1(3)：×0.3（线性）

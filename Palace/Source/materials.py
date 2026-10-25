@@ -132,8 +132,9 @@ def standard(name, base, normal=None, mask=None, smooth=0.5, metallic=0.0, silt=
         e.color = (*s2l('#C3E3D5'), 1)
         b.link(lw.outputs['Facing'], ramp.inputs[0])
         b.link(ramp.outputs[0], bs.inputs['Specular Tint'])
-        bs.inputs['Specular IOR Level'].default_value = 0.9
-        bs.inputs['Coat Weight'].default_value = 0.4
+        # 终审 10-25 #1/#5：鳞默认是暗的——不加清漆层、基础高光压低，屋面不再整片反射上方的亮水；珍珠光只来自灯（_NacreLift 的那一条带）
+        bs.inputs['Specular IOR Level'].default_value = 0.3
+        bs.inputs['Coat Weight'].default_value = 0.0
         b.link(ramp.outputs[0], bs.inputs['Coat Tint'])
     out = bs.outputs[0]
     if cull:
@@ -170,8 +171,8 @@ def build_all():
     M['Verdigris'] = standard('M_07b_Verdigris', '#3E7A68', smooth=0.32)
     M['Stone'] = standard('M_07b_Stone', T('Stone_Albedo'), T('Stone_Normal'), T('Stone_Mask'), silt=0.6)
     M['StoneDark'] = standard('M_07b_StoneDark', T('Stone_Albedo'), T('Stone_Normal'), T('Stone_Mask'), silt=0.4, tint=(0.8, 0.8, 0.8))
-    # 终审 10-25 #1(3)：屋面要比水暗——鳞瓦漫反射 ×0.12、瓦 ×0.3（线性；珍珠母的光在高光里，不在漫反射里）
-    M['FishScale'] = standard('M_07b_FishScale', T('FishScale_Albedo'), T('FishScale_Normal'), T('FishScale_Mask'), silt=0.25, irid=True, tint=(0.12, 0.12, 0.12))
+    # 终审 10-25 #1(3)：屋面要比水暗——鳞瓦漫反射 ×0.06、淤泥 0.1、瓦 ×0.3（线性；珍珠母的光在高光里，不在漫反射里）
+    M['FishScale'] = standard('M_07b_FishScale', T('FishScale_Albedo'), T('FishScale_Normal'), T('FishScale_Mask'), silt=0.1, irid=True, tint=(0.06, 0.06, 0.06))
     M['Cowrie'] = standard('M_07b_Cowrie', T('Cowrie_Albedo'), T('Cowrie_Normal'), T('Cowrie_Mask'), silt=0.2, nstr=1.5)
     M['Tile'] = standard('M_07b_Tile', T('Stone_Albedo'), T('Stone_Normal'), None, smooth=0.35, silt=0.7, tint=(0.29, 0.3, 0.3))
     M['Wood'] = standard('M_07b_Wood', '#2C2522', smooth=0.35)
