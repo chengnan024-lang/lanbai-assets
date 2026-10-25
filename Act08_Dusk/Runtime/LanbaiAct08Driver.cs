@@ -44,6 +44,10 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
     public Renderer[] cards;                   // Lanbai/CloudCard renderers: upper, lower, wisps
     public int[] cardGroup;                    // 0 upper from 8-i, 1 upper from 8-ii, 2 lower (other sky, 8-ii), 3 wisp
     public float[] cardGain;
+    public float[] cardFogCap;                 // r2: near / upper cards keep their body (_FogCap 0.55-0.7), far ones 1
+    public Vector4[] cardMelt;                 // r2: softer bases on the front cards (_Melt)
+    public float[] cardTopY, cardDist;         // r2: 8-i cards show only while their top is under the gap's lower edge
+    public float ceilingOuterR = 3100f;
     public Vector3[] wispBase, wispTangent;    // wisps only (index = wisp order among cards with group 3)
     public float[] wispDrift;
     public Light worldSun;                     // THE main light (D-24)
@@ -99,7 +103,7 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
 
     private MaterialPropertyBlock _mpb;
     private int _idSeaLevel, _idSeaMode, _idSeaClock, _idRefl, _idDissolve, _idFog, _idSunDisc, _idSunDir;
-    private int _idGain, _idAlpha, _idSunColor, _idSkyUp, _idGround;
+    private int _idGain, _idAlpha, _idSunColor, _idSkyUp, _idGround, _idFogCap, _idMelt;
     private bool _ready, _seaModeOurs;
     private int _ceilingMat = -1, _ceilingOn = -1;   // -1 unknown (activation / backward jump: set from t), 0 / 1
     private int _skyStage = -1;                // 0 8-i applied, 1 blending to 8-ii, 2 8-ii applied, 3 blending to blue, 4 blue applied
@@ -165,6 +169,8 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
         _idSunColor = VRCShader.PropertyToID("_SunColor");
         _idSkyUp = VRCShader.PropertyToID("_SkyUpColor");
         _idGround = VRCShader.PropertyToID("_GroundColor");
+        _idFogCap = VRCShader.PropertyToID("_FogCap");
+        _idMelt = VRCShader.PropertyToID("_Melt");
         _ready = true;
     }
 
@@ -267,7 +273,7 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
         Ceiling(t, h);
 
         // ---- the cards
-        Cards(t, w2, wb);
+        Cards(t, w2, wb, h);
     }
 
     private void Sky(float t)
@@ -349,7 +355,15 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
         r.SetPropertyBlock(_mpb);
     }
 
-    private void Cards(float t, float w2, float wb)
+    private float Gap8i(int i, float t, float h)
+    {
+        if (cardTopY == null || cardDist == null || i >= cardTopY.Length || i >= cardDist.Length) return 1f;
+        float lo = Mathf.Atan(Mathf.Max(h, 0.05f) / ceilingOuterR);
+        float top = Mathf.Atan((cardTopY[i] + h - ceilingLocalY) / Mathf.Max(cardDist[i], 1f));
+        return Mathf.Max(Smooth((lo - top) / (0.5f * Mathf.Deg2Rad)), Smooth((t - tF10e) / 5f));
+    }
+
+    private void Cards(float t, float w2, float wb, float h)
     {
         if (cards == null || cardGroup == null || cardGain == null) return;
         int nW = wispBase == null ? 0 : Mathf.Min(wispBase.Length, Mathf.Min(wispTangent == null ? 0 : wispTangent.Length, wispDrift == null ? 0 : wispDrift.Length));
@@ -365,7 +379,7 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
             Renderer r = cards[i];
             if (r == null) continue;
             int g = cardGroup[i];
-            float a = g == 0 ? 1f : (g == 3 ? wisp : inII);
+            float a = g == 0 ? Gap8i(i, t, h) : (g == 3 ? wisp : inII);
             if (g == 3)
             {
                 if (wi < nW)
@@ -383,6 +397,8 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
             _mpb.SetVector(_idSunColor, lower ? lS : uS);
             _mpb.SetVector(_idSkyUp, lower ? lK : uK);
             _mpb.SetVector(_idGround, lower ? lG : uG);
+            if (cardFogCap != null && i < cardFogCap.Length) _mpb.SetFloat(_idFogCap, cardFogCap[i]);
+            if (cardMelt != null && i < cardMelt.Length) _mpb.SetVector(_idMelt, cardMelt[i]);
             r.SetPropertyBlock(_mpb);
         }
     }

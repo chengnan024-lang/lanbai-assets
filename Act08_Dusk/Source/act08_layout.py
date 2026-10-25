@@ -144,6 +144,31 @@ LOWER = [  # the other sky's clouds: other variants, 70 % of the count, x 0.82 +
     ('L07', 'CloudV2_Strato_duskD', -25.0, 12000.0, -6.0, 1600.0),
 ]
 OTHER = dict(gain=0.82, tint=[0.92, 0.95, 1.05])
+# r2 (director final review: "技术对、但不好看"): the FRONT, in three overlapping layers in the free spaces (outside the sun line
+# and the Zhuangzi block), bigger toward the eye and smaller toward the horizon; a mass up-right and a different one down-right
+# (weight balanced, not mirrored); a high thin layer catching the pink; near / upper cards keep their body and gold edge
+# (_FogCap 0.06 near / 0.12 mid / 0.2 high: at 0.5-0.6 the 1.5-km fog (31 %) already reads pink; Docs~/iterations/03_fog_cap.png),
+# only the far layer eats the fog. Opaque angular widths -> card widths (cards_v2 opaque_bbox_uv).
+FRONT = [  # id, card, az, D, el_at_href, opaque deg, group, show_from, fog_cap, layer
+    ('F_N1', 'CloudV2_Cumulus_duskU', -30.0, 1500.0, 4.5, 16.0, 'upper', '8ii', 0.06, 'near'),
+    ('F_N2', 'CloudV2_Bank_duskU', -9.0, 1900.0, 8.0, 14.0, 'upper', '8ii', 0.06, 'near'),
+    ('F_N3', 'CloudV2_Cumulus_duskD', -24.0, 1400.0, -5.5, 13.0, 'lower', '8ii', 0.06, 'near'),
+    ('F_M1', 'CloudV2_Cumulus_duskU', -42.0, 4000.0, 2.0, 9.0, 'upper', '8ii', 0.12, 'mid'),
+    ('F_M2', 'CloudV2_Strato_duskU', 8.0, 4500.0, 4.0, 10.0, 'upper', '8ii', 0.12, 'mid'),
+    ('F_M3', 'CloudV2_Puff_duskD', -12.0, 3500.0, -4.0, 6.0, 'lower', '8ii', 0.12, 'mid'),
+    ('F_M4', 'CloudV2_Strato_duskD', 6.0, 4200.0, -4.5, 9.0, 'lower', '8ii', 0.12, 'mid'),
+    ('F_R1', 'CloudV2_Bank_duskU', 32.0, 2500.0, 10.5, 14.0, 'upper', '8ii', 0.06, 'near-right'),
+    ('F_R2', 'CloudV2_Congestus_duskD', 36.0, 2800.0, -11.0, 12.0, 'lower', '8ii', 0.06, 'near-right'),
+    ('F_H1', 'CloudV2_Strato_duskU', -18.0, 6000.0, 10.0, 30.0, 'upper', '8ii', 0.2, 'high'),
+    ('F_H2', 'CloudV2_Wisp_duskU', 18.0, 7000.0, 12.5, 22.0, 'upper', '8ii', 0.2, 'high'),
+]
+FRONT_MELT = [-0.04, 0.18, 0.0, 0.0]          # softer bases (the review: "ruler-straight bottoms")
+CARDS_JSON = json.load(open(os.path.join(REPO, 'Clouds_v2', 'Textures', 'cards_v2.json')))['cards']
+
+
+def width_for(card, D, deg):
+    ob = CARDS_JSON[card]['opaque_bbox_uv']
+    return round(2.0 * D * math.tan(math.radians(deg) / 2.0) / max(ob[2] - ob[0], 0.2), 1)
 WISPS = [  # id, az, D, local y, drift m/s (tangential, + = toward +az)
     ('W01', -95.0, 450.0, -40.0, 5.0),
     ('W02', -70.0, 520.0, -110.0, 4.0),
@@ -177,6 +202,26 @@ def card_entries():
         out.append(dict(id=cid, card=card, group='lower', position_local=[round(D * math.sin(a), 1), round(y, 1), round(D * math.cos(a), 1)],
                         width_m=w, gain=OTHER['gain'], tint=OTHER['tint'], show_from='8ii', el_at_href=el, az=az, dist=D,
                         keepout=keepout(az, el), pivot='top'))
+    for cid, card, az, D, el, deg, grp, frm, cap, layer in FRONT:
+        a = math.radians(az)
+        y = D * math.tan(math.radians(el)) - H_REF + EYE[1]
+        e = dict(id=cid, card=card, group=grp, position_local=[round(D * math.sin(a), 1), round(y, 1), round(D * math.cos(a), 1)],
+                 width_m=width_for(card, D, deg), gain=(OTHER['gain'] if grp == 'lower' else 1.0), show_from=frm, el_at_href=el,
+                 az=az, dist=D, keepout=keepout(az, el), fog_cap=cap, melt=FRONT_MELT, layer=layer, opaque_deg=deg)
+        if grp == 'lower':
+            e.update(tint=OTHER['tint'], pivot='top')
+        out.append(e)
+    for e in out:
+        # the card's top (local y): 8-i cards show only while it is under the gap's lower edge (review r2: not cut by the
+        # ceiling's opaque depth), then come in with the dissolve
+        cj = CARDS_JSON.get(e['card'])
+        if cj:
+            aspect = cj['size'][1] / cj['size'][0]
+            hgt = (cj['opaque_bbox_uv'][3] - cj['cloud_base_v']) * aspect * e['width_m']
+            e['top_y_local'] = round(e['position_local'][1] + (0.0 if e['group'] == 'lower' else hgt), 1)
+        e.setdefault('fog_cap', 1.0)
+        e.setdefault('melt', [-0.02, 0.10, 0.0, 0.0])
+        e.setdefault('layer', 'far')
     return out
 
 
@@ -301,6 +346,18 @@ def main():
             if c['group'] == 'lower' and y > 0:
                 cross.append((c['id'], round(float(t), 1))); break
     print('cards crossing the horizon', cross)
+    # the keep-outs over time (the cards slide with h(t)): sun line while it exists (to 993.06), the poem block 965.4 -> 993
+    ko = []
+    for c in cards:
+        for t in np.arange(T['F10e'], 993.06, 0.5):
+            h = motion(t)[0]
+            el = math.degrees(math.atan((c['position_local'][1] + h - EYE[1]) / c['dist']))
+            if c['group'] == 'lower':
+                pass                               # el is the top for the lower cards (pivot moved by the builder)
+            k = keepout(c['az'], el)
+            if k == 'sun line' or (k and t >= 965.4):
+                ko.append((c['id'], round(float(t), 1), k)); break
+    print('keep-outs over time', ko)
     print('keep-out violations', bad, ' nearest card', min(c['dist'] for c in cards), 'm, fastest rise',
           max(c['deg_per_s_rise'] for c in cards), 'deg/s')
 

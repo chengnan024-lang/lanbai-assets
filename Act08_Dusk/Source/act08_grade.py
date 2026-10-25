@@ -16,6 +16,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 KIT = os.path.normpath(os.path.join(HERE, '..'))
 sys.path.insert(0, HERE)
 import act08_ref as R  # noqa: E402
+R.POEM_ON = False
 import lb_common as C  # noqa: E402
 
 W = 320

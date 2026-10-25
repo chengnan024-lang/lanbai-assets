@@ -34,6 +34,10 @@ CAMS['hero_down'] = dict(eye=[0.55, 1.7, 2.05], yaw_deg=0.0, pitch_deg=-30.0, hf
                          note='the lower hemisphere: the mirrored dusk (8-i) / the other sky (8-ii)')
 CAMS['vr_up'] = dict(eye=[0.55, 1.7, 2.05], yaw_deg=0.0, pitch_deg=60.0, hfov_deg=97.3, res=[1832, 1920],
                      note='D-09: VR single eye looking up (the roof is gone from ~950)')
+CAMS['side_left'] = dict(eye=[0.55, 1.7, 2.05], yaw_deg=-90.0, pitch_deg=-5.0, hfov_deg=90.0, res=[1920, 1080],
+                        note='the left side windows: the dusk wisps pass under the ceiling (922.36 -> 956.36)')
+CAMS['side_right'] = dict(eye=[0.55, 1.7, 2.05], yaw_deg=110.0, pitch_deg=-5.0, hfov_deg=90.0, res=[1920, 1080],
+                         note='the right side windows (behind the door group): the dusk wisps')
 SHELL = json.load(open(os.path.join(HARNESS, 'bus_shell.json')))['presets']['bible_v2']
 WORK = os.environ.get('LB_WORK', '/tmp/lb/clouds')
 EYE = np.array(AL.EYE)
@@ -93,6 +97,7 @@ def _keyed(keys, w, V):
     return C.sample_equirect(sky_img(keys[-1][1]), V, 0.0)
 
 
+POEM_ON = True                             # the Zhuangzi stand-in on stills (act08_ink.py / flash turn it off)
 KEYED_NEAREST = True                       # stills: the nearest true blend; act08_flash.py sets False
 
 
@@ -128,8 +133,8 @@ def horizon_b(V, F):
     return c * (1 - dn)[:, None] + nad[None] * dn[:, None]
 
 
-def fog_apply(col, V, dist, t):
-    f = 1 - np.exp(-AL.fog_density(t) * dist)
+def fog_apply(col, V, dist, t, cap=1.0):
+    f = np.minimum(1 - np.exp(-AL.fog_density(t) * dist), cap)          # LanbaiFog: min(f, _FogCap)
     return col * (1 - f)[:, None] + horizon_b(V, fog_params(t)) * f[:, None]
 
 
@@ -206,6 +211,7 @@ def specks(V, img, t, h, pix):
 # ---- cards
 _CARD = {}
 STANDIN = set()
+COVER = {}                                 # per group: the cards' combined alpha per pixel (the last render)
 
 
 def card_tex(name):
@@ -245,8 +251,15 @@ def card_list(t, h):
     out = []
     w2 = float(ss((t - B['F10e']) / 8.0))
     dark = 2.0 ** (-6.0 * float(np.clip((t - B['end8']) / 8.0, 0, 1)))
+    lo_edge = math.atan(max(h, 0.05) / (LAYOUT['ceiling']['radius'] + 0.5 * LAYOUT['ceiling']['band']))
+    diss = float(ss((t - B['F10e']) / 5.0))
     for c in LAYOUT['cards']:
-        a = 1.0 if c['show_from'] == '8i' else w2
+        if c['show_from'] == '8i':
+            # 8-i: only while the card's top is under the gap's lower edge (0.5 deg soft), then with the dissolve
+            top = math.atan((c.get('top_y_local', c['position_local'][1]) + h - EYE[1]) / c['dist'])
+            a = max(float(ss((lo_edge - top) / math.radians(0.5))), diss)
+        else:
+            a = w2
         if a <= 0:
             continue
         p = np.array(c['position_local'], float) + np.array([0.0, h, 0.0])
@@ -289,20 +302,34 @@ def draw_cards(V, img, depth, t, h, pix):
             continue
         rel, left = CS.rel_angle(-f[[0, 2]], sun[[0, 2]])
         uu = np.where(left, 1 - u[ok], u[ok])
-        xi = np.clip((uu * wid).astype(int), 0, wid - 1)
-        yi = np.clip(((1 - v[ok]) * hgt).astype(int), 0, hgt - 1)
+        # bilinear (r2: the review saw the nearest-neighbour texels)
+        fx = np.clip(uu * wid - 0.5, 0, wid - 1.001); fy = np.clip((1 - v[ok]) * hgt - 0.5, 0, hgt - 1.001)
+        x0 = fx.astype(int); y0 = fy.astype(int); ax = (fx - x0)[:, None]; ay = (fy - y0)[:, None]
+
+        def bil(T):
+            T2 = T.reshape(hgt, wid, -1)
+            r = (T2[y0, x0] * (1 - ax) * (1 - ay) + T2[y0, x0 + 1] * ax * (1 - ay) + T2[y0 + 1, x0] * (1 - ax) * ay
+                 + T2[y0 + 1, x0 + 1] * ax * ay)
+            return r
         w0, w1, w2 = CS.key_weights(rel)
-        k = K[yi, xi, 0] * w0 + K[yi, xi, 1] * w1 + K[yi, xi, 2] * w2
-        a = A[yi, xi]
+        Kb = bil(K)
+        k = Kb[:, 0] * w0 + Kb[:, 1] * w1 + Kb[:, 2] * w2
+        a = bil(A[..., None])[:, 0]
+        Sb = bil(S)
         sc, sk, gd = colours(c.get('group', 'upper'), t)
-        col = k[:, None] * sc + S[yi, xi, 0:1] * sk + S[yi, xi, 1:2] * gd
+        col = k[:, None] * sc + Sb[:, 0:1] * sk + Sb[:, 1:2] * gd
         if c.get('tint'):
             col = col * np.array(c['tint'])
         col *= c['gain_t']
-        a = a * c['alpha_t'] * CS.melt(np.ones_like(a), v[ok], cj['cloud_base_v'])
-        col = fog_apply(col, V[ok], tt[ok], t)
+        mt = c.get('melt', [-0.02, 0.10, 0, 0])
+        a = a * c['alpha_t'] * CS.melt(np.ones_like(a), v[ok], cj['cloud_base_v'], (mt[0], mt[1]))
+        col = fog_apply(col, V[ok], tt[ok], t, c.get('fog_cap', 1.0))
         idx = np.nonzero(ok)[0]
         img[idx] = img[idx] * (1 - a)[:, None] + col * a[:, None]
+        g = c.get('group', 'wisp')
+        if g not in COVER or len(COVER[g]) != len(V):
+            COVER[g] = np.zeros(len(V))
+        COVER[g][idx] = 1 - (1 - COVER[g][idx]) * (1 - a)
 
 
 # ---- the cabin (bible_v2 angular shell); the roof and upper walls go with the erosion (0.25 -> 0.65, 922.36 -> 962.26)
@@ -356,6 +383,54 @@ def rays(cam, w):
     return d.reshape(-1, 3), hh, 2 * tx / w
 
 
+# ---- the Zhuangzi lines (a stand-in for LanbaiPoemDriver, composition only): Fonts/README_Fonts §4.7 column: above the
+# horizon L1, L3' (mirror) ; below L3, L1' ; 2.2 deg per character (CJK line spacing 1.6 em, half a gap either side of the
+# horizon), centred on az +35, el 0; ink #27304A (D-33 #4), mirrors alpha 0.5 softness 0.3; L1 971.4, L3 976.4, out 989 -> 993
+POEM_L1, POEM_L3 = '天之苍苍，其正色邪？', '其视下也，亦若是则已矣'
+_POEM = {}
+
+
+def _poem_canvas(line, mirror, ppd=40):
+    from PIL import ImageDraw, ImageFont, ImageFilter
+    key = (line, mirror)
+    if key not in _POEM:
+        font = ImageFont.truetype(os.path.join(REPO, 'Fonts', 'Originals~', 'SourceHanSerifCN-Regular.otf'), int(2.2 * ppd))
+        w = int(len(line) * 2.2 * ppd + ppd); hgt = int(2.2 * ppd * 1.3)
+        im = Image.new('L', (w, hgt), 0)
+        ImageDraw.Draw(im).text((ppd // 2, int(0.1 * hgt)), line, fill=255, font=font)
+        if mirror:
+            im = im.transpose(Image.FLIP_TOP_BOTTOM).filter(ImageFilter.GaussianBlur(0.3 * ppd * 0.25))
+        _POEM[key] = np.asarray(im).astype(np.float32) / 255.0
+    return _POEM[key]
+
+
+def poem_overlay(codes, V, t, ppd=40):
+    if not (971.4 <= t < 993.0):
+        return codes
+    az, el = C.azel_from_dir(V)
+    ink = C.hex_rgb('#27304A') * 255.0
+    lh = 2.2 * 1.6                                           # line pitch (deg)
+    rows = [('L1', POEM_L1, False, 0.5 * lh + 0.5 * lh * 0.6 + lh, 971.4), ('L3m', POEM_L3, True, 0.5 * lh * 0.6 + 0.5 * lh, 976.4),
+            ('L3', POEM_L3, False, -(0.5 * lh * 0.6 + 0.5 * lh), 976.4), ('L1m', POEM_L1, True, -(0.5 * lh + 0.5 * lh * 0.6 + lh), 971.4)]
+    out = codes.reshape(-1, 3).copy()
+    drift = max(0.0, t - 989.0) / 4.0
+    for name, line, mirror, elc, t_on in rows:
+        if t < t_on:
+            continue
+        cv = _poem_canvas(line, mirror, ppd)
+        hgt, w = cv.shape
+        a_w, e_h = w / ppd, hgt / ppd
+        e_off = elc + (3.0 * drift if not name.endswith('m') == (elc > 0) else -3.0 * drift)
+        x = (az - (35.0 - 0.5 * a_w)) * ppd
+        y = ((e_off + 0.5 * e_h) - el) * ppd
+        m = (x >= 0) & (x < w - 1) & (y >= 0) & (y < hgt - 1)
+        if not m.any():
+            continue
+        cov = cv[y[m].astype(int), x[m].astype(int)] * (0.5 if mirror else 1.0) * (1.0 - drift)
+        out[m] = out[m] * (1 - cov[:, None]) + ink[None] * cov[:, None]
+    return out.reshape(codes.shape)
+
+
 def purple_share(codes):
     """D-21: h_ab 290-330, C* > 8, L* > 40 (the bible's palette colours pass: they are all < 290 or L* <= 40)"""
     L, hh, cc = C.hue_chroma(codes.reshape(-1, 3))
@@ -379,6 +454,8 @@ def render(t, cam_name, w=960, door='bible_v2', out_dir=None, tag='', dev=None):
     lin = img.reshape(hh, w, 3)
     ev = exposure(t) if dev is None else dev
     codes = C.grade(lin, grade_profile(t), bloom=True, ev=ev)
+    if POEM_ON:
+        codes = np.where(win.reshape(hh, w, 1), poem_overlay(codes, V, t).reshape(hh, w, 3), codes)
     luma = codes @ C.LUMA
     thr = np.percentile(luma, 99.9)
     ys, xs = np.nonzero(luma >= thr)
