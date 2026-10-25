@@ -53,13 +53,17 @@ def leaf_mat(wet, clip=0.5):
     uv = b.N('ShaderNodeTexCoord').outputs['UV']
     A = b.tex(os.path.join(TEX, 'T_Tree_LeafCluster_Albedo.png'), uv, 'sRGB')
     M = b.tex(os.path.join(TEX, 'T_Tree_LeafCluster_Mask.png'), uv)
+    Nn = b.tex(os.path.join(TEX, 'T_Tree_LeafCluster_Normal.png'), uv)
     thin, g, ao = b.sep(M.outputs['Color'])
     bs = b.N('ShaderNodeBsdfPrincipled')
+    nm = b.N('ShaderNodeNormalMap'); b.L(Nn.outputs['Color'], nm.inputs['Color']); nm.inputs['Strength'].default_value = 1.0
+    b.L(nm.outputs[0], bs.inputs['Normal'])
     alb = b.mixc(1.0, A.outputs['Color'], b.comb(ao, ao, ao), 'MULTIPLY')
     b.L(alb, bs.inputs['Base Color'])
     bs.inputs['Roughness'].default_value = 1 - (0.35 + (0.60 - 0.35) * wet)
-    tl = b.N('ShaderNodeBsdfTranslucent'); b.L(b.mixc(1.0, alb, (0.6, 0.7, 0.35, 1), 'MULTIPLY'), tl.inputs['Color'])
-    mx = b.N('ShaderNodeMixShader'); b.L(b.math('MULTIPLY', thin, 0.35), mx.inputs[0]); b.L(bs.outputs[0], mx.inputs[1]); b.L(tl.outputs[0], mx.inputs[2])
+    # translucency (Lanbai/Tree _Translucency): thin leaf blades pass ~20 % of the light, yellow-green
+    tl = b.N('ShaderNodeBsdfTranslucent'); tl.inputs['Color'].default_value = (*MT.hexlin('#8C9A4A'), 1)
+    mx = b.N('ShaderNodeMixShader'); b.L(b.math('MULTIPLY', thin, 0.30), mx.inputs[0]); b.L(bs.outputs[0], mx.inputs[1]); b.L(tl.outputs[0], mx.inputs[2])
     cut = b.math('GREATER_THAN', A.outputs['Alpha'], clip)
     tr = b.N('ShaderNodeBsdfTransparent')
     fin = b.N('ShaderNodeMixShader'); b.L(cut, fin.inputs[0]); b.L(tr.outputs[0], fin.inputs[1]); b.L(mx.outputs[0], fin.inputs[2])

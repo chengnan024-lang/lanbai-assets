@@ -104,6 +104,46 @@ def spot(name, loc, power_unity, col, size_deg=150.0, blend=0.6, rot=(0, 0, 0), 
     return ob
 
 
+def cobra_light(name, loc, peak_I, col, radius=0.06, rot_z=0.0):
+    """A cobra-head distribution (IESNA type II-ish, medium cutoff), as a Cycles point light with a direction-driven
+    strength: I(theta) relative to the peak, theta from the nadir:
+        0.55 at the nadir, rising to 1.0 at 68 deg, falling to 0.10 at 85 deg and 0.03 above the horizon (uplight).
+    Wider along the road (y) than across it (x): the across-road term is x0.75 beyond 45 deg.
+    peak_I in Unity units (E = I / d^2 at the peak direction)."""
+    l = bpy.data.lights.new(name, 'POINT')
+    l.energy = B.unity_point_power(peak_I)
+    l.color = col
+    l.shadow_soft_size = radius
+    l.use_nodes = True
+    nt = l.node_tree
+    em = nt.nodes.get('Emission')
+    tc = nt.nodes.new('ShaderNodeTexCoord')
+    sep = nt.nodes.new('ShaderNodeSeparateXYZ'); nt.links.new(tc.outputs['Normal'], sep.inputs[0])
+    ac = nt.nodes.new('ShaderNodeMath'); ac.operation = 'ARCCOSINE'
+    neg = nt.nodes.new('ShaderNodeMath'); neg.operation = 'MULTIPLY'; neg.inputs[1].default_value = -1.0
+    nt.links.new(sep.outputs[2], neg.inputs[0]); nt.links.new(neg.outputs[0], ac.inputs[0])
+    deg = nt.nodes.new('ShaderNodeMath'); deg.operation = 'MULTIPLY'; deg.inputs[1].default_value = 180 / math.pi
+    nt.links.new(ac.outputs[0], deg.inputs[0])
+    curve = nt.nodes.new('ShaderNodeFloatCurve')
+    cm = curve.mapping
+    cm.clip_max_x = 180; cm.clip_max_y = 1
+    pts = [(0, 0.55), (40, 0.75), (68, 1.0), (78, 0.55), (85, 0.10), (95, 0.03), (180, 0.02)]
+    c = cm.curves[0]
+    while len(c.points) < len(pts):
+        c.points.new(0, 0)
+    for p, (x, y) in zip(c.points, pts):
+        p.location = (x / 180.0, y)
+    cm.clip_max_x = 1.0
+    cm.update()
+    sc_ = nt.nodes.new('ShaderNodeMath'); sc_.operation = 'DIVIDE'; sc_.inputs[1].default_value = 180.0
+    nt.links.new(deg.outputs[0], sc_.inputs[0]); nt.links.new(sc_.outputs[0], curve.inputs['Value'])
+    nt.links.new(curve.outputs[0], em.inputs['Strength'])
+    ob = bpy.data.objects.new(name, l)
+    bpy.context.scene.collection.objects.link(ob)
+    ob.location = loc; ob.rotation_euler = (0, 0, rot_z)
+    return ob
+
+
 def point(name, loc, power_unity, col, radius=0.03):
     l = bpy.data.lights.new(name, 'POINT')
     l.energy = B.unity_point_power(power_unity)

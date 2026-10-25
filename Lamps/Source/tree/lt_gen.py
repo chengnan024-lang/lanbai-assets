@@ -21,12 +21,12 @@ class Species:
 # 三个候选形（参考板用）。都是东亚到欧洲乡道上常见的“无名”落叶阔叶树的形，不是某个具体树种的标本。
 SPECIES = {
     # A：老的路边阔叶树（槐 / 榆一类的形）：短干，3–4 根斜伸的大枝，每根枝端一团叶云，团与团之间露天
-    'A_old_broadleaf': Species(trunk_h=2.4, trunk_r=0.28, lean=(0.05, 0.01),
+    'A_old_broadleaf': Species(trunk_h=2.4, trunk_r=0.19, lean=(0.05, 0.01),
                                limbs=[(15, 30, 5.4, 1.0), (140, 38, 4.6, 0.85), (250, 48, 4.4, 0.8), (75, 62, 5.6, 0.95), (200, 70, 3.6, 0.7)],
                                clump=(1.7, 1.2), clumps_per_limb=2, n_pts=3600, step=0.24, infl=1.5, kill=0.40,
                                leaf_size=0.80, leaf_per_tip=2, droop=0.0, pendant=0.0, seed=4),
     # B：垂枝型（柳一类，水田边）：主干分成几根向上的大枝，枝端垂下 2–4 m 的细枝帘
-    'B_weeping': Species(trunk_h=2.6, trunk_r=0.26, lean=(-0.05, 0.02),
+    'B_weeping': Species(trunk_h=2.6, trunk_r=0.18, lean=(-0.05, 0.02),
                          limbs=[(0, 60, 5.0, 1.0), (125, 64, 4.6, 0.9), (245, 62, 4.8, 0.95), (300, 75, 4.0, 0.8)],
                          clump=(1.5, 1.0), clumps_per_limb=2, n_pts=2400, step=0.24, infl=1.4, kill=0.40,
                          leaf_size=0.60, leaf_per_tip=1, droop=0.0, pendant=3.2, seed=7),
@@ -40,11 +40,13 @@ SPECIES = {
 
 def limb_paths(sp, rng):
     """Major limbs from the fork (top of the trunk): gently curving polylines (azimuth, elevation, length)."""
+    sp.trunk_h = sp.trunk_h0 * getattr(sp, 'scale', 1.0) ** 0.5 if hasattr(sp, 'trunk_h0') else sp.trunk_h
     top = np.array([sp.lean[0] * sp.trunk_h ** 2 / 2, sp.lean[1] * sp.trunk_h ** 2 / 2, sp.trunk_h])
     paths = []
     for az, el, L, w in sp.limbs:
         az = math.radians(az + rng.normal(0, 8)); el = math.radians(el + rng.normal(0, 4))
         pts = [top]
+        L = L * getattr(sp, 'scale', 1.0)
         n = int(L / sp.step)
         d = np.array([math.cos(el) * math.cos(az), math.cos(el) * math.sin(az), math.sin(el)])
         for k in range(n):
@@ -64,7 +66,7 @@ def attraction_points(sp, rng, paths):
             c = P[min(len(P) - 1, int(t * (len(P) - 1)))] + rng.normal(0, 0.5, 3)
             if k == sp.clumps_per_limb - 1:
                 c = P[-1] + (P[-1] - P[-2]) / sp.step * sp.clump[0] * 0.5
-            r = np.array([sp.clump[0], sp.clump[0], sp.clump[1]]) * w * rng.uniform(0.75, 1.15)
+            r = np.array([sp.clump[0], sp.clump[0], sp.clump[1]]) * w * rng.uniform(0.75, 1.15) * getattr(sp, 'scale', 1.0)
             clumps.append((c, r))
     pts = []
     tries = 0
@@ -200,3 +202,66 @@ def leaf_cards(sk, sp, rng=None):
                 up = d - np.dot(d, nrm) * nrm; up /= np.linalg.norm(up) + 1e-9
             C.append(c); Nn.append(nrm); U.append(up); S.append(sp.leaf_size * rng.uniform(0.75, 1.25))
     return np.array(C), np.array(Nn), np.array(U), np.array(S)
+
+
+# ---------------------------------------------------------------------------------------------- the sample tree (D-44 #6)
+import copy as _copy
+
+
+def variant(base, seed, scale, lean, rot_deg, n_pts=None):
+    sp = _copy.deepcopy(SPECIES[base])
+    sp.seed = seed; sp.scale = scale; sp.lean = lean
+    sp.trunk_h0 = sp.trunk_h
+    sp.trunk_r = sp.trunk_r * scale ** 0.8
+    sp.limbs = [(az + rot_deg, el, L, w) for az, el, L, w in sp.limbs]
+    if n_pts:
+        sp.n_pts = n_pts
+    sp.n_pts = int(sp.n_pts * scale ** 1.5)
+    return sp
+
+
+VARIANTS = {   # A main (3 variants, 10-13 m, different seeds / lean / crown bias), B accent (paddy side only)
+    'Tree_A1': lambda: variant('A_old_broadleaf', 4, 1.30, (0.05, 0.01), 0),
+    'Tree_A2': lambda: variant('A_old_broadleaf', 21, 1.45, (-0.03, 0.04), 115),
+    'Tree_A3': lambda: variant('A_old_broadleaf', 37, 1.52, (0.02, -0.05), 230),
+    'Tree_B1': lambda: variant('B_weeping', 7, 1.25, (-0.05, 0.02), 0),
+}
+
+
+def clump_cards(sk, sp, lod, rng=None):
+    """Leaf-cluster cards placed by the crown clumps (not by every twig): the crown reads as masses with sky between,
+    and the cards are big enough not to fizz at a distance (director note 2). Returns (centres, normals, ups, sizes, cell).
+    LOD0: ~1.3 m cards, atlas cells 0-2; LOD1: ~2.6 m 'clump' cards, cell 3, about a fifth as many."""
+    rng = rng or np.random.default_rng(sp.seed * 7 + lod)
+    clumps = sk['clumps']
+    sc = getattr(sp, 'scale', 1.0)
+    size = (1.25 if lod == 0 else 2.5) * (0.9 + 0.1 * sc)
+    dens = 1.0 / (0.50 if lod == 0 else 2.8)       # cards per m^3 of clump
+    ctr_all = np.mean([c for c, r in clumps], axis=0) - np.array([0, 0, 1.5])
+    C, Nn, U, S, cell = [], [], [], [], []
+    weeping = getattr(sp, 'pendant', 0) > 0
+    for c, r in clumps:
+        vol = 4 / 3 * math.pi * r[0] * r[1] * r[2]
+        n = max(3, int(vol * dens))
+        for k in range(n):
+            d = rng.normal(0, 1, 3); d /= np.linalg.norm(d)
+            rad = rng.uniform(0, 1) ** 0.35                 # biased to the shell
+            p = c + d * r * rad
+            out = p - ctr_all; out[2] *= 0.6; out /= np.linalg.norm(out) + 1e-9
+            nrm = out * 0.8 + d * 0.6 + np.array([0, 0, 0.5]) + rng.normal(0, 0.35, 3); nrm /= np.linalg.norm(nrm)
+            up = np.cross(nrm, rng.normal(0, 1, 3)); up /= np.linalg.norm(up)
+            C.append(p - up * size * 0.5); Nn.append(nrm); U.append(up); S.append(size * rng.uniform(0.8, 1.2))
+            cell.append(3 if lod > 0 else int(rng.integers(0, 3)))
+    if weeping:
+        # the curtain: cards hanging along the pendant strands
+        N, r = sk['N'], sk['r']
+        idx = [i for i in range(len(N)) if r[i] <= 0.0061]
+        step = 2 if lod == 0 else 9
+        for i in idx[::step]:
+            nrm = rng.normal(0, 1, 3); nrm[2] *= 0.2; nrm /= np.linalg.norm(nrm)
+            dn = np.array([0, 0, -1.0]) + rng.normal(0, 0.2, 3)
+            up = -(dn - np.dot(dn, nrm) * nrm); up /= np.linalg.norm(up)       # the card's up = toward the strand
+            s = (0.8 if lod == 0 else 1.8)
+            C.append(N[i] - up * s); Nn.append(nrm); U.append(up); S.append(s)          # top edge at the strand
+            cell.append(2 if lod == 0 else 3)
+    return np.array(C), np.array(Nn), np.array(U), np.array(S), np.array(cell)

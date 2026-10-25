@@ -43,10 +43,22 @@ def branches(sk, sides=6, min_r=0.0, sides_by_r=None):
         ring_of[key] = ids
         return ids
 
+    # simplify chains: keep roots, forks, tips and a node every `seglen(r)` metres of path; edges join kept nodes
+    keep = np.zeros(n, bool); keep[0] = True
+    acc = np.zeros(n)
+    kept_parent = np.full(n, -1)
     for i in range(1, n):
         p = par[i]
-        if r[i] < min_r:
+        acc[i] = acc[p] + np.linalg.norm(N[i] - N[p])
+        seglen = 0.3 if r[i] > 0.12 else (0.6 if r[i] > 0.04 else 1.1)
+        last = p if keep[p] else kept_parent[p]
+        kept_parent[i] = last
+        if len(children[i]) != 1 or (acc[i] - acc[last]) >= seglen:
+            keep[i] = True
+    for i in range(1, n):
+        if not keep[i] or r[i] < min_r:
             continue
+        p = kept_parent[i]
         k = sides if sides_by_r is None else sides_by_r(r[i])
         a = ring(p, k); b = ring(i, k)
         for s in range(k):
@@ -55,12 +67,15 @@ def branches(sk, sides=6, min_r=0.0, sides_by_r=None):
 
 
 def leaves(cards, rng=None, aspect=1.0):
-    C, Nn, U, S = cards
+    """cards = (centres, normals, ups, sizes[, atlas cells]). The card's bottom edge sits at the centre point and it
+    extends `size` along `up` (so a card grows out of its twig)."""
+    C, Nn, U, S = cards[:4]
+    cells = cards[4] if len(cards) > 4 else None
     rng = rng or np.random.default_rng(2)
     V, F, UV, COL = [], [], [], []
-    for c, nrm, up, s in zip(C, Nn, U, S):
+    for j, (c, nrm, up, s) in enumerate(zip(C, Nn, U, S)):
         rt = np.cross(up, nrm)
-        cell = rng.integers(0, 4)
+        cell = int(cells[j]) if cells is not None else int(rng.integers(0, 4))
         u0, v0 = (cell % 2) * 0.5, 1 - (cell // 2 + 1) * 0.5
         flip = rng.uniform() < 0.5
         base = len(V)
