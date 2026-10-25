@@ -35,6 +35,9 @@ namespace Lanbai.Overlay.Editor
 
         public static void Build()
         {
+            // 复核的次要项：直接调 Build()（不经过菜单）时，先确认程序资产 Ready，再动场景
+            Type ot = Lanbai.Udon.LanbaiUdonPrograms.TypeOfScript("LanbaiOverlay");
+            if (ot != null) Lanbai.Udon.LanbaiUdonPrograms.RequireReady("蓝白/Build/Overlay", ot);
             var old = GameObject.Find("Lanbai_Overlay");
             if (old != null) Undo.DestroyObjectImmediate(old);
 

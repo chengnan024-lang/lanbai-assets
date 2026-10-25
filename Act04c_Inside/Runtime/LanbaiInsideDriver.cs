@@ -162,6 +162,13 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
         _spawnSince = since;
     }
 
+    /// <summary>Director v1.3（复核 DIR13-6）：这一段最亮的非白视向的亮度（遮罩的 L 单位）= WriteBlack 的 Ls 0.2（门内 APL 约 90）；
+    /// LB_Journey 在门内窗口之外、门内画面里自己淡入时按它定时长。</summary>
+    public float LanbaiBrightestL(float t)
+    {
+        return 0.2f;
+    }
+
     /// <summary>Director v1.2：遮罩球归门内的那一段（剪 1 前 0.25 s 的变暗到第 6 幕的预滚）。</summary>
     public float[] LanbaiOverlayWindow()
     {
@@ -216,7 +223,7 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
     /// null when this act has no grade event at t. The dispatcher sums every act's events and writes EXPO once.</summary>
     public float[] LanbaiGrade(float t)
     {
-        float d = LanbaiDeltaEV(t);
+        float d = FlashFor(t);
         return d != 0f ? new float[] { d, 0f, 0f, 1f } : null;
     }
 
@@ -229,6 +236,23 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
         if (t < t0 + 0.5f) return flashEV;
         if (t < tU12) return flashEV * (1f - (t - t0 - 0.5f) / 0.25f);
         return 0f;
+    }
+
+    /// <summary>Director v1.3（复核的次要项）：迟到的人在 248.39–248.64 之间结束黑场时，FLASH_TEAR 的 +0.56 EV 会在
+    /// 交接那一帧冒出来。这个人从黑里升起来（出生的黑还没交出来，或者正在 catch-up），根本没看到撕口的闪，所以对他
+    /// 闪光的 dEV 记 0（遮罩球的补偿也用 0，两边一致）。</summary>
+    private float FlashFor(float t)
+    {
+        // v1.3 r2：出生的黑 / LB_Journey 自己淡入的时候不压（黑里看不见；LB_Journey 的淡入限的是“看到的亮度”，闪光
+        // 已经算在 gradeDEV 里）。只压“交给我、正从黑往上升”的人：不然淡入一结束，压着的闪光一帧冒出来
+        if (_spawnSince < 1e5f && _spawnSince >= 0f)
+        {
+            float te = t - _spawnSince;
+            float range = Mathf.Log(0.2f / 0.004f, 2f);   // WriteBlack's catch-up range (Ls 0.2 over the 0.004 floor)
+            // v1.3 r2（复核 DIR13-3）：从 FLASH_TEAR 开始（U12 − 0.75）就算：淡入结束在闪光当中的，闪光也不冒出来
+            if (te >= tU12 - 0.75f && te < tU12 + 4.0f && _spawnSince * 0.85f < range) return 0f;   // still catching up
+        }
+        return LanbaiDeltaEV(t);
     }
 
     public void LanbaiTick(float t)
@@ -265,7 +289,7 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
         // the forward view there; these are the structure ahead)
         float ksl = SS((s - lipS[7]) / 15f) * (1f - SS((s - lipS[7] - sleeveDepth) / 30f));
         VRCShader.SetGlobalVector(_idFibre, new Vector4(fib.r, fib.g, fib.b, looseGain * Mathf.Lerp(1f, sleeveLooseK, ksl)));
-        if (writeExposure && exposure != null) exposure.SetDeltaEV(LanbaiDeltaEV(t));
+        if (writeExposure && exposure != null) exposure.SetDeltaEV(FlashFor(t));
         WriteBlack(t);
         _lastT = t;
     }
@@ -521,7 +545,7 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
         }
         if (t < tb)
         {
-            if (catchUp && aC > 0f) overlay.SetFlat(blackFillS4c, aC, LanbaiDeltaEV(t));
+            if (catchUp && aC > 0f) overlay.SetFlat(blackFillS4c, aC, FlashFor(t));
             return;
         }
         if (t < tU12)
@@ -529,7 +553,7 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
             // EV-linear from the frame (APL ~90 at the flash's end) to #030409; darkening is free (bible §1.8)
             float x = (t - tb) / 0.25f;
             float a = EvOverlayAlpha(x, Ls, Lb, Ls, Lb);
-            overlay.SetFlat(blackFillS4c, Mathf.Max(a, aC), LanbaiDeltaEV(t));
+            overlay.SetFlat(blackFillS4c, Mathf.Max(a, aC), FlashFor(t));
         }
         else if (t < tU12 + 4.0f)
         {
