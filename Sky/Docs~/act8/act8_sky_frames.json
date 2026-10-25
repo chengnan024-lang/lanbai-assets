@@ -25,31 +25,31 @@
  },
  {
   "t": 988.5,
-  "APL": 150.6,
-  "red_clip_pct": 3.28,
+  "APL": 152.9,
+  "red_clip_pct": 3.93,
   "lavender_pct": 0.0
  },
  {
   "t": 990.0,
-  "APL": 143.5,
-  "red_clip_pct": 3.12,
+  "APL": 138.3,
+  "red_clip_pct": 0.0,
   "lavender_pct": 0.0
  },
  {
   "t": 991.5,
-  "APL": 108.0,
+  "APL": 106.7,
   "red_clip_pct": 0.0,
   "lavender_pct": 0.0
  },
  {
   "t": 993.06,
-  "APL": 85.0,
+  "APL": 85.2,
   "red_clip_pct": 0.0,
   "lavender_pct": 0.0
  },
  {
   "t": 1001.21,
-  "APL": 49.6,
+  "APL": 49.7,
   "red_clip_pct": 0.0,
   "lavender_pct": 0.0
  }
