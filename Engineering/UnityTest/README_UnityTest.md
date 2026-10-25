@@ -46,7 +46,7 @@
 | `Editor/LanbaiTestMenu.cs` | 菜单 蓝白/Test/… |
 | `Editor/LanbaiTestJson.cs` | 小 JSON 读写 |
 | `Editor/LanbaiTestPlay.cs` | **Play 阶段**（1.2.0，§7.6）：存状态、进 Play、跳转、拍、退出 Play、reload 以后收尾；交接扫描的曲线和拼图 |
-| `tests/*.json` | 测试定义（§6）：`gate_clouds_test`、`act06_test`、`bus_slice`、`transitions_sweep`、`flicker_probe`（这两个在 Play 模式里拍，§7.6）、`act01_spawn`（占位）、`palace_hotspot`（占位） |
+| `tests/*.json` | 测试定义（§6）：`gate_clouds_test`、`act06_test`、`bus_slice`、`transitions_sweep`、`flicker_probe`（这两个在 Play 模式里拍，§7.6）、`tree_sample`（灯包的样板树，D-44 #6）、`act01_spawn`（占位）、`palace_hotspot`（占位） |
 | `tests/data/transitions_table.json` | 交接扫描用的交接表（圣经 §6.x，36 个；`kind` = check / cut / black / flash） |
 | `Tools~/lanbai_sync.ps1` | 仓库 → 工程的同步脚本（§2）。在 `~` 文件夹里，Unity 不导入 |
 
@@ -328,5 +328,5 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json" -Encoding UTF8
 ## 11. 检查
 
 - C#：`bash Common/Tools~/compile_check/check_cs.sh Engineering/UnityTest` → `C# CHECK OK (0 assembly error(s), 0 lint warning(s))`（UnityEditor 2021.1 引用程序集 + PPv2 桩；不是 Unity 编译）。
-- 测试定义：7 个 `tests/*.json` 和 `tests/data/transitions_table.json` 都是合法 JSON，`gate_clouds_test` 的机位、时间、文件名对过 `Gate/GateLayout_v2.json` 的 `cameras` 和 HANDOFF_LOG。
+- 测试定义：8 个 `tests/*.json` 和 `tests/data/transitions_table.json` 都是合法 JSON，`gate_clouds_test` 的机位、时间、文件名对过 `Gate/GateLayout_v2.json` 的 `cameras` 和 HANDOFF_LOG。
 - 同步脚本：PowerShell 7.4.6 上用一个假仓库 + 假工程走过：只列出、`-Apply`、第二次全部“一样”、本地改过被拒（退出码 2，什么都没改）、`-Force`（先备份再覆盖）、仓库删了的文件只列出不删、工程里多出来的不动、没有“同步：”行时猜路径并要求 `-AcceptGuess`、`.git/index.lock` / 没提交的改动 / 不在 main 都停（退出码 4）；对真仓库的两条门的条目只列出过一次（猜到的路径见 `Engineering/给总导演.md`）。
