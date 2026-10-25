@@ -367,6 +367,8 @@ USHARP_RULES = [
     (r'\bSystem\.Linq\b|\busing\s+System\.Linq\s*;', 'LINQ is not exposed to Udon'),
     (r'\b(?:List|Dictionary|HashSet|Queue|Stack)\s*<', 'System.Collections.Generic collections are not exposed to Udon (use arrays / VRC DataList)'),
     (r'\bclass\s+\w+\s*<', 'generic classes are not supported by UdonSharp'),
+    # found on SDK 3.10.5 by 阿白 (FromLocal/full_preview/20261025-0103): the stub has it, Udon does not expose it
+    (r'\.maxVisibleLines\b', 'TMP maxVisibleLines is not exposed to Udon in SDK 3.10.5 (bake one text per state instead)'),
 ]
 
 

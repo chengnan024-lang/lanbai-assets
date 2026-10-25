@@ -4,9 +4,9 @@
    960,
    540
   ],
-  "APL": 49.16,
-  "EV_display": -4.106,
-  "luma_lt12_pct": 0.59,
+  "APL": 59.75,
+  "EV_display": -3.545,
+  "luma_lt12_pct": 0.53,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
@@ -19,27 +19,27 @@
   "lavender_act6_pct": 0.0,
   "brightest": {
    "bbox": [
-    460,
+    459,
     1,
-    899,
-    537
+    885,
+    425
    ],
    "centroid": [
-    508.5,
-    31.1
+    486.1,
+    13.3
    ],
-   "clusters": 5,
+   "clusters": 4,
    "clusters_ge5pct": 1,
-   "min_luma": 187.0,
+   "min_luma": 192.3,
    "centroid_az_el": [
-    3.79,
-    60.74
+    0.51,
+    62.78
    ]
   },
   "top25_Lstar": {
-   "mean": 13.94,
+   "mean": 14.39,
    "p50": 3.53,
-   "p90": 66.49
+   "p90": 69.62
   },
   "palette": {
    "act": "07a",
@@ -48,49 +48,49 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 12.4,
+     "nearest_dE2000_p01": 11.7,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 7.5,
+     "nearest_dE2000_p01": 6.4,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 8.3,
+     "nearest_dE2000_p01": 6.7,
      "within_dE5_pct": 0.01
     },
     {
      "hex": "#3876AB",
      "role": "浅水 縹",
-     "nearest_dE2000_p01": 7.2,
-     "within_dE5_pct": 0.02
+     "nearest_dE2000_p01": 2.4,
+     "within_dE5_pct": 26.25
     },
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
-     "nearest_dE2000_p01": 2.4,
-     "within_dE5_pct": 1.97
+     "nearest_dE2000_p01": 4.0,
+     "within_dE5_pct": 0.13
     },
     {
      "hex": "#697987",
      "role": "海雪",
-     "nearest_dE2000_p01": 2.0,
-     "within_dE5_pct": 1.18
+     "nearest_dE2000_p01": 6.0,
+     "within_dE5_pct": 0.02
     },
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 11.4,
+     "nearest_dE2000_p01": 9.8,
      "within_dE5_pct": 0.01
     }
    ],
    "pixel_to_nearest_dE_median": 18.1,
    "pixel_to_nearest_dE_p90": 18.1,
-   "pixels_within5_pct": 3.2
+   "pixels_within5_pct": 26.4
   }
  },
  "cam": {
@@ -193,7 +193,7 @@
    540
   ]
  },
- "render_seconds": 19.7,
+ "render_seconds": 18.2,
  "lens": "none",
  "bloom_tint": "single",
  "note": "F4p 462.36: the shafts gathered into the skylight hole"

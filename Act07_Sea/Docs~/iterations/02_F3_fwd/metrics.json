@@ -4,8 +4,8 @@
    960,
    540
   ],
-  "APL": 78.63,
-  "EV_display": -3.222,
+  "APL": 76.7,
+  "EV_display": -3.292,
   "luma_lt12_pct": 0.0,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
@@ -19,27 +19,27 @@
   "lavender_act6_pct": 0.0,
   "brightest": {
    "bbox": [
-    289,
-    258,
+    288,
+    267,
     381,
-    370
+    436
    ],
    "centroid": [
-    367.6,
-    298.1
+    365.3,
+    352.6
    ],
-   "clusters": 6,
-   "clusters_ge5pct": 2,
-   "min_luma": 139.5,
+   "clusters": 2,
+   "clusters_ge5pct": 1,
+   "min_luma": 132.0,
    "centroid_az_el": [
-    -13.12,
-    -3.31
+    -13.37,
+    -9.47
    ]
   },
   "top25_Lstar": {
-   "mean": 26.07,
-   "p50": 29.14,
-   "p90": 34.87
+   "mean": 24.79,
+   "p50": 27.97,
+   "p90": 31.97
   },
   "palette": {
    "act": "07a",
@@ -48,32 +48,32 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 29.4,
+     "nearest_dE2000_p01": 31.4,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 19.3,
+     "nearest_dE2000_p01": 21.6,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 13.4,
+     "nearest_dE2000_p01": 15.7,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#3876AB",
      "role": "浅水 縹",
-     "nearest_dE2000_p01": 2.2,
-     "within_dE5_pct": 34.95
+     "nearest_dE2000_p01": 2.3,
+     "within_dE5_pct": 37.59
     },
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
-     "nearest_dE2000_p01": 1.7,
-     "within_dE5_pct": 10.41
+     "nearest_dE2000_p01": 1.5,
+     "within_dE5_pct": 13.82
     },
     {
      "hex": "#697987",
@@ -84,13 +84,13 @@
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 15.2,
+     "nearest_dE2000_p01": 17.5,
      "within_dE5_pct": 0.0
     }
    ],
-   "pixel_to_nearest_dE_median": 5.6,
+   "pixel_to_nearest_dE_median": 4.9,
    "pixel_to_nearest_dE_p90": 17.5,
-   "pixels_within5_pct": 45.4
+   "pixels_within5_pct": 51.4
   }
  },
  "cam": {
@@ -193,7 +193,7 @@
    540
   ]
  },
- "render_seconds": 16.7,
+ "render_seconds": 18.6,
  "lens": "none",
  "bloom_tint": "single",
  "note": "F3 367.21 forward: shafts slanting down, snow rising past (APL target 85)"

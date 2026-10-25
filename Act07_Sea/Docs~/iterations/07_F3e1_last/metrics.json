@@ -4,8 +4,8 @@
    960,
    540
   ],
-  "APL": 33.52,
-  "EV_display": -5.042,
+  "APL": 31.68,
+  "EV_display": -5.199,
   "luma_lt12_pct": 58.1,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
@@ -19,27 +19,27 @@
   "lavender_act6_pct": 0.0,
   "brightest": {
    "bbox": [
-    107,
+    31,
     1,
-    923,
-    503
+    903,
+    539
    ],
    "centroid": [
-    594.4,
-    143.5
+    466.3,
+    206.9
    ],
-   "clusters": 15,
-   "clusters_ge5pct": 6,
-   "min_luma": 129.1,
+   "clusters": 44,
+   "clusters_ge5pct": 1,
+   "min_luma": 128.0,
    "centroid_az_el": [
-    15.04,
-    51.3
+    4.23,
+    45.21
    ]
   },
   "top25_Lstar": {
-   "mean": 8.83,
+   "mean": 8.73,
    "p50": 2.19,
-   "p90": 49.28
+   "p90": 48.45
   },
   "palette": {
    "act": "07a",
@@ -48,49 +48,49 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 29.0,
+     "nearest_dE2000_p01": 29.4,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 21.1,
+     "nearest_dE2000_p01": 21.7,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 16.8,
+     "nearest_dE2000_p01": 17.4,
      "within_dE5_pct": 0.01
     },
     {
      "hex": "#3876AB",
      "role": "浅水 縹",
-     "nearest_dE2000_p01": 6.5,
+     "nearest_dE2000_p01": 7.6,
      "within_dE5_pct": 0.01
     },
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
-     "nearest_dE2000_p01": 2.4,
-     "within_dE5_pct": 32.55
+     "nearest_dE2000_p01": 2.6,
+     "within_dE5_pct": 34.1
     },
     {
      "hex": "#697987",
      "role": "海雪",
-     "nearest_dE2000_p01": 3.4,
-     "within_dE5_pct": 1.83
+     "nearest_dE2000_p01": 3.2,
+     "within_dE5_pct": 2.27
     },
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 19.5,
+     "nearest_dE2000_p01": 20.0,
      "within_dE5_pct": 0.01
     }
    ],
    "pixel_to_nearest_dE_median": 19.2,
    "pixel_to_nearest_dE_p90": 19.2,
-   "pixels_within5_pct": 34.4
+   "pixels_within5_pct": 36.4
   }
  },
  "cam": {
@@ -194,7 +194,7 @@
    540
   ]
  },
- "render_seconds": 20.5,
+ "render_seconds": 16.2,
  "lens": "none",
  "bloom_tint": "single",
  "note": "F3e1 512.0: the window shrinking (gain x ~0.24 on the way to 0.04 at 514.36), the last wide shaft over the seats"

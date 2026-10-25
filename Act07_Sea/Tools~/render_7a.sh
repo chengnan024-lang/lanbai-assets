@@ -58,3 +58,10 @@ wait
 run 20_897_floorhole 897.96 --cam hero --pitch -52 --bus bible_v2 --set floorhole=-22,22,-70,-38 --note "D-26 897.96: down through the eroded floor in front of the main seat (az -22..22, el -70..-38): the inverted window's warm ring and rose-gold arc ahead, the indigo core near the feet" &
 run 21_921_floorhole 921.4  --cam hero --pitch -52 --bus bible_v2 --set floorhole=-22,22,-70,-38 --note "D-26 921.4: the same hole, the mirror 1.4 m below the eye: the same angles (the window is a cone), the fog thinner" &
 wait
+# ---- D-44 #5: the same beats as the local screenshots (FromLocal/act07a_view/): forward + up 60 from the main seat
+for bt in 363.3 367.2 387 446 462.4 474.4 506.4 532.4 556.4 559 630 645; do
+  RH=""; awk "BEGIN{exit !($bt >= 387)}" && RH="--set roofhole=auto"
+  run b${bt}_fwd  $bt --cam hero --pitch 0  --bus bible_v2 --note "D-44 #5 beat $bt forward from the main seat" &
+  run b${bt}_up60 $bt --cam hero --pitch 60 --bus bible_v2 $RH --note "D-44 #5 beat $bt up 60 from the main seat" &
+  wait
+done
