@@ -13,7 +13,7 @@
 //    alpha = EvRampAlpha(x, L_scene, L_overlay, L_floor)     never a linear alpha ramp for a brightening.
 //  Keep the renderer DISABLED when alpha = 0 (saves a full-screen pass per eye).
 // =====================================================================================================
-Shader "Lanbai/Overlay"
+Shader "Lanbai/Legacy/Overlay_v1"   // v1 (lens_tech). Renamed so it never shadows Overlay/ v2 "Lanbai/Overlay" (D-44 #7; 阿白 did the same locally, GUID kept)
 {
     Properties
     {

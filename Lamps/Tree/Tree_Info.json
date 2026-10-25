@@ -1,0 +1,66 @@
+{
+ "Tree_A1": {
+  "height_m": 10.89,
+  "crown_width_m": [
+   9.78,
+   10.47
+  ],
+  "trunk_radius_m": 0.234,
+  "tris_lod0": 8142,
+  "tris_lod1": 1326,
+  "tris_lod2": 4,
+  "impostor": "T_Tree_Impostor_Tree_A1.png",
+  "impostor_half_width_m": 7.17,
+  "impostor_height_m": 14.34,
+  "seed": 4,
+  "scale": 1.3
+ },
+ "Tree_A2": {
+  "height_m": 12.23,
+  "crown_width_m": [
+   8.43,
+   11.72
+  ],
+  "trunk_radius_m": 0.256,
+  "tris_lod0": 10486,
+  "tris_lod1": 1540,
+  "tris_lod2": 4,
+  "impostor": "T_Tree_Impostor_Tree_A2.png",
+  "impostor_half_width_m": 6.73,
+  "impostor_height_m": 13.45,
+  "seed": 21,
+  "scale": 1.45
+ },
+ "Tree_A3": {
+  "height_m": 12.96,
+  "crown_width_m": [
+   10.93,
+   12.82
+  ],
+  "trunk_radius_m": 0.266,
+  "tris_lod0": 11996,
+  "tris_lod1": 1750,
+  "tris_lod2": 4,
+  "impostor": "T_Tree_Impostor_Tree_A3.png",
+  "impostor_half_width_m": 9.19,
+  "impostor_height_m": 18.38,
+  "seed": 37,
+  "scale": 1.52
+ },
+ "Tree_B1": {
+  "height_m": 10.39,
+  "crown_width_m": [
+   7.53,
+   9.17
+  ],
+  "trunk_radius_m": 0.215,
+  "tris_lod0": 5816,
+  "tris_lod1": 1666,
+  "tris_lod2": 4,
+  "impostor": "T_Tree_Impostor_Tree_B1.png",
+  "impostor_half_width_m": 5.51,
+  "impostor_height_m": 11.02,
+  "seed": 7,
+  "scale": 1.25
+ }
+}

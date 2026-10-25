@@ -1,0 +1,261 @@
+{
+  "id": "tree_sample",
+  "title": "样板树（D-44 #6）：三个对照机位 + 主座位 20 px/° 近景 + 头部微动的闪烁序列 + 性能",
+  "source": "总导演 D-44 #6、10-25 选形（A 为主、B 点缀）；Lamps/Tree/README_样板树.md；FromLocal/trees/README.md 的机位与位置",
+  "source_why": "灯包写在 Lamps/Tree/UnityTest/tree_sample.json；总工程师 10-25 审过拷进来（改了一处：perf 的状态用 id 不用 name，不然量数名是 perf.row.all_on.*，row_tris 那一项会“没量到”）。以后改这份，灯包的那份只作原稿",
+  "requires": {
+    "folders": [
+      "Assets/Lanbai/Common",
+      "Assets/Lanbai/Grading",
+      "Assets/Lanbai/Lamps/Tree"
+    ],
+    "files": [
+      "Assets/Lanbai/Scenes/Lanbai.unity",
+      "Assets/Lanbai/Lamps/Tree/Models/Tree_A1.fbx",
+      "Assets/Lanbai/Lamps/Tree/Models/Tree_A2.fbx",
+      "Assets/Lanbai/Lamps/Tree/Models/Tree_A3.fbx",
+      "Assets/Lanbai/Lamps/Tree/Models/Tree_B1.fbx"
+    ],
+    "types": [
+      "Lanbai.Lamps.LanbaiTreeBuilder",
+      "Lanbai.Grading.LanbaiGradeBuilder"
+    ],
+    "menus": [
+      "蓝白/Build/Sample Trees"
+    ]
+  },
+  "scene": {
+    "path": "Assets/Lanbai/Scenes/Lanbai.unity",
+    "mode": "copy",
+    "why": "拷进沙盒：树只放在拷贝里，主场景不动"
+  },
+  "allowed_writes": [
+    "Assets/Lanbai/Lamps/Tree/Generated/**",
+    "Assets/Lanbai/Lamps/Tree/Prefabs/**"
+  ],
+  "allowed_writes_why": "蓝白/Build/Sample Trees 只写这两处（材质、预制体）；导入设置由 LanbaiTreeImport 在 Lamps/Tree/ 里改",
+  "settings": {
+    "vertex_compression_off": [
+      "Color"
+    ],
+    "vertex_compression_off_why": "风用顶点色（R 柔度、G 相位、B 叶）；D-40b #3 已经不压缩 Color",
+    "gate": false
+  },
+  "build": [
+    {
+      "type": "menu",
+      "path": "蓝白/Build/Sample Trees"
+    },
+    {
+      "type": "method",
+      "name": "Lanbai.Grading.LanbaiGradeBuilder.Solo",
+      "arg": "S1",
+      "expect": "solo S1",
+      "why": "第 1 幕的调色（对照图是站台雨夜；本地 9-30 的对照用的是 Night profile，所以和旧图的亮度不完全可比）"
+    },
+    {
+      "type": "set_field_objects_active",
+      "component": "LB_Journey",
+      "fields": [
+        "*Group",
+        "*group"
+      ],
+      "value": false,
+      "optional": true,
+      "why": "关掉别的幕的占位组；路组若也被关，对照图里会没有路——那就把这一步删掉重跑（README §5）"
+    },
+    {
+      "type": "method",
+      "name": "Lanbai.Lamps.LanbaiTreeBuilder.TestRow",
+      "arg": "",
+      "expect": "OK tree test row"
+    },
+    {
+      "type": "assert_object",
+      "path": "Lanbai_TreeTestRow"
+    }
+  ],
+  "cameras": {
+    "overview": {
+      "eye": [
+        4.6,
+        1.65,
+        -9.0
+      ],
+      "look_at": [
+        4.0,
+        5.0,
+        30.0
+      ],
+      "vfov": 55,
+      "w": 1600,
+      "h": 900,
+      "ref": "repo:Lamps/Tree/Docs~/compare_overview_blender.png"
+    },
+    "right": {
+      "eye": [
+        3.2,
+        1.65,
+        2.0
+      ],
+      "look_at": [
+        10.0,
+        5.0,
+        24.0
+      ],
+      "vfov": 55,
+      "w": 1600,
+      "h": 900,
+      "ref": "repo:Lamps/Tree/Docs~/compare_right_blender.png"
+    },
+    "left": {
+      "eye": [
+        -2.5,
+        1.65,
+        0.0
+      ],
+      "look_at": [
+        -10.0,
+        5.0,
+        26.0
+      ],
+      "vfov": 55,
+      "w": 1600,
+      "h": 900,
+      "ref": "repo:Lamps/Tree/Docs~/compare_left_blender.png"
+    },
+    "hero": {
+      "eye": [
+        0.55,
+        1.7,
+        2.05
+      ],
+      "look_at": [
+        9.0,
+        6.0,
+        16.0
+      ],
+      "crop_deg": [
+        40,
+        30
+      ],
+      "ppd": 20,
+      "ref": "repo:Lamps/Tree/Docs~/hero_20ppd_blender.png"
+    }
+  },
+  "cameras_why": "前三个 = FromLocal/trees/README.md 的机位（Unity 世界，垂直 55°，1600×900）；hero = 主座位（D-40b #1）看右手第一棵树的树冠，20 px/°（D-40b #2）",
+  "shots": [
+    {
+      "id": "overview",
+      "cam": "overview"
+    },
+    {
+      "id": "right",
+      "cam": "right"
+    },
+    {
+      "id": "left",
+      "cam": "left"
+    },
+    {
+      "id": "hero",
+      "cam": "hero"
+    }
+  ],
+  "sequences": [
+    {
+      "id": "hero_micro",
+      "cam": "hero",
+      "kind": "micro_motion",
+      "amp_cm": 2,
+      "amp_deg": 1,
+      "fps": 90,
+      "frames": 90,
+      "reference_ss": 4
+    },
+    {
+      "id": "hero_static",
+      "cam": "hero",
+      "kind": "static",
+      "fps": 90,
+      "frames": 45,
+      "reference_ss": 4
+    },
+    {
+      "id": "right_micro",
+      "cam": "right",
+      "kind": "micro_motion",
+      "amp_cm": 2,
+      "amp_deg": 1,
+      "fps": 90,
+      "frames": 90,
+      "reference_ss": 4
+    }
+  ],
+  "sequences_why": "总导演 10-25 第 2 条：叶子不能闪。hero 是 LOD0 近景，right 里有 LOD1 / LOD2 的远树。static 是对照（只剩画面自己的时间噪声，比如风）",
+  "perf": [
+    {
+      "id": "row",
+      "cam": "overview",
+      "states": [
+        {
+          "id": "trees"
+        }
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "id": "hero_shimmer",
+      "metric": "seq.hero_micro.shimmer_p99",
+      "op": "<=",
+      "value": 12,
+      "gate": true,
+      "why": "初值：叶缘在 4× 超采样参考下的差，p99 ≤ 12（0–255）。第一次实测后由总工程师定"
+    },
+    {
+      "id": "hero_shimmer_frac",
+      "metric": "seq.hero_micro.shimmer_frac",
+      "op": "<=",
+      "value": 0.02,
+      "gate": true,
+      "why": "超过阈值 4 的像素 ≤ 2 %"
+    },
+    {
+      "id": "right_shimmer_frac",
+      "metric": "seq.right_micro.shimmer_frac",
+      "op": "<=",
+      "value": 0.02,
+      "gate": true,
+      "why": "远树（LOD1 / LOD2）同样不能闪"
+    },
+    {
+      "id": "overview_apl",
+      "metric": "shot.overview.apl",
+      "op": "between",
+      "value": [
+        12,
+        40
+      ],
+      "gate": false,
+      "why": "圣经第 1 幕 APL 22；这个机位里有车和灯，只作参考"
+    },
+    {
+      "id": "row_tris",
+      "metric": "perf.row.trees.triangles",
+      "op": "<=",
+      "value": 400000,
+      "gate": false,
+      "why": "整个画面的三角面，参考；7 棵树 LOD0 合计约 6 万"
+    }
+  ],
+  "headset_checklist": [
+    "坐在主座位看右手第一棵树：叶簇边缘不爬、不闪；风是慢的摆，不是抖",
+    "两只眼各闭一次：叶卡、剪影卡（远处）两眼一致（alpha-to-coverage 需要 MSAA：VRChat 默认开）",
+    "钠灯下：迎灯的叶团是暗的橄榄 / 琥珀，不是亮绿；其余是剪影，比背后的天暗",
+    "远处的树（LOD2 两张交叉卡）走过去时不读成两块板"
+  ],
+  "manual": [
+    "Frame Debugger 看一棵 LOD0：两个 draw（树皮、叶），叶在 AlphaTest 队列、AlphaToMask 开"
+  ]
+}

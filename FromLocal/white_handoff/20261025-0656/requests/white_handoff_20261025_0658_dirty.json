@@ -1,0 +1,12 @@
+{
+  "steps": [
+    {
+      "op": "refresh"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_WhiteHandoffAudit.PreserveDirtyPreview"
+    }
+  ],
+  "id": "white_handoff_20261025_0658_dirty"
+}

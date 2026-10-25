@@ -1,0 +1,201 @@
+{
+ "metrics": {
+  "size": [
+   960,
+   540
+  ],
+  "APL": 43.82,
+  "EV_display": -4.95,
+  "luma_lt12_pct": 22.27,
+  "Lstar_gt85_pct": 0.0,
+  "clip_black_pct": 0.0,
+  "clip_white_pct": 0.0,
+  "clip_black_largest_region_pct": 0.0,
+  "clip_white_largest_region_pct": 0.0,
+  "warm_shadow_pct": 0.0,
+  "purple_pct": 0.0,
+  "purple_largest_region_pct": 0.0,
+  "violet_strong_pct": 0.0,
+  "lavender_act6_pct": 0.0,
+  "brightest": {
+   "bbox": [
+    10,
+    19,
+    920,
+    403
+   ],
+   "centroid": [
+    385.0,
+    215.6
+   ],
+   "clusters": 101,
+   "clusters_ge5pct": 1,
+   "min_luma": 151.3,
+   "centroid_az_el": [
+    -10.3,
+    5.53
+   ]
+  },
+  "top25_Lstar": {
+   "mean": 22.29,
+   "p50": 26.0,
+   "p90": 26.86
+  },
+  "palette": {
+   "act": "07a",
+   "metric": "CIEDE2000 (as Review/Tools~/measure.py)",
+   "swatches": [
+    {
+     "hex": "#E6F3F8",
+     "role": "斯涅尔窗 藍白",
+     "nearest_dE2000_p01": 28.5,
+     "within_dE5_pct": 0.0
+    },
+    {
+     "hex": "#ACD4ED",
+     "role": "座椅上的焦散",
+     "nearest_dE2000_p01": 17.1,
+     "within_dE5_pct": 0.0
+    },
+    {
+     "hex": "#90BFE9",
+     "role": "光柱",
+     "nearest_dE2000_p01": 10.3,
+     "within_dE5_pct": 0.03
+    },
+    {
+     "hex": "#3876AB",
+     "role": "浅水 縹",
+     "nearest_dE2000_p01": 6.5,
+     "within_dE5_pct": 0.04
+    },
+    {
+     "hex": "#11395E",
+     "role": "窗外全反射的暗镜",
+     "nearest_dE2000_p01": 1.9,
+     "within_dE5_pct": 75.32
+    },
+    {
+     "hex": "#697987",
+     "role": "海雪",
+     "nearest_dE2000_p01": 13.6,
+     "within_dE5_pct": 0.0
+    },
+    {
+     "hex": "#8AC6FF",
+     "role": "生物荧光",
+     "nearest_dE2000_p01": 11.1,
+     "within_dE5_pct": 0.05
+    }
+   ],
+   "pixel_to_nearest_dE_median": 3.3,
+   "pixel_to_nearest_dE_p90": 19.3,
+   "pixels_within5_pct": 75.4
+  }
+ },
+ "cam": {
+  "eye": [
+   0.55,
+   1.7,
+   2.05
+  ],
+  "yaw_deg": 0,
+  "pitch_deg": 0.0,
+  "hfov_deg": 90,
+  "res": [
+   960,
+   540
+  ],
+  "note": "主座位眼位、正前、桌面 1920×1080、水平 90°（= 本地门测试 U7 截图的机位，Gate cameras.U7）。全片的“标准机位”。",
+  "source": "Engineering/render_harness",
+  "name": "hero"
+ },
+ "grade_spec": {
+  "S7a": 1.0,
+  "S7b": 0.188
+ },
+ "grade_state": {
+  "postExposure": -0.7248,
+  "temperature": -2.60872,
+  "tint": 1.42248,
+  "saturation": 7.925040000000001,
+  "contrast": -9.124319999999999,
+  "lift": [
+   0.9625392,
+   0.987732,
+   1.0,
+   0.014604800000000001
+  ],
+  "gamma": [
+   0.973988,
+   0.987988,
+   1.0,
+   -0.2324536
+  ],
+  "gain": [
+   0.9877372,
+   0.9965084000000001,
+   0.9995864,
+   0.386034
+  ],
+  "mixer": [
+   100.2472,
+   0.64368,
+   -2.9032799999999996,
+   -0.17128000000000002,
+   101.13076,
+   0.21243999999999996,
+   1.3356400000000002,
+   2.0059199999999997,
+   99.4424
+  ],
+  "bloom": {
+   "intensity": 4.376,
+   "threshold": 2.1666800000000004,
+   "softKnee": 0.6,
+   "diffusion": 7.812,
+   "color": [
+    0.9267607843137254,
+    0.984078431372549,
+    1.0
+   ],
+   "clamp": 4.2399999999983455
+  },
+  "vignette": {
+   "intensity": 0.0,
+   "smoothness": 0.2,
+   "roundness": 1.0,
+   "rounded": false,
+   "color": "#000000"
+  }
+ },
+ "bloom_share_of_APL": 0.01,
+ "t": 506.4,
+ "target": {
+  "phase": "最后一闪",
+  "APL": 46.0,
+  "grade": "S7a→S7b",
+  "range": [
+   46,
+   35
+  ]
+ },
+ "scene": {
+  "what": "act 7a",
+  "frame": "__7a__",
+  "depth": 68.22,
+  "fog": 0.0288,
+  "erosion": 0.127,
+  "bus": "bible_v2",
+  "glass": false,
+  "samples": 48,
+  "res": [
+   960,
+   540
+  ]
+ },
+ "render_seconds": 12.3,
+ "lens": "none",
+ "bloom_tint": "single",
+ "note": "D-44 #5 beat 506.4 forward from the main seat"
+}

@@ -31,7 +31,7 @@ VRChat 只允许 Udon 写 `_Udon_` 前缀的全局 shader 量（`VRCShader.SetGl
 | `_Udon_WaterFogUp` / `_Udon_WaterFogMid` / `_Udon_WaterFogDown` | 水下雾色（朝上 / 水平 / 朝下，线性） | 海 | `LanbaiFog` |
 | `_Udon_MirrorPlane` | float4：x 当前镜面在车正下方的世界 y、y 镜线强度 0–1、z 镜序号 1–13（0 无）、w 穿越进度 −1…1 | 镜子驱动 | 车厢、`Lanbai/BronzeMirror`、星尘 |
 | `_Udon_MirrorRimLight` | float4：xyz 最近镜缘点世界位置、w 目标照度 E（0–0.3，8000 K） | 镜子驱动 | 车厢 / 头像补光 |
-| `_Udon_OverlayColor` | rgb 填色 × 2^(−ΔEV)，a FLAT 模式的 alpha | `LanbaiOverlay`（由当时拥有遮罩的幕调用）。**出生淡入优先（Director v1.2）**：`LB_Journey` 的出生淡入期间（`dispatcher.LanbaiSpawnFadeBegin()` → `LanbaiSpawnFadeEnd()`）只有 `LB_Journey` 调，驱动经 `LanbaiSpawnFade(since)` 得知、不调；之后从黑按 ≤ 0.85 EV/s 升（`README_集成.md` §8.4）。这个时刻不另设全局量：只有驱动要知道，分发层直接传 | `Lanbai/Overlay` |
+| `_Udon_OverlayColor` | rgb 填色 × 2^(−ΔEV)，a FLAT 模式的 alpha | `LanbaiOverlay`（由当时拥有遮罩的幕调用）。**出生淡入优先（Director v1.2；v1.3 按 D-43 改了交接，见 `Director/README_Director.md` §0）**：`LB_Journey` 的出生淡入期间（`dispatcher.LanbaiSpawnFadeBegin()` → `LanbaiSpawnFadeEnd()`）只有 `LB_Journey` 调，驱动经 `LanbaiSpawnFade(since)` 得知、不调；之后从黑按 ≤ 0.85 EV/s 升（`README_集成.md` §8.4）。这个时刻不另设全局量：只有驱动要知道，分发层直接传 | `Lanbai/Overlay` |
 | `_Udon_OverlayCurve` / `_Udon_OverlayLum` | 曲线（tau、T、模式、呼吸）；(Lfrom, Lto, Lscene, Lover) | 同上 | 同上 |
 | `_Udon_OverlayLobe0..3` / `_Udon_OverlayLead` / `_Udon_OverlayLeadElse` | 方向领先瓣（方向、半角）；各瓣领先秒数；其余方向领先与软边 | 同上 | 同上 |
 | `_Udon_InsidePortal` | float4：x 裂口平面世界 z，y = 1 门户生效（门内驱动在 4c 之前就可能置 1）。**读的 shader 必须每只眼再判断 `_WorldSpaceCameraPos.z > x`，才裁掉 z > x 的东西**；只看 y 会让 U9 之前平面以远的云海、远云和光束整片消失 | 门内驱动 | 门内 shader、**门的 shader / 驱动** |

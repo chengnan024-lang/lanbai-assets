@@ -1,0 +1,27 @@
+{
+    "id": "act07a_state_20261025_0340",
+    "state": "done",
+    "step": 6,
+    "total": 6,
+    "started": "2026-10-25 03:38:06",
+    "finished": "2026-10-25 03:38:32",
+    "error": "",
+    "log": [
+        "03:38:06 收到请求，共 6 步",
+        "03:38:06 刷新导入（AssetDatabase.Refresh）",
+        "03:38:09 （脚本重新加载，接着做第 1 步）",
+        "03:38:11 导入和编译完成",
+        "03:38:12 进入 Play",
+        "03:38:13 （脚本重新加载，接着做第 2 步）",
+        "03:38:16 已经在 Play 里，等 5 秒",
+        "03:38:22 调用 Lanbai.Tests.LB_SeaViewAudit.BeginStateOnly",
+        "03:38:22   用时 0.0 秒",
+        "03:38:22   返回：running sea view audit",
+        "03:38:31 调用 Lanbai.Tests.LB_SeaViewAudit.Status",
+        "03:38:31   用时 0.0 秒",
+        "03:38:31   返回：done 12 times / state only: E:\\IDMdownload\\VRCC\\Backups\\continuation_20261025\\act07a_view_0336_state_corrected",
+        "03:38:31 停止 Play",
+        "03:38:32 全部完成"
+    ],
+    "files": []
+}

@@ -1,0 +1,40 @@
+{
+  "id": "white_handoff_20261025_0655_audit",
+  "steps": [
+    {
+      "op": "refresh"
+    },
+    {
+      "target": "Lanbai.Tests.LB_WhiteHandoffAudit.Inspect",
+      "op": "call"
+    },
+    {
+      "target": "Lanbai.Tests.LB_WhiteHandoffAudit.QuietNextPlay",
+      "op": "call"
+    },
+    {
+      "seconds": 4,
+      "op": "play"
+    },
+    {
+      "target": "Lanbai.Tests.LB_FullAssembly.Seek",
+      "arg": "1148.8",
+      "op": "call"
+    },
+    {
+      "target": "Lanbai.Tests.LB_WhiteHandoffAudit.Inspect",
+      "op": "call"
+    },
+    {
+      "seconds": 2,
+      "op": "wait"
+    },
+    {
+      "target": "Lanbai.Tests.LB_WhiteHandoffAudit.Inspect",
+      "op": "call"
+    },
+    {
+      "op": "stop"
+    }
+  ]
+}
