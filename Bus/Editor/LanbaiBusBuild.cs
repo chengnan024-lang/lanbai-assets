@@ -460,7 +460,7 @@ public static class LanbaiBusBuild
         m.SetColor("_WearColor", Hex("#6A3434")); m.SetFloat("_WearSmooth", 0.66f); m.SetFloat("_WearAmount", 0.8f);
         m.SetColor("_SunFadeColor", Hex("#7A4A48")); m.SetFloat("_SunFadeSmooth", 0.40f); m.SetFloat("_SunFadeAmount", 0.8f);
         m.SetColor("_GrimeColor", Hex("#5B524A")); m.SetFloat("_GrimeAbsolute", 1f); m.SetFloat("_GrimeAmount", 0.5f);
-        m.SetFloat("_CrackAmount", 0f);
+        m.SetColor("_CrackColor", Hex("#8A6A60")); m.SetFloat("_CrackSmooth", 0.20f); m.SetFloat("_CrackAmount", 1f);   // bible 4.2 seam cracks: atlas mask B x vertex alpha (2-5 per seat)
         Detail(m, "Cabin_SeatLeather_N_0.30m.jpg", 0.30f, 0.30f / Mathf.Max(pi.metres_per_uv, 0.01f), null);
     }
 

@@ -192,6 +192,9 @@ def vinyl(worn=1.0, sun=0.0, name='M_Bus_Vinyl_Detail', base_mat='Vinyl', cols=N
     crack_mask.operation = 'MINIMUM'
     nt.links.new(crack, crack_mask.inputs[0])
     crack_mask.inputs[1].default_value = 1.0
+    flag = nt.nodes.new('ShaderNodeValue')            # 'this is leatherette' for texbake (the albedo alpha in Unity)
+    flag.name = flag.label = 'leather_flag'
+    flag.outputs[0].default_value = 1.0
     show = nt.nodes.new('ShaderNodeValue')
     show.name = show.label = 'crack_show'
     show.outputs[0].default_value = 1.0

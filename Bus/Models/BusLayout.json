@@ -780,11 +780,42 @@
   "Glass_WinR5",
   "Glass_WindscreenL",
   "Glass_WindscreenR",
+  "Pole_R0",
+  "Seat_DriverSeat",
+  "Seat_RearBench",
+  "Seat_SeatL0",
+  "Seat_SeatL1",
+  "Seat_SeatL2",
+  "Seat_SeatL3",
+  "Seat_SeatL4",
+  "Seat_SeatL5",
+  "Seat_SeatR0",
+  "Seat_SeatR1",
+  "Seat_SeatR2",
+  "Seat_SeatR3",
+  "Seat_SeatR4",
+  "Seat_SeatR5",
+  "Seat_SeatR6",
   "Wheel_FL",
   "Wheel_FR",
   "Wheel_RL",
-  "Wheel_RR"
+  "Wheel_RR",
+  "Window_R1"
  ],
+ "slice": {
+  "seat": [
+   "Seat_SeatR0"
+  ],
+  "window": [
+   "Window_R1",
+   "Glass_WinR1"
+  ],
+  "pillar": [
+   "Pole_R0"
+  ],
+  "missing": [],
+  "note": "D-40 #1：菜单「蓝白/Build/车 切片」（Bus/Editor/LanbaiBusSliceBuilder.cs）从 Bus.fbx 里取这几个物体，车局部坐标不变（车在原点）。missing 不空 = 这个 FBX 是旧的，要重跑 finish_bus.py"
+ },
  "door_panels": [
   {
    "name": "Bus_Door0",
@@ -867,6 +898,71 @@
    "note": "FBX 里是开着的状态；关上 = 把物体移到 closed.position、绕自己的 +Y 转 closed.yaw_deg（第 11 幕，白遮罩下）"
   }
  ],
+ "parts": [
+  {
+   "type": "DriverSeat",
+   "res": 2048,
+   "metres_per_uv": 2.18211,
+   "instances": [
+    "Seat_DriverSeat"
+   ],
+   "baked": true
+  },
+  {
+   "type": "RearBench",
+   "res": 1024,
+   "metres_per_uv": 4.52534,
+   "instances": [
+    "Seat_RearBench"
+   ],
+   "baked": true
+  },
+  {
+   "type": "SeatL",
+   "res": 1024,
+   "metres_per_uv": 3.0517,
+   "instances": [
+    "Seat_SeatL0",
+    "Seat_SeatL1",
+    "Seat_SeatL2",
+    "Seat_SeatL3"
+   ],
+   "baked": true
+  },
+  {
+   "type": "SeatLBox",
+   "res": 1024,
+   "metres_per_uv": 2.77518,
+   "instances": [
+    "Seat_SeatL4",
+    "Seat_SeatL5"
+   ],
+   "baked": true
+  },
+  {
+   "type": "SeatHero",
+   "res": 2048,
+   "metres_per_uv": 2.03469,
+   "instances": [
+    "Seat_SeatR0"
+   ],
+   "baked": true
+  },
+  {
+   "type": "SeatR",
+   "res": 2048,
+   "metres_per_uv": 2.17718,
+   "instances": [
+    "Seat_SeatR1",
+    "Seat_SeatR2",
+    "Seat_SeatR3",
+    "Seat_SeatR4",
+    "Seat_SeatR5",
+    "Seat_SeatR6"
+   ],
+   "baked": true
+  }
+ ],
  "stats": {
   "Bus_Door0": {
    "verts": 40,
@@ -905,8 +1001,8 @@
    "tris": 356
   },
   "Cabin_Static": {
-   "verts": 38694,
-   "tris": 69545
+   "verts": 167836,
+   "tris": 320233
   },
   "Cabin_Tubes": {
    "verts": 960,
@@ -1044,6 +1140,70 @@
    "verts": 49,
    "tris": 72
   },
+  "Pole_R0": {
+   "verts": 2040,
+   "tris": 4020
+  },
+  "Seat_DriverSeat": {
+   "verts": 3904,
+   "tris": 7692
+  },
+  "Seat_RearBench": {
+   "verts": 10448,
+   "tris": 20736
+  },
+  "Seat_SeatL0": {
+   "verts": 6824,
+   "tris": 13460
+  },
+  "Seat_SeatL1": {
+   "verts": 6824,
+   "tris": 13460
+  },
+  "Seat_SeatL2": {
+   "verts": 6824,
+   "tris": 13460
+  },
+  "Seat_SeatL3": {
+   "verts": 6824,
+   "tris": 13460
+  },
+  "Seat_SeatL4": {
+   "verts": 4908,
+   "tris": 9680
+  },
+  "Seat_SeatL5": {
+   "verts": 4908,
+   "tris": 9680
+  },
+  "Seat_SeatR0": {
+   "verts": 4556,
+   "tris": 8976
+  },
+  "Seat_SeatR1": {
+   "verts": 5868,
+   "tris": 11552
+  },
+  "Seat_SeatR2": {
+   "verts": 5868,
+   "tris": 11552
+  },
+  "Seat_SeatR3": {
+   "verts": 5868,
+   "tris": 11552
+  },
+  "Seat_SeatR4": {
+   "verts": 5868,
+   "tris": 11552
+  },
+  "Seat_SeatR5": {
+   "verts": 5868,
+   "tris": 11552
+  },
+  "Seat_SeatR6": {
+   "verts": 5868,
+   "tris": 11552
+  },
   "Wheel_FL": {
    "verts": 648,
    "tris": 1284
@@ -1060,6 +1220,10 @@
    "verts": 648,
    "tris": 1284
   },
+  "Window_R1": {
+   "verts": 14556,
+   "tris": 28044
+  },
   "Wiper-0.14": {
    "verts": 32,
    "tris": 28
@@ -1069,5 +1233,5 @@
    "tris": 28
   }
  },
- "stats_total_tris": 132433
+ "stats_total_tris": 595101
 }

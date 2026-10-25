@@ -70,10 +70,10 @@ Shader "Lanbai/Cabin"
 
         [Header(D-36 part textures on uv0)]
         _UsePart ("Use part textures  0 or 1", Float) = 0
-        [NoScaleOffset] _PartAlbedo ("Part albedo  sRGB (x _Color)", 2D) = "white" {}
+        [NoScaleOffset] _PartAlbedo ("Part albedo  sRGB (x _Color)  A leather mask for the grain detail", 2D) = "white" {}
         [NoScaleOffset] _PartNormal ("Part normal  tangent space on uv0", 2D) = "bump" {}
         _PartNormalScale ("Part normal scale", Range(0, 2)) = 1
-        [NoScaleOffset] _PartMask ("Part mask  R metal  G smoothness  B wear  A AO  linear", 2D) = "white" {}
+        [NoScaleOffset] _PartMask ("Part mask  R metal  G smoothness  B seam-crack shapes  A AO  linear", 2D) = "white" {}
 
         [Header(Emission)]
         [Enum(None,0,Tube,1,Radio,2,Gauge,3,DestBlind,4)] _EmitMode ("Emission mode", Float) = 0
@@ -226,10 +226,15 @@ Shader "Lanbai/Cabin"
                 occl = am.a;
             }
             half3 nPart = half3(0, 0, 1);
+            float partCrack = 0.0;
+            float partLeather = 1.0;
             [branch] if (_UsePart > 0.5)
             {   // D-36 parts: the baked thirty years (wrinkles, wear, chips, AO) on the part's own uv0 atlas
                 float4 pm = tex2D(_PartMask, uv0);
-                albedo = _Color.rgb * tex2D(_PartAlbedo, uv0).rgb;
+                partCrack = pm.b;                // the type atlas's seam-crack candidates (bible 4.2: 2-5 per seat)
+                float4 pa = tex2D(_PartAlbedo, uv0);
+                albedo = _Color.rgb * pa.rgb;
+                partLeather = pa.a;              // where the part is leatherette (alpha 1): only there the grain detail
                 metal = pm.r;
                 smooth = pm.g;
                 occl = pm.a;
@@ -258,6 +263,11 @@ Shader "Lanbai/Cabin"
             float crack = smoothstep(1.0 - 0.12 * seed, 1.0 - 0.04 * seed, crackN) * step(0.001, seed) * _CrackAmount;
             albedo = lerp(albedo, _CrackColor.rgb, crack);
             smooth = lerp(smooth, _CrackSmooth, crack);
+            // D-36 seats: which of the atlas's crack candidates are open on THIS seat = vertex alpha (finish_bus.seat_wear,
+            // 2-5 per seat), so seats sharing one atlas and one material still split in different places. 0 off parts.
+            float pcrack = partCrack * saturate(IN.color.a) * _CrackAmount;
+            albedo = lerp(albedo, _CrackColor.rgb, pcrack);
+            smooth = lerp(smooth, _CrackSmooth, pcrack);
 
             // height band (stanchions: 0.80 at hand height 1.0-1.8 m above the floor)
             float hb = smoothstep(_HeightSmooth.x - 0.05, _HeightSmooth.x, P.y) * (1.0 - smoothstep(_HeightSmooth.y, _HeightSmooth.y + 0.05, P.y));
@@ -275,16 +285,19 @@ Shader "Lanbai/Cabin"
             smooth = LanbaiCabinBleachSmooth(smooth, bleach);
 
             // detail normal
-            half3 nT = UnpackScaleNormal(tex2D(_DetailNormal, uvd), _DetailNormalScale);
+            half3 nT = UnpackScaleNormal(tex2D(_DetailNormal, uvd), _DetailNormalScale * partLeather);
             o.Normal = _UsePart > 0.5 ? BlendNormals(nPart, nT) : nT;
             float3 nWS = normalize(WorldNormalVector(IN, o.Normal));
 
         #ifndef UNITY_PASS_SHADOWCASTER
             // D-40 #4 geometric specular AA: the LAST smoothness edit (after the part mask, detail mask, grime, wear,
             // sun fade, cracks, height band, wet and bleach), so ForwardBase (main light + reflection probe mip) and
-            // ForwardAdd (wound light, sodium sweep, mirror rim) all shade with the filtered value. Top level of surf:
-            // no divergent branch around the ddx / ddy (the [branch] blocks above are closed; the lerp is not a
-            // branch). The shadow caster writes depth only, so it skips this.
+            // ForwardAdd (the wound light and any other added real-time light) shade with the filtered value. The
+            // act 9 mirror rim (_Udon_MirrorRimLight below) is base-pass diffuse emission, no specular: not affected.
+            // Top level of surf: no divergent branch around the ddx / ddy (the [branch] blocks above are closed; the
+            // lerp is not a branch). The shadow caster writes depth only, so it skips this. nWS includes _PartNormal
+            // and the detail grain: on the D-36 seat parts (one material for tube, frame and leatherette) the two
+            // _SpecAAMapNormal choices differ; on Steel / Alu / Chrome (no part, detail scale 0) they agree.
             float3 nGeo = normalize(WorldNormalVector(IN, float3(0, 0, 1)));      // interpolated vertex normal
             float3 nAA = lerp(nGeo, nWS, saturate(_SpecAAMapNormal));
             smooth = LanbaiCabinSpecAA(smooth, nAA, _SpecAAVariance, _SpecAAThreshold);

@@ -223,16 +223,18 @@ def pole_flicker(r, d, smooth, shifts=32, **kw):
     return out
 
 
-# the D-40 #4 headset targets (what, radius m, smoothness, tube). Seat tube r from Bus/Source/parts/seat.py HEAD
-# (0.011), painted #3C3E3D 0.35 / worn bends 0.50 (LanbaiBusBuild SeatFrame + _WearSmooth); GEOMETRY ONLY: the seat is
-# a D-36 part material (PartMat: baked _PartNormal + the leather grain on the whole part), so with _SpecAAMapNormal 1
-# the tube's kernel is bigger than this (at most kappa). Ø32 pole bible §4.2 / parts/poles.py; window alu frame
-# profile rounded 1.2 mm (parts/window.py FRAME); chrome 0.85: the stop-button ring on the pole (poles.py _Ring,
-# bevel 0.0012) and the window latch / keeper (window.py, bevel 0.0012), the driver's door lever Ø12 (driver.py
-# DoorCtl_Lever, r 0.006). tube False = a 1-3 px rounded edge: not in the flicker rows (the row's coverage of a
-# 1-3 px edge would dominate the CV).
+# the D-40 #4 headset targets (what, radius m, smoothness, tube). Seat from Bus/Source/parts/seat.py at 27145d8 (the
+# r5 672M rebuild): painted tube Ø25 (R_T 0.0125) #3C3E3D 0.35 / worn bare bends 0.50 (LanbaiBusBuild SeatFrame +
+# _WearSmooth), the top run's black leatherette sleeve Ø55 (R_SLEEVE 0.0275) polished by hands 0.66 (PartMat
+# _WearSmooth); GEOMETRY ONLY: the seat is a D-36 part material (PartMat: baked _PartNormal + the leather grain on the
+# whole part), so with _SpecAAMapNormal 1 its kernel is bigger than this (at most kappa). Ø32 pole bible §4.2 /
+# parts/poles.py; window alu frame profile rounded 1.2 mm (parts/window.py FRAME); chrome 0.85: the stop-button ring
+# on the pole (poles.py _Ring, bevel 0.0012) and the window latch / keeper (window.py, bevel 0.0012), the driver's
+# door lever Ø12 (driver.py DoorCtl_Lever, r 0.006). tube False = a 1-3 px rounded edge: not in the flicker rows (the
+# row's coverage of a 1-3 px edge would dominate the CV).
 SPEC_AA_TARGETS = [
-    ('seat tube painted Ø22', 0.011, 0.35, True), ('seat tube worn Ø22', 0.011, 0.50, True),
+    ('seat tube painted Ø25', 0.0125, 0.35, True), ('seat tube worn bend Ø25', 0.0125, 0.50, True),
+    ('seat sleeve Ø55 polished', 0.0275, 0.66, True),
     ('pole Ø32', 0.016, 0.55, True), ('pole Ø32 hand height', 0.016, 0.80, True),
     ('window frame edge r1.2mm', 0.0012, 0.45, False),
     ('chrome ring / latch r1.2mm', 0.0012, 0.85, False), ('chrome door lever Ø12', 0.006, 0.85, True)]
@@ -275,6 +277,13 @@ def specaa_selftest():
     # 7. sub-pixel motion of a Ø32 pole's highlight at 2 m, hand-height 0.80: the filter cuts the flicker
     fl = pole_flicker(0.016, 2.0, 0.80)
     assert fl['on']['cvE'] < 0.5 * fl['off']['cvE'] and fl['on']['cvP'] < fl['off']['cvP'], fl
+    # 8. chrome 0.85 (the Ø12 door lever) at 2 m: flicker cut at least 4x - and most of its energy goes (isotropic)
+    fc = pole_flicker(0.006, 2.0, 0.85)
+    assert fc['on']['cvE'] < 0.25 * fc['off']['cvE'] and fc['on']['E_rel'] < 0.5, fc
+    # 9. the slice cameras' "ss": 2 at 1 m: the 2x grid alone already removes most of the pole's flicker, and the
+    #    filter takes less energy than at 1 sample per pixel (its ddx is half) - the slice under-shows the filter
+    f1, f2 = pole_flicker(0.016, 1.0, 0.80), pole_flicker(0.016, 1.0, 0.80, sr=2)
+    assert f2['off']['cvE'] < 0.25 * f1['off']['cvE'] and f2['on']['E_rel'] > f1['on']['E_rel'], (f1, f2)
 
     print('spec AA  sigma2 %.3f  kappa %.2f  (%d px/deg)' % (SPEC_AA_VARIANCE, SPEC_AA_THRESHOLD, PX_PER_DEG))
     print('  normal turning 10 deg / px:  ' + '  '.join('%.2f->%.3f' % (a, b) for a, b in zip(S, s10)))
@@ -291,7 +300,7 @@ def specaa_selftest():
         print('  %-26s s %.2f   1 m: %.3f (%4.1f deg) / %.3f (%4.1f deg)   2 m: %.3f (%4.1f deg) / %.3f (%4.1f deg)'
               % (name, s0, cells[0][1], cells[0][0], cells[1][1], cells[1][0], cells[2][1], cells[2][0], cells[3][1], cells[3][0]))
     print('  seat (part material, _SpecAAMapNormal 1): baked part normal + grain add to the kernel; worst case (kappa cap): '
-          + '  '.join('%.2f->%.3f' % (s0, 1 - ((1 - s0) ** 4 + SPEC_AA_THRESHOLD) ** 0.25) for s0 in (0.35, 0.50, 0.55)))
+          + '  '.join('%.2f->%.3f' % (s0, 1 - ((1 - s0) ** 4 + SPEC_AA_THRESHOLD) ** 0.25) for s0 in (0.35, 0.50, 0.66)))
     print('  sub-pixel motion (0..2 px, 32 steps), highlight 30 deg off the view; CV = std / mean over the steps')
     fmt = ('  %-26s s %.2f %.0f m%s  energy CV ref %.3f off %.3f on %.3f   peak CV off %.3f on %.3f   '
            'energy vs ref off %.2f on %.2f')

@@ -170,7 +170,8 @@ def _mulc(nt, a, b):
 
 
 def part_textures(nt, bs, ptype):
-    """D-36 part atlas (Lanbai/Cabin _UsePart): albedo, normal, mask (R metal, G smoothness, A AO) on uv0 'UVMap'."""
+    """D-36 part atlas (Lanbai/Cabin _UsePart): albedo, normal, mask (R metal, G smoothness, B seam-crack candidates,
+    A AO) on uv0 'UVMap'."""
     import glob
     d = os.path.join(ROOT, 'Bus', 'Textures', 'Parts')
 
@@ -193,7 +194,7 @@ def part_textures(nt, bs, ptype):
     nt.links.new(tm.outputs['Color'], sp.inputs[0])
     nt.links.new(sp.outputs[0], bs.inputs['Metallic'])
     nt.links.new(_m(nt, 'SUBTRACT', 1.0, sp.outputs[1]), bs.inputs['Roughness'])
-    return ta.outputs['Color']
+    return ta.outputs['Color'], sp.outputs[2]            # albedo, the seam-crack candidates (mask B)
 
 
 def act_material(m_src, lm_img, P, ambient, tubes):
@@ -211,8 +212,9 @@ def act_material(m_src, lm_img, P, ambient, tubes):
     sep = nt.nodes.new('ShaderNodeSeparateColor')
     nt.links.new(vc.outputs['Color'], sep.inputs[0])
     alb = c
+    pcrk = None
     if key.startswith('Part_'):
-        alb = part_textures(nt, bs, key[5:])
+        alb, pcrk = part_textures(nt, bs, key[5:])
     if 'wear' in look:
         alb = _mixc(nt, _m(nt, 'MULTIPLY', sep.outputs[1], look['wear'][1]), alb, tuple(lin(look['wear'][0])))
     if 'grime' in look:
@@ -225,6 +227,8 @@ def act_material(m_src, lm_img, P, ambient, tubes):
     if 'fade' in look:
         f = _m(nt, 'MINIMUM', _m(nt, 'DIVIDE', sep.outputs[2], 0.75), 1.0)
         alb = _mixc(nt, _m(nt, 'MULTIPLY', f, look['fade'][1]), alb, tuple(lin(look['fade'][0])))
+    if pcrk is not None:                     # Lanbai/Cabin: the open cracks = mask B x vertex alpha (this seat's 2-5)
+        alb = _mixc(nt, _m(nt, 'MULTIPLY', pcrk, vc.outputs['Alpha']), alb, tuple(lin('#8A6A60')))
     # bleach: albedo -> luminance x 0.9 tinted by the ambient colour
     bl = P['bleach']
     if bl > 0:

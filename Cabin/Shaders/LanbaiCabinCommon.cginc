@@ -62,7 +62,8 @@ inline float LanbaiCabinBleachSmooth(float s, float bleach) { return lerp(s, 0.3
 
 // ---------------------------------------------------------------------------------------------------
 // D-40 #4 geometric specular anti-aliasing (VR, ~20 px/deg: the painted seat tube, the Ø32 stanchions, the window
-// alu frame's 1.2 mm rounded edges at 1-2 m).
+// alu frame's 1.2 mm rounded edges, the chrome 0.85 small parts - stop-button ring, window latch, driver's levers -
+// at 1-2 m).
 // Tokuyoshi & Kaplanyan 2019, "Improved Geometric Specular Antialiasing", I3D '19, the normal-derivative ("deferred")
 // listing, itself the screen-space form of Kaplanyan, Hill, Patney & Lefohn 2016 (HPG '16):
 //     kernelRoughness2   = 2 sigma2 (dot(dndx, dndx) + dot(dndy, dndy))      sigma2: pixel filter variance (paper 1/2pi)
@@ -76,10 +77,13 @@ inline float LanbaiCabinBleachSmooth(float s, float bleach) { return lerp(s, 0.3
 // G-buffer normal, i.e. the shading normal with the normal maps. Lanbai/Cabin defaults to the shading normal
 // (_SpecAAMapNormal 1): Unity's BC5 / DXT5nm normal maps rebuild z, so a mip keeps no normal variance (no Toksvig),
 // and the D-36 part masks carry no roughness-from-normal prefilter - the derivative is the only place the baked
-// piping, seams and rounded edges get filtered. _SpecAAMapNormal 0 = Filament's choice.
+// piping, seams and rounded edges get filtered. _SpecAAMapNormal 0 = Filament's choice. The two agree where there is
+// no normal map (Steel / Alu / Chrome); they differ on the D-36 seat parts, whose one material carries the baked
+// part normal and the leather grain on the tube as well as on the leatherette.
 // Isotropic (Unity Standard GGX has no anisotropy): on a thin tube the widening along its axis is wasted, so the
-// highlight gets wider AND dimmer (cabin_numpy specaa: a Ø32 pole at 0.80 seen at 2 m keeps ~51 % of its energy,
-// its flicker drops ~4x). Hard edges with split normals are not seen (a quad never spans two triangles).
+// highlight of a directional / point light gets wider AND dimmer (cabin_numpy specaa: a Ø32 pole at 0.80 seen at 2 m
+// keeps ~51 % of its energy, its flicker drops ~4x; a Ø12 chrome lever at 0.85 keeps ~14 %, flicker ~8x less).
+// Hard edges with split normals are not seen (a quad never spans two triangles).
 // sigma2 = 0 returns the input exactly (off). ~15 ALU: 2 derivative ops, 2 dp3, 2 sqrt, a few mad / min / saturate.
 // Call it at the top level of the fragment code (no divergent branch around it: ddx / ddy). Cabin/Tools~/cabin_numpy.py
 // spec_aa() is the CPU port (self-test: python3 Cabin/Tools~/cabin_numpy.py specaa).

@@ -30,7 +30,7 @@
    -39.0,
    48.0
   ],
-  "solid_angle_cells": 26179
+  "solid_angle_cells": 28100
  },
  "SlopeR2": {
   "az": [
@@ -45,14 +45,14 @@
  },
  "Brow2": {
   "az": [
-   -10.5,
+   -9.5,
    2.5
   ],
   "el": [
    24.0,
    29.0
   ],
-  "solid_angle_cells": 210
+  "solid_angle_cells": 209
  },
  "SlopeL1": {
   "az": [
@@ -78,25 +78,25 @@
  },
  "WinR2": {
   "az": [
-   154.0,
+   153.5,
    166.5
   ],
   "el": [
-   -19.0,
+   -20.0,
    25.0
   ],
-  "solid_angle_cells": 714
+  "solid_angle_cells": 926
  },
  "Brow0": {
   "az": [
    -46.5,
-   -39.5
+   -40.5
   ],
   "el": [
    17.5,
    22.5
   ],
-  "solid_angle_cells": 98
+  "solid_angle_cells": 86
  },
  "SlopeL2": {
   "az": [
@@ -153,17 +153,6 @@
   ],
   "solid_angle_cells": 88
  },
- "WinL0": {
-  "az": [
-   -82.0,
-   -57.5
-  ],
-  "el": [
-   -10.5,
-   14.5
-  ],
-  "solid_angle_cells": 1761
- },
  "WinL1": {
   "az": [
    -106.0,
@@ -173,7 +162,18 @@
    -10.5,
    14.0
   ],
-  "solid_angle_cells": 569
+  "solid_angle_cells": 707
+ },
+ "WinL0": {
+  "az": [
+   -82.0,
+   -57.5
+  ],
+  "el": [
+   -10.5,
+   14.0
+  ],
+  "solid_angle_cells": 2042
  },
  "SlopeR4": {
   "az": [
@@ -188,14 +188,14 @@
  },
  "WinL2": {
   "az": [
-   -135.5,
-   -119.5
+   -137.5,
+   -119.0
   ],
   "el": [
    -9.5,
    12.0
   ],
-  "solid_angle_cells": 505
+  "solid_angle_cells": 701
  },
  "SlopeL4": {
   "az": [
@@ -207,6 +207,17 @@
    11.5
   ],
   "solid_angle_cells": 43
+ },
+ "WinR3": {
+  "az": [
+   169.0,
+   169.5
+  ],
+  "el": [
+   -4.0,
+   11.5
+  ],
+  "solid_angle_cells": 20
  },
  "SlopeL5": {
   "az": [
@@ -222,24 +233,13 @@
  "WinL3": {
   "az": [
    -147.5,
-   -140.5
+   -140.0
   ],
   "el": [
-   -1.5,
+   -5.0,
    9.0
   ],
-  "solid_angle_cells": 70
- },
- "WinR3": {
-  "az": [
-   169.0,
-   169.0
-  ],
-  "el": [
-   5.5,
-   7.5
-  ],
-  "solid_angle_cells": 5
+  "solid_angle_cells": 129
  },
  "WinL4": {
   "az": [
@@ -247,10 +247,10 @@
    -151.5
   ],
   "el": [
-   -1.0,
+   -4.0,
    7.0
   ],
-  "solid_angle_cells": 43
+  "solid_angle_cells": 57
  },
  "RearWindow": {
   "az": [
@@ -258,20 +258,20 @@
    180.0
   ],
   "el": [
-   -0.5,
+   -2.5,
    4.5
   ],
-  "solid_angle_cells": 284
+  "solid_angle_cells": 389
  },
  "(open: door / nothing)": {
   "az": [
-   -163.0,
-   37.0
+   21.0,
+   38.0
   ],
   "el": [
-   -60.0,
+   -42.5,
    37.5
   ],
-  "solid_angle_cells": 5600
+  "solid_angle_cells": 4459
  }
 }

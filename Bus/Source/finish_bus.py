@@ -774,6 +774,15 @@ def main():
             ca = o.data.color_attributes.new('Col', 'FLOAT_COLOR', 'POINT')
             for c in ca.data:
                 c.color = (0.0, 0.0, 0.0, 1.0)
+    # Unity imports only the FIRST vertex colour set of an FBX mesh: drop every set but 'Col' (the D-36 parts carry
+    # 'Zone', the Blender-only authoring channel that drives their detail materials), so mesh.colors is always 'Col'
+    for o in objs:
+        if o.type == 'MESH':
+            for ca in [c for c in o.data.color_attributes if c.name != 'Col']:
+                o.data.color_attributes.remove(ca)
+            if 'Col' in o.data.color_attributes:
+                o.data.color_attributes.active_color = o.data.color_attributes['Col']
+                o.data.color_attributes.render_color_index = list(o.data.color_attributes).index(o.data.color_attributes['Col'])
     if 'Cabin_DestBlind' in out:
         dest_blind_uv(out['Cabin_DestBlind'])
     fbx = os.path.join(a.out, 'Bus.fbx')
@@ -803,6 +812,9 @@ def main():
     # what Unity will see: uv1 = UVLightmap on every lightmapped separate object (read back from the FBX)
     bad += ['%s uv %s' % (k, v['uv_layers']) for k, v in rep.items()
             if k.startswith(LM_SEPARATE) and isinstance(v, dict) and v['uv_layers'] != list(LM_UV_ORDER)]
+    # what Unity will see: mesh.colors = the first colour set, which must be 'Col'
+    bad += ['%s colours %s' % (k, v['colours']) for k, v in rep.items()
+            if isinstance(v, dict) and v['colours'] and v['colours'][0] != 'Col']
     print('[finish] %d objects, %d tris total, readback problems: %s, %s' % (len(objs), lay['stats_total_tris'], bad or 'none', info))
 
 

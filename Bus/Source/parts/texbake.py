@@ -155,6 +155,25 @@ def _emit_node(ob, node_name):
     return saved
 
 
+def _emit_ao(ob, dist=0.06, samples=16):
+    """emit an Ambient Occlusion node's AO (only_local: the object's own geometry) from every material."""
+    saved = []
+    for m in ob.data.materials:
+        nt = m.node_tree
+        out = [n for n in nt.nodes if n.type == 'OUTPUT_MATERIAL'][0]
+        old = out.inputs[0].links[0].from_socket if out.inputs[0].links else None
+        ao = nt.nodes.new('ShaderNodeAmbientOcclusion')
+        ao.only_local = True
+        ao.samples = samples
+        ao.inputs['Distance'].default_value = dist
+        em = nt.nodes.new('ShaderNodeEmission')
+        nt.links.new(ao.outputs['AO'], em.inputs['Color'])
+        nt.links.new(em.outputs[0], out.inputs[0])
+        saved.append((nt, out, old, em))
+        saved.append((nt, out, None, ao))
+    return saved
+
+
 def _set_value_nodes(ob, node_name, v):
     for m in ob.data.materials:
         n = m.node_tree.nodes.get(node_name)
@@ -197,8 +216,15 @@ def bake_part(objs, name, res=2048, samples=32, out_dir=OUT, high=None):
     sc.cycles.samples = samples
     nrm = _bake(ob, _image(name + '_nrm', res), 'NORMAL', src=hs, normal_space='TANGENT')
     rgh = _bake(ob, _image(name + '_rgh', res), 'ROUGHNESS', src=hs)
-    sc.cycles.samples = max(samples, 64)
-    ao = _bake(ob, _image(name + '_ao', res), 'AO', src=hs)
+    src = hs if hs is not None else ob
+    sc.cycles.samples = 1
+    saved = _emit_node(src, 'crack_mask')
+    crk = _bake(ob, _image(name + '_crk', res), 'EMIT', src=hs)
+    _restore(saved)
+    sc.cycles.samples = max(samples, 32)
+    saved = _emit_ao(src, 0.06)                 # the part's own AO only (see bake_onto)
+    ao = _bake(ob, _image(name + '_ao', res), 'EMIT', src=hs)
+    _restore(saved)
     sc.cycles.samples = 1
     saved = _emit_metal(hs if hs is not None else ob)
     met = _bake(ob, _image(name + '_met', res), 'EMIT', src=hs)
@@ -246,9 +272,18 @@ def bake_onto(target, high, name, res=2048, samples=16, out_dir=OUT):
     saved = _emit_node(hs, 'crack_mask')
     crk = _bake(target, _image(name + '_crk', res), 'EMIT', src=hs)
     _restore(saved)
-    sc.cycles.samples = samples
-    sc.cycles.samples = max(samples, 64)
-    ao = _bake(target, _image(name + '_ao', res), 'AO', src=hs)
+    # AO of the part on itself only (an AO node, only_local, 6 cm): the Cycles 'AO' bake type counts every object in
+    # the scene - the low-poly target wrapped round the high one, the rest of the bus - and came out ~0 (r1-r4 atlases)
+    sc.cycles.samples = max(samples, 32)
+    saved = _emit_ao(hs, 0.06)
+    ao = _bake(target, _image(name + '_ao', res), 'EMIT', src=hs)
+    _restore(saved)
+    # where the part is leatherette (vinyl, piping, sleeve): the albedo's alpha, so Unity puts the leather grain detail
+    # only there and not on the painted tube and board
+    sc.cycles.samples = 1
+    saved = _emit_node(hs, 'leather_flag')
+    lea = _bake(target, _image(name + '_lea', res), 'EMIT', src=hs)
+    _restore(saved)
     sc.cycles.samples = 1
     saved = _emit_socket(hs, 'Metallic')
     met = _bake(target, _image(name + '_met', res), 'EMIT', src=hs)
@@ -263,12 +298,13 @@ def bake_onto(target, high, name, res=2048, samples=16, out_dir=OUT):
     flip = lambda a: a[::-1]
     files = {}
     p = os.path.join(out_dir, 'Part_%s_Albedo_%d.png' % (name, res))
-    Image.fromarray((lin2srgb(flip(alb)[..., :3]) * 255 + 0.5).astype(np.uint8)).save(p)
+    rgba = np.concatenate([lin2srgb(flip(alb)[..., :3]), np.clip(flip(lea)[..., :1], 0, 1)], -1)
+    Image.fromarray((rgba * 255 + 0.5).astype(np.uint8), 'RGBA').save(p)
     files['albedo'] = p
     p = os.path.join(out_dir, 'Part_%s_Normal_%d.png' % (name, res))
     Image.fromarray((np.clip(flip(nrm)[..., :3], 0, 1) * 255 + 0.5).astype(np.uint8)).save(p)
     files['normal'] = p
-    mask = np.stack([flip(met)[..., 0], 1.0 - flip(rgh)[..., 0], np.zeros_like(rgh[..., 0]), flip(ao)[..., 0]], -1)
+    mask = np.stack([flip(met)[..., 0], 1.0 - flip(rgh)[..., 0], flip(crk)[..., 0], flip(ao)[..., 0]], -1)
     p = os.path.join(out_dir, 'Part_%s_Mask_%d.png' % (name, res))
     Image.fromarray((np.clip(mask, 0, 1) * 255 + 0.5).astype(np.uint8), 'RGBA').save(p)
     files['mask'] = p

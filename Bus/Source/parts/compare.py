@@ -199,9 +199,10 @@ def main(argv=None):
     a = ap.parse_args(argv)
 
     photos, neutral = split_list(a.photos), split_list(a.neutral)
-    final = split_list(a.final) or split_list(a.renders)
     if a.final and a.renders:
-        final = split_list(a.final) + split_list(a.renders)
+        raise SystemExit('[compare] give --final or --renders (the old name of the same column), not both: '
+                         'concatenating them would shift every row of the column')
+    final = split_list(a.final) or split_list(a.renders)
     unity, headset = split_list(a.unity), split_list(a.headset)
     for lst in (photos, neutral, final, unity, headset):
         for p in lst:
