@@ -2,7 +2,7 @@
 //  LanbaiAct08Builder.cs   菜单 蓝白/Build/Act08：按 Act08_Dusk/Act08_Layout.json 搭第 8 幕（暮 → 蓝时）   cloud session "云"
 //  !!! WRITTEN WITHOUT A UNITY COMPILER !!!  Roslyn-checked (Common/Tools~/compile_check) only.
 //
-//  Re-runnable: deletes the previous R_Dusk and rebuilds it; the driver object Act08_Driver (under Director if there is one)
+//  Re-runnable: deletes the previous R_Dusk (found by name, inactive too) and rebuilds it; the driver object Act08_Driver (under Director if there is one)
 //  is KEPT and refilled. Needs in the project (import order: README §0): Assets/Lanbai/Common, GateClouds/Editor
 //  (AddUdonSharp / SetupUdonSharp / FindInScenePublic), Sky (蓝白/Sky/Build Sky: the presets dusk_8i, dusk_8ii, blue_hour),
 //  Sea (Models/Sea_Ceiling.fbx; 蓝白/Sea/Create Materials: M_08_SeaCeiling / Edge / Fade; Textures/Cube_DuskLower_256),
@@ -97,6 +97,29 @@ public static class LanbaiAct08Builder
     }
 
     // D-41：菜单先等 U# 程序资产初始化完再搭；直接调 Build() 时没初始化完就不动场景（Common/Editor/LanbaiUdonPrograms）
+    static bool OtherTintFromSky(string proj, out Vector4 tint)
+    {
+        tint = Vector4.one;
+        string path = Path.Combine(proj, "Assets/Lanbai/Sky/SkyPresets.json");
+        if (!File.Exists(path)) return false;
+        var sp = D(MiniJson.Parse(File.ReadAllText(path)));
+        if (!sp.ContainsKey("presets")) return false;
+        foreach (object po in L(sp["presets"]))
+        {
+            var p = D(po);
+            if (!p.ContainsKey("name") || (string)p["name"] != "dusk_8ii" || !p.ContainsKey("vectors")) continue;
+            foreach (object eo in L(p["vectors"]))
+            {
+                var e = D(eo);
+                if (!e.ContainsKey("k") || (string)e["k"] != "_OtherTint") continue;
+                var v = L(e["v"]);
+                tint = new Vector4(F(v[0]), F(v[1]), F(v[2]), 1f);
+                return true;
+            }
+        }
+        return false;
+    }
+
     [MenuItem("蓝白/Build/Act08")]
     public static void BuildMenu()
     {
@@ -112,10 +135,16 @@ public static class LanbaiAct08Builder
         var J = D(MiniJson.Parse(File.ReadAllText(Path.Combine(proj, Kit, "Act08_Layout.json"))));
         var CJ = D(MiniJson.Parse(File.ReadAllText(Path.Combine(proj, CloudsKit, "Textures", "cards_v2.json"))));
         var B = D(J["beats"]);
-        var oldD = Object.FindObjectOfType<LanbaiAct08Driver>();
+        var oldD = Object.FindObjectOfType<LanbaiAct08Driver>(true);
 
-        var old = GameObject.Find("R_Dusk");
-        if (old != null) Object.DestroyImmediate(old);
+        // final review F6: R_Dusk is inactive outside the act (the driver's LanbaiActivate), and GameObject.Find skips inactive
+        // objects, so a re-run used to add a second one. Find by name including inactive (and clear any old duplicates).
+        for (int guard = 0; guard < 16; guard++)
+        {
+            Transform old = LanbaiGateCloudsBuilder.FindInScenePublic("R_Dusk");
+            if (old == null) break;
+            Object.DestroyImmediate(old.gameObject);
+        }
         var rDusk = new GameObject("R_Dusk").transform;
 
         // ---- the sea ceiling (the sea kit's model and materials; README_Sea接口 §4 act 8)
@@ -244,7 +273,7 @@ public static class LanbaiAct08Builder
         d.tCeilingOff = F(ceil["dissolve_end"]); d.ceilingLocalY = F(ceil["y_local"]);
         var bc = D(B["cards"]); var wo = L(bc["wisp_out"]); var ci2 = L(bc["upper_8ii_in"]); var dk = L(bc["dark"]);
         d.wispOut0 = F(wo[0]); d.wispOut1 = F(wo[1]); d.cardsIn0 = F(ci2[0]); d.cardsIn1 = F(ci2[1]); d.darkDur = F(dk[1]) - F(dk[0]);
-        if (bc.ContainsKey("f12_dip")) { var fd = L(bc["f12_dip"]); d.f12Dip = new Vector3(F(fd[0]), F(fd[1]), F(fd[2])); }
+        if (bc.ContainsKey("blue_fade")) { var bf = L(bc["blue_fade"]); d.blueFade = new Vector2(F(bf[0]), F(bf[1])); }   // final review A5
         var mo = D(J["motion"]); d.v0 = F(mo["v0"]);
         var segs = L(mo["segments"]);
         d.segT0 = new float[segs.Count]; d.segDur = new float[segs.Count]; d.segV0 = new float[segs.Count]; d.segV1 = new float[segs.Count];
@@ -267,8 +296,13 @@ public static class LanbaiAct08Builder
         if (cols != null && cols.ContainsKey("duskU") && cols.ContainsKey("duskD"))
         {
             var u = D(cols["duskU"]); var lo = D(cols["duskD"]);
+            // final review A6: the other sky's tint is the sky's own (dusk_8ii _OtherTint), read here, not copied; the layout's
+            // value (written from the same file by act08_layout.py) is only the fallback. Dusk light only; the blue hour is untinted.
             var tint = L(D(J["other"])["tint"]);
             Vector4 tn = new Vector4(F(tint[0]), F(tint[1]), F(tint[2]), 1f);
+            Vector4 skyTn;
+            if (OtherTintFromSky(proj, out skyTn)) tn = skyTn;
+            else log += "\n[Act08] Sky/SkyPresets.json dusk_8ii _OtherTint not found: the layout's tint is used";
             d.upSun = V4(L(u["SunColor"])); d.upSky = V4(L(u["SkyUpColor"])); d.upGround = V4(L(u["GroundColor"]));
             d.loSun = Vector4.Scale(V4(L(lo["SunColor"])), tn); d.loSky = Vector4.Scale(V4(L(lo["SkyUpColor"])), tn);
             d.loGround = Vector4.Scale(V4(L(lo["GroundColor"])), tn);

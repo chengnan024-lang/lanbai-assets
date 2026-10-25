@@ -143,7 +143,29 @@ LOWER = [  # the other sky's clouds: other variants, 70 % of the count, x 0.82 +
     ('L06', 'CloudV2_Congestus_duskD', 70.0, 10000.0, -1.2, 1500.0),
     ('L07', 'CloudV2_Strato_duskD', -25.0, 12000.0, -6.0, 1600.0),
 ]
-OTHER = dict(gain=0.82, tint=[0.92, 0.95, 1.05])
+BLUE_FADE = (0.4, 0.55)        # (final review A5) gain at the end, and the wb where it gets there (act08_blue.py)
+BLUE_DESAT = 1.0               # chroma of the blue-hour card light (act08_blue.py)
+
+
+def _desat(c, k):
+    m = sum(c) / 3.0
+    return [round(m + (v - m) * k, 5) for v in c]
+
+
+def _other_tint():
+    """(final review A6) the tint of the other sky's clouds is the sky's own: dusk_8ii `_OtherTint` in Sky/SkyPresets.json
+    (read, not copied). It belongs to the dusk other sky only: the driver bakes it into the dusk colours, the blue hour
+    lerps to the untinted blue colours (it goes with wb)."""
+    sp = json.load(open(os.path.join(REPO, 'Sky', 'SkyPresets.json')))
+    for p in sp['presets']:
+        if p.get('name') == 'dusk_8ii' or p.get('presetName') == 'dusk_8ii' or p.get('id') == 'dusk_8ii':
+            for e in p.get('vectors', []):
+                if e.get('k') == '_OtherTint':
+                    return [round(float(v), 4) for v in e['v'][:3]]
+    raise SystemExit('Sky/SkyPresets.json: dusk_8ii _OtherTint not found')
+
+
+OTHER = dict(gain=0.82, tint=_other_tint(), tint_source='Sky/SkyPresets.json dusk_8ii _OtherTint')
 # r2 (director final review: "技术对、但不好看"): the FRONT, in three overlapping layers in the free spaces (outside the sun line
 # and the Zhuangzi block), bigger toward the eye and smaller toward the horizon; a mass up-right and a different one down-right
 # (weight balanced, not mirrored); a high thin layer catching the pink; near / upper cards keep their body and gold edge
@@ -156,7 +178,7 @@ OTHER = dict(gain=0.82, tint=[0.92, 0.95, 1.05])
 NEAR_AMB = dict(upper=[0.3, 0.7, 1.0], lower=[0.45, 0.8, 1.0])
 FRONT = [  # id, card, az, D, el_at_href, opaque deg, group, show_from, fog_cap, layer
     ('F_N1', 'CloudV2_Cumulus_duskU', -30.0, 1500.0, 4.5, 16.0, 'upper', '8ii', 0.0, 'near'),
-    ('F_N2', 'CloudV2_Bank_duskU', -9.0, 1900.0, 8.0, 14.0, 'upper', '8ii', 0.0, 'near'),
+    ('F_N2', 'CloudV2_Bank_duskU', -22.0, 1900.0, 12.5, 14.0, 'upper', '8ii', 0.0, 'near'),   # final review A3: was az -9 (rel 9: aubergine h 312-323 over the line)
     ('F_N3', 'CloudV2_Cumulus_duskD', -24.0, 1400.0, -5.5, 13.0, 'lower', '8ii', 0.0, 'near'),
     ('F_M1', 'CloudV2_Cumulus_duskU', -42.0, 4000.0, 2.0, 9.0, 'upper', '8ii', 0.12, 'mid'),
     ('F_M2', 'CloudV2_Strato_duskU', 8.0, 4500.0, 4.0, 10.0, 'upper', '8ii', 0.12, 'mid'),
@@ -300,9 +322,10 @@ def main():
         sun_sink=dict(t=[T['F10e'], T['F10e'] + 3.0], el=[SUN_EL, 0.0]),
         cards=dict(upper_8ii_in=[T['F10e'], T['F10e'] + 8.0], lower_in=[T['F10e'], T['F10e'] + 8.0],
                    blue=[T['F12'], T['F12'] + 6.0], dark=[END8, END8 + 8.0], wisp_out=WISP_FADE,
-                   # (final r2) F12: the cards dim mid-blend (gain x (1 - d sin(pi wb^p)^q)) so the warm -> blue swing
-                   # crosses the D-21 band under L* 40
-                   f12_dip=[0.6, 2.5, 0.4]),
+                   # (final review A5) F12: the cards dim as the light leaves and stay dim, no rebound: gain x lerp(1, g,
+                   # smoothstep(0, w_end, wb)); the warm -> blue swing crosses the D-21 band under L* 40, and the blue-hour
+                   # cards are no brighter than the sky at their elevation (act08_blue.py; Docs~/blue_cards.json)
+                   blue_fade=list(BLUE_FADE)),
         light=dict(colour_srgb='#FFA642', E=2.2, floor=0.001, collapse=[T['F12'], T['F12'] + 6.0],
                    note='D-00: Inspector = E = 2.2 (the bible table 1.43 is the voided gamma value)'),
         trilight=dict(i=dict(sky='#1C3350', equator='#D08A70', ground='#4C5577'), ii_sky='#465582', ii=[T['F10e'], T['F10e'] + 8.0],
@@ -329,7 +352,8 @@ def main():
         cards=cards, wisps=wisp_entries(), other=OTHER, beats=beats,
         # 8b: the sun is gone; the cards are lit by the blue-hour dome only (blue_hour zenith / nadir x 6, the same scale the
         # dusk solve lands on; D-25: colours per act, no re-bake)
-        blue_colours=dict(SkyUpColor=[0.0846, 0.1188, 0.306], GroundColor=[0.0804, 0.1806, 0.594]),
+        blue_colours=dict(SkyUpColor=_desat([0.0846, 0.1188, 0.306], BLUE_DESAT), GroundColor=_desat([0.0804, 0.1806, 0.594], BLUE_DESAT),
+                          desat=BLUE_DESAT, note='blue_hour zenith / nadir x 6, chroma x desat (final review A5: C* <= the sky)'),
         tables=dict(t0=EXIT, dt=0.1,
                     h=[round(motion(t)[0], 2) for t in np.arange(EXIT, END8 + 0.05, 0.1)],
                     fog=[float('%.6g' % fog_density(t)) for t in np.arange(EXIT, END8 + 0.05, 0.1)]),

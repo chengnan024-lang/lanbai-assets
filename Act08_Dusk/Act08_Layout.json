@@ -1028,15 +1028,15 @@
    "card": "CloudV2_Bank_duskU",
    "group": "upper",
    "position_local": [
-    -297.2,
-    48.7,
-    1876.6
+    -711.8,
+    202.9,
+    1761.6
    ],
    "width_m": 534.4,
    "gain": 1.0,
    "show_from": "8ii",
-   "el_at_href": 8.0,
-   "az": -9.0,
+   "el_at_href": 12.5,
+   "az": -22.0,
    "dist": 1900.0,
    "keepout": null,
    "fog_cap": 0.0,
@@ -1053,7 +1053,7 @@
     0.7,
     1.0
    ],
-   "top_y_local": 171.9,
+   "top_y_local": 326.1,
    "deg_per_s_rise": 0.09
   },
   {
@@ -1428,7 +1428,8 @@
    0.92,
    0.95,
    1.05
-  ]
+  ],
+  "tint_source": "Sky/SkyPresets.json dusk_8ii _OtherTint"
  },
  "beats": {
   "exit": 922.36,
@@ -1528,10 +1529,9 @@
     950.36,
     956.36
    ],
-   "f12_dip": [
-    0.6,
-    2.5,
-    0.4
+   "blue_fade": [
+    0.4,
+    0.55
    ]
   },
   "light": {
@@ -1605,7 +1605,9 @@
    0.0804,
    0.1806,
    0.594
-  ]
+  ],
+  "desat": 1.0,
+  "note": "blue_hour zenith / nadir x 6, chroma x desat (final review A5: C* <= the sky)"
  },
  "tables": {
   "t0": 922.36,

@@ -252,11 +252,14 @@ def specks(V, img, t, h, pix):
 # ---- cards
 _CARD = {}
 STANDIN = set()
-F12_DIP, DIP_P, DIP_Q = LAYOUT['beats']['cards'].get('f12_dip', [0.0, 1.0, 1.0])   # (final r2) act08_layout.py
+BLUE_FADE = list(LAYOUT['beats']['cards'].get('blue_fade', [1.0, 1.0]))   # (final review A5) act08_layout.py; act08_blue.py tries values
+RIM_FADE = 1.0                             # (final review A4) the shader's _RimFade on every act 8 card
 
 
-def f12_dip_shape(wb):
-    return float(np.sin(math.pi * min(max(wb, 0.0), 1.0) ** DIP_P)) ** DIP_Q
+def blue_fade(wb):
+    """the cards' gain over the F12 blend: down as the light leaves, no rebound (= the driver's blueFade)"""
+    return 1.0 + (BLUE_FADE[0] - 1.0) * float(ss(wb / max(BLUE_FADE[1], 1e-3)))
+
 AMB_OVERRIDE = {}                          # act08_shadow.py: group -> trial NEAR_AMB
 COVER = {}                                 # per group: the cards' combined alpha per pixel (the last render)
 
@@ -275,7 +278,7 @@ def card_tex(name):
     return _CARD[real]
 
 
-def colours(group, t, amb=None):
+def colours(group, t, amb=None, tint=None):
     """the cards' light (D-25: colours per act). Solved values from cards_v2.json colours.<set> when they exist, else the
     design stand-in (sun = the preset's disc fill, sky / ground = the preset's zenith / nadir x 4, like the dawn solve)"""
     key = 'duskD' if group == 'lower' else 'duskU'
@@ -288,6 +291,8 @@ def colours(group, t, amb=None):
         gd = np.array([0.0437, 0.0685, 0.1878]) * 4.0
     if amb is not None:                       # (D-42 #1) the near layer: the dusk sky / ground light only
         sk, gd = sk * np.array(amb), gd * np.array(amb)
+    if tint is not None:                      # (final review A6) the other sky's tint: on the dusk light only, gone with wb
+        sc, sk, gd = sc * np.array(tint), sk * np.array(tint), gd * np.array(tint)
     bh = LAYOUT['blue_colours']
     wb = float(ss((t - B['F12']) / 6.0))
     sc = sc * (1 - wb)
@@ -365,17 +370,19 @@ def draw_cards(V, img, depth, t, h, pix):
         k = Kb[:, 0] * w0 + Kb[:, 1] * w1 + Kb[:, 2] * w2
         a = bil(A[..., None])[:, 0]
         Sb = bil(S)
-        sc, sk, gd = colours(c.get('group', 'upper'), t, AMB_OVERRIDE.get(c.get('group')) if c.get('amb') and AMB_OVERRIDE else c.get('amb'))
-        col = k[:, None] * sc + Sb[:, 0:1] * sk + Sb[:, 1:2] * gd
-        if c.get('tint'):
-            col = col * np.array(c['tint'])
-        col *= c['gain_t']
-        # (final r2) the F12 blend swings the lit cards from warm (h 40) to blue (h 283) through the D-21 band: the light
-        # leaves first, so they are under L* 40 when the hue crosses (the driver's same dip, cardDipF12)
-        _, wbx = weights(t)
-        col *= 1.0 - F12_DIP * f12_dip_shape(wbx)
+        sc, sk, gd = colours(c.get('group', 'upper'), t, AMB_OVERRIDE.get(c.get('group')) if c.get('amb') and AMB_OVERRIDE else c.get('amb'),
+                             c.get('tint'))
         mt = c.get('melt', [-0.02, 0.10, 0, 0])
-        a = a * c['alpha_t'] * CS.melt(np.ones_like(a), v[ok], cj['cloud_base_v'], (mt[0], mt[1]))
+        melt = CS.melt(np.ones_like(a), v[ok], cj['cloud_base_v'], (mt[0], mt[1]))
+        # (final review A4, = the shader's _RimFade) the sun-lit rim comes after the body and goes before it
+        k = k * (1.0 + RIM_FADE * (melt * melt * float(ss((c['alpha_t'] - 0.4) / 0.6)) - 1.0))
+        col = k[:, None] * sc + Sb[:, 0:1] * sk + Sb[:, 1:2] * gd
+        col *= c['gain_t']
+        # (final review A5) F12: down as the light leaves and stays down (no rebound); the warm -> blue swing crosses the
+        # D-21 band under L* 40
+        _, wbx = weights(t)
+        col *= blue_fade(wbx)
+        a = a * c['alpha_t'] * melt
         col = fog_apply(col, V[ok], tt[ok], t, c.get('fog_cap', 1.0))
         idx = np.nonzero(ok)[0]
         img[idx] = img[idx] * (1 - a)[:, None] + col * a[:, None]
@@ -383,6 +390,10 @@ def draw_cards(V, img, depth, t, h, pix):
         if g not in COVER or len(COVER[g]) != len(V):
             COVER[g] = np.zeros(len(V))
         COVER[g][idx] = 1 - (1 - COVER[g][idx]) * (1 - a)
+        ck = 'C:' + c.get('id', '?')
+        if ck not in COVER or len(COVER[ck]) != len(V):
+            COVER[ck] = np.zeros(len(V))
+        COVER[ck][idx] = 1 - (1 - COVER[ck][idx]) * (1 - a)
         lk = 'L:' + c.get('layer', 'far')
         if lk not in COVER or len(COVER[lk]) != len(V):
             COVER[lk] = np.zeros(len(V))

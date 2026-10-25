@@ -62,7 +62,7 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
     public float tExit = 922.36f, tF10e = 956.36f, tF12 = 987.06f, tEnd8 = 1001.21f, tCeilingOff = 965.36f;
     public float blend8iiDur = 8f, blendBlueDur = 6f;
     public float wispOut0 = 950.36f, wispOut1 = 956.36f;
-    public Vector3 f12Dip = new Vector3(0.6f, 2.5f, 0.4f);   // F12: gain x (1 - x sin(pi wb^y)^z): under L* 40 through the D-21 band
+    public Vector2 blueFade = new Vector2(0.4f, 0.55f);       // final review A5: F12 gain x lerp(1, x, smoothstep(0, y, wb)): down, no rebound
     public float cardsIn0 = 956.36f, cardsIn1 = 964.36f, darkDur = 8f, darkEV = 6f;
 
     [Header("Motion (closed form, Act08_Layout motion)")]
@@ -105,11 +105,16 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
 
     private MaterialPropertyBlock _mpb;
     private int _idSeaLevel, _idSeaMode, _idSeaClock, _idRefl, _idDissolve, _idFog, _idSunDisc, _idSunDir;
-    private int _idGain, _idAlpha, _idSunColor, _idSkyUp, _idGround, _idFogCap, _idMelt;
+    private int _idGain, _idAlpha, _idSunColor, _idSkyUp, _idGround, _idFogCap, _idMelt, _idRimFade;
     private bool _ready, _seaModeOurs;
     private int _ceilingMat = -1, _ceilingOn = -1;   // -1 unknown (activation / backward jump: set from t), 0 / 1
     private int _skyStage = -1;                // 0 8-i applied, 1 blending to 8-ii, 2 8-ii applied, 3 blending to blue, 4 blue applied
     private float _lastT = -1f;
+    // final review F4 (D-27 #4): what was written last; a state that does not change is not written again
+    private bool _cardsValid, _cardsOff, _lightValid, _rsValid, _skyGlobalsValid;
+    private float _cW2, _cWb, _cInII, _cWisp, _cDark, _cFade;
+    private float _lRsWb;
+    private float _lH = float.NaN, _lLightI, _lLightEl, _lRsW2, _lRsWB, _lRsDark, _lRsFog, _lFog, _lK, _lLine, _lSunEl;
     private float[] _window;
     private float[] _grade;
 
@@ -118,7 +123,7 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
     {
         if (!_ready) _Init();
         if (t < windowStart || t > windowEnd) return;
-        if (t < _lastT - 0.25f) { _skyStage = -1; _ceilingMat = -1; _ceilingOn = -1; }   // a backward jump: rebuild from t
+        if (t < _lastT - 0.25f) { _skyStage = -1; _ceilingMat = -1; _ceilingOn = -1; Invalidate(); }   // a backward jump: rebuild from t
         _lastT = t;
         Evaluate(t);
     }
@@ -129,7 +134,12 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
             for (int i = 0; i < roots.Length; i++) if (roots[i] != null) roots[i].SetActive(on);
         if (!on && _ready) HandBack();
         // D-33 #6: everything is rebuilt from t on the next tick (late joiners, timeline drags)
-        if (on) { _skyStage = -1; _ceilingMat = -1; _ceilingOn = -1; _lastT = -1f; }
+        if (on) { _skyStage = -1; _ceilingMat = -1; _ceilingOn = -1; _lastT = -1f; Invalidate(); }
+    }
+
+    private void Invalidate()
+    {
+        _cardsValid = false; _cardsOff = false; _lightValid = false; _rsValid = false; _skyGlobalsValid = false; _lH = float.NaN;
     }
 
     public float[] LanbaiWindow()
@@ -173,6 +183,7 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
         _idGround = VRCShader.PropertyToID("_GroundColor");
         _idFogCap = VRCShader.PropertyToID("_FogCap");
         _idMelt = VRCShader.PropertyToID("_Melt");
+        _idRimFade = VRCShader.PropertyToID("_RimFade");
         _ready = true;
     }
 
@@ -235,7 +246,7 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
     public void Evaluate(float t)
     {
         float h = Depth(t);
-        if (rDusk != null) rDusk.localPosition = new Vector3(0f, h, 0f);
+        if (rDusk != null && h != _lH) { rDusk.localPosition = new Vector3(0f, h, 0f); _lH = h; }   // constant after 995.06
         float w2 = Smooth((t - tF10e) / blend8iiDur);
         float wb = Smooth((t - tF12) / blendBlueDur);
         float collapse = Smooth((t - tF12) / lineCollapse);
@@ -249,9 +260,15 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
             if (worldSun == null) worldSun = RenderSettings.sun;
             if (worldSun != null)
             {
-                worldSun.transform.rotation = Quaternion.LookRotation(-SunNow(t));
-                worldSun.color = sunColor;
-                worldSun.intensity = Mathf.Max(sunE * Reveal(t) * (1f - collapse), sunFloor);
+                float li = Mathf.Max(sunE * Reveal(t) * (1f - collapse), sunFloor);
+                float le = Smooth((t - tF10e) / sunSinkDur);
+                if (!_lightValid || li != _lLightI || le != _lLightEl)  // from 993.06 on: the floor, written once
+                {
+                    worldSun.transform.rotation = Quaternion.LookRotation(-SunNow(t));
+                    worldSun.color = sunColor;
+                    worldSun.intensity = li;
+                    _lLightI = li; _lLightEl = le; _lightValid = true;
+                }
             }
         }
 
@@ -260,15 +277,20 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
         {
             float wB = Smooth((t - tF12) / triBlueDur);
             float dark = Mathf.Pow(triDarkK, Mathf.Clamp01((t - tEnd8) / darkDur));     // 9a: EV-linear to near zero
-            Color sky = Color.Lerp(Color.Lerp(triSkyI.linear, triSkyII.linear, w2), triSkyB.linear, wB) * dark;
-            Color eq = Color.Lerp(triEquator.linear, triEquatorB.linear, wB) * dark;
-            Color gr = Color.Lerp(triGround.linear, triGroundB.linear, wB) * dark;
-            RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Trilight;
-            RenderSettings.ambientSkyColor = sky.gamma;
-            RenderSettings.ambientEquatorColor = eq.gamma;
-            RenderSettings.ambientGroundColor = gr.gamma;
-            RenderSettings.fogColor = Color.Lerp(Color.Lerp(fogColorI, fogColorII, w2), fogColorB, wb);
-            RenderSettings.fogDensity = t < tEnd8 ? FogDensity(t) : 0f;
+            float fd = t < tEnd8 ? FogDensity(t) : 0f;
+            if (!_rsValid || w2 != _lRsW2 || wB != _lRsWB || dark != _lRsDark || wb != _lRsWb || fd != _lRsFog)   // F4: on a change only
+            {
+                Color sky = Color.Lerp(Color.Lerp(triSkyI.linear, triSkyII.linear, w2), triSkyB.linear, wB) * dark;
+                Color eq = Color.Lerp(triEquator.linear, triEquatorB.linear, wB) * dark;
+                Color gr = Color.Lerp(triGround.linear, triGroundB.linear, wB) * dark;
+                RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Trilight;
+                RenderSettings.ambientSkyColor = sky.gamma;
+                RenderSettings.ambientEquatorColor = eq.gamma;
+                RenderSettings.ambientGroundColor = gr.gamma;
+                RenderSettings.fogColor = Color.Lerp(Color.Lerp(fogColorI, fogColorII, w2), fogColorB, wb);
+                RenderSettings.fogDensity = fd;
+                _lRsW2 = w2; _lRsWB = wB; _lRsDark = dark; _lRsFog = fd; _lRsWb = wb; _rsValid = true;
+            }
         }
 
         // ---- the sea ceiling (8-i; dissolves F10e -> 965.36)
@@ -283,35 +305,43 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
         if (dusk8i == null || dusk8ii == null || blueHour == null) return;
         if (t < tF10e)
         {
-            if (_skyStage != 0) { dusk8i.Apply(); _skyStage = 0; }
+            if (_skyStage != 0) { dusk8i.Apply(); _skyStage = 0; _skyGlobalsValid = false; }
         }
         else if (t < tF10e + blend8iiDur)
         {
-            if (_skyStage != 1) { dusk8i.Apply(); _skyStage = 1; }          // D-33 #6: a full write before the blend
+            if (_skyStage != 1) { dusk8i.Apply(); _skyStage = 1; _skyGlobalsValid = false; }          // D-33 #6: a full write before the blend
             dusk8i.ApplyBlend(dusk8ii, Smooth((t - tF10e) / blend8iiDur));
         }
         else if (t < tF12)
         {
-            if (_skyStage != 2) { dusk8ii.Apply(); _skyStage = 2; }
+            if (_skyStage != 2) { dusk8ii.Apply(); _skyStage = 2; _skyGlobalsValid = false; }
         }
         else if (t < tF12 + blendBlueDur)
         {
-            if (_skyStage != 3) { dusk8ii.Apply(); _skyStage = 3; }
+            if (_skyStage != 3) { dusk8ii.Apply(); _skyStage = 3; _skyGlobalsValid = false; }
             dusk8ii.ApplyBlend(blueHour, Smooth((t - tF12) / blendBlueDur));
         }
         else
         {
-            if (_skyStage != 4) { blueHour.Apply(); _skyStage = 4; }
+            if (_skyStage != 4) { blueHour.Apply(); _skyStage = 4; _skyGlobalsValid = false; }
         }
-        // over the presets: the fog density and the sun line (dusk_8ii lists _Udon_SunDisc in its blendSkip: ours)
-        VRCShader.SetGlobalVector(_idFog, new Vector4(FogDensity(t), 0f, 0f, 1f));
+        // over the presets: the fog density and the sun line (dusk_8ii lists _Udon_SunDisc in its blendSkip: ours).
+        // A preset Apply() rewrites them, so they are always written in a stage that just applied or is blending.
+        float fog = FogDensity(t);
         float k = 1f - Smooth((t - tF12) / lineCollapse);
         float line = lineDeg * Smooth((t - lineGrow0) / lineGrow) * k;   // review r1 B1: only once the discs touch
-        VRCShader.SetGlobalVector(_idSunDisc, new Vector4(k, discRadius, line, 1f));
-        if (t >= tF10e)                                        // D-39 #2: the sun and its other self touch: one line
+        float se = Smooth((t - tF10e) / sunSinkDur);
+        bool blending = _skyStage == 1 || _skyStage == 3;
+        if (blending || !_skyGlobalsValid || fog != _lFog || k != _lK || line != _lLine || se != _lSunEl)
         {
-            Vector3 sd = SunNow(t);
-            VRCShader.SetGlobalVector(_idSunDir, new Vector4(sd.x, sd.y, sd.z, 1f));
+            VRCShader.SetGlobalVector(_idFog, new Vector4(fog, 0f, 0f, 1f));
+            VRCShader.SetGlobalVector(_idSunDisc, new Vector4(k, discRadius, line, 1f));
+            if (t >= tF10e)                                    // D-39 #2: the sun and its other self touch: one line
+            {
+                Vector3 sd = SunNow(t);
+                VRCShader.SetGlobalVector(_idSunDir, new Vector4(sd.x, sd.y, sd.z, 1f));
+            }
+            _lFog = fog; _lK = k; _lLine = line; _lSunEl = se; _skyGlobalsValid = true;
         }
     }
 
@@ -370,11 +400,23 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
         if (cards == null || cardGroup == null || cardGain == null) return;
         int nW = wispBase == null ? 0 : Mathf.Min(wispBase.Length, Mathf.Min(wispTangent == null ? 0 : wispTangent.Length, wispDrift == null ? 0 : wispDrift.Length));
         int nC = Mathf.Min(cards.Length, Mathf.Min(cardGroup.Length, cardGain.Length));   // review r1: no unchecked indexing
+        if (t >= tEnd8 + darkDur)                              // the end state: all off, written once
+        {
+            if (_cardsOff) return;
+            for (int i = 0; i < nC; i++) if (cards[i] != null && cards[i].enabled) cards[i].enabled = false;
+            _cardsOff = true; _cardsValid = false;
+            return;
+        }
+        _cardsOff = false;
         float dark = Mathf.Pow(2f, -darkEV * Mathf.Clamp01((t - tEnd8) / darkDur));
         float inII = Smooth((t - cardsIn0) / Mathf.Max(cardsIn1 - cardsIn0, 1e-3f));
         float wisp = 1f - Smooth((t - wispOut0) / Mathf.Max(wispOut1 - wispOut0, 1e-3f));
-        float dipS = Mathf.Sin(Mathf.PI * Mathf.Pow(Mathf.Clamp01(wb), f12Dip.y));
-        float dip = 1f - f12Dip.x * Mathf.Pow(Mathf.Max(dipS, 0f), f12Dip.z);
+        float fade = 1f + (blueFade.x - 1f) * Smooth(wb / Mathf.Max(blueFade.y, 1e-3f));   // final review A5: no rebound
+        // final review F4: from F10e + 5 s the 8-i cards' gap term is 1, so the cards depend only on these six numbers;
+        // while none of them moves (8-ii 965.4 -> 987.06, the blue hour 993.06 -> 1001.21) the loop is skipped
+        bool gapDone = t >= tF10e + 5f;
+        if (_cardsValid && gapDone && w2 == _cW2 && wb == _cWb && inII == _cInII && wisp == _cWisp && dark == _cDark && fade == _cFade) return;
+        _cW2 = w2; _cWb = wb; _cInII = inII; _cWisp = wisp; _cDark = dark; _cFade = fade; _cardsValid = gapDone;
         Vector4 uS = upSun * (1f - wb), uK = Vector4.Lerp(upSky, blueSky, wb), uG = Vector4.Lerp(upGround, blueGround, wb);
         Vector4 lS = loSun * (1f - wb), lK = Vector4.Lerp(loSky, blueSky, wb), lG = Vector4.Lerp(loGround, blueGround, wb);
         int wi = 0;
@@ -384,19 +426,19 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
             if (r == null) continue;
             int g = cardGroup[i];
             float a = g == 0 ? Gap8i(i, t, h) : (g == 3 ? wisp : inII);
+            bool vis = a > 0.001f;
             if (g == 3)
             {
-                if (wi < nW)
+                if (vis && wi < nW)                            // final review F4: a wisp moves only while it is seen
                     r.transform.localPosition = wispBase[wi] + wispTangent[wi] * (wispDrift[wi] * (t - tExit));
                 wi++;
             }
-            if (t >= tEnd8 + darkDur) a = 0f;
-            bool vis = a > 0.001f;
             if (r.enabled != vis) r.enabled = vis;
             if (!vis) continue;
             bool lower = g == 2;
             r.GetPropertyBlock(_mpb);
-            _mpb.SetFloat(_idGain, cardGain[i] * dark * dip);
+            _mpb.SetFloat(_idGain, cardGain[i] * dark * fade);
+            _mpb.SetFloat(_idRimFade, 1f);                   // final review A4: the rim fades with _Alpha and the melt
             _mpb.SetFloat(_idAlpha, a);
             _mpb.SetVector(_idSunColor, lower ? lS : uS);
             if (cardAmb != null && i < cardAmb.Length)   // (1,1,1,1) everywhere but the near layer
