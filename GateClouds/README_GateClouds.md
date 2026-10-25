@@ -58,6 +58,8 @@
 | `Shaders/Lanbai_GateCloudDeck.shader` | 云海 v2（§3）：主 pass + ShadowCaster（进 `_CameraDepthTexture`） |
 | `Shaders/Lanbai_GateCloudCard.shader` | 云卡（§4） |
 | `Shaders/Lanbai_GateBeam.shader` | 光束 / 阴影楔（§5） |
+| `Shaders/Lanbai_GateVolumeDeck.shader`、`Shaders/LanbaiCloudVolume.cginc` | **D-44 #3**：阿白的体积云海 + 触手根部的“裙”；体积云和触手共用的密度（§12） |
+| `GateClouds_Skirts.json` | **D-44 #3**：28 条触手根部的中心线和半径（`Source/seam_ref.py bake`），Build 读（§12） |
 | `Textures/Deck_Detail_1024.png`、`Deck_Macro_512.png` | 云海的两张周期贴图（线性数据，§3.2） |
 | `Textures/GateCard_{Congestus,Bank,Strato,Puff,Wisp}.png` | 门专用云卡 v2（§4.1） |
 | `Textures/deck_tiles.json`、`gate_cards.json` | 量程、通道缩放、云底位置 |
@@ -254,6 +256,7 @@
 | `Source/gate_clouds_layout.py` | 写 `GateClouds_Layout.json` |
 | `Source/preview_gate.py` | 整帧预览（云海 + 卡 + 光束；`--over` 贴回 Unity 截图的触手；`--fse` 量透明叠绘） |
 | `Source/measure_comb.py` | 美术审片的"轮廓梳齿"量法 |
+| `Source/seam_ref.py` | **D-44 #3** 触手根部和体积云的参照渲染（触手从 `GateArms_v4.fbx` 按驱动摆姿势，Cycles 只出位置 / 法线；体积云是阿白 shader 的逐行移植）；`bake` 写 `GateClouds_Skirts.json`（§12） |
 | `Source/measure_rims.py` | 第 4 轮的量法：云海区（画面下 45%）p5 / p50 / p95 / p99.5，边光像素（比 15 px 中值亮 12 码以上）的 p95 / p99.5 |
 | `Tools~/slang_check.py`、`Tools~/cs_check/check_cs.sh` | shader / C# 检查 |
 
@@ -290,3 +293,67 @@
 6. 驱动只管云；门内会话要的 U9 交界四件事（GateRoot 减速、`_Udon_TearHide`、门户裁剪的 renderer 开关、触手卷回）属于**门的总驱动**，这一版只做了 shader 一侧的 `_Udon_InsidePortal` 裁剪（`给总控.md`）。
 7. 预览里的触手和裂口是 10-08 的 Unity 截图贴回去的，接缝（裂口周围的椭圆）不是云的问题。
 8. 陌生人 r2："云塔像平纸板、和触手相像"——第 4 轮只做了底边羽化和远处加雾；云塔本身仍是一张公告板（没有视差）。要更立体需要多层卡或体积，留作下一轮的选项（`给总控.md`）。
+
+---
+
+## 12. 触手根部和云的接缝（D-44 #3，2026-10-25）
+
+小楠在全程预览里指出：暗的触手在云面上有一道硬的横线（`FromLocal/visual_feedback/20261025-0206/04_gate_root_seam.png`）。门下面的云海已经换成阿白本地的体积云 `VolumeCloudDeck`，所以交界按这块云来做。
+
+### 12.1 为什么会有横线
+- TentacleSway v2.7d 在**名义云顶 − 5 m** 处把触手平切掉（`clip`），最低的 18 m 用噪声化开，上面 46 m 往一个固定的暗色（`_CloudTopColor` 0.026）淡。这是按以前的云卡 / 高度场云海做的：那种云海的云头正好在名义云顶上下，平切口藏在云头后面。
+- 阿白的体积云在名义云顶处的阈值是 0.75，几乎是空的。**看得见的云面在名义云顶下面 50–90 m**，而且有空隙。所以触手在半空中就被平切掉了：一截暗的、带锯齿底边的断头立在稀薄的云上，暗色淡出那一段也在空中。这就是那道横线。参照渲染把它原样复现了出来（每张图的上半张）。
+
+### 12.2 改了什么（四件事，没有一张雾片）
+1. **几何一直伸进云里**（TentacleSway v2.8，只在体积云模式下生效）：
+   - 不在云顶切，只在 **云顶 − 160 m** 切。体积云的底在 − 170 m。不再用噪声化开。
+   - 根部比 **云顶 − 150 m** 浅的触手，顶点着色器把最低的 60 m 往下拉到 − 150 m（`(1 − s)²` 过渡）。近处 3 条的根本来只在云顶 − 35 m，拉下去以后，致密的云底以上看不到开口的根环。拉伸在每个 pass 都做，影子和深度跟着走。其余触手的根本来就在 − 60…− 175 m。
+2. **触手按深度和云面软过渡**（TentacleSway v2.8）：沿视线往眼睛方向取 3 个点（3、15、40 m），用体积云**同一个密度函数**采样（含裙）。前面有多少云，表皮就往**云海在那里自己被照亮的颜色**（天光 × 高度 + 月光 × 自遮挡 + 脚下光池，× 云海增益）走多少，最多 0.95。被湿过的部分，云顶附加雾按 (1 − 湿) 减掉，因为云会自己加雾。
+   - 第一版是往正上方取样，结果云下面的触手变成一根发白的“玻璃柱”，还有一条水平的过渡线（`seam_ref` 迭代里看到的）。改成往眼睛方向取样以后，从空隙里看到的触手保持暗，躲在云团后面的部分按云团自己的形状消失，不按任何一个高度。
+3. **云体本身在根部加密度：一圈“裙”**（`Lanbai/GateVolumeDeck` + `LanbaiCloudVolume.cginc`）：
+   - 每条穿过云的触手周围，云往上堆：从触手表面往外按 exp(−d / W) 衰减（W = max(22 m, 1.3 × 半径)），3 W 以外为 0（最后半个 W 渐变到 0）。
+   - 贴着触手的地方，裙的顶比远处高 26 m（远处在云顶 − 24 m）。顶的高低随云海自己较细的那层噪声起伏 ±20 m，所以是一团一团的，不是一圈光滑的面包圈。裙的密度 × 2.2，取 max(云海, 裙)。
+   - 第一版用较粗的那层噪声（30–130 m 一格），近处看是一个光滑的圆丘；又太薄，挡不住后面的触手，看起来像玻璃柱。这一版加厚、加宽、改用细噪声。
+   - 每帧最多 8 条：驱动把每条触手根部的中心线变换到世界坐标，找它穿过（云顶 − 40 m）的位置和那里的半径，选离车最近的 8 条。强度跟这条触手的显现关键帧走，裙不会突然冒出来。正在上升、还没穿过那一层的触手没有裙。云海每条射线先挑出能碰到的（最多 4 条），再进步进循环。
+4. **不许只挡一张雾片**：没有新加任何卡片或雾片。触手、云海、驱动三处都是真改。
+
+**没有体积云的时候**（全局量 `_Udon_CloudVolume.x` 为 0，例如还在用 `Lanbai/GateCloudDeck`），TentacleSway v2.8 和 v2.7d **完全一样**。
+
+### 12.3 看图（参照渲染，`Source/seam_ref.py`，每张上 = 现在、下 = 改后）
+`Docs~/seam/seam_{seat152,seat,left,right,outside}.png`（1280×720 ×2）；1:1 裁图在 `Docs~/seam/crops/`。
+| 机位 | t | 看什么 |
+|---|---|---|
+| 主座位眼睛 `seat152` | 152.0 | 向前，手正从云里升起来（U7 前后） |
+| 主座位眼睛 `seat` | 166.0 | 向前，门柱、巨像的根 |
+| 左窗 `left` | 168.0 | 往左下 30°，Near_0 和左边远处的根 |
+| 右窗 `right` | 168.0 | 往右下 30°，Near_1 / Near_2 和右边的门柱 |
+| 车外 `outside` | 168.0 | 车左边 130 m、往下 45 m，看近处 3 条触手的根和后面的手 |
+
+**参照渲染是什么、不是什么**：
+- 触手：`GateArms_v4.fbx` 的 LOD0，按 `LanbaiGateDriver.Pose` 摆在时间 t（上升、倾、跟踪、合拢、车坐标）。颜色是简化的替身（暗的反照率 + 月光 + 轮廓 + TentacleSway 的雾公式），上下两半一样，所以只比较接缝。
+- 云：阿白 shader 的逐行移植（同一张 128³ 密度、同一个种子）。
+- **没有**车身、群臂（3–4 km 外的 36 条）、裂口，也没有 bloom。
+
+### 12.4 交接（本地）
+1. 拷 `GateClouds/`（新：`Shaders/Lanbai_GateVolumeDeck.shader`、`Shaders/LanbaiCloudVolume.cginc`、`GateClouds_Skirts.json`）和 `Gate/Shaders/Lanbai_TentacleSway.shader`（v2.8）。
+2. 全程预览里体积云海的材质，Build 会自己处理：
+   - 不用手动换 shader。**蓝白/Gate Clouds/Build** 会找到场景里用 `Lanbai/Local/VolumeCloudDeck` 的材质，把 shader 换成 `Lanbai/GateVolumeDeck`。属性名一样，值都保留；阿白的那份 shader 不用删。
+   - 材质在我们的 `GateClouds/Deck` 上：Build 之后照样挂回去。
+   - 材质在别的物体上：`GateClouds/Deck` 关掉，不画第二层云海。
+   - Build 会把这个材质的 `_NoiseVolume` / `_Density` / `_CloudWind` 抄进驱动，Console 里有一行 `volume deck ...: N arms for the skirts`。
+3. 看那 4 个机位。主座位、左右窗（往下看）、车外，t = 152、166、168。请把截图推到 `FromLocal/gate_clouds_test/`。
+
+### 12.5 性能（**没在 GPU 上量过**）
+- **云海**：每条射线先挑一次裙（8 次 2D 距离）。按 5 个机位 320×180 的射线数：59–91% 的云海射线带 1 条以上，平均 1.0–2.5 条。
+  - 每次取密度，对每条挑中的裙先做一次距离比较，3 W 以外就返回。只有真在裙里的步才算完整的 exp、smoothstep。
+  - 估计云海的 ALU 多 10–25%。纹理读取不变（裙用的是同一次 `tex3Dlod` 的结果）。
+- **触手**：只有云顶 + 40 m 以下的像素做，每像素多 3 次密度（各 1 次 `tex3Dlod`、8 条裙的距离比较）。湿 > 0.002 时再加 2 次（月光自遮挡）。
+  - 这部分在画面里占的面积小（根部）。远处的群臂根在雾里也会做，但只有几个像素。
+- **Udon**：每帧 28 条触手，每条 1–4 次 `TransformPoint`，再挑 8 条最近的，写 10 个全局量。
+- 请本地实测：Udon 毫秒、GPU 帧时间，开 / 关体积云模式各一次。关的方法：驱动的 `cloudVolumeTex` 清空。
+
+### 12.6 检查
+- `check_shaders.py GateClouds/Shaders Gate/Shaders/Lanbai_TentacleSway.shader` → `6 files, 24 translation units (DXC on, CGIncludes 2022.3.22f1): 0 errors, 0 warnings. NOT a Unity compile.`
+- `check_cs.sh GateClouds Common/Editor Common/Runtime` → `C# CHECK OK (0 assembly error(s), 5 lint warning(s))`：5 个警告都是新的 `_Udon_` 名字还没登记（已写进 `给总控.md` §9）。
+- **没在 Unity 里编译过。**
+

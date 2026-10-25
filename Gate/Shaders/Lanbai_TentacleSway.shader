@@ -1,3 +1,16 @@
+//  v2.8 (gate clouds kit, D-44 #3 the root seam, 2026-10-25; UNCOMPILED): the arms in 阿白's VOLUME cloud. Under the
+//    volume deck (Lanbai/GateVolumeDeck; the gate clouds driver sets _Udon_CloudVolume.x = 1) the visible cloud surface
+//    is 50-90 m under the nominal top (its threshold is 0.75 there), so v2.7's clip at top - 5 and the ragged fade to
+//    _CloudTopColor left a flat-cut dark stump standing on thin cloud ("a hard horizontal line"). In volume mode:
+//    * the arm is clipped only at top - _RootClip (160 m: the deck's floor is top - 170), the dissolve is off;
+//    * roots shallower than top - _RootReach (150 m; the near arms stand at top - 35) are stretched down to it over the
+//      lowest _RootSpan m (vertex; every pass, so the shadow / depth agree): no open root ring above the dense floor;
+//    * the surface is WET into the cloud: wet = _CloudWet.y (1 - exp(-k tau)), tau from three taps of the deck's own
+//      density IN FRONT of the skin (toward the eye: 3, 15, 40 m; LanbaiCloudVolume.cginc, skirts included), toward the
+//      deck's own lit colour there (ambient x height + moon x its self-shadow, x the deck gain); the cloud-top fog extra
+//      fades by (1 - wet) (the cloud fogs itself);
+//    * the deck gathers a SKIRT round every arm (the deck's side, LanbaiGateSkirt*).
+//    Without the volume (the global unset) v2.7d is unchanged. Reference: GateClouds/Source/seam_ref.py.
 //  v2.7d (gate clouds kit, 2026-10-22; UNCOMPILED): `noforwardadd` on the surface pragma. The gate_test found a real
 //    floating point division by zero in the generated ForwardAdd POINT variant; the gate has no point lights and the
 //    fill directional is Not Important (spherical harmonics), so the pass did nothing but cost a draw. Nothing else changed.
@@ -220,6 +233,14 @@ Shader "Lanbai/TentacleSway"
         _Girth ("Girth (root radius multiplier, 1 = library; GateArms_v2 meshes have it baked: keep 1)", Range(1, 4)) = 1
         _GirthFalloff ("Girth Falloff (power of 1 - t)", Range(0.5, 4)) = 1.5
         [Toggle] _ClipBelowCloud ("Clip Below The Cloud-Sea Top", Float) = 1
+        [Header(v2.8 the volume cloud  only when _Udon_CloudVolume.x is 1)]
+        _RootClip ("v2.8: clip this far under the cloud top (m)", Float) = 160
+        _RootReach ("v2.8: roots shallower than this under the top (m) are stretched down to it", Float) = 150
+        _RootSpan ("v2.8: the stretch runs over this much of the arm above the root (m)", Float) = 60
+        _CloudWet ("v2.8 wet: k, max, near tap, far tap toward the eye (m; the middle one is 15)", Vector) = (1.5, 0.95, 3, 40)
+        _CloudLit ("v2.8 the deck's light: moon E (deck _MoonE), gain (deck _Gain), -, -", Vector) = (0.38, 0.9, 0, 0)
+        _CloudMoonColor ("v2.8 the deck's _MoonColor, linear", Vector) = (0.6724, 0.7758, 1.0, 1)
+        _CloudAmbColor ("v2.8 the deck's _AmbColor, linear", Vector) = (0.0436, 0.0504, 0.0726, 1)
         _RimPx ("Pixel Rim Width N (px): far 2.2, near 5", Range(0, 10)) = 2.2
         _RimPxMoon ("Pixel Rim Moon Side Strength", Range(0, 4)) = 1.3
         _RimPxTear ("Pixel Rim Tear Side Strength", Range(0, 4)) = 2.2
@@ -340,6 +361,9 @@ Shader "Lanbai/TentacleSway"
         half _RimPxTear;
         half _ReflectionScale;
         #include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc"
+        #include "Assets/Lanbai/GateClouds/Shaders/LanbaiCloudVolume.cginc"     // v2.8: the volume cloud's density
+        float _RootClip, _RootReach, _RootSpan;
+        float4 _CloudWet, _CloudLit, _CloudMoonColor, _CloudAmbColor;
 
         half _RimGain;
         half _RimLadderFloor;
@@ -554,6 +578,20 @@ Shader "Lanbai/TentacleSway"
             v.tangent.xyz = RotZ(RotX(v.tangent.xyz, a1), a2);
             o.swayT = t;
             o.rawU = v.texcoord.x;
+
+            // v2.8 (D-44 #3): in the volume cloud a root shallower than top - _RootReach is stretched down to it (the
+            // lowest _RootSpan m of the arm, (1 - s)^2; the near arms' roots stand at top - 35 m, above the dense floor)
+            if (LanbaiCloudVolumeOn() && _ClipBelowCloud > 0.5)
+            {
+                float3 rootW = mul(unity_ObjectToWorld, float4(0.0, 0.0, 0.0, 1.0)).xyz;
+                float need = rootW.y - (CloudTop() - _RootReach);
+                if (need > 0.0)
+                {
+                    float wy = mul(unity_ObjectToWorld, float4(v.vertex.xyz, 1.0)).y;
+                    float s = saturate((wy - rootW.y) / max(_RootSpan, 1.0));
+                    v.vertex.xyz += mul((float3x3)unity_WorldToObject, float3(0.0, -need * (1.0 - s) * (1.0 - s), 0.0));
+                }
+            }
         }
 
         // v2.7: LanbaiBand / HaloProfile / the wound's air live in LanbaiGateSky.cginc (shared with the skybox)
@@ -566,10 +604,12 @@ Shader "Lanbai/TentacleSway"
         void surf(Input IN, inout SurfaceOutputStandard o)
         {
             // v2.2: the arm ends inside the cloud sea (also in the generated shadow caster, which runs surf for clip)
+            // v2.8: in the volume cloud only at its floor (top - _RootClip), and no dissolve (D-44 #3)
+            bool volCloud = LanbaiCloudVolumeOn();
             if (_ClipBelowCloud > 0.5)
-                clip(IN.worldPos.y - CloudTop() + 5.0);
+                clip(IN.worldPos.y - CloudTop() + (volCloud ? _RootClip : 5.0));
             // v2.5: the root dissolves in the lowest _RootDissolve m of the (ragged) cloud-top fade zone
-            if (_RootDissolve > 0.0)
+            if (_RootDissolve > 0.0 && !volCloud)
             {
                 float3 pN = NoisePos(IN.worldPos);           // v2.6: the cloud-sea frame (GateRoot moves)
                 float zd = IN.worldPos.y - CloudTop() + (VNoise(pN / 18.0) - 0.5) * 30.0;
@@ -746,7 +786,31 @@ Shader "Lanbai/TentacleSway"
             float dens = LanbaiGateDensity(_FogDensity);    // v2.7e: D-22 (_Udon_Fog first)
             // v2.4 (tech B3): the cloud-top extra is ADDED to the density scale (as in the renders)
             half ovr = OverWhite(IN.worldPos);                                // v2.7: the air in front of a silhouette over the white
-            float rho = dens * (_FogDensityScale + _FogExtra.x * exp(-h / max(_FogExtra.y, 1.0))) * (1.0 - _OverWhiteFog * ovr);
+            // v2.8 (D-44 #3): WET into the volume cloud -- the deck's density IN FRONT of the skin (toward the eye, at
+            // _CloudWet.z, 15 m and _CloudWet.w): an arm seen through a gap stays dark, one behind the cloud's lumps
+            // fades into them by their own shape (taps straight up made a pale glass column and a level line);
+            // the target is the deck's own lit colour at the near tap (x its gain)
+            bool volCloud = LanbaiCloudVolumeOn();
+            float wet = 0.0;
+            float3 wetCol = 0.0;
+            if (volCloud && IN.worldPos.y < CloudTop() + 40.0)
+            {
+                float top = CloudTop();
+                float3 org = _Udon_GateOrigin.xyz;
+                float3 pOut = IN.worldPos - V * _CloudWet.z;
+                float d0 = LanbaiCloudDensityAt(pOut, top, org, _Udon_GateTime);
+                float d1 = LanbaiCloudDensityAt(IN.worldPos - V * 15.0, top, org, _Udon_GateTime);
+                float d2 = LanbaiCloudDensityAt(IN.worldPos - V * _CloudWet.w, top, org, _Udon_GateTime);
+                wet = _CloudWet.y * (1.0 - exp(-(d0 * 9.0 + d1 * 18.0 + d2 * 30.0) * _CloudWet.x));
+                if (wet > 0.002)
+                {
+                    float3 md = LanbaiMoonDir(_RimDir.xyz);
+                    float facing = pow(saturate(dot(V, md)), 5.0);
+                    wetCol = LanbaiCloudLitAt(pOut, top, org, _Udon_GateTime, md, facing, _CloudAmbColor.rgb,
+                                              _CloudMoonColor.rgb, _CloudLit.x) * _CloudLit.y;
+                }
+            }
+            float rho = dens * (_FogDensityScale + _FogExtra.x * exp(-h / max(_FogExtra.y, 1.0)) * (1.0 - wet)) * (1.0 - _OverWhiteFog * ovr);
             float f = 1.0 - exp(-dist * rho);
             float capI = UNITY_ACCESS_INSTANCED_PROP(LanbaiGate, _FogCapI);
             float fc = min(f, (capI > 0.0) ? capI : _FogCap) * (_FogCapHeight > 0.0 ? exp(-h / _FogCapHeight) : 1.0);
@@ -762,7 +826,10 @@ Shader "Lanbai/TentacleSway"
         #ifdef UNITY_PASS_FORWARDADD
             color.rgb *= (1.0 - f) * (1.0 - cf);
         #else
-            color.rgb = lerp(color.rgb, (half3)_CloudTopColor.rgb, cf);
+            if (volCloud)
+                color.rgb = lerp(color.rgb, (half3)wetCol, (half)wet);           // v2.8: no dark cloud-top band
+            else
+                color.rgb = lerp(color.rgb, (half3)_CloudTopColor.rgb, cf);
             color.rgb = lerp(color.rgb, LanbaiFogColour(V, dist, ovr), f);
         #endif
             color.a = 1.0;
