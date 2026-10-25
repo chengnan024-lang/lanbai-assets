@@ -1,0 +1,60 @@
+playing=True audio=0
+segStart=0.000,0.000,50.300,150.300,179.550,248.640,251.640,363.260,922.360,987.060,1149.310,1178.460,1249.960,1729.960
+cueF=251.640,281.860,352.060,367.210,446.010,644.960,735.560,748.260,835.160,929.110,942.260,969.760,987.060,1018.210,1059.660,1115.360,1149.310
+starCross=1032.410,1034.910,1037.980,1041.740,1045.820,1052.300,1058.950,1067.460,1077.210,1089.910,1106.410,1125.550,1149.310
+runtime dbgT=1158.318
+runtime dbgSeg=10
+runtime dbgDEV=0
+runtime dbgB=0
+runtime _alpha=0
+runtime useGrades=True
+runtime ppWhite=PP_White (UnityEngine.Rendering.PostProcessing.PostProcessVolume)
+runtime ppBlack=PP_Black (UnityEngine.Rendering.PostProcessing.PostProcessVolume)
+Journey t=1158.318 seg=10
+Dispatcher t=1158.318 active=2
+Cloud clock=113.8 origin=(0.00, 110.00, 3880.33, 1.00)
+Sky cube=Sky_Overcast_Night_2048x1024 (UnityEngine.Cubemap) stars=(1.00, 8.00, 199.99, 1.00)
+Overlay=(0.00, 0.00, 0.00, 0.00) sea=0
+Editor smooth frame ms=11.15
+Camera [1] Local Player/PlayerController/DestkopTrackingData/Head/PlayerCamera/StackedCamera : Cam_InternalUI enabled=True pos=(0.20, 2.38, -0.30)
+Camera [1] Local Player/PlayerController/DestkopTrackingData/Head/PlayerCamera enabled=True pos=(0.20, 2.38, -0.30)
+Camera Lanbai/VRCWorld/ReferenceCamera enabled=False pos=(0.20, 2.24, -1.40)
+Root ClientSimPlayerData(Clone) active=True
+Root Lanbai active=True
+Root DeliveredGate active=True
+Root Lanbai_SkyPresets active=True
+Root Lanbai_SkyDriver_Acts1to3 active=True
+Root Lanbai_SkyDriver_Acts11to12 active=True
+Root Lanbai_Stars_BSC5 active=True
+Root Lanbai_Overlay active=True
+Root Lanbai_Inside active=True
+Root Act06_Driver active=True
+Root R_Act07 active=True
+Root Act07_Driver active=True
+Root R_StarSea active=False
+Root Lanbai_Act09Driver active=True
+Root Lanbai_Grades active=True
+Root Gate_Driver active=True
+Root R_Dawn active=False
+Root R_DawnRing active=False
+Root Lanbai_PoemDriver active=True
+Root Lanbai_Board active=True
+
+volume Lanbai/PostProcess/PP_White layer=22 enabled=True active=True weight=1 priority=150 profile=Assets/Lanbai/Generated/PostProcess/LB_PP_White.asset WHITE=True BLACK=False
+  ColorGrading active=True enabled=True
+    postExposure=11 override=True
+  Vignette active=True enabled=True
+  Bloom active=True enabled=True
+  ChromaticAberration active=True enabled=True
+volume Lanbai/PostProcess/PP_Black layer=22 enabled=True active=True weight=0 priority=151 profile=Assets/Lanbai/Generated/PostProcess/LB_PP_Black.asset WHITE=False BLACK=True
+  ColorGrading active=True enabled=True
+    postExposure=-14 override=True
+  Vignette active=True enabled=True
+  Bloom active=True enabled=True
+  ChromaticAberration active=True enabled=True
+volume Lanbai_Grades/Scenes/PPV_S10 layer=22 enabled=True active=True weight=1 priority=13 profile=Assets/Lanbai/Grading/Profiles/Lanbai_PP_S10.asset WHITE=False BLACK=False
+  ColorGrading active=True enabled=True
+    postExposure=0 override=True
+  Bloom active=True enabled=True
+  Vignette active=True enabled=True
+  Grain active=True enabled=True

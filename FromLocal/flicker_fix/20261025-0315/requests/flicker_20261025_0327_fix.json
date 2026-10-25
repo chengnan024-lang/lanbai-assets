@@ -1,0 +1,20 @@
+{
+  "id": "flicker_20261025_0327_fix",
+  "steps": [
+    {
+      "op": "refresh"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Programs"
+    },
+    {
+      "op": "wait",
+      "seconds": 8
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.CheckPrograms"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "steps": [
+    {
+      "arg": "baseline_direct|baseline|1023|18|0",
+      "target": "Lanbai.Tests.LB_FlickerDiagnostic.Begin",
+      "op": "call"
+    },
+    {
+      "seconds": 19,
+      "op": "wait"
+    },
+    {
+      "target": "Lanbai.Tests.LB_FlickerDiagnostic.Status",
+      "op": "call"
+    },
+    {
+      "arg": "no_mirrors_direct|no_mirrors|1023|18|0",
+      "target": "Lanbai.Tests.LB_FlickerDiagnostic.Begin",
+      "op": "call"
+    },
+    {
+      "seconds": 19,
+      "op": "wait"
+    },
+    {
+      "target": "Lanbai.Tests.LB_FlickerDiagnostic.Status",
+      "op": "call"
+    },
+    {
+      "arg": "no_sea_direct|no_sea|1023|18|0",
+      "target": "Lanbai.Tests.LB_FlickerDiagnostic.Begin",
+      "op": "call"
+    },
+    {
+      "seconds": 19,
+      "op": "wait"
+    },
+    {
+      "target": "Lanbai.Tests.LB_FlickerDiagnostic.Status",
+      "op": "call"
+    }
+  ],
+  "id": "flicker_20261025_0321_isolate"
+}

@@ -1,0 +1,32 @@
+{
+    "id": "flicker_20261025_0321_isolate",
+    "state": "done",
+    "step": 9,
+    "total": 9,
+    "started": "2026-10-25 03:19:38",
+    "finished": "2026-10-25 03:20:39",
+    "error": "",
+    "log": [
+        "03:19:38 收到请求，共 9 步",
+        "03:19:38 调用 Lanbai.Tests.LB_FlickerDiagnostic.Begin（baseline_direct|baseline|1023|18|0）",
+        "03:19:38   用时 0.0 秒",
+        "03:19:38   返回：running baseline_direct",
+        "03:19:58 调用 Lanbai.Tests.LB_FlickerDiagnostic.Status",
+        "03:19:58   用时 0.0 秒",
+        "03:19:58   返回：done baseline_direct frames=177 errors=0 folder=E:\\IDMdownload\\VRCC\\Backups\\continuation_20261025\\flicker_0315\\captures\\baseline_direct",
+        "03:19:58 调用 Lanbai.Tests.LB_FlickerDiagnostic.Begin（no_mirrors_direct|no_mirrors|1023|18|0）",
+        "03:19:58   用时 0.0 秒",
+        "03:19:58   返回：running no_mirrors_direct",
+        "03:20:18 调用 Lanbai.Tests.LB_FlickerDiagnostic.Status",
+        "03:20:18   用时 0.0 秒",
+        "03:20:18   返回：done no_mirrors_direct frames=177 errors=0 folder=E:\\IDMdownload\\VRCC\\Backups\\continuation_20261025\\flicker_0315\\captures\\no_mirrors_direct",
+        "03:20:19 调用 Lanbai.Tests.LB_FlickerDiagnostic.Begin（no_sea_direct|no_sea|1023|18|0）",
+        "03:20:19   用时 0.0 秒",
+        "03:20:19   返回：running no_sea_direct",
+        "03:20:39 调用 Lanbai.Tests.LB_FlickerDiagnostic.Status",
+        "03:20:39   用时 0.0 秒",
+        "03:20:39   返回：done no_sea_direct frames=177 errors=0 folder=E:\\IDMdownload\\VRCC\\Backups\\continuation_20261025\\flicker_0315\\captures\\no_sea_direct",
+        "03:20:39 全部完成"
+    ],
+    "files": []
+}

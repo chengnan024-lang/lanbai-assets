@@ -1,0 +1,40 @@
+{
+    "id": "white_handoff_20261025_0655_audit",
+    "state": "done",
+    "step": 9,
+    "total": 9,
+    "started": "2026-10-25 06:52:10",
+    "finished": "2026-10-25 06:52:32",
+    "error": "",
+    "log": [
+        "06:52:10 收到请求，共 9 步",
+        "06:52:10 刷新导入（AssetDatabase.Refresh）",
+        "06:52:16 （脚本重新加载，接着做第 1 步）",
+        "06:52:17 导入和编译完成",
+        "06:52:18 调用 Lanbai.Tests.LB_WhiteHandoffAudit.Inspect",
+        "06:52:18   用时 0.0 秒",
+        "06:52:18   返回内容写在 LanbaiRemote/results/white_handoff_20261025_0655_audit.step2.txt",
+        "06:52:18 调用 Lanbai.Tests.LB_WhiteHandoffAudit.QuietNextPlay",
+        "06:52:18   用时 0.0 秒",
+        "06:52:18   返回：Next diagnostic Play muted; volume restored on return to edit mode",
+        "06:52:19 进入 Play",
+        "06:52:20 （脚本重新加载，接着做第 4 步）",
+        "06:52:23 已经在 Play 里，等 4 秒",
+        "06:52:28 调用 Lanbai.Tests.LB_FullAssembly.Seek（1148.8）",
+        "06:52:28   用时 0.0 秒",
+        "06:52:28   返回：Runtime timeline seek 1148.8",
+        "06:52:28 调用 Lanbai.Tests.LB_WhiteHandoffAudit.Inspect",
+        "06:52:28   用时 0.0 秒",
+        "06:52:28   返回内容写在 LanbaiRemote/results/white_handoff_20261025_0655_audit.step6.txt",
+        "06:52:31 调用 Lanbai.Tests.LB_WhiteHandoffAudit.Inspect",
+        "06:52:31   用时 0.0 秒",
+        "06:52:31   返回内容写在 LanbaiRemote/results/white_handoff_20261025_0655_audit.step8.txt",
+        "06:52:32 停止 Play",
+        "06:52:32 全部完成"
+    ],
+    "files": [
+        "LanbaiRemote/results/white_handoff_20261025_0655_audit.step2.txt",
+        "LanbaiRemote/results/white_handoff_20261025_0655_audit.step6.txt",
+        "LanbaiRemote/results/white_handoff_20261025_0655_audit.step8.txt"
+    ]
+}

@@ -1,0 +1,42 @@
+{
+    "id": "white_handoff_20261025_0656_apply",
+    "state": "done",
+    "step": 10,
+    "total": 10,
+    "started": "2026-10-25 06:56:14",
+    "finished": "2026-10-25 06:56:50",
+    "error": "",
+    "log": [
+        "06:56:14 收到请求，共 10 步",
+        "06:56:14 刷新导入（AssetDatabase.Refresh）",
+        "06:56:17 （脚本重新加载，接着做第 1 步）",
+        "06:56:19 导入和编译完成",
+        "06:56:19 调用 Lanbai.Tests.LB_WhiteHandoffAudit.ApplyPreviewWhitePriority",
+        "06:56:20   用时 0.4 秒",
+        "06:56:20   返回：Saved only FullPreview: PP_White priority 2 -> 150; PP_Black unchanged",
+        "06:56:20 调用 Lanbai.Tests.LB_WhiteHandoffAudit.Inspect",
+        "06:56:20   用时 0.0 秒",
+        "06:56:20   返回内容写在 LanbaiRemote/results/white_handoff_20261025_0656_apply.step3.txt",
+        "06:56:20 调用 Lanbai.Tests.LB_WhiteHandoffAudit.QuietNextPlay",
+        "06:56:20   用时 0.0 秒",
+        "06:56:20   返回：Next diagnostic Play muted; volume restored on return to edit mode",
+        "06:56:21 进入 Play",
+        "06:56:22 （脚本重新加载，接着做第 5 步）",
+        "06:56:25 已经在 Play 里，等 4 秒",
+        "06:56:29 调用 Lanbai.Tests.LB_FlickerDiagnostic.Begin（white_handoff_0656_saved|baseline|1139|17|0）",
+        "06:56:29   用时 0.0 秒",
+        "06:56:29   返回：running white_handoff_0656_saved",
+        "06:56:48 调用 Lanbai.Tests.LB_FlickerDiagnostic.Status",
+        "06:56:48   用时 0.0 秒",
+        "06:56:48   返回：done white_handoff_0656_saved frames=168 errors=0 folder=E:\\IDMdownload\\VRCC\\Backups\\continuation_20261025\\flicker_0315\\captures\\white_handoff_0656_saved",
+        "06:56:49 调用 Lanbai.Tests.LB_WhiteHandoffAudit.Inspect",
+        "06:56:49   用时 0.0 秒",
+        "06:56:49   返回内容写在 LanbaiRemote/results/white_handoff_20261025_0656_apply.step9.txt",
+        "06:56:49 停止 Play",
+        "06:56:50 全部完成"
+    ],
+    "files": [
+        "LanbaiRemote/results/white_handoff_20261025_0656_apply.step3.txt",
+        "LanbaiRemote/results/white_handoff_20261025_0656_apply.step9.txt"
+    ]
+}

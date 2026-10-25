@@ -1,0 +1,32 @@
+{
+    "id": "white_handoff_20261025_0659_exit",
+    "state": "done",
+    "step": 7,
+    "total": 7,
+    "started": "2026-10-25 06:58:50",
+    "finished": "2026-10-25 06:59:17",
+    "error": "",
+    "log": [
+        "06:58:50 收到请求，共 7 步",
+        "06:58:50 调用 Lanbai.Tests.LB_WhiteHandoffAudit.QuietNextPlay",
+        "06:58:50   用时 0.0 秒",
+        "06:58:50   返回：Next diagnostic Play muted; volume restored on return to edit mode",
+        "06:58:51 进入 Play",
+        "06:58:52 （脚本重新加载，接着做第 2 步）",
+        "06:58:55 已经在 Play 里，等 4 秒",
+        "06:58:59 调用 Lanbai.Tests.LB_FlickerDiagnostic.Begin（white_handoff_0659_exit|baseline|1177|14|0）",
+        "06:58:59   用时 0.0 秒",
+        "06:58:59   返回：running white_handoff_0659_exit",
+        "06:59:15 调用 Lanbai.Tests.LB_FlickerDiagnostic.Status",
+        "06:59:15   用时 0.0 秒",
+        "06:59:15   返回：done white_handoff_0659_exit frames=137 errors=0 folder=E:\\IDMdownload\\VRCC\\Backups\\continuation_20261025\\flicker_0315\\captures\\white_handoff_0659_exit",
+        "06:59:16 调用 Lanbai.Tests.LB_WhiteHandoffAudit.Inspect",
+        "06:59:16   用时 0.0 秒",
+        "06:59:16   返回内容写在 LanbaiRemote/results/white_handoff_20261025_0659_exit.step6.txt",
+        "06:59:16 停止 Play",
+        "06:59:17 全部完成"
+    ],
+    "files": [
+        "LanbaiRemote/results/white_handoff_20261025_0659_exit.step6.txt"
+    ]
+}
