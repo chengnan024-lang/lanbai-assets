@@ -17,6 +17,10 @@
 // _Udon_HorizonColor, _Udon_FogBandColor and _Udon_NadirColor (as the star_sea preset: LanbaiHorizon is the floor too);
 // plus the first stars' MaterialPropertyBlock (no globals). Per frame: 5 SetGlobalVector (9 from 1009.21), 1 MPB,
 // no loops, no allocation.
+// Taking over (Engineering/README_集成.md §9.5, D-33 #6): the first tick at t >= 1001.21 after an activation (or after the
+// timeline went back before 1001.21) applies the whole blue_hour preset once (handoffPreset.Apply(): all the sky's
+// globals, the same values act 8b leaves), then writes its own on top in the same frame: a late joiner or a seek
+// lands on the same sky as watching from the start. Not before 1001.21 (the sky is still act 8b's then).
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
@@ -28,6 +32,7 @@ namespace Lanbai.Act09
     {
         [Header("Roots and renderers (filled by 蓝白/Build/Act09)")]
         public GameObject root;
+        public Lanbai.Sky.LanbaiSkyPreset handoffPreset;  // Lanbai_SkyPresets/SkyPreset_blue_hour
         public Renderer firstStars;
         public Renderer questionStars;
 
@@ -58,6 +63,7 @@ namespace Lanbai.Act09
         private int idGain, idOrderFade;
         private MaterialPropertyBlock mpb;
         private bool ready;
+        private bool _full;                               // blue_hour applied since the activation / the last seek back
 
         void Start()
         {
@@ -90,6 +96,7 @@ namespace Lanbai.Act09
 
         public void LanbaiActivate(bool on)
         {
+            _full = false;
             if (root != null)
                 root.SetActive(on);
         }
@@ -136,7 +143,16 @@ namespace Lanbai.Act09
                 questionStars.enabled = t >= tF13;        // built disabled; also off again when the timeline seeks back
 
             if (t < tActStart)
+            {
+                _full = false;                            // a seek back before the takeover: write it all again later
                 return;                                   // the 8b driver still owns the sky globals
+            }
+            if (!_full)
+            {
+                if (handoffPreset != null)
+                    handoffPreset.Apply();                // all of blue_hour once; ours are written on top below
+                _full = true;
+            }
 
             float night = Mathf.Clamp01((t - tActStart) / (tDarkEnd - tActStart));
             VRCShader.SetGlobalVector(idSkyBlend, new Vector4(0f, 1f, night, 1f));
