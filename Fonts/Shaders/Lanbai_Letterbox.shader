@@ -20,7 +20,7 @@ Shader "Lanbai/Letterbox"
     {
         _Slide ("Slide (0 none, 1 full)", Range(0, 1)) = 0
         _ScreenAspect ("Screen aspect (w / h)", Float) = 1.7778
-        _Cut ("Target aspect, tan corner, unused, unused", Vector) = (2.39, 1, 0, 0)
+        _Cut ("Target aspect, tan corner, overscan, unused", Vector) = (2.39, 1, 1.02, 0)
     }
     SubShader
     {
@@ -77,9 +77,12 @@ Shader "Lanbai/Letterbox"
                 if (_VRChatMirrorMode != 0 || _VRChatCameraMode != 0) discard;
                 // bar height as a fraction of the view height: (1 - screenAspect / targetAspect) / 2 (none if the screen
                 // is already wider than the target)
+                // the quad is _Cut.z (overscan) times the view: measure in view units, centred on the quad
+                float os = max(_Cut.z, 1.0);
                 float bar = saturate(0.5 * (1.0 - _ScreenAspect / max(_Cut.x, 0.01))) * _Slide;
-                float y = min(i.uv.y, 1.0 - i.uv.y);                      // distance from the nearer top / bottom edge
-                float xs = min(i.uv.x, 1.0 - i.uv.x) * _ScreenAspect;     // distance from the nearer side, in view heights
+                float2 v = (i.uv - 0.5) * os + 0.5;                         // view coordinates (0..1 across the view)
+                float y = min(v.y, 1.0 - v.y);                            // distance from the nearer top / bottom edge
+                float xs = min(v.x, 1.0 - v.x) * _ScreenAspect;           // distance from the nearer side, in view heights
                 float tanC = max(_Cut.y, 0.01);
                 float cut = max(0.0, bar - xs * tanC);                    // the 45° corner: the bar is thinner near the sides
                 float h = bar - cut;

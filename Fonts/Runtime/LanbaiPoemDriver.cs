@@ -123,7 +123,7 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
     public int key = 3;
     public int overrideKey = -1;
     public int mode = 0;                             // 0 follow, 1 stay, 2 off
-    public int seat = 0;                             // the bus's seat order; -1 = not seated
+    public int seat = -1;                            // the bus's seat order (main 0); -1 = not seated (SetSeat)
     public string clientLanguage = "";
 
     private MaterialPropertyBlock _mpb;
@@ -141,7 +141,9 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
     private float _aTop, _aBot;
     // follow state (PostLateUpdate)
     private int _placedS = -1;
-    private bool _haveHead;
+    private bool _haveHead, _headOk;
+    private Vector3 _headL;
+    private float _hYaw, _hPitch, _angVel;
     private Vector3 _hp, _prevFwd;
     private float _yaw, _yawVel, _el, _elVel, _depth = 1f;
     private bool _chaseYaw, _chaseEl;
@@ -323,6 +325,7 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
     public override void PostLateUpdate()
     {
         bool show = _active && mode != 2 && _sCur >= 0 && _pg >= 0 && subRig != null;
+        if (_vr) SampleHead();                                       // every frame: no stale sample after a page gap
         Letterbox(_active && mode != 2);                             // its segments start ~3 s before their poem
         if (!show)
         {
@@ -366,34 +369,48 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
     }
 
     // ---- VR: lazy follow in bus space (C.3)
-    private void PlaceVR()
+    // head pose in bus space, sampled every PostLateUpdate in VR (also while no page shows)
+    private void SampleHead()
     {
         VRCPlayerApi lp = Networking.LocalPlayer;
-        if (lp == null) return;
+        if (lp == null) { _headOk = false; return; }
         float dt = Mathf.Max(Time.deltaTime, 0.0001f);
         VRCPlayerApi.TrackingData hd = lp.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
-        Quaternion busRot = busRoot != null ? busRoot.rotation : Quaternion.identity;
-        Quaternion inv = Quaternion.Inverse(busRot);
-        Vector3 headL = busRoot != null ? busRoot.InverseTransformPoint(hd.position) : hd.position;
+        Quaternion inv = Quaternion.Inverse(busRoot != null ? busRoot.rotation : Quaternion.identity);
+        _headL = busRoot != null ? busRoot.InverseTransformPoint(hd.position) : hd.position;
         Vector3 fwd = inv * (hd.rotation * Vector3.forward);
-        float yaw = Mathf.Atan2(fwd.x, fwd.z) * Mathf.Rad2Deg;
-        float th = Mathf.Asin(Mathf.Clamp(fwd.y, -1f, 1f)) * Mathf.Rad2Deg;
-        if (!_haveHead) { _hp = headL; _prevFwd = fwd; _haveHead = true; }
-        _hp = Vector3.Lerp(_hp, headL, 1f - Mathf.Exp(-dt / headTau));
-        float angVel = Vector3.Angle(_prevFwd, fwd) / dt;
+        _hYaw = Mathf.Atan2(fwd.x, fwd.z) * Mathf.Rad2Deg;
+        _hPitch = Mathf.Asin(Mathf.Clamp(fwd.y, -1f, 1f)) * Mathf.Rad2Deg;
+        if (!_haveHead) { _hp = _headL; _prevFwd = fwd; _haveHead = true; }
+        _hp = Vector3.Lerp(_hp, _headL, 1f - Mathf.Exp(-dt / headTau));
+        _angVel = Vector3.Angle(_prevFwd, fwd) / dt;
         _prevFwd = fwd;
+        _headOk = true;
+    }
+
+    private void PlaceVR()
+    {
+        if (!_headOk) return;
+        float dt = Mathf.Max(Time.deltaTime, 0.0001f);
+        Quaternion busRot = busRoot != null ? busRoot.rotation : Quaternion.identity;
+        float yaw = _hYaw, th = _hPitch, angVel = _angVel;
         float E = sE[_sCur];
 
         if (_placedS != _sCur)
         {
             // a new poem appears straight ahead; during a fast turn wait for it to slow down, at most 0.5 s
             if (angVel > fastDps && _waitNew < 0.5f) { _waitNew += dt; return; }
+            _hp = _headL;                                            // around where the head is now, not the last poem's
             Anchor(yaw, th, E);
             _depth = DepthTarget();
             _placedS = _sCur;
             _holdUntil = Time.time + firstHold;
             _fState = 0;
             _fade = 1f;
+            // placed late (the page's own fade-in is over): fade in here instead of cutting in (D.1);
+            // turned beyond the yaw limit: start hidden until the head comes back
+            if (_waitNew > 0f) { _fState = 3; _fade = 0f; }
+            if (mode == 0 && Mathf.Abs(yaw) > yawLimit) { _fState = 2; _fade = 0f; _hideReason = 2; _fTimer = 0f; _calmT = 0f; }
             _waitNew = 0f;
         }
         else if (mode == 0)
@@ -422,8 +439,11 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
             }
             if (_fState == 0)
             {
-                if (Time.time >= _holdUntil) FollowYaw(yaw, dt);
-                FollowPitch(th, E, dt);
+                if (Time.time >= _holdUntil)                         // nothing moves in the first 0.6 s (C.3)
+                {
+                    FollowYaw(yaw, dt);
+                    FollowPitch(th, E, dt);
+                }
             }
         }
         // depth: changes only while hidden or moving (> 5°/s), <= 0.5 m/s (C.2)
@@ -590,7 +610,8 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
             pos = hd.position;
             rot = hd.rotation;
         }
-        float h = 2f * lbDist * Mathf.Tan(0.5f * fov * Mathf.Deg2Rad) * 1.02f;     // 2 % overscan
+        const float over = 1.02f;                                                 // 2 % overscan (the shader undoes it)
+        float h = 2f * lbDist * Mathf.Tan(0.5f * fov * Mathf.Deg2Rad) * over;
         lbQuad.position = pos + rot * new Vector3(0f, 0f, lbDist);
         lbQuad.rotation = rot;
         lbQuad.localScale = new Vector3(h * aspect, h, 1f);
@@ -598,7 +619,7 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
         _mpb.Clear();
         _mpb.SetFloat(_idSlide, e);
         _mpb.SetFloat(_idAspect, aspect);
-        _mpb.SetVector(_idCut, new Vector4(lbAspect, Mathf.Tan(lbCornerDeg * Mathf.Deg2Rad), 0f, 0f));
+        _mpb.SetVector(_idCut, new Vector4(lbAspect, Mathf.Tan(lbCornerDeg * Mathf.Deg2Rad), over, 0f));
         if (lbRenderer != null) lbRenderer.SetPropertyBlock(_mpb);
     }
 

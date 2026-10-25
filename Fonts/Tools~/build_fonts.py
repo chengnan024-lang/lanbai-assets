@@ -581,6 +581,26 @@ for pid, per in VIEW.items():
 view_ok = not view_fail
 view_lines.insert(1, 'viewcheck: %s%s' % ('PASS' if view_ok else 'FAIL', '' if view_ok else ' — ' + ', '.join(view_fail)))
 
+# D-45 C.2: the subtitle depth table is written by the bus package at Bus/Docs~/viewcheck/subtitle_depth.json (Unity
+# ignores ~ folders, so the bake cannot read it there): copied into Fonts/subtitle_depth.json when it is there and has the
+# agreed shape ({"seats", "yaw_cells": 24, "pitch_cells": 9, "depth_m": [seat][24][9]}); otherwise the driver's fallbacks
+DEPTH_SRC = os.path.join(BUS_DIR, 'Bus', 'Docs~', 'viewcheck', 'subtitle_depth.json')
+DEPTH_DST = os.path.join(KIT, 'subtitle_depth.json')
+if os.path.exists(DEPTH_SRC):
+    with open(DEPTH_SRC, encoding='utf-8') as f_:
+        dj = json.load(f_)
+    dm = dj.get('depth_m', [])
+    shape_ok = (dj.get('yaw_cells') == 24 and dj.get('pitch_cells') == 9 and len(dm) > 0
+                and all(len(sy) == 24 and all(len(c) == 9 for c in sy) for sy in dm))
+    if not shape_ok:
+        sys.exit('DEPTH TABLE: %s does not have the agreed shape (seats x 24 yaw x 9 pitch)' % DEPTH_SRC)
+    with open(DEPTH_DST, 'w', encoding='utf-8') as f_:
+        json.dump(dj, f_, ensure_ascii=False, separators=(',', ':'))
+    depth_note = 'subtitle depth table: %d seats from %s -> Fonts/subtitle_depth.json' % (len(dm), BUS_SRC)
+else:
+    depth_note = 'subtitle depth table: not in %s yet -> the driver uses the fallbacks (C.2)' % BUS_SRC
+print(depth_note)
+
 # D-37 seat table: retired in v5 (D-45 I.1; seat_table.py and seat_positions.json stay, unused)
 SEATS = None
 seat_lines = ['retired in v5 (D-45): the subtitles follow the head; the Zhuangzi column keeps the main seat\'s D-33 placement']
@@ -863,7 +883,7 @@ with open(os.path.join(DOCS, 'build_report.txt'), 'w', encoding='utf-8') as f:
     f.write('== SCRIM GEOMETRY ==\n' + '\n'.join(scr_lines) + '\n\n')
     f.write('== VERTICAL PLACEMENT ==\n' + '\n'.join(vert_lines) + '\n\n')
     f.write('== VIEWCHECK (D-33 #5) ==\n' + '\n'.join(view_lines) + '\n\n')
-    f.write('== SUBTITLES (v5, D-45) ==\n' + ('PASS' if sub_ok else 'FAIL') + ' — Docs~/subtitle_report.md\n' + '\n'.join(sub_extra) + '\n\n')
+    f.write('== SUBTITLES (v5, D-45) ==\n' + ('PASS' if sub_ok else 'FAIL') + ' — Docs~/subtitle_report.md\n' + depth_note + '\n' + '\n'.join(sub_extra) + '\n\n')
     f.write('== SEATS (D-37) ==\n' + '\n'.join(seat_lines) + '\n\n')
     f.write('== PLACEMENT (D-33) ==\n' + ('PASS' if not place_bad else '\n'.join('FAIL %s/%s: %s' % (r['poem'], r['player'], '; '.join(r['problems'])) for r in place_bad)) + '\n\n')
     f.write('== LINE WIDTHS ==\n' + '\n'.join(width_lines) + '\n\n')

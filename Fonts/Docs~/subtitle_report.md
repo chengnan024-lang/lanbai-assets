@@ -37,7 +37,7 @@ fill P12b_Keats               night  S12            target #B3BCC0 -> fill #C0CA
 | P04a_Rilke | zh | 1 | 137.30 | nSerifSC | 因为美无非是 / 恐怖的开端 | 11.7 / 9.7 | 0.85 |
 | P04a_Rilke | zht | 1 | 137.30 | nSerifTW | 因為美無非是 / 恐怖的開端 | 11.7 / 9.7 | 0.85 |
 | P04a_Rilke | ja | 1 | 137.30 | nSerifJP | 美とは　恐ろしいものの / 始まりにほかならない | 21.4 / 19.4 | 1.54 |
-| P04a_Rilke | en | 1 | 137.30 | Garamond | For beauty is nothing but / the beginning of terror | 17.3 / 15.5 | 3.77 |
+| P04a_Rilke | en | 1 | 137.30 | Garamond | For beauty is only / where terror begins | 12.1 / 13.2 | 2.92 |
 | P04a_Rilke | de | 1 | 137.30 | Garamond | Denn das Schöne ist nichts / als des Schrecklichen Anfang | 18.3 / 19.5 | 4.23 |
 | P04b_Urlicht | zh | 1 | 166.10 | nSerifSC | 啊　不！ / 我不肯被拒之门外！ | 7.7 / 17.5 | 1.89 |
 | P04b_Urlicht | zht | 1 | 166.10 | nSerifTW | 啊　不！ / 我不肯被拒之門外！ | 7.7 / 17.5 | 1.89 |

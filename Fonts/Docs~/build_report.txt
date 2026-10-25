@@ -1,4 +1,4 @@
-Lanbai Fonts kit build report  2026-10-25 19:52 UTC
+Lanbai Fonts kit build report  2026-10-25 19:53 UTC
 
 == SUBSETS (original -> subset) ==
 SourceHanSerifSC-Regular       SourceHanSerifCN-Regular.otf       11626108 B -> LanbaiSerifSC-Regular.otf                   86156 B  ( 0.74%)  glyphs 393  renamed Lanbai Serif SC (RFN Source); U+2014 -> full-width mid-line rule (glyph of U+2500)
@@ -138,7 +138,7 @@ P09_Tianwen
   de           translation  centre   -1.03°   top   +3.50°   bottom   -5.55°   shift +0.00°  ok
 
 == VIEWCHECK (D-33 #5) ==
-Every block of every player against the real bus (origin/pkg/bus (da68ef3); the bus's occlusion table Bus/Docs~/viewcheck/hero_occlusion.npz via Bus/Source/occlusion_lookup.py (0.25° grid); clearance ring 0.25° steps up to 4.0°). FAIL = some of the block is behind an opaque part (glass does not count).
+Every block of every player against the real bus (origin/pkg/bus (0b41bde); the bus's occlusion table Bus/Docs~/viewcheck/hero_occlusion.npz via Bus/Source/occlusion_lookup.py (0.25° grid); clearance ring 0.25° steps up to 4.0°). FAIL = some of the block is behind an opaque part (glass does not count).
 viewcheck: PASS
 
 P08b_Zhuangzi_Xiaoyao    zh  EXEMPT hits Body,Door2_Stile1,Door3_Stile0,Door3_Stile1,DoorGrab clearance >= 4.0
@@ -146,6 +146,7 @@ P08b_Zhuangzi_Xiaoyao    zht EXEMPT hits Body,Door2_Stile1,Door3_Stile0,Door3_St
 
 == SUBTITLES (v5, D-45) ==
 PASS — Docs~/subtitle_report.md
+subtitle depth table: not in origin/pkg/bus (0b41bde) yet -> the driver uses the fallbacks (C.2)
 fill P03_LiBai_Dream          night  S2→S3@0.299    target #B3BCC0 -> fill #D5E2E1            -> screen #B3BCC0 (luma 186.4) ok
 fill P04a_Rilke               standard S3→S4@0.195    target #D0DBDF -> fill #EEFFFD @ +0.89    -> screen #D0DBDF (luma 217.0) ok
 halo P04a_Rilke               a0.30 #0E1A2F -> fill #1F293F -> screen #0E1A2F

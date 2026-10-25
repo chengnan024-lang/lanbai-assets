@@ -41,6 +41,7 @@
 | `Tools~/lanbai_subtitles.py`（新） | 字幕架的全部参数（`RIG`，就是 JSON 里的 `subtitle_rig`）、每页的时刻、`zht` 页（由 v4 的简繁对照逐字换）、按子集字体量行宽、自检、`Docs~/subtitle_report.md` |
 | `Tools~/build_fonts.py` | 世界字只排天问和庄子字列；P09 SHA 断言；`block_viewcheck` 只查庄子字列；座位表（`seat_table.py`）退役；JP Medium 不再出 TMP 资产（子集文件留着，P09 冻结排版里那块退役小字要用它的字宽）；字幕的填色和行晕填色；`strings_all.json` 第 5 版。任何一项字幕自检不过，构建报错 |
 | `Tools~/make_subtitle_proofs.py`（新） | 字幕校样，见 00.5 |
+| 里尔克的英文（D-48） | 改成我们自己的译文 “For beauty is only / where terror begins”（原句和 Mitchell 1982 的译本一字不差）；来源声明见 `Art/译文来源声明.md` |
 | `Runtime/LanbaiPoemDriver.cs` | 重写，接口不变（见 00.3） |
 | `Shaders/Lanbai_Subtitle.shader`（新） | TMP 3D 距离场，算法同 TMP（同名属性，TMP 的 padding / ScaleRatio 照常起作用）；Overlay+10、ZTest Always、ZWrite Off；Underlay 乘行的 α；镜子、手持相机里不画 |
 | `Shaders/Lanbai_SubtitleHalo.shader`（新） | 行晕，Overlay+9 |
@@ -55,9 +56,9 @@
 
 - **接口不变**：`LanbaiTick(t)`、`LanbaiActivate`、`LanbaiWindow`、`LanbaiTakesOverNothing`、`LanbaiBoard(秒)`、`LanbaiBoardHide()`、`SetSeat(座位)`、`_LangZh`、`_LangJa`、`_LangEn` 都在，本地连线不用改。新事件：`_LangZhs`、`_LangZht`、`_SubFollow`、`_SubStay`、`_SubOff`。`_LangZh` 保留旧意思（`zh-HK` 的人仍看繁体），本地测试工具发的就是它。
 - `LanbaiTick`（Director 每帧，Update）只从 t 算：哪首、这个键的哪一页、每行的 α。换页那一帧给这个字体的两行赋 `.text`（不用 `maxVisibleLines`，D-44 #7）。
-- `PostLateUpdate` 放字幕架：VR 读 `GetTrackingData(Head)`，在车的坐标里做懒跟随；桌面贴屏幕相机。`SetSeat(−1)` = 不在座位上（离座时调用要阿白在 `LB_Seat` 里加一行，可选）。
+- `PostLateUpdate` 放字幕架：VR 读 `GetTrackingData(Head)`，在车的坐标里做懒跟随；桌面贴屏幕相机。`SetSeat(−1)` = 不在座位上（离座时调用要阿白在 `LB_Seat` 里加一行，可选）。`seat` 默认 −1：没调过 `SetSeat` 的人（迟到还没坐下、站着的）按“不在座位上”放 0.8 m；坐上主座位要调 `SetSeat(0)`。
 - `LanbaiBoard(s)`：s ≤ 0 时不印“车将在 X 秒后开出”，只出设置卡和其余提示（本地 `LB_Journey` 现在传 0）。
-- 深度表 `Fonts/subtitle_depth.json` 由车包出（还没到）。烘焙菜单认的格式：`{"seats": [...], "yaw_cells": 24, "pitch_cells": 9, "depth_m": [座位][偏航格][俯仰格]}`，偏航格 c 覆盖车坐标 −180 + 15c … −165 + 15c 度，俯仰格 j 以 −40 + 10j 度为中心，≤ 0 = 范围里没有不透明件。座位顺序 = `SetSeat` 的座位号（主座位 0）。
+- 深度表由车包写在 `Bus/Docs~/viewcheck/subtitle_depth.json`（`pkg/bus`，还没到）。`~` 文件夹 Unity 不导入，所以 `build_fonts.py` 每次构建从 `origin/pkg/bus`（或 `LANBAI_BUS_DIR`）读它、核对形状、拷成 `Fonts/subtitle_depth.json`，烘焙菜单读这份拷贝；车包更新了表，总工程师重跑一次构建，本地重点一次烘焙菜单。格式：`{"seats": [...], "yaw_cells": 24, "pitch_cells": 9, "depth_m": [座位][偏航格][俯仰格]}`，偏航格 c 覆盖车坐标 −180 + 15c … −165 + 15c 度，俯仰格 j 以 −40 + 10j 度为中心，≤ 0 = 范围里没有不透明件。座位顺序 = `SetSeat` 的座位号（主座位 0）。
 
 ### 00.4 本地接入顺序（I.6）
 
@@ -75,7 +76,7 @@
 
 ### 00.6 还没定 / 要别人给的
 
-- 深度表（车包，可以晚到）。
+- 深度表（车包，`Bus/Docs~/viewcheck/subtitle_depth.json`，可以晚到；到了以后重跑构建）。
 - 日文分页和设置卡的日文要请母语者看（D-30a #4）；译文来源由阿白核对（D-46）。
 - 黑边的三段时刻是第一版（方案只点了场景，没给秒）：3c 134.0–151.5、6d 342.0–359.0、9a 1005.0–1018.21。滑入滑出 1.5 s。比例和切角等 R1 量了 Fins 的截图再改。
 - 圣经 §1.8 说“除遮罩球和诗句字幕外没有 ZTest Always”：黑边也用了 ZTest Always（它要盖住 0.9 m 以内的东西）。请总导演在条文里加上黑边，或者改成别的做法。
