@@ -17,8 +17,8 @@
 // _Udon_HorizonColor, _Udon_FogBandColor and _Udon_NadirColor (as the star_sea preset: LanbaiHorizon is the floor too);
 // plus the first stars' MaterialPropertyBlock (no globals). Per frame: 5 SetGlobalVector (9 from 1009.21), 1 MPB,
 // no loops, no allocation.
-// Taking over (Engineering/README_集成.md §9.5, D-33 #6): the first tick at t >= 1001.21 after an activation (or after the
-// timeline went back before 1001.21) applies the whole blue_hour preset once (handoffPreset.Apply(): all the sky's
+// Taking over (Engineering/README_集成.md §9.5, D-33 #6): the first tick at t >= 1001.21 after an activation or after
+// any jump back in time applies the whole blue_hour preset once (handoffPreset.Apply(): all the sky's
 // globals, the same values act 8b leaves), then writes its own on top in the same frame: a late joiner or a seek
 // lands on the same sky as watching from the start. Not before 1001.21 (the sky is still act 8b's then).
 using UdonSharp;
@@ -64,6 +64,7 @@ namespace Lanbai.Act09
         private MaterialPropertyBlock mpb;
         private bool ready;
         private bool _full;                               // blue_hour applied since the activation / the last seek back
+        private float _lastT = -1f;
 
         void Start()
         {
@@ -97,6 +98,7 @@ namespace Lanbai.Act09
         public void LanbaiActivate(bool on)
         {
             _full = false;
+            _lastT = -1f;
             if (root != null)
                 root.SetActive(on);
         }
@@ -121,6 +123,11 @@ namespace Lanbai.Act09
         public void LanbaiTick(float t)
         {
             Init();
+            // any jump back (a seek; review F2: from after 1009.21 back into 1001.21 .. 1009.21 the four horizon colours
+            // stayed at the star floor) writes blue_hour in full again before our own values
+            if (t < _lastT - 0.05f)
+                _full = false;
+            _lastT = t;
             float x = Mathf.Clamp01((t - tF13) / (tF16 - tF13));
             float x25 = Mathf.Pow(x, 2.5f);
 

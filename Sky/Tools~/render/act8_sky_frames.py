@@ -1,7 +1,8 @@
 """第 8 幕的天（只有天，没有车厢 / 云卡 / 海）：按「云」的驱动（pkg/clouds Act08_Dusk/Runtime/LanbaiAct08Driver.cs）的时间表写全局量，
 在 CPU 上跑真的 Lanbai/Sky，按 S8 / S8b + 第 8 幕的蓝时 ΔEV（Act08_Grade.json：993.06 → 1001.21 到 −1.5）调色。
 看四件事（第 8 幕终审，天空这边）：日线的形状和收缩、暮 HDRI 太阳右边的台阶、蓝时的地平线缝 / 日侧、F12 前后的过渡带。
--> Sky/Docs~/act8/act8_sky_frames.png（正前方 90°）+ act8_sun_line.png（日线小块：方位 ±16°、仰角 ±4°）"""
+-> Sky/Docs~/act8/act8_sky_frames.png（正前方 90°）+ act8_sun_line.png（日线小块：方位 ±16°、仰角 ±4°）
++ act8_fade_986_994.png（F12 的淡变，每 0.25 s 一张：上面三行正前方，下面三行抬头 35°）"""
 import os, sys, json
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
@@ -94,6 +95,18 @@ def main():
         im = Image.fromarray(c.astype(np.uint8)); ImageDraw.Draw(im).text((6, 4), '%.2f' % t, fill=(255, 255, 255), font=font(14))
         strip.append(np.asarray(im))
     Image.fromarray(np.concatenate(strip, 0)).save(os.path.join(OUT, 'act8_sun_line.png'))
+    # the F12 fade, every 0.25 s (act 8 final review A1: no hard edge, no sudden cut), front and up 35 deg
+    fade = []
+    for pitch in (0, 35):
+        dd = camera_dirs(240, 135, 90, 0, pitch).astype(np.float32)
+        row = []
+        for t in np.arange(986.0, 994.01, 0.25):
+            g, wb = state(t, P)
+            im = Image.fromarray(grade(S.render(dd, {}, g).reshape(135, 240, 3), wb, t).astype(np.uint8))
+            ImageDraw.Draw(im).text((4, 2), '%.2f' % t, fill=(255, 255, 255), font=font(11))
+            row.append(np.asarray(im))
+        fade.append(np.concatenate([np.concatenate(row[i:i + 11], 1) for i in range(0, 33, 11)], 0))
+    Image.fromarray(np.concatenate(fade, 0)).save(os.path.join(OUT, 'act8_fade_986_994.png'))
     json.dump(meas, open(os.path.join(OUT, 'act8_sky_frames.json'), 'w'), indent=1, ensure_ascii=False)
 
 
