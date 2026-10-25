@@ -27,7 +27,7 @@ import sea_numpy as S  # noqa: E402
 import scene_kit as SK  # noqa: E402
 import act07_motion as AM  # noqa: E402
 
-LAY = json.load(open(os.path.join(PKG, 'Act07_Layout.json'), encoding='utf-8'))
+LAY = json.load(open(os.environ.get('LB_ACT07_LAYOUT', os.path.join(PKG, 'Act07_Layout.json')), encoding='utf-8'))   # env: try a layout variant
 U = LAY['unity']
 P_LAY = LAY['particles']
 

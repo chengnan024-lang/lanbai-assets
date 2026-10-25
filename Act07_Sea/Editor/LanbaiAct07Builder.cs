@@ -78,7 +78,15 @@ public static class LanbaiAct07Builder
     static Mesh SaveMesh(Mesh m, string path)
     {
         var old = AssetDatabase.LoadAssetAtPath<Mesh>(path);
-        if (old != null) AssetDatabase.DeleteAsset(path);
+        if (old != null)
+        {
+            // Preserve existing asset identity and .meta during an incremental rebuild.
+            m.name = old.name;
+            EditorUtility.CopySerialized(m, old);
+            UnityEngine.Object.DestroyImmediate(m);
+            EditorUtility.SetDirty(old);
+            return old;
+        }
         AssetDatabase.CreateAsset(m, path);
         return m;
     }
