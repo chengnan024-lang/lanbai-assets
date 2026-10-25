@@ -1,4 +1,4 @@
-2026-10-25 UTC · 整车重出在跑（侧窗 r2、座椅减面 + LOD、A2 管灯、无皮纹图集、光照图修法），跑完重跑 viewcheck / 座位遮挡 / 庄子 / 斯涅尔 / 接缝检查再推模型。光照图修法的代码先推了：图集留边减半（密度约 80 → 95 texel/m）、每个岛至少 2.5 texel 宽、主座位 / 侧窗 / 立柱三件密度 ×1.75、烘完回填黑 texel（岛里 + 外圈 2 texel）。D-45 字幕深度表的代码（seat_occlusion.py --subtitle-depth → Bus/Docs~/viewcheck/subtitle_depth.json）也推了，表在算。上一次推的：切片、D-44 先交版、D-46 抬头图（Bus/Docs~/viewcheck/d46_up60/up60_sheet.png）。**Bus/Models 还是上一版。** 没在 Unity 里编译过。卡点：无。
+2026-10-25 UTC · 整车重出在跑（侧窗 r2、座椅减面 + LOD、A2 管灯、无皮纹图集、光照图修法），跑完重跑 viewcheck / 座位遮挡 / 庄子 / 斯涅尔 / 接缝检查再推模型。光照图修法的代码先推了：图集留边减半（密度约 80 → 95 texel/m）、每个岛至少 2.5 texel 宽、主座位 / 侧窗 / 立柱三件密度 ×1.75、烘完回填黑 texel（岛里 + 外圈 2 texel）。D-45 字幕深度表出了：Bus/Docs~/viewcheck/subtitle_depth.json（23 座 × 偏航 24 × 俯仰 9，字体包拷到 Fonts/；说明在给总控 #32）。上一次推的：切片、D-44 先交版、D-46 抬头图（Bus/Docs~/viewcheck/d46_up60/up60_sheet.png）。**Bus/Models 还是上一版。** 没在 Unity 里编译过。卡点：无。
 
 # 车 · 状态
 
