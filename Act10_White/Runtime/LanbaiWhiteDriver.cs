@@ -23,7 +23,7 @@ namespace Lanbai.Act10
         public float tMirror12 = 1137.58f;
         public float tImpactEnd = 1138.78f;
         public float tSwellEnd = 1144.78f;
-        public float tMaskStart = 1146.31f;
+        public float tMaskStart = 1144.81f;          // C1 = B (总导演 10-25): the mask starts with the in-breath (1144.78 + 0.03)
         public float tF16 = 1149.31f;
         public float tSilenceEnd = 1178.46f;
         public float tShrinkEnd = 1186.46f;
@@ -52,7 +52,11 @@ namespace Lanbai.Act10
         public Color fillShrinkVR = new Color(1.040287f, 1.442772f, 1.580083f, 1f);
         public float lWhite = 0.86f;                 // relative luminance of the white the mask goes to (#E8F1F5 desktop)
         public float lWhiteVR = 0.74f;               // #D7E3E8
-        public float lSceneMask = 0.13f;             // EvOverlayAlpha's scalar Lscene for the 3-s mask: the DARKEST view (looking up, APL ~100; E17, review r2)
+        public float lSceneMask = 0.06f;             // EvOverlayAlpha's Lscene for the mask: the DARKEST view measured (side-up +30 deg, L 0.058-0.060; C1)
+        public float maskSeconds = 4.5f;             // C1 = B: 1144.81 -> 1149.31 for every direction outside the forward lobe
+        public Vector3 maskLobeDir = new Vector3(0f, 0.1f, 1f);   // forward (the bus's travel direction, +6 deg)
+        public float maskLobeHalfAngle = 25f;
+        public float maskLobeLead = 0.46f;           // forward first shows the white at 1146.32 (on the beat); 0.17 EV left at the F16 cut
         public float lScene11 = 0.012f;              // act 11 APL 30 -> relative luminance
         public float breathAmount = 0.02f;
         public float breathHz = 0.1f;
@@ -93,6 +97,7 @@ namespace Lanbai.Act10
         public void LanbaiActivate(bool on)
         {
             lobesSet = false;                       // D-33 #6: everything is rebuilt from t on the next tick (late joiners, scrubbing)
+            maskLobeSet = false;
             if (!on)
                 Release();                          // only if WE hold the overlay (review r2 #1: never clear the spawn black)
         }
@@ -139,6 +144,7 @@ namespace Lanbai.Act10
 
         // ---------------------------------------------------------------------------------------- overlay
         private bool lobesSet;
+        private bool maskLobeSet;
         private bool ownsOverlay;                   // set by our own Set*; we Hide() only what we drew (review r2 #1)
 
         private void Release()
@@ -150,6 +156,7 @@ namespace Lanbai.Act10
             overlay.Hide();
             ownsOverlay = false;
             lobesSet = false;
+            maskLobeSet = false;
         }
 
         private void DriveOverlay(float t)
@@ -188,6 +195,12 @@ namespace Lanbai.Act10
             {
                 overlay.ClearLobes();               // scrubbed back from the shrink (F5)
                 lobesSet = false;
+                maskLobeSet = false;
+            }
+            if ((ramping || t >= tF16) && maskLobeSet)
+            {
+                overlay.ClearLobes();               // the mask's forward lobe is only for the mask
+                maskLobeSet = false;
             }
             overlay.SetBreath(0f);                  // the breath is applied here, phased by t, not by the shader's _Time (F5)
             if (ramping)
@@ -203,8 +216,16 @@ namespace Lanbai.Act10
             }
             else if (t < tF16)
             {
-                // 3-s mask, ONE curve built for the darkest view (E17); WHITE_BLOOM falls with it (LanbaiGrade)
-                overlay.SetCurve(overlay.PickFill(fillMaskDesktop, fillMaskVR), Lin(evT, evV, t), t - tMaskStart, tF16 - tMaskStart, lSceneMask, lw, lSceneMask, lw);
+                // the mask (C1 = B): ONE curve built for the darkest view (Lscene 0.06, E17), 4.5 s from the in-breath for
+                // every direction, the forward lobe 0.46 s behind (forward first shows white at 1146.32, on the beat)
+                if (!maskLobeSet)
+                {
+                    overlay.ClearLobes();
+                    overlay.SetLobe(0, maskLobeDir.normalized, maskLobeHalfAngle, maskLobeLead);
+                    overlay.SetLeadElse(0f, 30f);
+                    maskLobeSet = true;
+                }
+                overlay.SetCurve(overlay.PickFill(fillMaskDesktop, fillMaskVR), Lin(evT, evV, t), t - tMaskStart, maskSeconds, lSceneMask, lw, lSceneMask, lw);
             }
             else if (t < tSilenceEnd)
             {
@@ -214,6 +235,7 @@ namespace Lanbai.Act10
             {
                 if (!lobesSet)
                 {
+                    maskLobeSet = false;
                     overlay.ClearLobes();
                     for (int i = 0; i < 3 && i < lobeDir.Length; i++)
                         overlay.SetLobe(i, lobeDir[i].normalized, lobeHalfAngle[i], lobeLead[i]);
@@ -245,7 +267,7 @@ namespace Lanbai.Act10
             if (t < tMaskStart)
                 return 0f;
             if (t < tF16)
-                return EvOverlayAlpha((t - tMaskStart) / (tF16 - tMaskStart), lSceneMask, lw, lSceneMask, lw);
+                return EvOverlayAlpha((t - tMaskStart) / maskSeconds, lSceneMask, lw, lSceneMask, lw);   // outside the forward lobe
             if (t < tSilenceEnd)
                 return 1f;
             return ShrinkAlpha(t, 0f);

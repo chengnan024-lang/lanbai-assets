@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.join(MP.REPO, 'Art', 'tools', 'lens_tech'))
 import flashcheck as FC
 
 CASES = dict(m1=(1029.4, 1035.4, 0, -12), m10=(1112.4, 1118.4, 0, -12), m11=(1122.5, 1128.5, 0, -12),
-             wf=(1137.0, 1149.31, 0, 6), wd=(1137.0, 1149.31, 0, -60), wu=(1137.0, 1149.31, 0, 60), m13in=(1058.0, 1065.0, 0, -45))
+             wf=(1137.0, 1150.0, 0, 6), wd=(1137.0, 1150.0, 0, -60), wu=(1137.0, 1150.0, 0, 60), wsu=(1137.0, 1150.0, 90, 30), m13in=(1058.0, 1065.0, 0, -45))
 for _k, _m in enumerate(MP.SCH['mirrors'][:12]):          # C6: every crossing, forward-low / up / down
     _tc = _m['t_cross']
     CASES.setdefault('m%d' % (_k + 1), (_tc - 3.0, _tc + 3.0, 0, -12))
@@ -28,7 +28,22 @@ for _k, _m in enumerate(MP.SCH['mirrors'][:12]):          # C6: every crossing, 
 W = MP.WHITE
 FILL = np.array(W['overlay']['fills']['S9b_WHITESAT']['desktop']['linear_rgb'])
 LW = float(MP.G.hexlin('#E8F1F5') @ np.array([0.2126, 0.7152, 0.0722]))
-LSCENE = float(sys.argv[5]) if len(sys.argv) > 5 else 0.13   # = LanbaiWhiteDriver.lSceneMask (darkest view)
+LSCENE = float(sys.argv[5]) if len(sys.argv) > 5 else 0.06   # = LanbaiWhiteDriver.lSceneMask (darkest view; C1 = B)
+MASK = W['overlay']['mask_in']                                # C1 = B: 1144.81, 4.5 s, a forward lobe 0.46 s behind
+T_MASK0, T_MASK = MASK['t'][0], MASK['T_s']
+
+
+def mask_lead(d):
+    """Overlay v2 LeadAt: leadElse, then lerp toward each lobe's lead by its smoothstep weight (soft edge >= 30 deg)."""
+    lead = np.full(d.shape[:-1], MASK['lead_else_s'])
+    soft = max(MASK['soft_edge_deg'], 30.0)
+    for lb in MASK['lobes']:
+        v = np.array(lb['dir'], float); v /= np.linalg.norm(v)
+        c = d @ v
+        cin = math.cos(math.radians(lb['half_angle_deg'])); cout = math.cos(math.radians(min(lb['half_angle_deg'] + soft, 180.0)))
+        m = np.clip((c - cout) / (cin - cout), 0, 1); m = m * m * (3 - 2 * m)
+        lead = lead + (lb['lead_s'] - lead) * m
+    return lead
 
 
 def ev_alpha(x, lf, lt, ls, lo):
@@ -50,12 +65,18 @@ def main():
         t0, t1 = float(os.environ['T0']), float(os.environ['T1'])
     ts = np.arange(t0, t1 + 1e-6, 1.0 / fps)
     frames = []
+    LEAD = None
     for t in ts:
         c, info = MP.frame(float(t), yaw, pitch, w, h, dust=True)
-        if case in ('wf', 'wd', 'wu') and t >= W['labels']['mask_start']:
-            # redo in linear with the overlay composited before the grade
-            x = (t - W['labels']['mask_start']) / (W['labels']['F16_cut2'] - W['labels']['mask_start'])
-            a = ev_alpha(x, LSCENE, LW, LSCENE, LW)
+        if case in ('wf', 'wd', 'wu', 'wsu') and t >= T_MASK0:
+            # the overlay composited per pixel (the forward lobe leads by 0.46 s); at F16 the cut to the full white
+            if LEAD is None:
+                LEAD = mask_lead(MP.camera_dirs(w, h, 90, yaw, pitch).reshape(h, w, 3))
+            if t >= W['labels']['F16_cut2']:
+                a = np.ones((h, w))
+            else:
+                a = np.vectorize(lambda x: ev_alpha(x, LSCENE, LW, LSCENE, LW))((t - T_MASK0 - LEAD) / T_MASK)
+            a = a[..., None]
             ev = MP.white_ev(float(t))
             lin = MP.G.hexlin  # noqa
             # approximate: blend in display-linear space of the graded frame toward the fill's screen colour
@@ -73,7 +94,7 @@ def main():
     out = os.path.join(MP.REPO, 'Mirrors', 'Docs~', 'flashcheck')
     os.makedirs(out, exist_ok=True)
     rep['case'] = case; rep['t'] = [t0, t1]; rep['fps'] = fps; rep['size'] = [w, h]; rep['view'] = [yaw, pitch]
-    rep['note'] = 'numpy port of the mirror shaders on the act 9 sky (no cabin); the white mask blended in display-linear toward #E8F1F5 with EvOverlayAlpha (Lscene %.2f); WHITE_SAT/BLOOM blended into the PPv2 parameters; star flux conserved below 1.6 px (r3 C2)' % LSCENE
+    rep['note'] = 'numpy port of the mirror shaders on the act 9 sky (no cabin); the white mask blended in display-linear toward #E8F1F5 with EvOverlayAlpha (Lscene %.2f; C1 = B: from 1144.81, 4.5 s, forward lobe +0.46 s); WHITE_SAT/BLOOM blended into the PPv2 parameters; star flux conserved below 1.6 px (r3 C2)' % LSCENE
     json.dump(rep, open(os.path.join(out, case + (('_' + os.environ['MIRROR13']) if os.environ.get('MIRROR13') else '') + ('_%dpx' % w if w != 192 else '') + '.json'), 'w'), indent=1, default=float)
     print(json.dumps({k: rep[k] for k in rep if k not in ('series',)}, default=float)[:1500])
 

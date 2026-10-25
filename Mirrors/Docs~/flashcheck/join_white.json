@@ -1,4 +1,32 @@
 {
+ "1144.81_desk": {
+  "view": {
+   "view_Lmask": 0.48,
+   "lead": 0.0
+  },
+  "rise_025_1_2": [
+   0.3,
+   0.9,
+   1.7
+  ],
+  "flashes": 0.5,
+  "rule": "PASS",
+  "PASS": true
+ },
+ "1144.81_vr": {
+  "view": {
+   "view_Lmask": 0.48,
+   "lead": 0.0
+  },
+  "rise_025_1_2": [
+   0.3,
+   0.9,
+   1.7
+  ],
+  "flashes": 0.5,
+  "rule": "PASS",
+  "PASS": true
+ },
  "1146.31_desk": {
   "view": {
    "view_Lmask": 0.48,
@@ -83,21 +111,21 @@
   "rule": "PASS",
   "PASS": true
  },
- "1169.00_desk": {
+ "1168.50_desk": {
   "view": {
    "view_Lmask": 0.48,
    "lead": 0.0
   },
   "rise_025_1_2": [
-   0.31,
-   0.91,
-   1.54
+   0.3,
+   0.9,
+   1.7
   ],
-  "flashes": 0.0,
+  "flashes": 0.5,
   "rule": "PASS",
   "PASS": true
  },
- "1169.00_vr": {
+ "1168.50_vr": {
   "view": {
    "view_Lmask": 0.48,
    "lead": 0.0

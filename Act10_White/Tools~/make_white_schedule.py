@@ -70,8 +70,11 @@ out = dict(
                              multiplier='镜面自发光 × 2^EV（只乘第 13 面的自发光项，不乘反射项）', see='Mirrors/MirrorSchedule.json mirrors[12].face_emission_extra'),
     overlay=dict(
         shader='Lanbai_Overlay v2（会话「门内」，Overlay/；没推之前照圣经 §1.8 的接口：_Color rgb = HDR 填色、a = 不透明度；球跟头部位置；物体空间抖动）',
-        mask_in=dict(t=[t_mask0, F16], curve='EvOverlayAlpha(x, Lscene, Lwhite, Lscene, Lwhite)', x='(t − 1146.31) / 3.0',
-                     Lscene='标量：按“极端视向”定（变白的遮罩按最暗的视向建，§1.8 E17）——数值见 Mirrors/Docs~/flashcheck/wf.json、wd.json（flash_seq.py）；取最暗的视向（抬头 APL ≈ 100 → L ≈ 0.13）',
+        mask_in=dict(t=[round(t_sw_end + 0.03, 2), F16], ruling='C1 = B（总导演 10-25）',
+                     curve='EvOverlayAlpha(clamp01((t − 1144.81 − lead(dir)) / 4.5), Lscene, Lwhite, Lscene, Lwhite)',
+                     Lscene=0.06, Lscene_note='最暗的视向实测：侧上方 +30°（yaw 90°）L 0.058（384 px）/ 0.060（1920×1080），Mirrors/Docs~/flashcheck/c1_views_1146.31.json',
+                     lobes=[dict(dir=[0.0, 0.1, 1.0], half_angle_deg=25, lead_s=0.46, note='正前方：1146.32 才看得出变白（卡在白的那一拍）；F16 时还差 0.17 EV，剪 2 一步补齐')],
+                     lead_else_s=0.0, soft_edge_deg=30, T_s=4.5,
                      fill_row='S9b_WHITESAT', fill_times_2pow_minus_dEV=True),
         hold=dict(t=[F16, t_sil_end], alpha=1.0, fill_row='S10', breath=dict(amount=0.02, hz=0.1, note='±2 %、0.1 Hz；乘在填色上'),
                   peak_hold_s=round(t_sil_end - F16, 2), rule='峰值保持 ≤ 30 s（只算 F16 → 静默结束）；本地若延长播放淡出，必须同步缩短 5 s 静默'),

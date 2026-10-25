@@ -11,9 +11,11 @@ import flashcheck as FC   # noqa: E402
 
 W = json.load(open(os.path.join(REPO, 'Act10_White', 'WhiteSchedule.json'), encoding='utf-8'))
 LB = W['labels']
-T_MASK, T_F16, T_SE, T_END = LB['mask_start'], LB['F16_cut2'], LB['silence_end'], LB['shrink_end']
+MK = W['overlay']['mask_in']
+T_MASK, T_F16, T_SE, T_END = MK['t'][0], LB['F16_cut2'], LB['silence_end'], LB['shrink_end']   # C1 = B: 1144.81
+MASK_T = MK['T_s']
 FLOOR, RATE, L11, SHRINK, DECAY = 0.004, 0.80, 0.012, 5.0, 4.0
-LS_MASK = 0.13
+LS_MASK = MK['Lscene']
 
 
 def ev_alpha(x, lf, lt, ls, lo):
@@ -22,7 +24,7 @@ def ev_alpha(x, lf, lt, ls, lo):
     return min(max((ls - L) / (ls - lo), 0.0), 1.0)
 
 
-def screen(t, tj, lw, lv_mask, lead):
+def screen(t, tj, lw, lv_mask, lead, mlead=0.0):
     """the screen luminance of one view (its scene behind the mask = lv_mask, its shrink lead = lead)."""
     if t < tj:
         return FLOOR                                             # the spawn black (held by the dispatcher)
@@ -40,7 +42,7 @@ def screen(t, tj, lw, lv_mask, lead):
     if t < tj + ramp:
         return lw * (FLOOR / lw) ** (1 - (t - tj) / ramp)       # opaque, fill black -> white
     if t < T_F16:
-        a = ev_alpha((t - T_MASK) / (T_F16 - T_MASK), LS_MASK, lw, LS_MASK, lw)
+        a = ev_alpha((t - T_MASK - mlead) / MASK_T, LS_MASK, lw, LS_MASK, lw)
         return (1 - a) * lv_mask + a * lw
     if t < T_SE:
         return lw
@@ -51,8 +53,8 @@ def screen(t, tj, lw, lv_mask, lead):
 def run(tj, lw=0.86, fps=30.0):
     ts = np.arange(tj - 1.0, T_END + 4.0, 1 / fps)
     worst = None
-    for lv, lead in ((0.48, 0.0), (0.06, 3.0), (0.74, 1.5)):
-        L = np.array([screen(t, tj, lw, lv, lead) for t in ts])
+    for lv, lead, ml in ((0.48, 0.0, 0.46), (0.06, 3.0, 0.0), (0.74, 1.5, 0.0)):   # forward is in the mask's lobe
+        L = np.array([screen(t, tj, lw, lv, lead, ml) for t in ts])
         code = np.where(L <= 0.0031308, L * 12.92, 1.055 * L ** (1 / 2.4) - 0.055) * 255
         frames = [np.full((54, 96, 3), c, np.uint8) for c in np.clip(code, 0, 255)]
         rep, _ = FC.analyze(frames, fps, hfov=90.0, label='join')
@@ -66,7 +68,7 @@ def run(tj, lw=0.86, fps=30.0):
 if __name__ == '__main__':
     out = {}
     # D-43 #5 times (black end; 1140 is handed over at the mask's start, rule 4) + the boundaries of this driver's paths
-    for tj in (1146.31, 1150.0, 1160.0, 1169.0, 1169.5, 1175.0, 1178.46, 1180.0, 1186.0):
+    for tj in (1144.81, 1146.31, 1150.0, 1160.0, 1168.5, 1169.5, 1175.0, 1178.46, 1180.0, 1186.0):
         for lw, tag in ((0.86, 'desk'), (0.74, 'vr')):
             w = run(tj, lw)
             out['%.2f_%s' % (tj, tag)] = dict(view=w[0], rise_025_1_2=w[1][:3], flashes=w[1][3], rule=w[1][4], PASS=w[2])
