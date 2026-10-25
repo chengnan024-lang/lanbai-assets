@@ -218,12 +218,17 @@ def sheet(key):
     return path
 
 
-def letterbox_mask(w, h, aspect, tan_c, slide=1.0):
-    bar = max(0.0, 0.5 * (1 - (w / h) / aspect)) * slide
+def bar_frac(w, h, aspect, e):
+    return max(0.0, 0.5 * (1 - (w / h) / aspect)) * e
+
+
+def letterbox_mask(w, h, aspect, tan_c, corner_frac, e=1.0):
+    """as Lanbai/Letterbox: bars of bar_frac x h, inner corners cut at 45°, corner_frac of the bar deep"""
+    bar = bar_frac(w, h, aspect, e)
     yy, xx = np.mgrid[0:h, 0:w]
-    y = np.minimum(yy, h - 1 - yy) / h
-    xs = np.minimum(xx, w - 1 - xx) / h
-    cut = np.maximum(0.0, bar - xs * tan_c)
+    y = (np.minimum(yy, h - 1 - yy) + 0.5) / h
+    xs = (np.minimum(xx, w - 1 - xx) + 0.5) / h
+    cut = np.maximum(0.0, corner_frac * bar - xs * tan_c)
     return (y < bar - cut).astype(np.float64)
 
 
@@ -235,10 +240,12 @@ def desktop():
     fov = rig['desktop']['fov_fallback_deg']
     ppd_v = H / fov
     el_top = fov / 2
-    picks = [('P04a_Rilke', 'en', '3c 里尔克（黑边）'), ('P06_Dream_Dawn', 'zh', '6d 晨句（黑边）'), ('P09_Tianwen', 'en', '9a 天问（黑边，到 F13）'),
-             ('P07_HeBo', 'ja', '7b 河伯（没有黑边）')]
+    # (poem, key, label, slide e): e = 1 bars fully in, 0.5 half way through the 1.5 s slide, 0 no bars
+    picks = [('P04a_Rilke', 'en', '3c 里尔克（黑边）', 1.0), ('P06_Dream_Dawn', 'zh', '6d 晨句（黑边）', 1.0),
+             ('P09_Tianwen', 'en', '9a 天问（黑边，1018.11 前滑出）', 1.0), ('P09_Tianwen', 'ja', '9a 天问 滑出到一半（约 1017.4）', 0.5),
+             ('P04a_Rilke', 'de', '3c 里尔克 滑入到一半（约 134.75）', 0.5), ('P07_HeBo', 'ja', '7b 河伯（没有黑边）', 0.0)]
     panels = []
-    for pid, key, lab in picks:
+    for pid, key, lab, e in picks:
         rec = next(r for r in D['subtitles'] if r['poem'] == pid)
         pg = rec['keys'][key][0]
         img = scene_bg(rec['scene'], W, H, el_top, ppd_v)
@@ -246,22 +253,27 @@ def desktop():
         cls = 'cjk' if L.FONTS[pg['font']]['cjk'] else 'latin'
         base_y = H - rig['desktop']['baseline_frac_h'] * H
         centre_y = base_y - rig['em_centre_above_baseline_em'][cls] * em_px
-        if '没有' not in lab:                                   # the bars (Overlay+5) under the text (Overlay+10)
-            m = letterbox_mask(W, H, lb['aspect'], math.tan(math.radians(lb['corner_deg'])))
+        if e > 0:                                               # the bars (Overlay+5) under the text (Overlay+10)
+            m = letterbox_mask(W, H, lb['aspect'], math.tan(math.radians(lb['corner_deg'])), lb['corner_frac'], e)
             img = img * (1 - m[..., None])
+            # as the driver: the block centred in the bottom bar, moving with the slide (smoothstep e already applied)
+            bar_px = bar_frac(W, H, lb['aspect'], e) * H
+            block_mid = 0.5 * rig['line_pitch_em'][cls] * em_px if len(pg['lines']) > 1 else 0.0
+            y_bar = H - 0.5 * bar_px + block_mid
+            centre_y = centre_y + (y_bar - centre_y) * e
         rec2 = dict(rec, base_bottom_el=0.0)
         img = draw_page(img, rig, rec2, pg, W / 2, lambda el: centre_y, em_px, desktop=True)
         u8 = np.clip(np.round(img * 255), 0, 255).astype(np.uint8)
         out = Image.fromarray(u8)
         cap = caption(W, ['桌面 16:9 · %s · %s · em = 屏高 %.1f%%，末行基线在底边上方 %.0f%%' % (lab, key, 100 * rig['desktop']['em_frac_h'], 100 * rig['desktop']['baseline_frac_h']),
-                          '黑边 %.2f:1，内角 %.0f° 切角，%.1f 秒滑入滑出；时段 %s（数据，先用这些值）' % (
-                              lb['aspect'], lb['corner_deg'], lb['slide_s'], '、'.join('%s %.1f–%.2f' % (s['id'], s['t0'], s['t1']) for s in lb['segments']))])
+                          '黑边 %.2f:1，内角 %.0f° 切角、深为黑边高度的 %.0f%%，%.1f 秒滑入滑出；字幕在黑边里竖直居中；时段 %s' % (
+                              lb['aspect'], lb['corner_deg'], 100 * lb['corner_frac'], lb['slide_s'], '、'.join('%s %.1f–%.2f' % (s['id'], s['t0'], s['t1']) for s in lb['segments']))])
         p = Image.new('RGB', (W, out.height + cap.height))
         p.paste(out, (0, 0))
         p.paste(cap, (0, out.height))
         panels.append(p)
-    head = header(2 * W + 48, '蓝白 · 字幕校样（第 5 版）· 桌面', ['字贴在屏幕下部（C.8）；黑边只在桌面、只在三段（D-45 #15.3），VR 里没有；字画在黑边上面（队列 Overlay+10 对 +5）。背景是示意，不是渲染。'])
-    out = Image.new('RGB', (2 * W + 48, head.height + 2 * (panels[0].height + 16) + 16), (12, 14, 18))
+    head = header(2 * W + 48, '蓝白 · 字幕校样（第 5 版）· 桌面', ['字贴在屏幕下部（C.8）；黑边只在桌面、只在三段（D-45 #15.3），VR 里没有。黑边在的时候字幕整块放进下面那条黑边里、竖直居中，滑入滑出时跟着挪（D-45 #15 r2）。背景是示意，不是渲染。'])
+    out = Image.new('RGB', (2 * W + 48, head.height + 3 * (panels[0].height + 16) + 16), (12, 14, 18))
     out.paste(head, (0, 0))
     for n, p in enumerate(panels):
         r, c = divmod(n, 2)

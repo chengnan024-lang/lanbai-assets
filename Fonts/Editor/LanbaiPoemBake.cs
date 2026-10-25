@@ -455,6 +455,8 @@ namespace Lanbai.Fonts.Editor
             Set(driver, "lbT0", segs.Select(s => F(s["t0"])).ToArray()); Set(driver, "lbT1", segs.Select(s => F(s["t1"])).ToArray());
             Set(driver, "lbAspect", F(lb["aspect"])); Set(driver, "lbCornerDeg", F(lb["corner_deg"]));
             Set(driver, "lbSlide", F(lb["slide_s"])); Set(driver, "lbDist", F(lb["distance_m"]));
+            Set(driver, "lbCornerFrac", lb.ContainsKey("corner_frac") ? F(lb["corner_frac"]) : 0.5f);
+            Set(driver, "lbSubsInBar", !lb.ContainsKey("subtitles_in_bar") || (lb["subtitles_in_bar"] is bool sib && sib));
             return "Letterbox: " + segs.Count + " segments (desktop only).";
         }
 
