@@ -111,7 +111,7 @@ class Act06Scene:
             c = B['base'] + 0.5 * (n2(x, z, 2630.0, 0, 51.0) - 0.62) + 0.25 * (n2(x, z, 8700.0, 0, 61.0) - 0.5)
             op = float(ss(B['open'][0], B['open'][1], t))
             c = np.maximum(c, 0.97 * (1 - op))       # closed until 305.4: the sea first shows at 305.4 (bible §6·6)
-            c = c * (1 - 0.92 * op * np.maximum(lake(x, z, B['column'], 3.0), lake(x, z, B['bay'], 4.0)))
+            c = c * (1 - op * np.maximum(lake(x, z, B['column'], 3.0), lake(x, z, B['bay'], 4.0)))
             return np.clip(c, 0, 1)
 
         towers = []
@@ -119,12 +119,61 @@ class Act06Scene:
             a = math.radians(tw['az'])
             towers.append((tw['r'] * math.sin(a), tw['r'] * math.cos(a), tw['rad']))
 
-        def covT(x, z, t):
-            c = np.zeros_like(x)
-            for (tx, tz, rad) in towers:
-                d = np.hypot(x - tx, z - tz)
-                c = np.maximum(c, ss(rad, rad * 0.35, d + 350.0 * (n2(x, z, 1200.0, 0, 81.0) - 0.5)))
-            return c * 0.8              # never solid: the noise carves the heads (cauliflower, not a dome)
+        # (D-44 #2 review 1) the towers: cumulus congestus built from blobs, not an extruded disc (that read as ice / a
+        # mesa: flat top, straight walls, vertical stripes). Rows of spheres narrowing upward + a crown of smaller heads
+        # (big lumps on small lumps); edges eroded by inverted multi-scale Worley (round cauliflower lumps); flat-ish base;
+        # self-shadow from the sun march. No vertical plane anywhere.
+        y0T = g['A']['y0']
+        blobs = []
+        for k_t, (tx, tz, rad) in enumerate(towers):
+            top = g['T'][k_t]['top']
+            H = top - y0T
+            rng = np.random.default_rng(100 + k_t)
+            sph = []
+            rows = 7
+            for r_i in range(rows):
+                u = r_i / (rows - 1)
+                yc = y0T + H * (0.10 + 0.78 * u)
+                rr = rad * (1.0 - 0.55 * u)
+                nb = 5 if u < 0.5 else 4
+                for _ in range(nb):
+                    ang = rng.uniform(0, 2 * math.pi)
+                    off = rr * rng.uniform(0.2, 0.55)
+                    sph.append((tx + off * math.cos(ang), yc + rng.uniform(-0.05, 0.05) * H, tz + off * math.sin(ang),
+                                rr * rng.uniform(0.55, 0.75)))
+            for _ in range(7):                                   # the crown: small heads on the big ones
+                ang = rng.uniform(0, 2 * math.pi)
+                off = rad * 0.45 * rng.uniform(0.0, 0.8)
+                sph.append((tx + off * math.cos(ang), top - H * rng.uniform(0.04, 0.14), tz + off * math.sin(ang),
+                            rad * rng.uniform(0.18, 0.3)))
+            blobs.append((tx, tz, rad * 1.4, np.array(sph, np.float32)))
+
+        def tower_field(Q, t, vol):
+            sig = np.zeros(len(Q), np.float32)
+            hh = np.zeros(len(Q), np.float32)
+            for (tx, tz, R, sph) in blobs:
+                near = (np.abs(Q[:, 0] - tx) < R) & (np.abs(Q[:, 2] - tz) < R)
+                if not near.any():
+                    continue
+                idx = np.nonzero(near)[0]
+                q = Q[idx]
+                f = np.zeros(len(q), np.float32)
+                for (cx, cy, cz, r) in sph:
+                    d = np.sqrt((q[:, 0] - cx) ** 2 + (q[:, 1] - cy) ** 2 + (q[:, 2] - cz) ** 2)
+                    f = np.maximum(f, 1.0 - d / r)
+                shape = ss(0.0, 0.5, f) * ss(y0T, y0T + 80.0, q[:, 1])
+                live = shape > 0.01
+                if not live.any():
+                    continue
+                k1, k2 = vol.n / 700.0, vol.n / 190.0
+                wq = q - np.array([2.0, 0.0, 1.0], np.float32) * t
+                e1 = 1.0 - vol.sample(wq * k1, 1)                # Worley distance: high at the cell borders
+                e2 = 1.0 - vol.sample(wq * k2 + 31.0, 1)
+                base = np.clip(shape - 0.55 * e1 * (1.0 - 0.4 * f) - 0.22 * e2, 0, 1)
+                base = np.clip(base / 0.45, 0, 1)
+                sig[idx] = np.maximum(sig[idx], base * 0.05)
+                hh[idx] = np.clip((q[:, 1] - y0T) / 2600.0, 0, 1)
+            return sig, hh
 
         # P: three drifting puffs the bus really goes into and out of (D-44 #2 "近处的云团，车会进去，也会出来"): each moves
         # with its wind and crosses the bus column at t_c, when the eye is at y_c; thin (sigma 0.012: a veil, not a white-out)
@@ -145,11 +194,10 @@ class Act06Scene:
         top_t = max(tw['top'] for tw in g['T'])
         self.layers = [VR.Layer('P%d' % k, pf[1] - pf[4] * 0.5, pf[1] + pf[4] * 0.5, covP_for(pf), scale=900.0, wind=tuple(pf[2]),
                                 sigma=0.012, erode=0.45, base_soft=0.2) for k, pf in enumerate(puffs)] + [
-            VR.Layer('A', g['A']['y0'], g['A']['y1'], covA, scale=1700.0, wind=(4.0, 0.0, 1.5), sigma=0.05, erode=0.5),
+            VR.Layer('A', g['A']['y0'], g['A']['y1'], covA, scale=1700.0, wind=(4.0, 0.0, 1.5), sigma=0.05, erode=0.25, hvar=0.15),
             VR.Layer('B', g['B']['y0'], g['B']['y1'], covB, scale=600.0, wind=(3.0, 0.0, 2.5), sigma=0.04, kind='strato',
                      erode=0.42, base_soft=0.1, soft_pow=2.0, hvar=0.3),
-            VR.Layer('T', g['A']['y0'], top_t, covT, scale=1500.0, wind=(2.0, 0.0, 1.0), sigma=0.05, erode=0.5,
-                     base_soft=0.02),
+            VR.FieldLayer('T', g['A']['y0'], top_t, tower_field),
         ]
         sun = np.array([S_AX[0] * math.cos(math.radians(SUN_EL)), math.sin(math.radians(SUN_EL)), S_AX[1] * math.cos(math.radians(SUN_EL))])
         col = A6.COL
@@ -163,7 +211,7 @@ class Act06Scene:
         gold = gold * float(card_sun @ VR.LUMA) / float(gold @ VR.LUMA)
         self.scene = VR.Scene(self.vol, self.layers, sun, gold * SUN_K,
                               np.array(col['SkyUpColor']) * AMB_K, np.array(col['GroundColor']) * AMB_K * 1.6,
-                              fog_fn=self.fog, amb_k=1.0, ms=0.3)
+                              fog_fn=self.fog, amb_k=1.0, ms=0.3, casters=('A',), cast_k=0.6, ao_k=AO_K)
 
     def fog(self, V, dist):
         fc = PR.fog_colour(self.sky, V)
@@ -171,6 +219,7 @@ class Act06Scene:
         return fc, fa
 
 
+AO_K = 0.75                      # under the cover the sky light is the cover's dark base (review 3)
 SUN_K, AMB_K = 0.8, 0.3          # calibrated on the 282 frame: lit tops ~#F3D2B0, shade ~#8593AA (S6)
 _SC = None
 NORM = {0: (0.549, 0.791), 1: (0.331, 0.635), 2: (0.251, 0.711)}    # vol_density.py p10 / p90 per channel

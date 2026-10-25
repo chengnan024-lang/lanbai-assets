@@ -24,6 +24,14 @@ class Volume:
         v = np.load(path).astype(np.float32)          # [z, y, x, 3]
         self.v = v
         self.n = v.shape[0]
+        # each channel's p10 .. p90 (the shader gets the same as two vectors): the Perlin-Worley base only spans ~0.55-0.79,
+        # so thresholded raw it barely moves in 3-D and the 2-D coverage alone draws the cloud: extruded slabs with flat
+        # tops and straight walls (the "blocks" of the board, review 2). Normalised, the 3-D noise shapes the billows.
+        self.lo = np.array([np.percentile(v[..., c], 10) for c in range(v.shape[-1])], np.float32)
+        self.hi = np.array([np.percentile(v[..., c], 90) for c in range(v.shape[-1])], np.float32)
+
+    def norm(self, x, ch):
+        return np.clip((x - self.lo[ch]) / (self.hi[ch] - self.lo[ch]), 0.0, 1.0)
 
     def sample(self, p, ch):
         """trilinear, periodic; p (M, 3) in texels (x, y, z)"""
@@ -59,14 +67,24 @@ class Layer:
         return ss(0.0, self.base_soft, h) * (1 - ss(top * 0.6, top, h))
 
 
+class FieldLayer:
+    """a layer whose density is its own field (e.g. a cumulus tower built from blobs): field(P, t, vol) -> (sigma, h01)"""
+    def __init__(self, name, y0, y1, field):
+        self.name, self.y0, self.y1, self.field = name, y0, y1, field
+        self.cov = lambda x, z, t: np.ones_like(x)
+
+
 class Scene:
     def __init__(self, vol, layers, sun_dir, sun_col, sky_col, gnd_col, fog_fn=None, phase=(0.6, -0.25, 0.7),
-                 amb_k=1.0, ms=0.25):
+                 amb_k=1.0, ms=0.25, casters=(), cast_k=0.6, ao_k=0.6):
         self.vol, self.layers = vol, layers
         self.sun = np.asarray(sun_dir, float) / np.linalg.norm(sun_dir)
         self.sun_col, self.sky_col, self.gnd_col = map(lambda a: np.asarray(a, float), (sun_col, sky_col, gnd_col))
         self.fog_fn, self.phase, self.amb_k, self.ms = fog_fn, phase, amb_k, ms
         self.step_k, self.step_min, self.step_max = 0.015, 10.0, 450.0
+        # long-range shadow and sky occlusion from whole layers (the shader's 2-D "how thick is the layer up there" term):
+        # the near sun samples reach 600 m; at a 5.8 deg sun that never climbs to a deck 650 m higher
+        self.casters, self.cast_k, self.ao_k = [l for l in layers if l.name in casters], cast_k, ao_k
         self.ymin = min(l.y0 for l in layers)
         self.ymax = max(l.y1 for l in layers)
 
@@ -81,6 +99,12 @@ class Scene:
                 continue
             idx = np.nonzero(inside)[0]
             Q = P[idx]
+            if isinstance(L, FieldLayer):
+                s, h = L.field(Q, t, self.vol)
+                better = s > sig[idx]
+                hh[idx[better]] = h[better]
+                sig[idx] += s
+                continue
             c = L.cov(Q[:, 0], Q[:, 2], t)
             keep = c > 0.01
             if not keep.any():
@@ -93,11 +117,11 @@ class Scene:
                 h = h + L.hvar * 2 * (self.vol.sample(pv, 0) - 0.67) / 0.24
             prof = L.profile(np.clip(h, 0, 1), c) * ((h >= 0) & (h <= 1))
             q = (Q - L.wind[None] * t) * k
-            n0 = self.vol.sample(q[:, [0, 1, 2]], 0)
+            n0 = self.vol.norm(self.vol.sample(q[:, [0, 1, 2]], 0), 0)
             base = np.clip((n0 * prof - (1 - c)) / np.maximum(c, 1e-3), 0, 1)
             if detail:
                 q2 = (Q - L.wind[None] * t * 1.6) * (k * 4.0)
-                g = self.vol.sample(q2, 1)
+                g = self.vol.norm(self.vol.sample(q2, 1), 1)
                 er = L.erode * (0.35 + 0.65 * (1 - h))          # wispy at the base, crisp at the heads
                 base = np.clip((base - g * er) / np.maximum(1 - g * er, 1e-3), 0, 1)
             s = (base ** L.soft_pow if L.soft_pow != 1.0 else base) * L.sigma
@@ -111,7 +135,35 @@ class Scene:
         for dd, w in ((25.0, 25.0), (80.0, 60.0), (220.0, 160.0), (600.0, 450.0)):
             s, _ = self.density(P + self.sun[None] * dd, t, detail=False)
             tau += s * w
+        return np.exp(-tau) * self.deck_T(P, t)
+
+    def deck_T(self, P, t, n=5):
+        """sun transmittance through the caster layers above P, from their 2-D coverage along the sun ray"""
+        tau = np.zeros(len(P), np.float32)
+        sy = max(self.sun[1], 1e-3)
+        for L in self.casters:
+            a = np.clip((L.y0 - P[:, 1]) / sy, 600.0, None)        # the near samples cover the first 600 m
+            b = (L.y1 - P[:, 1]) / sy
+            ok = b > a
+            if not ok.any():
+                continue
+            seg = np.where(ok, (b - a) / n, 0.0)
+            for i in range(n):
+                s = a + (i + 0.5) * seg
+                Q = P + self.sun[None] * s[:, None]
+                c = L.cov(Q[:, 0].astype(np.float32), Q[:, 2].astype(np.float32), t)
+                tau += np.where(ok, c * L.sigma * self.cast_k * seg, 0.0)
         return np.exp(-tau)
+
+    def sky_occlusion(self, P, t):
+        """how much of the sky dome a caster layer above P hides (under the cover the 'sky' is the cover's dark base)"""
+        occ = np.zeros(len(P), np.float32)
+        for L in self.casters:
+            below = P[:, 1] < L.y0
+            if below.any():
+                c = L.cov(P[:, 0].astype(np.float32), P[:, 2].astype(np.float32), t)
+                occ = np.maximum(occ, np.where(below, c, 0.0))
+        return occ
 
     def hg(self, cos, g):
         return (1 - g * g) / (4 * np.pi * (1 + g * g - 2 * g * cos) ** 1.5)
@@ -154,6 +206,8 @@ class Scene:
                 Ph = P[hit]
                 Ts = self.sun_T(Ph, t)
                 amb = self.gnd_col[None] * (1 - h[hit])[:, None] + self.sky_col[None] * h[hit][:, None]
+                if self.casters:
+                    amb = amb * (1 - self.ao_k * self.sky_occlusion(Ph, t))[:, None]
                 ms = 1.0 + self.ms * (1 - np.exp(-s * 200.0))
                 Lsrc = self.sun_col[None] * (Ts * ph[ia] * 4 * np.pi * ms)[:, None] * 0.25 + amb * self.amb_k
                 if self.fog_fn is not None:
