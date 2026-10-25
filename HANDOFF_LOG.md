@@ -4,6 +4,35 @@
 
 > **2026-10-24 起，读这份日志的本地是 ChatGPT「阿白」**（10-24 已接管，D-40a #8、D-41）。先读根目录的 `HANDOFF_CHATGPT.md`：协作边界、第一次接管的步骤、回传协议都在那里。下面各条里的“你”指本地，现在就是阿白。旧条里“技术上怎么实现由你决定”（09-28）作废：技术架构归总工程师，高风险改动先备份并经小楠确认（`HANDOFF_CHATGPT.md` §F）。
 
+## 2026-10-25（北京 22:10）· 🌳 样板树进 main：请做第一次“本地技术验收”（D-46 的第一件）
+同步：`Lamps/Tree/`
+不同步：`Lamps/Source/`（Blender 的生成代码，Unity 用不到）
+
+**是什么：** 灯包做的样板树。四棵：
+- `Tree_A1`、`A2`、`A3`：老的路边阔叶树，10.9 / 12.2 / 13.0 m，路边成排用；
+- `Tree_B1`：垂枝，只放在水田边，全程 1–2 棵。
+
+都是三档 LOD，LOD2 是两张交叉的剪影卡。全部程序化生成，可以按 CC0 公开。
+- shader：`Lanbai/TreeBark`、`Lanbai/TreeLeaf`（alpha-to-coverage、透光、湿润读 `_Udon_Wetness`、顶点风只水平）。
+- 菜单：`蓝白/Build/Sample Trees`，会建材质和带 LODGroup 的预制体。
+- 说明：`Lamps/Tree/README_样板树.md`；总览图：`Lamps/Tree/Docs~/Tree_Board_final.png`。
+
+**美术上我已看过，可以交本地试。** 技术验收是你的（D-46），按你的判断做，至少包括：
+1. 编译。点菜单搭一次，看导入设置对不对：叶子贴图要开 Mip Maps Preserve Coverage。
+2. 在 FullPreview 或测试场景里，按 `FromLocal/trees/README.md` 的三个机位（overview / right / left）放这四棵，和现在的杨树、临落树各拍一张，同光、同距离。再从 D-28 主座位 (0.55, 1.70, 2.05) 往右窗看一张。
+3. 闪烁：主座位看树冠，头部微动（±2 cm、±1°）录一段。叶缘看得出闪的话写进问题单。
+4. 性能：四棵各自的三角数、draw call，以及 LOD 在多远切换。
+5. 交付：
+   - 测试定义 `Lamps/Tree/UnityTest/tree_sample.json`，总工程师还没拷进测试工具的 tests/。你先照它手工做，或者等工具修好。
+   - 结果放 `FromLocal/tree_sample/<时间>/`，问题写 `FromLocal/tree_sample/问题.md`。
+
+**我还想知道三件事（美术，看完截图我来定）：**
+- 钠灯旁那棵，迎灯的那一团在 Unity 里亮不亮？Blender 里是暗的，因为路灯投影把下层叶团压暗了。
+- LOD1 的叶簇卡，夜里能不能看出平的长方形？
+- LOD2 交叉卡的交线，远处能不能看出来？
+
+**现场的树先别换。** 还是杨树；等你的验收和我的美术判断出来再说。
+
 ## 2026-10-25（北京 21:50）· 🤝 小楠定了：审美以外的事都交给你（D-46）
 **阿白，你的留言（`FromLocal/coordination/20261025_abai_research_support_offer.md`）总导演和小楠都看了。** 小楠的原话是：“除了审美方面，其他各方各面繁琐复杂的事情可以全部交给阿白来处理。”所以从现在起：
 - **云端只管审美**：美术方向、裁决、美术终审（好不好看、合不合圣经）、派活、合 main。
