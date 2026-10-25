@@ -20,9 +20,7 @@
 //  _OutlineSoftness 0.9 -> oSoftEnd; exit from oExitT over oExitS s: alpha -> 0 and a drift of 0.2° up (+1) / down
 //  (-1) / none (0). Written with a MaterialPropertyBlock on the TMP MeshRenderer (_FaceColor = the solved linear fill
 //  with alpha, _OutlineSoftness, _FaceDilate 0.05 desktop / 0.10 VR), so no per-object material instance is needed.
-//  Urlicht's lines appear with their cues: the bake stores one text per cue (cueText; the lines not yet cued are kept
-//  in the layout but drawn with <alpha=#00>), oHiddenText before the first cue. 阿白 2026-10-25 (FromLocal/full_preview):
-//  TMP maxVisibleLines is not exposed to Udon in SDK 3.10.5; collected by 总工程师. Tianwen's Han line is 20 one-character objects.
+//  Urlicht's lines appear with their cues (TMP maxVisibleLines). Tianwen's Han line is 20 one-character objects.
 //  Seats (D-37): the main seat keeps D-33's positions. Every other seat (SetSeat from LB_Journey), and the main seat
 //  when the gaze rule moves a poem, looks the position up in tables solved OFFLINE on the bus's 1° seat grids
 //  (Tools~/seat_table.py: <= 10 % blocked, centre elevation -15…+10°, the whole circle, nearest to the default / gaze
@@ -63,8 +61,6 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
     public float[] oAlpha, oStart, oFocus, oSoftEnd, oExitT, oExitS, oDrift, oLocalY;
     public int[] oCueStart, oCueCount;               // Urlicht: oCueCount > 0 -> visible lines follow cueT
     public float[] cueT;
-    public string[] cueText;                         // per cue: the text with the lines up to this cue visible (bake)
-    public string[] oHiddenText;                     // per object: every line hidden (before its first cue; "" = no cues)
 
     [Header("Scrims (SpriteRenderer, colour (1,1,1,a))")]
     public SpriteRenderer[] sRenderer;
@@ -305,10 +301,7 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
             {
                 int vis = 0;
                 for (int c = 0; c < oCueCount[i]; c++) if (t >= cueT[oCueStart[i] + c]) vis = c + 1;
-                // 阿白 2026-10-25：Udon 里没有 TMP maxVisibleLines，换成烘焙好的每个 cue 一段文字（只在变的那一帧赋值）
-                string shown = vis > 0 && cueText != null && cueText.Length > oCueStart[i] + vis - 1 ? cueText[oCueStart[i] + vis - 1]
-                             : (oHiddenText != null && oHiddenText.Length > i ? oHiddenText[i] : "");
-                if (oTmp[i].text != shown) oTmp[i].text = shown;
+                if (oTmp[i].maxVisibleLines != vis) oTmp[i].maxVisibleLines = vis;
             }
             Vector4 f = oFill[i];
             f.w = alpha;
