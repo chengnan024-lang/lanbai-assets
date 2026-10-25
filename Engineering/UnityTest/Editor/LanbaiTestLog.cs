@@ -160,6 +160,8 @@ namespace Lanbai.Test
         /// <summary>Play 阶段（1.2.0）：进 Play 之前的 Console 行存进文件，reload 以后读回来接着记。</summary>
         public List<Dictionary<string, object>> Rows() { lock (_lock) return new List<Dictionary<string, object>>(_rows); }
         public void Preload(IEnumerable<Dictionary<string, object>> rows) { lock (_lock) _rows.InsertRange(0, rows); }
+        public void Append(IEnumerable<Dictionary<string, object>> rows) { if (rows != null) lock (_lock) _rows.AddRange(rows); }
+        public void Clear() { lock (_lock) _rows.Clear(); }
 
         public void WriteJsonl(string path)
         {

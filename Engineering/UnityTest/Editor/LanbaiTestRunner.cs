@@ -117,7 +117,7 @@ namespace Lanbai.Test
     [InitializeOnLoad]
     public static class Runner
     {
-        public const string VERSION = "1.2.0";   // 1.2.0（2026-10-25）：Play 阶段（transitions_sweep、flicker_probe，D-44 #4）；1.1.0：D-43 #6 copied、复核的次要项
+        public const string VERSION = "1.2.1";   // 1.2.1（2026-10-25）：Play 阶段按复核 E1–E12 改；1.2.0：Play 阶段（transitions_sweep、flicker_probe，D-44 #4）；1.1.0：D-43 #6 copied、复核的次要项
         public const string TESTS_DIR = "Assets/Lanbai/Engineering/UnityTest/tests";
         public const string REPORTS = "LanbaiReports/tests";
         static readonly CultureInfo IC = CultureInfo.InvariantCulture;
@@ -274,6 +274,15 @@ namespace Lanbai.Test
                 catch (Exception e) { exit = ToolFailure(ctx, e); }
             }
             Finish(ctx, exit, done);
+        }
+
+        /// <summary>1.2.1（E6）：Play 阶段收尾自己出错时也要有结果：result.json + LANBAI_TEST_RESULT（退出码 3），再回调</summary>
+        public static void Emergency(string outDir, string test, string error, Action<int, string> done)
+        {
+            var r = new Dictionary<string, object> { { "test", test }, { "exit", 3.0 }, { "status", "error" }, { "out", outDir }, { "error", error }, { "vr_headset", "not_tested" }, { "tool_version", VERSION } };
+            try { File.WriteAllText(Path.Combine(outDir, "result.json"), TJson.Write(r), new UTF8Encoding(false)); } catch { }
+            Final(r);
+            if (done != null) done(3, outDir);
         }
 
         /// <summary>进 Play 之前调：等 U# 时记下的“reload 以后从头再跑”不能留着，不然进 Play 的那次 reload 会把测试又从头跑一遍</summary>
