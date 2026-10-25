@@ -19,7 +19,7 @@ import lb_common as C  # noqa: E402
 
 W = 480
 VIEWS = [(995.0, 'hero'), (995.0, 'door_d12'), (1001.21, 'hero'), (1001.21, 'door_d12')]
-BASE_BLUE = {k: list(R.LAYOUT['blue_colours'][k]) for k in ('SkyUpColor', 'GroundColor')}
+BASE_BLUE = {k: list(R.LAYOUT['blue_colours']['raw'][k]) for k in ('SkyUpColor', 'GroundColor')}   # undesaturated
 
 
 def set_blue(g, desat):

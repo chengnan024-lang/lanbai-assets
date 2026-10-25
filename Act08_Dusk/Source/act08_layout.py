@@ -143,6 +143,8 @@ LOWER = [  # the other sky's clouds: other variants, 70 % of the count, x 0.82 +
     ('L06', 'CloudV2_Congestus_duskD', 70.0, 10000.0, -1.2, 1500.0),
     ('L07', 'CloudV2_Strato_duskD', -25.0, 12000.0, -6.0, 1600.0),
 ]
+BLUE_DUR = 9.5                 # (final review, sky 15c0d1d) F12 -> blue hour: the sky fades each direction over the blend after a
+                               # 1.5 s zenith / nadir lead, so >= 8 s per direction (bible §1.4, §6·8b) needs 9.5 s; the cards the same
 BLUE_FADE = (0.595, 0.55)        # (final review A5) gain at the end, and the wb where it gets there (act08_blue.py)
 BLUE_DESAT = 0.656               # chroma of the blue-hour card light (act08_blue.py)
 
@@ -321,7 +323,7 @@ def main():
         # other self on the seam (the other sky samples (-x, -y, z): its sun is at -el), the two lines melt into one
         sun_sink=dict(t=[T['F10e'], T['F10e'] + 3.0], el=[SUN_EL, 0.0]),
         cards=dict(upper_8ii_in=[T['F10e'], T['F10e'] + 8.0], lower_in=[T['F10e'], T['F10e'] + 8.0],
-                   blue=[T['F12'], T['F12'] + 6.0], dark=[END8, END8 + 8.0], wisp_out=WISP_FADE,
+                   blue=[T['F12'], T['F12'] + BLUE_DUR], dark=[END8, END8 + 8.0], wisp_out=WISP_FADE,
                    # (final review A5) F12: the cards dim as the light leaves and stay dim, no rebound: gain x lerp(1, g,
                    # smoothstep(0, w_end, wb)); the warm -> blue swing crosses the D-21 band under L* 40, and the blue-hour
                    # cards are no brighter than the sky at their elevation (act08_blue.py; Docs~/blue_cards.json)
@@ -353,7 +355,7 @@ def main():
         # 8b: the sun is gone; the cards are lit by the blue-hour dome only (blue_hour zenith / nadir x 6, the same scale the
         # dusk solve lands on; D-25: colours per act, no re-bake)
         blue_colours=dict(SkyUpColor=_desat([0.0846, 0.1188, 0.306], BLUE_DESAT), GroundColor=_desat([0.0804, 0.1806, 0.594], BLUE_DESAT),
-                          desat=BLUE_DESAT, note='blue_hour zenith / nadir x 6, chroma x desat (final review A5: C* <= the sky)'),
+                          desat=BLUE_DESAT, raw=dict(SkyUpColor=[0.0846, 0.1188, 0.306], GroundColor=[0.0804, 0.1806, 0.594]), note='blue_hour zenith / nadir x 6, chroma x desat (final review A5: C* <= the sky)'),
         tables=dict(t0=EXIT, dt=0.1,
                     h=[round(motion(t)[0], 2) for t in np.arange(EXIT, END8 + 0.05, 0.1)],
                     fog=[float('%.6g' % fog_density(t)) for t in np.arange(EXIT, END8 + 0.05, 0.1)]),

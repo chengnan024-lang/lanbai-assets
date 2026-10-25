@@ -272,7 +272,8 @@ public static class LanbaiAct08Builder
         d.tExit = F(B["exit"]); d.tF10e = F(B["F10e"]); d.tF12 = F(B["F12"]); d.tEnd8 = F(B["end8"]);
         d.tCeilingOff = F(ceil["dissolve_end"]); d.ceilingLocalY = F(ceil["y_local"]);
         var bc = D(B["cards"]); var wo = L(bc["wisp_out"]); var ci2 = L(bc["upper_8ii_in"]); var dk = L(bc["dark"]);
-        d.wispOut0 = F(wo[0]); d.wispOut1 = F(wo[1]); d.cardsIn0 = F(ci2[0]); d.cardsIn1 = F(ci2[1]); d.darkDur = F(dk[1]) - F(dk[0]);
+        d.wispOut0 = F(wo[0]); d.wispOut1 = F(wo[1]);
+        if (bc.ContainsKey("blue")) { var bb = L(bc["blue"]); d.blendBlueDur = F(bb[1]) - F(bb[0]); }   // >= 8 s per sky direction d.cardsIn0 = F(ci2[0]); d.cardsIn1 = F(ci2[1]); d.darkDur = F(dk[1]) - F(dk[0]);
         if (bc.ContainsKey("blue_fade")) { var bf = L(bc["blue_fade"]); d.blueFade = new Vector2(F(bf[0]), F(bf[1])); }   // final review A5
         var mo = D(J["motion"]); d.v0 = F(mo["v0"]);
         var segs = L(mo["segments"]);

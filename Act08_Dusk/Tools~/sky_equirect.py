@@ -95,6 +95,34 @@ def render(name, W=1024, over=None, tag=''):
     return path, img, p
 
 
+def state_act8(t, P, TS, AF):
+    """= act8_sky_frames.state(t) (the sky session's: the real ApplyBlend + this driver's sun line / direction), except the
+    F12 -> blue hour blend runs over this act's beats.cards.blue (9.5 s: >= 8 s per sky direction after the sky's 1.5 s
+    zenith lead; the sky's own state() has 6 s). The sun line still collapses over 6 s."""
+    import json as _json
+    lay = _json.load(open(os.path.join(REPO, 'Act08_Dusk', 'Act08_Layout.json')))
+    b0, b1 = lay['beats']['cards']['blue']
+    dur = b1 - b0
+    F10e, F12, ss = AF.F10e, AF.F12, AF.ss
+    if t < F10e:
+        g = TS.globs_of(P['dusk_8i'])
+    elif t < F10e + 8:
+        g = TS.blend(P['dusk_8i'], P['dusk_8ii'], ss((t - F10e) / 8))[0]
+    elif t < F12:
+        g = TS.globs_of(P['dusk_8ii'])
+    elif t < F12 + dur:
+        g = TS.blend(P['dusk_8ii'], P['blue_hour'], ss((t - F12) / dur))[0]
+    else:
+        g = TS.globs_of(P['blue_hour'])
+    g = dict(g)
+    k = 1 - ss((t - F12) / 6.0)
+    g['_Udon_SunDisc'] = [k, 0.265, 10.0 * ss((t - 959.36) / 5.0) * k, 1.0]
+    if t >= F10e:
+        el = np.radians(0.5 * (1 - ss((t - F10e) / 3.0)))
+        g['_Udon_SunDir'] = [0.0, float(np.sin(el)), float(np.cos(el)), 1.0]
+    return g
+
+
 def render_at(t, W=1024):
     """the sky at time t exactly as the act 8 driver writes it: the sky session's own act8_sky_frames.state(t) (the real
     LanbaiSkyPreset.ApplyBlend, TS.blend, + this driver's sun line / sun direction; pkg/sky d69940e). -> sky_at<t>_<W>.hdr"""
@@ -111,7 +139,7 @@ def render_at(t, W=1024):
     S.renderer().tex.clear()
     S.set_cube('_CubeA', S.load_hdr(MP.P['dusk_8i']['hdri_file']))
     S.set_tex('_GlowTex', S.load_glow(4))
-    g, _ = AF.state(t, P)
+    g = state_act8(t, P, TS, AF)
     H = W // 2
     d = C.equirect_dirs(H, W, 0.0).reshape(-1, 3).astype(np.float32)
     out = np.zeros((d.shape[0], 3), np.float32)

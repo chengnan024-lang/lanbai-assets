@@ -59,9 +59,12 @@ def sky_img(name):
     return SKYS[name]
 
 
+BLUE_DUR = LAYOUT['beats']['cards']['blue'][1] - LAYOUT['beats']['cards']['blue'][0]   # 9.5 s (act08_layout)
+
+
 def weights(t):
     """(w8ii, wblue): the sky schedule (Apply / ApplyBlend smoothstep), as the driver"""
-    return float(ss((t - B['F10e']) / 8.0)), float(ss((t - B['F12']) / 6.0))
+    return float(ss((t - B['F10e']) / 8.0)), float(ss((t - B['F12']) / BLUE_DUR))
 
 
 SKY_AT = os.environ.get('LB_SKY_AT', '/tmp/lb/sky2')   # time keys (Tools~/sky_equirect.py --at), the sky session's state(t)
@@ -294,7 +297,7 @@ def colours(group, t, amb=None, tint=None):
     if tint is not None:                      # (final review A6) the other sky's tint: on the dusk light only, gone with wb
         sc, sk, gd = sc * np.array(tint), sk * np.array(tint), gd * np.array(tint)
     bh = LAYOUT['blue_colours']
-    wb = float(ss((t - B['F12']) / 6.0))
+    wb = weights(t)[1]
     sc = sc * (1 - wb)
     sk = sk * (1 - wb) + np.array(bh['SkyUpColor']) * wb
     gd = gd * (1 - wb) + np.array(bh['GroundColor']) * wb

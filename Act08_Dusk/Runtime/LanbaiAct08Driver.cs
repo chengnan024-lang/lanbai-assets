@@ -60,7 +60,7 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
     [Header("Timeline (Act08_Layout.json)")]
     public float windowStart = 922.36f, windowEnd = 1149.31f;
     public float tExit = 922.36f, tF10e = 956.36f, tF12 = 987.06f, tEnd8 = 1001.21f, tCeilingOff = 965.36f;
-    public float blend8iiDur = 8f, blendBlueDur = 6f;
+    public float blend8iiDur = 8f, blendBlueDur = 9.5f;      // F12: >= 8 s per sky direction (the sky's 1.5 s lead + 8)
     public float wispOut0 = 950.36f, wispOut1 = 956.36f;
     public Vector2 blueFade = new Vector2(0.4f, 0.55f);       // final review A5: F12 gain x lerp(1, x, smoothstep(0, y, wb)): down, no rebound
     public float cardsIn0 = 956.36f, cardsIn1 = 964.36f, darkDur = 8f, darkEV = 6f;
