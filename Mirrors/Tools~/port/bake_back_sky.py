@@ -1,7 +1,7 @@
 """终审 M-2：镜背“身后的天”的来源，没有极点。
-银河辉光（天空自己的 glow，增益 1 减增益 0 = 只有银河那一项）的亮度，按球面上的高斯（σ 0.2 rad ≈ 27° 的反射瓣）模糊，
-存成 64 px 的立方图（横十字 256 × 192，单通道，sqrt 编码：值 = sqrt(L / scale)）。shader：
-    Lsky = lum(星空底) + 银河增益(V) × scale × cube(V)²
+这一幕的天（银河增益 1 时的全部：夜底 + 星空底 + 银河辉光，不含星点）的亮度，按球面上的高斯（σ 0.2 rad ≈ 27° 的反射瓣）
+模糊，存成 64 px 的立方图（横十字 256 × 192，单通道，sqrt 编码：值 = sqrt(L / scale)）。shader：
+    Lsky = max(lum(星空底), 银河增益(V) × scale × cube(V)²)     （点燃前星空底为主，点燃后就是模糊的天）
     ~/bpy/bin/python bake_back_sky.py   -> Mirrors/Textures/T_MirrorBackSky_Cube.png，scale 打印出来（= _BackSkyScale）"""
 import json, math, os, sys
 import numpy as np
@@ -34,7 +34,7 @@ def main():
     lat = np.pi / 2 - (np.arange(H * 2) + 0.5) / (H * 2) * np.pi
     LO, LA = np.meshgrid(lon, lat)
     d = np.stack([np.cos(LA) * np.sin(LO), np.sin(LA), np.cos(LA) * np.cos(LO)], -1).reshape(-1, 3)
-    glow = (MP.sky(d, mat, g1) - MP.sky(d, mat, g0)) @ LUMA
+    glow = MP.sky(d, mat, g1) @ LUMA
     glow = glow.reshape(H, 2, W, 2).mean((1, 3))
     d = d.reshape(H, 2, W, 2, 3).mean((1, 3)); d /= np.linalg.norm(d, axis=-1, keepdims=True)
     wsa = np.cos(np.pi / 2 - (np.arange(H) + 0.5) / H * np.pi)[:, None] * np.ones((1, W))

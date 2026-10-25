@@ -33,7 +33,8 @@ BREAK_AMP, EDGE_W, APPEAR_S = 5.0, 0.3, 3.0
 TONE = np.array([1.262, 0.974, 0.484])     # solved so that S9a / S9b show #CDBF9C (review r1 #5)
 BRONZE_TONE = 1.0
 RIM_SCHEME = 'JSON'       # the schedule's rim_soft; mirror13_study.py overrides it for the comparison schemes
-RIM_SOFT_FROM = {'A': 0.80, 'C': 0.55, 'D': 0.55, 'E': 0.35, 'F': 0.25, 'G': 0.25, 'H': 0.80, 'JSON': 0.80}
+RIM_SOFT_FROM = {'A': 0.80, 'C': 0.55, 'D': 0.55, 'E': 0.35, 'F': 0.25, 'G': 0.25, 'H': 0.80, 'JSON': 0.35}
+FAR_UNTIL, FAR_SECONDS, FAR_DIM = 1135.31, 4.0, 0.5   # = LanbaiMirrorsDriver farUntil / farSeconds / farDim (M-4)
 
 
 # ------------------------------------------------------------------------------------------------- driver logic
@@ -84,8 +85,8 @@ def _mirror_state(m, t):
     rimsoft = 0.0
     if m['index'] == 13:
         rs = m.get('rim_soft') if RIM_SCHEME == 'JSON' else None
-        if RIM_SCHEME == 'JSON':   # the schedule's own: none since review r3 C4 (D-38: the rim is always clear)
-            rimsoft = 0.0 if rs is None else 1.0 - min(max((t - rs['sharpen_from']) / rs['seconds'], 0), 1)
+        if RIM_SCHEME == 'JSON':   # 终审 M-4: the far disc (LanbaiMirrorsDriver farUntil 1135.31, 4 s -> sharp at F16 - 10)
+            rimsoft = 1.0 - min(max((t - FAR_UNTIL) / FAR_SECONDS, 0), 1)
         elif RIM_SCHEME == 'H':
             rimsoft = 1.0 - min(max((t - 1135.31) / 4.0, 0), 1)
         elif RIM_SCHEME == 'G':
@@ -101,7 +102,8 @@ def _mirror_state(m, t):
         else:
             rimsoft = 1.0 - min(max((t - (m['t_cross'] - 10.0)) / 4.0, 0), 1)
     return dict(D=D, R=R, c=np.array([cx, y_edge, cz]), y_car=y_car, vis=vis, appear=appear, dissolve=dis, extra=extra,
-                k=m['emission_k'], index=m['index'], rimsoft=rimsoft)
+                k=m['emission_k'], index=m['index'], rimsoft=rimsoft,
+                far=rimsoft if (m['index'] == 13 and RIM_SCHEME == 'JSON') else 0.0)
 
 
 def pulse_ev(t):
@@ -178,6 +180,47 @@ def fbm(pM):
     return (noise(pM / 8.0) * 0.55 + noise(pM / 2.7 + 17.1) * 0.30 + noise(pM / 0.9 + 41.7) * 0.15) * 2 - 1
 
 
+def _hash2(p):
+    q = np.stack([p[..., 0], p[..., 1], p[..., 0]], -1) * np.array([0.1031, 0.1030, 0.0973])
+    q = q - np.floor(q)
+    q = q + (q * (q[..., [1, 2, 0]] + 33.33)).sum(-1, keepdims=True)
+    a = (q[..., [0, 0]] + q[..., [1, 2]]) * q[..., [2, 1]]
+    return a - np.floor(a)
+
+
+def cells(x):
+    """LanbaiMirrorCells: F1, F2, id of a 2D Voronoi (3 x 3 neighbourhood)."""
+    i = np.floor(x); f = x - i
+    F1 = np.full(x.shape[:-1], 8.0); F2 = np.full(x.shape[:-1], 8.0); ID = np.zeros(x.shape[:-1])
+    for dy in (-1, 0, 1):
+        for dx in (-1, 0, 1):
+            g = np.array([dx, dy], float)
+            o = _hash2(i + g)
+            d = np.linalg.norm(g + o - f, axis=-1)
+            idn = (o[..., 0] * 7.31 + o[..., 1] * 3.17) % 1.0
+            closer = d < F1
+            F2 = np.where(closer, F1, np.minimum(F2, d)); ID = np.where(closer, idn, ID); F1 = np.where(closer, d, F1)
+    return F1, F2, ID
+
+
+def breakup(sd, xz, cellM, bandM):
+    """LanbaiMirrorBreakup (终审 M-3)."""
+    glow = np.zeros_like(sd)
+    m = (sd > 0) & (sd < bandM)
+    if not m.any():
+        return sd, glow
+    s = sd[m] / bandM
+    F1, F2, ID = cells(xz[m] / cellM)
+    edge = (F2 - F1) * 0.5
+    gap = 0.18 * (1 - s) ** 2
+    gone = ID - (s * 1.3 - 0.1)
+    keep = np.minimum(edge - gap, -gone)
+    g = (1 - s) * np.clip(1 - (edge - gap) / 0.06, 0, 1) * (keep >= 0)
+    out = sd.copy(); out[m] = np.where(keep >= 0, sd[m], -1.0)
+    glow[m] = g
+    return out, glow
+
+
 def schlick(f0, c):
     m = 1 - np.clip(c, 0, 1)
     return f0 + (1 - f0) * (m ** 5)[..., None]
@@ -195,22 +238,46 @@ def sky(dirs, mat, gl):
 _BLUR = {}
 
 
+_CUBE = {}
+
+
 def sky_broad(dirs, mat, gl, key):
-    """MirrorSky(V, 0.5): a ~27 deg lobe = a blurred sky (64 x 32 equirect, sigma 0.2 rad)."""
-    if key not in _BLUR:
-        from scipy.ndimage import gaussian_filter
-        Wq, Hq = 64, 32
-        lon = (np.arange(Wq) + 0.5) / Wq * 2 * np.pi - np.pi; lat = np.pi / 2 - (np.arange(Hq) + 0.5) / Hq * np.pi
-        LO, LA = np.meshgrid(lon, lat)
-        dd = np.stack([np.cos(LA) * np.sin(LO), np.sin(LA), np.cos(LA) * np.cos(LO)], -1)
-        L = sky(dd, mat, gl) @ np.array([0.2126, 0.7152, 0.0722])
-        sg = float(os.environ.get('BACK_SIGMA', 0.2)) / (2 * np.pi) * Wq
-        _BLUR.clear(); _BLUR[key] = gaussian_filter(np.pad(L, ((0, 0), (Wq, Wq)), mode='wrap'), sg, mode='nearest')[:, Wq:2 * Wq]
-    Lm = _BLUR[key]; Hq, Wq = Lm.shape
-    lon = np.arctan2(dirs[:, 0], dirs[:, 2]); lat = np.arcsin(np.clip(dirs[:, 1], -1, 1))
-    x = np.clip(((lon + np.pi) / (2 * np.pi) * Wq - 0.5).astype(int) % Wq, 0, Wq - 1)
-    y = np.clip(((np.pi / 2 - lat) / np.pi * Hq - 0.5).astype(int), 0, Hq - 1)
-    return Lm[y, x]
+    """the back's 'sky behind' (终审 M-2): floor + gain x scale x cube(V)^2, the same pole-free cube as the shader
+    (Mirrors/Textures/T_MirrorBackSky_Cube.png, bake_back_sky.py)."""
+    if not _CUBE:
+        from PIL import Image
+        im = np.asarray(Image.open(os.path.join(REPO, 'Mirrors', 'Textures', 'T_MirrorBackSky_Cube.png')), np.float32) / 255.0
+        n = im.shape[0] // 3
+        pos = {0: (1, 2), 1: (1, 0), 2: (0, 1), 3: (2, 1), 4: (1, 1), 5: (1, 3)}
+        _CUBE['faces'] = [im[r * n:(r + 1) * n, c * n:(c + 1) * n] for f, (r, c) in sorted(pos.items())]
+        _CUBE['scale'] = json.load(open(os.path.join(REPO, 'Mirrors', 'Docs~', 'T_MirrorBackSky_Cube.json')))['scale']
+    d = dirs / np.linalg.norm(dirs, axis=-1, keepdims=True)
+    ax = np.abs(d); n = _CUBE['faces'][0].shape[0]
+    out = np.zeros(len(d))
+    major = np.argmax(ax, -1)
+    for f in range(6):
+        a = f // 2; sgn = 1 if f % 2 == 0 else -1
+        m = (major == a) & (np.sign(d[:, a]) == sgn)
+        if not m.any():
+            continue
+        x, y, z = d[m, 0], d[m, 1], d[m, 2]
+        if f == 0: u, v = -z / x, -y / x
+        elif f == 1: u, v = -z / x, y / x
+        elif f == 2: u, v = x / y, z / y
+        elif f == 3: u, v = -x / y, z / y
+        elif f == 4: u, v = x / z, -y / z
+        else: u, v = x / z, y / z
+        iu = np.clip(((u + 1) / 2 * n).astype(int), 0, n - 1); iv = np.clip(((v + 1) / 2 * n).astype(int), 0, n - 1)
+        out[m] = _CUBE['faces'][f][iv, iu]
+    floor = MP_floor(gl, mat) @ np.array([0.2126, 0.7152, 0.0722])
+    gain = gl['_Udon_GalaxyGain'][0]
+    return np.maximum(floor, gain * _CUBE['scale'] * out * out)
+
+
+def MP_floor(gl, mat):
+    """the star floor: in the port, the port sky itself at galaxy gain 0 (its _Udon_ZenithColor is not what the port's sky
+    draws; Unity's shader reads _Udon_ZenithColor, which act 9 writes as that same floor)."""
+    return sky(np.array([[0.0, 1.0, 0.0]]), mat, dict(gl, _Udon_GalaxyGain=[0.0, 0, 0, 1]))[0]
 
 
 # ------------------------------------------------------------------------------------------------- the frame
@@ -253,6 +320,18 @@ def frame(t, yaw=0.0, pitch=0.0, w=960, h=540, ss=1, cabin=None, dust=True, extr
         tk = (yk - EYE[1]) / np.where(np.abs(d[..., 1]) > 1e-9, d[..., 1], 1e-9)
         Pk = EYE + d * tk[..., None]; rk = np.hypot(Pk[..., 0] - c[0], Pk[..., 2] - c[2])
         back = (tk > 0) & (rk <= 0.5 * D) & (EYE[1] < yk)       # only from below (Cull Back)
+        # the knob (终审 M-1: it was never drawn): the mesh's superellipse dome, base radius 0.065 D, hanging 0.05 D below
+        # the back, as a half ellipsoid (radii 0.065 D, 0.05 D) under the back plane
+        ka, kb = 0.065 * D, 0.05 * D
+        kc = np.array([c[0], yk, c[2]])
+        sc_ = np.array([1.0 / ka, 1.0 / kb, 1.0 / ka])
+        o_ = (EYE - kc) * sc_; dd_ = d * sc_
+        qa = (dd_ * dd_).sum(-1); qb = (o_ * dd_).sum(-1); qc = (o_ * o_).sum() - 1.0
+        kd = qb * qb - qa * qc
+        tkn = (-qb - np.sqrt(np.maximum(kd, 0))) / np.maximum(qa, 1e-12)
+        Pkn = EYE + d * tkn[..., None]
+        knob = (kd > 0) & (tkn > 0) & (Pkn[..., 1] <= yk + 1e-6)
+        rkn = np.hypot(Pkn[..., 0] - c[0], Pkn[..., 2] - c[2])
         # dissolve / appear front (object-anchored noise, metres)
         def keep(Pw, rM):
             sc = max(1.0, R / 40.0)                             # the breakup grows with the mirror (shader MirrorFront, r3 #5)
@@ -261,10 +340,14 @@ def frame(t, yaw=0.0, pitch=0.0, w=960, h=540, ss=1, cabin=None, dust=True, extr
             n1 = fbm(pM); n2 = fbm(pM + 71.3)
             sdD = (R + amp - st['dissolve'] * (R + 2 * amp)) - (rM + amp * n1)
             sdA = (-amp + st['appear'] * (R + 2 * amp)) - (rM + amp * n2)
+            cg = np.zeros_like(sdD)
+            if st['dissolve'] > 0.0005:                         # 终审 M-3: the breakup band (LanbaiMirrorBreakup)
+                sdD, cg = breakup(sdD, (Pw - c)[..., [0, 2]], 1.2 * sc, 3.0 * amp)
             sd = np.minimum(sdD, sdA)
             act = float(st['dissolve'] > 0.0005 or st['appear'] < 0.9995)
-            return sd > 0, np.clip(1 - sd / EDGE_W, 0, 1) * act
-        for kind, mask, Pw, rM, tdist in (('face', face, P, rr, tt), ('band', band, Pb, rb, tb), ('back', back, Pk, rk, tk)):
+            return sd > 0, np.maximum(np.clip(1 - sd / EDGE_W, 0, 1) * act, cg)
+        for kind, mask, Pw, rM, tdist in (('face', face, P, rr, tt), ('band', band, Pb, rb, tb), ('back', back, Pk, rk, tk),
+                                          ('knob', knob, Pkn, rkn, tkn)):
             if not mask.any():
                 continue
             ok, edge = keep(Pw[mask], rM[mask])
@@ -280,10 +363,14 @@ def frame(t, yaw=0.0, pitch=0.0, w=960, h=540, ss=1, cabin=None, dust=True, extr
                 n = Pn - Cs; n /= np.linalg.norm(n, axis=-1, keepdims=True)
                 rdir = dn - 2 * (dn * n).sum(-1, keepdims=True) * n
                 sk = sky(rdir, mat, gl)
+                if st.get('far', 0) > 0:                         # M-4: the far disc's reflection is blurred (_FaceSoft)
+                    bl = sky_broad(rdir, mat, gl, round(t, 3))
+                    lum = sk @ np.array([0.2126, 0.7152, 0.0722])
+                    sk = sk * ((1 - 0.8 * st['far']) + 0.8 * st['far'] * bl / np.maximum(lum, 1e-6))[:, None]
                 F = schlick(F0_FACE, -(dn * n).sum(-1))
                 col = sk * F + sk * (st['k'] * st['vis'] * 2 ** st['extra'])
                 lum = col @ np.array([0.2126, 0.7152, 0.0722])
-                col = lum[:, None] * (1 - BRONZE_TONE + BRONZE_TONE * TONE[None, :])   # white-bronze tone (#CDBF9C), chroma from the tone only (r3: a blue/warm mix went lavender)
+                col = lum[:, None] * (1 - BRONZE_TONE + BRONZE_TONE * TONE[None, :]) * (1 - (1 - FAR_DIM) * st.get('far', 0))   # white-bronze tone; M-4 far dim (#CDBF9C), chroma from the tone only (r3: a blue/warm mix went lavender)
             elif kind == 'band':                                  # 连珠乳钉: LanbaiMirrorBeadNormalOS
                 fp = tdist[nearer] * pxang / np.maximum(np.abs(dn[:, 1]), 0.05)
                 n, cover = BP.bead_normal(Pn - c, D, fp)
@@ -293,6 +380,10 @@ def frame(t, yaw=0.0, pitch=0.0, w=960, h=540, ss=1, cabin=None, dust=True, extr
                 fp = tdist[nearer] * pxang / np.maximum(np.abs(dn[:, 1]), 0.05)
                 Lsky = sky_broad(dn, mat, gl, round(t, 3))
                 col = BP.back_color(Pn - c, D, fp, Lsky)
+            if kind == 'knob':
+                Lsky = sky_broad(dn, mat, gl, round(t, 3))
+                nk = (Pn - kc) * sc_ * sc_; nk /= np.linalg.norm(nk, axis=-1, keepdims=True)
+                col = BP.knob_color(nk, Lsky)
             near = np.clip((tdist[nearer] - 5.0) / 20.0, 0, 1)
             col = col + EDGE * (edge[idx] * near)[:, None]
             if st['rimsoft'] > 0:                                # only the comparison schemes (D-38 / r3 C4: none in the schedule)
@@ -302,7 +393,7 @@ def frame(t, yaw=0.0, pitch=0.0, w=960, h=540, ss=1, cabin=None, dust=True, extr
                 col = col * (1 - soft[:, None]) + img[nearer] * soft[:, None]
             img[nearer] = col
             depth[nearer] = tdist[nearer]
-            owner[nearer] = st['index'] * 10 + {'face': 0, 'band': 1, 'back': 2}[kind]
+            owner[nearer] = st['index'] * 10 + {'face': 0, 'band': 1, 'back': 2, 'knob': 3}[kind]
         face_mask[st['index']] = (st, Cs, rho)
         info['mirrors'].append(dict(index=st['index'], y_car=round(st['y_car'], 2), vis=round(st['vis'], 3),
                                     appear=round(st['appear'], 3), dissolve=round(st['dissolve'], 3), extra_EV=round(st['extra'], 3)))
@@ -355,9 +446,9 @@ def frame(t, yaw=0.0, pitch=0.0, w=960, h=540, ss=1, cabin=None, dust=True, extr
             u1, u2, u3, u4 = rng.random((4, 250))
             a = 2 * np.pi * u2
             car = np.array([EYE[0] - cx, EYE[2] - cz])
-            nearP = car[None, :] + np.stack([np.cos(a), np.sin(a)], -1) * (np.sqrt(u1) * min(40.0, R))[:, None]
+            nearP = car[None, :] + np.stack([np.cos(a), np.sin(a)], -1) * (np.sqrt(u1) * min(60.0, R))[:, None]
             anyP = np.stack([np.cos(a), np.sin(a)], -1) * (np.sqrt(u1) * R)[:, None]
-            p = np.where((u3 < 0.7)[:, None], nearP, anyP)
+            p = np.where((u3 < 0.9)[:, None], nearP, anyP)   # 终审 M-3: 90 % within 60 m
             l = np.linalg.norm(p, axis=-1); p = np.where((l > 0.985 * R)[:, None], p * (0.985 * R / np.maximum(l, 1e-6))[:, None], p)
             q = np.linalg.norm(p, axis=-1) / R
             tb = m['t_cross'] + 2.0 * (1 - q); age = t - tb

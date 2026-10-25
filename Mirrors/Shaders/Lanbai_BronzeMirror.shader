@@ -35,6 +35,10 @@ Shader "Lanbai/BronzeMirror"
         _Appear ("Appear 0 to 1 (centre to rim)", Range(0, 1)) = 1
         _Dissolve ("Dissolve 0 to 1 (rim to centre)", Range(0, 1)) = 0
         _BreakAmp ("Breakup amplitude m", Float) = 5
+        _RimSoft ("Far: soft rim 0 to 1 (mirror 13 before F16 - 10; 终审 M-4)", Range(0, 1)) = 0
+        _RimSoftFrom ("Far: soft rim starts at this fraction of the radius", Range(0, 1)) = 0.35
+        _FaceSoft ("Far: blurred reflection 0 to 1", Range(0, 1)) = 0
+        _FarDim ("Far: face brightness multiplier", Range(0, 1)) = 1
         _EdgeWidth ("Glowing front width m", Float) = 0.3
         _EdgeColor ("Front glow linear rgb (#CDBF9C x 0.8)", Vector) = (0.488, 0.417, 0.266, 0)
 
@@ -62,7 +66,7 @@ Shader "Lanbai/BronzeMirror"
         _BackRelief ("Back relief shading strength", Range(0, 3)) = 1.4
         _BackLumK ("Back luminance / sky luminance behind it", Range(0, 2)) = 1.15
         _BackSkyCube ("Back: blurred galaxy glow luminance (cube, sqrt-encoded; Tools~/port/bake_back_sky.py)", Cube) = "black" {}
-        _BackSkyScale ("Back: cube decode scale (bake_back_sky.py prints it)", Float) = 0.072055
+        _BackSkyScale ("Back: cube decode scale (bake_back_sky.py prints it)", Float) = 0.072384
         _BackBump ("Back band bump strength", Range(0, 2)) = 1
 
         [Header(Sky reflected)]
@@ -91,6 +95,7 @@ Shader "Lanbai/BronzeMirror"
         #include "LanbaiMirror.cginc"
 
         float _RadiusM, _MirrorK, _EmissionK, _Visibility, _EmitExtraEV, _Appear, _Dissolve, _BreakAmp, _EdgeWidth;
+        float _RimSoft, _RimSoftFrom, _FaceSoft, _FarDim;
         float4 _EdgeColor, _FaceF0, _RimF0, _BackAlbedo, _SkyFloor;
         float _BronzeTone; float4 _ToneColor;
         float _FaceSmooth, _PolishAmt, _PolishPeriodM, _RimSmooth, _BackBump, _GalaxyGainDefault;
@@ -156,9 +161,14 @@ Shader "Lanbai/BronzeMirror"
             float amp = _BreakAmp * sc;
             float sdD = LanbaiMirrorDissolveSD(rM, _RadiusM, LanbaiMirrorFBM(pM), _Dissolve, amp);
             float sdA = LanbaiMirrorAppearSD(rM, _RadiusM, LanbaiMirrorFBM(pM + 71.3), _Appear, amp);
+            // 终审 M-3: behind the dissolve front a band (3 x the breakup amplitude) cracks into chunks that drop out one by
+            // one, each with its own glowing edge: it breaks into stardust, it does not retreat like a coastline
+            float chunkGlow = 0.0;
+            if (_Dissolve > 0.0005)
+                sdD = LanbaiMirrorBreakup(sdD, posOS.xz * D, 1.2 * sc, 3.0 * amp, chunkGlow);
             float sd = min(sdD, sdA);
             float active = step(0.0005, _Dissolve) + step(_Appear, 0.9995);
-            glowEdge = saturate(1.0 - sd / max(_EdgeWidth, 1e-3)) * saturate(active);
+            glowEdge = max(saturate(1.0 - sd / max(_EdgeWidth, 1e-3)) * saturate(active), chunkGlow);
             return sd;
         }
         ENDCG
@@ -196,7 +206,7 @@ Shader "Lanbai/BronzeMirror"
                     half4 ft = tex2D(_FaceTex, i.uv0);
                     float ripple = sin(6.2831853 * rM / max(_PolishPeriodM, 0.01)) * saturate(1.5 - footprint / _PolishPeriodM);
                     float s = _FaceSmooth + (ft.r - 0.5) * 0.04 + _PolishAmt * ripple + ft.a * 0.01;
-                    s = LanbaiSpecAA(n, saturate(s));
+                    s = LanbaiSpecAA(n, saturate(lerp(s, 0.45, _FaceSoft)));   // far mirror 13: a blurred disc (M-4)
                     float3 r = reflect(V, n);
                     float3 sky = MirrorSky(r, s);
                     float3 f0 = _FaceF0.rgb * (1.0 + (ft.g - 0.5) * float3(0.06, 0.0, -0.06)) * (1.0 - 0.25 * ft.b);
@@ -205,6 +215,7 @@ Shader "Lanbai/BronzeMirror"
                     col = sky * F + sky * (_EmissionK * _Visibility * exp2(_EmitExtraEV));
                     // the Milky Way in white bronze reads #CDBF9C (bible palette 09), warmer than any physical F0 makes it
                     col = dot(col, float3(0.2126, 0.7152, 0.0722)) * lerp(float3(1.0, 1.0, 1.0), _ToneColor.rgb, _BronzeTone);   // chroma from the tone only: a blue / warm mix went lavender (r3, D-21)
+                    col *= _FarDim;                     // mirror 13 waiting far below: one stop under the column mirrors (M-4)
                 }
                 else if (i.region < 0.375)                      // ---- RIM BAND (beads)
                 {
@@ -267,9 +278,10 @@ Shader "Lanbai/BronzeMirror"
                     float3 luma = float3(0.2126, 0.7152, 0.0722);
                     // the sky behind, broad (~27 deg lobe: the local level without the galaxy's detail; r6: the roughest lobe
                     // dipped, the sharp sky ghosted). 终审 M-2: from a small pole-free cube of the blurred glow, not the
-                    // equirect's coarse mips (they drew radial cones round the zenith): floor + gain(V) x glow
+                    // equirect's coarse mips (they drew radial cones round the zenith): the blurred sky at gain 1 x the gain,
+                    // never below the star floor (before the ignition the floor is the sky)
                     float gc = texCUBElod(_BackSkyCube, float4(V, 0.0)).r;
-                    float Lsky = dot(LanbaiMirrorSkyFloor(_SkyFloor.rgb), luma) + LanbaiMirrorGainAt(V, _GalaxyGainDefault) * _BackSkyScale * gc * gc;
+                    float Lsky = max(dot(LanbaiMirrorSkyFloor(_SkyFloor.rgb), luma), LanbaiMirrorGainAt(V, _GalaxyGainDefault) * _BackSkyScale * gc * gc);
                     float3 pat = _BackAlbedo.rgb * lerp(float3(0.85, 1.0, 1.05), float3(1.15, 0.92, 0.8), m.a);
                     float3 tint = lerp(pat / max(dot(pat, luma), 1e-4), _RimF0.rgb / dot(_RimF0.rgb, luma), 0.45 * m.b);
                     float3 key = normalize(float3(-0.45, -0.75, -0.48));   // from behind a rider looking up: lit from the top of the screen (r6: +z read as pits)
@@ -280,6 +292,13 @@ Shader "Lanbai/BronzeMirror"
                     col = Lsky * _BackLumK * tint * shade;
                 }
 
+                // 终审 M-4: mirror 13 waiting far below reads as the bible's blurred giant disc: its outer part fades toward the
+                // sky behind it (fake transparency) until F16 - 10, then the rim sharpens (D-38: clear from then on)
+                if (_RimSoft > 0.0)
+                {
+                    float soft = smoothstep(_RimSoftFrom, 1.0, rOS / 0.5) * _RimSoft;
+                    col = lerp(col, MirrorSky(V, 0.6), soft);
+                }
                 // the glowing front fades out near the eye: a dissolving mirror just overhead is seen at grazing, where a
                 // 0.3 m front would smear into a wide bright ribbon (iteration r2)
                 col += _EdgeColor.rgb * glowEdge * saturate((distance(i.posWS, _WorldSpaceCameraPos) - 5.0) / 20.0);

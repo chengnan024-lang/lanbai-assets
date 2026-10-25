@@ -101,6 +101,48 @@ inline float LanbaiMirrorAppearSD(float rM, float R, float noise, float progress
     return front - key;
 }
 
+// ---- the breakup band behind the dissolve front (终审 M-3) ----------------------------------------------------
+// Voronoi chunks in the mirror's plane (metres / cell size): F1, F2 (distances to the nearest two cell points) and the
+// nearest cell's random id 0..1. Behind the front (s = 0 at the front .. 1 a band width inside) the cracks between chunks
+// open first, then chunks drop out one by one; each chunk's crack edge glows on its own.
+inline float2 LanbaiMirrorHash2(float2 p)
+{
+    float3 q = frac(float3(p.xyx) * float3(0.1031, 0.1030, 0.0973));
+    q += dot(q, q.yzx + 33.33);
+    return frac((q.xx + q.yz) * q.zy);
+}
+inline float3 LanbaiMirrorCells(float2 x)
+{
+    float2 i = floor(x), f = frac(x);
+    float F1 = 8.0, F2 = 8.0, id = 0.0;
+    for (int dy = -1; dy <= 1; dy++)
+        for (int dx = -1; dx <= 1; dx++)
+        {
+            float2 g = float2(dx, dy);
+            float2 o = LanbaiMirrorHash2(i + g);
+            float d = length(g + o - f);
+            if (d < F1) { F2 = F1; F1 = d; id = frac(o.x * 7.31 + o.y * 3.17); }
+            else if (d < F2) { F2 = d; }
+        }
+    return float3(F1, F2, id);
+}
+// sdFront: the smooth front's signed distance (m, > 0 kept); xzM: position in the plane (m); cellM: chunk size (m);
+// bandM: band width (m). Returns the new signed distance (< 0 = clipped) and the chunk-edge glow.
+inline float LanbaiMirrorBreakup(float sdFront, float2 xzM, float cellM, float bandM, out float glow)
+{
+    glow = 0.0;
+    if (sdFront <= 0.0 || sdFront >= bandM)
+        return sdFront;
+    float s = sdFront / bandM;                                   // 0 at the front .. 1 inside
+    float3 c = LanbaiMirrorCells(xzM / cellM);
+    float edge = (c.y - c.x) * 0.5;                              // distance to the crack, in cells
+    float gap = 0.18 * (1.0 - s) * (1.0 - s);                    // cracks open toward the front
+    float gone = c.z - (s * 1.3 - 0.1);                          // > 0: this chunk has already dropped out
+    float keep = min(edge - gap, -gone);
+    glow = (1.0 - s) * saturate(1.0 - (edge - gap) / 0.06) * step(0.0, keep);
+    return keep >= 0.0 ? sdFront : -1.0;
+}
+
 // ---- rim beads (连珠乳钉) on the face-side rim band ---------------------------------------------------------------
 // posOS on the band (r 0.48..0.50).  Returns the bead normal in object space and a coverage 0..1 (AA by footprint).
 inline float3 LanbaiMirrorBeadNormalOS(float3 posOS, float D, float footprintM, out float cover)

@@ -31,8 +31,8 @@ Shader "Lanbai/MirrorDust"
         _Dur ("Dissolve duration s", Float) = 2
         _Fade ("Fade s", Float) = 4
         _Rise ("Rise speed m per s (max 1)", Range(0, 1)) = 0.6
-        _NearFrac ("Fraction born near the car", Range(0, 1)) = 0.7
-        _NearRadius ("Near region radius m", Float) = 40
+        _NearFrac ("Fraction born near the car", Range(0, 1)) = 0.9   // 终审 M-3: most of the 250 where the front is seen
+        _NearRadius ("Near region radius m", Float) = 60
         _ColA ("Colour at birth linear (#CDBF9C)", Vector) = (0.61, 0.52, 0.33, 0)
         _ColB ("Colour at the end linear (#F2F6FF)", Vector) = (0.89, 0.92, 1.0, 0)
         _Flux ("Peak brightness at minimum size", Float) = 6

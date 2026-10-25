@@ -148,3 +148,12 @@ def bead_normal(Pl, D, fp):
     cover = inside * detail
     nn = np.array([0, 1.0, 0]) * (1 - cover[:, None]) + nb * cover[:, None]
     return nn / np.linalg.norm(nn, axis=-1, keepdims=True), cover
+
+
+def knob_color(n, Lsky):
+    """the knob in the BACK branch with the dome normal (shader: i.region > 0.875): patina tint, relief key, AO 1."""
+    pat = BACK_ALB * (np.array([0.85, 1.0, 1.05]) * 0.5 + np.array([1.15, 0.92, 0.8]) * 0.5)
+    tint = pat / (pat @ LUMA)
+    key = np.array([-0.45, -0.75, -0.48]); key /= np.linalg.norm(key)
+    shade = np.maximum(1.0 + BACK_RELIEF * (n @ key - np.array([0, -1.0, 0]) @ key), 0.15)
+    return (Lsky * BACK_LUMK * shade)[:, None] * tint[None, :]

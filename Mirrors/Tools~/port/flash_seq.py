@@ -19,7 +19,8 @@ sys.path.insert(0, os.path.join(MP.REPO, 'Art', 'tools', 'lens_tech'))
 import flashcheck as FC
 
 CASES = dict(m1=(1029.4, 1035.4, 0, -12), m10=(1112.4, 1118.4, 0, -12), m11=(1122.5, 1128.5, 0, -12),
-             wf=(1137.0, 1150.0, 0, 6), wd=(1137.0, 1150.0, 0, -60), wu=(1137.0, 1150.0, 0, 60), wsu=(1137.0, 1150.0, 90, 30), m13in=(1058.0, 1065.0, 0, -45))
+             wf=(1137.0, 1150.0, 0, 6), wd=(1137.0, 1150.0, 0, -60), wu=(1137.0, 1150.0, 0, 60), wsu=(1137.0, 1150.0, 90, 30), m13in=(1058.0, 1065.0, 0, -45),
+             m1in=(1023.0, 1031.0, 0, -12), m1ind=(1023.0, 1031.0, 0, -45))
 for _k, _m in enumerate(MP.SCH['mirrors'][:12]):          # C6: every crossing, forward-low / up / down
     _tc = _m['t_cross']
     CASES.setdefault('m%d' % (_k + 1), (_tc - 3.0, _tc + 3.0, 0, -12))

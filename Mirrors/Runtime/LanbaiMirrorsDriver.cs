@@ -53,6 +53,11 @@ namespace Lanbai.Mirrors
         [Header("Mirror 13: extra face emission EV (WhiteSchedule.json mirror13_face_extra, linear)")]
         public float[] extraT = new float[] { 1138.78f, 1146.31f };
         public float[] extraV = new float[] { 0f, 2.7f };     // r3 C3: +2.7 EV (looking down with WHITE_BLOOM <= 220)
+        [Header("Mirror 13 far (终审 M-4): the bible's blurred giant disc until F16 - 10, one stop under the column")]
+        public float farUntil = 1135.31f;           // far = 1 before this ...
+        public float farSeconds = 4f;               // ... -> 0 at F16 - 10 (1139.31): sharp and full from then on (D-38)
+        public float farDim = 0.5f;                 // face x 0.5 while far (one stop)
+        public float farRimFrom = 0.35f;            // the soft rim starts at this fraction of the radius
 
         [Header("Constants (spec_conventions.md)")]
         public Vector3 eye = new Vector3(0.55f, 1.70f, 2.05f);
@@ -69,7 +74,7 @@ namespace Lanbai.Mirrors
         private const float Rho = 7.6875f;
 
         private MaterialPropertyBlock mpb;
-        private int idRadius, idK, idEmK, idVis, idExtra, idAppear, idDissolve;
+        private int idRadius, idK, idEmK, idVis, idExtra, idAppear, idDissolve, idRimSoft, idRimSoftFrom, idFaceSoft, idFarDim;
         private int idSphere, idAxis, idFaceK;
         private int idDustNow, idDustT0, idDustC, idDustCar, idDustOn;
         private int idPlane, idRimLight;
@@ -94,6 +99,7 @@ namespace Lanbai.Mirrors
         private bool[] starOn, dustOn;
         private bool rimLit;
         private float[] lastVis, lastAppear, lastDis, lastExtra;
+        private float lastFar = -1f;
 
         void Start()
         {
@@ -121,6 +127,10 @@ namespace Lanbai.Mirrors
             idExtra = VRCShader.PropertyToID("_EmitExtraEV");
             idAppear = VRCShader.PropertyToID("_Appear");
             idDissolve = VRCShader.PropertyToID("_Dissolve");
+            idRimSoft = VRCShader.PropertyToID("_RimSoft");
+            idRimSoftFrom = VRCShader.PropertyToID("_RimSoftFrom");
+            idFaceSoft = VRCShader.PropertyToID("_FaceSoft");
+            idFarDim = VRCShader.PropertyToID("_FarDim");
             idSphere = VRCShader.PropertyToID("_SphereC");
             idAxis = VRCShader.PropertyToID("_Axis");
             idFaceK = VRCShader.PropertyToID("_FaceK");
@@ -325,9 +335,12 @@ namespace Lanbai.Mirrors
                 float appear = Mathf.Clamp01((t - visT[visStart[k]]) / appearSeconds);
                 float dis = dissolveEnd[k] > 0f ? Mathf.Clamp01((t - tCross[k]) / (dissolveEnd[k] - tCross[k])) : 0f;
                 float extra = (k == n - 1) ? Linear(extraT, extraV, 0, extraT.Length, t) : 0f;
-                if (vis != lastVis[k] || appear != lastAppear[k] || dis != lastDis[k] || extra != lastExtra[k])
+                float far = (k == n - 1) ? 1f - Mathf.Clamp01((t - farUntil) / farSeconds) : 0f;
+                bool farChanged = k == n - 1 && far != lastFar;
+                if (vis != lastVis[k] || appear != lastAppear[k] || dis != lastDis[k] || extra != lastExtra[k] || farChanged)
                 {
                     lastVis[k] = vis; lastAppear[k] = appear; lastDis[k] = dis; lastExtra[k] = extra;
+                    if (k == n - 1) lastFar = far;
                     mpb.Clear();
                     mpb.SetFloat(idRadius, 0.5f * D);
                     mpb.SetFloat(idK, k + 1);
@@ -336,6 +349,10 @@ namespace Lanbai.Mirrors
                     mpb.SetFloat(idExtra, extra);
                     mpb.SetFloat(idAppear, appear);
                     mpb.SetFloat(idDissolve, dis);
+                    mpb.SetFloat(idRimSoft, far);
+                    mpb.SetFloat(idRimSoftFrom, farRimFrom);
+                    mpb.SetFloat(idFaceSoft, far);
+                    mpb.SetFloat(idFarDim, 1f - (1f - farDim) * far);
                     int b = 3 * k;
                     if (lodRenderers[b] != null) lodRenderers[b].SetPropertyBlock(mpb);
                     if (lodRenderers[b + 1] != null) lodRenderers[b + 1].SetPropertyBlock(mpb);
