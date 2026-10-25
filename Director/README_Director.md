@@ -1,4 +1,4 @@
-# Director · 分发层 v1.2（`Director/`）
+# Director · 分发层 v1.3（`Director/`）
 
 维护：总工程师。**没在 Unity 里编译过**：C# 用 `Common/Tools~/compile_check/check_cs.sh` 做了 Roslyn 类型检查（editor + player 两遍、U# 规则），生成器跑过一次真生成（对门的 `LanbaiGateClouds` + 一个假的海驱动），生成结果和门的驱动一起编译通过、重复生成不变（幂等）。
 
@@ -13,13 +13,18 @@
    if (dispatcher != null) dispatcher.LanbaiDispatch(t);   // 放在 ApplyGrades() 之前（它要读下面的 grade* 结果）
    // 出生的 3 秒黑场里调一次（圣经 §1.9：所有根物体在相机前激活 2 帧预热 shader）：
    if (dispatcher != null) dispatcher.LanbaiPrewarm();
-   // v1.2（出生淡入优先）：出生时
-   if (dispatcher != null) dispatcher.LanbaiSpawnFadeBegin();   // 和 LanbaiPrewarm 放在一起，出生的黑开始时
-   bool covered = dispatcher != null && (dispatcher.LanbaiCoversOverlay(t) || dispatcher.LanbaiCoversOverlay(t + spawnFadeSeconds));
-   // covered：这时有驱动拿着遮罩球（第 6 幕的晨、第 10 幕的白……）。不做出生淡入，出生的黑一直保持黑；
-   //          黑结束的那一帧调 End，之后只有驱动那一次从黑升起来（≤ 0.85 EV/s）
-   // 不 covered：照常淡入，淡入结束的那一帧调 End
-   if (dispatcher != null) dispatcher.LanbaiSpawnFadeEnd();     // 只认第一次（幂等）；不调的话 Begin 之后 10 秒当作已结束
+   // v1.3（D-43：迟到的人只看到一次变亮，从黑开始、EV 线性、≤ 0.85 EV/s）。出生的黑开始时：
+   if (dispatcher != null) dispatcher.LanbaiSpawnFadeBegin();   // 和 LanbaiPrewarm 放在一起
+   // 出生的黑（3 s，圣经 §1.9）结束的那一帧，定一次：
+   float T = beforeDeparture ? 3f : dispatcher.LanbaiSpawnFadeLength(t, lBlack);   // 站台（出发前）照旧 3 秒；别处按场景定，≤ 9 秒
+   float L = dispatcher.LanbaiSpawnBrightestL(t);                // 淡入的目标亮度（这一刻最亮的非白视向）
+   float handAt = dispatcher.LanbaiOverlayHandoverAt(t, t + T);  // [黑结束, 黑结束 + 淡入) 里第一个有驱动拿着遮罩球的时刻
+   // handAt >= 0：不做淡入。遮罩球保持黑，一直到 t >= handAt 并且 dispatcher.LanbaiCoversOverlay(t) 的那一帧调
+   //              dispatcher.LanbaiSpawnFadeEnd()，遮罩球交给驱动（不 Hide），驱动从黑往上升。
+   //              （等了 handAt + 1 秒还没覆盖上，比如时间轴被拖走了：当作 handAt < 0，从这一刻起自己淡入）
+   // handAt < 0： 自己淡入：overlay.ClearLobes(); 每帧 overlay.SetCurve(fill, dispatcher.gradeDEV, tau, T, lBlack, L, L, lBlack)，
+   //              tau = 黑结束以后的秒数；tau >= T 的那一帧 overlay.Hide() 并调 dispatcher.LanbaiSpawnFadeEnd()
+   // LanbaiSpawnFadeEnd 只认第一次（幂等）；不调的话 Begin 之后 15 秒当作已结束
    ```
    **接管开关（v1.1，2026-10-24）**：分发层按“这个驱动写什么”分开给窗口——
    ```csharp
@@ -80,7 +85,9 @@ for 每个驱动（按类名、再按场景层级排序，固定顺序）：
    public void LanbaiSpawnFade(float since)   // 分发层每帧在 LanbaiTick 之前调（窗口里）
    ```
    `since < 0`：出生的黑 / 淡入还在走，**这一帧不碰遮罩球**（`Hide()` 也不调）；`since ≥ 0`：= `t − _fadeEndT`，`_fadeEndT` 是 `LanbaiSpawnFadeEnd()` 之后第一次 `LanbaiDispatch` 的**时间轴时刻**，锁存一次（不拿 `Time.time` 算，卡顿时 t 和 since 一起走，不会跳过 266.4 一下 `Hide()`）。淡入结束在驱动自己的遮罩窗口里的，从黑起按 **≤ 0.85 EV/s** 升，和自己的曲线取更暗的，跑完再 `Hide()`。
-   **遮罩窗口**：可选的 `public float[] LanbaiOverlayWindow()` 报“遮罩球归我”的那一段（第 6 幕 252.64–266.4、门内 248.39–252.64）；不报就用整个窗口。分发层在 `Start()` 里把这些拼成 `overlayWindowsFlat`，`LB_Journey` 用 `LanbaiCoversOverlay(t)` 判断出生时要不要淡入（见 §0 第 3 条）。
+   **遮罩窗口**（v1.3，D-43）：实现了 `LanbaiSpawnFade` 的驱动**必须**实现 `public float[] LanbaiOverlayWindow()`，报“从开始写遮罩球，到还来得及在自己窗口里把一个人从黑升起来的最后一刻”（窗口结束 − 一次完整的爬升）。在这一段里任何时刻交接过来的人，驱动都从黑往上升，升完再 `Hide()`，**过了自己曲线原定的结束时刻也一样**（第 6 幕：252.64 → 351.2，266.4 以后亮着的那一段也算；门内 248.39 → 252.64）。没实现的，生成器**不放进**窗口表，**3 Report 报 ERROR**（不再拿整个窗口去顶）。分发层第一次被问到时建表（懒构建，`LB_Journey` 在自己的 `Start()` 里问也行），`LB_Journey` 用 `LanbaiOverlayHandoverAt` 判断（见 §0 第 3 条）。
+   **窗口之外的出生淡入**（v1.3）：`LB_Journey` 自己淡入，EV 线性，T = log2(L / L黑) / 0.85，最长 9 秒；L 是这一刻最亮的非白视向：在窗口里的驱动可选报 `public float LanbaiBrightestL(float t)`（第 6 幕报 0.652，门内 0.2），没人报就按 1（= 9 秒）。站台（出发前）照旧 3 秒。
+   **数值核对**：`Director/Tools~/spawn_fade_sim.py`（分发层、`LB_Journey` 的出生、门内、第 6 幕的 Python 移植；第 10 幕的白是按 D-43 写的替身）。进场 238、244、249、255、260、263.5、266、267、270、1140、1150、1180 s 全过，结果在 `Docs~/spawn_fade_sim.md`；负对照（v1.2 的做法）在 263.5 s 一帧 +7.35 EV，复现了 D-43 说的问题。
    `LB_Journey` 没调 `LanbaiSpawnFadeBegin` 时（旧的本地）`since` = 1e6，等于不限制。分发层的 `spawnFadeSince` 在 Inspector 里看得到。**3 Report** 会对“有 `LanbaiOverlay` 字段、没有 `LanbaiSpawnFade`”的驱动报 WARNING。**接口只有这一个**：镜与白的白驱动改用 `LanbaiSpawnFade(float since)`（总导演已通知），生成器不认别的签名。
 
 ## 4. 已知的
