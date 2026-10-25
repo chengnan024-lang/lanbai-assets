@@ -45,6 +45,7 @@ namespace Lanbai.Test
         public readonly UndoStack undo = new UndoStack();
         public readonly LogCapture log = new LogCapture();
         public Dictionary<string, object> sync;             // Assets/Lanbai/.lanbai_sync.json（同步脚本写的）
+        public Dictionary<string, object> consent;          // LanbaiReports/tests/CONSENT.json（小楠的同意，阿白写）
         public string gitStatus;                             // 工程是 git 仓库时，git status --porcelain 的原文
         public WriteGuard.Snapshot before;
         public Dictionary<string, object> writes;
@@ -52,7 +53,7 @@ namespace Lanbai.Test
         public readonly List<string> toolErrors = new List<string>();            // 工具自己代码里的异常（不是被调的脚本、不是步骤判的失败）→ 退出码 3
         public readonly List<string> toolTouched = new List<string>();           // 工具临时改过、又改回去的资产（材质、JSON）
         public readonly Dictionary<string, byte[]> restoredBytes = new Dictionary<string, byte[]>();
-        public bool sandboxReady;
+        public bool sandboxReady, preflightOnly;
         public float? lastT;
         public readonly DateTime started = DateTime.UtcNow;
 
@@ -90,7 +91,12 @@ namespace Lanbai.Test
             for (int i = _a.Count - 1; i >= mark; i--)
             {
                 try { _a[i].Value(); }
-                catch (Exception e) { errs.Add("改回 " + _a[i].Key + " 失败：" + e.Message); }
+                catch (Exception)
+                {
+                    // 再试一次（比如导入刚好在忙）；还不行就报出来，原样在报告的“警告”里
+                    try { _a[i].Value(); }
+                    catch (Exception e2) { errs.Add("改回 " + _a[i].Key + " 失败（试了两次）：" + e2.Message); }
+                }
                 _a.RemoveAt(i);
             }
             return errs;
@@ -190,6 +196,13 @@ namespace Lanbai.Test
                 ctx.testId = testId ?? Path.GetFileNameWithoutExtension(ctx.testFile ?? "unknown");
                 ctx.runId = DateTime.Now.ToString("yyyyMMdd-HHmmss", IC);
                 ctx.outDir = NewOutDir(ctx);
+                ctx.preflightOnly = preflightOnly;
+                // 一开始就写一个 running 标记：Unity 中途崩了，这个文件夹里留下的是 running，不会被误读成上一次的结果
+                File.WriteAllText(Path.Combine(ctx.outDir, "result.json"), TJson.Write(new Dictionary<string, object>
+                {
+                    { "test", ctx.testId }, { "run", ctx.runId }, { "status", "running" }, { "started_utc", ctx.started.ToString("o", IC) },
+                    { "note", "跑完会被这次的结果盖掉；还是 running，就是没跑完（Unity 崩了或被关了）。以这个文件夹的 result.json / 日志里这次的 LANBAI_TEST_RESULT 为准，不看 Unity.exe 自己的退出码" }
+                }), new UTF8Encoding(false));
                 ctx.Info("测试 " + ctx.testId + "，输出 " + ctx.outDir);
                 if (ctx.testFile == null) throw new BlockedException("找不到测试定义 " + testId + ".json（应该在 " + TESTS_DIR + "/ 里；先跑同步脚本）");
                 string text = File.ReadAllText(ctx.testFile);
@@ -334,6 +347,13 @@ namespace Lanbai.Test
             return failed > 0 ? 1 : 0;
         }
 
+        /// <summary>只做预检时不报 pass（没跑测试）：通过 = preflight_ok。</summary>
+        public static string StatusOf(Ctx ctx, int exit)
+        {
+            if (ctx != null && ctx.preflightOnly) return exit == 0 ? "preflight_ok" : StatusOf(exit);
+            return StatusOf(exit);
+        }
+
         public static string StatusOf(int exit)
         {
             switch (exit) { case 0: return "pass"; case 1: return "fail"; case 2: return "blocked"; default: return "error"; }
@@ -345,7 +365,7 @@ namespace Lanbai.Test
             r["test"] = ctx.testId;
             r["run"] = ctx.runId;
             r["exit"] = (double)exit;
-            r["status"] = StatusOf(exit);
+            r["status"] = StatusOf(ctx, exit);
             r["out"] = ctx.outDir;
             r["checks_failed"] = (double)ctx.checks.Count(c => (string)c["status"] == "fail");
             r["checks_total"] = (double)ctx.checks.Count;
@@ -432,8 +452,8 @@ namespace Lanbai.Test
                 if (!AssetDatabase.CopyAsset(path, open)) throw new Exception("拷贝场景到沙盒失败：" + path + " → " + open);
             }
             else if (mode != "in_place") throw new BlockedException("scene.mode 只能是 in_place / copy / new，现在是 " + mode);
-            var cur = SceneManager.GetActiveScene();
-            if (cur.path != open || !cur.isLoaded) EditorSceneManager.OpenScene(open, OpenSceneMode.Single);
+            // 一律从磁盘上的版本开始（in_place 时也重开一次：预检已经保证没有没保存的改动，重开不丢东西）
+            EditorSceneManager.OpenScene(open, OpenSceneMode.Single);
             ctx.scenePath = open;
             ctx.Info("场景：" + open + "（" + mode + (mode == "copy" ? "，原件 " + path : "") + "）");
         }

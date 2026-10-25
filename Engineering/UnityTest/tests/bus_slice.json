@@ -22,7 +22,8 @@
   },
   "allowed_writes": [
     "Assets/Lanbai/Bus/Generated/**",
-    "Assets/Lanbai/UdonPrograms/**"
+    "Assets/Lanbai/UdonPrograms/**",
+    "Assets/SerializedUdonPrograms/**"
   ],
   "require_ppv2": true,
   "build": [
@@ -170,10 +171,12 @@
       "variants": [
         "raw",
         "bc7",
-        "crunch"
+        "bc5",
+        "crunch:50",
+        "crunch:100"
       ],
       "crunch_quality": 50,
-      "why": "0.5 m 处 Crunch 和 BC7 各一张，和不压缩的比 PSNR（D-40 #1 第 1 项）；结果决定车近景贴图要不要免 Crunch"
+      "why": "0.5 m 处：BC7、Crunch（质量 50）和不压缩的比 PSNR（D-40 #1 第 1 项）；法线另加 BC5 对 Crunch（DXT5nm，质量 100）（D-40b #6）。bc5 只对法线贴图生效，别的贴图那一档用 BC7"
     },
     {
       "id": "window",
@@ -184,10 +187,12 @@
       "variants": [
         "raw",
         "bc7",
-        "crunch"
+        "bc5",
+        "crunch:50",
+        "crunch:100"
       ],
       "crunch_quality": 50,
-      "why": "0.5 m 处 Crunch 和 BC7 各一张，和不压缩的比 PSNR（D-40 #1 第 1 项）；结果决定车近景贴图要不要免 Crunch"
+      "why": "0.5 m 处：BC7、Crunch（质量 50）和不压缩的比 PSNR（D-40 #1 第 1 项）；法线另加 BC5 对 Crunch（DXT5nm，质量 100）（D-40b #6）。bc5 只对法线贴图生效，别的贴图那一档用 BC7"
     },
     {
       "id": "pillar",
@@ -198,10 +203,12 @@
       "variants": [
         "raw",
         "bc7",
-        "crunch"
+        "bc5",
+        "crunch:50",
+        "crunch:100"
       ],
       "crunch_quality": 50,
-      "why": "0.5 m 处 Crunch 和 BC7 各一张，和不压缩的比 PSNR（D-40 #1 第 1 项）；结果决定车近景贴图要不要免 Crunch"
+      "why": "0.5 m 处：BC7、Crunch（质量 50）和不压缩的比 PSNR（D-40 #1 第 1 项）；法线另加 BC5 对 Crunch（DXT5nm，质量 100）（D-40b #6）。bc5 只对法线贴图生效，别的贴图那一档用 BC7"
     }
   ],
   "sequences": [
@@ -252,7 +259,7 @@
     },
     {
       "id": "pillar_shimmer",
-      "metric": "seq.pillar_micro.hf_frac",
+      "metric": "seq.pillar_micro.shimmer_frac",
       "op": "<=",
       "value": 0.005,
       "gate": false,
@@ -260,7 +267,7 @@
     },
     {
       "id": "window_shimmer",
-      "metric": "seq.window_micro.hf_frac",
+      "metric": "seq.window_micro.shimmer_frac",
       "op": "<=",
       "value": 0.005,
       "gate": false,
@@ -268,7 +275,7 @@
     },
     {
       "id": "seat_crunch_psnr",
-      "metric": "tex.seat.crunch.seat_05m.psnr",
+      "metric": "tex.seat.crunch_q50.seat_05m.psnr",
       "op": ">=",
       "value": 38,
       "gate": false,
@@ -276,7 +283,7 @@
     },
     {
       "id": "window_crunch_psnr",
-      "metric": "tex.window.crunch.window_05m.psnr",
+      "metric": "tex.window.crunch_q50.window_05m.psnr",
       "op": ">=",
       "value": 38,
       "gate": false,
@@ -284,11 +291,19 @@
     },
     {
       "id": "pillar_crunch_psnr",
-      "metric": "tex.pillar.crunch.pillar_05m.psnr",
+      "metric": "tex.pillar.crunch_q50.pillar_05m.psnr",
       "op": ">=",
       "value": 38,
       "gate": false,
       "why": "同上"
+    },
+    {
+      "id": "normal_crunch100_vs_bc5",
+      "metric": "tex.seat.crunch_q100.seat_05m.psnr",
+      "op": ">=",
+      "value": 38,
+      "gate": false,
+      "why": "法线：Crunch 质量 100 和不压缩比（BC5 那一档看 tex.seat.bc5.seat_05m.psnr）；比完总工程师给全片统一一条（D-40b #6）"
     }
   ],
   "headset_checklist": [

@@ -14,9 +14,10 @@
 // v1.1: a driver reports what it writes with public bool LanbaiWritesAtmosphere() / LanbaiWritesSun(), or through public
 //   bool fields writeRenderSettings / writeMainLight (WritesHow below); the generated Start() builds
 //   atmosphereWindowsFlat / sunWindowsFlat from them.
-// v1.2: a driver with public void LanbaiSpawnFade(float) gets the seconds since LB_Journey's spawn fade ended (-1 while it
-//   runs) before each LanbaiTick: the spawn fade wins over the overlay (the dispatcher's header). 3 Report warns about a
-//   driver that has an overlay field (type LanbaiOverlay) but no LanbaiSpawnFade.
+// v1.2: a driver with public void LanbaiSpawnFade(float) gets the timeline seconds since LB_Journey's spawn fade ended (-1
+//   while it runs) before each LanbaiTick, and its overlay window (optional float[] LanbaiOverlayWindow(), else its window)
+//   goes into overlayWindowsFlat / LanbaiCoversOverlay(t) (the dispatcher's header). 3 Report warns about a driver that has
+//   an overlay field (type LanbaiOverlay) but no LanbaiSpawnFade.
 // UdonSharp editor APIs are reached by reflection so this file type-checks without the UdonSharp editor assembly; if a
 // call is not found, the menu says what to do by hand.
 #if UNITY_EDITOR
@@ -145,6 +146,13 @@ namespace Lanbai.Director.Editor
                 string flat = ton != null && ton.ReturnType == typeof(bool)
                     ? "            if (!{0}[i].LanbaiTakesOverNothing()) {{ windowsFlat[2 * n] = {0}_w[2 * i]; windowsFlat[2 * n + 1] = {0}_w[2 * i + 1]; n++; }}\n"
                     : "            windowsFlat[2 * n] = {0}_w[2 * i]; windowsFlat[2 * n + 1] = {0}_w[2 * i + 1]; n++;\n";
+                // v1.2: drivers that hold the overlay (LanbaiSpawnFade) go into overlayWindowsFlat, narrowed by their optional
+                // float[] LanbaiOverlayWindow()
+                var sfm = types[k].GetMethod("LanbaiSpawnFade", PF, null, new[] { typeof(float) }, null);
+                var owm = types[k].GetMethod("LanbaiOverlayWindow", PF, null, Type.EmptyTypes, null);
+                string ovl = sfm == null ? "" : (owm != null && owm.ReturnType == typeof(float[])
+                    ? string.Format("            if ({0}[i] != null) {{ float[] ow = {0}[i].LanbaiOverlayWindow(); if (ow != null && ow.Length >= 2) {{ overlayWindowsFlat = Grow(overlayWindowsFlat, 2 * no + 2); overlayWindowsFlat[2 * no] = ow[0]; overlayWindowsFlat[2 * no + 1] = ow[1]; no++; }} }}\n", d)
+                    : string.Format("            if ({0}[i] != null) {{ overlayWindowsFlat = Grow(overlayWindowsFlat, 2 * no + 2); overlayWindowsFlat[2 * no] = {0}_w[2 * i]; overlayWindowsFlat[2 * no + 1] = {0}_w[2 * i + 1]; no++; }}\n", d));
                 string wa = WritesHow(types[k], "LanbaiWritesAtmosphere", "writeRenderSettings");
                 string ws = WritesHow(types[k], "LanbaiWritesSun", "writeMainLight");
                 wins.AppendFormat(
@@ -152,14 +160,15 @@ namespace Lanbai.Director.Editor
                     "        {{\n" +
                     "            if ({0}_w[2 * i] > {0}_w[2 * i + 1]) continue;\n" +
                     flat +
-                    "{1}{2}" +
+                    "{1}{2}{3}" +
                     "        }}\n", d,
                     wa == null ? "" : string.Format(
                         "            if ({0}[i] != null && {1}) {{ atmosphereWindowsFlat = Grow(atmosphereWindowsFlat, 2 * na + 2); atmosphereWindowsFlat[2 * na] = {0}_w[2 * i]; atmosphereWindowsFlat[2 * na + 1] = {0}_w[2 * i + 1]; na++; }}\n",
                         d, wa.Replace("{x}", d + "[i]")),
                     ws == null ? "" : string.Format(
                         "            if ({0}[i] != null && {1}) {{ sunWindowsFlat = Grow(sunWindowsFlat, 2 * ns + 2); sunWindowsFlat[2 * ns] = {0}_w[2 * i]; sunWindowsFlat[2 * ns + 1] = {0}_w[2 * i + 1]; ns++; }}\n",
-                        d, ws.Replace("{x}", d + "[i]")));
+                        d, ws.Replace("{x}", d + "[i]")),
+                    ovl);
                 var gm = types[k].GetMethod("LanbaiGrade", PF, null, new[] { typeof(float) }, null);
                 bool hasGrade = gm != null && gm.ReturnType == typeof(float[]);
                 string grade = hasGrade

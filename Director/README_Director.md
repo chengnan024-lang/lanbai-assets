@@ -13,9 +13,13 @@
    if (dispatcher != null) dispatcher.LanbaiDispatch(t);   // 放在 ApplyGrades() 之前（它要读下面的 grade* 结果）
    // 出生的 3 秒黑场里调一次（圣经 §1.9：所有根物体在相机前激活 2 帧预热 shader）：
    if (dispatcher != null) dispatcher.LanbaiPrewarm();
-   // v1.2（出生淡入优先，总导演对镜与白终审的裁决）：出生的黑 / 淡入开始时，和淡入刚结束的那一帧各调一次
-   if (dispatcher != null) dispatcher.LanbaiSpawnFadeBegin();   // 和 LanbaiPrewarm 放在一起
-   if (dispatcher != null) dispatcher.LanbaiSpawnFadeEnd();     // 淡入结束的那一帧（之后遮罩球不再归 LB_Journey）
+   // v1.2（出生淡入优先）：出生时
+   if (dispatcher != null) dispatcher.LanbaiSpawnFadeBegin();   // 和 LanbaiPrewarm 放在一起，出生的黑开始时
+   bool covered = dispatcher != null && (dispatcher.LanbaiCoversOverlay(t) || dispatcher.LanbaiCoversOverlay(t + spawnFadeSeconds));
+   // covered：这时有驱动拿着遮罩球（第 6 幕的晨、第 10 幕的白……）。不做出生淡入，出生的黑一直保持黑；
+   //          黑结束的那一帧调 End，之后只有驱动那一次从黑升起来（≤ 0.85 EV/s）
+   // 不 covered：照常淡入，淡入结束的那一帧调 End
+   if (dispatcher != null) dispatcher.LanbaiSpawnFadeEnd();     // 只认第一次（幂等）；不调的话 Begin 之后 10 秒当作已结束
    ```
    **接管开关（v1.1，2026-10-24）**：分发层按“这个驱动写什么”分开给窗口——
    ```csharp
@@ -75,7 +79,9 @@ for 每个驱动（按类名、再按场景层级排序，固定顺序）：
    ```csharp
    public void LanbaiSpawnFade(float since)   // 分发层每帧在 LanbaiTick 之前调（窗口里）
    ```
-   `since < 0`：出生淡入还在走，**这一帧不写遮罩球**；`since ≥ 0`：淡入结束了多少秒，从黑起按 **≤ 0.85 EV/s** 升到驱动自己要的值（这个升法由驱动自己做）。`LB_Journey` 没调 `LanbaiSpawnFadeBegin` 时（旧的本地）`since` = 1e6，等于不限制。分发层的 `spawnFadeSince` 在 Inspector 里看得到。**3 Report** 会对“有 `LanbaiOverlay` 字段、没有 `LanbaiSpawnFade`”的驱动报 WARNING。
+   `since < 0`：出生的黑 / 淡入还在走，**这一帧不碰遮罩球**（`Hide()` 也不调）；`since ≥ 0`：= `t − _fadeEndT`，`_fadeEndT` 是 `LanbaiSpawnFadeEnd()` 之后第一次 `LanbaiDispatch` 的**时间轴时刻**，锁存一次（不拿 `Time.time` 算，卡顿时 t 和 since 一起走，不会跳过 266.4 一下 `Hide()`）。淡入结束在驱动自己的遮罩窗口里的，从黑起按 **≤ 0.85 EV/s** 升，和自己的曲线取更暗的，跑完再 `Hide()`。
+   **遮罩窗口**：可选的 `public float[] LanbaiOverlayWindow()` 报“遮罩球归我”的那一段（第 6 幕 252.64–266.4、门内 248.39–252.64）；不报就用整个窗口。分发层在 `Start()` 里把这些拼成 `overlayWindowsFlat`，`LB_Journey` 用 `LanbaiCoversOverlay(t)` 判断出生时要不要淡入（见 §0 第 3 条）。
+   `LB_Journey` 没调 `LanbaiSpawnFadeBegin` 时（旧的本地）`since` = 1e6，等于不限制。分发层的 `spawnFadeSince` 在 Inspector 里看得到。**3 Report** 会对“有 `LanbaiOverlay` 字段、没有 `LanbaiSpawnFade`”的驱动报 WARNING。**接口只有这一个**：镜与白的白驱动改用 `LanbaiSpawnFade(float since)`（总导演已通知），生成器不认别的签名。
 
 ## 4. 已知的
 

@@ -13,7 +13,7 @@ namespace Lanbai.Test
         const string M = "蓝白/Test/";
 
         [MenuItem(M + "Run gate_clouds_test", false, 1)] static void RunGate() { RunMenu("gate_clouds_test"); }
-        [MenuItem(M + "Run act06_dawn", false, 2)] static void RunAct06() { RunMenu("act06_dawn"); }
+        [MenuItem(M + "Run act06_test", false, 2)] static void RunAct06() { RunMenu("act06_test"); }
         [MenuItem(M + "Run bus_slice", false, 3)] static void RunBus() { RunMenu("bus_slice"); }
         [MenuItem(M + "Run act01_spawn", false, 4)] static void RunAct01() { RunMenu("act01_spawn"); }
         [MenuItem(M + "Run palace_hotspot", false, 5)] static void RunPalace() { RunMenu("palace_hotspot"); }
@@ -23,7 +23,11 @@ namespace Lanbai.Test
         {
             if (!Directory.Exists(Sandbox.DIR)) { EditorUtility.DisplayDialog("蓝白测试", "没有沙盒。", "好"); return; }
             if (!File.Exists(Sandbox.MarkerPath)) { EditorUtility.DisplayDialog("蓝白测试", Sandbox.DIR + " 没有标记文件，不是测试工具建的，不删。", "好"); return; }
-            if (EditorUtility.DisplayDialog("蓝白测试", "删掉 " + Sandbox.DIR + "？（测试工具的沙盒，里面只有拷贝）", "删", "取消")) Sandbox.Delete(null);
+            if (EditorUtility.DisplayDialog("蓝白测试", "删掉 " + Sandbox.DIR + "？（测试工具的沙盒，里面只有拷贝）", "删", "取消"))
+            {
+                try { Sandbox.Delete(null); }
+                catch (BlockedException e) { EditorUtility.DisplayDialog("蓝白测试", e.Message, "好"); }
+            }
         }
         [MenuItem(M + "Discard Test Scene Changes", false, 41)] static void Discard()
         {

@@ -1,10 +1,14 @@
 // 蓝白 · Unity 测试工具 · 步骤
 // 每一步是测试定义里的一个对象 {"type": ..., ...}，按顺序做；字符串里的 {t} 换成当时的时间。
 //   menu          {"path": "蓝白/Gate Clouds/Build"}
-//   method        {"name": "Lanbai.Tests.LB_GateTest.Build", "arg": "155.1"}  或 "args": [...]（静态方法；返回 "ERROR" 开头的字符串算失败）
+//   method        {"name": "Lanbai.Tests.LB_GateTest.Build", "arg": "155.1"}  或 "args": [...]（静态方法；返回 "ERROR" 开头的字符串算失败；
+//                 "expect": "solo S6" = 返回的字符串里必须有这几个字）
 //   call          {"object": "Act06_Driver", "component": "LanbaiAct06Driver", "method": "Evaluate", "args": ["{t}"]}（场景里组件的方法）
 //   set_field     {"object": "**/Act06_Driver", "component": "LanbaiAct06Driver", "field": "writeRenderSettings", "value": true}（公开字段；不存场景）
 //   set_active    {"path": "GateRoot/GateClouds/Deck", "value": false}
+//   set_field_objects_active {"component": "LB_Journey", "fields": ["gateGroup", "*Group", "seaA"], "value": false, "optional": true}
+//                 组件上这些字段（GameObject / GameObject[] / Component / Component[]）指着的物体开关；字段名可以用 *；
+//                 optional：场景里没有这个组件 / 字段时只记一句，不算失败
 //   set_renderer  {"path": "...", "value": false}
 //   set_light     {"path": "Gate_Lights/Fill_from_below", "render_mode": "ForcePixel|ForceVertex|Auto", "culling_mask": 0, "intensity": 1}
 //   set_material  {"asset": "...mat" | "find": "M_GateAirSky" | "under": "GateRoot/GateClouds/Cards" | "renderer_name": "Rear_*"（renderer 或它的父物体）, "props": {"_BackBand": 1.25}}
@@ -155,6 +159,7 @@ namespace Lanbai.Test
                         return Scenes.PathOf(tr) + " Renderer.enabled " + old + " → " + v;
                     }
                 case "set_light": return SetLight(ctx, st, restore);
+                case "set_field_objects_active": return SetFieldObjectsActive(ctx, st, restore);
                 case "set_field": return SetField(ctx, st, restore);
                 case "set_material": return SetMaterial(ctx, st, t, restore);
                 case "edit_json": return EditJson(ctx, st, restore);
@@ -334,6 +339,55 @@ namespace Lanbai.Test
             return Ret(st, ret) ?? (cn + "." + mn + " 跑完");
         }
 
+        static string SetFieldObjectsActive(Ctx ctx, Dictionary<string, object> st, bool restore)
+        {
+            string cn = TJson.S(TJson.G(st, "component"));
+            bool optional = TJson.B(TJson.G(st, "optional")), v = TJson.B(TJson.G(st, "value"));
+            Component comp = null;
+            foreach (var g in Scenes.AllRoots())
+            {
+                foreach (var c in g.GetComponentsInChildren<Component>(true))
+                    if (c != null && (c.GetType().Name == cn || c.GetType().FullName == cn)) { comp = c; break; }
+                if (comp != null) break;
+            }
+            if (comp == null)
+            {
+                if (optional) return "场景里没有 " + cn + "（optional，跳过）";
+                throw new StepException("场景里没有组件 " + cn);
+            }
+            var pats = TJson.Sa(TJson.G(st, "fields")).Select(p => new Regex("^" + Regex.Escape(p).Replace("\\*", ".*") + "$")).ToList();
+            var said = new List<string>();
+            foreach (var f in comp.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+            {
+                if (!pats.Any(r => r.IsMatch(f.Name))) continue;
+                var objs = new List<GameObject>();
+                object val = f.GetValue(comp);
+                if (val is GameObject) objs.Add((GameObject)val);
+                else if (val is Component) objs.Add(((Component)val).gameObject);
+                else if (val is Array)
+                    foreach (var o in (Array)val)
+                    {
+                        if (o is GameObject) objs.Add((GameObject)o);
+                        else if (o is Component) objs.Add(((Component)o).gameObject);
+                    }
+                foreach (var go in objs)
+                {
+                    if (go == null) continue;
+                    bool old = go.activeSelf;
+                    go.SetActive(v);
+                    var g2 = go;
+                    if (restore) ctx.undo.Push("SetActive " + go.name, () => { if (g2 != null) g2.SetActive(old); });
+                    said.Add(f.Name + ":" + go.name + " " + old + " → " + v);
+                }
+            }
+            if (said.Count == 0)
+            {
+                if (optional) return cn + " 上没有对得上 " + string.Join("、", TJson.Sa(TJson.G(st, "fields")).ToArray()) + " 的物体字段（optional，跳过）";
+                throw new StepException(cn + " 上没有对得上的物体字段");
+            }
+            return Scenes.PathOf(comp.transform) + " " + cn + "：" + string.Join("；", said.ToArray());
+        }
+
         static string SetField(Ctx ctx, Dictionary<string, object> st, bool restore)
         {
             var tr = Need(TJson.S(TJson.G(st, "object")));
@@ -396,6 +450,8 @@ namespace Lanbai.Test
             string s = ret as string ?? ret.ToString();
             string errPrefix = TJson.S(TJson.G(st, "error_prefix"), "ERROR");
             if (s.TrimStart().StartsWith(errPrefix, StringComparison.Ordinal)) throw new StepException(s);
+            string expect = TJson.S(TJson.G(st, "expect"));
+            if (expect != null && s.IndexOf(expect, StringComparison.Ordinal) < 0) throw new StepException("返回里没有「" + expect + "」：" + s);
             return s;
         }
 

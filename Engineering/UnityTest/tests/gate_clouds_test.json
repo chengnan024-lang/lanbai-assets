@@ -65,14 +65,17 @@
     "Assets/Lanbai/GateClouds/Textures/**",
     "Assets/Lanbai/GateClouds/GateClouds_Layout.json",
     "Assets/Lanbai/UdonPrograms/**",
-    "Assets/Lanbai/Gate/Generated/**"
+    "Assets/Lanbai/Gate/Generated/**",
+    "Assets/SerializedUdonPrograms/**"
   ],
-  "allowed_writes_why": "沙盒规则的例外：门测试本来就是这些搭建脚本搭的（LB_GateTest.Build 存 GateTest.unity 和 Tests/GateTest_Materials/；蓝白/Gate Clouds/Build 建 Generated/、设贴图导入、建 U# 程序资产；auto_lite 那一档临时改 GateClouds_Layout.json，量完逐字节写回）。别的地方被改就算没声明的写入",
+  "allowed_writes_why": "沙盒规则的例外：门测试本来就是这些搭建脚本搭的（LB_GateTest.Build 存 GateTest.unity 和 Tests/GateTest_Materials/；蓝白/Gate Clouds/Build 建 Generated/、设贴图导入、建 U# 程序资产；auto_lite 那一档临时改 GateClouds_Layout.json，量完逐字节写回）。别的地方被改就算没声明的写入；U# 编译把程序的序列化结果写进 Assets/SerializedUdonPrograms/（和 UdonPrograms 一起）",
   "backup_before": [
     "Assets/Lanbai/Tests/**",
-    "Assets/Lanbai/GateClouds/GateClouds_Layout.json"
+    "Assets/Lanbai/GateClouds/GateClouds_Layout.json",
+    "Assets/Lanbai/UdonPrograms/**",
+    "Assets/SerializedUdonPrograms/**"
   ],
-  "backup_before_why": "总导演批准原地跑的条件：开搭之前把 Tests/ 里会被改的文件（门测试场景、材质、U# 程序资产）和画质档那个 JSON 原样拷进本次输出的 backup_before/",
+  "backup_before_why": "总导演批准原地跑的条件：开搭之前把 Tests/ 里会被改的文件、画质档那个 JSON、U# 程序资产（UdonPrograms 和 SerializedUdonPrograms 一起）原样拷进本次输出的 backup_before/；要还原就一起拷回去（README §9）",
   "camera_template": "ReferenceCamera",
   "time": [
     {
@@ -401,6 +404,17 @@
       "ss": 1
     },
     {
+      "id": "U7_static",
+      "cam": "U7",
+      "kind": "static",
+      "fps": 90,
+      "frames": 45,
+      "w": 1280,
+      "h": 720,
+      "ss": 1,
+      "why": "对照：相机不动、时间不动，只剩画面本身的时间噪声（抖动 / 时间性效果）；和 U7_micro 比，才知道微动带来了多少闪烁"
+    },
+    {
       "id": "U8fwd_micro",
       "cam": "U8fwd",
       "kind": "micro_motion",
@@ -667,15 +681,15 @@
     },
     {
       "id": "U7_shimmer",
-      "metric": "seq.U7_micro.hf_frac",
+      "metric": "seq.U7_micro.shimmer_frac",
       "op": "<=",
       "value": 0.01,
       "gate": false,
-      "why": "头部微动 1 秒里来回跳（hf > 6/255）的像素 ≤ 1%：初值，第一次实测后由总工程师定"
+      "why": "头部微动 1 秒里来回跳（shimmer > 4/255）的像素 ≤ 1%：初值，第一次实测后由总工程师定"
     },
     {
       "id": "U8fwd_shimmer",
-      "metric": "seq.U8fwd_micro.hf_frac",
+      "metric": "seq.U8fwd_micro.shimmer_frac",
       "op": "<=",
       "value": 0.01,
       "gate": false,
@@ -683,7 +697,7 @@
     },
     {
       "id": "deck_roll_shimmer",
-      "metric": "seq.deck_roll.hf_frac",
+      "metric": "seq.deck_roll.shimmer_frac",
       "op": "<=",
       "value": 0.01,
       "gate": false,

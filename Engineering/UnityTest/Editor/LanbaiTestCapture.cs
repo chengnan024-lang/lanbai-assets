@@ -465,11 +465,17 @@ namespace Lanbai.Test
             float eyeOff = TJson.F(TJson.G(d, "eye_offset_mm"), 0f) * 0.001f;
             bool save = TJson.B(TJson.G(d, "save_frames"), true);
             float thr = TJson.F(TJson.G(d, "hf_threshold"), 6f), scale = TJson.F(TJson.G(d, "heat_scale"), 24f);
+            // 闪烁的主量（终审 r2）：每一帧同一个姿态再渲一张高倍超采样的参考（默认 4×），量“测的图 − 参考图”随时间的抖动。
+            // 真实的运动（边缘挪动）两张图一起挪，差里没有；剩下的是采样不足带来的闪烁 / 爬动 / 摩尔纹。reference_ss: 0 = 不渲参考
+            int refSS = Math.Max(0, TJson.I(TJson.G(d, "reference_ss"), 4));
+            float shThr = TJson.F(TJson.G(d, "shimmer_threshold"), 4f);
             // t0 写了就用 t0（机位自己的 t 只是截图用的时刻）；没写 t0 才用机位的 t
             float t0 = TJson.Has(d, "t0") ? TJson.F(TJson.G(d, "t0")) : (c.t ?? 0f);
             float t1 = TJson.F(TJson.G(d, "t1"), t0 + n / fps);
             bool advance = kind == "time" || TJson.B(TJson.G(d, "advance_time"));
             bool hasTime = TJson.Has(d, "t") || TJson.Has(d, "t0");
+            if (kind != "micro_motion" && kind != "time" && kind != "static")
+                throw new StepException("序列 " + c.id + "：kind 只能是 micro_motion / time / static，现在是 " + kind);
             if (kind == "time")
             {
                 if (!hasTime) throw new StepException("序列 " + c.id + "：kind = time 要写 t0（和 t1）");
@@ -479,20 +485,23 @@ namespace Lanbai.Test
             if (n < 3) throw new StepException("序列至少 3 帧");
 
             int mark = ctx.undo.Mark();
-            Renderer2 r = null;
+            Renderer2 r = null, rr = null;
             string dir = "seq/" + c.id;
             try
             {
                 if (hasTime) ApplyTime(ctx, t0, false);
                 RunBefore(ctx, d, "before");
                 r = new Renderer2(ctx, c, w, h, ss, true);
+                if (refSS > ss) rr = new Renderer2(ctx, c, w, h, refSS, true);
                 int N = w * h;
                 var sum = new double[N]; var sum2 = new double[N]; var hf2 = new double[N];
+                var dsum = rr != null ? new double[N] : null; var dsum2 = rr != null ? new double[N] : null;
                 var p1 = new float[N]; var p2 = new float[N]; var cur = new float[N];
                 var apl = new List<object>();
                 var right = c.rot * Vector3.right;
                 Vector3 baseEye = c.eye + right * eyeOff;
                 r.Frame(3);   // 预热（PPv2 的自动曝光之类）
+                if (rr != null) rr.Frame(3);
                 for (int i = 0; i < n; i++)
                 {
                     float s = i / fps;
@@ -507,6 +516,13 @@ namespace Lanbai.Test
                     r.go.transform.position = baseEye + c.rot * off;
                     r.go.transform.rotation = c.rot * q;
                     var px = r.Frame(1);
+                    Color32[] rpx = null;
+                    if (rr != null)
+                    {
+                        rr.go.transform.position = r.go.transform.position;
+                        rr.go.transform.rotation = r.go.transform.rotation;
+                        rpx = rr.Frame(1);
+                    }
                     double fsum = 0;
                     for (int k = 0; k < N; k++)
                     {
@@ -514,6 +530,7 @@ namespace Lanbai.Test
                         cur[k] = y; fsum += y;
                         sum[k] += y; sum2[k] += (double)y * y;
                         if (i >= 2) { double dd = y - 2f * p1[k] + p2[k]; hf2[k] += dd * dd; }
+                        if (rpx != null) { double df = y - Img.Luma(rpx[k]); dsum[k] += df; dsum2[k] += df * df; }
                     }
                     apl.Add(fsum / N);
                     var tmp = p2; p2 = p1; p1 = cur; cur = tmp;
@@ -526,36 +543,50 @@ namespace Lanbai.Test
                 if (save) ctx.AddFile(dir + "/0000.png …（" + n + " 帧）");
                 // 每个像素：时间标准差（含真实的运动）、二阶差分的均方根（只剩来回跳的那部分 = 闪烁）
                 var std = new float[N]; var hf = new float[N]; var mean = new float[N];
+                var sh = rr != null ? new float[N] : null;
                 for (int k = 0; k < N; k++)
                 {
                     double m = sum[k] / n;
                     mean[k] = (float)m;
                     std[k] = (float)Math.Sqrt(Math.Max(0, sum2[k] / n - m * m));
                     hf[k] = (float)Math.Sqrt(hf2[k] / (n - 2) / 6.0);   // ÷6：白噪声时二阶差分的方差是 6σ²，这样和 std 同一个尺度
+                    if (sh != null) { double dm = dsum[k] / n; sh[k] = (float)Math.Sqrt(Math.Max(0, dsum2[k] / n - dm * dm)); }
                 }
                 string pre = "seq." + c.id;
                 ctx.Metric(pre + ".frames", n);
-                ctx.Metric(pre + ".std_mean", Avg(std), "逐像素亮度（0–255）的时间标准差，全画面平均；含真实运动带来的变化");
-                ctx.Metric(pre + ".std_p99", Pct(std, 0.99));
-                ctx.Metric(pre + ".hf_mean", Avg(hf), "逐像素二阶时间差分的均方根 ÷ √6（0–255）：平滑的运动几乎不算，来回跳的闪烁 / 爬动才算");
-                ctx.Metric(pre + ".hf_p99", Pct(hf, 0.99));
-                ctx.Metric(pre + ".hf_frac", hf.Count(x => x > thr) / (double)N, "hf > " + thr.ToString("0.#", IC) + " 的像素占比");
+                if (sh != null)
+                {
+                    ctx.Metric(pre + ".shimmer_mean", Avg(sh), "闪烁（主量）：逐像素“测的图 − 同一姿态的 " + refSS + "× 超采样参考”的亮度差（0–255）随时间的标准差，全画面平均；真实运动两张一起挪、不算在里面");
+                    ctx.Metric(pre + ".shimmer_p99", Pct(sh, 0.99));
+                    ctx.Metric(pre + ".shimmer_frac", sh.Count(x => x > shThr) / (double)N, "shimmer > " + shThr.ToString("0.#", IC) + " 的像素占比");
+                }
+                ctx.Metric(pre + ".motion_std_mean", Avg(std), "逐像素亮度（0–255）的时间标准差，全画面平均：含真实运动（边缘挪动），只作参考，不是闪烁");
+                ctx.Metric(pre + ".motion_std_p99", Pct(std, 0.99));
+                ctx.Metric(pre + ".hf_raw_mean", Avg(hf), "逐像素二阶时间差分的均方根 ÷ √6（0–255）：平滑运动大多不算，但正常的边缘运动也会进来一部分，只作参考；闪烁看 shimmer");
+                ctx.Metric(pre + ".hf_raw_p99", Pct(hf, 0.99));
+                ctx.Metric(pre + ".hf_raw_frac", hf.Count(x => x > thr) / (double)N, "hf_raw > " + thr.ToString("0.#", IC) + " 的像素占比");
                 var ap = apl.Select(x => (double)x).ToList();
                 double maxStep = 0;
                 for (int i = 1; i < ap.Count; i++) maxStep = Math.Max(maxStep, Math.Abs(ap[i] - ap[i - 1]));
                 ctx.Metric(pre + ".apl_min", ap.Min());
                 ctx.Metric(pre + ".apl_max", ap.Max());
                 ctx.Metric(pre + ".apl_max_step", maxStep, "相邻两帧 APL 的最大跳变");
-                Img.SavePng(Img.Heat(std, mean, scale), w, h, ctx.Out(dir + "/heat_std.png"));
-                Img.SavePng(Img.Heat(hf, mean, scale), w, h, ctx.Out(dir + "/heat_flicker.png"));
-                ctx.AddFile(dir + "/heat_std.png"); ctx.AddFile(dir + "/heat_flicker.png");
+                Img.SavePng(Img.Heat(std, mean, scale), w, h, ctx.Out(dir + "/heat_motion_std.png"));
+                Img.SavePng(Img.Heat(hf, mean, scale), w, h, ctx.Out(dir + "/heat_hf_raw.png"));
+                ctx.AddFile(dir + "/heat_motion_std.png"); ctx.AddFile(dir + "/heat_hf_raw.png");
+                if (sh != null)
+                {
+                    Img.SavePng(Img.Heat(sh, mean, Math.Max(1f, scale / 2f)), w, h, ctx.Out(dir + "/heat_shimmer.png"));
+                    ctx.AddFile(dir + "/heat_shimmer.png");
+                }
                 var rec = new Dictionary<string, object>
                 {
                     { "id", c.id }, { "kind", kind }, { "fps", (double)fps }, { "frames", (double)n }, { "w", (double)w }, { "h", (double)h }, { "ss", (double)ss },
                     { "amp_cm", (double)(ampM * 100f) }, { "amp_deg", (double)ampDeg }, { "eye_offset_mm", (double)(eyeOff * 1000f) },
                     { "t0", hasTime ? (object)(double)t0 : null }, { "t1", advance ? (object)(double)t1 : null }, { "advance_time", advance },
                     { "heat_scale", (double)scale }, { "hf_threshold", (double)thr }, { "apl_per_frame", apl },
-                    { "heat_std", dir + "/heat_std.png" }, { "heat_flicker", dir + "/heat_flicker.png" },
+                    { "reference_ss", (double)(rr != null ? refSS : 0) }, { "shimmer_threshold", (double)shThr },
+                    { "heat_shimmer", sh != null ? dir + "/heat_shimmer.png" : null }, { "heat_motion_std", dir + "/heat_motion_std.png" }, { "heat_hf_raw", dir + "/heat_hf_raw.png" },
                     { "note", "编辑器里普通相机逐帧渲染（不是 SPS-I、不是头显）；热图颜色 0 → " + scale.ToString("0", IC) + "（亮度 0–255），底下是平均画面的灰度" }
                 };
                 File.WriteAllText(ctx.Out(dir + "/numbers.json"), TJson.Write(rec));
@@ -565,6 +596,7 @@ namespace Lanbai.Test
             finally
             {
                 if (r != null) r.Dispose();
+                if (rr != null) rr.Dispose();
                 foreach (var e in ctx.undo.RollbackTo(mark)) ctx.Warn(e);
                 ctx.lastT = null;
             }
@@ -627,9 +659,10 @@ namespace Lanbai.Test
             var perVar = new Dictionary<string, object>();
             foreach (var v in variants)
             {
+                string vs = v.Replace(":", "_q");      // 文件夹 / 文件名 / 量数名里不能有冒号（Windows）
                 // 1) 贴图拷进沙盒、按这一档设导入
-                string tdir = Sandbox.DIR + "/tex_" + id + "_" + v;
-                AssetDatabase.CreateFolder(Sandbox.DIR, "tex_" + id + "_" + v);
+                string tdir = Sandbox.DIR + "/tex_" + id + "_" + vs;
+                AssetDatabase.CreateFolder(Sandbox.DIR, "tex_" + id + "_" + vs);
                 var map = new Dictionary<Texture2D, Texture2D>();
                 double mb = 0;
                 foreach (var t2 in seen)
@@ -641,10 +674,16 @@ namespace Lanbai.Test
                     var pc = ti.GetPlatformTextureSettings("Standalone");
                     pc.overridden = true;
                     pc.maxTextureSize = Math.Max(pc.maxTextureSize, ti.maxTextureSize);
-                    if (v == "raw") pc.format = TextureImporterFormat.RGBA32;
-                    else if (v == "bc7") pc.format = TextureImporterFormat.BC7;
-                    else if (v == "crunch") { pc.format = ti.DoesSourceTextureHaveAlpha() || ti.textureType == TextureImporterType.NormalMap ? TextureImporterFormat.DXT5Crunched : TextureImporterFormat.DXT1Crunched; pc.crunchedCompression = true; pc.compressionQuality = quality; }
-                    else throw new StepException("不认识的压缩档 " + v + "（raw / bc7 / crunch）");
+                    // 档：raw（不压缩 RGBA32）、bc7、bc5（法线：BC5；不是法线的贴图用 BC7 并记下）、crunch 或 crunch:<质量>
+                    //（法线贴图 Crunch 是 DXT5Crunched = DXT5nm；D-40b #6 要的是 BC5 对 Crunch 质量 100）
+                    bool nrm = ti.textureType == TextureImporterType.NormalMap;
+                    string vk = v.Split(':')[0];
+                    int vq = v.Contains(":") ? int.Parse(v.Split(':')[1], IC) : quality;
+                    if (vk == "raw") pc.format = TextureImporterFormat.RGBA32;
+                    else if (vk == "bc7") pc.format = TextureImporterFormat.BC7;
+                    else if (vk == "bc5") pc.format = nrm ? TextureImporterFormat.BC5 : TextureImporterFormat.BC7;
+                    else if (vk == "crunch") { pc.format = ti.DoesSourceTextureHaveAlpha() || nrm ? TextureImporterFormat.DXT5Crunched : TextureImporterFormat.DXT1Crunched; pc.crunchedCompression = true; pc.compressionQuality = vq; }
+                    else throw new StepException("不认识的压缩档 " + v + "（raw / bc7 / bc5 / crunch / crunch:<质量>）");
                     ti.SetPlatformTextureSettings(pc);
                     ti.SaveAndReimport();
                     var nt = AssetDatabase.LoadAssetAtPath<Texture2D>(dst);
@@ -655,9 +694,9 @@ namespace Lanbai.Test
                 var clone = new Dictionary<Material, Material>();
                 foreach (var m in mats)
                 {
-                    var cm = new Material(m) { name = m.name + "_" + v };
+                    var cm = new Material(m) { name = m.name + "_" + vs };
                     foreach (var kv in texProps[m]) cm.SetTexture(kv.Key, map[kv.Value]);
-                    AssetDatabase.CreateAsset(cm, AssetDatabase.GenerateUniqueAssetPath(tdir + "/" + m.name + "_" + v + ".mat"));
+                    AssetDatabase.CreateAsset(cm, AssetDatabase.GenerateUniqueAssetPath(tdir + "/" + m.name + "_" + vs + ".mat"));
                     clone[m] = cm;
                 }
                 // 3) 场景里用到这些材质的 renderer 临时换成拷贝（结束时换回；场景不存）
@@ -675,27 +714,27 @@ namespace Lanbai.Test
                         ctx.undo.Push("材质换回 " + rr.name, () => { if (r3 != null) r3.sharedMaterials = old; });
                         swapped++;
                     }
-                var vrec = new Dictionary<string, object> { { "storage_mb", mb }, { "renderers_swapped", (double)swapped } };
-                ctx.Metric("tex." + id + "." + v + ".storage_mb", mb, "这一档全部贴图的显存 / 存储读数（编辑器 TextureUtil；Crunch 的下载体积更小，以构建报告为准）");
+                var vrec = new Dictionary<string, object> { { "storage_mb", mb }, { "renderers_swapped", (double)swapped }, { "note", v.StartsWith("bc5") ? "bc5 只对法线贴图生效，别的贴图这一档用 BC7" : null } };
+                ctx.Metric("tex." + id + "." + vs + ".storage_mb", mb, "这一档全部贴图的显存 / 存储读数（编辑器 TextureUtil；Crunch 的下载体积更小，以构建报告为准）");
                 try
                 {
                     if (swapped == 0) throw new StepException("场景里没有 renderer 用这些材质");
                     foreach (var sid in shots)
                     {
-                        var s = Shoot(ctx, new Dictionary<string, object> { { "cam", sid } }, "tex/" + id, "__" + v);
+                        var s = Shoot(ctx, new Dictionary<string, object> { { "cam", sid } }, "tex/" + id, "__" + vs);
                         string f = (string)s["file"];
                         var px = Img.LoadPng(ctx.Out(f));
                         if (v == "raw") basePx[sid] = px;
                         else if (basePx.ContainsKey(sid))
                         {
                             double psnr = Img.Psnr(px, basePx[sid]);
-                            ctx.Metric("tex." + id + "." + v + "." + sid + ".psnr", psnr, "和不压缩那张比的 PSNR（dB，8 位 RGB）；越高越像");
+                            ctx.Metric("tex." + id + "." + vs + "." + sid + ".psnr", psnr, "和不压缩那张比的 PSNR（dB，8 位 RGB）；越高越像");
                             vrec[sid + "_psnr"] = psnr;
                         }
                     }
                 }
                 finally { foreach (var e in ctx.undo.RollbackTo(mark)) ctx.Warn(e); }
-                perVar[v] = vrec;
+                perVar[vs] = vrec;
             }
             rec["variants"] = perVar;
             rec["note"] = "贴图和材质都是沙盒里的拷贝，原资产的导入设置没动；场景里只是临时换了材质，没存";

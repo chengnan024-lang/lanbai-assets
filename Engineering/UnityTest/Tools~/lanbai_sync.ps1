@@ -1,27 +1,33 @@
 ﻿<#
-蓝白 · 仓库 → Unity 工程 同步脚本（D-40a #5）· 总工程师
+蓝白 · 仓库 → Unity 工程 同步脚本（D-40a #5；v2 按总导演终审改）· 总工程师
   只同步 HANDOFF_LOG 当前那一条点名的文件夹 / 文件：仓库里的 X/... → 工程的 Assets/Lanbai/X/...
-  默认只列出要做什么（新增 / 覆盖 / 删除），不改任何东西；加 -Apply 才动手。
-  动手之前：要覆盖或删除的文件先打包进 <工程>\LanbaiSyncBackup\<时间>.zip。
-  上次同步时每个文件的哈希记在 Assets\Lanbai\.lanbai_sync.json；工程里的文件在那之后被本地改过的，不覆盖、不删，除非加 -Force。
-  原地覆盖文件，从不删文件夹再拷（仓库里没有 .meta，GUID 在工程的 .meta 里，删了引用就断）；.meta 一概不碰。
-  从不自动删除：仓库里没有了的文件只列出来，要删请人工删。工程里本来就有的（Generated/、UdonPrograms/*.asset、本地自己加的）一概不动。
-  开始前先查仓库：.git/index.lock 在、git 不能用、有没提交的改动、不在 main 上，都停下（退出码 4），不自动修。
+  * 文件从 **commit** 取，不从工作区取：用 git ls-tree -r HEAD 列、git cat-file 逐个取出（D-41 #5 批准的部分检出里，
+    工作区里可能根本没有这些文件；以前从工作区列，会悄悄少拷）。HANDOFF_LOG 也从 HEAD 读。
+  * -Repo 必须写；HEAD 必须等于 origin/main（不等就停：先在仓库里照 HANDOFF_CHATGPT 更新到最新的 main）。
+  * 默认只列出（新增 / 覆盖 / 本地改过 / 仓库里没有了），不改任何东西；加 -Apply 才动手。
+  * 原地覆盖文件，从不删文件夹再拷；工程里的 .meta 一概不碰，仓库里的 .meta 一律不同步（GUID 在工程的 .meta 里）。
+  * 动手之前：要覆盖的文件（连 .meta）和上次的同步记录先打包进 <工程>\LanbaiSyncBackup\<时间>.zip。
+  * 同步记录 Assets\Lanbai\.lanbai_sync.json：每个文件的 git blob 哈希、来自哪个提交、什么时候同步的。
+    工程里的文件在那之后被本地改过的（或没有记录、又和仓库不一样的），整次拒绝，除非加 -Force。
+    **-Force 属于批量替换（HANDOFF_CHATGPT §F）**：先整工程备份、把只列出的清单推到 FromLocal/takeover/、小楠确认以后才用。
+  * 从不自动删除：仓库里没有了的文件只列出来，要删照 §F（挪到 _to_delete，经小楠确认）。
+  * git 的任何一步出错都当作出错（不当成“干净”），停下（退出码 4），不自动修。
 
 用法（PowerShell 5.1 或 7）：
-  powershell -ExecutionPolicy Bypass -File lanbai_sync.ps1 -Project "D:\Unity\Lanbai"                 # 只列出（看当前那一条）
-  powershell -ExecutionPolicy Bypass -File lanbai_sync.ps1 -Project "D:\Unity\Lanbai" -Apply          # 照列出的做
-  -Repo <路径>        仓库，默认 E:\IDMdownload\VRCC\lanbai-assets
+  powershell -ExecutionPolicy Bypass -File lanbai_sync.ps1 -Repo "<仓库>" -Project "<工程>"            # 只列出（看当前那一条）
+  powershell -ExecutionPolicy Bypass -File lanbai_sync.ps1 -Repo "<仓库>" -Project "<工程>" -Apply     # 照列出的做
+  -Repo <路径>        仓库（必填；要是更新到最新 main 的那一个，HANDOFF_CHATGPT §C 第 5 步）
+  -Project <路径>     Unity 工程（必填）
   -Entry <n>          HANDOFF_LOG 的第 n 条（1 = 最上面、最新的，默认）
   -EntryMatch <字>    标题里含这几个字的那一条（比 -Entry 优先）
   -Paths a/,b/c.json  不看 HANDOFF_LOG，直接指定（只在总导演 / 总工程师明说时用）
   -AcceptGuess        这一条没有“同步：”行、路径是从反引号里猜的时候，确认按猜的做
-  -Force              本地改过的文件也覆盖（照样先进备份）
+  -Force              本地改过的文件也覆盖（照样先进备份；见上面 §F）
 退出码：0 完成（或只列出）；1 没有可同步的；2 有本地改过的文件被拒绝（什么都没改）；3 脚本出错；4 仓库状态不对（什么都没改）。
 #>
 [CmdletBinding()]
 param(
-    [string]$Repo = 'E:\IDMdownload\VRCC\lanbai-assets',
+    [Parameter(Mandatory = $true)][string]$Repo,
     [Parameter(Mandatory = $true)][string]$Project,
     [int]$Entry = 1,
     [string]$EntryMatch = '',
@@ -32,26 +38,62 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$ToolVersion = '1.0.0'
+$ToolVersion = '2.0.0'
 try { [Console]::OutputEncoding = [Text.Encoding]::UTF8 } catch { }
 $Utf8NoBom = New-Object Text.UTF8Encoding $false
 
-# 永远不同步的：顶层的这些、任何一层叫这些名字的文件夹、这些扩展名（.py 会被 Unity 当文本导入；Source/、Renders/ 是云端的生成脚本和渲染图）
+# 永远不同步的：顶层的这些、任何一层叫这些名字的文件夹、这些扩展名
 $SkipTop = @('FromLocal', 'Art', '.git', '.github', '.claude')
 $SkipDirs = @('Source', 'Renders', '__pycache__', '.git')
-$SkipExt = @('.py', '.pyc', '.blend', '.blend1', '.ps1', '.sh')
+$SkipExt = @('.py', '.pyc', '.blend', '.blend1', '.ps1', '.sh', '.meta')
 $LocalModified = 'LOCAL_MODIFIED'
 
 function Say([string]$s) { Write-Host $s }
 function Norm([string]$p) { return ($p -replace '\\', '/').Trim('/') }
-function Sha([string]$file) { return (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant() }
-function GitOut([string]$dir, [string[]]$gitArgs) {
-    try {
-        $o = & git -C $dir @gitArgs 2>$null
-        if ($LASTEXITCODE -ne 0) { return $null }
-        return (($o | Out-String).Trim())
-    } catch { return $null }
+function Stop4([string]$msg) { Say ("停：" + $msg + " 什么都没改。"); exit 4 }
+
+# git：用 Process 跑，stdout / stderr 分开读（PowerShell 5.1 下 `& git ... 2>$null` 会把 stderr 变成异常或吞掉）
+function GitRun([string[]]$gitArgs, [string]$outFile = $null) {
+    $psi = New-Object System.Diagnostics.ProcessStartInfo
+    $psi.FileName = 'git'
+    $q = @('-C', $Repo) + $gitArgs | ForEach-Object { if ($_ -match '[\s"]') { '"' + ($_ -replace '"', '\"') + '"' } else { $_ } }
+    $psi.Arguments = ($q -join ' ')
+    $psi.UseShellExecute = $false
+    $psi.RedirectStandardOutput = $true
+    $psi.RedirectStandardError = $true
+    $psi.CreateNoWindow = $true
+    try { $p = [System.Diagnostics.Process]::Start($psi) } catch { return @{ ok = $false; code = -1; out = ''; err = 'git 跑不起来：' + $_.Exception.Message } }
+    $errTask = $p.StandardError.ReadToEndAsync()
+    $out = ''
+    if ($outFile) {
+        $fs = [System.IO.File]::Create($outFile)
+        try { $p.StandardOutput.BaseStream.CopyTo($fs) } finally { $fs.Dispose() }        # 原样的字节（二进制文件）
+    } else {
+        $ms = New-Object System.IO.MemoryStream
+        $p.StandardOutput.BaseStream.CopyTo($ms)
+        $out = [Text.Encoding]::UTF8.GetString($ms.ToArray())
+    }
+    $p.WaitForExit()
+    return @{ ok = ($p.ExitCode -eq 0); code = $p.ExitCode; out = $out; err = $errTask.Result }
 }
+function GitText([string[]]$gitArgs, [string]$what) {
+    $r = GitRun $gitArgs
+    if (-not $r.ok) { Stop4 ($what + " 失败（git " + ($gitArgs -join ' ') + "，退出码 " + $r.code + "）：" + $r.err.Trim()) }
+    return $r.out
+}
+
+# 文件的 git blob 哈希（sha1("blob <长度>\0" + 内容)），和 ls-tree 给的一样，用来比“工程里的这个文件是不是仓库里那一版”
+function BlobSha([string]$file) {
+    $bytes = [System.IO.File]::ReadAllBytes($file)
+    $head = [Text.Encoding]::ASCII.GetBytes("blob " + $bytes.Length + [char]0)
+    $sha = [System.Security.Cryptography.SHA1]::Create()
+    try {
+        $sha.TransformBlock($head, 0, $head.Length, $null, 0) | Out-Null
+        $sha.TransformFinalBlock($bytes, 0, $bytes.Length) | Out-Null
+        return (($sha.Hash | ForEach-Object { $_.ToString('x2') }) -join '')
+    } finally { $sha.Dispose() }
+}
+function Sha256([string]$file) { return (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant() }
 
 function Skip([string]$rel) {
     $parts = (Norm $rel).Split('/')
@@ -64,6 +106,7 @@ function Skip([string]$rel) {
 }
 
 try {
+    if (-not (Test-Path -LiteralPath $Repo)) { Stop4 "仓库不在：$Repo" }
     $Repo = (Resolve-Path -LiteralPath $Repo).Path
     $Project = (Resolve-Path -LiteralPath $Project).Path
     if (-not (Test-Path -LiteralPath (Join-Path $Project 'Assets'))) { throw "不是 Unity 工程（没有 Assets 文件夹）：$Project" }
@@ -71,7 +114,21 @@ try {
     $RecordPath = Join-Path $Lanbai '.lanbai_sync.json'
     $Stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 
-    # ── 1. 这次同步哪些路径 ─────────────────────────────────────
+    # ── 1. 仓库的状态（任何一步出错都停，fail closed）─────────────
+    $lock = Join-Path (Join-Path $Repo '.git') 'index.lock'
+    if (Test-Path -LiteralPath $lock) { Stop4 "仓库里有 $lock（上一次 git 没正常结束，或者还有 git 在跑）。不自动删它：确认没有 git 在跑以后人工处理，再重跑。" }
+    $commit = (GitText @('rev-parse', 'HEAD') '读 HEAD').Trim()
+    $branch = (GitText @('rev-parse', '--abbrev-ref', 'HEAD') '读分支').Trim()
+    $originMain = (GitText @('rev-parse', 'origin/main') '读 origin/main').Trim()
+    $status = GitText @('status', '--porcelain') 'git status'
+    Say "蓝白同步 $ToolVersion"
+    Say "  仓库 $Repo"
+    Say "  工程 $Project"
+    Say "  仓库 HEAD $commit（$branch），origin/main $originMain"
+    if ($commit -ne $originMain) { Stop4 "仓库的 HEAD 不是 origin/main（$commit ≠ $originMain）。先照 HANDOFF_CHATGPT §C 第 5 步把这个仓库更新到最新的 main，或者 -Repo 换成更新过的那一个。" }
+    if ($status.Trim().Length -gt 0) { Say $status; Stop4 "仓库里有没提交的改动（git status --porcelain 不是空的）。不自动处理：人工看过再重跑。" }
+
+    # ── 2. 这次同步哪些路径（HANDOFF_LOG 从 HEAD 读）──────────────
     $mode = 'entry'
     $entryTitle = ''
     $sel = New-Object System.Collections.Generic.List[string]
@@ -81,9 +138,8 @@ try {
         foreach ($p in $Paths) { foreach ($q in ($p -split ',')) { if ($q.Trim()) { $sel.Add((Norm $q.Trim())) } } }
         $entryTitle = '（-Paths 指定）'
     } else {
-        $log = Join-Path $Repo 'HANDOFF_LOG.md'
-        if (-not (Test-Path -LiteralPath $log)) { throw "仓库里没有 HANDOFF_LOG.md：$Repo" }
-        $lines = [IO.File]::ReadAllLines($log, [Text.Encoding]::UTF8)
+        $logText = GitText @('show', 'HEAD:HANDOFF_LOG.md') '从 HEAD 读 HANDOFF_LOG.md'
+        $lines = $logText -split "`r?`n"
         $entries = @()
         $cur = $null
         foreach ($l in $lines) {
@@ -103,20 +159,16 @@ try {
             if ($t -match '^(\*\*)?同步[:：]') { $explicit = $true; foreach ($m in $rx.Matches($l)) { $sel.Add((Norm $m.Groups[1].Value)) } }
         }
         if (-not $explicit) {
-            # 没有“同步：”行：从反引号里猜（只认仓库里真有的路径；“不要拷 / 别拷 / 先别导入”那几行里的当成排除）
             $mode = 'guess'
             $negRx = [regex]'不要拷|别拷|不拷|不同步|别导入|先别导入|不要导入|不用拷'
             foreach ($l in $pick.body) {
-                # 一行里“不要拷”后面的路径算排除，前面的照样算要拷（“拷 `Gate/`，不要拷 `Gate/Source/`”）
                 $nm = $negRx.Match($l)
                 $negAt = $(if ($nm.Success) { $nm.Index } else { [int]::MaxValue })
                 foreach ($m in $rx.Matches($l)) {
                     $neg = $m.Index -gt $negAt
                     $tok = Norm $m.Groups[1].Value
                     if ($tok -notmatch '^[A-Za-z0-9_][A-Za-z0-9_~.\-/]*$') { continue }
-                    $full = Join-Path $Repo $tok
-                    if (-not (Test-Path -LiteralPath $full)) { continue }
-                    if ((Norm $tok).Split('/').Count -eq 1 -and -not (Test-Path -LiteralPath $full -PathType Container)) { continue }
+                    if ($tok.Split('/').Count -eq 1 -and $tok -notmatch '/$' -and $m.Groups[1].Value -notmatch '/$') { continue }
                     if ($neg) { $excl.Add($tok) } else { $sel.Add($tok) }
                 }
             }
@@ -124,66 +176,62 @@ try {
     }
     $sel = @($sel | Select-Object -Unique)
     $excl = @($excl | Select-Object -Unique)
-
-    Say "蓝白同步 $ToolVersion"
-    Say "  仓库 $Repo"
-    Say "  工程 $Project"
     Say "  条目「$entryTitle」（$(if ($mode -eq 'guess') { '没有“同步：”行，路径是猜的' } elseif ($mode -eq 'paths') { '-Paths 指定' } else { '按“同步：”行' })）"
     Say "  同步：$(if ($sel.Count) { $sel -join '  ' } else { '（没有）' })"
     if ($excl.Count) { Say "  不同步：$($excl -join '  ')" }
     if ($sel.Count -eq 0) { Say '没有要同步的路径。'; exit 1 }
 
-    # ── 2. 仓库的状态 ───────────────────────────────────────────
-    $lock = Join-Path (Join-Path $Repo '.git') 'index.lock'
-    if (Test-Path -LiteralPath $lock) { Say "停：仓库里有 $lock（上一次 git 没正常结束，或者还有 git 在跑）。不自动删它：确认没有 git 在跑以后人工处理，再重跑。什么都没改。"; exit 4 }
-    $commit = GitOut $Repo @('rev-parse', 'HEAD')
-    $branch = GitOut $Repo @('rev-parse', '--abbrev-ref', 'HEAD')
-    $dirty = GitOut $Repo @('status', '--porcelain')
-    Say "  仓库提交 $(if ($commit) { $commit } else { '（读不到：没装 git 或不是 git 仓库）' })  分支 $branch$(if ($dirty) { '  ⚠ 仓库里有没提交的改动' } else { '' })"
-    if (-not $commit) { Say '停：读不到仓库的提交号（没装 git，或者不是 git 仓库）。什么都没改。'; exit 4 }
-    if ($dirty) { Say "停：仓库里有没提交的改动（git status --porcelain 不是空的），同步的内容说不清是哪个提交。不自动处理：人工看过再重跑。什么都没改。"; Say $dirty; exit 4 }
-    if ($branch -ne 'main') { Say "停：仓库不在 main 上（$branch）。本地测试只用 main。什么都没改。"; exit 4 }
+    # ── 3. 从 commit 列文件（git ls-tree -r HEAD）───────────────
+    $repoFiles = @{}          # 相对路径 → blob 哈希
+    foreach ($s in $sel) {
+        if ($SkipTop -contains $s.Split('/')[0]) { Say "  跳过 $s（这个文件夹从不进工程）"; continue }
+        $lt = GitText @('ls-tree', '-r', '-z', '--full-tree', 'HEAD', '--', $s) "列 HEAD 里的 $s"
+        $n = 0
+        foreach ($rec in ($lt -split [char]0)) {
+            if (-not $rec) { continue }
+            $tab = $rec.IndexOf("`t")
+            if ($tab -lt 0) { continue }
+            $meta = $rec.Substring(0, $tab).Split(' ')
+            $rel = Norm $rec.Substring($tab + 1)
+            if ($meta.Count -lt 3 -or $meta[1] -ne 'blob' -or $meta[0] -eq '120000') { continue }   # 只要普通文件（不要子模块、软链接）
+            if ($rel -ne $s -and -not $rel.StartsWith($s.TrimEnd('/') + '/')) { continue }
+            if (Skip $rel) { continue }
+            $ex = $false
+            foreach ($x in $excl) { if ($rel -eq $x -or $rel.StartsWith($x.TrimEnd('/') + '/')) { $ex = $true; break } }
+            if ($ex) { continue }
+            $repoFiles[$rel] = $meta[2]
+            $n++
+        }
+        if ($n -eq 0) { Say "  ⚠ HEAD 里没有 $s 下的文件（或全被排除了）" }
+    }
 
-    # ── 3. 上次的记录 ───────────────────────────────────────────
+    # ── 4. 上次的记录 ───────────────────────────────────────────
     $rec = @{}
     $recRaw = $null
     if (Test-Path -LiteralPath $RecordPath) {
         $recRaw = [IO.File]::ReadAllText($RecordPath, [Text.Encoding]::UTF8)
         $j = $recRaw | ConvertFrom-Json
-        if ($j.files) { foreach ($p in $j.files.PSObject.Properties) { $rec[$p.Name] = @{ sha256 = $p.Value.sha256; repo = $p.Value.repo; synced_at = $p.Value.synced_at } } }
+        if ($j.files) { foreach ($p in $j.files.PSObject.Properties) { $rec[$p.Name] = @{ blob = $p.Value.blob; sha256 = $p.Value.sha256; commit = $p.Value.commit; repo = $p.Value.repo; synced_at = $p.Value.synced_at } } }
+    }
+    function SameAsRecord($r, [string]$file) {
+        if ($r -eq $null) { return $false }
+        if ($r.blob) { return (BlobSha $file) -eq $r.blob }
+        if ($r.sha256) { return (Sha256 $file) -eq $r.sha256 }      # v1 的记录
+        return $false
     }
 
-    # ── 4. 逐个文件比 ───────────────────────────────────────────
+    # ── 5. 逐个文件比 ───────────────────────────────────────────
     $plan = New-Object System.Collections.Generic.List[object]
-    $repoFiles = @{}
-    foreach ($s in $sel) {
-        if (Skip ($s + '/x')) { if ((Norm $s).Split('/')[0] -in $SkipTop) { Say "  跳过 $s（这个文件夹从不进工程）"; continue } }
-        $full = Join-Path $Repo $s
-        if (-not (Test-Path -LiteralPath $full)) { Say "  ⚠ 仓库里没有 $s，跳过"; continue }
-        if (Test-Path -LiteralPath $full -PathType Container) { $files = Get-ChildItem -LiteralPath $full -Recurse -File -Force }
-        else { $files = @(Get-Item -LiteralPath $full) }
-        foreach ($f in $files) {
-            $rel = Norm ($f.FullName.Substring($Repo.Length))
-            if (Skip $rel) { continue }
-            $ex = $false
-            foreach ($x in $excl) { if ($rel -eq $x -or $rel.StartsWith($x.TrimEnd('/') + '/')) { $ex = $true; break } }
-            if ($ex) { continue }
-            $repoFiles[$rel] = $f.FullName
-        }
-    }
     foreach ($rel in ($repoFiles.Keys | Sort-Object)) {
         $key = 'Assets/Lanbai/' + $rel
         $dst = Join-Path $Lanbai ($rel -replace '/', [IO.Path]::DirectorySeparatorChar)
-        $src = $repoFiles[$rel]
-        $hs = Sha $src
-        if (-not (Test-Path -LiteralPath $dst)) { $plan.Add(@{ op = 'ADD'; key = $key; src = $src; dst = $dst; sha = $hs; repo = $rel }); continue }
-        $hd = Sha $dst
-        if ($hd -eq $hs) { $plan.Add(@{ op = 'SAME'; key = $key; src = $src; dst = $dst; sha = $hs; repo = $rel }); continue }
+        $blob = $repoFiles[$rel]
+        if (-not (Test-Path -LiteralPath $dst)) { $plan.Add(@{ op = 'ADD'; key = $key; dst = $dst; blob = $blob; repo = $rel }); continue }
+        if ((BlobSha $dst) -eq $blob) { $plan.Add(@{ op = 'SAME'; key = $key; dst = $dst; blob = $blob; repo = $rel }); continue }
         $r = $rec[$key]
-        if ($r -ne $null -and $r.sha256 -eq $hd) { $plan.Add(@{ op = 'OVERWRITE'; key = $key; src = $src; dst = $dst; sha = $hs; repo = $rel }) }
-        else { $plan.Add(@{ op = $LocalModified; key = $key; src = $src; dst = $dst; sha = $hs; repo = $rel; why = $(if ($r -eq $null) { '没有同步记录，和仓库不一样' } else { '上次同步以后在本地改过' }) }) }
+        if (SameAsRecord $r $dst) { $plan.Add(@{ op = 'OVERWRITE'; key = $key; dst = $dst; blob = $blob; repo = $rel }) }
+        else { $plan.Add(@{ op = $LocalModified; key = $key; dst = $dst; blob = $blob; repo = $rel; why = $(if ($r -eq $null) { '没有同步记录，和仓库不一样' } else { '上次同步以后在本地改过' }) }) }
     }
-    # 仓库里没有了的：上次由本脚本拷进去、在这次同步的路径下、现在仓库里没有了（或现在被排除）的文件。只列出，不删
     foreach ($key in @($rec.Keys)) {
         $rel = $key.Substring('Assets/Lanbai/'.Length)
         $under = $false
@@ -191,19 +239,16 @@ try {
         if (-not $under -or $repoFiles.ContainsKey($rel)) { continue }
         $dst = Join-Path $Lanbai ($rel -replace '/', [IO.Path]::DirectorySeparatorChar)
         if (-not (Test-Path -LiteralPath $dst)) { $plan.Add(@{ op = 'FORGET'; key = $key; dst = $dst }); continue }
-        $hd = Sha $dst
-        $plan.Add(@{ op = 'GONE'; key = $key; dst = $dst; why = $(if ($hd -eq $rec[$key].sha256) { '上次同步以后没改过' } else { '本地改过' }) })
+        $plan.Add(@{ op = 'GONE'; key = $key; dst = $dst; why = $(if (SameAsRecord $rec[$key] $dst) { '上次同步以后没改过' } else { '本地改过' }) })
     }
-    # 工程里多出来的（不是本脚本拷的）：只数一下，不动
     $extra = 0
     foreach ($s in $sel) {
         $d = Join-Path $Lanbai ($s -replace '/', [IO.Path]::DirectorySeparatorChar)
         if (Test-Path -LiteralPath $d -PathType Container) {
             foreach ($f in (Get-ChildItem -LiteralPath $d -Recurse -File -Force)) {
                 if ($f.Name.EndsWith('.meta')) { continue }
-                $k = 'Assets/Lanbai/' + (Norm ($f.FullName.Substring($Lanbai.Length)))
-                $r2 = $k.Substring('Assets/Lanbai/'.Length)
-                if (-not $repoFiles.ContainsKey($r2) -and -not $rec.ContainsKey($k)) { $extra++ }
+                $r2 = Norm ($f.FullName.Substring($Lanbai.Length))
+                if (-not $repoFiles.ContainsKey($r2) -and -not $rec.ContainsKey('Assets/Lanbai/' + $r2)) { $extra++ }
             }
         }
     }
@@ -214,13 +259,11 @@ try {
     Say "计划：新增 $([int]$count['ADD'])，覆盖 $([int]$count['OVERWRITE'])，一样的 $([int]$count['SAME'])，本地改过的 $([int]$count[$LocalModified])；仓库里没有了的 $([int]$count['GONE']) 个只列出、不删；工程里多出来的 $extra 个不动"
     foreach ($op in @('ADD', 'OVERWRITE', $LocalModified, 'GONE')) {
         foreach ($p in ($plan | Where-Object { $_.op -eq $op })) {
-            $tag = @{ 'ADD' = '  + 新增  '; 'OVERWRITE' = '  ~ 覆盖  '; 'GONE' = '  ? 仓库里没有了（不自动删，要删请人工删）'
+            $tag = @{ 'ADD' = '  + 新增  '; 'OVERWRITE' = '  ~ 覆盖  '; 'GONE' = '  ? 仓库里没有了（不自动删）'
                       $LocalModified = $(if ($Force) { '  ! 本地改过，-Force 照样覆盖 ' } else { '  ! 本地改过，不覆盖 ' }) }[$op]
             Say ("$tag$($p.key)" + $(if ($p.why) { "（$($p.why)）" } else { '' }))
         }
     }
-
-    # 计划另存一份（工程的 LanbaiReports/sync/，不在 Assets 里）
     $repDir = Join-Path (Join-Path $Project 'LanbaiReports') 'sync'
     New-Item -ItemType Directory -Force -Path $repDir | Out-Null
     $planOut = @{ tool_version = $ToolVersion; at = (Get-Date -Format 'o'); applied = [bool]$Apply; force = [bool]$Force; mode = $mode; entry = $entryTitle; repo_commit = $commit; paths = $sel; excluded = $excl;
@@ -231,14 +274,14 @@ try {
     if (-not $Apply) {
         Say ''
         Say '只列出，没有改任何东西。照这个做：加 -Apply。'
-        if ($blocked.Count -gt 0 -and -not $Force) { Say "有 $($blocked.Count) 个本地改过的文件：-Apply 时会整个拒绝；确认要用仓库的版本盖掉，再加 -Force（盖之前会进备份）。" }
+        if ($blocked.Count -gt 0 -and -not $Force) { Say "有 $($blocked.Count) 个本地改过的文件：-Apply 时会整个拒绝。-Force 属于批量替换（HANDOFF_CHATGPT §F）：先整工程备份、把这份清单推到 FromLocal/takeover/、小楠确认以后才用。" }
         if ($mode -eq 'guess') { Say '这一条没有“同步：”行，路径是猜的：核对上面的“同步：”一行，对的话 -Apply 时再加 -AcceptGuess。' }
         exit 0
     }
     if ($mode -eq 'guess' -and -not $AcceptGuess) { Say '这一条没有“同步：”行，路径是猜的；核对过就加 -AcceptGuess 再跑。什么都没改。'; exit 1 }
-    if ($blocked.Count -gt 0 -and -not $Force) { Say "拒绝：$($blocked.Count) 个文件在本地改过（见上面的 !）。什么都没改。要盖掉就加 -Force。"; exit 2 }
+    if ($blocked.Count -gt 0 -and -not $Force) { Say "拒绝：$($blocked.Count) 个文件在本地改过（见上面的 !）。什么都没改。停，告诉小楠；要用仓库的版本盖掉，照 §F 先备份、推清单、经小楠确认再加 -Force。"; exit 2 }
 
-    # ── 5. 备份要覆盖 / 删除的 ─────────────────────────────────
+    # ── 6. 备份要覆盖的 ─────────────────────────────────────────
     $touch = @($plan | Where-Object { $_.op -in @('OVERWRITE', $LocalModified) })
     if ($touch.Count -gt 0 -or $recRaw) {
         Add-Type -AssemblyName System.IO.Compression -ErrorAction SilentlyContinue
@@ -257,29 +300,37 @@ try {
         Say "备份：$zipPath（$($touch.Count) 个文件$(if ($recRaw) { ' + 上次的同步记录' } else { '' })）"
     }
 
-    # ── 6. 照计划做 ─────────────────────────────────────────────
+    # ── 7. 照计划做：从 commit 取出（git cat-file blob），先写临时文件、核对哈希，再原地覆盖 ───
     $now = Get-Date -Format 'o'
     foreach ($p in $plan) {
-        switch -Wildcard ($p.op) {
-            'ADD' { New-Item -ItemType Directory -Force -Path (Split-Path -Parent $p.dst) | Out-Null; Copy-Item -LiteralPath $p.src -Destination $p.dst -Force; $rec[$p.key] = @{ sha256 = $p.sha; repo = $p.repo; synced_at = $now } }
-            'OVERWRITE' { Copy-Item -LiteralPath $p.src -Destination $p.dst -Force; $rec[$p.key] = @{ sha256 = $p.sha; repo = $p.repo; synced_at = $now } }
-            'SAME' { $rec[$p.key] = @{ sha256 = $p.sha; repo = $p.repo; synced_at = $now } }
-            'FORGET' { $rec.Remove($p.key) }
-            $LocalModified { Copy-Item -LiteralPath $p.src -Destination $p.dst -Force; $rec[$p.key] = @{ sha256 = $p.sha; repo = $p.repo; synced_at = $now } }
+        if ($p.op -in @('ADD', 'OVERWRITE', $LocalModified)) {
+            $dir = Split-Path -Parent $p.dst
+            New-Item -ItemType Directory -Force -Path $dir | Out-Null
+            $tmp = $p.dst + '.lanbai_sync_tmp'
+            $r = GitRun @('cat-file', 'blob', $p.blob) $tmp
+            if (-not $r.ok) { if (Test-Path -LiteralPath $tmp) { Remove-Item -LiteralPath $tmp -Force }; throw ("取不出 " + $p.repo + "（" + $p.blob + "）：" + $r.err.Trim()) }
+            if ((BlobSha $tmp) -ne $p.blob) { Remove-Item -LiteralPath $tmp -Force; throw ("取出来的 " + $p.repo + " 哈希不对") }
+            Move-Item -LiteralPath $tmp -Destination $p.dst -Force
+            $rec[$p.key] = @{ blob = $p.blob; commit = $commit; repo = $p.repo; synced_at = $now }
         }
+        elseif ($p.op -eq 'SAME') {
+            $old = $rec[$p.key]
+            $rec[$p.key] = @{ blob = $p.blob; commit = $(if ($old -and $old.blob -eq $p.blob -and $old.commit) { $old.commit } else { $commit }); repo = $p.repo; synced_at = $(if ($old -and $old.synced_at) { $old.synced_at } else { $now }) }
+        }
+        elseif ($p.op -eq 'FORGET') { $rec.Remove($p.key) }
     }
 
-    # ── 7. 记录 ─────────────────────────────────────────────────
+    # ── 8. 记录（每个文件记它来自哪个提交）─────────────────────
     $filesObj = [ordered]@{}
-    foreach ($k in ($rec.Keys | Sort-Object)) { $filesObj[$k] = [ordered]@{ sha256 = $rec[$k].sha256; repo = $rec[$k].repo; synced_at = $rec[$k].synced_at } }
+    foreach ($k in ($rec.Keys | Sort-Object)) { $filesObj[$k] = [ordered]@{ blob = $rec[$k].blob; sha256 = $rec[$k].sha256; commit = $rec[$k].commit; repo = $rec[$k].repo; synced_at = $rec[$k].synced_at } }
     $out = [ordered]@{
-        tool = 'lanbai_sync.ps1'; tool_version = $ToolVersion; synced_at = $now; repo_path = $Repo; repo_commit = $commit; repo_branch = $branch; repo_dirty = [bool]$dirty
+        tool = 'lanbai_sync.ps1'; tool_version = $ToolVersion; synced_at = $now; repo_path = $Repo; repo_commit = $commit; repo_branch = $branch; origin_main = $originMain
         entry = $entryTitle; mode = $mode; paths = $sel; excluded = $excl; forced = [bool]$Force; files = $filesObj
     }
     New-Item -ItemType Directory -Force -Path $Lanbai | Out-Null
     [IO.File]::WriteAllText($RecordPath, ($out | ConvertTo-Json -Depth 6), $Utf8NoBom)
-    Say "完成：新增 $([int]$count['ADD'])，覆盖 $([int]$count['OVERWRITE'] + $(if ($Force) { [int]$count[$LocalModified] } else { 0 }))；仓库里没有了的 $([int]$count['GONE']) 个没删。记录：$RecordPath"
-    if ([int]$count['GONE'] -gt 0) { Say '仓库里没有了的文件还留在工程里：要删就在 Unity 的 Project 窗口里删（连 .meta 一起），别在资源管理器里只删一半。' }
+    Say "完成：新增 $([int]$count['ADD'])，覆盖 $([int]$count['OVERWRITE'] + $(if ($Force) { [int]$count[$LocalModified] } else { 0 }))（都从提交 $commit 取）；仓库里没有了的 $([int]$count['GONE']) 个没删。记录：$RecordPath"
+    if ([int]$count['GONE'] -gt 0) { Say '仓库里没有了的文件还留在工程里：要删照 HANDOFF_CHATGPT §F（挪到 _to_delete、连 .meta、经小楠确认）。' }
     Say '回到 Unity，等它导入、编译完，再跑测试。'
     exit 0
 } catch {

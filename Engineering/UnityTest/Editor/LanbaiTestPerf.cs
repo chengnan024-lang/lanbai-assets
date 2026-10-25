@@ -79,7 +79,7 @@ namespace Lanbai.Test
                     ctx.Metric(k + ".vr_cpu_ms", (double)vr["cpu_ms"]);
                     var rs = (Dictionary<string, object>)rec["render_stats"];
                     foreach (var name in new[] { "draw_calls", "batches", "setpass", "triangles", "vertices", "shadow_casters" })
-                        if (rs.ContainsKey(name)) ctx.Metric(k + "." + name, (double)rs[name]);
+                        if (rs.ContainsKey(name) && rs[name] != null) ctx.Metric(k + "." + name, (double)rs[name]);
                 }
                 finally { Object.DestroyImmediate(probe); }
                 ctx.perf.Add(rec);
@@ -114,12 +114,15 @@ namespace Lanbai.Test
                     cam.Render(); Sync(rt, probe);
                     long d1 = rDraw.CurrentValue, b1 = rBatch.CurrentValue, s1 = rSet.CurrentValue, t1 = rTri.CurrentValue, v1 = rVert.CurrentValue, c1 = rShadow.CurrentValue;
                     r["recorder_valid"] = rDraw.Valid;
-                    r["draw_calls"] = (double)(d1 - d0);
-                    r["batches"] = (double)(b1 - b0);
-                    r["setpass"] = (double)(s1 - s0);
-                    r["triangles"] = (double)(t1 - t0);
-                    r["vertices"] = (double)(v1 - v0);
-                    r["shadow_casters"] = (double)(c1 - c0);
+                    // 编辑模式手动 Render 时 ProfilerRecorder 常常读成 0（HANDOFF_CHATGPT §G）：读到 0 就记“没量到”（null），不当成 0
+                    bool zero = !rDraw.Valid || (d1 - d0 == 0 && t1 - t0 == 0);
+                    r["recorder_zero"] = zero;
+                    r["draw_calls"] = zero ? null : (object)(double)(d1 - d0);
+                    r["batches"] = zero ? null : (object)(double)(b1 - b0);
+                    r["setpass"] = zero ? null : (object)(double)(s1 - s0);
+                    r["triangles"] = zero ? null : (object)(double)(t1 - t0);
+                    r["vertices"] = zero ? null : (object)(double)(v1 - v0);
+                    r["shadow_casters"] = zero ? null : (object)(double)(c1 - c0);
                     r["unitystats_after"] = new Dictionary<string, object>
                     {
                         { "draw_calls", (double)UnityStats.drawCalls }, { "batches", (double)UnityStats.batches }, { "setpass", (double)UnityStats.setPassCalls },

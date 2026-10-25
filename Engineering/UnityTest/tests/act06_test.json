@@ -1,5 +1,5 @@
 {
-  "id": "act06_dawn",
+  "id": "act06_test",
   "title": "第 6 幕 · 晨（254–266 s 黑 → 晨，三个视向：正前 / 天窗 / 车门）",
   "source": "Act06_Dawn/README_Act06.md §0、§5（D-35 r3）；D-40 #8 标杆画面 C「晨光云海」",
   "requires": {
@@ -40,9 +40,15 @@
   "allowed_writes": [
     "Assets/Lanbai/Act06_Dawn/Generated/**",
     "Assets/Lanbai/Act06_Dawn/Textures/**",
-    "Assets/Lanbai/UdonPrograms/**"
+    "Assets/Lanbai/Clouds_v2/Generated/**",
+    "Assets/Lanbai/UdonPrograms/**",
+    "Assets/SerializedUdonPrograms/**"
   ],
-  "allowed_writes_why": "蓝白/Build/Act06 自己要写的：Generated/（网格、材质、临时反射立方图 Refl_S6_standin）、两张起伏贴图的导入设置、U# 程序资产",
+  "allowed_writes_why": "蓝白/Build/Act06 自己要写的：Generated/（网格、材质、临时反射立方图 Refl_S6_standin）、两张起伏贴图的导入设置、它先调的 蓝白/Clouds v2/Build Materials 写的 Clouds_v2/Generated/、U# 程序资产和它的序列化结果",
+  "backup_before": [
+    "Assets/Lanbai/UdonPrograms/**",
+    "Assets/SerializedUdonPrograms/**"
+  ],
   "camera_template_why": "不写 camera_template：用场景里第一台带 PostProcessLayer 的相机当参考（主场景的相机名没定）",
   "time": [
     {
@@ -70,6 +76,27 @@
   ],
   "udon_programs_why": "D-41：开搭之前用 Common/Editor/LanbaiUdonPrograms 建好这些 U# 程序资产、等 SDK 初始化完（2/2）；搭建菜单就不会在半路排队",
   "build": [
+    {
+      "type": "method",
+      "name": "Lanbai.Grading.LanbaiGradeBuilder.Solo",
+      "arg": "S6",
+      "expect": "solo S6",
+      "why": "S6 调色单独开到 1（第 6 幕在剪 1 的黑下硬切 S6，LB_Journey.ApplyGrades；编辑模式里 LB_Journey 不跑，所以测试自己设）。场景是沙盒里的拷贝，不存"
+    },
+    {
+      "type": "set_field_objects_active",
+      "component": "LB_Journey",
+      "fields": [
+        "*Group",
+        "*group",
+        "seaA",
+        "seaB",
+        "skyDome"
+      ],
+      "value": false,
+      "optional": true,
+      "why": "关掉 LB_Journey 的旧占位组（README_集成 §1 / §3：包装好的幕，旧占位由本地关）；编辑模式里 LB_Journey 不跑，所以测试自己关。字段名按集成说明里列过的，对不上的只记一句"
+    },
     {
       "type": "call",
       "object": "**/Lanbai_SkyPresets/dawn",
@@ -284,6 +311,18 @@
       "w": 1280,
       "h": 720,
       "ss": 1
+    },
+    {
+      "id": "hero_static",
+      "cam": "hero",
+      "kind": "static",
+      "t": 266.34,
+      "fps": 90,
+      "frames": 45,
+      "w": 1280,
+      "h": 720,
+      "ss": 1,
+      "why": "对照：相机不动、时间不动"
     }
   ],
   "perf": [
@@ -375,7 +414,7 @@
     },
     {
       "id": "hero_shimmer",
-      "metric": "seq.hero_micro.hf_frac",
+      "metric": "seq.hero_micro.shimmer_frac",
       "op": "<=",
       "value": 0.01,
       "gate": false,
@@ -383,7 +422,7 @@
     },
     {
       "id": "door_shimmer",
-      "metric": "seq.door_micro.hf_frac",
+      "metric": "seq.door_micro.shimmer_frac",
       "op": "<=",
       "value": 0.01,
       "gate": false,

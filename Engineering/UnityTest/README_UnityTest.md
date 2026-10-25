@@ -10,7 +10,7 @@
 
 ## 0. 每次测试，阿白照这个做
 
-1. 仓库：在 `E:\IDMdownload\VRCC\lanbai-assets` 里 `git pull`（要在 `main` 上）。**第一次会很大**（本地停在 29fa6f2，main 领先近 500 个提交，约 1.1 GiB）：让它跑完，别中途关掉；中途断了、留下 `.git\index.lock` 的话，同步脚本会停下（§2），不自动修。
+1. 仓库：照 `HANDOFF_CHATGPT.md` §C 第 5 步，把**你在用的那个仓库**（D-41 #5 批准的浅克隆 + 部分检出）更新到最新的 `main`。下面的 `<仓库>` 都指它。同步脚本会核对它的 HEAD 等于 `origin/main`，不等就停（§2）；`.git\index.lock` 在也停，不自动修。
 2. 同步（§2）。先只列出，看一眼，再 `-Apply`。**第一次同步（以及任何要 `-Force` 的时候）属于“批量替换”（`HANDOFF_CHATGPT.md` §F），三步缺一不可**：
    1. 先把整个 Unity 工程打一个 zip 备份（关掉 Unity 再打）；
    2. 把只列出的那份清单（屏幕上的输出，和 `<工程>\LanbaiReports\sync\<时间>_plan.json`）推到仓库的 `FromLocal/takeover/`，给小楠看；
@@ -18,11 +18,13 @@
 
    平时（不用 `-Force`）：
    ```powershell
-   cd E:\IDMdownload\VRCC\lanbai-assets
-   powershell -ExecutionPolicy Bypass -File "Engineering\UnityTest\Tools~\lanbai_sync.ps1" -Project "<工程>"
-   powershell -ExecutionPolicy Bypass -File "Engineering\UnityTest\Tools~\lanbai_sync.ps1" -Project "<工程>" -Apply
+   cd "<仓库>"
+   cmd /c "git show HEAD:Engineering/UnityTest/Tools~/lanbai_sync.ps1 > %TEMP%\lanbai_sync.ps1"   # 部分检出里脚本可能不在工作区：从提交里原样取出
+   powershell -ExecutionPolicy Bypass -File "$env:TEMP\lanbai_sync.ps1" -Repo "<仓库>" -Project "<工程>"
+   powershell -ExecutionPolicy Bypass -File "$env:TEMP\lanbai_sync.ps1" -Repo "<仓库>" -Project "<工程>" -Apply
    ```
-3. 打开 Unity，等导入、编译完。Console 里有编译错误就停：把 Console 原样推回来（工具的预检也会因为编译错误 BLOCKED）。
+   （用 `cmd /c` 重定向是为了字节原样：PowerShell 5.1 自己的 `>` 会按控制台编码转一遍，中文会坏。工作区里有这个脚本的话直接用它也行。）
+3. **开 Unity 之前**过 `HANDOFF_CHATGPT.md` 的几道关：C 盘 / E 盘空间和可用内存（不够就停，告诉小楠）、备份、弹窗一律按“不改”回答；**第一次用这个工具之前要小楠同意**（工具的预检会查同意记录，§3）。然后打开 Unity，等导入、编译完。Console 里有编译错误就停：把 Console 原样推回来（工具的预检也会因为编译错误 BLOCKED）。
 4. 跑测试：菜单 **蓝白/Test/Run gate_clouds_test**，或者关掉 Unity 用批处理（§3）。
 5. 看退出码和 `summary.md`（§4）。
 6. 把整个输出文件夹 `<工程>\LanbaiReports\tests\<test-id>\<时间>\` 拷到仓库的 `FromLocal\<test-id>\<时间>\`（同名，`manifest.json` 的 `fromlocal` 一栏写着），推。看到的问题写进 `FromLocal\<test-id>\问题.md`，分级 S0 阻断 / S1 严重 / S2 一般 / S3 建议（`HANDOFF_CHATGPT.md` 的约定）。BLOCKED 的也推：报告里写着缺什么。
@@ -43,7 +45,7 @@
 | `Editor/LanbaiTestLog.cs` | Console 抓取（开跑前已有的 + 跑的过程中新来的 + 编译消息） |
 | `Editor/LanbaiTestMenu.cs` | 菜单 蓝白/Test/… |
 | `Editor/LanbaiTestJson.cs` | 小 JSON 读写 |
-| `tests/*.json` | 测试定义（§6）：`gate_clouds_test`、`act06_dawn`、`bus_slice`、`act01_spawn`（占位）、`palace_hotspot`（占位） |
+| `tests/*.json` | 测试定义（§6）：`gate_clouds_test`、`act06_test`、`bus_slice`、`act01_spawn`（占位）、`palace_hotspot`（占位） |
 | `Tools~/lanbai_sync.ps1` | 仓库 → 工程的同步脚本（§2）。在 `~` 文件夹里，Unity 不导入 |
 
 工程里的位置：`Assets/Lanbai/Engineering/UnityTest/`（同步脚本按 `X/...` → `Assets/Lanbai/X/...` 拷）。Editor 代码没有 asmdef，编进 `Assembly-CSharp-Editor`，和门测试脚本、各包的搭建脚本在同一个程序集里，互相调得到。
@@ -55,14 +57,15 @@
 **只同步 HANDOFF_LOG 当前那一条点名的文件夹 / 文件。** 仓库里的 `X/...` 拷到工程的 `Assets/Lanbai/X/...`。
 
 - 默认只列出（新增 `+`、覆盖 `~`、本地改过 `!`、仓库里没有了 `?`），什么都不改；加 `-Apply` 才动手。
-- **原地覆盖**，从不删文件夹再拷：仓库里没有 `.meta`，资源的 GUID 在工程的 `.meta` 里，删了文件夹再拷 GUID 会变、引用会断。`.meta` 一概不碰。
-- 开始前先查仓库：`.git\index.lock` 在、git 用不了、有没提交的改动、不在 `main` 上，都停下（退出码 4），什么都不改，也不自动修。
+- **文件从提交取，不从工作区取**：`git ls-tree -r HEAD` 列、`git cat-file` 逐个取出（取出来先核对 blob 哈希再覆盖）。所以部分检出的仓库也能用，不会悄悄少拷；`HANDOFF_LOG.md` 也从 HEAD 读。
+- **原地覆盖**，从不删文件夹再拷：资源的 GUID 在工程的 `.meta` 里，删了文件夹再拷 GUID 会变、引用会断。工程里的 `.meta` 一概不碰，**仓库里的 `.meta` 一律不同步**。
+- **`-Repo` 必须写**，并且它的 HEAD 必须等于 `origin/main`。开始前还查：`.git\index.lock` 在、git 用不了或任何一步出错（按出错处理，不当成“干净”）、有没提交的改动，都停下（退出码 4），什么都不改，也不自动修。
 - 动手前，要覆盖的文件（连同 `.meta`）和上次的同步记录先打包进 `<工程>\LanbaiSyncBackup\<时间>.zip`。
-- 同步记录 `Assets\Lanbai\.lanbai_sync.json`：仓库路径、提交号、分支、条目标题、每个文件上次同步时的 SHA-256。测试工具从这里读提交号写进 `manifest.json`（点开头的文件 Unity 不导入）。
-- **本地改过的文件不覆盖、不删**（工程里的哈希和上次同步时的不一样，或者没有记录又和仓库不一样）：整次拒绝，退出码 2，什么都没改；确认要用仓库的版本就加 `-Force`（照样先进备份）。第一次同步时工程里已经有旧文件的，也会走到这一条。
+- 同步记录 `Assets\Lanbai\.lanbai_sync.json`：仓库路径、提交号、条目标题，**每个文件**上次同步时的 git blob 哈希、来自哪个提交、什么时候同步的。测试工具从这里读提交号写进 `manifest.json`（点开头的文件 Unity 不导入）。
+- **本地改过的文件不覆盖、不删**（工程里的哈希和上次同步时的不一样，或者没有记录又和仓库不一样）：整次拒绝，退出码 2，什么都没改。**停，告诉小楠**；要用仓库的版本盖掉，`-Force` 属于批量替换，照 §0 第 2 条的三步（备份、推清单、小楠确认）。第一次同步时工程里已经有旧文件的，也会走到这一条。
 - 第一次同步时工程里已经有 10-08 以来的旧文件，没有同步记录、内容又和仓库不一样，一定会被拒绝：照 §0 第 2 条的三步做。
-- **从不自动删除。** 上次由它拷进去、现在仓库里没有了的文件只列出来（`?`），要删请在 Unity 的 Project 窗口里删（连 `.meta` 一起）。工程里本来就有的（各包的 `Generated/`、`UdonPrograms/*.asset`、本地自己加的）一概不动，只数一下。
-- 永远不同步：仓库根上的单个文件、`FromLocal/`、`Art/`；任何一层叫 `Source`、`Renders`、`__pycache__` 的文件夹；`.py .pyc .blend .blend1 .ps1 .sh`。
+- **从不自动删除。** 上次由它拷进去、现在仓库里没有了的文件只列出来（`?`），要删照 `HANDOFF_CHATGPT.md` §F（挪到 `_to_delete`、连 `.meta`、经小楠确认）。工程里本来就有的（各包的 `Generated/`、`UdonPrograms/*.asset`、本地自己加的）一概不动，只数一下。
+- 永远不同步：仓库根上的单个文件、`FromLocal/`、`Art/`；任何一层叫 `Source`、`Renders`、`__pycache__` 的文件夹；`.py .pyc .blend .blend1 .ps1 .sh .meta`。
 - 每次的计划另存一份在 `<工程>\LanbaiReports\sync\<时间>_plan.json`。
 
 **HANDOFF_LOG 的约定（给写条目的人）：** 条目里写一行“同步：”，路径都放反引号里；不要的写“不同步：”。
@@ -75,7 +78,7 @@
 | 参数 | |
 |---|---|
 | `-Project <路径>` | Unity 工程（必填） |
-| `-Repo <路径>` | 仓库，默认 `E:\IDMdownload\VRCC\lanbai-assets` |
+| `-Repo <路径>` | 仓库（必填；HEAD 要等于 `origin/main`） |
 | `-Entry <n>` | HANDOFF_LOG 的第 n 条，1 = 最上面、最新的（默认） |
 | `-EntryMatch <字>` | 标题里含这几个字的那一条 |
 | `-Paths a/,b/c.json` | 不看 HANDOFF_LOG，直接指定。只在总导演 / 总工程师明说时用 |
@@ -89,8 +92,13 @@
 
 ## 3. 跑测试
 
+### 开跑之前工具自己查的几道关（HANDOFF_CHATGPT，只读）
+- **资源**：C 盘剩 ≥ 10 GB、工程所在盘剩 ≥ 10 GB、可用内存 ≥ 6 GB（测试定义的 `resources` 可改：`min_c_gb`、`min_project_gb`、`min_free_ram_gb`）。不够就 BLOCKED：**停，告诉小楠**（工具和阿白都不替小楠关程序、清文件；VRChat 开着就请小楠关）。
+- **小楠的同意**：第一次用这个工具之前要小楠同意。同意以后，阿白写 `<工程>/LanbaiReports/tests/CONSENT.json`：`{"by": "小楠", "date": "YYYY-MM-DD", "backup": "整工程备份的 zip 路径", "note": "小楠原话"}`。没有这个文件就 BLOCKED；备份的路径这台机器上找不到，只警告。工具只读它，不替人写。
+- **弹窗**：工具自己不弹（批处理没有；菜单只有开始前和跑完的两个框）。Unity / Hub / VCC / SDK 的弹窗照 HANDOFF_CHATGPT §C 第 5 步一律按“不改”回答。
+
 ### 菜单
-**蓝白/Test/Run gate_clouds_test**（以及 act06_dawn、bus_slice、act01_spawn、palace_hotspot）；**Run Other Test…** 列出 `tests/` 里所有的；**Preflight Only…** 只做预检。跑的时候编辑器不响应（几分钟），跑完弹一个框，可以直接打开输出文件夹。菜单跑完，测试场景留在打开的状态（没保存）；下次跑之前要么保存、要么点 **蓝白/Test/Discard Test Scene Changes**（只对沙盒里的拷贝和 `Assets/Lanbai/Tests/` 下的场景起作用），不然预检会因为“有没保存的改动”BLOCKED。
+**蓝白/Test/Run gate_clouds_test**（以及 act06_test、bus_slice、act01_spawn、palace_hotspot）；**Run Other Test…** 列出 `tests/` 里所有的；**Preflight Only…** 只做预检。跑的时候编辑器不响应（几分钟），跑完弹一个框，可以直接打开输出文件夹。菜单跑完，测试场景留在打开的状态（没保存）；下次跑之前要么保存、要么点 **蓝白/Test/Discard Test Scene Changes**（只对沙盒里的拷贝和 `Assets/Lanbai/Tests/` 下的场景起作用），不然预检会因为“有没保存的改动”BLOCKED。
 
 ### 批处理（**要先关掉这个工程的 Unity 编辑器**）
 同一个工程同一时间只能有一个 Unity 打开（编辑器开着时，批处理会报工程被占用、直接退出，日志里没有 `LANBAI_TEST_RESULT`）。这一条没在阿白的机器上试过；不想关编辑器就用菜单。
@@ -105,11 +113,11 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json"
 ```
 - `| Out-Null` 是为了让 PowerShell 等 Unity 退出再往下走（不然 `$LASTEXITCODE` 拿不到）。
 - **不要加 `-nographics`**：截图和性能要真的显卡（预检会因为没有显卡 BLOCKED）。不用加 `-quit`（工具自己退出）。
-- 只做预检：末尾加 `-lanbaiPreflightOnly`。用别的测试定义文件：`-lanbaiTestFile <路径>`（代替 `-lanbaiTest`）。
+- 只做预检：末尾加 `-lanbaiPreflightOnly`。只做预检的结果是 `preflight_ok`（不是 `pass`：没跑测试），三层状态里 Unity 桌面记 `not_tested`，也不覆盖 `last_result.json`。用别的测试定义文件：`-lanbaiTestFile <路径>`（代替 `-lanbaiTest`）。
 - **PPv2 在批处理下生效没有，没验证过。** 工具每次第一张截图前自己查：同一机位开 / 关 PPv2 各渲一张小图，要不一样（检查项 `ppv2_effective`）。批处理下这一项没过的话，截图就是没调色的，**改用菜单跑**，其余照旧。
 - 等的过程中编辑器 reload 了（编译完之类）：工具从头再跑一次（新的输出文件夹，上一次那个没有报告）；再 reload 一次就 BLOCKED（退出码 2），批处理照样退出。
 - 要等 U# 程序资产初始化的时候（测试定义的 `udon_programs` 有新建的，D-41），`RunCli` 先返回，批处理的编辑器循环接着转，等好了再跑、跑完再退出；所以**别加 `-quit`**。菜单也一样：先返回，跑完再弹框。
-- 日志的最后几行可能是 Unity 自己退出时写的；结果那一行用上面的 `Select-String` 找，或直接读 `last_result.json`。
+- **结果以这一次运行的结果行为准**：每次一开始就在输出文件夹里写 `result.json` = `running`，跑完盖成结果。`Unity.exe` 自己的退出码不可靠（Unity 自己出错也会给 1，看起来和“检查没过”一样）：读这次的 `result.json`，或日志里这次的 `LANBAI_TEST_RESULT` 那一行（日志的最后几行可能是 Unity 自己退出时写的，用 `Select-String` 找）。`result.json` 还是 `running` = 没跑完（崩了或被关了）。
 
 ---
 
@@ -119,7 +127,7 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json"
 |---|---|---|
 | **0** | 全部跑完，检查全过 | 拷输出文件夹到 `FromLocal/`、推；头显清单另外看 |
 | **1** | 跑完了，有检查没过（或有一步失败了） | 照样拷、推。**不要自己改数值、不要自己修**：`summary.md` 的“检查项”和“步骤”写着哪里没过，云端看了再定 |
-| **2** | BLOCKED：预检或前置条件不满足，什么都没搭 | 看 `summary.md` 第一段的原因。能自己补的补上再跑（没同步的同步、Unity / 包版本不对的装对、有没保存的场景先存或放弃）；补不了的（比如车的切片还没交、占位测试）照样推报告 |
+| **2** | BLOCKED：预检或前置条件不满足，什么都没搭 | 看 `summary.md` 第一段的原因。**只有“没同步”这一种自己补**（照 §0 重新同步再跑）；Unity / 包版本不对、有没保存的场景、资源不够、没有小楠的同意、别的任何原因：**停，告诉小楠**（`HANDOFF_CHATGPT.md` §F：不装、不升降版本，不替人保存场景）。补不了的（比如车的切片还没交、占位测试）照样推报告 |
 | **3** | 工具自己出了异常（工具自己代码里的异常，哪怕只在一张截图里，也算 3；被调的搭建脚本抛的、步骤判的失败算 1） | 推 `manifest.json`（`error`、`error_stack`）、`console.jsonl` 和 `-logFile` 的日志；照 §9 恢复后可以重跑一次。这是总工程师的 bug |
 | 日志里**没有** `LANBAI_TEST_RESULT` | Unity 没走到工具：多半是启动时就有编译错误（`-executeMethod` 根本没执行），或者工程被另一个 Unity 开着 | 打开编辑器看 Console；把 `-logFile` 的日志原样推回来。按 BLOCKED 处理 |
 
@@ -179,11 +187,12 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json"
 | `type` | 字段 | |
 |---|---|---|
 | `menu` | `path` | 执行菜单（比如 `蓝白/Gate Clouds/Build`） |
-| `method` | `name`（类型全名.方法名），`arg`（一个字符串）或 `args` | 静态方法；返回 `ERROR` 开头的字符串算失败（门测试脚本的习惯，`error_prefix` 可改） |
+| `method` | `name`（类型全名.方法名），`arg`（一个字符串）或 `args`，`expect` | 静态方法；返回 `ERROR` 开头的字符串算失败（门测试脚本的习惯，`error_prefix` 可改）；写了 `expect` 时，返回里没有这几个字也算失败 |
 | `call` | `object`、`component`、`method`、`args` | 场景里组件的方法（比如 U# 驱动的 `Evaluate(t)`） |
 | `set_field` | `object`、`component`、`field`、`value` | 组件的公开字段（bool / float / int / string） |
 | `set_active` / `set_renderer` | `path`、`value` | 开关 GameObject / Renderer |
 | `set_light` | `path`，`render_mode`（`NotImportant` / `Important` / `Auto`）、`culling_mask`、`intensity`、`enabled` | |
+| `set_field_objects_active` | `component`、`fields`（字段名，可以用 `*`）、`value`、`optional` | 组件上这些字段指着的物体（GameObject / 组件，单个或数组）开关；比如关掉 `LB_Journey` 的旧占位组。`optional`：没有这个组件 / 字段只记一句 |
 | `set_material` | 选法 `asset` / `find`（材质名）/ `under`（场景路径下所有 renderer 的材质）/ `renderer_name`（名字通配，renderer 或它的父物体），可以同时写取并集；`props`；`min_count` | 只改有这个属性的材质；数、3 个或 4 个数（颜色 / 向量） |
 | `edit_json` | `asset`、`set: {"a.b": 值}` | 临时改一个 JSON 文件：原文件逐字节备份，结束时写回 |
 | `assert_log` | `contains`、`absent` | 这一组步骤开始以后的 Console 里有 / 没有这些字 |
@@ -213,7 +222,7 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json"
 
 量数（`manifest.json` 的 `metrics`）的名字：
 - `shot.<id>.apl / dark_pct / clip_pct / max_luma`，有参考图时 `ref_apl / apl_ratio / ref_rmse64`。APL = 8 位 sRGB 的 Rec.709 加权平均（0–255），和门测试、渲染夹具同一个量。
-- `seq.<id>.std_mean / std_p99 / hf_mean / hf_p99 / hf_frac / apl_min / apl_max / apl_max_step / frames`
+- `seq.<id>.shimmer_mean / shimmer_p99 / shimmer_frac`（闪烁的主量）、`motion_std_mean / motion_std_p99`、`hf_raw_mean / hf_raw_p99 / hf_raw_frac`（参考）、`apl_min / apl_max / apl_max_step / frames`
 - `stereo.<id>.apl_lr_diff`
 - `perf.<id>.<状态>.desktop_ms / vr_ms / vr_cpu_ms / draw_calls / batches / setpass / triangles / vertices / shadow_casters`
 - `tex.<id>.<档>.storage_mb`、`tex.<id>.<档>.<机位>.psnr`
@@ -229,8 +238,10 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json"
 ### 7.2 动态序列（`sequences`）
 - `kind: "micro_motion"`（默认）：头部微动。位置 ±`amp_cm`（默认 2 cm）、角度 ±`amp_deg`（默认 1°），`fps` 默认 90、`frames` 默认 1 秒。运动是固定的两个正弦叠加，每次跑都一样。时间停在 `t`（`advance_time: true` 时一起往前走）。
 - `kind: "time"`：机位不动，时间从 `t0` 走到 `t1`，每帧用 `time` 步骤定时间（比如云海滚动、黑 → 晨）。
+- `kind: "static"`：机位不动、时间不动的**对照**，只剩画面本身的时间噪声（抖动、时间性效果）。和同一机位的 `micro_motion` 一起看，才知道微动带来了多少闪烁。
 - 尺寸默认 1280×720、`ss` 默认 1（头显里没有超采样，闪烁才看得出来）；机位按 `ppd` 算过的就用它的尺寸。`eye_offset_mm` 可以把整段挪到左眼 / 右眼的位置。
-- 每个像素算两个量（亮度 0–255）：`std` 时间标准差（含真实运动带来的变化）；`hf` 二阶时间差分的均方根 ÷ √6（平滑的运动几乎不算，来回跳的闪烁 / 爬动才算，白噪声时和 `std` 同一尺度）。报全画面平均、p99、`hf` 超过 `hf_threshold`（默认 6）的像素占比；每帧的 APL、最大的帧间跳变。热图 `heat_flicker.png`（`hf`）、`heat_std.png`：黑 → 紫 → 红 → 橙 → 浅黄 = 0 → `heat_scale`（默认 24），很小的值显示平均画面的暗灰。
+- **闪烁的主量 `shimmer`**（终审 r2 改）：每一帧在**同一个姿态**再渲一张高倍超采样的参考（`reference_ss`，默认 4×；0 = 不渲），逐像素量“测的图 − 参考图”的亮度差（0–255）随时间的标准差。真实的运动（边缘挪动）两张图一起挪，差里没有；剩下的是采样不足带来的闪烁、爬动、摩尔纹。报全画面平均、p99、超过 `shimmer_threshold`（默认 4）的像素占比，热图 `heat_shimmer.png`。
+- 另外两个量**只作参考，不是闪烁**：`motion_std`（逐像素亮度的时间标准差，含真实运动）、`hf_raw`（二阶时间差分的均方根 ÷ √6；平滑运动大多不算，但正常的边缘运动也会进来一部分）；热图 `heat_motion_std.png`、`heat_hf_raw.png`。还有每帧的 APL、最大的帧间跳变。热图颜色：黑 → 紫 → 红 → 橙 → 浅黄，很小的值显示平均画面的暗灰。
 - **这是编辑器里普通相机逐帧渲染的近似**：没有 SPS-I、没有头显的镜片和刷新；阈值是初值，第一次实测后由总工程师定。
 - 帧默认都存（`save_frames: false` 可关）：云端可以拿去跑 `flashcheck.py`。
 
@@ -241,7 +252,7 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json"
 两台普通相机各往左、右偏 `ipd_mm / 2`（默认 64 mm → ±32 mm），分别渲染、左右并排存一张。**标明是近似：不是 SPS-I 单通道立体，不是头显测试。** 能看出来的只有“两只眼看到的东西差不多”这一层；每只眼的抖动 / 噪声是不是一致，要看头显。
 
 ### 7.5 贴图压缩对照（`texture_compare`）
-选中材质（选法和 `set_material` 一样）上的所有贴图，各拷一份进沙盒、按每一档设导入（`raw` 不压缩 RGBA32、`bc7`、`crunch`：DXT1/DXT5 Crunched，`crunch_quality` 默认 50），材质也拷一份换上这些贴图；场景里用到原材质的 renderer 临时换成拷贝，拍 `shots` 里列的机位，换回。报每一档的存储大小（编辑器读数），以及和 `raw` 那张比的 PSNR。**原贴图的导入设置不动。** 原贴图的 mip、各向异性、过滤、sRGB 写进 `manifest.json` 的 `textures`。
+选中材质（选法和 `set_material` 一样）上的所有贴图，各拷一份进沙盒、按每一档设导入（`raw` 不压缩 RGBA32、`bc7`、`bc5`（只对法线贴图；别的贴图这一档用 BC7）、`crunch` 或 `crunch:<质量>`（DXT1/DXT5 Crunched，法线是 DXT5nm；不写质量用 `crunch_quality`，默认 50）。量数名和文件名里冒号换成 `_q`，比如 `crunch:100` → `crunch_q100`；D-40b #6 的法线对照 = `bc5` 对 `crunch:100`），材质也拷一份换上这些贴图；场景里用到原材质的 renderer 临时换成拷贝，拍 `shots` 里列的机位，换回。报每一档的存储大小（编辑器读数），以及和 `raw` 那张比的 PSNR。**原贴图的导入设置不动。** 原贴图的 mip、各向异性、过滤、sRGB 写进 `manifest.json` 的 `textures`。
 
 ---
 
@@ -253,7 +264,7 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json"
 - 工具临时改过又改回的（`set_material` 改过的材质、`edit_json` 写回的文件）：内容和原来一样、或者只是被后面搭建脚本的 `SaveAssets` 把改回后的值落了盘的，单独列在 `writes.tool_touched_restored`，不算没声明的写入。
 - 跑之前、跑之后各记一次 `Assets/`（大小 + 修改时间）和 `ProjectSettings/*.asset`（内容哈希）：沙盒和 `allowed_writes` 以外的每一处改动都列进 `writes.undeclared`，检查项 `no_undeclared_writes` 不过。
 - **例外（总导演已批准，条件是下面三样）：** 每次的 `summary.md` 和 `manifest.json` 都写全 `allowed_writes`；`edit_json` 改的文件在任何情况下都逐字节写回（改回栈在每一项的 `finally` 和整次运行的 `finally` 里都会跑；只有 Unity 本身崩掉时写不回，那就照 §9 第 4 条从 `backup/` 拷回）；测试定义的 `backup_before`（门测试：`Assets/Lanbai/Tests/**` 和 `GateClouds_Layout.json`）在开搭之前原样拷进本次输出的 `backup_before/`。
-- 例外的具体内容： `gate_clouds_test` 在原场景 `Assets/Lanbai/Tests/GateTest.unity` 里跑（`in_place`），由门测试脚本和门的搭建菜单去写 `Tests/`、`GateClouds/Generated/`、贴图导入设置、`UdonPrograms/`——HANDOFF_LOG 那几条本来就要这样搭；`auto_lite` 那一档临时改 `GateClouds_Layout.json`，量完逐字节写回。这些都列在它的 `allowed_writes` 里。`act06_dawn` 把主场景拷进沙盒再搭，但第 6 幕的搭建脚本会写 `Act06_Dawn/Generated/`。
+- 例外的具体内容： `gate_clouds_test` 在原场景 `Assets/Lanbai/Tests/GateTest.unity` 里跑（`in_place`），由门测试脚本和门的搭建菜单去写 `Tests/`、`GateClouds/Generated/`、贴图导入设置、`UdonPrograms/`——HANDOFF_LOG 那几条本来就要这样搭；`auto_lite` 那一档临时改 `GateClouds_Layout.json`，量完逐字节写回。这些都列在它的 `allowed_writes` 里。`act06_test` 把主场景拷进沙盒再搭，但第 6 幕的搭建脚本会写 `Act06_Dawn/Generated/`。
 
 ---
 
@@ -282,7 +293,7 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json"
 - **Play 模式的东西工具不做**：Udon 时间（ClientSim + Profiler）、门的时钟在 Play 里走的画面、头显里的一切。都列在 `summary.md` 的手动项和头显清单里。`GateTest.unity` 没有 VRC 场景描述符，Play 时 ClientSim 起不来；所以 `gate_clouds_test` 最后把搭好的场景另存成 `Assets/_LanbaiTest/GateTest_play.unity`、只在这份拷贝上加描述符，量 Udon 时间就在它里面按 Play（手动项第 1 条）。
 - **工具不碰的两样**：不调 UdonSharp 的任何编译（U# 在 build 模式下编译会出几千条假 CS0518，还会改写程序资产；工具只用编辑器自己的编译）；不加 AssetPostprocessor（加一个全局的，全工程的模型都会重导入）。
 - 预检会报告工程里是不是有两套调色（旧的 `Assets/Lanbai/Grades/` + layer 4、套件的 `Assets/Lanbai/Grading/` + layer 22），只报告，不删；每张截图记下参考相机 PostProcessLayer 的 volumeLayer（`pp_volume_layer`）。
-- `act06_dawn` 在编辑模式里直接调 U# 驱动的 C# 方法（`LanbaiActivate`、`Evaluate(t)`）来定时间，没试过；驱动里用到只有 Udon 里才有的东西，会在那一步报错。主场景里车不在原点的话，机位的 `eye` 要改。
+- `act06_test` 在编辑模式里直接调 U# 驱动的 C# 方法（`LanbaiActivate`、`Evaluate(t)`）来定时间，没试过；驱动里用到只有 Udon 里才有的东西，会在那一步报错。主场景里车不在原点的话，机位的 `eye` 要改。
 - 闪烁、APL、PSNR 的阈值都是初值，第一次实测后定；性能的预算检查只报不卡（编辑器估算）。
 - `LB_GateTest.*` 本来没有菜单（以前是本地的远程小助手 `LB_Remote` 用反射调的，不在仓库里）：现在由这个工具的菜单和 `-executeMethod` 调。
 - 同步脚本只在 PowerShell 7.4（Linux）上测过，Windows PowerShell 5.1 没跑过；文件是带 BOM 的 UTF-8（5.1 读中文要 BOM）。

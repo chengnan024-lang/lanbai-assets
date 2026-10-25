@@ -162,6 +162,12 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
         _spawnSince = since;
     }
 
+    /// <summary>Director v1.2：遮罩球归门内的那一段（剪 1 前 0.25 s 的变暗到第 6 幕的预滚）。</summary>
+    public float[] LanbaiOverlayWindow()
+    {
+        return new float[] { tU12 - 0.25f, tU12 + 4.0f };
+    }
+
     public void LanbaiActivate(bool on)
     {
         Init();

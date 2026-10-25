@@ -46,6 +46,10 @@ namespace Lanbai.Test
                 SystemInfo.graphicsDeviceName + "（" + gdt + "，" + SystemInfo.graphicsDeviceVersion + "，显存 " + SystemInfo.graphicsMemorySize + " MB）" +
                 (gdt == GraphicsDeviceType.Null ? "：没有显卡设备。批处理不要加 -nographics" : ""));
 
+            // HANDOFF_CHATGPT 的几道关（只读）：资源、小楠的同意（含备份）
+            Resources(ctx, P);
+            Consent(ctx, P);
+
             string wantUnity = TJson.S(TJson.G(req, "unity"), DEFAULT_UNITY);
             Item(P, "unity", Application.unityVersion == wantUnity ? "ok" : "blocked", Application.unityVersion + "（要 " + wantUnity + "）");
 
@@ -89,7 +93,7 @@ namespace Lanbai.Test
                 if (s.isDirty) dirty.Add(string.IsNullOrEmpty(s.path) ? "（未命名场景）" : s.path);
             }
             Item(P, "open_scenes", dirty.Count > 0 ? "blocked" : "ok",
-                dirty.Count > 0 ? "这些场景有没保存的改动：" + string.Join("、", dirty.ToArray()) + "。工具不替你保存：自己存或放弃改动（测试场景可以用 蓝白/Test/放弃测试场景的改动）后再跑"
+                dirty.Count > 0 ? "这些场景有没保存的改动：" + string.Join("、", dirty.ToArray()) + "。工具不替你保存，也不丢掉：停，告诉小楠（HANDOFF_CHATGPT §F）。如果是测试工具自己留下的测试场景（沙盒里的拷贝、Assets/Lanbai/Tests/ 下的），可以用 蓝白/Test/Discard Test Scene Changes"
                                 : "没有没保存的改动（" + SceneManager.GetActiveScene().path + "）");
 
             // 沙盒：在、但没有标记文件 = 不是工具建的，不删，停
@@ -125,6 +129,78 @@ namespace Lanbai.Test
 
             var bad = P.Where(x => (string)x["status"] == "blocked").Select(x => x["item"] + "：" + x["detail"]).ToList();
             if (bad.Count > 0) throw new BlockedException("预检没过：" + string.Join("；", bad.ToArray()));
+        }
+
+        // ── 资源（HANDOFF_CHATGPT §F、D-41 #6）：C 盘、工程所在盘的空间，可用内存。不够就 BLOCKED：停，告诉小楠 ──
+        static void Resources(Ctx ctx, List<Dictionary<string, object>> P)
+        {
+            var r = TJson.G(ctx.test, "resources");
+            double minC = TJson.D(TJson.G(r, "min_c_gb"), 10), minProj = TJson.D(TJson.G(r, "min_project_gb"), 10), minRam = TJson.D(TJson.G(r, "min_free_ram_gb"), 6);
+            var bad = new List<string>(); var said = new List<string>();
+            try
+            {
+                string projRoot = Path.GetPathRoot(ctx.projectDir);
+                foreach (var d in DriveInfo.GetDrives())
+                {
+                    if (!d.IsReady) continue;
+                    bool isC = d.Name.StartsWith("C", StringComparison.OrdinalIgnoreCase) && Application.platform == RuntimePlatform.WindowsEditor;
+                    bool isProj = string.Equals(d.Name, projRoot, StringComparison.OrdinalIgnoreCase);
+                    if (!isC && !isProj) continue;
+                    double gb = d.AvailableFreeSpace / 1073741824.0;
+                    said.Add(d.Name + " 剩 " + gb.ToString("0.0", CultureInfo.InvariantCulture) + " GB");
+                    if (isC && gb < minC) bad.Add("C 盘只剩 " + gb.ToString("0.0", CultureInfo.InvariantCulture) + " GB（要 ≥ " + minC + "）");
+                    if (isProj && !isC && gb < minProj) bad.Add("工程所在盘 " + d.Name + " 只剩 " + gb.ToString("0.0", CultureInfo.InvariantCulture) + " GB（要 ≥ " + minProj + "）");
+                }
+            }
+            catch (Exception e) { said.Add("读不到磁盘空间（" + e.Message + "）"); }
+            double ram = FreeRamGB();
+            if (ram >= 0)
+            {
+                said.Add("可用内存 " + ram.ToString("0.0", CultureInfo.InvariantCulture) + " GB");
+                if (ram < minRam) bad.Add("可用内存只有 " + ram.ToString("0.0", CultureInfo.InvariantCulture) + " GB（要 ≥ " + minRam + "；VRChat 开着就先关掉，D-41 #6）");
+            }
+            else said.Add("可用内存读不到（不是 Windows）");
+            ctx.Metric("resources.free_ram_gb", ram);
+            Item(P, "resources", bad.Count > 0 ? "blocked" : "ok", string.Join("，", said.ToArray()) + (bad.Count > 0 ? "。不够：" + string.Join("；", bad.ToArray()) + "。停，告诉小楠（工具和阿白都不替小楠关程序、清文件）" : ""));
+        }
+
+#if UNITY_EDITOR_WIN
+        [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+        struct MEMORYSTATUSEX { public uint dwLength, dwMemoryLoad; public ulong ullTotalPhys, ullAvailPhys, ullTotalPageFile, ullAvailPageFile, ullTotalVirtual, ullAvailVirtual, ullAvailExtendedVirtual; }
+        [System.Runtime.InteropServices.DllImport("kernel32.dll")]
+        static extern bool GlobalMemoryStatusEx(ref MEMORYSTATUSEX m);
+#endif
+        static double FreeRamGB()
+        {
+#if UNITY_EDITOR_WIN
+            try
+            {
+                var m = new MEMORYSTATUSEX { dwLength = (uint)System.Runtime.InteropServices.Marshal.SizeOf(typeof(MEMORYSTATUSEX)) };
+                if (GlobalMemoryStatusEx(ref m)) return m.ullAvailPhys / 1073741824.0;
+            }
+            catch { }
+#endif
+            return -1;
+        }
+
+        // ── 小楠的同意（HANDOFF_CHATGPT：第一次用工具之前），含备份在哪 ──────────────────
+        public const string CONSENT = "LanbaiReports/tests/CONSENT.json";
+        static void Consent(Ctx ctx, List<Dictionary<string, object>> P)
+        {
+            string path = Path.Combine(ctx.projectDir, CONSENT);
+            if (!File.Exists(path))
+            {
+                Item(P, "consent", "blocked", "没有 " + CONSENT + "：第一次用测试工具之前要小楠同意（HANDOFF_CHATGPT）。小楠同意以后，阿白写这个文件：" +
+                     "{\"by\": \"小楠\", \"date\": \"YYYY-MM-DD\", \"backup\": \"整工程备份的 zip 路径\", \"note\": \"小楠原话\"}。工具只读它，不替人写");
+                return;
+            }
+            object j = null;
+            try { j = TJson.Parse(File.ReadAllText(path, Encoding.UTF8)); } catch (Exception e) { Item(P, "consent", "blocked", CONSENT + " 读不懂：" + e.Message); return; }
+            string by = TJson.S(TJson.G(j, "by")), date = TJson.S(TJson.G(j, "date")), backup = TJson.S(TJson.G(j, "backup"));
+            if (string.IsNullOrEmpty(by) || string.IsNullOrEmpty(date)) { Item(P, "consent", "blocked", CONSENT + " 缺 by / date"); return; }
+            bool hasBackup = !string.IsNullOrEmpty(backup) && File.Exists(backup);
+            ctx.consent = TJson.M(j);
+            Item(P, "consent", hasBackup ? "ok" : "warn", by + " " + date + " 同意；备份 " + (string.IsNullOrEmpty(backup) ? "（没写）" : backup + (hasBackup ? "（在）" : "（这台机器上找不到这个文件）")));
         }
 
         /// <summary>测试自己的前置条件：文件夹、文件、类型、脚本里的补丁、版本标记。缺一样就 BLOCKED（不会算“过”）。</summary>
@@ -409,8 +485,16 @@ namespace Lanbai.Test
             if (!Directory.Exists(DIR)) return true;
             if (!File.Exists(MarkerPath)) throw new BlockedException(DIR + " 没有标记文件，不删");
             bool sandboxOpen = false;
+            var dirtyOthers = new List<string>();
             for (int i = 0; i < SceneManager.sceneCount; i++)
-                if (SceneManager.GetSceneAt(i).path.StartsWith(DIR + "/", StringComparison.Ordinal)) sandboxOpen = true;
+            {
+                var sc = SceneManager.GetSceneAt(i);
+                if (sc.path.StartsWith(DIR + "/", StringComparison.Ordinal)) sandboxOpen = true;
+                else if (sc.isDirty) dirtyOthers.Add(string.IsNullOrEmpty(sc.path) ? "（未命名场景）" : sc.path);
+            }
+            // 要换成空场景才删得掉开着的沙盒场景；别的场景有没保存的改动，换场景会把它们丢掉：不换、不删，停
+            if (sandboxOpen && dirtyOthers.Count > 0)
+                throw new BlockedException("沙盒里的场景开着，可是 " + string.Join("、", dirtyOthers.ToArray()) + " 有没保存的改动：工具不替人丢掉，也不替人保存。停，告诉小楠");
             if (sandboxOpen)   // 沙盒里的场景开着（哪怕不是当前场景）：先换成空场景，再删
                 UnityEditor.SceneManagement.EditorSceneManager.NewScene(UnityEditor.SceneManagement.NewSceneSetup.EmptyScene, UnityEditor.SceneManagement.NewSceneMode.Single);
             AssetDatabase.DeleteAsset(DIR);

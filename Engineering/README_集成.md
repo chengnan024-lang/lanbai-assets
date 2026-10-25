@@ -159,7 +159,7 @@ Director v1.1 起没有要本地填的窗口：`LB_Journey` 勾 `extAtmosphere` 
 | 东西 | 写的人 | 驱动报什么 |
 |---|---|---|
 | PPv2 weight、ΔEV（一帧一个） | **只有 `LB_Journey.ApplyGrades`** | 有曝光事件的驱动实现 `float[] LanbaiGrade(t)`，分发层加起来放进 `dispatcher.gradeDEV`（`gradeOwned` = 有人报）。现在报的：门内的 `FLASH_TEAR`（247.89 起 0.4 s 升、0.1 保持、0.25 落）。**`ApplyGrades` 里自己那份 FLASH_TEAR 要删**（不然算两次）。门内的 `writeExposure` 一直不勾 |
-| 遮罩球 `Lanbai_Overlay` v2 | **出生淡入优先（v1.2）**：`LB_Journey` 的出生黑 / 淡入从 `dispatcher.LanbaiSpawnFadeBegin()` 到 `LanbaiSpawnFadeEnd()`，这段时间**任何驱动都不写遮罩球**。之后：248.39 → 252.64 **门内**（剪 1 的黑）；第 6 幕（252.64 `SetFlat` → 254.14 起 `SetCurve` 晨从黑里亮起 → 266.44 `Hide()`）；第 10 幕的白归镜与白 | 门内调 `overlay.SetFlat(…, LanbaiDeltaEV(t))` 自己补 ΔEV。场景里只放一个。拿遮罩球的驱动实现 `LanbaiSpawnFade(float since)`（Director v1.2，`README_Director.md` §3 第 8 条）：`since < 0` 不写；之后从黑按 ≤ 0.85 EV/s 升到自己的值（迟到的人在白里进来，由镜与白自己升） |
+| 遮罩球 `Lanbai_Overlay` v2 | **出生淡入优先（v1.2）**：`LB_Journey` 的出生黑 / 淡入从 `dispatcher.LanbaiSpawnFadeBegin()` 到 `LanbaiSpawnFadeEnd()`，这段时间**任何驱动都不碰遮罩球**。出生时 `dispatcher.LanbaiCoversOverlay(t)`（或 t + 淡入时长）为真（有驱动拿着遮罩球）：`LB_Journey` **不做淡入**，出生的黑保持黑，黑结束那一帧调 End，之后只有驱动那一次从黑升起来；为假：照常淡入、淡入结束调 End。End 只认第一次；Begin 后 10 秒没有 End 当作已结束。之后：248.39 → 252.64 **门内**（剪 1 的黑）；第 6 幕（252.64 `SetFlat` → 254.14 起 `SetCurve` 晨从黑里亮起 → 266.44 `Hide()`）；第 10 幕的白归镜与白 | 门内调 `overlay.SetFlat(…, LanbaiDeltaEV(t))` 自己补 ΔEV。场景里只放一个。拿遮罩球的驱动实现 `LanbaiSpawnFade(float since)`（Director v1.2，`README_Director.md` §3 第 8 条）：`since < 0` 不写；之后从黑按 ≤ 0.85 EV/s 升到自己的值（迟到的人在白里进来，由镜与白自己升） |
 
 ---
 
@@ -207,7 +207,7 @@ Director v1.1 起没有要本地填的窗口：`LB_Journey` 勾 `extAtmosphere` 
 - **接管**：勾 `Act06_Driver.writeRenderSettings`、`writeMainLight`，`LB_Journey` 勾 `extAtmosphere` / `extSun`（窗口自动，§3；`README_Act06.md` §0 第 4 条的手填窗口作废）。环境光 Trilight。
 - 窗口 248.64 → 363.62：248.64 起写天雾月星（§8.1），252.64 起写 RenderSettings（到 362.26）和主光（到 363.615，§8.2），遮罩 252.64 → 266.44（§8.4），海的全局量 300 → 363.26（入水那一帧海的驱动在同一个 y 接手）。
 - 车厢漂白 251.64 → 281.86 归车厢驱动（圣经 §4.8 的表，D-35），不归第 6 幕。
-- 截图和量数：`README_Act06.md` §0 第 5 条；标杆画面 C（254–266 s 三个视向）用测试工具跑 `act06_dawn`（`Engineering/UnityTest/`）。
+- 截图和量数：`README_Act06.md` §0 第 5 条；标杆画面 C（254–266 s 三个视向）用测试工具跑 `act06_test`（`Engineering/UnityTest/`）。
 
 ### 9.4 第 7 幕：7a + 7c（`Sea/`、`Act07_Sea/`；7b 宫殿还没交）
 

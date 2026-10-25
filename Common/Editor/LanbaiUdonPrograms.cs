@@ -111,9 +111,6 @@ namespace Lanbai.Udon
                 catch (TargetInvocationException e) { Debug.LogWarning(TAG + "GetUdonSharpProgramAsset(" + t.Name + ") threw: " + e.InnerException); }
             }
             var all = Scan(t);
-            if (all.Count > 1)
-                Debug.LogWarning(TAG + t.Name + " has " + all.Count + " program assets: " + string.Join(", ", all.Select(AssetDatabase.GetAssetPath).ToArray()) +
-                                 ". Keep one (the SDK uses " + (viaSdk != null ? AssetDatabase.GetAssetPath(viaSdk) : all[0].name) + "), delete the others in the Project window.");
             return viaSdk != null ? viaSdk : (all.Count > 0 ? all[0] : null);
         }
 
@@ -151,6 +148,15 @@ namespace Lanbai.Udon
             asset = null;
             if (!Available) { detail = "UdonSharp 不在这个工程里"; return ProgramState.NoUdonSharp; }
             if (ScriptOf(t) == null) { detail = t.Name + ".cs 不在工程里，或者还没编译"; return ProgramState.NoScript; }
+            var dup = Scan(t);
+            if (dup.Count > 1)
+            {
+                // U# 1.x 遇到同一个脚本有两个程序资产，整个工程的 U# 编译都会失败：当错误报，不挑一个接着用
+                detail = t.Name + " 有 " + dup.Count + " 个程序资产：" + string.Join("、", dup.Select(AssetDatabase.GetAssetPath).ToArray()) +
+                         "。U# 1.x 遇到重复的程序资产会让整个工程编译失败：只留一个，多余的照 HANDOFF_CHATGPT §F 挪走（经小楠确认），再点一次菜单";
+                asset = dup[0];
+                return ProgramState.Conflict;
+            }
             asset = Find(t);
             if (asset == null) { detail = t.Name + " 还没有程序资产"; return ProgramState.Missing; }
             int s, c, cur;
@@ -188,7 +194,7 @@ namespace Lanbai.Udon
             {
                 Object a; string d;
                 var st = StateOf(t, out a, out d);
-                if (st == ProgramState.NoScript) throw new InvalidOperationException(TAG + who + "：" + d);
+                if (st == ProgramState.NoScript || st == ProgramState.Conflict) throw new InvalidOperationException(TAG + who + "：" + d);
                 if (st != ProgramState.Missing) continue;
                 string path = (pathFor ?? DefaultPath)(t);
                 if (AssetDatabase.LoadMainAssetAtPath(path) != null || File.Exists(path))
@@ -230,10 +236,31 @@ namespace Lanbai.Udon
         // 不是菜单的排队（测试工具自己的）由测试工具自己续（Engineering/UnityTest/Editor/LanbaiTestRunner.cs）。
         const string PendingKey = "Lanbai.Udon.PendingMenus", ResumeKey = "Lanbai.Udon.ResumeCount.";
 
+        // 每个菜单（who）最近一次的状态：DEFERRED（在排队等）/ DONE / FAILED: 原因。从代码里调菜单的（比如本地的 LB_Remote）
+        // 用 MenuStatus(菜单路径) 查，别把“排了队”当成“搭好了”。也写一行 LANBAI_UDON_STATUS {json} 进日志
+        const string StatusKey = "Lanbai.Udon.Status.";
+        public static string MenuStatus(string who) { return SessionState.GetString(StatusKey + who, ""); }
+        static void SetStatus(string who, string status)
+        {
+            SessionState.SetString(StatusKey + who, status);
+            var prev = Application.GetStackTraceLogType(LogType.Log);
+            Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
+            Debug.Log("LANBAI_UDON_STATUS {\"menu\": \"" + who.Replace("\"", "'") + "\", \"status\": \"" + status.Split('\n')[0].Replace("\"", "'").Replace("\\", "/") + "\"}");
+            Application.SetStackTraceLogType(LogType.Log, prev);
+        }
+
         static LanbaiUdonPrograms()
         {
+            EditorApplication.playModeStateChanged += OnPlayMode;
             string pending = SessionState.GetString(PendingKey, "");
             if (string.IsNullOrEmpty(pending)) return;
+            if (EditorApplication.isPlayingOrWillChangePlaymode)
+            {
+                // 进 Play 的 reload：不续（Play 里不搭），清掉
+                SessionState.EraseString(PendingKey);
+                foreach (var menu in pending.Split('\n')) if (menu.Length > 0) SetStatus(menu, "FAILED: 进了 Play 模式，排着的搭建取消了；回到编辑模式再点一次菜单");
+                return;
+            }
             SessionState.EraseString(PendingKey);
             EditorApplication.delayCall += () =>
             {
@@ -247,6 +274,21 @@ namespace Lanbai.Udon
                     if (!EditorApplication.ExecuteMenuItem(menu)) Debug.LogError(TAG + "自动再点 “" + menu + "” 失败（菜单不在？）：请手动点一次");
                 }
             };
+        }
+
+        // 进 Play（离开编辑模式）时：排队中的搭建一律按失败结束，写清原因（Play 里不能搭，reload 后也不续）
+        static void OnPlayMode(PlayModeStateChange ch)
+        {
+            if (ch != PlayModeStateChange.ExitingEditMode || _jobs.Count == 0) return;
+            for (int i = _jobs.Count - 1; i >= 0; i--)
+            {
+                var j = _jobs[i];
+                Finish(i);
+                ForgetMenu(j.who, false);
+                string why = "进 Play 模式了：排着队的 “" + j.who + "” 取消，没搭。回到编辑模式再点一次菜单";
+                SetStatus(j.who, "FAILED: " + why);
+                j.fail(TAG + why);
+            }
         }
 
         static void RememberMenu(string who)
@@ -282,12 +324,20 @@ namespace Lanbai.Udon
                 return true;
             }
             string rep;
-            if (AllReady(ts, out rep)) { ForgetMenu(who, true); build(); return true; }
+            if (AllReady(ts, out rep))
+            {
+                ForgetMenu(who, true);
+                try { build(); SetStatus(who, "DONE"); }
+                catch (Exception e) { SetStatus(who, "FAILED: " + e.Message); throw; }
+                return true;
+            }
+            if (EditorApplication.isPlayingOrWillChangePlaymode) { SetStatus(who, "FAILED: Play 模式里不搭"); fail(TAG + who + "：Play 模式里不搭（回到编辑模式再点）"); return false; }
             try { CreateMissing(who, ts, pathFor); }
-            catch (Exception e) { fail(e.Message); return false; }
+            catch (Exception e) { SetStatus(who, "FAILED: " + e.Message); fail(e.Message); return false; }
             double now = EditorApplication.timeSinceStartup;
             _jobs.Add(new Job { who = who, types = ts, build = build, fail = fail, deadline = now + TimeoutSeconds, created = now, nextTick = now + 0.5 });
             RememberMenu(who);
+            SetStatus(who, "DEFERRED");
             if (_jobs.Count == 1) EditorApplication.update += Tick;
             AllReady(ts, out rep);
             Debug.Log(TAG + who + "：程序资产还没初始化完，等 SDK（最多 " + TimeoutSeconds.ToString("0") + " 秒），初始化完自动接着搭：\n" + rep);
@@ -305,21 +355,29 @@ namespace Lanbai.Udon
                 j.nextTick = now + 0.5;
                 string rep;
                 bool ready;
+                if (j.types.Any(tt => { Object a; string d; return StateOf(tt, out a, out d) == ProgramState.Conflict; }))
+                {
+                    AllReady(j.types, out rep);
+                    Finish(i); ForgetMenu(j.who, false); SetStatus(j.who, "FAILED: 重复的程序资产");
+                    j.fail(TAG + j.who + "：有重复的程序资产，没搭：\n" + rep);
+                    continue;
+                }
                 try { ready = AllReady(j.types, out rep); }
-                catch (Exception e) { Finish(i); ForgetMenu(j.who, false); j.fail(TAG + j.who + "：查程序资产时出错：" + e); continue; }
+                catch (Exception e) { Finish(i); ForgetMenu(j.who, false); SetStatus(j.who, "FAILED: 查程序资产时出错"); j.fail(TAG + j.who + "：查程序资产时出错：" + e); continue; }
                 if (ready)
                 {
                     Finish(i);
                     ForgetMenu(j.who, true);
                     Debug.Log(TAG + j.who + "：程序资产都初始化完了，接着搭");
-                    try { j.build(); }
-                    catch (Exception e) { j.fail(TAG + j.who + " 搭建失败：" + e); }
+                    try { j.build(); SetStatus(j.who, "DONE"); }
+                    catch (Exception e) { SetStatus(j.who, "FAILED: " + e.Message); j.fail(TAG + j.who + " 搭建失败：" + e); }
                     continue;
                 }
                 if (now > j.deadline)
                 {
                     Finish(i);
                     ForgetMenu(j.who, false);
+                    SetStatus(j.who, "FAILED: 等程序资产初始化超时（" + TimeoutSeconds.ToString("0") + " 秒）");
                     j.fail(TAG + j.who + "：等了 " + TimeoutSeconds.ToString("0") + " 秒，程序资产还没初始化完，没搭。工具不手写版本号、不 Force Upgrade：" +
                            "把 Console 里 UdonSharp 的报错原样推回来（可能是 U# 编译不过）。现在的状态：\n" + rep);
                     continue;

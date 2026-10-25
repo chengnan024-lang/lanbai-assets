@@ -129,6 +129,12 @@ public class LanbaiAct06Driver : UdonSharpBehaviour
         _spawnSince = since;
     }
 
+    // Director v1.2：遮罩球归第 6 幕的那一段（预滚到 Hide），不是整个窗口；LB_Journey 在这一段里出生时不做淡入、保持黑
+    public float[] LanbaiOverlayWindow()
+    {
+        return new float[] { tPreroll0, tOverlayOff };
+    }
+
     public void LanbaiActivate(bool on)
     {
         if (roots != null)
@@ -353,7 +359,7 @@ public class LanbaiAct06Driver : UdonSharpBehaviour
             _lobesSet = false;                                   // LB_Journey's fade may have cleared the lobes
             if (t - _spawnSince < tOverlayOff) _overlayHidden = false;
         }
-        bool catchUp = !held && _spawnSince < 1e5f && t - _spawnSince >= tPreroll0 - 1f && t - _spawnSince < tOverlayOff;
+        bool catchUp = !held && _spawnSince < 1e5f && t - _spawnSince >= tPreroll0 && t - _spawnSince < tOverlayOff;   // the fade ended inside LanbaiOverlayWindow
         float floorL = 0.004f;
         float rangeEV = Mathf.Log(Mathf.Max(lDawn, floorL) / Mathf.Max(lBlack, floorL), 2f);
         float tauC = catchUp ? _spawnSince * 0.85f * dawnT / Mathf.Max(rangeEV, 1e-3f) : 1e6f;   // the curve's tau the 0.85 EV/s ramp has reached

@@ -37,12 +37,13 @@ namespace Lanbai.Test
             File.WriteAllText(ctx.Out("manifest.json"), TJson.Write(m), U8);
             var res = new Dictionary<string, object>
             {
-                { "test", ctx.testId }, { "run", ctx.runId }, { "exit", (double)exit }, { "status", Runner.StatusOf(exit) }, { "out", ctx.outDir },
+                { "test", ctx.testId }, { "run", ctx.runId }, { "exit", (double)exit }, { "status", Runner.StatusOf(ctx, exit) }, { "preflight_only", ctx.preflightOnly }, { "out", ctx.outDir },
                 { "blocked_reason", ctx.blockedReason }, { "error", ctx.error }
             };
             File.WriteAllText(ctx.Out("result.json"), TJson.Write(res), U8);
             // 最近一次的结果另存一份在测试文件夹上一层，好找
-            File.WriteAllText(Path.Combine(Path.GetDirectoryName(ctx.outDir), "last_result.json"), TJson.Write(res), U8);
+            // 只做预检的不覆盖 last_result.json（那里只放真跑过的测试）
+            if (!ctx.preflightOnly) File.WriteAllText(Path.Combine(Path.GetDirectoryName(ctx.outDir), "last_result.json"), TJson.Write(res), U8);
         }
 
         static Dictionary<string, object> Gpu()
@@ -71,7 +72,8 @@ namespace Lanbai.Test
             m["finished_utc"] = DateTime.UtcNow.ToString("o", IC);
             m["duration_s"] = Math.Round((DateTime.UtcNow - ctx.started).TotalSeconds, 1);
             m["exit_code"] = (double)exit;
-            m["status"] = Runner.StatusOf(exit);
+            m["status"] = Runner.StatusOf(ctx, exit);
+            m["preflight_only"] = ctx.preflightOnly;
             m["blocked_reason"] = ctx.blockedReason;
             m["error"] = ctx.error;
             if (ctx.errorStack != null) m["error_stack"] = ctx.errorStack;
@@ -100,10 +102,11 @@ namespace Lanbai.Test
             m["gpu"] = Gpu();
 
             // 三层状态（D-40a #6）：工具只填 Unity 桌面这一层；头显这一层固定 not_tested
+            m["consent"] = ctx.consent;
             m["layers"] = new Dictionary<string, object>
             {
                 { "blender_offline", new Dictionary<string, object> { { "status", "pending_cloud" }, { "note", "云端对照 Blender 参考帧后填；工具不填" } } },
-                { "unity_desktop", new Dictionary<string, object> { { "status", Runner.StatusOf(exit) }, { "note", "Unity 编辑器里的桌面渲染和编辑器估算的性能" } } },
+                { "unity_desktop", new Dictionary<string, object> { { "status", ctx.preflightOnly ? "not_tested" : Runner.StatusOf(exit) }, { "note", ctx.preflightOnly ? "只做了预检，没跑测试" : "Unity 编辑器里的桌面渲染和编辑器估算的性能；工具检查全过也只记“待总导演看图”（D-41 #4）" } } },
                 { "vr_headset", new Dictionary<string, object> { { "status", "not_tested" }, { "note", "工具不测头显，也不会把这一层标成通过；看 summary.md 末尾的头显清单" } } },
             };
             m["preflight"] = ctx.preflight.Cast<object>().ToList();
@@ -135,7 +138,7 @@ namespace Lanbai.Test
             string verdict;
             switch (exit)
             {
-                case 0: verdict = "✅ 跑完了，检查全过（退出码 0）"; break;
+                case 0: verdict = ctx.preflightOnly ? "✅ 只做了预检：通过（没跑测试，不是测试通过）" : "✅ 跑完了，工具的检查全过（退出码 0）：待总导演看图，不是验收通过"; break;
                 case 1: verdict = "❌ 跑完了，有检查没过（退出码 1）"; break;
                 case 2: verdict = "⛔ BLOCKED：预检或前置条件不满足，没跑（退出码 2）"; break;
                 default: verdict = "💥 工具自己出了异常（退出码 3）"; break;
@@ -145,7 +148,7 @@ namespace Lanbai.Test
             if (ctx.error != null) sb.AppendLine("\n异常：`" + ctx.error + "`（堆栈在 manifest.json 的 error_stack）");
             sb.AppendLine();
             sb.AppendLine("- 测试：`" + ctx.testId + "`（" + TJson.S(TJson.G(ctx.test, "source"), "") + "）");
-            sb.AppendLine("- 三层状态：Blender 离线 **云端填**；Unity 桌面 **" + Runner.StatusOf(exit) + "**；头显 **not_tested**（工具不测头显）");
+            sb.AppendLine("- 三层状态：Blender 离线 **云端填**；Unity 桌面 **" + (ctx.preflightOnly ? "not_tested（只做了预检）" : Runner.StatusOf(exit) + (exit == 0 ? "（工具检查全过，待总导演看图）" : "")) + "**；头显 **not_tested**（工具不测头显）");
             sb.AppendLine("- 工具 " + Runner.VERSION + "，Unity " + Application.unityVersion + (Application.isBatchMode ? "（批处理）" : "（菜单）") + "，显卡 " + SystemInfo.graphicsDeviceName + "（" + SystemInfo.graphicsDeviceType + "）");
             var repo = TJson.M(m["repo"]);
             sb.AppendLine("- 仓库：" + (ctx.sync != null ? "提交 `" + TJson.S(TJson.G(repo, "repo_commit"), "?") + "`，" + TJson.S(TJson.G(repo, "synced_at"), "?") + " 同步，条目「" + TJson.S(TJson.G(repo, "entry"), "?") + "」" : "没有同步记录，提交号不明"));
@@ -207,15 +210,15 @@ namespace Lanbai.Test
             if (ctx.sequences.Count > 0)
             {
                 sb.AppendLine("## 动态序列（闪烁）");
-                sb.AppendLine("编辑器里普通相机逐帧渲染：`hf` 是逐像素亮度的二阶时间差分（÷√6，0–255），平滑的运动几乎不算、来回跳的闪烁和爬动才算；`std` 含真实运动。热图在 `seq/<id>/heat_*.png`。**这是近似，不是头显。**");
+                sb.AppendLine("编辑器里普通相机逐帧渲染。**闪烁看 `shimmer`**：每帧同一姿态另渲一张高倍超采样的参考，量“测的图 − 参考”的亮度差（0–255）随时间的抖动，真实运动不算在里面。`motion_std` 含真实运动、`hf_raw` 也会混进正常的边缘运动，只作参考。`static` 序列是相机不动的对照（只剩画面本身的时间噪声）。热图在 `seq/<id>/heat_*.png`。**这是近似，不是头显。**");
                 sb.AppendLine();
-                sb.AppendLine("| 序列 | 种类 | 帧 | std 平均 / p99 | hf 平均 / p99 | hf 超阈值的像素 | APL 最小 / 最大 / 最大跳变 |");
+                sb.AppendLine("| 序列 | 种类 | 帧 | shimmer 平均 / p99 / 超阈值 | motion_std 平均 | hf_raw 平均 / p99 | APL 最小 / 最大 / 最大跳变 |");
                 sb.AppendLine("|---|---|---|---|---|---|---|");
                 foreach (var s in ctx.sequences)
                 {
                     string k = "seq." + s["id"];
-                    sb.AppendLine("| " + s["id"] + " | " + s["kind"] + " | " + N((double)s["frames"]) + " | " + Mt(ctx, k + ".std_mean") + " / " + Mt(ctx, k + ".std_p99") + " | " +
-                                  Mt(ctx, k + ".hf_mean") + " / " + Mt(ctx, k + ".hf_p99") + " | " + Pc(ctx, k + ".hf_frac") + " | " +
+                    sb.AppendLine("| " + s["id"] + " | " + s["kind"] + " | " + N((double)s["frames"]) + " | " + Mt(ctx, k + ".shimmer_mean") + " / " + Mt(ctx, k + ".shimmer_p99") + " / " + Pc(ctx, k + ".shimmer_frac") + " | " +
+                                  Mt(ctx, k + ".motion_std_mean") + " | " + Mt(ctx, k + ".hf_raw_mean") + " / " + Mt(ctx, k + ".hf_raw_p99") + " | " +
                                   Mt(ctx, k + ".apl_min") + " / " + Mt(ctx, k + ".apl_max") + " / " + Mt(ctx, k + ".apl_max_step") + " |");
                 }
                 sb.AppendLine();
@@ -232,7 +235,7 @@ namespace Lanbai.Test
                     var v = (Dictionary<string, object>)p["vr_estimate_1832x1920x2"];
                     var r = (Dictionary<string, object>)p["render_stats"];
                     sb.AppendLine("| " + p["id"] + " / " + p["state"] + " | " + (p.ContainsKey("t") ? N((double)p["t"]) : "") + " | " + N((double)d["total_ms"]) + " | " +
-                                  N((double)v["total_ms"]) + "（" + N((double)v["cpu_ms"]) + "） | " + N((double)r["draw_calls"]) + " | " + N((double)r["setpass"]) + " | " + N((double)r["triangles"]) + " |");
+                                  N((double)v["total_ms"]) + "（" + N((double)v["cpu_ms"]) + "） | " + Nn(r["draw_calls"]) + " | " + Nn(r["setpass"]) + " | " + Nn(r["triangles"]) + " |");
                 }
                 sb.AppendLine();
             }
@@ -306,6 +309,7 @@ namespace Lanbai.Test
         }
 
         static string Icon(string s) { return s == "ok" ? "✅" : s == "blocked" || s == "fail" ? "⛔" : s == "warn" ? "⚠️" : "ℹ️"; }
+        static string Nn(object v) { return v is double ? N((double)v) : "没量到"; }
         static string N(double v) { return Math.Abs(v) >= 1000 ? v.ToString("N0", IC) : v.ToString("0.##", IC); }
         static string Mt(Ctx ctx, string k) { double v; return ctx.metrics.TryGetValue(k, out v) ? N(v) : "—"; }
         static string Pc(Ctx ctx, string k) { double v; return ctx.metrics.TryGetValue(k, out v) ? (100 * v).ToString("0.###", IC) + " %" : "—"; }

@@ -35,6 +35,12 @@
 - 只在“请一次 U# 编译（CompileSync）”和建资产时可能引起 reload；U# 编译本身不编 C#，一般不会 reload。
 - 测试工具（`Engineering/UnityTest/`）自己排的队不是菜单：它也记在 `SessionState` 里，reload 以后**从头再跑一次**（新的输出文件夹，上一次的文件夹没有报告）；再 reload 一次就算 BLOCKED（退出码 2；批处理照样退出，不会挂住）。
 
+## 排队的另外三条规矩（终审 r2）
+
+- **进 Play 模式（离开编辑模式）时，排队中的搭建一律按失败结束**，Console 写清原因（“进 Play 模式了，排着队的 … 取消，没搭”）；进 Play 的那次 reload 也不自动续。回到编辑模式再点一次菜单。
+- **重复的程序资产直接报错**（状态 `Conflict`）：同一个脚本有两个程序资产，U# 1.x 会让整个工程的 U# 编译失败，所以工具不挑一个接着用，菜单不搭、报出两个路径。只留一个，多余的照 `HANDOFF_CHATGPT.md` §F 挪走（经小楠确认），再点菜单。
+- **从代码里调菜单（比如本地的 `LB_Remote`）时，被推迟执行要查得到**：每个菜单最近一次的状态是 `DEFERRED`（在排队等）/ `DONE` / `FAILED: 原因`，用 `Lanbai.Udon.LanbaiUdonPrograms.MenuStatus("<菜单路径>")` 查（存在 `SessionState`），日志里也写一行 `LANBAI_UDON_STATUS {"menu": "...", "status": "..."}`。**`ExecuteMenuItem` 返回 true 不等于搭好了**：看到 `DEFERRED` 就等它变成 `DONE` / `FAILED`。
+
 ## 谁换成了它
 
 main 上（这次一起改了）：
