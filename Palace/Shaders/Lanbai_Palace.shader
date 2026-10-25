@@ -41,6 +41,7 @@ Shader "Lanbai/Palace"
         _POMHeight ("POM height m", Float) = 0.015
         _POMTile ("Texture tile m", Float) = 1
         _POMFade ("POM fade distance m", Float) = 40
+        _GlintFar ("Cowrie: lamp glints fade out by this distance m", Float) = 12
         [Header(Lamps and water)]
         _LampGain ("Analytic lamp specular gain  FishScale 6", Float) = 1
         _NacreLift ("Nacre: lamps treated as this many m higher  smoke and mirrors", Float) = 0
@@ -76,7 +77,7 @@ Shader "Lanbai/Palace"
             sampler2D _MainTex, _BumpMap, _MaskMap;
             float4 _MainTex_ST, _Color, _WearColor, _SiltColor, _NacreFace, _NacreMid, _NacreGraze;
             float _BumpScale, _Smoothness, _SmoothnessConst, _UseMask, _Mode, _Metallic, _SiltAmount, _SiltSmooth, _SiltScale, _FogScale;
-            float _POMHeight, _POMTile, _POMFade, _LampGain, _NacreLift, _NacreSpread, _EnvSpec, _SwayAmp, _SwayHz, _LipFade;
+            float _POMHeight, _POMTile, _POMFade, _GlintFar, _LampGain, _NacreLift, _NacreSpread, _EnvSpec, _SwayAmp, _SwayHz, _LipFade;
 
             struct appdata
             {
@@ -128,8 +129,8 @@ Shader "Lanbai/Palace"
             float4 frag(v2f i, float facing : VFACE) : SV_Target
             {
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
-                float3 eye = LanbaiCentreEyePos();
-                float3 V = normalize(eye - i.posWS);
+                float3 eye = LanbaiCentreEyePos();                       // 雾、雾带、淡出距离：中眼（和共用的雾一致）
+                float3 V = normalize(_WorldSpaceCameraPos - i.posWS);       // 终审 10-25：高光、环境反射、POM 用每只眼自己的视线（头显里不像画上去的）
                 float3 Ng = normalize(i.nWS) * (facing >= 0 ? 1.0 : -1.0);
                 float3 T = normalize(i.tWS.xyz - Ng * dot(i.tWS.xyz, Ng));
                 float3 B = cross(Ng, T) * i.tWS.w;
@@ -198,6 +199,10 @@ Shader "Lanbai/Palace"
                 bool nacre = _Mode > 1.5 && _Mode < 2.5;
                 // 第 8 轮（评审 r5 #7）：珍珠母的灯高光按挪高 _NacreLift 的灯算、瓣放宽 _NacreSpread（smoke and mirrors，README §3）
                 float3 spec = LanbaiPalaceLampsLift(i.posWS, N, V, nacre ? alpha + _NacreSpread : alpha, F0, nacre ? _NacreLift : 0.0) * _LampGain;
+                // 终审 10-25 #2：宝贝的闪点只在 _GlintFar（12 m）以内出现，远处是平滑的暗藕紫——紫要在 668.6 s、9 m 处被“发现”，
+                // 不是 40 m 外就在打广告
+                if (_Mode > 2.5)
+                    spec *= saturate((_GlintFar - dist) / 4.0);
                 if (_Mode > 1.5 && _Mode < 2.5)
                     spec = dot(spec, float3(0.2126, 0.7152, 0.0722)) * LanbaiNacre(NdotV, _NacreFace.rgb, _NacreMid.rgb, _NacreGraze.rgb, mask.b) * 1.6;
                 // 环境反射：反射方向的水色（LanbaiHorizon），按菲涅耳与粗糙度压

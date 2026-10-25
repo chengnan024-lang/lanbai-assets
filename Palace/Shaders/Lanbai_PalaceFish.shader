@@ -114,8 +114,8 @@ Shader "Lanbai/PalaceFish"
             float4 frag(v2f i) : SV_Target
             {
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
-                float3 eye = LanbaiCentreEyePos();
-                float3 V = normalize(eye - i.posWS);
+                float3 eye = LanbaiCentreEyePos();                       // 雾、雾带、淡出距离：中眼（和共用的雾一致）
+                float3 V = normalize(_WorldSpaceCameraPos - i.posWS);       // 终审 10-25：高光、环境反射、POM 用每只眼自己的视线（头显里不像画上去的）
                 float3 N = normalize(i.nWS);
                 float3 albedo = lerp(_Belly.rgb, _Back.rgb, smoothstep(0.45, 0.75, i.side));
                 float rough = 1.0 - _Smoothness;

@@ -2120,7 +2120,7 @@
      ],
      "color": "#FF9C2F",
      "range_m": 3.5,
-     "intensity": 21.84,
+     "intensity": 5.46,
      "shadows": "soft",
      "mode": "Baked"
     },
@@ -2133,7 +2133,7 @@
      ],
      "color": "#2A557B",
      "range_m": 5.0,
-     "intensity": 56.0,
+     "intensity": 16.8,
      "shadows": "none",
      "mode": "Baked"
     }
@@ -2164,7 +2164,7 @@
      ],
      "color": "#FF9C2F",
      "range_m": 3.5,
-     "intensity": 21.84,
+     "intensity": 5.46,
      "shadows": "soft",
      "mode": "Baked"
     },
@@ -2177,7 +2177,7 @@
      ],
      "color": "#2A557B",
      "range_m": 5.0,
-     "intensity": 56.0,
+     "intensity": 16.8,
      "shadows": "none",
      "mode": "Baked"
     }
@@ -2299,7 +2299,7 @@
   "note8": "第 8 轮（评审 r5 #3）：门的两盏面光换成烘焙聚光（有范围窗），只照门这一开间和门槛；去掉 door_area_I / pour_ratio",
   "nacre_lift": 9,
   "nacre_radius": 0.6,
-  "cowrie_spec_gain": 4.0,
+  "cowrie_spec_gain": 1.5,
   "palace_fog_scale": 0.42,
   "wash": {
    "z": 415.6,
@@ -2323,7 +2323,8 @@
    ]
   },
   "note9": "第 9 轮（终审 10-25）：宫殿的雾变薄以后，提亮光的边和灯光圈的边露出了阴影里的暖色——提亮光 70/11 → 40/9，暖光范围 4 → 3.5",
-  "note9b": "复核 r9：近处的鱼鳞屋整片银白（挪高 12 m、瓣宽 1 m 的镜中灯太宽）→ 挪高 9 m、增益 8、瓣宽 0.6 m；代价：proc_l 檐口的珍珠光没了，等终审 #5（鳞默认暗、灯经过时一条带扫过整片屋面）重做"
+  "note9b": "复核 r9：近处的鱼鳞屋整片银白（挪高 12 m、瓣宽 1 m 的镜中灯太宽）→ 挪高 9 m、增益 8、瓣宽 0.6 m；代价：proc_l 檐口的珍珠光没了，等终审 #5（鳞默认暗、灯经过时一条带扫过整片屋面）重做",
+  "note10": "第 10 轮（终审 #2）：阙前两盏灯回到标准亮度（暖、靛 ×1），宝贝闪点 ×4 → ×1.5、只在 12 m 内"
  },
  "render": {
   "fog_density": 0.018,

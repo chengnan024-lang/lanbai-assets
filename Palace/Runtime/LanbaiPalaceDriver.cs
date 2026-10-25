@@ -52,6 +52,8 @@ public class LanbaiPalaceDriver : UdonSharpBehaviour
     public float washFrom = 706f, washTo = 718f;
     [Header("解析灯换位子不“啪”一下（终审 10-25）：第 7 近的灯按离第 8 近的距离差淡进淡出")]
     public float slotFadeM = 3f;
+    [Header("F8：星座一盏盏暗下去（与 Lanbai/PalaceFlame 的 _FadeStart/_FadeSpan/_FadeLen 同式；相位 = (k × 0.618034) mod 1）")]
+    public float fadeStart = 835.16f, fadeSpan = 36f, fadeLen = 4f;
 
     private int[] _idLamp, _idCol, _idDir, _idAxis;
     private int _idCount;
@@ -164,6 +166,10 @@ public class LanbaiPalaceDriver : UdonSharpBehaviour
             }
             Vector3 w = rPalaceTf.TransformPoint(lampLocal[i]);
             float fade = cutD < float.MaxValue ? Mathf.Clamp01((cutD - Mathf.Sqrt(_d2[i])) / Mathf.Max(slotFadeM, 0.01f)) : 1f;
+            float ph = (i * 0.618034f) % 1f;
+            float s0 = fadeStart + ph * fadeSpan;
+            float xf = Mathf.Clamp01((t - s0) / Mathf.Max(fadeLen, 0.01f));
+            fade *= 1f - xf * xf * (3f - 2f * xf);
             VRCShader.SetGlobalVector(_idLamp[k], new Vector4(w.x, w.y, w.z, lampIntensity * fade));
             VRCShader.SetGlobalVector(_idCol[k], col);
             VRCShader.SetGlobalVector(_idDir[k], new Vector4(0f, -1f, 0f, -1f));    // 全向

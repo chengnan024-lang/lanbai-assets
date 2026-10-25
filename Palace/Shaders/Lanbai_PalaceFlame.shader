@@ -35,6 +35,9 @@ Shader "Lanbai/PalaceFlame"
         _MinPixels ("Minimum flame half size px", Float) = 2.0
         _RingFar ("Halo indigo ring fades out by this distance m", Float) = 150
         _Gain ("Gain  driver", Float) = 1
+        _FadeStart ("F8: first lamp starts dimming at t", Float) = 835.16
+        _FadeSpan ("F8: lamps start dimming over this many s  staggered by phase", Float) = 36
+        _FadeLen ("F8: each lamp dims over this many s", Float) = 4
     }
     SubShader
     {
@@ -58,7 +61,7 @@ Shader "Lanbai/PalaceFlame"
 
             sampler2D _FlipTex;
             float4 _FlameColor, _FlameCore, _FlameSize, _HaloMid;
-            float _HaloRadius, _HaloWarm, _HaloWarmR, _RingGain, _HaloPull, _FlamePull, _BelowPull, _LipY, _Atten, _FPS, _MinPixels, _Gain, _SoftFade, _RingFar;
+            float _HaloRadius, _HaloWarm, _HaloWarmR, _RingGain, _HaloPull, _FlamePull, _BelowPull, _LipY, _Atten, _FPS, _MinPixels, _Gain, _SoftFade, _RingFar, _FadeStart, _FadeSpan, _FadeLen;
             UNITY_DECLARE_DEPTH_TEXTURE(_CameraDepthTexture);
 
             struct appdata
@@ -156,7 +159,11 @@ Shader "Lanbai/PalaceFlame"
                     float m2 = m * m;
                     col = m * _FlameColor.rgb + m2 * m2 * 4.0 * _FlameCore.rgb;     // 金的焰身 + 白热的芯（不靠色调映射的肩部变金）
                 }
-                return float4(col * i.info.z * _Gain, 1.0);
+                // 终审 10-25：F8 → 7c 前的 40 秒，星座一盏盏暗下去（每盏按相位错开、4 秒淡出，只看 _Udon_T，D-33 #6）；
+                // 875.16 全灭，比时间窗的末尾（876.16）早一秒，所以不会在窗口结束那一帧整片消失
+                float s0 = _FadeStart + i.info.y * _FadeSpan;
+                float fadeF8 = 1.0 - smoothstep(s0, s0 + _FadeLen, _Udon_T);
+                return float4(col * i.info.z * _Gain * fadeF8, 1.0);
             }
             ENDCG
         }
