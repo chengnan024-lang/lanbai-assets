@@ -87,11 +87,11 @@ class Act06Scene:
             q = x * C_AX[0] + z * C_AX[1]
             a0, a1 = L['a']
             u = np.clip((a - a0) / (a1 - a0), 0, 1)
-            hw = (L['hw'][0] + (L['hw'][1] - L['hw'][0]) * u) * (0.7 + 0.6 * n2(a, np.full_like(a, 7.0 * seed), 3000.0, 2, seed))
+            hw = (L['hw'][0] + (L['hw'][1] - L['hw'][0]) * u) * (0.7 + 0.6 * n2(a, np.full_like(a, 7.0 * seed), 3000.0, 0, seed))
             hw = hw + L.get('basin', 0.0) * ss(900.0, 0.0, np.abs(a))         # wider round the bus column (walls ~500 m off, bible)
             mid = L['c_off'] + 0.5 * L['warp'] * 2 * (n2(a, np.full_like(a, 3.0 * seed), 6000.0, 0, seed + 5.0) - 0.5)
             qw = q + L['warp'] * 2 * (n2(x, z, 1400.0, 0, seed + 11.0) - 0.5)
-            aw = a + L.get('end_warp', 0.0) * 2 * (n2(x, z, 2000.0, 2, seed + 17.0) - 0.5)
+            aw = a + L.get('end_warp', 0.0) * 2 * (n2(x, z, 2000.0, 0, seed + 17.0) - 0.5)
             ends = ss(a0 - L['soft'], a0, aw) * ss(a1, a1 - L['soft'] * 3, aw)
             return ss(hw, hw - L['soft'], np.abs(qw - mid)) * ends
 
@@ -146,8 +146,8 @@ class Act06Scene:
         self.layers = [VR.Layer('P%d' % k, pf[1] - pf[4] * 0.5, pf[1] + pf[4] * 0.5, covP_for(pf), scale=900.0, wind=tuple(pf[2]),
                                 sigma=0.012, erode=0.45, base_soft=0.2) for k, pf in enumerate(puffs)] + [
             VR.Layer('A', g['A']['y0'], g['A']['y1'], covA, scale=1700.0, wind=(4.0, 0.0, 1.5), sigma=0.05, erode=0.5),
-            VR.Layer('B', g['B']['y0'], g['B']['y1'], covB, scale=1800.0, wind=(3.0, 0.0, 2.5), sigma=0.04, kind='cumulus',
-                     erode=0.42, base_soft=0.1),
+            VR.Layer('B', g['B']['y0'], g['B']['y1'], covB, scale=600.0, wind=(3.0, 0.0, 2.5), sigma=0.04, kind='strato',
+                     erode=0.42, base_soft=0.1, soft_pow=2.0, hvar=0.3),
             VR.Layer('T', g['A']['y0'], top_t, covT, scale=1500.0, wind=(2.0, 0.0, 1.0), sigma=0.05, erode=0.5,
                      base_soft=0.02),
         ]

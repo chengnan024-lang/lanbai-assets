@@ -45,7 +45,10 @@ class Volume:
 class Layer:
     """y0 base, y1 top (world m); cov(x, z, t) -> 0..1; scale = metres per volume period (R); kind 'cumulus' | 'strato'"""
     def __init__(self, name, y0, y1, cov, scale=2400.0, wind=(5.0, 0.0, 2.0), sigma=0.045, kind='cumulus', erode=0.35,
-                 base_soft=0.06):
+                 base_soft=0.06, soft_pow=1.0, hvar=0.0):
+        self.soft_pow = soft_pow                       # > 1: density rounds off near the threshold (no flat-topped blocks)
+        self.hvar = hvar                               # base / top heights wander (fraction of the layer): no ruler-straight
+                                                       # base and top lines on a thin layer seen from the side
         self.name, self.y0, self.y1, self.cov, self.scale = name, y0, y1, cov, scale
         self.wind, self.sigma, self.kind, self.erode, self.base_soft = np.array(wind, float), sigma, kind, erode, base_soft
 
@@ -84,8 +87,11 @@ class Scene:
                 continue
             idx, Q, c = idx[keep], Q[keep], c[keep]
             h = (Q[:, 1] - L.y0) / (L.y1 - L.y0)
-            prof = L.profile(h, c)
             k = self.vol.n / L.scale
+            if L.hvar:
+                pv = np.stack([Q[:, 0] * k * 0.35, np.full(len(Q), 40.0, np.float32), Q[:, 2] * k * 0.35], -1)
+                h = h + L.hvar * 2 * (self.vol.sample(pv, 0) - 0.67) / 0.24
+            prof = L.profile(np.clip(h, 0, 1), c) * ((h >= 0) & (h <= 1))
             q = (Q - L.wind[None] * t) * k
             n0 = self.vol.sample(q[:, [0, 1, 2]], 0)
             base = np.clip((n0 * prof - (1 - c)) / np.maximum(c, 1e-3), 0, 1)
@@ -94,7 +100,7 @@ class Scene:
                 g = self.vol.sample(q2, 1)
                 er = L.erode * (0.35 + 0.65 * (1 - h))          # wispy at the base, crisp at the heads
                 base = np.clip((base - g * er) / np.maximum(1 - g * er, 1e-3), 0, 1)
-            s = base * L.sigma
+            s = (base ** L.soft_pow if L.soft_pow != 1.0 else base) * L.sigma
             better = s > sig[idx]
             hh[idx[better]] = h[better]
             sig[idx] += s
