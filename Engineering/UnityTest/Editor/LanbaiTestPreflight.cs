@@ -661,6 +661,7 @@ namespace Lanbai.Test
             };
             if (ctx.shots.Count > 0 && TJson.B(TJson.G(ctx.test, "require_ppv2"), true))
                 defs.Add(Def("ppv2_effective", "capture.ppv2_effective", "==", 1, true, "截图经过了 PPv2（开 / 关 PPv2 各渲一张小图，要不一样）"));
+            defs.AddRange(PlayReport.CheckDefs(ctx));   // 1.2.1：Play 阶段（PPv2 生效、漏拍）
             foreach (var s in ctx.settings)
                 defs.Add(Def("setting_" + s["item"], "settings." + s["item"], "==", 1, (string)s["status"] != "warn", (string)s["detail"]));
 

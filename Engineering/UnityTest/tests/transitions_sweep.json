@@ -26,20 +26,28 @@
       "time_var": "dbgT",
       "seek_var": "debugSeekSeconds",
       "seek_event": "_DebugSeekVar",
-      "why": "和本地的旅程进度面板一样：写 debugSeekSeconds、发 _DebugSeekVar 跳转；dbgT 是旅程每帧算出来的 t"
+      "why": "和本地的旅程进度面板一样：写 debugSeekSeconds、发 _DebugSeekVar 跳转；dbgT 是旅程每帧算出来的 t。进 Play 以后先等：本地玩家有了、ready_vars 都为 true、分发层 spawnFadeSince ≥ 0、再过 2 帧（最多 60 s，不然 BLOCKED）",
+      "ready_vars": [
+        "_journeyReady",
+        "_spawnFadeEnded"
+      ]
     },
     "camera": {
       "relative_to": {
         "component": "LB_Journey",
         "field": "busRoot"
       },
-      "eye_field": "heroEye",
       "yaw": 0,
       "pitch": 0,
       "hfov": 90,
       "w": 640,
       "h": 360,
-      "why": "主座位往前看：相机挂在 LB_Journey.busRoot 上，位置是 LB_Journey.heroEye（车的局部坐标，诗句也按它摆）；车动相机跟着动。遮罩球每张拍之前挪到相机这里"
+      "why": "主座位往前看：D-28 的主座位眼点 (0.55, 1.70, 2.05)（车的局部坐标；LB_Journey.heroEye 是作废的旧值，不用），相机挂在 LB_Journey.busRoot 上，车动相机跟着动。ClientSim 的玩家也挪到这里（seat_player），遮罩球每张拍之前挪到相机这里；manifest 记 play.head_cam_dist_max",
+      "eye": [
+        0.55,
+        1.7,
+        2.05
+      ]
     },
     "overlay_follow_camera": true,
     "settle_s": 2,
@@ -52,7 +60,10 @@
       "fine_fps": 10,
       "only": [],
       "why": "only 留空 = 表里全部（36 个，实时约 36 × (14 + 2) s ≈ 10 分钟）；只想看几个就写它们的 id，比如 [\"x22\", \"x26\"]"
-    }
+    },
+    "seat_player": true,
+    "max_missed_frac": 0.1,
+    "max_missed_frac_why": "实时拍不满时漏掉的比例；超过 10 % 这一段算 fail（帧间的量只用中间没漏拍、间隔 ≤ 1.5 × 安排间隔的相邻两张）"
   },
   "checks": [],
   "checks_why": "不设卡：这是找问题的扫描，不是验收。summary.md 的表里，类别是“要查”的交接超过圣经 §1.8 的三个窗口（0.25 / 1 / 2 s 里 0.5 / 1.0 / 1.8 EV，那里是每个视向，这里是全画面平均）会标 ⚠️",

@@ -100,7 +100,7 @@
 
 ### 开跑之前工具自己查的几道关（HANDOFF_CHATGPT，只读）
 - **资源**：C 盘剩 ≥ 10 GB、工程所在盘剩 ≥ 10 GB、可用内存 ≥ 6 GB（测试定义的 `resources` 可改：`min_c_gb`、`min_project_gb`、`min_free_ram_gb`）。不够就 BLOCKED：**停，告诉小楠**（工具和阿白都不替小楠关程序、清文件；VRChat 开着就请小楠关）。
-- **小楠的同意**：第一次用这个工具之前要小楠同意。同意以后，阿白写 `<工程>/LanbaiReports/tests/CONSENT.json`：`{"by": "小楠", "date": "YYYY-MM-DD", "tool_version": "1.2.0", "tests": ["gate_clouds_test", "transitions_sweep", "flicker_probe"], "backup": "整工程备份的 zip 路径", "note": "小楠原话"}`。没有这个文件就 BLOCKED；**同意的范围**：`tool_version` 要和工具的版本一样（工具升了版本要重新问），`tests` 里要有这次跑的测试，不然 BLOCKED；备份的路径这台机器上找不到，只警告。工具只读它，不替人写。
+- **小楠的同意**：第一次用这个工具之前要小楠同意。同意以后，阿白写 `<工程>/LanbaiReports/tests/CONSENT.json`：`{"by": "小楠", "date": "YYYY-MM-DD", "tool_version": "1.2.1", "tests": ["gate_clouds_test", "transitions_sweep", "flicker_probe"], "backup": "整工程备份的 zip 路径", "note": "小楠原话"}`。没有这个文件就 BLOCKED；**同意的范围**：`tool_version` 要和工具的版本一样（工具升了版本要重新问），`tests` 里要有这次跑的测试，不然 BLOCKED；备份的路径这台机器上找不到，只警告。工具只读它，不替人写。
 - **弹窗**：工具自己不弹（批处理没有；菜单只有开始前和跑完的两个框）。Unity / Hub / VCC / SDK 的弹窗照 HANDOFF_CHATGPT §C 第 5 步一律按“不改”回答。
 
 ### 菜单
@@ -265,14 +265,17 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json" -Encoding UTF8
 
 测试定义里有 `play` 的，编辑模式的那一半照常（预检、把场景拷进沙盒、`build`），然后**工具自己进 Play 模式**（ClientSim 照常起来，旅程照常走）：用旅程的调试跳转把时间轴拨到每一段开头前 `settle_s` 秒，时间轴实时走，每走过一个要拍的时刻就用工具自己的相机拍一张；全部拍完退出 Play，reload 以后照常写报告。**跑的时候别碰编辑器**（别点停止、别改脚本：Play 里 reload 了这次就作废，退出码 3）。
 
-- 时间轴：`clock` = `{"component": "LB_Journey", "time_var": "dbgT", "seek_var": "debugSeekSeconds", "seek_event": "_DebugSeekVar"}`（默认就是这些，和本地的旅程进度面板一样）。
-- 相机：`camera.relative_to` = `{"component": "LB_Journey", "field": "busRoot"}`（或场景路径），`eye`（车的局部坐标；不写就用 `LB_Journey.heroEye`），`yaw` / `pitch` / `roll`（度），`hfov`、`w`、`h`（默认 640×360）。车动相机跟着动。`overlay_follow_camera`（默认 true）：每张拍之前把遮罩球挪到相机这里（它平时跟着玩家的头），拍完放回。
-- 每张记**要的时刻和实际的时刻**（时间轴是实时走的，编辑器一帧拍不完会晚一点：照实记，不补；`missed` = 要拍但已经走过去了的），平均对数亮度 mean(log2(max(L, 0.004)))（L = 线性亮度，从 8 位 sRGB 读回来换算）和 APL。
+- **先等准备好**（1.2.1）：本地玩家有了、旅程的 `clock.ready_vars` 都为 true（默认 `_journeyReady`、`_spawnFadeEnded`）、分发层的 `spawnFadeSince` ≥ 0（出生淡入结束）、再过至少 2 帧；60 s 还没好记 **BLOCKED**（退出码 2）。然后核对 Udon 变量的名字和类型（`time_var` / `seek_var` 要是 float，没有这个变量就 BLOCKED），开 / 关 PPv2 各渲一张（`play.ppv2_effective`，没生效算 fail），把 ClientSim 的玩家挪到主座位（`seat_player`，默认 true；每一段开拍前再挪一次；`play.head_cam_dist_max` 记头离相机最远多少）。
+- 时间轴：`clock` = `{"component": "LB_Journey", "time_var": "dbgT", "seek_var": "debugSeekSeconds", "seek_event": "_DebugSeekVar", "ready_vars": [...]}`（默认就是这些，和本地的旅程进度面板一样）。
+- 相机：`camera.relative_to` = `{"component": "LB_Journey", "field": "busRoot"}`（或场景路径），`eye`（车的局部坐标；默认 D-28 的主座位 (0.55, 1.70, 2.05)；`LB_Journey.heroEye` 是作废的旧值，不再用），`yaw` / `pitch` / `roll`（度），`hfov`、`w`、`h`（默认 640×360）。车动相机跟着动。`overlay_follow_camera`（默认 true）：每张拍之前把遮罩球挪到相机这里（它平时跟着玩家的头），拍完放回。
+- 每张记**要的时刻和实际的时刻**（时间轴是实时走的，编辑器一帧拍不完会晚一点：照实记，不补）。**帧间的量**（相邻两张的差、闪烁计数、差图）**只用有效的相邻两张**：中间没漏拍、实际间隔 ≤ 1.5 × 安排的间隔。每段记 `achieved_fps`、`missed_frac`；`missed_frac` 超过 `play.max_missed_frac`（默认 0.1）算 fail。拍的循环里不写盘：PNG 都在一段拍完以后写。每张还记平均对数亮度 mean(log2(max(L, 0.004)))（L = 线性亮度，从 8 位 sRGB 读回来换算）和 APL。
 - **`sweep`**（交接扫描）：`table`（默认 `data/transitions_table.json`）或 `transitions`，`only`（只扫这几个 id），`pre_s` / `post_s`（7 / 7）、`coarse_fps`（1）、`fine_s` / `fine_fps`（交接点前后 1 s、10 fps）。每个交接出 `sweep/<id>/strip_1s.png`（每秒一张，从左上按时间排）、`strip_fine.png`（交接点前后 1 s，每 0.1 s 一张）、`curve.png`（横轴时间，纵轴 −8 … 0 EV，红线 = 交接时刻）、`frames.csv`；量数 `sweep.<id>.max_step_ev`（相邻两张、间隔 ≤ 0.15 s 的最大差）、`rise_025` / `rise_1` / `rise_2`（窗口里最多升了多少 EV）。`summary.md` 里一张表：有意的（`cut` 剪 1–3、`black` 第 5 幕的黑、`flash` U9 和 FLASH_TEAR）单独标，“要查”的超过圣经 §1.8 的三个窗口标 ⚠️。**全画面平均、主座位往前**：只用来找“哪里跳了”，不是验收（圣经的限速是每个视向的）。
 - **`probes`**（闪烁探测）：每个 `{id, t0, t1, fps, variants: [{id, why, toggles: [...]}]}`（默认 1016–1042 s、30 fps）。每个变体把同一段重拍一遍，**拍每一张之前**把它的 `toggles` 再做一遍（旅程可能每帧改回去）：
   `set_active {path, value}`、`set_renderer {path, value}`、`set_components_enabled {component（类型名，含子类）, value}`、`field_objects_active {component, fields, value}`（组件字段指着的物体）、`field_renderers {component, fields, enabled?, mpb_float?}`（字段里的 renderer：开关、或者往 MaterialPropertyBlock 写几个 float）、`udon_var {component, var, value}`、`global_float` / `global_vector {name（只许 _Udon_）, value}`；都可以 `optional`。
+  **每个变体之前，上一个变体改过的东西逆序还原**（第一次改之前记下原值；全局量、MaterialPropertyBlock、Udon 变量也还原：全局量退出 Play 以后还在）；收尾和所有中断（Play 被退出、工具出错）也还原。
   每个变体出 `probe/<id>/<变体>/frames.csv`（每帧的平均对数亮度、APL、和上一帧的平均差）、`curve.png`、`flicker_count.png`（每个像素相邻帧差 > 24 的次数：局部的闪在哪）、`max_diff.png`、差最大的 8 对 `diff_<t>_heat.png` + `diff_<t>_frame.png`；量数 `max_step_ev`、`steps_over_01ev`、`flicker_px_frac`，以及每个变体比第一个变体（对照）的 `max_step_vs_<对照>`。**探测不改、不删任何东西**：toggles 只在 Play 里，退出 Play 就回去了。
 - 编辑器里普通相机，不是头显、不是 SPS-I；每次跑出来的帧时刻会差几毫秒。批处理下进 Play 没试过：用菜单跑。
+- **中断和收尾**（1.2.1）：整个 Play 阶段有总超时（每段长度 + settle + 20 s，再加 120 s；`play.timeout_s` 可改）；Console 的 Error Pause 停住 Play 时工具恢复它、记次数（`play.error_pauses`，超过 20 次算出错）；收尾自己出错也照样写 `result.json` 和 `LANBAI_TEST_RESULT`（退出码 3）。进 / 出 Play 两次 reload 之间的 Console 都接上（reload 之前没存的行写进 `_state/console_bridge.jsonl`），同样的行只留一条、记 `repeat` 次数；跑完 `_state/` 删掉。
 
 ---
 

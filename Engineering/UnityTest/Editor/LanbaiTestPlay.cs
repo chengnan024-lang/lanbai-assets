@@ -1,18 +1,21 @@
-// 蓝白 · Unity 测试工具 · Play 阶段（工具 1.2.0，D-44 #4；总工程师 2026-10-25）
+// 蓝白 · Unity 测试工具 · Play 阶段（工具 1.2.1；1.2.0 D-44 #4，1.2.1 总导演复核 E1–E12；总工程师 2026-10-25）
 // !!! NOT COMPILED IN UNITY: Roslyn type-check only (Common/Tools~/compile_check). Never run in Play mode yet. !!!
 //
 // 测试定义里有 "play" 的（tests/transitions_sweep.json、tests/flicker_probe.json）：编辑模式的那一半照常（预检、开场景、
 // build），然后工具把这次运行的状态存进输出文件夹的 _state/，进 Play 模式（ClientSim 照常起来，旅程照常走），在
 // EditorApplication.update 里：
-//   1. 用旅程的调试跳转把时间轴拨到某一段的开头前 settle_s 秒（默认 LB_Journey.debugSeekSeconds + _DebugSeekVar，
-//      和本地的旅程进度面板一样），等时间走到这一段；
-//   2. 时间轴每走过一个要拍的时刻，用工具自己的相机（挂在车上：默认 LB_Journey.busRoot 的局部坐标里的
-//      LB_Journey.heroEye，主座位）拍一张：遮罩球先挪到这台相机的位置（它平时跟着玩家的头），拍完放回；
-//   3. 每张记“要的时刻 / 实际的时刻”（时间轴是实时走的，编辑器一帧拍不完就会晚一点：照实记，不补）、平均对数亮度
-//      mean(log2(max(L, 0.004)))（L = 线性亮度，从 8 位 sRGB 读回来换算）和 APL；
-//   4. 全部拍完，存结果，退出 Play。reload 以后读回状态，查检查项，照常写报告。
-// 编辑器里普通相机，不是头显、不是 SPS-I；时间轴是实时走的，所以每次跑出来的帧时刻会差几毫秒。
-// Play 模式中途被人退出、或者 Play 里脚本重新编译（reload）了：这次算工具异常（退出码 3），报告照写。
+//   0. 等准备好（1.2.1，E2）：本地玩家有了、旅程的 ready_vars 都为 true（默认 _journeyReady、_spawnFadeEnded）、分发层
+//      的 spawnFadeSince ≥ 0（出生淡入结束）、再过至少 2 帧；60 s 还没好记 BLOCKED。然后把玩家放到主座位（E4），
+//      开 / 关 PPv2 各渲一张核对 PPv2 生效（E5），核对 Udon 变量的名字和类型（E8）；
+//   1. 用旅程的调试跳转把时间轴拨到某一段的开头前 settle_s 秒，等时间走到这一段；
+//   2. 时间轴每走过一个要拍的时刻，用工具自己的相机（挂在车上：LB_Journey.busRoot 局部坐标里的 camera.eye，默认 D-28
+//      的主座位 (0.55, 1.70, 2.05)）拍一张：遮罩球先挪到这台相机的位置，拍完放回；记相机和玩家头的距离；
+//   3. 每张记“要的时刻 / 实际的时刻”、平均对数亮度、APL；帧间的量只用间隔 ≤ 1.5 × 安排的间隔、中间没漏拍的相邻两张
+//      （E3）；记 achieved_fps、missed_frac，超过门槛算 fail；PNG 都在一段拍完以后才写（拍的循环里不写盘）；
+//   4. 探测的每个变体之前把上一个变体改过的东西逆序还原（E1）；收尾和所有中断路径也还原（全局量 Play 退出后还在，E7）；
+//   5. 全部拍完，存结果，退出 Play。reload 以后读回状态，查检查项，照常写报告；_state/ 删掉（E11）。
+// reload 前后的 Console 都接上（E9：reload 之前把没存的行写进 _state/console_bridge.jsonl）；Error Pause 停住 Play 时
+// 工具把它恢复并记下（E10）；收尾出错也照样写结果行（E6），整个 Play 阶段有总超时。
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -33,10 +36,40 @@ namespace Lanbai.Test
         const string Key = "Lanbai.Test.Play";
         static readonly CultureInfo IC = CultureInfo.InvariantCulture;
         static Run _run;
+        static readonly LogCapture _bridge = new LogCapture();   // E9：两次 reload 之间、没有 ctx 的时候的 Console
 
-        static PlayPhase() { EditorApplication.update += Tick; }
+        static PlayPhase()
+        {
+            EditorApplication.update += Tick;
+            AssemblyReloadEvents.beforeAssemblyReload += FlushBridge;
+            if (!string.IsNullOrEmpty(SessionState.GetString(Key, ""))) _bridge.Start();
+        }
 
         public static bool Wants(Ctx ctx) { return TJson.M(ctx.T("play")) != null; }
+
+        static string OutOfState()
+        {
+            var st = TJson.M(TJson.Parse(SessionState.GetString(Key, "{}")));
+            return TJson.S(TJson.G(st, "out"));
+        }
+
+        /// <summary>E9：reload 之前，桥里的 Console 行追加进 _state/console_bridge.jsonl（reload 以后的那一半由新的桥接着记）。</summary>
+        static void FlushBridge()
+        {
+            try
+            {
+                string outDir = string.IsNullOrEmpty(SessionState.GetString(Key, "")) ? null : OutOfState();
+                if (outDir == null) return;
+                _bridge.Stop();
+                var rows = _bridge.Rows();
+                if (rows.Count == 0) return;
+                var sb = new StringBuilder();
+                foreach (var r in rows) sb.Append(TJson.Write(r, false)).Append('\n');
+                File.AppendAllText(Store.P(outDir, "console_bridge.jsonl"), sb.ToString(), new UTF8Encoding(false));
+                _bridge.Clear();
+            }
+            catch (Exception) { }
+        }
 
         /// <summary>编辑模式这一半做完以后调：存状态、进 Play。返回 Deferred（收尾由 Tick 在退出 Play 以后做）。</summary>
         public static int Begin(Ctx ctx)
@@ -44,21 +77,23 @@ namespace Lanbai.Test
             foreach (var e in ctx.undo.RollbackTo(0)) ctx.Warn(e);
             if (ctx.undo.Failed.Count > 0) throw new BlockedException("进 Play 之前有改回失败的：" + string.Join("、", ctx.undo.Failed.ToArray()));
             var plan = Plan.Build(ctx);                      // 定义写错了在编辑模式里就停
-            ctx.Info("Play 阶段：" + plan.segs.Count + " 段、" + plan.segs.Sum(s => s.samples.Count) + " 个时刻；进 Play 模式");
+            ctx.Info("Play 阶段：" + plan.segs.Count + " 段、" + plan.segs.Sum(s => s.samples.Count) + " 个时刻，总超时 " + plan.timeout.ToString("0", IC) + " s；进 Play 模式");
             if (Application.isBatchMode) ctx.Warn("批处理下进 Play 模式没在阿白的机器上试过；不行就用菜单跑");
             try { EditorUtility.ClearProgressBar(); } catch { }
             ctx.log.Stop();
             Store.Save(ctx);
             Runner.ClearPending();
-            SetState(ctx.outDir, "enter", ctx.mode, ctx.testId, null);
+            SetState(ctx.outDir, "enter", ctx.mode, ctx.testId, null, false);
+            _bridge.Clear();
+            _bridge.Start();
             EditorApplication.isPlaying = true;
             return Deferred;
         }
 
-        static void SetState(string outDir, string phase, string mode, string test, string err)
+        static void SetState(string outDir, string phase, string mode, string test, string err, bool blocked)
         {
             var d = new Dictionary<string, object> { { "out", outDir }, { "phase", phase }, { "mode", mode }, { "test", test }, { "at", EditorApplication.timeSinceStartup } };
-            if (err != null) d["error"] = err;
+            if (err != null) { d["error"] = err; d["blocked"] = blocked; }
             SessionState.SetString(Key, TJson.Write(d, false));
         }
 
@@ -70,6 +105,8 @@ namespace Lanbai.Test
             try { st = TJson.M(TJson.Parse(s)); } catch { SessionState.EraseString(Key); return; }
             string outDir = TJson.S(TJson.G(st, "out")), phase = TJson.S(TJson.G(st, "phase")), mode = TJson.S(TJson.G(st, "mode")), test = TJson.S(TJson.G(st, "test"));
             double at = TJson.G(st, "at") is double ? (double)TJson.G(st, "at") : 0;
+            string err = TJson.S(TJson.G(st, "error"));
+            bool blocked = TJson.B(TJson.G(st, "blocked"));
             try
             {
                 switch (phase)
@@ -77,43 +114,49 @@ namespace Lanbai.Test
                     case "enter":
                         if (EditorApplication.isPlaying)
                         {
-                            _run = new Run(outDir);
-                            SetState(outDir, "capture", mode, test, null);
+                            _run = new Run(outDir, TakeBridge());
+                            SetState(outDir, "capture", mode, test, null, false);
                         }
                         else if (!EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.timeSinceStartup - at > 20)
-                            SetState(outDir, "finish", mode, test, "没进 Play 模式（编译错误？场景里缺东西？看 Console）");
+                            SetState(outDir, "finish", mode, test, "没进 Play 模式（编译错误？场景里缺东西？看 Console）", true);
                         break;
                     case "capture":
                         if (!EditorApplication.isPlaying)
                         {
                             if (!EditorApplication.isPlayingOrWillChangePlaymode)
-                                SetState(outDir, "finish", mode, test, "Play 模式中途被退出了（有人点了停止，或者 Unity 自己退出了 Play）");
+                            {
+                                if (_run != null) { _run.Abort("Play 模式中途被退出了"); _run = null; }
+                                SetState(outDir, "finish", mode, test, "Play 模式中途被退出了（有人点了停止，或者 Unity 自己退出了 Play）", false);
+                            }
                             return;
                         }
                         if (_run == null)
                         {
-                            // Play 里 reload 了（脚本重新编译）：拍到一半的状态没了
-                            SetState(outDir, "exit", mode, test, "Play 模式里编辑器 reload 了（脚本重新编译？），拍到一半的没了");
+                            // Play 里 reload 了（脚本重新编译）：拍到一半的状态没了（拍到一半时还原用的原值也没了：退出 Play 场景会回去，全局量不会）
+                            SetState(outDir, "exit", mode, test, "Play 模式里编辑器 reload 了（脚本重新编译？），拍到一半的没了", false);
                             EditorApplication.isPlaying = false;
                             return;
                         }
+                        // E10：Console 的 Error Pause 把 Play 停住了：恢复，记下；一直停就算出错
+                        if (EditorApplication.isPaused) { _run.Paused(); EditorApplication.isPaused = false; }
                         _run.Step();
                         if (_run.done)
                         {
-                            string err = _run.Save();
-                            _run = null;
-                            SetState(outDir, "exit", mode, test, err);
+                            var r = _run; _run = null;
+                            string e2 = r.Save(out bool bl);
+                            _bridge.Clear(); _bridge.Start();
+                            SetState(outDir, "exit", mode, test, e2, bl);
                             EditorApplication.isPlaying = false;
                         }
                         break;
                     case "exit":
                         if (!EditorApplication.isPlaying && !EditorApplication.isPlayingOrWillChangePlaymode)
-                            SetState(outDir, "finish", mode, test, TJson.S(TJson.G(st, "error")));
+                            SetState(outDir, "finish", mode, test, err, blocked);
                         break;
                     case "finish":
                         if (EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isCompiling) return;
                         SessionState.EraseString(Key);
-                        Finish(outDir, mode, test, TJson.S(TJson.G(st, "error")));
+                        Finish(outDir, mode, test, err, blocked);
                         break;
                     default:
                         SessionState.EraseString(Key);
@@ -123,24 +166,44 @@ namespace Lanbai.Test
             catch (Exception e)
             {
                 Debug.LogError(LogCapture.TAG + " Play 阶段自己出错：" + e);
-                _run = null;
-                if (EditorApplication.isPlaying) { SetState(outDir, "exit", mode, test, "Play 阶段的工具代码出错：" + e.GetType().Name + ": " + e.Message); EditorApplication.isPlaying = false; }
-                else { SessionState.EraseString(Key); try { Finish(outDir, mode, test, "Play 阶段的工具代码出错：" + e.Message); } catch (Exception e2) { Debug.LogError(LogCapture.TAG + " 收尾也出错：" + e2); } }
+                if (_run != null) { try { _run.Abort("Play 阶段的工具代码出错"); } catch { } _run = null; }
+                if (EditorApplication.isPlaying) { SetState(outDir, "exit", mode, test, "Play 阶段的工具代码出错：" + e.GetType().Name + ": " + e.Message, false); EditorApplication.isPlaying = false; }
+                else { SessionState.EraseString(Key); Finish(outDir, mode, test, "Play 阶段的工具代码出错：" + e.Message, false); }
             }
         }
 
-        static void Finish(string outDir, string mode, string test, string err)
+        static List<Dictionary<string, object>> TakeBridge()
         {
-            var ctx = Store.Load(outDir);
-            ctx.log.Start();
-            int exit = 0;
-            if (!string.IsNullOrEmpty(err))
+            _bridge.Stop();
+            var rows = _bridge.Rows();
+            _bridge.Clear();
+            return rows;
+        }
+
+        /// <summary>退出 Play、reload 以后：读回状态，照常收尾。出错也一定写结果行（E6）。</summary>
+        static void Finish(string outDir, string mode, string test, string err, bool blocked)
+        {
+            var done = Runner.DoneFor(mode, test, false);
+            Ctx ctx = null;
+            try
             {
-                ctx.error = err;
-                exit = 3;
-                if (err.StartsWith("没进 Play", StringComparison.Ordinal)) { ctx.blockedReason = err; ctx.error = null; exit = 2; }
+                ctx = Store.Load(outDir);
+                ctx.log.Append(TakeBridge());
+                ctx.log.Start();
+                int exit = 0;
+                if (!string.IsNullOrEmpty(err))
+                {
+                    if (blocked) { ctx.blockedReason = err; exit = 2; }
+                    else { ctx.error = err; exit = 3; }
+                }
+                Runner.FinishFromPlay(ctx, exit, done);
+                Store.Delete(outDir);                    // E11：_state/ 不留在输出里
             }
-            Runner.FinishFromPlay(ctx, exit, Runner.DoneFor(mode, test, false));
+            catch (Exception e)
+            {
+                Debug.LogError(LogCapture.TAG + " Play 阶段收尾出错：" + e);
+                Runner.Emergency(outDir, test, "Play 阶段收尾出错：" + e.GetType().Name + ": " + e.Message + (err != null ? "（之前：" + err + "）" : ""), done);
+            }
         }
 
         // ─────────────────────────────────────────────────────────────
@@ -149,7 +212,7 @@ namespace Lanbai.Test
         public sealed class Seg
         {
             public string group, id, name, kind, note, variant;
-            public float tc, t0, t1;
+            public float tc, t0, t1, fineFrom = 1e9f, fineTo = -1e9f;
             public List<float> samples = new List<float>();
             public List<object> toggles = new List<object>();
         }
@@ -158,13 +221,14 @@ namespace Lanbai.Test
         {
             public List<Seg> segs = new List<Seg>();
             public Dictionary<string, object> play, cam;
-            public float settle;
+            public float settle, timeout, maxMissed;
 
             public static Plan Build(Ctx ctx)
             {
                 var p = new Plan { play = TJson.M(ctx.T("play")) };
                 p.cam = TJson.M(TJson.G(p.play, "camera")) ?? new Dictionary<string, object>();
                 p.settle = TJson.F(TJson.G(p.play, "settle_s"), 2f);
+                p.maxMissed = TJson.F(TJson.G(p.play, "max_missed_frac"), 0.1f);
                 var sw = TJson.M(TJson.G(p.play, "sweep"));
                 if (sw != null)
                 {
@@ -186,7 +250,7 @@ namespace Lanbai.Test
                         if (id == null || !TJson.Has(r, "t")) throw new StepException("交接表的每一行要有 id 和 t");
                         if (only.Count > 0 && !only.Contains(id)) continue;
                         float tc = TJson.F(TJson.G(r, "t"));
-                        var s = new Seg { group = "sweep", id = id, name = TJson.S(TJson.G(r, "name"), id), kind = TJson.S(TJson.G(r, "kind"), "check"), note = TJson.S(TJson.G(r, "note")), tc = tc, t0 = tc - pre, t1 = tc + post };
+                        var s = new Seg { group = "sweep", id = id, name = TJson.S(TJson.G(r, "name"), id), kind = TJson.S(TJson.G(r, "kind"), "check"), note = TJson.S(TJson.G(r, "note")), tc = tc, t0 = tc - pre, t1 = tc + post, fineFrom = tc - fs, fineTo = tc + fs };
                         for (int i = 0; i * (1f / cf) <= pre + post + 1e-4f; i++) Add(s.samples, s.t0 + i / cf);
                         for (int i = 0; i * (1f / ff) <= 2f * fs + 1e-4f; i++) Add(s.samples, tc - fs + i / ff);
                         s.samples.Sort();
@@ -212,6 +276,8 @@ namespace Lanbai.Test
                     }
                 }
                 if (p.segs.Count == 0) throw new StepException("play 里没有要拍的（sweep 或 probes）");
+                // E6：总超时 = 每段的长度 + settle + 20 s，加上准备的 60 s 和 60 s 余量（测试定义可以用 timeout_s 改）
+                p.timeout = TJson.F(TJson.G(p.play, "timeout_s"), p.segs.Sum(x => x.t1 - x.t0 + p.settle + 20f) + 120f);
                 return p;
             }
 
@@ -219,7 +285,27 @@ namespace Lanbai.Test
         }
 
         // ─────────────────────────────────────────────────────────────
-        //  每帧临时改的东西（只在 Play 里；退出 Play 自己就没了）。拍每一张之前都再设一次（旅程可能每帧改回去）
+        //  还原（E1、E7）：每样东西第一次改之前记下原值；下一个变体之前、收尾、中断时逆序还原
+        // ─────────────────────────────────────────────────────────────
+        public sealed class Restorer
+        {
+            readonly List<KeyValuePair<string, Action>> _l = new List<KeyValuePair<string, Action>>();
+            readonly HashSet<string> _keys = new HashSet<string>();
+            public void Remember(string key, Action restore) { if (_keys.Add(key)) _l.Add(new KeyValuePair<string, Action>(key, restore)); }
+            public List<string> RestoreAll()
+            {
+                var errs = new List<string>();
+                for (int i = _l.Count - 1; i >= 0; i--)
+                {
+                    try { _l[i].Value(); } catch (Exception e) { errs.Add("还原 " + _l[i].Key + " 失败：" + e.Message); }
+                }
+                _l.Clear(); _keys.Clear();
+                return errs;
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        //  每帧临时改的东西（只在 Play 里）。拍每一张之前都再设一次（旅程可能每帧改回去）
         // ─────────────────────────────────────────────────────────────
         public static class Toggles
         {
@@ -236,8 +322,10 @@ namespace Lanbai.Test
                 }
             }
 
-            /// <summary>做一遍；返回做了什么（第一次记进步骤）。找不到的：optional 就跳过，不然报错。</summary>
-            public static string Apply(Ctx ctx, Dictionary<string, object> t)
+            static string Id(Object o) { return o.GetInstanceID().ToString(IC); }
+
+            /// <summary>做一遍；返回做了什么。找不到的：optional 就跳过，不然报错。第一次改每样东西之前把原值交给 rs。</summary>
+            public static string Apply(Ctx ctx, Dictionary<string, object> t, Restorer rs)
             {
                 string k = TJson.S(TJson.G(t, "type"));
                 bool opt = TJson.B(TJson.G(t, "optional"));
@@ -248,7 +336,9 @@ namespace Lanbai.Test
                         {
                             var tr = Scenes.Find(TJson.S(TJson.G(t, "path")));
                             if (tr == null) { if (opt) return "没有 " + TJson.S(TJson.G(t, "path")) + "（optional，跳过）"; throw new StepException("找不到 " + TJson.S(TJson.G(t, "path"))); }
-                            if (tr.gameObject.activeSelf != v) tr.gameObject.SetActive(v);
+                            var go = tr.gameObject; bool old = go.activeSelf;
+                            rs.Remember("active " + Id(go), () => { if (go != null) go.SetActive(old); });
+                            if (go.activeSelf != v) go.SetActive(v);
                             return Scenes.PathOf(tr) + " active = " + v;
                         }
                     case "set_renderer":
@@ -256,6 +346,8 @@ namespace Lanbai.Test
                             var tr = Scenes.Find(TJson.S(TJson.G(t, "path")));
                             var r = tr != null ? tr.GetComponent<Renderer>() : null;
                             if (r == null) { if (opt) return "没有 " + TJson.S(TJson.G(t, "path")) + " 的 Renderer（optional，跳过）"; throw new StepException("找不到 " + TJson.S(TJson.G(t, "path")) + " 的 Renderer"); }
+                            bool old = r.enabled;
+                            rs.Remember("renderer " + Id(r), () => { if (r != null) r.enabled = old; });
                             r.enabled = v;
                             return Scenes.PathOf(tr) + " Renderer.enabled = " + v;
                         }
@@ -268,8 +360,8 @@ namespace Lanbai.Test
                             foreach (var c in Object.FindObjectsOfType(ty, true))
                             {
                                 var b = c as Behaviour; var r = c as Renderer;
-                                if (b != null) { b.enabled = v; n++; where.Add(Scenes.PathOf(b.transform)); }
-                                else if (r != null) { r.enabled = v; n++; where.Add(Scenes.PathOf(r.transform)); }
+                                if (b != null) { bool old = b.enabled; rs.Remember("behaviour " + Id(b), () => { if (b != null) b.enabled = old; }); b.enabled = v; n++; where.Add(Scenes.PathOf(b.transform)); }
+                                else if (r != null) { bool old = r.enabled; rs.Remember("renderer " + Id(r), () => { if (r != null) r.enabled = old; }); r.enabled = v; n++; where.Add(Scenes.PathOf(r.transform)); }
                             }
                             if (n == 0 && !opt) throw new StepException("场景里没有 " + cn);
                             return cn + " × " + n + " enabled = " + v + (where.Count > 0 ? "（" + string.Join("、", where.Take(8).ToArray()) + "）" : "");
@@ -277,7 +369,6 @@ namespace Lanbai.Test
                     case "field_objects_active":
                     case "field_renderers":
                         {
-                            // 组件（编辑模式里的 U# 代理，字段就是场景里存的引用）上这些字段指着的物体 / renderer：
                             //   field_objects_active  {"component": "LB_Journey", "fields": ["seaA", "seaB"], "value": false}
                             //   field_renderers       {"component": "LB_Journey", "fields": ["busRenderers"], "enabled": true, "mpb_float": {"_Alpha": 1}}
                             string cn = TJson.S(TJson.G(t, "component"));
@@ -300,15 +391,27 @@ namespace Lanbai.Test
                                 if (k == "field_objects_active")
                                 {
                                     var go = o is GameObject ? (GameObject)o : o is Component ? ((Component)o).gameObject : null;
-                                    if (go != null) { if (go.activeSelf != v) go.SetActive(v); n++; }
+                                    if (go == null) continue;
+                                    bool old = go.activeSelf;
+                                    rs.Remember("active " + Id(go), () => { if (go != null) go.SetActive(old); });
+                                    if (go.activeSelf != v) go.SetActive(v);
+                                    n++;
                                 }
                                 else
                                 {
                                     var rr = o as Renderer;
                                     if (rr == null) continue;
-                                    if (TJson.Has(t, "enabled")) rr.enabled = TJson.B(TJson.G(t, "enabled"));
+                                    if (TJson.Has(t, "enabled"))
+                                    {
+                                        bool old = rr.enabled;
+                                        rs.Remember("renderer " + Id(rr), () => { if (rr != null) rr.enabled = old; });
+                                        rr.enabled = TJson.B(TJson.G(t, "enabled"));
+                                    }
                                     if (mpbF != null)
                                     {
+                                        var before = new MaterialPropertyBlock();
+                                        rr.GetPropertyBlock(before);
+                                        rs.Remember("mpb " + Id(rr), () => { if (rr != null) rr.SetPropertyBlock(before); });
                                         var mpb = new MaterialPropertyBlock();
                                         rr.GetPropertyBlock(mpb);
                                         foreach (var kv in mpbF) mpb.SetFloat(kv.Key, TJson.F(kv.Value));
@@ -324,20 +427,31 @@ namespace Lanbai.Test
                             string cn = TJson.S(TJson.G(t, "component")), var = TJson.S(TJson.G(t, "var"));
                             var ub = Udon.Behaviour(cn);
                             if (ub == null) { if (opt) return "没有 " + cn + "（optional，跳过）"; throw new StepException("找不到 " + cn + " 背后的 UdonBehaviour"); }
-                            object val = TJson.G(t, "value");
-                            if (val is double) val = (float)(double)val;
+                            var vt = Udon.TypeOf(ub, var);
+                            if (vt == null) throw new StepException(cn + " 没有 Udon 变量 " + var + "（名字写错了？）");
+                            object val = Udon.Convert(TJson.G(t, "value"), vt);
+                            object old = Udon.Get(ub, var);
+                            rs.Remember("udon " + Id(ub) + "." + var, () => { if (ub != null) Udon.Set(ub, var, old); });
                             Udon.Set(ub, var, val);
                             return cn + "." + var + " = " + TJson.Write(TJson.G(t, "value"), false);
                         }
                     case "global_float":
-                        Shader.SetGlobalFloat(TJson.S(TJson.G(t, "name")), TJson.F(TJson.G(t, "value")));
-                        return TJson.S(TJson.G(t, "name")) + " = " + TJson.F(TJson.G(t, "value")).ToString("0.###", IC);
+                        {
+                            string n = TJson.S(TJson.G(t, "name"));
+                            float old = Shader.GetGlobalFloat(n);
+                            rs.Remember("global " + n, () => Shader.SetGlobalFloat(n, old));
+                            Shader.SetGlobalFloat(n, TJson.F(TJson.G(t, "value")));
+                            return n + " = " + TJson.F(TJson.G(t, "value")).ToString("0.###", IC);
+                        }
                     case "global_vector":
                         {
+                            string n = TJson.S(TJson.G(t, "name"));
                             var a = TJson.Fa(TJson.G(t, "value")) ?? new float[0];
                             var vec = new Vector4(a.Length > 0 ? a[0] : 0, a.Length > 1 ? a[1] : 0, a.Length > 2 ? a[2] : 0, a.Length > 3 ? a[3] : 0);
-                            Shader.SetGlobalVector(TJson.S(TJson.G(t, "name")), vec);
-                            return TJson.S(TJson.G(t, "name")) + " = " + vec;
+                            Vector4 old = Shader.GetGlobalVector(n);
+                            rs.Remember("global " + n, () => Shader.SetGlobalVector(n, old));
+                            Shader.SetGlobalVector(n, vec);
+                            return n + " = " + vec;
                         }
                 }
                 throw new StepException("不认识的 toggle " + k);
@@ -345,7 +459,7 @@ namespace Lanbai.Test
         }
 
         // ─────────────────────────────────────────────────────────────
-        //  UdonBehaviour（反射：工具不引用 Udon 的程序集）
+        //  UdonBehaviour、本地玩家（反射：工具不引用 Udon / VRC SDK 的程序集）
         // ─────────────────────────────────────────────────────────────
         public static class Udon
         {
@@ -361,7 +475,6 @@ namespace Lanbai.Test
                 {
                     try { var ub = m.Invoke(null, new object[] { proxy }) as Component; if (ub != null) return ub; } catch { }
                 }
-                // 退路：同一个物体上程序名一样的 UdonBehaviour
                 var ubt = Preflight.FindType("VRC.Udon.UdonBehaviour");
                 return ubt != null ? proxy.GetComponents(ubt).FirstOrDefault() : null;
             }
@@ -369,6 +482,22 @@ namespace Lanbai.Test
             {
                 var m = ub.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance).FirstOrDefault(x => x.Name == "GetProgramVariable" && !x.IsGenericMethod && x.GetParameters().Length == 1);
                 return m != null ? m.Invoke(ub, new object[] { name }) : null;
+            }
+            /// <summary>E8：变量的类型（没有这个变量 = null；读不到类型的 SDK = typeof(object)）。</summary>
+            public static Type TypeOf(Component ub, string name)
+            {
+                var m = ub.GetType().GetMethod("GetProgramVariableType", BindingFlags.Public | BindingFlags.Instance, null, new[] { typeof(string) }, null);
+                if (m == null) return typeof(object);
+                return m.Invoke(ub, new object[] { name }) as Type;
+            }
+            public static object Convert(object json, Type t)
+            {
+                if (t == typeof(float)) return TJson.F(json);
+                if (t == typeof(int)) return TJson.I(json);
+                if (t == typeof(bool)) return TJson.B(json);
+                if (t == typeof(double)) return TJson.D(json, 0);
+                if (t == typeof(string)) return TJson.S(json);
+                return json is double ? (object)(float)(double)json : json;
             }
             public static void Set(Component ub, string name, object v)
             {
@@ -384,6 +513,45 @@ namespace Lanbai.Test
             }
         }
 
+        public static class Player
+        {
+            public static object Local()
+            {
+                var net = Preflight.FindType("VRC.SDKBase.Networking");
+                var p = net != null ? net.GetProperty("LocalPlayer", BindingFlags.Public | BindingFlags.Static) : null;
+                try { return p != null ? p.GetValue(null) : null; } catch { return null; }
+            }
+            public static Vector3? Head(object lp)
+            {
+                if (lp == null) return null;
+                try
+                {
+                    var tdt = lp.GetType().GetNestedType("TrackingDataType");
+                    var m = lp.GetType().GetMethod("GetTrackingData");
+                    if (tdt == null || m == null) return null;
+                    object td = m.Invoke(lp, new[] { Enum.Parse(tdt, "Head") });
+                    var f = td.GetType().GetField("position");
+                    return f != null ? (Vector3?)(Vector3)f.GetValue(td) : null;
+                }
+                catch { return null; }
+            }
+            public static Vector3? Position(object lp)
+            {
+                try { var m = lp.GetType().GetMethod("GetPosition", Type.EmptyTypes); return m != null ? (Vector3?)(Vector3)m.Invoke(lp, null) : null; } catch { return null; }
+            }
+            public static bool Teleport(object lp, Vector3 pos, Quaternion rot)
+            {
+                try
+                {
+                    var m = lp.GetType().GetMethod("TeleportTo", new[] { typeof(Vector3), typeof(Quaternion) });
+                    if (m == null) return false;
+                    m.Invoke(lp, new object[] { pos, rot });
+                    return true;
+                }
+                catch { return false; }
+            }
+        }
+
         // ─────────────────────────────────────────────────────────────
         //  Play 里一帧一帧走的拍摄
         // ─────────────────────────────────────────────────────────────
@@ -392,22 +560,26 @@ namespace Lanbai.Test
             public bool done;
             readonly Ctx ctx;
             readonly Plan plan;
-            readonly string clockType, timeVar, seekVar, seekEvent;
-            Component clock;
+            readonly string clockType, timeVar, seekVar, seekEvent, dispatcherType;
+            readonly List<string> readyVars;
+            Component clock, dispatcher;
             Capture.Renderer2 r;
             Transform anchor, overlayTr;
             Vector3 eyeLocal; Quaternion rotLocal;
-            int w, h, segIdx = -1, sampleIdx;
-            string state = "next";
-            double stateAt;
+            int w, h, segIdx = -1, sampleIdx, readyFrames, pauses;
+            string state = "ready";
+            double stateAt, startedAt;
             Seg seg;
             SegData data;
-            string fatal;
+            string fatal; bool fatalBlocked;
+            readonly Restorer rs = new Restorer();
+            float headCamMax = -1f;
             static readonly float[] Lin = BuildLin();
 
-            public Run(string outDir)
+            public Run(string outDir, List<Dictionary<string, object>> bridged)
             {
                 ctx = Store.Load(outDir);
+                ctx.log.Append(bridged);
                 ctx.log.Start();
                 plan = Plan.Build(ctx);
                 var ck = TJson.M(TJson.G(plan.play, "clock")) ?? new Dictionary<string, object>();
@@ -415,6 +587,9 @@ namespace Lanbai.Test
                 timeVar = TJson.S(TJson.G(ck, "time_var"), "dbgT");
                 seekVar = TJson.S(TJson.G(ck, "seek_var"), "debugSeekSeconds");
                 seekEvent = TJson.S(TJson.G(ck, "seek_event"), "_DebugSeekVar");
+                readyVars = TJson.Has(ck, "ready_vars") ? TJson.Sa(TJson.G(ck, "ready_vars")) : new List<string> { "_journeyReady", "_spawnFadeEnded" };
+                dispatcherType = TJson.S(TJson.G(plan.play, "dispatcher"), "LanbaiActDispatcher");
+                startedAt = stateAt = EditorApplication.timeSinceStartup;
                 ctx.Info("Play 阶段开始：" + plan.segs.Count + " 段");
             }
 
@@ -425,17 +600,61 @@ namespace Lanbai.Test
                 return l;
             }
 
+            public void Paused()
+            {
+                pauses++;
+                ctx.Warn("Console 的 Error Pause 把 Play 停住了（第 " + pauses + " 次）：工具恢复了它；看 Console 里那条 Error");
+                if (pauses > 20) Fail("Error Pause 停了 20 次以上：Console 里一直在报 Error，拍不下去", false);
+            }
+
             float Now()
             {
                 object v = Udon.Get(clock, timeVar);
                 return v is float ? (float)v : (v is double ? (float)(double)v : -1f);
             }
 
+            void Fail(string msg, bool blocked)
+            {
+                if (fatal == null) { fatal = msg; fatalBlocked = blocked; }
+                done = true;
+            }
+
+            /// <summary>E2：本地玩家、旅程准备好、出生淡入结束、至少 2 帧。</summary>
+            bool Ready(double now)
+            {
+                if (now - stateAt > 60.0)
+                {
+                    Fail("进 Play 以后 60 s 还没准备好（本地玩家 / " + string.Join(" / ", readyVars.ToArray()) + " / 出生淡入结束）：ClientSim 没起来？", true);
+                    return false;
+                }
+                if (Player.Local() == null) { readyFrames = 0; return false; }
+                if (clock == null) clock = Udon.Behaviour(clockType);
+                if (clock == null) { readyFrames = 0; return false; }
+                foreach (var v in readyVars)
+                {
+                    var t = Udon.TypeOf(clock, v);
+                    if (t == null) { Fail(clockType + " 没有 Udon 变量 " + v + "（ready_vars 写错了，或者本地的旅程不一样）", true); return false; }
+                    if (!(Udon.Get(clock, v) is bool) || !(bool)Udon.Get(clock, v)) { readyFrames = 0; return false; }
+                }
+                if (dispatcher == null) dispatcher = Udon.Behaviour(dispatcherType);
+                if (dispatcher != null)
+                {
+                    object sf = Udon.Get(dispatcher, "spawnFadeSince");
+                    if (sf is float && (float)sf < 0f) { readyFrames = 0; return false; }
+                }
+                return ++readyFrames >= 2;
+            }
+
             void Setup()
             {
-                clock = Udon.Behaviour(clockType);
-                if (clock == null) throw new StepException("Play 里找不到 " + clockType + " 背后的 UdonBehaviour（时间轴从它读）");
-                // 相机：挂在车上（默认 LB_Journey.busRoot 局部坐标里的 heroEye），朝向 yaw / pitch / roll（度，车的局部坐标）
+                // E8：时间轴的变量名字和类型
+                foreach (var v in new[] { timeVar, seekVar })
+                {
+                    var t = Udon.TypeOf(clock, v);
+                    if (t == null) throw new BlockedPlay(clockType + " 没有 Udon 变量 " + v + "（clock 写错了，或者本地的旅程不一样）");
+                    if (t != typeof(object) && t != typeof(float)) throw new BlockedPlay(clockType + "." + v + " 是 " + t.Name + "，要 float");
+                }
+                // 相机：挂在车上，camera.eye（车的局部坐标；默认 D-28 的主座位 (0.55, 1.70, 2.05)），朝向 yaw / pitch / roll
                 var c = plan.cam;
                 object rel = TJson.G(c, "relative_to");
                 var proxyType = Lanbai.Udon.LanbaiUdonPrograms.TypeOfScript(clockType) ?? Preflight.FindType(clockType);
@@ -447,14 +666,9 @@ namespace Lanbai.Test
                     var fi = proxy != null ? proxy.GetType().GetField(f, BindingFlags.Public | BindingFlags.Instance) : null;
                     anchor = fi != null ? fi.GetValue(proxy) as Transform : null;
                 }
-                if (anchor == null) throw new StepException("找不到相机挂的车（camera.relative_to）");
-                if (TJson.Has(c, "eye")) { var e = TJson.Fa(TJson.G(c, "eye")); eyeLocal = new Vector3(e[0], e[1], e[2]); }
-                else
-                {
-                    var fi = proxy != null ? proxy.GetType().GetField(TJson.S(TJson.G(c, "eye_field"), "heroEye"), BindingFlags.Public | BindingFlags.Instance) : null;
-                    if (fi == null || fi.FieldType != typeof(Vector3)) throw new StepException("camera 没写 eye，" + clockType + " 上也没有 heroEye");
-                    eyeLocal = (Vector3)fi.GetValue(proxy);
-                }
+                if (anchor == null) throw new BlockedPlay("找不到相机挂的车（camera.relative_to）");
+                var e = TJson.Fa(TJson.G(c, "eye")) ?? new[] { 0.55f, 1.70f, 2.05f };
+                eyeLocal = new Vector3(e[0], e[1], e[2]);
                 rotLocal = Quaternion.Euler(-TJson.F(TJson.G(c, "pitch"), 0f), TJson.F(TJson.G(c, "yaw"), 0f), TJson.F(TJson.G(c, "roll"), 0f));
                 w = TJson.I(TJson.G(c, "w"), 640); h = TJson.I(TJson.G(c, "h"), 360);
                 var cam = new Capture.Cam { id = "play", eye = anchor.TransformPoint(eyeLocal), rot = anchor.rotation * rotLocal, hfov = TJson.F(TJson.G(c, "hfov"), 90f), w = w, h = h, ss = 1, def = c };
@@ -466,6 +680,39 @@ namespace Lanbai.Test
                     overlayTr = oc != null ? oc.transform : null;
                     if (overlayTr == null) ctx.Warn("场景里没有 LanbaiOverlay：遮罩球不挪（拍到的画面里可能没有黑 / 白）");
                 }
+                SeatPlayer();
+                // E5：开 / 关 PPv2 各渲一张，不一样才算生效
+                bool dummy;
+                var a = Shoot();
+                var b = Capture.RenderOnce(ctx, cam, w, h, 1, false, out dummy);
+                double diff = 0;
+                for (int i = 0; i < a.Length && i < b.Length; i++) diff += Math.Abs(Img.Luma(a[i]) - Img.Luma(b[i]));
+                diff /= Math.Max(1, a.Length);
+                ctx.Metric("play.ppv2_layer", r.hasPP ? 1 : 0, "Play 里参考相机上有 PostProcessLayer、工具的相机 Init 成功");
+                ctx.Metric("play.ppv2_diff", diff, "Play 里同一机位开 / 关 PPv2 的平均亮度差（sRGB 0–255）");
+                ctx.Metric("play.ppv2_effective", r.hasPP && diff > 0.5 ? 1 : 0, "Play 里 PPv2 真的生效了（曲线是调过色的画面）");
+                if (!(r.hasPP && diff > 0.5)) ctx.Warn("Play 里 PPv2 好像没生效（开 / 关差 " + diff.ToString("0.00", IC) + "）：曲线是没调色的画面");
+            }
+
+            /// <summary>E4：ClientSim 的玩家放到主座位（头对准相机）；记下头和相机的距离。</summary>
+            void SeatPlayer()
+            {
+                if (!TJson.B(TJson.G(plan.play, "seat_player"), true)) return;
+                var lp = Player.Local();
+                var head = Player.Head(lp); var pos = Player.Position(lp);
+                var camPos = anchor.TransformPoint(eyeLocal);
+                if (lp == null || head == null || pos == null) { ctx.Warn("读不到本地玩家的头 / 位置：玩家没挪到主座位（遮罩球照样挪到相机这里）"); return; }
+                Vector3 off = head.Value - pos.Value;
+                if (!Player.Teleport(lp, camPos - off, Quaternion.Euler(0f, (anchor.rotation * rotLocal).eulerAngles.y, 0f)))
+                    ctx.Warn("TeleportTo 调不了：玩家没挪到主座位");
+            }
+
+            void TrackHead()
+            {
+                var hd = Player.Head(Player.Local());
+                if (hd == null) return;
+                float d = Vector3.Distance(hd.Value, anchor.TransformPoint(eyeLocal));
+                if (d > headCamMax) headCamMax = d;
             }
 
             public void Step()
@@ -473,18 +720,24 @@ namespace Lanbai.Test
                 if (done) return;
                 try
                 {
-                    if (clock == null) Setup();
                     double now = EditorApplication.timeSinceStartup;
+                    if (now - startedAt > plan.timeout) { Fail("Play 阶段超过总超时 " + plan.timeout.ToString("0", IC) + " s", false); return; }
                     switch (state)
                     {
+                        case "ready":
+                            if (!Ready(now)) return;
+                            Setup();
+                            state = "next";
+                            return;
                         case "next":
-                            if (data != null) data.Finish(ctx);
+                            if (data != null) data.Finish(ctx, plan);
                             data = null;
+                            foreach (var er in rs.RestoreAll()) ctx.Warn(er);      // E1：上一个变体改的东西逆序还原
                             segIdx++;
                             if (segIdx >= plan.segs.Count) { done = true; return; }
                             seg = plan.segs[segIdx];
                             data = new SegData(seg, w, h);
-                            foreach (var tg in seg.toggles) data.toggleLog.Add(Toggles.Apply(ctx, TJson.M(tg)));
+                            foreach (var tg in seg.toggles) data.toggleLog.Add(Toggles.Apply(ctx, TJson.M(tg), rs));
                             Udon.Set(clock, seekVar, Math.Max(0f, seg.t0 - plan.settle));
                             Udon.Send(clock, seekEvent);
                             sampleIdx = 0;
@@ -494,7 +747,7 @@ namespace Lanbai.Test
                         case "settle":
                             {
                                 float t = Now();
-                                if (t >= seg.samples[0] - 1e-3f) { state = "capture"; goto case "capture"; }
+                                if (t >= seg.samples[0] - 1e-3f) { SeatPlayer(); state = "capture"; stateAt = now; goto case "capture"; }
                                 if (now - stateAt > plan.settle + 30.0) throw new StepException("跳到 " + (seg.t0 - plan.settle).ToString("0.##", IC) + " 以后时间轴 30 秒没走到 " + seg.samples[0].ToString("0.##", IC) + "（现在 " + t.ToString("0.##", IC) + "）：调试跳转没起作用？");
                                 return;
                             }
@@ -507,13 +760,14 @@ namespace Lanbai.Test
                                     if (now - stateAt > (seg.t1 - seg.t0) + plan.settle + 60.0) throw new StepException("时间轴停在 " + t.ToString("0.##", IC) + "，没走到 " + seg.samples[sampleIdx].ToString("0.##", IC));
                                     return;
                                 }
-                                float target = seg.samples[sampleIdx];
                                 int skipped = 0;
                                 while (sampleIdx + 1 < seg.samples.Count && seg.samples[sampleIdx + 1] <= t + 1e-3f) { sampleIdx++; skipped++; }
                                 data.missed += skipped;
-                                foreach (var tg in seg.toggles) Toggles.Apply(ctx, TJson.M(tg));
+                                float target = seg.samples[sampleIdx];
+                                foreach (var tg in seg.toggles) Toggles.Apply(ctx, TJson.M(tg), rs);
+                                TrackHead();
                                 var px = Shoot();
-                                data.Add(ctx, target, t, px, Lin);
+                                data.Add(sampleIdx, target, t, px, Lin);
                                 sampleIdx++;
                                 return;
                             }
@@ -522,11 +776,11 @@ namespace Lanbai.Test
                 catch (Exception e)
                 {
                     var inner = e is TargetInvocationException && e.InnerException != null ? e.InnerException : e;
-                    if (!(inner is StepException)) ctx.ToolError("Play 阶段", inner);
-                    fatal = inner.Message;
+                    bool bl = inner is BlockedPlay;
+                    if (!(inner is StepException) && !bl) ctx.ToolError("Play 阶段", inner);
                     if (seg != null) ctx.steps.Add(new Dictionary<string, object> { { "phase", "play" }, { "type", seg.group }, { "desc", seg.id + (seg.variant != null ? "/" + seg.variant : "") }, { "status", "error" }, { "error", inner.Message } });
-                    if (data != null) { try { data.Finish(ctx); } catch { } data = null; }
-                    done = true;
+                    if (data != null) { try { data.Finish(ctx, plan); } catch { } data = null; }
+                    Fail(inner.Message, bl);
                 }
             }
 
@@ -541,35 +795,60 @@ namespace Lanbai.Test
                 finally { if (overlayTr != null) overlayTr.position = old; }
             }
 
-            /// <summary>存结果（ctx 连同 Play 里的 Console）；返回要当成工具异常的那句话（没有 = null）。</summary>
-            public string Save()
+            /// <summary>中断（Play 被退出、工具出错）：能还原的还原（全局量退出 Play 后还在）。</summary>
+            public void Abort(string why)
             {
+                foreach (var er in rs.RestoreAll()) ctx.Warn(er);
+                if (fatal == null) fatal = why;
+                try { Save(out bool _); } catch { }
+            }
+
+            /// <summary>存结果（ctx 连同 Play 里的 Console）；返回要记的那句话（没有 = null），blocked = 算 BLOCKED。</summary>
+            public string Save(out bool blocked)
+            {
+                foreach (var er in rs.RestoreAll()) ctx.Warn(er);
                 try { EditorUtility.ClearProgressBar(); } catch { }
-                if (r != null) r.Dispose();
+                if (r != null) { r.Dispose(); r = null; }
+                if (headCamMax >= 0f) ctx.Metric("play.head_cam_dist_max", headCamMax, "拍的时候玩家的头离工具相机最远多少米（遮罩球每张都挪到相机这里；这个数大说明玩家没坐到主座位）");
+                ctx.Metric("play.error_pauses", pauses, "Error Pause 停住 Play 的次数（工具每次都恢复了）");
                 PlayReport.Summaries(ctx);
                 ctx.log.Stop();
                 Store.Save(ctx);
+                blocked = fatalBlocked;
                 return fatal;
             }
         }
 
-        /// <summary>一段的数据：每帧的数，缩略图，探测的逐像素统计。</summary>
+        sealed class BlockedPlay : Exception { public BlockedPlay(string m) : base(m) { } }
+
+        /// <summary>一段的数据：每帧的数，缩略图，探测的逐像素统计。PNG 都在 Finish 里才写（E3）。</summary>
         sealed class SegData
         {
             readonly Seg seg; readonly int w, h, N;
             public int missed;
             public readonly List<string> toggleLog = new List<string>();
-            readonly List<double[]> rows = new List<double[]>();          // target, t, meanLog, apl, diffMean
+            readonly List<double[]> rows = new List<double[]>();          // index, target, t, meanLog, apl, diffMean
             readonly List<KeyValuePair<float, Color32[]>> thumbs = new List<KeyValuePair<float, Color32[]>>();
-            float[] prevY, lastY; int[] flips; float[] maxDiff;
-            readonly List<KeyValuePair<double, string>> top = new List<KeyValuePair<double, string>>();
-            const int TW = 160, TH = 90;
+            float[] prevY, lastY; int[] flips; float[] maxDiff; double prevT = double.NaN, prevTarget; int prevIdx = -10;
+            readonly List<Top> top = new List<Top>();
+            int validPairs;
+            const int TW = 160, TH = 90, TOPK = 8;
+
+            sealed class Top { public double score; public float t; public float[] heat, y; public Color32[] px; }
 
             public SegData(Seg s, int w, int h) { seg = s; this.w = w; this.h = h; N = w * h; }
 
             string Dir { get { return seg.group == "sweep" ? "sweep/" + seg.id : "probe/" + seg.id + "/" + seg.variant; } }
 
-            public void Add(Ctx ctx, float target, float t, Color32[] px, float[] lin)
+            /// <summary>E3：相邻两张只在中间没漏拍、实际间隔 ≤ 1.5 × 安排的间隔时才算帧间的量。</summary>
+            bool ValidPair(int idx, float target, float t)
+            {
+                if (prevIdx != idx - 1 || double.IsNaN(prevT)) return false;
+                double sched = target - prevTarget;
+                return sched > 0 && t - prevT <= 1.5 * sched + 1e-4;
+            }
+
+            public void Add(int idx, float target, float t, Color32[] px, float[] lin)
             {
                 double sumLog = 0, sumY = 0;
                 var y = new float[N];
@@ -581,11 +860,13 @@ namespace Lanbai.Test
                     float yy = Img.Luma(c);
                     y[k] = yy; sumY += yy;
                 }
+                bool valid = ValidPair(idx, target, t);
+                if (valid) validPairs++;
                 double diffMean = double.NaN;
                 if (seg.group == "probe")
                 {
                     if (flips == null) { flips = new int[N]; maxDiff = new float[N]; }
-                    if (prevY != null)
+                    if (prevY != null && valid)
                     {
                         double sd = 0;
                         var heat = new float[N];
@@ -597,62 +878,59 @@ namespace Lanbai.Test
                             if (d > 24f) flips[k]++;
                         }
                         diffMean = sd / N;
-                        // 相邻帧差最大的几张（默认 8）原样存下来：差图 + 这一帧
-                        if (top.Count < 8 || diffMean > top.Min(x => x.Key))
+                        // 相邻帧差最大的几张（默认 8）留在内存里，一段拍完再写盘
+                        if (top.Count < TOPK || diffMean > top.Min(x => x.score))
                         {
-                            string name = Dir + "/diff_" + t.ToString("0000.000", CultureInfo.InvariantCulture);
-                            Img.SavePng(Img.Heat(heat, y, 64f), w, h, ctx.Out(name + "_heat.png"));
-                            Img.SavePng(px, w, h, ctx.Out(name + "_frame.png"));
-                            top.Add(new KeyValuePair<double, string>(diffMean, name));
-                            if (top.Count > 8)
-                            {
-                                var drop = top.OrderBy(x => x.Key).First();
-                                top.Remove(drop);
-                                try { File.Delete(ctx.Out(drop.Value + "_heat.png")); File.Delete(ctx.Out(drop.Value + "_frame.png")); } catch { }
-                            }
+                            top.Add(new Top { score = diffMean, t = t, heat = heat, y = y, px = (Color32[])px.Clone() });
+                            if (top.Count > TOPK) top.Remove(top.OrderBy(x => x.score).First());
                         }
                     }
                     prevY = y;
                 }
                 lastY = y;
-                rows.Add(new[] { target, t, sumLog / N, sumY / N, diffMean });
+                rows.Add(new double[] { idx, target, t, sumLog / N, sumY / N, diffMean, valid ? 1 : 0 });
+                prevT = t; prevTarget = target; prevIdx = idx;
                 if (seg.group == "sweep") thumbs.Add(new KeyValuePair<float, Color32[]>(target, Img.Resample(px, w, h, TW, TH)));
             }
 
-            public void Finish(Ctx ctx)
+            public void Finish(Ctx ctx, Plan plan)
             {
                 string pre = seg.group == "sweep" ? "sweep." + seg.id : "probe." + seg.id + "." + seg.variant;
                 var rec = new Dictionary<string, object>
                 {
                     { "group", seg.group }, { "id", seg.id }, { "variant", seg.variant }, { "name", seg.name }, { "kind", seg.kind }, { "note", seg.note },
                     { "t", (double)seg.tc }, { "t0", (double)seg.t0 }, { "t1", (double)seg.t1 }, { "samples", (double)seg.samples.Count }, { "captured", (double)rows.Count },
-                    { "missed", (double)missed }, { "toggles", toggleLog.Cast<object>().ToList() }, { "dir", Dir }
+                    { "missed", (double)missed }, { "valid_pairs", (double)validPairs }, { "toggles", toggleLog.Cast<object>().ToList() }, { "dir", Dir }
                 };
-                var csv = new StringBuilder("target_t,t,mean_log2_L,apl,diff_mean\n");
+                var csv = new StringBuilder("index,target_t,t,mean_log2_L,apl,diff_mean,valid_pair\n");
                 foreach (var r in rows) csv.AppendLine(string.Join(",", r.Select(x => double.IsNaN(x) ? "" : x.ToString("0.#####", CultureInfo.InvariantCulture)).ToArray()));
                 File.WriteAllText(ctx.Out(Dir + "/frames.csv"), csv.ToString(), new UTF8Encoding(false));
                 ctx.AddFile(Dir + "/frames.csv");
+                double missedFrac = seg.samples.Count > 0 ? 1.0 - rows.Count / (double)seg.samples.Count : 1.0;
+                double span = rows.Count >= 2 ? rows[rows.Count - 1][2] - rows[0][2] : 0;
                 ctx.Metric(pre + ".captured", rows.Count);
-                ctx.Metric(pre + ".missed", missed, "要拍、但编辑器那一帧已经走过去了的时刻（时间轴是实时走的）");
+                ctx.Metric(pre + ".missed", seg.samples.Count - rows.Count, "要拍、但编辑器那一帧已经走过去了的时刻（时间轴是实时走的）");
+                ctx.Metric(pre + ".missed_frac", missedFrac, "漏拍的比例；超过 play.max_missed_frac（默认 0.1）算 fail");
+                ctx.Metric(pre + ".achieved_fps", span > 0 ? (rows.Count - 1) / span : 0, "实际拍到的帧率（张数 / 时间轴秒）");
+                rec["max_missed_frac"] = (double)plan.maxMissed;
                 if (rows.Count >= 2)
                 {
-                    // 相邻两张的对数亮度差（只算间隔 ≤ 0.15 s 的）、0.25 / 1 / 2 s 窗口里最多升了多少 EV（圣经 §1.8 的三个窗口，这里是全画面的平均）
+                    // 帧间：只用有效的相邻两张（E3）
                     double maxStep = 0, maxStepAt = 0;
                     for (int i = 1; i < rows.Count; i++)
                     {
-                        double dt = rows[i][1] - rows[i - 1][1];
-                        if (dt <= 0 || dt > 0.15) continue;
-                        double d = Math.Abs(rows[i][2] - rows[i - 1][2]);
-                        if (d > maxStep) { maxStep = d; maxStepAt = rows[i][1]; }
+                        if (rows[i][6] < 0.5) continue;
+                        double d = Math.Abs(rows[i][3] - rows[i - 1][3]);
+                        if (d > maxStep) { maxStep = d; maxStepAt = rows[i][2]; }
                     }
-                    ctx.Metric(pre + ".max_step_ev", maxStep, "相邻两张（间隔 ≤ 0.15 s）平均对数亮度 mean(log2(max(L, 0.004))) 的最大差（EV，升降都算）");
+                    ctx.Metric(pre + ".max_step_ev", maxStep, "有效的相邻两张（中间没漏拍、间隔 ≤ 1.5 × 安排的间隔）平均对数亮度 mean(log2(max(L, 0.004))) 的最大差（EV，升降都算）");
                     rec["max_step_at"] = maxStepAt;
                     foreach (var win in new[] { 0.25, 1.0, 2.0 })
                     {
                         double best = 0;
                         for (int i = 0; i < rows.Count; i++)
-                            for (int j = i + 1; j < rows.Count && rows[j][1] - rows[i][1] <= win + 1e-6; j++)
-                                best = Math.Max(best, rows[j][2] - rows[i][2]);
+                            for (int j = i + 1; j < rows.Count && rows[j][2] - rows[i][2] <= win + 1e-6; j++)
+                                best = Math.Max(best, rows[j][3] - rows[i][3]);
                         ctx.Metric(pre + ".rise_" + (win == 0.25 ? "025" : win.ToString("0", CultureInfo.InvariantCulture)), best,
                             win.ToString("0.##", CultureInfo.InvariantCulture) + " s 窗口里平均对数亮度最多升了多少 EV（圣经 §1.8：≤ " + (win == 0.25 ? "0.5" : win == 1.0 ? "1.0" : "1.8") + "，那里是每个视向，这里是全画面平均）");
                     }
@@ -661,9 +939,8 @@ namespace Lanbai.Test
                 }
                 if (seg.group == "sweep" && thumbs.Count > 0)
                 {
-                    float fs = 1.0001f;
-                    var coarse = thumbs.Where(x => Math.Abs(x.Key - seg.tc) > fs || Math.Abs((x.Key - seg.t0) - Mathf.Round(x.Key - seg.t0)) < 1e-3f).ToList();
-                    var fine = thumbs.Where(x => Math.Abs(x.Key - seg.tc) <= fs).ToList();
+                    var coarse = thumbs.Where(x => x.Key < seg.fineFrom - 1e-3f || x.Key > seg.fineTo + 1e-3f || Math.Abs((x.Key - seg.t0) - Mathf.Round(x.Key - seg.t0)) < 1e-3f).ToList();
+                    var fine = thumbs.Where(x => x.Key >= seg.fineFrom - 1e-3f && x.Key <= seg.fineTo + 1e-3f).ToList();
                     Img.SavePng(PlayReport.Sheet(coarse.Select(x => x.Value).ToList(), 5, TW, TH, out int cw, out int ch), cw, ch, ctx.Out(Dir + "/strip_1s.png"));
                     Img.SavePng(PlayReport.Sheet(fine.Select(x => x.Value).ToList(), 7, TW, TH, out int fw, out int fh), fw, fh, ctx.Out(Dir + "/strip_fine.png"));
                     ctx.AddFile(Dir + "/strip_1s.png"); ctx.AddFile(Dir + "/strip_fine.png");
@@ -674,15 +951,23 @@ namespace Lanbai.Test
                 if (seg.group == "probe" && flips != null && lastY != null)
                 {
                     int stepsOver = 0;
-                    for (int i = 1; i < rows.Count; i++) if (Math.Abs(rows[i][2] - rows[i - 1][2]) > 0.1) stepsOver++;
-                    ctx.Metric(pre + ".steps_over_01ev", stepsOver, "相邻两帧平均对数亮度差 > 0.1 EV 的次数");
+                    for (int i = 1; i < rows.Count; i++) if (rows[i][6] > 0.5 && Math.Abs(rows[i][3] - rows[i - 1][3]) > 0.1) stepsOver++;
+                    ctx.Metric(pre + ".steps_over_01ev", stepsOver, "有效的相邻两帧平均对数亮度差 > 0.1 EV 的次数");
                     int flick = flips.Count(x => x >= 4);
-                    ctx.Metric(pre + ".flicker_px_frac", flick / (double)N, "这一段里相邻两帧亮度差 > 24（0–255）的次数 ≥ 4 的像素占比（局部的闪看这个和 flicker_count.png）");
+                    ctx.Metric(pre + ".flicker_px_frac", flick / (double)N, "这一段里有效的相邻两帧亮度差 > 24（0–255）的次数 ≥ 4 的像素占比（局部的闪看这个和 flicker_count.png）");
                     float mx = Math.Max(4f, flips.Max());
                     Img.SavePng(Img.Heat(flips.Select(x => (float)x).ToArray(), lastY, mx), w, h, ctx.Out(Dir + "/flicker_count.png"));
                     Img.SavePng(Img.Heat(maxDiff, lastY, 128f), w, h, ctx.Out(Dir + "/max_diff.png"));
                     ctx.AddFile(Dir + "/flicker_count.png"); ctx.AddFile(Dir + "/max_diff.png");
-                    rec["top_diffs"] = top.OrderByDescending(x => x.Key).Select(x => (object)x.Value).ToList();
+                    var names = new List<object>();
+                    foreach (var tp in top.OrderByDescending(x => x.score))
+                    {
+                        string name = Dir + "/diff_" + tp.t.ToString("0000.000", CultureInfo.InvariantCulture);
+                        Img.SavePng(Img.Heat(tp.heat, tp.y, 64f), w, h, ctx.Out(name + "_heat.png"));
+                        Img.SavePng(tp.px, w, h, ctx.Out(name + "_frame.png"));
+                        names.Add(name);
+                    }
+                    rec["top_diffs"] = names;
                     rec["flicker_count_max"] = (double)flips.Max();
                 }
                 PlayReport.Records(ctx).Add(rec);
@@ -694,7 +979,27 @@ namespace Lanbai.Test
         // ─────────────────────────────────────────────────────────────
         public static class Store
         {
-            static string P(string outDir, string n) { string d = Path.Combine(outDir, "_state"); Directory.CreateDirectory(d); return Path.Combine(d, n); }
+            public static string P(string outDir, string n) { string d = Path.Combine(outDir, "_state"); Directory.CreateDirectory(d); return Path.Combine(d, n); }
+
+            public static void Delete(string outDir)
+            {
+                try { string d = Path.Combine(outDir, "_state"); if (Directory.Exists(d)) Directory.Delete(d, true); } catch (Exception) { }
+            }
+
+            /// <summary>E11：Console 去重：同一来源、类型、内容、堆栈的行只留第一条，记次数（镜子的报错每帧一条）。</summary>
+            public static List<Dictionary<string, object>> Dedupe(List<Dictionary<string, object>> rows)
+            {
+                var o = new List<Dictionary<string, object>>();
+                var seen = new Dictionary<string, Dictionary<string, object>>();
+                foreach (var r in rows)
+                {
+                    string k = TJson.S(TJson.G(r, "source"), "") + "\u0001" + TJson.S(TJson.G(r, "type"), "") + "\u0001" + TJson.S(TJson.G(r, "msg"), "") + "\u0001" + TJson.S(TJson.G(r, "stack"), "");
+                    Dictionary<string, object> first;
+                    if (seen.TryGetValue(k, out first)) { first["repeat"] = TJson.D(TJson.G(first, "repeat"), 1) + TJson.D(TJson.G(r, "repeat"), 1); continue; }
+                    seen[k] = r; o.Add(r);
+                }
+                return o;
+            }
 
             public static void Save(Ctx c)
             {
@@ -712,6 +1017,8 @@ namespace Lanbai.Test
                     { "play", c.play.Cast<object>().ToList() },
                     { "warnings", c.warnings.Cast<object>().ToList() }, { "files", c.files.Cast<object>().ToList() },
                     { "toolErrors", c.toolErrors.Cast<object>().ToList() }, { "toolTouched", c.toolTouched.Cast<object>().ToList() },
+                    // E12：逐字节写回的原文件（edit_json / set_material 的豁免核对要用），reload 以后还要
+                    { "restoredBytes", c.restoredBytes.ToDictionary(kv => kv.Key, kv => (object)System.Convert.ToBase64String(kv.Value)) },
                 };
                 if (c.before != null)
                     d["before"] = new Dictionary<string, object>
@@ -720,7 +1027,20 @@ namespace Lanbai.Test
                         { "settings", c.before.settings.ToDictionary(kv => kv.Key, kv => (object)kv.Value) },
                     };
                 File.WriteAllText(P(c.outDir, "ctx.json"), TJson.Write(d, false), new UTF8Encoding(false));
-                c.log.WriteJsonl(P(c.outDir, "console.jsonl"));
+                var sb = new StringBuilder();
+                foreach (var r in Dedupe(c.log.Rows())) sb.Append(TJson.Write(r, false)).Append('\n');
+                File.WriteAllText(P(c.outDir, "console.jsonl"), sb.ToString(), new UTF8Encoding(false));
+                string br = P(c.outDir, "console_bridge.jsonl");
+                if (File.Exists(br)) File.Delete(br);           // 已经并进 ctx.log 了
+            }
+
+            static List<Dictionary<string, object>> ReadJsonl(string path)
+            {
+                var rows = new List<Dictionary<string, object>>();
+                if (!File.Exists(path)) return rows;
+                foreach (var line in File.ReadAllLines(path, Encoding.UTF8))
+                    if (line.Trim().Length > 0) { try { var r = TJson.M(TJson.Parse(line)); if (r != null) rows.Add(r); } catch { } }
+                return rows;
             }
 
             public static Ctx Load(string outDir)
@@ -744,6 +1064,8 @@ namespace Lanbai.Test
                 Fill(c.play, d, "play");
                 c.warnings.AddRange(TJson.Sa(TJson.G(d, "warnings"))); c.files.AddRange(TJson.Sa(TJson.G(d, "files")));
                 c.toolErrors.AddRange(TJson.Sa(TJson.G(d, "toolErrors"))); c.toolTouched.AddRange(TJson.Sa(TJson.G(d, "toolTouched")));
+                foreach (var kv in TJson.M(TJson.G(d, "restoredBytes")) ?? new Dictionary<string, object>())
+                    try { c.restoredBytes[kv.Key] = System.Convert.FromBase64String(TJson.S(kv.Value, "")); } catch { }
                 var b = TJson.M(TJson.G(d, "before"));
                 if (b != null)
                 {
@@ -757,13 +1079,10 @@ namespace Lanbai.Test
                     }
                     foreach (var kv in TJson.M(TJson.G(b, "settings")) ?? new Dictionary<string, object>()) c.before.settings[kv.Key] = TJson.S(kv.Value, "");
                 }
-                string logPath = P(outDir, "console.jsonl");
-                if (File.Exists(logPath))
-                {
-                    var rows = new List<Dictionary<string, object>>();
-                    foreach (var line in File.ReadAllLines(logPath, Encoding.UTF8)) if (line.Trim().Length > 0) { var r = TJson.M(TJson.Parse(line)); if (r != null) rows.Add(r); }
-                    c.log.Preload(rows);
-                }
+                // E9：存下的 Console + reload 之前桥里没存的那一段，按顺序接上（去重）
+                var rows = ReadJsonl(P(outDir, "console.jsonl"));
+                rows.AddRange(ReadJsonl(P(outDir, "console_bridge.jsonl")));
+                c.log.Preload(Dedupe(rows));
                 return c;
             }
 
@@ -774,13 +1093,27 @@ namespace Lanbai.Test
         }
     }
 
-    /// <summary>Play 阶段的图（曲线、缩略图拼版）和 summary.md 里的那一节。</summary>
     public static class PlayReport
     {
         public const int PW = 960, PH = 320;
         static readonly CultureInfo IC = CultureInfo.InvariantCulture;
 
         public static List<Dictionary<string, object>> Records(Ctx ctx) { return ctx.play; }
+
+        /// <summary>1.2.1：Play 阶段的检查项（Checks.Evaluate 调）：PPv2 生效、每段漏拍不超过门槛。</summary>
+        public static List<Dictionary<string, object>> CheckDefs(Ctx ctx)
+        {
+            var l = new List<Dictionary<string, object>>();
+            if (ctx.play.Count == 0 && !ctx.metrics.ContainsKey("play.ppv2_effective")) return l;
+            l.Add(new Dictionary<string, object> { { "id", "play_ppv2_effective" }, { "metric", "play.ppv2_effective" }, { "op", "==" }, { "value", 1.0 }, { "gate", true }, { "why", "Play 里拍的画面经过了 PPv2（开 / 关各渲一张，要不一样）；没生效，曲线就是没调色的画面" } });
+            foreach (var r in ctx.play)
+            {
+                string pre = (string)r["group"] == "sweep" ? "sweep." + (string)r["id"] : "probe." + (string)r["id"] + "." + (string)r["variant"];
+                double mx = r.ContainsKey("max_missed_frac") ? TJson.D(r["max_missed_frac"], 0.1) : 0.1;
+                l.Add(new Dictionary<string, object> { { "id", pre.Replace('.', '_') + "_missed" }, { "metric", pre + ".missed_frac" }, { "op", "<=" }, { "value", mx }, { "gate", true }, { "why", "漏拍的比例（实时拍不满）；超过门槛，这一段的帧间量不能信" } });
+            }
+            return l;
+        }
 
         public static void Summaries(Ctx ctx)
         {
@@ -814,8 +1147,8 @@ namespace Lanbai.Test
             for (int e = -8; e <= 0; e++) HLine(img, Y(e), grid);
             for (double t = Math.Ceiling(x0); t <= x1; t += 1) VLine(img, X(t), grid);
             if (seg.group == "sweep") VLine(img, X(seg.tc), mark);
-            for (int i = 1; i < rows.Count; i++) Line(img, X(rows[i - 1][1]), Y(rows[i - 1][2]), X(rows[i][1]), Y(rows[i][2]), line);
-            foreach (var r in rows) { int x = X(r[1]), y = Y(r[2]); for (int dy = -1; dy <= 1; dy++) for (int dx = -1; dx <= 1; dx++) Put(img, x + dx, y + dy, dot); }
+            for (int i = 1; i < rows.Count; i++) Line(img, X(rows[i - 1][2]), Y(rows[i - 1][3]), X(rows[i][2]), Y(rows[i][3]), line);
+            foreach (var r in rows) { int x = X(r[2]), y = Y(r[3]); for (int dy = -1; dy <= 1; dy++) for (int dx = -1; dx <= 1; dx++) Put(img, x + dx, y + dy, dot); }
             return img;
         }
 
@@ -862,7 +1195,7 @@ namespace Lanbai.Test
                 sb.AppendLine("## 交接扫描（Play 模式，主座位；全画面的平均对数亮度）");
                 sb.AppendLine("每个交接前后各 7 s：每秒一张（`strip_1s.png`），交接点前后 1 s 每 0.1 s 一张（`strip_fine.png`），曲线 `curve.png`（红线 = 交接时刻，纵轴 −8 … 0 EV）。**有意的**（剪 1–3、第 5 幕的黑、U9 的闪、FLASH_TEAR）单独标出，不算技术跳变。圣经 §1.8 的限速是每个视向的，这里是全画面平均，只用来找“哪里跳了”，不是验收。");
                 sb.AppendLine();
-                sb.AppendLine("| # | 交接 | t | 类别 | 相邻两张最大差 EV | 0.25 s 升 | 1 s 升 | 2 s 升 | 漏拍 | 图 |");
+                sb.AppendLine("| # | 交接 | t | 类别 | 相邻两张最大差 EV | 0.25 s 升 | 1 s 升 | 2 s 升 | 漏拍比例 | 图 |");
                 sb.AppendLine("|---|---|---|---|---|---|---|---|---|---|");
                 foreach (var r in sweeps)
                 {
@@ -874,7 +1207,7 @@ namespace Lanbai.Test
                     bool hot = kind == "check" && (r025 > 0.5 || r1 > 1.0 || r2 > 1.8);
                     sb.AppendLine("| " + id + " | " + (string)r["name"] + " | " + ((double)r["t"]).ToString("0.##", IC) + " | " + tag + " | " + M(p + ".max_step_ev") + " | " +
                                   (hot && r025 > 0.5 ? "⚠️ " : "") + M(p + ".rise_025") + " | " + (hot && r1 > 1.0 ? "⚠️ " : "") + M(p + ".rise_1") + " | " + (hot && r2 > 1.8 ? "⚠️ " : "") + M(p + ".rise_2") + " | " +
-                                  M(p + ".missed") + " | `" + (string)r["dir"] + "/` |");
+                                  M(p + ".missed_frac") + " | `" + (string)r["dir"] + "/` |");
                 }
                 sb.AppendLine();
             }
@@ -882,16 +1215,16 @@ namespace Lanbai.Test
             if (probes.Count > 0)
             {
                 sb.AppendLine("## 闪烁探测（Play 模式，30 fps）");
-                sb.AppendLine("一次跑一组变体：每个变体把同一段重拍一遍，只差 `toggles` 里关掉的那一样。看 `max_step_ev` 和 `flicker_px_frac` 哪个变体明显变小；局部的闪看每个变体的 `flicker_count.png`（相邻帧差 > 24 的次数）和 `diff_*_heat.png`（差最大的 8 对）。**探测不改、不删任何东西**：退出 Play 就全回去了。");
+                sb.AppendLine("帧间的量只用有效的相邻两帧（中间没漏拍、实际间隔 ≤ 1.5 × 1/fps）；每个变体之前，上一个变体关掉的东西逆序还原。一次跑一组变体：每个变体把同一段重拍一遍，只差 `toggles` 里关掉的那一样。看 `max_step_ev` 和 `flicker_px_frac` 哪个变体明显变小；局部的闪看每个变体的 `flicker_count.png`（相邻帧差 > 24 的次数）和 `diff_*_heat.png`（差最大的 8 对）。**探测不改、不删任何东西**：退出 Play 就全回去了。");
                 sb.AppendLine();
-                sb.AppendLine("| 探测 | 变体 | 关了什么 | 相邻两帧最大差 EV | > 0.1 EV 的次数 | 局部闪的像素占比 | 拍了 / 漏拍 | 图 |");
+                sb.AppendLine("| 探测 | 变体 | 关了什么 | 相邻两帧最大差 EV | > 0.1 EV 的次数 | 局部闪的像素占比 | 实际帧率 / 漏拍比例 | 图 |");
                 sb.AppendLine("|---|---|---|---|---|---|---|---|");
                 foreach (var r in probes)
                 {
                     string p = "probe." + (string)r["id"] + "." + (string)r["variant"];
                     var tg = TJson.Sa(r["toggles"]);
                     sb.AppendLine("| " + (string)r["id"] + " | " + (string)r["variant"] + " | " + (tg.Count == 0 ? "（都开着）" : string.Join("；", tg.ToArray()).Replace("|", "/")) + " | " +
-                                  M(p + ".max_step_ev") + " | " + M(p + ".steps_over_01ev") + " | " + M(p + ".flicker_px_frac") + " | " + M(p + ".captured") + " / " + M(p + ".missed") + " | `" + (string)r["dir"] + "/` |");
+                                  M(p + ".max_step_ev") + " | " + M(p + ".steps_over_01ev") + " | " + M(p + ".flicker_px_frac") + " | " + M(p + ".achieved_fps") + " / " + M(p + ".missed_frac") + " | `" + (string)r["dir"] + "/` |");
                 }
                 sb.AppendLine();
             }
