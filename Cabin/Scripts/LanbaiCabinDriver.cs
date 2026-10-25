@@ -178,9 +178,18 @@ public class LanbaiCabinDriver : UdonSharpBehaviour
     }
 
     // ------------------------------------------------------------------------------------------------ interface
+    // Director v1.1 (README_Director §3 #7): whole-film window, takes over no placeholder group: keep it out of windowsFlat
+    public bool LanbaiTakesOverNothing()
+    {
+        return true;
+    }
+
+    // The whole film and after it: LB_Journey's clock runs on past the end (13 = wake + 480 = 1729.96, held at 'wake'
+    // until someone departs again), so the window never ends (as LanbaiPoemDriver): a late joiner or a seek after
+    // 1729.96 gets the act 12 state (radio off), not Start()'s t = 0. Every curve and pose is constant from tAct12 on.
     public float[] LanbaiWindow()
     {
-        return new float[] { -600f, 1400f };     // the whole film: the cabin is the frame of every act
+        return new float[] { -600f, 100000f };   // the cabin is the frame of every act
     }
 
     public void LanbaiActivate(bool on)

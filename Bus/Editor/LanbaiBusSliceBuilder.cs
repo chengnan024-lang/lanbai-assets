@@ -11,11 +11,20 @@
 //     Slice_Grade_S2       only if the grading kit's Lanbai_PP_S2 profile exists: a global PPv2 volume (night road)
 // The pieces come out of Bus.fbx with their world transforms; the rest of the FBX instance is destroyed. Names: BusLayout.json
 // 'slice' (finish_bus.py), the defaults below for an older layout. Materials: exactly the full build's makers
-// (LanbaiBusBuild.CabinMat / GlassMat / PartMat, the mode from LanbaiBusBuild.ModeFor) written to Bus/Generated/Materials.
-// Writes ONLY under Assets/Lanbai/Bus/Generated/ (bus_slice.json allowed_writes): it saves its own assets one by one
-// (SaveAssetIfDirty), never AssetDatabase.SaveAssets (that would also flush whatever else is dirty, e.g. U# program assets).
-// No UdonSharp program assets (D-41), no VRChat components, no import-setting changes. Other lights in the scene are
-// switched off (undoable, one undo step with the build): the slice is lit by the tube light map.
+// (LanbaiBusBuild.CabinMat / GlassMat / PartMat, the mode from LanbaiBusBuild.ModeFor) written to Bus/Generated/Materials;
+// what those makers report ('texture missing', 'unknown material', 'part X: not in BusLayout.json parts', ...) is counted
+// in the summary line as errors / warnings (CountShared).
+// Writes ONLY under Assets/Lanbai/Bus/Generated/. bus_slice.json allowed_writes is Assets/Lanbai/Bus/Generated/**,
+// Assets/Lanbai/UdonPrograms/** and Assets/SerializedUdonPrograms/**: the last two are for the U# compiler / the SDK,
+// which may write there on their own while the test runs; this menu writes neither. It saves its own assets one by one
+// (SaveAssetIfDirty), never AssetDatabase.SaveAssets (that would also flush whatever else is dirty, e.g. U# program
+// assets). The first build in a project also makes Assets/Lanbai/Bus/Generated.meta, which is outside 'Generated/**':
+// reported as a WARNING (the test's no_undeclared_writes fails on that run only).
+// No .unity (the scene is never saved), no UdonSharp program assets (D-41), no VRChat components, no import-setting or
+// project-setting changes: the vertex compression (bus_slice.json settings.vertex_compression_off, set by the local
+// tester) and the texture import types (Part_*_Normal_* must be Normal maps: ERROR if not) are only READ and reported.
+// Light: the pre-baked _CabinTubeLM on uv1 (D-32), no Unity light maps (bus_slice.json has_lightmaps only warns). Other
+// lights in the scene are switched off (undoable, one undo step with the build): the slice is lit by the tube light map.
 // Explained in Bus/README.md §5.
 #if UNITY_EDITOR
 #pragma warning disable 0618 // PPv2 3.5+ marks its types [Obsolete] (the project has 3.4.0; a warning only)
@@ -78,6 +87,7 @@ public static class LanbaiBusSliceBuilder
         else
         {
             errors++;
+            rep.AppendLine("ERROR: not found: " + LanbaiBusBuild.LayoutPath + " (the seat's part atlas needs its 'parts' table): building with the default names");
             Debug.LogError(Tag + "not found: " + LanbaiBusBuild.LayoutPath + " (the seat's part atlas needs its 'parts' table): building with the default names");
         }
         bool fromLayout = sn != null && Has(sn.seat) && Has(sn.window) && Has(sn.pillar);
@@ -88,15 +98,30 @@ public static class LanbaiBusSliceBuilder
             warnings++;
             rep.AppendLine("WARNING: BusLayout.json eye_hero " + Fmt(new Vector3(L.eye_hero[0], L.eye_hero[1], L.eye_hero[2])) + " is not the contract eye " + Fmt(HeroEye) + " (D-40b #1): the camera uses the contract eye");
         }
-        LanbaiBusBuild.BeginShared(rep, L);                         // the material makers report into rep, PartMat reads L.parts
+        var shared = new StringBuilder();                           // the material makers report here; counted after step 3
+        LanbaiBusBuild.BeginShared(shared, L);                      // PartMat reads L.parts
         // Unity's own lightmap unwrap would overwrite uv1 = the _CabinTubeLM atlas (and the uv1 check below cannot see it:
         // that unwrap is inside 0..1 too). Only reported: changing it would write Bus.fbx.meta, outside allowed_writes.
         var mi = AssetImporter.GetAtPath(LanbaiBusBuild.FbxPath) as ModelImporter;
         if (mi != null && mi.generateSecondaryUV)
         {
             errors++;
+            rep.AppendLine("ERROR: " + LanbaiBusBuild.FbxPath + ": Generate Lightmap UVs is ON (Unity replaces uv1 = the _CabinTubeLM atlas)");
             Debug.LogError(Tag + LanbaiBusBuild.FbxPath + ": Generate Lightmap UVs is ON, Unity replaces uv1 (the _CabinTubeLM atlas): turn it off in the import settings and build again");
         }
+        // bus_slice.json settings.vertex_compression_off (a gate of the test): a PROJECT setting, read here and reported,
+        // never changed (the test's project_settings_untouched / writes.project_settings_changed would catch it)
+        string vcHow;
+        int vcMask = VertexCompressionMask(out vcHow);
+        string vcStill = string.Join(", ", VcNeedOff.Where(a => vcMask < 0 || (vcMask & (1 << (int)a)) != 0).Select(a => a.ToString()).ToArray());
+        if (vcStill.Length > 0)
+        {
+            warnings++;
+            rep.AppendLine("WARNING: Project Settings > Player > Other Settings > Vertex Compression: " + (vcMask < 0 ? "could not read it (" + vcHow + ")" : "still compresses " + vcStill) +
+                           ". bus_slice.json settings.vertex_compression_off (a gate) wants TexCoord0-3 and Color off (uv1 = the _CabinTubeLM atlas, Col = the wear masks). " +
+                           "This menu does not change project settings: untick them by hand (Bus/README.md §5)");
+        }
+        else rep.AppendLine("vertex compression: TexCoord0-3 and Color off (mask " + vcMask + ", " + vcHow + "; bus_slice.json settings.vertex_compression_off)");
 
         Undo.IncrementCurrentGroup();
         Undo.SetCurrentGroupName("Build bus slice");
@@ -117,7 +142,15 @@ public static class LanbaiBusSliceBuilder
             warnings++;
             rep.AppendLine("WARNING: this scene also has the full bus (Lanbai_Bus): the slice sits inside it (same bus-local frame)");
         }
+        bool firstRun = !AssetDatabase.IsValidFolder(GenDir);
         LanbaiBusBuild.EnsureFolder(GenMatDir);
+        if (firstRun)
+        {
+            // the folder's own .meta (Assets/Lanbai/Bus/Generated.meta) is not inside 'Generated/**'
+            warnings++;
+            rep.AppendLine("WARNING: first build in this project: made " + GenDir + " and with it " + GenDir + ".meta, which is outside bus_slice.json " +
+                           "allowed_writes (" + GenDir + "/**): the test's no_undeclared_writes fails on this run only, run it again (Bus/README.md §5)");
+        }
 
         // 2. the FBX at the origin (unpacked, as the full build does), the three pieces out of it with their world transforms
         var root = new GameObject(RootName);
@@ -140,6 +173,7 @@ public static class LanbaiBusSliceBuilder
                 if (t == null)
                 {
                     errors++; missing.Add(n);
+                    rep.AppendLine("ERROR: " + p.Key + ": " + n + " is not in Bus.fbx");
                     Debug.LogError(Tag + p.Key + ": object " + n + " is not in " + LanbaiBusBuild.FbxPath +
                                    " (an FBX exported before D-40 #1? re-export with Bus/Source/finish_bus.py, Bus/README.md §5). The rest is built.");
                     continue;
@@ -154,6 +188,7 @@ public static class LanbaiBusSliceBuilder
         if (cabin == null || glass == null)
         {
             errors++;
+            rep.AppendLine("ERROR: shader missing: Lanbai/Cabin " + (cabin != null) + ", Lanbai/BusGlass " + (glass != null));
             Debug.LogError(Tag + "shader missing: Lanbai/Cabin " + (cabin != null) + ", Lanbai/BusGlass " + (glass != null) + " (Cabin/Shaders, Rain/): materials fall back to Standard");
         }
         int layerBus = LayerMask.NameToLayer("Bus");
@@ -194,6 +229,11 @@ public static class LanbaiBusSliceBuilder
                 if (uvNote.Length > 0) rep.AppendLine("    " + uvNote);
             }
         }
+        CountShared(shared, rep, ref errors, ref warnings);
+        CheckImports(groups, rep, ref errors, ref warnings);
+        int nLightmaps = LightmapSettings.lightmaps != null ? LightmapSettings.lightmaps.Length : 0;
+        rep.AppendLine("light: the pre-baked _CabinTubeLM (" + LanbaiBusBuild.Tex + "Cabin_TubeLM.exr) on uv1 (D-32); the slice uses no Unity light map " +
+                       "(static flags off; this scene has " + nLightmaps + "), so bus_slice.json has_lightmaps (scene.lightmaps >= 1) only warns");
 
         // 4. tube light only: the sandbox's default Directional Light (and any other light) would light the slice like day
         foreach (var li in UnityEngine.Object.FindObjectsOfType<Light>())
@@ -250,6 +290,7 @@ public static class LanbaiBusSliceBuilder
         else
         {
             errors++;
+            rep.AppendLine("ERROR: PostProcessResources not found: the camera's PostProcessLayer has no resources");
             Debug.LogError(Tag + "PostProcessResources not found (is com.unity.postprocessing installed?): the camera's PostProcessLayer has no resources");
         }
         rep.AppendLine("Slice_Camera: " + Fmt(HeroEye) + " looking +Z, vertical FOV " + cam.fieldOfView.ToString("0.0") + " (90 horizontal at 16:9), near 0.02, HDR, PostProcessLayer volume layer " +
@@ -271,7 +312,18 @@ public static class LanbaiBusSliceBuilder
         {
             warnings++;
             rep.AppendLine("WARNING: no grade volume (" + GradeProfile + " " + (prof != null ? "found" : "not found") + ", layer " + PPLayerName + " " + (ppLayer >= 0) +
-                           "): shots are not graded; run 蓝白/Grades/Build Profiles & Volumes once and build again");
+                           "): PPv2 has nothing to do, so the test's ppv2_effective (a gate when there are shots) fails; " +
+                           "run 蓝白/Grades/Build Profiles & Volumes once and build again");
+        }
+
+        // the test tool copies the FIRST camera with a PostProcessLayer it meets (bus_slice.json has no camera_template):
+        // the slice's root goes to the top of its scene, and anything that would still come first is reported
+        root.transform.SetSiblingIndex(0);
+        var firstPP = FirstPPCamera();
+        if (firstPP != null && firstPP != cam)
+        {
+            warnings++;
+            rep.AppendLine("WARNING: the test tool would copy the camera settings of " + firstPP.name + " (the first camera with a PostProcessLayer), not Slice_Camera");
         }
 
         Undo.RegisterCreatedObjectUndo(root, "Build bus slice");
@@ -301,7 +353,8 @@ public static class LanbaiBusSliceBuilder
         Selection.activeGameObject = root;
         rep.AppendLine("writes: " + saved.Count + " asset(s) under " + GenDir + " (" + string.Join(", ", saved.Select(Path.GetFileName).ToArray()) +
                        "); nothing else" + (SaveIfDirty != null ? " (saved one by one, no AssetDatabase.SaveAssets)" : "") +
-                       ": no UdonSharp program assets, no import settings, the scene is not saved");
+                       ": no UdonSharp program assets (Assets/Lanbai/UdonPrograms/, Assets/SerializedUdonPrograms/ are in bus_slice.json " +
+                       "allowed_writes for the U# compiler, not for this menu), no import or project settings, the scene is not saved (no .unity)");
         string head = (errors > 0 ? "ERROR " : "OK ") + "built " + RootName + ": " + errors + " error(s), " + warnings + " warning(s)" +
                       (missing.Count > 0 ? ", missing in Bus.fbx: " + string.Join(", ", missing.ToArray()) : "");
         if (errors > 0) Debug.LogError(Tag + head + "\n" + rep);
@@ -366,6 +419,156 @@ public static class LanbaiBusSliceBuilder
         const float e = 1e-3f;
         foreach (var v in uv) if (v.x < -e || v.x > 1f + e || v.y < -e || v.y > 1f + e) return false;
         return true;
+    }
+
+    // ------------------------------------------------------------------------------------------------ what gets counted
+    // bus_slice.json settings.vertex_compression_off: TexCoord0..3 and Color. Read as the test tool reads it (bit = 1 <<
+    // VertexAttribute): PlayerSettings.vertexChannelCompressionMask by reflection (not in the 2021.1 reference UnityEditor the
+    // compile check uses), else the line 'VertexChannelCompressionMask: <n>' of ProjectSettings/ProjectSettings.asset.
+    static readonly VertexAttribute[] VcNeedOff = { VertexAttribute.TexCoord0, VertexAttribute.TexCoord1, VertexAttribute.TexCoord2,
+                                                    VertexAttribute.TexCoord3, VertexAttribute.Color };
+
+    static int VertexCompressionMask(out string how)
+    {
+        try
+        {
+            var p = typeof(PlayerSettings).GetProperty("vertexChannelCompressionMask", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+            if (p != null) { how = "PlayerSettings.vertexChannelCompressionMask"; return Convert.ToInt32(p.GetValue(null, null)); }
+        }
+        catch (Exception) { }
+        try
+        {
+            foreach (string line in File.ReadAllLines("ProjectSettings/ProjectSettings.asset"))
+            {
+                string s = line.Trim();
+                int v;
+                if (s.StartsWith("VertexChannelCompressionMask:", StringComparison.Ordinal) &&
+                    int.TryParse(s.Substring("VertexChannelCompressionMask:".Length).Trim(), out v)) { how = "ProjectSettings.asset"; return v; }
+            }
+        }
+        catch (Exception) { }
+        how = "neither PlayerSettings nor ProjectSettings.asset";
+        return -1;
+    }
+
+    // The shared makers (LanbaiBusBuild.CabinMat / GlassMat / PartMat / T) write one line per problem, once per renderer and
+    // material. Each distinct line is counted once: a missing texture or a part type missing from BusLayout.json is an
+    // ERROR (the slice would test a material without it), and so is 'unknown material X -> Alu values' (CabinMat then
+    // gives the part Alu's values, metallic 1: a vinyl or enamel part would render as metal and spoil the look test);
+    // everything else they report ('_CabinCube empty', ...) is a WARNING.
+    static void CountShared(StringBuilder shared, StringBuilder rep, ref int errors, ref int warnings)
+    {
+        var seen = new HashSet<string>();
+        foreach (string raw in shared.ToString().Split('\n'))
+        {
+            string s = raw.Trim();
+            if (s.Length == 0 || !seen.Add(s)) continue;
+            bool err = s.StartsWith("texture missing", StringComparison.Ordinal) || s.Contains("not in BusLayout.json parts") ||
+                       s.StartsWith("unknown material", StringComparison.Ordinal) || s.StartsWith("MISSING SHADER", StringComparison.Ordinal);
+            if (err) errors++; else warnings++;
+            rep.AppendLine((err ? "ERROR (material): " : "WARNING (material): ") + s);
+        }
+    }
+
+    // Import settings of the textures on the slice's materials: READ only (changing them writes .meta files outside
+    // allowed_writes). Lanbai/Cabin unpacks _PartNormal / _DetailNormal with UnpackScaleNormal, so they must be Normal
+    // maps (an sRGB colour import bends every normal; texture_compare's bc5 / ncrunch also key on the Normal map type);
+    // masks, the tube light map and the rain-glass data are linear data; _CabinTubeLM is HDR (RGBAHalf, Cabin/README.md §5).
+    static readonly string[] NormalProps = { "_PartNormal", "_DetailNormal" };
+    static readonly string[] LinearProps = { "_PartMask", "_DetailMask", "_CabinTubeLM", "_BeadNormal", "_BeadData", "_RunnerFlow" };
+
+    const string NormalFix = "Lanbai/Cabin unpacks it as a normal map (UnpackScaleNormal), so the normals come out bent, and texture_compare's bc5 / " +
+                             "ncrunch only touch Normal-map textures. Set Texture Type = Normal map (Cabin/Editor/LanbaiCabinImport.cs does it on " +
+                             "import for names with '_Normal'; with an older copy of that script, reimport after updating it, or set it by hand). " +
+                             "This menu only reads import settings (writing them would change .meta files outside allowed_writes)";
+
+    static void CheckImports(List<GameObject> groups, StringBuilder rep, ref int errors, ref int warnings)
+    {
+        var done = new HashSet<string>();
+        var normalsSeen = new HashSet<string>();
+        int n = 0;
+        foreach (var g in groups)
+            foreach (var r in g.GetComponentsInChildren<Renderer>(true))
+                foreach (var m in r.sharedMaterials)
+                {
+                    if (m == null) continue;
+                    foreach (string prop in NormalProps.Concat(LinearProps))
+                    {
+                        if (!m.HasProperty(prop)) continue;
+                        var t = m.GetTexture(prop);
+                        string p = t != null ? AssetDatabase.GetAssetPath(t) : null;
+                        if (string.IsNullOrEmpty(p) || !done.Add(prop + "|" + p)) continue;
+                        var ti = AssetImporter.GetAtPath(p) as TextureImporter;
+                        if (ti == null) continue;
+                        n++;
+                        if (Array.IndexOf(NormalProps, prop) >= 0)
+                        {
+                            if (ti.textureType != TextureImporterType.NormalMap)
+                            {
+                                errors++;
+                                rep.AppendLine("ERROR (import): " + p + " (" + prop + ", on the slice) is imported as " + ti.textureType + (ti.sRGBTexture ? ", sRGB" : "") +
+                                               ", not as a Normal map: " + NormalFix);
+                            }
+                            normalsSeen.Add(p);
+                        }
+                        else if (ti.textureType != TextureImporterType.NormalMap && ti.sRGBTexture)
+                        {
+                            warnings++;
+                            rep.AppendLine("WARNING (import): " + p + " (" + prop + ") is imported as sRGB; the shader reads linear data: untick sRGB (Color Texture)");
+                        }
+                        var t2 = t as Texture2D;
+                        if (prop == "_CabinTubeLM" && t2 != null && t2.format != TextureFormat.RGBAHalf && t2.format != TextureFormat.RGBAFloat)
+                        {
+                            warnings++;
+                            rep.AppendLine("WARNING (import): " + p + " is " + t2.format + ", not RGBAHalf: the tube light map is HDR (E above 1 near the tubes) " +
+                                           "and its seams show every quantisation step (Cabin/README.md §5, LanbaiCabinImport)");
+                        }
+                    }
+                }
+        rep.AppendLine("import types: " + n + " texture(s) on the slice's materials checked (read only)");
+        CheckPartNormals(normalsSeen, rep, ref errors);
+    }
+
+    // Every D-36 part normal map (Bus/Textures/Parts/Part_<type>_Normal_<res>.png), not only the slice's: the full bus uses
+    // them all and they go through the same import rule. READ only; one ERROR per texture that is not a Normal map.
+    static void CheckPartNormals(HashSet<string> alreadyReported, StringBuilder rep, ref int errors)
+    {
+        string dir = LanbaiBusBuild.Tex + "Parts";
+        if (!AssetDatabase.IsValidFolder(dir))
+        {
+            rep.AppendLine("part normal maps: " + dir + " not found (the material makers report the missing textures)");
+            return;
+        }
+        int n = 0, bad = 0;
+        foreach (string g in AssetDatabase.FindAssets("t:Texture2D", new[] { dir }))
+        {
+            string p = AssetDatabase.GUIDToAssetPath(g);
+            string f = Path.GetFileNameWithoutExtension(p);
+            if (!f.StartsWith("Part_", StringComparison.Ordinal) || f.IndexOf("_Normal_", StringComparison.Ordinal) < 0) continue;
+            var ti = AssetImporter.GetAtPath(p) as TextureImporter;
+            if (ti == null) continue;
+            n++;
+            if (ti.textureType == TextureImporterType.NormalMap) continue;
+            bad++;
+            if (alreadyReported.Contains(p)) continue;                  // counted above (on the slice)
+            errors++;
+            rep.AppendLine("ERROR (import): " + p + " is imported as " + ti.textureType + (ti.sRGBTexture ? ", sRGB" : "") + ", not as a Normal map: " + NormalFix);
+        }
+        rep.AppendLine("part normal maps: " + n + " Part_*_Normal_* in " + dir + ", " + bad + " not imported as Normal map (read only)");
+    }
+
+    // as the test tool's camera template: the first camera (no target texture) with a PostProcessLayer, scenes and roots in order
+    static Camera FirstPPCamera()
+    {
+        for (int i = 0; i < SceneManager.sceneCount; i++)
+        {
+            var sc = SceneManager.GetSceneAt(i);
+            if (!sc.isLoaded) continue;
+            foreach (var g in sc.GetRootGameObjects())
+                foreach (var c in g.GetComponentsInChildren<Camera>(true))
+                    if (c.targetTexture == null && c.GetComponent<PostProcessLayer>() != null) return c;
+        }
+        return null;
     }
 
     // ------------------------------------------------------------------------------------------------ PPv2 assets

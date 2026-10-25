@@ -113,7 +113,7 @@
 
 ## 5. 导入（`Editor/LanbaiCabinImport.cs`）
 
-贴图：`*TubeLM*` → 线性、RGBAHalf、不压缩、Clamp、Bilinear、有 mip；`*_N_*` → 法线图；`*_M_*` → 线性遮罩；其余（反照率、刻度面）sRGB。细节图 Repeat、各向异性 4。模型：不生成第二套 UV（uv1 是 LM 图集）、网格压缩关、法线导入、切线 MikkTSpace、不焊点、不导相机灯光动画。项目设置的 Vertex Compression 它改不了（§0 第 2 步）。
+贴图：`*TubeLM*` → 线性、RGBAHalf、不压缩、Clamp、Bilinear、有 mip；`*_N_*`、`*_Normal_*`（座椅部件 `Part_<类>_Normal_<分辨率>`，D-44 评审）→ 法线图；`*_M_*`、`*Mask*`（含 `Part_<类>_Mask_<分辨率>`）→ 线性遮罩；其余（反照率、刻度面）sRGB。细节图 Repeat、各向异性 4。模型：不生成第二套 UV（uv1 是 LM 图集）、网格压缩关、法线导入、切线 MikkTSpace、不焊点、不导相机灯光动画。项目设置的 Vertex Compression 它改不了（§0 第 2 步）。
 
 ---
 
@@ -146,7 +146,7 @@
 | 第 12 幕 1251.96 | 1 | | | | | 系着不动 | |
 
 - **D-26 地板洞**（`_HoleOpen`）：F8b 877.96 → +6 s 长到最小洞（0.5），→ 897.96 全开（1），保持到假醒 1178.46。
-- **接法**：`LanbaiTick(t)` / `LanbaiActivate(on)` / `LanbaiWindow()`（CONTROL §5）。窗口是全片 {−600, 1400}：车厢是每一幕的画框，根物体不开关。`Start()` 里按 t = 0 写一遍全部全局量和 MPB（CONTROL §6 第 9 条）。
+- **接法**：`LanbaiTick(t)` / `LanbaiActivate(on)` / `LanbaiWindow()`（CONTROL §5）。窗口是 {−600, 100000}：全片，加上片尾以后（`LB_Journey` 的时钟过了 1729.96 还在走，停在“醒”），迟到的人、跳到片尾以后也拿到第 12 幕的状态；车厢是每一幕的画框，根物体不开关。`LanbaiTakesOverNothing()` 返回 true（Director §3 #7）：它的窗口不进 `windowsFlat` / `LanbaiCovered(t)`。`Start()` 里按 t = 0 写一遍全部全局量和 MPB（CONTROL §6 第 9 条）。
 - **每帧的开销**：全局量最多 5 个 `SetGlobal*`（值变了才写，大部分帧 0–2 个）；窗帘动的时候 `curtainRenderers` 个 MPB 写（1 个网格就 1 次），D-26 洞长的 20 秒里 `cabinRenderers` 个；座位 1 Hz；第 4 幕读 `LB_Journey` 三个变量。
 - 曝光：本包没有曝光事件，不实现 `LanbaiGrade`（曝光只由 `LB_Journey.ApplyGrades` 写）。
 - 眼位：用的是车包的 (0.55, 1.70, 2.05)（= Gate `cameras.U7`、`bus_spec.EYE`），**不是** `LB_Journey.heroEye` 的 (0.70, 1.77, 0.20)；座位球中心 (0.55, 1.05, 2.05)。

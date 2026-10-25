@@ -1,0 +1,213 @@
+// erode.osl - Cycles OSL port of LanbaiCabinErodeField (Cabin/Shaders/LanbaiCabinCommon.cginc, working tree with the
+// D-46 LanbaiZenithTerm), for look-up renders of the erosion. Not a repository file.
+//   - noise: LanbaiHash13 (Common/Shaders/LanbaiVR.cginc) + quintic value noise + 4-octave FBM (LanbaiCabinFBM)
+//   - tau: height / front / skylight terms (prose form _ErodeForm 0 by default), - _FadeResist, + LanbaiZenithTerm
+//   - protections: seat sphere, floor patch, D-33 #7a door bias, D-26 hole branch
+//   - constants = the Properties defaults of Cabin/Shaders/LanbaiCabin.shader
+// Position: the shading point P (Blender world) converted to Unity: (P.x, P.z, P.y) (U2B swaps y and z).
+// Output s = noise - tau (s < 0: the pixel is clipped), removed = (s < 0), n_uniform = the uniformised noise.
+
+// ---- LanbaiCabin.shader Properties defaults
+#define ERODE_COEF_X 0.45            // _ErodeCoef     height
+#define ERODE_COEF_Y 0.25            //                front
+#define ERODE_COEF_Z 0.35            //                skylight
+#define ERODE_COEF_W 0.8             //                skylight falloff m
+#define ERODE_NOISE_X 0.55           // _ErodeNoise    patch m
+#define ERODE_NOISE_Y 0.30           //                uniformise lo
+#define ERODE_NOISE_Z 0.70           //                uniformise hi
+#define NOISE_RANGE_X -0.20          // _ErodeNoiseRange
+#define NOISE_RANGE_Y 0.25
+#define BOX_FLOOR 0.62               // _CabinBox x
+#define BOX_CROWN 2.62               //           y
+#define BOX_REAR -3.65               //           z
+#define BOX_FRONT 3.50               //           w
+#define SKY_X 0.55                   // _SkyRect
+#define SKY_Y 2.62
+#define SKY_Z 2.80
+#define SKY_H 0.30
+#define ZEN_X 0.55                   // _ErodeZenith (D-46)
+#define ZEN_Z0 1.95
+#define ZEN_Z1 2.50
+#define ZEN_W 0.50
+#define ZEN_FALL 0.15                // _ErodeZenithShape
+#define ZEN_STRETCH 2.0
+#define ZEN_GATE0 2.40
+#define ZEN_GATE1 2.50
+#define ZEN_RAMP0 0.050              // _ErodeZenithRamp
+#define ZEN_RAMP1 0.075
+#define SEAT_X 0.55                  // _SeatSphere
+#define SEAT_Y 1.05
+#define SEAT_Z 2.05
+#define SEAT_R 0.9
+#define PATCH_X0 -0.16               // _FloorPatch
+#define PATCH_X1 1.04
+#define PATCH_Z0 0.85
+#define PATCH_Z1 2.45
+#define HOLEF_X 0.55                 // _HoleFull
+#define HOLEF_Z 2.925
+#define HOLEF_HX 0.45
+#define HOLEF_HZ 0.475
+#define HOLEM_X 0.55                 // _HoleMin
+#define HOLEM_Z 3.04
+#define HOLEM_HX 0.30
+#define HOLEM_HZ 0.26
+#define DOORMIN_X 0.80               // _DoorBoxMin (w = soft margin)
+#define DOORMIN_Y 0.45
+#define DOORMIN_Z 2.38
+#define DOORMIN_W 0.15
+#define DOORMAX_X 1.60               // _DoorBoxMax
+#define DOORMAX_Y 3.00
+#define DOORMAX_Z 3.45
+#define HOLE_CORNER 0.22             // _HoleShape
+#define HOLE_EDGE 0.10
+#define HOLE_MAXY 0.70
+
+float lb_frac(float x) { return x - floor(x); }
+float lb_sat(float x) { return min(max(x, 0.0), 1.0); }
+float lb_lerp(float a, float b, float t) { return a + (b - a) * t; }
+float lb_smoothstep(float a, float b, float x)
+{
+    float t = lb_sat((x - a) / (b - a));
+    return t * t * (3.0 - 2.0 * t);
+}
+
+// LanbaiHash13: p = frac(p * 0.1031); p += dot(p, p.zyx + 31.32); return frac((p.x + p.y) * p.z)
+float lb_hash13(float px, float py, float pz)
+{
+    float x = lb_frac(px * 0.1031);
+    float y = lb_frac(py * 0.1031);
+    float z = lb_frac(pz * 0.1031);
+    float d = x * (z + 31.32) + y * (y + 31.32) + z * (x + 31.32);
+    x += d;
+    y += d;
+    z += d;
+    return lb_frac((x + y) * z);
+}
+
+// LanbaiVNoise3: quintic value noise on the integer lattice
+float lb_vnoise3(float px, float py, float pz)
+{
+    float ix = floor(px), iy = floor(py), iz = floor(pz);
+    float fx = px - ix, fy = py - iy, fz = pz - iz;
+    float ux = fx * fx * fx * (fx * (fx * 6.0 - 15.0) + 10.0);
+    float uy = fy * fy * fy * (fy * (fy * 6.0 - 15.0) + 10.0);
+    float uz = fz * fz * fz * (fz * (fz * 6.0 - 15.0) + 10.0);
+    float n000 = lb_hash13(ix, iy, iz), n100 = lb_hash13(ix + 1.0, iy, iz);
+    float n010 = lb_hash13(ix, iy + 1.0, iz), n110 = lb_hash13(ix + 1.0, iy + 1.0, iz);
+    float n001 = lb_hash13(ix, iy, iz + 1.0), n101 = lb_hash13(ix + 1.0, iy, iz + 1.0);
+    float n011 = lb_hash13(ix, iy + 1.0, iz + 1.0), n111 = lb_hash13(ix + 1.0, iy + 1.0, iz + 1.0);
+    float x00 = lb_lerp(n000, n100, ux), x10 = lb_lerp(n010, n110, ux);
+    float x01 = lb_lerp(n001, n101, ux), x11 = lb_lerp(n011, n111, ux);
+    return lb_lerp(lb_lerp(x00, x10, uy), lb_lerp(x01, x11, uy), uz);
+}
+
+// LanbaiCabinFBM: 4 octaves, lattice offset (17.3, 5.1, 9.7), lacunarity 2.03 + (3.1, 7.7, 1.3), gain 0.5, / 0.9375
+float lb_fbm(float x, float y, float z, float patch)
+{
+    float sc = max(patch, 0.05);
+    float px = x / sc + 17.3, py = y / sc + 5.1, pz = z / sc + 9.7;
+    float s = 0.0, a = 0.5;
+    for (int k = 0; k < 4; k++) {
+        s += a * lb_vnoise3(px, py, pz);
+        px = px * 2.03 + 3.1;
+        py = py * 2.03 + 7.7;
+        pz = pz * 2.03 + 1.3;
+        a *= 0.5;
+    }
+    return s / 0.9375;
+}
+
+// LanbaiSkyDist: distance to the skylight glass square (0 on the rim and inside)
+float lb_skydist(float x, float y, float z)
+{
+    float qx = max(abs(x - SKY_X) - SKY_H, 0.0);
+    float qz = max(abs(z - SKY_Z) - SKY_H, 0.0);
+    float dxz = sqrt(qx * qx + qz * qz);
+    float dy = y - SKY_Y;
+    return sqrt(dxz * dxz + dy * dy);
+}
+
+// LanbaiRectSD: rounded-rectangle signed distance in the floor plane (negative inside)
+float lb_rectsd(float px, float pz, float cx, float cz, float hx, float hz, float r)
+{
+    float qx = abs(px - cx) - (hx - r);
+    float qz = abs(pz - cz) - (hz - r);
+    float mx = max(qx, 0.0), mz = max(qz, 0.0);
+    return sqrt(mx * mx + mz * mz) + min(max(qx, qz), 0.0) - r;
+}
+
+// LanbaiZenithTerm (D-46)
+float lb_zenith(float x, float y, float z, float fade)
+{
+    float w = lb_sat((fade - ZEN_RAMP0) / max(ZEN_RAMP1 - ZEN_RAMP0, 1e-4));
+    float dx = (x - ZEN_X) / max(ZEN_STRETCH, 0.1);
+    float dz = max(max(ZEN_Z0 - z, z - ZEN_Z1), 0.0);
+    float g = exp(-sqrt(dx * dx + dz * dz) / max(ZEN_FALL, 0.01));
+    return ZEN_W * w * g * lb_smoothstep(ZEN_GATE0, ZEN_GATE1, y);
+}
+
+shader erode(
+    float fade = 0.0,           // _Udon_CabinFade.x
+    float hole_open = 0.0,      // _HoleOpen (D-26)
+    float resist = 0.0,         // _FadeResist (stanchions 0.30)
+    float zen_on = 1.0,         // 1 = D-46 zenith term on, 0 = the field before D-46
+    float door_bias = 0.0,      // _DoorBias (D-33 #7a)
+    float form = 0.0,           // _ErodeForm 0 prose (default), 1 literal
+    float erode_enable = 1.0,   // _ErodeEnable
+    output float s = 10.0,
+    output float removed = 0.0,
+    output float n_uniform = 0.0)
+{
+    float x = P[0], y = P[2], z = P[1];          // Blender world -> Unity (x, z, y)
+
+    float hN = lb_sat((y - BOX_FLOOR) / max(BOX_CROWN - BOX_FLOOR, 0.1));
+    float fN = lb_sat((z - BOX_REAR) / max(BOX_FRONT - BOX_REAR, 0.1));
+    float e = exp(-lb_skydist(x, y, z) / max(ERODE_COEF_W, 0.05));
+    float frontTerm = form > 0.5 ? fN : 1.0 - fN;
+    float skyTerm = form > 0.5 ? e : 1.0 - e;
+    float tau = fade - ERODE_COEF_X * (1.0 - hN) - ERODE_COEF_Y * frontTerm - ERODE_COEF_Z * skyTerm - resist;
+    if (zen_on > 0.5)
+        tau += lb_zenith(x, y, z, fade);                                     // D-46
+    tau = fade > 0.0 ? tau : -10.0;                                          // fade 0 = nothing, exactly
+
+    // D-33 #7a door group box (tauDoor taken before the protections, as the shader)
+    float dqx = max(DOORMIN_X - x, x - DOORMAX_X);
+    float dqy = max(DOORMIN_Y - y, y - DOORMAX_Y);
+    float dqz = max(DOORMIN_Z - z, z - DOORMAX_Z);
+    float inDoor = 1.0 - lb_smoothstep(0.0, max(DOORMIN_W, 0.01), max(max(dqx, dqy), dqz));
+    float tauDoor = tau + 1.0 + resist;
+
+    // protections: seat sphere until the last step, floor patch until act 9
+    float seatRelease = lb_sat((fade - 0.97) / 0.03);
+    float sx = x - SEAT_X, sy = y - SEAT_Y, sz = z - SEAT_Z;
+    float inSphere = 1.0 - lb_smoothstep(SEAT_R - 0.05, SEAT_R, sqrt(sx * sx + sy * sy + sz * sz));
+    float patchRelease = lb_sat((fade - 0.65) / 0.027);
+    float pcx = (PATCH_X0 + PATCH_X1) * 0.5, pcz = (PATCH_Z0 + PATCH_Z1) * 0.5;
+    float phx = (PATCH_X1 - PATCH_X0) * 0.5, phz = (PATCH_Z1 - PATCH_Z0) * 0.5;
+    float inPatch = (lb_rectsd(x, z, pcx, pcz, phx, phz, 0.02) < 0.0 && y < BOX_FLOOR + 0.08) ? 1.0 : 0.0;
+    float prot = max(inSphere * (1.0 - seatRelease), inPatch * (1.0 - patchRelease));
+    tau = lb_lerp(tau, -10.0, prot);
+    tau = fade > 0.0 ? lb_lerp(tau, tauDoor, lb_sat(door_bias) * inDoor) : tau;
+
+    float n = lb_fbm(x, y, z, ERODE_NOISE_X);
+    float nu = lb_sat((n - ERODE_NOISE_Y) / max(ERODE_NOISE_Z - ERODE_NOISE_Y, 1e-3));
+    float nr = lb_lerp(NOISE_RANGE_X, NOISE_RANGE_Y, nu);
+    float sv = nr - tau;
+
+    // D-26: the soft-edged floor hole in front of the hero seat (wins over the sphere and the patch)
+    float o = lb_sat(hole_open);
+    if (o > 0.0 && y < HOLE_MAXY) {
+        float g = lb_sat(o * 2.0);
+        float k = lb_sat(o * 2.0 - 1.0);
+        float cx = lb_lerp(HOLEM_X, HOLEF_X, k);
+        float cz = lb_lerp(HOLEM_Z, HOLEF_Z, k);
+        float hx = lb_lerp(HOLEM_HX * g, HOLEF_HX, k);
+        float hz = lb_lerp(HOLEM_HZ * g, HOLEF_HZ, k);
+        float sd = lb_rectsd(x, z, cx, cz, max(hx, 0.001), max(hz, 0.001), min(HOLE_CORNER, min(hx, hz)));
+        sd += (nu - 0.5) * 2.0 * HOLE_EDGE;
+        sv = min(sv, sd);
+    }
+    s = erode_enable > 0.5 ? sv : 10.0;
+    removed = s < 0.0 ? 1.0 : 0.0;
+    n_uniform = nu;
+}

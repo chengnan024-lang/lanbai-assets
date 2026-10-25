@@ -1,0 +1,69 @@
+{
+ "_about": "image statistics of the up60 renders: sky = min(R, G, B) >= 215 (8-bit sRGB); circle20 = the part of the 20-deg zenith circle inside the frame (the zenith itself is just above the top edge). Not the snell_check metric.",
+ "rows": [
+  {
+   "t": 380,
+   "zen_on": 0,
+   "png": "/tmp/bus/d46/up60_380_before.png",
+   "sky_frame_pct": 17.11,
+   "sky_in_circle20_pct": 0.0,
+   "circle20_in_frame_px": 55356
+  },
+  {
+   "t": 387,
+   "zen_on": 0,
+   "png": "/tmp/bus/d46/up60_387_before.png",
+   "sky_frame_pct": 17.45,
+   "sky_in_circle20_pct": 0.0,
+   "circle20_in_frame_px": 55356
+  },
+  {
+   "t": 446,
+   "zen_on": 0,
+   "png": "/tmp/bus/d46/up60_446_before.png",
+   "sky_frame_pct": 24.69,
+   "sky_in_circle20_pct": 0.0,
+   "circle20_in_frame_px": 55356
+  },
+  {
+   "t": 506,
+   "zen_on": 0,
+   "png": "/tmp/bus/d46/up60_506_before.png",
+   "sky_frame_pct": 29.01,
+   "sky_in_circle20_pct": 0.0,
+   "circle20_in_frame_px": 55356
+  },
+  {
+   "t": 380,
+   "zen_on": 1,
+   "png": "/tmp/bus/d46/up60_380_d46.png",
+   "sky_frame_pct": 17.69,
+   "sky_in_circle20_pct": 0.0,
+   "circle20_in_frame_px": 55356
+  },
+  {
+   "t": 387,
+   "zen_on": 1,
+   "png": "/tmp/bus/d46/up60_387_d46.png",
+   "sky_frame_pct": 26.41,
+   "sky_in_circle20_pct": 34.62,
+   "circle20_in_frame_px": 55356
+  },
+  {
+   "t": 446,
+   "zen_on": 1,
+   "png": "/tmp/bus/d46/up60_446_d46.png",
+   "sky_frame_pct": 39.71,
+   "sky_in_circle20_pct": 63.14,
+   "circle20_in_frame_px": 55356
+  },
+  {
+   "t": 506,
+   "zen_on": 1,
+   "png": "/tmp/bus/d46/up60_506_d46.png",
+   "sky_frame_pct": 45.28,
+   "sky_in_circle20_pct": 76.79,
+   "circle20_in_frame_px": 55356
+  }
+ ]
+}

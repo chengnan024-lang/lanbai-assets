@@ -319,7 +319,9 @@ def pane_fade_at(o):
     with the D-46 zenith term: cabin_numpy.pane_fade_at)."""
     from mathutils import Vector
     vs = [o.matrix_world @ v.co for v in o.data.vertices]
-    c = sum(vs, Vector()) / max(len(vs), 1)
+    lo = Vector((min(v.x for v in vs), min(v.y for v in vs), min(v.z for v in vs)))
+    hi = Vector((max(v.x for v in vs), max(v.y for v in vs), max(v.z for v in vs)))
+    c = (lo + hi) / 2                                         # = Unity's Renderer.bounds.center (the AABB centre)
     return CN.pane_fade_at((c.x, c.z, c.y))                   # blender -> unity
 
 

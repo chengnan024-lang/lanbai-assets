@@ -1,7 +1,8 @@
 // Lanbai / 蓝白 -- import settings for the cabin and the bus (Cabin/ and Bus/ only; CONTROL §2.3 'only your folders').
 // UNCOMPILED (cloud side): Roslyn type-check only (Common/Tools~/compile_check/check_cs.sh, editor pass).
 //
-//   textures  albedo sRGB (default); normals (*_N_*) = NormalMap, linear; masks (*_M_*) linear; the tube light map
+//   textures  albedo sRGB (default); normals (*_N_*, *_Normal_*: Bus/Textures/Parts) = NormalMap, linear; masks (*_M_*,
+//             *Mask*: Part_<type>_Mask_<res>) linear; the tube light map
 //             (*TubeLM*) linear RGBAHalf, no compression, clamp, bilinear; detail maps wrap repeat, aniso 4.
 //             The radio dial (Cabin_RadioDial_*) is sRGB (RGB = the face albedo; A = backlight mask, alpha is linear anyway).
 //   models    keep uv1 (never generate secondary UVs over it: _CabinTubeLM lives there), mesh compression off,
@@ -50,7 +51,7 @@ public class LanbaiCabinImport : AssetPostprocessor
             ti.SetPlatformTextureSettings(pc);
             return;
         }
-        if (name.Contains("_N_") || name.EndsWith("_N"))
+        if (name.Contains("_N_") || name.EndsWith("_N") || name.Contains("_Normal_") || name.EndsWith("_Normal"))
         {
             ti.textureType = TextureImporterType.NormalMap;
             ti.sRGBTexture = false;

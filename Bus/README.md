@@ -142,7 +142,7 @@ occ.point(az, el)                                   # ('WindscreenR' | 'open' | 
 
 ## 5. 车厢切片（D-40 #1：座椅 + 侧窗 + 立柱，给本地的 Unity 测试）
 
-**没在 Unity 里编译、导入、运行过。** C# 只过了 `bash Common/Tools~/compile_check/check_cs.sh Cabin Bus`（Roslyn：0 错误、0 警告、lint 干净）；Blender 那边只在 Blender 里读回核对过。
+**没在 Unity 里编译、导入、运行过。** C# 只过了 Roslyn 类型检查：`bash Common/Tools~/compile_check/check_cs.sh Cabin Bus Common`，也加了 `--strict`（不是 Unity 编译）。Blender 那边只在 Blender 里读回、核对过。
 
 **是什么。** 整车之前先单独进 Unity 的三件：主座位的座椅、主座位那扇侧窗（车厢里那一半 + 玻璃）、右边第一根立柱。总工程师的测试 `Engineering/UnityTest/tests/bus_slice.json`（`pkg/engineering`）用它查 D-40 #1 的五项：贴图压缩、mip、高光闪烁、光照图接缝、法线强度。
 
@@ -157,18 +157,31 @@ occ.point(az, el)                                   # ('WindscreenR' | 'open' | 
 | `Slice_Pillar` | `Pole_R0`（立柱、上下法兰和螺钉、停车按钮盒） | `Lanbai/Cabin`（`_CabinTubeLM`） |
 | `Slice_Globals` | `LanbaiBusSliceGlobals`（见下） | |
 | `Slice_Camera` | 主座位眼位 (0.55, 1.70, 2.05)，朝 +Z；16:9 下水平 90°（竖直 58.7°），near 0.02，HDR，背景纯黑（切片外面什么都没有，按夜路算）；`PostProcessLayer`：体积层 = `PostProcessing` 层（没有这一层就警告，体积层留空），AA 关，Stop NaN 开 | |
-| `Slice_Grade_S2` | 只在项目里有调色套件的 `Lanbai_PP_S2`（夜路）、也有 `PostProcessing` 层时才建：全局 PPv2 体积，权重 1。没有就警告，截图不调色 | |
+| `Slice_Grade_S2` | 只在项目里有调色套件的 `Lanbai_PP_S2`（夜路）、也有 `PostProcessing` 层时才建：全局 PPv2 体积，权重 1。没有就警告：PPv2 没东西可做，有截图时测试的 `ppv2_effective` 不过 | |
 
-- **材质和整车菜单是同一套代码**（`LanbaiBusBuild.CabinMat / GlassMat / PartMat`，用哪种由 `LanbaiBusBuild.ModeFor` 定），只是写到 `Assets/Lanbai/Bus/Generated/Materials/`。层：`Bus`（没有这一层就警告）。
-- **只写 `Assets/Lanbai/Bus/Generated/`**（`bus_slice.json` 的 `allowed_writes`）：`Materials/`，只有旧 FBX 时才有 `Meshes/`（见下面 uv1 那条）。它只存自己写的那几个资源（`AssetDatabase.SaveAssetIfDirty`，一个一个存，路径不在 `Generated/` 下的不存），**不调 `AssetDatabase.SaveAssets`**：那个会把工程里所有没存的改动一起落盘（比如 U# 的程序资产、`Assets/SerializedUdonPrograms/`），测试工具会把它们算成这次搭建的写入。不建 UdonSharp 程序资产（D-41），不挂 VRChat 组件，不改导入设置，不存场景。
-- **第一次在一个工程里点**会新建 `Assets/Lanbai/Bus/Generated/` 这个文件夹，连带 `Assets/Lanbai/Bus/Generated.meta`。这个 `.meta` 不在 `Generated/**` 里面，总工程师的写入核对（`writes.undeclared`）会把它算成没声明的写入，`no_undeclared_writes` 不过；第二次跑就没有了。要么 `bus_slice.json` 的 `allowed_writes` 加一条 `Assets/Lanbai/Bus/Generated.meta`，要么测试工具把 `X/**` 也算上 `X.meta`（都归总工程师改，这里改不了）。
-- **Bus.fbx 的导入设置 Generate Lightmap UVs 要关着**（默认就是关的）。开着的话 Unity 自己展的 uv1 会盖掉 `_CabinTubeLM` 的图集，而且它也在 0…1 里、下面的 uv1 检查看不出来，所以菜单单独查这一项，开着就报错（只报，不改：改了要写 `Bus.fbx.meta`）。
-- 场景里别的灯（沙盒默认的 Directional Light）会被**关掉**（可以 Undo），切片只吃管灯的光照图。铬件、立柱的高光来自场景默认的反射（天空盒），不是车厢里的反射探针。
-- 缺物体（旧的 FBX）时 Console 报错、点名缺哪个，其余照搭。
+**光照：用预烘好的 `_CabinTubeLM`，场景里没有 Unity 的光照图。** 切片和整车一样，用 Blender 预烘好的管灯光照图 `Textures/Cabin_TubeLM.exr`（D-32；RGB = 管灯照度 E，A = AO）。`Lanbai/Cabin` 从 **uv1** 读它，再乘 `_Udon_CabinLightmap`（切片里由 `Slice_Globals` 写成 1）。切片的物体不设静态标志，菜单也不烘，所以场景里 Unity 的光照图是 0 张。`bus_slice.json` 的 `has_lightmaps`（`scene.lightmaps` ≥ 1）因此只会**警告**，按约定（`requires.why`）不算失败。本地不用烘焙，也没有烘焙设置要写。光照图接缝看近景截图和 `Docs~/slice/光照图接缝检查.md`。
 
-**全局量组件 `Scripts/LanbaiBusSliceGlobals.cs`。** 世界里车厢 shader 读的全局量由 `LanbaiCabinDriver`（U#）每帧写；切片里没有驱动，`_Udon_CabinLightmap` 是 0，整个车厢就是黑的。这个组件是普通的 MonoBehaviour（不是 UdonSharp：切片场景是本地测试场景，不上传），`[ExecuteAlways]`，在 OnEnable / Update 里写，类型和驱动一样（`Common/UdonGlobals.md`）：`_Udon_CabinLightmap` = 1（管灯开，`SetGlobalFloat`）；`_Udon_CabinAmbient` = (0, 0, 0, 1)（夜路 t = 30，线性）；`_Udon_CabinBleach`、`_Udon_CabinFade` = (0, 0, 0, 1)（float4，只读 .x）；穿越光带 `_Udon_CabinSlice` / `_Udon_CabinSliceColor` 关。数值可以在组件上改。**不要把它放进世界场景**：会和车厢驱动每帧打架。
+**写什么、不写什么。**
+- 只写 `Assets/Lanbai/Bus/Generated/`：`Materials/`（材质和整车菜单是同一套代码 `LanbaiBusBuild.CabinMat / GlassMat / PartMat`，用哪种由 `LanbaiBusBuild.ModeFor` 定）；只有旧 FBX 时才有 `Meshes/`（见下面 uv1 那条）。层：`Bus`（没有这一层就警告）。
+- 它只存自己写的那几个资源（`AssetDatabase.SaveAssetIfDirty`，一个一个存，路径不在 `Generated/` 下的不存），**不调 `AssetDatabase.SaveAssets`**：那个会把工程里所有没存的改动一起落盘，测试工具会把它们算成这次搭建的写入。
+- `bus_slice.json` 的 `allowed_writes` 有三条：`Assets/Lanbai/Bus/Generated/**`、`Assets/Lanbai/UdonPrograms/**`、`Assets/SerializedUdonPrograms/**`。后两条是给 U# 编译器和 SDK 的（测试跑着的时候它们可能自己写），这个菜单两处都不写。
+- 不建 UdonSharp 程序资产（D-41），不挂 VRChat 组件，不改导入设置，不改项目设置，不存场景（不产生 `.unity`）。
+- **第一次在一个工程里点**会新建 `Generated/` 文件夹，连带 `Assets/Lanbai/Bus/Generated.meta`。这个 `.meta` 不在 `Generated/**` 里，写入核对（`writes.undeclared`）会算它没声明，`no_undeclared_writes` 这一次不过；再跑一次就没有了（报告里有这条警告）。根治要总工程师改：`allowed_writes` 加 `Assets/Lanbai/Bus/Generated.meta`，或者工具把 `X/**` 也算上 `X.meta`。
 
-**FBX 要先重导出。** `Window_R1`、`Pole_R0` 是这次才从 `Cabin_Static` 里分出来的（`Source/finish_bus.py` 的 `SEPARATE`；`BusLayout.json` 多了一项 `slice`，列出切片要的物体名，`missing` 不空就是 FBX 旧了）。旧的 `Bus.fbx` 里侧窗和立柱还合在 `Cabin_Static` 里，菜单会报这两件缺，只搭出座椅和玻璃。车厢光照图的 uv1 是全车一起排的，分出来以后整张图集都重排了，所以要按第 1 节“重做一遍”的顺序**全部重跑**：`finish_bus.py` → `bake_lightmap.py`（烘的物体已经加上 `Window_*`、`Pole_*`）→ `weather_exterior.py` → `finish_bus.py --from-blend`。只换 FBX、不重烘 `Cabin_TubeLM.exr`，整个车厢的光照图都会错位。
+**菜单只查、不改的几项**（写进报告，算进总行的错误 / 警告数）：
+- **顶点压缩**（项目设置）：`settings.vertex_compression_off` 要 TexCoord0–3 和 Color 都不压缩（uv1 是光照图，Color 是磨损遮罩），而且是卡退出码的。菜单只读出来（先读 `PlayerSettings`，读不到再读 `ProjectSettings.asset`），没关就警告。由本地测试的人在 Project Settings → Player → Other Settings → Vertex Compression 里手动取消勾选。
+- **`Bus.fbx` 的 Generate Lightmap UVs** 要关着（默认就是关的）。开着的话 Unity 自己展的 uv1 会盖掉 `_CabinTubeLM` 的图集，而且它也在 0…1 里、下面的 uv1 检查看不出来，所以单独查这一项，开着就报错（改了要写 `Bus.fbx.meta`，所以只报）。
+- **零件法线**：`Textures/Parts/Part_<类型>_Normal_<分辨率>.png` 必须是 Normal map 类型（`Lanbai/Cabin` 按法线贴图解；`texture_compare` 的 `bc5`、`ncrunch` 也只认 Normal map）。不是就报 ERROR，每张一条。设类型的是 `Cabin/Editor/LanbaiCabinImport.cs`（按名字里的 `_Normal`）；菜单不改导入设置。
+- 别的贴图：遮罩、光照图、雨玻璃的数据图被当成 sRGB 导入就警告；光照图不是 RGBAHalf 就警告。
+- **材质代码报的问题**（和整车同一套代码）：`texture missing`、`part X: not in BusLayout.json parts`、`unknown material` 算错误（`unknown material` 时材质代码悄悄给了铝的参数，金属度 1，人造革、搪瓷件会渲成金属）；`_CabinCube empty` 这类算警告。同一句只算一次。
+- 测试工具抄“第一台带 `PostProcessLayer` 的相机”的设置（`bus_slice.json` 没写 `camera_template`）。菜单把 `Lanbai_BusSlice` 放到场景最上面；前面还有别的这种相机就警告。
+- 总行：`OK built Lanbai_BusSlice: 0 error(s), N warning(s)`，有错误时开头是 `ERROR`。
+
+另外：场景里别的灯（沙盒默认的 Directional Light）会被**关掉**（可以 Undo），切片只吃管灯的光照图。铬件、立柱的高光来自场景默认的反射（天空盒），不是车厢里的反射探针。缺物体时 Console 报错、点名缺哪个，其余照搭。
+
+**全局量组件 `Scripts/LanbaiBusSliceGlobals.cs`。** 世界里车厢 shader 读的全局量由 `LanbaiCabinDriver`（U#）每帧写；切片里没有驱动，`_Udon_CabinLightmap` 是 0，整个车厢就是黑的。这个组件是普通的 MonoBehaviour（不是 UdonSharp：切片场景是本地测试场景，不上传），`[ExecuteAlways]`，在 OnEnable / Update 里写，类型和驱动一样（`Common/UdonGlobals.md`）：`_Udon_CabinLightmap` = 1（管灯开，`SetGlobalFloat`）；`_Udon_CabinAmbient` = (0, 0, 0, 1)（夜路 t = 30，线性）；`_Udon_CabinBleach`、`_Udon_CabinFade` = (0, 0, 0, 1)（float4，只读 .x）；穿越光带 `_Udon_CabinSlice` / `_Udon_CabinSliceColor` 关。数值可以在组件上改。`_Udon_CabinFade` 是 0 时侵蚀一个像素也不剪，D-46 新加的天顶项也一样，所以切片不受它影响。**不要把它放进世界场景**：会和车厢驱动每帧打架。
+
+**FBX。** 现在的 `Models/Bus.fbx` 已经是分开导出的版本：`Window_R1`、`Pole_R0` 单独成物体，`BusLayout.json` 的 `slice.missing` 是空的，三件读回的 uv 层都是 `UVMap, UVLightmap, UVMetric`（`Models/Bus_fbx_readback.json`）。里面的侧窗还是 r1（`Window_R1` 约 2.8 万三角形）；D-36 A2 r2 的省面版（约 7.5k）还没导出。以后重导出时，车厢光照图的 uv1 是全车一起排的，要按第 1 节“重做一遍”的顺序**全部重跑**：`finish_bus.py` → `bake_lightmap.py`（烘的物体包括 `Window_*`、`Pole_*`）→ `weather_exterior.py` → `finish_bus.py --from-blend`。只换 FBX、不重烘 `Cabin_TubeLM.exr`，整个车厢的光照图都会错位。旧 FBX（`Window_R1`、`Pole_R0` 还合在 `Cabin_Static` 里）时菜单会报这两件缺，只搭出座椅和玻璃。
 
 **uv 层的顺序（座椅的 uv1，已修）。** `Lanbai/Cabin` 从 uv1 读 `_CabinTubeLM`，FBX 的 uv 按 Blender 里 uv 层的顺序进 Unity（第一层 uv0、第二层 uv1、第三层 uv2）。以前 D-36 的座椅导出的是 `UVMap, UVMetric, UVLightmap`：Unity 里座椅的 uv1 是米制的盒投影（约 −2.3…2.3），光照图在 uv2，整车和切片的 15 个座位都把 `_CabinTubeLM` 采错。现在 `finish_bus.py` 的 `lm_uv_order` 把每个进光照图的单独物体（`Seat_*`、`Window_*`、`Pole_*`）都排成 **`UVMap, UVLightmap, UVMetric`**（`Cabin_Static` 本来就是 `UVMap, UVLightmap`）：
 - 正常导出时在存 `.blend` 之前排（`bake_lightmap.py`、`weather_exterior.py` 读到的就是排好的）；`--from-blend` 导出时再排一次，所以拿修之前存的 `.blend` 重导出也对。只是换层的顺序，uv 的数一个不变（层按名字读、删掉、按顺序加回去），所以已经烘好的 `Cabin_TubeLM.exr` 不用为这个重烘。
@@ -184,3 +197,10 @@ occ.point(az, el)                                   # ('WindscreenR' | 'open' | 
 - 单独测 `lm_uv_order`：把 17 件的层顺序打乱（座椅改回修之前的顺序，另外两件让 `UVMap` 不在第一层），排回来以后顺序对，每一层的 uv 和打乱前逐个相等，再调一次什么都不改。
 - 用打乱后存的 `.blend` 跑 `finish_bus.py --from-blend`：17 件读回都是 `UVMap, UVLightmap, UVMetric`。
 - 用排好的 `.blend` 跑 `bake_lightmap.py --res 256 --samples 4`（只是看它能不能跑）：`Cabin_Static` + 15 个座位 + `Window_R1` + `Pole_R0` 都按名字找到 `UVLightmap`，烘完了。正式的 1024²、96 采样没跑。
+
+**光照图接缝检查**（10-25，`Docs~/slice/光照图接缝检查.md`，脚本 `Docs~/slice/lm_seam_check.py`）。在 `/tmp/bus/bus_final_ext.blend` 和现在的 `Cabin_TubeLM.exr`（2048²）上按 Unity 的采法（uv1、双线性、mip 0）量切片三件。岛之间的留白够（离别的岛最近 8 个 texel，没有串色）；问题是**黑 texel**：密度约 78 texel/m（一个 texel 约 13 mm），比一个 texel 还窄的岛（座椅的滚边和倒角条、侧窗胶条的唇边、停车按钮）根本没烘到；压在别的零件下面的 texel 是黑的，又被 13 mm 的 texel 和双线性滤波带到看得见的面上。座椅在测试的两张近景里，3.1–3.7 % 的非金属像素采到 ≥ 25 % 的黑 texel（≥ 50 %：2.5–2.9 %）。改法写在报告里（`finish_bus.py` 的最小岛宽、`bake_lightmap.py` 的黑 texel 回填，回填要包括岛外一圈 2 个 texel，只补岛里的效果小得多），这次没改那两个文件。
+
+**看测试截图时注意**（`bus_slice.json` 的机位，归总工程师）：
+- `seat_*` 是从主座位的眼往下看主座位自己的座垫和靠背（切片的座椅就是主座位 `Seat_SeatR0`），不是测试里写的“前排座椅靠背”。
+- `window_05m` 对着侧窗包围盒的中心：0.5 m、40°×30° 的画面里只有玻璃，窗框、窗扣不在画里。`window_10m` 才拍到上面的横档。
+- `seat_10m` 左上角黑色的 T 形件是座椅靠墙的固定板和撑管。整车里它夹在侧墙和轮罩之间，烘出来本来就是黑的；切片里没有墙，它才露出来。不是接缝问题。
