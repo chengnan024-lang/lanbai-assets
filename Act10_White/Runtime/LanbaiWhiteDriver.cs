@@ -23,7 +23,7 @@ namespace Lanbai.Act10
         public float tMirror12 = 1137.58f;
         public float tImpactEnd = 1138.78f;
         public float tSwellEnd = 1144.78f;
-        public float tMaskStart = 1144.81f;          // C1 = B (总导演 10-25): the mask starts with the in-breath (1144.78 + 0.03)
+        public float tMaskStart = 1144.11f;          // C1 = B (总导演 10-25), softened 10-25: side-up +30 deg 1 s <= 0.95 EV
         public float tF16 = 1149.31f;
         public float tSilenceEnd = 1178.46f;
         public float tShrinkEnd = 1186.46f;
@@ -53,10 +53,10 @@ namespace Lanbai.Act10
         public float lWhite = 0.86f;                 // relative luminance of the white the mask goes to (#E8F1F5 desktop)
         public float lWhiteVR = 0.74f;               // #D7E3E8
         public float lSceneMask = 0.06f;             // EvOverlayAlpha's Lscene for the mask: the DARKEST view measured (side-up +30 deg, L 0.058-0.060; C1)
-        public float maskSeconds = 4.5f;             // C1 = B: 1144.81 -> 1149.31 for every direction outside the forward lobe
+        public float maskSeconds = 5.2f;             // 1144.11 -> 1149.31 for every direction outside the forward lobe (full white at F16)
         public Vector3 maskLobeDir = new Vector3(0f, 0.1f, 1f);   // forward (the bus's travel direction, +6 deg)
         public float maskLobeHalfAngle = 25f;
-        public float maskLobeLead = 0.46f;           // forward first shows the white at 1146.32 (on the beat); 0.17 EV left at the F16 cut
+        public float maskLobeLead = 1.00f;           // forward first shows the white at 1146.32 (on the beat); 0.31 EV left at the F16 cut
         public float lScene11 = 0.012f;              // act 11 APL 30 -> relative luminance
         public float breathAmount = 0.02f;
         public float breathHz = 0.1f;

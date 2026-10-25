@@ -53,7 +53,7 @@ def screen(t, tj, lw, lv_mask, lead, mlead=0.0):
 def run(tj, lw=0.86, fps=30.0):
     ts = np.arange(tj - 1.0, T_END + 4.0, 1 / fps)
     worst = None
-    for lv, lead, ml in ((0.48, 0.0, 0.46), (0.06, 3.0, 0.0), (0.74, 1.5, 0.0)):   # forward is in the mask's lobe
+    for lv, lead, ml in ((0.48, 0.0, MK['lobes'][0]['lead_s']), (0.06, 3.0, 0.0), (0.74, 1.5, 0.0)):   # forward is in the mask's lobe
         L = np.array([screen(t, tj, lw, lv, lead, ml) for t in ts])
         code = np.where(L <= 0.0031308, L * 12.92, 1.055 * L ** (1 / 2.4) - 0.055) * 255
         frames = [np.full((54, 96, 3), c, np.uint8) for c in np.clip(code, 0, 255)]
@@ -68,7 +68,7 @@ def run(tj, lw=0.86, fps=30.0):
 if __name__ == '__main__':
     out = {}
     # D-43 #5 times (black end; 1140 is handed over at the mask's start, rule 4) + the boundaries of this driver's paths
-    for tj in (1144.81, 1146.31, 1150.0, 1160.0, 1168.5, 1169.5, 1175.0, 1178.46, 1180.0, 1186.0):
+    for tj in (1144.11, 1144.81, 1146.31, 1150.0, 1160.0, 1168.5, 1169.5, 1175.0, 1178.46, 1180.0, 1186.0):
         for lw, tag in ((0.86, 'desk'), (0.74, 'vr')):
             w = run(tj, lw)
             out['%.2f_%s' % (tj, tag)] = dict(view=w[0], rise_025_1_2=w[1][:3], flashes=w[1][3], rule=w[1][4], PASS=w[2])

@@ -1,4 +1,32 @@
 {
+ "1144.11_desk": {
+  "view": {
+   "view_Lmask": 0.48,
+   "lead": 0.0
+  },
+  "rise_025_1_2": [
+   0.3,
+   0.9,
+   1.7
+  ],
+  "flashes": 0.5,
+  "rule": "PASS",
+  "PASS": true
+ },
+ "1144.11_vr": {
+  "view": {
+   "view_Lmask": 0.48,
+   "lead": 0.0
+  },
+  "rise_025_1_2": [
+   0.3,
+   0.9,
+   1.7
+  ],
+  "flashes": 0.5,
+  "rule": "PASS",
+  "PASS": true
+ },
  "1144.81_desk": {
   "view": {
    "view_Lmask": 0.48,
