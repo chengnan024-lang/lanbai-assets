@@ -561,7 +561,10 @@ namespace Lanbai.Test
         {
             // 工具自己不 SaveAssets：只比搭建脚本自己存下来的。工具在内存里改的材质值不落盘（改回去以后也不落盘）
             var after = Take(ctx.projectDir);
-            var allowed = TJson.Sa(TJson.G(ctx.test, "allowed_writes")).Select(Glob).ToList();
+            // "new:<glob>"（1.2.2）：只放过新建的文件；这些地方已有的文件被改、被删，照常算没声明的写入
+            var aw = TJson.Sa(TJson.G(ctx.test, "allowed_writes"));
+            var allowed = aw.Where(x => !x.StartsWith("new:", StringComparison.Ordinal)).Select(Glob).ToList();
+            var allowedNew = aw.Where(x => x.StartsWith("new:", StringComparison.Ordinal)).Select(x => Glob(x.Substring(4))).ToList();
             var declared = new List<object>(); var undeclared = new List<object>(); var ps = new List<object>(); var touched = new List<object>();
             Action<string, string> classify = (path, what) =>
             {
@@ -572,7 +575,7 @@ namespace Lanbai.Test
                 {
                     try { if (File.ReadAllBytes(path).SequenceEqual(orig)) { touched.Add("写回了、内容和原来一样 " + path); return; } } catch { }
                 }
-                bool ok = allowed.Any(r => r.IsMatch(path) || r.IsMatch(p));
+                bool ok = allowed.Any(r => r.IsMatch(path) || r.IsMatch(p)) || (what == "新建" && allowedNew.Any(r => r.IsMatch(path) || r.IsMatch(p)));
                 // 工具临时改过又改回的材质（复核的次要项：按字节核对）：落了盘、和原来逐字节一样的上面已经豁免；不一样的照常算，
                 // 并注明是工具改过的（改回以后被谁 SaveAssets 落了盘，序列化和原来不同，或者没改回去）
                 if (!ok && what == "改了" && ctx.toolTouched.Contains(p)) { undeclared.Add(what + " " + path + "（工具临时改过的；落盘后和原来逐字节不一样）"); return; }

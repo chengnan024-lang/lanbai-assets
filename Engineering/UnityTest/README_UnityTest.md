@@ -174,7 +174,7 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json" -Encoding UTF8
 | `blocked` | 写了就整个 BLOCKED（占位测试用），值是原因 |
 | `requires` | 前置条件，缺一样就 BLOCKED：`unity`（默认 `2022.3.22f1`）、`packages`（默认 `com.vrchat.worlds` 3.10.5、`com.unity.postprocessing` 3.4.0）、`folders`、`files`、`types`（类型名，可以不带命名空间）、`menus`、`file_contains`（`{file 或 script, text: [...], absent: [...], why}`：脚本里有没有那几行补丁、JSON 里有没有新版本的标记）、`scene_objects`（打开场景以后查）、`scene_components` |
 | `scene` | `{path, mode}`：`copy`（默认：拷进沙盒再开，原场景不动）、`in_place`（就在原场景里：门测试的 `LB_GateTest` 写死了场景路径）、`new`（沙盒里的空场景） |
-| `allowed_writes` | 沙盒以外允许被改的地方（glob，`**` 跨文件夹）：只给现有搭建脚本本来就要写的地方 |
+| `allowed_writes` | 沙盒以外允许被改的地方（glob，`**` 跨文件夹）：只给现有搭建脚本本来就要写的地方。前面加 `new:`（1.2.2）= 只放过新建的文件，那里已有的文件被改、被删照常报（`SerializedUdonPrograms` 这类 U# 自己写的地方用它）。`udon_programs` 列的程序资产工具在记快照之前就建好，不用为它们开 `Assets/Lanbai/UdonPrograms/**` |
 | `backup_before` | 开搭之前原样拷进输出 `backup_before/` 的文件（glob） |
 | `camera_template` | 抄设置的参考相机（场景路径）；不写就用第一台带 PostProcessLayer 的相机 |
 | `time` | 怎么把场景定到时间 t 的步骤（`{t}` 换成数字），比如 `LB_GateTest.Apply("{t}")` |
