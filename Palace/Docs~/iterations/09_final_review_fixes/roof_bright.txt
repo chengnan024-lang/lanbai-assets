@@ -1,0 +1,5 @@
+h722 roof px 6537 frac >2x water 0.033 frac >1x 0.061
+h728 roof px 6798 frac >2x water 0.081 frac >1x 0.109
+poem roof px 8143 frac >2x water 0.016 frac >1x 0.025
+proc roof px 8153 frac >2x water 0.000 frac >1x 0.008
+proc_l roof px 33956 frac >2x water 0.000 frac >1x 0.000
