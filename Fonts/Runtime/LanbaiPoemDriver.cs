@@ -95,7 +95,7 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
     public float headTau = 0.5f;
     public float depthMain = 1f, depthMin = 0.45f, depthMax = 1f, depthNear = 0.92f, depthRate = 0.5f;
     public float depthFbMain30 = 1f, depthFbMainOther = 0.6f, depthFbOther = 0.45f, depthFbUnseated = 0.8f;
-    public float[] depthTable;                       // [(seat * 24 + yawCell) * 9 + pitchCell]: first opaque hit (m); empty -> fallbacks
+    public float[] depthTable;                       // [(seat * 24 + yawCell) * 9 + pitchCell]: final depth (m, the bus applied 0.92 / clamp); empty -> fallbacks
     public float deskDist = 1f, deskEmFrac = 0.042f, deskBaseFrac = 0.08f, deskFov = 60f;
     public float dilateVR = 0.10f, dilateDesk = 0.05f;
 
@@ -521,13 +521,14 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
         if (Mathf.Abs(target - _el) < lowStop && Mathf.Abs(_elVel) < yawStopVel) { _chaseEl = false; _elVel = 0f; }
     }
 
-    // depth = clamp(0.92 × first opaque hit, 0.45, 1.0) from the bus's table: the cell and its two yaw neighbours,
-    // the smallest (no interpolation, C.2); no table -> the fallbacks
+    // depth from the bus's table (values already clamp(0.92 × first opaque hit, 0.45, 1.0), Bus/给总控.md #32): yaw cells
+    // centred on -180 + 15 j, pitch cells on -40 + 10 i; the cell and its two yaw neighbours, the smallest (no
+    // interpolation, C.2); no table -> the fallbacks
     private float DepthTarget()
     {
         if (depthTable != null && seat >= 0 && depthTable.Length >= (seat + 1) * 216)
         {
-            int yc = Mathf.FloorToInt((_yaw + 180f) / 15f);
+            int yc = Mathf.RoundToInt((_yaw + 180f) / 15f);
             int pc = Mathf.Clamp(Mathf.RoundToInt((_el + 40f) / 10f), 0, 8);
             float d = 1000f;
             for (int j = -1; j <= 1; j++)
@@ -536,7 +537,7 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
                 float v = depthTable[(seat * 24 + c) * 9 + pc];
                 if (v > 0f && v < d) d = v;
             }
-            return Mathf.Clamp(depthNear * d, depthMin, depthMax);
+            return Mathf.Clamp(d, depthMin, depthMax);
         }
         if (seat < 0) return depthFbUnseated;
         if (seat > 0) return depthFbOther;

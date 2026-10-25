@@ -583,20 +583,39 @@ view_lines.insert(1, 'viewcheck: %s%s' % ('PASS' if view_ok else 'FAIL', '' if v
 
 # D-45 C.2: the subtitle depth table is written by the bus package at Bus/Docs~/viewcheck/subtitle_depth.json (Unity
 # ignores ~ folders, so the bake cannot read it there): copied into Fonts/subtitle_depth.json when it is there and has the
-# agreed shape ({"seats", "yaw_cells": 24, "pitch_cells": 9, "depth_m": [seat][24][9]}); otherwise the driver's fallbacks
+# format Bus/给总控.md #32 checks out (grid, shape, values, seat order = BusLayout); otherwise the driver's fallbacks
 DEPTH_SRC = os.path.join(BUS_DIR, 'Bus', 'Docs~', 'viewcheck', 'subtitle_depth.json')
 DEPTH_DST = os.path.join(KIT, 'subtitle_depth.json')
 if os.path.exists(DEPTH_SRC):
+    # Bus/给总控.md #32: {seats: [{name, eye, depth[24][9]}], yaw0 -180, yaw_step 15, n_yaw 24 (cell CENTRES), pitch0 -40,
+    # pitch_step 10, n_pitch 9}; the values are already the final depth clamp(0.92 x d_near, 0.45, 1.0)
     with open(DEPTH_SRC, encoding='utf-8') as f_:
         dj = json.load(f_)
-    dm = dj.get('depth_m', [])
-    shape_ok = (dj.get('yaw_cells') == 24 and dj.get('pitch_cells') == 9 and len(dm) > 0
-                and all(len(sy) == 24 and all(len(c) == 9 for c in sy) for sy in dm))
-    if not shape_ok:
-        sys.exit('DEPTH TABLE: %s does not have the agreed shape (seats x 24 yaw x 9 pitch)' % DEPTH_SRC)
+    seats_ = dj.get('seats', [])
+    grid_ok = (dj.get('n_yaw') == 24 and dj.get('n_pitch') == 9 and dj.get('yaw0') == -180.0 and dj.get('yaw_step') == 15.0
+               and dj.get('pitch0') == -40.0 and dj.get('pitch_step') == 10.0)
+    shape_ok = len(seats_) > 0 and all(len(x['depth']) == 24 and all(len(c) == 9 for c in x['depth']) for x in seats_)
+    vals = [v for x in seats_ for row in x['depth'] for v in row]
+    range_ok = bool(vals) and min(vals) >= 0.45 - 1e-6 and max(vals) <= 1.0 + 1e-6
+    with open(os.path.join(BUS_DIR, 'Bus', 'Models', 'BusLayout.json'), encoding='utf-8') as f_:
+        order = [x['name'] for x in json.load(f_)['seats']]
+    order_ok = [x['name'] for x in seats_] == order
+    if not (grid_ok and shape_ok and range_ok and order_ok):
+        sys.exit('DEPTH TABLE: %s: grid %s, shape %s, values in [0.45, 1] %s, seat order = BusLayout %s' % (
+            DEPTH_SRC, grid_ok, shape_ok, range_ok, order_ok))
+    out_d = collections.OrderedDict([
+        ('_about', 'D-45 C.2 subtitle depth, copied by Tools~/build_fonts.py from %s Bus/Docs~/viewcheck/subtitle_depth.json '
+                   '(written by Bus/Source/seat_occlusion.py --subtitle-depth). depth_m[seat][yaw][pitch] = the FINAL depth in '
+                   'metres (the bus already applied clamp(0.92 x d_near, 0.45, 1.0)). Yaw cell j is centred on yaw0 + 15 j (bus '
+                   'space, +-7.5 deg), pitch cell i on pitch0 + 10 i. Seat order = BusLayout.json = SetSeat index (SeatR0 = 0). '
+                   'Runtime: the cell and its two yaw neighbours, the smallest.' % BUS_SRC),
+        ('source', BUS_SRC), ('seats', [x['name'] for x in seats_]), ('eyes', [x.get('eye') for x in seats_]),
+        ('yaw0', -180.0), ('yaw_step', 15.0), ('yaw_cells', 24), ('pitch0', -40.0), ('pitch_step', 10.0), ('pitch_cells', 9),
+        ('values', 'final_depth_m'), ('depth_m', [x['depth'] for x in seats_])])
     with open(DEPTH_DST, 'w', encoding='utf-8') as f_:
-        json.dump(dj, f_, ensure_ascii=False, separators=(',', ':'))
-    depth_note = 'subtitle depth table: %d seats from %s -> Fonts/subtitle_depth.json' % (len(dm), BUS_SRC)
+        json.dump(out_d, f_, ensure_ascii=False, separators=(',', ':'))
+    depth_note = 'subtitle depth table: %d seats from %s -> Fonts/subtitle_depth.json (min %.3f m, max %.3f m)' % (
+        len(seats_), BUS_SRC, min(vals), max(vals))
 else:
     depth_note = 'subtitle depth table: not in %s yet -> the driver uses the fallbacks (C.2)' % BUS_SRC
 print(depth_note)

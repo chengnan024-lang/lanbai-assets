@@ -414,10 +414,9 @@ namespace Lanbai.Fonts.Editor
             Set(d, "dilateVR", F(fd["vr"])); Set(d, "dilateDesk", F(fd["desktop"]));
         }
 
-        // C.2: Fonts/subtitle_depth.json from the bus package (may come later; the driver has fallbacks). Expected:
-        // {"seats": [...23 names in the bus's seat order], "yaw_cells": 24, "pitch_cells": 9, "depth_m": [seat][yaw][pitch]}
-        // yaw cell c covers -180 + 15c .. -165 + 15c degrees (bus space), pitch cell j is centred on -40 + 10j degrees;
-        // a value <= 0 means no opaque part in range.
+        // C.2: Fonts/subtitle_depth.json, copied and checked by Tools~/build_fonts.py from the bus package's table:
+        // {"seats": [...23 names, BusLayout order = SetSeat index], "yaw_cells": 24, "pitch_cells": 9, "yaw0": -180,
+        // "yaw_step": 15, "pitch0": -40, "pitch_step": 10, "depth_m": [seat][yaw][pitch]} (final depths in metres; cells centred).
         static string BakeDepth(Component driver)
         {
             string path = AssetDatabase.FindAssets("subtitle_depth").Select(AssetDatabase.GUIDToAssetPath)
@@ -426,7 +425,8 @@ namespace Lanbai.Fonts.Editor
             var J = (Dictionary<string, object>)MiniJson.Parse(File.ReadAllText(path));
             var D = (List<object>)J["depth_m"];
             int S = D.Count, Y = (int)F(J["yaw_cells"]), P = (int)F(J["pitch_cells"]);
-            if (Y != 24 || P != 9) { Debug.LogError("[Lanbai Subtitles] " + path + ": expected 24 yaw x 9 pitch cells, got " + Y + " x " + P); Set(driver, "depthTable", new float[0]); return "Depth: table has the wrong shape: fallbacks."; }
+            bool grid = J.ContainsKey("yaw0") && F(J["yaw0"]) == -180f && F(J["yaw_step"]) == 15f && F(J["pitch0"]) == -40f && F(J["pitch_step"]) == 10f;
+            if (Y != 24 || P != 9 || !grid) { Debug.LogError("[Lanbai Subtitles] " + path + ": expected 24 yaw x 9 pitch cells, got " + Y + " x " + P); Set(driver, "depthTable", new float[0]); return "Depth: table has the wrong shape: fallbacks."; }
             var t = new float[S * Y * P];
             for (int s = 0; s < S; s++)
                 for (int y = 0; y < Y; y++)
