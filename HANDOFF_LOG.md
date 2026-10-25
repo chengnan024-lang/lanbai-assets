@@ -4,6 +4,23 @@
 
 > **2026-10-24 起，读这份日志的本地是 ChatGPT「阿白」**（10-24 已接管，D-40a #8、D-41）。先读根目录的 `HANDOFF_CHATGPT.md`：协作边界、第一次接管的步骤、回传协议都在那里。下面各条里的“你”指本地，现在就是阿白。旧条里“技术上怎么实现由你决定”（09-28）作废：技术架构归总工程师，高风险改动先备份并经小楠确认（`HANDOFF_CHATGPT.md` §F）。
 
+## 2026-10-25（北京 23:00）· 🌅 天空的第 8 幕改动进 main（第 8 幕的云还在改）
+同步：`Sky/` `Act09_StarSea/` `Engineering/README_集成.md`
+
+**改了什么：**
+- 第 8 幕 F12（987 → 993）暮转蓝时，现在是整片天一起变：以前是一道约 1° 的硬边从天顶扫到地平线。
+- 蓝时仰角 +14° 那圈台阶去掉了。
+- 日线在 959.36 从日盘里长出来，不再一帧跳亮。
+- **第 9 幕往回拖**：从 1009.21 以后拖回 1001.21–1009.21，天不会再停在星空底。
+- 其他预设一个数没变，只有 `blue_hour` 的样子变了。
+
+全程预览里你已经接了天空，同步以后重搭天空和第 9 幕。
+
+**技术验收（D-46）：**
+- 第 9 幕：跳到 1100，再拖回 1005，看天对不对。验收条目见 `Engineering/README_集成.md` §9.5。
+- 有了 1.2.1 以后，`transitions_sweep` 会扫到 F12 这一段。
+- 第 8 幕的云（`Act08_Dusk/`、`Clouds_v2/`）还没合进来，**这次不同步**。
+
 ## 2026-10-25（北京 22:50）· 🔧 Director v1.3 r2 + 测试工具 1.2.1 进 main；本地修复已收回（Dispatcher）
 同步：`Director/` `Engineering/UnityTest/` `Common/` `Overlay/` `Act06_Dawn/Runtime/` `Act04c_Inside/Runtime/`
 不同步：`Fonts/Runtime/LanbaiPoemDriver.cs` `Fonts/Editor/LanbaiPoemBake.cs`（仓库版还在用 maxVisibleLines，你本地的逐行烘焙要留着，等 D-45 重写诗句）
