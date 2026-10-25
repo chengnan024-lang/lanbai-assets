@@ -1,0 +1,61 @@
+diff --git a/Mirrors/Editor/LanbaiMirrorsBuild.cs b/Mirrors/Editor/LanbaiMirrorsBuild.cs
+index 096aa96..6fcf859 100644
+--- a/Mirrors/Editor/LanbaiMirrorsBuild.cs
++++ b/Mirrors/Editor/LanbaiMirrorsBuild.cs
+@@ -31,11 +31,17 @@ namespace Lanbai.Mirrors.EditorTools
+             return k.Substring(0, k.LastIndexOf('/'));
+         }
+ 
++        // D-41：菜单先建 U# 程序资产（脚本旁边）、等 SDK 初始化完，再搭（Common/Editor/LanbaiUdonPrograms）
+         [MenuItem("蓝白/Build/Mirrors")]
++        public static void BuildMenu()
++        {
++            Lanbai.Udon.LanbaiUdonPrograms.RunWhenReady("蓝白/Build/Mirrors", new[] { typeof(LanbaiMirrorsDriver) }, Build, Lanbai.Udon.LanbaiUdonPrograms.NextToScript);
++        }
++
+         public static void Build()
+         {
++            Lanbai.Udon.LanbaiUdonPrograms.RequireReady("蓝白/Build/Mirrors", typeof(LanbaiMirrorsDriver));
+             string kit = KitRoot();
+-            EnsureProgramAsset("LanbaiMirrorsDriver");
+             GameObject model = AssetDatabase.LoadAssetAtPath<GameObject>(kit + "/Models/BronzeMirror.fbx");
+             Shader shMirror = Shader.Find("Lanbai/BronzeMirror");
+             Shader shStars = Shader.Find("Lanbai/MirrorStars");
+@@ -218,32 +224,15 @@ namespace Lanbai.Mirrors.EditorTools
+ 
+         static LanbaiMirrorsDriver AddUdon(GameObject go)
+         {
+-            Type addType = Type.GetType("UdonSharpEditor.UdonSharpUndo, UdonSharp.Editor");
+-            if (addType != null)
+-                foreach (System.Reflection.MethodInfo mi in addType.GetMethods())
+-                    if (mi.Name == "AddComponent" && mi.IsGenericMethodDefinition)
+-                        return (LanbaiMirrorsDriver)mi.MakeGenericMethod(typeof(LanbaiMirrorsDriver)).Invoke(null, new object[] { go });
+-            return go.AddComponent<LanbaiMirrorsDriver>();
++            return (LanbaiMirrorsDriver)Lanbai.Udon.LanbaiUdonPrograms.AddComponent(go, typeof(LanbaiMirrorsDriver));
+         }
+ 
+-        // U# 1.x only compiles scripts that have a program asset (CONTROL §6 pitfall 11)
++        // U# 1.x only compiles scripts that have a program asset (CONTROL §6 pitfall 11)：D-41 起交给共用工具（不等初始化）
+         public static void EnsureProgramAsset(string scriptName)
+         {
+-            Type progType = Type.GetType("UdonSharp.UdonSharpProgramAsset, UdonSharp.Editor");
+-            if (progType == null) { Debug.LogWarning("[Mirrors] UdonSharp not found: create the U# program asset for " + scriptName + " by hand"); return; }
+-            foreach (string id in AssetDatabase.FindAssets(scriptName + " t:MonoScript"))
+-            {
+-                string sp = AssetDatabase.GUIDToAssetPath(id);
+-                if (!sp.EndsWith("/" + scriptName + ".cs")) continue;
+-                string ap = sp.Substring(0, sp.Length - 3) + ".asset";
+-                if (AssetDatabase.LoadAssetAtPath<ScriptableObject>(ap) != null) return;
+-                ScriptableObject prog = ScriptableObject.CreateInstance(progType);
+-                System.Reflection.FieldInfo f = progType.GetField("sourceCsScript");
+-                if (f != null) f.SetValue(prog, AssetDatabase.LoadAssetAtPath<MonoScript>(sp));
+-                AssetDatabase.CreateAsset(prog, ap);
+-                AssetDatabase.SaveAssets();
+-                return;
+-            }
++            Type t = Lanbai.Udon.LanbaiUdonPrograms.TypeOfScript(scriptName);
++            if (t == null) { Debug.LogWarning("[Mirrors] " + scriptName + ".cs not found or not compiled yet"); return; }
++            Lanbai.Udon.LanbaiUdonPrograms.CreateMissing("[Mirrors] " + scriptName, new[] { t }, Lanbai.Udon.LanbaiUdonPrograms.NextToScript);
+         }
+     }
+ 

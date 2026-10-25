@@ -108,6 +108,7 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
     private bool _ready;
     private bool _activated;                       // LanbaiActivate has run (a late joiner inside 4c keeps the dome on)
     private float _lastT = -1f;
+    private float _spawnSince = 1e6f;              // Director v1.2: seconds since LB_Journey's spawn fade ended (< 0 = fading; 1e6 = not reported)
 
     void Start()
     {
@@ -152,6 +153,19 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
     public float[] LanbaiWindow()
     {
         return new float[] { tU9 - 2.0f, tU12 + 4.0f };      // to F0 + 1: then act 6 takes the overlay (the dawn pre-roll)
+    }
+
+    /// <summary>Director v1.2（出生淡入优先）：分发层每帧在 LanbaiTick 之前调。since &lt; 0 时这一帧不碰遮罩球；
+    /// 淡入在我们拿着遮罩球的时候（248.39 起）结束的，从黑按 ≤ 0.85 EV/s 升，不比原来的黑亮（WriteBlack）。</summary>
+    public void LanbaiSpawnFade(float since)
+    {
+        _spawnSince = since;
+    }
+
+    /// <summary>Director v1.2：遮罩球归门内的那一段（剪 1 前 0.25 s 的变暗到第 6 幕的预滚）。</summary>
+    public float[] LanbaiOverlayWindow()
+    {
+        return new float[] { tU12 - 0.25f, tU12 + 4.0f };
     }
 
     public void LanbaiActivate(bool on)
@@ -492,15 +506,30 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
     private void WriteBlack(float t)
     {
         if (overlay == null) return;
+        if (_spawnSince < 0f) return;                   // Director v1.2: LB_Journey's spawn fade has the overlay
         float tb = tU12 - 0.25f;
-        if (t < tb) return;
+        float Ls = 0.2f, Lb = 0.00129f;
+        // Director v1.2: a late joiner whose spawn fade ended while the overlay was ours comes up from black at
+        // <= 0.85 EV/s (the frame's ~7.6 EV in ~9 s); the darker of that and the scheduled black wins
+        float te = t - _spawnSince;
+        bool catchUp = _spawnSince < 1e5f && te >= tb && te < tU12 + 4.0f;
+        float aC = 0f;
+        if (catchUp)
+        {
+            float range = Mathf.Log(Ls / Mathf.Max(Lb, 0.004f), 2f);
+            aC = EvOverlayAlpha(_spawnSince * 0.85f / Mathf.Max(range, 1e-3f), Lb, Ls, Ls, Lb);
+        }
+        if (t < tb)
+        {
+            if (catchUp && aC > 0f) overlay.SetFlat(blackFillS4c, aC, LanbaiDeltaEV(t));
+            return;
+        }
         if (t < tU12)
         {
             // EV-linear from the frame (APL ~90 at the flash's end) to #030409; darkening is free (bible §1.8)
-            float Ls = 0.2f, Lb = 0.00129f;
             float x = (t - tb) / 0.25f;
             float a = EvOverlayAlpha(x, Ls, Lb, Ls, Lb);
-            overlay.SetFlat(blackFillS4c, a, LanbaiDeltaEV(t));
+            overlay.SetFlat(blackFillS4c, Mathf.Max(a, aC), LanbaiDeltaEV(t));
         }
         else if (t < tU12 + 4.0f)
         {

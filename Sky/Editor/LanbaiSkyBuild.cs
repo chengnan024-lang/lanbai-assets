@@ -147,6 +147,14 @@ namespace Lanbai.Sky.EditorTools
         [MenuItem("蓝白/Sky/Build Sky (one material + preset objects)")]
         public static void BuildSky()
         {
+            // D-41：先等两个 U# 程序资产（脚本旁边）初始化完，再搭（Common/Editor/LanbaiUdonPrograms）
+            Lanbai.Udon.LanbaiUdonPrograms.RunWhenReady("蓝白/Sky/Build Sky (one material + preset objects)", new[] { typeof(Lanbai.Sky.LanbaiSkyPreset), typeof(Lanbai.Sky.LanbaiSkyDriver) },
+                BuildSkyNow, Lanbai.Udon.LanbaiUdonPrograms.NextToScript);
+        }
+
+        public static void BuildSkyNow()
+        {
+            Lanbai.Udon.LanbaiUdonPrograms.RequireReady("蓝白/Sky/Build Sky", typeof(Lanbai.Sky.LanbaiSkyPreset), typeof(Lanbai.Sky.LanbaiSkyDriver));
             StringBuilder rep = new StringBuilder();
             rep.AppendLine("蓝白 · Sky build report " + DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
             Material mat = BuildSkyMaterial(rep);
@@ -361,8 +369,6 @@ namespace Lanbai.Sky.EditorTools
 
         static GameObject CreatePresetObjectsWith(SkyPresetFile pf, Material mat, Dictionary<string, float> rot, StringBuilder rep)
         {
-            EnsureProgramAsset("LanbaiSkyPreset");
-            EnsureProgramAsset("LanbaiSkyDriver");
             // updated in place (references from drivers to these objects survive a re-run); new presets are added,
             // objects of presets no longer in the JSON are removed (with Undo)
             GameObject root = FindRoot("Lanbai_SkyPresets", true);
@@ -371,18 +377,13 @@ namespace Lanbai.Sky.EditorTools
             List<GameObject> stale = new List<GameObject>();
             foreach (Transform ch in root.transform) if (ch.name.StartsWith("SkyPreset_") && !keep.Contains(ch.name)) stale.Add(ch.gameObject);
             foreach (GameObject g in stale) { rep.AppendLine("  removed " + g.name + " (no longer in SkyPresets.json)"); Undo.DestroyObjectImmediate(g); }
-            Type addType = Type.GetType("UdonSharpEditor.UdonSharpUndo, UdonSharp.Editor");
-            System.Reflection.MethodInfo add = null;
-            if (addType != null)
-                foreach (System.Reflection.MethodInfo mi in addType.GetMethods())
-                    if (mi.Name == "AddComponent" && mi.IsGenericMethodDefinition) { add = mi.MakeGenericMethod(typeof(Lanbai.Sky.LanbaiSkyPreset)); break; }
+            bool add = Lanbai.Udon.LanbaiUdonPrograms.Available;
             foreach (SkyPreset p in pf.presets)
             {
                 GameObject go = Child(root, "SkyPreset_" + p.name);
                 Lanbai.Sky.LanbaiSkyPreset c = go.GetComponent<Lanbai.Sky.LanbaiSkyPreset>();
                 if (c == null)
-                    c = (add != null) ? (Lanbai.Sky.LanbaiSkyPreset)add.Invoke(null, new object[] { go })
-                                      : go.AddComponent<Lanbai.Sky.LanbaiSkyPreset>();
+                    c = (Lanbai.Sky.LanbaiSkyPreset)Lanbai.Udon.LanbaiUdonPrograms.AddComponent(go, typeof(Lanbai.Sky.LanbaiSkyPreset));
                 c.presetName = p.name;
                 c.skyMaterial = mat;
                 c.cubeA = string.IsNullOrEmpty(p.cubeA) ? null : FindCube(p.cubeA, out string _);
@@ -402,7 +403,7 @@ namespace Lanbai.Sky.EditorTools
                 c.ambientColor = Gamma(GetGlobal4(p, "_Udon_ZenithColor"));
                 EditorUtility.SetDirty(c);
             }
-            rep.AppendLine("preset objects under Lanbai_SkyPresets (" + pf.presets.Length + ")" + (add == null ? "  (UdonSharp editor not found: plain AddComponent used)" : ""));
+            rep.AppendLine("preset objects under Lanbai_SkyPresets (" + pf.presets.Length + ")" + (!add ? "  (UdonSharp editor not found: plain AddComponent used)" : ""));
             return root;
         }
 
@@ -410,17 +411,12 @@ namespace Lanbai.Sky.EditorTools
         static void CreateDrivers(SkyPresetFile pf, GameObject presetRoot, StringBuilder rep)
         {
             if (pf.drivers == null) return;
-            Type addType = Type.GetType("UdonSharpEditor.UdonSharpUndo, UdonSharp.Editor");
-            System.Reflection.MethodInfo add = null;
-            if (addType != null)
-                foreach (System.Reflection.MethodInfo mi in addType.GetMethods())
-                    if (mi.Name == "AddComponent" && mi.IsGenericMethodDefinition) { add = mi.MakeGenericMethod(typeof(Lanbai.Sky.LanbaiSkyDriver)); break; }
             foreach (SkyDriverDef d in pf.drivers)
             {
                 GameObject go = FindRoot(d.name, true);
                 Lanbai.Sky.LanbaiSkyDriver c = go.GetComponent<Lanbai.Sky.LanbaiSkyDriver>();
                 if (c == null)
-                    c = (add != null) ? (Lanbai.Sky.LanbaiSkyDriver)add.Invoke(null, new object[] { go }) : go.AddComponent<Lanbai.Sky.LanbaiSkyDriver>();
+                    c = (Lanbai.Sky.LanbaiSkyDriver)Lanbai.Udon.LanbaiUdonPrograms.AddComponent(go, typeof(Lanbai.Sky.LanbaiSkyDriver));
                 Undo.RecordObject(c, "蓝白 Sky build");
                 int n = d.entries.Length;
                 c.presets = new Lanbai.Sky.LanbaiSkyPreset[n]; c.presetT0 = new float[n]; c.presetT1 = new float[n]; c.fadeSec = new float[n];
@@ -460,24 +456,12 @@ namespace Lanbai.Sky.EditorTools
             return mr;
         }
 
+        // D-41：建程序资产交给共用工具（不等初始化；要等就用 LanbaiUdonPrograms.RunWhenReady）。留着这个名字给别的包调
         public static void EnsureProgramAsset(string scriptName)
         {
-            Type progType = Type.GetType("UdonSharp.UdonSharpProgramAsset, UdonSharp.Editor");
-            if (progType == null) { Debug.LogWarning("[Lanbai/Sky] UdonSharp not found: create the U# program asset for " + scriptName + " by hand"); return; }
-            foreach (string id in AssetDatabase.FindAssets(scriptName + " t:MonoScript"))
-            {
-                string sp = AssetDatabase.GUIDToAssetPath(id);
-                if (!sp.EndsWith("/" + scriptName + ".cs")) continue;
-                string ap = sp.Substring(0, sp.Length - 3) + ".asset";
-                if (AssetDatabase.LoadAssetAtPath<ScriptableObject>(ap) != null) return;
-                ScriptableObject prog = ScriptableObject.CreateInstance(progType);
-                System.Reflection.FieldInfo f = progType.GetField("sourceCsScript");
-                if (f != null) f.SetValue(prog, AssetDatabase.LoadAssetAtPath<MonoScript>(sp));
-                AssetDatabase.CreateAsset(prog, ap);
-                AssetDatabase.SaveAssets();
-                Debug.Log("[Lanbai/Sky] U# program asset -> " + ap);
-                return;
-            }
+            Type t = Lanbai.Udon.LanbaiUdonPrograms.TypeOfScript(scriptName);
+            if (t == null) { Debug.LogWarning("[Lanbai/Sky] " + scriptName + ".cs 不在工程里或还没编译：没建程序资产"); return; }
+            Lanbai.Udon.LanbaiUdonPrograms.CreateMissing("[Lanbai/Sky] " + scriptName, new[] { t }, Lanbai.Udon.LanbaiUdonPrograms.NextToScript);
         }
 
         // ---------------------------------------------------------------------------------------------------------
