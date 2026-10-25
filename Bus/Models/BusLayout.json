@@ -1,0 +1,1237 @@
+{
+ "_about": "车的布局（唯一数据源 Bus/Source/bus_spec.py，由 finish_bus.py 写出）。Unity 车局部坐标：米，x 右 y 上 z 前，车头 +Z，路面 y 0。",
+ "eye_hero": [
+  0.55,
+  1.7,
+  2.05
+ ],
+ "floor_y": 0.62,
+ "skylight": {
+  "centre": [
+   0.55,
+   2.62,
+   2.8
+  ],
+  "half": 0.3
+ },
+ "door": {
+  "kind": "one glazed leaf of four panels, all folding outward onto the rear jamb (D-28e)",
+  "open_swing_deg": 60.0,
+  "panel_m": 0.15,
+  "jambs_m": {
+   "rear": 0.03,
+   "front": 0.02
+  },
+  "opening_z": [
+   2.62,
+   3.27
+  ],
+  "note": "FBX 里是开着的状态（圣经：门从不关）；第 11 幕在白的遮罩下关上。关的状态的变换在完整的车里补（WIP）"
+ },
+ "wheels": {
+  "radius": 0.45,
+  "names": [
+   "Wheel_FR",
+   "Wheel_FL",
+   "Wheel_RR",
+   "Wheel_RL"
+  ],
+  "axis": "local X",
+  "centres": [
+   [
+    0.8200000000000001,
+    0.45,
+    2.05
+   ],
+   [
+    -1.18,
+    0.45,
+    2.05
+   ],
+   [
+    0.8200000000000001,
+    0.45,
+    -1.55
+   ],
+   [
+    -1.18,
+    0.45,
+    -1.55
+   ]
+  ]
+ },
+ "tubes": [
+  {
+   "row": "L",
+   "x": -0.73,
+   "z0": -3.1,
+   "z1": -1.9500000000000002
+  },
+  {
+   "row": "L",
+   "x": -0.73,
+   "z0": -1.83,
+   "z1": -0.6800000000000002
+  },
+  {
+   "row": "L",
+   "x": -0.73,
+   "z0": -0.56,
+   "z1": 0.5899999999999999
+  },
+  {
+   "row": "L",
+   "x": -0.73,
+   "z0": 0.71,
+   "z1": 1.8599999999999999
+  },
+  {
+   "row": "L",
+   "x": -0.73,
+   "z0": 1.98,
+   "z1": 3.13
+  },
+  {
+   "row": "R",
+   "x": 0.37000000000000005,
+   "z0": -3.38,
+   "z1": -2.23
+  },
+  {
+   "row": "R",
+   "x": 0.37000000000000005,
+   "z0": -2.23,
+   "z1": -1.08
+  },
+  {
+   "row": "R",
+   "x": 0.37000000000000005,
+   "z0": -1.08,
+   "z1": 0.06999999999999984
+  },
+  {
+   "row": "R",
+   "x": 0.37000000000000005,
+   "z0": 0.06999999999999984,
+   "z1": 1.2199999999999998
+  },
+  {
+   "row": "R",
+   "x": 0.37000000000000005,
+   "z0": 1.2199999999999998,
+   "z1": 2.37
+  }
+ ],
+ "head_fill_lights": [
+  {
+   "pos": [
+    -0.73,
+    2.45,
+    0.0
+   ],
+   "colour": "#E4F1F3",
+   "render_mode": "Not Important",
+   "culling": "Player + PlayerLocal",
+   "note": "圣经 §4.3：座位处灰卡 #585F64，强度 × _Udon_CabinLightmap"
+  },
+  {
+   "pos": [
+    0.37000000000000005,
+    2.45,
+    0.0
+   ],
+   "colour": "#E4F1F3",
+   "render_mode": "Not Important",
+   "culling": "Player + PlayerLocal",
+   "note": "圣经 §4.3：座位处灰卡 #585F64，强度 × _Udon_CabinLightmap"
+  }
+ ],
+ "bus": {
+  "model": "PAZ-672 (D-28)",
+  "centre_x": -0.18,
+  "width": 2.44,
+  "length": 7.15,
+  "height": 2.74,
+  "bounds_min": [
+   -1.4,
+   0.0,
+   -3.65
+  ],
+  "bounds_max": [
+   1.04,
+   2.8,
+   3.62
+  ]
+ },
+ "radio": {
+  "centre": [
+   0.165,
+   1.461,
+   3.107
+  ],
+  "az_el": [
+   -20,
+   -12
+  ]
+ },
+ "steering_wheel": {
+  "centre": [
+   -0.82,
+   1.3,
+   3.0
+  ],
+  "tilt_deg": 28.0
+ },
+ "seats": [
+  {
+   "name": "SeatR0",
+   "hero": true,
+   "x": 0.55,
+   "cushion_y": 1.03,
+   "back_z": 1.82,
+   "station_pos": [
+    0.55,
+    1.03,
+    2.12
+   ],
+   "eye_approx": [
+    0.55,
+    1.71,
+    2.0500000000000003
+   ]
+  },
+  {
+   "name": "SeatR1",
+   "hero": false,
+   "x": 0.55,
+   "cushion_y": 1.02,
+   "back_z": 1.1,
+   "station_pos": [
+    0.55,
+    1.02,
+    1.4000000000000001
+   ],
+   "eye_approx": [
+    0.55,
+    1.7000000000000002,
+    1.33
+   ]
+  },
+  {
+   "name": "SeatR2",
+   "hero": false,
+   "x": 0.55,
+   "cushion_y": 1.02,
+   "back_z": 0.3800000000000001,
+   "station_pos": [
+    0.55,
+    1.02,
+    0.6800000000000002
+   ],
+   "eye_approx": [
+    0.55,
+    1.7000000000000002,
+    0.6100000000000001
+   ]
+  },
+  {
+   "name": "SeatR3",
+   "hero": false,
+   "x": 0.55,
+   "cushion_y": 1.02,
+   "back_z": -0.3400000000000001,
+   "station_pos": [
+    0.55,
+    1.02,
+    -0.04000000000000009
+   ],
+   "eye_approx": [
+    0.55,
+    1.7000000000000002,
+    -0.11000000000000007
+   ]
+  },
+  {
+   "name": "SeatR4",
+   "hero": false,
+   "x": 0.55,
+   "cushion_y": 1.02,
+   "back_z": -1.0599999999999998,
+   "station_pos": [
+    0.55,
+    1.02,
+    -0.7599999999999998
+   ],
+   "eye_approx": [
+    0.55,
+    1.7000000000000002,
+    -0.8299999999999998
+   ]
+  },
+  {
+   "name": "SeatR5",
+   "hero": false,
+   "x": 0.55,
+   "cushion_y": 1.02,
+   "back_z": -1.7799999999999996,
+   "station_pos": [
+    0.55,
+    1.02,
+    -1.4799999999999995
+   ],
+   "eye_approx": [
+    0.55,
+    1.7000000000000002,
+    -1.5499999999999996
+   ]
+  },
+  {
+   "name": "SeatR6",
+   "hero": false,
+   "x": 0.55,
+   "cushion_y": 1.02,
+   "back_z": -2.5,
+   "station_pos": [
+    0.55,
+    1.02,
+    -2.2
+   ],
+   "eye_approx": [
+    0.55,
+    1.7000000000000002,
+    -2.27
+   ]
+  },
+  {
+   "name": "SeatL0w",
+   "hero": false,
+   "x": -1.1,
+   "cushion_y": 1.02,
+   "back_z": 1.46,
+   "station_pos": [
+    -1.1,
+    1.02,
+    1.76
+   ],
+   "eye_approx": [
+    -1.1,
+    1.7000000000000002,
+    1.69
+   ]
+  },
+  {
+   "name": "SeatL0a",
+   "hero": false,
+   "x": -0.66,
+   "cushion_y": 1.02,
+   "back_z": 1.46,
+   "station_pos": [
+    -0.66,
+    1.02,
+    1.76
+   ],
+   "eye_approx": [
+    -0.66,
+    1.7000000000000002,
+    1.69
+   ]
+  },
+  {
+   "name": "SeatL1w",
+   "hero": false,
+   "x": -1.1,
+   "cushion_y": 1.02,
+   "back_z": 0.74,
+   "station_pos": [
+    -1.1,
+    1.02,
+    1.04
+   ],
+   "eye_approx": [
+    -1.1,
+    1.7000000000000002,
+    0.97
+   ]
+  },
+  {
+   "name": "SeatL1a",
+   "hero": false,
+   "x": -0.66,
+   "cushion_y": 1.02,
+   "back_z": 0.74,
+   "station_pos": [
+    -0.66,
+    1.02,
+    1.04
+   ],
+   "eye_approx": [
+    -0.66,
+    1.7000000000000002,
+    0.97
+   ]
+  },
+  {
+   "name": "SeatL2w",
+   "hero": false,
+   "x": -1.1,
+   "cushion_y": 1.02,
+   "back_z": 0.020000000000000018,
+   "station_pos": [
+    -1.1,
+    1.02,
+    0.32
+   ],
+   "eye_approx": [
+    -1.1,
+    1.7000000000000002,
+    0.25
+   ]
+  },
+  {
+   "name": "SeatL2a",
+   "hero": false,
+   "x": -0.66,
+   "cushion_y": 1.02,
+   "back_z": 0.020000000000000018,
+   "station_pos": [
+    -0.66,
+    1.02,
+    0.32
+   ],
+   "eye_approx": [
+    -0.66,
+    1.7000000000000002,
+    0.25
+   ]
+  },
+  {
+   "name": "SeatL3w",
+   "hero": false,
+   "x": -1.1,
+   "cushion_y": 1.02,
+   "back_z": -0.7000000000000002,
+   "station_pos": [
+    -1.1,
+    1.02,
+    -0.4000000000000002
+   ],
+   "eye_approx": [
+    -1.1,
+    1.7000000000000002,
+    -0.4700000000000002
+   ]
+  },
+  {
+   "name": "SeatL3a",
+   "hero": false,
+   "x": -0.66,
+   "cushion_y": 1.02,
+   "back_z": -0.7000000000000002,
+   "station_pos": [
+    -0.66,
+    1.02,
+    -0.4000000000000002
+   ],
+   "eye_approx": [
+    -0.66,
+    1.7000000000000002,
+    -0.4700000000000002
+   ]
+  },
+  {
+   "name": "SeatL4w",
+   "hero": false,
+   "x": -1.1,
+   "cushion_y": 1.02,
+   "back_z": -1.42,
+   "station_pos": [
+    -1.1,
+    1.02,
+    -1.1199999999999999
+   ],
+   "eye_approx": [
+    -1.1,
+    1.7000000000000002,
+    -1.19
+   ]
+  },
+  {
+   "name": "SeatL4a",
+   "hero": false,
+   "x": -0.66,
+   "cushion_y": 1.02,
+   "back_z": -1.42,
+   "station_pos": [
+    -0.66,
+    1.02,
+    -1.1199999999999999
+   ],
+   "eye_approx": [
+    -0.66,
+    1.7000000000000002,
+    -1.19
+   ]
+  },
+  {
+   "name": "SeatL5w",
+   "hero": false,
+   "x": -1.1,
+   "cushion_y": 1.02,
+   "back_z": -2.1399999999999997,
+   "station_pos": [
+    -1.1,
+    1.02,
+    -1.8399999999999996
+   ],
+   "eye_approx": [
+    -1.1,
+    1.7000000000000002,
+    -1.9099999999999997
+   ]
+  },
+  {
+   "name": "SeatL5a",
+   "hero": false,
+   "x": -0.66,
+   "cushion_y": 1.02,
+   "back_z": -2.1399999999999997,
+   "station_pos": [
+    -0.66,
+    1.02,
+    -1.8399999999999996
+   ],
+   "eye_approx": [
+    -0.66,
+    1.7000000000000002,
+    -1.9099999999999997
+   ]
+  },
+  {
+   "name": "RearBench0",
+   "hero": false,
+   "x": -1.05,
+   "cushion_y": 1.02,
+   "back_z": -3.53,
+   "station_pos": [
+    -1.05,
+    1.02,
+    -3.23
+   ],
+   "eye_approx": [
+    -1.05,
+    1.7000000000000002,
+    -3.3
+   ]
+  },
+  {
+   "name": "RearBench1",
+   "hero": false,
+   "x": -0.55,
+   "cushion_y": 1.02,
+   "back_z": -3.53,
+   "station_pos": [
+    -0.55,
+    1.02,
+    -3.23
+   ],
+   "eye_approx": [
+    -0.55,
+    1.7000000000000002,
+    -3.3
+   ]
+  },
+  {
+   "name": "RearBench2",
+   "hero": false,
+   "x": 0.0,
+   "cushion_y": 1.02,
+   "back_z": -3.53,
+   "station_pos": [
+    0.0,
+    1.02,
+    -3.23
+   ],
+   "eye_approx": [
+    0.0,
+    1.7000000000000002,
+    -3.3
+   ]
+  },
+  {
+   "name": "RearBench3",
+   "hero": false,
+   "x": 0.55,
+   "cushion_y": 1.02,
+   "back_z": -3.53,
+   "station_pos": [
+    0.55,
+    1.02,
+    -3.23
+   ],
+   "eye_approx": [
+    0.55,
+    1.7000000000000002,
+    -3.3
+   ]
+  }
+ ],
+ "seat_count": 23,
+ "colliders": [
+  {
+   "name": "Col_Floor",
+   "c": [
+    -0.18,
+    0.59,
+    -0.07499999999999996
+   ],
+   "s": [
+    2.38,
+    0.06,
+    7.03
+   ]
+  },
+  {
+   "name": "Col_WallL",
+   "c": [
+    -1.3699999999999999,
+    1.5,
+    -0.07499999999999996
+   ],
+   "s": [
+    0.06,
+    1.8,
+    7.03
+   ]
+  },
+  {
+   "name": "Col_WallR_rear",
+   "c": [
+    1.01,
+    1.5,
+    -0.5149999999999999
+   ],
+   "s": [
+    0.06,
+    1.8,
+    6.27
+   ]
+  },
+  {
+   "name": "Col_WallR_front",
+   "c": [
+    1.01,
+    1.5,
+    3.39
+   ],
+   "s": [
+    0.06,
+    1.8,
+    0.24
+   ]
+  },
+  {
+   "name": "Col_Front",
+   "c": [
+    -0.18,
+    1.5,
+    3.44
+   ],
+   "s": [
+    2.38,
+    1.8,
+    0.06
+   ]
+  },
+  {
+   "name": "Col_Rear",
+   "c": [
+    -0.18,
+    1.5,
+    -3.59
+   ],
+   "s": [
+    2.38,
+    1.8,
+    0.06
+   ]
+  },
+  {
+   "name": "Col_Roof",
+   "c": [
+    -0.18,
+    2.65,
+    -0.07499999999999996
+   ],
+   "s": [
+    2.38,
+    0.06,
+    7.03
+   ]
+  },
+  {
+   "name": "Col_Dash",
+   "c": [
+    -0.18,
+    0.95,
+    3.27
+   ],
+   "s": [
+    2.38,
+    0.66,
+    0.38
+   ]
+  },
+  {
+   "name": "Col_EngineCover",
+   "c": [
+    -0.19,
+    0.8200000000000001,
+    2.8
+   ],
+   "s": [
+    0.62,
+    0.4,
+    0.56
+   ]
+  },
+  {
+   "name": "Col_Guard",
+   "c": [
+    0.775,
+    0.93,
+    2.55
+   ],
+   "s": [
+    0.43,
+    0.62,
+    0.04
+   ]
+  },
+  {
+   "name": "Col_Step",
+   "c": [
+    0.82,
+    0.3,
+    2.9450000000000003
+   ],
+   "s": [
+    0.44,
+    0.6,
+    0.6499999999999999
+   ]
+  }
+ ],
+ "cabin_bounds": {
+  "min": [
+   -1.3499999999999999,
+   0.57,
+   -3.59
+  ],
+  "max": [
+   0.99,
+   2.62,
+   3.44
+  ],
+  "note": "D-31：车厢内部的范围（给 LB_Journey.busMin / busMax）；Director 按玩家根位置检查，头探出玻璃 ≤ 0.6 m 不算离开"
+ },
+ "instance_cap_note": "D-31：实例人数上限 = seat_count（不算司机座）",
+ "objects": [
+  "Bus_Door0",
+  "Bus_Door1",
+  "Bus_Door2",
+  "Bus_Door3",
+  "Bus_Exterior_LOD0",
+  "Bus_Exterior_LOD1",
+  "Cabin_Curtains",
+  "Cabin_DestBlind",
+  "Cabin_Radio",
+  "Cabin_Static",
+  "Cabin_Tubes",
+  "Glass_Brow0",
+  "Glass_Brow2",
+  "Glass_DestWindow",
+  "Glass_Door0",
+  "Glass_Door1",
+  "Glass_Door2",
+  "Glass_Door3",
+  "Glass_RearWindow",
+  "Glass_Skylight",
+  "Glass_SlopeL0",
+  "Glass_SlopeL1",
+  "Glass_SlopeL2",
+  "Glass_SlopeL3",
+  "Glass_SlopeL4",
+  "Glass_SlopeL5",
+  "Glass_SlopeR1",
+  "Glass_SlopeR2",
+  "Glass_SlopeR3",
+  "Glass_SlopeR4",
+  "Glass_SlopeR5",
+  "Glass_WinL0",
+  "Glass_WinL1",
+  "Glass_WinL2",
+  "Glass_WinL3",
+  "Glass_WinL4",
+  "Glass_WinL5",
+  "Glass_WinR1",
+  "Glass_WinR2",
+  "Glass_WinR3",
+  "Glass_WinR4",
+  "Glass_WinR5",
+  "Glass_WindscreenL",
+  "Glass_WindscreenR",
+  "Pole_R0",
+  "Seat_DriverSeat",
+  "Seat_RearBench",
+  "Seat_SeatL0",
+  "Seat_SeatL1",
+  "Seat_SeatL2",
+  "Seat_SeatL3",
+  "Seat_SeatL4",
+  "Seat_SeatL5",
+  "Seat_SeatR0",
+  "Seat_SeatR1",
+  "Seat_SeatR2",
+  "Seat_SeatR3",
+  "Seat_SeatR4",
+  "Seat_SeatR5",
+  "Seat_SeatR6",
+  "Wheel_FL",
+  "Wheel_FR",
+  "Wheel_RL",
+  "Wheel_RR",
+  "Window_R1"
+ ],
+ "slice": {
+  "seat": [
+   "Seat_SeatR0"
+  ],
+  "window": [
+   "Window_R1",
+   "Glass_WinR1"
+  ],
+  "pillar": [
+   "Pole_R0"
+  ],
+  "missing": [],
+  "note": "D-40 #1：菜单「蓝白/Build/车 切片」（Bus/Editor/LanbaiBusSliceBuilder.cs）从 Bus.fbx 里取这几个物体，车局部坐标不变（车在原点）。missing 不空 = 这个 FBX 是旧的，要重跑 finish_bus.py"
+ },
+ "door_panels": [
+  {
+   "name": "Bus_Door0",
+   "open": {
+    "position": [
+     1.04,
+     0.0,
+     2.65
+    ],
+    "yaw_deg": 0.0
+   },
+   "closed": {
+    "position": [
+     1.04,
+     0.0,
+     2.65
+    ],
+    "yaw_deg": -60.0
+   },
+   "note": "FBX 里是开着的状态；关上 = 把物体移到 closed.position、绕自己的 +Y 转 closed.yaw_deg（第 11 幕，白遮罩下）"
+  },
+  {
+   "name": "Bus_Door1",
+   "open": {
+    "position": [
+     1.04,
+     0.0,
+     2.624
+    ],
+    "yaw_deg": 0.0
+   },
+   "closed": {
+    "position": [
+     1.04,
+     0.0,
+     2.8
+    ],
+    "yaw_deg": -60.0
+   },
+   "note": "FBX 里是开着的状态；关上 = 把物体移到 closed.position、绕自己的 +Y 转 closed.yaw_deg（第 11 幕，白遮罩下）"
+  },
+  {
+   "name": "Bus_Door2",
+   "open": {
+    "position": [
+     1.04,
+     0.0,
+     2.598
+    ],
+    "yaw_deg": 0.0
+   },
+   "closed": {
+    "position": [
+     1.04,
+     0.0,
+     2.9499999999999997
+    ],
+    "yaw_deg": -60.0
+   },
+   "note": "FBX 里是开着的状态；关上 = 把物体移到 closed.position、绕自己的 +Y 转 closed.yaw_deg（第 11 幕，白遮罩下）"
+  },
+  {
+   "name": "Bus_Door3",
+   "open": {
+    "position": [
+     1.04,
+     0.0,
+     2.572
+    ],
+    "yaw_deg": 0.0
+   },
+   "closed": {
+    "position": [
+     1.04,
+     0.0,
+     3.0999999999999996
+    ],
+    "yaw_deg": -60.0
+   },
+   "note": "FBX 里是开着的状态；关上 = 把物体移到 closed.position、绕自己的 +Y 转 closed.yaw_deg（第 11 幕，白遮罩下）"
+  }
+ ],
+ "parts": [
+  {
+   "type": "DriverSeat",
+   "res": 2048,
+   "metres_per_uv": 2.18211,
+   "instances": [
+    "Seat_DriverSeat"
+   ],
+   "baked": true
+  },
+  {
+   "type": "RearBench",
+   "res": 1024,
+   "metres_per_uv": 4.52534,
+   "instances": [
+    "Seat_RearBench"
+   ],
+   "baked": true
+  },
+  {
+   "type": "SeatL",
+   "res": 1024,
+   "metres_per_uv": 3.0517,
+   "instances": [
+    "Seat_SeatL0",
+    "Seat_SeatL1",
+    "Seat_SeatL2",
+    "Seat_SeatL3"
+   ],
+   "baked": true
+  },
+  {
+   "type": "SeatLBox",
+   "res": 1024,
+   "metres_per_uv": 2.77518,
+   "instances": [
+    "Seat_SeatL4",
+    "Seat_SeatL5"
+   ],
+   "baked": true
+  },
+  {
+   "type": "SeatHero",
+   "res": 2048,
+   "metres_per_uv": 2.03469,
+   "instances": [
+    "Seat_SeatR0"
+   ],
+   "baked": true
+  },
+  {
+   "type": "SeatR",
+   "res": 2048,
+   "metres_per_uv": 2.17718,
+   "instances": [
+    "Seat_SeatR1",
+    "Seat_SeatR2",
+    "Seat_SeatR3",
+    "Seat_SeatR4",
+    "Seat_SeatR5",
+    "Seat_SeatR6"
+   ],
+   "baked": true
+  }
+ ],
+ "stats": {
+  "Bus_Door0": {
+   "verts": 40,
+   "tris": 60
+  },
+  "Bus_Door1": {
+   "verts": 40,
+   "tris": 60
+  },
+  "Bus_Door2": {
+   "verts": 40,
+   "tris": 60
+  },
+  "Bus_Door3": {
+   "verts": 40,
+   "tris": 60
+  },
+  "Bus_Exterior_LOD0": {
+   "verts": 14216,
+   "tris": 21641
+  },
+  "Bus_Exterior_LOD1": {
+   "verts": 5509,
+   "tris": 7573
+  },
+  "Cabin_Curtains": {
+   "verts": 13286,
+   "tris": 24300
+  },
+  "Cabin_DestBlind": {
+   "verts": 8,
+   "tris": 12
+  },
+  "Cabin_Radio": {
+   "verts": 224,
+   "tris": 356
+  },
+  "Cabin_Static": {
+   "verts": 167836,
+   "tris": 320233
+  },
+  "Cabin_Tubes": {
+   "verts": 960,
+   "tris": 1880
+  },
+  "Glass_Brow0": {
+   "verts": 15,
+   "tris": 16
+  },
+  "Glass_Brow2": {
+   "verts": 15,
+   "tris": 16
+  },
+  "Glass_DestWindow": {
+   "verts": 30,
+   "tris": 40
+  },
+  "Glass_Door0": {
+   "verts": 8,
+   "tris": 4
+  },
+  "Glass_Door1": {
+   "verts": 8,
+   "tris": 4
+  },
+  "Glass_Door2": {
+   "verts": 8,
+   "tris": 4
+  },
+  "Glass_Door3": {
+   "verts": 8,
+   "tris": 4
+  },
+  "Glass_RearWindow": {
+   "verts": 45,
+   "tris": 64
+  },
+  "Glass_Skylight": {
+   "verts": 4,
+   "tris": 2
+  },
+  "Glass_SlopeL0": {
+   "verts": 20,
+   "tris": 24
+  },
+  "Glass_SlopeL1": {
+   "verts": 25,
+   "tris": 32
+  },
+  "Glass_SlopeL2": {
+   "verts": 25,
+   "tris": 32
+  },
+  "Glass_SlopeL3": {
+   "verts": 25,
+   "tris": 32
+  },
+  "Glass_SlopeL4": {
+   "verts": 25,
+   "tris": 32
+  },
+  "Glass_SlopeL5": {
+   "verts": 20,
+   "tris": 24
+  },
+  "Glass_SlopeR1": {
+   "verts": 30,
+   "tris": 40
+  },
+  "Glass_SlopeR2": {
+   "verts": 25,
+   "tris": 32
+  },
+  "Glass_SlopeR3": {
+   "verts": 25,
+   "tris": 32
+  },
+  "Glass_SlopeR4": {
+   "verts": 25,
+   "tris": 32
+  },
+  "Glass_SlopeR5": {
+   "verts": 25,
+   "tris": 32
+  },
+  "Glass_WindscreenL": {
+   "verts": 126,
+   "tris": 208
+  },
+  "Glass_WindscreenR": {
+   "verts": 126,
+   "tris": 208
+  },
+  "Glass_WinL0": {
+   "verts": 42,
+   "tris": 60
+  },
+  "Glass_WinL1": {
+   "verts": 49,
+   "tris": 72
+  },
+  "Glass_WinL2": {
+   "verts": 49,
+   "tris": 72
+  },
+  "Glass_WinL3": {
+   "verts": 49,
+   "tris": 72
+  },
+  "Glass_WinL4": {
+   "verts": 49,
+   "tris": 72
+  },
+  "Glass_WinL5": {
+   "verts": 42,
+   "tris": 60
+  },
+  "Glass_WinR1": {
+   "verts": 56,
+   "tris": 84
+  },
+  "Glass_WinR2": {
+   "verts": 49,
+   "tris": 72
+  },
+  "Glass_WinR3": {
+   "verts": 49,
+   "tris": 72
+  },
+  "Glass_WinR4": {
+   "verts": 49,
+   "tris": 72
+  },
+  "Glass_WinR5": {
+   "verts": 49,
+   "tris": 72
+  },
+  "Pole_R0": {
+   "verts": 2040,
+   "tris": 4020
+  },
+  "Seat_DriverSeat": {
+   "verts": 3904,
+   "tris": 7692
+  },
+  "Seat_RearBench": {
+   "verts": 10448,
+   "tris": 20736
+  },
+  "Seat_SeatL0": {
+   "verts": 6824,
+   "tris": 13460
+  },
+  "Seat_SeatL1": {
+   "verts": 6824,
+   "tris": 13460
+  },
+  "Seat_SeatL2": {
+   "verts": 6824,
+   "tris": 13460
+  },
+  "Seat_SeatL3": {
+   "verts": 6824,
+   "tris": 13460
+  },
+  "Seat_SeatL4": {
+   "verts": 4908,
+   "tris": 9680
+  },
+  "Seat_SeatL5": {
+   "verts": 4908,
+   "tris": 9680
+  },
+  "Seat_SeatR0": {
+   "verts": 4556,
+   "tris": 8976
+  },
+  "Seat_SeatR1": {
+   "verts": 5868,
+   "tris": 11552
+  },
+  "Seat_SeatR2": {
+   "verts": 5868,
+   "tris": 11552
+  },
+  "Seat_SeatR3": {
+   "verts": 5868,
+   "tris": 11552
+  },
+  "Seat_SeatR4": {
+   "verts": 5868,
+   "tris": 11552
+  },
+  "Seat_SeatR5": {
+   "verts": 5868,
+   "tris": 11552
+  },
+  "Seat_SeatR6": {
+   "verts": 5868,
+   "tris": 11552
+  },
+  "Wheel_FL": {
+   "verts": 648,
+   "tris": 1284
+  },
+  "Wheel_FR": {
+   "verts": 648,
+   "tris": 1284
+  },
+  "Wheel_RL": {
+   "verts": 648,
+   "tris": 1284
+  },
+  "Wheel_RR": {
+   "verts": 648,
+   "tris": 1284
+  },
+  "Window_R1": {
+   "verts": 14556,
+   "tris": 28044
+  },
+  "Wiper-0.14": {
+   "verts": 32,
+   "tris": 28
+  },
+  "Wiper-1.18": {
+   "verts": 32,
+   "tris": 28
+  }
+ },
+ "stats_total_tris": 595101
+}

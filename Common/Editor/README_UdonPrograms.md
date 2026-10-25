@@ -55,7 +55,7 @@ main 上（这次一起改了）：
 | 门内 | `Act04c_Inside/Editor/LanbaiInsideBuild.cs` | 蓝白/Build/04c 门内（三个脚本） | 脚本旁边 |
 | 天空 | `Sky/Editor/LanbaiSkyBuild.cs`（`EnsureProgramAsset` 也改成调它） | 蓝白/Sky/Build Sky、Create Preset Objects | 脚本旁边 |
 | 第 9 幕 | `Act09_StarSea/Editor/LanbaiAct09Build.cs` | 蓝白/Build/Act09 | 脚本旁边 |
-| 诗 | `Fonts/Editor/LanbaiPoemBake.cs`（asmdef 加了引用） | 蓝白/Fonts/Build Poem Objects | 脚本旁边 |
+| 诗 | `Fonts/Editor/LanbaiPoemBake.cs`（asmdef 加了引用） | 蓝白/Fonts/Build Subtitles (v5) | 脚本旁边 |
 | Director | `Director/Editor/LanbaiDirectorGen.cs` | 蓝白/Director/2 Wire Scene | 脚本旁边 |
 | 测试工具 | `Engineering/UnityTest/`（测试定义的 `udon_programs`） | 蓝白/Test/…、`-executeMethod` | 默认 |
 

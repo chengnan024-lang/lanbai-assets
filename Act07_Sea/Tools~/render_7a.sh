@@ -30,7 +30,7 @@ run 06_F4p_gather   462.36 --cam hero --pitch 35 --bus bible_v2 --note "F4p 462.
 wait
 run 06b_F4p_side_up 461.0  --cam hero --yaw 80 --pitch 30 --bus bible_v2 --note "F4p gathering (461, the gather ~97 %): from the right side window looking up, the shafts converge on the roof outside the bus" &
 wait
-run 07_F3e1_last    512.0  --cam hero --pitch 40 --bus bible_v2 --note "F3e1 512.0: the window shrinking (gain x ~0.24 on the way to 0.04 at 514.36), the last wide shaft over the seats" &
+run 07_F3e1_last    508.4  --cam hero --pitch 40 --bus bible_v2 --note "F3e1 508.4: the last wide shaft at full strength mid-sweep (in from 504.36, sweep 506.36-510.36: D-44 #5 10-25), the window starting to shrink" &
 run 07b_F3e1_509    509.0  --cam hero --yaw 150 --pitch 55 --bus bible_v2 --set roofhole=auto --note "F3e1 509: the last wide shaft sweeping past overhead, up and back through the eroded roof (el >= 70 - 120 x erosion)" &
 wait
 run 07c_F3e1_515    515.0  --cam hero --pitch 75 --bus bible_v2 --set roofhole=54 --note "F3e1 515: straight up through the eroded roof, the Snell window is a dark coin (gain x 0.04)" &

@@ -2,7 +2,7 @@
   "id": "tree_sample",
   "title": "样板树（D-44 #6）：三个对照机位 + 主座位 20 px/° 近景 + 头部微动的闪烁序列 + 性能",
   "source": "总导演 D-44 #6、10-25 选形（A 为主、B 点缀）；Lamps/Tree/README_样板树.md；FromLocal/trees/README.md 的机位与位置",
-  "source_why": "灯包写在 Lamps/Tree/UnityTest/tree_sample.json；总工程师 10-25 审过拷进来（改了一处：perf 的状态用 id 不用 name，不然量数名是 perf.row.all_on.*，row_tris 那一项会“没量到”）。以后改这份，灯包的那份只作原稿",
+  "source_why": "灯包写在 Lamps/Tree/UnityTest/tree_sample.json；总工程师 10-25 审过拷进来（改了一处：perf 的状态用 id 不用 name，不然量数名是 perf.row.all_on.*，row_tris 那一项会“没量到”）。以后改这份，灯包的那份只作原稿；10-25 阿白第一次跑（FromLocal/tree_sample/20261025-101954）以后改：场景用 FullPreview、去掉关占位组的那一步、机位 MSAA 4、闪烁只量树（isolate + ROI）、门槛按 ROI 重定",
   "requires": {
     "folders": [
       "Assets/Lanbai/Common",
@@ -10,7 +10,7 @@
       "Assets/Lanbai/Lamps/Tree"
     ],
     "files": [
-      "Assets/Lanbai/Scenes/Lanbai.unity",
+      "Assets/Lanbai/Scenes/Lanbai_FullPreview.unity",
       "Assets/Lanbai/Lamps/Tree/Models/Tree_A1.fbx",
       "Assets/Lanbai/Lamps/Tree/Models/Tree_A2.fbx",
       "Assets/Lanbai/Lamps/Tree/Models/Tree_A3.fbx",
@@ -25,9 +25,9 @@
     ]
   },
   "scene": {
-    "path": "Assets/Lanbai/Scenes/Lanbai.unity",
+    "path": "Assets/Lanbai/Scenes/Lanbai_FullPreview.unity",
     "mode": "copy",
-    "why": "拷进沙盒：树只放在拷贝里，主场景不动"
+    "why": "用 FullPreview：交付的调色 Volume（Grades）只在这个场景里，正式的 Lanbai.unity 里没有，S1 Solo 会找不到而失败（阿白 10-25 095406）。拷进沙盒：树只放在拷贝里，原场景不动"
   },
   "allowed_writes": [
     "Assets/Lanbai/Lamps/Tree/Generated/**",
@@ -52,17 +52,6 @@
       "arg": "S1",
       "expect": "solo S1",
       "why": "第 1 幕的调色（对照图是站台雨夜；本地 9-30 的对照用的是 Night profile，所以和旧图的亮度不完全可比）"
-    },
-    {
-      "type": "set_field_objects_active",
-      "component": "LB_Journey",
-      "fields": [
-        "*Group",
-        "*group"
-      ],
-      "value": false,
-      "optional": true,
-      "why": "关掉别的幕的占位组；路组若也被关，对照图里会没有路——那就把这一步删掉重跑（README §5）"
     },
     {
       "type": "method",
@@ -90,7 +79,8 @@
       "vfov": 55,
       "w": 1600,
       "h": 900,
-      "ref": "repo:Lamps/Tree/Docs~/compare_overview_blender.png"
+      "ref": "repo:Lamps/Tree/Docs~/compare_overview_blender.png",
+      "msaa": 4
     },
     "right": {
       "eye": [
@@ -106,7 +96,8 @@
       "vfov": 55,
       "w": 1600,
       "h": 900,
-      "ref": "repo:Lamps/Tree/Docs~/compare_right_blender.png"
+      "ref": "repo:Lamps/Tree/Docs~/compare_right_blender.png",
+      "msaa": 4
     },
     "left": {
       "eye": [
@@ -122,7 +113,8 @@
       "vfov": 55,
       "w": 1600,
       "h": 900,
-      "ref": "repo:Lamps/Tree/Docs~/compare_left_blender.png"
+      "ref": "repo:Lamps/Tree/Docs~/compare_left_blender.png",
+      "msaa": 4
     },
     "hero": {
       "eye": [
@@ -140,10 +132,11 @@
         30
       ],
       "ppd": 20,
-      "ref": "repo:Lamps/Tree/Docs~/hero_20ppd_blender.png"
+      "ref": "repo:Lamps/Tree/Docs~/hero_20ppd_blender.png",
+      "msaa": 4
     }
   },
-  "cameras_why": "前三个 = FromLocal/trees/README.md 的机位（Unity 世界，垂直 55°，1600×900）；hero = 主座位（D-40b #1）看右手第一棵树的树冠，20 px/°（D-40b #2）",
+  "cameras_why": "前三个 = FromLocal/trees/README.md 的机位（Unity 世界，垂直 55°，1600×900）；hero = 主座位（D-40b #1）看右手第一棵树的树冠，20 px/°（D-40b #2）。msaa 4：叶用 alpha-to-coverage，没有 MSAA 就是整块卡片（VRChat 默认开 MSAA；阿白 10-25）",
   "shots": [
     {
       "id": "overview",
@@ -171,7 +164,13 @@
       "amp_deg": 1,
       "fps": 90,
       "frames": 90,
-      "reference_ss": 4
+      "reference_ss": 4,
+      "isolate": {
+        "keep": [
+          "Lanbai_TreeTestRow"
+        ],
+        "roi_dilate_px": 4
+      }
     },
     {
       "id": "hero_static",
@@ -179,7 +178,13 @@
       "kind": "static",
       "fps": 90,
       "frames": 45,
-      "reference_ss": 4
+      "reference_ss": 4,
+      "isolate": {
+        "keep": [
+          "Lanbai_TreeTestRow"
+        ],
+        "roi_dilate_px": 4
+      }
     },
     {
       "id": "right_micro",
@@ -189,10 +194,16 @@
       "amp_deg": 1,
       "fps": 90,
       "frames": 90,
-      "reference_ss": 4
+      "reference_ss": 4,
+      "isolate": {
+        "keep": [
+          "Lanbai_TreeTestRow"
+        ],
+        "roi_dilate_px": 4
+      }
     }
   ],
-  "sequences_why": "总导演 10-25 第 2 条：叶子不能闪。hero 是 LOD0 近景，right 里有 LOD1 / LOD2 的远树。static 是对照（只剩画面自己的时间噪声，比如风）",
+  "sequences_why": "总导演 10-25 第 2 条：叶子不能闪。hero 是 LOD0 近景，right 里有 LOD1 / LOD2 的远树。static 是对照（只剩画面自己的时间噪声，比如风）。isolate：只留 Lanbai_TreeTestRow 下的 Renderer（旧车柱、灯杆、路、别的占位在序列里关掉，灯光不动），闪烁只在 ROI（树 + 外扩 4 px）里算；第一次跑是整幅画面，主座位还被旧车柱挡住，那组数字不能拿来判树",
   "perf": [
     {
       "id": "row",
@@ -211,23 +222,39 @@
       "op": "<=",
       "value": 12,
       "gate": true,
-      "why": "初值：叶缘在 4× 超采样参考下的差，p99 ≤ 12（0–255）。第一次实测后由总工程师定"
+      "why": "ROI 里（树 + 外扩 4 px），4× 超采样参考下的差 p99 ≤ 12（0–255）。初值：第一次 ROI 实测以后由总工程师定（10-25 整幅画面量到 12.30，含车柱和路，不可比）"
     },
     {
       "id": "hero_shimmer_frac",
       "metric": "seq.hero_micro.shimmer_frac",
       "op": "<=",
-      "value": 0.02,
+      "value": 0.05,
       "gate": true,
-      "why": "超过阈值 4 的像素 ≤ 2 %"
+      "why": "ROI 里超过 4 的像素 ≤ 5 %。分母从整幅画面换成 ROI（几乎全是叶缘），所以比 2 % 放宽；初值，第一次 ROI 实测后定"
     },
     {
       "id": "right_shimmer_frac",
       "metric": "seq.right_micro.shimmer_frac",
       "op": "<=",
-      "value": 0.02,
+      "value": 0.05,
       "gate": true,
-      "why": "远树（LOD1 / LOD2）同样不能闪"
+      "why": "远树（LOD1 / LOD2）同样不能闪；ROI 里 ≤ 5 %，初值同上（10-25 整幅画面 21.1 %，含路和车，不可比）"
+    },
+    {
+      "id": "hero_roi",
+      "metric": "seq.hero_micro.roi_frac",
+      "op": ">=",
+      "value": 0.05,
+      "gate": true,
+      "why": "ROI 至少占画面 5 %：机位真的对着树（ROI 太小，上面三项就没有意义）"
+    },
+    {
+      "id": "hero_static_ref",
+      "metric": "seq.hero_static.shimmer_frac",
+      "op": "<=",
+      "value": 0.02,
+      "gate": false,
+      "why": "静止对照：只剩风和画面自己的时间噪声；比微动高说明风在抖，不是采样不足"
     },
     {
       "id": "overview_apl",

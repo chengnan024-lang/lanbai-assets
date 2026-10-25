@@ -4,8 +4,8 @@
    960,
    540
   ],
-  "APL": 43.82,
-  "EV_display": -4.95,
+  "APL": 45.79,
+  "EV_display": -4.81,
   "luma_lt12_pct": 22.27,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
@@ -25,21 +25,21 @@
     403
    ],
    "centroid": [
-    385.0,
-    215.6
+    383.3,
+    215.2
    ],
    "clusters": 101,
    "clusters_ge5pct": 1,
-   "min_luma": 151.3,
+   "min_luma": 152.1,
    "centroid_az_el": [
-    -10.3,
-    5.53
+    -10.47,
+    5.59
    ]
   },
   "top25_Lstar": {
-   "mean": 22.29,
-   "p50": 26.0,
-   "p90": 26.86
+   "mean": 23.02,
+   "p50": 26.05,
+   "p90": 30.01
   },
   "palette": {
    "act": "07a",
@@ -48,49 +48,49 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 28.5,
+     "nearest_dE2000_p01": 28.3,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 17.1,
+     "nearest_dE2000_p01": 16.9,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 10.3,
-     "within_dE5_pct": 0.03
+     "nearest_dE2000_p01": 10.1,
+     "within_dE5_pct": 0.04
     },
     {
      "hex": "#3876AB",
      "role": "浅水 縹",
-     "nearest_dE2000_p01": 6.5,
-     "within_dE5_pct": 0.04
+     "nearest_dE2000_p01": 6.4,
+     "within_dE5_pct": 0.05
     },
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
      "nearest_dE2000_p01": 1.9,
-     "within_dE5_pct": 75.32
+     "within_dE5_pct": 67.51
     },
     {
      "hex": "#697987",
      "role": "海雪",
-     "nearest_dE2000_p01": 13.6,
+     "nearest_dE2000_p01": 13.5,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 11.1,
+     "nearest_dE2000_p01": 10.8,
      "within_dE5_pct": 0.05
     }
    ],
-   "pixel_to_nearest_dE_median": 3.3,
+   "pixel_to_nearest_dE_median": 3.4,
    "pixel_to_nearest_dE_p90": 19.3,
-   "pixels_within5_pct": 75.4
+   "pixels_within5_pct": 67.6
   }
  },
  "cam": {
@@ -169,7 +169,7 @@
    "color": "#000000"
   }
  },
- "bloom_share_of_APL": 0.01,
+ "bloom_share_of_APL": 0.0,
  "t": 506.4,
  "target": {
   "phase": "最后一闪",
@@ -194,7 +194,7 @@
    540
   ]
  },
- "render_seconds": 12.3,
+ "render_seconds": 13.3,
  "lens": "none",
  "bloom_tint": "single",
  "note": "D-44 #5 beat 506.4 forward from the main seat"

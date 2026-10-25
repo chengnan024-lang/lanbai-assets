@@ -1,0 +1,406 @@
+{
+ "_about": "hero eye, the Snell window cone (elevation >= 41.4 deg, solid-angle weighted), the current bus, with the act erosion fade(t) (snell_check.py), D-46 zenith term on",
+ "targets_d46": {
+  "387": "cone >= 25 %",
+  "446": "cone >= 35 %",
+  "506": "cone >= 45 %, zenith 20 deg >= 30 %"
+ },
+ "eye": [
+  0.55,
+  1.7,
+  2.05
+ ],
+ "step_deg": 1.0,
+ "rows": [
+  {
+   "t": 370.0,
+   "fade": 0.0387,
+   "snell_cone": {
+    "skylight": 0.0834,
+    "other_glass": 0.1078,
+    "eroded_hole": 0.0178,
+    "blocked": 0.791,
+    "visible": 0.209
+   },
+   "zenith_20deg": {
+    "skylight": 0.0,
+    "other_glass": 0.0,
+    "eroded_hole": 0.0,
+    "blocked": 1.0,
+    "visible": 0.0
+   },
+   "blocked_by": {
+    "Ceiling": 0.5717,
+    "Body": 0.0651,
+    "TubeR4": 0.0593,
+    "WinR1_Frame": 0.0149,
+    "Rail+0.29": 0.0144,
+    "HatchWall0": 0.011
+   }
+  },
+  {
+   "t": 375.0,
+   "fade": 0.051,
+   "snell_cone": {
+    "skylight": 0.0834,
+    "other_glass": 0.1078,
+    "eroded_hole": 0.0202,
+    "blocked": 0.7886,
+    "visible": 0.2114
+   },
+   "zenith_20deg": {
+    "skylight": 0.0,
+    "other_glass": 0.0,
+    "eroded_hole": 0.0,
+    "blocked": 1.0,
+    "visible": 0.0
+   },
+   "blocked_by": {
+    "Ceiling": 0.567,
+    "Body": 0.0677,
+    "TubeR4": 0.0593,
+    "WinR1_Frame": 0.0149,
+    "Rail+0.29": 0.0144,
+    "HatchWall0": 0.011
+   }
+  },
+  {
+   "t": 380.0,
+   "fade": 0.0609,
+   "snell_cone": {
+    "skylight": 0.0834,
+    "other_glass": 0.1078,
+    "eroded_hole": 0.0376,
+    "blocked": 0.7712,
+    "visible": 0.2288
+   },
+   "zenith_20deg": {
+    "skylight": 0.0,
+    "other_glass": 0.0,
+    "eroded_hole": 0.0426,
+    "blocked": 0.9574,
+    "visible": 0.0426
+   },
+   "blocked_by": {
+    "Ceiling": 0.5421,
+    "Body": 0.0757,
+    "TubeR4": 0.0593,
+    "WinR1_Frame": 0.0149,
+    "Rail+0.29": 0.0144,
+    "HatchWall0": 0.0109
+   }
+  },
+  {
+   "t": 384.0,
+   "fade": 0.0678,
+   "snell_cone": {
+    "skylight": 0.0834,
+    "other_glass": 0.1078,
+    "eroded_hole": 0.0891,
+    "blocked": 0.7197,
+    "visible": 0.2803
+   },
+   "zenith_20deg": {
+    "skylight": 0.0,
+    "other_glass": 0.0,
+    "eroded_hole": 0.1554,
+    "blocked": 0.8446,
+    "visible": 0.1554
+   },
+   "blocked_by": {
+    "Ceiling": 0.4802,
+    "Body": 0.0915,
+    "TubeR4": 0.0592,
+    "WinR1_Frame": 0.0149,
+    "Rail+0.29": 0.0144,
+    "CurtainRailR1.001": 0.0097
+   }
+  },
+  {
+   "t": 387.0,
+   "fade": 0.0726,
+   "snell_cone": {
+    "skylight": 0.0834,
+    "other_glass": 0.1078,
+    "eroded_hole": 0.1407,
+    "blocked": 0.6681,
+    "visible": 0.3319
+   },
+   "zenith_20deg": {
+    "skylight": 0.0,
+    "other_glass": 0.0,
+    "eroded_hole": 0.3203,
+    "blocked": 0.6797,
+    "visible": 0.3203
+   },
+   "blocked_by": {
+    "Ceiling": 0.4263,
+    "Body": 0.1015,
+    "TubeR4": 0.0552,
+    "WinR1_Frame": 0.0149,
+    "Rail+0.29": 0.0144,
+    "CurtainRailR1.001": 0.0097
+   }
+  },
+  {
+   "t": 395.0,
+   "fade": 0.0839,
+   "snell_cone": {
+    "skylight": 0.0834,
+    "other_glass": 0.1078,
+    "eroded_hole": 0.1817,
+    "blocked": 0.6271,
+    "visible": 0.3729
+   },
+   "zenith_20deg": {
+    "skylight": 0.0,
+    "other_glass": 0.0,
+    "eroded_hole": 0.4427,
+    "blocked": 0.5573,
+    "visible": 0.4427
+   },
+   "blocked_by": {
+    "Ceiling": 0.3976,
+    "Body": 0.0963,
+    "TubeR4": 0.0496,
+    "Rail+0.29": 0.0144,
+    "WinR1_Frame": 0.0142,
+    "CurtainRailR1.001": 0.0097
+   }
+  },
+  {
+   "t": 410.0,
+   "fade": 0.1018,
+   "snell_cone": {
+    "skylight": 0.0834,
+    "other_glass": 0.1078,
+    "eroded_hole": 0.2125,
+    "blocked": 0.5963,
+    "visible": 0.4037
+   },
+   "zenith_20deg": {
+    "skylight": 0.0,
+    "other_glass": 0.0,
+    "eroded_hole": 0.4891,
+    "blocked": 0.5109,
+    "visible": 0.4891
+   },
+   "blocked_by": {
+    "Ceiling": 0.38,
+    "Body": 0.0938,
+    "TubeR4": 0.0477,
+    "Rail+0.29": 0.0144,
+    "WinR1_Frame": 0.0106,
+    "CurtainRailR1.001": 0.0074
+   }
+  },
+  {
+   "t": 430.0,
+   "fade": 0.1217,
+   "snell_cone": {
+    "skylight": 0.0834,
+    "other_glass": 0.1078,
+    "eroded_hole": 0.2441,
+    "blocked": 0.5647,
+    "visible": 0.4353
+   },
+   "zenith_20deg": {
+    "skylight": 0.0,
+    "other_glass": 0.0,
+    "eroded_hole": 0.5345,
+    "blocked": 0.4655,
+    "visible": 0.5345
+   },
+   "blocked_by": {
+    "Ceiling": 0.364,
+    "Body": 0.088,
+    "TubeR4": 0.0464,
+    "Rail+0.29": 0.0144,
+    "WinR1_Frame": 0.0081,
+    "CurtainRailR1.001": 0.0058
+   }
+  },
+  {
+   "t": 446.0,
+   "fade": 0.1355,
+   "snell_cone": {
+    "skylight": 0.0834,
+    "other_glass": 0.1078,
+    "eroded_hole": 0.2649,
+    "blocked": 0.5439,
+    "visible": 0.4561
+   },
+   "zenith_20deg": {
+    "skylight": 0.0,
+    "other_glass": 0.0,
+    "eroded_hole": 0.5714,
+    "blocked": 0.4286,
+    "visible": 0.5714
+   },
+   "blocked_by": {
+    "Ceiling": 0.3516,
+    "Body": 0.0836,
+    "TubeR4": 0.0451,
+    "Rail+0.29": 0.0144,
+    "WinR1_Frame": 0.0081,
+    "CurtainRailR1.001": 0.0054
+   }
+  },
+  {
+   "t": 460.0,
+   "fade": 0.1465,
+   "snell_cone": {
+    "skylight": 0.0834,
+    "other_glass": 0.1078,
+    "eroded_hole": 0.2775,
+    "blocked": 0.5313,
+    "visible": 0.4687
+   },
+   "zenith_20deg": {
+    "skylight": 0.0,
+    "other_glass": 0.0,
+    "eroded_hole": 0.5919,
+    "blocked": 0.4081,
+    "visible": 0.5919
+   },
+   "blocked_by": {
+    "Ceiling": 0.3436,
+    "Body": 0.0821,
+    "TubeR4": 0.0444,
+    "Rail+0.29": 0.0144,
+    "WinR1_Frame": 0.008,
+    "CurtainRailR1.001": 0.0053
+   }
+  },
+  {
+   "t": 500.0,
+   "fade": 0.1742,
+   "snell_cone": {
+    "skylight": 0.0834,
+    "other_glass": 0.1078,
+    "eroded_hole": 0.3109,
+    "blocked": 0.4979,
+    "visible": 0.5021
+   },
+   "zenith_20deg": {
+    "skylight": 0.0,
+    "other_glass": 0.0,
+    "eroded_hole": 0.657,
+    "blocked": 0.343,
+    "visible": 0.657
+   },
+   "blocked_by": {
+    "Ceiling": 0.3242,
+    "Body": 0.0739,
+    "TubeR4": 0.0411,
+    "Rail+0.29": 0.0144,
+    "WinR1_Frame": 0.0078,
+    "CurtainRailR1.001": 0.0051
+   }
+  },
+  {
+   "t": 506.0,
+   "fade": 0.178,
+   "snell_cone": {
+    "skylight": 0.0834,
+    "other_glass": 0.1078,
+    "eroded_hole": 0.3174,
+    "blocked": 0.4914,
+    "visible": 0.5086
+   },
+   "zenith_20deg": {
+    "skylight": 0.0,
+    "other_glass": 0.0,
+    "eroded_hole": 0.6669,
+    "blocked": 0.3331,
+    "visible": 0.6669
+   },
+   "blocked_by": {
+    "Ceiling": 0.3215,
+    "Body": 0.0717,
+    "TubeR4": 0.0406,
+    "Rail+0.29": 0.0144,
+    "WinR1_Frame": 0.0077,
+    "CurtainRailR1.001": 0.0051
+   }
+  },
+  {
+   "t": 550.0,
+   "fade": 0.2035,
+   "snell_cone": {
+    "skylight": 0.0834,
+    "other_glass": 0.1078,
+    "eroded_hole": 0.3525,
+    "blocked": 0.4563,
+    "visible": 0.5437
+   },
+   "zenith_20deg": {
+    "skylight": 0.0,
+    "other_glass": 0.0,
+    "eroded_hole": 0.7227,
+    "blocked": 0.2773,
+    "visible": 0.7227
+   },
+   "blocked_by": {
+    "Ceiling": 0.3005,
+    "Body": 0.0645,
+    "TubeR4": 0.0363,
+    "Rail+0.29": 0.0144,
+    "WinR1_Frame": 0.0074,
+    "SlopeRevealR0_1.37": 0.005
+   }
+  },
+  {
+   "t": 600.0,
+   "fade": 0.2292,
+   "snell_cone": {
+    "skylight": 0.0834,
+    "other_glass": 0.1078,
+    "eroded_hole": 0.3878,
+    "blocked": 0.421,
+    "visible": 0.579
+   },
+   "zenith_20deg": {
+    "skylight": 0.0,
+    "other_glass": 0.0,
+    "eroded_hole": 0.7773,
+    "blocked": 0.2227,
+    "visible": 0.7773
+   },
+   "blocked_by": {
+    "Ceiling": 0.2794,
+    "Body": 0.0559,
+    "TubeR4": 0.033,
+    "Rail+0.29": 0.0144,
+    "WinR1_Frame": 0.007,
+    "SlopeRevealR0_1.37": 0.005
+   }
+  },
+  {
+   "t": 644.96,
+   "fade": 0.25,
+   "snell_cone": {
+    "skylight": 0.0834,
+    "other_glass": 0.1078,
+    "eroded_hole": 0.4187,
+    "blocked": 0.3901,
+    "visible": 0.6099
+   },
+   "zenith_20deg": {
+    "skylight": 0.0,
+    "other_glass": 0.0,
+    "eroded_hole": 0.8165,
+    "blocked": 0.1835,
+    "visible": 0.8165
+   },
+   "blocked_by": {
+    "Ceiling": 0.2675,
+    "Body": 0.0449,
+    "TubeR4": 0.0308,
+    "Rail+0.29": 0.0144,
+    "WinR1_Frame": 0.0056,
+    "SlopeRevealR0_1.37": 0.005
+   }
+  }
+ ]
+}

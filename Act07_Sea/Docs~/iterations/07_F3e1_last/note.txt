@@ -1,1 +1,1 @@
-F3e1 512.0: the window shrinking (gain x ~0.24 on the way to 0.04 at 514.36), the last wide shaft over the seats
+F3e1 508.4: the last wide shaft at full strength mid-sweep (in from 504.36, sweep 506.36-510.36: D-44 #5 10-25), the window starting to shrink

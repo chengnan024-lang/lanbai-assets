@@ -1,0 +1,7 @@
+{
+ "scale": 0.07238420963491869,
+ "sigma_rad": 0.2,
+ "t_ref": 1045.0,
+ "encoding": "sqrt(L / scale)",
+ "layout": "horizontal cross, Unity face order"
+}

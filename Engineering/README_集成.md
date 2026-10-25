@@ -248,21 +248,24 @@ Director v1.1 起没有要本地填的窗口：`LB_Journey` 勾 `extAtmosphere` 
 - **开销**：`LanbaiTick` 5 个 SetGlobalVector（1009.21 起 9 个）、1 个 MPB、两个 renderer 开关，没有循环、不分配内存；账本里按 < 0.1 ms 记（未实测）。
 - **截图**（主座位，桌面 1920×1080 / 90°，PPv2 开）：1001.21、1005.21、1008.6；**F13 那一帧、1020.24、1021.29、1021.95 和 1022.41**（正前方 / 抬头 +60° / 银心方向，用来在 Unity 里重标 g(t)：中间三帧是 g = 0.25 / 0.5 / 0.75 附近，带车厢以后跨度会小）；1100、1137。1016–1030 s 的录像跑 `flashcheck.py`。
 
-### 9.6 诗句（`Fonts/` 第 4 版 + 4.1 的运行时，D-30 / D-33）
+### 9.6 诗句（`Fonts/` 第 5 版：Fins 式字幕，D-45）
 
-- **摆诗归 `LanbaiPoemDriver`**（`Fonts/Runtime/`，4.1，D-33 #5）：烘焙菜单会在 `Fonts/Runtime/` 里给 `LanbaiPoemDriver`、`LanbaiLangButton` 建 U# 程序资产（U# 1.x 没有 `.asset` 就不编译；菜单打印“created the U# program asset”就是建了）。菜单 `蓝白/Fonts/Build Poem Objects (v4.1 runtime)` 读 `strings_all.json`，建 `Lanbai_Poems`（每首诗 × 每个玩家键一套 TMP，全关）、`Lanbai_Board`（发车提示 + 中 / 日 / EN 三个开关）、`Lanbai_PoemDriver`，字段全填好。前提：字体资产、诗句材质已经建好（`Fonts/README_Fonts.md` §3.2）。然后把 `busRoot` 拖成车的根（场景里有名为 `Bus` 的物体时自动接），公告板挪到站牌上，Director 1 Generate、2 Wire。
-- 它管：语言（客户端代码 → 键，`zh-HK` 先判；`OnLanguageChanged`；公告板开关只对本人）、注视规则（§7.4-6，庄子和天问固定）、出现 / 停留 / 退场（2.5 s 对焦、0.2° 漂移）、Urlicht 的行跟乐句、天问的 20 个单字物体、6d 的亮衬、公告板的倒计时和中 / 日 / EN 三个开关（`LB_Journey` 发车前每帧调 `LanbaiBoard(离发车的秒数)`，发车后调一次 `LanbaiBoardHide()`：倒计时和开关一起关，发车以后世界里没有 UI 字）。侧窗三首（李白两首、济慈）的注视阈值是 75°，其余 50°；挪的时候只挪在挡风右片或侧窗里（D-33 #7c）。只从 t 算，迟到的人、拖时间轴都对（D-33 #6）。
-- **`LB_Journey` 里的三组诗句数组退役**（`_poemIdx` / `_poemStage` 那一套和 `PickLanguage()` 一起）：本地删掉它们，不要两个系统同时摆诗。本地还要在玩家坐下 / 换座位时调 `LanbaiPoemDriver.SetSeat(座位号)`（座位号 = `BusLayout.json` 的 seats 顺序，主座位 SeatR0 = 0）。别的座位的诗位置是离线解好的表（D-37，`Fonts/seat_positions.json`），烘焙菜单读进驱动；车更新座位网格以后，总工程师重跑 `build_fonts.py`，本地重点一次烘焙菜单。
-- **天问的汉字对所有玩家都在同一个位置**（第 9 幕的 16 颗星按中文排版放），不是中文的玩家下面多一块自己语言的小字。时刻全部没变。
-- 没在 Unity 里编译过：TMP 3D 上用 MaterialPropertyBlock 写 `_FaceColor` / `_OutlineSoftness` / `_FaceDilate`、U# 里 `TextMeshPro.maxVisibleLines`，第一次导入请把 Console 推回来。
+- **诗是字幕，归 `LanbaiPoemDriver`**（`Fonts/Runtime/`，第 5 版，接口和 4.1 一样，Director 不用改）。菜单 `蓝白/Fonts/Build Subtitles (v5)` 先建 U# 程序资产（`LanbaiPoemDriver`、`LanbaiLangButton`），再读 `strings_all.json` 第 5 版，先删掉旧的 `Lanbai_Poems`、`Lanbai_Board`（含旧的中 / 日 / EN 三个按钮）、`Lanbai_PoemDriver`，然后建：世界字 `Lanbai_Poems`（天问天上的 20 个汉字、庄子字列简繁两套）、字幕架 `Lanbai_Subtitles`、桌面黑边 `Lanbai_Letterbox`、公告板设置卡 `Lanbai_Board/Card`、`Lanbai_PoemDriver`（字段全填好，`busRoot` 找名为 `Bus` 的物体，`exposure` 找场景里的 `LanbaiExposure`）。前提和顺序见 `Fonts/README_Fonts.md` §00.4：先重建字体资产（字表变了）、跑诗句材质。然后 Director 1 Generate、2 Wire。
+- 它管：语言（客户端代码 → 键，`zh-HK` / `zh-TW` / `zh-Hant` 先判；`OnLanguageChanged`；设置卡上手动选只对本人，选过以后不再跟客户端变）、显示方式（跟随视线 / 留在原处 / 关）、每首诗的分页和淡入淡出（只从 t 算，迟到的人、拖时间轴都对，D-33 #6）、VR 懒跟随和深度（在 `PostLateUpdate` 里放）、桌面贴屏幕相机、桌面黑边（三段，VR 没有）、天问天上的字（逐字对焦，F13 暗下，和字幕开关无关）、庄子字列（`zh` / `en` / `de` 看简体，`zht` / `ja` 看繁体）。
+- **`LB_Journey` 要删的**（I.6 第 3 条）：旧的诗句数组、`ApplyPoem`、`GazeAz`、`PlacePoem`、`PickLanguage`（`StartsWith("zh")` 会把繁体分进简体），不要两个系统同时摆诗。`LanbaiBoard(0f)` 不用改：驱动把 ≤ 0 当作“没有倒计时”，第一行不印。发车后调一次 `LanbaiBoardHide()`（设置卡、7 个 Interact 一起收起）。座位：坐下 / 换座位时调 `SetSeat(座位号)`（主座位 0，选深度表的那一行）；离座时调 `SetSeat(-1)` 可选。
+- `LB_FullAssemblyBinding`：删掉烘逐行文本（`cueText` / `oHiddenText`）的那一段（v5 每行一个物体、换页给 `.text` 赋值，D-44 #7 的做法已经收进来）；座位号映射留着；测试工具发的 `_LangZh` 照旧可用。
+- **同步**：D-44 #7 时“`Fonts/Runtime/LanbaiPoemDriver.cs`、`Fonts/Editor/LanbaiPoemBake.cs` 不同步”的排除，第 5 版合进 main 以后可以去掉：仓库版不再用 `maxVisibleLines`。
+- 字幕放一个专用的用户层（22–31 里挑一个 VRChat 没占的）：参考相机的 culling mask 包含它，十三面镜的反射相机和反射探针排除它；shader 自己也会在镜子、手持相机里丢弃。挑好的层号写在这里：（待阿白填）。
+- 第 9 幕表里“字由诗句系统淡掉”仍然成立：天上的汉字还是这个驱动淡掉；**译文字幕在 F13 前（1018.11）消失**，1018.21 那一帧没有任何字幕。
+- 没在 Unity 里编译过，也没在头显里看过：`VRCCameraSettings.ScreenCamera` 在 SDK 3.10.5 的 U# 里能不能用（不能用时驱动退回头部追踪数据、竖直视场按 60°）、`PostLateUpdate` 里 `MaterialPropertyBlock` 写 TMP 3D、三个新 shader 的 SPS-I。第一次导入请把 Console 推回来。
 
-### 9.8 D-31 给本地的几件（照 Fins 的经验，`Art/总导演裁决.md` D-31）
+### 9.8 Fins 给本地的几件（D-31，字幕部分按 D-45 改写）
 
-1. **语言**（D-30 + D-31 #1）：`VRCPlayerApi.GetCurrentLanguage()` 返回 RFC 5646 代码（`zh-CN`、`zh-HK`、`ja`、`de`、`en`……）。映射按 `Fonts/strings_all.json` 的 `player_of_client_language`：**先判 `zh-HK`（繁体 → `zht`）再判 `zh`**；空 / null → `en`。`OnLanguageChanged(string)` 进世界时触发一次、以后改语言再触发。本地的 `PickLanguage()` 现在 `StartsWith("zh")` 会把繁体分进简体，而且会把正在显示的诗重置（`_poemIdx` / `_poemStage` = −1）：只换 `layout` 的键，正在显示的那一句照它的时刻走完。公告板加「中 / 日 / EN」三选一（只对本人，默认按客户端；按“中”时 `zh-HK` 的人仍看繁体）。字串在 `strings_all.json` 的 `ui`。细节：`Fonts/README_Fonts.md` §0.1、§0.8。
+1. **语言与字幕的开关**（D-30、D-31 #1、D-45 F）：`VRCPlayerApi.GetCurrentLanguage()` 返回 RFC 5646 代码。映射按 `strings_all.json` 的 `player_of_client_language`：**先判 `zh-HK` / `zh-TW` / `zh-Hant`（→ `zht`）再判 `zh`**；空 / null → `en`；`de` → `de` 键。第 1 幕公告箱里钉一张“乘车须知”设置卡（A2 横幅）：左边“字幕语言：简体中文 / 繁體中文 / 日本語 / English”“字幕：跟随视线 / 留在原处 / 关”，右边是发车提示和“只对你自己有效”“开车以后就不能再改”。选中的那一项墨色印满、旁边按一枚铜图钉，没选中的 55% 墨。德语客户端按 English 时图钉落在 English 上，旁边多一个小字 *Deutsch*，字幕仍是 `de` 键。Interact 距离 2 m：从主座位隔着开着的车门点不点得到，阿白试一次；点不到就只能在站台上点。字串在 `strings_all.json` 的 `ui_v5`、`ui`。
 2. **送回座位按根位置算**（D-31 #3）：车厢包围盒检查用 `VRCPlayerApi.GetPosition()`（脚底的根），**不用头**；头探出玻璃 ≤ 0.6 m 不许触发 0.5 秒遮罩送回。包围盒从车的 `BusLayout.json` 读（PAZ：车宽 2.44 m，车身中线 x = −0.18，眼位 (0.55, 1.70, 2.05) 不变）。这个检查归谁（Director 2 Hz 还是本地的 `busMin/busMax`）还没定，见 `Director/README_Director.md` §5；不管谁做，规则照这一条。
-3. **偏航（第 2、11 幕）转的是世界（路的根），永远不转车和座位**（D-31 #4）：参照系一转，同车人头像的头发和 PhysBones 会被甩。本地 `LB_Journey` 里凡是“转车”的偏航，改成反向转路的根。
-4. **发车提示 + 人数上限**（D-31 #5）：发车前公告板用玩家自己的语言显示 `ui` 里的两行（`{0}` = 离发车的秒数）；实例人数上限 = 车的座位数（「车」数）。发车以后不再有 UI 字。
-5. **世界说明（上传时填，不进世界）**：双语“请预载 / Please preload”（D-31 #6）；再加一句最好的座位（D-37）——中：「最好的座位：右前排靠窗（车门后面那个）」，日：「いちばんの席：右側最前列の窓側（ドアのすぐ後ろ）」，英：“Best seat: front row on the right, by the window (just behind the door)”。第 4 幕、第 7b 幕两个热点，有条件的话在 RTX 3060 级的机器上实测一次（协议见账本 §三、§五）。
+3. **偏航（第 2、11 幕）转的是世界（路的根），永远不转车和座位**（D-31 #4）：参照系一转，同车人头像的头发和 PhysBones 会被甩，字幕的懒跟随也是在车的坐标里算的。本地 `LB_Journey` 里凡是“转车”的偏航，改成反向转路的根。
+4. **发车提示 + 人数上限**（D-31 #5）：发车提示在设置卡右栏；现在没有倒计时（`LanbaiBoard(0f)`），“车将在 X 秒后开出”这一行不印，以后有了倒计时传真正的秒数，这一行自动回来。实例人数上限 = 车的座位数（「车」数）。发车以后世界里没有 UI 字（设置卡收起）。
+5. **世界说明（上传时填，不进世界）**：双语“请预载 / Please preload”（D-31 #6）；最好的座位（D-37）——中：「最好的座位：右前排靠窗（车门后面那个）」，日：「いちばんの席：右側最前列の窓側（ドアのすぐ後ろ）」，英：“Best seat: front row on the right, by the window (just behind the door)”；再加一句字幕（D-45 F.5）——「字幕的语言和显示方式可以在站台的公告板上切换 / 字幕の言語と表示は駅の掲示板で切り替えられます / Subtitle language and mode can be set on the station notice board」。第 4 幕、第 7b 幕两个热点，有条件的话在 RTX 3060 级的机器上实测一次（协议见账本 §三、§五）。
 6. **遮挡剔除只给静止的站台（第 1、12 幕）烘**（D-31 #7）：会动的外景（跑步机）一律不烘。账本从来没假设过遮挡剔除（账本 §六 末尾）。
 
 ### 9.7 还没交的（这几格在 §8 里写着“等包”）

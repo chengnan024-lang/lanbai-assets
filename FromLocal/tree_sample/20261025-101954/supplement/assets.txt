@@ -1,0 +1,40 @@
+Asset audit; draw slots are structural submesh/material counts, not a GPU draw measurement. LOD distances use group.size / (2*tan(vFOV/2)*screenHeight) * QualitySettings.lodBias; camera vFOV=55 degrees.
+lodBias=2 msaa=4
+Tree_A1 scale=(1.00, 1.00, 1.00) groupSize=14.33572 reference=(0.00, 5.71, 0.00)
+  Tree_A1_LOD0 localBounds=Center: (-1.73, 5.59, -1.32), Extents: (5.15, 5.60, 5.57) scale=(1.00, 1.00, 1.00) materials=M_Tree_Bark:Lanbai/TreeBark,M_Tree_Leaf:Lanbai/TreeLeaf
+LOD0 triangles=8142 drawSlots=2 height=0.25 approxTransitionMeters=110.1546
+  Tree_A1_LOD1 localBounds=Center: (-1.51, 5.68, -1.14), Extents: (5.57, 5.69, 5.81) scale=(1.00, 1.00, 1.00) materials=M_Tree_Bark:Lanbai/TreeBark,M_Tree_Leaf:Lanbai/TreeLeaf
+LOD1 triangles=1326 drawSlots=2 height=0.08 approxTransitionMeters=344.2332
+  Tree_A1_LOD2 localBounds=Center: (0.00, 5.71, 0.00), Extents: (7.17, 7.17, 7.17) scale=(1.00, 1.00, 1.00) materials=M_Tree_Impostor_Tree_A1:Lanbai/TreeLeaf
+LOD2 triangles=4 drawSlots=1 height=0.012 approxTransitionMeters=2294.888
+Tree_A2 scale=(1.00, 1.00, 1.00) groupSize=13.50664 reference=(0.00, 6.35, 0.03)
+  Tree_A2_LOD0 localBounds=Center: (0.56, 6.22, 0.15), Extents: (4.91, 6.22, 6.32) scale=(1.00, 1.00, 1.00) materials=M_Tree_Bark:Lanbai/TreeBark,M_Tree_Leaf:Lanbai/TreeLeaf
+LOD0 triangles=10486 drawSlots=2 height=0.25 approxTransitionMeters=103.784
+  Tree_A2_LOD1 localBounds=Center: (0.92, 6.47, 0.49), Extents: (5.18, 6.48, 6.29) scale=(1.00, 1.00, 1.00) materials=M_Tree_Bark:Lanbai/TreeBark,M_Tree_Leaf:Lanbai/TreeLeaf
+LOD1 triangles=1540 drawSlots=2 height=0.08 approxTransitionMeters=324.3251
+  Tree_A2_LOD2 localBounds=Center: (0.00, 6.35, 0.00), Extents: (6.73, 6.73, 6.73) scale=(1.00, 1.00, 1.00) materials=M_Tree_Impostor_Tree_A2:Lanbai/TreeLeaf
+LOD2 triangles=4 drawSlots=1 height=0.012 approxTransitionMeters=2162.167
+Tree_A3 scale=(1.00, 1.00, 1.00) groupSize=18.38003 reference=(0.00, 6.88, 0.00)
+  Tree_A3_LOD0 localBounds=Center: (-0.80, 6.74, 1.73), Extents: (5.98, 6.76, 7.10) scale=(1.00, 1.00, 1.00) materials=M_Tree_Bark:Lanbai/TreeBark,M_Tree_Leaf:Lanbai/TreeLeaf
+LOD0 triangles=11996 drawSlots=2 height=0.25 approxTransitionMeters=141.2309
+  Tree_A3_LOD1 localBounds=Center: (-0.57, 7.39, 1.27), Extents: (5.86, 7.40, 7.47) scale=(1.00, 1.00, 1.00) materials=M_Tree_Bark:Lanbai/TreeBark,M_Tree_Leaf:Lanbai/TreeLeaf
+LOD1 triangles=1750 drawSlots=2 height=0.08 approxTransitionMeters=441.3464
+  Tree_A3_LOD2 localBounds=Center: (0.00, 6.88, 0.00), Extents: (9.19, 9.19, 9.19) scale=(1.00, 1.00, 1.00) materials=M_Tree_Impostor_Tree_A3:Lanbai/TreeLeaf
+LOD2 triangles=4 drawSlots=1 height=0.012 approxTransitionMeters=2942.309
+Tree_B1 scale=(1.00, 1.00, 1.00) groupSize=11.03313 reference=(0.00, 5.50, 0.00)
+  Tree_B1_LOD0 localBounds=Center: (0.39, 5.40, -0.14), Extents: (4.20, 5.41, 5.01) scale=(1.00, 1.00, 1.00) materials=M_Tree_Bark:Lanbai/TreeBark,M_Tree_Leaf:Lanbai/TreeLeaf
+LOD0 triangles=5816 drawSlots=2 height=0.25 approxTransitionMeters=84.77776
+  Tree_B1_LOD1 localBounds=Center: (0.15, 5.40, -0.15), Extents: (4.73, 5.42, 5.31) scale=(1.00, 1.00, 1.00) materials=M_Tree_Bark:Lanbai/TreeBark,M_Tree_Leaf:Lanbai/TreeLeaf
+LOD1 triangles=1666 drawSlots=2 height=0.08 approxTransitionMeters=264.9305
+  Tree_B1_LOD2 localBounds=Center: (0.00, 5.51, 0.00), Extents: (5.51, 5.51, 5.51) scale=(1.00, 1.00, 1.00) materials=M_Tree_Impostor_Tree_B1:Lanbai/TreeLeaf
+LOD2 triangles=4 drawSlots=1 height=0.012 approxTransitionMeters=1766.203
+Assets/Lanbai/Lamps/Tree/Textures/T_Tree_Bark_Albedo.png mip=True preserveCoverage=False alphaSource=FromInput alphaRef=0.5 sRGB=True max=2048
+Assets/Lanbai/Lamps/Tree/Textures/T_Tree_Bark_Mask.png mip=True preserveCoverage=False alphaSource=FromInput alphaRef=0.5 sRGB=False max=2048
+Assets/Lanbai/Lamps/Tree/Textures/T_Tree_Bark_Normal.png mip=True preserveCoverage=False alphaSource=FromInput alphaRef=0.5 sRGB=False max=2048
+Assets/Lanbai/Lamps/Tree/Textures/T_Tree_Impostor_Tree_A1.png mip=True preserveCoverage=True alphaSource=FromInput alphaRef=0.5 sRGB=True max=2048
+Assets/Lanbai/Lamps/Tree/Textures/T_Tree_Impostor_Tree_A2.png mip=True preserveCoverage=True alphaSource=FromInput alphaRef=0.5 sRGB=True max=2048
+Assets/Lanbai/Lamps/Tree/Textures/T_Tree_Impostor_Tree_A3.png mip=True preserveCoverage=True alphaSource=FromInput alphaRef=0.5 sRGB=True max=2048
+Assets/Lanbai/Lamps/Tree/Textures/T_Tree_Impostor_Tree_B1.png mip=True preserveCoverage=True alphaSource=FromInput alphaRef=0.5 sRGB=True max=2048
+Assets/Lanbai/Lamps/Tree/Textures/T_Tree_LeafCluster_Albedo.png mip=True preserveCoverage=True alphaSource=FromInput alphaRef=0.5 sRGB=True max=2048
+Assets/Lanbai/Lamps/Tree/Textures/T_Tree_LeafCluster_Mask.png mip=True preserveCoverage=False alphaSource=FromInput alphaRef=0.5 sRGB=False max=2048
+Assets/Lanbai/Lamps/Tree/Textures/T_Tree_LeafCluster_Normal.png mip=True preserveCoverage=False alphaSource=FromInput alphaRef=0.5 sRGB=False max=2048

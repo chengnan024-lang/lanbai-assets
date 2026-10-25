@@ -4,9 +4,9 @@
    960,
    540
   ],
-  "APL": 34.32,
-  "EV_display": -5.759,
-  "luma_lt12_pct": 5.63,
+  "APL": 40.25,
+  "EV_display": -5.325,
+  "luma_lt12_pct": 5.61,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
@@ -16,30 +16,30 @@
   "purple_pct": 0.0,
   "purple_largest_region_pct": 0.0,
   "violet_strong_pct": 0.0,
-  "lavender_act6_pct": 0.044,
+  "lavender_act6_pct": 0.009,
   "brightest": {
    "bbox": [
-    14,
-    53,
-    806,
-    534
+    15,
+    50,
+    805,
+    486
    ],
    "centroid": [
-    139.2,
-    369.7
+    208.9,
+    291.1
    ],
-   "clusters": 9,
-   "clusters_ge5pct": 5,
-   "min_luma": 77.9,
+   "clusters": 12,
+   "clusters_ge5pct": 6,
+   "min_luma": 99.5,
    "centroid_az_el": [
-    41.37,
-    -4.31
+    47.89,
+    4.02
    ]
   },
   "top25_Lstar": {
-   "mean": 15.86,
-   "p50": 16.05,
-   "p90": 20.77
+   "mean": 18.46,
+   "p50": 18.86,
+   "p90": 22.49
   },
   "palette": {
    "act": "07a",
@@ -48,49 +48,49 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 51.9,
+     "nearest_dE2000_p01": 40.9,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 43.7,
+     "nearest_dE2000_p01": 32.0,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 38.7,
+     "nearest_dE2000_p01": 26.8,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#3876AB",
      "role": "浅水 縹",
-     "nearest_dE2000_p01": 17.9,
-     "within_dE5_pct": 0.01
+     "nearest_dE2000_p01": 6.0,
+     "within_dE5_pct": 0.07
     },
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
      "nearest_dE2000_p01": 3.2,
-     "within_dE5_pct": 6.51
+     "within_dE5_pct": 15.01
     },
     {
      "hex": "#697987",
      "role": "海雪",
-     "nearest_dE2000_p01": 20.9,
+     "nearest_dE2000_p01": 11.7,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 40.4,
+     "nearest_dE2000_p01": 28.5,
      "within_dE5_pct": 0.01
     }
    ],
-   "pixel_to_nearest_dE_median": 8.6,
-   "pixel_to_nearest_dE_p90": 10.3,
-   "pixels_within5_pct": 6.5
+   "pixel_to_nearest_dE_median": 7.0,
+   "pixel_to_nearest_dE_p90": 8.2,
+   "pixels_within5_pct": 15.1
   }
  },
  "cam": {
@@ -194,7 +194,7 @@
    540
   ]
  },
- "render_seconds": 23.3,
+ "render_seconds": 27.1,
  "lens": "none",
  "bloom_tint": "single",
  "note": "F3e2 532.36: the ridge wall rising past the right window, edged by the hull light"

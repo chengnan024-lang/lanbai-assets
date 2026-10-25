@@ -1,0 +1,780 @@
+{
+ "Bus_Door0": {
+  "verts": 40,
+  "verts_expected": 40,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Bus_Door1": {
+  "verts": 40,
+  "verts_expected": 40,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Bus_Door2": {
+  "verts": 40,
+  "verts_expected": 40,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Bus_Door3": {
+  "verts": 40,
+  "verts_expected": 40,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Bus_Exterior_LOD0": {
+  "verts": 14216,
+  "verts_expected": 14216,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Bus_Exterior_LOD1": {
+  "verts": 5509,
+  "verts_expected": 5509,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Cabin_Curtains": {
+  "verts": 13286,
+  "verts_expected": 13286,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVPanel",
+   "UVPanel2"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Cabin_DestBlind": {
+  "verts": 8,
+  "verts_expected": 8,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Cabin_Radio": {
+  "verts": 224,
+  "verts_expected": 224,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Cabin_Static": {
+  "verts": 167836,
+  "verts_expected": 167836,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Cabin_Tubes": {
+  "verts": 960,
+  "verts_expected": 960,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_Brow0": {
+  "verts": 15,
+  "verts_expected": 15,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_Brow2": {
+  "verts": 15,
+  "verts_expected": 15,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_DestWindow": {
+  "verts": 30,
+  "verts_expected": 30,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_Door0": {
+  "verts": 8,
+  "verts_expected": 8,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_Door1": {
+  "verts": 8,
+  "verts_expected": 8,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_Door2": {
+  "verts": 8,
+  "verts_expected": 8,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_Door3": {
+  "verts": 8,
+  "verts_expected": 8,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_RearWindow": {
+  "verts": 45,
+  "verts_expected": 45,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_Skylight": {
+  "verts": 4,
+  "verts_expected": 4,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_SlopeL0": {
+  "verts": 20,
+  "verts_expected": 20,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_SlopeL1": {
+  "verts": 25,
+  "verts_expected": 25,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_SlopeL2": {
+  "verts": 25,
+  "verts_expected": 25,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_SlopeL3": {
+  "verts": 25,
+  "verts_expected": 25,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_SlopeL4": {
+  "verts": 25,
+  "verts_expected": 25,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_SlopeL5": {
+  "verts": 20,
+  "verts_expected": 20,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_SlopeR1": {
+  "verts": 30,
+  "verts_expected": 30,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_SlopeR2": {
+  "verts": 25,
+  "verts_expected": 25,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_SlopeR3": {
+  "verts": 25,
+  "verts_expected": 25,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_SlopeR4": {
+  "verts": 25,
+  "verts_expected": 25,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_SlopeR5": {
+  "verts": 25,
+  "verts_expected": 25,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_WindscreenL": {
+  "verts": 126,
+  "verts_expected": 126,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_WindscreenR": {
+  "verts": 126,
+  "verts_expected": 126,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_WinL0": {
+  "verts": 42,
+  "verts_expected": 42,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_WinL1": {
+  "verts": 49,
+  "verts_expected": 49,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_WinL2": {
+  "verts": 49,
+  "verts_expected": 49,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_WinL3": {
+  "verts": 49,
+  "verts_expected": 49,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_WinL4": {
+  "verts": 49,
+  "verts_expected": 49,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_WinL5": {
+  "verts": 42,
+  "verts_expected": 42,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_WinR1": {
+  "verts": 56,
+  "verts_expected": 56,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_WinR2": {
+  "verts": 49,
+  "verts_expected": 49,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_WinR3": {
+  "verts": 49,
+  "verts_expected": 49,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_WinR4": {
+  "verts": 49,
+  "verts_expected": 49,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Glass_WinR5": {
+  "verts": 49,
+  "verts_expected": 49,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Pole_R0": {
+  "verts": 2040,
+  "verts_expected": 2040,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_DriverSeat": {
+  "verts": 3904,
+  "verts_expected": 3904,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_RearBench": {
+  "verts": 10448,
+  "verts_expected": 10448,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatL0": {
+  "verts": 6824,
+  "verts_expected": 6824,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatL1": {
+  "verts": 6824,
+  "verts_expected": 6824,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatL2": {
+  "verts": 6824,
+  "verts_expected": 6824,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatL3": {
+  "verts": 6824,
+  "verts_expected": 6824,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatL4": {
+  "verts": 4908,
+  "verts_expected": 4908,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatL5": {
+  "verts": 4908,
+  "verts_expected": 4908,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatR0": {
+  "verts": 4556,
+  "verts_expected": 4556,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatR1": {
+  "verts": 5868,
+  "verts_expected": 5868,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatR2": {
+  "verts": 5868,
+  "verts_expected": 5868,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatR3": {
+  "verts": 5868,
+  "verts_expected": 5868,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatR4": {
+  "verts": 5868,
+  "verts_expected": 5868,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatR5": {
+  "verts": 5868,
+  "verts_expected": 5868,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatR6": {
+  "verts": 5868,
+  "verts_expected": 5868,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Wheel_FL": {
+  "verts": 648,
+  "verts_expected": 648,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Wheel_FR": {
+  "verts": 648,
+  "verts_expected": 648,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Wheel_RL": {
+  "verts": 648,
+  "verts_expected": 648,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Wheel_RR": {
+  "verts": 648,
+  "verts_expected": 648,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Window_R1": {
+  "verts": 14556,
+  "verts_expected": 14556,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Wiper-0.14": {
+  "verts": 32,
+  "verts_expected": 32,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Wiper-1.18": {
+  "verts": 32,
+  "verts_expected": 32,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "WiperPivot_L": "ok (empty)",
+ "WiperPivot_R": "ok (empty)"
+}
