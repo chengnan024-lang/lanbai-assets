@@ -340,6 +340,9 @@ def draw_cards(V, img, depth, t, h, pix):
 
 
 # ---- the cabin (bible_v2 angular shell); the roof and upper walls go with the erosion (0.25 -> 0.65, 922.36 -> 962.26)
+DOOR_GROUP_AZ = (21.0, 50.0)                # the stand-in shell's door post + frame, inside the poem's +21.8 .. +48.2
+
+
 def window_mask(V, t, door='bible_v2'):
     az, el = C.azel_from_dir(V)
     m = np.zeros(len(V), bool)
@@ -352,6 +355,12 @@ def window_mask(V, t, door='bible_v2'):
     e = float(np.clip((t - B['exit']) / (962.26 - B['exit']), 0, 1))
     open_el = 60.0 - 48.0 * e                    # the roof (el > 60) is gone early, the upper walls down to +12 by 962
     m |= el > open_el
+    # D-33 #7a (the bus driver's door-group erosion bias, pkg/bus, not built yet; modelled here so the poem frames are
+    # honest): the door group (door frame / post / grab pole between the windscreen and the door glass) erodes from the
+    # top during the dissolve and is gone before 965.4, when the Zhuangzi block comes
+    gd = float(np.clip((t - 956.36) / (965.4 - 956.36), 0, 1))
+    if gd > 0:
+        m |= (az >= DOOR_GROUP_AZ[0]) & (az <= DOOR_GROUP_AZ[1]) & (el > 30.0 - 60.0 * gd)
     return m
 
 
