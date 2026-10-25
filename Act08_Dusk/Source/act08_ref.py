@@ -211,6 +211,7 @@ def specks(V, img, t, h, pix):
 # ---- cards
 _CARD = {}
 STANDIN = set()
+AMB_OVERRIDE = {}                          # act08_shadow.py: group -> trial NEAR_AMB
 COVER = {}                                 # per group: the cards' combined alpha per pixel (the last render)
 
 
@@ -228,7 +229,7 @@ def card_tex(name):
     return _CARD[real]
 
 
-def colours(group, t):
+def colours(group, t, amb=None):
     """the cards' light (D-25: colours per act). Solved values from cards_v2.json colours.<set> when they exist, else the
     design stand-in (sun = the preset's disc fill, sky / ground = the preset's zenith / nadir x 4, like the dawn solve)"""
     key = 'duskD' if group == 'lower' else 'duskU'
@@ -239,6 +240,8 @@ def colours(group, t):
         sc = np.array([6.681, 1.892, 0.9061]) * 0.55
         sk = np.array([0.1139, 0.178, 0.469]) * 4.0
         gd = np.array([0.0437, 0.0685, 0.1878]) * 4.0
+    if amb is not None:                       # (D-42 #1) the near layer: the dusk sky / ground light only
+        sk, gd = sk * np.array(amb), gd * np.array(amb)
     bh = LAYOUT['blue_colours']
     wb = float(ss((t - B['F12']) / 6.0))
     sc = sc * (1 - wb)
@@ -316,7 +319,7 @@ def draw_cards(V, img, depth, t, h, pix):
         k = Kb[:, 0] * w0 + Kb[:, 1] * w1 + Kb[:, 2] * w2
         a = bil(A[..., None])[:, 0]
         Sb = bil(S)
-        sc, sk, gd = colours(c.get('group', 'upper'), t)
+        sc, sk, gd = colours(c.get('group', 'upper'), t, AMB_OVERRIDE.get(c.get('group')) if c.get('amb') and AMB_OVERRIDE else c.get('amb'))
         col = k[:, None] * sc + Sb[:, 0:1] * sk + Sb[:, 1:2] * gd
         if c.get('tint'):
             col = col * np.array(c['tint'])
@@ -330,6 +333,10 @@ def draw_cards(V, img, depth, t, h, pix):
         if g not in COVER or len(COVER[g]) != len(V):
             COVER[g] = np.zeros(len(V))
         COVER[g][idx] = 1 - (1 - COVER[g][idx]) * (1 - a)
+        lk = 'L:' + c.get('layer', 'far')
+        if lk not in COVER or len(COVER[lk]) != len(V):
+            COVER[lk] = np.zeros(len(V))
+        COVER[lk][idx] = 1 - (1 - COVER[lk][idx]) * (1 - a)
 
 
 # ---- the cabin (bible_v2 angular shell); the roof and upper walls go with the erosion (0.25 -> 0.65, 922.36 -> 962.26)

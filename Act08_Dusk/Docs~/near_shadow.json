@@ -1,0 +1,68 @@
+{
+ "target": "#363D59",
+ "t": 971.4,
+ "cam": "hero",
+ "width": 480,
+ "near_amb": {
+  "upper": [
+   0.3,
+   0.7,
+   1.0
+  ],
+  "lower": [
+   0.45,
+   0.8,
+   1.0
+  ]
+ },
+ "fog_cap_near": 0.0,
+ "amb_1": {
+  "upper": {
+   "hex": "#554659",
+   "dE": 11.947912199721594,
+   "hC": [
+    320.3,
+    13.6
+   ]
+  },
+  "lower": {
+   "hex": "#403C4F",
+   "dE": 7.21825612989199,
+   "hC": [
+    300.0,
+    12.2
+   ]
+  },
+  "edge_purple": 0.0014583333333333334,
+  "frame_purple": 0.0015,
+  "APL": 132.0
+ },
+ "chosen": {
+  "upper": {
+   "hex": "#403C5A",
+   "dE": 4.425777086278797,
+   "hC": [
+    298.5,
+    19.6
+   ]
+  },
+  "lower": {
+   "hex": "#2F364F",
+   "dE": 3.6407157265741756,
+   "hC": [
+    285.5,
+    17.1
+   ]
+  },
+  "edge_purple": 0.0010416666666666667,
+  "frame_purple": 0.001,
+  "APL": 131.4
+ },
+ "before_r2": {
+  "note": "fog cap 0.06, NEAR_AMB 1 (08afa9a)",
+  "upper": "#6E4B5A",
+  "lower": "#5A4051",
+  "frame_purple": 0.0017
+ },
+ "why": "the bloom (PPv2 engine, the sun line and the pink band) and the 6 % pink fog add a warm floor the sky light cannot scale away: an even x0.6 goes RED (#653C44); a blue-only push goes PURPLE (#5F3A63). Fog cap 0 on the near layer + a red-cut sky light lands on #363D59 (dE 4) with less D-21 purple than before"
+}

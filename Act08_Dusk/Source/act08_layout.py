@@ -147,18 +147,23 @@ OTHER = dict(gain=0.82, tint=[0.92, 0.95, 1.05])
 # r2 (director final review: "技术对、但不好看"): the FRONT, in three overlapping layers in the free spaces (outside the sun line
 # and the Zhuangzi block), bigger toward the eye and smaller toward the horizon; a mass up-right and a different one down-right
 # (weight balanced, not mirrored); a high thin layer catching the pink; near / upper cards keep their body and gold edge
-# (_FogCap 0.06 near / 0.12 mid / 0.2 high: at 0.5-0.6 the 1.5-km fog (31 %) already reads pink; Docs~/iterations/03_fog_cap.png),
+# (_FogCap 0 near (D-42 #1; was 0.06) / 0.12 mid / 0.2 high: at 0.5-0.6 the 1.5-km fog (31 %) already reads pink; Docs~/iterations/03_fog_cap.png),
 # only the far layer eats the fog. Opaque angular widths -> card widths (cards_v2 opaque_bbox_uv).
+# (D-42 #1) the near layer's backlit body reads deep indigo (bible dusk cloud shadow #363D59): its sky / ground light
+# (_SkyUpColor, _GroundColor; dusk part only, the blue hour lerps as before) x NEAR_AMB per group. Solved on the 971.4
+# front frame with bloom (act08_shadow.py; Docs~/near_shadow.json); the sun term (the gold rims) and the mid / far layers
+# untouched. The near layer's _FogCap goes 0.06 -> 0: 6 % of the bright pink fog on a body this dark was half the mauve
+NEAR_AMB = dict(upper=[0.3, 0.7, 1.0], lower=[0.45, 0.8, 1.0])
 FRONT = [  # id, card, az, D, el_at_href, opaque deg, group, show_from, fog_cap, layer
-    ('F_N1', 'CloudV2_Cumulus_duskU', -30.0, 1500.0, 4.5, 16.0, 'upper', '8ii', 0.06, 'near'),
-    ('F_N2', 'CloudV2_Bank_duskU', -9.0, 1900.0, 8.0, 14.0, 'upper', '8ii', 0.06, 'near'),
-    ('F_N3', 'CloudV2_Cumulus_duskD', -24.0, 1400.0, -5.5, 13.0, 'lower', '8ii', 0.06, 'near'),
+    ('F_N1', 'CloudV2_Cumulus_duskU', -30.0, 1500.0, 4.5, 16.0, 'upper', '8ii', 0.0, 'near'),
+    ('F_N2', 'CloudV2_Bank_duskU', -9.0, 1900.0, 8.0, 14.0, 'upper', '8ii', 0.0, 'near'),
+    ('F_N3', 'CloudV2_Cumulus_duskD', -24.0, 1400.0, -5.5, 13.0, 'lower', '8ii', 0.0, 'near'),
     ('F_M1', 'CloudV2_Cumulus_duskU', -42.0, 4000.0, 2.0, 9.0, 'upper', '8ii', 0.12, 'mid'),
     ('F_M2', 'CloudV2_Strato_duskU', 8.0, 4500.0, 4.0, 10.0, 'upper', '8ii', 0.12, 'mid'),
     ('F_M3', 'CloudV2_Puff_duskD', -12.0, 3500.0, -4.0, 6.0, 'lower', '8ii', 0.12, 'mid'),
     ('F_M4', 'CloudV2_Strato_duskD', 6.0, 4200.0, -4.5, 9.0, 'lower', '8ii', 0.12, 'mid'),
-    ('F_R1', 'CloudV2_Bank_duskU', 32.0, 2500.0, 10.5, 14.0, 'upper', '8ii', 0.06, 'near-right'),
-    ('F_R2', 'CloudV2_Congestus_duskD', 36.0, 2800.0, -11.0, 12.0, 'lower', '8ii', 0.06, 'near-right'),
+    ('F_R1', 'CloudV2_Bank_duskU', 32.0, 2500.0, 10.5, 14.0, 'upper', '8ii', 0.0, 'near-right'),
+    ('F_R2', 'CloudV2_Congestus_duskD', 36.0, 2800.0, -11.0, 12.0, 'lower', '8ii', 0.0, 'near-right'),
     ('F_H1', 'CloudV2_Strato_duskU', -18.0, 6000.0, 10.0, 30.0, 'upper', '8ii', 0.2, 'high'),
     ('F_H2', 'CloudV2_Wisp_duskU', 18.0, 7000.0, 12.5, 22.0, 'upper', '8ii', 0.2, 'high'),
 ]
@@ -210,6 +215,8 @@ def card_entries():
                  az=az, dist=D, keepout=keepout(az, el), fog_cap=cap, melt=FRONT_MELT, layer=layer, opaque_deg=deg)
         if grp == 'lower':
             e.update(tint=OTHER['tint'], pivot='top')
+        if layer.startswith('near'):
+            e['amb'] = NEAR_AMB[grp]
         out.append(e)
     for e in out:
         # the card's top (local y): 8-i cards show only while it is under the gap's lower edge (review r2: not cut by the

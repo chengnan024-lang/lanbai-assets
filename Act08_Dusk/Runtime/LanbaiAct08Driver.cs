@@ -44,7 +44,8 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
     public Renderer[] cards;                   // Lanbai/CloudCard renderers: upper, lower, wisps
     public int[] cardGroup;                    // 0 upper from 8-i, 1 upper from 8-ii, 2 lower (other sky, 8-ii), 3 wisp
     public float[] cardGain;
-    public float[] cardFogCap;                 // r2: near / upper cards keep their body (_FogCap 0.55-0.7), far ones 1
+    public float[] cardFogCap;                 // r2: near 0 (D-42), mid 0.12, high 0.2, far 1
+    public Vector4[] cardAmb;                  // D-42 #1: the near layer's dusk sky / ground light x amb (deep indigo body)
     public Vector4[] cardMelt;                 // r2: softer bases on the front cards (_Melt)
     public float[] cardTopY, cardDist;         // r2: 8-i cards show only while their top is under the gap's lower edge
     public float ceilingOuterR = 3100f;
@@ -395,8 +396,18 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
             _mpb.SetFloat(_idGain, cardGain[i] * dark);
             _mpb.SetFloat(_idAlpha, a);
             _mpb.SetVector(_idSunColor, lower ? lS : uS);
-            _mpb.SetVector(_idSkyUp, lower ? lK : uK);
-            _mpb.SetVector(_idGround, lower ? lG : uG);
+            if (cardAmb != null && i < cardAmb.Length)   // (1,1,1,1) everywhere but the near layer
+            {
+                // the dusk part only; the blue hour lerps to the same blue colours as every other card
+                Vector4 am = cardAmb[i];
+                _mpb.SetVector(_idSkyUp, Vector4.Lerp(Vector4.Scale(lower ? loSky : upSky, am), blueSky, wb));
+                _mpb.SetVector(_idGround, Vector4.Lerp(Vector4.Scale(lower ? loGround : upGround, am), blueGround, wb));
+            }
+            else
+            {
+                _mpb.SetVector(_idSkyUp, lower ? lK : uK);
+                _mpb.SetVector(_idGround, lower ? lG : uG);
+            }
             if (cardFogCap != null && i < cardFogCap.Length) _mpb.SetFloat(_idFogCap, cardFogCap[i]);
             if (cardMelt != null && i < cardMelt.Length) _mpb.SetVector(_idMelt, cardMelt[i]);
             r.SetPropertyBlock(_mpb);

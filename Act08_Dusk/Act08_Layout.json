@@ -1006,7 +1006,7 @@
    "az": -30.0,
    "dist": 1500.0,
    "keepout": null,
-   "fog_cap": 0.06,
+   "fog_cap": 0.0,
    "melt": [
     -0.04,
     0.18,
@@ -1015,6 +1015,11 @@
    ],
    "layer": "near",
    "opaque_deg": 16.0,
+   "amb": [
+    0.3,
+    0.7,
+    1.0
+   ],
    "top_y_local": 132.3,
    "deg_per_s_rise": 0.115
   },
@@ -1034,7 +1039,7 @@
    "az": -9.0,
    "dist": 1900.0,
    "keepout": null,
-   "fog_cap": 0.06,
+   "fog_cap": 0.0,
    "melt": [
     -0.04,
     0.18,
@@ -1043,6 +1048,11 @@
    ],
    "layer": "near",
    "opaque_deg": 14.0,
+   "amb": [
+    0.3,
+    0.7,
+    1.0
+   ],
    "top_y_local": 171.9,
    "deg_per_s_rise": 0.09
   },
@@ -1062,7 +1072,7 @@
    "az": -24.0,
    "dist": 1400.0,
    "keepout": null,
-   "fog_cap": 0.06,
+   "fog_cap": 0.0,
    "melt": [
     -0.04,
     0.18,
@@ -1077,6 +1087,11 @@
     1.05
    ],
    "pivot": "top",
+   "amb": [
+    0.45,
+    0.8,
+    1.0
+   ],
    "top_y_local": -353.1,
    "deg_per_s_rise": 0.123
   },
@@ -1220,7 +1235,7 @@
    "az": 32.0,
    "dist": 2500.0,
    "keepout": null,
-   "fog_cap": 0.06,
+   "fog_cap": 0.0,
    "melt": [
     -0.04,
     0.18,
@@ -1229,6 +1244,11 @@
    ],
    "layer": "near-right",
    "opaque_deg": 14.0,
+   "amb": [
+    0.3,
+    0.7,
+    1.0
+   ],
    "top_y_local": 407.1,
    "deg_per_s_rise": 0.069
   },
@@ -1248,7 +1268,7 @@
    "az": 36.0,
    "dist": 2800.0,
    "keepout": null,
-   "fog_cap": 0.06,
+   "fog_cap": 0.0,
    "melt": [
     -0.04,
     0.18,
@@ -1263,6 +1283,11 @@
     1.05
    ],
    "pivot": "top",
+   "amb": [
+    0.45,
+    0.8,
+    1.0
+   ],
    "top_y_local": -762.6,
    "deg_per_s_rise": 0.061
   },

@@ -161,7 +161,7 @@ public static class LanbaiAct08Builder
 
         // ---- the cards: upper (8-i / 8-ii), lower (the other sky, 8-ii), wisps
         var renderers = new List<Renderer>(); var groups = new List<int>(); var gains = new List<float>();
-        var caps = new List<float>(); var melts = new List<Vector4>(); var tops = new List<float>(); var dists = new List<float>();
+        var caps = new List<float>(); var ambs = new List<Vector4>(); var melts = new List<Vector4>(); var tops = new List<float>(); var dists = new List<float>();
         var wBase = new List<Vector3>(); var wTan = new List<Vector3>(); var wDrift = new List<float>();
         var cardsRoot = Child(rDusk, "Cards").transform;
         var cardInfo = D(CJ["cards"]);
@@ -184,6 +184,8 @@ public static class LanbaiAct08Builder
             renderers.Add(r); gains.Add(F(c["gain"]));
             groups.Add(lower ? 2 : ((string)c["show_from"] == "8i" ? 0 : 1));
             caps.Add(c.ContainsKey("fog_cap") ? F(c["fog_cap"]) : 1f);
+            if (c.ContainsKey("amb")) { var am = L(c["amb"]); ambs.Add(new Vector4(F(am[0]), F(am[1]), F(am[2]), 1f)); }
+            else ambs.Add(Vector4.one);
             melts.Add(c.ContainsKey("melt") ? V4(L(c["melt"])) : new Vector4(-0.02f, 0.10f, 0f, 0f));
             tops.Add(c.ContainsKey("top_y_local") ? F(c["top_y_local"]) : pos.y); dists.Add(F(c["dist"]));
         }
@@ -194,7 +196,7 @@ public static class LanbaiAct08Builder
             Vector3 pos = V3(L(w["position_local"]));
             var r = PlaceCard(wispRoot, (string)w["id"], (string)w["card"], pos, F(w["width_m"]));
             if (r == null) continue;
-            renderers.Add(r); gains.Add(F(w["gain"])); groups.Add(3); caps.Add(1f); melts.Add(new Vector4(-0.02f, 0.10f, 0f, 0f));
+            renderers.Add(r); gains.Add(F(w["gain"])); groups.Add(3); caps.Add(1f); ambs.Add(Vector4.one); melts.Add(new Vector4(-0.02f, 0.10f, 0f, 0f));
             tops.Add(pos.y); dists.Add(500f);
             wBase.Add(pos); wTan.Add(V3(L(w["tangent"]))); wDrift.Add(F(w["drift"]));
         }
@@ -211,7 +213,7 @@ public static class LanbaiAct08Builder
         d.rDusk = rDusk; d.ceilingInner = inner; d.ceilingEdge = edge; d.specks = specksR;
         d.matCeiling = mCeil; d.matCeilingFade = mFade;
         d.cards = renderers.ToArray(); d.cardGroup = groups.ToArray(); d.cardGain = gains.ToArray();
-        d.cardFogCap = caps.ToArray(); d.cardMelt = melts.ToArray(); d.cardTopY = tops.ToArray(); d.cardDist = dists.ToArray();
+        d.cardFogCap = caps.ToArray(); d.cardAmb = ambs.ToArray(); d.cardMelt = melts.ToArray(); d.cardTopY = tops.ToArray(); d.cardDist = dists.ToArray();
         d.ceilingOuterR = F(ceil["radius"]) + 0.5f * F(ceil["band"]);
         d.wispBase = wBase.ToArray(); d.wispTangent = wTan.ToArray(); d.wispDrift = wDrift.ToArray();
         foreach (var sp in Object.FindObjectsOfType<LanbaiSkyPreset>())
