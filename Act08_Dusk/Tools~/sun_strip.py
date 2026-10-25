@@ -48,19 +48,36 @@ def patch(t, W=600, H=120):
     finally:
         os.chdir(cwd)
     pa, pb = MP.P['dusk_8i'], MP.P['dusk_8ii']
-    S.renderer().tex.clear()
-    S.set_cube('_CubeA', S.load_hdr(pa['hdri_file']))
-    ga, gb = dict(pa['globals']), dict(pb['globals'])
-    if pa.get('fog_from_sky'):
-        ga.update(MP.fog_group(pa))
-    if pb.get('fog_from_sky'):
-        gb.update(MP.fog_group(pb))
-    ga.setdefault('_Udon_SkyBlend', [0.0, 0.0, 0.0, 1.0])
-    globs = SE._lerp_dict(ga, gb, w)
-    e = math.radians(el)
-    globs['_Udon_SunDir'] = [0.0, math.sin(e), math.cos(e), 1.0]
-    globs['_Udon_SunDisc'] = [1.0, 0.265, z, 1.0]
-    mat = SE._lerp_dict(pa['material'], pb['material'], w)
+    if os.path.exists(os.path.join(REPO, 'Sky', 'Tools~', 'render', 'act8_sky_frames.py')):
+        # pkg/sky d69940e on: the sky session's own state(t) (the real ApplyBlend + this driver's line / sun direction)
+        sys.path.insert(0, os.path.join(REPO, 'Sky', 'Tools~', 'render'))
+        os.chdir(os.path.join(REPO, 'Sky', 'Tools~', 'render'))
+        try:
+            import test_sequence as TS
+            import act8_sky_frames as AF
+            P, _ = TS.load()
+        finally:
+            os.chdir(cwd)
+        S.renderer().tex.clear()
+        S.set_cube('_CubeA', S.load_hdr(pa['hdri_file']))
+        S.set_tex('_GlowTex', S.load_glow(4))
+        globs, mat = dict(AF.state(t, P)[0]), {}
+    else:
+        globs, mat = None, None
+    if globs is None:
+        S.renderer().tex.clear()
+        S.set_cube('_CubeA', S.load_hdr(pa['hdri_file']))
+        ga, gb = dict(pa['globals']), dict(pb['globals'])
+        if pa.get('fog_from_sky'):
+            ga.update(MP.fog_group(pa))
+        if pb.get('fog_from_sky'):
+            gb.update(MP.fog_group(pb))
+        ga.setdefault('_Udon_SkyBlend', [0.0, 0.0, 0.0, 1.0])
+        globs = SE._lerp_dict(ga, gb, w)
+        e = math.radians(el)
+        globs['_Udon_SunDir'] = [0.0, math.sin(e), math.cos(e), 1.0]
+        globs['_Udon_SunDisc'] = [1.0, 0.265, z, 1.0]
+        mat = SE._lerp_dict(pa['material'], pb['material'], w)
     az = (np.arange(W) + 0.5) / W * 30.0 - 15.0
     elv = 3.0 - (np.arange(H) + 0.5) / H * 6.0
     A, E = np.meshgrid(np.radians(az), np.radians(elv))
