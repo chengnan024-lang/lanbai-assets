@@ -64,7 +64,48 @@ def weights(t):
     return float(ss((t - B['F10e']) / 8.0)), float(ss((t - B['F12']) / 6.0))
 
 
+SKY_AT = os.environ.get('LB_SKY_AT', '/tmp/lb/sky2')   # time keys (Tools~/sky_equirect.py --at), the sky session's state(t)
+_AT = None
+
+
+def _at_keys():
+    global _AT
+    if _AT is None:
+        import glob
+        import re
+        _AT = {}
+        for f in glob.glob(os.path.join(SKY_AT, 'sky_at*_*.hdr')):
+            m = re.match(r'sky_at([0-9.]+)_(\d+)\.hdr', os.path.basename(f))
+            if m:
+                t, w = float(m.group(1)), int(m.group(2))
+                if w > _AT.get(t, (0, ''))[0]:
+                    _AT[t] = (w, f)
+    return _AT
+
+
+def _at_img(t):
+    w, f = _at_keys()[t]
+    k = ('at', t)
+    if k not in SKYS:
+        SKYS[k] = C.read_hdr(f).astype(np.float64)
+    return SKYS[k]
+
+
 def sky(V, t):
+    """(pkg/sky d69940e on) the time keys when there are any: the nearest key for stills (rendered at the stills' own t),
+    a lerp of the two neighbouring keys (0.5 s apart in the dissolve / F12) for sequences"""
+    ks = sorted(_at_keys())
+    if ks:
+        if KEYED_NEAREST or t <= ks[0] or t >= ks[-1]:
+            return C.sample_equirect(_at_img(min(ks, key=lambda k: abs(k - t))), V, 0.0)
+        i = int(np.searchsorted(ks, t))
+        t0, t1 = ks[i - 1], ks[i]
+        x = (t - t0) / (t1 - t0)
+        return C.sample_equirect(_at_img(t0), V, 0.0) * (1 - x) + C.sample_equirect(_at_img(t1), V, 0.0) * x
+    return sky_presets(V, t)
+
+
+def sky_presets(V, t):
     w2, wb = weights(t)
     a = C.sample_equirect(sky_img('dusk_8i'), V, 0.0)
     if 0 < w2 < 1:

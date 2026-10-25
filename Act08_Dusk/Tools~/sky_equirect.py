@@ -95,6 +95,35 @@ def render(name, W=1024, over=None, tag=''):
     return path, img, p
 
 
+def render_at(t, W=1024):
+    """the sky at time t exactly as the act 8 driver writes it: the sky session's own act8_sky_frames.state(t) (the real
+    LanbaiSkyPreset.ApplyBlend, TS.blend, + this driver's sun line / sun direction; pkg/sky d69940e). -> sky_at<t>_<W>.hdr"""
+    cwd = os.getcwd()
+    os.chdir(os.path.join(REPO, 'Sky', 'Tools~', 'render'))
+    try:
+        import make_presets as MP
+        import sky_cpu as S
+        import test_sequence as TS
+        import act8_sky_frames as AF
+    finally:
+        os.chdir(cwd)
+    P, _ = TS.load()
+    S.renderer().tex.clear()
+    S.set_cube('_CubeA', S.load_hdr(MP.P['dusk_8i']['hdri_file']))
+    S.set_tex('_GlowTex', S.load_glow(4))
+    g, _ = AF.state(t, P)
+    H = W // 2
+    d = C.equirect_dirs(H, W, 0.0).reshape(-1, 3).astype(np.float32)
+    out = np.zeros((d.shape[0], 3), np.float32)
+    n = 1 << 18
+    for i in range(0, d.shape[0], n):
+        out[i:i + n] = np.asarray(S.render(d[i:i + n], {}, g)).reshape(-1, 3)
+    path = os.path.join(WORK, f'sky_at{t:.2f}_{W}.hdr')
+    os.makedirs(WORK, exist_ok=True)
+    C.write_hdr(path, out.reshape(H, W, 3))
+    return path
+
+
 if __name__ == '__main__':
     import argparse
     ap = argparse.ArgumentParser()
@@ -102,7 +131,12 @@ if __name__ == '__main__':
     ap.add_argument('W', nargs='?', type=int, default=1024)
     ap.add_argument('--line', type=float, default=None)
     ap.add_argument('--blend', nargs=2, default=None, metavar=('TO', 'W'))
+    ap.add_argument('--at', type=float, nargs='+', default=None)
     a = ap.parse_args()
+    if a.at:
+        for t in a.at:
+            print(render_at(t, a.W), flush=True)
+        sys.exit(0)
     if a.blend:
         over = {'_Udon_SunDisc': [1.0 - float(a.blend[1]), 0.265, a.line * (1.0 - float(a.blend[1])), 1.0]} if a.line else None
         print(render_blend(a.name, a.blend[0], float(a.blend[1]), a.W, over)[0])
