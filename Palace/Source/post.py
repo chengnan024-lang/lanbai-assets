@@ -31,6 +31,7 @@ FOG_UP = srgb_to_lin('#182930')       # 屏幕 #06202C（填值由 grade.solve_f
 FOG_MID = srgb_to_lin('#0D1920')      # 屏幕 #04121E（第 4 轮：评审量到背景中位 #040F1B，抬 2–3 码）
 FOG_DOWN = srgb_to_lin('#020302')     # 屏幕 #02070F（深渊）
 FLAME_ATTEN = 0.004
+DOOR_ATTEN = 0.0025                                   # 第 10 轮（终审 #2）：门光自己的衰减——F5p 335 m 外门芯 ≥ 150，是两列灯汇聚的那一点
 FLAME_GOLD = np.array([1.396, 0.536, 0.142])          # 金 #E0A860 在 S7b 下的线性值（海 README §2.6 的做法：不靠色调映射的肩部）
 FLAME_FILL = FLAME_GOLD * 2.2                         # 灯焰身：金
 FLAME_CORE = np.array([1.0, 0.82, 0.55]) * 2.6        # 灯焰芯：白热（m⁴ 加权），屏幕上核心到 255、外缘是金 #FFC46A 一带
@@ -39,7 +40,7 @@ HALO_R = 1.5
 HALO_PULL = 1.0                                       # 终审 10-25 #3：晕的深度往眼睛挪的最大米数（≤ d/2，位置不挪）
 BELOW_PULL = 2.5                                      # 眼睛低于下唇时火的深度往前挪的米数
 FLAME_PULL = 1.5                                      # 从下面陡着看时火往眼睛挪的米数
-GROUP_GAIN = {'amb': 1.0, 'warm': 1.0, 'indigo': 1.0, 'door': 1.0, 'accent': 1.0}
+GROUP_GAIN = {'amb': 1.0, 'warm': 1.0, 'indigo': 1.0, 'door': 1.0, 'accent': 1.0, 'bus': 1.0}
 
 
 def read_exr(path):
@@ -132,12 +133,11 @@ def composite(exr, shot, gains=None, halo=True, flame_scale=1.0):
     g = dict(GROUP_GAIN, **(gains or {}))
     C = exr['Combined'][..., :3].astype(np.float64)
     H, W = C.shape[:2]
-    groups = {k: exr['Combined_' + k][..., :3].astype(np.float64) for k in ('amb', 'warm', 'indigo', 'door', 'accent', 'doorglow')
+    groups = {k: exr['Combined_' + k][..., :3].astype(np.float64) for k in ('amb', 'warm', 'indigo', 'door', 'accent', 'bus', 'doorglow')
               if 'Combined_' + k in exr}
     # 没进任何灯组的自发光（防漏）：C 比各组之和多出来的部分算 doorglow
     if 'doorglow' in groups:
-        busg = exr['Combined_bus'][..., :3] if 'Combined_bus' in exr else 0.0
-        rest = np.clip(C - sum(groups.values()) - busg, 0, None)
+        rest = np.clip(C - sum(groups.values()), 0, None)          # 'bus' 已经在 groups 里（车底的光）
         groups['doorglow'] = groups['doorglow'] + np.where((rest.sum(-1) > 0.05)[..., None], rest, 0.0)
     S = sum(groups.values()) + 1e-9
     sb = gaussian_filter(S, (1.2, 1.2, 0)) + 1e-9
@@ -168,8 +168,8 @@ def composite(exr, shot, gains=None, halo=True, flame_scale=1.0):
     # 门里的光（Lanbai/PalaceGlow，不透明、_FogMode 2）：那些像素就是 glow × exp(−d·0.004)，不混雾色
     if 'Combined_doorglow' in exr:
         gm = (groups['doorglow'].sum(-1) > 0.5 * S.sum(-1)) & hit
-        g2 = C * np.exp(-FLAME_ATTEN * np.minimum(dist, 1e5))[..., None]
-        img = np.where(gm[..., None], g2, img + glow * np.exp(-FLAME_ATTEN * np.minimum(dist, 1e5))[..., None] * (~gm)[..., None])
+        g2 = C * np.exp(-DOOR_ATTEN * np.minimum(dist, 1e5))[..., None]
+        img = np.where(gm[..., None], g2, img + glow * np.exp(-DOOR_ATTEN * np.minimum(dist, 1e5))[..., None] * (~gm)[..., None])
     vv = np.where(hit, veil(Pu, e, t), 0.0)
     if 'Object Index.X' in exr:                         # 台地（pass_index 3）：下缘的溶解（LanbaiPalaceLipVeil）
         rock = np.round(exr['Object Index.X']) == 3

@@ -292,7 +292,11 @@ def add_bus():
                 o.data.materials.clear()
                 o.data.materials.append(dark)
                 o.visible_diffuse = o.visible_glossy = o.visible_shadow = False   # 车厢不挡宫殿的光（参考图里车只给相机看）
-        return [o for o in objs if o.type == 'MESH'] + [frame]
+        # 终审 10-25 #4：车底的光（圣经 7b-ii：1–2 盏实时点光在车下，#FF5A2E，车处 E 0.15；归海——参考图里先放一盏，空司机座才读得出来）
+        ub = bl.point_light_unity('BusUnderLight', (0.0, -1.2, 0.0), materials.s2l('#FF5A2E'), 0.15 * 1.2 ** 2 / 0.9, 6.0, radius=0.2)
+        ub.lightgroup = 'bus'
+        ub['lb_bus'] = 1
+        return [o for o in objs if o.type == 'MESH'] + [frame, ub]
     amb = tuple(0.3 * c for c in materials.s2l('#0F1E30'))          # 圣经 §6·7b：车厢环境 #0F1E30 × 0.3
     objs, eye = S.bus_shell('bible_v2', interior_ambient=amb)
     R = Matrix.Rotation(math.pi, 4, 'Z')          # 标准台的轴 (x, z, y) → 本包的轴 (−x, −z, y)

@@ -36,7 +36,7 @@ LAMPS = list(FRAME['lamps'])
 # 第 8 轮（评审 r5 #6）：阙基高 3 m、比阙身宽 0.8 m，1.85 m 的灯焰在阙基顶面以下，整面宝贝贴面都在阙基的影子里；
 # 阙前这两盏做成高 3.85 m 的立灯（灯焰 3.62 m，高过阙基 0.6 m），并恢复靛光：暖 + 靛照在 #5B2A4E 上才是 #7A4A6E
 QUE_LAMP_H = 3.85
-QUE_LAMP_INDIGO = 0.6        # 第 10 轮（终审 #2）：标准亮度；靛 ×0.6，暖 : 靛 让 #5B2A4E 的贝在灯旁读成 #7A4A6E 一带（h 330–340），不偏蓝紫
+QUE_LAMP_INDIGO = 0.3        # 第 10 轮（终审 #2）：标准亮度；靛 ×0.6，暖 : 靛 让 #5B2A4E 的贝在灯旁读成 #7A4A6E 一带（h 330–340），不偏蓝紫
 QUE_LAMP_GAIN = 1.0          # 第 10 轮（终审 #2）：回到标准亮度（第 8 轮的 ×4 读成霓虹广告牌）
 QUE_LAMPS = [dict(id='Lamp_Q%d' % (k + 1), group='que', pos=[q['pos'][0], 0.0, round(q['pos'][2] - q['footprint'][1] / 2 - 1.6, 3)],
                   yaw_deg=0.0, height_m=QUE_LAMP_H, indigo_lift=0.0, indigo_range=5.0, gain=QUE_LAMP_GAIN, indigo_gain=QUE_LAMP_INDIGO, flame_pos=[q['pos'][0], QUE_LAMP_H - 0.23, round(q['pos'][2] - q['footprint'][1] / 2 - 1.6, 3)])

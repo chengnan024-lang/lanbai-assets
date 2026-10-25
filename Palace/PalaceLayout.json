@@ -2133,7 +2133,7 @@
      ],
      "color": "#2A557B",
      "range_m": 5.0,
-     "intensity": 16.8,
+     "intensity": 8.4,
      "shadows": "none",
      "mode": "Baked"
     }
@@ -2177,7 +2177,7 @@
      ],
      "color": "#2A557B",
      "range_m": 5.0,
-     "intensity": 16.8,
+     "intensity": 8.4,
      "shadows": "none",
      "mode": "Baked"
     }
