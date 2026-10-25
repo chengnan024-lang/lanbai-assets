@@ -70,6 +70,18 @@
 //       LanbaiSpawnFadeLength(t, lBlack)    T = log2(L / lBlack) / 0.85, at most spawnFadeMax (9 s); the platform before
 //                                           departure keeps its 3 s (LB_Journey decides that, not the dispatcher)
 //   * spawnFadeTimeout 10 -> 15 s (3 s black + up to 9 s fade + the wait for a window must not time out first)
+// v1.3 r2 (总导演复核, D-43 #7, 2026-10-25):
+//   * a driver's overlay window ends at the last moment a joiner handed over can still be FULLY lifted inside the driver's
+//     own control (its control segment's end - one full rise - a margin); after it, LB_Journey fades in by itself
+//   * LB_Journey's own fade limits the SEEN brightness (scene x 2^dEV, the drivers' exposure ramps included): the fade
+//     runs until a ramp from the black at <= 0.85 EV/s catches up with LanbaiSpawnSeenL(t, dEV) (README §0, the state
+//     machine); LanbaiSpawnBrightestL is clamped to <= 1, spawnFadeMax 9 -> 9.4 s (= log2(1 / 0.004) / 0.85)
+//   * handed over or not: LanbaiOverlayHandoverAt records its answer; LanbaiSpawnFadeOwn() says "I fade in myself after
+//     all". After the End, a joiner who was NOT handed over gets since = 1e6 (the drivers act as for anyone already there),
+//     so a fade of LB_Journey's that runs into an overlay window is never followed by a driver's rise from black. If
+//     LB_Journey never asked (a v1.2 local build), the v1.2 rule stays: handed over = an overlay window holds the end
+//   * the timeline going back before the latched end (a scrub) forgets the spawn fade (since = 1e6 again)
+//   * spawnFadeTimeout 15 -> 25 s
 using UdonSharp;
 using UnityEngine;
 
@@ -95,14 +107,15 @@ public class LanbaiActDispatcher : UdonSharpBehaviour
     public int prewarmFrames = 2;
     [Header("v1.2: timeline seconds since LB_Journey's spawn fade ended (-1 = still fading, 1e6 = never reported)")]
     public float spawnFadeSince = 1e6f;
-    public float spawnFadeTimeout = 15f;  // real seconds after Begin without an End: the fade counts as ended (v1.3: 10 -> 15)
+    public float spawnFadeTimeout = 25f;  // real seconds after Begin without an End: the fade counts as ended (v1.3 r2: 15 -> 25)
     [Header("v1.3: LB_Journey's own spawn fade-in outside the overlay windows (D-43 #3)")]
     public float spawnFadeDefaultL = 1f;  // brightest non-white luminance when no active driver reports one (1 -> the 9 s cap)
-    public float spawnFadeMax = 9f;       // seconds
+    public float spawnFadeMax = 9.4f;     // seconds (= log2(1 / 0.004) / 0.85; L is clamped to <= 1)
     public float spawnFadeRate = 0.85f;   // EV/s (bible §1.8, E17)
 
     private int _prewarm = -1;
     private bool _fadeReported, _fadeEndAsked, _fadeEnded;
+    private int _handState;               // v1.3 r2: 0 = LB_Journey never asked, 1 = handed over, 2 = fades in itself
     private float _fadeBegin = -1f;       // Time.time of LanbaiSpawnFadeBegin (only for the 10 s timeout)
     private float _fadeEndT = -1f;        // TIMELINE t latched at the first LanbaiDispatch after LanbaiSpawnFadeEnd
     private bool _built;                  // v1.3: the window tables exist (built lazily by the first caller)
@@ -167,6 +180,14 @@ public class LanbaiActDispatcher : UdonSharpBehaviour
         _fadeEnded = false;
         _fadeEndT = -1f;
         _fadeBegin = Time.time;
+        _handState = 0;
+    }
+
+    // v1.3 r2: LB_Journey gave up waiting for a hand-over (the window went away, e.g. the timeline was dragged) and fades in
+    // itself: after its End the drivers get since = 1e6
+    public void LanbaiSpawnFadeOwn()
+    {
+        if (_fadeReported && !_fadeEnded) _handState = 2;
     }
 
     // v1.2: LB_Journey's spawn fade (or, over a driver's overlay window, its spawn black) has ended. Idempotent: only the
@@ -205,6 +226,7 @@ public class LanbaiActDispatcher : UdonSharpBehaviour
             float h = Mathf.Max(t0, w[i]);
             if (best < 0f || h < best) best = h;
         }
+        if (_fadeReported && !_fadeEnded) _handState = best >= 0f ? 1 : 2;   // v1.3 r2: remembered for the latch
         return best;
     }
 
@@ -216,16 +238,42 @@ public class LanbaiActDispatcher : UdonSharpBehaviour
         float L = -1f;
         // <LANBAI-GENERATED-BRIGHTEST>
         // </LANBAI-GENERATED-BRIGHTEST>
-        return L > 0f ? L : spawnFadeDefaultL;
+        return Mathf.Min(L > 0f ? L : spawnFadeDefaultL, 1f);   // v1.3 r2: <= 1 (the cap of a non-white view)
     }
 
-    // v1.3: LB_Journey's own fade-in length at t: EV-linear from lBlack to the brightest view at <= spawnFadeRate EV/s,
-    // capped at spawnFadeMax (the platform before departure keeps 3 s: LB_Journey's decision)
+    // v1.3 r2 (D-43 #7): the brightest non-white view as SEEN: LanbaiSpawnBrightestL(t) x 2^appliedDEV, appliedDEV = the
+    // whole dEV ApplyGrades applies this frame (LB_Journey's own events + gradeDEV of the drivers)
+    public float LanbaiSpawnSeenL(float t, float appliedDEV)
+    {
+        return LanbaiSpawnBrightestL(t) * Mathf.Pow(2f, appliedDEV);
+    }
+
+    // v1.3 r2: the sum of the drivers' LanbaiGrade dEV at ANY timeline t (the drivers whose window contains t), without
+    // dispatching: the grade events are functions of t, so LB_Journey's fade length can look ahead at the exposure ramps
+    public float LanbaiGradeDEVAt(float t)
+    {
+        if (!_built) _Build();
+        float sum = 0f;
+        // <LANBAI-GENERATED-GRADEAT>
+        // </LANBAI-GENERATED-GRADEAT>
+        return sum;
+    }
+
+    // v1.3 r2 (D-43 #7): how long LB_Journey's own fade from t takes: a ramp from the floor (0.004) at spawnFadeRate EV/s
+    // until it reaches the SEEN brightest view LanbaiSpawnBrightestL(t') x 2^LanbaiGradeDEVAt(t'), looked ahead every 0.25 s
+    // (so an exposure ramp of a driver that starts during the fade lengthens it, and LanbaiOverlayHandoverAt asked over
+    // [t, t + this) sees a window that the longer fade would run into). Without exposure events: log2(L / 0.004) / 0.85,
+    // <= spawnFadeMax (9.4 s); with them at most spawnFadeTimeout - 5 s. lBlack is kept for the v1.3 signature
     public float LanbaiSpawnFadeLength(float t, float lBlack)
     {
-        float L = LanbaiSpawnBrightestL(t);
-        float ev = Mathf.Log(Mathf.Max(L, 0.004f) / Mathf.Max(lBlack, 0.004f), 2f);
-        return Mathf.Clamp(ev / Mathf.Max(spawnFadeRate, 1e-3f), 0f, spawnFadeMax);
+        float cap = Mathf.Max(spawnFadeMax, spawnFadeTimeout - 5f);
+        for (float s = 0f; s <= cap; s += 0.25f)
+        {
+            float tt = t + s;
+            float seen = LanbaiSpawnBrightestL(tt) * Mathf.Pow(2f, LanbaiGradeDEVAt(tt));
+            if (0.004f * Mathf.Pow(2f, spawnFadeRate * s) >= seen) return s;
+        }
+        return cap;
     }
 
     public void LanbaiDispatch(float t)
@@ -240,8 +288,10 @@ public class LanbaiActDispatcher : UdonSharpBehaviour
         {
             _fadeEnded = true;            // latched once, in timeline seconds (a hitch moves t and since together)
             _fadeEndT = t;
+            if (_handState == 0) _handState = Inside(overlayWindowsFlat, t) ? 1 : 2;   // v1.2 LB_Journey: the v1.2 rule
         }
-        float fadeSince = !_fadeReported ? 1e6f : (!_fadeEnded ? -1f : Mathf.Max(0f, t - _fadeEndT));
+        if (_fadeEnded && t < _fadeEndT - 0.5f) _fadeReported = false;   // v1.3 r2: scrubbed back before the latch
+        float fadeSince = !_fadeReported ? 1e6f : (!_fadeEnded ? -1f : (_handState == 2 ? 1e6f : Mathf.Max(0f, t - _fadeEndT)));
         spawnFadeSince = fadeSince;
         // <LANBAI-GENERATED-DISPATCH>
         // </LANBAI-GENERATED-DISPATCH>

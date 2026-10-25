@@ -1,0 +1,41 @@
+diff --git a/Act10_White/Runtime/LanbaiWhiteDriver.cs b/Act10_White/Runtime/LanbaiWhiteDriver.cs
+index 9c30f25..77ef468 100644
+--- a/Act10_White/Runtime/LanbaiWhiteDriver.cs
++++ b/Act10_White/Runtime/LanbaiWhiteDriver.cs
+@@ -91,7 +91,10 @@ namespace Lanbai.Act10
+         // end of the whole window). Whoever's spawn black ends inside it is brought up by this driver, never by LB_Journey.
+         public float[] LanbaiOverlayWindow()
+         {
+-            return new float[] { tMaskStart, tShrinkEnd + joinTail };
++            // D-43 #7 (总工程师 10-25, spawn_fade_sim): only up to the last moment a joiner handed over can still be lifted
++            // fully inside this driver's window (the black -> act 11 ramp, ~2 s, + 0.5 s margin); after it LB_Journey fades
++            float sceneRampT = Mathf.Log(Mathf.Max(lScene11, joinFromL * 1.01f) / joinFromL, 2f) / joinMaxEVps;
++            return new float[] { tMaskStart, tShrinkEnd + joinTail - sceneRampT - 0.5f };
+         }
+ 
+         public void LanbaiActivate(bool on)
+@@ -171,7 +174,10 @@ namespace Lanbai.Act10
+             // shrink is over, then rises EV-linearly from black to act 11: ONE brightening, never white then a drop
+             bool toScene = joinedLate && tJoinReady + rampT > tSilenceEnd;
+             float sceneRampT = Mathf.Log(Mathf.Max(lScene11, joinFromL * 1.01f) / joinFromL, 2f) / joinMaxEVps;
+-            if (spawnSince < 0f || t < tMaskStart || (!toScene && t >= tShrinkEnd) || (toScene && t >= tShrinkEnd + sceneRampT))
++            // D-43 #7: the ramp to act 11 starts at the hand-over (or at the shrink's end, whichever is later), not always
++            // at the shrink's end: a joiner handed over at 1187.5 must start from black, not 1 s into the ramp
++            float sceneRamp0 = Mathf.Max(tShrinkEnd, tJoinReady);
++            if (spawnSince < 0f || t < tMaskStart || (!toScene && t >= tShrinkEnd) || (toScene && t >= sceneRamp0 + sceneRampT))
+             {
+                 Release();                          // outside our parts, or the spawn fade still runs: write nothing
+                 return;
+@@ -183,10 +189,10 @@ namespace Lanbai.Act10
+                 overlay.SetBreath(0f);
+                 // fully black while the white / the shrink is behind it; from the shrink's end a black veil that starts at the
+                 // floor (0.004) and lets act 11 up EV-linearly at <= joinMaxEVps (every view rises by the same EV)
+-                if (t < tShrinkEnd)
++                if (t < sceneRamp0)
+                     overlay.SetFlat(Color.black, 1f, 0f);
+                 else
+-                    overlay.SetCurve(Color.black, 0f, t - tShrinkEnd, sceneRampT, joinFromL, lScene11, lScene11, 0f);
++                    overlay.SetCurve(Color.black, 0f, t - sceneRamp0, sceneRampT, joinFromL, lScene11, lScene11, 0f);
+                 return;
+             }
+             bool ramping = joinedLate && t < tJoinReady + rampT;

@@ -129,6 +129,7 @@ namespace Lanbai.Director.Editor
             var wins = new StringBuilder();
             var disp = new StringBuilder();
             var bright = new StringBuilder();
+            var gradeAt = new StringBuilder();
             const BindingFlags PF = BindingFlags.Public | BindingFlags.Instance;
             for (int k = 0; k < types.Count; k++)
             {
@@ -177,6 +178,10 @@ namespace Lanbai.Director.Editor
                     ovl);
                 var gm = types[k].GetMethod("LanbaiGrade", PF, null, new[] { typeof(float) }, null);
                 bool hasGrade = gm != null && gm.ReturnType == typeof(float[]);
+                if (hasGrade)   // v1.3 r2: LanbaiGradeDEVAt(t), the grade dEV at any t (LB_Journey's fade length looks ahead)
+                    gradeAt.AppendFormat(
+                        "        for (int i = 0; i < {0}.Length; i++)\n" +
+                        "            if ({0}[i] != null && t >= {0}_w[2 * i] && t < {0}_w[2 * i + 1]) {{ float[] g = {0}[i].LanbaiGrade(t); if (g != null && g.Length >= 1) sum += g[0]; }}\n", d);
                 string grade = hasGrade
                     ? "                float[] g = d.LanbaiGrade(t);\n" +
                       "                if (g != null && g.Length >= 4)\n" +
@@ -214,6 +219,7 @@ namespace Lanbai.Director.Editor
             src = Replace(src, "LANBAI-GENERATED-WINDOWS", wins.ToString());
             src = Replace(src, "LANBAI-GENERATED-DISPATCH", disp.ToString());
             src = Replace(src, "LANBAI-GENERATED-BRIGHTEST", bright.ToString());
+            src = Replace(src, "LANBAI-GENERATED-GRADEAT", gradeAt.ToString());
             return src;
         }
 
