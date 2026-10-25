@@ -1,0 +1,19 @@
+{
+  "id": "Asphalt025C",
+  "author": "ambientCG / Lennart Demes",
+  "source": "https://ambientcg.com/a/Asphalt025C",
+  "license": "CC0-1.0",
+  "license_url": "https://docs.ambientcg.com/license/",
+  "checked": "2026-10-25",
+  "source_release_date": "2023-02-17",
+  "download": {
+    "attributes": "2K-PNG",
+    "extension": "zip",
+    "url": "https://ambientcg.com/get?file=Asphalt025C_2K-PNG.zip",
+    "size": 68282696
+  },
+  "status": "BLOCKED_HTTP_403",
+  "downloaded_bytes": 0,
+  "sha256": null,
+  "unity_imported": false
+}
