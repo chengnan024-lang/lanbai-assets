@@ -5,11 +5,11 @@
 
 ## 0. 先做这几步（拷什么、点什么、截什么图）
 
-1. 把 `Palace/` 拷到 `Assets/Lanbai/Palace/`（要有 `Assets/Lanbai/Common/`——**含 D-41 的 `Common/Editor/LanbaiUdonPrograms.cs`**，总工程师的共用 U# 程序资产工具，现在在 `pkg/engineering`，合 main 之前要从那里拷——和 `Assets/Lanbai/Act07_Sea/`；不再依赖 GateClouds）。
+1. 把 `Palace/` 拷到 `Assets/Lanbai/Palace/`（要有 `Assets/Lanbai/Common/`——**含 D-41 的 `Common/Editor/LanbaiUdonPrograms.cs`**（总工程师的共用 U# 程序资产工具，已在 main）——和 `Assets/Lanbai/Act07_Sea/`；不再依赖 GateClouds）。
    `Source/`、`Docs~/` 不需要进 Unity（`Docs~` 本来就被忽略；`Source/` 是 Python，可以不拷）。
 2. Project Settings → Player → **Vertex Compression：TexCoord0–3 不压缩**（鱼的编号在 uv2 里，CONTROL §6 第 8 条）。
 3. 先跑 `蓝白/Build/Act07a`（海），再跑 **`蓝白/Build/7b 宫殿`**：`R_Palace` 会挂在 `R_Sea` 下（局部位置 (0, −250.335, 0)），驱动 `LanbaiPalaceDriver` 放在场景根上。
-4. **烘焙**（§4）：**只在宫殿自己的测试场景里烘**（只有 R_Sea + R_Palace），不要在全片场景里点 Bake——会覆盖整个场景的光照贴图。全片怎么烘归总工程师（终审 10-25）。
+4. **烘焙**（§4）：**只在宫殿自己的测试场景里烘**（只有 R_Sea + R_Palace），不要在全片场景里点 Bake——会覆盖整个场景的光照贴图。D-42：各包烘自己的光照图（BC6H），提取工具到了以后宫殿再接（终审 10-25）。
 5. Director 的分发表里加 `LanbaiPalaceDriver`（时间窗 643.96 → 876.16）。
 6. 截图推回 `FromLocal/07b_test/`：主座位 (0.55, 1.70, 2.05)、桌面 1920×1080、水平 90°、PPv2 开（S7b）：
    **t = 655.86（F5p）、690、706、735.56（F6）、748.26（F7）**；另 F7p **812.36** 抬头向左上（yaw −25°、pitch +42°）一张。
