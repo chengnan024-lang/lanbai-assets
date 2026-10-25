@@ -96,6 +96,8 @@ def main():
     cs.append('    public const float DoorHalfHeight = %.3ff, DoorSpecI = %.3ff, NacreLampGain = %.2ff;' % (H['door_size'][1] / 2, T.get('door_spec_I', 60.0), T.get('nacre_spec_gain', 1.0)))
     # 第 8 轮：珍珠母的“镜中灯”往上挪 nacre_lift 米；瓣放宽 ≈ 参考图里 1.5 m 球光源在 12–15 m 处的放宽（0.5 r / d）
     cs.append('    public const float NacreLift = %.2ff, NacreSpread = %.3ff;' % (T.get('nacre_lift', 0.0), 0.5 * T.get('nacre_radius', 0.1) / 12.5))
+    nb = T.get('nacre_band', dict(gain=0.0, width=1.0, reach=6.0))
+    cs.append('    public const float BandGain = %.3ff, BandWidth = %.2ff, BandReach = %.2ff;   // 珍珠光带（终审 10-25 #5）' % (nb['gain'], nb['width'], nb['reach']))
     cs.append('    public const float WarmI = %.4ff, WarmRange = %.3ff, IndigoI = %.4ff, IndigoRange = %.3ff, IndigoLift = %.2ff;' % (T['warm_I'], T['warm_range'], T['indigo_I'], T['indigo_range'], T.get('indigo_lift', 0.3)))
     cs.append('    public static readonly float[] WarmColor = %s;   // 线性 #FF9C2F' % arr(lin('#FF9C2F')))
     cs.append('    public static readonly float[] IndigoColor = %s;   // 线性 #2A557B' % arr(lin('#2A557B')))

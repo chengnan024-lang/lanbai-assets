@@ -152,7 +152,10 @@ public static class LanbaiPalaceBuilder
         d["FishScale"].SetFloat("_LampGain", LanbaiPalaceData.NacreLampGain);     // 珍珠光要“滚出来”（评审 r3 #7）
         d["FishScale"].SetFloat("_NacreLift", LanbaiPalaceData.NacreLift);         // 第 8 轮：灯在檐下照不出镜面高光，按挪高的灯算（README §3）
         d["FishScale"].SetFloat("_NacreSpread", LanbaiPalaceData.NacreSpread);
-        d["FishScale"].SetFloat("_EnvSpec", 0.15f);        // 终审 10-25 #1/#5：鳞默认是暗的，不整片反射上方的亮水
+        d["FishScale"].SetFloat("_EnvSpec", 0.15f);
+        d["FishScale"].SetFloat("_BandGain", LanbaiPalaceData.BandGain);       // 终审 10-25 #5：灯经过时一条珍珠光带扫过屋面
+        d["FishScale"].SetFloat("_BandWidth", LanbaiPalaceData.BandWidth);
+        d["FishScale"].SetFloat("_BandReach", LanbaiPalaceData.BandReach);        // 终审 10-25 #1/#5：鳞默认是暗的，不整片反射上方的亮水
         Std(d, pal, "Cowrie", "Cowrie", "Cowrie", "Cowrie", 3, 0.92f, 0f, 0.2f, "#FFFFFF");
         d["Cowrie"].SetFloat("_LampGain", LanbaiPalaceData.CowrieLampGain);       // 第 8 轮 r6：贝壳上一串小高光（终审：之前写在 Std 前面，KeyNotFound）
         Std(d, pal, "StoneWet", "Stone", "Stone", null, 0, 0.85f, 0f, 0f, "#C2C4C8");   // 终审 #4：湿台阶，门的线光源在上面反光

@@ -46,6 +46,10 @@ Shader "Lanbai/Palace"
         _LampGain ("Analytic lamp specular gain  FishScale 6", Float) = 1
         _NacreLift ("Nacre: lamps treated as this many m higher  smoke and mirrors", Float) = 0
         _NacreSpread ("Nacre: added GGX alpha  wider glints", Float) = 0
+        _NacreAniso ("Nacre: stretch lamp highlight up the roof slope 0..1  sweeping band", Range(0, 1)) = 0
+        _BandGain ("Nacre band gain  final review #5", Float) = 0.02
+        _BandWidth ("Nacre band half width along the eave m", Float) = 1.2
+        _BandReach ("Nacre band horizontal reach m", Float) = 8
         _EnvSpec ("Ambient reflection of the water colour", Float) = 0.6
         [Header(Seaweed sway)]
         _SwayAmp ("Sway amplitude m at the tip  0 off", Float) = 0
@@ -77,7 +81,7 @@ Shader "Lanbai/Palace"
             sampler2D _MainTex, _BumpMap, _MaskMap;
             float4 _MainTex_ST, _Color, _WearColor, _SiltColor, _NacreFace, _NacreMid, _NacreGraze;
             float _BumpScale, _Smoothness, _SmoothnessConst, _UseMask, _Mode, _Metallic, _SiltAmount, _SiltSmooth, _SiltScale, _FogScale;
-            float _POMHeight, _POMTile, _POMFade, _GlintFar, _LampGain, _NacreLift, _NacreSpread, _EnvSpec, _SwayAmp, _SwayHz, _LipFade;
+            float _POMHeight, _POMTile, _POMFade, _GlintFar, _LampGain, _NacreLift, _NacreSpread, _NacreAniso, _BandGain, _BandWidth, _BandReach, _EnvSpec, _SwayAmp, _SwayHz, _LipFade;
 
             struct appdata
             {
@@ -198,13 +202,20 @@ Shader "Lanbai/Palace"
                 float alpha = max(rough * rough, 0.002);
                 bool nacre = _Mode > 1.5 && _Mode < 2.5;
                 // 第 8 轮（评审 r5 #7）：珍珠母的灯高光按挪高 _NacreLift 的灯算、瓣放宽 _NacreSpread（smoke and mirrors，README §3）
-                float3 spec = LanbaiPalaceLampsLift(i.posWS, N, V, nacre ? alpha + _NacreSpread : alpha, F0, nacre ? _NacreLift : 0.0) * _LampGain;
+                float3 spec = LanbaiPalaceLampsLift(i.posWS, N, V, nacre ? alpha + _NacreSpread : alpha, F0, nacre ? _NacreLift : 0.0,
+                                                    normalize(B), nacre ? _NacreAniso : 0.0) * _LampGain;   // B = 屋面坡向（UV v）
                 // 终审 10-25 #2：宝贝的闪点只在 _GlintFar（12 m）以内出现，远处是平滑的暗藕紫——紫要在 668.6 s、9 m 处被“发现”，
                 // 不是 40 m 外就在打广告
                 if (_Mode > 2.5)
                     spec *= saturate((_GlintFar - dist) / 4.0);
                 if (_Mode > 1.5 && _Mode < 2.5)
-                    spec = dot(spec, float3(0.2126, 0.7152, 0.0722)) * LanbaiNacre(NdotV, _NacreFace.rgb, _NacreMid.rgb, _NacreGraze.rgb, mask.b) * 1.6;
+                {
+                    // 珍珠光带：灯的亮度 × 虹彩色（随 N·V 走 #E7C9D5 → #C3E3D5 → #B9C6EA）× 鳞的闪（鳞片法线朝向的起伏）
+                    float glint = 0.3 + 0.7 * pow(saturate(dot(N, Ng)), 6.0);
+                    float3 bandL = LanbaiNacreBand(i.posWS, Ng, _BandWidth, _BandReach);
+                    spec = dot(bandL, float3(0.2126, 0.7152, 0.0722)) * _BandGain * glint
+                         * LanbaiNacre(NdotV, _NacreFace.rgb, _NacreMid.rgb, _NacreGraze.rgb, mask.b);
+                }
                 // 环境反射：反射方向的水色（LanbaiHorizon），按菲涅耳与粗糙度压
                 float3 R = reflect(-V, N);
                 float3 Fr = F0 + (1.0 - F0) * pow(1.0 - NdotV, 5.0) * (1.0 - rough);

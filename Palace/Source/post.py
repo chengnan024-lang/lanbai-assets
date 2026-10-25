@@ -157,6 +157,10 @@ def composite(exr, shot, gains=None, halo=True, flame_scale=1.0):
     F = 1 - np.exp(-FOG_DENSITY * PALACE_FOG_SCALE * np.minimum(dist, 1e5))
     fc = fog_color(D)
     img = np.where(hit[..., None], surf * (1 - F[..., None]) + fc * F[..., None], fc)
+    if _TN.get('nacre_band') and 'Object Index.X' in exr and 'Normal.X' in exr:
+        nb = nacre_band(exr, Pu, e, t)
+        surf_band = nb * (1 - F[..., None])                      # 和表面一起吃宫殿的雾
+        img = img + surf_band
     if WASH:
         r0, r1 = WASH.get('ramp', [0.0, 0.0])
         x = min(1.0, max(0.0, (t - r0) / max(r1 - r0, 0.01)))     # 驱动按 t 写 _Gain：706 → 718 淡入
@@ -184,6 +188,43 @@ def composite(exr, shot, gains=None, halo=True, flame_scale=1.0):
             dz = np.where(back, 1e9, dz)
         img = draw_lamps(img, shot, dz, flame_scale)
     return img, dict(dist=dist, hit=hit, D=D)
+
+
+NACRE_COLS = [srgb_to_lin(c) for c in ('#E7C9D5', '#C3E3D5', '#B9C6EA')]
+
+
+def nacre_band(exr, Pu, e, t):
+    """珍珠光带（= Lanbai/Palace 的 LanbaiNacreBand）：鱼鳞屋屋面（pass 7）上，沿檐口方向和每盏灯同一位置的一条带。"""
+    B_ = _TN['nacre_band']
+    m = (np.round(exr['Object Index.X']) == 7) & (exr['Depth.Z'] < 1e6)
+    out = np.zeros(Pu.shape)
+    if not m.any():
+        return out
+    N = np.stack([exr['Normal.X'], exr['Normal.Y'], exr['Normal.Z']], -1)[m] @ B2U.T
+    P = Pu[m]
+    Te = np.cross(np.array([0.0, 1.0, 0.0]), N)
+    Te /= np.linalg.norm(Te, axis=-1, keepdims=True) + 1e-9
+    lamp_col = srgb_to_lin('#FF9C2F')
+    lum = 0.0
+    for i, fp in enumerate(lamp_points()):
+        ph = (i * 0.618034) % 1.0
+        xf = min(1.0, max(0.0, (t - (835.16 + ph * 36.0)) / 4.0))
+        w = _TN['warm_I'] * (1.0 - xf * xf * (3 - 2 * xf))
+        dp = P - fp
+        de = np.sum(dp * Te, -1)
+        dh2 = dp[:, 0] ** 2 + dp[:, 2] ** 2
+        lum = lum + w * np.exp(-de * de / B_['width'] ** 2) / (1 + dh2 / B_['reach'] ** 2)
+    lum = lum * float(lamp_col @ np.array([0.2126, 0.7152, 0.0722]))
+    V = e - P
+    V /= np.linalg.norm(V, axis=-1, keepdims=True)
+    x = np.clip(1 - np.abs(np.sum(N * V, -1)), 0, 1)                   # LanbaiNacre（膜厚取 0.5）
+    c0, c1, c2 = NACRE_COLS
+    col = np.where((x < 0.5)[:, None], c0 + (c1 - c0) * (x * 2)[:, None], c1 + (c2 - c1) * (x * 2 - 1)[:, None])
+    cell = np.floor(P * 3.0)                                                   # 每片鳞（约 0.33 m）一个伪随机的朝向
+    hsh = np.modf(np.sin(cell @ np.array([12.9898, 78.233, 37.719])) * 43758.5453)[0]
+    glint = 0.3 + 0.7 * np.abs(hsh) ** 3                                       # 鳞的闪（参考图没有鳞片法线，按片伪随机）
+    out[m] = (lum * B_['gain'] * glint)[:, None] * col
+    return out
 
 
 def wash_card(D, e, dist, hit):

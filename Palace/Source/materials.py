@@ -73,6 +73,9 @@ def silt_mask(b, coverage=0.55):
     return b.math('MULTIPLY', up, noisy, clamp=True)
 
 
+NACRE_ANISO, NACRE_ANISO_ROT = 0.0, 0.0     # 第 10 轮试过各向异性，改用珍珠光带（post.nacre_band），这里关掉
+
+
 def standard(name, base, normal=None, mask=None, smooth=0.5, metallic=0.0, silt=0.0, nstr=1.0, irid=False, tint=None, cull=True):
     b = NB(name)
     bs = b.n('ShaderNodeBsdfPrincipled')
@@ -135,6 +138,13 @@ def standard(name, base, normal=None, mask=None, smooth=0.5, metallic=0.0, silt=
         # 终审 10-25 #1/#5：鳞默认是暗的——不加清漆层、基础高光压低，屋面不再整片反射上方的亮水；珍珠光只来自灯（_NacreLift 的那一条带）
         bs.inputs['Specular IOR Level'].default_value = 0.3
         bs.inputs['Coat Weight'].default_value = 0.0
+        # 终审 10-25 #5：灯的高光沿屋面坡向拉成一条带（Unity：_NacreAniso，B = UV v）
+        tg = b.n('ShaderNodeTangent')
+        tg.direction_type = 'UV_MAP'
+        tg.uv_map = 'UVMap'
+        b.link(tg.outputs['Tangent'], bs.inputs['Tangent'])
+        bs.inputs['Anisotropic'].default_value = NACRE_ANISO
+        bs.inputs['Anisotropic Rotation'].default_value = NACRE_ANISO_ROT
         b.link(ramp.outputs[0], bs.inputs['Coat Tint'])
     out = bs.outputs[0]
     if cull:

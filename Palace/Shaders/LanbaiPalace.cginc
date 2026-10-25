@@ -76,7 +76,9 @@ inline float3 LanbaiPalaceApplyFog(float3 colLinear, float3 posWS, float scale)
 // ---- 一盏解析灯的 GGX 高光（Unity Standard 约定：spec = D·Vis·F·π·E·NdotL）。点光，或 axis ≠ 0 时的线光源
 //      （Karis 2013：线段上离反射射线最近的点作代表点，瓣按半长放宽；与 Rain/Shaders/LanbaiLamps.cginc 同义）；
 //      dirW.w > −0.999 时只照 dirW 方向的锥（门：朝外的半球）。
-inline float3 LanbaiPalaceSpecOne(float4 lamp, float4 colR, float4 axis, float4 dirW, float3 P, float3 N, float3 V, float alpha, float3 F0)
+// Bs / aniso：各向异性——沿 Bs 方向拉长高光（Bs = 0 或 aniso = 0 时就是各向同性）。终审 10-25 #5：珍珠母的高光沿屋面坡向拉成一条带，
+// 灯经过时这条带顺着檐口扫过整片屋面（不是一个光斑）
+inline float3 LanbaiPalaceSpecOne(float4 lamp, float4 colR, float4 axis, float4 dirW, float3 P, float3 N, float3 V, float alpha, float3 F0, float3 Bs, float aniso)
 {
     if (lamp.w <= 0.0) return 0;
     float3 toC = lamp.xyz - P;
@@ -104,7 +106,9 @@ inline float3 LanbaiPalaceSpecOne(float4 lamp, float4 colR, float4 axis, float4 
     float a = saturate(alpha + colR.a * 0.5 * rsqrt(d2));          // 球光源放宽
     float a2 = a * a;
     float3 H = normalize(L + V);
-    float NdotH = saturate(dot(N, H));
+    float3 Hs = normalize(H - Bs * dot(H, Bs) * aniso);
+    float3 Ns = normalize(N - Bs * dot(N, Bs) * aniso);
+    float NdotH = saturate(dot(Ns, Hs));
     float NdotV = max(dot(N, V), 1e-4);
     float LdotH = saturate(dot(L, H));
     float dd = NdotH * NdotH * (a2 - 1.0) + 1.0;
@@ -118,24 +122,24 @@ inline float3 LanbaiPalaceSpecOne(float4 lamp, float4 colR, float4 axis, float4 
 
 // lift：只给珍珠母用（第 8 轮，评审 r5 #7，smoke and mirrors）——灯在檐下、相机在屋面高度，屋面不可能镜面反射到灯；
 // 把灯当成在它上方 lift 米处来算高光，灯经过时鳞片上滚过一串珍珠光。别的材质 lift = 0。
-inline float3 LanbaiPalaceLampsLift(float3 P, float3 N, float3 V, float alpha, float3 F0, float lift)
+inline float3 LanbaiPalaceLampsLift(float3 P, float3 N, float3 V, float alpha, float3 F0, float lift, float3 Bs, float aniso)
 {
     float3 s = 0;
     P.y -= lift;          // 等价于所有灯往上挪 lift
-    s += LanbaiPalaceSpecOne(_Udon_Lamp0, _Udon_LampColor0, _Udon_LampAxis0, _Udon_LampDir0, P, N, V, alpha, F0);
-    s += LanbaiPalaceSpecOne(_Udon_Lamp1, _Udon_LampColor1, _Udon_LampAxis1, _Udon_LampDir1, P, N, V, alpha, F0);
-    s += LanbaiPalaceSpecOne(_Udon_Lamp2, _Udon_LampColor2, _Udon_LampAxis2, _Udon_LampDir2, P, N, V, alpha, F0);
-    s += LanbaiPalaceSpecOne(_Udon_Lamp3, _Udon_LampColor3, _Udon_LampAxis3, _Udon_LampDir3, P, N, V, alpha, F0);
-    s += LanbaiPalaceSpecOne(_Udon_Lamp4, _Udon_LampColor4, _Udon_LampAxis4, _Udon_LampDir4, P, N, V, alpha, F0);
-    s += LanbaiPalaceSpecOne(_Udon_Lamp5, _Udon_LampColor5, _Udon_LampAxis5, _Udon_LampDir5, P, N, V, alpha, F0);
-    s += LanbaiPalaceSpecOne(_Udon_Lamp6, _Udon_LampColor6, _Udon_LampAxis6, _Udon_LampDir6, P, N, V, alpha, F0);
-    s += LanbaiPalaceSpecOne(_Udon_Lamp7, _Udon_LampColor7, _Udon_LampAxis7, _Udon_LampDir7, P, N, V, alpha, F0);
+    s += LanbaiPalaceSpecOne(_Udon_Lamp0, _Udon_LampColor0, _Udon_LampAxis0, _Udon_LampDir0, P, N, V, alpha, F0, Bs, aniso);
+    s += LanbaiPalaceSpecOne(_Udon_Lamp1, _Udon_LampColor1, _Udon_LampAxis1, _Udon_LampDir1, P, N, V, alpha, F0, Bs, aniso);
+    s += LanbaiPalaceSpecOne(_Udon_Lamp2, _Udon_LampColor2, _Udon_LampAxis2, _Udon_LampDir2, P, N, V, alpha, F0, Bs, aniso);
+    s += LanbaiPalaceSpecOne(_Udon_Lamp3, _Udon_LampColor3, _Udon_LampAxis3, _Udon_LampDir3, P, N, V, alpha, F0, Bs, aniso);
+    s += LanbaiPalaceSpecOne(_Udon_Lamp4, _Udon_LampColor4, _Udon_LampAxis4, _Udon_LampDir4, P, N, V, alpha, F0, Bs, aniso);
+    s += LanbaiPalaceSpecOne(_Udon_Lamp5, _Udon_LampColor5, _Udon_LampAxis5, _Udon_LampDir5, P, N, V, alpha, F0, Bs, aniso);
+    s += LanbaiPalaceSpecOne(_Udon_Lamp6, _Udon_LampColor6, _Udon_LampAxis6, _Udon_LampDir6, P, N, V, alpha, F0, Bs, aniso);
+    s += LanbaiPalaceSpecOne(_Udon_Lamp7, _Udon_LampColor7, _Udon_LampAxis7, _Udon_LampDir7, P, N, V, alpha, F0, Bs, aniso);
     return s;
 }
 
 inline float3 LanbaiPalaceLamps(float3 P, float3 N, float3 V, float alpha, float3 F0)
 {
-    return LanbaiPalaceLampsLift(P, N, V, alpha, F0, 0.0);
+    return LanbaiPalaceLampsLift(P, N, V, alpha, F0, 0.0, float3(0, 0, 0), 0.0);
 }
 
 // ---- _Udon_PalaceVeil：眼 → 片元的线段落在水平雾带 [y − z, y] 里的长度 L，veil = 1 − exp(−x·L)
@@ -164,6 +168,32 @@ inline float LanbaiPalaceLipVeil(float3 posWS, float3 eyeWS, float lipFade)
 }
 
 // 珍珠母的虹彩：高光颜色 = f(N·V)：正面 → 中 → 掠射（圣经 §6·7b 鱼鳞屋）
+// 终审 10-25 #5：珍珠光带。鳞默认是暗的；灯经过时，屋面上沿檐口方向、和灯同一位置的那一条（宽约 bandW）亮起来，
+// 灯往前走它就顺着檐口扫过去。这是写明的效果项（smoke and mirrors），不是镜面反射——檐下的灯在物理上照不出屋面的镜面高光。
+// 返回亮度（乘灯色、虹彩色在调用处做）。只用 0..6 号槽（7 号是殿门）。
+inline float LanbaiNacreBandOne(float4 lamp, float3 P, float3 Te, float bandW, float reach)
+{
+    if (lamp.w <= 0.0) return 0;
+    float3 dp = P - lamp.xyz;
+    float de = dot(dp, Te);
+    float dh2 = dot(dp.xz, dp.xz);
+    return lamp.w * exp(-de * de / (bandW * bandW)) / (1.0 + dh2 / (reach * reach));
+}
+
+inline float3 LanbaiNacreBand(float3 P, float3 Ng, float bandW, float reach)
+{
+    float3 Te = normalize(cross(float3(0, 1, 0), Ng) + float3(1e-4, 0, 0));    // 檐口方向（水平、贴着屋面）
+    float3 s = 0;
+    s += LanbaiNacreBandOne(_Udon_Lamp0, P, Te, bandW, reach) * _Udon_LampColor0.rgb;
+    s += LanbaiNacreBandOne(_Udon_Lamp1, P, Te, bandW, reach) * _Udon_LampColor1.rgb;
+    s += LanbaiNacreBandOne(_Udon_Lamp2, P, Te, bandW, reach) * _Udon_LampColor2.rgb;
+    s += LanbaiNacreBandOne(_Udon_Lamp3, P, Te, bandW, reach) * _Udon_LampColor3.rgb;
+    s += LanbaiNacreBandOne(_Udon_Lamp4, P, Te, bandW, reach) * _Udon_LampColor4.rgb;
+    s += LanbaiNacreBandOne(_Udon_Lamp5, P, Te, bandW, reach) * _Udon_LampColor5.rgb;
+    s += LanbaiNacreBandOne(_Udon_Lamp6, P, Te, bandW, reach) * _Udon_LampColor6.rgb;
+    return s;
+}
+
 inline float3 LanbaiNacre(float NdotV, float3 cFace, float3 cMid, float3 cGraze, float thick)
 {
     float x = saturate(1.0 - NdotV + (thick - 0.5) * 0.25);
