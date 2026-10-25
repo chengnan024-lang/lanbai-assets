@@ -1,0 +1,166 @@
+{
+  "source_main": "09164c99f2c222d33752720d754211d3029e3a94",
+  "hashes": [
+    {
+      "path": "Assets/Lanbai/Scenes/Lanbai.unity",
+      "sha256": "16f5d9d7d2fda794cbd6353038037c493367285bc128f341bdf45762f25c5af0"
+    },
+    {
+      "path": "Assets/Lanbai/Scenes/Lanbai_FullPreview.unity",
+      "sha256": "57d1ee304bbe50243191b0eac6faf7909efc48711c3d771ef5193e93690abdc6"
+    },
+    {
+      "path": "Assets/Lanbai/Scripts/LB_Journey.cs",
+      "sha256": "c07741a51a7c197e93da4b8d4f6590f86aff207b31989cd01718d4fbd962eac9"
+    },
+    {
+      "path": "Assets/Lanbai/Director/Runtime/LanbaiActDispatcher.cs",
+      "sha256": "7d8998f64a06dad8de190cfc37b90702f51d02007b4f1e69007ce54fcbff8c3d"
+    },
+    {
+      "path": "Assets/Lanbai/Fonts/Runtime/LanbaiPoemDriver.cs",
+      "sha256": "60c644b8e7c67c8b358fcbb445c889c2295a9dd47fae4d3fe868a0c5596c6764"
+    },
+    {
+      "path": "Assets/Lanbai/Fonts/Editor/LanbaiPoemBake.cs",
+      "sha256": "0ca384271e4e6f3d973225c43e40c674bc5cef0f8634bad63ecb6369cb5f0439"
+    }
+  ],
+  "requests": [
+    {
+      "id": "delivery_20261025_0943_perf_before",
+      "state": "done",
+      "started": "2026-10-25 09:42:27",
+      "finished": "2026-10-25 09:44:23",
+      "error": ""
+    },
+    {
+      "id": "delivery_20261025_0948_sea_ready",
+      "state": "done",
+      "started": "2026-10-25 09:46:24",
+      "finished": "2026-10-25 09:46:36",
+      "error": ""
+    },
+    {
+      "id": "delivery_20261025_0949_sea_build_capture",
+      "state": "done",
+      "started": "2026-10-25 09:47:32",
+      "finished": "2026-10-25 09:48:19",
+      "error": ""
+    },
+    {
+      "id": "delivery_20261025_0953_tree_preflight",
+      "state": "done",
+      "started": "2026-10-25 09:52:18",
+      "finished": "2026-10-25 09:53:32",
+      "error": ""
+    },
+    {
+      "id": "delivery_20261025_0954_tree_run",
+      "state": "done",
+      "started": "2026-10-25 09:54:06",
+      "finished": "2026-10-25 09:54:07",
+      "error": ""
+    },
+    {
+      "id": "delivery_20261025_0958_tree_restore",
+      "state": "done",
+      "started": "2026-10-25 09:58:22",
+      "finished": "2026-10-25 09:58:28",
+      "error": ""
+    },
+    {
+      "id": "delivery_20261025_1000_tree_preview",
+      "state": "done",
+      "started": "2026-10-25 10:00:58",
+      "finished": "2026-10-25 10:01:32",
+      "error": ""
+    },
+    {
+      "id": "delivery_20261025_1010_restore",
+      "state": "done",
+      "started": "2026-10-25 10:06:53",
+      "finished": "2026-10-25 10:06:54",
+      "error": ""
+    },
+    {
+      "id": "delivery_20261025_1012_prepare_fixed",
+      "state": "done",
+      "started": "2026-10-25 10:10:38",
+      "finished": "2026-10-25 10:11:09",
+      "error": ""
+    },
+    {
+      "id": "delivery_20261025_1013_verify",
+      "state": "done",
+      "started": "2026-10-25 10:12:19",
+      "finished": "2026-10-25 10:14:45",
+      "error": ""
+    },
+    {
+      "id": "delivery_20261025_1016_preserve",
+      "state": "failed",
+      "started": "2026-10-25 10:15:42",
+      "finished": "2026-10-25 10:15:47",
+      "error": "Exception: Snapshot differs: preserved without changing original; inspect E:\\IDMdownload\\VRCC\\Backups\\continuation_20261025\\delivery_0940/unsaved_101547.unity\n  at Lanbai.Tests.LB_DeliveryChecks.PreserveDirty () [0x000c6] in E:\\IDMdownload\\VRCC\\dream\\Assets\\Lanbai\\Tests\\Editor\\LB_DeliveryChecks.cs:22 \r\n  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)\r\n  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <27124aa0e30a41659b903b822b959bc7>:0 \r\n--- End of stack trace from previous location where exception was thrown ---\r\n\r\n  at Lanbai.Remote.LB_Remote.StepCall (Lanbai.Remote.RStep s) [0x00130] in E:\\IDMdownload\\VRCC\\dream\\Assets\\Lanbai\\Editor\\Remote\\LB_Remote.cs:551 \r\n  at Lanbai.Remote.LB_Remote.Advance (System.Double now) [0x0027f] in E:\\IDMdownload\\VRCC\\dream\\Assets\\Lanbai\\Editor\\Remote\\LB_Remote.cs:445 \r\n  at Lanbai.Remote.LB_Remote.Tick () [0x00061] in E:\\IDMdownload\\VRCC\\dream\\Assets\\Lanbai\\Editor\\Remote\\LB_Remote.cs:313 "
+    },
+    {
+      "id": "delivery_20261025_1017_prepare",
+      "state": "failed",
+      "started": "2026-10-25 10:09:04",
+      "finished": "2026-10-25 10:09:28",
+      "error": "Exception: 脚本编译失败，错误在 LanbaiRemote/compile.log\n  at Lanbai.Remote.LB_Remote.StepRefresh (System.Double now) [0x00064] in E:\\IDMdownload\\VRCC\\dream\\Assets\\Lanbai\\Editor\\Remote\\LB_Remote.cs:528 \r\n  at Lanbai.Remote.LB_Remote.Advance (System.Double now) [0x00273] in E:\\IDMdownload\\VRCC\\dream\\Assets\\Lanbai\\Editor\\Remote\\LB_Remote.cs:444 \r\n  at Lanbai.Remote.LB_Remote.Tick () [0x00061] in E:\\IDMdownload\\VRCC\\dream\\Assets\\Lanbai\\Editor\\Remote\\LB_Remote.cs:313 "
+    },
+    {
+      "id": "delivery_20261025_1019_tree_msaa_control",
+      "state": "done",
+      "started": "2026-10-25 10:17:45",
+      "finished": "2026-10-25 10:17:52",
+      "error": ""
+    },
+    {
+      "id": "delivery_20261025_1020_tree_restore",
+      "state": "done",
+      "started": "2026-10-25 10:19:08",
+      "finished": "2026-10-25 10:19:09",
+      "error": ""
+    },
+    {
+      "id": "delivery_20261025_1022_tree_alpha",
+      "state": "done",
+      "started": "2026-10-25 10:19:48",
+      "finished": "2026-10-25 10:20:25",
+      "error": ""
+    },
+    {
+      "id": "delivery_20261025_1024_restore_and_ready",
+      "state": "done",
+      "started": "2026-10-25 10:22:54",
+      "finished": "2026-10-25 10:23:07",
+      "error": ""
+    },
+    {
+      "id": "delivery_20261025_1025_final_views",
+      "state": "done",
+      "started": "2026-10-25 10:23:56",
+      "finished": "2026-10-25 10:24:34",
+      "error": ""
+    }
+  ],
+  "heartbeat": {
+    "time": "2026-10-25T10:27:59.6840755-04:00",
+    "editorTime": 13084.543012600001,
+    "focused": false,
+    "playing": false,
+    "compiling": false,
+    "updating": false,
+    "compileFailed": false,
+    "scene": "Assets/Lanbai/Scenes/Lanbai_FullPreview.unity",
+    "sceneDirty": false,
+    "request": "",
+    "step": 0,
+    "phase": 0,
+    "unity": "2022.3.22f1",
+    "note": "loaded"
+  }
+}

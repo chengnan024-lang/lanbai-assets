@@ -1,0 +1,19 @@
+{
+  "id": "PaintedMetal012",
+  "author": "ambientCG / Lennart Demes",
+  "source": "https://ambientcg.com/a/PaintedMetal012",
+  "license": "CC0-1.0",
+  "license_url": "https://docs.ambientcg.com/license/",
+  "checked": "2026-10-25",
+  "source_release_date": "2020-05-24",
+  "download": {
+    "attributes": "2K-PNG",
+    "extension": "zip",
+    "url": "https://ambientcg.com/get?file=PaintedMetal012_2K-PNG.zip",
+    "size": 63940926
+  },
+  "status": "BLOCKED_HTTP_403",
+  "downloaded_bytes": 0,
+  "sha256": null,
+  "unity_imported": false
+}

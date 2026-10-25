@@ -1,0 +1,162 @@
+{
+  "id": "tree_sample",
+  "title": "样板树（D-44 #6）：三个对照机位 + 主座位 20 px/° 近景 + 头部微动的闪烁序列 + 性能",
+  "source": "总导演 D-44 #6、10-25 选形（A 为主、B 点缀）；Lamps/Tree/README_样板树.md；FromLocal/trees/README.md 的机位与位置",
+  "source_why": "灯包写在 Lamps/Tree/UnityTest/tree_sample.json；总工程师 10-25 审过拷进来（改了一处：perf 的状态用 id 不用 name，不然量数名是 perf.row.all_on.*，row_tris 那一项会“没量到”）。以后改这份，灯包的那份只作原稿",
+  "requires": {
+    "folders": [
+      "Assets/Lanbai/Common",
+      "Assets/Lanbai/Grading",
+      "Assets/Lanbai/Lamps/Tree"
+    ],
+    "files": [
+      "Assets/Lanbai/Scenes/Lanbai.unity",
+      "Assets/Lanbai/Lamps/Tree/Models/Tree_A1.fbx",
+      "Assets/Lanbai/Lamps/Tree/Models/Tree_A2.fbx",
+      "Assets/Lanbai/Lamps/Tree/Models/Tree_A3.fbx",
+      "Assets/Lanbai/Lamps/Tree/Models/Tree_B1.fbx"
+    ],
+    "types": [
+      "Lanbai.Lamps.LanbaiTreeBuilder",
+      "Lanbai.Grading.LanbaiGradeBuilder"
+    ],
+    "menus": [
+      "蓝白/Build/Sample Trees"
+    ]
+  },
+  "scene": {
+    "path": "Assets/Lanbai/Scenes/Lanbai_FullPreview.unity",
+    "mode": "copy",
+    "why": "Local adaptation: delivered grading volumes exist in FullPreview; original Lanbai lacks them. Copy mode retained."
+  },
+  "allowed_writes": [
+    "Assets/Lanbai/Lamps/Tree/Generated/**",
+    "Assets/Lanbai/Lamps/Tree/Prefabs/**",
+    "Assets/Lanbai/Lamps/Tree/Generated.meta",
+    "Assets/Lanbai/Lamps/Tree/Prefabs.meta"
+  ],
+  "allowed_writes_why": "蓝白/Build/Sample Trees 只写这两处（材质、预制体）；导入设置由 LanbaiTreeImport 在 Lamps/Tree/ 里改",
+  "settings": {
+    "vertex_compression_off": [
+      "Color"
+    ],
+    "vertex_compression_off_why": "风用顶点色（R 柔度、G 相位、B 叶）；D-40b #3 已经不压缩 Color",
+    "gate": false
+  },
+  "build": [
+    {
+      "type": "menu",
+      "path": "蓝白/Build/Sample Trees"
+    },
+    {
+      "type": "method",
+      "name": "Lanbai.Grading.LanbaiGradeBuilder.Solo",
+      "arg": "S1",
+      "expect": "solo S1",
+      "why": "第 1 幕的调色（对照图是站台雨夜；本地 9-30 的对照用的是 Night profile，所以和旧图的亮度不完全可比）"
+    },
+    {
+      "type": "method",
+      "name": "Lanbai.Lamps.LanbaiTreeBuilder.TestRow",
+      "arg": "",
+      "expect": "OK tree test row"
+    },
+    {
+      "type": "assert_object",
+      "path": "Lanbai_TreeTestRow"
+    }
+  ],
+  "cameras": {
+    "overview": {
+      "eye": [
+        4.6,
+        1.65,
+        -9.0
+      ],
+      "look_at": [
+        4.0,
+        5.0,
+        30.0
+      ],
+      "vfov": 55,
+      "w": 1600,
+      "h": 900,
+      "ref": "repo:Lamps/Tree/Docs~/compare_overview_blender.png",
+      "msaa": 4
+    },
+    "right": {
+      "eye": [
+        3.2,
+        1.65,
+        2.0
+      ],
+      "look_at": [
+        10.0,
+        5.0,
+        24.0
+      ],
+      "vfov": 55,
+      "w": 1600,
+      "h": 900,
+      "ref": "repo:Lamps/Tree/Docs~/compare_right_blender.png",
+      "msaa": 4
+    },
+    "left": {
+      "eye": [
+        -2.5,
+        1.65,
+        0.0
+      ],
+      "look_at": [
+        -10.0,
+        5.0,
+        26.0
+      ],
+      "vfov": 55,
+      "w": 1600,
+      "h": 900,
+      "ref": "repo:Lamps/Tree/Docs~/compare_left_blender.png",
+      "msaa": 4
+    },
+    "hero": {
+      "eye": [
+        0.55,
+        1.7,
+        2.05
+      ],
+      "look_at": [
+        9.0,
+        6.0,
+        16.0
+      ],
+      "crop_deg": [
+        40,
+        30
+      ],
+      "ppd": 20,
+      "ref": "repo:Lamps/Tree/Docs~/hero_20ppd_blender.png",
+      "msaa": 4
+    }
+  },
+  "cameras_why": "前三个 = FromLocal/trees/README.md 的机位（Unity 世界，垂直 55°，1600×900）；hero = 主座位（D-40b #1）看右手第一棵树的树冠，20 px/°（D-40b #2）",
+  "shots": [
+    {
+      "id": "right",
+      "cam": "right"
+    }
+  ],
+  "sequences": [],
+  "sequences_why": "总导演 10-25 第 2 条：叶子不能闪。hero 是 LOD0 近景，right 里有 LOD1 / LOD2 的远树。static 是对照（只剩画面自己的时间噪声，比如风）",
+  "perf": [],
+  "checks": [],
+  "headset_checklist": [
+    "坐在主座位看右手第一棵树：叶簇边缘不爬、不闪；风是慢的摆，不是抖",
+    "两只眼各闭一次：叶卡、剪影卡（远处）两眼一致（alpha-to-coverage 需要 MSAA：VRChat 默认开）",
+    "钠灯下：迎灯的叶团是暗的橄榄 / 琥珀，不是亮绿；其余是剪影，比背后的天暗",
+    "远处的树（LOD2 两张交叉卡）走过去时不读成两块板"
+  ],
+  "manual": [
+    "Frame Debugger 看一棵 LOD0：两个 draw（树皮、叶），叶在 AlphaTest 队列、AlphaToMask 开"
+  ],
+  "local_note": "Controlled baseline: MSAA4 enabled, original leaf shader still unchanged; only right shot, not full acceptance."
+}
