@@ -155,7 +155,13 @@ class Act06Scene:
         col = A6.COL
         self.sky = C.read_hdr(SKY_HDR).astype(np.float64)
         self.fsky = PR.fog_sky(self.sky)
-        self.scene = VR.Scene(self.vol, self.layers, sun, np.array(col['SunColor']) * SUN_K,
+        # the sun's colour in the volume: the bible's shaft gold #FFD9A8 at the dawn card sun's luminance. The card sun
+        # (6.37, 2.28, 0.34) is red-orange: scattered in a thin puff seen from below and mixed with the blue sky light it
+        # read lavender (310 up: 16 % in the D-21 band; #FFC47A 6.7 %; #FFD9A8 0)
+        card_sun = np.array(col['SunColor'])
+        gold = C.hex_lin('#FFD9A8')
+        gold = gold * float(card_sun @ VR.LUMA) / float(gold @ VR.LUMA)
+        self.scene = VR.Scene(self.vol, self.layers, sun, gold * SUN_K,
                               np.array(col['SkyUpColor']) * AMB_K, np.array(col['GroundColor']) * AMB_K * 1.6,
                               fog_fn=self.fog, amb_k=1.0, ms=0.3)
 
@@ -224,7 +230,7 @@ def render(t, cam_name='hero', w=640, out=None, tag='', look=None, cabin=True, t
     L, hue, cc = C.hue_chroma(codes.reshape(-1, 3))
     m = dict(t=t, cam=cam_name, d=round(float(d), 1), eye_y=round(float(eye[1]), 1), APL=round(float((codes @ C.LUMA).mean()), 1),
              sun_visible=round(sun_vis, 3), purple_D21=round(float(((hue >= 285) & (hue <= 330) & (cc > 12)).mean()), 4),
-             cloud_cover_px=round(float(((1 - Tc) > 0.5).mean()), 3), sea_px=round(float(((sea) & (Tc > 0.5) & win).mean()), 3))
+             cloud_cover_px=round(float(((1 - Tc) > 0.5).mean()), 3), sea_px=round(float(((sea) & (ts < 60000.0) & (Tc > 0.5) & win).mean()), 3))   # beyond 60 km the sea is fog (horizon haze)
     if out:
         os.makedirs(out, exist_ok=True)
         Image.fromarray(np.clip(codes, 0, 255).astype(np.uint8)).save(os.path.join(out, f'{tag}{cam_name}_t{t:.1f}.png'))

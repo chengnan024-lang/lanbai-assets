@@ -110,7 +110,7 @@ class Scene:
     def hg(self, cos, g):
         return (1 - g * g) / (4 * np.pi * (1 + g * g - 2 * g * cos) ** 1.5)
 
-    def march(self, eye, V, t, max_d=60000.0, depth=None, near=0.5, steps_max=520):
+    def march(self, eye, V, t, max_d=60000.0, depth=None, near=0.5, steps_max=1400):
         """eye (3,), V (N, 3) unit. Returns (L premultiplied (N, 3), T (N,), first-hit distance (N,))"""
         N = len(V)
         eye = np.asarray(eye, float)
