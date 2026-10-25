@@ -111,6 +111,7 @@ public class LanbaiCabinDriver : UdonSharpBehaviour
     private Vector4 _amb = new Vector4(-1f, 0f, 0f, 0f), _dial = new Vector4(-1f, 0f, 0f, 0f), _seat;
     private int _glassOn = -1;
     private float[] _paneFadeAt;               // per pane: fade at which it goes (computed once from its bounds)
+    private float[] _paneZen;                  // per pane: D-46 zenith term at its centre (before the fade ramp)
     private float[] _paneT;                    // per pane: timeline second the fade passes it (1e9 = never)
     private float[] _paneBase;                 // per pane: material _TintStrength, _BaseAlpha, _DropOpacity, (spare)
     private bool _paneFading;
@@ -517,10 +518,28 @@ public class LanbaiCabinDriver : UdonSharpBehaviour
         return 1f - Mathf.Clamp01((t - t0) / Mathf.Max(glassFadeSeconds, 0.01f));
     }
 
-    // tau(P) = fade - 0.45 (1 - hN) - 0.25 (1 - fN) - 0.35 (1 - exp(-d_sky / 0.8)); the pane goes when tau > median
+    // D-46 zenith term (= LanbaiZenithTerm with the Lanbai/Cabin defaults _ErodeZenith (0.55, 1.95, 2.50, 0.50),
+    // _ErodeZenithShape (0.15, 2.0, 2.40, 2.50)), without the fade ramp
+    private float PaneZen(Vector3 p)
+    {
+        float dx = (p.x - 0.55f) / 2.0f;
+        float dz = Mathf.Max(Mathf.Max(1.95f - p.z, p.z - 2.50f), 0f);
+        float u = Mathf.Clamp01((p.y - 2.40f) / 0.10f);
+        return 0.50f * Mathf.Exp(-Mathf.Sqrt(dx * dx + dz * dz) / 0.15f) * u * u * (3f - 2f * u);
+    }
+
+    // the pane's tau at fade f, plus its threshold: fade + zenith x ramp (_ErodeZenithRamp 0.050 -> 0.075)
+    private float PaneTau(int i, float f)
+    {
+        return f + _paneZen[i] * Mathf.Clamp01((f - 0.050f) / 0.025f);
+    }
+
+    // tau(P) = fade - 0.45 (1 - hN) - 0.25 (1 - fN) - 0.35 (1 - exp(-d_sky / 0.8)) (+ D-46 zenith term); the pane goes
+    // when tau > median
     private void PaneThresholds()
     {
         _paneFadeAt = new float[glassRenderers.Length];
+        _paneZen = new float[glassRenderers.Length];
         for (int i = 0; i < glassRenderers.Length; i++)
         {
             Renderer r = glassRenderers[i];
@@ -532,6 +551,7 @@ public class LanbaiCabinDriver : UdonSharpBehaviour
             float dSky = Mathf.Sqrt(qx * qx + qz * qz + (p.y - 2.62f) * (p.y - 2.62f));
             float e = Mathf.Exp(-dSky / 0.8f);
             _paneFadeAt[i] = glassErodeMedian + 0.45f * (1f - hN) + 0.25f * (1f - fN) + 0.35f * (1f - e);
+            _paneZen[i] = PaneZen(p);
         }
         // the time each threshold is crossed: Fade is 0 before F2h, non-decreasing to act 11 (then 0 again)
         _paneT = new float[glassRenderers.Length];
@@ -540,10 +560,10 @@ public class LanbaiCabinDriver : UdonSharpBehaviour
         {
             float thr = _paneFadeAt[i];
             float lo = tF2h, hi = tAct11 - 0.001f;
-            if (Fade(hi) < thr) { _paneT[i] = 1e9f; }
+            if (PaneTau(i, Fade(hi)) < thr) { _paneT[i] = 1e9f; }
             else
             {
-                for (int it = 0; it < 30; it++) { float m = 0.5f * (lo + hi); if (Fade(m) >= thr) hi = m; else lo = m; }
+                for (int it = 0; it < 30; it++) { float m = 0.5f * (lo + hi); if (PaneTau(i, Fade(m)) >= thr) hi = m; else lo = m; }
                 _paneT[i] = hi;
             }
             // D-33 #7a: a pane in the door box (the folding leaves' glass) goes with the door group, at half its bias

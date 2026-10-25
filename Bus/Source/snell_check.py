@@ -8,6 +8,7 @@
     不在就穿过去接着打（和 zhuangzi_check.py 一样）；立柱吃 _FadeResist 0.3。
 分开报：经天窗玻璃看到的、经别的玻璃（斜面窗、侧窗）看到的、经侵蚀出来的洞看到的。
 用的是现在这辆车（build_bus.build()），不是阿白截图里的旧车。
+D-46（总导演 10-25）：侵蚀场加了“主座位正上方的顶棚先走”这一项（cabin_numpy.zenith_term）；--before 量没加之前的场。
 
     ~/bpy/bin/python Bus/Source/snell_check.py [--step 1] [--times 380,387,...]
 """
@@ -36,7 +37,8 @@ SNELL_EL = 90.0 - math.degrees(math.asin(1.0 / 1.333))      # 41.4 deg
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--step', type=float, default=1.0)
-    ap.add_argument('--times', default='380,387,395,410,430,460,500,550,600,644.96')
+    ap.add_argument('--times', default='370,375,380,384,387,395,410,430,446,460,500,506,550,600,644.96')
+    ap.add_argument('--before', action='store_true', help='the field before D-46 (no zenith term), for comparison')
     a = ap.parse_args()
     build_bus.build()
     bvh, owner, mat = scene_bvh()
@@ -70,7 +72,7 @@ def main():
                         continue
                     p = np.array([h[0].x, h[0].z, h[0].y])
                     resist = 0.30 if 'Steel' in mn else 0.0
-                    s = CN.erode_field(p[None], fade, resist=resist, hole_open=hole)[0]
+                    s = CN.erode_field(p[None], fade, resist=resist, hole_open=hole, zen=None if a.before else CN.ERODE_ZENITH)[0]
                     if s < 0:
                         through_hole = True
                         continue
@@ -101,9 +103,11 @@ def main():
               'zenith<=20deg visible %5.1f%%  blocked by %s'
               % (t, fade, 100 * frac['visible'], 100 * frac['skylight'], 100 * frac['other_glass'], 100 * frac['eroded_hole'],
                  100 * zf['visible'], ', '.join('%s %.1f%%' % (k, 100 * v / tot) for k, v in top[:4])))
-    out = os.path.join(HERE, '..', 'Docs~', 'viewcheck', 'snell_hero.json')
+    out = os.path.join(HERE, '..', 'Docs~', 'viewcheck', 'snell_hero%s.json' % ('_before_d46' if a.before else ''))
     json.dump(dict(_about='hero eye, the Snell window cone (elevation >= %.1f deg, solid-angle weighted), the current bus, '
-                          'with the act erosion fade(t) (snell_check.py)' % SNELL_EL,
+                          'with the act erosion fade(t) (snell_check.py)%s' % (SNELL_EL, ', the field BEFORE D-46 (no zenith term)'
+                                                                                if a.before else ', D-46 zenith term on'),
+                   targets_d46={'387': 'cone >= 25 %', '446': 'cone >= 35 %', '506': 'cone >= 45 %, zenith 20 deg >= 30 %'},
                    eye=list(B.EYE), step_deg=a.step, rows=rows), open(out, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     print('[snell] ->', os.path.normpath(out))
 

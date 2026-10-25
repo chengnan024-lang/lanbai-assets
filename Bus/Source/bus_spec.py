@@ -10,6 +10,7 @@
 - 两片挡风 + 细中柱（D-28），中柱 x −0.198（离中线 2 cm，夹在河伯 −25° 与银心 −30° 之间）；挡风包过两个前角。
 - 真车里从主座位看：挡风 −56 … +20.5°，门洞 +21.8 … +37°，门后柱 +37 … +42°，自己的侧窗 +42° 起。
 """
+import os
 import math
 
 # ---------------------------------------------------------------- 合同里的点（别的包在用，改之前先问总导演）
@@ -91,9 +92,19 @@ RADIO_C = (0.165, 1.461, 3.107)     # = 眼位 + 1.15 m @ az −20 / el −12（
 DASH_Z0 = 3.08
 DASH_TOP = 1.24
 TUBE_X = (XC - 0.55, XC + 0.55)     # 两排管灯
-TUBE_LEN = 1.15                     # 4 ft T8（1149 mm）
-TUBE_Z = [(-3.38 + i * TUBE_LEN, -3.38 + (i + 1) * TUBE_LEN) for i in range(5)]   # 右排停在天窗后沿之前（2.37）
-TUBE_Z_L = [(-3.10 + i * (TUBE_LEN + 0.12), -3.10 + i * (TUBE_LEN + 0.12) + TUBE_LEN) for i in range(5)]
+# D-46b（总导演 10-25 选 A）：灯罩 0.95 m，里面是 ЛБ-30（909 mm、30 W，那个年代苏联车里最常见的管）；圣经 4.3 的 1.2 m 改了。
+# 下面每一段是“灯位”= 灯罩 + 两头各 2 cm（build_bus.tubes 往里缩 2 cm 做灯罩，bake_lightmap 的面光再短 2 cm）。
+# 右排：主座位抬头 20° 以内（灯罩底那个高度上 z 1.73..2.37）不能有灯，所以最前那根的灯罩前端停在 1.73，5 根从 −3.45 均匀排过来。
+# 左排两种，出图给总导演挑（环境变量 LANBAI_TUBE_LEFT）：A1 = 和右排对齐；A2 = 留在原来 5 个中心（间距 1.27），只是变短。
+TUBE_DIFF = 0.95
+TUBE_LEN = TUBE_DIFF + 0.04
+_P = (1.73 - (-3.45) - TUBE_DIFF) / 4                              # 1.0575
+TUBE_Z = [(-3.45 + i * _P - 0.02, -3.45 + i * _P + TUBE_DIFF + 0.02) for i in range(5)]
+TUBE_LEFT = os.environ.get('LANBAI_TUBE_LEFT', 'A2')
+if TUBE_LEFT == 'A1':
+    TUBE_Z_L = list(TUBE_Z)
+else:
+    TUBE_Z_L = [(c - TUBE_LEN / 2, c + TUBE_LEN / 2) for c in (-2.525 + i * 1.27 for i in range(5))]
 
 
 def roof_y(x_rel):

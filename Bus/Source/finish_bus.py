@@ -8,6 +8,7 @@
   Bus_Exterior_LOD0 / _LOD1   车身外皮 + 外部件（灯、保险杠、镜、雨刮以外）            Lanbai/Cabin（外观参数）
   Cabin_Static                车厢里所有不动的东西（内壁、顶棚、地板、座椅、仪表台…） Lanbai/Cabin，uv1 = _CabinTubeLM
   Seat_*                      D-36 每个座位一个物体（uv0 = 零件图集，uv1 = _CabinTubeLM，和 Cabin_Static 同一张）
+  Seat_*_LOD1 / _LOD2         每个座位减到 50 % / 25 % 的两份（导出时做，seat_lods；LanbaiBusBuild 把三份放进一个 LODGroup）
   Window_R1 / Pole_R0         D-40 #1 切片用：主座位侧窗的车厢里那一半（WinR1_*）、右边第一根立柱（PoleR0*），
                               从 Cabin_Static 里分出来（SEPARATE），uv1 = _CabinTubeLM（同一张）
                               这三类的 uv 层顺序都是 UVMap, UVLightmap, UVMetric（lm_uv_order；Unity 按层的顺序当 uv0/1/2）
@@ -509,6 +510,30 @@ def lm_uv_order(objs):
     return changed
 
 
+# D-36 budget: every seat gets two lighter copies, Seat_<inst>_LOD1 (50 %) and _LOD2 (25 %); LanbaiBusBuild puts the
+# three in one LODGroup (LOD1 from about 3 m, LOD2 from about 8 m)
+SEAT_LODS = ((1, 0.5), (2, 0.25))
+
+
+def seat_lods(objs):
+    """Seat_<inst>_LOD1 / _LOD2: the seat collapse-decimated, uvs, uv1 and the per-seat colour carried along by the
+    collapse. Checked by rendering the albedo atlas (and _CabinTubeLM on uv1) on LOD0 and on the copy from the same
+    camera: SeatR at 3 m on LOD1 differs by 0.7 / 255 on average (p99 11), at 8 m on LOD2 by 1.0 (p99 11). Made at
+    export, after bake_lightmap.py is done with the .blend, so the copies never shadow their LOD0 in the light map."""
+    made = []
+    for ob in [o for o in objs if o.type == 'MESH' and o.name.startswith('Seat_') and '_LOD' not in o.name]:
+        for k, ratio in SEAT_LODS:
+            c = ob.copy()
+            c.data = ob.data.copy()
+            c.name = c.data.name = '%s_LOD%d' % (ob.name, k)
+            bpy.context.scene.collection.objects.link(c)
+            md = c.modifiers.new('dec', 'DECIMATE')
+            md.ratio = ratio
+            BB.apply_mods(c)
+            made.append(c)
+    return made
+
+
 def build_all(ao_samples, bake_parts=True):
     BB.build(open_door=True)
     objs = {o.name: o for o in bpy.data.objects}
@@ -767,6 +792,8 @@ def main():
         bpy.ops.wm.save_as_mainfile(filepath=a.blend)
         objs = list(out.values()) + extra
     door_rows = door_pivots({o.name: o for o in objs})
+    lods = seat_lods(objs)
+    objs += lods
     # every mesh gets a vertex colour: without one Unity feeds white and Lanbai/Cabin reads full grime / wear / fade
     # (review r2). Zero = clean; Cabin_Static and the curtains keep theirs.
     for o in objs:
@@ -795,8 +822,8 @@ def main():
         else:
             expect[o.name] = (0, None)
     # the render harness shell 'paz672' (Engineering/render_harness: --bus fbx:Bus/Models/Bus_HarnessShell_paz672.fbx):
-    # everything but the glass (an FBX glass imports opaque there) and the LOD1 copy
-    shell = [o for o in objs if o.type == 'MESH' and not o.name.startswith('Glass_') and not o.name.endswith('_LOD1')]
+    # everything but the glass (an FBX glass imports opaque there) and the LOD copies
+    shell = [o for o in objs if o.type == 'MESH' and not o.name.startswith('Glass_') and not o.name.endswith(('_LOD1', '_LOD2'))]
     export_fbx(os.path.join(a.out, 'Bus_HarnessShell_paz672.fbx'), shell)
     lay = layout(out)
     lay['door_panels'] = door_rows
@@ -805,6 +832,9 @@ def main():
     lay['parts'] = list(json.loads(bpy.context.scene.get('lb_parts', '{}')).values())
     lay['stats'] = {o.name: dict(verts=len(o.data.vertices), tris=sum(len(p.vertices) - 2 for p in o.data.polygons)) for o in objs if o.type == 'MESH'}
     lay['stats_total_tris'] = sum(v['tris'] for v in lay['stats'].values())
+    # what is drawn up close: every LOD0 (the LOD1 / LOD2 copies take over only further away)
+    lay['stats_lod0_tris'] = sum(v['tris'] for k, v in lay['stats'].items() if not k.endswith(('_LOD1', '_LOD2')))
+    lay['seat_lods'] = dict(ratios={'LOD%d' % k: r for k, r in SEAT_LODS}, objects=[o.name for o in lods])
     json.dump(lay, open(os.path.join(a.out, 'BusLayout.json'), 'w'), ensure_ascii=False, indent=1)
     rep = readback(fbx, expect)
     json.dump(rep, open(os.path.join(a.out, 'Bus_fbx_readback.json'), 'w'), ensure_ascii=False, indent=1)
@@ -815,7 +845,8 @@ def main():
     # what Unity will see: mesh.colors = the first colour set, which must be 'Col'
     bad += ['%s colours %s' % (k, v['colours']) for k, v in rep.items()
             if isinstance(v, dict) and v['colours'] and v['colours'][0] != 'Col']
-    print('[finish] %d objects, %d tris total, readback problems: %s, %s' % (len(objs), lay['stats_total_tris'], bad or 'none', info))
+    print('[finish] %d objects, %d tris total (%d in LOD0), readback problems: %s, %s'
+          % (len(objs), lay['stats_total_tris'], lay['stats_lod0_tris'], bad or 'none', info))
 
 
 if __name__ == '__main__':

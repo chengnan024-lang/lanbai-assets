@@ -19,6 +19,8 @@ sys.path.insert(0, HERE)
 import build_bus  # noqa: E402
 import bus_spec as B  # noqa: E402
 import scene_final as SF  # noqa: E402
+sys.path.insert(0, os.path.join(ROOT, 'Cabin', 'Tools~'))
+import cabin_numpy as CN  # noqa: E402   (the D-46 zenith-term constants = the Lanbai/Cabin defaults)
 
 lin = build_bus.srgb2lin
 
@@ -101,6 +103,17 @@ def erosion_field(nt, fade, resist=0.0):
     tau = _m(nt, 'SUBTRACT', tau, _m(nt, 'MULTIPLY', _m(nt, 'SUBTRACT', 1.0, fN), 0.25))
     tau = _m(nt, 'SUBTRACT', tau, _m(nt, 'MULTIPLY', _m(nt, 'SUBTRACT', 1.0, e), 0.35))
     tau = _m(nt, 'SUBTRACT', tau, resist)
+    # D-46 (LanbaiZenithTerm): in 7a the ceiling over the hero seat goes first, then spreads sideways
+    zx, zz0, zz1, zc = CN.ERODE_ZENITH
+    zr, zax, zy0, zy1 = CN.ERODE_ZENITH_SHAPE
+    w = min(max((fade - CN.ERODE_ZENITH_RAMP[0]) / (CN.ERODE_ZENITH_RAMP[1] - CN.ERODE_ZENITH_RAMP[0]), 0.0), 1.0)
+    if w > 0:
+        dx = _m(nt, 'DIVIDE', _m(nt, 'SUBTRACT', x, zx), zax)
+        dz = _m(nt, 'MAXIMUM', _m(nt, 'MAXIMUM', _m(nt, 'SUBTRACT', zz0, zu), _m(nt, 'SUBTRACT', zu, zz1)), 0.0)
+        g = _m(nt, 'EXPONENT', _m(nt, 'DIVIDE', _m(nt, 'SQRT', _m(nt, 'ADD', _m(nt, 'MULTIPLY', dx, dx), _m(nt, 'MULTIPLY', dz, dz))), -zr))
+        u = _m(nt, 'MINIMUM', _m(nt, 'MAXIMUM', _m(nt, 'DIVIDE', _m(nt, 'SUBTRACT', yu, zy0), zy1 - zy0), 0.0), 1.0)
+        sm = _m(nt, 'MULTIPLY', _m(nt, 'MULTIPLY', u, u), _m(nt, 'SUBTRACT', 3.0, _m(nt, 'MULTIPLY', u, 2.0)))
+        tau = _m(nt, 'ADD', tau, _m(nt, 'MULTIPLY', _m(nt, 'MULTIPLY', g, sm), zc * w))
     tau_raw = tau
     # protections: the seat sphere (0.9 m round the hero seat) until 0.97; the floor patch until 0.65
     ex, ey, ez = B.EYE
@@ -295,23 +308,25 @@ def act_material(m_src, lm_img, P, ambient, tubes):
     return m
 
 
+# the objects on _CabinTubeLM (uv 'UVLightmap'), as LanbaiBusBuild.ModeFor / bake_lightmap.py: Cabin_Static, the D-36 seats
+# and the D-40 #1 slice pieces finish_bus exports on their own (Window_R1, Pole_R0). act_material() gives them the cabin
+# terms, so erode_everything_else() must leave them alone (they already erode in act_material).
+TUBE_LM = ('Cabin_Static', 'Seat_', 'Window_', 'Pole_')
+
+
 def pane_fade_at(o):
-    """LanbaiCabinDriver.PaneThresholds: the fade at which a BusGlass pane is switched off (tau at its centre > median)."""
+    """LanbaiCabinDriver.PaneThresholds: the fade at which a BusGlass pane is switched off (tau at its centre > median,
+    with the D-46 zenith term: cabin_numpy.pane_fade_at)."""
     from mathutils import Vector
     vs = [o.matrix_world @ v.co for v in o.data.vertices]
     c = sum(vs, Vector()) / max(len(vs), 1)
-    x, y, z = c.x, c.z, c.y                                   # blender -> unity
-    hN = min(max((y - 0.62) / 2.00, 0.0), 1.0)
-    fN = min(max((z + 3.65) / 7.15, 0.0), 1.0)
-    qx, qz = max(abs(x - 0.55) - 0.30, 0.0), max(abs(z - 2.80) - 0.30, 0.0)
-    e = math.exp(-math.sqrt(qx * qx + qz * qz + (y - 2.62) ** 2) / 0.8)
-    return 0.025 + 0.45 * (1 - hN) + 0.25 * (1 - fN) + 0.35 * (1 - e)
+    return CN.pane_fade_at((c.x, c.z, c.y))                   # blender -> unity
 
 
 def erode_everything_else(objs, fade):
     """in Unity every Lanbai/Cabin and ThinCloth renderer clips on the same field, and the driver switches the glass
     panes off as the fade passes them: do the same for the objects build() did not already erode."""
-    done = ('Cabin_Static', 'Seat_', 'Bus_Exterior', 'Bus_Door')
+    done = TUBE_LM + ('Bus_Exterior', 'Bus_Door')
     bpy.context.view_layer.update()                           # matrix_world of the appended objects (else identity)
     for n, o in objs.items():
         if o.type != 'MESH' or o.hide_render or n.startswith(done):
@@ -386,7 +401,7 @@ def build(ctx):
     lm = bpy.data.images.load(os.path.join(tex, 'Cabin_TubeLM.exr'))
     lm.colorspace_settings.name = 'Non-Color'
     for n_, cs in objs.items():
-        if n_ == 'Cabin_Static' or n_.startswith('Seat_'):          # D-36: the seats are their own objects
+        if n_.startswith(TUBE_LM) and cs.type == 'MESH':
             for i, m in enumerate(list(cs.data.materials)):
                 cs.data.materials[i] = act_material(m, lm, P, amb, P['tubes'])
     if 'Cabin_Tubes' in objs:

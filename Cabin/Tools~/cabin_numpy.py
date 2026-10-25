@@ -3,7 +3,7 @@
 #  Cabin/Tools~/cabin_numpy.py   蓝白 · Lanbai/Cabin 的颜色数学的 numpy 版（与 LanbaiCabinCommon.cginc 1:1）
 #
 #  Ports: tube LM term, cabin ambient x AO, bleach, erosion threshold (prose / literal) + noise remap + 3 cm rim,
-#  seat sphere / floor patch / D-26 hole, D-08 wound-light limiter and the D-21 band guard (CIE Lab, D65),
+#  seat sphere / floor patch / D-26 hole / D-46 zenith term, D-08 wound-light limiter and the D-21 band guard (CIE Lab, D65),
 #  D-40 #4 geometric specular AA (spec_aa = LanbaiCabinSpecAA).
 #  python3 Cabin/Tools~/cabin_numpy.py specaa   only the specular AA self-test (asserts + a table; writes no file)
 #  Self-test (python3 Cabin/Tools~/cabin_numpy.py): the specaa test, then asserts + writes PNGs into Cabin/Docs~/:
@@ -37,6 +37,11 @@ HOLE_MIN = (0.55, 3.04, 0.30, 0.26)
 HOLE_SHAPE = (0.22, 0.10, 0.70)
 DOOR_BOX_MIN = (0.80, 0.45, 2.38, 0.15)       # D-33 #7a: xyz min, w soft margin
 DOOR_BOX_MAX = (1.60, 3.00, 3.45)
+# D-46 (总导演 10-25): in 7a the ceiling straight above the hero seat goes first, from the zenith to the skylight's
+# near edge, then the hole spreads sideways (Bus/Source/snell_check.py: the Snell window through it)
+ERODE_ZENITH = (0.55, 1.95, 2.50, 0.50)       # seed segment x, z0 (just behind the hero zenith z 2.05), z1 (skylight's near edge), strength
+ERODE_ZENITH_SHAPE = (0.15, 2.0, 2.40, 2.50)  # falloff m, sideways stretch (x distance / 2), ceiling gate y lo .. hi (walls end 2.40)
+ERODE_ZENITH_RAMP = (0.050, 0.075)            # comes in with the fade 0.050 -> 0.075 (t 374.5 -> 388.2)
 
 
 def srgb2lin(h):
@@ -388,8 +393,18 @@ def sky_dist(pos):
     return np.hypot(dxz, pos[..., 1] - SKY_RECT[1])
 
 
-def erode_field(pos, fade, form=0, resist=0.0, hole_open=0.0, coef=ERODE_COEF, noise_range=NOISE_RANGE, door_bias=0.0):
-    """s = noise - tau (< 0 removed). Mirrors LanbaiCabinErodeField."""
+def zenith_term(pos, fade, zen=ERODE_ZENITH, shape=ERODE_ZENITH_SHAPE, ramp=ERODE_ZENITH_RAMP):
+    """D-46: added to tau. Mirrors LanbaiZenithTerm."""
+    w = np.clip((fade - ramp[0]) / max(ramp[1] - ramp[0], 1e-4), 0, 1)
+    dx = (pos[..., 0] - zen[0]) / max(shape[1], 0.1)
+    dz = np.maximum(np.maximum(zen[1] - pos[..., 2], pos[..., 2] - zen[2]), 0.0)
+    g = np.exp(-np.sqrt(dx * dx + dz * dz) / max(shape[0], 0.01))
+    return zen[3] * w * g * smoothstep(shape[2], shape[3], pos[..., 1])
+
+
+def erode_field(pos, fade, form=0, resist=0.0, hole_open=0.0, coef=ERODE_COEF, noise_range=NOISE_RANGE, door_bias=0.0,
+                zen=ERODE_ZENITH):
+    """s = noise - tau (< 0 removed). Mirrors LanbaiCabinErodeField. zen=None: without the D-46 term (the field before)."""
     pos = np.asarray(pos, float)
     hN = np.clip((pos[..., 1] - CABIN_BOX[0]) / (CABIN_BOX[1] - CABIN_BOX[0]), 0, 1)
     fN = np.clip((pos[..., 2] - CABIN_BOX[2]) / (CABIN_BOX[3] - CABIN_BOX[2]), 0, 1)
@@ -397,6 +412,8 @@ def erode_field(pos, fade, form=0, resist=0.0, hole_open=0.0, coef=ERODE_COEF, n
     front = fN if form else 1 - fN
     sky = e if form else 1 - e
     tau = fade - coef[0] * (1 - hN) - coef[1] * front - coef[2] * sky - resist
+    if zen is not None:
+        tau = tau + zenith_term(pos, fade, zen)
     if fade <= 0:
         tau = np.full_like(tau, -10.0)
     seat_rel = np.clip((fade - 0.97) / 0.03, 0, 1)
@@ -495,6 +512,26 @@ def fade(t):
     return f + (1 - f) * ss((t - L['F16']) / 1.2)
 
 
+def pane_fade_at(c, zen=True, median=0.025):
+    """LanbaiCabinDriver.PaneThresholds: the fade at which a glass pane centred at c (unity) goes (tau at its centre >
+    the noise median); with the D-46 zenith term the pane's tau is fade + zenith x ramp(fade), solved here."""
+    c = np.asarray(c, float)
+    hN = np.clip((c[1] - CABIN_BOX[0]) / (CABIN_BOX[1] - CABIN_BOX[0]), 0, 1)
+    fN = np.clip((c[2] - CABIN_BOX[2]) / (CABIN_BOX[3] - CABIN_BOX[2]), 0, 1)
+    e = np.exp(-sky_dist(c[None])[0] / ERODE_COEF[3])
+    thr = median + ERODE_COEF[0] * (1 - hN) + ERODE_COEF[1] * (1 - fN) + ERODE_COEF[2] * (1 - e)
+    if not zen:
+        return float(thr)
+    z = float(zenith_term(c[None], 1.0)[0])                    # the full term (ramp 1)
+    f0, f1 = ERODE_ZENITH_RAMP
+    if thr <= f0:
+        return float(thr)
+    if thr - z >= f1:
+        return float(thr - z)
+    k = z / (f1 - f0)                                           # on the ramp: f + k (f - f0) = thr
+    return float((thr + k * f0) / (1 + k))
+
+
 def door_bias(t, start=957.40, end=965.40):
     """LanbaiCabinDriver.DoorBias (D-33 #7a)."""
     if t < start or t >= L['W11']:
@@ -575,6 +612,7 @@ def curves():
 
 ZONES = {  # name: (x range, y range, z range) sample boxes inside the cabin (bus_spec numbers)
     'skylight rim 0-0.3 m': ((0.05, 1.05), (2.55, 2.62), (2.30, 3.30)),
+    'ceiling over the hero (D-46)': ((0.23, 0.87), (2.55, 2.62), (1.73, 2.37)),
     'front roof z>1.5': ((-1.0, 1.0), (2.55, 2.62), (1.5, 3.4)),
     'rear roof z<-1': ((-1.0, 1.0), (2.55, 2.62), (-3.5, -1.0)),
     'upper walls y 1.9-2.4': ((0.95, 1.0), (1.9, 2.4), (-3.4, 3.2)),
@@ -598,7 +636,7 @@ def erosion_zones():
     W, H = 900, 380
     img = Image.new('RGB', (W, H), (250, 250, 248))
     d = ImageDraw.Draw(img)
-    cols = [(200, 40, 40), (230, 120, 30), (120, 120, 20), (40, 140, 60), (40, 100, 200), (120, 60, 180), (80, 80, 80)]
+    cols = [(200, 40, 40), (230, 0, 140), (230, 120, 30), (120, 120, 20), (40, 140, 60), (40, 100, 200), (120, 60, 180), (80, 80, 80)]
     for form in (0, 1):
         for zi, z in enumerate(ZONES):
             v = [zone_fraction(z, f, form) for f in fades]
@@ -652,6 +690,14 @@ def selftest():
     assert np.all(erode_field(sp, 0.96) > 0)
     hc = np.array([[HOLE_FULL[0], 0.62, HOLE_FULL[1]]])
     assert erode_field(hc, fade(897.96), 0, 0, hole(897.96))[0] < 0
+    # 5b. D-46: the ceiling over the hero opens with the ramp; nothing below the ceiling gate changes; fade 0 still nothing
+    zc = np.random.default_rng(2).uniform([0.30, 2.55, 1.80], [0.80, 2.62, 2.30], (4000, 3))
+    assert np.mean(erode_field(zc, fade(372.0)) < 0) == np.mean(erode_field(zc, fade(372.0), zen=None) < 0)
+    assert np.mean(erode_field(zc, fade(387.0)) < 0) > 0.40 and np.mean(erode_field(zc, fade(387.0), zen=None) < 0) < 0.01
+    low = np.random.default_rng(3).uniform([-1.3, 0.62, -3.6], [1.0, 2.40, 3.4], (6000, 3))
+    for f_ in (0.05, 0.1, 0.25, 0.65, 0.97):
+        assert np.array_equal(erode_field(low, f_) < 0, erode_field(low, f_, zen=None) < 0), f_
+    assert np.all(erode_field(zc, 0.0) > 0)
     # 6. curves hit the bible §4.8 table
     assert abs(fade(L['F5']) - 0.25) < 1e-6 and abs(fade(1137.58) - (0.65 + 0.027 * 12)) < 0.01
     assert abs(bleach(L['F1']) - 0.10) < 1e-6 and abs(bleach(L['RISE']) - 0.5) < 1e-6

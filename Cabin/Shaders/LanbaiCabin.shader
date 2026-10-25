@@ -107,6 +107,9 @@ Shader "Lanbai/Cabin"
         _RimGain ("Rim  x CabinAmbient", Float) = 1.5
         _CabinBox ("Cabin box  floor y  crown y  rear z  front z", Vector) = (0.62, 2.62, -3.65, 3.50)
         _SkyRect ("Skylight  centre xyz  half", Vector) = (0.55, 2.62, 2.80, 0.30)
+        _ErodeZenith ("D-46 ceiling over the hero first  seed x  z0  z1  strength", Vector) = (0.55, 1.95, 2.50, 0.50)
+        _ErodeZenithShape ("D-46  falloff m  sideways stretch  ceiling gate y lo  hi", Vector) = (0.15, 2.0, 2.40, 2.50)
+        _ErodeZenithRamp ("D-46  comes in with the fade  from  to", Vector) = (0.050, 0.075, 0, 0)
         _SeatSphere ("Local seat sphere  xyz  r", Vector) = (0.55, 1.05, 2.05, 0.9)
         _FloorPatch ("Floor patch  x0 x1 z0 z1", Vector) = (-0.16, 1.04, 0.85, 2.45)
         _HoleFull ("D-26 hole full  cx cz hx hz", Vector) = (0.55, 2.925, 0.45, 0.475)

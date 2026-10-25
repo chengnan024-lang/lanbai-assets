@@ -18,6 +18,10 @@ import build_bus as BB
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TEX = os.path.normpath(os.path.join(HERE, '..', '..', 'Textures'))
+# D-46c (总导演 10-25): no leather grain on the vinyl any more (0.5 mm: 0.6-1.1 px at 20 px/deg, only shimmer far away);
+# its work on the highlight goes to the smoothness, which varies a little by patches (not by grain) inside 0.42-0.70.
+# LANBAI_VINYL_R5=1 gives the r5 vinyl back (grain + the old smoothness), for the A/B close-ups only.
+VINYL_R5 = os.environ.get('LANBAI_VINYL_R5') == '1'
 
 
 def lin(h):
@@ -127,7 +131,7 @@ def vinyl(worn=1.0, sun=0.0, name='M_Bus_Vinyl_Detail', base_mat='Vinyl', cols=N
     """ox-blood vinyl, thirty years (director r4 #2, D-40 #3: wear only from what touches it):
       - polish where people sit / slide / hold: the part's 'Zone' attribute R (seat.py writes it: the two sitting dents,
         the thighs over the front roll and the welt there, the hand grip on the back's top band) -> #6A3434, 0.62-0.70;
-      - the window-side top sun-faded: 'Zone' G -> #7A4A48 / 0.40;
+      - the window-side top sun-faded: 'Zone' G -> #7A4A48 / 0.42 (D-46c: smoothness 0.42-0.70, by patches, no grain);
       - edges, seams and the welt elsewhere more matte, dust in the cavities and along the piping;
       - grain + puckering wrinkles at the seams + a broad slack field; mottling (dye lots, body oil)."""
     c = dict(base='#5A2126', polish='#6A3434', mottle='#4A1B20', faded='#7A4A48', dust='#5B524A')
@@ -153,7 +157,8 @@ def vinyl(worn=1.0, sun=0.0, name='M_Bus_Vinyl_Detail', base_mat='Vinyl', cols=N
     bump.inputs['Strength'].default_value = 1.0
     bump.inputs['Distance'].default_value = 0.004
     nt.links.new(h, bump.inputs['Height'])
-    nt.links.new(_grain(g, 0.30, 0.35), bump.inputs['Normal'])
+    if VINYL_R5:
+        nt.links.new(_grain(g, 0.30, 0.35), bump.inputs['Normal'])
     nt.links.new(bump.outputs['Normal'], bs.inputs['Normal'])
     base = g.mix(polish, (*lin(c['base']), 1), (*lin(c['polish']), 1))
     mot = g.noise(P, 9.0, detail=5.0, rough=0.6)
@@ -203,10 +208,19 @@ def vinyl(worn=1.0, sun=0.0, name='M_Bus_Vinyl_Detail', base_mat='Vinyl', cols=N
     nt.links.new(base, bs.inputs['Base Color'])
     nt.links.new(g.math('ADD', h, g.math('MULTIPLY', crack_mask.outputs[0], -0.6)), bump.inputs['Height'])
     rough = g.math('SUBTRACT', 0.55, g.math('MULTIPLY', polish, 0.21))                # 0.45 -> 0.66 smoothness
-    rough = g.math('ADD', rough, g.math('MULTIPLY', g.math('SUBTRACT', mot.outputs['Fac'], 0.5), 0.06))
-    rough = g.math('ADD', rough, g.math('MULTIPLY', g.math('MULTIPLY', edge, unrub), 0.10))  # unrubbed edges / seams matte
-    rough = g.math('ADD', rough, g.math('MULTIPLY', dust, 0.15))
-    rough = g.math('ADD', g.math('MULTIPLY', rough, g.math('SUBTRACT', 1.0, faded)), g.math('MULTIPLY', faded, 0.60), clamp=True)
+    if VINYL_R5:
+        rough = g.math('ADD', rough, g.math('MULTIPLY', g.math('SUBTRACT', mot.outputs['Fac'], 0.5), 0.06))
+        rough = g.math('ADD', rough, g.math('MULTIPLY', g.math('MULTIPLY', edge, unrub), 0.10))  # unrubbed edges / seams matte
+        rough = g.math('ADD', rough, g.math('MULTIPLY', dust, 0.15))
+        rough = g.math('ADD', g.math('MULTIPLY', rough, g.math('SUBTRACT', 1.0, faded)), g.math('MULTIPLY', faded, 0.60), clamp=True)
+    else:
+        # D-46c: patches 10-20 cm across, +-0.05 smoothness (body oil, a wipe, a dye lot), soft-edged, no grain
+        patch = g.noise(P, 6.5, detail=1.0, rough=0.4)
+        rough = g.math('ADD', rough, g.math('MULTIPLY', g.math('SUBTRACT', patch.outputs['Fac'], 0.5), 0.20))
+        rough = g.math('ADD', rough, g.math('MULTIPLY', g.math('MULTIPLY', edge, unrub), 0.08))  # unrubbed edges / seams matte
+        rough = g.math('ADD', rough, g.math('MULTIPLY', dust, 0.10))
+        rough = g.math('ADD', g.math('MULTIPLY', rough, g.math('SUBTRACT', 1.0, faded)), g.math('MULTIPLY', faded, 0.58))
+        rough = g.math('MINIMUM', g.math('MAXIMUM', rough, 0.30), 0.58)                # smoothness 0.42 .. 0.70
     rough = g.math('ADD', g.math('MULTIPLY', rough, g.math('SUBTRACT', 1.0, crack_vis)), g.math('MULTIPLY', crack_vis, 0.80))
     nt.links.new(rough, bs.inputs['Roughness'])
     bs.inputs['Specular IOR Level'].default_value = 0.5

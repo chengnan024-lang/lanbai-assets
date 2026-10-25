@@ -7,7 +7,7 @@
 //
 //  Bible §4.8 '慢慢消失': bleach (_Udon_CabinBleach) then erosion (_Udon_CabinFade, clip on world-space 3D FBM,
 //  0.3-0.8 m patches). Threshold structure is the bible's:
-//      tau = fade - 0.45 (1 - heightN) - 0.25 (front term) - 0.35 (skylight term)
+//      tau = fade - 0.45 (1 - heightN) - 0.25 (front term) - 0.35 (skylight term)   (+ the D-46 zenith term)
 //  _ErodeForm 1 = the literal text (front term = front-ness, skylight term = exp(-d / 0.8)).
 //  _ErodeForm 0 = DEFAULT, the bible's own prose ("侵蚀从天窗的边开始，然后车顶与车头"): the two terms are
 //                 complemented (1 - front-ness, 1 - exp(-d / 0.8)) so the skylight edge and the front go FIRST.
@@ -33,6 +33,9 @@ float4 _ErodeNoise;           // x base patch size m 0.55, y FBM uniformise lo, 
 float4 _ErodeNoiseRange;      // x, y: the uniform noise is mapped to [x, y] before the compare (-0.20, 0.25)
 float4 _CabinBox;             // x floor y 0.62, y crown y 2.62, z rear z -3.65, w front z 3.50
 float4 _SkyRect;              // xyz skylight glass centre (0.55, 2.62, 2.80), w half size 0.30
+float4 _ErodeZenith;          // D-46 seed segment over the hero: x 0.55, z0 1.95 .. z1 2.50 (skylight's near edge), w strength 0.50
+float4 _ErodeZenithShape;     // x falloff m 0.15, y sideways stretch 2 (x distances / 2), zw ceiling gate y 2.40 .. 2.50
+float4 _ErodeZenithRamp;      // xy: the term comes in with the fade 0.050 -> 0.075 (t 374.5 -> 388.2)
 float  _FadeResist;           // subtracted from tau for this material (stanchions 0.30: '立柱最后走')
 float4 _SeatSphere;           // xyz local seat centre (world), w radius 0.9  (driver writes per client via MPB)
 float4 _FloorPatch;           // x0 x1 z0 z1 of the patch kept to act 9 (>= 1.2 x 1.6 m)
@@ -143,6 +146,20 @@ inline float LanbaiRectSD(float2 p, float2 c, float2 h, float r)
     return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r;
 }
 
+// D-46 (总导演 10-25, act 7a): the ceiling straight above the hero seat goes first - from the zenith to the skylight's
+// near edge, and the roof skin over it - then the hole spreads sideways, so the hero looking up sees the Snell window
+// through it (Bus/Source/snell_check.py: 387 s >= 25 %, 446 s >= 35 %, 506 s >= 45 % of the cone, zenith 20 deg >= 30 %).
+// Added to tau; only above the ceiling gate (the walls end at y 2.40: seats, stanchions, rails, walls are untouched), and
+// only once the fade passes _ErodeZenithRamp.x, so the first hole opens at ~375 s, not at F2h.
+inline float LanbaiZenithTerm(float3 posWS, float fade)
+{
+    float w = saturate((fade - _ErodeZenithRamp.x) / max(_ErodeZenithRamp.y - _ErodeZenithRamp.x, 1e-4));
+    float dx = (posWS.x - _ErodeZenith.x) / max(_ErodeZenithShape.y, 0.1);
+    float dz = max(max(_ErodeZenith.y - posWS.z, posWS.z - _ErodeZenith.z), 0.0);
+    float g = exp(-sqrt(dx * dx + dz * dz) / max(_ErodeZenithShape.x, 0.01));
+    return _ErodeZenith.w * w * g * smoothstep(_ErodeZenithShape.z, _ErodeZenithShape.w, posWS.y);
+}
+
 // The erosion field. Returns s = noise - tau (s < 0 = removed). With _Udon_CabinFade unset (0) and the hole shut
 // every pixel returns a large positive s. 'protectMode' is applied inside: seat sphere, floor patch, D-26 hole.
 inline float LanbaiCabinErodeField(float3 posWS, out float nUniform)
@@ -154,6 +171,7 @@ inline float LanbaiCabinErodeField(float3 posWS, out float nUniform)
     float frontTerm = _ErodeForm > 0.5 ? fN : 1.0 - fN;
     float skyTerm = _ErodeForm > 0.5 ? e : 1.0 - e;
     float tau = fade - _ErodeCoef.x * (1.0 - hN) - _ErodeCoef.y * frontTerm - _ErodeCoef.z * skyTerm - _FadeResist;
+    tau += LanbaiZenithTerm(posWS, fade);                            // D-46
     tau = fade > 0.0 ? tau : -10.0;                                  // fade 0 = nothing, exactly
     // D-33 #7a: the door group (folding leaves, door post, door grab, upper frame, the WinR1 front gasket) goes
     // before 965.4 so Zhuangzi's horizon column is clear. Inside a soft box, tau is pulled toward tau + 1 (+ the

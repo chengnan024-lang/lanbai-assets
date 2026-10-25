@@ -19,12 +19,13 @@ using UnityEngine.Rendering;
 
 public static class LanbaiBusBuild
 {
-    // internal: shared with LanbaiBusSliceBuilder (蓝白/Build/车 切片, same folder / assembly)
+    // internal: shared with LanbaiBusSliceBuilder (蓝白/Build/车 切片) and LanbaiBusCabinDropIn (蓝白/Build/车厢（先交）, D-44),
+    // same folder / assembly
     internal const string Root = "Assets/Lanbai/";
     internal const string FbxPath = Root + "Bus/Models/Bus.fbx";
     internal const string LayoutPath = Root + "Bus/Models/BusLayout.json";
     internal const string MatDir = Root + "Bus/Materials";
-    const string ProgDir = Root + "Bus/Programs";
+    internal const string ProgDir = Root + "Bus/Programs";
     internal const string Tex = Root + "Bus/Textures/";
     const string RainGlass = Root + "Rain/Textures/Glass/";
     const string RootName = "Lanbai_Bus";
@@ -200,6 +201,8 @@ public static class LanbaiBusBuild
             _rep.AppendLine("LODGroup Bus_Exterior: LOD0 > 12 % screen height, LOD1 > 0.5 %");
         }
         else _rep.AppendLine("WARNING: Bus_Exterior_LOD0 / LOD1 not found");
+        // 4b. D-36 seat LODs (finish_bus.seat_lods: Seat_<inst>_LOD1 / _LOD2)
+        _rep.AppendLine(GroupSeatLods(model.transform));
 
         // 5. seats (VRCStation) and colliders
         var seatRoot = new GameObject("Seats"); seatRoot.transform.SetParent(root.transform, false);
@@ -365,10 +368,10 @@ public static class LanbaiBusBuild
         switch (key)
         {
             case "Vinyl":
-                // CC0 scanned leather (Poly Haven leather_red_03, 30 cm tile): its normal only; colour stays the bible's
-                Detail(m, "Cabin_SeatLeather_N_0.30m.jpg", 0.35f, 0.30f, null);
+                // D-46c (director 10-25): no leather grain detail normal (0.5 mm grain is 0.6-1.1 px at 20 px/deg: only shimmer
+                // far away, and memory); the highlight's unevenness is in the smoothness (patches, 0.42-0.70)
                 m.SetColor("_WearColor", Hex("#6A3434")); m.SetFloat("_WearSmooth", 0.66f); m.SetFloat("_WearAmount", 1f);
-                m.SetColor("_SunFadeColor", Hex("#7A4A48")); m.SetFloat("_SunFadeSmooth", 0.40f); m.SetFloat("_SunFadeAmount", 1f);
+                m.SetColor("_SunFadeColor", Hex("#7A4A48")); m.SetFloat("_SunFadeSmooth", 0.42f); m.SetFloat("_SunFadeAmount", 1f);
                 m.SetColor("_CrackColor", Hex("#8A6A60")); m.SetFloat("_CrackSmooth", 0.20f); m.SetFloat("_CrackAmount", 1f);
                 break;
             case "SeatFrame":
@@ -390,8 +393,7 @@ public static class LanbaiBusBuild
                 m.SetVector("_HeightSmooth", new Vector4(1.62f, 2.42f, 0.80f, 1f)); m.SetFloat("_FadeResist", 0.3f); break;
             case "TubeDiffuser":
                 m.SetFloat("_EmitMode", 1f); m.SetVector("_EmissionColor", new Vector4(1.632f, 2.024f, 2.042f, 1f)); m.SetFloat("_BugDots", 1f); break;
-            case "Dash":       // textured vinyl dash (CC0 leather normal, finer), hands' wear on the edge (vertex G)
-                Detail(m, "Cabin_SeatLeather_N_0.30m.jpg", 0.4f, 0.15f, null);
+            case "Dash":       // vinyl dash, hands' wear on the edge (vertex G); D-46c: no leather grain detail normal either
                 m.SetColor("_WearColor", Hex("#3E3F40")); m.SetFloat("_WearSmooth", 0.45f); m.SetFloat("_WearAmount", 1f);
                 m.SetColor("_GrimeColor", Hex("#6A6355")); m.SetFloat("_GrimeAmount", 1f); break;
             case "Alu":        // window frames: dust / a little corrosion in the corners (vertex R)
@@ -422,9 +424,9 @@ public static class LanbaiBusBuild
         return m;
     }
 
-    static Material ClothMat(Shader sh)
+    internal static Material ClothMat(Shader sh, string folder = null)
     {
-        var m = GetOrCreate("M_Bus_Curtain_Cloth", sh);
+        var m = GetOrCreate("M_Bus_Curtain_Cloth", sh, folder);
         m.SetColor("_Color", Hex("#A9BCCB")); m.SetColor("_HemColor", Hex("#8898A8")); m.SetFloat("_Glossiness", 0.18f);
         m.SetTexture("_WeaveNormal", T(Tex + "Cabin_CurtainWeave_N_0.05m.png")); m.SetFloat("_WeaveScale", 0.3f); m.SetFloat("_WeaveTile", 20f);
         m.SetFloat("_Inward", 0f);
@@ -472,10 +474,11 @@ public static class LanbaiBusBuild
         // the atlas is the same for every seat of a type; the per-seat wear is in the vertex colours (finish_bus.seat_wear):
         // G polish where people sit, B window sun-fade, R grime in the crease
         m.SetColor("_WearColor", Hex("#6A3434")); m.SetFloat("_WearSmooth", 0.66f); m.SetFloat("_WearAmount", 0.8f);
-        m.SetColor("_SunFadeColor", Hex("#7A4A48")); m.SetFloat("_SunFadeSmooth", 0.40f); m.SetFloat("_SunFadeAmount", 0.8f);
+        m.SetColor("_SunFadeColor", Hex("#7A4A48")); m.SetFloat("_SunFadeSmooth", 0.42f); m.SetFloat("_SunFadeAmount", 0.8f);
         m.SetColor("_GrimeColor", Hex("#5B524A")); m.SetFloat("_GrimeAbsolute", 1f); m.SetFloat("_GrimeAmount", 0.5f);
         m.SetColor("_CrackColor", Hex("#8A6A60")); m.SetFloat("_CrackSmooth", 0.20f); m.SetFloat("_CrackAmount", 1f);   // bible 4.2 seam cracks: atlas mask B x vertex alpha (2-5 per seat)
-        Detail(m, "Cabin_SeatLeather_N_0.30m.jpg", 0.30f, 0.30f / Mathf.Max(pi.metres_per_uv, 0.01f), null);
+        // D-46c: no leather grain detail normal (the reset at the top of the material leaves _DetailNormal empty, scale 0);
+        // the atlas smoothness (mask G) varies by patches inside 0.42-0.70 instead (parts/materials.py vinyl)
     }
 
     static void Detail(Material m, string normal, float strength, float tileM, string mask)
@@ -503,7 +506,7 @@ public static class LanbaiBusBuild
     }
 
     // the backing UdonBehaviour's interactText / proximity (as LB_Udon.Commit does), by reflection
-    static void InteractText(Component usb, string text, float proximity)
+    internal static void InteractText(Component usb, string text, float proximity)
     {
         Type u = FindType("UdonSharpEditor.UdonSharpEditorUtility");
         MethodInfo get = u == null ? null : u.GetMethods(BindingFlags.Public | BindingFlags.Static)
@@ -526,6 +529,48 @@ public static class LanbaiBusBuild
     }
 
     // ------------------------------------------------------------------------------------------------ helpers
+    // D-36 budget: finish_bus.seat_lods exports every seat three times - Seat_<inst> (LOD0), Seat_<inst>_LOD1 (50 %) and
+    // Seat_<inst>_LOD2 (25 %). Each seat keeps its place and name; its two copies go under it and a LODGroup on it switches
+    // LOD1 in from about SeatLod1Dist and LOD2 from SeatLod2Dist for a headset's ~SeatLodFovDeg vertical field of view
+    // (a 60 deg desktop camera switches at about twice the distance; QualitySettings.lodBias stretches both). LOD2 is never
+    // culled inside the bus. Without the copies (an FBX from before seat_lods) nothing changes. Used by 蓝白/Build/车 and
+    // the D-44 drop-in (without it the three copies would all draw, one inside the other).
+    internal const float SeatLod1Dist = 3f, SeatLod2Dist = 8f, SeatLodFovDeg = 100f;
+
+    internal static string GroupSeatLods(Transform model)
+    {
+        int n = 0, missing = 0;
+        var seats = new List<Transform>();
+        foreach (var t in model.GetComponentsInChildren<Transform>(true))
+            if (t.name.StartsWith("Seat_") && !t.name.Contains("_LOD") && t.GetComponent<Renderer>() != null) seats.Add(t);
+        float perDist = 0.5f / Mathf.Tan(0.5f * SeatLodFovDeg * Mathf.Deg2Rad);
+        foreach (var s0 in seats)
+        {
+            var s1 = FindDeep(model, s0.name + "_LOD1");
+            var s2 = FindDeep(model, s0.name + "_LOD2");
+            if (s1 == null || s2 == null) { missing++; continue; }
+            if (s0.GetComponent<LODGroup>() != null) UnityEngine.Object.DestroyImmediate(s0.GetComponent<LODGroup>());
+            s1.SetParent(s0, true); s2.SetParent(s0, true);
+            var r0 = s0.GetComponent<Renderer>();
+            var r1 = s1.GetComponent<Renderer>();
+            var r2 = s2.GetComponent<Renderer>();
+            if (r1 == null || r2 == null) { missing++; continue; }
+            var b = r0.bounds;
+            float size = Mathf.Max(b.size.x, Mathf.Max(b.size.y, b.size.z));
+            float h1 = Mathf.Clamp(size * perDist / SeatLod1Dist, 0.003f, 1f);
+            float h2 = Mathf.Clamp(size * perDist / SeatLod2Dist, 0.002f, h1 - 0.001f);
+            var lg = s0.gameObject.AddComponent<LODGroup>();
+            lg.SetLODs(new LOD[] {
+                new LOD(h1, new Renderer[] { r0 }),
+                new LOD(h2, new Renderer[] { r1 }),
+                new LOD(0.001f, new Renderer[] { r2 }) });
+            lg.RecalculateBounds();
+            n++;
+        }
+        return "seat LODGroups " + n + " (LOD1 from ~" + SeatLod1Dist + " m, LOD2 from ~" + SeatLod2Dist + " m at " + SeatLodFovDeg + " deg vertical)"
+               + (missing > 0 ? "; " + missing + " seats without _LOD1 / _LOD2 (an FBX from before finish_bus.seat_lods): all LOD0" : "");
+    }
+
     internal static Transform FindDeep(Transform t, string name)
     {
         if (t.name == name) return t;
@@ -571,27 +616,27 @@ public static class LanbaiBusBuild
         AssetDatabase.CreateFolder(parent, Path.GetFileName(path));
     }
 
-    static void SetRef(SerializedObject so, string prop, UnityEngine.Object v)
+    internal static void SetRef(SerializedObject so, string prop, UnityEngine.Object v)
     {
         var p = so.FindProperty(prop); if (p == null) { _rep.AppendLine("  no field " + prop); return; }
         p.objectReferenceValue = v;
     }
-    static void SetInt(SerializedObject so, string prop, int v) { var p = so.FindProperty(prop); if (p != null) p.intValue = v; else _rep.AppendLine("  no field " + prop); }
-    static void SetBool(SerializedObject so, string prop, bool v) { var p = so.FindProperty(prop); if (p != null) p.boolValue = v; else _rep.AppendLine("  no field " + prop); }
-    static void SetVec3(SerializedObject so, string prop, Vector3 v) { var p = so.FindProperty(prop); if (p != null) p.vector3Value = v; else _rep.AppendLine("  no field " + prop); }
-    static void SetRefs(SerializedObject so, string prop, List<UnityEngine.Object> v)
+    internal static void SetInt(SerializedObject so, string prop, int v) { var p = so.FindProperty(prop); if (p != null) p.intValue = v; else _rep.AppendLine("  no field " + prop); }
+    internal static void SetBool(SerializedObject so, string prop, bool v) { var p = so.FindProperty(prop); if (p != null) p.boolValue = v; else _rep.AppendLine("  no field " + prop); }
+    internal static void SetVec3(SerializedObject so, string prop, Vector3 v) { var p = so.FindProperty(prop); if (p != null) p.vector3Value = v; else _rep.AppendLine("  no field " + prop); }
+    internal static void SetRefs(SerializedObject so, string prop, List<UnityEngine.Object> v)
     {
         var p = so.FindProperty(prop); if (p == null || !p.isArray) { _rep.AppendLine("  no array field " + prop); return; }
         p.arraySize = v.Count;
         for (int i = 0; i < v.Count; i++) p.GetArrayElementAtIndex(i).objectReferenceValue = v[i];
     }
-    static void SetVec3s(SerializedObject so, string prop, List<Vector3> v)
+    internal static void SetVec3s(SerializedObject so, string prop, List<Vector3> v)
     {
         var p = so.FindProperty(prop); if (p == null || !p.isArray) { _rep.AppendLine("  no array field " + prop); return; }
         p.arraySize = v.Count;
         for (int i = 0; i < v.Count; i++) p.GetArrayElementAtIndex(i).vector3Value = v[i];
     }
-    static void SetFloats(SerializedObject so, string prop, List<float> v)
+    internal static void SetFloats(SerializedObject so, string prop, List<float> v)
     {
         var p = so.FindProperty(prop); if (p == null || !p.isArray) { _rep.AppendLine("  no array field " + prop); return; }
         p.arraySize = v.Count;
