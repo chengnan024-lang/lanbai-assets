@@ -1,6 +1,54 @@
 # HANDOFF_LOG（云端 → 本地）
 
-新的在上面。
+新的在上面。**新的一条压过旧的一条。** 时间写的是北京时间（git 用 UTC）。
+
+> **2026-10-24 起，读这份日志的本地是 ChatGPT「阿白」**（10-24 已接管，D-40a #8、D-41）。先读根目录的 `HANDOFF_CHATGPT.md`：协作边界、第一次接管的步骤、回传协议都在那里。下面各条里的“你”指本地，现在就是阿白。旧条里“技术上怎么实现由你决定”（09-28）作废：技术架构归总工程师，高风险改动先备份并经小楠确认（`HANDOFF_CHATGPT.md` §F）。
+
+## 2026-10-25（北京 11:40）· 🔧 复测 gate_clouds_test：-03（U# 程序资产）的云端修法、测试工具都进 main 了
+同步：`Engineering/UnityTest/` `Common/` `Gate/GateLayout_v2.json` `Gate/Shaders/` `Gate/Runtime/` `Gate/Editor/` `Gate/GateDriver_Bake.json` `GateClouds/` `Tear/Lanbai_Tear.shader`
+不同步：`Gate/Source/` `Gate/Renders/`
+
+**先决条件：-05（内存和 C 盘）要先解决。** 小楠处理好以前不开 Unity，这一条不变。
+
+1. **云端合了什么**（main ac4f6a0）：
+   - D-41 的共用工具 `Common/Editor/LanbaiUdonPrograms.cs`：按 Type 查程序资产、复用已有的，新建的等 SDK 初始化到 2/2 再继续，不 Force Upgrade。所有包的搭建脚本都改成调它，包括 `GateClouds/Editor/LanbaiGateCloudsBuilder.cs`。
+   - 你本地那份“改成传 Type”的过渡修复，同步时会被列成“本地改过”。照 §F 处理：先备份，清单给小楠看，小楠同意后 `-Force` 覆盖。这是对的，云端的修法已经包含了你那一行。
+   - 测试工具 `Engineering/UnityTest/`（`README_UnityTest.md`）和同步脚本 v2：按 commit 列文件，部分检出也能用；`-Repo` 必填，HEAD 必须等于 origin/main；`.meta` 不同步。
+2. **第一次用测试工具之前**：照 `README_UnityTest.md` §0 第 3 步写 `CONSENT.json`，要有小楠的同意和备份路径。预检会查：C 盘 ≥ 10 GB、工程盘 ≥ 10 GB、可用内存 ≥ 6 GB，不够就 BLOCKED。
+3. **怎么复测**：
+   - 同步（先演练，再 `-Apply`）；
+   - 点 `蓝白/U#/Program Asset Status (read only)`，看三个程序资产的两个版本；
+   - 跑 `蓝白/Test/Run gate_clouds_test`，或者用你自己的 `LB_GateContinuation` 流程，两种都可以；能用工具的话，两种各跑一次对照更好。
+   - 正常的话会看到 `[GateClouds] built: deck, 38 cards (10 towers), 6 beams`，没有 outdated script version。等了 180 秒还不好：先重启 Unity，**不要点 Force Upgrade**。
+4. 结果推到 `FromLocal/gate_clouds_test/<运行>/`，`问题.md` 里更新 -03、-04（-04 的网格名问题，云端也修了）。
+
+问题处理：gate_clouds_test-03 → 云端已修 ac4f6a0（等你桌面复测）
+问题处理：gate_clouds_test-04 → 云端已修 ac4f6a0（等你桌面复测）
+
+## 2026-10-25（北京 05:40）· ✅ 收到第一次接管和门测试：谢谢；云端在修什么，你接下来怎么做
+**阿白，谢谢，做得非常稳。** 备份先做、逐个文件核对；pull 失败就停，没有手修；用另一个浅克隆加部分检出绕开中断，并且核对过 SHA；把失败写成了 S0，没有把编译过了当成测过了；正式场景、ProjectSettings、依赖都没有乱动。这正是 `HANDOFF_CHATGPT.md` 想要的做法。总导演的裁决在 `Art/总导演裁决.md` D-41；交接文档已更新到第 2 版（状态改成“已接管”，§A 的环境照你核对的写）。
+
+**问题处理：**
+- 问题处理：gate_clouds_test-01 定 S2（不再阻断：浅克隆加部分检出的办法批准，D-41 #5）。原来那个 clone 保持不动。
+- 问题处理：gate_clouds_test-02 定 S1，开着。两件事：Udon 计时照 HANDOFF_CHATGPT §C 第 6 步，在沙盒拷贝里加描述符；头显通路由总工程师出方案。在那之前，这两项记“未测”。
+- 问题处理：gate_clouds_test-03 定 S0，开着。云端在修：D-41 #1，总工程师写一个共用的 U# 程序资产工具，把所有包的搭建脚本都改过来。你本地那份“改成传 Type”的最小修复是有效的过渡办法，可以留着；云端的修法合进 main 以后，同步时覆盖它。
+- 问题处理：gate_clouds_test-04 定 S2，开着，交总工程师。
+- 问题处理：gate_clouds_test-05 定 S0，开着，**要小楠处理**：C 盘只剩约 0.23 GB，VRChat 占约 14.8 GB 内存。这一条没解决之前，不启动 Unity。你停下来是对的。
+
+**接下来：**
+1. 小楠把内存和 C 盘处理好以后（D-41 #6），照你 `20261024-164251/README_说明.md` 最后一节“连续推进的准确入口”继续：程序资产 2/2 → Cloud Build → Apply(155.1) → Build Clock → 绑定验证 → 只保存 GateTest → 五个机位的 HDR 截图。不用等云端的修复：你的过渡修复加 `LB_GateContinuation` 够用。结果照旧推回 `FromLocal/gate_clouds_test/<运行>/`。
+2. 云端的修复（D-41 #1）和测试工具（`Engineering/UnityTest/`）合进 main 以后，我各写一条带“同步：”行的复测条目。到时候用工具重跑一次门，和你手工跑的结果对一下。
+3. **提前知道一件事**：`Assets/Lanbai/Delivered/lens_tech/` 里有 v1 的 `Lanbai/Overlay` shader，和仓库里的 Overlay v2 同名。导入门内之前要先处理，到时我会在门内那一条里写怎么做。门测试不受影响。
+4. 头显这一层（Quest 3 + Virtual Desktop）怎么接，等总工程师的方案。在那之前，头显栏一律记“这一层测不了”。
+
+## 2026-10-25（北京 00:40）· 🤝 本地改由 ChatGPT「阿白」接管（待接管）
+**阿白，欢迎。** 小楠 10-24 定：本地 Unity 的部署、集成、测试和反馈由你负责；云端（总导演、总工程师、各包、审片）的流程不变。**这一次先别导入任何东西。**
+1. 读 `HANDOFF_CHATGPT.md`，照 §C 做**第 1–4 步**：只读检查 → 记录和备份 → 环境核对 → 选第一个测试（门，`gate_clouds_test`）并写一页计划。
+2. 结果推到 `FromLocal/takeover/<YYYYMMDD>/`（`接管核对.md` + `inventory.json`），只提交这个路径，然后告诉小楠。
+3. 小楠说可以以后，再做第 5–7 步。门测试照下面四条，**从旧到新**：GateClouds v1.5 → LanbaiGateDriver → 驱动 v1.2 → 第 10 轮第 1 批，新条压过旧条。总工程师的一键测试工具（`Engineering/UnityTest/`）在做，到了 main 我会另写一条；有它就用它。
+- 现在能测的只有门。车的切片、第 1 幕出生点、宫殿都还没好，记 BLOCKED，不记通过。
+- 没在头显里看过的，不写“通过”；你不能戴头显的部分，标“这一层测不了”，留给小楠。
+
 
 ## 2026-10-24（北京 20:00）· 🌅 第 6 幕（晨）合进 main（先别导入，门做完再说）
 **第 6 幕的包合进 main 了，同样先别导入。** 它是全片最大的释放：黑 → 云海上的日出，太阳框在开着的车门里（D-12）；然后穿过云峡，305.4 太阳落到云唇后面，318.36 从朝日的边下面重新出来；再降到海面（海镜）。

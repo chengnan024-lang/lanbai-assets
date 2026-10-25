@@ -1,0 +1,18 @@
+[Licensing::Client] Successfully resolved entitlements
+[Licensing::Client] Successfully resolved entitlements
+[Licensing::Client] Successfully resolved entitlements
+[Licensing::Client] Successfully resolved entitlements
+*** Tundra requires additional run (0.10 seconds), 0 items updated, 2 evaluated
+Assets\Lanbai\Editor\LB_Builder_Road.cs(450,17): warning CS0162: Unreachable code detected
+*** Tundra build success (10.18 seconds), 11 items updated, 795 evaluated
+Assets\Lanbai\Editor\LB_Builder_Road.cs(450,17): warning CS0162: Unreachable code detected
+AssetDatabase: script compilation time: 14.241568s
+[Licensing::Client] Successfully resolved entitlements
+EditorUpdateCheck: Failed The requested URL returned error: 404
+[<color=#0c824c>UdonSharp</color>] Compile of 13 scripts finished in 00:24.630
+[Licensing::Client] Successfully resolved entitlements
+[<color=#0c824c>UdonSharp</color>] Compile of 13 scripts finished in 00:01.113
+[Licensing::Client] Successfully resolved entitlements
+[<color=#0c824c>UdonSharp</color>] Compile of 14 scripts finished in 00:00.629
+[<color=#0c824c>UdonSharp</color>] Compile of 14 scripts finished in 00:00.553
+[<color=#0c824c>UdonSharp</color>] Compile of 14 scripts finished in 00:00.546

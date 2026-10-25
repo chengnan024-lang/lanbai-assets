@@ -1,0 +1,1952 @@
+{
+  "source_commit": "f40f62c8370d34b53c1ce8a6815852b400d4896d",
+  "mode": "complete",
+  "at_utc": "2026-10-24T19:40:21.685964+00:00",
+  "files": [
+    {
+      "path": "Assets/Lanbai/Common/Shaders/LanbaiCaustics.cginc",
+      "old_sha256": null,
+      "new_sha256": "7f2e092da80fdda83465fffa152b89b04d7f077976b352e2ba95d7434c874371",
+      "bytes": 4624,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Common/Shaders/LanbaiFog.cginc",
+      "old_sha256": null,
+      "new_sha256": "ca59813d7ca1312f4d912f1e224b47068e29dda02dac378e5f1fc42abc540eb9",
+      "bytes": 9027,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc",
+      "old_sha256": null,
+      "new_sha256": "82b6d28d1c3b1893fa92ad335ebd41f7a150b499fdb86db6a039bdacabd44bf8",
+      "bytes": 20178,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Common/Shaders/LanbaiSky.cginc",
+      "old_sha256": null,
+      "new_sha256": "2fd6ce5972ec3d77ff5f78e7a55d6833180be87b4cfba0b425a9563a71e10f69",
+      "bytes": 21099,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Common/Shaders/LanbaiVR.cginc",
+      "old_sha256": null,
+      "new_sha256": "d2588fa188cb40167d4128ac29ec8e32d7b62e39de5a67cb849056364dfa5997",
+      "bytes": 8035,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Common/Shaders/README_LanbaiGlobals.md",
+      "old_sha256": null,
+      "new_sha256": "767d0f92f25abd0337c825102c47b8ca036ba2cc50a7c588f2410a842e285340",
+      "bytes": 2593,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Common/Tools~/.gitignore",
+      "old_sha256": null,
+      "new_sha256": "862263fa1f46c20f0d1e4dac5ffcc75abd55c08211b2c3864c5f8764b9d87793",
+      "bytes": 19,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Common/Tools~/compile_check/README_compile_check.md",
+      "old_sha256": null,
+      "new_sha256": "db0df4834a206259a2fb2b28213d402ccb85e823f54ce3e9cd36daecc581716d",
+      "bytes": 5567,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Common/Tools~/compile_check/check_cs.sh",
+      "old_sha256": null,
+      "new_sha256": "959c78e2378f62f825ab6c145544f1497db83eee301df4f76530859e175c310b",
+      "bytes": 744,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Common/Tools~/compile_check/check_shaders.py",
+      "old_sha256": null,
+      "new_sha256": "9c4d64d522b581d2c8ca0e495185f8da7dcfecaa0239a92a4add7d7ccc5fdb5e",
+      "bytes": 18441,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Common/Tools~/compile_check/lib/cs_check.py",
+      "old_sha256": null,
+      "new_sha256": "863dc2d6ac2366d4c837b766f7c66c836ad8b5e72cee66a39a4af6ae2f72a3d8",
+      "bytes": 26844,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Common/Tools~/compile_check/lib/dxc.py",
+      "old_sha256": null,
+      "new_sha256": "64b8768f848f49a1a8f72baa80b27d285d4374e60c41c983d09a88307a847b75",
+      "bytes": 4995,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Common/Tools~/compile_check/lib/hlsl_tu.py",
+      "old_sha256": null,
+      "new_sha256": "fc05b7f47ff535b6bcb3915c480b32b307326303e39678937ffe26900f312f00",
+      "bytes": 12776,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Common/Tools~/compile_check/lib/setup_fetch.py",
+      "old_sha256": null,
+      "new_sha256": "625fd1cb0fa0dddef09135215f3389764e60f69fa158c5d05c0ccc5064f9f8f6",
+      "bytes": 5759,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Common/Tools~/compile_check/lib/shaderlab.py",
+      "old_sha256": null,
+      "new_sha256": "fa613c170c0dffb430da2bd23e412d032c080c00e3002ce7aded08e5ad93970c",
+      "bytes": 8567,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Common/Tools~/compile_check/setup.sh",
+      "old_sha256": null,
+      "new_sha256": "990ca6177a0fe32ba003bfe031672544c3433f45c1270ce194fdfd4e35d48e47",
+      "bytes": 6292,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Common/Tools~/compile_check/stubs/PPv2Stub.cs",
+      "old_sha256": null,
+      "new_sha256": "1bd642346adb422015faac5503c8471435bf33d3eeff34e7e4b64c73b9fb10cf",
+      "bytes": 10287,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Common/Tools~/compile_check/stubs/TMPStub.cs",
+      "old_sha256": null,
+      "new_sha256": "5e4c3e99856e37af56faef73b2621df0b651577ebbfdbfcc670ecd5846ec702a",
+      "bytes": 4450,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Common/Tools~/compile_check/stubs/UdonSharpStub.cs",
+      "old_sha256": null,
+      "new_sha256": "054f43837ebdeabb592d624d0d72be287b9a393b55dfca1a76a2c53af5a8c379",
+      "bytes": 4512,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Common/Tools~/compile_check/stubs/VRCSDKStub.cs",
+      "old_sha256": null,
+      "new_sha256": "8bdaea97e63513fa82efa3beaa38bef973ea550f87064578dbe21bf2479dda68",
+      "bytes": 7372,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Common/Tools~/globals/gen_globals.py",
+      "old_sha256": null,
+      "new_sha256": "5c69856ef662cd27c91dd8f7dd926c2f652f4488009f0fe4535517ab9dc458b9",
+      "bytes": 6470,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Common/UdonGlobals.md",
+      "old_sha256": null,
+      "new_sha256": "ae7b7413faec4f274a5e61bb9d2398485cb50949d0506c5bb338b8784831d790",
+      "bytes": 9649,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Gate/Editor/LanbaiGateDriverBuilder.cs",
+      "old_sha256": null,
+      "new_sha256": "34d4a480dde7ea3acd19c683af068877117b3e7bf90a476ad8539a48e84da610",
+      "bytes": 23471,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Gate/GateDriver_Bake.json",
+      "old_sha256": null,
+      "new_sha256": "36cf490a24296836ed3c0e2c2c87bcb2d66500a876dcba4f6501768dc4388d81",
+      "bytes": 72461,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Gate/GateLayout_v2.json",
+      "old_sha256": "c378b04c5a69cea2eb81557f6b4a6d0bd9d80a48370615c781d75daf039cea99",
+      "new_sha256": "330b9ed696aca2ae09f3c8035bba344dc1d8446f0afc3f87b49f25347e62d98f",
+      "bytes": 530575,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Gate/Runtime/LanbaiGateDriver.cs",
+      "old_sha256": null,
+      "new_sha256": "d6ad908ad5521c715eb018167bf7524c8d66832e067e8170117f9db9d41c94cb",
+      "bytes": 25330,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Gate/Runtime/LanbaiGateTestClock.cs",
+      "old_sha256": null,
+      "new_sha256": "d0c566fd1be55434c300dd688b8d8587442b3302b96300deea743a609ddd38cc",
+      "bytes": 2037,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Gate/Shaders/LanbaiGateSky.cginc",
+      "old_sha256": "c17b7db91a9dcd5d6f1ecaacb1f064a5f7f77068b600348eacb770227738ba08",
+      "new_sha256": "f1409b8d063125349d8d9f29aac44adfc3d834c9088bffacd4c5cd2c8aa59438",
+      "bytes": 9163,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Gate/Shaders/Lanbai_GateAirSky.shader",
+      "old_sha256": "b77dded576112506ce9adba3c42bd538acabe9f57482d66545a49d64c6c68570",
+      "new_sha256": "85ed7c4b5bddf774edd46043e738836cbb1bdd0b4b40ec71677c5ecfc6d6c1c4",
+      "bytes": 5312,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Gate/Shaders/Lanbai_TentacleSway.shader",
+      "old_sha256": "cdbaa825038ebe88ec660ec188ec9d23fdcdf764ca201f5070a782cbb8cbb092",
+      "new_sha256": "a536d0c71d1677cdf5e2fcb6106fecc4766bbbdc6b2b90170407a35bceb85686",
+      "bytes": 53502,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Gate/Shaders/Lanbai_TentacleTide_v2.shader",
+      "old_sha256": "56125aedf1802513a570f2a06068095aaa9e835525adf339a12e01cb22580f24",
+      "new_sha256": "b6b61037bd3a62c6642923852afce42f2a176e1737727f2d214d20709f4fb5ae",
+      "bytes": 12148,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/.gitignore",
+      "old_sha256": null,
+      "new_sha256": "f44b1f0ff381634146416df18170a557fd96b6f73e612460ffef8e5707f48481",
+      "bytes": 24,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/cards_contact.jpg",
+      "old_sha256": null,
+      "new_sha256": "f8228583ff3ab5f760ba9d4731ed64a4145d2eb87d9641ab475b667e57668521",
+      "bytes": 183822,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/compare_U7.png",
+      "old_sha256": null,
+      "new_sha256": "71f6f09e3fe732d5fb6231585fd24774d81f9abb68006d67bcee27bab9ee120c",
+      "bytes": 2315426,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/compare_U8fwd.png",
+      "old_sha256": null,
+      "new_sha256": "9766064722f779cdecdd2b6e2349a2de52f7133fa3e6b2c0652095519f5bfde7",
+      "bytes": 2282446,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/compare_U8side.png",
+      "old_sha256": null,
+      "new_sha256": "803871ddda1bb834c1d0261e85fd610a1f7b88bc933b1f69a1e6289ff6524442",
+      "bytes": 1905334,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/compare_key.png",
+      "old_sha256": null,
+      "new_sha256": "6661678592f92de6048cc285b68fb06a1791792d3745c629999e087b5e934fc9",
+      "bytes": 3150911,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/compare_rear.png",
+      "old_sha256": null,
+      "new_sha256": "fbe48f8c52cf45a683ff5972b8ed3d6dc9d204d3c230015ee67a5582d23321c2",
+      "bytes": 1850950,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/crawl_map_U7_720p.png",
+      "old_sha256": null,
+      "new_sha256": "e36cae12df6e5531b2fdf4c9192d7a2e88fe6476a995c7e40bf3e236af86937f",
+      "bytes": 220980,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/d22_fog_check.png",
+      "old_sha256": null,
+      "new_sha256": "5e823251304883f13bec712f7ee811886923af7c44891dcd392b8899b5938173",
+      "bytes": 52807,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_linear_U7.exr",
+      "old_sha256": null,
+      "new_sha256": "617493c67426531e8f8f998510d11f3d05c12dfc3e4f178a78e6700dfb44ab6a",
+      "bytes": 3107047,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_linear_key.exr",
+      "old_sha256": null,
+      "new_sha256": "b1f3482ff2e0b1ca0586ac4acd61a16c0d396dea394fd158c1c780e488f7256b",
+      "bytes": 3055484,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_only_U7.png",
+      "old_sha256": null,
+      "new_sha256": "372127c2222fa72fc720d86370c2ca46b3ff6c19f1854587e1ad3f7876676cda",
+      "bytes": 1971584,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_only_U8fwd.png",
+      "old_sha256": null,
+      "new_sha256": "0662cfb053c136af53f6a0132d89c5fba9394ec002282473094df08eaf47e7a6",
+      "bytes": 2179264,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_only_U8side.png",
+      "old_sha256": null,
+      "new_sha256": "5a8ec9ae47ad3dc11354023f3c21aef24e65920a6f134c40ace50ea4e39bbf2c",
+      "bytes": 1885966,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_only_key.png",
+      "old_sha256": null,
+      "new_sha256": "c58b2f742fabcc71e452a4d76e55521a545eb590457fe27b48d452b3ef41165e",
+      "bytes": 2586164,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_only_rear.png",
+      "old_sha256": null,
+      "new_sha256": "4a9cffba19aadbd0dc70863c85c19370b4fe1b6f901ec230f2f5417093252327",
+      "bytes": 1842814,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_U7_60fps.mp4",
+      "old_sha256": null,
+      "new_sha256": "c919d34e0944e319ecb28fd620cdeb017f6f42b85ef8777083c67ce16205684f",
+      "bytes": 299657,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f000.jpg",
+      "old_sha256": null,
+      "new_sha256": "e4b808a06faaa33f41ad9ed6d375296fbb1327ccda1af5f5d74571f80c05ac20",
+      "bytes": 24962,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f001.jpg",
+      "old_sha256": null,
+      "new_sha256": "ee8d544ac998047a2cd5900c37854c54a182f81362600ec90b817a9cfe25e8e7",
+      "bytes": 24989,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f002.jpg",
+      "old_sha256": null,
+      "new_sha256": "202e036ba0602c3e8faf553b53a247398a68c7588e648540c32998a1ea8813d7",
+      "bytes": 24925,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f003.jpg",
+      "old_sha256": null,
+      "new_sha256": "73e094427b15650ec09d8b10d1d6853833334ca383c18cbae64c58df963a0d9a",
+      "bytes": 24980,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f004.jpg",
+      "old_sha256": null,
+      "new_sha256": "a760add5ccff10609d611d69c3e7a1ed2573ff7dcdd520a392661a123a28e833",
+      "bytes": 24972,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f005.jpg",
+      "old_sha256": null,
+      "new_sha256": "45555e2c7c9ab3c4fb63ec5f4b8a9ac432de847210660ce1009d3e6cd64588e0",
+      "bytes": 24984,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f006.jpg",
+      "old_sha256": null,
+      "new_sha256": "c43ae4516362554443e3aade37b65bd50f015293b11bef1e0cebf74d1007ca5b",
+      "bytes": 24950,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f007.jpg",
+      "old_sha256": null,
+      "new_sha256": "db2eaf2c68bbb045fe4a975236dcc5f34f770aace173e9b7859505a937fc10a0",
+      "bytes": 24922,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f008.jpg",
+      "old_sha256": null,
+      "new_sha256": "fcb5e6d1c3605e721c06223172f580b311554dfa1ee4e1551edb6250b4b687fe",
+      "bytes": 24987,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f009.jpg",
+      "old_sha256": null,
+      "new_sha256": "c1c3598344437fe23d225c0e7112aee0541df5050893dac9a5ae5d6e6b38fae2",
+      "bytes": 25119,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f010.jpg",
+      "old_sha256": null,
+      "new_sha256": "8c49ba1726784526d876e781509ce323ddbc3cc624773129d456dce22ac64933",
+      "bytes": 25010,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f011.jpg",
+      "old_sha256": null,
+      "new_sha256": "90f3dd8bb047e5616be4581b39560facd08fd67dfa20bf0ac342025d3f96e5d1",
+      "bytes": 24954,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f012.jpg",
+      "old_sha256": null,
+      "new_sha256": "8ae42dacf25ad81afd066a37a127b5f127abcfe6db399b13c0bb0e790357028c",
+      "bytes": 24989,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f013.jpg",
+      "old_sha256": null,
+      "new_sha256": "3474e5e4f04f59873f39bc8d548a85c134d879516bdc4b21905f0d7e9b76b75c",
+      "bytes": 25043,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f014.jpg",
+      "old_sha256": null,
+      "new_sha256": "00224624cde42e0344e1c7e5af10625d3fa517956848e89a7c6763c2d6f91978",
+      "bytes": 25053,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f015.jpg",
+      "old_sha256": null,
+      "new_sha256": "076ac0d5b908b4f07c2ed616c97228dfa804864c28b14c3ce90979e15f3014bb",
+      "bytes": 25053,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f016.jpg",
+      "old_sha256": null,
+      "new_sha256": "d13acb01103245c7a429266cfec15846b449572d1fc17c482a04df62deb8a4b4",
+      "bytes": 25008,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f017.jpg",
+      "old_sha256": null,
+      "new_sha256": "320b34769b0c627686f51bddafe5d65f4162e2b7410a03829a132d04192313f7",
+      "bytes": 25042,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f018.jpg",
+      "old_sha256": null,
+      "new_sha256": "de656914e5ceeea1e2d86c2a3cbca749dbc767827c19532abe742cad4f175f45",
+      "bytes": 25186,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f019.jpg",
+      "old_sha256": null,
+      "new_sha256": "595185ef96df0f589286d16b07d04cb6508ebcdab3795b9b144f64afba316c8a",
+      "bytes": 25102,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f020.jpg",
+      "old_sha256": null,
+      "new_sha256": "74262c07d90f2d613ec5674d3d13139bc97e7230174ec165f8a4c17805cd3115",
+      "bytes": 25213,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f021.jpg",
+      "old_sha256": null,
+      "new_sha256": "ce73fe6c05e0088eae6db70f09f215cccbdfddf27e36ea5867a6bda5bba9c22f",
+      "bytes": 25208,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f022.jpg",
+      "old_sha256": null,
+      "new_sha256": "bb14264c28fd4358c6cd981994b203c3b10a3658931635c0952a62421c644db8",
+      "bytes": 25293,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f023.jpg",
+      "old_sha256": null,
+      "new_sha256": "afbf58998ccc1edfae0b67250f630a0265aab62b180a2fff327b96c9413eb425",
+      "bytes": 25282,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f024.jpg",
+      "old_sha256": null,
+      "new_sha256": "1bcf280d2d1d6a61c736152f6fc4f6a38b43de921c23ffc4873603625ede8cf3",
+      "bytes": 25318,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f025.jpg",
+      "old_sha256": null,
+      "new_sha256": "8c01f14cd3206dc3bea9a753345aa3f8f6f4157d019a824d654ee0e1f39ee04d",
+      "bytes": 25315,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f026.jpg",
+      "old_sha256": null,
+      "new_sha256": "7317b6fdefa30d3734f5df333d56f04e3e3fb50f60ffcf93f4084d8f237cbf99",
+      "bytes": 25298,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f027.jpg",
+      "old_sha256": null,
+      "new_sha256": "4d626ac8dd2bb41ba2a1aa97a08b7cd48cb6d04fa568001a5635cd04593e5b93",
+      "bytes": 25313,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f028.jpg",
+      "old_sha256": null,
+      "new_sha256": "33e16e85278db119fa56fd73b445e4687993c85b97c5e406464f1b8699df6842",
+      "bytes": 25401,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f029.jpg",
+      "old_sha256": null,
+      "new_sha256": "3d1e911505086aeba5b329d5da4e3b9878cf1eb176413d996d07d9b5ba769ceb",
+      "bytes": 25361,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f030.jpg",
+      "old_sha256": null,
+      "new_sha256": "d3e29487d51bf450af6279171e65a52d7569bf87d1f32b00c11558244c8eebd4",
+      "bytes": 25380,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f031.jpg",
+      "old_sha256": null,
+      "new_sha256": "18cb5777db172b3bccadc8258076141013597ff8f5896d1423cd1c20fb08af16",
+      "bytes": 25357,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f032.jpg",
+      "old_sha256": null,
+      "new_sha256": "abf6e1641f4268c2c17e0107f285130f5a17fd5ac98767de402d2b67b3bf7920",
+      "bytes": 25397,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f033.jpg",
+      "old_sha256": null,
+      "new_sha256": "11ef70edec8860b8a29a03736c569e647c30c413f9cef65632b6fdf4dc646345",
+      "bytes": 25416,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f034.jpg",
+      "old_sha256": null,
+      "new_sha256": "81b83191a2c6bc732e8dfe54e435bb2f5704a80e0ca04bcd0720b992c68be04a",
+      "bytes": 25435,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f035.jpg",
+      "old_sha256": null,
+      "new_sha256": "98415fe75b6f322f6c2d740fd40e4b4ed7b14040c89cff5e8c231b5086883ca0",
+      "bytes": 25483,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f036.jpg",
+      "old_sha256": null,
+      "new_sha256": "7030fa28b177f7386133f83fdea58f2dbeb54d218bc315bf04b48ad772348455",
+      "bytes": 25412,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f037.jpg",
+      "old_sha256": null,
+      "new_sha256": "57b83d0c5969666ff2623db0b114cb8811025d8c34a5e9d789dd850e035152cb",
+      "bytes": 25393,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f038.jpg",
+      "old_sha256": null,
+      "new_sha256": "1886e8fcb805efdea417490e8c923b436493412b690596463411ececda7d1078",
+      "bytes": 25443,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f039.jpg",
+      "old_sha256": null,
+      "new_sha256": "767585cc2af8ba24922a748259bad3157471ee2fb6f0d852de4bf9fdf06e48ff",
+      "bytes": 25410,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f040.jpg",
+      "old_sha256": null,
+      "new_sha256": "94d12459ecabf5b0f82f6df1d6e576ef63a7e6029916e46aa8382c796e18bde9",
+      "bytes": 25462,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f041.jpg",
+      "old_sha256": null,
+      "new_sha256": "2f8899228a15b1bc2982a43bfaa02a7abf768158f853d4f93abcf50e588f37d4",
+      "bytes": 25536,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f042.jpg",
+      "old_sha256": null,
+      "new_sha256": "826092e0c4ef7b183d6de51faef2b7c7816bb351985586acf9bfdb84789a03b3",
+      "bytes": 25583,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f043.jpg",
+      "old_sha256": null,
+      "new_sha256": "7c95ef1fb72515bdb6ad3eef250064181cc2a5d9495c21684f2050f61c5ef208",
+      "bytes": 25582,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f044.jpg",
+      "old_sha256": null,
+      "new_sha256": "e26b62e49b9e6edb0d06bc09a6b4f2f64ee27a4c2e3899ed5b5ca1f38d671b50",
+      "bytes": 25516,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f045.jpg",
+      "old_sha256": null,
+      "new_sha256": "2a0082ae1608e17f751b36e3d73f21e830767354bd013991af836bcd6becbecf",
+      "bytes": 25521,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f046.jpg",
+      "old_sha256": null,
+      "new_sha256": "20127d42f8b7015f6d3549ff512a21c6b5a91075a9781b01081d2ddf98620e8e",
+      "bytes": 25409,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f047.jpg",
+      "old_sha256": null,
+      "new_sha256": "5e40d62bb9911395c80b7922da6b482bc830551ff4f19ee2e11a9a31f2f3e210",
+      "bytes": 25414,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f048.jpg",
+      "old_sha256": null,
+      "new_sha256": "b29669b6d2fd8c383b57a6eff339ae2c47e30a4b793453675d0a8cb9cb476f4c",
+      "bytes": 25399,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f049.jpg",
+      "old_sha256": null,
+      "new_sha256": "8fdea271814e797456dcc08b4fafdd3bf5c22fb08716b52ee8cbd402acb5edce",
+      "bytes": 25384,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f050.jpg",
+      "old_sha256": null,
+      "new_sha256": "f7d6d02fe63e00cd1627dd42e9cf9c82201f76f91668f2ff2bcae19fdb4cdb02",
+      "bytes": 25362,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f051.jpg",
+      "old_sha256": null,
+      "new_sha256": "2bf78c1a8d1d3b999bddd24fdc7b07da25f0afad5a205768e7e44a77ef7b4504",
+      "bytes": 25288,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f052.jpg",
+      "old_sha256": null,
+      "new_sha256": "f47a8f8d0820582384fbc4f884721727b6eebc7ea32721816ae1d640cbf0e272",
+      "bytes": 25288,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f053.jpg",
+      "old_sha256": null,
+      "new_sha256": "f529963c60f08dd1c89f7e043ad76e49e1364f94373f08c0fdde0ef3d22e8c47",
+      "bytes": 25347,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f054.jpg",
+      "old_sha256": null,
+      "new_sha256": "372014835842accd6e6b724b68576bb454ad35db80fb16ed2818472702c33970",
+      "bytes": 25331,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f055.jpg",
+      "old_sha256": null,
+      "new_sha256": "33b4edf1d947d7bb8179122abe5c99263067679234eba23394b60d83e24f7ae3",
+      "bytes": 25291,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f056.jpg",
+      "old_sha256": null,
+      "new_sha256": "1fc1b85b76e518209b7095049c86d3a2ce5f3e9b26ff79825441350bbdf32c4c",
+      "bytes": 25250,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f057.jpg",
+      "old_sha256": null,
+      "new_sha256": "1d6df5de98ade6b651141320eaa36764dc89acea351db2d4b662a7a2203eb829",
+      "bytes": 25305,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f058.jpg",
+      "old_sha256": null,
+      "new_sha256": "d730a92d3eed35e01442970b726a4bddc12dfeb92b97d6d55ee3e50cf3f290e7",
+      "bytes": 25231,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f059.jpg",
+      "old_sha256": null,
+      "new_sha256": "4ffaea98e991cf7b136ae269469d08c4dc42b6429aaa31cb29487c36303d773e",
+      "bytes": 25258,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f060.jpg",
+      "old_sha256": null,
+      "new_sha256": "e9e89c9e8d694b78cd483edbfae0039792b862ae1fa6442c6b4db01958af80c4",
+      "bytes": 25268,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f061.jpg",
+      "old_sha256": null,
+      "new_sha256": "ba283460d6d4779d1bc4cd3d50cfcfb84484eb7f5e42cea5c89fcf44c1942cf3",
+      "bytes": 25336,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f062.jpg",
+      "old_sha256": null,
+      "new_sha256": "5988ef16484a732b925336eab4cd30110a5f00f2cae2860ed8652093a322da63",
+      "bytes": 25386,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f063.jpg",
+      "old_sha256": null,
+      "new_sha256": "95e93611417c908858ea506f4478fcc100655eda3dd6561d8db918cafc90688f",
+      "bytes": 25293,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f064.jpg",
+      "old_sha256": null,
+      "new_sha256": "fb8f1f52fa505df91fd913808b339bd4d02dc9e15b0477bb5d98a32671b0ec00",
+      "bytes": 25379,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f065.jpg",
+      "old_sha256": null,
+      "new_sha256": "6c24206f7f11bdbf97c2a870a5879e109d824dc366ca97f4fe6dc82ddf67edfc",
+      "bytes": 25391,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f066.jpg",
+      "old_sha256": null,
+      "new_sha256": "e13f76d7520aa9648b01026275b12461c116d8bd446fe80d2162bc968fa7bc7f",
+      "bytes": 25359,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f067.jpg",
+      "old_sha256": null,
+      "new_sha256": "e7517d0c9b82a3dcf8ebcf4e87a778fd49a78d6d8f9b3f83bad7bd7a739c190a",
+      "bytes": 25376,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f068.jpg",
+      "old_sha256": null,
+      "new_sha256": "1e6ee918356c58b86b88965662361f473c50001d79d40f51f3eef16c2e5eb258",
+      "bytes": 25421,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f069.jpg",
+      "old_sha256": null,
+      "new_sha256": "913cf6fd2d41aeb38283b212dabb340b8989a1ab7d39b21a4e287d38a060fa67",
+      "bytes": 25394,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f070.jpg",
+      "old_sha256": null,
+      "new_sha256": "82dd4a17d5e00667fe3154757969e94cfc7713565de8191252d9ccd655049776",
+      "bytes": 25407,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f071.jpg",
+      "old_sha256": null,
+      "new_sha256": "f464eb3af96f907a249187620ec7d02171f2bd39fd3d80469f9e6451ab779166",
+      "bytes": 25479,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f072.jpg",
+      "old_sha256": null,
+      "new_sha256": "cf88a0061fc4ca239e7f1279b86e1eda0c4cc6fa76d6fd77ddc5b8e4755f0722",
+      "bytes": 25473,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f073.jpg",
+      "old_sha256": null,
+      "new_sha256": "c75a14553d6aee225e935e6464d1b8502fe2b5afdeae8605a2943c6e2a48a5fd",
+      "bytes": 25452,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f074.jpg",
+      "old_sha256": null,
+      "new_sha256": "01d2d905b40ff0571bd294c6f4a4c91cef2e560ca4004e50338c500d28094732",
+      "bytes": 25500,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f075.jpg",
+      "old_sha256": null,
+      "new_sha256": "f84cfecd966767b29ce31aedb75c63050e6fc6d4647bf0539137288eda0746d1",
+      "bytes": 25528,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f076.jpg",
+      "old_sha256": null,
+      "new_sha256": "9cbd8e4c1f9e04882d2159d368809b3bcde5d4dad83c12d7a14bfc8ed827dbfc",
+      "bytes": 25559,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f077.jpg",
+      "old_sha256": null,
+      "new_sha256": "8fa6d053f4b7367970551ce5dc43f260efe3c0154145c08e9f41e4c5676f6d27",
+      "bytes": 25479,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f078.jpg",
+      "old_sha256": null,
+      "new_sha256": "3809c098092a721dcdab656748f83b8d07bc704a449974da590b6ecb81f0795e",
+      "bytes": 25415,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f079.jpg",
+      "old_sha256": null,
+      "new_sha256": "e8cc3beba92cd8a9bbc1a8215d53b449f5cd76152dff7bb690a3d2e591519d95",
+      "bytes": 25424,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f080.jpg",
+      "old_sha256": null,
+      "new_sha256": "35cbfd68d07c021fbd5a2aa9ea3e89669ca0b0c0d318e983d83468d92aec438c",
+      "bytes": 25505,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f081.jpg",
+      "old_sha256": null,
+      "new_sha256": "2480257d449fe53cfbe807e0dd71b39cdee174877576b735b95969ec1cb1f39d",
+      "bytes": 25510,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f082.jpg",
+      "old_sha256": null,
+      "new_sha256": "1187132b86988a89abf4aa2b517e831da98d1ef34a838195e87db4ee9323b012",
+      "bytes": 25574,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f083.jpg",
+      "old_sha256": null,
+      "new_sha256": "0db83a7df39da8a4e9d7ca33c282f543cdca915f10911051d6b40c9d1ebb10ce",
+      "bytes": 25593,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f084.jpg",
+      "old_sha256": null,
+      "new_sha256": "8dd7880e2855c1b2a08b83078b4306b994cacfd8fa0e32cdde4fef53ec8f5f4c",
+      "bytes": 25591,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f085.jpg",
+      "old_sha256": null,
+      "new_sha256": "5753a34a26981eb7512b8c6a272493503ec8cdcfa9126bec172cbeeffafb8ad4",
+      "bytes": 25565,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f086.jpg",
+      "old_sha256": null,
+      "new_sha256": "1525a1be139a784c9358a53192091f20000e7287dd46ff48e52b928cd0df7f0a",
+      "bytes": 25477,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f087.jpg",
+      "old_sha256": null,
+      "new_sha256": "4cfdfe6e93b342ad0593b9cae8bcdb897f554fec69aba46ae30cc242ff1a14cc",
+      "bytes": 25500,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f088.jpg",
+      "old_sha256": null,
+      "new_sha256": "40b582eca4b80f6ff768e7255cf5011129adedea5950124767510b7c3415131b",
+      "bytes": 25510,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f089.jpg",
+      "old_sha256": null,
+      "new_sha256": "60b14df27e4fd1f0b644879499f3d168db93714fd6edbba2d974f35ddada6eb1",
+      "bytes": 25554,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f090.jpg",
+      "old_sha256": null,
+      "new_sha256": "32aea7b1fb389dc7e6a3b8a7c8da1842edca40d602d24d4c366151232028fcbe",
+      "bytes": 25593,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f091.jpg",
+      "old_sha256": null,
+      "new_sha256": "92bcf2dfa07b6ca7a7892722949739bf3904f781873750c16199c23c71b4d814",
+      "bytes": 25605,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f092.jpg",
+      "old_sha256": null,
+      "new_sha256": "7180a537b89d70ae3898b20c52eaf5ea3e19df8363ee8d8d0688744dc515461d",
+      "bytes": 25639,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f093.jpg",
+      "old_sha256": null,
+      "new_sha256": "fec9f0a376f72eed30db27c6b4a548b96128a6f53899398b07651e01707ae8e1",
+      "bytes": 25687,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f094.jpg",
+      "old_sha256": null,
+      "new_sha256": "1159d25436e4caa5de930a144414ed8a22796b130a711aecad42dc5cdd20f694",
+      "bytes": 25764,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f095.jpg",
+      "old_sha256": null,
+      "new_sha256": "b5b31a313d392f17beedee1f41042196149d6bcae49b58c54de14c05c9e1ab59",
+      "bytes": 25713,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f096.jpg",
+      "old_sha256": null,
+      "new_sha256": "06d0dfdae8e63b4f35f5ffda0b9069898f3204492fcc9a5a49e5d89c4d08a2c7",
+      "bytes": 25783,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f097.jpg",
+      "old_sha256": null,
+      "new_sha256": "5a7fc3ef66336aef8f64bcf0066364dfb80c856e8b6ec52dbbdfbfa8807d5e96",
+      "bytes": 25752,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f098.jpg",
+      "old_sha256": null,
+      "new_sha256": "232514e3eab3833952535cd4410831d112b638107ec35b2a893123195d7ff438",
+      "bytes": 25820,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f099.jpg",
+      "old_sha256": null,
+      "new_sha256": "750a551270343a4c578fdb01651bdc1e6f2b0fdbaaeb00de4b1515cbf3cbbee7",
+      "bytes": 25816,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f100.jpg",
+      "old_sha256": null,
+      "new_sha256": "2b918410890d4d078441a4c842ba9e5e2799337de05a37db958e04c4590b81bd",
+      "bytes": 25795,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f101.jpg",
+      "old_sha256": null,
+      "new_sha256": "49796817ee62524da05d4b4a0399668514e57e15b5e4a29637ca608d26d6d428",
+      "bytes": 25883,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f102.jpg",
+      "old_sha256": null,
+      "new_sha256": "55d341a21dbd1a36b0da5347212c8e142cd149a7d5917d92408a22995db5b42c",
+      "bytes": 25863,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f103.jpg",
+      "old_sha256": null,
+      "new_sha256": "78df4a14f4e119dea7de407270b1852907e14c2fe763adca910fff673eb4250f",
+      "bytes": 25888,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f104.jpg",
+      "old_sha256": null,
+      "new_sha256": "82c5be676587579913fdc3728fb1218cd7fa3eda4f94e007c59c4f79b39ba52b",
+      "bytes": 25862,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f105.jpg",
+      "old_sha256": null,
+      "new_sha256": "86f5590b9a96da9f63b08c669133ead72153b2d51e26812a76ce3d6fda8c272d",
+      "bytes": 25845,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f106.jpg",
+      "old_sha256": null,
+      "new_sha256": "c59c4335effe329e28cc90998f518dedda0aa1dfacab209158a3296a4d0b0404",
+      "bytes": 25837,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f107.jpg",
+      "old_sha256": null,
+      "new_sha256": "230b74eb0496d354215a19d81ef3118eb732eb658806229cd188ad8b35cee419",
+      "bytes": 25832,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f108.jpg",
+      "old_sha256": null,
+      "new_sha256": "6ecf96aec2ad3b45415f7ef39504268cf514697effb294bcd39470ec517ebe48",
+      "bytes": 25791,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f109.jpg",
+      "old_sha256": null,
+      "new_sha256": "b195cd97441c8166c15c685578a742c25496eebe6962b35f0ddf109e045b9c95",
+      "bytes": 25734,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f110.jpg",
+      "old_sha256": null,
+      "new_sha256": "adf50f1d5af84d91ea3a1d8f6a0d5f043d2c2e16ac5ee9bd9f5c7661d9acc934",
+      "bytes": 25805,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f111.jpg",
+      "old_sha256": null,
+      "new_sha256": "7d68a2f9477ecec1252e00a8635136473720118150f33a3f8d194a4c206e8642",
+      "bytes": 25832,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f112.jpg",
+      "old_sha256": null,
+      "new_sha256": "187892804d6cd58b1399fbce5f4b7cf2e9e573145d961f2b094f240da2a5884f",
+      "bytes": 25860,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f113.jpg",
+      "old_sha256": null,
+      "new_sha256": "bd3d1e0e55c9717becb76c8c3efbc15d5f1604c180ee8aa1cc8d7a6e573a79fc",
+      "bytes": 25866,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f114.jpg",
+      "old_sha256": null,
+      "new_sha256": "d954b863db68f983ca4abfb69cc50549288af87825565cde9494a3e01958f2b8",
+      "bytes": 25800,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f115.jpg",
+      "old_sha256": null,
+      "new_sha256": "dd47aca11244b67031c1546f331c8befbc53af4698a26d450ddba9b3b139fe15",
+      "bytes": 25797,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f116.jpg",
+      "old_sha256": null,
+      "new_sha256": "5f53d40e99b8c0bfdfc53be7b61d0bd2a96970a199f6b742891213c15cd67483",
+      "bytes": 25857,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f117.jpg",
+      "old_sha256": null,
+      "new_sha256": "f46ec8b1320d9a2bc12356639b2d2eac5169134849cd810967dd092aa9629fce",
+      "bytes": 25793,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f118.jpg",
+      "old_sha256": null,
+      "new_sha256": "0523aec844d2c4814edd34654b98d376e9f028e48379a2b317a79b21b75b7df1",
+      "bytes": 25864,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/deck_scroll_frames/f119.jpg",
+      "old_sha256": null,
+      "new_sha256": "54cf0b9a50d525a809939a30fa4eac7187af25669360dd1ad800939a6580fdaf",
+      "bytes": 25911,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/flashcheck_U7_720p.json",
+      "old_sha256": null,
+      "new_sha256": "fe8f383eeeed0c26da61f62f2949997d9e00f6325c3ddb606f73de82b5899a67",
+      "bytes": 371,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/fse_clouds.json",
+      "old_sha256": null,
+      "new_sha256": "526918c55ad238f9a1d3e7269c877cb2465e14160e65c38a151b16641e5fc363",
+      "bytes": 2034,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/iterations/01_volume_march_uniform_steps.jpg",
+      "old_sha256": null,
+      "new_sha256": "a138ba88b5d133234ae29930bfcd7b90bc49044a69f0944791fdac6f05c3628b",
+      "bytes": 53495,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/iterations/02_skin_aliasing.jpg",
+      "old_sha256": null,
+      "new_sha256": "f4591af3b1a08c63a78c442a8495ccceccfcead8baa60b6db39afc544566eb88",
+      "bytes": 41572,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/iterations/03_exponential_steps.jpg",
+      "old_sha256": null,
+      "new_sha256": "6f214826614c2c94984d85bdfe966b4630250082267070d1365bb225f4d2e041",
+      "bytes": 38379,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/iterations/04_pending_commit_rims_lids.jpg",
+      "old_sha256": null,
+      "new_sha256": "1d099fb772e7a5e87ff5c6aaafcc3996f9aae36d372a06a0f368f39de0fffadc",
+      "bytes": 39538,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/iterations/05_rounder_heads.jpg",
+      "old_sha256": null,
+      "new_sha256": "39e03cca4c310d3c4b52a4dc6aaab489892b2c184b9defa1b49054e5ca3f1910",
+      "bytes": 40218,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/iterations/06_thin_skin_lower_heads.jpg",
+      "old_sha256": null,
+      "new_sha256": "bda481e0b39303b7e9aa0ea751600592bf2ed424b1cbdd7b675ff35d70b63bc8",
+      "bytes": 40944,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/iterations/07_haze_no_approach.jpg",
+      "old_sha256": null,
+      "new_sha256": "f4391dc32cd11b322d925db54602e2bdb4a57fe7159b09bb9985379f65351376",
+      "bytes": 72718,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/iterations/08_round2_key.jpg",
+      "old_sha256": null,
+      "new_sha256": "df815c00808df8fb2d0ca9c16eab91f868a466293d39bfec8df638310134e787",
+      "bytes": 65814,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/iterations/09_round4_key.jpg",
+      "old_sha256": null,
+      "new_sha256": "b5d92f81b109b246af72073f2edacf8e725b83203554eda2c54ee6d28ca99e4a",
+      "bytes": 116484,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/iterations/10_v14_final_key.jpg",
+      "old_sha256": null,
+      "new_sha256": "c68cdeb0d483849c83c369288331daae4b83236dfc6741858de1f7ab38e66866",
+      "bytes": 116065,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/iterations/11_v15_key.jpg",
+      "old_sha256": null,
+      "new_sha256": "74d6ef012e123095f8bcb2761cf88a7a9f9431d0455dd872a0ab160a92868b42",
+      "bytes": 116927,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/iterations/README.md",
+      "old_sha256": null,
+      "new_sha256": "cce4e5c6e62d4891f46e263dbdae66f11653d4f5fe7f61a34219c8e140a3c463",
+      "bytes": 3607,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/perf_options_crops.png",
+      "old_sha256": null,
+      "new_sha256": "7abfaef21778bd463c501b8d7bdb44568ef086824fba6e68c7fc71d03b0e041a",
+      "bytes": 673079,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/r10_towers_key.png",
+      "old_sha256": null,
+      "new_sha256": "acfe73f99909fd697d42af069657f4d039eabbcf968336ab22bb9ed43424db96",
+      "bytes": 829059,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/r4_crops/U7_terraces.png",
+      "old_sha256": null,
+      "new_sha256": "18302e65c783fbf8e2e6ffca655e076b8183aa047859c1d5d3f88331ae72ceb4",
+      "bytes": 104087,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/r4_crops/U7_troughs.png",
+      "old_sha256": null,
+      "new_sha256": "ee4146dc2600255bb7139aad3aae7f6df56e54afb86cfe3ffd9352984c2bf42d",
+      "bytes": 79749,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/r4_crops/U8fwd_centre.png",
+      "old_sha256": null,
+      "new_sha256": "492817d322cc7a7e6e199b52b8894f801a4b9f7f02e32aba752501b9b01044ac",
+      "bytes": 167904,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/r4_crops/U8side_troughs.png",
+      "old_sha256": null,
+      "new_sha256": "3ab6e2acd4eff59e25fa79975ff290513418fba4b25ff5065ee770eb2f3f5ede",
+      "bytes": 141953,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/r4_crops/key_blocker.png",
+      "old_sha256": null,
+      "new_sha256": "302ccaacad8f19b9811f8f8e875fc0d39399c54d3fb7de5e4c80647354b23dde",
+      "bytes": 97903,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/r4_crops/key_foot_pool.png",
+      "old_sha256": null,
+      "new_sha256": "2e68f327fdca5110f99f8c1303118a17175b29f651212dc2cc94af74fec91563",
+      "bytes": 224288,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/r4_crops/key_gap_fragment.png",
+      "old_sha256": null,
+      "new_sha256": "156165a7e524e49629a693e2e52f0f554f70dc39b66e2c7b174c11bc68a36405",
+      "bytes": 47409,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/r4_crops/r10_tower_U7.png",
+      "old_sha256": null,
+      "new_sha256": "1138849b46196a0f08e7bff53d9ec87736f626e4ecd44bb56f38ad55751cfdf7",
+      "bytes": 430726,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/r4_crops/r10_tower_key.png",
+      "old_sha256": null,
+      "new_sha256": "9651357bb6989366031bbf8218a8da2c781f74bc0a41f3fab234110d690259cd",
+      "bytes": 712837,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/r4_crops/r10_tower_key_t163_collapse.png",
+      "old_sha256": null,
+      "new_sha256": "9817a04be2d6b92ab5a79d6dae9fac1f37973e0fd01a44d9d33adb531b792cfe",
+      "bytes": 270342,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/reviews/final.md",
+      "old_sha256": null,
+      "new_sha256": "df5193a849d502f94b8435269f4c70e0d209012181d82cf8e0661c68334e5b68",
+      "bytes": 2418,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/reviews/r1_art.md",
+      "old_sha256": null,
+      "new_sha256": "af8a4a0d86c4b43770821158264080601f8a719d95531d68c69a442b2275de27",
+      "bytes": 1178,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/reviews/r1_stranger_640.md",
+      "old_sha256": null,
+      "new_sha256": "b31ea707a804634b2680a69ef196b305d00d623ede7b91ee83b1d282eea6348d",
+      "bytes": 1060,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/reviews/r1_tech.md",
+      "old_sha256": null,
+      "new_sha256": "22d0b35eb9d28f14ce9aeed6afa23bf0063f40f5ccc28de226bcd3c51ab7fb0c",
+      "bytes": 1009,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/reviews/r1_vr_perf.md",
+      "old_sha256": null,
+      "new_sha256": "5d6211cb10f3c485e4724363195b9476b79c0473dcb946a60df44ef949ee2a1f",
+      "bytes": 858,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/reviews/r2_art_stranger.md",
+      "old_sha256": null,
+      "new_sha256": "92e4cd759ec1d9f2dbaeadd928aa0d38fb730c9f70855ce809f2541bf2e8150a",
+      "bytes": 1010,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/reviews/r2_tech.md",
+      "old_sha256": null,
+      "new_sha256": "2fc63ee79a2c2ecd1e0431078cb177624f0d0d817979acea3d113d00e6e845e5",
+      "bytes": 2680,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Docs~/reviews/r3_all.md",
+      "old_sha256": null,
+      "new_sha256": "c5564c32fde345bd69e5dd83aa43ebebb395374bf21469b0161dfdc43a6603eb",
+      "bytes": 2327,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Editor/LanbaiGateCloudsBuilder.cs",
+      "old_sha256": null,
+      "new_sha256": "e60fbe6bfa189d082ec6923ff0644e80d630a1f9587e6c8159e2570f204b691d",
+      "bytes": 31080,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/GateClouds_Layout.json",
+      "old_sha256": null,
+      "new_sha256": "629a4e9373e71caf36a0986257ab9d7b7b3a879f94ef5e34d14ee876c1f7c82f",
+      "bytes": 21836,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/README_GateClouds.md",
+      "old_sha256": null,
+      "new_sha256": "0a2059555ab13ac2350fb66baf0899f80aa35b98c85f662eef25a4b57ac6a56a",
+      "bytes": 39880,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Runtime/LanbaiGateClouds.cs",
+      "old_sha256": null,
+      "new_sha256": "9029c220cf2f2fab2d7bca6d0950e959af2220fc6a9933b3e1797003bd79e73f",
+      "bytes": 6309,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/STATUS.md",
+      "old_sha256": null,
+      "new_sha256": "ce74ea1ed348b3f0e62a90a0458e71651737d9d71e343767b1e99ce4f77b8bab",
+      "bytes": 1823,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Shaders/Lanbai_GateBeam.shader",
+      "old_sha256": null,
+      "new_sha256": "fd93cbc2d3156086bc6c9462437b479eb20064395d8ffa05051cf8df8080b7f0",
+      "bytes": 8830,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Shaders/Lanbai_GateCloudCard.shader",
+      "old_sha256": null,
+      "new_sha256": "55257942146d5aa1cb869bf10b7aa1545758a52ee60dd6c6268f8333ba449f5a",
+      "bytes": 10557,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Shaders/Lanbai_GateCloudDeck.shader",
+      "old_sha256": null,
+      "new_sha256": "d862622d09945ec9d9557dc4d87b914a957e483a1396974a3250b59b4f8322c7",
+      "bytes": 35072,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Source/check_d22_fog.py",
+      "old_sha256": null,
+      "new_sha256": "3b6994d29451f8a3bc13e937bd8a55127555fc752580fdce15fe02eb8d74648a",
+      "bytes": 7768,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Source/deck_ref.py",
+      "old_sha256": null,
+      "new_sha256": "fec8b171db837c31f57021112e22afecc1b093e859125346955fde6561fef6ca",
+      "bytes": 30988,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Source/deck_tiles.py",
+      "old_sha256": null,
+      "new_sha256": "5e22d6bf06b4497c765de2e02ad0f93bac8eb734e7f5fdc3c070a495b61d3cd9",
+      "bytes": 9872,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Source/gate_cards.py",
+      "old_sha256": null,
+      "new_sha256": "904a427ba9379cdabd956d65755ff191b5920fdde36ab86a4ff996bc7b418a87",
+      "bytes": 10026,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Source/gate_clouds_layout.py",
+      "old_sha256": null,
+      "new_sha256": "5b4a3cf3f8ea39a4c1f2e2ee6f56a81d8ed99114299554bdad19fee3712614a5",
+      "bytes": 11692,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Source/measure_comb.py",
+      "old_sha256": null,
+      "new_sha256": "273be1d9640031cfa7c506eeed50cf228ab8aa87dee3c1bfc680e80d85ea93eb",
+      "bytes": 1369,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Source/measure_crawl.py",
+      "old_sha256": null,
+      "new_sha256": "99ec33bf6ea6a4ed1ff5bf3928a497f3be5228105e163137a2e7177bdc6bd630",
+      "bytes": 2233,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Source/measure_rims.py",
+      "old_sha256": null,
+      "new_sha256": "0c8aae30a7deb79b3a9165dd229394993a2d8ee4e9828d73d2748e8aa5a59606",
+      "bytes": 1282,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Source/preview_gate.py",
+      "old_sha256": null,
+      "new_sha256": "4b3e938cc174b44b984b0b024737444a9830b01a24b8161d1bb1483f6e327418",
+      "bytes": 12356,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Textures/Deck_Detail_1024.png",
+      "old_sha256": null,
+      "new_sha256": "7c9ebda436f49e08d71423c95f0264db3985efe8f0fcc9cb2de14ffa520faef1",
+      "bytes": 2349539,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Textures/Deck_Macro_512.png",
+      "old_sha256": null,
+      "new_sha256": "bc35f451862b1928e57e14b7a17040c6133ff6fb52d88563a0083d06559998df",
+      "bytes": 421357,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Textures/GateCard_Bank.png",
+      "old_sha256": null,
+      "new_sha256": "b7b4a9d14352ce38e7d4aeb293083dc533a81b68f6def7884d60c020c3907998",
+      "bytes": 1556983,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Textures/GateCard_Congestus.png",
+      "old_sha256": null,
+      "new_sha256": "28444fdea6d17e65d20b38461d9048d4d5087f156ddc7310e3eb9c961f5d3ee3",
+      "bytes": 929706,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Textures/GateCard_Puff.png",
+      "old_sha256": null,
+      "new_sha256": "d2abf07dbeece03474056d8447c294ee635e530e870668ed17bfc9e2751eb515",
+      "bytes": 827436,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Textures/GateCard_Strato.png",
+      "old_sha256": null,
+      "new_sha256": "bf977064a7d427beba4ce9be5503fcc60abd0a837156443455371a4822c48d16",
+      "bytes": 1502741,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Textures/GateCard_Wisp.png",
+      "old_sha256": null,
+      "new_sha256": "e6a171b555befa2b9f88c1c0ba469a716b8ba3b5e7c71bc46a4ee00597733f36",
+      "bytes": 1521016,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Textures/deck_tiles.json",
+      "old_sha256": null,
+      "new_sha256": "898c6e964b08ece147d6af3272d7a5134e78fb0806147e7fcceace2851c7d06d",
+      "bytes": 412,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Textures/gate_cards.json",
+      "old_sha256": null,
+      "new_sha256": "46c8c2777dfe453b7ae87a4bd19210f1c0cfa727a2547737e060385abad759a6",
+      "bytes": 1561,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Tools~/UnityCG.cginc",
+      "old_sha256": null,
+      "new_sha256": "d116fe810b3645a4e2a1f6c80121e0b28893a528e468c840b6a131adc9e15c15",
+      "bytes": 88,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Tools~/cs_check/UnityStub.cs",
+      "old_sha256": null,
+      "new_sha256": "44ab7d1077fd4635616cdecbb944fc99a6969ce1c34e7106a76f32a47acd0ebb",
+      "bytes": 8297,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Tools~/cs_check/check_cs.sh",
+      "old_sha256": null,
+      "new_sha256": "abf088f26125390814cf3f4b808ec56032f4613f75fcc5a235049dfbd779ed1c",
+      "bytes": 367,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Tools~/slang_check.py",
+      "old_sha256": null,
+      "new_sha256": "8028dca78b288c1d20fd94d3485daad711a61fe73e1c37e7e61fea38e6cec19f",
+      "bytes": 3006,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/Tools~/unity_stub.hlsl",
+      "old_sha256": null,
+      "new_sha256": "810e338f79c633e88d839eaffab0f583e1736c336683259ed85db8c684cf9be5",
+      "bytes": 2909,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/总工程师意见.md",
+      "old_sha256": null,
+      "new_sha256": "1fe31ab49b8e232c75a3627e109a8b59813f0febea6d1273585630e8f66dfcf6",
+      "bytes": 24267,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/暂停总结.md",
+      "old_sha256": null,
+      "new_sha256": "a38ac6eee3312373ce86f395e3ce8cd664e63ae1aaa6f87a219e0983f68e2582",
+      "bytes": 4415,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/给总控.md",
+      "old_sha256": null,
+      "new_sha256": "c63c8ed53be254ad5db98e594f61d15e7a3215457d427704869f5e3940c9c8ab",
+      "bytes": 6909,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/给本地_补丁_LB_GateTest_Run.md",
+      "old_sha256": null,
+      "new_sha256": "95cc2bcd60056915ea4ac6ae522723af50050e550ad6722805862459c28b1612",
+      "bytes": 3580,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/GateClouds/美术审片意见.md",
+      "old_sha256": null,
+      "new_sha256": "71904ada18e350ea32b9cd33ebb1cbc0daa3ba07c814a9b8c0f618446f3b6140",
+      "bytes": 14209,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Tear/Lanbai_Tear.shader",
+      "old_sha256": "d569f62e3642bc3166beca4772e266c282329662a1dd4b7660d7120a74396934",
+      "new_sha256": "c758081b3429815ff9c84cedc376f502706f20776fa584646111ebf66178e9ac",
+      "bytes": 34299,
+      "reason": "main sync",
+      "written": true
+    },
+    {
+      "path": "ProjectSettings/ProjectSettings.asset",
+      "old_sha256": "bab8d0440add3bf8b36b9777d9cd28ac521c53f9e124ca0aec4cc2aca3fb4c90",
+      "new_sha256": "a93eaacabb42c0ab45fbbea533ef635342237e85de6e7c92547f27ee4fda1d7c",
+      "bytes": 25805,
+      "reason": "approved test integration",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Tests/Editor/LB_GateTest_Run.cs",
+      "old_sha256": "78b9d98e579daaf1739d7f4fe0c355a19de66cdddbce3f771adc09aea541efee",
+      "new_sha256": "b43e7c59c49b8b029213760cf0aa6d8bb84171e4a439d2165415bfc84df61edd",
+      "bytes": 39454,
+      "reason": "approved test integration",
+      "written": true
+    },
+    {
+      "path": "Assets/Lanbai/Tests/Editor/LB_GateTest_Build.cs",
+      "old_sha256": "e19c44276da6046e5616480b8db4faa0207bfd147c2a11451e08ccc7a70d7545",
+      "new_sha256": "9d876469c015ff37f9697e628f058ee9b19242dcb440d4d025c9381a8482f8a7",
+      "bytes": 40258,
+      "reason": "approved test integration",
+      "written": true
+    }
+  ],
+  "space_before": {
+    "C:/": 3408326656,
+    "E:/": 110630555648
+  },
+  "completed_utc": "2026-10-24T19:40:23.289285+00:00",
+  "space_after": {
+    "C:/": 3408326656,
+    "E:/": 110583058432
+  }
+}

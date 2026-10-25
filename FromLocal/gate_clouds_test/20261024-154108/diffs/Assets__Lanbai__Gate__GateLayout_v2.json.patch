@@ -1,0 +1,41 @@
+--- before/Assets/Lanbai/Gate/GateLayout_v2.json
++++ after/Assets/Lanbai/Gate/GateLayout_v2.json
+@@ -1164,9 +1164,10 @@
+   },
+   "tear": {
+    "type": "Directional (CABIN ONLY: culling mask = the bus layers, NOT the tentacles)",
+-   "color": "#A99DE1",
++   "color": "#B9B6D6",
++   "inner_edge": "#A99DE1 (D-08: only the thin inner edge of the white, in Lanbai_Tear; the cabin is lit #B9B6D6)",
+    "E": 0.8,
+-   "inspector": 0.9,
++   "inspector": 0.8,
+    "shadows": "none",
+    "direction": "from _Udon_TearPos toward the bus each frame",
+    "round4": "the tentacles get the wound from TentacleSway v2.7 itself (v2.6 + the far scale / clamp _WoundSpecFar / _WoundSpecMax, none above el +25 deg, OVER-THE-WHITE dimming): a LINE LIGHT on _Udon_TearFoot -> _Udon_TearTop (wrap diffuse E = _TearDiffuse x (_TearDiffuseRef / d)^2, the tube-light specular of the white on the wet skin, and the screen-space _RimWound). The renders: two ellipse area lights the size of the white at the lens (front E 2.0 @ 600 m, back x 0.35, diffuse only) + the analytical specular. Do not let the directional also light the arms (double light)"
+@@ -1175,9 +1176,10 @@
+    "type": "Directional",
+    "color": "#5A6488",
+    "E": 0.24,
+-   "inspector": 0.52,
++   "inspector": 0.24,
+    "from_below": true
+-  }
++  },
++  "note_inspector": "VRChat forces GraphicsSettings.lightsUseLinearIntensity = true, so the Inspector intensity equals E (fixed 2026-10-08 after the Unity gate_test; the earlier 0.52 / 0.9 used the gamma conversion)."
+  },
+  "sky_band": {
+   "near": "#484D63 (fill #67697D) next to the tear",
+@@ -28764,5 +28766,11 @@
+  },
+  "near_root": "near arms (frame bus) are fixed to the bus, not to GateRoot; see instances[*].how",
+  "hero_time": 155.1,
+- "hero_tear_scale": 0.64
++ "hero_tear_scale": 0.64,
++ "stars": {
++  "material": "M_GateAirSky (Lanbai/GateAirSky)",
++  "_Stars": 0.055,
++  "rule": "D-06 / D-21: the brightest star at most 12 L* above the sky it sits in, after the S4 grade. Solved per elevation and azimuth (GateClouds/Source deck_ref band + moon air, graded): the dark sky above el 35 binds at 0.057; 0.055 is used. One EV darker low in the band (shader v3.1: inband 0.5 -> 1 over el 10..35). Footprint: one hash cell = 1/420 rad = 0.136 deg ~ 2.9 px at 1080p / ~2 px in the headset (>= 1.5 px). No galaxy.",
++  "note": "The sky kit (when merged) draws its own BSC5 stars from _Udon_StarGain / _Udon_StarShape, which the gate driver writes on [U6, U9) from FogPresets act4_gate; if the film keeps the sky kit's single skybox, M_GateAirSky and this value retire with it."
++ }
+ }

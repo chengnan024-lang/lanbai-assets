@@ -1,4 +1,4 @@
-# Director · 分发层 v1.1（`Director/`）
+# Director · 分发层 v1.2（`Director/`）
 
 维护：总工程师。**没在 Unity 里编译过**：C# 用 `Common/Tools~/compile_check/check_cs.sh` 做了 Roslyn 类型检查（editor + player 两遍、U# 规则），生成器跑过一次真生成（对门的 `LanbaiGateClouds` + 一个假的海驱动），生成结果和门的驱动一起编译通过、重复生成不变（幂等）。
 
@@ -13,6 +13,13 @@
    if (dispatcher != null) dispatcher.LanbaiDispatch(t);   // 放在 ApplyGrades() 之前（它要读下面的 grade* 结果）
    // 出生的 3 秒黑场里调一次（圣经 §1.9：所有根物体在相机前激活 2 帧预热 shader）：
    if (dispatcher != null) dispatcher.LanbaiPrewarm();
+   // v1.2（出生淡入优先）：出生时
+   if (dispatcher != null) dispatcher.LanbaiSpawnFadeBegin();   // 和 LanbaiPrewarm 放在一起，出生的黑开始时
+   bool covered = dispatcher != null && (dispatcher.LanbaiCoversOverlay(t) || dispatcher.LanbaiCoversOverlay(t + spawnFadeSeconds));
+   // covered：这时有驱动拿着遮罩球（第 6 幕的晨、第 10 幕的白……）。不做出生淡入，出生的黑一直保持黑；
+   //          黑结束的那一帧调 End，之后只有驱动那一次从黑升起来（≤ 0.85 EV/s）
+   // 不 covered：照常淡入，淡入结束的那一帧调 End
+   if (dispatcher != null) dispatcher.LanbaiSpawnFadeEnd();     // 只认第一次（幂等）；不调的话 Begin 之后 10 秒当作已结束
    ```
    **接管开关（v1.1，2026-10-24）**：分发层按“这个驱动写什么”分开给窗口——
    ```csharp
@@ -67,6 +74,14 @@ for 每个驱动（按类名、再按场景层级排序，固定顺序）：
 6. **（v1.1）报出自己写什么**：会在自己的窗口里写 `RenderSettings` 的雾 / 环境色的驱动，加 `public bool LanbaiWritesAtmosphere()`；写那一盏主光的，加 `public bool LanbaiWritesSun()`。已经有 `public bool writeRenderSettings` / `writeMainLight` 字段的驱动（门内、海）不用加，生成器直接读字段。分发层在 `Start()` 读一次（之后在 Inspector 里改开关要重进 Play）。**3 Report** 会在每个驱动后面标 `[atmosphere]` / `[sun]`，两个都写同一样的驱动窗口重叠时报 `ERROR`。
 7. **（v1.1）不接管任何占位组的驱动**（比如摆诗的 `LanbaiPoemDriver`，窗口是全片）：加 `public bool LanbaiTakesOverNothing()` 返回 true。分发层照样调它，但它的窗口**不进** `windowsFlat` / `LanbaiCovered(t)`——不然 `LanbaiCovered(t)` 处处为真，`LB_Journey` 会在第 6、7b、8、10、11 幕还是占位的时候把占位组全关掉（D-33 评审 #2）。
    - 现在 main 上：门内、海按字段报（默认关，本地勾上才算）；门、第 9 幕不写；**天空的 `LanbaiSkyDriver` 还没有 `LanbaiWritesAtmosphere()`**——它的 `LanbaiSkyPreset.ownsAtmosphere` 打开时才写 RenderSettings，请天空下次醒来加一行（返回任一预设的 `ownsAtmosphere`），在那之前它被当成“不写”。
+
+8. **（v1.2）拿着遮罩球的驱动要让出生淡入**：迟到的人在驱动占着遮罩球的时候进来（比如第 10 幕 1146–1186 的白），驱动每帧写遮罩球，会和 `LB_Journey` 的出生淡入抢同一个通道，淡入一结束画面一帧从黑跳到白（+7.5 EV）。所以：有 `LanbaiOverlay` 字段的驱动加
+   ```csharp
+   public void LanbaiSpawnFade(float since)   // 分发层每帧在 LanbaiTick 之前调（窗口里）
+   ```
+   `since < 0`：出生的黑 / 淡入还在走，**这一帧不碰遮罩球**（`Hide()` 也不调）；`since ≥ 0`：= `t − _fadeEndT`，`_fadeEndT` 是 `LanbaiSpawnFadeEnd()` 之后第一次 `LanbaiDispatch` 的**时间轴时刻**，锁存一次（不拿 `Time.time` 算，卡顿时 t 和 since 一起走，不会跳过 266.4 一下 `Hide()`）。淡入结束在驱动自己的遮罩窗口里的，从黑起按 **≤ 0.85 EV/s** 升，和自己的曲线取更暗的，跑完再 `Hide()`。
+   **遮罩窗口**：可选的 `public float[] LanbaiOverlayWindow()` 报“遮罩球归我”的那一段（第 6 幕 252.64–266.4、门内 248.39–252.64）；不报就用整个窗口。分发层在 `Start()` 里把这些拼成 `overlayWindowsFlat`，`LB_Journey` 用 `LanbaiCoversOverlay(t)` 判断出生时要不要淡入（见 §0 第 3 条）。
+   `LB_Journey` 没调 `LanbaiSpawnFadeBegin` 时（旧的本地）`since` = 1e6，等于不限制。分发层的 `spawnFadeSince` 在 Inspector 里看得到。**3 Report** 会对“有 `LanbaiOverlay` 字段、没有 `LanbaiSpawnFade`”的驱动报 WARNING。**接口只有这一个**：镜与白的白驱动改用 `LanbaiSpawnFade(float since)`（总导演已通知），生成器不认别的签名。
 
 ## 4. 已知的
 

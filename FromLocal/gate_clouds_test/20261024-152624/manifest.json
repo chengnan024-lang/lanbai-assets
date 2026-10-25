@@ -1,0 +1,132 @@
+{
+  "test_id": "gate_clouds_test",
+  "run_id": "20261024-152624",
+  "timezone": "America/New_York",
+  "reporter": "Lanbai-local (阿白)",
+  "status": "BLOCKED_AWAITING_SYNC_ALTERNATIVE",
+  "blocked_at": "C.5.1 normal git pull retried and failed",
+  "source_commit_requested": "f40f62c8370d34b53c1ce8a6815852b400d4896d",
+  "local_repository_commit": "480e711657e9301372619ac766f36bb54a5c857b",
+  "imported_repository_commit": null,
+  "unity_version": "2022.3.22f1",
+  "sdk_worlds_version": "3.10.5",
+  "ppv2_version": "3.4.0",
+  "tmp_manifest_version": "2.1.6",
+  "tmp_resolved_version": "3.0.6",
+  "udonsharp_version": null,
+  "clientsim_version": null,
+  "package_versions_note": "UdonSharp and ClientSim bundled; independent version unknown",
+  "machine": {
+    "os": "Windows 11 Home Chinese 10.0.26200 x64",
+    "cpu": "Intel Core i9-13980HX",
+    "cores": 24,
+    "logical_processors": 32,
+    "ram_bytes": 33959809024,
+    "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "vram_MiB": 8188,
+    "nvidia_driver": "610.62",
+    "windows_driver": "32.0.16.1062",
+    "secondary_gpu": "Intel UHD",
+    "headset": "Meta Quest 3",
+    "streaming": "Virtual Desktop",
+    "headset_available_user_report": true,
+    "headset_test_status": "未测"
+  },
+  "tools": {
+    "LB_GateTest": "existing local code, not executed",
+    "Engineering_UnityTest": "absent on target main"
+  },
+  "steps": {
+    "cleanup_handoff": "complete",
+    "read_only_inventory": "complete",
+    "full_backup": "verified",
+    "main_pull": "failed",
+    "file_sync": "not_started",
+    "ProjectSettings_change": "not_started",
+    "unity_launch": "not_started",
+    "compile": "未测",
+    "screenshots": "未测",
+    "performance": "未测",
+    "udon_runtime": "未测",
+    "headset": "未测",
+    "feedback_push": "not_attempted_after_pull_failure"
+  },
+  "status_layers": {
+    "blender_offline": "未测",
+    "unity_desktop": "未测",
+    "vr_headset": "未测"
+  },
+  "prior_cloud_offline_status": "passed according to handoff; not a result of this run",
+  "backup": {
+    "status": "verified",
+    "archive": "E:\\IDMdownload\\VRCC\\Backups\\dream_20261024-134728.zip",
+    "archive_bytes": 522183967,
+    "archive_sha256": "c960d93308580f4066d7db331ea91080b5f8ee1c118d752ccac094d878add7f8",
+    "source_logical_bytes": 692092091,
+    "file_count": 7233,
+    "meta_count": 3036,
+    "all_entries_crc_and_sha256_verified": true,
+    "required_entries": [
+      "ProjectSettings/ProjectVersion.txt",
+      "ProjectSettings/ProjectSettings.asset",
+      "Packages/manifest.json",
+      "Packages/vpm-manifest.json",
+      "Packages/packages-lock.json",
+      "Assets/Lanbai/Scenes/Lanbai.unity",
+      "Assets/Lanbai/Scenes/Lanbai.unity.meta",
+      "Assets/Lanbai/Tests/GateTest.unity",
+      "Assets/Lanbai/Tests/GateTest.unity.meta",
+      "Assets/Lanbai/Scripts/LB_Journey.cs"
+    ],
+    "source_metadata_unchanged": true,
+    "manifest": "E:\\IDMdownload\\VRCC\\Backups\\dream_20261024-134728.manifest.json",
+    "recovery": {
+      "source": "E:\\IDMdownload\\VRCC\\dream\\Temp\\__Backupscenes\\0.backup",
+      "path": "E:\\IDMdownload\\VRCC\\Backups\\dream_20261024-134728_recovery_0.backup",
+      "bytes": 207824,
+      "sha256": "df4dc50aebc50188a7c8746802ddc5b542207d652fa99db004d32ffdcae7ff84"
+    },
+    "c_free_before": 4713635840,
+    "e_free_before": 111776870400,
+    "c_free_after": 4575895552,
+    "e_free_after": 111252643840,
+    "verified_utc": "2026-10-24T17:48:28.889170+00:00",
+    "filename_timezone": "America/New_York",
+    "restore_test_performed": false
+  },
+  "project_changes": [],
+  "evidence": [
+    "git_pull_full.txt",
+    "resume_state.json",
+    "README_说明.md"
+  ],
+  "retry_options": {
+    "http.version": "HTTP/1.1",
+    "scope": "command only"
+  },
+  "project_verification": {
+    "checked_utc": "2026-10-24T19:24:49.449916+00:00",
+    "checked_files": 7233,
+    "changed": [],
+    "missing": [],
+    "extra": [],
+    "errors": [],
+    "project_content_unchanged": true,
+    "scope": "All source files included in verified backup; excluded root directories not assessed"
+  },
+  "alternative_checkout_path": "E:\\IDMdownload\\VRCC\\lanbai-assets-gate-main-20261024",
+  "alternative_approved": false,
+  "remote_main_unchanged": true,
+  "known_shader_fixes_confirmed_in_main": true,
+  "vertex_enum_checked_from_installed_unity_assembly": {
+    "Color": 8,
+    "TexCoord0": 16,
+    "TexCoord1": 32,
+    "TexCoord2": 64,
+    "TexCoord3": 128,
+    "current_mask": 4054,
+    "proposed_mask": 3846,
+    "applied": false
+  },
+  "publication": "local_only_not_pushed"
+}

@@ -1,0 +1,25 @@
+{
+  "at_utc": "2026-10-24T19:30:59.468569+00:00",
+  "files": [
+    {
+      "name": "git_pull_full.txt",
+      "bytes": 14818,
+      "sha256": "abebe3d68c3178abd15a05bda4518928cf8c7a377a987fb392dfda1c4b57ce45"
+    },
+    {
+      "name": "manifest.json",
+      "bytes": 4719,
+      "sha256": "880c4c2d7f76b026d74a55464b7803c7c129563da16db36c5c31c6496903c8df"
+    },
+    {
+      "name": "README_说明.md",
+      "bytes": 2188,
+      "sha256": "c6691d0d6ea6757f388885bf41a084dbd18b434cedfee718e403f790d3056015"
+    },
+    {
+      "name": "resume_state.json",
+      "bytes": 749,
+      "sha256": "005780a981d91bffacb6d25a8eca2d15ac5d2f56499e63c2abb47344db940659"
+    }
+  ]
+}

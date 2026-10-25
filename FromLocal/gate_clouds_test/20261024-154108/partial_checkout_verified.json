@@ -1,0 +1,1761 @@
+{
+  "status": "verified",
+  "head": "f40f62c8370d34b53c1ce8a6815852b400d4896d",
+  "checkout_count": 249,
+  "import_count": 239,
+  "import_bytes": 46871791,
+  "space_before": {
+    "C:/": 3409809408,
+    "E:/": 110689071104
+  },
+  "space_after": {
+    "C:/": 3409453056,
+    "E:/": 110594760704
+  },
+  "files": [
+    {
+      "path": ".gitattributes",
+      "bytes": 148,
+      "git_blob": "194023cee72f697e36695033e0a525efd20e6585",
+      "sha256": "923a5798246c351228e9f7297d28f3e5d1c5962a1c64beb2017566a7722478bc",
+      "import": false
+    },
+    {
+      "path": "Art/ART_BIBLE.md",
+      "bytes": 343181,
+      "git_blob": "afb59dfc361bcf7f2b613f8c5fea5fdd1ebbbb09",
+      "sha256": "5acbdeeafa0e12909af2c21d8fadfadf949b10f22e1a4e9cfdb4d9507d316f5d",
+      "import": false
+    },
+    {
+      "path": "Art/总导演裁决.md",
+      "bytes": 72376,
+      "git_blob": "f827db91b98c72bfa8bc547d5dd4d893119a2aae",
+      "sha256": "66ab2fe026cb05fb59d7e7057861da7daadb7d21334986bf8b0c3a3ee646341b",
+      "import": false
+    },
+    {
+      "path": "CONTROL_总控.md",
+      "bytes": 15025,
+      "git_blob": "c168053144fe02365a351c454b571e6fdc316b5d",
+      "sha256": "0b48ff551529f0ac15e0e5a948f26f16d037ea4e897add07c38af81466433203",
+      "import": false
+    },
+    {
+      "path": "Common/Shaders/LanbaiCaustics.cginc",
+      "bytes": 4624,
+      "git_blob": "f42cb57fa60571ff8b30630ea65654fb51abe75d",
+      "sha256": "7f2e092da80fdda83465fffa152b89b04d7f077976b352e2ba95d7434c874371",
+      "import": true
+    },
+    {
+      "path": "Common/Shaders/LanbaiFog.cginc",
+      "bytes": 9027,
+      "git_blob": "9183cc707f68045956c872a75cef58cb242c2cd0",
+      "sha256": "ca59813d7ca1312f4d912f1e224b47068e29dda02dac378e5f1fc42abc540eb9",
+      "import": true
+    },
+    {
+      "path": "Common/Shaders/LanbaiGlobals.cginc",
+      "bytes": 20178,
+      "git_blob": "3d76bb24a0640b37574d06c37887d0d2dbe03cb5",
+      "sha256": "82b6d28d1c3b1893fa92ad335ebd41f7a150b499fdb86db6a039bdacabd44bf8",
+      "import": true
+    },
+    {
+      "path": "Common/Shaders/LanbaiSky.cginc",
+      "bytes": 21099,
+      "git_blob": "3a4ef1bdce94606ef6acdced4357a7d99cdb7d09",
+      "sha256": "2fd6ce5972ec3d77ff5f78e7a55d6833180be87b4cfba0b425a9563a71e10f69",
+      "import": true
+    },
+    {
+      "path": "Common/Shaders/LanbaiVR.cginc",
+      "bytes": 8035,
+      "git_blob": "90efcc2b6eb2d8731ea662d46f824eaccb355d89",
+      "sha256": "d2588fa188cb40167d4128ac29ec8e32d7b62e39de5a67cb849056364dfa5997",
+      "import": true
+    },
+    {
+      "path": "Common/Shaders/README_LanbaiGlobals.md",
+      "bytes": 2593,
+      "git_blob": "d60f082d9923089ef7f3d3e184bc37c666406ac2",
+      "sha256": "767d0f92f25abd0337c825102c47b8ca036ba2cc50a7c588f2410a842e285340",
+      "import": true
+    },
+    {
+      "path": "Common/Tools~/.gitignore",
+      "bytes": 19,
+      "git_blob": "7a60b85e148f80966a550e5ab6a762a907c69ca6",
+      "sha256": "862263fa1f46c20f0d1e4dac5ffcc75abd55c08211b2c3864c5f8764b9d87793",
+      "import": true
+    },
+    {
+      "path": "Common/Tools~/compile_check/README_compile_check.md",
+      "bytes": 5567,
+      "git_blob": "96cc3ed137cb255fee68cd5da2960cb620a25d64",
+      "sha256": "db0df4834a206259a2fb2b28213d402ccb85e823f54ce3e9cd36daecc581716d",
+      "import": true
+    },
+    {
+      "path": "Common/Tools~/compile_check/check_cs.sh",
+      "bytes": 744,
+      "git_blob": "42ad09c1637820108f57cf48f1efc1fe167975c3",
+      "sha256": "959c78e2378f62f825ab6c145544f1497db83eee301df4f76530859e175c310b",
+      "import": true
+    },
+    {
+      "path": "Common/Tools~/compile_check/check_shaders.py",
+      "bytes": 18441,
+      "git_blob": "0138a7f51c453072af5ec9830129e3437357f6d9",
+      "sha256": "9c4d64d522b581d2c8ca0e495185f8da7dcfecaa0239a92a4add7d7ccc5fdb5e",
+      "import": true
+    },
+    {
+      "path": "Common/Tools~/compile_check/lib/cs_check.py",
+      "bytes": 26844,
+      "git_blob": "1d5285c807e8942590a0ed785eaaf71fda3c57be",
+      "sha256": "863dc2d6ac2366d4c837b766f7c66c836ad8b5e72cee66a39a4af6ae2f72a3d8",
+      "import": true
+    },
+    {
+      "path": "Common/Tools~/compile_check/lib/dxc.py",
+      "bytes": 4995,
+      "git_blob": "f7ebd0b731e7cc56e0c9ed798a46da581f2971c3",
+      "sha256": "64b8768f848f49a1a8f72baa80b27d285d4374e60c41c983d09a88307a847b75",
+      "import": true
+    },
+    {
+      "path": "Common/Tools~/compile_check/lib/hlsl_tu.py",
+      "bytes": 12776,
+      "git_blob": "77acbf2396094d6e212f6bbdf947908c7e7e5bbc",
+      "sha256": "fc05b7f47ff535b6bcb3915c480b32b307326303e39678937ffe26900f312f00",
+      "import": true
+    },
+    {
+      "path": "Common/Tools~/compile_check/lib/setup_fetch.py",
+      "bytes": 5759,
+      "git_blob": "d6a9cfe5f82f44ffa0707aff9732f7c6417fe884",
+      "sha256": "625fd1cb0fa0dddef09135215f3389764e60f69fa158c5d05c0ccc5064f9f8f6",
+      "import": true
+    },
+    {
+      "path": "Common/Tools~/compile_check/lib/shaderlab.py",
+      "bytes": 8567,
+      "git_blob": "676edb8d169964a8d79a7a566ec8c185f3b51631",
+      "sha256": "fa613c170c0dffb430da2bd23e412d032c080c00e3002ce7aded08e5ad93970c",
+      "import": true
+    },
+    {
+      "path": "Common/Tools~/compile_check/setup.sh",
+      "bytes": 6292,
+      "git_blob": "1d569b127eb90f87d3460bb1cada90ee7350f140",
+      "sha256": "990ca6177a0fe32ba003bfe031672544c3433f45c1270ce194fdfd4e35d48e47",
+      "import": true
+    },
+    {
+      "path": "Common/Tools~/compile_check/stubs/PPv2Stub.cs",
+      "bytes": 10287,
+      "git_blob": "4edef28a677082aa39417e3bd5b56b76eb46bda6",
+      "sha256": "1bd642346adb422015faac5503c8471435bf33d3eeff34e7e4b64c73b9fb10cf",
+      "import": true
+    },
+    {
+      "path": "Common/Tools~/compile_check/stubs/TMPStub.cs",
+      "bytes": 4450,
+      "git_blob": "7507bd11d4b9cfe8ba0cdc87cf26782122a1f50f",
+      "sha256": "5e4c3e99856e37af56faef73b2621df0b651577ebbfdbfcc670ecd5846ec702a",
+      "import": true
+    },
+    {
+      "path": "Common/Tools~/compile_check/stubs/UdonSharpStub.cs",
+      "bytes": 4512,
+      "git_blob": "e03049c6ce53f6e585e13f42ccab683787a50609",
+      "sha256": "054f43837ebdeabb592d624d0d72be287b9a393b55dfca1a76a2c53af5a8c379",
+      "import": true
+    },
+    {
+      "path": "Common/Tools~/compile_check/stubs/VRCSDKStub.cs",
+      "bytes": 7372,
+      "git_blob": "8cb4aa2d5a959830f85bf1d3f452fe9d91da7060",
+      "sha256": "8bdaea97e63513fa82efa3beaa38bef973ea550f87064578dbe21bf2479dda68",
+      "import": true
+    },
+    {
+      "path": "Common/Tools~/globals/gen_globals.py",
+      "bytes": 6470,
+      "git_blob": "bbea85bdc9062e32f1b0f1e421eb9709146f9971",
+      "sha256": "5c69856ef662cd27c91dd8f7dd926c2f652f4488009f0fe4535517ab9dc458b9",
+      "import": true
+    },
+    {
+      "path": "Common/UdonGlobals.md",
+      "bytes": 9649,
+      "git_blob": "427c10bb92194f9290ef5546f5cdbc6bc3ec59d7",
+      "sha256": "ae7b7413faec4f274a5e61bb9d2398485cb50949d0506c5bb338b8784831d790",
+      "import": true
+    },
+    {
+      "path": "Engineering/README_集成.md",
+      "bytes": 33816,
+      "git_blob": "ad3c607544c5563ddc9b30d3e985c0a139f5f732",
+      "sha256": "250957260759c9599af2a6f5307c2de96735dd8ac2b961459baff3a36efafa78",
+      "import": false
+    },
+    {
+      "path": "Engineering/ledgers/README_账本.md",
+      "bytes": 28148,
+      "git_blob": "a8fb2daeecf8814a69f27a5b651c0a114b16ecf5",
+      "sha256": "fc1737f5ac0a02977157510ac78355bfa23652212917c1ebce2d6354e486c524",
+      "import": false
+    },
+    {
+      "path": "Gate/Editor/LanbaiGateDriverBuilder.cs",
+      "bytes": 23471,
+      "git_blob": "8506a7b2f3bc1ac728817ef45729130e44b0946d",
+      "sha256": "34d4a480dde7ea3acd19c683af068877117b3e7bf90a476ad8539a48e84da610",
+      "import": true
+    },
+    {
+      "path": "Gate/GateDriver_Bake.json",
+      "bytes": 72461,
+      "git_blob": "c4014e0d2ae70c210d16986b89cc8c94a5a35d5f",
+      "sha256": "36cf490a24296836ed3c0e2c2c87bcb2d66500a876dcba4f6501768dc4388d81",
+      "import": true
+    },
+    {
+      "path": "Gate/GateLayout_v2.json",
+      "bytes": 530575,
+      "git_blob": "8827ec8fa92c00095bffeac996915b2222c874f4",
+      "sha256": "330b9ed696aca2ae09f3c8035bba344dc1d8446f0afc3f87b49f25347e62d98f",
+      "import": true
+    },
+    {
+      "path": "Gate/README_GateDriver.md",
+      "bytes": 12758,
+      "git_blob": "e61f6c279dcfdd21a6d2e32702bdd8a8142c975d",
+      "sha256": "5d0a5253b1742f32d88443dd0fa5e281c72273f08b03bde663376c4ca0be59bc",
+      "import": false
+    },
+    {
+      "path": "Gate/README_GateLayout.md",
+      "bytes": 85950,
+      "git_blob": "6454f290be2dc13d54ef19b32005a33bc16eac82",
+      "sha256": "338ca9fcd0d38f8e084317098159aad9111b4b2961aaab88f9698d5c14438c45",
+      "import": false
+    },
+    {
+      "path": "Gate/Runtime/LanbaiGateDriver.cs",
+      "bytes": 25330,
+      "git_blob": "87289523075ed683205b8dd43300dbee6e77aed2",
+      "sha256": "d6ad908ad5521c715eb018167bf7524c8d66832e067e8170117f9db9d41c94cb",
+      "import": true
+    },
+    {
+      "path": "Gate/Runtime/LanbaiGateTestClock.cs",
+      "bytes": 2037,
+      "git_blob": "4fb155b9815f75e9511e6beadf4378ae1bfb84ca",
+      "sha256": "d0c566fd1be55434c300dd688b8d8587442b3302b96300deea743a609ddd38cc",
+      "import": true
+    },
+    {
+      "path": "Gate/Shaders/LanbaiGateSky.cginc",
+      "bytes": 9163,
+      "git_blob": "5e2660f34dc1d90cc9ac9d9ef91ff8d159ad02bb",
+      "sha256": "f1409b8d063125349d8d9f29aac44adfc3d834c9088bffacd4c5cd2c8aa59438",
+      "import": true
+    },
+    {
+      "path": "Gate/Shaders/Lanbai_GateAirSky.shader",
+      "bytes": 5312,
+      "git_blob": "f56b751cf920308fbe7ea9ee509922de9fbd0e26",
+      "sha256": "85ed7c4b5bddf774edd46043e738836cbb1bdd0b4b40ec71677c5ecfc6d6c1c4",
+      "import": true
+    },
+    {
+      "path": "Gate/Shaders/Lanbai_TentacleSway.shader",
+      "bytes": 53502,
+      "git_blob": "78f9e1c6cd680546ace55e7e8bbe28f95e5baca9",
+      "sha256": "a536d0c71d1677cdf5e2fcb6106fecc4766bbbdc6b2b90170407a35bceb85686",
+      "import": true
+    },
+    {
+      "path": "Gate/Shaders/Lanbai_TentacleTide_v2.shader",
+      "bytes": 12148,
+      "git_blob": "2d7b8210de843931d9f0a3a2a009a4e0dce8af97",
+      "sha256": "b6b61037bd3a62c6642923852afce42f2a176e1737727f2d214d20709f4fb5ae",
+      "import": true
+    },
+    {
+      "path": "GateClouds/.gitignore",
+      "bytes": 24,
+      "git_blob": "95109d13c31f6de7a744b2903b83b1628b500120",
+      "sha256": "f44b1f0ff381634146416df18170a557fd96b6f73e612460ffef8e5707f48481",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/cards_contact.jpg",
+      "bytes": 183822,
+      "git_blob": "d04d6b20698814ef164055c1e190fe81e273b7a4",
+      "sha256": "f8228583ff3ab5f760ba9d4731ed64a4145d2eb87d9641ab475b667e57668521",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/compare_U7.png",
+      "bytes": 2315426,
+      "git_blob": "50700d0d1c79584e7bcd8ca118de8c5e70ae68b5",
+      "sha256": "71f6f09e3fe732d5fb6231585fd24774d81f9abb68006d67bcee27bab9ee120c",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/compare_U8fwd.png",
+      "bytes": 2282446,
+      "git_blob": "4e24083965048bbc799cbb6a115f2c942267c9e4",
+      "sha256": "9766064722f779cdecdd2b6e2349a2de52f7133fa3e6b2c0652095519f5bfde7",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/compare_U8side.png",
+      "bytes": 1905334,
+      "git_blob": "ab53af4b8e9dc8f7958844b2a466e23141863c3e",
+      "sha256": "803871ddda1bb834c1d0261e85fd610a1f7b88bc933b1f69a1e6289ff6524442",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/compare_key.png",
+      "bytes": 3150911,
+      "git_blob": "e713e2b88efae277660951579899e711d027a397",
+      "sha256": "6661678592f92de6048cc285b68fb06a1791792d3745c629999e087b5e934fc9",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/compare_rear.png",
+      "bytes": 1850950,
+      "git_blob": "b98ff9babb7da71a0b4428608fb8cb2e91cef299",
+      "sha256": "fbe48f8c52cf45a683ff5972b8ed3d6dc9d204d3c230015ee67a5582d23321c2",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/crawl_map_U7_720p.png",
+      "bytes": 220980,
+      "git_blob": "d92d566cee41e717a5372355bd7b680fa0859f50",
+      "sha256": "e36cae12df6e5531b2fdf4c9192d7a2e88fe6476a995c7e40bf3e236af86937f",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/d22_fog_check.png",
+      "bytes": 52807,
+      "git_blob": "870c9721cd99897ae3c3f1a6aeb2fd18f5bd8265",
+      "sha256": "5e823251304883f13bec712f7ee811886923af7c44891dcd392b8899b5938173",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_linear_U7.exr",
+      "bytes": 3107047,
+      "git_blob": "7bac90047ff06091704c3b3683cf8f4770623726",
+      "sha256": "617493c67426531e8f8f998510d11f3d05c12dfc3e4f178a78e6700dfb44ab6a",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_linear_key.exr",
+      "bytes": 3055484,
+      "git_blob": "1a99128ae3849a2f7d5a7360f3d86257a44817e7",
+      "sha256": "b1f3482ff2e0b1ca0586ac4acd61a16c0d396dea394fd158c1c780e488f7256b",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_only_U7.png",
+      "bytes": 1971584,
+      "git_blob": "8b7ce5ed8ef45c8a0ee37381920f62cf6f248e54",
+      "sha256": "372127c2222fa72fc720d86370c2ca46b3ff6c19f1854587e1ad3f7876676cda",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_only_U8fwd.png",
+      "bytes": 2179264,
+      "git_blob": "28dcb7c8a1ff69a834f0055e5d43e8841e441355",
+      "sha256": "0662cfb053c136af53f6a0132d89c5fba9394ec002282473094df08eaf47e7a6",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_only_U8side.png",
+      "bytes": 1885966,
+      "git_blob": "43d391364690514d066db4a8ba606b7681fd1839",
+      "sha256": "5a8ec9ae47ad3dc11354023f3c21aef24e65920a6f134c40ace50ea4e39bbf2c",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_only_key.png",
+      "bytes": 2586164,
+      "git_blob": "8f253086adf8ad5a560e7ddd974f7ae3f8d40784",
+      "sha256": "c58b2f742fabcc71e452a4d76e55521a545eb590457fe27b48d452b3ef41165e",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_only_rear.png",
+      "bytes": 1842814,
+      "git_blob": "5597e090e316171ad08866e3888270225a28b049",
+      "sha256": "4a9cffba19aadbd0dc70863c85c19370b4fe1b6f901ec230f2f5417093252327",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_U7_60fps.mp4",
+      "bytes": 299657,
+      "git_blob": "49ae3e61a06cb5b944b89dfbcd3ddd544f7eb7f9",
+      "sha256": "c919d34e0944e319ecb28fd620cdeb017f6f42b85ef8777083c67ce16205684f",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f000.jpg",
+      "bytes": 24962,
+      "git_blob": "e0653a3eef6fde852530e47a301a4283af3a3cc4",
+      "sha256": "e4b808a06faaa33f41ad9ed6d375296fbb1327ccda1af5f5d74571f80c05ac20",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f001.jpg",
+      "bytes": 24989,
+      "git_blob": "750cba36a39a4f4168fce7b2684b312ae6c66ef9",
+      "sha256": "ee8d544ac998047a2cd5900c37854c54a182f81362600ec90b817a9cfe25e8e7",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f002.jpg",
+      "bytes": 24925,
+      "git_blob": "f09f082370eda3e4a5acdae638384c9eb17b81d6",
+      "sha256": "202e036ba0602c3e8faf553b53a247398a68c7588e648540c32998a1ea8813d7",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f003.jpg",
+      "bytes": 24980,
+      "git_blob": "d58f31078d4f550ef1e3c8dfbe94e4fd408e1d8f",
+      "sha256": "73e094427b15650ec09d8b10d1d6853833334ca383c18cbae64c58df963a0d9a",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f004.jpg",
+      "bytes": 24972,
+      "git_blob": "38d88e4edff4a1c3dcc2536bfaffcaeea49305a8",
+      "sha256": "a760add5ccff10609d611d69c3e7a1ed2573ff7dcdd520a392661a123a28e833",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f005.jpg",
+      "bytes": 24984,
+      "git_blob": "46e21edbc819b7234ab2cc181944a17a24f4d88e",
+      "sha256": "45555e2c7c9ab3c4fb63ec5f4b8a9ac432de847210660ce1009d3e6cd64588e0",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f006.jpg",
+      "bytes": 24950,
+      "git_blob": "1d905ce43109484afcd997a230e4878ed9be4015",
+      "sha256": "c43ae4516362554443e3aade37b65bd50f015293b11bef1e0cebf74d1007ca5b",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f007.jpg",
+      "bytes": 24922,
+      "git_blob": "6936fbc9662884def5760bce26fbaf26a2436861",
+      "sha256": "db2eaf2c68bbb045fe4a975236dcc5f34f770aace173e9b7859505a937fc10a0",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f008.jpg",
+      "bytes": 24987,
+      "git_blob": "ae4a699b9d81b409c39d1a651ac6c2c5b1334620",
+      "sha256": "fcb5e6d1c3605e721c06223172f580b311554dfa1ee4e1551edb6250b4b687fe",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f009.jpg",
+      "bytes": 25119,
+      "git_blob": "c224a795d68da20c533c153af253e1e915e52e8a",
+      "sha256": "c1c3598344437fe23d225c0e7112aee0541df5050893dac9a5ae5d6e6b38fae2",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f010.jpg",
+      "bytes": 25010,
+      "git_blob": "3f1b702556ad05e2da8d8d4d5ae2ac20329b97d4",
+      "sha256": "8c49ba1726784526d876e781509ce323ddbc3cc624773129d456dce22ac64933",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f011.jpg",
+      "bytes": 24954,
+      "git_blob": "1480cf99afb3bf01b498b97fd410ee48adda9171",
+      "sha256": "90f3dd8bb047e5616be4581b39560facd08fd67dfa20bf0ac342025d3f96e5d1",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f012.jpg",
+      "bytes": 24989,
+      "git_blob": "5519600861bbc682769956bcded9343996bb91b4",
+      "sha256": "8ae42dacf25ad81afd066a37a127b5f127abcfe6db399b13c0bb0e790357028c",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f013.jpg",
+      "bytes": 25043,
+      "git_blob": "b162db7477b353198d906431838ab3d1583cc45c",
+      "sha256": "3474e5e4f04f59873f39bc8d548a85c134d879516bdc4b21905f0d7e9b76b75c",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f014.jpg",
+      "bytes": 25053,
+      "git_blob": "808d592233de9df6c84fb09b4ad6aaa4a6617701",
+      "sha256": "00224624cde42e0344e1c7e5af10625d3fa517956848e89a7c6763c2d6f91978",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f015.jpg",
+      "bytes": 25053,
+      "git_blob": "69c7c424950dbd8d2694338957aeaa29c757f50e",
+      "sha256": "076ac0d5b908b4f07c2ed616c97228dfa804864c28b14c3ce90979e15f3014bb",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f016.jpg",
+      "bytes": 25008,
+      "git_blob": "506d7a4bdf812b4ee42c5e870b0e74c6c51949f1",
+      "sha256": "d13acb01103245c7a429266cfec15846b449572d1fc17c482a04df62deb8a4b4",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f017.jpg",
+      "bytes": 25042,
+      "git_blob": "7f2898c3b18e5cd00a394f14d88144763f92e2ee",
+      "sha256": "320b34769b0c627686f51bddafe5d65f4162e2b7410a03829a132d04192313f7",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f018.jpg",
+      "bytes": 25186,
+      "git_blob": "10298b45b49380dc64cc5a020853750b7bbcd416",
+      "sha256": "de656914e5ceeea1e2d86c2a3cbca749dbc767827c19532abe742cad4f175f45",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f019.jpg",
+      "bytes": 25102,
+      "git_blob": "23a80c2db4bcc0c2b7321778874a2f97dd6e4e69",
+      "sha256": "595185ef96df0f589286d16b07d04cb6508ebcdab3795b9b144f64afba316c8a",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f020.jpg",
+      "bytes": 25213,
+      "git_blob": "f352cd58df8e86a86ea3067af627a7dc26174681",
+      "sha256": "74262c07d90f2d613ec5674d3d13139bc97e7230174ec165f8a4c17805cd3115",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f021.jpg",
+      "bytes": 25208,
+      "git_blob": "83498b1db2836d1cee62d5861966f9d34ee45fe4",
+      "sha256": "ce73fe6c05e0088eae6db70f09f215cccbdfddf27e36ea5867a6bda5bba9c22f",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f022.jpg",
+      "bytes": 25293,
+      "git_blob": "67bd02a3537856089e910cb20ed564ab63a61345",
+      "sha256": "bb14264c28fd4358c6cd981994b203c3b10a3658931635c0952a62421c644db8",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f023.jpg",
+      "bytes": 25282,
+      "git_blob": "d4a19c83f42cb634aa8b2a0003818eaa495fc161",
+      "sha256": "afbf58998ccc1edfae0b67250f630a0265aab62b180a2fff327b96c9413eb425",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f024.jpg",
+      "bytes": 25318,
+      "git_blob": "dc4f059a93f16ac638fa1b77718d1f7e3761dd0a",
+      "sha256": "1bcf280d2d1d6a61c736152f6fc4f6a38b43de921c23ffc4873603625ede8cf3",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f025.jpg",
+      "bytes": 25315,
+      "git_blob": "242b9c3b2b2e781123ad23c91acd13a8daf52c4e",
+      "sha256": "8c01f14cd3206dc3bea9a753345aa3f8f6f4157d019a824d654ee0e1f39ee04d",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f026.jpg",
+      "bytes": 25298,
+      "git_blob": "b25ce12656d0f5e982f371ca6574c4e8978412ef",
+      "sha256": "7317b6fdefa30d3734f5df333d56f04e3e3fb50f60ffcf93f4084d8f237cbf99",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f027.jpg",
+      "bytes": 25313,
+      "git_blob": "0d1e5e9ed21210bbcfb2cf77604f5aaf84730662",
+      "sha256": "4d626ac8dd2bb41ba2a1aa97a08b7cd48cb6d04fa568001a5635cd04593e5b93",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f028.jpg",
+      "bytes": 25401,
+      "git_blob": "60c0c94095ca532104b867fed804ca7e2fde6c10",
+      "sha256": "33e16e85278db119fa56fd73b445e4687993c85b97c5e406464f1b8699df6842",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f029.jpg",
+      "bytes": 25361,
+      "git_blob": "c25205b05ee7666ba68d6eb9acb8a044b93b24d4",
+      "sha256": "3d1e911505086aeba5b329d5da4e3b9878cf1eb176413d996d07d9b5ba769ceb",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f030.jpg",
+      "bytes": 25380,
+      "git_blob": "609653262f8c780fadafee057c989f49b7c5fe01",
+      "sha256": "d3e29487d51bf450af6279171e65a52d7569bf87d1f32b00c11558244c8eebd4",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f031.jpg",
+      "bytes": 25357,
+      "git_blob": "8a54734d7510a12ea3eea837415c1be35fb49b6a",
+      "sha256": "18cb5777db172b3bccadc8258076141013597ff8f5896d1423cd1c20fb08af16",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f032.jpg",
+      "bytes": 25397,
+      "git_blob": "04417ae42b0159c77d069e9fcadc644000b605b5",
+      "sha256": "abf6e1641f4268c2c17e0107f285130f5a17fd5ac98767de402d2b67b3bf7920",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f033.jpg",
+      "bytes": 25416,
+      "git_blob": "ddbcf455bd37abd33ae0b25ee8fa527bb13e8764",
+      "sha256": "11ef70edec8860b8a29a03736c569e647c30c413f9cef65632b6fdf4dc646345",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f034.jpg",
+      "bytes": 25435,
+      "git_blob": "07e43f4412afac06947d56e722a8a46589223590",
+      "sha256": "81b83191a2c6bc732e8dfe54e435bb2f5704a80e0ca04bcd0720b992c68be04a",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f035.jpg",
+      "bytes": 25483,
+      "git_blob": "dbc9d2cebeaba0913bf4144ce6970ea2808c469f",
+      "sha256": "98415fe75b6f322f6c2d740fd40e4b4ed7b14040c89cff5e8c231b5086883ca0",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f036.jpg",
+      "bytes": 25412,
+      "git_blob": "455b2cd3818625571d7ed9c716509ea833671877",
+      "sha256": "7030fa28b177f7386133f83fdea58f2dbeb54d218bc315bf04b48ad772348455",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f037.jpg",
+      "bytes": 25393,
+      "git_blob": "a6b170afa9952329c8b3b5b0e17e1ce60f55d1ee",
+      "sha256": "57b83d0c5969666ff2623db0b114cb8811025d8c34a5e9d789dd850e035152cb",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f038.jpg",
+      "bytes": 25443,
+      "git_blob": "2c21a521ceac6d099c82a117558a8ecabc2bfc79",
+      "sha256": "1886e8fcb805efdea417490e8c923b436493412b690596463411ececda7d1078",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f039.jpg",
+      "bytes": 25410,
+      "git_blob": "b89e78cbf90fba1518112985dec179196636a902",
+      "sha256": "767585cc2af8ba24922a748259bad3157471ee2fb6f0d852de4bf9fdf06e48ff",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f040.jpg",
+      "bytes": 25462,
+      "git_blob": "25c9fd4fade1d86ca614910812675b5835f105cc",
+      "sha256": "94d12459ecabf5b0f82f6df1d6e576ef63a7e6029916e46aa8382c796e18bde9",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f041.jpg",
+      "bytes": 25536,
+      "git_blob": "c312b413122f71a91e5474c0f081df2802f64bbb",
+      "sha256": "2f8899228a15b1bc2982a43bfaa02a7abf768158f853d4f93abcf50e588f37d4",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f042.jpg",
+      "bytes": 25583,
+      "git_blob": "bae46e5f0536c6733dcab3bf1abae29d71f7750c",
+      "sha256": "826092e0c4ef7b183d6de51faef2b7c7816bb351985586acf9bfdb84789a03b3",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f043.jpg",
+      "bytes": 25582,
+      "git_blob": "c1295af1f798912873774dc73e8ba997f3a9d677",
+      "sha256": "7c95ef1fb72515bdb6ad3eef250064181cc2a5d9495c21684f2050f61c5ef208",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f044.jpg",
+      "bytes": 25516,
+      "git_blob": "0991447cffb34c6d30b223cb8c391054b97c4b76",
+      "sha256": "e26b62e49b9e6edb0d06bc09a6b4f2f64ee27a4c2e3899ed5b5ca1f38d671b50",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f045.jpg",
+      "bytes": 25521,
+      "git_blob": "5e09cec94a2740675c033d531f18842457bd94f4",
+      "sha256": "2a0082ae1608e17f751b36e3d73f21e830767354bd013991af836bcd6becbecf",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f046.jpg",
+      "bytes": 25409,
+      "git_blob": "a3e5943841077d4d22bd5b91c5fbf24d354c2fa6",
+      "sha256": "20127d42f8b7015f6d3549ff512a21c6b5a91075a9781b01081d2ddf98620e8e",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f047.jpg",
+      "bytes": 25414,
+      "git_blob": "8d0a3df9fc5874083b9283a64d59496c51dac556",
+      "sha256": "5e40d62bb9911395c80b7922da6b482bc830551ff4f19ee2e11a9a31f2f3e210",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f048.jpg",
+      "bytes": 25399,
+      "git_blob": "50170341f5daeccdb9e3be77ed54db539a411ef0",
+      "sha256": "b29669b6d2fd8c383b57a6eff339ae2c47e30a4b793453675d0a8cb9cb476f4c",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f049.jpg",
+      "bytes": 25384,
+      "git_blob": "11888c5210600002d7765ffd5160886cd34f0546",
+      "sha256": "8fdea271814e797456dcc08b4fafdd3bf5c22fb08716b52ee8cbd402acb5edce",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f050.jpg",
+      "bytes": 25362,
+      "git_blob": "6e1530b6224da36fa2b6b8dd0b24ad76d10d1827",
+      "sha256": "f7d6d02fe63e00cd1627dd42e9cf9c82201f76f91668f2ff2bcae19fdb4cdb02",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f051.jpg",
+      "bytes": 25288,
+      "git_blob": "bf74445fcd4f651c8490ca7714e537b81427b1a5",
+      "sha256": "2bf78c1a8d1d3b999bddd24fdc7b07da25f0afad5a205768e7e44a77ef7b4504",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f052.jpg",
+      "bytes": 25288,
+      "git_blob": "0c0a135949981874ce2ff4eca072383ff0f657bf",
+      "sha256": "f47a8f8d0820582384fbc4f884721727b6eebc7ea32721816ae1d640cbf0e272",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f053.jpg",
+      "bytes": 25347,
+      "git_blob": "d37183d8c5d25917b029a9c200eb96c50d9170a4",
+      "sha256": "f529963c60f08dd1c89f7e043ad76e49e1364f94373f08c0fdde0ef3d22e8c47",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f054.jpg",
+      "bytes": 25331,
+      "git_blob": "cfbd4b1e77e76b97428eb9b52fb0122314cfb499",
+      "sha256": "372014835842accd6e6b724b68576bb454ad35db80fb16ed2818472702c33970",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f055.jpg",
+      "bytes": 25291,
+      "git_blob": "869a080289c7a05f0d6a662b9d96c21bbc3c4664",
+      "sha256": "33b4edf1d947d7bb8179122abe5c99263067679234eba23394b60d83e24f7ae3",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f056.jpg",
+      "bytes": 25250,
+      "git_blob": "5e206430be005d3392a03c49589a76cf2008629e",
+      "sha256": "1fc1b85b76e518209b7095049c86d3a2ce5f3e9b26ff79825441350bbdf32c4c",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f057.jpg",
+      "bytes": 25305,
+      "git_blob": "83c16aabd2b0312a72e9e34c821be0329ba95bfd",
+      "sha256": "1d6df5de98ade6b651141320eaa36764dc89acea351db2d4b662a7a2203eb829",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f058.jpg",
+      "bytes": 25231,
+      "git_blob": "ed79e5a150a111b7711a4eea57b35802cabee9e8",
+      "sha256": "d730a92d3eed35e01442970b726a4bddc12dfeb92b97d6d55ee3e50cf3f290e7",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f059.jpg",
+      "bytes": 25258,
+      "git_blob": "f2eac0880f44fa495b2fc2c7379969742527abdb",
+      "sha256": "4ffaea98e991cf7b136ae269469d08c4dc42b6429aaa31cb29487c36303d773e",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f060.jpg",
+      "bytes": 25268,
+      "git_blob": "3941340a09071340de72897e88bf8e3351c769da",
+      "sha256": "e9e89c9e8d694b78cd483edbfae0039792b862ae1fa6442c6b4db01958af80c4",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f061.jpg",
+      "bytes": 25336,
+      "git_blob": "addf09619296c0b90f0f97bc7c547af4a5259100",
+      "sha256": "ba283460d6d4779d1bc4cd3d50cfcfb84484eb7f5e42cea5c89fcf44c1942cf3",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f062.jpg",
+      "bytes": 25386,
+      "git_blob": "ca5a5e809cdb487d30b157b1e7c9e33631d7b495",
+      "sha256": "5988ef16484a732b925336eab4cd30110a5f00f2cae2860ed8652093a322da63",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f063.jpg",
+      "bytes": 25293,
+      "git_blob": "26f69ca973ceff0ac0682b69fc8138236f8f73de",
+      "sha256": "95e93611417c908858ea506f4478fcc100655eda3dd6561d8db918cafc90688f",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f064.jpg",
+      "bytes": 25379,
+      "git_blob": "671870589db697d0742fa3e24a2a984332e726a4",
+      "sha256": "fb8f1f52fa505df91fd913808b339bd4d02dc9e15b0477bb5d98a32671b0ec00",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f065.jpg",
+      "bytes": 25391,
+      "git_blob": "6481738c3b5e59320f7e024d239569af8dcc2583",
+      "sha256": "6c24206f7f11bdbf97c2a870a5879e109d824dc366ca97f4fe6dc82ddf67edfc",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f066.jpg",
+      "bytes": 25359,
+      "git_blob": "e5fb5daee9d845a9d9f3bf844d11a6570a90365f",
+      "sha256": "e13f76d7520aa9648b01026275b12461c116d8bd446fe80d2162bc968fa7bc7f",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f067.jpg",
+      "bytes": 25376,
+      "git_blob": "c2d8fb20057c61bd16d85b5732a71a6a300d6926",
+      "sha256": "e7517d0c9b82a3dcf8ebcf4e87a778fd49a78d6d8f9b3f83bad7bd7a739c190a",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f068.jpg",
+      "bytes": 25421,
+      "git_blob": "4d748705bcfb42f65f7560d5e42de3a89a205ec8",
+      "sha256": "1e6ee918356c58b86b88965662361f473c50001d79d40f51f3eef16c2e5eb258",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f069.jpg",
+      "bytes": 25394,
+      "git_blob": "a3dc5c2110a33e5f9c49149c4d1584a122f1d278",
+      "sha256": "913cf6fd2d41aeb38283b212dabb340b8989a1ab7d39b21a4e287d38a060fa67",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f070.jpg",
+      "bytes": 25407,
+      "git_blob": "602411f9210b93f365e43e6c6107ca504aa40776",
+      "sha256": "82dd4a17d5e00667fe3154757969e94cfc7713565de8191252d9ccd655049776",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f071.jpg",
+      "bytes": 25479,
+      "git_blob": "b6301f0f0b9636493e774ff2a287a90af585e0be",
+      "sha256": "f464eb3af96f907a249187620ec7d02171f2bd39fd3d80469f9e6451ab779166",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f072.jpg",
+      "bytes": 25473,
+      "git_blob": "a60021728460bc3e84565b7474ed3586956b618d",
+      "sha256": "cf88a0061fc4ca239e7f1279b86e1eda0c4cc6fa76d6fd77ddc5b8e4755f0722",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f073.jpg",
+      "bytes": 25452,
+      "git_blob": "d3a2c514547fc3857be18510d5eb65eeb563bae7",
+      "sha256": "c75a14553d6aee225e935e6464d1b8502fe2b5afdeae8605a2943c6e2a48a5fd",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f074.jpg",
+      "bytes": 25500,
+      "git_blob": "efebd6c175057cffd1ffb4a75a253f99eb9afbab",
+      "sha256": "01d2d905b40ff0571bd294c6f4a4c91cef2e560ca4004e50338c500d28094732",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f075.jpg",
+      "bytes": 25528,
+      "git_blob": "88cf57253a3d25a6ebcffb5d8650c37370b994c3",
+      "sha256": "f84cfecd966767b29ce31aedb75c63050e6fc6d4647bf0539137288eda0746d1",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f076.jpg",
+      "bytes": 25559,
+      "git_blob": "9a563561cc34127735251b56478ca705a73d6773",
+      "sha256": "9cbd8e4c1f9e04882d2159d368809b3bcde5d4dad83c12d7a14bfc8ed827dbfc",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f077.jpg",
+      "bytes": 25479,
+      "git_blob": "1939ca15e83fc9a4e680b07c21439331de6586be",
+      "sha256": "8fa6d053f4b7367970551ce5dc43f260efe3c0154145c08e9f41e4c5676f6d27",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f078.jpg",
+      "bytes": 25415,
+      "git_blob": "473ce9548e4b38469b2e47b401dd7f715aee1fb5",
+      "sha256": "3809c098092a721dcdab656748f83b8d07bc704a449974da590b6ecb81f0795e",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f079.jpg",
+      "bytes": 25424,
+      "git_blob": "18a8fe31809aaa98c5034638076e33584c115d70",
+      "sha256": "e8cc3beba92cd8a9bbc1a8215d53b449f5cd76152dff7bb690a3d2e591519d95",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f080.jpg",
+      "bytes": 25505,
+      "git_blob": "f1fec015329a87d77f6b61eaa31b10fff32c7500",
+      "sha256": "35cbfd68d07c021fbd5a2aa9ea3e89669ca0b0c0d318e983d83468d92aec438c",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f081.jpg",
+      "bytes": 25510,
+      "git_blob": "d1daa5d0f03687a78970573dc7d7f2c33c674c2e",
+      "sha256": "2480257d449fe53cfbe807e0dd71b39cdee174877576b735b95969ec1cb1f39d",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f082.jpg",
+      "bytes": 25574,
+      "git_blob": "9c5173694b059da0e7d6a5c1436fc5181f4d024b",
+      "sha256": "1187132b86988a89abf4aa2b517e831da98d1ef34a838195e87db4ee9323b012",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f083.jpg",
+      "bytes": 25593,
+      "git_blob": "025da7958c21e958ab370a13a621c12739e9f040",
+      "sha256": "0db83a7df39da8a4e9d7ca33c282f543cdca915f10911051d6b40c9d1ebb10ce",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f084.jpg",
+      "bytes": 25591,
+      "git_blob": "e4082177f16c3560640e0e3754151100009d564e",
+      "sha256": "8dd7880e2855c1b2a08b83078b4306b994cacfd8fa0e32cdde4fef53ec8f5f4c",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f085.jpg",
+      "bytes": 25565,
+      "git_blob": "b03eba60bc4ff7613b44032ee61ccab6c54b62d1",
+      "sha256": "5753a34a26981eb7512b8c6a272493503ec8cdcfa9126bec172cbeeffafb8ad4",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f086.jpg",
+      "bytes": 25477,
+      "git_blob": "fcb22e3d647c03725f1c90aaec3581d06c51d4f7",
+      "sha256": "1525a1be139a784c9358a53192091f20000e7287dd46ff48e52b928cd0df7f0a",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f087.jpg",
+      "bytes": 25500,
+      "git_blob": "d67419a5aa831e4ebbeab91049764f89d34e7963",
+      "sha256": "4cfdfe6e93b342ad0593b9cae8bcdb897f554fec69aba46ae30cc242ff1a14cc",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f088.jpg",
+      "bytes": 25510,
+      "git_blob": "03f9030a7477043814969cc21d2a4e7653967de5",
+      "sha256": "40b582eca4b80f6ff768e7255cf5011129adedea5950124767510b7c3415131b",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f089.jpg",
+      "bytes": 25554,
+      "git_blob": "8cc5b744262e198b801b3d55549614f1c29d3078",
+      "sha256": "60b14df27e4fd1f0b644879499f3d168db93714fd6edbba2d974f35ddada6eb1",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f090.jpg",
+      "bytes": 25593,
+      "git_blob": "fbfb158d4d9700687a57ef680bc00e4dfcba9e4f",
+      "sha256": "32aea7b1fb389dc7e6a3b8a7c8da1842edca40d602d24d4c366151232028fcbe",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f091.jpg",
+      "bytes": 25605,
+      "git_blob": "db3920f5db9b02d458d4f1acc7c8ec1b42bfbc37",
+      "sha256": "92bcf2dfa07b6ca7a7892722949739bf3904f781873750c16199c23c71b4d814",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f092.jpg",
+      "bytes": 25639,
+      "git_blob": "8ffd5e91eaf02acfa5a6af2c1bfc5cbb9dc16a7b",
+      "sha256": "7180a537b89d70ae3898b20c52eaf5ea3e19df8363ee8d8d0688744dc515461d",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f093.jpg",
+      "bytes": 25687,
+      "git_blob": "128e4d272d101bdd7537ae40f09aa46cdf2feff8",
+      "sha256": "fec9f0a376f72eed30db27c6b4a548b96128a6f53899398b07651e01707ae8e1",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f094.jpg",
+      "bytes": 25764,
+      "git_blob": "7cc0ba6d4b4a8b7703a89881eb228eec55fb40f0",
+      "sha256": "1159d25436e4caa5de930a144414ed8a22796b130a711aecad42dc5cdd20f694",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f095.jpg",
+      "bytes": 25713,
+      "git_blob": "3c88bc0e0cd7470b5926c341ad1f34b6a1f1b75b",
+      "sha256": "b5b31a313d392f17beedee1f41042196149d6bcae49b58c54de14c05c9e1ab59",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f096.jpg",
+      "bytes": 25783,
+      "git_blob": "98403bcf93358bd7de23f6881503749b6fc33cb8",
+      "sha256": "06d0dfdae8e63b4f35f5ffda0b9069898f3204492fcc9a5a49e5d89c4d08a2c7",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f097.jpg",
+      "bytes": 25752,
+      "git_blob": "39a63e806df3d14491c8ac1c7fc02d1dece21058",
+      "sha256": "5a7fc3ef66336aef8f64bcf0066364dfb80c856e8b6ec52dbbdfbfa8807d5e96",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f098.jpg",
+      "bytes": 25820,
+      "git_blob": "5270c7a5d76ac6f936fe485d0ff0d49d4534ac23",
+      "sha256": "232514e3eab3833952535cd4410831d112b638107ec35b2a893123195d7ff438",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f099.jpg",
+      "bytes": 25816,
+      "git_blob": "eadff024963c2e4f3350629cd213783087665b8e",
+      "sha256": "750a551270343a4c578fdb01651bdc1e6f2b0fdbaaeb00de4b1515cbf3cbbee7",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f100.jpg",
+      "bytes": 25795,
+      "git_blob": "742ee4e5f91f4d9f90b349f7022f74bf4bccf6a5",
+      "sha256": "2b918410890d4d078441a4c842ba9e5e2799337de05a37db958e04c4590b81bd",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f101.jpg",
+      "bytes": 25883,
+      "git_blob": "71401d4d707072fd3627592ec72ee7c88bfe57a5",
+      "sha256": "49796817ee62524da05d4b4a0399668514e57e15b5e4a29637ca608d26d6d428",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f102.jpg",
+      "bytes": 25863,
+      "git_blob": "63f104aefb2e6439914c03d444012ae1038eb849",
+      "sha256": "55d341a21dbd1a36b0da5347212c8e142cd149a7d5917d92408a22995db5b42c",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f103.jpg",
+      "bytes": 25888,
+      "git_blob": "58b68609bd369c34bfce4f18409e31677137ad00",
+      "sha256": "78df4a14f4e119dea7de407270b1852907e14c2fe763adca910fff673eb4250f",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f104.jpg",
+      "bytes": 25862,
+      "git_blob": "aca2a1149f36543b37e0952e52e207e7a97453b4",
+      "sha256": "82c5be676587579913fdc3728fb1218cd7fa3eda4f94e007c59c4f79b39ba52b",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f105.jpg",
+      "bytes": 25845,
+      "git_blob": "e620ca73d220194b2411e4ebed582d4c543c2118",
+      "sha256": "86f5590b9a96da9f63b08c669133ead72153b2d51e26812a76ce3d6fda8c272d",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f106.jpg",
+      "bytes": 25837,
+      "git_blob": "aa20fccce33e08bf4bb7411137a21a68569802bf",
+      "sha256": "c59c4335effe329e28cc90998f518dedda0aa1dfacab209158a3296a4d0b0404",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f107.jpg",
+      "bytes": 25832,
+      "git_blob": "7b12a9ce58d86868d86a87f0942a7b88ca695b8e",
+      "sha256": "230b74eb0496d354215a19d81ef3118eb732eb658806229cd188ad8b35cee419",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f108.jpg",
+      "bytes": 25791,
+      "git_blob": "1053db467d976654e5990ba868da63c1520650fd",
+      "sha256": "6ecf96aec2ad3b45415f7ef39504268cf514697effb294bcd39470ec517ebe48",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f109.jpg",
+      "bytes": 25734,
+      "git_blob": "c5f37a64e91d9c91603f47a2fcdc09c6d8cf592b",
+      "sha256": "b195cd97441c8166c15c685578a742c25496eebe6962b35f0ddf109e045b9c95",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f110.jpg",
+      "bytes": 25805,
+      "git_blob": "9925553d92274010c4fce2d6646af13c97fdd2c4",
+      "sha256": "adf50f1d5af84d91ea3a1d8f6a0d5f043d2c2e16ac5ee9bd9f5c7661d9acc934",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f111.jpg",
+      "bytes": 25832,
+      "git_blob": "6e98d5b24f793b8b7c341a7138be96a568be7406",
+      "sha256": "7d68a2f9477ecec1252e00a8635136473720118150f33a3f8d194a4c206e8642",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f112.jpg",
+      "bytes": 25860,
+      "git_blob": "aa2831603519d9376c371ef0bb6ad9a42fe04fa0",
+      "sha256": "187892804d6cd58b1399fbce5f4b7cf2e9e573145d961f2b094f240da2a5884f",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f113.jpg",
+      "bytes": 25866,
+      "git_blob": "5826007070f6c548d8d95622393beb87f61d1ead",
+      "sha256": "bd3d1e0e55c9717becb76c8c3efbc15d5f1604c180ee8aa1cc8d7a6e573a79fc",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f114.jpg",
+      "bytes": 25800,
+      "git_blob": "1328ed9e8eb8ce097fac21b0604751b4444ff9e5",
+      "sha256": "d954b863db68f983ca4abfb69cc50549288af87825565cde9494a3e01958f2b8",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f115.jpg",
+      "bytes": 25797,
+      "git_blob": "614e058a288fad3df79d036317627e515a675f71",
+      "sha256": "dd47aca11244b67031c1546f331c8befbc53af4698a26d450ddba9b3b139fe15",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f116.jpg",
+      "bytes": 25857,
+      "git_blob": "2af268ff82d9dba1b0fbb0c6e8511df71cc2e45b",
+      "sha256": "5f53d40e99b8c0bfdfc53be7b61d0bd2a96970a199f6b742891213c15cd67483",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f117.jpg",
+      "bytes": 25793,
+      "git_blob": "13bfd7b0d7006a779f8b13ac43d6bd294d1127b2",
+      "sha256": "f46ec8b1320d9a2bc12356639b2d2eac5169134849cd810967dd092aa9629fce",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f118.jpg",
+      "bytes": 25864,
+      "git_blob": "d48e155714053d17ff7b9c3f8f719bd5d60f58fc",
+      "sha256": "0523aec844d2c4814edd34654b98d376e9f028e48379a2b317a79b21b75b7df1",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/deck_scroll_frames/f119.jpg",
+      "bytes": 25911,
+      "git_blob": "c0e023a21c66c518d68ca196459b0842df10c101",
+      "sha256": "54cf0b9a50d525a809939a30fa4eac7187af25669360dd1ad800939a6580fdaf",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/flashcheck_U7_720p.json",
+      "bytes": 371,
+      "git_blob": "63121e3ad6cf1a5e3d01cab9dd9013bf7b2e0536",
+      "sha256": "fe8f383eeeed0c26da61f62f2949997d9e00f6325c3ddb606f73de82b5899a67",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/fse_clouds.json",
+      "bytes": 2034,
+      "git_blob": "16dec0c412b66e24a9498f32eae2bfc18a9803d0",
+      "sha256": "526918c55ad238f9a1d3e7269c877cb2465e14160e65c38a151b16641e5fc363",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/iterations/01_volume_march_uniform_steps.jpg",
+      "bytes": 53495,
+      "git_blob": "d487525ecfa689f5b06c783713555704e2e1ea89",
+      "sha256": "a138ba88b5d133234ae29930bfcd7b90bc49044a69f0944791fdac6f05c3628b",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/iterations/02_skin_aliasing.jpg",
+      "bytes": 41572,
+      "git_blob": "7c5a3e7b35548cf98bcbfe5a479224aa3f0fcdfd",
+      "sha256": "f4591af3b1a08c63a78c442a8495ccceccfcead8baa60b6db39afc544566eb88",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/iterations/03_exponential_steps.jpg",
+      "bytes": 38379,
+      "git_blob": "e974661d12a28487484ec8942a87b2c834708ebe",
+      "sha256": "6f214826614c2c94984d85bdfe966b4630250082267070d1365bb225f4d2e041",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/iterations/04_pending_commit_rims_lids.jpg",
+      "bytes": 39538,
+      "git_blob": "6e5aeb1aeb7e0f6d0837941f012f12fd537e4654",
+      "sha256": "1d099fb772e7a5e87ff5c6aaafcc3996f9aae36d372a06a0f368f39de0fffadc",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/iterations/05_rounder_heads.jpg",
+      "bytes": 40218,
+      "git_blob": "7fe7f6adf4b6fac3aaf31ee8b944bf8fe5ceffe8",
+      "sha256": "39e03cca4c310d3c4b52a4dc6aaab489892b2c184b9defa1b49054e5ca3f1910",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/iterations/06_thin_skin_lower_heads.jpg",
+      "bytes": 40944,
+      "git_blob": "4bbf6d95798183e02d9f4de51ce4665202489cf0",
+      "sha256": "bda481e0b39303b7e9aa0ea751600592bf2ed424b1cbdd7b675ff35d70b63bc8",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/iterations/07_haze_no_approach.jpg",
+      "bytes": 72718,
+      "git_blob": "a20ffbd0feef6dd157315040165e24f0d11b895c",
+      "sha256": "f4391dc32cd11b322d925db54602e2bdb4a57fe7159b09bb9985379f65351376",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/iterations/08_round2_key.jpg",
+      "bytes": 65814,
+      "git_blob": "82731082743d570d6d513ea97473167f25cdde92",
+      "sha256": "df815c00808df8fb2d0ca9c16eab91f868a466293d39bfec8df638310134e787",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/iterations/09_round4_key.jpg",
+      "bytes": 116484,
+      "git_blob": "ed59089a38a3a3a30026adfd75a25352a8c83dfb",
+      "sha256": "b5d92f81b109b246af72073f2edacf8e725b83203554eda2c54ee6d28ca99e4a",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/iterations/10_v14_final_key.jpg",
+      "bytes": 116065,
+      "git_blob": "c681eb09c6602755b5665116a6b8e39f438be7a7",
+      "sha256": "c68cdeb0d483849c83c369288331daae4b83236dfc6741858de1f7ab38e66866",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/iterations/11_v15_key.jpg",
+      "bytes": 116927,
+      "git_blob": "b0c160993f75fbf6480d9f7fe8decb31a0f4a067",
+      "sha256": "74d6ef012e123095f8bcb2761cf88a7a9f9431d0455dd872a0ab160a92868b42",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/iterations/README.md",
+      "bytes": 3607,
+      "git_blob": "fbe3c604b9f03d2bbedd8306fa182abeacf179f9",
+      "sha256": "cce4e5c6e62d4891f46e263dbdae66f11653d4f5fe7f61a34219c8e140a3c463",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/perf_options_crops.png",
+      "bytes": 673079,
+      "git_blob": "0910a136bf33d96ebb7fe7f902651f037a7fdfe9",
+      "sha256": "7abfaef21778bd463c501b8d7bdb44568ef086824fba6e68c7fc71d03b0e041a",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/r10_towers_key.png",
+      "bytes": 829059,
+      "git_blob": "112f48400b20c418e863c22708b3c7fc1d68cbd4",
+      "sha256": "acfe73f99909fd697d42af069657f4d039eabbcf968336ab22bb9ed43424db96",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/r4_crops/U7_terraces.png",
+      "bytes": 104087,
+      "git_blob": "4e5097c04bb2d649fe3228d6796eadc28be7a17e",
+      "sha256": "18302e65c783fbf8e2e6ffca655e076b8183aa047859c1d5d3f88331ae72ceb4",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/r4_crops/U7_troughs.png",
+      "bytes": 79749,
+      "git_blob": "e68a7aa98b9a93f86cf611e42ccbf1a25d2f1643",
+      "sha256": "ee4146dc2600255bb7139aad3aae7f6df56e54afb86cfe3ffd9352984c2bf42d",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/r4_crops/U8fwd_centre.png",
+      "bytes": 167904,
+      "git_blob": "3500295f5b38d54b07def795b243bd68143160ec",
+      "sha256": "492817d322cc7a7e6e199b52b8894f801a4b9f7f02e32aba752501b9b01044ac",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/r4_crops/U8side_troughs.png",
+      "bytes": 141953,
+      "git_blob": "b9e98bba01b68ed1f7cb234078071dcc802fb331",
+      "sha256": "3ab6e2acd4eff59e25fa79975ff290513418fba4b25ff5065ee770eb2f3f5ede",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/r4_crops/key_blocker.png",
+      "bytes": 97903,
+      "git_blob": "51aa1b109e3f9b10b72405c75774648b0d4eaea9",
+      "sha256": "302ccaacad8f19b9811f8f8e875fc0d39399c54d3fb7de5e4c80647354b23dde",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/r4_crops/key_foot_pool.png",
+      "bytes": 224288,
+      "git_blob": "072c3e52228af073324486f06d475d14ffa99e9e",
+      "sha256": "2e68f327fdca5110f99f8c1303118a17175b29f651212dc2cc94af74fec91563",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/r4_crops/key_gap_fragment.png",
+      "bytes": 47409,
+      "git_blob": "cadcc0863c6c5a2efd25a1a4bd2ce2fe82982687",
+      "sha256": "156165a7e524e49629a693e2e52f0f554f70dc39b66e2c7b174c11bc68a36405",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/r4_crops/r10_tower_U7.png",
+      "bytes": 430726,
+      "git_blob": "ea0dbae22052869dfd959ceffae51088e5b81d1b",
+      "sha256": "1138849b46196a0f08e7bff53d9ec87736f626e4ecd44bb56f38ad55751cfdf7",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/r4_crops/r10_tower_key.png",
+      "bytes": 712837,
+      "git_blob": "8ef8ee0ce378950313defe00d672bd44b1db0f73",
+      "sha256": "9651357bb6989366031bbf8218a8da2c781f74bc0a41f3fab234110d690259cd",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/r4_crops/r10_tower_key_t163_collapse.png",
+      "bytes": 270342,
+      "git_blob": "30d60067415a9f08cd24466bb6682c4e3f1fa70b",
+      "sha256": "9817a04be2d6b92ab5a79d6dae9fac1f37973e0fd01a44d9d33adb531b792cfe",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/reviews/final.md",
+      "bytes": 2418,
+      "git_blob": "73d49205e4f966f80d50d758ea52b87d54bd6d2b",
+      "sha256": "df5193a849d502f94b8435269f4c70e0d209012181d82cf8e0661c68334e5b68",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/reviews/r1_art.md",
+      "bytes": 1178,
+      "git_blob": "6ed4feba05cc1598ba6e345f4d46e18fb2c16c33",
+      "sha256": "af8a4a0d86c4b43770821158264080601f8a719d95531d68c69a442b2275de27",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/reviews/r1_stranger_640.md",
+      "bytes": 1060,
+      "git_blob": "b8d3acba298291c888052dee97616ecb00193c2e",
+      "sha256": "b31ea707a804634b2680a69ef196b305d00d623ede7b91ee83b1d282eea6348d",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/reviews/r1_tech.md",
+      "bytes": 1009,
+      "git_blob": "c6cb5f51a7807b4a1cbacd7b047cd13fdf1f4767",
+      "sha256": "22d0b35eb9d28f14ce9aeed6afa23bf0063f40f5ccc28de226bcd3c51ab7fb0c",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/reviews/r1_vr_perf.md",
+      "bytes": 858,
+      "git_blob": "70fe780763ec440619d71bfb545746e4170abf00",
+      "sha256": "5d6211cb10f3c485e4724363195b9476b79c0473dcb946a60df44ef949ee2a1f",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/reviews/r2_art_stranger.md",
+      "bytes": 1010,
+      "git_blob": "e5511bcac8ef789d2c4e64fb5e8e16f810e36492",
+      "sha256": "92e4cd759ec1d9f2dbaeadd928aa0d38fb730c9f70855ce809f2541bf2e8150a",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/reviews/r2_tech.md",
+      "bytes": 2680,
+      "git_blob": "f17152efe0cccdcbb7938f313c0efcad5902bc5b",
+      "sha256": "2fc63ee79a2c2ecd1e0431078cb177624f0d0d817979acea3d113d00e6e845e5",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Docs~/reviews/r3_all.md",
+      "bytes": 2327,
+      "git_blob": "0a01abb18f02143e0d81057ffd3f77ec9ee10acb",
+      "sha256": "c5564c32fde345bd69e5dd83aa43ebebb395374bf21469b0161dfdc43a6603eb",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Editor/LanbaiGateCloudsBuilder.cs",
+      "bytes": 31080,
+      "git_blob": "6f824a05296533d4217b4afe617aa5761efde844",
+      "sha256": "e60fbe6bfa189d082ec6923ff0644e80d630a1f9587e6c8159e2570f204b691d",
+      "import": true
+    },
+    {
+      "path": "GateClouds/GateClouds_Layout.json",
+      "bytes": 21836,
+      "git_blob": "81e4de0871181fe3c9e256ffbc35dfa88318ee69",
+      "sha256": "629a4e9373e71caf36a0986257ab9d7b7b3a879f94ef5e34d14ee876c1f7c82f",
+      "import": true
+    },
+    {
+      "path": "GateClouds/README_GateClouds.md",
+      "bytes": 39880,
+      "git_blob": "e71348bf4f952c2b574ddb1925bb9e4c17c9ba72",
+      "sha256": "0a2059555ab13ac2350fb66baf0899f80aa35b98c85f662eef25a4b57ac6a56a",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Runtime/LanbaiGateClouds.cs",
+      "bytes": 6309,
+      "git_blob": "e2467c42324cf13775c9c310d602a45327a38bc8",
+      "sha256": "9029c220cf2f2fab2d7bca6d0950e959af2220fc6a9933b3e1797003bd79e73f",
+      "import": true
+    },
+    {
+      "path": "GateClouds/STATUS.md",
+      "bytes": 1823,
+      "git_blob": "ae997e558bc49cb0ef5e6b6b9c19732525bdef06",
+      "sha256": "ce74ea1ed348b3f0e62a90a0458e71651737d9d71e343767b1e99ce4f77b8bab",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Shaders/Lanbai_GateBeam.shader",
+      "bytes": 8830,
+      "git_blob": "dcf6b2b3fdda60804bfa3a1f9ed03a2e21f94842",
+      "sha256": "fd93cbc2d3156086bc6c9462437b479eb20064395d8ffa05051cf8df8080b7f0",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Shaders/Lanbai_GateCloudCard.shader",
+      "bytes": 10557,
+      "git_blob": "d3d13e5595d8c5fd2f14f8a33a0ff91a19bf59ea",
+      "sha256": "55257942146d5aa1cb869bf10b7aa1545758a52ee60dd6c6268f8333ba449f5a",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Shaders/Lanbai_GateCloudDeck.shader",
+      "bytes": 35072,
+      "git_blob": "622c731cca2a1248a4e5faa076f87b143dbee2e9",
+      "sha256": "d862622d09945ec9d9557dc4d87b914a957e483a1396974a3250b59b4f8322c7",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Source/check_d22_fog.py",
+      "bytes": 7768,
+      "git_blob": "38ed42a857c1cc00097c82506da3db72ed8e15c0",
+      "sha256": "3b6994d29451f8a3bc13e937bd8a55127555fc752580fdce15fe02eb8d74648a",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Source/deck_ref.py",
+      "bytes": 30988,
+      "git_blob": "e4e8e2e99b6f80bbdfff3d386651a3f37a664497",
+      "sha256": "fec8b171db837c31f57021112e22afecc1b093e859125346955fde6561fef6ca",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Source/deck_tiles.py",
+      "bytes": 9872,
+      "git_blob": "78e6840e3d684d2ba994a949b572b628666fd474",
+      "sha256": "5e22d6bf06b4497c765de2e02ad0f93bac8eb734e7f5fdc3c070a495b61d3cd9",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Source/gate_cards.py",
+      "bytes": 10026,
+      "git_blob": "214c384ff8702e685e08ceecb5847875a25fe470",
+      "sha256": "904a427ba9379cdabd956d65755ff191b5920fdde36ab86a4ff996bc7b418a87",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Source/gate_clouds_layout.py",
+      "bytes": 11692,
+      "git_blob": "3796328fedcdf456f62bc7c5b125fe74c4bcdf66",
+      "sha256": "5b4a3cf3f8ea39a4c1f2e2ee6f56a81d8ed99114299554bdad19fee3712614a5",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Source/measure_comb.py",
+      "bytes": 1369,
+      "git_blob": "613a81ed5a0e792c449a2ea43c0d728f39b47350",
+      "sha256": "273be1d9640031cfa7c506eeed50cf228ab8aa87dee3c1bfc680e80d85ea93eb",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Source/measure_crawl.py",
+      "bytes": 2233,
+      "git_blob": "e375c86d1a273556b5710369e2e9a6d190e25d9b",
+      "sha256": "99ec33bf6ea6a4ed1ff5bf3928a497f3be5228105e163137a2e7177bdc6bd630",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Source/measure_rims.py",
+      "bytes": 1282,
+      "git_blob": "de9b8914a191ae75725f90c2d9f4855279b4b458",
+      "sha256": "0c8aae30a7deb79b3a9165dd229394993a2d8ee4e9828d73d2748e8aa5a59606",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Source/preview_gate.py",
+      "bytes": 12356,
+      "git_blob": "fb2c332ff6ef56adf74662cd211688ea9407c43d",
+      "sha256": "4b3e938cc174b44b984b0b024737444a9830b01a24b8161d1bb1483f6e327418",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Textures/Deck_Detail_1024.png",
+      "bytes": 2349539,
+      "git_blob": "3aa9437e344e03f7a5ffa1651b6bc9f5b273f2a1",
+      "sha256": "7c9ebda436f49e08d71423c95f0264db3985efe8f0fcc9cb2de14ffa520faef1",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Textures/Deck_Macro_512.png",
+      "bytes": 421357,
+      "git_blob": "a45c519a1a61c42f16de53c494ed39b5a16b04dd",
+      "sha256": "bc35f451862b1928e57e14b7a17040c6133ff6fb52d88563a0083d06559998df",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Textures/GateCard_Bank.png",
+      "bytes": 1556983,
+      "git_blob": "4ff7ab6395e2cffbf0dbebe927af29bf0c5dca50",
+      "sha256": "b7b4a9d14352ce38e7d4aeb293083dc533a81b68f6def7884d60c020c3907998",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Textures/GateCard_Congestus.png",
+      "bytes": 929706,
+      "git_blob": "f9031fcc96f29ec719ef99ef50d0f87318d08de3",
+      "sha256": "28444fdea6d17e65d20b38461d9048d4d5087f156ddc7310e3eb9c961f5d3ee3",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Textures/GateCard_Puff.png",
+      "bytes": 827436,
+      "git_blob": "1d17b76549451995c3ccaa528c3c0b099ecf2347",
+      "sha256": "d2abf07dbeece03474056d8447c294ee635e530e870668ed17bfc9e2751eb515",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Textures/GateCard_Strato.png",
+      "bytes": 1502741,
+      "git_blob": "14f61dc207016c55f115f73d6934cc93017e8ac2",
+      "sha256": "bf977064a7d427beba4ce9be5503fcc60abd0a837156443455371a4822c48d16",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Textures/GateCard_Wisp.png",
+      "bytes": 1521016,
+      "git_blob": "de45fd3abaec0baf504a275c84058a37f5604801",
+      "sha256": "e6a171b555befa2b9f88c1c0ba469a716b8ba3b5e7c71bc46a4ee00597733f36",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Textures/deck_tiles.json",
+      "bytes": 412,
+      "git_blob": "0849b8269f0f12cd3543179784cb7dcc08fb4ab1",
+      "sha256": "898c6e964b08ece147d6af3272d7a5134e78fb0806147e7fcceace2851c7d06d",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Textures/gate_cards.json",
+      "bytes": 1561,
+      "git_blob": "2f20d9a86dc6c3ce7a48acec6b972892152d3978",
+      "sha256": "46c8c2777dfe453b7ae87a4bd19210f1c0cfa727a2547737e060385abad759a6",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Tools~/UnityCG.cginc",
+      "bytes": 88,
+      "git_blob": "f178f510beb5a2237fbf937d566332caa9ef0ca2",
+      "sha256": "d116fe810b3645a4e2a1f6c80121e0b28893a528e468c840b6a131adc9e15c15",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Tools~/cs_check/UnityStub.cs",
+      "bytes": 8297,
+      "git_blob": "f2127bcb3fb44cc0e5f48a7ff505d60dd683a9ce",
+      "sha256": "44ab7d1077fd4635616cdecbb944fc99a6969ce1c34e7106a76f32a47acd0ebb",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Tools~/cs_check/check_cs.sh",
+      "bytes": 367,
+      "git_blob": "fea5b29cad8b1bb85baccbea259ca67d3dd40137",
+      "sha256": "abf088f26125390814cf3f4b808ec56032f4613f75fcc5a235049dfbd779ed1c",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Tools~/slang_check.py",
+      "bytes": 3006,
+      "git_blob": "f49ff02e9b8f202c09a92669806f7ed98063616a",
+      "sha256": "8028dca78b288c1d20fd94d3485daad711a61fe73e1c37e7e61fea38e6cec19f",
+      "import": true
+    },
+    {
+      "path": "GateClouds/Tools~/unity_stub.hlsl",
+      "bytes": 2909,
+      "git_blob": "65aeb347b52e07055da29ffa2089cbd8a8f08093",
+      "sha256": "810e338f79c633e88d839eaffab0f583e1736c336683259ed85db8c684cf9be5",
+      "import": true
+    },
+    {
+      "path": "GateClouds/总工程师意见.md",
+      "bytes": 24267,
+      "git_blob": "f1c82a228253c68b637d1e744910735a832e53f9",
+      "sha256": "1fe31ab49b8e232c75a3627e109a8b59813f0febea6d1273585630e8f66dfcf6",
+      "import": true
+    },
+    {
+      "path": "GateClouds/暂停总结.md",
+      "bytes": 4415,
+      "git_blob": "ad749515b82de7a1406799a63757f659675d2937",
+      "sha256": "a38ac6eee3312373ce86f395e3ce8cd664e63ae1aaa6f87a219e0983f68e2582",
+      "import": true
+    },
+    {
+      "path": "GateClouds/给总控.md",
+      "bytes": 6909,
+      "git_blob": "94dd6b312a6225941ca2598c375649b0dbbd7d1c",
+      "sha256": "c63c8ed53be254ad5db98e594f61d15e7a3215457d427704869f5e3940c9c8ab",
+      "import": true
+    },
+    {
+      "path": "GateClouds/给本地_补丁_LB_GateTest_Run.md",
+      "bytes": 3580,
+      "git_blob": "188483bd821a28c51e7abeea7dc0d89851e9e3e4",
+      "sha256": "95cc2bcd60056915ea4ac6ae522723af50050e550ad6722805862459c28b1612",
+      "import": true
+    },
+    {
+      "path": "GateClouds/美术审片意见.md",
+      "bytes": 14209,
+      "git_blob": "c402e302892f587773fbc0e95462d73c5b61805a",
+      "sha256": "71904ada18e350ea32b9cd33ebb1cbc0daa3ba07c814a9b8c0f618446f3b6140",
+      "import": true
+    },
+    {
+      "path": "HANDOFF_CHATGPT.md",
+      "bytes": 23969,
+      "git_blob": "09809b0e9a4b136691fe272b8c32e02826e25d6d",
+      "sha256": "33fa9bb21e752c77c5c758b127fa74eae2b1fe299cd97e850fa1a3c5def44e59",
+      "import": false
+    },
+    {
+      "path": "HANDOFF_LOG.md",
+      "bytes": 49133,
+      "git_blob": "97f875c773b5e0d85e446fba33432c9cf49fa27a",
+      "sha256": "af14703ec833d63388827012baec67b71acd04ef5d708ac12e2ce223ab05c793",
+      "import": false
+    },
+    {
+      "path": "Tear/Lanbai_Tear.shader",
+      "bytes": 34299,
+      "git_blob": "a602b8bfa7ca080679074d809d4083eeeb48bba7",
+      "sha256": "c758081b3429815ff9c84cedc376f502706f20776fa584646111ebf66178e9ac",
+      "import": true
+    }
+  ],
+  "verified_utc": "2026-10-24T19:37:16.876487+00:00"
+}

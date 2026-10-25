@@ -24,7 +24,15 @@ namespace Lanbai.Overlay.Editor
         const string ProgramPath = Root + "/Runtime/LanbaiOverlay.asset";
         static readonly Vector3 HeroEye = new Vector3(0.55f, 1.70f, 2.05f);   // Gate/GateLayout_v2.json cameras.U7
 
+        // D-41：菜单先建 U# 程序资产（脚本旁边）、等 SDK 初始化完，再搭（Common/Editor/LanbaiUdonPrograms）
         [MenuItem("蓝白/Build/Overlay")]
+        public static void BuildMenu()
+        {
+            Type t = Lanbai.Udon.LanbaiUdonPrograms.TypeOfScript("LanbaiOverlay");
+            if (t == null) { Debug.LogError("[Lanbai Overlay] LanbaiOverlay.cs is not compiled yet (copy Overlay/Runtime/)"); return; }
+            Lanbai.Udon.LanbaiUdonPrograms.RunWhenReady("蓝白/Build/Overlay", new[] { t }, Build, Lanbai.Udon.LanbaiUdonPrograms.NextToScript);
+        }
+
         public static void Build()
         {
             var old = GameObject.Find("Lanbai_Overlay");
@@ -69,33 +77,22 @@ namespace Lanbai.Overlay.Editor
             Debug.Log("[Lanbai Overlay] built Lanbai_Overlay (r 1.5 m, disabled until a driver shows it). " + note);
         }
 
-        /// <summary>Program asset + component for an UdonSharp script, by reflection (UdonSharp 1.x).</summary>
+        /// <summary>Program asset + component for an UdonSharp script（D-41：走 Common/Editor/LanbaiUdonPrograms）。
+        /// 程序资产缺了就建在 programPath；还没初始化完就抛异常、不加组件（菜单会先等它初始化完）。</summary>
         public static string AddUdonSharp(GameObject go, string scriptPath, string programPath, string className)
         {
             var script = AssetDatabase.LoadAssetAtPath<MonoScript>(scriptPath);
             if (script == null) return "script not found: " + scriptPath;
-            Type progType = FindType("UdonSharp.UdonSharpProgramAsset");
-            if (progType == null) return "UdonSharp editor not found: add " + className + " and its program asset by hand.";
-            var prog = AssetDatabase.LoadAssetAtPath(programPath, progType);
-            if (prog == null)
-            {
-                prog = ScriptableObject.CreateInstance(progType);
-                var f = progType.GetField("sourceCsScript", BindingFlags.Public | BindingFlags.Instance);
-                if (f != null) f.SetValue(prog, script);
-                AssetDatabase.CreateAsset(prog, programPath);
-            }
             Type behType = script.GetClass();
             if (behType == null) return "class " + className + " not compiled yet: run again after the scripts compile.";
-            Type undo = FindType("UdonSharpEditor.UdonSharpUndo");
-            MethodInfo add = undo == null ? null : undo.GetMethods(BindingFlags.Public | BindingFlags.Static)
-                .FirstOrDefault(m => m.Name == "AddComponent" && !m.IsGenericMethod && m.GetParameters().Length == 2);
-            if (add != null)
+            if (!Lanbai.Udon.LanbaiUdonPrograms.Available)
             {
-                add.Invoke(null, new object[] { go, behType });
-                return "UdonSharp component added.";
+                Undo.AddComponent(go, behType);
+                return "UdonSharp editor not found: added " + className + " with Undo.AddComponent (no UdonBehaviour, it will not run in VRChat).";
             }
-            Undo.AddComponent(go, behType);
-            return "added " + className + " with Undo.AddComponent: open it once in the Inspector so UdonSharp makes its UdonBehaviour.";
+            Lanbai.Udon.LanbaiUdonPrograms.CreateMissing(className, new[] { behType }, t => programPath);
+            Lanbai.Udon.LanbaiUdonPrograms.AddComponent(go, behType);
+            return "UdonSharp component added.";
         }
 
         public static Type FindType(string fullName)
