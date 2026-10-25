@@ -1,6 +1,6 @@
 {
  "warm_I": 5.46,
- "warm_range": 4.0,
+ "warm_range": 3.5,
  "indigo_I": 28.0,
  "indigo_range": 12.0,
  "note": "第 4 轮（评审 r3）：门的漫反射 ×0.35、去掉往台阶下铺的那盏（阴影发暖）；门改为解析线光源出高光（_Udon_Lamp7，湿石面上的亮带）；珍珠母的解析高光 ×6；阙前各加一盏灯",
@@ -8,11 +8,11 @@
  "spec_I": 5.46,
  "door_spec_I": 60.0,
  "nacre_spec_gain": 24.0,
- "door_accent_I": 70.0,
+ "door_accent_I": 40.0,
  "door_spill_I": 60.0,
  "door_spill_range": 4.0,
  "door_spill_angle": 90.0,
- "door_accent_range": 11.0,
+ "door_accent_range": 9.0,
  "door_accent_angle": 70.0,
  "note8": "第 8 轮（评审 r5 #3）：门的两盏面光换成烘焙聚光（有范围窗），只照门这一开间和门槛；去掉 door_area_I / pour_ratio",
  "nacre_lift": 12.0,
@@ -39,5 +39,6 @@
    706.0,
    718.0
   ]
- }
+ },
+ "note9": "第 9 轮（终审 10-25）：宫殿的雾变薄以后，提亮光的边和灯光圈的边露出了阴影里的暖色——提亮光 70/11 → 40/9，暖光范围 4 → 3.5"
 }
