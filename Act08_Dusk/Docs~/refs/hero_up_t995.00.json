@@ -3,15 +3,15 @@
  "cam": "hero_up",
  "door": "bible_v2",
  "h": 174.2,
- "dEV": -0.358,
- "APL": 65.2,
+ "dEV": -0.26,
+ "APL": 51.2,
  "purple_D21": 0.0,
  "purple_D21_no_ceiling": 0.0,
  "brightest_px": [
-  0.295,
-  0.982
+  0.504,
+  0.862
  ],
  "reveal": 1.0,
  "cards_standin": [],
- "width": 960
+ "width": 1800
 }

@@ -5,11 +5,11 @@
  "h": 270.7,
  "dEV": 0.0,
  "APL": 75.4,
- "purple_D21": 0.0166,
- "purple_D21_no_ceiling": 0.0001,
+ "purple_D21": 0.0056,
+ "purple_D21_no_ceiling": 0.0,
  "brightest_px": [
-  0.535,
-  0.473
+  0.54,
+  0.474
  ],
  "reveal": 1.0,
  "cards_standin": [],

@@ -4,12 +4,12 @@
  "door": "bible_v2",
  "h": 83.4,
  "dEV": 0.0,
- "APL": 79.4,
- "purple_D21": 0.001,
- "purple_D21_no_ceiling": 0.001,
+ "APL": 80.0,
+ "purple_D21": 0.0011,
+ "purple_D21_no_ceiling": 0.0011,
  "brightest_px": [
   0.775,
-  0.353
+  0.354
  ],
  "reveal": 1.0,
  "cards_standin": [],

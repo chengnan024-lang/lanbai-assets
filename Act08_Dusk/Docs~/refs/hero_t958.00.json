@@ -4,11 +4,11 @@
  "door": "bible_v2",
  "h": 270.7,
  "dEV": 0.0,
- "APL": 111.2,
- "purple_D21": 0.0285,
+ "APL": 111.1,
+ "purple_D21": 0.0114,
  "purple_D21_no_ceiling": 0.0001,
  "brightest_px": [
-  0.554,
+  0.561,
   0.444
  ],
  "reveal": 1.0,

@@ -12,6 +12,6 @@
  "max_rise_ev_2s": 1.12,
  "max_fall_ev_0.25s": 0.04,
  "peak_apl_luma": 91,
- "mean_apl_luma": 71,
+ "mean_apl_luma": 70,
  "lanbai_ramp_law": "PASS"
 }

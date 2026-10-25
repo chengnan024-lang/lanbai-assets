@@ -4,7 +4,7 @@
  "fps": 10.0,
  "tile_px": 8,
  "max_general_flashes_in_any_1s": 0.5,
- "max_red_flashes_in_any_1s": 1.5,
+ "max_red_flashes_in_any_1s": 1.0,
  "wcag_2_3_1": "PASS",
  "lanbai_flash_rule": "FAIL",
  "max_rise_ev_0.25s": 0.11,

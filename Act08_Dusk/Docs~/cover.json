@@ -1,42 +1,89 @@
 {
  "hero_958.00": {
   "lower": 0.0,
-  "upper": 0.0013
+  "L:far": 0.0,
+  "upper": 0.0013,
+  "L:mid": 0.0,
+  "L:near-right": 0.0,
+  "L:near": 0.0
  },
  "door_d12_958.00": {
   "lower": 0.0,
-  "upper": 0.0
+  "L:far": 0.0,
+  "upper": 0.0,
+  "L:mid": 0.0,
+  "L:near-right": 0.0
  },
  "hero_965.40": {
-  "lower": 0.0628,
-  "upper": 0.0601
+  "lower": 0.0632,
+  "L:far": 0.0055,
+  "upper": 0.0607,
+  "L:high": 0.0214,
+  "L:mid": 0.0164,
+  "L:near-right": 0.0435,
+  "L:near": 0.0434
  },
  "door_d12_965.40": {
-  "lower": 0.0348,
-  "upper": 0.0313
+  "lower": 0.0392,
+  "L:far": 0.0081,
+  "upper": 0.0317,
+  "L:high": 0.0157,
+  "L:mid": 0.0119,
+  "L:near-right": 0.029,
+  "L:near": 0.0074
  },
  "hero_971.40": {
-  "lower": 0.0605,
-  "upper": 0.0607
+  "lower": 0.061,
+  "L:far": 0.0055,
+  "upper": 0.0618,
+  "L:high": 0.0213,
+  "L:mid": 0.0163,
+  "L:near-right": 0.0424,
+  "L:near": 0.0423
  },
  "door_d12_971.40": {
-  "lower": 0.0344,
-  "upper": 0.0316
+  "lower": 0.0393,
+  "L:far": 0.0082,
+  "upper": 0.0323,
+  "L:high": 0.0157,
+  "L:mid": 0.012,
+  "L:near-right": 0.0288,
+  "L:near": 0.0073
  },
  "hero_987.06": {
-  "lower": 0.054,
-  "upper": 0.0613
+  "lower": 0.0544,
+  "L:far": 0.0055,
+  "upper": 0.0629,
+  "L:high": 0.0213,
+  "L:mid": 0.0164,
+  "L:near-right": 0.0395,
+  "L:near": 0.038
  },
  "door_d12_987.06": {
-  "lower": 0.0329,
-  "upper": 0.0314
+  "lower": 0.0392,
+  "L:far": 0.008,
+  "upper": 0.0325,
+  "L:high": 0.0155,
+  "L:mid": 0.0118,
+  "L:near-right": 0.029,
+  "L:near": 0.0073
  },
  "hero_995.00": {
-  "lower": 0.0524,
-  "upper": 0.061
+  "lower": 0.0529,
+  "L:far": 0.0055,
+  "upper": 0.0628,
+  "L:high": 0.0214,
+  "L:mid": 0.0164,
+  "L:near-right": 0.0389,
+  "L:near": 0.0369
  },
  "door_d12_995.00": {
-  "lower": 0.0325,
-  "upper": 0.0314
+  "lower": 0.0392,
+  "L:far": 0.0082,
+  "upper": 0.0326,
+  "L:high": 0.0155,
+  "L:mid": 0.0119,
+  "L:near-right": 0.029,
+  "L:near": 0.0073
  }
 }

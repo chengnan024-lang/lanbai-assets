@@ -12,58 +12,58 @@
  "shell": "bible_v2 (the door frame blocks part: visible_share)",
  "res": {
   "971.4_upper": {
-   "sky_L_med": 80.5,
-   "sky_L_p10": 61.4,
+   "sky_L_med": 76.4,
+   "sky_L_p10": 57.3,
    "ink_L": 20.2,
-   "dL_med": 60.3,
-   "dL_min": 41.2,
-   "weber_med": 0.947,
-   "visible_share": 0.817
+   "dL_med": 56.2,
+   "dL_min": 37.1,
+   "weber_med": 0.94,
+   "visible_share": 1.0
   },
   "971.4_lower": {
-   "sky_L_med": 75.3,
-   "sky_L_p10": 63.6,
+   "sky_L_med": 71.0,
+   "sky_L_p10": 59.1,
    "ink_L": 20.2,
-   "dL_med": 55.1,
-   "dL_min": 43.4,
-   "weber_med": 0.938,
-   "visible_share": 0.817
+   "dL_med": 50.8,
+   "dL_min": 38.9,
+   "weber_med": 0.928,
+   "visible_share": 1.0
   },
   "976.4_upper": {
-   "sky_L_med": 80.5,
-   "sky_L_p10": 61.4,
+   "sky_L_med": 76.4,
+   "sky_L_p10": 57.3,
    "ink_L": 20.2,
-   "dL_med": 60.3,
-   "dL_min": 41.2,
-   "weber_med": 0.947,
-   "visible_share": 0.817
+   "dL_med": 56.2,
+   "dL_min": 37.1,
+   "weber_med": 0.94,
+   "visible_share": 1.0
   },
   "976.4_lower": {
-   "sky_L_med": 75.3,
-   "sky_L_p10": 63.6,
+   "sky_L_med": 71.0,
+   "sky_L_p10": 59.1,
    "ink_L": 20.2,
-   "dL_med": 55.1,
-   "dL_min": 43.4,
-   "weber_med": 0.938,
-   "visible_share": 0.817
+   "dL_med": 50.8,
+   "dL_min": 38.9,
+   "weber_med": 0.928,
+   "visible_share": 1.0
   },
   "985.0_upper": {
-   "sky_L_med": 80.5,
-   "sky_L_p10": 61.4,
+   "sky_L_med": 76.4,
+   "sky_L_p10": 57.3,
    "ink_L": 20.2,
-   "dL_med": 60.3,
-   "dL_min": 41.2,
-   "weber_med": 0.947,
-   "visible_share": 0.817
+   "dL_med": 56.2,
+   "dL_min": 37.1,
+   "weber_med": 0.94,
+   "visible_share": 1.0
   },
   "985.0_lower": {
-   "sky_L_med": 75.3,
-   "sky_L_p10": 63.6,
+   "sky_L_med": 71.0,
+   "sky_L_p10": 59.2,
    "ink_L": 20.2,
-   "dL_med": 55.1,
-   "dL_min": 43.4,
-   "weber_med": 0.938,
-   "visible_share": 0.817
+   "dL_med": 50.8,
+   "dL_min": 39.0,
+   "weber_med": 0.928,
+   "visible_share": 1.0
   }
  }
 }

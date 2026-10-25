@@ -3,13 +3,13 @@
  "cam": "side_left",
  "door": "bible_v2",
  "h": 5.0,
- "dEV": -1.769,
- "APL": 45.1,
- "purple_D21": 0.0001,
+ "dEV": -1.75,
+ "APL": 46.1,
+ "purple_D21": 0.0,
  "purple_D21_no_ceiling": 0.0,
  "brightest_px": [
-  0.773,
-  0.351
+  0.772,
+  0.353
  ],
  "reveal": 0.0,
  "cards_standin": [],

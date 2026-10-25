@@ -7,11 +7,11 @@
  "max_red_flashes_in_any_1s": 0.0,
  "wcag_2_3_1": "PASS",
  "lanbai_flash_rule": "PASS",
- "max_rise_ev_0.25s": 0.04,
- "max_rise_ev_1s": 0.12,
- "max_rise_ev_2s": -0.06,
- "max_fall_ev_0.25s": 0.14,
- "peak_apl_luma": 156,
- "mean_apl_luma": 99,
+ "max_rise_ev_0.25s": 0.02,
+ "max_rise_ev_1s": 0.04,
+ "max_rise_ev_2s": -0.01,
+ "max_fall_ev_0.25s": 0.24,
+ "peak_apl_luma": 143,
+ "mean_apl_luma": 89,
  "lanbai_ramp_law": "PASS"
 }
