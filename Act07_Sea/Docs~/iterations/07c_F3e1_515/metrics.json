@@ -4,8 +4,8 @@
    960,
    540
   ],
-  "APL": 83.06,
-  "EV_display": -3.461,
+  "APL": 83.04,
+  "EV_display": -3.462,
   "luma_lt12_pct": 0.0,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
@@ -20,24 +20,24 @@
   "brightest": {
    "bbox": [
     11,
-    5,
-    779,
-    532
+    10,
+    926,
+    529
    ],
    "centroid": [
-    634.2,
-    279.5
+    502.7,
+    288.8
    ],
-   "clusters": 51,
-   "clusters_ge5pct": 3,
-   "min_luma": 118.4,
+   "clusters": 78,
+   "clusters_ge5pct": 0,
+   "min_luma": 109.9,
    "centroid_az_el": [
-    48.84,
-    57.19
+    18.95,
+    56.35
    ]
   },
   "top25_Lstar": {
-   "mean": 36.53,
+   "mean": 36.51,
    "p50": 36.63,
    "p90": 37.05
   },
@@ -48,32 +48,32 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 37.3,
+     "nearest_dE2000_p01": 39.4,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 27.4,
+     "nearest_dE2000_p01": 29.8,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 21.4,
-     "within_dE5_pct": 0.02
+     "nearest_dE2000_p01": 24.0,
+     "within_dE5_pct": 0.01
     },
     {
      "hex": "#3876AB",
      "role": "浅水 縹",
-     "nearest_dE2000_p01": 6.6,
+     "nearest_dE2000_p01": 6.7,
      "within_dE5_pct": 0.04
     },
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
      "nearest_dE2000_p01": 3.0,
-     "within_dE5_pct": 9.35
+     "within_dE5_pct": 9.34
     },
     {
      "hex": "#697987",
@@ -84,8 +84,8 @@
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 23.1,
-     "within_dE5_pct": 0.02
+     "nearest_dE2000_p01": 25.8,
+     "within_dE5_pct": 0.01
     }
    ],
    "pixel_to_nearest_dE_median": 11.1,
@@ -194,7 +194,7 @@
    540
   ]
  },
- "render_seconds": 25.7,
+ "render_seconds": 18.7,
  "lens": "none",
  "bloom_tint": "single",
  "note": "F3e1 515: straight up through the eroded roof, the Snell window is a dark coin (gain x 0.04)"

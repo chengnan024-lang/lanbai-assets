@@ -21,19 +21,19 @@
    "bbox": [
     98,
     59,
-    925,
+    926,
     462
    ],
    "centroid": [
-    439.6,
-    336.5
+    443.2,
+    333.0
    ],
-   "clusters": 19,
+   "clusters": 23,
    "clusters_ge5pct": 1,
-   "min_luma": 54.7,
+   "min_luma": 54.8,
    "centroid_az_el": [
-    83.28,
-    -42.52
+    83.77,
+    -41.98
    ]
   },
   "top25_Lstar": {
@@ -193,7 +193,7 @@
    540
   ]
  },
- "render_seconds": 26.2,
+ "render_seconds": 20.5,
  "lens": "none",
  "bloom_tint": "single",
  "note": "897.96 out of the right side window, looking down: the dark mirror with the palace lamps, the window's rim at the bottom"
