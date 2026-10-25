@@ -384,7 +384,18 @@ def draw_cards(V, img, depth, t, h, pix):
 DOOR_GROUP_AZ = (21.0, 50.0)                # the stand-in shell's door post + frame, inside the poem's +21.8 .. +48.2
 
 
-def window_mask(V, t, door='bible_v2'):
+DOOR_FADE = (957.40, 965.40)
+
+
+def door_alpha(t):
+    return float(ss((t - DOOR_FADE[0]) / (DOOR_FADE[1] - DOOR_FADE[0])))
+
+
+def door_region(az):
+    return (az >= DOOR_GROUP_AZ[0]) & (az <= DOOR_GROUP_AZ[1])
+
+
+def window_mask(V, t, door='bible_v2', with_door=True):
     az, el = C.azel_from_dir(V)
     m = np.zeros(len(V), bool)
     for wdw in SHELL['windows']:
@@ -396,12 +407,11 @@ def window_mask(V, t, door='bible_v2'):
     e = float(np.clip((t - B['exit']) / (962.26 - B['exit']), 0, 1))
     open_el = 60.0 - 48.0 * e                    # the roof (el > 60) is gone early, the upper walls down to +12 by 962
     m |= el > open_el
-    # D-33 #7a (the bus driver's door-group erosion bias, pkg/bus, not built yet; modelled here so the poem frames are
-    # honest): the door group (door frame / post / grab pole between the windscreen and the door glass) erodes from the
-    # top during the dissolve and is gone before 965.4, when the Zhuangzi block comes
-    gd = float(np.clip((t - 956.36) / (965.4 - 956.36), 0, 1))
-    if gd > 0:
-        m |= (az >= DOOR_GROUP_AZ[0]) & (az <= DOOR_GROUP_AZ[1]) & (el > 30.0 - 60.0 * gd)
+    # D-33 #7a, as the bus built it (pkg/bus a0775dd): the whole door group (door frame / post / grab pole between the
+    # windscreen and the door glass) fades out together, soft, 957.40 -> 965.40. Boolean users (cover, ink, poem) count it
+    # open from half way; render() composites the soft fade (door_alpha)
+    if with_door and door_alpha(t) >= 0.5:
+        m |= door_region(az)
     return m
 
 
@@ -507,7 +517,16 @@ def render(t, cam_name, w=960, door='bible_v2', out_dir=None, tag='', dev=None):
     specks(V, img, t, h, pix)
     win = window_mask(V, t, door)
     interior = C.hex_lin('#1A1F2A')
-    img[~win] = interior
+    da = door_alpha(t)
+    if 0 < da < 1:
+        # the door group mid-fade: the base shell's window mask (no door), the door region blended by its fade
+        az_, _ = C.azel_from_dir(V)
+        dr = door_region(az_) & ~window_mask(V, t, door, with_door=False)
+        base = img.copy()
+        img[~win] = interior
+        img[dr] = interior * (1 - da) + base[dr] * da
+    else:
+        img[~win] = interior
     lin = img.reshape(hh, w, 3)
     ev = exposure(t) if dev is None else dev
     codes = C.grade(lin, grade_profile(t), bloom=True, ev=ev)
