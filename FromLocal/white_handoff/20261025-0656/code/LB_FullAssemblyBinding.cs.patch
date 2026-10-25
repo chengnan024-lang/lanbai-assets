@@ -1,0 +1,15 @@
+--- a/Assets/Lanbai/Tests/Editor/LB_FullAssemblyBinding.cs
++++ b/Assets/Lanbai/Tests/Editor/LB_FullAssemblyBinding.cs
+@@ -97,7 +97,11 @@
+    j.useGrades=true; int ppLayer=LayerMask.NameToLayer("PostProcessing");
+    foreach(var v in UnityEngine.Object.FindObjectsOfType<PostProcessVolume>(true)) {
+     if(v.transform.IsChildOf(gradeRoot.transform)) continue;
+-    if(v==j.ppWhite || v==j.ppBlack) { v.gameObject.layer=ppLayer; v.weight=0; }
++    if(v==j.ppWhite || v==j.ppBlack) {
++     v.gameObject.layer=ppLayer; v.weight=0;
++     // The legacy white mask must be evaluated after the delivered scene grades.
++     if(v==j.ppWhite) v.priority=Lanbai.EditorTools.LB_Grades.MASK_PRIORITY;
++    }
+     else { v.weight=0; v.enabled=false; }
+    }
+    foreach(var camera in UnityEngine.Object.FindObjectsOfType<Camera>(true)) {

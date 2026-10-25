@@ -1,0 +1,25 @@
+playing=False audio=1
+segStart=0.000,0.000,50.300,150.300,179.550,248.640,251.640,363.260,922.360,987.060,1149.310,1178.460,1249.960,1729.960
+cueF=251.640,281.860,352.060,367.210,446.010,644.960,735.560,748.260,835.160,929.110,942.260,969.760,987.060,1018.210,1059.660,1115.360,1149.310
+starCross=1032.410,1034.910,1037.980,1041.740,1045.820,1052.300,1058.950,1067.460,1077.210,1089.910,1106.410,1125.550,1149.310
+volume Lanbai_Grades/Scenes/PPV_S1 layer=22 enabled=True active=True weight=1 priority=1 profile=Assets/Lanbai/Grading/Profiles/Lanbai_PP_S1.asset WHITE=False BLACK=False
+  ColorGrading active=True enabled=True
+    postExposure=0 override=True
+  Bloom active=True enabled=True
+  Vignette active=True enabled=True
+  Grain active=True enabled=True
+volume Lanbai_Grades/Lens_DesktopOnly/PPV_LENS_CLEAN layer=22 enabled=True active=True weight=1 priority=199 profile=Assets/Lanbai/Grading/Profiles/Lanbai_PP_LENS_CLEAN.asset WHITE=False BLACK=False
+  Vignette active=True enabled=True
+  Grain active=True enabled=True
+volume Lanbai/PostProcess/PP_White layer=22 enabled=True active=True weight=0 priority=150 profile=Assets/Lanbai/Generated/PostProcess/LB_PP_White.asset WHITE=True BLACK=False
+  ColorGrading active=True enabled=True
+    postExposure=11 override=True
+  Vignette active=True enabled=True
+  Bloom active=True enabled=True
+  ChromaticAberration active=True enabled=True
+volume Lanbai/PostProcess/PP_Black layer=22 enabled=True active=True weight=0 priority=3 profile=Assets/Lanbai/Generated/PostProcess/LB_PP_Black.asset WHITE=False BLACK=True
+  ColorGrading active=True enabled=True
+    postExposure=-14 override=True
+  Vignette active=True enabled=True
+  Bloom active=True enabled=True
+  ChromaticAberration active=True enabled=True
