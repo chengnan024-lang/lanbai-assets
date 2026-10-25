@@ -1,0 +1,58 @@
+--- Director/Tools~/spawn_fade_sim.py	2026-10-25 13:35:25.288851452 +0000
++++ Director/Tools~/spawn_fade_sim.py (pkg/mirrors port)	2026-10-25 13:36:01.805012946 +0000
+@@ -36,8 +36,8 @@
+ import os
+ import sys
+ 
+-HERE = os.path.dirname(os.path.abspath(__file__))
+-DOCS = os.path.join(os.path.dirname(HERE), 'Docs~')
++HERE = '/home/user/lanbai-assets/Director/Tools~'
++DOCS = '/tmp/claude-0/-home-user-lanbai-assets/7a33d9f2-fd7e-5243-9518-e269b862117d/scratchpad'
+ FLOOR = 0.004
+ RATE = 0.85
+ DIRS = ['zenith', 'below', 'sun', 'else', 'fwd', 'side']
+@@ -242,10 +242,20 @@
+         self.ov, self.since = ov, 1e6
+         self.owns = self.lobes = self.maskLobe = False
+ 
++    MINE = True                # pkg/mirrors (10-25, after the final review): W1 + W2 as in the driver now
++    lB11 = 1.0                 # W2: the veil is built for act 11's brightest non-white view
++
++    def scene_ramp_mine(self):
++        return math.log2(max(self.lB11, self.joinFromL * 1.01) / self.joinFromL) / self.joinMaxEVps
++
+     def window(self):
++        if self.MINE:
++            return (self.tMirror12 - 1.0, self.tShrinkEnd + self.scene_ramp_mine() + 0.5)
+         return (self.tMirror12 - 1.0, self.tShrinkEnd + self.joinTail)
+ 
+     def overlay_window(self):
++        if self.MINE:
++            return (self.tMaskStart, self.tShrinkEnd)
+         if self.fixed:
+             return (self.tMaskStart, self.tShrinkEnd + self.joinTail - self.scene_ramp() - 0.5)
+         return (self.tMaskStart, self.tShrinkEnd + self.joinTail)
+@@ -277,16 +287,19 @@
+         joinedLate = tJoin >= self.tMaskStart
+         rampT = math.log2(lw / self.joinFromL) / self.joinMaxEVps
+         toScene = joinedLate and tJoin + rampT > self.tSilenceEnd
+-        sceneRampT = math.log2(max(self.lScene11, self.joinFromL * 1.01) / self.joinFromL) / self.joinMaxEVps
+-        rampEnd = (max(self.tShrinkEnd, tJoin) if self.fixed else self.tShrinkEnd) + sceneRampT
++        sceneRampT = self.scene_ramp_mine() if self.MINE else math.log2(max(self.lScene11, self.joinFromL * 1.01) / self.joinFromL) / self.joinMaxEVps
++        rampEnd = (max(self.tShrinkEnd, tJoin) if (self.fixed or self.MINE) else self.tShrinkEnd) + sceneRampT
++        if self.since < 0 and self.MINE:
++            return                                  # W5: neither draw nor Hide while the spawn black runs
+         if self.since < 0 or t < self.tMaskStart or (not toScene and t >= self.tShrinkEnd) or (toScene and t >= rampEnd):
+             self.release(); return
+         if toScene:
+             self.owns = True
+             if self.lobes: ov.ClearLobes(); self.lobes = False
+-            r0 = max(self.tShrinkEnd, tJoin) if self.fixed else self.tShrinkEnd
++            r0 = max(self.tShrinkEnd, tJoin) if (self.fixed or self.MINE) else self.tShrinkEnd
++            lb = self.lB11 if self.MINE else self.lScene11
+             if t < r0: ov.SetFlat(0.0, 1.0)
+-            else: ov.SetCurve(0.0, t - r0, sceneRampT, self.joinFromL, self.lScene11, self.lScene11, 0.0)
++            else: ov.SetCurve(0.0, t - r0, sceneRampT, self.joinFromL, lb, lb, 0.0)
+             return
+         ramping = joinedLate and t < tJoin + rampT
+         self.owns = True

@@ -39,6 +39,8 @@ Shader "Lanbai/BronzeMirror"
         _RimSoftFrom ("Far: soft rim starts at this fraction of the radius", Range(0, 1)) = 0.35
         _FaceSoft ("Far: blurred reflection 0 to 1", Range(0, 1)) = 0
         _FarDim ("Far: face brightness multiplier", Range(0, 1)) = 1
+        _RimGlow ("Far: rim ring glow (linear; bible 镜缘 #4E545E)", Color) = (0.04, 0.045, 0.05, 1)
+        _RimGlowAmt ("Far: rim ring glow amount 0 to 1", Range(0, 1)) = 0
         _EdgeWidth ("Glowing front width m", Float) = 0.3
         _EdgeColor ("Front glow linear rgb (#CDBF9C x 0.8)", Vector) = (0.488, 0.417, 0.266, 0)
 
@@ -95,7 +97,8 @@ Shader "Lanbai/BronzeMirror"
         #include "LanbaiMirror.cginc"
 
         float _RadiusM, _MirrorK, _EmissionK, _Visibility, _EmitExtraEV, _Appear, _Dissolve, _BreakAmp, _EdgeWidth;
-        float _RimSoft, _RimSoftFrom, _FaceSoft, _FarDim;
+        float _RimSoft, _RimSoftFrom, _FaceSoft, _FarDim, _RimGlowAmt;
+        float4 _RimGlow;
         float4 _EdgeColor, _FaceF0, _RimF0, _BackAlbedo, _SkyFloor;
         float _BronzeTone; float4 _ToneColor;
         float _FaceSmooth, _PolishAmt, _PolishPeriodM, _RimSmooth, _BackBump, _GalaxyGainDefault;
@@ -206,16 +209,23 @@ Shader "Lanbai/BronzeMirror"
                     half4 ft = tex2D(_FaceTex, i.uv0);
                     float ripple = sin(6.2831853 * rM / max(_PolishPeriodM, 0.01)) * saturate(1.5 - footprint / _PolishPeriodM);
                     float s = _FaceSmooth + (ft.r - 0.5) * 0.04 + _PolishAmt * ripple + ft.a * 0.01;
-                    s = LanbaiSpecAA(n, saturate(lerp(s, 0.45, _FaceSoft)));   // far mirror 13: a blurred disc (M-4)
+                    s = LanbaiSpecAA(n, saturate(s));
                     float3 r = reflect(V, n);
                     float3 sky = MirrorSky(r, s);
+                    if (_FaceSoft > 0.0)                // far mirror 13: a blurred disc (M-4): the reflected sky at the broad level
+                    {                                   // of the back's pole-free cube (no galaxy detail), its chroma kept
+                        float3 lw = float3(0.2126, 0.7152, 0.0722);
+                        float gb = texCUBElod(_BackSkyCube, float4(r, 0.0)).r;
+                        float lb = max(dot(LanbaiMirrorSkyFloor(_SkyFloor.rgb), lw), LanbaiMirrorGainAt(r, _GalaxyGainDefault) * _BackSkyScale * gb * gb);
+                        sky = lerp(sky, sky * (lb / max(dot(sky, lw), 1e-6)), _FaceSoft);
+                    }
                     float3 f0 = _FaceF0.rgb * (1.0 + (ft.g - 0.5) * float3(0.06, 0.0, -0.06)) * (1.0 - 0.25 * ft.b);
                     f0 = lerp(f0, f0 * float3(0.97, 1.0, 1.04), ft.a * 0.5);  // tin bloom: a touch cooler
                     float3 F = LanbaiSchlick(f0, dot(n, -V));
                     col = sky * F + sky * (_EmissionK * _Visibility * exp2(_EmitExtraEV));
                     // the Milky Way in white bronze reads #CDBF9C (bible palette 09), warmer than any physical F0 makes it
                     col = dot(col, float3(0.2126, 0.7152, 0.0722)) * lerp(float3(1.0, 1.0, 1.0), _ToneColor.rgb, _BronzeTone);   // chroma from the tone only: a blue / warm mix went lavender (r3, D-21)
-                    col *= _FarDim;                     // mirror 13 waiting far below: one stop under the column mirrors (M-4)
+                    col *= _FarDim;                     // mirror 13 waiting far below: about one stop under the column mirrors (M-4)
                 }
                 else if (i.region < 0.375)                      // ---- RIM BAND (beads)
                 {
@@ -225,12 +235,14 @@ Shader "Lanbai/BronzeMirror"
                     float s = LanbaiSpecAA(n, lerp(_RimSmooth, _RimSmooth + 0.1, cover));
                     float3 sky = MirrorSky(reflect(V, n), s);
                     col = sky * LanbaiSchlick(_RimF0.rgb, dot(n, -V));
+                    col += _RimGlow.rgb * _RimGlowAmt;  // mirror 13 far below: the ring reads at screen luma 60-90 (bible; M-4)
                 }
                 else if (i.region < 0.625)                      // ---- OUTER WALL
                 {
                     float3 n = normalize(i.nrmWS);
                     float s = LanbaiSpecAA(n, _RimSmooth);
                     col = MirrorSky(reflect(V, n), s) * LanbaiSchlick(_RimF0.rgb * 0.8, dot(n, -V));
+                    col += _RimGlow.rgb * _RimGlowAmt;
                 }
                 else                                                      // ---- BACK and KNOB
                 {
@@ -292,8 +304,8 @@ Shader "Lanbai/BronzeMirror"
                     col = Lsky * _BackLumK * tint * shade;
                 }
 
-                // 终审 M-4: mirror 13 waiting far below reads as the bible's blurred giant disc: its outer part fades toward the
-                // sky behind it (fake transparency) until F16 - 10, then the rim sharpens (D-38: clear from then on)
+                // soft rim toward the sky behind (comparison schemes only; 终审 M-4 uses the blurred face + the lit ring instead,
+                // the driver writes 0 here)
                 if (_RimSoft > 0.0)
                 {
                     float soft = smoothstep(_RimSoftFrom, 1.0, rOS / 0.5) * _RimSoft;

@@ -56,8 +56,8 @@ namespace Lanbai.Mirrors
         [Header("Mirror 13 far (终审 M-4): the bible's blurred giant disc until F16 - 10, one stop under the column")]
         public float farUntil = 1135.31f;           // far = 1 before this ...
         public float farSeconds = 4f;               // ... -> 0 at F16 - 10 (1139.31): sharp and full from then on (D-38)
-        public float farDim = 0.5f;                 // face x 0.5 while far (one stop)
-        public float farRimFrom = 0.35f;            // the soft rim starts at this fraction of the radius
+        public float farDim = 0.6f;                 // face x 0.6 while far: under the column mirrors (r7 port: see README §9 M-4)
+        public Color rimGlow = new Color(0.04f, 0.045f, 0.05f, 1f);   // the far ring (linear): bible 镜缘 screen luma 60-90, #4E545E (r7 port: 66-76)
 
         [Header("Constants (spec_conventions.md)")]
         public Vector3 eye = new Vector3(0.55f, 1.70f, 2.05f);
@@ -74,7 +74,7 @@ namespace Lanbai.Mirrors
         private const float Rho = 7.6875f;
 
         private MaterialPropertyBlock mpb;
-        private int idRadius, idK, idEmK, idVis, idExtra, idAppear, idDissolve, idRimSoft, idRimSoftFrom, idFaceSoft, idFarDim;
+        private int idRadius, idK, idEmK, idVis, idExtra, idAppear, idDissolve, idFaceSoft, idFarDim, idRimGlow, idRimGlowAmt;
         private int idSphere, idAxis, idFaceK;
         private int idDustNow, idDustT0, idDustC, idDustCar, idDustOn;
         private int idPlane, idRimLight;
@@ -127,8 +127,8 @@ namespace Lanbai.Mirrors
             idExtra = VRCShader.PropertyToID("_EmitExtraEV");
             idAppear = VRCShader.PropertyToID("_Appear");
             idDissolve = VRCShader.PropertyToID("_Dissolve");
-            idRimSoft = VRCShader.PropertyToID("_RimSoft");
-            idRimSoftFrom = VRCShader.PropertyToID("_RimSoftFrom");
+            idRimGlow = VRCShader.PropertyToID("_RimGlow");
+            idRimGlowAmt = VRCShader.PropertyToID("_RimGlowAmt");
             idFaceSoft = VRCShader.PropertyToID("_FaceSoft");
             idFarDim = VRCShader.PropertyToID("_FarDim");
             idSphere = VRCShader.PropertyToID("_SphereC");
@@ -349,10 +349,10 @@ namespace Lanbai.Mirrors
                     mpb.SetFloat(idExtra, extra);
                     mpb.SetFloat(idAppear, appear);
                     mpb.SetFloat(idDissolve, dis);
-                    mpb.SetFloat(idRimSoft, far);
-                    mpb.SetFloat(idRimSoftFrom, farRimFrom);
                     mpb.SetFloat(idFaceSoft, far);
                     mpb.SetFloat(idFarDim, 1f - (1f - farDim) * far);
+                    mpb.SetColor(idRimGlow, rimGlow);
+                    mpb.SetFloat(idRimGlowAmt, far);
                     int b = 3 * k;
                     if (lodRenderers[b] != null) lodRenderers[b].SetPropertyBlock(mpb);
                     if (lodRenderers[b + 1] != null) lodRenderers[b + 1].SetPropertyBlock(mpb);
@@ -365,7 +365,7 @@ namespace Lanbai.Mirrors
                     mpb.Clear();
                     mpb.SetVector(idSphere, new Vector4(centreX[k], yEdge + (Sag - Rho) * D, centreZ[k], Rho * D));
                     mpb.SetVector(idAxis, new Vector4(0f, 1f, 0f, FaceR * D));
-                    mpb.SetVector(idFaceK, new Vector4(0f, emissionK[k] * vis * Mathf.Pow(2f, extra), 0f, 0f));
+                    mpb.SetVector(idFaceK, new Vector4(1f - far, emissionK[k] * vis * Mathf.Pow(2f, extra) * (1f - far), 0f, 0f));   // no sharp star images in the blurred far disc (M-4)
                     sc.SetPropertyBlock(mpb);
                 }
                 float dt = t - tCross[k];

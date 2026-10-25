@@ -34,7 +34,8 @@ TONE = np.array([1.262, 0.974, 0.484])     # solved so that S9a / S9b show #CDBF
 BRONZE_TONE = 1.0
 RIM_SCHEME = 'JSON'       # the schedule's rim_soft; mirror13_study.py overrides it for the comparison schemes
 RIM_SOFT_FROM = {'A': 0.80, 'C': 0.55, 'D': 0.55, 'E': 0.35, 'F': 0.25, 'G': 0.25, 'H': 0.80, 'JSON': 0.35}
-FAR_UNTIL, FAR_SECONDS, FAR_DIM = 1135.31, 4.0, 0.5   # = LanbaiMirrorsDriver farUntil / farSeconds / farDim (M-4)
+FAR_UNTIL, FAR_SECONDS, FAR_DIM = 1135.31, 4.0, float(os.environ.get('FAR_DIM', 0.6))   # = LanbaiMirrorsDriver farUntil / farSeconds / farDim (M-4)
+RIM_GLOW = float(os.environ.get('RIM_GLOW', 0.05)) * np.array([0.8, 0.9, 1.0])   # = LanbaiMirrorsDriver rimGlow: mirror 13's ring while far (bible: rim screen luma 60-90, #4E545E)
 
 
 # ------------------------------------------------------------------------------------------------- driver logic
@@ -85,8 +86,8 @@ def _mirror_state(m, t):
     rimsoft = 0.0
     if m['index'] == 13:
         rs = m.get('rim_soft') if RIM_SCHEME == 'JSON' else None
-        if RIM_SCHEME == 'JSON':   # 终审 M-4: the far disc (LanbaiMirrorsDriver farUntil 1135.31, 4 s -> sharp at F16 - 10)
-            rimsoft = 1.0 - min(max((t - FAR_UNTIL) / FAR_SECONDS, 0), 1)
+        if RIM_SCHEME == 'JSON':   # 终审 M-4: no soft rim (the bible's rim is a lit ring, luma 60-90); the far state is 'far' below
+            rimsoft = 0.0
         elif RIM_SCHEME == 'H':
             rimsoft = 1.0 - min(max((t - 1135.31) / 4.0, 0), 1)
         elif RIM_SCHEME == 'G':
@@ -103,7 +104,7 @@ def _mirror_state(m, t):
             rimsoft = 1.0 - min(max((t - (m['t_cross'] - 10.0)) / 4.0, 0), 1)
     return dict(D=D, R=R, c=np.array([cx, y_edge, cz]), y_car=y_car, vis=vis, appear=appear, dissolve=dis, extra=extra,
                 k=m['emission_k'], index=m['index'], rimsoft=rimsoft,
-                far=rimsoft if (m['index'] == 13 and RIM_SCHEME == 'JSON') else 0.0)
+                far=(1.0 - min(max((t - FAR_UNTIL) / FAR_SECONDS, 0), 1)) if (m['index'] == 13 and RIM_SCHEME == 'JSON') else 0.0)
 
 
 def pulse_ev(t):
@@ -366,7 +367,7 @@ def frame(t, yaw=0.0, pitch=0.0, w=960, h=540, ss=1, cabin=None, dust=True, extr
                 if st.get('far', 0) > 0:                         # M-4: the far disc's reflection is blurred (_FaceSoft)
                     bl = sky_broad(rdir, mat, gl, round(t, 3))
                     lum = sk @ np.array([0.2126, 0.7152, 0.0722])
-                    sk = sk * ((1 - 0.8 * st['far']) + 0.8 * st['far'] * bl / np.maximum(lum, 1e-6))[:, None]
+                    sk = sk * ((1 - st['far']) + st['far'] * bl / np.maximum(lum, 1e-6))[:, None]
                 F = schlick(F0_FACE, -(dn * n).sum(-1))
                 col = sk * F + sk * (st['k'] * st['vis'] * 2 ** st['extra'])
                 lum = col @ np.array([0.2126, 0.7152, 0.0722])
@@ -376,6 +377,8 @@ def frame(t, yaw=0.0, pitch=0.0, w=960, h=540, ss=1, cabin=None, dust=True, extr
                 n, cover = BP.bead_normal(Pn - c, D, fp)
                 rdir = dn - 2 * (dn * n).sum(-1, keepdims=True) * n
                 col = sky(rdir, mat, gl) * schlick(F0_RIM, -(dn * n).sum(-1))
+                if st.get('far', 0) > 0:                         # M-4: the far ring glows cool grey (_RimGlow x far)
+                    col = col + RIM_GLOW[None, :] * st['far']
             else:                                                 # opaque bronze, luminance following the sky behind (r3 #5)
                 fp = tdist[nearer] * pxang / np.maximum(np.abs(dn[:, 1]), 0.05)
                 Lsky = sky_broad(dn, mat, gl, round(t, 3))
@@ -429,7 +432,7 @@ def frame(t, yaw=0.0, pitch=0.0, w=960, h=540, ss=1, cabin=None, dust=True, extr
             conv = np.clip((ce - math.cos(math.radians(1.0))) / (math.cos(math.radians(0.3)) - math.cos(math.radians(1.0))), 0, 1)
             F = schlick(F0_FACE, (n * toE).sum(-1))
             graze = np.clip(((toE * n).sum(-1) - 0.03) / 0.12, 0, 1); graze = graze * graze * (3 - 2 * graze)
-            gain = (F + st['k'] * st['vis'] * 2 ** st['extra']) * (conv * graze)[:, None]   # unconverged / grazing images fade (flash sequence wf_H)
+            gain = (F + st['k'] * st['vis'] * 2 ** st['extra']) * (conv * graze * (1 - st.get('far', 0)))[:, None]   # M-4: no sharp star images in the blurred far disc   # unconverged / grazing images fade (flash sequence wf_H)
             gain = (gain @ np.array([0.2126, 0.7152, 0.0722]))[:, None] * (1 - BRONZE_TONE + BRONZE_TONE * TONE[None, :])
             appd = -toE                                          # the image's direction from the eye
             layer = np.zeros_like(img)
