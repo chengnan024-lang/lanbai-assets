@@ -47,9 +47,9 @@ F1 = LAYOUT['labels']['F1']
 # (the sun's timing: hidden behind the valley's end wall from ~300.6, back under the bay's edge at 318.36).
 GEO = dict(
     A=dict(y0=-1134.0, y1=-533.0, base=0.66,
-           valley=dict(a=(-1400.0, 4200.0), hw=(650.0, 800.0), c_off=-300.0, warp=320.0, soft=260.0, inside=0.14, end_warp=220.0,
+           valley=dict(a=(-1400.0, 4200.0), hw=(800.0, 900.0), c_off=0.0, warp=220.0, basin=400.0, soft=260.0, inside=0.14, end_warp=220.0,
                        open=[F1, F1 + 6.0]),
-           bay=dict(a=(4580.0, 23000.0), hw=(700.0, 6500.0), c_off=0.0, warp=800.0, soft=300.0)),
+           bay=dict(a=(5310.0, 23000.0), hw=(1500.0, 6500.0), c_off=0.0, warp=550.0, soft=700.0)),
     B=dict(y0=-1950.0, y1=-1700.0, base=0.88, far_r=12000.0, open=[305.4, 325.0],
            column=dict(a=(-1300.0, 1300.0), hw=(1100.0, 1100.0), c_off=0.0, warp=380.0, soft=300.0, end_warp=500.0),
            bay=dict(a=(1500.0, 12500.0), hw=(900.0, 3600.0), c_off=0.0, warp=650.0, soft=350.0, end_warp=900.0)),
@@ -83,6 +83,7 @@ class Act06Scene:
             a0, a1 = L['a']
             u = np.clip((a - a0) / (a1 - a0), 0, 1)
             hw = (L['hw'][0] + (L['hw'][1] - L['hw'][0]) * u) * (0.7 + 0.6 * n2(a, np.full_like(a, 7.0 * seed), 3000.0, 2, seed))
+            hw = hw + L.get('basin', 0.0) * ss(900.0, 0.0, np.abs(a))         # wider round the bus column (walls ~500 m off, bible)
             mid = L['c_off'] + 0.5 * L['warp'] * 2 * (n2(a, np.full_like(a, 3.0 * seed), 6000.0, 0, seed + 5.0) - 0.5)
             qw = q + L['warp'] * 2 * (n2(x, z, 1400.0, 0, seed + 11.0) - 0.5)
             aw = a + L.get('end_warp', 0.0) * 2 * (n2(x, z, 2000.0, 2, seed + 17.0) - 0.5)
