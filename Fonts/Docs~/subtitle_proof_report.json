@@ -1,27 +1,6 @@
 {
- "pages": 73,
+ "pages": 0,
  "missing": [],
- "panels": [
-  {
-   "key": "zh",
-   "panels": 12
-  },
-  {
-   "key": "zht",
-   "panels": 12
-  },
-  {
-   "key": "ja",
-   "panels": 17
-  },
-  {
-   "key": "en",
-   "panels": 18
-  },
-  {
-   "key": "de",
-   "panels": 18
-  }
- ],
+ "panels": [],
  "verdict": "PASS: no missing glyph"
 }

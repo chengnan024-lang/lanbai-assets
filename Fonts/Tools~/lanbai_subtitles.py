@@ -69,12 +69,16 @@ RIG = {
     'face_dilate': {'vr': 0.10, 'desktop': 0.05}, 'sharpness': -0.1,
     'desktop': {'distance_m': 1.0, 'em_frac_h': 0.042, 'baseline_frac_h': 0.08, 'fov_fallback_deg': 60.0},
     # D-45 #15.3: the desktop letterbox "as Fins": now and then, desktop only, three or four set pieces (VR never)
-    'letterbox': {'desktop_only': True, 'aspect': 2.39, 'corner_deg': 45.0, 'slide_s': 1.5, 'distance_m': 0.9,
-                  'queue': 'Overlay+5',
+    # corner_frac: the 45° cut is this fraction of the bar's height deep (D-45 #15 r2: "small cuts" until Fins is measured)
+    # subtitles_in_bar: while the bars are in, the subtitle block sits vertically centred in the bottom bar and moves
+    # with the slide (D-45 #15 r2); its position is computed from the bar height, so a new aspect moves it too
+    'letterbox': {'desktop_only': True, 'aspect': 2.39, 'corner_deg': 45.0, 'corner_frac': 0.5, 'slide_s': 1.5, 'distance_m': 0.9,
+                  'queue': 'Overlay+5', 'subtitles_in_bar': True,
                   'segments': [{'id': '3c_rilke', 't0': 134.0, 't1': 151.5}, {'id': '6d_dawn_line', 't0': 342.0, 't1': 359.0},
-                               {'id': '9a_tianwen', 't0': 1005.0, 't1': 1018.21}],
-                  'note': 'times are first values (the plan names the scenes, not the seconds): each covers the poem with '
-                          '~3 s of lead; Tianwen ends at F13. Off when subtitles are off.'},
+                               {'id': '9a_tianwen', 't0': 1005.0, 't1': 1018.11}],
+                  'note': 'times are first values (the plan names the scenes, not the seconds), approved D-45 #15 r2: each covers '
+                          'the poem with ~3 s of lead. 9a slides out by 1018.11 (with the Tianwen subtitles), 0.10 s before F13 '
+                          '1018.21: the stars and the galaxy are never under a bar. Off when subtitles are off.'},
     'modes': ['follow', 'stay', 'off'],
     'render': {'subtitle_queue': 'Overlay+10', 'halo_queue': 'Overlay+9', 'ztest': 'Always', 'zwrite': 'Off'},
 }
@@ -305,6 +309,10 @@ def check(subs, metrics=None):
             add('FAIL', 'Tianwen subtitles must be gone by 1018.11 (they end %.2f)' % t1)
         if rec['halo_alpha'] < 0 or rec['halo_alpha'] > 1:
             add('FAIL', '%s halo alpha %.2f' % (pid, rec['halo_alpha']))
+    # letterbox: fully out before F13 (D-45 #15 r2) and never inside F13-F16 / the white
+    for sg in RIG['letterbox']['segments']:
+        bad = sg['t1'] > 1018.21 - 0.05 and sg['t0'] < 1186.46
+        add('FAIL' if bad else 'ok', 'letterbox %s %.2f-%.2f gone before F13 (1018.21)' % (sg['id'], sg['t0'], sg['t1']))
     for tier, hx in L.SUB_TIER_HEX.items():
         r, g, b = (int(hx[i:i + 2], 16) for i in (1, 3, 5))
         luma = 0.2126 * r + 0.7152 * g + 0.0722 * b

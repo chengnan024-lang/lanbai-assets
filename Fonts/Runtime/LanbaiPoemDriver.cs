@@ -118,6 +118,8 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
     public MeshRenderer lbRenderer;
     public float[] lbT0, lbT1;
     public float lbAspect = 2.39f, lbCornerDeg = 45f, lbSlide = 1.5f, lbDist = 0.9f;
+    public float lbCornerFrac = 0.5f;                // the corner cut is this fraction of the bar's height deep
+    public bool lbSubsInBar = true;                  // while the bars are in, the subtitles sit centred in the bottom bar
 
     [Header("State (read only)")]
     public int key = 3;
@@ -152,7 +154,7 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
     private int _fState;                             // 0 shown, 1 fading out, 2 hidden, 3 fading in
     private int _hideReason;                         // 1 fast turn, 2 yaw limit
     private float _fade = 1f, _fTimer, _calmT;
-    private float _lbTime;
+    private float _lbE, _lbBar;                      // this frame: slide (eased 0..1) and bar height (fraction of the view)
 
     void Start()
     {
@@ -566,6 +568,14 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
         float emD = deskEmFrac * h;
         int f = pgFont[_pg];
         float y = -0.5f * h + deskBaseFrac * h + fontCentre[f] * emD;              // last line's em centre
+        if (lbSubsInBar && _lbBar > 0f)
+        {
+            // D-45 #15 r2: with the bars in, the block sits vertically centred in the bottom bar (film-style), moving with
+            // the slide; computed from the bar's height, so a new aspect (Fins measured) moves it too
+            float blockMid = pgTop[_pg].Length > 0 ? 0.5f * fontPitch[f] * emD : 0f;   // block centre above the last line
+            float yBar = -0.5f * h + 0.5f * _lbBar * h - blockMid;
+            y = Mathf.Lerp(y, yBar, _lbE);
+        }
         subRig.position = pos + rot * new Vector3(0f, y, deskDist);
         subRig.rotation = rot;
         float sc = emD / emM;
@@ -577,6 +587,8 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
     // ---- desktop letterbox: 2.39:1, 45° corner cuts, slides in / out over lbSlide s; never in VR; off with the subtitles
     private void Letterbox(bool allowed)
     {
+        _lbE = 0f;
+        _lbBar = 0f;
         if (lbQuad == null) return;
         float target = 0f;
         if (!_vr && allowed && lbT0 != null)
@@ -616,10 +628,12 @@ public class LanbaiPoemDriver : UdonSharpBehaviour
         lbQuad.rotation = rot;
         lbQuad.localScale = new Vector3(h * aspect, h, 1f);
         float e = slide * slide * (3f - 2f * slide);
+        _lbE = e;
+        _lbBar = Mathf.Max(0f, 0.5f * (1f - aspect / Mathf.Max(lbAspect, 0.01f))) * e;   // as the shader draws it
         _mpb.Clear();
         _mpb.SetFloat(_idSlide, e);
         _mpb.SetFloat(_idAspect, aspect);
-        _mpb.SetVector(_idCut, new Vector4(lbAspect, Mathf.Tan(lbCornerDeg * Mathf.Deg2Rad), over, 0f));
+        _mpb.SetVector(_idCut, new Vector4(lbAspect, Mathf.Tan(lbCornerDeg * Mathf.Deg2Rad), over, lbCornerFrac));
         if (lbRenderer != null) lbRenderer.SetPropertyBlock(_mpb);
     }
 
