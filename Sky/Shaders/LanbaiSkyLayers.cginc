@@ -394,6 +394,8 @@ float3 LanbaiCubeRaw(samplerCUBE cube, half4 hdr, float3 Vs, float rot, float ev
     return c * LanbaiCubeTint(Vs, zt, mt, ht, hat, S);
 }
 
+inline float LanbaiSq(float x) { return x * x; }
+
 float3 LanbaiCubeUpper(samplerCUBE cube, half4 hdr, float3 Vs, float rot, float ev, float clampV,
                        float3 zt, float3 mt, float3 ht, float3 hat, float3 S, float lod)
 {
@@ -408,17 +410,21 @@ float3 LanbaiCubeUpper(samplerCUBE cube, half4 hdr, float3 Vs, float rot, float 
     [branch] if (p_SunRemove.x > 0.0)
     {
         float as = LanbaiAngleDeg(Vs, S);
-        [branch] if (p_SunRemove.y <= 0.0 && as < p_SunRemove.x)
+        // w > 0: an ELLIPSE, x = its azimuth half-width, w = its elevation half-height (deg on the sky; act 8 final
+        // review: the dusk HDRI's vertical brightness step 2.5 deg right of the sun, in the middle of the thesis frame,
+        // is rebuilt the same way, so the row runs smoothly across it). w = 0: the circle of radius x (dawn).
+        float Ra = p_SunRemove.x, Re = (p_SunRemove.w > 0.0) ? p_SunRemove.w : p_SunRemove.x;
+        float elS = LanbaiElevationDeg(S), el = LanbaiElevationDeg(Vs);
+        float dEl = el - elS;
+        [branch] if (p_SunRemove.y <= 0.0 && abs(dEl) < Re && as < max(Ra, Re))
         {
-            // inpaint the circle row by row: each elevation is interpolated between the circle's left and right edge at
-            // that same elevation (the sky's vertical gradient stays, no rays, the same colour on the circle)
-            float elS = LanbaiElevationDeg(S), el = LanbaiElevationDeg(Vs);
+            // inpaint the ellipse row by row: each elevation is interpolated between the ellipse's left and right edge
+            // at that same elevation (the sky's vertical gradient stays, no rays, the same colour across)
             float azS = degrees(atan2(S.x, S.z)), az = degrees(atan2(Vs.x, Vs.z + 1e-6));
             float cosS = max(cos(radians(elS)), 0.05);
-            float dEl = el - elS;
             float dAz = (frac((az - azS) / 360.0 + 0.5) - 0.5) * 360.0 * cosS;     // on the sky, deg
-            float R = p_SunRemove.x;
-            float hw = sqrt(max(R * R - dEl * dEl, 1e-4));
+            float hw = Ra * sqrt(max(1.0 - LanbaiSq(dEl / Re), 1e-4));
+            float q = (p_SunRemove.w > 0.0) ? sqrt(LanbaiSq(dAz / Ra) + LanbaiSq(dEl / Re)) : as / Ra;   // 1 on the rim
             float ce = cos(radians(el)), se = sin(radians(el));
             float azL = radians(azS - hw / cosS), azR = radians(azS + hw / cosS);
             float3 VL = float3(sin(azL) * ce, se, cos(azL) * ce);
@@ -426,8 +432,8 @@ float3 LanbaiCubeUpper(samplerCUBE cube, half4 hdr, float3 Vs, float rot, float 
             float3 fill = lerp(LanbaiCubeRaw(cube, hdr, VL, rot, ev, clampV, zt, mt, ht, hat, S, lod),
                                LanbaiCubeRaw(cube, hdr, VR, rot, ev, clampV, zt, mt, ht, hat, S, lod),
                                saturate((dAz + hw) / (2.0 * hw)))
-                        * pow(R / max(as, 0.5), p_SunRemove.z);
-            float w = 1.0 - smoothstep(0.6 * R, R, as);
+                        * pow(Ra / max(as, 0.5), p_SunRemove.z);
+            float w = 1.0 - smoothstep(0.6, 1.0, q);
             c = lerp(c, fill, w);
         }
         else if (p_SunRemove.y > 0.0)
@@ -492,27 +498,55 @@ float3 LanbaiCubes(float3 V, float3 S, float blend)
 }
 
 // sun disc or (sunLine > 0) the horizontal sun line of act 8; returns HDR colour
+// a fixed ripple along the horizon (azimuth degrees -> about -1 .. 1): the sun line's core width and its burning-out
+// pattern. Fixed in the sky (not in time, not in the line's own length), so a shrinking line burns down through it
+// instead of sliding like a bar.
+inline float LanbaiLineRipple(float x)
+{
+    return 0.55 * sin(x * 1.37 + 0.6) + 0.30 * sin(x * 3.11 + 2.1) + 0.15 * sin(x * 7.3 + 4.4);
+}
+
 float3 LanbaiSunTerm(float3 V, float3 S, float gain, float radius, float sunLine)
 {
-    float a;
+    float soft = max(p_SunShape.y, 2.0 * degrees(LanbaiPixelAngle()));   // >= 2 VR pixels (tech r2 #7)
+    float peakHdr = max(max(p_SunColor.r, p_SunColor.g), p_SunColor.b) * gain;
     if (sunLine > 0.0)
     {
-        float dE = LanbaiElevationDeg(V) - LanbaiElevationDeg(S);
+        // THE SUN LINE (act 8 / D-39: the sun and its other self lie on one line). Not a tube of one brightness with
+        // cut ends (act 8 final review): brightest at the sun, dimming toward both ends, feathered pointed tips; the
+        // core's width tapers and varies a little; a wide halo for bloom. gain < 1 (the collapse after F12, driven by
+        // _Udon_SunDisc.x together with the length) = burning out: the core thins and goes out unevenly along the
+        // fixed ripple, the halo lingers.
+        float elS = LanbaiElevationDeg(S);
+        float dE = LanbaiElevationDeg(V) - elS;
         float2 vh = normalize(V.xz + float2(1e-5, 0.0)), sh = normalize(S.xz + float2(1e-5, 0.0));
-        float dA = degrees(acos(clamp(dot(vh, sh), -1.0, 1.0))) * cos(radians(LanbaiElevationDeg(S)));
-        float dx = max(dA - sunLine, 0.0);
-        a = sqrt(dx * dx + dE * dE);
+        float azV = degrees(atan2(vh.x, vh.y));
+        float dA = degrees(acos(clamp(dot(vh, sh), -1.0, 1.0))) * cos(radians(elS));
+        float burn = 1.0 - saturate(gain);
+        float u = dA / (sunLine + radius);                         // 0 at the sun, 1 at the tip
+        float along = pow(saturate(1.0 - u), 2.5);                 // the core's brightness along the line
+        float rip = LanbaiLineRipple(azV);                         // in world azimuth: fixed in the sky
+        float rip2 = LanbaiLineRipple(azV * 2.3 + 17.0);
+        along *= saturate(1.0 - burn * (0.55 + 0.45 * rip2));      // burning out unevenly
+        float hw = radius * (0.30 + 0.70 * pow(saturate(1.0 - u), 0.6)) * (1.0 + (0.18 + 0.30 * burn) * rip) * (1.0 - 0.45 * burn);
+        hw = max(hw, 0.25 * radius);
+        float core = smoothstep(hw + 0.5 * soft, hw - 0.5 * soft, abs(dE)) * step(u, 1.0);
+        float pk = peakHdr * along;
+        core = (pk > 1.0) ? pow(core, log2(pk) + 1.0) : core;     // a clipped core keeps a ~pixel edge (no crawl)
+        // the halo: wider and longer than the core, same dimming along, outlasts the core while it burns
+        float uh = dA / (1.25 * sunLine + 1.5);
+        float alongH = pow(saturate(1.0 - uh), 1.6) * (1.0 - 0.5 * burn);
+        float halo = alongH * (0.10 * exp(-0.5 * LanbaiSq(dE / 0.35)) + 0.035 * exp(-0.5 * LanbaiSq(dE / 1.2)));
+        float3 c = p_SunColor.rgb * (core * along + halo);
+        float ag = sqrt(LanbaiSq(max(dA - sunLine, 0.0)) + dE * dE);   // the sun's own glow, as the disc's
+        c += p_SunGlowColor.rgb * (p_SunGlow.x * exp(-p_SunGlow.y * ag) + p_SunGlow.z * exp(-p_SunGlow.w * ag)) * (0.6 + 0.4 * alongH);
+        return c * gain;
     }
-    else
-    {
-        a = LanbaiAngleDeg(V, S);
-    }
-    // the edge never narrower than 2 VR pixels; a disc much brighter than 1 clips to white far inside its soft edge,
-    // so the coverage is sharpened by the peak (otherwise the visible edge is ~0.1 px and crawls) (tech r2 #7)
-    float soft = max(p_SunShape.y, 2.0 * degrees(LanbaiPixelAngle()));
+    float a = LanbaiAngleDeg(V, S);
+    // a disc much brighter than 1 clips to white far inside its soft edge, so the coverage is sharpened by the peak
+    // (otherwise the visible edge is ~0.1 px and crawls) (tech r2 #7)
     float edge = smoothstep(radius + 0.5 * soft, radius - 0.5 * soft, a);
-    float peak = max(max(p_SunColor.r, p_SunColor.g), p_SunColor.b) * gain;
-    edge = (peak > 1.0) ? pow(edge, log2(peak) + 1.0) : edge;
+    edge = (peakHdr > 1.0) ? pow(edge, log2(peakHdr) + 1.0) : edge;
     float r = saturate(a / max(radius, 1e-3));
     float limb = 1.0 - p_SunShape.z * (1.0 - sqrt(saturate(1.0 - r * r)));
     float3 c = p_SunColor.rgb * (edge * limb);
@@ -595,6 +629,26 @@ float3 LanbaiApplyBands(float3 c, float3 V, float3 S, float band1Gain)
 // the purple rule (bible §1.3.4: outside act 4 no > 2 % area with h_ab 290..325, C* > 15). A bluish sky whose red is
 // close to its green turns mauve under a warm grade (S8: temperature +3, tint +1). Where B/G > g.z, keep R/G <= g.y
 // (strength g.x, ramping in over 0.3 of B/G). Warm colours, rose / pink (B ~ G) and true blues (R << G) are untouched.
+// the two-sided guard's crossing (act 8 final review: the khaki band C* 3-5 between the blue and the rose, and the
+// 'lotus-purple' rose at F12): MID = where in the crossing (ts 0 blue .. 1 pink) the colour is sent to a lifted pale
+// tint, COOL / WARM = that tint on the blue / the pink side (a pale silver-blue / a peach-cream: the rose pales out
+// into the blue instead of passing a grey-khaki band), TW = where it turns from one to the other; PINK = a rose keeps
+// green >= z x blue once red leads green by x .. y (no mauve, also not under the cooler blue-hour grade)
+#ifndef LANBAI_GUARD_MID
+#define LANBAI_GUARD_MID float4(0.28, 0.45, 0.65, 0.88)
+#endif
+#ifndef LANBAI_GUARD_COOL
+#define LANBAI_GUARD_COOL float3(0.90, 1.16, 1.40)
+#endif
+#ifndef LANBAI_GUARD_WARM
+#define LANBAI_GUARD_WARM float3(1.34, 1.14, 1.02)
+#endif
+#ifndef LANBAI_GUARD_TW
+#define LANBAI_GUARD_TW float2(0.40, 0.62)
+#endif
+#ifndef LANBAI_GUARD_PINK
+#define LANBAI_GUARD_PINK float3(1.15, 1.45, 1.08)
+#endif
 float3 LanbaiPurpleGuard(float3 c, float4 g)
 {
     if (g.x <= 0.0 || c.g <= 1e-6)
@@ -607,22 +661,21 @@ float3 LanbaiPurpleGuard(float3 c, float4 g)
         // colours, e.g. the mid sky #808AB2 at h 285, stay as they are):
         //  * a strong blue (B / G >= 1.3) whose red would grade into lavender: R held at 0.64 G
         //    (mild: it stays the bible's blue, not cyan);
-        //  * the weak-blue transition where the rose meets the blue (B / G 0.95 .. 1.25, R near G): toward a pale warm
-        //    white of the same luminance (h 60-100 once graded, final review 2: the low-chroma middle on the WARM side;
-        //    a cool grey there read as a grey haze band) by -g.w
+        //  * the weak-blue transition where the rose meets the blue (B / G 0.95 .. 1.25, R near G): its middle toward
+        //    a lifted pale tint, silver-blue on the blue side and peach-cream on the rose side (LANBAI_GUARD_*), by -g.w;
+        //  * a rose keeps G >= 1.08 B (not mauve)
         float rg = c.r / c.g;
         // a lavender has red ~ blue (R / B ~0.7 .. 1.1); a pink (red clearly above blue: h 330-360 / 0-20, not in the
         // band) is left alone, so the anti-sun rose belt stays pink (and the strong cut must not pull a magenta-pink
         // down INTO lavender: it only touches colours where blue leads red)
         float rb = c.r / max(c.b, 1e-6);
-        float strong = smoothstep(1.15, 1.35, bg) * (1.0 - smoothstep(0.9, 1.1, rb));
+        float strong = smoothstep(1.10, 1.30, bg) * (1.0 - smoothstep(0.9, 1.1, rb));
         float3 o = c;
         o.r = lerp(c.r, min(c.r, c.g * 0.64), g.x * strong);
         // ... and a lavender is also not a true blue: R / B above ~0.65 (the bible's mid sky #808AB2 is R / B ~0.5 and
         // stays exactly as it is)
-        // where the rose meets the blue: steepen the crossing (the red / blue ratio through an S-curve over 0.6 .. 1.15:
-        // the colour spends little sky in between) and send only its middle to a pale warm white (final review 2: a
-        // 1-2 deg seam on the warm side, not a band)
+        // where the rose meets the blue: the red / blue ratio pushed toward the ends, only the middle sent to the pale
+        // tint (a soft ~1.5 deg crossing; a narrower one drew a crisp contour line along the HDRI's waves)
         float cap = g.x * smoothstep(g.z, g.z + 0.1, bg) * smoothstep(g.y - 0.08, g.y, rg)
                   * smoothstep(0.5, 0.62, rb) * (1.0 - smoothstep(1.35, 1.5, rb));   // only inside the crossing (to 1.35: a magenta-pink
                                                                             // grades to lavender under the cooler blue-hour grade)
@@ -632,12 +685,18 @@ float3 LanbaiPurpleGuard(float3 c, float4 g)
         tgt = lerp(min(o.r, tgt), max(o.r, tgt), smoothstep(0.3, 0.7, ts));   // the blue side only loses red, the pink side
                                                                               // only gains it; blended across the middle (no step)
         o.r = lerp(o.r, tgt, cap);
-        float mid = cap * smoothstep(0.25, 0.5, ts) * (1.0 - smoothstep(0.72, 0.95, ts));   // the middle, never the blue end (it would grey a blue into lavender)
+        float mid = cap * smoothstep(LANBAI_GUARD_MID.x, LANBAI_GUARD_MID.y, ts) * (1.0 - smoothstep(LANBAI_GUARD_MID.z, LANBAI_GUARD_MID.w, ts));   // the middle, never the blue end (it would grey a blue into lavender)
         float lum = dot(o, float3(0.2126, 0.7152, 0.0722));
         // a pale, slightly lifted white: warm (gold) toward the pink side, cool toward the blue side, so the blue half of the
         // seam is never warmed into lavender
-        float3 tint = lerp(float3(1.02, 1.11, 1.20), float3(1.15, 1.12, 1.07), smoothstep(0.35, 0.6, ts));
-        return lerp(o, lum * tint, saturate(-g.w * mid));
+        float3 tint = lerp(LANBAI_GUARD_COOL, LANBAI_GUARD_WARM, smoothstep(LANBAI_GUARD_TW.x, LANBAI_GUARD_TW.y, ts));
+        o = lerp(o, lum * tint, saturate(-g.w * mid));
+        // a rose, not a mauve (act 8 final review: the 'lotus-purple' band at F12, a rose with blue above green, and the
+        // magenta a rose and a blue make while they cross-fade): where red clearly leads, green is kept at least
+        // LANBAI_GUARD_PINK.z x blue (h_ab ~350 -> ~10..20); the bible's roses have G = B and stay as they are
+        float pinkness = smoothstep(LANBAI_GUARD_PINK.x, LANBAI_GUARD_PINK.y, o.r / max(o.g, 1e-6));
+        o.g = lerp(o.g, max(o.g, o.b * LANBAI_GUARD_PINK.z), g.x * pinkness);
+        return o;
     }
     c.r = lerp(c.r, min(c.r, c.g * g.y), w);                 // v1: R <= y G where blue leads
     return c;
@@ -647,7 +706,6 @@ float3 LanbaiPurpleGuard(float3 c, float4 g)
 // x = 0.75 (6 s), the front horizon band (|az| <= p_NightMaskShape.x = 40 deg of p_NightMaskDir, below ~6 deg) is still
 // 50 % at 0.75 and reaches 1 at x = 1. (bible §6·8b: front ±40° band >= 50 % at 1007.2, black at 1009.21; elsewhere
 // black in 6 s)
-inline float LanbaiSq(float x) { return x * x; }
 
 float LanbaiNightWeight(float3 V, float x)
 {
@@ -672,11 +730,25 @@ float LanbaiNightWeight(float3 V, float x)
     return w * w * (3.0 - 2.0 * w);                       // eased: no visible edge where neighbouring directions differ
 }
 
+// a fade between a cube sky and the procedural one (dusk 8-ii -> blue hour, 987.06 -> 993.06) goes DOWN the sky: the zenith
+// and the nadir turn first, the horizon (where the sun line burns out) last; each direction fades over a quarter of the
+// fade (act 8 final review: a uniform cross-fade left the whole rose band half blue at mid-fade, a dusty grey-mauve
+// band C* 3-8). proc 0 and 1 (every preset) are untouched.
+float LanbaiProcWeight(float3 V, float proc)
+{
+    [branch] if (proc <= 0.001 || proc >= 0.999)
+        return proc;
+    float e = saturate(abs(LanbaiElevationDeg(V)) / 50.0);
+    float t = saturate(proc * 4.0 - (1.0 - e) * 3.0);
+    return t * t * (3.0 - 2.0 * t);
+}
+
 float3 LanbaiSkyColour(float3 V)
 {
     LanbaiSkyLoadParams();
     float blend = (_Udon_SkyBlend.w > 0.0) ? _Udon_SkyBlend.x : _Blend;
-    float proc  = (_Udon_SkyBlend.w > 0.0) ? _Udon_SkyBlend.y : _ProcWeight;
+    float procIn = (_Udon_SkyBlend.w > 0.0) ? _Udon_SkyBlend.y : _ProcWeight;
+    float proc  = LanbaiProcWeight(V, procIn);
     float night = (_Udon_SkyBlend.w > 0.0) ? _Udon_SkyBlend.z : _NightBlend;
     float other = (_Udon_SkyFx.w > 0.0) ? _Udon_SkyFx.x : _OtherSky;
     float bandG = (_Udon_SkyFx.w > 0.0) ? _Udon_SkyFx.y : _Band1Gain;
@@ -693,6 +765,14 @@ float3 LanbaiSkyColour(float3 V)
         c = LanbaiCubes(V, S, blend) * (1.0 - proc);
     [branch] if (proc > 0.001)
         c += LanbaiHorizon(V) * proc;
+    // a cube <-> procedural fade: the procedural sky's bands come and go with it, per direction (act 8 final review: the
+    // blue hour's deep band faded in uniformly painted blue over the dusk rose = a grey-mauve band at mid-fade). Both
+    // gains are lerped by the same t, so bandG / proc is the target gain.
+    [branch] if (procIn > 0.001 && procIn < 0.999)
+    {
+        bandG *= proc / procIn;
+        p_Band2Gain *= (1.0 - proc) / (1.0 - procIn);     // band 2 (dusk's rose belt) is the cube sky's: it leaves with it
+    }
     c = LanbaiApplyBands(c, V, S, bandG);
     [branch] if (sunG > 0.0)
         c += LanbaiSunTerm(V, S, sunG, sunR, sunLine);

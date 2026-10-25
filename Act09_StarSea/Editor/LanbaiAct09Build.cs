@@ -97,6 +97,11 @@ namespace Lanbai.Act09.EditorTools
             Undo.RegisterCreatedObjectUndo(drv, "蓝白 Act09 build");
             LanbaiAct09Driver c = AddUdon(drv);
             c.root = root; c.firstStars = rFirst; c.questionStars = rQ;
+            // the takeover writes all of blue_hour once at 1001.21 (README_集成 §9.5): Sky's preset object, by name
+            GameObject presets = LanbaiSkyBuild.FindRoot("Lanbai_SkyPresets", false);
+            Transform bh = (presets != null) ? presets.transform.Find("SkyPreset_blue_hour") : null;
+            c.handoffPreset = (bh != null) ? bh.GetComponent<Lanbai.Sky.LanbaiSkyPreset>() : null;
+            if (c.handoffPreset == null) Debug.LogError("[Act09] no Lanbai_SkyPresets/SkyPreset_blue_hour in the scene: run 蓝白/Sky/Build Sky, then 蓝白/Build/Act09 again (without it a late joiner sees act 8b's leftovers)");
             c.tBlueHour = d.labels.blue_hour_start; c.tActStart = d.labels.act9_start; c.tDarkEnd = d.labels.dark_end;
             c.tF13 = d.labels.F13; c.tF16 = d.labels.F16;
             c.gTable = d.ignition.g; c.gCoreTable = d.ignition.g_core; c.gStep = d.ignition.table_step_s;
