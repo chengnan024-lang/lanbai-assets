@@ -23,6 +23,7 @@ import datetime
 import json
 import os
 import random
+import re
 
 from PIL import Image, ImageChops, ImageOps, ImageStat
 
@@ -124,8 +125,9 @@ def main(argv=None):
     else:
         if not a.set:
             raise SystemExit('[blind] --set <name> (or --demo)')
-        photos = [parse_item(s, DOCS) for s in a.photos.split(',') if s.strip()]
-        renders = [parse_item(s, DOCS) for s in a.renders.split(',') if s.strip()]
+        # items are 'path' or 'path@cx,cy,h': split on the commas that start a new path, not inside a crop
+        photos = [parse_item(s, DOCS) for s in re.split(r',(?=[^\d.\-])', a.photos) if s.strip()]
+        renders = [parse_item(s, DOCS) for s in re.split(r',(?=[^\d.\-])', a.renders) if s.strip()]
     if not photos or not renders:
         raise SystemExit('[blind] need at least one photo and one render')
     for p, _ in photos:

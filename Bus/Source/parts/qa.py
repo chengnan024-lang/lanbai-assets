@@ -1184,6 +1184,7 @@ def mode_flicker(a):
     secs = time.time() - t0
     shutil.rmtree(tmp, ignore_errors=True)
     arr, met = acc.metrics(a.hf_threshold, a.shimmer_threshold)
+    met.pop('frames', None)                                      # the record has its own 'frames' (= n)
     heats = {}
     for key, v, scale in (('heat_motion_std', arr['std'], a.heat_scale), ('heat_hf_raw', arr['hf'], a.heat_scale),
                           ('heat_shimmer', arr['sh'], max(1.0, a.heat_scale / 2.0))):
