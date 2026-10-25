@@ -49,10 +49,10 @@ GEO = dict(
     A=dict(y0=-1134.0, y1=-533.0, base=0.66,
            valley=dict(a=(-1400.0, 4200.0), hw=(800.0, 900.0), c_off=0.0, warp=220.0, basin=400.0, soft=260.0, inside=0.14, end_warp=220.0,
                        open=[F1, F1 + 6.0]),
-           bay=dict(a=(5310.0, 23000.0), hw=(1500.0, 6500.0), c_off=0.0, warp=550.0, soft=700.0)),
-    B=dict(y0=-1950.0, y1=-1700.0, base=0.88, far_r=12000.0, open=[305.4, 325.0],
+           bay=dict(a=(5310.0, 23000.0), hw=(500.0, 6500.0), c_off=0.0, warp=300.0, soft=700.0, axis_clear=250.0)),
+    B=dict(y0=-1950.0, y1=-1700.0, base=0.88, far_r=12000.0, open=[305.4, 311.0],
            column=dict(a=(-1300.0, 1300.0), hw=(1100.0, 1100.0), c_off=0.0, warp=380.0, soft=300.0, end_warp=500.0),
-           bay=dict(a=(1500.0, 12500.0), hw=(900.0, 3600.0), c_off=0.0, warp=650.0, soft=350.0, end_warp=900.0)),
+           bay=dict(a=(500.0, 12500.0), hw=(1200.0, 3600.0), c_off=0.0, warp=650.0, soft=350.0, end_warp=900.0)),
     P=[(291.0, (4.0, 0.0, 1.5), 260.0, 110.0), (299.0, (-3.0, 0.0, 3.0), 300.0, 140.0), (326.0, (3.0, 0.0, 2.5), 320.0, 120.0)],
     T=[dict(az=-25.0, r=7500.0, rad=1300.0, top=1500.0), dict(az=75.0, r=9000.0, rad=1100.0, top=1200.0),
        dict(az=120.0, r=10000.0, rad=1000.0, top=1300.0)],
@@ -93,7 +93,10 @@ class Act06Scene:
             qw = q + L['warp'] * 2 * (n2(x, z, 1400.0, 0, seed + 11.0) - 0.5)
             aw = a + L.get('end_warp', 0.0) * 2 * (n2(x, z, 2000.0, 0, seed + 17.0) - 0.5)
             ends = ss(a0 - L['soft'], a0, aw) * ss(a1, a1 - L['soft'] * 3, aw)
-            return ss(hw, hw - L['soft'], np.abs(qw - mid)) * ends
+            out = ss(hw, hw - L['soft'], np.abs(qw - mid)) * ends
+            if L.get('axis_clear'):              # the sun line itself stays open (no wandering edge across it)
+                out = np.maximum(out, ss(L['axis_clear'], L['axis_clear'] * 0.5, np.abs(q)) * ss(a0 - L['soft'], a0, a))
+            return out
 
         def covA(x, z, t):
             A = g['A']
@@ -210,7 +213,7 @@ class Act06Scene:
         gold = C.hex_lin('#FFD9A8')
         gold = gold * float(card_sun @ VR.LUMA) / float(gold @ VR.LUMA)
         self.scene = VR.Scene(self.vol, self.layers, sun, gold * SUN_K,
-                              np.array(col['SkyUpColor']) * AMB_K, np.array(col['GroundColor']) * AMB_K * 1.6,
+                              np.array(col['SkyUpColor']) * AMB_K, np.array(col['GroundColor']) * AMB_K * GND_K,
                               fog_fn=self.fog, amb_k=1.0, ms=0.3, casters=('A',), cast_k=0.6, ao_k=AO_K)
 
     def fog(self, V, dist):
@@ -219,7 +222,9 @@ class Act06Scene:
         return fc, fa
 
 
-AO_K = 0.75                      # under the cover the sky light is the cover's dark base (review 3)
+UNDER_FOG_K = 0.25                # the haze under the cover, in its shadow
+GND_K = 0.5                      # light from below (sea, the lower layer): the cover's base is lit by a dark sea (review 3)
+AO_K = 1.0                      # under the cover the sky light is the cover's dark base (review 3)
 SUN_K, AMB_K = 0.8, 0.3          # calibrated on the 282 frame: lit tops ~#F3D2B0, shade ~#8593AA (S6)
 _SC = None
 NORM = {0: (0.549, 0.791), 1: (0.331, 0.635), 2: (0.251, 0.711)}    # vol_density.py p10 / p90 per channel
@@ -239,8 +244,12 @@ def render(t, cam_name='hero', w=640, out=None, tag='', look=None, cabin=True, t
         cam.update(look)
     V, hh, pix = A6.rays(cam, w)
     d, _ = AL.descent(t if t_bus is None else t_bus)     # t_bus: freeze the bus there while the clouds run on (flow)
-    A6.FOG_D = A6.fog_at(t)
-    PR.FOG_K = A6.fog_colour_k(t)
+    # (review 3) under the cover the air keeps its density but sits in the cover's shadow: its colour x UNDER_FOG_K
+    # (the opaque plain thinned the haze instead; with a volume deck above, the haze is what reads "sunk")
+    f = LAYOUT['beats']['fog_under_cover']
+    x = A6.smooth01((t - f['down_t0']) / f['dur']) * (1 - A6.smooth01((t - f['up_t0']) / f['dur']))
+    A6.FOG_D = f['base']
+    PR.FOG_K = 1.0 + (UNDER_FOG_K - 1.0) * float(x)
     eye = np.array([A6.EYE[0], A6.EYE[1] - d, A6.EYE[2]])
     img = C.sample_equirect(S.sky, V, 0.0)
     # the sun disc (procedural, not fogged): visible only where the clouds let it through (T below)
