@@ -151,7 +151,7 @@ for 每个驱动（按类名、再按场景层级排序，固定顺序）：
    - **数值核对**：`Director/Tools~/spawn_fade_sim.py`（v1.3 r2）。Python 移植的是真代码：分发层、§0 第 4 条的状态机、门内、第 6 幕，和镜与白 `pkg/mirrors` 962567b 的**真白驱动**（含 `LanbaiGrade`）；看到的亮度 = (1 − a)·场景·2^ΣdEV + a·填色。判据：圣经 §1.8 的三个窗口，加“任何 1 / 2 / 4 s 窗口 ≤ 0.85 EV/s”，从出生量到和一直在场的人一样为止。结果在 `Docs~/spawn_fade_sim.md`：
      - D-43 的进场时刻 + 1125.75 / 1130 / 1134.25（复核 DIR13-4）、两条 0.5 s 卡顿、一条“拖回锁存时刻之前”（DIR13-2）全过；
      - 175–372 s 每 0.1 s 一个进场（1971 个）全过；
-     - 1120–1200 s 每 0.1 s（801 个）：**用镜与白现在的白驱动有 24 个不过**（1183.6–1186 进场，最坏一帧 +0.89 EV：它从黑升到第 11 幕的那条线从“白收完”算起、不从交接算起，窗口也报到了升不完的地方），**照 `Engineering/D43r2_patches/pkg-mirrors_LanbaiWhiteDriver.patch` 改了以后 801 个全过**；
+     - 1120–1200 s 每 0.1 s（801 个）：**用镜与白现在的白驱动有 24 个不过**（1183.6–1185.9 进场，最坏一帧 +1.53 EV：它从黑升到第 11 幕的那条线从“白收完”算起、不从交接算起，窗口也报到了升不完的地方），**照 `Engineering/D43r2_patches/pkg-mirrors_LanbaiWhiteDriver.patch` 改了以后 801 个全过**；
      - 负对照全部复现：v1.2 的做法 +7.35 EV；拖回不忘掉出生 +7.35 EV；r1 的固定时长淡入 1130 s 1 s 升 1.46 EV；FLASH_TEAR 不压 +0.57 EV；r1 整套 + 淡入结束在闪光里 +0.47 EV。
    - `LB_Journey` 没调 `LanbaiSpawnFadeBegin` 时（旧的本地）`since` = 1e6，等于不限制。分发层的 `spawnFadeSince` 在 Inspector 里看得到。**3 Report** 对“有 `LanbaiOverlay` 字段、没有 `LanbaiSpawnFade`”的驱动报 WARNING。
 
