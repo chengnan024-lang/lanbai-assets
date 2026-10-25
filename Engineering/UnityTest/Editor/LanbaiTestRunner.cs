@@ -117,7 +117,7 @@ namespace Lanbai.Test
     [InitializeOnLoad]
     public static class Runner
     {
-        public const string VERSION = "1.2.1";   // 1.2.1（2026-10-25）：Play 阶段按复核 E1–E12 改；1.2.0：Play 阶段（transitions_sweep、flicker_probe，D-44 #4）；1.1.0：D-43 #6 copied、复核的次要项
+        public const string VERSION = "1.2.2";   // 1.2.2（2026-10-25）：机位 msaa、序列 isolate / ROI、WriteGuard 小文件按内容哈希；1.2.1（2026-10-25）：Play 阶段按复核 E1–E12 改；1.2.0：Play 阶段（transitions_sweep、flicker_probe，D-44 #4）；1.1.0：D-43 #6 copied、复核的次要项
         public const string TESTS_DIR = "Assets/Lanbai/Engineering/UnityTest/tests";
         public const string REPORTS = "LanbaiReports/tests";
         static readonly CultureInfo IC = CultureInfo.InvariantCulture;
