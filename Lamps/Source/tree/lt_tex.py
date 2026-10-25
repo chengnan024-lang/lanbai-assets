@@ -113,9 +113,18 @@ def leaf_cluster(out, N=2048, seed=5):
             for k in range(150):
                 rr = rng.uniform(0, 1) ** 0.5
                 a = rng.uniform(0, 2 * math.pi)
-                b0 = np.array([cell * 0.5 + math.cos(a) * rr * cell * 0.34, cell * 0.52 + math.sin(a) * rr * cell * 0.30])
+                b0 = np.array([cell * 0.5 + math.cos(a) * rr * cell * 0.24, cell * 0.52 + math.sin(a) * rr * cell * 0.21])
                 ang = a + rng.normal(0, 0.6)
                 compound_leaf(cv, b0 - 0.08 * cell * np.array([math.cos(ang), math.sin(ang)]), ang, cell * rng.uniform(0.15, 0.22), cell * 0.034, rng, rng.uniform(0, 1))
+        # nothing may touch the cell's border: a leaf cut by the card edge shows the card as a straight-edged
+        # rectangle (director 10-25, LOD1 'flat rectangles'). Keep coverage inside an ellipse with a 4 % margin;
+        # the LOD0 twig enters at the bottom centre, so the bottom middle stays open there.
+        yy0, xx0 = np.mgrid[0:cell, 0:cell] + 0.5
+        er = np.hypot((xx0 - cell / 2) / (cell * 0.46), (yy0 - cell / 2) / (cell * 0.46))
+        keep = er < 1.0
+        if ci < 3:
+            keep |= (np.abs(xx0 - cell / 2) < cell * 0.03) & (yy0 > cell * 0.5)
+        cv.cov[~keep] = 0
         sl = (slice(oy, oy + cell), slice(ox, ox + cell))
         full.alb[sl] = cv.alb; full.cov[sl] = cv.cov; full.hgt[sl] = cv.hgt; full.thin[sl] = cv.thin; full.tilt[sl] = cv.tilt
     from scipy import ndimage

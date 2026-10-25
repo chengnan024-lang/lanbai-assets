@@ -1,0 +1,33 @@
+{
+ "name": "CloudV2_Congestus_duskD",
+ "shape": "Congestus",
+ "set": "duskD",
+ "size": [
+  1024,
+  1024
+ ],
+ "sun_el": 1.0,
+ "key_angles": [
+  15.0,
+  80.0,
+  150.0
+ ],
+ "kscale": 3.0,
+ "sscale": 1.1,
+ "clipped_K": 0.0,
+ "clipped_S": 1.465119890760661e-05,
+ "pitch": -12.0,
+ "lens": 50.0,
+ "k_p999": [
+  1.5724213969687286,
+  0.6377483386993412,
+  0.4896344974040988
+ ],
+ "cloud_base_v": 0.0898,
+ "opaque_bbox_uv": [
+  0.249,
+  0.0898,
+  0.749,
+  0.9072
+ ]
+}

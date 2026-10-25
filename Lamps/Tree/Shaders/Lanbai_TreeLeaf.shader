@@ -2,6 +2,8 @@
 //  Lanbai/TreeLeaf      蓝白 · 样板树的叶簇卡与远处的剪影卡（D-44 #6）
 //  !!! WRITTEN WITHOUT A UNITY COMPILER. Checked with Common/Tools~/compile_check (DXC + Unity CGIncludes). !!!
 //
+//  * keepalpha + LightingTreeLeaf returns s.Alpha: without them Unity writes alpha 1 and A2C shows whole cards
+//    (local check FromLocal/tree_sample/20261025-101954, patch adopted).
 //  * Alpha-to-coverage (bible §6·1 "树用 alpha-to-coverage"): AlphaToMask On, and the alpha is SHARPENED around
 //    _Cutoff by its own screen derivative (alpha' = (a - cutoff) / fwidth(a) + 0.5), so with MSAA the leaf edge
 //    gets 2-8 coverage steps instead of a hard alpha-test stair, and without MSAA it degrades to a plain cutout.
@@ -23,7 +25,7 @@ Shader "Lanbai/TreeLeaf"
         _MaskTex ("Mask R thin G smoothness B AO", 2D) = "white" {}
         _Cutoff ("Coverage Cutoff", Range(0.05, 0.95)) = 0.5
         _TransColor ("Translucency Colour", Color) = (0.55, 0.60, 0.25, 1)
-        _TransStrength ("Translucency", Range(0, 1)) = 0.30
+        _TransStrength ("Translucency", Range(0, 1)) = 0.22
         _WetResponse ("Wet Response", Range(0, 1)) = 1
         [Toggle(_LANBAI_IMPOSTOR)] _Impostor ("Impostor Card (LOD2)", Float) = 0
         _ImpostorCentre ("Impostor Crown Centre (object m)", Vector) = (0, 7, 0, 5)
@@ -45,7 +47,7 @@ Shader "Lanbai/TreeLeaf"
         AlphaToMask On
 
         CGPROGRAM
-        #pragma surface surf TreeLeaf vertex:vert finalcolor:fogColor nofog fullforwardshadows
+        #pragma surface surf TreeLeaf vertex:vert finalcolor:fogColor nofog fullforwardshadows keepalpha
         #pragma target 3.5
         #pragma multi_compile_fog
         #pragma multi_compile_instancing
@@ -108,6 +110,7 @@ Shader "Lanbai/TreeLeaf"
             half back = saturate(dot(-s.Normal, L) * 0.5 + 0.5);
             half through = pow(saturate(dot(viewDir, -L)), 2.0);
             c.rgb += _TransColor.rgb * _TransStrength * s.Thin * gi.light.color * back * (0.35 + 0.65 * through);
+            c.a = s.Alpha;          // keepalpha: an opaque-queue surface shader otherwise forces alpha 1 (local test 10-25)
             return c;
         }
 

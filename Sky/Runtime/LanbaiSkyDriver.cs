@@ -59,6 +59,10 @@ namespace Lanbai.Sky
 
         public void LanbaiActivate(bool on)
         {
+            // other acts own the shared globals while this driver is off: coming back to the same preset index must
+            // write its whole state again (阿白, Unity check 2026-10-25: from acts 8 / 9 back to 0 the early sky kept the
+            // later values; FromLocal/sky_delivery/20261025-1012)
+            if (on) { lastIndex = -2; lastWasFade = false; }
             if (root != null)
                 root.SetActive(on);
         }
@@ -86,6 +90,11 @@ namespace Lanbai.Sky
             bool fading = i > 0 && presets[i - 1] != null && f > 0f && t < presetT0[i] + f;
             if (fading)
             {
+                // entering a fade fresh (a new index, or the first tick after an activation): the source preset in full
+                // first. ApplyBlend skips the names both presets share after its first frame, and its first frame only
+                // comes with a new pair, so values another act wrote meanwhile would stay. Apply() also resets that.
+                if (i != lastIndex)
+                    presets[i - 1].Apply();
                 float x = Mathf.Clamp01((t - presetT0[i]) / f);
                 presets[i - 1].ApplyBlend(presets[i], x * x * (3f - 2f * x));
             }

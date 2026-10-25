@@ -63,7 +63,7 @@ def leaf_mat(wet, clip=0.5):
     bs.inputs['Roughness'].default_value = 1 - (0.35 + (0.60 - 0.35) * wet)
     # translucency (Lanbai/Tree _Translucency): thin leaf blades pass ~20 % of the light, yellow-green
     tl = b.N('ShaderNodeBsdfTranslucent'); tl.inputs['Color'].default_value = (*MT.hexlin('#8C9A4A'), 1)
-    mx = b.N('ShaderNodeMixShader'); b.L(b.math('MULTIPLY', thin, 0.30), mx.inputs[0]); b.L(bs.outputs[0], mx.inputs[1]); b.L(tl.outputs[0], mx.inputs[2])
+    mx = b.N('ShaderNodeMixShader'); b.L(b.math('MULTIPLY', thin, 0.22), mx.inputs[0]); b.L(bs.outputs[0], mx.inputs[1]); b.L(tl.outputs[0], mx.inputs[2])
     cut = b.math('GREATER_THAN', A.outputs['Alpha'], clip)
     tr = b.N('ShaderNodeBsdfTransparent')
     fin = b.N('ShaderNodeMixShader'); b.L(cut, fin.inputs[0]); b.L(tr.outputs[0], fin.inputs[1]); b.L(mx.outputs[0], fin.inputs[2])

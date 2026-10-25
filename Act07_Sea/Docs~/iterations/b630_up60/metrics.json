@@ -4,8 +4,8 @@
    960,
    540
   ],
-  "APL": 30.05,
-  "EV_display": -6.106,
+  "APL": 30.06,
+  "EV_display": -6.105,
   "luma_lt12_pct": 0.0,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
@@ -37,7 +37,7 @@
    ]
   },
   "top25_Lstar": {
-   "mean": 12.75,
+   "mean": 12.76,
    "p50": 12.99,
    "p90": 13.93
   },
@@ -194,7 +194,7 @@
    540
   ]
  },
- "render_seconds": 8.3,
+ "render_seconds": 8.8,
  "lens": "none",
  "bloom_tint": "single",
  "note": "D-44 #5 beat 630 up 60 from the main seat"

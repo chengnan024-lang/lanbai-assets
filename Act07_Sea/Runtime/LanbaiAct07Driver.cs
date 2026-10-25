@@ -90,7 +90,7 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
     public float shaftDepthFull = 18f, shaftDepthGone = 25f;
     public float gatherT0 = 453f, gatherT1 = 462.36f, shaftsGoneT = 467.6f;
     public Vector3 gatherPointBus = new Vector3(0.55f, 2.74f, 1.2f);
-    public float lastT0 = 506.36f, lastIn = 2f, lastSweep = 4f, lastOut = 2f;
+    public float lastT0 = 504.36f, lastIn = 2f, lastSweep = 4f, lastOut = 2f;
     public Vector3 lastFromBus = new Vector3(3f, 14f, -2f), lastToBus = new Vector3(-1.5f, 14f, 4.5f), lastTargetBus = new Vector3(1f, 0.95f, -2f), lastTargetToBus = new Vector3(0f, 0.95f, 3.5f);
     public Vector3 beamGatherPos = new Vector3(0.87f, 5.16f, 1.76f), beamGatherAim = new Vector3(0.55f, 1.1f, 1.75f);
     public float beamGatherE = 9f, beamLastE = 7.5f;

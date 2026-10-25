@@ -3,7 +3,7 @@
   阴影体（alpha > 0.97 里亮度 10–30 百分位的中位）→ 云影目标，受光顶（98 百分位）→ 云顶目标（调色后的屏幕码）。
 未知数：日色 = 黑体色温 K × 增益（Unity 的 E 叠在里面）、天光 RGB、地光 = 该幕 Trilight 地色 × 增益。
 同一组的所有卡用同一组颜色（光是一致的，不逐卡调）。结果写 Textures/cards_v2.json 的 colours.<组>。
-用法：python card_solve.py dawn | dusk"""
+用法：python card_solve.py dawn | duskU | duskD | --index"""
 import os
 import sys
 import json
@@ -25,7 +25,9 @@ BASE_W = 0.0
 TARGETS = {
     # shadow: bible; top: dawn = palette 06 'cloud tops peach'; dusk = 设计值 (between the slot amber and the rose band)
     'dawn': dict(set='dawn', grade='S6', shadow='#8593AA', top='#F6DCC4', ground='#8FA0BE', rel=70.0, K0=3000, Kmin=2400, Kmax=3600, gnd_max=1.2),
-    'dusk': dict(set='duskU', grade='S8', shadow='#363D59', top='#F0A878', ground='#4C5577', rel=70.0, K0=2400, Kmin=2000, Kmax=3000, gnd_max=1.2),
+    # act 8 (D-25: colours per act): the overhead group (duskU) and the other sky's group (duskD, solved on its own cards)
+    'duskU': dict(set='duskU', grade='S8', shadow='#363D59', top='#F0A878', ground='#4C5577', rel=70.0, K0=2400, Kmin=2000, Kmax=3000, gnd_max=1.2),
+    'duskD': dict(set='duskD', grade='S8', shadow='#363D59', top='#F0A878', ground='#4C5577', rel=70.0, K0=2400, Kmin=2000, Kmax=3000, gnd_max=1.2),
 }
 
 
@@ -88,15 +90,25 @@ def solve(which, card='Cumulus'):
         h, c = C.hue_chroma(cs[0])[1:]
         dh = ((h - h_t + 180) % 360) - 180
         # review r1 R5: the BACKLIT shadow (rel 15) must stay blue too: penalise h beyond 280 (toward lilac)
-        hb, cb = C.hue_chroma(measure(K, S, a, 15.0, colours_from_x(x, T), T['grade'], sel)[0])[1:]
+        mb = measure(K, S, a, 15.0, colours_from_x(x, T), T['grade'], sel)
+        hb, cb = C.hue_chroma(mb[0])[1:]
         pb = max(0.0, (((hb - h_t + 180) % 360) - 180) - 8.0) * min(cb / 8, 1)
+        # (act 8) the backlit TOP must not show as lilac either (D-21: h 290-330, C* > 8, L* > 40): red rim light + blue
+        # dome mixes there; penalised from h 285 / C* 7 / L* 38 (margin)
+        # (act 8 review r1) swept over rel 15 .. 25 deg: the lilac passes through between the red rim and the warm tops
+        pt = 0.0
+        for rr in (15.0, 18.0, 20.0, 22.0, 25.0):
+            mt = mb[1] if rr == 15.0 else measure(K, S, a, rr, colours_from_x(x, T), T['grade'], sel)[1]
+            lt, ht, ct = C.hue_chroma(mt)
+            pt += (max(0.0, float(ct[0] if np.ndim(ct) else ct) - 7.0) * max(0.0, float(lt[0] if np.ndim(lt) else lt) - 38.0)) \
+                if 285.0 <= float(ht[0] if np.ndim(ht) else ht) <= 335.0 else 0.0
         # (act 6 window, review r2 leftover) the FRONT-lit flat base (rel 150) must not go pink-brown: chroma of warm
         # base pixels above 6 is penalised (bible 1.3 rule 2: no warm in the shadowed underside)
         cbase = measure_base(K, S, a, 150.0, colours_from_x(x, T), T['grade'], base)
         hz, cz = C.hue_chroma(cbase)[1:]
         pz = max(0.0, cz - 6.0) * (1.0 if (hz < 120 or hz > 340) else 0.0)
         return float(((cs[0] - tsh) ** 2).sum() + 0.5 * ((cs[1] - ttp) ** 2).sum() + 2 * dh ** 2 * min(c / 10, 1)
-                     + 20 * pb ** 2 + BASE_W * pz ** 2)
+                     + 20 * pb ** 2 + BASE_W * pz ** 2 + 50 * float(pt) ** 2)
     best = None
     for x0 in ([3.0, T['K0'], 1.0, 1.1, 1.6, 1.0], [5.0, T['K0'] + 600, 1.2, 1.3, 1.8, 0.6], [2.0, T['K0'] - 300, 0.8, 0.9, 1.3, 1.15]):
         r = minimize(f, x0, method='Nelder-Mead', options=dict(xatol=1e-4, fatol=1e-3, maxiter=4000))
