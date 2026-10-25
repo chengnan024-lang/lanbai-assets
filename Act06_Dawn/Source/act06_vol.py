@@ -109,13 +109,19 @@ class Act06Scene:
             c = c * (1 - lake(x, z, A['bay'], 2.0))
             return np.clip(c, 0, 1)
 
+        def covB_raw(x, z):
+            B = g['B']
+            return B['base'] + 0.5 * (n2(x, z, 2630.0, 0, 51.0) - 0.62) + 0.25 * (n2(x, z, 8700.0, 0, 61.0) - 0.5)
+
         def covB(x, z, t):
             B = g['B']
-            c = B['base'] + 0.5 * (n2(x, z, 2630.0, 0, 51.0) - 0.62) + 0.25 * (n2(x, z, 8700.0, 0, 61.0) - 0.5)
+            c = covB_raw(x, z)
             op = float(ss(B['open'][0], B['open'][1], t))
             c = np.maximum(c, 0.97 * (1 - op))       # closed until 305.4: the sea first shows at 305.4 (bible §6·6)
             c = c * (1 - op * np.maximum(lake(x, z, B['column'], 3.0), lake(x, z, B['bay'], 4.0)))
             return np.clip(c, 0, 1)
+
+        self.lake_of, self.covB_raw = lake, covB_raw      # act06_cov_bake.py takes the coverage apart for the shader
 
         towers = []
         for tw in g['T']:
