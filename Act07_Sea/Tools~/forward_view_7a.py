@@ -109,6 +109,17 @@ def particles_at(t, depth, dens):
         az, el, d = azel(np.asarray(Tr['positions']).reshape(-1, 3) - EYE)
         out['trails'] = dict(pool_in_view=int(inside(az, el).sum()), of=Tr['count'],
                              note='the hull points are beside / under the bus: through the windscreen only the ones ahead of the eye')
+        TF = P.get('trails_front')
+        if TF is not None:
+            f0, f1 = U['trails_front_fade']
+            g = 1.0 - smooth((t - f0) / (f1 - f0))
+            # they flow up the windscreen: count the pool that is in the field while rising 0..3 m
+            q = np.asarray(TF['positions']).reshape(-1, 3)
+            n_in = 0
+            for rise in (0.0, 1.0, 2.0, 3.0):
+                az, el, d = azel(q + np.array([0.0, rise, 0.0]) - EYE)
+                n_in = max(n_in, int(inside(az, el).sum()))
+            out['trails_front'] = dict(pool_in_view=n_in if g > 0.01 else 0, of=TF['count'], gain=round(g, 2))
     else:
         out['trails'] = dict(pool_in_view=0, note='before F4')
     return out
@@ -120,7 +131,9 @@ def ridge_at(t, depth, dens):
     busw = np.array([0.0, -depth, AM.fwd(t)])
     ys = g['y0'] + g['dy'] * np.arange(g['ny']); zs = g['z0'] + g['dz'] * np.arange(g['nz'])
     Z, Y = np.meshgrid(zs, ys)
-    pts = np.stack([X, Y, Z], -1).reshape(-1, 3) - busw
+    yaw = math.radians(R.get('yaw_deg', 0.0))
+    Xr = X * math.cos(yaw) + Z * math.sin(yaw); Zr = -X * math.sin(yaw) + Z * math.cos(yaw)     # the mesh's turn (D-44 #5 P3)
+    pts = np.stack([Xr, Y, Zr], -1).reshape(-1, 3) - busw
     az, el, d = azel(pts - EYE)
     tr = np.exp(-dens * d)
     vis = inside(az, el) & (tr > 0.1)
@@ -155,8 +168,8 @@ def main():
     out = os.path.join(PKG, 'Docs~', 'forward_view_7a.json')
     json.dump(dict(field=dict(az=AZ, el=EL, eye=EYE.tolist()), beats=rows), open(out, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     for r in rows:
-        print(r['t'], r['beat'], 'depth', r['depth'], 'fog', r['fog_per_m'], '| shafts', r['shafts'], '| snow', r['snow'], '| seeds', r['seeds'],
-              '| trails', r['trails'].get('pool_in_view'), '| ridge', r['ridge'], '| warm', r['warm'])
+        print(r['t'], r['beat'], '| shafts', r['shafts'].get('in_view'), '| snow', r['snow']['in_view'], '| seeds', r['seeds'],
+              '| trails', r['trails'].get('pool_in_view'), '| front', r.get('trails_front', {}).get('pool_in_view'), '| ridge', r['ridge']['in_view_pct'], '| last', r['last_shaft'][:8], '| warm', r['warm'])
     print('wrote', out)
 
 

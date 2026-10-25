@@ -214,7 +214,7 @@ Act07_Driver             LanbaiAct07Driver（U#；重建时留着重用）
 ## 7. 检查
 
 - shader：`python3 Common/Tools~/compile_check/check_shaders.py Act07_Sea/Shaders Sea/Shaders` → 0 错 0 警。
-- C#：`bash Common/Tools~/compile_check/check_cs.sh Act07_Sea Sea GateClouds` → OK（搭建脚本用到 `Sea/Editor` 和 `GateClouds/Editor`，一起编）。
+- C#：`bash Common/Tools~/compile_check/check_cs.sh Act07_Sea Sea GateClouds Common` → OK（搭建脚本用到 `Sea/Editor`、`GateClouds/Editor` 和 D-41 的 `Common/Editor/LanbaiUdonPrograms`，一起编）。
 - 数据：`~/bpy/bin/python Act07_Sea/Tools~/act07_layout.py`（重生 JSON：播种的 5° 锥检查在生成时做）。
 - **没在 Unity 里编译过，没在头显里看过。**
 
