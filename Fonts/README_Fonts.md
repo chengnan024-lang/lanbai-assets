@@ -1,4 +1,4 @@
-# 蓝白 / Lanbai · 字体与 TextMeshPro 字符表套件（Fonts）· 第 4 版（D-30：只显示自己的语言；圣经 v2.1）
+# 蓝白 / Lanbai · 字体与 TextMeshPro 字符表套件（Fonts）· 第 5 版（D-45：诗句改成 Fins 式字幕；圣经 v2.1）
 
 这个套件落实美术圣经 **v2.1** 的 **§7 字体与诗句排版（全部）**，以及 **§5.5 / §7.6 片尾公告板与 Coleridge 纸条**、§4.7 目的地牌的字。
 
@@ -16,6 +16,70 @@
 > ⚠ **`Editor/` 里的三个 C# 文件都没有在 Unity 里编译或运行过**（我们这边没有 Unity）：`LanbaiTMPFontBuilder.cs`、`LanbaiPoemMaterials.cs`、`LanbaiScrimTextureImport.cs`。它们照 TextMeshPro 3.0.x（Unity 2022.3 自带的 `com.unity.textmeshpro`）的 API 写，在 Unity 外做过类型检查：Roslyn，对照 UnityEngine / UnityEditor 引用程序集和一个 TMP API 桩，警告按错误处理，**0 警告**（`Tools~/compile_check/`）。拿不准的 TMP 成员一律走反射。第一次运行请把 Console 的输出原样回传。**字体、字符表、JSON、衬底贴图和校样都不依赖这三个脚本**：手动也能做出一样的资产（§3.3、§5.4）。
 
 ---
+
+## 00. 第 5 版改了什么（2026-10-25，总工程师；D-45 和第 15 条小楠的四项决定）
+
+> **没有在 Unity 里编译过，也没有在头显里看过。** C# 过了 `Common/Tools~/compile_check/check_cs.sh`（Roslyn + 桩，0 错 0 警告），三个新 shader 过了 `check_shaders.py`（DXC，0 错 0 警告）。这不是 Unity 编译。技术验收归阿白（D-46）：Unity 桌面、VR 头显各记“未测 / 通过 / 不通过”（D-40a #4）。
+> 方案全文：`Art/字幕方案_D-45.md`。下面 §0 以后是第 4 版的记录；和本节冲突的，以本节为准。
+
+### 00.1 规则
+
+- **诗是字幕。** 每个玩家只看自己语言的一两行白字，没有底框，水平居中，em 1.8°，每页 ≤ 2 行，行宽 ≤ 25°，CJK 字距 +0.10 em、行距 1.5 em，拉丁行距 1.35 em，底边对齐（末行永远在同一处）。行末的「？」「！」「—」悬挂半个 em（CJK）。
+- **VR**：末行的 em 框中心在世界仰角 **E = −21°**（天问译文 −9.4°），主座位往前 1.0 m；懒跟随（偏航死区、临界阻尼、≤ 60°/s、俯仰三段带滞回、快速转头先隐藏再出现、±120° 上限）；深度按车包的表，表没到时用后备值（主座位 ±30° 内 1.0 m、其余 0.6 m；别的座位 0.45 m；不在座位上 0.8 m）。
+- **桌面**：贴在 `VRCCameraSettings.ScreenCamera` 前 1 m，em = 屏高 4.2%，末行基线在底边上方 8%。
+- **小楠第 15 条的四项**：① 高度、② 字号 “照 Fins 做”：先用 −21°、1.8°，阿白 R1 量出来以后只改数据（`subtitle_rig.base_bottom_el_deg`、`em_deg`；换算出来落在 −14…−17° 之间就挪到近的那一边，自检会拦）；1.8° 在头显里横笔断开时中日文改 2.0°（`em_cjk_deg_optB`）。③ **桌面黑边**：只在桌面、只在三段（3c 里尔克、6d 晨句、9a 天问到 F13），2.39:1、内角 45° 切角，都是数据（`subtitle_rig.letterbox`；时段是第一版取值，见 00.6）。④ **庄子保留字列，两套**：`zh`、`en`、`de` 看简体字列，`zht`、`ja` 看繁体字列；字列仍做 `block_viewcheck`、D-33 #4 的靛墨、D-33 #7a 的门组侵蚀；`ja`、`en`、`de` 另有字幕，`zh`、`zht` 没有。
+- **世界里还留着的字**：天问写在天上的 20 个汉字（所有人，排版和 v4.1 一个字节都不差：`build_fonts.py` 断言 P09 `layout` 的 SHA-256 = `4fc91cea…a9a22`），庄子字列，以及站牌、目的地牌、公告板（不归本套件的那些照旧）。
+- **颜色**：一个色相两档：标准白 `#D0DBDF`、夜白 `#B3BCC0`（屏幕目标，luma ≤ 224）；按每首诗当时起作用的调色反解填色，驱动每帧乘 2^(−ΔEV)（`LanbaiExposure.GetAppliedDeltaEV()`，和遮罩球同一个量）。贴字暗晕（TMP Underlay，黑，α 0.5，dilate 0.15，softness 0.30）常开；里尔克、Urlicht、晨句、庄子、齐物论另有行晕（`#0E1A2F`，一首之内 α 不变）。
+- **时间**：出现、消失完的时刻和 §7.5 一样；淡入 0.30 s；换页 0.25 s 出、0.10 s 空、0.30 s 进；最后一页 0.50 s 淡出（庄子 4 s、济慈 3 s）；Urlicht 两行各自跟歌声（166.10、167.85，0.20 s）；天问译文 1018.11 前淡尽；不对焦、不漂移。
+- **语言与模式**（公告板设置卡，只对本人）：简体中文 / 繁體中文 / 日本語 / English；跟随视线 / 留在原处 / 关。默认按客户端语言（`zh-HK`、`zh-TW`、`zh-Hant` → 繁），手动选了以后客户端改语言不再跟着变；德语客户端按 English 仍是 `de` 键。关掉字幕不影响天上的汉字和庄子字列。
+
+### 00.2 文件
+
+| 文件 | 第 5 版 |
+|---|---|
+| `Tools~/lanbai_strings.py` | 加 `SUBS`（每首诗、每个键的分页，B.8）、`UI_V5`（设置卡的字）、`UI_LANG_NAMES`、`SUB_FONT_V5`、`SUB_TIER_HEX`。原文、译文、时刻没动 |
+| `Tools~/lanbai_subtitles.py`（新） | 字幕架的全部参数（`RIG`，就是 JSON 里的 `subtitle_rig`）、每页的时刻、`zht` 页（由 v4 的简繁对照逐字换）、按子集字体量行宽、自检、`Docs~/subtitle_report.md` |
+| `Tools~/build_fonts.py` | 世界字只排天问和庄子字列；P09 SHA 断言；`block_viewcheck` 只查庄子字列；座位表（`seat_table.py`）退役；JP Medium 不再出 TMP 资产（子集文件留着，P09 冻结排版里那块退役小字要用它的字宽）；字幕的填色和行晕填色；`strings_all.json` 第 5 版。任何一项字幕自检不过，构建报错 |
+| `Tools~/make_subtitle_proofs.py`（新） | 字幕校样，见 00.5 |
+| `Runtime/LanbaiPoemDriver.cs` | 重写，接口不变（见 00.3） |
+| `Shaders/Lanbai_Subtitle.shader`（新） | TMP 3D 距离场，算法同 TMP（同名属性，TMP 的 padding / ScaleRatio 照常起作用）；Overlay+10、ZTest Always、ZWrite Off；Underlay 乘行的 α；镜子、手持相机里不画 |
+| `Shaders/Lanbai_SubtitleHalo.shader`（新） | 行晕，Overlay+9 |
+| `Shaders/Lanbai_Letterbox.shader`（新） | 桌面黑边，Overlay+5，一块 Quad 盖住视野，按 `_Slide` 滑入 |
+| `Editor/LanbaiPoemBake.cs` | 新菜单 `蓝白/Fonts/Build Subtitles (v5)`（取代 `Build Poem Objects (v4.1 runtime)`），见 00.4 |
+| `Editor/LanbaiTMPFontBuilder.cs` | JP Medium 拿掉 |
+| `Textures/Lanbai_Scrim_Line.png` | 改作行晕；`Lanbai_Scrim_Block.png` 退役（文件留着） |
+| `seat_positions.json`、`Tools~/seat_table.py` | 退役，文件留着 |
+| `Common/Tools~/compile_check` | 加 `VRCCameraSettings` 桩；`ZTest Always` 的检查放行字幕、行晕、黑边 |
+
+### 00.3 驱动（`LanbaiPoemDriver` 第 5 版）
+
+- **接口不变**：`LanbaiTick(t)`、`LanbaiActivate`、`LanbaiWindow`、`LanbaiTakesOverNothing`、`LanbaiBoard(秒)`、`LanbaiBoardHide()`、`SetSeat(座位)`、`_LangZh`、`_LangJa`、`_LangEn` 都在，本地连线不用改。新事件：`_LangZhs`、`_LangZht`、`_SubFollow`、`_SubStay`、`_SubOff`。`_LangZh` 保留旧意思（`zh-HK` 的人仍看繁体），本地测试工具发的就是它。
+- `LanbaiTick`（Director 每帧，Update）只从 t 算：哪首、这个键的哪一页、每行的 α。换页那一帧给这个字体的两行赋 `.text`（不用 `maxVisibleLines`，D-44 #7）。
+- `PostLateUpdate` 放字幕架：VR 读 `GetTrackingData(Head)`，在车的坐标里做懒跟随；桌面贴屏幕相机。`SetSeat(−1)` = 不在座位上（离座时调用要阿白在 `LB_Seat` 里加一行，可选）。
+- `LanbaiBoard(s)`：s ≤ 0 时不印“车将在 X 秒后开出”，只出设置卡和其余提示（本地 `LB_Journey` 现在传 0）。
+- 深度表 `Fonts/subtitle_depth.json` 由车包出（还没到）。烘焙菜单认的格式：`{"seats": [...], "yaw_cells": 24, "pitch_cells": 9, "depth_m": [座位][偏航格][俯仰格]}`，偏航格 c 覆盖车坐标 −180 + 15c … −165 + 15c 度，俯仰格 j 以 −40 + 10j 度为中心，≤ 0 = 范围里没有不透明件。座位顺序 = `SetSeat` 的座位号（主座位 0）。
+
+### 00.4 本地接入顺序（I.6）
+
+1. 同步 `Fonts/`（`Runtime/LanbaiPoemDriver.cs`、`Editor/LanbaiPoemBake.cs` 现在可以被仓库版覆盖：v5 已经收进了 D-44 #7 的逐行文本做法——每行一个物体，换页给 `.text` 赋值）。
+2. 重建 SC、TC、JP Regular、Garamond Regular / Italic 的字体资产（`蓝白/Fonts/Build TMP Font Assets`；字表加了 U+3000、天问日文译文的字、’、设置卡的字）。
+3. 跑 `蓝白/Fonts/Build Poem Materials`（只剩天问和庄子字列的材质）。
+4. 跑 `蓝白/Fonts/Build Subtitles (v5)`：先按名字删掉旧的 `Lanbai_Poems`、`Lanbai_Board`（含旧的中 / 日 / EN 按钮）、`Lanbai_PoemDriver`，再建新的；字幕材质建在 `FontAssets/SubtitleMaterials/`。设置卡 `Lanbai_Board/Card` 挪进第 1 幕公告箱（A2 横幅，钉在片尾纸的下半部）；位置是第一版，行距、图钉可以挪（驱动只记图钉的两组位置：`boardPinLangPos`、`boardPinModePos`，挪了行就改这两组）。
+5. Director 的 1 Generate、2 Wire。
+6. 字幕放一个专用的用户层（22–31 里挑一个 VRChat 没占的）：参考相机的 culling mask 包含它，十三面镜的反射相机、反射探针排除它。挑好写进 `README_集成`。
+
+### 00.5 自检和校样
+
+- `python3 Tools~/build_fonts.py`：P09 SHA PASS；字幕自检全部通过（行宽最宽 24.9°，天问英文第二页；每页 ≤ 2 行；每页 ≥ 3 s；同步点各键一致；无字区；天问 1018.11；每首在屏幕上的时长不比 v4 长，所以每幕 ≤ 40% 的结论不变；填色 luma ≤ 224；字表覆盖）。阅读速度和每一页的宽度列在 `Docs~/subtitle_report.md`。负对照：改一个字、三行、超宽、2 秒一页、同步点不对、天问拖过 F13、缺一个键，各报出来了。
+- `python3 Tools~/make_subtitle_proofs.py`：`Docs~/SubProof_{zh,zht,ja,en,de}.png`（每一页一格：主座位往前看，背景是 v4 的美术示意加 −16° 以下的仪表台暗带，字是屏幕目标色，暗晕、行晕照数据）和 `SubProof_Desktop.png`（16:9，三段黑边和一段没有黑边的）。73 页，没有缺字。**不是渲染、不是 Unity 截图。**
+
+### 00.6 还没定 / 要别人给的
+
+- 深度表（车包，可以晚到）。
+- 日文分页和设置卡的日文要请母语者看（D-30a #4）；译文来源由阿白核对（D-46）。
+- 黑边的三段时刻是第一版（方案只点了场景，没给秒）：3c 134.0–151.5、6d 342.0–359.0、9a 1005.0–1018.21。滑入滑出 1.5 s。比例和切角等 R1 量了 Fins 的截图再改。
+- 圣经 §1.8 说“除遮罩球和诗句字幕外没有 ZTest Always”：黑边也用了 ZTest Always（它要盖住 0.9 m 以内的东西）。请总导演在条文里加上黑边，或者改成别的做法。
+- 头显里要看：1.8° 的横笔、字幕的 SPS-I（闭一只眼再闭另一只）、Underlay 有没有方框残影（先用「鱗」「闕」试）、VRChat 菜单 / 名牌和字幕的先后。
 
 ## 0. 第 4 版改了什么（2026-10-24，总工程师；D-30、D-13）
 
@@ -259,7 +323,7 @@ D-30 的例外只有天问，所以庄子也只显示自己的语言：中文玩
 | `Editor/LanbaiTMPFontBuilder.cs` + `Lanbai.Fonts.Editor.asmdef` | **（未编译）** 菜单 `蓝白/Fonts/…`：一键生成、重建、校验全部 TMP 字体资产。 |
 | `Editor/LanbaiPoemMaterials.cs` | **（未编译，由脚本生成）** 菜单 `蓝白/Fonts/Build Poem Materials (solved fills)`：为每首诗生成 TMP 材质预设（HDR `_FaceColor` = 求解的填值），以及两个衬底材质（`Sprites/Default`，`_Color` = 填值）。 |
 | `Runtime/LanbaiPoemDriver.cs`、`Runtime/LanbaiLangButton.cs` | **（未编译，第 4.1 版）** 摆诗的运行时与公告板的语言开关（§0.10） |
-| `Editor/LanbaiPoemBake.cs` | **（未编译，第 4.1 版）** 菜单 `蓝白/Fonts/Build Poem Objects (v4.1 runtime)`（§0.10） |
+| `Editor/LanbaiPoemBake.cs` | **（未编译，第 5 版）** 菜单 `蓝白/Fonts/Build Subtitles (v5)`（§00.4；第 4.1 版的 `Build Poem Objects` 已取代） |
 | `Tools~/block_viewcheck.py` | D-33 的真车射线检查（`build_fonts.py` 调用，§0.9） |
 | `Editor/LanbaiScrimTextureImport.cs` | **（未编译）** AssetPostprocessor，给两张衬底贴图设好 Sprite 导入参数。 |
 | `Originals~/` | 下载来的原件（Adobe 按地区的 SubsetOTF、Google Fonts 的 TTF），以及 EB Garamond 可变字体实例化出来的静态 `EBGaramond-Regular.ttf` / `EBGaramond-Italic.ttf`。 |
