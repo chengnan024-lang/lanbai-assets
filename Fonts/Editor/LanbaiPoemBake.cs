@@ -79,7 +79,6 @@ namespace Lanbai.Fonts.Editor
             var oFill = new List<Vector4>(); var oAlpha = new List<float>(); var oStart = new List<float>(); var oFocus = new List<float>();
             var oSoftEnd = new List<float>(); var oExitT = new List<float>(); var oExitS = new List<float>(); var oDrift = new List<float>();
             var oLocalY = new List<float>(); var oCueStart = new List<int>(); var oCueCount = new List<int>(); var cueT = new List<float>();
-            var cueText = new List<string>(); var oHiddenText = new List<string>();
             var sRenderer = new List<SpriteRenderer>(); var sAlpha = new List<float>(); var sStart = new List<float>();
             var sExitT = new List<float>(); var sExitS = new List<float>();
             int missing = 0;
@@ -179,22 +178,8 @@ namespace Lanbai.Fonts.Editor
                                 var lc = (List<object>)lineCues[shown];
                                 foreach (Dictionary<string, object> c in lc) cueT.Add(F(c["t"]));
                                 oCueCount.Add(lc.Count);
-                                // 阿白 2026-10-25（FromLocal/full_preview，总工程师收）：Udon 里没有 TMP maxVisibleLines，所以每个
-                                // cue 烘一段文字：已经到的行照常，还没到的行留在排版里、用 <alpha=#00> 画成透明（行位不跳）。
-                                // 每行自己的 <space=…> 标签在行内，按 \n 切开不会切断标签
-                                tmp.richText = true;
-                                string original = tmp.text;
-                                var lines = original.Split('\n');
-                                oHiddenText.Add("<alpha=#00>" + original);
-                                for (int c = 0; c < lc.Count; c++)
-                                {
-                                    int visible = Math.Min(c + 1, lines.Length);
-                                    cueText.Add(string.Join("\n", lines.Take(visible).ToArray()) +
-                                                (visible < lines.Length ? "<alpha=#00>\n" + string.Join("\n", lines.Skip(visible).ToArray()) : ""));
-                                }
-                                tmp.text = oHiddenText[oHiddenText.Count - 1];
                             }
-                            else { oCueStart.Add(0); oCueCount.Add(0); oHiddenText.Add(""); }
+                            else { oCueStart.Add(0); oCueCount.Add(0); }
                         }
                     }
                     slotObjCount[slot] = oGo.Count - slotObjStart[slot];
@@ -271,7 +256,6 @@ namespace Lanbai.Fonts.Editor
             Set(driver, "oFocus", oFocus.ToArray()); Set(driver, "oSoftEnd", oSoftEnd.ToArray()); Set(driver, "oExitT", oExitT.ToArray());
             Set(driver, "oExitS", oExitS.ToArray()); Set(driver, "oDrift", oDrift.ToArray()); Set(driver, "oLocalY", oLocalY.ToArray());
             Set(driver, "oCueStart", oCueStart.ToArray()); Set(driver, "oCueCount", oCueCount.ToArray()); Set(driver, "cueT", cueT.ToArray());
-            Set(driver, "cueText", cueText.ToArray()); Set(driver, "oHiddenText", oHiddenText.ToArray());
             Set(driver, "sRenderer", sRenderer.ToArray()); Set(driver, "sAlpha", sAlpha.ToArray()); Set(driver, "sStart", sStart.ToArray());
             Set(driver, "sExitT", sExitT.ToArray()); Set(driver, "sExitS", sExitS.ToArray());
             Set(driver, "slotBlkEl0", slotBlkEl0); Set(driver, "slotBlkEl1", slotBlkEl1);
@@ -283,8 +267,7 @@ namespace Lanbai.Fonts.Editor
             // the three switch buttons (中 / 日 / EN): a label + a BoxCollider + LanbaiLangButton
             var buttons = new GameObject("Buttons");
             buttons.transform.SetParent(board.transform, false);
-            // 阿白 2026-10-25：TMP 要先 Awake 才能设字体，在关着的父物体下建会空引用；建的时候开着，建完再关
-            buttons.SetActive(true);
+            buttons.SetActive(false);                              // on with the countdown, off after departure
             Set(driver, "boardButtons", buttons);
             CopyProxyToUdon(driver);
             if (buttonType != null)
@@ -309,7 +292,6 @@ namespace Lanbai.Fonts.Editor
                     if (b != null) { Set(b, "driver", driver); Set(b, "eventName", events[i]); CopyProxyToUdon(b); }
                 }
             }
-            buttons.SetActive(false);                              // on with the countdown, off after departure
             report.AppendFormat("{0} poems x {1} keys, {2} text objects, {3} scrims, board {4} languages; ", N, K, oGo.Count, sRenderer.Count, BoardKeys.Length);
             report.Append(missing == 0 ? "every font asset / material found." : missing + " font asset(s) / material(s) NOT found: build them first (蓝白/Fonts/Build TMP Font Assets, Build Poem Materials) and run this again.");
             report.Append(bus == null ? " busRoot: drag the bus root into Lanbai_PoemDriver." : " busRoot = Bus.");
