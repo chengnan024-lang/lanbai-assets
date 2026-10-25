@@ -346,11 +346,13 @@ def ridge(rng):
                          'nearest part at az +35 from the main eye (D-44 #5 P3)',
                 x_min_m=round(float(X.min()), 3), grid=dict(z0=-45.0, dz=1.0, nz=len(zs), y0=-135.0, dy=1.0, ny=len(ys)),
                 x=R(X, 3), back_thickness_m=6.0,
-                material=dict(shader='Lanbai/SeaRidge', base=R(fill('#0B1A26', 'S7b') * 0.8), rim=R(srgb_lin('#8AC6FF') * 1.2),
-                              rim_reach_m=8.0, rim_near_m=12.0, rim_wrap=0.55, rim_face=0.04, rim_edge=4.0,
+                material=dict(shader='Lanbai/SeaRidge', base=R(fill('#0B1A26', 'S7b') * 0.8), rim=R(srgb_lin('#8AC6FF') * 2.4),
+                              rim_reach_m=14.0, rim_near_m=22.0, rim_wrap=0.55, rim_face=0.02, rim_edge=4.0,
                               note='low contrast: the faces sit just above the water fog of 105 m; only the silhouettes catch the '
                                    'hull bioluminescence #8AC6FF (bible: 只被船体生物荧光描出一道边), full strength out to rim_near_m, '
-                                   'falling off over rim_reach_m beyond; wrap: the trails run along the whole hull'),
+                                   'falling off over rim_reach_m beyond; wrap: the trails run along the whole hull. 10-25 (总导演, 阿白 0949: '
+                                   '"描边要读得出来"): after the P3 turn the visible ridge is 12-27 m away, so full strength out to 22 m, rim x 2, '
+                                   'faces halved (rim_face 0.02) so the faces stay where they were and only the edge reads'),
                 passes=dict(enters_window_t=round(L['F3e2'] - 12.0, 2), centre_t=L['F3e2'], leaves_window_t=round(L['F3e2'] + 14.0, 2)))
 
 
@@ -438,13 +440,15 @@ def main():
                     gather=dict(t0=453.0, t1=L['F4p'], point_bus=[0.55, 2.74, 1.2], note='F4p: the shafts converge on the skylight hole in 9 s; the '
                                 'gather point is the skylight (bus frame); the driver writes _GatherPoint in R_Sea object space each frame'),
                     after_F4p_fade=[[L['F4p'], 1.0], [467.6, 0.0]],
-                    last_shaft=dict(t_in=L['F3e1'], fade_in_s=2.0, sweep_s=4.0, fade_out_s=2.0, half_width=2.2, length=34.0, alpha=0.10,
+                    last_shaft=dict(t_in=round(L['F3e1'] - 2.0, 2), fade_in_s=2.0, sweep_s=4.0, fade_out_s=2.0, half_width=2.2, length=34.0, alpha=0.10,
                                     from_bus=R(LAST_FOOT_FROM - SUN_AXIS * 14.0, 3), to_bus=R(LAST_FOOT_TO - SUN_AXIS * 14.0, 3),
                                     target_from_bus=R(LAST_FOOT_FROM, 3), target_to_bus=R(LAST_FOOT_TO, 3),
                                     p2_note='D-44 #5 P2: PARALLEL to the refracted sun at both ends (the centre is 14 m up the sun axis from '
                                             'the foot, so foot - centre is constant): the sun never moves (总导演 10-25 #1); the foot '
                                             'sweeps from 14 m AHEAD (seen through the windscreen, the top fades out ahead-right toward '
                                             'the sun) over the roof onto the seats',
+                                    t_note='10-25 (总导演, 阿白 0949): full strength ON the F3e1 beat -- in from F3e1 - 2 s, the 4 s sweep starts at '
+                                           'F3e1 with the foot still ~14 m ahead in the windscreen, out by F3e1 + 6 s (the window\'s dark-coin curve still starts at F3e1)',
                                     top_above_centre_m=2.0,
                                     note='F3e1: the last wide shaft sweeps across the seats (2 s in, 4 s sweep, 2 s out; seats <= luma 120): its '
                                          'foot moves from target_from to target_to (past the main seat at ~0.58), the beam light rides with it; '
