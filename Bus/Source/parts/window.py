@@ -110,10 +110,20 @@ def _outline_rails(seg, z0, z1, y0, y1, r, offset_i=0.0, step=0.02, n_arc=10):
 
 
 # profiles (d, i): d from the outer skin into the cabin, i from the opening edge into the opening
-FRAME = _round([(BB.SHELL_T + 0.0045, -0.030), (BB.SHELL_T + 0.0045, 0.007), (0.021, 0.007), (0.021, 0.0045),
-                (BB.SHELL_T + 0.0015, 0.0045), (BB.SHELL_T + 0.0015, -0.030)], 0.0012)
-GASKET = _round([(0.0153, -0.006), (0.0153, 0.010), (0.0168, 0.011), (0.0200, 0.006), (0.0222, 0.002),
-                 (0.0222, -0.006)], 0.0012)
+FRAME_P = [(BB.SHELL_T + 0.0045, -0.030), (BB.SHELL_T + 0.0045, 0.007), (0.021, 0.007), (0.021, 0.0045),
+           (BB.SHELL_T + 0.0015, 0.0045), (BB.SHELL_T + 0.0015, -0.030)]
+GASKET_P = [(0.0153, -0.006), (0.0153, 0.010), (0.0168, 0.011), (0.0200, 0.006), (0.0222, 0.002), (0.0222, -0.006)]
+FRAME, GASKET = _round(FRAME_P, 0.0012), _round(GASKET_P, 0.0012)
+
+# r2: how finely each window is built. r1 sampled every window like the bake source (28 000 triangles a window, 280 000
+# for the eleven - the cabin budget is 200 000 for everything). Straight runs need no rails between their ends (the wall is
+# straight along u and only gently curved in y), only the R 70 corners do; the profiles' 1.2 mm roundings only matter
+# within a metre (the hero window at 0.5 m: 'hero'), elsewhere a chamfer (the smoothing and the spec AA do the rest).
+TIERS = {
+    'high': dict(step=0.012, n_arc=10, rn=2, sash_arc=8),     # a bake / close-up source
+    'hero': dict(step=0.12, n_arc=8, rn=1, sash_arc=6),       # WinR1, 0.5 m from the hero eye
+    'low': dict(step=0.15, n_arc=5, rn=0, sash_arc=3),        # every other window (>= 1.3 m away)
+}
 
 
 def side_window(seg, k, z0, z1, quality='low', collection='Cabin'):
@@ -121,15 +131,18 @@ def side_window(seg, k, z0, z1, quality='low', collection='Cabin'):
     y0, y1 = B.WIN_SILL, B.WIN_HEAD
     nm = 'Win%s%d' % (seg, k)
     objs = []
-    step = 0.012 if quality == 'high' else 0.025
-    objs.append(sweep_framed(nm + '_Frame', _outline_rails(seg, z0, z1, y0, y1, R_CORNER, step=step), FRAME, 'Alu', collection))
-    objs.append(sweep_framed(nm + '_GasketIn', _outline_rails(seg, z0, z1, y0, y1, R_CORNER, step=step), GASKET, 'Seal', collection))
+    T = TIERS[quality]
+    step, rn = T['step'], T['rn']
+    frame_p, gasket_p = _round(FRAME_P, 0.0012, rn), _round(GASKET_P, 0.0012, rn)
+    rails_o = _outline_rails(seg, z0, z1, y0, y1, R_CORNER, step=step, n_arc=T['n_arc'])
+    objs.append(sweep_framed(nm + '_Frame', rails_o, frame_p, 'Alu', collection))
+    objs.append(sweep_framed(nm + '_GasketIn', rails_o, gasket_p, 'Seal', collection))
     ua, ub = sorted((BB.perim_u(seg, z0), BB.perim_u(seg, z1)))
     um = (ua + ub) / 2
-    us = np.linspace(ua + 0.004, ub - 0.004, max(8, int((ub - ua) / 0.05)))
+    us = np.linspace(ua + 0.004, ub - 0.004, max(3, int((ub - ua) / max(step, 0.05))))
     # transom: a double-track alu rail across the glass (inside), 1.905-1.935 (= the outside transom)
     TR = _round([(0.016, -0.0105), (0.031, -0.0105), (0.031, -0.004), (0.027, -0.004), (0.027, 0.004), (0.031, 0.004),
-                 (0.031, 0.0105), (0.016, 0.0105)], 0.001)          # (no taller than the outside transom: the contract band)
+                 (0.031, 0.0105), (0.016, 0.0105)], 0.001, rn)      # (no taller than the outside transom: the contract band)
     rails = []
     for u in us:
         p, n, du, dy = _wall_frame(u, 1.92)
@@ -137,19 +150,19 @@ def side_window(seg, k, z0, z1, quality='low', collection='Cabin'):
     objs.append(sweep_framed(nm + '_Transom', rails, TR, 'Alu', collection, closed=False))
     # sill board with a rounded nose (cream enamel), under the frame
     SILL = _round([(BB.SHELL_T, -0.006), (0.092, -0.006), (0.098, -0.014), (0.098, -0.030), (0.090, -0.036),
-                   (BB.SHELL_T, -0.036)], 0.004, 3)
+                   (BB.SHELL_T, -0.036)], 0.004, 3 if quality == 'high' else rn + 1)
     rails = []
-    for u in np.linspace(ua - 0.03, ub + 0.03, max(8, int((ub - ua) / 0.05))):
+    for u in np.linspace(ua - 0.03, ub + 0.03, max(3, int((ub - ua) / max(step, 0.05)))):
         p, n, du, dy = _wall_frame(u, y0 - 0.032)
         rails.append((p, -n, dy))
     objs.append(sweep_framed(nm + '_Sill', rails, SILL, 'Int_Enamel', collection, closed=False))
     # the two upper sashes: 16 mm alu frames, the rear one inside the front one, meeting 30 mm past the middle
     ys0, ys1 = 1.937, y1 - 0.004
-    SASH = _round([(0.0, -0.008), (0.0, 0.008), (0.008, 0.008), (0.008, -0.008)], 0.0015)
+    SASH = _round([(0.0, -0.008), (0.0, 0.008), (0.008, 0.008), (0.008, -0.008)], 0.0015, rn)
     for s_, (a_, b_), dd in ((0, (ua + 0.006, um + 0.018), 0.024), (1, (um - 0.018, ub - 0.006), 0.017)):
         ra = {'00': 0.006, '10': 0.006, '11': 0.006 if s_ == 0 else R_CORNER - 0.01,
               '01': R_CORNER - 0.01 if s_ == 0 else 0.006}
-        pts = BB._outline(a_, b_, ys0, ys1, ra, n_arc=8, step=step)
+        pts = BB._outline(a_, b_, ys0, ys1, ra, n_arc=T['sash_arc'], step=step)
         rails = []
         M = len(pts)
         for j, (u, y) in enumerate(pts):
@@ -166,9 +179,12 @@ def side_window(seg, k, z0, z1, quality='low', collection='Cabin'):
     yl = (ys0 + ys1) / 2
     p, n, du, dy = _wall_frame(um + 0.018 - 0.008, yl)
     base = p - n * 0.032
-    objs.append(_reuleaux(nm + '_Latch', base, -n, du, dy, 0.016, 0.007, 'Chrome', collection))
+    # 672M (Kolesa salon-7, README §6.2): a cream plastic knob ('like a Mazda rotor') on a small metal plate
+    objs.append(_plate(nm + '_LatchPlate', base, -n, du, dy, 0.015, 0.011, 0.0018, 'Alu', collection))
+    objs.append(_reuleaux(nm + '_Latch', base - n * 0.0018, -n, du, dy, 0.016, 0.007, 'LatchCream', collection,
+                          n=12 if quality != 'low' else 6))
     p2, n2, du2, dy2 = _wall_frame(um - 0.03, yl)
-    objs.append(_plate(nm + '_Keeper', p2 - n2 * 0.025, -n2, du2, dy2, 0.010, 0.014, 0.005, 'Chrome', collection))
+    objs.append(_plate(nm + '_Keeper', p2 - n2 * 0.025, -n2, du2, dy2, 0.010, 0.014, 0.005, 'Alu', collection))
     return objs
 
 

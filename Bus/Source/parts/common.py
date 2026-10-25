@@ -331,3 +331,14 @@ def lathe_x(name, prof, yc, zc, m, collection='Seats', sides=24):
     if bm.calc_volume(signed=True) < 0:
         bmesh.ops.reverse_faces(bm, faces=bm.faces)
     return finish(BB.obj_from_bm(name, bm, [m], collection))
+
+
+def decimate(ob, ratio):
+    """quadric-collapse an object to ~ratio of its faces (the game-mesh LOD0 of a pad: its fine shape lives in the baked
+    normal map; the collapse keeps the silhouette, the creases and the attributes interpolated)."""
+    md = ob.modifiers.new('dec', 'DECIMATE')
+    md.decimate_type = 'COLLAPSE'
+    md.ratio = ratio
+    md.use_collapse_triangulate = False
+    apply_mods(ob)
+    return finish(ob)

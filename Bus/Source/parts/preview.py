@@ -136,7 +136,7 @@ def _window_scene():
     BB.floor()
     objs = []
     for k, (z0, z1) in enumerate(B.WIN_R[:2]):
-        objs += WIN.side_window('R', k + 1, z0, z1)
+        objs += WIN.side_window('R', k + 1, z0, z1, quality='hero' if k == 0 else 'low')
     return objs
 
 

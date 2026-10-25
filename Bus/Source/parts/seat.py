@@ -41,6 +41,7 @@ W_T = 0.020                      # the side tubes run 20 mm in front of the back
 BACK_RISE = 0.45                 # top of the back (with the sleeve) above the cushion top: the real 672M proportion
                                  # (director 10-25, second ruling: not lined up with our lowered window sill)
 R_WELT = 0.0019                  # Ø3.8 mm piping
+DECIMATE_PAD = 0.5               # the game mesh's cushion and back pad after a quadric collapse (cabin LOD0 budget)
 
 
 def _hex_bolt(name, c, axis, r, h, m, collection):
@@ -423,6 +424,8 @@ def _cushion(name, x0, x1, cx, cy, z0c, z1c, double, worn, wall_side, lv, small,
     wp = C.sweep(name + '_CushionPiping', C.welt(cu, outline, R_WELT), R_WELT, 'Piping', collection, sides=small)
     _zone_attr(wp, zone)
     objs.append(wp)
+    if not hi:
+        C.decimate(cu, DECIMATE_PAD)        # the game mesh (cabin budget): the bake carries the fine shape
     return objs
 
 
@@ -475,6 +478,8 @@ def _back_pad(name, bx0, bx1, O, H, cy, worn, wall_side, lv, small, collection, 
                  closed=True)
     _zone_attr(bp, zone_b)
     back.append(bp)
+    if not hi:
+        C.decimate(bk, DECIMATE_PAD)
     return back
 
 

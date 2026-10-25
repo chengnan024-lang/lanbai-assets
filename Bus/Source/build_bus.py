@@ -49,6 +49,7 @@ MAT_TABLE = {
     # the seat-back top tube. Not in the bible's §4.2 table (给总控 D-36 r5); names avoid 'Vinyl' so the per-seat red wear
     # tint (finish_bus.seat_wear, vinyl faces only) never lands on them.
     'Piping': ('#C8BC9E', 0.40, 0), 'Sleeve': ('#2E2E2E', 0.45, 0),
+    'LatchCream': ('#D9CFB8', 0.55, 0),        # 672M sash latch: a cream plastic rotor knob (Kolesa salon-7)
     'Alu': ('#B8BBBD', 0.45, 1), 'SafetyYellow': ('#C9A227', 0.40, 0), 'Steel': ('#C0C3C4', 0.55, 1),
     'TubeDiffuser': ('#D8DBD6', 0.60, 0), 'Dash': ('#353637', 0.30, 0), 'Bakelite': ('#2E2E2E', 0.45, 0),
     'RadioLeather': ('#4A2E1F', 0.45, 0), 'RadioGrille': ('#B8BBBD', 0.55, 1), 'RadioDial': ('#E8DFC8', 0.5, 0),
@@ -795,7 +796,9 @@ def window_trim():
     from parts import window as WIN
     for side, seg, wins in ((1, 'R', B.WIN_R), (-1, 'L', B.WIN_L)):
         for k, (z0, z1) in enumerate(wins):
-            WIN.side_window(seg, k + 1 if side > 0 else k, z0, z1)
+            kk = k + 1 if side > 0 else k
+            # r2: the hero's own window (WinR1, 0.5 m) a finer build, every other one lean (cabin budget)
+            WIN.side_window(seg, kk, z0, z1, quality='hero' if (seg, kk) == ('R', 1) else 'low')
 
 
 def poles_and_guard():
