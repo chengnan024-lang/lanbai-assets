@@ -2,13 +2,22 @@
 """鱼鳞屋：汉式小殿，模块局部坐标（地面 y = 0，中心在原点，正面朝 −z）。
 
     build(w, h, d, lod=0, seed=0) -> UB
-        w 面宽（x，台基）9–11.4 m；d 进深（z，台基）7–8.5 m；h 檐口高（檐下皮离地）4.8–5.6 m。
+        w × d：占地（x 面宽 9–11.4 m，z 进深 7–8.5 m）—— 第 10 轮起是**檐口外皮**的范围（屋檐不再伸出 w × d；
+        只有前面踏步伸出约 0.3 m × 级数）。h：layout 给的名义檐高 4.8–5.6 m，实际墙高按类型取 0.74–0.8 h。
 
-形制（research_han.md §3–6）：矮石台基（0.6–1.0 m，按 seed）、前出廊、三间、四根朱漆小八角檐柱 + 覆盆础 +
-鎏金柱头箍 + 栌斗、柱头上一道 LacquerBand 檐枋；墙 StoneDark；正面一门（双扇，关着，黑漆，鎏金衔环）两窗（直棂）。
-屋顶“鱼鳞屋”：seed 偶数四阿、奇数悬山；直坡、檐口平直、转角不起翘；屋面槽 FishScale（平的，鳞由贴图 + 法线），
-檐口一排半圆鳞片头（几何，半径 0.35 m，比屋面陡、垂过檐板），正脊 / 垂脊 Tile，正脊两端只起翘 + 克制鱼尾。
-注意：屋檐（连鳞片头）比台基每边多出约 0.5 + 0.2 m；前面的踏步伸出台基 0.3 m × (级数 − 1)。
+第 10 轮（终审“带白花边的矮棚子”）：
+  · 檐口：去掉一排大半圆鳞片头（scale_row，r 0.35，垂过檐板 = “白花边”）。改成一道平直檐板（Wood，高 FASCIA）
+    + 檐板上皮一排小鳞尖（≤ 0.12 m，躺在坡面上，尖点在檐板上皮，不垂下）。
+  · 汉式屋顶分量：屋顶高（檐口到脊顶）≥ 墙高（地面到檐下皮）；出檐 ≈ 墙高 / 3（从檐柱 / 墙中线算）；
+    直坡、檐口平直、转角不起翘、正脊两端只略起翘。坡度按这个算出来（约 38–45°，比原来 30° 陡）。
+    挑梁（LOD0）：柱头上伸出的方木头托出檐（汉代出檐靠挑梁 / 插拱）。
+  · 三类（按 seed % 3）：
+      B 标准三间：四根檐柱、前出廊、一门两窗；四阿（seed // 3 偶）或悬山（奇）。
+      A 小屋：占地 ~0.62 w × 0.86 d，两间 + 中柱（孝堂山石祠式，汉代偶数开间），悬山，门偏一间、另一间开窗。
+      C 重檐楼：下层同 B（墙略矮），下檐是一圈腰檐（截头四阿），上面一层矮楼身 + 直棂窗，再一层四阿顶；最高。
+屋面槽 FishScale（平的，鳞由贴图 + 法线），脊 Tile；“鱼鳞”只在下檐一圈出小鳞尖（research_han §6 建议，非汉制）。
+形制细节（research_han.md §3–6）：矮石台基（0.6–1.0 m，按 seed）、朱漆小八角檐柱 + 覆盆础 + 鎏金柱头箍 + 栌斗、
+LacquerBand 檐枋；墙 StoneDark；板门双扇（黑漆，鎏金衔环），直棂窗。
 """
 import math
 
@@ -16,14 +25,26 @@ import numpy as np
 
 try:
     from .common import TILE
-    from .que import KB, box, beam_x, beam_z, course, extrude, hip_ridges, hip_solid, ngon_prism, prism, ridge, _emit
+    from .que import KB, box, beam_x, beam_z, course, extrude, hip_ridges, hip_solid, ngon_prism, prism, ridge, sweep2d, _emit
 except ImportError:
     from common import TILE
-    from que import KB, box, beam_x, beam_z, course, extrude, hip_ridges, hip_solid, ngon_prism, prism, ridge, _emit
+    from que import KB, box, beam_x, beam_z, course, extrude, hip_ridges, hip_solid, ngon_prism, prism, ridge, sweep2d, _emit
 
-SLOPE = 30.0          # 屋面坡度（度）
-SCALE_R = 0.35        # 檐口鳞片头半径
-FASCIA = 0.15
+FASCIA = 0.3          # 檐板高（屋面实体檐口的竖直外皮）
+TIP_PITCH = 0.24      # 小鳞尖：中距（半宽 0.12）
+TIP = 0.1             # 小鳞尖：尖长（沿坡）
+TIP_BAND = 0.16       # 鳞尖后面压在坡面上的一条（同一实体）
+RIDGE_H = 0.75        # 正脊高（汉脊较高）
+RIDGE_LIFT = 0.3      # 正脊两端只略起翘
+SLOPE_MIN, SLOPE_MAX = 32.0, 45.0
+CLASSES = 'BAC'       # seed % 3 → 类型
+
+
+def variant(seed):
+    """(类型, 是否四阿)。"""
+    cls = CLASSES[seed % 3]
+    hip = cls == 'C' or (cls == 'B' and (seed // 3) % 2 == 0)
+    return cls, hip
 
 
 def slab(ub, poly, nrm, t, slot):
@@ -53,32 +74,22 @@ def torus(ub, c, ax, R, r, n, m, slot):
     _emit(ub, V, F, slot)
 
 
-def scale_row(ub, T0, T1, s, rs=SCALE_R, nseg=7):
-    """沿檐口上皮 T0→T1 排一行半圆鳞片头：板面比屋面陡（约 55°），从檐板外皮垂下、头比檐板低 ~0.15 m。
-    s = 屋面向上坡的单位向量。"""
-    T0, T1, s = (np.asarray(x, float) for x in (T0, T1, s))
-    e = T1 - T0
-    W = np.linalg.norm(e)
-    e /= W
-    g = -s + np.array([0, -0.95, 0])               # 向外、向下
-    g /= np.linalg.norm(g)
-    m = np.cross(g, e)
-    if np.dot(m, -s) + m[1] < 0:                   # 让板的法线朝外上
-        m = -m
-    k = max(1, int(round(W / (2 * rs))))
-    step = W / k
-    out = -np.cross(e, (0, 1.0, 0))                 # 水平外法线（檐板外皮方向）
-    if np.dot(out, -s) < 0:
-        out = -out
-    for i in range(k):
-        c = T0 + e * step * (i + 0.5) + out * 0.03
-        r = step / 2 * 1.0
-        pts = [c + e * r - g * 0.14]
-        for j in range(nseg + 1):
-            a = math.pi * j / nseg
-            pts.append(c + e * (r * math.cos(a)) + g * (r * math.sin(a)))
-        pts.append(c - e * r - g * 0.14)
-        slab(ub, pts, m, 0.07 if i % 2 else 0.075, 'FishScale')
+def scale_tips(ub, T0, e, s, W, a=0.0):
+    """檐口小鳞尖：一条躺在坡面上的锯齿带（一个封闭实体）。T0 = 檐板上皮外角，e 沿檐，s 向上坡；
+    尖点正好在檐板上皮外沿（v = 0），不垂下；两端各让 a（四阿的戗脊、悬山的垂脊）。"""
+    T0, e, s = (np.asarray(x, float) for x in (T0, e, s))
+    n = np.cross(e, s)
+    if n[1] < 0:
+        n = -n
+    L = W - 2 * a
+    k = max(1, int(round(L / TIP_PITCH)))
+    step = L / k
+    P, Q = [], []
+    for i in range(2 * k + 1):
+        u = a + step * i / 2
+        P.append((u, 0.0 if i % 2 else TIP))           # 尖 / 谷
+        Q.append((u, TIP + TIP_BAND))
+    sweep2d(ub, P, Q, T0, e, s, n, 0.004, 0.045, 'FishScale')
 
 
 def _slope_uv(P, T0, e, s, tile):
@@ -120,156 +131,220 @@ def gable_roof(ub, X, Z, ys, fascia, slope_deg):
 def build(w, h, d, lod=0, seed=0):
     rng = np.random.default_rng(seed + 7)
     hi = lod == 0
-    hip = seed % 2 == 0
+    cls, hip = variant(seed)
     tb = round(0.6 + 0.4 * rng.random(), 2)                 # 台基高
     ub = KB()
     W2, D2 = w / 2, d / 2
+    rtop = RIDGE_H - 0.2                                   # 正脊顶比坡顶高出的量（脊底埋进 0.2）
+    # ---------------- 类型 → 檐口范围 X × Z、墙高 ye、坡度
+    if cls == 'A':
+        X, Z, ye = 0.62 * W2, 0.86 * D2, 0.74 * h
+    elif cls == 'B':
+        X, Z, ye = W2 - 0.05, D2 - 0.05, 0.8 * h
+    else:
+        X, Z, ye = W2 - 0.05, D2 - 0.05, 0.74 * h
+    if cls != 'C':
+        # 屋顶高（檐下皮→脊顶）= FASCIA + Z·tan + rtop ≥ 1.04 墙高；太陡就压低墙
+        tn = (1.04 * ye - FASCIA - rtop) / Z
+        tn = min(max(tn, math.tan(math.radians(SLOPE_MIN))), math.tan(math.radians(SLOPE_MAX)))
+        ye = min(ye, (FASCIA + Z * tn + rtop) / 1.04)
+        slope = math.degrees(math.atan(tn))
+    ov = ye / 3                                            # 出檐 ≈ 墙高 / 3
+    ye = round(ye, 3)
+
+    # ---------------- 柱网
+    xc = X - (0.8 if not hip else ov)                       # 檐柱中线（悬山两山只出际 0.8）
+    zf, zb = -Z + ov, Z - ov                                # 前檐柱 / 后墙中线
+    zw = zf + (1.0 if cls == 'A' else 1.15)                 # 前墙（前出廊）
+    yb0 = ye - 0.42                                         # 枋底
+    yd0 = yb0 - 0.36                                        # 栌斗底（柱顶）
+    if cls == 'A':
+        xs = [-xc, 0.0, xc]                                 # 两间 + 中柱
+        bay = xc
+        side = 1 if (seed // 3) % 2 else -1
+        door_x, win_xs = side * xc / 2, [-side * xc / 2]
+    else:
+        xs = [-xc, -xc / 3, xc / 3, xc]
+        bay = 2 * xc / 3
+        door_x, win_xs = 0.0, [-bay, bay]
+    cr = 0.24 if cls != 'A' else 0.22                       # 八角柱外接半径
+    PX, PZ = xc + 0.55, zb + 0.55                           # 台基半宽 / 半深
+
     # ---------------- 台基
-    box(ub, (-W2, -0.3, -D2), (W2, tb - 0.12, D2), 'Stone')
-    box(ub, (-W2 - 0.06, tb - 0.12, -D2 - 0.06), (W2 + 0.06, tb, D2 + 0.06), 'Stone')     # 压阑石
+    box(ub, (-PX, -0.3, -PZ), (PX, tb - 0.12, PZ), 'Stone')
+    box(ub, (-PX - 0.06, tb - 0.12, -PZ - 0.06), (PX + 0.06, tb, PZ + 0.06), 'Stone')     # 压阑石
     if hi:                                                                                # 角柱 + 间柱（凸 0.05）
         for sx in (-1, 1):
-            for z in np.linspace(-D2 + 0.2, D2 - 0.2, 4):
-                box(ub, (min(sx * W2, sx * (W2 + 0.05)), 0.0, z - 0.2), (max(sx * W2, sx * (W2 + 0.05)), tb - 0.12, z + 0.2), 'Stone')
+            for z in np.linspace(-PZ + 0.2, PZ - 0.2, 3 if cls == 'A' else 4):
+                box(ub, (min(sx * PX, sx * (PX + 0.05)), 0.0, z - 0.2), (max(sx * PX, sx * (PX + 0.05)), tb - 0.12, z + 0.2), 'Stone')
         for sz in (-1, 1):
-            for x in np.linspace(-W2 + 0.2, W2 - 0.2, 6):
-                if sz < 0 and abs(x) < 1.4:
+            for x in np.linspace(-PX + 0.2, PX - 0.2, 4 if cls == 'A' else 6):
+                if sz < 0 and abs(x - door_x) < 1.4:
                     continue
-                box(ub, (x - 0.2, 0.0, min(sz * D2, sz * (D2 + 0.05))), (x + 0.2, tb - 0.12, max(sz * D2, sz * (D2 + 0.05))), 'Stone')
-    n_st = max(3, int(math.ceil(tb / 0.2)))                                                # 踏步
+                box(ub, (x - 0.2, 0.0, min(sz * PZ, sz * (PZ + 0.05))), (x + 0.2, tb - 0.12, max(sz * PZ, sz * (PZ + 0.05))), 'Stone')
+    n_st = max(3, int(math.ceil(tb / 0.2)))                                                # 踏步（对着门）
     sh = tb / n_st
+    sw = 1.15 if cls != 'A' else 0.95
     for k in range(n_st - 1):
-        box(ub, (-1.15, -0.3 if k == 0 else 0.0, -D2 - 0.3 * (n_st - 1 - k)), (1.15, sh * (k + 1), -D2 + 0.01), 'Stone')
+        box(ub, (door_x - sw, -0.3 if k == 0 else 0.0, -PZ - 0.3 * (n_st - 1 - k)), (door_x + sw, sh * (k + 1), -PZ + 0.01), 'Stone')
     if hi:
-        for sx in (-1, 1):                                                                 # 垂带石
-            x = sx * 1.3
-            # 楔形：底矩形 + 斜顶
-            V = [(x - 0.15, -0.3, -D2 - 0.3 * (n_st - 1) - 0.1), (x + 0.15, -0.3, -D2 - 0.3 * (n_st - 1) - 0.1),
-                 (x + 0.15, -0.3, -D2 + 0.01), (x - 0.15, -0.3, -D2 + 0.01),
-                 (x - 0.15, sh + 0.08, -D2 - 0.3 * (n_st - 1) - 0.1), (x + 0.15, sh + 0.08, -D2 - 0.3 * (n_st - 1) - 0.1),
-                 (x + 0.15, tb + 0.08, -D2 + 0.01), (x - 0.15, tb + 0.08, -D2 + 0.01)]
+        for sx in (-1, 1):                                                                 # 垂带石（楔形）
+            x = door_x + sx * (sw + 0.15)
+            z0 = -PZ - 0.3 * (n_st - 1) - 0.1
+            V = [(x - 0.15, -0.3, z0), (x + 0.15, -0.3, z0), (x + 0.15, -0.3, -PZ + 0.01), (x - 0.15, -0.3, -PZ + 0.01),
+                 (x - 0.15, sh + 0.08, z0), (x + 0.15, sh + 0.08, z0), (x + 0.15, tb + 0.08, -PZ + 0.01), (x - 0.15, tb + 0.08, -PZ + 0.01)]
             F = [(0, 1, 2, 3), (4, 7, 6, 5), (0, 4, 5, 1), (1, 5, 6, 2), (2, 6, 7, 3), (3, 7, 4, 0)]
             _emit(ub, V, F, 'Stone')
 
-    # ---------------- 柱网 / 墙
-    xc = W2 - 0.75                       # 檐柱中线
-    zf = -D2 + 0.75                      # 前檐柱
-    zb = D2 - 0.75                       # 后墙中线
-    zw = zf + 1.2                        # 前墙（前出廊）
-    ye = h                               # 檐下皮
-    yb0 = ye - 0.42                      # 枋底
-    yd0 = yb0 - 0.36                     # 栌斗底（柱顶）
-    bay = 2 * xc / 3
-    cr = 0.24                            # 八角柱外接半径（对边 ≈ 0.44，柱高的 ~1/9）
-
-    def column(x, z, free=True):
+    # ---------------- 柱、墙、枋
+    def column(x, z):
         if hi:
             ngon_prism(ub, x, z, cr + 0.16, cr + 0.07, tb - 0.01, tb + 0.16, 8, 'Stone')        # 覆盆础
             ngon_prism(ub, x, z, cr, cr * 0.94, tb + 0.15, yd0 - 0.14, 8, 'Lacquer')
             ngon_prism(ub, x, z, cr * 0.98, cr * 0.98, yd0 - 0.16, yd0 - 0.01, 8, 'Gilt')       # 柱头箍
             ngon_prism(ub, x, z, cr * 0.94, cr * 0.94, yd0 - 0.02, yd0 + 0.01, 8, 'Lacquer')
-            # 栌斗：斗欹（下收）+ 斗耳
-            s0, s1 = 0.2, 0.3
+            s0, s1 = 0.2, 0.3                                                                   # 栌斗：斗欹 + 斗耳
             prism(ub, (x - s0, x + s0, z - s0, z + s0, yd0), (x - s1, x + s1, z - s1, z + s1, yd0 + 0.17), 'Lacquer')
             box(ub, (x - s1, yd0 + 0.17, z - s1), (x + s1, yb0, z + s1), 'Lacquer')
         else:
             ngon_prism(ub, x, z, cr, cr, tb, yb0, 6, 'Lacquer')
 
-    for x in (-xc, -xc / 3, xc / 3, xc):
+    for x in xs:
         column(x, zf)
-    for sx in (-1, 1):
-        for z in ((zb,) if hi else ()):
-            column(sx * xc, z, free=False)
-    # 墙（含后、侧、前墙；从台基面到枋底）
-    box(ub, (-xc - 0.14, tb - 0.02, zw), (xc + 0.14, yb0 + 0.01, zb + 0.14), 'StoneDark')
-    # 枋：墙顶一圈 + 前檐枋 + 两侧的廊枋
+    if hi:
+        for sx in (-1, 1):
+            column(sx * xc, zb)
+    box(ub, (-xc - 0.14, tb - 0.02, zw), (xc + 0.14, yb0 + 0.01, zb + 0.14), 'StoneDark')       # 墙
     course(ub, xc + 0.18, (zb + 0.18 - (zw - 0.06)) / 2, yb0, ye, 0.0, (zb + 0.18 + zw - 0.06) / 2)
-    beam_x(ub, -xc - 0.45, xc + 0.45, yb0, ye, zf - 0.16, zf + 0.16)
+    beam_x(ub, -xc - 0.45, xc + 0.45, yb0, ye, zf - 0.16, zf + 0.16)                           # 前檐枋
     for sx in (-1, 1):
-        beam_z(ub, zf + 0.1, zw, yb0, ye, sx * xc - 0.15, sx * xc + 0.15)
+        beam_z(ub, zf + 0.1, zw, yb0, ye, sx * xc - 0.15, sx * xc + 0.15)                       # 廊枋
+    if hi:                                                                                      # 挑梁：托出檐
+        for x in xs:
+            beam_z(ub, -Z + 0.25, zf + 0.12, yb0 + 0.12, ye, x - 0.11, x + 0.11)
+            beam_z(ub, zb + 0.1, Z - 0.25, yb0 + 0.12, ye, x - 0.11, x + 0.11)
+        if hip:
+            for sx in (-1, 1):
+                for z in (zf, zb):
+                    beam_x(ub, min(sx * (xc + 0.12), sx * (X - 0.25)), max(sx * (xc + 0.12), sx * (X - 0.25)), yb0 + 0.12, ye, z - 0.11, z + 0.11)
 
-    # ---------------- 门、窗（前墙 z = zw，外面朝 −z）
-    dw = min(1.9, bay * 0.62)
-    dh = min(2.75, (yb0 - tb) * 0.74)
+    # ---------------- 门、窗
+    def window(wx, wy0, ww, wh, zface):
+        """直棂窗（外面朝 −z，zface = 墙外皮）。"""
+        box(ub, (wx - ww / 2, wy0, zface - 0.03), (wx + ww / 2, wy0 + wh, zface + 0.01), 'LacquerBlack')     # 窗洞底
+        fw = 0.11
+        box(ub, (wx - ww / 2 - fw, wy0 - fw, zface - 0.11), (wx + ww / 2 + fw, wy0, zface + 0.01), 'LacquerBlack')
+        box(ub, (wx - ww / 2 - fw, wy0 + wh, zface - 0.11), (wx + ww / 2 + fw, wy0 + wh + fw, zface + 0.01), 'LacquerBlack')
+        box(ub, (wx - ww / 2 - fw, wy0, zface - 0.11), (wx - ww / 2, wy0 + wh, zface + 0.01), 'LacquerBlack')
+        box(ub, (wx + ww / 2, wy0, zface - 0.11), (wx + ww / 2 + fw, wy0 + wh, zface + 0.01), 'LacquerBlack')
+        nb = max(4, int(ww / 0.16))
+        for i in range(1, nb):
+            bx = wx - ww / 2 + ww * i / nb
+            box(ub, (bx - 0.032, wy0, zface - 0.09), (bx + 0.032, wy0 + wh, zface - 0.02), 'Wood')
+
+    dw = min(1.9 if cls != 'A' else 1.5, bay * 0.62)
+    dh = min(2.75, (yb0 - tb) * 0.78)
     yd = tb + 0.14
     if hi:
-        box(ub, (-dw / 2 - 0.1, tb - 0.01, zw - 0.14), (dw / 2 + 0.1, yd, zw + 0.02), 'LacquerBlack')        # 门槛
+        box(ub, (door_x - dw / 2 - 0.1, tb - 0.01, zw - 0.14), (door_x + dw / 2 + 0.1, yd, zw + 0.02), 'LacquerBlack')      # 门槛
         for sx in (-1, 1):
-            box(ub, (min(sx * dw / 2, sx * (dw / 2 + 0.2)), tb, zw - 0.13), (max(sx * dw / 2, sx * (dw / 2 + 0.2)), yd + dh + 0.22, zw + 0.02), 'LacquerBlack')   # 门框
-        box(ub, (-dw / 2 - 0.36, yd + dh, zw - 0.15), (dw / 2 + 0.36, yd + dh + 0.24, zw + 0.02), 'LacquerBlack')              # 门楣
+            x0, x1 = door_x + sx * dw / 2, door_x + sx * (dw / 2 + 0.2)
+            box(ub, (min(x0, x1), tb, zw - 0.13), (max(x0, x1), yd + dh + 0.22, zw + 0.02), 'LacquerBlack')          # 门框
+        box(ub, (door_x - dw / 2 - 0.36, yd + dh, zw - 0.15), (door_x + dw / 2 + 0.36, yd + dh + 0.24, zw + 0.02), 'LacquerBlack')   # 门楣
         for sx in (-1, 1):                                                                   # 两扇（关着）
-            box(ub, (min(sx * 0.012, sx * dw / 2), yd, zw - 0.07), (max(sx * 0.012, sx * dw / 2), yd + dh, zw + 0.02), 'LacquerBlack')
-            # 衔环：底座 + 环（鎏金）
-            cx = sx * 0.3
-            cy = yd + dh * 0.5
+            x0, x1 = door_x + sx * 0.012, door_x + sx * dw / 2
+            box(ub, (min(x0, x1), yd, zw - 0.07), (max(x0, x1), yd + dh, zw + 0.02), 'LacquerBlack')
+            cx, cy = door_x + sx * min(0.3, dw * 0.16), yd + dh * 0.5                         # 衔环
             extrude(ub, (cx, cy, zw - 0.065), (cx, cy, zw - 0.11), (0, 1.0, 0),
                     [(0.11 * math.cos(2 * math.pi * j / 6), 0.11 * math.sin(2 * math.pi * j / 6)) for j in range(6)], 'Gilt')
             torus(ub, (cx, cy - 0.13, zw - 0.125), (0, 0, 1.0), 0.12, 0.022, 10, 4, 'Gilt')
-        # 窗：左右两间各一（直棂）
-        ww, wh = min(1.35, bay * 0.5), min(1.0, (yb0 - tb) * 0.28)
-        wy0 = tb + min(1.35, (yb0 - tb) * 0.4)
-        for sx in (-1, 1):
-            wx = sx * bay
-            box(ub, (wx - ww / 2, wy0, zw - 0.03), (wx + ww / 2, wy0 + wh, zw + 0.01), 'LacquerBlack')                    # 窗洞底
-            fw = 0.11
-            box(ub, (wx - ww / 2 - fw, wy0 - fw, zw - 0.11), (wx + ww / 2 + fw, wy0, zw + 0.01), 'LacquerBlack')        # 下框
-            box(ub, (wx - ww / 2 - fw, wy0 + wh, zw - 0.11), (wx + ww / 2 + fw, wy0 + wh + fw, zw + 0.01), 'LacquerBlack')
-            box(ub, (wx - ww / 2 - fw, wy0, zw - 0.11), (wx - ww / 2, wy0 + wh, zw + 0.01), 'LacquerBlack')
-            box(ub, (wx + ww / 2, wy0, zw - 0.11), (wx + ww / 2 + fw, wy0 + wh, zw + 0.01), 'LacquerBlack')
-            nb = max(5, int(ww / 0.16))
-            for i in range(1, nb):
-                bx = wx - ww / 2 + ww * i / nb
-                box(ub, (bx - 0.032, wy0, zw - 0.09), (bx + 0.032, wy0 + wh, zw - 0.02), 'Wood')
+        ww, wh = min(1.35, bay * 0.5), min(1.0, (yb0 - tb) * 0.3)
+        wy0 = tb + min(1.3, (yb0 - tb) * 0.4)
+        for wx in win_xs:
+            window(wx, wy0, ww, wh, zw)
     else:
-        box(ub, (-dw / 2, tb, zw - 0.06), (dw / 2, yd + dh, zw + 0.02), 'LacquerBlack')
+        box(ub, (door_x - dw / 2, tb, zw - 0.06), (door_x + dw / 2, yd + dh, zw + 0.02), 'LacquerBlack')
 
     # ---------------- 屋顶
-    X, Z = xc + 1.25, zb + 1.25
-    if hip:
-        roof = hip_solid(ub, 0, 0, X, Z, ye, FASCIA, SLOPE, top='FishScale', fas='Wood', soffit='Wood')
-        yr = roof['y_top']
-        hip_ridges(ub, roof, 0.3, 0.24)
-        ridge(ub, (0, 0, 0), 'x', X - Z + 0.15, yr - 0.2, 0.55, 0.36, 0.42, n_end=5 if hi else 2)
+    info = dict(cls=cls, hip=hip, wall=ye, overhang=round(ov, 2))
+    if cls == 'C':
+        # 下檐：一圈腰檐（截头四阿，30°），上面矮楼身 + 上檐四阿
+        Zi = max(1.3, 0.4 * Z)
+        r = Z - Zi
+        Xi = X - r
+        lo = hip_solid(ub, 0, 0, X, Z, ye, FASCIA, 30.0, inner=(Xi, Zi), top='FishScale', fas='Wood', soffit='Wood')
+        hip_ridges(ub, lo, 0.28, 0.2)
         if hi:
+            a = (TIP + TIP_BAND) * math.cos(math.radians(30.0)) + 0.18
+            for sd in lo['sides']:
+                scale_tips(ub, sd['T0'], sd['e'], sd['s'], sd['W'], a)
+        yi = lo['y_top']
+        Xu, Zu = Xi + 0.1, Zi + 0.1                                # 上层楼身（略大于腰檐内口，盖住平顶）
+        ye2 = yi + max(1.25, 0.3 * ye)
+        box(ub, (-Xu, ye + 0.2, -Zu), (Xu, ye2 - 0.34, Zu), 'StoneDark')
+        course(ub, Xu + 0.06, Zu + 0.06, ye2 - 0.34, ye2)
+        if hi:
+            uh = min(0.75, ye2 - 0.34 - yi - 0.3)
+            for k in (-1, 0, 1):
+                window(k * Xu * 0.6, yi + 0.2, min(1.1, Xu * 0.45), uh, -Zu)
+        ov2 = 0.95
+        X2, Z2 = Xu + ov2, Zu + ov2
+        roof = hip_solid(ub, 0, 0, X2, Z2, ye2, FASCIA, 40.0, top='FishScale', fas='Wood', soffit='Wood')
+        yr = roof['y_top']
+        hip_ridges(ub, roof, 0.3, 0.26)
+        ridge(ub, (0, 0, 0), 'x', X2 - Z2 + 0.15, yr - 0.2, RIDGE_H, 0.42, RIDGE_LIFT, n_end=5 if hi else 2)
+        info.update(slope='30/40', ye2=round(ye2, 2))
+    elif hip:
+        roof = hip_solid(ub, 0, 0, X, Z, ye, FASCIA, slope, top='FishScale', fas='Wood', soffit='Wood')
+        yr = roof['y_top']
+        hip_ridges(ub, roof, 0.3, 0.26)
+        ridge(ub, (0, 0, 0), 'x', X - Z + 0.15, yr - 0.2, RIDGE_H, 0.42, RIDGE_LIFT, n_end=5 if hi else 2)
+        if hi:
+            a = (TIP + TIP_BAND) * math.cos(math.radians(slope)) + 0.18
             for sd in roof['sides']:
-                scale_row(ub, sd['T0'], sd['T0'] + sd['e'] * sd['W'], sd['s'])
+                scale_tips(ub, sd['T0'], sd['e'], sd['s'], sd['W'], a)
+        info.update(slope=round(slope, 1))
     else:
-        Xg = xc + 0.95                                                   # 出际
-        g = gable_roof(ub, Xg, Z, ye, FASCIA, SLOPE)
+        Xg = X                                                           # 悬山出际到 X
+        g = gable_roof(ub, Xg, Z, ye, FASCIA, slope)
         yr = g['yr']
-        tn = math.tan(math.radians(SLOPE))
-        # 山墙 / 廊顶：墙线以上到屋面下皮的五边形实体（封住屋架，前面兼作廊顶）
+        tn = math.tan(math.radians(slope))
+        # 山墙 / 廊顶：墙线以上到屋面下皮的五边形实体
         za, zb2 = zf - 0.22, zb + 0.18
         xa = xc + 0.16
-        sec = [(za, ye - 0.01), (zb2, ye - 0.01), (zb2, ye + FASCIA + (Z - zb2) * tn - FASCIA - 0.02),
-               (0.0, yr - FASCIA - 0.02), (za, ye + FASCIA + (Z + za) * tn - FASCIA - 0.02)]
+        sec = [(za, ye - 0.01), (zb2, ye - 0.01), (zb2, ye + (Z - zb2) * tn - 0.02),
+               (0.0, yr - FASCIA - 0.02), (za, ye + (Z + za) * tn - 0.02)]
         V = [(x, y, z) for x in (-xa, xa) for (z, y) in sec]
         n = len(sec)
         F = [tuple(range(n)), tuple(reversed(range(n, 2 * n)))]
         F += [(i, n + i, n + (i + 1) % n, (i + 1) % n) for i in range(n)]
         _emit(ub, V, F, 'StoneDark')
-        # 垂脊（两山沿坡）+ 正脊
-        for sx in (-1, 1):
+        for sx in (-1, 1):                                               # 垂脊（两山沿坡）
             x = sx * (Xg - 0.17)
             for sz in (-1, 1):
                 p0 = np.array([x, ye + FASCIA, sz * Z])
                 p1 = np.array([x, yr, 0.0])
                 d_ = p1 - p0
-                extrude(ub, p0 - d_ * 0.01, p1, (0, 1.0, 0), [(-0.17, -0.1), (0.17, -0.1), (0.17, 0.22), (-0.17, 0.22)], 'Tile')
-        ridge(ub, (0, 0, 0), 'x', Xg + 0.05, yr - 0.22, 0.55, 0.36, 0.42, n_end=5 if hi else 2)
+                extrude(ub, p0 - d_ * 0.01, p1, (0, 1.0, 0), [(-0.17, -0.1), (0.17, -0.1), (0.17, 0.24), (-0.17, 0.24)], 'Tile')
+        ridge(ub, (0, 0, 0), 'x', Xg + 0.05, yr - 0.2, RIDGE_H, 0.42, RIDGE_LIFT, n_end=5 if hi else 2)
         if hi:
             for sz in (-1, 1):
                 T0 = np.array([-Xg if sz < 0 else Xg, ye + FASCIA, sz * Z])
-                T1 = np.array([Xg if sz < 0 else -Xg, ye + FASCIA, sz * Z])
-                s = g['sf'] if sz < 0 else g['sb']
-                scale_row(ub, T0, T1, s)
+                e = np.array([1.0 if sz < 0 else -1.0, 0, 0])
+                scale_tips(ub, T0, e, g['sf'] if sz < 0 else g['sb'], 2 * Xg, 0.36)
+        info.update(slope=round(slope, 1))
+    info['roof'] = round(yr - 0.2 + RIDGE_H - ye, 2)                       # 檐下皮 → 脊顶（不含端头起翘）
+    info['top'] = round(yr - 0.2 + RIDGE_H, 2)
+    ub.info = info
     return ub
 
 
 if __name__ == '__main__':
     from que import check_closed_outward
-    for seed in (0, 1):
-        for lod in (0, 1):
-            u = build(10.2, 5.2, 7.5, lod, seed)
-            bad, frac = check_closed_outward(u)
-            print('house seed%d lod%d: %d tris, %d parts, bad %d, centroid %.3f' % (seed, lod, u.tris(), len(u.parts), len(bad), frac))
+    for (w, h, d) in ((9.0, 4.8, 7.0), (10.2, 5.2, 7.5), (11.4, 5.6, 8.0), (9.6, 5.6, 7.0)):
+        for seed in range(6):
+            for lod in (0, 1):
+                u = build(w, h, d, lod, seed)
+                bad, frac = check_closed_outward(u)
+                print('house %4.1f×%3.1f×%3.1f seed%d lod%d: %5d tris, %3d parts, bad %d, centroid %.3f  %s'
+                      % (w, h, d, seed, lod, u.tris(), len(u.parts), len(bad), frac, u.info if lod == 0 else ''))
