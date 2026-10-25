@@ -40,6 +40,7 @@ namespace Lanbai.Test
         public readonly List<Dictionary<string, object>> perf = new List<Dictionary<string, object>>();
         public readonly List<Dictionary<string, object>> textures = new List<Dictionary<string, object>>();
         public readonly List<Dictionary<string, object>> settings = new List<Dictionary<string, object>>();
+        public readonly List<Dictionary<string, object>> play = new List<Dictionary<string, object>>();   // 1.2.0：Play 阶段的每一段（交接扫描 / 闪烁探测）
         public readonly List<string> warnings = new List<string>();
         public readonly List<string> files = new List<string>();
         public readonly UndoStack undo = new UndoStack();
@@ -55,7 +56,7 @@ namespace Lanbai.Test
         public readonly Dictionary<string, byte[]> restoredBytes = new Dictionary<string, byte[]>();
         public bool sandboxReady, preflightOnly;
         public float? lastT;
-        public readonly DateTime started = DateTime.UtcNow;
+        public DateTime started = DateTime.UtcNow;   // Play 阶段读回来时要恢复（1.2.0），所以不是 readonly
 
         public void Metric(string name, double v, string note = null)
         {
@@ -116,7 +117,7 @@ namespace Lanbai.Test
     [InitializeOnLoad]
     public static class Runner
     {
-        public const string VERSION = "1.1.0";   // 1.1.0（2026-10-25）：D-43 #6 copied、复核的次要项（CONSENT 的范围、改回失败重试、ncrunch）
+        public const string VERSION = "1.2.0";   // 1.2.0（2026-10-25）：Play 阶段（transitions_sweep、flicker_probe，D-44 #4）；1.1.0：D-43 #6 copied、复核的次要项
         public const string TESTS_DIR = "Assets/Lanbai/Engineering/UnityTest/tests";
         public const string REPORTS = "LanbaiReports/tests";
         static readonly CultureInfo IC = CultureInfo.InvariantCulture;
@@ -242,7 +243,7 @@ namespace Lanbai.Test
                         SessionState.SetString(PendingKey, (testId ?? "") + "\t" + (testFile ?? "") + "\t" + (preflightOnly ? "1" : "0") + "\t" + mode);
                         ctx.Info("等 U# 程序资产初始化完再搭（最多 " + Lanbai.Udon.LanbaiUdonPrograms.TimeoutSeconds.ToString("0", IC) + " 秒）：\n" + rep);
                         Lanbai.Udon.LanbaiUdonPrograms.RunWhenReady("测试 " + ctx.testId, types,
-                            () => Finish(ctx, Guarded(ctx, () => Body(ctx)), done),
+                            () => { int e = Guarded(ctx, () => Body(ctx)); if (e != PlayPhase.Deferred) Finish(ctx, e, done); },
                             null,
                             msg => { ctx.blockedReason = "U# 程序资产没准备好：" + msg; Finish(ctx, 2, done); });
                     }
@@ -251,7 +252,41 @@ namespace Lanbai.Test
             }
             catch (BlockedException b) { exit = Blocked(ctx, b); }
             catch (Exception e) { exit = ToolFailure(ctx, e); }
-            if (!deferred) Finish(ctx, exit, done);
+            if (!deferred && exit != PlayPhase.Deferred) Finish(ctx, exit, done);
+        }
+
+        /// <summary>Play 阶段（1.2.0）跑完、退出 Play、reload 以后由 PlayPhase 调：查检查项和写入，再照常收尾。</summary>
+        public static void FinishFromPlay(Ctx ctx, int exit, Action<int, string> done)
+        {
+            if (exit == 0)
+            {
+                try
+                {
+                    if (ctx.before != null) ctx.writes = WriteGuard.Diff(ctx);
+                    Checks.Evaluate(ctx);
+                    exit = ctx.checks.Count(c => (string)c["status"] == "fail") > 0 ? 1 : 0;
+                    if (ctx.toolErrors.Count > 0)
+                    {
+                        ctx.error = "工具自己的代码出了 " + ctx.toolErrors.Count + " 次异常（详情在 manifest 的 tool_errors）：" + ctx.toolErrors[0].Split('\n')[0];
+                        exit = 3;
+                    }
+                }
+                catch (Exception e) { exit = ToolFailure(ctx, e); }
+            }
+            Finish(ctx, exit, done);
+        }
+
+        /// <summary>进 Play 之前调：等 U# 时记下的“reload 以后从头再跑”不能留着，不然进 Play 的那次 reload 会把测试又从头跑一遍</summary>
+        public static void ClearPending()
+        {
+            SessionState.EraseString(PendingKey);
+            SessionState.EraseBool(ResumeKey);
+        }
+
+        /// <summary>reload 以后重建“跑完以后做什么”：批处理退出，菜单打一行日志。</summary>
+        public static Action<int, string> DoneFor(string mode, string id, bool pre)
+        {
+            return mode == "batch" ? (Action<int, string>)((code, o) => EditorApplication.Exit(code)) : MenuDone(id, pre);
         }
 
         static int Guarded(Ctx ctx, Func<int> f)
@@ -333,6 +368,14 @@ namespace Lanbai.Test
 
         static int Body(Ctx ctx)
         {
+            // 1.2.0：测试定义有 play 的（transitions_sweep、flicker_probe），搭建以后进 Play 模式去拍，收尾在退出 Play 以后
+            if (PlayPhase.Wants(ctx))
+            {
+                bool okBuild = Steps.RunList(ctx, TJson.L(ctx.T("build")), "build", null, true);
+                if (!okBuild) { ctx.Warn("搭建有一步失败，不进 Play"); return 1; }
+                Preflight.ProjectSettingsChecks(ctx);
+                return PlayPhase.Begin(ctx);
+            }
             // 3) 搭建
             bool built = Steps.RunList(ctx, TJson.L(ctx.T("build")), "build", null, true);
             if (built) Steps.RunList(ctx, TJson.L(ctx.T("after_build")), "after_build", null, false);

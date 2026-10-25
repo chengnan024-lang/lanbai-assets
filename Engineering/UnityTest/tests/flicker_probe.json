@@ -1,0 +1,159 @@
+{
+  "id": "flicker_probe",
+  "title": "闪烁探测（Play 模式，默认 1016–1042 s，30 fps，一次跑一组变体）",
+  "source": "D-44 #1 / #4：1025 s 的闪。HANDOFF_LOG 当日条的“一次只关一样”自动化：每个变体把同一段重拍一遍，只差关掉的那一样；不改、不删任何东西（退出 Play 就回去了）",
+  "requires": {
+    "files": [
+      "Assets/Lanbai/Scenes/Lanbai_FullPreview.unity"
+    ],
+    "types": [
+      "LB_Journey",
+      "LanbaiOverlay",
+      "LanbaiActDispatcher"
+    ],
+    "why": "本地的全程预览场景（FromLocal/full_preview/20261025-0103）：12 个包接好、LB_Journey 带调试跳转（debugSeekSeconds + _DebugSeekVar）。工程里没有这个场景就 BLOCKED"
+  },
+  "scene": {
+    "path": "Assets/Lanbai/Scenes/Lanbai_FullPreview.unity",
+    "mode": "copy",
+    "why": "拷进沙盒再进 Play：全程预览场景本身不动、不存"
+  },
+  "allowed_writes": [],
+  "allowed_writes_why": "同上",
+  "play": {
+    "clock": {
+      "component": "LB_Journey",
+      "time_var": "dbgT",
+      "seek_var": "debugSeekSeconds",
+      "seek_event": "_DebugSeekVar",
+      "why": "和本地的旅程进度面板一样：写 debugSeekSeconds、发 _DebugSeekVar 跳转；dbgT 是旅程每帧算出来的 t"
+    },
+    "camera": {
+      "relative_to": {
+        "component": "LB_Journey",
+        "field": "busRoot"
+      },
+      "eye_field": "heroEye",
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 90,
+      "w": 640,
+      "h": 360,
+      "why": "主座位往前看：相机挂在 LB_Journey.busRoot 上，位置是 LB_Journey.heroEye（车的局部坐标，诗句也按它摆）；车动相机跟着动。遮罩球每张拍之前挪到相机这里"
+    },
+    "overlay_follow_camera": true,
+    "settle_s": 2,
+    "probes": [
+      {
+        "id": "p1025",
+        "t0": 1016,
+        "t1": 1042,
+        "fps": 30,
+        "variants": [
+          {
+            "id": "as_is",
+            "why": "三样都开着（对照）",
+            "toggles": []
+          },
+          {
+            "id": "cabin_full",
+            "why": "旧车厢不溶解（侵蚀 = 0：busRenderers 的 _Alpha = 1）",
+            "toggles": [
+              {
+                "type": "field_renderers",
+                "component": "LB_Journey",
+                "fields": [
+                  "busRenderers"
+                ],
+                "mpb_float": {
+                  "_Alpha": 1
+                },
+                "optional": true
+              }
+            ]
+          },
+          {
+            "id": "cabin_hidden",
+            "why": "旧车厢藏起来（busRenderers 关掉）",
+            "toggles": [
+              {
+                "type": "field_renderers",
+                "component": "LB_Journey",
+                "fields": [
+                  "busRenderers"
+                ],
+                "enabled": false,
+                "optional": true
+              }
+            ]
+          },
+          {
+            "id": "no_starsea",
+            "why": "星海占位（SeaA、SeaB）一直藏着",
+            "toggles": [
+              {
+                "type": "field_objects_active",
+                "component": "LB_Journey",
+                "fields": [
+                  "seaA",
+                  "seaB"
+                ],
+                "value": false,
+                "optional": true
+              }
+            ]
+          },
+          {
+            "id": "no_mirror",
+            "why": "场景里的 VRC_MirrorReflection 全关（挂在哪写进这一行的记录里）",
+            "toggles": [
+              {
+                "type": "set_components_enabled",
+                "component": "VRC.SDKBase.VRC_MirrorReflection",
+                "value": false,
+                "optional": true
+              }
+            ]
+          },
+          {
+            "id": "all_three_off",
+            "why": "三样都关",
+            "toggles": [
+              {
+                "type": "field_renderers",
+                "component": "LB_Journey",
+                "fields": [
+                  "busRenderers"
+                ],
+                "enabled": false,
+                "optional": true
+              },
+              {
+                "type": "field_objects_active",
+                "component": "LB_Journey",
+                "fields": [
+                  "seaA",
+                  "seaB"
+                ],
+                "value": false,
+                "optional": true
+              },
+              {
+                "type": "set_components_enabled",
+                "component": "VRC.SDKBase.VRC_MirrorReflection",
+                "value": false,
+                "optional": true
+              }
+            ]
+          }
+        ],
+        "why": "变体可以随便加减；toggle 的类型见 README_UnityTest §6（set_active、set_renderer、set_components_enabled、field_objects_active、field_renderers、udon_var、global_float、global_vector）"
+      }
+    ]
+  },
+  "checks": [],
+  "checks_why": "不设卡：看 summary.md 的表，哪个变体的 max_step_ev / flicker_px_frac 明显变小",
+  "manual": [
+    "结果和录屏一起放进 FromLocal/flicker_1025/<时间>/；工具只拍主座位往前，闪在别的方向就把 camera 的 yaw / pitch 改了再跑"
+  ]
+}
