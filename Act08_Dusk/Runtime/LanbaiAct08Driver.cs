@@ -21,7 +21,7 @@
 //    the cards                 Lanbai/CloudCard (Clouds_v2): upper group, lower group (the other sky, 8-ii, x 0.82), wisps;
 //                              colours by MPB (D-25: dusk -> blue hour), alpha / gain by t; 9a: EV-linear to dark by 1009.21.
 //    exposure                  LanbaiGrade(t) = {dEV, 0, 0, 1}: the exit pin (APL 34) -> +0.5 EV at F9 -> 0 at 933.11; the blue
-//                              hour 0 -> -1.5 EV (993.06 -> 1001.21, D-39 #1) -> 0 at 1009.21 (the
+//                              hour 0 -> -1.09 EV (993.06 -> 1001.21, D-39 #1; Act08_Grade.json) -> 0 at 1009.21 (the
 //                              dispatcher sums it; this driver never touches PPv2).
 //  D-33 #6: LanbaiActivate(true) clears the 'applied' flags: the next tick rebuilds sky, fog, sun line, light, RenderSettings,
 //  ceiling, cards from t alone (an Apply before any blend). Hand-back: only our own channels (ceiling off, SeaMode 0).
