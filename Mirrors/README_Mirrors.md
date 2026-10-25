@@ -5,8 +5,14 @@
 
 ## 0. 先做这几步
 
-1. **拷**：`Mirrors/` → `Assets/Lanbai/Mirrors/`（`Tools~`、`Docs~`、`Source/` 不会被 Unity 导入，拷了也没关系；`Source/BronzeMirror.blend` 不用拷）。依赖：`Assets/Lanbai/Common/`（`LanbaiGlobals.cginc`、`LanbaiSky.cginc`、`LanbaiFog.cginc`、`LanbaiVR.cginc`）和 `Assets/Lanbai/Sky/`（星点网格 `Sky/Generated/StarPoints_BSC5.asset`、银河图 `Sky/Textures/StarSky_Glow_8192x4096.png`）。
+1. **拷**：`Mirrors/` → `Assets/Lanbai/Mirrors/`（`Tools~`、`Docs~`、`Source/` 不会被 Unity 导入，拷了也没关系；`Source/BronzeMirror.blend` 不用拷）。依赖：`Assets/Lanbai/Common/`（`LanbaiGlobals.cginc`、`LanbaiSky.cginc`、`LanbaiFog.cginc`、`LanbaiVR.cginc`；编辑器的 `Common/Editor/LanbaiUdonPrograms.cs`，D-41）和 `Assets/Lanbai/Sky/`（星点网格 `Sky/Generated/StarPoints_BSC5.asset`、银河图 `Sky/Textures/StarSky_Glow_8192x4096.png`）。
 2. **点**：先跑天空的 `蓝白/Sky/Build Star Mesh`、`蓝白/Sky/Build Sky`、`蓝白/Build/Act09`，再点 **`蓝白/Build/Mirrors`**（可重复运行：先删上一次的 `R_Mirrors` 与 `Lanbai_MirrorsDriver`）。然后 `蓝白/Director/1 Generate Dispatcher`、`2 Wire Scene`。
+**接进全程预览（D-44 #1，给阿白）**：镜子的运行版本就是这一套（驱动 `LanbaiMirrorsDriver` + 三个 shader + 星尘 + 两个全局量），时刻表照 E20（`MirrorSchedule.json` / `LanbaiMirrorsData.cs`）。
+- 搭完以后，**`LB_Journey.PlaceStarSea` 的旧海面在 1010 → 1150.31 里要关掉**（`Engineering/README_集成.md` §3 的接管开关；不关的话旧海和镜子同时在）。
+- 没有天空的星点网格 / 银河图也能跑：镜面退回材质的 `_SkyFloor`，只是没有反射的星、反射的银河是空的（搭建时会给 warning）。
+- 车厢接口：车厢 shader 读 `_Udon_MirrorPlane`（镜面世界 y、镜线强度、镜序号、穿越进度）画镜线和推进侵蚀；`_Udon_MirrorRimLight` 与 `R_Mirrors/MirrorRimLight`（不投影的点光，只照 Player / PlayerLocal）是穿越时的镜缘光。
+- **不用 `VRC_MirrorReflection`**：镜面查天空自己的银河图，反射的星是天空星点网格的模板副本（`Lanbai/MirrorStars`）。全程预览里每帧报错的那个 VRC 镜子不是这个包的。
+
 3. **截图推回**（`FromLocal/mirrors_test/`，桌面 1920×1080、水平 FOV 90°、主座位眼位）：t = 1030.4 正前方偏下 12°、1030.4 向下看 −60°、1113.4 正前方偏下、1116.0 抬头 +30°、1123.5 正前方偏下、1136.6 正前方偏下、1142.0 向下看；外加 §1.8 录像窗口 (g)：1119 → 1150 正前方与向下看各一段 60 fps PNG 序列（跑 `flashcheck.py`）。和 `Docs~/iterations/r2_*.png` 对照（同一时刻、同一视向，只差车厢）。
 
 ## 1. 有什么
