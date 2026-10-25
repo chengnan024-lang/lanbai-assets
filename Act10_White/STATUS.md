@@ -1,1 +1,1 @@
-2026-10-25 08:20 UTC · 可以终审了：C1 = B（遮罩 1144.81 起 4.5 s、Lscene 0.06、正前方瓣 +0.46 s），四个白序列 PASS；LanbaiOverlayWindow {1144.81, 1188.96}（请重新 Generate Dispatcher），迟到的人 join_check 全 PASS；搭建菜单 `蓝白/Build/Act10 White`（D-41）。详情 `README_Act10.md`。
+2026-10-25 · 终审 W1–W5、M-9、M-10 改完：LanbaiOverlayWindow {1144.11, 1186.46}（W1，请重新 Generate Dispatcher），黑纱按 Lb 1.0 建（W2），W3 / W5，需要 Director v1.3（W4）；`join_check.py` 全 PASS；main 上的 `spawn_fade_sim.py` 换成本驱动逻辑后 1120–1200 s 801 个进场 0 个不过。详情 `README_Act10.md` §2。
