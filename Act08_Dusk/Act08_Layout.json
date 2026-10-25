@@ -3247,7 +3247,7 @@
    0.0,
    0.0,
    0.0,
-   -1.05,
+   -1.011,
    0.0
   ],
   "target_ev": [
@@ -3292,7 +3292,7 @@
   "note": "LanbaiGrade(t) = {dEV(t), 0, 0, 1}, linear between the keys (the exit 922.36 .. 933.11; the blue hour: --blue). Calibrate on the real bus: README §5 (7c end 921 and 8 start 923 front screenshots)",
   "blue": {
    "apl_target": 50.0,
-   "dev_at_1001_21": -1.05,
+   "dev_at_1001_21": -1.011,
    "ramp": [
     993.06,
     1001.21,
