@@ -428,12 +428,31 @@ def part_material(ptype):
 def seat_parts(out, seat_groups, bake=True):
     from parts import seat as SEAT, materials as MATS, texbake as TB
     seats, by_type = [], {}
+    joined = {}
     for inst, parts in seat_groups.items():
         ptype = parts[0]['lb_part']
         ob = join('Seat_' + inst, parts)
         ob['lb_part'] = ptype
         bb = [ob.matrix_world @ Vector(c) for c in ob.bound_box]
         set_origin(ob, sum(bb, Vector()) / 8)
+        joined[inst] = ob
+    # the seats of a type share one atlas, so they must have the same mesh. The decimated pads (seat.DECIMATE_PAD) are
+    # not: the collapse order depends on float noise in the world positions (SeatL1 came out 2 loops off SeatL0). The
+    # seats of a type differ only by a translation, so each takes the canonical seat's mesh at its own place.
+    for inst, ob in joined.items():
+        canon = joined.get(BB.SEAT_TYPES[ob['lb_part']]['inst'])
+        if canon is None or canon is ob:
+            continue
+        bb0 = np.array([tuple(c) for c in ob.bound_box])
+        old = ob.data
+        ob.data = canon.data.copy()
+        ob.data.name = ob.name
+        bpy.data.meshes.remove(old)
+        err = float(np.abs(np.array([tuple(c) for c in ob.bound_box]) - bb0).max())
+        if err > 0.003:
+            print('[finish] WARNING: %s differs from %s by %.1f mm (bounding box) - not just a translation?' % (ob.name, canon.name, 1000 * err))
+    for inst, ob in joined.items():
+        ptype = ob['lb_part']
         uv0_metric(ob)
         me = ob.data
         lay = me.uv_layers.new(name='UVMetric')
