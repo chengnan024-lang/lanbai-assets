@@ -4,7 +4,8 @@ that no HLSL compiler sees (Unity's ShaderLab parser does):
     'Failed to create material drawer Header with arguments ...') - CONTROL_总控.md §6 item 2.
   * a property line the parser would not accept (warning: the pattern below is ours, not Unity's grammar).
   * [KeywordEnum] / [Toggle(KW)] keywords never declared by a #pragma (the material control would do nothing).
-  * ZTest Always (CONTROL §3: only the overlay / mask sphere may use it).
+  * ZTest Always (CONTROL §3: only the overlay / mask sphere may use it; D-45 #10 adds the poem subtitles and their
+    line halos; the desktop letterbox (D-45 #15.3) is listed too, pending the director's wording in the bible).
 """
 import re
 
@@ -35,6 +36,9 @@ def blank_comments(text):
 def line_of(text, pos):
     return text.count('\n', 0, pos) + 1
 
+
+
+ZTEST_ALWAYS_OK = {'Lanbai/Overlay', 'Lanbai/Subtitle', 'Lanbai/SubtitleHalo', 'Lanbai/Letterbox'}
 
 class Block:
     def __init__(self, kind, text, line, start):
@@ -158,5 +162,6 @@ class ShaderFile:
                 if m.group(2) not in declared_keywords:
                     out.append(('WARN', ln, '[%s(%s)] %s: keyword %s is not declared by any #pragma' % (m.group(1), m.group(2), m.group(3), m.group(2))))
         for ln in self.ztest_always:
-            out.append(('WARN', ln, 'ZTest Always: CONTROL §3 allows it only on the overlay / mask sphere'))
+            if self.name not in ZTEST_ALWAYS_OK:
+                out.append(('WARN', ln, 'ZTest Always: CONTROL §3 allows it only on the overlay / mask sphere and the poem subtitles (D-45 #10)'))
         return out

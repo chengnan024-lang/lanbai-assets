@@ -46,7 +46,12 @@ RIG = {
     'line_pitch_em': {'cjk': 1.5, 'latin': 1.35}, 'tracking_em': {'cjk': 0.10, 'latin': 0.0},
     'max_lines': 2, 'max_line_deg': 25.0, 'max_line_deg_optB': 26.0,
     'base_bottom_el_deg': -21.0, 'base_bottom_el_optB': -13.0, 'forbidden_el_band_deg': [-17.0, -14.0],
-    'hang_em': 0.5, 'hang_chars': '？！—?!',
+    'hang_em': 0.5, 'hang_chars': '？！—',
+    # the "last line at E" point is the em box's centre: CJK 0.38 em, Latin 0.23 em above the baseline (as v4's
+    # lanbai_layout CJK_MID / LAT_TOP+LAT_BOT); the bake puts each TMP's baseline that far below its line centre
+    'em_centre_above_baseline_em': {'cjk': 0.38, 'latin': 0.23},
+    'tmp_font_size_per_m_em': 10.0, 'em_m_at_1m': round(2 * math.tan(math.radians(0.9)), 6),
+    'fonts': ['SourceHanSerifSC-Regular', 'SourceHanSerifTW-Regular', 'SourceHanSerifJP-Regular', 'EBGaramond-Regular', 'EBGaramond-Italic'],
     'depth': {'main_forward_m': 1.0, 'clamp_m': [0.45, 1.0], 'near_factor': 0.92, 'max_rate_mps': 0.5,
               'fallback': {'main_within_30deg': 1.0, 'main_other': 0.6, 'other_seats': 0.45, 'unseated': 0.8}},
     'yaw': {'deadzone_min_deg': 12.0, 'deadzone_margin_deg': 3.0, 'stop_err_deg': 1.5, 'stop_vel_dps': 3.0,
@@ -267,14 +272,20 @@ def check(subs, metrics=None):
             for s in rec['sync']:
                 if not any(abs(pg['t'] - s) < 1e-6 for pg in pages):
                     add('FAIL', '%s/%s has no page change at the sync point %.2f' % (pid, key, s))
-            # widths
+            # widths; hanging line-final ？！— in CJK (B.5: not counted in the centring -> the line moves right by half the hang)
             if metrics is not None:
                 for pg in pages:
+                    pg['width_deg'], pg['width_em'], pg['x_em'] = [], [], []
+                    cjk = L.FONTS[pg['font']]['cjk']
                     for ln in pg['lines']:
-                        w = deg_of_em(metrics.width_em(pg['font'], ln), RIG['em_deg'])
-                        pg.setdefault('width_deg', []).append(round(w, 2))
+                        w_em = metrics.width_em(pg['font'], ln)
+                        w = deg_of_em(w_em, RIG['em_deg'])
+                        pg['width_deg'].append(round(w, 2))
+                        pg['width_em'].append(round(w_em, 4))
+                        pg['x_em'].append(RIG['hang_em'] / 2 if cjk and ln[-1] in RIG['hang_chars'] else 0.0)
                         if w > RIG['max_line_deg'] + 1e-6:
                             add('FAIL', '%s/%s line %.1f° > %.0f°' % (pid, key, w, RIG['max_line_deg']), ln)
+                    pg['half_width_deg'] = round(max(pg['width_deg']) / 2, 2)
             # reading speed (report)
             for i, pg in enumerate(pages):
                 t_next = pages[i + 1]['t'] if i + 1 < len(pages) else rec['t_end']
