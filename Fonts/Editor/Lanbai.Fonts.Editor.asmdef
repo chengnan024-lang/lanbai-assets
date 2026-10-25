@@ -2,7 +2,8 @@
     "name": "Lanbai.Fonts.Editor",
     "rootNamespace": "",
     "references": [
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro",
+        "Lanbai.Common.Editor"
     ],
     "includePlatforms": [
         "Editor"

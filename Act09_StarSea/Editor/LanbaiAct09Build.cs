@@ -38,10 +38,16 @@ namespace Lanbai.Act09.EditorTools
         // magnitude that gives a linear peak 'peak' with _StarScale 1.6, _MagRef 0, _MagSlope 0.5 (no rank boost)
         static float MagForPeak(float peak) { return -Mathf.Log(Mathf.Max(peak, 1e-6f) / 1.6f, 2f) / (1.3287712f * MagSlope); }   // _StarScale 1.6
 
+        // D-41：菜单先等 U# 程序资产初始化完再搭（Common/Editor/LanbaiUdonPrograms）
         [MenuItem("蓝白/Build/Act09")]
+        public static void BuildMenu()
+        {
+            Lanbai.Udon.LanbaiUdonPrograms.RunWhenReady("蓝白/Build/Act09", new[] { typeof(LanbaiAct09Driver) }, Build, Lanbai.Udon.LanbaiUdonPrograms.NextToScript);
+        }
+
         public static void Build()
         {
-            LanbaiSkyBuild.EnsureProgramAsset("LanbaiAct09Driver");
+            Lanbai.Udon.LanbaiUdonPrograms.RequireReady("蓝白/Build/Act09", typeof(LanbaiAct09Driver));
             A9File d = JsonUtility.FromJson<A9File>(File.ReadAllText(ActRoot() + "/Act09_StarSea.json"));
             string gen = LanbaiSkyBuild.GeneratedFolder();
             Mesh main = AssetDatabase.LoadAssetAtPath<Mesh>(gen + "/StarPoints_BSC5.asset");
@@ -137,12 +143,7 @@ namespace Lanbai.Act09.EditorTools
 
         static LanbaiAct09Driver AddUdon(GameObject go)
         {
-            Type addType = Type.GetType("UdonSharpEditor.UdonSharpUndo, UdonSharp.Editor");
-            if (addType != null)
-                foreach (System.Reflection.MethodInfo mi in addType.GetMethods())
-                    if (mi.Name == "AddComponent" && mi.IsGenericMethodDefinition)
-                        return (LanbaiAct09Driver)mi.MakeGenericMethod(typeof(LanbaiAct09Driver)).Invoke(null, new object[] { go });
-            return go.AddComponent<LanbaiAct09Driver>();
+            return (LanbaiAct09Driver)Lanbai.Udon.LanbaiUdonPrograms.AddComponent(go, typeof(LanbaiAct09Driver));
         }
     }
 }
