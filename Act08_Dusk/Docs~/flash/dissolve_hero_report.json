@@ -7,7 +7,7 @@
  "max_red_flashes_in_any_1s": 0.5,
  "wcag_2_3_1": "PASS",
  "lanbai_flash_rule": "FAIL",
- "max_rise_ev_0.25s": 0.02,
+ "max_rise_ev_0.25s": 0.03,
  "max_rise_ev_1s": 0.12,
  "max_rise_ev_2s": 0.23,
  "max_fall_ev_0.25s": 0.01,
