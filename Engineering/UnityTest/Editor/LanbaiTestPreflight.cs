@@ -525,6 +525,17 @@ namespace Lanbai.Test
         {
             public readonly Dictionary<string, KeyValuePair<long, long>> assets = new Dictionary<string, KeyValuePair<long, long>>();
             public readonly Dictionary<string, string> settings = new Dictionary<string, string>();
+            // 1.2.2（阿白 10-25：Sea / SeaB / WetGround 按 mtime 报了，逐字节其实一样）：搭建脚本常常整个重存的那几类小文件，
+            // 开搭前记内容哈希；mtime 变了而哈希没变 = “存了、内容没变”，不算改动。大文件（贴图、模型）仍只看大小和 mtime。
+            public readonly Dictionary<string, string> hashes = new Dictionary<string, string>();
+        }
+
+        static readonly string[] HashExt = { ".mat", ".asset", ".prefab", ".meta", ".controller", ".anim", ".json", ".shader", ".cginc", ".cs", ".physicMaterial", ".mask", ".overrideController" };
+        const long HashMaxBytes = 4L * 1024 * 1024;
+
+        static bool Hashable(string path, long len)
+        {
+            return len <= HashMaxBytes && HashExt.Any(e => path.EndsWith(e, StringComparison.OrdinalIgnoreCase));
         }
 
         public static Snapshot Take(string projectDir)
@@ -537,6 +548,7 @@ namespace Lanbai.Test
                 if (rel.StartsWith(Sandbox.DIR + "/", StringComparison.Ordinal) || rel == Sandbox.DIR + ".meta") continue;
                 var fi = new FileInfo(f);
                 s.assets[rel] = new KeyValuePair<long, long>(fi.Length, fi.LastWriteTimeUtc.Ticks);
+                if (Hashable(rel, fi.Length)) { try { s.hashes[rel] = Sha256(File.ReadAllBytes(f)); } catch { } }
             }
             string ps = Path.Combine(projectDir, "ProjectSettings");
             if (Directory.Exists(ps))
@@ -570,7 +582,13 @@ namespace Lanbai.Test
             {
                 KeyValuePair<long, long> b;
                 if (!ctx.before.assets.TryGetValue(kv.Key, out b)) classify(kv.Key, "新建");
-                else if (b.Key != kv.Value.Key || b.Value != kv.Value.Value) classify(kv.Key, "改了");
+                else if (b.Key != kv.Value.Key || b.Value != kv.Value.Value)
+                {
+                    string h0, h1;
+                    if (b.Key == kv.Value.Key && ctx.before.hashes.TryGetValue(kv.Key, out h0) && after.hashes.TryGetValue(kv.Key, out h1) && h0 == h1)
+                        touched.Add("存了、内容逐字节没变 " + kv.Key);
+                    else classify(kv.Key, "改了");
+                }
             }
             foreach (var kv in ctx.before.assets) if (!after.assets.ContainsKey(kv.Key)) classify(kv.Key, "删了");
             foreach (var kv in after.settings)
@@ -585,7 +603,7 @@ namespace Lanbai.Test
             {
                 { "sandbox", Sandbox.DIR }, { "allowed_writes", TJson.Sa(TJson.G(ctx.test, "allowed_writes")).Cast<object>().ToList() },
                 { "declared", declared }, { "undeclared", undeclared }, { "project_settings_changed", ps }, { "tool_touched_restored", touched },
-                { "note", "按文件大小和修改时间比的：搭建脚本存了但内容没变的文件也算“改了”；只在内存里改、没存盘的不算" }
+                { "note", "按文件大小和修改时间比；材质、.asset、预制体、.meta 这类 ≤ 4 MB 的小文件另比内容哈希，存了但逐字节没变的列在 tool_touched_restored、不算改动；只在内存里改、没存盘的不算" }
             };
         }
 

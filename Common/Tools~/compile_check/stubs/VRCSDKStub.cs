@@ -144,3 +144,22 @@ namespace VRC.SDK3.Components
         public override void ExitStation(VRC.SDKBase.VRCPlayerApi player) { }
     }
 }
+
+// D-45: the desktop camera for the subtitles (C.8). VRCCameraSettings (SDK 3.7.6+, creators.vrchat.com/worlds/udon/
+// vrc-graphics/vrc-camera-settings): only the members the poem driver uses. [推测] for SDK 3.10.5: 阿白 confirms that
+// U# exposes them; the driver falls back to the head tracking data and a 60° vertical FOV when ScreenCamera is null.
+namespace VRC.SDK3.Rendering
+{
+    public class VRCCameraSettings
+    {
+        public static VRCCameraSettings ScreenCamera { get { return null; } }
+        public static VRCCameraSettings PhotoCamera { get { return null; } }
+        public bool Active { get { return true; } }
+        public Vector3 Position { get { return Vector3.zero; } }
+        public Quaternion Rotation { get { return Quaternion.identity; } }
+        public Vector3 Forward { get { return Vector3.forward; } }
+        public float FieldOfView { get { return 60f; } set { } }
+        public int PixelWidth { get { return 1920; } }
+        public int PixelHeight { get { return 1080; } }
+    }
+}
