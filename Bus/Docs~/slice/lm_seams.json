@@ -7,24 +7,24 @@
   "objects": 18,
   "islands": 8047,
   "covered_frac": 0.4014,
-  "nonblack_frac": 0.6132,
+  "nonblack_frac": 0.6248,
   "texels_two_islands": 0,
   "ring_outside_lit_black_frac": {
-   "n4": 0.005,
-   "texels_n4": 457044,
-   "n8": 0.0085,
-   "texels_n8": 505123
+   "n4": 0.0037,
+   "texels_n4": 458934,
+   "n8": 0.0071,
+   "texels_n8": 507066
   },
   "fill_sim": {
    "passes": 3,
    "neighbourhood": "3x3, mean of the non-black neighbours",
    "texels_filled": {
-    "inside": 96024,
-    "inside_ring2": 139855
+    "inside": 102961,
+    "inside_ring2": 142937
    },
    "black_frac_after": {
-    "inside": 0.3639,
-    "inside_ring2": 0.3534
+    "inside": 0.3507,
+    "inside_ring2": 0.3412
    }
   },
   "uv_fill": 0.4033,
@@ -70,7 +70,7 @@
     "gap_p5": 4.0,
     "gap_le2": 0,
     "baked_islands": 146,
-    "ring_black_frac_baked": 0.025
+    "ring_black_frac_baked": 0.0245
    },
    "folds": {
     "texels": 1084,
@@ -79,24 +79,24 @@
    },
    "black": {
     "in_bus": {
-     "tris_gt_10pct": 14,
-     "tris_gt_25pct": 11,
-     "area_gt_10pct_cm2": 149.96,
-     "area_gt_25pct_cm2": 110.93,
+     "tris_gt_10pct": 2,
+     "tris_gt_25pct": 2,
+     "area_gt_10pct_cm2": 5.65,
+     "area_gt_25pct_cm2": 5.65,
      "max": 1.0
     },
     "slice_shots": {
-     "tris_gt_10pct": 14,
-     "tris_gt_25pct": 13,
-     "area_gt_10pct_cm2": 157.84,
-     "area_gt_25pct_cm2": 157.8,
+     "tris_gt_10pct": 3,
+     "tris_gt_25pct": 3,
+     "area_gt_10pct_cm2": 44.29,
+     "area_gt_25pct_cm2": 44.29,
      "max": 1.0
     },
     "slice_only": {
-     "tris_gt_10pct": 9,
-     "tris_gt_25pct": 8,
-     "area_gt_10pct_cm2": 111.91,
-     "area_gt_25pct_cm2": 111.87,
+     "tris_gt_10pct": 2,
+     "tris_gt_25pct": 2,
+     "area_gt_10pct_cm2": 43.47,
+     "area_gt_25pct_cm2": 43.47,
      "max": 1.0
     },
     "visible_metal": {
@@ -107,19 +107,19 @@
      "max": 0.987
     },
     "all": {
-     "tris_gt_10pct": 341,
-     "tris_gt_25pct": 316,
-     "area_gt_10pct_cm2": 6634.22,
-     "area_gt_25pct_cm2": 6568.9,
+     "tris_gt_10pct": 283,
+     "tris_gt_25pct": 269,
+     "area_gt_10pct_cm2": 6237.46,
+     "area_gt_25pct_cm2": 6228.02,
      "max": 1.0
     }
    },
    "unlit_nonmetal": {
     "in_bus": {
-     "tris_gt_10pct": 158,
-     "tris_gt_25pct": 136,
-     "area_gt_10pct_cm2": 599.89,
-     "area_gt_25pct_cm2": 593.54,
+     "tris_gt_10pct": 200,
+     "tris_gt_25pct": 168,
+     "area_gt_10pct_cm2": 677.22,
+     "area_gt_25pct_cm2": 659.34,
      "max": 1.0
     },
     "slice_only": {
@@ -133,24 +133,24 @@
    "fill_sim": {
     "inside": {
      "in_bus": {
-      "tris_gt_10pct": 10,
-      "tris_gt_25pct": 7,
-      "area_gt_10pct_cm2": 120.79,
-      "area_gt_25pct_cm2": 81.76,
-      "max": 0.819
+      "tris_gt_10pct": 1,
+      "tris_gt_25pct": 1,
+      "area_gt_10pct_cm2": 0.83,
+      "area_gt_25pct_cm2": 0.83,
+      "max": 0.517
      },
      "slice_shots": {
-      "tris_gt_10pct": 9,
-      "tris_gt_25pct": 8,
-      "area_gt_10pct_cm2": 91.44,
-      "area_gt_25pct_cm2": 91.4,
+      "tris_gt_10pct": 3,
+      "tris_gt_25pct": 3,
+      "area_gt_10pct_cm2": 44.29,
+      "area_gt_25pct_cm2": 44.29,
       "max": 1.0
      },
      "in_bus_left_by_cause_cm2": {
       "no_texel": 0.0,
-      "thin": 22.15,
-      "enclosed": 42.66,
-      "open": 16.95
+      "thin": 0.83,
+      "enclosed": 0.0,
+      "open": 0.0
      }
     },
     "inside_ring2": {
@@ -201,83 +201,83 @@
     "counted_smooth_lt20": {
      "edges": 101,
      "length_m": 0.671,
-     "rel_p50": 0.159,
-     "rel_p95": 0.639,
-     "rel_max": 0.792,
-     "over_5pct": 79,
-     "over_10pct": 63,
-     "over_25pct": 36,
-     "length_over_10pct_m": 0.448,
-     "abs_E_max": 0.319
+     "rel_p50": 0.126,
+     "rel_p95": 0.534,
+     "rel_max": 1.0,
+     "over_5pct": 86,
+     "over_10pct": 59,
+     "over_25pct": 32,
+     "length_over_10pct_m": 0.407,
+     "abs_E_max": 0.669
     },
     "counted_20_60": {
      "edges": 309,
      "length_m": 13.418,
-     "rel_p50": 0.176,
-     "rel_p95": 0.827,
+     "rel_p50": 0.171,
+     "rel_p95": 0.877,
      "rel_max": 1.0,
-     "over_5pct": 248,
-     "over_10pct": 197,
-     "over_25pct": 126,
-     "length_over_10pct_m": 9.782,
-     "abs_E_max": 0.568
+     "over_5pct": 249,
+     "over_10pct": 200,
+     "over_25pct": 123,
+     "length_over_10pct_m": 10.321,
+     "abs_E_max": 0.563
     },
     "counted_smooth_lt20_lit": {
-     "edges": 96,
-     "length_m": 0.625,
-     "rel_p50": 0.17,
-     "rel_p95": 0.637,
-     "rel_max": 0.792,
-     "over_5pct": 78,
-     "over_10pct": 62,
-     "over_25pct": 35,
-     "length_over_10pct_m": 0.422,
-     "abs_E_max": 0.319
+     "edges": 95,
+     "length_m": 0.622,
+     "rel_p50": 0.129,
+     "rel_p95": 0.531,
+     "rel_max": 0.712,
+     "over_5pct": 84,
+     "over_10pct": 57,
+     "over_25pct": 30,
+     "length_over_10pct_m": 0.378,
+     "abs_E_max": 0.3
     },
     "counted_20_60_lit": {
-     "edges": 277,
-     "length_m": 8.223,
-     "rel_p50": 0.173,
-     "rel_p95": 0.706,
-     "rel_max": 0.875,
-     "over_5pct": 228,
-     "over_10pct": 178,
-     "over_25pct": 108,
-     "length_over_10pct_m": 5.356,
-     "abs_E_max": 0.568
+     "edges": 276,
+     "length_m": 8.222,
+     "rel_p50": 0.169,
+     "rel_p95": 0.739,
+     "rel_max": 0.893,
+     "over_5pct": 227,
+     "over_10pct": 179,
+     "over_25pct": 103,
+     "length_over_10pct_m": 5.762,
+     "abs_E_max": 0.554
     },
     "all_smooth_lt20": {
      "edges": 177,
      "length_m": 1.159,
-     "rel_p50": 0.189,
-     "rel_p95": 0.828,
+     "rel_p50": 0.16,
+     "rel_p95": 1.0,
      "rel_max": 1.0,
-     "over_5pct": 139,
-     "over_10pct": 118,
-     "over_25pct": 69,
-     "length_over_10pct_m": 0.812,
-     "abs_E_max": 0.416
+     "over_5pct": 151,
+     "over_10pct": 114,
+     "over_25pct": 62,
+     "length_over_10pct_m": 0.766,
+     "abs_E_max": 0.669
     }
    },
    "edge_dip": {
     "boundary_edges": 1914,
-    "checked": 956,
-    "ratio_p5": 0.678,
-    "dark_lt_90pct": 274,
+    "checked": 949,
+    "ratio_p5": 0.682,
+    "dark_lt_90pct": 268,
     "dark_lt_75pct": 95,
-    "dark_lt_50pct": 14,
-    "length_dark_lt_75pct_m": 3.474
+    "dark_lt_50pct": 10,
+    "length_dark_lt_75pct_m": 4.788
    },
    "mip_black_counted": {
     "mip1": {
-     "tris_gt_10pct": 113,
-     "tris_gt_25pct": 26,
-     "area_gt_25pct_cm2": 290.9
+     "tris_gt_10pct": 97,
+     "tris_gt_25pct": 14,
+     "area_gt_25pct_cm2": 126.5
     },
     "mip2": {
-     "tris_gt_10pct": 991,
-     "tris_gt_25pct": 106,
-     "area_gt_25pct_cm2": 395.0
+     "tris_gt_10pct": 976,
+     "tris_gt_25pct": 94,
+     "area_gt_25pct_cm2": 243.1
     }
    },
    "black_causes_in_bus": {
@@ -287,85 +287,27 @@
      "by_material": {}
     },
     "thin": {
-     "tris": 6,
-     "area_cm2": 22.96,
+     "tris": 1,
+     "area_cm2": 0.83,
      "by_material": {
-      "Part_SeatHero": 22.96
+      "Part_SeatHero": 0.83
      }
     },
     "enclosed": {
-     "tris": 2,
-     "area_cm2": 49.24,
-     "by_material": {
-      "Part_SeatHero": 49.24
-     }
+     "tris": 0,
+     "area_cm2": 0.0,
+     "by_material": {}
     },
     "open": {
-     "tris": 3,
-     "area_cm2": 38.73,
+     "tris": 1,
+     "area_cm2": 4.83,
      "by_material": {
-      "Part_SeatHero": 38.73
+      "Part_SeatHero": 4.83
      }
     },
     "thin_islands": {
-     "count": 4,
+     "count": 1,
      "largest": [
-      {
-       "island": 22,
-       "texels": 3952,
-       "tris": 92,
-       "area_cm2": 1757.68,
-       "black_thin_cm2": 19.69,
-       "uv_bbox_texels": [
-        56.69,
-        71.2
-       ],
-       "uv_area_texels": 3996.31,
-       "mat": "Part_SeatHero",
-       "at_unity": [
-        0.552,
-        0.941,
-        2.096
-       ],
-       "spot_unity": [
-        0.589,
-        0.942,
-        1.893
-       ],
-       "spot_normal": [
-        0.0,
-        -0.862,
-        -0.507
-       ]
-      },
-      {
-       "island": 87,
-       "texels": 97,
-       "tris": 9,
-       "area_cm2": 46.43,
-       "black_thin_cm2": 1.64,
-       "uv_bbox_texels": [
-        22.1,
-        9.21
-       ],
-       "uv_area_texels": 103.4,
-       "mat": "Part_SeatHero",
-       "at_unity": [
-        0.32,
-        0.964,
-        1.887
-       ],
-       "spot_unity": [
-        0.32,
-        0.991,
-        1.88
-       ],
-       "spot_normal": [
-        0.707,
-        0.543,
-        0.453
-       ]
-      },
       {
        "island": 105,
        "texels": 102,
@@ -393,34 +335,6 @@
         0.543,
         0.453
        ]
-      },
-      {
-       "island": 104,
-       "texels": 113,
-       "tris": 9,
-       "area_cm2": 46.43,
-       "black_thin_cm2": 0.81,
-       "uv_bbox_texels": [
-        22.1,
-        9.21
-       ],
-       "uv_area_texels": 103.4,
-       "mat": "Part_SeatHero",
-       "at_unity": [
-        0.78,
-        0.964,
-        1.887
-       ],
-       "spot_unity": [
-        0.78,
-        0.991,
-        1.88
-       ],
-       "spot_normal": [
-        -0.707,
-        0.543,
-        0.453
-       ]
       }
      ]
     },
@@ -429,67 +343,8 @@
      "without_texel": 0,
      "under_4_texels": 0
     },
-    "enclosed_spots": [
-     {
-      "at_unity": [
-       0.32,
-       0.961,
-       1.884
-      ],
-      "normal_unity": [
-       1.0,
-       0.0,
-       0.0
-      ],
-      "mat": "Part_SeatHero",
-      "area_cm2": 42.66
-     },
-     {
-      "at_unity": [
-       0.57,
-       1.423,
-       1.746
-      ],
-      "normal_unity": [
-       0.0,
-       0.562,
-       0.827
-      ],
-      "mat": "Part_SeatHero",
-      "area_cm2": 6.58
-     }
-    ],
+    "enclosed_spots": [],
     "open_spots": [
-     {
-      "at_unity": [
-       0.624,
-       0.927,
-       1.912
-      ],
-      "normal_unity": [
-       0.0,
-       0.383,
-       -0.924
-      ],
-      "mat": "Part_SeatHero",
-      "area_cm2": 16.95,
-      "escape": 0.29
-     },
-     {
-      "at_unity": [
-       0.476,
-       0.929,
-       1.913
-      ],
-      "normal_unity": [
-       0.0,
-       0.383,
-       -0.924
-      ],
-      "mat": "Part_SeatHero",
-      "area_cm2": 16.95,
-      "escape": 0.21
-     },
      {
       "at_unity": [
        0.582,
@@ -509,86 +364,6 @@
    },
    "faces_black_in_bus": [
     {
-     "face": 2192,
-     "weight": 1.0,
-     "area_cm2": 42.66,
-     "mat": "Part_SeatHero",
-     "at_unity": [
-      0.32,
-      0.961,
-      1.884
-     ],
-     "normal_unity": [
-      1.0,
-      0.0,
-      0.0
-     ]
-    },
-    {
-     "face": 1037,
-     "weight": 1.0,
-     "area_cm2": 11.33,
-     "mat": "Part_SeatHero",
-     "at_unity": [
-      0.589,
-      0.942,
-      1.893
-     ],
-     "normal_unity": [
-      0.0,
-      -0.862,
-      -0.507
-     ]
-    },
-    {
-     "face": 1037,
-     "weight": 1.0,
-     "area_cm2": 8.36,
-     "mat": "Part_SeatHero",
-     "at_unity": [
-      0.501,
-      0.943,
-      1.891
-     ],
-     "normal_unity": [
-      0.0,
-      -0.862,
-      -0.507
-     ]
-    },
-    {
-     "face": 3154,
-     "weight": 0.97,
-     "area_cm2": 6.58,
-     "mat": "Part_SeatHero",
-     "at_unity": [
-      0.57,
-      1.423,
-      1.746
-     ],
-     "normal_unity": [
-      0.0,
-      0.562,
-      0.827
-     ]
-    },
-    {
-     "face": 2135,
-     "weight": 0.55,
-     "area_cm2": 16.95,
-     "mat": "Part_SeatHero",
-     "at_unity": [
-      0.476,
-      0.929,
-      1.913
-     ],
-     "normal_unity": [
-      0.0,
-      0.383,
-      -0.924
-     ]
-    },
-    {
      "face": 1057,
      "weight": 1.0,
      "area_cm2": 4.83,
@@ -605,28 +380,12 @@
      ]
     },
     {
-     "face": 2135,
-     "weight": 0.45,
-     "area_cm2": 16.95,
-     "mat": "Part_SeatHero",
-     "at_unity": [
-      0.624,
-      0.927,
-      1.912
-     ],
-     "normal_unity": [
-      0.0,
-      0.383,
-      -0.924
-     ]
-    },
-    {
-     "face": 2183,
-     "weight": 1.0,
+     "face": 2223,
+     "weight": 0.52,
      "area_cm2": 0.83,
      "mat": "Part_SeatHero",
      "at_unity": [
-      0.32,
+      0.782,
       0.991,
       1.88
      ],
@@ -634,90 +393,10 @@
       0.707,
       0.543,
       0.453
-     ]
-    },
-    {
-     "face": 2221,
-     "weight": 1.0,
-     "area_cm2": 0.81,
-     "mat": "Part_SeatHero",
-     "at_unity": [
-      0.78,
-      0.991,
-      1.88
-     ],
-     "normal_unity": [
-      -0.707,
-      0.543,
-      0.453
-     ]
-    },
-    {
-     "face": 2183,
-     "weight": 1.0,
-     "area_cm2": 0.81,
-     "mat": "Part_SeatHero",
-     "at_unity": [
-      0.32,
-      0.96,
-      1.917
-     ],
-     "normal_unity": [
-      0.707,
-      0.543,
-      0.453
-     ]
-    },
-    {
-     "face": 1928,
-     "weight": 0.13,
-     "area_cm2": 11.04,
-     "mat": "Part_SeatHero",
-     "at_unity": [
-      0.762,
-      1.253,
-      1.79
-     ],
-     "normal_unity": [
-      -0.831,
-      -0.096,
-      -0.547
-     ]
-    },
-    {
-     "face": 1928,
-     "weight": 0.12,
-     "area_cm2": 11.04,
-     "mat": "Part_SeatHero",
-     "at_unity": [
-      0.761,
-      1.105,
-      1.817
-     ],
-     "normal_unity": [
-      -0.831,
-      -0.096,
-      -0.547
      ]
     }
    ],
    "faces_black_slice_only": [
-    {
-     "face": 2518,
-     "weight": 0.92,
-     "area_cm2": 60.72,
-     "mat": "Part_SeatHero",
-     "at_unity": [
-      0.978,
-      0.909,
-      2.108
-     ],
-     "normal_unity": [
-      -1.0,
-      0.0,
-      0.0
-     ]
-    },
     {
      "face": 2229,
      "weight": 1.0,
@@ -735,99 +414,19 @@
      ]
     },
     {
-     "face": 2221,
-     "weight": 1.0,
-     "area_cm2": 0.83,
+     "face": 2223,
+     "weight": 0.46,
+     "area_cm2": 0.81,
      "mat": "Part_SeatHero",
      "at_unity": [
-      0.78,
+      0.782,
       0.96,
       1.917
      ],
      "normal_unity": [
-      -0.707,
+      0.707,
       0.543,
       0.453
-     ]
-    },
-    {
-     "face": 2494,
-     "weight": 0.5,
-     "area_cm2": 2.02,
-     "mat": "Part_SeatHero",
-     "at_unity": [
-      0.978,
-      0.878,
-      2.108
-     ],
-     "normal_unity": [
-      -0.924,
-      -0.383,
-      -0.0
-     ]
-    },
-    {
-     "face": 2496,
-     "weight": 0.46,
-     "area_cm2": 1.41,
-     "mat": "Part_SeatHero",
-     "at_unity": [
-      0.979,
-      0.94,
-      2.018
-     ],
-     "normal_unity": [
-      -0.924,
-      0.0,
-      -0.383
-     ]
-    },
-    {
-     "face": 2496,
-     "weight": 0.44,
-     "area_cm2": 1.41,
-     "mat": "Part_SeatHero",
-     "at_unity": [
-      0.978,
-      0.909,
-      2.019
-     ],
-     "normal_unity": [
-      -0.924,
-      0.0,
-      -0.383
-     ]
-    },
-    {
-     "face": 2494,
-     "weight": 0.34,
-     "area_cm2": 2.02,
-     "mat": "Part_SeatHero",
-     "at_unity": [
-      0.979,
-      0.877,
-      2.064
-     ],
-     "normal_unity": [
-      -0.924,
-      -0.383,
-      -0.0
-     ]
-    },
-    {
-     "face": 2471,
-     "weight": 0.23,
-     "area_cm2": 0.04,
-     "mat": "Part_SeatHero",
-     "at_unity": [
-      0.979,
-      0.878,
-      2.018
-     ],
-     "normal_unity": [
-      -0.888,
-      -0.325,
-      -0.325
      ]
     }
    ],
@@ -846,6 +445,22 @@
       -0.0,
       -0.001,
       -1.0
+     ]
+    },
+    {
+     "face": 2192,
+     "weight": 1.0,
+     "area_cm2": 42.66,
+     "mat": "Part_SeatHero",
+     "at_unity": [
+      0.32,
+      0.961,
+      1.884
+     ],
+     "normal_unity": [
+      1.0,
+      0.0,
+      0.0
      ]
     },
     {
@@ -913,6 +528,22 @@
      ]
     },
     {
+     "face": 49,
+     "weight": 0.57,
+     "area_cm2": 50.07,
+     "mat": "Part_SeatHero",
+     "at_unity": [
+      0.36,
+      1.299,
+      1.769
+     ],
+     "normal_unity": [
+      0.0,
+      -0.174,
+      -0.985
+     ]
+    },
+    {
      "face": 1932,
      "weight": 1.0,
      "area_cm2": 11.04,
@@ -927,127 +558,23 @@
       -0.144,
       -0.819
      ]
-    },
-    {
-     "face": 1931,
-     "weight": 1.0,
-     "area_cm2": 11.04,
-     "mat": "Part_SeatHero",
-     "at_unity": [
-      0.775,
-      1.253,
-      1.785
-     ],
-     "normal_unity": [
-      0.195,
-      -0.17,
-      -0.966
-     ]
-    },
-    {
-     "face": 1937,
-     "weight": 1.0,
-     "area_cm2": 11.04,
-     "mat": "Part_SeatHero",
-     "at_unity": [
-      0.779,
-      1.108,
-      1.833
-     ],
-     "normal_unity": [
-      0.556,
-      0.144,
-      0.819
-     ]
     }
    ],
    "counted_by_material": {
     "Part_SeatHero": {
      "area_cm2": 9373.3,
-     "in_bus_black_gt_25pct_cm2": 110.93,
-     "slice_only_black_gt_25pct_cm2": 111.87,
-     "in_bus_unlit_gt_25pct_cm2": 593.54
+     "in_bus_black_gt_25pct_cm2": 5.65,
+     "slice_only_black_gt_25pct_cm2": 43.47,
+     "in_bus_unlit_gt_25pct_cm2": 659.34
     }
    },
    "worst_seams": [
     {
      "kind": "seam",
-     "rel": 0.695,
+     "rel": 0.712,
      "E": [
-      0.148,
-      0.309
-     ],
-     "dihedral": 3.1,
-     "edge_mm": 72.1,
-     "at_unity": [
-      0.755,
-      1.32,
-      1.766
-     ],
-     "normal_unity": [
-      0.664,
-      -0.13,
-      -0.737
-     ],
-     "mat": [
-      "Part_SeatHero",
-      "Part_SeatHero"
-     ]
-    },
-    {
-     "kind": "seam",
-     "rel": 0.68,
-     "E": [
-      0.106,
-      0.229
-     ],
-     "dihedral": 1.6,
-     "edge_mm": 12.5,
-     "at_unity": [
-      0.754,
-      1.362,
-      1.759
-     ],
-     "normal_unity": [
-      0.683,
-      -0.117,
-      -0.721
-     ],
-     "mat": [
-      "Part_SeatHero",
-      "Part_SeatHero"
-     ]
-    },
-    {
-     "kind": "seam",
-     "rel": 0.455,
-     "E": [
-      0.256,
-      0.176
-     ],
-     "dihedral": 5.9,
-     "edge_mm": 14.5,
-     "at_unity": [
-      0.353,
-      1.028,
-      1.865
-     ],
-     "normal_unity": [
-      -0.63,
-      -0.742,
-      0.23
-     ],
-     "mat": [
-      "Part_SeatHero",
-      "Part_SeatHero"
-     ]
-    },
-    {
-     "kind": "seam",
-     "rel": 0.442,
-     "E": [
-      0.071,
-      0.121
+      0.039,
+      0.111
      ],
      "dihedral": 9.4,
      "edge_mm": 4.9,
@@ -1068,10 +595,106 @@
     },
     {
      "kind": "seam",
-     "rel": 0.394,
+     "rel": 0.549,
      "E": [
-      0.416,
-      0.269
+      0.112,
+      0.199
+     ],
+     "dihedral": 1.6,
+     "edge_mm": 12.5,
+     "at_unity": [
+      0.754,
+      1.362,
+      1.759
+     ],
+     "normal_unity": [
+      0.683,
+      -0.117,
+      -0.721
+     ],
+     "mat": [
+      "Part_SeatHero",
+      "Part_SeatHero"
+     ]
+    },
+    {
+     "kind": "seam",
+     "rel": 0.531,
+     "E": [
+      0.156,
+      0.26
+     ],
+     "dihedral": 3.1,
+     "edge_mm": 72.1,
+     "at_unity": [
+      0.755,
+      1.32,
+      1.766
+     ],
+     "normal_unity": [
+      0.664,
+      -0.13,
+      -0.737
+     ],
+     "mat": [
+      "Part_SeatHero",
+      "Part_SeatHero"
+     ]
+    },
+    {
+     "kind": "seam",
+     "rel": 0.414,
+     "E": [
+      0.175,
+      0.133
+     ],
+     "dihedral": 4.0,
+     "edge_mm": 12.4,
+     "at_unity": [
+      0.353,
+      1.025,
+      1.852
+     ],
+     "normal_unity": [
+      -0.729,
+      -0.669,
+      0.148
+     ],
+     "mat": [
+      "Part_SeatHero",
+      "Part_SeatHero"
+     ]
+    },
+    {
+     "kind": "seam",
+     "rel": 0.338,
+     "E": [
+      0.162,
+      0.215
+     ],
+     "dihedral": 14.7,
+     "edge_mm": 14.4,
+     "at_unity": [
+      0.353,
+      1.028,
+      1.865
+     ],
+     "normal_unity": [
+      -0.63,
+      -0.742,
+      0.23
+     ],
+     "mat": [
+      "Part_SeatHero",
+      "Part_SeatHero"
+     ]
+    },
+    {
+     "kind": "seam",
+     "rel": 0.328,
+     "E": [
+      0.435,
+      0.303
      ],
      "dihedral": 16.9,
      "edge_mm": 6.7,
@@ -1089,54 +712,13 @@
       "Part_SeatHero",
       "Part_SeatHero"
      ]
-    },
-    {
-     "kind": "seam",
-     "rel": 0.387,
-     "E": [
-      0.053,
-      0.059
-     ],
-     "dihedral": 9.4,
-     "edge_mm": 4.9,
-     "at_unity": [
-      0.369,
-      1.45,
-      1.77
-     ],
-     "normal_unity": [
-      0.393,
-      -0.627,
-      0.673
-     ],
-     "mat": [
-      "Part_SeatHero",
-      "Part_SeatHero"
-     ]
     }
    ],
    "worst_edge_dips": [
     {
      "kind": "edge_dip",
-     "ratio": 0.0,
-     "E_in": 0.54,
-     "edge_mm": 146.0,
-     "at_unity": [
-      0.318,
-      0.976,
-      1.899
-     ],
-     "normal_unity": [
-      0.0,
-      0.768,
-      0.64
-     ],
-     "mat": "Part_SeatHero"
-    },
-    {
-     "kind": "edge_dip",
      "ratio": 0.02,
-     "E_in": 0.248,
+     "E_in": 0.247,
      "edge_mm": 36.8,
      "at_unity": [
       0.783,
@@ -1152,8 +734,8 @@
     },
     {
      "kind": "edge_dip",
-     "ratio": 0.054,
-     "E_in": 0.373,
+     "ratio": 0.045,
+     "E_in": 0.38,
      "edge_mm": 37.6,
      "at_unity": [
       0.786,
@@ -1169,8 +751,8 @@
     },
     {
      "kind": "edge_dip",
-     "ratio": 0.145,
-     "E_in": 0.63,
+     "ratio": 0.142,
+     "E_in": 0.62,
      "edge_mm": 378.4,
      "at_unity": [
       0.311,
@@ -1181,6 +763,23 @@
       0.0,
       1.0,
       0.0
+     ],
+     "mat": "Part_SeatHero"
+    },
+    {
+     "kind": "edge_dip",
+     "ratio": 0.249,
+     "E_in": 0.041,
+     "edge_mm": 7.7,
+     "at_unity": [
+      0.323,
+      0.951,
+      1.898
+     ],
+     "normal_unity": [
+      -0.741,
+      -0.008,
+      -0.671
      ],
      "mat": "Part_SeatHero"
     }
@@ -1213,7 +812,7 @@
     "gap_p5": 4.0,
     "gap_le2": 0,
     "baked_islands": 21,
-    "ring_black_frac_baked": 0.0303
+    "ring_black_frac_baked": 0.0314
    },
    "folds": {
     "texels": 0,
@@ -1243,26 +842,26 @@
      "max": 0.0
     },
     "visible_metal": {
-     "tris_gt_10pct": 27,
-     "tris_gt_25pct": 27,
-     "area_gt_10pct_cm2": 11.45,
-     "area_gt_25pct_cm2": 11.45,
+     "tris_gt_10pct": 13,
+     "tris_gt_25pct": 13,
+     "area_gt_10pct_cm2": 8.04,
+     "area_gt_25pct_cm2": 8.04,
      "max": 1.0
     },
     "all": {
-     "tris_gt_10pct": 936,
-     "tris_gt_25pct": 872,
-     "area_gt_10pct_cm2": 1941.01,
-     "area_gt_25pct_cm2": 1912.04,
+     "tris_gt_10pct": 766,
+     "tris_gt_25pct": 704,
+     "area_gt_10pct_cm2": 1525.19,
+     "area_gt_25pct_cm2": 1442.77,
      "max": 1.0
     }
    },
    "unlit_nonmetal": {
     "in_bus": {
-     "tris_gt_10pct": 105,
-     "tris_gt_25pct": 91,
-     "area_gt_10pct_cm2": 110.18,
-     "area_gt_25pct_cm2": 86.83,
+     "tris_gt_10pct": 110,
+     "tris_gt_25pct": 96,
+     "area_gt_10pct_cm2": 115.78,
+     "area_gt_25pct_cm2": 88.66,
      "max": 1.0
     },
     "slice_only": {
@@ -1344,29 +943,29 @@
     "counted_smooth_lt20": {
      "edges": 103,
      "length_m": 8.035,
-     "rel_p50": 0.178,
-     "rel_p95": 0.999,
+     "rel_p50": 0.148,
+     "rel_p95": 1.0,
      "rel_max": 1.0,
-     "over_5pct": 89,
-     "over_10pct": 73,
-     "over_25pct": 46,
-     "length_over_10pct_m": 5.333,
-     "abs_E_max": 0.366
+     "over_5pct": 86,
+     "over_10pct": 66,
+     "over_25pct": 45,
+     "length_over_10pct_m": 4.893,
+     "abs_E_max": 0.36
     },
     "counted_20_60": {
      "edges": 0
     },
     "counted_smooth_lt20_lit": {
-     "edges": 81,
-     "length_m": 5.717,
-     "rel_p50": 0.136,
-     "rel_p95": 0.712,
-     "rel_max": 0.908,
-     "over_5pct": 67,
-     "over_10pct": 51,
-     "over_25pct": 24,
-     "length_over_10pct_m": 3.015,
-     "abs_E_max": 0.339
+     "edges": 80,
+     "length_m": 5.705,
+     "rel_p50": 0.107,
+     "rel_p95": 0.589,
+     "rel_max": 0.933,
+     "over_5pct": 63,
+     "over_10pct": 43,
+     "over_25pct": 22,
+     "length_over_10pct_m": 2.563,
+     "abs_E_max": 0.34
     },
     "counted_20_60_lit": {
      "edges": 0
@@ -1374,24 +973,24 @@
     "all_smooth_lt20": {
      "edges": 250,
      "length_m": 11.287,
-     "rel_p50": 0.188,
+     "rel_p50": 0.136,
      "rel_p95": 1.0,
      "rel_max": 1.0,
-     "over_5pct": 173,
-     "over_10pct": 153,
-     "over_25pct": 117,
-     "length_over_10pct_m": 7.528,
-     "abs_E_max": 0.396
+     "over_5pct": 162,
+     "over_10pct": 137,
+     "over_25pct": 110,
+     "length_over_10pct_m": 6.934,
+     "abs_E_max": 0.36
     }
    },
    "edge_dip": {
     "boundary_edges": 541,
-    "checked": 422,
-    "ratio_p5": 0.798,
-    "dark_lt_90pct": 64,
-    "dark_lt_75pct": 14,
-    "dark_lt_50pct": 6,
-    "length_dark_lt_75pct_m": 1.284
+    "checked": 425,
+    "ratio_p5": 0.752,
+    "dark_lt_90pct": 60,
+    "dark_lt_75pct": 22,
+    "dark_lt_50pct": 5,
+    "length_dark_lt_75pct_m": 1.954
    },
    "mip_black_counted": {
     "mip1": {
@@ -1400,7 +999,7 @@
      "area_gt_25pct_cm2": 5.7
     },
     "mip2": {
-     "tris_gt_10pct": 190,
+     "tris_gt_10pct": 183,
      "tris_gt_25pct": 49,
      "area_gt_25pct_cm2": 35.6
     }
@@ -1575,9 +1174,9 @@
      "area_cm2": 2.55,
      "mat": "Seal",
      "at_unity": [
-      1.01,
-      1.673,
-      1.309
+      1.009,
+      1.716,
+      1.308
      ],
      "normal_unity": [
       -0.842,
@@ -1591,9 +1190,9 @@
      "area_cm2": 2.55,
      "mat": "Seal",
      "at_unity": [
-      1.009,
-      1.716,
-      1.308
+      1.01,
+      1.673,
+      1.309
      ],
      "normal_unity": [
       -0.842,
@@ -1651,16 +1250,40 @@
      "area_cm2": 269.6,
      "in_bus_black_gt_25pct_cm2": 3.22,
      "slice_only_black_gt_25pct_cm2": 0.0,
-     "in_bus_unlit_gt_25pct_cm2": 86.83
+     "in_bus_unlit_gt_25pct_cm2": 88.66
     }
    },
    "worst_seams": [
     {
      "kind": "seam",
-     "rel": 0.882,
+     "rel": 0.82,
      "E": [
-      0.061,
-      0.179
+      0.079,
+      0.015
+     ],
+     "dihedral": 18.5,
+     "edge_mm": 125.6,
+     "at_unity": [
+      0.995,
+      2.209,
+      1.935
+     ],
+     "normal_unity": [
+      -0.604,
+      -0.797,
+      0.0
+     ],
+     "mat": [
+      "Seal",
+      "Seal"
+     ]
+    },
+    {
+     "kind": "seam",
+     "rel": 0.731,
+     "E": [
+      0.086,
+      0.175
      ],
      "dihedral": 13.2,
      "edge_mm": 11.7,
@@ -1681,58 +1304,10 @@
     },
     {
      "kind": "seam",
-     "rel": 0.876,
+     "rel": 0.649,
      "E": [
-      0.155,
-      0.035
-     ],
-     "dihedral": 18.5,
-     "edge_mm": 125.6,
-     "at_unity": [
-      0.995,
-      2.209,
-      1.684
-     ],
-     "normal_unity": [
-      -0.604,
-      -0.797,
-      0.0
-     ],
-     "mat": [
-      "Seal",
-      "Seal"
-     ]
-    },
-    {
-     "kind": "seam",
-     "rel": 0.865,
-     "E": [
-      0.028,
-      0.147
-     ],
-     "dihedral": 13.2,
-     "edge_mm": 11.7,
-     "at_unity": [
-      0.997,
-      2.206,
-      2.517
-     ],
-     "normal_unity": [
-      0.747,
-      -0.634,
-      -0.199
-     ],
-     "mat": [
-      "Seal",
-      "Seal"
-     ]
-    },
-    {
-     "kind": "seam",
-     "rel": 0.712,
-     "E": [
-      0.064,
-      0.174
+      0.08,
+      0.179
      ],
      "dihedral": 13.2,
      "edge_mm": 11.7,
@@ -1753,22 +1328,22 @@
     },
     {
      "kind": "seam",
-     "rel": 0.627,
+     "rel": 0.586,
      "E": [
-      0.111,
-      0.173
+      0.152,
+      0.096
      ],
-     "dihedral": 13.1,
-     "edge_mm": 11.8,
+     "dihedral": 18.6,
+     "edge_mm": 11.7,
      "at_unity": [
-      0.998,
-      2.155,
-      2.559
+      0.996,
+      2.206,
+      1.353
      ],
      "normal_unity": [
-      0.73,
-      -0.045,
-      -0.682
+      -0.603,
+      -0.765,
+      0.227
      ],
      "mat": [
       "Seal",
@@ -1777,10 +1352,34 @@
     },
     {
      "kind": "seam",
-     "rel": 0.562,
+     "rel": 0.526,
      "E": [
-      0.199,
-      0.101
+      0.241,
+      0.318
+     ],
+     "dihedral": 13.2,
+     "edge_mm": 11.7,
+     "at_unity": [
+      1.023,
+      1.313,
+      2.517
+     ],
+     "normal_unity": [
+      0.708,
+      0.677,
+      -0.199
+     ],
+     "mat": [
+      "Seal",
+      "Seal"
+     ]
+    },
+    {
+     "kind": "seam",
+     "rel": 0.524,
+     "E": [
+      0.158,
+      0.1
      ],
      "dihedral": 18.5,
      "edge_mm": 11.7,
@@ -1803,25 +1402,8 @@
    "worst_edge_dips": [
     {
      "kind": "edge_dip",
-     "ratio": 0.349,
-     "E_in": 0.09,
-     "edge_mm": 125.5,
-     "at_unity": [
-      0.995,
-      2.209,
-      1.433
-     ],
-     "normal_unity": [
-      -0.826,
-      -0.564,
-      -0.0
-     ],
-     "mat": "Seal"
-    },
-    {
-     "kind": "edge_dip",
-     "ratio": 0.353,
-     "E_in": 0.059,
+     "ratio": 0.07,
+     "E_in": 0.03,
      "edge_mm": 125.6,
      "at_unity": [
       0.995,
@@ -1837,8 +1419,25 @@
     },
     {
      "kind": "edge_dip",
-     "ratio": 0.468,
-     "E_in": 0.065,
+     "ratio": 0.351,
+     "E_in": 0.06,
+     "edge_mm": 125.5,
+     "at_unity": [
+      0.995,
+      2.209,
+      1.433
+     ],
+     "normal_unity": [
+      -0.826,
+      -0.564,
+      -0.0
+     ],
+     "mat": "Seal"
+    },
+    {
+     "kind": "edge_dip",
+     "ratio": 0.379,
+     "E_in": 0.046,
      "edge_mm": 125.6,
      "at_unity": [
       0.995,
@@ -1854,18 +1453,18 @@
     },
     {
      "kind": "edge_dip",
-     "ratio": 0.479,
-     "E_in": 0.108,
-     "edge_mm": 125.5,
+     "ratio": 0.577,
+     "E_in": 0.251,
+     "edge_mm": 11.7,
      "at_unity": [
-      0.997,
-      2.209,
-      2.437
+      0.996,
+      2.177,
+      1.318
      ],
      "normal_unity": [
-      0.75,
-      -0.662,
-      0.0
+      -0.614,
+      -0.386,
+      0.688
      ],
      "mat": "Seal"
     }
@@ -2029,68 +1628,68 @@
     "counted_smooth_lt20": {
      "edges": 7,
      "length_m": 0.021,
-     "rel_p50": 0.639,
-     "rel_p95": 0.875,
-     "rel_max": 0.909,
+     "rel_p50": 0.597,
+     "rel_p95": 0.847,
+     "rel_max": 0.885,
      "over_5pct": 7,
      "over_10pct": 7,
      "over_25pct": 7,
      "length_over_10pct_m": 0.021,
-     "abs_E_max": 0.695
+     "abs_E_max": 0.662
     },
     "counted_20_60": {
      "edges": 70,
      "length_m": 0.617,
-     "rel_p50": 0.247,
-     "rel_p95": 0.568,
-     "rel_max": 0.817,
-     "over_5pct": 67,
-     "over_10pct": 64,
-     "over_25pct": 35,
-     "length_over_10pct_m": 0.598,
-     "abs_E_max": 0.727
+     "rel_p50": 0.235,
+     "rel_p95": 0.542,
+     "rel_max": 0.783,
+     "over_5pct": 70,
+     "over_10pct": 59,
+     "over_25pct": 34,
+     "length_over_10pct_m": 0.577,
+     "abs_E_max": 0.679
     },
     "counted_smooth_lt20_lit": {
      "edges": 7,
      "length_m": 0.021,
-     "rel_p50": 0.639,
-     "rel_p95": 0.875,
-     "rel_max": 0.909,
+     "rel_p50": 0.597,
+     "rel_p95": 0.847,
+     "rel_max": 0.885,
      "over_5pct": 7,
      "over_10pct": 7,
      "over_25pct": 7,
      "length_over_10pct_m": 0.021,
-     "abs_E_max": 0.695
+     "abs_E_max": 0.662
     },
     "counted_20_60_lit": {
      "edges": 70,
      "length_m": 0.617,
-     "rel_p50": 0.247,
-     "rel_p95": 0.568,
-     "rel_max": 0.817,
-     "over_5pct": 67,
-     "over_10pct": 64,
-     "over_25pct": 35,
-     "length_over_10pct_m": 0.598,
-     "abs_E_max": 0.727
+     "rel_p50": 0.235,
+     "rel_p95": 0.542,
+     "rel_max": 0.783,
+     "over_5pct": 70,
+     "over_10pct": 59,
+     "over_25pct": 34,
+     "length_over_10pct_m": 0.577,
+     "abs_E_max": 0.679
     },
     "all_smooth_lt20": {
      "edges": 204,
      "length_m": 8.645,
      "rel_p50": 0.0,
      "rel_p95": 0.0,
-     "rel_max": 0.909,
+     "rel_max": 0.885,
      "over_5pct": 8,
      "over_10pct": 8,
      "over_25pct": 8,
      "length_over_10pct_m": 0.025,
-     "abs_E_max": 0.695
+     "abs_E_max": 0.662
     }
    },
    "edge_dip": {
     "boundary_edges": 225,
     "checked": 66,
-    "ratio_p5": 0.951,
+    "ratio_p5": 0.955,
     "dark_lt_90pct": 0,
     "dark_lt_75pct": 0,
     "dark_lt_50pct": 0,
@@ -2301,14 +1900,14 @@
    "kind": "thin island",
    "mat": "Part_SeatHero",
    "at_unity": [
-    0.589,
-    0.942,
-    1.893
+    0.782,
+    0.991,
+    1.88
    ],
    "normal_unity": [
-    0.0,
-    -0.862,
-    -0.507
+    0.707,
+    0.543,
+    0.453
    ]
   },
   {
@@ -2317,30 +1916,30 @@
    "kind": "under a part",
    "mat": "Part_SeatHero",
    "at_unity": [
-    0.624,
-    0.927,
-    1.912
+    0.582,
+    0.965,
+    2.274
    ],
    "normal_unity": [
-    0.0,
-    0.383,
-    -0.924
+    0.005,
+    -0.406,
+    0.914
    ]
   },
   {
    "obj": "Seat_SeatR0",
    "piece": "seat",
-   "kind": "seam 70%",
+   "kind": "seam 71%",
    "mat": "Part_SeatHero",
    "at_unity": [
-    0.755,
-    1.32,
-    1.766
+    0.731,
+    1.45,
+    1.77
    ],
    "normal_unity": [
-    0.664,
-    -0.13,
-    -0.737
+    -0.242,
+    -0.689,
+    0.684
    ]
   },
   {
@@ -2349,9 +1948,9 @@
    "kind": "slice only",
    "mat": "Part_SeatHero",
    "at_unity": [
-    0.978,
-    0.909,
-    2.108
+    0.78,
+    0.961,
+    1.884
    ],
    "normal_unity": [
     -1.0,
@@ -2381,22 +1980,22 @@
   "exr": "Bus/Textures/Cabin_TubeLM.exr",
   "uv": "UVLightmap",
   "exr_stats": {
-   "E_lum_max": 1.373,
-   "E_lum_p99_nonblack": 0.877,
-   "texels_E_over_1": 9919
+   "E_lum_max": 1.277,
+   "E_lum_p99_nonblack": 0.863,
+   "texels_E_over_1": 9284
   }
  },
  "onscreen_black": {
   "views": {
    "seat_05m": {
     "nonmetal_px": 429165,
-    "black_ge25_pct": 0.08,
-    "black_ge50_pct": 0.06
+    "black_ge25_pct": 0.06,
+    "black_ge50_pct": 0.04
    },
    "seat_10m": {
     "nonmetal_px": 325423,
-    "black_ge25_pct": 0.05,
-    "black_ge50_pct": 0.04
+    "black_ge25_pct": 0.04,
+    "black_ge50_pct": 0.03
    },
    "window_05m": {
     "nonmetal_px": 0,
