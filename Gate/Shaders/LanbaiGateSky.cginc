@@ -50,7 +50,15 @@ half3 LanbaiBand(float3 V)
 {
     // v2: whenever the sky's model globals are set (the gate driver writes them on [U6, U9), the sky before U6), the band
     // IS the sky's horizon (identical in act 4 to 1.2e-7: Sky/README_Fog接口 §5); the material band below is the fallback
-    [branch] if (_Udon_FogModel.w > 0.0) return (half3)LanbaiHorizon(V);
+    // (one result, one return: FXC warned "LanbaiBand may be used without being fully initialized" on the early return
+    // inside [branch], gate_clouds_test 20261025-0009)
+    half3 result;
+    [branch] if (_Udon_FogModel.w > 0.0)
+    {
+        result = (half3)LanbaiHorizon(V);
+    }
+    else
+    {
     float el = degrees(asin(clamp(V.y, -1.0, 1.0)));
     float3 T = (dot(_Udon_FogBandDir.xyz, _Udon_FogBandDir.xyz) > 0.25) ? _Udon_FogBandDir.xyz
                                                                        : (LanbaiTearPos() - _WorldSpaceCameraPos);
@@ -69,7 +77,9 @@ half3 LanbaiBand(float3 V)
     half lum = dot(sky, half3(0.2126, 0.7152, 0.0722));
     sky = lerp(sky, lum * half3(0.92, 0.98, 1.12), _BelowDesat * smoothstep(0.0, -4.0, el));
     float below = lerp(_BelowHorizon.z, 1.0, smoothstep(_BelowHorizon.x, _BelowHorizon.y, el));
-    return sky * below;
+    result = sky * below;
+    }
+    return result;
 }
 
 // the fog density this frame, the same precedence as LanbaiFog's LanbaiFogDensity(): _Udon_Fog (w > 0: the sky / the gate
