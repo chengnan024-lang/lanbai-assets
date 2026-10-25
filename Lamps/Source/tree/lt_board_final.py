@@ -46,10 +46,12 @@ heat = Image.open(os.path.join(shimd, 'hero_shimmer_heat.png'))
 im.paste(heat, (50 + H.width + 30, y))
 tx = 50 + H.width + 30
 d.text((tx, y + heat.height + 10), '闪烁代理（头部 ±2 cm / ±1° 微动 12 帧；4× 有序超采样 ≈ MSAA 4× 的 alpha-to-coverage，对 16× 参考）', font=f3, fill=(170, 178, 188))
-d.text((tx, y + heat.height + 40), 'shimmer 均值 %.2f · p99 %.1f · >4 的像素 %.2f %% · 只看叶缘像素的均值 %.2f（0–255）' %
-       (sh['shimmer_mean'], sh['shimmer_p99'], 100 * sh['shimmer_frac_gt4'], sh['shimmer_mean_on_edges']), font=f3, fill=(220, 200, 160))
-d.text((tx, y + heat.height + 70), '热图：黑 0 → 红 → 黄 ≥ 16。真正的判定是 Unity 测试 tree_sample 的 hero_micro 序列（门槛初值 p99 ≤ 12、>4 的 ≤ 2 %）和头显。', font=f3, fill=(150, 158, 168))
-y += max(H.height, heat.height + 110) + 30
+d.text((tx, y + heat.height + 40), '最坏情况（白叶在黑底上）：均值 %.1f · p99 %.0f · 叶缘均值 %.1f（0–255）——这只是覆盖率本身的跳动' %
+       (sh['shimmer_mean'], sh['shimmer_p99'], sh['shimmer_mean_on_edges']), font=f3, fill=(170, 178, 188))
+d.text((tx, y + heat.height + 70), '在第 1 幕的夜里（× 叶与背后的局部对比，叶缘中位对比 %.1f 码）：均值 %.2f · p99 %.2f · >4 码的像素 %.2f %%' %
+       (sh['night_contrast_p50_on_edges'], sh['night_shimmer_mean'], sh['night_shimmer_p99'], 100 * sh['night_shimmer_frac_gt4']), font=f3, fill=(220, 200, 160))
+d.text((tx, y + heat.height + 100), '热图（最坏情况）：黑 0 → 红 → 黄 ≥ 16。真正的判定是 Unity 测试 tree_sample 的 hero_micro 序列（门槛初值 p99 ≤ 12、>4 的 ≤ 2 %）和头显。', font=f3, fill=(150, 158, 168))
+y += max(H.height, heat.height + 140) + 30
 notes = ['总导演四条：① 剪影先于细节——叶云团之间露天，15–40 m 外比背后的天暗一档（显示约 3–15，天 ~18–22）；② 叶簇卡 1.25 m（LOD0）、2.5 m 叶团（LOD1）、远处剪影卡（LOD2），',
          '　图集开 Mip Maps Preserve Coverage；③ A 三个变体（种子、10.9 / 12.2 / 13.0 m、偏冠方向不同）；④ 湿树皮 ×0.6 / 0.45，湿叶 0.60，透光；钠灯下叶是暗橄榄，不发绿发亮。',
          '已知：Blender 里路灯投影，灯旁树的下层叶团被上层挡住，比 Unity（路灯烘焙）暗一点；远处的球形“树线”只是舞台。']

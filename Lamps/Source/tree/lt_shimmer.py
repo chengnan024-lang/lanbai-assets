@@ -44,3 +44,26 @@ hm = np.clip(sh / 16.0, 0, 1)
 rgb = np.stack([hm ** 0.5, hm ** 1.5, hm ** 3], -1)
 Image.fromarray((rgb * 255).astype(np.uint8)).save(os.path.join(out, '%s_shimmer_heat.png' % shot))
 print(json.dumps(res, indent=1))
+
+
+def weighted(shim_json, graded_png):
+    """Coverage shimmer x the local contrast of the graded night frame (5x5 max - min of luma): what the flicker is in
+    display codes, since a leaf edge only flickers by as much as the leaf differs from what is behind it."""
+    from PIL import Image
+    from scipy import ndimage
+    s = json.load(open(shim_json))
+    d = os.path.dirname(shim_json)
+    nf = s['frames']; W, H = s['size']
+    diffs = []
+    for f in range(nf):
+        t = np.load(os.path.join(d, 'hero_s2_f%02d.npy' % f))[..., 0].reshape(H, 2, W, 2).mean((1, 3))
+        r = np.load(os.path.join(d, 'hero_s4_f%02d.npy' % f))[..., 0].reshape(H, 4, W, 4).mean((1, 3))
+        diffs.append(t - r)
+    sh = np.array(diffs).std(0)                         # coverage fraction
+    g = np.asarray(Image.open(graded_png).convert('RGB'), float) @ np.array([0.2126, 0.7152, 0.0722])
+    con = ndimage.maximum_filter(g, 5) - ndimage.minimum_filter(g, 5)
+    w = sh * con
+    s.update(night_shimmer_mean=float(w.mean()), night_shimmer_p99=float(np.percentile(w, 99)), night_shimmer_frac_gt4=float((w > 4).mean()),
+             night_contrast_p50_on_edges=float(np.median(con[sh > 0.01])) if (sh > 0.01).any() else 0.0)
+    json.dump(s, open(shim_json, 'w'), indent=1)
+    return s

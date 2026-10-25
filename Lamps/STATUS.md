@@ -1,4 +1,4 @@
-**2026-10-25 · 样板树正式版（A1–A3 + B1，三档 LOD、Lanbai/TreeBark + TreeLeaf、搭建脚本、UnityTest 定义）在做最后的渲染与闪烁检查，随后推 · 灯杆工作仍停在暂停时的 WIP · 卡点：无**
+**2026-10-25 · 样板树正式版已推（A1–A3 + B1、三档 LOD、Lanbai/TreeBark + TreeLeaf、搭建脚本、UnityTest 定义 `Tree/UnityTest/tree_sample.json`、对照图与闪烁检查）· 等总导演 / 美术审片 / 总工程师 · 灯杆工作仍停在暂停时的 WIP · 卡点：无**
 
 # 灯与假醒 · 状态
 
