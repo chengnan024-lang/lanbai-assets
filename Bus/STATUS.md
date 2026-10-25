@@ -1,4 +1,4 @@
-2026-10-25 UTC · D-36 A1 座椅 r5（672M）：整车重出了（Models/Bus.fbx 59.5 万三角形、Cabin_TubeLM 2048、主座位 viewcheck 15/15、庄子 0%）。**每个座位的遮挡网格 seats_occlusion_1deg.json 重出了，请总工程师重跑 build_fonts。** 修了三个错：座椅图集的 AO 以前几乎全黑（烘焙把低模和整车都算进去了），开裂通道没写进去，FBX 的第一套顶点色是 Blender 用的 Zone 而不是 Col（Unity 只读第一套，座位的磨损会读错）。Lanbai/Cabin 读每座的开裂（图集遮罩 B × 顶点色 alpha）和人造革遮罩（albedo alpha，皮纹只上人造革）。座椅图集正在重烘（Textures/Parts 还没提交）。预算超了：侧窗 r1 占 28 万、座椅 18 万，下一步侧窗 r2 减面、座椅加 LOD。没在 Unity 里编译过。卡点：无。
+2026-10-25 UTC · D-36 A1 座椅 r5（672M）：整车已重出（Models/Bus.fbx 59.5 万三角形、Cabin_TubeLM 2048、主座位 viewcheck 15/15、庄子 0%），座椅图集按修好的烘焙全部重烘、这次提交（AO 正常、开裂候选在遮罩 B、albedo alpha = 人造革遮罩）。每个座位的遮挡网格也重出了（build_fonts 先不用重跑：总导演说等 D-45 的字幕方案再定）。Lanbai/Cabin 读每座开裂（遮罩 B × 顶点色 alpha）和人造革遮罩。预算超了：侧窗 r1 占 28 万、座椅 18 万，侧窗 r2 减面、座椅加 LOD。下一步：对照板 + 盲测 → 切片 → 外壳 + Lanbai/Cabin 先交（D-44）。没在 Unity 里编译过。卡点：无。
 
 # 车 · 状态
 
