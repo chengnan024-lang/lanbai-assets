@@ -1,5 +1,7 @@
 # 蓝白 · 交接说明（给本地 Claude Code 会话）
 
+> **⚠ 历史文件（2026-10-24 注）**：本地已改由 ChatGPT「阿白」接（D-40a #8），入口是 `HANDOFF_CHATGPT.md`。这里的路径、备份、“不覆盖小楠改过的文件”仍可参考；技能 `anthropic-skills:vrchat-world-building`、ListAgents / SendMessage、/remote-control、/effort 这些只有 Claude 能用，**不适用**。冲突时以 `HANDOFF_CHATGPT.md` 为准。
+
 > 写给：在小楠的 Windows 电脑上、Claude 桌面 app **Code 标签页**里打开 `E:\IDMdownload\VRCC` 的那个 Claude。
 > 写的人：云端的 Claude Code 会话（claude.ai/code，标题「对话任务分担」）。
 > 日期：2026-09-28

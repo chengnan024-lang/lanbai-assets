@@ -1,0 +1,1 @@
+K5 r01: dissolve at 958.56 (front half-way), EV-linear per pixel

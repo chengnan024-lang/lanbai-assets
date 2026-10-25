@@ -1,0 +1,6 @@
+本文件为分类摘要；完整相关时间段见 console_full.txt，完整机器 Editor.log 留本地。
+C# warning: LB_Builder_Road.cs:450 CS0162 (existing).
+Shader warnings: LanbaiGateSky.cginc:53 LanbaiBand potentially uninitialized (3 shaders).
+Capture warnings: releasing active RenderTexture.
+Rebuild warnings: old transform/renderer references temporarily missing.
+Post-run exception 00:15:04.897: MissingReferenceException, UdonSharpEditorUtility.cs:931 delayed RunBehaviourSetup callback. Outside official report capture.

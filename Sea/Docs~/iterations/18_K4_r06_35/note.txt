@@ -1,0 +1,1 @@
+K4 r06 (D-17): mirror band tinted to gold (h_ab 62), OKLab purple guard C<=0.02 (pitch 35)

@@ -1,0 +1,47 @@
+{
+  "unit": "bytes",
+  "note": "Snapshot timestamps approximate where noted; no cleanup performed; no abnormal decline during import/build sampling. E used for download, backup, TEMP/TMP and Unity log. Unity created its own small GI cache on C.",
+  "samples": [
+    {
+      "phase": "after_sync_before_launch",
+      "C_free": 3408326656,
+      "E_free": 110583058432
+    },
+    {
+      "phase": "loaded_before_scene_switch",
+      "C_free": 3394805760,
+      "E_free": 110560460800
+    },
+    {
+      "phase": "before_gate_build",
+      "C_free": 3393986560,
+      "E_free": 110559969280
+    },
+    {
+      "phase": "after_gate_build",
+      "C_free": 3392385024,
+      "E_free": 110559363072
+    },
+    {
+      "phase": "before_cloud_build",
+      "C_free": 3391688704,
+      "E_free": 110559297536
+    },
+    {
+      "phase": "after_cloud_first_failure",
+      "C_free": 3391729664,
+      "E_free": 110540664832
+    },
+    {
+      "phase": "after_cloud_retry",
+      "C_free": 3391545344,
+      "E_free": 110539980800
+    },
+    {
+      "phase": "post_import_audit",
+      "at_utc": "2026-10-24T19:48:16.694499+00:00",
+      "C_free": 3389030400,
+      "E_free": 110539358208
+    }
+  ]
+}

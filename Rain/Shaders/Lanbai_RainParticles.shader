@@ -49,7 +49,7 @@ Shader "Lanbai/RainParticles"
             #pragma multi_compile_fog
             #include "UnityCG.cginc"
             #include "LanbaiLamps.cginc"
-            #include "LanbaiVR.cginc"
+            #include "Assets/Lanbai/Common/Shaders/LanbaiVR.cginc"
 
             sampler2D _MainTex;
             float4 _MainTex_ST;

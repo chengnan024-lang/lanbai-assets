@@ -1,0 +1,21 @@
+diff --git a/Palace/Editor/LanbaiPalaceBuilder.cs b/Palace/Editor/LanbaiPalaceBuilder.cs
+index 2cce80e..7111a3c 100644
+--- a/Palace/Editor/LanbaiPalaceBuilder.cs
++++ b/Palace/Editor/LanbaiPalaceBuilder.cs
+@@ -38,9 +38,16 @@ public static class LanbaiPalaceBuilder
+         { "Terrace", 0.25f }, { "Weeds", 0.5f }, { "Lamps", 2.0f }, { "Hall", 0.6f }, { "Que", 0.8f }, { "Houses", 0.6f },
+     };
+ 
++    // D-41：菜单先等 U# 程序资产初始化完再搭；直接调 Build() 时没初始化完就不动场景（Common/Editor/LanbaiUdonPrograms）
+     [MenuItem("蓝白/Build/7b 宫殿")]
++    public static void BuildMenu()
++    {
++        Lanbai.Udon.LanbaiUdonPrograms.RunWhenReady("蓝白/Build/7b 宫殿", new[] { typeof(LanbaiPalaceDriver) }, Build);
++    }
++
+     public static void Build()
+     {
++        Lanbai.Udon.LanbaiUdonPrograms.RequireReady("蓝白/Build/7b 宫殿", typeof(LanbaiPalaceDriver));
+         // ---- 1. 根
+         Transform rSea = FindInScene("R_Sea");
+         var old = rSea != null ? rSea.Find("R_Palace") : null;

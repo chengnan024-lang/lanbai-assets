@@ -1,0 +1,215 @@
+{
+  "generated_utc": "2026-10-24T19:51:08.108495+00:00",
+  "files": [
+    {
+      "path": "backup_verification.json",
+      "bytes": 1448,
+      "sha256": "f5c0b22bf44759fb8dde27b0e1ce262f47b23c0b571246acd537bfe0eddd0c96"
+    },
+    {
+      "path": "code/LB_GateTest_Build.cs",
+      "bytes": 40258,
+      "sha256": "9d876469c015ff37f9697e628f058ee9b19242dcb440d4d025c9381a8482f8a7"
+    },
+    {
+      "path": "code/LB_GateTest_Run.cs",
+      "bytes": 39454,
+      "sha256": "b43e7c59c49b8b029213760cf0aa6d8bb84171e4a439d2165415bfc84df61edd"
+    },
+    {
+      "path": "compiler_editor_excerpt.txt",
+      "bytes": 1249,
+      "sha256": "751ef5baf3fe4d4385118c91eab1cb6966d327a431d158caaaf0114574043f38"
+    },
+    {
+      "path": "console_errors_warnings.txt",
+      "bytes": 2413,
+      "sha256": "5faac4f9ee856558314e6e2606b1922a76311b09285c799ee2bb282da68839d3"
+    },
+    {
+      "path": "console_full.txt",
+      "bytes": 3761,
+      "sha256": "db03ce9b5da2cdebfa86b27de128d1d491a8a3faa7002338e0c9fda1a2210e31"
+    },
+    {
+      "path": "diagnostics/LanbaiGateClouds.asset.txt",
+      "bytes": 976,
+      "sha256": "9153d0d8247c3cb4d3a92e5a14ba310708288b96de15a79950a82fff9779b0f3"
+    },
+    {
+      "path": "diagnostics/source_evidence.txt",
+      "bytes": 5131,
+      "sha256": "5a944945c811a869d4961a8065e7cc3b1949872ca8c7c0f97aed0fcf4016a86a"
+    },
+    {
+      "path": "diagnostics/ui_capture.json",
+      "bytes": 358,
+      "sha256": "0eb5ee36dfddf29fb9fed59bcd352b7356cd42b21966da7cf3f8df240c92969b"
+    },
+    {
+      "path": "diagnostics/unity_partial_scene_not_acceptance.png",
+      "bytes": 245863,
+      "sha256": "36410d62d4c76bcf6cc104520b555b49c3408bde392a79454de921beb4e65e0f"
+    },
+    {
+      "path": "diffs/Assets__Lanbai__Gate__GateLayout_v2.json.patch",
+      "bytes": 2625,
+      "sha256": "6781eb42dff235fbf31c137e4d52aa44e53d4d836864e1ae0c74858938b27dbe"
+    },
+    {
+      "path": "diffs/Assets__Lanbai__Gate__Shaders__Lanbai_GateAirSky.shader.patch",
+      "bytes": 1831,
+      "sha256": "94dde1b2d1972d099952b1d5b41de8f378f83b1a51dc8e3452fee1dd72e09835"
+    },
+    {
+      "path": "diffs/Assets__Lanbai__Gate__Shaders__Lanbai_TentacleSway.shader.patch",
+      "bytes": 4907,
+      "sha256": "f4332b3af0f84911f25e3dda422ce7ad52d1b280453689279830e9e0b084bb00"
+    },
+    {
+      "path": "diffs/Assets__Lanbai__Gate__Shaders__Lanbai_TentacleTide_v2.shader.patch",
+      "bytes": 6615,
+      "sha256": "9c8649352e979a139c94ce7875f2daffd632471e19d9534d1546e5a3f9278cff"
+    },
+    {
+      "path": "diffs/Assets__Lanbai__Gate__Shaders__LanbaiGateSky.cginc.patch",
+      "bytes": 3080,
+      "sha256": "06c5f876a9f95438a4ddb941c414545d3254b00ff514f546709ead29e2bd71c1"
+    },
+    {
+      "path": "diffs/Assets__Lanbai__Tear__Lanbai_Tear.shader.patch",
+      "bytes": 2414,
+      "sha256": "98d362a2cec4eb8248a4bf3fbdeba76ffbeda8223d6c6574b098804553ff92d3"
+    },
+    {
+      "path": "diffs/Assets__Lanbai__Tests__Editor__LB_GateTest_Build.cs.patch",
+      "bytes": 2630,
+      "sha256": "05521875c0c7810dff6dd2af266356a3221c1cecbad232f7401ddf533b2ebb30"
+    },
+    {
+      "path": "diffs/Assets__Lanbai__Tests__Editor__LB_GateTest_Run.cs.patch",
+      "bytes": 3778,
+      "sha256": "92b1c79d519c28bf492eeeedbdc2076cacdcaf511c4c81fb98ebfc3a2201ecea"
+    },
+    {
+      "path": "diffs/Assets__Lanbai__Tests__GateTest.unity.patch",
+      "bytes": 1247088,
+      "sha256": "4e6b8a6274d5a92af3a8ffb3d187ac70571690c03e9e534f778cb9bacb2b531c"
+    },
+    {
+      "path": "diffs/Assets__Lanbai__Tests__GateTest_Materials__M_GateAirSky.mat.patch",
+      "bytes": 370,
+      "sha256": "d24ee7a23cd00aaa0f0f4ae11937658ce2b46327fe6be435515d1aac001c74b1"
+    },
+    {
+      "path": "diffs/Assets__Lanbai__Tests__GateTest_Materials__M_TentacleTide_v3_A.mat.patch",
+      "bytes": 1358,
+      "sha256": "b6cde2e2e32b34b1cb0d76a4615bb37c0b5ebd8c174b3de9f832aa806f31a23f"
+    },
+    {
+      "path": "diffs/Assets__Lanbai__Tests__GateTest_Materials__M_TentacleTide_v3_B.mat.patch",
+      "bytes": 1358,
+      "sha256": "54b9ddb442bbf0db72e2f4a2dde9b43cef0b5d5fd352927a217c353afecc83cc"
+    },
+    {
+      "path": "diffs/ProjectSettings__ProjectSettings.asset.patch",
+      "bytes": 379,
+      "sha256": "61446ce93dcec8259475288b9c47c5ed7ecd8ffa5cd3dafd230779e2cc4f6da3"
+    },
+    {
+      "path": "direct_write_journal.json",
+      "bytes": 68902,
+      "sha256": "998f08226e3d4cb08104d41ae2a28ea02e2252db8eda70e7e4c9f87666a955e9"
+    },
+    {
+      "path": "disk_checks.json",
+      "bytes": 1238,
+      "sha256": "470b5f73db57abe34039eafd994489b991674063837d5c4d92776c8a8ac8db72"
+    },
+    {
+      "path": "gate_whitelist.json",
+      "bytes": 11208,
+      "sha256": "023f1b9b858e3663df4a1f767f05f74ae3c0c5fff5a19ab91a16c48b2879f825"
+    },
+    {
+      "path": "heartbeat_at_stop.json",
+      "bytes": 375,
+      "sha256": "db6fa54e660683810c5eeec617be93ff2155f0b5944c1950222393952864473a"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 6017,
+      "sha256": "2dee733ab91d84d8386af161a766edb68da9cfc4ab42d6b56fee0010e96a850a"
+    },
+    {
+      "path": "partial_checkout_manifest.json",
+      "bytes": 50547,
+      "sha256": "b72354c69388f0b981bb2f27a52b38355ff06f76ece1ab6599e9005b7411607e"
+    },
+    {
+      "path": "partial_checkout_verified.json",
+      "bytes": 66896,
+      "sha256": "753b71ee291f97a5711ce84fb3c257a42e16f3a7a4501a20133a2b6e309fd86e"
+    },
+    {
+      "path": "project_changes_and_protection.json",
+      "bytes": 88747,
+      "sha256": "a08a6fc925a4f8d2dedda09159566f0617bce0ee4ec7ab0df3fdb5458ebb2b11"
+    },
+    {
+      "path": "README_说明.md",
+      "bytes": 8020,
+      "sha256": "f66e412f1bdd84e1a84c7cca37505e53216f0e9d92eb2a91e1aca718002de4c6"
+    },
+    {
+      "path": "remote/requests/gate_20261024_1547_open.json",
+      "bytes": 173,
+      "sha256": "6d0dd8d4e5d9cf0943815fff7d4edecf1607de7f29d5ba22333feef8251f4c2a"
+    },
+    {
+      "path": "remote/requests/gate_20261024_build.json",
+      "bytes": 163,
+      "sha256": "a00c5c3be600b29c7780f86595fa0f53b33b83c9cde5b035891f7125931e69e8"
+    },
+    {
+      "path": "remote/requests/gate_20261024_cloudbuild.json",
+      "bytes": 148,
+      "sha256": "54f0752088a6bb217c656af0bf3cca43ff44c8649f21f20c8b691aba25364a7b"
+    },
+    {
+      "path": "remote/requests/gate_20261024_cloudbuild_retry.json",
+      "bytes": 154,
+      "sha256": "9264526869e4218024715b19a1f3ab4b7168e4d660deaa432e7c0f2e242ecf40"
+    },
+    {
+      "path": "remote/results/gate_20261024_1547_open.json",
+      "bytes": 367,
+      "sha256": "0c2241f886a78a9df7da8d267776bb100c0d065eea89f86c7bfd677ee863b64e"
+    },
+    {
+      "path": "remote/results/gate_20261024_build.json",
+      "bytes": 559,
+      "sha256": "084b2adf0a5c7a868f9598e78d2f82e8451969f808050e41dc1bd880f4c78d3a"
+    },
+    {
+      "path": "remote/results/gate_20261024_build.step1.txt",
+      "bytes": 12002,
+      "sha256": "cbc30fdcf1c5731508f02500da12f4e84a1451340e48e693454235506e7d39cb"
+    },
+    {
+      "path": "remote/results/gate_20261024_cloudbuild.json",
+      "bytes": 1620,
+      "sha256": "b8aa77dccd747c04ec1c600e7b7fa1153a6070ee9044016de5eea00256e40aeb"
+    },
+    {
+      "path": "remote/results/gate_20261024_cloudbuild_retry.json",
+      "bytes": 1626,
+      "sha256": "f03d6fabcbaf3d95199d04cf14ced6c65b9410ee81dc0656274faf56143e911d"
+    },
+    {
+      "path": "rollback_inventory.json",
+      "bytes": 88611,
+      "sha256": "834012de53ef4d23fd1bf6d6b089adc162101ab487f0b2550df3ceeebb6da4d3"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+ "bible_v2": {
+  "暮日": true,
+  "唱词 4b": true,
+  "天问 / 庄子 11": true,
+  "裂口顶 U7": true,
+  "里尔克": true,
+  "晨日": true,
+  "庄子 8-ii": true,
+  "李白 3/12": true,
+  "济慈": true,
+  "月": true,
+  "河伯": true,
+  "银心": true,
+  "收音机": true,
+  "坠入深海": true,
+  "天窗里的伤口 U8a": true
+ },
+ "local_v1": {
+  "暮日": true,
+  "唱词 4b": true,
+  "天问 / 庄子 11": true,
+  "裂口顶 U7": false,
+  "里尔克": false,
+  "晨日": true,
+  "庄子 8-ii": true,
+  "李白 3/12": true,
+  "济慈": true,
+  "月": true,
+  "河伯": true,
+  "银心": false,
+  "收音机": false,
+  "坠入深海": false,
+  "天窗里的伤口 U8a": false
+ }
+}

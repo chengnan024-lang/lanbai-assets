@@ -1,0 +1,21 @@
+{
+    "id": "gate_continue_20261025_formal_cloud",
+    "state": "done",
+    "step": 4,
+    "total": 4,
+    "started": "2026-10-25 00:09:08",
+    "finished": "2026-10-25 00:09:12",
+    "error": "",
+    "log": [
+        "00:09:08 收到请求，共 4 步",
+        "00:09:08 调用 Lanbai.Tests.LB_GateContinuation.CheckScene",
+        "00:09:08   用时 0.0 秒",
+        "00:09:08   返回：Scene bindings valid: 64 gate instances, 38 cards, 10 tower layers, all 3 backing Udon behaviours, legacy renderers disabled; HDR reference camera. skyFromSky=True; sceneDirty=False",
+        "00:09:08 菜单 蓝白/Gate Clouds/Build",
+        "00:09:12 调用 Lanbai.Udon.LanbaiUdonPrograms.MenuStatus（蓝白/Gate Clouds/Build）",
+        "00:09:12   用时 0.0 秒",
+        "00:09:12   返回：DONE",
+        "00:09:12 全部完成"
+    ],
+    "files": []
+}

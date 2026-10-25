@@ -1,0 +1,92 @@
+{
+  "steps": [
+    {
+      "arg": "200",
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Seek"
+    },
+    {
+      "seconds": 2,
+      "op": "wait"
+    },
+    {
+      "arg": "门内",
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Capture"
+    },
+    {
+      "arg": "280",
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Seek"
+    },
+    {
+      "seconds": 2,
+      "op": "wait"
+    },
+    {
+      "arg": "晨景",
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Capture"
+    },
+    {
+      "arg": "400",
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Seek"
+    },
+    {
+      "seconds": 2,
+      "op": "wait"
+    },
+    {
+      "arg": "海中",
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Capture"
+    },
+    {
+      "arg": "950",
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Seek"
+    },
+    {
+      "seconds": 2,
+      "op": "wait"
+    },
+    {
+      "arg": "暮景",
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Capture"
+    },
+    {
+      "arg": "1030",
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Seek"
+    },
+    {
+      "seconds": 2,
+      "op": "wait"
+    },
+    {
+      "arg": "星海",
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Capture"
+    },
+    {
+      "arg": "1180",
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Seek"
+    },
+    {
+      "seconds": 2,
+      "op": "wait"
+    },
+    {
+      "arg": "假醒",
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Capture"
+    },
+    {
+      "op": "stop"
+    }
+  ],
+  "id": "full_20261025_act_checks"
+}

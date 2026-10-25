@@ -7,6 +7,7 @@ R=https://raw.githubusercontent.com
 g(){ curl -sSfL --retry 3 -o "$2" "$1" && echo "ok $(basename "$2")"; }
 g $R/adobe-fonts/source-han-serif/release/SubsetOTF/CN/SourceHanSerifCN-Regular.otf "$O/SourceHanSerifCN-Regular.otf"
 g $R/adobe-fonts/source-han-serif/release/SubsetOTF/CN/SourceHanSerifCN-Medium.otf  "$O/SourceHanSerifCN-Medium.otf"
+g $R/adobe-fonts/source-han-serif/release/SubsetOTF/TW/SourceHanSerifTW-Regular.otf "$O/SourceHanSerifTW-Regular.otf"   # v4: Traditional (zh-HK players, D-31)
 g $R/adobe-fonts/source-han-serif/release/SubsetOTF/JP/SourceHanSerifJP-Regular.otf "$O/SourceHanSerifJP-Regular.otf"
 g $R/adobe-fonts/source-han-serif/release/SubsetOTF/JP/SourceHanSerifJP-Medium.otf  "$O/SourceHanSerifJP-Medium.otf"
 g $R/adobe-fonts/source-han-sans/release/SubsetOTF/CN/SourceHanSansCN-Heavy.otf     "$O/SourceHanSansCN-Heavy.otf"

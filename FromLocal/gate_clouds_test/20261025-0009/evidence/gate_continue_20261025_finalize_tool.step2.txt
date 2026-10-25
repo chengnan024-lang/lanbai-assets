@@ -1,0 +1,2 @@
+Removed tool-created duplicate VRCWorld; retained the configured GateTest_ClientSim descriptor. Bound the HDR reference camera; normalized generated crop45 mesh name without changing geometry or GUID. Scene bindings valid: 64 gate instances, 38 cards, 10 tower layers, all 3 backing Udon behaviours, legacy renderers disabled; HDR reference camera. skyFromSky=True; sceneDirty=True
+Saved GateTest only.

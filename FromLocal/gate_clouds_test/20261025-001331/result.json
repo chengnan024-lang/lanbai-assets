@@ -1,0 +1,10 @@
+{
+  "test": "gate_clouds_test",
+  "run": "20261025-001331",
+  "exit": 0,
+  "status": "preflight_ok",
+  "preflight_only": true,
+  "out": "<project>\\LanbaiReports/tests\\gate_clouds_test\\20261025-001331",
+  "blocked_reason": null,
+  "error": null
+}

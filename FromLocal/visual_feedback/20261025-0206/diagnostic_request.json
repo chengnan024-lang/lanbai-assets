@@ -1,0 +1,50 @@
+{
+  "steps": [
+    {
+      "target": "Lanbai.Remote.LB_QA.Info",
+      "arg": "Lanbai,2",
+      "op": "call"
+    },
+    {
+      "seconds": 5,
+      "op": "play"
+    },
+    {
+      "target": "Lanbai.Tests.LB_FullAssembly.Seek",
+      "arg": "1023",
+      "op": "call"
+    },
+    {
+      "seconds": 0.5,
+      "op": "wait"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.RuntimeState"
+    },
+    {
+      "target": "Lanbai.Remote.LB_QA.Vars",
+      "arg": "Journey:segStart,dbgT,dbgSeg;active:Lake",
+      "op": "call"
+    },
+    {
+      "target": "Lanbai.Remote.LB_QA.Info",
+      "arg": "Lake,1",
+      "op": "call"
+    },
+    {
+      "target": "Lanbai.Tests.LB_FullAssembly.Capture",
+      "arg": "闪烁排查_1025_原状",
+      "op": "call"
+    },
+    {
+      "target": "Lanbai.Remote.LB_QA.Info",
+      "arg": "Lanbai/SkySea,3",
+      "op": "call"
+    },
+    {
+      "op": "stop"
+    }
+  ],
+  "id": "flicker_20261025_0203_read"
+}

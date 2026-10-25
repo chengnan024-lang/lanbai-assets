@@ -1,4 +1,10 @@
 // =====================================================================================================
+//  v2.3 (gate clouds kit, 2026-10-22; UNCOMPILED): the fog colour is the SHARED gate sky (gate_test §2.2 item 10):
+//    #include "Assets/Lanbai/Gate/Shaders/LanbaiGateSky.cginc" (project-root path, CONTROL §3) and LanbaiGateFogColour(V, dist, moon, 0.35, 0) -- the band WITH the
+//    round-8 back band and below-horizon desaturation, + the moon aureole, exactly the arms' fog. The private copy of
+//    LanbaiBand (v2 values (12, 34, 5), unscaled fills) is gone; the defaults are the gate's: _HazeNear (0.1085,
+//    0.1130, 0.1641), _HazeFar (0.0436, 0.0504, 0.0726), _BandEl (6, 22, 2). Geometry, rise, sway, mist unchanged.
+// =====================================================================================================
 //  v2.2 (gate round 3 run 6, 2026-10-01; UNCOMPILED): for the v3 atlases (gate/Textures/TentacleTide_v3_Atlas_A/B)
 //    + UV6 'TideMist' (x = mist height m, y = root sink m): the base dissolves over the blade's own mist height,
 //      alpha x saturate((y - _Udon_CloudTop.x + 8) / mist)^1.6, so the 360 bases never line up on the cloud-top line
@@ -56,13 +62,20 @@ Shader "Lanbai/TentacleTide"
         _FogDensity ("Exp Fog Density (per metre)", Float) = 0.0006
         _FogCap ("Fog Cap (tide 0.92)", Range(0, 1)) = 0.92
         _FogCapFrom ("Cap blends in from x to y metres", Vector) = (1300, 1700, 0, 0)
-        _HazeNear ("Haze Band Next To The Tear #484D63, linear", Vector) = (0.0648, 0.0742, 0.1248, 1)
-        _HazeFar ("Haze Band 50 deg Away #2A3041, linear", Vector) = (0.0232, 0.0296, 0.0512, 1)
+        _HazeNear ("Haze Band Next To The Tear (fill x 0.80), linear", Vector) = (0.1085, 0.1130, 0.1641, 1)
+        _HazeFar ("Haze Band 50 deg Away (fill x 0.80), linear", Vector) = (0.0436, 0.0504, 0.0726, 1)
         _Void ("Void #070A14, linear", Vector) = (0.0021, 0.0030, 0.0070, 1)
         _BandAz ("Band azimuth: full to x deg, gone at y deg", Vector) = (50, 60, 0, 0)
-        _BandEl ("Band elevation: full to x deg, gone at y deg, power z", Vector) = (12, 34, 5, 0)
+        _BandEl ("Band elevation: full to x deg, gone at y deg, power z", Vector) = (6, 22, 2, 0)
         _FogBaseTip ("Fog cap at the base (x) and the tips (y); height of the blend (z m)", Vector) = (0.58, 0.48, 400, 0)
         _BelowHorizon ("Below the horizon: from x deg to y deg, darkest factor z", Vector) = (-25, 0, 0.55, 0)
+        _BelowDesat ("Below-horizon desaturation", Range(0, 1)) = 0.6
+        _BackBand ("Back band x HazeFar", Range(0, 2)) = 0.55
+        _RimDir ("Direction to the moon (fallback; _Udon_MoonDir wins)", Vector) = (-0.2059, 0.1392, 0.9686, 0)
+        _MoonGlowColor ("Moon aureole #8FA3C8, linear", Vector) = (0.275, 0.366, 0.578, 1)
+        _MoonGlowShape ("Aureole: a1, k1, a2, k2", Vector) = (1.6, 0.9, 0.06, 0.32)
+        _MoonAirFog ("Moon aureole in the fog (arms 0.35)", Range(0, 1)) = 0.35
+        _HaloColor ("Halo (unused here; shared include)", Vector) = (0.195, 0.198, 0.332, 1)
     }
     SubShader
     {
@@ -78,16 +91,14 @@ Shader "Lanbai/TentacleTide"
             #pragma fragment frag
             #pragma target 3.0
             #include "UnityCG.cginc"
+            #include "Assets/Lanbai/Gate/Shaders/LanbaiGateSky.cginc"
 
             sampler2D _MainTex;
             float _Opacity, _RimGain, _SwayAmp, _SwayPeriod, _AtlasGain, _Reveal;
-            float4 _Udon_CloudTop;     // global: x = cloud-sea top (world y); w > 0 = set
-            float4 _TearPos;
-            float _FogDensity, _FogCap;
-            float4 _FogCapFrom, _HazeNear, _HazeFar, _Void, _BandAz, _BandEl, _BelowHorizon, _FogBaseTip;
-            float _Udon_GateTime;      // global: timeline t (s); 0 = unset -> everything risen
-            float4 _Udon_TearPos;      // global: the tear core (world); w > 0 = set
-            float3 TearPosW() { return (_Udon_TearPos.w > 0.0) ? _Udon_TearPos.xyz : _TearPos.xyz; }
+            #include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc"
+            float _FogDensity, _FogCap, _MoonAirFog;
+            float4 _FogCapFrom, _FogBaseTip, _RimDir;
+            float3 TearPosW() { return LanbaiTearPos(); }   // _Udon_TearPos / _TearPos: declared in LanbaiGateSky.cginc
 
             struct appdata
             {
@@ -110,21 +121,6 @@ Shader "Lanbai/TentacleTide"
                 float mist : TEXCOORD3;
                 UNITY_VERTEX_OUTPUT_STEREO
             };
-
-            // identical to LanbaiBand() in Lanbai_TentacleSway.shader
-            float3 LanbaiBand(float3 V)
-            {
-                float el = degrees(asin(clamp(V.y, -1.0, 1.0)));
-                float3 T = TearPosW() - _WorldSpaceCameraPos;
-                float2 th = normalize(T.xz + float2(1e-5, 0.0));
-                float2 vh = normalize(V.xz + float2(1e-5, 0.0));
-                float az = degrees(acos(clamp(dot(th, vh), -1.0, 1.0)));
-                float3 band = lerp(_HazeNear.rgb, _HazeFar.rgb, smoothstep(0.0, _BandAz.x, az));
-                float wel = pow(saturate(1.0 - smoothstep(_BandEl.x, _BandEl.y, el)), (_BandEl.z > 0.0) ? _BandEl.z : 1.0);
-                float w = (1.0 - smoothstep(_BandAz.x, _BandAz.y, az)) * wel;
-                float3 sky = lerp(_Void.rgb, band, w);
-                return sky * lerp(_BelowHorizon.z, 1.0, smoothstep(_BelowHorizon.x, _BelowHorizon.y, el));
-            }
 
             v2f vert(appdata v)
             {
@@ -169,11 +165,11 @@ Shader "Lanbai/TentacleTide"
                 c.rgb *= lerp(1.0, _RimGain, saturate(lum * 4.0)) * _AtlasGain;
                 float3 dv = i.wpos - _WorldSpaceCameraPos;
                 float dist = length(dv);
-                float fo = 1.0 - exp(-dist * _FogDensity);
+                float fo = 1.0 - exp(-dist * LanbaiGateDensity(_FogDensity));   // v2.4: D-22
                 fo = lerp(fo, min(fo, _FogCap), smoothstep(_FogCapFrom.x, _FogCapFrom.y, dist));
                 fo = min(fo, lerp(_FogBaseTip.x, _FogBaseTip.y, smoothstep(0.0, _FogBaseTip.z, i.hgt)));
                 fo = 1.0 - (1.0 - fo) * _Reveal;
-                c.rgb = lerp(c.rgb, LanbaiBand(dv / max(dist, 1e-3)), fo);
+                c.rgb = lerp(c.rgb, LanbaiGateFogColour(dv / max(dist, 1e-3), dist, LanbaiMoonDir(_RimDir.xyz), (half)_MoonAirFog, 0.0), fo);
                 c.a *= _Opacity;
                 if (_Udon_CloudTop.w > 0.0)        // v2.2: the base melts over the blade's own mist height
                     c.a *= pow(saturate((i.wpos.y - _Udon_CloudTop.x + 8.0) / i.mist), 1.6);

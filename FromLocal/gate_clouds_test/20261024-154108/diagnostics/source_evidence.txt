@@ -1,0 +1,88 @@
+Assets/Lanbai/GateClouds/Editor/LanbaiGateCloudsBuilder.cs
+375:     static object CallStatic(Type t, string name, params object[] args)
+376:     {
+377:         if (t == null) return null;
+378:         // an overload with exactly args.Length parameters first (tech r2 #3: CopyProxyToUdon(b) vs (b, policy): the
+379:         // reflection order is not defined, and a null policy throws), then one whose extra parameters have defaults
+380:         MethodInfo[] all = t.GetMethods(BindingFlags.Public | BindingFlags.Static);
+381:         for (int pass = 0; pass < 2; pass++)
+382:         foreach (MethodInfo mi in all)
+383:         {
+384:             if (mi.Name != name || mi.IsGenericMethodDefinition) continue;
+385:             ParameterInfo[] ps = mi.GetParameters();
+386:             if (pass == 0 ? ps.Length != args.Length : ps.Length <= args.Length) continue;
+387:             bool defs = true;
+388:             for (int k = args.Length; k < ps.Length; k++) if (!ps[k].HasDefaultValue) defs = false;
+389:             if (!defs) continue;
+390:             bool ok = true;
+391:             for (int k = 0; k < args.Length; k++)
+392:                 if (args[k] != null && !ps[k].ParameterType.IsInstanceOfType(args[k])) { ok = false; break; }
+393:             if (!ok) continue;
+394:             object[] full = new object[ps.Length];
+395:             for (int k = 0; k < ps.Length; k++) full[k] = k < args.Length ? args[k] : (ps[k].HasDefaultValue ? ps[k].DefaultValue : null);
+396:             return mi.Invoke(null, full);
+397:         }
+
+Assets/Lanbai/GateClouds/Editor/LanbaiGateCloudsBuilder.cs
+430:         if (asset == null && src != null)
+431:         {
+432:             if (!AssetDatabase.IsValidFolder("Assets/Lanbai/UdonPrograms"))
+433:             {
+434:                 if (!AssetDatabase.IsValidFolder("Assets/Lanbai")) AssetDatabase.CreateFolder("Assets", "Lanbai");
+435:                 AssetDatabase.CreateFolder("Assets/Lanbai", "UdonPrograms");
+436:             }
+437:             asset = ScriptableObject.CreateInstance(paT);
+438:             src.SetValue(asset, ms);
+439:             AssetDatabase.CreateAsset(asset, "Assets/Lanbai/UdonPrograms/" + type.Name + ".asset");
+440:             AssetDatabase.SaveAssets();
+441:             Debug.Log("[GateClouds] created Assets/Lanbai/UdonPrograms/" + type.Name + ".asset");
+442:             // 2) compile (UdonSharpCompilerV1.CompileSync), so the new program exists before the behaviour is set up
+443:             CallStatic(FindType("UdonSharp.Compiler.UdonSharpCompilerV1"), "CompileSync");
+444:         }
+
+Packages/com.vrchat.worlds/Integrations/UdonSharp/Editor/UdonSharpEditorUtility.cs
+126:         private static UdonSharpProgramAsset GetUdonSharpProgramAsset(MonoScript programScript)
+127:         {
+128:             InitTypeLookups();
+129: 
+130:             _programAssetLookup.TryGetValue(programScript, out var foundProgramAsset);
+131: 
+132:             return foundProgramAsset;
+133:         }
+134: 
+135:         /// <summary>
+136:         /// Gets the UdonSharpProgramAsset that represents the program for the given UdonSharpBehaviour
+137:         /// </summary>
+138:         /// <param name="udonSharpBehaviour"></param>
+139:         /// <returns></returns>
+140:         [PublicAPI]
+141:         public static UdonSharpProgramAsset GetUdonSharpProgramAsset(UdonSharpBehaviour udonSharpBehaviour)
+142:         {
+143:             return GetUdonSharpProgramAsset(MonoScript.FromMonoBehaviour(udonSharpBehaviour));
+144:         }
+145: 
+146:         [PublicAPI]
+147:         public static UdonSharpProgramAsset GetUdonSharpProgramAsset(Type type)
+148:         {
+149:             InitTypeLookups();
+150: 
+151:             _programAssetTypeLookup.TryGetValue(type, out UdonSharpProgramAsset foundProgramAsset);
+152: 
+153:             return foundProgramAsset;
+154:         }
+155: 
+
+Packages/com.vrchat.worlds/Integrations/UdonSharp/Editor/UdonSharpEditorUtility.cs
+1167:             UdonSharpProgramAsset programAsset = GetUdonSharpProgramAsset(proxy);
+1168:             
+1169:             if (programAsset == null)
+1170:                 throw new InvalidOperationException($"Cannot run serialization on U# behaviour '{proxy}', the U# program asset on this component is null. Try restarting Unity and if problems persist, verify that you have a UdonSharpProgramAsset with the script '{proxy.GetType()}' assigned to it.");
+1171: 
+1172:             if (programAsset.ScriptVersion < UdonSharpProgramVersion.CurrentVersion)
+1173:                 throw new InvalidOperationException($"Cannot run serialization on U# behaviour '{proxy}' with outdated script version, wait until program assets have compiled.");
+1174: 
+1175:             if (programAsset.CompiledVersion < UdonSharpProgramVersion.CurrentVersion)
+1176:                 throw new InvalidOperationException($"Cannot run serialization on U# behaviour '{proxy}' with outdated behaviour version, wait until program assets have compiled.");
+1177: 
+1178:             Profiler.BeginSample("CopyProxyToUdon");
+1179: 

@@ -1,0 +1,67 @@
+[
+  {
+    "file": "01_dawn_dense_clouds.png",
+    "bytes": 695954,
+    "sha256": "9a63e9e4b623c35847e42d6278d5fdf25ae17eec0fb296c954df35aec9f8da9e"
+  },
+  {
+    "file": "02_dawn_rectangular_underside.png",
+    "bytes": 457577,
+    "sha256": "0af3578e6cc586ebafb319acc61ff300e0f24259b912bd5aeefbad60ae69c78c"
+  },
+  {
+    "file": "03_user_tree_and_console_1277s.png",
+    "bytes": 1514668,
+    "sha256": "c7201ad214bc1cc90330a25789e7d2c96634235fe8903ffaba8aa4da00dd1521"
+  },
+  {
+    "file": "04_gate_root_seam.png",
+    "bytes": 68341,
+    "sha256": "1b2f2c68e0b842477344d7cc4a1f132cdf8a68cd59b2e8a65afc347da1b90e1b"
+  },
+  {
+    "file": "05_diagnostic_near_1025s.png",
+    "bytes": 2277870,
+    "sha256": "ebef134911ed9a75318f372c7ca1285252ac84cdcbeb04a5bf5ea7634085206e"
+  },
+  {
+    "file": "diagnostic_request.json",
+    "bytes": 1013,
+    "sha256": "e4c48e1f612a56598074aca67afec65a18e6c58abf915c5548311ef67779666d"
+  },
+  {
+    "file": "flicker_20261025_0203_read.json",
+    "bytes": 2131,
+    "sha256": "ac87bb36ad5e79e4723c12ab42d12a04bdd238101cad34c25fd65b6c490dd1a7"
+  },
+  {
+    "file": "flicker_20261025_0203_read.step1.txt",
+    "bytes": 7734,
+    "sha256": "27eb0a54e2a132a1c121d0256d84e3af1a18b8b7e3f8299049274c77019ff086"
+  },
+  {
+    "file": "flicker_20261025_0203_read.step5.txt",
+    "bytes": 1279,
+    "sha256": "ca991439ffaf160e38282778e2cc324f6cb35f9ad3220408eeb992eee89a13f7"
+  },
+  {
+    "file": "flicker_20261025_0203_read.step6.txt",
+    "bytes": 95,
+    "sha256": "81881a0c4a716f0aa9a3bdf7c58bc35c1f84d2edf5f6fb02ecc18e5654b3184f"
+  },
+  {
+    "file": "flicker_20261025_0203_read.step8.txt",
+    "bytes": 1480,
+    "sha256": "c4db8814c1251fbac659b63daf909700a325f0eb6915716e215c70c3bfdd4d57"
+  },
+  {
+    "file": "mirror_error_excerpt.txt",
+    "bytes": 3009,
+    "sha256": "0b3b58b9b9d4322ffc1426fef159aec5ff5e702f4916429cffc03c5c3de27cfb"
+  },
+  {
+    "file": "README.txt",
+    "bytes": 3980,
+    "sha256": "576fde91dfca656613dd26fdb7cd271731141898749684aa2025ef9d273661ea"
+  }
+]

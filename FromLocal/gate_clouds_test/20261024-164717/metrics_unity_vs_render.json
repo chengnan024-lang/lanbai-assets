@@ -1,0 +1,1455 @@
+{
+  "method": "Upstream lbh.lab, palette_dev, apl_target and matching independent mean/threshold formulas; act=04; display sRGB PNG, no recoloring. Connected-component operations omitted; no dependency installed.",
+  "source_commit": "0fd5a8ec28d02e54140b75e1a7bc7c046f1872bb",
+  "source_sha256": {
+    "Engineering/render_harness/lbh/__init__.py": "493a5bef776d0ab0cc9e2e0f9b28dc58b77c320c0f54a17232b7ddccd2e1bc7f",
+    "Engineering/render_harness/lbh/measure.py": "0019539025132b9dc55e3d9c93b0dd29f3e39047380c450fed65eefa4af27844",
+    "Engineering/render_harness/lbh/paths.py": "efa4ec68c6f08ea7113c1c95e9bfd8c95f7d6a7398eb8f3429536e32a2d390db",
+    "Art/tools/v21/scene_data_v21.py": "af172a662e6588ed52fa780956c7e312645d16f9ebca340ce579afac4f05ee10",
+    "Art/tools/v21/cues_v21.py": "a703cd2c113615e3b588f2a7fd8f4f666d037b94ade13397c104fe3e76a05939",
+    "FromLocal/cues.json": "56f43445d025f82ec3404f9f1dcd6db8698e5bd796feb53f2c97f34a0dcee6d8"
+  },
+  "limitations": [
+    "Only local measurement copy of cues_v21.py has its hardcoded Linux input path redirected to the same Git cues.json under E; no data or formulas changed.",
+    "No ID pass: per-object masks and cloud-only measurements are not claimed.",
+    "Composite reference upper half includes pasted old arms in some views and no arms in others; lower half includes bus interior. Whole-frame APL is descriptive, not a direct pass/fail test.",
+    "Bottom 40 percent rectangle includes all visible objects; it is not a cloud-only mask."
+  ],
+  "views": {
+    "key": {
+      "t": 154.5,
+      "unity": {
+        "size": [
+          2560,
+          1072
+        ],
+        "APL": 35.96,
+        "EV_display": -4.93,
+        "luma_lt12_pct": 25.97,
+        "Lstar_gt85_pct": 1.055,
+        "clip_black_pct": 0.0,
+        "clip_white_pct": 0.144,
+        "warm_shadow_pct": 0.0,
+        "purple_pct": 0.719,
+        "violet_strong_pct": 0.121,
+        "top25_Lstar": {
+          "mean": 3.04,
+          "p50": 2.15,
+          "p90": 4.22
+        },
+        "palette": {
+          "act": "04",
+          "metric": "CIEDE2000 (as Review/Tools~/measure.py)",
+          "swatches": [
+            {
+              "hex": "#070A14",
+              "role": "虚空（方位 >60° 或仰角 >35°）",
+              "nearest_dE2000_p01": 0.4,
+              "within_dE5_pct": 37.68
+            },
+            {
+              "hex": "#484D63",
+              "role": "光雾带 裂口旁（0–15°）",
+              "nearest_dE2000_p01": 0.8,
+              "within_dE5_pct": 7.31
+            },
+            {
+              "hex": "#2A3041",
+              "role": "光雾带 离裂口 50°",
+              "nearest_dE2000_p01": 0.5,
+              "within_dE5_pct": 38.75
+            },
+            {
+              "hex": "#0F1116",
+              "role": "近处触手本体",
+              "nearest_dE2000_p01": 2.1,
+              "within_dE5_pct": 33.49
+            },
+            {
+              "hex": "#262B38",
+              "role": "巨像冠部（雾中，头清脚没）",
+              "nearest_dE2000_p01": 0.3,
+              "within_dE5_pct": 43.18
+            },
+            {
+              "hex": "#A9C2FF",
+              "role": "月光轮廓",
+              "nearest_dE2000_p01": 11.9,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#A99DE1",
+              "role": "裂口侧轮廓 / 裂口光",
+              "nearest_dE2000_p01": 10.8,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#5B57A1",
+              "role": "紫晕（黄昏靛紫，呼吸）",
+              "nearest_dE2000_p01": 8.2,
+              "within_dE5_pct": 0.01
+            },
+            {
+              "hex": "#495270",
+              "role": "裂口下的云海",
+              "nearest_dE2000_p01": 1.0,
+              "within_dE5_pct": 3.1
+            },
+            {
+              "hex": "#F5F2EC",
+              "role": "裂口核心：未染的白",
+              "nearest_dE2000_p01": 0.8,
+              "within_dE5_pct": 0.69
+            }
+          ],
+          "pixel_to_nearest_dE_median": 2.0,
+          "pixel_to_nearest_dE_p90": 4.8,
+          "pixels_within5_pct": 92.8
+        },
+        "connected_regions": "not measured; SciPy unavailable",
+        "APL_target": {
+          "phase": "4 门",
+          "APL": 38.3,
+          "grade": "S4",
+          "range": [
+            38,
+            40
+          ]
+        },
+        "bottom40_luma_percentiles": {
+          "p5": 20.08,
+          "p50": 43.95,
+          "p95": 76.39
+        }
+      },
+      "reference_upper": {
+        "size": [
+          2560,
+          1072
+        ],
+        "APL": 34.82,
+        "EV_display": -4.958,
+        "luma_lt12_pct": 25.74,
+        "Lstar_gt85_pct": 1.072,
+        "clip_black_pct": 0.292,
+        "clip_white_pct": 0.148,
+        "warm_shadow_pct": 0.0,
+        "purple_pct": 0.548,
+        "violet_strong_pct": 0.107,
+        "top25_Lstar": {
+          "mean": 3.27,
+          "p50": 2.09,
+          "p90": 4.51
+        },
+        "palette": {
+          "act": "04",
+          "metric": "CIEDE2000 (as Review/Tools~/measure.py)",
+          "swatches": [
+            {
+              "hex": "#070A14",
+              "role": "虚空（方位 >60° 或仰角 >35°）",
+              "nearest_dE2000_p01": 0.4,
+              "within_dE5_pct": 38.61
+            },
+            {
+              "hex": "#484D63",
+              "role": "光雾带 裂口旁（0–15°）",
+              "nearest_dE2000_p01": 1.1,
+              "within_dE5_pct": 6.06
+            },
+            {
+              "hex": "#2A3041",
+              "role": "光雾带 离裂口 50°",
+              "nearest_dE2000_p01": 0.5,
+              "within_dE5_pct": 36.71
+            },
+            {
+              "hex": "#0F1116",
+              "role": "近处触手本体",
+              "nearest_dE2000_p01": 2.2,
+              "within_dE5_pct": 33.42
+            },
+            {
+              "hex": "#262B38",
+              "role": "巨像冠部（雾中，头清脚没）",
+              "nearest_dE2000_p01": 0.3,
+              "within_dE5_pct": 44.12
+            },
+            {
+              "hex": "#A9C2FF",
+              "role": "月光轮廓",
+              "nearest_dE2000_p01": 11.0,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#A99DE1",
+              "role": "裂口侧轮廓 / 裂口光",
+              "nearest_dE2000_p01": 9.8,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#5B57A1",
+              "role": "紫晕（黄昏靛紫，呼吸）",
+              "nearest_dE2000_p01": 8.5,
+              "within_dE5_pct": 0.01
+            },
+            {
+              "hex": "#495270",
+              "role": "裂口下的云海",
+              "nearest_dE2000_p01": 1.4,
+              "within_dE5_pct": 2.37
+            },
+            {
+              "hex": "#F5F2EC",
+              "role": "裂口核心：未染的白",
+              "nearest_dE2000_p01": 0.8,
+              "within_dE5_pct": 0.7
+            }
+          ],
+          "pixel_to_nearest_dE_median": 2.1,
+          "pixel_to_nearest_dE_p90": 4.8,
+          "pixels_within5_pct": 92.7
+        },
+        "connected_regions": "not measured; SciPy unavailable"
+      },
+      "reference_final_with_bus": {
+        "size": [
+          2560,
+          1072
+        ],
+        "APL": 35.24,
+        "EV_display": -4.867,
+        "luma_lt12_pct": 26.34,
+        "Lstar_gt85_pct": 1.065,
+        "clip_black_pct": 0.126,
+        "clip_white_pct": 0.117,
+        "warm_shadow_pct": 0.0,
+        "purple_pct": 0.311,
+        "violet_strong_pct": 0.014,
+        "top25_Lstar": {
+          "mean": 3.12,
+          "p50": 2.6,
+          "p90": 3.78
+        },
+        "palette": {
+          "act": "04",
+          "metric": "CIEDE2000 (as Review/Tools~/measure.py)",
+          "swatches": [
+            {
+              "hex": "#070A14",
+              "role": "虚空（方位 >60° 或仰角 >35°）",
+              "nearest_dE2000_p01": 0.0,
+              "within_dE5_pct": 46.77
+            },
+            {
+              "hex": "#484D63",
+              "role": "光雾带 裂口旁（0–15°）",
+              "nearest_dE2000_p01": 1.0,
+              "within_dE5_pct": 5.9
+            },
+            {
+              "hex": "#2A3041",
+              "role": "光雾带 离裂口 50°",
+              "nearest_dE2000_p01": 0.6,
+              "within_dE5_pct": 24.27
+            },
+            {
+              "hex": "#0F1116",
+              "role": "近处触手本体",
+              "nearest_dE2000_p01": 1.8,
+              "within_dE5_pct": 42.79
+            },
+            {
+              "hex": "#262B38",
+              "role": "巨像冠部（雾中，头清脚没）",
+              "nearest_dE2000_p01": 0.6,
+              "within_dE5_pct": 30.48
+            },
+            {
+              "hex": "#A9C2FF",
+              "role": "月光轮廓",
+              "nearest_dE2000_p01": 11.7,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#A99DE1",
+              "role": "裂口侧轮廓 / 裂口光",
+              "nearest_dE2000_p01": 10.3,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#5B57A1",
+              "role": "紫晕（黄昏靛紫，呼吸）",
+              "nearest_dE2000_p01": 8.6,
+              "within_dE5_pct": 0.01
+            },
+            {
+              "hex": "#495270",
+              "role": "裂口下的云海",
+              "nearest_dE2000_p01": 1.7,
+              "within_dE5_pct": 2.4
+            },
+            {
+              "hex": "#F5F2EC",
+              "role": "裂口核心：未染的白",
+              "nearest_dE2000_p01": 0.8,
+              "within_dE5_pct": 0.68
+            }
+          ],
+          "pixel_to_nearest_dE_median": 2.6,
+          "pixel_to_nearest_dE_p90": 5.1,
+          "pixels_within5_pct": 88.2
+        },
+        "connected_regions": "not measured; SciPy unavailable"
+      }
+    },
+    "U7": {
+      "t": 155.1,
+      "unity": {
+        "size": [
+          1920,
+          1080
+        ],
+        "APL": 31.5,
+        "EV_display": -5.34,
+        "luma_lt12_pct": 24.78,
+        "Lstar_gt85_pct": 0.65,
+        "clip_black_pct": 0.0,
+        "clip_white_pct": 0.084,
+        "warm_shadow_pct": 0.0,
+        "purple_pct": 0.605,
+        "violet_strong_pct": 0.072,
+        "top25_Lstar": {
+          "mean": 3.37,
+          "p50": 2.09,
+          "p90": 5.31
+        },
+        "palette": {
+          "act": "04",
+          "metric": "CIEDE2000 (as Review/Tools~/measure.py)",
+          "swatches": [
+            {
+              "hex": "#070A14",
+              "role": "虚空（方位 >60° 或仰角 >35°）",
+              "nearest_dE2000_p01": 0.4,
+              "within_dE5_pct": 45.92
+            },
+            {
+              "hex": "#484D63",
+              "role": "光雾带 裂口旁（0–15°）",
+              "nearest_dE2000_p01": 0.9,
+              "within_dE5_pct": 4.62
+            },
+            {
+              "hex": "#2A3041",
+              "role": "光雾带 离裂口 50°",
+              "nearest_dE2000_p01": 0.5,
+              "within_dE5_pct": 31.72
+            },
+            {
+              "hex": "#0F1116",
+              "role": "近处触手本体",
+              "nearest_dE2000_p01": 2.1,
+              "within_dE5_pct": 40.98
+            },
+            {
+              "hex": "#262B38",
+              "role": "巨像冠部（雾中，头清脚没）",
+              "nearest_dE2000_p01": 0.3,
+              "within_dE5_pct": 40.89
+            },
+            {
+              "hex": "#A9C2FF",
+              "role": "月光轮廓",
+              "nearest_dE2000_p01": 12.5,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#A99DE1",
+              "role": "裂口侧轮廓 / 裂口光",
+              "nearest_dE2000_p01": 11.7,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#5B57A1",
+              "role": "紫晕（黄昏靛紫，呼吸）",
+              "nearest_dE2000_p01": 8.4,
+              "within_dE5_pct": 0.01
+            },
+            {
+              "hex": "#495270",
+              "role": "裂口下的云海",
+              "nearest_dE2000_p01": 1.3,
+              "within_dE5_pct": 1.9
+            },
+            {
+              "hex": "#F5F2EC",
+              "role": "裂口核心：未染的白",
+              "nearest_dE2000_p01": 1.1,
+              "within_dE5_pct": 0.42
+            }
+          ],
+          "pixel_to_nearest_dE_median": 2.2,
+          "pixel_to_nearest_dE_p90": 4.7,
+          "pixels_within5_pct": 94.8
+        },
+        "connected_regions": "not measured; SciPy unavailable",
+        "APL_target": {
+          "phase": "4 门",
+          "APL": 38.3,
+          "grade": "S4",
+          "range": [
+            38,
+            40
+          ]
+        },
+        "bottom40_luma_percentiles": {
+          "p5": 15.37,
+          "p50": 31.94,
+          "p95": 56.74
+        }
+      },
+      "reference_upper": {
+        "size": [
+          1920,
+          1080
+        ],
+        "APL": 29.32,
+        "EV_display": -5.451,
+        "luma_lt12_pct": 24.71,
+        "Lstar_gt85_pct": 0.671,
+        "clip_black_pct": 0.386,
+        "clip_white_pct": 0.088,
+        "warm_shadow_pct": 0.0,
+        "purple_pct": 0.465,
+        "violet_strong_pct": 0.066,
+        "top25_Lstar": {
+          "mean": 3.63,
+          "p50": 2.09,
+          "p90": 5.72
+        },
+        "palette": {
+          "act": "04",
+          "metric": "CIEDE2000 (as Review/Tools~/measure.py)",
+          "swatches": [
+            {
+              "hex": "#070A14",
+              "role": "虚空（方位 >60° 或仰角 >35°）",
+              "nearest_dE2000_p01": 0.4,
+              "within_dE5_pct": 52.31
+            },
+            {
+              "hex": "#484D63",
+              "role": "光雾带 裂口旁（0–15°）",
+              "nearest_dE2000_p01": 1.3,
+              "within_dE5_pct": 3.4
+            },
+            {
+              "hex": "#2A3041",
+              "role": "光雾带 离裂口 50°",
+              "nearest_dE2000_p01": 0.5,
+              "within_dE5_pct": 25.06
+            },
+            {
+              "hex": "#0F1116",
+              "role": "近处触手本体",
+              "nearest_dE2000_p01": 2.1,
+              "within_dE5_pct": 42.65
+            },
+            {
+              "hex": "#262B38",
+              "role": "巨像冠部（雾中，头清脚没）",
+              "nearest_dE2000_p01": 0.3,
+              "within_dE5_pct": 36.27
+            },
+            {
+              "hex": "#A9C2FF",
+              "role": "月光轮廓",
+              "nearest_dE2000_p01": 11.9,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#A99DE1",
+              "role": "裂口侧轮廓 / 裂口光",
+              "nearest_dE2000_p01": 10.7,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#5B57A1",
+              "role": "紫晕（黄昏靛紫，呼吸）",
+              "nearest_dE2000_p01": 8.6,
+              "within_dE5_pct": 0.01
+            },
+            {
+              "hex": "#495270",
+              "role": "裂口下的云海",
+              "nearest_dE2000_p01": 1.7,
+              "within_dE5_pct": 1.35
+            },
+            {
+              "hex": "#F5F2EC",
+              "role": "裂口核心：未染的白",
+              "nearest_dE2000_p01": 1.1,
+              "within_dE5_pct": 0.44
+            }
+          ],
+          "pixel_to_nearest_dE_median": 2.7,
+          "pixel_to_nearest_dE_p90": 4.8,
+          "pixels_within5_pct": 94.5
+        },
+        "connected_regions": "not measured; SciPy unavailable"
+      },
+      "reference_final_with_bus": {
+        "size": [
+          1920,
+          1080
+        ],
+        "APL": 26.43,
+        "EV_display": -5.531,
+        "luma_lt12_pct": 29.07,
+        "Lstar_gt85_pct": 0.597,
+        "clip_black_pct": 0.173,
+        "clip_white_pct": 0.034,
+        "warm_shadow_pct": 0.0,
+        "purple_pct": 0.36,
+        "violet_strong_pct": 0.008,
+        "top25_Lstar": {
+          "mean": 3.68,
+          "p50": 2.09,
+          "p90": 8.97
+        },
+        "palette": {
+          "act": "04",
+          "metric": "CIEDE2000 (as Review/Tools~/measure.py)",
+          "swatches": [
+            {
+              "hex": "#070A14",
+              "role": "虚空（方位 >60° 或仰角 >35°）",
+              "nearest_dE2000_p01": 0.0,
+              "within_dE5_pct": 66.98
+            },
+            {
+              "hex": "#484D63",
+              "role": "光雾带 裂口旁（0–15°）",
+              "nearest_dE2000_p01": 1.2,
+              "within_dE5_pct": 2.82
+            },
+            {
+              "hex": "#2A3041",
+              "role": "光雾带 离裂口 50°",
+              "nearest_dE2000_p01": 0.6,
+              "within_dE5_pct": 15.01
+            },
+            {
+              "hex": "#0F1116",
+              "role": "近处触手本体",
+              "nearest_dE2000_p01": 1.0,
+              "within_dE5_pct": 65.16
+            },
+            {
+              "hex": "#262B38",
+              "role": "巨像冠部（雾中，头清脚没）",
+              "nearest_dE2000_p01": 0.6,
+              "within_dE5_pct": 19.11
+            },
+            {
+              "hex": "#A9C2FF",
+              "role": "月光轮廓",
+              "nearest_dE2000_p01": 12.6,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#A99DE1",
+              "role": "裂口侧轮廓 / 裂口光",
+              "nearest_dE2000_p01": 12.3,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#5B57A1",
+              "role": "紫晕（黄昏靛紫，呼吸）",
+              "nearest_dE2000_p01": 8.8,
+              "within_dE5_pct": 0.01
+            },
+            {
+              "hex": "#495270",
+              "role": "裂口下的云海",
+              "nearest_dE2000_p01": 2.0,
+              "within_dE5_pct": 1.18
+            },
+            {
+              "hex": "#F5F2EC",
+              "role": "裂口核心：未染的白",
+              "nearest_dE2000_p01": 1.0,
+              "within_dE5_pct": 0.39
+            }
+          ],
+          "pixel_to_nearest_dE_median": 1.8,
+          "pixel_to_nearest_dE_p90": 4.8,
+          "pixels_within5_pct": 91.6
+        },
+        "connected_regions": "not measured; SciPy unavailable"
+      }
+    },
+    "U8fwd": {
+      "t": 169.65,
+      "unity": {
+        "size": [
+          1920,
+          1080
+        ],
+        "APL": 62.97,
+        "EV_display": -3.21,
+        "luma_lt12_pct": 10.55,
+        "Lstar_gt85_pct": 6.062,
+        "clip_black_pct": 0.0,
+        "clip_white_pct": 0.66,
+        "warm_shadow_pct": 0.0,
+        "purple_pct": 1.266,
+        "violet_strong_pct": 0.192,
+        "top25_Lstar": {
+          "mean": 19.56,
+          "p50": 4.95,
+          "p90": 86.72
+        },
+        "palette": {
+          "act": "04",
+          "metric": "CIEDE2000 (as Review/Tools~/measure.py)",
+          "swatches": [
+            {
+              "hex": "#070A14",
+              "role": "虚空（方位 >60° 或仰角 >35°）",
+              "nearest_dE2000_p01": 0.4,
+              "within_dE5_pct": 23.66
+            },
+            {
+              "hex": "#484D63",
+              "role": "光雾带 裂口旁（0–15°）",
+              "nearest_dE2000_p01": 1.1,
+              "within_dE5_pct": 11.88
+            },
+            {
+              "hex": "#2A3041",
+              "role": "光雾带 离裂口 50°",
+              "nearest_dE2000_p01": 0.5,
+              "within_dE5_pct": 30.18
+            },
+            {
+              "hex": "#0F1116",
+              "role": "近处触手本体",
+              "nearest_dE2000_p01": 2.0,
+              "within_dE5_pct": 17.62
+            },
+            {
+              "hex": "#262B38",
+              "role": "巨像冠部（雾中，头清脚没）",
+              "nearest_dE2000_p01": 0.7,
+              "within_dE5_pct": 29.75
+            },
+            {
+              "hex": "#A9C2FF",
+              "role": "月光轮廓",
+              "nearest_dE2000_p01": 8.0,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#A99DE1",
+              "role": "裂口侧轮廓 / 裂口光",
+              "nearest_dE2000_p01": 9.1,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#5B57A1",
+              "role": "紫晕（黄昏靛紫，呼吸）",
+              "nearest_dE2000_p01": 7.3,
+              "within_dE5_pct": 0.04
+            },
+            {
+              "hex": "#495270",
+              "role": "裂口下的云海",
+              "nearest_dE2000_p01": 1.3,
+              "within_dE5_pct": 8.46
+            },
+            {
+              "hex": "#F5F2EC",
+              "role": "裂口核心：未染的白",
+              "nearest_dE2000_p01": 0.2,
+              "within_dE5_pct": 3.49
+            }
+          ],
+          "pixel_to_nearest_dE_median": 3.4,
+          "pixel_to_nearest_dE_p90": 8.6,
+          "pixels_within5_pct": 77.0
+        },
+        "connected_regions": "not measured; SciPy unavailable",
+        "APL_target": {
+          "phase": "4 门",
+          "APL": 39.3,
+          "grade": "S4",
+          "range": [
+            38,
+            40
+          ]
+        },
+        "bottom40_luma_percentiles": {
+          "p5": 19.08,
+          "p50": 55.82,
+          "p95": 178.05
+        }
+      },
+      "reference_upper": {
+        "size": [
+          1920,
+          1080
+        ],
+        "APL": 40.9,
+        "EV_display": -4.761,
+        "luma_lt12_pct": 13.26,
+        "Lstar_gt85_pct": 0.692,
+        "clip_black_pct": 0.386,
+        "clip_white_pct": 0.119,
+        "warm_shadow_pct": 0.0,
+        "purple_pct": 0.01,
+        "violet_strong_pct": 0.0,
+        "top25_Lstar": {
+          "mean": 3.91,
+          "p50": 3.28,
+          "p90": 6.55
+        },
+        "palette": {
+          "act": "04",
+          "metric": "CIEDE2000 (as Review/Tools~/measure.py)",
+          "swatches": [
+            {
+              "hex": "#070A14",
+              "role": "虚空（方位 >60° 或仰角 >35°）",
+              "nearest_dE2000_p01": 0.8,
+              "within_dE5_pct": 23.23
+            },
+            {
+              "hex": "#484D63",
+              "role": "光雾带 裂口旁（0–15°）",
+              "nearest_dE2000_p01": 1.5,
+              "within_dE5_pct": 7.78
+            },
+            {
+              "hex": "#2A3041",
+              "role": "光雾带 离裂口 50°",
+              "nearest_dE2000_p01": 0.5,
+              "within_dE5_pct": 44.74
+            },
+            {
+              "hex": "#0F1116",
+              "role": "近处触手本体",
+              "nearest_dE2000_p01": 3.0,
+              "within_dE5_pct": 16.35
+            },
+            {
+              "hex": "#262B38",
+              "role": "巨像冠部（雾中，头清脚没）",
+              "nearest_dE2000_p01": 0.6,
+              "within_dE5_pct": 47.34
+            },
+            {
+              "hex": "#A9C2FF",
+              "role": "月光轮廓",
+              "nearest_dE2000_p01": 8.3,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#A99DE1",
+              "role": "裂口侧轮廓 / 裂口光",
+              "nearest_dE2000_p01": 9.3,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#5B57A1",
+              "role": "紫晕（黄昏靛紫，呼吸）",
+              "nearest_dE2000_p01": 8.7,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#495270",
+              "role": "裂口下的云海",
+              "nearest_dE2000_p01": 1.5,
+              "within_dE5_pct": 2.98
+            },
+            {
+              "hex": "#F5F2EC",
+              "role": "裂口核心：未染的白",
+              "nearest_dE2000_p01": 6.4,
+              "within_dE5_pct": 0.03
+            }
+          ],
+          "pixel_to_nearest_dE_median": 3.0,
+          "pixel_to_nearest_dE_p90": 5.3,
+          "pixels_within5_pct": 86.1
+        },
+        "connected_regions": "not measured; SciPy unavailable"
+      },
+      "reference_final_with_bus": {
+        "size": [
+          1920,
+          1080
+        ],
+        "APL": 43.07,
+        "EV_display": -4.008,
+        "luma_lt12_pct": 18.36,
+        "Lstar_gt85_pct": 3.305,
+        "clip_black_pct": 0.167,
+        "clip_white_pct": 0.187,
+        "warm_shadow_pct": 0.0,
+        "purple_pct": 1.395,
+        "violet_strong_pct": 0.03,
+        "top25_Lstar": {
+          "mean": 11.81,
+          "p50": 5.63,
+          "p90": 23.01
+        },
+        "palette": {
+          "act": "04",
+          "metric": "CIEDE2000 (as Review/Tools~/measure.py)",
+          "swatches": [
+            {
+              "hex": "#070A14",
+              "role": "虚空（方位 >60° 或仰角 >35°）",
+              "nearest_dE2000_p01": 0.4,
+              "within_dE5_pct": 52.14
+            },
+            {
+              "hex": "#484D63",
+              "role": "光雾带 裂口旁（0–15°）",
+              "nearest_dE2000_p01": 1.1,
+              "within_dE5_pct": 6.17
+            },
+            {
+              "hex": "#2A3041",
+              "role": "光雾带 离裂口 50°",
+              "nearest_dE2000_p01": 0.5,
+              "within_dE5_pct": 20.76
+            },
+            {
+              "hex": "#0F1116",
+              "role": "近处触手本体",
+              "nearest_dE2000_p01": 0.6,
+              "within_dE5_pct": 51.3
+            },
+            {
+              "hex": "#262B38",
+              "role": "巨像冠部（雾中，头清脚没）",
+              "nearest_dE2000_p01": 0.3,
+              "within_dE5_pct": 23.21
+            },
+            {
+              "hex": "#A9C2FF",
+              "role": "月光轮廓",
+              "nearest_dE2000_p01": 9.5,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#A99DE1",
+              "role": "裂口侧轮廓 / 裂口光",
+              "nearest_dE2000_p01": 8.4,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#5B57A1",
+              "role": "紫晕（黄昏靛紫，呼吸）",
+              "nearest_dE2000_p01": 8.3,
+              "within_dE5_pct": 0.02
+            },
+            {
+              "hex": "#495270",
+              "role": "裂口下的云海",
+              "nearest_dE2000_p01": 1.8,
+              "within_dE5_pct": 2.46
+            },
+            {
+              "hex": "#F5F2EC",
+              "role": "裂口核心：未染的白",
+              "nearest_dE2000_p01": 0.4,
+              "within_dE5_pct": 1.83
+            }
+          ],
+          "pixel_to_nearest_dE_median": 2.2,
+          "pixel_to_nearest_dE_p90": 5.3,
+          "pixels_within5_pct": 87.8
+        },
+        "connected_regions": "not measured; SciPy unavailable"
+      }
+    },
+    "U8side": {
+      "t": 166.45,
+      "unity": {
+        "size": [
+          1920,
+          1080
+        ],
+        "APL": 18.9,
+        "EV_display": -6.897,
+        "luma_lt12_pct": 37.25,
+        "Lstar_gt85_pct": 0.023,
+        "clip_black_pct": 0.0,
+        "clip_white_pct": 0.009,
+        "warm_shadow_pct": 0.0,
+        "purple_pct": 1.408,
+        "violet_strong_pct": 0.627,
+        "top25_Lstar": {
+          "mean": 2.77,
+          "p50": 2.09,
+          "p90": 5.04
+        },
+        "palette": {
+          "act": "04",
+          "metric": "CIEDE2000 (as Review/Tools~/measure.py)",
+          "swatches": [
+            {
+              "hex": "#070A14",
+              "role": "虚空（方位 >60° 或仰角 >35°）",
+              "nearest_dE2000_p01": 0.4,
+              "within_dE5_pct": 67.19
+            },
+            {
+              "hex": "#484D63",
+              "role": "光雾带 裂口旁（0–15°）",
+              "nearest_dE2000_p01": 4.0,
+              "within_dE5_pct": 0.16
+            },
+            {
+              "hex": "#2A3041",
+              "role": "光雾带 离裂口 50°",
+              "nearest_dE2000_p01": 0.6,
+              "within_dE5_pct": 7.48
+            },
+            {
+              "hex": "#0F1116",
+              "role": "近处触手本体",
+              "nearest_dE2000_p01": 2.2,
+              "within_dE5_pct": 54.3
+            },
+            {
+              "hex": "#262B38",
+              "role": "巨像冠部（雾中，头清脚没）",
+              "nearest_dE2000_p01": 0.6,
+              "within_dE5_pct": 19.14
+            },
+            {
+              "hex": "#A9C2FF",
+              "role": "月光轮廓",
+              "nearest_dE2000_p01": 23.0,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#A99DE1",
+              "role": "裂口侧轮廓 / 裂口光",
+              "nearest_dE2000_p01": 18.5,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#5B57A1",
+              "role": "紫晕（黄昏靛紫，呼吸）",
+              "nearest_dE2000_p01": 9.0,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#495270",
+              "role": "裂口下的云海",
+              "nearest_dE2000_p01": 5.0,
+              "within_dE5_pct": 0.1
+            },
+            {
+              "hex": "#F5F2EC",
+              "role": "裂口核心：未染的白",
+              "nearest_dE2000_p01": 35.1,
+              "within_dE5_pct": 0.0
+            }
+          ],
+          "pixel_to_nearest_dE_median": 2.8,
+          "pixel_to_nearest_dE_p90": 5.3,
+          "pixels_within5_pct": 86.7
+        },
+        "connected_regions": "not measured; SciPy unavailable",
+        "APL_target": {
+          "phase": "4 门",
+          "APL": 39.1,
+          "grade": "S4",
+          "range": [
+            38,
+            40
+          ]
+        },
+        "bottom40_luma_percentiles": {
+          "p5": 11.37,
+          "p50": 24.16,
+          "p95": 46.67
+        }
+      },
+      "reference_upper": {
+        "size": [
+          1920,
+          1080
+        ],
+        "APL": 20.56,
+        "EV_display": -6.694,
+        "luma_lt12_pct": 40.39,
+        "Lstar_gt85_pct": 0.021,
+        "clip_black_pct": 0.386,
+        "clip_white_pct": 0.003,
+        "warm_shadow_pct": 0.0,
+        "purple_pct": 0.0,
+        "violet_strong_pct": 0.0,
+        "top25_Lstar": {
+          "mean": 2.4,
+          "p50": 2.09,
+          "p90": 3.06
+        },
+        "palette": {
+          "act": "04",
+          "metric": "CIEDE2000 (as Review/Tools~/measure.py)",
+          "swatches": [
+            {
+              "hex": "#070A14",
+              "role": "虚空（方位 >60° 或仰角 >35°）",
+              "nearest_dE2000_p01": 0.5,
+              "within_dE5_pct": 64.68
+            },
+            {
+              "hex": "#484D63",
+              "role": "光雾带 裂口旁（0–15°）",
+              "nearest_dE2000_p01": 3.8,
+              "within_dE5_pct": 0.38
+            },
+            {
+              "hex": "#2A3041",
+              "role": "光雾带 离裂口 50°",
+              "nearest_dE2000_p01": 0.6,
+              "within_dE5_pct": 14.01
+            },
+            {
+              "hex": "#0F1116",
+              "role": "近处触手本体",
+              "nearest_dE2000_p01": 2.4,
+              "within_dE5_pct": 53.22
+            },
+            {
+              "hex": "#262B38",
+              "role": "巨像冠部（雾中，头清脚没）",
+              "nearest_dE2000_p01": 0.5,
+              "within_dE5_pct": 28.89
+            },
+            {
+              "hex": "#A9C2FF",
+              "role": "月光轮廓",
+              "nearest_dE2000_p01": 46.2,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#A99DE1",
+              "role": "裂口侧轮廓 / 裂口光",
+              "nearest_dE2000_p01": 38.5,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#5B57A1",
+              "role": "紫晕（黄昏靛紫，呼吸）",
+              "nearest_dE2000_p01": 14.1,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#495270",
+              "role": "裂口下的云海",
+              "nearest_dE2000_p01": 5.9,
+              "within_dE5_pct": 0.02
+            },
+            {
+              "hex": "#F5F2EC",
+              "role": "裂口核心：未染的白",
+              "nearest_dE2000_p01": 55.9,
+              "within_dE5_pct": 0.02
+            }
+          ],
+          "pixel_to_nearest_dE_median": 2.3,
+          "pixel_to_nearest_dE_p90": 4.6,
+          "pixels_within5_pct": 95.4
+        },
+        "connected_regions": "not measured; SciPy unavailable"
+      },
+      "reference_final_with_bus": {
+        "size": [
+          1920,
+          1080
+        ],
+        "APL": 21.39,
+        "EV_display": -6.6,
+        "luma_lt12_pct": 35.06,
+        "Lstar_gt85_pct": 0.035,
+        "clip_black_pct": 0.153,
+        "clip_white_pct": 0.011,
+        "warm_shadow_pct": 0.0,
+        "purple_pct": 0.386,
+        "violet_strong_pct": 0.0,
+        "top25_Lstar": {
+          "mean": 3.43,
+          "p50": 2.6,
+          "p90": 7.28
+        },
+        "palette": {
+          "act": "04",
+          "metric": "CIEDE2000 (as Review/Tools~/measure.py)",
+          "swatches": [
+            {
+              "hex": "#070A14",
+              "role": "虚空（方位 >60° 或仰角 >35°）",
+              "nearest_dE2000_p01": 0.0,
+              "within_dE5_pct": 68.88
+            },
+            {
+              "hex": "#484D63",
+              "role": "光雾带 裂口旁（0–15°）",
+              "nearest_dE2000_p01": 3.1,
+              "within_dE5_pct": 0.95
+            },
+            {
+              "hex": "#2A3041",
+              "role": "光雾带 离裂口 50°",
+              "nearest_dE2000_p01": 1.3,
+              "within_dE5_pct": 10.23
+            },
+            {
+              "hex": "#0F1116",
+              "role": "近处触手本体",
+              "nearest_dE2000_p01": 0.6,
+              "within_dE5_pct": 65.07
+            },
+            {
+              "hex": "#262B38",
+              "role": "巨像冠部（雾中，头清脚没）",
+              "nearest_dE2000_p01": 1.0,
+              "within_dE5_pct": 22.47
+            },
+            {
+              "hex": "#A9C2FF",
+              "role": "月光轮廓",
+              "nearest_dE2000_p01": 30.4,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#A99DE1",
+              "role": "裂口侧轮廓 / 裂口光",
+              "nearest_dE2000_p01": 26.6,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#5B57A1",
+              "role": "紫晕（黄昏靛紫，呼吸）",
+              "nearest_dE2000_p01": 11.4,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#495270",
+              "role": "裂口下的云海",
+              "nearest_dE2000_p01": 5.5,
+              "within_dE5_pct": 0.08
+            },
+            {
+              "hex": "#F5F2EC",
+              "role": "裂口核心：未染的白",
+              "nearest_dE2000_p01": 42.6,
+              "within_dE5_pct": 0.02
+            }
+          ],
+          "pixel_to_nearest_dE_median": 2.0,
+          "pixel_to_nearest_dE_p90": 4.7,
+          "pixels_within5_pct": 92.6
+        },
+        "connected_regions": "not measured; SciPy unavailable"
+      }
+    },
+    "rear": {
+      "t": 177.55,
+      "unity": {
+        "size": [
+          1920,
+          1080
+        ],
+        "APL": 26.43,
+        "EV_display": -6.132,
+        "luma_lt12_pct": 25.98,
+        "Lstar_gt85_pct": 0.011,
+        "clip_black_pct": 0.0,
+        "clip_white_pct": 0.0,
+        "warm_shadow_pct": 0.0,
+        "purple_pct": 0.554,
+        "violet_strong_pct": 0.114,
+        "top25_Lstar": {
+          "mean": 5.7,
+          "p50": 2.12,
+          "p90": 14.26
+        },
+        "palette": {
+          "act": "04",
+          "metric": "CIEDE2000 (as Review/Tools~/measure.py)",
+          "swatches": [
+            {
+              "hex": "#070A14",
+              "role": "虚空（方位 >60° 或仰角 >35°）",
+              "nearest_dE2000_p01": 0.5,
+              "within_dE5_pct": 47.46
+            },
+            {
+              "hex": "#484D63",
+              "role": "光雾带 裂口旁（0–15°）",
+              "nearest_dE2000_p01": 3.2,
+              "within_dE5_pct": 0.74
+            },
+            {
+              "hex": "#2A3041",
+              "role": "光雾带 离裂口 50°",
+              "nearest_dE2000_p01": 0.3,
+              "within_dE5_pct": 32.42
+            },
+            {
+              "hex": "#0F1116",
+              "role": "近处触手本体",
+              "nearest_dE2000_p01": 2.3,
+              "within_dE5_pct": 35.46
+            },
+            {
+              "hex": "#262B38",
+              "role": "巨像冠部（雾中，头清脚没）",
+              "nearest_dE2000_p01": 0.0,
+              "within_dE5_pct": 41.14
+            },
+            {
+              "hex": "#A9C2FF",
+              "role": "月光轮廓",
+              "nearest_dE2000_p01": 14.2,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#A99DE1",
+              "role": "裂口侧轮廓 / 裂口光",
+              "nearest_dE2000_p01": 12.6,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#5B57A1",
+              "role": "紫晕（黄昏靛紫，呼吸）",
+              "nearest_dE2000_p01": 11.0,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#495270",
+              "role": "裂口下的云海",
+              "nearest_dE2000_p01": 4.8,
+              "within_dE5_pct": 0.17
+            },
+            {
+              "hex": "#F5F2EC",
+              "role": "裂口核心：未染的白",
+              "nearest_dE2000_p01": 25.3,
+              "within_dE5_pct": 0.0
+            }
+          ],
+          "pixel_to_nearest_dE_median": 2.0,
+          "pixel_to_nearest_dE_p90": 5.0,
+          "pixels_within5_pct": 89.7
+        },
+        "connected_regions": "not measured; SciPy unavailable",
+        "APL_target": {
+          "phase": "4 门",
+          "APL": 39.9,
+          "grade": "S4",
+          "range": [
+            38,
+            40
+          ]
+        },
+        "bottom40_luma_percentiles": {
+          "p5": 19.45,
+          "p50": 35.95,
+          "p95": 48.74
+        }
+      },
+      "reference_upper": {
+        "size": [
+          1920,
+          1080
+        ],
+        "APL": 29.37,
+        "EV_display": -5.885,
+        "luma_lt12_pct": 37.54,
+        "Lstar_gt85_pct": 0.021,
+        "clip_black_pct": 0.386,
+        "clip_white_pct": 0.003,
+        "warm_shadow_pct": 0.0,
+        "purple_pct": 0.0,
+        "violet_strong_pct": 0.0,
+        "top25_Lstar": {
+          "mean": 2.22,
+          "p50": 2.09,
+          "p90": 2.09
+        },
+        "palette": {
+          "act": "04",
+          "metric": "CIEDE2000 (as Review/Tools~/measure.py)",
+          "swatches": [
+            {
+              "hex": "#070A14",
+              "role": "虚空（方位 >60° 或仰角 >35°）",
+              "nearest_dE2000_p01": 0.8,
+              "within_dE5_pct": 43.39
+            },
+            {
+              "hex": "#484D63",
+              "role": "光雾带 裂口旁（0–15°）",
+              "nearest_dE2000_p01": 4.8,
+              "within_dE5_pct": 0.11
+            },
+            {
+              "hex": "#2A3041",
+              "role": "光雾带 离裂口 50°",
+              "nearest_dE2000_p01": 0.0,
+              "within_dE5_pct": 51.26
+            },
+            {
+              "hex": "#0F1116",
+              "role": "近处触手本体",
+              "nearest_dE2000_p01": 3.0,
+              "within_dE5_pct": 40.93
+            },
+            {
+              "hex": "#262B38",
+              "role": "巨像冠部（雾中，头清脚没）",
+              "nearest_dE2000_p01": 0.0,
+              "within_dE5_pct": 53.16
+            },
+            {
+              "hex": "#A9C2FF",
+              "role": "月光轮廓",
+              "nearest_dE2000_p01": 49.2,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#A99DE1",
+              "role": "裂口侧轮廓 / 裂口光",
+              "nearest_dE2000_p01": 40.6,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#5B57A1",
+              "role": "紫晕（黄昏靛紫，呼吸）",
+              "nearest_dE2000_p01": 15.7,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#495270",
+              "role": "裂口下的云海",
+              "nearest_dE2000_p01": 7.3,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#F5F2EC",
+              "role": "裂口核心：未染的白",
+              "nearest_dE2000_p01": 58.5,
+              "within_dE5_pct": 0.02
+            }
+          ],
+          "pixel_to_nearest_dE_median": 0.8,
+          "pixel_to_nearest_dE_p90": 3.3,
+          "pixels_within5_pct": 98.0
+        },
+        "connected_regions": "not measured; SciPy unavailable"
+      },
+      "reference_final_with_bus": {
+        "size": [
+          1920,
+          1080
+        ],
+        "APL": 25.04,
+        "EV_display": -5.993,
+        "luma_lt12_pct": 43.0,
+        "Lstar_gt85_pct": 0.016,
+        "clip_black_pct": 0.172,
+        "clip_white_pct": 0.002,
+        "warm_shadow_pct": 0.0,
+        "purple_pct": 0.06,
+        "violet_strong_pct": 0.0,
+        "top25_Lstar": {
+          "mean": 4.64,
+          "p50": 2.31,
+          "p90": 8.08
+        },
+        "palette": {
+          "act": "04",
+          "metric": "CIEDE2000 (as Review/Tools~/measure.py)",
+          "swatches": [
+            {
+              "hex": "#070A14",
+              "role": "虚空（方位 >60° 或仰角 >35°）",
+              "nearest_dE2000_p01": 0.0,
+              "within_dE5_pct": 65.53
+            },
+            {
+              "hex": "#484D63",
+              "role": "光雾带 裂口旁（0–15°）",
+              "nearest_dE2000_p01": 3.3,
+              "within_dE5_pct": 3.72
+            },
+            {
+              "hex": "#2A3041",
+              "role": "光雾带 离裂口 50°",
+              "nearest_dE2000_p01": 0.0,
+              "within_dE5_pct": 16.52
+            },
+            {
+              "hex": "#0F1116",
+              "role": "近处触手本体",
+              "nearest_dE2000_p01": 1.8,
+              "within_dE5_pct": 58.15
+            },
+            {
+              "hex": "#262B38",
+              "role": "巨像冠部（雾中，头清脚没）",
+              "nearest_dE2000_p01": 0.6,
+              "within_dE5_pct": 19.33
+            },
+            {
+              "hex": "#A9C2FF",
+              "role": "月光轮廓",
+              "nearest_dE2000_p01": 16.0,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#A99DE1",
+              "role": "裂口侧轮廓 / 裂口光",
+              "nearest_dE2000_p01": 13.9,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#5B57A1",
+              "role": "紫晕（黄昏靛紫，呼吸）",
+              "nearest_dE2000_p01": 11.1,
+              "within_dE5_pct": 0.0
+            },
+            {
+              "hex": "#495270",
+              "role": "裂口下的云海",
+              "nearest_dE2000_p01": 5.1,
+              "within_dE5_pct": 0.08
+            },
+            {
+              "hex": "#F5F2EC",
+              "role": "裂口核心：未染的白",
+              "nearest_dE2000_p01": 25.5,
+              "within_dE5_pct": 0.01
+            }
+          ],
+          "pixel_to_nearest_dE_median": 1.3,
+          "pixel_to_nearest_dE_p90": 5.0,
+          "pixels_within5_pct": 89.5
+        },
+        "connected_regions": "not measured; SciPy unavailable"
+      }
+    }
+  }
+}

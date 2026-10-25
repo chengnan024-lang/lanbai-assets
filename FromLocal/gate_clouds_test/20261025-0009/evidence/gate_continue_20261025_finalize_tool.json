@@ -1,0 +1,29 @@
+{
+    "id": "gate_continue_20261025_finalize_tool",
+    "state": "done",
+    "step": 5,
+    "total": 5,
+    "started": "2026-10-25 00:15:56",
+    "finished": "2026-10-25 00:16:15",
+    "error": "",
+    "log": [
+        "00:15:56 收到请求，共 5 步",
+        "00:15:56 刷新导入（AssetDatabase.Refresh）",
+        "00:16:09 （脚本重新加载，接着做第 1 步）",
+        "00:16:10 导入和编译完成",
+        "00:16:11 调用 Lanbai.Tests.LB_FormalTestEntry.FinalizeGate",
+        "00:16:11   用时 0.4 秒",
+        "00:16:11   返回内容写在 LanbaiRemote/results/gate_continue_20261025_finalize_tool.step2.txt",
+        "00:16:11 调用 Lanbai.Tests.LB_GateContinuation.CheckPrograms",
+        "00:16:11   用时 0.0 秒",
+        "00:16:11   返回内容写在 LanbaiRemote/results/gate_continue_20261025_finalize_tool.step3.txt",
+        "00:16:15 调用 Lanbai.Tests.LB_GateContinuation.CheckScene",
+        "00:16:15   用时 0.0 秒",
+        "00:16:15   返回：Scene bindings valid: 64 gate instances, 38 cards, 10 tower layers, all 3 backing Udon behaviours, legacy renderers disabled; HDR reference camera. skyFromSky=True; sceneDirty=False",
+        "00:16:15 全部完成"
+    ],
+    "files": [
+        "LanbaiRemote/results/gate_continue_20261025_finalize_tool.step2.txt",
+        "LanbaiRemote/results/gate_continue_20261025_finalize_tool.step3.txt"
+    ]
+}

@@ -91,12 +91,12 @@ Shader "Lanbai/Tear"
         _Intensity ("Intensity", Float) = 1
         _EmissionScale ("Emission scale (Lens/Rip PNG = fill / 4)", Float) = 4
 
-        [Header(Tear frame (object space of Tear_Root))]
+        [Header(Tear frame  object space of Tear_Root)]
         _TearAcrossOS ("Across axis (+ = right as seen from the bus)", Vector) = (-0.99756, -0.06976, 0, 0)
         _TearAxisOS ("Lens axis (up, tilted 4 deg)", Vector) = (-0.06976, 0.99756, 0, 0)
         _OpenMin ("Width at _Udon_TearOpen = 0 (fraction of full)", Float) = 0.6
 
-        [Header(Own attenuation (sky object, optional))]
+        [Header(Own attenuation  sky object  optional)]
         _Atten ("Attenuation per m (0 = off)", Float) = 0
         _HazeColor ("Haze fill, LINEAR (band next to the tear, x 0.80 since v5)", Vector) = (0.1085, 0.1130, 0.1641, 1)
 
@@ -170,7 +170,7 @@ Shader "Lanbai/Tear"
 
     CGINCLUDE
     #include "UnityCG.cginc"
-    #include "LanbaiVR.cginc"
+    #include "Assets/Lanbai/Common/Shaders/LanbaiVR.cginc"   // the canonical copy (has LanbaiNearFade + LanbaiCentreEyePos); 2026-10-23
 
     sampler2D _MainTex; float4 _MainTex_ST;
     float4 _Tint; float _Intensity, _EmissionScale;
@@ -184,8 +184,7 @@ Shader "Lanbai/Tear"
     float _SoftFade, _EdgeFadePow; float4 _NearFadeM;
     float _DepthPrepass;
     float _CloudFadeM, _RimDesat; float4 _LanesRect; sampler2D _LanesTex;
-    float4 _Udon_CloudTop;     // global: x = world y of the cloud-sea top this frame; w > 0 = set
-    float4 _Udon_GateOrigin;   // v5 global: xyz = GateRoot.position this frame (noise in the cloud-sea frame)
+    #include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc"
     float4 _FlapEdge; float _FlapTrans;
     float4 _FootMist; float _FootMistM; float4 _FootCloudEdge, _FootCloudCore, _CardV; float _FootGlow; float4 _FootLobe;
     float4 _FootCut, _SkyCloud; float _SkyRim, _SkyNear; float4 _LaneW, _LaneFoot, _LaneNear; float _NearFootCut, _FootAddK;
@@ -219,8 +218,7 @@ Shader "Lanbai/Tear"
         return 1.0 - smoothstep(0.75, 1.0, e);
     }
 
-    // Udon globals (never set = 0)
-    float _Udon_TearOpen, _Udon_RipProgress, _Udon_TearHide, _Udon_TearBreath;
+    // Udon globals (never set = 0): _Udon_TearOpen / RipProgress / TearHide / TearBreath come from LanbaiGlobals.cginc above
 
     struct appdata
     {

@@ -1,0 +1,314 @@
+{
+  "tool": "Lanbai.Test.Runner",
+  "tool_version": "1.0.0",
+  "test_id": "gate_clouds_test",
+  "run_id": "20261025-001331",
+  "fromlocal": "FromLocal/gate_clouds_test/20261025-001331/",
+  "test_file": "<project>\\Assets\\Lanbai\\Engineering\\UnityTest\\tests\\gate_clouds_test.json",
+  "test_sha256": "4c49970db5607a5df0be8dd6d4dd543476a6ce84ff8ffaa4ab42274bbfc29bae",
+  "mode": "menu",
+  "started_utc": "2026-10-25T04:13:31.8900476Z",
+  "finished_utc": "2026-10-25T04:13:31.9320474Z",
+  "duration_s": 0,
+  "exit_code": 0,
+  "status": "preflight_ok",
+  "preflight_only": true,
+  "blocked_reason": null,
+  "error": null,
+  "repo": {
+    "repo_commit": "f703a951cbadf0eb6bc4df263f6d315e298dd0fc",
+    "repo_branch": "main",
+    "repo_dirty": null,
+    "repo_path": "<asset-checkout>",
+    "entry": "D-41 common Udon program repair and Engineering/UnityTest",
+    "synced_at": "2026-10-25T00:13:19.2541837-04:00",
+    "paths": null,
+    "tool_version": "local-20261025"
+  },
+  "unity": {
+    "version": "2022.3.22f1",
+    "batch": false,
+    "color_space": "Linear",
+    "quality": "VRC High",
+    "build_target": "StandaloneWindows64",
+    "scene": null
+  },
+  "packages": {
+    "com.vrchat.worlds": "3.10.5",
+    "com.vrchat.base": "3.10.5",
+    "com.unity.postprocessing": "3.4.0",
+    "com.unity.textmeshpro": "3.0.6"
+  },
+  "gpu": {
+    "name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "vendor": "NVIDIA",
+    "api": "Direct3D11",
+    "version": "Direct3D 11.0 [level 11.1]",
+    "vram_mb": 7956,
+    "cpu": "13th Gen Intel(R) Core(TM) i9-13980HX",
+    "cpu_threads": 32,
+    "ram_mb": 32386,
+    "os": "Windows 11  (10.0.26200) 64bit"
+  },
+  "consent": {
+    "backup": "E:\\IDMdownload\\VRCC\\Backups\\dream_20261025-000405.zip",
+    "note": "用户原话：开始实际部署；把项目窗口切到前台。然后 先部署 让我能一直看到进度。承接现有门测试部署与常规验证授权。",
+    "scope": "仅 GateTest；不改正式场景或项目设置；不上传世界",
+    "by": "用户（当前聊天）",
+    "tool_version": "1.0.0",
+    "tests": [
+      "gate_clouds_test"
+    ],
+    "date": "2026-10-25"
+  },
+  "layers": {
+    "blender_offline": {
+      "status": "pending_cloud",
+      "note": "云端对照 Blender 参考帧后填；工具不填"
+    },
+    "unity_desktop": {
+      "status": "not_tested",
+      "note": "只做了预检，没跑测试"
+    },
+    "vr_headset": {
+      "status": "not_tested",
+      "note": "工具不测头显，也不会把这一层标成通过；看 summary.md 末尾的头显清单"
+    }
+  },
+  "preflight": [
+    {
+      "item": "gpu",
+      "status": "ok",
+      "detail": "NVIDIA GeForce RTX 4060 Laptop GPU（Direct3D11，Direct3D 11.0 [level 11.1]，显存 7956 MB）"
+    },
+    {
+      "item": "resources",
+      "status": "ok",
+      "detail": "C:\\ 剩 13.0 GB，E:\\ 剩 85.8 GB，可用内存 10.0 GB"
+    },
+    {
+      "item": "consent",
+      "status": "ok",
+      "detail": "用户（当前聊天） 2026-10-25 同意；备份 E:\\IDMdownload\\VRCC\\Backups\\dream_20261025-000405.zip（在）"
+    },
+    {
+      "item": "unity",
+      "status": "ok",
+      "detail": "2022.3.22f1（要 2022.3.22f1）"
+    },
+    {
+      "item": "editor_state",
+      "status": "ok",
+      "detail": "Play False，编译中 False，导入中 False（要在编辑模式、编译和导入都完成后再跑）"
+    },
+    {
+      "item": "color_space",
+      "status": "ok",
+      "detail": "Linear（要 Linear）"
+    },
+    {
+      "item": "package:com.vrchat.worlds",
+      "status": "ok",
+      "detail": "3.10.5（要 3.10.5；读自 PackageManager）"
+    },
+    {
+      "item": "package:com.unity.postprocessing",
+      "status": "ok",
+      "detail": "3.4.0（要 3.4.0；读自 PackageManager）"
+    },
+    {
+      "item": "udonsharp",
+      "status": "ok",
+      "detail": "UdonSharp.UdonSharpBehaviour 在（UdonSharp.Runtime），随 VRChat Worlds SDK"
+    },
+    {
+      "item": "compile",
+      "status": "ok",
+      "detail": "scriptCompilationFailed False，Console 里的编译错误（含 UdonSharp 的）0 条（Console 共 2 条，原样在 console.jsonl）"
+    },
+    {
+      "item": "open_scenes",
+      "status": "ok",
+      "detail": "没有没保存的改动（Assets/Lanbai/Tests/GateTest.unity）"
+    },
+    {
+      "item": "sandbox",
+      "status": "ok",
+      "detail": "没有遗留的沙盒"
+    },
+    {
+      "item": "grading",
+      "status": "warn",
+      "detail": "有旧的 Assets/Lanbai/Grades/，有套件的 Assets/Lanbai/Grading/；layer 4 =「Water」，layer 22 =「PostProcessing」。两套调色都在：工具不删，截图用的是参考相机上的那一套（PostProcessLayer 的 volumeLayer 写在 manifest 的截图记录里）"
+    },
+    {
+      "item": "sync_record",
+      "status": "ok",
+      "detail": "仓库提交 f703a951cbadf0eb6bc4df263f6d315e298dd0fc（2026-10-25T00:13:19.2541837-04:00 同步，条目：D-41 common Udon program repair and Engineering/UnityTest）"
+    },
+    {
+      "item": "git_status",
+      "status": "info",
+      "detail": "工程不是 git 仓库"
+    }
+  ],
+  "preconditions": [
+    {
+      "item": "文件夹 Assets/Lanbai/Common",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件夹 Assets/Lanbai/Gate",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件夹 Assets/Lanbai/GateClouds",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件夹 Assets/Lanbai/Tear",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件夹 Assets/Lanbai/Tentacles",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件夹 Assets/Lanbai/Tests",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件 Assets/Lanbai/Tests/GateTest.unity",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件 Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件 Assets/Lanbai/Gate/GateLayout_v2.json",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件 Assets/Lanbai/Gate/GateDriver_Bake.json",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件 Assets/Lanbai/GateClouds/GateClouds_Layout.json",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "类型 Lanbai.Tests.LB_GateTest",
+      "status": "ok",
+      "detail": "脚本没拷进来或没编译"
+    },
+    {
+      "item": "类型 LanbaiGateCloudsBuilder",
+      "status": "ok",
+      "detail": "脚本没拷进来或没编译"
+    },
+    {
+      "item": "类型 LanbaiGateDriverBuilder",
+      "status": "ok",
+      "detail": "脚本没拷进来或没编译"
+    },
+    {
+      "item": "类型 LanbaiGateDriver",
+      "status": "ok",
+      "detail": "脚本没拷进来或没编译"
+    },
+    {
+      "item": "类型 LanbaiGateClouds",
+      "status": "ok",
+      "detail": "脚本没拷进来或没编译"
+    },
+    {
+      "item": "脚本 LB_GateTest_Run 含「LanbaiGateCloudsBuilder.Apply(t)」",
+      "status": "ok",
+      "detail": "HANDOFF v1.5 第 4 步：LB_GateTest_Run.cs 的 4 处 SetPB 第 4 个参数改成 false，Apply 里加 LanbaiGateCloudsBuilder.Apply(t)（逐行对照 GateClouds/给本地_补丁_LB_GateTest_Run.md）。不改的话截图和帧时间都作废（Assets/Lanbai/Tests/Editor/LB_GateTest_Run.cs）"
+    },
+    {
+      "item": "脚本 LB_GateTest_Run 含「SetPB(tear, \"Tear_CloudGlow_Additive\", mpb, false」",
+      "status": "ok",
+      "detail": "HANDOFF v1.5 第 4 步：LB_GateTest_Run.cs 的 4 处 SetPB 第 4 个参数改成 false，Apply 里加 LanbaiGateCloudsBuilder.Apply(t)（逐行对照 GateClouds/给本地_补丁_LB_GateTest_Run.md）。不改的话截图和帧时间都作废（Assets/Lanbai/Tests/Editor/LB_GateTest_Run.cs）"
+    },
+    {
+      "item": "脚本 LB_GateTest_Run 含「SetPB(tear, \"Tear_CloudGlow\", mpb, false」",
+      "status": "ok",
+      "detail": "HANDOFF v1.5 第 4 步：LB_GateTest_Run.cs 的 4 处 SetPB 第 4 个参数改成 false，Apply 里加 LanbaiGateCloudsBuilder.Apply(t)（逐行对照 GateClouds/给本地_补丁_LB_GateTest_Run.md）。不改的话截图和帧时间都作废（Assets/Lanbai/Tests/Editor/LB_GateTest_Run.cs）"
+    },
+    {
+      "item": "脚本 LB_GateTest_Run 含「SetPB(tear, \"Tear_LightLane\", mpb, false」",
+      "status": "ok",
+      "detail": "HANDOFF v1.5 第 4 步：LB_GateTest_Run.cs 的 4 处 SetPB 第 4 个参数改成 false，Apply 里加 LanbaiGateCloudsBuilder.Apply(t)（逐行对照 GateClouds/给本地_补丁_LB_GateTest_Run.md）。不改的话截图和帧时间都作废（Assets/Lanbai/Tests/Editor/LB_GateTest_Run.cs）"
+    },
+    {
+      "item": "脚本 LB_GateTest_Run 含「SetPB(st, st.name, mpb, false」",
+      "status": "ok",
+      "detail": "HANDOFF v1.5 第 4 步：LB_GateTest_Run.cs 的 4 处 SetPB 第 4 个参数改成 false，Apply 里加 LanbaiGateCloudsBuilder.Apply(t)（逐行对照 GateClouds/给本地_补丁_LB_GateTest_Run.md）。不改的话截图和帧时间都作废（Assets/Lanbai/Tests/Editor/LB_GateTest_Run.cs）"
+    },
+    {
+      "item": "文件 Assets/Lanbai/GateClouds/GateClouds_Layout.json 含「Tower_Colossus_2_Back」",
+      "status": "ok",
+      "detail": "第 10 轮第 1 批的云（38 张卡）；画质档要是 default（截图一律用 default）（Assets/Lanbai/GateClouds/GateClouds_Layout.json）"
+    },
+    {
+      "item": "文件 Assets/Lanbai/GateClouds/GateClouds_Layout.json 含「\"quality\": \"default\"」",
+      "status": "ok",
+      "detail": "第 10 轮第 1 批的云（38 张卡）；画质档要是 default（截图一律用 default）（Assets/Lanbai/GateClouds/GateClouds_Layout.json）"
+    },
+    {
+      "item": "文件 Assets/Lanbai/Gate/GateLayout_v2.json 含「\"_Stars\": 0.055」",
+      "status": "ok",
+      "detail": "第 10 轮第 1 批的 GateLayout_v2.json（D-06：第 4 幕有星）（Assets/Lanbai/Gate/GateLayout_v2.json）"
+    }
+  ],
+  "git_status_porcelain": null,
+  "steps": [],
+  "settings": [],
+  "checks": [],
+  "shots": [],
+  "sequences": [],
+  "textures": [],
+  "metrics": {
+    "console.compile_errors_at_start": 0,
+    "resources.free_ram_gb": 10.030559539794922
+  },
+  "metric_notes": {},
+  "writes": null,
+  "allowed_writes": [
+    "Assets/Lanbai/Tests/**",
+    "Assets/Lanbai/GateClouds/Generated/**",
+    "Assets/Lanbai/GateClouds/Textures/**",
+    "Assets/Lanbai/GateClouds/GateClouds_Layout.json",
+    "Assets/Lanbai/UdonPrograms/**",
+    "Assets/Lanbai/Gate/Generated/**",
+    "Assets/SerializedUdonPrograms/**"
+  ],
+  "allowed_writes_why": "沙盒规则的例外：门测试本来就是这些搭建脚本搭的（LB_GateTest.Build 存 GateTest.unity 和 Tests/GateTest_Materials/；蓝白/Gate Clouds/Build 建 Generated/、设贴图导入、建 U# 程序资产；auto_lite 那一档临时改 GateClouds_Layout.json，量完逐字节写回）。别的地方被改就算没声明的写入；U# 编译把程序的序列化结果写进 Assets/SerializedUdonPrograms/（和 UdonPrograms 一起）",
+  "backup_before": [
+    "Assets/Lanbai/Tests/**",
+    "Assets/Lanbai/GateClouds/GateClouds_Layout.json",
+    "Assets/Lanbai/UdonPrograms/**",
+    "Assets/SerializedUdonPrograms/**"
+  ],
+  "warnings": [],
+  "files": [
+    "test_definition.json",
+    "console.jsonl",
+    "summary.md",
+    "manifest.json",
+    "result.json"
+  ]
+}

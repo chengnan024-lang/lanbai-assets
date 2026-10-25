@@ -1,0 +1,229 @@
+{
+ "metrics": {
+  "size": [
+   960,
+   540
+  ],
+  "APL": 53.35,
+  "EV_display": -4.467,
+  "luma_lt12_pct": 21.02,
+  "Lstar_gt85_pct": 0.007,
+  "clip_black_pct": 0.0,
+  "clip_white_pct": 0.0,
+  "clip_black_largest_region_pct": 0.0,
+  "clip_white_largest_region_pct": 0.0,
+  "warm_shadow_pct": 0.0,
+  "purple_pct": 0.0,
+  "purple_largest_region_pct": 0.0,
+  "violet_strong_pct": 0.0,
+  "lavender_act6_pct": 0.0,
+  "brightest": {
+   "bbox": [
+    86,
+    17,
+    682,
+    247
+   ],
+   "centroid": [
+    405.0,
+    218.4
+   ],
+   "clusters": 6,
+   "clusters_ge5pct": 2,
+   "min_luma": 147.6,
+   "centroid_az_el": [
+    -8.39,
+    5.5
+   ]
+  },
+  "top25_Lstar": {
+   "mean": 23.68,
+   "p50": 27.1,
+   "p90": 31.26
+  },
+  "palette": {
+   "act": "04c",
+   "metric": "CIEDE2000 (as Review/Tools~/measure.py)",
+   "swatches": [
+    {
+     "hex": "#0C0E14",
+     "role": "暗车厢剪影",
+     "nearest_dE2000_p01": 1.2,
+     "within_dE5_pct": 22.61
+    },
+    {
+     "hex": "#1D2336",
+     "role": "第一重光唇之间的雾",
+     "nearest_dE2000_p01": 5.8,
+     "within_dE5_pct": 0.01
+    },
+    {
+     "hex": "#53606E",
+     "role": "第八重光唇之间的雾",
+     "nearest_dE2000_p01": 3.2,
+     "within_dE5_pct": 0.37
+    },
+    {
+     "hex": "#E6E1F2",
+     "role": "光唇纤维 第 1 重（一丝紫）",
+     "nearest_dE2000_p01": 23.3,
+     "within_dE5_pct": 0.0
+    },
+    {
+     "hex": "#D9DFEE",
+     "role": "光唇纤维 第 4 重",
+     "nearest_dE2000_p01": 21.3,
+     "within_dE5_pct": 0.0
+    },
+    {
+     "hex": "#C2D8E2",
+     "role": "光唇纤维 第 8 重（瓶覗）",
+     "nearest_dE2000_p01": 19.3,
+     "within_dE5_pct": 0.0
+    },
+    {
+     "hex": "#F2B169",
+     "role": "收音机 = Lichtchen",
+     "nearest_dE2000_p01": 28.0,
+     "within_dE5_pct": 0.0
+    },
+    {
+     "hex": "#FFF1DC",
+     "role": "前方暖白光点",
+     "nearest_dE2000_p01": 27.8,
+     "within_dE5_pct": 0.01
+    }
+   ],
+   "pixel_to_nearest_dE_median": 8.6,
+   "pixel_to_nearest_dE_p90": 10.5,
+   "pixels_within5_pct": 23.0
+  }
+ },
+ "cam": {
+  "eye": [
+   0.55,
+   1.7,
+   2.05
+  ],
+  "yaw_deg": 0,
+  "pitch_deg": 0,
+  "hfov_deg": 90,
+  "res": [
+   960,
+   540
+  ],
+  "note": "主座位眼位、正前、桌面 1920×1080、水平 90°（= 本地门测试 U7 截图的机位，Gate cameras.U7）。全片的“标准机位”。",
+  "source": "Engineering/render_harness",
+  "name": "hero"
+ },
+ "grade_spec": {
+  "S4c": 1.0,
+  "LENS_CLEAN": 1.0
+ },
+ "grade_state": {
+  "postExposure": -0.9,
+  "temperature": -2.89,
+  "tint": 1.65,
+  "saturation": -13.56,
+  "contrast": 0.8,
+  "lift": [
+   0.9824,
+   0.9835,
+   1.0,
+   0.0061
+  ],
+  "gamma": [
+   0.9893,
+   0.9814,
+   1.0,
+   -0.0699
+  ],
+  "gain": [
+   0.9994,
+   0.991,
+   1.0,
+   0.1188
+  ],
+  "mixer": [
+   99.81,
+   0.11,
+   -1.08,
+   -0.73,
+   100.56,
+   -0.28,
+   0.08,
+   0.42,
+   99.86
+  ],
+  "bloom": {
+   "intensity": 6.0,
+   "threshold": 2.69,
+   "softKnee": 0.7,
+   "diffusion": 9.0,
+   "color": [
+    0.9490196078431372,
+    0.9529411764705882,
+    0.9647058823529412
+   ],
+   "clamp": 4.239999999997963
+  },
+  "vignette": {
+   "intensity": 0.2,
+   "smoothness": 0.4,
+   "roundness": 1.0,
+   "rounded": false,
+   "color": [
+    0.00784313725490196,
+    0.01568627450980392,
+    0.0392156862745098
+   ]
+  }
+ },
+ "bloom_share_of_APL": 0.0,
+ "t": 231.0,
+ "target": {
+  "phase": "4c selig Leben",
+  "APL": 50.0,
+  "grade": "S4c",
+  "range": [
+   42,
+   55
+  ]
+ },
+ "scene": {
+  "what": "第 4c 幕 t=231.00 s=1892.4 lips=6 fog=#414B57",
+  "bus": "bible_v2",
+  "glass": true,
+  "samples": 48,
+  "res": [
+   960,
+   540
+  ],
+  "fse": {
+   "total": 0.014,
+   "layers": {
+    "(Fringe|Hang|Threads|Wall|Loose|Dot)": 0.0138
+   },
+   "objects": {
+    "Inside_Dot": 0.0128,
+    "Inside_Loose": 0.001,
+    "Lip7_Fringe": 0.0,
+    "Lip7_Hang": 0.0,
+    "Lip8_Wall": 0.0,
+    "Ply0_Fringe": 0.0,
+    "Ply4_Fringe": 0.0
+   },
+   "max_layers_per_pixel": 1,
+   "pixels_over_8_layers_pct": 0.0,
+   "res": [
+    480,
+    270
+   ],
+   "method": "coverage of each transparent object, depth-tested against the opaque scene (holdouts), 1 spp"
+  }
+ },
+ "render_seconds": 52.5,
+ "lens": "clean",
+ "bloom_tint": "single",
+ "note": ""
+}

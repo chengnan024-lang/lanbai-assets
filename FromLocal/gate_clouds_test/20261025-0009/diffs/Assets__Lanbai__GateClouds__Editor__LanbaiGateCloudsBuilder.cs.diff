@@ -1,0 +1,149 @@
+--- before/Assets/Lanbai/GateClouds/Editor/LanbaiGateCloudsBuilder.cs
++++ after/Assets/Lanbai/GateClouds/Editor/LanbaiGateCloudsBuilder.cs
+@@ -108,7 +108,7 @@
+     // ---- meshes ---------------------------------------------------------------------------------------------------
+     static Mesh SaveMesh(Mesh m, string path)
+     {
+-        m.name = Path.GetFileNameWithoutExtension(path);
++        m.name = Path.GetFileNameWithoutExtension(path);   // 本地 gate_clouds_test-04：网格名和文件名一致（_crop45 那几张以前对不上）
+         var old = AssetDatabase.LoadAssetAtPath<Mesh>(path);
+         if (old != null) { EditorUtility.CopySerialized(m, old); return old; }
+         AssetDatabase.CreateAsset(m, path);
+@@ -179,10 +179,15 @@
+     }
+ 
+     [MenuItem("蓝白/Gate Clouds/Build")]
+-    public static void BuildMenu() { Build(); }
++    public static void BuildMenu()
++    {
++        // D-41：先等 U# 程序资产初始化完（新建的要等 SDK 在 EditorApplication.update 里升版本），再搭
++        Lanbai.Udon.LanbaiUdonPrograms.RunWhenReady("蓝白/Gate Clouds/Build", new[] { typeof(LanbaiGateClouds) }, () => Build());
++    }
+ 
+     public static GameObject Build()
+     {
++        Lanbai.Udon.LanbaiUdonPrograms.RequireReady("蓝白/Gate Clouds/Build", typeof(LanbaiGateClouds));   // D-41：没初始化完就不动场景
+         string kit = KitDir();
+         Layout L = Load(kit);
+         string gen = kit + "/Generated";
+@@ -363,114 +368,22 @@
+         return root.gameObject;
+     }
+ 
+-    static Type FindType(string full)
+-    {
+-        foreach (Assembly a in AppDomain.CurrentDomain.GetAssemblies())
+-        {
+-            Type t = a.GetType(full);
+-            if (t != null) return t;
+-        }
+-        return null;
+-    }
+-
+-    static object CallStatic(Type t, string name, params object[] args)
+-    {
+-        if (t == null) return null;
+-        // an overload with exactly args.Length parameters first (tech r2 #3: CopyProxyToUdon(b) vs (b, policy): the
+-        // reflection order is not defined, and a null policy throws), then one whose extra parameters have defaults
+-        MethodInfo[] all = t.GetMethods(BindingFlags.Public | BindingFlags.Static);
+-        for (int pass = 0; pass < 2; pass++)
+-        foreach (MethodInfo mi in all)
+-        {
+-            if (mi.Name != name || mi.IsGenericMethodDefinition) continue;
+-            ParameterInfo[] ps = mi.GetParameters();
+-            if (pass == 0 ? ps.Length != args.Length : ps.Length <= args.Length) continue;
+-            bool defs = true;
+-            for (int k = args.Length; k < ps.Length; k++) if (!ps[k].HasDefaultValue) defs = false;
+-            if (!defs) continue;
+-            bool ok = true;
+-            for (int k = 0; k < args.Length; k++)
+-                if (args[k] != null && !ps[k].ParameterType.IsInstanceOfType(args[k])) { ok = false; break; }
+-            if (!ok) continue;
+-            object[] full = new object[ps.Length];
+-            for (int k = 0; k < ps.Length; k++) full[k] = k < args.Length ? args[k] : (ps[k].HasDefaultValue ? ps[k].DefaultValue : null);
+-            return mi.Invoke(null, full);
+-        }
+-        return null;
+-    }
+-
+-    // UdonSharp 1.x, by reflection so the kit compiles with or without it (tech r1 #1, chief engineer #6; the same steps
+-    // as FromLocal/code/timeline_v1/LB_Udon.cs): 1) a program asset for the driver's script in
+-    // Assets/Lanbai/UdonPrograms/ (not Generated/), 2) compile, 3) the component through UdonSharpUndo.AddComponent
+-    // (or AddComponent + RunBehaviourSetup), 4) after the fields are filled, CopyProxyToUdon; a missing backing
+-    // UdonBehaviour is an error, not a silent pass.
++    // UdonSharp 1.x：D-41 起全部走共用的 Common/Editor/LanbaiUdonPrograms（按 Type 查程序资产、等 SDK 初始化完、
++    // CopyProxyToUdon 出错照实报）。以前这里按 MonoScript 反射去查，SDK 3.10.5 里那个重载是 private，永远查不到，
++    // 每次都新建程序资产、马上 CopyProxyToUdon，于是 “outdated script version”（本地 gate_clouds_test-03）。
+     static LanbaiGateClouds AddDriver(GameObject go) { return (LanbaiGateClouds)AddUdonSharp(go, typeof(LanbaiGateClouds)); }
+     static void SetupUdonSharp(LanbaiGateClouds drv) { SetupUdonSharp((MonoBehaviour)drv); }
+ 
+-    // any UdonSharpBehaviour type (also used by Gate/Editor/LanbaiGateDriverBuilder.cs for LanbaiGateDriver and the
+-    // Play-mode test clock): its program asset in Assets/Lanbai/UdonPrograms/<Type>.asset, compiled, then the component
++    // any UdonSharpBehaviour type (Gate、Act06、Act07 的搭建脚本也调它)：程序资产要已经初始化完（搭建菜单用 RunWhenReady 等）
+     public static MonoBehaviour AddUdonSharp(GameObject go, Type type)
+     {
+-        Type paT = FindType("UdonSharp.UdonSharpProgramAsset");
+-        Type utT = FindType("UdonSharpEditor.UdonSharpEditorUtility");
+-        if (paT == null || utT == null)
+-        {
+-            Debug.LogError("[GateClouds] UdonSharp is not in this project: " + type.Name + " will not run in VRChat");
+-            return (MonoBehaviour)go.AddComponent(type);
+-        }
+-        // 1) the program asset
+-        MonoScript ms = null;                                                 // tech r2 #9: no temporary component
+-        foreach (string g in AssetDatabase.FindAssets(type.Name + " t:MonoScript"))
+-        {
+-            var cand = AssetDatabase.LoadAssetAtPath<MonoScript>(AssetDatabase.GUIDToAssetPath(g));
+-            if (cand != null && cand.GetClass() == type) { ms = cand; break; }
+-        }
+-        if (ms == null) throw new Exception("[GateClouds] " + type.Name + ".cs not found in the project");
+-        // SDK 3.10.5 exposes the Type overload; its MonoScript overload is private.
+-        // Using MonoScript here silently misses an existing asset and recreates it.
+-        UnityEngine.Object asset = CallStatic(utT, "GetUdonSharpProgramAsset", type) as UnityEngine.Object;
+-        FieldInfo src = paT.GetField("sourceCsScript");
+-        if (asset == null && src != null)
+-        {
+-            if (!AssetDatabase.IsValidFolder("Assets/Lanbai/UdonPrograms"))
+-            {
+-                if (!AssetDatabase.IsValidFolder("Assets/Lanbai")) AssetDatabase.CreateFolder("Assets", "Lanbai");
+-                AssetDatabase.CreateFolder("Assets/Lanbai", "UdonPrograms");
+-            }
+-            asset = ScriptableObject.CreateInstance(paT);
+-            src.SetValue(asset, ms);
+-            AssetDatabase.CreateAsset(asset, "Assets/Lanbai/UdonPrograms/" + type.Name + ".asset");
+-            AssetDatabase.SaveAssets();
+-            Debug.Log("[GateClouds] created Assets/Lanbai/UdonPrograms/" + type.Name + ".asset");
+-            // 2) compile (UdonSharpCompilerV1.CompileSync), so the new program exists before the behaviour is set up
+-            CallStatic(FindType("UdonSharp.Compiler.UdonSharpCompilerV1"), "CompileSync");
+-        }
+-        // 3) the component with its backing UdonBehaviour
+-        MonoBehaviour drv = null;
+-        Type undoT = FindType("UdonSharpEditor.UdonSharpUndo");
+-        if (undoT != null)
+-            foreach (MethodInfo mi in undoT.GetMethods(BindingFlags.Public | BindingFlags.Static))
+-                if (mi.Name == "AddComponent" && mi.IsGenericMethodDefinition && mi.GetParameters().Length == 1)
+-                {
+-                    drv = mi.MakeGenericMethod(type).Invoke(null, new object[] { go }) as MonoBehaviour;
+-                    break;
+-                }
+-        if (drv == null)
+-        {
+-            drv = (MonoBehaviour)go.AddComponent(type);
+-            CallStatic(utT, "RunBehaviourSetup", drv);
+-        }
+-        return drv;
++        return (MonoBehaviour)Lanbai.Udon.LanbaiUdonPrograms.AddComponent(go, type);
+     }
+ 
+     // after the fields are filled: copy them into the backing UdonBehaviour; a missing backing behaviour is an error
+     public static void SetupUdonSharp(MonoBehaviour b)
+     {
+-        Type utT = FindType("UdonSharpEditor.UdonSharpEditorUtility");
+-        if (utT == null) return;
+-        CallStatic(utT, "CopyProxyToUdon", b);
+-        if (CallStatic(utT, "GetBackingUdonBehaviour", b) == null)
+-            throw new InvalidOperationException("[GateClouds] " + b.GetType().Name + " has no backing UdonBehaviour: check the UdonSharp program asset (Assets/Lanbai/UdonPrograms/" + b.GetType().Name + ".asset) and the Console");
++        Lanbai.Udon.LanbaiUdonPrograms.CopyProxyToUdon(b);
+     }
+ 
+     public static Transform FindInScenePublic(string name) { return FindInScene(name); }

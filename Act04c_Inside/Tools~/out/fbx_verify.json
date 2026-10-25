@@ -1,0 +1,170 @@
+{
+ "lips": {
+  "Lip1_Hang": {
+   "ok": true,
+   "n": 768,
+   "uv_layers": 1
+  },
+  "Lip1_Sheet": {
+   "ok": true,
+   "n": 4672,
+   "uv_layers": 2
+  },
+  "Lip1_Fringe": {
+   "ok": true,
+   "n": 1450,
+   "uv_layers": 1
+  },
+  "Lip2_Hang": {
+   "ok": true,
+   "n": 768,
+   "uv_layers": 1
+  },
+  "Lip2_Sheet": {
+   "ok": true,
+   "n": 5432,
+   "uv_layers": 2
+  },
+  "Lip2_Fringe": {
+   "ok": true,
+   "n": 1766,
+   "uv_layers": 1
+  },
+  "Lip2_Threads": {
+   "ok": true,
+   "n": 28,
+   "uv_layers": 1
+  },
+  "Lip3_Hang": {
+   "ok": true,
+   "n": 768,
+   "uv_layers": 1
+  },
+  "Lip3_Sheet": {
+   "ok": true,
+   "n": 4751,
+   "uv_layers": 2
+  },
+  "Lip3_Fringe": {
+   "ok": true,
+   "n": 1496,
+   "uv_layers": 1
+  },
+  "Lip3_Threads": {
+   "ok": true,
+   "n": 56,
+   "uv_layers": 1
+  },
+  "Lip4_Hang": {
+   "ok": true,
+   "n": 768,
+   "uv_layers": 1
+  },
+  "Lip4_Sheet": {
+   "ok": true,
+   "n": 5603,
+   "uv_layers": 2
+  },
+  "Lip4_Fringe": {
+   "ok": true,
+   "n": 2122,
+   "uv_layers": 1
+  },
+  "Lip5_Hang": {
+   "ok": true,
+   "n": 768,
+   "uv_layers": 1
+  },
+  "Lip5_Sheet": {
+   "ok": true,
+   "n": 4512,
+   "uv_layers": 2
+  },
+  "Lip5_Fringe": {
+   "ok": true,
+   "n": 1520,
+   "uv_layers": 1
+  },
+  "Lip5_Threads": {
+   "ok": true,
+   "n": 56,
+   "uv_layers": 1
+  },
+  "Lip6_Hang": {
+   "ok": true,
+   "n": 768,
+   "uv_layers": 1
+  },
+  "Lip6_Sheet": {
+   "ok": true,
+   "n": 4084,
+   "uv_layers": 2
+  },
+  "Lip6_Fringe": {
+   "ok": true,
+   "n": 1672,
+   "uv_layers": 1
+  },
+  "Lip6_Threads": {
+   "ok": true,
+   "n": 56,
+   "uv_layers": 1
+  },
+  "Lip7_Hang": {
+   "ok": true,
+   "n": 768,
+   "uv_layers": 1
+  },
+  "Lip7_Sheet": {
+   "ok": true,
+   "n": 4411,
+   "uv_layers": 2
+  },
+  "Lip7_Fringe": {
+   "ok": true,
+   "n": 2056,
+   "uv_layers": 1
+  },
+  "Lip8_Ply0_Sheet": {
+   "ok": true,
+   "n": 3500,
+   "uv_layers": 2
+  },
+  "Lip8_Ply0_Fringe": {
+   "ok": true,
+   "n": 1674,
+   "uv_layers": 1
+  },
+  "Lip8_Ply1_Sheet": {
+   "ok": true,
+   "n": 3445,
+   "uv_layers": 2
+  },
+  "Lip8_Ply2_Sheet": {
+   "ok": true,
+   "n": 3833,
+   "uv_layers": 2
+  },
+  "Lip8_Ply3_Sheet": {
+   "ok": true,
+   "n": 3691,
+   "uv_layers": 2
+  },
+  "Lip8_Ply4_Sheet": {
+   "ok": true,
+   "n": 3716,
+   "uv_layers": 2
+  },
+  "Lip8_Ply4_Fringe": {
+   "ok": true,
+   "n": 1784,
+   "uv_layers": 1
+  },
+  "Lip8_Wall": {
+   "ok": true,
+   "n": 4320,
+   "uv_layers": 1
+  }
+ },
+ "all_ok": true
+}
