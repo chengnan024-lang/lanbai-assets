@@ -74,7 +74,26 @@ namespace Lanbai.Mirrors
         private int idDustNow, idDustT0, idDustC, idDustCar, idDustOn;
         private int idPlane, idRimLight;
         private bool ready;
+        private bool valid;                         // M2: all arrays present and of matching length
         private float[] grade = new float[4];
+
+        // M1: precomputed per mirror (the eye and the centres never move) and per-frame caches, so a frame only touches the
+        // few mirrors that are on and only writes what changed (every Udon operation is an extern call)
+        private int n;
+        private int[] slotOf;                       // star-copy slot
+        private float[] yOff;                       // face point under the eye -> face edge (object y = 0), metres
+        private Vector3[] rimPos;                   // nearest rim point, xz (y filled per frame)
+        private float[] rimDistM;
+        private Vector4[] dustC, dustCar;
+        private bool[] onCache;
+        private int[] activeList;
+        private int activeCount;
+        private float segA = 1e9f, segB = -1e9f;   // [segA, segB): the active set does not change inside
+        private float[] events;                     // every activeStart / activeEnd / tCross / dissolveEnd + 4, sorted
+        private int[] dustK;                        // per dust slot: the mirror it shows (-1 none)
+        private bool[] starOn, dustOn;
+        private bool rimLit;
+        private float[] lastVis, lastAppear, lastDis, lastExtra;
 
         void Start()
         {
@@ -93,6 +112,7 @@ namespace Lanbai.Mirrors
         {
             if (ready)
                 return;
+            ready = true;
             mpb = new MaterialPropertyBlock();
             idRadius = VRCShader.PropertyToID("_RadiusM");
             idK = VRCShader.PropertyToID("_MirrorK");
@@ -111,7 +131,68 @@ namespace Lanbai.Mirrors
             idDustOn = VRCShader.PropertyToID("_DustOn");
             idPlane = VRCShader.PropertyToID("_Udon_MirrorPlane");
             idRimLight = VRCShader.PropertyToID("_Udon_MirrorRimLight");
-            ready = true;
+
+            // M2: a half-wired driver must not index out of range every frame: check, and stay idle if anything is off
+            valid = tCross != null && mirrors != null && lodRenderers != null && starCopies != null && dustSlots != null;
+            if (valid)
+            {
+                n = tCross.Length;
+                valid = n > 0 && mirrors.Length == n && lodRenderers.Length == 3 * n && starCopies.Length >= 7 && dustSlots.Length >= 3
+                    && diameter != null && diameter.Length == n && centreX != null && centreX.Length == n && centreZ != null && centreZ.Length == n
+                    && emissionK != null && emissionK.Length == n && pulseEV != null && pulseEV.Length == n
+                    && activeStart != null && activeStart.Length == n && activeEnd != null && activeEnd.Length == n
+                    && dissolveEnd != null && dissolveEnd.Length == n && crossSpeed != null && crossSpeed.Length == n
+                    && knotStart != null && knotStart.Length == n && knotCount != null && knotCount.Length == n
+                    && visStart != null && visStart.Length == n && visCount != null && visCount.Length == n
+                    && knotT != null && knotY != null && knotV != null && visT != null && visV != null
+                    && extraT != null && extraV != null && extraT.Length == extraV.Length && extraT.Length > 0;
+            }
+            if (valid)
+                for (int k = 0; k < n && valid; k++)
+                    valid = mirrors[k] != null && knotCount[k] > 0 && knotStart[k] + knotCount[k] <= knotT.Length
+                        && knotT.Length == knotY.Length && knotT.Length == knotV.Length
+                        && visCount[k] > 0 && visStart[k] + visCount[k] <= visT.Length && visT.Length == visV.Length;
+            if (!valid)
+            {
+                Debug.LogError("[Mirrors] LanbaiMirrorsDriver: arrays missing or of different lengths: run 蓝白/Build/Mirrors again. The driver stays idle.");
+                return;
+            }
+            slotOf = new int[n]; yOff = new float[n]; rimPos = new Vector3[n]; rimDistM = new float[n];
+            dustC = new Vector4[n]; dustCar = new Vector4[n]; onCache = new bool[n]; activeList = new int[n];
+            lastVis = new float[n]; lastAppear = new float[n]; lastDis = new float[n]; lastExtra = new float[n];
+            for (int k = 0; k < n; k++)
+            {
+                float D = diameter[k];
+                slotOf[k] = (k == n - 1) ? 6 : (k % 6);
+                float dx = eye.x - centreX[k], dz = eye.z - centreZ[k];
+                float l2 = Mathf.Max(Mathf.Sqrt(dx * dx + dz * dz), 1e-3f);
+                float rCar = Mathf.Min(l2 / D, FaceR);
+                yOff[k] = (Mathf.Sqrt(Rho * Rho - rCar * rCar) - (Rho - Sag)) * D;
+                rimPos[k] = new Vector3(centreX[k] + dx / l2 * 0.5f * D, 0f, centreZ[k] + dz / l2 * 0.5f * D);
+                rimDistM[k] = Mathf.Abs(0.5f * D - l2);
+                dustC[k] = new Vector4(centreX[k], eye.y - yOff[k], centreZ[k], 0.5f * D);
+                dustCar[k] = new Vector4(dx, dz, crossSpeed[k], D);
+                lastVis[k] = -1f;
+                onCache[k] = mirrors[k].gameObject.activeSelf;
+            }
+            events = new float[4 * n];
+            for (int k = 0; k < n; k++)
+            {
+                events[4 * k] = activeStart[k]; events[4 * k + 1] = activeEnd[k];
+                events[4 * k + 2] = tCross[k]; events[4 * k + 3] = dissolveEnd[k] > 0f ? dissolveEnd[k] + 4f : activeEnd[k];
+            }
+            for (int i = 1; i < events.Length; i++)    // insertion sort, once (52 values; no System.Array in Udon)
+            {
+                float v = events[i];
+                int j = i - 1;
+                while (j >= 0 && events[j] > v) { events[j + 1] = events[j]; j--; }
+                events[j + 1] = v;
+            }
+            dustK = new int[dustSlots.Length]; dustOn = new bool[dustSlots.Length];
+            for (int s = 0; s < dustSlots.Length; s++) { dustK[s] = -1; dustOn[s] = dustSlots[s] != null && dustSlots[s].enabled; }
+            starOn = new bool[starCopies.Length];
+            for (int s = 0; s < starCopies.Length; s++) starOn[s] = starCopies[s] != null && starCopies[s].enabled;
+            rimLit = rimLight != null && rimLight.enabled;
         }
 
         // ---------------------------------------------------------------------------------------- dispatcher API
@@ -207,68 +288,61 @@ namespace Lanbai.Mirrors
         public void LanbaiTick(float t)
         {
             Init();
-            if (t < windowStart || t >= windowEnd || t >= tCross[tCross.Length - 1])
+            if (!valid)
+                return;
+            if (t < windowStart || t >= windowEnd || t >= tCross[n - 1])
             {
-                for (int k = 0; k < mirrors.Length; k++)
-                    if (mirrors[k] != null && mirrors[k].gameObject.activeSelf && (t < activeStart[k] || t > activeEnd[k]))
-                        mirrors[k].gameObject.SetActive(false);
                 if (t < windowStart || t >= windowEnd)
                     AllOff();
                 else
                 {
-                    // mirror 13 alone after F16 - 0: its stars and dust slots are not ours to keep (F6)
+                    // mirror 13 alone from F16: its stars and dust are not ours to keep (F6)
+                    for (int k = 0; k < n; k++)
+                        if (onCache[k] && (t < activeStart[k] || t > activeEnd[k])) { mirrors[k].gameObject.SetActive(false); onCache[k] = false; }
                     for (int s = 0; s < dustSlots.Length; s++)
-                        if (dustSlots[s] != null && dustSlots[s].enabled)
-                            dustSlots[s].enabled = false;
-                    if (rimLight != null && rimLight.enabled)
-                        rimLight.enabled = false;
+                        if (dustOn[s]) { dustSlots[s].enabled = false; dustOn[s] = false; }
+                    if (rimLit) { rimLight.enabled = false; rimLit = false; }
                 }
+                segA = 1e9f; segB = -1e9f;
                 ClearGlobals();
                 return;
             }
-            int n = tCross.Length;
+            if (t < segA || t >= segB)
+                RebuildActive(t);
+
             float planeY = 0f, planeLine = 0f, planeIdx = 0f, planePhase = 0f, bestAbs = 1e9f;
-            Vector3 rim = Vector3.zero;
-            float rimE = 0f;
-            float rimDist = 0f;
-            for (int k = 0; k < n; k++)
+            float rimE = 0f, rimY = 0f;
+            int rimK = -1;
+            for (int a = 0; a < activeCount; a++)
             {
-                bool on = t >= activeStart[k] && t <= activeEnd[k];
-                GameObject go = mirrors[k].gameObject;
-                if (go.activeSelf != on)
-                    go.SetActive(on);
-                if (!on)
-                    continue;
+                int k = activeList[a];
                 float D = diameter[k];
                 float yCar = Hermite(knotStart[k], knotCount[k], t);
-                float rCar = Mathf.Min(Mathf.Sqrt((eye.x - centreX[k]) * (eye.x - centreX[k]) + (eye.z - centreZ[k]) * (eye.z - centreZ[k])) / D, FaceR);
-                float yEdge = yCar - (Mathf.Sqrt(Rho * Rho - rCar * rCar) - (Rho - Sag)) * D;
+                float yEdge = yCar - yOff[k];
                 mirrors[k].localPosition = new Vector3(centreX[k], yEdge, centreZ[k]);
-                mirrors[k].localScale = new Vector3(D, D, D);
 
                 float vis = Linear(visT, visV, visStart[k], visCount[k], t);
                 float appear = Mathf.Clamp01((t - visT[visStart[k]]) / appearSeconds);
                 float dis = dissolveEnd[k] > 0f ? Mathf.Clamp01((t - tCross[k]) / (dissolveEnd[k] - tCross[k])) : 0f;
                 float extra = (k == n - 1) ? Linear(extraT, extraV, 0, extraT.Length, t) : 0f;
-
-                mpb.Clear();
-                mpb.SetFloat(idRadius, 0.5f * D);
-                mpb.SetFloat(idK, k + 1);
-                mpb.SetFloat(idEmK, emissionK[k]);
-                mpb.SetFloat(idVis, vis);
-                mpb.SetFloat(idExtra, extra);
-                mpb.SetFloat(idAppear, appear);
-                mpb.SetFloat(idDissolve, dis);
-                for (int l = 0; l < 3; l++)
+                if (vis != lastVis[k] || appear != lastAppear[k] || dis != lastDis[k] || extra != lastExtra[k])
                 {
-                    Renderer r = lodRenderers[3 * k + l];
-                    if (r != null)
-                        r.SetPropertyBlock(mpb);
+                    lastVis[k] = vis; lastAppear[k] = appear; lastDis[k] = dis; lastExtra[k] = extra;
+                    mpb.Clear();
+                    mpb.SetFloat(idRadius, 0.5f * D);
+                    mpb.SetFloat(idK, k + 1);
+                    mpb.SetFloat(idEmK, emissionK[k]);
+                    mpb.SetFloat(idVis, vis);
+                    mpb.SetFloat(idExtra, extra);
+                    mpb.SetFloat(idAppear, appear);
+                    mpb.SetFloat(idDissolve, dis);
+                    int b = 3 * k;
+                    if (lodRenderers[b] != null) lodRenderers[b].SetPropertyBlock(mpb);
+                    if (lodRenderers[b + 1] != null) lodRenderers[b + 1].SetPropertyBlock(mpb);
+                    if (lodRenderers[b + 2] != null) lodRenderers[b + 2].SetPropertyBlock(mpb);
                 }
-
-                // the reflected stars of this mirror (its stencil slot)
-                int slot = (k == n - 1) ? 6 : (k % 6);
-                Renderer sc = starCopies[slot];
+                // the reflected stars of this mirror (its stencil slot): the sphere moves with the mirror every frame
+                Renderer sc = starCopies[slotOf[k]];
                 if (sc != null)
                 {
                     mpb.Clear();
@@ -277,82 +351,104 @@ namespace Lanbai.Mirrors
                     mpb.SetVector(idFaceK, new Vector4(0f, emissionK[k] * vis * Mathf.Pow(2f, extra), 0f, 0f));
                     sc.SetPropertyBlock(mpb);
                 }
-
-                // the nearest crossing drives the cabin line
                 float dt = t - tCross[k];
-                if (dt > -2f && dt < 2f && Mathf.Abs(dt) < bestAbs)
+                if (dt > -2f && dt < 2f)
                 {
-                    bestAbs = Mathf.Abs(dt);
-                    planeY = yCar;
-                    planeIdx = k + 1;
-                    planePhase = Mathf.Clamp(dt * 0.5f, -1f, 1f);
-                    planeLine = dt < 0f ? Mathf.Clamp01(1f + dt / 0.3f) : Mathf.Clamp01(1f - (dt - 0.6f) / 0.3f);
-                }
-                // the rim light: the mirror with the LARGEST envelope (C8: two close crossings never jump a frame);
-                // mirror 13 is not lit (its rim is kilometres away)
-                if (k < n - 1 && dt > -2f && dt < 1f)
-                {
-                    float e = rimLightE * (dt < 0f ? Mathf.SmoothStep(0f, 1f, 1f + dt / 2f) : Mathf.SmoothStep(0f, 1f, 1f - dt));
-                    if (e > rimE)
+                    float ad = dt < 0f ? -dt : dt;
+                    if (ad < bestAbs)                   // the nearest crossing drives the cabin line
                     {
-                        float dx = eye.x - centreX[k], dz = eye.z - centreZ[k];
-                        float l2 = Mathf.Max(Mathf.Sqrt(dx * dx + dz * dz), 1e-3f);
-                        rim = new Vector3(centreX[k] + dx / l2 * 0.5f * D, yEdge, centreZ[k] + dz / l2 * 0.5f * D);
-                        rimE = e;
-                        rimDist = Mathf.Abs(0.5f * D - l2);
+                        bestAbs = ad;
+                        planeY = yCar;
+                        planeIdx = k + 1;
+                        planePhase = Mathf.Clamp(dt * 0.5f, -1f, 1f);
+                        planeLine = dt < 0f ? Mathf.Clamp01(1f + dt / 0.3f) : Mathf.Clamp01(1f - (dt - 0.6f) / 0.3f);
+                    }
+                    // the rim light: the LARGEST envelope (C8); mirror 13 is not lit (its rim is kilometres away)
+                    if (k < n - 1 && dt < 1f)
+                    {
+                        float e = rimLightE * (dt < 0f ? Mathf.SmoothStep(0f, 1f, 1f + dt / 2f) : Mathf.SmoothStep(0f, 1f, 1f - dt));
+                        if (e > rimE) { rimE = e; rimK = k; rimY = yEdge; }
                     }
                 }
             }
-            // star copies of slots with no active mirror: collapse (gain 0)
-            for (int s = 0; s < starCopies.Length; s++)
-            {
-                if (starCopies[s] == null)
-                    continue;
-                bool used = false;
-                for (int k = 0; k < n; k++)
-                    if (t >= activeStart[k] && t <= activeEnd[k] && ((k == n - 1) ? 6 : (k % 6)) == s)
-                        used = true;
-                if (starCopies[s].enabled != used)
-                    starCopies[s].enabled = used;
-            }
-            // dust: the latest mirror per slot that is dissolving or fading (t_cross .. dissolveEnd + 4 s)
+            // dust: only the slots that show a mirror tick (the rest were written when the set changed)
             for (int s = 0; s < dustSlots.Length; s++)
             {
-                Renderer dr = dustSlots[s];
-                if (dr == null)
+                int kk = dustK[s];
+                if (kk < 0)
                     continue;
-                int kk = -1;
-                for (int k = 0; k < n - 1; k++)
-                    if (k % 3 == s && t >= tCross[k] && t <= dissolveEnd[k] + 4f)
-                        kk = k;
                 mpb.Clear();
                 mpb.SetFloat(idDustNow, t);
-                mpb.SetFloat(idDustOn, kk >= 0 ? 1f : 0f);
-                if (kk >= 0)
-                {
-                    float D = diameter[kk];
-                    float rCar = Mathf.Min(Mathf.Sqrt((eye.x - centreX[kk]) * (eye.x - centreX[kk]) + (eye.z - centreZ[kk]) * (eye.z - centreZ[kk])) / D, FaceR);
-                    float yEdge0 = eye.y - (Mathf.Sqrt(Rho * Rho - rCar * rCar) - (Rho - Sag)) * D;
-                    mpb.SetFloat(idDustT0, tCross[kk]);
-                    mpb.SetVector(idDustC, new Vector4(centreX[kk], yEdge0, centreZ[kk], 0.5f * D));
-                    mpb.SetVector(idDustCar, new Vector4(eye.x - centreX[kk], eye.z - centreZ[kk], crossSpeed[kk], D));
-                }
-                dr.SetPropertyBlock(mpb);
-                if (dr.enabled != (kk >= 0))
-                    dr.enabled = kk >= 0;
+                mpb.SetFloat(idDustOn, 1f);
+                mpb.SetFloat(idDustT0, tCross[kk]);
+                mpb.SetVector(idDustC, dustC[kk]);
+                mpb.SetVector(idDustCar, dustCar[kk]);
+                dustSlots[s].SetPropertyBlock(mpb);
             }
+            Vector3 rim = rimK >= 0 ? new Vector3(rimPos[rimK].x, rimY, rimPos[rimK].z) : Vector3.zero;
             VRCShader.SetGlobalVector(idPlane, new Vector4(planeY, planeLine, planeIdx, planePhase));
             VRCShader.SetGlobalVector(idRimLight, new Vector4(rim.x, rim.y, rim.z, rimE));
             if (rimLight != null)
             {
                 bool lit = rimE > 1e-4f;
-                if (rimLight.enabled != lit)
-                    rimLight.enabled = lit;
+                if (rimLit != lit) { rimLight.enabled = lit; rimLit = lit; }
                 if (lit)
                 {
                     rimLight.transform.localPosition = rim;     // a child of R_Mirrors, same frame as the mirrors
                     rimLight.intensity = rimLightIntensity * rimE / Mathf.Max(rimLightE, 1e-4f);
-                    rimLight.range = Mathf.Max(rimDist + 8f, 12f);
+                    rimLight.range = Mathf.Max(rimDistM[rimK] + 8f, 12f);
+                }
+            }
+        }
+
+        // the active set, star slots and dust slots only change at the event times: rebuild them there (or on a backward jump)
+        private void RebuildActive(float t)
+        {
+            segA = -1e9f; segB = 1e9f;
+            for (int i = 0; i < events.Length; i++)
+            {
+                if (events[i] <= t) segA = events[i];
+                else { segB = events[i]; break; }
+            }
+            activeCount = 0;
+            for (int s = 0; s < starCopies.Length; s++)
+            {
+                bool used = false;
+                for (int k = 0; k < n; k++)
+                    if (slotOf[k] == s && t >= activeStart[k] && t <= activeEnd[k]) { used = true; break; }
+                if (starCopies[s] != null && starOn[s] != used) { starCopies[s].enabled = used; starOn[s] = used; }
+            }
+            for (int k = 0; k < n; k++)
+            {
+                bool on = t >= activeStart[k] && t <= activeEnd[k];
+                if (onCache[k] != on)
+                {
+                    mirrors[k].gameObject.SetActive(on);
+                    onCache[k] = on;
+                    lastVis[k] = -1f;               // force the MPB on the next write
+                    if (on) mirrors[k].localScale = new Vector3(diameter[k], diameter[k], diameter[k]);
+                }
+                if (on)
+                    activeList[activeCount++] = k;
+            }
+            for (int s = 0; s < dustSlots.Length; s++)
+            {
+                int kk = -1;
+                for (int k = 0; k < n - 1; k++)
+                    if (k % 3 == s && t >= tCross[k] && t <= dissolveEnd[k] + 4f)
+                        kk = k;
+                dustK[s] = kk;
+                bool want = kk >= 0;
+                if (dustSlots[s] != null && dustOn[s] != want)
+                {
+                    if (!want)
+                    {
+                        mpb.Clear();
+                        mpb.SetFloat(idDustOn, 0f);
+                        dustSlots[s].SetPropertyBlock(mpb);
+                    }
+                    dustSlots[s].enabled = want;
+                    dustOn[s] = want;
                 }
             }
         }

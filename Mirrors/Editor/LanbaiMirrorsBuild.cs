@@ -241,14 +241,6 @@ namespace Lanbai.Mirrors.EditorTools
         {
             return (LanbaiMirrorsDriver)Lanbai.Udon.LanbaiUdonPrograms.AddComponent(go, typeof(LanbaiMirrorsDriver));
         }
-
-        // U# 1.x only compiles scripts that have a program asset (CONTROL §6 pitfall 11)：D-41 起交给共用工具（不等初始化）
-        public static void EnsureProgramAsset(string scriptName)
-        {
-            Type t = Lanbai.Udon.LanbaiUdonPrograms.TypeOfScript(scriptName);
-            if (t == null) { Debug.LogWarning("[Mirrors] " + scriptName + ".cs not found or not compiled yet"); return; }
-            Lanbai.Udon.LanbaiUdonPrograms.CreateMissing("[Mirrors] " + scriptName, new[] { t }, Lanbai.Udon.LanbaiUdonPrograms.NextToScript);
-        }
     }
 
     // import settings for this kit only (CONTROL §2.3): data textures linear, normals as normal maps, the FBX with

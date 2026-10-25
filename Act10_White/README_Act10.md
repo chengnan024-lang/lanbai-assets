@@ -5,7 +5,7 @@
 ## 0. 先做这几步
 
 1. **拷**：`Act10_White/` → `Assets/Lanbai/Act10_White/`（`Tools~` 不导入）。
-2. **搭**：先跑 `蓝白/Build/Overlay`，再跑 **`蓝白/Build/Act10 White`**（`Editor/LanbaiWhiteBuild.cs`，终审 r3 #3）：建 `LanbaiWhiteDriver` 的 U# 程序资产（走 `LanbaiMirrorsBuild.EnsureProgramAsset` 这一个调用点，D-41 总工程师的共用工具会换掉它的内容）、建常开的 `Lanbai_WhiteDriver`、挂组件、连 `Lanbai_Overlay`；场景里没有遮罩球就报错、什么都不建。可重复运行。字段的默认值 = `WhiteSchedule.json` 的数，不用改。
+2. **搭**：先跑 `蓝白/Build/Overlay`，再跑 **`蓝白/Build/Act10 White`**（`Editor/LanbaiWhiteBuild.cs`，终审 r3 #3）：用 D-41 的共用工具 `LanbaiUdonPrograms` 建 `LanbaiWhiteDriver` 的 U# 程序资产、等 SDK 初始化完、建常开的 `Lanbai_WhiteDriver`、挂组件、连 `Lanbai_Overlay`；场景里没有遮罩球就报错、什么都不建。可重复运行。字段的默认值 = `WhiteSchedule.json` 的数，不用改。
 3. **接 Director**：分发层在窗口 {1136.58, 1188.96} 里调 `LanbaiTick(t)` 与 `LanbaiGrade(t)`；`LB_Journey.ApplyGrades` 读汇总值写 EXPO_UP / WHITE_SAT / WHITE_BLOOM / 桌面镜头层；遮罩由本驱动自己画（§2）。**`LB_Journey` 里现在的白（冲击 / 膨胀）那一段要删掉**，换成这里的（`Engineering/README_集成.md` §5）。
 4. **截图推回**（`FromLocal/white_test/`）：1137.58 → 1150 与 1178 → 1190 两段 60 fps PNG 序列，正前方与向下看各一次（§1.8 录像窗口 (g)(h)），跑 `flashcheck.py`；再截 1160 一帧（桌面、VR 各一）量白的码值（桌面 `#E8F1F5`、VR `#D7E3E8`，±2 码，§1.8）。
 
