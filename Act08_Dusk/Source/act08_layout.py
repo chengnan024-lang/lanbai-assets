@@ -145,8 +145,8 @@ LOWER = [  # the other sky's clouds: other variants, 70 % of the count, x 0.82 +
 ]
 BLUE_DUR = 9.5                 # (final review, sky 15c0d1d) F12 -> blue hour: the sky fades each direction over the blend after a
                                # 1.5 s zenith / nadir lead, so >= 8 s per direction (bible §1.4, §6·8b) needs 9.5 s; the cards the same
-BLUE_FADE = (0.595, 0.55)        # (final review A5) gain at the end, and the wb where it gets there (act08_blue.py)
-BLUE_DESAT = 0.656               # chroma of the blue-hour card light (act08_blue.py)
+BLUE_FADE = (0.635, 0.55)        # (final review A5) gain at the end, and the wb where it gets there (act08_blue.py)
+BLUE_DESAT = 0.469               # chroma of the blue-hour card light (act08_blue.py)
 
 
 def _desat(c, k):
