@@ -155,7 +155,7 @@ def scene():
     return _SC
 
 
-def render(t, cam_name='hero', w=640, out=None, tag='', look=None):
+def render(t, cam_name='hero', w=640, out=None, tag='', look=None, cabin=True):
     S = scene()
     cam = dict(A6.CAMS[cam_name])
     if look:
@@ -195,7 +195,8 @@ def render(t, cam_name='hero', w=640, out=None, tag='', look=None):
     sun_vis = float(Tc[disc].mean()) if disc.any() else 0.0
     win = A6.window_mask(V)
     interior = C.hex_lin('#2A2C30') * (C.hex_lin('#98A4B8') * 0.5 + 0.6)
-    img[~win] = interior * (0.35 + 0.65 * sun_vis)
+    if cabin:
+        img[~win] = interior * (0.35 + 0.65 * sun_vis)
     lin = img.reshape(hh, w, 3)
     codes = C.grade(lin, 'S6', bloom=True)
     L, hue, cc = C.hue_chroma(codes.reshape(-1, 3))
@@ -216,8 +217,12 @@ if __name__ == '__main__':
     ap.add_argument('--cam', nargs='+', default=['hero'])
     ap.add_argument('--w', type=int, default=640)
     ap.add_argument('--out', default='/tmp/lb/a6vol')
+    ap.add_argument('--no_cabin', action='store_true')
+    ap.add_argument('--step_k', type=float, default=None)
     a = ap.parse_args()
     for t in a.t:
         for c in a.cam:
-            _, m = render(t, c, a.w, a.out)
+            if a.step_k:
+                scene().scene.step_k = a.step_k
+            _, m = render(t, c, a.w, a.out, tag=('nocab_' if a.no_cabin else ''), cabin=not a.no_cabin)
             print(json.dumps(m), flush=True)
