@@ -27,7 +27,8 @@
   "Flames_LOD0": 128
  },
  "Palace_Door": {
-  "DoorCones_LOD0": 6
+  "DoorCones_LOD0": 6,
+  "BackWash": 2
  },
  "Palace_Hall": {
   "Hall_LOD0": 62558,

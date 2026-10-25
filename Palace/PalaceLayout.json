@@ -2299,7 +2299,25 @@
   "note8": "第 8 轮（评审 r5 #3）：门的两盏面光换成烘焙聚光（有范围窗），只照门这一开间和门槛；去掉 door_area_I / pour_ratio",
   "nacre_lift": 12.0,
   "nacre_radius": 1.5,
-  "cowrie_spec_gain": 4.0
+  "cowrie_spec_gain": 4.0,
+  "palace_fog_scale": 0.42,
+  "wash": {
+   "z": 415.6,
+   "x": [
+    -110.0,
+    30.0
+   ],
+   "y": [
+    10.0,
+    100.0
+   ],
+   "rgb_lin": [
+    0.0015,
+    0.0038,
+    0.0052
+   ],
+   "note": "终审 10-25 #1(2)：大殿后 45 m 的竖直加法卡（Lanbai/PalaceGlow _Wash），屋顶挡住它"
+  }
  },
  "render": {
   "fog_density": 0.018,

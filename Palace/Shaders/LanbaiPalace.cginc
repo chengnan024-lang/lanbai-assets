@@ -50,6 +50,29 @@ inline float LanbaiSilt(float3 posWS, float3 nWS, float coverage, float scale)
     return up * m;
 }
 
+// 终审 10-25 #1(3)：淤泥只积在瓦沟、鳞沟、贝缝里（掩码 G = AO，越暗越是沟），不铺在瓦脊和屋面上——建筑要比水暗
+inline float LanbaiSiltGroove(float3 posWS, float3 nWS, float coverage, float scale, float ao)
+{
+    return LanbaiSilt(posWS, nWS, coverage, scale) * saturate((1.0 - ao) * 3.0);
+}
+
+#if defined(LANBAI_FOG_INCLUDED)
+// 终审 10-25 #1(1)：宫殿自己的雾密度倍数 _FogScale（只乘宫殿几何，雾色照旧是共用的 LanbaiHorizon）。海的雾 0.018 下
+// 169 m 外的殿只剩 5% 对比；×0.42 时殿顶和屋面成了衬着水的暗剪影。
+inline float3 LanbaiPalaceApplyFog(float3 colLinear, float3 posWS, float scale)
+{
+#if defined(FOG_EXP) || defined(FOG_EXP2) || defined(FOG_LINEAR) || defined(LANBAI_FOG_ALWAYS)
+    float3 eye = LanbaiCentreEyePos();
+    float f = LanbaiFogAmountEx(posWS, eye, LanbaiFogDensity() * scale, _FogCap, _FogHeightFalloff);
+    float3 V = posWS - eye;
+    V = (dot(V, V) > 1e-8) ? normalize(V) : float3(0.0, 0.0, 1.0);
+    return lerp(colLinear, LanbaiHorizon(V), f);
+#else
+    return colLinear;
+#endif
+}
+#endif
+
 // ---- 一盏解析灯的 GGX 高光（Unity Standard 约定：spec = D·Vis·F·π·E·NdotL）。点光，或 axis ≠ 0 时的线光源
 //      （Karis 2013：线段上离反射射线最近的点作代表点，瓣按半长放宽；与 Rain/Shaders/LanbaiLamps.cginc 同义）；
 //      dirW.w > −0.999 时只照 dirW 方向的锥（门：朝外的半球）。

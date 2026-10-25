@@ -29,6 +29,7 @@ Shader "Lanbai/Palace"
         _WearColor ("Wear underlayer colour  black lacquer", Color) = (0.157, 0.141, 0.149, 1)
         [Header(Silt)]
         _SiltAmount ("Silt coverage 0 to 1", Range(0, 1)) = 0.55
+        _FogScale ("Palace fog density scale  final review: 0.42", Float) = 1
         _SiltColor ("Silt colour", Color) = (0.369, 0.384, 0.349, 1)
         _SiltSmooth ("Silt smoothness", Range(0, 1)) = 0.10
         _SiltScale ("Silt noise scale per m", Float) = 0.35
@@ -74,7 +75,7 @@ Shader "Lanbai/Palace"
 
             sampler2D _MainTex, _BumpMap, _MaskMap;
             float4 _MainTex_ST, _Color, _WearColor, _SiltColor, _NacreFace, _NacreMid, _NacreGraze;
-            float _BumpScale, _Smoothness, _SmoothnessConst, _UseMask, _Mode, _Metallic, _SiltAmount, _SiltSmooth, _SiltScale;
+            float _BumpScale, _Smoothness, _SmoothnessConst, _UseMask, _Mode, _Metallic, _SiltAmount, _SiltSmooth, _SiltScale, _FogScale;
             float _POMHeight, _POMTile, _POMFade, _LampGain, _NacreLift, _NacreSpread, _EnvSpec, _SwayAmp, _SwayHz, _LipFade;
 
             struct appdata
@@ -171,7 +172,7 @@ Shader "Lanbai/Palace"
                 else if (_Mode < 1.5)
                     metal = mask.r;
                 // 淤泥（朝上的面）
-                float silt = LanbaiSilt(i.posWS, Ng, _SiltAmount, _SiltScale);
+                float silt = LanbaiSiltGroove(i.posWS, Ng, _SiltAmount, _SiltScale, mask.g);
                 albedo = lerp(albedo, _SiltColor.rgb, silt);
                 smooth = lerp(smooth, _SiltSmooth, silt);
                 metal *= 1.0 - silt;
@@ -204,7 +205,7 @@ Shader "Lanbai/Palace"
                 float3 Fr = F0 + (1.0 - F0) * pow(1.0 - NdotV, 5.0) * (1.0 - rough);
                 float3 env = LanbaiHorizon(R) * Fr * _EnvSpec * occ * (1.0 - 0.7 * rough);
                 float3 col = diffColor * diffLight * occ + spec + env;
-                col = LanbaiApplyFog(col, i.posWS);
+                col = LanbaiPalaceApplyFog(col, i.posWS, _FogScale);
                 float veil = max(LanbaiPalaceVeil(i.posWS, eye), LanbaiPalaceLipVeil(i.posWS, eye, _LipFade));
                 col = lerp(col, LanbaiHorizon(normalize(i.posWS - eye)), veil);
                 return float4(col, 1.0);
@@ -270,7 +271,7 @@ Shader "Lanbai/Palace"
                 float metal = _Metallic;
                 if (_Mode < 0.5) albedo = lerp(albedo, _WearColor.rgb, mask.r);
                 else if (_Mode < 1.5) metal = mask.r;
-                float silt = LanbaiSilt(i.posWS, normalize(i.nWS), _SiltAmount, _SiltScale);
+                float silt = LanbaiSiltGroove(i.posWS, normalize(i.nWS), _SiltAmount, _SiltScale, mask.g);
                 albedo = lerp(albedo, _SiltColor.rgb, silt);
                 metal *= 1.0 - silt;
                 m.Albedo = albedo * (1.0 - metal * 0.5);

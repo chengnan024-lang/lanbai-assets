@@ -74,13 +74,14 @@
  {
   "file": "宝贝_02_Naturalis.jpg",
   "commons_title": "File:Naturalis Biodiversity Center - RMNH.MOL.186043 - Mauritia mauritiana (Linnaeus, 1758) - Cypraeidae - Mollusc shell.jpeg",
-  "author": "Linnaeus, 1758",
+  "author": "Naturalis Biodiversity Center",
   "license": "CC0",
   "page": "https://commons.wikimedia.org/wiki/File:Naturalis_Biodiversity_Center_-_RMNH.MOL.186043_-_Mauritia_mauritiana_(Linnaeus,_1758)_-_Cypraeidae_-_Mollusc_shell.jpeg",
   "original_size": [
    1920,
    1278
   ],
-  "low_res_480px": true
+  "low_res_480px": true,
+  "author_note": "终审 10-25 授权检查：原来写成 “Linnaeus, 1758”，那是物种命名人，不是作者。按 Naturalis 在 Commons 上整批上传（CC0）的署名改；本会话的网络策略连不上 commons.wikimedia.org，没能逐字核对文件页，请「网络搜索协助」核对一次。"
  }
 ]

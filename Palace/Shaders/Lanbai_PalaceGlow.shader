@@ -16,6 +16,7 @@ Shader "Lanbai/PalaceGlow"
         _Alpha ("Cone card alpha", Float) = 0.06
         _Atten ("Attenuation per m  FogMode 2", Float) = 0.004
         [Toggle] _Additive ("Additive cone card", Float) = 0
+        [Toggle] _Wash ("Additive back wash card  upper glow behind the hall", Float) = 0
         [Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend ("Src blend", Float) = 1
         [Enum(UnityEngine.Rendering.BlendMode)] _DstBlend ("Dst blend", Float) = 0
         _ZWrite ("ZWrite", Float) = 1
@@ -42,7 +43,7 @@ Shader "Lanbai/PalaceGlow"
             #include "LanbaiPalace.cginc"
 
             float4 _Glow, _Grad;
-            float _Alpha, _Atten, _Additive, _Gain;
+            float _Alpha, _Atten, _Additive, _Wash, _Gain;
 
             struct appdata
             {
@@ -82,6 +83,14 @@ Shader "Lanbai/PalaceGlow"
                 float3 col = _Glow.rgb * exp(-_Atten * d) * _Gain;
                 if (_Additive < 0.5)
                     col *= lerp(_Grad.x, _Grad.y, saturate(i.uv.y));     // 门里的光：下亮上暗（UV0.y = 高度 / 门高）
+                if (_Wash > 0.5)
+                {
+                    // 终审 10-25 #1(2)：大殿后上方的“上方微光”卡（圣经“屋脊剪影映着上方微光”）——不是雾：加在水色上，屋顶挡住它。
+                    // UV0 = (0..1 横, 0..1 竖)；横向两边软、竖向下面从 0 升起、上面慢慢淡；不吃雾、只按 _Atten 衰减
+                    float u = saturate(i.uv.x), v = saturate(i.uv.y);
+                    float w = smoothstep(0.0, 0.3, u) * smoothstep(1.0, 0.7, u) * smoothstep(0.0, 0.35, v) * (1.0 - v * v);
+                    return float4(_Glow.rgb * w * _Gain * (1.0 - veil), 1.0);
+                }
                 if (_Additive > 0.5)
                 {
                     float along = saturate(1.0 - i.uv.y);

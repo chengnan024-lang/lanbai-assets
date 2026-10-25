@@ -78,13 +78,13 @@ def build(t_fish=None, lod_far=False):
     # 大殿、阙、鱼鳞屋（模块没交时用白模盒子）
     hall = try_kit('hall')
     if hall:
-        hall.build().build('Hall', col, M)
+        hall.build().build('Hall', col, M).pass_index = 4
     que = try_kit('que')
     if que:
         qu = que.build()
         cw, rest_q = split_slot(qu, 'Cowrie')
-        rest_q.build('Que', col, M)
-        cw.build('QueCowrie', col, M)
+        rest_q.build('Que', col, M).pass_index = 5
+        cw.build('QueCowrie', col, M).pass_index = 5
     house = try_kit('house')
     hu = UB()
     for i, h in enumerate(L.HOUSES):
@@ -105,8 +105,8 @@ def build(t_fish=None, lod_far=False):
         dst.F.append(tuple(range(o, o + len(f))))
         dst.S.append(sl)
         dst.UV.append(uv)
-    rest.build('Houses', col, M)
-    nac.build('HousesNacre', col, M)
+    rest.build('Houses', col, M).pass_index = 6
+    nac.build('HousesNacre', col, M).pass_index = 7
     # 门里的光（若大殿模块没有 DoorGlow 槽，补一块）
     for ob in col.objects:
         if 'M_07b_DoorGlow' in [m.name for m in ob.data.materials]:

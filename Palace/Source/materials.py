@@ -104,8 +104,10 @@ def standard(name, base, normal=None, mask=None, smooth=0.5, metallic=0.0, silt=
         nm.inputs['Strength'].default_value = nstr
         b.link(nt.outputs['Color'], nm.inputs['Color'])
         b.link(nm.outputs[0], bs.inputs['Normal'])
-    if silt > 0 and col is not None:
+    if silt > 0 and col is not None and mask:      # 没有掩码的槽在 Unity 里 mask.g = 1 → 不积淤泥（只积在沟里）
         s = silt_mask(b, silt)
+        if mask:      # 终审 10-25 #1(3)：淤泥只在沟里（掩码 G = AO），不铺在瓦脊和屋面上
+            s = b.math('MULTIPLY', s, b.math('MULTIPLY', b.math('SUBTRACT', 1.0, sepm.outputs['Green']), 3.0, clamp=True), clamp=True)
         mix = b.n('ShaderNodeMix', data_type='RGBA')
         b.link(s, mix.inputs[0])
         b.link(col, mix.inputs[6])
@@ -168,9 +170,10 @@ def build_all():
     M['Verdigris'] = standard('M_07b_Verdigris', '#3E7A68', smooth=0.32)
     M['Stone'] = standard('M_07b_Stone', T('Stone_Albedo'), T('Stone_Normal'), T('Stone_Mask'), silt=0.6)
     M['StoneDark'] = standard('M_07b_StoneDark', T('Stone_Albedo'), T('Stone_Normal'), T('Stone_Mask'), silt=0.4, tint=(0.8, 0.8, 0.8))
-    M['FishScale'] = standard('M_07b_FishScale', T('FishScale_Albedo'), T('FishScale_Normal'), T('FishScale_Mask'), silt=0.25, irid=True)
+    # 终审 10-25 #1(3)：屋面要比水暗——鳞瓦漫反射 ×0.12、瓦 ×0.3（线性；珍珠母的光在高光里，不在漫反射里）
+    M['FishScale'] = standard('M_07b_FishScale', T('FishScale_Albedo'), T('FishScale_Normal'), T('FishScale_Mask'), silt=0.25, irid=True, tint=(0.12, 0.12, 0.12))
     M['Cowrie'] = standard('M_07b_Cowrie', T('Cowrie_Albedo'), T('Cowrie_Normal'), T('Cowrie_Mask'), silt=0.2, nstr=1.5)
-    M['Tile'] = standard('M_07b_Tile', T('Stone_Albedo'), T('Stone_Normal'), None, smooth=0.35, silt=0.7, tint=(0.95, 0.98, 1.0))
+    M['Tile'] = standard('M_07b_Tile', T('Stone_Albedo'), T('Stone_Normal'), None, smooth=0.35, silt=0.7, tint=(0.29, 0.3, 0.3))
     M['Wood'] = standard('M_07b_Wood', '#2C2522', smooth=0.35)
     M['Rock'] = standard('M_07b_Rock', T('Rock_Albedo'), T('Rock_Normal'), T('Rock_Mask'), silt=0.5)
     M['Weed'] = standard('M_07b_Weed', '#2E3A26', smooth=0.55, cull=False)

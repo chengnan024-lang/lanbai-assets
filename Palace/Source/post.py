@@ -24,6 +24,9 @@ B2U = np.array([[-1.0, 0, 0], [0, 0, 1.0], [0, -1.0, 0]])
 
 # ---- 参数（全部写进 PalaceLayout.json 的 render 块）
 FOG_DENSITY = 0.018
+_TN = json.load(open(os.path.join(HERE, 'tuning.json')))
+PALACE_FOG_SCALE = _TN.get('palace_fog_scale', 1.0)    # 终审 10-25 #1(1)：宫殿几何的雾密度 × 这个（Lanbai/Palace 的 _FogScale）
+WASH = _TN.get('wash', None)                           # 终审 10-25 #1(2)：大殿后上方的“上方微光”卡
 FOG_UP = srgb_to_lin('#182930')       # 屏幕 #06202C（填值由 grade.solve_fill 求）
 FOG_MID = srgb_to_lin('#0D1920')      # 屏幕 #04121E（第 4 轮：评审量到背景中位 #040F1B，抬 2–3 码）
 FOG_DOWN = srgb_to_lin('#020302')     # 屏幕 #02070F（深渊）
@@ -33,8 +36,8 @@ FLAME_FILL = FLAME_GOLD * 2.2                         # 灯焰身：金
 FLAME_CORE = np.array([1.0, 0.82, 0.55]) * 2.6        # 灯焰芯：白热（m⁴ 加权），屏幕上核心到 255、外缘是金 #FFC46A 一带
 HALO_MID = srgb_to_lin('#446282')                    # 灯晕卡中段，屏幕 #2A557B
 HALO_R = 1.5
-HALO_PULL = 4.0                                       # 第 8 轮（评审 r5 #2）：晕卡往眼睛挪的最大米数（≤ d/2）
-BELOW_PULL = 200.0                                    # 眼睛在台地顶面以下时的最大挪动（≤ 0.75 d）
+HALO_PULL = 1.0                                       # 终审 10-25 #3：晕的深度往眼睛挪的最大米数（≤ d/2，位置不挪）
+BELOW_PULL = 2.5                                      # 眼睛低于下唇时火的深度往前挪的米数
 FLAME_PULL = 1.5                                      # 从下面陡着看时火往眼睛挪的米数
 GROUP_GAIN = {'amb': 1.0, 'warm': 1.0, 'indigo': 1.0, 'door': 1.0, 'accent': 1.0}
 
@@ -151,9 +154,11 @@ def composite(exr, shot, gains=None, halo=True, flame_scale=1.0):
     Pu = Pb @ B2U.T
     hit = exr['Depth.Z'] < 1e6
     dist = np.where(hit, np.linalg.norm(Pu - e, axis=-1), 1e9)
-    F = 1 - np.exp(-FOG_DENSITY * np.minimum(dist, 1e5))
+    F = 1 - np.exp(-FOG_DENSITY * PALACE_FOG_SCALE * np.minimum(dist, 1e5))
     fc = fog_color(D)
     img = np.where(hit[..., None], surf * (1 - F[..., None]) + fc * F[..., None], fc)
+    if WASH:
+        img = img + wash_card(D, e, dist, hit)[..., None] * np.array(WASH['rgb_lin'])
     # 门里的光（Lanbai/PalaceGlow，不透明、_FogMode 2）：那些像素就是 glow × exp(−d·0.004)，不混雾色
     if 'Combined_doorglow' in exr:
         gm = (groups['doorglow'].sum(-1) > 0.5 * S.sum(-1)) & hit
@@ -179,6 +184,21 @@ def composite(exr, shot, gains=None, halo=True, flame_scale=1.0):
     return img, dict(dist=dist, hit=hit, D=D)
 
 
+def wash_card(D, e, dist, hit):
+    """大殿后上方的加法渐变卡（Lanbai/PalaceGlow 的 _Wash）：竖直平面 z = zc，x0..x1、y0..y1；被挡住（命中更近）就没有。"""
+    W_ = WASH
+    zc = W_['z']
+    with np.errstate(divide='ignore', invalid='ignore'):
+        t = (zc - e[2]) / D[..., 2]
+    P = e + D * t[..., None]
+    u = (P[..., 0] - W_['x'][0]) / (W_['x'][1] - W_['x'][0])
+    v = (P[..., 1] - W_['y'][0]) / (W_['y'][1] - W_['y'][0])
+    ok = (t > 0) & (u >= 0) & (u <= 1) & (v >= 0) & (v <= 1) & ((~hit) | (dist > t))
+    ss = lambda a, b, x: np.clip((x - a) / (b - a), 0, 1) ** 2 * (3 - 2 * np.clip((x - a) / (b - a), 0, 1))
+    w = ss(0.0, 0.3, u) * (1 - ss(0.7, 1.0, u)) * ss(0.0, 0.35, v) * (1 - v * v)
+    return np.where(ok, w, 0.0)
+
+
 def draw_lamps(img, shot, dist, flame_scale=1.0):
     H, W = img.shape[:2]
     P = lamp_points()
@@ -191,11 +211,10 @@ def draw_lamps(img, shot, dist, flame_scale=1.0):
             continue
         vdir = (P[i] - eye_of(shot))
         fy = -vdir[1] / (np.linalg.norm(vdir) + 1e-9)            # shader 的 fwd.y（灯 → 眼）
-        hpull = min(HALO_PULL, 0.5 * dd[i])                       # 第 8 轮：晕往眼睛挪（水里的散射），角大小不变
-        fpull = FLAME_PULL * min(1.0, max(0.0, (-fy - 0.26) / 0.16))
-        below = min(1.0, max(0.0, (-eye_of(shot)[1] - 1.0) / 3.0))        # 眼睛在台地顶面以下（shader 同式）
-        fpull = max(fpull, below * min(0.75 * dd[i], BELOW_PULL))
-        hpull = max(hpull, below * min(0.75 * dd[i], BELOW_PULL))
+        # 终审 10-25 #3（= shader）：只挪深度，不挪位置（每只眼按真位置投影）；晕 ≤ 1 m，火：陡看 1.5 m、眼睛低于下唇 2.5 m
+        below = min(1.0, max(0.0, (L.LIP_Y - eye_of(shot)[1] - 0.5) / 2.0))
+        hpull = min(HALO_PULL, 0.5 * dd[i])
+        fpull = max(FLAME_PULL * min(1.0, max(0.0, (-fy - 0.26) / 0.16)), below * BELOW_PULL)
         rpx = HALO_R * ppm / zc[i]
         if px[i] < -rpx or px[i] > W + rpx or py[i] < -rpx or py[i] > H + rpx:
             continue

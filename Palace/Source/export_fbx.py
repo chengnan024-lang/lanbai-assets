@@ -148,7 +148,18 @@ def g_door(M):
     z = L.DOOR_Z + 5.0
     # 门里的光（第 4 轮）是大殿网格里 DoorGlow 槽的暗腔内衬，这里只导出门口的 3 张锥形光卡
     cones = door_cones_ub().build('DoorCones_LOD0', None, M)
-    write('Palace_Door', [cones])
+    wash = wash_ub().build('BackWash', None, M)
+    write('Palace_Door', [cones, wash])
+
+
+def wash_ub():
+    """终审 10-25 #1(2)：大殿后上方的“上方微光”卡——竖直四边形，朝 −z（朝神道），UV0 = (横 0..1, 竖 0..1)。"""
+    import json as _j
+    W = _j.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tuning.json')))['wash']
+    (xa, xb), (ya, yb), z = W['x'], W['y'], W['z']
+    u = UB()
+    u.add([(xa, ya, z), (xa, yb, z), (xb, yb, z), (xb, ya, z)], [(0, 1, 2, 3)], 'DoorGlow', [[(0, 0), (0, 1), (1, 1), (1, 0)]])
+    return u
 
 
 def door_cones_ub():

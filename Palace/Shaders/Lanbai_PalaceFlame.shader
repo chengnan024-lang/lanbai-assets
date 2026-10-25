@@ -24,9 +24,10 @@ Shader "Lanbai/PalaceFlame"
         _HaloWarm ("Halo warm core gain", Float) = 0.08
         _HaloWarmR ("Halo warm core radius  fraction of r", Float) = 0.14
         _RingGain ("Halo indigo ring gain", Float) = 0.9
-        _HaloPull ("Halo pulled toward eye m  max, also <= d/2", Float) = 4.0
+        _HaloPull ("Halo depth pulled toward eye m  max, also <= d/2", Float) = 1.0
         _FlamePull ("Flame pulled toward eye m when seen steeply from below", Float) = 1.5
-        _BelowPull ("Max pull m when the eye is below the terrace top", Float) = 200.0
+        _BelowPull ("Flame depth pull m when the eye is below the lip", Float) = 2.5
+        _LipY ("Terrace lip bottom y  palace frame, from Sea", Float) = -13
         _SoftFade ("Soft particle fade m", Float) = 1.0
         _HaloMid ("Halo indigo mid linear  fill 446282", Vector) = (0.0578, 0.1221, 0.2232, 0)
         _Atten ("Attenuation per m  FogMode 2", Float) = 0.004
@@ -57,7 +58,7 @@ Shader "Lanbai/PalaceFlame"
 
             sampler2D _FlipTex;
             float4 _FlameColor, _FlameCore, _FlameSize, _HaloMid;
-            float _HaloRadius, _HaloWarm, _HaloWarmR, _RingGain, _HaloPull, _FlamePull, _BelowPull, _Atten, _FPS, _MinPixels, _Gain, _SoftFade, _RingFar;
+            float _HaloRadius, _HaloWarm, _HaloWarmR, _RingGain, _HaloPull, _FlamePull, _BelowPull, _LipY, _Atten, _FPS, _MinPixels, _Gain, _SoftFade, _RingFar;
             UNITY_DECLARE_DEPTH_TEXTURE(_CameraDepthTexture);
 
             struct appdata
@@ -93,27 +94,30 @@ Shader "Lanbai/PalaceFlame"
                 // 火：竖直的柱状公告板；从很低 / 很高的角度看（|fwd.y| > 0.5）渐变成球状公告板，免得从下面看成一条细线
                 float3 upS = normalize(cross(fwd, right));
                 float eyeY = mul(unity_WorldToObject, float4(eye, 1.0)).y;     // 物体空间 = 宫殿坐标（y = 0 台地顶）
-                float below = saturate((-eyeY - 1.0) / 3.0);
-                float sph = halo ? 1.0 : max(saturate((abs(fwd.y) - 0.34) * 3.0), below);   // 20° 起变圆；从台地下面看一律是圆点（第 8 轮）
+                // 终审 10-25 #3：触发条件 = 眼睛低于台地下唇（_LipY，海的约定；D-34 #4 以后约 −9 m），不再是“低于台面”
+                float below = saturate((_LipY - eyeY - 0.5) / 2.0);
+                float sph = halo ? 1.0 : max(saturate((abs(fwd.y) - 0.34) * 3.0), below);   // 20° 起变圆；从下唇以下看一律是圆点
                 float3 upB = normalize(lerp(up, upS, sph));
                 float2 size = halo ? float2(_HaloRadius, _HaloRadius) : _FlameSize.xy;
                 // 最小像素：一个像素在 d 处的米数 = 2d / (P11 · 屏高)
                 float pix = 2.0 * d / (abs(unity_CameraProjection._m11) * _ScreenParams.y);
                 float s = halo ? 1.0 : max(1.0, _MinPixels * pix / max(size.x, 1e-4));
                 size *= s;
-                // 第 8 轮（评审 r5 #2）：晕是灯和眼睛之间那段水的散射，不是灯焰处的一张卡——往眼睛方向挪 min(_HaloPull, d/2)，
-                // 角大小不变；这样台地的崖边、栏杆不会把它切成半月。火只在从下面陡着看（仰角 15–25° 以上）时往前挪 _FlamePull，
-                // 让贴着崖边的灯焰不被几十厘米的边沿吃掉（平视时不挪，不会透过柱子看见火）。
-                float pull = halo ? min(_HaloPull, 0.5 * d) : _FlamePull * saturate((-fwd.y - 0.26) / 0.16);
-                // 眼睛在台地顶面以下（F7p 之后，D-17 / D-29“宫殿成了头顶的星座”）：灯排正好压在崖顶的剪影线上，几十厘米的
-                // 边沿会把火吃成断续的虚线。这时火和晕都往眼睛挪 min(0.25 d, _BelowPull)，沿崖边一串稳定的暖点；
-                // 远在台地后面的灯（挡住它的岩体比这更厚）照样被挡。物体空间 = 宫殿坐标（y = 0 台地顶）。
-                pull = max(pull, below * min(0.75 * d, _BelowPull));     // 第 8 轮 r6：0.25 d → 0.75 d，台地后面那一列也读成暖点（D-34 #4）
-                size *= (d - pull) / d;
-                float3 p = c + fwd * pull + right * v.uv0.x * size.x + upB * v.uv0.y * size.y;
-                o.pos = UnityWorldToClipPos(p);
-                o.projPos = ComputeScreenPos(o.pos);
-                COMPUTE_EYEDEPTH(o.projPos.z);
+                // 终审 10-25 #3：深度往眼睛挪，但**只挪 clip z**——公告板按真位置、每只眼各自投影（双眼视差对），
+                // 所以头顶的星座仍在 60–270 m 外，不会缩成近处的萤火虫。挪多少：
+                //   晕 ≤ min(_HaloPull 1 m, d/2)（晕是灯和眼睛之间那段水的散射，不该被栏杆、柱子切成半月）；
+                //   火：从下面陡着看（仰角 15–25° 起）_FlamePull 1.5 m；眼睛低于下唇时 _BelowPull 2.5 m（贴着崖边的灯焰不被几十厘米的边沿吃掉）。
+                //   远在台地后面的灯（挡住它的岩体比这厚）照样被挡；F7p 之前不会透过台地露出来。
+                float pull = halo ? min(_HaloPull, 0.5 * d)
+                                  : max(_FlamePull * saturate((-fwd.y - 0.26) / 0.16), below * _BelowPull);
+                float3 p = c + right * v.uv0.x * size.x + upB * v.uv0.y * size.y;
+                float4 cT = UnityWorldToClipPos(p);
+                float3 pP = p + fwd * pull;
+                float4 cP = UnityWorldToClipPos(pP);
+                o.pos = cT;
+                o.pos.z = cP.z / cP.w * cT.w;
+                o.projPos = ComputeScreenPos(cT);
+                o.projPos.z = -mul(UNITY_MATRIX_V, float4(pP, 1.0)).z;          // 软粒子按挪过以后的深度
                 o.corner = v.uv0;
                 o.info = float4(v.uv1.x, v.uv1.y, exp(-_Atten * d), saturate(1.25 - d / max(_RingFar * 0.8, 1.0)) * (1.0 - below));   // 第 6 轮（D-34 #4）：远处的灯焰放大到 ≥ 2 px 且不压暗——稳定、分得清的暖点；w = 靛环的距离淡出；眼睛在台地以下时没有靛环（第 8 轮：被崖边切开的靛环读成半月）
                 return o;

@@ -147,13 +147,13 @@ public static class LanbaiPalaceBuilder
         Std(d, pal, "Verdigris", null, null, null, 0, 0.32f, 0f, 0.3f, "#3E7A68");
         Std(d, pal, "Stone", "Stone", "Stone", "Stone", 0, 0.30f, 0f, 0.6f, "#FFFFFF");
         Std(d, pal, "StoneDark", "Stone", "Stone", "Stone", 0, 0.30f, 0f, 0.4f, "#CCCCCC");
-        Std(d, pal, "FishScale", "FishScale", "FishScale", "FishScale", 2, 0.86f, 0f, 0.25f, "#FFFFFF");
+        Std(d, pal, "FishScale", "FishScale", "FishScale", "FishScale", 2, 0.86f, 0f, 0.25f, "#616161");   // 终审 #1(3)：漫反射 ×0.12（线性）
         d["FishScale"].SetFloat("_LampGain", LanbaiPalaceData.NacreLampGain);     // 珍珠光要“滚出来”（评审 r3 #7）
         d["FishScale"].SetFloat("_NacreLift", LanbaiPalaceData.NacreLift);         // 第 8 轮：灯在檐下照不出镜面高光，按挪高的灯算（README §3）
         d["FishScale"].SetFloat("_NacreSpread", LanbaiPalaceData.NacreSpread);
         Std(d, pal, "Cowrie", "Cowrie", "Cowrie", "Cowrie", 3, 0.92f, 0f, 0.2f, "#FFFFFF");
         d["Cowrie"].SetFloat("_LampGain", LanbaiPalaceData.CowrieLampGain);       // 第 8 轮 r6：贝壳上一串小高光（终审：之前写在 Std 前面，KeyNotFound）
-        Std(d, pal, "Tile", "Stone", "Stone", null, 0, 0.35f, 0f, 0.7f, "#F2F8FF");
+        Std(d, pal, "Tile", "Stone", "Stone", null, 0, 0.35f, 0f, 0.7f, "#929495");   // 终审 #1(3)：×0.3（线性）
         Std(d, pal, "Wood", null, null, null, 0, 0.35f, 0f, 0.2f, "#2C2522");
         Std(d, pal, "Rock", "Rock", "Rock", "Rock", 0, 0.22f, 0f, 0.5f, "#FFFFFF");
         d["Rock"].SetFloat("_LipFade", 5f);          // 台地崖壁：从下面看下缘溶进水色
@@ -180,11 +180,21 @@ public static class LanbaiPalaceBuilder
         cone.SetFloat("_ZWrite", 0f);
         cone.renderQueue = 3000;
         d["DoorCone"] = cone;
+        // 终审 10-25 #1(2)：大殿后上方的“上方微光”卡（加法，不吃雾，屋顶挡住它：屋脊剪影映着上方微光）
+        var wash = Mat("Wash", Shader.Find("Lanbai/PalaceGlow"));
+        wash.SetVector("_Glow", V4(LanbaiPalaceData.WashLinear, 0f));
+        wash.SetFloat("_Wash", 1f);
+        wash.SetFloat("_SrcBlend", (float)BlendMode.One);
+        wash.SetFloat("_DstBlend", (float)BlendMode.One);
+        wash.SetFloat("_ZWrite", 0f);
+        wash.renderQueue = 2990;
+        d["Wash"] = wash;
         // 灯焰与灯晕
         var fl = Mat("Flame", Shader.Find("Lanbai/PalaceFlame"));
         fl.SetTexture("_FlipTex", AssetDatabase.LoadAssetAtPath<Texture2D>(TexDir + "T_07b_Flame_Flip4x2.png"));
         fl.SetVector("_FlameColor", V4(LanbaiPalaceData.FlameLinear, 0f));
         fl.SetVector("_HaloMid", V4(LanbaiPalaceData.HaloMid, 0f));
+        fl.SetFloat("_LipY", LanbaiPalaceData.LipY);
         d["Flame"] = fl;
         foreach (var m in d.Values) EditorUtility.SetDirty(m);
         return d;
@@ -201,6 +211,7 @@ public static class LanbaiPalaceBuilder
         m.SetFloat("_Mode", mode);
         m.SetFloat("_Metallic", metal);
         m.SetFloat("_SiltAmount", silt);
+        m.SetFloat("_FogScale", LanbaiPalaceData.FogScale);      // 终审 10-25 #1：宫殿几何的雾密度倍数
         Color c;
         ColorUtility.TryParseHtmlString(tint, out c);
         m.SetColor("_Color", c);
@@ -233,7 +244,7 @@ public static class LanbaiPalaceBuilder
             if (model == "Palace_Flames") slot = "Flame";
             // Palace_Door.fbx 里只有门口的光锥卡（门内衬在 Palace_Hall 里）。终审：只有一个物体的 FBX 根会被合并、渲染器改名成
             // Palace_Door，按 “DoorCones” 名字认不出来，光锥卡拿到了不透明的 DoorGlow。按模型认。
-            if (model == "Palace_Door") slot = "DoorCone";
+            if (model == "Palace_Door") slot = r.name.StartsWith("BackWash") ? "Wash" : "DoorCone";
             if (model == "Palace_Fish") slot = "Fish";
             Material m;
             if (!mats.TryGetValue(slot, out m))
