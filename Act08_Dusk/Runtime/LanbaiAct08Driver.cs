@@ -62,6 +62,7 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
     public float tExit = 922.36f, tF10e = 956.36f, tF12 = 987.06f, tEnd8 = 1001.21f, tCeilingOff = 965.36f;
     public float blend8iiDur = 8f, blendBlueDur = 6f;
     public float wispOut0 = 950.36f, wispOut1 = 956.36f;
+    public Vector3 f12Dip = new Vector3(0.6f, 2.5f, 0.4f);   // F12: gain x (1 - x sin(pi wb^y)^z): under L* 40 through the D-21 band
     public float cardsIn0 = 956.36f, cardsIn1 = 964.36f, darkDur = 8f, darkEV = 6f;
 
     [Header("Motion (closed form, Act08_Layout motion)")]
@@ -372,6 +373,8 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
         float dark = Mathf.Pow(2f, -darkEV * Mathf.Clamp01((t - tEnd8) / darkDur));
         float inII = Smooth((t - cardsIn0) / Mathf.Max(cardsIn1 - cardsIn0, 1e-3f));
         float wisp = 1f - Smooth((t - wispOut0) / Mathf.Max(wispOut1 - wispOut0, 1e-3f));
+        float dipS = Mathf.Sin(Mathf.PI * Mathf.Pow(Mathf.Clamp01(wb), f12Dip.y));
+        float dip = 1f - f12Dip.x * Mathf.Pow(Mathf.Max(dipS, 0f), f12Dip.z);
         Vector4 uS = upSun * (1f - wb), uK = Vector4.Lerp(upSky, blueSky, wb), uG = Vector4.Lerp(upGround, blueGround, wb);
         Vector4 lS = loSun * (1f - wb), lK = Vector4.Lerp(loSky, blueSky, wb), lG = Vector4.Lerp(loGround, blueGround, wb);
         int wi = 0;
@@ -393,7 +396,7 @@ public class LanbaiAct08Driver : UdonSharpBehaviour
             if (!vis) continue;
             bool lower = g == 2;
             r.GetPropertyBlock(_mpb);
-            _mpb.SetFloat(_idGain, cardGain[i] * dark);
+            _mpb.SetFloat(_idGain, cardGain[i] * dark * dip);
             _mpb.SetFloat(_idAlpha, a);
             _mpb.SetVector(_idSunColor, lower ? lS : uS);
             if (cardAmb != null && i < cardAmb.Length)   // (1,1,1,1) everywhere but the near layer

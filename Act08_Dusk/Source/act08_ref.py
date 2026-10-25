@@ -252,6 +252,11 @@ def specks(V, img, t, h, pix):
 # ---- cards
 _CARD = {}
 STANDIN = set()
+F12_DIP, DIP_P, DIP_Q = LAYOUT['beats']['cards'].get('f12_dip', [0.0, 1.0, 1.0])   # (final r2) act08_layout.py
+
+
+def f12_dip_shape(wb):
+    return float(np.sin(math.pi * min(max(wb, 0.0), 1.0) ** DIP_P)) ** DIP_Q
 AMB_OVERRIDE = {}                          # act08_shadow.py: group -> trial NEAR_AMB
 COVER = {}                                 # per group: the cards' combined alpha per pixel (the last render)
 
@@ -365,6 +370,10 @@ def draw_cards(V, img, depth, t, h, pix):
         if c.get('tint'):
             col = col * np.array(c['tint'])
         col *= c['gain_t']
+        # (final r2) the F12 blend swings the lit cards from warm (h 40) to blue (h 283) through the D-21 band: the light
+        # leaves first, so they are under L* 40 when the hue crosses (the driver's same dip, cardDipF12)
+        _, wbx = weights(t)
+        col *= 1.0 - F12_DIP * f12_dip_shape(wbx)
         mt = c.get('melt', [-0.02, 0.10, 0, 0])
         a = a * c['alpha_t'] * CS.melt(np.ones_like(a), v[ok], cj['cloud_base_v'], (mt[0], mt[1]))
         col = fog_apply(col, V[ok], tt[ok], t, c.get('fog_cap', 1.0))

@@ -88,7 +88,11 @@ def patch(t, W=600, H=120):
 
 def count_lines(lin, az, elv, at=5.0):
     col = int(np.argmin(np.abs(az - at)))
-    Y = lin[:, col] @ C.LUMA
+    # within +-1 deg of the horizon and above the local floor: the new line (pkg/sky d69940e) is faint at az 5 deg against
+    # the bright bands 1.5 deg away, which a 60 %-of-peak cut over the whole column counted as more lines
+    near = np.abs(elv) <= 1.0
+    Y = lin[near, col] @ C.LUMA
+    Y = Y - Y.min()
     pk = Y.max()
     if pk <= 0:
         return 0

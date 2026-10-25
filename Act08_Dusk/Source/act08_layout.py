@@ -299,7 +299,10 @@ def main():
         # other self on the seam (the other sky samples (-x, -y, z): its sun is at -el), the two lines melt into one
         sun_sink=dict(t=[T['F10e'], T['F10e'] + 3.0], el=[SUN_EL, 0.0]),
         cards=dict(upper_8ii_in=[T['F10e'], T['F10e'] + 8.0], lower_in=[T['F10e'], T['F10e'] + 8.0],
-                   blue=[T['F12'], T['F12'] + 6.0], dark=[END8, END8 + 8.0], wisp_out=WISP_FADE),
+                   blue=[T['F12'], T['F12'] + 6.0], dark=[END8, END8 + 8.0], wisp_out=WISP_FADE,
+                   # (final r2) F12: the cards dim mid-blend (gain x (1 - d sin(pi wb^p)^q)) so the warm -> blue swing
+                   # crosses the D-21 band under L* 40
+                   f12_dip=[0.6, 2.5, 0.4]),
         light=dict(colour_srgb='#FFA642', E=2.2, floor=0.001, collapse=[T['F12'], T['F12'] + 6.0],
                    note='D-00: Inspector = E = 2.2 (the bible table 1.43 is the voided gamma value)'),
         trilight=dict(i=dict(sky='#1C3350', equator='#D08A70', ground='#4C5577'), ii_sky='#465582', ii=[T['F10e'], T['F10e'] + 8.0],

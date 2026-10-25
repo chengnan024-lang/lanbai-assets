@@ -244,6 +244,7 @@ public static class LanbaiAct08Builder
         d.tCeilingOff = F(ceil["dissolve_end"]); d.ceilingLocalY = F(ceil["y_local"]);
         var bc = D(B["cards"]); var wo = L(bc["wisp_out"]); var ci2 = L(bc["upper_8ii_in"]); var dk = L(bc["dark"]);
         d.wispOut0 = F(wo[0]); d.wispOut1 = F(wo[1]); d.cardsIn0 = F(ci2[0]); d.cardsIn1 = F(ci2[1]); d.darkDur = F(dk[1]) - F(dk[0]);
+        if (bc.ContainsKey("f12_dip")) { var fd = L(bc["f12_dip"]); d.f12Dip = new Vector3(F(fd[0]), F(fd[1]), F(fd[2])); }
         var mo = D(J["motion"]); d.v0 = F(mo["v0"]);
         var segs = L(mo["segments"]);
         d.segT0 = new float[segs.Count]; d.segDur = new float[segs.Count]; d.segV0 = new float[segs.Count]; d.segV1 = new float[segs.Count];
