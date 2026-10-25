@@ -1,4 +1,4 @@
-2026-10-24 13:58 UTC · **可以终审了。** 新：总导演指出镜背铭文是时代错位（现代简体宋体）→ 已改：35 个铭文字直接取自克利夫兰 1995.298 铭文带照片（汉镜铭体、繁体古字形），十二地支取自 1995.301，不再用任何字体；铭文改成方格字距；对照图 `Docs~/inscription_plate.png`（上真镜 / 下我们），新的镜背预览 `Docs~/iterations/tex_r4.png`。此前：D-38 方案 H、全部序列 PASS、评审 r1/r2 阻断已改、shader 0 错误（没在 Unity 里编译）。卡点：无。
+2026-10-25 04:10 UTC · **可以终审了（只剩 C1 等总导演裁）。** 终审 r3 逐条改完（README §9）：极坐标带串珠法、铭文逐字描笔画、镜背不透明铜绿、真流云带与格角云气纹、乳钉球面、去 rim_soft、+2.7 EV、第 10 幕搭建菜单（D-41 共用工具）、迟到的人（LanbaiSpawnFade + LanbaiOverlayWindow，D-43，join_check 全 PASS）、镜缘点光、F5–F10 / C5–C8。r6 渲染用真贴图与 shader 逻辑（`Docs~/iterations/r6_sheet.png`）。全部 20 条序列重跑：19 条 PASS；**白抬头 2 s 爬 1.84 EV（限 1.8）不过 = C1**，方案 A / B 在 `给总控.md`，裁了就改。shader 0 错误、C# OK（都不是 Unity 编译）。
 
 # 镜与白 · 进度
 

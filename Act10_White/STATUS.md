@@ -1,1 +1,1 @@
-2026-10-24 13:20 UTC · 可以终审了（和镜子一起）：驱动拥有遮罩、只收回自己画的；白的正前方 / 向下 / 抬头序列 PASS。详情看 `Mirrors/STATUS.md`、`README_Act10.md`。
+2026-10-25 04:10 UTC · 可以终审了（只剩 C1 等裁）：搭建菜单 `蓝白/Build/Act10 White`（D-41）；迟到的人 LanbaiSpawnFade + LanbaiOverlayWindow {1146.31, 1188.96}（D-43，join_check 全 PASS）；呼吸按 t；白序列 wf / wd PASS，wu 2 s 1.84 EV 不过 = C1（方案在 `Mirrors/给总控.md`）。详情 `README_Act10.md`、`Mirrors/STATUS.md`。
