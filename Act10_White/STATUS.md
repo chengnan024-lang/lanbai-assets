@@ -1,1 +1,1 @@
-2026-10-25 04:10 UTC · 可以终审了（只剩 C1 等裁）：搭建菜单 `蓝白/Build/Act10 White`（D-41）；迟到的人 LanbaiSpawnFade + LanbaiOverlayWindow {1146.31, 1188.96}（D-43，join_check 全 PASS）；呼吸按 t；白序列 wf / wd PASS，wu 2 s 1.84 EV 不过 = C1（方案在 `Mirrors/给总控.md`）。详情 `README_Act10.md`、`Mirrors/STATUS.md`。
+2026-10-25 08:20 UTC · 可以终审了：C1 = B（遮罩 1144.81 起 4.5 s、Lscene 0.06、正前方瓣 +0.46 s），四个白序列 PASS；LanbaiOverlayWindow {1144.81, 1188.96}（请重新 Generate Dispatcher），迟到的人 join_check 全 PASS；搭建菜单 `蓝白/Build/Act10 White`（D-41）。详情 `README_Act10.md`。
