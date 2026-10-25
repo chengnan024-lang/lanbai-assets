@@ -71,6 +71,9 @@ public static class LanbaiBusBuild
     static Dictionary<string, PartInfo> _parts = new Dictionary<string, PartInfo>();
     const string PartTex = Tex + "Parts/";
 
+    // D-41：菜单先建三个 U# 程序资产（ProgDir）、等 SDK 初始化完，再搭（Common/Editor/LanbaiUdonPrograms）
+    static readonly string[] UdonScripts = { "LanbaiBusSeat", "LanbaiCabinDriver", "LanbaiWipers" };
+
     // for LanbaiBusSliceBuilder: the report the material makers write into, and the D-36 part table PartMat reads
     // (Build() sets both itself)
     internal static void BeginShared(StringBuilder rep, Layout L)
@@ -91,8 +94,19 @@ public static class LanbaiBusBuild
     }
 
     [MenuItem("蓝白/Build/车")]
+    public static void BuildMenu()
+    {
+        var types = UdonScripts.Select(Lanbai.Udon.LanbaiUdonPrograms.TypeOfScript).Where(t => t != null).ToArray();
+        Lanbai.Udon.LanbaiUdonPrograms.RunWhenReady("蓝白/Build/车", types, Build, t => ProgDir + "/" + t.Name + ".asset");
+    }
+
     public static void Build()
     {
+        foreach (var sn in UdonScripts)
+        {
+            var st = Lanbai.Udon.LanbaiUdonPrograms.TypeOfScript(sn);
+            if (st != null) Lanbai.Udon.LanbaiUdonPrograms.RequireReady("蓝白/Build/车", st);
+        }
         _rep = new StringBuilder();
         var fbx = AssetDatabase.LoadAssetAtPath<GameObject>(FbxPath);
         if (fbx == null) { Debug.LogError("[Lanbai Bus] not found: " + FbxPath); return; }
@@ -475,32 +489,17 @@ public static class LanbaiBusBuild
     // ------------------------------------------------------------------------------------------------ UdonSharp by reflection
     static string AddUdonSharp(GameObject go, string className)
     {
-        var guids = AssetDatabase.FindAssets(className + " t:MonoScript");
-        MonoScript script = guids.Select(g => AssetDatabase.LoadAssetAtPath<MonoScript>(AssetDatabase.GUIDToAssetPath(g)))
-                                 .FirstOrDefault(s => s != null && s.name == className);
-        if (script == null) return "script " + className + " not found";
-        Type progType = FindType("UdonSharp.UdonSharpProgramAsset");
-        if (progType != null)
+        // D-41：共用工具按 Type 查程序资产、要求已初始化完（菜单先等过了）、加组件并检查背后的 UdonBehaviour
+        Type behType = Lanbai.Udon.LanbaiUdonPrograms.TypeOfScript(className);
+        if (behType == null) return "script " + className + " not found or not compiled yet";
+        if (!Lanbai.Udon.LanbaiUdonPrograms.Available)
         {
-            string progPath = ProgDir + "/" + className + ".asset";
-            var prog = AssetDatabase.LoadAssetAtPath(progPath, progType);
-            if (prog == null)
-            {
-                prog = ScriptableObject.CreateInstance(progType);
-                var f = progType.GetField("sourceCsScript", BindingFlags.Public | BindingFlags.Instance);
-                if (f != null) f.SetValue(prog, script);
-                AssetDatabase.CreateAsset(prog, progPath);
-            }
+            Undo.AddComponent(go, behType);
+            return "UdonSharp editor not found: plain AddComponent, make the program asset by hand";
         }
-        Type behType = script.GetClass();
-        if (behType == null) return "class not compiled yet: run the menu again after the scripts compile";
-        Type undo = FindType("UdonSharpEditor.UdonSharpUndo");
-        MethodInfo add = undo == null ? null : undo.GetMethods(BindingFlags.Public | BindingFlags.Static)
-            .FirstOrDefault(m => m.Name == "AddComponent" && !m.IsGenericMethod && m.GetParameters().Length == 2);
-        if (add != null) { add.Invoke(null, new object[] { go, behType }); return "added (program asset in " + ProgDir + ")"; }
-        Undo.AddComponent(go, behType);
-        return progType == null ? "UdonSharp editor not found: plain AddComponent, make the program asset by hand"
-                                : "added with Undo.AddComponent: select it once so UdonSharp creates its UdonBehaviour";
+        Lanbai.Udon.LanbaiUdonPrograms.CreateMissing(className, new[] { behType }, t => ProgDir + "/" + t.Name + ".asset");
+        Lanbai.Udon.LanbaiUdonPrograms.AddComponent(go, behType);
+        return "added (program asset " + ProgDir + "/" + className + ".asset)";
     }
 
     // the backing UdonBehaviour's interactText / proximity (as LB_Udon.Commit does), by reflection
