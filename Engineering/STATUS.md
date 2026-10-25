@@ -1,4 +1,4 @@
-2026-10-25（UTC）· 总工程师：D-44 的三件已推 `pkg/engineering`：本地修复审完、诗的逐 cue 烘焙收进 Fonts；GetGlobalFloat 读 `_Udon_StarGain` 找到（本地 LB_FullAssemblyBinding:167），全仓只有这一处；测试工具 1.2.0 加了 Play 阶段和 `transitions_sweep`、`flicker_probe`。**全部没在 Unity 里编译过、跑过**（Play 阶段是新写的，第一次跑要看 Console）。下一个：D-42 独立烘焙工具（等测试工具合 main）。**等别人的**：① 总导演复核 D-43 / D-44；② 阿白跑两个新测试；③ 车交切片；④ 车换完零件 → 重跑 `build_fonts.py`；⑤ 车交 `paz672`；⑥ 门测试以后的各项终审；⑦ 镜与白的白驱动加 `LanbaiOverlayWindow`。
+2026-10-25（UTC）· 总工程师：复核的修改已推 `pkg/engineering`：Director v1.3 r2（DIR13-1…10，D-43 #7）、测试工具 1.2.1（E1–E12）、spawn_fade_sim 移植真白驱动并密扫。**镜与白的白驱动有一处要改**（补丁在 `Engineering/D43r2_patches/`）。全部没在 Unity 里编译过、跑过；按 D-46，技术验收由阿白在 Unity 里做。下一个：D-42 独立烘焙工具（等测试工具合 main）、D-45（诗改字幕，等裁决）、树的测试定义（等树合 main）。
 
 # 总工程师 · 进度
 
