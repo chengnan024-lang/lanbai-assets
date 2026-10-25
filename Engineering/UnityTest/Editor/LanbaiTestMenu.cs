@@ -17,6 +17,8 @@ namespace Lanbai.Test
         [MenuItem(M + "Run bus_slice", false, 3)] static void RunBus() { RunMenu("bus_slice"); }
         [MenuItem(M + "Run act01_spawn", false, 4)] static void RunAct01() { RunMenu("act01_spawn"); }
         [MenuItem(M + "Run palace_hotspot", false, 5)] static void RunPalace() { RunMenu("palace_hotspot"); }
+        [MenuItem(M + "Run transitions_sweep (Play mode)", false, 6)] static void RunSweep() { RunMenu("transitions_sweep"); }
+        [MenuItem(M + "Run flicker_probe (Play mode)", false, 7)] static void RunProbe() { RunMenu("flicker_probe"); }
         [MenuItem(M + "Run Other Test…", false, 20)] static void RunOther() { TestPicker.Open(false); }
         [MenuItem(M + "Preflight Only…", false, 21)] static void PreflightOnly() { TestPicker.Open(true); }
         [MenuItem(M + "Delete Sandbox (Assets/_LanbaiTest)", false, 40)] static void DeleteSandbox()

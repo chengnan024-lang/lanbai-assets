@@ -117,6 +117,7 @@ namespace Lanbai.Test
             m["settings"] = ctx.settings.Cast<object>().ToList();
             m["checks"] = ctx.checks.Cast<object>().ToList();
             m["shots"] = ctx.shots.Cast<object>().ToList();
+            m["play"] = ctx.play.Cast<object>().ToList();   // 1.2.0：Play 阶段（交接扫描 / 闪烁探测）
             m["sequences"] = ctx.sequences.Select(s => (object)s.Where(kv => kv.Key != "apl_per_frame").ToDictionary(kv => kv.Key, kv => kv.Value)).ToList();
             m["textures"] = ctx.textures.Cast<object>().ToList();
             m["metrics"] = ctx.metrics.OrderBy(kv => kv.Key, StringComparer.Ordinal).ToDictionary(kv => kv.Key, kv => (object)kv.Value);
@@ -258,6 +259,7 @@ namespace Lanbai.Test
                 sb.AppendLine();
             }
 
+            PlayReport.Section(ctx, sb);   // 1.2.0
             if (ctx.sequences.Count > 0)
             {
                 sb.AppendLine("## 动态序列（闪烁）");

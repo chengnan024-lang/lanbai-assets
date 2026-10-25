@@ -45,7 +45,9 @@
 | `Editor/LanbaiTestLog.cs` | Console 抓取（开跑前已有的 + 跑的过程中新来的 + 编译消息） |
 | `Editor/LanbaiTestMenu.cs` | 菜单 蓝白/Test/… |
 | `Editor/LanbaiTestJson.cs` | 小 JSON 读写 |
-| `tests/*.json` | 测试定义（§6）：`gate_clouds_test`、`act06_test`、`bus_slice`、`act01_spawn`（占位）、`palace_hotspot`（占位） |
+| `Editor/LanbaiTestPlay.cs` | **Play 阶段**（1.2.0，§7.6）：存状态、进 Play、跳转、拍、退出 Play、reload 以后收尾；交接扫描的曲线和拼图 |
+| `tests/*.json` | 测试定义（§6）：`gate_clouds_test`、`act06_test`、`bus_slice`、`transitions_sweep`、`flicker_probe`（这两个在 Play 模式里拍，§7.6）、`act01_spawn`（占位）、`palace_hotspot`（占位） |
+| `tests/data/transitions_table.json` | 交接扫描用的交接表（圣经 §6.x，36 个；`kind` = check / cut / black / flash） |
 | `Tools~/lanbai_sync.ps1` | 仓库 → 工程的同步脚本（§2）。在 `~` 文件夹里，Unity 不导入 |
 
 工程里的位置：`Assets/Lanbai/Engineering/UnityTest/`（同步脚本按 `X/...` → `Assets/Lanbai/X/...` 拷）。Editor 代码没有 asmdef，编进 `Assembly-CSharp-Editor`，和门测试脚本、各包的搭建脚本在同一个程序集里，互相调得到。
@@ -98,11 +100,11 @@
 
 ### 开跑之前工具自己查的几道关（HANDOFF_CHATGPT，只读）
 - **资源**：C 盘剩 ≥ 10 GB、工程所在盘剩 ≥ 10 GB、可用内存 ≥ 6 GB（测试定义的 `resources` 可改：`min_c_gb`、`min_project_gb`、`min_free_ram_gb`）。不够就 BLOCKED：**停，告诉小楠**（工具和阿白都不替小楠关程序、清文件；VRChat 开着就请小楠关）。
-- **小楠的同意**：第一次用这个工具之前要小楠同意。同意以后，阿白写 `<工程>/LanbaiReports/tests/CONSENT.json`：`{"by": "小楠", "date": "YYYY-MM-DD", "tool_version": "1.1.0", "tests": ["gate_clouds_test"], "backup": "整工程备份的 zip 路径", "note": "小楠原话"}`。没有这个文件就 BLOCKED；**同意的范围**：`tool_version` 要和工具的版本一样（工具升了版本要重新问），`tests` 里要有这次跑的测试，不然 BLOCKED；备份的路径这台机器上找不到，只警告。工具只读它，不替人写。
+- **小楠的同意**：第一次用这个工具之前要小楠同意。同意以后，阿白写 `<工程>/LanbaiReports/tests/CONSENT.json`：`{"by": "小楠", "date": "YYYY-MM-DD", "tool_version": "1.2.0", "tests": ["gate_clouds_test", "transitions_sweep", "flicker_probe"], "backup": "整工程备份的 zip 路径", "note": "小楠原话"}`。没有这个文件就 BLOCKED；**同意的范围**：`tool_version` 要和工具的版本一样（工具升了版本要重新问），`tests` 里要有这次跑的测试，不然 BLOCKED；备份的路径这台机器上找不到，只警告。工具只读它，不替人写。
 - **弹窗**：工具自己不弹（批处理没有；菜单只有开始前和跑完的两个框）。Unity / Hub / VCC / SDK 的弹窗照 HANDOFF_CHATGPT §C 第 5 步一律按“不改”回答。
 
 ### 菜单
-**蓝白/Test/Run gate_clouds_test**（以及 act06_test、bus_slice、act01_spawn、palace_hotspot）；**Run Other Test…** 列出 `tests/` 里所有的；**Preflight Only…** 只做预检。跑的时候编辑器不响应（几分钟），跑完弹一个框，可以直接打开输出文件夹。菜单跑完，测试场景留在打开的状态（没保存）。**不要保存它**：下次跑之前点 **蓝白/Test/Discard Test Scene Changes**（只对沙盒里的拷贝和 `Assets/Lanbai/Tests/` 下的场景起作用；别的已打开场景有没保存的改动时它不动，停，告诉小楠），不然预检会因为“有没保存的改动”BLOCKED。
+**蓝白/Test/Run gate_clouds_test**（以及 act06_test、bus_slice、**transitions_sweep (Play mode)**、**flicker_probe (Play mode)**、act01_spawn、palace_hotspot）；**Run Other Test…** 列出 `tests/` 里所有的；**Preflight Only…** 只做预检。跑的时候编辑器不响应（几分钟），跑完弹一个框，可以直接打开输出文件夹。菜单跑完，测试场景留在打开的状态（没保存）。**不要保存它**：下次跑之前点 **蓝白/Test/Discard Test Scene Changes**（只对沙盒里的拷贝和 `Assets/Lanbai/Tests/` 下的场景起作用；别的已打开场景有没保存的改动时它不动，停，告诉小楠），不然预检会因为“有没保存的改动”BLOCKED。
 
 ### 批处理（**要先关掉这个工程的 Unity 编辑器**）
 同一个工程同一时间只能有一个 Unity 打开（编辑器开着时，批处理会报工程被占用、直接退出，日志里没有 `LANBAI_TEST_RESULT`）。这一条没在阿白的机器上试过；不想关编辑器就用菜单。
@@ -259,6 +261,19 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json" -Encoding UTF8
 ### 7.5 贴图压缩对照（`texture_compare`）
 选中材质（选法和 `set_material` 一样）上的所有贴图，各拷一份进沙盒、按每一档设导入（`raw` 不压缩 RGBA32、`bc7`、`bc5`（只对法线贴图；别的贴图这一档用 BC7）、`crunch` 或 `crunch:<质量>`（DXT1/DXT5 Crunched，法线是 DXT5nm；不写质量用 `crunch_quality`，默认 50）。量数名和文件名里冒号换成 `_q`，比如 `crunch:100` → `crunch_q100`；`ncrunch:<质量>` 只把法线贴图做 Crunch、别的贴图用 BC7，和 `bc5` 那一档只差在法线上；D-40b #6 的法线对照 = `bc5` 对 `ncrunch:100`），材质也拷一份换上这些贴图；场景里用到原材质的 renderer 临时换成拷贝，拍 `shots` 里列的机位，换回。报每一档的存储大小（编辑器读数），以及和 `raw` 那张比的 PSNR。**原贴图的导入设置不动。** 原贴图的 mip、各向异性、过滤、sRGB 写进 `manifest.json` 的 `textures`。
 
+### 7.6 Play 阶段（`play`；1.2.0，D-44 #4）：`transitions_sweep`、`flicker_probe`
+
+测试定义里有 `play` 的，编辑模式的那一半照常（预检、把场景拷进沙盒、`build`），然后**工具自己进 Play 模式**（ClientSim 照常起来，旅程照常走）：用旅程的调试跳转把时间轴拨到每一段开头前 `settle_s` 秒，时间轴实时走，每走过一个要拍的时刻就用工具自己的相机拍一张；全部拍完退出 Play，reload 以后照常写报告。**跑的时候别碰编辑器**（别点停止、别改脚本：Play 里 reload 了这次就作废，退出码 3）。
+
+- 时间轴：`clock` = `{"component": "LB_Journey", "time_var": "dbgT", "seek_var": "debugSeekSeconds", "seek_event": "_DebugSeekVar"}`（默认就是这些，和本地的旅程进度面板一样）。
+- 相机：`camera.relative_to` = `{"component": "LB_Journey", "field": "busRoot"}`（或场景路径），`eye`（车的局部坐标；不写就用 `LB_Journey.heroEye`），`yaw` / `pitch` / `roll`（度），`hfov`、`w`、`h`（默认 640×360）。车动相机跟着动。`overlay_follow_camera`（默认 true）：每张拍之前把遮罩球挪到相机这里（它平时跟着玩家的头），拍完放回。
+- 每张记**要的时刻和实际的时刻**（时间轴是实时走的，编辑器一帧拍不完会晚一点：照实记，不补；`missed` = 要拍但已经走过去了的），平均对数亮度 mean(log2(max(L, 0.004)))（L = 线性亮度，从 8 位 sRGB 读回来换算）和 APL。
+- **`sweep`**（交接扫描）：`table`（默认 `data/transitions_table.json`）或 `transitions`，`only`（只扫这几个 id），`pre_s` / `post_s`（7 / 7）、`coarse_fps`（1）、`fine_s` / `fine_fps`（交接点前后 1 s、10 fps）。每个交接出 `sweep/<id>/strip_1s.png`（每秒一张，从左上按时间排）、`strip_fine.png`（交接点前后 1 s，每 0.1 s 一张）、`curve.png`（横轴时间，纵轴 −8 … 0 EV，红线 = 交接时刻）、`frames.csv`；量数 `sweep.<id>.max_step_ev`（相邻两张、间隔 ≤ 0.15 s 的最大差）、`rise_025` / `rise_1` / `rise_2`（窗口里最多升了多少 EV）。`summary.md` 里一张表：有意的（`cut` 剪 1–3、`black` 第 5 幕的黑、`flash` U9 和 FLASH_TEAR）单独标，“要查”的超过圣经 §1.8 的三个窗口标 ⚠️。**全画面平均、主座位往前**：只用来找“哪里跳了”，不是验收（圣经的限速是每个视向的）。
+- **`probes`**（闪烁探测）：每个 `{id, t0, t1, fps, variants: [{id, why, toggles: [...]}]}`（默认 1016–1042 s、30 fps）。每个变体把同一段重拍一遍，**拍每一张之前**把它的 `toggles` 再做一遍（旅程可能每帧改回去）：
+  `set_active {path, value}`、`set_renderer {path, value}`、`set_components_enabled {component（类型名，含子类）, value}`、`field_objects_active {component, fields, value}`（组件字段指着的物体）、`field_renderers {component, fields, enabled?, mpb_float?}`（字段里的 renderer：开关、或者往 MaterialPropertyBlock 写几个 float）、`udon_var {component, var, value}`、`global_float` / `global_vector {name（只许 _Udon_）, value}`；都可以 `optional`。
+  每个变体出 `probe/<id>/<变体>/frames.csv`（每帧的平均对数亮度、APL、和上一帧的平均差）、`curve.png`、`flicker_count.png`（每个像素相邻帧差 > 24 的次数：局部的闪在哪）、`max_diff.png`、差最大的 8 对 `diff_<t>_heat.png` + `diff_<t>_frame.png`；量数 `max_step_ev`、`steps_over_01ev`、`flicker_px_frac`，以及每个变体比第一个变体（对照）的 `max_step_vs_<对照>`。**探测不改、不删任何东西**：toggles 只在 Play 里，退出 Play 就回去了。
+- 编辑器里普通相机，不是头显、不是 SPS-I；每次跑出来的帧时刻会差几毫秒。批处理下进 Play 没试过：用菜单跑。
+
 ---
 
 ## 8. 沙盒和写入
@@ -296,7 +311,8 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json" -Encoding UTF8
   - 顶点压缩的掩码按 `1 << VertexAttribute` 读（先试 `PlayerSettings.vertexChannelCompressionMask`，读不到再读 `ProjectSettings.asset` 原文）；
   - 贴图存储大小用 `TextureUtil.GetStorageMemorySizeLong`（反射）。
 - **批处理下 PPv2 生效没有，不知道**：工具自己查（§3），不行就用菜单。
-- **Play 模式的东西工具不做**：Udon 时间（ClientSim + Profiler）、门的时钟在 Play 里走的画面、头显里的一切。都列在 `summary.md` 的手动项和头显清单里。`GateTest.unity` 没有 VRC 场景描述符，Play 时 ClientSim 起不来；所以 `gate_clouds_test` 最后把搭好的场景另存成 `Assets/_LanbaiTest/GateTest_play.unity`、只在这份拷贝上加描述符，量 Udon 时间就在它里面按 Play（手动项第 1 条）。
+- **Play 阶段（§7.6）没在 Unity 里跑过**：进 / 出 Play 的两次 reload 之间靠 `SessionState` 和输出文件夹的 `_state/` 接上；在 Play 里用反射调 `UdonBehaviour.GetProgramVariable / SetProgramVariable / SendCustomEvent`，用 `UdonSharpEditorUtility.GetBackingUdonBehaviour` 找旅程背后的 UdonBehaviour；在 `EditorApplication.update` 里手动 `Camera.Render()`。第一次跑请把 Console 原样推回来。
+- **除了 §7.6 的两个，Play 模式的东西工具不做**：Udon 时间（ClientSim + Profiler）、门的时钟在 Play 里走的画面、头显里的一切。都列在 `summary.md` 的手动项和头显清单里。`GateTest.unity` 没有 VRC 场景描述符，Play 时 ClientSim 起不来；所以 `gate_clouds_test` 最后把搭好的场景另存成 `Assets/_LanbaiTest/GateTest_play.unity`、只在这份拷贝上加描述符，量 Udon 时间就在它里面按 Play（手动项第 1 条）。
 - **工具不碰的两样**：不调 UdonSharp 的任何编译（U# 在 build 模式下编译会出几千条假 CS0518，还会改写程序资产；工具只用编辑器自己的编译）；不加 AssetPostprocessor（加一个全局的，全工程的模型都会重导入）。
 - 预检会报告工程里是不是有两套调色（旧的 `Assets/Lanbai/Grades/` + layer 4、套件的 `Assets/Lanbai/Grading/` + layer 22），只报告，不删；每张截图记下参考相机 PostProcessLayer 的 volumeLayer（`pp_volume_layer`）。
 - `act06_test` 在编辑模式里直接调 U# 驱动的 C# 方法（`LanbaiActivate`、`Evaluate(t)`）来定时间，没试过；驱动里用到只有 Udon 里才有的东西，会在那一步报错。主场景里车不在原点的话，机位的 `eye` 要改。
@@ -309,5 +325,5 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json" -Encoding UTF8
 ## 11. 检查
 
 - C#：`bash Common/Tools~/compile_check/check_cs.sh Engineering/UnityTest` → `C# CHECK OK (0 assembly error(s), 0 lint warning(s))`（UnityEditor 2021.1 引用程序集 + PPv2 桩；不是 Unity 编译）。
-- 测试定义：5 个 `tests/*.json` 都是合法 JSON，`gate_clouds_test` 的机位、时间、文件名对过 `Gate/GateLayout_v2.json` 的 `cameras` 和 HANDOFF_LOG。
+- 测试定义：7 个 `tests/*.json` 和 `tests/data/transitions_table.json` 都是合法 JSON，`gate_clouds_test` 的机位、时间、文件名对过 `Gate/GateLayout_v2.json` 的 `cameras` 和 HANDOFF_LOG。
 - 同步脚本：PowerShell 7.4.6 上用一个假仓库 + 假工程走过：只列出、`-Apply`、第二次全部“一样”、本地改过被拒（退出码 2，什么都没改）、`-Force`（先备份再覆盖）、仓库删了的文件只列出不删、工程里多出来的不动、没有“同步：”行时猜路径并要求 `-AcceptGuess`、`.git/index.lock` / 没提交的改动 / 不在 main 都停（退出码 4）；对真仓库的两条门的条目只列出过一次（猜到的路径见 `Engineering/给总导演.md`）。
