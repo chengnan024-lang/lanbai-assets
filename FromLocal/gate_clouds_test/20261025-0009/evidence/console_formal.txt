@@ -1,0 +1,173 @@
+[00:08:48.042] [远程小助手] 开始处理请求 gate_continue_20261025_formal_refresh
+[00:08:54.055] ══ 远程小助手已加载 · Unity 2022.3.22f1 · 编辑模式 ══
+[00:08:57.095] [信息] [Lanbai U#] 工程里的 U# 程序资产（16 个类型）：
+  LanbaiExposure：Ready，Assets/Lanbai/Tests/UdonPrograms/LanbaiExposure.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LanbaiTearParams：Ready，Assets/Lanbai/Tests/UdonPrograms/LanbaiTearParams.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LanbaiGateClouds：Ready，Assets/Lanbai/UdonPrograms/LanbaiGateClouds.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LanbaiGateDriver：Ready，Assets/Lanbai/UdonPrograms/LanbaiGateDriver.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LanbaiGateTestClock：Ready，Assets/Lanbai/UdonPrograms/LanbaiGateTestClock.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LB_DepartButton：Ready，Assets/Lanbai/UdonPrograms/LB_DepartButton.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LB_Journey：Ready，Assets/Lanbai/UdonPrograms/LB_Journey.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LB_Seat：Ready，Assets/Lanbai/UdonPrograms/LB_Seat.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  BoneFollower：Ready，Assets/UdonSharp/UtilityScripts/BoneFollower.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  InteractToggle：Ready，Assets/UdonSharp/UtilityScripts/InteractToggle.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  PlayerModSetter：Ready，Assets/UdonSharp/UtilityScripts/PlayerModSetter.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  GlobalToggleObject：Ready，Assets/UdonSharp/UtilityScripts/Synced/GlobalToggleObject.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  MasterToggleObject：Ready，Assets/UdonSharp/UtilityScripts/Synced/MasterToggleObject.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  TrackingDataFollower：Ready，Assets/UdonSharp/UtilityScripts/TrackingDataFollower.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  WorldAudioSettings：Ready，Assets/UdonSharp/UtilityScripts/WorldAudioSettings.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  WorldQualitySettings：Ready，Packages/com.vrchat.worlds/Samples/VRCQualitySettings/Scripts/WorldQualitySettings.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+[00:08:57.532] [远程小助手] 请求 gate_continue_20261025_formal_refresh 完成
+[00:09:08.377] [远程小助手] 开始处理请求 gate_continue_20261025_formal_cloud
+[00:09:09.649] [信息] [GateClouds] deck quality: default
+[00:09:09.828] [信息] [GateClouds] turned off Tear_CloudGlow (GateClouds replaces it)
+[00:09:09.828] [信息] [GateClouds] turned off Tear_CloudGlow_Additive (GateClouds replaces it)
+[00:09:09.828] [信息] [GateClouds] turned off Tear_LightLane (GateClouds replaces it)
+[00:09:09.828] [信息] [GateClouds] turned off Tear_FootSkyline (GateClouds replaces it)
+[00:09:09.831] [信息] [GateClouds] turned off Tear_FootSkylineIn (GateClouds replaces it)
+[00:09:09.831] [信息] [GateClouds] turned off Shaft_00 (GateClouds replaces it)
+[00:09:09.831] [信息] [GateClouds] turned off Shaft_01 (GateClouds replaces it)
+[00:09:10.009] [信息] [GateClouds] built: deck, 38 cards (10 towers), 6 beams
+[00:09:10.011] [信息] LANBAI_UDON_STATUS {"menu": "蓝白/Gate Clouds/Build", "status": "DONE"}
+[00:09:12.453] [远程小助手] 请求 gate_continue_20261025_formal_cloud 完成
+[00:09:21.288] [远程小助手] 开始处理请求 gate_continue_20261025_formal_gate
+[00:09:29.441] [信息] [GateDriver] D-22 sky handover: 14 vectors + 1 floats, moon_night -> act4_gate over 133.8 -> 163.8
+[00:09:29.593] [信息] [GateDriver] Gate_TestClock: Play mode only, delete it from the real world
+[00:09:29.595] [信息] [GateDriver] built: 64 instances (0 missing), 192 renderers, 1 tide renderers, 168 track keys
+[00:09:29.595] [信息] LANBAI_UDON_STATUS {"menu": "蓝白/Gate/Build Driver + Test Clock (Play mode only)", "status": "DONE"}
+[00:09:43.831] [远程小助手] 请求 gate_continue_20261025_formal_gate 完成
+[00:09:44.514] [远程小助手] 开始处理请求 gate_continue_20261025_formal_capture
+[00:09:47.755] [远程小助手] 请求 gate_continue_20261025_formal_capture 完成
+[00:10:05.803] [远程小助手] 开始处理请求 gate_continue_20261025_formal_play
+[00:10:21.772] ══ 远程小助手已加载 · Unity 2022.3.22f1 · 编辑模式 ══
+[00:10:23.160] [信息] [12:10:23.159][ClientSimMain] Starting ClientSim
+[00:10:23.214] [信息] [12:10:23.214][ClientSimPlayerManager] Assigning player id 1
+[00:10:23.216] [信息] [12:10:23.216][ClientSimPlayerManager] Player 1 is now master
+[00:10:23.648] [信息] UdonManager.OnSceneLoaded took '0.062'
+[00:10:23.650] [信息] [12:10:23.650][GameObject] Deleting editor only object: /_说明
+[00:10:28.304] [信息] [12:10:28.304][ClientSimPlayerController] Moving player to (0.550, -0.200, 2.050) and rotation (0.000, 0.000, 0.000) (fromPlaySpace=False)
+[00:10:28.414] [信息] [12:10:28.414][ClientSimMain] ClientSim Initialized
+[00:11:07.261] [远程小助手] 请求 gate_continue_20261025_formal_play 完成
+[00:11:44.890] [远程小助手] 开始处理请求 gate_continue_20261025_formal_loop_preview
+[00:11:46.365] ══ 远程小助手已加载 · Unity 2022.3.22f1 · 编辑模式 ══
+[00:11:47.673] [信息] [12:11:47.672][ClientSimMain] Starting ClientSim
+[00:11:47.715] [信息] [12:11:47.715][ClientSimPlayerManager] Assigning player id 1
+[00:11:47.717] [信息] [12:11:47.717][ClientSimPlayerManager] Player 1 is now master
+[00:11:48.149] [信息] UdonManager.OnSceneLoaded took '0.064'
+[00:11:48.151] [信息] [12:11:48.151][GameObject] Deleting editor only object: /_说明
+[00:11:48.776] [信息] [12:11:48.776][ClientSimPlayerController] Moving player to (0.550, -0.200, 2.050) and rotation (0.000, 0.000, 0.000) (fromPlaySpace=False)
+[00:11:48.870] [信息] [12:11:48.870][ClientSimMain] ClientSim Initialized
+[00:12:30.097] [远程小助手] 请求 gate_continue_20261025_formal_loop_preview 完成
+[00:13:05.808] [远程小助手] 开始处理请求 gate_continue_20261025_prepare_tool
+[00:13:07.272] [远程小助手] 请求 gate_continue_20261025_prepare_tool 完成
+[00:13:19.946] [远程小助手] 开始处理请求 gate_continue_20261025_tool_preflight
+[00:13:23.802] ══ 远程小助手已加载 · Unity 2022.3.22f1 · 编辑模式 ══
+[00:13:31.895] [信息] [LanbaiTest] 测试 gate_clouds_test，输出 <project>\LanbaiReports/tests\gate_clouds_test\20261025-001331
+[00:13:31.926] [信息] [LanbaiTest] 只做预检：通过
+[00:13:31.940] [信息] LANBAI_TEST_RESULT {"test":"gate_clouds_test","run":"20261025-001331","exit":0,"status":"preflight_ok","out":"<project>\\LanbaiReports/tests\\gate_clouds_test\\20261025-001331","checks_failed":0,"checks_total":0,"vr_headset":"not_tested","tool_version":"1.0.0"}
+[00:13:31.940] [信息] [GateContinuation] Official test preflight completed with exit 0: <project>\LanbaiReports/tests\gate_clouds_test\20261025-001331
+[00:13:31.947] [远程小助手] 请求 gate_continue_20261025_tool_preflight 完成
+[00:13:46.368] [远程小助手] 开始处理请求 gate_continue_20261025_tool_full
+[00:13:46.373] [信息] [LanbaiTest] 测试 gate_clouds_test，输出 <project>\LanbaiReports/tests\gate_clouds_test\20261025-001346
+[00:13:46.580] [信息] [LanbaiTest] 开搭之前备份了 220 个文件（2.1 MB）到 backup_before/
+[00:13:46.893] [信息] [LanbaiTest] 场景：Assets/Lanbai/Tests/GateTest.unity（in_place）
+[00:13:47.414] [警告] [LanbaiGateDriver] a transform / renderer is missing: re-run 蓝白/Gate/Build Driver after the gate's Build
+[00:13:47.418] [警告] [GateClouds] 48 card / tower renderers are missing (the gate was rebuilt after the clouds): please re-run 蓝白/Gate Clouds/Build
+[00:13:48.414] [信息] [GateClouds] deck quality: default
+[00:13:48.577] [信息] [GateClouds] turned off Tear_CloudGlow (GateClouds replaces it)
+[00:13:48.577] [信息] [GateClouds] turned off Tear_CloudGlow_Additive (GateClouds replaces it)
+[00:13:48.579] [信息] [GateClouds] turned off Tear_LightLane (GateClouds replaces it)
+[00:13:48.579] [信息] [GateClouds] turned off Tear_FootSkyline (GateClouds replaces it)
+[00:13:48.579] [信息] [GateClouds] turned off Tear_FootSkylineIn (GateClouds replaces it)
+[00:13:48.580] [信息] [GateClouds] turned off Shaft_00 (GateClouds replaces it)
+[00:13:48.581] [信息] [GateClouds] turned off Shaft_01 (GateClouds replaces it)
+[00:13:48.722] [信息] [GateClouds] built: deck, 38 cards (10 towers), 6 beams
+[00:13:48.722] [信息] LANBAI_UDON_STATUS {"menu": "蓝白/Gate Clouds/Build", "status": "DONE"}
+[00:13:57.007] [信息] [GateDriver] D-22 sky handover: 14 vectors + 1 floats, moon_night -> act4_gate over 133.8 -> 163.8
+[00:13:57.157] [信息] [GateDriver] Gate_TestClock: Play mode only, delete it from the real world
+[00:13:57.157] [信息] [GateDriver] built: 64 instances (0 missing), 192 renderers, 1 tide renderers, 168 track keys
+[00:13:57.157] [信息] LANBAI_UDON_STATUS {"menu": "蓝白/Gate/Build Driver + Test Clock (Play mode only)", "status": "DONE"}
+[00:13:57.259] [警告] Releasing render texture that is set to be RenderTexture.active!
+[00:13:57.278] [警告] Releasing render texture that is set to be RenderTexture.active!
+[00:13:57.635] [警告] Releasing render texture that is set to be RenderTexture.active!
+[00:13:58.177] [警告] Releasing render texture that is set to be RenderTexture.active!
+[00:13:58.658] [警告] Releasing render texture that is set to be RenderTexture.active!
+[00:13:59.159] [警告] Releasing render texture that is set to be RenderTexture.active!
+[00:13:59.622] [警告] Releasing render texture that is set to be RenderTexture.active!
+[00:14:00.135] [警告] Releasing render texture that is set to be RenderTexture.active!
+[00:14:00.229] [警告] Releasing render texture that is set to be RenderTexture.active!
+[00:14:00.516] [警告] Releasing render texture that is set to be RenderTexture.active!
+[00:14:00.573] [警告] Releasing render texture that is set to be RenderTexture.active!
+[00:14:12.280] [警告] Releasing render texture that is set to be RenderTexture.active!
+[00:14:18.504] [警告] Releasing render texture that is set to be RenderTexture.active!
+[00:14:30.523] [警告] Releasing render texture that is set to be RenderTexture.active!
+[00:14:39.752] [警告] Releasing render texture that is set to be RenderTexture.active!
+[00:14:41.805] [信息] [GateClouds] deck quality: auto_lite
+[00:14:41.910] [信息] [GateClouds] turned off Tear_CloudGlow (GateClouds replaces it)
+[00:14:41.912] [信息] [GateClouds] turned off Tear_CloudGlow_Additive (GateClouds replaces it)
+[00:14:41.912] [信息] [GateClouds] turned off Tear_LightLane (GateClouds replaces it)
+[00:14:41.912] [信息] [GateClouds] turned off Tear_FootSkyline (GateClouds replaces it)
+[00:14:41.912] [信息] [GateClouds] turned off Tear_FootSkylineIn (GateClouds replaces it)
+[00:14:41.912] [信息] [GateClouds] turned off Shaft_00 (GateClouds replaces it)
+[00:14:41.912] [信息] [GateClouds] turned off Shaft_01 (GateClouds replaces it)
+[00:14:42.058] [信息] [GateClouds] built: deck, 38 cards (10 towers), 6 beams
+[00:14:42.058] [信息] LANBAI_UDON_STATUS {"menu": "蓝白/Gate Clouds/Build", "status": "DONE"}
+[00:14:43.430] [信息] [GateClouds] deck quality: default
+[00:14:43.530] [信息] [GateClouds] turned off Tear_CloudGlow (GateClouds replaces it)
+[00:14:43.530] [信息] [GateClouds] turned off Tear_CloudGlow_Additive (GateClouds replaces it)
+[00:14:43.530] [信息] [GateClouds] turned off Tear_LightLane (GateClouds replaces it)
+[00:14:43.530] [信息] [GateClouds] turned off Tear_FootSkyline (GateClouds replaces it)
+[00:14:43.532] [信息] [GateClouds] turned off Tear_FootSkylineIn (GateClouds replaces it)
+[00:14:43.532] [信息] [GateClouds] turned off Shaft_00 (GateClouds replaces it)
+[00:14:43.532] [信息] [GateClouds] turned off Shaft_01 (GateClouds replaces it)
+[00:14:43.647] [信息] [GateClouds] built: deck, 38 cards (10 towers), 6 beams
+[00:14:43.647] [信息] LANBAI_UDON_STATUS {"menu": "蓝白/Gate Clouds/Build", "status": "DONE"}
+[00:14:51.854] [信息] [GateDriver] D-22 sky handover: 14 vectors + 1 floats, moon_night -> act4_gate over 133.8 -> 163.8
+[00:14:52.138] [信息] [GateDriver] Gate_TestClock: Play mode only, delete it from the real world
+[00:14:52.138] [信息] [GateDriver] built: 64 instances (0 missing), 192 renderers, 1 tide renderers, 168 track keys
+[00:14:52.139] [信息] LANBAI_UDON_STATUS {"menu": "蓝白/Gate/Build Driver + Test Clock (Play mode only)", "status": "DONE"}
+[00:14:54.240] [信息] [GateClouds] deck quality: auto_lite
+[00:14:54.332] [信息] [GateClouds] turned off Tear_CloudGlow (GateClouds replaces it)
+[00:14:54.333] [信息] [GateClouds] turned off Tear_CloudGlow_Additive (GateClouds replaces it)
+[00:14:54.334] [信息] [GateClouds] turned off Tear_LightLane (GateClouds replaces it)
+[00:14:54.334] [信息] [GateClouds] turned off Tear_FootSkyline (GateClouds replaces it)
+[00:14:54.335] [信息] [GateClouds] turned off Tear_FootSkylineIn (GateClouds replaces it)
+[00:14:54.335] [信息] [GateClouds] turned off Shaft_00 (GateClouds replaces it)
+[00:14:54.335] [信息] [GateClouds] turned off Shaft_01 (GateClouds replaces it)
+[00:14:54.443] [信息] [GateClouds] built: deck, 38 cards (10 towers), 6 beams
+[00:14:54.444] [信息] LANBAI_UDON_STATUS {"menu": "蓝白/Gate Clouds/Build", "status": "DONE"}
+[00:14:55.778] [信息] [GateClouds] deck quality: default
+[00:14:55.865] [信息] [GateClouds] turned off Tear_CloudGlow (GateClouds replaces it)
+[00:14:55.865] [信息] [GateClouds] turned off Tear_CloudGlow_Additive (GateClouds replaces it)
+[00:14:55.865] [信息] [GateClouds] turned off Tear_LightLane (GateClouds replaces it)
+[00:14:55.868] [信息] [GateClouds] turned off Tear_FootSkyline (GateClouds replaces it)
+[00:14:55.868] [信息] [GateClouds] turned off Tear_FootSkylineIn (GateClouds replaces it)
+[00:14:55.868] [信息] [GateClouds] turned off Shaft_00 (GateClouds replaces it)
+[00:14:55.868] [信息] [GateClouds] turned off Shaft_01 (GateClouds replaces it)
+[00:14:55.978] [信息] [GateClouds] built: deck, 38 cards (10 towers), 6 beams
+[00:14:55.978] [信息] LANBAI_UDON_STATUS {"menu": "蓝白/Gate Clouds/Build", "status": "DONE"}
+[00:15:04.254] [信息] [GateDriver] D-22 sky handover: 14 vectors + 1 floats, moon_night -> act4_gate over 133.8 -> 163.8
+[00:15:04.388] [信息] [GateDriver] Gate_TestClock: Play mode only, delete it from the real world
+[00:15:04.390] [信息] [GateDriver] built: 64 instances (0 missing), 192 renderers, 1 tide renderers, 168 track keys
+[00:15:04.390] [信息] LANBAI_UDON_STATUS {"menu": "蓝白/Gate/Build Driver + Test Clock (Play mode only)", "status": "DONE"}
+[00:15:04.885] [信息] LANBAI_TEST_RESULT {"test":"gate_clouds_test","run":"20261025-001346","exit":0,"status":"pass","out":"<project>\\LanbaiReports/tests\\gate_clouds_test\\20261025-001346","checks_failed":0,"checks_total":16,"vr_headset":"not_tested","tool_version":"1.0.0"}
+[00:15:04.885] [信息] [GateContinuation] Official test run completed with exit 0: <project>\LanbaiReports/tests\gate_clouds_test\20261025-001346
+[00:15:04.892] [远程小助手] 请求 gate_continue_20261025_tool_full 完成
+[00:15:04.897] [异常] MissingReferenceException: The object of type 'UdonBehaviour' has been destroyed but you are still trying to access it.
+Your script should either check if it is null or you should not destroy the object.
+        UdonSharpEditor.UdonSharpEditorUtility+<>c__DisplayClass35_0.<RunBehaviourSetup>b__0 () (at ./Packages/com.vrchat.worlds/Integrations/UdonSharp/Editor/UdonSharpEditorUtility.cs:931)
+        UnityEditor.EditorApplication.Internal_CallDelayFunctions () (at <80a8ce1980c648dca8e68f0d8aa3b930>:0)
+[00:15:56.364] [远程小助手] 开始处理请求 gate_continue_20261025_finalize_tool
+[00:15:57.311] [警告] Assets\Lanbai\Editor\LB_Builder_Road.cs(450,17): warning CS0162: Unreachable code detected
+[00:16:09.049] ══ 远程小助手已加载 · Unity 2022.3.22f1 · 编辑模式 ══
+[00:16:15.630] [远程小助手] 请求 gate_continue_20261025_finalize_tool 完成
+[00:16:27.688] [远程小助手] 开始处理请求 gate_continue_20261025_final_preview
+[00:16:29.576] ══ 远程小助手已加载 · Unity 2022.3.22f1 · 编辑模式 ══
+[00:16:30.909] [信息] [12:16:30.909][ClientSimMain] Starting ClientSim
+[00:16:30.957] [信息] [12:16:30.957][ClientSimPlayerManager] Assigning player id 1
+[00:16:30.959] [信息] [12:16:30.959][ClientSimPlayerManager] Player 1 is now master
+[00:16:31.471] [信息] UdonManager.OnSceneLoaded took '0.061'
+[00:16:31.472] [信息] [12:16:31.472][GameObject] Deleting editor only object: /_说明
+[00:16:32.063] [信息] [12:16:32.063][ClientSimPlayerController] Moving player to (0.550, -0.200, 2.050) and rotation (0.000, 0.000, 0.000) (fromPlaySpace=False)
+[00:16:32.152] [信息] [12:16:32.152][ClientSimMain] ClientSim Initialized
+[00:17:12.823] [远程小助手] 请求 gate_continue_20261025_final_preview 完成

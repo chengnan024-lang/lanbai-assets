@@ -1,0 +1,3 @@
+rear 截图 1920×1080（HDR 渲染，超采样 2×，竖直视角 48.98°）→ <asset-checkout>/FromLocal/gate_clouds_test/20261025-0009/shots/rear_unity_t177.55.png [HDR target: ARGBHalf / R16G16B16A16_SFloat]；平均亮度（sRGB 0–255，Rec.709 权重）20.8，< 12 的像素 28.3%
+t = 177.55：GateRoot (0, 2.77, 118.03)，云顶 y -147.23；臂 64 条显现、0 条关着；群臂 group0 1.00 / group1 0.00；远潮 _Reveal 0.00；月盘增益 0.00；裂口 H 969.8 m（缩放 0.970）、张开 1.000、撕裂 1.000；叠加光池 ×0.00、布褶 ×0.00、光晕 ×0.00（D 116 m）、光路 ×0.45（x 缩放 0.150）、光池 ×0.40
+Rear override: 8 arms, 19 materials; restored to 0.55 in finally.

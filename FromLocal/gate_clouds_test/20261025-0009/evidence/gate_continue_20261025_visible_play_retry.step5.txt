@@ -1,0 +1,3 @@
+Game 视图 1461×720（Play True），相机竖直视角 52.47°（按这个宽高比把水平视角对到 90°）
+UnityStats（Game 视图上一帧，和 Stats 窗口同一个来源）：draw call 181、batches 181、SetPass 175、三角面 571,251、顶点 308,855、投影物体 0、动态合批 0 / 实例化合批 134、渲染纹理切换 24
+ProfilerRecorder（每帧总数：上一帧 / 最近 30 帧的中位数）：Draw Calls Count 181 / 0，Batches Count 181 / 0，SetPass Calls Count 175 / 0，Triangles Count 571,251 / 0，Vertices Count 308,855 / 0，Shadow Casters Count 0 / 0，Visible Skinned Meshes Count 0 / 0

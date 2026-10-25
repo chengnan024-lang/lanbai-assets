@@ -1,0 +1,26 @@
+{
+    "id": "gate_continue_20261025_formal_refresh",
+    "state": "done",
+    "step": 4,
+    "total": 4,
+    "started": "2026-10-25 00:08:48",
+    "finished": "2026-10-25 00:08:57",
+    "error": "",
+    "log": [
+        "00:08:48 收到请求，共 4 步",
+        "00:08:48 刷新导入（AssetDatabase.Refresh）",
+        "00:08:54 （脚本重新加载，接着做第 1 步）",
+        "00:08:55 导入和编译完成",
+        "00:08:56 菜单 蓝白/U#/Program Asset Status (read only)",
+        "00:08:57 调用 Lanbai.Tests.LB_GateContinuation.CheckPrograms",
+        "00:08:57   用时 0.0 秒",
+        "00:08:57   返回内容写在 LanbaiRemote/results/gate_continue_20261025_formal_refresh.step3.txt",
+        "00:08:57 调用 Lanbai.Tests.LB_GateContinuation.CheckScene",
+        "00:08:57   用时 0.0 秒",
+        "00:08:57   返回：Scene bindings valid: 64 gate instances, 38 cards, 10 tower layers, all 3 backing Udon behaviours, legacy renderers disabled; HDR reference camera. skyFromSky=True; sceneDirty=False",
+        "00:08:57 全部完成"
+    ],
+    "files": [
+        "LanbaiRemote/results/gate_continue_20261025_formal_refresh.step3.txt"
+    ]
+}
