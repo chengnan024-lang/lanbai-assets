@@ -9,6 +9,7 @@
 //   the lamps (lobes: tubes 0 s, street lamps +1.5 s, the sea +3 s; the rest +3 s).  The fill compensation 2^-dEV is
 //   done by the overlay component from the dEV passed in, which is this driver's own dEV (in this window the white is
 //   the only exposure event).
+// Needs Director v1.3 (W4): LanbaiSpawnFade(since) before every LanbaiTick, LanbaiOverlayWindow(), LanbaiWritesAtmosphere().
 // Every number comes from Act10_White/WhiteSchedule.json (bible §6·9→10, §6·10, §6·10→11): the field defaults ARE those numbers.
 using UdonSharp;
 using UnityEngine;
@@ -40,7 +41,7 @@ namespace Lanbai.Act10
 
         [Header("Overlay (Lanbai_Overlay v2; directions of the 10 -> 11 lobes come from act 11's layout)")]
         public LanbaiOverlay overlay;
-        public Vector3[] lobeDir = new Vector3[] { new Vector3(0f, 0.6f, 0.8f), new Vector3(1f, 0.15f, 0f), new Vector3(0f, 1f, 0f) };
+        public Vector3[] lobeDir = new Vector3[] { new Vector3(0f, 0.6f, 0.8f), new Vector3(-1f, 0.15f, 0f), new Vector3(0f, 1f, 0f) };   // street lamps on the LEFT shoulder (bible act 11; M-10)
         public float[] lobeHalfAngle = new float[] { 30f, 40f, 35f };
         public float[] lobeLead = new float[] { 0f, 1.5f, 3f };
         public float leadElse = 3f;
@@ -67,31 +68,66 @@ namespace Lanbai.Act10
         [Header("Late joiners (总导演终审 r3 #4: the spawn fade first, then black -> white at <= 0.85 EV/s)")]
         public float joinFromL = 0.004f;             // the black the joiner's ramp starts from (EvOverlayAlpha's floor)
         public float joinMaxEVps = 0.8f;             // <= 0.85 (D-43) with margin: log2(0.86 / 0.004) / 0.8 = 9.7 s on desktop
-        public float joinTail = 2.5f;                // D-43: the window runs on past the shrink so a joiner held black there can rise to act 11
+        public float lBrightest11 = 1.0f;            // W2: the brightest non-white view of act 11 (relative luminance); 1.0 until act 11 gives Lb
+        public float joinMargin = 0.5f;              // D-43 #7: the window ends a full rise + this after the last hand-over
+
+        [Header("Fog (M-9: bible 10 -> 11; RenderSettings, Exponential only)")]
+        public bool writeRenderSettings = true;      // Director v1.1: this driver writes fog in its window (F16 -> the shrink's end)
+        public Color fogWhite = new Color(0.827f, 0.933f, 1f, 1f);       // #D3EEFF, the white's fog
+        public float fogWhiteDensity = 0.2f;
+        public Color fog11 = new Color(0.051f, 0.059f, 0.082f, 1f);      // #0D0F15, act 11's night fog (bible act 11 atmosphere)
+        public float fog11Density = 0.006f;
 
         private float[] grade = new float[4];
         private bool isVR;
         private bool vrKnown;
         private float spawnSince = 1e6f;             // seconds since the local spawn fade ended (-1 while it runs); no call = long ago
+        private float sinceIn = 1e6f;                // what the dispatcher last passed
+        private float prevT = -1f;
+        private int zeroFrames;
 
         // Director v1.2 (总导演 10-25, like 门内 and act 6): the dispatcher calls this before every LanbaiTick with the
         // seconds since LB_Journey's spawn fade ended, latched by the dispatcher; -1 while it runs. While it runs this
         // driver writes no overlay (the spawn fade owns it; under our overlay the dispatcher holds the spawn black).
         public void LanbaiSpawnFade(float since)
         {
-            spawnSince = since;
+            sinceIn = since;
         }
 
+        // W3: a Director that clamps since at 0 and latches once would hold every player at "just joined" forever; two frames
+        // in a row with since == 0 while t moves = the latch is broken: treat it as long ago
+        private void UpdateSince(float t)
+        {
+            if (sinceIn == 0f && prevT >= 0f && t != prevT)
+                zeroFrames++;
+            else if (sinceIn != 0f)
+                zeroFrames = 0;
+            spawnSince = zeroFrames >= 2 ? 1e6f : sinceIn;
+            prevT = t;
+        }
+
+        // the rise from black to act 11 (W2: built for act 11's BRIGHTEST non-white view, not its APL)
+        private float SceneRampSeconds()
+        {
+            return Mathf.Log(Mathf.Max(lBrightest11, joinFromL * 1.01f) / joinFromL, 2f) / joinMaxEVps;
+        }
+
+        // control ends once a player handed over at the shrink's end has been fully raised (+ margin)
         public float[] LanbaiWindow()
         {
-            return new float[] { tMirror12 - 1f, tShrinkEnd + joinTail };
+            return new float[] { tMirror12 - 1f, tShrinkEnd + SceneRampSeconds() + joinMargin };
         }
 
-        // D-43: the span in which this driver owns the overlay and lifts late joiners from black (from the mask's start to the
-        // end of the whole window). Whoever's spawn black ends inside it is brought up by this driver, never by LB_Journey.
+        // D-43 #7: report the overlay window only up to the last hand-over this driver can still raise completely (its own
+        // control end - one full rise - margin = the shrink's end). Later joiners belong to LB_Journey's fade.
         public float[] LanbaiOverlayWindow()
         {
-            return new float[] { tMaskStart, tShrinkEnd + joinTail };
+            return new float[] { tMaskStart, tShrinkEnd };
+        }
+
+        public bool LanbaiWritesAtmosphere()
+        {
+            return writeRenderSettings;
         }
 
         public void LanbaiActivate(bool on)
@@ -113,7 +149,9 @@ namespace Lanbai.Act10
                     vrKnown = true;
                 }
             }
+            UpdateSince(t);
             DriveOverlay(t);                        // after the VR check: the first frame already uses the right white
+            DriveFog(t);
         }
 
         public float[] LanbaiGrade(float t)
@@ -170,10 +208,13 @@ namespace Lanbai.Act10
             // D-43: a joiner whose rise to the white would run into the shrink (or who joined in it) stays black until the
             // shrink is over, then rises EV-linearly from black to act 11: ONE brightening, never white then a drop
             bool toScene = joinedLate && tJoinReady + rampT > tSilenceEnd;
-            float sceneRampT = Mathf.Log(Mathf.Max(lScene11, joinFromL * 1.01f) / joinFromL, 2f) / joinMaxEVps;
-            if (spawnSince < 0f || t < tMaskStart || (!toScene && t >= tShrinkEnd) || (toScene && t >= tShrinkEnd + sceneRampT))
+            float sceneRampT = SceneRampSeconds();
+            float t0s = Mathf.Max(tShrinkEnd, tJoinReady);   // W1: the rise to act 11 starts at the hand-over, never earlier
+            if (spawnSince < 0f)
+                return;                             // W5: the spawn black is the dispatcher's: neither draw nor Hide
+            if (t < tMaskStart || (!toScene && t >= tShrinkEnd) || (toScene && t >= t0s + sceneRampT))
             {
-                Release();                          // outside our parts, or the spawn fade still runs: write nothing
+                Release();                          // outside our parts: write nothing (we let go only of what we drew)
                 return;
             }
             if (toScene)
@@ -183,10 +224,10 @@ namespace Lanbai.Act10
                 overlay.SetBreath(0f);
                 // fully black while the white / the shrink is behind it; from the shrink's end a black veil that starts at the
                 // floor (0.004) and lets act 11 up EV-linearly at <= joinMaxEVps (every view rises by the same EV)
-                if (t < tShrinkEnd)
+                if (t < t0s)
                     overlay.SetFlat(Color.black, 1f, 0f);
                 else
-                    overlay.SetCurve(Color.black, 0f, t - tShrinkEnd, sceneRampT, joinFromL, lScene11, lScene11, 0f);
+                    overlay.SetCurve(Color.black, 0f, t - t0s, sceneRampT, joinFromL, lBrightest11, lBrightest11, 0f);
                 return;
             }
             bool ramping = joinedLate && t < tJoinReady + rampT;
@@ -244,6 +285,25 @@ namespace Lanbai.Act10
                 }
                 float dEV = afterSilenceEV * Mathf.Clamp01(1f - (t - tSilenceEnd) / afterSilenceDecay);
                 overlay.SetCurve(overlay.PickFill(fillShrinkDesktop, fillShrinkVR), dEV, t - tSilenceEnd, shrinkSeconds, lw, lScene11, lScene11, lw);
+            }
+        }
+
+        // M-9 (bible 10 -> 11): the white's fog (#D3EEFF, 0.2) from F16 under the full white; at 1178.46, under the full mask,
+        // a hard cut to act 11's night fog (#0D0F15, 0.006: occluded, so no cross-fade is needed); held to the shrink's end,
+        // where act 11 takes RenderSettings over. Outside [F16, shrink end) this driver never touches RenderSettings.
+        private void DriveFog(float t)
+        {
+            if (!writeRenderSettings || t < tF16 || t >= tShrinkEnd)
+                return;
+            if (t < tSilenceEnd)
+            {
+                RenderSettings.fogColor = fogWhite;
+                RenderSettings.fogDensity = fogWhiteDensity;
+            }
+            else
+            {
+                RenderSettings.fogColor = fog11;
+                RenderSettings.fogDensity = fog11Density;
             }
         }
 

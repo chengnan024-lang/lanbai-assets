@@ -15,6 +15,7 @@ MK = W['overlay']['mask_in']
 T_MASK, T_F16, T_SE, T_END = MK['t'][0], LB['F16_cut2'], LB['silence_end'], LB['shrink_end']   # C1 = B: 1144.81
 MASK_T = MK['T_s']
 FLOOR, RATE, L11, SHRINK, DECAY = 0.004, 0.80, 0.012, 5.0, 4.0
+LB11 = 1.0   # W2: the veil is built for act 11's brightest non-white view (1.0 until act 11 gives Lb)
 LS_MASK = MK['Lscene']
 
 
@@ -30,14 +31,15 @@ def screen(t, tj, lw, lv_mask, lead, mlead=0.0):
         return FLOOR                                             # the spawn black (held by the dispatcher)
     ramp = math.log(lw / FLOOR, 2) / RATE
     to_scene = tj + ramp > T_SE
-    scene_ramp = math.log(L11 / FLOOR, 2) / RATE
+    scene_ramp = math.log(LB11 / FLOOR, 2) / RATE
+    t0s = max(T_END, tj)                                         # W1: the rise starts at the hand-over
     dev = max(0.0, 1.0 - (t - T_SE) / DECAY) if t >= T_SE else 0.0
     l11 = L11 * 2 ** dev
     if to_scene:
-        if t < T_END:
+        if t < t0s:
             return FLOOR
-        x = min(max((t - T_END) / scene_ramp, 0), 1)
-        a = ev_alpha(x, FLOOR, L11, L11, 0.0)
+        x = min(max((t - t0s) / scene_ramp, 0), 1)
+        a = ev_alpha(x, FLOOR, LB11, LB11, 0.0)
         return max((1 - a) * l11, FLOOR)
     if t < tj + ramp:
         return lw * (FLOOR / lw) ** (1 - (t - tj) / ramp)       # opaque, fill black -> white
@@ -51,7 +53,7 @@ def screen(t, tj, lw, lv_mask, lead, mlead=0.0):
 
 
 def run(tj, lw=0.86, fps=30.0):
-    ts = np.arange(tj - 1.0, T_END + 4.0, 1 / fps)
+    ts = np.arange(tj - 1.0, max(T_END, tj) + math.log(LB11 / FLOOR, 2) / RATE + 2.0, 1 / fps)
     worst = None
     for lv, lead, ml in ((0.48, 0.0, MK['lobes'][0]['lead_s']), (0.06, 3.0, 0.0), (0.74, 1.5, 0.0)):   # forward is in the mask's lobe
         L = np.array([screen(t, tj, lw, lv, lead, ml) for t in ts])
@@ -68,7 +70,7 @@ def run(tj, lw=0.86, fps=30.0):
 if __name__ == '__main__':
     out = {}
     # D-43 #5 times (black end; 1140 is handed over at the mask's start, rule 4) + the boundaries of this driver's paths
-    for tj in (1144.11, 1144.81, 1146.31, 1150.0, 1160.0, 1168.5, 1169.5, 1175.0, 1178.46, 1180.0, 1186.0):
+    for tj in (1144.11, 1144.81, 1146.31, 1150.0, 1160.0, 1168.5, 1169.5, 1175.0, 1178.46, 1180.0, 1186.0, 1186.3, 1186.46):   # after 1186.46 (the overlay window's end, D-43 #7) LB_Journey fades
         for lw, tag in ((0.86, 'desk'), (0.74, 'vr')):
             w = run(tj, lw)
             out['%.2f_%s' % (tj, tag)] = dict(view=w[0], rise_025_1_2=w[1][:3], flashes=w[1][3], rule=w[1][4], PASS=w[2])
