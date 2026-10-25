@@ -16,5 +16,17 @@
   "caption": "M-2：第 1 面镜背 +0.8 s，抬头 75°（无极点的天）",
   "APL": 29.7,
   "m13_face_luma": null
+ },
+ "M2_m1_back_+1.0s": {
+  "t": 1033.41,
+  "caption": "M-2：+1.0 s，抬头 75°",
+  "APL": 25.3,
+  "m13_face_luma": null
+ },
+ "M3_m1_+0.5s": {
+  "t": 1032.91,
+  "caption": "M-3：m1 溶解 +0.5 s，朝镜心抬头 28°",
+  "APL": 20.5,
+  "m13_face_luma": null
  }
 }
