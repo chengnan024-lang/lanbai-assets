@@ -254,7 +254,7 @@ Director v1.1 起没有要本地填的窗口：`LB_Journey` 勾 `extAtmosphere` 
 - 它管：语言（客户端代码 → 键，`zh-HK` 先判；`OnLanguageChanged`；公告板开关只对本人）、注视规则（§7.4-6，庄子和天问固定）、出现 / 停留 / 退场（2.5 s 对焦、0.2° 漂移）、Urlicht 的行跟乐句、天问的 20 个单字物体、6d 的亮衬、公告板的倒计时和中 / 日 / EN 三个开关（`LB_Journey` 发车前每帧调 `LanbaiBoard(离发车的秒数)`，发车后调一次 `LanbaiBoardHide()`：倒计时和开关一起关，发车以后世界里没有 UI 字）。侧窗三首（李白两首、济慈）的注视阈值是 75°，其余 50°；挪的时候只挪在挡风右片或侧窗里（D-33 #7c）。只从 t 算，迟到的人、拖时间轴都对（D-33 #6）。
 - **`LB_Journey` 里的三组诗句数组退役**（`_poemIdx` / `_poemStage` 那一套和 `PickLanguage()` 一起）：本地删掉它们，不要两个系统同时摆诗。本地还要在玩家坐下 / 换座位时调 `LanbaiPoemDriver.SetSeat(座位号)`（座位号 = `BusLayout.json` 的 seats 顺序，主座位 SeatR0 = 0）。别的座位的诗位置是离线解好的表（D-37，`Fonts/seat_positions.json`），烘焙菜单读进驱动；车更新座位网格以后，总工程师重跑 `build_fonts.py`，本地重点一次烘焙菜单。
 - **天问的汉字对所有玩家都在同一个位置**（第 9 幕的 16 颗星按中文排版放），不是中文的玩家下面多一块自己语言的小字。时刻全部没变。
-- 没在 Unity 里编译过：TMP 3D 上用 MaterialPropertyBlock 写 `_FaceColor` / `_OutlineSoftness` / `_FaceDilate`、U# 里 `TextMeshPro.maxVisibleLines`，第一次导入请把 Console 推回来。
+- 没在 Unity 里编译过：TMP 3D 上用 MaterialPropertyBlock 写 `_FaceColor` / `_OutlineSoftness` / `_FaceDilate`（`maxVisibleLines` 在 Udon 里没有，诗已经改成逐 cue 烘焙的文字，阿白 10-25），第一次导入请把 Console 推回来。
 
 ### 9.8 D-31 给本地的几件（照 Fins 的经验，`Art/总导演裁决.md` D-31）
 

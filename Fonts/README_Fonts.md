@@ -172,7 +172,7 @@ D-30 的例外只有天问，所以庄子也只显示自己的语言：中文玩
 - `Runtime/LanbaiPoemDriver.cs`（UdonSharp）+ `Runtime/LanbaiLangButton.cs` + `Editor/LanbaiPoemBake.cs`（菜单 **蓝白/Fonts/Build Poem Objects (v4.1 runtime)**）。烘焙读 `strings_all.json`，在场景里建每首诗 × 每个玩家键（zh、zht、ja、en、de）一套 TMP（全关）、公告板（发车提示四种 + 中 / 日 / EN 三个开关），再填驱动的字段。
 - 驱动是 Director 的一个驱动（`LanbaiTick / LanbaiActivate / LanbaiWindow`，窗口是全片）。**只从 t 算**（D-33 #6）：迟到的人、拖时间轴都对；唯一记住的是这首诗出现时按注视规则放在了哪里，诗退场后就忘掉。
 - 语言：`GetCurrentLanguage()` → 键（`zh-HK` / `zh-TW` / `zh-Hant` 先判，旧的英文名也认）；`OnLanguageChanged` 重新映射；公告板开关只对本人覆盖（按“中”时繁体客户端仍看繁体）。诗显示到一半换语言，换的是同一时刻的另一套。
-- 每个文本物体：2.5 s 对焦（ease-out，`_OutlineSoftness` 0.9 → 终值，alpha 0 → 物体的 alpha），退场 alpha → 0 并按 0.2° 上 / 下漂（庄子按物体各自的方向，天问和 Urlicht 只淡不漂）。颜色、软度、Face Dilate（桌面 0.05 / VR 0.10）用 MaterialPropertyBlock 写在 TMP 的 MeshRenderer 上，不用每个物体一个材质实例。Urlicht 的行跟乐句（`maxVisibleLines`），天问的 20 个单字各自错开对焦。
+- 每个文本物体：2.5 s 对焦（ease-out，`_OutlineSoftness` 0.9 → 终值，alpha 0 → 物体的 alpha），退场 alpha → 0 并按 0.2° 上 / 下漂（庄子按物体各自的方向，天问和 Urlicht 只淡不漂）。颜色、软度、Face Dilate（桌面 0.05 / VR 0.10）用 MaterialPropertyBlock 写在 TMP 的 MeshRenderer 上，不用每个物体一个材质实例。Urlicht 的行跟乐句（烘焙时每个 cue 存一段文字，还没到的行用 `<alpha=#00>` 留在排版里；SDK 3.10.5 的 Udon 里没有 TMP `maxVisibleLines`，阿白 2026-10-25 在本地查到、改的，总工程师收回），天问的 20 个单字各自错开对焦。
 - 注视规则（§7.4-6）：出现那一刻，玩家在车里的朝向和默认方位差 ≤ 阈值就用默认（含里尔克日文的 +4.5° 这种按语言的默认）；否则放在玩家朝向（按 15° 取整）朝默认偏 20°，**只挪在挡风右片（−22.5…+16.5°）或侧窗（+48.5…+103°）里**（整块的左右沿都在里面）。阈值 50°；**侧窗三首（李白两首、济慈）75°**（D-33 #7c：50° 时主座位往前看的人会被挪到 +20° / +35°，正好压在 A 柱或门叠上；`poems[i].gaze_deg`）。默认位置以那个座位的眼睛为原点，挪过的位置以玩家的头（换到车坐标）为原点。庄子、天问固定不动。诗在屏幕上时换语言，新语言用它自己的锚点（出现时每种语言都摆好了），里尔克日文仍在 +4.5°。
 - **每个座位的位置（D-37，main f0fea3f）**：主座位用 D-33 的位置（全片构图的一部分）。别的座位**离线解好、运行时只查表**：`Tools~/seat_table.py` 在车的每个座位 1° 遮挡网格（`pkg/bus` `Bus/Docs~/viewcheck/seats_occlusion_1deg.json`）上，对每首会挪的诗、每种语言，整圈搜块中心（方位每 1°、仰角 −15…+10° 每 1°）：被挡 ≤ 10% 的位置里，尽量离那一幕的焦点 ≥ 12°（6d 的晨日 +30° / +6°、7b 的殿门 −9.5° / 0°，其余没有焦点数据），取离默认方向最近的；整圈都没有就取挡得最少的（不退回默认）。注视规则挪诗时的位置也按玩家朝向每 15° 一格（24 格）预先解好。写进 `Fonts/seat_positions.json`，烘焙菜单读进 `LanbaiPoemDriver` 的 `seatDefAz/El`、`seatGazeAz/El`（表的大小：1 265 + 30 360 组，63 250 个 float）。庄子、天问不挪。车更新网格以后重跑 `build_fonts.py` 再点烘焙菜单。
 - **结果**（`build_report.txt` 的 `== SEATS ==`，每个座位、每首诗、每种语言一行）：主座位以外平均被挡 **8.5%**（目标 ≤ 10%）；990 组里 52 组仍 > 10%，最坏的是 L3a 李白 I 日文 29%、L3w / L4w 河伯日 / 英 25–26%、R3 李白 I 日文 24%。按座位平均：R1 3.8%、R2 6.5%、R3 10.8%、L3w 11.4%、L3a 10.3%，其余 6–9%。
@@ -180,7 +180,7 @@ D-30 的例外只有天问，所以庄子也只显示自己的语言：中文玩
 - 烘焙会给 `LanbaiPoemDriver`、`LanbaiLangButton` 建 U# 程序资产（照天空的 `EnsureProgramAsset`）。驱动报 `LanbaiTakesOverNothing()`：它的全片窗口不进 Director 的 `windowsFlat`。
 - Urlicht 的逐行出字对繁体玩家也有（`line_cues_by_shown.zht`，D-33 评审 #3 修好）。
 - `LB_Journey` 里自己的诗句数组和 `PickLanguage()` 退役（`Engineering/README_集成.md` §9.6）。
-- **没在 Unity 里编译过**：C# 过了 `check_cs.sh`（editor + player 两遍，player 用真的 TMP DLL）。要本地确认的：U# 里 `TextMeshPro.maxVisibleLines`、TMP 3D 的 MeshRenderer 上用 MaterialPropertyBlock 改 `_FaceColor`（线性值，用 `SetVector` 写，不经过颜色空间换算）是否生效。
+- **没在 Unity 里编译过**：C# 过了 `check_cs.sh`（editor + player 两遍，player 用真的 TMP DLL）。要本地确认的：TMP 3D 的 MeshRenderer 上用 MaterialPropertyBlock 改 `_FaceColor`（线性值，用 `SetVector` 写，不经过颜色空间换算）是否生效。
 
 ### 0.7 改了哪些文件
 
