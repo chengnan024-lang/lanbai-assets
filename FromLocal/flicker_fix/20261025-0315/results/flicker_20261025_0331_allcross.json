@@ -1,0 +1,21 @@
+{
+    "id": "flicker_20261025_0331_allcross",
+    "state": "done",
+    "step": 4,
+    "total": 4,
+    "started": "2026-10-25 03:27:32",
+    "finished": "2026-10-25 03:30:30",
+    "error": "",
+    "log": [
+        "03:27:32 收到请求，共 4 步",
+        "03:27:32 调用 Lanbai.Tests.LB_FlickerDiagnostic.Begin（fix_all_crossings|baseline|995|175|1）",
+        "03:27:32   用时 0.0 秒",
+        "03:27:32   返回：running fix_all_crossings",
+        "03:30:29 调用 Lanbai.Tests.LB_FlickerDiagnostic.Status",
+        "03:30:29   用时 0.0 秒",
+        "03:30:29   返回：done fix_all_crossings frames=1728 errors=0 folder=E:\\IDMdownload\\VRCC\\Backups\\continuation_20261025\\flicker_0315\\captures\\fix_all_crossings",
+        "03:30:29 停止 Play",
+        "03:30:30 全部完成"
+    ],
+    "files": []
+}

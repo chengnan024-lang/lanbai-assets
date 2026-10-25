@@ -1,0 +1,37 @@
+{
+    "id": "flicker_20261025_0328_verify",
+    "state": "done",
+    "step": 10,
+    "total": 10,
+    "started": "2026-10-25 03:25:33",
+    "finished": "2026-10-25 03:26:49",
+    "error": "",
+    "log": [
+        "03:25:33 收到请求，共 10 步",
+        "03:25:33 调用 Lanbai.Tests.LB_FullAssembly.PrepareAllPrograms",
+        "03:25:34   用时 1.4 秒",
+        "03:25:34   返回：Preparing 25 Udon programs through the shared readiness gate",
+        "03:25:43 调用 Lanbai.Tests.LB_FullAssembly.CheckAllPrograms",
+        "03:25:44   用时 1.5 秒",
+        "03:25:44   返回内容写在 LanbaiRemote/results/flicker_20261025_0328_verify.step3.txt",
+        "03:25:44 进入 Play",
+        "03:25:46 （脚本重新加载，接着做第 4 步）",
+        "03:25:49 已经在 Play 里，等 5 秒",
+        "03:25:55 调用 Lanbai.Tests.LB_FlickerDiagnostic.Begin（fix_natural|baseline|1009|32|1）",
+        "03:25:55   用时 0.0 秒",
+        "03:25:55   返回：running fix_natural",
+        "03:26:29 调用 Lanbai.Tests.LB_FlickerDiagnostic.Status",
+        "03:26:29   用时 0.0 秒",
+        "03:26:29   返回：done fix_natural frames=277 errors=0 folder=E:\\IDMdownload\\VRCC\\Backups\\continuation_20261025\\flicker_0315\\captures\\fix_natural",
+        "03:26:29 调用 Lanbai.Tests.LB_FlickerDiagnostic.Begin（fix_direct|baseline|1023|18|1）",
+        "03:26:29   用时 0.0 秒",
+        "03:26:29   返回：running fix_direct",
+        "03:26:49 调用 Lanbai.Tests.LB_FlickerDiagnostic.Status",
+        "03:26:49   用时 0.0 秒",
+        "03:26:49   返回：done fix_direct frames=177 errors=0 folder=E:\\IDMdownload\\VRCC\\Backups\\continuation_20261025\\flicker_0315\\captures\\fix_direct",
+        "03:26:49 全部完成"
+    ],
+    "files": [
+        "LanbaiRemote/results/flicker_20261025_0328_verify.step3.txt"
+    ]
+}

@@ -1,0 +1,51 @@
+{
+  "steps": [
+    {
+      "op": "refresh"
+    },
+    {
+      "op": "play",
+      "seconds": 5
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FlickerDiagnostic.Begin",
+      "arg": "baseline_props|baseline|1023|18|1"
+    },
+    {
+      "op": "wait",
+      "seconds": 19
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FlickerDiagnostic.Status"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FlickerDiagnostic.Begin",
+      "arg": "no_refl_props|no_refl|1023|18|1"
+    },
+    {
+      "op": "wait",
+      "seconds": 19
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FlickerDiagnostic.Status"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FlickerDiagnostic.Begin",
+      "arg": "opaque_props|opaque_bus|1023|18|1"
+    },
+    {
+      "op": "wait",
+      "seconds": 19
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FlickerDiagnostic.Status"
+    }
+  ],
+  "id": "flicker_20261025_0323_props"
+}

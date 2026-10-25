@@ -1,0 +1,31 @@
+{
+    "id": "flicker_20261025_0315_natural",
+    "state": "done",
+    "step": 6,
+    "total": 6,
+    "started": "2026-10-25 03:15:49",
+    "finished": "2026-10-25 03:16:46",
+    "error": "",
+    "log": [
+        "03:15:49 收到请求，共 6 步",
+        "03:15:49 刷新导入（AssetDatabase.Refresh）",
+        "03:15:57 （脚本重新加载，接着做第 1 步）",
+        "03:15:59 导入和编译完成",
+        "03:15:59 调用 Lanbai.Tests.LB_FlickerDiagnostic.Inspect",
+        "03:15:59   用时 0.0 秒",
+        "03:15:59   返回内容写在 LanbaiRemote/results/flicker_20261025_0315_natural.step2.txt",
+        "03:16:00 进入 Play",
+        "03:16:02 （脚本重新加载，接着做第 3 步）",
+        "03:16:06 已经在 Play 里，等 6 秒",
+        "03:16:12 调用 Lanbai.Tests.LB_FlickerDiagnostic.Begin（baseline_natural|baseline|1009|32|0）",
+        "03:16:12   用时 0.0 秒",
+        "03:16:12   返回：running baseline_natural",
+        "03:16:46 调用 Lanbai.Tests.LB_FlickerDiagnostic.Status",
+        "03:16:46   用时 0.0 秒",
+        "03:16:46   返回：done baseline_natural frames=316 errors=0 folder=E:\\IDMdownload\\VRCC\\Backups\\continuation_20261025\\flicker_0315\\captures\\baseline_natural",
+        "03:16:46 全部完成"
+    ],
+    "files": [
+        "LanbaiRemote/results/flicker_20261025_0315_natural.step2.txt"
+    ]
+}

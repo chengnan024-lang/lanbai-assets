@@ -1,0 +1,14 @@
+[
+  {
+    "file": "Assets\\Lanbai\\Scenes\\Lanbai.unity",
+    "before": "16f5d9d7d2fda794cbd6353038037c493367285bc128f341bdf45762f25c5af0",
+    "after": "16f5d9d7d2fda794cbd6353038037c493367285bc128f341bdf45762f25c5af0",
+    "equal": true
+  },
+  {
+    "file": "Assets\\Lanbai\\Scenes\\Lanbai_FullPreview.unity",
+    "before": "92722de5ad2a30bf09041d411919cdf95294841f3e48dc5e4027052c33ebc5da",
+    "after": "92722de5ad2a30bf09041d411919cdf95294841f3e48dc5e4027052c33ebc5da",
+    "equal": true
+  }
+]

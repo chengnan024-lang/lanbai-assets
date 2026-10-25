@@ -1,0 +1,28 @@
+{
+  "id": "flicker_20261025_0325_interval",
+  "steps": [
+    {
+      "op": "refresh"
+    },
+    {
+      "seconds": 5,
+      "op": "play"
+    },
+    {
+      "arg": "no_mirrors_interval|no_mirrors_interval|1023|18|1",
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FlickerDiagnostic.Begin"
+    },
+    {
+      "seconds": 19,
+      "op": "wait"
+    },
+    {
+      "target": "Lanbai.Tests.LB_FlickerDiagnostic.Status",
+      "op": "call"
+    },
+    {
+      "op": "stop"
+    }
+  ]
+}
