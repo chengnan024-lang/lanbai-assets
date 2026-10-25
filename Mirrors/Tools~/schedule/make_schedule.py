@@ -84,7 +84,8 @@ EYE = np.array([0.55, 1.70, 2.05])             # Gate/GateLayout_v2.json cameras
 CAB = dict(x=(-1.40, 1.40), y=(0.0, 3.1), z=(-6.0, 5.0))   # conservative bus box (m, car space)
 # nearest-rim azimuth (deg, 0 = +Z ahead, negative = left).  Front sector, alternating, tragen! dead ahead,
 # the white's impact (12) front-right so the Milky Way core (-30 / +12) stays clear in the front-left.
-AZ = [-20, 30, -45, 15, -60, 50, -10, 35, -35, 0, -25, 20, 0]
+AZ = [-62, 45, -45, 15, -60, 50, -10, 35, -35, 0, -25, 20, 0]   # 终审 M-1: mirrors 1, 2 turned so their knobs pass beside the bus
+R_KNOB = 0.065          # knob base radius / D (make_mesh.py); it hangs 0.015 .. 0.065 D below the face edge
 D_NEAR = [14.0, 13.0, 15.0, 17.0, 20.0, 23.0, 26.0, 29.0, 32.0, 35.0, 60.0, 100.0, None]
 V_A = [3.0 * (40.0 / 3.0) ** (k / 9.0) for k in range(10)] + [18.0, 20.0]      # travel speed (m/s)
 V_C = [1.7 * (10.0 / 1.7) ** (k / 9.0) for k in range(10)] + [6.0, 5.0]        # crossing speed (m/s)
@@ -179,6 +180,12 @@ def centre(k):
     R = D[k] / 2
     c = np.array([EYE[0], 0.0, EYE[2]]) - u * (R - D_NEAR[k])   # nearest rim at distance d_near along u
     return c, u
+def knob_clearance(k):
+    """horizontal distance from the knob's outer edge to the cabin box (m); the knob passes through the cabin's height when
+    the mirror crosses, so it must be beside the bus (终审 M-1: >= 1 m)."""
+    c, _ = centre(k)
+    dx = max(CAB['x'][0] - c[0], 0.0, c[0] - CAB['x'][1]); dz = max(CAB['z'][0] - c[2], 0.0, c[2] - CAB['z'][1])
+    return math.hypot(dx, dz) - R_KNOB * D[k]
 def cabin_rim_clearance(k):
     c, _ = centre(k); R = D[k] / 2
     xs = np.linspace(*CAB['x'], 8); zs = np.linspace(*CAB['z'], 23)
@@ -214,7 +221,10 @@ for k in range(13):
         y = y13(tt); dn = R13; seen = float(np.sum((EYE[1] - y <= R13) & (tt < F16))) * 0.01; vd = float('nan')
     clr = cabin_rim_clearance(k)
     need_seen = 2.0 if k < 10 else 4.0
-    ok = clr >= 10.0 and (seen >= need_seen or k == 12) and (k == 12 or vd <= 1.05)
+    kclr = knob_clearance(k) if k < 12 else 99.0
+    if k < 12 and kclr < 1.0:
+        log('  !! 第 %d 面的钮离车厢包围盒只有 %.2f m（< 1 m）' % (k + 1, kclr))
+    ok = clr >= 10.0 and kclr >= 1.0 and (seen >= need_seen or k == 12) and (k == 12 or vd <= 1.05)
     ok_all &= ok
     boss = int(round(math.pi * (D[k] - 0.02 * D[k]) / 1.5))
     log('%2d  %8.2f  %5s  %5s  %6.1f  %5d  %4d  %6.1f  %6.1f  %5.1f  %5.2f   %6.2f    %5.2f   %4.2f  %5.2f  %s' % (
@@ -257,7 +267,9 @@ ok_all &= mx <= 3
 def queue_vis(k):
     """face-emission visibility multiplier knots (t, value): 0 -> 0.3 when the mirror joins the visible column, -> 1 on approach."""
     if k == 0:
-        return [[round(F13, 2), 0.3], [round(cross[0] - 6.0, 2), 0.3], [round(cross[0] - 2.0, 2), 1.0]]
+        # 终审 M-8: mirror 1 only starts condensing at 1024.41, so the galaxy's full ring under the feet (F13) is seen first
+        a = round(cross[0] - 8.0, 2)
+        return [[a, 0.0], [round(a + 3.0, 2), 0.3], [round(cross[0] - 2.0, 2), 1.0]]
     prev = cross[k - 1]
     if k < 12:
         # the visible column = the next three uncrossed mirrors, from F14 on (before F14 only the next one)
@@ -332,6 +344,7 @@ for k in range(13):
         near_rim_distance_m=round(D_NEAR[k], 2) if k < 12 else round(R, 1),
         centre_xz=[round(float(c[0]), 3), round(float(c[2]), 3)],
         cabin_rim_clearance_m=round(cabin_rim_clearance(k), 2),
+        knob_cabin_clearance_m=round(knob_clearance(k), 2) if k < 12 else None,
         speed_travel_mps=round(V_A[k], 3) if k < 12 else None,
         speed_cross_mps=round(V_C[k], 3) if k < 12 else round(float((y13(F16) - y13(F16 - 0.05)) / 0.05), 3),
         decel=dict(hold_s=HOLD[k], T_dec_s=T_DEC[k]) if k < 12 else None,

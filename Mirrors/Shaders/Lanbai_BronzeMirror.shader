@@ -61,6 +61,8 @@ Shader "Lanbai/BronzeMirror"
         _RimCloud ("Rim cloud band strip (1995.301), Repeat u", 2D) = "black" {}
         _BackRelief ("Back relief shading strength", Range(0, 3)) = 1.4
         _BackLumK ("Back luminance / sky luminance behind it", Range(0, 2)) = 1.15
+        _BackSkyCube ("Back: blurred galaxy glow luminance (cube, sqrt-encoded; Tools~/port/bake_back_sky.py)", Cube) = "black" {}
+        _BackSkyScale ("Back: cube decode scale (bake_back_sky.py prints it)", Float) = 0.072055
         _BackBump ("Back band bump strength", Range(0, 2)) = 1
 
         [Header(Sky reflected)]
@@ -93,7 +95,8 @@ Shader "Lanbai/BronzeMirror"
         float _BronzeTone; float4 _ToneColor;
         float _FaceSmooth, _PolishAmt, _PolishPeriodM, _RimSmooth, _BackBump, _GalaxyGainDefault;
         sampler2D _FaceTex, _BackNormal, _BackMask, _BackCentreNormal, _BackCentreMask, _Glyphs, _RimCloud;
-        float _BackRelief, _BackLumK;
+        float _BackRelief, _BackLumK, _BackSkyScale;
+        samplerCUBE _BackSkyCube;
         sampler2D _GlowTex;
         float4 _GlowTex_TexelSize;
 
@@ -262,7 +265,11 @@ Shader "Lanbai/BronzeMirror"
                     // patina, normalised to luminance 1) and by relief (a key from below-left, mean 1 over the relief,
                     // times the cell AO).  Worn ridges turn toward bare bronze.
                     float3 luma = float3(0.2126, 0.7152, 0.0722);
-                    float Lsky = dot(MirrorSky(V, 0.5), luma);          // a ~27 deg lobe: the local sky level without the galaxy's detail (r6: 0 dipped, sharp ghosted)
+                    // the sky behind, broad (~27 deg lobe: the local level without the galaxy's detail; r6: the roughest lobe
+                    // dipped, the sharp sky ghosted). 终审 M-2: from a small pole-free cube of the blurred glow, not the
+                    // equirect's coarse mips (they drew radial cones round the zenith): floor + gain(V) x glow
+                    float gc = texCUBElod(_BackSkyCube, float4(V, 0.0)).r;
+                    float Lsky = dot(LanbaiMirrorSkyFloor(_SkyFloor.rgb), luma) + LanbaiMirrorGainAt(V, _GalaxyGainDefault) * _BackSkyScale * gc * gc;
                     float3 pat = _BackAlbedo.rgb * lerp(float3(0.85, 1.0, 1.05), float3(1.15, 0.92, 0.8), m.a);
                     float3 tint = lerp(pat / max(dot(pat, luma), 1e-4), _RimF0.rgb / dot(_RimF0.rgb, luma), 0.45 * m.b);
                     float3 key = normalize(float3(-0.45, -0.75, -0.48));   // from behind a rider looking up: lit from the top of the screen (r6: +z read as pits)

@@ -173,6 +173,7 @@ namespace Lanbai.Mirrors.EditorTools
             m.SetTexture("_BackCentreMask", AssetDatabase.LoadAssetAtPath<Texture>(kit + "/Textures/T_MirrorBack_Centre_Mask_2048.png"));
             m.SetTexture("_Glyphs", AssetDatabase.LoadAssetAtPath<Texture>(kit + "/Textures/T_MirrorGlyphs_1024.png"));
             m.SetTexture("_RimCloud", AssetDatabase.LoadAssetAtPath<Texture>(kit + "/Textures/T_MirrorRimCloud_2048x256.png"));
+            m.SetTexture("_BackSkyCube", AssetDatabase.LoadAssetAtPath<Texture>(kit + "/Textures/T_MirrorBackSky_Cube.png"));
             if (glow != null) m.SetTexture("_GlowTex", glow);
             EditorUtility.SetDirty(m);
             return m;
@@ -269,6 +270,7 @@ namespace Lanbai.Mirrors.EditorTools
                 ti.sRGBTexture = false;                 // masks, face data and glyph coverage are data, not colour
                 ti.textureCompression = TextureImporterCompression.CompressedHQ;
             }
+            if (f.StartsWith("T_MirrorBackSky_Cube")) { ti.textureShape = TextureImporterShape.TextureCube; ti.generateCubemap = TextureImporterGenerateCubemap.AutoCubemap; ti.mipmapEnabled = false; ti.textureCompression = TextureImporterCompression.Uncompressed; ti.sRGBTexture = false; }   // horizontal cross, 64 px, linear
         }
 
         void OnPreprocessModel()

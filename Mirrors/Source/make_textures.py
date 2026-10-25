@@ -122,26 +122,63 @@ INSC_BOX = (19.0, 16.8)                  # trace units of one crop (x, y)
 INSC_STROKE = 1.05                       # stroke width, trace units (the real band's strokes: ~10 px of the 2x unwrap)
 
 
+def weld(polys, reach=0.7):
+    """终审 M-7: a stroke end that stops just short of another stroke (a trace gap, read as a broken stroke) is carried on to
+    touch it (nearest point on any other polyline within `reach` units)."""
+    import numpy as _np
+    segs = []
+    for i, pl in enumerate(polys):
+        for j in range(len(pl) - 1):
+            segs.append((i, _np.array(pl[j], float), _np.array(pl[j + 1], float)))
+    out = [list(map(list, pl)) for pl in polys]
+    for i, pl in enumerate(polys):
+        if len(pl) >= 12:                      # a circle: closed
+            continue
+        for end in (0, -1):
+            p = _np.array(pl[end], float)
+            best = None
+            for (k, a, b) in segs:
+                if k == i:
+                    continue
+                ab = b - a; t = _np.clip(_np.dot(p - a, ab) / max(_np.dot(ab, ab), 1e-9), 0, 1)
+                q = a + t * ab; d = _np.linalg.norm(q - p)
+                if 1e-3 < d <= reach and (best is None or d < best[0]):
+                    best = (d, q)
+            if best is not None:
+                if end == 0:
+                    out[i].insert(0, [float(best[1][0]), float(best[1][1])])
+                else:
+                    out[i].append([float(best[1][0]), float(best[1][1])])
+    return out
+
+
 def traced_glyph(polys, px):
-    """one traced character -> px x px relief, the SAME scale and stroke width for every character (review r3 #2):
-    the crop (19 x 16.8 units) is centred in the cell at px / 19.5 per unit; strokes are cast ridges with a round
-    profile, continuous wherever the trace is."""
+    """one traced character -> px x px relief, the SAME scale for every character (review r3 #2): the crop (19 x 16.8 units)
+    is centred in the cell at px / 19.5 per unit. 终审 M-7: strokes are not matchsticks: each is drawn with the brush of the
+    cast Han mirror script, full at its head (1.3 x), thinning to its tail (0.7 x), round-ridged; gaps closed by weld()."""
     k = 4
     big = px * k
     sc = big / 19.5
     ox = (big - INSC_BOX[0] * sc) / 2.0; oy = (big - INSC_BOX[1] * sc) / 2.0
-    im = Image.new('L', (big, big), 0)
-    d = ImageDraw.Draw(im)
-    w = INSC_STROKE * sc
-    for pl in polys:
+    H = np.zeros((big, big), np.float32)
+    yy, xx = np.mgrid[0:big, 0:big].astype(np.float32)
+    w0 = INSC_STROKE * sc
+    for pl in weld(polys):
         pts = [(ox + x * sc, oy + y * sc) for x, y in pl]
-        d.line(pts, fill=255, width=int(round(w)), joint='curve')
-        for x, y in pts:
-            d.ellipse((x - w / 2, y - w / 2, x + w / 2, y + w / 2), fill=255)
-    a = np.asarray(im, np.float32) / 255.0 > 0.5
-    dist = distance_transform_edt(a) / (w / 2)                     # 0 at the edge .. 1 on the centre line
-    h = np.sqrt(np.clip(dist * (2 - dist), 0, 1))                  # round ridge
-    out = Image.fromarray((h * 255).astype(np.uint8)).resize((px, px), Image.LANCZOS)
+        closed = len(pl) >= 12
+        L = [0.0]
+        for a, b in zip(pts[:-1], pts[1:]):
+            L.append(L[-1] + math.hypot(b[0] - a[0], b[1] - a[1]))
+        tot = max(L[-1], 1e-6)
+        for j, (a, b) in enumerate(zip(pts[:-1], pts[1:])):
+            ab = np.array([b[0] - a[0], b[1] - a[1]], np.float32); l2 = float(ab @ ab) + 1e-9
+            t = np.clip(((xx - a[0]) * ab[0] + (yy - a[1]) * ab[1]) / l2, 0, 1)
+            d = np.hypot(xx - (a[0] + t * ab[0]), yy - (a[1] + t * ab[1]))
+            s_along = (L[j] + t * math.sqrt(l2)) / tot
+            half = 0.5 * w0 * (1.0 if closed else (1.3 - 0.6 * s_along))
+            h = np.sqrt(np.clip(1.0 - (d / half) ** 2, 0, 1))
+            H = np.maximum(H, h)
+    out = Image.fromarray((H * 255).astype(np.uint8)).resize((px, px), Image.LANCZOS)
     return np.asarray(out, np.float32) / 255.0
 
 
@@ -385,11 +422,14 @@ def photo_field(n=N):
     cx, cy, r = PHOTO_C
     yy, xx = np.mgrid[0:n, 0:n].astype(np.float32)
     k = r / (n / 2.0)
-    px = cx + (xx + 0.5 - n / 2.0) * k
+    # 终审 M-6: the photo is the back seen FACING it; the back is only ever seen from BELOW, where east is on the viewer's
+    # left with north up: mirror the photo in u so its characters (the twelve branches) read the right way round
+    px = cx - (xx + 0.5 - n / 2.0) * k
     py = cy + (yy + 0.5 - n / 2.0) * k
     f = map_coordinates(rel, [py, px], order=1, mode='nearest')
     q = np.hypot(xx + 0.5 - n / 2.0, yy + 0.5 - n / 2.0) / (n / 2.0)
-    w = np.clip((q - 0.15) / 0.04, 0, 1) * np.clip((0.985 - q) / 0.02, 0, 1)   # the whole real back out to its rim (r3 #7)
+    # from just outside the procedural 柿蒂 seat (its petal tips reach r/R 0.23; 终审 M-5) to the rim
+    w = np.clip((q - 0.235) / 0.03, 0, 1) * np.clip((0.985 - q) / 0.02, 0, 1)
     return np.clip(0.5 + 0.5 * f, 0, 1), w
 
 
@@ -480,7 +520,7 @@ def main():
         # lines stand out of the field as in the photo); the procedural cell keeps the seat, the corners and the tiling
         H = H * (1 - pw) + np.clip((pf - 0.45) * 0.9, 0, 0.5) * pw    # the field sits at 0 like the rest of the cell
         cx, cy, r = PHOTO_C
-        uv = lambda pts: [((x - cx) / r, -(y - cy) / r) for x, y in pts]
+        uv = lambda pts: [(-(x - cx) / r, -(y - cy) / r) for x, y in pts]     # mirrored like the photo (M-6)
         Hd = np.maximum(dome((M, M), uv(PHOTO_BOSS_BIG), 0.034, 0.8) * 0.9, dome((M, M), uv(PHOTO_BOSS_SMALL), 0.026, 0.8) * 0.65)
         Hd = Hd.reshape(N, SS, N, SS).mean((1, 3))
         H = np.maximum(H, Hd)                                          # round bosses with a real highlight (A7)
