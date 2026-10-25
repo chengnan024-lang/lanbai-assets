@@ -12,10 +12,10 @@ import math
 import numpy as np
 
 SLOTS = ['Lacquer', 'LacquerBlack', 'LacquerBand', 'Gilt', 'Bronze', 'Verdigris', 'Stone', 'StoneDark',
-         'FishScale', 'Cowrie', 'Tile', 'Wood', 'Rock', 'Weed', 'Fish', 'DoorGlow']
+         'FishScale', 'Cowrie', 'Tile', 'Wood', 'Rock', 'Weed', 'Fish', 'DoorGlow', 'StoneWet']   # StoneWet：殿前湿台阶（终审 10-25 #4）
 TILE = {'Lacquer': 2.0, 'LacquerBlack': 2.0, 'LacquerBand': 4.0, 'Gilt': 1.0, 'Bronze': 0.5, 'Verdigris': 0.5,
         'Stone': 4.0, 'StoneDark': 4.0, 'FishScale': 2.0, 'Cowrie': 1.0, 'Tile': 3.0, 'Wood': 2.0, 'Rock': 8.0,
-        'Weed': 1.0, 'Fish': 1.0, 'DoorGlow': 4.0}
+        'Weed': 1.0, 'Fish': 1.0, 'DoorGlow': 4.0, 'StoneWet': 4.0}
 U2B = np.array([[-1.0, 0, 0], [0, 0, -1.0], [0, 1.0, 0]])
 
 

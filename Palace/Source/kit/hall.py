@@ -26,6 +26,7 @@ H_TOTAL = 30.0
 BAYS = 9
 BAY = (X1 - X0) / BAYS          # 6.667
 DOOR_X, DOOR_W, DOOR_H = -18.0, 4.2, 7.5
+MINGJIAN = 11.5                 # 门廊明间宽（终审 10-25 #4；原来是一个开间 6.67）
 PX0, PX1, PZ0, PZ1, PY = -72.0, -8.0, 334.1, 376.6, 6.0   # 台基
 SX0, SX1, SZ0, SZ1 = -22.0, -14.0, 325.1, 334.1           # 阶（墄）
 RIDGE_TOP = PY + H_TOTAL        # 36
@@ -653,9 +654,9 @@ def _parts(lod=0):
     cw = 0.6
     if D:
         for k in range(nst):
-            add('stair', box((SX0 + cw, 0, SZ0 + k * tread), (SX1 - cw, (k + 1) * PY / nst, SZ1), 'Stone'))
+            add('stair', box((SX0 + cw, 0, SZ0 + k * tread), (SX1 - cw, (k + 1) * PY / nst, SZ1), 'StoneWet'))
     else:
-        add('stair', extrude([(SZ0, 0), (SZ1, 0), (SZ1, PY)], (0, 0, 0), (0, 0, 1), (0, 1, 0), (1, 0, 0), SX0 + cw, SX1 - cw, 'Stone'))
+        add('stair', extrude([(SZ0, 0), (SZ1, 0), (SZ1, PY)], (0, 0, 0), (0, 0, 1), (0, 1, 0), (1, 0, 0), SX0 + cw, SX1 - cw, 'StoneWet'))   # 终审 #4：湿的台阶（门的线光源在上面反光）
     for xa in (SX0, SX1 - cw):
         add('stair', extrude([(SZ0, 0), (SZ1, 0), (SZ1, PY + 0.35), (SZ0, 0.35)], (0, 0, 0), (0, 0, 1), (0, 1, 0), (1, 0, 0),
                              xa, xa + cw, 'Stone'))
@@ -793,6 +794,9 @@ def _parts(lod=0):
     xs = [X0 + i * BAY for i in range(BAYS + 1)]
     xs[0] += COL_INSET
     xs[-1] -= COL_INSET
+    # 终审 10-25 #4：明间（门那一间）加宽到 11.5 m——从车里 −40° 斜看时门不再被门廊自己的两根柱子挡成 1° 的缝
+    db = int((DOOR_X - X0) // BAY)
+    xs[db], xs[db + 1] = DOOR_X - MINGJIAN / 2, DOOR_X + MINGJIAN / 2
     ye0, ye1 = COL_TOP - 0.8, COL_TOP
     for i, x in enumerate(xs):
         if D:

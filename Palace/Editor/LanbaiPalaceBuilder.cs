@@ -155,6 +155,7 @@ public static class LanbaiPalaceBuilder
         d["FishScale"].SetFloat("_EnvSpec", 0.15f);        // 终审 10-25 #1/#5：鳞默认是暗的，不整片反射上方的亮水
         Std(d, pal, "Cowrie", "Cowrie", "Cowrie", "Cowrie", 3, 0.92f, 0f, 0.2f, "#FFFFFF");
         d["Cowrie"].SetFloat("_LampGain", LanbaiPalaceData.CowrieLampGain);       // 第 8 轮 r6：贝壳上一串小高光（终审：之前写在 Std 前面，KeyNotFound）
+        Std(d, pal, "StoneWet", "Stone", "Stone", null, 0, 0.85f, 0f, 0f, "#C2C4C8");   // 终审 #4：湿台阶，门的线光源在上面反光
         Std(d, pal, "Tile", "Stone", "Stone", null, 0, 0.35f, 0f, 0.7f, "#929495");   // 终审 #1(3)：×0.3（线性）
         Std(d, pal, "Wood", null, null, null, 0, 0.35f, 0f, 0.2f, "#2C2522");
         Std(d, pal, "Rock", "Rock", "Rock", "Rock", 0, 0.22f, 0f, 0.5f, "#FFFFFF");

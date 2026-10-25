@@ -174,6 +174,8 @@ def build_all():
     # 终审 10-25 #1(3)：屋面要比水暗——鳞瓦漫反射 ×0.06、淤泥 0.1、瓦 ×0.3（线性；珍珠母的光在高光里，不在漫反射里）
     M['FishScale'] = standard('M_07b_FishScale', T('FishScale_Albedo'), T('FishScale_Normal'), T('FishScale_Mask'), silt=0.1, irid=True, tint=(0.06, 0.06, 0.06))
     M['Cowrie'] = standard('M_07b_Cowrie', T('Cowrie_Albedo'), T('Cowrie_Normal'), T('Cowrie_Mask'), silt=0.2, nstr=1.5)
+    # 终审 10-25 #4：殿前的台阶是湿的——暗、光滑 0.85，门的解析线光源（_Udon_Lamp7）在上面拉出一条看得见的反光
+    M['StoneWet'] = standard('M_07b_StoneWet', T('Stone_Albedo'), T('Stone_Normal'), None, smooth=0.85, tint=(0.55, 0.57, 0.6))
     M['Tile'] = standard('M_07b_Tile', T('Stone_Albedo'), T('Stone_Normal'), None, smooth=0.35, silt=0.7, tint=(0.29, 0.3, 0.3))
     M['Wood'] = standard('M_07b_Wood', '#2C2522', smooth=0.35)
     M['Rock'] = standard('M_07b_Rock', T('Rock_Albedo'), T('Rock_Normal'), T('Rock_Mask'), silt=0.5)
