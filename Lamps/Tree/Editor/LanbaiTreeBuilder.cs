@@ -142,11 +142,14 @@ namespace Lanbai.Lamps
                 lg.SetLODs(lods);
                 lg.RecalculateBounds();
                 EditorUtility.SetDirty(imp);
+                AssetDatabase.SaveAssetIfDirty(imp);
                 PrefabUtility.SaveAsPrefabAsset(go, pre + "/" + name + ".prefab");
                 Object.DestroyImmediate(go);
                 made++;
             }
-            AssetDatabase.SaveAssets();
+            // save only this kit's materials (a global SaveAssets wrote unrelated dirty assets: local check 10-25)
+            AssetDatabase.SaveAssetIfDirty(bark);
+            AssetDatabase.SaveAssetIfDirty(leaf);
             return "OK sample trees: " + made + " prefabs in " + pre;
         }
 

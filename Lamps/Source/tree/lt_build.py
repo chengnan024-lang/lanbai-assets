@@ -102,6 +102,20 @@ def impostor(name, ob, outdir, size=512):
     w = sc.world; bg = w.node_tree.nodes['Background']; old = tuple(bg.inputs[0].default_value), bg.inputs[1].default_value
     bg.inputs[0].default_value = (1, 1, 1, 1); bg.inputs[1].default_value = 1.0
     hide = [o for o in sc.objects if o is not ob and o.type in ('MESH', 'LIGHT', 'CURVE')]
+    # bake ALBEDO x AO only: no specular sheen of the white bake sky, no translucency (they made the LOD2 cards pale
+    # in the local Unity check 10-25: the Unity shader lights the impostor again)
+    saved = []
+    for slot in ob.material_slots:
+        m = slot.material
+        if m is None or m.node_tree is None:
+            continue
+        for n in m.node_tree.nodes:
+            if n.type == 'BSDF_PRINCIPLED':
+                saved.append((n, 'Specular IOR Level', n.inputs['Specular IOR Level'].default_value))
+                n.inputs['Specular IOR Level'].default_value = 0.0
+            if n.type == 'BSDF_TRANSLUCENT':
+                saved.append((n, 'Color', tuple(n.inputs['Color'].default_value)))
+                n.inputs['Color'].default_value = (0, 0, 0, 1)
     for o in hide:
         o.hide_render = True
     views = []
@@ -118,6 +132,8 @@ def impostor(name, ob, outdir, size=512):
         bpy.data.objects.remove(co)
     for o in hide:
         o.hide_render = False
+    for n, k, v in saved:
+        n.inputs[k].default_value = v
     bg.inputs[0].default_value = old[0]; bg.inputs[1].default_value = old[1]
     sc.render.resolution_x, sc.render.resolution_y, sc.render.film_transparent, sc.cycles.samples = keep
     img = np.concatenate(views, 1)                      # (size, 2 size, 4), top row first
