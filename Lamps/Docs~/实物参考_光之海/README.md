@@ -8,7 +8,7 @@
 | 文件 | 看什么 | 原页 |
 |---|---|---|
 | `ISS-62_印度西部与巴基斯坦.jpg` | **几乎就是圣经 3a 的那一帧**：灯海铺到地平线，地平线上一道大气的微光，上面是星，旁边还有月亮。“分不清灯在哪里结束、星从哪里开始” | [Commons](https://commons.wikimedia.org/wiki/File:ISS-62_City_lights_of_western_India_and_Pakistan.jpg) |
-| `ISS-65_欧洲.jpg` | 颜色的比例：暖的钠灯里夹着白的 LED（圣经：钠 55%、暖楼群 25%、冷 LED 15%、航空灯 5%） | [Commons](https://commons.wikimedia.org/wiki/File:ISS-65_Europe,_city_lights_from_space.jpg) |
+| ~~`ISS-65_欧洲.jpg`~~ **已删，只留链接** | 颜色的比例：暖的钠灯里夹着白的 LED（圣经：钠 55%、暖楼群 25%、冷 LED 15%、航空灯 5%） | [Commons](https://commons.wikimedia.org/wiki/File:ISS-65_Europe,_city_lights_from_space.jpg) |
 | `ISS_爪哇.jpg` | 结构：灯沿着路连成一根根线，镇子是亮的结，中间是暗的田和河 | [Commons](https://commons.wikimedia.org/wiki/File:Lights_of_Java.jpg) |
 
 ## 怎么用（建议）
@@ -22,3 +22,8 @@
 ## 授权
 
 NASA 的照片和数据是**美国政府作品，公有领域**（NASA 的标志和人物肖像除外）。可以修改、进世界，不强制署名（片尾写一行 “Imagery: NASA” 也好）。
+
+## 2026-10-25 核对（灯与假醒）
+
+- `ISS-65_欧洲.jpg` 的 EXIF 写着 `ImageDescription: GMT129_23_46_For ESA_Thomas Pesquet_Timelapse europe by night ...`：这是 **ESA（Thomas Pesquet）** 的照片，不是 NASA 的。ESA 的这类照片通常是 **CC BY-SA 3.0 IGO**，按 D-41 #7 只能放链接，所以文件已从仓库删掉，上表只留链接。（它仍在 `pkg/lamps` 的历史提交 357a4d7 里；要不要改写分支历史由总导演定。）
+- 另外两张（`ISS-62_印度西部与巴基斯坦.jpg`、`ISS_爪哇.jpg`）没有 EXIF；按加图的会话所写是 NASA 宇航员照片（公有领域）。云端连不上 Commons，**我没法再核一遍原页的许可**；合进 main 之前请有网络的一方点开上表的 Commons 链接确认。
