@@ -61,6 +61,71 @@ public static class LanbaiAct06Builder
 
     // D-41：菜单先等 U# 程序资产初始化完再搭；直接调 Build() 时没初始化完就不动场景（Common/Editor/LanbaiUdonPrograms）
     [MenuItem("蓝白/Build/Act06")]
+    // D-44 #2: the volume clouds (Clouds_v2/Volume, Lanbai/CloudVolume): the 3-D density, the coverage, the material, the proxy
+    static Renderer BuildVolume(Transform rDawn, Dictionary<string, object> VJ, string proj, ref string log)
+    {
+        string vk = CloudsKit + "/Volume";
+        if (!AssetDatabase.IsValidFolder(vk + "/Generated")) AssetDatabase.CreateFolder(vk, "Generated");
+        // the 128^3 density ([z][y][x] RGBA8 = Texture3D.SetPixelData order; Source/vol_density.py)
+        string bytesPath = Path.Combine(proj, vk, "Textures", "CloudVolume128.bytes");
+        string texPath = vk + "/Generated/CloudVolume128.asset";
+        Texture3D vol = null;
+        if (File.Exists(bytesPath))
+        {
+            vol = new Texture3D(128, 128, 128, TextureFormat.RGBA32, true) { name = "CloudVolume128", wrapMode = TextureWrapMode.Repeat, filterMode = FilterMode.Trilinear };
+            vol.SetPixelData(File.ReadAllBytes(bytesPath), 0);
+            vol.Apply(true, false);
+            var oldTex = AssetDatabase.LoadAssetAtPath<Texture3D>(texPath);
+            if (oldTex != null) AssetDatabase.DeleteAsset(texPath);
+            AssetDatabase.CreateAsset(vol, texPath);
+        }
+        else log += "\n[Act06] " + vk + "/Textures/CloudVolume128.bytes is missing (Source/vol_density.py): no clouds";
+        // the coverage: data, not colour; mirror-wrapped (the deck goes on to the horizon), uncompressed
+        string covPath = Kit + "/Textures/Act06_CloudCoverage.png";
+        var ti = AssetImporter.GetAtPath(covPath) as TextureImporter;
+        if (ti != null)
+        {
+            ti.sRGBTexture = false; ti.wrapMode = TextureWrapMode.Mirror; ti.textureCompression = TextureImporterCompression.Uncompressed;
+            ti.mipmapEnabled = true; ti.filterMode = FilterMode.Bilinear; ti.alphaIsTransparency = false;
+            ti.SaveAndReimport();
+        }
+        else log += "\n[Act06] " + covPath + " is missing (Source/act06_cov_bake.py)";
+        Shader sh = Shader.Find("Lanbai/CloudVolume");
+        if (sh == null) { log += "\n[Act06] shader Lanbai/CloudVolume not found (Clouds_v2/Volume/Shaders)"; return null; }
+        string matPath = Kit + "/Generated/M_06_CloudVolume.mat";
+        Material m = AssetDatabase.LoadAssetAtPath<Material>(matPath);
+        if (m == null) { m = new Material(sh); AssetDatabase.CreateAsset(m, matPath); }
+        m.shader = sh;
+        m.SetTexture("_DensityTex", vol);
+        m.SetTexture("_CovTex", AssetDatabase.LoadAssetAtPath<Texture2D>(covPath));
+        foreach (var kv in D(VJ["material"]))
+        {
+            if (kv.Value is List<object>) m.SetVector(kv.Key, V4(L(kv.Value)));
+            else m.SetFloat(kv.Key, F(kv.Value));
+        }
+        var tw = L(VJ["towers"]); var bl = L(VJ["blobs"]); var pf = L(VJ["puffs"]); var pw = L(VJ["puff_wind"]);
+        var towerBox = new Vector4[3]; var blobs = new Vector4[120]; var puff = new Vector4[3]; var puffWind = new Vector4[3];
+        for (int i = 0; i < tw.Count && i < 3; i++) towerBox[i] = V4(L(tw[i]));
+        for (int i = 0; i < bl.Count && i < 120; i++) blobs[i] = V4(L(bl[i]));
+        for (int i = 0; i < pf.Count && i < 3; i++) { puff[i] = V4(L(pf[i])); puffWind[i] = V4(L(pw[i])); }
+        m.SetVectorArray("_TowerBox", towerBox); m.SetVectorArray("_Blobs", blobs);
+        m.SetVectorArray("_Puff", puff); m.SetVectorArray("_PuffWind", puffWind);
+        m.SetFloat("_TowerCount", Mathf.Min(tw.Count, 3)); m.SetFloat("_PuffCount", Mathf.Min(pf.Count, 3));
+        m.renderQueue = 2980;
+        EditorUtility.SetDirty(m);
+        // the proxy: a cube the vertex shader puts round the eye (30 m half size); huge bounds so it is never culled
+        var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        go.name = "Act06_CloudVolume";
+        Object.DestroyImmediate(go.GetComponent<Collider>());
+        go.transform.SetParent(rDawn, false);
+        go.transform.localScale = Vector3.one * 100000f;
+        var r = go.GetComponent<MeshRenderer>();
+        r.sharedMaterial = m;
+        r.shadowCastingMode = ShadowCastingMode.Off; r.receiveShadows = false;
+        r.lightProbeUsage = LightProbeUsage.Off; r.reflectionProbeUsage = ReflectionProbeUsage.Off;
+        return r;
+    }
+
     public static void BuildMenu()
     {
         Lanbai.Udon.LanbaiUdonPrograms.RunWhenReady("蓝白/Build/Act06", new[] { typeof(LanbaiAct06Driver) }, () => Build());   // Build 自己把报告写进 Console
@@ -76,6 +141,10 @@ public static class LanbaiAct06Builder
         var CJ = D(MiniJson.Parse(File.ReadAllText(Path.Combine(proj, CloudsKit, "Textures", "cards_v2.json"))));
         var cardInfo = D(CJ["cards"]);
         var dawnCol = D(D(CJ["colours"])["dawn"]);
+        // D-44 #2: the volume clouds (Act06_Volume.json, Source/act06_vol_export.py) replace the plain, its mist, the cards
+        // and the ring. Without the file the old body is built as before.
+        string volJson = Path.Combine(proj, Kit, "Act06_Volume.json");
+        var VJ = File.Exists(volJson) ? D(MiniJson.Parse(File.ReadAllText(volJson))) : null;
 
         foreach (string n in new[] { "R_Dawn", "R_DawnRing" })
         {
@@ -212,6 +281,15 @@ public static class LanbaiAct06Builder
         }
 
         // ---- the driver
+        Renderer volR = null;
+        if (VJ != null)
+        {
+            volR = BuildVolume(rDawn, VJ, proj, ref log);
+            Object.DestroyImmediate(pGo); Object.DestroyImmediate(mGo); pR = null; mR = null;
+            foreach (var r in renderers) if (r != null) Object.DestroyImmediate(r.gameObject);
+            renderers.Clear(); gains.Clear(); mirrors.Clear(); isRing.Clear(); ids.Clear();
+        }
+
         GameObject dGo = oldD != null ? oldD.gameObject : new GameObject("Act06_Driver");
         Transform director = LanbaiGateCloudsBuilder.FindInScenePublic("Director");
         if (oldD == null && director != null) dGo.transform.SetParent(director, false);
@@ -220,7 +298,7 @@ public static class LanbaiAct06Builder
         if (d.worldSun == null) d.worldSun = RenderSettings.sun;
         if (d.worldSun == null) log += "\n[Act06] RenderSettings.sun is empty: wire Act06_Driver.worldSun to the world's main light (D-24) by hand";
         d.roots = new[] { rDawn.gameObject, rRing.gameObject };
-        d.rDawn = rDawn; d.plain = pR; d.plainMist = mR; d.seaRenderer = seaR;
+        d.rDawn = rDawn; d.plain = pR; d.plainMist = mR; d.seaRenderer = seaR; d.volume = volR;
         d.cards = renderers.ToArray(); d.cardGain = gains.ToArray(); d.cardMirror = mirrors.ToArray(); d.cardIsRing = isRing.ToArray();
         foreach (var sp in Object.FindObjectsOfType<LanbaiSkyPreset>())
             if (sp.presetName == "dawn") d.skyPreset = sp;
@@ -293,6 +371,21 @@ public static class LanbaiAct06Builder
         var fu = D(B["fog_under_cover"]);
         d.fogUnder = F(fu["under"]); d.fogDownT0 = F(fu["down_t0"]); d.fogUpT0 = F(fu["up_t0"]); d.fogDur = F(fu["dur"]);
         // (r3: no longer the preset's fogColor: act 6 writes its own far horizon, D-35 #3)
+        if (VJ != null)
+        {
+            // D-44 #2: the sun table from the volume (from the main seat along the sun), the openings, the towers' answer;
+            // under the cover the haze keeps its density and goes into the cover's shadow (review 3)
+            var vst = D(VJ["sun_table"]); var vv = L(vst["v"]);
+            d.sunTabT0 = F(vst["t0"]); d.sunTabDt = F(vst["dt"]);
+            d.sunTab = new float[vv.Count];
+            for (int i = 0; i < vv.Count; i++) d.sunTab[i] = F(vv[i]);
+            var op = D(VJ["open"]); var oa = L(op["A"]); var ob = L(op["B"]);
+            d.volOpenA = new Vector2(F(oa[0]), F(oa[1])); d.volOpenB = new Vector2(F(ob[0]), F(ob[1]));
+            d.fogColourK = F(VJ["under_fog_k"]); d.fogUnder = F(VJ["fog_under_density"]);
+            var ta = L(VJ["tower_answer"]);
+            d.volAnswer = new Vector3[ta.Count];
+            for (int i = 0; i < ta.Count; i++) { var a = L(ta[i]); d.volAnswer[i] = new Vector3(F(a[0]), F(a[1]), F(a[2])); }
+        }
         LanbaiGateCloudsBuilder.SetupUdonSharp(d);
         EditorUtility.SetDirty(d);
         AssetDatabase.SaveAssets();

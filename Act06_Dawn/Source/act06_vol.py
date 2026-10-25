@@ -157,6 +157,8 @@ class Act06Scene:
                             rad * rng.uniform(0.18, 0.3)))
             blobs.append((tx, tz, rad * 1.4, np.array(sph, np.float32)))
 
+        self.tower_blobs = blobs                         # act06_vol_export.py -> the shader's _Blobs
+
         def tower_field(Q, t, vol):
             sig = np.zeros(len(Q), np.float32)
             hh = np.zeros(len(Q), np.float32)

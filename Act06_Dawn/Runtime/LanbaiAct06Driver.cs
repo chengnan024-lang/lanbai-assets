@@ -37,6 +37,10 @@ public class LanbaiAct06Driver : UdonSharpBehaviour
     public Renderer plain;                     // Lanbai/CloudPlain proxy
     public Renderer plainMist;                 // Lanbai/CloudPlainMist (r2: the slot's mist; same proxy, same _SlotOpen)
     public Renderer seaRenderer;               // Sea_Disc with M_06_Sea (ABOVE)
+    public Renderer volume;                    // D-44 #2: Lanbai/CloudVolume (replaces the plain, the mist, the cards; null = the old body)
+    public Vector2 volOpenA = new Vector2(281.86f, 287.86f);   // the valley's clouds blow apart (F1 -> F1 + 6)
+    public Vector2 volOpenB = new Vector2(305.4f, 311f);       // the lower layer opens (the sea first shows at 305.4)
+    public Vector3[] volAnswer;                // the towers answer F0s: (t0, dur, +EV) per tower (_TowerGain)
     public Renderer[] cards;                   // Lanbai/CloudCard renderers (placed cards, then the ring)
     public float[] cardGain;
     public float[] cardMirror;
@@ -105,6 +109,7 @@ public class LanbaiAct06Driver : UdonSharpBehaviour
     private int _idSeaLevel, _idSeaMode, _idSeaClock, _idSlotOpen, _idGain, _idAlpha, _idMirror;
     private int _idFog, _idHorizonC, _idNadirC, _idBandW, _idNearC, _idZenithC, _idMistClock;
     private int _idCalmAll, _idCalmPatch, _idSunColor, _idRefl, _idReflHdr, _idReflExp;
+    private int _idCloudClock, _idOrigin, _idCovOpen, _idTowerGain;
     private bool _ready, _skyApplied, _sunTaken, _overlayHidden, _lobesSet;
     private float _lastT = -1f;
     private float[] _window;
@@ -192,6 +197,10 @@ public class LanbaiAct06Driver : UdonSharpBehaviour
         _idReflHdr = VRCShader.PropertyToID("_Udon_ReflCube_HDR");
         _idReflExp = VRCShader.PropertyToID("_Udon_ReflExposure");
         _idSlotOpen = VRCShader.PropertyToID("_SlotOpen");
+        _idCloudClock = VRCShader.PropertyToID("_Udon_CloudClock");
+        _idOrigin = VRCShader.PropertyToID("_Origin");
+        _idCovOpen = VRCShader.PropertyToID("_CovOpen");
+        _idTowerGain = VRCShader.PropertyToID("_TowerGain");
         _idGain = VRCShader.PropertyToID("_Gain");
         _idAlpha = VRCShader.PropertyToID("_Alpha");
         _idMirror = VRCShader.PropertyToID("_Mirror");
@@ -312,6 +321,25 @@ public class LanbaiAct06Driver : UdonSharpBehaviour
             RenderSettings.ambientGroundColor = triGround;
             RenderSettings.fogColor = fogColorGamma;
             RenderSettings.fogDensity = fogD;
+        }
+
+        // D-44 #2: the volume clouds. The clock (one writer: this act, 248.64 -> 363.62; README_Volume §4), where the layout is
+        // (R_Dawn moves up d(t)), how far the valley and the lower layer have opened, the towers' answer
+        if (volume != null)
+        {
+            VRCShader.SetGlobalVector(_idCloudClock, new Vector4(t, 0f, 0f, 1f));
+            volume.GetPropertyBlock(_mpb);
+            Vector3 o = rDawn != null ? rDawn.position : Vector3.zero;
+            _mpb.SetVector(_idOrigin, new Vector4(o.x, o.y, o.z, 0f));
+            _mpb.SetVector(_idCovOpen, new Vector4(Smooth((t - volOpenA.x) / Mathf.Max(volOpenA.y - volOpenA.x, 1e-3f)),
+                                                   Smooth((t - volOpenB.x) / Mathf.Max(volOpenB.y - volOpenB.x, 1e-3f)), 0f, 0f));
+            float g0 = 1f, g1 = 1f, g2 = 1f;                  // (no Vector4 indexer in U#)
+            int na = volAnswer == null ? 0 : volAnswer.Length;
+            if (na > 0) g0 = Mathf.Pow(2f, volAnswer[0].z * Smooth((t - volAnswer[0].x) / Mathf.Max(volAnswer[0].y, 1e-3f)));
+            if (na > 1) g1 = Mathf.Pow(2f, volAnswer[1].z * Smooth((t - volAnswer[1].x) / Mathf.Max(volAnswer[1].y, 1e-3f)));
+            if (na > 2) g2 = Mathf.Pow(2f, volAnswer[2].z * Smooth((t - volAnswer[2].x) / Mathf.Max(volAnswer[2].y, 1e-3f)));
+            _mpb.SetVector(_idTowerGain, new Vector4(g0, g1, g2, 0f));
+            volume.SetPropertyBlock(_mpb);
         }
 
         // the plain: the slot opens at F1 (6 s)

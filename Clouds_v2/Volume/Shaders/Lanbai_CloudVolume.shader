@@ -56,6 +56,7 @@ Shader "Lanbai/CloudVolume"
         _MaxDist ("Max distance (m)", Float) = 60000
         _NearClear ("Comfort: density x smoothstep(x, y, distance) (no billow in the face)", Vector) = (2, 18, 0, 0)
         _TowerCount ("Towers (0..3)", Float) = 0
+        _TowerGain ("Per-tower light gain (the towers answer F0s: +0.7 EV each) - MPB / driver", Vector) = (1, 1, 1, 0)
         _PuffCount ("Drifting puffs (0..3)", Float) = 0
     }
 
@@ -96,6 +97,7 @@ Shader "Lanbai/CloudVolume"
             float _B_Strato;
             float4 _SunColor, _SkyColor, _GndColor, _Phase, _Shadow, _SunDirFallback, _NearClear;
             float _UnderFogK, _SeaY, _MaxSteps, _StepK, _MaxDist, _TowerCount, _PuffCount;
+            float4 _TowerGain;
             // set from the builder with Material.SetVectorArray (not in Properties)
             float4 _TowerBox[3];      // x, z (layout), R (bounding half size), y0 (flat base)
             float4 _Blobs[120];       // 40 per tower: xyz (layout), radius; radius 0 = unused
@@ -168,7 +170,7 @@ Shader "Lanbai/CloudVolume"
                 return (sh.z != 1.0 ? pow(base, sh.z) : base) * y4.z;
             }
 
-            float TowerDensity(float3 p, float t)
+            float TowerDensity(float3 p, float t, inout float gain)
             {
                 float s = 0.0;
                 [loop] for (int ti = 0; ti < 3; ti++)
@@ -189,7 +191,7 @@ Shader "Lanbai/CloudVolume"
                     float e1 = 1.0 - tex3Dlod(_DensityTex, float4(wq / 700.0, 0)).g;     // Worley distance: high at cell borders
                     float e2 = 1.0 - tex3Dlod(_DensityTex, float4(wq / 190.0 + 31.0 / 128.0, 0)).g;
                     float base = saturate((shape - 0.55 * e1 * (1.0 - 0.4 * f) - 0.22 * e2) / 0.45);
-                    s = max(s, base * 0.05);
+                    if (base * 0.05 > s) { s = base * 0.05; gain = _TowerGain[ti]; }
                 }
                 return s;
             }
@@ -213,9 +215,10 @@ Shader "Lanbai/CloudVolume"
             }
 
             // total density + the height in its layer (for the ambient)
-            float Density(float3 p, float t, bool detail, out float hOut)
+            float Density(float3 p, float t, bool detail, out float hOut, out float gain)
             {
                 hOut = 0.5;
+                gain = 1.0;
                 float4 c = Cov(p.xz);
                 float s = 0.0;
                 if (p.y >= _A_Y.x && p.y <= _A_Y.y)
@@ -228,7 +231,7 @@ Shader "Lanbai/CloudVolume"
                     s += LayerDensity(p, CovB(c), _B_Y, _B_Shape, _B_Wind.xyz, _B_Strato, t, detail);
                     hOut = (p.y - _B_Y.x) / (_B_Y.y - _B_Y.x);
                 }
-                if (_TowerCount > 0.0) s += TowerDensity(p, t);
+                if (_TowerCount > 0.0) s += TowerDensity(p, t, gain);
                 if (_PuffCount > 0.0) s += PuffDensity(p, t);
                 return s;
             }
@@ -294,19 +297,19 @@ Shader "Lanbai/CloudVolume"
                     if (s >= (int)_MaxSteps || d >= t1 || T < 0.03) break;
                     float dt = clamp(d * _StepK, 10.0, 450.0);
                     float3 p = eye + V * (d + 0.5 * dt);
-                    float h;
-                    float sig = Density(p, t, true, h) * SS(_NearClear.x, _NearClear.y, d);
+                    float h, tg;
+                    float sig = Density(p, t, true, h, tg) * SS(_NearClear.x, _NearClear.y, d);
                     if (sig > 1e-5)
                     {
                         if ((s & 1) == 0)                              // the near sun sample every 2nd step
                         {
-                            float hs;
-                            sunT = exp(-Density(p + sunD * _Shadow.z, t, false, hs) * _Shadow.z) * DeckT(p, sunD);
+                            float hs, gs;
+                            sunT = exp(-Density(p + sunD * _Shadow.z, t, false, hs, gs) * _Shadow.z) * DeckT(p, sunD);
                         }
                         float occ = (p.y < _A_Y.x) ? CovA(Cov(p.xz)) : 0.0;
                         float3 amb = lerp(_GndColor.rgb, _SkyColor.rgb, h) * (1.0 - _Shadow.y * occ);
                         float ms = 1.0 + _Phase.w * (1.0 - exp(-sig * 200.0));
-                        float3 src = _SunColor.rgb * (sunT * ph * ms * 0.25) + amb;
+                        float3 src = _SunColor.rgb * (sunT * ph * ms * 0.25 * tg) + amb;
                         float fa = LanbaiFogAmount(eyeW + V * d, eyeW);
                         src = lerp(src, fogC, fa);
                         float a = 1.0 - exp(-sig * dt);
