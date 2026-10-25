@@ -200,5 +200,16 @@
    "frame": 0.029,
    "ok": false
   }
- ]
+ ],
+ "negative_control_flash": {
+  "join": 245.5,
+  "converged_at": 248.64,
+  "hitch": false,
+  "v12": false,
+  "w025": 0.622,
+  "w1": 0.622,
+  "w2": 0.622,
+  "frame": 0.622,
+  "ok": false
+ }
 }

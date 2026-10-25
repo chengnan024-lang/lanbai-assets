@@ -12,7 +12,7 @@
 
 1. 仓库：照 `HANDOFF_CHATGPT.md` §C 第 5 步，把**你在用的那个仓库**（D-41 #5 批准的浅克隆 + 部分检出）更新到最新的 `main`。下面的 `<仓库>` 都指它。同步脚本会核对它的 HEAD 等于 `origin/main`，不等就停（§2）；`.git\index.lock` 在也停，不自动修。
 2. 同步（§2）。先只列出，看一眼，再 `-Apply`。**第一次同步（以及任何要 `-Force` 的时候）属于“批量替换”（`HANDOFF_CHATGPT.md` §F），三步缺一不可**：
-   1. 先把整个 Unity 工程打一个 zip 备份（关掉 Unity 再打）；
+   1. 先整工程备份，照 `HANDOFF_CHATGPT.md` §C 第 2 步：关掉 Unity；排除 `Library`、`Temp`、`Logs`、`obj`、`Build`，打成 zip 放到 `E:\IDMdownload\VRCC\Backups\`；写下大小和 SHA256（`Get-FileHash <zip> -Algorithm SHA256`），逐文件核对。这个 zip 的路径就是 `CONSENT.json` 的 `backup`（§3）。备份做完之前不开 Unity；
    2. 把只列出的那份清单（屏幕上的输出，和 `<工程>\LanbaiReports\sync\<时间>_plan.json`）推到仓库的 `FromLocal/takeover/`，给小楠看；
    3. 小楠确认以后，才跑 `-Apply -Force`。
 
@@ -56,7 +56,8 @@
 
 **只同步 HANDOFF_LOG 当前那一条点名的文件夹 / 文件。** 仓库里的 `X/...` 拷到工程的 `Assets/Lanbai/X/...`。
 
-- 默认只列出（新增 `+`、覆盖 `~`、本地改过 `!`、仓库里没有了 `?`），什么都不改；加 `-Apply` 才动手。
+- 默认只列出（新增 `+`、覆盖 `~`、本地改过 `!`、仓库里没有了 `?`、这次排除了 `-`），什么都不改；加 `-Apply` 才动手。
+- **最后一行总是 `LANBAI_SYNC_RESULT {json}`**（v2.1）：退出码、状态（`listed` / `applied` / `refused_local_modified` / `path_not_in_head` / `guess_not_accepted` / `stopped` / `error`）、各类个数。判断结果看这一行，不靠屏幕上的中文。
 - **文件从提交取，不从工作区取**：`git ls-tree -r HEAD` 列、`git cat-file` 逐个取出（取出来先核对 blob 哈希再覆盖）。所以部分检出的仓库也能用，不会悄悄少拷；`HANDOFF_LOG.md` 也从 HEAD 读。
 - **原地覆盖**，从不删文件夹再拷：资源的 GUID 在工程的 `.meta` 里，删了文件夹再拷 GUID 会变、引用会断。工程里的 `.meta` 一概不碰，**仓库里的 `.meta` 一律不同步**。
 - **`-Repo` 必须写**，并且它的 HEAD 必须等于 `origin/main`。开始前还查：`.git\index.lock` 在、git 用不了或任何一步出错（按出错处理，不当成“干净”）、有没提交的改动，都停下（退出码 4），什么都不改，也不自动修。
@@ -64,8 +65,11 @@
 - 同步记录 `Assets\Lanbai\.lanbai_sync.json`：仓库路径、提交号、条目标题，**每个文件**上次同步时的 git blob 哈希、来自哪个提交、什么时候同步的。测试工具从这里读提交号写进 `manifest.json`（点开头的文件 Unity 不导入）。
 - **本地改过的文件不覆盖、不删**（工程里的哈希和上次同步时的不一样，或者没有记录又和仓库不一样）：整次拒绝，退出码 2，什么都没改。**停，告诉小楠**；要用仓库的版本盖掉，`-Force` 属于批量替换，照 §0 第 2 条的三步（备份、推清单、小楠确认）。第一次同步时工程里已经有旧文件的，也会走到这一条。
 - 第一次同步时工程里已经有 10-08 以来的旧文件，没有同步记录、内容又和仓库不一样，一定会被拒绝：照 §0 第 2 条的三步做。
+- **点名的路径在 HEAD 里一个文件都没有**（拼错了、还没合进 main）：报错退出（退出码 1，`path_not_in_head`），什么都不改。
+- **这次排除了的（`-`）和仓库里没有了的（`?`）分开**：上次同步过、这次被“不同步：”或跳过规则挡掉的文件记成 `EXCLUDED`，工程里的照旧不动、记录也留着；不会被当成“仓库里没有了”。
+- **工程里没有 `Assets/Lanbai` 就拒绝**（退出码 4）：`-Project` 指错了，或者不是蓝白的工程；不替人新建。
 - **从不自动删除。** 上次由它拷进去、现在仓库里没有了的文件只列出来（`?`），要删照 `HANDOFF_CHATGPT.md` §F（挪到 `_to_delete`、连 `.meta`、经小楠确认）。工程里本来就有的（各包的 `Generated/`、`UdonPrograms/*.asset`、本地自己加的）一概不动，只数一下。
-- 永远不同步：仓库根上的单个文件、`FromLocal/`、`Art/`；任何一层叫 `Source`、`Renders`、`__pycache__` 的文件夹；`.py .pyc .blend .blend1 .ps1 .sh .meta`。
+- 永远不同步（和 `HANDOFF_CHATGPT.md` §A 的 robocopy 一样，另加 `.meta`）：仓库根上的单个文件、`FromLocal/`、`Art/`；任何一层叫 `Source`、`Renders`、`__pycache__`、`Docs~`、`Tools~`、`Source~`、`Originals~` 的文件夹；`.py .pyc .blend .blend1 .ps1 .sh .meta`；`.gitignore`。
 - 每次的计划另存一份在 `<工程>\LanbaiReports\sync\<时间>_plan.json`。
 
 **HANDOFF_LOG 的约定（给写条目的人）：** 条目里写一行“同步：”，路径都放反引号里；不要的写“不同步：”。
@@ -84,7 +88,7 @@
 | `-Paths a/,b/c.json` | 不看 HANDOFF_LOG，直接指定。只在总导演 / 总工程师明说时用 |
 | `-Apply` / `-Force` / `-AcceptGuess` | 见上 |
 
-退出码：0 完成（或只列出）；1 没有可同步的（或猜的路径没加 `-AcceptGuess`）；2 本地改过的被拒绝；3 脚本出错；4 仓库状态不对（lock 文件、没提交的改动、不在 main）。
+退出码：0 完成（或只列出）；1 没有可同步的、点名的路径在 HEAD 里没有、或者猜的路径没加 `-AcceptGuess`；2 本地改过的被拒绝；3 脚本出错；4 仓库或工程状态不对（lock 文件、没提交的改动、不在 main、工程里没有 `Assets/Lanbai`）。
 
 同步时 Unity 开着也可以（文件是原地覆盖的），但最好先关掉，或者至少别在它导入的时候同步；同步完回到 Unity 等它导入、编译完。
 
@@ -94,24 +98,25 @@
 
 ### 开跑之前工具自己查的几道关（HANDOFF_CHATGPT，只读）
 - **资源**：C 盘剩 ≥ 10 GB、工程所在盘剩 ≥ 10 GB、可用内存 ≥ 6 GB（测试定义的 `resources` 可改：`min_c_gb`、`min_project_gb`、`min_free_ram_gb`）。不够就 BLOCKED：**停，告诉小楠**（工具和阿白都不替小楠关程序、清文件；VRChat 开着就请小楠关）。
-- **小楠的同意**：第一次用这个工具之前要小楠同意。同意以后，阿白写 `<工程>/LanbaiReports/tests/CONSENT.json`：`{"by": "小楠", "date": "YYYY-MM-DD", "backup": "整工程备份的 zip 路径", "note": "小楠原话"}`。没有这个文件就 BLOCKED；备份的路径这台机器上找不到，只警告。工具只读它，不替人写。
+- **小楠的同意**：第一次用这个工具之前要小楠同意。同意以后，阿白写 `<工程>/LanbaiReports/tests/CONSENT.json`：`{"by": "小楠", "date": "YYYY-MM-DD", "tool_version": "1.1.0", "tests": ["gate_clouds_test"], "backup": "整工程备份的 zip 路径", "note": "小楠原话"}`。没有这个文件就 BLOCKED；**同意的范围**：`tool_version` 要和工具的版本一样（工具升了版本要重新问），`tests` 里要有这次跑的测试，不然 BLOCKED；备份的路径这台机器上找不到，只警告。工具只读它，不替人写。
 - **弹窗**：工具自己不弹（批处理没有；菜单只有开始前和跑完的两个框）。Unity / Hub / VCC / SDK 的弹窗照 HANDOFF_CHATGPT §C 第 5 步一律按“不改”回答。
 
 ### 菜单
-**蓝白/Test/Run gate_clouds_test**（以及 act06_test、bus_slice、act01_spawn、palace_hotspot）；**Run Other Test…** 列出 `tests/` 里所有的；**Preflight Only…** 只做预检。跑的时候编辑器不响应（几分钟），跑完弹一个框，可以直接打开输出文件夹。菜单跑完，测试场景留在打开的状态（没保存）；下次跑之前要么保存、要么点 **蓝白/Test/Discard Test Scene Changes**（只对沙盒里的拷贝和 `Assets/Lanbai/Tests/` 下的场景起作用），不然预检会因为“有没保存的改动”BLOCKED。
+**蓝白/Test/Run gate_clouds_test**（以及 act06_test、bus_slice、act01_spawn、palace_hotspot）；**Run Other Test…** 列出 `tests/` 里所有的；**Preflight Only…** 只做预检。跑的时候编辑器不响应（几分钟），跑完弹一个框，可以直接打开输出文件夹。菜单跑完，测试场景留在打开的状态（没保存）。**不要保存它**：下次跑之前点 **蓝白/Test/Discard Test Scene Changes**（只对沙盒里的拷贝和 `Assets/Lanbai/Tests/` 下的场景起作用；别的已打开场景有没保存的改动时它不动，停，告诉小楠），不然预检会因为“有没保存的改动”BLOCKED。
 
 ### 批处理（**要先关掉这个工程的 Unity 编辑器**）
 同一个工程同一时间只能有一个 Unity 打开（编辑器开着时，批处理会报工程被占用、直接退出，日志里没有 `LANBAI_TEST_RESULT`）。这一条没在阿白的机器上试过；不想关编辑器就用菜单。
 ```powershell
-$unity = "C:\Program Files\Unity\Hub\Editor\2022.3.22f1\Editor\Unity.exe"
-$proj  = "D:\Unity\Lanbai"
+$unity = "E:\VRR\2022.3.22f1\Editor\Unity.exe"          # HANDOFF_CHATGPT §A；以那里写的为准
+$proj  = "E:\IDMdownload\VRCC\dream"
 $id    = "gate_clouds_test"
 & $unity -batchmode -projectPath $proj -executeMethod Lanbai.Test.Runner.RunCli -lanbaiTest $id -logFile "$proj\LanbaiReports\tests\$id.log" | Out-Null
 $code = $LASTEXITCODE; "退出码 $code"
-Select-String -Path "$proj\LanbaiReports\tests\$id.log" -Pattern '^LANBAI_TEST_RESULT ' | Select-Object -Last 1
-Get-Content "$proj\LanbaiReports\tests\$id\last_result.json"
+Select-String -Path "$proj\LanbaiReports\tests\$id.log" -Pattern '^LANBAI_TEST_RESULT ' -Encoding UTF8 | Select-Object -Last 1
+Get-Content "$proj\LanbaiReports\tests\$id\last_result.json" -Encoding UTF8
 ```
 - `| Out-Null` 是为了让 PowerShell 等 Unity 退出再往下走（不然 `$LASTEXITCODE` 拿不到）。
+- **编码**：Unity 的日志和工具写的 JSON 都是 UTF-8 没有 BOM；PowerShell 5.1 的 `Select-String` / `Get-Content` 不加 `-Encoding UTF8` 会按系统编码读，中文变乱码（结果行的 JSON 也就读不对）。路径里有中文的话，整条命令用 PowerShell 跑，不要经 `cmd`。
 - **不要加 `-nographics`**：截图和性能要真的显卡（预检会因为没有显卡 BLOCKED）。不用加 `-quit`（工具自己退出）。
 - 只做预检：末尾加 `-lanbaiPreflightOnly`。只做预检的结果是 `preflight_ok`（不是 `pass`：没跑测试），三层状态里 Unity 桌面记 `not_tested`，也不覆盖 `last_result.json`。用别的测试定义文件：`-lanbaiTestFile <路径>`（代替 `-lanbaiTest`）。
 - **PPv2 在批处理下生效没有，没验证过。** 工具每次第一张截图前自己查：同一机位开 / 关 PPv2 各渲一张小图，要不一样（检查项 `ppv2_effective`）。批处理下这一项没过的话，截图就是没调色的，**改用菜单跑**，其余照旧。
@@ -139,7 +144,7 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json"
 
 | 文件 | |
 |---|---|
-| `manifest.json` | 机器读的全部：工具版本、测试 id、测试定义的 SHA-256、仓库提交（同步记录）、Unity / SDK / 包的版本、显卡、预检、前置条件、每一步的状态和用时、只查不改的设置、检查项、全部量数（`metrics`，每个量的说明在 `metric_notes`）、写入核对、警告、文件清单；三层状态在 `layers` |
+| `manifest.json` | 机器读的全部：工具版本、测试 id、测试定义的 SHA-256、仓库提交（同步记录）、**每个文件夹拷进来时的提交**（`copied`：从同步记录按 `Assets/Lanbai/` 下的第一层文件夹汇总，`summary.md` 里也印；一个文件夹混了多个提交会警告，D-43 #6）、Unity / SDK / 包的版本、显卡、预检、前置条件、每一步的状态和用时、只查不改的设置、检查项、全部量数（`metrics`，每个量的说明在 `metric_notes`）、写入核对、警告、文件清单；三层状态在 `layers` |
 | `summary.md` | 给人看的摘要：结果、检查项（没过的在前）、预检、步骤、截图表、序列表、性能表、贴图压缩、设置、写入、Console 的前几条错误、**头显清单** |
 | `console.jsonl` | Console 一行一条：`source`（`console_snapshot` 开跑前已有的 / `live` 跑的过程中 / `compile` 编译消息）、`type`、`msg`、`stack`、`file`/`line`；UdonSharp 的带 `"udonsharp": true`，工具自己的带 `"tool": true` |
 | `shots/*.png` | 截图（8 位 sRGB PNG，经过 PPv2）。有参考图的另有 `<机位>__vs_ref.png`（Unity 在上、参考在下） |
@@ -252,7 +257,7 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json"
 两台普通相机各往左、右偏 `ipd_mm / 2`（默认 64 mm → ±32 mm），分别渲染、左右并排存一张。**标明是近似：不是 SPS-I 单通道立体，不是头显测试。** 能看出来的只有“两只眼看到的东西差不多”这一层；每只眼的抖动 / 噪声是不是一致，要看头显。
 
 ### 7.5 贴图压缩对照（`texture_compare`）
-选中材质（选法和 `set_material` 一样）上的所有贴图，各拷一份进沙盒、按每一档设导入（`raw` 不压缩 RGBA32、`bc7`、`bc5`（只对法线贴图；别的贴图这一档用 BC7）、`crunch` 或 `crunch:<质量>`（DXT1/DXT5 Crunched，法线是 DXT5nm；不写质量用 `crunch_quality`，默认 50）。量数名和文件名里冒号换成 `_q`，比如 `crunch:100` → `crunch_q100`；D-40b #6 的法线对照 = `bc5` 对 `crunch:100`），材质也拷一份换上这些贴图；场景里用到原材质的 renderer 临时换成拷贝，拍 `shots` 里列的机位，换回。报每一档的存储大小（编辑器读数），以及和 `raw` 那张比的 PSNR。**原贴图的导入设置不动。** 原贴图的 mip、各向异性、过滤、sRGB 写进 `manifest.json` 的 `textures`。
+选中材质（选法和 `set_material` 一样）上的所有贴图，各拷一份进沙盒、按每一档设导入（`raw` 不压缩 RGBA32、`bc7`、`bc5`（只对法线贴图；别的贴图这一档用 BC7）、`crunch` 或 `crunch:<质量>`（DXT1/DXT5 Crunched，法线是 DXT5nm；不写质量用 `crunch_quality`，默认 50）。量数名和文件名里冒号换成 `_q`，比如 `crunch:100` → `crunch_q100`；`ncrunch:<质量>` 只把法线贴图做 Crunch、别的贴图用 BC7，和 `bc5` 那一档只差在法线上；D-40b #6 的法线对照 = `bc5` 对 `ncrunch:100`），材质也拷一份换上这些贴图；场景里用到原材质的 renderer 临时换成拷贝，拍 `shots` 里列的机位，换回。报每一档的存储大小（编辑器读数），以及和 `raw` 那张比的 PSNR。**原贴图的导入设置不动。** 原贴图的 mip、各向异性、过滤、sRGB 写进 `manifest.json` 的 `textures`。
 
 ---
 
@@ -261,7 +266,8 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json"
 - 工具只往 **`Assets/_LanbaiTest/`**（带标记文件 `.lanbai_test_sandbox`）和输出文件夹写。开跑时删掉上次遗留的沙盒：**只删带标记的**；`Assets/_LanbaiTest/` 在、却没有标记，预检 BLOCKED。
 - **工具从不保存场景**，也不 `SaveAssets`；材质值、物体开关这些在内存里改，结束时改回。
 - 项目设置（顶点压缩、雾的变体剔除、光强）只查不改。
-- 工具临时改过又改回的（`set_material` 改过的材质、`edit_json` 写回的文件）：内容和原来一样、或者只是被后面搭建脚本的 `SaveAssets` 把改回后的值落了盘的，单独列在 `writes.tool_touched_restored`，不算没声明的写入。
+- 工具临时改过又改回的（`set_material` 改过的材质、`edit_json` 写回的文件）：**按字节核对**：落盘的内容和开跑前磁盘上的逐字节一样，单独列在 `writes.tool_touched_restored`，不算没声明的写入；不一样（比如被后面搭建脚本的 `SaveAssets` 按另一种序列化落了盘）就照常算写入，注明“工具临时改过的”。
+- **改回失败**：试两次，还不行就留着，之后每次改回和收尾时再试，报告的警告里写着；收尾时 `edit_json` 改过的文件还写不回去，**退出码 3**（工程里留着测试改过的值），原文件在输出的 `backup/`：停，告诉小楠。
 - 跑之前、跑之后各记一次 `Assets/`（大小 + 修改时间）和 `ProjectSettings/*.asset`（内容哈希）：沙盒和 `allowed_writes` 以外的每一处改动都列进 `writes.undeclared`，检查项 `no_undeclared_writes` 不过。
 - **例外（总导演已批准，条件是下面三样）：** 每次的 `summary.md` 和 `manifest.json` 都写全 `allowed_writes`；`edit_json` 改的文件在任何情况下都逐字节写回（改回栈在每一项的 `finally` 和整次运行的 `finally` 里都会跑；只有 Unity 本身崩掉时写不回，那就照 §9 第 4 条从 `backup/` 拷回）；测试定义的 `backup_before`（门测试：`Assets/Lanbai/Tests/**` 和 `GateClouds_Layout.json`）在开搭之前原样拷进本次输出的 `backup_before/`。
 - 例外的具体内容： `gate_clouds_test` 在原场景 `Assets/Lanbai/Tests/GateTest.unity` 里跑（`in_place`），由门测试脚本和门的搭建菜单去写 `Tests/`、`GateClouds/Generated/`、贴图导入设置、`UdonPrograms/`——HANDOFF_LOG 那几条本来就要这样搭；`auto_lite` 那一档临时改 `GateClouds_Layout.json`，量完逐字节写回。这些都列在它的 `allowed_writes` 里。`act06_test` 把主场景拷进沙盒再搭，但第 6 幕的搭建脚本会写 `Act06_Dawn/Generated/`。

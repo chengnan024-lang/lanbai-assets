@@ -35,6 +35,18 @@ namespace Lanbai.Test
             bool ours = s.path.StartsWith(Sandbox.DIR + "/") || s.path.StartsWith("Assets/Lanbai/Tests/");
             if (!ours) { EditorUtility.DisplayDialog("蓝白测试", "当前场景 " + s.path + " 不是测试场景（沙盒里的拷贝或 Assets/Lanbai/Tests/ 下的），这个菜单不碰它。", "好"); return; }
             if (!s.isDirty) { EditorUtility.DisplayDialog("蓝白测试", "没有没保存的改动。", "好"); return; }
+            // 复核的次要项：OpenScene(Single) 会把别的已打开场景一起关掉；别的场景有没保存的改动就不动（和删沙盒一样），停
+            var dirtyOthers = new System.Collections.Generic.List<string>();
+            for (int i = 0; i < SceneManager.sceneCount; i++)
+            {
+                var sc = SceneManager.GetSceneAt(i);
+                if (sc != s && sc.isDirty) dirtyOthers.Add(string.IsNullOrEmpty(sc.path) ? "（未命名场景）" : sc.path);
+            }
+            if (dirtyOthers.Count > 0)
+            {
+                EditorUtility.DisplayDialog("蓝白测试", "别的已打开场景有没保存的改动：" + string.Join("、", dirtyOthers.ToArray()) + "。重新打开测试场景会把它们一起关掉，工具不替人丢掉，也不替人保存。停，告诉小楠。", "好");
+                return;
+            }
             if (EditorUtility.DisplayDialog("蓝白测试", "不保存，从磁盘重新打开 " + s.path + "？", "放弃改动", "取消"))
                 EditorSceneManager.OpenScene(s.path, OpenSceneMode.Single);
         }

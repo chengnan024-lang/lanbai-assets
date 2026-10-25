@@ -455,21 +455,26 @@ def main():
     joins = [238, 244, 245.5, 249, 255, 260, 263.5, 266, 267, 270, 1140, 1150, 1180]
     rows = [check(ts) for ts in joins] + [check(263.5, True), check(270, True)]
     neg = [check(ts, v12=True) for ts in (263.5, 266, 1140)]     # negative control: v1.2 must fail here
+    keep = Inside.flash_for
+    Inside.flash_for = lambda self, t: self.delta_ev(t)          # negative control 2: FLASH_TEAR not suppressed for joiners
+    negf = check(245.5)
+    Inside.flash_for = keep
     os.makedirs(DOCS, exist_ok=True)
     with open(os.path.join(DOCS, 'spawn_fade_sim.json'), 'w', encoding='utf-8') as f:
-        json.dump({'v13': rows, 'negative_control_v12': neg}, f, indent=1)
+        json.dump({'v13': rows, 'negative_control_v12': neg, 'negative_control_flash': negf}, f, indent=1)
     head = '| 进场 s | 卡顿 | 和一直在场的人一样的时刻 s | 0.25 s 内最多升 EV（≤ 0.5） | 1 s（≤ 1.0） | 2 s（≤ 1.8） | 一帧最多升 EV | 过 |\n|---|---|---|---|---|---|---|---|\n'
     body = ''.join('| {join} | {h} | {c} | {w025} | {w1} | {w2} | {frame} | {ok} |\n'.format(
         h='0.5 s' if r['hitch'] else '', c=r['converged_at'], ok='是' if r['ok'] else '**否**', **{k: r[k] for k in ('join', 'w025', 'w1', 'w2', 'frame')}) for r in rows)
     nbody = ''.join('| {join} | v1.2 | {c} | {w025} | {w1} | {w2} | {frame} | {ok} |\n'.format(
         c=r['converged_at'], ok='是' if r['ok'] else '否（应当不过）', **{k: r[k] for k in ('join', 'w025', 'w1', 'w2', 'frame')}) for r in neg)
-    body += nbody
+    body += nbody + '| 245.5 | 闪光不压 | {c} | {w025} | {w1} | {w2} | {frame} | {ok} |\n'.format(
+        c=negf['converged_at'], ok='是' if negf['ok'] else '否（应当不过）', **{k: negf[k] for k in ('w025', 'w1', 'w2', 'frame')})
     with open(os.path.join(DOCS, 'spawn_fade_sim.md'), 'w', encoding='utf-8') as f:
         f.write('# 迟到的人进场：数值核对（`Director/Tools~/spawn_fade_sim.py` 生成，Python 移植，不是 Unity 里跑的）\n\n'
                 '第 10 幕的白用的是按 D-43 写的替身，不是镜与白的代码。亮度按 0.004 的地板算 EV（和 `overlay_model.py` 一样）。'
-                '“卡顿”= 交接那一帧时间轴跳 0.5 s。最后几行“v1.2”是负对照：用 v1.2 的做法，263.5 应当不过（D-43 说的 +7.35 EV）。\n\n' + head + body)
+                '“卡顿”= 交接那一帧时间轴跳 0.5 s。最后几行是负对照：“v1.2”用 v1.2 的做法，263.5 应当不过（D-43 说的 +7.35 EV）；“闪光不压”是门内不对迟到的人压 FLASH_TEAR，245.5（248.5 交接）应当不过（复核说的一帧 +0.56 EV）。\n\n' + head + body)
     print(head + body)
-    neg_ok = not neg[0]['ok']                                  # 263.5 under v1.2 = the +7.35 EV jump D-43 is about
+    neg_ok = not neg[0]['ok'] and not negf['ok']               # 263.5 under v1.2 = the +7.35 EV jump D-43 is about
     print('negative control (v1.2 at 263.5 must fail):', 'reproduced' if neg_ok else 'NOT reproduced')
     return 0 if all(r['ok'] for r in rows) and neg_ok else 1
 
