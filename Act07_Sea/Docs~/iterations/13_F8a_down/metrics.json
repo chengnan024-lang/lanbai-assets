@@ -4,7 +4,7 @@
    960,
    540
   ],
-  "APL": 11.24,
+  "APL": 11.21,
   "EV_display": -7.966,
   "luma_lt12_pct": 40.84,
   "Lstar_gt85_pct": 0.0,
@@ -13,27 +13,27 @@
   "clip_black_largest_region_pct": 0.0,
   "clip_white_largest_region_pct": 0.0,
   "warm_shadow_pct": 0.0,
-  "purple_pct": 0.003,
+  "purple_pct": 0.0,
   "purple_largest_region_pct": 0.0,
-  "violet_strong_pct": 0.003,
-  "lavender_act6_pct": 0.03,
+  "violet_strong_pct": 0.0,
+  "lavender_act6_pct": 0.0,
   "brightest": {
    "bbox": [
-    27,
-    5,
-    954,
-    383
+    1,
+    1,
+    958,
+    466
    ],
    "centroid": [
-    378.7,
-    235.7
+    599.9,
+    176.3
    ],
-   "clusters": 54,
-   "clusters_ge5pct": 3,
-   "min_luma": 19.3,
+   "clusters": 83,
+   "clusters_ge5pct": 2,
+   "min_luma": 16.1,
    "centroid_az_el": [
-    80.22,
-    -25.65
+    104.02,
+    -21.76
    ]
   },
   "top25_Lstar": {
@@ -48,43 +48,43 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 88.8,
+     "nearest_dE2000_p01": 90.2,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 72.6,
+     "nearest_dE2000_p01": 73.0,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 62.3,
+     "nearest_dE2000_p01": 63.0,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#3876AB",
      "role": "浅水 縹",
-     "nearest_dE2000_p01": 33.0,
+     "nearest_dE2000_p01": 34.1,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
-     "nearest_dE2000_p01": 13.1,
+     "nearest_dE2000_p01": 14.7,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#697987",
      "role": "海雪",
-     "nearest_dE2000_p01": 33.5,
+     "nearest_dE2000_p01": 33.9,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 65.9,
+     "nearest_dE2000_p01": 66.6,
      "within_dE5_pct": 0.0
     }
    ],
@@ -168,7 +168,7 @@
    "color": "#000000"
   }
  },
- "bloom_share_of_APL": 0.01,
+ "bloom_share_of_APL": 0.0,
  "t": 848.86,
  "target": {
   "phase": "7c 退去",
@@ -193,7 +193,7 @@
    540
   ]
  },
- "render_seconds": 26.2,
+ "render_seconds": 20.0,
  "lens": "none",
  "bloom_tint": "single",
  "note": "F8a 848.86: far below, the dark mirror appears (110 m, mostly fog), the palace lamps reflected in it"

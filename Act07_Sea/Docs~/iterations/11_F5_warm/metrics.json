@@ -4,8 +4,8 @@
    960,
    540
   ],
-  "APL": 11.95,
-  "EV_display": -7.884,
+  "APL": 11.91,
+  "EV_display": -7.912,
   "luma_lt12_pct": 44.78,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
@@ -16,28 +16,28 @@
   "purple_pct": 0.0,
   "purple_largest_region_pct": 0.0,
   "violet_strong_pct": 0.0,
-  "lavender_act6_pct": 0.045,
+  "lavender_act6_pct": 0.012,
   "brightest": {
    "bbox": [
+    1,
     0,
-    0,
-    831,
-    325
+    832,
+    342
    ],
    "centroid": [
-    203.6,
-    161.5
+    419.6,
+    155.1
    ],
-   "clusters": 28,
-   "clusters_ge5pct": 8,
-   "min_luma": 28.8,
+   "clusters": 36,
+   "clusters_ge5pct": 4,
+   "min_luma": 20.7,
    "centroid_az_el": [
-    -49.06,
-    1.85
+    -27.68,
+    2.46
    ]
   },
   "top25_Lstar": {
-   "mean": 5.46,
+   "mean": 5.43,
    "p50": 5.75,
    "p90": 6.92
   },
@@ -48,43 +48,43 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 81.7,
+     "nearest_dE2000_p01": 87.4,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 70.6,
+     "nearest_dE2000_p01": 71.9,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 60.2,
+     "nearest_dE2000_p01": 61.7,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#3876AB",
      "role": "浅水 縹",
-     "nearest_dE2000_p01": 31.4,
+     "nearest_dE2000_p01": 32.3,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
-     "nearest_dE2000_p01": 12.6,
+     "nearest_dE2000_p01": 13.0,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#697987",
      "role": "海雪",
-     "nearest_dE2000_p01": 31.5,
+     "nearest_dE2000_p01": 32.5,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 63.9,
+     "nearest_dE2000_p01": 65.3,
      "within_dE5_pct": 0.0
     }
    ],
@@ -193,7 +193,7 @@
    540
   ]
  },
- "render_seconds": 16.8,
+ "render_seconds": 13.2,
  "lens": "none",
  "bloom_tint": "single",
  "note": "F5 644.96: far below, one warm point among the cold seeds (APL target 16)"

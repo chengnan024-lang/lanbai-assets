@@ -1,6 +1,7 @@
 """D-44 #5: what can the main seat see FORWARD in act 7a, beat by beat? (before the local per-beat screenshots)
 
   ~/bpy/bin/python Act07_Sea/Tools~/forward_view_7a.py      -> Act07_Sea/Docs~/forward_view_7a.json (+ prints a table)
+  ... [--eye 0.70,1.77,0.20] [--layout <json>] [--out <json>]   (阿白's old-bus HERO_EYE / the layout the local build ran)
 
 The forward field (总导演 D-44 #5): azimuth -35..+35, elevation -10..+25 from the main eye (0.55, 1.70, 2.05), i.e. what
 the windscreen shows (bus_shell bible_v2: az -50..25, el -15..22). Everything comes from Act07_Layout.json and the
@@ -19,9 +20,13 @@ PKG = os.path.normpath(os.path.join(HERE, '..'))
 sys.path.insert(0, HERE)
 import act07_motion as AM                                   # noqa: E402
 
-J = json.load(open(os.path.join(PKG, 'Act07_Layout.json'), encoding='utf-8'))
+def _arg(name, default):
+    return sys.argv[sys.argv.index(name) + 1] if name in sys.argv else default
+
+
+J = json.load(open(_arg('--layout', os.path.join(PKG, 'Act07_Layout.json')), encoding='utf-8'))
 U, P = J['unity'], J['particles']
-EYE = np.array([0.55, 1.70, 2.05])
+EYE = np.array([float(v) for v in _arg('--eye', '0.55,1.70,2.05').split(',')])
 AZ, EL = (-35.0, 35.0), (-10.0, 25.0)
 BEATS = [(363.3, 'F2h 入水'), (367.2, 'F3 斯涅尔之窗'), (387.0, '车顶破洞见窗'), (446.0, 'F4 船体荧光'), (462.4, 'F4p 光柱汇聚'),
          (474.4, 'F3e 间奏'), (506.4, 'F3e1 最后一闪'), (532.4, 'F3e2 海脊'), (556.4, 'F3e3 蓝熄灭'), (559.0, 'F3i 播种开始'),
@@ -165,7 +170,7 @@ def main():
         last = t - U['last_t0']
         r['last_shaft'] = 'sweeping overhead (bus frame from (3,14,-2) to (-1.5,14,4.5)): above the windscreen' if 0 < last < 8 else 'off'
         rows.append(r)
-    out = os.path.join(PKG, 'Docs~', 'forward_view_7a.json')
+    out = _arg('--out', os.path.join(PKG, 'Docs~', 'forward_view_7a.json'))
     json.dump(dict(field=dict(az=AZ, el=EL, eye=EYE.tolist()), beats=rows), open(out, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     for r in rows:
         print(r['t'], r['beat'], '| shafts', r['shafts'].get('in_view'), '| snow', r['snow']['in_view'], '| seeds', r['seeds'],

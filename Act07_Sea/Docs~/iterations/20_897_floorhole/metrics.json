@@ -4,10 +4,10 @@
    960,
    540
   ],
-  "APL": 14.56,
-  "EV_display": -6.617,
+  "APL": 14.19,
+  "EV_display": -6.714,
   "luma_lt12_pct": 83.95,
-  "Lstar_gt85_pct": 0.017,
+  "Lstar_gt85_pct": 0.012,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
   "clip_black_largest_region_pct": 0.0,
@@ -16,24 +16,24 @@
   "purple_pct": 1.003,
   "purple_largest_region_pct": 0.96,
   "violet_strong_pct": 0.0,
-  "lavender_act6_pct": 4.622,
+  "lavender_act6_pct": 5.411,
   "brightest": {
    "bbox": [
     358,
-    169,
-    565,
-    187
+    168,
+    575,
+    189
    ],
    "centroid": [
-    474.2,
-    182.1
+    484.2,
+    182.2
    ],
-   "clusters": 2,
-   "clusters_ge5pct": 2,
-   "min_luma": 150.6,
+   "clusters": 3,
+   "clusters_ge5pct": 3,
+   "min_luma": 134.3,
    "centroid_az_el": [
-    -0.79,
-    -41.42
+    0.79,
+    -41.36
    ]
   },
   "top25_Lstar": {
@@ -48,19 +48,19 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 32.5,
+     "nearest_dE2000_p01": 37.0,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 35.5,
+     "nearest_dE2000_p01": 38.0,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 33.8,
+     "nearest_dE2000_p01": 35.6,
      "within_dE5_pct": 0.0
     },
     {
@@ -84,7 +84,7 @@
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 36.0,
+     "nearest_dE2000_p01": 37.7,
      "within_dE5_pct": 0.0
     }
    ],
@@ -168,7 +168,7 @@
    "color": "#000000"
   }
  },
- "bloom_share_of_APL": 0.01,
+ "bloom_share_of_APL": 0.0,
  "t": 897.96,
  "target": {
   "phase": "倒置的窗",
@@ -193,7 +193,7 @@
    540
   ]
  },
- "render_seconds": 26.6,
+ "render_seconds": 21.8,
  "lens": "none",
  "bloom_tint": "single",
  "note": "D-26 897.96: down through the eroded floor in front of the main seat (az -22..22, el -70..-38): the inverted window's warm ring and rose-gold arc ahead, the indigo core near the feet"
