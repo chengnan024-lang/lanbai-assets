@@ -1,0 +1,37 @@
+--- before/Assets/Lanbai/Tests/Editor/LB_GateTest_Build.cs
++++ after/Assets/Lanbai/Tests/Editor/LB_GateTest_Build.cs
+@@ -355,6 +355,17 @@
+                 var mB = MatAsset("M_TentacleTide_v3_B", shTide);
+                 mA.SetTexture("_MainTex", LoadA<Texture2D>(GATE + "/Textures/TentacleTide_v3_Atlas_A.png", missing));
+                 mB.SetTexture("_MainTex", LoadA<Texture2D>(GATE + "/Textures/TentacleTide_v3_Atlas_B.png", missing));
++                // Current GateClouds JSON is the source for the three approved tide defaults.
++                var tideDefaults = G(JReader.Parse(File.ReadAllText("Assets/Lanbai/GateClouds/GateClouds_Layout.json", Encoding.UTF8)), "tide_material");
++                Vector3 hazeNear = V3(G(tideDefaults, "_HazeNear"));
++                Vector3 hazeFar = V3(G(tideDefaults, "_HazeFar"));
++                Vector3 bandEl = V3(G(tideDefaults, "_BandEl"));
++                foreach (var tideMat in new[] { mA, mB })
++                {
++                    tideMat.SetColor("_HazeNear", new Color(hazeNear.x, hazeNear.y, hazeNear.z, 1f));
++                    tideMat.SetColor("_HazeFar", new Color(hazeFar.x, hazeFar.y, hazeFar.z, 1f));
++                    tideMat.SetVector("_BandEl", new Vector4(bandEl.x, bandEl.y, bandEl.z, 0f));
++                }
+                 EditorUtility.SetDirty(mA); EditorUtility.SetDirty(mB);
+                 foreach (var r in tide.GetComponentsInChildren<Renderer>(true))
+                 {
+@@ -387,6 +398,7 @@
+                 l.transform.rotation = Quaternion.LookRotation(-V3(G(mo, "direction_to_light_unity")).normalized, Vector3.up);
+                 var fi = G(LJ, "fill");
+                 var lf = NewLight(lights.transform, "Fill_from_below", Hex(S(G(fi, "color"))), F(G(fi, "inspector"), 0.52f), LightShadows.None);
++                lf.renderMode = LightRenderMode.ForceVertex; // HANDOFF D-07: Not Important.
+                 lf.transform.rotation = Quaternion.LookRotation(Vector3.up, Vector3.forward);          // JSON：from_below（没给方位，取正下方往上）
+                 var te = G(LJ, "tear");
+                 var lt = NewLight(lights.transform, "Tear_CabinOnly", Hex(S(G(te, "color"))), F(G(te, "inspector"), 0.9f), LightShadows.None);
+@@ -396,6 +408,8 @@
+ 
+             // ---- 天空、雾
+             var sky = MatAsset("M_GateAirSky", shSky);
++            sky.SetFloat("_Stars", F(G(G(J, "stars"), "_Stars"), 0.055f));
++            EditorUtility.SetDirty(sky);
+             RenderSettings.skybox = sky;
+             var FJ = G(J, "fog");
+             RenderSettings.fog = true;

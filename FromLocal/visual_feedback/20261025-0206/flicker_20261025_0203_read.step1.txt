@@ -1,0 +1,58 @@
+Lanbai L=Default world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+  Bus L=Default world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+    Model L=Default world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+    CabinLight L=Default world=(0.00, 2.47, -2.20) local=(0.00, 2.47, -2.20) rot=(0, 0, 0) scale=(1, 1, 1) | Light Point I=1.5 R=6.5 mask=9729
+    CabinLight L=Default world=(0.00, 2.47, 0.00) local=(0.00, 2.47, 0.00) rot=(0, 0, 0) scale=(1, 1, 1) | Light Point I=1.5 R=6.5 mask=9729
+    CabinLight L=Default world=(0.00, 2.47, 2.00) local=(0.00, 2.47, 2.00) rot=(0, 0, 0) scale=(1, 1, 1) | Light Point I=1.5 R=6.5 mask=9729
+    Headlight L=Default world=(-0.73, 0.99, 3.42) local=(-0.73, 0.99, 3.42) rot=(4, 0, 0) scale=(1, 1, 1) | Light Spot I=6 R=70 mask=11776
+    Headlight L=Default world=(0.73, 0.99, 3.42) local=(0.73, 0.99, 3.42) rot=(4, 0, 0) scale=(1, 1, 1) | Light Spot I=6 R=70 mask=11776
+    CabinProbe L=Default world=(0.00, 1.70, 0.00) local=(0.00, 1.70, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+    Seats L=Default world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+    Colliders L=Default world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+    Label L=Bus world=(0.00, 2.47, 2.99) local=(0.00, 2.47, 2.99) rot=(0, 180, 0) scale=(1, 1, 1) | MeshRenderer bounds=(-0.1, 2.4, 3.0)~(0.1, 2.5, 3.0) mesh=TextMeshPro Mesh(6tri,1sub) mats=LB_Serif Material<TextMeshPro/Mobile/Distance Field>,
+    RadioAnchor L=Default world=(0.15, 1.36, 2.88) local=(0.15, 1.36, 2.88) rot=(0, 0, 0) scale=(1, 1, 1)
+    SpawnInBus L=Default world=(0.20, 0.64, -1.40) local=(0.20, 0.64, -1.40) rot=(0, 0, 0) scale=(1, 1, 1)
+    Rain L=Default world=(0.00, 2.90, 0.00) local=(0.00, 2.90, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+  Road L=Default world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+    RoadRoot L=Default world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+    RoadPatch [关] L=Environment world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1) | MeshRenderer bounds=(-3.2, 0.0, 4.0)~(3.2, 0.0, 28.0) mesh=LB_RoadPatch(2tri,1sub) mats=LB_RoadPatch<Lanbai/Lit>,
+    LightSea [关] L=Environment world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1) | MeshRenderer bounds=(-898.3, -0.2, -700.7)~(899.2, 0.2, 1101.6) mesh=LB_LightSea(16344tri,1sub) mats=LB_LightSea<Lanbai/Unlit>,
+    CloudSea [关] L=Default world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+    Rain L=Default world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+  Legacy_Gate [关] L=Default world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+    Legacy_GateRoot L=Default world=(0.00, 0.00, 700.00) local=(0.00, 0.00, 700.00) rot=(0, 0, 0) scale=(1, 1, 1)
+  SkyDome L=Default world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1) | MeshRenderer[关] bounds=(-2500.0, -2500.0, -2500.0)~(2500.0, 2500.0, 2500.0) mesh=LB_SkyDome(2208tri,1sub) mats=LB_Sky<Lanbai/Sky>,
+  Sky [关] L=Default world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+    Clouds L=Default world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+    Meteors [关] L=Default world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1) | ParticleSystemRenderer bounds=(0.0, 0.0, 0.0)~(0.0, 0.0, 0.0) mats=LB_Mote<Legacy Shaders/Particles/Additive>,
+  Sun L=Default world=(0.00, 50.00, 0.00) local=(0.00, 50.00, 0.00) rot=(30, 201, 0) scale=(1, 1, 1) | Light Directional[关] I=0.25 R=10 mask=-1
+  SeaA [关] L=Default world=(0.00, -1500.00, 0.00) local=(0.00, -1500.00, 0.00) rot=(90, 0, 0) scale=(1, 1, 1) | MeshRenderer bounds=(-3000.0, -1501.0, -3000.0)~(3000.0, -1499.0, 3000.0) mesh=LB_Sea(3200tri,1sub) mats=LB_Sea<Lanbai/Sea>,
+  SeaB [关] L=Default world=(0.00, -1500.00, 0.00) local=(0.00, -1500.00, 0.00) rot=(90, 0, 0) scale=(1, 1, 1) | MeshRenderer bounds=(-3000.0, -1501.0, -3000.0)~(3000.0, -1499.0, 3000.0) mesh=LB_Sea(3200tri,1sub) mats=LB_SeaB<Lanbai/Sea>,
+  Deep [关] L=Default world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+    Motes L=Default world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1) | ParticleSystemRenderer bounds=(0.0, 0.0, 0.0)~(0.0, 0.0, 0.0) mats=LB_Mote<Legacy Shaders/Particles/Additive>,
+    Plankton [关] L=Default world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1) | ParticleSystemRenderer bounds=(0.0, 0.0, 0.0)~(0.0, 0.0, 0.0) mats=LB_Plankton<Legacy Shaders/Particles/Additive>,
+    GodRays L=Default world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1) | MeshRenderer bounds=(-351.2, -517.6, -327.2)~(364.1, 200.0, 380.7) mesh=LB_GodRays(88tri,1sub) mats=LB_GodRay<Lanbai/GodRay>,
+    Roots L=Default world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1) | MeshRenderer bounds=(-290.5, -622.0, -378.2)~(365.7, 490.6, 255.9) mesh=LB_Roots(4050tri,1sub) mats=LB_Root<Lanbai/Tentacle>,
+  PostProcess L=Water world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+    PP_Base L=Water world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+    PP_Night L=Water world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+    PP_Gate L=Water world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+    PP_Dawn L=Water world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+    PP_Dusk L=Water world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+    PP_Stars L=Water world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+    PP_Deep L=Water world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+    PP_White L=PostProcessing world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+    PP_Black L=PostProcessing world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+    Grades L=Water world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+    Helpers L=Water world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+  VRCWorld L=Default world=(0.20, 0.64, -1.40) local=(0.20, 0.64, -1.40) rot=(0, 0, 0) scale=(1, 1, 1)
+    Spawns L=Default world=(0.20, 0.64, -1.40) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+    ReferenceCamera L=Water world=(0.20, 2.24, -1.40) local=(0.00, 1.60, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+  Audio L=Default world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+    World L=Default world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+    Boom L=Default world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+    Splash L=Default world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+  Poem L=Default world=(0.00, 3.70, 17.00) local=(0.00, 3.70, 17.00) rot=(0, 0, 0) scale=(1, 1, 1) | MeshRenderer bounds=(0.0, 3.7, 17.0)~(0.0, 3.7, 17.0) mesh=TextMeshPro Mesh(2tri,1sub) mats=LB_Serif Material<TextMeshPro/Mobile/Distance Field>,
+  Systems L=Default world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+    Journey L=Default world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)
+  Director L=Default world=(0.00, 0.00, 0.00) local=(0.00, 0.00, 0.00) rot=(0, 0, 0) scale=(1, 1, 1)

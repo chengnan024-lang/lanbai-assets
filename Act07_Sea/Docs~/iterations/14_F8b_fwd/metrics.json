@@ -4,40 +4,40 @@
    960,
    540
   ],
-  "APL": 13.65,
-  "EV_display": -7.682,
+  "APL": 13.56,
+  "EV_display": -7.73,
   "luma_lt12_pct": 22.73,
-  "Lstar_gt85_pct": 0.002,
+  "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
   "clip_black_largest_region_pct": 0.0,
   "clip_white_largest_region_pct": 0.0,
   "warm_shadow_pct": 0.0,
-  "purple_pct": 0.001,
+  "purple_pct": 0.0,
   "purple_largest_region_pct": 0.0,
-  "violet_strong_pct": 0.001,
-  "lavender_act6_pct": 0.093,
+  "violet_strong_pct": 0.0,
+  "lavender_act6_pct": 0.028,
   "brightest": {
    "bbox": [
-    88,
-    52,
-    959,
-    529
+    38,
+    39,
+    944,
+    531
    ],
    "centroid": [
-    729.2,
-    140.1
+    628.3,
+    353.4
    ],
-   "clusters": 14,
-   "clusters_ge5pct": 7,
-   "min_luma": 48.2,
+   "clusters": 42,
+   "clusters_ge5pct": 4,
+   "min_luma": 23.8,
    "centroid_az_el": [
-    24.28,
-    11.29
+    14.81,
+    -7.38
    ]
   },
   "top25_Lstar": {
-   "mean": 4.44,
+   "mean": 4.27,
    "p50": 4.66,
    "p90": 4.99
   },
@@ -48,43 +48,43 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 68.1,
+     "nearest_dE2000_p01": 85.4,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 61.5,
+     "nearest_dE2000_p01": 71.4,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 54.5,
+     "nearest_dE2000_p01": 61.2,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#3876AB",
      "role": "浅水 縹",
-     "nearest_dE2000_p01": 25.3,
+     "nearest_dE2000_p01": 31.9,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
-     "nearest_dE2000_p01": 10.2,
+     "nearest_dE2000_p01": 13.0,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#697987",
      "role": "海雪",
-     "nearest_dE2000_p01": 26.5,
+     "nearest_dE2000_p01": 31.8,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 57.6,
+     "nearest_dE2000_p01": 64.9,
      "within_dE5_pct": 0.0
     }
    ],
@@ -168,7 +168,7 @@
    "color": "#000000"
   }
  },
- "bloom_share_of_APL": 0.03,
+ "bloom_share_of_APL": 0.0,
  "t": 877.96,
  "target": {
   "phase": "7c 海底发光",
@@ -193,7 +193,7 @@
    540
   ]
  },
- "render_seconds": 22.7,
+ "render_seconds": 17.7,
  "lens": "none",
  "bloom_tint": "single",
  "note": "F8b 877.96 forward: the trembling stops; APL target 20"

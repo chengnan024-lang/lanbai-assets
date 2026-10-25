@@ -1,0 +1,15 @@
+{
+  "image_pair_seconds": [
+    147.005,
+    151.842
+  ],
+  "mean_abs_rgb_difference_0_255": 12.402626991271973,
+  "fraction_pixels_any_channel_diff_gt_2": 0.8267833333333333,
+  "roi_xywh": [
+    200,
+    550,
+    1200,
+    300
+  ],
+  "qualification": "Image change includes journey motion. Independent cloud advection is implemented from the Udon time; this comparison alone does not isolate wind from journey movement."
+}

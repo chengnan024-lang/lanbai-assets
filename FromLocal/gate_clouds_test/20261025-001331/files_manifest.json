@@ -1,0 +1,37 @@
+[
+  {
+    "path": "console.jsonl",
+    "bytes": 3171,
+    "sha256": "f167cdb2f1d2dcb0019d25b2556d8da18713a66fdbf0f15e9deac26b2ba14d33"
+  },
+  {
+    "path": "manifest.json",
+    "bytes": 11471,
+    "sha256": "387dff46b4a5c07899e1af44db0be8e23abebf6c4bca1ca14eb0d5b853c19b29"
+  },
+  {
+    "path": "public_export.json",
+    "bytes": 1768,
+    "sha256": "092220533d504fcfbe839c5909893c45d4ba4160c47fcb2ac6e87e65c1c5af56"
+  },
+  {
+    "path": "README_说明.md",
+    "bytes": 346,
+    "sha256": "c5a9c286d6f0ecc5b5d354907a1545db903114b03403cf5011045661d6c12a8d"
+  },
+  {
+    "path": "result.json",
+    "bytes": 248,
+    "sha256": "504228217d6e8567d0a6eb165e59a842973b67965c5e4f5de1149a23771b0482"
+  },
+  {
+    "path": "summary.md",
+    "bytes": 6386,
+    "sha256": "8cdc2722f7dd38b18a3ce59971deee75b420192f25505a12a25b632df221451f"
+  },
+  {
+    "path": "test_definition.json",
+    "bytes": 20494,
+    "sha256": "4c49970db5607a5df0be8dd6d4dd543476a6ce84ff8ffaa4ab42274bbfc29bae"
+  }
+]

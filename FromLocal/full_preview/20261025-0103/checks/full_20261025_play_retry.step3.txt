@@ -1,0 +1,106 @@
+Scene=Assets/Lanbai/Scenes/Lanbai_FullPreview.unity dirty=False
+Roots=Lanbai, DeliveredGate, Lanbai_SkyPresets, Lanbai_SkyDriver_Acts1to3, Lanbai_SkyDriver_Acts11to12, Lanbai_Stars_BSC5, Lanbai_Overlay, Lanbai_Inside, Act06_Driver, R_Act07, Act07_Driver, R_StarSea, Lanbai_Act09Driver, Lanbai_Grades, Gate_Driver, R_Dawn, R_DawnRing, Lanbai_Poems, Lanbai_PoemDriver, Lanbai_Board
+Objects=1764 Renderers=1179
+U# Lanbai.LB_DepartButton @ Lanbai/Bus/Model/DepartButton
+U# Lanbai.LB_Seat @ Lanbai/Bus/Seats/Seat0
+U# Lanbai.LB_Seat @ Lanbai/Bus/Seats/Seat1
+U# Lanbai.LB_Seat @ Lanbai/Bus/Seats/Seat2
+U# Lanbai.LB_Seat @ Lanbai/Bus/Seats/Seat3
+U# Lanbai.LB_Seat @ Lanbai/Bus/Seats/Seat4
+U# Lanbai.LB_Seat @ Lanbai/Bus/Seats/Seat5
+U# Lanbai.LB_Seat @ Lanbai/Bus/Seats/Seat6
+U# Lanbai.LB_Seat @ Lanbai/Bus/Seats/Seat7
+U# Lanbai.LB_Seat @ Lanbai/Bus/Seats/Seat8
+U# Lanbai.LB_Seat @ Lanbai/Bus/Seats/Seat9
+U# Lanbai.LB_Seat @ Lanbai/Bus/Seats/Seat10
+U# Lanbai.LB_Seat @ Lanbai/Bus/Seats/Seat11
+U# Lanbai.LB_Seat @ Lanbai/Bus/Seats/Seat12
+U# Lanbai.LB_Seat @ Lanbai/Bus/Seats/Seat13
+U# Lanbai.LB_Seat @ Lanbai/Bus/Seats/Seat14
+U# Lanbai.LB_Seat @ Lanbai/Bus/Seats/Seat15
+U# Lanbai.LB_Seat @ Lanbai/Bus/Seats/Seat16
+U# Lanbai.LB_Seat @ Lanbai/Bus/Seats/Seat17
+U# Lanbai.LB_Journey @ Lanbai/Systems/Journey
+U# LanbaiActDispatcher @ Lanbai/Director
+U# LanbaiGateClouds @ DeliveredGate/GateClouds_Driver
+U# Lanbai.Sky.LanbaiSkyPreset @ Lanbai_SkyPresets/SkyPreset_overcast_rain_night
+U# Lanbai.Sky.LanbaiSkyPreset @ Lanbai_SkyPresets/SkyPreset_overcast_rain_night_town
+U# Lanbai.Sky.LanbaiSkyPreset @ Lanbai_SkyPresets/SkyPreset_moon_night
+U# Lanbai.Sky.LanbaiSkyPreset @ Lanbai_SkyPresets/SkyPreset_dawn
+U# Lanbai.Sky.LanbaiSkyPreset @ Lanbai_SkyPresets/SkyPreset_dusk_8i
+U# Lanbai.Sky.LanbaiSkyPreset @ Lanbai_SkyPresets/SkyPreset_dusk_8ii
+U# Lanbai.Sky.LanbaiSkyPreset @ Lanbai_SkyPresets/SkyPreset_blue_hour
+U# Lanbai.Sky.LanbaiSkyPreset @ Lanbai_SkyPresets/SkyPreset_star_sea
+U# Lanbai.Sky.LanbaiSkyDriver @ Lanbai_SkyDriver_Acts1to3
+U# Lanbai.Sky.LanbaiSkyDriver @ Lanbai_SkyDriver_Acts11to12
+U# LanbaiOverlay @ Lanbai_Overlay
+U# LanbaiInsideDriver @ Lanbai_Inside/LanbaiInsideDriver
+U# LanbaiSkylightSpot @ Lanbai_Inside/LanbaiSkylightSpot
+U# LanbaiInsideTestClock @ Lanbai_Inside/Inside_TestClock (test scene only)
+U# LanbaiAct06Driver @ Act06_Driver
+U# LanbaiAct07Driver @ Act07_Driver
+U# Lanbai.Act09.LanbaiAct09Driver @ Lanbai_Act09Driver
+U# LanbaiGateDriver @ Gate_Driver
+U# LanbaiPoemDriver @ Lanbai_PoemDriver
+U# LanbaiLangButton @ Lanbai_Board/Buttons/Lang_Zh
+U# LanbaiLangButton @ Lanbai_Board/Buttons/Lang_Ja
+U# LanbaiLangButton @ Lanbai_Board/Buttons/Lang_En
+Camera Lanbai/VRCWorld/ReferenceCamera enabled=False xyz=(0.20, 2.24, -1.40)
+Light Lanbai/Sun enabled=False intensity=0.25
+Light DeliveredGate/Gate_Lights/Moon enabled=True intensity=1
+Light DeliveredGate/Gate_Lights/Fill_from_below enabled=True intensity=0.24
+Light DeliveredGate/Gate_Lights/Tear_CabinOnly enabled=True intensity=0.3971123
+Journey.deliveredDispatcher=Lanbai/Director
+Journey.deliveredPoems=Lanbai_PoemDriver
+Journey.deliveredOverlay=Lanbai_Overlay
+Journey.fallbackDusk=Lanbai_SkyPresets/SkyPreset_dusk_8i
+Journey.fallbackBlue=Lanbai_SkyPresets/SkyPreset_blue_hour
+Journey.busRoot=Lanbai/Bus
+Journey.doorPivot=Lanbai/Bus/Model/Door1
+Journey.doorPivot2=Lanbai/Bus/Model/Door1/Door0
+Journey.fan=Lanbai/Bus/Model/FanBlades
+Journey.pendant=Lanbai/Bus/Model/Amulet
+Journey.spawnInBus=Lanbai/Bus/SpawnInBus
+Journey.roadGroup=Lanbai/Road
+Journey.roadRoot=Lanbai/Road/RoadRoot
+Journey.roadPatch=Lanbai/Road/RoadPatch
+Journey.lightSea=Lanbai/Road/LightSea
+Journey.cloudSea=Lanbai/Road/CloudSea
+Journey.truck=Lanbai/Road/RoadRoot/Truck
+Journey.rainIdle=Lanbai/Road/Rain/RainIdle
+Journey.rainMoving=Lanbai/Road/Rain/RainMoving
+Journey.rainHeadlight=Lanbai/Road/Rain/RainHeadlight
+Journey.gateGroup=Lanbai/Legacy_Gate
+Journey.gateRoot=Lanbai/Legacy_Gate/Legacy_GateRoot
+Journey.riftGlow=Lanbai/Legacy_Gate/Legacy_GateRoot/RiftGlow
+Journey.skyDome=Lanbai/SkyDome
+Journey.skyGroup=Lanbai/Sky
+Journey.seaA=Lanbai/SeaA
+Journey.seaB=Lanbai/SeaB
+Journey.seaARenderer=Lanbai/SeaA
+Journey.seaBRenderer=Lanbai/SeaB
+Journey.deepGroup=Lanbai/Deep
+Journey.godRays=Lanbai/Deep/GodRays
+Journey.sun=DeliveredGate/Gate_Lights/Moon
+Journey.meteors=Lanbai/Sky/Meteors
+Journey.plankton=Lanbai/Deep/Plankton
+Journey.ppNight=Lanbai/PostProcess/PP_Night
+Journey.ppGate=Lanbai/PostProcess/PP_Gate
+Journey.ppDawn=Lanbai/PostProcess/PP_Dawn
+Journey.ppDusk=Lanbai/PostProcess/PP_Dusk
+Journey.ppStars=Lanbai/PostProcess/PP_Stars
+Journey.ppDeep=Lanbai/PostProcess/PP_Deep
+Journey.ppWhite=Lanbai/PostProcess/PP_White
+Journey.ppBlack=Lanbai/PostProcess/PP_Black
+Journey.ppBase=Lanbai/PostProcess/PP_Base
+Journey.radio=Lanbai/Bus/RadioAnchor/Radio
+Journey.radioFilter=Lanbai/Bus/RadioAnchor/Radio
+Journey.radioHighPass=Lanbai/Bus/RadioAnchor/Radio
+Journey.radioNoise=Lanbai/Bus/RadioAnchor/RadioNoise
+Journey.world=Lanbai/Audio/World
+Journey.boom=Lanbai/Audio/Boom
+Journey.splash=Lanbai/Audio/Splash
+Journey.insects=Lanbai/Road/RoadRoot/Tile0/Insects
+Journey.rain=Lanbai/Bus/Rain
+Journey.poem=Lanbai/Poem
+Journey.poemRoot=Lanbai/Poem

@@ -21,19 +21,19 @@
    "bbox": [
     0,
     394,
-    381,
-    455
+    846,
+    522
    ],
    "centroid": [
-    182.6,
-    421.3
+    184.0,
+    421.6
    ],
-   "clusters": 19,
+   "clusters": 20,
    "clusters_ge5pct": 9,
    "min_luma": 107.9,
    "centroid_az_el": [
-    -30.81,
-    -14.93
+    -30.67,
+    -14.95
    ]
   },
   "top25_Lstar": {
@@ -48,19 +48,19 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 42.6,
+     "nearest_dE2000_p01": 42.5,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 41.6,
+     "nearest_dE2000_p01": 41.4,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 40.7,
+     "nearest_dE2000_p01": 40.6,
      "within_dE5_pct": 0.0
     },
     {
@@ -78,13 +78,13 @@
     {
      "hex": "#697987",
      "role": "海雪",
-     "nearest_dE2000_p01": 23.1,
+     "nearest_dE2000_p01": 23.0,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 44.0,
+     "nearest_dE2000_p01": 43.9,
      "within_dE5_pct": 0.0
     }
    ],
@@ -193,7 +193,7 @@
    540
   ]
  },
- "render_seconds": 16.3,
+ "render_seconds": 13.9,
  "lens": "none",
  "bloom_tint": "single",
  "note": "D-23: 897.96 forward through the windscreen (7c, before surfacing): the dark dip must stay APL 30-34"

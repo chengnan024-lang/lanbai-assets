@@ -1,0 +1,12 @@
+[15:45:20.192] [警告] [GateClouds] not built
+[15:45:37.187] [远程小助手] 请求失败：InvalidOperationException: Cannot run serialization on U# behaviour 'GateClouds_Driver (LanbaiGateClouds)' with outdated script version, wait until program assets have compiled.
+  at UdonSharpEditor.UdonSharpEditorUtility.CopyProxyToUdon (UdonSharp.UdonSharpBehaviour proxy, UdonSharpEditor.ProxySerializationPolicy serializationPolicy) [0x000bc] in .\Packages\com.vrchat.worlds\Integrations\UdonSharp\Editor\UdonSharpEditorUtility.cs:1198 
+  at UdonSharpEditor.UdonSharpEditorUtility.CopyProxyToUdon (UdonSharp.UdonSharpBehaviour proxy) [0x00000] in .\Packages\com.vrchat.worlds\Integrations\UdonSharp\Editor\UdonSharpEditorUtility.cs:1143 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <27124aa0e30a41659b903b822b959bc7>:0 
+[15:46:02.919] [警告] Main Object Name 'GateClouds_Card_Congestus' does not match filename 'GateClouds_Card_Congestus_crop45'
+[15:46:03.612] [远程小助手] 请求失败：InvalidOperationException: Cannot run serialization on U# behaviour 'GateClouds_Driver (LanbaiGateClouds)' with outdated script version, wait until program assets have compiled.
+  at UdonSharpEditor.UdonSharpEditorUtility.CopyProxyToUdon (UdonSharp.UdonSharpBehaviour proxy, UdonSharpEditor.ProxySerializationPolicy serializationPolicy) [0x000bc] in .\Packages\com.vrchat.worlds\Integrations\UdonSharp\Editor\UdonSharpEditorUtility.cs:1198 
+  at UdonSharpEditor.UdonSharpEditorUtility.CopyProxyToUdon (UdonSharp.UdonSharpBehaviour proxy) [0x00000] in .\Packages\com.vrchat.worlds\Integrations\UdonSharp\Editor\UdonSharpEditorUtility.cs:1143 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <27124aa0e30a41659b903b822b959bc7>:0 

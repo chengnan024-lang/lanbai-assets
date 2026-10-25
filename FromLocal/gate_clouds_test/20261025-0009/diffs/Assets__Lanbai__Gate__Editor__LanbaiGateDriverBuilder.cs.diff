@@ -1,0 +1,31 @@
+--- before/Assets/Lanbai/Gate/Editor/LanbaiGateDriverBuilder.cs
++++ after/Assets/Lanbai/Gate/Editor/LanbaiGateDriverBuilder.cs
+@@ -45,10 +45,17 @@
+     }
+ 
+     [MenuItem("蓝白/Gate/Build Driver")]
+-    public static void BuildMenu() { Build(false); }
++    public static void BuildMenu()
++    {
++        // D-41：先等 U# 程序资产初始化完再搭（Common/Editor/LanbaiUdonPrograms）
++        Lanbai.Udon.LanbaiUdonPrograms.RunWhenReady("蓝白/Gate/Build Driver", new[] { typeof(LanbaiGateDriver) }, () => Build(false));
++    }
+ 
+     [MenuItem("蓝白/Gate/Build Driver + Test Clock (Play mode only)")]
+-    public static void BuildClockMenu() { Build(true); }
++    public static void BuildClockMenu()
++    {
++        Lanbai.Udon.LanbaiUdonPrograms.RunWhenReady("蓝白/Gate/Build Driver + Test Clock (Play mode only)", new[] { typeof(LanbaiGateDriver), typeof(LanbaiGateTestClock) }, () => Build(true));
++    }
+ 
+     // ---- a tiny JSON reader (the sky's FogPresets.json mixes types under one key: JsonUtility cannot read it) ----------
+     // objects -> Dictionary<string, object>, arrays -> List<object>, numbers -> double, strings, true / false, null
+@@ -206,6 +213,8 @@
+ 
+     public static LanbaiGateDriver Build(bool withClock)
+     {
++        if (withClock) Lanbai.Udon.LanbaiUdonPrograms.RequireReady("蓝白/Gate/Build Driver", typeof(LanbaiGateDriver), typeof(LanbaiGateTestClock));
++        else Lanbai.Udon.LanbaiUdonPrograms.RequireReady("蓝白/Gate/Build Driver", typeof(LanbaiGateDriver));
+         string[] g = AssetDatabase.FindAssets("GateDriver_Bake");
+         string path = null;
+         foreach (string id in g) { string p = AssetDatabase.GUIDToAssetPath(id); if (p.EndsWith("GateDriver_Bake.json")) { path = p; break; } }

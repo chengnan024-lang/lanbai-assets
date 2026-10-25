@@ -1,0 +1,35 @@
+{
+    "id": "white_handoff_20261025_0654_freshtrial",
+    "state": "done",
+    "step": 8,
+    "total": 8,
+    "started": "2026-10-25 06:54:50",
+    "finished": "2026-10-25 06:55:20",
+    "error": "",
+    "log": [
+        "06:54:50 收到请求，共 8 步",
+        "06:54:50 调用 Lanbai.Tests.LB_WhiteHandoffAudit.QuietNextPlay",
+        "06:54:50   用时 0.0 秒",
+        "06:54:50   返回：Next diagnostic Play muted; volume restored on return to edit mode",
+        "06:54:51 进入 Play",
+        "06:54:52 （脚本重新加载，接着做第 2 步）",
+        "06:54:55 已经在 Play 里，等 4 秒",
+        "06:54:59 调用 Lanbai.Tests.LB_WhiteHandoffAudit.TrialMaskPriority",
+        "06:54:59   用时 0.0 秒",
+        "06:54:59   返回：Runtime trial: white/black mask priorities 150/151; scene assets untouched",
+        "06:55:00 调用 Lanbai.Tests.LB_FlickerDiagnostic.Begin（white_handoff_0654_freshtrial|baseline|1139|17|0）",
+        "06:55:00   用时 0.0 秒",
+        "06:55:00   返回：running white_handoff_0654_freshtrial",
+        "06:55:19 调用 Lanbai.Tests.LB_FlickerDiagnostic.Status",
+        "06:55:19   用时 0.0 秒",
+        "06:55:19   返回：done white_handoff_0654_freshtrial frames=168 errors=0 folder=E:\\IDMdownload\\VRCC\\Backups\\continuation_20261025\\flicker_0315\\captures\\white_handoff_0654_freshtrial",
+        "06:55:19 调用 Lanbai.Tests.LB_WhiteHandoffAudit.Inspect",
+        "06:55:19   用时 0.0 秒",
+        "06:55:19   返回内容写在 LanbaiRemote/results/white_handoff_20261025_0654_freshtrial.step7.txt",
+        "06:55:19 停止 Play",
+        "06:55:20 全部完成"
+    ],
+    "files": [
+        "LanbaiRemote/results/white_handoff_20261025_0654_freshtrial.step7.txt"
+    ]
+}

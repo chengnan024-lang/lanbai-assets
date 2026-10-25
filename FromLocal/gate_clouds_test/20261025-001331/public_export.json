@@ -1,0 +1,46 @@
+{
+  "note": "Original output retained locally. Public text redacts local path prefixes and normalizes line endings to LF; image pixels unchanged. backup_before remains local with hashes listed.",
+  "files": [
+    {
+      "path": "console.jsonl",
+      "bytes": 3171,
+      "source_sha256": "aa798d035acb976e513b70cbc26fd2347283cb442188a1292e4837dd2f4b3219",
+      "export_sha256": "f167cdb2f1d2dcb0019d25b2556d8da18713a66fdbf0f15e9deac26b2ba14d33",
+      "path_redacted": true,
+      "text_changed": true
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 11471,
+      "source_sha256": "0c2da4e57c26141fdf4289699f8863b09890bf769055a0f1a8021fed766c45e1",
+      "export_sha256": "387dff46b4a5c07899e1af44db0be8e23abebf6c4bca1ca14eb0d5b853c19b29",
+      "path_redacted": true,
+      "text_changed": true
+    },
+    {
+      "path": "result.json",
+      "bytes": 248,
+      "source_sha256": "2f4f4bd0ba769cc30d98c3dd60e65ac856444368db166d3b1bb22c5e8500946e",
+      "export_sha256": "504228217d6e8567d0a6eb165e59a842973b67965c5e4f5de1149a23771b0482",
+      "path_redacted": true,
+      "text_changed": true
+    },
+    {
+      "path": "summary.md",
+      "bytes": 6386,
+      "source_sha256": "f175825a816909cde86823a1249da9369c5c609631a6ecc8aafbc3ffc1a6f935",
+      "export_sha256": "8cdc2722f7dd38b18a3ce59971deee75b420192f25505a12a25b632df221451f",
+      "path_redacted": true,
+      "text_changed": true
+    },
+    {
+      "path": "test_definition.json",
+      "bytes": 20494,
+      "source_sha256": "4c49970db5607a5df0be8dd6d4dd543476a6ce84ff8ffaa4ab42274bbfc29bae",
+      "export_sha256": "4c49970db5607a5df0be8dd6d4dd543476a6ce84ff8ffaa4ab42274bbfc29bae",
+      "path_redacted": false,
+      "text_changed": false
+    }
+  ],
+  "backup_before_local_only": []
+}

@@ -1,0 +1,20 @@
+{
+    "id": "gate_continue_20261025_tool_preflight",
+    "state": "done",
+    "step": 2,
+    "total": 2,
+    "started": "2026-10-25 00:13:19",
+    "finished": "2026-10-25 00:13:31",
+    "error": "",
+    "log": [
+        "00:13:19 收到请求，共 2 步",
+        "00:13:19 刷新导入（AssetDatabase.Refresh）",
+        "00:13:23 （脚本重新加载，接着做第 1 步）",
+        "00:13:25 导入和编译完成",
+        "00:13:31 调用 Lanbai.Tests.LB_FormalTestEntry.Run（preflight）",
+        "00:13:31   用时 0.1 秒",
+        "00:13:31   返回：Official Runner invoked; use this run's result.json and completion record, not this adapter return value.",
+        "00:13:31 全部完成"
+    ],
+    "files": []
+}

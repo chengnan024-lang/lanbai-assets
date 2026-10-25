@@ -1,0 +1,458 @@
+[Licensing::Module] Trying to connect to existing licensing client channel...
+[Licensing::IpcConnector] Connection attempt to the License Client on channel: "LicenseClient-Kinzer" failed because channel doesn't exist; code: "0x80000002"
+[Licensing::Module] Successfully launched the LicensingClient (PId: 60220)
+[Licensing::IpcConnector] Successfully connected to the License Client on channel: "LicenseClient-Kinzer" at "2026-10-24T20:41:26.4996782Z"
+[Licensing::Client] Error: Code 10 while verifying Licensing Client signature (process Id: 60220, path: "E:/VRR/2022.3.22f1/Editor/Data/Resources/Licensing/Client/Unity.Licensing.Client.exe")
+[Licensing::Module] Error: LicensingClient has failed validation; ignoring
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.15.0+66d4389
+  Session Id:              10c46a1d151e4564817fe9b19145b0da
+  Correlation Id:          55387330a2f2ae8a82a65b69d5a14975
+  External correlation Id: 2302180421088377445
+  Machine Id:              xkTloTdycWmKQHB8Y38mdfV0ge4=
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-Kinzer" (connect: 1.46s, validation: 0.07s, handshake: 0.09s)
+[Licensing::IpcConnector] Successfully connected to the License Notification on channel: "LicenseClient-Kinzer-notifications" at "2026-10-24T20:41:26.6615266Z"
+[Licensing::Module] Connected to LicensingClient (PId: 60220, launch time: 0.08, total connection time: 1.62s)
+[Licensing::Module] Error: Access token is unavailable; failed to update
+[Licensing::Client] Error: Code 500 while processing request (status: Unable to update licenses. Errors: Cannot load ULF license: Root element is missing.,Token not found in cache)
+[Licensing::Client] Error: Code 500 while updating license in client (status: Unable to update licenses. Errors: Cannot load ULF license: Root element is missing.,Token not found in cache)
+Built from '2022.3/staging' branch; Version is '2022.3.22f1 (887be4894c44) revision 8944612'; Using compiler version '192829333'; Build Type 'Release'
+OS: 'Windows 11  (10.0.26200) 64bit CoreCountrySpecific' Language: 'zh' Physical Memory: 32386 MB
+[Licensing::Client] Successfully resolved entitlements
+[Licensing::Module] Serial number assigned to: "18968344640327-UnityPersXXXX"
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1, IsPro: 0
+
+COMMAND LINE ARGUMENTS:
+E:\VRR\2022.3.22f1\Editor\Unity.exe
+-batchmode
+-nographics
+-projectPath
+E:\IDMdownload\VRCC\dream
+-disable-assembly-updater
+-executeMethod
+Lanbai.Tests.LB_GateContinuation.RunBatchSetup
+-logFile
+E:\IDMdownload\VRCC\Backups\takeover_20261024-1634\work\batch-setup-1644.log
+Successfully changed project path to: E:\IDMdownload\VRCC\dream
+E:/IDMdownload/VRCC/dream
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gfx=262144"
+Player connection [76716] Host "[IP] 192.168.31.98 [Port] 55504 [Flags] 2 [Guid] 4048847778 [EditorId] 4048847778 [Version] 1048832 [Id] WindowsEditor(7,Kinzer) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" joined multi-casting on [225.0.0.222:54997]...
+
+Player connection [76716] Host "[IP] 192.168.31.98 [Port] 55504 [Flags] 2 [Guid] 4048847778 [EditorId] 4048847778 [Version] 1048832 [Id] WindowsEditor(7,Kinzer) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" joined alternative multi-casting on [225.0.0.222:34997]...
+
+[Physics::Module] Initialized MultithreadedJobDispatcher with 31 workers.
+[Package Manager] UpmClient::Connect -- Connected to IPC stream "Upm-83844" after 0.8 seconds.
+[Licensing::Client] Successfully resolved entitlements
+[Package Manager] Restoring resolved packages state from cache
+[Licensing::Client] Successfully resolved entitlement details
+[Package Manager] Registered 55 packages:
+  Packages from [https://packages.unity.com]:
+    com.unity.ide.rider@3.0.26 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.ide.rider@3.0.26)
+    com.unity.ide.visualstudio@2.0.22 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.ide.visualstudio@2.0.22)
+    com.unity.ide.vscode@1.2.5 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.ide.vscode@1.2.5)
+    com.unity.postprocessing@3.4.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.postprocessing@3.4.0)
+    com.unity.cinemachine@2.9.7 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.cinemachine@2.9.7)
+    com.unity.textmeshpro@3.0.6 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.textmeshpro@3.0.6)
+    com.unity.inputsystem@1.7.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.inputsystem@1.7.0)
+    com.unity.ai.navigation@1.1.5 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.ai.navigation@1.1.5)
+    com.unity.nuget.newtonsoft-json@3.2.1 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.nuget.newtonsoft-json@3.2.1)
+    com.unity.burst@1.8.12 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.burst@1.8.12)
+    com.unity.collections@2.1.4 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.collections@2.1.4)
+    com.unity.mathematics@1.2.6 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.mathematics@1.2.6)
+    com.unity.timeline@1.7.6 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.timeline@1.7.6)
+    com.unity.xr.management@4.4.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.xr.management@4.4.0)
+    com.unity.xr.oculus@4.2.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.xr.oculus@4.2.0)
+    com.unity.ext.nunit@1.0.6 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.ext.nunit@1.0.6)
+    com.unity.test-framework@1.1.33 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.test-framework@1.1.33)
+    com.unity.xr.legacyinputhelpers@2.1.10 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.xr.legacyinputhelpers@2.1.10)
+    com.unity.nuget.mono-cecil@1.11.4 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.nuget.mono-cecil@1.11.4)
+  Built-in packages:
+    com.unity.ugui@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.ugui@1.0.0)
+    com.unity.modules.ai@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.modules.ai@1.0.0)
+    com.unity.modules.androidjni@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.modules.androidjni@1.0.0)
+    com.unity.modules.animation@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.modules.animation@1.0.0)
+    com.unity.modules.assetbundle@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.modules.assetbundle@1.0.0)
+    com.unity.modules.audio@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.modules.audio@1.0.0)
+    com.unity.modules.cloth@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.modules.cloth@1.0.0)
+    com.unity.modules.director@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.modules.director@1.0.0)
+    com.unity.modules.imageconversion@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.modules.imageconversion@1.0.0)
+    com.unity.modules.imgui@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.modules.imgui@1.0.0)
+    com.unity.modules.jsonserialize@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.modules.jsonserialize@1.0.0)
+    com.unity.modules.particlesystem@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.modules.particlesystem@1.0.0)
+    com.unity.modules.physics@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.modules.physics@1.0.0)
+    com.unity.modules.physics2d@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.modules.physics2d@1.0.0)
+    com.unity.modules.screencapture@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.modules.screencapture@1.0.0)
+    com.unity.modules.terrain@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.modules.terrain@1.0.0)
+    com.unity.modules.terrainphysics@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.modules.terrainphysics@1.0.0)
+    com.unity.modules.tilemap@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.modules.tilemap@1.0.0)
+    com.unity.modules.ui@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.modules.ui@1.0.0)
+    com.unity.modules.uielements@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.modules.uielements@1.0.0)
+    com.unity.modules.umbra@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.modules.umbra@1.0.0)
+    com.unity.modules.unityanalytics@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.modules.unityanalytics@1.0.0)
+    com.unity.modules.unitywebrequest@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.modules.unitywebrequest@1.0.0)
+    com.unity.modules.unitywebrequestassetbundle@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.modules.unitywebrequestassetbundle@1.0.0)
+    com.unity.modules.unitywebrequestaudio@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.modules.unitywebrequestaudio@1.0.0)
+    com.unity.modules.unitywebrequesttexture@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.modules.unitywebrequesttexture@1.0.0)
+    com.unity.modules.unitywebrequestwww@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.modules.unitywebrequestwww@1.0.0)
+    com.unity.modules.vehicles@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.modules.vehicles@1.0.0)
+    com.unity.modules.video@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.modules.video@1.0.0)
+    com.unity.modules.vr@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.modules.vr@1.0.0)
+    com.unity.modules.wind@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.modules.wind@1.0.0)
+    com.unity.modules.xr@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.modules.xr@1.0.0)
+    com.unity.modules.subsystems@1.0.0 (location: E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.modules.subsystems@1.0.0)
+  Embedded packages:
+    com.vrchat.base@file:E:\IDMdownload\VRCC\dream\Packages\com.vrchat.base (location: E:\IDMdownload\VRCC\dream\Packages\com.vrchat.base)
+    com.vrchat.core.vpm-resolver@file:E:\IDMdownload\VRCC\dream\Packages\com.vrchat.core.vpm-resolver (location: E:\IDMdownload\VRCC\dream\Packages\com.vrchat.core.vpm-resolver)
+    com.vrchat.worlds@file:E:\IDMdownload\VRCC\dream\Packages\com.vrchat.worlds (location: E:\IDMdownload\VRCC\dream\Packages\com.vrchat.worlds)
+[Subsystems] Looking for new subsystems at path E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.xr.oculus@4.2.0
+[Subsystems] Novel subsystem found at Library/PackageCache/com.unity.xr.oculus@4.2.0/Runtime/UnitySubsystemsManifest.json
+[Subsystems] Discovering subsystems at path E:/VRR/2022.3.22f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path E:/IDMdownload/VRCC/dream/Assets
+[Subsystems] Discovering subsystems at path E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.xr.oculus@4.2.0
+[Subsystems] No descriptors matched for  examples in Library/PackageCache/com.unity.xr.oculus@4.2.0/Runtime/UnitySubsystemsManifest.json.
+[Subsystems] 1 'inputs' descriptors matched in Library/PackageCache/com.unity.xr.oculus@4.2.0/Runtime/UnitySubsystemsManifest.json
+[Subsystems] 1 'displays' descriptors matched in Library/PackageCache/com.unity.xr.oculus@4.2.0/Runtime/UnitySubsystemsManifest.json
+[Subsystems] No descriptors matched for  meshings in Library/PackageCache/com.unity.xr.oculus@4.2.0/Runtime/UnitySubsystemsManifest.json.
+Package Manager log level set to [2]
+[Package Manager] Done registering packages in 0.18 seconds
+Refreshing native plugins compatible for Editor in 76.94 ms, found 7 plugins.
+Preloading 2 native plugins for Editor in 4.74 ms.
+Initialize engine version: 2022.3.22f1 (887be4894c44)
+[Subsystems] Discovering subsystems at path E:/VRR/2022.3.22f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path E:/IDMdownload/VRCC/dream/Assets
+[Subsystems] Discovering subsystems at path E:\IDMdownload\VRCC\dream\Library\PackageCache\com.unity.xr.oculus@4.2.0
+[Subsystems] No descriptors matched for  examples in Library/PackageCache/com.unity.xr.oculus@4.2.0/Runtime/UnitySubsystemsManifest.json.
+[Subsystems] 1 'inputs' descriptors matched in Library/PackageCache/com.unity.xr.oculus@4.2.0/Runtime/UnitySubsystemsManifest.json
+[Subsystems] 1 'displays' descriptors matched in Library/PackageCache/com.unity.xr.oculus@4.2.0/Runtime/UnitySubsystemsManifest.json
+[Subsystems] No descriptors matched for  meshings in Library/PackageCache/com.unity.xr.oculus@4.2.0/Runtime/UnitySubsystemsManifest.json.
+Forcing GfxDevice: Null
+GfxDevice: creating device client; threaded=0; jobified=0
+NullGfxDevice:
+    Version:  NULL 1.0 [1.0]
+    Renderer: Null Device
+    Vendor:   Unity Technologies
+[Licensing::Client] Successfully resolved entitlements
+Initialize mono
+Mono path[0] = 'E:/VRR/2022.3.22f1/Editor/Data/Managed'
+Mono path[1] = 'E:/VRR/2022.3.22f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'E:/VRR/2022.3.22f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56844
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+ImportWorker Server TCP listen port: 0
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: E:/VRR/2022.3.22f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.003869 seconds.
+- Loaded All Assemblies, in  0.486 seconds
+Native extension for WindowsStandalone target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.400 seconds
+Domain Reload Profiling: 886ms
+	BeginReloadAssembly (172ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (0ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (1ms)
+	RebuildCommonClasses (45ms)
+	RebuildNativeTypeToScriptingClass (11ms)
+	initialDomainReloadingComplete (69ms)
+	LoadAllAssembliesAndSetupDomain (188ms)
+		LoadAssemblies (172ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (185ms)
+			TypeCache.Refresh (183ms)
+				TypeCache.ScanAssembly (163ms)
+			ScanForSourceGeneratedMonoScriptInfo (1ms)
+			ResolveRequiredComponents (1ms)
+	FinalizeReload (401ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (326ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (8ms)
+			SetLoadedEditorAssemblies (10ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (3ms)
+			ProcessInitializeOnLoadAttributes (227ms)
+			ProcessInitializeOnLoadMethodAttributes (78ms)
+			AfterProcessingInitializeOnLoad (0ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (0ms)
+[Licensing::Client] Successfully resolved entitlements
+Application.AssetDatabase Initial Refresh Start
+[ScriptCompilation] Requested script compilation because: Assetdatabase observed changes in script compilation related files
+Starting: E:\VRR\2022.3.22f1\Editor\Data\bee_backend.exe --dont-print-to-structured-log --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aE.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
+WorkingDir: E:/IDMdownload/VRCC/dream
+DisplayProgressbar: Compiling Scripts
+Starting: E:\VRR\2022.3.22f1\Editor\Data\Tools\netcorerun\netcorerun.exe "E:\VRR\2022.3.22f1\Editor\Data\Tools\BuildPipeline\ScriptCompilationBuildProgram.exe" "Library/Bee/1900b0aE.dag.json" "Library/Bee/1900b0aE-inputdata.json" "Library\Bee\buildprogram0.traceevents"
+WorkingDir: E:/IDMdownload/VRCC/dream
+ExitCode: 4 Duration: 0s291ms
+Rebuilding DAG because FileSignature timestamp changed: Library/Bee/1900b0aE-inputdata.json
+*** Tundra requires additional run (0.07 seconds), 0 items updated, 69 evaluated
+ExitCode: 0 Duration: 1s21ms
+Starting: E:\VRR\2022.3.22f1\Editor\Data\bee_backend.exe --dont-print-to-structured-log --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aE.dag" --continue-on-failure --dagfilejson="Library\Bee\1900b0aE.dag.json" --profile="Library/Bee/backend2.traceevents" ScriptAssemblies
+WorkingDir: E:/IDMdownload/VRCC/dream
+ExitCode: 0 Duration: 2s608ms
+Finished compiling graph: 799 nodes, 11854 flattened edges (9192 ToBuild, 136 ToUse), maximum node priority 859
+[610/795    0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+[791/795    0s] Csc Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll (+2 others)
+Assets\Lanbai\Editor\LB_Builder_Road.cs(450,17): warning CS0162: Unreachable code detected
+[792/795    1s] ILPostProcess Library/Bee/artifacts/1900b0aE.dag/post-processed/Assembly-CSharp-Editor.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll, with 124 defines and 323 references
+
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+
+running Unity.Jobs.CodeGen.JobsILPostProcessor
+
+running zzzUnity.Burst.CodeGen.BurstILPostProcessor
+[793/795    0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.pdb
+[794/795    0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.dll
+*** Tundra build success (2.41 seconds), 5 items updated, 795 evaluated
+Assets\Lanbai\Editor\LB_Builder_Road.cs(450,17): warning CS0162: Unreachable code detected
+AssetDatabase: script compilation time: 5.102563s
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  1.648 seconds
+Refreshing native plugins compatible for Editor in 25.53 ms, found 7 plugins.
+Preloading 2 native plugins for Editor in 0.30 ms.
+Start importing Assets/Lanbai/Tests/Editor/LB_GateContinuation.cs using Guid(e5dc8b19b61c98f41a84c7a3d5a5d786) Importer(-1,00000000000000000000000000000000)  -> (artifact id: '1a59b1818d9f81d26a74b70dfe3962fc') in 0.026168 seconds
+Refreshing native plugins compatible for Editor in 28.06 ms, found 7 plugins.
+Native extension for WindowsStandalone target not found
+[XR] OculusXRPlugin: registering subsystems
+[Subsystems] OculusXRPlugin successfully registered Provider for oculus display
+[XR] Oculus Input lifecycle provider registered.
+[Subsystems] OculusXRPlugin successfully registered Provider for oculus input
+[Subsystems] OculusXRPlugin successfully registered Provider for oculus display
+[XR] OVRP version 1.92.0
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  7.355 seconds
+Domain Reload Profiling: 9001ms
+	BeginReloadAssembly (258ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (12ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (32ms)
+	RebuildCommonClasses (49ms)
+	RebuildNativeTypeToScriptingClass (14ms)
+	initialDomainReloadingComplete (66ms)
+	LoadAllAssembliesAndSetupDomain (1258ms)
+		LoadAssemblies (867ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (540ms)
+			TypeCache.Refresh (483ms)
+				TypeCache.ScanAssembly (439ms)
+			ScanForSourceGeneratedMonoScriptInfo (40ms)
+			ResolveRequiredComponents (10ms)
+	FinalizeReload (7355ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (5556ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (5ms)
+			SetLoadedEditorAssemblies (5ms)
+			RefreshPlugins (0ms)
+			BeforeProcessingInitializeOnLoad (85ms)
+			ProcessInitializeOnLoadAttributes (4448ms)
+			ProcessInitializeOnLoadMethodAttributes (1010ms)
+			AfterProcessingInitializeOnLoad (3ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (25ms)
+Refreshing native plugins compatible for Editor in 31.06 ms, found 7 plugins.
+Preloading 2 native plugins for Editor in 0.23 ms.
+Asset Pipeline Refresh (id=77c5ae37e94f50e43b369d168200f1f7): Total: 16.687 seconds - Initiated by InitialRefreshV2(ForceSynchronousImport)
+	Summary:
+		Imports: total=85 (actual=1, local cache=84, cache server=0)
+		Asset DB Process Time: managed=6 ms, native=2124 ms
+		Asset DB Callback time: managed=244 ms, native=44 ms
+		Scripting: domain reloads=1, domain reload time=9115 ms, compile time=5103 ms, other=47 ms
+		Project Asset Count: scripts=4419, non-scripts=2128
+		Asset File Changes: new=0, changed=1, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeBeforeRefreshCallbacks: 1.630ms
+	ApplyChangesToAssetFolders: 0.061ms
+	Scan: 325.926ms
+	OnSourceAssetsModified: 5.510ms
+	GetAllGuidsForCategorization: 2.576ms
+	CategorizeAssets: 188.412ms
+	ImportOutOfDateAssets: 7495.950ms (2321.176ms without children)
+		ImportManagerImport: 39.226ms (11.089ms without children)
+			ImportInProcess: 28.126ms
+			UpdateCategorizedAssets: 0.011ms
+		CompileScripts: 5102.713ms
+		ReloadNativeAssets: 0.239ms
+		UnloadImportedAssets: 27.452ms
+		ReloadImportedAssets: 0.001ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 3.338ms
+		InitializingProgressBar: 0.011ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.001ms
+		OnDemandSchedulerStart: 1.792ms
+	PostProcessAllAssets: 245.918ms
+	Hotreload: 36.273ms
+	GatherAllCurrentPrimaryArtifactRevisions: 0.008ms
+	UnloadStreamsBegin: 2.626ms
+	PersistCurrentRevisions: 0.600ms
+	UnloadStreamsEnd: 0.092ms
+	GenerateScriptTypeHashes: 3.659ms
+	Untracked: 8380.975ms
+Application.AssetDatabase Initial Refresh End
+Scanning for USB devices : 2009.524ms
+Initializing Unity extensions:
+[Licensing::Client] Successfully resolved entitlements
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-dream
+ProgressiveSceneManager::Cancel()
+Unloading 19 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 286 unused Assets / (0.6 MB). Loaded Objects now: 4137.
+Memory consumption went from 235.7 MB to 235.2 MB.
+Total: 91.796500 ms (FindLiveObjects: 0.219900 ms CreateObjectMapping: 0.090400 ms MarkObjects: 90.643100 ms  DeleteObjects: 0.841100 ms)
+
+Opening scene 'Assets/Lanbai/Tests/GateTest.unity'
+Unloading 109 Unused Serialized files (Serialized files now loaded: 0)
+Loaded scene 'Assets/Lanbai/Tests/GateTest.unity'
+	Deserialize:            97.782 ms
+	Integration:            466.590 ms
+	Integration of assets:  3.061 ms
+	Thread Wait Time:       0.003 ms
+	Total Operation Time:   567.436 ms
+Unloading 3 unused Assets / (1.9 KB). Loaded Objects now: 5578.
+Memory consumption went from 226.6 MB to 226.6 MB.
+Total: 84.605600 ms (FindLiveObjects: 0.577200 ms CreateObjectMapping: 0.138800 ms MarkObjects: 83.829100 ms  DeleteObjects: 0.058600 ms)
+
+Asset Pipeline Refresh (id=94ed4dcc9712e9d4ab1376ed23d24ced): Total: 0.029 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+[GateContinuation] START 2026-10-24T16:41:49.8600271-04:00; graphics=Null
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+Lanbai.Tests.LB_GateContinuation:BatchLog (string) (at Assets/Lanbai/Tests/Editor/LB_GateContinuation.cs:51)
+Lanbai.Tests.LB_GateContinuation:RunBatchSetup () (at Assets/Lanbai/Tests/Editor/LB_GateContinuation.cs:38)
+
+(Filename: Assets/Lanbai/Tests/Editor/LB_GateContinuation.cs Line: 51)
+
+Microsoft Media Foundation video decoding to texture disabled: graphics device is Null, only Direct3D 11 and Direct3D 12 (only on desktop) are supported for hardware-accelerated video decoding.
+[Project] Loading completed in 24.983 seconds
+	Project init time: 				21.792 seconds
+		Template init time: 		0.000 seconds
+		Package Manager init time: 		0.810 seconds
+		Asset Database init time: 		0.461 seconds
+		Global illumination init time: 	0.007 seconds
+		Assemblies load time: 			0.891 seconds
+		Unity extensions init time: 	0.005 seconds
+		Asset Database refresh time: 	0.000 seconds
+	Scene opening time: 			1.316 seconds
+##utp:{"type":"ProjectInfo","version":2,"phase":"Immediate","time":1792874509911,"processId":83844,"projectLoad":24.9828583,"projectInit":21.7921691,"templateInit":0.0,"packageManagerInit":0.8104561,"assetDatabaseInit":0.4610955,"globalIlluminationInit":0.0070822,"assembliesLoad":0.8914318,"unityExtensionsInit":0.0050369,"assetDatabaseRefresh":0.0,"sceneOpening":1.3157206}
+##utp:{"type":"EditorInfo","version":2,"phase":"Immediate","time":1792874509911,"processId":83844,"editorVersion":"2022.3.22f1 (887be4894c44)","branch":"2022.3/staging","buildType":"Release","platform":"Windows"}
+Refreshing native plugins compatible for Editor in 23.39 ms, found 7 plugins.
+Refreshing native plugins compatible for Editor in 19.56 ms, found 7 plugins.
+Start importing Packages/com.vrchat.base/Integrations/OculusSpatializer/Android/arm32/libAudioPluginOculusSpatializer.so using Guid(e8e4c8f12751f7c439bae4bb849c6166) Importer(-1,00000000000000000000000000000000)  -> (artifact id: '12111a2b5476bb669ac9915072d0cc63') in 0.004286 seconds
+Refreshing native plugins compatible for Editor in 23.03 ms, found 7 plugins.
+Preloading 2 native plugins for Editor in 0.14 ms.
+Asset Pipeline Refresh (id=c0b80697c355aa349a251bf25f3a8f58): Total: 0.142 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Refreshing native plugins compatible for Editor in 18.30 ms, found 7 plugins.
+Start importing Packages/com.vrchat.base/Integrations/OculusSpatializer/Android/arm64/libAudioPluginOculusSpatializer.so using Guid(8a100aaac9551f649a8f4ff1280d16db) Importer(-1,00000000000000000000000000000000)  -> (artifact id: 'e57642b68612f9ce3ca333152ecd11cc') in 0.004566 seconds
+Refreshing native plugins compatible for Editor in 24.86 ms, found 7 plugins.
+Preloading 2 native plugins for Editor in 0.20 ms.
+Asset Pipeline Refresh (id=7aa0c4a4c5dffa14199bc34b72852250): Total: 0.073 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Refreshing native plugins compatible for Editor in 20.07 ms, found 7 plugins.
+Start importing Packages/com.vrchat.base/Integrations/OculusSpatializer/AudioPluginOculusSpatializer.bundle using Guid(883467ec1b9392b46a1549fac1d7f5dc) Importer(-1,00000000000000000000000000000000)  -> (artifact id: '818f7d29f1f76871774b9cd6a45492e9') in 0.002894 seconds
+Refreshing native plugins compatible for Editor in 21.61 ms, found 7 plugins.
+Preloading 2 native plugins for Editor in 0.18 ms.
+Asset Pipeline Refresh (id=d08ae9cfad6b414469ad126b63d8909a): Total: 0.070 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Refreshing native plugins compatible for Editor in 25.47 ms, found 7 plugins.
+Start importing Packages/com.vrchat.base/Integrations/OculusSpatializer/x64/AudioPluginOculusSpatializer.dll using Guid(cab7645a5ae73dd4cbbe72983022cce7) Importer(-1,00000000000000000000000000000000)  -> (artifact id: 'dcf42efc3243568d828fe11b18e13073') in 0.004310 seconds
+Refreshing native plugins compatible for Editor in 38.61 ms, found 7 plugins.
+Preloading 2 native plugins for Editor in 0.16 ms.
+Asset Pipeline Refresh (id=ddc84a617879b9b4295b06f8ceab5f7a): Total: 0.100 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Asset Pipeline Refresh (id=8463ada5ffe4e1845ad173fae7c342d7): Total: 0.065 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+[Licensing::Client] Successfully resolved entitlement details
+Start importing Assets/Lanbai/UdonPrograms/LanbaiGateDriver.asset using Guid(3332603cf086aa24fb365792b61e7e48) Importer(-1,00000000000000000000000000000000)  -> (artifact id: '9babf990b876bd1ae34a9afea6cc1c1a') in 0.003361 seconds
+Refreshing native plugins compatible for Editor in 23.56 ms, found 7 plugins.
+Preloading 2 native plugins for Editor in 0.16 ms.
+Asset Pipeline Refresh (id=a221e34ad759a33409b50b6eb10ed957): Total: 0.061 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing Assets/Lanbai/UdonPrograms/LanbaiGateTestClock.asset using Guid(9b88ba8a9da646a42a948af23ce1b774) Importer(-1,00000000000000000000000000000000)  -> (artifact id: 'c27495e623540d58d579ddb6f4b7fcb2') in 0.002771 seconds
+Refreshing native plugins compatible for Editor in 26.90 ms, found 7 plugins.
+Preloading 2 native plugins for Editor in 0.28 ms.
+Asset Pipeline Refresh (id=88d55bd9598bf294480ab722bfd9ff0a): Total: 0.058 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Start importing ProjectSettings/ProjectSettings.asset using Guid(00000000000000004000000000000000) Importer(-1,00000000000000000000000000000000)  -> (artifact id: 'fd8243126b1cc8a24371367c949a9466') in 0.004111 seconds
+Refreshing native plugins compatible for Editor in 22.29 ms, found 7 plugins.
+Preloading 2 native plugins for Editor in 0.15 ms.
+Asset Pipeline Refresh (id=393b2b9e4a8f4a54894562e2d4900b6c): Total: 0.050 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Asset Pipeline Refresh (id=9df67c114dec77b48b9100746d1b5b09): Total: 0.011 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+[GateContinuation] LanbaiGateClouds: reused c8eae9de33bb92f419423540656a7ab9
+LanbaiGateDriver: created; await SDK editor update before building
+LanbaiGateTestClock: created; await SDK editor update before building
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+Lanbai.Tests.LB_GateContinuation:BatchLog (string) (at Assets/Lanbai/Tests/Editor/LB_GateContinuation.cs:51)
+Lanbai.Tests.LB_GateContinuation:BatchTick () (at Assets/Lanbai/Tests/Editor/LB_GateContinuation.cs:68)
+UnityEditor.EditorApplication:Internal_CallUpdateFunctions ()
+
+(Filename: Assets/Lanbai/Tests/Editor/LB_GateContinuation.cs Line: 51)
+
+Request Asset Garbage Collect because used heap size increased from 226.6 MB to 0.56 GB, exceeding the threshold of 256.0 MB.
+Unloading 0 Unused Serialized files (Serialized files now loaded: 0)
+[UnityConnectServicesConfig] config is NOT valid, switching to default
+Created GICache directory at C:/Users/29742/AppData/LocalLow/Unity/Caches/GiCache. Took: 0.111s, timestamps: [25.006 - 25.116]
+gi::BakeBackendSwitch: switching bake backend from 3 to 1.
+GfxDevice renderer is null. Unity cannot update the Ambient Probe and Reflection Probes that the SkyManager generates. Run the Editor without the -nographics argument or generate lighting for your scene.
+Received signal SIGSEGV
+CheckDisalowAllocation. Allocating memory when it is not allowed to allocate memory. Label used for allocation: MemoryProfiler.
+Obtained 20 stack frames
+0x00007ff6ab722348 (Unity) 
+0x00007ff6ab729b2c (Unity) 
+0x00007fffc5799d6e (mono-2.0-bdwgc) 
+0x00007fffc579a739 (mono-2.0-bdwgc) 
+0x00007fffc579ae42 (mono-2.0-bdwgc) 
+0x00007fffc579b0ed (mono-2.0-bdwgc) 
+0x00007fffc579ae36 (mono-2.0-bdwgc) 
+0x00007fffc579b0ed (mono-2.0-bdwgc) 
+0x00007fffc579ae36 (mono-2.0-bdwgc) 
+0x00007fffc579b6be (mono-2.0-bdwgc) 
+0x00007ff6abab5b3f (Unity) 
+0x00007ff6abb01a36 (Unity) 
+0x00007ff6abb04e3e (Unity) 
+0x00007ff6abb04a2d (Unity) 
+0x00007ff6aca93812 (Unity) 
+0x00007ff6acf0e67a (Unity) 
+0x00007ff6acf13550 (Unity) 
+0x00007ff6ae2f594e (Unity) udnSetPath
+0x00007ff91b60dda7 (KERNEL32) BaseThreadInitThunk
+0x00007ff91ca3ee4c (ntdll) RtlUserThreadStart
+

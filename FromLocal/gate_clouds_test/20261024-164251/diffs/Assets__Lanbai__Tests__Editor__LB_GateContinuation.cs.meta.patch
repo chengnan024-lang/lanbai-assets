@@ -1,0 +1,14 @@
+--- /dev/null
++++ after/Assets/Lanbai/Tests/Editor/LB_GateContinuation.cs.meta
+@@ -0,0 +1,11 @@
++fileFormatVersion: 2
++guid: e5dc8b19b61c98f41a84c7a3d5a5d786
++MonoImporter:
++  externalObjects: {}
++  serializedVersion: 2
++  defaultReferences: []
++  executionOrder: 0
++  icon: {instanceID: 0}
++  userData: 
++  assetBundleName: 
++  assetBundleVariant: 

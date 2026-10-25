@@ -4,8 +4,8 @@
    960,
    540
   ],
-  "APL": 57.12,
-  "EV_display": -3.562,
+  "APL": 56.42,
+  "EV_display": -3.601,
   "luma_lt12_pct": 48.02,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
@@ -19,27 +19,27 @@
   "lavender_act6_pct": 0.0,
   "brightest": {
    "bbox": [
-    57,
-    1,
-    709,
-    526
+    23,
+    0,
+    593,
+    345
    ],
    "centroid": [
-    418.5,
-    70.8
+    453.3,
+    29.1
    ],
-   "clusters": 31,
+   "clusters": 23,
    "clusters_ge5pct": 2,
-   "min_luma": 159.7,
+   "min_luma": 160.1,
    "centroid_az_el": [
-    124.91,
-    74.3
+    132.16,
+    79.61
    ]
   },
   "top25_Lstar": {
-   "mean": 40.91,
+   "mean": 40.82,
    "p50": 54.37,
-   "p90": 65.28
+   "p90": 65.09
   },
   "palette": {
    "act": "07a",
@@ -60,37 +60,37 @@
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 10.3,
-     "within_dE5_pct": 0.02
+     "nearest_dE2000_p01": 10.9,
+     "within_dE5_pct": 0.01
     },
     {
      "hex": "#3876AB",
      "role": "浅水 縹",
-     "nearest_dE2000_p01": 5.9,
-     "within_dE5_pct": 0.01
+     "nearest_dE2000_p01": 6.1,
+     "within_dE5_pct": 0.0
     },
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
      "nearest_dE2000_p01": 2.9,
-     "within_dE5_pct": 17.76
+     "within_dE5_pct": 19.85
     },
     {
      "hex": "#697987",
      "role": "海雪",
      "nearest_dE2000_p01": 3.8,
-     "within_dE5_pct": 4.47
+     "within_dE5_pct": 5.97
     },
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 13.4,
-     "within_dE5_pct": 0.02
+     "nearest_dE2000_p01": 14.1,
+     "within_dE5_pct": 0.01
     }
    ],
-   "pixel_to_nearest_dE_median": 11.8,
-   "pixel_to_nearest_dE_p90": 19.3,
-   "pixels_within5_pct": 22.3
+   "pixel_to_nearest_dE_median": 11.9,
+   "pixel_to_nearest_dE_p90": 19.2,
+   "pixels_within5_pct": 25.8
   }
  },
  "cam": {
@@ -169,7 +169,7 @@
    "color": "#000000"
   }
  },
- "bloom_share_of_APL": 0.01,
+ "bloom_share_of_APL": 0.0,
  "t": 509.0,
  "target": {
   "phase": "最后一闪",
@@ -194,7 +194,7 @@
    540
   ]
  },
- "render_seconds": 19.1,
+ "render_seconds": 15.6,
  "lens": "none",
  "bloom_tint": "single",
  "note": "F3e1 509: the last wide shaft sweeping past overhead, up and back through the eroded roof (el >= 70 - 120 x erosion)"

@@ -1,0 +1,31 @@
+{
+  "atUtc": "2026-10-24T19:29:05.7301851Z",
+  "head": "480e711657e9301372619ac766f36bb54a5c857b",
+  "status": [],
+  "locks": [],
+  "gitProcesses": [],
+  "disks": [
+    {
+      "DeviceID": "C:",
+      "FreeSpace": 3413958656
+    },
+    {
+      "DeviceID": "E:",
+      "FreeSpace": 110732660736
+    }
+  ],
+  "memory": {
+    "FreePhysicalMemory": 6561332,
+    "FreeVirtualMemory": 8695680
+  },
+  "sourceVerification": {
+    "checked_utc": "2026-10-24T15:24:49.449916-04:00",
+    "checked_files": 7233,
+    "changed": [],
+    "missing": [],
+    "extra": [],
+    "errors": [],
+    "project_content_unchanged": true,
+    "scope": "All source files included in verified backup; excluded root directories not assessed"
+  }
+}

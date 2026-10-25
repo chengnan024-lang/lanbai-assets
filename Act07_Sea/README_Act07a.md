@@ -200,6 +200,16 @@ Act07_Driver             LanbaiAct07Driver（U#；重建时留着重用）
 4. 车里的东西（从下往上的焦散、玫瑰点光照在座椅上）标准台画不出来；水线也要本地接玻璃网格才有。
 5. 立方图是退路（见上）；正式的暮天来了重量一次窗心 / 窗缘。
 
+## 5.1 从主座位往前看（D-44 #5）
+
+“海中好几分钟只有一片蓝”：每个节拍往前（方位 ±35°、仰角 −10…+25°）看得到什么、哪几拍只在头顶或侧窗、以及怎么挪进前方视野的提案，见 `Docs~/7a_前方视野.md`（数据 `Docs~/forward_view_7a.json`，`Tools~/forward_view_7a.py` 生成）。阿白 10-25 的 12 个时刻已经在那里逐格核对过（§5）：
+
+- 没有“没画出来”的；
+- 其余的分两类：“画了但不在视野里”的，P1–P7 已经挪了；“被旧车顶 / 旧挡风玻璃挡住”的，归车包。
+- 工具 `Tools~/overlay_local_7a.py` 把每样东西应在的位置画到本地截图上。
+
+**新车（D-28）接进来之前，`Act07_TrailsFront` 设为不启用**：它贴在新车车头外，在旧车里会落进车厢。
+
 ## 6. 和别的包的接口
 
 - **云（第 6 幕）**：F2h 那一帧云关掉自己的海、本驱动开平面（同一个 y = 车上方 1.0 m、同一个 ABOVE 材质）。两块平面永不同时存在（`Sea/README_Sea接口.md` §5）。
@@ -210,7 +220,7 @@ Act07_Driver             LanbaiAct07Driver（U#；重建时留着重用）
 ## 7. 检查
 
 - shader：`python3 Common/Tools~/compile_check/check_shaders.py Act07_Sea/Shaders Sea/Shaders` → 0 错 0 警。
-- C#：`bash Common/Tools~/compile_check/check_cs.sh Act07_Sea Sea GateClouds` → OK（搭建脚本用到 `Sea/Editor` 和 `GateClouds/Editor`，一起编）。
+- C#：`bash Common/Tools~/compile_check/check_cs.sh Act07_Sea Sea GateClouds Common` → OK（搭建脚本用到 `Sea/Editor`、`GateClouds/Editor` 和 D-41 的 `Common/Editor/LanbaiUdonPrograms`，一起编）。
 - 数据：`~/bpy/bin/python Act07_Sea/Tools~/act07_layout.py`（重生 JSON：播种的 5° 锥检查在生成时做）。
 - **没在 Unity 里编译过，没在头显里看过。**
 

@@ -1,0 +1,13 @@
+--- before/Assets/Lanbai/Tests/GateTest_Materials/M_TentacleTide_v3_A.mat
++++ after/Assets/Lanbai/Tests/GateTest_Materials/M_TentacleTide_v3_A.mat
+@@ -47,8 +47,8 @@
+     - _FogBaseTip: {r: 0.58, g: 0.48, b: 400, a: 0}
+     - _FogCapFrom: {r: 1300, g: 1700, b: 0, a: 0}
+     - _HaloColor: {r: 0.195, g: 0.198, b: 0.332, a: 1}
+-    - _HazeFar: {r: 0.0436, g: 0.0504, b: 0.0726, a: 1}
+-    - _HazeNear: {r: 0.1085, g: 0.113, b: 0.1641, a: 1}
++    - _HazeFar: {r: 0.0436, g: 0.0504, b: 0.0726, a: 0}
++    - _HazeNear: {r: 0.1085, g: 0.113, b: 0.1641, a: 0}
+     - _MoonGlowColor: {r: 0.275, g: 0.366, b: 0.578, a: 1}
+     - _MoonGlowShape: {r: 1.6, g: 0.9, b: 0.06, a: 0.32}
+     - _RimDir: {r: -0.2059, g: 0.1392, b: 0.9686, a: 0}

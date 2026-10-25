@@ -1,0 +1,10 @@
+{
+  "id": "gate_20261024_1547_open",
+  "steps": [
+    {
+      "op": "open",
+      "target": "Assets/Lanbai/Tests/GateTest.unity",
+      "discard": false
+    }
+  ]
+}

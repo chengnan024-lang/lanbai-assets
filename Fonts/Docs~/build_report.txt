@@ -1,4 +1,4 @@
-Lanbai Fonts kit build report  2026-10-24 11:29 UTC
+Lanbai Fonts kit build report  2026-10-24 12:18 UTC
 
 == SUBSETS (original -> subset) ==
 SourceHanSerifSC-Regular       SourceHanSerifCN-Regular.otf       11626108 B -> LanbaiSerifSC-Regular.otf                   77332 B  ( 0.67%)  glyphs 366  renamed Lanbai Serif SC (RFN Source); U+2014 -> full-width mid-line rule (glyph of U+2500)
@@ -310,7 +310,7 @@ P12b_Keats
   de           main         centre  -14.00°   top  -13.22°   bottom  -14.78°   shift +0.00°  ok
 
 == VIEWCHECK (D-33 #5) ==
-Every block of every player against the real bus (origin/pkg/bus (029e146); the bus's occlusion table Bus/Docs~/viewcheck/hero_occlusion.npz via Bus/Source/occlusion_lookup.py (0.25° grid); clearance ring 0.25° steps up to 4.0°). FAIL = some of the block is behind an opaque part (glass does not count).
+Every block of every player against the real bus (origin/pkg/bus (0ec3aec); the bus's occlusion table Bus/Docs~/viewcheck/hero_occlusion.npz via Bus/Source/occlusion_lookup.py (0.25° grid); clearance ring 0.25° steps up to 4.0°). FAIL = some of the block is behind an opaque part (glass does not count).
 viewcheck: PASS
 
 P03_LiBai_Dream          zh  ok     hits -                                        clearance >= 4.0
@@ -368,6 +368,1280 @@ P12b_Keats               zht ok     hits -                                      
 P12b_Keats               ja  ok     hits -                                        clearance 3.25 (Door3_Stile1)
 P12b_Keats               en  ok     hits -                                        clearance 2.5 (Door3_Stile1)
 P12b_Keats               de  ok     hits -                                        clearance 2.5 (Door3_Stile1)
+
+== SEATS (D-37) ==
+D-37: every seat but the main one (which keeps D-33), every poem that may move, every key: block <= 10 % blocked, centre elevation -15…+10°, whole circle, nearest to the default (as seen from that seat), >= 12° from the focus when it can; none -> the least blocked. Grid: origin/pkg/bus (0ec3aec).
+
+mean blocked, every seat but the main one: 8.5 % (target <= 10 %); checks over 10 %: 52 of 990; moved from the default: 946
+table: 1265 default entries + 30360 gaze entries (24 facings) = 63250 floats (az, el) in LanbaiPoemDriver
+mean by seat: SeatR0 0.0%, SeatR1 3.8%, SeatR2 6.5%, SeatR3 10.8%, SeatR4 9.8%, SeatR5 8.6%, SeatR6 8.9%, SeatL0w 8.8%, SeatL0a 6.2%, SeatL1w 7.3%, SeatL1a 7.6%, SeatL2w 8.0%, SeatL2a 7.8%, SeatL3w 11.4%, SeatL3a 10.3%, SeatL4w 9.2%, SeatL4a 9.2%, SeatL5w 8.6%, SeatL5a 8.0%, RearBench0 8.9%, RearBench1 9.0%, RearBench2 8.7%, RearBench3 9.2%
+worst: SeatL3a P03_LiBai_Dream/ja 29%; SeatL3w P07_HeBo/ja 26%; SeatL4w P07_HeBo/en 26%; SeatL4w P07_HeBo/de 26%; SeatL3w P07_HeBo/en 25%; SeatL3w P07_HeBo/de 25%; SeatR3 P03_LiBai_Dream/ja 24%; SeatL3w P03_LiBai_Dream/ja 23%; SeatL3w P03_LiBai_Dream/en 23%; SeatL3w P03_LiBai_Dream/de 23%; SeatL3w P08a_Dream_Dusk/ja 23%; SeatL3w P12a_LiBai_Wake/ja 23%
+
+  SeatR0      P03_LiBai_Dream          zh  default  +61.0°  -9.0° blocked   0% ->  +61.0°  -9.0° blocked   0%
+  SeatR0      P03_LiBai_Dream          zht default  +61.0°  -9.0° blocked   0% ->  +61.0°  -9.0° blocked   0%
+  SeatR0      P03_LiBai_Dream          ja  default  +61.0°  -9.0° blocked   0% ->  +61.0°  -9.0° blocked   0%
+  SeatR0      P03_LiBai_Dream          en  default  +61.0°  -9.0° blocked   0% ->  +61.0°  -9.0° blocked   0%
+  SeatR0      P03_LiBai_Dream          de  default  +61.0°  -9.0° blocked   0% ->  +61.0°  -9.0° blocked   0%
+  SeatR0      P04a_Rilke               zh  default   +5.5°  -5.4° blocked   0% ->   +5.5°  -5.4° blocked   0%
+  SeatR0      P04a_Rilke               zht default   +5.5°  -5.4° blocked   0% ->   +5.5°  -5.4° blocked   0%
+  SeatR0      P04a_Rilke               ja  default   +4.5°  -7.1° blocked   0% ->   +4.5°  -7.1° blocked   0%
+  SeatR0      P04a_Rilke               en  default   +5.5°  -4.8° blocked   0% ->   +5.5°  -4.8° blocked   0%
+  SeatR0      P04a_Rilke               de  default   +5.5°  -4.8° blocked   0% ->   +5.5°  -4.8° blocked   0%
+  SeatR0      P04b_Urlicht             zh  default   +0.0°  -8.0° blocked   0% ->   +0.0°  -8.0° blocked   0%
+  SeatR0      P04b_Urlicht             zht default   +0.0°  -8.0° blocked   0% ->   +0.0°  -8.0° blocked   0%
+  SeatR0      P04b_Urlicht             ja  default   +0.0°  -8.0° blocked   0% ->   +0.0°  -8.0° blocked   0%
+  SeatR0      P04b_Urlicht             en  default   +0.0°  -8.0° blocked   0% ->   +0.0°  -8.0° blocked   0%
+  SeatR0      P04b_Urlicht             de  default   +0.0°  -8.0° blocked   0% ->   +0.0°  -8.0° blocked   0%
+  SeatR0      P06_Dream_Dawn           zh  default   -2.0°  -5.2° blocked   0% ->   -2.0°  -5.2° blocked   0%
+  SeatR0      P06_Dream_Dawn           zht default   -2.0°  -5.2° blocked   0% ->   -2.0°  -5.2° blocked   0%
+  SeatR0      P06_Dream_Dawn           ja  default   -2.0°  -7.1° blocked   0% ->   -2.0°  -7.1° blocked   0%
+  SeatR0      P06_Dream_Dawn           en  default   -2.0°  -6.6° blocked   0% ->   -2.0°  -6.6° blocked   0%
+  SeatR0      P06_Dream_Dawn           de  default   -2.0°  -6.6° blocked   0% ->   -2.0°  -6.6° blocked   0%
+  SeatR0      P07_HeBo                 zh  default   +6.5°  +5.4° blocked   0% ->   +6.5°  +5.4° blocked   0%
+  SeatR0      P07_HeBo                 zht default   +6.5°  +5.4° blocked   0% ->   +6.5°  +5.4° blocked   0%
+  SeatR0      P07_HeBo                 ja  default   +6.5°  +3.6° blocked   0% ->   +6.5°  +3.6° blocked   0%
+  SeatR0      P07_HeBo                 en  default   +6.5°  +2.3° blocked   0% ->   +6.5°  +2.3° blocked   0%
+  SeatR0      P07_HeBo                 de  default   +6.5°  +2.3° blocked   0% ->   +6.5°  +2.3° blocked   0%
+  SeatR0      P08a_Dream_Dusk          zh  default   -2.0°  -5.2° blocked   0% ->   -2.0°  -5.2° blocked   0%
+  SeatR0      P08a_Dream_Dusk          zht default   -2.0°  -5.2° blocked   0% ->   -2.0°  -5.2° blocked   0%
+  SeatR0      P08a_Dream_Dusk          ja  default   -2.0°  -9.0° blocked   0% ->   -2.0°  -9.0° blocked   0%
+  SeatR0      P08a_Dream_Dusk          en  default   -2.0°  -6.6° blocked   0% ->   -2.0°  -6.6° blocked   0%
+  SeatR0      P08a_Dream_Dusk          de  default   -2.0°  -6.6° blocked   0% ->   -2.0°  -6.6° blocked   0%
+  SeatR0      P08b_Zhuangzi_Xiaoyao    zh  default  +35.0°  +0.0° blocked  33% ->  +35.0°  +0.0° blocked  33%  (fixed)
+  SeatR0      P08b_Zhuangzi_Xiaoyao    zht default  +35.0°  +0.0° blocked  33% ->  +35.0°  +0.0° blocked  33%  (fixed)
+  SeatR0      P08b_Zhuangzi_Xiaoyao    ja  default  +35.0°  +0.0° blocked  38% ->  +35.0°  +0.0° blocked  38%  (fixed)
+  SeatR0      P08b_Zhuangzi_Xiaoyao    en  default  +35.0°  +0.0° blocked  36% ->  +35.0°  +0.0° blocked  36%  (fixed)
+  SeatR0      P08b_Zhuangzi_Xiaoyao    de  default  +35.0°  +0.0° blocked  36% ->  +35.0°  +0.0° blocked  36%  (fixed)
+  SeatR0      P09_Tianwen              zh  default   +0.0°  +8.0° blocked   0% ->   +0.0°  +8.0° blocked   0%  (fixed)
+  SeatR0      P09_Tianwen              zht default   +0.0°  +8.0° blocked   0% ->   +0.0°  +8.0° blocked   0%  (fixed)
+  SeatR0      P09_Tianwen              ja  default   +0.0°  +3.3° blocked   0% ->   +0.0°  +3.3° blocked   0%  (fixed)
+  SeatR0      P09_Tianwen              en  default   +0.0°  +2.6° blocked   0% ->   +0.0°  +2.7° blocked   0%  (fixed)
+  SeatR0      P09_Tianwen              de  default   +0.0°  +2.6° blocked   0% ->   +0.0°  +2.7° blocked   0%  (fixed)
+  SeatR0      P11_Zhuangzi_Butterfly   zh  default   +0.0°  +8.0° blocked   0% ->   +0.0°  +8.0° blocked   0%
+  SeatR0      P11_Zhuangzi_Butterfly   zht default   +0.0°  +8.0° blocked   0% ->   +0.0°  +8.0° blocked   0%
+  SeatR0      P11_Zhuangzi_Butterfly   ja  default   +0.0°  +8.0° blocked   0% ->   +0.0°  +8.0° blocked   0%
+  SeatR0      P11_Zhuangzi_Butterfly   en  default   +0.0°  +8.0° blocked   0% ->   +0.0°  +8.0° blocked   0%
+  SeatR0      P11_Zhuangzi_Butterfly   de  default   +0.0°  +8.0° blocked   0% ->   +0.0°  +8.0° blocked   0%
+  SeatR0      P12a_LiBai_Wake          zh  default  +61.0°  -9.0° blocked   0% ->  +61.0°  -9.0° blocked   0%
+  SeatR0      P12a_LiBai_Wake          zht default  +61.0°  -9.0° blocked   0% ->  +61.0°  -9.0° blocked   0%
+  SeatR0      P12a_LiBai_Wake          ja  default  +61.0°  -9.0° blocked   0% ->  +61.0°  -9.0° blocked   0%
+  SeatR0      P12a_LiBai_Wake          en  default  +61.0°  -9.0° blocked   0% ->  +61.0°  -9.0° blocked   0%
+  SeatR0      P12a_LiBai_Wake          de  default  +61.0°  -9.0° blocked   0% ->  +61.0°  -9.0° blocked   0%
+  SeatR0      P12b_Keats               zh  default  +61.0° -14.0° blocked   0% ->  +61.0° -14.0° blocked   0%
+  SeatR0      P12b_Keats               zht default  +61.0° -14.0° blocked   0% ->  +61.0° -14.0° blocked   0%
+  SeatR0      P12b_Keats               ja  default  +61.0° -14.0° blocked   0% ->  +61.0° -14.0° blocked   0%
+  SeatR0      P12b_Keats               en  default  +61.0° -14.0° blocked   0% ->  +61.0° -14.0° blocked   0%
+  SeatR0      P12b_Keats               de  default  +61.0° -14.0° blocked   0% ->  +61.0° -14.0° blocked   0%
+  SeatR1      P03_LiBai_Dream          zh  default  +61.0°  -9.0° blocked   0% ->  +61.0°  -9.0° blocked   0%
+  SeatR1      P03_LiBai_Dream          zht default  +61.0°  -9.0° blocked   0% ->  +61.0°  -9.0° blocked   0%
+  SeatR1      P03_LiBai_Dream          ja  default  +61.0°  -9.0° blocked   8% ->  +61.0°  -9.0° blocked   8%
+  SeatR1      P03_LiBai_Dream          en  default  +61.0°  -9.0° blocked   4% ->  +61.0°  -9.0° blocked   4%
+  SeatR1      P03_LiBai_Dream          de  default  +61.0°  -9.0° blocked   4% ->  +61.0°  -9.0° blocked   4%
+  SeatR1      P04a_Rilke               zh  default   +5.5°  -5.4° blocked  60% ->   +5.0°  -2.0° blocked   6%
+  SeatR1      P04a_Rilke               zht default   +5.5°  -5.4° blocked  60% ->   +5.0°  -2.0° blocked   6%
+  SeatR1      P04a_Rilke               ja  default   +4.5°  -7.1° blocked  72% ->   +4.0°  +0.0° blocked   8%
+  SeatR1      P04a_Rilke               en  default   +5.5°  -4.8° blocked  55% ->   +5.0°  -2.0° blocked  10%
+  SeatR1      P04a_Rilke               de  default   +5.5°  -4.8° blocked  54% ->   +5.0°  -2.0° blocked   9%
+  SeatR1      P04b_Urlicht             zh  default   +0.0°  -8.0° blocked 100% ->   +0.0°  -2.0° blocked   0%
+  SeatR1      P04b_Urlicht             zht default   +0.0°  -8.0° blocked 100% ->   +0.0°  -2.0° blocked   0%
+  SeatR1      P04b_Urlicht             ja  default   +0.0°  -8.0° blocked 100% ->   +0.0°  -2.0° blocked   9%
+  SeatR1      P04b_Urlicht             en  default   +0.0°  -8.0° blocked 100% ->   +0.0°  -2.0° blocked   0%
+  SeatR1      P04b_Urlicht             de  default   +0.0°  -8.0° blocked 100% ->   +0.0°  -2.0° blocked   0%
+  SeatR1      P06_Dream_Dawn           zh  default   -2.0°  -5.2° blocked  70% ->   -2.0°  -3.0° blocked   2%
+  SeatR1      P06_Dream_Dawn           zht default   -2.0°  -5.2° blocked  70% ->   -2.0°  -3.0° blocked   2%
+  SeatR1      P06_Dream_Dawn           ja  default   -2.0°  -7.1° blocked  86% ->   -2.0°  -1.0° blocked   1%
+  SeatR1      P06_Dream_Dawn           en  default   -2.0°  -6.6° blocked  83% ->   -2.0°  -2.0° blocked   0%
+  SeatR1      P06_Dream_Dawn           de  default   -2.0°  -6.6° blocked  83% ->   -2.0°  -2.0° blocked   0%
+  SeatR1      P07_HeBo                 zh  default   +6.5°  +5.4° blocked  13% ->   +5.0°  +5.0° blocked   6%
+  SeatR1      P07_HeBo                 zht default   +6.5°  +5.4° blocked  13% ->   +5.0°  +5.0° blocked   6%
+  SeatR1      P07_HeBo                 ja  default   +6.5°  +3.6° blocked  10% ->   +6.0°  +4.0° blocked  10%
+  SeatR1      P07_HeBo                 en  default   +6.5°  +2.3° blocked  17% ->   +5.0°  +3.0° blocked   6%
+  SeatR1      P07_HeBo                 de  default   +6.5°  +2.3° blocked  17% ->   +5.0°  +3.0° blocked   6%
+  SeatR1      P08a_Dream_Dusk          zh  default   -2.0°  -5.2° blocked  70% ->   -2.0°  -3.0° blocked   3%
+  SeatR1      P08a_Dream_Dusk          zht default   -2.0°  -5.2° blocked  70% ->   -2.0°  -3.0° blocked   3%
+  SeatR1      P08a_Dream_Dusk          ja  default   -2.0°  -9.0° blocked  84% ->   -2.0°  +0.0° blocked   9%
+  SeatR1      P08a_Dream_Dusk          en  default   -2.0°  -6.6° blocked  84% ->   -2.0°  -2.0° blocked   1%
+  SeatR1      P08a_Dream_Dusk          de  default   -2.0°  -6.6° blocked  84% ->   -2.0°  -2.0° blocked   1%
+  SeatR1      P08b_Zhuangzi_Xiaoyao    zh  default  +35.0°  +0.0° blocked  30% ->  +35.0°  +0.0° blocked  30%  (fixed)
+  SeatR1      P08b_Zhuangzi_Xiaoyao    zht default  +35.0°  +0.0° blocked  30% ->  +35.0°  +0.0° blocked  30%  (fixed)
+  SeatR1      P08b_Zhuangzi_Xiaoyao    ja  default  +35.0°  +0.0° blocked  27% ->  +35.0°  +0.0° blocked  27%  (fixed)
+  SeatR1      P08b_Zhuangzi_Xiaoyao    en  default  +35.0°  +0.0° blocked  24% ->  +35.0°  +0.0° blocked  24%  (fixed)
+  SeatR1      P08b_Zhuangzi_Xiaoyao    de  default  +35.0°  +0.0° blocked  24% ->  +35.0°  +0.0° blocked  24%  (fixed)
+  SeatR1      P09_Tianwen              zh  default   +0.0°  +8.0° blocked   0% ->   +0.0°  +8.0° blocked   0%  (fixed)
+  SeatR1      P09_Tianwen              zht default   +0.0°  +8.0° blocked   0% ->   +0.0°  +8.0° blocked   0%  (fixed)
+  SeatR1      P09_Tianwen              ja  default   +0.0°  +3.3° blocked   8% ->   +0.0°  +3.3° blocked   8%  (fixed)
+  SeatR1      P09_Tianwen              en  default   +0.0°  +2.6° blocked  10% ->   +0.0°  +2.7° blocked  10%  (fixed)
+  SeatR1      P09_Tianwen              de  default   +0.0°  +2.6° blocked  10% ->   +0.0°  +2.7° blocked  10%  (fixed)
+  SeatR1      P11_Zhuangzi_Butterfly   zh  default   +0.0°  +8.0° blocked   0% ->   +0.0°  +8.0° blocked   0%
+  SeatR1      P11_Zhuangzi_Butterfly   zht default   +0.0°  +8.0° blocked   0% ->   +0.0°  +8.0° blocked   0%
+  SeatR1      P11_Zhuangzi_Butterfly   ja  default   +0.0°  +8.0° blocked   0% ->   +0.0°  +8.0° blocked   0%
+  SeatR1      P11_Zhuangzi_Butterfly   en  default   +0.0°  +8.0° blocked   7% ->   +0.0°  +8.0° blocked   7%
+  SeatR1      P11_Zhuangzi_Butterfly   de  default   +0.0°  +8.0° blocked   7% ->   +0.0°  +8.0° blocked   7%
+  SeatR1      P12a_LiBai_Wake          zh  default  +61.0°  -9.0° blocked   0% ->  +61.0°  -9.0° blocked   0%
+  SeatR1      P12a_LiBai_Wake          zht default  +61.0°  -9.0° blocked   0% ->  +61.0°  -9.0° blocked   0%
+  SeatR1      P12a_LiBai_Wake          ja  default  +61.0°  -9.0° blocked   4% ->  +61.0°  -9.0° blocked   4%
+  SeatR1      P12a_LiBai_Wake          en  default  +61.0°  -9.0° blocked   4% ->  +61.0°  -9.0° blocked   4%
+  SeatR1      P12a_LiBai_Wake          de  default  +61.0°  -9.0° blocked   4% ->  +61.0°  -9.0° blocked   4%
+  SeatR1      P12b_Keats               zh  default  +61.0° -14.0° blocked   0% ->  +61.0° -14.0° blocked   0%
+  SeatR1      P12b_Keats               zht default  +61.0° -14.0° blocked   0% ->  +61.0° -14.0° blocked   0%
+  SeatR1      P12b_Keats               ja  default  +61.0° -14.0° blocked   4% ->  +61.0° -14.0° blocked   4%
+  SeatR1      P12b_Keats               en  default  +61.0° -14.0° blocked   8% ->  +61.0° -14.0° blocked   8%
+  SeatR1      P12b_Keats               de  default  +61.0° -14.0° blocked   8% ->  +61.0° -14.0° blocked   8%
+  SeatR2      P03_LiBai_Dream          zh  default  +61.0°  -9.0° blocked  25% ->  +64.0°  -9.0° blocked  10%
+  SeatR2      P03_LiBai_Dream          zht default  +61.0°  -9.0° blocked  25% ->  +64.0°  -9.0° blocked  10%
+  SeatR2      P03_LiBai_Dream          ja  default  +61.0°  -9.0° blocked  28% ->  +66.0°  -9.0° blocked   7%
+  SeatR2      P03_LiBai_Dream          en  default  +61.0°  -9.0° blocked  26% ->  +65.0°  -9.0° blocked   8%
+  SeatR2      P03_LiBai_Dream          de  default  +61.0°  -9.0° blocked  26% ->  +65.0°  -9.0° blocked   8%
+  SeatR2      P04a_Rilke               zh  default   +5.5°  -5.4° blocked  90% ->   +4.0°  +1.0° blocked   6%
+  SeatR2      P04a_Rilke               zht default   +5.5°  -5.4° blocked  90% ->   +4.0°  +1.0° blocked   6%
+  SeatR2      P04a_Rilke               ja  default   +4.5°  -7.1° blocked  94% ->   +1.0°  +3.0° blocked   8%
+  SeatR2      P04a_Rilke               en  default   +5.5°  -4.8° blocked  88% ->   +3.0°  +1.0° blocked  10%
+  SeatR2      P04a_Rilke               de  default   +5.5°  -4.8° blocked  89% ->   +2.0°  +1.0° blocked   9%
+  SeatR2      P04b_Urlicht             zh  default   +0.0°  -8.0° blocked 100% ->   +0.0°  +1.0° blocked   0%
+  SeatR2      P04b_Urlicht             zht default   +0.0°  -8.0° blocked 100% ->   +0.0°  +1.0° blocked   0%
+  SeatR2      P04b_Urlicht             ja  default   +0.0°  -8.0° blocked  93% ->   -2.0°  +1.0° blocked   7%
+  SeatR2      P04b_Urlicht             en  default   +0.0°  -8.0° blocked 100% ->   +0.0°  +1.0° blocked   5%
+  SeatR2      P04b_Urlicht             de  default   +0.0°  -8.0° blocked 100% ->   +0.0°  +1.0° blocked   5%
+  SeatR2      P06_Dream_Dawn           zh  default   -2.0°  -5.2° blocked  86% ->   -2.0°  +0.0° blocked   0%
+  SeatR2      P06_Dream_Dawn           zht default   -2.0°  -5.2° blocked  86% ->   -2.0°  +0.0° blocked   0%
+  SeatR2      P06_Dream_Dawn           ja  default   -2.0°  -7.1° blocked  96% ->   -4.0°  +1.0° blocked  10%
+  SeatR2      P06_Dream_Dawn           en  default   -2.0°  -6.6° blocked 100% ->   -2.0°  +1.0° blocked   0%
+  SeatR2      P06_Dream_Dawn           de  default   -2.0°  -6.6° blocked 100% ->   -2.0°  +1.0° blocked   0%
+  SeatR2      P07_HeBo                 zh  default   +6.5°  +5.4° blocked  21% ->   +4.0°  +5.0° blocked   7%
+  SeatR2      P07_HeBo                 zht default   +6.5°  +5.4° blocked  21% ->   +4.0°  +5.0° blocked   7%
+  SeatR2      P07_HeBo                 ja  default   +6.5°  +3.6° blocked  29% ->  +59.0°  +9.0° blocked   9%
+  SeatR2      P07_HeBo                 en  default   +6.5°  +2.3° blocked  40% ->  +58.0°  +8.0° blocked   9%
+  SeatR2      P07_HeBo                 de  default   +6.5°  +2.3° blocked  40% ->  +58.0°  +8.0° blocked   9%
+  SeatR2      P08a_Dream_Dusk          zh  default   -2.0°  -5.2° blocked  75% ->   -2.0°  +0.0° blocked   7%
+  SeatR2      P08a_Dream_Dusk          zht default   -2.0°  -5.2° blocked  75% ->   -2.0°  +0.0° blocked   7%
+  SeatR2      P08a_Dream_Dusk          ja  default   -2.0°  -9.0° blocked  96% ->   -2.0°  +3.0° blocked   8%
+  SeatR2      P08a_Dream_Dusk          en  default   -2.0°  -6.6° blocked  95% ->   -2.0°  +1.0° blocked   0%
+  SeatR2      P08a_Dream_Dusk          de  default   -2.0°  -6.6° blocked  95% ->   -2.0°  +1.0° blocked   0%
+  SeatR2      P08b_Zhuangzi_Xiaoyao    zh  default  +35.0°  +0.0° blocked  89% ->  +35.0°  +0.0° blocked  89%  (fixed)
+  SeatR2      P08b_Zhuangzi_Xiaoyao    zht default  +35.0°  +0.0° blocked  89% ->  +35.0°  +0.0° blocked  89%  (fixed)
+  SeatR2      P08b_Zhuangzi_Xiaoyao    ja  default  +35.0°  +0.0° blocked  96% ->  +35.0°  +0.0° blocked  96%  (fixed)
+  SeatR2      P08b_Zhuangzi_Xiaoyao    en  default  +35.0°  +0.0° blocked  96% ->  +35.0°  +0.0° blocked  96%  (fixed)
+  SeatR2      P08b_Zhuangzi_Xiaoyao    de  default  +35.0°  +0.0° blocked  96% ->  +35.0°  +0.0° blocked  96%  (fixed)
+  SeatR2      P09_Tianwen              zh  default   +0.0°  +8.0° blocked  15% ->   +0.0°  +8.0° blocked  15%  (fixed)
+  SeatR2      P09_Tianwen              zht default   +0.0°  +8.0° blocked  15% ->   +0.0°  +8.0° blocked  15%  (fixed)
+  SeatR2      P09_Tianwen              ja  default   +0.0°  +3.3° blocked  28% ->   +0.0°  +3.3° blocked  28%  (fixed)
+  SeatR2      P09_Tianwen              en  default   +0.0°  +2.6° blocked  29% ->   +0.0°  +2.7° blocked  29%  (fixed)
+  SeatR2      P09_Tianwen              de  default   +0.0°  +2.6° blocked  29% ->   +0.0°  +2.7° blocked  29%  (fixed)
+  SeatR2      P11_Zhuangzi_Butterfly   zh  default   +0.0°  +8.0° blocked  15% ->   +0.0°  +7.0° blocked   6%
+  SeatR2      P11_Zhuangzi_Butterfly   zht default   +0.0°  +8.0° blocked  15% ->   +0.0°  +7.0° blocked   6%
+  SeatR2      P11_Zhuangzi_Butterfly   ja  default   +0.0°  +8.0° blocked  26% ->   +0.0°  +5.0° blocked   5%
+  SeatR2      P11_Zhuangzi_Butterfly   en  default   +0.0°  +8.0° blocked  30% ->   -2.0°  +6.0° blocked   9%
+  SeatR2      P11_Zhuangzi_Butterfly   de  default   +0.0°  +8.0° blocked  30% ->   -2.0°  +6.0° blocked   9%
+  SeatR2      P12a_LiBai_Wake          zh  default  +61.0°  -9.0° blocked  19% ->  +63.0°  -9.0° blocked   6%
+  SeatR2      P12a_LiBai_Wake          zht default  +61.0°  -9.0° blocked  19% ->  +63.0°  -9.0° blocked   6%
+  SeatR2      P12a_LiBai_Wake          ja  default  +61.0°  -9.0° blocked  26% ->  +65.0°  -9.0° blocked   8%
+  SeatR2      P12a_LiBai_Wake          en  default  +61.0°  -9.0° blocked  26% ->  +65.0°  -9.0° blocked   8%
+  SeatR2      P12a_LiBai_Wake          de  default  +61.0°  -9.0° blocked  26% ->  +65.0°  -9.0° blocked   8%
+  SeatR2      P12b_Keats               zh  default  +61.0° -14.0° blocked  25% ->  +64.0° -14.0° blocked  10%
+  SeatR2      P12b_Keats               zht default  +61.0° -14.0° blocked  25% ->  +64.0° -14.0° blocked  10%
+  SeatR2      P12b_Keats               ja  default  +61.0° -14.0° blocked  27% ->  +65.0° -14.0° blocked   9%
+  SeatR2      P12b_Keats               en  default  +61.0° -14.0° blocked  29% ->  +66.0° -14.0° blocked   8%
+  SeatR2      P12b_Keats               de  default  +61.0° -14.0° blocked  29% ->  +66.0° -14.0° blocked   8%
+  SeatR3      P03_LiBai_Dream          zh  default  +61.0°  -9.0° blocked  89% ->   -1.0°  +4.0° blocked  10%
+  SeatR3      P03_LiBai_Dream          zht default  +61.0°  -9.0° blocked  89% ->   -1.0°  +4.0° blocked  10%
+  SeatR3      P03_LiBai_Dream          ja  default  +61.0°  -9.0° blocked  90% ->  -12.0°  +1.0° blocked  24%
+  SeatR3      P03_LiBai_Dream          en  default  +61.0°  -9.0° blocked  90% ->  -12.0°  +2.0° blocked  18%
+  SeatR3      P03_LiBai_Dream          de  default  +61.0°  -9.0° blocked  90% ->  -12.0°  +2.0° blocked  18%
+  SeatR3      P04a_Rilke               zh  default   +5.5°  -5.4° blocked  94% ->   +0.0°  +2.0° blocked   6%
+  SeatR3      P04a_Rilke               zht default   +5.5°  -5.4° blocked  94% ->   +0.0°  +2.0° blocked   6%
+  SeatR3      P04a_Rilke               ja  default   +4.5°  -7.1° blocked  98% ->  -11.0°  +3.0° blocked  12%
+  SeatR3      P04a_Rilke               en  default   +5.5°  -4.8° blocked  95% ->   -1.0°  +2.0° blocked  10%
+  SeatR3      P04a_Rilke               de  default   +5.5°  -4.8° blocked  96% ->   -4.0°  +2.0° blocked   9%
+  SeatR3      P04b_Urlicht             zh  default   +0.0°  -8.0° blocked 100% ->   -1.0°  +2.0° blocked   6%
+  SeatR3      P04b_Urlicht             zht default   +0.0°  -8.0° blocked 100% ->   -1.0°  +2.0° blocked   6%
+  SeatR3      P04b_Urlicht             ja  default   +0.0°  -8.0° blocked  98% ->   -7.0°  +2.0° blocked   7%
+  SeatR3      P04b_Urlicht             en  default   +0.0°  -8.0° blocked 100% ->   -1.0°  +2.0° blocked  10%
+  SeatR3      P04b_Urlicht             de  default   +0.0°  -8.0° blocked 100% ->   -1.0°  +2.0° blocked  10%
+  SeatR3      P06_Dream_Dawn           zh  default   -2.0°  -5.2° blocked  97% ->   -4.0°  +1.0° blocked   9%
+  SeatR3      P06_Dream_Dawn           zht default   -2.0°  -5.2° blocked  97% ->   -4.0°  +1.0° blocked   9%
+  SeatR3      P06_Dream_Dawn           ja  default   -2.0°  -7.1° blocked  99% ->   -1.0°  +4.0° blocked  10%
+  SeatR3      P06_Dream_Dawn           en  default   -2.0°  -6.6° blocked 100% ->   -2.0°  +2.0° blocked   0%
+  SeatR3      P06_Dream_Dawn           de  default   -2.0°  -6.6° blocked 100% ->   -2.0°  +2.0° blocked   0%
+  SeatR3      P07_HeBo                 zh  default   +6.5°  +5.4° blocked  48% ->   -1.0°  +4.0° blocked  10%
+  SeatR3      P07_HeBo                 zht default   +6.5°  +5.4° blocked  48% ->   -1.0°  +4.0° blocked  10%
+  SeatR3      P07_HeBo                 ja  default   +6.5°  +3.6° blocked  57% ->  -14.0°  +1.0° blocked  22%
+  SeatR3      P07_HeBo                 en  default   +6.5°  +2.3° blocked  62% ->  +29.0°  +2.0° blocked  19%
+  SeatR3      P07_HeBo                 de  default   +6.5°  +2.3° blocked  62% ->  +29.0°  +2.0° blocked  19%
+  SeatR3      P08a_Dream_Dusk          zh  default   -2.0°  -5.2° blocked  87% ->   -7.0°  +1.0° blocked   7%
+  SeatR3      P08a_Dream_Dusk          zht default   -2.0°  -5.2° blocked  87% ->   -7.0°  +1.0° blocked   7%
+  SeatR3      P08a_Dream_Dusk          ja  default   -2.0°  -9.0° blocked  99% ->  -12.0°  +2.0° blocked  18%
+  SeatR3      P08a_Dream_Dusk          en  default   -2.0°  -6.6° blocked  98% ->   -2.0°  +2.0° blocked  10%
+  SeatR3      P08a_Dream_Dusk          de  default   -2.0°  -6.6° blocked  98% ->   -2.0°  +2.0° blocked  10%
+  SeatR3      P08b_Zhuangzi_Xiaoyao    zh  default  +35.0°  +0.0° blocked  54% ->  +35.0°  +0.0° blocked  54%  (fixed)
+  SeatR3      P08b_Zhuangzi_Xiaoyao    zht default  +35.0°  +0.0° blocked  54% ->  +35.0°  +0.0° blocked  54%  (fixed)
+  SeatR3      P08b_Zhuangzi_Xiaoyao    ja  default  +35.0°  +0.0° blocked  56% ->  +35.0°  +0.0° blocked  56%  (fixed)
+  SeatR3      P08b_Zhuangzi_Xiaoyao    en  default  +35.0°  +0.0° blocked  55% ->  +35.0°  +0.0° blocked  55%  (fixed)
+  SeatR3      P08b_Zhuangzi_Xiaoyao    de  default  +35.0°  +0.0° blocked  55% ->  +35.0°  +0.0° blocked  55%  (fixed)
+  SeatR3      P09_Tianwen              zh  default   +0.0°  +8.0° blocked  54% ->   +0.0°  +8.0° blocked  54%  (fixed)
+  SeatR3      P09_Tianwen              zht default   +0.0°  +8.0° blocked  54% ->   +0.0°  +8.0° blocked  54%  (fixed)
+  SeatR3      P09_Tianwen              ja  default   +0.0°  +3.3° blocked  53% ->   +0.0°  +3.3° blocked  53%  (fixed)
+  SeatR3      P09_Tianwen              en  default   +0.0°  +2.6° blocked  55% ->   +0.0°  +2.7° blocked  55%  (fixed)
+  SeatR3      P09_Tianwen              de  default   +0.0°  +2.6° blocked  55% ->   +0.0°  +2.7° blocked  55%  (fixed)
+  SeatR3      P11_Zhuangzi_Butterfly   zh  default   +0.0°  +8.0° blocked  49% ->   -1.0°  +5.0° blocked  10%
+  SeatR3      P11_Zhuangzi_Butterfly   zht default   +0.0°  +8.0° blocked  49% ->   -1.0°  +5.0° blocked  10%
+  SeatR3      P11_Zhuangzi_Butterfly   ja  default   +0.0°  +8.0° blocked  52% ->  -11.0°  +3.0° blocked  12%
+  SeatR3      P11_Zhuangzi_Butterfly   en  default   +0.0°  +8.0° blocked  57% ->   -7.0°  +4.0° blocked   8%
+  SeatR3      P11_Zhuangzi_Butterfly   de  default   +0.0°  +8.0° blocked  57% ->   -7.0°  +4.0° blocked   8%
+  SeatR3      P12a_LiBai_Wake          zh  default  +61.0°  -9.0° blocked  87% ->   +0.0°  +3.0° blocked   6%
+  SeatR3      P12a_LiBai_Wake          zht default  +61.0°  -9.0° blocked  87% ->   +0.0°  +3.0° blocked   6%
+  SeatR3      P12a_LiBai_Wake          ja  default  +61.0°  -9.0° blocked  90% ->  -12.0°  +2.0° blocked  18%
+  SeatR3      P12a_LiBai_Wake          en  default  +61.0°  -9.0° blocked  90% ->  -12.0°  +2.0° blocked  18%
+  SeatR3      P12a_LiBai_Wake          de  default  +61.0°  -9.0° blocked  90% ->  -12.0°  +2.0° blocked  18%
+  SeatR3      P12b_Keats               zh  default  +61.0° -14.0° blocked  90% ->   -1.0°  +2.0° blocked  10%
+  SeatR3      P12b_Keats               zht default  +61.0° -14.0° blocked  90% ->   -1.0°  +2.0° blocked  10%
+  SeatR3      P12b_Keats               ja  default  +61.0° -14.0° blocked  91% -> -171.0°  +3.0° blocked   9%
+  SeatR3      P12b_Keats               en  default  +61.0° -14.0° blocked  92% ->   -5.0°  +0.0° blocked   8%
+  SeatR3      P12b_Keats               de  default  +61.0° -14.0° blocked  92% ->   -5.0°  +0.0° blocked   8%
+  SeatR4      P03_LiBai_Dream          zh  default  +61.0°  -9.0° blocked  20% ->   -4.0°  +3.0° blocked   7%
+  SeatR4      P03_LiBai_Dream          zht default  +61.0°  -9.0° blocked  20% ->   -4.0°  +3.0° blocked   7%
+  SeatR4      P03_LiBai_Dream          ja  default  +61.0°  -9.0° blocked  25% ->  +59.0°  -9.0° blocked  17%
+  SeatR4      P03_LiBai_Dream          en  default  +61.0°  -9.0° blocked  23% -> -170.0°  +4.0° blocked  12%
+  SeatR4      P03_LiBai_Dream          de  default  +61.0°  -9.0° blocked  23% -> -170.0°  +4.0° blocked  12%
+  SeatR4      P04a_Rilke               zh  default   +5.5°  -5.4° blocked  99% ->   -2.0°  +2.0° blocked   6%
+  SeatR4      P04a_Rilke               zht default   +5.5°  -5.4° blocked  99% ->   -2.0°  +2.0° blocked   6%
+  SeatR4      P04a_Rilke               ja  default   +4.5°  -7.1° blocked  94% -> -163.0°  +3.0° blocked   9%
+  SeatR4      P04a_Rilke               en  default   +5.5°  -4.8° blocked  90% ->   -3.0°  +2.0° blocked  10%
+  SeatR4      P04a_Rilke               de  default   +5.5°  -4.8° blocked  90% ->   -4.0°  +2.0° blocked   9%
+  SeatR4      P04b_Urlicht             zh  default   +0.0°  -8.0° blocked 100% ->   -3.0°  +2.0° blocked   6%
+  SeatR4      P04b_Urlicht             zht default   +0.0°  -8.0° blocked 100% ->   -3.0°  +2.0° blocked   6%
+  SeatR4      P04b_Urlicht             ja  default   +0.0°  -8.0° blocked  99% ->   -7.0°  +2.0° blocked   8%
+  SeatR4      P04b_Urlicht             en  default   +0.0°  -8.0° blocked 100% ->   -3.0°  +2.0° blocked  10%
+  SeatR4      P04b_Urlicht             de  default   +0.0°  -8.0° blocked 100% ->   -3.0°  +2.0° blocked  10%
+  SeatR4      P06_Dream_Dawn           zh  default   -2.0°  -5.2° blocked  96% ->   -4.0°  +1.0° blocked   9%
+  SeatR4      P06_Dream_Dawn           zht default   -2.0°  -5.2° blocked  96% ->   -4.0°  +1.0° blocked   9%
+  SeatR4      P06_Dream_Dawn           ja  default   -2.0°  -7.1° blocked  99% ->   -4.0°  +3.0° blocked   7%
+  SeatR4      P06_Dream_Dawn           en  default   -2.0°  -6.6° blocked 100% ->   -2.0°  +2.0° blocked   6%
+  SeatR4      P06_Dream_Dawn           de  default   -2.0°  -6.6° blocked 100% ->   -2.0°  +2.0° blocked   6%
+  SeatR4      P07_HeBo                 zh  default   +6.5°  +5.4° blocked  57% -> -175.0°  +4.0° blocked   8%
+  SeatR4      P07_HeBo                 zht default   +6.5°  +5.4° blocked  57% -> -175.0°  +4.0° blocked   8%
+  SeatR4      P07_HeBo                 ja  default   +6.5°  +3.6° blocked  54% ->  +54.0°  -5.0° blocked  20%
+  SeatR4      P07_HeBo                 en  default   +6.5°  +2.3° blocked  62% ->  +49.0°  -6.0° blocked  19%
+  SeatR4      P07_HeBo                 de  default   +6.5°  +2.3° blocked  62% ->  +49.0°  -6.0° blocked  19%
+  SeatR4      P08a_Dream_Dusk          zh  default   -2.0°  -5.2° blocked  93% ->   -7.0°  +1.0° blocked   9%
+  SeatR4      P08a_Dream_Dusk          zht default   -2.0°  -5.2° blocked  93% ->   -7.0°  +1.0° blocked   9%
+  SeatR4      P08a_Dream_Dusk          ja  default   -2.0°  -9.0° blocked  98% -> -169.0°  +4.0° blocked  12%
+  SeatR4      P08a_Dream_Dusk          en  default   -2.0°  -6.6° blocked  98% ->   -3.0°  +2.0° blocked  10%
+  SeatR4      P08a_Dream_Dusk          de  default   -2.0°  -6.6° blocked  98% ->   -3.0°  +2.0° blocked  10%
+  SeatR4      P08b_Zhuangzi_Xiaoyao    zh  default  +35.0°  +0.0° blocked  71% ->  +35.0°  +0.0° blocked  71%  (fixed)
+  SeatR4      P08b_Zhuangzi_Xiaoyao    zht default  +35.0°  +0.0° blocked  71% ->  +35.0°  +0.0° blocked  71%  (fixed)
+  SeatR4      P08b_Zhuangzi_Xiaoyao    ja  default  +35.0°  +0.0° blocked  82% ->  +35.0°  +0.0° blocked  82%  (fixed)
+  SeatR4      P08b_Zhuangzi_Xiaoyao    en  default  +35.0°  +0.0° blocked  87% ->  +35.0°  +0.0° blocked  87%  (fixed)
+  SeatR4      P08b_Zhuangzi_Xiaoyao    de  default  +35.0°  +0.0° blocked  87% ->  +35.0°  +0.0° blocked  87%  (fixed)
+  SeatR4      P09_Tianwen              zh  default   +0.0°  +8.0° blocked  69% ->   +0.0°  +8.0° blocked  69%  (fixed)
+  SeatR4      P09_Tianwen              zht default   +0.0°  +8.0° blocked  69% ->   +0.0°  +8.0° blocked  69%  (fixed)
+  SeatR4      P09_Tianwen              ja  default   +0.0°  +3.3° blocked  55% ->   +0.0°  +3.3° blocked  55%  (fixed)
+  SeatR4      P09_Tianwen              en  default   +0.0°  +2.6° blocked  60% ->   +0.0°  +2.7° blocked  60%  (fixed)
+  SeatR4      P09_Tianwen              de  default   +0.0°  +2.6° blocked  60% ->   +0.0°  +2.7° blocked  60%  (fixed)
+  SeatR4      P11_Zhuangzi_Butterfly   zh  default   +0.0°  +8.0° blocked  67% ->   -4.0°  +4.0° blocked   8%
+  SeatR4      P11_Zhuangzi_Butterfly   zht default   +0.0°  +8.0° blocked  67% ->   -4.0°  +4.0° blocked   8%
+  SeatR4      P11_Zhuangzi_Butterfly   ja  default   +0.0°  +8.0° blocked  68% -> -163.0°  +4.0° blocked  10%
+  SeatR4      P11_Zhuangzi_Butterfly   en  default   +0.0°  +8.0° blocked  67% ->   -7.0°  +3.0° blocked   8%
+  SeatR4      P11_Zhuangzi_Butterfly   de  default   +0.0°  +8.0° blocked  67% ->   -7.0°  +3.0° blocked   8%
+  SeatR4      P12a_LiBai_Wake          zh  default  +61.0°  -9.0° blocked  25% ->   -2.0°  +3.0° blocked   9%
+  SeatR4      P12a_LiBai_Wake          zht default  +61.0°  -9.0° blocked  25% ->   -2.0°  +3.0° blocked   9%
+  SeatR4      P12a_LiBai_Wake          ja  default  +61.0°  -9.0° blocked  23% -> -170.0°  +4.0° blocked  12%
+  SeatR4      P12a_LiBai_Wake          en  default  +61.0°  -9.0° blocked  23% -> -170.0°  +4.0° blocked  12%
+  SeatR4      P12a_LiBai_Wake          de  default  +61.0°  -9.0° blocked  23% -> -170.0°  +4.0° blocked  12%
+  SeatR4      P12b_Keats               zh  default  +61.0° -14.0° blocked  20% ->   -3.0°  +2.0° blocked  10%
+  SeatR4      P12b_Keats               zht default  +61.0° -14.0° blocked  20% ->   -3.0°  +2.0° blocked  10%
+  SeatR4      P12b_Keats               ja  default  +61.0° -14.0° blocked  23% ->   -4.0°  +3.0° blocked  10%
+  SeatR4      P12b_Keats               en  default  +61.0° -14.0° blocked  25% ->   -5.0°  +0.0° blocked   8%
+  SeatR4      P12b_Keats               de  default  +61.0° -14.0° blocked  25% ->   -5.0°  +0.0° blocked   8%
+  SeatR5      P03_LiBai_Dream          zh  default  +61.0°  -9.0° blocked 100% -> -174.0°  +1.0° blocked  10%
+  SeatR5      P03_LiBai_Dream          zht default  +61.0°  -9.0° blocked 100% -> -174.0°  +1.0° blocked  10%
+  SeatR5      P03_LiBai_Dream          ja  default  +61.0°  -9.0° blocked 100% -> -172.0°  +4.0° blocked   9%
+  SeatR5      P03_LiBai_Dream          en  default  +61.0°  -9.0° blocked 100% -> -173.0°  +3.0° blocked  10%
+  SeatR5      P03_LiBai_Dream          de  default  +61.0°  -9.0° blocked 100% -> -173.0°  +3.0° blocked  10%
+  SeatR5      P04a_Rilke               zh  default   +5.5°  -5.4° blocked  95% -> -151.0°  +2.0° blocked   6%
+  SeatR5      P04a_Rilke               zht default   +5.5°  -5.4° blocked  95% -> -151.0°  +2.0° blocked   6%
+  SeatR5      P04a_Rilke               ja  default   +4.5°  -7.1° blocked  95% -> -154.0°  +4.0° blocked   8%
+  SeatR5      P04a_Rilke               en  default   +5.5°  -4.8° blocked  92% -> -152.0°  +2.0° blocked  10%
+  SeatR5      P04a_Rilke               de  default   +5.5°  -4.8° blocked  93% -> -153.0°  +2.0° blocked   9%
+  SeatR5      P04b_Urlicht             zh  default   +0.0°  -8.0° blocked 100% -> -152.0°  +2.0° blocked   6%
+  SeatR5      P04b_Urlicht             zht default   +0.0°  -8.0° blocked 100% -> -152.0°  +2.0° blocked   6%
+  SeatR5      P04b_Urlicht             ja  default   +0.0°  -8.0° blocked  98% -> -156.0°  +2.0° blocked   7%
+  SeatR5      P04b_Urlicht             en  default   +0.0°  -8.0° blocked 100% -> -152.0°  +2.0° blocked  10%
+  SeatR5      P04b_Urlicht             de  default   +0.0°  -8.0° blocked 100% -> -152.0°  +2.0° blocked  10%
+  SeatR5      P06_Dream_Dawn           zh  default   -2.0°  -5.2° blocked  97% -> -153.0°  +1.0° blocked   9%
+  SeatR5      P06_Dream_Dawn           zht default   -2.0°  -5.2° blocked  97% -> -153.0°  +1.0° blocked   9%
+  SeatR5      P06_Dream_Dawn           ja  default   -2.0°  -7.1° blocked  99% -> -152.0°  +3.0° blocked  10%
+  SeatR5      P06_Dream_Dawn           en  default   -2.0°  -6.6° blocked 100% -> -151.0°  +2.0° blocked   6%
+  SeatR5      P06_Dream_Dawn           de  default   -2.0°  -6.6° blocked 100% -> -151.0°  +2.0° blocked   6%
+  SeatR5      P07_HeBo                 zh  default   +6.5°  +5.4° blocked  57% -> -151.0°  +6.0° blocked   7%
+  SeatR5      P07_HeBo                 zht default   +6.5°  +5.4° blocked  57% -> -151.0°  +6.0° blocked   7%
+  SeatR5      P07_HeBo                 ja  default   +6.5°  +3.6° blocked  63% -> -155.0°  +6.0° blocked  10%
+  SeatR5      P07_HeBo                 en  default   +6.5°  +2.3° blocked  66% -> -161.0°  +5.0° blocked  10%
+  SeatR5      P07_HeBo                 de  default   +6.5°  +2.3° blocked  66% -> -161.0°  +5.0° blocked  10%
+  SeatR5      P08a_Dream_Dusk          zh  default   -2.0°  -5.2° blocked  93% -> -156.0°  +1.0° blocked   7%
+  SeatR5      P08a_Dream_Dusk          zht default   -2.0°  -5.2° blocked  93% -> -156.0°  +1.0° blocked   7%
+  SeatR5      P08a_Dream_Dusk          ja  default   -2.0°  -9.0° blocked  98% -> -153.0°  +5.0° blocked  10%
+  SeatR5      P08a_Dream_Dusk          en  default   -2.0°  -6.6° blocked  98% -> -152.0°  +2.0° blocked  10%
+  SeatR5      P08a_Dream_Dusk          de  default   -2.0°  -6.6° blocked  98% -> -152.0°  +2.0° blocked  10%
+  SeatR5      P08b_Zhuangzi_Xiaoyao    zh  default  +35.0°  +0.0° blocked  83% ->  +35.0°  +0.0° blocked  83%  (fixed)
+  SeatR5      P08b_Zhuangzi_Xiaoyao    zht default  +35.0°  +0.0° blocked  83% ->  +35.0°  +0.0° blocked  83%  (fixed)
+  SeatR5      P08b_Zhuangzi_Xiaoyao    ja  default  +35.0°  +0.0° blocked  88% ->  +35.0°  +0.0° blocked  88%  (fixed)
+  SeatR5      P08b_Zhuangzi_Xiaoyao    en  default  +35.0°  +0.0° blocked  86% ->  +35.0°  +0.0° blocked  86%  (fixed)
+  SeatR5      P08b_Zhuangzi_Xiaoyao    de  default  +35.0°  +0.0° blocked  86% ->  +35.0°  +0.0° blocked  86%  (fixed)
+  SeatR5      P09_Tianwen              zh  default   +0.0°  +8.0° blocked  77% ->   +0.0°  +8.0° blocked  77%  (fixed)
+  SeatR5      P09_Tianwen              zht default   +0.0°  +8.0° blocked  77% ->   +0.0°  +8.0° blocked  77%  (fixed)
+  SeatR5      P09_Tianwen              ja  default   +0.0°  +3.3° blocked  61% ->   +0.0°  +3.3° blocked  61%  (fixed)
+  SeatR5      P09_Tianwen              en  default   +0.0°  +2.6° blocked  66% ->   +0.0°  +2.7° blocked  66%  (fixed)
+  SeatR5      P09_Tianwen              de  default   +0.0°  +2.6° blocked  66% ->   +0.0°  +2.7° blocked  66%  (fixed)
+  SeatR5      P11_Zhuangzi_Butterfly   zh  default   +0.0°  +8.0° blocked  79% -> -152.0°  +7.0° blocked  10%
+  SeatR5      P11_Zhuangzi_Butterfly   zht default   +0.0°  +8.0° blocked  79% -> -152.0°  +7.0° blocked  10%
+  SeatR5      P11_Zhuangzi_Butterfly   ja  default   +0.0°  +8.0° blocked  72% -> -154.0°  +6.0° blocked   9%
+  SeatR5      P11_Zhuangzi_Butterfly   en  default   +0.0°  +8.0° blocked  73% -> -156.0°  +7.0° blocked   8%
+  SeatR5      P11_Zhuangzi_Butterfly   de  default   +0.0°  +8.0° blocked  73% -> -156.0°  +7.0° blocked   8%
+  SeatR5      P12a_LiBai_Wake          zh  default  +61.0°  -9.0° blocked 100% -> -175.0°  +1.0° blocked   6%
+  SeatR5      P12a_LiBai_Wake          zht default  +61.0°  -9.0° blocked 100% -> -175.0°  +1.0° blocked   6%
+  SeatR5      P12a_LiBai_Wake          ja  default  +61.0°  -9.0° blocked 100% -> -173.0°  +3.0° blocked  10%
+  SeatR5      P12a_LiBai_Wake          en  default  +61.0°  -9.0° blocked 100% -> -173.0°  +3.0° blocked  10%
+  SeatR5      P12a_LiBai_Wake          de  default  +61.0°  -9.0° blocked 100% -> -173.0°  +3.0° blocked  10%
+  SeatR5      P12b_Keats               zh  default  +61.0° -14.0° blocked 100% -> -174.0°  +0.0° blocked  10%
+  SeatR5      P12b_Keats               zht default  +61.0° -14.0° blocked 100% -> -174.0°  +0.0° blocked  10%
+  SeatR5      P12b_Keats               ja  default  +61.0° -14.0° blocked 100% -> -173.0°  +1.0° blocked  10%
+  SeatR5      P12b_Keats               en  default  +61.0° -14.0° blocked 100% -> -172.0°  +0.0° blocked   8%
+  SeatR5      P12b_Keats               de  default  +61.0° -14.0° blocked 100% -> -172.0°  +0.0° blocked   8%
+  SeatR6      P03_LiBai_Dream          zh  default  +61.0°  -9.0° blocked 100% -> -175.0°  +2.0° blocked  10%
+  SeatR6      P03_LiBai_Dream          zht default  +61.0°  -9.0° blocked 100% -> -175.0°  +2.0° blocked  10%
+  SeatR6      P03_LiBai_Dream          ja  default  +61.0°  -9.0° blocked 100% -> -173.0°  +5.0° blocked   8%
+  SeatR6      P03_LiBai_Dream          en  default  +61.0°  -9.0° blocked 100% -> -174.0°  +4.0° blocked   9%
+  SeatR6      P03_LiBai_Dream          de  default  +61.0°  -9.0° blocked 100% -> -174.0°  +4.0° blocked   9%
+  SeatR6      P04a_Rilke               zh  default   +5.5°  -5.4° blocked  95% -> -139.0°  +0.0° blocked   8%
+  SeatR6      P04a_Rilke               zht default   +5.5°  -5.4° blocked  95% -> -139.0°  +0.0° blocked   8%
+  SeatR6      P04a_Rilke               ja  default   +4.5°  -7.1° blocked  97% -> -142.0°  +3.0° blocked   8%
+  SeatR6      P04a_Rilke               en  default   +5.5°  -4.8° blocked  96% -> -140.0°  +1.0° blocked  10%
+  SeatR6      P04a_Rilke               de  default   +5.5°  -4.8° blocked  96% -> -141.0°  +1.0° blocked   9%
+  SeatR6      P04b_Urlicht             zh  default   +0.0°  -8.0° blocked 100% -> -140.0°  +0.0° blocked   9%
+  SeatR6      P04b_Urlicht             zht default   +0.0°  -8.0° blocked 100% -> -140.0°  +0.0° blocked   9%
+  SeatR6      P04b_Urlicht             ja  default   +0.0°  -8.0° blocked  99% -> -144.0°  +1.0° blocked   7%
+  SeatR6      P04b_Urlicht             en  default   +0.0°  -8.0° blocked 100% -> -140.0°  +1.0° blocked  10%
+  SeatR6      P04b_Urlicht             de  default   +0.0°  -8.0° blocked 100% -> -140.0°  +1.0° blocked  10%
+  SeatR6      P06_Dream_Dawn           zh  default   -2.0°  -5.2° blocked 100% ->   -7.0°  +2.0° blocked   9%
+  SeatR6      P06_Dream_Dawn           zht default   -2.0°  -5.2° blocked 100% ->   -7.0°  +2.0° blocked   9%
+  SeatR6      P06_Dream_Dawn           ja  default   -2.0°  -7.1° blocked 100% -> -140.0°  +2.0° blocked  10%
+  SeatR6      P06_Dream_Dawn           en  default   -2.0°  -6.6° blocked 100% -> -139.0°  +0.0° blocked   8%
+  SeatR6      P06_Dream_Dawn           de  default   -2.0°  -6.6° blocked 100% -> -139.0°  +0.0° blocked   8%
+  SeatR6      P07_HeBo                 zh  default   +6.5°  +5.4° blocked  74% -> -139.0°  +9.0° blocked   8%
+  SeatR6      P07_HeBo                 zht default   +6.5°  +5.4° blocked  74% -> -139.0°  +9.0° blocked   8%
+  SeatR6      P07_HeBo                 ja  default   +6.5°  +3.6° blocked  75% -> -140.0°  +5.0° blocked  10%
+  SeatR6      P07_HeBo                 en  default   +6.5°  +2.3° blocked  78% -> -139.0°  +7.0° blocked  10%
+  SeatR6      P07_HeBo                 de  default   +6.5°  +2.3° blocked  78% -> -139.0°  +7.0° blocked  10%
+  SeatR6      P08a_Dream_Dusk          zh  default   -2.0°  -5.2° blocked 100% -> -144.0°  +0.0° blocked   7%
+  SeatR6      P08a_Dream_Dusk          zht default   -2.0°  -5.2° blocked 100% -> -144.0°  +0.0° blocked   7%
+  SeatR6      P08a_Dream_Dusk          ja  default   -2.0°  -9.0° blocked  99% -> -141.0°  +4.0° blocked   9%
+  SeatR6      P08a_Dream_Dusk          en  default   -2.0°  -6.6° blocked 100% -> -140.0°  +1.0° blocked  10%
+  SeatR6      P08a_Dream_Dusk          de  default   -2.0°  -6.6° blocked 100% -> -140.0°  +1.0° blocked  10%
+  SeatR6      P08b_Zhuangzi_Xiaoyao    zh  default  +35.0°  +0.0° blocked  59% ->  +35.0°  +0.0° blocked  59%  (fixed)
+  SeatR6      P08b_Zhuangzi_Xiaoyao    zht default  +35.0°  +0.0° blocked  59% ->  +35.0°  +0.0° blocked  59%  (fixed)
+  SeatR6      P08b_Zhuangzi_Xiaoyao    ja  default  +35.0°  +0.0° blocked  51% ->  +35.0°  +0.0° blocked  51%  (fixed)
+  SeatR6      P08b_Zhuangzi_Xiaoyao    en  default  +35.0°  +0.0° blocked  47% ->  +35.0°  +0.0° blocked  47%  (fixed)
+  SeatR6      P08b_Zhuangzi_Xiaoyao    de  default  +35.0°  +0.0° blocked  47% ->  +35.0°  +0.0° blocked  47%  (fixed)
+  SeatR6      P09_Tianwen              zh  default   +0.0°  +8.0° blocked  95% ->   +0.0°  +8.0° blocked  95%  (fixed)
+  SeatR6      P09_Tianwen              zht default   +0.0°  +8.0° blocked  95% ->   +0.0°  +8.0° blocked  95%  (fixed)
+  SeatR6      P09_Tianwen              ja  default   +0.0°  +3.3° blocked  69% ->   +0.0°  +3.3° blocked  69%  (fixed)
+  SeatR6      P09_Tianwen              en  default   +0.0°  +2.6° blocked  70% ->   +0.0°  +2.7° blocked  70%  (fixed)
+  SeatR6      P09_Tianwen              de  default   +0.0°  +2.6° blocked  70% ->   +0.0°  +2.7° blocked  70%  (fixed)
+  SeatR6      P11_Zhuangzi_Butterfly   zh  default   +0.0°  +8.0° blocked  94% -> -140.0°  +9.0° blocked  10%
+  SeatR6      P11_Zhuangzi_Butterfly   zht default   +0.0°  +8.0° blocked  94% -> -140.0°  +9.0° blocked  10%
+  SeatR6      P11_Zhuangzi_Butterfly   ja  default   +0.0°  +8.0° blocked  86% -> -142.0°  +9.0° blocked  10%
+  SeatR6      P11_Zhuangzi_Butterfly   en  default   +0.0°  +8.0° blocked  85% -> -144.0° +10.0° blocked   8%
+  SeatR6      P11_Zhuangzi_Butterfly   de  default   +0.0°  +8.0° blocked  85% -> -144.0° +10.0° blocked   8%
+  SeatR6      P12a_LiBai_Wake          zh  default  +61.0°  -9.0° blocked 100% -> -176.0°  +2.0° blocked   6%
+  SeatR6      P12a_LiBai_Wake          zht default  +61.0°  -9.0° blocked 100% -> -176.0°  +2.0° blocked   6%
+  SeatR6      P12a_LiBai_Wake          ja  default  +61.0°  -9.0° blocked 100% -> -174.0°  +4.0° blocked   9%
+  SeatR6      P12a_LiBai_Wake          en  default  +61.0°  -9.0° blocked 100% -> -174.0°  +4.0° blocked   9%
+  SeatR6      P12a_LiBai_Wake          de  default  +61.0°  -9.0° blocked 100% -> -174.0°  +4.0° blocked   9%
+  SeatR6      P12b_Keats               zh  default  +61.0° -14.0° blocked 100% -> -175.0°  +1.0° blocked  10%
+  SeatR6      P12b_Keats               zht default  +61.0° -14.0° blocked 100% -> -175.0°  +1.0° blocked  10%
+  SeatR6      P12b_Keats               ja  default  +61.0° -14.0° blocked 100% -> -174.0°  +2.0° blocked   9%
+  SeatR6      P12b_Keats               en  default  +61.0° -14.0° blocked 100% ->   -8.0°  +1.0° blocked   8%
+  SeatR6      P12b_Keats               de  default  +61.0° -14.0° blocked 100% ->   -8.0°  +1.0° blocked   8%
+  SeatL0w     P03_LiBai_Dream          zh  default  +61.0°  -9.0° blocked  39% ->  +55.0°  -4.0° blocked   9%
+  SeatL0w     P03_LiBai_Dream          zht default  +61.0°  -9.0° blocked  39% ->  +55.0°  -4.0° blocked   9%
+  SeatL0w     P03_LiBai_Dream          ja  default  +61.0°  -9.0° blocked  43% ->  +53.0°  -1.0° blocked  10%
+  SeatL0w     P03_LiBai_Dream          en  default  +61.0°  -9.0° blocked  42% ->  +54.0°  -3.0° blocked  10%
+  SeatL0w     P03_LiBai_Dream          de  default  +61.0°  -9.0° blocked  42% ->  +54.0°  -3.0° blocked  10%
+  SeatL0w     P04a_Rilke               zh  default   +5.5°  -5.4° blocked  63% ->   +5.0°  +1.0° blocked   8%
+  SeatL0w     P04a_Rilke               zht default   +5.5°  -5.4° blocked  63% ->   +5.0°  +1.0° blocked   8%
+  SeatL0w     P04a_Rilke               ja  default   +4.5°  -7.1° blocked  54% ->   +4.0°  +2.0° blocked   9%
+  SeatL0w     P04a_Rilke               en  default   +5.5°  -4.8° blocked  59% ->   +5.0°  +1.0° blocked   8%
+  SeatL0w     P04a_Rilke               de  default   +5.5°  -4.8° blocked  58% ->   +5.0°  +1.0° blocked   8%
+  SeatL0w     P04b_Urlicht             zh  default   +0.0°  -8.0° blocked  39% ->   +1.0°  +0.0° blocked   9%
+  SeatL0w     P04b_Urlicht             zht default   +0.0°  -8.0° blocked  39% ->   +1.0°  +0.0° blocked   9%
+  SeatL0w     P04b_Urlicht             ja  default   +0.0°  -8.0° blocked  52% ->   +6.0°  +1.0° blocked   9%
+  SeatL0w     P04b_Urlicht             en  default   +0.0°  -8.0° blocked  45% ->   +1.0°  +1.0° blocked  10%
+  SeatL0w     P04b_Urlicht             de  default   +0.0°  -8.0° blocked  45% ->   +1.0°  +1.0° blocked  10%
+  SeatL0w     P06_Dream_Dawn           zh  default   -2.0°  -5.2° blocked  39% ->   +0.0°  +2.0° blocked   9%
+  SeatL0w     P06_Dream_Dawn           zht default   -2.0°  -5.2° blocked  39% ->   +0.0°  +2.0° blocked   9%
+  SeatL0w     P06_Dream_Dawn           ja  default   -2.0°  -7.1° blocked  36% ->   +2.0°  +1.0° blocked   9%
+  SeatL0w     P06_Dream_Dawn           en  default   -2.0°  -6.6° blocked  30% ->   +0.0°  -1.0° blocked   9%
+  SeatL0w     P06_Dream_Dawn           de  default   -2.0°  -6.6° blocked  30% ->   +0.0°  -1.0° blocked   9%
+  SeatL0w     P07_HeBo                 zh  default   +6.5°  +5.4° blocked   0% ->   +6.0°  +5.0° blocked   0%
+  SeatL0w     P07_HeBo                 zht default   +6.5°  +5.4° blocked   0% ->   +6.0°  +5.0° blocked   0%
+  SeatL0w     P07_HeBo                 ja  default   +6.5°  +3.6° blocked   9% ->   +6.0°  +4.0° blocked   8%
+  SeatL0w     P07_HeBo                 en  default   +6.5°  +2.3° blocked  20% ->   +5.0°  +4.0° blocked  10%
+  SeatL0w     P07_HeBo                 de  default   +6.5°  +2.3° blocked  20% ->   +5.0°  +4.0° blocked  10%
+  SeatL0w     P08a_Dream_Dusk          zh  default   -2.0°  -5.2° blocked  42% ->   +2.0°  +2.0° blocked  10%
+  SeatL0w     P08a_Dream_Dusk          zht default   -2.0°  -5.2° blocked  42% ->   +2.0°  +2.0° blocked  10%
+  SeatL0w     P08a_Dream_Dusk          ja  default   -2.0°  -9.0° blocked  52% ->   +3.0°  +3.0° blocked   7%
+  SeatL0w     P08a_Dream_Dusk          en  default   -2.0°  -6.6° blocked  36% ->   +1.0°  +1.0° blocked  10%
+  SeatL0w     P08a_Dream_Dusk          de  default   -2.0°  -6.6° blocked  36% ->   +1.0°  +1.0° blocked  10%
+  SeatL0w     P08b_Zhuangzi_Xiaoyao    zh  default  +35.0°  +0.0° blocked  26% ->  +35.0°  +0.0° blocked  26%  (fixed)
+  SeatL0w     P08b_Zhuangzi_Xiaoyao    zht default  +35.0°  +0.0° blocked  26% ->  +35.0°  +0.0° blocked  26%  (fixed)
+  SeatL0w     P08b_Zhuangzi_Xiaoyao    ja  default  +35.0°  +0.0° blocked  37% ->  +35.0°  +0.0° blocked  37%  (fixed)
+  SeatL0w     P08b_Zhuangzi_Xiaoyao    en  default  +35.0°  +0.0° blocked  31% ->  +35.0°  +0.0° blocked  31%  (fixed)
+  SeatL0w     P08b_Zhuangzi_Xiaoyao    de  default  +35.0°  +0.0° blocked  31% ->  +35.0°  +0.0° blocked  31%  (fixed)
+  SeatL0w     P09_Tianwen              zh  default   +0.0°  +8.0° blocked  10% ->   +0.0°  +8.0° blocked  10%  (fixed)
+  SeatL0w     P09_Tianwen              zht default   +0.0°  +8.0° blocked  10% ->   +0.0°  +8.0° blocked  10%  (fixed)
+  SeatL0w     P09_Tianwen              ja  default   +0.0°  +3.3° blocked  23% ->   +0.0°  +3.3° blocked  23%  (fixed)
+  SeatL0w     P09_Tianwen              en  default   +0.0°  +2.6° blocked  24% ->   +0.0°  +2.7° blocked  24%  (fixed)
+  SeatL0w     P09_Tianwen              de  default   +0.0°  +2.6° blocked  24% ->   +0.0°  +2.7° blocked  24%  (fixed)
+  SeatL0w     P11_Zhuangzi_Butterfly   zh  default   +0.0°  +8.0° blocked  10% ->   +0.0°  +8.0° blocked  10%
+  SeatL0w     P11_Zhuangzi_Butterfly   zht default   +0.0°  +8.0° blocked  10% ->   +0.0°  +8.0° blocked  10%
+  SeatL0w     P11_Zhuangzi_Butterfly   ja  default   +0.0°  +8.0° blocked  10% ->   +0.0°  +8.0° blocked  10%
+  SeatL0w     P11_Zhuangzi_Butterfly   en  default   +0.0°  +8.0° blocked  15% ->   +2.0°  +8.0° blocked   8%
+  SeatL0w     P11_Zhuangzi_Butterfly   de  default   +0.0°  +8.0° blocked  15% ->   +2.0°  +8.0° blocked   8%
+  SeatL0w     P12a_LiBai_Wake          zh  default  +61.0°  -9.0° blocked  32% ->  +75.0°  +1.0° blocked   9%
+  SeatL0w     P12a_LiBai_Wake          zht default  +61.0°  -9.0° blocked  32% ->  +75.0°  +1.0° blocked   9%
+  SeatL0w     P12a_LiBai_Wake          ja  default  +61.0°  -9.0° blocked  42% ->  +54.0°  -3.0° blocked  10%
+  SeatL0w     P12a_LiBai_Wake          en  default  +61.0°  -9.0° blocked  42% ->  +54.0°  -3.0° blocked  10%
+  SeatL0w     P12a_LiBai_Wake          de  default  +61.0°  -9.0° blocked  42% ->  +54.0°  -3.0° blocked  10%
+  SeatL0w     P12b_Keats               zh  default  +61.0° -14.0° blocked  64% ->  +55.0°  -5.0° blocked   9%
+  SeatL0w     P12b_Keats               zht default  +61.0° -14.0° blocked  64% ->  +55.0°  -5.0° blocked   9%
+  SeatL0w     P12b_Keats               ja  default  +61.0° -14.0° blocked  66% ->  +54.0°  -5.0° blocked  10%
+  SeatL0w     P12b_Keats               en  default  +61.0° -14.0° blocked  73% ->  +53.0°  -3.0° blocked   8%
+  SeatL0w     P12b_Keats               de  default  +61.0° -14.0° blocked  73% ->  +53.0°  -3.0° blocked   8%
+  SeatL0a     P03_LiBai_Dream          zh  default  +61.0°  -9.0° blocked  23% ->  +50.0°  -5.0° blocked  10%
+  SeatL0a     P03_LiBai_Dream          zht default  +61.0°  -9.0° blocked  23% ->  +50.0°  -5.0° blocked  10%
+  SeatL0a     P03_LiBai_Dream          ja  default  +61.0°  -9.0° blocked  32% ->  +48.0°  -3.0° blocked   9%
+  SeatL0a     P03_LiBai_Dream          en  default  +61.0°  -9.0° blocked  29% ->  +49.0°  -4.0° blocked  10%
+  SeatL0a     P03_LiBai_Dream          de  default  +61.0°  -9.0° blocked  29% ->  +49.0°  -4.0° blocked  10%
+  SeatL0a     P04a_Rilke               zh  default   +5.5°  -5.4° blocked  47% ->   +5.0°  +2.0° blocked   8%
+  SeatL0a     P04a_Rilke               zht default   +5.5°  -5.4° blocked  47% ->   +5.0°  +2.0° blocked   8%
+  SeatL0a     P04a_Rilke               ja  default   +4.5°  -7.1° blocked  56% ->   +5.0°  +3.0° blocked  10%
+  SeatL0a     P04a_Rilke               en  default   +5.5°  -4.8° blocked  52% ->   +3.0°  +2.0° blocked  10%
+  SeatL0a     P04a_Rilke               de  default   +5.5°  -4.8° blocked  52% ->   +9.0°  +2.0° blocked  10%
+  SeatL0a     P04b_Urlicht             zh  default   +0.0°  -8.0° blocked  78% ->   +4.0°  +2.0° blocked   9%
+  SeatL0a     P04b_Urlicht             zht default   +0.0°  -8.0° blocked  78% ->   +4.0°  +2.0° blocked   9%
+  SeatL0a     P04b_Urlicht             ja  default   +0.0°  -8.0° blocked  71% ->   +0.0°  +3.0° blocked   4%
+  SeatL0a     P04b_Urlicht             en  default   +0.0°  -8.0° blocked  75% ->   +3.0°  +2.0° blocked  10%
+  SeatL0a     P04b_Urlicht             de  default   +0.0°  -8.0° blocked  75% ->   +3.0°  +2.0° blocked  10%
+  SeatL0a     P06_Dream_Dawn           zh  default   -2.0°  -5.2° blocked  82% ->   -2.0°  +2.0° blocked   0%
+  SeatL0a     P06_Dream_Dawn           zht default   -2.0°  -5.2° blocked  82% ->   -2.0°  +2.0° blocked   0%
+  SeatL0a     P06_Dream_Dawn           ja  default   -2.0°  -7.1° blocked  85% ->   +1.0°  +2.0° blocked  10%
+  SeatL0a     P06_Dream_Dawn           en  default   -2.0°  -6.6° blocked  94% ->   -2.0°  +3.0° blocked   0%
+  SeatL0a     P06_Dream_Dawn           de  default   -2.0°  -6.6° blocked  94% ->   -2.0°  +3.0° blocked   0%
+  SeatL0a     P07_HeBo                 zh  default   +6.5°  +5.4° blocked   7% ->   +6.0°  +5.0° blocked   6%
+  SeatL0a     P07_HeBo                 zht default   +6.5°  +5.4° blocked   7% ->   +6.0°  +5.0° blocked   6%
+  SeatL0a     P07_HeBo                 ja  default   +6.5°  +3.6° blocked  12% ->   +6.0°  +5.0° blocked   9%
+  SeatL0a     P07_HeBo                 en  default   +6.5°  +2.3° blocked  20% ->   +5.0°  +5.0° blocked   7%
+  SeatL0a     P07_HeBo                 de  default   +6.5°  +2.3° blocked  20% ->   +5.0°  +5.0° blocked   7%
+  SeatL0a     P08a_Dream_Dusk          zh  default   -2.0°  -5.2° blocked  75% ->   -2.0°  +2.0° blocked   0%
+  SeatL0a     P08a_Dream_Dusk          zht default   -2.0°  -5.2° blocked  75% ->   -2.0°  +2.0° blocked   0%
+  SeatL0a     P08a_Dream_Dusk          ja  default   -2.0°  -9.0° blocked  86% ->   -2.0°  +4.0° blocked   8%
+  SeatL0a     P08a_Dream_Dusk          en  default   -2.0°  -6.6° blocked  85% ->   -2.0°  +3.0° blocked   0%
+  SeatL0a     P08a_Dream_Dusk          de  default   -2.0°  -6.6° blocked  85% ->   -2.0°  +3.0° blocked   0%
+  SeatL0a     P08b_Zhuangzi_Xiaoyao    zh  default  +35.0°  +0.0° blocked   8% ->  +35.0°  +0.0° blocked   8%  (fixed)
+  SeatL0a     P08b_Zhuangzi_Xiaoyao    zht default  +35.0°  +0.0° blocked   8% ->  +35.0°  +0.0° blocked   8%  (fixed)
+  SeatL0a     P08b_Zhuangzi_Xiaoyao    ja  default  +35.0°  +0.0° blocked  22% ->  +35.0°  +0.0° blocked  22%  (fixed)
+  SeatL0a     P08b_Zhuangzi_Xiaoyao    en  default  +35.0°  +0.0° blocked  11% ->  +35.0°  +0.0° blocked  11%  (fixed)
+  SeatL0a     P08b_Zhuangzi_Xiaoyao    de  default  +35.0°  +0.0° blocked  11% ->  +35.0°  +0.0° blocked  11%  (fixed)
+  SeatL0a     P09_Tianwen              zh  default   +0.0°  +8.0° blocked   0% ->   +0.0°  +8.0° blocked   0%  (fixed)
+  SeatL0a     P09_Tianwen              zht default   +0.0°  +8.0° blocked   0% ->   +0.0°  +8.0° blocked   0%  (fixed)
+  SeatL0a     P09_Tianwen              ja  default   +0.0°  +3.3° blocked  21% ->   +0.0°  +3.3° blocked  21%  (fixed)
+  SeatL0a     P09_Tianwen              en  default   +0.0°  +2.6° blocked  21% ->   +0.0°  +2.7° blocked  21%  (fixed)
+  SeatL0a     P09_Tianwen              de  default   +0.0°  +2.6° blocked  21% ->   +0.0°  +2.7° blocked  21%  (fixed)
+  SeatL0a     P11_Zhuangzi_Butterfly   zh  default   +0.0°  +8.0° blocked   0% ->   +0.0°  +8.0° blocked   0%
+  SeatL0a     P11_Zhuangzi_Butterfly   zht default   +0.0°  +8.0° blocked   0% ->   +0.0°  +8.0° blocked   0%
+  SeatL0a     P11_Zhuangzi_Butterfly   ja  default   +0.0°  +8.0° blocked   0% ->   +0.0°  +8.0° blocked   0%
+  SeatL0a     P11_Zhuangzi_Butterfly   en  default   +0.0°  +8.0° blocked   4% ->   +0.0°  +8.0° blocked   4%
+  SeatL0a     P11_Zhuangzi_Butterfly   de  default   +0.0°  +8.0° blocked   4% ->   +0.0°  +8.0° blocked   4%
+  SeatL0a     P12a_LiBai_Wake          zh  default  +61.0°  -9.0° blocked  26% ->  +71.0°  +0.0° blocked   4%
+  SeatL0a     P12a_LiBai_Wake          zht default  +61.0°  -9.0° blocked  26% ->  +71.0°  +0.0° blocked   4%
+  SeatL0a     P12a_LiBai_Wake          ja  default  +61.0°  -9.0° blocked  29% ->  +49.0°  -4.0° blocked  10%
+  SeatL0a     P12a_LiBai_Wake          en  default  +61.0°  -9.0° blocked  29% ->  +49.0°  -4.0° blocked  10%
+  SeatL0a     P12a_LiBai_Wake          de  default  +61.0°  -9.0° blocked  29% ->  +49.0°  -4.0° blocked  10%
+  SeatL0a     P12b_Keats               zh  default  +61.0° -14.0° blocked  55% ->  +50.0°  -6.0° blocked  10%
+  SeatL0a     P12b_Keats               zht default  +61.0° -14.0° blocked  55% ->  +50.0°  -6.0° blocked  10%
+  SeatL0a     P12b_Keats               ja  default  +61.0° -14.0° blocked  52% ->  +49.0°  -6.0° blocked  10%
+  SeatL0a     P12b_Keats               en  default  +61.0° -14.0° blocked  58% ->  +48.0°  -8.0° blocked   8%
+  SeatL0a     P12b_Keats               de  default  +61.0° -14.0° blocked  58% ->  +48.0°  -8.0° blocked   8%
+  SeatL1w     P03_LiBai_Dream          zh  default  +61.0°  -9.0° blocked  79% ->  +65.0°  +1.0° blocked   9%
+  SeatL1w     P03_LiBai_Dream          zht default  +61.0°  -9.0° blocked  79% ->  +65.0°  +1.0° blocked   9%
+  SeatL1w     P03_LiBai_Dream          ja  default  +61.0°  -9.0° blocked  73% ->   +6.0°  +5.0° blocked   7%
+  SeatL1w     P03_LiBai_Dream          en  default  +61.0°  -9.0° blocked  75% ->  +65.0°  +5.0° blocked   9%
+  SeatL1w     P03_LiBai_Dream          de  default  +61.0°  -9.0° blocked  75% ->  +65.0°  +5.0° blocked   9%
+  SeatL1w     P04a_Rilke               zh  default   +5.5°  -5.4° blocked  81% ->   +5.0°  +2.0° blocked   4%
+  SeatL1w     P04a_Rilke               zht default   +5.5°  -5.4° blocked  81% ->   +5.0°  +2.0° blocked   4%
+  SeatL1w     P04a_Rilke               ja  default   +4.5°  -7.1° blocked  84% ->   +6.0°  +3.0° blocked   8%
+  SeatL1w     P04a_Rilke               en  default   +5.5°  -4.8° blocked  72% ->   +5.0°  +2.0° blocked   3%
+  SeatL1w     P04a_Rilke               de  default   +5.5°  -4.8° blocked  71% ->   +5.0°  +2.0° blocked   3%
+  SeatL1w     P04b_Urlicht             zh  default   +0.0°  -8.0° blocked  85% ->   +2.0°  +2.0° blocked   9%
+  SeatL1w     P04b_Urlicht             zht default   +0.0°  -8.0° blocked  85% ->   +2.0°  +2.0° blocked   9%
+  SeatL1w     P04b_Urlicht             ja  default   +0.0°  -8.0° blocked  90% ->   +8.0°  +3.0° blocked   7%
+  SeatL1w     P04b_Urlicht             en  default   +0.0°  -8.0° blocked  87% ->   +3.0°  +2.0° blocked   8%
+  SeatL1w     P04b_Urlicht             de  default   +0.0°  -8.0° blocked  87% ->   +3.0°  +2.0° blocked   8%
+  SeatL1w     P06_Dream_Dawn           zh  default   -2.0°  -5.2° blocked  64% ->   +4.0°  +1.0° blocked   9%
+  SeatL1w     P06_Dream_Dawn           zht default   -2.0°  -5.2° blocked  64% ->   +4.0°  +1.0° blocked   9%
+  SeatL1w     P06_Dream_Dawn           ja  default   -2.0°  -7.1° blocked  83% ->   +4.0°  +2.0° blocked  10%
+  SeatL1w     P06_Dream_Dawn           en  default   -2.0°  -6.6° blocked  75% ->   +2.0°  +2.0° blocked   4%
+  SeatL1w     P06_Dream_Dawn           de  default   -2.0°  -6.6° blocked  75% ->   +2.0°  +2.0° blocked   4%
+  SeatL1w     P07_HeBo                 zh  default   +6.5°  +5.4° blocked   0% ->   +6.0°  +5.0° blocked   0%
+  SeatL1w     P07_HeBo                 zht default   +6.5°  +5.4° blocked   0% ->   +6.0°  +5.0° blocked   0%
+  SeatL1w     P07_HeBo                 ja  default   +6.5°  +3.6° blocked  12% ->   +6.0°  +5.0° blocked   7%
+  SeatL1w     P07_HeBo                 en  default   +6.5°  +2.3° blocked  25% ->  +28.0°  +2.0° blocked   7%
+  SeatL1w     P07_HeBo                 de  default   +6.5°  +2.3° blocked  25% ->  +28.0°  +2.0° blocked   7%
+  SeatL1w     P08a_Dream_Dusk          zh  default   -2.0°  -5.2° blocked  63% ->   +8.0°  +2.0° blocked   7%
+  SeatL1w     P08a_Dream_Dusk          zht default   -2.0°  -5.2° blocked  63% ->   +8.0°  +2.0° blocked   7%
+  SeatL1w     P08a_Dream_Dusk          ja  default   -2.0°  -9.0° blocked  88% ->   +5.0°  +4.0° blocked   7%
+  SeatL1w     P08a_Dream_Dusk          en  default   -2.0°  -6.6° blocked  80% ->   +3.0°  +2.0° blocked   8%
+  SeatL1w     P08a_Dream_Dusk          de  default   -2.0°  -6.6° blocked  80% ->   +3.0°  +2.0° blocked   8%
+  SeatL1w     P08b_Zhuangzi_Xiaoyao    zh  default  +35.0°  +0.0° blocked  15% ->  +35.0°  +0.0° blocked  15%  (fixed)
+  SeatL1w     P08b_Zhuangzi_Xiaoyao    zht default  +35.0°  +0.0° blocked  15% ->  +35.0°  +0.0° blocked  15%  (fixed)
+  SeatL1w     P08b_Zhuangzi_Xiaoyao    ja  default  +35.0°  +0.0° blocked  44% ->  +35.0°  +0.0° blocked  44%  (fixed)
+  SeatL1w     P08b_Zhuangzi_Xiaoyao    en  default  +35.0°  +0.0° blocked  36% ->  +35.0°  +0.0° blocked  36%  (fixed)
+  SeatL1w     P08b_Zhuangzi_Xiaoyao    de  default  +35.0°  +0.0° blocked  36% ->  +35.0°  +0.0° blocked  36%  (fixed)
+  SeatL1w     P09_Tianwen              zh  default   +0.0°  +8.0° blocked  25% ->   +0.0°  +8.0° blocked  25%  (fixed)
+  SeatL1w     P09_Tianwen              zht default   +0.0°  +8.0° blocked  25% ->   +0.0°  +8.0° blocked  25%  (fixed)
+  SeatL1w     P09_Tianwen              ja  default   +0.0°  +3.3° blocked  38% ->   +0.0°  +3.3° blocked  38%  (fixed)
+  SeatL1w     P09_Tianwen              en  default   +0.0°  +2.6° blocked  40% ->   +0.0°  +2.7° blocked  40%  (fixed)
+  SeatL1w     P09_Tianwen              de  default   +0.0°  +2.6° blocked  40% ->   +0.0°  +2.7° blocked  40%  (fixed)
+  SeatL1w     P11_Zhuangzi_Butterfly   zh  default   +0.0°  +8.0° blocked  20% ->   +2.0°  +8.0° blocked  10%
+  SeatL1w     P11_Zhuangzi_Butterfly   zht default   +0.0°  +8.0° blocked  20% ->   +2.0°  +8.0° blocked  10%
+  SeatL1w     P11_Zhuangzi_Butterfly   ja  default   +0.0°  +8.0° blocked  33% ->   +4.0°  +7.0° blocked  10%
+  SeatL1w     P11_Zhuangzi_Butterfly   en  default   +0.0°  +8.0° blocked  27% ->   +8.0°  +7.0° blocked   7%
+  SeatL1w     P11_Zhuangzi_Butterfly   de  default   +0.0°  +8.0° blocked  27% ->   +8.0°  +7.0° blocked   7%
+  SeatL1w     P12a_LiBai_Wake          zh  default  +61.0°  -9.0° blocked  82% ->  +66.0°  +1.0° blocked   9%
+  SeatL1w     P12a_LiBai_Wake          zht default  +61.0°  -9.0° blocked  82% ->  +66.0°  +1.0° blocked   9%
+  SeatL1w     P12a_LiBai_Wake          ja  default  +61.0°  -9.0° blocked  75% ->  +65.0°  +5.0° blocked   9%
+  SeatL1w     P12a_LiBai_Wake          en  default  +61.0°  -9.0° blocked  75% ->  +65.0°  +5.0° blocked   9%
+  SeatL1w     P12a_LiBai_Wake          de  default  +61.0°  -9.0° blocked  75% ->  +65.0°  +5.0° blocked   9%
+  SeatL1w     P12b_Keats               zh  default  +61.0° -14.0° blocked 100% ->  +64.0°  +1.0° blocked   6%
+  SeatL1w     P12b_Keats               zht default  +61.0° -14.0° blocked 100% ->  +64.0°  +1.0° blocked   6%
+  SeatL1w     P12b_Keats               ja  default  +61.0° -14.0° blocked 100% ->  +65.0°  +1.0° blocked  10%
+  SeatL1w     P12b_Keats               en  default  +61.0° -14.0° blocked 100% ->  +61.0°  +0.0° blocked   8%
+  SeatL1w     P12b_Keats               de  default  +61.0° -14.0° blocked 100% ->  +61.0°  +0.0° blocked   8%
+  SeatL1a     P03_LiBai_Dream          zh  default  +61.0°  -9.0° blocked  48% ->  +63.0°  +1.0° blocked  10%
+  SeatL1a     P03_LiBai_Dream          zht default  +61.0°  -9.0° blocked  48% ->  +63.0°  +1.0° blocked  10%
+  SeatL1a     P03_LiBai_Dream          ja  default  +61.0°  -9.0° blocked  61% ->  +33.0°  -1.0° blocked  10%
+  SeatL1a     P03_LiBai_Dream          en  default  +61.0°  -9.0° blocked  57% ->  +34.0°  -2.0° blocked   9%
+  SeatL1a     P03_LiBai_Dream          de  default  +61.0°  -9.0° blocked  57% ->  +34.0°  -2.0° blocked   9%
+  SeatL1a     P04a_Rilke               zh  default   +5.5°  -5.4° blocked  57% ->  +10.0°  -2.0° blocked   9%
+  SeatL1a     P04a_Rilke               zht default   +5.5°  -5.4° blocked  57% ->  +10.0°  -2.0° blocked   9%
+  SeatL1a     P04a_Rilke               ja  default   +4.5°  -7.1° blocked  74% ->   +7.0°  +3.0° blocked  10%
+  SeatL1a     P04a_Rilke               en  default   +5.5°  -4.8° blocked  52% ->   +9.0°  +1.0° blocked  10%
+  SeatL1a     P04a_Rilke               de  default   +5.5°  -4.8° blocked  53% ->   +6.0°  +2.0° blocked  10%
+  SeatL1a     P04b_Urlicht             zh  default   +0.0°  -8.0° blocked  89% ->   +0.0°  +2.0° blocked   8%
+  SeatL1a     P04b_Urlicht             zht default   +0.0°  -8.0° blocked  89% ->   +0.0°  +2.0° blocked   8%
+  SeatL1a     P04b_Urlicht             ja  default   +0.0°  -8.0° blocked  88% ->   +0.0°  +2.0° blocked   9%
+  SeatL1a     P04b_Urlicht             en  default   +0.0°  -8.0° blocked  90% ->   -1.0°  +2.0° blocked   8%
+  SeatL1a     P04b_Urlicht             de  default   +0.0°  -8.0° blocked  90% ->   -1.0°  +2.0° blocked   8%
+  SeatL1a     P06_Dream_Dawn           zh  default   -2.0°  -5.2° blocked  73% ->   -2.0°  +2.0° blocked   0%
+  SeatL1a     P06_Dream_Dawn           zht default   -2.0°  -5.2° blocked  73% ->   -2.0°  +2.0° blocked   0%
+  SeatL1a     P06_Dream_Dawn           ja  default   -2.0°  -7.1° blocked  89% ->   -2.0°  +3.0° blocked   6%
+  SeatL1a     P06_Dream_Dawn           en  default   -2.0°  -6.6° blocked  91% ->   -2.0°  +2.0° blocked   9%
+  SeatL1a     P06_Dream_Dawn           de  default   -2.0°  -6.6° blocked  91% ->   -2.0°  +2.0° blocked   9%
+  SeatL1a     P07_HeBo                 zh  default   +6.5°  +5.4° blocked   8% ->   +6.0°  +5.0° blocked   8%
+  SeatL1a     P07_HeBo                 zht default   +6.5°  +5.4° blocked   8% ->   +6.0°  +5.0° blocked   8%
+  SeatL1a     P07_HeBo                 ja  default   +6.5°  +3.6° blocked  14% ->  +10.0°  +4.0° blocked   9%
+  SeatL1a     P07_HeBo                 en  default   +6.5°  +2.3° blocked  17% ->  +10.0°  +2.0° blocked  10%
+  SeatL1a     P07_HeBo                 de  default   +6.5°  +2.3° blocked  17% ->  +10.0°  +2.0° blocked  10%
+  SeatL1a     P08a_Dream_Dusk          zh  default   -2.0°  -5.2° blocked  68% ->   -2.0°  +2.0° blocked   4%
+  SeatL1a     P08a_Dream_Dusk          zht default   -2.0°  -5.2° blocked  68% ->   -2.0°  +2.0° blocked   4%
+  SeatL1a     P08a_Dream_Dusk          ja  default   -2.0°  -9.0° blocked  91% ->   -2.0°  +4.0° blocked   9%
+  SeatL1a     P08a_Dream_Dusk          en  default   -2.0°  -6.6° blocked  88% ->   -2.0°  +2.0° blocked   8%
+  SeatL1a     P08a_Dream_Dusk          de  default   -2.0°  -6.6° blocked  88% ->   -2.0°  +2.0° blocked   8%
+  SeatL1a     P08b_Zhuangzi_Xiaoyao    zh  default  +35.0°  +0.0° blocked  19% ->  +35.0°  +0.0° blocked  19%  (fixed)
+  SeatL1a     P08b_Zhuangzi_Xiaoyao    zht default  +35.0°  +0.0° blocked  19% ->  +35.0°  +0.0° blocked  19%  (fixed)
+  SeatL1a     P08b_Zhuangzi_Xiaoyao    ja  default  +35.0°  +0.0° blocked  34% ->  +35.0°  +0.0° blocked  34%  (fixed)
+  SeatL1a     P08b_Zhuangzi_Xiaoyao    en  default  +35.0°  +0.0° blocked  22% ->  +35.0°  +0.0° blocked  22%  (fixed)
+  SeatL1a     P08b_Zhuangzi_Xiaoyao    de  default  +35.0°  +0.0° blocked  22% ->  +35.0°  +0.0° blocked  22%  (fixed)
+  SeatL1a     P09_Tianwen              zh  default   +0.0°  +8.0° blocked   4% ->   +0.0°  +8.0° blocked   4%  (fixed)
+  SeatL1a     P09_Tianwen              zht default   +0.0°  +8.0° blocked   4% ->   +0.0°  +8.0° blocked   4%  (fixed)
+  SeatL1a     P09_Tianwen              ja  default   +0.0°  +3.3° blocked  21% ->   +0.0°  +3.3° blocked  21%  (fixed)
+  SeatL1a     P09_Tianwen              en  default   +0.0°  +2.6° blocked  24% ->   +0.0°  +2.7° blocked  24%  (fixed)
+  SeatL1a     P09_Tianwen              de  default   +0.0°  +2.6° blocked  24% ->   +0.0°  +2.7° blocked  24%  (fixed)
+  SeatL1a     P11_Zhuangzi_Butterfly   zh  default   +0.0°  +8.0° blocked   5% ->   +0.0°  +8.0° blocked   5%
+  SeatL1a     P11_Zhuangzi_Butterfly   zht default   +0.0°  +8.0° blocked   5% ->   +0.0°  +8.0° blocked   5%
+  SeatL1a     P11_Zhuangzi_Butterfly   ja  default   +0.0°  +8.0° blocked  14% ->   +0.0°  +7.0° blocked   5%
+  SeatL1a     P11_Zhuangzi_Butterfly   en  default   +0.0°  +8.0° blocked   5% ->   +0.0°  +8.0° blocked   5%
+  SeatL1a     P11_Zhuangzi_Butterfly   de  default   +0.0°  +8.0° blocked   5% ->   +0.0°  +8.0° blocked   5%
+  SeatL1a     P12a_LiBai_Wake          zh  default  +61.0°  -9.0° blocked  44% ->  +65.0°  +2.0° blocked   9%
+  SeatL1a     P12a_LiBai_Wake          zht default  +61.0°  -9.0° blocked  44% ->  +65.0°  +2.0° blocked   9%
+  SeatL1a     P12a_LiBai_Wake          ja  default  +61.0°  -9.0° blocked  57% ->  +34.0°  -2.0° blocked   9%
+  SeatL1a     P12a_LiBai_Wake          en  default  +61.0°  -9.0° blocked  57% ->  +34.0°  -2.0° blocked   9%
+  SeatL1a     P12a_LiBai_Wake          de  default  +61.0°  -9.0° blocked  57% ->  +34.0°  -2.0° blocked   9%
+  SeatL1a     P12b_Keats               zh  default  +61.0° -14.0° blocked  95% ->  +61.0°  +1.0° blocked  10%
+  SeatL1a     P12b_Keats               zht default  +61.0° -14.0° blocked  95% ->  +61.0°  +1.0° blocked  10%
+  SeatL1a     P12b_Keats               ja  default  +61.0° -14.0° blocked  89% ->  +61.0°  +2.0° blocked   9%
+  SeatL1a     P12b_Keats               en  default  +61.0° -14.0° blocked 100% ->  +61.0°  +0.0° blocked   4%
+  SeatL1a     P12b_Keats               de  default  +61.0° -14.0° blocked 100% ->  +61.0°  +0.0° blocked   4%
+  SeatL2w     P03_LiBai_Dream          zh  default  +61.0°  -9.0° blocked  92% ->  +32.0°  +2.0° blocked  10%
+  SeatL2w     P03_LiBai_Dream          zht default  +61.0°  -9.0° blocked  92% ->  +32.0°  +2.0° blocked  10%
+  SeatL2w     P03_LiBai_Dream          ja  default  +61.0°  -9.0° blocked  88% ->  -34.0° -15.0° blocked   8%
+  SeatL2w     P03_LiBai_Dream          en  default  +61.0°  -9.0° blocked  90% ->  -33.0° -15.0° blocked   9%
+  SeatL2w     P03_LiBai_Dream          de  default  +61.0°  -9.0° blocked  90% ->  -33.0° -15.0° blocked   9%
+  SeatL2w     P04a_Rilke               zh  default   +5.5°  -5.4° blocked  97% ->   +5.0°  +2.0° blocked   1%
+  SeatL2w     P04a_Rilke               zht default   +5.5°  -5.4° blocked  97% ->   +5.0°  +2.0° blocked   1%
+  SeatL2w     P04a_Rilke               ja  default   +4.5°  -7.1° blocked  97% ->   +8.0°  +4.0° blocked   7%
+  SeatL2w     P04a_Rilke               en  default   +5.5°  -4.8° blocked  94% ->   +5.0°  +2.0° blocked   7%
+  SeatL2w     P04a_Rilke               de  default   +5.5°  -4.8° blocked  94% ->   +7.0°  +2.0° blocked   6%
+  SeatL2w     P04b_Urlicht             zh  default   +0.0°  -8.0° blocked 100% ->   +4.0°  +2.0° blocked   6%
+  SeatL2w     P04b_Urlicht             zht default   +0.0°  -8.0° blocked 100% ->   +4.0°  +2.0° blocked   6%
+  SeatL2w     P04b_Urlicht             ja  default   +0.0°  -8.0° blocked 100% ->   +9.0°  +2.0° blocked   8%
+  SeatL2w     P04b_Urlicht             en  default   +0.0°  -8.0° blocked 100% ->   +5.0°  +2.0° blocked   7%
+  SeatL2w     P04b_Urlicht             de  default   +0.0°  -8.0° blocked 100% ->   +5.0°  +2.0° blocked   7%
+  SeatL2w     P06_Dream_Dawn           zh  default   -2.0°  -5.2° blocked 100% ->   +6.0°  +2.0° blocked   9%
+  SeatL2w     P06_Dream_Dawn           zht default   -2.0°  -5.2° blocked 100% ->   +6.0°  +2.0° blocked   9%
+  SeatL2w     P06_Dream_Dawn           ja  default   -2.0°  -7.1° blocked 100% ->   +5.0°  +3.0° blocked   6%
+  SeatL2w     P06_Dream_Dawn           en  default   -2.0°  -6.6° blocked 100% ->   +3.0°  +2.0° blocked   7%
+  SeatL2w     P06_Dream_Dawn           de  default   -2.0°  -6.6° blocked 100% ->   +3.0°  +2.0° blocked   7%
+  SeatL2w     P07_HeBo                 zh  default   +6.5°  +5.4° blocked  10% ->   +6.0°  +5.0° blocked  10%
+  SeatL2w     P07_HeBo                 zht default   +6.5°  +5.4° blocked  10% ->   +6.0°  +5.0° blocked  10%
+  SeatL2w     P07_HeBo                 ja  default   +6.5°  +3.6° blocked  22% ->  -30.0°  +7.0° blocked  10%
+  SeatL2w     P07_HeBo                 en  default   +6.5°  +2.3° blocked  35% ->  -29.0°  +4.0° blocked   9%
+  SeatL2w     P07_HeBo                 de  default   +6.5°  +2.3° blocked  35% ->  -29.0°  +4.0° blocked   9%
+  SeatL2w     P08a_Dream_Dusk          zh  default   -2.0°  -5.2° blocked 100% ->   +9.0°  +1.0° blocked   9%
+  SeatL2w     P08a_Dream_Dusk          zht default   -2.0°  -5.2° blocked 100% ->   +9.0°  +1.0° blocked   9%
+  SeatL2w     P08a_Dream_Dusk          ja  default   -2.0°  -9.0° blocked 100% ->  -33.0° -10.0° blocked   9%
+  SeatL2w     P08a_Dream_Dusk          en  default   -2.0°  -6.6° blocked 100% ->   +5.0°  +2.0° blocked   7%
+  SeatL2w     P08a_Dream_Dusk          de  default   -2.0°  -6.6° blocked 100% ->   +5.0°  +2.0° blocked   7%
+  SeatL2w     P08b_Zhuangzi_Xiaoyao    zh  default  +35.0°  +0.0° blocked  33% ->  +35.0°  +0.0° blocked  33%  (fixed)
+  SeatL2w     P08b_Zhuangzi_Xiaoyao    zht default  +35.0°  +0.0° blocked  33% ->  +35.0°  +0.0° blocked  33%  (fixed)
+  SeatL2w     P08b_Zhuangzi_Xiaoyao    ja  default  +35.0°  +0.0° blocked  57% ->  +35.0°  +0.0° blocked  57%  (fixed)
+  SeatL2w     P08b_Zhuangzi_Xiaoyao    en  default  +35.0°  +0.0° blocked  51% ->  +35.0°  +0.0° blocked  51%  (fixed)
+  SeatL2w     P08b_Zhuangzi_Xiaoyao    de  default  +35.0°  +0.0° blocked  51% ->  +35.0°  +0.0° blocked  51%  (fixed)
+  SeatL2w     P09_Tianwen              zh  default   +0.0°  +8.0° blocked  56% ->   +0.0°  +8.0° blocked  56%  (fixed)
+  SeatL2w     P09_Tianwen              zht default   +0.0°  +8.0° blocked  56% ->   +0.0°  +8.0° blocked  56%  (fixed)
+  SeatL2w     P09_Tianwen              ja  default   +0.0°  +3.3° blocked  55% ->   +0.0°  +3.3° blocked  55%  (fixed)
+  SeatL2w     P09_Tianwen              en  default   +0.0°  +2.6° blocked  60% ->   +0.0°  +2.7° blocked  60%  (fixed)
+  SeatL2w     P09_Tianwen              de  default   +0.0°  +2.6° blocked  60% ->   +0.0°  +2.7° blocked  60%  (fixed)
+  SeatL2w     P11_Zhuangzi_Butterfly   zh  default   +0.0°  +8.0° blocked  53% ->   +4.0°  +6.0° blocked  10%
+  SeatL2w     P11_Zhuangzi_Butterfly   zht default   +0.0°  +8.0° blocked  53% ->   +4.0°  +6.0° blocked  10%
+  SeatL2w     P11_Zhuangzi_Butterfly   ja  default   +0.0°  +8.0° blocked  55% ->   +8.0°  +4.0° blocked   7%
+  SeatL2w     P11_Zhuangzi_Butterfly   en  default   +0.0°  +8.0° blocked  55% ->   +9.0°  +5.0° blocked   9%
+  SeatL2w     P11_Zhuangzi_Butterfly   de  default   +0.0°  +8.0° blocked  55% ->   +9.0°  +5.0° blocked   9%
+  SeatL2w     P12a_LiBai_Wake          zh  default  +61.0°  -9.0° blocked  96% ->  +33.0°  +2.0° blocked   6%
+  SeatL2w     P12a_LiBai_Wake          zht default  +61.0°  -9.0° blocked  96% ->  +33.0°  +2.0° blocked   6%
+  SeatL2w     P12a_LiBai_Wake          ja  default  +61.0°  -9.0° blocked  90% ->  -33.0° -15.0° blocked   9%
+  SeatL2w     P12a_LiBai_Wake          en  default  +61.0°  -9.0° blocked  90% ->  -33.0° -15.0° blocked   9%
+  SeatL2w     P12a_LiBai_Wake          de  default  +61.0°  -9.0° blocked  90% ->  -33.0° -15.0° blocked   9%
+  SeatL2w     P12b_Keats               zh  default  +61.0° -14.0° blocked 100% ->  +32.0°  +1.0° blocked  10%
+  SeatL2w     P12b_Keats               zht default  +61.0° -14.0° blocked 100% ->  +32.0°  +1.0° blocked  10%
+  SeatL2w     P12b_Keats               ja  default  +61.0° -14.0° blocked 100% ->  +31.0°  +2.0° blocked   9%
+  SeatL2w     P12b_Keats               en  default  +61.0° -14.0° blocked 100% ->  +30.0°  -1.0° blocked   8%
+  SeatL2w     P12b_Keats               de  default  +61.0° -14.0° blocked 100% ->  +30.0°  -1.0° blocked   8%
+  SeatL2a     P03_LiBai_Dream          zh  default  +61.0°  -9.0° blocked  79% ->  +19.0°  +0.0° blocked  10%
+  SeatL2a     P03_LiBai_Dream          zht default  +61.0°  -9.0° blocked  79% ->  +19.0°  +0.0° blocked  10%
+  SeatL2a     P03_LiBai_Dream          ja  default  +61.0°  -9.0° blocked  85% ->  +15.0°  +2.0° blocked  10%
+  SeatL2a     P03_LiBai_Dream          en  default  +61.0°  -9.0° blocked  84% ->  +16.0°  +0.0° blocked  10%
+  SeatL2a     P03_LiBai_Dream          de  default  +61.0°  -9.0° blocked  84% ->  +16.0°  +0.0° blocked  10%
+  SeatL2a     P04a_Rilke               zh  default   +5.5°  -5.4° blocked  75% ->   +9.0°  +0.0° blocked   8%
+  SeatL2a     P04a_Rilke               zht default   +5.5°  -5.4° blocked  75% ->   +9.0°  +0.0° blocked   8%
+  SeatL2a     P04a_Rilke               ja  default   +4.5°  -7.1° blocked  83% ->   +7.0°  +2.0° blocked  10%
+  SeatL2a     P04a_Rilke               en  default   +5.5°  -4.8° blocked  69% ->   +6.0°  +1.0° blocked  10%
+  SeatL2a     P04a_Rilke               de  default   +5.5°  -4.8° blocked  70% ->   +6.0°  +1.0° blocked  10%
+  SeatL2a     P04b_Urlicht             zh  default   +0.0°  -8.0° blocked 100% ->   +0.0°  +2.0° blocked   6%
+  SeatL2a     P04b_Urlicht             zht default   +0.0°  -8.0° blocked 100% ->   +0.0°  +2.0° blocked   6%
+  SeatL2a     P04b_Urlicht             ja  default   +0.0°  -8.0° blocked  94% ->   +0.0°  +2.0° blocked   9%
+  SeatL2a     P04b_Urlicht             en  default   +0.0°  -8.0° blocked  98% ->   +0.0°  +2.0° blocked   5%
+  SeatL2a     P04b_Urlicht             de  default   +0.0°  -8.0° blocked  98% ->   +0.0°  +2.0° blocked   5%
+  SeatL2a     P06_Dream_Dawn           zh  default   -2.0°  -5.2° blocked 100% ->   -2.0°  +1.0° blocked   9%
+  SeatL2a     P06_Dream_Dawn           zht default   -2.0°  -5.2° blocked 100% ->   -2.0°  +1.0° blocked   9%
+  SeatL2a     P06_Dream_Dawn           ja  default   -2.0°  -7.1° blocked 100% ->   -2.0°  +3.0° blocked   5%
+  SeatL2a     P06_Dream_Dawn           en  default   -2.0°  -6.6° blocked 100% ->   -2.0°  +2.0° blocked   0%
+  SeatL2a     P06_Dream_Dawn           de  default   -2.0°  -6.6° blocked 100% ->   -2.0°  +2.0° blocked   0%
+  SeatL2a     P07_HeBo                 zh  default   +6.5°  +5.4° blocked  19% ->   +6.0°  +4.0° blocked   9%
+  SeatL2a     P07_HeBo                 zht default   +6.5°  +5.4° blocked  19% ->   +6.0°  +4.0° blocked   9%
+  SeatL2a     P07_HeBo                 ja  default   +6.5°  +3.6° blocked  18% ->  +14.0°  +2.0° blocked  10%
+  SeatL2a     P07_HeBo                 en  default   +6.5°  +2.3° blocked  27% ->  +16.0°  +1.0° blocked   5%
+  SeatL2a     P07_HeBo                 de  default   +6.5°  +2.3° blocked  27% ->  +16.0°  +1.0° blocked   5%
+  SeatL2a     P08a_Dream_Dusk          zh  default   -2.0°  -5.2° blocked  89% ->   -1.0°  +1.0° blocked   9%
+  SeatL2a     P08a_Dream_Dusk          zht default   -2.0°  -5.2° blocked  89% ->   -1.0°  +1.0° blocked   9%
+  SeatL2a     P08a_Dream_Dusk          ja  default   -2.0°  -9.0° blocked 100% ->   +8.0°  +3.0° blocked  10%
+  SeatL2a     P08a_Dream_Dusk          en  default   -2.0°  -6.6° blocked 100% ->   -2.0°  +2.0° blocked   5%
+  SeatL2a     P08a_Dream_Dusk          de  default   -2.0°  -6.6° blocked 100% ->   -2.0°  +2.0° blocked   5%
+  SeatL2a     P08b_Zhuangzi_Xiaoyao    zh  default  +35.0°  +0.0° blocked  44% ->  +35.0°  +0.0° blocked  44%  (fixed)
+  SeatL2a     P08b_Zhuangzi_Xiaoyao    zht default  +35.0°  +0.0° blocked  44% ->  +35.0°  +0.0° blocked  44%  (fixed)
+  SeatL2a     P08b_Zhuangzi_Xiaoyao    ja  default  +35.0°  +0.0° blocked  62% ->  +35.0°  +0.0° blocked  62%  (fixed)
+  SeatL2a     P08b_Zhuangzi_Xiaoyao    en  default  +35.0°  +0.0° blocked  57% ->  +35.0°  +0.0° blocked  57%  (fixed)
+  SeatL2a     P08b_Zhuangzi_Xiaoyao    de  default  +35.0°  +0.0° blocked  57% ->  +35.0°  +0.0° blocked  57%  (fixed)
+  SeatL2a     P09_Tianwen              zh  default   +0.0°  +8.0° blocked  39% ->   +0.0°  +8.0° blocked  39%  (fixed)
+  SeatL2a     P09_Tianwen              zht default   +0.0°  +8.0° blocked  39% ->   +0.0°  +8.0° blocked  39%  (fixed)
+  SeatL2a     P09_Tianwen              ja  default   +0.0°  +3.3° blocked  36% ->   +0.0°  +3.3° blocked  36%  (fixed)
+  SeatL2a     P09_Tianwen              en  default   +0.0°  +2.6° blocked  39% ->   +0.0°  +2.7° blocked  39%  (fixed)
+  SeatL2a     P09_Tianwen              de  default   +0.0°  +2.6° blocked  39% ->   +0.0°  +2.7° blocked  39%  (fixed)
+  SeatL2a     P11_Zhuangzi_Butterfly   zh  default   +0.0°  +8.0° blocked  38% ->   +0.0°  +6.0° blocked   6%
+  SeatL2a     P11_Zhuangzi_Butterfly   zht default   +0.0°  +8.0° blocked  38% ->   +0.0°  +6.0° blocked   6%
+  SeatL2a     P11_Zhuangzi_Butterfly   ja  default   +0.0°  +8.0° blocked  40% ->   +0.0°  +4.0° blocked   6%
+  SeatL2a     P11_Zhuangzi_Butterfly   en  default   +0.0°  +8.0° blocked  42% ->   +1.0°  +5.0° blocked   9%
+  SeatL2a     P11_Zhuangzi_Butterfly   de  default   +0.0°  +8.0° blocked  42% ->   +1.0°  +5.0° blocked   9%
+  SeatL2a     P12a_LiBai_Wake          zh  default  +61.0°  -9.0° blocked  83% ->  +76.0°  +1.0° blocked   9%
+  SeatL2a     P12a_LiBai_Wake          zht default  +61.0°  -9.0° blocked  83% ->  +76.0°  +1.0° blocked   9%
+  SeatL2a     P12a_LiBai_Wake          ja  default  +61.0°  -9.0° blocked  84% ->  +16.0°  +0.0° blocked  10%
+  SeatL2a     P12a_LiBai_Wake          en  default  +61.0°  -9.0° blocked  84% ->  +16.0°  +0.0° blocked  10%
+  SeatL2a     P12a_LiBai_Wake          de  default  +61.0°  -9.0° blocked  84% ->  +16.0°  +0.0° blocked  10%
+  SeatL2a     P12b_Keats               zh  default  +61.0° -14.0° blocked  95% ->  +19.0°  -1.0° blocked  10%
+  SeatL2a     P12b_Keats               zht default  +61.0° -14.0° blocked  95% ->  +19.0°  -1.0° blocked  10%
+  SeatL2a     P12b_Keats               ja  default  +61.0° -14.0° blocked  92% ->  +17.0°  +1.0° blocked   9%
+  SeatL2a     P12b_Keats               en  default  +61.0° -14.0° blocked 100% ->  +16.0°  -2.0° blocked   8%
+  SeatL2a     P12b_Keats               de  default  +61.0° -14.0° blocked 100% ->  +16.0°  -2.0° blocked   8%
+  SeatL3w     P03_LiBai_Dream          zh  default  +61.0°  -9.0° blocked  85% ->  +19.0°  +2.0° blocked   8%
+  SeatL3w     P03_LiBai_Dream          zht default  +61.0°  -9.0° blocked  85% ->  +19.0°  +2.0° blocked   8%
+  SeatL3w     P03_LiBai_Dream          ja  default  +61.0°  -9.0° blocked  88% -> -143.0°  -2.0° blocked  23%
+  SeatL3w     P03_LiBai_Dream          en  default  +61.0°  -9.0° blocked  87% -> -144.0°  -3.0° blocked  23%
+  SeatL3w     P03_LiBai_Dream          de  default  +61.0°  -9.0° blocked  87% -> -144.0°  -3.0° blocked  23%
+  SeatL3w     P04a_Rilke               zh  default   +5.5°  -5.4° blocked 100% ->   +5.0°  +2.0° blocked   7%
+  SeatL3w     P04a_Rilke               zht default   +5.5°  -5.4° blocked 100% ->   +5.0°  +2.0° blocked   7%
+  SeatL3w     P04a_Rilke               ja  default   +4.5°  -7.1° blocked 100% -> +164.0°  +3.0° blocked  11%
+  SeatL3w     P04a_Rilke               en  default   +5.5°  -4.8° blocked 100% ->   +7.0°  +2.0° blocked   6%
+  SeatL3w     P04a_Rilke               de  default   +5.5°  -4.8° blocked 100% ->   +7.0°  +2.0° blocked  10%
+  SeatL3w     P04b_Urlicht             zh  default   +0.0°  -8.0° blocked 100% ->   +6.0°  +2.0° blocked   6%
+  SeatL3w     P04b_Urlicht             zht default   +0.0°  -8.0° blocked 100% ->   +6.0°  +2.0° blocked   6%
+  SeatL3w     P04b_Urlicht             ja  default   +0.0°  -8.0° blocked  97% ->  +10.0°  +2.0° blocked   8%
+  SeatL3w     P04b_Urlicht             en  default   +0.0°  -8.0° blocked 100% ->   +7.0°  +2.0° blocked   6%
+  SeatL3w     P04b_Urlicht             de  default   +0.0°  -8.0° blocked 100% ->   +7.0°  +2.0° blocked   6%
+  SeatL3w     P06_Dream_Dawn           zh  default   -2.0°  -5.2° blocked  92% ->   +7.0°  +2.0° blocked   9%
+  SeatL3w     P06_Dream_Dawn           zht default   -2.0°  -5.2° blocked  92% ->   +7.0°  +2.0° blocked   9%
+  SeatL3w     P06_Dream_Dawn           ja  default   -2.0°  -7.1° blocked  99% ->   +7.0°  +3.0° blocked   8%
+  SeatL3w     P06_Dream_Dawn           en  default   -2.0°  -6.6° blocked 100% ->   +4.0°  +2.0° blocked   7%
+  SeatL3w     P06_Dream_Dawn           de  default   -2.0°  -6.6° blocked 100% ->   +4.0°  +2.0° blocked   7%
+  SeatL3w     P07_HeBo                 zh  default   +6.5°  +5.4° blocked  23% ->  +21.0°  +2.0° blocked   9%
+  SeatL3w     P07_HeBo                 zht default   +6.5°  +5.4° blocked  23% ->  +21.0°  +2.0° blocked   9%
+  SeatL3w     P07_HeBo                 ja  default   +6.5°  +3.6° blocked  36% -> -139.0°  -4.0° blocked  26%
+  SeatL3w     P07_HeBo                 en  default   +6.5°  +2.3° blocked  44% -> -147.0°  -1.0° blocked  25%
+  SeatL3w     P07_HeBo                 de  default   +6.5°  +2.3° blocked  44% -> -147.0°  -1.0° blocked  25%
+  SeatL3w     P08a_Dream_Dusk          zh  default   -2.0°  -5.2° blocked  90% ->  +10.0°  +1.0° blocked   8%
+  SeatL3w     P08a_Dream_Dusk          zht default   -2.0°  -5.2° blocked  90% ->  +10.0°  +1.0° blocked   8%
+  SeatL3w     P08a_Dream_Dusk          ja  default   -2.0°  -9.0° blocked  97% -> -140.0°  -3.0° blocked  23%
+  SeatL3w     P08a_Dream_Dusk          en  default   -2.0°  -6.6° blocked  98% ->   +7.0°  +2.0° blocked   6%
+  SeatL3w     P08a_Dream_Dusk          de  default   -2.0°  -6.6° blocked  98% ->   +7.0°  +2.0° blocked   6%
+  SeatL3w     P08b_Zhuangzi_Xiaoyao    zh  default  +35.0°  +0.0° blocked  54% ->  +35.0°  +0.0° blocked  54%  (fixed)
+  SeatL3w     P08b_Zhuangzi_Xiaoyao    zht default  +35.0°  +0.0° blocked  54% ->  +35.0°  +0.0° blocked  54%  (fixed)
+  SeatL3w     P08b_Zhuangzi_Xiaoyao    ja  default  +35.0°  +0.0° blocked  70% ->  +35.0°  +0.0° blocked  70%  (fixed)
+  SeatL3w     P08b_Zhuangzi_Xiaoyao    en  default  +35.0°  +0.0° blocked  66% ->  +35.0°  +0.0° blocked  66%  (fixed)
+  SeatL3w     P08b_Zhuangzi_Xiaoyao    de  default  +35.0°  +0.0° blocked  66% ->  +35.0°  +0.0° blocked  66%  (fixed)
+  SeatL3w     P09_Tianwen              zh  default   +0.0°  +8.0° blocked  60% ->   +0.0°  +8.0° blocked  60%  (fixed)
+  SeatL3w     P09_Tianwen              zht default   +0.0°  +8.0° blocked  60% ->   +0.0°  +8.0° blocked  60%  (fixed)
+  SeatL3w     P09_Tianwen              ja  default   +0.0°  +3.3° blocked  56% ->   +0.0°  +3.3° blocked  56%  (fixed)
+  SeatL3w     P09_Tianwen              en  default   +0.0°  +2.6° blocked  60% ->   +0.0°  +2.7° blocked  60%  (fixed)
+  SeatL3w     P09_Tianwen              de  default   +0.0°  +2.6° blocked  60% ->   +0.0°  +2.7° blocked  60%  (fixed)
+  SeatL3w     P11_Zhuangzi_Butterfly   zh  default   +0.0°  +8.0° blocked  62% ->   +7.0°  +4.0° blocked   8%
+  SeatL3w     P11_Zhuangzi_Butterfly   zht default   +0.0°  +8.0° blocked  62% ->   +7.0°  +4.0° blocked   8%
+  SeatL3w     P11_Zhuangzi_Butterfly   ja  default   +0.0°  +8.0° blocked  62% -> +164.0°  +3.0° blocked  11%
+  SeatL3w     P11_Zhuangzi_Butterfly   en  default   +0.0°  +8.0° blocked  60% ->  +10.0°  +3.0° blocked   9%
+  SeatL3w     P11_Zhuangzi_Butterfly   de  default   +0.0°  +8.0° blocked  60% ->  +10.0°  +3.0° blocked   9%
+  SeatL3w     P12a_LiBai_Wake          zh  default  +61.0°  -9.0° blocked  85% ->  +22.0°  +2.0° blocked   8%
+  SeatL3w     P12a_LiBai_Wake          zht default  +61.0°  -9.0° blocked  85% ->  +22.0°  +2.0° blocked   8%
+  SeatL3w     P12a_LiBai_Wake          ja  default  +61.0°  -9.0° blocked  87% -> -144.0°  -3.0° blocked  23%
+  SeatL3w     P12a_LiBai_Wake          en  default  +61.0°  -9.0° blocked  87% -> -144.0°  -3.0° blocked  23%
+  SeatL3w     P12a_LiBai_Wake          de  default  +61.0°  -9.0° blocked  87% -> -144.0°  -3.0° blocked  23%
+  SeatL3w     P12b_Keats               zh  default  +61.0° -14.0° blocked 100% ->  +24.0°  +2.0° blocked  10%
+  SeatL3w     P12b_Keats               zht default  +61.0° -14.0° blocked 100% ->  +24.0°  +2.0° blocked  10%
+  SeatL3w     P12b_Keats               ja  default  +61.0° -14.0° blocked 100% ->  +18.0°  +2.0° blocked   8%
+  SeatL3w     P12b_Keats               en  default  +61.0° -14.0° blocked 100% ->  +18.0°  +0.0° blocked   8%
+  SeatL3w     P12b_Keats               de  default  +61.0° -14.0° blocked 100% ->  +18.0°  +0.0° blocked   8%
+  SeatL3a     P03_LiBai_Dream          zh  default  +61.0°  -9.0° blocked  67% ->   +1.0°  +3.0° blocked   8%
+  SeatL3a     P03_LiBai_Dream          zht default  +61.0°  -9.0° blocked  67% ->   +1.0°  +3.0° blocked   8%
+  SeatL3a     P03_LiBai_Dream          ja  default  +61.0°  -9.0° blocked  81% ->  +10.0°  +1.0° blocked  29%
+  SeatL3a     P03_LiBai_Dream          en  default  +61.0°  -9.0° blocked  77% -> +170.0°  +3.0° blocked  20%
+  SeatL3a     P03_LiBai_Dream          de  default  +61.0°  -9.0° blocked  77% -> +170.0°  +3.0° blocked  20%
+  SeatL3a     P04a_Rilke               zh  default   +5.5°  -5.4° blocked  90% ->   +3.0°  +2.0° blocked   6%
+  SeatL3a     P04a_Rilke               zht default   +5.5°  -5.4° blocked  90% ->   +3.0°  +2.0° blocked   6%
+  SeatL3a     P04a_Rilke               ja  default   +4.5°  -7.1° blocked  90% -> +170.0°  +3.0° blocked   8%
+  SeatL3a     P04a_Rilke               en  default   +5.5°  -4.8° blocked  82% ->   +1.0°  +2.0° blocked   6%
+  SeatL3a     P04a_Rilke               de  default   +5.5°  -4.8° blocked  81% ->   +1.0°  +2.0° blocked  10%
+  SeatL3a     P04b_Urlicht             zh  default   +0.0°  -8.0° blocked 100% ->   +0.0°  +2.0° blocked   6%
+  SeatL3a     P04b_Urlicht             zht default   +0.0°  -8.0° blocked 100% ->   +0.0°  +2.0° blocked   6%
+  SeatL3a     P04b_Urlicht             ja  default   +0.0°  -8.0° blocked  98% -> +171.0°  +2.0° blocked   7%
+  SeatL3a     P04b_Urlicht             en  default   +0.0°  -8.0° blocked  99% ->   +0.0°  +2.0° blocked   6%
+  SeatL3a     P04b_Urlicht             de  default   +0.0°  -8.0° blocked  99% ->   +0.0°  +2.0° blocked   6%
+  SeatL3a     P06_Dream_Dawn           zh  default   -2.0°  -5.2° blocked 100% ->   +0.0°  +2.0° blocked   9%
+  SeatL3a     P06_Dream_Dawn           zht default   -2.0°  -5.2° blocked 100% ->   +0.0°  +2.0° blocked   9%
+  SeatL3a     P06_Dream_Dawn           ja  default   -2.0°  -7.1° blocked 100% ->   +0.0°  +3.0° blocked   8%
+  SeatL3a     P06_Dream_Dawn           en  default   -2.0°  -6.6° blocked 100% ->   -2.0°  +2.0° blocked   1%
+  SeatL3a     P06_Dream_Dawn           de  default   -2.0°  -6.6° blocked 100% ->   -2.0°  +2.0° blocked   1%
+  SeatL3a     P07_HeBo                 zh  default   +6.5°  +5.4° blocked  39% -> +166.0°  +3.0° blocked   7%
+  SeatL3a     P07_HeBo                 zht default   +6.5°  +5.4° blocked  39% -> +166.0°  +3.0° blocked   7%
+  SeatL3a     P07_HeBo                 ja  default   +6.5°  +3.6° blocked  33% -> -113.0°  +6.0° blocked  21%
+  SeatL3a     P07_HeBo                 en  default   +6.5°  +2.3° blocked  44% ->  -36.0° +10.0° blocked  19%
+  SeatL3a     P07_HeBo                 de  default   +6.5°  +2.3° blocked  44% ->  -36.0° +10.0° blocked  19%
+  SeatL3a     P08a_Dream_Dusk          zh  default   -2.0°  -5.2° blocked  95% -> +171.0°  +1.0° blocked   7%
+  SeatL3a     P08a_Dream_Dusk          zht default   -2.0°  -5.2° blocked  95% -> +171.0°  +1.0° blocked   7%
+  SeatL3a     P08a_Dream_Dusk          ja  default   -2.0°  -9.0° blocked 100% -> +170.0°  +3.0° blocked  20%
+  SeatL3a     P08a_Dream_Dusk          en  default   -2.0°  -6.6° blocked 100% ->   +0.0°  +2.0° blocked   6%
+  SeatL3a     P08a_Dream_Dusk          de  default   -2.0°  -6.6° blocked 100% ->   +0.0°  +2.0° blocked   6%
+  SeatL3a     P08b_Zhuangzi_Xiaoyao    zh  default  +35.0°  +0.0° blocked  70% ->  +35.0°  +0.0° blocked  70%  (fixed)
+  SeatL3a     P08b_Zhuangzi_Xiaoyao    zht default  +35.0°  +0.0° blocked  70% ->  +35.0°  +0.0° blocked  70%  (fixed)
+  SeatL3a     P08b_Zhuangzi_Xiaoyao    ja  default  +35.0°  +0.0° blocked  80% ->  +35.0°  +0.0° blocked  80%  (fixed)
+  SeatL3a     P08b_Zhuangzi_Xiaoyao    en  default  +35.0°  +0.0° blocked  75% ->  +35.0°  +0.0° blocked  75%  (fixed)
+  SeatL3a     P08b_Zhuangzi_Xiaoyao    de  default  +35.0°  +0.0° blocked  75% ->  +35.0°  +0.0° blocked  75%  (fixed)
+  SeatL3a     P09_Tianwen              zh  default   +0.0°  +8.0° blocked  54% ->   +0.0°  +8.0° blocked  54%  (fixed)
+  SeatL3a     P09_Tianwen              zht default   +0.0°  +8.0° blocked  54% ->   +0.0°  +8.0° blocked  54%  (fixed)
+  SeatL3a     P09_Tianwen              ja  default   +0.0°  +3.3° blocked  50% ->   +0.0°  +3.3° blocked  50%  (fixed)
+  SeatL3a     P09_Tianwen              en  default   +0.0°  +2.6° blocked  51% ->   +0.0°  +2.7° blocked  51%  (fixed)
+  SeatL3a     P09_Tianwen              de  default   +0.0°  +2.6° blocked  51% ->   +0.0°  +2.7° blocked  51%  (fixed)
+  SeatL3a     P11_Zhuangzi_Butterfly   zh  default   +0.0°  +8.0° blocked  49% ->   +0.0°  +5.0° blocked   9%
+  SeatL3a     P11_Zhuangzi_Butterfly   zht default   +0.0°  +8.0° blocked  49% ->   +0.0°  +5.0° blocked   9%
+  SeatL3a     P11_Zhuangzi_Butterfly   ja  default   +0.0°  +8.0° blocked  55% -> +170.0°  +4.0° blocked  10%
+  SeatL3a     P11_Zhuangzi_Butterfly   en  default   +0.0°  +8.0° blocked  59% -> +171.0°  +4.0° blocked   8%
+  SeatL3a     P11_Zhuangzi_Butterfly   de  default   +0.0°  +8.0° blocked  59% -> +171.0°  +4.0° blocked   8%
+  SeatL3a     P12a_LiBai_Wake          zh  default  +61.0°  -9.0° blocked  63% ->   +3.0°  +3.0° blocked   9%
+  SeatL3a     P12a_LiBai_Wake          zht default  +61.0°  -9.0° blocked  63% ->   +3.0°  +3.0° blocked   9%
+  SeatL3a     P12a_LiBai_Wake          ja  default  +61.0°  -9.0° blocked  77% -> +170.0°  +3.0° blocked  20%
+  SeatL3a     P12a_LiBai_Wake          en  default  +61.0°  -9.0° blocked  77% -> +170.0°  +3.0° blocked  20%
+  SeatL3a     P12a_LiBai_Wake          de  default  +61.0°  -9.0° blocked  77% -> +170.0°  +3.0° blocked  20%
+  SeatL3a     P12b_Keats               zh  default  +61.0° -14.0° blocked  95% ->   +2.0°  +3.0° blocked  10%
+  SeatL3a     P12b_Keats               zht default  +61.0° -14.0° blocked  95% ->   +2.0°  +3.0° blocked  10%
+  SeatL3a     P12b_Keats               ja  default  +61.0° -14.0° blocked  89% -> +168.0°  +3.0° blocked   9%
+  SeatL3a     P12b_Keats               en  default  +61.0° -14.0° blocked 100% -> +169.0°  +0.0° blocked   8%
+  SeatL3a     P12b_Keats               de  default  +61.0° -14.0° blocked 100% -> +169.0°  +0.0° blocked   8%
+  SeatL4w     P03_LiBai_Dream          zh  default  +61.0°  -9.0° blocked  94% -> +154.0°  +3.0° blocked  10%
+  SeatL4w     P03_LiBai_Dream          zht default  +61.0°  -9.0° blocked  94% -> +154.0°  +3.0° blocked  10%
+  SeatL4w     P03_LiBai_Dream          ja  default  +61.0°  -9.0° blocked  89% -> +161.0°  +4.0° blocked  17%
+  SeatL4w     P03_LiBai_Dream          en  default  +61.0°  -9.0° blocked  92% -> +157.0°  +4.0° blocked   7%
+  SeatL4w     P03_LiBai_Dream          de  default  +61.0°  -9.0° blocked  92% -> +157.0°  +4.0° blocked   7%
+  SeatL4w     P04a_Rilke               zh  default   +5.5°  -5.4° blocked 100% ->   +5.0°  +3.0° blocked   7%
+  SeatL4w     P04a_Rilke               zht default   +5.5°  -5.4° blocked 100% ->   +5.0°  +3.0° blocked   7%
+  SeatL4w     P04a_Rilke               ja  default   +4.5°  -7.1° blocked 100% -> +156.0°  +4.0° blocked   8%
+  SeatL4w     P04a_Rilke               en  default   +5.5°  -4.8° blocked 100% ->   +7.0°  +2.0° blocked  10%
+  SeatL4w     P04a_Rilke               de  default   +5.5°  -4.8° blocked 100% ->   +8.0°  +2.0° blocked   9%
+  SeatL4w     P04b_Urlicht             zh  default   +0.0°  -8.0° blocked 100% ->   +6.0°  +3.0° blocked   7%
+  SeatL4w     P04b_Urlicht             zht default   +0.0°  -8.0° blocked 100% ->   +6.0°  +3.0° blocked   7%
+  SeatL4w     P04b_Urlicht             ja  default   +0.0°  -8.0° blocked 100% ->  +11.0°  +2.0° blocked   7%
+  SeatL4w     P04b_Urlicht             en  default   +0.0°  -8.0° blocked 100% ->   +7.0°  +2.0° blocked  10%
+  SeatL4w     P04b_Urlicht             de  default   +0.0°  -8.0° blocked 100% ->   +7.0°  +2.0° blocked  10%
+  SeatL4w     P06_Dream_Dawn           zh  default   -2.0°  -5.2° blocked 100% ->   +7.0°  +2.0° blocked   9%
+  SeatL4w     P06_Dream_Dawn           zht default   -2.0°  -5.2° blocked 100% ->   +7.0°  +2.0° blocked   9%
+  SeatL4w     P06_Dream_Dawn           ja  default   -2.0°  -7.1° blocked 100% -> +154.0°  +3.0° blocked  10%
+  SeatL4w     P06_Dream_Dawn           en  default   -2.0°  -6.6° blocked 100% ->   +5.0°  +3.0° blocked   7%
+  SeatL4w     P06_Dream_Dawn           de  default   -2.0°  -6.6° blocked 100% ->   +5.0°  +3.0° blocked   7%
+  SeatL4w     P07_HeBo                 zh  default   +6.5°  +5.4° blocked  37% -> +153.0°  +5.0° blocked   8%
+  SeatL4w     P07_HeBo                 zht default   +6.5°  +5.4° blocked  37% -> +153.0°  +5.0° blocked   8%
+  SeatL4w     P07_HeBo                 ja  default   +6.5°  +3.6° blocked  48% -> +166.0°  +6.0° blocked  16%
+  SeatL4w     P07_HeBo                 en  default   +6.5°  +2.3° blocked  57% -> +168.0°  +7.0° blocked  26%
+  SeatL4w     P07_HeBo                 de  default   +6.5°  +2.3° blocked  57% -> +168.0°  +7.0° blocked  26%
+  SeatL4w     P08a_Dream_Dusk          zh  default   -2.0°  -5.2° blocked 100% ->  +10.0°  +2.0° blocked   7%
+  SeatL4w     P08a_Dream_Dusk          zht default   -2.0°  -5.2° blocked 100% ->  +10.0°  +2.0° blocked   7%
+  SeatL4w     P08a_Dream_Dusk          ja  default   -2.0°  -9.0° blocked 100% -> +157.0°  +4.0° blocked   7%
+  SeatL4w     P08a_Dream_Dusk          en  default   -2.0°  -6.6° blocked 100% ->   +7.0°  +2.0° blocked  10%
+  SeatL4w     P08a_Dream_Dusk          de  default   -2.0°  -6.6° blocked 100% ->   +7.0°  +2.0° blocked  10%
+  SeatL4w     P08b_Zhuangzi_Xiaoyao    zh  default  +35.0°  +0.0° blocked  66% ->  +35.0°  +0.0° blocked  66%  (fixed)
+  SeatL4w     P08b_Zhuangzi_Xiaoyao    zht default  +35.0°  +0.0° blocked  66% ->  +35.0°  +0.0° blocked  66%  (fixed)
+  SeatL4w     P08b_Zhuangzi_Xiaoyao    ja  default  +35.0°  +0.0° blocked  77% ->  +35.0°  +0.0° blocked  77%  (fixed)
+  SeatL4w     P08b_Zhuangzi_Xiaoyao    en  default  +35.0°  +0.0° blocked  78% ->  +35.0°  +0.0° blocked  78%  (fixed)
+  SeatL4w     P08b_Zhuangzi_Xiaoyao    de  default  +35.0°  +0.0° blocked  78% ->  +35.0°  +0.0° blocked  78%  (fixed)
+  SeatL4w     P09_Tianwen              zh  default   +0.0°  +8.0° blocked  71% ->   +0.0°  +8.0° blocked  71%  (fixed)
+  SeatL4w     P09_Tianwen              zht default   +0.0°  +8.0° blocked  71% ->   +0.0°  +8.0° blocked  71%  (fixed)
+  SeatL4w     P09_Tianwen              ja  default   +0.0°  +3.3° blocked  70% ->   +0.0°  +3.3° blocked  70%  (fixed)
+  SeatL4w     P09_Tianwen              en  default   +0.0°  +2.6° blocked  71% ->   +0.0°  +2.7° blocked  71%  (fixed)
+  SeatL4w     P09_Tianwen              de  default   +0.0°  +2.6° blocked  71% ->   +0.0°  +2.7° blocked  71%  (fixed)
+  SeatL4w     P11_Zhuangzi_Butterfly   zh  default   +0.0°  +8.0° blocked  69% ->   +7.0°  +3.0° blocked   7%
+  SeatL4w     P11_Zhuangzi_Butterfly   zht default   +0.0°  +8.0° blocked  69% ->   +7.0°  +3.0° blocked   7%
+  SeatL4w     P11_Zhuangzi_Butterfly   ja  default   +0.0°  +8.0° blocked  67% -> +156.0°  +5.0° blocked  10%
+  SeatL4w     P11_Zhuangzi_Butterfly   en  default   +0.0°  +8.0° blocked  72% -> +158.0°  +6.0° blocked   8%
+  SeatL4w     P11_Zhuangzi_Butterfly   de  default   +0.0°  +8.0° blocked  72% -> +158.0°  +6.0° blocked   8%
+  SeatL4w     P12a_LiBai_Wake          zh  default  +61.0°  -9.0° blocked  99% ->  +21.0°  +2.0° blocked   7%
+  SeatL4w     P12a_LiBai_Wake          zht default  +61.0°  -9.0° blocked  99% ->  +21.0°  +2.0° blocked   7%
+  SeatL4w     P12a_LiBai_Wake          ja  default  +61.0°  -9.0° blocked  92% -> +157.0°  +4.0° blocked   7%
+  SeatL4w     P12a_LiBai_Wake          en  default  +61.0°  -9.0° blocked  92% -> +157.0°  +4.0° blocked   7%
+  SeatL4w     P12a_LiBai_Wake          de  default  +61.0°  -9.0° blocked  92% -> +157.0°  +4.0° blocked   7%
+  SeatL4w     P12b_Keats               zh  default  +61.0° -14.0° blocked 100% ->  +19.0°  +2.0° blocked   6%
+  SeatL4w     P12b_Keats               zht default  +61.0° -14.0° blocked 100% ->  +19.0°  +2.0° blocked   6%
+  SeatL4w     P12b_Keats               ja  default  +61.0° -14.0° blocked 100% -> +155.0°  +3.0° blocked   9%
+  SeatL4w     P12b_Keats               en  default  +61.0° -14.0° blocked 100% ->  +18.0°  +1.0° blocked   8%
+  SeatL4w     P12b_Keats               de  default  +61.0° -14.0° blocked 100% ->  +18.0°  +1.0° blocked   8%
+  SeatL4a     P03_LiBai_Dream          zh  default  +61.0°  -9.0° blocked  80% -> +162.0°  +3.0° blocked  10%
+  SeatL4a     P03_LiBai_Dream          zht default  +61.0°  -9.0° blocked  80% -> +162.0°  +3.0° blocked  10%
+  SeatL4a     P03_LiBai_Dream          ja  default  +61.0°  -9.0° blocked  84% -> +174.0°  +4.0° blocked  21%
+  SeatL4a     P03_LiBai_Dream          en  default  +61.0°  -9.0° blocked  83% -> +171.0°  +5.0° blocked  10%
+  SeatL4a     P03_LiBai_Dream          de  default  +61.0°  -9.0° blocked  83% -> +171.0°  +5.0° blocked  10%
+  SeatL4a     P04a_Rilke               zh  default   +5.5°  -5.4° blocked  90% -> +174.0°  +2.0° blocked   6%
+  SeatL4a     P04a_Rilke               zht default   +5.5°  -5.4° blocked  90% -> +174.0°  +2.0° blocked   6%
+  SeatL4a     P04a_Rilke               ja  default   +4.5°  -7.1° blocked  91% -> +164.0°  +4.0° blocked   8%
+  SeatL4a     P04a_Rilke               en  default   +5.5°  -4.8° blocked  84% -> +162.0°  +2.0° blocked  10%
+  SeatL4a     P04a_Rilke               de  default   +5.5°  -4.8° blocked  83% -> +163.0°  +2.0° blocked   9%
+  SeatL4a     P04b_Urlicht             zh  default   +0.0°  -8.0° blocked 100% -> +175.0°  +2.0° blocked   6%
+  SeatL4a     P04b_Urlicht             zht default   +0.0°  -8.0° blocked 100% -> +175.0°  +2.0° blocked   6%
+  SeatL4a     P04b_Urlicht             ja  default   +0.0°  -8.0° blocked 100% ->   +6.0°  +3.0° blocked   9%
+  SeatL4a     P04b_Urlicht             en  default   +0.0°  -8.0° blocked 100% -> +162.0°  +2.0° blocked  10%
+  SeatL4a     P04b_Urlicht             de  default   +0.0°  -8.0° blocked 100% -> +162.0°  +2.0° blocked  10%
+  SeatL4a     P06_Dream_Dawn           zh  default   -2.0°  -5.2° blocked 100% ->   +3.0°  +2.0° blocked   9%
+  SeatL4a     P06_Dream_Dawn           zht default   -2.0°  -5.2° blocked 100% ->   +3.0°  +2.0° blocked   9%
+  SeatL4a     P06_Dream_Dawn           ja  default   -2.0°  -7.1° blocked 100% -> +162.0°  +3.0° blocked  10%
+  SeatL4a     P06_Dream_Dawn           en  default   -2.0°  -6.6° blocked 100% -> +174.0°  +2.0° blocked   6%
+  SeatL4a     P06_Dream_Dawn           de  default   -2.0°  -6.6° blocked 100% -> +174.0°  +2.0° blocked   6%
+  SeatL4a     P07_HeBo                 zh  default   +6.5°  +5.4° blocked  41% -> +174.0°  +6.0° blocked   6%
+  SeatL4a     P07_HeBo                 zht default   +6.5°  +5.4° blocked  41% -> +174.0°  +6.0° blocked   6%
+  SeatL4a     P07_HeBo                 ja  default   +6.5°  +3.6° blocked  38% -> +177.0°  +6.0° blocked  15%
+  SeatL4a     P07_HeBo                 en  default   +6.5°  +2.3° blocked  47% ->  -56.0°  +4.0° blocked  15%
+  SeatL4a     P07_HeBo                 de  default   +6.5°  +2.3° blocked  47% ->  -56.0°  +4.0° blocked  15%
+  SeatL4a     P08a_Dream_Dusk          zh  default   -2.0°  -5.2° blocked  96% ->   +6.0°  +2.0° blocked   7%
+  SeatL4a     P08a_Dream_Dusk          zht default   -2.0°  -5.2° blocked  96% ->   +6.0°  +2.0° blocked   7%
+  SeatL4a     P08a_Dream_Dusk          ja  default   -2.0°  -9.0° blocked 100% -> +171.0°  +5.0° blocked  10%
+  SeatL4a     P08a_Dream_Dusk          en  default   -2.0°  -6.6° blocked 100% -> +162.0°  +2.0° blocked  10%
+  SeatL4a     P08a_Dream_Dusk          de  default   -2.0°  -6.6° blocked 100% -> +162.0°  +2.0° blocked  10%
+  SeatL4a     P08b_Zhuangzi_Xiaoyao    zh  default  +35.0°  +0.0° blocked  76% ->  +35.0°  +0.0° blocked  76%  (fixed)
+  SeatL4a     P08b_Zhuangzi_Xiaoyao    zht default  +35.0°  +0.0° blocked  76% ->  +35.0°  +0.0° blocked  76%  (fixed)
+  SeatL4a     P08b_Zhuangzi_Xiaoyao    ja  default  +35.0°  +0.0° blocked  80% ->  +35.0°  +0.0° blocked  80%  (fixed)
+  SeatL4a     P08b_Zhuangzi_Xiaoyao    en  default  +35.0°  +0.0° blocked  76% ->  +35.0°  +0.0° blocked  76%  (fixed)
+  SeatL4a     P08b_Zhuangzi_Xiaoyao    de  default  +35.0°  +0.0° blocked  76% ->  +35.0°  +0.0° blocked  76%  (fixed)
+  SeatL4a     P09_Tianwen              zh  default   +0.0°  +8.0° blocked  73% ->   +0.0°  +8.0° blocked  73%  (fixed)
+  SeatL4a     P09_Tianwen              zht default   +0.0°  +8.0° blocked  73% ->   +0.0°  +8.0° blocked  73%  (fixed)
+  SeatL4a     P09_Tianwen              ja  default   +0.0°  +3.3° blocked  57% ->   +0.0°  +3.3° blocked  57%  (fixed)
+  SeatL4a     P09_Tianwen              en  default   +0.0°  +2.6° blocked  59% ->   +0.0°  +2.7° blocked  59%  (fixed)
+  SeatL4a     P09_Tianwen              de  default   +0.0°  +2.6° blocked  59% ->   +0.0°  +2.7° blocked  59%  (fixed)
+  SeatL4a     P11_Zhuangzi_Butterfly   zh  default   +0.0°  +8.0° blocked  69% -> +162.0°  +6.0° blocked  10%
+  SeatL4a     P11_Zhuangzi_Butterfly   zht default   +0.0°  +8.0° blocked  69% -> +162.0°  +6.0° blocked  10%
+  SeatL4a     P11_Zhuangzi_Butterfly   ja  default   +0.0°  +8.0° blocked  68% -> +164.0°  +5.0° blocked   9%
+  SeatL4a     P11_Zhuangzi_Butterfly   en  default   +0.0°  +8.0° blocked  68% -> +166.0°  +6.0° blocked   8%
+  SeatL4a     P11_Zhuangzi_Butterfly   de  default   +0.0°  +8.0° blocked  68% -> +166.0°  +6.0° blocked   8%
+  SeatL4a     P12a_LiBai_Wake          zh  default  +61.0°  -9.0° blocked  79% -> +174.0°  +3.0° blocked   6%
+  SeatL4a     P12a_LiBai_Wake          zht default  +61.0°  -9.0° blocked  79% -> +174.0°  +3.0° blocked   6%
+  SeatL4a     P12a_LiBai_Wake          ja  default  +61.0°  -9.0° blocked  83% -> +171.0°  +5.0° blocked  10%
+  SeatL4a     P12a_LiBai_Wake          en  default  +61.0°  -9.0° blocked  83% -> +171.0°  +5.0° blocked  10%
+  SeatL4a     P12a_LiBai_Wake          de  default  +61.0°  -9.0° blocked  83% -> +171.0°  +5.0° blocked  10%
+  SeatL4a     P12b_Keats               zh  default  +61.0° -14.0° blocked  96% -> +162.0°  +2.0° blocked  10%
+  SeatL4a     P12b_Keats               zht default  +61.0° -14.0° blocked  96% -> +162.0°  +2.0° blocked  10%
+  SeatL4a     P12b_Keats               ja  default  +61.0° -14.0° blocked  94% -> +163.0°  +3.0° blocked   9%
+  SeatL4a     P12b_Keats               en  default  +61.0° -14.0° blocked 100% ->   +8.0°  +1.0° blocked   8%
+  SeatL4a     P12b_Keats               de  default  +61.0° -14.0° blocked 100% ->   +8.0°  +1.0° blocked   8%
+  SeatL5w     P03_LiBai_Dream          zh  default  +61.0°  -9.0° blocked 100% -> +143.0°  +3.0° blocked  10%
+  SeatL5w     P03_LiBai_Dream          zht default  +61.0°  -9.0° blocked 100% -> +143.0°  +3.0° blocked  10%
+  SeatL5w     P03_LiBai_Dream          ja  default  +61.0°  -9.0° blocked  99% -> +146.0°  +4.0° blocked   7%
+  SeatL5w     P03_LiBai_Dream          en  default  +61.0°  -9.0° blocked 100% -> +144.0°  +5.0° blocked  10%
+  SeatL5w     P03_LiBai_Dream          de  default  +61.0°  -9.0° blocked 100% -> +144.0°  +5.0° blocked  10%
+  SeatL5w     P04a_Rilke               zh  default   +5.5°  -5.4° blocked 100% ->   +6.0°  +2.0° blocked   8%
+  SeatL5w     P04a_Rilke               zht default   +5.5°  -5.4° blocked 100% ->   +6.0°  +2.0° blocked   8%
+  SeatL5w     P04a_Rilke               ja  default   +4.5°  -7.1° blocked 100% ->  -74.0° -15.0° blocked   8%
+  SeatL5w     P04a_Rilke               en  default   +5.5°  -4.8° blocked 100% ->   +8.0°  +3.0° blocked  10%
+  SeatL5w     P04a_Rilke               de  default   +5.5°  -4.8° blocked 100% ->  +14.0°  +2.0° blocked  10%
+  SeatL5w     P04b_Urlicht             zh  default   +0.0°  -8.0° blocked 100% ->   +7.0°  +3.0° blocked   9%
+  SeatL5w     P04b_Urlicht             zht default   +0.0°  -8.0° blocked 100% ->   +7.0°  +3.0° blocked   9%
+  SeatL5w     P04b_Urlicht             ja  default   +0.0°  -8.0° blocked 100% ->  -76.0° -15.0° blocked   7%
+  SeatL5w     P04b_Urlicht             en  default   +0.0°  -8.0° blocked 100% ->   +8.0°  +3.0° blocked  10%
+  SeatL5w     P04b_Urlicht             de  default   +0.0°  -8.0° blocked 100% ->   +8.0°  +3.0° blocked  10%
+  SeatL5w     P06_Dream_Dawn           zh  default   -2.0°  -5.2° blocked 100% ->   +8.0°  +2.0° blocked   9%
+  SeatL5w     P06_Dream_Dawn           zht default   -2.0°  -5.2° blocked 100% ->   +8.0°  +2.0° blocked   9%
+  SeatL5w     P06_Dream_Dawn           ja  default   -2.0°  -7.1° blocked 100% ->  -72.0° -15.0° blocked  10%
+  SeatL5w     P06_Dream_Dawn           en  default   -2.0°  -6.6° blocked 100% ->   +6.0°  +2.0° blocked   8%
+  SeatL5w     P06_Dream_Dawn           de  default   -2.0°  -6.6° blocked 100% ->   +6.0°  +2.0° blocked   8%
+  SeatL5w     P07_HeBo                 zh  default   +6.5°  +5.4° blocked  39% ->  -71.0° +10.0° blocked   6%
+  SeatL5w     P07_HeBo                 zht default   +6.5°  +5.4° blocked  39% ->  -71.0° +10.0° blocked   6%
+  SeatL5w     P07_HeBo                 ja  default   +6.5°  +3.6° blocked  54% ->  -72.0° +10.0° blocked  10%
+  SeatL5w     P07_HeBo                 en  default   +6.5°  +2.3° blocked  61% ->  -71.0°  +6.0° blocked   6%
+  SeatL5w     P07_HeBo                 de  default   +6.5°  +2.3° blocked  61% ->  -71.0°  +6.0° blocked   6%
+  SeatL5w     P08a_Dream_Dusk          zh  default   -2.0°  -5.2° blocked 100% ->  +11.0°  +2.0° blocked   7%
+  SeatL5w     P08a_Dream_Dusk          zht default   -2.0°  -5.2° blocked 100% ->  +11.0°  +2.0° blocked   7%
+  SeatL5w     P08a_Dream_Dusk          ja  default   -2.0°  -9.0° blocked 100% ->  -73.0° -15.0° blocked   9%
+  SeatL5w     P08a_Dream_Dusk          en  default   -2.0°  -6.6° blocked 100% ->   +8.0°  +3.0° blocked  10%
+  SeatL5w     P08a_Dream_Dusk          de  default   -2.0°  -6.6° blocked 100% ->   +8.0°  +3.0° blocked  10%
+  SeatL5w     P08b_Zhuangzi_Xiaoyao    zh  default  +35.0°  +0.0° blocked  72% ->  +35.0°  +0.0° blocked  72%  (fixed)
+  SeatL5w     P08b_Zhuangzi_Xiaoyao    zht default  +35.0°  +0.0° blocked  72% ->  +35.0°  +0.0° blocked  72%  (fixed)
+  SeatL5w     P08b_Zhuangzi_Xiaoyao    ja  default  +35.0°  +0.0° blocked  79% ->  +35.0°  +0.0° blocked  79%  (fixed)
+  SeatL5w     P08b_Zhuangzi_Xiaoyao    en  default  +35.0°  +0.0° blocked  77% ->  +35.0°  +0.0° blocked  77%  (fixed)
+  SeatL5w     P08b_Zhuangzi_Xiaoyao    de  default  +35.0°  +0.0° blocked  77% ->  +35.0°  +0.0° blocked  77%  (fixed)
+  SeatL5w     P09_Tianwen              zh  default   +0.0°  +8.0° blocked  85% ->   +0.0°  +8.0° blocked  85%  (fixed)
+  SeatL5w     P09_Tianwen              zht default   +0.0°  +8.0° blocked  85% ->   +0.0°  +8.0° blocked  85%  (fixed)
+  SeatL5w     P09_Tianwen              ja  default   +0.0°  +3.3° blocked  75% ->   +0.0°  +3.3° blocked  75%  (fixed)
+  SeatL5w     P09_Tianwen              en  default   +0.0°  +2.6° blocked  76% ->   +0.0°  +2.7° blocked  76%  (fixed)
+  SeatL5w     P09_Tianwen              de  default   +0.0°  +2.6° blocked  76% ->   +0.0°  +2.7° blocked  76%  (fixed)
+  SeatL5w     P11_Zhuangzi_Butterfly   zh  default   +0.0°  +8.0° blocked  84% ->   +8.0°  +3.0° blocked  10%
+  SeatL5w     P11_Zhuangzi_Butterfly   zht default   +0.0°  +8.0° blocked  84% ->   +8.0°  +3.0° blocked  10%
+  SeatL5w     P11_Zhuangzi_Butterfly   ja  default   +0.0°  +8.0° blocked  79% ->  -74.0° +10.0° blocked   8%
+  SeatL5w     P11_Zhuangzi_Butterfly   en  default   +0.0°  +8.0° blocked  83% ->  -76.0° +10.0° blocked   7%
+  SeatL5w     P11_Zhuangzi_Butterfly   de  default   +0.0°  +8.0° blocked  83% ->  -76.0° +10.0° blocked   7%
+  SeatL5w     P12a_LiBai_Wake          zh  default  +61.0°  -9.0° blocked 100% -> +142.0°  +3.0° blocked   6%
+  SeatL5w     P12a_LiBai_Wake          zht default  +61.0°  -9.0° blocked 100% -> +142.0°  +3.0° blocked   6%
+  SeatL5w     P12a_LiBai_Wake          ja  default  +61.0°  -9.0° blocked 100% -> +144.0°  +5.0° blocked  10%
+  SeatL5w     P12a_LiBai_Wake          en  default  +61.0°  -9.0° blocked 100% -> +144.0°  +5.0° blocked  10%
+  SeatL5w     P12a_LiBai_Wake          de  default  +61.0°  -9.0° blocked 100% -> +144.0°  +5.0° blocked  10%
+  SeatL5w     P12b_Keats               zh  default  +61.0° -14.0° blocked 100% ->  +15.0°  +2.0° blocked   9%
+  SeatL5w     P12b_Keats               zht default  +61.0° -14.0° blocked 100% ->  +15.0°  +2.0° blocked   9%
+  SeatL5w     P12b_Keats               ja  default  +61.0° -14.0° blocked 100% -> +144.0°  +3.0° blocked   9%
+  SeatL5w     P12b_Keats               en  default  +61.0° -14.0° blocked 100% ->  +14.0°  +1.0° blocked   8%
+  SeatL5w     P12b_Keats               de  default  +61.0° -14.0° blocked 100% ->  +14.0°  +1.0° blocked   8%
+  SeatL5a     P03_LiBai_Dream          zh  default  +61.0°  -9.0° blocked  96% -> +152.0°  +1.0° blocked   6%
+  SeatL5a     P03_LiBai_Dream          zht default  +61.0°  -9.0° blocked  96% -> +152.0°  +1.0° blocked   6%
+  SeatL5a     P03_LiBai_Dream          ja  default  +61.0°  -9.0° blocked  97% -> +154.0°  +4.0° blocked   6%
+  SeatL5a     P03_LiBai_Dream          en  default  +61.0°  -9.0° blocked  97% -> +153.0°  +3.0° blocked   6%
+  SeatL5a     P03_LiBai_Dream          de  default  +61.0°  -9.0° blocked  97% -> +153.0°  +3.0° blocked   6%
+  SeatL5a     P04a_Rilke               zh  default   +5.5°  -5.4° blocked  94% -> +150.0°  +0.0° blocked   6%
+  SeatL5a     P04a_Rilke               zht default   +5.5°  -5.4° blocked  94% -> +150.0°  +0.0° blocked   6%
+  SeatL5a     P04a_Rilke               ja  default   +4.5°  -7.1° blocked  97% -> +153.0°  +2.0° blocked  10%
+  SeatL5a     P04a_Rilke               en  default   +5.5°  -4.8° blocked  94% ->  -92.0°  -4.0° blocked  10%
+  SeatL5a     P04a_Rilke               de  default   +5.5°  -4.8° blocked  94% ->  -93.0°  -4.0° blocked   9%
+  SeatL5a     P04b_Urlicht             zh  default   +0.0°  -8.0° blocked 100% -> +151.0°  +0.0° blocked   6%
+  SeatL5a     P04b_Urlicht             zht default   +0.0°  -8.0° blocked 100% -> +151.0°  +0.0° blocked   6%
+  SeatL5a     P04b_Urlicht             ja  default   +0.0°  -8.0° blocked 100% -> +155.0°  +0.0° blocked   7%
+  SeatL5a     P04b_Urlicht             en  default   +0.0°  -8.0° blocked 100% ->  -92.0°  -4.0° blocked  10%
+  SeatL5a     P04b_Urlicht             de  default   +0.0°  -8.0° blocked 100% ->  -92.0°  -4.0° blocked  10%
+  SeatL5a     P06_Dream_Dawn           zh  default   -2.0°  -5.2° blocked 100% ->  -93.0°  -5.0° blocked   9%
+  SeatL5a     P06_Dream_Dawn           zht default   -2.0°  -5.2° blocked 100% ->  -93.0°  -5.0° blocked   9%
+  SeatL5a     P06_Dream_Dawn           ja  default   -2.0°  -7.1° blocked 100% ->  -92.0°  -3.0° blocked  10%
+  SeatL5a     P06_Dream_Dawn           en  default   -2.0°  -6.6° blocked 100% -> +150.0°  +0.0° blocked   6%
+  SeatL5a     P06_Dream_Dawn           de  default   -2.0°  -6.6° blocked 100% -> +150.0°  +0.0° blocked   6%
+  SeatL5a     P07_HeBo                 zh  default   +6.5°  +5.4° blocked  57% -> +150.0°  +5.0° blocked  10%
+  SeatL5a     P07_HeBo                 zht default   +6.5°  +5.4° blocked  57% -> +150.0°  +5.0° blocked  10%
+  SeatL5a     P07_HeBo                 ja  default   +6.5°  +3.6° blocked  55% -> +152.0°  +6.0° blocked   9%
+  SeatL5a     P07_HeBo                 en  default   +6.5°  +2.3° blocked  62% -> +151.0°  +6.0° blocked   7%
+  SeatL5a     P07_HeBo                 de  default   +6.5°  +2.3° blocked  62% -> +151.0°  +6.0° blocked   7%
+  SeatL5a     P08a_Dream_Dusk          zh  default   -2.0°  -5.2° blocked 100% -> +155.0°  -1.0° blocked   7%
+  SeatL5a     P08a_Dream_Dusk          zht default   -2.0°  -5.2° blocked 100% -> +155.0°  -1.0° blocked   7%
+  SeatL5a     P08a_Dream_Dusk          ja  default   -2.0°  -9.0° blocked 100% -> +153.0°  +3.0° blocked   6%
+  SeatL5a     P08a_Dream_Dusk          en  default   -2.0°  -6.6° blocked 100% ->  -92.0°  -4.0° blocked  10%
+  SeatL5a     P08a_Dream_Dusk          de  default   -2.0°  -6.6° blocked 100% ->  -92.0°  -4.0° blocked  10%
+  SeatL5a     P08b_Zhuangzi_Xiaoyao    zh  default  +35.0°  +0.0° blocked  81% ->  +35.0°  +0.0° blocked  81%  (fixed)
+  SeatL5a     P08b_Zhuangzi_Xiaoyao    zht default  +35.0°  +0.0° blocked  81% ->  +35.0°  +0.0° blocked  81%  (fixed)
+  SeatL5a     P08b_Zhuangzi_Xiaoyao    ja  default  +35.0°  +0.0° blocked  89% ->  +35.0°  +0.0° blocked  89%  (fixed)
+  SeatL5a     P08b_Zhuangzi_Xiaoyao    en  default  +35.0°  +0.0° blocked  90% ->  +35.0°  +0.0° blocked  90%  (fixed)
+  SeatL5a     P08b_Zhuangzi_Xiaoyao    de  default  +35.0°  +0.0° blocked  90% ->  +35.0°  +0.0° blocked  90%  (fixed)
+  SeatL5a     P09_Tianwen              zh  default   +0.0°  +8.0° blocked  86% ->   +0.0°  +8.0° blocked  86%  (fixed)
+  SeatL5a     P09_Tianwen              zht default   +0.0°  +8.0° blocked  86% ->   +0.0°  +8.0° blocked  86%  (fixed)
+  SeatL5a     P09_Tianwen              ja  default   +0.0°  +3.3° blocked  70% ->   +0.0°  +3.3° blocked  70%  (fixed)
+  SeatL5a     P09_Tianwen              en  default   +0.0°  +2.6° blocked  72% ->   +0.0°  +2.7° blocked  72%  (fixed)
+  SeatL5a     P09_Tianwen              de  default   +0.0°  +2.6° blocked  72% ->   +0.0°  +2.7° blocked  72%  (fixed)
+  SeatL5a     P11_Zhuangzi_Butterfly   zh  default   +0.0°  +8.0° blocked  86% ->  -92.0° +10.0° blocked  10%
+  SeatL5a     P11_Zhuangzi_Butterfly   zht default   +0.0°  +8.0° blocked  86% ->  -92.0° +10.0° blocked  10%
+  SeatL5a     P11_Zhuangzi_Butterfly   ja  default   +0.0°  +8.0° blocked  77% -> +153.0°  +3.0° blocked  10%
+  SeatL5a     P11_Zhuangzi_Butterfly   en  default   +0.0°  +8.0° blocked  83% -> +155.0°  +6.0° blocked  10%
+  SeatL5a     P11_Zhuangzi_Butterfly   de  default   +0.0°  +8.0° blocked  83% -> +155.0°  +6.0° blocked  10%
+  SeatL5a     P12a_LiBai_Wake          zh  default  +61.0°  -9.0° blocked  95% -> +150.0°  +1.0° blocked   7%
+  SeatL5a     P12a_LiBai_Wake          zht default  +61.0°  -9.0° blocked  95% -> +150.0°  +1.0° blocked   7%
+  SeatL5a     P12a_LiBai_Wake          ja  default  +61.0°  -9.0° blocked  97% -> +153.0°  +3.0° blocked   6%
+  SeatL5a     P12a_LiBai_Wake          en  default  +61.0°  -9.0° blocked  97% -> +153.0°  +3.0° blocked   6%
+  SeatL5a     P12a_LiBai_Wake          de  default  +61.0°  -9.0° blocked  97% -> +153.0°  +3.0° blocked   6%
+  SeatL5a     P12b_Keats               zh  default  +61.0° -14.0° blocked 100% -> +151.0°  +0.0° blocked  10%
+  SeatL5a     P12b_Keats               zht default  +61.0° -14.0° blocked 100% -> +151.0°  +0.0° blocked  10%
+  SeatL5a     P12b_Keats               ja  default  +61.0° -14.0° blocked  99% -> +152.0°  +1.0° blocked  10%
+  SeatL5a     P12b_Keats               en  default  +61.0° -14.0° blocked 100% -> +153.0°  -2.0° blocked   8%
+  SeatL5a     P12b_Keats               de  default  +61.0° -14.0° blocked 100% -> +153.0°  -2.0° blocked   8%
+  RearBench0  P03_LiBai_Dream          zh  default  +61.0°  -9.0° blocked  91% -> +111.0° -11.0° blocked   9%
+  RearBench0  P03_LiBai_Dream          zht default  +61.0°  -9.0° blocked  91% -> +111.0° -11.0° blocked   9%
+  RearBench0  P03_LiBai_Dream          ja  default  +61.0°  -9.0° blocked  90% -> +114.0°  -7.0° blocked  10%
+  RearBench0  P03_LiBai_Dream          en  default  +61.0°  -9.0° blocked  89% -> +111.0°  +3.0° blocked  10%
+  RearBench0  P03_LiBai_Dream          de  default  +61.0°  -9.0° blocked  89% -> +111.0°  +3.0° blocked  10%
+  RearBench0  P04a_Rilke               zh  default   +5.5°  -5.4° blocked 100% -> +109.0° -11.0° blocked   9%
+  RearBench0  P04a_Rilke               zht default   +5.5°  -5.4° blocked 100% -> +109.0° -11.0° blocked   9%
+  RearBench0  P04a_Rilke               ja  default   +4.5°  -7.1° blocked 100% -> +112.0°  +2.0° blocked   9%
+  RearBench0  P04a_Rilke               en  default   +5.5°  -4.8° blocked 100% -> +110.0°  +1.0° blocked  10%
+  RearBench0  P04a_Rilke               de  default   +5.5°  -4.8° blocked 100% -> +111.0° -10.0° blocked  10%
+  RearBench0  P04b_Urlicht             zh  default   +0.0°  -8.0° blocked 100% -> +110.0° -11.0° blocked   8%
+  RearBench0  P04b_Urlicht             zht default   +0.0°  -8.0° blocked 100% -> +110.0° -11.0° blocked   8%
+  RearBench0  P04b_Urlicht             ja  default   +0.0°  -8.0° blocked 100% -> +114.0° -11.0° blocked   9%
+  RearBench0  P04b_Urlicht             en  default   +0.0°  -8.0° blocked 100% -> +111.0° -12.0° blocked  10%
+  RearBench0  P04b_Urlicht             de  default   +0.0°  -8.0° blocked 100% -> +111.0° -12.0° blocked  10%
+  RearBench0  P06_Dream_Dawn           zh  default   -2.0°  -5.2° blocked 100% ->   +7.0°  +2.0° blocked   8%
+  RearBench0  P06_Dream_Dawn           zht default   -2.0°  -5.2° blocked 100% ->   +7.0°  +2.0° blocked   8%
+  RearBench0  P06_Dream_Dawn           ja  default   -2.0°  -7.1° blocked 100% -> +111.0° -11.0° blocked   9%
+  RearBench0  P06_Dream_Dawn           en  default   -2.0°  -6.6° blocked 100% -> +109.0° -11.0° blocked   9%
+  RearBench0  P06_Dream_Dawn           de  default   -2.0°  -6.6° blocked 100% -> +109.0° -11.0° blocked   9%
+  RearBench0  P07_HeBo                 zh  default   +6.5°  +5.4° blocked  49% -> +109.0° +10.0° blocked   6%
+  RearBench0  P07_HeBo                 zht default   +6.5°  +5.4° blocked  49% -> +109.0° +10.0° blocked   6%
+  RearBench0  P07_HeBo                 ja  default   +6.5°  +3.6° blocked  60% -> +110.0° +10.0° blocked  10%
+  RearBench0  P07_HeBo                 en  default   +6.5°  +2.3° blocked  65% -> +109.0° +10.0° blocked   7%
+  RearBench0  P07_HeBo                 de  default   +6.5°  +2.3° blocked  65% -> +109.0° +10.0° blocked   7%
+  RearBench0  P08a_Dream_Dusk          zh  default   -2.0°  -5.2° blocked 100% -> +114.0° -12.0° blocked  10%
+  RearBench0  P08a_Dream_Dusk          zht default   -2.0°  -5.2° blocked 100% -> +114.0° -12.0° blocked  10%
+  RearBench0  P08a_Dream_Dusk          ja  default   -2.0°  -9.0° blocked 100% -> +111.0°  +3.0° blocked  10%
+  RearBench0  P08a_Dream_Dusk          en  default   -2.0°  -6.6° blocked 100% -> +111.0° -12.0° blocked  10%
+  RearBench0  P08a_Dream_Dusk          de  default   -2.0°  -6.6° blocked 100% -> +111.0° -12.0° blocked  10%
+  RearBench0  P08b_Zhuangzi_Xiaoyao    zh  default  +35.0°  +0.0° blocked  86% ->  +35.0°  +0.0° blocked  86%  (fixed)
+  RearBench0  P08b_Zhuangzi_Xiaoyao    zht default  +35.0°  +0.0° blocked  86% ->  +35.0°  +0.0° blocked  86%  (fixed)
+  RearBench0  P08b_Zhuangzi_Xiaoyao    ja  default  +35.0°  +0.0° blocked  87% ->  +35.0°  +0.0° blocked  87%  (fixed)
+  RearBench0  P08b_Zhuangzi_Xiaoyao    en  default  +35.0°  +0.0° blocked  88% ->  +35.0°  +0.0° blocked  88%  (fixed)
+  RearBench0  P08b_Zhuangzi_Xiaoyao    de  default  +35.0°  +0.0° blocked  88% ->  +35.0°  +0.0° blocked  88%  (fixed)
+  RearBench0  P09_Tianwen              zh  default   +0.0°  +8.0° blocked  92% ->   +0.0°  +8.0° blocked  92%  (fixed)
+  RearBench0  P09_Tianwen              zht default   +0.0°  +8.0° blocked  92% ->   +0.0°  +8.0° blocked  92%  (fixed)
+  RearBench0  P09_Tianwen              ja  default   +0.0°  +3.3° blocked  76% ->   +0.0°  +3.3° blocked  76%  (fixed)
+  RearBench0  P09_Tianwen              en  default   +0.0°  +2.6° blocked  77% ->   +0.0°  +2.7° blocked  77%  (fixed)
+  RearBench0  P09_Tianwen              de  default   +0.0°  +2.6° blocked  77% ->   +0.0°  +2.7° blocked  77%  (fixed)
+  RearBench0  P11_Zhuangzi_Butterfly   zh  default   +0.0°  +8.0° blocked  97% -> +110.0° +10.0° blocked  10%
+  RearBench0  P11_Zhuangzi_Butterfly   zht default   +0.0°  +8.0° blocked  97% -> +110.0° +10.0° blocked  10%
+  RearBench0  P11_Zhuangzi_Butterfly   ja  default   +0.0°  +8.0° blocked  85% -> +112.0° +10.0° blocked   8%
+  RearBench0  P11_Zhuangzi_Butterfly   en  default   +0.0°  +8.0° blocked  89% -> +114.0° +10.0° blocked   7%
+  RearBench0  P11_Zhuangzi_Butterfly   de  default   +0.0°  +8.0° blocked  89% -> +114.0° +10.0° blocked   7%
+  RearBench0  P12a_LiBai_Wake          zh  default  +61.0°  -9.0° blocked  96% -> +109.0° -10.0° blocked   9%
+  RearBench0  P12a_LiBai_Wake          zht default  +61.0°  -9.0° blocked  96% -> +109.0° -10.0° blocked   9%
+  RearBench0  P12a_LiBai_Wake          ja  default  +61.0°  -9.0° blocked  89% -> +111.0°  +3.0° blocked  10%
+  RearBench0  P12a_LiBai_Wake          en  default  +61.0°  -9.0° blocked  89% -> +111.0°  +3.0° blocked  10%
+  RearBench0  P12a_LiBai_Wake          de  default  +61.0°  -9.0° blocked  89% -> +111.0°  +3.0° blocked  10%
+  RearBench0  P12b_Keats               zh  default  +61.0° -14.0° blocked 100% -> +111.0° -12.0° blocked  10%
+  RearBench0  P12b_Keats               zht default  +61.0° -14.0° blocked 100% -> +111.0° -12.0° blocked  10%
+  RearBench0  P12b_Keats               ja  default  +61.0° -14.0° blocked 100% -> +112.0° -11.0° blocked   8%
+  RearBench0  P12b_Keats               en  default  +61.0° -14.0° blocked 100% -> +112.0° -11.0° blocked   8%
+  RearBench0  P12b_Keats               de  default  +61.0° -14.0° blocked 100% -> +112.0° -11.0° blocked   8%
+  RearBench1  P03_LiBai_Dream          zh  default  +61.0°  -9.0° blocked  81% -> +115.0° -14.0° blocked   9%
+  RearBench1  P03_LiBai_Dream          zht default  +61.0°  -9.0° blocked  81% -> +115.0° -14.0° blocked   9%
+  RearBench1  P03_LiBai_Dream          ja  default  +61.0°  -9.0° blocked  83% -> +118.0° -15.0° blocked   9%
+  RearBench1  P03_LiBai_Dream          en  default  +61.0°  -9.0° blocked  83% -> +116.0° -13.0° blocked  10%
+  RearBench1  P03_LiBai_Dream          de  default  +61.0°  -9.0° blocked  83% -> +116.0° -13.0° blocked  10%
+  RearBench1  P04a_Rilke               zh  default   +5.5°  -5.4° blocked  97% ->  +76.0°  +4.0° blocked   9%
+  RearBench1  P04a_Rilke               zht default   +5.5°  -5.4° blocked  97% ->  +76.0°  +4.0° blocked   9%
+  RearBench1  P04a_Rilke               ja  default   +4.5°  -7.1° blocked  99% -> +117.0° -14.0° blocked   8%
+  RearBench1  P04a_Rilke               en  default   +5.5°  -4.8° blocked  98% -> +114.0° -12.0° blocked  10%
+  RearBench1  P04a_Rilke               de  default   +5.5°  -4.8° blocked  98% -> +115.0° -13.0° blocked  10%
+  RearBench1  P04b_Urlicht             zh  default   +0.0°  -8.0° blocked 100% -> +114.0° -14.0° blocked   8%
+  RearBench1  P04b_Urlicht             zht default   +0.0°  -8.0° blocked 100% -> +114.0° -14.0° blocked   8%
+  RearBench1  P04b_Urlicht             ja  default   +0.0°  -8.0° blocked 100% -> +118.0° -14.0° blocked   9%
+  RearBench1  P04b_Urlicht             en  default   +0.0°  -8.0° blocked 100% -> +114.0° -12.0° blocked  10%
+  RearBench1  P04b_Urlicht             de  default   +0.0°  -8.0° blocked 100% -> +114.0° -12.0° blocked  10%
+  RearBench1  P06_Dream_Dawn           zh  default   -2.0°  -5.2° blocked 100% -> +115.0° -13.0° blocked   9%
+  RearBench1  P06_Dream_Dawn           zht default   -2.0°  -5.2° blocked 100% -> +115.0° -13.0° blocked   9%
+  RearBench1  P06_Dream_Dawn           ja  default   -2.0°  -7.1° blocked 100% -> +115.0° -14.0° blocked   9%
+  RearBench1  P06_Dream_Dawn           en  default   -2.0°  -6.6° blocked 100% ->  +76.0°  +4.0° blocked   9%
+  RearBench1  P06_Dream_Dawn           de  default   -2.0°  -6.6° blocked 100% ->  +76.0°  +4.0° blocked   9%
+  RearBench1  P07_HeBo                 zh  default   +6.5°  +5.4° blocked  59% -> +114.0° +10.0° blocked   6%
+  RearBench1  P07_HeBo                 zht default   +6.5°  +5.4° blocked  59% -> +114.0° +10.0° blocked   6%
+  RearBench1  P07_HeBo                 ja  default   +6.5°  +3.6° blocked  59% -> +115.0° +10.0° blocked  10%
+  RearBench1  P07_HeBo                 en  default   +6.5°  +2.3° blocked  69% -> +114.0° +10.0° blocked   6%
+  RearBench1  P07_HeBo                 de  default   +6.5°  +2.3° blocked  69% -> +114.0° +10.0° blocked   6%
+  RearBench1  P08a_Dream_Dusk          zh  default   -2.0°  -5.2° blocked 100% -> +118.0° -15.0° blocked  10%
+  RearBench1  P08a_Dream_Dusk          zht default   -2.0°  -5.2° blocked 100% -> +118.0° -15.0° blocked  10%
+  RearBench1  P08a_Dream_Dusk          ja  default   -2.0°  -9.0° blocked 100% -> +116.0° -13.0° blocked  10%
+  RearBench1  P08a_Dream_Dusk          en  default   -2.0°  -6.6° blocked 100% -> +114.0° -12.0° blocked  10%
+  RearBench1  P08a_Dream_Dusk          de  default   -2.0°  -6.6° blocked 100% -> +114.0° -12.0° blocked  10%
+  RearBench1  P08b_Zhuangzi_Xiaoyao    zh  default  +35.0°  +0.0° blocked  78% ->  +35.0°  +0.0° blocked  78%  (fixed)
+  RearBench1  P08b_Zhuangzi_Xiaoyao    zht default  +35.0°  +0.0° blocked  78% ->  +35.0°  +0.0° blocked  78%  (fixed)
+  RearBench1  P08b_Zhuangzi_Xiaoyao    ja  default  +35.0°  +0.0° blocked  82% ->  +35.0°  +0.0° blocked  82%  (fixed)
+  RearBench1  P08b_Zhuangzi_Xiaoyao    en  default  +35.0°  +0.0° blocked  83% ->  +35.0°  +0.0° blocked  83%  (fixed)
+  RearBench1  P08b_Zhuangzi_Xiaoyao    de  default  +35.0°  +0.0° blocked  83% ->  +35.0°  +0.0° blocked  83%  (fixed)
+  RearBench1  P09_Tianwen              zh  default   +0.0°  +8.0° blocked  90% ->   +0.0°  +8.0° blocked  90%  (fixed)
+  RearBench1  P09_Tianwen              zht default   +0.0°  +8.0° blocked  90% ->   +0.0°  +8.0° blocked  90%  (fixed)
+  RearBench1  P09_Tianwen              ja  default   +0.0°  +3.3° blocked  71% ->   +0.0°  +3.3° blocked  71%  (fixed)
+  RearBench1  P09_Tianwen              en  default   +0.0°  +2.6° blocked  72% ->   +0.0°  +2.7° blocked  72%  (fixed)
+  RearBench1  P09_Tianwen              de  default   +0.0°  +2.6° blocked  72% ->   +0.0°  +2.7° blocked  72%  (fixed)
+  RearBench1  P11_Zhuangzi_Butterfly   zh  default   +0.0°  +8.0° blocked  91% -> +115.0° +10.0° blocked  10%
+  RearBench1  P11_Zhuangzi_Butterfly   zht default   +0.0°  +8.0° blocked  91% -> +115.0° +10.0° blocked  10%
+  RearBench1  P11_Zhuangzi_Butterfly   ja  default   +0.0°  +8.0° blocked  80% -> +117.0° +10.0° blocked   8%
+  RearBench1  P11_Zhuangzi_Butterfly   en  default   +0.0°  +8.0° blocked  87% -> +119.0° +10.0° blocked   7%
+  RearBench1  P11_Zhuangzi_Butterfly   de  default   +0.0°  +8.0° blocked  87% -> +119.0° +10.0° blocked   7%
+  RearBench1  P12a_LiBai_Wake          zh  default  +61.0°  -9.0° blocked  84% -> +113.0° -13.0° blocked   9%
+  RearBench1  P12a_LiBai_Wake          zht default  +61.0°  -9.0° blocked  84% -> +113.0° -13.0° blocked   9%
+  RearBench1  P12a_LiBai_Wake          ja  default  +61.0°  -9.0° blocked  83% -> +116.0° -13.0° blocked  10%
+  RearBench1  P12a_LiBai_Wake          en  default  +61.0°  -9.0° blocked  83% -> +116.0° -13.0° blocked  10%
+  RearBench1  P12a_LiBai_Wake          de  default  +61.0°  -9.0° blocked  83% -> +116.0° -13.0° blocked  10%
+  RearBench1  P12b_Keats               zh  default  +61.0° -14.0° blocked  91% -> +114.0° -12.0° blocked  10%
+  RearBench1  P12b_Keats               zht default  +61.0° -14.0° blocked  91% -> +114.0° -12.0° blocked  10%
+  RearBench1  P12b_Keats               ja  default  +61.0° -14.0° blocked  86% -> +115.0° -12.0° blocked  10%
+  RearBench1  P12b_Keats               en  default  +61.0° -14.0° blocked 100% -> +116.0° -14.0° blocked   8%
+  RearBench1  P12b_Keats               de  default  +61.0° -14.0° blocked 100% -> +116.0° -14.0° blocked   8%
+  RearBench2  P03_LiBai_Dream          zh  default  +61.0°  -9.0° blocked  50% ->  +69.0°  -3.0° blocked   9%
+  RearBench2  P03_LiBai_Dream          zht default  +61.0°  -9.0° blocked  50% ->  +69.0°  -3.0° blocked   9%
+  RearBench2  P03_LiBai_Dream          ja  default  +61.0°  -9.0° blocked  44% -> +129.0°  +1.0° blocked   9%
+  RearBench2  P03_LiBai_Dream          en  default  +61.0°  -9.0° blocked  46% ->  +69.0°  +3.0° blocked  10%
+  RearBench2  P03_LiBai_Dream          de  default  +61.0°  -9.0° blocked  46% ->  +69.0°  +3.0° blocked  10%
+  RearBench2  P04a_Rilke               zh  default   +5.5°  -5.4° blocked  95% ->  +64.0°  +6.0° blocked   9%
+  RearBench2  P04a_Rilke               zht default   +5.5°  -5.4° blocked  95% ->  +64.0°  +6.0° blocked   9%
+  RearBench2  P04a_Rilke               ja  default   +4.5°  -7.1° blocked  97% ->  +69.0°  +5.0° blocked   9%
+  RearBench2  P04a_Rilke               en  default   +5.5°  -4.8° blocked  94% ->  +66.0°  +6.0° blocked   8%
+  RearBench2  P04a_Rilke               de  default   +5.5°  -4.8° blocked  94% ->  +67.0°  +6.0° blocked   7%
+  RearBench2  P04b_Urlicht             zh  default   +0.0°  -8.0° blocked 100% ->  +65.0°  +6.0° blocked   8%
+  RearBench2  P04b_Urlicht             zht default   +0.0°  -8.0° blocked 100% ->  +65.0°  +6.0° blocked   8%
+  RearBench2  P04b_Urlicht             ja  default   +0.0°  -8.0° blocked 100% ->  +70.0°  +7.0° blocked  10%
+  RearBench2  P04b_Urlicht             en  default   +0.0°  -8.0° blocked 100% ->  +66.0°  +6.0° blocked   8%
+  RearBench2  P04b_Urlicht             de  default   +0.0°  -8.0° blocked 100% ->  +66.0°  +6.0° blocked   8%
+  RearBench2  P06_Dream_Dawn           zh  default   -2.0°  -5.2° blocked 100% ->  +67.0°  +5.0° blocked   8%
+  RearBench2  P06_Dream_Dawn           zht default   -2.0°  -5.2° blocked 100% ->  +67.0°  +5.0° blocked   8%
+  RearBench2  P06_Dream_Dawn           ja  default   -2.0°  -7.1° blocked 100% ->  +67.0°  +5.0° blocked  10%
+  RearBench2  P06_Dream_Dawn           en  default   -2.0°  -6.6° blocked 100% ->  +64.0°  +6.0° blocked   9%
+  RearBench2  P06_Dream_Dawn           de  default   -2.0°  -6.6° blocked 100% ->  +64.0°  +6.0° blocked   9%
+  RearBench2  P07_HeBo                 zh  default   +6.5°  +5.4° blocked  68% ->  +67.0°  +5.0° blocked  10%
+  RearBench2  P07_HeBo                 zht default   +6.5°  +5.4° blocked  68% ->  +67.0°  +5.0° blocked  10%
+  RearBench2  P07_HeBo                 ja  default   +6.5°  +3.6° blocked  66% ->  +68.0°  +3.0° blocked  10%
+  RearBench2  P07_HeBo                 en  default   +6.5°  +2.3° blocked  74% ->  +68.0°  +2.0° blocked   9%
+  RearBench2  P07_HeBo                 de  default   +6.5°  +2.3° blocked  74% ->  +68.0°  +2.0° blocked   9%
+  RearBench2  P08a_Dream_Dusk          zh  default   -2.0°  -5.2° blocked 100% ->  +69.0°  +7.0° blocked   9%
+  RearBench2  P08a_Dream_Dusk          zht default   -2.0°  -5.2° blocked 100% ->  +69.0°  +7.0° blocked   9%
+  RearBench2  P08a_Dream_Dusk          ja  default   -2.0°  -9.0° blocked 100% ->  +68.0°  +4.0° blocked  10%
+  RearBench2  P08a_Dream_Dusk          en  default   -2.0°  -6.6° blocked 100% ->  +66.0°  +6.0° blocked   8%
+  RearBench2  P08a_Dream_Dusk          de  default   -2.0°  -6.6° blocked 100% ->  +66.0°  +6.0° blocked   8%
+  RearBench2  P08b_Zhuangzi_Xiaoyao    zh  default  +35.0°  +0.0° blocked  81% ->  +35.0°  +0.0° blocked  81%  (fixed)
+  RearBench2  P08b_Zhuangzi_Xiaoyao    zht default  +35.0°  +0.0° blocked  81% ->  +35.0°  +0.0° blocked  81%  (fixed)
+  RearBench2  P08b_Zhuangzi_Xiaoyao    ja  default  +35.0°  +0.0° blocked  80% ->  +35.0°  +0.0° blocked  80%  (fixed)
+  RearBench2  P08b_Zhuangzi_Xiaoyao    en  default  +35.0°  +0.0° blocked  81% ->  +35.0°  +0.0° blocked  81%  (fixed)
+  RearBench2  P08b_Zhuangzi_Xiaoyao    de  default  +35.0°  +0.0° blocked  81% ->  +35.0°  +0.0° blocked  81%  (fixed)
+  RearBench2  P09_Tianwen              zh  default   +0.0°  +8.0° blocked  94% ->   +0.0°  +8.0° blocked  94%  (fixed)
+  RearBench2  P09_Tianwen              zht default   +0.0°  +8.0° blocked  94% ->   +0.0°  +8.0° blocked  94%  (fixed)
+  RearBench2  P09_Tianwen              ja  default   +0.0°  +3.3° blocked  71% ->   +0.0°  +3.3° blocked  71%  (fixed)
+  RearBench2  P09_Tianwen              en  default   +0.0°  +2.6° blocked  73% ->   +0.0°  +2.7° blocked  73%  (fixed)
+  RearBench2  P09_Tianwen              de  default   +0.0°  +2.6° blocked  73% ->   +0.0°  +2.7° blocked  73%  (fixed)
+  RearBench2  P11_Zhuangzi_Butterfly   zh  default   +0.0°  +8.0° blocked  93% ->  +66.0°  +7.0° blocked   8%
+  RearBench2  P11_Zhuangzi_Butterfly   zht default   +0.0°  +8.0° blocked  93% ->  +66.0°  +7.0° blocked   8%
+  RearBench2  P11_Zhuangzi_Butterfly   ja  default   +0.0°  +8.0° blocked  85% ->  +69.0°  +5.0° blocked   9%
+  RearBench2  P11_Zhuangzi_Butterfly   en  default   +0.0°  +8.0° blocked  87% -> -121.0°  +7.0° blocked  10%
+  RearBench2  P11_Zhuangzi_Butterfly   de  default   +0.0°  +8.0° blocked  87% -> -121.0°  +7.0° blocked  10%
+  RearBench2  P12a_LiBai_Wake          zh  default  +61.0°  -9.0° blocked  44% ->  +68.0°  -9.0° blocked   6%
+  RearBench2  P12a_LiBai_Wake          zht default  +61.0°  -9.0° blocked  44% ->  +68.0°  -9.0° blocked   6%
+  RearBench2  P12a_LiBai_Wake          ja  default  +61.0°  -9.0° blocked  46% ->  +69.0°  +3.0° blocked  10%
+  RearBench2  P12a_LiBai_Wake          en  default  +61.0°  -9.0° blocked  46% ->  +69.0°  +3.0° blocked  10%
+  RearBench2  P12a_LiBai_Wake          de  default  +61.0°  -9.0° blocked  46% ->  +69.0°  +3.0° blocked  10%
+  RearBench2  P12b_Keats               zh  default  +61.0° -14.0° blocked  31% ->  +69.0°  -3.0° blocked   9%
+  RearBench2  P12b_Keats               zht default  +61.0° -14.0° blocked  31% ->  +69.0°  -3.0° blocked   9%
+  RearBench2  P12b_Keats               ja  default  +61.0° -14.0° blocked  36% ->  +69.0°  +3.0° blocked  10%
+  RearBench2  P12b_Keats               en  default  +61.0° -14.0° blocked  29% ->  +63.0° -15.0° blocked   6%
+  RearBench2  P12b_Keats               de  default  +61.0° -14.0° blocked  29% ->  +63.0° -15.0° blocked   6%
+  RearBench3  P03_LiBai_Dream          zh  default  +61.0°  -9.0° blocked  38% ->  +61.0°  +8.0° blocked   9%
+  RearBench3  P03_LiBai_Dream          zht default  +61.0°  -9.0° blocked  38% ->  +61.0°  +8.0° blocked   9%
+  RearBench3  P03_LiBai_Dream          ja  default  +61.0°  -9.0° blocked  48% -> +177.0°  -3.0° blocked   8%
+  RearBench3  P03_LiBai_Dream          en  default  +61.0°  -9.0° blocked  43% -> +176.0°  -4.0° blocked   9%
+  RearBench3  P03_LiBai_Dream          de  default  +61.0°  -9.0° blocked  43% -> +176.0°  -4.0° blocked   9%
+  RearBench3  P04a_Rilke               zh  default   +5.5°  -5.4° blocked 100% ->  +38.0° +10.0° blocked   9%
+  RearBench3  P04a_Rilke               zht default   +5.5°  -5.4° blocked 100% ->  +38.0° +10.0° blocked   9%
+  RearBench3  P04a_Rilke               ja  default   +4.5°  -7.1° blocked  96% -> -113.0°  +2.0° blocked   9%
+  RearBench3  P04a_Rilke               en  default   +5.5°  -4.8° blocked  94% ->  +59.0° +10.0° blocked  10%
+  RearBench3  P04a_Rilke               de  default   +5.5°  -4.8° blocked  95% -> -112.0° -10.0° blocked  10%
+  RearBench3  P04b_Urlicht             zh  default   +0.0°  -8.0° blocked 100% ->  +39.0°  +9.0° blocked   9%
+  RearBench3  P04b_Urlicht             zht default   +0.0°  -8.0° blocked 100% ->  +39.0°  +9.0° blocked   9%
+  RearBench3  P04b_Urlicht             ja  default   +0.0°  -8.0° blocked  98% -> -115.0° -12.0° blocked  10%
+  RearBench3  P04b_Urlicht             en  default   +0.0°  -8.0° blocked 100% ->  +59.0° +10.0° blocked  10%
+  RearBench3  P04b_Urlicht             de  default   +0.0°  -8.0° blocked 100% ->  +59.0° +10.0° blocked  10%
+  RearBench3  P06_Dream_Dawn           zh  default   -2.0°  -5.2° blocked 100% -> -112.0° -10.0° blocked   9%
+  RearBench3  P06_Dream_Dawn           zht default   -2.0°  -5.2° blocked 100% -> -112.0° -10.0° blocked   9%
+  RearBench3  P06_Dream_Dawn           ja  default   -2.0°  -7.1° blocked 100% ->  +60.0°  +8.0° blocked  10%
+  RearBench3  P06_Dream_Dawn           en  default   -2.0°  -6.6° blocked 100% ->  +58.0°  +0.0° blocked   9%
+  RearBench3  P06_Dream_Dawn           de  default   -2.0°  -6.6° blocked 100% ->  +58.0°  +0.0° blocked   9%
+  RearBench3  P07_HeBo                 zh  default   +6.5°  +5.4° blocked  76% ->  +39.0°  +8.0° blocked  10%
+  RearBench3  P07_HeBo                 zht default   +6.5°  +5.4° blocked  76% ->  +39.0°  +8.0° blocked  10%
+  RearBench3  P07_HeBo                 ja  default   +6.5°  +3.6° blocked  76% ->  +60.0°  +9.0° blocked  10%
+  RearBench3  P07_HeBo                 en  default   +6.5°  +2.3° blocked  77% ->  +58.0°  +3.0° blocked   9%
+  RearBench3  P07_HeBo                 de  default   +6.5°  +2.3° blocked  77% ->  +58.0°  +3.0° blocked   9%
+  RearBench3  P08a_Dream_Dusk          zh  default   -2.0°  -5.2° blocked 100% -> -115.0° -12.0° blocked   9%
+  RearBench3  P08a_Dream_Dusk          zht default   -2.0°  -5.2° blocked 100% -> -115.0° -12.0° blocked   9%
+  RearBench3  P08a_Dream_Dusk          ja  default   -2.0°  -9.0° blocked 100% -> -112.0°  +3.0° blocked  10%
+  RearBench3  P08a_Dream_Dusk          en  default   -2.0°  -6.6° blocked 100% ->  +59.0° +10.0° blocked  10%
+  RearBench3  P08a_Dream_Dusk          de  default   -2.0°  -6.6° blocked 100% ->  +59.0° +10.0° blocked  10%
+  RearBench3  P08b_Zhuangzi_Xiaoyao    zh  default  +35.0°  +0.0° blocked  46% ->  +35.0°  +0.0° blocked  46%  (fixed)
+  RearBench3  P08b_Zhuangzi_Xiaoyao    zht default  +35.0°  +0.0° blocked  46% ->  +35.0°  +0.0° blocked  46%  (fixed)
+  RearBench3  P08b_Zhuangzi_Xiaoyao    ja  default  +35.0°  +0.0° blocked  46% ->  +35.0°  +0.0° blocked  46%  (fixed)
+  RearBench3  P08b_Zhuangzi_Xiaoyao    en  default  +35.0°  +0.0° blocked  45% ->  +35.0°  +0.0° blocked  45%  (fixed)
+  RearBench3  P08b_Zhuangzi_Xiaoyao    de  default  +35.0°  +0.0° blocked  45% ->  +35.0°  +0.0° blocked  45%  (fixed)
+  RearBench3  P09_Tianwen              zh  default   +0.0°  +8.0° blocked  94% ->   +0.0°  +8.0° blocked  94%  (fixed)
+  RearBench3  P09_Tianwen              zht default   +0.0°  +8.0° blocked  94% ->   +0.0°  +8.0° blocked  94%  (fixed)
+  RearBench3  P09_Tianwen              ja  default   +0.0°  +3.3° blocked  78% ->   +0.0°  +3.3° blocked  78%  (fixed)
+  RearBench3  P09_Tianwen              en  default   +0.0°  +2.6° blocked  81% ->   +0.0°  +2.7° blocked  81%  (fixed)
+  RearBench3  P09_Tianwen              de  default   +0.0°  +2.6° blocked  81% ->   +0.0°  +2.7° blocked  81%  (fixed)
+  RearBench3  P11_Zhuangzi_Butterfly   zh  default   +0.0°  +8.0° blocked  96% ->  +59.0° +10.0° blocked  10%
+  RearBench3  P11_Zhuangzi_Butterfly   zht default   +0.0°  +8.0° blocked  96% ->  +59.0° +10.0° blocked  10%
+  RearBench3  P11_Zhuangzi_Butterfly   ja  default   +0.0°  +8.0° blocked  88% -> -113.0° +10.0° blocked   8%
+  RearBench3  P11_Zhuangzi_Butterfly   en  default   +0.0°  +8.0° blocked  89% -> -115.0° +10.0° blocked   7%
+  RearBench3  P11_Zhuangzi_Butterfly   de  default   +0.0°  +8.0° blocked  89% -> -115.0° +10.0° blocked   7%
+  RearBench3  P12a_LiBai_Wake          zh  default  +61.0°  -9.0° blocked  35% ->  +59.0°  +0.0° blocked   8%
+  RearBench3  P12a_LiBai_Wake          zht default  +61.0°  -9.0° blocked  35% ->  +59.0°  +0.0° blocked   8%
+  RearBench3  P12a_LiBai_Wake          ja  default  +61.0°  -9.0° blocked  43% -> +176.0°  -4.0° blocked   9%
+  RearBench3  P12a_LiBai_Wake          en  default  +61.0°  -9.0° blocked  43% -> +176.0°  -4.0° blocked   9%
+  RearBench3  P12a_LiBai_Wake          de  default  +61.0°  -9.0° blocked  43% -> +176.0°  -4.0° blocked   9%
+  RearBench3  P12b_Keats               zh  default  +61.0° -14.0° blocked  40% ->  +61.0°  +8.0° blocked  10%
+  RearBench3  P12b_Keats               zht default  +61.0° -14.0° blocked  40% ->  +61.0°  +8.0° blocked  10%
+  RearBench3  P12b_Keats               ja  default  +61.0° -14.0° blocked  46% -> +176.0°  -6.0° blocked   9%
+  RearBench3  P12b_Keats               en  default  +61.0° -14.0° blocked  50% -> +177.0° -15.0° blocked   8%
+  RearBench3  P12b_Keats               de  default  +61.0° -14.0° blocked  50% -> +177.0° -15.0° blocked   8%
 
 == PLACEMENT (D-33) ==
 PASS

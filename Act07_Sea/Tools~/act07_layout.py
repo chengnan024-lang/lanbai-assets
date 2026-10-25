@@ -127,6 +127,12 @@ def act7c():
 
 
 # ---------------------------------------------------------------------------------------------------- shafts
+_SUN_AZ, _SUN_TILT = math.radians(30.0), math.asin(math.sin(math.radians(20.0)) / 1.333)
+SUN_AXIS = np.array([-math.sin(_SUN_TILT) * math.sin(_SUN_AZ), -math.cos(_SUN_TILT), -math.sin(_SUN_TILT) * math.cos(_SUN_AZ)])   # down, away from the sun
+LAST_FOOT_FROM = np.array([0.8, 1.0, 14.0])        # P2: ahead, through the windscreen
+LAST_FOOT_TO = np.array([0.2, 0.95, -1.5])         # onto the seats (past the main seat at ~0.2 of the way... the sweep crosses it)
+
+
 def shafts(rng):
     """<= 16 light shafts fixed in the WATER frame (the surface makes them; the bus sinks past them), axis = the refracted
     sun (air elevation 70 deg -> in water 14.9 deg off vertical), 1-4 m wide, 20-40 m long, alpha 0.04-0.08; centres 6-20 m
@@ -142,6 +148,16 @@ def shafts(rng):
     for dx, dz, hw, ln, al in ((-2.0, 7.0, 0.8, 28.0, 0.08), (1.6, 10.5, 1.1, 30.0, 0.075), (-0.6, 14.0, 0.7, 26.0, 0.08)):
         out.append(dict(centre=R([EYE[0] + dx, eye_y_F3 - 2.0, EYE[2] + dz], 3), axis=R(axis, 5), half_width=hw, length=ln,
                         seed=round(rng.uniform(), 4), alpha=al, note='F3 forward'))
+    # P1 (D-44 #5): six shafts AHEAD of the bus at the F4p depth (12-26 m out, within the windscreen +-30 deg): when they
+    # gather (453 -> F4p) the vertex shader slides them toward the skylight, so the convergence crosses the windscreen. Their
+    # axis is the same refracted sun (az +30, el 70 in air: 14.9 deg off vertical, top toward the sun): only their POSITION
+    # moves, the sun does not (总导演 10-25 #1); their tops fade out ahead (the shader's ends)
+    eye_y_F4p = -AM.depth(L['F4p']) + EYE[1]
+    for k in range(6):
+        azk = math.radians(-30.0 + 12.0 * k + rng.uniform(-3.0, 3.0)); dk = rng.uniform(12.0, 26.0)
+        out.append(dict(centre=R([EYE[0] + dk * math.sin(azk), eye_y_F4p + rng.uniform(-3.0, 3.0), EYE[2] + dk * math.cos(azk)], 3),
+                        axis=R(axis, 5), half_width=round(rng.uniform(0.6, 1.4), 3), length=round(rng.uniform(28.0, 38.0), 2),
+                        seed=round(rng.uniform(), 4), alpha=round(rng.uniform(0.06, 0.08), 4), note='F4p forward'))
     tries = 0
     while len(out) < 16 and tries < 5000:
         tries += 1
@@ -159,6 +175,7 @@ def shafts(rng):
 # ---------------------------------------------------------------------------------------------------- particles
 SNOW_NEAR, SNOW_SPHERE, SNOW_BOX = 2.0, 10.0, 20.0
 SNOW_LIT = 2.2
+SNOW_LIT_DEEP = 1.3           # D-44 #5 P6: below 30 m the flakes stay a little brighter than the dark water (was x 1)
 
 
 def snow(rng, n=2400):
@@ -183,17 +200,23 @@ def seeds(rng, n=200):
     """播下的光: 200 births from F3i to F5, density rising toward ...die starben! (628-644: the densest), each a 0.2 s
     birth flash then a steady 12-15 % glow FIXED IN THE WATER; >= 5 m from the eye at birth, <= 3 cm, and never two flashes
     at once inside one 5 deg cone (checked here: a birth is moved later until it is clear). Colour = the bioluminescence
-    #8AC6FF (fill #5E7AFF @ +2.73). Positions: around and above the bus at its birth depth (by F5 '~200 still cold points
-    around and overhead')."""
+    #8AC6FF (fill #5E84FF @ +2.73). Positions: 60 % in the FORWARD field (az +-35, el -10..+5, 12-24 m: D-44 #5 P4 --
+    born ahead, they rise across the windscreen as the bus sinks), the rest around and above the bus at its birth depth
+    (by F5 '~200 still cold points around and overhead'). The 5 deg / 0.25 s birth rule is checked over all of them."""
     t0, t1 = L['F3i'], L['F5'] - 0.5
     u = rng.uniform(size=n * 3)
     ts = np.sort(t0 + (t1 - t0) * (1.0 - (1.0 - u) ** 0.55))[:n * 3]           # density rises toward the end
     ts = np.sort(rng.choice(ts, n, replace=False))
     births, dirs, pos = [], [], []
     for tb in ts:
+        fwd_birth = rng.uniform() < 0.6
         for _ in range(200):
-            r = rng.uniform(5.5, 22.0)
-            el = math.radians(rng.uniform(-35.0, 70.0)); az = rng.uniform(0, 2 * math.pi)
+            if fwd_birth:              # P4 (D-44 #5): born in the forward field, then they rise across the windscreen as the bus sinks
+                r = rng.uniform(12.0, 24.0)    # low and far: ~10 s to rise across the windscreen at ~1 m/s
+                el = math.radians(rng.uniform(-10.0, 5.0)); az = math.radians(rng.uniform(-35.0, 35.0))
+            else:
+                r = rng.uniform(5.5, 22.0)
+                el = math.radians(rng.uniform(-35.0, 70.0)); az = rng.uniform(0, 2 * math.pi)
             d = np.array([math.cos(el) * math.sin(az), math.sin(el), math.cos(el) * math.cos(az)])
             clash = any(abs(tb - t2) < 0.25 and math.degrees(math.acos(min(1.0, float(d @ d2)))) < 5.0 for t2, d2 in zip(births, dirs))
             if not clash:
@@ -225,10 +248,28 @@ def hull_points(rng, n):
     return np.array(pts)
 
 
+def trails_front(rng, n=270):
+    """D-44 #5 P5: 30 % of the hull bioluminescence on the FRONT of the bus (just outside the face below and across the
+    windscreen, z 3.70); the water streams up past a sinking bus, so they flow UP the windscreen, along the body's surface
+    (the shader moves them by -_Udon_SeaBusVel x age: straight up while there is no forward speed). The main eye's +-10 deg
+    (x 0.28 .. 0.82 at the glass) gets only 10 % of the density (总导演 10-25 #3: not in front of the picture). A separate
+    renderer because from F5 the bus moves forward and these would stream back THROUGH the glass: the driver fades them
+    out over the 5 s before F5. Born y 0.5 .. 1.2 (below the windscreen), life 1.5 - 3 s at 1-1.5 m/s = over the glass."""
+    pts = []
+    while len(pts) < n:
+        x = rng.uniform(-0.95, 0.95)
+        if 0.28 < x < 0.82 and rng.uniform() > 0.1:
+            continue
+        pts.append([x, rng.uniform(0.5, 1.2), 3.70])           # 0.2 m off the front face: the shader jitters +-0.125
+    return dict(kind='TRAIL', count=n, colour=R(srgb_lin(BIO_FILL, 2.73)), positions=R(np.array(pts), 3),
+                radius=R(rng.uniform(0.005, 0.015, n), 5), phase=R(rng.uniform(size=n), 4), life=R(rng.uniform(1.5, 3.0, n), 3),
+                seed=R(rng.uniform(size=n), 4), T0=L['F4'], rate=90.0, pool=n, alpha=1.0, fade_out=[round(L['F5'] - 5.0, 2), L['F5']])
+
+
 def trails(rng):
     """船体生物荧光 (F4 on): 300 births / s, life 1.5-3 s, 1-3 cm with a soft glow, screen #8AC6FF (fill #5E7AFF @ +2.73);
     a pool of 900 quads at hull points (BUS frame); the shader streams them back with the water (-_Udon_SeaBusVel x age)"""
-    n = 900
+    n = 630                                        # + 270 on the front (trails_front, D-44 #5 P5): 900 as before
     pts = hull_points(rng, n)
     ph = rng.uniform(size=n)
     # the first 90 of the pool: three lines along the right side (y 0.9 / 1.55 / 2.2, 26 cm out), each born front -> back
@@ -239,7 +280,7 @@ def trails(rng):
         ph[i] = 0.1 * j / 29.0 + 0.33 * line
     return dict(kind='TRAIL', count=n, colour=R(srgb_lin(BIO_FILL, 2.73)), positions=R(pts, 3),
                 radius=R(rng.uniform(0.005, 0.015, n), 5), phase=R(ph, 4), life=R(rng.uniform(1.5, 3.0, n), 3),
-                seed=R(rng.uniform(size=n), 4), T0=L['F4'], rate=300.0, pool=n, alpha=1.0)
+                seed=R(rng.uniform(size=n), 4), T0=L['F4'], rate=210.0, pool=n, alpha=1.0)
 
 
 def bubbles(rng):
@@ -264,6 +305,7 @@ def bubbles(rng):
 
 
 # ---------------------------------------------------------------------------------------------------- the ridge wall
+RIDGE_YAW = -55.0             # P3: the nearest part from abeam (az 90) to ahead-right (az +35)
 def ridge(rng):
     """F3e2 (532.36, 105 m): 'a ridge's rock wall rises past the right window: >= 12 m away, relative 1.5 m/s, low
     contrast, only edged by the hull's bioluminescence'. A heightfield in the WATER frame: the face is the plane
@@ -286,7 +328,23 @@ def ridge(rng):
     # the face tilts back a little at the top and bottom (a ridge, not a wall of a box)
     tilt = 4.0 * (np.clip((Y + 107.0) / 28.0, -1, 1) ** 2)
     X = 12.0 + off + tilt
-    return dict(frame='WATER', x_min_m=round(float(X.min()), 3), grid=dict(z0=-45.0, dz=1.0, nz=len(zs), y0=-135.0, dy=1.0, ny=len(ys)),
+    # P3 (D-44 #5): turned about the bus's vertical axis (water x = z = 0) so the nearest part is ahead-right (az +35 from the
+    # eye) instead of abeam: it rises across the right of the windscreen. Turned, the eye (0.55, 2.05 off the axis) comes
+    # closer, so the wall is pushed out until every vertex is >= 12.2 m from the eye (the bible's >= 12 m; it sinks past
+    # vertically, so the relative speed is still 1.5 m/s). Local x' = x cos(yaw) + z sin(yaw), z' = -x sin(yaw) + z cos(yaw)
+    yaw = math.radians(RIDGE_YAW)
+    push = 0.0
+    for _ in range(200):
+        Xr = (X + push) * math.cos(yaw) + Z * math.sin(yaw); Zr = -(X + push) * math.sin(yaw) + Z * math.cos(yaw)
+        dmin = float(np.min(np.hypot(Xr - EYE[0], Zr - EYE[2])))
+        if dmin >= 12.2:
+            break
+        push += 0.1
+    X = X + push
+    return dict(frame='WATER', yaw_deg=RIDGE_YAW, pushed_out_m=round(push, 2), min_dist_from_eye_m=round(dmin, 2),
+                yaw_note='vertices: x\' = x cos(yaw) + z sin(yaw), z\' = -x sin(yaw) + z cos(yaw) about the water origin (the bus axis); '
+                         'nearest part at az +35 from the main eye (D-44 #5 P3)',
+                x_min_m=round(float(X.min()), 3), grid=dict(z0=-45.0, dz=1.0, nz=len(zs), y0=-135.0, dy=1.0, ny=len(ys)),
                 x=R(X, 3), back_thickness_m=6.0,
                 material=dict(shader='Lanbai/SeaRidge', base=R(fill('#0B1A26', 'S7b') * 0.8), rim=R(srgb_lin('#8AC6FF') * 1.2),
                               rim_reach_m=8.0, rim_near_m=12.0, rim_wrap=0.55, rim_face=0.04, rim_edge=4.0,
@@ -381,7 +439,12 @@ def main():
                                 'gather point is the skylight (bus frame); the driver writes _GatherPoint in R_Sea object space each frame'),
                     after_F4p_fade=[[L['F4p'], 1.0], [467.6, 0.0]],
                     last_shaft=dict(t_in=L['F3e1'], fade_in_s=2.0, sweep_s=4.0, fade_out_s=2.0, half_width=2.2, length=34.0, alpha=0.10,
-                                    from_bus=[3.0, 14.0, -2.0], to_bus=[-1.5, 14.0, 4.5], target_from_bus=[1.0, 0.95, -2.0], target_to_bus=[0.0, 0.95, 3.5],
+                                    from_bus=R(LAST_FOOT_FROM - SUN_AXIS * 14.0, 3), to_bus=R(LAST_FOOT_TO - SUN_AXIS * 14.0, 3),
+                                    target_from_bus=R(LAST_FOOT_FROM, 3), target_to_bus=R(LAST_FOOT_TO, 3),
+                                    p2_note='D-44 #5 P2: PARALLEL to the refracted sun at both ends (the centre is 14 m up the sun axis from '
+                                            'the foot, so foot - centre is constant): the sun never moves (总导演 10-25 #1); the foot '
+                                            'sweeps from 14 m AHEAD (seen through the windscreen, the top fades out ahead-right toward '
+                                            'the sun) over the roof onto the seats',
                                     top_above_centre_m=2.0,
                                     note='F3e1: the last wide shaft sweeps across the seats (2 s in, 4 s sweep, 2 s out; seats <= luma 120): its '
                                          'foot moves from target_from to target_to (past the main seat at ~0.58), the beam light rides with it; '
@@ -393,7 +456,7 @@ def main():
                   last=dict(E_peak=7.5, curve='the last shaft\'s alpha; position = the shaft centre, aim = its moving foot'),
                   note='Inspector intensity = E (D-00: VRChat forces lightsUseLinearIntensity = true; the bible §1.5 trap 1 is void). Spot lights use Unity\'s legacy range falloff (trap 2): '
                        'check against the grey card locally, the seats must stay <= luma 120 and <= 6 % of the frame. Expected (cloud estimate: Built-in diffuse = albedo x colour x E x atten + the cabin ambient of §cabin, legacy atten ~ 1 / (1 + 25 d^2 / range^2), graded): F4p the worn seat #6A3434 luma ~79, the base vinyl #5A2126 ~57, a mid-grey hand ~155; F3e1 (E 7.5) worn ~72, base ~52. Range 20 m so the falloff over the 4 m throw is 0.49, not 0.16 (range 9 needed E ~44)'),
-        particles=dict(snow=snow(rng), seeds=seeds(rng), trails=trails(rng), bubbles=bubbles(rng),
+        particles=dict(snow=snow(rng), seeds=seeds(rng), trails=trails(rng), trails_front=trails_front(rng), bubbles=bubbles(rng),
                        snow_sink=0.015, snow_sphere=SNOW_SPHERE, snow_box=SNOW_BOX, snow_lit=dict(gain=SNOW_LIT, depth_full=12.0, depth_none=30.0, note='sunlit flakes in the shallow water: the bible screen colour #697987 has the luma of the water behind it at F3 (both ~118) and the flakes vanish; x gain until 12 m, smoothstep to x 1 (the bible colour) by 30 m (给总控 第五批 #9)'), near_fade=[0.3, 0.8], min_px=1.5),
         ridge=ridge(rng),
         warm_point=warm_point(),
@@ -451,7 +514,8 @@ def main():
         c7_tri_sky=R(srgb_lin(J['act7c']['trilight']['sky_hex'])), c7_tri_equator=R(srgb_lin(J['act7c']['trilight']['equator_hex'])),
         c7_tri_ground_t=[k['t'] for k in J['act7c']['trilight']['ground']],
         c7_tri_ground=sum([list(R(srgb_lin(k['hex']))) for k in J['act7c']['trilight']['ground']], []),
-        wl_entry=J['act7c']['waterline']['entry'], wl_exit=J['act7c']['waterline']['exit'], snow_lit=SNOW_LIT, snow_lit_d0=12.0, snow_lit_d1=30.0,
+        wl_entry=J['act7c']['waterline']['entry'], wl_exit=J['act7c']['waterline']['exit'], snow_lit=SNOW_LIT, snow_lit_d0=12.0, snow_lit_d1=30.0, snow_lit_deep=SNOW_LIT_DEEP,
+        trails_front_fade=[round(L['F5'] - 5.0, 2), L['F5']], ridge_yaw=RIDGE_YAW,
         warm_position=J['warm_point']['position_water'], warm_colour=J['warm_point']['colour'], warm_flux=J['warm_point']['flux'],
         warm_radius=J['warm_point']['radius_m'], warm_fade=J['warm_point']['fade_in_s'],
         warm_halo_radius=J['warm_point']['halo_radius_m'], warm_halo_flux=J['warm_point']['halo_flux'],

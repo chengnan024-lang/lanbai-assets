@@ -1,0 +1,47 @@
+{
+  "steps": [
+    {
+      "target": "Lanbai.Tests.LB_FullAssembly.PrepareAllPrograms",
+      "op": "call"
+    },
+    {
+      "op": "wait",
+      "seconds": 8
+    },
+    {
+      "target": "Lanbai.Tests.LB_FullAssembly.CheckAllPrograms",
+      "op": "call"
+    },
+    {
+      "op": "play",
+      "seconds": 5
+    },
+    {
+      "op": "call",
+      "arg": "fix_natural|baseline|1009|32|1",
+      "target": "Lanbai.Tests.LB_FlickerDiagnostic.Begin"
+    },
+    {
+      "op": "wait",
+      "seconds": 33
+    },
+    {
+      "target": "Lanbai.Tests.LB_FlickerDiagnostic.Status",
+      "op": "call"
+    },
+    {
+      "op": "call",
+      "arg": "fix_direct|baseline|1023|18|1",
+      "target": "Lanbai.Tests.LB_FlickerDiagnostic.Begin"
+    },
+    {
+      "op": "wait",
+      "seconds": 19
+    },
+    {
+      "target": "Lanbai.Tests.LB_FlickerDiagnostic.Status",
+      "op": "call"
+    }
+  ],
+  "id": "flicker_20261025_0328_verify"
+}

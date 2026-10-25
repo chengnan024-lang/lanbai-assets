@@ -4,8 +4,8 @@
    960,
    540
   ],
-  "APL": 16.22,
-  "EV_display": -6.164,
+  "APL": 15.87,
+  "EV_display": -6.234,
   "luma_lt12_pct": 83.94,
   "Lstar_gt85_pct": 0.057,
   "clip_black_pct": 0.0,
@@ -13,10 +13,10 @@
   "clip_black_largest_region_pct": 0.0,
   "clip_white_largest_region_pct": 0.0,
   "warm_shadow_pct": 0.05,
-  "purple_pct": 0.733,
+  "purple_pct": 0.734,
   "purple_largest_region_pct": 0.68,
   "violet_strong_pct": 0.0,
-  "lavender_act6_pct": 2.609,
+  "lavender_act6_pct": 2.738,
   "brightest": {
    "bbox": [
     337,
@@ -89,7 +89,7 @@
     }
    ],
    "pixel_to_nearest_dE_median": 19.0,
-   "pixel_to_nearest_dE_p90": 19.2,
+   "pixel_to_nearest_dE_p90": 19.1,
    "pixels_within5_pct": 0.0
   }
  },
@@ -168,7 +168,7 @@
    "color": "#000000"
   }
  },
- "bloom_share_of_APL": 0.05,
+ "bloom_share_of_APL": 0.06,
  "t": 921.4,
  "target": {
   "phase": "倒置的窗",
@@ -193,7 +193,7 @@
    540
   ]
  },
- "render_seconds": 26.5,
+ "render_seconds": 21.6,
  "lens": "none",
  "bloom_tint": "single",
  "note": "D-26 921.4: the same hole, the mirror 1.4 m below the eye: the same angles (the window is a cone), the fog thinner"

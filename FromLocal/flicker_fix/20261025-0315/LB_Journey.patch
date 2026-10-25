@@ -1,0 +1,60 @@
+--- a/Assets/Lanbai/Scripts/LB_Journey.cs
++++ b/Assets/Lanbai/Scripts/LB_Journey.cs
+@@ -232,6 +232,9 @@
+         float _wheelAngle;
+         float _starTurn;
+         MaterialPropertyBlock _mpb;
++        // VRC mirrors own their renderer property block. Keep journey look values
++        // on per-renderer runtime materials so reflection rendering cannot erase them.
++        Material _seaMatA, _seaMatB;
+         float _doorAngle;
+         bool _wasIdle = true;
+         Vector3 _mwNormal;
+@@ -758,19 +761,34 @@
+         void SetSeaLook(Renderer r, int skyIdx, float mirror, float fade)
+         {
+             if (r == null || skyTop == null || skyIdx >= skyTop.Length) return;
+-            r.GetPropertyBlock(_mpb);
+-            _mpb.SetColor("_SkyTop", skyTop[skyIdx]);
+-            _mpb.SetColor("_SkyHorizon", skyHorizon[skyIdx]);
+-            _mpb.SetColor("_SkyBottom", skyBottom[skyIdx]);
+-            _mpb.SetVector("_SunDir", sunDir[skyIdx]);
+-            _mpb.SetColor("_SunColor", sunColor[skyIdx]);
+-            _mpb.SetFloat("_Stars", starAmount[skyIdx]);
+-            _mpb.SetFloat("_MilkyWay", Mathf.Max(0f, starAmount[skyIdx] - 0.5f) * 2.6f);
+-            _mpb.SetVector("_MilkyWayNormal", new Vector4(_mwNormal.x, _mwNormal.y, _mwNormal.z, 0f));
+-            _mpb.SetFloat("_Mirror", mirror);
+-            _mpb.SetFloat("_Fade", fade);
+-            SetSkyTex(skyIdx, skyIdx, 0f, 1f);
+-            r.SetPropertyBlock(_mpb);
++            Material m;
++            if (r == seaARenderer) {
++                if (_seaMatA == null) _seaMatA = r.material;
++                m = _seaMatA;
++            } else {
++                if (_seaMatB == null) _seaMatB = r.material;
++                m = _seaMatB;
++            }
++            if (m == null) return;
++            m.SetColor("_SkyTop", skyTop[skyIdx]);
++            m.SetColor("_SkyHorizon", skyHorizon[skyIdx]);
++            m.SetColor("_SkyBottom", skyBottom[skyIdx]);
++            m.SetVector("_SunDir", sunDir[skyIdx]);
++            m.SetColor("_SunColor", sunColor[skyIdx]);
++            m.SetFloat("_Stars", starAmount[skyIdx]);
++            m.SetFloat("_MilkyWay", Mathf.Max(0f, starAmount[skyIdx] - 0.5f) * 2.6f);
++            m.SetVector("_MilkyWayNormal", new Vector4(_mwNormal.x, _mwNormal.y, _mwNormal.z, 0f));
++            m.SetFloat("_Mirror", mirror);
++            m.SetFloat("_Fade", fade);
++            Texture sky = skyTex != null && skyIdx < skyTex.Length ? skyTex[skyIdx] : null;
++            m.SetFloat("_TexAmount", sky != null ? 1f : 0f);
++            m.SetFloat("_TexBlend", 0f);
++            if (sky != null) { m.SetTexture("_SkyTexA", sky); m.SetTexture("_SkyTexB", sky); }
++            float exp = skyTexExposure != null && skyIdx < skyTexExposure.Length ? skyTexExposure[skyIdx] : 1f;
++            float rot = skyTexRot != null && skyIdx < skyTexRot.Length ? skyTexRot[skyIdx] : 0f;
++            if (skyIdx == SKY_STARS) rot += _starTurn;
++            m.SetFloat("_TexAExp", exp); m.SetFloat("_TexBExp", exp);
++            m.SetFloat("_TexARot", rot); m.SetFloat("_TexBRot", rot);
+         }
+ 
+         // ═════════════════════════════════════════════════════════════

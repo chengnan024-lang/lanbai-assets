@@ -1,0 +1,335 @@
+{
+  "id": "bus_slice",
+  "title": "车的切片（座椅 + 侧窗 + 立柱）· 进引擎的五项检查",
+  "source": "D-40 #1「车先出一个切片」；D-36 #1 近景按 VR 像素密度；D-40 #4 几何高光抗锯齿",
+  "requires": {
+    "folders": [
+      "Assets/Lanbai/Common",
+      "Assets/Lanbai/Bus",
+      "Assets/Lanbai/Bus/Editor"
+    ],
+    "menus": [
+      "蓝白/Build/车 切片"
+    ],
+    "types": [
+      "LanbaiBusSliceBuilder"
+    ],
+    "why": "车的切片还没交。约定（总导演 D-40 回复 #10）：仓库里没有 .meta，所以不交 .unity 场景，交一个搭建菜单 蓝白/Build/车 切片（类名 LanbaiBusSliceBuilder：工具靠这个类在不在来判断切片交没交，菜单在不在 Unity 没有可靠的读法），在本地现搭：它在当前场景（工具给它一个沙盒里的空场景）里建 Slice_Seat、Slice_SideWindow、Slice_Pillar 三件和一台带 PostProcessLayer 的相机；要写的生成物放 Assets/Lanbai/Bus/Generated/。光照图：本地烘就把烘焙设置写进车的 README；用预烘好的 _CabinTubeLM 贴图就照 D-32 从 uv1 读（那样场景里没有 Unity 的光照图，has_lightmaps 只警告）"
+  },
+  "scene": {
+    "mode": "new",
+    "why": "沙盒里的空场景，搭建菜单往里搭"
+  },
+  "allowed_writes": [
+    "Assets/Lanbai/Bus/Generated/**",
+    "Assets/Lanbai/UdonPrograms/**",
+    "Assets/SerializedUdonPrograms/**"
+  ],
+  "require_ppv2": true,
+  "build": [
+    {
+      "type": "menu",
+      "path": "蓝白/Build/车 切片"
+    }
+  ],
+  "settings": {
+    "vertex_compression_off": [
+      "TexCoord0",
+      "TexCoord1",
+      "TexCoord2",
+      "TexCoord3",
+      "Color"
+    ],
+    "gate": true
+  },
+  "cameras": {
+    "seat_05m": {
+      "look_at_object": "**/Slice_Seat",
+      "toward": [
+        0.55,
+        1.7,
+        2.05
+      ],
+      "distance": 0.5,
+      "crop_deg": [
+        40,
+        30
+      ],
+      "ppd": 20,
+      "ss": 2,
+      "why": "前排座椅靠背（D-36 #1：0.7 m）：从主座位那边、离 0.5 m 看，按 20 px/° 出（D-36 #1、D-40 #1）"
+    },
+    "seat_10m": {
+      "look_at_object": "**/Slice_Seat",
+      "toward": [
+        0.55,
+        1.7,
+        2.05
+      ],
+      "distance": 1.0,
+      "crop_deg": [
+        40,
+        30
+      ],
+      "ppd": 20,
+      "ss": 2,
+      "why": "前排座椅靠背（D-36 #1：0.7 m）：从主座位那边、离 1.0 m 看，按 20 px/° 出（D-36 #1、D-40 #1）"
+    },
+    "window_05m": {
+      "look_at_object": "**/Slice_SideWindow",
+      "toward": [
+        0.55,
+        1.7,
+        2.05
+      ],
+      "distance": 0.5,
+      "crop_deg": [
+        40,
+        30
+      ],
+      "ppd": 20,
+      "ss": 2,
+      "why": "侧窗框和推拉窗扣（0.5 m）：从主座位那边、离 0.5 m 看，按 20 px/° 出（D-36 #1、D-40 #1）"
+    },
+    "window_10m": {
+      "look_at_object": "**/Slice_SideWindow",
+      "toward": [
+        0.55,
+        1.7,
+        2.05
+      ],
+      "distance": 1.0,
+      "crop_deg": [
+        40,
+        30
+      ],
+      "ppd": 20,
+      "ss": 2,
+      "why": "侧窗框和推拉窗扣（0.5 m）：从主座位那边、离 1.0 m 看，按 20 px/° 出（D-36 #1、D-40 #1）"
+    },
+    "pillar_05m": {
+      "look_at_object": "**/Slice_Pillar",
+      "toward": [
+        0.55,
+        1.7,
+        2.05
+      ],
+      "distance": 0.5,
+      "crop_deg": [
+        40,
+        30
+      ],
+      "ppd": 20,
+      "ss": 2,
+      "why": "立柱和扶杆（0.6 m）：从主座位那边、离 0.5 m 看，按 20 px/° 出（D-36 #1、D-40 #1）"
+    },
+    "pillar_10m": {
+      "look_at_object": "**/Slice_Pillar",
+      "toward": [
+        0.55,
+        1.7,
+        2.05
+      ],
+      "distance": 1.0,
+      "crop_deg": [
+        40,
+        30
+      ],
+      "ppd": 20,
+      "ss": 2,
+      "why": "立柱和扶杆（0.6 m）：从主座位那边、离 1.0 m 看，按 20 px/° 出（D-36 #1、D-40 #1）"
+    }
+  },
+  "cameras_why": "主座位的眼 [0.55, 1.7, 2.05]（cameras.json 的 hero）；切片场景要和整车同一个坐标系（车在原点）",
+  "shots": [
+    {
+      "cam": "seat_05m"
+    },
+    {
+      "cam": "seat_10m"
+    },
+    {
+      "cam": "window_05m"
+    },
+    {
+      "cam": "window_10m"
+    },
+    {
+      "cam": "pillar_05m"
+    },
+    {
+      "cam": "pillar_10m"
+    }
+  ],
+  "texture_compare": [
+    {
+      "id": "seat",
+      "under": "**/Slice_Seat",
+      "shots": [
+        "seat_05m"
+      ],
+      "variants": [
+        "raw",
+        "bc7",
+        "bc5",
+        "crunch:50",
+        "crunch:100"
+      ],
+      "crunch_quality": 50,
+      "why": "0.5 m 处：BC7、Crunch（质量 50）和不压缩的比 PSNR（D-40 #1 第 1 项）；法线另加 BC5 对 Crunch（DXT5nm，质量 100）（D-40b #6）。bc5 只对法线贴图生效，别的贴图那一档用 BC7"
+    },
+    {
+      "id": "window",
+      "under": "**/Slice_SideWindow",
+      "shots": [
+        "window_05m"
+      ],
+      "variants": [
+        "raw",
+        "bc7",
+        "bc5",
+        "crunch:50",
+        "crunch:100"
+      ],
+      "crunch_quality": 50,
+      "why": "0.5 m 处：BC7、Crunch（质量 50）和不压缩的比 PSNR（D-40 #1 第 1 项）；法线另加 BC5 对 Crunch（DXT5nm，质量 100）（D-40b #6）。bc5 只对法线贴图生效，别的贴图那一档用 BC7"
+    },
+    {
+      "id": "pillar",
+      "under": "**/Slice_Pillar",
+      "shots": [
+        "pillar_05m"
+      ],
+      "variants": [
+        "raw",
+        "bc7",
+        "bc5",
+        "crunch:50",
+        "crunch:100"
+      ],
+      "crunch_quality": 50,
+      "why": "0.5 m 处：BC7、Crunch（质量 50）和不压缩的比 PSNR（D-40 #1 第 1 项）；法线另加 BC5 对 Crunch（DXT5nm，质量 100）（D-40b #6）。bc5 只对法线贴图生效，别的贴图那一档用 BC7"
+    }
+  ],
+  "sequences": [
+    {
+      "id": "pillar_micro",
+      "cam": "pillar_10m",
+      "kind": "micro_motion",
+      "fps": 90,
+      "frames": 90,
+      "amp_cm": 2,
+      "amp_deg": 1,
+      "why": "铬件和倒角稍远一点时闪不闪（D-40 #1 第 3 项、#4）"
+    },
+    {
+      "id": "window_micro",
+      "cam": "window_10m",
+      "kind": "micro_motion",
+      "fps": 90,
+      "frames": 90,
+      "amp_cm": 2,
+      "amp_deg": 1
+    },
+    {
+      "id": "seat_micro",
+      "cam": "seat_10m",
+      "kind": "micro_motion",
+      "fps": 90,
+      "frames": 90,
+      "amp_cm": 2,
+      "amp_deg": 1
+    }
+  ],
+  "stereo": [
+    {
+      "cam": "pillar_05m",
+      "id": "pillar_05m"
+    }
+  ],
+  "perf": [],
+  "checks": [
+    {
+      "id": "has_lightmaps",
+      "metric": "scene.lightmaps",
+      "op": ">=",
+      "value": 1,
+      "why": "光照图接缝那一项要先有光照图（D-40 #1 第 4 项）。车用预烘的 _CabinTubeLM（D-32，uv1）时 Unity 的光照图是 0 张，所以只警告；接缝照样看近景图",
+      "gate": false
+    },
+    {
+      "id": "pillar_shimmer",
+      "metric": "seq.pillar_micro.shimmer_frac",
+      "op": "<=",
+      "value": 0.005,
+      "gate": false,
+      "why": "立柱 / 铬扶手：头部微动里来回跳的像素（初值，切片第一次实测后定）"
+    },
+    {
+      "id": "window_shimmer",
+      "metric": "seq.window_micro.shimmer_frac",
+      "op": "<=",
+      "value": 0.005,
+      "gate": false,
+      "why": "同上"
+    },
+    {
+      "id": "seat_crunch_psnr",
+      "metric": "tex.seat.crunch_q50.seat_05m.psnr",
+      "op": ">=",
+      "value": 38,
+      "gate": false,
+      "why": "0.5 m 处 Crunch 和不压缩比 ≥ 38 dB（初值；低了就是细节被压没了，D-40 #1）"
+    },
+    {
+      "id": "window_crunch_psnr",
+      "metric": "tex.window.crunch_q50.window_05m.psnr",
+      "op": ">=",
+      "value": 38,
+      "gate": false,
+      "why": "同上"
+    },
+    {
+      "id": "pillar_crunch_psnr",
+      "metric": "tex.pillar.crunch_q50.pillar_05m.psnr",
+      "op": ">=",
+      "value": 38,
+      "gate": false,
+      "why": "同上"
+    },
+    {
+      "id": "normal_crunch100_vs_bc5",
+      "metric": "tex.seat.crunch_q100.seat_05m.psnr",
+      "op": ">=",
+      "value": 38,
+      "gate": false,
+      "why": "法线：Crunch 质量 100 和不压缩比（BC5 那一档看 tex.seat.bc5.seat_05m.psnr）；比完总工程师给全片统一一条（D-40b #6）"
+    }
+  ],
+  "headset_checklist": [
+    "铬件、倒角、立柱稍远一点（1–2 m）时闪不闪（D-40 #4 的几何高光抗锯齿开着）",
+    "贴图在 0.5 m 处是不是糊、细节有没有被压没（mip 和压缩）",
+    "光照图接缝：座椅和侧窗框上看不看得到接缝",
+    "法线强度：凸起和缝线读得出来、又不像塑料",
+    "对照板第 5 栏「头显里一句话」：每件写一句"
+  ],
+  "manual": [
+    "对照板五栏（D-40 #1）：真车照片 / Blender 中性光 / Blender 定稿 / Unity 截图（这次的 shots/）/ 头显里一句话",
+    "Crunch 免不免由总导演定；免的话下载账总工程师重算（车的下载上限 75 MB）"
+  ],
+  "allowed_writes_why": "车的切片搭建菜单生成的网格、材质、贴图导入设置",
+  "after_build": [
+    {
+      "type": "assert_object",
+      "path": "**/Slice_Seat"
+    },
+    {
+      "type": "assert_object",
+      "path": "**/Slice_SideWindow"
+    },
+    {
+      "type": "assert_object",
+      "path": "**/Slice_Pillar"
+    }
+  ]
+}
