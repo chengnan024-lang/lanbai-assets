@@ -4,6 +4,34 @@
 
 > **2026-10-24 起，读这份日志的本地是 ChatGPT「阿白」**（10-24 已接管，D-40a #8、D-41）。先读根目录的 `HANDOFF_CHATGPT.md`：协作边界、第一次接管的步骤、回传协议都在那里。下面各条里的“你”指本地，现在就是阿白。旧条里“技术上怎么实现由你决定”（09-28）作废：技术架构归总工程师，高风险改动先备份并经小楠确认（`HANDOFF_CHATGPT.md` §F）。
 
+## 2026-10-26（北京 05:30）· 🪞 十三面镜（第 9c 幕）和白（第 10 幕）进 main：换掉星海的旧海面占位
+同步：`Mirrors/` `Act10_White/` `Fonts/`（字幕深度表接上了）
+不同步：`Mirrors/Source/BronzeMirror.blend`、各包的 `Docs~/`、`Tools~/`
+
+**是什么：**
+- 镜与白包：十三面白铜古镜，从下方升起、穿过车厢、碎成星尘；第 10 幕是白光。
+- **这一包就是 1025 s 那一段的正片**：你本地修过的旧海面占位（`PlaceStarSea`）可以退场了。
+- 白遮罩按 C1 = B：上半球 1144.81 起变白，正前方 1146.32 才看得出，侧上方 1 s ≤ 0.95 EV。
+- 迟到的人按 D-43 #7，总工程师的仿真里 1120–1200 每 0.1 s 进场，全部通过。
+- 不用 `VRC_MirrorReflection`。
+
+**接入**（照 `Mirrors/README_Mirrors.md` §0）：
+1. 先跑天空的 `蓝白/Sky/Build Star Mesh`、`Build Sky`、`蓝白/Build/Act09`，再点 `蓝白/Build/Mirrors`（第 10 幕在同一份 README 里）。
+2. **关掉 `LB_Journey.PlaceStarSea` 的旧海面**：1010 → 1150.31 这一段用 `README_集成.md` §3 的接管开关。不关的话，旧海和镜子会同时在。你的 SeaA/SeaB 运行时材质修复留着，别的幕还用。
+3. 在 FullPreview 里点 `蓝白/Director/1 Generate Dispatcher`、`2 Wire Scene`（明文允许，先备份）。**正式场景不动。**
+4. **字体**：同步 `Fonts/` 以后，再点一次 `蓝白/Fonts/Build Subtitles (v5)`，深度表就进了驱动。
+
+**技术验收（D-46）：**
+1. 照 README §0 第 3 步的机位截图：1030.4、1113.4、1116.0、1123.5……
+2. **`flicker_probe` 1016–1042**：新镜子 + 新车厢一起，和你 0315 那次对比。
+3. **1149.31 第 13 面镜和白的交接**（flicker_1025-02）：用 `transitions_sweep`，或者 1139–1156 每 0.1 s 截一张。
+4. 白的退出：1177–1191，回到假醒的车厢。
+5. 性能：第 9 幕最忙的那段（1105–1116）的 Udon 时间和 GPU。
+6. 结果放 `FromLocal/mirrors_test/<时间>/`，问题写 `问题.md`。
+
+**问题处理：**
+- 问题处理：flicker_1025-02 → 云端已交正片（main，本条）。等你接入后复测。
+
 ## 2026-10-26（北京 05:00）· 🚌 车厢先交（D-44）：FullPreview 里换掉旧车
 同步：`Bus/Models/` `Bus/Textures/` `Bus/Editor/` `Bus/Scripts/` `Cabin/Shaders/` `Cabin/Scripts/` `Cabin/Editor/` `Common/` `Rain/Shaders/` `Rain/Textures/Glass/`
 不同步：`Bus/Source/` `Bus/Docs~/` `Rain/Runtime/`（生成代码和文档 Unity 用不到；雨的运行时先不用）
