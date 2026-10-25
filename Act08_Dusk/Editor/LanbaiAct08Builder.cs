@@ -96,9 +96,16 @@ public static class LanbaiAct08Builder
         return r;
     }
 
+    // D-41：菜单先等 U# 程序资产初始化完再搭；直接调 Build() 时没初始化完就不动场景（Common/Editor/LanbaiUdonPrograms）
     [MenuItem("蓝白/Build/Act08")]
+    public static void BuildMenu()
+    {
+        Lanbai.Udon.LanbaiUdonPrograms.RunWhenReady("蓝白/Build/Act08", new[] { typeof(LanbaiAct08Driver) }, () => Build());   // Build 自己把报告写进 Console
+    }
+
     public static string Build()
     {
+        Lanbai.Udon.LanbaiUdonPrograms.RequireReady("蓝白/Build/Act08", typeof(LanbaiAct08Driver));
         string log = LanbaiCloudsV2Builder.BuildMaterials();
         if (!AssetDatabase.IsValidFolder(Kit + "/Generated")) AssetDatabase.CreateFolder(Kit, "Generated");
         string proj = Path.GetDirectoryName(Application.dataPath);
