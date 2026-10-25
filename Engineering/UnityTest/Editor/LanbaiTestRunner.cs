@@ -83,21 +83,31 @@ namespace Lanbai.Test
     public sealed class UndoStack
     {
         readonly List<KeyValuePair<string, Action>> _a = new List<KeyValuePair<string, Action>>();
+        // 复核的次要项：改回失败的不丢，留在这里，之后每次 RollbackTo 再试；收尾时还有的 → 报告里列出来（JSON 的 → 退出码 3）
+        readonly List<KeyValuePair<string, Action>> _failed = new List<KeyValuePair<string, Action>>();
         public int Mark() { return _a.Count; }
         public void Push(string what, Action a) { _a.Add(new KeyValuePair<string, Action>(what, a)); }
+        public List<string> Failed { get { return _failed.Select(x => x.Key).ToList(); } }
         public List<string> RollbackTo(int mark)
         {
             var errs = new List<string>();
+            int fresh = 0;
             for (int i = _a.Count - 1; i >= mark; i--)
             {
                 try { _a[i].Value(); }
                 catch (Exception)
                 {
-                    // 再试一次（比如导入刚好在忙）；还不行就报出来，原样在报告的“警告”里
+                    // 再试一次（比如导入刚好在忙）；还不行就留下来，下次 RollbackTo 和收尾时再试
                     try { _a[i].Value(); }
-                    catch (Exception e2) { errs.Add("改回 " + _a[i].Key + " 失败（试了两次）：" + e2.Message); }
+                    catch (Exception e2) { errs.Add("改回 " + _a[i].Key + " 失败（试了两次，留着之后再试）：" + e2.Message); _failed.Add(_a[i]); fresh++; }
                 }
                 _a.RemoveAt(i);
+            }
+            for (int i = _failed.Count - 1; i >= 0; i--)
+            {
+                if (i >= _failed.Count - fresh) continue;   // 这一轮刚失败的，下次再试
+                try { _failed[i].Value(); errs.Add("改回 " + _failed[i].Key + "：之前失败，这次重试成功了"); _failed.RemoveAt(i); }
+                catch (Exception) { }
             }
             return errs;
         }
@@ -106,7 +116,7 @@ namespace Lanbai.Test
     [InitializeOnLoad]
     public static class Runner
     {
-        public const string VERSION = "1.0.0";
+        public const string VERSION = "1.1.0";   // 1.1.0（2026-10-25）：D-43 #6 copied、复核的次要项（CONSENT 的范围、改回失败重试、ncrunch）
         public const string TESTS_DIR = "Assets/Lanbai/Engineering/UnityTest/tests";
         public const string REPORTS = "LanbaiReports/tests";
         static readonly CultureInfo IC = CultureInfo.InvariantCulture;
@@ -286,6 +296,13 @@ namespace Lanbai.Test
             SessionState.EraseString(PendingKey);
             SessionState.EraseBool(ResumeKey);
             try { foreach (var e in ctx.undo.RollbackTo(0)) ctx.warnings.Add(e); } catch { }
+            try { foreach (var e in ctx.undo.RollbackTo(0)) ctx.warnings.Add(e); } catch { }   // 失败过的再试一次
+            if (ctx.undo.Failed.Any(f => f.StartsWith("JSON ", StringComparison.Ordinal)))
+            {
+                // edit_json 改过的文件写不回去：工程里留着测试改过的值，不能当没事（退出码 3），原文件在输出的 backup/
+                ctx.error = (ctx.error != null ? ctx.error + "；" : "") + "改回失败、留在工程里：" + string.Join("、", ctx.undo.Failed.ToArray()) + "。原文件在输出文件夹的 backup/，停，告诉小楠";
+                exit = 3;
+            }
             try { EditorUtility.ClearProgressBar(); } catch { }
             // 报告（报告写不出来也算工具异常）
             try

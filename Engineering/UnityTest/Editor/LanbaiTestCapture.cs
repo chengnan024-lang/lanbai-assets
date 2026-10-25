@@ -682,8 +682,14 @@ namespace Lanbai.Test
                     if (vk == "raw") pc.format = TextureImporterFormat.RGBA32;
                     else if (vk == "bc7") pc.format = TextureImporterFormat.BC7;
                     else if (vk == "bc5") pc.format = nrm ? TextureImporterFormat.BC5 : TextureImporterFormat.BC7;
+                    // ncrunch（复核的次要项）：只把法线做 Crunch（DXT5nm），别的贴图用 BC7：和 bc5 那一档只差在法线上，直接比
+                    else if (vk == "ncrunch")
+                    {
+                        if (nrm) { pc.format = TextureImporterFormat.DXT5Crunched; pc.crunchedCompression = true; pc.compressionQuality = vq; }
+                        else pc.format = TextureImporterFormat.BC7;
+                    }
                     else if (vk == "crunch") { pc.format = ti.DoesSourceTextureHaveAlpha() || nrm ? TextureImporterFormat.DXT5Crunched : TextureImporterFormat.DXT1Crunched; pc.crunchedCompression = true; pc.compressionQuality = vq; }
-                    else throw new StepException("不认识的压缩档 " + v + "（raw / bc7 / bc5 / crunch / crunch:<质量>）");
+                    else throw new StepException("不认识的压缩档 " + v + "（raw / bc7 / bc5 / crunch / crunch:<质量> / ncrunch:<质量>）");
                     ti.SetPlatformTextureSettings(pc);
                     ti.SaveAndReimport();
                     var nt = AssetDatabase.LoadAssetAtPath<Texture2D>(dst);
@@ -714,7 +720,7 @@ namespace Lanbai.Test
                         ctx.undo.Push("材质换回 " + rr.name, () => { if (r3 != null) r3.sharedMaterials = old; });
                         swapped++;
                     }
-                var vrec = new Dictionary<string, object> { { "storage_mb", mb }, { "renderers_swapped", (double)swapped }, { "note", v.StartsWith("bc5") ? "bc5 只对法线贴图生效，别的贴图这一档用 BC7" : null } };
+                var vrec = new Dictionary<string, object> { { "storage_mb", mb }, { "renderers_swapped", (double)swapped }, { "note", v.StartsWith("bc5") ? "bc5 只对法线贴图生效，别的贴图这一档用 BC7" : v.StartsWith("ncrunch") ? "ncrunch 只对法线贴图做 Crunch，别的贴图这一档用 BC7（和 bc5 只差在法线上）" : null } };
                 ctx.Metric("tex." + id + "." + vs + ".storage_mb", mb, "这一档全部贴图的显存 / 存储读数（编辑器 TextureUtil；Crunch 的下载体积更小，以构建报告为准）");
                 try
                 {

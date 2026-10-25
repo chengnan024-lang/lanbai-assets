@@ -173,10 +173,11 @@
         "bc7",
         "bc5",
         "crunch:50",
-        "crunch:100"
+        "crunch:100",
+        "ncrunch:100"
       ],
       "crunch_quality": 50,
-      "why": "0.5 m 处：BC7、Crunch（质量 50）和不压缩的比 PSNR（D-40 #1 第 1 项）；法线另加 BC5 对 Crunch（DXT5nm，质量 100）（D-40b #6）。bc5 只对法线贴图生效，别的贴图那一档用 BC7"
+      "why": "0.5 m 处：BC7、Crunch（质量 50）和不压缩的比 PSNR（D-40 #1 第 1 项）；法线另加 BC5 对 Crunch（DXT5nm，质量 100）（D-40b #6）。bc5、ncrunch 只对法线贴图生效，别的贴图那两档用 BC7，所以 bc5 和 ncrunch:100 只差在法线上"
     },
     {
       "id": "window",
@@ -189,10 +190,11 @@
         "bc7",
         "bc5",
         "crunch:50",
-        "crunch:100"
+        "crunch:100",
+        "ncrunch:100"
       ],
       "crunch_quality": 50,
-      "why": "0.5 m 处：BC7、Crunch（质量 50）和不压缩的比 PSNR（D-40 #1 第 1 项）；法线另加 BC5 对 Crunch（DXT5nm，质量 100）（D-40b #6）。bc5 只对法线贴图生效，别的贴图那一档用 BC7"
+      "why": "0.5 m 处：BC7、Crunch（质量 50）和不压缩的比 PSNR（D-40 #1 第 1 项）；法线另加 BC5 对 Crunch（DXT5nm，质量 100）（D-40b #6）。bc5、ncrunch 只对法线贴图生效，别的贴图那两档用 BC7，所以 bc5 和 ncrunch:100 只差在法线上"
     },
     {
       "id": "pillar",
@@ -205,10 +207,11 @@
         "bc7",
         "bc5",
         "crunch:50",
-        "crunch:100"
+        "crunch:100",
+        "ncrunch:100"
       ],
       "crunch_quality": 50,
-      "why": "0.5 m 处：BC7、Crunch（质量 50）和不压缩的比 PSNR（D-40 #1 第 1 项）；法线另加 BC5 对 Crunch（DXT5nm，质量 100）（D-40b #6）。bc5 只对法线贴图生效，别的贴图那一档用 BC7"
+      "why": "0.5 m 处：BC7、Crunch（质量 50）和不压缩的比 PSNR（D-40 #1 第 1 项）；法线另加 BC5 对 Crunch（DXT5nm，质量 100）（D-40b #6）。bc5、ncrunch 只对法线贴图生效，别的贴图那两档用 BC7，所以 bc5 和 ncrunch:100 只差在法线上"
     }
   ],
   "sequences": [
@@ -299,11 +302,11 @@
     },
     {
       "id": "normal_crunch100_vs_bc5",
-      "metric": "tex.seat.crunch_q100.seat_05m.psnr",
+      "metric": "tex.seat.ncrunch_q100.seat_05m.psnr",
       "op": ">=",
       "value": 38,
       "gate": false,
-      "why": "法线：Crunch 质量 100 和不压缩比（BC5 那一档看 tex.seat.bc5.seat_05m.psnr）；比完总工程师给全片统一一条（D-40b #6）"
+      "why": "法线：只把法线做 Crunch（质量 100，ncrunch:100）和不压缩比；BC5 那一档看 tex.seat.bc5.seat_05m.psnr，两档别的贴图都是 BC7，差别只来自法线；比完总工程师给全片统一一条（D-40b #6）"
     }
   ],
   "headset_checklist": [
