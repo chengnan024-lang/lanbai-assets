@@ -196,7 +196,7 @@ _BLUR = {}
 
 
 def sky_broad(dirs, mat, gl, key):
-    """MirrorSky(V, 0.0): the roughest lobe (~2 rad) = a heavily blurred sky (64 x 32 equirect, sigma 0.6 rad)."""
+    """MirrorSky(V, 0.5): a ~27 deg lobe = a blurred sky (64 x 32 equirect, sigma 0.2 rad)."""
     if key not in _BLUR:
         from scipy.ndimage import gaussian_filter
         Wq, Hq = 64, 32
@@ -204,7 +204,7 @@ def sky_broad(dirs, mat, gl, key):
         LO, LA = np.meshgrid(lon, lat)
         dd = np.stack([np.cos(LA) * np.sin(LO), np.sin(LA), np.cos(LA) * np.cos(LO)], -1)
         L = sky(dd, mat, gl) @ np.array([0.2126, 0.7152, 0.0722])
-        sg = float(os.environ.get('BACK_SIGMA', 0.6)) / (2 * np.pi) * Wq
+        sg = float(os.environ.get('BACK_SIGMA', 0.2)) / (2 * np.pi) * Wq
         _BLUR.clear(); _BLUR[key] = gaussian_filter(np.pad(L, ((0, 0), (Wq, Wq)), mode='wrap'), sg, mode='nearest')[:, Wq:2 * Wq]
     Lm = _BLUR[key]; Hq, Wq = Lm.shape
     lon = np.arctan2(dirs[:, 0], dirs[:, 2]); lat = np.arcsin(np.clip(dirs[:, 1], -1, 1))
