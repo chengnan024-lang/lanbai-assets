@@ -1,0 +1,32 @@
+F5p all 0.054% outside halo discs 0.007%
+F6 all 0.086% outside halo discs 0.075%
+F7 all 0.449% outside halo discs 0.432%
+proc all 0.029% outside halo discs 0.005%
+proc_l all 0.358% outside halo discs 0.113%
+que_lamp all 0.133% outside halo discs 0.023%
+h722 all 0.039% outside halo discs 0.013%
+h728 all 0.028% outside halo discs 0.024%
+proc roof px 8648 frac >2x water 0.201 frac >1x 0.251
+proc_l roof px 29388 frac >2x water 0.212 frac >1x 0.260
+p706 roof px 5411 frac >2x water 0.241 frac >1x 0.281
+h722 roof px 8090 frac >2x water 0.000 frac >1x 0.001
+h728 roof px 5486 frac >2x water 0.000 frac >1x 0.000
+que_lamp que px 371731 top2% h 309 C* 11.4  medianC 15.4  meanRGB [46.9 42.8 58.8]
+   purple strip px 5399 top2% h 341 C* 27.7 meanRGB [104.7  55.7  86.3]
+   bbox 433 468 410 438
+F5p que px 134093 top2% h 320 C* 11.8  medianC 14.9  meanRGB [56.  45.1 60.3]
+   purple strip px 2046 top2% h 352 C* 17.1 meanRGB [104.5  70.3  84.6]
+   bbox 328 362 426 442
+que_l que px 194800 top2% h 319 C* 11.3  medianC 14.0  meanRGB [53.8 43.5 58. ]
+   purple strip px 3197 top2% h 355 C* 15.1 meanRGB [102.4  71.6  82.9]
+   bbox 711 727 633 649
+proc_l roof px 29388 luma p50 12 p95 109 p99.5 164 max 188
+  top3%: C* median 9.3; hue hist (C*>4): [  0   0   0  82 398 251 149]
+  mean rgb [133. 148. 158.]
+proc roof px 8648 luma p50 12 p95 90 p99.5 141 max 174
+  top3%: C* median 8.5; hue hist (C*>4): [  0   0   0  23 130  55  52]
+  mean rgb [114. 128. 136.]
+p706 roof px 5411 luma p50 13 p95 103 p99.5 146 max 169
+  top3%: C* median 7.8; hue hist (C*>4): [ 0  0  0  5 81 44 33]
+  mean rgb [118. 131. 140.]
+F7 去掉门洞亮区和灯芯周围 12 px（亮度 > 120 的像素膨胀 12 px）：0.218%，剩下的是门口光锥卡
