@@ -274,6 +274,7 @@ def draw_lamps(img, shot, dist, flame_scale=1.0):
         ph = (i * 0.618034) % 1.0                                          # = export_fbx.g_flames 的相位
         xf = min(1.0, max(0.0, (SHOTS[shot][0] - (835.16 + ph * 36.0)) / 4.0))
         att *= 1.0 - xf * xf * (3 - 2 * xf)                                # F8 → 7c：一盏盏暗下去（shader 同式）
+        att *= L.cliff_vis(eye_of(shot), P[i])                             # 总导演 10-26：被崖口挡住的灯按几何淡掉（shader 的 LanbaiCliffVis 同式）
         x0, x1 = int(max(px[i] - rpx - 2, 0)), int(min(px[i] + rpx + 2, W))
         y0, y1 = int(max(py[i] - rpx - 2, 0)), int(min(py[i] + rpx + 2, H))
         if x1 <= x0 or y1 <= y0:

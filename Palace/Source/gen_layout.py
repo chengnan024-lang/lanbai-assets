@@ -82,6 +82,11 @@ def main():
     cs.append('{')
     cs.append('    public const float TerraceDepth = %.4ff;' % terrace_depth)
     cs.append('    public const float LipY = %.3ff;   // 台地下唇（海的约定 terrace.lip_bottom_y）：眼睛低于它，灯焰的深度往前挪（终审 10-25 #3）' % L.LIP_Y)
+    C_ = L.CLIFF
+    cs.append('    public static readonly UnityEngine.Vector4 CliffEdge = new UnityEngine.Vector4(%.3ff, %.3ff, %.3ff, %.3ff);   // 崖口遮挡淡出（总导演 10-26）：edge x、最低下唇 y、下唇 x、坡面起伏上包络' % (C_['edge_x'], C_['lip_low'], C_['lip_x'], C_['bump']))
+    cs.append('    public static readonly UnityEngine.Vector4 CliffSlope = new UnityEngine.Vector4(%.3ff, %.3ff, %.3ff, %.3ff);  // 坡宽、坡深（下限）、余量、车下沉最快 m/s' % (C_['slope_w'], C_['slope_d'], C_['pad'], C_['sink']))
+    cs.append('    public static readonly UnityEngine.Vector4 CliffSlopeZ = new UnityEngine.Vector4(%.1ff, %.1ff, %.1ff, %.1ff);   // 坡段 z：起、满起、满止、止' % (C_['slope_z'][0], C_['slope_z'][2], C_['slope_z'][3], C_['slope_z'][1]))
+    cs.append('    public const float CliffFadeS = %.2ff;   // 淡出至少这么多秒' % C_['fade_s'])
     cs.append('    public static readonly float[] WashLinear = %s;   // 上方微光卡的颜色（线性，加在水色上）' % arr(T['wash']['rgb_lin']))
     cs.append('    public const float FogScale = %.3ff;   // 宫殿几何的雾密度倍数（终审 10-25 #1）' % T.get('palace_fog_scale', 1.0))
     cs.append('    public static readonly float[] Flames = %s;' % arr(flames))

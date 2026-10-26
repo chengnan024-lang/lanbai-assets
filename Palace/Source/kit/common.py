@@ -21,7 +21,7 @@ def palace_frame():
     import json
     import os
     here = os.path.dirname(os.path.abspath(__file__))
-    pinned = os.path.normpath(os.path.join(here, '..', 'PalaceFrame_约定_pkg_sea_dcab186.json'))
+    pinned = os.path.normpath(os.path.join(here, '..', 'PalaceFrame_约定_pkg_sea_37dbdd6.json'))
     p = (os.environ.get('PALACE_FRAME') or (pinned if os.path.exists(pinned) else None)
          or os.path.normpath(os.path.join(here, '..', '..', '..', 'Act07_Sea', 'PalaceFrame_约定.json')))
     return json.load(open(p, encoding='utf-8'))

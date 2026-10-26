@@ -202,6 +202,10 @@ public static class LanbaiPalaceBuilder
         fl.SetVector("_FlameColor", V4(LanbaiPalaceData.FlameLinear, 0f));
         fl.SetVector("_HaloMid", V4(LanbaiPalaceData.HaloMid, 0f));
         fl.SetFloat("_LipY", LanbaiPalaceData.LipY);
+        fl.SetVector("_CliffEdge", LanbaiPalaceData.CliffEdge);       // 被崖口挡住的灯按几何淡掉（总导演 10-26）
+        fl.SetVector("_CliffSlope", LanbaiPalaceData.CliffSlope);
+        fl.SetVector("_CliffSlopeZ", LanbaiPalaceData.CliffSlopeZ);
+        fl.SetFloat("_CliffFadeS", LanbaiPalaceData.CliffFadeS);
         d["Flame"] = fl;
         foreach (var m in d.Values) EditorUtility.SetDirty(m);
         return d;

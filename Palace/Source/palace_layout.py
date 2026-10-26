@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.join(REPO, 'Act07_Sea', 'Tools~'))
 import act07_motion as M  # noqa: E402
 
 # 第 10 轮 (c)：海的新约定在 pkg/sea dcab186、还没合 main——先钉一份在 Source/ 里（合了以后删掉这份，回到 Act07_Sea 的那份）
-_PINNED = os.path.join(HERE, 'PalaceFrame_约定_pkg_sea_dcab186.json')
+_PINNED = os.path.join(HERE, 'PalaceFrame_约定_pkg_sea_37dbdd6.json')
 FRAME = json.load(open(os.environ.get('PALACE_FRAME') or (_PINNED if os.path.exists(_PINNED) else os.path.join(REPO, 'Act07_Sea', 'PalaceFrame_约定.json')), encoding='utf-8'))
 CUES = dict(FRAME['labels_used'])
 T_QUE = 668.6
@@ -27,6 +27,56 @@ BUS_Y_STOP = FRAME['frame']['bus_origin_y_stop']
 
 EDGE_X = FRAME['terrace']['edge_x']
 LIP_Y = FRAME['terrace']['lip_bottom_y']
+
+# 总导演 10-26：被崖口挡住多半的灯，车下沉时按几何遮挡在 >= 1 s 里淡掉（只往“藏”的方向；一盏灯要么读得出，要么不在）。
+# 遮挡体按保守的近似：崖口顶边的斜坡（约定 terrace.edge_slope，坡宽、坡深取不带起伏的下限）+ 竖直石壁（外凸到 edge + 0.9）
+# + 参差的下唇（最低处 lip − 1.2、往里收 0.6）。视线从坡上越过，或从下唇下面（下缘以下台地没有底面）穿过，才算看得见。
+_ES = FRAME['terrace'].get('edge_slope')
+_ESD = (_ES or {}).get('drop_m', 1.6)
+CLIFF = dict(edge_x=FRAME['terrace']['edge_x'], lip_low=LIP_Y - 1.2, lip_x=FRAME['terrace']['edge_x'] - 0.6, wall_out=FRAME['terrace']['edge_x'] + 0.9,
+             slope_w=(_ES['width_m'] if _ES else 0.8), slope_d=(min(_ESD) if isinstance(_ESD, list) else _ESD),
+             slope_z=((_ES or {}).get('z', [48.0, 306.0]) + (_ES or {}).get('z_full', [54.0, 296.0])),
+             bump=0.52, pad=0.08, fade_s=1.0, sink=1.5)
+
+
+def cliff_vis(e, c):
+    """眼 e、灯 c（宫殿坐标）之间的视线越过崖口的余量 → 可见度 0..1（= Lanbai/PalaceFlame 的 LanbaiCliffVis）。"""
+    C = CLIFF
+    ex, ey, ez = e
+    cx, cy, cz = c
+    if ex <= C['wall_out'] or cx >= C['edge_x']:
+        return 1.0
+    def at(x):
+        t = (x - ex) / (cx - ex)
+        return ey + (cy - ey) * t, ez + (cz - ez) * t, t
+    def ss(a, b, x):
+        u = min(1.0, max(0.0, (x - a) / (b - a)))
+        return u * u * (3 - 2 * u)
+    big = C['slope_w'] > 1.0
+    m_over = 1e9
+    for k in (0.0, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.65, 0.8, 1.0):
+        y, z, _ = at(C['edge_x'])
+        z0, z1, zf0, zf1 = C['slope_z']
+        w = ss(z0, zf0, z) * (1.0 - ss(zf1, z1, z)) if big else 0.0
+        W = 0.8 + w * (C['slope_w'] - 0.8)
+        D = 1.6 + w * (C['slope_d'] - 1.6)
+        x = C['edge_x'] - W * (1 - k)
+        if big:
+            kr = 0.15
+            s = (k * k / (2 * kr) if k < kr else k - kr / 2) / (1 - kr / 2)
+        else:
+            s = k ** 1.5
+        yr, _, _ = at(x)
+        m_over = min(m_over, yr - (-D * s + C['bump'] * w * math.sin(math.pi * k)))   # 坡面起伏的上包络（terrace.py：≤ 0.51 m × sin πk）
+    for j in (0.25, 0.5, 0.75, 1.0):                                 # 坡底往下 4.4 m 内石壁外凸从 0 长到最多 0.9 m（terrace.py）
+        yw, _, _ = at(C['edge_x'] + 0.9 * j)
+        m_over = min(m_over, yw - (-D - 4.4 * j))
+    m_over -= C['pad']
+    yl, _, te = at(C['lip_x'])
+    m_under = C['lip_low'] - yl - C['pad']                            # 从下唇下面穿过
+    m = max(m_over, m_under)
+    width = max(0.1, C['fade_s'] * C['sink'] * (1.0 - te))          # 车下沉 1 s，视线在崖口处移动的米数
+    return min(1.0, max(0.0, m / width))
 AXIS_X = FRAME['avenue']['axis_x']
 COL_R_X, COL_L_X = FRAME['avenue']['columns_x']
 HALL = FRAME['hall']

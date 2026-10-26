@@ -3,6 +3,10 @@ public static class LanbaiPalaceData
 {
     public const float TerraceDepth = 250.3350f;
     public const float LipY = -13.000f;   // 台地下唇（海的约定 terrace.lip_bottom_y）：眼睛低于它，灯焰的深度往前挪（终审 10-25 #3）
+    public static readonly UnityEngine.Vector4 CliffEdge = new UnityEngine.Vector4(-8.000f, -14.200f, -8.600f, 0.520f);   // 崖口遮挡淡出（总导演 10-26）：edge x、最低下唇 y、下唇 x、坡面起伏上包络
+    public static readonly UnityEngine.Vector4 CliffSlope = new UnityEngine.Vector4(3.500f, 6.000f, 0.080f, 1.500f);  // 坡宽、坡深（下限）、余量、车下沉最快 m/s
+    public static readonly UnityEngine.Vector4 CliffSlopeZ = new UnityEngine.Vector4(48.0f, 54.0f, 296.0f, 306.0f);   // 坡段 z：起、满起、满止、止
+    public const float CliffFadeS = 1.00f;   // 淡出至少这么多秒
     public static readonly float[] WashLinear = { 0.00150f, 0.00380f, 0.00520f };   // 上方微光卡的颜色（线性，加在水色上）
     public const float FogScale = 0.420f;   // 宫殿几何的雾密度倍数（终审 10-25 #1）
     public static readonly float[] Flames = { -12.00000f, 1.62000f, 54.39000f, -30.00000f, 1.62000f, 54.39000f, -12.00000f, 1.50000f, 72.24000f, -30.00000f, 1.50000f, 72.24000f, -12.00000f, 1.62000f, 90.44000f, -30.00000f, 1.62000f, 90.44000f, -12.00000f, 1.50000f, 108.29000f, -30.00000f, 1.50000f, 108.29000f, -12.00000f, 1.62000f, 126.49000f, -30.00000f, 1.62000f, 126.49000f, -12.00000f, 1.50000f, 144.34000f, -30.00000f, 1.50000f, 144.34000f, -12.00000f, 1.62000f, 162.19000f, -30.00000f, 1.62000f, 162.19000f, -12.00000f, 1.50000f, 180.39000f, -30.00000f, 1.50000f, 180.39000f, -12.00000f, 1.62000f, 198.24000f, -30.00000f, 1.62000f, 198.24000f, -12.00000f, 1.50000f, 216.44000f, -30.00000f, 1.50000f, 216.44000f, -12.00000f, 1.62000f, 234.29000f, -30.00000f, 1.62000f, 234.29000f, -12.00000f, 1.50000f, 252.49000f, -30.00000f, 1.50000f, 252.49000f, -16.00000f, 7.66000f, 335.30000f, -26.00000f, 7.66000f, 335.30000f, -37.00000f, 7.66000f, 335.30000f, -48.00000f, 7.66000f, 335.30000f, -59.00000f, 7.66000f, 335.30000f, -69.00000f, 7.66000f, 335.30000f, -12.00000f, 3.62000f, 34.79000f, -30.00000f, 3.62000f, 34.79000f };
