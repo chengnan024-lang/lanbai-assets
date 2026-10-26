@@ -140,14 +140,21 @@ class Ctx:
         self.t = t
         self.eye = eye
         self.top = -D.h_bus(t)
+        self.topv = self.top + VOL.get('Lift', 0.0)      # R10: the deck's lift (GateVolumeDeck _Lift), at full strength
+
         self.origin = D.gate_origin(t)
         self.skirts = skirts or []           # (cx, cz, r) world
         self.tearA, self.tearB = tear_segment(t)
 
+    def topl(self, p):
+        """LanbaiCloudLift: the lifted top at p (all of it within 250 m of the tear's foot, none beyond 500 m)"""
+        d = np.hypot(p[..., 0] - self.tearA[0], p[..., 2] - self.tearA[2])
+        return self.top + VOL.get('Lift', 0.0) * (1.0 - ss(250.0, 500.0, d))
+
 
 def vol_shape(p, c):
     """VolumeCloudDeck density() / _Density, plus the noise R (the skirt reuses it)"""
-    top = c.top
+    top = c.topl(p)
     y = (p[..., 1] - (top - 170.0)) / 200.0
     env = ss(0.0, 0.16, y) * (1.0 - ss(0.9, 1.0, y))
     xz = p[..., [0, 2]] - c.origin[[0, 2]] - np.array(VOL['Wind']) * c.t
@@ -167,8 +174,9 @@ def skirt(p, c, n):
         g = np.exp(-np.maximum(d - r, 0.0) / W)
         g = g * np.clip((3.0 - np.maximum(d - r, 0.0) / W) * 2.0, 0.0, 1.0)   # the shader: tapered, 0 past 3 W
         # lumpy: the top rides the finer noise (G: 16-32 m cells), the billows too (R is 30-130 m: a smooth dome)
-        sk_top = c.top + NEW['SkirtBase'] + NEW['SkirtClimb'] * g + (n[..., 1] - 0.5) * NEW['SkirtLump']
-        v = ss(sk_top, sk_top - NEW['SkirtSoft'], p[..., 1]) * ss(c.top - 170.0, c.top - 120.0, p[..., 1])
+        tl = c.topl(p)
+        sk_top = tl + NEW['SkirtBase'] + NEW['SkirtClimb'] * g + (n[..., 1] - 0.5) * NEW['SkirtLump']
+        v = ss(sk_top, sk_top - NEW['SkirtSoft'], p[..., 1]) * ss(tl - 170.0, tl - 120.0, p[..., 1])
         billow = ss(0.30, 0.55, n[..., 1] + 0.25 * g)
         out = np.maximum(out, NEW['SkirtK'] * k * g * v * billow)
     return out
@@ -189,7 +197,7 @@ def fog_colour(V, c, tear):
 def cloud_light(p, c, tear, new, facing, vray=None):
     optical = density(p + MOON * 18.0, c, new) * 22.0 + density(p + MOON * 50.0, c, new) * 38.0
     illum = 0.08 + 0.92 * np.exp(-optical * 1.7)
-    height = np.clip((p[..., 1] - (c.top - 120.0)) / 140.0, 0, 1)
+    height = np.clip((p[..., 1] - (c.topl(p) - 120.0)) / 140.0, 0, 1)
     light = VOL['Amb'] * (.3 + height * .35)[..., None] + VOL['MoonColor'] * (VOL['MoonE'] * illum * (.65 + facing * .35))[..., None]
     foot = c.tearA if TEARL['on'] else c.origin + np.array([0.0, -150.0, 19.0])
     dist = np.hypot((p[..., 0] - foot[0]) / 180.0, (p[..., 2] - foot[2]) / 240.0)
@@ -227,7 +235,12 @@ def march(V, c, scene_d, new, tear, seed=0):
     lower = c.top - 170.0
     below = eye[1] < lower                       # the deck seen from under its floor (GateVolumeDeck [D-44])
     ok = V[:, 1] > 0.0005 if below else V[:, 1] < -0.0005
-    upper = c.top + 30.0 if below else min(c.top + 30.0, eye[1] - 18.0)
+    # + the lift only for rays that pass within 500 m of the tear's foot (horizontally), as the deck
+    fd = c.tearA[[0, 2]] - eye[[0, 2]]
+    rh = V[:, [0, 2]]
+    tc = np.maximum((rh @ fd) / np.maximum((rh * rh).sum(1), 1e-6), 0.0)
+    liftR = np.where(np.linalg.norm(fd[None] - rh * tc[:, None], axis=1) < 500.0, VOL.get('Lift', 0.0), 0.0)
+    upper = c.top + liftR + 30.0 if below else np.minimum(c.top + liftR + 30.0, eye[1] - 18.0)
     with np.errstate(divide='ignore', invalid='ignore'):
         if below:
             start = (lower - eye[1]) / V[:, 1]
@@ -245,30 +258,59 @@ def march(V, c, scene_d, new, tear, seed=0):
     count = np.where(v[:, 1] > -0.35, 80, 56)
     L = (s1 - s0) / count
     p0 = eye + v * s0[:, None]
-    jit = 0.2 + 0.6 * tex3d(p0 * 0.073)[:, 1]
+    if VOL.get('HashJitter') and getattr(c, 'pix', None):
+        # GateVolumeDeck _HashJitter (R10): LanbaiHash13 of the cloud-top-plane world point, ~1.5 pixel cells
+        tp = np.maximum(np.abs(eye[1] - c.top), 1.0) / np.maximum(np.abs(v[:, 1]), 1e-4)
+        pw = eye + v * tp[:, None] - c.origin
+        cell = np.maximum(tp * 1.5 * c.pix, 0.05)
+        jit = D.hash13(np.floor(pw / cell[:, None]) + 0.5)
+    else:
+        jit = 0.2 + 0.6 * tex3d(p0 * 0.073)[:, 1]
     fogc = fog_colour(v, c, tear)
     facing = np.clip(v @ MOON, 0, 1) ** 5
     tr = np.ones(len(idx))
     acc = np.zeros((len(idx), 3))
-    for s in range(80):
-        live = (s < count) & (tr >= 0.015)
+    # GateVolumeDeck [R10b] Refine (x = factor, y = span in coarse steps): at a ray's first sample with cloud, back up one
+    # coarse step and walk the surface layer at L / x for y coarse steps, then coarse again. The surface (where a ray's
+    # light is decided) is sampled x times finer: the jitter grain and its frame-to-frame flicker drop with it
+    rf, rk = VOL.get('Refine', (1, 0))
+    rf = max(int(rf), 1)
+    nf = int(rf * rk) if rf > 1 else 0
+    tt = s0 + jit * L
+    stp = L.copy()
+    fine = np.zeros(len(idx), int)
+    done = np.zeros(len(idx), bool) if nf else np.ones(len(idx), bool)
+    for s in range(80 + nf):
+        live = (tt < s1) & (tr >= 0.015)
         if not live.any():
             break
         k = np.nonzero(live)[0]
-        tt = s0[k] + (s + jit[k]) * L[k]
-        p = eye + v[k] * tt[:, None]
+        p = eye + v[k] * tt[k][:, None]
         den = density(p, c, new)
         m = den > 0.00008
-        if not m.any():
-            continue
-        km = k[m]
-        pm = p[m]
-        light = cloud_light(pm, c, tear, new, facing[km], v[km])
-        f = (1.0 - np.exp(-VOL['Fog'] * tt[m]))[:, None]
-        light = (light * VOL['Gain']) * (1 - f) + fogc[km] * f
-        a = 1.0 - np.exp(-den[m] * L[km])
-        acc[km] += (tr[km] * a)[:, None] * light
-        tr[km] *= 1.0 - a
+        hit = m & ~done[k]
+        if hit.any():
+            kh = k[hit]
+            done[kh] = True
+            back = np.maximum(tt[kh] - L[kh], s0[kh])
+            stp[kh] = L[kh] / rf
+            tt[kh] = back + jit[kh] * stp[kh]
+            fine[kh] = nf
+            m &= ~hit
+        if m.any():
+            km = k[m]
+            pm = p[m]
+            light = cloud_light(pm, c, tear, new, facing[km], v[km])
+            f = (1.0 - np.exp(-VOL['Fog'] * tt[km]))[:, None]
+            light = (light * VOL['Gain']) * (1 - f) + fogc[km] * f
+            a = 1.0 - np.exp(-den[m] * stp[km])
+            acc[km] += (tr[km] * a)[:, None] * light
+            tr[km] *= 1.0 - a
+        adv = k[~hit] if hit.any() else k
+        tt[adv] += stp[adv]
+        fz = adv[fine[adv] > 0]
+        fine[fz] -= 1
+        stp[fz[fine[fz] == 0]] = L[fz[fine[fz] == 0]]
     out[idx] = acc
     trans[idx] = tr
     return out, trans
@@ -352,6 +394,51 @@ def reveal(d, t):
 ARMS = None
 
 
+CURL_FORCE = None          # None: the driver's schedule; a number: every curling arm at that progress (pictures)
+
+
+def curl_geom(name, V, p, R, sc, t):
+    """TentacleSway v2.9 _Curl: past t0 every vertex turns about the pivot by curl x angle x (t - t0) / (1 - t0)"""
+    cu_ = LAY[name].get('curl')
+    if not cu_:
+        return V
+    if CURL_FORCE is not None:
+        cu = CURL_FORCE
+    else:
+        cu = float(ss(0.0, 1.0, (t - cu_['t_start']) / max(cu_['duration_s'], 0.1)))
+    if cu <= 0:
+        return V
+    T = ARMS[name + '_t']
+    piv = np.array(cu_['pivot_os'])
+    k = np.array(cu_['axis_os'])
+    k = k / np.linalg.norm(k)
+    Vl = (V - p) @ R / sc
+    s_ = np.clip((T - cu_['t0']) / (1 - cu_['t0']), 0, 1)
+    a = cu * cu_['angle_rad'] * s_
+    r = Vl - piv
+    co, si = np.cos(a)[:, None], np.sin(a)[:, None]
+    Vl = piv + r * co + np.cross(k, r) * si + k * (r @ k)[:, None] * (1 - co)
+    return (Vl * sc) @ R.T + p
+
+
+def girth(name, V, p, R, sc):
+    """TentacleSway _Girth / _GirthFalloff of the instance (GateLayout material): every ring's radius x
+    (1 + (g - 1) (1 - t)^p) (the shader inflates along the normal by (g - 1) (1 - t)^p x B x R_root: the same for a tube)"""
+    m = LAY[name].get('material', {})
+    g, gp = float(m.get('_Girth', 1.0)), float(m.get('_GirthFalloff', 1.5))
+    if g == 1.0:
+        return V
+    T = ARMS[name + '_t']
+    Vl = (V - p) @ R / sc
+    W = Vl.copy()
+    bins = np.round(T * 400).astype(int)
+    for b in np.unique(bins):
+        k = bins == b
+        cen = Vl[k].mean(0)
+        W[k] = cen + (Vl[k] - cen) * (1.0 + (g - 1.0) * (1.0 - T[k].mean()) ** gp)
+    return (W * sc) @ R.T + p
+
+
 def arm_meshes(t, new):
     """world-space vertex arrays of the arms visible at t; AFTER: the root reach (TentacleSway v2.8 vertex stretch)"""
     global ARMS
@@ -363,9 +450,14 @@ def arm_meshes(t, new):
         name = d['id']
         if name + '_v' not in ARMS.files or reveal(d, t) <= 0.0:
             continue
+        # LanbaiGateDriver: every arm retired from U9 - 0.05, except the hands kept for the curl (curl_t[2] = keep)
+        if t >= BAKE['U9'] - 0.05 and not (d.get('curl') and d['curl_t'][2] > 0 and t < d['curl_t'][2]):
+            continue
         p, R = pose(d, t)
         sc = float(LAY[name].get('scale', 1.0))
         V = (ARMS[name + '_v'] * sc) @ R.T + p
+        V = girth(name, V, p, R, sc)
+        V = curl_geom(name, V, p, R, sc, t)
         if V[:, 1].max() < top - 40.0:
             continue
         if new:
@@ -429,6 +521,8 @@ def bake_skirts():
             # radius: the mean distance from the centroid, across the local axis (vertical in object space near the
             # root; for the bins higher up the arm leans, the error is the cos of the lean)
             r = float(np.sqrt(((P[:, [0, 2]] - cen[[0, 2]]) ** 2).sum(1)).mean())
+            m_ = LAY[name].get('material', {})          # + the instance's girth (D-05: Near_1)
+            r *= 1.0 + (float(m_.get('_Girth', 1.0)) - 1.0) * (1.0 - 0.5 * (edges[k] + edges[k + 1])) ** float(m_.get('_GirthFalloff', 1.5))
             pts += [round(float(x), 3) for x in cen]          # object space (TransformPoint applies the scale)
             rad.append(round(r * sc, 2))                       # world metres
         rk = []
@@ -447,6 +541,62 @@ def bake_skirts():
     return J
 
 
+CURL_ARMS = ('Hand_L0', 'Hand_L1', 'Hand_L2', 'Hand_R0', 'Hand_R1', 'Hand_R2')
+CURL = dict(t0=0.7, angle=2.2, dur=1.75, start=180.15, step=0.42, order=(2, 4, 0, 5, 1, 3), keep_until=184.5, fade=0.5)
+
+
+def rodrigues(r, k, a):
+    k = k / np.linalg.norm(k)
+    return r * np.cos(a) + np.cross(k, r) * np.sin(a) + k * (r @ k)[..., None] * (1 - np.cos(a)) if r.ndim > 1 else \
+        r * np.cos(a) + np.cross(k, r) * np.sin(a) + k * (r @ k) * (1 - np.cos(a))
+
+
+def bake_curl():
+    """Gate/GateLayout_v2.json instances[*].curl for the 6 hands at the lips (圣经 §I 喉): pivot = the centreline at t0
+    (object space, Unity axes, before the scale), axis = so that the tip turns AWAY from the tear (checked numerically),
+    angle at the tip, and the schedule (each dur s, staggered by step, in `order`)"""
+    global ARMS
+    if ARMS is None:
+        ARMS = np.load('/tmp/claude-0/seam/arms.npz')
+    import collections
+    path = os.path.join(GATE, 'GateLayout_v2.json')
+    J = json.load(open(path), object_pairs_hook=collections.OrderedDict)
+    by = {d['id']: d for d in BAKE['inst']}
+    tU9 = BAKE['U9']
+    tear = D.gate_origin(tU9) + np.array([0.0, -150.0 + 0.4 * tear_h(tU9), 0.0])
+    for it in J['instances']:
+        if it['id'] not in CURL_ARMS:
+            continue
+        name = it['id']
+        V, T = ARMS[name + '_v'], ARMS[name + '_t']
+        piv = V[np.abs(T - CURL['t0']) < 0.01].mean(0)
+        tip = V[T > 0.98].mean(0)
+        d = tip - piv
+        p, R = pose(by[name], tU9 - 0.1)
+        sc = float(it.get('scale', 1.0))
+        w = ((tear - p) @ R) / sc - piv                          # the tear, in object space, from the pivot
+        k = np.cross(w, d)
+        k /= np.linalg.norm(k)
+        # check: a small turn must move the tip away from the tear; else flip
+        tip2 = piv + rodrigues(d, k, 0.2)
+        if np.linalg.norm(tip2 - (piv + w)) < np.linalg.norm(tip - (piv + w)):
+            k = -k
+        j = CURL_ARMS.index(name)
+        start = CURL['start'] + CURL['order'][j] * CURL['step']
+        it['curl'] = collections.OrderedDict(
+            t0=CURL['t0'], pivot_os=[round(float(x), 3) for x in piv], axis_os=[round(float(x), 4) for x in k],
+            angle_rad=CURL['angle'], t_start=round(start, 2), duration_s=CURL['dur'], keep_until=CURL['keep_until'],
+            note='圣经 §I 喉: the fingertip curls back at the first lip (GateClouds/Source/seam_ref.py curl; TentacleSway v2.9)')
+        # kept past U9 (总导演 10-26 A): the reveal fades over [keep - fade, keep]
+        if CURL['keep_until'] > 0:
+            ks = [k for k in it['reveal']['keys'] if k['t'] < CURL['keep_until'] - CURL['fade'] - 1e-3]
+            ks += [collections.OrderedDict(t=round(CURL['keep_until'] - CURL['fade'], 2), value=1.0),
+                   collections.OrderedDict(t=CURL['keep_until'], value=0.0)]
+            it['reveal']['keys'] = ks
+        print(name, 'start %.2f' % start, 'pivot', it['curl']['pivot_os'], 'axis', it['curl']['axis_os'])
+    json.dump(J, open(path, 'w'), indent=1, ensure_ascii=False)
+
+
 SKJ = None
 
 
@@ -456,7 +606,7 @@ def skirts_runtime(t, arms_posed, eye):
     if SKJ is None:
         SKJ = json.load(open(os.path.join(D.KIT, 'GateClouds_Skirts.json')))
     top = -D.h_bus(t)
-    yl = top - SKJ['level']
+    yl0 = top - SKJ['level']
     by = {d['id']: d for d in BAKE['inst']}
     cand = []
     for a in SKJ['arms']:
@@ -467,6 +617,9 @@ def skirts_runtime(t, arms_posed, eye):
         p, R = pose(d, t)
         P = (np.array(a['pts']).reshape(-1, 3) * float(LAY[a['id']].get('scale', 1.0))) @ R.T + p
         r = np.array(a['r'])
+        g = D.gate_origin(t)
+        lf = 1.0 - float(ss(250.0, 500.0, np.hypot(P[0, 0] - g[0], P[0, 2] - g[2] - 20.0)))   # the U#: lift at the root
+        yl = yl0 + VOL.get('Lift', 0.0) * lf
         hit = None
         if P[0, 1] >= yl:
             hit = (P[0], r[0])                    # the root stands above the level: the stretched stem is vertical
@@ -549,7 +702,7 @@ def render_arm_passes(arms, cam, w, h):
         for l in list(em.inputs['Color'].links):
             nt.links.remove(l)
         nt.links.new(geo.outputs[sock], em.inputs['Color'])
-        out = '/tmp/claude-0/seam/_pass_%s.exr' % key
+        out = '/tmp/claude-0/seam/_pass_%s_%d.exr' % (key, os.getpid())      # one per process (parallel renders)
         sc.render.filepath = out
         bpy.ops.render.render(write_still=True)
         with OpenEXR.File(out) as fexr:
@@ -598,6 +751,7 @@ def shade_arm(P, N, c, tear, new):
     col = ARM['Albedo'] * (ARM['MoonE'] * ndl[:, None] * VOL['MoonColor'] + ARM['Fill'])
     col = col + VOL['MoonColor'] * (ARM['Rim'] * rim)[:, None]
     top = c.top
+    topv = c.topl(P)                           # R10: the lifted deck's floor (under-floor shade / fade)
     pN = P - c.origin
     keep = np.ones(len(P), bool)
     wet = np.zeros(len(P))
@@ -619,7 +773,7 @@ def shade_arm(P, N, c, tear, new):
         wet = NEW['WetMax'] * (1.0 - np.exp(-tau))
         facing = np.clip(V @ MOON, 0, 1) ** 5
         tgt = cloud_light(pout, c, tear, True, facing) * VOL['Gain']
-        col = col * (1.0 + (NEW['UnderDark'] - 1.0) * ss(top - 160.0, top - 220.0, P[:, 1]))[:, None]
+        col = col * (1.0 + (NEW['UnderDark'] - 1.0) * ss(topv - 160.0, topv - 220.0, P[:, 1]))[:, None]
         col = col + (tgt - col) * wet[:, None]
     # LanbaiFog (the cloud-top extra; AFTER: the extra fades where the arm is wet, the cloud fogs itself)
     h = np.maximum(P[:, 1] - top, 0.0)
@@ -630,10 +784,10 @@ def shade_arm(P, N, c, tear, new):
     fcol = fog_colour(V, c, tear)
     col = col * (1 - f)[:, None] + fcol * f[:, None]
     if new:                                   # under the deck's flat floor: fade into the floor behind (the shader, v2.8)
-        m = 0.95 * ss(top - 290.0, top - 170.0, P[:, 1]) * ss(top - 120.0, top - 170.0, P[:, 1]) * (V[:, 1] > 0.02)
+        m = 0.95 * ss(topv - 290.0, topv - 170.0, P[:, 1]) * ss(topv - 120.0, topv - 170.0, P[:, 1]) * (V[:, 1] > 0.02)
         if (m > 0.002).any():
             k = np.nonzero(m > 0.002)[0]
-            tq = (top - 110.0 - eye[1]) / V[k, 1]
+            tq = (topv - 110.0 - eye[1]) / V[k, 1]
             q = eye + V[k] * tq[:, None]
             facing = np.clip(V[k] @ MOON, 0, 1) ** 5
             lc = cloud_light(q, c, tear, True, facing) * VOL['Gain']
@@ -751,6 +905,12 @@ if __name__ == '__main__':
     if a[0] == 'seq':                 # seq <name> [--n 24]
         n = int(a[a.index('--n') + 1]) if '--n' in a else 24
         render_seq(a[1], n, w, outdir)
+        sys.exit(0)
+    if a[0] == 'curl':                # write the hands' curl into Gate/GateLayout_v2.json (then gate_driver_bake.py)
+        for kv in (a[1].split(',') if len(a) > 1 and '=' in a[1] else []):
+            k_, v_ = kv.split('=')
+            CURL[k_] = float(v_)
+        bake_curl()
         sys.exit(0)
     if a[0] == 'bake':
         bake_skirts()

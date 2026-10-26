@@ -1,4 +1,4 @@
-2026-10-25 · **D-44 #3 触手根部和云的接缝：做完，等总导演看** · 按阿白的体积云做（全程预览的 VolumeCloudDeck）：TentacleSway v2.8（只在体积云模式生效：几何一直伸到云顶 − 2 km，按视线前方的云软过渡，云底以下在云影里）；Lanbai/GateVolumeDeck = 阿白的云海 + 根部的“裙” + 从云下往上看；LanbaiCloudVolume.cginc（云和触手共用一个密度）；U# 每帧写 8 条裙；参照渲染 Source/seam_ref.py：5 个机位前后对比 + 3 段连续视角（Docs~/seam/）；shader 0 错 0 警告、C# OK（5 个新全局量待登记，给总控 §9）· 第 10 轮剩下的（U8、keyart 光、U7 多采样、指尖卷回）还没开始
+2026-10-26 · **第 10 轮第 3 批：总导演 10-26 的 A / B / C + 雾封顶做完，等复看** · A 云面 4 倍细步（U7 逐帧 0.57% → 0.17%，爬行 0.007%，亮云 1:1 无颗粒）、B 巨像 1 yaw 30（keyart 拱离裂口右沿 3.6°）、C 卷 2.2 rad 只卷尖端 30%、6 根手雾封顶 0.7 淡出时放开（4c 雾里反差 20%）；README §14、图 Docs~/r10b/；撕边坐标等门内导出
 
 ## 进度
 - [x] 云海 `Lanbai/GateCloudDeck` + `Deck_Detail_1024` / `Deck_Macro_512` + `Source/deck_ref.py`（逐行 numpy 移植）；独立技术审查一轮（移植对照），改完

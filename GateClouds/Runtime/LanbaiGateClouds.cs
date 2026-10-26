@@ -58,7 +58,7 @@ public class LanbaiGateClouds : UdonSharpBehaviour
     [Header("D-44 #3: the volume cloud and the arms' skirts (builder)")]
     public Texture3D cloudVolumeTex;                                  // the volume deck material's _NoiseVolume (null = no volume)
     public Vector4 cloudVolume = new Vector4(1f, 0.036f, 520f, 260f); // x 1, y extinction / m (_Density), z / w periods m
-    public Vector4 cloudWind = new Vector4(8f, 3f, 0f, 0f);           // xy the deck's _CloudWind.xy
+    public Vector4 cloudWind = new Vector4(8f, 3f, 60f, 0f);          // xy the deck's _CloudWind.xy, z its _Lift (m, R10)
     public Transform gateRoot;                                        // GateRoot: the cloud top = GateRoot.y - 150 (= -h_bus)
     public Transform[] skirtArms;
     public float[] skirtPts;                                          // object-space centreline points (xyz) of every arm
@@ -178,7 +178,7 @@ public class LanbaiGateClouds : UdonSharpBehaviour
         }
         VRCShader.SetGlobalVector(_idVol, cloudVolume);
         VRCShader.SetGlobalVector(_idWind, cloudWind);
-        float yl = gateRoot.position.y - 150f - skirtLevel;
+        float yl0 = gateRoot.position.y - 150f - skirtLevel;
         int n = 0;
         for (int i = 0; i < skirtArms.Length; i++)
         {
@@ -190,6 +190,11 @@ public class LanbaiGateClouds : UdonSharpBehaviour
             int p0 = skirtPtStart[i], pc = skirtPtCount[i];
             if (pc < 1) continue;
             Vector3 a = tr.TransformPoint(new Vector3(skirtPts[3 * p0], skirtPts[3 * p0 + 1], skirtPts[3 * p0 + 2]));
+            // R10: the deck's lift at this arm (LanbaiCloudLift: all of it within 250 m of the tear's foot = GateRoot's
+            // x, z + ~20 m, none beyond 500 m)
+            Vector3 g = gateRoot.position;
+            float lf = 1f - Mathf.Clamp01((Mathf.Sqrt((a.x - g.x) * (a.x - g.x) + (a.z - g.z - 20f) * (a.z - g.z - 20f)) - 250f) / 250f);
+            float yl = yl0 + cloudWind.z * lf * lf * (3f - 2f * lf);
             bool hit = false;
             float hx = 0f, hz = 0f, hr = 0f;
             if (a.y >= yl) { hit = true; hx = a.x; hz = a.z; hr = skirtR[p0]; }   // the root stands above: its stem

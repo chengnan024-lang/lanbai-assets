@@ -11,6 +11,8 @@
 //  LanbaiCloudShape (or keep it identical), (2) add the lines marked [D-44], (3) leave _Udon_CloudVolume* to the gate
 //  clouds driver (which copies THIS material's _NoiseVolume / _Density / _CloudWind into the globals, so the arms and the
 //  deck cannot disagree). Reference render: GateClouds/Source/seam_ref.py.
+//  [R10] _HashJitter: per-pixel world-anchored step jitter (阿白's smooth one banded); _Lift (60 m, within 250 -> 500 m of the tear's foot): the gate's cloud top is where the deck's surface is (阿白's surface is ~70 m under its top: the
+//  tear's foot hung over air); _TearLight: the tear lights the deck (lit edges, dark hearts); the old flat pool x _PoolK.
 //  [D-44] also: an eye UNDER the deck's floor (top - 170) sees it from below (upward rays, no comfort cut), for the
 //  acceptance view of the roots from under the cloud (阿白's original draws only downward rays).
 // =====================================================================================================
@@ -61,6 +63,12 @@ Shader "Lanbai/GateVolumeDeck"
         _CrevGlow ("Crevasse floor glow #C0B9E4 x 0.35, linear", Vector) = (0.184, 0.170, 0.272, 1)
         _FootPool ("Foot light: radius (m), offset toward the bus (m, < 0 = beyond the foot), strength, floor under the tops  (x S / 0.64)", Vector) = (160, -100, 6.0, 0.1)
         _FootPoolColor ("Foot pool colour #E2E8F3, linear", Vector) = (0.7605, 0.8070, 0.8963, 1)
+        [Header(R10 the gate on the volume deck)]
+        _Lift ("Lift the deck by this (m): its visible surface (top - 70) up to the gate's cloud top", Float) = 60
+        _TearLight ("Tear line light: E at r0, r0 (m), HG g, self-shadow tap (m)", Vector) = (0.5, 120, 0.6, 30)
+        _PoolK ("The old flat foot pool x this (the tear light replaces it)", Range(0, 1)) = 0
+        [Toggle] _HashJitter ("Step jitter: world-anchored LanbaiHash13 (1) or 阿白's smooth noise (0, bands)", Float) = 1
+        _Refine ("Surface refine: x = step factor (1 off), y = span in coarse steps", Vector) = (4, 6, 0, 0)
         _TearFootW ("Tear foot fallback: world xyz, w = white half width (global _Udon_TearFoot wins)", Vector) = (-0.3, -57.4, 1497.6, 76)
 
         [Header(Fog  LanbaiGateSky)]
@@ -97,10 +105,12 @@ Shader "Lanbai/GateVolumeDeck"
         #include "UnityCG.cginc"
         #include "Assets/Lanbai/Gate/Shaders/LanbaiGateSky.cginc"
         #include "Assets/Lanbai/GateClouds/Shaders/LanbaiCloudVolume.cginc"   // [D-44]
+        #include "Assets/Lanbai/Common/Shaders/LanbaiVR.cginc"                  // [R10] LanbaiHash13
         sampler3D _NoiseVolume;
         UNITY_DECLARE_DEPTH_TEXTURE(_CameraDepthTexture);
         float4 _CloudWind, _MoonColor, _AmbColor, _RimDir, _GateOrigin, _FogDensity, _FootPoolColor;
         float _Density, _CloudTopY, _MoonE, _AmbK, _Gain;
+        float _Lift, _PoolK, _HashJitter; float4 _TearLight, _Refine;                                  // [R10]
         struct appdata { float4 vertex:POSITION; UNITY_VERTEX_INPUT_INSTANCE_ID };
         struct v2f { float4 pos:SV_POSITION; float3 wpos:TEXCOORD0; float4 screen:TEXCOORD1; UNITY_VERTEX_OUTPUT_STEREO };
         v2f vert(appdata v) {
@@ -112,6 +122,7 @@ Shader "Lanbai/GateVolumeDeck"
           o.wpos=p;o.pos=UnityWorldToClipPos(p);o.screen=ComputeScreenPos(o.pos);return o;
         }
         float density(float3 p,float top,float3 origin,LanbaiSkirtSet sk) {
+          top+=LanbaiCloudLift(p,_Lift);                                                    // [R10] lifted away from the eye
           float2 nrg;
           float shape=LanbaiCloudShape(_NoiseVolume,p,top,origin,_CloudWind.xy,_Udon_GateTime,float2(520.0,260.0),nrg);
           shape=max(shape,LanbaiGateSkirtSet(p,top,nrg,sk));                                  // [D-44] the root skirts
@@ -128,7 +139,14 @@ Shader "Lanbai/GateVolumeDeck"
           float3 origin=_Udon_GateOrigin.w>0?_Udon_GateOrigin.xyz:_GateOrigin.xyz;
           bool below=eye.y<top-170.0;                                                    // [D-44] the view from under the deck
           if(below?ray.y<=0.0005:ray.y>=-0.0005)discard;
-          float upper=below?top+30.0:min(top+30.0,eye.y-18.0),lower=top-170.0;
+          // [R10] + the lift only for rays that pass within 500 m of the tear's foot (horizontally)
+          float liftR=0.0;
+          if(_Udon_TearFoot.w>0) {
+            float2 fd=_Udon_TearFoot.xz-eye.xz, rh=ray.xz;
+            float tc=max(dot(fd,rh)/max(dot(rh,rh),1e-6),0.0);
+            liftR=length(fd-rh*tc)<500.0?_Lift:0.0;
+          }
+          float upper=below?top+liftR+30.0:min(top+liftR+30.0,eye.y-18.0),lower=top-170.0;
           float start=below?(lower-eye.y)/ray.y:max(0.0,(upper-eye.y)/ray.y);
           float end=min(4200.0,((below?upper:lower)-eye.y)/ray.y);
           float2 uv=UnityStereoTransformScreenSpaceTex(i.screen.xy/i.screen.w);
@@ -138,33 +156,68 @@ Shader "Lanbai/GateVolumeDeck"
           if(end<=start)discard;
           int count=ray.y > -0.35 ? 80 : 56;
           float stepLength=(end-start)/count;
-          float jitter=0.2+0.6*tex3Dlod(_NoiseVolume,float4((eye+ray*start)*0.073,0)).g;
+          // [R10] 阿白's jitter is a smooth noise of the start point: neighbouring pixels jitter alike and the steps show as
+          // horizontal bands (worst on long marches). The gate's: LanbaiHash13 of the world point where the ray meets the
+          // cloud-top plane (in the cloud-sea frame), quantised to ~1.5 pixel footprints: per pixel, the same for both eyes,
+          // locked to the world (as Lanbai/GateCloudDeck)
+          float jitter;
+          if(_HashJitter>0.5) {
+            float tp=max(abs(eye.y-top),1.0)/max(abs(ray.y),1e-4);
+            float3 pw=eye+ray*tp-origin;
+            float cell=max(tp*1.5*2.0/(_ScreenParams.y*unity_CameraProjection._m11),0.05);
+            jitter=LanbaiHash13(floor(pw/cell)+0.5);
+          }
+          else jitter=0.2+0.6*tex3Dlod(_NoiseVolume,float4((eye+ray*start)*0.073,0)).g;
           float3 moon=LanbaiMoonDir(_RimDir.xyz);
           float3 fog=LanbaiGateFogColour(ray,1000.0,moon,_FogDensity.z,0.3);
           LanbaiSkirtSet sk=LanbaiGateSkirtCull(eye,ray,start,end);                          // [D-44]
           float3 sum=0;float transmission=1;
           float facing=pow(saturate(dot(ray,moon)),5.0);
-          [loop] for(int s=0;s<80;s++) {
-            if(s>=count)break;
-            float t=start+(s+jitter)*stepLength;
+          // [R10b] surface refine: at the ray's first sample with cloud, back up one coarse step and walk the surface layer
+          // at L / _Refine.x for _Refine.y coarse steps, then coarse again. The surface (where a ray's light is decided) is
+          // sampled x times finer: the jitter grain and its frame-to-frame flicker drop with it (总导演 10-26 A)
+          float rf=max(floor(_Refine.x),1.0);
+          int nf=rf>1.0?(int)(rf*_Refine.y):0;
+          float t=start+jitter*stepLength, stp=stepLength;
+          int fine=0; bool refined=nf==0;
+          [loop] for(int s=0;s<128;s++) {
+            if(t>=end || s>=80+nf)break;
             float3 p=eye+ray*t;
             if(_Udon_InsidePortal.y>.5 && eye.z>_Udon_InsidePortal.x && p.z>_Udon_InsidePortal.x)break;
             float den=density(p,top,origin,sk);
+            if(!refined && den>0.00008) {
+              refined=true; stp=stepLength/rf; t=max(t-stepLength,start)+jitter*stp; fine=nf;
+              continue;
+            }
             if(den>0.00008) {
               float optical=density(p+moon*18.0,top,origin,sk)*22.0+density(p+moon*50.0,top,origin,sk)*38.0;
               float illumination=0.08+0.92*exp(-optical*1.7);
-              float height=saturate((p.y-(top-120.0))/140.0);
+              float height=saturate((p.y-(top+LanbaiCloudLift(p,_Lift)-120.0))/140.0);
               float3 light=_AmbColor.rgb*(.3+height*.35)+_MoonColor.rgb*_MoonE*illumination*(.65+facing*.35);
               if(_Udon_TearFoot.w>0) {
                 float dist=length((p.xz-_Udon_TearFoot.xz)/float2(180,240));
-                light+=_FootPoolColor.rgb*.09*exp(-dist*dist)*height;
+                light+=_FootPoolColor.rgb*.09*_PoolK*exp(-dist*dist)*height;
+                // [R10] the tear as a line light (foot -> top): soft falloff r0^2 / (d^2 + r0^2), one self-shadow tap
+                // toward it, forward scattering toward the eye: lit edges, dark hearts (U8 forward)
+                float3 tA=_Udon_TearFoot.xyz, tAB=_Udon_TearTop.xyz-_Udon_TearFoot.xyz;
+                float3 q=tA+tAB*saturate(dot(p-tA,tAB)/max(dot(tAB,tAB),1.0));
+                float3 Ld=q-p; float dd=max(length(Ld),1.0); Ld/=dd;
+                float r0=_TearLight.y, E=_TearLight.x*r0*r0/(dd*dd+r0*r0);
+                if(E>0.002) {
+                  float tauT=density(p+Ld*_TearLight.w,top,origin,sk)*_TearLight.w*1.6;
+                  float g=_TearLight.z, cth=dot(ray,Ld);
+                  float ph=(1.0-g*g)/pow(1.0+g*g-2.0*g*cth,1.5)/((1.0-g*g)/((1.0+g)*(1.0+g)*(1.0+g)))*0.5+0.125;
+                  light+=_FootPoolColor.rgb*E*(0.05+0.95*exp(-tauT*1.7))*ph;
+                }
               }
               light=lerp(light*_Gain,fog,1.0-exp(-LanbaiGateDensity(_FogDensity.x)*t));
-              float alpha=1.0-exp(-den*stepLength);
+              float alpha=1.0-exp(-den*stp);
               sum+=transmission*alpha*light;
               transmission*=1.0-alpha;
               if(transmission<0.015)break;
             }
+            t+=stp;
+            if(fine>0) { fine--; if(fine==0)stp=stepLength; }
           }
           return half4(sum,1.0-transmission);
         }
