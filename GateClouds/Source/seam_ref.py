@@ -48,7 +48,7 @@ NEW = dict(RootReach=150.0, RootSpan=60.0, RootClip=2010.0, RootDeep=2000.0, Und
            # wet: optical depth from the three density taps -> wet, max wet
            WetK=1.5, WetMax=0.95, WetTap0=3.0, WetTap1=15.0, WetTap2=40.0)
 OLD = dict(Clip=5.0, Dissolve=18.0, Fade=46.0, TopColor=np.array([0.026, 0.030, 0.038]))
-ARM = dict(Albedo=np.array([0.030, 0.029, 0.036]), MoonE=1.0, Fill=0.06, Rim=0.10, FogExtra=1.5, FogExtraH=25.0,
+ARM = dict(Albedo=np.array([0.030, 0.029, 0.036]), MoonE=1.0, Fill=0.06, Rim=0.03, FogExtra=1.5, FogExtraH=25.0,
            Cap=0.6, CapFrom=(1300.0, 1700.0), CapH=500.0)
 
 
@@ -105,6 +105,36 @@ def tex3d(uvw):
     return out
 
 
+def tear_h(t):
+    """LanbaiGateDriver.TearH: monotone PCHIP through the baked knots"""
+    kt, kh, kd = BAKE['h_t'], BAKE['h_H'], BAKE['h_d']
+    if t <= kt[0]:
+        return kh[0]
+    if t >= kt[-1]:
+        return kh[-1]
+    i = 0
+    while i < len(kt) - 2 and t > kt[i + 1]:
+        i += 1
+    h = kt[i + 1] - kt[i]
+    s = (t - kt[i]) / h
+    s2, s3 = s * s, s * s * s
+    return ((2 * s3 - 3 * s2 + 1) * kh[i] + (s3 - 2 * s2 + s) * h * kd[i] + (-2 * s3 + 3 * s2) * kh[i + 1]
+            + (s3 - s2) * h * kd[i + 1])
+
+
+def tear_segment(t):
+    """_Udon_TearFoot / _Udon_TearTop: Tear_Root = GateRoot + (0, -150, 0), yaw 180, scale H / 1000"""
+    S = tear_h(t) / 1000.0
+    g = D.gate_origin(t) + np.array([0.0, -150.0, 0.0])
+    f = np.array(BAKE['tear_foot_os']) * S
+    tp = np.array(BAKE['tear_top_os']) * S
+    return g + np.array([-f[0], f[1], -f[2]]), g + np.array([-tp[0], tp[1], -tp[2]])
+
+
+# the gate's tear light on the volume deck (R10-1, Lanbai/GateVolumeDeck _TearLight; off = 阿白's deck)
+TEARL = dict(on=False, E=0.0, R0=250.0, G=0.6, Tap=30.0, Pool=1.0, Color=np.array([0.7605, 0.8070, 0.8963]))
+
+
 class Ctx:
     def __init__(self, t, eye, skirts=None):
         self.t = t
@@ -112,6 +142,7 @@ class Ctx:
         self.top = -D.h_bus(t)
         self.origin = D.gate_origin(t)
         self.skirts = skirts or []           # (cx, cz, r) world
+        self.tearA, self.tearB = tear_segment(t)
 
 
 def vol_shape(p, c):
@@ -155,14 +186,35 @@ def fog_colour(V, c, tear):
     return D.band(V, c.eye, tear) + D.moon_air(V) * 0.35
 
 
-def cloud_light(p, c, tear, new, facing):
+def cloud_light(p, c, tear, new, facing, vray=None):
     optical = density(p + MOON * 18.0, c, new) * 22.0 + density(p + MOON * 50.0, c, new) * 38.0
     illum = 0.08 + 0.92 * np.exp(-optical * 1.7)
     height = np.clip((p[..., 1] - (c.top - 120.0)) / 140.0, 0, 1)
     light = VOL['Amb'] * (.3 + height * .35)[..., None] + VOL['MoonColor'] * (VOL['MoonE'] * illum * (.65 + facing * .35))[..., None]
-    foot = c.origin + np.array([0.0, -150.0, 19.0])
+    foot = c.tearA if TEARL['on'] else c.origin + np.array([0.0, -150.0, 19.0])
     dist = np.hypot((p[..., 0] - foot[0]) / 180.0, (p[..., 2] - foot[2]) / 240.0)
-    light = light + VOL['FootPoolColor'] * (.09 * np.exp(-dist * dist) * height)[..., None]
+    pool = TEARL['Pool'] if TEARL['on'] else 1.0
+    light = light + VOL['FootPoolColor'] * (.09 * pool * np.exp(-dist * dist) * height)[..., None]
+    if TEARL['on'] and TEARL['E'] > 0:
+        # the tear as a line light: nearest point on foot -> top, soft falloff r0^2 / (d^2 + r0^2), one self-shadow tap
+        # toward it, forward scattering toward the eye (lit edges, dark hearts)
+        A, B = c.tearA, c.tearB
+        AB = B - A
+        u = np.clip(((p - A) @ AB) / (AB @ AB), 0, 1)
+        q = A + u[..., None] * AB
+        Ld = q - p
+        d = np.maximum(np.linalg.norm(Ld, axis=-1), 1.0)
+        Ld = Ld / d[..., None]
+        E = TEARL['E'] * TEARL['R0'] ** 2 / (d * d + TEARL['R0'] ** 2)
+        tau = density(p + Ld * TEARL['Tap'], c, new) * TEARL['Tap'] * 1.6
+        sh = 0.05 + 0.95 * np.exp(-tau * 1.7)
+        if vray is not None:
+            cth = np.clip((vray * Ld).sum(-1), -1, 1)
+            g = TEARL['G']
+            ph = (1 - g * g) / np.power(1 + g * g - 2 * g * cth, 1.5) / ((1 - g * g) / (1 + g) ** 3) * 0.5 + 0.5 * 0.25
+        else:
+            ph = 0.5
+        light = light + TEARL['Color'] * (E * sh * ph)[..., None]
     return light
 
 
@@ -211,7 +263,7 @@ def march(V, c, scene_d, new, tear, seed=0):
             continue
         km = k[m]
         pm = p[m]
-        light = cloud_light(pm, c, tear, new, facing[km])
+        light = cloud_light(pm, c, tear, new, facing[km], v[km])
         f = (1.0 - np.exp(-VOL['Fog'] * tt[m]))[:, None]
         light = (light * VOL['Gain']) * (1 - f) + fogc[km] * f
         a = 1.0 - np.exp(-den[m] * L[km])
@@ -578,7 +630,7 @@ def shade_arm(P, N, c, tear, new):
     fcol = fog_colour(V, c, tear)
     col = col * (1 - f)[:, None] + fcol * f[:, None]
     if new:                                   # under the deck's flat floor: fade into the floor behind (the shader, v2.8)
-        m = 0.95 * ss(top - 290.0, top - 170.0, P[:, 1]) * (V[:, 1] > 0.02)
+        m = 0.95 * ss(top - 290.0, top - 170.0, P[:, 1]) * ss(top - 120.0, top - 170.0, P[:, 1]) * (V[:, 1] > 0.02)
         if (m > 0.002).any():
             k = np.nonzero(m > 0.002)[0]
             tq = (top - 110.0 - eye[1]) / V[k, 1]
