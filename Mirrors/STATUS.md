@@ -12,3 +12,5 @@
 | 迭代图 | ✅ r7（`Docs~/iterations/r7_sheet.png`）+ M-11 关键帧 1920×1080（`r7_key_*.png`、`Docs~/visibility_21ppd.md`） |
 | flashcheck | ✅ §7 |
 | 没做 / 做不了 | Unity 编译、头显实测、带车厢的合成（D-46：阿白） |
+
+**待办（总导演 10-26，看 r8 时记的）**：第 13 面在远处时的亮环，向下 −45° 在 1131 附近到 luma 92，比圣经的 60–90 高 2。这次接受；下次动 shader 时把 `rimGlow` 压一点（约 × 0.95），压到 90 以内。r8 条带：`Docs~/iterations/r8_sheet.png`（d0fd5e4，只有图，不合）。
