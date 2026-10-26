@@ -453,7 +453,7 @@ public static class LanbaiGateCloudsBuilder
         if (drv.cloudVolumeTex == null) Debug.LogWarning("[GateClouds] the volume deck has no 3D _NoiseVolume: volume mode off");
         drv.cloudVolume = new Vector4(1f, volMat.HasProperty("_Density") ? volMat.GetFloat("_Density") : 0.036f, 520f, 260f);
         Vector4 w = volMat.HasProperty("_CloudWind") ? volMat.GetVector("_CloudWind") : new Vector4(8f, 3f, 0f, 0f);
-        drv.cloudWind = new Vector4(w.x, w.y, 0f, 0f);
+        drv.cloudWind = new Vector4(w.x, w.y, volMat.HasProperty("_Lift") ? volMat.GetFloat("_Lift") : 0f, 0f);   // z: R10 lift
         string path = kit + "/GateClouds_Skirts.json";
         if (!File.Exists(path)) { Debug.LogWarning("[GateClouds] " + path + " missing: no skirts"); return; }
         SkirtFile F = JsonUtility.FromJson<SkirtFile>(File.ReadAllText(path));

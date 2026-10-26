@@ -125,7 +125,20 @@ def main():
                  # the per-renderer block values LB_GateTest writes (the builder snapshots the multitude's variant dims
                  # and occlusion maps from the scene; these two come from here)
                  phase=float(it['phase']) if 'phase' in it else float(it['material'].get('_Phase', 0.0)),
-                 fog_cap=float(it['_FogCapI']) if '_FogCapI' in it else -1.0)
+                 fog_cap=float(it['_FogCapI']) if '_FogCapI' in it else -1.0,
+                 # round 10: the instance's own girth (D-05: Near_1), written into its property block by the driver
+                 girth=[float(it.get('material', {}).get('_Girth', 1.0)), float(it.get('material', {}).get('_GirthFalloff', 1.5)),
+                        float((it.get('material', {}).get('_VariantDims') or [0.0])[0]),
+                        1.0 if float(it.get('material', {}).get('_Girth', 1.0)) != 1.0 else 0.0],
+                 # round 10 (圣经 §I 喉): the fingertip curl -- pivot (object space) + t0, axis + angle, start, duration,
+                 # keep_until (> 0: this arm is NOT retired at U9 until then, so the curl is seen looking back)
+                 curl=0, curl_pivot=[0.0, 0.0, 0.0, 0.0], curl_axis=[0.0, 0.0, 0.0, 0.0], curl_t=[0.0, 0.0, 0.0])
+        cu = it.get('curl')
+        if cu:
+            d['curl'] = 1
+            d['curl_pivot'] = [float(v) for v in cu['pivot_os']] + [float(cu['t0'])]
+            d['curl_axis'] = [float(v) for v in cu['axis_os']] + [float(cu['angle_rad'])]
+            d['curl_t'] = [float(cu['t_start']), float(cu['duration_s']), float(cu.get('keep_until', 0.0))]
         rv = it.get('reveal') or {}
         if it.get('layer') == 'surge':
             d['reveal_kind'] = 2

@@ -1,3 +1,7 @@
+//  v2.9 (gate round 10, 2026-10-26; UNCOMPILED): the fingertip curl (圣经 §I 喉: the arms stop at the first lip, their
+//    tips curl back). Instanced _Curl (0..1, the gate driver), _CurlPivot (object-space centreline point at t0, w = t0) and
+//    _CurlAxis (object-space axis, w = the angle at the tip in rad; both baked per arm, Gate/GateDriver_Bake.json curl):
+//    past t0 every vertex turns about the pivot by _Curl x angle x (t - t0) / (1 - t0). Off (0) everywhere else.
 //  v2.8 (gate clouds kit, D-44 #3 the root seam, 2026-10-25; UNCOMPILED): the arms in 阿白's VOLUME cloud. Under the
 //    volume deck (Lanbai/GateVolumeDeck; the gate clouds driver sets _Udon_CloudVolume.x = 1) the visible cloud surface
 //    is 50-90 m under the nominal top (its threshold is 0.75 there), so v2.7's clip at top - 5 and the ragged fade to
@@ -223,6 +227,9 @@ Shader "Lanbai/TentacleSway"
         [Toggle] _RimBackOnly ("Moon rims only when the moon is in front of the view (rear window: 0)", Float) = 1
         [Toggle] _UseUVRadius ("Use UV2.x = baked radius / root radius (GateArms_v3.fbx: 1; library meshes: 0)", Float) = 0
         _Reveal ("Reveal 0..1 (instanced; 0 = all haze, renderer off)", Range(0, 1)) = 1
+        _Curl ("v2.9 fingertip curl 0..1 (instanced; the gate driver, U9)", Range(0, 1)) = 0
+        _CurlPivot ("v2.9 curl pivot: object-space centreline point, w = t where the curl starts (instanced)", Vector) = (0, 0, 0, 0.75)
+        _CurlAxis ("v2.9 curl axis (object space), w = the angle at the tip, rad (instanced)", Vector) = (1, 0, 0, 5)
         _MoonGlowFog ("Moon air in the fog colour", Range(0, 2)) = 0.35
         _MoonGlowColor ("Moon aureole #8FA3C8, linear", Vector) = (0.275, 0.366, 0.578, 1)
         _MoonGlowShape ("Aureole: a1, k1, a2, k2 (a1 e^-k1 deg + a2 e^-k2 deg)", Vector) = (1.6, 0.9, 0.06, 0.32)
@@ -389,6 +396,9 @@ Shader "Lanbai/TentacleSway"
             UNITY_DEFINE_INSTANCED_PROP(float, _Reveal)
             UNITY_DEFINE_INSTANCED_PROP(float, _FogCapI)
             UNITY_DEFINE_INSTANCED_PROP(float, _RevealGroup)
+            UNITY_DEFINE_INSTANCED_PROP(float, _Curl)
+            UNITY_DEFINE_INSTANCED_PROP(float4, _CurlPivot)
+            UNITY_DEFINE_INSTANCED_PROP(float4, _CurlAxis)
         UNITY_INSTANCING_BUFFER_END(LanbaiGate)
 
         float4 _ThinK; half _ThinSmooth; float4 _ThinAlbedo;
@@ -570,6 +580,29 @@ Shader "Lanbai/TentacleSway"
             float infl = max(0.0, 0.5 * _MinWidthPx * pxW - rW);
             v.vertex.xyz += v.normal * (infl / objScale);
         #endif
+
+            // v2.9 (门第 10 轮, 圣经 §I 喉): the fingertip CURL. Past t0 (_CurlPivot.w) every vertex turns about the
+            // centreline point at t0 by an angle that grows from 0 there to _Curl x _CurlAxis.w at the tip: the tail rolls
+            // up (a straight tail becomes a spiral). Object space, before the sway, in every pass (shadows and depth follow).
+            float curl = UNITY_ACCESS_INSTANCED_PROP(LanbaiGate, _Curl);
+            if (curl > 0.0)
+            {
+                float4 cp = UNITY_ACCESS_INSTANCED_PROP(LanbaiGate, _CurlPivot);
+                float4 ca = UNITY_ACCESS_INSTANCED_PROP(LanbaiGate, _CurlAxis);
+                float cs = saturate((t - cp.w) / max(1.0 - cp.w, 1e-3));
+                float ang = curl * ca.w * cs;
+                if (ang != 0.0)
+                {
+                    float3 k = normalize(ca.xyz);
+                    float sa, co;
+                    sincos(ang, sa, co);
+                    // Rodrigues: r' = r cos + (k x r) sin + k (k . r)(1 - cos)
+                    float3 r = v.vertex.xyz - cp.xyz;
+                    v.vertex.xyz = cp.xyz + r * co + cross(k, r) * sa + k * dot(k, r) * (1.0 - co);
+                    v.normal = v.normal * co + cross(k, v.normal) * sa + k * dot(k, v.normal) * (1.0 - co);
+                    v.tangent.xyz = v.tangent.xyz * co + cross(k, v.tangent.xyz) * sa + k * dot(k, v.tangent.xyz) * (1.0 - co);
+                }
+            }
 
             float w = pow(t, _SwayStiffness);
             float tt = _Time.y * _SwayFrequency;
@@ -808,7 +841,7 @@ Shader "Lanbai/TentacleSway"
             bool volCloud = LanbaiCloudVolumeOn();
             float wet = 0.0;
             float3 wetCol = 0.0;
-            if (volCloud && IN.worldPos.y < CloudTop() + 40.0)
+            if (volCloud && IN.worldPos.y < CloudTop() + _Udon_CloudVolumeWind.z + 40.0)   // R10: + the deck's lift
             {
                 float top = CloudTop();
                 float3 org = _Udon_GateOrigin.xyz;
@@ -844,7 +877,8 @@ Shader "Lanbai/TentacleSway"
             if (volCloud)
             {
                 // v2.8: under the deck's floor (top - 160 .. - 220) the arm is in the cloud's shadow
-                color.rgb *= lerp(1.0, _UnderDark, smoothstep(CloudTop() - 160.0, CloudTop() - 220.0, IN.worldPos.y));
+                float topL = CloudTop() + LanbaiCloudLift(IN.worldPos, _Udon_CloudVolumeWind.z);   // R10: the lifted deck's floor
+                color.rgb *= lerp(1.0, _UnderDark, smoothstep(topL - 160.0, topL - 220.0, IN.worldPos.y));
                 color.rgb = lerp(color.rgb, (half3)wetCol, (half)wet);           // v2.8: no dark cloud-top band
             }
             else
@@ -855,7 +889,7 @@ Shader "Lanbai/TentacleSway"
             // distance (from under the cloud it was a dark block cut by the floor's level edge; never seen from above)
             if (volCloud && V.y > 0.02)
             {
-                float top = CloudTop();
+                float top = CloudTop() + LanbaiCloudLift(IN.worldPos, _Udon_CloudVolumeWind.z);   // R10: the lifted deck
                 // only UNDER the floor: rises toward it from top - 290, and is gone again by top - 120 (inside the dense
                 // cloud). (9af9a8a had only the first smoothstep: it stayed 1 ABOVE the floor, so every arm seen looking
                 // up took the floor's colour; caught in the R10 reference at U8fwd, 10-26)
@@ -866,7 +900,7 @@ Shader "Lanbai/TentacleSway"
                     float tq = (top - 110.0 - _WorldSpaceCameraPos.y) / V.y;
                     float3 q = _WorldSpaceCameraPos + V * tq;
                     float3 md = LanbaiMoonDir(_RimDir.xyz);
-                    float3 lc = LanbaiCloudLitAt(q, top, _Udon_GateOrigin.xyz, _Udon_GateTime, md, pow(saturate(dot(V, md)), 5.0),
+                    float3 lc = LanbaiCloudLitAt(q, CloudTop(), _Udon_GateOrigin.xyz, _Udon_GateTime, md, pow(saturate(dot(V, md)), 5.0),
                                                  _CloudAmbColor.rgb, _CloudMoonColor.rgb, _CloudLit.x) * _CloudLit.y;
                     lc = lerp(lc, LanbaiFogColour(V, tq, ovr), 1.0 - exp(-dens * tq));
                     color.rgb = lerp(color.rgb, (half3)lc, (half)m);

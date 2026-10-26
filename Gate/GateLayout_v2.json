@@ -2275,7 +2275,25 @@
      "how": "after rise / lean: localRotation = Slerp between the keys (smoothstep between consecutive keys); keeps the fingertip (a whip on the far lip / a coil on its own hem) on its point of the cloth as the tear opens and the bus approaches, within 0.5-0.6 deg/s"
     }
    ],
-   "frame": "GateRoot"
+   "frame": "GateRoot",
+   "curl": {
+    "t0": 0.7,
+    "pivot_os": [
+     -133.378,
+     288.134,
+     -278.325
+    ],
+    "axis_os": [
+     -0.6739,
+     -0.5595,
+     0.4826
+    ],
+    "angle_rad": 5.0,
+    "t_start": 181.05,
+    "duration_s": 1.75,
+    "keep_until": 0.0,
+    "note": "圣经 §I 喉: the fingertip curls back at the first lip (GateClouds/Source/seam_ref.py curl; TentacleSway v2.9)"
+   }
   },
   {
    "id": "Hand_L1",
@@ -2706,7 +2724,25 @@
      "how": "after rise / lean: localRotation = Slerp between the keys (smoothstep between consecutive keys); keeps the fingertip (a whip on the far lip / a coil on its own hem) on its point of the cloth as the tear opens and the bus approaches, within 0.5-0.6 deg/s"
     }
    ],
-   "frame": "GateRoot"
+   "frame": "GateRoot",
+   "curl": {
+    "t0": 0.7,
+    "pivot_os": [
+     -211.712,
+     329.045,
+     -333.102
+    ],
+    "axis_os": [
+     -0.7307,
+     0.2924,
+     0.6169
+    ],
+    "angle_rad": 5.0,
+    "t_start": 181.95,
+    "duration_s": 1.75,
+    "keep_until": 0.0,
+    "note": "圣经 §I 喉: the fingertip curls back at the first lip (GateClouds/Source/seam_ref.py curl; TentacleSway v2.9)"
+   }
   },
   {
    "id": "Hand_L2",
@@ -3137,7 +3173,25 @@
      "how": "after rise / lean: localRotation = Slerp between the keys (smoothstep between consecutive keys); keeps the fingertip (a whip on the far lip / a coil on its own hem) on its point of the cloth as the tear opens and the bus approaches, within 0.5-0.6 deg/s"
     }
    ],
-   "frame": "GateRoot"
+   "frame": "GateRoot",
+   "curl": {
+    "t0": 0.7,
+    "pivot_os": [
+     -179.015,
+     250.71,
+     -268.074
+    ],
+    "axis_os": [
+     -0.7928,
+     -0.2193,
+     0.5686
+    ],
+    "angle_rad": 5.0,
+    "t_start": 180.15,
+    "duration_s": 1.75,
+    "keep_until": 0.0,
+    "note": "圣经 §I 喉: the fingertip curls back at the first lip (GateClouds/Source/seam_ref.py curl; TentacleSway v2.9)"
+   }
   },
   {
    "id": "Hand_R0",
@@ -3568,7 +3622,25 @@
      "how": "after rise / lean: localRotation = Slerp between the keys (smoothstep between consecutive keys); keeps the fingertip (a whip on the far lip / a coil on its own hem) on its point of the cloth as the tear opens and the bus approaches, within 0.5-0.6 deg/s"
     }
    ],
-   "frame": "GateRoot"
+   "frame": "GateRoot",
+   "curl": {
+    "t0": 0.7,
+    "pivot_os": [
+     238.748,
+     388.003,
+     -224.876
+    ],
+    "axis_os": [
+     -0.2552,
+     0.8275,
+     -0.5002
+    ],
+    "angle_rad": 5.0,
+    "t_start": 182.4,
+    "duration_s": 1.75,
+    "keep_until": 0.0,
+    "note": "圣经 §I 喉: the fingertip curls back at the first lip (GateClouds/Source/seam_ref.py curl; TentacleSway v2.9)"
+   }
   },
   {
    "id": "Hand_R1",
@@ -3999,7 +4071,25 @@
      "how": "after rise / lean: localRotation = Slerp between the keys (smoothstep between consecutive keys); keeps the fingertip (a whip on the far lip / a coil on its own hem) on its point of the cloth as the tear opens and the bus approaches, within 0.5-0.6 deg/s"
     }
    ],
-   "frame": "GateRoot"
+   "frame": "GateRoot",
+   "curl": {
+    "t0": 0.7,
+    "pivot_os": [
+     241.431,
+     363.526,
+     -312.443
+    ],
+    "axis_os": [
+     -0.6702,
+     -0.3741,
+     -0.641
+    ],
+    "angle_rad": 5.0,
+    "t_start": 180.6,
+    "duration_s": 1.75,
+    "keep_until": 0.0,
+    "note": "圣经 §I 喉: the fingertip curls back at the first lip (GateClouds/Source/seam_ref.py curl; TentacleSway v2.9)"
+   }
   },
   {
    "id": "Hand_R2",
@@ -4430,7 +4520,25 @@
      "how": "after rise / lean: localRotation = Slerp between the keys (smoothstep between consecutive keys); keeps the fingertip (a whip on the far lip / a coil on its own hem) on its point of the cloth as the tear opens and the bus approaches, within 0.5-0.6 deg/s"
     }
    ],
-   "frame": "GateRoot"
+   "frame": "GateRoot",
+   "curl": {
+    "t0": 0.7,
+    "pivot_os": [
+     201.865,
+     390.829,
+     -251.065
+    ],
+    "axis_os": [
+     0.5843,
+     0.6888,
+     0.429
+    ],
+    "angle_rad": 5.0,
+    "t_start": 181.5,
+    "duration_s": 1.75,
+    "keep_until": 0.0,
+    "note": "圣经 §I 喉: the fingertip curls back at the first lip (GateClouds/Source/seam_ref.py curl; TentacleSway v2.9)"
+   }
   },
   {
    "id": "Colossus_bg_00",
@@ -5598,7 +5706,7 @@
    "texture_variant": "C1",
    "mesh": "GateArms_v4.fbx: Colossus_1 (LODGroup: Colossus_1_LOD0 / _LOD1 / _LOD2)",
    "position": [
-    1345.36,
+    338.52,
     -209.8,
     1490.69
    ],
@@ -5635,7 +5743,7 @@
    "length_m": 647.3,
    "max_diameter_to_length": "1:13.4",
    "top_above_cloud_m": 276.0,
-   "note": "rises behind the Rilke line",
+   "note": "rises behind the Rilke line round 10 (D-13 / D-28): moved to +5.5 deg from the main seat at t 145.3 (behind poem block A), x 1345.36 -> 338.52",
    "material_kind": "colossus",
    "material": {
     "_CloudTopColor": [
@@ -5788,7 +5896,7 @@
      "t1": 165.8,
      "depth_m": 281.0,
      "position_start": [
-      1345.36,
+      338.52,
       -490.79,
       1490.69
      ],
@@ -14628,8 +14736,8 @@
    "texture_variant": "C",
    "mesh": "GateArms_v4.fbx: Near_1 (LODGroup: Near_1_LOD0 / _LOD1 / _LOD2)",
    "position": [
-    38.0,
-    -35.0,
+    34.0,
+    -5.0,
     -25.0
    ],
    "rotation_xyzw": [
@@ -14665,7 +14773,7 @@
    "length_m": 150.0,
    "max_diameter_to_length": "1:16.6",
    "top_above_cloud_m": 98.4,
-   "note": "",
+   "note": "round 10 (D-05): raised 30 m and 4 m in toward the bus, _Girth 2.0 / _GirthFalloff 0.5 with its own root radius (_VariantDims.x 1.27 m object space): 276-293 px wide at eye height in U8side 1080p (was 51-83), nearest 10.5 m over 156-179.55 (GateClouds/Source/near_width.py)",
    "material_kind": "near",
    "material": {
     "_CloudTopColor": [
@@ -14685,7 +14793,7 @@
      1700
     ],
     "_UseUVRadius": 1,
-    "_Girth": 1.0,
+    "_Girth": 2.0,
     "_ReflFarRange": [
      250,
      800
@@ -14795,7 +14903,14 @@
     "_SwayFrequency": 0.06,
     "_SwaySecondary": 0.6,
     "_SwayStiffness": 2.0,
-    "_SwayWavelength": 0.9
+    "_SwayWavelength": 0.9,
+    "_GirthFalloff": 0.5,
+    "_VariantDims": [
+     1.27,
+     45.5,
+     0.0,
+     0.0
+    ]
    },
    "clearance_m": 11.5,
    "clearance_t": 168.35,
@@ -14812,8 +14927,8 @@
      "t1": 164.65,
      "depth_m": 200.0,
      "position_start": [
-      38.0,
-      -235.0,
+      34.0,
+      -205.0,
       -25.0
      ],
      "profile": "ss",
@@ -27951,7 +28066,7 @@
     "hides": "Colossus_1",
     "card": "Cloud_Bank_moon",
     "position": [
-     1287.0,
+     280.2,
      -175.0,
      1363.4
     ],
@@ -27988,7 +28103,8 @@
       173.8,
       0.0
      ]
-    ]
+    ],
+    "note": "round 10: moved with Colossus_1 (dx -1006.8)"
    },
    {
     "id": "Tower_Colossus_2",

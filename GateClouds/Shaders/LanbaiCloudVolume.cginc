@@ -16,7 +16,8 @@
 //  so the generated LanbaiGlobals.cginc can take them over without a double declaration):
 //    _Udon_CloudVolume      x = 1 set (the volume cloud is the gate's deck), y = extinction / m (0.036),
 //                           z = horizontal period m (520), w = vertical period m (260)
-//    _Udon_CloudVolumeWind  xy = wind m/s (8, 3) (with _Udon_GateTime, as the deck)
+//    _Udon_CloudVolumeWind  xy = wind m/s (8, 3) (with _Udon_GateTime, as the deck), z = the deck's _Lift (m, R10;
+//                           applied by LanbaiCloudLift: all of it within 250 m of the tear's foot, none beyond 500 m)
 //    _Udon_CloudVolumeTex   the 128^3 density volume (R, G), the deck material's _NoiseVolume
 //    _Udon_GateSkirt0..7    x, z = where the arm's axis crosses the cloud (world), y = strength 0..1 (the arm's reveal),
 //                           w = its radius there (m; 0 = off)
@@ -170,12 +171,21 @@ float LanbaiGateSkirtAll(float3 p, float top, float2 nrg)
     return m;
 }
 
+// R10: around the tear's foot the gate lifts the deck so its visible surface (~70 m under its top) meets the foot (the
+// gate's cloud top): all of it within 250 m of the foot, none beyond 500 m (the rest of the deck is 阿白's, untouched)
+float LanbaiCloudLift(float3 p, float lift)
+{
+    if (_Udon_TearFoot.w <= 0.0) return 0.0;
+    return lift * (1.0 - smoothstep(250.0, 500.0, length(p.xz - _Udon_TearFoot.xz)));
+}
+
 // ---- for the arms ---------------------------------------------------------------------------------------------------
 bool LanbaiCloudVolumeOn() { return _Udon_CloudVolume.x > 0.5; }
 
 // extinction (1/m) at p: the deck's density (+ skirts) x the comfort cut under the eye, from the globals
 float LanbaiCloudDensityAt(float3 p, float top, float3 origin, float time)
 {
+    top += LanbaiCloudLift(p, _Udon_CloudVolumeWind.z);   // R10: the deck's lift (top = the gate's cloud top, unlifted)
     float2 nrg;
     float s = LanbaiCloudShape(_Udon_CloudVolumeTex, p, top, origin, _Udon_CloudVolumeWind.xy, time, _Udon_CloudVolume.zw, nrg);
     s = max(s, LanbaiGateSkirtAll(p, top, nrg));
@@ -189,10 +199,11 @@ float LanbaiCloudDensityAt(float3 p, float top, float3 origin, float time)
 float3 LanbaiCloudLitAt(float3 p, float top, float3 origin, float time, float3 moon, float facing,
                         float3 ambCol, float3 moonCol, float moonE)
 {
+    // (top unlifted, as LanbaiCloudDensityAt; the height term uses the lifted one)
     float optical = LanbaiCloudDensityAt(p + moon * 18.0, top, origin, time) * 22.0
                   + LanbaiCloudDensityAt(p + moon * 50.0, top, origin, time) * 38.0;
     float illumination = 0.08 + 0.92 * exp(-optical * 1.7);
-    float height = saturate((p.y - (top - 120.0)) / 140.0);
+    float height = saturate((p.y - (top + LanbaiCloudLift(p, _Udon_CloudVolumeWind.z) - 120.0)) / 140.0);
     float3 light = ambCol * (0.3 + height * 0.35) + moonCol * moonE * illumination * (0.65 + facing * 0.35);
     if (_Udon_TearFoot.w > 0.0)                     // the deck's foot pool (#E2E8F3 x 0.09, 180 x 240 m)
     {
