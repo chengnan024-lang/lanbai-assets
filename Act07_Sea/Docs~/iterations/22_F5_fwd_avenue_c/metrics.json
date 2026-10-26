@@ -25,15 +25,15 @@
     440
    ],
    "centroid": [
-    690.1,
-    185.7
+    686.0,
+    186.4
    ],
    "clusters": 16,
    "clusters_ge5pct": 5,
    "min_luma": 58.6,
    "centroid_az_el": [
-    19.85,
-    6.84
+    19.46,
+    6.79
    ]
   },
   "top25_Lstar": {
@@ -48,19 +48,19 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 62.4,
+     "nearest_dE2000_p01": 62.7,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 56.4,
+     "nearest_dE2000_p01": 56.5,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 51.4,
+     "nearest_dE2000_p01": 51.6,
      "within_dE5_pct": 0.0
     },
     {
@@ -84,7 +84,7 @@
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 53.8,
+     "nearest_dE2000_p01": 54.1,
      "within_dE5_pct": 0.0
     }
    ],
@@ -193,8 +193,8 @@
    540
   ]
  },
- "render_seconds": 7.6,
+ "render_seconds": 7.9,
  "lens": "none",
  "bloom_tint": "single",
- "note": "F5+3 648.0 forward from the main seat: the warm point (Lamp_L01, x -28.75 after the round-10 avenue shift) at az -29, el -13.5, no longer behind Que_L"
+ "note": "F5+3 648.0 forward from the main seat: the warm point (Lamp_L01, x -30 after the round-10 avenue shift of 3 m) at az -30.3, el -13.4, no longer behind Que_L (real que profile)"
 }

@@ -29340,11 +29340,11 @@
  "warm_point": {
   "id": "Lamp_L01",
   "position_water": [
-   -28.75,
+   -30.0,
    -248.715,
    54.39
   ],
-  "distance_at_F5_m": 61.69,
+  "distance_at_F5_m": 62.29,
   "t_on": 644.96,
   "fade_in_s": 3.0,
   "colour": [
@@ -30201,7 +30201,7 @@
   ],
   "ridge_yaw": -55.0,
   "warm_position": [
-   -28.75,
+   -30.0,
    -248.715,
    54.39
   ],

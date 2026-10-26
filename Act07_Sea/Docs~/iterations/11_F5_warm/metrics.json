@@ -25,15 +25,15 @@
     342
    ],
    "centroid": [
-    421.2,
-    154.0
+    422.8,
+    153.7
    ],
-   "clusters": 35,
-   "clusters_ge5pct": 5,
+   "clusters": 37,
+   "clusters_ge5pct": 6,
    "min_luma": 20.7,
    "centroid_az_el": [
-    -27.52,
-    2.6
+    -27.36,
+    2.63
    ]
   },
   "top25_Lstar": {
@@ -193,7 +193,7 @@
    540
   ]
  },
- "render_seconds": 14.3,
+ "render_seconds": 10.1,
  "lens": "none",
  "bloom_tint": "single",
  "note": "F5 644.96: far below, one warm point among the cold seeds (APL target 16)"

@@ -11,17 +11,16 @@ The driver places R_Palace so that this frame moves past the fixed bus: R_Palace
 world origin). busPos(t) = (0, BUS_Y_STOP + (depth(F7) - depth(t)), fwd(t)), see act07_motion.py.
 
 Composition the layout is solved for (bible §6·7b 构图):
-  * avenue (神道) axis at x = -19.75: right lamp column x = -10.75, left column x = -28.75 (round 10, 10-26: the whole
-    avenue moved 1.75 m left so it runs between the two que again, Que_R -12 / Que_L -27.5; it was -18 / -9 / -27);
+  * avenue (神道) axis at x = -21: right lamp column x = -12, left column x = -30 (round 10, 10-26: the whole avenue
+    moved 3 m left so it runs between the two que again, Que_R -12 / Que_L -30; it was -18 / -9 / -27);
   * the 12 lamp pairs are abreast of the bus at 672.0, 677.1, ... 728.6 (5.1 s apart) -> z_k = fwd(t_k);
-  * the hall's open door is ON the avenue axis (x = -19.75) and the bus stops 35.3 m short of it at F7, so the door is at
-    azimuth -6.7 deg (706), -16.7 deg (F6), -29.2 deg (F7) from the bus heading (was -6 / -15 / -27 with the axis at -18;
-    STOP_GAP kept, so the hall stays at the same z);
-  * the hall (60 m, 9 bays) runs from 1.75 m inside the terrace edge leftwards (moved with the avenue): the open door is bay 8 of 9 (counted from the left),
+  * the hall's open door is ON the avenue axis (x = -21) and the bus stops 35.3 m short of it at F7; the door azimuths
+    are in door_azimuth_check (they were -6 / -15 / -27 with the axis at -18; STOP_GAP kept, so the hall stays at the same z);
+  * the hall (60 m, 9 bays) runs from 3 m inside the terrace edge leftwards (moved with the avenue): the open door is bay 8 of 9 (counted from the left),
     so from the stopped bus the hall fills the windshield LEFT of the door and the right of the frame is the dark open
     abyss (bible: '右边是暗的空旷').  [decision: a Han hall's door is normally central; this asymmetry is the price of
     '门在神道轴线上、车左约 18 m' + '右边是暗的空旷' + a 60 m hall that does not hang over the cliff.]
-  * the right que (紫贝阙, 40 m, x -12, unchanged) is passed at 9 m at 668.6; the left que at x -27.5.
+  * the right que (紫贝阙, 40 m, x -12, unchanged) is passed at 9 m at 668.6; the left que at x -30.
 """
 import json
 import math
@@ -37,12 +36,15 @@ import act07_motion as M  # noqa: E402
 EDGE_X = -8.0              # terrace edge face (vertical lip), seaweed-hung
 LIP_BOTTOM_Y = -13.0       # lower edge of the lip: the bus eye passes it at ~F7p (bible: 'about 17 m below the stop')
 BUS_Y_STOP = 2.5           # bus origin above the terrace top while gliding / stopped (lamp flames are BELOW the floor)
-# palace round 10 (总导演 10-26, option c): the whole avenue 1.75 m left so it runs exactly between the two que again
-# after the left que moved out (room for the waist eaves: 4-5 m between them); the right que stays put
-AVENUE_SHIFT = -1.75
-AXIS_X = -18.0 + AVENUE_SHIFT                       # -19.75
-COL_R, COL_L = -9.0 + AVENUE_SHIFT, -27.0 + AVENUE_SHIFT   # -10.75, -28.75
-QUE_R_X, QUE_L_X = -12.0, -27.5                     # centres; the avenue axis is their midpoint
+# palace round 10 (总导演 10-26, option c): the whole avenue moved left so it runs exactly between the two que again
+# after the left que moved out (room for the eaves); the right que stays put. -1.75 (2fb1ff1) was solved with a 6 x 10 m
+# box; with the palace's real que profile (que.py round 10: body half-width 3.80-3.95 x / 5.80-5.95 z, waist eave 5.77,
+# upper eave 5.91 at y 34-36.5) the left que at -27.5 still hid Lamp_L01 (F5's warm point) 645.0-658.5 from the main
+# seat; -3.0 is the least shift that clears it (Que_L -30: none hidden; eaves 6.5 / 6.2 m apart without shrinking them)
+AVENUE_SHIFT = -3.0
+AXIS_X = -18.0 + AVENUE_SHIFT                       # -21.0
+COL_R, COL_L = -9.0 + AVENUE_SHIFT, -27.0 + AVENUE_SHIFT   # -12.0, -30.0
+QUE_R_X, QUE_L_X = -12.0, -24.0 + 2.0 * AVENUE_SHIFT       # -12, -30: centres; the avenue axis is their midpoint
 PAIR_T = [672.0, 677.1, 682.3, 687.4, 692.6, 697.7, 702.8, 708.0, 713.1, 718.3, 723.4, 728.6]
 STOP_GAP = 35.3            # bus origin -> door plane at F7 (18 / tan 27 deg)
 HALL_W, HALL_BAYS, HALL_H, HALL_D = 60.0, 9, 30.0, 28.0
