@@ -1,0 +1,65 @@
+{
+  "checked_at": "2026-10-26T10:30:22.833792+00:00",
+  "attempts": [
+    {
+      "asset": "Rusty Metal 02",
+      "provider": "Poly Haven",
+      "source": "https://polyhaven.com/a/rusty_metal_02",
+      "status": "DOWNLOADED_AND_VERIFIED",
+      "bytes": 23101665,
+      "source_manifest": "../polyhaven_rusty_metal_02/source.json"
+    },
+    {
+      "asset": "LeafSet016",
+      "provider": "ambientCG",
+      "source": "https://ambientcg.com/view?id=LeafSet016",
+      "download": "https://ambientcg.com/get?file=LeafSet016_2K-PNG.zip",
+      "status": "HTTP_403",
+      "downloaded_bytes": 0,
+      "sha256": null
+    },
+    {
+      "asset": "Asphalt025C",
+      "provider": "ambientCG",
+      "source": "https://ambientcg.com/view?id=Asphalt025C",
+      "download": "https://ambientcg.com/get?file=Asphalt025C_2K-PNG.zip",
+      "status": "HTTP_403",
+      "downloaded_bytes": 0,
+      "sha256": null
+    },
+    {
+      "asset": "Green Leaf 03",
+      "provider": "cgbookcase",
+      "source": "https://www.cgbookcase.com/textures/green-leaf-03",
+      "download": "https://cgbookcase-volume.b-cdn.net/t/GreenLeaf03_MR_2K.zip",
+      "status": "HTTP_403",
+      "downloaded_bytes": 0,
+      "sha256": null
+    },
+    {
+      "asset": "Single Lane Road Wet 01",
+      "provider": "cgbookcase",
+      "source": "https://www.cgbookcase.com/textures/single-lane-road-wet-01",
+      "download": "https://cgbookcase-volume.b-cdn.net/t/SingleLaneRoadWet01_MR_2K.zip",
+      "status": "HTTP_403",
+      "downloaded_bytes": 0,
+      "sha256": null
+    },
+    {
+      "asset": "Mimosa Leaf Atlas",
+      "provider": "3DTexel",
+      "source": "https://3dtexel.com/product/mimosa-leaf-atlas/",
+      "status": "REQUIRES_LOGIN_NOT_DOWNLOADED",
+      "downloaded_bytes": 0,
+      "sha256": null
+    },
+    {
+      "asset": "Tree Bark 03",
+      "provider": "Poly Haven",
+      "source": "https://polyhaven.com/a/tree_bark_03",
+      "status": "NOT_DOWNLOADED_NOT_VERIFIED_WET_BARK",
+      "downloaded_bytes": 0,
+      "sha256": null
+    }
+  ]
+}
