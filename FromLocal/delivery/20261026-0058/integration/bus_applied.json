@@ -1,0 +1,517 @@
+{
+  "time": "2026-10-26T01:16:25.749209-04:00",
+  "source": "a5a75cb29f0e27bc864e5b0e332950331f406de1",
+  "files": [
+    {
+      "path": "Bus/Editor/LanbaiBusBuild.cs",
+      "bytes": 41453,
+      "source_sha256": "25a5170fd87a52866c0641903ea2645dc91a6879c3a36d82f67b52c3f487de86",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Editor/LanbaiBusCabinDropIn.cs",
+      "bytes": 86129,
+      "source_sha256": "0deb76d5450e05410acff796cae566bfdf321c4a6233888aa827b3f13f96f9b7",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Editor/LanbaiBusSliceBuilder.cs",
+      "bytes": 39006,
+      "source_sha256": "141f9258cd7afea560f4a1200730190b6b11f2568867929bb3f879aba3bc05cb",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Editor/README_Build.md",
+      "bytes": 5679,
+      "source_sha256": "3420fae70db185c30ba65a55a8a5d4e073172ce4114fd576994ceb308bb8c232",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Models/Bus.fbx",
+      "bytes": 18366956,
+      "source_sha256": "9a555dbcab3a04cd6f17878eb16024fa63233488becd01042ddfd047160da4a7",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Models/BusLayout.json",
+      "bytes": 21127,
+      "source_sha256": "e9c49a5d28cf973145002290b666a6f05a2c7ab55717330424fe7ef3e94038de",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Models/Bus_HarnessShell_paz672.fbx",
+      "bytes": 12016140,
+      "source_sha256": "f00248bd4ff9a8638a91ad037bb96d984a1c27b782ab1762430fdc50dae23779",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Models/Bus_fbx_readback.json",
+      "bytes": 15935,
+      "source_sha256": "aaaceb00405c52f98bfd051a23919a14ec5c333350fb1f8746aa85557427b73c",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Scripts/LanbaiBusSeat.cs",
+      "bytes": 1219,
+      "source_sha256": "0fd335b7f0d9273725317c7c4dbbd7fe0e4a60ba43b5e02eb25c240836735700",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Scripts/LanbaiBusSliceGlobals.cs",
+      "bytes": 3359,
+      "source_sha256": "4842a750e7841be4c8be00f7b108f993c405ac35628d8b20a9be269d8120d133",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Textures/Bus_DestBlind_1024x296.png",
+      "bytes": 82527,
+      "source_sha256": "e0be72a8a7db414985321104388dd27160a2e1bc7220b513b84ba2c515a25b36",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Textures/Bus_DestBlind_Blank_1024x296.png",
+      "bytes": 77328,
+      "source_sha256": "650ee4cc06f2b393397786b14c9480d17ceee8bdbe8112753ec8ef89b86a87fd",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Textures/Bus_Exterior_Albedo_2048.png",
+      "bytes": 1339319,
+      "source_sha256": "5e1d77f8bb48425cd5b32a45b23644bfa6f0cfd1262485f33468b8ce4565e1e6",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Textures/Bus_Exterior_Mask_2048.png",
+      "bytes": 1391011,
+      "source_sha256": "a669f91ae78592e106cbebf60c056542f84c1bf38a0823b5e57c765cf486a9dd",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Textures/Cabin_CeilingPerf_M_0.12m.png",
+      "bytes": 311860,
+      "source_sha256": "bb58e4f2a3bdac610fb8375c7df42bd0b7d84297192cde79cfa7d129cdc770c9",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Textures/Cabin_CeilingPerf_N_0.12m.png",
+      "bytes": 249720,
+      "source_sha256": "7ab2ac598cc2bfd044a4eec68b0f0720fc0eeb29502701db1f7b4aed87c273ed",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Textures/Cabin_CurtainWeave_N_0.05m.png",
+      "bytes": 356819,
+      "source_sha256": "72472d25ead9b517c184eb21ca7417a1c23274af2e1c330923c9c489f49f84ae",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Textures/Cabin_FloorStud_M_0.20m.png",
+      "bytes": 618245,
+      "source_sha256": "01890f1b612dbac0224e6df2d3769ffb1df52d97214e3946750b430b18504931",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Textures/Cabin_FloorStud_N_0.20m.png",
+      "bytes": 331947,
+      "source_sha256": "c8e158c26593e40f7db8fca5784857ff961f820901119d36a6c9bebab79214a9",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Textures/Cabin_RadioDial_512x256.png",
+      "bytes": 1492,
+      "source_sha256": "85d41388f92c3782bc28bddc2982f0e0eca25517b9e93ede49c099abc84053fa",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Textures/Cabin_RadioLeather_N_0.40m.jpg",
+      "bytes": 3030702,
+      "source_sha256": "3386277290af50b4d464dc9a9f195bbf8dd6f137b9ae0274552397d2f0135c98",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Textures/Cabin_SeatLeather_N_0.30m.jpg",
+      "bytes": 2211401,
+      "source_sha256": "abc7a2f6ac4803342a37ac881ad9c556dbc08b7a44c9bf9891d52c1b96266fa9",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Textures/Cabin_TubeLM.exr",
+      "bytes": 67142064,
+      "source_sha256": "555f6e3842cb461686355d3f86e17e37b4b42775cc47ae9df63243f5f8019cdf",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Textures/Cabin_VinylGrain_N_0.25m.png",
+      "bytes": 2239702,
+      "source_sha256": "036b295143682e312ecdf7cb7429101baec818c25c91c76a459416dbb12fbff1",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Textures/Parts/Part_DriverSeat_Albedo_2048.png",
+      "bytes": 1759560,
+      "source_sha256": "08ef552f391bf8362a111ef8bb83feec8a6b9e8678b30141fc38dc0c58080e5b",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Textures/Parts/Part_DriverSeat_Mask_2048.png",
+      "bytes": 2474017,
+      "source_sha256": "bcba0afe8aff9bf8d96d1d00f6366731a175ff2a7bbb0f46417844eb2b74509b",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Textures/Parts/Part_DriverSeat_Normal_2048.png",
+      "bytes": 2907528,
+      "source_sha256": "b1ce58861db154002e495c3b17b307dc72bfc6f9053a0fc43846495d57f23376",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Textures/Parts/Part_RearBench_Albedo_1024.png",
+      "bytes": 566312,
+      "source_sha256": "4bab4b90e54298dc30e539ed05140c135cd8bfe2ee67b5e302965fa827c75cc8",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Textures/Parts/Part_RearBench_Mask_1024.png",
+      "bytes": 652357,
+      "source_sha256": "9b116bd005bf225002f9648d477871545ee6f8700ef83dffe81d6465c284bc6a",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Textures/Parts/Part_RearBench_Normal_1024.png",
+      "bytes": 783883,
+      "source_sha256": "8a14f78a025d0ee5ddf779d77de326ff441e58136c82730c5dc9615f71dda4e1",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Textures/Parts/Part_SeatHero_Albedo_2048.png",
+      "bytes": 1707957,
+      "source_sha256": "9ef60192ea4e62901b22dde214e28d03c8dd078c0ff24cd0655a2614ab858f87",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Textures/Parts/Part_SeatHero_Mask_2048.png",
+      "bytes": 2411476,
+      "source_sha256": "d22e407cb5c4a147533ab8ca6f7ddca2763778057df812f4679332e7632abecb",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Textures/Parts/Part_SeatHero_Normal_2048.png",
+      "bytes": 2790650,
+      "source_sha256": "d543c24664eb66fda3308f0e9559ca0851fb16efde4aba2c90fbaa0ed0423338",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Textures/Parts/Part_SeatLBox_Albedo_1024.png",
+      "bytes": 606223,
+      "source_sha256": "4fa1f00b38d8f1e1764942bd73ac5b23d9c5c467bd76ae22a936508b86bc3ebe",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Textures/Parts/Part_SeatLBox_Mask_1024.png",
+      "bytes": 780646,
+      "source_sha256": "366d6c8454cdd9bfdc03aea9192bc129fed2f5658bcf28f0a9f95a7a151567cc",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Textures/Parts/Part_SeatLBox_Normal_1024.png",
+      "bytes": 862293,
+      "source_sha256": "7547de0478bc812ab5bb5ffe82d6daa9ac2b71bdffcc99e9f2891e417a643013",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Textures/Parts/Part_SeatL_Albedo_1024.png",
+      "bytes": 710095,
+      "source_sha256": "1178cc9f3ba09573965eabe1f60d1530a7298c0f5cfd13314180dbfa0532e120",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Textures/Parts/Part_SeatL_Mask_1024.png",
+      "bytes": 817782,
+      "source_sha256": "7e1e972b9576c97b7e717bd4fc9560c893bb00b7ddffc0eba22e8af3b08dbe83",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Textures/Parts/Part_SeatL_Normal_1024.png",
+      "bytes": 763061,
+      "source_sha256": "f06ee549343d989c146dda395931c2b60e09604a85280b4a2ce56e7866fa7b22",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Textures/Parts/Part_SeatR_Albedo_2048.png",
+      "bytes": 2152686,
+      "source_sha256": "ea7909bbc2f535deffe2d236e3c0cb4c060216ec0e1a1b23fedceb06d3bc2e95",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Textures/Parts/Part_SeatR_Mask_2048.png",
+      "bytes": 2920247,
+      "source_sha256": "b72b99543c366b8f35dbf4cd2183383a93406afe2496c5e45dbde4dfc4950aff",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Bus/Textures/Parts/Part_SeatR_Normal_2048.png",
+      "bytes": 2809438,
+      "source_sha256": "a87567ccf940b0680705589f62e1a261dd3627aafd24cc486eb016c9e7b3f195",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Cabin/Editor/CabinTubeLM_说明.md",
+      "bytes": 1281,
+      "source_sha256": "47598f0898f54287e18b7dcd2983b3727ed52990a0812b847ef4c581c36c8bf9",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Cabin/Editor/LanbaiCabinImport.cs",
+      "bytes": 4888,
+      "source_sha256": "1488305281456238c9e436d5b94882999e91d656fa4ed1168c0c375f91ea567c",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Cabin/Scripts/LanbaiCabinDriver.cs",
+      "bytes": 35624,
+      "source_sha256": "8c36795850c4b01462aef1ef06f6b8e9513bca6b7adaae6e1be52b43db68c96a",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Cabin/Shaders/LanbaiCabin.shader",
+      "bytes": 24165,
+      "source_sha256": "971095473dca5efe44d5d07e684cd6fa27f380c938109823696feb78deda4630",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Cabin/Shaders/LanbaiCabinCommon.cginc",
+      "bytes": 18803,
+      "source_sha256": "351bc5a4c0a62ce8ef194a193852685ee3f4cc0faf2bd0807b92996af62d5fb8",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Cabin/Shaders/LanbaiThinCloth.shader",
+      "bytes": 15343,
+      "source_sha256": "8638365547c8100ecf417f971c0c354d8659e5b55db2de8f3d452ea0c746c5b6",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Common/Editor/Lanbai.Common.Editor.asmdef",
+      "bytes": 387,
+      "source_sha256": "4c42b061b86127c3dd5298197f262fdaa5a1702e5403634dae42248ebe63d26d",
+      "target_sha256": "4c42b061b86127c3dd5298197f262fdaa5a1702e5403634dae42248ebe63d26d",
+      "action": "same"
+    },
+    {
+      "path": "Common/Editor/LanbaiUdonPrograms.cs",
+      "bytes": 30399,
+      "source_sha256": "b3178635e2e510d4267a00fd626a1b1d91afb5df3f0d5ea5a20df2d388bf851b",
+      "target_sha256": "b3178635e2e510d4267a00fd626a1b1d91afb5df3f0d5ea5a20df2d388bf851b",
+      "action": "same"
+    },
+    {
+      "path": "Common/Editor/README_UdonPrograms.md",
+      "bytes": 8934,
+      "source_sha256": "9ab57ffc2dad515e64849e08908be5969c60873b8557478debd03d00c1992b87",
+      "target_sha256": "fe70d66a31b7c265fa91e7a4ba601a7b9b9615ae297c26c12adab25b79fe7425",
+      "action": "update"
+    },
+    {
+      "path": "Common/Shaders/LanbaiCaustics.cginc",
+      "bytes": 4624,
+      "source_sha256": "7f2e092da80fdda83465fffa152b89b04d7f077976b352e2ba95d7434c874371",
+      "target_sha256": "7f2e092da80fdda83465fffa152b89b04d7f077976b352e2ba95d7434c874371",
+      "action": "same"
+    },
+    {
+      "path": "Common/Shaders/LanbaiFog.cginc",
+      "bytes": 9027,
+      "source_sha256": "ca59813d7ca1312f4d912f1e224b47068e29dda02dac378e5f1fc42abc540eb9",
+      "target_sha256": "ca59813d7ca1312f4d912f1e224b47068e29dda02dac378e5f1fc42abc540eb9",
+      "action": "same"
+    },
+    {
+      "path": "Common/Shaders/LanbaiGlobals.cginc",
+      "bytes": 20178,
+      "source_sha256": "82b6d28d1c3b1893fa92ad335ebd41f7a150b499fdb86db6a039bdacabd44bf8",
+      "target_sha256": "82b6d28d1c3b1893fa92ad335ebd41f7a150b499fdb86db6a039bdacabd44bf8",
+      "action": "same"
+    },
+    {
+      "path": "Common/Shaders/LanbaiSky.cginc",
+      "bytes": 21099,
+      "source_sha256": "2fd6ce5972ec3d77ff5f78e7a55d6833180be87b4cfba0b425a9563a71e10f69",
+      "target_sha256": "2fd6ce5972ec3d77ff5f78e7a55d6833180be87b4cfba0b425a9563a71e10f69",
+      "action": "same"
+    },
+    {
+      "path": "Common/Shaders/LanbaiVR.cginc",
+      "bytes": 8035,
+      "source_sha256": "d2588fa188cb40167d4128ac29ec8e32d7b62e39de5a67cb849056364dfa5997",
+      "target_sha256": "d2588fa188cb40167d4128ac29ec8e32d7b62e39de5a67cb849056364dfa5997",
+      "action": "same"
+    },
+    {
+      "path": "Common/Shaders/README_LanbaiGlobals.md",
+      "bytes": 2593,
+      "source_sha256": "767d0f92f25abd0337c825102c47b8ca036ba2cc50a7c588f2410a842e285340",
+      "target_sha256": "767d0f92f25abd0337c825102c47b8ca036ba2cc50a7c588f2410a842e285340",
+      "action": "same"
+    },
+    {
+      "path": "Rain/Shaders/LanbaiLamps.cginc",
+      "bytes": 12432,
+      "source_sha256": "2808ae712206ca48a0b0e22eba9ece9c99df95224344ed5de572acb28af86df3",
+      "target_sha256": "2808ae712206ca48a0b0e22eba9ece9c99df95224344ed5de572acb28af86df3",
+      "action": "same"
+    },
+    {
+      "path": "Rain/Shaders/LanbaiRain.cginc",
+      "bytes": 34301,
+      "source_sha256": "b4d71ebf48fab9a018e02e89099828c741abff0a07de6bce5b0a88939df0f1b4",
+      "target_sha256": "b4d71ebf48fab9a018e02e89099828c741abff0a07de6bce5b0a88939df0f1b4",
+      "action": "same"
+    },
+    {
+      "path": "Rain/Shaders/Lanbai_BusGlass.shader",
+      "bytes": 17606,
+      "source_sha256": "d9939cab6fe9fc14770e0b887c2d9cfeac76d343868b697c66f46f69987fd42a",
+      "target_sha256": "d9939cab6fe9fc14770e0b887c2d9cfeac76d343868b697c66f46f69987fd42a",
+      "action": "same"
+    },
+    {
+      "path": "Rain/Shaders/Lanbai_DripDrop.shader",
+      "bytes": 6074,
+      "source_sha256": "3695b9f2d6f006cf5b957c8368f2d2c66aa5cd5fa34e138688e7825c86aa62a7",
+      "target_sha256": "3695b9f2d6f006cf5b957c8368f2d2c66aa5cd5fa34e138688e7825c86aa62a7",
+      "action": "same"
+    },
+    {
+      "path": "Rain/Shaders/Lanbai_MirrorCopy.shader",
+      "bytes": 4855,
+      "source_sha256": "8486349cbb3d94d4e2b02ba84fe4fbd6c1a5ec88b36c5649bc3986e0c2658b02",
+      "target_sha256": "8486349cbb3d94d4e2b02ba84fe4fbd6c1a5ec88b36c5649bc3986e0c2658b02",
+      "action": "same"
+    },
+    {
+      "path": "Rain/Shaders/Lanbai_OneDrop.shader",
+      "bytes": 8109,
+      "source_sha256": "81295403baee5755b6c452b3914ea75c5303ad74e26e8ef7dfe8f2bb60914f33",
+      "target_sha256": "81295403baee5755b6c452b3914ea75c5303ad74e26e8ef7dfe8f2bb60914f33",
+      "action": "same"
+    },
+    {
+      "path": "Rain/Shaders/Lanbai_PuddleOverlay.shader",
+      "bytes": 7777,
+      "source_sha256": "7a9e8bf191a507c7da0e74e545377d594cc982d4a63200069db6db142e4a43a0",
+      "target_sha256": "7a9e8bf191a507c7da0e74e545377d594cc982d4a63200069db6db142e4a43a0",
+      "action": "same"
+    },
+    {
+      "path": "Rain/Shaders/Lanbai_RainParticles.shader",
+      "bytes": 6339,
+      "source_sha256": "24ba2d6a54b7aedd6c223a29c153b603794caa2c27b46a7fdd288615d4758eaf",
+      "target_sha256": "24ba2d6a54b7aedd6c223a29c153b603794caa2c27b46a7fdd288615d4758eaf",
+      "action": "same"
+    },
+    {
+      "path": "Rain/Shaders/Lanbai_StencilWindow.shader",
+      "bytes": 5334,
+      "source_sha256": "cabf62ca1a791339e2cd8fb7450593dfe7095ae953f098a376344d9dbd6ab7e0",
+      "target_sha256": "cabf62ca1a791339e2cd8fb7450593dfe7095ae953f098a376344d9dbd6ab7e0",
+      "action": "same"
+    },
+    {
+      "path": "Rain/Shaders/Lanbai_WetOverlay.shader",
+      "bytes": 5445,
+      "source_sha256": "e6bc37d77fe05c78994b48419b7392df54ffb75c6b23940b8c7ff9315e2df699",
+      "target_sha256": "e6bc37d77fe05c78994b48419b7392df54ffb75c6b23940b8c7ff9315e2df699",
+      "action": "same"
+    },
+    {
+      "path": "Rain/Shaders/Lanbai_WetSurface.shader",
+      "bytes": 14807,
+      "source_sha256": "8e77b2208b34bd60030e7411712f3239c63ecf8928f1669486f0fad8c0bac783",
+      "target_sha256": "8e77b2208b34bd60030e7411712f3239c63ecf8928f1669486f0fad8c0bac783",
+      "action": "same"
+    },
+    {
+      "path": "Rain/Textures/Glass/GlassRunners_Flow_512x1024.png",
+      "bytes": 157435,
+      "source_sha256": "7c20cdf5a50455b638d6077c60593bc4aca2510f6f1e23c57ede0a7dae7cd893",
+      "target_sha256": "7c20cdf5a50455b638d6077c60593bc4aca2510f6f1e23c57ede0a7dae7cd893",
+      "action": "same"
+    },
+    {
+      "path": "Rain/Textures/Glass/RainBeads_Horizontal_Data_1024.png",
+      "bytes": 1149623,
+      "source_sha256": "499442b0a791cec6dada91153302306c56784d4085ffd510f55cee270879490e",
+      "target_sha256": "499442b0a791cec6dada91153302306c56784d4085ffd510f55cee270879490e",
+      "action": "same"
+    },
+    {
+      "path": "Rain/Textures/Glass/RainBeads_Horizontal_Normal_1024.png",
+      "bytes": 1512929,
+      "source_sha256": "39a67fd46ae76f7fb8cec6a868555ea3d18113a243061020e1e3c483a5d63bb8",
+      "target_sha256": "39a67fd46ae76f7fb8cec6a868555ea3d18113a243061020e1e3c483a5d63bb8",
+      "action": "same"
+    },
+    {
+      "path": "Rain/Textures/Glass/RainBeads_Vertical_Data_1024.png",
+      "bytes": 1133709,
+      "source_sha256": "6cf4bba792c18c7cfe361ee82981eefd2ffadba56474f6360709e470a6250916",
+      "target_sha256": "6cf4bba792c18c7cfe361ee82981eefd2ffadba56474f6360709e470a6250916",
+      "action": "same"
+    },
+    {
+      "path": "Rain/Textures/Glass/RainBeads_Vertical_Normal_1024.png",
+      "bytes": 1430199,
+      "source_sha256": "ba81d3c1a79a3aa010bac7b24ce77734600b39013751d67fc2e68202076bb866",
+      "target_sha256": "ba81d3c1a79a3aa010bac7b24ce77734600b39013751d67fc2e68202076bb866",
+      "action": "same"
+    }
+  ]
+}

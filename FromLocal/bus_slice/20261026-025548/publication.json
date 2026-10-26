@@ -1,0 +1,62 @@
+{
+  "source_local": "E:\\IDMdownload\\VRCC\\dream\\LanbaiReports\\tests\\bus_slice\\20261026-025548",
+  "visual_validity": "camera UI excluded; still requires visual review",
+  "omitted": "Private consent note; backup_before and transient state; invalid-run PNG bulk",
+  "files": [
+    {
+      "path": "console.jsonl",
+      "bytes": 14193,
+      "sha256": "e804f08b6c37ef7512812d55e4e6fa44625c9abccae2646335a26fb5b1bd2df0"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 22502,
+      "sha256": "d613163e0d130d7e3e68541e7bf0f6dc38a43407d4823a2f9bea0ac3ad8cfff6"
+    },
+    {
+      "path": "result.json",
+      "bytes": 246,
+      "sha256": "7fa22e8b054cab7c491aab797a8a878e57daf7d18467e2372221852f67f91d14"
+    },
+    {
+      "path": "summary.md",
+      "bytes": 8222,
+      "sha256": "9fb70db4d38acc0ea41e18cc83947f07747fde0ef177c2e873742215c5e1c316"
+    },
+    {
+      "path": "test_definition.json",
+      "bytes": 8328,
+      "sha256": "1e1e6b484049f52b49ae74114bc6150d7635446757a5e1bd14dfb1feca7c5414"
+    },
+    {
+      "path": "shots/window_05_front_upper.png",
+      "bytes": 127844,
+      "sha256": "d9803396e0887dc8402da09588182d5f54fd7b1a9458a2d2edd0257206ae68ad"
+    },
+    {
+      "path": "shots/window_05_rear.png",
+      "bytes": 251082,
+      "sha256": "08aca293ad9276e58b569cd825d4aec82871229b2bf5699fab8cd73d3f4ac639"
+    },
+    {
+      "path": "shots/window_05_rear_upper.png",
+      "bytes": 200188,
+      "sha256": "8b5de21de046bf0b6507eba1f55c3218d23d2318c918451dc7e65aef315b8925"
+    },
+    {
+      "path": "shots/window_10_front_upper.png",
+      "bytes": 130447,
+      "sha256": "54706bbbe18035d382aebda1ddd2ad60f9bada44f863363627308716fa9a5234"
+    },
+    {
+      "path": "shots/window_10_rear.png",
+      "bytes": 235661,
+      "sha256": "b2499276c4a1e3a27bcfbbc57dbe62ec49ba32a755b54c57d5b6cf85a38db726"
+    },
+    {
+      "path": "shots/window_10_rear_upper.png",
+      "bytes": 180632,
+      "sha256": "2afc741fa0c89df7821bfd855054cbab1eda926d56abd62bd2e9ef1f05e16077"
+    }
+  ]
+}

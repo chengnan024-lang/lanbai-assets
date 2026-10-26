@@ -1,0 +1,37 @@
+{
+  "source_local": "E:\\IDMdownload\\VRCC\\dream\\LanbaiReports\\tests\\flicker_probe\\20261026-011103",
+  "visual_validity": "invalid: simulator UI contaminated",
+  "omitted": "Private consent note; backup_before and transient state; invalid-run PNG bulk",
+  "files": [
+    {
+      "path": "console.jsonl",
+      "bytes": 31764,
+      "sha256": "80b1b2f9c668ef7f9f8a858e6f903a65b8276dcad866e1e5e48c42797a16145c"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 14943,
+      "sha256": "8829d16191d849238bf8678246a4fc1eb4378434387321051175918ab6c48b11"
+    },
+    {
+      "path": "result.json",
+      "bytes": 254,
+      "sha256": "9bf6efa00076d7b5bf94e11fec7456e77385d48028f28bc9de3cef7ec744a67d"
+    },
+    {
+      "path": "summary.md",
+      "bytes": 7660,
+      "sha256": "19e8ff2ae318bc828629d7da34f6a490cbefc182ddc4f535401a3dc1b5bd51fe"
+    },
+    {
+      "path": "test_definition.json",
+      "bytes": 3307,
+      "sha256": "b8f96aa80bf04ed0e0ee08cf4ab7a8df76f7fcf86d6fbf66cd2153a18476256f"
+    },
+    {
+      "path": "probe/p1025/as_is/frames.csv",
+      "bytes": 41934,
+      "sha256": "c0443b3c394ec7df50ce01b1400ce2085356f94507dec0a9f2ef2d03f5dc6f94"
+    }
+  ]
+}

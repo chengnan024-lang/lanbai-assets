@@ -1,0 +1,21 @@
+label=fixed_hitch_past_window time=61.19259 batch=True audio=0
+dbgT=282.8
+dbgSeg=6
+dbgDEV=0
+dbgB=-0.75
+_sp=0
+_spHandAt=248.39
+_spBlackEnd=47.00655
+_spFade0=29.39264
+_spawnFadeEnded=True
+_journeyReady=True
+dispatcher.lastT=282.8
+dispatcher.activeCount=2
+dispatcher.gradeDEV=0
+dispatcher.spawnFadeTimeout=25
+dispatcher.spawnFadeMax=9.4
+dispatcher._fadeEndT=270.022
+dispatcher._fadeEnded=True
+dispatcher._handState=1
+dispatcher._fadeBegin=44.00655
+overlay=(0.00, 0.00, 0.00, 0.00)

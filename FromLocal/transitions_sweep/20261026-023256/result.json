@@ -1,0 +1,10 @@
+{
+  "test": "transitions_sweep",
+  "run": "20261026-023256",
+  "exit": 1,
+  "status": "fail",
+  "preflight_only": false,
+  "out": "E:\\IDMdownload\\VRCC\\dream\\LanbaiReports/tests\\transitions_sweep\\20261026-023256",
+  "blocked_reason": null,
+  "error": null
+}

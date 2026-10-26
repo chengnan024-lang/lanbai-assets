@@ -1,0 +1,44 @@
+--- a/Bus/Editor/LanbaiBusCabinDropIn.cs
++++ b/Bus/Editor/LanbaiBusCabinDropIn.cs
+@@ -269,6 +269,10 @@
+         model.name = ModelName;
+         model.transform.SetParent(root.transform, false);
+         Identity(model.transform);
++        R.Line(LanbaiBusBuild.AlignModelToLayout(model.transform, L));
++        // Unity creates an aggregate FBX LODGroup from the *_LOD names. The explicit
++        // exterior and seat groups below must be their only owners.
++        foreach (var importedLod in model.GetComponentsInChildren<LODGroup>(true)) UnityEngine.Object.DestroyImmediate(importedLod);
+         if (!exterior)
+         {
+             int cut = 0;
+@@ -418,8 +422,9 @@
+         Type seatType = lbSeat ?? Lanbai.Udon.LanbaiUdonPrograms.TypeOfScript("LanbaiBusSeat");
+         Component poems = One("LanbaiPoemDriver", R);
+         var eyes = Field(poems, "seatEye") as Vector3[];
++        bool v5 = poems != null && poems.GetType().GetField("depthTable") != null;
+         bool poemSeat = lbSeat != null && lbSeat.GetField("poemDriver") != null && lbSeat.GetField("poemSeatIndex") != null && poems != null;
+-        if (poemSeat && (eyes == null || eyes.Length == 0)) R.Warn("LanbaiPoemDriver.seatEye 是空的：每个座位的诗都按主座位摆（Fonts/seat_positions.json 烘了吗？）");
++        if (poemSeat && !v5 && (eyes == null || eyes.Length == 0)) R.Warn("LanbaiPoemDriver.seatEye 是空的：每个座位的诗都按主座位摆（Fonts/seat_positions.json 烘了吗？）");
+         float worst = 0f;
+         int made = 0;
+         foreach (var s in L.seats)
+@@ -449,8 +454,8 @@
+                 LanbaiBusBuild.SetRef(sso, "station", st);
+                 if (poemSeat)
+                 {
+-                    float d;
+-                    int k = NearestEye(eyes, s, out d);
++                    float d = 0f;
++                    int k = v5 ? made - 1 : NearestEye(eyes, s, out d);
+                     worst = Mathf.Max(worst, d);
+                     LanbaiBusBuild.SetRef(sso, "poemDriver", poems);
+                     LanbaiBusBuild.SetInt(sso, "poemSeatIndex", k);
+@@ -464,7 +469,7 @@
+         if (stationType == null) R.Warn("VRCStation 类型找不到（VRChat SDK？）：只建了座位的位置，没有 station");
+         if (seatType == null) R.Warn("LB_Seat 和 LanbaiBusSeat 都找不到：station 没有“坐下”的交互");
+         R.Line("seats: " + made + " VRCStation(s), sit script " + (seatType != null ? seatType.Name : "none") +
+-               (poemSeat ? ", poem seat = nearest LanbaiPoemDriver.seatEye (worst " + worst.ToString("0.00") + " m)" : ""));
++               (poemSeat && v5 ? ", poem seat = v5 BusLayout order" : poemSeat ? ", poem seat = nearest LanbaiPoemDriver.seatEye (worst " + worst.ToString("0.00") + " m)" : ""));
+         if (poemSeat && worst > 0.15f) R.Warn("有座位离最近的 seatEye 超过 0.15 m：Fonts/seat_positions.json 和 BusLayout.json 的座位对不上，诗的位置按别的座位算");
+     }
+ 

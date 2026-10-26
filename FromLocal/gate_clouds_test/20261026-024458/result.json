@@ -1,0 +1,10 @@
+{
+  "test": "gate_clouds_test",
+  "run": "20261026-024458",
+  "exit": 0,
+  "status": "pass",
+  "preflight_only": false,
+  "out": "E:\\IDMdownload\\VRCC\\dream\\LanbaiReports/tests\\gate_clouds_test\\20261026-024458",
+  "blocked_reason": null,
+  "error": null
+}

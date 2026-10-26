@@ -1,0 +1,150 @@
+{
+  "note": "编辑器里的估算（Unity 编辑模式、手动渲染到 RenderTexture），不是头显实测；VR 一列是 1832×1920 渲两次的估算",
+  "gpu": {
+    "name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "vendor": "NVIDIA",
+    "api": "Direct3D11",
+    "version": "Direct3D 11.0 [level 11.1]",
+    "vram_mb": 7956,
+    "cpu": "13th Gen Intel(R) Core(TM) i9-13980HX",
+    "cpu_threads": 32,
+    "ram_mb": 32386,
+    "os": "Windows 11  (10.0.26200) 64bit"
+  },
+  "entries": [
+    {
+      "id": "U7",
+      "state": "all_on",
+      "cam": "U7",
+      "t": 155.10000610351563,
+      "label": "全开",
+      "render_stats": {
+        "recorder_valid": true,
+        "recorder_zero": true,
+        "draw_calls": null,
+        "batches": null,
+        "setpass": null,
+        "triangles": null,
+        "vertices": null,
+        "shadow_casters": null,
+        "unitystats_after": {
+          "draw_calls": 1,
+          "batches": 1,
+          "setpass": 1,
+          "triangles": 2,
+          "vertices": 6
+        },
+        "ppv2": true,
+        "note": "ProfilerRecorder：同一帧里第二次渲染前后的差（编辑模式手动 Render 时可能读成 0，那就看 Game 视图 / Frame Debugger）；UnityStats 是上一帧的读数",
+        "quality": "VRC High",
+        "lod_bias": 2,
+        "pixel_lights": 8,
+        "shadow_distance": 150,
+        "msaa": 4
+      },
+      "vram": {
+        "process_dedicated_mb": 847.4,
+        "card_used_mb": 1006,
+        "card_total_mb": 8188,
+        "note": "process_dedicated_mb：Unity 进程（含编辑器、场景视图、所有打开的资源）占的物理显存；比状态之间的差，不当作世界的绝对值。card_used_mb：整张卡（含别的程序）"
+      },
+      "desktop_1920x1080": {
+        "w": 1920,
+        "h": 1080,
+        "renders_per_frame": 1,
+        "vfov": 58.715511322021484,
+        "total_ms": 5.02,
+        "cpu_ms": 1.6,
+        "sync_ms": 0.14,
+        "gpu_est_ms": 4.87,
+        "p90_ms": 5.2,
+        "min_ms": 4.88,
+        "max_ms": 5.35,
+        "samples": 24,
+        "ppv2": true
+      },
+      "vr_estimate_1832x1920x2": {
+        "w": 1832,
+        "h": 1920,
+        "renders_per_frame": 2,
+        "vfov": 100,
+        "total_ms": 11.55,
+        "cpu_ms": 3.38,
+        "sync_ms": 0.21,
+        "gpu_est_ms": 11.34,
+        "p90_ms": 11.75,
+        "min_ms": 11.05,
+        "max_ms": 12.15,
+        "samples": 24,
+        "ppv2": true
+      }
+    },
+    {
+      "id": "U8fwd",
+      "state": "all_on",
+      "cam": "U8fwd",
+      "t": 169.64999389648438,
+      "label": "全开",
+      "render_stats": {
+        "recorder_valid": true,
+        "recorder_zero": true,
+        "draw_calls": null,
+        "batches": null,
+        "setpass": null,
+        "triangles": null,
+        "vertices": null,
+        "shadow_casters": null,
+        "unitystats_after": {
+          "draw_calls": 1,
+          "batches": 1,
+          "setpass": 1,
+          "triangles": 2,
+          "vertices": 6
+        },
+        "ppv2": true,
+        "note": "ProfilerRecorder：同一帧里第二次渲染前后的差（编辑模式手动 Render 时可能读成 0，那就看 Game 视图 / Frame Debugger）；UnityStats 是上一帧的读数",
+        "quality": "VRC High",
+        "lod_bias": 2,
+        "pixel_lights": 8,
+        "shadow_distance": 150,
+        "msaa": 4
+      },
+      "vram": {
+        "process_dedicated_mb": 790.8,
+        "card_used_mb": 950,
+        "card_total_mb": 8188,
+        "note": "process_dedicated_mb：Unity 进程（含编辑器、场景视图、所有打开的资源）占的物理显存；比状态之间的差，不当作世界的绝对值。card_used_mb：整张卡（含别的程序）"
+      },
+      "desktop_1920x1080": {
+        "w": 1920,
+        "h": 1080,
+        "renders_per_frame": 1,
+        "vfov": 58.715511322021484,
+        "total_ms": 4.85,
+        "cpu_ms": 1.49,
+        "sync_ms": 0.24,
+        "gpu_est_ms": 4.62,
+        "p90_ms": 4.98,
+        "min_ms": 4.69,
+        "max_ms": 5.13,
+        "samples": 24,
+        "ppv2": true
+      },
+      "vr_estimate_1832x1920x2": {
+        "w": 1832,
+        "h": 1920,
+        "renders_per_frame": 2,
+        "vfov": 100,
+        "total_ms": 11.79,
+        "cpu_ms": 3.25,
+        "sync_ms": 0.24,
+        "gpu_est_ms": 11.55,
+        "p90_ms": 12.01,
+        "min_ms": 11.52,
+        "max_ms": 12.06,
+        "samples": 24,
+        "ppv2": true
+      }
+    }
+  ]
+}

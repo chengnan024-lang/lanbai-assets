@@ -1,0 +1,1157 @@
+[
+  {
+    "path": "Assets/Lanbai/Fonts/Charsets/charset_ALL_CJK.txt",
+    "sha256": "117ca6632918e5e1e7ffd2c57d037ea741fcd599e041fe31f5d02c5d00a87b51",
+    "bytes": 747
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Charsets/charset_ALL_CJK.txt.meta",
+    "sha256": "a72df23248f1968f73f6e20f1b8c40bea84d2033772006c491370af568527630",
+    "bytes": 158
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Charsets/charset_EBGaramond-Italic+ascii.txt",
+    "sha256": "f939d3e40c8fddc6de43df8f5102fb4e865ea9809910a0fb0b1be6a6dbf43342",
+    "bytes": 102
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Charsets/charset_EBGaramond-Italic+ascii.txt.meta",
+    "sha256": "9ca4ad96eb7bcc263ebf52dcec59e5266671dbfeb315dc622eaa94f9d0c79d53",
+    "bytes": 158
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Charsets/charset_EBGaramond-Italic.txt",
+    "sha256": "6e18cfa2171f803157b82048619dcff2fea784c8f05e36cc4ceb30b999d58568",
+    "bytes": 49
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Charsets/charset_EBGaramond-Italic.txt.meta",
+    "sha256": "9c717b64bb0c37eb460c791a6741febc3912b2353715c64e51090f7f660527cc",
+    "bytes": 158
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Charsets/charset_EBGaramond-Regular+ascii.txt",
+    "sha256": "f7acfd03956eaa21a912410c0dc7dfe38ea46434ab836955c09a7de816717901",
+    "bytes": 108
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Charsets/charset_EBGaramond-Regular+ascii.txt.meta",
+    "sha256": "4080d9bc1f269bb54e8c1abb4a8b2ba034683f82a4bf80cf314ad40d84ec9dea",
+    "bytes": 158
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Charsets/charset_EBGaramond-Regular.txt",
+    "sha256": "a5d6a1f3fe558867617f25aab4e8cc605de327e0def0f7d6bb40faed2dff0989",
+    "bytes": 82
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Charsets/charset_EBGaramond-Regular.txt.meta",
+    "sha256": "cc8bf6ffc0b365ac549729ae170046c8b1cc5f964d49c416ae99a68dc074b615",
+    "bytes": 158
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Charsets/charset_SourceHanSerifJP-Regular.txt",
+    "sha256": "998a36c86114c68b65a31b8db5b749918d68c93e0c089893364362a422c803fc",
+    "bytes": 379
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Charsets/charset_SourceHanSerifJP-Regular.txt.meta",
+    "sha256": "f47638527d60638659d01339c1f9273309a76252181c619c163730ebccb6da81",
+    "bytes": 158
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Charsets/charset_SourceHanSerifSC-Regular.txt",
+    "sha256": "818cbb6cf697580de5dd35da826557ccce227666f8e9f2a4a55f483b574d81e3",
+    "bytes": 444
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Charsets/charset_SourceHanSerifSC-Regular.txt.meta",
+    "sha256": "f45d90df36baf9c318d2a17e9fe2b08f0a96f1dc34764bb0fcbbea18c87d55b4",
+    "bytes": 158
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Charsets/charset_SourceHanSerifTW-Regular.txt",
+    "sha256": "3637fa1a040c638174190bf9c6170a9eb3bfcf43885d7d438d4c20e91d338d70",
+    "bytes": 334
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Charsets/charset_SourceHanSerifTW-Regular.txt.meta",
+    "sha256": "cb234d6f1d710d2166f015fc400d3071f04bb90d3ff8940cdf9055f65adfe20d",
+    "bytes": 158
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Editor/LanbaiPoemBake.cs",
+    "sha256": "0ca384271e4e6f3d973225c43e40c674bc5cef0f8634bad63ecb6369cb5f0439",
+    "bytes": 29309
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Editor/LanbaiPoemBake.cs.meta",
+    "sha256": "da74ba4f83b197da2055c4ffae1a8c86e1ff5d2ed1bfee457bee441a1d395564",
+    "bytes": 243
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Editor/LanbaiPoemMaterials.cs",
+    "sha256": "5298377c7bc8b572288c202f29534a717f6267124cc659521040c17b46a35478",
+    "bytes": 17154
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Editor/LanbaiPoemMaterials.cs.meta",
+    "sha256": "00d918bf772f0a2bf3ac0ead4f8efa886b292a5349ef4ca610748f8ed38b9e3a",
+    "bytes": 243
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Editor/LanbaiTMPFontBuilder.cs",
+    "sha256": "5802e13f358372327364b4f5621d2ece8e0c575c61feed7f879928ea373bd572",
+    "bytes": 20329
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Editor/LanbaiTMPFontBuilder.cs.meta",
+    "sha256": "67532d059647ea4ec26a74aa13a73a2098de0eac82f67b8a6ee5f71d9271dde7",
+    "bytes": 243
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/Lanbai_Barlow_SemiBold SDF.asset",
+    "sha256": "6f53b89b9a75e381628dee0c9a6ade4187a68ffd4bccb1e5a85e6e8b6e56357a",
+    "bytes": 2546638
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/Lanbai_Garamond_Italic SDF.asset",
+    "sha256": "b36597f251c6f4721975a7cd0e5e286ca3487412f68fc15ffade10b2bed8be50",
+    "bytes": 2320151
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/Lanbai_Garamond_Regular SDF.asset",
+    "sha256": "1a6b23cb0d383ce172b2a6320302b464b75355e432f0887e3c109ec08d1fded9",
+    "bytes": 2351388
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/Lanbai_SerifJP_Medium SDF.asset",
+    "sha256": "00f561b56699df1570cdd033cc4ccbc751973beb1f99154a5046ba28a0540779",
+    "bytes": 8411427
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/Lanbai_SerifJP_Regular SDF.asset",
+    "sha256": "815a3407c9b2f29d5b837be616220767ad56019bb6a27039a62d6545d769a57a",
+    "bytes": 8466856
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/Lanbai_SerifSC_Medium SDF.asset",
+    "sha256": "a2d6decf6dff9d078689d2d43dd8d3f18ee513ce4a53af8ca999042e933ff41a",
+    "bytes": 8407503
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/Lanbai_SerifSC_Regular SDF.asset",
+    "sha256": "8fe8a7ecb96fe2ec92da42c1886addc7d467b3dba263a1eb5d88320566a4ae0b",
+    "bytes": 8478631
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/Lanbai_SerifTC_Regular SDF.asset",
+    "sha256": "d16a0505e278c74dadf4fe80873622b7dafad12ebbfcc886d4d7268ffd502236",
+    "bytes": 8458918
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_Garamond_Italic SDF - P04a_Rilke.mat",
+    "sha256": "680a8be7c700c0a263a6f6628ccd8573768a49f25ccb94b0f740ec83eff800ef",
+    "bytes": 3098
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_Garamond_Italic SDF - P04b_Urlicht.mat",
+    "sha256": "eecca88cee92aec21785c426d818ec7e60998c65c64ce65a555a05f739c1cc9e",
+    "bytes": 3100
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_Garamond_Italic SDF - P12b_Keats.mat",
+    "sha256": "2b3709f019f6f41e0ee205906673a88ac215735726cf43e808590891bca1f94d",
+    "bytes": 3098
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_Garamond_Regular SDF - P03_LiBai_Dream.mat",
+    "sha256": "b3cd853004290b6db3e1640dac2313fe83765d9bfbc8e56214e095790d360a19",
+    "bytes": 3104
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_Garamond_Regular SDF - P04a_Rilke.mat",
+    "sha256": "8c75a4b006679a08d824bbb3686e29c764698749baa1d82d1e8848dd56745bc3",
+    "bytes": 3099
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_Garamond_Regular SDF - P04b_Urlicht.mat",
+    "sha256": "8ccb071f5b6580ef12fda34bc646709c13bac434f470d69cd5ca6bbbf6560331",
+    "bytes": 3101
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_Garamond_Regular SDF - P06_Dream_Dawn.mat",
+    "sha256": "ea1102a2d471766c0a1fcc2d252a5792f1f5a13295442e674b5ab443aa6b1af5",
+    "bytes": 3106
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_Garamond_Regular SDF - P07_HeBo.mat",
+    "sha256": "661fb6616ac539447f864d2a7d5313bc1769428c6e6e732dffb15ce9ce94f5fb",
+    "bytes": 3097
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_Garamond_Regular SDF - P08a_Dream_Dusk.mat",
+    "sha256": "e6eb1263e85933af091cec4aa0d192a36268cd255aaf54cdd990d3a5a47f5fdf",
+    "bytes": 3104
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_Garamond_Regular SDF - P08b_Zhuangzi_Xiaoyao.mat",
+    "sha256": "a9509e3f956c29e8bdd46d705a62cd1094f1a54e84106d235b5d8d6fc22f0019",
+    "bytes": 3112
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_Garamond_Regular SDF - P09_Tianwen.mat",
+    "sha256": "7cecb6ff944638fa096290369d982452bed96da9359c1e653705bdbed8b8b44c",
+    "bytes": 3102
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_Garamond_Regular SDF - P11_Zhuangzi_Butterfly.mat",
+    "sha256": "8875795ebeab9b2d2484fc60318e401c1901062e86c891411b141bcb32ded3a9",
+    "bytes": 3111
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_Garamond_Regular SDF - P12a_LiBai_Wake.mat",
+    "sha256": "32af4670dfc3c95a200dacad604e035ed10e45e074541182b796b71b1a8d73a8",
+    "bytes": 3104
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_Scrim_Light_S6.mat",
+    "sha256": "859ed2950cd76c0ee5ffedf8a374deee1b816b33c53170bdc9d9868b020e8ea0",
+    "bytes": 1150
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_SerifJP_Medium SDF - P09_Tianwen.mat",
+    "sha256": "0c2515ff4834dc859da80b48de5b4c3a3416a9cb0731e8565da871e5c6bfe6e5",
+    "bytes": 3100
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_SerifJP_Regular SDF - P03_LiBai_Dream.mat",
+    "sha256": "d9c56a4ceea297d9f69d7bc039fd512b8703498b0e85bce1ccfcb1b7fe3cf276",
+    "bytes": 3103
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_SerifJP_Regular SDF - P04a_Rilke.mat",
+    "sha256": "a11a213fcd8f549af7e1171ef3d8594bee356d37eec6269ac5db62fc45e83a98",
+    "bytes": 3098
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_SerifJP_Regular SDF - P04b_Urlicht.mat",
+    "sha256": "3a583563b7e603915e87d07576e101736c015b7b8c68aa8a8eef7e6ae73a74ec",
+    "bytes": 3100
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_SerifJP_Regular SDF - P06_Dream_Dawn.mat",
+    "sha256": "e933a9cff18bce5bde75a648d83ef578778c8a24d6fa12d971edda8d35fdd09b",
+    "bytes": 3105
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_SerifJP_Regular SDF - P07_HeBo.mat",
+    "sha256": "8934a60bd8fcccde60107e8bdbbfb71cc2e7d55ca182d4f1040b3c39e2f96598",
+    "bytes": 3096
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_SerifJP_Regular SDF - P08a_Dream_Dusk.mat",
+    "sha256": "acfb32e5fc46f36cb8e589b9a56fd949cc3117f5d81873abddd9e37ff3e2e6a3",
+    "bytes": 3103
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_SerifJP_Regular SDF - P08b_Zhuangzi_Xiaoyao.mat",
+    "sha256": "772c0b93675a4977e231b620516f00af2a124c581f4e74b75309091321d1305e",
+    "bytes": 3111
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_SerifJP_Regular SDF - P11_Zhuangzi_Butterfly.mat",
+    "sha256": "5ce69eda169eb574d28f557febb7e5fb79e3b04573c9f56ea6953cdb6e26d0ed",
+    "bytes": 3110
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_SerifJP_Regular SDF - P12a_LiBai_Wake.mat",
+    "sha256": "06963006a3e46cfa79f8f37992e3176b83e785915aadac873511ebc8ce33ba31",
+    "bytes": 3103
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_SerifJP_Regular SDF - P12b_Keats.mat",
+    "sha256": "8d488f26144514c465262e330481073c4f0a5280acc90015e285d057ac803dfe",
+    "bytes": 3098
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_SerifSC_Regular SDF - P03_LiBai_Dream.mat",
+    "sha256": "384eb4f53d048835664a3e9127ecdaa3b21584257b23701583e81c1ab0be99bd",
+    "bytes": 3102
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_SerifSC_Regular SDF - P04a_Rilke.mat",
+    "sha256": "0ae8cf7bdfed5db4eeb32b1b6cf8dabbb5f0cc511b1c584dcb7420b5981ce502",
+    "bytes": 3097
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_SerifSC_Regular SDF - P04b_Urlicht.mat",
+    "sha256": "6d85004a75fc866b4f62cd6d6f92d774034f49e3fd80132f387c5d13801d3d74",
+    "bytes": 3099
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_SerifSC_Regular SDF - P06_Dream_Dawn.mat",
+    "sha256": "fd194ef3f71a02721aa8df9af0b0b9e16a4beeb7907afd6d70f3c109491eba7b",
+    "bytes": 3104
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_SerifSC_Regular SDF - P07_HeBo.mat",
+    "sha256": "9145e9a9593515a5b7882427496bd9fb88617f7dceeb7756e4f807d14780dd45",
+    "bytes": 3095
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_SerifSC_Regular SDF - P08a_Dream_Dusk.mat",
+    "sha256": "bb010545134173cdb6f2c64b9ae6f0acdab9b2900221c24cb34af200931c441d",
+    "bytes": 3102
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_SerifSC_Regular SDF - P08b_Zhuangzi_Xiaoyao.mat",
+    "sha256": "4c27576411e57c11c4fab13c87c4d241c14e822fc307b639b910787e1d2cfdb9",
+    "bytes": 3110
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_SerifSC_Regular SDF - P09_Tianwen.mat",
+    "sha256": "aaf919855d1c2204146e62057e0868c395d48b634f521ee960393b82a0d4d2e8",
+    "bytes": 3100
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_SerifSC_Regular SDF - P11_Zhuangzi_Butterfly.mat",
+    "sha256": "e51242573ae354628dd4a94f9c381db59c1ce8906cd7b7abaad2fba670802f95",
+    "bytes": 3109
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_SerifSC_Regular SDF - P12a_LiBai_Wake.mat",
+    "sha256": "d236d44cbffdbd0378ace2d65ebfe047e5171fb9f727622d8e31db97a47a79e7",
+    "bytes": 3102
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_SerifSC_Regular SDF - P12b_Keats.mat",
+    "sha256": "809ba4b465ca0b14f3d3dec578377944ad2c4168e4dbcd1bdcb3bdf785f27e6c",
+    "bytes": 3097
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_SerifTC_Regular SDF - P03_LiBai_Dream.mat",
+    "sha256": "904699c445f22d0237bfc07bb23d2742a1b0962cb575921fc81c6afc5d0cb71b",
+    "bytes": 3102
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_SerifTC_Regular SDF - P04a_Rilke.mat",
+    "sha256": "4eea4cca47087e87c0f676595cf84fa6d010f9c4e952f6b2895549cb2577cce6",
+    "bytes": 3097
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_SerifTC_Regular SDF - P04b_Urlicht.mat",
+    "sha256": "542afca36c1f433bc5da259bb940923e514d68fce29c120b1d986a8f88d0072c",
+    "bytes": 3099
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_SerifTC_Regular SDF - P06_Dream_Dawn.mat",
+    "sha256": "ed328bdc9bf14b467f513e19a23296800cf264397c7e9e93a7e055ac357e7250",
+    "bytes": 3104
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_SerifTC_Regular SDF - P07_HeBo.mat",
+    "sha256": "ece82311006c23198b97a95443fda4a2d9561948df16070fda43004f25b03807",
+    "bytes": 3095
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_SerifTC_Regular SDF - P08a_Dream_Dusk.mat",
+    "sha256": "74f7848f5010b530cc88f653de881913f4e9508167ca56449f69f9259f7d7a87",
+    "bytes": 3102
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_SerifTC_Regular SDF - P08b_Zhuangzi_Xiaoyao.mat",
+    "sha256": "9a658f4e08ec72f5395feaa4f70669775c0caa9f5f3641227cc120dbb6e80581",
+    "bytes": 3110
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_SerifTC_Regular SDF - P11_Zhuangzi_Butterfly.mat",
+    "sha256": "1395b3af048a4b4a8a2691d9198daf84bb9aea10db1a52c3ae4642495b387904",
+    "bytes": 3109
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_SerifTC_Regular SDF - P12a_LiBai_Wake.mat",
+    "sha256": "924c2d8d4b8c1306b4fc68d909e41d70d9e95093a758adb8b6d52d429076bde0",
+    "bytes": 3102
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/FontAssets/PoemMaterials/Lanbai_SerifTC_Regular SDF - P12b_Keats.mat",
+    "sha256": "c566c03580d8cf6aa5c8ea8e61c2b00992d8bd8ba36963dd7fbb5fbbf9da3c04",
+    "bytes": 3097
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/LB_Serif SDF.asset",
+    "sha256": "54f68230c8e7501cdaa5a6238a16fc6073408845e3c09ddf47f63843ee028fba",
+    "bytes": 8657391
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/README_Fonts.md",
+    "sha256": "4c4b58a3ef6578ef079f17c96c00d9401269dafdece9554a16ea54f014314f83",
+    "bytes": 88376
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/README_Fonts.md.meta",
+    "sha256": "830f27472adde6b0157ec4dbe961d3d74c55f717941d5451bf7fc18a1155f78d",
+    "bytes": 158
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Runtime/LanbaiPoemDriver.cs",
+    "sha256": "60c644b8e7c67c8b358fcbb445c889c2295a9dd47fae4d3fe868a0c5596c6764",
+    "bytes": 18147
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Runtime/LanbaiPoemDriver.cs.meta",
+    "sha256": "adac87746d53e69836c95057375eeaabe56289f8162fb3b0e97c2b0b8ad9e570",
+    "bytes": 243
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/strings_all.json",
+    "sha256": "b9e449411787c64879235ba43c01529708d9313ffed05697c41d8409d3c7f5bd",
+    "bytes": 327417
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/strings_all.json.meta",
+    "sha256": "b9abef435af547c5661c49b52dc13fb364bf29d2ccd83dfbc0d783a6f5d3b893",
+    "bytes": 158
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Subset/EBGaramond-Italic.Lanbai.ttf",
+    "sha256": "26dc4a304e9e96fe491db3b9103d505b8ea718189306f7aabdf675bc27b36cf9",
+    "bytes": 54164
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Subset/EBGaramond-Italic.Lanbai.ttf.meta",
+    "sha256": "408d4560d2ac404643492d5c11e3a97beda12c3dcf45c412f8b1ae04270f50a4",
+    "bytes": 476
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Subset/EBGaramond-Regular.Lanbai.ttf",
+    "sha256": "28884775ba023ad84986e13c74c14f0db68dec18809d438fd572cde431e2f8a3",
+    "bytes": 56468
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Subset/EBGaramond-Regular.Lanbai.ttf.meta",
+    "sha256": "3efe94cd89fa9c307b058c8a6f2cd44369142861d2b9d8d3a7688fb3aaf6385a",
+    "bytes": 476
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Subset/LanbaiSerifJP-Regular.otf",
+    "sha256": "7eb74a0a9449b956e9eea05ef29bd4fcf0de6ce67c897d5a492ea6f8df68a126",
+    "bytes": 77456
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Subset/LanbaiSerifJP-Regular.otf.meta",
+    "sha256": "162297be707de76db6f01a79e0d4b47e8dfbb86f6839c9696d29233b9851f86f",
+    "bytes": 480
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Subset/LanbaiSerifSC-Regular.otf",
+    "sha256": "296c23c6d115aa9bfed50bc9001dbac0c65e7466d9a5021fedf64b8d91ff0b78",
+    "bytes": 77332
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Subset/LanbaiSerifSC-Regular.otf.meta",
+    "sha256": "1079697392a34154aae0b9b005cd5ce8fcb083204214bae885753fe11e41619c",
+    "bytes": 480
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Subset/LanbaiSerifTC-Regular.otf",
+    "sha256": "85cefda30368aac36fa4eb4dc4273052b923081080ce77a0256cac0322bf11b1",
+    "bytes": 73836
+  },
+  {
+    "path": "Assets/Lanbai/Fonts/Subset/LanbaiSerifTC-Regular.otf.meta",
+    "sha256": "59d5498a088e8df71cb9c4043b42fcfada522c0e7b58e935255951cd33a1f980",
+    "bytes": 480
+  },
+  {
+    "path": "Assets/Lanbai/Scenes/Lanbai_FullPreview.unity",
+    "sha256": "e89b72e674e4b15ec01a71863cd3848649169df35eb0ee62ec7aabad6108f440",
+    "bytes": 7889837
+  },
+  {
+    "path": "Assets/Lanbai/Scripts/LB_Journey.cs",
+    "sha256": "18a9d144cde1601e9a7aeb6b0feba396ec7b6614509fb959e48205c5c826a6d9",
+    "bytes": 95168
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/041a20c94b795564c852cf14d4cf78ef.asset",
+    "sha256": "93031448d5ae3da7e59e3725c17caa933920ae25e44bc808f74bc3e24b087c1d",
+    "bytes": 51871
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/041a20c94b795564c852cf14d4cf78ef.asset.meta",
+    "sha256": "64c20a73969ddcda61a0dcf7d7ab23588c47d146ca2d298f5fc48e4a38b1cbfb",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/0562f9778485da14e81b56a26e2424bc.asset",
+    "sha256": "373b2dfcfc306bab81e726422d5fa0fc83a605ae0ed596b8c8c54b2c8d870eae",
+    "bytes": 11129
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/0562f9778485da14e81b56a26e2424bc.asset.meta",
+    "sha256": "3019f24c3ecc97443c7275d5671d135b5290bde41a48dbbf32742edb77ab5cc0",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/0f233d5258cac354788a3a662175a8a6.asset",
+    "sha256": "a27711319890774d073edd9303afbf68a158301cabe899ee3531c3ace857bbed",
+    "bytes": 84743
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/0f233d5258cac354788a3a662175a8a6.asset.meta",
+    "sha256": "496fcc2f034f1f8ff0c0cb16abe1f0a3cd1fd8f403e495584912223d249df21f",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/17830d157f00b09408e9c38c2091a851.asset",
+    "sha256": "9f48017a8452b6292b61fe4da21eece8dc766e41f4b597bfb4ad00c2f190549e",
+    "bytes": 3905
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/17830d157f00b09408e9c38c2091a851.asset.meta",
+    "sha256": "1f7ba889cc0b7cba8ea9bced67d4e1d99c1d9143a735238e9d3c0338bcfa1f62",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/18a8a73823b22934e929c67357a4e2d7.asset",
+    "sha256": "5f6751ca904ebebfb6e55939fd7870c5bd05a0d6bea7a0f04e2e570b51742981",
+    "bytes": 3547
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/18a8a73823b22934e929c67357a4e2d7.asset.meta",
+    "sha256": "d1e608408a1ae2fe224347f8876b18b0b253f1e61524efeae5d268d9719314cb",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/1acedb947e4c9dc4d8f749557d611c1e.asset",
+    "sha256": "7692f97b9415e3df56a313899602ac142808bfb0bdb38f0d33f5ee8192d49274",
+    "bytes": 8733
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/1acedb947e4c9dc4d8f749557d611c1e.asset.meta",
+    "sha256": "161c4d2ed420cbd83b8ef7c5a815adfc80c234e5d67c04a002e5db0231df19b4",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/1c2074b0971ca254295e1f8d3383f21d.asset",
+    "sha256": "187709183b5d48343a3f923985b177be7db0552db8dd09db5da17d1c6b22fcba",
+    "bytes": 4663
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/1c2074b0971ca254295e1f8d3383f21d.asset.meta",
+    "sha256": "40e6fcf4c279896224f152374ea6b1fad25619455c86e4460ebb469f8367c4ee",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/1c47dae766cbcbf48b72b3045cb9297e.asset",
+    "sha256": "47c8fd3a698de5a5c09aba0521bd06298528ab09232c53213837347151a32f98",
+    "bytes": 167805
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/1c47dae766cbcbf48b72b3045cb9297e.asset.meta",
+    "sha256": "fef89d059d0565afb48769d319933553e0faecc8bdb9c97d044085d2e87afe22",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/1f7e9fb643472ef4d83f2ad49fe34b18.asset",
+    "sha256": "162deb24f1c0b936c3c443687dda727fcb6c04f3d8518e7e2ee001deadb7fe69",
+    "bytes": 4407
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/1f7e9fb643472ef4d83f2ad49fe34b18.asset.meta",
+    "sha256": "1f0f32b56d8fbb071ce304c232636542511225bb1b6170b33b2d423428f9e0e0",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/3053cc98f03a13041a10e0650d9b6e24.asset",
+    "sha256": "ca88d02d5e2d433128219ea90cea33157abb146cdc02fd0077be69a96684f326",
+    "bytes": 3405
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/3053cc98f03a13041a10e0650d9b6e24.asset.meta",
+    "sha256": "b1a5769cb38da4aeefd97cec683ba3bf644766d072fb28e844086b3e8fd91b1a",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/33324f447d661da40b534c9fa93c0ec2.asset",
+    "sha256": "8d9c860faee2f95b6e2ec5fe7236f60cd8a4d92d8b0564d65fc8021cfcfa6b0f",
+    "bytes": 4387
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/33324f447d661da40b534c9fa93c0ec2.asset.meta",
+    "sha256": "a5727b934336f87827cafd183bdad23797ceaf67982ee4df47334076ec05d9cf",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/3332603cf086aa24fb365792b61e7e48.asset",
+    "sha256": "447d2d1348c7e55313e517c60270f3390910bb19ed05f5dbe98e338261560a22",
+    "bytes": 57293
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/3332603cf086aa24fb365792b61e7e48.asset.meta",
+    "sha256": "075b21a7ae0e9764e2c4021f5f76fd3f74a6d5467d5786a7d8399d34d4a9d477",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/3d024fda64377514ab33fa3baefec378.asset",
+    "sha256": "99d088f0efdf7bd024b21662d680f5783c3b758dee8dff4c310625417ccb066a",
+    "bytes": 5991
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/3d024fda64377514ab33fa3baefec378.asset.meta",
+    "sha256": "618a80442824b813fe9bcc62aa6a75812601bc9118be0fe4920dd34e6dfbb4a5",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/429fd8f97f0383a4d9969e9f5b23961a.asset",
+    "sha256": "f9365d245a9a0b336c60411d10b83759c51e5682898b9365da1a439ecacb3252",
+    "bytes": 25087
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/429fd8f97f0383a4d9969e9f5b23961a.asset.meta",
+    "sha256": "002cf55f7d19c10fa624b4054c87b647dd4650f5c38f02026b4b746f07cc7e42",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/4715e20276be3b141a6a216230cab4e9.asset",
+    "sha256": "112101313ca6b89c18f3a13fa3a560ce44481ec91460796b051f49b57bccbe4f",
+    "bytes": 3575
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/4715e20276be3b141a6a216230cab4e9.asset.meta",
+    "sha256": "d30544538c7d42366f7450446d691bcb435cc53d87fa2d7732f33b31f25980f7",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/49ba99e73d9ab4349871a10f182ee457.asset",
+    "sha256": "df64141e163ee55b49f099a65437e27944b23736b231e7ad9d7af9a8e0c2c39a",
+    "bytes": 4531
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/49ba99e73d9ab4349871a10f182ee457.asset.meta",
+    "sha256": "b2b5ddb40c39007c8c1076e2538a672b51eeb61b55bfbfea125a4b20b1000931",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/4b5ed3dd02d57ba4b8557eb8e702f1a0.asset",
+    "sha256": "9681ca323ca3d187817ca80aa23a2d748715c96cb5e4497a453817cf54772b5b",
+    "bytes": 51945
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/4b5ed3dd02d57ba4b8557eb8e702f1a0.asset.meta",
+    "sha256": "5674b5b1b2c1b1572961f94a75bf62b170e59ed9ecf16c9101aa024be864ca4b",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/4bca3d48ccbf9ae4688570911995c770.asset",
+    "sha256": "1832db4ac9cf91f6a99a381d32d86e83ee36a0f7fe901fdaa21d51a4de34d9b3",
+    "bytes": 4467
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/4bca3d48ccbf9ae4688570911995c770.asset.meta",
+    "sha256": "7a2f57555493d01eb571e99fabdd43e6bb9a35df0bb8fa251bca7733c5c0b099",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/4bce5478918f8e848a9285461da4a00b.asset",
+    "sha256": "76ef66a7ba40dec39b3db54be3167cf0e16bcb361aace79d7399fab35529cb1c",
+    "bytes": 41063
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/4bce5478918f8e848a9285461da4a00b.asset.meta",
+    "sha256": "8de1cad2ef7e8365171a93be796fc1102b65cb214776e35396e2bd539e3962de",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/4d685674de27be844ad0f9920614fd2c.asset",
+    "sha256": "dd7db7c6470ce2542c66fb7169d7113c7d42d75eed276c118ba3159239d28eff",
+    "bytes": 2927
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/4d685674de27be844ad0f9920614fd2c.asset.meta",
+    "sha256": "134d8e057a12e1764467ebdf62e4e8d4580d0423a938e745a7d82d6d61089aba",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/4eb7aa2be7d95324ea25c03bf1cab34f.asset",
+    "sha256": "8796e6d8dfe63d41d6e0311a65ee6551ce28467eb86480a7bcebb9d85ad6325d",
+    "bytes": 8733
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/4eb7aa2be7d95324ea25c03bf1cab34f.asset.meta",
+    "sha256": "0a1b6cbcc80483a8bc3d8acef6fdbb5be56f34e0d2036efb6bee2417694cf9fd",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/5463afdb73b505649b857341d262468a.asset",
+    "sha256": "3f891ddcbf8eac0d2dd1c780f7033d45d1e65eba90ce2a71e82182a6602c1c0a",
+    "bytes": 4599
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/5463afdb73b505649b857341d262468a.asset.meta",
+    "sha256": "7e805a32b0ad854c2dfe2b0ba01b2f819ef4c77307f4569469812e96b40a4cac",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/566cc00e27d5822449529a3785eae366.asset",
+    "sha256": "fa5c81bb7b3116fcd0e602271d21e080bad26cd7c5ad97515f071503c27c1973",
+    "bytes": 6107
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/566cc00e27d5822449529a3785eae366.asset.meta",
+    "sha256": "505b08ea5f79c64b04506d8346e0c06dc021c29eb192815d19654f69edf9b43c",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/5c1e19cdbeeb89745b2dbcdc1db8dff0.asset",
+    "sha256": "fa447a5474cf5c3c4b9c536af9c5679b4a1c4810a7199d62679d23572efbb0c6",
+    "bytes": 14795
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/5c1e19cdbeeb89745b2dbcdc1db8dff0.asset.meta",
+    "sha256": "21098a238c0a34c763183795d43b0c465ce1645b38c475fbd1bd357108048c00",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/61e68250f395ec84e86cd652744a6a20.asset",
+    "sha256": "2405b23c16f7cfc5976b5a0afde0157e13efdd354d4e265cb185f32a49225918",
+    "bytes": 15841
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/61e68250f395ec84e86cd652744a6a20.asset.meta",
+    "sha256": "496b8deb7608e9cc43a0145c33dd8a4eb60db9c74c34454b5e1f9181a586818f",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/62d157ce28de1064b8095c8cd096e77c.asset",
+    "sha256": "6951c94d7485c61af484a54f00f87536d60fafad80de2931f3932fc8143cc065",
+    "bytes": 11563
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/62d157ce28de1064b8095c8cd096e77c.asset.meta",
+    "sha256": "cab78bdd84e6c2393b2ea3a46901db1573a1844237ed81d61232ef17580ed64c",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/6568a1ee75e80ae48b3926a0e8a585be.asset",
+    "sha256": "ba8d9ad5c610885d50a765164655be2c813487fd65070724c2408886fe6bf825",
+    "bytes": 39995
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/6568a1ee75e80ae48b3926a0e8a585be.asset.meta",
+    "sha256": "22e204275cb6ff018d08e2d39a401b3d80ecc03ca7bdbecd1789322a5b614c0d",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/6657daa4973ee1249aae293810e8bccd.asset",
+    "sha256": "f349a0903c0d3399894d71c061b386190f744fad28d07af26e29944c0cecb382",
+    "bytes": 2847
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/6657daa4973ee1249aae293810e8bccd.asset.meta",
+    "sha256": "29c2c522c2212f193a237dea6cae26c4091eec68cd4c9a20f973651749a777de",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/667c46fd2864a124ea921d98d4914fe5.asset",
+    "sha256": "142ba0f9ce7d214e43a5f7b7959a7c6635024d5c5872b043e591eb85a21b52f1",
+    "bytes": 4647
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/667c46fd2864a124ea921d98d4914fe5.asset.meta",
+    "sha256": "c64c29bddf761e56b92e682e53b44c256279e2af480b53ee67657b861e64d444",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/68d999abd6627d04999b5bebe2438687.asset",
+    "sha256": "e2cc3e6c4aa1b4e4024cc56a4e177982c83b657f1e571740743153571bddd062",
+    "bytes": 2565
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/68d999abd6627d04999b5bebe2438687.asset.meta",
+    "sha256": "2cc84e9766bf31aa3908e9f621bb30aac656611f98b06e40dd160e52cb00b15d",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/699261d683532df468f1ed17ff8c8cf1.asset",
+    "sha256": "ecdc12c43868eddd1f4cf2dc0c5ce59d2b05479cce8e49ccfc61832547276e78",
+    "bytes": 8735
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/699261d683532df468f1ed17ff8c8cf1.asset.meta",
+    "sha256": "c70e0e5cf101291598d0ae69de93079d71af4424b71731ccec968e36f33da2a9",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/6ec701b06cfc77847adf82e3290f94df.asset",
+    "sha256": "4d1324743625f2d7ae2e1a18573627376d43655c1208fd8398bcbc263449f07c",
+    "bytes": 12427
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/6ec701b06cfc77847adf82e3290f94df.asset.meta",
+    "sha256": "6ff895bc1b75f2257d11c59cffca1478dd96d1623a1e9a9578b227513602df90",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/744008418ce9b104aa7f56d0a0136933.asset",
+    "sha256": "0e421c3588b201a3fddabdb5f20d1edb5c0c10e5445038703c0b87fe7f86e338",
+    "bytes": 13881
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/744008418ce9b104aa7f56d0a0136933.asset.meta",
+    "sha256": "0f3b4866da176eedd837be52cc320dd534acff270872681592a15a55a252e02b",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/75f3b7bb830f4324a8b2f49814f3493a.asset",
+    "sha256": "fa728147a211fbeda9df7980b785ae31e142106d0df033ee9ccd100f99e87e70",
+    "bytes": 4435
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/75f3b7bb830f4324a8b2f49814f3493a.asset.meta",
+    "sha256": "b6e26614a5f5ac4208a7cfe13e0ea7e9395e987491a4b147ca1426afc6e76171",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/7ca93cc79de948a48b2256a78eaed8ec.asset",
+    "sha256": "78ddebeef08b4fe6a4feb810d9b3ef909967ac64e995ab968ca3bae68c6d1e72",
+    "bytes": 14117
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/7ca93cc79de948a48b2256a78eaed8ec.asset.meta",
+    "sha256": "afb7df7c792b296d6e4363033604397cace8c53a6286b9672c445e5f8ef3d348",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/8175c20f542fbaf40811f752bfbf8759.asset",
+    "sha256": "09f5a54e97f889dcfbebf8753035c335bb85c3d9097507b80d392fc275585ab0",
+    "bytes": 21311
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/8175c20f542fbaf40811f752bfbf8759.asset.meta",
+    "sha256": "c233da4bd22d9747d622dea56bd2b07a0a53852391ed1ac63b62d8e62b0688fd",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/853a35cf0f51df6498d68490a1f662e3.asset",
+    "sha256": "fe00eb0473c0c92444b13787fa73ba8cf79db3c3779a43dfec818f0c3068680b",
+    "bytes": 3077
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/853a35cf0f51df6498d68490a1f662e3.asset.meta",
+    "sha256": "a4d40d4e260bae24c98ea0c63e23e8a98cd74103ada6f2d9ac0b9d366fa48871",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/8732b730b248f4344a2839981e1ff9f0.asset",
+    "sha256": "0f68e8ebb2c41d542dd956e2caf8798c0c2aa3581a7cd9062bd1f69577aec455",
+    "bytes": 4919
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/8732b730b248f4344a2839981e1ff9f0.asset.meta",
+    "sha256": "a5aa065d1ce90dcd68e59eda2d98f4ec474847ae30d084e245b82dac2f4e3aac",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/8a784137b6a06774d987e992b558ca5b.asset",
+    "sha256": "e12dffd1f7ef60847eaf0865d790cad6a355c43f976bac424c63635340bb4367",
+    "bytes": 4875
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/8a784137b6a06774d987e992b558ca5b.asset.meta",
+    "sha256": "e273133661fc8d93ef7e9dc5d509f01d722d2f817952a91e6458de27e6e0f6e7",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/953e2e6278cc9314f9f2913d9bc25309.asset",
+    "sha256": "a88c2c3a0a26d0ebb361355664c6fc866b9262bd950caf32c60c78fb607619a4",
+    "bytes": 4407
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/953e2e6278cc9314f9f2913d9bc25309.asset.meta",
+    "sha256": "b609f848da8b02bfd79df2df763f2ac42f20bb50a55520c5335d67cf10ec9a32",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/96ee11c7074d21e4f84d189ad35d45fc.asset",
+    "sha256": "0e090e65141d45307c4aeec6d8e42105912f53f2bcc2a024e3e51d71409e06c3",
+    "bytes": 4585
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/96ee11c7074d21e4f84d189ad35d45fc.asset.meta",
+    "sha256": "e3039232203802a43f72f29ad1e1fe1a1bb7b820e26fc9a7e35891ca6b5e0eae",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/980a7697571ae1540827c8b930f79790.asset",
+    "sha256": "f84930c949b35e94d5b0aa11337996cd789d89541200e5a7f7996c1b6beb61cf",
+    "bytes": 3645
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/980a7697571ae1540827c8b930f79790.asset.meta",
+    "sha256": "e7e968d57b4877f70a88cc0bc6e2b4be251820f48b25d1cd151ef36100471b0b",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/9b88ba8a9da646a42a948af23ce1b774.asset",
+    "sha256": "fa6d2a551877d5a7579218b7a3052f0fb95144c116b1ca34ecaa7559b8e106d0",
+    "bytes": 5459
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/9b88ba8a9da646a42a948af23ce1b774.asset.meta",
+    "sha256": "fe3766edfd73a9a3e0ed2fd15bb6bcd1e85953a44151465970ce34b4ae8c2af4",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/9d916a2228b78c646aa46fe3ba85879d.asset",
+    "sha256": "10bd58a01ddc1f45d5825661733d48acc7acdccde462f800d49ff6c03816aee7",
+    "bytes": 5087
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/9d916a2228b78c646aa46fe3ba85879d.asset.meta",
+    "sha256": "6eff5c18b546e83ecc7aeb24e1bfbd3d9d75e8a8a0f1450b8eb72d85d74415cd",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/a05ce101bfd7b654aa62341b785483cb.asset",
+    "sha256": "b08b746d0f28e06be2b6d2fe8f1e5511f50805d1aaa7efc9d3840e88732b0502",
+    "bytes": 16673
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/a05ce101bfd7b654aa62341b785483cb.asset.meta",
+    "sha256": "0e0fbaaddc5f198366ee4fc69b15be0bdc1595439b136e9275474d814254b9f6",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/a1125ad687f8d9f41b0da3667d153a30.asset",
+    "sha256": "d17fbb45256e2f4ff7922fcd6daa8e017e084261d6cc13add776368a9745d35f",
+    "bytes": 7457
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/a1125ad687f8d9f41b0da3667d153a30.asset.meta",
+    "sha256": "285f086eca0e892a999fa63b304c463e6fd32bf436170399e71020b126bb69fc",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/a3b924aa5d416d94c86ddd019ccb8441.asset",
+    "sha256": "2195c98131445ecd402ce019dbcdcde5af8db757af339c41dbbbf2ff40a22677",
+    "bytes": 5037
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/a3b924aa5d416d94c86ddd019ccb8441.asset.meta",
+    "sha256": "4de2c12fc22a495f94a86eec583ea3bb8c5756648bef2aa7c69cca21b0012f87",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/a7250c474046ad245ac64456f76800ca.asset",
+    "sha256": "8383295f46287f28d60c95983eaf5d8bfc89211b0e55a28e233cd6d2a1ac39cc",
+    "bytes": 2851
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/a7250c474046ad245ac64456f76800ca.asset.meta",
+    "sha256": "94e45794edf45a5b6dc9082aa00677683b6da50250d1eb4f2aafb56774f7d55b",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/acd8738ca64f5a9448dfb040d1f2e4d5.asset",
+    "sha256": "93dedd4c693d7c77eb845754a7773723d48a3d7c583ec8ab79484e11ba0726c6",
+    "bytes": 3761
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/acd8738ca64f5a9448dfb040d1f2e4d5.asset.meta",
+    "sha256": "68966c1634e94ef8e5710238aba94716edb4ba32ffc017edf661b79e3aa271cf",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/ae759e1167fbbf64797a7f6a51f6ee91.asset",
+    "sha256": "db100099a44b677a54d34a8978e58311dda9c1da980fa96cc9a563466fa1fa19",
+    "bytes": 26451
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/ae759e1167fbbf64797a7f6a51f6ee91.asset.meta",
+    "sha256": "338a1e23a59ad90b792f5ef2438b132c482b07930776598f4226b4e248d58467",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/af53faf31851f0d428f46fbcbdc4c7db.asset",
+    "sha256": "489065eb3985778becf9fb0375362e98b3e5924652acb55f3fe968b3324dfc9c",
+    "bytes": 8861
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/af53faf31851f0d428f46fbcbdc4c7db.asset.meta",
+    "sha256": "b49245cd6b1c480bb5538bcdd3429abf6627ab39823d15b0ae8029057ae94e21",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/b35f97b1813cb064d852c92d1c5c1751.asset",
+    "sha256": "fb8397e73391abe2accace521bc42a26d10673867f6ff6743cf054cd43bb8a93",
+    "bytes": 9333
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/b35f97b1813cb064d852c92d1c5c1751.asset.meta",
+    "sha256": "9fa824a1adf4e7697f4e0b1acc5e27cf8b3c6f43f70b80f4812bb47948d27fc6",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/b42eae3a19d2e89448e47dd9c7f5d0e2.asset",
+    "sha256": "7af080cef81f473b060f641e8794a6398a5579e60c53a65a185ac63b51b90ad5",
+    "bytes": 4791
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/b42eae3a19d2e89448e47dd9c7f5d0e2.asset.meta",
+    "sha256": "b4377eca65b0bd929b21c31e744e3556bab2f74c949fda48df5882182768ca27",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/b5280742086799a4c8c0a14e90cd913d.asset",
+    "sha256": "d0b67eaaf85da4e45f6b6b73f300863068a0bb82638ddaaed465589fab6167d1",
+    "bytes": 3313
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/b5280742086799a4c8c0a14e90cd913d.asset.meta",
+    "sha256": "e1ba651911ec9bd84e5c7d388736aa1edacbc8bbde2ed1f93b7a0b5a62e072a1",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/b8e95bf9755820c4380659898968aaf5.asset",
+    "sha256": "ec153f9331d8e73988471950cd20b46dd77245515ba79ab1b5fcd92fa3778c36",
+    "bytes": 5015
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/b8e95bf9755820c4380659898968aaf5.asset.meta",
+    "sha256": "f62dc926486c3ecb2e00bfd878bc8c68ab14879e1941d09cba09709d5d6c3607",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/ba069e3ec8479394a8a01259fbacbfe0.asset",
+    "sha256": "cd81d18e398e686e16c7575c09b5dda5dc1ef4752c1b627bb0eca997fb82a521",
+    "bytes": 2553
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/ba069e3ec8479394a8a01259fbacbfe0.asset.meta",
+    "sha256": "861dec3b868543d231fea36b693e05cff135916de8ef9887707a450b54029953",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/bb3a8d142476b0c4d966ef4aa3cc3104.asset",
+    "sha256": "ac56b5112cb1b5b25b36c50ab666edd1c755c7447301cd54abe7b8952a427782",
+    "bytes": 65187
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/bb3a8d142476b0c4d966ef4aa3cc3104.asset.meta",
+    "sha256": "32babd013a61b1ac087412589a2b8b18254985d8f6ff12c6defa02ec6578a329",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/c6e9444c05ce9d7479266884b95ba034.asset",
+    "sha256": "d9f0f5404ccababdcad7d5f0fb7e7a3c067e2813b59fc9dbdc45f55f2869f015",
+    "bytes": 3663
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/c6e9444c05ce9d7479266884b95ba034.asset.meta",
+    "sha256": "406fd90064209e765e70bb86baf83de37696db1514d75e36126ceea607ac14c6",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/c8df303ceb45ae84f85a11591f741734.asset",
+    "sha256": "474f8ebfa68b09f022a2ff1745904f387ec8a2767931421f1bbae6efa3ef67f7",
+    "bytes": 3751
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/c8df303ceb45ae84f85a11591f741734.asset.meta",
+    "sha256": "2da9b93898ba1de279ec5333ba50a0d8bda16975c06b11b0d38cb8726657b9b0",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/c8eae9de33bb92f419423540656a7ab9.asset",
+    "sha256": "90ebd7b9b419f125e984b37e41de60d3fa4aec26c48f5dfd20e8112033dfa288",
+    "bytes": 15489
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/c8eae9de33bb92f419423540656a7ab9.asset.meta",
+    "sha256": "7f42e4b1dc939c56a33e74bb1cd1985c1a58f4f67266bc951952cbac7abff1ba",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/d78d0aa68ba85fb43bbfaa649e8e398c.asset",
+    "sha256": "d5e8be91bfb33a76166abde10235ad53bd37be7be2bf222a38c230d6fe01f133",
+    "bytes": 2813
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/d78d0aa68ba85fb43bbfaa649e8e398c.asset.meta",
+    "sha256": "2025a6701d72930004ab6800eea63a97ffbbfd4cdbf07ef19b0e58d2505f0ddb",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/da113172081f2ba40b9cc46674a846d0.asset",
+    "sha256": "b25167112fb5606eac8eef845e1c0ebad59721e290945d04a3fe783d83f153fc",
+    "bytes": 5161
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/da113172081f2ba40b9cc46674a846d0.asset.meta",
+    "sha256": "cf8e362dbd42a0462668ce53bc8c1602a7c21ee74be398881266e5b1d3a2f02f",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/dfcb9d6121fc4084e97b5303b0054618.asset",
+    "sha256": "6200ce856339dfdcbbba53dd7b2d9d9a8e74c15fa96e32fe85e701860c6d1e52",
+    "bytes": 1813
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/dfcb9d6121fc4084e97b5303b0054618.asset.meta",
+    "sha256": "c9631c38fa0cd5e02bbe29c0faad28e4b814c897bc54a683d25272b1b0919454",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/e2bad6459db55854ab35efcad68fd926.asset",
+    "sha256": "a65f0b19dc1a4d5fc11fd2c9f88d51d83c8c412fd0124a36d0700dcb88cc8f80",
+    "bytes": 3797
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/e2bad6459db55854ab35efcad68fd926.asset.meta",
+    "sha256": "3fafdfbc0efe5e8e6e5ba144d2a2bde8f2d7bd47c91a88da5556f489b297d7f6",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/e56c3f4ad4a28b54dae2e4e998849d64.asset",
+    "sha256": "21c47ace6d6fe8a06ea2b2df8427b656dc17337492c34f29230d6e2cee30a2cd",
+    "bytes": 23567
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/e56c3f4ad4a28b54dae2e4e998849d64.asset.meta",
+    "sha256": "822c6b036a8f9ea0d76cc2cfb7dab0432582c28d33706f1b136de15b8c4056f6",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/ecb904849c59f924e8fe86a481b7ce68.asset",
+    "sha256": "a06d64e701e5cacb8b105382913a51f3eacbffb6d833cbfd6e3e4c0a0ce80a37",
+    "bytes": 16295
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/ecb904849c59f924e8fe86a481b7ce68.asset.meta",
+    "sha256": "a98fbc1add0dc516aca933b9299358cd7d9355a94763662fb137279daaf1b0a3",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/ef9e478cf5c4bf743a1b12d9dfd54162.asset",
+    "sha256": "80d9dc25c1acbb963afdc644a09230e361259780022e43688d2c51d51dbee854",
+    "bytes": 51231
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/ef9e478cf5c4bf743a1b12d9dfd54162.asset.meta",
+    "sha256": "12423c1fc7817cbadc0c10ac72ecfcbe4363749436ec99aff129b61104861fa5",
+    "bytes": 189
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/fa52d8b703fd906459112715b1ef1f3a.asset",
+    "sha256": "a0286f97e066ee794da7e9ec5f4bc0c94ba31759a37fe94db361d3a081bc8d6e",
+    "bytes": 4731
+  },
+  {
+    "path": "Assets/SerializedUdonPrograms/fa52d8b703fd906459112715b1ef1f3a.asset.meta",
+    "sha256": "692596aac826fa83594443eaba64450248bdcb9a1e38ea75e9ceec8de3bc8b5e",
+    "bytes": 189
+  }
+]

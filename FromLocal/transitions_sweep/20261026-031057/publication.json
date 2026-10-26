@@ -1,0 +1,72 @@
+{
+  "source_local": "E:\\IDMdownload\\VRCC\\dream\\LanbaiReports\\tests\\transitions_sweep\\20261026-031057",
+  "visual_validity": "camera UI excluded; still requires visual review",
+  "omitted": "Private consent note; backup_before and transient state; invalid-run PNG bulk",
+  "files": [
+    {
+      "path": "console.jsonl",
+      "bytes": 59044,
+      "sha256": "b09df6e7c73d5cde05e49e270666a59e8815d208a19e514fc3f796d2757b7ac2"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 16995,
+      "sha256": "d85420f44c776ae2f170c975f8ce0b5950805916851a86ec32a402b8b10253dc"
+    },
+    {
+      "path": "result.json",
+      "bytes": 262,
+      "sha256": "0cfceecd0212ceff002d44032349a5d6249a66bdf123e16be3a3e60fede0e12d"
+    },
+    {
+      "path": "summary.md",
+      "bytes": 6948,
+      "sha256": "1f975173a36e7396681391d3249aadcb51fcf79d29e78d400758de318e41dda7"
+    },
+    {
+      "path": "test_definition.json",
+      "bytes": 3717,
+      "sha256": "2593b41997a30f092e7ff6a51f9c19cd27733bcfcb56081c069b6a112925ddf6"
+    },
+    {
+      "path": "sweep/x06/curve.png",
+      "bytes": 6449,
+      "sha256": "a1a571444b9f55d1e61e7eeba010473c603b9f6e37cd17ce1ff3b85ed43c386c"
+    },
+    {
+      "path": "sweep/x06/frames.csv",
+      "bytes": 1313,
+      "sha256": "9335c9fe6ce0f45683a7d3ca0a31747c28053d16b8043eb13fb09fef568585f4"
+    },
+    {
+      "path": "sweep/x06/strip_1s.png",
+      "bytes": 217105,
+      "sha256": "2ae4aa0ac70ac8abc7d7286042ee39f35d1489e9b81d553b3131cef2c9dc79ec"
+    },
+    {
+      "path": "sweep/x06/strip_fine.png",
+      "bytes": 293384,
+      "sha256": "66e1ac3e56489ea3a7fbd6d6144b83e022f4601a66572352c17aaa8fc3c4f442"
+    },
+    {
+      "path": "sweep/x40/curve.png",
+      "bytes": 7816,
+      "sha256": "9fd5ee962de9e4408fe02e10f7ee5b8fdf6fc1ed73eee7ea995f1bed78336911"
+    },
+    {
+      "path": "sweep/x40/frames.csv",
+      "bytes": 1591,
+      "sha256": "17c1cf748f47eb2eaabd7988217acc56e0ec56ac8a7a3aad243a5578d0eecbe2"
+    },
+    {
+      "path": "sweep/x40/strip_1s.png",
+      "bytes": 299431,
+      "sha256": "195b889605a1492caa1c8742bc713be999d67944b424c9e3e1d142a1087209d0"
+    },
+    {
+      "path": "sweep/x40/strip_fine.png",
+      "bytes": 375669,
+      "sha256": "71f4beec50a9c7795bfc1d920e54fcdc031263ddd4cc29dff2effbf2358ae0d4"
+    }
+  ]
+}

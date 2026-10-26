@@ -1,0 +1,21 @@
+label=fixed_paused_timeline time=43.19268 batch=True audio=0
+dbgT=244.011
+dbgSeg=4
+dbgDEV=0
+dbgB=-0.9
+_sp=0
+_spHandAt=248.39
+_spBlackEnd=23.00318
+_spFade0=29.39264
+_spawnFadeEnded=True
+_journeyReady=True
+dispatcher.lastT=244.011
+dispatcher.activeCount=2
+dispatcher.gradeDEV=0
+dispatcher.spawnFadeTimeout=25
+dispatcher.spawnFadeMax=9.4
+dispatcher._fadeEndT=244.011
+dispatcher._fadeEnded=True
+dispatcher._handState=2
+dispatcher._fadeBegin=20.00318
+overlay=(0.00, 0.00, 0.00, 0.00)

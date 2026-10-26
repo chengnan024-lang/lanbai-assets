@@ -1,0 +1,1 @@
+Fixed D28 eye (.55,1.70,2.05), 960x540 HDR PPv2 MSAA4; yaw=0 pitch=35 timeline=990.761 actualDEV=0

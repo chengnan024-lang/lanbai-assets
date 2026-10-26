@@ -1,0 +1,265 @@
+{
+  "time": "2026-10-26T01:36:03.267071-04:00",
+  "source": "a5a75cb29f0e27bc864e5b0e332950331f406de1",
+  "files": [
+    {
+      "path": "Act04c_Inside/Runtime/LanbaiInsideDriver.cs",
+      "bytes": 30359,
+      "source_sha256": "e0ddb2b40ad240fd8959851fa80973393da0a826c2f2d9e61fe8b8899ab5283a",
+      "target_sha256": "085ad6fada7b53beadd6ce883204a12445d5bd9af0aed3064c5f171725e37284",
+      "action": "update"
+    },
+    {
+      "path": "Act04c_Inside/Runtime/LanbaiInsideTestClock.cs",
+      "bytes": 3553,
+      "source_sha256": "5d91f99d0daf31bc011583f27d29d956e8b47f0709d75f3cdbbb65f38ff92698",
+      "target_sha256": "5d91f99d0daf31bc011583f27d29d956e8b47f0709d75f3cdbbb65f38ff92698",
+      "action": "same"
+    },
+    {
+      "path": "Act04c_Inside/Runtime/LanbaiSkylightSpot.cs",
+      "bytes": 2460,
+      "source_sha256": "92c12f59e1bf93f0ff26f53132eb25029bd598a374221881284db247be1238a6",
+      "target_sha256": "92c12f59e1bf93f0ff26f53132eb25029bd598a374221881284db247be1238a6",
+      "action": "same"
+    },
+    {
+      "path": "Gate/Editor/LanbaiGateDriverBuilder.cs",
+      "bytes": 25645,
+      "source_sha256": "f511fdbcb274e2e4bef4ac647b3a58880699bb5fffd29484dd10425977d42052",
+      "target_sha256": "503f723cf60b9885cabe8ddd385dcc932309fb62b236a7a85a962523295c7fae",
+      "action": "update"
+    },
+    {
+      "path": "Gate/GateDriver_Bake.json",
+      "bytes": 87927,
+      "source_sha256": "e73a1e5eaae76709bb36b0b94b58cf9809583080b2a0522103306eda6b977c31",
+      "target_sha256": "36cf490a24296836ed3c0e2c2c87bcb2d66500a876dcba4f6501768dc4388d81",
+      "action": "update"
+    },
+    {
+      "path": "Gate/GateLayout_v2.json",
+      "bytes": 534289,
+      "source_sha256": "33137b0162ac4173aeb932918a29fd840ff01b6c474f48b659b4faa75ce62922",
+      "target_sha256": "330b9ed696aca2ae09f3c8035bba344dc1d8446f0afc3f87b49f25347e62d98f",
+      "action": "update"
+    },
+    {
+      "path": "Gate/Runtime/LanbaiGateDriver.cs",
+      "bytes": 29436,
+      "source_sha256": "cda86a28184beaaf21fa49d5690c90dc5f8320c1dda119d43811bf2815ae7ae1",
+      "target_sha256": "d6ad908ad5521c715eb018167bf7524c8d66832e067e8170117f9db9d41c94cb",
+      "action": "update"
+    },
+    {
+      "path": "Gate/Runtime/LanbaiGateTestClock.cs",
+      "bytes": 2037,
+      "source_sha256": "d0c566fd1be55434c300dd688b8d8587442b3302b96300deea743a609ddd38cc",
+      "target_sha256": "d0c566fd1be55434c300dd688b8d8587442b3302b96300deea743a609ddd38cc",
+      "action": "same"
+    },
+    {
+      "path": "Gate/Shaders/LanbaiGateSky.cginc",
+      "bytes": 9421,
+      "source_sha256": "70ddb6a5e3f1d91fc850918ddc93a8405a6485e6be033615a9974661f8136b70",
+      "target_sha256": "f1409b8d063125349d8d9f29aac44adfc3d834c9088bffacd4c5cd2c8aa59438",
+      "action": "update"
+    },
+    {
+      "path": "Gate/Shaders/Lanbai_GateAirSky.shader",
+      "bytes": 5312,
+      "source_sha256": "85ed7c4b5bddf774edd46043e738836cbb1bdd0b4b40ec71677c5ecfc6d6c1c4",
+      "target_sha256": "85ed7c4b5bddf774edd46043e738836cbb1bdd0b4b40ec71677c5ecfc6d6c1c4",
+      "action": "same"
+    },
+    {
+      "path": "Gate/Shaders/Lanbai_TentacleSway.shader",
+      "bytes": 65940,
+      "source_sha256": "b26cc9f3c62fc6b5b26ede4728e0cb5e9df3781b42778299fc5557dc3e263069",
+      "target_sha256": "a536d0c71d1677cdf5e2fcb6106fecc4766bbbdc6b2b90170407a35bceb85686",
+      "action": "update"
+    },
+    {
+      "path": "Gate/Shaders/Lanbai_TentacleTide_v2.shader",
+      "bytes": 12148,
+      "source_sha256": "b6b61037bd3a62c6642923852afce42f2a176e1737727f2d214d20709f4fb5ae",
+      "target_sha256": "b6b61037bd3a62c6642923852afce42f2a176e1737727f2d214d20709f4fb5ae",
+      "action": "same"
+    },
+    {
+      "path": "GateClouds/Editor/LanbaiGateCloudsBuilder.cs",
+      "bytes": 32385,
+      "source_sha256": "82f773901d77661ae90c1a9bed689542008c5a2497a57d867a181605fa064640",
+      "target_sha256": "23a88b7f14d8255057f3185d7cb5210f5c7f41a9794d41064f22531a36485385",
+      "action": "update"
+    },
+    {
+      "path": "GateClouds/GateClouds_Layout.json",
+      "bytes": 21835,
+      "source_sha256": "0ea864e0e7780cf1aff560afecbe76980f89800897ba71a193b4fb2dfeb74591",
+      "target_sha256": "629a4e9373e71caf36a0986257ab9d7b7b3a879f94ef5e34d14ee876c1f7c82f",
+      "action": "update"
+    },
+    {
+      "path": "GateClouds/GateClouds_Skirts.json",
+      "bytes": 25261,
+      "source_sha256": "82fbd3a3b068027686cb207695f456a019dbba466967ea3db916e2c0c16877bd",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "GateClouds/README_GateClouds.md",
+      "bytes": 60693,
+      "source_sha256": "2ca3bf93955e51f0a1bef08691fda1700b986cc6f878db7eeafa3cb34cc87f40",
+      "target_sha256": "0a2059555ab13ac2350fb66baf0899f80aa35b98c85f662eef25a4b57ac6a56a",
+      "action": "update"
+    },
+    {
+      "path": "GateClouds/Runtime/LanbaiGateClouds.cs",
+      "bytes": 12995,
+      "source_sha256": "dedcdac58d4e18134df5d114e611f79c9908042e3aad9a22bfe400530d2b2f47",
+      "target_sha256": "9029c220cf2f2fab2d7bca6d0950e959af2220fc6a9933b3e1797003bd79e73f",
+      "action": "update"
+    },
+    {
+      "path": "GateClouds/STATUS.md",
+      "bytes": 1580,
+      "source_sha256": "64221c3d2ae811f413a74ddb720aa9035ffba319a93e15739ae3604245ceae79",
+      "target_sha256": "ce74ea1ed348b3f0e62a90a0458e71651737d9d71e343767b1e99ce4f77b8bab",
+      "action": "update"
+    },
+    {
+      "path": "GateClouds/Shaders/LanbaiCloudVolume.cginc",
+      "bytes": 10830,
+      "source_sha256": "c4526abab69e767c222a7595442aa28b1da53a1133f9d2ad7144091237b063ef",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "GateClouds/Shaders/Lanbai_GateBeam.shader",
+      "bytes": 8830,
+      "source_sha256": "fd93cbc2d3156086bc6c9462437b479eb20064395d8ffa05051cf8df8080b7f0",
+      "target_sha256": "fd93cbc2d3156086bc6c9462437b479eb20064395d8ffa05051cf8df8080b7f0",
+      "action": "same"
+    },
+    {
+      "path": "GateClouds/Shaders/Lanbai_GateCloudCard.shader",
+      "bytes": 10557,
+      "source_sha256": "55257942146d5aa1cb869bf10b7aa1545758a52ee60dd6c6268f8333ba449f5a",
+      "target_sha256": "55257942146d5aa1cb869bf10b7aa1545758a52ee60dd6c6268f8333ba449f5a",
+      "action": "same"
+    },
+    {
+      "path": "GateClouds/Shaders/Lanbai_GateCloudDeck.shader",
+      "bytes": 35072,
+      "source_sha256": "d862622d09945ec9d9557dc4d87b914a957e483a1396974a3250b59b4f8322c7",
+      "target_sha256": "d862622d09945ec9d9557dc4d87b914a957e483a1396974a3250b59b4f8322c7",
+      "action": "same"
+    },
+    {
+      "path": "GateClouds/Shaders/Lanbai_GateVolumeDeck.shader",
+      "bytes": 16396,
+      "source_sha256": "f5f34b33a4a9a2fbc822b59f712f077c58866d0058300ebd911ff549acdae513",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "GateClouds/Textures/Deck_Detail_1024.png",
+      "bytes": 2349539,
+      "source_sha256": "7c9ebda436f49e08d71423c95f0264db3985efe8f0fcc9cb2de14ffa520faef1",
+      "target_sha256": "7c9ebda436f49e08d71423c95f0264db3985efe8f0fcc9cb2de14ffa520faef1",
+      "action": "same"
+    },
+    {
+      "path": "GateClouds/Textures/Deck_Macro_512.png",
+      "bytes": 421357,
+      "source_sha256": "bc35f451862b1928e57e14b7a17040c6133ff6fb52d88563a0083d06559998df",
+      "target_sha256": "bc35f451862b1928e57e14b7a17040c6133ff6fb52d88563a0083d06559998df",
+      "action": "same"
+    },
+    {
+      "path": "GateClouds/Textures/GateCard_Bank.png",
+      "bytes": 1556983,
+      "source_sha256": "b7b4a9d14352ce38e7d4aeb293083dc533a81b68f6def7884d60c020c3907998",
+      "target_sha256": "b7b4a9d14352ce38e7d4aeb293083dc533a81b68f6def7884d60c020c3907998",
+      "action": "same"
+    },
+    {
+      "path": "GateClouds/Textures/GateCard_Congestus.png",
+      "bytes": 929706,
+      "source_sha256": "28444fdea6d17e65d20b38461d9048d4d5087f156ddc7310e3eb9c961f5d3ee3",
+      "target_sha256": "28444fdea6d17e65d20b38461d9048d4d5087f156ddc7310e3eb9c961f5d3ee3",
+      "action": "same"
+    },
+    {
+      "path": "GateClouds/Textures/GateCard_Puff.png",
+      "bytes": 827436,
+      "source_sha256": "d2abf07dbeece03474056d8447c294ee635e530e870668ed17bfc9e2751eb515",
+      "target_sha256": "d2abf07dbeece03474056d8447c294ee635e530e870668ed17bfc9e2751eb515",
+      "action": "same"
+    },
+    {
+      "path": "GateClouds/Textures/GateCard_Strato.png",
+      "bytes": 1502741,
+      "source_sha256": "bf977064a7d427beba4ce9be5503fcc60abd0a837156443455371a4822c48d16",
+      "target_sha256": "bf977064a7d427beba4ce9be5503fcc60abd0a837156443455371a4822c48d16",
+      "action": "same"
+    },
+    {
+      "path": "GateClouds/Textures/GateCard_Wisp.png",
+      "bytes": 1521016,
+      "source_sha256": "e6a171b555befa2b9f88c1c0ba469a716b8ba3b5e7c71bc46a4ee00597733f36",
+      "target_sha256": "e6a171b555befa2b9f88c1c0ba469a716b8ba3b5e7c71bc46a4ee00597733f36",
+      "action": "same"
+    },
+    {
+      "path": "GateClouds/Textures/deck_tiles.json",
+      "bytes": 412,
+      "source_sha256": "898c6e964b08ece147d6af3272d7a5134e78fb0806147e7fcceace2851c7d06d",
+      "target_sha256": "898c6e964b08ece147d6af3272d7a5134e78fb0806147e7fcceace2851c7d06d",
+      "action": "same"
+    },
+    {
+      "path": "GateClouds/Textures/gate_cards.json",
+      "bytes": 1561,
+      "source_sha256": "46c8c2777dfe453b7ae87a4bd19210f1c0cfa727a2547737e060385abad759a6",
+      "target_sha256": "46c8c2777dfe453b7ae87a4bd19210f1c0cfa727a2547737e060385abad759a6",
+      "action": "same"
+    },
+    {
+      "path": "GateClouds/总工程师意见.md",
+      "bytes": 24267,
+      "source_sha256": "1fe31ab49b8e232c75a3627e109a8b59813f0febea6d1273585630e8f66dfcf6",
+      "target_sha256": "1fe31ab49b8e232c75a3627e109a8b59813f0febea6d1273585630e8f66dfcf6",
+      "action": "same"
+    },
+    {
+      "path": "GateClouds/暂停总结.md",
+      "bytes": 4415,
+      "source_sha256": "a38ac6eee3312373ce86f395e3ce8cd664e63ae1aaa6f87a219e0983f68e2582",
+      "target_sha256": "a38ac6eee3312373ce86f395e3ce8cd664e63ae1aaa6f87a219e0983f68e2582",
+      "action": "same"
+    },
+    {
+      "path": "GateClouds/给总控.md",
+      "bytes": 9998,
+      "source_sha256": "bc32d5095a4761a6b3999fd7c4ab06393b431289a141d9dc3e94db226f67f6bf",
+      "target_sha256": "c63c8ed53be254ad5db98e594f61d15e7a3215457d427704869f5e3940c9c8ab",
+      "action": "update"
+    },
+    {
+      "path": "GateClouds/给本地_补丁_LB_GateTest_Run.md",
+      "bytes": 3580,
+      "source_sha256": "95cc2bcd60056915ea4ac6ae522723af50050e550ad6722805862459c28b1612",
+      "target_sha256": "95cc2bcd60056915ea4ac6ae522723af50050e550ad6722805862459c28b1612",
+      "action": "same"
+    },
+    {
+      "path": "GateClouds/美术审片意见.md",
+      "bytes": 14209,
+      "source_sha256": "71904ada18e350ea32b9cd33ebb1cbc0daa3ba07c814a9b8c0f618446f3b6140",
+      "target_sha256": "71904ada18e350ea32b9cd33ebb1cbc0daa3ba07c814a9b8c0f618446f3b6140",
+      "action": "same"
+    }
+  ]
+}

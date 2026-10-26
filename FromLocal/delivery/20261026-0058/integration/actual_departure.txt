@@ -1,0 +1,21 @@
+label=actual_departure time=19.19139 batch=True audio=0
+dbgT=-1
+dbgSeg=0
+dbgDEV=0
+dbgB=0
+_sp=0
+_spHandAt=0
+_spBlackEnd=3.180782
+_spFade0=3.183851
+_spawnFadeEnded=True
+_journeyReady=True
+dispatcher.lastT=0
+dispatcher.activeCount=3
+dispatcher.gradeDEV=0
+dispatcher.spawnFadeTimeout=25
+dispatcher.spawnFadeMax=9.4
+dispatcher._fadeEndT=0
+dispatcher._fadeEnded=True
+dispatcher._handState=2
+dispatcher._fadeBegin=0.1807824
+overlay=(0.00, 0.00, 0.00, 0.00)
