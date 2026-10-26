@@ -307,9 +307,16 @@ def add_bus():
     return objs
 
 
-def set_bus(objs, t, visible, dz=0.0, dx=0.0):
+def set_bus(objs, t, visible, dz=0.0, dx=0.0, psi=None):
     car = L.car(t) + np.array([dx, 0.0, dz])
     T = Matrix.Translation(Vector(bl.u2b(car)))
+    if psi is not None:                       # 车头转角（度，向右为正）和车原点偏移：D-34 #5 的 C 稿（海的补丁）
+        yaw, bdx, bdz = psi
+        a = math.radians(yaw)
+        Ru = np.array([[math.cos(a), 0, math.sin(a)], [0, 1, 0], [-math.sin(a), 0, math.cos(a)]])
+        Mb = bl.U2B @ Ru @ bl.B2U
+        R4 = Matrix([list(Mb[0]) + [0], list(Mb[1]) + [0], list(Mb[2]) + [0], [0, 0, 0, 1]])
+        T = Matrix.Translation(Vector(bl.u2b(L.car(t) + np.array([bdx, 0.0, bdz])))) @ R4
     for o in objs:
         if 'base_mw' not in o:
             o['base_mw'] = [list(r) for r in o.matrix_world]
@@ -318,12 +325,12 @@ def set_bus(objs, t, visible, dz=0.0, dx=0.0):
 
 
 def render_shot(name, out, res, spp, bus):
-    from shots import SHOTS, NO_BUS, SHOT_DZ, SHOT_DX
+    from shots import SHOTS, NO_BUS, SHOT_DZ, SHOT_DX, SHOT_PSI
     t, yaw, pitch, hfov, _ = SHOTS[name]
     dz = SHOT_DZ.get(name, 0.0)
     dx = SHOT_DX.get(name, 0.0)
     sc = bpy.context.scene
-    set_bus(bus, t, name not in NO_BUS, dz, dx)
+    set_bus(bus, t, name not in NO_BUS, dz, dx, SHOT_PSI.get(name))
     cam = bl.camera_unity('Cam_' + name, L.eye(t) + np.array([dx, 0, dz]), yaw, pitch, hfov)
     sc.camera = cam
     bl.render_setup(res, int(round(res * 9 / 16)), spp)

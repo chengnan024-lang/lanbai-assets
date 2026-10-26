@@ -226,7 +226,11 @@ def cowrie():
     alb = alb * (1 - 0.6 * slit[..., None])
     gap = (h < 0.02)
     alb = np.where(gap[..., None], hexl('#2B2A26'), alb)
-    alb = fit_mean(alb, '#5E3050')
+    # 第 10c 轮（复核 r10b #2）：以前把整张（含暗缝）的均值校到 #5E3050，贝面被推到 (111, 37, 90)、C* 42，灯旁读成品红。
+    # 现在只校贝面（不含缝和背斑）：#58325A（h 325、C* 30）——宫灯的暖光把色相往红推约 8°，灯旁才落在 #7A4A6E 一带（h 335、C* 29）
+    shell = ~gap & (spots < 0.5)
+    m = alb[shell].mean(0)
+    alb = np.where(shell[..., None], np.clip(alb * (hexl('#58325A') / np.maximum(m, 1e-6)), 0, 0.82), alb)
     nrm = normal_from_height(gaussian_filter(h - 0.4 * slit, 1.0, mode='wrap'), 6.0)
     sm = np.where(gap, 0.25, 0.92 - 0.2 * slit)
     ao = np.clip(0.35 + 0.65 * h, 0, 1)
