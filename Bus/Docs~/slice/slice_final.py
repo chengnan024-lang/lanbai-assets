@@ -164,7 +164,8 @@ def slice_cams(objs):
     out = {}
     for cid in ORDER:
         piece, dist = QA.SLICE_CAMS[cid]
-        target, lo, hi = QA.bounds_center([objs[n] for n in PIECES[piece] if n in objs])
+        _, lo, hi = QA.bounds_center([objs[n] for n in PIECES[piece] if n in objs])
+        target = QA.slice_target(cid, lo, hi)                # look_at_anchor (main 90bf00c): the window cameras
         d = np.asarray(HERO, float) - target
         eye = target + d / np.linalg.norm(d) * dist
         out[cid] = dict(piece=piece, distance=dist, target=target, eye=eye, rot=QA.look_rotation(target - eye),

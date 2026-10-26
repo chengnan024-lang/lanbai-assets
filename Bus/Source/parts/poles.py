@@ -12,6 +12,7 @@ _HeightSmooth 做（1.62–2.42 m 以外的段落更哑）；这里不画。
 """
 import math
 
+import bmesh
 import numpy as np
 
 import build_bus as BB
@@ -20,18 +21,48 @@ from parts import common as C
 
 R_POLE = 0.016                # Ø32
 SIDES = 20
+AXES = {'x': (1, 0, 0), 'y': (0, 0, 1), 'z': (0, 1, 0)}      # unity axis -> blender (BB.cylinder)
+
+
+def rounded(ob, axes):
+    """smooth-shade the round faces (the sides and the bevel round the rim), keep the faces facing one of 'axes'
+    (unity axis letters: a cylinder's end caps, a box's flat sides) flat behind a split edge. BB.cylinder / BB.box are
+    flat-shaded: the slice's pillar_05m showed the stop-button clamp and the flanges as facets, and most of its
+    micro-motion flicker (Docs~/slice/终审/README.md, item 4)."""
+    C.apply_mods(ob)
+    dirs = [np.array(AXES[a], float) for a in axes]
+    bm = bmesh.new()
+    bm.from_mesh(ob.data)
+    bm.normal_update()
+    # 0.995: the bevel's steps are >= 15 deg off the flat face (a 3-segment box bevel), they go smooth
+    flat = {f: any(abs(float(np.dot(f.normal, d))) > 0.995 for d in dirs) for f in bm.faces}
+    for f in bm.faces:
+        f.smooth = True
+    for e in bm.edges:
+        lf = e.link_faces
+        e.smooth = not (len(lf) == 2 and flat[lf[0]] != flat[lf[1]])
+    bm.to_mesh(ob.data)
+    bm.free()
+    md = ob.modifiers.new('es', 'EDGE_SPLIT')        # the split survives FBX (as common.finish)
+    md.use_edge_angle, md.use_edge_sharp = False, True
+    C.apply_mods(ob)
+    return ob
+
+
+def cyl(name, c, axis, r, length, m, collection, segs, bevel):
+    return rounded(BB.cylinder(name, c, axis, r, length, m, collection, segs=segs, bevel=bevel), axis)
 
 
 def flange(name, c, axis_sign, collection, r=0.034, t=0.007):
     """a round base flange on the floor (axis_sign +1, the pole goes up) or the ceiling (-1) with 3 slotted screws."""
     x, y, z = c
-    objs = [BB.cylinder(name, (x, y + axis_sign * t / 2, z), 'y', r, t, 'Steel', collection, segs=28, bevel=0.0018)]
-    objs.append(BB.cylinder(name + '_Collar', (x, y + axis_sign * (t + 0.010), z), 'y', R_POLE + 0.004, 0.020, 'Steel',
-                            collection, segs=SIDES, bevel=0.0015))
+    objs = [cyl(name, (x, y + axis_sign * t / 2, z), 'y', r, t, 'Steel', collection, segs=28, bevel=0.0018)]
+    objs.append(cyl(name + '_Collar', (x, y + axis_sign * (t + 0.010), z), 'y', R_POLE + 0.004, 0.020, 'Steel',
+                    collection, segs=SIDES, bevel=0.0015))
     for k in range(3):
         a = 2 * math.pi * k / 3 + 0.5
-        objs.append(BB.cylinder(name + '_Screw%d' % k, (x + 0.025 * math.cos(a), y + axis_sign * (t + 0.001), z + 0.025 * math.sin(a)),
-                                'y', 0.0042, 0.002, 'Steel', collection, segs=10, bevel=0.0007))
+        objs.append(cyl(name + '_Screw%d' % k, (x + 0.025 * math.cos(a), y + axis_sign * (t + 0.001), z + 0.025 * math.sin(a)),
+                        'y', 0.0042, 0.002, 'Steel', collection, segs=10, bevel=0.0007))
     return objs
 
 
@@ -47,11 +78,11 @@ def pole(name, x, z, y0, y1, collection='Cabin', button=False):
 
 def stop_button(name, x, y, z, collection):
     """a small pressed-steel box clamped round the pole with a red mushroom push button facing the aisle."""
-    objs = [BB.box(name + '_Box', (x - 0.028, y - 0.045, z - 0.032), (x + 0.028, y + 0.045, z - 0.010), 'Ext_Cream', collection,
-                   bevel=0.006, segs=3)]
-    objs.append(BB.cylinder(name + '_Clamp', (x, y, z), 'y', R_POLE + 0.0035, 0.10, 'Steel', collection, segs=SIDES, bevel=0.002))
-    objs.append(BB.cylinder(name + '_Ring', (x, y, z - 0.034), 'z', 0.017, 0.005, 'Chrome', collection, segs=24, bevel=0.0012))
-    objs.append(BB.cylinder(name + '_Knob', (x, y, z - 0.040), 'z', 0.013, 0.008, 'ButtonRed', collection, segs=24, bevel=0.004))
+    objs = [rounded(BB.box(name + '_Box', (x - 0.028, y - 0.045, z - 0.032), (x + 0.028, y + 0.045, z - 0.010), 'Ext_Cream',
+                           collection, bevel=0.006, segs=3), 'xyz')]
+    objs.append(cyl(name + '_Clamp', (x, y, z), 'y', R_POLE + 0.0035, 0.10, 'Steel', collection, segs=SIDES, bevel=0.002))
+    objs.append(cyl(name + '_Ring', (x, y, z - 0.034), 'z', 0.017, 0.005, 'Chrome', collection, segs=24, bevel=0.0012))
+    objs.append(cyl(name + '_Knob', (x, y, z - 0.040), 'z', 0.013, 0.008, 'ButtonRed', collection, segs=24, bevel=0.004))
     return objs
 
 
@@ -73,9 +104,9 @@ def ceiling_rail(name, x, z0, z1, y, hangers, ceil_y_fn, collection='Cabin'):
 
 def split_clamp(name, x, y, z, collection):
     """the T joint: a 50 mm sleeve round the rail (two halves, a seam), a socket up into the hanger, two bolt heads."""
-    objs = [BB.cylinder(name + '_Sleeve', (x, y, z), 'z', R_POLE + 0.0045, 0.052, 'Steel', collection, segs=SIDES, bevel=0.002)]
-    objs.append(BB.cylinder(name + '_Socket', (x, y + R_POLE + 0.010, z), 'y', 0.0145, 0.026, 'Steel', collection, segs=16,
-                            bevel=0.0015))
+    objs = [cyl(name + '_Sleeve', (x, y, z), 'z', R_POLE + 0.0045, 0.052, 'Steel', collection, segs=SIDES, bevel=0.002)]
+    objs.append(cyl(name + '_Socket', (x, y + R_POLE + 0.010, z), 'y', 0.0145, 0.026, 'Steel', collection, segs=16,
+                    bevel=0.0015))
     for dz in (-0.017, 0.017):
         objs.append(BB.cylinder(name + '_Bolt%+.3f' % dz, (x + R_POLE + 0.006, y - 0.004, z + dz), 'x', 0.0045, 0.004,
                                 'Steel', collection, segs=6, bevel=0.0008))
@@ -88,6 +119,6 @@ def door_grab(name, x_wall, z, y0, y1, collection='Cabin'):
     path = [(x_wall - 0.004, y0, z + 0.04), (xs, y0 + 0.02, z), (xs, y1 - 0.02, z), (x_wall - 0.004, y1, z + 0.04)]
     objs = [C.sweep(name, path, 0.0125, 'Steel', collection, sides=SIDES, bend=0.035, seg_per_90=8)]
     for yy in (y0, y1):
-        objs.append(BB.cylinder(name + '_Mount%.2f' % yy, (x_wall - 0.004, yy, z + 0.04), 'x', 0.022, 0.008, 'Steel',
-                                collection, segs=24, bevel=0.0015))
+        objs.append(cyl(name + '_Mount%.2f' % yy, (x_wall - 0.004, yy, z + 0.04), 'x', 0.022, 0.008, 'Steel',
+                        collection, segs=24, bevel=0.0015))
     return objs

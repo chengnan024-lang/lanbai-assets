@@ -140,8 +140,8 @@ BACKDROP = 0.18              # what camera rays (and rays straight through glass
 PLATE_ALBEDO = 0.04          # the dark plate under the cards (the grey card would vanish on the grey backdrop)
 CLIP_LEVEL = 254             # a pixel is clipped when any channel reaches this
 
-# 总工程师 bus_slice.json 的六台机位（origin/pkg/engineering:Engineering/UnityTest/tests/bus_slice.json @ ec0b071）：
-# 看切片物体的包围盒中心，朝主座位的眼退 distance，裁 40 × 30°，20 px/°。切片物体 = 车里真位置上的那一件
+# 总工程师 bus_slice.json 的六台机位（origin/pkg/engineering:Engineering/UnityTest/tests/bus_slice.json @ ec0b071，
+# 侧窗两台 main 90bf00c）：看切片物体的包围盒中心（侧窗两台看 SLICE_ANCHOR），朝主座位的眼退 distance，裁 40 × 30°，20 px/°。切片物体 = 车里真位置上的那一件
 # （Bus/Editor/LanbaiBusSliceBuilder.cs：Slice_Seat = SeatR0 主座位，Slice_SideWindow = WinR1，Slice_Pillar = PoleR0）。
 SLICE_CAMS = {
     'seat_05m': ('seat', 0.5), 'seat_10m': ('seat', 1.0),
@@ -149,6 +149,9 @@ SLICE_CAMS = {
     'pillar_05m': ('pillar', 0.5), 'pillar_10m': ('pillar', 1.0),
 }
 SLICE_CROP, SLICE_PPD = (40.0, 30.0), 20.0
+# look_at_anchor（main 90bf00c，测试工具 1.2.2，LanbaiTestCapture 93-97）：两台侧窗机位不再对着包围盒中心（只拍到玻璃），
+# 对着包围盒里的一点，每轴 0 = min、1 = max：window_05m 窗扣、window_10m 窗框的后上角
+SLICE_ANCHOR = {'window_05m': (0.5, 0.785, 0.5), 'window_10m': (0.5, 0.785, 0.774)}
 # bus_slice.json 'sequences' (cam -> sequence id) and its shimmer checks (gate false: an initial value, set after the
 # slice's first Unity run). Listed so the Blender number can be found next to the Unity one; it is not that check.
 SLICE_SEQ = {'pillar_10m': 'pillar_micro', 'window_10m': 'window_micro', 'seat_10m': 'seat_micro'}
@@ -672,6 +675,12 @@ def ppd_size(hfov, vfov, ppd):
     return int(round(2 * math.tan(math.radians(hfov) / 2) * k)), int(round(2 * math.tan(math.radians(vfov) / 2) * k))
 
 
+def slice_target(cid, lo, hi):
+    """the point a slice camera looks at: the bounds centre, or its look_at_anchor inside the bounds."""
+    an = SLICE_ANCHOR.get(cid)
+    return (lo + hi) / 2 if an is None else lo + np.asarray(an, float) * (hi - lo)
+
+
 def bounds_center(objs):
     """Unity Renderer.bounds of all the pieces, encapsulated -> centre (Unity coords)."""
     lo, hi = np.full(3, 1e9), np.full(3, -1e9)
@@ -1092,13 +1101,15 @@ def mode_flicker(a):
             print('[qa flicker] ERROR: the slice pieces did not build from %s; use a HEAD snapshot:\n       %s'
                   % (SRC, SNAP_RECIPE))
             return 4
-        target, lo, hi = bounds_center(pieces[piece])
+        _, lo, hi = bounds_center(pieces[piece])
+        target = slice_target(cid, lo, hi)
         d = np.asarray(B.EYE, float) - target                      # LanbaiTestCapture.cs 95-105: back off toward 'toward'
         eye = target + d / np.linalg.norm(d) * dist
         crop = SLICE_CROP
         ppd = SLICE_PPD
         seq_id = SLICE_SEQ.get(cid)
-        cam_info = dict(slice_cam=cid, look_at_object=piece, bounds_center=[round(float(v), 4) for v in target],
+        cam_info = dict(slice_cam=cid, look_at_object=piece, bounds_center=[round(float(v), 4) for v in (lo + hi) / 2],
+                        look_at_anchor=SLICE_ANCHOR.get(cid), look_at=[round(float(v), 4) for v in target],
                         bounds_min=[round(float(v), 4) for v in lo], bounds_max=[round(float(v), 4) for v in hi],
                         toward=list(B.EYE), distance=dist, scene='the three slice pieces only (LanbaiBusSliceBuilder)')
     else:
