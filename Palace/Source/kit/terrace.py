@@ -6,9 +6,10 @@ import math
 
 import numpy as np
 
-from .common import UB
+from .common import UB, palace_frame
 
 CHAMFER_W, CHAMFER_D = 0.8, 1.6
+PAVE_X0 = palace_frame()['avenue']['paving']['x'][0]
 
 
 def _noise(x, z, seed=0):
@@ -28,7 +29,7 @@ def build(lod=0, edge_x=-8.0, lip_y=-13.0, z0=-120.0, z1=520.0, x_far=-260.0):
     zs = np.arange(z0, z1 + 0.01, dz)
     # 终审 10-25 #3：崖口顶边是风化的斜坡（最后 CHAMFER_W m 往下 CHAMFER_D m），不是直角——从下唇以下按真位置看，
     # 离崖口 1 m 的那一列灯焰正好越过崖顶（深度不作弊；眼睛在 −29 m 以上都看得见），远处那一列照样被台地挡住。
-    xs = np.array([edge_x, edge_x - CHAMFER_W * 0.5, edge_x - CHAMFER_W, edge_x - 1.0, -28.5, -34, -45, -60, -85, -120, -170, x_far])
+    xs = np.array([edge_x, edge_x - CHAMFER_W * 0.5, edge_x - CHAMFER_W, edge_x - 1.0, PAVE_X0, -34, -45, -60, -85, -120, -170, x_far])
     H = np.zeros((len(xs), len(zs)))
     for i, x in enumerate(xs):
         for j, z in enumerate(zs):
@@ -49,7 +50,8 @@ def build(lod=0, edge_x=-8.0, lip_y=-13.0, z0=-120.0, z1=520.0, x_far=-260.0):
     _orient_up(tmp)
     u.merge(tmp)
     # ---- 神道铺石（抬高 0.12，四周有边）
-    u.box((-28.5, 0.0, 42.4), (-8.5, 0.12, 334.1), 'Stone', skip=('-y',))
+    pv = palace_frame()['avenue']['paving']                 # 第 10 轮 (c)：按海的约定
+    u.box((pv['x'][0], 0.0, pv['z'][0]), (pv['x'][1], 0.12, pv['z'][1]), 'Stone', skip=('-y',))
     # ---- 崖壁：x = edge_x，从 y 0 到 lip_y，带起伏（横向 1–2 m 的岩石凸凹）；下缘往里卷
     rows = [-CHAMFER_D, -2.4, -4.0, -6.5, -9.0, -11.0, -12.4, lip_y]
     dzw = 4.0 if lod == 0 else 16.0

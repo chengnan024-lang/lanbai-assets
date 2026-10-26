@@ -136,7 +136,7 @@ def standard(name, base, normal=None, mask=None, smooth=0.5, metallic=0.0, silt=
         b.link(lw.outputs['Facing'], ramp.inputs[0])
         b.link(ramp.outputs[0], bs.inputs['Specular Tint'])
         # 终审 10-25 #1/#5：鳞默认是暗的——不加清漆层、基础高光压低，屋面不再整片反射上方的亮水；珍珠光只来自灯（_NacreLift 的那一条带）
-        bs.inputs['Specular IOR Level'].default_value = 0.3
+        bs.inputs['Specular IOR Level'].default_value = 0.0      # 复核 r10b：鳞默认暗——不反射水（整片冷色碎闪点就是它）；珍珠光只来自光带
         bs.inputs['Coat Weight'].default_value = 0.0
         # 终审 10-25 #5：灯的高光沿屋面坡向拉成一条带（Unity：_NacreAniso，B = UV v）
         tg = b.n('ShaderNodeTangent')

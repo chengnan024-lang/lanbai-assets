@@ -19,17 +19,22 @@ except ImportError:  # 直接当脚本 / sys.path 里有 kit/
     from common import UB, lathe, TILE
 
 # ------------------------------------------------------------------ 约定数据（PalaceFrame_约定.json · hall）
-X0, X1 = -68.0, -8.0            # 殿身
+try:
+    from .common import palace_frame as _pf
+except ImportError:
+    from common import palace_frame as _pf
+_H = _pf()['hall']                # 第 10 轮 (c)：殿的 x 全部按海的约定（神道左移 1.75 m）
+X0, X1 = _H['x']                # 殿身
 ZF, DEPTH = 342.6, 28.0         # 前檐墙 / 进深
 ZB = ZF + DEPTH                 # 后墙 370.6
 H_TOTAL = 30.0
 BAYS = 9
 BAY = (X1 - X0) / BAYS          # 6.667
-DOOR_X, DOOR_W, DOOR_H = -18.0, 4.2, 7.5
+DOOR_X, DOOR_W, DOOR_H = _H['door_x'], _H['door_size'][0], _H['door_size'][1]
 LEAF_OPEN = 92.0                # 门扇向里开的角度（终审 10-25 #4：70° 时从 −40° 斜看，门扇挡掉半个门洞；开到贴着暗腔侧壁）
 MINGJIAN = 11.5                 # 门廊明间宽（终审 10-25 #4；原来是一个开间 6.67）
-PX0, PX1, PZ0, PZ1, PY = -72.0, -8.0, 334.1, 376.6, 6.0   # 台基
-SX0, SX1, SZ0, SZ1 = -22.0, -14.0, 325.1, 334.1           # 阶（墄）
+PX0, PX1 = _H['platform']['x']; PZ0, PZ1, PY = 334.1, 376.6, 6.0   # 台基
+SX0, SX1 = _H['platform']['stair']['x']; SZ0, SZ1 = 325.1, 334.1     # 阶（墄）
 RIDGE_TOP = PY + H_TOTAL        # 36
 
 # ------------------------------------------------------------------ 设计取值
@@ -781,7 +786,7 @@ def _parts(lod=0):
             add(nm, solid(u.transformed(M, t)))
     # 门里的暖光（第 4 轮，美术评审 r3 阻断 1）：整个门后暗腔的内衬都发光（背面、两侧、顶、地），朝里；
     # 门扇在它前面读成暗剪影，从任何角度看门洞里都是光，看不见实体墙。UV0.y = (y − 台基面) / 门高（shader 的竖向渐变）。
-    lx0, lx1 = -21.0 + 0.02, -15.0 - 0.02
+    lx0, lx1 = DOOR_X - 3.0 + 0.02, DOOR_X + 3.0 - 0.02
     ly0, ly1 = PY + 0.02, PY + 8.5 - 0.02
     lz0, lz1 = ZF + WALL_T + 0.02, 348.6 - 0.02
     g = UB()

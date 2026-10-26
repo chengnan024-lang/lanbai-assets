@@ -152,7 +152,7 @@ public static class LanbaiPalaceBuilder
         d["FishScale"].SetFloat("_LampGain", LanbaiPalaceData.NacreLampGain);     // 珍珠光要“滚出来”（评审 r3 #7）
         d["FishScale"].SetFloat("_NacreLift", LanbaiPalaceData.NacreLift);         // 第 8 轮：灯在檐下照不出镜面高光，按挪高的灯算（README §3）
         d["FishScale"].SetFloat("_NacreSpread", LanbaiPalaceData.NacreSpread);
-        d["FishScale"].SetFloat("_EnvSpec", 0.15f);
+        d["FishScale"].SetFloat("_EnvSpec", 0f);           // 复核 r10b：鳞默认暗，不反射水
         d["FishScale"].SetFloat("_BandGain", LanbaiPalaceData.BandGain);       // 终审 10-25 #5：灯经过时一条珍珠光带扫过屋面
         d["FishScale"].SetFloat("_BandWidth", LanbaiPalaceData.BandWidth);
         d["FishScale"].SetFloat("_BandReach", LanbaiPalaceData.BandReach);        // 终审 10-25 #1/#5：鳞默认是暗的，不整片反射上方的亮水

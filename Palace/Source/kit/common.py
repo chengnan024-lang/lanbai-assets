@@ -16,6 +16,17 @@ SLOTS = ['Lacquer', 'LacquerBlack', 'LacquerBand', 'Gilt', 'Bronze', 'Verdigris'
 TILE = {'Lacquer': 2.0, 'LacquerBlack': 2.0, 'LacquerBand': 4.0, 'Gilt': 1.0, 'Bronze': 0.5, 'Verdigris': 0.5,
         'Stone': 4.0, 'StoneDark': 4.0, 'FishScale': 2.0, 'Cowrie': 1.0, 'Tile': 3.0, 'Wood': 2.0, 'Rock': 8.0,
         'Weed': 1.0, 'Fish': 1.0, 'DoorGlow': 4.0, 'StoneWet': 4.0}
+def palace_frame():
+    """海的宫殿约定（Act07_Sea/PalaceFrame_约定.json）；环境变量 PALACE_FRAME 可指到另一份（例如 pkg/sea 上还没合的新约定）。"""
+    import json
+    import os
+    here = os.path.dirname(os.path.abspath(__file__))
+    pinned = os.path.normpath(os.path.join(here, '..', 'PalaceFrame_约定_pkg_sea_2fb1ff1.json'))
+    p = (os.environ.get('PALACE_FRAME') or (pinned if os.path.exists(pinned) else None)
+         or os.path.normpath(os.path.join(here, '..', '..', '..', 'Act07_Sea', 'PalaceFrame_约定.json')))
+    return json.load(open(p, encoding='utf-8'))
+
+
 U2B = np.array([[-1.0, 0, 0], [0, 0, -1.0], [0, 1.0, 0]])
 
 

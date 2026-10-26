@@ -200,7 +200,13 @@ def nacre_band(exr, Pu, e, t):
     out = np.zeros(Pu.shape)
     if not m.any():
         return out
-    N = np.stack([exr['Normal.X'], exr['Normal.Y'], exr['Normal.Z']], -1)[m] @ B2U.T
+    # 几何法线（= shader 的 Ng）：用位置的屏幕梯度算——Normal 通道带着鳞片的法线贴图，会把檐口方向抖散成满屋面的碎点
+    gy, gx = np.gradient(Pu, axis=(0, 1))
+    Ng = np.cross(gx, gy)
+    Ng /= np.linalg.norm(Ng, axis=-1, keepdims=True) + 1e-12
+    Ns = np.stack([exr['Normal.X'], exr['Normal.Y'], exr['Normal.Z']], -1) @ B2U.T
+    Ng = np.where((np.sum(Ng * Ns, -1) < 0)[..., None], -Ng, Ng)      # 朝向和着色法线一致
+    N = Ng[m]
     P = Pu[m]
     Te = np.cross(np.array([0.0, 1.0, 0.0]), N)
     Te /= np.linalg.norm(Te, axis=-1, keepdims=True) + 1e-9
