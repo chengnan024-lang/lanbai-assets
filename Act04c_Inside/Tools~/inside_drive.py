@@ -22,6 +22,7 @@ FOG_D0, FOG_D1 = 0.0006, D.FOG_DENSITY  # act 4's density -> the inside's, over 
 NADIR_K = 0.80                          # darker below (review r1 / art review r03)
 SHEET_FOG_CAP, LIP8_HOLD_M, LIP8_RAMP_M = 0.25, 70.0, 60.0     # r09: cap 0.30 -> 0.25 (art review r08 B2-3; 0.28 lifted 200 by only 0.4 APL and the 197 near sheet to 41)
 CROSSED_FADE_M = 300.0
+LIP1_HOLD_M = 290.0                    # D-49: lip 1 starts fading only at s(184.5), once the gate's six hands behind it are gone
 SLEEVE_FOG_K = 0.72                                    # r07 / r09: the air inside the sleeve (forward APL; the side window barely depends on it)
 SLEEVE_INNER_CLOTH_K = 1.35                            # r09: the inner plies' cut faces (226 side APL)
 SLEEVE_LOOSE_K = 12.0                                  # r08: loose fibres pulled from the thick cloth, inside the sleeve
@@ -129,6 +130,8 @@ def lip_visibility(k, t):
     S = [float(D.dist(x)) for x in D.LIP_T]
     if s >= S[k - 1]:                                # 总导演终审 #4: crossed lips fade out behind (D-02 looking back)
         s_out = S[k - 1] + (D.SLEEVE_DEPTH if k == 8 else 0.0)      # lip 8: crossed once the sleeve's exit is
+        if k == 1:                                   # D-49: lip 1's cloth masks the gate's hands behind it until 184.5
+            s_out = S[0] + LIP1_HOLD_M
         return 1.0 if s < s_out else 1.0 - float(D.ss(np.clip((s - s_out) / CROSSED_FADE_M, 0.0, 1.0)))
     ahead = [i for i in range(8) if S[i] > s]
     rank = ahead.index(k - 1)

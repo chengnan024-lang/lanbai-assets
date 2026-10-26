@@ -59,6 +59,7 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
     public float[] lipMatLip;                     // which lip (1..8) each material belongs to
     public float lip8HoldM = 70f, lip8RampM = 60f;
     public float crossedFadeM = 300f;              // #4: crossed lips fade out over this distance behind
+    public float lip1HoldM = 290f;                 // D-49: lip 1 starts fading only here (s(184.5): the gate's six hands behind it are gone)
 
     [Header("Lichtchen ahead (sky object)")]
     public Transform dotTransform;                // bus-anchored, 2.3 km along the dot direction from the hero eye
@@ -401,6 +402,9 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
         if (s >= lipS[k - 1])
         {
             float sOut = lipS[k - 1] + (k == 8 ? sleeveDepth : 0f);     // lip 8: crossed only once the sleeve's exit is
+            // D-49 (looking back, A): lip 1's cloth masks the gate's six hands behind it (opaque, writes depth); it must
+            // stay visible until they are gone, or they would be cut by an edge that has faded away
+            if (k == 1) sOut = lipS[0] + lip1HoldM;
             return s < sOut ? 1f : 1f - SS((s - sOut) / crossedFadeM);
         }
         int rank = 0;
