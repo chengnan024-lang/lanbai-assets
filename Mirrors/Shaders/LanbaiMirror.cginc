@@ -138,8 +138,9 @@ inline float LanbaiMirrorBreakup(float sdFront, float2 xzM, float cellM, float b
     float edge = (c.y - c.x) * 0.5;                              // distance to the crack, in cells
     float gap = 0.18 * (1.0 - s) * (1.0 - s);                    // cracks open toward the front
     float gone = c.z - (s * 1.3 - 0.1);                          // > 0: this chunk has already dropped out
-    float keep = min(edge - gap, -gone);
-    glow = (1.0 - s) * saturate(1.0 - (edge - gap) / 0.06) * step(0.0, keep);
+    float shrink = 0.6 * saturate((gone + 0.25) / 0.25);        // a chunk shrinks to its centre before it drops: no pop (flash m9)
+    float keep = min(edge - gap - shrink, -gone);
+    glow = (1.0 - s) * saturate(1.0 - (edge - gap - shrink) / 0.06) * step(0.0, keep);
     return keep >= 0.0 ? sdFront : -1.0;
 }
 

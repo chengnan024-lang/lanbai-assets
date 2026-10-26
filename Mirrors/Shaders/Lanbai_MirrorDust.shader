@@ -17,7 +17,7 @@
 //  Per renderer (MaterialPropertyBlock, LanbaiMirrorsDriver): _DustNow (timeline t), _DustT0 (crossing t),
 //    _DustC (xyz = world position of the mirror centre at the crossing (face-edge height), w = radius m),
 //    _DustCar (xy = car xz minus centre xz, metres; z = face rise speed m/s after the crossing; w = D),
-//    _DustOn (0/1).
+//    _DustOn (0 = off, else the gain: mirror 12's dust, born in the impact, is at 0.5).
 // =====================================================================================================
 Shader "Lanbai/MirrorDust"
 {
@@ -27,7 +27,7 @@ Shader "Lanbai/MirrorDust"
         _DustT0 ("Crossing time", Float) = -100
         _DustC ("Mirror centre at crossing xyz and radius w", Vector) = (0, 0, 0, 20)
         _DustCar ("Car minus centre xy, rise speed z, diameter w", Vector) = (0, 0, 1.7, 40)
-        _DustOn ("On", Float) = 0
+        _DustOn ("On and gain (0..1)", Float) = 0
         _Dur ("Dissolve duration s", Float) = 2
         _Fade ("Fade s", Float) = 4
         _Rise ("Rise speed m per s (max 1)", Range(0, 1)) = 0.6

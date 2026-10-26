@@ -103,8 +103,8 @@
   ]
  },
  "Cabin_Static": {
-  "verts": 167836,
-  "verts_expected": 167836,
+  "verts": 57820,
+  "verts_expected": 57820,
   "bbox_err_m": 0.0,
   "uv_layers": [
    "UVMap",
@@ -502,8 +502,8 @@
   ]
  },
  "Seat_DriverSeat": {
-  "verts": 3904,
-  "verts_expected": 3904,
+  "verts": 2836,
+  "verts_expected": 2836,
   "bbox_err_m": 0.0,
   "uv_layers": [
    "UVMap",
@@ -515,8 +515,8 @@
   ]
  },
  "Seat_RearBench": {
-  "verts": 10448,
-  "verts_expected": 10448,
+  "verts": 7340,
+  "verts_expected": 7340,
   "bbox_err_m": 0.0,
   "uv_layers": [
    "UVMap",
@@ -528,8 +528,8 @@
   ]
  },
  "Seat_SeatL0": {
-  "verts": 6824,
-  "verts_expected": 6824,
+  "verts": 5484,
+  "verts_expected": 5484,
   "bbox_err_m": 0.0,
   "uv_layers": [
    "UVMap",
@@ -541,8 +541,8 @@
   ]
  },
  "Seat_SeatL1": {
-  "verts": 6824,
-  "verts_expected": 6824,
+  "verts": 5484,
+  "verts_expected": 5484,
   "bbox_err_m": 0.0,
   "uv_layers": [
    "UVMap",
@@ -554,8 +554,8 @@
   ]
  },
  "Seat_SeatL2": {
-  "verts": 6824,
-  "verts_expected": 6824,
+  "verts": 5484,
+  "verts_expected": 5484,
   "bbox_err_m": 0.0,
   "uv_layers": [
    "UVMap",
@@ -567,8 +567,8 @@
   ]
  },
  "Seat_SeatL3": {
-  "verts": 6824,
-  "verts_expected": 6824,
+  "verts": 5484,
+  "verts_expected": 5484,
   "bbox_err_m": 0.0,
   "uv_layers": [
    "UVMap",
@@ -580,8 +580,8 @@
   ]
  },
  "Seat_SeatL4": {
-  "verts": 4908,
-  "verts_expected": 4908,
+  "verts": 3568,
+  "verts_expected": 3568,
   "bbox_err_m": 0.0,
   "uv_layers": [
    "UVMap",
@@ -593,8 +593,8 @@
   ]
  },
  "Seat_SeatL5": {
-  "verts": 4908,
-  "verts_expected": 4908,
+  "verts": 3568,
+  "verts_expected": 3568,
   "bbox_err_m": 0.0,
   "uv_layers": [
    "UVMap",
@@ -606,8 +606,8 @@
   ]
  },
  "Seat_SeatR0": {
-  "verts": 4556,
-  "verts_expected": 4556,
+  "verts": 3536,
+  "verts_expected": 3536,
   "bbox_err_m": 0.0,
   "uv_layers": [
    "UVMap",
@@ -619,8 +619,8 @@
   ]
  },
  "Seat_SeatR1": {
-  "verts": 5868,
-  "verts_expected": 5868,
+  "verts": 4848,
+  "verts_expected": 4848,
   "bbox_err_m": 0.0,
   "uv_layers": [
    "UVMap",
@@ -632,8 +632,8 @@
   ]
  },
  "Seat_SeatR2": {
-  "verts": 5868,
-  "verts_expected": 5868,
+  "verts": 4848,
+  "verts_expected": 4848,
   "bbox_err_m": 0.0,
   "uv_layers": [
    "UVMap",
@@ -645,8 +645,8 @@
   ]
  },
  "Seat_SeatR3": {
-  "verts": 5868,
-  "verts_expected": 5868,
+  "verts": 4848,
+  "verts_expected": 4848,
   "bbox_err_m": 0.0,
   "uv_layers": [
    "UVMap",
@@ -658,8 +658,8 @@
   ]
  },
  "Seat_SeatR4": {
-  "verts": 5868,
-  "verts_expected": 5868,
+  "verts": 4848,
+  "verts_expected": 4848,
   "bbox_err_m": 0.0,
   "uv_layers": [
    "UVMap",
@@ -671,8 +671,8 @@
   ]
  },
  "Seat_SeatR5": {
-  "verts": 5868,
-  "verts_expected": 5868,
+  "verts": 4848,
+  "verts_expected": 4848,
   "bbox_err_m": 0.0,
   "uv_layers": [
    "UVMap",
@@ -684,8 +684,8 @@
   ]
  },
  "Seat_SeatR6": {
-  "verts": 5868,
-  "verts_expected": 5868,
+  "verts": 4848,
+  "verts_expected": 4848,
   "bbox_err_m": 0.0,
   "uv_layers": [
    "UVMap",
@@ -741,8 +741,8 @@
   ]
  },
  "Window_R1": {
-  "verts": 14556,
-  "verts_expected": 14556,
+  "verts": 5304,
+  "verts_expected": 5304,
   "bbox_err_m": 0.0,
   "uv_layers": [
    "UVMap",
@@ -776,5 +776,395 @@
   ]
  },
  "WiperPivot_L": "ok (empty)",
- "WiperPivot_R": "ok (empty)"
+ "WiperPivot_R": "ok (empty)",
+ "Seat_DriverSeat_LOD1": {
+  "verts": 1447,
+  "verts_expected": 1447,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_DriverSeat_LOD2": {
+  "verts": 752,
+  "verts_expected": 752,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_RearBench_LOD1": {
+  "verts": 3710,
+  "verts_expected": 3710,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_RearBench_LOD2": {
+  "verts": 1895,
+  "verts_expected": 1895,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatL0_LOD1": {
+  "verts": 2789,
+  "verts_expected": 2789,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatL0_LOD2": {
+  "verts": 1441,
+  "verts_expected": 1441,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatL1_LOD1": {
+  "verts": 2789,
+  "verts_expected": 2789,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatL1_LOD2": {
+  "verts": 1441,
+  "verts_expected": 1441,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatL2_LOD1": {
+  "verts": 2789,
+  "verts_expected": 2789,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatL2_LOD2": {
+  "verts": 1441,
+  "verts_expected": 1441,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatL3_LOD1": {
+  "verts": 2789,
+  "verts_expected": 2789,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatL3_LOD2": {
+  "verts": 1441,
+  "verts_expected": 1441,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatL4_LOD1": {
+  "verts": 1818,
+  "verts_expected": 1818,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatL4_LOD2": {
+  "verts": 943,
+  "verts_expected": 943,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatL5_LOD1": {
+  "verts": 1818,
+  "verts_expected": 1818,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatL5_LOD2": {
+  "verts": 943,
+  "verts_expected": 943,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatR0_LOD1": {
+  "verts": 1802,
+  "verts_expected": 1802,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatR0_LOD2": {
+  "verts": 935,
+  "verts_expected": 935,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatR1_LOD1": {
+  "verts": 2470,
+  "verts_expected": 2470,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatR1_LOD2": {
+  "verts": 1281,
+  "verts_expected": 1281,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatR2_LOD1": {
+  "verts": 2470,
+  "verts_expected": 2470,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatR2_LOD2": {
+  "verts": 1281,
+  "verts_expected": 1281,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatR3_LOD1": {
+  "verts": 2470,
+  "verts_expected": 2470,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatR3_LOD2": {
+  "verts": 1281,
+  "verts_expected": 1281,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatR4_LOD1": {
+  "verts": 2470,
+  "verts_expected": 2470,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatR4_LOD2": {
+  "verts": 1281,
+  "verts_expected": 1281,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatR5_LOD1": {
+  "verts": 2470,
+  "verts_expected": 2470,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatR5_LOD2": {
+  "verts": 1281,
+  "verts_expected": 1281,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatR6_LOD1": {
+  "verts": 2470,
+  "verts_expected": 2470,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ },
+ "Seat_SeatR6_LOD2": {
+  "verts": 1281,
+  "verts_expected": 1281,
+  "bbox_err_m": 0.0,
+  "uv_layers": [
+   "UVMap",
+   "UVLightmap",
+   "UVMetric"
+  ],
+  "colours": [
+   "Col"
+  ]
+ }
 }
