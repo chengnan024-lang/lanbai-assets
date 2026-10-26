@@ -10,6 +10,11 @@
 //     <Tear root>/GateBeam_<id>           2 shafts (Lanbai/GateBeam, mode 0), Tear_Root (or Tear_Kit) object space
 //   and the LanbaiGateClouds driver on GateRoot/GateClouds with every array filled. Run it again any time: it
 //   deletes what it built before. Nothing else in the scene is touched.
+// D-44 #3 (2026-10-25): the volume cloud. If the scene draws the gate's cloud with 阿白's volume deck
+//   (Lanbai/Local/VolumeCloudDeck, or this kit's Lanbai/GateVolumeDeck = the same + the root skirts), that material is
+//   kept across rebuilds on GateClouds/Deck, its shader is switched to Lanbai/GateVolumeDeck (same properties), and its
+//   _NoiseVolume / _Density / _CloudWind are copied into the driver (the arms read the very same density). The arms'
+//   root centrelines come from GateClouds_Skirts.json (Source/seam_ref.py bake). No volume material: nothing changes.
 // Menu 蓝白/Gate Clouds/Apply At U7b (or Apply(t)): edit-mode preview of the towers at time t and the cards'
 //   property blocks (property blocks are not saved; Play / VRChat writes them in LanbaiGateClouds.Start).
 // Put this file in an Editor folder WITHOUT an asmdef (it needs Assembly-CSharp's LanbaiGateClouds).
@@ -37,6 +42,8 @@ public static class LanbaiGateCloudsBuilder
     }
     [Serializable] public class BeamDef { public string id; public string parent; public float mode; public float[] start; public float[] axis; public float half_width; public float length; public float widen; public float intensity; }
     [Serializable] public class FogBandDef { public float[] color; public float until; }
+    [Serializable] public class SkirtArm { public string id; public float[] pts; public float[] r; public float[] reveal; }
+    [Serializable] public class SkirtFile { public float level; public float climb; public float width; public float strength; public SkirtArm[] arms; }
     [Serializable] public class Layout { public float hero_t; public float[] window; public FogBandDef fog_band; public DeckDef deck; public ShapeDef[] shapes; public CardDef[] cards; public BeamDef[] beams; }
 
     const string RootName = "GateClouds";
@@ -201,6 +208,20 @@ public static class LanbaiGateCloudsBuilder
         if (gateRoot == null) throw new Exception("[GateClouds] no GateRoot in the open scene");
         Transform tearRoot = FindDeep(gateRoot, "Tear_Root") ?? FindDeep(gateRoot, "Tear_Kit");
         Transform old = gateRoot.Find(RootName);
+        // D-44 #3: the volume deck material, if the scene has one (ours first: the previous build's Deck)
+        Renderer volR = FindVolumeDeck(old);
+        Material volMat = volR != null ? volR.sharedMaterial : null;
+        bool volOnOurDeck = volR != null && old != null && volR.transform.IsChildOf(old);
+        if (volMat != null)
+        {
+            Shader gv = Shader.Find("Lanbai/GateVolumeDeck");
+            if (gv != null && volMat.shader != gv)
+            {
+                Debug.Log("[GateClouds] volume deck " + volMat.name + ": shader " + volMat.shader.name + " -> Lanbai/GateVolumeDeck (+ root skirts)");
+                volMat.shader = gv;
+                EditorUtility.SetDirty(volMat);
+            }
+        }
         if (old != null) UnityEngine.Object.DestroyImmediate(old.gameObject);
         if (tearRoot != null)
             for (int i = tearRoot.childCount - 1; i >= 0; i--)
@@ -245,6 +266,15 @@ public static class LanbaiGateCloudsBuilder
         deck.AddComponent<MeshFilter>().sharedMesh = SaveMesh(DeckQuad(L.deck.quad_size), gen + "/GateClouds_DeckQuad.asset");
         var dr = deck.AddComponent<MeshRenderer>();
         dr.sharedMaterial = deckMat;
+        if (volMat != null)
+        {
+            if (volOnOurDeck) dr.sharedMaterial = volMat;        // the volume deck draws on our quad (as in FullPreview)
+            else
+            {
+                dr.enabled = false;                                  // another renderer draws it: no second deck
+                Debug.Log("[GateClouds] the scene's volume deck (" + volR.name + ") draws the gate's cloud: GateClouds/Deck off");
+            }
+        }
         dr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         dr.receiveShadows = false;
 
@@ -347,6 +377,7 @@ public static class LanbaiGateCloudsBuilder
         drv.sagKeys = sagK.ToArray(); drv.sagStart = sagS.ToArray(); drv.sagCount = sagN.ToArray();
         drv.sinkKeys = sinkK.ToArray(); drv.sinkStart = sinkS.ToArray(); drv.sinkCount = sinkN.ToArray();
         drv.alphaKeys = alK.ToArray(); drv.alphaStart = alS.ToArray(); drv.alphaCount = alN.ToArray();
+        FillVolume(drv, volMat, gateRoot, kit);
         SetupUdonSharp(drv);
         // the deck now draws the tear's pool itself (tech r1 #4): the flat cloud-top layers would be cut by the billows;
         // round 4: the foot's skyline cards (art r2: dark lumps; the deck's billows and crevasse take the lens foot now)
@@ -388,6 +419,65 @@ public static class LanbaiGateCloudsBuilder
 
     public static Transform FindInScenePublic(string name) { return FindInScene(name); }
     public static Transform FindDeepPublic(Transform p, string name) { return FindDeep(p, name); }
+
+    static bool IsVolumeShader(Shader sh)
+    {
+        return sh != null && (sh.name == "Lanbai/GateVolumeDeck" || sh.name == "Lanbai/Local/VolumeCloudDeck");
+    }
+
+    // the renderer that draws the volume cloud: under the previous GateClouds first, else anywhere in the open scenes
+    static Renderer FindVolumeDeck(Transform oldRoot)
+    {
+        if (oldRoot != null)
+            foreach (Renderer r in oldRoot.GetComponentsInChildren<Renderer>(true))
+                if (r.sharedMaterial != null && IsVolumeShader(r.sharedMaterial.shader)) return r;
+        foreach (Renderer r in Resources.FindObjectsOfTypeAll<Renderer>())
+        {
+            if (r.hideFlags != HideFlags.None || !r.gameObject.scene.IsValid()) continue;
+            if (r.sharedMaterial != null && IsVolumeShader(r.sharedMaterial.shader)) return r;
+        }
+        return null;
+    }
+
+    // D-44 #3: the volume globals' sources and the arms' skirts
+    static void FillVolume(LanbaiGateClouds drv, Material volMat, Transform gateRoot, string kit)
+    {
+        drv.gateRoot = gateRoot;
+        drv.cloudVolumeTex = null;
+        if (volMat == null)
+        {
+            Debug.Log("[GateClouds] no volume deck in the scene: the arms keep TentacleSway v2.7d's cloud-top fade");
+            return;
+        }
+        drv.cloudVolumeTex = volMat.GetTexture("_NoiseVolume") as Texture3D;
+        if (drv.cloudVolumeTex == null) Debug.LogWarning("[GateClouds] the volume deck has no 3D _NoiseVolume: volume mode off");
+        drv.cloudVolume = new Vector4(1f, volMat.HasProperty("_Density") ? volMat.GetFloat("_Density") : 0.036f, 520f, 260f);
+        Vector4 w = volMat.HasProperty("_CloudWind") ? volMat.GetVector("_CloudWind") : new Vector4(8f, 3f, 0f, 0f);
+        drv.cloudWind = new Vector4(w.x, w.y, 0f, 0f);
+        string path = kit + "/GateClouds_Skirts.json";
+        if (!File.Exists(path)) { Debug.LogWarning("[GateClouds] " + path + " missing: no skirts"); return; }
+        SkirtFile F = JsonUtility.FromJson<SkirtFile>(File.ReadAllText(path));
+        var arms = new List<Transform>();
+        var pts = new List<float>(); var ps = new List<int>(); var pc = new List<int>(); var rr = new List<float>();
+        var rk = new List<float>(); var rs = new List<int>(); var rc = new List<int>();
+        int missing = 0;
+        foreach (SkirtArm a in F.arms)
+        {
+            Transform tr = FindInScene(a.id);                        // GateRoot/<id> or NearRoot_busRelative/<id>
+            if (tr == null || a.pts == null || a.r == null || a.pts.Length != 3 * a.r.Length) { missing++; continue; }
+            arms.Add(tr);
+            ps.Add(pts.Count / 3); pc.Add(a.r.Length);
+            pts.AddRange(a.pts); rr.AddRange(a.r);
+            Pack(a.reveal, rk, rs, rc);
+        }
+        drv.skirtArms = arms.ToArray();
+        drv.skirtPts = pts.ToArray(); drv.skirtPtStart = ps.ToArray(); drv.skirtPtCount = pc.ToArray(); drv.skirtR = rr.ToArray();
+        drv.skirtRevKeys = rk.ToArray(); drv.skirtRevStart = rs.ToArray(); drv.skirtRevCount = rc.ToArray();
+        drv.skirtLevel = F.level;
+        drv.skirtK = new Vector4(0f, F.width, F.climb, F.strength);
+        Debug.Log(string.Format("[GateClouds] volume deck {0}: {1} arms for the skirts{2}", volMat.name, arms.Count,
+                                missing > 0 ? " (" + missing + " not found in the scene)" : ""));
+    }
 
     static void Pack(float[] keys, List<float> all, List<int> start, List<int> count)
     {
