@@ -856,7 +856,11 @@ Shader "Lanbai/TentacleSway"
             if (volCloud && V.y > 0.02)
             {
                 float top = CloudTop();
-                float m = 0.95 * smoothstep(top - 290.0, top - 170.0, IN.worldPos.y);
+                // only UNDER the floor: rises toward it from top - 290, and is gone again by top - 120 (inside the dense
+                // cloud). (9af9a8a had only the first smoothstep: it stayed 1 ABOVE the floor, so every arm seen looking
+                // up took the floor's colour; caught in the R10 reference at U8fwd, 10-26)
+                float m = 0.95 * smoothstep(top - 290.0, top - 170.0, IN.worldPos.y)
+                               * smoothstep(top - 120.0, top - 170.0, IN.worldPos.y);
                 if (m > 0.002)
                 {
                     float tq = (top - 110.0 - _WorldSpaceCameraPos.y) / V.y;
