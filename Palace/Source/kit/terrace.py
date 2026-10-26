@@ -16,6 +16,10 @@ CHAMFER_W, CHAMFER_D = 0.8, 1.6
 _ES = palace_frame()['terrace'].get('edge_slope')     # 海的约定 terrace.edge_slope（A，pkg/sea f7d9a22 起）
 BIG = ([float(v) for v in os.environ['PALACE_CHAMFER'].split(',')] if os.environ.get('PALACE_CHAMFER')
        else ([_ES['width_m'], _ES['drop_m']] if _ES else None))
+if BIG and isinstance(BIG[1], (list, tuple)):      # 约定给的是坡底深度的范围 [浅, 深]
+    BIG = [BIG[0], BIG[1][0], BIG[1][1] - BIG[1][0]]
+SLOPE_Z = (_ES or {}).get('z', [48.0, 306.0])
+SLOPE_ZF = (_ES or {}).get('z_full', [54.0, 296.0])
 PAVE_X0 = palace_frame()['avenue']['paving']['x'][0]
 
 
@@ -41,10 +45,10 @@ def slope_wd(z):
     宽、深沿 z 慢慢起伏（被水蚀的崖边，不是挖出来的一道坡）。"""
     if not BIG:
         return CHAMFER_W, CHAMFER_D
-    w = _ss(48.0, 54.0, z) * (1.0 - _ss(296.0, 306.0, z))
+    w = _ss(SLOPE_Z[0], SLOPE_ZF[0], z) * (1.0 - _ss(SLOPE_ZF[1], SLOPE_Z[1], z))
     n1, n2 = _noise(z, 3.0, 21), _noise(z * 1.3, 7.0, 23)
     W = 0.8 + w * (BIG[0] - 0.8 + 0.3 * min(1.0, abs(n1)))      # 坡顶最多退到 x −11.8，近列灯（x −12）站在坡顶后面
-    D = 1.6 + w * (BIG[1] - 1.6 + 0.6 * abs(n2))
+    D = 1.6 + w * (BIG[1] - 1.6 + (BIG[2] if len(BIG) > 2 else 0.6) * min(1.0, abs(n2)))
     return W, D
 
 
