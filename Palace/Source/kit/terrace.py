@@ -13,7 +13,9 @@ import os
 CHAMFER_W, CHAMFER_D = 0.8, 1.6
 # 复核 r10c 的试样（总导演未定）：PALACE_CHAMFER="3.5,6" 把崖口斜坡加大到“最后 3.5 m 往下 6 m”——
 # 神道左移 3.0 m 以后近列灯离崖口 4 m，下唇以下看它的视线在崖口处低于崖顶，被石壁挡住
-BIG = [float(v) for v in os.environ['PALACE_CHAMFER'].split(',')] if os.environ.get('PALACE_CHAMFER') else None
+_ES = palace_frame()['terrace'].get('edge_slope')     # 海的约定 terrace.edge_slope（A，pkg/sea f7d9a22 起）
+BIG = ([float(v) for v in os.environ['PALACE_CHAMFER'].split(',')] if os.environ.get('PALACE_CHAMFER')
+       else ([_ES['width_m'], _ES['drop_m']] if _ES else None))
 PAVE_X0 = palace_frame()['avenue']['paving']['x'][0]
 
 
