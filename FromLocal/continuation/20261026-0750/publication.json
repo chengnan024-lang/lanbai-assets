@@ -1,0 +1,209 @@
+{
+  "time": "2026-10-26T08:08:01.010729-04:00",
+  "base": "6d6a700d3976bd75aa422026e2c2ba68cbf6bebb",
+  "scope": "FromLocal only; no private messages/consent/raw process inventory",
+  "files": [
+    {
+      "path": "FromLocal/continuation/20261026-0750/README.md",
+      "bytes": 4819,
+      "sha256": "619a0b784795b9aad9ee589025efe4cc7ee3ff79fc7df40393de484e9d05feff"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/bus_camera_records.json",
+      "bytes": 5135,
+      "sha256": "a9ac2129df9199d48af658762e2df159612a193c94c4e2bb47ddbd742e76ce15"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/deployment_audit.json",
+      "bytes": 10575,
+      "sha256": "0bcf6371fc8a4e61b3cc7f4951b8fc3bec2da263e2fbef76010784328cbd70ae"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/scene_timing_and_bindings.json",
+      "bytes": 6404,
+      "sha256": "d52795e950fc5d94e2c7f2052a91d933f0a78c75d86e82d5b31c7f8e20c6a51b"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/source_excerpts.json",
+      "bytes": 22160,
+      "sha256": "167889a8376cf33363fbe2c582d5d3c02cf5a607c85fb742b59f9e3a9da3ad62"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/source_verification.json",
+      "bytes": 125529,
+      "sha256": "8d8dec6b7a906176865cd1cceba7e7b2d8986b71285fcc138f82d2cc2f4f46c4"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/technical_next_steps.md",
+      "bytes": 3695,
+      "sha256": "e0f2d46fde06ccf1ce12027d64a080c942b6083e0c23bc02a62fb65b22827ef7"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/timing_analysis.md",
+      "bytes": 3886,
+      "sha256": "d6a07965bd561defb9be26f1862da6988d46dab34792b036b6b44765638c1b11"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/wake_probe/material_guard_result.txt",
+      "bytes": 72,
+      "sha256": "3b5830cdbe4c8833afc601b98ef2630eaa2fcf0900301bbd435f11255e60c36c"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/wake_probe/states.json",
+      "bytes": 789,
+      "sha256": "6741f7c5a884b53b7ecb19482fce3338b9516055e59b78466bc77c90cbdb60fa"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/wake_probe/wake_probe_before_hashes.json",
+      "bytes": 340888,
+      "sha256": "526e5a150ca4bbd10e46fc6fd3b33a0561ad9ce3c9688881ecc4301d22bf9a4b"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/wake_probe/wake_probe_disk_check.json",
+      "bytes": 711,
+      "sha256": "2a3e2d619341470e2163fe5935671dc1739bc9a15228b7f16cb98787e306b270"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/wake_probe/wake_probe_request.json",
+      "bytes": 3896,
+      "sha256": "9dbdee81f51ca14b8d34901dbf83a2680916e5796a309abc0bc10b25fb2485de"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/wake_probe/wake_probe_result.json",
+      "bytes": 6416,
+      "sha256": "98cb5edd51a4382cad5dc6364fc9a9a536bf080a8c637cae87951d3c1c15b5d7"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/wake_probe/wake_semantics_0800_124986.png",
+      "bytes": 682224,
+      "sha256": "a6da09fe32666cea23d5529811a6be0dbe8626b1cbf76e4003d2d9f6d7b33f69"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/wake_probe/wake_semantics_0800_124986.txt",
+      "bytes": 98,
+      "sha256": "67b39c98d9fe215e9ecd3d321d5eb50f533eefebf247c11eeb78bf1914d68328"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/wake_probe/wake_semantics_0800_124986_right.png",
+      "bytes": 746241,
+      "sha256": "fdcaec7e5b26e35d043af159f7cf57432b37f79cc0a9dc45e81b31d96855ea32"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/wake_probe/wake_semantics_0800_124986_right.txt",
+      "bytes": 99,
+      "sha256": "9dce4b6c80b085baf5dd18e8329c1a4daaa9926bf5b55052e8544c2b5a1fcfdd"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/wake_probe/wake_semantics_0800_124986_state.txt",
+      "bytes": 63,
+      "sha256": "0cd985e1380f02bd721880c4080f0cadf06663597642fd35bba80502158e1a37"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/wake_probe/wake_semantics_0800_124996.png",
+      "bytes": 581934,
+      "sha256": "58ad13439afa701d09928e524b0b591dc9d10b7d3389a67afdb36a02deb8edbe"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/wake_probe/wake_semantics_0800_124996.txt",
+      "bytes": 106,
+      "sha256": "660740a7ec99632734b84d109e4266823fe438d6223d69ce7a5993b6219fe275"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/wake_probe/wake_semantics_0800_124996_right.png",
+      "bytes": 646254,
+      "sha256": "c7e70590dee9b4bcfa1ae74eac8de85bbfdcafce0001997e1c5bd4156febb35c"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/wake_probe/wake_semantics_0800_124996_right.txt",
+      "bytes": 107,
+      "sha256": "acce9ebe650a557c08674bd1bd476d54ca52ee6d05a5641d6811312204a5aa7a"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/wake_probe/wake_semantics_0800_124996_state.txt",
+      "bytes": 77,
+      "sha256": "3e90f6e00564d431be7a0e1d9e3c4aaeec1ba9a7ec25d00f7b92e810a3d8409e"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/wake_probe/wake_semantics_0800_125186.png",
+      "bytes": 683707,
+      "sha256": "286821c56294362a6cecf10cf3eb4559e27b15aea330c649648bef818438b2d5"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/wake_probe/wake_semantics_0800_125186.txt",
+      "bytes": 106,
+      "sha256": "bd318270e1b35d4a19cd7984defc60a98bdac2e8114180dd93287503fe6086dd"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/wake_probe/wake_semantics_0800_125186_right.png",
+      "bytes": 712370,
+      "sha256": "9d335f9cdbe76f65247c621dc474893853f77189ef584fe4b6cee07281f05c71"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/wake_probe/wake_semantics_0800_125186_right.txt",
+      "bytes": 107,
+      "sha256": "a588826f3d71fee9f929efb3ad06186e012cd96879362f89910816ba1543c8e7"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/wake_probe/wake_semantics_0800_125186_state.txt",
+      "bytes": 77,
+      "sha256": "8766dcc294ed6b9c11d43bf56a8bd2bcfd9ad91d98f0987a87e119714fcc0e1b"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/wake_probe/wake_semantics_0800_125196.png",
+      "bytes": 744062,
+      "sha256": "ed667cecf3fa4d2201341f2a1240d137549e3ed3423a27ef9535a23b444af42e"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/wake_probe/wake_semantics_0800_125196.txt",
+      "bytes": 106,
+      "sha256": "483dd7b1207b6d33c5b47b4596890542a797fd18a1904a6500073448fc53c1fe"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/wake_probe/wake_semantics_0800_125196_right.png",
+      "bytes": 760416,
+      "sha256": "41bd8d919b21a19746eae6cf917629b78ba7d12601b057296c025a37d8fb9b58"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/wake_probe/wake_semantics_0800_125196_right.txt",
+      "bytes": 107,
+      "sha256": "4e1ed47b816085fcadfb1925d07d3acef438d5ed6087aaf7e6f37ef60cccc367"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/wake_probe/wake_semantics_0800_125196_state.txt",
+      "bytes": 77,
+      "sha256": "00211fbc87dc5b572e11f2eba8df67c25f1a96ce1d06ec4a2adf7068ab320ce3"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/wake_probe/wake_semantics_0800_125206.png",
+      "bytes": 741534,
+      "sha256": "1d2307c8b736ebdb4a6ca7d0a2d5da10d61a737f280e3b03bebc65818d76206f"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/wake_probe/wake_semantics_0800_125206.txt",
+      "bytes": 106,
+      "sha256": "707a8059f3a3767b11755d126e7fb7dc6428d31f22edd7c2abb708bcfb7076f6"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/wake_probe/wake_semantics_0800_125206_right.png",
+      "bytes": 758524,
+      "sha256": "07feab51ba4e3678ab39a9da76d98ee06c92bfbe54ac3639180bae2b3ad73169"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/wake_probe/wake_semantics_0800_125206_right.txt",
+      "bytes": 107,
+      "sha256": "f0f3f48a9f1fd6bf90899b626c79109dddb24dea885e4c6d43904b3ced39c994"
+    },
+    {
+      "path": "FromLocal/continuation/20261026-0750/wake_probe/wake_semantics_0800_125206_state.txt",
+      "bytes": 77,
+      "sha256": "4d106e934de067968b2ee53164ad249c10d763a2d3ae281a538082e1b956fda0"
+    }
+  ],
+  "image_decode_and_size_check": {
+    "count": 10,
+    "dimensions": [
+      960,
+      540
+    ]
+  }
+}

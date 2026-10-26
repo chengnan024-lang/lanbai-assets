@@ -1,0 +1,179 @@
+{
+  "id": "continuation_20261026_0800_wake_probe",
+  "steps": [
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_WhiteHandoffAudit.QuietNextPlay"
+    },
+    {
+      "op": "play"
+    },
+    {
+      "op": "wait",
+      "seconds": 8
+    },
+    {
+      "op": "call",
+      "target": "UnityEngine.AudioListener.get_volume"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_NewDelivery.SitHero"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_NewDelivery.Depart"
+    },
+    {
+      "op": "wait",
+      "seconds": 5
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Seek",
+      "arg": "1249.86"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_DirectorTakeover.FreezeTimeline",
+      "arg": "1249.86"
+    },
+    {
+      "op": "wait",
+      "seconds": 0.4
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FinalDeliveryChecks.WhiteState",
+      "arg": "wake_semantics_0800_124986"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_CurrentViews.D28",
+      "arg": "wake_semantics_0800_124986_right|45|0"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Seek",
+      "arg": "1249.96"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_DirectorTakeover.FreezeTimeline",
+      "arg": "1249.96"
+    },
+    {
+      "op": "wait",
+      "seconds": 0.4
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FinalDeliveryChecks.WhiteState",
+      "arg": "wake_semantics_0800_124996"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_CurrentViews.D28",
+      "arg": "wake_semantics_0800_124996_right|45|0"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Seek",
+      "arg": "1251.86"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_DirectorTakeover.FreezeTimeline",
+      "arg": "1251.86"
+    },
+    {
+      "op": "wait",
+      "seconds": 0.4
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FinalDeliveryChecks.WhiteState",
+      "arg": "wake_semantics_0800_125186"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_CurrentViews.D28",
+      "arg": "wake_semantics_0800_125186_right|45|0"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Seek",
+      "arg": "1251.96"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_DirectorTakeover.FreezeTimeline",
+      "arg": "1251.96"
+    },
+    {
+      "op": "wait",
+      "seconds": 0.4
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FinalDeliveryChecks.WhiteState",
+      "arg": "wake_semantics_0800_125196"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_CurrentViews.D28",
+      "arg": "wake_semantics_0800_125196_right|45|0"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FullAssembly.Seek",
+      "arg": "1252.06"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_DirectorTakeover.FreezeTimeline",
+      "arg": "1252.06"
+    },
+    {
+      "op": "wait",
+      "seconds": 0.4
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_FinalDeliveryChecks.WhiteState",
+      "arg": "wake_semantics_0800_125206"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_CurrentViews.D28",
+      "arg": "wake_semantics_0800_125206_right|45|0"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_DirectorTakeover.UnfreezeTimeline"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_CurrentViews.ExitHero"
+    },
+    {
+      "op": "wait",
+      "seconds": 1
+    },
+    {
+      "op": "stop"
+    },
+    {
+      "op": "wait",
+      "seconds": 3
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_NewDelivery.PreserveDirty"
+    },
+    {
+      "op": "call",
+      "target": "UnityEngine.AudioListener.get_volume"
+    }
+  ]
+}

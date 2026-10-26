@@ -1,0 +1,24 @@
+{
+  "request": "continuation_20261026_0800_wake_probe",
+  "finished": "2026-10-26 08:00:15",
+  "hash_scope": "All .cs/.shader/.cginc/.mat/.asset/.unity/.json/.meta under Assets/Lanbai; not a whole-disk write monitor",
+  "checked_files_before": 2627,
+  "checked_files_after": 2627,
+  "changes": [],
+  "heartbeat": {
+    "time": "2026-10-26T08:00:15.5662951-04:00",
+    "editorTime": 25126.090428599997,
+    "focused": true,
+    "playing": false,
+    "compiling": false,
+    "updating": false,
+    "compileFailed": false,
+    "scene": "Assets/Lanbai/Scenes/Lanbai_FullPreview.unity",
+    "sceneDirty": false,
+    "request": "",
+    "step": 0,
+    "phase": 0,
+    "unity": "2022.3.22f1",
+    "note": "loaded"
+  }
+}
