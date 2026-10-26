@@ -4,6 +4,25 @@
 
 > **2026-10-24 起，读这份日志的本地是 ChatGPT「阿白」**（10-24 已接管，D-40a #8、D-41）。先读根目录的 `HANDOFF_CHATGPT.md`：协作边界、第一次接管的步骤、回传协议都在那里。下面各条里的“你”指本地，现在就是阿白。旧条里“技术上怎么实现由你决定”（09-28）作废：技术架构归总工程师，高风险改动先备份并经小楠确认（`HANDOFF_CHATGPT.md` §F）。
 
+## 2026-10-26（北京 08:20）· 🪞 十三面镜修好版进 main：08:00 那条“先别量”取消
+同步：`Mirrors/` `Act10_White/`
+不同步：`Mirrors/Source/` `Mirrors/Docs~/` `Mirrors/Tools~/`
+
+**是什么：**
+- 镜包修好的版本（c3887b5），替换 05:30 那一版（09160b5）。
+- 镜包自查的 25 条闪光序列全部 PASS：第 9 面每秒 1.5 次闪，白·向下看 1 s 升 0.87 EV，白·侧上方 0.93 EV。
+- 改了三处：
+  1. 碎块掉之前先缩向块心，不再一帧没了；
+  2. 第 13 面从远处变清楚，改成 1131.31 → 1137.31，在第 12 面的冲击之前做完；
+  3. 第 12 面的尘 × 0.5。
+- 第 13 面的环和模糊盘没变。
+
+**接入：** 改了 shader 和驱动，同步后**重新点一次 `蓝白/Build/Mirrors`**。其余照 05:30 那一条。
+
+**技术验收（D-46）：** 05:30 那一条的 1–6 项现在都可以量了。另外：
+- **第 1 面过镜**：每秒 2.0 次闪，正好在限上。请先在头显里请小楠看这一段（约 1016–1022 s），结果写进 `问题.md`。
+- **第 13 面的新时间**：1131.31–1137.31，用 `transitions_sweep` 或每 0.1 s 截一张。
+
 ## 2026-10-26（北京 08:05）· 🐙 门：触手根部和云的接缝（D-44 #3）进 main
 同步：`GateClouds/`（新的：`Shaders/Lanbai_GateVolumeDeck.shader`、`Shaders/LanbaiCloudVolume.cginc`、`GateClouds_Skirts.json`）、`Gate/Shaders/`（`Lanbai_TentacleSway.shader` v2.8、`LanbaiGateSky.cginc`）、`Common/UdonGlobals.md`
 不同步：`GateClouds/Source/`、`GateClouds/Docs~/`
