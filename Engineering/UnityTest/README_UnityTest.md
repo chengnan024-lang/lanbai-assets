@@ -220,7 +220,8 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json" -Encoding UTF8
 
 `eye [x,y,z]`；朝向 `euler [x,y,z]`（Unity 的 localEulerAngles）或 `yaw`、`pitch`、`roll`（= `(−pitch, yaw, roll)`，和渲染夹具一样）；`hfov`（水平视角，默认 90）或 `vfov`；`w`、`h`（默认 1920×1080）、`ss`（超采样，默认 2）；`t`；`ref`（参考图：`repo:<仓库里的路径>` 按同步记录的仓库路径找，或工程里的路径）、`ref_half`（`top` / `bottom`：`compare_*.png` 上半张是这一版的参照）；`before`（定好时间以后、拍之前的步骤，拍完改回）/ `after`（拍完以后的步骤，不登记改回）。
 
-近景：`look_at [x,y,z]` 或 `look_at_object`（场景路径，取包围盒中心）+ `distance`（米）+ `toward [x,y,z]`（相机退向这个点，比如主座位的眼）；`crop_deg [宽, 高]` + `ppd`（每度像素，默认 20：D-36 #1 的 Index 密度）时，尺寸按画面中心每度 `ppd` 个像素算。
+近景：`look_at [x,y,z]` 或 `look_at_object`（场景路径，取包围盒中心；加 `look_at_anchor [ax, ay, az]`（1.2.2）就取包围盒里的那个点，每轴 0 = min、1 = max，比如对着窗扣、窗框的一个角）+ `distance`（米）+ `toward [x,y,z]`（相机退向这个点，比如主座位的眼）；`crop_deg [宽, 高]` + `ppd`（每度像素，默认 20：D-36 #1 的 Index 密度）时，尺寸按画面中心每度 `ppd` 个像素算。
+截图可以写 `coverage_of [路径, ...]`（1.2.2）：同一机位关掉这些物体再渲一张，亮度差 > 2 的像素占比记成 `shot.<id>.coverage`（下限：和背景一样亮的像素数不进去），用来保证画面里真的有要审的东西（`bus_slice` 的侧窗：窗框 / 胶条 ≥ 30 %）。
 
 ### 6.3 检查项
 
