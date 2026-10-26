@@ -14,8 +14,9 @@ Composition the layout is solved for (bible §6·7b 构图):
   * avenue (神道) axis at x = -21: right lamp column x = -12, left column x = -30 (round 10, D-49 #3: the whole avenue
     moved 3 m left so it runs between the two que again, Que_R -12 / Que_L -30; it was -18 / -9 / -27);
   * the 12 lamp pairs are abreast of the bus at 672.0, 677.1, ... 728.6 (5.1 s apart) -> z_k = fwd(t_k);
-  * the hall's open door is ON the avenue axis (x = -21) and the bus stops 35.3 m short of it at F7; the door azimuths
-    are in door_azimuth_check (they were -6 / -15 / -27 with the axis at -18; STOP_GAP kept, so the hall stays at the same z);
+  * the hall's open door is ON the avenue axis (x = -21) and the bus stops 35.3 m short of it at F7; F6 -> F7 the bus
+    steers right by act07_motion.TURN_DEG (D-34 #5 / D-49 #4 option C) so that at F7 the lit door is in the left pane
+    of the windscreen, centre -38 deg from the main eye, clear of the PAZ centre post; door_azimuth_check / bus_turn;
   * the hall (60 m, 9 bays) runs from 3 m inside the terrace edge leftwards (moved with the avenue): the open door is bay 8 of 9 (counted from the left),
     so from the stopped bus the hall fills the windshield LEFT of the door and the right of the frame is the dark open
     abyss (bible: '右边是暗的空旷').  [decision: a Han hall's door is normally central; this asymmetry is the price of
@@ -56,9 +57,23 @@ def r3(v):
 
 
 def bus_pos(t):
-    """bus origin in the palace frame"""
+    """bus origin in the palace frame (with the F6 -> F7 drift of the right turn into the stop, act07_motion.drift)"""
     y = BUS_Y_STOP + (M.depth(M.L['F7']) - M.depth(t))
-    return (0.0, y, M.fwd(t))
+    dx, dz = M.drift(t)
+    return (dx, y, M.fwd(t) + dz)
+
+
+EYE = (0.55, 1.70, 2.05)
+
+
+def eye_az_el(p, t):
+    """azimuth / elevation of a palace-frame point from the main eye, the bus turned by heading(t)"""
+    a = math.radians(M.heading(t))
+    b = bus_pos(t)
+    e = (b[0] + EYE[0] * math.cos(a) + EYE[2] * math.sin(a), b[1] + EYE[1], b[2] - EYE[0] * math.sin(a) + EYE[2] * math.cos(a))
+    d = (p[0] - e[0], p[1] - e[1], p[2] - e[2])
+    lx, lz = d[0] * math.cos(a) - d[2] * math.sin(a), d[0] * math.sin(a) + d[2] * math.cos(a)   # into the bus frame
+    return math.degrees(math.atan2(lx, lz)), math.degrees(math.atan2(d[1], math.hypot(lx, lz)))
 
 
 def main():
@@ -127,7 +142,18 @@ def main():
                    bus_origin_y_stop=BUS_Y_STOP, terrace_top_depth_m=round(M.depth(L['F7']) + BUS_Y_STOP, 3),
                    placement='R_Palace.localPosition = -busPos(t) (relative to the bus origin; bus at the world origin)'),
         labels_used={k: L[k] for k in ('F5', 'F5p', 'F5q', 'F5r', 'F6', 'F7', 'F7s', 'F7p', 'F8')},
-        bus_samples=[dict(t=round(t, 2), pos=r3(bus_pos(t))) for t in [L['F5'] + 0.5 * i for i in range(int((M.EXIT - L['F5']) / 0.5) + 2)]],
+        bus_samples=[dict(t=round(t, 2), pos=r3(bus_pos(t)), heading_deg=round(M.heading(t), 4)) for t in [L['F5'] + 0.5 * i for i in range(int((M.EXIT - L['F5']) / 0.5) + 2)]],
+        bus_turn=dict(t0=M.TURN_T0, t1=M.TURN_T1, heading_deg=M.TURN_DEG, ease='smoothstep',
+                      max_rate_deg_s=round(1.5 * M.TURN_DEG / (M.TURN_T1 - M.TURN_T0), 3), drift_at_t1=r3(M.drift(M.TURN_T1)),
+                      rule='D-34 #5 / D-49 #4 option C (总导演 10-26): the bus steers right into the stop, heading(t) = heading_deg x '
+                           'smoothstep((t - t0) / (t1 - t0)), held after t1 to the exit; it moves along its heading, so bus_samples '
+                           'carry the drift. Only R_Palace turns: R_Palace world rotation = yaw(-heading), world position = '
+                           'yaw(-heading) x (straight-path placement - drift) about the bus origin (the world origin). The sea, the '
+                           'sun, the shafts, the 7c mirror and rose lights do not turn.',
+                      written_by='the act-7 driver (sea): LanbaiAct07Driver palaceRoot, every frame from t0 (identity before)',
+                      door_at_t1_from_eye=dict(left=round(eye_az_el((door_x - 2.1, PLATFORM_H + 3.75, z_door), M.TURN_T1)[0], 2),
+                                               right=round(eye_az_el((door_x + 2.1, PLATFORM_H + 3.75, z_door), M.TURN_T1)[0], 2),
+                                               centre=round(eye_az_el((door_x, PLATFORM_H + 3.75, z_door), M.TURN_T1)[0], 2))),
         terrace=dict(top_y=0.0, edge_x=EDGE_X, lip_bottom_y=LIP_BOTTOM_Y, extent_x=[-260.0, EDGE_X], extent_z=[-120.0, 520.0],
                      note='the lip face (x = edge_x, y lip_bottom..0) is solid rock with seaweed; BELOW the lip the terrace has NO underside '
                           '(dream decision, README): from below, the palace lamps read as a constellation overhead (F7p); the buildings '
@@ -139,7 +165,8 @@ def main():
                   open_door_bay=door_bay + 1, door_x=round(door_x, 3), door_size=[4.2, 7.5], platform=dict(height_m=PLATFORM_H, front_z=round(plat_front, 3),
                   x=[hall_x0 - 4.0, EDGE_X + AVENUE_SHIFT], back_z=round(z_door + HALL_D + 6.0, 3), stair=dict(x=[door_x - 4.0, door_x + 4.0], z=[round(plat_front - 9.0, 3), round(plat_front, 3)])),
                   interior_emission=dict(color='#FFB74D', gain=3.0), door_cone_cards=dict(count=3, length_m=20.0, alpha=0.06)),
-        door_azimuth_check={k: round(-math.degrees(math.atan2(-AXIS_X, z_door - M.fwd(t))), 2) for k, t in (('706', 706.0), ('F6', L['F6']), ('F7', L['F7']))},
+        door_azimuth_check={k: round(eye_az_el((door_x, PLATFORM_H + 3.75, z_door), t)[0], 2) for k, t in (('706', 706.0), ('F6', L['F6']), ('F7', L['F7']))},
+        door_azimuth_note='from the main eye (0.55, 1.70, 2.05), the bus turned by bus_turn (10-26: was from the bus origin, no turn)',
         lamps=lamps,
         baked_lights=baked,
         palace_veil=dict(

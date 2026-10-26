@@ -42,6 +42,8 @@ public static class LanbaiAct07Builder
         public float[] shaft_centre, shaft_axis, shaft_half_width, shaft_length, shaft_seed, shaft_alpha, shaft_colour;
         public float shaft_depth_full, shaft_depth_gone, gather_t0, gather_t1, shafts_gone_t; public float[] gather_point_bus;
         public float last_t0, last_in, last_sweep, last_out, last_half_width, last_length, last_alpha;
+        public float turn_deg, turn_t0, turn_t1, turn_dt;
+        public float[] turn_drift;
         public float[] last_from, last_to, last_target, last_target_to; public float last_top;
         public float beam_angle, beam_range, beam_gather_E, beam_last_E; public float[] beam_gather_pos, beam_gather_aim;
         public float snow_sphere, snow_box, snow_lit, snow_lit_d0, snow_lit_d1, snow_lit_deep, ridge_yaw; public float[] trails_front_fade;
@@ -423,6 +425,11 @@ public static class LanbaiAct07Builder
         d.shaftDepthFull = u.shaft_depth_full; d.shaftDepthGone = u.shaft_depth_gone;
         d.gatherT0 = u.gather_t0; d.gatherT1 = u.gather_t1; d.shaftsGoneT = u.shafts_gone_t; d.gatherPointBus = V3(u.gather_point_bus);
         d.lastT0 = u.last_t0; d.lastIn = u.last_in; d.lastSweep = u.last_sweep; d.lastOut = u.last_out;
+        // F7 (D-34 #5 / D-49 #4 C): the bus steers right into the stop -- the driver turns R_Palace (the palace package
+        // builds it under R_Sea; found here if it is already there, else by name at _Init)
+        d.turnDeg = u.turn_deg; d.turnT0 = u.turn_t0; d.turnT1 = u.turn_t1; d.turnDt = u.turn_dt; d.turnDrift = u.turn_drift;
+        var pal = rSea.Find("R_Palace");
+        if (pal != null) { d.palaceRoot = pal; d.palaceLocal0 = pal.localPosition; d.palaceLocal0Set = true; }
         d.lastFromBus = V3(u.last_from); d.lastToBus = V3(u.last_to); d.lastTargetBus = V3(u.last_target); d.lastTargetToBus = V3(u.last_target_to);
         d.beamGatherPos = V3(u.beam_gather_pos); d.beamGatherAim = V3(u.beam_gather_aim); d.beamGatherE = u.beam_gather_E; d.beamLastE = u.beam_last_E;
         d.warmFadeIn = u.warm_fade;

@@ -104,6 +104,61 @@ def fwd(t):
     return FWD.x(t)
 
 
+# ---- 7b-ii F7 (D-34 #5 / D-49 #4, 总导演 10-26: option C, door centre -38 deg): the bus steers RIGHT into the stop.
+# Heading (Unity yaw, + = clockwise from above) psi(t) = TURN_DEG * smoothstep((t - F6) / (F7 - F6)), held after F7
+# (the bus only sinks from there). The bus moves along its heading, so in the palace frame it drifts: d(t) = integral
+# of fwd'(t) * (sin psi, cos psi - 1) -- the displacement from the straight path. Only R_Palace follows this (the sea,
+# the sun, the 7c mirror and rose lights do not). TURN_DEG is solved by Tools~/f7_door_options.py (palace contract 3.0:
+# door x -21) for the door centre at -38 deg from the main eye at F7.
+TURN_DEG = 4.08
+TURN_T0, TURN_T1 = L['F6'], L['F7']
+_TURN_DT = 0.01
+_TURN_TAB = None
+
+
+def heading(t):
+    return TURN_DEG * smoothstep((t - TURN_T0) / (TURN_T1 - TURN_T0))
+
+
+def _turn_table():
+    global _TURN_TAB
+    if _TURN_TAB is None:
+        import math
+        tab, x, z, t = [(TURN_T0, 0.0, 0.0)], 0.0, 0.0, TURN_T0
+        while t < TURN_T1 - 1e-9:
+            tm = t + _TURN_DT * 0.5
+            ds = fwd(t + _TURN_DT) - fwd(t)
+            a = math.radians(heading(tm))
+            x += ds * math.sin(a); z += ds * (math.cos(a) - 1.0); t += _TURN_DT
+            tab.append((t, x, z))
+        _TURN_TAB = tab
+    return _TURN_TAB
+
+
+def drift(t):
+    """(dx, dz) of the bus from the straight path, palace frame (0 before F6, held after F7)"""
+    tab = _turn_table()
+    if t <= TURN_T0:
+        return 0.0, 0.0
+    if t >= TURN_T1:
+        return tab[-1][1], tab[-1][2]
+    i = min(int((t - TURN_T0) / _TURN_DT), len(tab) - 2)
+    f = (t - tab[i][0]) / _TURN_DT
+    return tab[i][1] + (tab[i + 1][1] - tab[i][1]) * f, tab[i][2] + (tab[i + 1][2] - tab[i][2]) * f
+
+
+def palace_to_bus(p, t, bus_y_stop=2.5):
+    """palace-frame points (..., 3) -> the bus frame at t (PalaceFrame_约定: bus origin y = bus_y_stop + depth(F7) - depth(t)
+    above the terrace top), with the F7 right turn: yaw(-heading) x (p - bus(t)), bus(t) on the drifted path"""
+    import math
+    import numpy as np
+    dx, dz = drift(t)
+    b = np.array([dx, bus_y_stop + (depth(L['F7']) - depth(t)), fwd(t) + dz])
+    q = np.asarray(p, float) - b
+    a = math.radians(-heading(t))
+    c, s = math.cos(a), math.sin(a)
+    return np.stack([q[..., 0] * c + q[..., 2] * s, q[..., 1], -q[..., 0] * s + q[..., 2] * c], -1)
+
 if __name__ == '__main__':
     for k in ('F2h', 'F3', 'F4', 'F4p', 'F3e', 'F3e1', 'F3e2', 'F3e3', 'F3i', 'F5', 'F5p', 'F6', 'F7', 'F7s', 'F7p', 'F8',
               'F8a', 'F8b', 'F8c'):

@@ -37,6 +37,12 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
     [Header("Scene (filled by the builder)")]
     public GameObject[] roots;
     public Transform rSea;                     // everything fixed in the water: the plane, the shafts, the ridge, the warm point
+    [Tooltip("R_Sea/R_Palace (the palace package's root). F6 -> F7 the bus steers right into the stop: only this turns")]
+    public Transform palaceRoot;
+    public Vector3 palaceLocal0;               // R_Palace's local position as built (the straight path); captured at _Init if not set
+    public bool palaceLocal0Set;
+    public float turnDeg = 4.08f, turnT0 = 735.56f, turnT1 = 748.26f, turnDt = 0.25f;
+    public float[] turnDrift;                  // (x, z) of the bus from the straight path every turnDt from turnT0 (palace frame)
     public Renderer seaRenderer;
     public Material seaAbove, seaBelow;
     public Renderer shafts, lastShaft, ridge, warmPoint;
@@ -171,6 +177,8 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
     public void _Init()
     {
         _mpb = new MaterialPropertyBlock();
+        if (palaceRoot == null && rSea != null) palaceRoot = rSea.Find("R_Palace");
+        if (palaceRoot != null && !palaceLocal0Set) { palaceLocal0 = palaceRoot.localPosition; palaceLocal0Set = true; }
         _idSeaLevel = VRCShader.PropertyToID("_Udon_SeaLevel");
         _idSeaMode = VRCShader.PropertyToID("_Udon_SeaMode");
         _idSeaClock = VRCShader.PropertyToID("_Udon_SeaClock");
@@ -262,6 +270,7 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
         float vSink = ProfileV(t, sinkV0, sinkSegT0, sinkSegDur, sinkSegDv);
         float vFwd = t < fwdT0 ? 0f : ProfileV(t, fwdV0, fwdSegT0, fwdSegDur, fwdSegDv);
         if (rSea != null) rSea.localPosition = new Vector3(0f, depth, -fwd);
+        PalaceTurn(t);
         bool under = t >= tEyeUnder;
         bool c7 = t >= tF8;
 
@@ -523,7 +532,9 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
         SetGain(bubblesGlass, t >= tEntry && t < tEntry + 4f ? 1f : 0f);
         SetGain(bubblesSeats, under ? 1f : 0f);
         SetGain(ridge, trailGain);                                 // its rim is the trails' light
-        SetGain(warmPoint, Smooth((t - tF5) / Mathf.Max(warmFadeIn, 1e-3f)));
+        // the stand-in lamp lives under R_Sea, which does not turn: out over the 2 s before the F6 -> F7 turn (the palace's
+        // own lamps carry the avenue from F5 anyway; README_Act07a §2 warm_point)
+        SetGain(warmPoint, Smooth((t - tF5) / Mathf.Max(warmFadeIn, 1e-3f)) * (1f - Smooth((t - (turnT0 - 2f)) / 2f)));
     }
 
     private void TimeIndex(float x, float[] xs)                 // linear between time keys (shares _wi / _wf)
@@ -563,6 +574,29 @@ public class LanbaiAct07Driver : UdonSharpBehaviour
         if (lastShaft != null) lastShaft.enabled = false;
         SetGain(snow, 0f); SetGain(seeds, 0f); SetGain(trails, 0f); SetGain(trailsFront, 0f); SetGain(bubblesGlass, 0f); SetGain(bubblesSeats, 0f);
         SetGain(ridge, 0f); SetGain(warmPoint, 0f);
+    }
+
+    // F7 (D-34 #5 / D-49 #4 option C): the bus steers right by turnDeg x smoothstep over F6 -> F7 and holds it; it moves
+    // along its heading, so it also drifts (turnDrift). The bus is the world origin, so the palace turns about it:
+    // world = yaw(-heading) x (R_Sea + palaceLocal0 - drift); R_Sea is not rotated, so the local position is that - R_Sea.
+    private void PalaceTurn(float t)
+    {
+        if (palaceRoot == null || rSea == null) return;
+        float u = Mathf.Clamp01((t - turnT0) / Mathf.Max(turnT1 - turnT0, 1e-3f));
+        float psi = turnDeg * Smooth(u);
+        float dx = 0f, dz = 0f;
+        if (turnDrift != null && turnDrift.Length >= 4 && t > turnT0)
+        {
+            int n = turnDrift.Length / 2;
+            float f = Mathf.Min((t - turnT0) / Mathf.Max(turnDt, 1e-3f), n - 1.0001f);
+            int i = (int)f; f -= i;
+            dx = Mathf.Lerp(turnDrift[2 * i], turnDrift[2 * i + 2], f);
+            dz = Mathf.Lerp(turnDrift[2 * i + 1], turnDrift[2 * i + 3], f);
+        }
+        Quaternion q = Quaternion.Euler(0f, -psi, 0f);
+        Vector3 s = rSea.localPosition;
+        palaceRoot.localRotation = q;
+        palaceRoot.localPosition = q * (s + palaceLocal0 - new Vector3(dx, 0f, dz)) - s;
     }
 
     private void SetGain(Renderer r, float g)

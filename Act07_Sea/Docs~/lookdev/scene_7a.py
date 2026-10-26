@@ -87,13 +87,13 @@ def lamps_env(t, a):
     if key in _LAMPS:
         return _LAMPS[key]
     PF = json.load(open(os.path.join(PKG, 'PalaceFrame_约定.json'), encoding='utf-8'))
-    bus = np.array([0.0, PF['frame']['bus_origin_y_stop'] + (AM.depth(AM.L['F7']) - AM.depth(t)), AM.fwd(t)])
+    yb = PF['frame']['bus_origin_y_stop']                # the palace in the bus frame, with the F7 right turn (bus_turn)
     fade = float(a.get('lampfade', 0.5))
-    pts = [(np.asarray(L_['flame_pos']) - bus, fade) for L_ in PF['lamps']]
+    pts = [(AM.palace_to_bus(L_['flame_pos'], t, yb), fade) for L_ in PF['lamps']]
     rg = PF['specks']['region']; rs = np.random.default_rng(7)
     for _ in range(240):
         q = np.array([rs.uniform(*rg['x']), rs.uniform(*rg['y']), rs.uniform(*rg['z'])])
-        pts.append((q - bus, 0.5 * rs.uniform(0.4, 1.0)))
+        pts.append((AM.palace_to_bus(q, t, yb), 0.5 * rs.uniform(0.4, 1.0)))
     env = SK.env_lamps_above(pts, SK.lin('#3E2C2B') * 0.6, SK.lamp_gold('S7b') * 14.0, 0.25)
     _LAMPS.clear(); _LAMPS[key] = env
     return env

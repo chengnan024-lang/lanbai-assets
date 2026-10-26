@@ -93,6 +93,13 @@ def report():
     rate=max((p[i+1][3]-p[i][3])/0.02 for i in range(len(p)-1))
     show('C', o, '| steer %.2f deg over F6 -> F7 (%.1f s), max %.2f deg/s, drift %.2f m'%(m,L['F7']-L['F6'],rate,info['x_drift']))
 
+    # as built: act07_motion.TURN_DEG / heading / drift (the contract's bus_turn, the driver's PalaceTurn)
+    pb=lambda q: M.palace_to_bus(np.array(q,float),L['F7'],F['frame']['bus_origin_y_stop'])
+    res={}
+    for k,(xx,y) in {'L':(dx0-dw/2,plat+dh/2),'R':(dx0+dw/2,plat+dh/2),'C':(dx0,plat+dh/2),'TL':(dx0-dw/2,plat+dh),'BL':(dx0-dw/2,plat),'TR':(dx0+dw/2,plat+dh),'BR':(dx0+dw/2,plat)}.items():
+        d=pb((xx,y,zd))-EYE; res[k]=(math.degrees(math.atan2(d[0],d[2])), math.degrees(math.atan2(d[1],math.hypot(d[0],d[2]))))
+    show('C built', res, '| TURN_DEG %.2f, max %.2f deg/s, drift %.3f m'%(M.TURN_DEG, 1.5*M.TURN_DEG/(L['F7']-L['F6']), M.drift(L['F7'])[0]))
+
 
 if __name__=='__main__':
     report()

@@ -542,6 +542,9 @@ def main():
         last_length=ls['length'], last_alpha=ls['alpha'], last_from=ls['from_bus'], last_to=ls['to_bus'], last_target=ls['target_from_bus'], last_target_to=ls['target_to_bus'], last_top=ls['top_above_centre_m'],
         beam_angle=J['beam']['spot_angle_deg'], beam_range=J['beam']['range_m'], beam_gather_pos=J['beam']['gather']['pos_bus'],
         beam_gather_aim=J['beam']['gather']['aim_bus'], beam_gather_E=J['beam']['gather']['E_peak'], beam_last_E=J['beam']['last']['E_peak'],
+        turn_deg=AM.TURN_DEG, turn_t0=AM.TURN_T0, turn_t1=AM.TURN_T1, turn_dt=0.25,
+        turn_drift=sum([[round(v, 4) for v in AM.drift(AM.TURN_T0 + 0.25 * i)] for i in range(int(round((AM.TURN_T1 - AM.TURN_T0) / 0.25)) + 2)], []),
+        turn_note='F7 (D-34 #5 / D-49 #4 option C): the bus steers right into the stop; the driver turns R_Palace only (PalaceFrame_约定 bus_turn); drift = (x, z) pairs every turn_dt from turn_t0',
         snow_sphere=SNOW_SPHERE, snow_box=SNOW_BOX,
         # act 7c (README_Act07a §9)
         F8=L['F8'], F8b=L['F8b'], F8c=L['F8c'],

@@ -254,13 +254,13 @@ def frame_K3(rays, eye, t, a):
     plane_depth = AM.depth(AM.EXIT) + 1.70           # the EYE crosses the plane at the exit
     level = eye[1] - (plane_depth - AM.depth(t))
     PF = json.load(open(os.path.join(REPO, 'Act07_Sea', 'PalaceFrame_约定.json'), encoding='utf-8'))
-    bus = np.array([0.0, PF['frame']['bus_origin_y_stop'] + (AM.depth(AM.L['F7']) - AM.depth(t)), AM.fwd(t)])
+    yb = PF['frame']['bus_origin_y_stop']            # the palace in the bus frame, with the F7 right turn (bus_turn)
     fade = float(a.get('lampfade', 0.5))             # F8: the constellation dims lamp by lamp
-    pts = [(np.asarray(L['flame_pos']) - bus, fade) for L in PF['lamps']]
+    pts = [(AM.palace_to_bus(L['flame_pos'], t, yb), fade) for L in PF['lamps']]
     rg = PF['specks']['region']; rs = np.random.default_rng(7)
     for _ in range(int(a.get('specks', 240))):                 # the drowned city's far lights (PalaceSpecks), dim
         q = np.array([rs.uniform(*rg['x']), rs.uniform(*rg['y']), rs.uniform(*rg['z'])])
-        pts.append((q - bus, float(a.get('speckgain', 0.5)) * rs.uniform(0.4, 1.0)))
+        pts.append((AM.palace_to_bus(q, t, yb), float(a.get('speckgain', 0.5)) * rs.uniform(0.4, 1.0)))
     fogc = lin('#3E2C2B')
     refl = env_lamps_above(pts, fogc * 0.6, lamp_gold('S7b') * float(a.get('lampgain', 14.0)), float(a.get('lampdeg', 0.25)))
     M = material('M_07c_SeaMirror', a, TIRColor=tuple(fogc * 0.5))
