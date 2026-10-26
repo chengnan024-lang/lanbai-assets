@@ -16,7 +16,7 @@ public static class LanbaiPalaceData
     public static readonly float[] DoorCentre = { -21.00000f, 9.75000f, 343.50000f };
     public const float DoorHalfHeight = 3.750f, DoorSpecI = 60.000f, NacreLampGain = 1.00f;
     public const float NacreLift = 0.00f, NacreSpread = 0.024f;
-    public const float BandGain = 0.700f, BandWidth = 0.60f, BandReach = 6.00f;   // 珍珠光带（终审 10-25 #5）
+    public const float BandGain = 0.800f, BandWidth = 0.45f, BandReach = 6.00f;   // 珍珠光带（终审 10-25 #5）
     public const float WarmI = 5.4600f, WarmRange = 3.500f, IndigoI = 28.0000f, IndigoRange = 12.000f, IndigoLift = 4.00f;
     public static readonly float[] WarmColor = { 1.00000f, 0.33245f, 0.02843f };   // 线性 #FF9C2F
     public static readonly float[] IndigoColor = { 0.02315f, 0.09084f, 0.19807f };   // 线性 #2A557B
