@@ -11,15 +11,17 @@ The driver places R_Palace so that this frame moves past the fixed bus: R_Palace
 world origin). busPos(t) = (0, BUS_Y_STOP + (depth(F7) - depth(t)), fwd(t)), see act07_motion.py.
 
 Composition the layout is solved for (bible §6·7b 构图):
-  * avenue (神道) axis at x = -18: right lamp column x = -9 (9 m left of the bus), left column x = -27;
+  * avenue (神道) axis at x = -19.75: right lamp column x = -10.75, left column x = -28.75 (round 10, 10-26: the whole
+    avenue moved 1.75 m left so it runs between the two que again, Que_R -12 / Que_L -27.5; it was -18 / -9 / -27);
   * the 12 lamp pairs are abreast of the bus at 672.0, 677.1, ... 728.6 (5.1 s apart) -> z_k = fwd(t_k);
-  * the hall's open door is ON the avenue axis (x = -18) and the bus stops 35.3 m short of it at F7, so the door is at
-    azimuth -6 deg (706, 169 m), -15 deg (F6, 66 m), -27 deg (F7, 35 m) from the bus heading;
-  * the hall (60 m, 9 bays) runs from the terrace edge leftwards: the open door is bay 8 of 9 (counted from the left),
+  * the hall's open door is ON the avenue axis (x = -19.75) and the bus stops 35.3 m short of it at F7, so the door is at
+    azimuth -6.7 deg (706), -16.7 deg (F6), -29.2 deg (F7) from the bus heading (was -6 / -15 / -27 with the axis at -18;
+    STOP_GAP kept, so the hall stays at the same z);
+  * the hall (60 m, 9 bays) runs from 1.75 m inside the terrace edge leftwards (moved with the avenue): the open door is bay 8 of 9 (counted from the left),
     so from the stopped bus the hall fills the windshield LEFT of the door and the right of the frame is the dark open
     abyss (bible: '右边是暗的空旷').  [decision: a Han hall's door is normally central; this asymmetry is the price of
-    '门在神道轴线上、车左 18 m' + '右边是暗的空旷' + a 60 m hall that does not hang over the cliff.]
-  * the right que (紫贝阙, 40 m) is passed at 9 m at 668.6.
+    '门在神道轴线上、车左约 18 m' + '右边是暗的空旷' + a 60 m hall that does not hang over the cliff.]
+  * the right que (紫贝阙, 40 m, x -12, unchanged) is passed at 9 m at 668.6; the left que at x -27.5.
 """
 import json
 import math
@@ -35,8 +37,12 @@ import act07_motion as M  # noqa: E402
 EDGE_X = -8.0              # terrace edge face (vertical lip), seaweed-hung
 LIP_BOTTOM_Y = -13.0       # lower edge of the lip: the bus eye passes it at ~F7p (bible: 'about 17 m below the stop')
 BUS_Y_STOP = 2.5           # bus origin above the terrace top while gliding / stopped (lamp flames are BELOW the floor)
-AXIS_X = -18.0
-COL_R, COL_L = -9.0, -27.0
+# palace round 10 (总导演 10-26, option c): the whole avenue 1.75 m left so it runs exactly between the two que again
+# after the left que moved out (room for the waist eaves: 4-5 m between them); the right que stays put
+AVENUE_SHIFT = -1.75
+AXIS_X = -18.0 + AVENUE_SHIFT                       # -19.75
+COL_R, COL_L = -9.0 + AVENUE_SHIFT, -27.0 + AVENUE_SHIFT   # -10.75, -28.75
+QUE_R_X, QUE_L_X = -12.0, -27.5                     # centres; the avenue axis is their midpoint
 PAIR_T = [672.0, 677.1, 682.3, 687.4, 692.6, 697.7, 702.8, 708.0, 713.1, 718.3, 723.4, 728.6]
 STOP_GAP = 35.3            # bus origin -> door plane at F7 (18 / tan 27 deg)
 HALL_W, HALL_BAYS, HALL_H, HALL_D = 60.0, 9, 30.0, 28.0
@@ -59,7 +65,7 @@ def main():
     z_stop = M.fwd(L['F7'])
     z_door = z_stop + STOP_GAP
     pairs = [M.fwd(t) for t in PAIR_T]
-    hall_x1 = EDGE_X                     # hall flush with the terrace edge
+    hall_x1 = EDGE_X + AVENUE_SHIFT      # hall (and platform) moved with the avenue so the open door stays ON its axis
     hall_x0 = hall_x1 - HALL_W
     bay = HALL_W / HALL_BAYS
     door_bay = int(round((AXIS_X - hall_x0) / bay - 0.5))          # 0-based
@@ -105,7 +111,7 @@ def main():
             seaweed.append(dict(id='Weed_%02d' % (i + 1), pos=r3((EDGE_X - 0.4, -2.0 - (i * 5 % 9), z)), height_m=2.0 + (i * 13 % 30) / 10.0))
         else:           # at the platform foot and the que bases
             z = plat_front - 1.0 if i < 26 else 40.0
-            x = door_x + 3 - (i - 18) * 7.0 if i < 26 else (-12.0 if i % 2 else -24.0)
+            x = door_x + 3 - (i - 18) * 7.0 if i < 26 else (QUE_R_X if i % 2 else QUE_L_X)
             seaweed.append(dict(id='Weed_%02d' % (i + 1), pos=r3((x, 0.0, z)), height_m=2.0 + (i * 7 % 30) / 10.0))
 
     specks = dict(file='PalaceSpecks_Points.fbx', count=240, note='far lights of the drowned city beyond the fog: '
@@ -126,11 +132,11 @@ def main():
                           '(dream decision, README): from below, the palace lamps read as a constellation overhead (F7p); the buildings '
                           'are veiled by fog from below (global _Udon_PalaceVeil, see palace_veil)'),
         avenue=dict(axis_x=AXIS_X, columns_x=[COL_R, COL_L], pair_spacing_m=round(pairs[1] - pairs[0], 3), paving=dict(x=[COL_L - 1.5, COL_R + 0.5], z=[pairs[0] - 12.0, plat_front])),
-        que=[dict(id='Que_R', pos=r3((COL_R - 3.0, 0.0, pairs[0] - 13.0)), footprint=r3((6.0, 10.0)), height_m=QUE_H, passed_at=668.6),
-             dict(id='Que_L', pos=r3((COL_L + 3.0, 0.0, pairs[0] - 13.0)), footprint=r3((6.0, 10.0)), height_m=QUE_H)],
+        que=[dict(id='Que_R', pos=r3((QUE_R_X, 0.0, pairs[0] - 13.0)), footprint=r3((6.0, 10.0)), height_m=QUE_H, passed_at=668.6),
+             dict(id='Que_L', pos=r3((QUE_L_X, 0.0, pairs[0] - 13.0)), footprint=r3((6.0, 10.0)), height_m=QUE_H)],
         hall=dict(id='Hall', x=[hall_x0, hall_x1], front_z=round(z_door, 3), depth_m=HALL_D, height_m=HALL_H, bays=HALL_BAYS, bay_m=round(bay, 4),
                   open_door_bay=door_bay + 1, door_x=round(door_x, 3), door_size=[4.2, 7.5], platform=dict(height_m=PLATFORM_H, front_z=round(plat_front, 3),
-                  x=[hall_x0 - 4.0, EDGE_X], back_z=round(z_door + HALL_D + 6.0, 3), stair=dict(x=[door_x - 4.0, door_x + 4.0], z=[round(plat_front - 9.0, 3), round(plat_front, 3)])),
+                  x=[hall_x0 - 4.0, EDGE_X + AVENUE_SHIFT], back_z=round(z_door + HALL_D + 6.0, 3), stair=dict(x=[door_x - 4.0, door_x + 4.0], z=[round(plat_front - 9.0, 3), round(plat_front, 3)])),
                   interior_emission=dict(color='#FFB74D', gain=3.0), door_cone_cards=dict(count=3, length_m=20.0, alpha=0.06)),
         door_azimuth_check={k: round(-math.degrees(math.atan2(-AXIS_X, z_door - M.fwd(t))), 2) for k, t in (('706', 706.0), ('F6', L['F6']), ('F7', L['F7']))},
         lamps=lamps,
