@@ -4,6 +4,47 @@
 
 > **2026-10-24 起，读这份日志的本地是 ChatGPT「阿白」**（10-24 已接管，D-40a #8、D-41）。先读根目录的 `HANDOFF_CHATGPT.md`：协作边界、第一次接管的步骤、回传协议都在那里。下面各条里的“你”指本地，现在就是阿白。旧条里“技术上怎么实现由你决定”（09-28）作废：技术架构归总工程师，高风险改动先备份并经小楠确认（`HANDOFF_CHATGPT.md` §F）。
 
+## 2026-10-26（北京 08:05）· 🐙 门：触手根部和云的接缝（D-44 #3）进 main
+同步：`GateClouds/`（新的：`Shaders/Lanbai_GateVolumeDeck.shader`、`Shaders/LanbaiCloudVolume.cginc`、`GateClouds_Skirts.json`）、`Gate/Shaders/`（`Lanbai_TentacleSway.shader` v2.8、`LanbaiGateSky.cginc`）、`Common/UdonGlobals.md`
+不同步：`GateClouds/Source/`、`GateClouds/Docs~/`
+
+**是什么：**
+- 修的是小楠全程预览里看到的那道横线（`FromLocal/visual_feedback/20261025-0206/04_gate_root_seam.png`）。
+- 按你本地的体积云 `VolumeCloudDeck` 做：触手伸进云里，云在根部堆起一圈，触手按云的密度慢慢消失。
+- 加了 5 组全局量（`_Udon_CloudVolume*`、`_Udon_GateSkirt0..7`、`_Udon_GateSkirtK`），已登记。
+- 你报的 `LanbaiGateSky.cginc` 第 53 行 shader 警告（gate_clouds_test 20261025-0009）一起修了（a803c2e）。
+- 没有体积云时（`_Udon_CloudVolume.x` = 0），触手和以前完全一样。
+
+**接入**（照 `GateClouds/README_GateClouds.md` §12.4）：
+1. 拷上面那些文件，先备份 FullPreview。
+2. 点 **蓝白/Gate Clouds/Build**。它会把用 `Lanbai/Local/VolumeCloudDeck` 的材质换成 `Lanbai/GateVolumeDeck`（属性名一样，值保留，你那份 shader 不用删）。Console 应有一行 `volume deck ...: N arms for the skirts`。
+3. **正式场景不动。**
+
+**技术验收（D-46）：**
+1. Console 0 错 0 警告（特别是 TentacleSway 和 GateVolumeDeck）。
+2. 四个机位的截图：主座位、左右窗往下看、车外；t = 152、166、168。
+3. 三段录像：主座位从左窗转到右窗（t 165→168）、车外侧面、云下往上看（README §12.3）。
+4. 门那段（130–200 s）的 GPU 时间：换 shader 前后各一次。
+5. 结果放 `FromLocal/gate_clouds_test/<时间>/`，问题写 `问题.md`。
+
+**问题处理：**
+- 04_gate_root_seam → 云端已交（main，本条）。等你接入后复测。
+- 门下的云海定了用体积云（D-44 #3 这一版的做法）。门以后的改动都做在体积云上，门自己的高度场云海只留作备用。
+
+## 2026-10-26（北京 08:00）· ⏸ 十三面镜：先别量闪光和白
+上一条（05:30）的十三面镜，你先接入、截图都可以，**但下面三项先不要量**：
+- `flicker_probe` 1016–1042 里镜子的部分；
+- 1149.31 第 13 面镜和白的交接；
+- 白的退出 1177–1191。
+
+**原因：** 镜包自己复查时，05:30 那一版（09160b5）有三条闪光序列没过：
+- 第 9 面：每秒 2.5 次闪；
+- wd、wsu：1 秒内变化 1.02 / 1.03 EV。
+
+修好的版本（9fea6e6 之后）正在复跑。已经过的有 m9、wd、wf、m7、m10，wsu 还在跑。全部过了以后我合进 main，再写一条新的，你再量。
+
+**车厢那部分照常：** 1016–1042 里新车厢自己的细闪（旧车 dither 那一条），照 05:00 那一条量。
+
 ## 2026-10-26（北京 05:30）· 🪞 十三面镜（第 9c 幕）和白（第 10 幕）进 main：换掉星海的旧海面占位
 同步：`Mirrors/` `Act10_White/` `Fonts/`（字幕深度表接上了）
 不同步：`Mirrors/Source/BronzeMirror.blend`、各包的 `Docs~/`、`Tools~/`
