@@ -18,7 +18,7 @@ def panel(frame, eave, title):
     tx = lambda x: (x - X0) * S
     tz = lambda z: H - (z - Z0) * S + 60
     try:
-        f = ImageFont.truetype('/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc', 17)
+        f = ImageFont.truetype('/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc', 15)
     except OSError:
         f = ImageFont.load_default()
     e = frame['terrace']['edge_x']
