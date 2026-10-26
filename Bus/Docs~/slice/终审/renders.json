@@ -1,0 +1,316 @@
+{
+ "views": {
+  "seat_05m": {
+   "kind": "bus_slice.json camera",
+   "look_at_object": "seat",
+   "distance_m": 0.5,
+   "eye": [
+    0.5562,
+    1.6671,
+    2.0475
+   ],
+   "target": [
+    0.6493,
+    1.1773,
+    2.0102
+   ],
+   "bounds_min": [
+    0.3085,
+    0.8645,
+    1.733
+   ],
+   "bounds_max": [
+    0.99,
+    1.49,
+    2.2875
+   ],
+   "crop_deg": [
+    40.0,
+    30.0
+   ],
+   "ppd": 20.0,
+   "res": [
+    834,
+    614
+   ],
+   "scene": "the three pieces only",
+   "seconds": 58.2,
+   "png": "seat_05m.png",
+   "png_kb": 151,
+   "png_mode": "rgb",
+   "mean_srgb": 41.6,
+   "look_at": "从主座位的眼往下看自己的座垫和靠背：乙烯、滚边、裂纹；光照图有没有黑点、接缝"
+  },
+  "seat_10m": {
+   "kind": "bus_slice.json camera",
+   "look_at_object": "seat",
+   "distance_m": 1.0,
+   "eye": [
+    0.4632,
+    2.157,
+    2.0848
+   ],
+   "target": [
+    0.6493,
+    1.1773,
+    2.0102
+   ],
+   "bounds_min": [
+    0.3085,
+    0.8645,
+    1.733
+   ],
+   "bounds_max": [
+    0.99,
+    1.49,
+    2.2875
+   ],
+   "crop_deg": [
+    40.0,
+    30.0
+   ],
+   "ppd": 20.0,
+   "res": [
+    834,
+    614
+   ],
+   "scene": "the three pieces only",
+   "seconds": 49.2,
+   "png": "seat_10m.png",
+   "png_kb": 178,
+   "png_mode": "rgb",
+   "mean_srgb": 38.4,
+   "look_at": "离 1 m 从上往下看整把座椅；左上黑色 T 形件是靠墙的固定板（整车里藏在墙和轮罩之间）"
+  },
+  "window_05m": {
+   "kind": "bus_slice.json camera",
+   "look_at_object": "window",
+   "distance_m": 0.5,
+   "eye": [
+    0.5019,
+    1.6955,
+    2.0628
+   ],
+   "target": [
+    0.9832,
+    1.7404,
+    1.935
+   ],
+   "bounds_min": [
+    0.942,
+    1.232,
+    1.27
+   ],
+   "bounds_max": [
+    1.0244,
+    2.2489,
+    2.6
+   ],
+   "crop_deg": [
+    40.0,
+    30.0
+   ],
+   "ppd": 20.0,
+   "res": [
+    834,
+    614
+   ],
+   "scene": "the three pieces only",
+   "seconds": 28.7,
+   "png": "window_05m.png",
+   "png_kb": 2,
+   "png_mode": "rgb",
+   "mean_srgb": 17.0,
+   "look_at": "画面里只有玻璃（窗中心，外面是夜）：窗框、窗扣、胶条都不在这台机位里"
+  },
+  "window_10m": {
+   "kind": "bus_slice.json camera",
+   "look_at_object": "window",
+   "distance_m": 1.0,
+   "eye": [
+    0.0206,
+    1.6506,
+    2.1905
+   ],
+   "target": [
+    0.9832,
+    1.7404,
+    1.935
+   ],
+   "bounds_min": [
+    0.942,
+    1.232,
+    1.27
+   ],
+   "bounds_max": [
+    1.0244,
+    2.2489,
+    2.6
+   ],
+   "crop_deg": [
+    40.0,
+    30.0
+   ],
+   "ppd": 20.0,
+   "res": [
+    834,
+    614
+   ],
+   "scene": "the three pieces only",
+   "seconds": 32.9,
+   "png": "window_10m.png",
+   "png_kb": 34,
+   "png_mode": "rgb",
+   "mean_srgb": 21.9,
+   "look_at": "只拍到推拉窗中间的横框和竖框（铝）；其余是玻璃"
+  },
+  "pillar_05m": {
+   "kind": "bus_slice.json camera",
+   "look_at_object": "pillar",
+   "distance_m": 0.5,
+   "eye": [
+    0.4172,
+    1.6591,
+    1.547
+   ],
+   "target": [
+    0.29,
+    1.62,
+    1.065
+   ],
+   "bounds_min": [
+    0.256,
+    0.62,
+    1.026
+   ],
+   "bounds_max": [
+    0.324,
+    2.62,
+    1.104
+   ],
+   "crop_deg": [
+    40.0,
+    30.0
+   ],
+   "ppd": 20.0,
+   "res": [
+    834,
+    614
+   ],
+   "scene": "the three pieces only",
+   "seconds": 16.4,
+   "png": "pillar_05m.png",
+   "png_kb": 37,
+   "png_mode": "rgb",
+   "mean_srgb": 26.5,
+   "look_at": "立柱钢管（反射车厢）、停车按钮盒背面、按钮盒上的箍"
+  },
+  "pillar_10m": {
+   "kind": "bus_slice.json camera",
+   "look_at_object": "pillar",
+   "distance_m": 1.0,
+   "eye": [
+    0.5444,
+    1.6983,
+    2.0289
+   ],
+   "target": [
+    0.29,
+    1.62,
+    1.065
+   ],
+   "bounds_min": [
+    0.256,
+    0.62,
+    1.026
+   ],
+   "bounds_max": [
+    0.324,
+    2.62,
+    1.104
+   ],
+   "crop_deg": [
+    40.0,
+    30.0
+   ],
+   "ppd": 20.0,
+   "res": [
+    834,
+    614
+   ],
+   "scene": "the three pieces only",
+   "seconds": 13.6,
+   "png": "pillar_10m.png",
+   "png_kb": 28,
+   "png_mode": "rgb",
+   "mean_srgb": 22.1,
+   "look_at": "立柱稍远和按钮盒；测试的闪烁项 pillar_micro 用这台"
+  },
+  "ctx_window": {
+   "kind": "hero eye, whole bus",
+   "eye": [
+    0.55,
+    1.7,
+    2.05
+   ],
+   "yaw_deg": 61.0,
+   "pitch_deg": -10.0,
+   "hfov_deg": 90.0,
+   "res": [
+    960,
+    720
+   ],
+   "scene": "the whole bus (scene_acts act 2)",
+   "seconds": 49.0,
+   "png": "ctx_window.png",
+   "png_kb": 141,
+   "png_mode": "rgb",
+   "mean_srgb": 28.4,
+   "look_at": "整车里：主座位往右前看 WinR1 前半：窗柱、横框、窗台、胶条、扶杆"
+  },
+  "ctx_cushion": {
+   "kind": "hero eye, whole bus",
+   "eye": [
+    0.55,
+    1.7,
+    2.05
+   ],
+   "yaw_deg": -30.0,
+   "pitch_deg": -70.0,
+   "hfov_deg": 80.0,
+   "res": [
+    960,
+    720
+   ],
+   "scene": "the whole bus (scene_acts act 2)",
+   "seconds": 95.8,
+   "png": "ctx_cushion.png",
+   "png_kb": 315,
+   "png_mode": "rgb",
+   "mean_srgb": 83.7,
+   "look_at": "整车里：主座位往左下看自己的座垫：座垫左沿、过道；下边是靠背上沿"
+  }
+ },
+ "scene": {
+  "what": "act 2 cabin reference",
+  "tubes": 1.0,
+  "bleach": 0,
+  "fade": 0
+ },
+ "blend": "/tmp/bus/bus_final_ext.blend",
+ "blend_md5_before": "f9ea73f3e69cf2cbf49b7fd10b9f204f",
+ "samples": 48,
+ "threads": 2,
+ "grade": "S2 (lbh/grade.py, bloom on, no lens layer = VR)",
+ "denoise": "OpenImageDenoise",
+ "engine": "Cycles CPU",
+ "shading": "scene_acts.build(act 2) + diffuse from the lightmap only (tube diffusers hidden from diffuse rays, emissive materials not sampled as lights, diffuse bounces 0); glossy rays traced",
+ "contact_sheet": {
+  "png": "contact_sheet.png",
+  "mode": "palette256",
+  "kb": 203
+ },
+ "blend_md5_after": "f9ea73f3e69cf2cbf49b7fd10b9f204f",
+ "blend_untouched": true,
+ "note": "Blender 里的近似（Cycles、scene_acts 的第 2 幕着色），不是 Unity 截图；没在 Unity 里编译、导入、运行过。近景只有切片三件（和切片场景一样），整车两张是整辆车。"
+}

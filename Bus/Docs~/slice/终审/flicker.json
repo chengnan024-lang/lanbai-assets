@@ -1,0 +1,245 @@
+{
+ "what": "qa.py --mode flicker 在 bus_slice.json 的六台近景机位上（--view slice:<名>）",
+ "layer": "Blender 离线（近似）：EEVEE，Render Samples 1，参考图 4 倍同一姿态再缩回；量法照抄 LanbaiTestCapture 的 micro_motion（shimmer = 逐像素“测的图 − 参考图”亮度差随时间的标准差，shimmer_frac = 大于 4 的像素占比）",
+ "unity": "不是 Unity 的数。Unity 层的数以总工程师的测试工具（bus_slice.json 的 sequences：seat_micro、window_micro、pillar_micro，都在 1.0 m 机位）出的为准；测试里 pillar_shimmer / window_shimmer ≤ 0.005，gate false（初值）。",
+ "differences": "qa.py 现搭切片三件（Bus/Source 的 seat.py / window.py / poles.py，不是导出的减面网格）、MAT_TABLE 的平色材质（没有零件图集）、管灯是 EEVEE 实时面光（不是 _CabinTubeLM）、没有 Lanbai/Cabin 的几何高光抗锯齿（金属上的数应当比 Unity 大）、切片机位不加反射探针、没有 PPv2。",
+ "views": {
+  "seat_05m": {
+   "shimmer_mean": 0.19937798131298978,
+   "shimmer_p99": 3.3154239654541016,
+   "shimmer_frac": 0.006819300260117639,
+   "motion_std_mean": 2.1804831362783106,
+   "motion_std_p99": 16.60606575012207,
+   "hf_raw_mean": 1.1427476942646972,
+   "hf_raw_p99": 8.45281982421875,
+   "hf_raw_frac": 0.07133120864871621,
+   "apl_min": 6.4280778721278375,
+   "apl_max": 7.285253153559208,
+   "apl_max_step": 0.02781907179721088,
+   "frames": 90,
+   "fps": 90.0,
+   "size": [
+    834,
+    614
+   ],
+   "reference_ss": 4,
+   "engine": "eevee",
+   "eye": [
+    0.5562,
+    1.6671,
+    2.0475
+   ],
+   "bounds_center": [
+    0.6493,
+    1.1773,
+    2.0102
+   ],
+   "unity_sequence": null,
+   "unity_check": null,
+   "seconds": 547.7,
+   "sources_commit": "c07dd9e",
+   "command": "~/bpy/bin/python -B Bus/Source/parts/qa.py --mode flicker --part seat --view slice:seat_05m --frames 90"
+  },
+  "seat_10m": {
+   "shimmer_mean": 0.2445294932618974,
+   "shimmer_p99": 3.384045124053955,
+   "shimmer_frac": 0.005854599707855865,
+   "motion_std_mean": 3.5725665880710578,
+   "motion_std_p99": 25.729873657226562,
+   "hf_raw_mean": 1.5475872758210525,
+   "hf_raw_p99": 11.124568939208984,
+   "hf_raw_frac": 0.09524367476702678,
+   "apl_min": 6.599180213303483,
+   "apl_max": 7.5260061643298535,
+   "apl_max_step": 0.03911786237256454,
+   "frames": 90,
+   "fps": 90.0,
+   "size": [
+    834,
+    614
+   ],
+   "reference_ss": 4,
+   "engine": "eevee",
+   "eye": [
+    0.4632,
+    2.157,
+    2.0848
+   ],
+   "bounds_center": [
+    0.6493,
+    1.1773,
+    2.0102
+   ],
+   "unity_sequence": "seat_micro",
+   "unity_check": null,
+   "seconds": 487.1,
+   "sources_commit": "c07dd9e",
+   "command": "~/bpy/bin/python -B Bus/Source/parts/qa.py --mode flicker --part seat --view slice:seat_10m --frames 90"
+  },
+  "window_05m": {
+   "shimmer_mean": 9.762324568727568e-05,
+   "shimmer_p99": 0.0,
+   "shimmer_frac": 0.0,
+   "motion_std_mean": 0.004847277291811376,
+   "motion_std_p99": 0.0,
+   "hf_raw_mean": 0.000572060118308418,
+   "hf_raw_p99": 0.0,
+   "hf_raw_frac": 0.0,
+   "apl_min": 3.070480331100973,
+   "apl_max": 3.083468608290637,
+   "apl_max_step": 0.002840959517546704,
+   "frames": 90,
+   "fps": 90.0,
+   "size": [
+    834,
+    614
+   ],
+   "reference_ss": 4,
+   "engine": "eevee",
+   "eye": [
+    0.5018,
+    1.6955,
+    2.0628
+   ],
+   "bounds_center": [
+    0.9831,
+    1.7404,
+    1.935
+   ],
+   "unity_sequence": null,
+   "unity_check": null,
+   "seconds": 277.4,
+   "sources_commit": "c07dd9e",
+   "command": "~/bpy/bin/python -B Bus/Source/parts/qa.py --mode flicker --part window --view slice:window_05m --frames 90"
+  },
+  "window_10m": {
+   "shimmer_mean": 0.11098677141667405,
+   "shimmer_p99": 2.982512950897217,
+   "shimmer_frac": 0.006758762371210523,
+   "motion_std_mean": 2.088139422570477,
+   "motion_std_p99": 24.207012176513672,
+   "hf_raw_mean": 0.5982430570810644,
+   "hf_raw_p99": 8.78691291809082,
+   "hf_raw_frac": 0.039412118513658126,
+   "apl_min": 4.537738517955841,
+   "apl_max": 4.643777194129399,
+   "apl_max_step": 0.004322560032390399,
+   "frames": 90,
+   "fps": 90.0,
+   "size": [
+    834,
+    614
+   ],
+   "reference_ss": 4,
+   "engine": "eevee",
+   "eye": [
+    0.0205,
+    1.6506,
+    2.1906
+   ],
+   "bounds_center": [
+    0.9831,
+    1.7404,
+    1.935
+   ],
+   "unity_sequence": "window_micro",
+   "unity_check": {
+    "id": "window_shimmer",
+    "metric": "seq.window_micro.shimmer_frac",
+    "op": "<=",
+    "value": 0.005,
+    "gate": false
+   },
+   "seconds": 327.5,
+   "sources_commit": "c07dd9e",
+   "command": "~/bpy/bin/python -B Bus/Source/parts/qa.py --mode flicker --part window --view slice:window_10m --frames 90"
+  },
+  "pillar_05m": {
+   "shimmer_mean": 0.14805358809986238,
+   "shimmer_p99": 4.648857593536377,
+   "shimmer_frac": 0.013058608487802591,
+   "motion_std_mean": 7.137502656538741,
+   "motion_std_p99": 63.97019958496094,
+   "hf_raw_mean": 2.0120030484838916,
+   "hf_raw_p99": 19.287858963012695,
+   "hf_raw_frac": 0.1481108272990728,
+   "apl_min": 6.890267327446604,
+   "apl_max": 7.17546086096693,
+   "apl_max_step": 0.03191710967448547,
+   "frames": 90,
+   "fps": 90.0,
+   "size": [
+    834,
+    614
+   ],
+   "reference_ss": 4,
+   "engine": "eevee",
+   "eye": [
+    0.4172,
+    1.6591,
+    1.547
+   ],
+   "bounds_center": [
+    0.29,
+    1.62,
+    1.065
+   ],
+   "unity_sequence": null,
+   "unity_check": null,
+   "seconds": 312.5,
+   "sources_commit": "c07dd9e",
+   "command": "~/bpy/bin/python -B Bus/Source/parts/qa.py --mode flicker --part poles --view slice:pillar_05m --frames 90"
+  },
+  "pillar_10m": {
+   "shimmer_mean": 0.09326069766031904,
+   "shimmer_p99": 2.38828444480896,
+   "shimmer_frac": 0.006569337363985034,
+   "motion_std_mean": 3.918192824659423,
+   "motion_std_p99": 58.74738311767578,
+   "hf_raw_mean": 1.181555600802994,
+   "hf_raw_p99": 20.195825576782227,
+   "hf_raw_frac": 0.0742350744811317,
+   "apl_min": 5.044350914441721,
+   "apl_max": 5.115872014232719,
+   "apl_max_step": 0.02089467213716034,
+   "frames": 90,
+   "fps": 90.0,
+   "size": [
+    834,
+    614
+   ],
+   "reference_ss": 4,
+   "engine": "eevee",
+   "eye": [
+    0.5444,
+    1.6983,
+    2.0289
+   ],
+   "bounds_center": [
+    0.29,
+    1.62,
+    1.065
+   ],
+   "unity_sequence": "pillar_micro",
+   "unity_check": {
+    "id": "pillar_shimmer",
+    "metric": "seq.pillar_micro.shimmer_frac",
+    "op": "<=",
+    "value": 0.005,
+    "gate": false
+   },
+   "seconds": 315.8,
+   "sources_commit": "c07dd9e",
+   "command": "~/bpy/bin/python -B Bus/Source/parts/qa.py --mode flicker --part poles --view slice:pillar_10m --frames 90"
+  }
+ },
+ "worst_two": [
+  "pillar_05m",
+  "seat_05m"
+ ],
+ "heat_images": {
+  "pillar_05m": "flicker_heat_shimmer_pillar_05m.png",
+  "seat_05m": "flicker_heat_shimmer_seat_05m.png"
+ },
+ "heat_note": "热图 = qa.py 的 heat_shimmer（颜色 0 → 12 级亮度），这里 2 × 2 取最大缩成一半（亮点不丢）"
+}
