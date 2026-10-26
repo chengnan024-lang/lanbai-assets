@@ -4,6 +4,46 @@
 
 > **2026-10-24 起，读这份日志的本地是 ChatGPT「阿白」**（10-24 已接管，D-40a #8、D-41）。先读根目录的 `HANDOFF_CHATGPT.md`：协作边界、第一次接管的步骤、回传协议都在那里。下面各条里的“你”指本地，现在就是阿白。旧条里“技术上怎么实现由你决定”（09-28）作废：技术架构归总工程师，高风险改动先备份并经小楠确认（`HANDOFF_CHATGPT.md` §F）。
 
+## 2026-10-26（北京 11:10）· 🐙 门第 10 轮 + 门内“回头看”进 main（D-49 #1）
+同步：
+- `Gate/Shaders/`（TentacleSway v2.9）、`Gate/Runtime/`、`Gate/Editor/`、`Gate/GateLayout_v2.json`、`Gate/GateDriver_Bake.json`；
+- `GateClouds/`（`Source/`、`Docs~/` 除外）；
+- `Common/UdonGlobals.md`；
+- `Act04c_Inside/Runtime/LanbaiInsideDriver.cs`。
+
+不同步：`GateClouds/Source/` `GateClouds/Docs~/` `Gate/Source/` `Act04c_Inside/Docs~/` `Act04c_Inside/Tools~/`
+
+**是什么**（美术终审过，图在 `GateClouds/Docs~/r10b/`，说明在 `GateClouds/README_GateClouds.md` §13、§14）：
+- 门下的云海定了用你的体积云（D-49 #1），这一轮都改在 `Lanbai/GateVolumeDeck` 上：
+  - **裂口的脚落在云上**：`_Lift` 60 m，只在脚的 250 m 以内把云抬上来。新增 `_Udon_CloudVolumeWind.z`，已登记。
+  - **U8 暗心**：裂口当光源，迎着它的云边亮、芯暗。
+  - **颗粒**：步进抖动换成锁在世界上的 Hash，云面那一层细走（`_Refine`），亮云上看不出颗粒。
+- **D-05**：U8 近处的触手 Near_1 加粗、靠车。
+- **巨像 1**：145.3 s 在 +5.5°，keyart 里不碰裂口。
+- **指尖卷回（回头看）**：6 根抓唇的手过 U9 以后不退场，180.15 → 184.0 依次卷回，184.5 沉进 4c 的雾里。门的窗口为它们延到 185。
+- **门内**：第 1 重光唇“过了以后淡掉”推迟到 184.5，不然手会被一道看不见的边裁掉。
+
+**接入：**
+1. 先备份 FullPreview。
+2. 依次点：
+   - `蓝白/Gate/Build Driver`；
+   - `蓝白/Gate Clouds/Build`（会从云海材质抄 `_Lift`）；
+   - `蓝白/Build/04c 门内`。
+3. **正式场景不动。**
+
+**技术验收（D-46）：**
+1. Console 0 错 0 警告（TentacleSway v2.9、GateVolumeDeck、两个驱动）。
+2. GPU：门那段（130–200 s）换前 / 换后各一次。云面细走每条视线最多多 19 步，要量一下，超了写进 `问题.md`。
+3. 截图 / 录像：
+   - U7、U8 前方、keyart（154.5）；
+   - U8 侧窗看 Near_1；
+   - 145.3 往前看巨像 1 和诗块 A。
+4. **回头看**：主座位回头 180°，180.5 / 181.5 / 183.0 / 184.3 各一张，再录 180 → 186 一段。
+   - 要看到 6 根手在第一道光唇外卷回，是暗剪影，不比背后亮；184.5 以后沉进雾里。
+   - 头显里请小楠看一次，结果写进 `问题.md`。
+5. `flicker_probe` 179–190（进门 + 回头）。
+6. 结果放 `FromLocal/gate_clouds_test/<时间>/`。
+
 ## 2026-10-26（北京 08:45）· 🐙 门：TentacleSway v2.8 修一个 bug，请用这一版
 同步：`Gate/Shaders/Lanbai_TentacleSway.shader`（7d8a5f9）
 
