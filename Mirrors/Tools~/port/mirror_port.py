@@ -34,7 +34,8 @@ TONE = np.array([1.262, 0.974, 0.484])     # solved so that S9a / S9b show #CDBF
 BRONZE_TONE = 1.0
 RIM_SCHEME = 'JSON'       # the schedule's rim_soft; mirror13_study.py overrides it for the comparison schemes
 RIM_SOFT_FROM = {'A': 0.80, 'C': 0.55, 'D': 0.55, 'E': 0.35, 'F': 0.25, 'G': 0.25, 'H': 0.80, 'JSON': 0.35}
-FAR_UNTIL, FAR_SECONDS, FAR_DIM = 1135.31, 4.0, float(os.environ.get('FAR_DIM', 0.6))   # = LanbaiMirrorsDriver farUntil / farSeconds / farDim (M-4)
+FAR_UNTIL, FAR_SECONDS, FAR_DIM = 1131.31, 6.0, float(os.environ.get('FAR_DIM', 0.6))   # = LanbaiMirrorsDriver farUntil / farSeconds / farDim (M-4)
+DUST_GAIN_IMPACT = 0.5   # mirror 12's dust is born in the white's impact: half (flash wsu)
 RIM_GLOW = float(os.environ.get('RIM_GLOW', 0.06)) * np.array([0.8, 0.9, 1.0])   # = LanbaiMirrorsDriver rimGlow: mirror 13's ring while far (bible: rim screen luma 60-90, #4E545E)
 
 
@@ -215,8 +216,9 @@ def breakup(sd, xz, cellM, bandM):
     edge = (F2 - F1) * 0.5
     gap = 0.18 * (1 - s) ** 2
     gone = ID - (s * 1.3 - 0.1)
-    keep = np.minimum(edge - gap, -gone)
-    g = (1 - s) * np.clip(1 - (edge - gap) / 0.06, 0, 1) * (keep >= 0)
+    shrink = 0.6 * np.clip((gone + 0.25) / 0.25, 0, 1)    # a chunk shrinks to its centre before it drops (no pop; flash m9)
+    keep = np.minimum(edge - gap - shrink, -gone)
+    g = (1 - s) * np.clip(1 - (edge - gap - shrink) / 0.06, 0, 1) * (keep >= 0)
     out = sd.copy(); out[m] = np.where(keep >= 0, sd[m], -1.0)
     glow[m] = g
     return out, glow
@@ -465,6 +467,7 @@ def frame(t, yaw=0.0, pitch=0.0, w=960, h=540, ss=1, cabin=None, dust=True, extr
             dirs = pos - EYE; dist = np.linalg.norm(dirs, axis=-1); dirs /= dist[:, None]
             rmin = 1.4 / 1.4133 * pxang * dist
             peak = 6.0 * np.minimum(0.05 / rmin, 1) ** 2 * br * alive * np.clip((dist - 0.3) / 0.7, 0, 1)
+            peak = peak * (DUST_GAIN_IMPACT if m['index'] == 12 else 1.0)   # = LanbaiMirrorsDriver dustGainImpact
             layer = np.zeros_like(img)
             SC.splat(layer, W, H, fov, yaw, pitch, dirs, peak, col, fw)
             img += layer

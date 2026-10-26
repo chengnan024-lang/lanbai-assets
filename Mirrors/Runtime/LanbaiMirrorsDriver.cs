@@ -54,8 +54,8 @@ namespace Lanbai.Mirrors
         public float[] extraT = new float[] { 1138.78f, 1146.31f };
         public float[] extraV = new float[] { 0f, 2.7f };     // r3 C3: +2.7 EV (looking down with WHITE_BLOOM <= 220)
         [Header("Mirror 13 far (终审 M-4): the bible's blurred giant disc until F16 - 10, one stop under the column")]
-        public float farUntil = 1135.31f;           // far = 1 before this ...
-        public float farSeconds = 4f;               // ... -> 0 at F16 - 10 (1139.31): sharp and full from then on (D-38)
+        public float farUntil = 1131.31f;           // far = 1 before this ...
+        public float farSeconds = 6f;               // ... -> 0 at 1137.31, before mirror 12's impact (1137.58; flash wd / wsu) and F16 - 10: sharp from then on (D-38)
         public float farDim = 0.6f;                 // face x 0.6 while far: under the column mirrors (r7 port: see README §9 M-4)
         public Color rimGlow = new Color(0.048f, 0.054f, 0.06f, 1f);  // the far ring (linear): bible 镜缘 screen luma 60-90, #4E545E (r7 port: see README §10 M-4)
 
@@ -64,6 +64,7 @@ namespace Lanbai.Mirrors
         public float appearSeconds = 3f;
         public float pulseIn = 0.08f;
         public float pulseOut = 0.35f;
+        public float dustGainImpact = 0.5f;         // mirror 12's dust is born in the white's impact (1137.58 -> 1138.78): half (flash wsu: 1 s <= 1.0 EV)
         public float rimLightE = 0.3f;
         [Header("Rim light (总导演 F7, 10-24: one point light, no shadows, Not Important, culling Player + PlayerLocal)")]
         public Light rimLight;                      // built by 蓝白/Build/Mirrors; driven by the envelope, off at 0
@@ -396,7 +397,7 @@ namespace Lanbai.Mirrors
                     continue;
                 mpb.Clear();
                 mpb.SetFloat(idDustNow, t);
-                mpb.SetFloat(idDustOn, 1f);
+                mpb.SetFloat(idDustOn, kk == n - 2 ? dustGainImpact : 1f);
                 mpb.SetFloat(idDustT0, tCross[kk]);
                 mpb.SetVector(idDustC, dustC[kk]);
                 mpb.SetVector(idDustCar, dustCar[kk]);
