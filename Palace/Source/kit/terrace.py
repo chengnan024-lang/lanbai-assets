@@ -47,7 +47,7 @@ def slope_wd(z):
         return CHAMFER_W, CHAMFER_D
     w = _ss(SLOPE_Z[0], SLOPE_ZF[0], z) * (1.0 - _ss(SLOPE_ZF[1], SLOPE_Z[1], z))
     n1, n2 = _noise(z, 3.0, 21), _noise(z * 1.3, 7.0, 23)
-    W = 0.8 + w * (BIG[0] - 0.8 + 0.3 * min(1.0, abs(n1)))      # 坡顶最多退到 x −11.8，近列灯（x −12）站在坡顶后面
+    W = 0.8 + w * (BIG[0] - 0.8)      # 坡宽不起伏：坡顶就在 x = edge − W（3.6 m 时 −11.6），近列灯的石座（到 −11.64）站在坡顶后面
     D = 1.6 + w * (BIG[1] - 1.6 + (BIG[2] if len(BIG) > 2 else 0.6) * min(1.0, abs(n2)))
     return W, D
 
