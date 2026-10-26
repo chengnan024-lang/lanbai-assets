@@ -5049,8 +5049,19 @@
   "lip_bottom_y": -13.0,
   "edge_slope": {
    "width_m": 3.5,
-   "drop_m": 6.0,
-   "note": "option A (总导演 10-26, F7p): the top of the edge weathers into a slope over the last 3.5 m (x -11.5 .. -8) down 6 m; the vertical lip face runs from y -6 down to lip_bottom_y; the 18 lip seaweeds stand below it"
+   "drop_m": [
+    6.0,
+    6.6
+   ],
+   "z": [
+    48.0,
+    306.0
+   ],
+   "z_full": [
+    54.0,
+    296.0
+   ],
+   "note": "option A (总导演 10-26, F7p): along the lamp avenue only, the top of the edge weathers into a rounded slope from x -11.5 .. -11.8 down to its foot at x -8, y -6.0 .. -6.6 (geometry: palace); below it the old lip face to lip_bottom_y; by the que and the platform the old 0.8 x 1.6 m chamfer. The lip seaweeds within z stand below the foot (tops <= -7.1)"
   },
   "extent_x": [
    -260.0,
@@ -7197,7 +7208,7 @@
    "id": "Weed_01",
    "pos": [
     -8.4,
-    -8.5,
+    -2.0,
     -20.0
    ],
    "height_m": 2.0
@@ -7206,7 +7217,7 @@
    "id": "Weed_02",
    "pos": [
     -8.4,
-    -10.738,
+    -7.0,
     5.0
    ],
    "height_m": 3.3
@@ -7215,7 +7226,7 @@
    "id": "Weed_03",
    "pos": [
     -8.4,
-    -11.287,
+    -3.0,
     30.0
    ],
    "height_m": 4.6
@@ -7224,7 +7235,7 @@
    "id": "Weed_04",
    "pos": [
     -8.4,
-    -10.525,
+    -8.0,
     44.0
    ],
    "height_m": 2.9
@@ -7233,7 +7244,7 @@
    "id": "Weed_05",
    "pos": [
     -8.4,
-    -11.075,
+    -11.675,
     69.0
    ],
    "height_m": 4.2
@@ -7242,7 +7253,7 @@
    "id": "Weed_06",
    "pos": [
     -8.4,
-    -10.312,
+    -10.912,
     94.0
    ],
    "height_m": 2.5
@@ -7251,7 +7262,7 @@
    "id": "Weed_07",
    "pos": [
     -8.4,
-    -10.863,
+    -11.462,
     108.0
    ],
    "height_m": 3.8
@@ -7260,7 +7271,7 @@
    "id": "Weed_08",
    "pos": [
     -8.4,
-    -10.1,
+    -10.7,
     133.0
    ],
    "height_m": 2.1
@@ -7269,7 +7280,7 @@
    "id": "Weed_09",
    "pos": [
     -8.4,
-    -10.65,
+    -11.25,
     158.0
    ],
    "height_m": 3.4
@@ -7278,7 +7289,7 @@
    "id": "Weed_10",
    "pos": [
     -8.4,
-    -11.2,
+    -11.8,
     172.0
    ],
    "height_m": 4.7
@@ -7287,7 +7298,7 @@
    "id": "Weed_11",
    "pos": [
     -8.4,
-    -10.438,
+    -11.037,
     197.0
    ],
    "height_m": 3.0
@@ -7296,7 +7307,7 @@
    "id": "Weed_12",
    "pos": [
     -8.4,
-    -10.988,
+    -11.587,
     211.0
    ],
    "height_m": 4.3
@@ -7305,7 +7316,7 @@
    "id": "Weed_13",
    "pos": [
     -8.4,
-    -10.225,
+    -10.825,
     236.0
    ],
    "height_m": 2.6
@@ -7314,7 +7325,7 @@
    "id": "Weed_14",
    "pos": [
     -8.4,
-    -10.775,
+    -11.375,
     261.0
    ],
    "height_m": 3.9
@@ -7323,7 +7334,7 @@
    "id": "Weed_15",
    "pos": [
     -8.4,
-    -10.012,
+    -10.613,
     275.0
    ],
    "height_m": 2.2
@@ -7332,7 +7343,7 @@
    "id": "Weed_16",
    "pos": [
     -8.4,
-    -10.562,
+    -11.162,
     300.0
    ],
    "height_m": 3.5
@@ -7341,7 +7352,7 @@
    "id": "Weed_17",
    "pos": [
     -8.4,
-    -12.5,
+    -10.0,
     325.0
    ],
    "height_m": 4.8
@@ -7350,7 +7361,7 @@
    "id": "Weed_18",
    "pos": [
     -8.4,
-    -10.35,
+    -6.0,
     339.0
    ],
    "height_m": 3.1
