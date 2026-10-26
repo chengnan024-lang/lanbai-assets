@@ -31,10 +31,10 @@ def shot(name, t, yaw, pitch):
 
 
 def sheet():
-    log = {}
-    rows = [('A：第 9 面碎块 r7（一帧没了）', ['A0_%.2f' % t for t in A_T]), ('A：现在（先缩向块心）', ['A1_%.2f' % t for t in A_T]),
-            ('B：第 13 面远→近 1131.31→1137.31（向下 −45°）', ['B_%.2f' % t for t in B_T]),
-            ('C：第 12 面的尘 1138.67，增益 1 / 0.5', ['C0_90_30', 'C1_90_30', 'C0_0_-60', 'C1_0_-60'])]
+    log = json.load(open(os.path.join(OUT, 'r8.json'))) if os.path.exists(os.path.join(OUT, 'r8.json')) else {}
+    rows = [('A0  mirror 9 chunks, r7: a chunk vanishes in one frame (1113.36: the back shows, L dips 0.034 -> 0.026)', ['A0_%.2f' % t for t in A_T]), ('A1  now: chunks shrink to their centre before they drop (L flat)', ['A1_%.2f' % t for t in A_T]),
+            ('B   mirror 13 far -> near, 1131.31 -> 1137.31 (down -45 deg); mirror 12 covers the view from ~1134', ['B_%.2f' % t for t in B_T]),
+            ('C   mirror 12 dust at 1138.67 (impact): gain 1 | 0.5 at side-up yaw 90 +30 (wsu), then gain 1 | 0.5 down -60', ['C0_90_30', 'C1_90_30', 'C0_0_-60', 'C1_0_-60'])]
     tw, th = 320, 180
     cols = max(len(r[1]) for r in rows)
     sh = Image.new('RGB', (tw * cols, (th + 34) * len(rows)), 'white')
@@ -45,14 +45,16 @@ def sheet():
         for ci, n in enumerate(names):
             im = Image.open(os.path.join(OUT, 'r8_%s.png' % n)).resize((tw, th))
             sh.paste(im, (ci * tw, y + 30))
-            r = json.load(open(os.path.join(OUT, 'r8_%s.json' % n)))
+            jp = os.path.join(OUT, 'r8_%s.json' % n)
+            r = json.load(open(jp)) if os.path.exists(jp) else log[n]
             log[n] = r
             lab = 't %.2f  APL %.0f  L %.4f' % (r['t'], r['APL'], r['L']) + ('  ring %.0f face %.0f' % (r['m13_ring'], r['m13_face']) if 'm13_ring' in r else '')
             d.text((ci * tw + 4, y + 16), lab, fill=(60, 60, 60))
     sh.save(os.path.join(OUT, 'r8_sheet.png'))
     json.dump(log, open(os.path.join(OUT, 'r8.json'), 'w'), indent=1)
     for n in log:
-        os.remove(os.path.join(OUT, 'r8_%s.json' % n))
+        if os.path.exists(os.path.join(OUT, 'r8_%s.json' % n)):
+            os.remove(os.path.join(OUT, 'r8_%s.json' % n))
 
 
 if __name__ == '__main__':
