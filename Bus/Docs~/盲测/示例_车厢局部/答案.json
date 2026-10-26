@@ -1,0 +1,219 @@
+{
+ "set": "示例_车厢局部",
+ "made": "2026-10-25",
+ "seed": 20261025,
+ "count": 8,
+ "photos": 4,
+ "renders": 4,
+ "treatment": {
+  "crop": "9:16 around (cx, cy), h x image height",
+  "work_size": [
+   540,
+   960
+  ],
+  "output": [
+   1080,
+   1920
+  ],
+  "resample": "LANCZOS down to the work size, BICUBIC up to the output",
+  "grayscale": false,
+  "grayscale_why": "auto",
+  "jpeg_quality": 85,
+  "labels": false,
+  "exif": false
+ },
+ "rule": "盲测是找问题的工具，不是合格线（D-40a #2）：挑出来的地方进下一轮的修改清单，不判过不过。照片和渲染尽量对齐机位和光照。",
+ "answers": [
+  {
+   "file": "01.jpg",
+   "kind": "photo",
+   "kind_zh": "照片",
+   "source": "Bus/Docs~/实物参考_PAZ细节/flickr/F05_前门内侧_两扇折门_门口立柱_弯扶手_铭牌_31583333525.jpg",
+   "crop_px": [
+    218,
+    240,
+    848,
+    1360
+   ],
+   "crop_spec": {
+    "cx": 0.5,
+    "cy": 0.5,
+    "h": 0.7
+   },
+   "credit": {
+    "author": "Artem Svetlov (trolleway)",
+    "license": "CC BY 2.0",
+    "page": "https://www.flickr.com/photos/trolleway/31583333525/",
+    "title": "Moscow retro bus PAZ-672 Н308НР40 | Экскурсия на ПАЗ-672 Н30…"
+   }
+  },
+  {
+   "file": "02.jpg",
+   "kind": "render",
+   "kind_zh": "渲染（CG）",
+   "source": "Bus/Docs~/parts/poles/r1_button_0.6m_day.png",
+   "crop_px": [
+    438,
+    0,
+    843,
+    720
+   ],
+   "crop_spec": {
+    "cx": 0.5,
+    "cy": 0.5,
+    "h": 1.0
+   }
+  },
+  {
+   "file": "03.jpg",
+   "kind": "photo",
+   "kind_zh": "照片",
+   "source": "Bus/Docs~/实物参考_PAZ细节/flickr/F01_座椅背面_靠背顶整条软套_白背板_铆钉_31583330165.jpg",
+   "crop_px": [
+    722,
+    0,
+    1261,
+    959
+   ],
+   "crop_spec": {
+    "cx": 0.62,
+    "cy": 0.45,
+    "h": 0.9
+   },
+   "credit": {
+    "author": "Artem Svetlov (trolleway)",
+    "license": "CC BY 2.0",
+    "page": "https://www.flickr.com/photos/trolleway/31583330165/",
+    "title": "Moscow retro bus PAZ-672 Н308НР40 | Экскурсия на ПАЗ-672 Н30…"
+   }
+  },
+  {
+   "file": "04.jpg",
+   "kind": "render",
+   "kind_zh": "渲染（CG）",
+   "source": "Bus/Docs~/parts/window/r1_corner_0.5m_day.png",
+   "crop_px": [
+    438,
+    0,
+    843,
+    720
+   ],
+   "crop_spec": {
+    "cx": 0.5,
+    "cy": 0.5,
+    "h": 1.0
+   }
+  },
+  {
+   "file": "05.jpg",
+   "kind": "render",
+   "kind_zh": "渲染（CG）",
+   "source": "Bus/Docs~/parts/window/r1_latch_0.4m_day.png",
+   "crop_px": [
+    591,
+    0,
+    996,
+    720
+   ],
+   "crop_spec": {
+    "cx": 0.62,
+    "cy": 0.5,
+    "h": 1.0
+   }
+  },
+  {
+   "file": "06.jpg",
+   "kind": "photo",
+   "kind_zh": "照片",
+   "source": "Bus/Docs~/实物参考_PAZ细节/flickr/F04_后轮罩_双人座侧面弯管框_单座_立柱横杆_31211178060.jpg",
+   "crop_px": [
+    391,
+    400,
+    931,
+    1360
+   ],
+   "crop_spec": {
+    "cx": 0.62,
+    "cy": 0.55,
+    "h": 0.6
+   },
+   "credit": {
+    "author": "Artem Svetlov (trolleway)",
+    "license": "CC BY 2.0",
+    "page": "https://www.flickr.com/photos/trolleway/31211178060/",
+    "title": "Moscow retro bus PAZ-672 Н308НР40 | Экскурсия на ПАЗ-672 Н30…"
+   }
+  },
+  {
+   "file": "07.jpg",
+   "kind": "photo",
+   "kind_zh": "照片",
+   "source": "Bus/Docs~/实物参考_PAZ细节/flickr/F09_斜面窗内侧_拱形窗柱_衣钩_铝压条_31583316685.jpg",
+   "crop_px": [
+    530,
+    54,
+    1069,
+    1013
+   ],
+   "crop_spec": {
+    "cx": 0.5,
+    "cy": 0.5,
+    "h": 0.9
+   },
+   "credit": {
+    "author": "Artem Svetlov (trolleway)",
+    "license": "CC BY 2.0",
+    "page": "https://www.flickr.com/photos/trolleway/31583316685/",
+    "title": "Moscow retro bus PAZ-672 Н308НР40 | Экскурсия на ПАЗ-672 Н30…"
+   }
+  },
+  {
+   "file": "08.jpg",
+   "kind": "render",
+   "kind_zh": "渲染（CG）",
+   "source": "Bus/Docs~/parts/seat/r4_back_0.7m_day.png",
+   "crop_px": [
+    79,
+    0,
+    484,
+    720
+   ],
+   "crop_spec": {
+    "cx": 0.22,
+    "cy": 0.5,
+    "h": 1.0
+   }
+  }
+ ],
+ "credits": [
+  {
+   "author": "Artem Svetlov (trolleway)",
+   "license": "CC BY 2.0",
+   "page": "https://www.flickr.com/photos/trolleway/31583333525/",
+   "title": "Moscow retro bus PAZ-672 Н308НР40 | Экскурсия на ПАЗ-672 Н30…",
+   "changes": "裁成 9:16 竖条、缩放、存 JPEG"
+  },
+  {
+   "author": "Artem Svetlov (trolleway)",
+   "license": "CC BY 2.0",
+   "page": "https://www.flickr.com/photos/trolleway/31583330165/",
+   "title": "Moscow retro bus PAZ-672 Н308НР40 | Экскурсия на ПАЗ-672 Н30…",
+   "changes": "裁成 9:16 竖条、缩放、存 JPEG"
+  },
+  {
+   "author": "Artem Svetlov (trolleway)",
+   "license": "CC BY 2.0",
+   "page": "https://www.flickr.com/photos/trolleway/31211178060/",
+   "title": "Moscow retro bus PAZ-672 Н308НР40 | Экскурсия на ПАЗ-672 Н30…",
+   "changes": "裁成 9:16 竖条、缩放、存 JPEG"
+  },
+  {
+   "author": "Artem Svetlov (trolleway)",
+   "license": "CC BY 2.0",
+   "page": "https://www.flickr.com/photos/trolleway/31583316685/",
+   "title": "Moscow retro bus PAZ-672 Н308НР40 | Экскурсия на ПАЗ-672 Н30…",
+   "changes": "裁成 9:16 竖条、缩放、存 JPEG"
+  }
+ ],
+ "note": "示例：仓库里现成的文件（renders = Bus/Docs~/parts/*/ 里 10-24 的近景渲染，白天光；photos = trolleway 那辆车，多半是 672、座椅重包过红色，颜色和 672M 不一样）。颜色本身就会露馅，这一组只是演示工具怎么用，不拿来下结论。"
+}

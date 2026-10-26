@@ -39,14 +39,15 @@ for k, i in enumerate(cand):
     first.append(dict(hr=int(cat['hr'][i]), dir=[round(float(x), 6) for x in d[i]], mag=float(cat['mag'][i]),
                       el=round(float(elev[i]), 2), order=round(k / (len(cand) - 1), 4),
                       out_t=round(LAB['act9_start'] + 8.0 * (0.25 + 0.75 * k / (len(cand) - 1)), 2)))
-# ---- the 16 stars of the question (Fonts/strings_all.json poem P09_Tianwen, zh layout): one where each character was,
+# ---- the 16 stars of the question (poem P09_Tianwen, zh layout, frozen: tianwen_layout_frozen.json): one where each character was,
 # on the character's densest stroke junction (the maximum of its ink blurred by 0.06 em, Source Han Serif), not the
 # em-box centre (final review r1 #4: em-box centres made a 2 x 8 lattice, "a dotted line"); brightness by stroke count
 # as MAGNITUDES 1.2 (12 strokes) .. 6 (3 strokes), the peak = 6 x (the bible's HDR x 6) at magnitude 1.2 and the
 # Lanbai/StarPoints slope (x 10^(-0.4 x 0.5 x dm)): 6 .. 0.66, so the faint ones are faint and two or three lead
 # (a peak range 1.2 .. 6 all clipped to white after the grade: the rows still read as equal dots)
-S = json.load(open(os.path.join(REPO, 'Fonts', 'strings_all.json')))
-P = [p for p in S['poems'] if p.get('id') == 'P09_Tianwen'][0]
+# D-45: the layout is FROZEN in Tools~/tianwen_layout_frozen.json (the v4.1 P09 entry of Fonts/strings_all.json, copied
+# verbatim): the font kit may change strings_all.json, the stars stay where the characters were
+P = json.load(open(os.path.join(HERE, 'tianwen_layout_frozen.json'), encoding='utf-8'))['poem']
 lay = P['layout']['zh']['objects'][0]
 dist = P['place'][2]; em_m = dist * math.tan(math.radians(P['size_main']))
 STROKES = {'遂': 12, '古': 5, '之': 3, '初': 7, '谁': 10, '传': 6, '道': 12, '上': 3, '下': 3, '未': 5, '形': 7, '何': 7, '由': 5, '考': 6}
@@ -88,7 +89,7 @@ out = dict(
     ownership=('两个边界。1001.21（第 9 幕起点）起本驱动每帧写 _Udon_SkyBlend、_Udon_SkyFx、_Udon_Fog、_Udon_GalaxyGain、_Udon_StarGain；'
                '1009.21（变暗结束）起再加 _Udon_ZenithColor、_Udon_HorizonColor、_Udon_FogBandColor、_Udon_NadirColor（= 星空底）。'
                '在这之前这些名字归第 8b 幕（云）的驱动；8b 的驱动在 t ≥ 1001.21 时不再调用 LanbaiSkyPreset 的 Apply / ApplyBlend（Apply 一次写全部 68 个名字，会成第二个写的人，D-22）。'
-               '第一批星的材质参数从 993.06 起由本驱动写（MaterialPropertyBlock，不用全局量）。1149.31（F16）起归 Lanbai_SkyDriver_Acts11to12。'),
+               '接手的第一帧（t ≥ 1001.21，激活后或往回拖过 1001.21 后）先 Apply 一次 blue_hour 预设写全天空的量（README_集成 §9.5），再写自己的。第一批星的材质参数从 993.06 起由本驱动写（MaterialPropertyBlock，不用全局量）。1149.31（F16）起归 Lanbai_SkyDriver_Acts11to12。'),
     sky=dict(material='Sky/Generated/M_Sky.mat（全片一个天空材质；8b 与 9 都是蓝时预设 blue_hour 的全局量 + 本驱动的覆盖）',
              night=dict(t=[LAB['act9_start'], LAB['dark_end']], curve='linear', global_='_Udon_SkyBlend.z 0 -> 1（shader 里按方向延迟，_Udon_Sky_NightMaskShape = (40, 45, 6, 22)：背日与天顶 6 s 黑；前方 ±40° 的地平线带 1007.2 仍 ≥ 50%，最后一抹贴着地平线、几度高、顶边平，8 s 黑）'),
              band1_gain=0.85, proc=1.0,
@@ -108,7 +109,7 @@ out = dict(
     first_stars=dict(stars=first, colour_target='#E8EEF8', appear=[LAB['blue_hour_start'] + 1.0, LAB['blue_hour_start'] + 4.0], peak=0.55,
                      out_s=0.8, note='天顶附近十几颗真实的星（BSC，≤ 4.6 等，仰角 > 62°）。993.06 + 1 起 3 秒出现；1001.21 起按离天顶由远到近一颗颗熄灭（每颗 0.8 s），天顶那一颗在 1009.21 熄灭，同一刻天问开始对焦（圣经 §3.3）。'),
     question_stars=dict(stars=qstars, appear='F13 那一帧（与所有星同时）', colour='#F2F6FF', fwhm_px=1.6,
-                        note='每个字原来的位置一颗（Fonts/strings_all.json P09_Tianwen 的排版：方位 0°、仰角 +8°、50 m、2.2°），落在这个字笔画最密的交点（思源宋体墨迹按 0.06 em 模糊后的最大值，glyph_em = 相对字框中心的 x、基线以上的 y），不是字框中心；亮度按笔画数排成星等 6 − 4.8 × (笔画 − 3) / 9（12 画 1.2 等 … 3 画 6 等），HDR 峰值 = 6 × 10^(−0.2 × (星等 − 1.2))（最亮 ×6 = 圣经 §6·9 9a，最暗 0.66），12 画和 10 画的三颗领头；留到第 9 幕结束。字本身由字体套件的诗句系统在 1.2 s 内暗下。'),
+                        note='每个字原来的位置一颗（P09_Tianwen 的排版，冻结在 Act09_StarSea/Tools~/tianwen_layout_frozen.json（字体套件 v4.1，D-45）：方位 0°、仰角 +8°、50 m、2.2°），落在这个字笔画最密的交点（思源宋体墨迹按 0.06 em 模糊后的最大值，glyph_em = 相对字框中心的 x、基线以上的 y），不是字框中心；亮度按笔画数排成星等 6 − 4.8 × (笔画 − 3) / 9（12 画 1.2 等 … 3 画 6 等），HDR 峰值 = 6 × 10^(−0.2 × (星等 − 1.2))（最亮 ×6 = 圣经 §6·9 9a，最暗 0.66），12 画和 10 画的三颗领头；留到第 9 幕结束。字本身由字体套件的诗句系统在 1.2 s 内暗下。'),
     mirrors=dict(schedule='Mirrors/MirrorSchedule.json（pkg/mirrors，「镜与白」）', first_mirror=first_mirror,
                  hold_after_ignition=round(first_mirror - LAB['ignition_full'], 2),
                  note='镜子的网格 / shader / 驱动由「镜与白」交；本幕的搭建脚本在套件到了以后把它挂进 R_StarSea。'),

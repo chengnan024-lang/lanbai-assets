@@ -15,7 +15,7 @@
   992.06,
   1149.31
  ],
- "ownership": "两个边界。1001.21（第 9 幕起点）起本驱动每帧写 _Udon_SkyBlend、_Udon_SkyFx、_Udon_Fog、_Udon_GalaxyGain、_Udon_StarGain；1009.21（变暗结束）起再加 _Udon_ZenithColor、_Udon_HorizonColor、_Udon_FogBandColor、_Udon_NadirColor（= 星空底）。在这之前这些名字归第 8b 幕（云）的驱动；8b 的驱动在 t ≥ 1001.21 时不再调用 LanbaiSkyPreset 的 Apply / ApplyBlend（Apply 一次写全部 68 个名字，会成第二个写的人，D-22）。第一批星的材质参数从 993.06 起由本驱动写（MaterialPropertyBlock，不用全局量）。1149.31（F16）起归 Lanbai_SkyDriver_Acts11to12。",
+ "ownership": "两个边界。1001.21（第 9 幕起点）起本驱动每帧写 _Udon_SkyBlend、_Udon_SkyFx、_Udon_Fog、_Udon_GalaxyGain、_Udon_StarGain；1009.21（变暗结束）起再加 _Udon_ZenithColor、_Udon_HorizonColor、_Udon_FogBandColor、_Udon_NadirColor（= 星空底）。在这之前这些名字归第 8b 幕（云）的驱动；8b 的驱动在 t ≥ 1001.21 时不再调用 LanbaiSkyPreset 的 Apply / ApplyBlend（Apply 一次写全部 68 个名字，会成第二个写的人，D-22）。接手的第一帧（t ≥ 1001.21，激活后或往回拖过 1001.21 后）先 Apply 一次 blue_hour 预设写全天空的量（README_集成 §9.5），再写自己的。第一批星的材质参数从 993.06 起由本驱动写（MaterialPropertyBlock，不用全局量）。1149.31（F16）起归 Lanbai_SkyDriver_Acts11to12。",
  "sky": {
   "material": "Sky/Generated/M_Sky.mat（全片一个天空材质；8b 与 9 都是蓝时预设 blue_hour 的全局量 + 本驱动的覆盖）",
   "night": {
@@ -742,7 +742,7 @@
   "appear": "F13 那一帧（与所有星同时）",
   "colour": "#F2F6FF",
   "fwhm_px": 1.6,
-  "note": "每个字原来的位置一颗（Fonts/strings_all.json P09_Tianwen 的排版：方位 0°、仰角 +8°、50 m、2.2°），落在这个字笔画最密的交点（思源宋体墨迹按 0.06 em 模糊后的最大值，glyph_em = 相对字框中心的 x、基线以上的 y），不是字框中心；亮度按笔画数排成星等 6 − 4.8 × (笔画 − 3) / 9（12 画 1.2 等 … 3 画 6 等），HDR 峰值 = 6 × 10^(−0.2 × (星等 − 1.2))（最亮 ×6 = 圣经 §6·9 9a，最暗 0.66），12 画和 10 画的三颗领头；留到第 9 幕结束。字本身由字体套件的诗句系统在 1.2 s 内暗下。"
+  "note": "每个字原来的位置一颗（P09_Tianwen 的排版，冻结在 Act09_StarSea/Tools~/tianwen_layout_frozen.json（字体套件 v4.1，D-45）：方位 0°、仰角 +8°、50 m、2.2°），落在这个字笔画最密的交点（思源宋体墨迹按 0.06 em 模糊后的最大值，glyph_em = 相对字框中心的 x、基线以上的 y），不是字框中心；亮度按笔画数排成星等 6 − 4.8 × (笔画 − 3) / 9（12 画 1.2 等 … 3 画 6 等），HDR 峰值 = 6 × 10^(−0.2 × (星等 − 1.2))（最亮 ×6 = 圣经 §6·9 9a，最暗 0.66），12 画和 10 画的三颗领头；留到第 9 幕结束。字本身由字体套件的诗句系统在 1.2 s 内暗下。"
  },
  "mirrors": {
   "schedule": "Mirrors/MirrorSchedule.json（pkg/mirrors，「镜与白」）",

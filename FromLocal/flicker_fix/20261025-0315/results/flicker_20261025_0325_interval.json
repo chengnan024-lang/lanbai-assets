@@ -1,0 +1,27 @@
+{
+    "id": "flicker_20261025_0325_interval",
+    "state": "done",
+    "step": 6,
+    "total": 6,
+    "started": "2026-10-25 03:23:35",
+    "finished": "2026-10-25 03:24:12",
+    "error": "",
+    "log": [
+        "03:23:35 收到请求，共 6 步",
+        "03:23:35 刷新导入（AssetDatabase.Refresh）",
+        "03:23:38 （脚本重新加载，接着做第 1 步）",
+        "03:23:40 导入和编译完成",
+        "03:23:40 进入 Play",
+        "03:23:42 （脚本重新加载，接着做第 2 步）",
+        "03:23:45 已经在 Play 里，等 5 秒",
+        "03:23:51 调用 Lanbai.Tests.LB_FlickerDiagnostic.Begin（no_mirrors_interval|no_mirrors_interval|1023|18|1）",
+        "03:23:51   用时 0.0 秒",
+        "03:23:51   返回：running no_mirrors_interval",
+        "03:24:11 调用 Lanbai.Tests.LB_FlickerDiagnostic.Status",
+        "03:24:11   用时 0.0 秒",
+        "03:24:11   返回：done no_mirrors_interval frames=177 errors=0 folder=E:\\IDMdownload\\VRCC\\Backups\\continuation_20261025\\flicker_0315\\captures\\no_mirrors_interval",
+        "03:24:12 停止 Play",
+        "03:24:12 全部完成"
+    ],
+    "files": []
+}

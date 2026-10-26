@@ -67,7 +67,7 @@ public float[] LanbaiWindow()         // {开始 t, 结束 t}，含预热
 - 时间只用 t 和 cues 标签（驱动里的标签数组由搭建脚本从 `FromLocal/cues.json` 烘进去：**Udon 运行时读不了 JSON**，所有表都要由编辑器脚本烘成 `float[]` 字段）。
 - 不写 PPv2，不写 `RenderSettings`（除非这一幕已经按 §3 接管），不碰车。
 - **从 t 单独重建自己的画面（D-33 #6）**：迟到的人从路上加入、调试时拖时间轴，驱动在任何 t 被激活的那一帧，都要把它这一段要的共享量写全，不能指望前一个驱动留下的值。现在还靠“前一个留下的值”的：
-  - **第 9 幕**（`LanbaiAct09Driver`）：只写 5–9 个量，其余 59 个靠第 8b 幕 `Apply(blue_hour)` 留下；天空下次醒来时照 §9.5 “接手时写全 `blue_hour`”改。
+  - **第 9 幕**（`LanbaiAct09Driver`）：只写 5–9 个量，其余靠接手那一帧的 `Apply(blue_hour)`（§9.5 “接手时写全 `blue_hour`”，天空已做）。
   - **第 9 幕的主光和环境光**：没人写，靠第 8 幕留下（§9.5：`LB_Journey` 保持不动）；第 8 幕的包交来时要能从 t 重建它们。
   - **门的驱动在 [U6, U9) 之前（113.80 → 133.80）的天、雾、月**：归天空（`Lanbai_SkyDriver_Acts1to3` 每帧按 t 写，可以重建）；门自己在 [U6, U9) 里重进时会写全（`_skyFull` 复位），已经满足。
   - **133.80 → 180.05 的主光**：门不写，靠 `LB_Journey` / 场景值（§8.2）。
@@ -159,7 +159,7 @@ Director v1.1 起没有要本地填的窗口：`LB_Journey` 勾 `extAtmosphere` 
 | 东西 | 写的人 | 驱动报什么 |
 |---|---|---|
 | PPv2 weight、ΔEV（一帧一个） | **只有 `LB_Journey.ApplyGrades`** | 有曝光事件的驱动实现 `float[] LanbaiGrade(t)`，分发层加起来放进 `dispatcher.gradeDEV`（`gradeOwned` = 有人报）。现在报的：门内的 `FLASH_TEAR`（247.89 起 0.4 s 升、0.1 保持、0.25 落）。**`ApplyGrades` 里自己那份 FLASH_TEAR 要删**（不然算两次）。门内的 `writeExposure` 一直不勾 |
-| 遮罩球 `Lanbai_Overlay` v2 | **出生淡入优先（v1.2）**：`LB_Journey` 的出生黑 / 淡入从 `dispatcher.LanbaiSpawnFadeBegin()` 到 `LanbaiSpawnFadeEnd()`，这段时间**任何驱动都不碰遮罩球**。出生时 `dispatcher.LanbaiCoversOverlay(t)`（或 t + 淡入时长）为真（有驱动拿着遮罩球）：`LB_Journey` **不做淡入**，出生的黑保持黑，黑结束那一帧调 End，之后只有驱动那一次从黑升起来；为假：照常淡入、淡入结束调 End。End 只认第一次；Begin 后 10 秒没有 End 当作已结束。之后：248.39 → 252.64 **门内**（剪 1 的黑）；第 6 幕（252.64 `SetFlat` → 254.14 起 `SetCurve` 晨从黑里亮起 → 266.44 `Hide()`）；第 10 幕的白归镜与白 | 门内调 `overlay.SetFlat(…, LanbaiDeltaEV(t))` 自己补 ΔEV。场景里只放一个。拿遮罩球的驱动实现 `LanbaiSpawnFade(float since)`（Director v1.2，`README_Director.md` §3 第 8 条）：`since < 0` 不写；之后从黑按 ≤ 0.85 EV/s 升到自己的值（迟到的人在白里进来，由镜与白自己升） |
+| 遮罩球 `Lanbai_Overlay` v2 | **出生淡入（Director v1.3，D-43）**：`LB_Journey` 的出生黑 / 淡入从 `dispatcher.LanbaiSpawnFadeBegin()` 到 `LanbaiSpawnFadeEnd()`，这段时间**任何驱动都不碰遮罩球**。黑结束时问 `dispatcher.LanbaiOverlayHandoverAt(t, t + T)`：≥ 0（淡入期间有驱动的遮罩窗口）→ **不做淡入**，保持黑到那一刻，调 End，之后只有驱动那一次从黑升起来；< 0 → 自己淡入：从地板起 0.85 EV/s，**限的是看到的亮度**（场景 × 2^dEV，驱动的曝光爬升算进去，D-43 #7），追上了才 Hide 并调 End（站台出发前照旧 3 秒）。`LanbaiSpawnFadeLength` 往前看驱动的曝光事件，所以“淡入期间有没有窗口”问的是真的时长。End 只认第一次；Begin 后 25 秒没有 End 当作已结束；完整的状态机在 `README_Director.md` §0 第 4 条（v1.3 r2）。之后：248.39 → 252.64 **门内**（剪 1 的黑）；第 6 幕（252.64 `SetFlat` → 254.14 起 `SetCurve` 晨从黑里亮起 → 266.44 `Hide()`）；第 10 幕的白归镜与白 | 门内调 `overlay.SetFlat(…, LanbaiDeltaEV(t))` 自己补 ΔEV。场景里只放一个。拿遮罩球的驱动实现 `LanbaiSpawnFade(float since)`（Director v1.2，`README_Director.md` §3 第 8 条）：`since < 0` 不写；之后从黑按 ≤ 0.85 EV/s 升到自己的值（迟到的人在白里进来，由镜与白自己升） |
 
 ---
 
@@ -205,7 +205,7 @@ Director v1.1 起没有要本地填的窗口：`LB_Journey` 勾 `extAtmosphere` 
 - **导入顺序**（`README_Act06.md` §0）：`Common/`、`GateClouds/`（搭建脚本借它的 U# 小工具 `LanbaiGateCloudsBuilder`，没有它 `蓝白/Build/Act06` 编不过）、`Sky/`（跑过 `蓝白/Sky/Build Sky`，场景里有 `Lanbai_SkyPresets/dawn`）、`Sea/`（跑过 `蓝白/Sea/Create Materials`，`Sea/Materials/M_06_Sea.mat` 在）、`Overlay/`（场景里只有一个 `LanbaiOverlay`）、`Clouds_v2/`，最后 `Act06_Dawn/`。
 - **先应用 `dawn` 预设，再点 `蓝白/Build/Act06`**：搭建脚本在海面上方 2 m 现烘临时反射立方图 `Generated/Refl_S6_standin`，烘的是当时的天；总控的 `Refl_S6` 来了就换（`Act06_Driver.reflCube`）。可以重复点，`Act06_Driver` 和手接的引用保留。点完 → `蓝白/Director/1 Generate` → 等编译 → `2 Wire Scene` → `3 Report`。
 - **接管**：勾 `Act06_Driver.writeRenderSettings`、`writeMainLight`，`LB_Journey` 勾 `extAtmosphere` / `extSun`（窗口自动，§3；`README_Act06.md` §0 第 4 条的手填窗口作废）。环境光 Trilight。
-- 窗口 248.64 → 363.62：248.64 起写天雾月星（§8.1），252.64 起写 RenderSettings（到 362.26）和主光（到 363.615，§8.2），遮罩 252.64 → 266.44（§8.4），海的全局量 300 → 363.26（入水那一帧海的驱动在同一个 y 接手）。
+- 窗口 248.64 → 363.62：248.64 起写天雾月星（§8.1），252.64 起写 RenderSettings（到 362.26）和主光（到 363.615，§8.2），遮罩 252.64 → 266.44（§8.4；迟到的人在 252.64 → 351.2 之间交接过来的，从黑升完才 `Hide()`，可以过 266.44，Director v1.3），海的全局量 300 → 363.26（入水那一帧海的驱动在同一个 y 接手）。
 - 车厢漂白 251.64 → 281.86 归车厢驱动（圣经 §4.8 的表，D-35），不归第 6 幕。
 - 截图和量数：`README_Act06.md` §0 第 5 条；标杆画面 C（254–266 s 三个视向）用测试工具跑 `act06_test`（`Engineering/UnityTest/`）。
 
@@ -238,31 +238,34 @@ Director v1.1 起没有要本地填的窗口：`LB_Journey` 勾 `extAtmosphere` 
   - **主光和环境光保持不动**（第 8 幕留下的值；`LB_Journey` 不按它的 `SKY_*` 预设在这一段改主光 / RenderSettings）；
   - **去掉它自己的 F13 “重燃”**（星、银河的点燃全归本驱动；`LB_Journey` 里任何在 F13 改星 / 天 / 曝光的代码删掉）；
   - **在黑里关掉占位**：`skyDome` 等第 9 幕的旧占位组，在进第 9 幕之前的黑 / 遮挡里关（不在蓝时里关）。
-- **接手时写全 `blue_hour`（D-33 #6，给天空照做；还没做）**：现在本驱动只写 5–9 个量，其余 59 个靠第 8b 幕留下。迟到的人在 1050 s 进来、或调试时从 1100 往回拖到 1005，第 8b 幕没跑过，那 59 个量是错的。改法：
+- **接手时写全 `blue_hour`（D-33 #6，天空已照做：pkg/sky，第 9 幕 v1.4；往回跳也会重写，见第 6 条）**：现在本驱动只写 5–9 个量，其余 59 个靠第 8b 幕留下。迟到的人在 1050 s 进来、或调试时从 1100 往回拖到 1005，第 8b 幕没跑过，那 59 个量是错的。改法：
   1. `LanbaiAct09Driver` 加两个字段：`public Lanbai.Sky.LanbaiSkyPreset handoffPreset;`（`蓝白/Build/Act09` 按名字接场景里的 `SkyPreset_blue_hour`，接不到就在 Console 里说）和 `private bool _full;`。
   2. `LanbaiActivate(on)`：`_full = false;`（开、关都清）。
   3. `LanbaiTick(t)` 的开头：`if (t >= tActStart && !_full) { if (handoffPreset != null) handoffPreset.Apply(); _full = true; }`，然后照旧写自己的 5–9 个量（它们压在 `Apply` 写的值上面，同一帧）。`t < tActStart` 时 `_full = false`（往回拖过 1001.21 再往前，会再写一次）。
   4. 为什么是 `blue_hour` 而且只在 ≥ 1001.21：992.06 → 1001.21 这一段天还归第 8b 幕（它在 987.06 → 993.06 从 `dusk_8ii` 混到 `blue_hour`），这时写会成第二个写的人；1001.21 起其余 59 个量本来就等于 `blue_hour` 的值（第 9 幕只改那 5–9 个），所以先 `Apply` 再写自己的，结果和正常从头看完全一样。
   5. `Apply()` 只在 `ownsAtmosphere` 打开时才写 RenderSettings；预设默认关，所以这一步不碰 RenderSettings / 主光（§8.3）。一帧写 68 个量，只发生一次，不算进每帧开销。
-  6. 验收：分别从 990、1005、1050、1140 起播（和从头播到这几个时刻比），`_Udon_*` 的值逐个相同。
+  6. 验收：分别从 990、1005、1050、1140 起播（和从头播到这几个时刻比），`_Udon_*` 的值逐个相同。 **再加往回拖**：从 1100 拖回 1005（和从头播到 1005 比），以及从 1009.21 以后拖回 1001.21 … 1009.21 里的任何一刻：驱动发现时间往回跳就清掉 `_full`，下一帧先 `Apply(blue_hour)` 再写自己的（第 8 幕终审 F2：以前天顶 / 地平线 / 雾带 / 天底四个颜色会停在星空底）。
 - **开销**：`LanbaiTick` 5 个 SetGlobalVector（1009.21 起 9 个）、1 个 MPB、两个 renderer 开关，没有循环、不分配内存；账本里按 < 0.1 ms 记（未实测）。
 - **截图**（主座位，桌面 1920×1080 / 90°，PPv2 开）：1001.21、1005.21、1008.6；**F13 那一帧、1020.24、1021.29、1021.95 和 1022.41**（正前方 / 抬头 +60° / 银心方向，用来在 Unity 里重标 g(t)：中间三帧是 g = 0.25 / 0.5 / 0.75 附近，带车厢以后跨度会小）；1100、1137。1016–1030 s 的录像跑 `flashcheck.py`。
 
-### 9.6 诗句（`Fonts/` 第 4 版 + 4.1 的运行时，D-30 / D-33）
+### 9.6 诗句（`Fonts/` 第 5 版：Fins 式字幕，D-45）
 
-- **摆诗归 `LanbaiPoemDriver`**（`Fonts/Runtime/`，4.1，D-33 #5）：烘焙菜单会在 `Fonts/Runtime/` 里给 `LanbaiPoemDriver`、`LanbaiLangButton` 建 U# 程序资产（U# 1.x 没有 `.asset` 就不编译；菜单打印“created the U# program asset”就是建了）。菜单 `蓝白/Fonts/Build Poem Objects (v4.1 runtime)` 读 `strings_all.json`，建 `Lanbai_Poems`（每首诗 × 每个玩家键一套 TMP，全关）、`Lanbai_Board`（发车提示 + 中 / 日 / EN 三个开关）、`Lanbai_PoemDriver`，字段全填好。前提：字体资产、诗句材质已经建好（`Fonts/README_Fonts.md` §3.2）。然后把 `busRoot` 拖成车的根（场景里有名为 `Bus` 的物体时自动接），公告板挪到站牌上，Director 1 Generate、2 Wire。
-- 它管：语言（客户端代码 → 键，`zh-HK` 先判；`OnLanguageChanged`；公告板开关只对本人）、注视规则（§7.4-6，庄子和天问固定）、出现 / 停留 / 退场（2.5 s 对焦、0.2° 漂移）、Urlicht 的行跟乐句、天问的 20 个单字物体、6d 的亮衬、公告板的倒计时和中 / 日 / EN 三个开关（`LB_Journey` 发车前每帧调 `LanbaiBoard(离发车的秒数)`，发车后调一次 `LanbaiBoardHide()`：倒计时和开关一起关，发车以后世界里没有 UI 字）。侧窗三首（李白两首、济慈）的注视阈值是 75°，其余 50°；挪的时候只挪在挡风右片或侧窗里（D-33 #7c）。只从 t 算，迟到的人、拖时间轴都对（D-33 #6）。
-- **`LB_Journey` 里的三组诗句数组退役**（`_poemIdx` / `_poemStage` 那一套和 `PickLanguage()` 一起）：本地删掉它们，不要两个系统同时摆诗。本地还要在玩家坐下 / 换座位时调 `LanbaiPoemDriver.SetSeat(座位号)`（座位号 = `BusLayout.json` 的 seats 顺序，主座位 SeatR0 = 0）。别的座位的诗位置是离线解好的表（D-37，`Fonts/seat_positions.json`），烘焙菜单读进驱动；车更新座位网格以后，总工程师重跑 `build_fonts.py`，本地重点一次烘焙菜单。
-- **天问的汉字对所有玩家都在同一个位置**（第 9 幕的 16 颗星按中文排版放），不是中文的玩家下面多一块自己语言的小字。时刻全部没变。
-- 没在 Unity 里编译过：TMP 3D 上用 MaterialPropertyBlock 写 `_FaceColor` / `_OutlineSoftness` / `_FaceDilate`、U# 里 `TextMeshPro.maxVisibleLines`，第一次导入请把 Console 推回来。
+- **诗是字幕，归 `LanbaiPoemDriver`**（`Fonts/Runtime/`，第 5 版，接口和 4.1 一样，Director 不用改）。菜单 `蓝白/Fonts/Build Subtitles (v5)` 先建 U# 程序资产（`LanbaiPoemDriver`、`LanbaiLangButton`），再读 `strings_all.json` 第 5 版，先删掉旧的 `Lanbai_Poems`、`Lanbai_Board`（含旧的中 / 日 / EN 三个按钮）、`Lanbai_PoemDriver`，然后建：世界字 `Lanbai_Poems`（天问天上的 20 个汉字、庄子字列简繁两套）、字幕架 `Lanbai_Subtitles`、桌面黑边 `Lanbai_Letterbox`、公告板设置卡 `Lanbai_Board/Card`、`Lanbai_PoemDriver`（字段全填好，`busRoot` 找名为 `Bus` 的物体，`exposure` 找场景里的 `LanbaiExposure`）。前提和顺序见 `Fonts/README_Fonts.md` §00.4：先重建字体资产（字表变了）、跑诗句材质。然后 Director 1 Generate、2 Wire。
+- 它管：语言（客户端代码 → 键，`zh-HK` / `zh-TW` / `zh-Hant` 先判；`OnLanguageChanged`；设置卡上手动选只对本人，选过以后不再跟客户端变）、显示方式（跟随视线 / 留在原处 / 关）、每首诗的分页和淡入淡出（只从 t 算，迟到的人、拖时间轴都对，D-33 #6）、VR 懒跟随和深度（在 `PostLateUpdate` 里放）、桌面贴屏幕相机、桌面黑边（三段，VR 没有）、天问天上的字（逐字对焦，F13 暗下，和字幕开关无关）、庄子字列（`zh` / `en` / `de` 看简体，`zht` / `ja` 看繁体）。
+- **`LB_Journey` 要删的**（I.6 第 3 条）：旧的诗句数组、`ApplyPoem`、`GazeAz`、`PlacePoem`、`PickLanguage`（`StartsWith("zh")` 会把繁体分进简体），不要两个系统同时摆诗。`LanbaiBoard(0f)` 不用改：驱动把 ≤ 0 当作“没有倒计时”，第一行不印。发车后调一次 `LanbaiBoardHide()`（设置卡、7 个 Interact 一起收起）。座位：坐下 / 换座位时调 `SetSeat(座位号)`（主座位 0，选深度表的那一行）；离座时调 `SetSeat(-1)` 可选。
+- `LB_FullAssemblyBinding`：删掉烘逐行文本（`cueText` / `oHiddenText`）的那一段（v5 每行一个物体、换页给 `.text` 赋值，D-44 #7 的做法已经收进来）；座位号映射留着；测试工具发的 `_LangZh` 照旧可用。
+- **同步**：D-44 #7 时“`Fonts/Runtime/LanbaiPoemDriver.cs`、`Fonts/Editor/LanbaiPoemBake.cs` 不同步”的排除，第 5 版合进 main 以后可以去掉：仓库版不再用 `maxVisibleLines`。
+- 字幕放一个专用的用户层（22–31 里挑一个 VRChat 没占的）：参考相机的 culling mask 包含它，十三面镜的反射相机和反射探针排除它；shader 自己也会在镜子、手持相机里丢弃。挑好的层号写在这里：（待阿白填）。
+- 第 9 幕表里“字由诗句系统淡掉”仍然成立：天上的汉字还是这个驱动淡掉；**译文字幕在 F13 前（1018.11）消失**，1018.21 那一帧没有任何字幕。
+- 没在 Unity 里编译过，也没在头显里看过：`VRCCameraSettings.ScreenCamera` 在 SDK 3.10.5 的 U# 里能不能用（不能用时驱动退回头部追踪数据、竖直视场按 60°）、`PostLateUpdate` 里 `MaterialPropertyBlock` 写 TMP 3D、三个新 shader 的 SPS-I。第一次导入请把 Console 推回来。
 
-### 9.8 D-31 给本地的几件（照 Fins 的经验，`Art/总导演裁决.md` D-31）
+### 9.8 Fins 给本地的几件（D-31，字幕部分按 D-45 改写）
 
-1. **语言**（D-30 + D-31 #1）：`VRCPlayerApi.GetCurrentLanguage()` 返回 RFC 5646 代码（`zh-CN`、`zh-HK`、`ja`、`de`、`en`……）。映射按 `Fonts/strings_all.json` 的 `player_of_client_language`：**先判 `zh-HK`（繁体 → `zht`）再判 `zh`**；空 / null → `en`。`OnLanguageChanged(string)` 进世界时触发一次、以后改语言再触发。本地的 `PickLanguage()` 现在 `StartsWith("zh")` 会把繁体分进简体，而且会把正在显示的诗重置（`_poemIdx` / `_poemStage` = −1）：只换 `layout` 的键，正在显示的那一句照它的时刻走完。公告板加「中 / 日 / EN」三选一（只对本人，默认按客户端；按“中”时 `zh-HK` 的人仍看繁体）。字串在 `strings_all.json` 的 `ui`。细节：`Fonts/README_Fonts.md` §0.1、§0.8。
+1. **语言与字幕的开关**（D-30、D-31 #1、D-45 F）：`VRCPlayerApi.GetCurrentLanguage()` 返回 RFC 5646 代码。映射按 `strings_all.json` 的 `player_of_client_language`：**先判 `zh-HK` / `zh-TW` / `zh-Hant`（→ `zht`）再判 `zh`**；空 / null → `en`；`de` → `de` 键。第 1 幕公告箱里钉一张“乘车须知”设置卡（A2 横幅）：左边“字幕语言：简体中文 / 繁體中文 / 日本語 / English”“字幕：跟随视线 / 留在原处 / 关”，右边是发车提示和“只对你自己有效”“开车以后就不能再改”。选中的那一项墨色印满、旁边按一枚铜图钉，没选中的 55% 墨。德语客户端按 English 时图钉落在 English 上，旁边多一个小字 *Deutsch*，字幕仍是 `de` 键。Interact 距离 2 m：从主座位隔着开着的车门点不点得到，阿白试一次；点不到就只能在站台上点。字串在 `strings_all.json` 的 `ui_v5`、`ui`。
 2. **送回座位按根位置算**（D-31 #3）：车厢包围盒检查用 `VRCPlayerApi.GetPosition()`（脚底的根），**不用头**；头探出玻璃 ≤ 0.6 m 不许触发 0.5 秒遮罩送回。包围盒从车的 `BusLayout.json` 读（PAZ：车宽 2.44 m，车身中线 x = −0.18，眼位 (0.55, 1.70, 2.05) 不变）。这个检查归谁（Director 2 Hz 还是本地的 `busMin/busMax`）还没定，见 `Director/README_Director.md` §5；不管谁做，规则照这一条。
-3. **偏航（第 2、11 幕）转的是世界（路的根），永远不转车和座位**（D-31 #4）：参照系一转，同车人头像的头发和 PhysBones 会被甩。本地 `LB_Journey` 里凡是“转车”的偏航，改成反向转路的根。
-4. **发车提示 + 人数上限**（D-31 #5）：发车前公告板用玩家自己的语言显示 `ui` 里的两行（`{0}` = 离发车的秒数）；实例人数上限 = 车的座位数（「车」数）。发车以后不再有 UI 字。
-5. **世界说明（上传时填，不进世界）**：双语“请预载 / Please preload”（D-31 #6）；再加一句最好的座位（D-37）——中：「最好的座位：右前排靠窗（车门后面那个）」，日：「いちばんの席：右側最前列の窓側（ドアのすぐ後ろ）」，英：“Best seat: front row on the right, by the window (just behind the door)”。第 4 幕、第 7b 幕两个热点，有条件的话在 RTX 3060 级的机器上实测一次（协议见账本 §三、§五）。
+3. **偏航（第 2、11 幕）转的是世界（路的根），永远不转车和座位**（D-31 #4）：参照系一转，同车人头像的头发和 PhysBones 会被甩，字幕的懒跟随也是在车的坐标里算的。本地 `LB_Journey` 里凡是“转车”的偏航，改成反向转路的根。
+4. **发车提示 + 人数上限**（D-31 #5）：发车提示在设置卡右栏；现在没有倒计时（`LanbaiBoard(0f)`），“车将在 X 秒后开出”这一行不印，以后有了倒计时传真正的秒数，这一行自动回来。实例人数上限 = 车的座位数（「车」数）。发车以后世界里没有 UI 字（设置卡收起）。
+5. **世界说明（上传时填，不进世界）**：双语“请预载 / Please preload”（D-31 #6）；最好的座位（D-37）——中：「最好的座位：右前排靠窗（车门后面那个）」，日：「いちばんの席：右側最前列の窓側（ドアのすぐ後ろ）」，英：“Best seat: front row on the right, by the window (just behind the door)”；再加一句字幕（D-45 F.5）——「字幕的语言和显示方式可以在站台的公告板上切换 / 字幕の言語と表示は駅の掲示板で切り替えられます / Subtitle language and mode can be set on the station notice board」。第 4 幕、第 7b 幕两个热点，有条件的话在 RTX 3060 级的机器上实测一次（协议见账本 §三、§五）。
 6. **遮挡剔除只给静止的站台（第 1、12 幕）烘**（D-31 #7）：会动的外景（跑步机）一律不烘。账本从来没假设过遮挡剔除（账本 §六 末尾）。
 
 ### 9.7 还没交的（这几格在 §8 里写着“等包”）

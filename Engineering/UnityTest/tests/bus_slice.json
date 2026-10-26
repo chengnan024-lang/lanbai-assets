@@ -89,7 +89,15 @@
       ],
       "ppd": 20,
       "ss": 2,
-      "why": "侧窗框和推拉窗扣（0.5 m）：从主座位那边、离 0.5 m 看，按 20 px/° 出（D-36 #1、D-40 #1）"
+      "why": "窗扣（0.5 m）：对着包围盒里 y 0.785、z 0.5 的点（约 2.03 m 高、窗长的正中）：上半截两扇推拉小窗的相会处——转子窗扣、扣座、两根竖梃、扇框下档，下沿是双槽横档（1.905–1.935 m）。从主座位那边、离 0.5 m，按 20 px/°（D-36 #1、D-40 #1）。车包 10-26：原来对着包围盒中心，整张都是玻璃",
+      "look_at_anchor": [
+        0.5,
+        0.785,
+        0.5
+      ],
+      "coverage_of": [
+        "**/Slice_SideWindow/Window_R1"
+      ]
     },
     "window_10m": {
       "look_at_object": "**/Slice_SideWindow",
@@ -105,7 +113,15 @@
       ],
       "ppd": 20,
       "ss": 2,
-      "why": "侧窗框和推拉窗扣（0.5 m）：从主座位那边、离 1.0 m 看，按 20 px/° 出（D-36 #1、D-40 #1）"
+      "why": "窗框的后上角（1.0 m）：对着 y 0.785、z 0.774 的点（约 2.03 m 高、离窗后端约 0.30 m），画面里有 R70 大圆角、L 形铝框的两面、带唇的胶条、后扇推拉窗的扇框、横档。从主座位那边、离 1.0 m，按 20 px/°。车包 10-26：原来只拍到中间的横框",
+      "look_at_anchor": [
+        0.5,
+        0.785,
+        0.774
+      ],
+      "coverage_of": [
+        "**/Slice_SideWindow/Window_R1"
+      ]
     },
     "pillar_05m": {
       "look_at_object": "**/Slice_Pillar",
@@ -173,10 +189,11 @@
         "bc7",
         "bc5",
         "crunch:50",
-        "crunch:100"
+        "crunch:100",
+        "ncrunch:100"
       ],
       "crunch_quality": 50,
-      "why": "0.5 m 处：BC7、Crunch（质量 50）和不压缩的比 PSNR（D-40 #1 第 1 项）；法线另加 BC5 对 Crunch（DXT5nm，质量 100）（D-40b #6）。bc5 只对法线贴图生效，别的贴图那一档用 BC7"
+      "why": "0.5 m 处：BC7、Crunch（质量 50）和不压缩的比 PSNR（D-40 #1 第 1 项）；法线另加 BC5 对 Crunch（DXT5nm，质量 100）（D-40b #6）。bc5、ncrunch 只对法线贴图生效，别的贴图那两档用 BC7，所以 bc5 和 ncrunch:100 只差在法线上"
     },
     {
       "id": "window",
@@ -189,10 +206,11 @@
         "bc7",
         "bc5",
         "crunch:50",
-        "crunch:100"
+        "crunch:100",
+        "ncrunch:100"
       ],
       "crunch_quality": 50,
-      "why": "0.5 m 处：BC7、Crunch（质量 50）和不压缩的比 PSNR（D-40 #1 第 1 项）；法线另加 BC5 对 Crunch（DXT5nm，质量 100）（D-40b #6）。bc5 只对法线贴图生效，别的贴图那一档用 BC7"
+      "why": "0.5 m 处：BC7、Crunch（质量 50）和不压缩的比 PSNR（D-40 #1 第 1 项）；法线另加 BC5 对 Crunch（DXT5nm，质量 100）（D-40b #6）。bc5、ncrunch 只对法线贴图生效，别的贴图那两档用 BC7，所以 bc5 和 ncrunch:100 只差在法线上"
     },
     {
       "id": "pillar",
@@ -205,10 +223,11 @@
         "bc7",
         "bc5",
         "crunch:50",
-        "crunch:100"
+        "crunch:100",
+        "ncrunch:100"
       ],
       "crunch_quality": 50,
-      "why": "0.5 m 处：BC7、Crunch（质量 50）和不压缩的比 PSNR（D-40 #1 第 1 项）；法线另加 BC5 对 Crunch（DXT5nm，质量 100）（D-40b #6）。bc5 只对法线贴图生效，别的贴图那一档用 BC7"
+      "why": "0.5 m 处：BC7、Crunch（质量 50）和不压缩的比 PSNR（D-40 #1 第 1 项）；法线另加 BC5 对 Crunch（DXT5nm，质量 100）（D-40b #6）。bc5、ncrunch 只对法线贴图生效，别的贴图那两档用 BC7，所以 bc5 和 ncrunch:100 只差在法线上"
     }
   ],
   "sequences": [
@@ -266,12 +285,28 @@
       "why": "立柱 / 铬扶手：头部微动里来回跳的像素（初值，切片第一次实测后定）"
     },
     {
+      "id": "window_frame_05m",
+      "metric": "shot.window_05m.coverage",
+      "op": ">=",
+      "value": 0.3,
+      "gate": true,
+      "why": "总导演 10-26：画面里至少 30 % 是窗框 / 胶条（Window_R1：铝框、胶条、横档、扇框、窗扣；玻璃是另一个物体，不算）。不过就是机位没对上，改 look_at_anchor"
+    },
+    {
+      "id": "window_frame_10m",
+      "metric": "shot.window_10m.coverage",
+      "op": ">=",
+      "value": 0.3,
+      "gate": true,
+      "why": "同上"
+    },
+    {
       "id": "window_shimmer",
       "metric": "seq.window_micro.shimmer_frac",
       "op": "<=",
       "value": 0.005,
       "gate": false,
-      "why": "同上"
+      "why": "初值 0.005，先不动（总导演 10-26）：Blender 里 1.0 m 三台是 0.0059–0.0068，但 Blender 没有高光抗锯齿，等阿白的 Unity 数再定。机位改成对着窗框的角以后，画面里铝边多了，这一项会比原来的“全是玻璃”高"
     },
     {
       "id": "seat_crunch_psnr",
@@ -299,11 +334,11 @@
     },
     {
       "id": "normal_crunch100_vs_bc5",
-      "metric": "tex.seat.crunch_q100.seat_05m.psnr",
+      "metric": "tex.seat.ncrunch_q100.seat_05m.psnr",
       "op": ">=",
       "value": 38,
       "gate": false,
-      "why": "法线：Crunch 质量 100 和不压缩比（BC5 那一档看 tex.seat.bc5.seat_05m.psnr）；比完总工程师给全片统一一条（D-40b #6）"
+      "why": "法线：只把法线做 Crunch（质量 100，ncrunch:100）和不压缩比；BC5 那一档看 tex.seat.bc5.seat_05m.psnr，两档别的贴图都是 BC7，差别只来自法线；比完总工程师给全片统一一条（D-40b #6）"
     }
   ],
   "headset_checklist": [
@@ -331,5 +366,6 @@
       "type": "assert_object",
       "path": "**/Slice_Pillar"
     }
-  ]
+  ],
+  "source_why": "；10-26 车包转来：两台侧窗机位改成对着窗扣 / 窗框的角（look_at_anchor），加窗框占比 ≥ 30 % 的检查（coverage_of）"
 }

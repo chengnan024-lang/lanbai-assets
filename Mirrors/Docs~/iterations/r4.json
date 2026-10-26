@@ -1,0 +1,330 @@
+[
+ {
+  "t": 1030.4,
+  "mirrors": [
+   {
+    "index": 1,
+    "y_car": -2.03,
+    "vis": 0.998,
+    "appear": 1,
+    "dissolve": 0,
+    "extra_EV": 0.0
+   },
+   {
+    "index": 2,
+    "y_car": -89.81,
+    "vis": 0.3,
+    "appear": 1,
+    "dissolve": 0,
+    "extra_EV": 0.0
+   }
+  ],
+  "APL": 35.7,
+  "EV": 0.0,
+  "label": "1030.4 第 1 面穿越前 2 s · 正前方偏下",
+  "file": "r4_00_1030.4_0_-12.png",
+  "face_mean": [
+   36.0,
+   34.7,
+   31.7
+  ],
+  "face_p90": [
+   85.5,
+   76.5,
+   59.7
+  ],
+  "face_frac": 0.383
+ },
+ {
+  "t": 1030.4,
+  "mirrors": [
+   {
+    "index": 1,
+    "y_car": -2.03,
+    "vis": 0.998,
+    "appear": 1,
+    "dissolve": 0,
+    "extra_EV": 0.0
+   },
+   {
+    "index": 2,
+    "y_car": -89.81,
+    "vis": 0.3,
+    "appear": 1,
+    "dissolve": 0,
+    "extra_EV": 0.0
+   }
+  ],
+  "APL": 24.6,
+  "EV": 0.0,
+  "label": "1030.4 第 1 面 · 向下看",
+  "file": "r4_01_1030.4_-20_-60.png",
+  "face_mean": [
+   24.6,
+   24.6,
+   24.4
+  ],
+  "face_p90": [
+   41.1,
+   38.5,
+   32.7
+  ],
+  "face_frac": 1.0
+ },
+ {
+  "t": 1068.6,
+  "mirrors": [
+   {
+    "index": 3,
+    "y_car": -4.07,
+    "vis": 1.0,
+    "appear": 1,
+    "dissolve": 0,
+    "extra_EV": 0.0
+   },
+   {
+    "index": 4,
+    "y_car": -71.0,
+    "vis": 0.3,
+    "appear": 1,
+    "dissolve": 0,
+    "extra_EV": 0.0
+   },
+   {
+    "index": 5,
+    "y_car": -125.28,
+    "vis": 0.3,
+    "appear": 1,
+    "dissolve": 0,
+    "extra_EV": 0.0
+   },
+   {
+    "index": 13,
+    "y_car": -5963.33,
+    "vis": 0.3,
+    "appear": 1,
+    "dissolve": 0.0,
+    "extra_EV": 0.0
+   }
+  ],
+  "APL": 36.4,
+  "EV": 0.0,
+  "label": "1068.6 第 3 面前 2 s（下方的柱）",
+  "file": "r4_02_1068.6_0_-12.png",
+  "face_mean": [
+   34.9,
+   33.5,
+   30.6
+  ],
+  "face_p90": [
+   76.2,
+   68.8,
+   53.9
+  ],
+  "face_frac": 0.31
+ },
+ {
+  "t": 1113.4,
+  "mirrors": [
+   {
+    "index": 9,
+    "y_car": 6.13,
+    "vis": 1.0,
+    "appear": 1,
+    "dissolve": 0.27,
+    "extra_EV": 0.0
+   },
+   {
+    "index": 10,
+    "y_car": -24.38,
+    "vis": 1.0,
+    "appear": 1,
+    "dissolve": 0,
+    "extra_EV": 0.0
+   },
+   {
+    "index": 11,
+    "y_car": -181.0,
+    "vis": 0.314,
+    "appear": 1,
+    "dissolve": 0,
+    "extra_EV": 0.0
+   },
+   {
+    "index": 12,
+    "y_car": -436.9,
+    "vis": 0.054,
+    "appear": 0.18,
+    "dissolve": 0,
+    "extra_EV": 0.0
+   },
+   {
+    "index": 13,
+    "y_car": -5246.91,
+    "vis": 0.3,
+    "appear": 1,
+    "dissolve": 0.0,
+    "extra_EV": 0.0
+   }
+  ],
+  "APL": 39.3,
+  "EV": 0.0,
+  "label": "1113.4 第 10 面前 2 s（加速的尾）",
+  "file": "r4_03_1113.4_0_-12.png",
+  "face_mean": null,
+  "face_p90": null,
+  "face_frac": 0.0
+ },
+ {
+  "t": 1116.0,
+  "mirrors": [
+   {
+    "index": 10,
+    "y_car": 8.1,
+    "vis": 1.0,
+    "appear": 1,
+    "dissolve": 0.32,
+    "extra_EV": 0.0
+   },
+   {
+    "index": 11,
+    "y_car": -134.2,
+    "vis": 1.0,
+    "appear": 1,
+    "dissolve": 0,
+    "extra_EV": 0.0
+   },
+   {
+    "index": 12,
+    "y_car": -384.9,
+    "vis": 0.3,
+    "appear": 1,
+    "dissolve": 0,
+    "extra_EV": 0.0
+   },
+   {
+    "index": 13,
+    "y_car": -5205.11,
+    "vis": 0.3,
+    "appear": 1,
+    "dissolve": 0.0,
+    "extra_EV": 0.0
+   }
+  ],
+  "APL": 43.1,
+  "EV": 0.0,
+  "label": "1116.0 第 10 面穿过后 · 抬头（溶解 + 星尘）",
+  "file": "r4_04_1116.0_0_30.png",
+  "face_mean": null,
+  "face_p90": null,
+  "face_frac": 0.0
+ },
+ {
+  "t": 1123.5,
+  "mirrors": [
+   {
+    "index": 11,
+    "y_car": -11.35,
+    "vis": 1.0,
+    "appear": 1,
+    "dissolve": 0,
+    "extra_EV": 0.0
+   },
+   {
+    "index": 12,
+    "y_car": -234.9,
+    "vis": 0.3,
+    "appear": 1,
+    "dissolve": 0,
+    "extra_EV": 0.0
+   },
+   {
+    "index": 13,
+    "y_car": -5100.86,
+    "vis": 0.3,
+    "appear": 1,
+    "dissolve": 0.0,
+    "extra_EV": 0.0
+   }
+  ],
+  "APL": 50.9,
+  "EV": 0.0,
+  "label": "1123.5 第 11 面（尾声的第一声钟）",
+  "file": "r4_05_1123.5_0_-12.png",
+  "face_mean": [
+   63.5,
+   58.2,
+   48.1
+  ],
+  "face_p90": [
+   145.6,
+   131.2,
+   100.8
+  ],
+  "face_frac": 0.428
+ },
+ {
+  "t": 1136.6,
+  "mirrors": [
+   {
+    "index": 12,
+    "y_car": -3.2,
+    "vis": 1.0,
+    "appear": 1,
+    "dissolve": 0,
+    "extra_EV": 0.0
+   },
+   {
+    "index": 13,
+    "y_car": -5001.69,
+    "vis": 0.657,
+    "appear": 1,
+    "dissolve": 0.0,
+    "extra_EV": 0.0
+   }
+  ],
+  "APL": 59.8,
+  "EV": 0.0,
+  "label": "1136.6 第 12 面前 1 s",
+  "file": "r4_06_1136.6_0_-12.png",
+  "face_mean": [
+   73.4,
+   66.9,
+   54.5
+  ],
+  "face_p90": [
+   168.5,
+   153.2,
+   119.3
+  ],
+  "face_frac": 0.589
+ },
+ {
+  "t": 1142.0,
+  "mirrors": [
+   {
+    "index": 13,
+    "y_car": -806.16,
+    "vis": 1.0,
+    "appear": 1,
+    "dissolve": 0.0,
+    "extra_EV": 1.283
+   }
+  ],
+  "APL": 118.6,
+  "EV": 1.751,
+  "label": "1142.0 第 13 面 · 向下看（白的膨胀里）",
+  "file": "r4_07_1142.0_0_-60.png",
+  "face_mean": [
+   144.4,
+   130.8,
+   103.3
+  ],
+  "face_p90": [
+   201.5,
+   186.9,
+   152.2
+  ],
+  "face_frac": 0.78
+ }
+]

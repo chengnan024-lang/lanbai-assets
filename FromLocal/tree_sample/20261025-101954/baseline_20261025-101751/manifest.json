@@ -1,0 +1,456 @@
+{
+  "tool": "Lanbai.Test.Runner",
+  "tool_version": "1.2.1",
+  "test_id": "tree_sample",
+  "run_id": "20261025-101751",
+  "fromlocal": "FromLocal/tree_sample/20261025-101751/",
+  "test_file": "E:\\IDMdownload\\VRCC\\Backups\\continuation_20261025\\delivery_0940\\tree_sample_msaa.json",
+  "test_sha256": "dd376bce79d933ecb7a54ce877b0a8139aaaea96fcc78a06c910242dd34bbbcd",
+  "mode": "bridge",
+  "started_utc": "2026-10-25T14:17:51.1815709Z",
+  "finished_utc": "2026-10-25T14:17:52.5110938Z",
+  "duration_s": 1.3,
+  "exit_code": 0,
+  "status": "pass",
+  "preflight_only": false,
+  "blocked_reason": null,
+  "error": null,
+  "repo": {
+    "repo_commit": "f703a951cbadf0eb6bc4df263f6d315e298dd0fc",
+    "repo_branch": "main",
+    "repo_dirty": null,
+    "repo_path": "E:\\IDMdownload\\VRCC\\lanbai-assets-gate-main-20261024",
+    "entry": "D-41 common Udon program repair and Engineering/UnityTest",
+    "synced_at": "2026-10-25T00:13:19.2541837-04:00",
+    "paths": null,
+    "tool_version": "local-20261025"
+  },
+  "copied": null,
+  "unity": {
+    "version": "2022.3.22f1",
+    "batch": false,
+    "color_space": "Linear",
+    "quality": "VRC High",
+    "build_target": "StandaloneWindows64",
+    "scene": "Assets/_LanbaiTest/Lanbai_FullPreview_copy.unity"
+  },
+  "packages": {
+    "com.vrchat.worlds": "3.10.5",
+    "com.vrchat.base": "3.10.5",
+    "com.unity.postprocessing": "3.4.0",
+    "com.unity.textmeshpro": "3.0.6"
+  },
+  "gpu": {
+    "name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "vendor": "NVIDIA",
+    "api": "Direct3D11",
+    "version": "Direct3D 11.0 [level 11.1]",
+    "vram_mb": 7956,
+    "cpu": "13th Gen Intel(R) Core(TM) i9-13980HX",
+    "cpu_threads": 32,
+    "ram_mb": 32386,
+    "os": "Windows 11  (10.0.26200) 64bit"
+  },
+  "consent": {
+    "tool_version": "1.2.1",
+    "tests": [
+      "gate_clouds_test",
+      "tree_sample"
+    ],
+    "authorized_locally": true,
+    "private_details": "omitted from public report"
+  },
+  "layers": {
+    "blender_offline": {
+      "status": "pending_cloud",
+      "note": "云端对照 Blender 参考帧后填；工具不填"
+    },
+    "unity_desktop": {
+      "status": "pass",
+      "note": "Unity 编辑器里的桌面渲染和编辑器估算的性能；工具检查全过也只记“待总导演看图”（D-41 #4）"
+    },
+    "vr_headset": {
+      "status": "not_tested",
+      "note": "工具不测头显，也不会把这一层标成通过；看 summary.md 末尾的头显清单"
+    }
+  },
+  "preflight": [
+    {
+      "item": "gpu",
+      "status": "ok",
+      "detail": "NVIDIA GeForce RTX 4060 Laptop GPU（Direct3D11，Direct3D 11.0 [level 11.1]，显存 7956 MB）"
+    },
+    {
+      "item": "resources",
+      "status": "ok",
+      "detail": "C:\\ 剩 38.4 GB，E:\\ 剩 70.2 GB，可用内存 9.7 GB"
+    },
+    {
+      "item": "consent",
+      "status": "ok",
+      "detail": "用户（当前聊天） 2026-10-25 同意（工具 1.2.1，测试 gate_clouds_test、tree_sample）；备份 E:\\IDMdownload\\VRCC\\Backups\\dream_20261025-000405.zip（在）"
+    },
+    {
+      "item": "unity",
+      "status": "ok",
+      "detail": "2022.3.22f1（要 2022.3.22f1）"
+    },
+    {
+      "item": "editor_state",
+      "status": "ok",
+      "detail": "Play False，编译中 False，导入中 False（要在编辑模式、编译和导入都完成后再跑）"
+    },
+    {
+      "item": "color_space",
+      "status": "ok",
+      "detail": "Linear（要 Linear）"
+    },
+    {
+      "item": "package:com.vrchat.worlds",
+      "status": "ok",
+      "detail": "3.10.5（要 3.10.5；读自 PackageManager）"
+    },
+    {
+      "item": "package:com.unity.postprocessing",
+      "status": "ok",
+      "detail": "3.4.0（要 3.4.0；读自 PackageManager）"
+    },
+    {
+      "item": "udonsharp",
+      "status": "ok",
+      "detail": "UdonSharp.UdonSharpBehaviour 在（UdonSharp.Runtime），随 VRChat Worlds SDK"
+    },
+    {
+      "item": "compile",
+      "status": "ok",
+      "detail": "scriptCompilationFailed False，Console 里的编译错误（含 UdonSharp 的）0 条（Console 共 2 条，原样在 console.jsonl）"
+    },
+    {
+      "item": "open_scenes",
+      "status": "ok",
+      "detail": "没有没保存的改动（Assets/Lanbai/Scenes/Lanbai_FullPreview.unity）"
+    },
+    {
+      "item": "sandbox",
+      "status": "ok",
+      "detail": "有上次遗留的沙盒（有标记），开跑时删掉重建"
+    },
+    {
+      "item": "grading",
+      "status": "warn",
+      "detail": "有旧的 Assets/Lanbai/Grades/，有套件的 Assets/Lanbai/Grading/；layer 4 =「Water」，layer 22 =「PostProcessing」。两套调色都在：工具不删，截图用的是参考相机上的那一套（PostProcessLayer 的 volumeLayer 写在 manifest 的截图记录里）"
+    },
+    {
+      "item": "sync_record",
+      "status": "ok",
+      "detail": "仓库提交 f703a951cbadf0eb6bc4df263f6d315e298dd0fc（2026-10-25T00:13:19.2541837-04:00 同步，条目：D-41 common Udon program repair and Engineering/UnityTest）"
+    },
+    {
+      "item": "git_status",
+      "status": "info",
+      "detail": "工程不是 git 仓库"
+    }
+  ],
+  "preconditions": [
+    {
+      "item": "文件夹 Assets/Lanbai/Common",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件夹 Assets/Lanbai/Grading",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件夹 Assets/Lanbai/Lamps/Tree",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件 Assets/Lanbai/Scenes/Lanbai.unity",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件 Assets/Lanbai/Lamps/Tree/Models/Tree_A1.fbx",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件 Assets/Lanbai/Lamps/Tree/Models/Tree_A2.fbx",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件 Assets/Lanbai/Lamps/Tree/Models/Tree_A3.fbx",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件 Assets/Lanbai/Lamps/Tree/Models/Tree_B1.fbx",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "类型 Lanbai.Lamps.LanbaiTreeBuilder",
+      "status": "ok",
+      "detail": "脚本没拷进来或没编译"
+    },
+    {
+      "item": "类型 Lanbai.Grading.LanbaiGradeBuilder",
+      "status": "ok",
+      "detail": "脚本没拷进来或没编译"
+    },
+    {
+      "item": "菜单 蓝白/Build/Sample Trees",
+      "status": "ok",
+      "detail": ""
+    }
+  ],
+  "git_status_porcelain": null,
+  "steps": [
+    {
+      "phase": "build",
+      "index": 0,
+      "type": "menu",
+      "desc": "菜单 蓝白/Build/Sample Trees",
+      "status": "ok",
+      "out": "执行了菜单 蓝白/Build/Sample Trees",
+      "ms": 248.8
+    },
+    {
+      "phase": "build",
+      "index": 1,
+      "type": "method",
+      "desc": "Lanbai.Grading.LanbaiGradeBuilder.Solo(S1)",
+      "why": "第 1 幕的调色（对照图是站台雨夜；本地 9-30 的对照用的是 Night profile，所以和旧图的亮度不完全可比）",
+      "status": "ok",
+      "out": "solo S1 站牌",
+      "ms": 8.7
+    },
+    {
+      "phase": "build",
+      "index": 2,
+      "type": "method",
+      "desc": "Lanbai.Lamps.LanbaiTreeBuilder.TestRow()",
+      "status": "ok",
+      "out": "OK tree test row: 7 trees, hid 0 old tree renderers",
+      "ms": 12.8
+    },
+    {
+      "phase": "build",
+      "index": 3,
+      "type": "assert_object",
+      "desc": "assert_object Lanbai_TreeTestRow",
+      "status": "ok",
+      "out": "在",
+      "ms": 0.6
+    }
+  ],
+  "settings": [
+    {
+      "item": "vertex_compression_off",
+      "status": "ok",
+      "detail": "Player → Other Settings → Vertex Compression：要关掉 Color；现在的掩码 3846（ProjectSettings.asset 原文），都关了",
+      "changed_by_tool": false
+    }
+  ],
+  "checks": [
+    {
+      "id": "steps_ok",
+      "metric": "steps.errors",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "每一步都跑成功了",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "no_compile_errors",
+      "metric": "console.compile_errors",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "跑的过程中没有新的编译错误",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "no_exceptions",
+      "metric": "console.exceptions",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "跑的过程中 Console 没有异常（工具自己的不算）",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "no_console_errors",
+      "metric": "console.errors",
+      "op": "==",
+      "value": 0,
+      "gate": false,
+      "why": "跑的过程中 Console 没有 Error（默认只警告；测试定义可以改成必须）",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "no_undeclared_writes",
+      "metric": "writes.undeclared",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "沙盒和 allowed_writes 以外没有文件被改",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "project_settings_untouched",
+      "metric": "writes.project_settings_changed",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "ProjectSettings 没被改",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "ppv2_effective",
+      "metric": "capture.ppv2_effective",
+      "op": "==",
+      "value": 1,
+      "gate": true,
+      "why": "截图经过了 PPv2（开 / 关 PPv2 各渲一张小图，要不一样）",
+      "measured": 1,
+      "expect": "= 1",
+      "status": "pass"
+    },
+    {
+      "id": "setting_vertex_compression_off",
+      "metric": "settings.vertex_compression_off",
+      "op": "==",
+      "value": 1,
+      "gate": true,
+      "why": "Player → Other Settings → Vertex Compression：要关掉 Color；现在的掩码 3846（ProjectSettings.asset 原文），都关了",
+      "measured": 1,
+      "expect": "= 1",
+      "status": "pass"
+    }
+  ],
+  "shots": [
+    {
+      "id": "right",
+      "file": "shots/right.png",
+      "w": 1600,
+      "h": 900,
+      "ss": 2,
+      "eye": [
+        3.200000047683716,
+        1.649999976158142,
+        2
+      ],
+      "euler": [
+        351.72259521484375,
+        17.175905227661133,
+        0
+      ],
+      "hfov": 90,
+      "vfov_used": 55,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 64.23237420454522,
+      "dark_pct": 8.707083333333333,
+      "clip_pct": 3.321875,
+      "max_luma": 255,
+      "ref": "repo:Lamps/Tree/Docs~/compare_right_blender.png",
+      "ref_status": "参考图不在：E:\\IDMdownload\\VRCC\\lanbai-assets-gate-main-20261024\\Lamps\\Tree\\Docs~\\compare_right_blender.png"
+    }
+  ],
+  "play": [],
+  "sequences": [],
+  "textures": [],
+  "metrics": {
+    "capture.ppv2_diff": 14.544583168191215,
+    "capture.ppv2_effective": 1,
+    "capture.ppv2_layer": 1,
+    "console.compile_errors": 0,
+    "console.compile_errors_at_start": 0,
+    "console.errors": 0,
+    "console.exceptions": 0,
+    "console.warnings": 0,
+    "resources.free_ram_gb": 9.746841430664062,
+    "scene.lightmaps": 0,
+    "settings.vertex_compression_off": 1,
+    "shot.right.apl": 64.23237420454522,
+    "shot.right.clip_pct": 3.321875,
+    "shot.right.dark_pct": 8.707083333333333,
+    "shot.right.max_luma": 255,
+    "steps.errors": 0,
+    "writes.declared": 10,
+    "writes.project_settings_changed": 0,
+    "writes.undeclared": 0
+  },
+  "metric_notes": {
+    "settings.vertex_compression_off": "Player → Other Settings → Vertex Compression：要关掉 Color；现在的掩码 3846（ProjectSettings.asset 原文），都关了",
+    "scene.lightmaps": "打开的场景里的光照图张数",
+    "capture.ppv2_layer": "参考相机上有 PostProcessLayer、新相机 Init 成功",
+    "capture.ppv2_diff": "开 / 关 PPv2 两张 192×108 小图的平均亮度差（sRGB 0–255）",
+    "shot.right.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "writes.undeclared": "沙盒和 allowed_writes 以外被改动的文件",
+    "writes.project_settings_changed": "ProjectSettings/*.asset 内容变了的个数（工具只查不改）"
+  },
+  "writes": {
+    "sandbox": "Assets/_LanbaiTest",
+    "allowed_writes": [
+      "Assets/Lanbai/Lamps/Tree/Generated/**",
+      "Assets/Lanbai/Lamps/Tree/Prefabs/**",
+      "Assets/Lanbai/Lamps/Tree/Generated.meta",
+      "Assets/Lanbai/Lamps/Tree/Prefabs.meta"
+    ],
+    "declared": [
+      "改了 Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Bark.mat",
+      "改了 Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Impostor_Tree_A1.mat",
+      "改了 Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Impostor_Tree_A2.mat",
+      "改了 Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Impostor_Tree_A3.mat",
+      "改了 Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Impostor_Tree_B1.mat",
+      "改了 Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Leaf.mat",
+      "改了 Assets/Lanbai/Lamps/Tree/Prefabs/Tree_A1.prefab",
+      "改了 Assets/Lanbai/Lamps/Tree/Prefabs/Tree_A2.prefab",
+      "改了 Assets/Lanbai/Lamps/Tree/Prefabs/Tree_A3.prefab",
+      "改了 Assets/Lanbai/Lamps/Tree/Prefabs/Tree_B1.prefab"
+    ],
+    "undeclared": [],
+    "project_settings_changed": [],
+    "tool_touched_restored": [],
+    "note": "按文件大小和修改时间比的：搭建脚本存了但内容没变的文件也算“改了”；只在内存里改、没存盘的不算"
+  },
+  "allowed_writes": [
+    "Assets/Lanbai/Lamps/Tree/Generated/**",
+    "Assets/Lanbai/Lamps/Tree/Prefabs/**",
+    "Assets/Lanbai/Lamps/Tree/Generated.meta",
+    "Assets/Lanbai/Lamps/Tree/Prefabs.meta"
+  ],
+  "allowed_writes_why": "蓝白/Build/Sample Trees 只写这两处（材质、预制体）；导入设置由 LanbaiTreeImport 在 Lamps/Tree/ 里改",
+  "backup_before": [],
+  "warnings": [
+    "参考图不在：E:\\IDMdownload\\VRCC\\lanbai-assets-gate-main-20261024\\Lamps\\Tree\\Docs~\\compare_right_blender.png"
+  ],
+  "files": [
+    "test_definition.json",
+    "shots/right.png",
+    "console.jsonl",
+    "summary.md",
+    "manifest.json",
+    "result.json"
+  ],
+  "public_copy_note": "Consent private notes omitted; technical result unchanged. Baseline 100058 retains only sequence endpoint samples; full raw baseline remains local. Final 101954 includes all frames."
+}

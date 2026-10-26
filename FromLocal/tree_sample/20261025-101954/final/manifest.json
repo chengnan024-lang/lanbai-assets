@@ -1,0 +1,764 @@
+{
+  "tool": "Lanbai.Test.Runner",
+  "tool_version": "1.2.1",
+  "test_id": "tree_sample",
+  "run_id": "20261025-101954",
+  "fromlocal": "FromLocal/tree_sample/20261025-101954/",
+  "test_file": "E:\\IDMdownload\\VRCC\\Backups\\continuation_20261025\\delivery_0940\\tree_sample_alpha.json",
+  "test_sha256": "2dd0d224aacbff19da14ab0149ce8f5a3dfeff0c9bfed3df7c32b8ca7fa6a4a1",
+  "mode": "bridge",
+  "started_utc": "2026-10-25T14:19:54.5369271Z",
+  "finished_utc": "2026-10-25T14:20:25.1154479Z",
+  "duration_s": 30.6,
+  "exit_code": 1,
+  "status": "fail",
+  "preflight_only": false,
+  "blocked_reason": null,
+  "error": null,
+  "repo": {
+    "repo_commit": "f703a951cbadf0eb6bc4df263f6d315e298dd0fc",
+    "repo_branch": "main",
+    "repo_dirty": null,
+    "repo_path": "E:\\IDMdownload\\VRCC\\lanbai-assets-gate-main-20261024",
+    "entry": "D-41 common Udon program repair and Engineering/UnityTest",
+    "synced_at": "2026-10-25T00:13:19.2541837-04:00",
+    "paths": null,
+    "tool_version": "local-20261025"
+  },
+  "copied": null,
+  "unity": {
+    "version": "2022.3.22f1",
+    "batch": false,
+    "color_space": "Linear",
+    "quality": "VRC High",
+    "build_target": "StandaloneWindows64",
+    "scene": "Assets/_LanbaiTest/Lanbai_FullPreview_copy.unity"
+  },
+  "packages": {
+    "com.vrchat.worlds": "3.10.5",
+    "com.vrchat.base": "3.10.5",
+    "com.unity.postprocessing": "3.4.0",
+    "com.unity.textmeshpro": "3.0.6"
+  },
+  "gpu": {
+    "name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "vendor": "NVIDIA",
+    "api": "Direct3D11",
+    "version": "Direct3D 11.0 [level 11.1]",
+    "vram_mb": 7956,
+    "cpu": "13th Gen Intel(R) Core(TM) i9-13980HX",
+    "cpu_threads": 32,
+    "ram_mb": 32386,
+    "os": "Windows 11  (10.0.26200) 64bit"
+  },
+  "consent": {
+    "tool_version": "1.2.1",
+    "tests": [
+      "gate_clouds_test",
+      "tree_sample"
+    ],
+    "authorized_locally": true,
+    "private_details": "omitted from public report"
+  },
+  "layers": {
+    "blender_offline": {
+      "status": "pending_cloud",
+      "note": "云端对照 Blender 参考帧后填；工具不填"
+    },
+    "unity_desktop": {
+      "status": "fail",
+      "note": "Unity 编辑器里的桌面渲染和编辑器估算的性能；工具检查全过也只记“待总导演看图”（D-41 #4）"
+    },
+    "vr_headset": {
+      "status": "not_tested",
+      "note": "工具不测头显，也不会把这一层标成通过；看 summary.md 末尾的头显清单"
+    }
+  },
+  "preflight": [
+    {
+      "item": "gpu",
+      "status": "ok",
+      "detail": "NVIDIA GeForce RTX 4060 Laptop GPU（Direct3D11，Direct3D 11.0 [level 11.1]，显存 7956 MB）"
+    },
+    {
+      "item": "resources",
+      "status": "ok",
+      "detail": "C:\\ 剩 38.4 GB，E:\\ 剩 70.2 GB，可用内存 9.7 GB"
+    },
+    {
+      "item": "consent",
+      "status": "ok",
+      "detail": "用户（当前聊天） 2026-10-25 同意（工具 1.2.1，测试 gate_clouds_test、tree_sample）；备份 E:\\IDMdownload\\VRCC\\Backups\\dream_20261025-000405.zip（在）"
+    },
+    {
+      "item": "unity",
+      "status": "ok",
+      "detail": "2022.3.22f1（要 2022.3.22f1）"
+    },
+    {
+      "item": "editor_state",
+      "status": "ok",
+      "detail": "Play False，编译中 False，导入中 False（要在编辑模式、编译和导入都完成后再跑）"
+    },
+    {
+      "item": "color_space",
+      "status": "ok",
+      "detail": "Linear（要 Linear）"
+    },
+    {
+      "item": "package:com.vrchat.worlds",
+      "status": "ok",
+      "detail": "3.10.5（要 3.10.5；读自 PackageManager）"
+    },
+    {
+      "item": "package:com.unity.postprocessing",
+      "status": "ok",
+      "detail": "3.4.0（要 3.4.0；读自 PackageManager）"
+    },
+    {
+      "item": "udonsharp",
+      "status": "ok",
+      "detail": "UdonSharp.UdonSharpBehaviour 在（UdonSharp.Runtime），随 VRChat Worlds SDK"
+    },
+    {
+      "item": "compile",
+      "status": "ok",
+      "detail": "scriptCompilationFailed False，Console 里的编译错误（含 UdonSharp 的）0 条（Console 共 2 条，原样在 console.jsonl）"
+    },
+    {
+      "item": "open_scenes",
+      "status": "ok",
+      "detail": "没有没保存的改动（Assets/Lanbai/Scenes/Lanbai_FullPreview.unity）"
+    },
+    {
+      "item": "sandbox",
+      "status": "ok",
+      "detail": "有上次遗留的沙盒（有标记），开跑时删掉重建"
+    },
+    {
+      "item": "grading",
+      "status": "warn",
+      "detail": "有旧的 Assets/Lanbai/Grades/，有套件的 Assets/Lanbai/Grading/；layer 4 =「Water」，layer 22 =「PostProcessing」。两套调色都在：工具不删，截图用的是参考相机上的那一套（PostProcessLayer 的 volumeLayer 写在 manifest 的截图记录里）"
+    },
+    {
+      "item": "sync_record",
+      "status": "ok",
+      "detail": "仓库提交 f703a951cbadf0eb6bc4df263f6d315e298dd0fc（2026-10-25T00:13:19.2541837-04:00 同步，条目：D-41 common Udon program repair and Engineering/UnityTest）"
+    },
+    {
+      "item": "git_status",
+      "status": "info",
+      "detail": "工程不是 git 仓库"
+    }
+  ],
+  "preconditions": [
+    {
+      "item": "文件夹 Assets/Lanbai/Common",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件夹 Assets/Lanbai/Grading",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件夹 Assets/Lanbai/Lamps/Tree",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件 Assets/Lanbai/Scenes/Lanbai.unity",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件 Assets/Lanbai/Lamps/Tree/Models/Tree_A1.fbx",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件 Assets/Lanbai/Lamps/Tree/Models/Tree_A2.fbx",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件 Assets/Lanbai/Lamps/Tree/Models/Tree_A3.fbx",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件 Assets/Lanbai/Lamps/Tree/Models/Tree_B1.fbx",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "类型 Lanbai.Lamps.LanbaiTreeBuilder",
+      "status": "ok",
+      "detail": "脚本没拷进来或没编译"
+    },
+    {
+      "item": "类型 Lanbai.Grading.LanbaiGradeBuilder",
+      "status": "ok",
+      "detail": "脚本没拷进来或没编译"
+    },
+    {
+      "item": "菜单 蓝白/Build/Sample Trees",
+      "status": "ok",
+      "detail": ""
+    }
+  ],
+  "git_status_porcelain": null,
+  "steps": [
+    {
+      "phase": "build",
+      "index": 0,
+      "type": "menu",
+      "desc": "菜单 蓝白/Build/Sample Trees",
+      "status": "ok",
+      "out": "执行了菜单 蓝白/Build/Sample Trees",
+      "ms": 298.3
+    },
+    {
+      "phase": "build",
+      "index": 1,
+      "type": "method",
+      "desc": "Lanbai.Grading.LanbaiGradeBuilder.Solo(S1)",
+      "why": "第 1 幕的调色（对照图是站台雨夜；本地 9-30 的对照用的是 Night profile，所以和旧图的亮度不完全可比）",
+      "status": "ok",
+      "out": "solo S1 站牌",
+      "ms": 8.1
+    },
+    {
+      "phase": "build",
+      "index": 2,
+      "type": "method",
+      "desc": "Lanbai.Lamps.LanbaiTreeBuilder.TestRow()",
+      "status": "ok",
+      "out": "OK tree test row: 7 trees, hid 0 old tree renderers",
+      "ms": 12
+    },
+    {
+      "phase": "build",
+      "index": 3,
+      "type": "assert_object",
+      "desc": "assert_object Lanbai_TreeTestRow",
+      "status": "ok",
+      "out": "在",
+      "ms": 0.6
+    }
+  ],
+  "settings": [
+    {
+      "item": "vertex_compression_off",
+      "status": "ok",
+      "detail": "Player → Other Settings → Vertex Compression：要关掉 Color；现在的掩码 3846（ProjectSettings.asset 原文），都关了",
+      "changed_by_tool": false
+    }
+  ],
+  "checks": [
+    {
+      "id": "steps_ok",
+      "metric": "steps.errors",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "每一步都跑成功了",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "no_compile_errors",
+      "metric": "console.compile_errors",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "跑的过程中没有新的编译错误",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "no_exceptions",
+      "metric": "console.exceptions",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "跑的过程中 Console 没有异常（工具自己的不算）",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "no_console_errors",
+      "metric": "console.errors",
+      "op": "==",
+      "value": 0,
+      "gate": false,
+      "why": "跑的过程中 Console 没有 Error（默认只警告；测试定义可以改成必须）",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "no_undeclared_writes",
+      "metric": "writes.undeclared",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "沙盒和 allowed_writes 以外没有文件被改",
+      "measured": 3,
+      "expect": "= 0",
+      "status": "fail"
+    },
+    {
+      "id": "project_settings_untouched",
+      "metric": "writes.project_settings_changed",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "ProjectSettings 没被改",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "ppv2_effective",
+      "metric": "capture.ppv2_effective",
+      "op": "==",
+      "value": 1,
+      "gate": true,
+      "why": "截图经过了 PPv2（开 / 关 PPv2 各渲一张小图，要不一样）",
+      "measured": 1,
+      "expect": "= 1",
+      "status": "pass"
+    },
+    {
+      "id": "setting_vertex_compression_off",
+      "metric": "settings.vertex_compression_off",
+      "op": "==",
+      "value": 1,
+      "gate": true,
+      "why": "Player → Other Settings → Vertex Compression：要关掉 Color；现在的掩码 3846（ProjectSettings.asset 原文），都关了",
+      "measured": 1,
+      "expect": "= 1",
+      "status": "pass"
+    },
+    {
+      "id": "hero_shimmer",
+      "metric": "seq.hero_micro.shimmer_p99",
+      "op": "<=",
+      "value": 12,
+      "gate": true,
+      "why": "初值：叶缘在 4× 超采样参考下的差，p99 ≤ 12（0–255）。第一次实测后由总工程师定",
+      "measured": 12.298746109008789,
+      "expect": "≤ 12",
+      "status": "fail"
+    },
+    {
+      "id": "hero_shimmer_frac",
+      "metric": "seq.hero_micro.shimmer_frac",
+      "op": "<=",
+      "value": 0.02,
+      "gate": true,
+      "why": "超过阈值 4 的像素 ≤ 2 %",
+      "measured": 0.05274802958935783,
+      "expect": "≤ 0.02",
+      "status": "fail"
+    },
+    {
+      "id": "right_shimmer_frac",
+      "metric": "seq.right_micro.shimmer_frac",
+      "op": "<=",
+      "value": 0.02,
+      "gate": true,
+      "why": "远树（LOD1 / LOD2）同样不能闪",
+      "measured": 0.21129375,
+      "expect": "≤ 0.02",
+      "status": "fail"
+    },
+    {
+      "id": "overview_apl",
+      "metric": "shot.overview.apl",
+      "op": "between",
+      "value": [
+        12,
+        40
+      ],
+      "gate": false,
+      "why": "圣经第 1 幕 APL 22；这个机位里有车和灯，只作参考",
+      "measured": 50.118140394982696,
+      "expect": "12 … 40",
+      "status": "warn"
+    },
+    {
+      "id": "row_tris",
+      "metric": "perf.row.trees.triangles",
+      "op": "<=",
+      "value": 400000,
+      "gate": false,
+      "why": "整个画面的三角面，参考；7 棵树 LOD0 合计约 6 万",
+      "status": "warn",
+      "detail": "没量到（这一项的截图 / 序列 / 性能没跑成，或名字写错）"
+    }
+  ],
+  "shots": [
+    {
+      "id": "overview",
+      "file": "shots/overview.png",
+      "w": 1600,
+      "h": 900,
+      "ss": 2,
+      "eye": [
+        4.599999904632568,
+        1.649999976158142,
+        -9
+      ],
+      "euler": [
+        355.091064453125,
+        359.11859130859375,
+        0
+      ],
+      "hfov": 90,
+      "vfov_used": 55,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 50.118140394982696,
+      "dark_pct": 11.735208333333333,
+      "clip_pct": 1.7175,
+      "max_luma": 255,
+      "ref": "repo:Lamps/Tree/Docs~/compare_overview_blender.png",
+      "ref_status": "参考图不在：E:\\IDMdownload\\VRCC\\lanbai-assets-gate-main-20261024\\Lamps\\Tree\\Docs~\\compare_overview_blender.png"
+    },
+    {
+      "id": "right",
+      "file": "shots/right.png",
+      "w": 1600,
+      "h": 900,
+      "ss": 2,
+      "eye": [
+        3.200000047683716,
+        1.649999976158142,
+        2
+      ],
+      "euler": [
+        351.72259521484375,
+        17.175905227661133,
+        0
+      ],
+      "hfov": 90,
+      "vfov_used": 55,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 65.11182942615284,
+      "dark_pct": 6.661041666666667,
+      "clip_pct": 3.321875,
+      "max_luma": 255,
+      "ref": "repo:Lamps/Tree/Docs~/compare_right_blender.png",
+      "ref_status": "参考图不在：E:\\IDMdownload\\VRCC\\lanbai-assets-gate-main-20261024\\Lamps\\Tree\\Docs~\\compare_right_blender.png"
+    },
+    {
+      "id": "left",
+      "file": "shots/left.png",
+      "w": 1600,
+      "h": 900,
+      "ss": 2,
+      "eye": [
+        -2.5,
+        1.649999976158142,
+        0
+      ],
+      "euler": [
+        352.9427795410156,
+        343.9091796875,
+        1.0753640111715868e-07
+      ],
+      "hfov": 90,
+      "vfov_used": 55,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 40.78137392833564,
+      "dark_pct": 7.339930555555555,
+      "clip_pct": 0.12729166666666666,
+      "max_luma": 255,
+      "ref": "repo:Lamps/Tree/Docs~/compare_left_blender.png",
+      "ref_status": "参考图不在：E:\\IDMdownload\\VRCC\\lanbai-assets-gate-main-20261024\\Lamps\\Tree\\Docs~\\compare_left_blender.png"
+    },
+    {
+      "id": "hero",
+      "file": "shots/hero.png",
+      "w": 834,
+      "h": 614,
+      "ss": 2,
+      "eye": [
+        0.550000011920929,
+        1.7000000476837158,
+        2.049999952316284
+      ],
+      "euler": [
+        345.230224609375,
+        31.204748153686523,
+        4.414740146785334e-07
+      ],
+      "hfov": 40,
+      "vfov_used": 30,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 20.370034847156795,
+      "dark_pct": 1.138893445504183,
+      "clip_pct": 0,
+      "max_luma": 204.09739685058594,
+      "ref": "repo:Lamps/Tree/Docs~/hero_20ppd_blender.png",
+      "ref_status": "参考图不在：E:\\IDMdownload\\VRCC\\lanbai-assets-gate-main-20261024\\Lamps\\Tree\\Docs~\\hero_20ppd_blender.png"
+    }
+  ],
+  "play": [],
+  "sequences": [
+    {
+      "id": "hero_micro",
+      "kind": "micro_motion",
+      "fps": 90,
+      "frames": 90,
+      "w": 834,
+      "h": 614,
+      "ss": 1,
+      "amp_cm": 1.9999999552965164,
+      "amp_deg": 1,
+      "eye_offset_mm": 0,
+      "t0": null,
+      "t1": null,
+      "advance_time": false,
+      "heat_scale": 24,
+      "hf_threshold": 6,
+      "reference_ss": 4,
+      "shimmer_threshold": 4,
+      "heat_shimmer": "seq/hero_micro/heat_shimmer.png",
+      "heat_motion_std": "seq/hero_micro/heat_motion_std.png",
+      "heat_hf_raw": "seq/hero_micro/heat_hf_raw.png",
+      "note": "编辑器里普通相机逐帧渲染（不是 SPS-I、不是头显）；热图颜色 0 → 24（亮度 0–255），底下是平均画面的灰度"
+    },
+    {
+      "id": "hero_static",
+      "kind": "static",
+      "fps": 90,
+      "frames": 45,
+      "w": 834,
+      "h": 614,
+      "ss": 1,
+      "amp_cm": 1.9999999552965164,
+      "amp_deg": 1,
+      "eye_offset_mm": 0,
+      "t0": null,
+      "t1": null,
+      "advance_time": false,
+      "heat_scale": 24,
+      "hf_threshold": 6,
+      "reference_ss": 4,
+      "shimmer_threshold": 4,
+      "heat_shimmer": "seq/hero_static/heat_shimmer.png",
+      "heat_motion_std": "seq/hero_static/heat_motion_std.png",
+      "heat_hf_raw": "seq/hero_static/heat_hf_raw.png",
+      "note": "编辑器里普通相机逐帧渲染（不是 SPS-I、不是头显）；热图颜色 0 → 24（亮度 0–255），底下是平均画面的灰度"
+    },
+    {
+      "id": "right_micro",
+      "kind": "micro_motion",
+      "fps": 90,
+      "frames": 90,
+      "w": 1600,
+      "h": 900,
+      "ss": 1,
+      "amp_cm": 1.9999999552965164,
+      "amp_deg": 1,
+      "eye_offset_mm": 0,
+      "t0": null,
+      "t1": null,
+      "advance_time": false,
+      "heat_scale": 24,
+      "hf_threshold": 6,
+      "reference_ss": 4,
+      "shimmer_threshold": 4,
+      "heat_shimmer": "seq/right_micro/heat_shimmer.png",
+      "heat_motion_std": "seq/right_micro/heat_motion_std.png",
+      "heat_hf_raw": "seq/right_micro/heat_hf_raw.png",
+      "note": "编辑器里普通相机逐帧渲染（不是 SPS-I、不是头显）；热图颜色 0 → 24（亮度 0–255），底下是平均画面的灰度"
+    }
+  ],
+  "textures": [],
+  "metrics": {
+    "capture.ppv2_diff": 20.75299936125952,
+    "capture.ppv2_effective": 1,
+    "capture.ppv2_layer": 1,
+    "console.compile_errors": 0,
+    "console.compile_errors_at_start": 0,
+    "console.errors": 0,
+    "console.exceptions": 0,
+    "console.warnings": 0,
+    "perf.row.trees.desktop_ms": 15.19,
+    "perf.row.trees.vr_cpu_ms": 9.63,
+    "perf.row.trees.vr_ms": 30.01,
+    "resources.free_ram_gb": 9.69881820678711,
+    "scene.lightmaps": 0,
+    "seq.hero_micro.apl_max": 21.596853980815514,
+    "seq.hero_micro.apl_max_step": 0.13225857535421426,
+    "seq.hero_micro.apl_min": 19.24665406399515,
+    "seq.hero_micro.frames": 90,
+    "seq.hero_micro.hf_raw_frac": 0.05653652973386763,
+    "seq.hero_micro.hf_raw_mean": 1.4874179288343352,
+    "seq.hero_micro.hf_raw_p99": 17.668752670288086,
+    "seq.hero_micro.motion_std_mean": 3.199105819191552,
+    "seq.hero_micro.motion_std_p99": 34.040340423583984,
+    "seq.hero_micro.shimmer_frac": 0.05274802958935783,
+    "seq.hero_micro.shimmer_mean": 1.1850184135352055,
+    "seq.hero_micro.shimmer_p99": 12.298746109008789,
+    "seq.hero_static.apl_max": 20.318230064997344,
+    "seq.hero_static.apl_max_step": 0.0023647475281158847,
+    "seq.hero_static.apl_min": 20.315709651412774,
+    "seq.hero_static.frames": 45,
+    "seq.hero_static.hf_raw_frac": 0,
+    "seq.hero_static.hf_raw_mean": 0.5368661481639698,
+    "seq.hero_static.hf_raw_p99": 0.9356404542922974,
+    "seq.hero_static.motion_std_mean": 0.5335560143679803,
+    "seq.hero_static.motion_std_p99": 0.8950579762458801,
+    "seq.hero_static.shimmer_frac": 0,
+    "seq.hero_static.shimmer_mean": 0.6022488582814384,
+    "seq.hero_static.shimmer_p99": 1.0221178531646729,
+    "seq.right_micro.apl_max": 66.09159656787183,
+    "seq.right_micro.apl_max_step": 0.1606940653976352,
+    "seq.right_micro.apl_min": 64.30124448277718,
+    "seq.right_micro.frames": 90,
+    "seq.right_micro.hf_raw_frac": 0.101225,
+    "seq.right_micro.hf_raw_mean": 2.552314512200531,
+    "seq.right_micro.hf_raw_p99": 12.671353340148926,
+    "seq.right_micro.motion_std_mean": 6.672896561023076,
+    "seq.right_micro.motion_std_p99": 41.76889419555664,
+    "seq.right_micro.shimmer_frac": 0.21129375,
+    "seq.right_micro.shimmer_mean": 2.5697420421030426,
+    "seq.right_micro.shimmer_p99": 12.59461498260498,
+    "settings.vertex_compression_off": 1,
+    "shot.hero.apl": 20.370034847156795,
+    "shot.hero.clip_pct": 0,
+    "shot.hero.dark_pct": 1.138893445504183,
+    "shot.hero.max_luma": 204.09739685058594,
+    "shot.left.apl": 40.78137392833564,
+    "shot.left.clip_pct": 0.12729166666666666,
+    "shot.left.dark_pct": 7.339930555555555,
+    "shot.left.max_luma": 255,
+    "shot.overview.apl": 50.118140394982696,
+    "shot.overview.clip_pct": 1.7175,
+    "shot.overview.dark_pct": 11.735208333333333,
+    "shot.overview.max_luma": 255,
+    "shot.right.apl": 65.11182942615284,
+    "shot.right.clip_pct": 3.321875,
+    "shot.right.dark_pct": 6.661041666666667,
+    "shot.right.max_luma": 255,
+    "steps.errors": 0,
+    "writes.declared": 10,
+    "writes.project_settings_changed": 0,
+    "writes.undeclared": 3
+  },
+  "metric_notes": {
+    "settings.vertex_compression_off": "Player → Other Settings → Vertex Compression：要关掉 Color；现在的掩码 3846（ProjectSettings.asset 原文），都关了",
+    "scene.lightmaps": "打开的场景里的光照图张数",
+    "capture.ppv2_layer": "参考相机上有 PostProcessLayer、新相机 Init 成功",
+    "capture.ppv2_diff": "开 / 关 PPv2 两张 192×108 小图的平均亮度差（sRGB 0–255）",
+    "shot.overview.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "shot.right.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "shot.left.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "shot.hero.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "seq.hero_micro.shimmer_mean": "闪烁（主量）：逐像素“测的图 − 同一姿态的 4× 超采样参考”的亮度差（0–255）随时间的标准差，全画面平均；真实运动两张一起挪、不算在里面",
+    "seq.hero_micro.shimmer_frac": "shimmer > 4 的像素占比",
+    "seq.hero_micro.motion_std_mean": "逐像素亮度（0–255）的时间标准差，全画面平均：含真实运动（边缘挪动），只作参考，不是闪烁",
+    "seq.hero_micro.hf_raw_mean": "逐像素二阶时间差分的均方根 ÷ √6（0–255）：平滑运动大多不算，但正常的边缘运动也会进来一部分，只作参考；闪烁看 shimmer",
+    "seq.hero_micro.hf_raw_frac": "hf_raw > 6 的像素占比",
+    "seq.hero_micro.apl_max_step": "相邻两帧 APL 的最大跳变",
+    "seq.hero_static.shimmer_mean": "闪烁（主量）：逐像素“测的图 − 同一姿态的 4× 超采样参考”的亮度差（0–255）随时间的标准差，全画面平均；真实运动两张一起挪、不算在里面",
+    "seq.hero_static.shimmer_frac": "shimmer > 4 的像素占比",
+    "seq.hero_static.motion_std_mean": "逐像素亮度（0–255）的时间标准差，全画面平均：含真实运动（边缘挪动），只作参考，不是闪烁",
+    "seq.hero_static.hf_raw_mean": "逐像素二阶时间差分的均方根 ÷ √6（0–255）：平滑运动大多不算，但正常的边缘运动也会进来一部分，只作参考；闪烁看 shimmer",
+    "seq.hero_static.hf_raw_frac": "hf_raw > 6 的像素占比",
+    "seq.hero_static.apl_max_step": "相邻两帧 APL 的最大跳变",
+    "seq.right_micro.shimmer_mean": "闪烁（主量）：逐像素“测的图 − 同一姿态的 4× 超采样参考”的亮度差（0–255）随时间的标准差，全画面平均；真实运动两张一起挪、不算在里面",
+    "seq.right_micro.shimmer_frac": "shimmer > 4 的像素占比",
+    "seq.right_micro.motion_std_mean": "逐像素亮度（0–255）的时间标准差，全画面平均：含真实运动（边缘挪动），只作参考，不是闪烁",
+    "seq.right_micro.hf_raw_mean": "逐像素二阶时间差分的均方根 ÷ √6（0–255）：平滑运动大多不算，但正常的边缘运动也会进来一部分，只作参考；闪烁看 shimmer",
+    "seq.right_micro.hf_raw_frac": "hf_raw > 6 的像素占比",
+    "seq.right_micro.apl_max_step": "相邻两帧 APL 的最大跳变",
+    "perf.row.trees.desktop_ms": "编辑器估算：电脑 1920×1080 一帧（CPU 提交 + 等 GPU）中位数",
+    "perf.row.trees.vr_ms": "编辑器估算：1832×1920 渲两次（VR 两只眼，同一方向）中位数；不是头显实测",
+    "writes.undeclared": "沙盒和 allowed_writes 以外被改动的文件",
+    "writes.project_settings_changed": "ProjectSettings/*.asset 内容变了的个数（工具只查不改）"
+  },
+  "writes": {
+    "sandbox": "Assets/_LanbaiTest",
+    "allowed_writes": [
+      "Assets/Lanbai/Lamps/Tree/Generated/**",
+      "Assets/Lanbai/Lamps/Tree/Prefabs/**",
+      "Assets/Lanbai/Lamps/Tree/Generated.meta",
+      "Assets/Lanbai/Lamps/Tree/Prefabs.meta"
+    ],
+    "declared": [
+      "改了 Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Bark.mat",
+      "改了 Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Impostor_Tree_A1.mat",
+      "改了 Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Impostor_Tree_A2.mat",
+      "改了 Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Impostor_Tree_A3.mat",
+      "改了 Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Impostor_Tree_B1.mat",
+      "改了 Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Leaf.mat",
+      "改了 Assets/Lanbai/Lamps/Tree/Prefabs/Tree_A1.prefab",
+      "改了 Assets/Lanbai/Lamps/Tree/Prefabs/Tree_A2.prefab",
+      "改了 Assets/Lanbai/Lamps/Tree/Prefabs/Tree_A3.prefab",
+      "改了 Assets/Lanbai/Lamps/Tree/Prefabs/Tree_B1.prefab"
+    ],
+    "undeclared": [
+      "改了 Assets/Lanbai/Generated/Materials/LB_Sea.mat",
+      "改了 Assets/Lanbai/Generated/Materials/LB_SeaB.mat",
+      "改了 Assets/Lanbai/Generated/Materials/LB_WetGround.mat"
+    ],
+    "project_settings_changed": [],
+    "tool_touched_restored": [],
+    "note": "按文件大小和修改时间比的：搭建脚本存了但内容没变的文件也算“改了”；只在内存里改、没存盘的不算"
+  },
+  "allowed_writes": [
+    "Assets/Lanbai/Lamps/Tree/Generated/**",
+    "Assets/Lanbai/Lamps/Tree/Prefabs/**",
+    "Assets/Lanbai/Lamps/Tree/Generated.meta",
+    "Assets/Lanbai/Lamps/Tree/Prefabs.meta"
+  ],
+  "allowed_writes_why": "蓝白/Build/Sample Trees 只写这两处（材质、预制体）；导入设置由 LanbaiTreeImport 在 Lamps/Tree/ 里改",
+  "backup_before": [],
+  "warnings": [
+    "参考图不在：E:\\IDMdownload\\VRCC\\lanbai-assets-gate-main-20261024\\Lamps\\Tree\\Docs~\\compare_overview_blender.png",
+    "参考图不在：E:\\IDMdownload\\VRCC\\lanbai-assets-gate-main-20261024\\Lamps\\Tree\\Docs~\\compare_right_blender.png",
+    "参考图不在：E:\\IDMdownload\\VRCC\\lanbai-assets-gate-main-20261024\\Lamps\\Tree\\Docs~\\compare_left_blender.png",
+    "参考图不在：E:\\IDMdownload\\VRCC\\lanbai-assets-gate-main-20261024\\Lamps\\Tree\\Docs~\\hero_20ppd_blender.png"
+  ],
+  "files": [
+    "test_definition.json",
+    "shots/overview.png",
+    "shots/right.png",
+    "shots/left.png",
+    "shots/hero.png",
+    "seq/hero_micro/0000.png …（90 帧）",
+    "seq/hero_micro/heat_motion_std.png",
+    "seq/hero_micro/heat_hf_raw.png",
+    "seq/hero_micro/heat_shimmer.png",
+    "seq/hero_micro/numbers.json",
+    "seq/hero_static/0000.png …（45 帧）",
+    "seq/hero_static/heat_motion_std.png",
+    "seq/hero_static/heat_hf_raw.png",
+    "seq/hero_static/heat_shimmer.png",
+    "seq/hero_static/numbers.json",
+    "seq/right_micro/0000.png …（90 帧）",
+    "seq/right_micro/heat_motion_std.png",
+    "seq/right_micro/heat_hf_raw.png",
+    "seq/right_micro/heat_shimmer.png",
+    "seq/right_micro/numbers.json",
+    "console.jsonl",
+    "perf.json",
+    "summary.md",
+    "manifest.json",
+    "result.json"
+  ],
+  "public_copy_note": "Consent private notes omitted; technical result unchanged. Baseline 100058 retains only sequence endpoint samples; full raw baseline remains local. Final 101954 includes all frames."
+}

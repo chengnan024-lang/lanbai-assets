@@ -40,10 +40,20 @@ def join_lines(segs, key):
             out += s[key]
     return out
 
+# v5 (D-45): the poems are subtitles (lanbai_subtitles.py). World text is left only for the Han characters of Tianwen in
+# the sky (everyone) and the Zhuangzi column (D-45 #15.4: zh / en / de read the simplified column, zht / ja the
+# traditional one). Tianwen's v4 sub-lines stay in its frozen layout (SHA check) but nobody shows them any more.
+import lanbai_subtitles as LS
+WORLD_TEXT = {'P09_Tianwen': ('main',), 'P08b_Zhuangzi_Xiaoyao': ('main', 'zht')}
+COLUMN_OF_KEY = {'zh': 'zh', 'en': 'zh', 'de': 'zh', 'zht': 'zht', 'ja': 'zht'}
+SUBS, SUB_STRINGS = LS.build()
 poems_out = []
 for p in L.POEMS:
-    for fk, ln, ident in L.shown_strings(p):           # v4 (D-30): only what some player actually sees
-        add(fk, ln, ident)
+    keep = WORLD_TEXT.get(p['id'], ())
+    for fk, ln, ident in L.shown_strings(p):
+        k_ = 'main' if ident == p['id'] else ident.split('/', 1)[1]
+        if k_ in keep:
+            add(fk, ln, ident)
     main_lines = join_lines(p['segments'], 'main')
     q = {k: v for k, v in p.items() if k not in ('segments', 'translations')}
     q['original'] = dict(p['original'], lines=main_lines, tmp_text='\n'.join(main_lines))
@@ -83,6 +93,12 @@ for ln in K['verse']['lines']:
 add(L.DESTINATION_ROLL['font'], L.DESTINATION_ROLL['text'], 'DEST_ROLL')
 for u in L.UI:
     add(u['font'], u['text'], u['id'])
+for fk, ln, ident in SUB_STRINGS:                      # v5 subtitles and the board's settings card
+    add(fk, ln, ident)
+RETIRED = [k for k in L.FONTS if not by_font[k]]       # v5: JP Medium (it only had Tianwen's Japanese sub-line)
+for k in RETIRED:
+    del by_font[k]
+FONTS_V5 = collections.OrderedDict((k, v) for k, v in L.FONTS.items() if k not in RETIRED)
 
 # --------------------------------------------------------------------------------------- charsets
 def charset_of(strings):
@@ -94,7 +110,7 @@ def charset_of(strings):
     return ''.join(sorted(cs, key=ord))
 
 charsets = collections.OrderedDict()
-for k in L.FONTS:
+for k in FONTS_V5:
     charsets[k] = charset_of(by_font[k].keys())
 
 def write_charset(name, chars):
@@ -347,7 +363,7 @@ def subset_font(k):
 # ------------------------------------------------------------------------------------- run subsets
 report = []
 subset_info = {}
-for k, info in L.FONTS.items():
+for k, info in FONTS_V5.items():
     out, notes, missing, f2 = subset_font(k)
     o_path = os.path.join(ORIG, info['original'])
     subset_info[k] = dict(original=info['original'], original_bytes=os.path.getsize(o_path),
@@ -363,7 +379,7 @@ for k, info in L.FONTS.items():
 # ------------------------------------------------------------------------------ coverage check (every string)
 cov_lines = []
 ok_all = True
-fonts_loaded = {k: TTFont(os.path.join(SUB, L.FONTS[k]['subset'])) for k in L.FONTS}
+fonts_loaded = {k: TTFont(os.path.join(SUB, L.FONTS[k]['subset'])) for k in FONTS_V5}
 for k, d in by_font.items():
     cm = fonts_loaded[k].getBestCmap()
     cmo = TTFont(os.path.join(ORIG, L.FONTS[k]['original']), lazy=True).getBestCmap()
@@ -446,7 +462,7 @@ def shelf_pack(boxes, W, H):
 
 atlas_lines = ['TMP atlas fit at Sampling Point Size 90, Padding 10 (bible §7.2), shelf-packer check (conservative).']
 atlas_info = {}
-for k, info in L.FONTS.items():
+for k, info in FONTS_V5.items():
     if not info.get('tmp_asset'):
         continue
     for variant, chars in (('exact', charsets[k]),) + ((('+ascii', ''.join(sorted(set(charsets[k]) | set(L.ASCII), key=ord))),) if not info['cjk'] else ()):
@@ -484,9 +500,25 @@ for k, f in fonts_loaded.items():
 # ------------------------------------------------------------------------------- layout (lanbai_layout.py)
 import lanbai_layout as LY
 import lanbai_color as LC
-LAYOUTS = LY.all_layouts()
+# v5: only the world text keeps a layout. P09 exactly as v4.1 (every player; the sky stars of act 9 were placed from it),
+# the Zhuangzi column as two sets (COLUMN_OF_KEY says who reads which).
+import hashlib
+_P = {p['id']: p for p in L.POEMS}
+LAYOUTS = collections.OrderedDict()
+LAYOUTS['P08b_Zhuangzi_Xiaoyao'] = {k: LY.poem_layout(_P['P08b_Zhuangzi_Xiaoyao'], k) for k in ('zh', 'zht')}
+LAYOUTS['P09_Tianwen'] = {pl: LY.poem_layout(_P['P09_Tianwen'], pl) for pl in LY.PLAYERS}
+P09_SHA = hashlib.sha256(json.dumps(LAYOUTS['P09_Tianwen'], sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode('utf-8')).hexdigest()
+P09_SHA_OK = P09_SHA == LS.P09_SHA_V41
+print('P09 layout sha256 %s -> %s' % (P09_SHA, 'PASS (= v4.1)' if P09_SHA_OK else 'FAIL (v4.1 is %s)' % LS.P09_SHA_V41))
 for q in poems_out:
-    q['layout'] = LAYOUTS[q['id']]
+    if q['id'] in LAYOUTS:
+        q['layout'] = LAYOUTS[q['id']]
+    if q['id'] == 'P08b_Zhuangzi_Xiaoyao':
+        q['column_of_key'] = dict(COLUMN_OF_KEY)
+    if q['id'] == 'P09_Tianwen':
+        q['layout_sha256'] = P09_SHA
+        q['layout_note'] = ('v5: frozen = v4.1 byte for byte (sha256 above). Only the "main" objects (the Han characters in the '
+                            'sky) are shown; the "translation" objects are v4 and retired: the subtitles carry them now.')
 v_ok, v_rows = LY.vertical_check(LAYOUTS)
 
 # line widths (v4: every line some player sees, at the size it is shown; limit 28°, bible §7.3 / D-30 #2)
@@ -512,6 +544,7 @@ place_bad = LY.placement_check(LAYOUTS)
 for r in place_bad:
     print('PLACEMENT FAIL %s/%s: %s' % (r['poem'], r['player'], '; '.join(r['problems'])))
 import block_viewcheck as BV
+VIEW_LAYOUTS = {'P08b_Zhuangzi_Xiaoyao': LAYOUTS['P08b_Zhuangzi_Xiaoyao']}    # v5: only the Zhuangzi column (D-45 #15.4)
 import subprocess, tempfile
 BUS_DIR = os.environ.get('LANBAI_BUS_DIR')
 BUS_REF = os.environ.get('LANBAI_BUS_REF', 'origin/pkg/bus')
@@ -527,10 +560,10 @@ if not BUS_DIR:
 else:
     BUS_SRC = BUS_DIR
 if BV.lookup_available(BUS_DIR) and os.environ.get('LANBAI_VIEWCHECK') != 'rays':
-    VIEW = BV.run_lookup(LAYOUTS, BUS_DIR)
+    VIEW = BV.run_lookup(VIEW_LAYOUTS, BUS_DIR)
     how = 'the bus\'s occlusion table Bus/Docs~/viewcheck/hero_occlusion.npz via Bus/Source/occlusion_lookup.py (0.25° grid)'
 else:
-    VIEW = BV.run(LAYOUTS, BUS_DIR)
+    VIEW = BV.run(VIEW_LAYOUTS, BUS_DIR)
     how = 'rays cast here: Bus/Source/build_bus.py + viewcheck.cast, every %.1f°' % BV.STEP
 view_lines = ['Every block of every player against the real bus (%s; %s; clearance ring %.2f° steps up to %.1f°). '
               'FAIL = some of the block is behind an opaque part (glass does not count).' % (BUS_SRC, how, BV.RING, BV.MAX_CLEAR), '']
@@ -548,42 +581,57 @@ for pid, per in VIEW.items():
 view_ok = not view_fail
 view_lines.insert(1, 'viewcheck: %s%s' % ('PASS' if view_ok else 'FAIL', '' if view_ok else ' — ' + ', '.join(view_fail)))
 
-# D-37: every seat's positions solved offline on the bus's 1° seat grids (seat_table.py) -> Fonts/seat_positions.json,
-# which 蓝白/Fonts/Build Poem Objects bakes into LanbaiPoemDriver; the runtime only looks up
-import seat_table as ST
-SEAT_GRID = os.path.join(BUS_DIR, 'Bus', 'Docs~', 'viewcheck', 'seats_occlusion_1deg.json')
-seat_lines = ['D-37: every seat but the main one (which keeps D-33), every poem that may move, every key: block <= %d %% blocked, '
-              'centre elevation %d…%+d°, whole circle, nearest to the default (as seen from that seat), >= %.0f° from the focus '
-              'when it can; none -> the least blocked. Grid: %s.' % (100 * ST.LIMIT, ST.EL_MIN, ST.EL_MAX, ST.FOCUS_CLEAR, BUS_SRC), '']
-SEATS = None
-if os.path.exists(SEAT_GRID):
-    SEATS = ST.run(LAYOUTS, L.POEMS, SEAT_GRID, LY.PLAYERS)
-    sm = ST.summary(SEATS)
-    SEATS['summary'] = sm
-    with open(os.path.join(KIT, 'seat_positions.json'), 'w', encoding='utf-8') as f_:
-        json.dump({k: v for k, v in SEATS.items() if k not in ('rows', 'summary')}, f_, ensure_ascii=False, separators=(',', ':'))
-    seat_lines.append('mean blocked, every seat but the main one: %.1f %% (target <= 10 %%); checks over 10 %%: %d of %d; moved from the '
-                      'default: %d' % (100 * sm['mean_others'], sm['over_limit'], sm['checks_others'], sm['moved']))
-    seat_lines.append('table: %d default entries + %d gaze entries (%d facings) = %d floats (az, el) in LanbaiPoemDriver' % (
-        sm['table_entries']['default'], sm['table_entries']['gaze'], ST.FACINGS, sm['table_entries']['floats']))
-    seat_lines.append('mean by seat: ' + ', '.join('%s %.1f%%' % (k, 100 * v) for k, v in sm['mean_by_seat'].items()))
-    seat_lines.append('worst: ' + '; '.join('%s %s/%s %.0f%%' % (a_, b_, c_, 100 * d_) for a_, b_, c_, d_ in sm['worst']))
-    seat_lines.append('')
-    for r in SEATS['rows']:
-        seat_lines.append('  %-11s %-24s %-3s default %+6.1f° %+5.1f° blocked %3.0f%% -> %+6.1f° %+5.1f° blocked %3.0f%%%s' % (
-            r['seat'], r['poem'], r['key'], r['default_az'], r['default_el'], 100 * r['blocked_default'], r['az'], r['el'],
-            100 * r['blocked'], '  (fixed)' if r['fixed'] else ''))
+# D-45 C.2: the subtitle depth table is written by the bus package at Bus/Docs~/viewcheck/subtitle_depth.json (Unity
+# ignores ~ folders, so the bake cannot read it there): copied into Fonts/subtitle_depth.json when it is there and has the
+# format Bus/给总控.md #32 checks out (grid, shape, values, seat order = BusLayout); otherwise the driver's fallbacks
+DEPTH_SRC = os.path.join(BUS_DIR, 'Bus', 'Docs~', 'viewcheck', 'subtitle_depth.json')
+DEPTH_DST = os.path.join(KIT, 'subtitle_depth.json')
+if os.path.exists(DEPTH_SRC):
+    # Bus/给总控.md #32: {seats: [{name, eye, depth[24][9]}], yaw0 -180, yaw_step 15, n_yaw 24 (cell CENTRES), pitch0 -40,
+    # pitch_step 10, n_pitch 9}; the values are already the final depth clamp(0.92 x d_near, 0.45, 1.0)
+    with open(DEPTH_SRC, encoding='utf-8') as f_:
+        dj = json.load(f_)
+    seats_ = dj.get('seats', [])
+    grid_ok = (dj.get('n_yaw') == 24 and dj.get('n_pitch') == 9 and dj.get('yaw0') == -180.0 and dj.get('yaw_step') == 15.0
+               and dj.get('pitch0') == -40.0 and dj.get('pitch_step') == 10.0)
+    shape_ok = len(seats_) > 0 and all(len(x['depth']) == 24 and all(len(c) == 9 for c in x['depth']) for x in seats_)
+    vals = [v for x in seats_ for row in x['depth'] for v in row]
+    range_ok = bool(vals) and min(vals) >= 0.45 - 1e-6 and max(vals) <= 1.0 + 1e-6
+    with open(os.path.join(BUS_DIR, 'Bus', 'Models', 'BusLayout.json'), encoding='utf-8') as f_:
+        order = [x['name'] for x in json.load(f_)['seats']]
+    order_ok = [x['name'] for x in seats_] == order
+    if not (grid_ok and shape_ok and range_ok and order_ok):
+        sys.exit('DEPTH TABLE: %s: grid %s, shape %s, values in [0.45, 1] %s, seat order = BusLayout %s' % (
+            DEPTH_SRC, grid_ok, shape_ok, range_ok, order_ok))
+    out_d = collections.OrderedDict([
+        ('_about', 'D-45 C.2 subtitle depth, copied by Tools~/build_fonts.py from %s Bus/Docs~/viewcheck/subtitle_depth.json '
+                   '(written by Bus/Source/seat_occlusion.py --subtitle-depth). depth_m[seat][yaw][pitch] = the FINAL depth in '
+                   'metres (the bus already applied clamp(0.92 x d_near, 0.45, 1.0)). Yaw cell j is centred on yaw0 + 15 j (bus '
+                   'space, +-7.5 deg), pitch cell i on pitch0 + 10 i. Seat order = BusLayout.json = SetSeat index (SeatR0 = 0). '
+                   'Runtime: the cell and its two yaw neighbours, the smallest.' % BUS_SRC),
+        ('source', BUS_SRC), ('seats', [x['name'] for x in seats_]), ('eyes', [x.get('eye') for x in seats_]),
+        ('yaw0', -180.0), ('yaw_step', 15.0), ('yaw_cells', 24), ('pitch0', -40.0), ('pitch_step', 10.0), ('pitch_cells', 9),
+        ('values', 'final_depth_m'), ('depth_m', [x['depth'] for x in seats_])])
+    with open(DEPTH_DST, 'w', encoding='utf-8') as f_:
+        json.dump(out_d, f_, ensure_ascii=False, separators=(',', ':'))
+    depth_note = 'subtitle depth table: %d seats from %s -> Fonts/subtitle_depth.json (min %.3f m, max %.3f m)' % (
+        len(seats_), BUS_SRC, min(vals), max(vals))
 else:
-    seat_lines.append('no seat grid at %s: skipped (seat_positions.json not written)' % SEAT_GRID)
+    depth_note = 'subtitle depth table: not in %s yet -> the driver uses the fallbacks (C.2)' % BUS_SRC
+print(depth_note)
+
+# D-37 seat table: retired in v5 (D-45 I.1; seat_table.py and seat_positions.json stay, unused)
+SEATS = None
+seat_lines = ['retired in v5 (D-45): the subtitles follow the head; the Zhuangzi column keeps the main seat\'s D-33 placement']
 
 # block table (D-30: each act package places the poem with it; the bus re-checks Rilke's D-13 position with it)
 block_rows = []
 for q in poems_out:
-    for pl, lay in q['layout'].items():
+    for pl, lay in q.get('layout', {}).items():
         b = lay['block']
         block_rows.append(dict(poem=q['id'], player=pl, shown=lay['shown'], shown_lang=lay['shown_lang'], sub_line=lay['translation'],
                                size_deg=lay['objects'][0]['size_deg'], lines=sum(len(o['lines']) for o in lay['objects'] if o['role'] != 'mirror'),
-                               viewcheck=VIEW[q['id']][pl], **b))
+                               viewcheck=VIEW.get(q['id'], {}).get(pl), **b))
 
 # ------------------------------------------------------------------ colour: screen target -> fill (verify r2 B.1)
 SIMINFO = LC.sim_info()
@@ -600,6 +648,8 @@ col_ok = True
 pure_targets = []
 engine_items = []
 for q in poems_out:
+    if 'layout' not in q:
+        continue
     fr = LC.poem_fill_record(q)
     prof = fr['profile']
     q['grade'] = fr['grade']
@@ -624,7 +674,8 @@ for q in poems_out:
     for pl, lay in q['layout'].items():
         for card in (lay if isinstance(lay, list) else [lay]):
             for o in card['objects']:
-                names[o['material']] = o['tmp_asset']
+                if o['role'] in ('main', 'mirror'):          # v5: Tianwen's "translation" objects are retired
+                    names[o['material']] = o['tmp_asset']
     for mname, asset in names.items():
         materials[mname] = dict(name=mname, kind='tmp_face', tmp_asset=asset, poem=q['id'], profile=fr['grade'],
                                 target=fr['target'], fill_hdr=fr['fill_hdr'], fill_linear=fr['fill_linear'])
@@ -660,6 +711,44 @@ col_lines.append('  grades (Grading verify B1): %s%s' % (e_status, '' if e_worst
 for r in e_rows:
     col_lines.append('  %-30s %-16s target %s -> engine %s  %d' % (r['name'], r['grade'], r['target'], r['engine_screen'], r['diff_codes']))
 
+# ------------------------------------------------------------------ v5 subtitles (D-45): fills, checks, report
+_Q = {q['id']: q for q in poems_out}
+sub_extra = []
+for rec in SUBS:
+    q2 = dict(_Q[rec['poem']], color_target=rec['target'], opacity=1.0)
+    fr = LC.poem_fill_record(q2)
+    rec['grade'] = fr['grade']
+    rec['fill_hdr'], rec['fill_linear'], rec['screen_of_fill'] = fr['fill_hdr'], fr['fill_linear'], fr['screen_of_fill']
+    rec['fill_ok'] = bool(fr['screen_of_fill'] == fr['target'] and LC.luma(fr['screen_of_fill']) <= LS.RIG['luma_max'])
+    if fr.get('screen_over_hold'):
+        rec['screen_over_hold'] = fr['screen_over_hold']
+    sub_extra.append('fill %-24s %-6s %-14s target %s -> fill %-18s -> screen %s (luma %5.1f) %s' % (
+        rec['poem'], rec['tier'], fr['grade'], rec['target'], fr['fill_hdr'], fr['screen_of_fill'], LC.luma(fr['screen_of_fill']),
+        'ok' if rec['fill_ok'] else 'FAIL'))
+    if rec['halo_alpha'] > 0:
+        hf = LC.fill_record(LS.RIG['halo']['colour'], LC.poem_solve_spec(q2), rec['halo_alpha'])
+        rec['halo_fill_hdr'], rec['halo_fill_linear'] = hf['fill_hdr'], hf['fill_linear']
+        sub_extra.append('halo %-24s a%.2f %s -> fill %s -> screen %s' % (rec['poem'], rec['halo_alpha'], hf['target'], hf['fill_hdr'], hf['screen_of_fill']))
+sub_ok, sub_rows = LS.check(SUBS, LS.Metrics())
+for rec in SUBS:
+    if not rec['fill_ok']:
+        sub_ok = False
+        sub_rows.append(('FAIL', '%s fill does not show its target %s within luma %.0f' % (rec['poem'], rec['target'], LS.RIG['luma_max']), ''))
+    # time on screen: never longer than v4's (so every act's text share stays the §7.5 one, <= 40 %), never earlier
+    # than v4's appear time minus the sung lead
+    q = _Q[rec['poem']]
+    lead = LS.RIG['fade']['lyric_lead'] if rec.get('line_t') else 0.0
+    span_ok = (rec['t_in'] >= q['t_appear'] - lead - 1e-6 and rec['t_end'] <= q['t_gone'] + 1e-6)
+    sub_rows.append(('ok' if span_ok else 'FAIL', '%s on screen %.2f-%.2f inside v4 %.2f-%.2f (act share <= 40 %% unchanged)' % (
+        rec['poem'], rec['t_in'], rec['t_end'], q['t_appear'], q['t_gone']), ''))
+    sub_ok = sub_ok and span_ok
+sub_rows.append(('ok' if P09_SHA_OK else 'FAIL', 'P09 layout sha256 = v4.1', P09_SHA))
+sub_ok = sub_ok and P09_SHA_OK
+sub_rows.append(('ok' if ok_all else 'FAIL', 'charsets cover every subtitle and board string (coverage above)', ''))
+sub_ok = sub_ok and ok_all
+with open(os.path.join(DOCS, 'subtitle_report.md'), 'w', encoding='utf-8') as f:
+    f.write(LS.report_md(SUBS, sub_rows, ['```'] + sub_extra + ['```']))
+
 # timing (bible v2.1 §7.4-3 / §7.5)
 time_lines = ['Bible v2.1 §7.5 timeline (t = s after departure; the Director binds each to its cue label). hold formula = §7.4-3 x 1.3.', '']
 for q in poems_out:
@@ -674,7 +763,7 @@ scr_lines = ['Scrim quads: width_m = 2 d tan(width_deg / 2) (was d tan(width_deg
 scr_ok = True
 seen_s = set()
 for q in poems_out:
-    for pl, lay in q['layout'].items():
+    for pl, lay in q.get('layout', {}).items():
         for card in (lay if isinstance(lay, list) else [lay]):
             d_ = card['anchor'][2]
             for sc in card['scrims']:
@@ -753,6 +842,16 @@ out['_about'] = ('Every string the Lanbai world displays (art bible v2.1 §4.7, 
                  'Lines are pre-broken (TMP word wrap OFF). Sizes are em heights in degrees of visual angle; '
                  'place = [azimuth°, elevation°, distance m] in bus space.')
 out['generated'] = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')
+out['version'] = 5
+out['display_rule_v5'] = ('v5 (D-45, 2026-10-25; overrides v4 below and bible §7 presentation): the poems are subtitles in the lower '
+                          'part of the view, Fins-style, lazily following the head (subtitle_rig, subtitles; Tools~/lanbai_subtitles.py). '
+                          'Player key from the client language as before (player_of_client_language; zh-Hant / zh-HK / zh-TW -> zht), '
+                          'overridable on the board. Same words as v4, new breaks. World text is left in two places only: the Han '
+                          'characters of Tianwen in the sky (everyone; P09 layout frozen = v4.1, layout_sha256) and the Zhuangzi column '
+                          '(zh / en / de read the simplified column, zht / ja the traditional one: column_of_key); ja / en / de also get '
+                          'Zhuangzi subtitles, zh / zht do not, and nobody gets Tianwen subtitles in zh / zht.')
+out['retired_in_v5'] = dict(fonts=RETIRED, block_layouts='every poem but P09 and the Zhuangzi column', seat_table='seat_table.py / seat_positions.json',
+                            viewcheck='only the Zhuangzi column', textures=['Textures/Lanbai_Scrim_Block.png'])
 out['display_rule'] = ('v4 (D-30, 2026-10-24; overrides bible §7.4-7): every player sees ONE language. Player key from the '
                        'VRChat client language: zh* -> zh, ja -> ja, de -> de, anything else -> en. The original is shown when it '
                        'is in the player\'s language (a de player reads the German originals, English otherwise); otherwise the '
@@ -762,7 +861,7 @@ out['display_rule'] = ('v4 (D-30, 2026-10-24; overrides bible §7.4-7): every pl
                        'gets one 1.8° line of their language beneath (sub_line). Timing unchanged (§7.5, x1.3 kept). Zhuangzi: the '
                        'shown language is mirrored, no caption. layout[player] per poem; block_table lists every block\'s size.')
 out['player_of_client_language'] = [dict(client_prefix=a, player=b) for a, b in L.PLAYER_OF_CLIENT]
-out['fonts'] = collections.OrderedDict((k, fontinfo(k)) for k in L.FONTS)
+out['fonts'] = collections.OrderedDict((k, fontinfo(k)) for k in FONTS_V5)
 out['by_font'] = collections.OrderedDict((k, [{'text': t, 'used_by': ids} for t, ids in d.items()]) for k, d in by_font.items())
 out['poems'] = poems_out
 out['credits'] = L.CREDITS
@@ -770,6 +869,10 @@ out['credits_signkit_variant'] = L.CREDITS_SIGNKIT_VARIANT
 out['coleridge_slip'] = L.COLERIDGE
 out['destination_roll'] = L.DESTINATION_ROLL
 out['ui'] = L.UI
+out['ui_v5'] = LS.ui_rows()
+out['subtitle_rig'] = LS.RIG
+out['subtitles'] = SUBS
+out['subtitle_check'] = dict(passed=bool(sub_ok), rows=[dict(status=a_, what=b_, detail=c_) for a_, b_, c_ in sub_rows if a_ != 'ok'])
 out['ui_note'] = L.UI_NOTE
 out['layout_model'] = LY.__doc__.strip()
 out['zhuangzi_rule'] = LY.zhuangzi_layout.__doc__.strip()
@@ -799,6 +902,7 @@ with open(os.path.join(DOCS, 'build_report.txt'), 'w', encoding='utf-8') as f:
     f.write('== SCRIM GEOMETRY ==\n' + '\n'.join(scr_lines) + '\n\n')
     f.write('== VERTICAL PLACEMENT ==\n' + '\n'.join(vert_lines) + '\n\n')
     f.write('== VIEWCHECK (D-33 #5) ==\n' + '\n'.join(view_lines) + '\n\n')
+    f.write('== SUBTITLES (v5, D-45) ==\n' + ('PASS' if sub_ok else 'FAIL') + ' — Docs~/subtitle_report.md\n' + depth_note + '\n' + '\n'.join(sub_extra) + '\n\n')
     f.write('== SEATS (D-37) ==\n' + '\n'.join(seat_lines) + '\n\n')
     f.write('== PLACEMENT (D-33) ==\n' + ('PASS' if not place_bad else '\n'.join('FAIL %s/%s: %s' % (r['poem'], r['player'], '; '.join(r['problems'])) for r in place_bad)) + '\n\n')
     f.write('== LINE WIDTHS ==\n' + '\n'.join(width_lines) + '\n\n')
@@ -808,7 +912,8 @@ with open(os.path.join(DOCS, 'build_report.txt'), 'w', encoding='utf-8') as f:
 with open(os.path.join(DOCS, 'build_report.json'), 'w', encoding='utf-8') as f:
     json.dump(dict(subsets=subset_info, atlas=atlas_info, leading=lead_info, coverage_pass=ok_all, widest_line_deg=round(worst, 2),
                    vertical_pass=v_ok, vertical=v_rows, colour_pass=col_ok, scrim_geometry_pass=scr_ok,
-                   colour={q['id']: dict(face=q['face_color'], scrim=q.get('scrim_fill')) for q in poems_out},
+                   colour={q['id']: dict(face=q['face_color'], scrim=q.get('scrim_fill')) for q in poems_out if 'face_color' in q},
+                   subtitle_pass=bool(sub_ok),
                    colour_solver=SIMINFO, bible_crosscheck=dict(status=b_status, worst_codes=b_worst, rows=b_rows),
                    engine_crosscheck=dict(status=e_status, worst_codes=e_worst, rows=e_rows),
                    materials=list(materials.values())),
@@ -826,6 +931,10 @@ print('\n'.join(time_lines))
 print('\n'.join(scr_lines))
 print('\n'.join(view_lines))
 print('\n'.join(seat_lines[:3]))
-if place_bad or not view_ok:
-    sys.exit('BUILD FAILED: %d placement problem(s), viewcheck %s (strings_all.json and the report are written so you can look)' % (
-        len(place_bad), 'PASS' if view_ok else 'FAIL: ' + ', '.join(view_fail)))
+for r in sub_rows:
+    if r[0] != 'ok':
+        print('SUBTITLE', *r)
+print('subtitles: %s (Docs~/subtitle_report.md)' % ('PASS' if sub_ok else 'FAIL'))
+if place_bad or not view_ok or not sub_ok:
+    sys.exit('BUILD FAILED: %d placement problem(s), viewcheck %s, subtitles %s (strings_all.json and the reports are written so you can look)' % (
+        len(place_bad), 'PASS' if view_ok else 'FAIL: ' + ', '.join(view_fail), 'PASS' if sub_ok else 'FAIL'))

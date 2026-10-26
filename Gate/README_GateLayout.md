@@ -85,7 +85,7 @@
 | `GateMultitude_v2.fbx` | 群臂的 **12 个姿态** `MU0…MU5` + 镜像 `MU0m…MU5m`，每个一个空物体 + `_LOD0/1/2`，根在原点。36 个实例按雾档用 3 个材质（§4.5、§5）。 |
 | `TentacleTide_v2.fbx` | 360 片远潮（未变），材质 `Textures/TentacleTide_v3_Atlas_A/B.png`。 |
 | `Shaders/LanbaiGateSky.cginc` | **新**：天空 / 光雾带 / 月晕 / 伤口空气的唯一定义（§6、§7.0）。 |
-| `Shaders/Lanbai_TentacleSway.shader` | 触手 shader **v2.7c**（§7.1；v2.7c 只加了 `_RimLadderFloor`）。 |
+| `Shaders/Lanbai_TentacleSway.shader` | 触手 shader **v2.8**（§7.1；v2.7c 加了 `_RimLadderFloor`，v2.7d `noforwardadd`；**v2.8 = D-44 #3 根部和体积云的接缝**，只在 `_Udon_CloudVolume.x = 1` 时生效，见 `GateClouds/README_GateClouds.md` §12）。 |
 | `Shaders/Lanbai_GateAirSky.shader` | 天空盒 **v3**（§7.1b；从 `deliver/Tentacles` 挪到这里，v2 在 `deliver/Tentacles/_superseded~/`）。 |
 | `Shaders/Lanbai_TentacleTide_v2.shader` | 远潮 shader v2.2（未改）。 |
 | `Textures/Bus_DestinationBlind_1024x256.png` | 目的地牌：R = 字的透光（只给车外那一面），G = 亚麻纹。车里那一面：`emission = #1A1E28 × (0.96 + 0.04 G)`，没有字（§8.5）。 |

@@ -191,16 +191,25 @@ namespace Lanbai.Test
             if (!File.Exists(path))
             {
                 Item(P, "consent", "blocked", "没有 " + CONSENT + "：第一次用测试工具之前要小楠同意（HANDOFF_CHATGPT）。小楠同意以后，阿白写这个文件：" +
-                     "{\"by\": \"小楠\", \"date\": \"YYYY-MM-DD\", \"backup\": \"整工程备份的 zip 路径\", \"note\": \"小楠原话\"}。工具只读它，不替人写");
+                     "{\"by\": \"小楠\", \"date\": \"YYYY-MM-DD\", \"tool_version\": \"" + Runner.VERSION + "\", \"tests\": [\"gate_clouds_test\"], \"backup\": \"整工程备份的 zip 路径\", \"note\": \"小楠原话\"}。工具只读它，不替人写");
                 return;
             }
             object j = null;
             try { j = TJson.Parse(File.ReadAllText(path, Encoding.UTF8)); } catch (Exception e) { Item(P, "consent", "blocked", CONSENT + " 读不懂：" + e.Message); return; }
             string by = TJson.S(TJson.G(j, "by")), date = TJson.S(TJson.G(j, "date")), backup = TJson.S(TJson.G(j, "backup"));
             if (string.IsNullOrEmpty(by) || string.IsNullOrEmpty(date)) { Item(P, "consent", "blocked", CONSENT + " 缺 by / date"); return; }
+            // 复核的次要项：同意的范围写清楚：哪个版本的工具、哪几个测试。版本不同或者测试不在里面 → BLOCKED，重新问小楠
+            string tv = TJson.S(TJson.G(j, "tool_version"));
+            var tests = TJson.Sa(TJson.G(j, "tests"));
+            if (string.IsNullOrEmpty(tv) || tests.Count == 0)
+            { Item(P, "consent", "blocked", CONSENT + " 没写范围：要有 tool_version（现在是 " + Runner.VERSION + "）和 tests（同意跑哪几个测试，比如 [\"" + ctx.testId + "\"]）。停，告诉小楠"); return; }
+            if (tv != Runner.VERSION)
+            { Item(P, "consent", "blocked", "小楠同意的是工具 " + tv + "，现在是 " + Runner.VERSION + "：工具换了版本要重新问小楠，再改 CONSENT.json"); return; }
+            if (!tests.Contains(ctx.testId))
+            { Item(P, "consent", "blocked", "小楠同意跑的测试是 " + string.Join("、", tests.ToArray()) + "，不包括 " + ctx.testId + "：先问小楠，再加进 CONSENT.json 的 tests"); return; }
             bool hasBackup = !string.IsNullOrEmpty(backup) && File.Exists(backup);
             ctx.consent = TJson.M(j);
-            Item(P, "consent", hasBackup ? "ok" : "warn", by + " " + date + " 同意；备份 " + (string.IsNullOrEmpty(backup) ? "（没写）" : backup + (hasBackup ? "（在）" : "（这台机器上找不到这个文件）")));
+            Item(P, "consent", hasBackup ? "ok" : "warn", by + " " + date + " 同意（工具 " + tv + "，测试 " + string.Join("、", tests.ToArray()) + "）；备份 " + (string.IsNullOrEmpty(backup) ? "（没写）" : backup + (hasBackup ? "（在）" : "（这台机器上找不到这个文件）")));
         }
 
         /// <summary>测试自己的前置条件：文件夹、文件、类型、脚本里的补丁、版本标记。缺一样就 BLOCKED（不会算“过”）。</summary>
@@ -516,6 +525,17 @@ namespace Lanbai.Test
         {
             public readonly Dictionary<string, KeyValuePair<long, long>> assets = new Dictionary<string, KeyValuePair<long, long>>();
             public readonly Dictionary<string, string> settings = new Dictionary<string, string>();
+            // 1.2.2（阿白 10-25：Sea / SeaB / WetGround 按 mtime 报了，逐字节其实一样）：搭建脚本常常整个重存的那几类小文件，
+            // 开搭前记内容哈希；mtime 变了而哈希没变 = “存了、内容没变”，不算改动。大文件（贴图、模型）仍只看大小和 mtime。
+            public readonly Dictionary<string, string> hashes = new Dictionary<string, string>();
+        }
+
+        static readonly string[] HashExt = { ".mat", ".asset", ".prefab", ".meta", ".controller", ".anim", ".json", ".shader", ".cginc", ".cs", ".physicMaterial", ".mask", ".overrideController" };
+        const long HashMaxBytes = 4L * 1024 * 1024;
+
+        static bool Hashable(string path, long len)
+        {
+            return len <= HashMaxBytes && HashExt.Any(e => path.EndsWith(e, StringComparison.OrdinalIgnoreCase));
         }
 
         public static Snapshot Take(string projectDir)
@@ -528,6 +548,7 @@ namespace Lanbai.Test
                 if (rel.StartsWith(Sandbox.DIR + "/", StringComparison.Ordinal) || rel == Sandbox.DIR + ".meta") continue;
                 var fi = new FileInfo(f);
                 s.assets[rel] = new KeyValuePair<long, long>(fi.Length, fi.LastWriteTimeUtc.Ticks);
+                if (Hashable(rel, fi.Length)) { try { s.hashes[rel] = Sha256(File.ReadAllBytes(f)); } catch { } }
             }
             string ps = Path.Combine(projectDir, "ProjectSettings");
             if (Directory.Exists(ps))
@@ -540,7 +561,10 @@ namespace Lanbai.Test
         {
             // 工具自己不 SaveAssets：只比搭建脚本自己存下来的。工具在内存里改的材质值不落盘（改回去以后也不落盘）
             var after = Take(ctx.projectDir);
-            var allowed = TJson.Sa(TJson.G(ctx.test, "allowed_writes")).Select(Glob).ToList();
+            // "new:<glob>"（1.2.2）：只放过新建的文件；这些地方已有的文件被改、被删，照常算没声明的写入
+            var aw = TJson.Sa(TJson.G(ctx.test, "allowed_writes"));
+            var allowed = aw.Where(x => !x.StartsWith("new:", StringComparison.Ordinal)).Select(Glob).ToList();
+            var allowedNew = aw.Where(x => x.StartsWith("new:", StringComparison.Ordinal)).Select(x => Glob(x.Substring(4))).ToList();
             var declared = new List<object>(); var undeclared = new List<object>(); var ps = new List<object>(); var touched = new List<object>();
             Action<string, string> classify = (path, what) =>
             {
@@ -551,16 +575,23 @@ namespace Lanbai.Test
                 {
                     try { if (File.ReadAllBytes(path).SequenceEqual(orig)) { touched.Add("写回了、内容和原来一样 " + path); return; } } catch { }
                 }
-                bool ok = allowed.Any(r => r.IsMatch(path) || r.IsMatch(p));
-                // 工具临时改过又改回的材质：之后别的搭建脚本 SaveAssets 时会把它（改回后的值）落盘，单独列出来，不算没声明的写入
-                if (!ok && what == "改了" && ctx.toolTouched.Contains(p)) { touched.Add("工具临时改过、已改回，被搭建脚本的 SaveAssets 落了盘 " + path); return; }
+                bool ok = allowed.Any(r => r.IsMatch(path) || r.IsMatch(p)) || (what == "新建" && allowedNew.Any(r => r.IsMatch(path) || r.IsMatch(p)));
+                // 工具临时改过又改回的材质（复核的次要项：按字节核对）：落了盘、和原来逐字节一样的上面已经豁免；不一样的照常算，
+                // 并注明是工具改过的（改回以后被谁 SaveAssets 落了盘，序列化和原来不同，或者没改回去）
+                if (!ok && what == "改了" && ctx.toolTouched.Contains(p)) { undeclared.Add(what + " " + path + "（工具临时改过的；落盘后和原来逐字节不一样）"); return; }
                 (ok ? declared : undeclared).Add(what + " " + path);
             };
             foreach (var kv in after.assets)
             {
                 KeyValuePair<long, long> b;
                 if (!ctx.before.assets.TryGetValue(kv.Key, out b)) classify(kv.Key, "新建");
-                else if (b.Key != kv.Value.Key || b.Value != kv.Value.Value) classify(kv.Key, "改了");
+                else if (b.Key != kv.Value.Key || b.Value != kv.Value.Value)
+                {
+                    string h0, h1;
+                    if (b.Key == kv.Value.Key && ctx.before.hashes.TryGetValue(kv.Key, out h0) && after.hashes.TryGetValue(kv.Key, out h1) && h0 == h1)
+                        touched.Add("存了、内容逐字节没变 " + kv.Key);
+                    else classify(kv.Key, "改了");
+                }
             }
             foreach (var kv in ctx.before.assets) if (!after.assets.ContainsKey(kv.Key)) classify(kv.Key, "删了");
             foreach (var kv in after.settings)
@@ -575,7 +606,7 @@ namespace Lanbai.Test
             {
                 { "sandbox", Sandbox.DIR }, { "allowed_writes", TJson.Sa(TJson.G(ctx.test, "allowed_writes")).Cast<object>().ToList() },
                 { "declared", declared }, { "undeclared", undeclared }, { "project_settings_changed", ps }, { "tool_touched_restored", touched },
-                { "note", "按文件大小和修改时间比的：搭建脚本存了但内容没变的文件也算“改了”；只在内存里改、没存盘的不算" }
+                { "note", "按文件大小和修改时间比；材质、.asset、预制体、.meta 这类 ≤ 4 MB 的小文件另比内容哈希，存了但逐字节没变的列在 tool_touched_restored、不算改动；只在内存里改、没存盘的不算" }
             };
         }
 
@@ -651,6 +682,7 @@ namespace Lanbai.Test
             };
             if (ctx.shots.Count > 0 && TJson.B(TJson.G(ctx.test, "require_ppv2"), true))
                 defs.Add(Def("ppv2_effective", "capture.ppv2_effective", "==", 1, true, "截图经过了 PPv2（开 / 关 PPv2 各渲一张小图，要不一样）"));
+            defs.AddRange(PlayReport.CheckDefs(ctx));   // 1.2.1：Play 阶段（PPv2 生效、漏拍）
             foreach (var s in ctx.settings)
                 defs.Add(Def("setting_" + s["item"], "settings." + s["item"], "==", 1, (string)s["status"] != "warn", (string)s["detail"]));
 

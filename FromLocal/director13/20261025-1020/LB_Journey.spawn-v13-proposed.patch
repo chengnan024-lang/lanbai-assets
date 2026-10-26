@@ -1,0 +1,104 @@
+--- a/Assets/Lanbai/Scripts/LB_Journey.cs
++++ b/Assets/Lanbai/Scripts/LB_Journey.cs
+@@ -26,8 +26,7 @@
+         public LanbaiOverlay deliveredOverlay;
+         public Lanbai.Sky.LanbaiSkyPreset fallbackDusk, fallbackBlue;
+         public bool useDeliveredGate, useDeliveredInside, useDeliveredDawn, useDeliveredSea, useDeliveredSky;
+-        private bool _deliveredStarted, _journeyReady, _spawnFadeEnded;
+-        private float _spawnTime;
++        private bool _deliveredStarted, _journeyReady;
+         private int _deliveredWaitFrames;
+         private int _fallbackRegion = -1;
+ 
+@@ -370,6 +369,7 @@
+             ApplySky(t, seg, tl);
+             ApplyDelivered(t, seg);
+             ApplyPost(t, seg, tl);
++            if (_deliveredStarted) SpawnTick(t, dbgDEV, seg == S_IDLE);
+             ApplyBus(t, seg, tl);
+             ApplyAudio(t, seg, tl);
+             if (deliveredPoems == null) ApplyPoem(seg == S_IDLE ? -1f : t);
+@@ -388,13 +388,7 @@
+             if (!_journeyReady) { if (deliveredOverlay != null) deliveredOverlay.SetFlat(Color.black, 1f, 0f); return; }
+             if (_deliveredWaitFrames < 3) { _deliveredWaitFrames++; if (deliveredOverlay != null) deliveredOverlay.SetFlat(Color.black, 1f, 0f); return; }
+             if (!_deliveredStarted) {
+-                deliveredDispatcher.LanbaiPrewarm(); deliveredDispatcher.LanbaiSpawnFadeBegin();
+-                _spawnTime = Time.time; _deliveredStarted = true;
+-            }
+-            float age = Time.time - _spawnTime;
+-            if (!_spawnFadeEnded && age >= 3f) {
+-                if (deliveredOverlay != null) deliveredOverlay.Hide();
+-                deliveredDispatcher.LanbaiSpawnFadeEnd(); _spawnFadeEnded = true;
++                SpawnBegin(t); _deliveredStarted = true;
+             }
+             if (useDeliveredGate && gateGroup != null) gateGroup.SetActive(false);
+             if (useDeliveredGate && cloudSea != null && t >= 113.8f) cloudSea.gameObject.SetActive(false);
+@@ -420,9 +414,65 @@
+                 }
+             }
+             deliveredDispatcher.LanbaiDispatch(t);
+-            if (!_spawnFadeEnded && deliveredOverlay != null) {
+-                bool held = deliveredDispatcher.LanbaiCoversOverlay(t) || deliveredDispatcher.LanbaiCoversOverlay(t + 3f);
+-                deliveredOverlay.SetFlat(Color.black, held ? 1f : 1f - Smooth((age - 1f) / 2f), 0f);
++
++        }
++
++        // ---- 字段 ----
++        const int SP_NONE = 0, SP_BLACK = 1, SP_HOLD = 2, SP_FADE = 3, SP_PLATFORM = 4;
++        int _sp = SP_NONE;
++        float _spBlackEnd, _spHandAt, _spFade0;
++        public float spawnPlatformL = 1f; // Conservative upper bound; calibrate the platform brightest view.
++        public float spawnBlack = 3f;                 // 圣经 §1.9
++        public float spawnLBlack = 0.0013f;           // 出生黑的亮度（#030409）
++        public Color spawnFill = Color.black;         // 出生遮罩的填色（S1 行，本地定）
++        
++        // ---- 出生那一帧（Start 里、或玩家进来那一刻），t = 时间轴秒 ----
++        void SpawnBegin(float t)
++        {
++            if (deliveredDispatcher != null) { deliveredDispatcher.LanbaiPrewarm(); deliveredDispatcher.LanbaiSpawnFadeBegin(); }
++            _sp = SP_BLACK; _spBlackEnd = Time.time + spawnBlack;
++        }
++        
++        // ---- 每帧，在 deliveredDispatcher.LanbaiDispatch(t) 和 ApplyGrades() 之后调；dEV = ApplyGrades 这一帧实际用的总 dEV ----
++        //      （LB_Journey 自己的事件 + deliveredDispatcher.gradeDEV），遮罩的填色要按它补偿（SetFlat 的第 3 个参数）
++        void SpawnTick(float t, float dEV, bool beforeDeparture)
++        {
++            if (_sp == SP_NONE || deliveredOverlay == null) return;
++            if (_sp == SP_BLACK)
++            {
++                deliveredOverlay.SetFlat(spawnFill, 1f, dEV);
++                if (Time.time < _spBlackEnd) return;
++                if (beforeDeparture || deliveredDispatcher == null) { _sp = SP_PLATFORM; _spFade0 = Time.time; }   // 站台：照旧 3 秒
++                else
++                {
++                    float T = deliveredDispatcher.LanbaiSpawnFadeLength(t, spawnLBlack);                // 往前看了驱动的曝光爬升；没有爬升时 ≤ 9.4 秒
++                    _spHandAt = deliveredDispatcher.LanbaiOverlayHandoverAt(t, t + T + 0.5f);          // 分发层记下“交没交”
++                    if (_spHandAt >= 0f) _sp = SP_HOLD; else { _sp = SP_FADE; _spFade0 = Time.time; }
++                }
++            }
++            if (_sp == SP_HOLD)
++            {
++                deliveredOverlay.SetFlat(spawnFill, 1f, dEV);                                         // 保持黑
++                if (t >= _spHandAt && deliveredDispatcher.LanbaiCoversOverlay(t)) { deliveredDispatcher.LanbaiSpawnFadeEnd(); _sp = SP_NONE; return; }   // 交给驱动，不 Hide
++                if (t > _spHandAt + 1f) { deliveredDispatcher.LanbaiSpawnFadeOwn(); _sp = SP_FADE; _spFade0 = Time.time; }   // 窗口没了（时间轴被拖走）：自己淡入
++                else return;
++            }
++            if (_sp == SP_FADE)
++            {
++                float seen = deliveredDispatcher.LanbaiSpawnSeenL(t, dEV);                           // 最亮的非白视向，看到的亮度（≤ 1 × 2^dEV）
++                float ramp = 0.004f * Mathf.Pow(2f, 0.85f * (Time.time - _spFade0));                // 从地板 0.004 起（再暗的看不出来）、EV 线性、0.85 EV/s
++                if (ramp >= seen) { deliveredOverlay.Hide(); deliveredDispatcher.LanbaiSpawnFadeEnd(); _sp = SP_NONE; return; }
++                // 看到的 = (1 − a)·seen + a·L黑 = ramp：a = (seen − ramp) / (seen − L黑)（遮罩画在 PPv2 之前，填色按 dEV 补偿）
++                deliveredOverlay.ClearLobes();
++                deliveredOverlay.SetFlat(spawnFill, Mathf.Clamp01((seen - ramp) / Mathf.Max(seen - spawnLBlack, 1e-5f)), dEV);
++                return;
++            }
++            if (_sp == SP_PLATFORM)
++            {
++                float tau = Time.time - _spFade0;
++                deliveredOverlay.ClearLobes();
++                deliveredOverlay.SetCurve(spawnFill, dEV, tau, 3f, spawnLBlack, spawnPlatformL, spawnPlatformL, spawnLBlack);   // spawnPlatformL = 站台最亮的视向
++                if (tau >= 3f) { deliveredOverlay.Hide(); if (deliveredDispatcher != null) deliveredDispatcher.LanbaiSpawnFadeEnd(); _sp = SP_NONE; }
+             }
+         }
+ 

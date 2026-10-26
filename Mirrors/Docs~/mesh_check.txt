@@ -1,0 +1,5 @@
+objects: ['BronzeMirror', 'BronzeMirror_LOD0', 'BronzeMirror_LOD1', 'BronzeMirror_LOD2']
+LOD0: 51024 tris, 25512 verts, diameter 1.0000, y -0.0650..0.0150, regions [0.0, 0.25, 0.5, 0.75, 1.0], UV0 u 0.000..1.000, cap deviation 3.69e-08, non-manifold edges 0, cap faces up 10688/10688 -> OK
+LOD1: 14416 tris, 7208 verts, diameter 1.0000, y -0.0650..0.0150, regions [0.0, 0.25, 0.5, 0.75, 1.0], UV0 u 0.000..1.000, cap deviation 3.67e-08, non-manifold edges 0, cap faces up 2752/2752 -> OK
+LOD2: 4740 tris, 2370 verts, diameter 1.0000, y -0.0650..0.0150, regions [0.0, 0.25, 0.5, 0.75, 1.0], UV0 u 0.000..1.000, cap deviation 3.64e-08, non-manifold edges 0, cap faces up 672/672 -> OK
+ALL: PASS

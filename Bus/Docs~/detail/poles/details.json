@@ -1,0 +1,31 @@
+{
+ "part": "poles",
+ "model": "PAZ-672M（立柱、顶扶杆、门口扶手；圣经 §4.2：Ø32 不锈钢）",
+ "source_code": "Bus/Source/parts/poles.py + build_bus.poles_and_guard（提交 1e9cafa）",
+ "hero_eye": [0.55, 1.70, 2.05],
+ "distance_rule": "视距 = 主座位的眼到那处细节最近 / 最远的那一件（Unity 坐标直线距离，bus_spec 的位置）。范围 = [近, 远]。",
+ "visible_rule": "角像素 = 尺寸 ÷ 视距（弧度）× 180/π × 像素密度；≥ 2 px 记“看得出”。判定按 20 px/°（D-40a #6），14 px/° 只作参考（D-40b #2）。compare.py 算。",
+ "details": [
+  {"id": "pole_tube", "name": "立柱管 Ø32", "size_mm": 32, "size_of": "管径", "distance_m": [1.01, 1.48], "where": "右边第一根立柱 PoleR0（x 0.29, z 1.07），眼高到脚下", "modelled": "几何：20 段扫掠管（common.sweep）", "material": "Steel #C0C3C4 / 0.55 / 金属 1；握手带 1.0–1.8 m 0.80（_HeightSmooth）"},
+  {"id": "pole_facets", "name": "管子的棱（20 段，每段弦长约 5 mm）", "size_mm": 5.0, "size_of": "一段的弦长 π×32/20", "distance_m": [1.01, 1.48], "where": "PoleR0 的轮廓", "modelled": "几何（平滑着色，只在轮廓上看得出棱）"},
+  {"id": "floor_flange", "name": "地板法兰座 Ø68 × 7", "size_mm": 68, "size_of": "直径", "distance_m": [1.19, 1.48], "where": "PoleR0、护栏的地脚", "modelled": "几何：倒角圆盘（BB.cylinder 28 段）"},
+  {"id": "flange_thickness", "name": "法兰的厚度 7 mm", "size_mm": 7, "size_of": "厚", "distance_m": [1.19, 1.48], "where": "同上", "modelled": "几何"},
+  {"id": "flange_collar", "name": "法兰上的套箍 Ø40 × 20", "size_mm": 20, "size_of": "高", "distance_m": [1.19, 1.48], "where": "同上", "modelled": "几何"},
+  {"id": "flange_screws", "name": "法兰上的 3 颗螺钉 Ø8.4", "size_mm": 8.4, "size_of": "螺钉头直径", "distance_m": [1.36, 1.48], "where": "PoleR0 上下两个法兰", "modelled": "几何：10 段圆柱（没有一字槽）"},
+  {"id": "ceil_flange", "name": "顶棚法兰 Ø68（贴着顶棚）", "size_mm": 68, "size_of": "直径", "distance_m": [0.94, 1.36], "where": "PoleR0 顶上、右顶扶杆的端头法兰 Ø60", "modelled": "几何"},
+  {"id": "rail", "name": "顶扶杆 Ø32（纵向，y 2.30）", "size_mm": 32, "size_of": "管径", "distance_m": [0.66, 1.13], "where": "右顶扶杆的端头弯（z 1.95）到左顶扶杆", "modelled": "几何：带 6 cm 弯的扫掠管"},
+  {"id": "rail_elbow", "name": "顶扶杆端头的弯（半径 60 mm）", "size_mm": 60, "size_of": "弯曲半径", "distance_m": [0.66, 0.94], "where": "右顶扶杆前端，向上弯进顶棚法兰", "modelled": "几何：每 90° 10 段"},
+  {"id": "hanger", "name": "吊杆 Ø20", "size_mm": 20, "size_of": "管径", "distance_m": [1.87, 2.08], "where": "两根顶扶杆在 z 0.3 的吊杆（z −1.5 的在 3.6 m 外）", "modelled": "几何：16 段"},
+  {"id": "split_clamp", "name": "对开管夹（套 Ø41 × 52）", "size_mm": 52, "size_of": "套长", "distance_m": [1.87, 2.08], "where": "吊杆和顶扶杆相交处", "modelled": "几何：套 + 插座 + 两颗螺栓"},
+  {"id": "clamp_seam", "name": "管夹两半之间的缝（约 1 mm）", "size_mm": 1.0, "size_of": "缝宽", "distance_m": [1.87, 2.08], "where": "同上", "modelled": "没有做成几何（套是一整个圆柱）；要的话进法线贴图"},
+  {"id": "clamp_bolts", "name": "管夹的两颗螺栓头 Ø9", "size_mm": 9, "size_of": "六角头外径", "distance_m": [1.87, 2.08], "where": "同上", "modelled": "几何：6 段（六角）"},
+  {"id": "stop_box", "name": "停车按钮盒 56 × 90 × 22", "size_mm": 56, "size_of": "宽", "distance_m": [1.07, 1.07], "where": "PoleR0 上 1.50 m（按钮朝车尾，主座位看到的是盒子的侧面）", "modelled": "几何：倒角盒（Ext_Cream 搪瓷）+ 抱箍"},
+  {"id": "stop_knob", "name": "红色蘑菇按钮 Ø26", "size_mm": 26, "size_of": "直径", "distance_m": [1.07, 1.07], "where": "同上", "modelled": "几何（ButtonRed）+ 铬圈 Ø34 × 5"},
+  {"id": "stop_ring", "name": "按钮的铬圈 5 mm 厚", "size_mm": 5, "size_of": "厚", "distance_m": [1.07, 1.07], "where": "同上", "modelled": "几何（Chrome）"},
+  {"id": "door_grab", "name": "门口扶手 Ø25（离墙 45 mm）", "size_mm": 25, "size_of": "管径", "distance_m": [0.63, 0.95], "where": "前门柱后 0.10 m，0.95–1.95 m 高", "modelled": "几何：带 3.5 cm 弯的扫掠管"},
+  {"id": "door_grab_mount", "name": "门口扶手的墙座 Ø44 × 8", "size_mm": 8, "size_of": "厚", "distance_m": [0.68, 1.03], "where": "扶手上下两端", "modelled": "几何"},
+  {"id": "guard_rail", "name": "门口护栏 Ø32（y 1.24）", "size_mm": 32, "size_of": "管径", "distance_m": [0.68, 1.19], "where": "主座位正前方，护板上沿到地脚", "modelled": "几何 + 搪瓷护板 GuardPanel"},
+  {"id": "grip_band", "name": "握亮的带（光滑度 0.55 → 0.80 的过渡 5 cm）", "size_mm": 50, "size_of": "过渡宽", "distance_m": [1.01, 1.36], "where": "PoleR0 离地板 1.0 m 和 1.8 m 处", "modelled": "Lanbai/Cabin _HeightSmooth（不是几何；Blender 的 qa.py flicker 照着做了）"}
+ ],
+ "note": "尺寸取自 poles.py 的数；视距按 bus_spec 的位置算（主座位的眼 (0.55, 1.70, 2.05)）。没有在 Unity 里看过。"
+}

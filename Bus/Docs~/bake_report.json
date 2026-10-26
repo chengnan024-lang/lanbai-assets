@@ -1,0 +1,44 @@
+{
+ "watts_per_tube": 6.287144814984011,
+ "scale": 0.628714481498401,
+ "calibrated_on": "mean of 7 mid-cabin cushions = 0.60",
+ "black_in_islands": 529178,
+ "filled": 462931,
+ "island_texels": 1923030,
+ "hero_cushion": {
+  "E": [
+   0.291,
+   0.328,
+   0.327
+  ],
+  "AO": 0.846,
+  "dist": 0.0
+ },
+ "aisle_floor": {
+  "E": [
+   0.56,
+   0.623,
+   0.619
+  ],
+  "AO": 0.906,
+  "dist": -0.001
+ },
+ "ceiling_centre": {
+  "E": [
+   0.107,
+   0.117,
+   0.12
+  ],
+  "AO": 0.972,
+  "dist": -0.0
+ },
+ "lower_wall_R": {
+  "E": [
+   0.012,
+   0.012,
+   0.012
+  ],
+  "AO": 0.279,
+  "dist": -0.195
+ }
+}

@@ -1,0 +1,20 @@
+[
+  {
+    "path": "Assets/Lanbai/Generated/Materials/LB_Sea.mat",
+    "before_sha256": "3df231c3ee48e0ebed745e6473f00569d83e782fa63f36d5aa8fc81c2820bff7",
+    "after_sha256": "3df231c3ee48e0ebed745e6473f00569d83e782fa63f36d5aa8fc81c2820bff7",
+    "same": true
+  },
+  {
+    "path": "Assets/Lanbai/Generated/Materials/LB_SeaB.mat",
+    "before_sha256": "ba1dd3c7a4b6af99afc4e28994741c3f2c93db0efe60b7bee951a1f0c9eaccdd",
+    "after_sha256": "ba1dd3c7a4b6af99afc4e28994741c3f2c93db0efe60b7bee951a1f0c9eaccdd",
+    "same": true
+  },
+  {
+    "path": "Assets/Lanbai/Generated/Materials/LB_WetGround.mat",
+    "before_sha256": "24f5a0743eda93c3d4d5b2080ec833b77dd5b06a1ac560509b0545a84b55465b",
+    "after_sha256": "24f5a0743eda93c3d4d5b2080ec833b77dd5b06a1ac560509b0545a84b55465b",
+    "same": true
+  }
+]

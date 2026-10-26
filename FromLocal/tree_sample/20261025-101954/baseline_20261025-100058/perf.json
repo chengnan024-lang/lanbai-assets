@@ -1,0 +1,69 @@
+{
+  "note": "编辑器里的估算（Unity 编辑模式、手动渲染到 RenderTexture），不是头显实测；VR 一列是 1832×1920 渲两次的估算",
+  "gpu": {
+    "name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "vendor": "NVIDIA",
+    "api": "Direct3D11",
+    "version": "Direct3D 11.0 [level 11.1]",
+    "vram_mb": 7956,
+    "cpu": "13th Gen Intel(R) Core(TM) i9-13980HX",
+    "cpu_threads": 32,
+    "ram_mb": 32386,
+    "os": "Windows 11  (10.0.26200) 64bit"
+  },
+  "entries": [
+    {
+      "id": "row",
+      "state": "trees",
+      "cam": "overview",
+      "render_stats": {
+        "recorder_valid": true,
+        "recorder_zero": true,
+        "draw_calls": null,
+        "batches": null,
+        "setpass": null,
+        "triangles": null,
+        "vertices": null,
+        "shadow_casters": null,
+        "unitystats_after": {
+          "draw_calls": 7434,
+          "batches": 7434,
+          "setpass": 4926,
+          "triangles": 13124458,
+          "vertices": 15244245
+        },
+        "ppv2": true,
+        "note": "ProfilerRecorder：同一帧里第二次渲染前后的差（编辑模式手动 Render 时可能读成 0，那就看 Game 视图 / Frame Debugger）；UnityStats 是上一帧的读数",
+        "quality": "VRC High",
+        "lod_bias": 2,
+        "pixel_lights": 8,
+        "shadow_distance": 150,
+        "msaa": 4
+      },
+      "desktop_1920x1080": {
+        "w": 1920,
+        "h": 1080,
+        "renders_per_frame": 1,
+        "vfov": 55,
+        "total_ms": 13.71,
+        "cpu_ms": 5.74,
+        "min_ms": 12.97,
+        "max_ms": 18.92,
+        "samples": 24,
+        "ppv2": true
+      },
+      "vr_estimate_1832x1920x2": {
+        "w": 1832,
+        "h": 1920,
+        "renders_per_frame": 2,
+        "vfov": 100,
+        "total_ms": 29.9,
+        "cpu_ms": 10.63,
+        "min_ms": 29.52,
+        "max_ms": 30.45,
+        "samples": 24,
+        "ppv2": true
+      }
+    }
+  ]
+}

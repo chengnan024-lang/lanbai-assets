@@ -1,4 +1,4 @@
-2026-10-24 · **第 10 轮（第 1 批）可以终审了** · 云塔背层（Colossus_2 一座，往背月侧错开、下沉跟着高度缩放；keyart 云卡叠绘 0.899 ≤ 0.9；对比图 Docs~/r10_towers_key.png + 3 张 1:1）；云海抖动 = LanbaiHash13（世界点，两眼一致）；D-06 星 _Stars 0.055（GateLayout_v2.json stars，比背后的天高 ≤ 12 L*）+ GateAirSky 带里暗 1 EV；U7 720p 60 fps 滚动 flashcheck 全 PASS；逐像素银边爬行 0.19% → 0.147%（_Skin2.y 3 → 1.5）；shader 0 错 0 警告、C# OK · 等本地截图再做：U8 前方暗心、keyart 脚下光复量、U7 多采样、指尖卷回（待定）
+2026-10-25 · **D-44 #3 触手根部和云的接缝：做完，等总导演看** · 按阿白的体积云做（全程预览的 VolumeCloudDeck）：TentacleSway v2.8（只在体积云模式生效：几何一直伸到云顶 − 2 km，按视线前方的云软过渡，云底以下在云影里）；Lanbai/GateVolumeDeck = 阿白的云海 + 根部的“裙” + 从云下往上看；LanbaiCloudVolume.cginc（云和触手共用一个密度）；U# 每帧写 8 条裙；参照渲染 Source/seam_ref.py：5 个机位前后对比 + 3 段连续视角（Docs~/seam/）；shader 0 错 0 警告、C# OK（5 个新全局量待登记，给总控 §9）· 第 10 轮剩下的（U8、keyart 光、U7 多采样、指尖卷回）还没开始
 
 ## 进度
 - [x] 云海 `Lanbai/GateCloudDeck` + `Deck_Detail_1024` / `Deck_Macro_512` + `Source/deck_ref.py`（逐行 numpy 移植）；独立技术审查一轮（移植对照），改完
