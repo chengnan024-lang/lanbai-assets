@@ -4,54 +4,54 @@
   "cam": "hero",
   "d": -0.2,
   "eye_y": 1.9,
-  "APL": 132.2,
+  "APL": 128.5,
   "sun_visible": 1.0,
   "purple_D21": 0.0,
-  "cloud_cover_px": 0.503,
-  "sea_px": 0.0
+  "cloud_cover_px": 0.509,
+  "sea_px": 0.001
  },
  "hero_282.0": {
   "t": 282.0,
   "cam": "hero",
   "d": 378.7,
   "eye_y": -377.0,
-  "APL": 132.0,
+  "APL": 126.4,
   "sun_visible": 1.0,
   "purple_D21": 0.0,
-  "cloud_cover_px": 0.517,
-  "sea_px": 0.0
+  "cloud_cover_px": 0.522,
+  "sea_px": 0.002
  },
  "hero_305.4": {
   "t": 305.4,
   "cam": "hero",
   "d": 1134.6,
   "eye_y": -1132.9,
-  "APL": 125.6,
-  "sun_visible": 0.027,
+  "APL": 103.8,
+  "sun_visible": 0.011,
   "purple_D21": 0.0,
-  "cloud_cover_px": 0.724,
-  "sea_px": 0.0
+  "cloud_cover_px": 0.762,
+  "sea_px": 0.011
  },
  "hero_318.4": {
   "t": 318.4,
   "cam": "hero",
   "d": 1602.6,
   "eye_y": -1600.9,
-  "APL": 110.8,
-  "sun_visible": 0.592,
+  "APL": 81.1,
+  "sun_visible": 0.467,
   "purple_D21": 0.0,
-  "cloud_cover_px": 0.685,
-  "sea_px": 0.066
+  "cloud_cover_px": 0.66,
+  "sea_px": 0.135
  },
  "hero_340.0": {
   "t": 340.0,
   "cam": "hero",
   "d": 2335.6,
   "eye_y": -2333.9,
-  "APL": 112.8,
+  "APL": 104.0,
   "sun_visible": 1.0,
-  "purple_D21": 0.0001,
-  "cloud_cover_px": 0.462,
+  "purple_D21": 0.0012,
+  "cloud_cover_px": 0.463,
   "sea_px": 0.293
  },
  "hero_360.0": {
@@ -59,10 +59,10 @@
   "cam": "hero",
   "d": 2598.2,
   "eye_y": -2596.5,
-  "APL": 113.6,
+  "APL": 104.8,
   "sun_visible": 1.0,
-  "purple_D21": 0.0001,
-  "cloud_cover_px": 0.441,
+  "purple_D21": 0.0011,
+  "cloud_cover_px": 0.448,
   "sea_px": 0.297
  },
  "door_d12_300.0": {
@@ -70,21 +70,21 @@
   "cam": "door_d12",
   "d": 940.2,
   "eye_y": -938.5,
-  "APL": 140.0,
-  "sun_visible": 0.215,
+  "APL": 102.0,
+  "sun_visible": 0.156,
   "purple_D21": 0.0,
-  "cloud_cover_px": 0.943,
-  "sea_px": 0.0
+  "cloud_cover_px": 0.849,
+  "sea_px": 0.01
  },
  "nocab_hero_up60_310.0": {
   "t": 310.0,
   "cam": "hero_up60",
   "d": 1300.2,
   "eye_y": -1298.5,
-  "APL": 172.7,
+  "APL": 160.3,
   "sun_visible": 0.0,
   "purple_D21": 0.0,
-  "cloud_cover_px": 0.06,
+  "cloud_cover_px": 0.144,
   "sea_px": 0.0
  },
  "nocab_hero_down_330.0": {
@@ -92,7 +92,7 @@
   "cam": "hero_down",
   "d": 2019.7,
   "eye_y": -2018.0,
-  "APL": 69.8,
+  "APL": 70.8,
   "sun_visible": 0.0,
   "purple_D21": 0.0,
   "cloud_cover_px": 0.0,

@@ -18,11 +18,11 @@
    "cam": "hero",
    "d": 123.8,
    "eye_y": -122.1,
-   "APL": 131.9,
+   "APL": 127.9,
    "sun_visible": 1.0,
    "purple_D21": 0.0,
-   "cloud_cover_px": 0.508,
-   "sea_px": 0.0
+   "cloud_cover_px": 0.514,
+   "sea_px": 0.001
   }
  },
  "285.0": {
@@ -44,11 +44,11 @@
    "cam": "hero",
    "d": 454.9,
    "eye_y": -453.2,
-   "APL": 132.4,
+   "APL": 126.0,
    "sun_visible": 1.0,
    "purple_D21": 0.0,
-   "cloud_cover_px": 0.52,
-   "sea_px": 0.0
+   "cloud_cover_px": 0.519,
+   "sea_px": 0.004
   }
  },
  "291.5": {
@@ -70,10 +70,10 @@
    "cam": "hero",
    "d": 643.1,
    "eye_y": -641.4,
-   "APL": 142.1,
-   "sun_visible": 0.427,
+   "APL": 113.1,
+   "sun_visible": 0.374,
    "purple_D21": 0.0,
-   "cloud_cover_px": 0.67,
+   "cloud_cover_px": 0.652,
    "sea_px": 0.0
   }
  },
@@ -96,11 +96,11 @@
    "cam": "hero",
    "d": 796.5,
    "eye_y": -794.8,
-   "APL": 131.1,
+   "APL": 119.4,
    "sun_visible": 1.0,
    "purple_D21": 0.0,
-   "cloud_cover_px": 0.552,
-   "sea_px": 0.0
+   "cloud_cover_px": 0.555,
+   "sea_px": 0.006
   }
  },
  "299.8": {
@@ -122,11 +122,11 @@
    "cam": "hero",
    "d": 933.0,
    "eye_y": -931.3,
-   "APL": 136.0,
-   "sun_visible": 0.265,
+   "APL": 101.0,
+   "sun_visible": 0.201,
    "purple_D21": 0.0,
-   "cloud_cover_px": 0.816,
-   "sea_px": 0.0
+   "cloud_cover_px": 0.76,
+   "sea_px": 0.006
   }
  },
  "303.5": {
@@ -148,11 +148,11 @@
    "cam": "hero",
    "d": 1066.2,
    "eye_y": -1064.5,
-   "APL": 128.2,
-   "sun_visible": 0.286,
+   "APL": 105.1,
+   "sun_visible": 0.011,
    "purple_D21": 0.0,
-   "cloud_cover_px": 0.686,
-   "sea_px": 0.0
+   "cloud_cover_px": 0.696,
+   "sea_px": 0.009
   }
  },
  "306.0": {
@@ -174,11 +174,11 @@
    "cam": "hero",
    "d": 1156.2,
    "eye_y": -1154.5,
-   "APL": 124.5,
-   "sun_visible": 0.014,
+   "APL": 101.0,
+   "sun_visible": 0.012,
    "purple_D21": 0.0,
-   "cloud_cover_px": 0.738,
-   "sea_px": 0.0
+   "cloud_cover_px": 0.79,
+   "sea_px": 0.012
   }
  },
  "312.0": {
@@ -200,11 +200,11 @@
    "cam": "hero",
    "d": 1372.2,
    "eye_y": -1370.5,
-   "APL": 113.7,
-   "sun_visible": 0.012,
+   "APL": 74.4,
+   "sun_visible": 0.013,
    "purple_D21": 0.0,
-   "cloud_cover_px": 0.823,
-   "sea_px": 0.005
+   "cloud_cover_px": 0.712,
+   "sea_px": 0.106
   }
  },
  "326.5": {
@@ -226,11 +226,11 @@
    "cam": "hero",
    "d": 1894.2,
    "eye_y": -1892.5,
-   "APL": 124.5,
-   "sun_visible": 0.139,
-   "purple_D21": 0.0,
-   "cloud_cover_px": 0.491,
-   "sea_px": 0.256
+   "APL": 105.5,
+   "sun_visible": 0.928,
+   "purple_D21": 0.0008,
+   "cloud_cover_px": 0.487,
+   "sea_px": 0.263
   }
  },
  "335.0": {
@@ -252,10 +252,10 @@
    "cam": "hero",
    "d": 2189.4,
    "eye_y": -2187.7,
-   "APL": 113.2,
+   "APL": 104.1,
    "sun_visible": 1.0,
-   "purple_D21": 0.0005,
-   "cloud_cover_px": 0.463,
+   "purple_D21": 0.0017,
+   "cloud_cover_px": 0.471,
    "sea_px": 0.29
   }
  },
@@ -264,32 +264,32 @@
   "cam": "hero",
   "d": 940.2,
   "eye_y": -938.5,
-  "APL": 134.0,
-  "sun_visible": 0.274,
+  "APL": 102.7,
+  "sun_visible": 0.182,
   "purple_D21": 0.0,
-  "cloud_cover_px": 0.791,
-  "sea_px": 0.0
+  "cloud_cover_px": 0.734,
+  "sea_px": 0.009
  },
  "flow_300": {
   "t": 300.0,
   "cam": "hero",
   "d": 940.2,
   "eye_y": -938.5,
-  "APL": 132.5,
-  "sun_visible": 0.215,
+  "APL": 99.4,
+  "sun_visible": 0.155,
   "purple_D21": 0.0,
-  "cloud_cover_px": 0.859,
-  "sea_px": 0.0
+  "cloud_cover_px": 0.78,
+  "sea_px": 0.009
  },
  "flow_310": {
   "t": 310.0,
   "cam": "hero",
   "d": 940.2,
   "eye_y": -938.5,
-  "APL": 133.4,
-  "sun_visible": 0.234,
+  "APL": 89.6,
+  "sun_visible": 0.181,
   "purple_D21": 0.0,
-  "cloud_cover_px": 0.938,
-  "sea_px": 0.001
+  "cloud_cover_px": 0.796,
+  "sea_px": 0.022
  }
 }
