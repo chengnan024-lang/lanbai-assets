@@ -2296,7 +2296,7 @@
      -0.5595,
      0.4826
     ],
-    "angle_rad": 5.0,
+    "angle_rad": 2.2,
     "t_start": 180.99,
     "duration_s": 1.75,
     "keep_until": 184.5,
@@ -2753,7 +2753,7 @@
      0.2924,
      0.6169
     ],
-    "angle_rad": 5.0,
+    "angle_rad": 2.2,
     "t_start": 181.83,
     "duration_s": 1.75,
     "keep_until": 184.5,
@@ -3210,7 +3210,7 @@
      -0.2193,
      0.5686
     ],
-    "angle_rad": 5.0,
+    "angle_rad": 2.2,
     "t_start": 180.15,
     "duration_s": 1.75,
     "keep_until": 184.5,
@@ -3667,7 +3667,7 @@
      0.8275,
      -0.5002
     ],
-    "angle_rad": 5.0,
+    "angle_rad": 2.2,
     "t_start": 182.25,
     "duration_s": 1.75,
     "keep_until": 184.5,
@@ -4124,7 +4124,7 @@
      -0.3741,
      -0.641
     ],
-    "angle_rad": 5.0,
+    "angle_rad": 2.2,
     "t_start": 180.57,
     "duration_s": 1.75,
     "keep_until": 184.5,
@@ -4581,7 +4581,7 @@
      0.6888,
      0.429
     ],
-    "angle_rad": 5.0,
+    "angle_rad": 2.2,
     "t_start": 181.41,
     "duration_s": 1.75,
     "keep_until": 184.5,
@@ -5760,13 +5760,13 @@
    ],
    "rotation_xyzw": [
     0.0,
-    1.0,
+    0.258819,
     0.0,
-    0.0
+    0.965926
    ],
    "rotation_euler_deg": [
     0.0,
-    180.0,
+    30.0,
     0.0
    ],
    "position_U7b": [
@@ -5791,7 +5791,7 @@
    "length_m": 647.3,
    "max_diameter_to_length": "1:13.4",
    "top_above_cloud_m": 276.0,
-   "note": "rises behind the Rilke line round 10 (D-13 / D-28): moved to +5.5 deg from the main seat at t 145.3 (behind poem block A), x 1345.36 -> 338.52",
+   "note": "rises behind the Rilke line round 10 (D-13 / D-28): moved to +5.5 deg from the main seat at t 145.3 (behind poem block A), x 1345.36 -> 338.52; round 10 (总导演 10-26 B): yaw 180 -> 30 deg so the arch leans AWAY from the tear: keyart 154.50 arch 7.0-13.6 deg, the tear right edge 3.8 deg (>= 3 deg clear, off the foot pool); at 145.3 its root still at +5.5 deg",
    "material_kind": "colossus",
    "material": {
     "_CloudTopColor": [

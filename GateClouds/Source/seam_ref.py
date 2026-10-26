@@ -270,25 +270,47 @@ def march(V, c, scene_d, new, tear, seed=0):
     facing = np.clip(v @ MOON, 0, 1) ** 5
     tr = np.ones(len(idx))
     acc = np.zeros((len(idx), 3))
-    for s in range(80):
-        live = (s < count) & (tr >= 0.015)
+    # GateVolumeDeck [R10b] Refine (x = factor, y = span in coarse steps): at a ray's first sample with cloud, back up one
+    # coarse step and walk the surface layer at L / x for y coarse steps, then coarse again. The surface (where a ray's
+    # light is decided) is sampled x times finer: the jitter grain and its frame-to-frame flicker drop with it
+    rf, rk = VOL.get('Refine', (1, 0))
+    rf = max(int(rf), 1)
+    nf = int(rf * rk) if rf > 1 else 0
+    tt = s0 + jit * L
+    stp = L.copy()
+    fine = np.zeros(len(idx), int)
+    done = np.zeros(len(idx), bool) if nf else np.ones(len(idx), bool)
+    for s in range(80 + nf):
+        live = (tt < s1) & (tr >= 0.015)
         if not live.any():
             break
         k = np.nonzero(live)[0]
-        tt = s0[k] + (s + jit[k]) * L[k]
-        p = eye + v[k] * tt[:, None]
+        p = eye + v[k] * tt[k][:, None]
         den = density(p, c, new)
         m = den > 0.00008
-        if not m.any():
-            continue
-        km = k[m]
-        pm = p[m]
-        light = cloud_light(pm, c, tear, new, facing[km], v[km])
-        f = (1.0 - np.exp(-VOL['Fog'] * tt[m]))[:, None]
-        light = (light * VOL['Gain']) * (1 - f) + fogc[km] * f
-        a = 1.0 - np.exp(-den[m] * L[km])
-        acc[km] += (tr[km] * a)[:, None] * light
-        tr[km] *= 1.0 - a
+        hit = m & ~done[k]
+        if hit.any():
+            kh = k[hit]
+            done[kh] = True
+            back = np.maximum(tt[kh] - L[kh], s0[kh])
+            stp[kh] = L[kh] / rf
+            tt[kh] = back + jit[kh] * stp[kh]
+            fine[kh] = nf
+            m &= ~hit
+        if m.any():
+            km = k[m]
+            pm = p[m]
+            light = cloud_light(pm, c, tear, new, facing[km], v[km])
+            f = (1.0 - np.exp(-VOL['Fog'] * tt[km]))[:, None]
+            light = (light * VOL['Gain']) * (1 - f) + fogc[km] * f
+            a = 1.0 - np.exp(-den[m] * stp[km])
+            acc[km] += (tr[km] * a)[:, None] * light
+            tr[km] *= 1.0 - a
+        adv = k[~hit] if hit.any() else k
+        tt[adv] += stp[adv]
+        fz = adv[fine[adv] > 0]
+        fine[fz] -= 1
+        stp[fz[fine[fz] == 0]] = L[fz[fine[fz] == 0]]
     out[idx] = acc
     trans[idx] = tr
     return out, trans
@@ -520,7 +542,7 @@ def bake_skirts():
 
 
 CURL_ARMS = ('Hand_L0', 'Hand_L1', 'Hand_L2', 'Hand_R0', 'Hand_R1', 'Hand_R2')
-CURL = dict(t0=0.7, angle=5.0, dur=1.75, start=180.15, step=0.42, order=(2, 4, 0, 5, 1, 3), keep_until=184.5, fade=0.5)
+CURL = dict(t0=0.7, angle=2.2, dur=1.75, start=180.15, step=0.42, order=(2, 4, 0, 5, 1, 3), keep_until=184.5, fade=0.5)
 
 
 def rodrigues(r, k, a):

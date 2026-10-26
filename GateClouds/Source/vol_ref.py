@@ -7,7 +7,8 @@ where they are brighter than the scene, above the foot). No cloud cards, no bus.
 frame, as metrics_unity_vs_render.json) and region percentiles.
 
   python3 vol_ref.py <view> [--w 960] [--set k=v,...] [--out dir]     view = U8fwd | key | U7 | U8side
-  --set: TEARL keys (E, R0, G, Tap, Pool) for the AFTER column
+  --set: TEARL keys (E, R0, G, Tap, Pool) and Lift, HashJitter, RefineF, RefineK for the AFTER column
+  --before r10: before = the round-10 batch-2 deck (no refine), else no tear light
 """
 import json
 import os
@@ -29,7 +30,10 @@ TEARCUT = {'U8fwd': ('U8fwd_unity_t169.65.png', (560, 1360), 640),
            'U7': ('U7_unity_t155.10.png', (840, 1120), 560),
            'U8side': ('U8side_unity_t166.45.png', (0, 0), 0)}
 # the after column's tear light (Lanbai/GateVolumeDeck defaults; keep in sync)
-AFTER = dict(on=True, E=0.5, R0=120.0, G=0.6, Tap=30.0, Pool=0.0, Lift=60.0, HashJitter=1.0)
+AFTER = dict(on=True, E=0.5, R0=120.0, G=0.6, Tap=30.0, Pool=0.0, Lift=60.0, HashJitter=1.0, RefineF=4.0, RefineK=6.0)
+# --before r10: the before column is the round-10 batch-2 deck (7b5481c: no refine), for the grain fix (总导演 10-26 A)
+R10B = dict(AFTER, RefineF=1.0, RefineK=0.0)
+VOLKEYS = ('Lift', 'HashJitter', 'RefineF', 'RefineK')
 
 
 def cam_of(view):
@@ -80,7 +84,7 @@ def tear_layer(view, w, h):
     return np.asarray(rgb).astype(np.float32), np.asarray(al).astype(np.float32)[..., None] / 255.0
 
 
-def render(view, w, outdir, after):
+def render(view, w, outdir, after, before=None):
     S.TEX = S.density_tex() if S.TEX is None else S.TEX
     cam = cam_of(view)
     t = cam['t']
@@ -93,11 +97,12 @@ def render(view, w, outdir, after):
     P, N, hit = S.render_arm_passes(arms, cam, w, h)
     trgb, ta = tear_layer(view, w, h)
     out = {}
-    for name, tl in (('before', dict(on=False, E=0.0)), ('after', after)):
+    for name, tl in (('before', before or dict(on=False, E=0.0)), ('after', after)):
         S.TEARL.update(dict(on=False, E=0.0, R0=250.0, G=0.6, Tap=30.0, Pool=1.0))
-        S.TEARL.update({k: v for k, v in tl.items() if k not in ('Lift', 'HashJitter')})
+        S.TEARL.update({k: v for k, v in tl.items() if k not in VOLKEYS})
         S.VOL['Lift'] = float(tl.get('Lift', 0.0))
         S.VOL['HashJitter'] = float(tl.get('HashJitter', 0.0))
+        S.VOL['Refine'] = (int(tl.get('RefineF', 1)), float(tl.get('RefineK', 0)))
         c = S.Ctx(t, eye)
         c.pix = PIX
         c.skirts = S.skirts_runtime(t, arms, eye)
@@ -135,12 +140,12 @@ def render(view, w, outdir, after):
     return out
 
 
-def seq(view, n, w, outdir, after, fps=60.0):
+def seq(view, n, w, outdir, after, fps=60.0, before=None):
     """n frames at fps from the view's t: before / after into outdir/before, outdir/after (f%03d.png, for measure_crawl)"""
     t0 = CAMS[view]['t']
     for f in range(n):
         CAMS[view] = dict(CAMS[view], t=t0 + f / fps)
-        out = render(view, w, os.path.join(outdir, '_tmp'), after)
+        out = render(view, w, os.path.join(outdir, '_tmp'), after, before)
         for k in ('before', 'after'):
             os.makedirs(os.path.join(outdir, k), exist_ok=True)
             Image.fromarray(out[k]).save(os.path.join(outdir, k, 'f%03d.png' % f))
@@ -155,7 +160,8 @@ if __name__ == '__main__':
     if '--set' in a:
         for k, v in (x.split('=') for x in a[a.index('--set') + 1].split(',')):
             after[k] = float(v)
+    before = R10B if '--before' in a and a[a.index('--before') + 1] == 'r10' else None
     if '--seq' in a:
-        seq(a[0], int(a[a.index('--seq') + 1]), w, outdir, after)
+        seq(a[0], int(a[a.index('--seq') + 1]), w, outdir, after, before=before)
     else:
-        render(a[0], w, outdir, after)
+        render(a[0], w, outdir, after, before)

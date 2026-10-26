@@ -3,6 +3,8 @@
 //    _CurlAxis (object-space axis, w = the angle at the tip in rad; both baked per arm, Gate/GateDriver_Bake.json curl):
 //    past t0 every vertex turns about the pivot by _Curl x angle x (t - t0) / (1 - t0). Off (0) everywhere else.
 //    Instanced _Silhouette (0..1): surface colour x (1 - s) before the fog (the kept hands looking back: fog only).
+//    Instanced _FogHold (0 off, else the fog cap at any distance, before the reveal): the kept hands' 0.7 in the 4c fog,
+//    let go to 1 over their fade (总导演 10-26).
 //  v2.8 (gate clouds kit, D-44 #3 the root seam, 2026-10-25; UNCOMPILED): the arms in 阿白's VOLUME cloud. Under the
 //    volume deck (Lanbai/GateVolumeDeck; the gate clouds driver sets _Udon_CloudVolume.x = 1) the visible cloud surface
 //    is 50-90 m under the nominal top (its threshold is 0.75 there), so v2.7's clip at top - 5 and the ragged fade to
@@ -230,8 +232,9 @@ Shader "Lanbai/TentacleSway"
         _Reveal ("Reveal 0..1 (instanced; 0 = all haze, renderer off)", Range(0, 1)) = 1
         _Curl ("v2.9 fingertip curl 0..1 (instanced; the gate driver, U9)", Range(0, 1)) = 0
         _CurlPivot ("v2.9 curl pivot: object-space centreline point, w = t where the curl starts (instanced)", Vector) = (0, 0, 0, 0.75)
-        _CurlAxis ("v2.9 curl axis (object space), w = the angle at the tip, rad (instanced)", Vector) = (1, 0, 0, 5)
+        _CurlAxis ("v2.9 curl axis (object space), w = the angle at the tip, rad (instanced)", Vector) = (1, 0, 0, 2.2)
         _Silhouette ("v2.9 0..1: the surface goes to black, only the fog is left (instanced; the hands kept past U9)", Range(0, 1)) = 0
+        _FogHold ("v2.9 fog cap at any distance (instanced; 0 or 1 = off; the hands kept past U9: 0.7, let go as they fade)", Range(0, 1)) = 0
         _MoonGlowFog ("Moon air in the fog colour", Range(0, 2)) = 0.35
         _MoonGlowColor ("Moon aureole #8FA3C8, linear", Vector) = (0.275, 0.366, 0.578, 1)
         _MoonGlowShape ("Aureole: a1, k1, a2, k2 (a1 e^-k1 deg + a2 e^-k2 deg)", Vector) = (1.6, 0.9, 0.06, 0.32)
@@ -399,6 +402,7 @@ Shader "Lanbai/TentacleSway"
             UNITY_DEFINE_INSTANCED_PROP(float, _FogCapI)
             UNITY_DEFINE_INSTANCED_PROP(float, _RevealGroup)
             UNITY_DEFINE_INSTANCED_PROP(float, _Curl)
+            UNITY_DEFINE_INSTANCED_PROP(float, _FogHold)
             UNITY_DEFINE_INSTANCED_PROP(float4, _CurlPivot)
             UNITY_DEFINE_INSTANCED_PROP(float4, _CurlAxis)
             UNITY_DEFINE_INSTANCED_PROP(float, _Silhouette)
@@ -866,6 +870,10 @@ Shader "Lanbai/TentacleSway"
             float capI = UNITY_ACCESS_INSTANCED_PROP(LanbaiGate, _FogCapI);
             float fc = min(f, (capI > 0.0) ? capI : _FogCap) * (_FogCapHeight > 0.0 ? exp(-h / _FogCapHeight) : 1.0);
             f = lerp(f, fc, smoothstep(_FogCapFrom.x, _FogCapFrom.y, dist));
+            // v2.9: the kept hands' cap at any distance (总导演 10-26: the 4c fog ate the curl); before the reveal, so the
+            // reveal's fade still takes them all the way into the fog
+            float hold = UNITY_ACCESS_INSTANCED_PROP(LanbaiGate, _FogHold);
+            if (hold > 0.0) f = min(f, hold);
             // v2.4 (tech B1): the reveal comes AFTER the cap: at 0 the arm is all haze (and Udon turns it off)
             float rv = UNITY_ACCESS_INSTANCED_PROP(LanbaiGate, _Reveal);
             if (_UseGlobalReveal > 0.5)                                       // v2.7: the multitude's group reveal (one global)

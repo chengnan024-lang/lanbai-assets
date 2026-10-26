@@ -5,6 +5,8 @@ shimmers as the deck scrolls. Here, per pixel: frame-to-frame luma changes large
 changes reverse sign at least twice within 10 frames (a contour passing by changes once; a shimmering one flips).
 Reported over the lower half of the frame (the deck), by column thirds, plus a red map over a frame.
 
+Also: per frame, the share of deck pixels changing by more than 4 codes (总导演 10-26: <= 0.2 %).
+
   python3 measure_crawl.py <frames_dir> [--frames 30] [--map out.png]
 """
 import glob
@@ -41,6 +43,10 @@ if __name__ == '__main__':
           % (a[0], len(fs), 100 * (deck >= 2).mean(), 100 * (deck >= 3).mean(),
              100 * (deck[:, :w // 3] >= 2).mean(), 100 * (deck[:, w // 3:2 * w // 3] >= 2).mean(),
              100 * (deck[:, 2 * w // 3:] >= 2).mean()))
+    # 总导演 10-26 A: per frame, the share of deck pixels that change by more than 4 codes (mean and worst frame)
+    dd = np.abs(np.diff(A[:, h // 2:], axis=0)) > 4.0
+    per = 100 * dd.mean(axis=(1, 2))
+    print('   per-frame deck pixels changing > 4 codes: mean %.3f %%, worst frame %.3f %%' % (per.mean(), per.max()))
     if '--map' in a:
         f = Image.open(fs[len(fs) // 2]).convert('RGB')
         m = Image.fromarray(((worst >= 2) * 255).astype(np.uint8))

@@ -93,6 +93,10 @@ public class LanbaiGateDriver : UdonSharpBehaviour
     public bool[] curlOn;
     public Vector4[] curlPivot, curlAxis;      // object space: pivot + t0, axis + angle (rad)
     public float[] curlStart, curlDur, curlKeep;   // keep > 0: not retired at U9 until then (the curl is seen looking back)
+    [Tooltip("The kept hands' fog cap past U9 (TentacleSway _FogHold; 总导演 10-26: 0.7)")]
+    public float holdFogCap = 0.7f;
+    [Tooltip("The cap lets go over the last s before curlKeep (= the reveal's fade in GateLayout)")]
+    public float holdFade = 0.5f;
     public float[] rPhase, rFogCap, rGroup;
     public bool[] rHasFogCap, rHasDims;
     public Vector4[] rDims;
@@ -102,8 +106,8 @@ public class LanbaiGateDriver : UdonSharpBehaviour
     private int _idPhase, _idFogCap, _idGroup, _idReveal, _idDims, _idOcc, _idIntensity;
     private int _idCloudTop, _idTearPos, _idTearH, _idMoonDir, _idGateTime, _idGateOrigin, _idTearFoot, _idTearTop;
     private int _idMult, _idDisc, _idOpen, _idRip, _idHide;
-    private float[] _lastRv, _lastCurl, _lastSil;
-    private int _idSil;
+    private float[] _lastRv, _lastCurl, _lastSil, _lastHold;
+    private int _idSil, _idFogHold;
     private int _idCurl, _idCurlPivot, _idCurlAxis, _idGirth, _idGirthFalloff;
     private int[] _poseState;                 // 0 = must pose, 1 = posed before the span, 2 = after it
     private bool _mult0, _mult1, _retired, _ready;
@@ -168,6 +172,7 @@ public class LanbaiGateDriver : UdonSharpBehaviour
         _idIntensity = VRCShader.PropertyToID("_Intensity");
         _idCurl = VRCShader.PropertyToID("_Curl");
         _idSil = VRCShader.PropertyToID("_Silhouette");
+        _idFogHold = VRCShader.PropertyToID("_FogHold");
         _idCurlPivot = VRCShader.PropertyToID("_CurlPivot");
         _idCurlAxis = VRCShader.PropertyToID("_CurlAxis");
         _idGirth = VRCShader.PropertyToID("_Girth");
@@ -196,11 +201,12 @@ public class LanbaiGateDriver : UdonSharpBehaviour
         _lastRv = new float[n];
         _lastCurl = new float[n];
         _lastSil = new float[n];
+        _lastHold = new float[n];
         _poseState = new int[n];
         for (int i = 0; i < n; i++)
         {
             _lastRv[i] = -1f;
-            WriteBlocks(i, 1f, 0f, 0f);        // the reveal itself follows on the first tick
+            WriteBlocks(i, 1f, 0f, 0f, 0f);        // the reveal itself follows on the first tick
         }
         // the multitude's renderers: whatever the editor left, bring them to a known state (tech review driver #1)
         _mult0 = true; _mult1 = true; _retired = false;
@@ -257,12 +263,17 @@ public class LanbaiGateDriver : UdonSharpBehaviour
             // the kept hands past the plane: dark silhouettes (fog only), ramped over 0.3 s from the retirement frame so the
             // fog's hand-over (gate -> 4c) shows no colour jump; and no shadow pass (门内 10-26)
             float sil = kept ? SS((t - (U9 - 0.05f)) / 0.3f) : 0f;
-            if (rv == _lastRv[i] && cu == _lastCurl[i] && sil == _lastSil[i]) continue; // nothing changed: no MPB writes
+            // their fog capped at holdFogCap (总导演 10-26: the 4c fog ate the curl), eased in with the silhouette and let go
+            // over the last holdFade s with the reveal: the hands sink into the 4c fog, they do not blink out. 1 = no cap
+            float hold = 0f;
+            if (kept) hold = Mathf.Lerp(Mathf.Lerp(1f, holdFogCap, sil), 1f, SS((t - (curlKeep[i] - holdFade)) / holdFade));
+            if (rv == _lastRv[i] && cu == _lastCurl[i] && sil == _lastSil[i] && hold == _lastHold[i]) continue; // nothing changed: no MPB writes
             bool silChanged = (sil > 0f) != (_lastSil[i] > 0f);
             _lastRv[i] = rv;
             _lastCurl[i] = cu;
             _lastSil[i] = sil;
-            WriteBlocks(i, rv, cu, sil);
+            _lastHold[i] = hold;
+            WriteBlocks(i, rv, cu, sil, hold);
             if (silChanged) SetShadows(i, sil <= 0f);
         }
         // the tide
@@ -395,7 +406,7 @@ public class LanbaiGateDriver : UdonSharpBehaviour
                 rend[k].shadowCastingMode = on ? UnityEngine.Rendering.ShadowCastingMode.On : UnityEngine.Rendering.ShadowCastingMode.Off;
     }
 
-    void WriteBlocks(int i, float rv, float cu, float sil)
+    void WriteBlocks(int i, float rv, float cu, float sil, float hold)
     {
         if (rend == null || instRendStart == null) return;
         int s = instRendStart[i], c = instRendCount[i];
@@ -424,6 +435,7 @@ public class LanbaiGateDriver : UdonSharpBehaviour
             {
                 _mpb.SetFloat(_idCurl, cu);
                 _mpb.SetFloat(_idSil, sil);
+                _mpb.SetFloat(_idFogHold, hold);
                 _mpb.SetVector(_idCurlPivot, curlPivot[i]);
                 _mpb.SetVector(_idCurlAxis, curlAxis[i]);
             }

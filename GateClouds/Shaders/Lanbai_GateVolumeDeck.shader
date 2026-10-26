@@ -68,6 +68,7 @@ Shader "Lanbai/GateVolumeDeck"
         _TearLight ("Tear line light: E at r0, r0 (m), HG g, self-shadow tap (m)", Vector) = (0.5, 120, 0.6, 30)
         _PoolK ("The old flat foot pool x this (the tear light replaces it)", Range(0, 1)) = 0
         [Toggle] _HashJitter ("Step jitter: world-anchored LanbaiHash13 (1) or 阿白's smooth noise (0, bands)", Float) = 1
+        _Refine ("Surface refine: x = step factor (1 off), y = span in coarse steps", Vector) = (4, 6, 0, 0)
         _TearFootW ("Tear foot fallback: world xyz, w = white half width (global _Udon_TearFoot wins)", Vector) = (-0.3, -57.4, 1497.6, 76)
 
         [Header(Fog  LanbaiGateSky)]
@@ -109,7 +110,7 @@ Shader "Lanbai/GateVolumeDeck"
         UNITY_DECLARE_DEPTH_TEXTURE(_CameraDepthTexture);
         float4 _CloudWind, _MoonColor, _AmbColor, _RimDir, _GateOrigin, _FogDensity, _FootPoolColor;
         float _Density, _CloudTopY, _MoonE, _AmbK, _Gain;
-        float _Lift, _PoolK, _HashJitter; float4 _TearLight;                                  // [R10]
+        float _Lift, _PoolK, _HashJitter; float4 _TearLight, _Refine;                                  // [R10]
         struct appdata { float4 vertex:POSITION; UNITY_VERTEX_INPUT_INSTANCE_ID };
         struct v2f { float4 pos:SV_POSITION; float3 wpos:TEXCOORD0; float4 screen:TEXCOORD1; UNITY_VERTEX_OUTPUT_STEREO };
         v2f vert(appdata v) {
@@ -172,12 +173,22 @@ Shader "Lanbai/GateVolumeDeck"
           LanbaiSkirtSet sk=LanbaiGateSkirtCull(eye,ray,start,end);                          // [D-44]
           float3 sum=0;float transmission=1;
           float facing=pow(saturate(dot(ray,moon)),5.0);
-          [loop] for(int s=0;s<80;s++) {
-            if(s>=count)break;
-            float t=start+(s+jitter)*stepLength;
+          // [R10b] surface refine: at the ray's first sample with cloud, back up one coarse step and walk the surface layer
+          // at L / _Refine.x for _Refine.y coarse steps, then coarse again. The surface (where a ray's light is decided) is
+          // sampled x times finer: the jitter grain and its frame-to-frame flicker drop with it (总导演 10-26 A)
+          float rf=max(floor(_Refine.x),1.0);
+          int nf=rf>1.0?(int)(rf*_Refine.y):0;
+          float t=start+jitter*stepLength, stp=stepLength;
+          int fine=0; bool refined=nf==0;
+          [loop] for(int s=0;s<128;s++) {
+            if(t>=end || s>=80+nf)break;
             float3 p=eye+ray*t;
             if(_Udon_InsidePortal.y>.5 && eye.z>_Udon_InsidePortal.x && p.z>_Udon_InsidePortal.x)break;
             float den=density(p,top,origin,sk);
+            if(!refined && den>0.00008) {
+              refined=true; stp=stepLength/rf; t=max(t-stepLength,start)+jitter*stp; fine=nf;
+              continue;
+            }
             if(den>0.00008) {
               float optical=density(p+moon*18.0,top,origin,sk)*22.0+density(p+moon*50.0,top,origin,sk)*38.0;
               float illumination=0.08+0.92*exp(-optical*1.7);
@@ -200,11 +211,13 @@ Shader "Lanbai/GateVolumeDeck"
                 }
               }
               light=lerp(light*_Gain,fog,1.0-exp(-LanbaiGateDensity(_FogDensity.x)*t));
-              float alpha=1.0-exp(-den*stepLength);
+              float alpha=1.0-exp(-den*stp);
               sum+=transmission*alpha*light;
               transmission*=1.0-alpha;
               if(transmission<0.015)break;
             }
+            t+=stp;
+            if(fine>0) { fine--; if(fine==0)stp=stepLength; }
           }
           return half4(sum,1.0-transmission);
         }
