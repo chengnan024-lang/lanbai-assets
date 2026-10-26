@@ -6,7 +6,7 @@ import sys
 
 from PIL import Image, ImageDraw, ImageFont
 
-OLD_EAVE, NEW_EAVE = (5.77, 7.77), (5.47, 7.47)       # 腰檐 / 上檐里较宽的那一层的外扩（含檐板、串珠），x 半宽 / z 半深
+OLD_EAVE, NEW_EAVE = (5.91, 7.91), (5.91, 7.91)       # 上檐（全高里最宽的一层）的外扩（含檐板、串珠），x 半宽 / z 半深——dcab186 檐不用收
 BASE = (3.95, 5.95)
 X0, X1, Z0, Z1, S = -52.0, 2.0, 18.0, 112.0, 14       # 画的范围（宫殿坐标，米）和每米像素
 
@@ -49,7 +49,7 @@ def panel(frame, eave, title):
 
 if __name__ == '__main__':
     a = panel(json.load(open(sys.argv[1], encoding='utf-8')), OLD_EAVE, '现在')
-    b = panel(json.load(open(sys.argv[2], encoding='utf-8')), NEW_EAVE, '(c)')
+    b = panel(json.load(open(sys.argv[2], encoding='utf-8')), NEW_EAVE, '改后（dcab186）')
     im = Image.new('RGB', (a.width + b.width + 20, max(a.height, b.height)), (0, 0, 0))
     im.paste(a, (0, 0))
     im.paste(b, (a.width + 20, 0))
