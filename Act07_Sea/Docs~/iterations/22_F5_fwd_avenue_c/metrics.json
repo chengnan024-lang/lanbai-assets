@@ -25,15 +25,15 @@
     440
    ],
    "centroid": [
-    724.9,
-    174.4
+    720.4,
+    176.9
    ],
-   "clusters": 19,
+   "clusters": 18,
    "clusters_ge5pct": 6,
-   "min_luma": 55.6,
+   "min_luma": 55.8,
    "centroid_az_el": [
-    23.45,
-    7.85
+    22.98,
+    7.62
    ]
   },
   "top25_Lstar": {
@@ -54,13 +54,13 @@
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 58.4,
+     "nearest_dE2000_p01": 57.8,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 52.5,
+     "nearest_dE2000_p01": 52.3,
      "within_dE5_pct": 0.0
     },
     {
@@ -84,7 +84,7 @@
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 55.1,
+     "nearest_dE2000_p01": 54.8,
      "within_dE5_pct": 0.0
     }
    ],
@@ -193,8 +193,8 @@
    540
   ]
  },
- "render_seconds": 7.8,
+ "render_seconds": 7.4,
  "lens": "none",
  "bloom_tint": "single",
- "note": "F5+3 648.0 forward from the main seat: the warm point Lamp_R02 (az -9.1, el -11.5; through the PAZ windscreen, not behind a que) after the round-10 avenue shift of 1.75 m"
+ "note": "F5+3 648.0 forward from the main seat: the warm point Lamp_R02 (az -10.1, el -11.5; through the PAZ windscreen, not behind a que) after the round-10 avenue shift of 3 m"
 }

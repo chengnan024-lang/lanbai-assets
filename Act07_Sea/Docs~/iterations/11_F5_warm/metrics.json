@@ -6,7 +6,7 @@
   ],
   "APL": 11.91,
   "EV_display": -7.913,
-  "luma_lt12_pct": 44.78,
+  "luma_lt12_pct": 44.77,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
@@ -25,15 +25,15 @@
     342
    ],
    "centroid": [
-    444.0,
-    141.0
+    443.9,
+    139.3
    ],
-   "clusters": 33,
-   "clusters_ge5pct": 4,
+   "clusters": 37,
+   "clusters_ge5pct": 6,
    "min_luma": 20.7,
    "centroid_az_el": [
-    -24.77,
-    4.05
+    -24.81,
+    4.23
    ]
   },
   "top25_Lstar": {
@@ -193,7 +193,7 @@
    540
   ]
  },
- "render_seconds": 10.1,
+ "render_seconds": 9.5,
  "lens": "none",
  "bloom_tint": "single",
  "note": "F5 644.96: far below, one warm point among the cold seeds (APL target 16)"

@@ -29340,13 +29340,13 @@
  "warm_point": {
   "id": "Lamp_R02",
   "position_water": [
-   -10.75,
+   -12.0,
    -248.835,
    72.24
   ],
-  "distance_at_F5_m": 72.56,
+  "distance_at_F5_m": 72.77,
   "az_el_at_F5": [
-   -9.1,
+   -10.1,
    -11.5
   ],
   "picked_by": "PAZ-672 viewcheck grid (1 deg margin) + que bodies",
@@ -30206,7 +30206,7 @@
   ],
   "ridge_yaw": -55.0,
   "warm_position": [
-   -10.75,
+   -12.0,
    -248.835,
    72.24
   ],

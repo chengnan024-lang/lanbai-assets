@@ -58,8 +58,8 @@ wait
 run 20_897_floorhole 897.96 --cam hero --pitch -52 --bus bible_v2 --set floorhole=-22,22,-70,-38 --note "D-26 897.96: down through the eroded floor in front of the main seat (az -22..22, el -70..-38): the inverted window's warm ring and rose-gold arc ahead, the indigo core near the feet" &
 run 21_921_floorhole 921.4  --cam hero --pitch -52 --bus bible_v2 --set floorhole=-22,22,-70,-38 --note "D-26 921.4: the same hole, the mirror 1.4 m below the eye: the same angles (the window is a cone), the fog thinner" &
 wait
-# palace round 10 (D-49 #3): the avenue 1.75 m left; the warm point (Lamp_R02 since 10-26, picked through the PAZ viewcheck grid) from the main seat, looking ahead
-run 22_F5_fwd_avenue_c 648.0 --cam hero --pitch 0 --bus bible_v2 --note "F5+3 648.0 forward from the main seat: the warm point Lamp_R02 (az -9.1, el -11.5; through the PAZ windscreen, not behind a que) after the round-10 avenue shift of 1.75 m" &
+# palace round 10 (D-49 #3): the avenue 3 m left; the warm point (Lamp_R02 since 10-26, picked through the PAZ viewcheck grid) from the main seat, looking ahead
+run 22_F5_fwd_avenue_c 648.0 --cam hero --pitch 0 --bus bible_v2 --note "F5+3 648.0 forward from the main seat: the warm point Lamp_R02 (az -10.1, el -11.5; through the PAZ windscreen, not behind a que) after the round-10 avenue shift of 3 m" &
 wait
 # ---- D-44 #5: the same beats as the local screenshots (FromLocal/act07a_view/): forward + up 60 from the main seat
 for bt in 363.3 367.2 387 446 462.4 474.4 506.4 532.4 556.4 559 630 645; do
