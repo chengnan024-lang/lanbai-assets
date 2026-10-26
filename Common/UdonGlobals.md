@@ -58,6 +58,7 @@ VRChat 只允许 Udon 写 `_Udon_` 前缀的全局 shader 量（`VRCShader.SetGl
 | `_Udon_CloudVolumeTex` | 全局 3D 纹理（`sampler3D`）：128³ 云密度（R、G），= 云海材质的 `_NoiseVolume`（D-44 #3） | 同上 | 同上 |
 | `_Udon_GateSkirt0..7` | float4：x、z = 触手轴穿过云的位置（世界）、y = 强度 0..1（触手的显现）、w = 那里的半径 m（0 = 没有）；离车最近的 8 条（D-44 #3） | 门的云驱动 `LanbaiGateClouds` | `Lanbai/GateVolumeDeck`、`Lanbai/TentacleSway` v2.8 |
 | `_Udon_GateSkirtK` | float4：x 条数 0–8、y 宽 × 半径、z 贴着触手往上堆的高度 m、w 强度（D-44 #3） | 同上 | 同上 |
+| `_Udon_CloudClock` | float4：x = 时间轴秒、w > 0 = 已设（D-44 #2，2026-10-26 登记）；同一时刻只有一个写的人，以后门要用就在自己的窗口里写 | 第 6 幕驱动 `LanbaiAct06Driver`，248.64 → 363.62 | `Lanbai/CloudVolume`（`Clouds_v2/Volume/`；shader 里 `#ifndef LANBAI_DECL__Udon_CloudClock` 自己声明） |
 | `_Udon_WorldS` | （本地的时间轴里用的，含义见 `FromLocal/code/timeline_v1/`） | 本地 | 本地 |
 
 ## 预留（还没人写，先占名字）
