@@ -5,7 +5,7 @@
    540
   ],
   "APL": 11.91,
-  "EV_display": -7.912,
+  "EV_display": -7.913,
   "luma_lt12_pct": 44.78,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
@@ -25,15 +25,15 @@
     342
    ],
    "centroid": [
-    422.8,
-    153.7
+    444.0,
+    141.0
    ],
-   "clusters": 37,
-   "clusters_ge5pct": 6,
+   "clusters": 33,
+   "clusters_ge5pct": 4,
    "min_luma": 20.7,
    "centroid_az_el": [
-    -27.36,
-    2.63
+    -24.77,
+    4.05
    ]
   },
   "top25_Lstar": {

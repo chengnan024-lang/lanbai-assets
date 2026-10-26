@@ -1,0 +1,56 @@
+--- orig/Palace/Source/scene.py	2026-10-26 00:12:27.000000000 +0000
++++ pal/Palace/Source/scene.py	2026-10-26 00:28:13.395350687 +0000
+@@ -307,9 +307,17 @@
+     return objs
+ 
+ 
+-def set_bus(objs, t, visible, dz=0.0, dx=0.0):
++def set_bus(objs, t, visible, dz=0.0, dx=0.0, psi=None):
+     car = L.car(t) + np.array([dx, 0.0, dz])
+     T = Matrix.Translation(Vector(bl.u2b(car)))
++    if psi is not None:
++        yaw, bdx, bdz = psi
++        car = L.car(t) + np.array([bdx, 0.0, bdz])
++        a = math.radians(yaw)
++        Ru = np.array([[math.cos(a), 0, math.sin(a)], [0, 1, 0], [-math.sin(a), 0, math.cos(a)]])
++        Mb = bl.U2B @ Ru @ np.linalg.inv(bl.U2B)
++        R4 = Matrix(((Mb[0][0], Mb[0][1], Mb[0][2], 0), (Mb[1][0], Mb[1][1], Mb[1][2], 0), (Mb[2][0], Mb[2][1], Mb[2][2], 0), (0, 0, 0, 1)))
++        T = Matrix.Translation(Vector(bl.u2b(car))) @ R4
+     for o in objs:
+         if 'base_mw' not in o:
+             o['base_mw'] = [list(r) for r in o.matrix_world]
+@@ -318,12 +326,12 @@
+ 
+ 
+ def render_shot(name, out, res, spp, bus):
+-    from shots import SHOTS, NO_BUS, SHOT_DZ, SHOT_DX
++    from shots import SHOTS, NO_BUS, SHOT_DZ, SHOT_DX, SHOT_PSI
+     t, yaw, pitch, hfov, _ = SHOTS[name]
+     dz = SHOT_DZ.get(name, 0.0)
+     dx = SHOT_DX.get(name, 0.0)
+     sc = bpy.context.scene
+-    set_bus(bus, t, name not in NO_BUS, dz, dx)
++    set_bus(bus, t, name not in NO_BUS, dz, dx, SHOT_PSI.get(name))
+     cam = bl.camera_unity('Cam_' + name, L.eye(t) + np.array([dx, 0, dz]), yaw, pitch, hfov)
+     sc.camera = cam
+     bl.render_setup(res, int(round(res * 9 / 16)), spp)
+--- orig/Palace/Source/shots.py	2026-10-26 00:12:27.000000000 +0000
++++ pal/Palace/Source/shots.py	2026-10-26 00:28:13.394809899 +0000
+@@ -42,3 +42,17 @@
+ # 机位的车位置偏移（米，沿 z）：D-34 #5 的试稿，车路待海确认
+ SHOT_DZ = {'F7_40': 11.14, 'F7pbL': -0.0160, 'F7pbR': 0.0160}
+ SHOT_DX = {'F7_40x': 9.35, 'F7_vr': 9.35, 'F7pbL': 0.0277, 'F7pbR': -0.0277}     # 立体对：眼睛沿相机右方 ∓0.032 m
++
++# ---- 海 10-26（D-49 #4 / D-34 #5）：F7 殿门三个做法的对比，殿门 door_x -19.75（神道左移 1.75 m 以后）
++SHOTS.update({
++    'F7_now': (L.CUES['F7'], 0.0, 0.0, 90.0, '现在：门右沿贴着中柱'),
++    'F7_B':   (L.CUES['F7'], 0.0, 0.0, 90.0, 'B：车路整体右移 9.35 m'),
++    'F7_Bp':  (L.CUES['F7'], 0.0, 0.0, 90.0, "B': 车路整体右移 2.98 m，门心 -35"),
++    'F7_C':   (L.CUES['F7'], 6.9100, 0.0, 90.0, 'C：F6 -> F7 车头向右转 6.91 度（最快 0.82 度/秒，起止缓），横漂 1.20 m'),
++    'L690_now': (692.6, -70.0, -12.0, 90.0, '现在 / C：690 前后左窗看经过的灯对（车左边那列）'),
++    'L690_B':   (692.6, -70.0, -12.0, 90.0, 'B：同上'),
++    'L690_Bp':  (692.6, -70.0, -12.0, 90.0, "B': 同上"),
++})
++SHOT_DX.update({'F7_B': 9.35, 'L690_B': 9.35, 'F7_Bp': 2.98, 'L690_Bp': 2.98, 'F7_C': 1.4426})
++SHOT_DZ.update({'F7_C': -0.1211})
++SHOT_PSI = {'F7_C': (6.9100, 1.2000, -0.0400)}      # (yaw deg, bus origin dx, dz)

@@ -29338,13 +29338,18 @@
   }
  },
  "warm_point": {
-  "id": "Lamp_L01",
+  "id": "Lamp_R02",
   "position_water": [
-   -30.0,
-   -248.715,
-   54.39
+   -10.75,
+   -248.835,
+   72.24
   ],
-  "distance_at_F5_m": 62.29,
+  "distance_at_F5_m": 72.56,
+  "az_el_at_F5": [
+   -9.1,
+   -11.5
+  ],
+  "picked_by": "PAZ-672 viewcheck grid (1 deg margin) + que bodies",
   "t_on": 644.96,
   "fade_in_s": 3.0,
   "colour": [
@@ -30201,9 +30206,9 @@
   ],
   "ridge_yaw": -55.0,
   "warm_position": [
-   -30.0,
-   -248.715,
-   54.39
+   -10.75,
+   -248.835,
+   72.24
   ],
   "warm_colour": [
    1.3961,

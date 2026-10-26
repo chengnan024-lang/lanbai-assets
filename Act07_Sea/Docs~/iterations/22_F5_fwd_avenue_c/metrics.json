@@ -5,14 +5,14 @@
    540
   ],
   "APL": 15.02,
-  "EV_display": -7.48,
+  "EV_display": -7.482,
   "luma_lt12_pct": 22.72,
   "Lstar_gt85_pct": 0.002,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
   "clip_black_largest_region_pct": 0.0,
   "clip_white_largest_region_pct": 0.0,
-  "warm_shadow_pct": 0.01,
+  "warm_shadow_pct": 0.0,
   "purple_pct": 0.0,
   "purple_largest_region_pct": 0.0,
   "violet_strong_pct": 0.0,
@@ -25,15 +25,15 @@
     440
    ],
    "centroid": [
-    686.0,
-    186.4
+    724.9,
+    174.4
    ],
-   "clusters": 16,
-   "clusters_ge5pct": 5,
-   "min_luma": 58.6,
+   "clusters": 19,
+   "clusters_ge5pct": 6,
+   "min_luma": 55.6,
    "centroid_az_el": [
-    19.46,
-    6.79
+    23.45,
+    7.85
    ]
   },
   "top25_Lstar": {
@@ -48,19 +48,19 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 62.7,
+     "nearest_dE2000_p01": 64.5,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 56.5,
+     "nearest_dE2000_p01": 58.4,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 51.6,
+     "nearest_dE2000_p01": 52.5,
      "within_dE5_pct": 0.0
     },
     {
@@ -84,7 +84,7 @@
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 54.1,
+     "nearest_dE2000_p01": 55.1,
      "within_dE5_pct": 0.0
     }
    ],
@@ -168,7 +168,7 @@
    "color": "#000000"
   }
  },
- "bloom_share_of_APL": 0.03,
+ "bloom_share_of_APL": 0.04,
  "t": 648.0,
  "target": {
   "phase": "7b 近",
@@ -193,8 +193,8 @@
    540
   ]
  },
- "render_seconds": 7.9,
+ "render_seconds": 7.8,
  "lens": "none",
  "bloom_tint": "single",
- "note": "F5+3 648.0 forward from the main seat: the warm point (Lamp_L01, x -30 after the round-10 avenue shift of 3 m) at az -30.3, el -13.4, no longer behind Que_L (real que profile)"
+ "note": "F5+3 648.0 forward from the main seat: the warm point Lamp_R02 (az -9.1, el -11.5; through the PAZ windscreen, not behind a que) after the round-10 avenue shift of 1.75 m"
 }

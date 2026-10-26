@@ -365,20 +365,60 @@ def warm_point():
     PF = json.load(open(os.path.join(PKG, 'PalaceFrame_约定.json'), encoding='utf-8'))
     td = PF['frame']['terrace_top_depth_m']
     busw = np.array([0.0, -AM.depth(L['F5']), AM.fwd(L['F5'])])
-    # the nearest lamp SEEN from the main seat: through the windscreen (bus_shell bible_v2: az -50..25, el -15..22) with
-    # 0.5 deg to spare at the lower edge, >= 2 deg off the centre post (az -11): Lamp_R01 (55 m) sits right behind the
-    # post and on the sill (review r1 #6), so it is Lamp_L01 (61 m, az -27.8, el -13.7)
+    # the nearest lamp SEEN from the main seat at F5 and through its 3 s fade-in:
+    #  * through the windscreen of the REAL bus (PAZ-672): the bus package's viewcheck grid Bus/Docs~/viewcheck/
+    #    hero_occlusion.npz (0.25 deg, from the main eye), every cell within 1 deg of the lamp must be WindscreenL / R
+    #    (10-26: the old bible_v2 rule picked Lamp_L01 at el -13.5, which in the PAZ bus is behind the cowl);
+    #  * not behind a que: the palace's que body (que.py round 10: half-widths 3.95 x 5.95 m, 40 m high) as a box.
+    # Without the grid (a checkout without Bus/) the old bible_v2 window box is the fallback.
+    grid = os.path.join(REPO, 'Bus', 'Docs~', 'viewcheck', 'hero_occlusion.npz')
+    if os.path.exists(grid):
+        G = np.load(grid, allow_pickle=True)
+        gids, gaz, gel = G['ids'], G['az'], G['el']
+        wins = json.loads(str(G['windows']))
+        glass_ids = {-(wins.index(w) + 2) for w in ('WindscreenL', 'WindscreenR')}
+
+        def through(az, el):
+            ii = np.clip(np.searchsorted(gel, [el - 1.0, el + 1.0]), 0, len(gel) - 1)
+            jj = np.clip(np.searchsorted(gaz, [az - 1.0, az + 1.0]), 0, len(gaz) - 1)
+            cells = gids[ii[0]:ii[1] + 1, jj[0]:jj[1] + 1]
+            return cells.size > 0 and all(int(c) in glass_ids for c in cells.ravel())
+    else:
+        def through(az, el):
+            return -50.0 < az < 25.0 and -14.5 < el < 22.0 and abs(az + 11.0) >= 2.0
+
+    def behind_que(e, p):
+        d = p - e
+        for q in PF['que']:
+            lo = np.array([q['pos'][0] - 3.95, 0.0 - td, q['pos'][2] - 5.95 + AM.fwd(L['F5'])])
+            hi = np.array([q['pos'][0] + 3.95, q['height_m'] - td, q['pos'][2] + 5.95 + AM.fwd(L['F5'])])
+            t0, t1 = 0.0, 1.0
+            for k in range(3):
+                if abs(d[k]) < 1e-9:
+                    if e[k] < lo[k] or e[k] > hi[k]:
+                        t0, t1 = 1.0, 0.0
+                    continue
+                u, v = sorted(((lo[k] - e[k]) / d[k], (hi[k] - e[k]) / d[k]))
+                t0, t1 = max(t0, u), min(t1, v)
+            if t0 <= t1:
+                return True
+        return False
+
     best = None
     for lp in PF['lamps']:
         p = np.array(lp['flame_pos']) + np.array([0.0, -td, AM.fwd(L['F5'])])
         dv = p - (busw + EYE)
         dist = np.linalg.norm(dv)
         az, el = math.degrees(math.atan2(dv[0], dv[2])), math.degrees(math.asin(dv[1] / dist))
-        if not (-50.0 < az < 25.0 and -14.5 < el < 22.0) or abs(az + 11.0) < 2.0:
+        if not through(az, el):
+            continue
+        if any(behind_que(np.array([0.0, -AM.depth(t), AM.fwd(t)]) + EYE, p) for t in np.arange(L['F5'], L['F5'] + 3.01, 0.5)):
             continue
         if best is None or dist < best[0]:
-            best = (dist, lp['id'], p)
-    return dict(id=best[1], position_water=R(best[2], 3), distance_at_F5_m=round(best[0], 2), t_on=L['F5'], fade_in_s=3.0,
+            best = (dist, lp['id'], p, az, el)
+    return dict(id=best[1], position_water=R(best[2], 3), distance_at_F5_m=round(best[0], 2), az_el_at_F5=[round(best[3], 1), round(best[4], 1)],
+                picked_by='PAZ-672 viewcheck grid (1 deg margin) + que bodies' if os.path.exists(grid) else 'bible_v2 window box (fallback)',
+                t_on=L['F5'], fade_in_s=3.0,
                 colour=R(fill('#E0A860', 'S7b')), flux=3.0, radius_m=0.25, halo_radius_m=0.85, halo_flux=0.7,
                 halo_note='a soft halo of ~1.6 deg (<= 2 deg) around the point so it can be found at 640 px (终审 7a 二): a second, wider and '
                           'dimmer point in the same mesh',

@@ -1,0 +1,79 @@
+{
+ "F7_B": {
+  "APL": 12.89,
+  "max_luma": 250.9,
+  "brightest_xy_frac": [
+   0.086,
+   0.38
+  ],
+  "purple_frac": 0.0,
+  "purple_D21_frac": 0.0,
+  "frac_luma_gt_200": 0.0002
+ },
+ "F7_Bp": {
+  "APL": 12.8,
+  "max_luma": 250.7,
+  "brightest_xy_frac": [
+   0.176,
+   0.38
+  ],
+  "purple_frac": 0.0,
+  "purple_D21_frac": 0.0,
+  "frac_luma_gt_200": 0.0002
+ },
+ "F7_C": {
+  "APL": 13.31,
+  "max_luma": 249.7,
+  "brightest_xy_frac": [
+   0.107,
+   0.37
+  ],
+  "purple_frac": 0.0,
+  "purple_D21_frac": 0.0,
+  "frac_luma_gt_200": 0.0002
+ },
+ "F7_now": {
+  "APL": 12.26,
+  "max_luma": 250.8,
+  "brightest_xy_frac": [
+   0.219,
+   0.378
+  ],
+  "purple_frac": 0.0,
+  "purple_D21_frac": 0.0,
+  "frac_luma_gt_200": 0.0002
+ },
+ "L690_B": {
+  "APL": 8.59,
+  "max_luma": 249.1,
+  "brightest_xy_frac": [
+   0.657,
+   0.409
+  ],
+  "purple_frac": 0.0,
+  "purple_D21_frac": 0.0,
+  "frac_luma_gt_200": 0.0001
+ },
+ "L690_Bp": {
+  "APL": 8.73,
+  "max_luma": 246.3,
+  "brightest_xy_frac": [
+   0.765,
+   0.441
+  ],
+  "purple_frac": 0.0,
+  "purple_D21_frac": 0.0,
+  "frac_luma_gt_200": 0.0001
+ },
+ "L690_now": {
+  "APL": 8.66,
+  "max_luma": 250.4,
+  "brightest_xy_frac": [
+   0.841,
+   0.463
+  ],
+  "purple_frac": 0.0,
+  "purple_D21_frac": 0.0,
+  "frac_luma_gt_200": 0.0001
+ }
+}
