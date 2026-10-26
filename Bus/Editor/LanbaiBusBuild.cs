@@ -35,7 +35,7 @@ public static class LanbaiBusBuild
     [Serializable] public class Col { public string name; public float[] c; public float[] s; }
     [Serializable] public class Pose { public float[] position; public float yaw_deg; }
     [Serializable] public class DoorPanel { public string name; public Pose open; public Pose closed; }
-    [Serializable] public class FillLight { public float[] pos; public string colour; }
+    [Serializable] public class FillLight { public float[] pos; public string colour; public float intensity; public float range; }
     [Serializable] public class BusBox { public float[] bounds_min; public float[] bounds_max; }
     [Serializable] public class PartInfo { public string type; public int res; public float metres_per_uv; public string[] instances; }
     [Serializable] public class Layout
@@ -264,7 +264,10 @@ public static class LanbaiBusBuild
                 var li = go.AddComponent<Light>();
                 li.type = LightType.Point; li.renderMode = LightRenderMode.ForceVertex; li.shadows = LightShadows.None;
                 li.color = Hex(string.IsNullOrEmpty(hl.colour) ? "#E4F1F3" : hl.colour);
-                li.intensity = 0.5f; li.range = 6.0f; li.lightmapBakeType = LightmapBakeType.Realtime;   // range 6: one lamp per tube row reaches both ends of the 7.1 m cabin (calibrate on the #585F64 grey card)
+                // the two row lamps: 0.5 / range 6 (one per tube row reaches both ends of the 7.1 m cabin; calibrate on the #585F64
+                // grey card); D-48: the hero row's fill, front-upper-right of the hero seat (BusLayout gives its intensity / range)
+                li.intensity = hl.intensity > 0f ? hl.intensity : 0.5f; li.range = hl.range > 0f ? hl.range : 6.0f;
+                li.lightmapBakeType = LightmapBakeType.Realtime;
                 li.cullingMask = playerMask;
             }
         if (playerMask == 0) _rep.AppendLine("WARNING: layers Player / PlayerLocal not found: set the head-fill culling by hand");

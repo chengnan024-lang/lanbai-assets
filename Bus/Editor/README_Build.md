@@ -23,7 +23,7 @@
 
 - Console 里 `[Lanbai Bus] built Lanbai_Bus` 的报告：有没有 `MISSING SHADER`、`texture missing`、`unknown material`、`no field`、“class not compiled yet”（第一次导入时脚本还没编完，再点一次）。
 - **车厢立方图**：`M_Bus_Glass_*` 的 `_CabinCube` 是空的（报告会说）。在主座位眼位 (0.55, 1.70, 2.05) 只开管灯烘一张车厢立方图（不要在门附近烘、不要实时探针：门内 181 s 的教训），三个玻璃材质都填上。
-- **`LB_Journey.cabinLights`** 拖进 `HeadFill_0/1`（它按 `_Udon_CabinLightmap` 的同一条曲线缩放强度）；用灰卡在座位处校到 `#585F64`（Inspector 值 = E，D-00）。
+- **`LB_Journey.cabinLights`** 拖进 `HeadFill_0/1/2`（`HeadFill_2` 是 D-48 主座位那一排的补光，从前上方偏右来，让主座位上的手和身体比车厢中段的头像暗约 0.3 EV）（它按 `_Udon_CabinLightmap` 的同一条曲线缩放强度）；用灰卡在座位处校到 `#585F64`（Inspector 值 = E，D-00）。
 - **雨刮枢轴的朝向**：`LanbaiWipers` 要求枢轴的本地 +Y = 雨刮静止时的臂、+Z = 转轴。FBX 里不是的话要改 FBX 或加一层空物体。
 - 主座位的 `VRCStation`：坐下去眼睛应该在 (0.55, 1.70, 2.05) 附近；`LB_Udon` 的座位脚本按名字找 station 的话，名字对一下。
 - Project Settings → Player → Other Settings → Vertex Compression：**TexCoord0–3 和 Color 都不勾**（CONTROL §6 第 8 条是 TexCoord0–3；切片测试 `bus_slice.json` 的 `settings.vertex_compression_off` 还要 Color，而且是卡退出码的那种）。这是项目设置，两个菜单都不改（切片菜单只读出来报告），要你手动取消勾选。

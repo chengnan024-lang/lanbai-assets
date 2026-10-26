@@ -79,15 +79,41 @@ def _zone_attr(ob, fn):
         c.color = (min(1.0, max(0.0, r)), min(1.0, max(0.0, g)), min(1.0, max(0.0, b)), 1.0)
 
 
+GUSSET_GAP = 0.002     # the slice seam check (D-40 #1): the gusset sat inside the cushion's rear-lower corner
+
+
+def _gusset_clear(c, v1, v2, y_bottom, z_rear, gap=GUSSET_GAP):
+    """the rear-corner gusset triangle (c, v1 forward along the run, v2 up the back tube), with the part that would be
+    inside the cushion (above its bottom AND in front of its rear face) cut away, 'gap' clear of both: the hypotenuse
+    gets a notch round the cushion's corner. Unity (x, y, z) points; the plate's plane is x = const."""
+    yb, zr = y_bottom - gap, z_rear - gap
+    d = v2 - v1
+    if abs(d[1]) < 1e-9 or abs(d[2]) < 1e-9:
+        return [c, v1, v2]
+    ta = (yb - v1[1]) / d[1]                  # the hypotenuse reaches the cushion's bottom
+    tb = (zr - v1[2]) / d[2]                  # ... and passes behind its rear face
+    inside = lambda p: p[1] > yb and p[2] > zr
+    if not (0.0 < ta < tb < 1.0) or inside(c) or inside(v1) or inside(v2):
+        return [c, v1, v2]
+    A, B_ = v1 + ta * d, v1 + tb * d
+    K = np.array((c[0], yb, zr))
+    return [c, v1, A, K, B_, v2]
+
+
 def _plate(name, pts, x, t, collection):
     """a flat plate (a polygon in a plane x = const, Unity (y, z) from pts) t thick, chamfered edges."""
     import bmesh
     bm = bmesh.new()
     a = [bm.verts.new(BB.U2B((x - t / 2, float(p[1]), float(p[2])))) for p in pts]
     b = [bm.verts.new(BB.U2B((x + t / 2, float(p[1]), float(p[2])))) for p in pts]
-    bm.faces.new(a)
-    bm.faces.new(list(reversed(b)))
     n = len(pts)
+    if n == 6:         # the notched gusset (_gusset_clear: c, v1, A, K, B, v2): two convex quads sharing c-K
+        for q in ((0, 1, 2, 3), (0, 3, 4, 5)):
+            bm.faces.new([a[k] for k in q])
+            bm.faces.new([b[k] for k in reversed(q)])
+    else:
+        bm.faces.new(a)
+        bm.faces.new(list(reversed(b)))
     for k in range(n):
         bm.faces.new((a[k], b[k], b[(k + 1) % n], a[(k + 1) % n]))
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
@@ -314,7 +340,7 @@ def seat_module(name, x0, x1, back_z, cushion_y=None, double=False, wall_side=1,
             v1 = c0 + np.array((0.0, 0.004, 0.10))
             v2 = c0 + U_ * 0.10 + np.array((0.0, 0.0, 0.004))
             v3 = c0 + np.array((0.0, 0.004, 0.0)) + U_ * 0.004
-            frame_objs.append(_plate(name + '_Gusset%d' % i, [v3, v1, v2], xo, 0.003, collection))
+            frame_objs.append(_plate(name + '_Gusset%d' % i, _gusset_clear(v3, v1, v2, cy - CUSH_T, z0c), xo, 0.003, collection))
             for k, uu in enumerate((0.35 * H, 0.75 * H)):
                 if uu > 0.04:
                     pc = _bp(F, x + out * (R_T + 0.0006), uu, W_T)

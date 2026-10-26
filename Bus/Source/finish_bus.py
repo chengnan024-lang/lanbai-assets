@@ -655,6 +655,12 @@ def lm_uv_order(objs):
     return changed
 
 
+# D-48 (director 10-26): the hero row's head fill - front-upper-right of the hero seat (with the tubes and the window), so
+# the hero's hands and body sit ~0.3 EV under the mid-cabin heads (hands -0.30, lap -0.36, chest -0.25, head -0.15 EV;
+# before it -1.2 .. -1.6 EV), with Unity's vertex point-light attenuation 1 / (1 + 25 d^2 / r^2). Lights only avatars.
+HERO_FILL = ((0.95, 1.95, 3.35), 0.646, 5.0)        # position (unity), intensity, range
+
+
 # D-36 budget: every seat gets two lighter copies, Seat_<inst>_LOD1 (50 %) and _LOD2 (25 %); LanbaiBusBuild puts the
 # three in one LODGroup (LOD1 from about 3 m, LOD2 from about 8 m)
 SEAT_LODS = ((1, 0.5), (2, 0.25))
@@ -874,7 +880,12 @@ def layout(out):
                     centres=[[B.XC + s * B.TRACK_HALF, B.WHEEL_R, z] for z in B.AXLES for s in (1, -1)]),
         tubes=[dict(row=r, x=x, z0=z0, z1=z1) for r, x, zl in (('L', B.TUBE_X[0], B.TUBE_Z_L), ('R', B.TUBE_X[1], B.TUBE_Z)) for z0, z1 in zl],
         head_fill_lights=[dict(pos=[x, 2.45, 0.0], colour='#E4F1F3', render_mode='Not Important', culling='Player + PlayerLocal',
-                               note='圣经 §4.3：座位处灰卡 #585F64，强度 × _Udon_CabinLightmap') for x in B.TUBE_X],
+                               intensity=0.5, range=6.0,
+                               note='圣经 §4.3：座位处灰卡 #585F64，强度 × _Udon_CabinLightmap') for x in B.TUBE_X] +
+                         [dict(pos=list(HERO_FILL[0]), colour='#E4F1F3', render_mode='Not Important', culling='Player + PlayerLocal',
+                               intensity=HERO_FILL[1], range=HERO_FILL[2],
+                               note='D-48（总导演 10-26）：主座位那一排的补光，从前上方偏右来；主座位上的手和身体比车厢中段的头像暗约 0.3 EV'
+                                    '（Unity 逐顶点点光的衰减 1 / (1 + 25 d² / r²) 算的）。只照人（Player 层），座垫上不会有新亮斑和影子')],
         bus=dict(model='PAZ-672 (D-28)', centre_x=B.XC, width=2 * B.W_HALF, length=B.Z_FRONT - B.Z_REAR, height=B.Y_TOP,
                  bounds_min=[B.XC - B.W_HALF, 0.0, B.Z_REAR], bounds_max=[B.R_WALL, 2.80, B.Z_FRONT + 0.12]),
         radio=dict(centre=list(B.RADIO_C), az_el=[-20, -12]), steering_wheel=dict(centre=list(B.WHEEL_C), tilt_deg=B.WHEEL_TILT),
