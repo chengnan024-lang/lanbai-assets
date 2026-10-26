@@ -64,62 +64,62 @@
   {
    "row": "L",
    "x": -0.73,
-   "z0": -3.1,
-   "z1": -1.9500000000000002
+   "z0": -3.02,
+   "z1": -2.03
   },
   {
    "row": "L",
    "x": -0.73,
-   "z0": -1.83,
-   "z1": -0.6800000000000002
+   "z0": -1.75,
+   "z1": -0.7599999999999999
   },
   {
    "row": "L",
    "x": -0.73,
-   "z0": -0.56,
-   "z1": 0.5899999999999999
+   "z0": -0.47999999999999987,
+   "z1": 0.5100000000000001
   },
   {
    "row": "L",
    "x": -0.73,
-   "z0": 0.71,
-   "z1": 1.8599999999999999
+   "z0": 0.7900000000000001,
+   "z1": 1.7800000000000002
   },
   {
    "row": "L",
    "x": -0.73,
-   "z0": 1.98,
-   "z1": 3.13
+   "z0": 2.06,
+   "z1": 3.0500000000000003
   },
   {
    "row": "R",
    "x": 0.37000000000000005,
-   "z0": -3.38,
-   "z1": -2.23
+   "z0": -3.47,
+   "z1": -2.48
   },
   {
    "row": "R",
    "x": 0.37000000000000005,
-   "z0": -2.23,
-   "z1": -1.08
+   "z0": -2.4125,
+   "z1": -1.4225
   },
   {
    "row": "R",
    "x": 0.37000000000000005,
-   "z0": -1.08,
-   "z1": 0.06999999999999984
+   "z0": -1.3550000000000004,
+   "z1": -0.36500000000000044
   },
   {
    "row": "R",
    "x": 0.37000000000000005,
-   "z0": 0.06999999999999984,
-   "z1": 1.2199999999999998
+   "z0": -0.29750000000000076,
+   "z1": 0.6924999999999992
   },
   {
    "row": "R",
    "x": 0.37000000000000005,
-   "z0": 1.2199999999999998,
-   "z1": 2.37
+   "z0": 0.7599999999999993,
+   "z1": 1.7499999999999993
   }
  ],
  "head_fill_lights": [
@@ -902,7 +902,7 @@
   {
    "type": "DriverSeat",
    "res": 2048,
-   "metres_per_uv": 2.18211,
+   "metres_per_uv": 1.98946,
    "instances": [
     "Seat_DriverSeat"
    ],
@@ -911,7 +911,7 @@
   {
    "type": "RearBench",
    "res": 1024,
-   "metres_per_uv": 4.52534,
+   "metres_per_uv": 4.08823,
    "instances": [
     "Seat_RearBench"
    ],
@@ -920,7 +920,7 @@
   {
    "type": "SeatL",
    "res": 1024,
-   "metres_per_uv": 3.0517,
+   "metres_per_uv": 3.88849,
    "instances": [
     "Seat_SeatL0",
     "Seat_SeatL1",
@@ -932,7 +932,7 @@
   {
    "type": "SeatLBox",
    "res": 1024,
-   "metres_per_uv": 2.77518,
+   "metres_per_uv": 2.81873,
    "instances": [
     "Seat_SeatL4",
     "Seat_SeatL5"
@@ -942,7 +942,7 @@
   {
    "type": "SeatHero",
    "res": 2048,
-   "metres_per_uv": 2.03469,
+   "metres_per_uv": 2.0474,
    "instances": [
     "Seat_SeatR0"
    ],
@@ -951,7 +951,7 @@
   {
    "type": "SeatR",
    "res": 2048,
-   "metres_per_uv": 2.17718,
+   "metres_per_uv": 2.39184,
    "instances": [
     "Seat_SeatR1",
     "Seat_SeatR2",
@@ -1001,8 +1001,8 @@
    "tris": 356
   },
   "Cabin_Static": {
-   "verts": 167836,
-   "tris": 320233
+   "verts": 57820,
+   "tris": 101009
   },
   "Cabin_Tubes": {
    "verts": 960,
@@ -1145,64 +1145,64 @@
    "tris": 4020
   },
   "Seat_DriverSeat": {
-   "verts": 3904,
-   "tris": 7692
+   "verts": 2836,
+   "tris": 5556
   },
   "Seat_RearBench": {
-   "verts": 10448,
-   "tris": 20736
+   "verts": 7340,
+   "tris": 14520
   },
   "Seat_SeatL0": {
-   "verts": 6824,
-   "tris": 13460
+   "verts": 5484,
+   "tris": 10780
   },
   "Seat_SeatL1": {
-   "verts": 6824,
-   "tris": 13460
+   "verts": 5484,
+   "tris": 10780
   },
   "Seat_SeatL2": {
-   "verts": 6824,
-   "tris": 13460
+   "verts": 5484,
+   "tris": 10780
   },
   "Seat_SeatL3": {
-   "verts": 6824,
-   "tris": 13460
+   "verts": 5484,
+   "tris": 10780
   },
   "Seat_SeatL4": {
-   "verts": 4908,
-   "tris": 9680
+   "verts": 3568,
+   "tris": 7000
   },
   "Seat_SeatL5": {
-   "verts": 4908,
-   "tris": 9680
+   "verts": 3568,
+   "tris": 7000
   },
   "Seat_SeatR0": {
-   "verts": 4556,
-   "tris": 8976
+   "verts": 3536,
+   "tris": 6936
   },
   "Seat_SeatR1": {
-   "verts": 5868,
-   "tris": 11552
+   "verts": 4848,
+   "tris": 9512
   },
   "Seat_SeatR2": {
-   "verts": 5868,
-   "tris": 11552
+   "verts": 4848,
+   "tris": 9512
   },
   "Seat_SeatR3": {
-   "verts": 5868,
-   "tris": 11552
+   "verts": 4848,
+   "tris": 9512
   },
   "Seat_SeatR4": {
-   "verts": 5868,
-   "tris": 11552
+   "verts": 4848,
+   "tris": 9512
   },
   "Seat_SeatR5": {
-   "verts": 5868,
-   "tris": 11552
+   "verts": 4848,
+   "tris": 9512
   },
   "Seat_SeatR6": {
-   "verts": 5868,
-   "tris": 11552
+   "verts": 4848,
+   "tris": 9512
   },
   "Wheel_FL": {
    "verts": 648,
@@ -1221,8 +1221,8 @@
    "tris": 1284
   },
   "Window_R1": {
-   "verts": 14556,
-   "tris": 28044
+   "verts": 5304,
+   "tris": 7500
   },
   "Wiper-0.14": {
    "verts": 32,
@@ -1231,7 +1231,166 @@
   "Wiper-1.18": {
    "verts": 32,
    "tris": 28
+  },
+  "Seat_DriverSeat_LOD1": {
+   "verts": 1447,
+   "tris": 2778
+  },
+  "Seat_DriverSeat_LOD2": {
+   "verts": 752,
+   "tris": 1388
+  },
+  "Seat_RearBench_LOD1": {
+   "verts": 3710,
+   "tris": 7260
+  },
+  "Seat_RearBench_LOD2": {
+   "verts": 1895,
+   "tris": 3630
+  },
+  "Seat_SeatL0_LOD1": {
+   "verts": 2789,
+   "tris": 5390
+  },
+  "Seat_SeatL0_LOD2": {
+   "verts": 1441,
+   "tris": 2694
+  },
+  "Seat_SeatL1_LOD1": {
+   "verts": 2789,
+   "tris": 5390
+  },
+  "Seat_SeatL1_LOD2": {
+   "verts": 1441,
+   "tris": 2694
+  },
+  "Seat_SeatL2_LOD1": {
+   "verts": 2789,
+   "tris": 5390
+  },
+  "Seat_SeatL2_LOD2": {
+   "verts": 1441,
+   "tris": 2694
+  },
+  "Seat_SeatL3_LOD1": {
+   "verts": 2789,
+   "tris": 5390
+  },
+  "Seat_SeatL3_LOD2": {
+   "verts": 1441,
+   "tris": 2694
+  },
+  "Seat_SeatL4_LOD1": {
+   "verts": 1818,
+   "tris": 3500
+  },
+  "Seat_SeatL4_LOD2": {
+   "verts": 943,
+   "tris": 1750
+  },
+  "Seat_SeatL5_LOD1": {
+   "verts": 1818,
+   "tris": 3500
+  },
+  "Seat_SeatL5_LOD2": {
+   "verts": 943,
+   "tris": 1750
+  },
+  "Seat_SeatR0_LOD1": {
+   "verts": 1802,
+   "tris": 3468
+  },
+  "Seat_SeatR0_LOD2": {
+   "verts": 935,
+   "tris": 1734
+  },
+  "Seat_SeatR1_LOD1": {
+   "verts": 2470,
+   "tris": 4756
+  },
+  "Seat_SeatR1_LOD2": {
+   "verts": 1281,
+   "tris": 2378
+  },
+  "Seat_SeatR2_LOD1": {
+   "verts": 2470,
+   "tris": 4756
+  },
+  "Seat_SeatR2_LOD2": {
+   "verts": 1281,
+   "tris": 2378
+  },
+  "Seat_SeatR3_LOD1": {
+   "verts": 2470,
+   "tris": 4756
+  },
+  "Seat_SeatR3_LOD2": {
+   "verts": 1281,
+   "tris": 2378
+  },
+  "Seat_SeatR4_LOD1": {
+   "verts": 2470,
+   "tris": 4756
+  },
+  "Seat_SeatR4_LOD2": {
+   "verts": 1281,
+   "tris": 2378
+  },
+  "Seat_SeatR5_LOD1": {
+   "verts": 2470,
+   "tris": 4756
+  },
+  "Seat_SeatR5_LOD2": {
+   "verts": 1281,
+   "tris": 2378
+  },
+  "Seat_SeatR6_LOD1": {
+   "verts": 2470,
+   "tris": 4756
+  },
+  "Seat_SeatR6_LOD2": {
+   "verts": 1281,
+   "tris": 2378
   }
  },
- "stats_total_tris": 595101
+ "stats_total_tris": 422519,
+ "stats_lod0_tris": 309048,
+ "seat_lods": {
+  "ratios": {
+   "LOD1": 0.5,
+   "LOD2": 0.25
+  },
+  "objects": [
+   "Seat_DriverSeat_LOD1",
+   "Seat_DriverSeat_LOD2",
+   "Seat_RearBench_LOD1",
+   "Seat_RearBench_LOD2",
+   "Seat_SeatL0_LOD1",
+   "Seat_SeatL0_LOD2",
+   "Seat_SeatL1_LOD1",
+   "Seat_SeatL1_LOD2",
+   "Seat_SeatL2_LOD1",
+   "Seat_SeatL2_LOD2",
+   "Seat_SeatL3_LOD1",
+   "Seat_SeatL3_LOD2",
+   "Seat_SeatL4_LOD1",
+   "Seat_SeatL4_LOD2",
+   "Seat_SeatL5_LOD1",
+   "Seat_SeatL5_LOD2",
+   "Seat_SeatR0_LOD1",
+   "Seat_SeatR0_LOD2",
+   "Seat_SeatR1_LOD1",
+   "Seat_SeatR1_LOD2",
+   "Seat_SeatR2_LOD1",
+   "Seat_SeatR2_LOD2",
+   "Seat_SeatR3_LOD1",
+   "Seat_SeatR3_LOD2",
+   "Seat_SeatR4_LOD1",
+   "Seat_SeatR4_LOD2",
+   "Seat_SeatR5_LOD1",
+   "Seat_SeatR5_LOD2",
+   "Seat_SeatR6_LOD1",
+   "Seat_SeatR6_LOD2"
+  ]
+ }
 }
