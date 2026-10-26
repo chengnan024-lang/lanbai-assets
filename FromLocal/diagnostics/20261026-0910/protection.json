@@ -1,0 +1,155 @@
+{
+  "time": "2026-10-26T09:32:31.268831-04:00",
+  "scope": "All .cs/.shader/.cginc/.mat/.asset/.unity/.json/.meta under Assets/Lanbai, not whole disk",
+  "before_files": 2627,
+  "after_files": 2641,
+  "existing_changed": 0,
+  "added_diagnostic_files_and_meta": [
+    {
+      "path": "Assets/Lanbai/Tests/Editor/LB_DiagnosticObjectId.shader",
+      "before": null,
+      "after": "89434dbb9ae7b0051aee85406b1513e133fa45adacb0a7634e84232c4be70785"
+    },
+    {
+      "path": "Assets/Lanbai/Tests/Editor/LB_DiagnosticObjectId.shader.meta",
+      "before": null,
+      "after": "e32dbeb0ddb7ac754a305059f722eac49349e78d58b26889c2c77f49e9e69b4c"
+    },
+    {
+      "path": "Assets/Lanbai/Tests/Editor/LB_DiagnosticTreeBark.shader",
+      "before": null,
+      "after": "33182b5bce47e8498d554b85fbb3cfccf862a784f6bb95a40fa7c6be7a221a9a"
+    },
+    {
+      "path": "Assets/Lanbai/Tests/Editor/LB_DiagnosticTreeBark.shader.meta",
+      "before": null,
+      "after": "fd0240bccf1a25e137f7ce29e0f267d7082c2b723664f6e028c8fa207fd0219f"
+    },
+    {
+      "path": "Assets/Lanbai/Tests/Editor/LB_DiagnosticTreeLeaf.shader",
+      "before": null,
+      "after": "764d70a3369893159e80b5f47df26ba0303679bcbefbb9b1f0213f52e388b18d"
+    },
+    {
+      "path": "Assets/Lanbai/Tests/Editor/LB_DiagnosticTreeLeaf.shader.meta",
+      "before": null,
+      "after": "604bbe8d3b6a22d8bbe2a04eabcb3cf2fb20a99b3124477a117ba93bd7d2aa91"
+    },
+    {
+      "path": "Assets/Lanbai/Tests/Editor/LB_SamplingTimeDiagnostic.cs",
+      "before": null,
+      "after": "15f9449159eff0cb12992875e86dd395c257e5451d8e4013726140fa6c9841bd"
+    },
+    {
+      "path": "Assets/Lanbai/Tests/Editor/LB_SamplingTimeDiagnostic.cs.meta",
+      "before": null,
+      "after": "206a8cf90e093a8c193832332ce390963356ce2949108918c58b14191c0cc5bd"
+    },
+    {
+      "path": "Assets/Lanbai/Tests/Editor/LB_SamplingTimeDiagnostic.shader",
+      "before": null,
+      "after": "f1a47e3532123c75a0fd59db28e02dbaa3b1cbfac2e92966ad743acc090a7bbe"
+    },
+    {
+      "path": "Assets/Lanbai/Tests/Editor/LB_SamplingTimeDiagnostic.shader.meta",
+      "before": null,
+      "after": "fa9673a3c03573d65c5c28eb1a48617241cd1154d91a52c4232af0b4592cdcf6"
+    },
+    {
+      "path": "Assets/Lanbai/Tests/Editor/LB_TreeControlledDiagnostic.cs",
+      "before": null,
+      "after": "c7f4254d5e5f7d2ee0ca231f2f1442ea3e4ad73b97a4c19be9b8e89e97af1830"
+    },
+    {
+      "path": "Assets/Lanbai/Tests/Editor/LB_TreeControlledDiagnostic.cs.meta",
+      "before": null,
+      "after": "8001578400d064470a80148a5d8bc25e767239ee888aa0a9f0a123bfbcc1c68f"
+    },
+    {
+      "path": "Assets/Lanbai/Tests/Editor/LB_WindowIdDiagnostic.cs",
+      "before": null,
+      "after": "9c1f5a4f27ef3b25e33cf782ba1a163dc8cfac44788095916ab9727843aba098"
+    },
+    {
+      "path": "Assets/Lanbai/Tests/Editor/LB_WindowIdDiagnostic.cs.meta",
+      "before": null,
+      "after": "1324d347fb476300aadb2c86831cd5d01dc55a1a08f3f2350d568e06b689a0a0"
+    }
+  ],
+  "heartbeat": {
+    "time": "2026-10-26T09:32:28.2198450-04:00",
+    "editorTime": 30658.741899599998,
+    "focused": true,
+    "playing": false,
+    "compiling": false,
+    "updating": false,
+    "compileFailed": false,
+    "scene": "Assets/Lanbai/Scenes/Lanbai_FullPreview.unity",
+    "sceneDirty": false,
+    "request": "",
+    "step": 0,
+    "phase": 0,
+    "unity": "2022.3.22f1",
+    "note": "loaded"
+  },
+  "requests": [
+    {
+      "id": "diagnostic_20261026_0910_install",
+      "state": "done",
+      "finished": "2026-10-26 09:10:28"
+    },
+    {
+      "id": "diagnostic_20261026_0910_window",
+      "state": "done",
+      "finished": "2026-10-26 09:10:42"
+    },
+    {
+      "id": "diagnostic_20261026_0914_window_precision",
+      "state": "done",
+      "finished": "2026-10-26 09:13:29"
+    },
+    {
+      "id": "diagnostic_20261026_0920_sampling_time",
+      "state": "done",
+      "finished": "2026-10-26 09:16:45"
+    },
+    {
+      "id": "diagnostic_20261026_0930_tree_control",
+      "state": "done",
+      "finished": "2026-10-26 09:20:03"
+    },
+    {
+      "id": "diagnostic_20261026_0935_tree_specular",
+      "state": "failed",
+      "finished": "2026-10-26 09:22:36"
+    },
+    {
+      "id": "diagnostic_20261026_0940_tree_noise_control",
+      "state": "done",
+      "finished": "2026-10-26 09:24:41"
+    },
+    {
+      "id": "diagnostic_20261026_0950_tree_direct_specular",
+      "state": "failed",
+      "finished": "2026-10-26 09:30:18"
+    }
+  ],
+  "scene_saves": 0,
+  "Play_entries": 0,
+  "asset_save_calls": 0,
+  "source_revision": "11c2f447c56444e171beb4f0cbe26fa8b505a6ab",
+  "fetch_main": "d51bf9e4ac0976efca843ec9387ddeb054574d8b",
+  "actual_model": "gpt-6-astra",
+  "actual_effort": "ultra",
+  "turn_context_time": "2026-10-26T13:05:33.513Z",
+  "resources_at_start": {
+    "C_free_GiB": 19.44,
+    "E_free_GiB": 64.37,
+    "RAM_free_GiB": 7.3
+  },
+  "resources_at_finish": {
+    "C_free_GiB": 19.39,
+    "E_free_GiB": 64.3,
+    "RAM_free_GiB": 4.74
+  }
+}

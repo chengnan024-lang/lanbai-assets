@@ -1,0 +1,13 @@
+{
+  "id": "diagnostic_20261026_0950_tree_direct_specular",
+  "steps": [
+    {
+      "op": "refresh"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_TreeControlledDiagnostic.NoSpecular",
+      "arg": "lod0_fixedphase_locked_dither_direct_spec_only"
+    }
+  ]
+}

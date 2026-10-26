@@ -1,0 +1,18 @@
+{
+  "id": "diagnostic_20261026_0940_tree_noise_control",
+  "steps": [
+    {
+      "op": "refresh"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_TreeControlledDiagnostic.Run",
+      "arg": "lod0_fixedphase_locked_dither"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_TreeControlledDiagnostic.NoSpecular",
+      "arg": "lod0_fixedphase_locked_dither_nospec"
+    }
+  ]
+}

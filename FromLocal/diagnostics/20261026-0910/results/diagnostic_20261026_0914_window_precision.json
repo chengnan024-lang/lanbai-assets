@@ -1,0 +1,20 @@
+{
+    "id": "diagnostic_20261026_0914_window_precision",
+    "state": "done",
+    "step": 2,
+    "total": 2,
+    "started": "2026-10-26 09:13:21",
+    "finished": "2026-10-26 09:13:29",
+    "error": "",
+    "log": [
+        "09:13:21 收到请求，共 2 步",
+        "09:13:21 刷新导入（AssetDatabase.Refresh）",
+        "09:13:25 （脚本重新加载，接着做第 1 步）",
+        "09:13:27 导入和编译完成",
+        "09:13:27 调用 Lanbai.Tests.LB_WindowIdDiagnostic.Convergence（precision_ss8_box）",
+        "09:13:29   用时 2.3 秒",
+        "09:13:29   返回：Diagnostic captured two original cameras, no world edits: E:/IDMdownload/VRCC/Backups/continuation_20261026/window_id_0910/precision_ss8_box",
+        "09:13:29 全部完成"
+    ],
+    "files": []
+}

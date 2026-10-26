@@ -1,0 +1,23 @@
+{
+    "id": "diagnostic_20261026_0940_tree_noise_control",
+    "state": "done",
+    "step": 3,
+    "total": 3,
+    "started": "2026-10-26 09:24:29",
+    "finished": "2026-10-26 09:24:41",
+    "error": "",
+    "log": [
+        "09:24:29 收到请求，共 3 步",
+        "09:24:29 刷新导入（AssetDatabase.Refresh）",
+        "09:24:32 （脚本重新加载，接着做第 1 步）",
+        "09:24:33 导入和编译完成",
+        "09:24:34 调用 Lanbai.Tests.LB_TreeControlledDiagnostic.Run（lod0_fixedphase_locked_dither）",
+        "09:24:37   用时 3.7 秒",
+        "09:24:37   返回：E:/IDMdownload/VRCC/Backups/continuation_20261026/tree_control_0930/lod0_fixedphase_locked_dither",
+        "09:24:38 调用 Lanbai.Tests.LB_TreeControlledDiagnostic.NoSpecular（lod0_fixedphase_locked_dither_nospec）",
+        "09:24:41   用时 3.1 秒",
+        "09:24:41   返回：E:/IDMdownload/VRCC/Backups/continuation_20261026/tree_control_0930/lod0_fixedphase_locked_dither_nospec",
+        "09:24:41 全部完成"
+    ],
+    "files": []
+}

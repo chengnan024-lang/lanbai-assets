@@ -1,0 +1,622 @@
+{
+  "status": "diagnostic_not_acceptance",
+  "frames": 30,
+  "dimensions": [834, 614],
+  "low_ss": 1,
+  "reference_ss": 4,
+  "msaa": 4,
+  "fixed_LOD": 0,
+  "fixed_wind_method": "Clone materials set WindFreq=FlutterFreq=0; amplitude and vertex/root phase retained. Original material assets untouched.",
+  "legacy_reference_error": {
+    "mean": 4.1725226985229176,
+    "p99": 20.807197986381748,
+    "fraction_gt4": 0.38469881840491854,
+    "roi_pixels": 347581
+  },
+  "box_reference_error": {
+    "mean": 4.102232758226215,
+    "p99": 20.415421924805333,
+    "fraction_gt4": 0.3799718626737365,
+    "roi_pixels": 347581
+  },
+  "reference_method_difference_mean_srgb": 1.3930961542964553,
+  "samples": [
+    {
+      "sample": 0,
+      "synthetic_motion_t": 0,
+      "editor_time": 29909.455809699997,
+      "frame_count": 12,
+      "low_gpu_Time": 3.3533334732055664,
+      "ref_gpu_Time": 3.3533334732055664,
+      "fixed_wind_phase_time": 0,
+      "fixed_lod": 0,
+      "eye": [0.56444239616394043, 1.7156082391738892, 2.0516855716705322],
+      "rotation": [-0.11902529746294022, 0.27345877885818481, 0.036020740866661072, 0.9538111686706543]
+    },
+    {
+      "sample": 1,
+      "synthetic_motion_t": 0.03409961611032486,
+      "editor_time": 29909.796634399998,
+      "frame_count": 12,
+      "low_gpu_Time": 3.3533334732055664,
+      "ref_gpu_Time": 3.3533334732055664,
+      "fixed_wind_phase_time": 0,
+      "fixed_lod": 0,
+      "eye": [0.56402319669723511, 1.7165411710739136, 2.0495765209198],
+      "rotation": [-0.11900309473276138, 0.2727658748626709, 0.036467023193836212, 0.953995406627655]
+    },
+    {
+      "sample": 2,
+      "synthetic_motion_t": 0.068199232220649719,
+      "editor_time": 29910.0395536,
+      "frame_count": 12,
+      "low_gpu_Time": 3.3533334732055664,
+      "ref_gpu_Time": 3.3533334732055664,
+      "fixed_wind_phase_time": 0,
+      "fixed_lod": 0,
+      "eye": [0.5623854398727417, 1.7166053056716919, 2.0483639240264893],
+      "rotation": [-0.11929386109113693, 0.27177459001541138, 0.036951478570699692, 0.95422333478927612]
+    },
+    {
+      "sample": 3,
+      "synthetic_motion_t": 0.10229884833097458,
+      "editor_time": 29910.2803641,
+      "frame_count": 12,
+      "low_gpu_Time": 3.3533334732055664,
+      "ref_gpu_Time": 3.3533334732055664,
+      "fixed_wind_phase_time": 0,
+      "fixed_lod": 0,
+      "eye": [0.56002748012542725, 1.7156466245651245, 2.0479927062988281],
+      "rotation": [-0.11980782449245453, 0.27069658041000366, 0.037403564900159836, 0.95444768667221069]
+    },
+    {
+      "sample": 4,
+      "synthetic_motion_t": 0.13639846444129944,
+      "editor_time": 29910.4322736,
+      "frame_count": 12,
+      "low_gpu_Time": 3.3533334732055664,
+      "ref_gpu_Time": 3.3533334732055664,
+      "fixed_wind_phase_time": 0,
+      "fixed_lod": 0,
+      "eye": [0.55757015943527222, 1.7136300802230835, 2.0482797622680664],
+      "rotation": [-0.1204332560300827, 0.26974108815193176, 0.037752896547317505, 0.95462572574615479]
+    },
+    {
+      "sample": 5,
+      "synthetic_motion_t": 0.1704980731010437,
+      "editor_time": 29910.5731667,
+      "frame_count": 12,
+      "low_gpu_Time": 3.3533334732055664,
+      "ref_gpu_Time": 3.3533334732055664,
+      "fixed_wind_phase_time": 0,
+      "fixed_lod": 0,
+      "eye": [0.55563580989837646, 1.710648775100708, 2.0489721298217773],
+      "rotation": [-0.12105002999305725, 0.26907983422279358, 0.037938758730888367, 0.95472699403762817]
+    },
+    {
+      "sample": 6,
+      "synthetic_motion_t": 0.20459769666194916,
+      "editor_time": 29910.714341799998,
+      "frame_count": 12,
+      "low_gpu_Time": 3.3533334732055664,
+      "ref_gpu_Time": 3.3533334732055664,
+      "fixed_wind_phase_time": 0,
+      "fixed_lod": 0,
+      "eye": [0.55472487211227417, 1.7069162130355835, 2.0498099327087402],
+      "rotation": [-0.1215442568063736, 0.26881888508796692, 0.037917941808700562, 0.95473849773406982]
+    },
+    {
+      "sample": 7,
+      "synthetic_motion_t": 0.23869730532169342,
+      "editor_time": 29910.8537297,
+      "frame_count": 12,
+      "low_gpu_Time": 3.3533334732055664,
+      "ref_gpu_Time": 3.3533334732055664,
+      "fixed_wind_phase_time": 0,
+      "fixed_lod": 0,
+      "eye": [0.555115818977356, 1.7027415037155151, 2.0505878925323486],
+      "rotation": [-0.12182214856147766, 0.26898133754730225, 0.037670020014047623, 0.95466715097427368]
+    },
+    {
+      "sample": 8,
+      "synthetic_motion_t": 0.27279692888259888,
+      "editor_time": 29910.993021,
+      "frame_count": 12,
+      "low_gpu_Time": 3.3533334732055664,
+      "ref_gpu_Time": 3.3533334732055664,
+      "fixed_wind_phase_time": 0,
+      "fixed_lod": 0,
+      "eye": [0.556806206703186, 1.698493480682373, 2.051196813583374],
+      "rotation": [-0.12182124704122543, 0.26950407028198242, 0.037199791520833969, 0.95453828573226929]
+    },
+    {
+      "sample": 9,
+      "synthetic_motion_t": 0.30689653754234314,
+      "editor_time": 29911.1329783,
+      "frame_count": 12,
+      "low_gpu_Time": 3.3533334732055664,
+      "ref_gpu_Time": 3.3533334732055664,
+      "fixed_wind_phase_time": 0,
+      "fixed_lod": 0,
+      "eye": [0.55950909852981567, 1.6945545673370361, 2.0516402721405029],
+      "rotation": [-0.12151798605918884, 0.27024900913238525, 0.036536999046802521, 0.95439189672470093]
+    },
+    {
+      "sample": 10,
+      "synthetic_motion_t": 0.3409961462020874,
+      "editor_time": 29911.2713638,
+      "frame_count": 12,
+      "low_gpu_Time": 3.3533334732055664,
+      "ref_gpu_Time": 3.3533334732055664,
+      "fixed_wind_phase_time": 0,
+      "fixed_lod": 0,
+      "eye": [0.56270366907119751, 1.6912730932235718, 2.05202317237854],
+      "rotation": [-0.12093048542737961, 0.27102738618850708, 0.035733390599489212, 0.95427620410919189]
+    },
+    {
+      "sample": 11,
+      "synthetic_motion_t": 0.37509578466415405,
+      "editor_time": 29911.411083699997,
+      "frame_count": 12,
+      "low_gpu_Time": 3.3533334732055664,
+      "ref_gpu_Time": 3.3533334732055664,
+      "fixed_wind_phase_time": 0,
+      "fixed_lod": 0,
+      "eye": [0.56573253870010376, 1.6889197826385498, 2.0525133609771729],
+      "rotation": [-0.12011634558439255, 0.27163213491439819, 0.034857325255870819, 0.95423948764801025]
+    },
+    {
+      "sample": 12,
+      "synthetic_motion_t": 0.40919539332389832,
+      "editor_time": 29911.5574915,
+      "frame_count": 12,
+      "low_gpu_Time": 3.3533334732055664,
+      "ref_gpu_Time": 3.3533334732055664,
+      "fixed_wind_phase_time": 0,
+      "fixed_lod": 0,
+      "eye": [0.56792622804641724, 1.6876528263092041, 2.053290843963623],
+      "rotation": [-0.11916599422693253, 0.27187377214431763, 0.033986244350671768, 0.95432132482528687]
+    },
+    {
+      "sample": 13,
+      "synthetic_motion_t": 0.44329500198364258,
+      "editor_time": 29911.7239714,
+      "frame_count": 12,
+      "low_gpu_Time": 3.3533334732055664,
+      "ref_gpu_Time": 3.3533334732055664,
+      "fixed_wind_phase_time": 0,
+      "fixed_lod": 0,
+      "eye": [0.56873065233230591, 1.6874986886978149, 2.0544881820678711],
+      "rotation": [-0.11819228529930115, 0.271613210439682, 0.033197693526744843, 0.95454424619674683]
+    },
+    {
+      "sample": 14,
+      "synthetic_motion_t": 0.47739461064338684,
+      "editor_time": 29911.881460999997,
+      "frame_count": 12,
+      "low_gpu_Time": 3.3533334732055664,
+      "ref_gpu_Time": 3.3533334732055664,
+      "fixed_wind_phase_time": 0,
+      "fixed_lod": 0,
+      "eye": [0.56781375408172607, 1.6883485317230225, 2.0561449527740479],
+      "rotation": [-0.11731764674186707, 0.27078676223754883, 0.032559957355260849, 0.95490890741348267]
+    },
+    {
+      "sample": 15,
+      "synthetic_motion_t": 0.5114942193031311,
+      "editor_time": 29912.019993799997,
+      "frame_count": 12,
+      "low_gpu_Time": 3.3533334732055664,
+      "ref_gpu_Time": 3.3533334732055664,
+      "fixed_wind_phase_time": 0,
+      "fixed_lod": 0,
+      "eye": [0.56513023376464844, 1.6899725198745728, 2.058178186416626],
+      "rotation": [-0.11666002869606018, 0.2694183886051178, 0.03212377056479454, 0.95539110898971558]
+    },
+    {
+      "sample": 16,
+      "synthetic_motion_t": 0.54559385776519775,
+      "editor_time": 29912.220210299998,
+      "frame_count": 12,
+      "low_gpu_Time": 3.3533334732055664,
+      "ref_gpu_Time": 3.3533334732055664,
+      "fixed_wind_phase_time": 0,
+      "fixed_lod": 0,
+      "eye": [0.56093186140060425, 1.6920508146286011, 2.060382604598999],
+      "rotation": [-0.11631929874420166, 0.26761865615844727, 0.03191664069890976, 0.95594531297683716]
+    },
+    {
+      "sample": 17,
+      "synthetic_motion_t": 0.5796934962272644,
+      "editor_time": 29912.359563399998,
+      "frame_count": 12,
+      "low_gpu_Time": 3.3533334732055664,
+      "ref_gpu_Time": 3.3533334732055664,
+      "fixed_wind_phase_time": 0,
+      "fixed_lod": 0,
+      "eye": [0.55572181940078735, 1.694214940071106, 2.0624566078186035],
+      "rotation": [-0.1163652315735817, 0.2655690610408783, 0.03194071352481842, 0.95651030540466309]
+    },
+    {
+      "sample": 18,
+      "synthetic_motion_t": 0.61379307508468628,
+      "editor_time": 29912.4990834,
+      "frame_count": 12,
+      "low_gpu_Time": 3.3533334732055664,
+      "ref_gpu_Time": 3.3533334732055664,
+      "fixed_wind_phase_time": 0,
+      "fixed_lod": 0,
+      "eye": [0.55016189813613892, 1.6960967779159546, 2.0640544891357422],
+      "rotation": [-0.11682853847742081, 0.26349523663520813, 0.03217451274394989, 0.95701944828033447]
+    },
+    {
+      "sample": 19,
+      "synthetic_motion_t": 0.64789271354675293,
+      "editor_time": 29912.6397481,
+      "frame_count": 12,
+      "low_gpu_Time": 3.3533334732055664,
+      "ref_gpu_Time": 3.3533334732055664,
+      "fixed_wind_phase_time": 0,
+      "fixed_lod": 0,
+      "eye": [0.54495096206665039, 1.6973773241043091, 2.0648484230041504],
+      "rotation": [-0.11769610643386841, 0.2616327702999115, 0.032577931880950928, 0.95741039514541626]
+    },
+    {
+      "sample": 20,
+      "synthetic_motion_t": 0.6819922924041748,
+      "editor_time": 29912.7813244,
+      "frame_count": 12,
+      "low_gpu_Time": 3.3533334732055664,
+      "ref_gpu_Time": 3.3533334732055664,
+      "fixed_wind_phase_time": 0,
+      "fixed_lod": 0,
+      "eye": [0.5406983494758606, 1.6978296041488647, 2.0645952224731445],
+      "rotation": [-0.11891119927167892, 0.26019120216369629, 0.033099137246608734, 0.95763516426086426]
+    },
+    {
+      "sample": 21,
+      "synthetic_motion_t": 0.71609193086624146,
+      "editor_time": 29912.9222385,
+      "frame_count": 12,
+      "low_gpu_Time": 3.3533334732055664,
+      "ref_gpu_Time": 3.3533334732055664,
+      "fixed_wind_phase_time": 0,
+      "fixed_lod": 0,
+      "eye": [0.53781646490097046, 1.6973493099212646, 2.0631866455078125],
+      "rotation": [-0.12037893384695053, 0.25932174921035767, 0.033681850880384445, 0.957667350769043]
+    },
+    {
+      "sample": 22,
+      "synthetic_motion_t": 0.75019156932830811,
+      "editor_time": 29913.0663831,
+      "frame_count": 12,
+      "low_gpu_Time": 3.3533334732055664,
+      "ref_gpu_Time": 3.3533334732055664,
+      "fixed_wind_phase_time": 0,
+      "fixed_lod": 0,
+      "eye": [0.5364537239074707, 1.6959697008132935, 2.0606796741485596],
+      "rotation": [-0.12197662144899368, 0.25909423828125, 0.034271702170372009, 0.95750582218170166]
+    },
+    {
+      "sample": 23,
+      "synthetic_motion_t": 0.78429114818573,
+      "editor_time": 29913.2071615,
+      "frame_count": 12,
+      "low_gpu_Time": 3.3533334732055664,
+      "ref_gpu_Time": 3.3533334732055664,
+      "fixed_wind_phase_time": 0,
+      "fixed_lod": 0,
+      "eye": [0.536480188369751, 1.693859338760376, 2.0572936534881592],
+      "rotation": [-0.12356778979301453, 0.259487122297287, 0.034820917993783951, 0.95717555284500122]
+    },
+    {
+      "sample": 24,
+      "synthetic_motion_t": 0.81839078664779663,
+      "editor_time": 29913.3426509,
+      "frame_count": 12,
+      "low_gpu_Time": 3.3533334732055664,
+      "ref_gpu_Time": 3.3533334732055664,
+      "fixed_wind_phase_time": 0,
+      "fixed_lod": 0,
+      "eye": [0.53752779960632324, 1.6913009881973267, 2.0533785820007324],
+      "rotation": [-0.12501826882362366, 0.26039209961891174, 0.035291239619255066, 0.95672404766082764]
+    },
+    {
+      "sample": 25,
+      "synthetic_motion_t": 0.85249042510986328,
+      "editor_time": 29913.4807944,
+      "frame_count": 12,
+      "low_gpu_Time": 3.3533334732055664,
+      "ref_gpu_Time": 3.3533334732055664,
+      "fixed_wind_phase_time": 0,
+      "fixed_lod": 0,
+      "eye": [0.53907650709152222, 1.6886558532714844, 2.0493595600128174],
+      "rotation": [-0.12621214985847473, 0.26163288950920105, 0.035655472427606583, 0.95621514320373535]
+    },
+    {
+      "sample": 26,
+      "synthetic_motion_t": 0.88659000396728516,
+      "editor_time": 29913.6164674,
+      "frame_count": 12,
+      "low_gpu_Time": 3.3533334732055664,
+      "ref_gpu_Time": 3.3533334732055664,
+      "fixed_wind_phase_time": 0,
+      "fixed_lod": 0,
+      "eye": [0.54056930541992188, 1.6863181591033936, 2.0456633567810059],
+      "rotation": [-0.12706537544727325, 0.26299461722373962, 0.03589789941906929, 0.95571941137313843]
+    },
+    {
+      "sample": 27,
+      "synthetic_motion_t": 0.92068964242935181,
+      "editor_time": 29913.752520299997,
+      "frame_count": 12,
+      "low_gpu_Time": 3.3533334732055664,
+      "ref_gpu_Time": 3.3533334732055664,
+      "fixed_wind_phase_time": 0,
+      "fixed_lod": 0,
+      "eye": [0.54153114557266235, 1.6846628189086914, 2.0426485538482666],
+      "rotation": [-0.12753549218177795, 0.26425924897193909, 0.036013983190059662, 0.95530349016189575]
+    },
+    {
+      "sample": 28,
+      "synthetic_motion_t": 0.95478922128677368,
+      "editor_time": 29913.9277213,
+      "frame_count": 12,
+      "low_gpu_Time": 3.3533334732055664,
+      "ref_gpu_Time": 3.3533334732055664,
+      "fixed_wind_phase_time": 0,
+      "fixed_lod": 0,
+      "eye": [0.54166978597640991, 1.6839978694915771, 2.0405449867248535],
+      "rotation": [-0.12762607634067535, 0.26524102687835693, 0.036009177565574646, 0.95501941442489624]
+    },
+    {
+      "sample": 29,
+      "synthetic_motion_t": 0.98888885974884033,
+      "editor_time": 29913.9615881,
+      "frame_count": 12,
+      "low_gpu_Time": 3.3533334732055664,
+      "ref_gpu_Time": 3.3533334732055664,
+      "fixed_wind_phase_time": 0,
+      "fixed_lod": 0,
+      "eye": [0.54093635082244873, 1.6845223903656006, 2.0394191741943359],
+      "rotation": [-0.12738566100597382, 0.26581618189811707, 0.035896867513656616, 0.95489585399627686]
+    }
+  ],
+  "materials": [
+    {
+      "source": "Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Bark.mat",
+      "shader": "Lanbai/TreeBark",
+      "wind_freq_before": 1.2999999523162842,
+      "flutter_freq_before": 5,
+      "wind_strength": 0.029999999329447746,
+      "flutter": 0
+    },
+    {
+      "source": "Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Leaf.mat",
+      "shader": "Lanbai/TreeLeaf",
+      "wind_freq_before": 1.2999999523162842,
+      "flutter_freq_before": 5,
+      "wind_strength": 0.05000000074505806,
+      "flutter": 0.012000000104308128
+    },
+    {
+      "source": "Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Bark.mat",
+      "shader": "Lanbai/TreeBark",
+      "wind_freq_before": 1.2999999523162842,
+      "flutter_freq_before": 5,
+      "wind_strength": 0.029999999329447746,
+      "flutter": 0
+    },
+    {
+      "source": "Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Leaf.mat",
+      "shader": "Lanbai/TreeLeaf",
+      "wind_freq_before": 1.2999999523162842,
+      "flutter_freq_before": 5,
+      "wind_strength": 0.05000000074505806,
+      "flutter": 0.012000000104308128
+    },
+    {
+      "source": "Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Bark.mat",
+      "shader": "Lanbai/TreeBark",
+      "wind_freq_before": 1.2999999523162842,
+      "flutter_freq_before": 5,
+      "wind_strength": 0.029999999329447746,
+      "flutter": 0
+    },
+    {
+      "source": "Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Leaf.mat",
+      "shader": "Lanbai/TreeLeaf",
+      "wind_freq_before": 1.2999999523162842,
+      "flutter_freq_before": 5,
+      "wind_strength": 0.05000000074505806,
+      "flutter": 0.012000000104308128
+    },
+    {
+      "source": "Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Bark.mat",
+      "shader": "Lanbai/TreeBark",
+      "wind_freq_before": 1.2999999523162842,
+      "flutter_freq_before": 5,
+      "wind_strength": 0.029999999329447746,
+      "flutter": 0
+    },
+    {
+      "source": "Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Leaf.mat",
+      "shader": "Lanbai/TreeLeaf",
+      "wind_freq_before": 1.2999999523162842,
+      "flutter_freq_before": 5,
+      "wind_strength": 0.05000000074505806,
+      "flutter": 0.012000000104308128
+    },
+    {
+      "source": "Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Bark.mat",
+      "shader": "Lanbai/TreeBark",
+      "wind_freq_before": 1.2999999523162842,
+      "flutter_freq_before": 5,
+      "wind_strength": 0.029999999329447746,
+      "flutter": 0
+    },
+    {
+      "source": "Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Leaf.mat",
+      "shader": "Lanbai/TreeLeaf",
+      "wind_freq_before": 1.2999999523162842,
+      "flutter_freq_before": 5,
+      "wind_strength": 0.05000000074505806,
+      "flutter": 0.012000000104308128
+    },
+    {
+      "source": "Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Bark.mat",
+      "shader": "Lanbai/TreeBark",
+      "wind_freq_before": 1.2999999523162842,
+      "flutter_freq_before": 5,
+      "wind_strength": 0.029999999329447746,
+      "flutter": 0
+    },
+    {
+      "source": "Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Leaf.mat",
+      "shader": "Lanbai/TreeLeaf",
+      "wind_freq_before": 1.2999999523162842,
+      "flutter_freq_before": 5,
+      "wind_strength": 0.05000000074505806,
+      "flutter": 0.012000000104308128
+    },
+    {
+      "source": "Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Bark.mat",
+      "shader": "Lanbai/TreeBark",
+      "wind_freq_before": 1.2999999523162842,
+      "flutter_freq_before": 5,
+      "wind_strength": 0.029999999329447746,
+      "flutter": 0
+    },
+    {
+      "source": "Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Leaf.mat",
+      "shader": "Lanbai/TreeLeaf",
+      "wind_freq_before": 1.2999999523162842,
+      "flutter_freq_before": 5,
+      "wind_strength": 0.05000000074505806,
+      "flutter": 0.012000000104308128
+    }
+  ],
+  "lights": [
+    {
+      "name": "Moon",
+      "type": "Directional",
+      "intensity": 1,
+      "range": 10,
+      "mask": -1
+    },
+    {
+      "name": "Light",
+      "type": "Spot",
+      "intensity": 5,
+      "range": 36,
+      "mask": 11776
+    },
+    {
+      "name": "Light",
+      "type": "Spot",
+      "intensity": 5,
+      "range": 36,
+      "mask": 11776
+    },
+    {
+      "name": "Light",
+      "type": "Spot",
+      "intensity": 6,
+      "range": 70,
+      "mask": 11776
+    },
+    {
+      "name": "Tear_CabinOnly",
+      "type": "Directional",
+      "intensity": 0.39711233973503113,
+      "range": 10,
+      "mask": 0
+    },
+    {
+      "name": "CabinLight",
+      "type": "Point",
+      "intensity": 1.5,
+      "range": 6.5,
+      "mask": 9729
+    },
+    {
+      "name": "Light",
+      "type": "Spot",
+      "intensity": 5,
+      "range": 36,
+      "mask": 11776
+    },
+    {
+      "name": "Light",
+      "type": "Spot",
+      "intensity": 5,
+      "range": 36,
+      "mask": 11776
+    },
+    {
+      "name": "CabinLight",
+      "type": "Point",
+      "intensity": 1.5,
+      "range": 6.5,
+      "mask": 9729
+    },
+    {
+      "name": "Fill_from_below",
+      "type": "Directional",
+      "intensity": 0.23999999463558197,
+      "range": 10,
+      "mask": -1
+    },
+    {
+      "name": "Light",
+      "type": "Spot",
+      "intensity": 5,
+      "range": 36,
+      "mask": 11776
+    },
+    {
+      "name": "CabinLight",
+      "type": "Point",
+      "intensity": 1.5,
+      "range": 6.5,
+      "mask": 9729
+    },
+    {
+      "name": "Light",
+      "type": "Spot",
+      "intensity": 5,
+      "range": 36,
+      "mask": 11776
+    },
+    {
+      "name": "Headlight",
+      "type": "Spot",
+      "intensity": 6,
+      "range": 70,
+      "mask": 11776
+    },
+    {
+      "name": "Light",
+      "type": "Spot",
+      "intensity": 5,
+      "range": 36,
+      "mask": 11776
+    },
+    {
+      "name": "Headlight",
+      "type": "Spot",
+      "intensity": 6,
+      "range": 70,
+      "mask": 11776
+    },
+    {
+      "name": "Light",
+      "type": "Spot",
+      "intensity": 5,
+      "range": 36,
+      "mask": 11776
+    }
+  ],
+  "wetness_global": 0,
+  "limits": "Offscreen preview scene, mesh/material copies, seven original row transforms, S1 profile, copied enabled lights. Fixed LOD0/wind and controlled environment differ from historical mixed LOD scene; cannot replace old FAIL or compare absolute values as before/after. Both references derive from the SAME high-res render. No geometry, lighting asset, threshold or official test changes."
+}
