@@ -36,7 +36,7 @@ import act07_motion as M  # noqa: E402
 
 EDGE_X = -8.0              # terrace edge face (vertical lip), seaweed-hung
 LIP_BOTTOM_Y = -13.0       # lower edge of the lip: the bus eye passes it at ~F7p (bible: 'about 17 m below the stop')
-SLOPE_Y, SLOPE_W = -6.6, 3.5   # option A (总导演 10-26): the weathered slope at the top of the edge -- the last 3.5 m drops 6.0-6.6 m (geometry: palace)
+SLOPE_Y, SLOPE_W = -9.6, 3.6   # option A as revised (总导演 10-26 11:35): the near lamp row stays whole past 816.5 -- the slope top at x -11.6, its foot 9.0 .. 9.6 m down (geometry: palace)
 SLOPE_Z = (48.0, 306.0)        # only along the lamp avenue (palace 10-26): full 54 .. 296, easing in / out; the que (z 36-47) and the platform (z 325-) keep the old 0.8 x 1.6 m chamfer
 BUS_Y_STOP = 2.5           # bus origin above the terrace top while gliding / stopped (lamp flames are BELOW the floor)
 # palace round 10 (D-49 #3 as revised 10-26 09:05): the whole avenue 3.0 m left so it runs exactly between the two que
@@ -129,11 +129,12 @@ def main():
             # <= SLOPE_Y - 0.5, its root >= LIP_BOTTOM_Y + 0.5, on the vertical face at x = EDGE_X - 0.4
             z = -20 + i * 21.0 + (i * 37 % 11)
             h = 2.0 + (i * 13 % 30) / 10.0
-            if SLOPE_Z[0] <= z <= SLOPE_Z[1]:   # under the slope (palace 10-26: its foot at y -6.0 .. -6.6)
-                y = max(LIP_BOTTOM_Y + 0.5, SLOPE_Y - 0.5 - h - (i * 5 % 9) / 8.0 * 1.5)
+            if SLOPE_Z[0] <= z <= SLOPE_Z[1]:   # under the slope (palace 10-26 11:35: its foot at y -9.0 .. -9.6): short
+                h = 1.2 + (i * 7 % 13) / 10.0   # 1.2 .. 2.4 m, rooted -11.5 .. -12.5, tops <= SLOPE_Y - 0.5 = -10.1
+                y = max(LIP_BOTTOM_Y + 0.5, SLOPE_Y - 0.5 - h - 0.3 * (i % 3))
             else:                               # by the que and the platform the edge keeps its small chamfer: as before
                 y = -2.0 - (i * 5 % 9)
-            seaweed.append(dict(id='Weed_%02d' % (i + 1), pos=r3((EDGE_X - 0.4, y, z)), height_m=h))
+            seaweed.append(dict(id='Weed_%02d' % (i + 1), pos=r3((EDGE_X - 0.4, y, z)), height_m=round(h, 3)))
         else:           # at the platform foot and the que bases
             z = plat_front - 1.0 if i < 26 else 40.0
             x = door_x + 3 - (i - 18) * 7.0 if i < 26 else (QUE_R_X if i % 2 else QUE_L_X)
@@ -163,7 +164,7 @@ def main():
                       door_at_t1_from_eye=dict(left=round(eye_az_el((door_x - 2.1, PLATFORM_H + 3.75, z_door), M.TURN_T1)[0], 2),
                                                right=round(eye_az_el((door_x + 2.1, PLATFORM_H + 3.75, z_door), M.TURN_T1)[0], 2),
                                                centre=round(eye_az_el((door_x, PLATFORM_H + 3.75, z_door), M.TURN_T1)[0], 2))),
-        terrace=dict(top_y=0.0, edge_x=EDGE_X, lip_bottom_y=LIP_BOTTOM_Y, edge_slope=dict(width_m=SLOPE_W, drop_m=[6.0, 6.6], z=[SLOPE_Z[0], SLOPE_Z[1]], z_full=[54.0, 296.0], note='option A (总导演 10-26, F7p): along the lamp avenue only, the top of the edge weathers into a rounded slope from x -11.5 .. -11.8 down to its foot at x -8, y -6.0 .. -6.6 (geometry: palace); below it the old lip face to lip_bottom_y; by the que and the platform the old 0.8 x 1.6 m chamfer. The lip seaweeds within z stand below the foot (tops <= -7.1)'), extent_x=[-260.0, EDGE_X], extent_z=[-120.0, 520.0],
+        terrace=dict(top_y=0.0, edge_x=EDGE_X, lip_bottom_y=LIP_BOTTOM_Y, edge_slope=dict(width_m=SLOPE_W, drop_m=[9.0, 9.6], z=[SLOPE_Z[0], SLOPE_Z[1]], z_full=[54.0, 296.0], note='option A as revised (总导演 10-26 11:35, F7p: the 13 near lamps stay whole past 816.5 and hand over to the far row without a gap): along the lamp avenue only (z 48 / 54 / 296 / 306), the top of the edge weathers into a rounded slope from x -11.6 (straight along z; the near lamps stand on -11.64) down to its foot at x -8, y -9.0 .. -9.6 (along z; geometry: palace); below it the old lip face to lip_bottom_y; by the que and the platform the old 0.8 x 1.6 m chamfer. The lip seaweeds within z stand below the foot (tops <= -10.1)'), extent_x=[-260.0, EDGE_X], extent_z=[-120.0, 520.0],
                      note='the lip face (x = edge_x, y lip_bottom..0) is solid rock with seaweed; BELOW the lip the terrace has NO underside '
                           '(dream decision, README): from below, the palace lamps read as a constellation overhead (F7p); the buildings '
                           'are veiled by fog from below (global _Udon_PalaceVeil, see palace_veil)'),
