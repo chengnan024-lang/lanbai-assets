@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.join(REPO, 'Act07_Sea', 'Tools~'))
 import act07_motion as M  # noqa: E402
 
 # 第 10 轮 (c)：海的新约定在 pkg/sea dcab186、还没合 main——先钉一份在 Source/ 里（合了以后删掉这份，回到 Act07_Sea 的那份）
-_PINNED = os.path.join(HERE, 'PalaceFrame_约定_pkg_sea_37dbdd6.json')
+_PINNED = os.path.join(HERE, 'PalaceFrame_约定_pkg_sea_f85c4b8.json')
 FRAME = json.load(open(os.environ.get('PALACE_FRAME') or (_PINNED if os.path.exists(_PINNED) else os.path.join(REPO, 'Act07_Sea', 'PalaceFrame_约定.json')), encoding='utf-8'))
 CUES = dict(FRAME['labels_used'])
 T_QUE = 668.6
