@@ -2,6 +2,7 @@
 //    tips curl back). Instanced _Curl (0..1, the gate driver), _CurlPivot (object-space centreline point at t0, w = t0) and
 //    _CurlAxis (object-space axis, w = the angle at the tip in rad; both baked per arm, Gate/GateDriver_Bake.json curl):
 //    past t0 every vertex turns about the pivot by _Curl x angle x (t - t0) / (1 - t0). Off (0) everywhere else.
+//    Instanced _Silhouette (0..1): surface colour x (1 - s) before the fog (the kept hands looking back: fog only).
 //  v2.8 (gate clouds kit, D-44 #3 the root seam, 2026-10-25; UNCOMPILED): the arms in 阿白's VOLUME cloud. Under the
 //    volume deck (Lanbai/GateVolumeDeck; the gate clouds driver sets _Udon_CloudVolume.x = 1) the visible cloud surface
 //    is 50-90 m under the nominal top (its threshold is 0.75 there), so v2.7's clip at top - 5 and the ragged fade to
@@ -230,6 +231,7 @@ Shader "Lanbai/TentacleSway"
         _Curl ("v2.9 fingertip curl 0..1 (instanced; the gate driver, U9)", Range(0, 1)) = 0
         _CurlPivot ("v2.9 curl pivot: object-space centreline point, w = t where the curl starts (instanced)", Vector) = (0, 0, 0, 0.75)
         _CurlAxis ("v2.9 curl axis (object space), w = the angle at the tip, rad (instanced)", Vector) = (1, 0, 0, 5)
+        _Silhouette ("v2.9 0..1: the surface goes to black, only the fog is left (instanced; the hands kept past U9)", Range(0, 1)) = 0
         _MoonGlowFog ("Moon air in the fog colour", Range(0, 2)) = 0.35
         _MoonGlowColor ("Moon aureole #8FA3C8, linear", Vector) = (0.275, 0.366, 0.578, 1)
         _MoonGlowShape ("Aureole: a1, k1, a2, k2 (a1 e^-k1 deg + a2 e^-k2 deg)", Vector) = (1.6, 0.9, 0.06, 0.32)
@@ -399,6 +401,7 @@ Shader "Lanbai/TentacleSway"
             UNITY_DEFINE_INSTANCED_PROP(float, _Curl)
             UNITY_DEFINE_INSTANCED_PROP(float4, _CurlPivot)
             UNITY_DEFINE_INSTANCED_PROP(float4, _CurlAxis)
+            UNITY_DEFINE_INSTANCED_PROP(float, _Silhouette)
         UNITY_INSTANCING_BUFFER_END(LanbaiGate)
 
         float4 _ThinK; half _ThinSmooth; float4 _ThinAlbedo;
@@ -883,6 +886,9 @@ Shader "Lanbai/TentacleSway"
             }
             else
                 color.rgb = lerp(color.rgb, (half3)_CloudTopColor.rgb, cf);
+            // v2.9: the hands kept past U9 for the curl are dark silhouettes against 4c's dome (门内 10-26: never brighter
+            // than the fog behind them, linear Y <= 0.024): no surface light at all, only the fog (ramped by the driver)
+            color.rgb *= 1.0 - UNITY_ACCESS_INSTANCED_PROP(LanbaiGate, _Silhouette);
             color.rgb = lerp(color.rgb, LanbaiFogColour(V, dist, ovr), f);
             // v2.8: under the deck's flat floor (top - 170) the stem fades, over the 120 m below it, into what the eye
             // sees of the floor behind it: the deck's lit colour 60 m inside the floor along this ray, fogged by its

@@ -102,7 +102,8 @@ public class LanbaiGateDriver : UdonSharpBehaviour
     private int _idPhase, _idFogCap, _idGroup, _idReveal, _idDims, _idOcc, _idIntensity;
     private int _idCloudTop, _idTearPos, _idTearH, _idMoonDir, _idGateTime, _idGateOrigin, _idTearFoot, _idTearTop;
     private int _idMult, _idDisc, _idOpen, _idRip, _idHide;
-    private float[] _lastRv, _lastCurl;
+    private float[] _lastRv, _lastCurl, _lastSil;
+    private int _idSil;
     private int _idCurl, _idCurlPivot, _idCurlAxis, _idGirth, _idGirthFalloff;
     private int[] _poseState;                 // 0 = must pose, 1 = posed before the span, 2 = after it
     private bool _mult0, _mult1, _retired, _ready;
@@ -166,6 +167,7 @@ public class LanbaiGateDriver : UdonSharpBehaviour
         _idOcc = VRCShader.PropertyToID("_OcclusionMap");
         _idIntensity = VRCShader.PropertyToID("_Intensity");
         _idCurl = VRCShader.PropertyToID("_Curl");
+        _idSil = VRCShader.PropertyToID("_Silhouette");
         _idCurlPivot = VRCShader.PropertyToID("_CurlPivot");
         _idCurlAxis = VRCShader.PropertyToID("_CurlAxis");
         _idGirth = VRCShader.PropertyToID("_Girth");
@@ -193,11 +195,12 @@ public class LanbaiGateDriver : UdonSharpBehaviour
         int n = instTf != null ? instTf.Length : 0;
         _lastRv = new float[n];
         _lastCurl = new float[n];
+        _lastSil = new float[n];
         _poseState = new int[n];
         for (int i = 0; i < n; i++)
         {
             _lastRv[i] = -1f;
-            WriteBlocks(i, 1f, 0f);            // the reveal itself follows on the first tick
+            WriteBlocks(i, 1f, 0f, 0f);        // the reveal itself follows on the first tick
         }
         // the multitude's renderers: whatever the editor left, bring them to a known state (tech review driver #1)
         _mult0 = true; _mult1 = true; _retired = false;
@@ -251,10 +254,16 @@ public class LanbaiGateDriver : UdonSharpBehaviour
             // the fingertip curl: smoothstep over its own duration (slow, staggered; no light changes with it)
             float cu = 0f;
             if (curlOn != null && i < curlOn.Length && curlOn[i]) cu = SS((t - curlStart[i]) / Mathf.Max(curlDur[i], 0.1f));
-            if (rv == _lastRv[i] && cu == _lastCurl[i]) continue; // nothing changed: no MPB writes
+            // the kept hands past the plane: dark silhouettes (fog only), ramped over 0.3 s from the retirement frame so the
+            // fog's hand-over (gate -> 4c) shows no colour jump; and no shadow pass (门内 10-26)
+            float sil = kept ? SS((t - (U9 - 0.05f)) / 0.3f) : 0f;
+            if (rv == _lastRv[i] && cu == _lastCurl[i] && sil == _lastSil[i]) continue; // nothing changed: no MPB writes
+            bool silChanged = (sil > 0f) != (_lastSil[i] > 0f);
             _lastRv[i] = rv;
             _lastCurl[i] = cu;
-            WriteBlocks(i, rv, cu);
+            _lastSil[i] = sil;
+            WriteBlocks(i, rv, cu, sil);
+            if (silChanged) SetShadows(i, sil <= 0f);
         }
         // the tide
         float tide = retired ? 0f : KeyAt(tideT, tideV, 0, tideT != null ? tideT.Length : 0, t);
@@ -378,7 +387,15 @@ public class LanbaiGateDriver : UdonSharpBehaviour
     }
 
     // every LOD renderer of instance i: its whole block (no GetPropertyBlock needed), the reveal, on / off
-    void WriteBlocks(int i, float rv, float cu)
+    void SetShadows(int i, bool on)
+    {
+        int s = instRendStart[i], c = instRendCount[i];
+        for (int k = s; k < s + c; k++)
+            if (rend[k] != null)
+                rend[k].shadowCastingMode = on ? UnityEngine.Rendering.ShadowCastingMode.On : UnityEngine.Rendering.ShadowCastingMode.Off;
+    }
+
+    void WriteBlocks(int i, float rv, float cu, float sil)
     {
         if (rend == null || instRendStart == null) return;
         int s = instRendStart[i], c = instRendCount[i];
@@ -406,6 +423,7 @@ public class LanbaiGateDriver : UdonSharpBehaviour
             if (curlOn != null && i < curlOn.Length && curlOn[i])
             {
                 _mpb.SetFloat(_idCurl, cu);
+                _mpb.SetFloat(_idSil, sil);
                 _mpb.SetVector(_idCurlPivot, curlPivot[i]);
                 _mpb.SetVector(_idCurlAxis, curlAxis[i]);
             }
