@@ -4,36 +4,36 @@
    960,
    540
   ],
-  "APL": 29.98,
-  "EV_display": -6.039,
+  "APL": 29.92,
+  "EV_display": -6.049,
   "luma_lt12_pct": 22.54,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
   "clip_black_largest_region_pct": 0.0,
   "clip_white_largest_region_pct": 0.0,
-  "warm_shadow_pct": 0.04,
+  "warm_shadow_pct": 0.05,
   "purple_pct": 0.0,
   "purple_largest_region_pct": 0.0,
   "violet_strong_pct": 0.0,
   "lavender_act6_pct": 0.0,
   "brightest": {
    "bbox": [
-    0,
-    394,
-    846,
+    1,
+    334,
+    847,
     522
    ],
    "centroid": [
-    184.0,
-    421.6
+    179.5,
+    421.1
    ],
-   "clusters": 20,
-   "clusters_ge5pct": 9,
-   "min_luma": 107.9,
+   "clusters": 17,
+   "clusters_ge5pct": 10,
+   "min_luma": 99.3,
    "centroid_az_el": [
-    -30.67,
-    -14.95
+    -31.23,
+    -14.87
    ]
   },
   "top25_Lstar": {
@@ -48,19 +48,19 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 42.5,
+     "nearest_dE2000_p01": 45.5,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 41.4,
+     "nearest_dE2000_p01": 43.9,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 40.6,
+     "nearest_dE2000_p01": 42.6,
      "within_dE5_pct": 0.0
     },
     {
@@ -78,13 +78,13 @@
     {
      "hex": "#697987",
      "role": "海雪",
-     "nearest_dE2000_p01": 23.0,
+     "nearest_dE2000_p01": 23.3,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 43.9,
+     "nearest_dE2000_p01": 45.4,
      "within_dE5_pct": 0.0
     }
    ],
@@ -193,7 +193,7 @@
    540
   ]
  },
- "render_seconds": 12.6,
+ "render_seconds": 12.8,
  "lens": "none",
  "bloom_tint": "single",
  "note": "D-23: 897.96 forward through the windscreen (7c, before surfacing): the dark dip must stay APL 30-34"

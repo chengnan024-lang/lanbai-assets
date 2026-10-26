@@ -1,51 +1,51 @@
 {
  "F7_B": {
-  "APL": 12.49,
-  "max_luma": 241.8,
+  "APL": 12.44,
+  "max_luma": 251.5,
   "brightest_xy_frac": [
-   0.086,
-   0.38
+   0.047,
+   0.197
   ],
   "purple_frac": 0.0,
   "purple_D21_frac": 0.0,
-  "frac_luma_gt_200": 0.0
+  "frac_luma_gt_200": 0.0002
  },
  "F7_Bp": {
-  "APL": 12.4,
-  "max_luma": 241.8,
+  "APL": 12.42,
+  "max_luma": 251.3,
   "brightest_xy_frac": [
-   0.195,
-   0.38
+   0.159,
+   0.198
   ],
   "purple_frac": 0.0,
   "purple_D21_frac": 0.0,
-  "frac_luma_gt_200": 0.0
+  "frac_luma_gt_200": 0.0001
  },
- "F7_C": {
-  "APL": 12.86,
-  "max_luma": 240.2,
+ "F7_Cfinal": {
+  "APL": 12.62,
+  "max_luma": 251.9,
   "brightest_xy_frac": [
-   0.13,
-   0.372
+   0.119,
+   0.182
   ],
   "purple_frac": 0.0,
   "purple_D21_frac": 0.0,
-  "frac_luma_gt_200": 0.0
+  "frac_luma_gt_200": 0.0001
  },
  "F7_now": {
-  "APL": 11.85,
-  "max_luma": 235.0,
+  "APL": 12.33,
+  "max_luma": 250.7,
   "brightest_xy_frac": [
-   0.22,
-   0.378
+   0.184,
+   0.197
   ],
   "purple_frac": 0.0,
   "purple_D21_frac": 0.0,
-  "frac_luma_gt_200": 0.0
+  "frac_luma_gt_200": 0.0001
  },
  "L690_B": {
-  "APL": 8.59,
-  "max_luma": 250.7,
+  "APL": 8.55,
+  "max_luma": 248.7,
   "brightest_xy_frac": [
    0.643,
    0.406
@@ -55,22 +55,22 @@
   "frac_luma_gt_200": 0.0001
  },
  "L690_Bp": {
-  "APL": 8.73,
-  "max_luma": 246.6,
+  "APL": 8.69,
+  "max_luma": 247.0,
   "brightest_xy_frac": [
    0.765,
-   0.441
+   0.442
   ],
   "purple_frac": 0.0,
   "purple_D21_frac": 0.0,
   "frac_luma_gt_200": 0.0001
  },
  "L690_now": {
-  "APL": 8.69,
-  "max_luma": 247.2,
+  "APL": 8.61,
+  "max_luma": 245.6,
   "brightest_xy_frac": [
-   0.806,
-   0.452
+   0.807,
+   0.454
   ],
   "purple_frac": 0.0,
   "purple_D21_frac": 0.0,

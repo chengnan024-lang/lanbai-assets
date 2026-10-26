@@ -35,8 +35,8 @@
      sc.camera = cam
      bl.render_setup(res, int(round(res * 9 / 16)), spp)
 --- orig/Palace/Source/shots.py	2026-10-26 00:12:27.000000000 +0000
-+++ pal/Palace/Source/shots.py	2026-10-26 00:39:22.969644156 +0000
-@@ -42,3 +42,17 @@
++++ pal/Palace/Source/shots.py	2026-10-26 00:50:43.897195452 +0000
+@@ -42,3 +42,23 @@
  # 机位的车位置偏移（米，沿 z）：D-34 #5 的试稿，车路待海确认
  SHOT_DZ = {'F7_40': 11.14, 'F7pbL': -0.0160, 'F7pbR': 0.0160}
  SHOT_DX = {'F7_40x': 9.35, 'F7_vr': 9.35, 'F7pbL': 0.0277, 'F7pbR': -0.0277}     # 立体对：眼睛沿相机右方 ∓0.032 m
@@ -54,3 +54,9 @@
 +SHOT_DX.update({'F7_B': 9.35, 'L690_B': 9.35, 'F7_Bp': 1.73, 'L690_Bp': 1.73, 'F7_C': 1.1908})
 +SHOT_DZ.update({'F7_C': -0.0921})
 +SHOT_PSI = {'F7_C': (5.7043, 0.9897, -0.0272)}      # (yaw deg, bus origin dx, dz)
++
++# ---- 海 10-26 定稿（D-49 #4 选 C、门心 -38）：F6 -> F7 车头右转 act07_motion.TURN_DEG
++SHOTS['F7_Cfinal'] = (L.CUES['F7'], 4.0800, 0.0, 90.0, 'C 定稿：车头右转 4.08 度，门心 -38')
++SHOT_DX['F7_Cfinal'] = 0.8526
++SHOT_DZ['F7_Cfinal'] = -0.0583
++SHOT_PSI['F7_Cfinal'] = (4.0800, 0.7081, -0.0139)
