@@ -277,6 +277,10 @@ public static class LanbaiGateDriverBuilder
 
         // timeline
         d.windowStart = B.U6 - 20f; d.windowEnd = B.U9 + 2f;
+        // round 10 (总导演 10-26 A): the hands that curl back are kept past U9; the window runs to their keep + 0.5 s
+        foreach (InstDef it in B.inst)
+            if (it.curl == 1 && it.curl_t != null && it.curl_t.Length == 3 && it.curl_t[2] > 0f)
+                d.windowEnd = Mathf.Max(d.windowEnd, it.curl_t[2] + 0.5f);
         d.U6k = B.U6k; d.U6 = B.U6; d.U7 = B.U7; d.U7b = B.U7b; d.U8 = B.U8; d.U9 = B.U9; d.vg = B.vg;
         d.hT = B.h_t; d.hH = B.h_H; d.hD = B.h_d;
         d.moonDir = V3(B.moon_dir);

@@ -428,6 +428,9 @@ def arm_meshes(t, new):
         name = d['id']
         if name + '_v' not in ARMS.files or reveal(d, t) <= 0.0:
             continue
+        # LanbaiGateDriver: every arm retired from U9 - 0.05, except the hands kept for the curl (curl_t[2] = keep)
+        if t >= BAKE['U9'] - 0.05 and not (d.get('curl') and d['curl_t'][2] > 0 and t < d['curl_t'][2]):
+            continue
         p, R = pose(d, t)
         sc = float(LAY[name].get('scale', 1.0))
         V = (ARMS[name + '_v'] * sc) @ R.T + p
@@ -517,7 +520,7 @@ def bake_skirts():
 
 
 CURL_ARMS = ('Hand_L0', 'Hand_L1', 'Hand_L2', 'Hand_R0', 'Hand_R1', 'Hand_R2')
-CURL = dict(t0=0.7, angle=5.0, dur=1.75, start=180.15, step=0.45, order=(2, 4, 0, 5, 1, 3), keep_until=0.0)
+CURL = dict(t0=0.7, angle=5.0, dur=1.75, start=180.15, step=0.42, order=(2, 4, 0, 5, 1, 3), keep_until=184.5, fade=0.5)
 
 
 def rodrigues(r, k, a):
@@ -562,6 +565,12 @@ def bake_curl():
             t0=CURL['t0'], pivot_os=[round(float(x), 3) for x in piv], axis_os=[round(float(x), 4) for x in k],
             angle_rad=CURL['angle'], t_start=round(start, 2), duration_s=CURL['dur'], keep_until=CURL['keep_until'],
             note='圣经 §I 喉: the fingertip curls back at the first lip (GateClouds/Source/seam_ref.py curl; TentacleSway v2.9)')
+        # kept past U9 (总导演 10-26 A): the reveal fades over [keep - fade, keep]
+        if CURL['keep_until'] > 0:
+            ks = [k for k in it['reveal']['keys'] if k['t'] < CURL['keep_until'] - CURL['fade'] - 1e-3]
+            ks += [collections.OrderedDict(t=round(CURL['keep_until'] - CURL['fade'], 2), value=1.0),
+                   collections.OrderedDict(t=CURL['keep_until'], value=0.0)]
+            it['reveal']['keys'] = ks
         print(name, 'start %.2f' % start, 'pivot', it['curl']['pivot_os'], 'axis', it['curl']['axis_os'])
     json.dump(J, open(path, 'w'), indent=1, ensure_ascii=False)
 

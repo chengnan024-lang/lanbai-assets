@@ -878,7 +878,7 @@ Shader "Lanbai/TentacleSway"
             {
                 // v2.8: under the deck's floor (top - 160 .. - 220) the arm is in the cloud's shadow
                 float topL = CloudTop() + LanbaiCloudLift(IN.worldPos, _Udon_CloudVolumeWind.z);   // R10: the lifted deck's floor
-                color.rgb *= lerp(1.0, _UnderDark, smoothstep(topL - 160.0, topL - 220.0, IN.worldPos.y));
+                color.rgb *= lerp(1.0, _UnderDark, 1.0 - smoothstep(topL - 220.0, topL - 160.0, IN.worldPos.y));
                 color.rgb = lerp(color.rgb, (half3)wetCol, (half)wet);           // v2.8: no dark cloud-top band
             }
             else
@@ -894,7 +894,7 @@ Shader "Lanbai/TentacleSway"
                 // cloud). (9af9a8a had only the first smoothstep: it stayed 1 ABOVE the floor, so every arm seen looking
                 // up took the floor's colour; caught in the R10 reference at U8fwd, 10-26)
                 float m = 0.95 * smoothstep(top - 290.0, top - 170.0, IN.worldPos.y)
-                               * smoothstep(top - 120.0, top - 170.0, IN.worldPos.y);
+                               * (1.0 - smoothstep(top - 170.0, top - 120.0, IN.worldPos.y));
                 if (m > 0.002)
                 {
                     float tq = (top - 110.0 - _WorldSpaceCameraPos.y) / V.y;

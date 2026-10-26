@@ -2032,6 +2032,14 @@
      {
       "t": 153.3,
       "value": 1.0
+     },
+     {
+      "t": 184.0,
+      "value": 1.0
+     },
+     {
+      "t": 184.5,
+      "value": 0.0
      }
     ],
     "how": "_Reveal (instanced) = smoothstep between keys, written per frame only for these single arms (GetPropertyBlock -> SetFloat -> SetPropertyBlock on EVERY LOD renderer); renderer.enabled = (_Reveal > 0). Applied after the fog cap: f = 1 - (1 - f) x _Reveal."
@@ -2289,9 +2297,9 @@
      0.4826
     ],
     "angle_rad": 5.0,
-    "t_start": 181.05,
+    "t_start": 180.99,
     "duration_s": 1.75,
-    "keep_until": 0.0,
+    "keep_until": 184.5,
     "note": "圣经 §I 喉: the fingertip curls back at the first lip (GateClouds/Source/seam_ref.py curl; TentacleSway v2.9)"
    }
   },
@@ -2481,6 +2489,14 @@
      {
       "t": 153.3,
       "value": 1.0
+     },
+     {
+      "t": 184.0,
+      "value": 1.0
+     },
+     {
+      "t": 184.5,
+      "value": 0.0
      }
     ],
     "how": "_Reveal (instanced) = smoothstep between keys, written per frame only for these single arms (GetPropertyBlock -> SetFloat -> SetPropertyBlock on EVERY LOD renderer); renderer.enabled = (_Reveal > 0). Applied after the fog cap: f = 1 - (1 - f) x _Reveal."
@@ -2738,9 +2754,9 @@
      0.6169
     ],
     "angle_rad": 5.0,
-    "t_start": 181.95,
+    "t_start": 181.83,
     "duration_s": 1.75,
-    "keep_until": 0.0,
+    "keep_until": 184.5,
     "note": "圣经 §I 喉: the fingertip curls back at the first lip (GateClouds/Source/seam_ref.py curl; TentacleSway v2.9)"
    }
   },
@@ -2930,6 +2946,14 @@
      {
       "t": 153.3,
       "value": 1.0
+     },
+     {
+      "t": 184.0,
+      "value": 1.0
+     },
+     {
+      "t": 184.5,
+      "value": 0.0
      }
     ],
     "how": "_Reveal (instanced) = smoothstep between keys, written per frame only for these single arms (GetPropertyBlock -> SetFloat -> SetPropertyBlock on EVERY LOD renderer); renderer.enabled = (_Reveal > 0). Applied after the fog cap: f = 1 - (1 - f) x _Reveal."
@@ -3189,7 +3213,7 @@
     "angle_rad": 5.0,
     "t_start": 180.15,
     "duration_s": 1.75,
-    "keep_until": 0.0,
+    "keep_until": 184.5,
     "note": "圣经 §I 喉: the fingertip curls back at the first lip (GateClouds/Source/seam_ref.py curl; TentacleSway v2.9)"
    }
   },
@@ -3379,6 +3403,14 @@
      {
       "t": 153.3,
       "value": 1.0
+     },
+     {
+      "t": 184.0,
+      "value": 1.0
+     },
+     {
+      "t": 184.5,
+      "value": 0.0
      }
     ],
     "how": "_Reveal (instanced) = smoothstep between keys, written per frame only for these single arms (GetPropertyBlock -> SetFloat -> SetPropertyBlock on EVERY LOD renderer); renderer.enabled = (_Reveal > 0). Applied after the fog cap: f = 1 - (1 - f) x _Reveal."
@@ -3636,9 +3668,9 @@
      -0.5002
     ],
     "angle_rad": 5.0,
-    "t_start": 182.4,
+    "t_start": 182.25,
     "duration_s": 1.75,
-    "keep_until": 0.0,
+    "keep_until": 184.5,
     "note": "圣经 §I 喉: the fingertip curls back at the first lip (GateClouds/Source/seam_ref.py curl; TentacleSway v2.9)"
    }
   },
@@ -3828,6 +3860,14 @@
      {
       "t": 153.3,
       "value": 1.0
+     },
+     {
+      "t": 184.0,
+      "value": 1.0
+     },
+     {
+      "t": 184.5,
+      "value": 0.0
      }
     ],
     "how": "_Reveal (instanced) = smoothstep between keys, written per frame only for these single arms (GetPropertyBlock -> SetFloat -> SetPropertyBlock on EVERY LOD renderer); renderer.enabled = (_Reveal > 0). Applied after the fog cap: f = 1 - (1 - f) x _Reveal."
@@ -4085,9 +4125,9 @@
      -0.641
     ],
     "angle_rad": 5.0,
-    "t_start": 180.6,
+    "t_start": 180.57,
     "duration_s": 1.75,
-    "keep_until": 0.0,
+    "keep_until": 184.5,
     "note": "圣经 §I 喉: the fingertip curls back at the first lip (GateClouds/Source/seam_ref.py curl; TentacleSway v2.9)"
    }
   },
@@ -4277,6 +4317,14 @@
      {
       "t": 153.3,
       "value": 1.0
+     },
+     {
+      "t": 184.0,
+      "value": 1.0
+     },
+     {
+      "t": 184.5,
+      "value": 0.0
      }
     ],
     "how": "_Reveal (instanced) = smoothstep between keys, written per frame only for these single arms (GetPropertyBlock -> SetFloat -> SetPropertyBlock on EVERY LOD renderer); renderer.enabled = (_Reveal > 0). Applied after the fog cap: f = 1 - (1 - f) x _Reveal."
@@ -4534,9 +4582,9 @@
      0.429
     ],
     "angle_rad": 5.0,
-    "t_start": 181.5,
+    "t_start": 181.41,
     "duration_s": 1.75,
-    "keep_until": 0.0,
+    "keep_until": 184.5,
     "note": "圣经 §I 喉: the fingertip curls back at the first lip (GateClouds/Source/seam_ref.py curl; TentacleSway v2.9)"
    }
   },

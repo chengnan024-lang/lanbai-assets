@@ -5,7 +5,7 @@
 //  CONTROL §5 interface (called by Director/LanbaiActDispatcher):
 //     LanbaiTick(t)        every frame inside LanbaiWindow() (t = timeline seconds)
 //     LanbaiActivate(on)   switches `roots` (GateRoot, NearRoot_bus), never this object (it stays active)
-//     LanbaiWindow()       {U6 - 20, U9 + 2} = {113.80, 181.55}
+//     LanbaiWindow()       {U6 - 20, U9 + 2} = {113.80, 181.55}; round 10: to 185.0 (the 6 hands kept for the curl, 184.5 + 0.5)
 //
 //  Per frame (Gate/README_GateLayout.md §2, §2.1, §2.2, §4.1; the same evaluation as the local editor test
 //  FromLocal/gate_test LB_GateTest_Run.Apply):
@@ -16,7 +16,8 @@
 //     MoonDisc / TearOpen / RipProgress / TearHide.
 //  U9 (the bus crosses the tear plane): every arm renderer (instances, the multitude, the tide) is switched off on the
 //  frame before the eye crosses the plane (the far side's renderers, 总导演 10-23 01:10; the arms behind the bus are
-//  retired, so they never meet act 4c's fog), and from U9 + 0.15 s _Udon_TearHide = 1. After U9 GateRoot.z = -s(t),
+//  retired, so they never meet act 4c's fog; round 10, 总导演 10-26 A: EXCEPT the 6 hands at the lips, kept to 184.5 for the
+//  fingertip curl seen looking back, faded 184.0 -> 184.5), and from U9 + 0.15 s _Udon_TearHide = 1. After U9 GateRoot.z = -s(t),
 //  the inside's decelerating closed form (GateRoot stays this driver's).
 //  NOT written here: _Udon_InsidePortal (the inside driver), _Udon_FogBand* (LanbaiGateClouds), the Tear kit's
 //  CloudGlow / LightLane / FootSkyline / old shafts (switched off for good by 蓝白/Gate Clouds/Build).

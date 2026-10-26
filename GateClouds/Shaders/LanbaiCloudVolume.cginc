@@ -112,7 +112,7 @@ float LanbaiGateSkirtOne(float3 p, float top, float2 nrg, float4 s)
     if (x > 3.0) return 0.0;                        // past 3 W: one compare for most steps of a ray
     float g = exp(-x) * saturate((3.0 - x) * 2.0);  // tapered to 0 over the last half W (no ring at the cut)
     float skTop = top + LANBAI_SKIRT_BASE + _Udon_GateSkirtK.z * g + (nrg.y - 0.5) * LANBAI_SKIRT_LUMP;
-    float v = smoothstep(skTop, skTop - LANBAI_SKIRT_SOFT, p.y) * smoothstep(top - 170.0, top - 120.0, p.y);
+    float v = (1.0 - smoothstep(skTop - LANBAI_SKIRT_SOFT, skTop, p.y)) * smoothstep(top - 170.0, top - 120.0, p.y);
     float billow = smoothstep(0.30, 0.55, nrg.y + 0.25 * g);
     return _Udon_GateSkirtK.w * saturate(s.y) * g * v * billow;
 }

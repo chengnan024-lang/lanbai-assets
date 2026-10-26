@@ -370,3 +370,28 @@
 - `check_cs.sh GateClouds Common/Editor Common/Runtime` → `C# CHECK OK (0 assembly error(s), 0 lint warning(s))`（5 组新全局量已登记进 `Common/UdonGlobals.md`，总导演 10-25）。
 - **没在 Unity 里编译过。**
 
+
+---
+
+## 13. 第 10 轮第 2 批（2026-10-26，门下的云 = 体积云 `Lanbai/GateVolumeDeck`，总导演 10-26 定 A）
+
+图都在 `Docs~/r10b/`（上 = 改前、下 = 改后；参照渲染 `Source/vol_ref.py`：触手 Cycles、体积云 numpy、裂口从本地 Unity 截图按像素贴回；没有云卡、没有车身）。**全部没在 Unity 里编译过。**
+
+| # | 项 | 做法 | 量出来的 |
+|---|---|---|---|
+| 0 | 裂口的脚悬空 | 阿白的云在名义云顶下 ~70 m 才看得见，脚下是空的。`_Lift` 60 m：只在脚的 250 m 以内把云抬上来，500 m 外为 0（`LanbaiCloudLift`，触手、裙、驱动同一个公式）。只有经过脚 500 m 以内的视线才多步进那一段，近处和别处的云不动（第一版整体抬高，近处被舒适裁切压平，还出了横条纹，已改） | — |
+| 1 | U8 暗心 | 裂口当**线光源**（脚 → 顶）：软衰减 r0²/(d² + r0²)（E 0.5、r0 120 m），朝裂口取 1 次自遮挡，HG g 0.6 朝眼睛前向散射：迎着裂口的云边亮、芯暗。旧的平光池 × 0（`_PoolK`） | 画面下 40%：p50 52 → 64（定稿窗外 p50 63）。光池框：p95 166（亮边有了）、p5 56–58：**暗不到 25**，填缝的是裂口旁那条亮雾带（600 m 的雾 ≈ `_HazeNear`）。再暗只能减那里的雾，这是美术的事 |
+| — | U8 APL | 改后 57.8（截图贴回的裂口 + 替身触手）。参照的 40.9 是**带车厢内饰**量的（下半张是黑的车厢），没有车身的画面量不到同一个数 | — |
+| 2 | keyart 脚下光 | 同上（光源 + 抬高） | 脚下 / 月光路 p95 **1.92**（≥ 1.33；阿白的原样 1.07） |
+| 3 | U7 多采样 | 体积云没有高度场那种轮廓台阶，**不需要多采样**。阿白的步进抖动是平滑噪声，相邻像素抖得一样，长步进成横条纹 → 换成按世界点的 `LanbaiHash13`（`_HashJitter` 1，两眼一致、锁在世界上，和高度场云海同一个做法） | 60 fps 0.5 s：爬行 0.000% → 0.052%（高度场 0.147%）；逐帧亮度差 > 4 码 0.10% → 0.57%：条纹换成细颗粒，亮的云团上 1:1 能看到 |
+| 4 | D-05 近臂要粗 | Near_1 抬高 30 m、往车靠 4 m，`_Girth` 2.0 / `_GirthFalloff` 0.5（它自己的根半径 `_VariantDims.x` 1.27 m）；驱动把 girth 写进它的 property block（不靠共用材质） | U8 侧窗 1080p 与眼同高处 **276–293 px**（原 51–83）；156 → 179.55 全程离眼最近 10.5 m（≥ 8 m）；`Source/near_width.py` |
+| 5 | 巨像 1 到 +5.5° | t 145.3（诗块 A 显示中、它开始升起）在主座位 +5.5°：x 1345.36 → 338.52（同深度），升起的起点和它的云塔 `Tower_Colossus_1` 一起挪 | keyart 云卡叠绘 0.899 不变。**keyart 里它的拱落到裂口脚的右边**（原来在右侧远处），请看 `colossus1_key.png` |
+| 6 | 指尖卷回（A） | TentacleSway **v2.9**：每根手在 t0 0.7 以后的顶点绕中心线上的支点转，角度从 0 到尖端 5 rad × `_Curl`。6 根手（Hand_L0–2、R0–2）U9 以后不退场，卷回 180.15 → 184.0（L2、R1、L0、R2、L1、R0，每根 1.75 s，间隔 0.42 s），停住，184.0 → 184.5 显现淡出；门驱动的窗口到 185.0。没有光的变化 | `curl_back_{180.5,181.5,183.0,184.3}.png`、`curl_back_strip.png`、`curl_back.mp4`（180 → 185），往前看 `curl_forward_check.png` 不变 |
+
+**还在等的（第 6 项）**：门内定第一道光唇往回看看到什么（门户、穹顶、4c 雾的交界）、性能放不放得下；做不干净就退回 B（176.3 → 179.4 往前看）。参照图里没有门内的唇和穹顶，只有门的天。
+
+**性能（没在 GPU 上量）**：云海里经过脚附近的视线，每个有云的步多 1 次密度（裂口光的自遮挡）；`_HashJitter` 不加采样。触手 v2.9 只多一段顶点运算（`_Curl` 为 0 时跳过）。驱动：6 根手卷回时每帧重写各自的 property block（4 秒）。
+
+**接口**：`_Udon_CloudVolumeWind.z` = 云海的 `_Lift`（已写进 `Common/UdonGlobals.md`）；Build 从云海材质抄 `_Lift`。`GateLayout_v2.json` 里 Near_1、Colossus_1、`Tower_Colossus_1`、6 根手的 `curl` 和 `reveal` 是这一轮手改的（生成器在本地的 Blender 流水线里，跑不了；每处都写了 note）。
+
+**检查**：`check_shaders.py Gate/Shaders GateClouds/Shaders` → 9 files, 28 translation units, 0 errors, 0 warnings；`check_cs.sh Gate GateClouds Common/Editor Common/Runtime` → C# CHECK OK (0 assembly errors, 0 lint warnings)。
