@@ -8,7 +8,13 @@ import numpy as np
 
 from .common import UB, palace_frame
 
+import os
+
 CHAMFER_W, CHAMFER_D = 0.8, 1.6
+# 复核 r10c 的试样（总导演未定）：PALACE_CHAMFER="3.5,6" 把崖口斜坡加大到“最后 3.5 m 往下 6 m”——
+# 神道左移 3.0 m 以后近列灯离崖口 4 m，下唇以下看它的视线在崖口处低于崖顶，被石壁挡住
+if os.environ.get('PALACE_CHAMFER'):
+    CHAMFER_W, CHAMFER_D = [float(v) for v in os.environ['PALACE_CHAMFER'].split(',')]
 PAVE_X0 = palace_frame()['avenue']['paving']['x'][0]
 
 
@@ -29,7 +35,8 @@ def build(lod=0, edge_x=-8.0, lip_y=-13.0, z0=-120.0, z1=520.0, x_far=-260.0):
     zs = np.arange(z0, z1 + 0.01, dz)
     # 终审 10-25 #3：崖口顶边是风化的斜坡（最后 CHAMFER_W m 往下 CHAMFER_D m），不是直角——从下唇以下按真位置看，
     # 离崖口 1 m 的那一列灯焰正好越过崖顶（深度不作弊；眼睛在 −29 m 以上都看得见），远处那一列照样被台地挡住。
-    xs = np.array([edge_x, edge_x - CHAMFER_W * 0.5, edge_x - CHAMFER_W, edge_x - 1.0, PAVE_X0, -34, -45, -60, -85, -120, -170, x_far])
+    xc = [edge_x - CHAMFER_W * f for f in ((0.0, 0.5, 1.0) if CHAMFER_W < 1.0 else (0.0, 0.2, 0.4, 0.6, 0.8, 1.0))]
+    xs = np.array(xc + [x for x in [edge_x - 1.0, PAVE_X0, -34, -45, -60, -85, -120, -170, x_far] if x < xc[-1] - 0.1])
     H = np.zeros((len(xs), len(zs)))
     for i, x in enumerate(xs):
         for j, z in enumerate(zs):
@@ -37,7 +44,7 @@ def build(lod=0, edge_x=-8.0, lip_y=-13.0, z0=-120.0, z1=520.0, x_far=-260.0):
                 H[i, j] = 0.35 * _noise(x, z, 1) * min(1.0, (-34 - x) / 20)
             elif x > edge_x - CHAMFER_W:
                 k = (x - (edge_x - CHAMFER_W)) / CHAMFER_W          # 0 在坡顶，1 在崖口
-                H[i, j] = -CHAMFER_D * k ** 1.5 + 0.08 * _noise(z, 2.0, 5) * k
+                H[i, j] = -CHAMFER_D * k ** (1.5 if CHAMFER_W < 1.0 else 1.0) + 0.08 * _noise(z, 2.0, 5) * k   # 大斜坡用直坡（视线要从坡顶擦过）
     V = [(x, H[i, j], z) for i, x in enumerate(xs) for j, z in enumerate(zs)]
     F = []
     nz = len(zs)
@@ -51,9 +58,9 @@ def build(lod=0, edge_x=-8.0, lip_y=-13.0, z0=-120.0, z1=520.0, x_far=-260.0):
     u.merge(tmp)
     # ---- 神道铺石（抬高 0.12，四周有边）
     pv = palace_frame()['avenue']['paving']                 # 第 10 轮 (c)：按海的约定
-    u.box((pv['x'][0], 0.0, pv['z'][0]), (pv['x'][1], 0.12, pv['z'][1]), 'Stone', skip=('-y',))
+    u.box((pv['x'][0], 0.0, pv['z'][0]), (min(pv['x'][1], edge_x - CHAMFER_W), 0.12, pv['z'][1]), 'Stone', skip=('-y',))   # 铺石不伸到斜坡上
     # ---- 崖壁：x = edge_x，从 y 0 到 lip_y，带起伏（横向 1–2 m 的岩石凸凹）；下缘往里卷
-    rows = [-CHAMFER_D, -2.4, -4.0, -6.5, -9.0, -11.0, -12.4, lip_y]
+    rows = [-CHAMFER_D] + [y for y in (-2.4, -4.0, -6.5, -9.0, -11.0, -12.4) if y < -CHAMFER_D - 0.3] + [lip_y]
     dzw = 4.0 if lod == 0 else 16.0
     zw = np.arange(z0, z1 + 0.01, dzw)
     def wx(y, z):

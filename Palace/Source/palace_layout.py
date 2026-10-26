@@ -46,6 +46,9 @@ QUE_LAMPS = [dict(id='Lamp_Q%d' % (k + 1), group='que', pos=[q['pos'][0], 0.0, r
 LAMPS += QUE_LAMPS
 HOUSES = FRAME['fish_houses']
 WEEDS = FRAME['seaweed']
+if os.environ.get('PALACE_CHAMFER'):           # 试样：斜坡加大以后，贴在崖壁上半截的海草挪到坡底以下（要海同意才能进约定）
+    _cd = float(os.environ['PALACE_CHAMFER'].split(',')[1])
+    WEEDS = [dict(w, pos=[w['pos'][0], min(w['pos'][1], -_cd - 0.8), w['pos'][2]]) for w in WEEDS]
 FISH = FRAME['fish']
 
 
