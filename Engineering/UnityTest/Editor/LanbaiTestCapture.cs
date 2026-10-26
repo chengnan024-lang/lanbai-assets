@@ -90,6 +90,11 @@ namespace Lanbai.Test
                 var b = rs[0].bounds;
                 foreach (var r in rs) b.Encapsulate(r.bounds);
                 look = new[] { b.center.x, b.center.y, b.center.z };
+                // look_at_anchor（1.2.2，车包 10-26：侧窗机位对着包围盒中心只拍到玻璃）：[ax, ay, az] = 包围盒里的点，
+                // 每轴 0 = min、1 = max、0.5 = 中心（比如窗扣、窗框的一个角）。跟着物体走，切片挪了也对
+                var an = TJson.Fa(TJson.G(d, "look_at_anchor"));
+                if (an != null && an.Length >= 3)
+                    look = new[] { b.min.x + an[0] * b.size.x, b.min.y + an[1] * b.size.y, b.min.z + an[2] * b.size.z };
             }
             var toward = TJson.Fa(TJson.G(d, "toward"));
             if (look != null && TJson.Has(d, "distance"))
@@ -342,6 +347,29 @@ namespace Lanbai.Test
                 if (c.t.HasValue) rec["t"] = (double)c.t.Value;
                 if (TJson.Has(c.def, "label")) rec["label"] = TJson.G(c.def, "label");
                 if (TJson.Has(c.def, "ref")) Compare(ctx, c, px, key, rec, folder);
+                // coverage_of（1.2.2）：这些物体（路径，可以多个）在画面里占多少：同一机位关掉它们再渲一张，亮度差 > 2 的像素
+                // 比例 → shot.<id>.coverage。和背景一样亮的像素数不进去，所以是下限
+                var cov = TJson.Sa(TJson.G(c.def, "coverage_of"));
+                if (cov.Count > 0)
+                {
+                    var rs = new List<UnityEngine.Renderer>();
+                    foreach (var path in cov)
+                    {
+                        var tr = Scenes.Find(path);
+                        if (tr == null) throw new StepException("机位 " + c.id + "：coverage_of 里的 " + path + " 不在场景里");
+                        rs.AddRange(tr.GetComponentsInChildren<UnityEngine.Renderer>(false).Where(r => r.enabled));
+                    }
+                    foreach (var r in rs) r.enabled = false;
+                    Color32[] off;
+                    try { bool pp2; off = RenderOnce(ctx, c, c.w, c.h, c.ss, true, out pp2); }
+                    finally { foreach (var r in rs) if (r != null) r.enabled = true; }
+                    int hit = 0;
+                    for (int k = 0; k < px.Length; k++) if (Math.Abs(Img.Luma(px[k]) - Img.Luma(off[k])) > 2f) hit++;
+                    double frac = hit / (double)px.Length;
+                    ctx.Metric(key + ".coverage", frac, "coverage_of 的物体占画面的比例（关掉它们再渲一张、亮度差 > 2 的像素；下限）");
+                    rec["coverage_of"] = cov.Cast<object>().ToList();
+                    rec["coverage"] = frac;
+                }
                 RunAfter(ctx, c.def);
                 ctx.shots.Add(rec);
                 return rec;
