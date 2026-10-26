@@ -1,0 +1,21 @@
+r21.log:F5p all 0.065% outside halo discs 0.012%
+r21.log:F6 all 0.081% outside halo discs 0.066%
+r21.log:F7_40x all 0.266% outside halo discs 0.229%
+r21.log:proc all 0.042% outside halo discs 0.004%
+r21.log:proc_l all 0.495% outside halo discs 0.172%
+r21.log:que_lamp all 0.153% outside halo discs 0.026%
+r21.log:h722 all 0.033% outside halo discs 0.006%
+r21.log:h728 all 0.026% outside halo discs 0.021%
+r21.log:proc roof px 8648 frac >2x water 0.054 frac >1x 0.161
+r21.log:proc_l roof px 29388 frac >2x water 0.078 frac >1x 0.154
+r21.log:p706 roof px 5411 frac >2x water 0.067 frac >1x 0.193
+r21.log:h722 roof px 8090 frac >2x water 0.000 frac >1x 0.000
+r21.log:h728 roof px 5486 frac >2x water 0.000 frac >1x 0.000
+r21c.log:proc roof px 8648 frac >2x water 0.025 frac >1x 0.128
+r21c.log:proc_l roof px 29388 frac >2x water 0.045 frac >1x 0.128
+r21c.log:p706 roof px 5411 frac >2x water 0.032 frac >1x 0.151
+r21c.log:h722 roof px 8090 frac >2x water 0.000 frac >1x 0.000
+r21c.log:h728 roof px 5486 frac >2x water 0.000 frac >1x 0.000
+r21c.log:F7_40x all 0.266% outside halo discs 0.229%
+r21c.log:proc_l all 0.495% outside halo discs 0.172%
+r21c.log:F6 all 0.081% outside halo discs 0.066%
