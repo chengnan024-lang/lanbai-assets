@@ -1,3 +1,5 @@
+**暂停（10-31，小楠决定全片停工）：停在 D-50 #1 做完、还没报告、没合 main。** 白的冲击改成 +0.8 EV / bloom 0.4（移植里 x35 的 1 s 升幅从 1.07 降到 0.86，按差值推 Unity ≈ 0.79）；第 13 面环到 1131 时 ≤ 88.5（全部 61–89）；w* / m12* 重跑全 PASS（白·侧上方 1 s 0.92 最高）。下一步：README §7 / §10 和 README_Act10 写进 D-50，把 commit 和 `Docs~/flashcheck/x35_d50.json`、`Docs~/iterations/x35_d50_strip.png` 交总导演，请阿白在 Unity 里重量 x35。
+
 # 镜与白 · 进度
 
 2026-10-25 · 终审（10-25 13:13，对 fa6ae23）逐条改完，见 `README_Mirrors.md` §10；Unity 里的技术验收归阿白（D-46）。
