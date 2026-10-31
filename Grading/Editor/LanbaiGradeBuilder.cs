@@ -478,6 +478,26 @@ namespace Lanbai.Grading
         {
             var md = new StringBuilder();
 
+            // ---- (0) D-50 #9 (2026-10-26 white tail): EVERY volume in the open scene, ours or local, must leave the tonemapper
+            //      alone or set it to Neutral. PPv2 cannot blend the tonemapper enum: a profile that overrides it to ACES
+            //      over a Neutral base flips the whole frame the moment its weight reaches 0 (the local PP_White did,
+            //      1253.95 -> 1254.05). Bible §1.4: Neutral everywhere, never ACES.
+            md.AppendLine("## Tonemapper on every volume in the scene (bible §1.4: Neutral only; an override to anything else flips when its weight reaches 0)");
+            md.AppendLine();
+            int tmBad = 0;
+            foreach (var vol in UnityEngine.Object.FindObjectsOfType<PostProcessVolume>(true))
+            {
+                var prof = vol.sharedProfile;
+                ColorGrading tcg;
+                if (prof == null || !prof.TryGetSettings(out tcg) || !tcg.tonemapper.overrideState || tcg.tonemapper.value == Tonemapper.Neutral) continue;
+                tmBad++;
+                errors++;
+                md.AppendLine("- ERROR " + vol.name + " (profile " + prof.name + ", priority " + vol.priority + "): tonemapper overridden to " + tcg.tonemapper.value +
+                              ". Untick the override (or set Neutral) in that profile");
+            }
+            if (tmBad == 0) md.AppendLine("- OK: no volume overrides the tonemapper to anything but Neutral");
+            md.AppendLine();
+
             // ---- (a) every profile: effect list + override list, compared with the data table
             md.AppendLine("## Profiles (values read from the profile assets after saving)");
             md.AppendLine();

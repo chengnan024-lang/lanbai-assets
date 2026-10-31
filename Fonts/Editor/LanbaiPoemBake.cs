@@ -299,6 +299,13 @@ namespace Lanbai.Fonts.Editor
             var halo = (Dictionary<string, object>)rig["halo"];
             var sprite = FindAsset<Sprite>(Path.GetFileNameWithoutExtension((string)halo["texture"]));
             if (sprite == null) missing++;
+            // 阿白 10-26 (D-50 #8): the driver's colour MaterialPropertyBlock replaces the SpriteRenderer's implicit _MainTex, so
+            // the halo sampled white and drew a hard rectangle. Bind the same alpha-gradient texture on the dedicated material.
+            if (sprite != null && mats.Halo != null) {
+                mats.Halo.SetTexture("_MainTex", sprite.texture);
+                EditorUtility.SetDirty(mats.Halo);
+                SaveOne(mats.Halo);
+            }
             SpriteRenderer haloT = null, haloB = null;
             for (int li = 0; li < 2; li++)
             {
@@ -625,7 +632,8 @@ namespace Lanbai.Fonts.Editor
                 if (!AssetDatabase.IsValidFolder(_dir)) AssetDatabase.CreateFolder(kit + "/FontAssets", "SubtitleMaterials");
                 Halo = Make("Lanbai_SubtitleHalo", "Lanbai/SubtitleHalo", 4009);
                 Letterbox = Make("Lanbai_Letterbox", "Lanbai/Letterbox", 4005);
-                AssetDatabase.SaveAssets();
+                SaveOne(Halo);
+                SaveOne(Letterbox);
             }
 
             Material Make(string name, string shader, int queue)
@@ -663,7 +671,7 @@ namespace Lanbai.Fonts.Editor
                 m.SetFloat("_FaceDilate", F(((Dictionary<string, object>)_rig["face_dilate"])["vr"]));
                 m.EnableKeyword("UNDERLAY_ON");
                 m.renderQueue = 4010;
-                EditorUtility.SetDirty(m);
+                SaveOne(m);
                 _text[fa.name] = m;
                 return m;
             }
@@ -722,6 +730,17 @@ namespace Lanbai.Fonts.Editor
             }
             f.SetValue(c, value);
             EditorUtility.SetDirty(c);
+        }
+
+        // AssetDatabase.SaveAssetIfDirty (Unity 2021.2+; the compile check's UnityEditor is 2021.1): by reflection. Never a global
+        // AssetDatabase.SaveAssets here (it would write every dirty asset in the project, D-50 #9); missing -> SetDirty only.
+        static readonly MethodInfo SaveIfDirtyMi = typeof(AssetDatabase).GetMethod("SaveAssetIfDirty", BindingFlags.Public | BindingFlags.Static,
+                                                                                   null, new[] { typeof(UnityEngine.Object) }, null);
+        static void SaveOne(UnityEngine.Object o)
+        {
+            if (o == null) return;
+            EditorUtility.SetDirty(o);
+            if (SaveIfDirtyMi != null) SaveIfDirtyMi.Invoke(null, new object[] { o });
         }
 
         static Type FindType(string name)
