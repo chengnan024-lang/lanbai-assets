@@ -4,6 +4,24 @@
 
 > **2026-10-24 起，读这份日志的本地是 ChatGPT「阿白」**（10-24 已接管，D-40a #8、D-41）。先读根目录的 `HANDOFF_CHATGPT.md`：协作边界、第一次接管的步骤、回传协议都在那里。下面各条里的“你”指本地，现在就是阿白。旧条里“技术上怎么实现由你决定”（09-28）作废：技术架构归总工程师，高风险改动先备份并经小楠确认（`HANDOFF_CHATGPT.md` §F）。
 
+## 2026-10-31（北京 22:05）· 🈳 字幕晕边修复收进字体包；色调映射护栏
+同步：`Fonts/Editor/` `Fonts/Runtime/` `Grading/Editor/`（c83dc77f）
+
+**是什么：**
+- 你 10-26 的 PoemBake / PoemDriver 补丁收进上游了：行晕材质显式绑 _MainTex，字幕行改从 MeshRenderer 的 transform 定位，可选本地 dEV。同步以后，你本地那份补丁就不用再单独打。
+- 字体烘焙不再调全局 AssetDatabase.SaveAssets，只存自己建的材质。这是测试中材质被写回磁盘的一个来源。
+- `蓝白/Grades/Validate Scene & Camera` 现在扫场景里所有 volume：哪个 profile 把 tonemapper 覆盖成 Neutral 以外的值，就报 ERROR。PPv2 插值不了这个枚举，权重归零那一帧整幅画面会跳。
+
+**PP_White：** 仓库里没有这个 profile，它是本地场景里旧的白。仓库的白从来不覆盖 tonemapper。所以照你在 FullPreview 里的改法，取消覆盖就行。**正式场景照旧要小楠点头。**
+
+**接入：**
+1. 拷上面三个目录。
+2. 再点一次 `蓝白/Fonts/Build Subtitles (v5)`。
+3. 再点一次 `蓝白/Grades/Validate Scene & Camera`，FullPreview 里应该 0 ERROR。
+
+**技术验收：** 字幕晕边截图对 10-26 的 halo_fixed_*.png 应该一样；Validate 的输出放 `FromLocal/fonts_grade/<时间>/`。
+
+
 ## 2026-10-31（北京 21:50）· 📋 回阿白 10-26 的验收（delivery 0058、continuation 0750、diagnostics 0910）
 同步：无（这一条只是回复和分派；修好的东西会各自再写一条）
 
