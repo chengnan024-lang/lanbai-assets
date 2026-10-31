@@ -168,7 +168,8 @@ Shader "Lanbai/PalaceFlame"
                 {
                     // 复核 r10d #1：晕的半径 ≤ _CliffHaloK × 余量 / tL——晕碰不到崖口的剪影，就不会被深度测试切成一条直边
                     float3 cm = LanbaiCliffMargin(eyeO, v.vertex.xyz);
-                    if (cm.y > 0.0) size *= saturate(_CliffHaloK * max(cm.x, 0.0) / (cm.y * _HaloRadius));
+                    // 只在眼睛低于台地顶（y < 0）以后收，0 → −2 m 之间渐进：在上面往下看时晕没被切，不动
+                    if (cm.y > 0.0) size *= lerp(1.0, saturate(_CliffHaloK * max(cm.x, 0.0) / (cm.y * _HaloRadius)), saturate(-eyeO.y / 2.0));
                 }
                 // 最小像素：一个像素在 d 处的米数 = 2d / (P11 · 屏高)
                 float pix = 2.0 * d / (abs(unity_CameraProjection._m11) * _ScreenParams.y);

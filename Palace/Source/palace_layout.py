@@ -59,7 +59,8 @@ def cliff_halo_r(e, c, R):
     m, tL, _ = cliff_margin(e, c)
     if tL <= 0.0:
         return R
-    return min(R, max(m, 0.0) * 0.6 / tL)
+    g = min(1.0, max(0.0, -e[1] / 2.0))          # 只在眼睛低于台地顶（y < 0）以后收：在上面往下看时晕没被切（proc_l），不动
+    return R + g * (min(R, max(m, 0.0) * 0.6 / tL) - R)
 
 
 def cliff_margin(e, c):
