@@ -36,6 +36,7 @@ RIM_SCHEME = 'JSON'       # the schedule's rim_soft; mirror13_study.py overrides
 RIM_SOFT_FROM = {'A': 0.80, 'C': 0.55, 'D': 0.55, 'E': 0.35, 'F': 0.25, 'G': 0.25, 'H': 0.80, 'JSON': 0.35}
 FAR_UNTIL, FAR_SECONDS, FAR_DIM = 1131.31, 6.0, float(os.environ.get('FAR_DIM', 0.6))   # = LanbaiMirrorsDriver farUntil / farSeconds / farDim (M-4)
 BREAKUP_SHRINK = float(os.environ.get('BREAKUP_SHRINK', 0.6))   # = LanbaiMirrorBreakup's shrink (0: the r7 chunks that popped)
+RIM_GLOW_LATE, RIM_GLOW_LATE_FROM = 0.9, 1095.0   # = LanbaiMirrorsDriver rimGlowLate / rimGlowLateFrom: the ring's own reflection grows as mirror 13 rises; the glow eases to x 0.9 by farUntil (ring <= 90; D-50 #1)
 DUST_GAIN_IMPACT = float(os.environ.get('DUST_GAIN_IMPACT', 0.5))   # mirror 12's dust is born in the white's impact: half (flash wsu)
 RIM_GLOW = float(os.environ.get('RIM_GLOW', 0.06)) * np.array([0.8, 0.9, 1.0])   # = LanbaiMirrorsDriver rimGlow: mirror 13's ring while far (bible: rim screen luma 60-90, #4E545E)
 
@@ -381,7 +382,8 @@ def frame(t, yaw=0.0, pitch=0.0, w=960, h=540, ss=1, cabin=None, dust=True, extr
                 rdir = dn - 2 * (dn * n).sum(-1, keepdims=True) * n
                 col = sky(rdir, mat, gl) * schlick(F0_RIM, -(dn * n).sum(-1))
                 if st.get('far', 0) > 0:                         # M-4: the far ring glows cool grey (_RimGlow x far)
-                    col = col + RIM_GLOW[None, :] * st['far']
+                    late = 1.0 + (RIM_GLOW_LATE - 1.0) * min(max((t - RIM_GLOW_LATE_FROM) / (FAR_UNTIL - RIM_GLOW_LATE_FROM), 0), 1)
+                    col = col + RIM_GLOW[None, :] * st['far'] * late
             else:                                                 # opaque bronze, luminance following the sky behind (r3 #5)
                 fp = tdist[nearer] * pxang / np.maximum(np.abs(dn[:, 1]), 0.05)
                 Lsky = sky_broad(dn, mat, gl, round(t, 3))

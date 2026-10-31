@@ -58,6 +58,8 @@ namespace Lanbai.Mirrors
         public float farSeconds = 6f;               // ... -> 0 at 1137.31, before mirror 12's impact (1137.58; flash wd / wsu) and F16 - 10: sharp from then on (D-38)
         public float farDim = 0.6f;                 // face x 0.6 while far: under the column mirrors (r7 port: see README §9 M-4)
         public Color rimGlow = new Color(0.048f, 0.054f, 0.06f, 1f);  // the far ring (linear): bible 镜缘 screen luma 60-90, #4E545E (r7 port: see README §10 M-4)
+        public float rimGlowLate = 0.9f;             // the ring's own reflection grows as mirror 13 rises: the glow eases to x 0.9 ...
+        public float rimGlowLateFrom = 1095f;        // ... from here to farUntil (ring luma <= 90 at 1131; D-50 #1)
 
         [Header("Constants (spec_conventions.md)")]
         public Vector3 eye = new Vector3(0.55f, 1.70f, 2.05f);
@@ -100,7 +102,7 @@ namespace Lanbai.Mirrors
         private bool[] starOn, dustOn;
         private bool rimLit;
         private float[] lastVis, lastAppear, lastDis, lastExtra;
-        private float lastFar = -1f;
+        private float lastFar = -1f, lastGlow = -1f;
 
         void Start()
         {
@@ -337,11 +339,13 @@ namespace Lanbai.Mirrors
                 float dis = dissolveEnd[k] > 0f ? Mathf.Clamp01((t - tCross[k]) / (dissolveEnd[k] - tCross[k])) : 0f;
                 float extra = (k == n - 1) ? Linear(extraT, extraV, 0, extraT.Length, t) : 0f;
                 float far = (k == n - 1) ? 1f - Mathf.Clamp01((t - farUntil) / farSeconds) : 0f;
-                bool farChanged = k == n - 1 && far != lastFar;
+                // the ring glow eases to rimGlowLate before farUntil; quantised to 1/200 so the MPB is rewritten ~20 times, not every frame
+                float glow = (k == n - 1) ? Mathf.Round(far * Mathf.Lerp(1f, rimGlowLate, Mathf.Clamp01((t - rimGlowLateFrom) / Mathf.Max(farUntil - rimGlowLateFrom, 1e-3f))) * 200f) / 200f : 0f;
+                bool farChanged = k == n - 1 && (far != lastFar || glow != lastGlow);
                 if (vis != lastVis[k] || appear != lastAppear[k] || dis != lastDis[k] || extra != lastExtra[k] || farChanged)
                 {
                     lastVis[k] = vis; lastAppear[k] = appear; lastDis[k] = dis; lastExtra[k] = extra;
-                    if (k == n - 1) lastFar = far;
+                    if (k == n - 1) { lastFar = far; lastGlow = glow; }
                     mpb.Clear();
                     mpb.SetFloat(idRadius, 0.5f * D);
                     mpb.SetFloat(idK, k + 1);
@@ -353,7 +357,7 @@ namespace Lanbai.Mirrors
                     mpb.SetFloat(idFaceSoft, far);
                     mpb.SetFloat(idFarDim, 1f - (1f - farDim) * far);
                     mpb.SetColor(idRimGlow, rimGlow);
-                    mpb.SetFloat(idRimGlowAmt, far);
+                    mpb.SetFloat(idRimGlowAmt, glow);
                     int b = 3 * k;
                     if (lodRenderers[b] != null) lodRenderers[b].SetPropertyBlock(mpb);
                     if (lodRenderers[b + 1] != null) lodRenderers[b + 1].SetPropertyBlock(mpb);

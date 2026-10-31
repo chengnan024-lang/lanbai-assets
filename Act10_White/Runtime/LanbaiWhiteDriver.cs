@@ -31,11 +31,11 @@ namespace Lanbai.Act10
 
         [Header("Curves (linear knots)")]
         public float[] evT = new float[] { 1137.58f, 1138.78f, 1144.78f, 1146.31f, 1149.31f };
-        public float[] evV = new float[] { 0f, 1f, 2.4f, 2.4f, 2.4f };
+        public float[] evV = new float[] { 0f, 0.8f, 2.4f, 2.4f, 2.4f };   // D-50 #1: the impact lifts +0.8 (Unity sweep x35: +1.0 rose 1.0024 EV / 1 s)
         public float[] satT = new float[] { 1137.58f, 1138.78f, 1144.78f };
         public float[] satV = new float[] { 0f, 0.42f, 1f };
         public float[] bloomT = new float[] { 1137.58f, 1138.78f, 1144.78f, 1146.31f, 1149.31f };
-        public float[] bloomV = new float[] { 0f, 0.5f, 1f, 1f, 0f };
+        public float[] bloomV = new float[] { 0f, 0.4f, 1f, 1f, 0f };   // D-50 #1: bloom 0.4 at the impact's end
         public float lensFadeStart = 1138.78f;
         public float lensFadeEnd = 1144.78f;
 

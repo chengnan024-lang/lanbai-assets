@@ -10,6 +10,11 @@ grades_final.json helpers（EXPO_UP、WHITE_SAT、WHITE_BLOOM、LENS_*）。
 用法：~/bpy/bin/python make_white_schedule.py
 """
 import json, math, os
+# D-50 #1 (阿白's Unity sweep 10-26, x35): the bible's impact (+1.0 EV and WHITE_BLOOM 0 -> 0.5 in 1.2 s) rose 1.0024 EV in 1 s
+# full-frame in Unity (limit 1.0; the director wants <= 0.9). The impact keeps its 1.2 s and its beat; it lifts less, and the
+# swell (6 s) makes up the rest: +0.8 EV and bloom 0.4 at 1138.78, the same +2.4 EV / bloom 1 at 1144.78.
+IMPACT_EV = 0.8
+IMPACT_BLOOM = 0.4
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..'))
 cues = json.load(open(os.path.join(ROOT, 'FromLocal', 'cues.json'), encoding='utf-8'))
@@ -54,13 +59,13 @@ out = dict(
     curve_rules=dict(knots='[t, value]，相邻节点之间线性插值（EV 线性的量直接给 EV；权重给 weight）；第一个节点之前取第一个值、最后一个之后取最后一个值',
                      ev_linear='EXPO_UP 的 ΔEV 在节点之间线性 → w = ΔEV / (4 − b) 也线性：EV 线性的包络保持 EV 线性（§1.4）'),
     exposure=dict(helper='EXPO_UP', base_b=B_S9B, formula='w = ΔEV / (4 − b)',
-                  dEV_knots=[[M12, 0.0], [t_imp_end, 1.0], [t_sw_end, 2.4], [t_mask0, 2.4], [F16, 2.4]],
-                  weight_check=dict(impact_end=round(w_up(1.0, B_S9B), 3), swell_end=round(w_up(2.4, B_S9B), 3)),
+                  dEV_knots=[[M12, 0.0], [t_imp_end, IMPACT_EV], [t_sw_end, 2.4], [t_mask0, 2.4], [F16, 2.4]],
+                  weight_check=dict(impact_end=round(w_up(IMPACT_EV, B_S9B), 3), swell_end=round(w_up(2.4, B_S9B), 3)),
                   at_F16='同一帧：EXPO_UP → 0（ΔEV 归零），场景 S9a/S9b → 0、S10 → 1；遮罩此刻全满，填值同帧换成 S10 那一行，屏幕一码不动',
                   after_silence=dict(t=t_sil_end, dEV=1.0, weight=round(w_up(1.0, -0.15), 3), decay_s=4.0, base_b=-0.15,
                                      note='10 → 11：遮罩全满时同帧硬切 S10 → S11，EXPO_UP +1.0（w 0.241，S11 的 b = −0.15）且填值同时 × 2^−1.0；之后 4 s 线性衰减（变暗，免费）')),
     white_sat=dict(knots=[[M12, 0.0], [t_imp_end, 0.42], [t_sw_end, 1.0], [F16 - 1e-3, 1.0], [F16, 0.0]], note='F16 遮罩全满同帧硬切到 0'),
-    white_bloom=dict(knots=[[M12, 0.0], [t_imp_end, 0.5], [t_sw_end, 1.0], [t_mask0, 1.0], [F16, 0.0]],
+    white_bloom=dict(knots=[[M12, 0.0], [t_imp_end, IMPACT_BLOOM], [t_sw_end, 1.0], [t_mask0, 1.0], [F16, 0.0]],
                      mask_rule='遮罩的 3 s 里随遮罩 EV 线性 1 → 0（= 1 − x，x = 遮罩的归一化时间；遮罩本身永远不 bloom）'),
     lens_desktop=dict(LENS_CLEAN=[[t_imp_end, 1.0], [t_sw_end, 0.0], [t_sil_end - 1e-3, 0.0], [t_sil_end, 1.0]],
                       LENS_ARCHIVE=[[t_sil_end - 1e-3, 0.0], [t_sil_end, 1.0]],
@@ -92,4 +97,4 @@ out = dict(
     audio_note='音乐 F16r 和弦收，播放淡出 1170.96 → 1173.46（本地），之后 5 s 数字静默；电台噪音 1178.46 起 −40 → −30 dB（第 11 幕）',
 )
 json.dump(out, open(os.path.join(ROOT, 'Act10_White', 'WhiteSchedule.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
-print('wrote WhiteSchedule.json', t_imp_end, t_sw_end, t_mask0, F16, t_sil_end, t_shrink_end, 'w', round(w_up(1.0, B_S9B), 3), round(w_up(2.4, B_S9B), 3))
+print('wrote WhiteSchedule.json', t_imp_end, t_sw_end, t_mask0, F16, t_sil_end, t_shrink_end, 'w', round(w_up(IMPACT_EV, B_S9B), 3), round(w_up(2.4, B_S9B), 3))
