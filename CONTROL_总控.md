@@ -132,6 +132,7 @@ float3 LanbaiApplyFog(float3 colLinear, float3 posWS);     // 用 LanbaiCentreEy
 11. U# 1.x 只编译有程序资产（`.asset`）的脚本 → 每个 U# 脚本要有程序资产；搭建脚本可以顺手建。
 12. 本地环境（10-08 的快照，阿白接管时重新核对，见 `HANDOFF_CHATGPT.md` §A）：**Unity 2022.3.22f1、VRChat SDK Worlds 3.10.5、PPv2 3.4.0、UdonSharp（SDK 自带）**，RTX 4060 Laptop。以前的 C# 检查对的是 Unity 2021.1 的引用程序集，有差别时以 2022.3 为准。
 13. JSON 里没给的值，本地会**自己推**并写进报告（门测试里推了光束宽度、平铺、补光方向等）。所以：**本地需要的每一个数都要写进 JSON 或 README**，不要只存在渲染脚本里。
+14. **搭建脚本不许调全局 `AssetDatabase.SaveAssets()`**（D-50，2026-10-31）：它会把别人在内存里被驱动改脏的材质一起写盘，测试里报成“未声明写入”。一律用 `Common/Editor/LanbaiAssetSave.cs` 的 `LanbaiAssetSave.Only(...)`，只存自己建的资产。现有的 17 处（门内、第 6/7/8/10 幕、车、云、Grading、镜、遮罩、海、天空、字体……）由各包在下一次改搭建脚本时一起换掉。
 
 ---
 
