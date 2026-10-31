@@ -342,7 +342,7 @@ TRANSITIONS = [   # bible §6.x; t = timeline seconds computed from the labels (
     dict(label='U1', t=[17.50, 37.50], what='雾 0.009 → 0.008（开车）', curve='smoothstep'),
     dict(label='U2b', t=[39.10, 79.10], what='雾 0.008 → 0.0025（灯尽 → 离地）', curve='smoothstep'),
     dict(label='U4h', t=[99.50, 107.50], what='雾 0 → 0.067（触云，云中雾色暖 #3A3530 → 冷 #4A5568 到 U5r）', curve='EV 线性'),
-    dict(label='U6k', t=[129.10, 131.60], what='雾 0.067 → 0.00035（破云）；月夜预设', curve='ease-out'),
+    dict(label='U6k', t=[129.10, 132.60], what='破云：阴雨夜 → 月夜预设，天、雾（→ 0.00035）、月、星同一条曲线 3.5 秒（D-50，原 2.5 秒）', curve='smoothstep 3.5 s'),
     dict(label='U6', t=[133.80, 163.80], what='→ 第 4 幕光带 0.0006；_Udon_FogModel 1 → 0（月夜的渐变 → 门的光带，同一段 smoothstep）', curve='smoothstep'),
     dict(label='U9 → U12', t=[179.55, 248.64], what='门内（门内会话定）', curve='—'),
     dict(label='剪 1', t=[248.64, 248.64], what='黑遮罩下硬切到晨：dawn 预设，0.00012，模型 B（A → B 在遮挡下）', curve='硬切'),
@@ -415,9 +415,10 @@ def driver_tables():
         dict(name='Lanbai_SkyDriver_Acts1to3', entries=[
             dict(preset='overcast_rain_night_town', t0=0.0, t1=cue_t('U1'), fade=0.0, label='0 → U1'),
             dict(preset='overcast_rain_night', t0=cue_t('U1'), t1=cue_t('U6k'), fade=10.0, label='U1 → U6k（钠光 10 秒淡掉）'),
-            # D-50 #1: the break-out is a 2.5 s fade (bible §6·3c: fog 0.067 -> 0.00035 in 2.5 s, EXPO_UP +0.5 EV over 0.6 s),
-            # not a cut: in Unity the cut (fade 0) was a +1.008 EV step in one frame at 129.1 (阿白's sweep x09, 10-26)
-            dict(preset='moon_night', t0=cue_t('U6k'), t1=cue_t('U6'), fade=2.5, label='U6k 破云：2.5 秒淡开（月夜）→ U6（门接手雾）')]),
+            # D-50 #1: the break-out is a 3.5 s fade (D-50 changes bible §6·3c's 2.5 s; sky, fog, moon, stars on one curve), not
+            # a cut: in Unity the cut (fade 0) was a +1.008 EV step in one frame at 129.1 (阿白's sweep x09, 10-26); 3.5 s
+            # keeps even a view full of sky (looking up at the moon) inside the comfort limits
+            dict(preset='moon_night', t0=cue_t('U6k'), t1=cue_t('U6'), fade=3.5, label='U6k 破云：3.5 秒淡开（月夜，D-50）→ U6（门接手雾）')]),
         dict(name='Lanbai_SkyDriver_Acts11to12', entries=[
             dict(preset='overcast_rain_night', t0=cue_t('F16'), t1=100000.0, fade=0.0, label='F16 白遮罩下 → 片尾')]),
     ]
