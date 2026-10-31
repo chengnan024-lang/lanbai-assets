@@ -4,8 +4,8 @@
    960,
    540
   ],
-  "APL": 56.28,
-  "EV_display": -3.379,
+  "APL": 56.3,
+  "EV_display": -3.378,
   "luma_lt12_pct": 60.18,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
@@ -19,21 +19,21 @@
   "lavender_act6_pct": 0.0,
   "brightest": {
    "bbox": [
-    457,
+    459,
     2,
     788,
     383
    ],
    "centroid": [
-    497.5,
-    24.4
+    499.7,
+    22.9
    ],
-   "clusters": 18,
-   "clusters_ge5pct": 2,
+   "clusters": 17,
+   "clusters_ge5pct": 1,
    "min_luma": 170.3,
    "centroid_az_el": [
-    12.38,
-    85.65
+    19.21,
+    85.71
    ]
   },
   "top25_Lstar": {
@@ -73,7 +73,7 @@
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
      "nearest_dE2000_p01": 3.5,
-     "within_dE5_pct": 4.07
+     "within_dE5_pct": 4.04
     },
     {
      "hex": "#697987",
@@ -90,7 +90,7 @@
    ],
    "pixel_to_nearest_dE_median": 19.3,
    "pixel_to_nearest_dE_p90": 19.3,
-   "pixels_within5_pct": 11.3
+   "pixels_within5_pct": 11.2
   }
  },
  "cam": {
@@ -194,7 +194,7 @@
    540
   ]
  },
- "render_seconds": 15.1,
+ "render_seconds": 16.4,
  "lens": "none",
  "bloom_tint": "single",
  "note": "D-44 #5 beat 506.4 up 60 from the main seat"

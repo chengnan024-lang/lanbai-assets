@@ -1,0 +1,250 @@
+{
+  "time": "2026-10-26T07:56:22.431206-04:00",
+  "head": "6d6a700d3976bd75aa422026e2c2ba68cbf6bebb",
+  "remote": "6d6a700d3976bd75aa422026e2c2ba68cbf6bebb",
+  "source_changes_since_delivery": [],
+  "ledger_files": 314,
+  "changed_files": [],
+  "local_patch_count": 9,
+  "approved_groups_missing_from_ledger": {
+    "dusk": [],
+    "bus": [],
+    "mirrors": [],
+    "gate": [],
+    "tree": [],
+    "tool": {
+      "explanation": "Separate tool verification, not missing deployment",
+      "verified_files": 21
+    }
+  },
+  "group_counts": {
+    "dusk": 99,
+    "bus": 73,
+    "mirrors": 79,
+    "gate": 37,
+    "tree": 21,
+    "tool": 21
+  },
+  "scene_hashes": {
+    "Assets/Lanbai/Scenes/Lanbai.unity": "16f5d9d7d2fda794cbd6353038037c493367285bc128f341bdf45762f25c5af0",
+    "Assets/Lanbai/Scenes/Lanbai_FullPreview.unity": "a5a75871e3773d5dbb310564f4640c2b1c5d0ec3882e6fb8bec5cc50371a2590",
+    "Assets/Lanbai/Scripts/LB_Journey.cs": "b97b838aa5a32bd9f2ab63d726ec60925749a48ec4c3368694a67dde3443a9e8"
+  },
+  "heartbeat": {
+    "time": "2026-10-26T07:56:21.7803360-04:00",
+    "editorTime": 24892.3023978,
+    "focused": true,
+    "playing": false,
+    "compiling": false,
+    "updating": false,
+    "compileFailed": false,
+    "scene": "Assets/Lanbai/Scenes/Lanbai_FullPreview.unity",
+    "sceneDirty": false,
+    "request": "",
+    "step": 0,
+    "phase": 0,
+    "unity": "2022.3.22f1",
+    "note": "loaded"
+  },
+  "tool_files": [
+    {
+      "source": "Engineering/UnityTest/Editor/LanbaiTestCapture.cs",
+      "sha256": "f063b73141d873f534829ea7aee0303554ad5175a9b4105ee96486508410b95d",
+      "published_local_patch": "Engineering_UnityTest_Editor_LanbaiTestCapture.cs.patch",
+      "matches_expected_with_lf_normalization": true
+    },
+    {
+      "source": "Engineering/UnityTest/Editor/LanbaiTestJson.cs",
+      "sha256": "f22cf2d6cb1e0af613a30821684133add70408821d517b1cc8a4cddf7d3bc330",
+      "published_local_patch": null,
+      "matches_expected_with_lf_normalization": true
+    },
+    {
+      "source": "Engineering/UnityTest/Editor/LanbaiTestLog.cs",
+      "sha256": "3a0d077caa16cc3fcb53b20880b84b1133d9d05b325fe4eedcf1a5843b2bee01",
+      "published_local_patch": null,
+      "matches_expected_with_lf_normalization": true
+    },
+    {
+      "source": "Engineering/UnityTest/Editor/LanbaiTestMenu.cs",
+      "sha256": "c37efc796b9bbffaf327ff0eecc7605d7c33f8c668b2232ad572b58671f1f8e3",
+      "published_local_patch": null,
+      "matches_expected_with_lf_normalization": true
+    },
+    {
+      "source": "Engineering/UnityTest/Editor/LanbaiTestPerf.cs",
+      "sha256": "b545d2cdb5c436ee5a7385c4d700c0b7b837d1fa9efc74422a0034205b3a85ae",
+      "published_local_patch": null,
+      "matches_expected_with_lf_normalization": true
+    },
+    {
+      "source": "Engineering/UnityTest/Editor/LanbaiTestPlay.cs",
+      "sha256": "8f418a27c33609f5748a673cdd935856ecfd22626a74e27ec2e0f195f6b26394",
+      "published_local_patch": "Engineering_UnityTest_Editor_LanbaiTestPlay.cs.patch",
+      "matches_expected_with_lf_normalization": true
+    },
+    {
+      "source": "Engineering/UnityTest/Editor/LanbaiTestPreflight.cs",
+      "sha256": "bfa849194bf3adf6148f533ef14be7d49aa8678bfd3bb6dbe99f4f8948d7eae7",
+      "published_local_patch": null,
+      "matches_expected_with_lf_normalization": true
+    },
+    {
+      "source": "Engineering/UnityTest/Editor/LanbaiTestReport.cs",
+      "sha256": "e35ad917e8bf3a9a091aa17c28b1475e57da68d9c7b41d95ef3c8c4dfc8d373a",
+      "published_local_patch": null,
+      "matches_expected_with_lf_normalization": true
+    },
+    {
+      "source": "Engineering/UnityTest/Editor/LanbaiTestRunner.cs",
+      "sha256": "f5350e57208e5014e021c007196106ef8fa4be01b0bd55d4bbe20f71cfdf1873",
+      "published_local_patch": null,
+      "matches_expected_with_lf_normalization": true
+    },
+    {
+      "source": "Engineering/UnityTest/Editor/LanbaiTestSteps.cs",
+      "sha256": "35d47f5c54fc7d94f82f7c2bdbda9fa066b0db845fc1fed280082ab5a4513f94",
+      "published_local_patch": null,
+      "matches_expected_with_lf_normalization": true
+    },
+    {
+      "source": "Engineering/UnityTest/README_UnityTest.md",
+      "sha256": "e1644bfa7df51c871c1c3ac52eade3c0b1326ab6d33e3e7d360f8cb0a025d796",
+      "published_local_patch": null,
+      "matches_expected_with_lf_normalization": true
+    },
+    {
+      "source": "Engineering/UnityTest/tests/act01_spawn.json",
+      "sha256": "2495d4d414e84315a1017e3f2cef72e115ac669e26a7d37e8e13780327438bbe",
+      "published_local_patch": null,
+      "matches_expected_with_lf_normalization": true
+    },
+    {
+      "source": "Engineering/UnityTest/tests/act06_test.json",
+      "sha256": "d42d885eb471afdde659d9fc58378de3cea2567e79ba578158136a21fa1eeae8",
+      "published_local_patch": null,
+      "matches_expected_with_lf_normalization": true
+    },
+    {
+      "source": "Engineering/UnityTest/tests/bus_dropin.json",
+      "sha256": "c88feaa240876200c2bfb8fe2d3cceae2c939f600d537b3ea307c7186e5e495f",
+      "published_local_patch": null,
+      "matches_expected_with_lf_normalization": true
+    },
+    {
+      "source": "Engineering/UnityTest/tests/bus_slice.json",
+      "sha256": "cad67a06574e656ef05cf1f68379ba92901842be3ca9ba1647abb2d02c573502",
+      "published_local_patch": null,
+      "matches_expected_with_lf_normalization": true
+    },
+    {
+      "source": "Engineering/UnityTest/tests/data/transitions_table.json",
+      "sha256": "4d6b328c269532aec32d06995db2ff643c38dbf894434110f77c9f71fc088567",
+      "published_local_patch": null,
+      "matches_expected_with_lf_normalization": true
+    },
+    {
+      "source": "Engineering/UnityTest/tests/flicker_probe.json",
+      "sha256": "3efdbd890cf086182d8d7eb5833daccb46b9c7a74eebee9922d9bb47b54ac11b",
+      "published_local_patch": null,
+      "matches_expected_with_lf_normalization": true
+    },
+    {
+      "source": "Engineering/UnityTest/tests/gate_clouds_test.json",
+      "sha256": "4c49970db5607a5df0be8dd6d4dd543476a6ce84ff8ffaa4ab42274bbfc29bae",
+      "published_local_patch": null,
+      "matches_expected_with_lf_normalization": true
+    },
+    {
+      "source": "Engineering/UnityTest/tests/palace_hotspot.json",
+      "sha256": "d1479a3c2ec1053c27185bf55d048016726240e7827865e1b42b859395822e4c",
+      "published_local_patch": null,
+      "matches_expected_with_lf_normalization": true
+    },
+    {
+      "source": "Engineering/UnityTest/tests/transitions_sweep.json",
+      "sha256": "58f99e60946a2aa9665e5faabbd04d99486502948e2310885c812bae224637b9",
+      "published_local_patch": null,
+      "matches_expected_with_lf_normalization": true
+    },
+    {
+      "source": "Engineering/UnityTest/tests/tree_sample.json",
+      "sha256": "4b6ace33bf40ab045b641a8ce6926fbf9fbf337a64f415f8abebc99cc5cc2c5f",
+      "published_local_patch": null,
+      "matches_expected_with_lf_normalization": true
+    }
+  ],
+  "published_helpers": [
+    {
+      "project": "Assets/Lanbai/Tests/Editor/LB_ApprovedTests.cs",
+      "sha256": "8983ffbd7d99eb6d1dd54287666a4f0b6cc6ddf02ad055bcbbe1022a356bc672",
+      "matches_published_copy": true,
+      "matches_published_bytes": false,
+      "comparison": "LF-normalized source text; checkout line endings can differ"
+    },
+    {
+      "project": "Assets/Lanbai/Tests/Editor/LB_CurrentViews.cs",
+      "sha256": "bf49722af99668e56ebc1362108f92cd3ea3ac412af834c4f264d53174dfa71d",
+      "matches_published_copy": true,
+      "matches_published_bytes": false,
+      "comparison": "LF-normalized source text; checkout line endings can differ"
+    },
+    {
+      "project": "Assets/Lanbai/Tests/Editor/LB_DeliveryPerf.cs",
+      "sha256": "42547dc38e1695988533f784501958ecb5ecb3418f58a046779208fe46d13285",
+      "matches_published_copy": true,
+      "matches_published_bytes": false,
+      "comparison": "LF-normalized source text; checkout line endings can differ"
+    },
+    {
+      "project": "Assets/Lanbai/Tests/Editor/LB_DiagnosticMaterials.cs",
+      "sha256": "ee2364786c626b212bfffb129a90ed131ba813ffed837df201373700fd7fd3c7",
+      "matches_published_copy": true,
+      "matches_published_bytes": false,
+      "comparison": "LF-normalized source text; checkout line endings can differ"
+    },
+    {
+      "project": "Assets/Lanbai/Tests/Editor/LB_DirectorTakeover.cs",
+      "sha256": "69106589d42fbdb47de8c93a291959c6de6c484b18ac3e0bf5dc4e65fcc901cb",
+      "matches_published_copy": true,
+      "matches_published_bytes": true,
+      "comparison": "LF-normalized source text; checkout line endings can differ"
+    },
+    {
+      "project": "Assets/Lanbai/Tests/Editor/LB_FinalDeliveryChecks.cs",
+      "sha256": "c5e4cee6731c235d00d5efa70f6ab201ba76644991a9e4a6abc081aece8a12b4",
+      "matches_published_copy": true,
+      "matches_published_bytes": false,
+      "comparison": "LF-normalized source text; checkout line endings can differ"
+    },
+    {
+      "project": "Assets/Lanbai/Tests/Editor/LB_FullAssemblyBinding.cs",
+      "sha256": "ca2dd644e469bbab5607ab4eba0d97dddd40b098a8670f029fc9683581763051",
+      "matches_published_copy": true,
+      "matches_published_bytes": false,
+      "comparison": "LF-normalized source text; checkout line endings can differ"
+    },
+    {
+      "project": "Assets/Lanbai/Tests/Editor/LB_NewDelivery.cs",
+      "sha256": "20a6ba76d7aadfe0cd0179b1de7f5c88daa8292350371682b828ffbbe7cf2a63",
+      "matches_published_copy": true,
+      "matches_published_bytes": true,
+      "comparison": "LF-normalized source text; checkout line endings can differ"
+    },
+    {
+      "project": "Assets/Lanbai/Tests/Editor/LB_WhiteHandoffAudit.cs",
+      "sha256": "6b7575bd47cb571ce2d0cf3f50a02cc2077693827f014096d3a20603e8b49e85",
+      "matches_published_copy": true,
+      "matches_published_bytes": false,
+      "comparison": "LF-normalized source text; checkout line endings can differ"
+    }
+  ],
+  "critical_hashes": {
+    "Assets/Lanbai/Scenes/Lanbai.unity": "16f5d9d7d2fda794cbd6353038037c493367285bc128f341bdf45762f25c5af0",
+    "Assets/Lanbai/Scenes/Lanbai_FullPreview.unity": "a5a75871e3773d5dbb310564f4640c2b1c5d0ec3882e6fb8bec5cc50371a2590",
+    "Assets/Lanbai/Scripts/LB_Journey.cs": "b97b838aa5a32bd9f2ab63d726ec60925749a48ec4c3368694a67dde3443a9e8",
+    "Assets/Lanbai/Scripts/LB_Seat.cs": "2f3f92962c2d8bc5fcea3a4ae6292776e3171a942e15a544058c60c4cf8c7882",
+    "Assets/Lanbai/Generated/PostProcess/LB_PP_White.asset": "896356aabfd946336e261f8eca6136830c8b3b6eac34b3d5aafdc9756e04cc3c",
+    "Assets/Lanbai/Generated/PostProcess/LB_PP_White_FullPreview.asset": "73f5f7c03c5d6b69d0556c7959d345244472e492e876dd4aaae8146e5fe2682a"
+  }
+}

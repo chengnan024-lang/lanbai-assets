@@ -1,0 +1,2 @@
+Halo_T active=True blockTexture= materialTexture= spriteTexture=Lanbai_Scrim_Line (UnityEngine.Texture2D)
+Halo_B active=True blockTexture= materialTexture= spriteTexture=Lanbai_Scrim_Line (UnityEngine.Texture2D)

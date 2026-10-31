@@ -1,0 +1,32 @@
+{
+  "source_local": "E:\\IDMdownload\\VRCC\\dream\\LanbaiReports\\tests\\bus_dropin\\20261026-020111",
+  "visual_validity": "camera UI excluded; still requires visual review",
+  "omitted": "Private consent note; backup_before and transient state; invalid-run PNG bulk",
+  "files": [
+    {
+      "path": "console.jsonl",
+      "bytes": 53513,
+      "sha256": "f6dafb7900245a57c7ce0e5c65bb86b875be7c52442334e9e1580c58c7ce8ab2"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 17815,
+      "sha256": "8b79ce183013d1149076ea51f57d185f3164b12eea007e79204f6dfb5f2088da"
+    },
+    {
+      "path": "result.json",
+      "bytes": 248,
+      "sha256": "a0b8bac7ee821175dd4126c5784d1b8459b7451acbd17571b364b7f5e2d23f00"
+    },
+    {
+      "path": "summary.md",
+      "bytes": 6736,
+      "sha256": "ff45819f6ce4fc63db4cba49a82172cf6bf97e9b4477204ba792c5e69ee173e7"
+    },
+    {
+      "path": "test_definition.json",
+      "bytes": 3300,
+      "sha256": "c88feaa240876200c2bfb8fe2d3cceae2c939f600d537b3ea307c7186e5e495f"
+    }
+  ]
+}

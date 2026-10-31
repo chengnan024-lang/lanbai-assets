@@ -94,7 +94,20 @@ def h_bus(t):
 
 
 def gate_origin(t):
-    return np.array([0.0, 150.0 - h_bus(t), 59.0164 * (CUES['U9'] - t)])
+    """LanbaiGateDriver: GateRoot = (0, 150 - h_bus, -s(t)); s = v_g tau before U9, then the inside's deceleration"""
+    tau = t - CUES['U9']
+    vg = 59.0164
+    if tau <= 0:
+        s = vg * tau
+    else:
+        B = json.load(open(os.path.join(REPO, 'Gate', 'GateDriver_Bake.json')))
+        T, ve = B['decel_T'], B['v_end']
+        if tau < T:
+            x = tau / T
+            s = vg * tau + (ve - vg) * T * (x ** 3 - 0.5 * x ** 4)
+        else:
+            s = vg * T + (ve - vg) * T * 0.5 + ve * (tau - T)
+    return np.array([0.0, 150.0 - h_bus(t), -s])
 
 
 # ---- sky (port of LanbaiGateSky.cginc LanbaiBand + LanbaiMoonAir) ---------------------------------------------------

@@ -33,6 +33,7 @@ public static class LanbaiGateDriverBuilder
         public int close; public EaseDef close_ease; public float[] close_end;
         public float drift_v; public float drift_tref;
         public float phase; public float fog_cap; public float pose_t0; public float pose_t1;
+        public float[] girth; public int curl; public float[] curl_pivot; public float[] curl_axis; public float[] curl_t;   // round 10
     }
     [Serializable] public class Bake
     {
@@ -276,6 +277,10 @@ public static class LanbaiGateDriverBuilder
 
         // timeline
         d.windowStart = B.U6 - 20f; d.windowEnd = B.U9 + 2f;
+        // round 10 (总导演 10-26 A): the hands that curl back are kept past U9; the window runs to their keep + 0.5 s
+        foreach (InstDef it in B.inst)
+            if (it.curl == 1 && it.curl_t != null && it.curl_t.Length == 3 && it.curl_t[2] > 0f)
+                d.windowEnd = Mathf.Max(d.windowEnd, it.curl_t[2] + 0.5f);
         d.U6k = B.U6k; d.U6 = B.U6; d.U7 = B.U7; d.U7b = B.U7b; d.U8 = B.U8; d.U9 = B.U9; d.vg = B.vg;
         d.hT = B.h_t; d.hH = B.h_H; d.hD = B.h_d;
         d.moonDir = V3(B.moon_dir);
@@ -295,6 +300,8 @@ public static class LanbaiGateDriverBuilder
         d.leanT0 = new float[n]; d.leanT1 = new float[n]; d.leanE = new float[n]; d.leanB = new float[n];
         d.closeT0 = new float[n]; d.closeT1 = new float[n]; d.closeE = new float[n]; d.closeB = new float[n];
         d.riseStart = new Vector3[n]; d.leanStart = new Quaternion[n]; d.closeEnd = new Quaternion[n];
+        d.instGirth = new Vector4[n]; d.curlOn = new bool[n]; d.curlPivot = new Vector4[n]; d.curlAxis = new Vector4[n];
+        d.curlStart = new float[n]; d.curlDur = new float[n]; d.curlKeep = new float[n];
         d.trackStart = new int[n]; d.trackCount = new int[n]; d.driftV = new float[n]; d.driftTref = new float[n];
         d.poseT0 = new float[n]; d.poseT1 = new float[n];
         d.instRendStart = new int[n]; d.instRendCount = new int[n];
@@ -316,6 +323,16 @@ public static class LanbaiGateDriverBuilder
             if (it.rev_t != null) { revT.AddRange(it.rev_t); revV.AddRange(it.rev_v); }
             d.riseOn[i] = it.rise == 1; d.riseProf[i] = it.rise_ease.profile; d.riseT0[i] = it.rise_ease.t0; d.riseT1[i] = it.rise_ease.t1;
             d.riseE[i] = it.rise_ease.e; d.riseB[i] = it.rise_ease.b; d.riseStart[i] = V3(it.rise_start);
+            // round 10: girth (D-05) and the fingertip curl
+            if (it.girth != null && it.girth.Length == 4) d.instGirth[i] = new Vector4(it.girth[0], it.girth[1], it.girth[2], it.girth[3]);
+            d.curlOn[i] = it.curl == 1 && it.curl_pivot != null && it.curl_pivot.Length == 4 && it.curl_axis != null && it.curl_axis.Length == 4
+                          && it.curl_t != null && it.curl_t.Length == 3;
+            if (d.curlOn[i])
+            {
+                d.curlPivot[i] = new Vector4(it.curl_pivot[0], it.curl_pivot[1], it.curl_pivot[2], it.curl_pivot[3]);
+                d.curlAxis[i] = new Vector4(it.curl_axis[0], it.curl_axis[1], it.curl_axis[2], it.curl_axis[3]);
+                d.curlStart[i] = it.curl_t[0]; d.curlDur[i] = it.curl_t[1]; d.curlKeep[i] = it.curl_t[2];
+            }
             d.leanOn[i] = it.lean == 1; d.leanProf[i] = it.lean_ease.profile; d.leanT0[i] = it.lean_ease.t0; d.leanT1[i] = it.lean_ease.t1;
             d.leanE[i] = it.lean_ease.e; d.leanB[i] = it.lean_ease.b; d.leanStart[i] = Q(it.lean_start, 0);
             d.closeOn[i] = it.close == 1; d.closeProf[i] = it.close_ease.profile; d.closeT0[i] = it.close_ease.t0; d.closeT1[i] = it.close_ease.t1;

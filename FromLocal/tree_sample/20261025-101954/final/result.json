@@ -1,0 +1,10 @@
+{
+  "test": "tree_sample",
+  "run": "20261025-101954",
+  "exit": 1,
+  "status": "fail",
+  "preflight_only": false,
+  "out": "E:\\IDMdownload\\VRCC\\dream\\LanbaiReports/tests\\tree_sample\\20261025-101954",
+  "blocked_reason": null,
+  "error": null
+}

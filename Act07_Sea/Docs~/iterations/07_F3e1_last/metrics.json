@@ -4,9 +4,9 @@
    960,
    540
   ],
-  "APL": 31.68,
-  "EV_display": -5.199,
-  "luma_lt12_pct": 58.1,
+  "APL": 35.52,
+  "EV_display": -4.861,
+  "luma_lt12_pct": 58.09,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
@@ -19,27 +19,27 @@
   "lavender_act6_pct": 0.0,
   "brightest": {
    "bbox": [
-    31,
+    38,
     1,
-    903,
-    539
+    930,
+    538
    ],
    "centroid": [
-    466.3,
-    206.9
+    408.7,
+    241.0
    ],
-   "clusters": 44,
-   "clusters_ge5pct": 1,
-   "min_luma": 128.0,
+   "clusters": 48,
+   "clusters_ge5pct": 2,
+   "min_luma": 139.3,
    "centroid_az_el": [
-    4.23,
-    45.21
+    -4.79,
+    41.46
    ]
   },
   "top25_Lstar": {
-   "mean": 8.73,
-   "p50": 2.19,
-   "p90": 48.45
+   "mean": 9.35,
+   "p50": 2.39,
+   "p90": 52.05
   },
   "palette": {
    "act": "07a",
@@ -48,49 +48,49 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 29.4,
+     "nearest_dE2000_p01": 25.7,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 21.7,
+     "nearest_dE2000_p01": 18.1,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 17.4,
+     "nearest_dE2000_p01": 14.2,
      "within_dE5_pct": 0.01
     },
     {
      "hex": "#3876AB",
      "role": "浅水 縹",
-     "nearest_dE2000_p01": 7.6,
-     "within_dE5_pct": 0.01
+     "nearest_dE2000_p01": 4.8,
+     "within_dE5_pct": 0.22
     },
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
      "nearest_dE2000_p01": 2.6,
-     "within_dE5_pct": 34.1
+     "within_dE5_pct": 24.98
     },
     {
      "hex": "#697987",
      "role": "海雪",
-     "nearest_dE2000_p01": 3.2,
-     "within_dE5_pct": 2.27
+     "nearest_dE2000_p01": 3.8,
+     "within_dE5_pct": 1.07
     },
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 20.0,
-     "within_dE5_pct": 0.01
+     "nearest_dE2000_p01": 17.1,
+     "within_dE5_pct": 0.02
     }
    ],
-   "pixel_to_nearest_dE_median": 19.2,
-   "pixel_to_nearest_dE_p90": 19.2,
-   "pixels_within5_pct": 36.4
+   "pixel_to_nearest_dE_median": 19.3,
+   "pixel_to_nearest_dE_p90": 19.3,
+   "pixels_within5_pct": 26.3
   }
  },
  "cam": {
@@ -112,54 +112,54 @@
  },
  "grade_spec": {
   "S7a": 1.0,
-  "S7b": 0.221
+  "S7b": 0.2
  },
  "grade_state": {
-  "postExposure": -0.7116,
-  "temperature": -2.68924,
-  "tint": 1.42116,
-  "saturation": 7.845180000000001,
-  "contrast": -8.584439999999999,
+  "postExposure": -0.72,
+  "temperature": -2.638,
+  "tint": 1.422,
+  "saturation": 7.896000000000001,
+  "contrast": -8.927999999999999,
   "lift": [
-   0.9626514,
-   0.987369,
+   0.96258,
+   0.9876,
    1.0,
-   0.0149216
+   0.01472
   ],
   "gamma": [
-   0.974021,
-   0.988021,
+   0.974,
+   0.988,
    1.0,
-   -0.22939120000000002
+   -0.23134000000000002
   ],
   "gain": [
-   0.9881299,
-   0.9966503,
-   0.9995138,
-   0.38126550000000003
+   0.98788,
+   0.99656,
+   0.99956,
+   0.38430000000000003
   ],
   "mixer": [
-   100.2274,
-   0.6390600000000001,
-   -2.95476,
-   -0.17326,
-   101.13967,
-   0.16722999999999993,
-   1.33663,
-   1.98414,
-   99.4358
+   100.24,
+   0.642,
+   -2.9219999999999997,
+   -0.17200000000000001,
+   101.134,
+   0.19599999999999995,
+   1.336,
+   1.998,
+   99.44
   ],
   "bloom": {
-   "intensity": 4.442,
-   "threshold": 2.15381,
+   "intensity": 4.4,
+   "threshold": 2.1620000000000004,
    "softKnee": 0.6,
-   "diffusion": 7.779,
+   "diffusion": 7.8,
    "color": [
-    0.9297372549019608,
-    0.9847254901960784,
+    0.927843137254902,
+    0.984313725490196,
     1.0
    ],
-   "clamp": 4.239999999998413
+   "clamp": 4.23999999999837
   },
   "vignette": {
    "intensity": 0.0,
@@ -170,10 +170,10 @@
   }
  },
  "bloom_share_of_APL": 0.0,
- "t": 512.0,
+ "t": 508.4,
  "target": {
   "phase": "最后一闪",
-  "APL": 43.6,
+  "APL": 45.1,
   "grade": "S7a→S7b",
   "range": [
    46,
@@ -183,9 +183,9 @@
  "scene": {
   "what": "act 7a",
   "frame": "__7a__",
-  "depth": 76.63,
-  "fog": 0.0277,
-  "erosion": 0.132,
+  "depth": 71.22,
+  "fog": 0.0284,
+  "erosion": 0.129,
   "bus": "bible_v2",
   "glass": false,
   "samples": 48,
@@ -194,8 +194,8 @@
    540
   ]
  },
- "render_seconds": 16.2,
+ "render_seconds": 19.5,
  "lens": "none",
  "bloom_tint": "single",
- "note": "F3e1 512.0: the window shrinking (gain x ~0.24 on the way to 0.04 at 514.36), the last wide shaft over the seats"
+ "note": "F3e1 508.4: the last wide shaft at full strength mid-sweep (in from 504.36, sweep 506.36-510.36: D-44 #5 10-25), the window starting to shrink"
 }

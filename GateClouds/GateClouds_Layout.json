@@ -483,7 +483,7 @@
    "group": "tower",
    "shape": "Bank",
    "position": [
-    1287.0,
+    280.2,
     -175.0,
     1363.4
    ],
@@ -500,7 +500,7 @@
     150.0
    ],
    "fog_cap": 0.5,
-   "moon_rel_deg_U7b": 36.6,
+   "moon_rel_deg_U7b": 17.7,
    "sag_keys": [
     142.8,
     1.0,

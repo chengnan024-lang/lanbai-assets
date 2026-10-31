@@ -1,0 +1,153 @@
+{
+  "time": "2026-10-26T01:22:07.238672-04:00",
+  "backup_verified_files": 43,
+  "files": [
+    {
+      "path": "Engineering/UnityTest/Editor/LanbaiTestCapture.cs",
+      "bytes": 58852,
+      "source_sha256": "f8b7ebefe5f1bcd8792f6fbf8dec709deeee2dcc5c7abdd9afda93307a99c11e",
+      "target_sha256": "523b3dae912b48f34bdde956df589c080c84907c56c9310f176d58de0bd772f8",
+      "action": "LOCAL_DIFF"
+    },
+    {
+      "path": "Engineering/UnityTest/Editor/LanbaiTestJson.cs",
+      "bytes": 12358,
+      "source_sha256": "f22cf2d6cb1e0af613a30821684133add70408821d517b1cc8a4cddf7d3bc330",
+      "target_sha256": "f22cf2d6cb1e0af613a30821684133add70408821d517b1cc8a4cddf7d3bc330",
+      "action": "same"
+    },
+    {
+      "path": "Engineering/UnityTest/Editor/LanbaiTestLog.cs",
+      "bytes": 8970,
+      "source_sha256": "3a0d077caa16cc3fcb53b20880b84b1133d9d05b325fe4eedcf1a5843b2bee01",
+      "target_sha256": "3a0d077caa16cc3fcb53b20880b84b1133d9d05b325fe4eedcf1a5843b2bee01",
+      "action": "same"
+    },
+    {
+      "path": "Engineering/UnityTest/Editor/LanbaiTestMenu.cs",
+      "bytes": 6500,
+      "source_sha256": "c37efc796b9bbffaf327ff0eecc7605d7c33f8c668b2232ad572b58671f1f8e3",
+      "target_sha256": "c37efc796b9bbffaf327ff0eecc7605d7c33f8c668b2232ad572b58671f1f8e3",
+      "action": "same"
+    },
+    {
+      "path": "Engineering/UnityTest/Editor/LanbaiTestPerf.cs",
+      "bytes": 16651,
+      "source_sha256": "b545d2cdb5c436ee5a7385c4d700c0b7b837d1fa9efc74422a0034205b3a85ae",
+      "target_sha256": "8710a9ecc6f8832769f41dfe659941f9539ecc356b3d57243ce90bea260d7688",
+      "action": "update"
+    },
+    {
+      "path": "Engineering/UnityTest/Editor/LanbaiTestPlay.cs",
+      "bytes": 81602,
+      "source_sha256": "27e55dadda00c854b669c7b68b9d727234e946cadb355c88e19a12ad6c50446d",
+      "target_sha256": "27e55dadda00c854b669c7b68b9d727234e946cadb355c88e19a12ad6c50446d",
+      "action": "same"
+    },
+    {
+      "path": "Engineering/UnityTest/Editor/LanbaiTestPreflight.cs",
+      "bytes": 47982,
+      "source_sha256": "bfa849194bf3adf6148f533ef14be7d49aa8678bfd3bb6dbe99f4f8948d7eae7",
+      "target_sha256": "d3fde3d1f0c59f5d3569d2011b1968dc6ccf85fb68d35013fe11967086c79d30",
+      "action": "update"
+    },
+    {
+      "path": "Engineering/UnityTest/Editor/LanbaiTestReport.cs",
+      "bytes": 25775,
+      "source_sha256": "e35ad917e8bf3a9a091aa17c28b1475e57da68d9c7b41d95ef3c8c4dfc8d373a",
+      "target_sha256": "e35ad917e8bf3a9a091aa17c28b1475e57da68d9c7b41d95ef3c8c4dfc8d373a",
+      "action": "same"
+    },
+    {
+      "path": "Engineering/UnityTest/Editor/LanbaiTestRunner.cs",
+      "bytes": 33686,
+      "source_sha256": "f5350e57208e5014e021c007196106ef8fa4be01b0bd55d4bbe20f71cfdf1873",
+      "target_sha256": "3fff6538816cf1c0503f1608cb2f9da051079ee0d20d9046c134737f092e69c9",
+      "action": "update"
+    },
+    {
+      "path": "Engineering/UnityTest/Editor/LanbaiTestSteps.cs",
+      "bytes": 38456,
+      "source_sha256": "35d47f5c54fc7d94f82f7c2bdbda9fa066b0db845fc1fed280082ab5a4513f94",
+      "target_sha256": "35d47f5c54fc7d94f82f7c2bdbda9fa066b0db845fc1fed280082ab5a4513f94",
+      "action": "same"
+    },
+    {
+      "path": "Engineering/UnityTest/README_UnityTest.md",
+      "bytes": 48442,
+      "source_sha256": "e1644bfa7df51c871c1c3ac52eade3c0b1326ab6d33e3e7d360f8cb0a025d796",
+      "target_sha256": "38f1bd8bc4e11d49ab2419a178e6b3694a7c81238fb83df25a549e2302992bf9",
+      "action": "update"
+    },
+    {
+      "path": "Engineering/UnityTest/tests/act01_spawn.json",
+      "bytes": 490,
+      "source_sha256": "2495d4d414e84315a1017e3f2cef72e115ac669e26a7d37e8e13780327438bbe",
+      "target_sha256": "2495d4d414e84315a1017e3f2cef72e115ac669e26a7d37e8e13780327438bbe",
+      "action": "same"
+    },
+    {
+      "path": "Engineering/UnityTest/tests/act06_test.json",
+      "bytes": 11240,
+      "source_sha256": "d42d885eb471afdde659d9fc58378de3cea2567e79ba578158136a21fa1eeae8",
+      "target_sha256": "d42d885eb471afdde659d9fc58378de3cea2567e79ba578158136a21fa1eeae8",
+      "action": "same"
+    },
+    {
+      "path": "Engineering/UnityTest/tests/bus_dropin.json",
+      "bytes": 3300,
+      "source_sha256": "c88feaa240876200c2bfb8fe2d3cceae2c939f600d537b3ea307c7186e5e495f",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Engineering/UnityTest/tests/bus_slice.json",
+      "bytes": 11455,
+      "source_sha256": "cad67a06574e656ef05cf1f68379ba92901842be3ca9ba1647abb2d02c573502",
+      "target_sha256": "b869a62e37d4d7cd927f97a372651577b67bfa965203fdaa1a935a33bf8ab236",
+      "action": "update"
+    },
+    {
+      "path": "Engineering/UnityTest/tests/data/transitions_table.json",
+      "bytes": 4832,
+      "source_sha256": "4d6b328c269532aec32d06995db2ff643c38dbf894434110f77c9f71fc088567",
+      "target_sha256": "4d6b328c269532aec32d06995db2ff643c38dbf894434110f77c9f71fc088567",
+      "action": "same"
+    },
+    {
+      "path": "Engineering/UnityTest/tests/flicker_probe.json",
+      "bytes": 5938,
+      "source_sha256": "3efdbd890cf086182d8d7eb5833daccb46b9c7a74eebee9922d9bb47b54ac11b",
+      "target_sha256": "3efdbd890cf086182d8d7eb5833daccb46b9c7a74eebee9922d9bb47b54ac11b",
+      "action": "same"
+    },
+    {
+      "path": "Engineering/UnityTest/tests/gate_clouds_test.json",
+      "bytes": 20494,
+      "source_sha256": "4c49970db5607a5df0be8dd6d4dd543476a6ce84ff8ffaa4ab42274bbfc29bae",
+      "target_sha256": "4c49970db5607a5df0be8dd6d4dd543476a6ce84ff8ffaa4ab42274bbfc29bae",
+      "action": "same"
+    },
+    {
+      "path": "Engineering/UnityTest/tests/palace_hotspot.json",
+      "bytes": 441,
+      "source_sha256": "d1479a3c2ec1053c27185bf55d048016726240e7827865e1b42b859395822e4c",
+      "target_sha256": "d1479a3c2ec1053c27185bf55d048016726240e7827865e1b42b859395822e4c",
+      "action": "same"
+    },
+    {
+      "path": "Engineering/UnityTest/tests/transitions_sweep.json",
+      "bytes": 3524,
+      "source_sha256": "58f99e60946a2aa9665e5faabbd04d99486502948e2310885c812bae224637b9",
+      "target_sha256": "58f99e60946a2aa9665e5faabbd04d99486502948e2310885c812bae224637b9",
+      "action": "same"
+    },
+    {
+      "path": "Engineering/UnityTest/tests/tree_sample.json",
+      "bytes": 8627,
+      "source_sha256": "4b6ace33bf40ab045b641a8ce6926fbf9fbf337a64f415f8abebc99cc5cc2c5f",
+      "target_sha256": "c64eb24518951c9854150c6fda3e553187e229a4176ad4a15594b7893af0958b",
+      "action": "update"
+    }
+  ]
+}

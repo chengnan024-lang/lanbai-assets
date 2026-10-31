@@ -1,0 +1,199 @@
+{
+ "metrics": {
+  "size": [
+   1280,
+   720
+  ],
+  "APL": 30.95,
+  "EV_display": -4.878,
+  "luma_lt12_pct": 56.76,
+  "Lstar_gt85_pct": 0.0,
+  "clip_black_pct": 0.0,
+  "clip_white_pct": 0.0,
+  "clip_black_largest_region_pct": 0.0,
+  "clip_white_largest_region_pct": 0.0,
+  "warm_shadow_pct": 0.0,
+  "purple_pct": 0.0,
+  "purple_largest_region_pct": 0.0,
+  "violet_strong_pct": 0.0,
+  "lavender_act6_pct": 0.0,
+  "brightest": {
+   "bbox": [
+    0,
+    44,
+    154,
+    77
+   ],
+   "centroid": [
+    85.7,
+    69.3
+   ],
+   "clusters": 1,
+   "clusters_ge5pct": 1,
+   "min_luma": 188.6,
+   "centroid_az_el": [
+    -40.8,
+    18.94
+   ]
+  },
+  "top25_Lstar": {
+   "mean": 16.27,
+   "p50": 5.38,
+   "p90": 60.75
+  },
+  "palette": {
+   "act": "11",
+   "metric": "CIEDE2000 (as Review/Tools~/measure.py)",
+   "swatches": [
+    {
+     "hex": "#05080F",
+     "role": "夜",
+     "nearest_dE2000_p01": 0.4,
+     "within_dE5_pct": 64.09
+    },
+    {
+     "hex": "#0F2438",
+     "role": "头顶的海（底面）",
+     "nearest_dE2000_p01": 8.5,
+     "within_dE5_pct": 0.0
+    },
+    {
+     "hex": "#D08A59",
+     "role": "海面上的钠灯闪光",
+     "nearest_dE2000_p01": 21.7,
+     "within_dE5_pct": 0.0
+    },
+    {
+     "hex": "#F2B070",
+     "role": "倒挂的灯头",
+     "nearest_dE2000_p01": 21.8,
+     "within_dE5_pct": 0.0
+    },
+    {
+     "hex": "#C4CACA",
+     "role": "车厢（完好、过于完好）",
+     "nearest_dE2000_p01": 4.9,
+     "within_dE5_pct": 0.11
+    },
+    {
+     "hex": "#3B3029",
+     "role": "干路上的灯池",
+     "nearest_dE2000_p01": 6.4,
+     "within_dE5_pct": 0.0
+    },
+    {
+     "hex": "#C8CAC2",
+     "role": "空白的目的地牌",
+     "nearest_dE2000_p01": 3.4,
+     "within_dE5_pct": 0.38
+    }
+   ],
+   "pixel_to_nearest_dE_median": 1.1,
+   "pixel_to_nearest_dE_p90": 10.0,
+   "pixels_within5_pct": 64.5
+  }
+ },
+ "cam": {
+  "eye": [
+   0.55,
+   1.7,
+   2.05
+  ],
+  "yaw_deg": 0.0,
+  "pitch_deg": 0.0,
+  "hfov_deg": 90,
+  "res": [
+   1280,
+   720
+  ],
+  "note": "主座位眼位、正前、桌面 1920×1080、水平 90°（= 本地门测试 U7 截图的机位，Gate cameras.U7）。全片的“标准机位”。",
+  "source": "Engineering/render_harness",
+  "name": "hero"
+ },
+ "grade_spec": {
+  "S11": 1.0
+ },
+ "grade_state": {
+  "postExposure": -0.15,
+  "temperature": -3.94,
+  "tint": 3.11,
+  "saturation": -21.78,
+  "contrast": 3.19,
+  "lift": [
+   0.9726,
+   0.9836,
+   1.0,
+   0.0161
+  ],
+  "gamma": [
+   0.9697,
+   0.9818,
+   1.0,
+   -0.0944
+  ],
+  "gain": [
+   1.0,
+   0.9968,
+   0.9733,
+   0.1504
+  ],
+  "mixer": [
+   98.75,
+   1.15,
+   -1.4,
+   -0.86,
+   101.59,
+   -0.53,
+   -0.38,
+   0.63,
+   99.91
+  ],
+  "bloom": {
+   "intensity": 3.5,
+   "threshold": 1.8,
+   "softKnee": 0.6,
+   "diffusion": 7.5,
+   "color": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "clamp": 4.239999999997963
+  },
+  "vignette": {
+   "intensity": 0.0,
+   "smoothness": 0.2,
+   "roundness": 1.0,
+   "rounded": false,
+   "color": "#000000"
+  }
+ },
+ "bloom_share_of_APL": 0.0,
+ "t": 1200.0,
+ "target": {
+  "phase": "11 假醒",
+  "APL": 30.0,
+  "grade": "S11",
+  "range": [
+   30,
+   30
+  ]
+ },
+ "scene": {
+  "what": "act 11 cabin reference",
+  "tubes": 1.0,
+  "bleach": 0,
+  "fade": 0,
+  "bus": "none",
+  "glass": false,
+  "samples": 40,
+  "res": [
+   1280,
+   720
+  ]
+ },
+ "render_seconds": 85.1,
+ "lens": "none",
+ "bloom_tint": "single",
+ "note": ""
+}

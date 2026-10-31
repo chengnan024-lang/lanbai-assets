@@ -35,6 +35,7 @@ Shader "Lanbai/CloudCard"
         _GroundColor ("Lower dome light - linear", Vector) = (0.3281, 0.4199, 0.6151, 0)
         _SunDirFallback ("Direction to the sun - fallback when _Udon_SunDir is unset", Vector) = (0.4973, 0.1045, 0.8613, 0)
         _Gain ("Gain - MPB", Range(0, 4)) = 1
+        _RimFade ("Rim fades with alpha / melt - MPB (act 8 A4; 0 = off)", Range(0, 1)) = 0
         _Alpha ("Alpha - MPB", Range(0, 1)) = 1
         _Mirror ("Mirror - 0 off 1 on 2 auto - MPB", Float) = 2
         [Toggle] _Billboard ("Yaw billboard to the centre eye", Float) = 1
@@ -76,6 +77,7 @@ Shader "Lanbai/CloudCard"
                 UNITY_DEFINE_INSTANCED_PROP(float, _Alpha)
                 UNITY_DEFINE_INSTANCED_PROP(float, _Mirror)
                 UNITY_DEFINE_INSTANCED_PROP(float, _Gain)
+                UNITY_DEFINE_INSTANCED_PROP(float, _RimFade)
             UNITY_INSTANCING_BUFFER_END(Props)
 
             struct appdata { float4 vertex : POSITION; float2 uv : TEXCOORD0; UNITY_VERTEX_INPUT_INSTANCE_ID };
@@ -150,15 +152,20 @@ Shader "Lanbai/CloudCard"
                 float edge = 1.0 - kt.a;
                 key *= 1.0 - _RimTame * (1.0 - w1) * edge * saturate(texPerPx - 1.0);   // only the backlit channel's rim (review r1 R)
 
+                // base melt: w = 0 in UV above the card's own flat cloud base (scale-independent; review r1);
+                //            w = 1 in metres above a world plane (e.g. the cloud plain's top) at y = _Melt.z
+                float hm = (_Melt.w > 0.5) ? (i.wpos.y - _Melt.z) : (i.uv.y - _BaseV);
+                float melt = smoothstep(_Melt.x, _Melt.x + max(_Melt.y, 1e-4), hm);
+                float aMpb = UNITY_ACCESS_INSTANCED_PROP(Props, _Alpha);
+                // act 8 final review A4: the sun-lit rim comes after the body and goes before it (no gold wire frame on a
+                // fading or soft-based card): x melt^2 x smoothstep(0.4, 1, _Alpha) where _RimFade = 1
+                key *= lerp(1.0, melt * melt * smoothstep(0.4, 1.0, aMpb), UNITY_ACCESS_INSTANCED_PROP(Props, _RimFade));
+
                 float3 c = _SunColor.rgb * key + (_SkyUpColor.rgb * st.r + _GroundColor.rgb * st.g) * _KScale.y;
                 c *= UNITY_ACCESS_INSTANCED_PROP(Props, _Gain);
                 c = LanbaiApplyFog(c, i.wpos);
 
-                float a = kt.a * UNITY_ACCESS_INSTANCED_PROP(Props, _Alpha);
-                // base melt: w = 0 in UV above the card's own flat cloud base (scale-independent; review r1);
-                //            w = 1 in metres above a world plane (e.g. the cloud plain's top) at y = _Melt.z
-                float hm = (_Melt.w > 0.5) ? (i.wpos.y - _Melt.z) : (i.uv.y - _BaseV);
-                a *= smoothstep(_Melt.x, _Melt.x + max(_Melt.y, 1e-4), hm);
+                float a = kt.a * aMpb * melt;
                 float d = distance(i.wpos, eye);
                 a *= smoothstep(_NearFade.x, max(_NearFade.y, _NearFade.x + 1e-3), d);
             #if defined(SOFTPARTICLES_ON)

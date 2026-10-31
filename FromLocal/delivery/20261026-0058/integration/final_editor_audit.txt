@@ -1,0 +1,50 @@
+scene=Assets/Lanbai/Scenes/Lanbai_FullPreview.unity dirty=False playing=False audio=1 compileFailed=False
+whitePriority=150 profile=Assets/Lanbai/Generated/PostProcess/LB_PP_White_FullPreview.asset tonemapperOverride=False
+useDeliveredGate=True
+useDeliveredInside=True
+useDeliveredDawn=True
+useDeliveredSea=True
+useDeliveredSky=True
+useDeliveredDusk=True
+useDeliveredMirrors=True
+useDeliveredWhite=True
+LanbaiGateDriver.roots count=2 null=0
+LanbaiGateDriver.tideRenderers count=1 null=0
+LanbaiGateDriver.instTf count=64 null=0
+LanbaiGateDriver.rend count=192 null=0
+LanbaiGateDriver.rOcc count=192 null=84
+LanbaiGateClouds.cardRenderers count=38 null=0
+LanbaiGateClouds.towers count=10 null=0
+LanbaiGateClouds.towerRenderers count=10 null=0
+LanbaiGateClouds.skirtArms count=28 null=0
+OK check (read only, nothing written): 0 error(s), 0 warning(s)
+  LanbaiInsideDriver：Ready，Assets/Lanbai/UdonPrograms/LanbaiInsideDriver.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LanbaiInsideTestClock：Ready，Assets/Lanbai/UdonPrograms/LanbaiInsideTestClock.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LanbaiSkylightSpot：Ready，Assets/Lanbai/UdonPrograms/LanbaiSkylightSpot.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LanbaiAct06Driver：Ready，Assets/Lanbai/UdonPrograms/LanbaiAct06Driver.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LanbaiAct07Driver：Ready，Assets/Lanbai/UdonPrograms/LanbaiAct07Driver.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LanbaiAct08Driver：Ready，Assets/Lanbai/UdonPrograms/LanbaiAct08Driver.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LanbaiAct09Driver：Ready，Assets/Lanbai/UdonPrograms/LanbaiAct09Driver.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LanbaiWhiteDriver：Ready，Assets/Lanbai/UdonPrograms/LanbaiWhiteDriver.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LanbaiBusSeat：Ready，Assets/Lanbai/Bus/Programs/LanbaiBusSeat.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LanbaiCabinDriver：Ready，Assets/Lanbai/Bus/Programs/LanbaiCabinDriver.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LanbaiActDispatcher：Ready，Assets/Lanbai/UdonPrograms/LanbaiActDispatcher.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LanbaiLangButton：Ready，Assets/Lanbai/UdonPrograms/LanbaiLangButton.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LanbaiPoemDriver：Ready，Assets/Lanbai/UdonPrograms/LanbaiPoemDriver.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LanbaiGateDriver：Ready，Assets/Lanbai/UdonPrograms/LanbaiGateDriver.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LanbaiGateTestClock：Ready，Assets/Lanbai/UdonPrograms/LanbaiGateTestClock.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LanbaiGateClouds：Ready，Assets/Lanbai/UdonPrograms/LanbaiGateClouds.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LanbaiExposure：Ready，Assets/Lanbai/Tests/UdonPrograms/LanbaiExposure.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LanbaiMirrorsDriver：Ready，Assets/Lanbai/UdonPrograms/LanbaiMirrorsDriver.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LanbaiOverlay：Ready，Assets/Lanbai/UdonPrograms/LanbaiOverlay.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LanbaiDrips：Ready，Assets/Lanbai/UdonPrograms/LanbaiDrips.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LanbaiLamps：Ready，Assets/Lanbai/UdonPrograms/LanbaiLamps.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LanbaiOneDrop：Ready，Assets/Lanbai/UdonPrograms/LanbaiOneDrop.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LanbaiRainState：Ready，Assets/Lanbai/UdonPrograms/LanbaiRainState.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LanbaiWipers：Ready，Assets/Lanbai/UdonPrograms/LanbaiWipers.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LB_DepartButton：Ready，Assets/Lanbai/UdonPrograms/LB_DepartButton.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LB_Journey：Ready，Assets/Lanbai/UdonPrograms/LB_Journey.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LB_Seat：Ready，Assets/Lanbai/UdonPrograms/LB_Seat.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LanbaiSkyDriver：Ready，Assets/Lanbai/UdonPrograms/LanbaiSkyDriver.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LanbaiSkyPreset：Ready，Assets/Lanbai/UdonPrograms/LanbaiSkyPreset.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）
+  LanbaiTearParams：Ready，Assets/Lanbai/Tests/UdonPrograms/LanbaiTearParams.asset：ScriptVersion 2 / CompiledVersion 2（SDK 当前 2）

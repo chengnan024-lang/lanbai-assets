@@ -1,0 +1,11 @@
+256 RGBAHalf cube; hero (.55,1.70,2.05); isolated preview scene; LOD0 bus meshes; no glass, world, PP or scene lights; tube lightmap=1; other emission disabled; display PNG clamps linear HDR.
+meshRenderers=66
+PositiveX max=0.423584 mean=0.0168309107536214
+NegativeX max=2.464844 mean=0.183478897639357
+PositiveY max=2.476563 mean=0.190672581968708
+NegativeY max=0.4587402 mean=0.132777016744816
+PositiveZ max=0.4824219 mean=0.0463572794342328
+NegativeZ max=2.470703 mean=0.174689616437409
+bound M_Bus_Glass_Side
+bound M_Bus_Glass_Skylight
+bound M_Bus_Glass_Windscreen

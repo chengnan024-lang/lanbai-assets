@@ -5,7 +5,7 @@
 //  CONTROL §5 interface (called by Director/LanbaiActDispatcher):
 //     LanbaiTick(t)        every frame inside LanbaiWindow() (t = timeline seconds)
 //     LanbaiActivate(on)   switches `roots` (GateRoot, NearRoot_bus), never this object (it stays active)
-//     LanbaiWindow()       {U6 - 20, U9 + 2} = {113.80, 181.55}
+//     LanbaiWindow()       {U6 - 20, U9 + 2} = {113.80, 181.55}; round 10: to 185.0 (the 6 hands kept for the curl, 184.5 + 0.5)
 //
 //  Per frame (Gate/README_GateLayout.md §2, §2.1, §2.2, §4.1; the same evaluation as the local editor test
 //  FromLocal/gate_test LB_GateTest_Run.Apply):
@@ -16,7 +16,8 @@
 //     MoonDisc / TearOpen / RipProgress / TearHide.
 //  U9 (the bus crosses the tear plane): every arm renderer (instances, the multitude, the tide) is switched off on the
 //  frame before the eye crosses the plane (the far side's renderers, 总导演 10-23 01:10; the arms behind the bus are
-//  retired, so they never meet act 4c's fog), and from U9 + 0.15 s _Udon_TearHide = 1. After U9 GateRoot.z = -s(t),
+//  retired, so they never meet act 4c's fog; round 10, 总导演 10-26 A: EXCEPT the 6 hands at the lips, kept to 184.5 for the
+//  fingertip curl seen looking back, faded 184.0 -> 184.5), and from U9 + 0.15 s _Udon_TearHide = 1. After U9 GateRoot.z = -s(t),
 //  the inside's decelerating closed form (GateRoot stays this driver's).
 //  NOT written here: _Udon_InsidePortal (the inside driver), _Udon_FogBand* (LanbaiGateClouds), the Tear kit's
 //  CloudGlow / LightLane / FootSkyline / old shafts (switched off for good by 蓝白/Gate Clouds/Build).
@@ -87,6 +88,15 @@ public class LanbaiGateDriver : UdonSharpBehaviour
     [Header("Renderers (every LOD of every instance)")]
     public Renderer[] rend;
     public int[] instRendStart, instRendCount;
+    [Header("Round 10: the instance's own girth (D-05) and the fingertip curl (圣经 §I 喉), per instance (bake)")]
+    public Vector4[] instGirth;                // x _Girth, y _GirthFalloff, z _VariantDims.x, w 1 = write them
+    public bool[] curlOn;
+    public Vector4[] curlPivot, curlAxis;      // object space: pivot + t0, axis + angle (rad)
+    public float[] curlStart, curlDur, curlKeep;   // keep > 0: not retired at U9 until then (the curl is seen looking back)
+    [Tooltip("The kept hands' fog cap past U9 (TentacleSway _FogHold; 总导演 10-26: 0.7)")]
+    public float holdFogCap = 0.7f;
+    [Tooltip("The cap lets go over the last s before curlKeep (= the reveal's fade in GateLayout)")]
+    public float holdFade = 0.5f;
     public float[] rPhase, rFogCap, rGroup;
     public bool[] rHasFogCap, rHasDims;
     public Vector4[] rDims;
@@ -96,7 +106,9 @@ public class LanbaiGateDriver : UdonSharpBehaviour
     private int _idPhase, _idFogCap, _idGroup, _idReveal, _idDims, _idOcc, _idIntensity;
     private int _idCloudTop, _idTearPos, _idTearH, _idMoonDir, _idGateTime, _idGateOrigin, _idTearFoot, _idTearTop;
     private int _idMult, _idDisc, _idOpen, _idRip, _idHide;
-    private float[] _lastRv;
+    private float[] _lastRv, _lastCurl, _lastSil, _lastHold;
+    private int _idSil, _idFogHold;
+    private int _idCurl, _idCurlPivot, _idCurlAxis, _idGirth, _idGirthFalloff;
     private int[] _poseState;                 // 0 = must pose, 1 = posed before the span, 2 = after it
     private bool _mult0, _mult1, _retired, _ready;
     private float[] _window;
@@ -158,6 +170,13 @@ public class LanbaiGateDriver : UdonSharpBehaviour
         _idDims = VRCShader.PropertyToID("_VariantDims");
         _idOcc = VRCShader.PropertyToID("_OcclusionMap");
         _idIntensity = VRCShader.PropertyToID("_Intensity");
+        _idCurl = VRCShader.PropertyToID("_Curl");
+        _idSil = VRCShader.PropertyToID("_Silhouette");
+        _idFogHold = VRCShader.PropertyToID("_FogHold");
+        _idCurlPivot = VRCShader.PropertyToID("_CurlPivot");
+        _idCurlAxis = VRCShader.PropertyToID("_CurlAxis");
+        _idGirth = VRCShader.PropertyToID("_Girth");
+        _idGirthFalloff = VRCShader.PropertyToID("_GirthFalloff");
         _idCloudTop = VRCShader.PropertyToID("_Udon_CloudTop");
         _idTearPos = VRCShader.PropertyToID("_Udon_TearPos");
         _idTearH = VRCShader.PropertyToID("_Udon_TearH");
@@ -180,11 +199,14 @@ public class LanbaiGateDriver : UdonSharpBehaviour
         for (int i = 0; i < nf; i++) _skyFloatIds[i] = VRCShader.PropertyToID(skyFloatNames[i]);
         int n = instTf != null ? instTf.Length : 0;
         _lastRv = new float[n];
+        _lastCurl = new float[n];
+        _lastSil = new float[n];
+        _lastHold = new float[n];
         _poseState = new int[n];
         for (int i = 0; i < n; i++)
         {
             _lastRv[i] = -1f;
-            WriteBlocks(i, 1f);                // the reveal itself follows on the first tick
+            WriteBlocks(i, 1f, 0f, 0f, 0f);        // the reveal itself follows on the first tick
         }
         // the multitude's renderers: whatever the editor left, bring them to a known state (tech review driver #1)
         _mult0 = true; _mult1 = true; _retired = false;
@@ -224,17 +246,35 @@ public class LanbaiGateDriver : UdonSharpBehaviour
             if (tr == null) { Warn(); continue; }
             bool groupOff = revKind[i] == 2 && !((instGroup[i] == 0) ? _mult0 : _mult1);
             float rv = revKind[i] == 1 ? KeyAt(revT, revV, revStart[i], revCount[i], t) : 1f;
-            if (retired) rv = 0f;
-            if (!retired && !groupOff && rv > 0f)                // hidden arms are not posed
+            // round 10: an arm with a curl kept past U9 (curlKeep > 0) is not retired until then
+            bool kept = curlOn != null && i < curlOn.Length && curlOn[i] && curlKeep[i] > 0f && t < curlKeep[i];
+            bool ret = retired && !kept;
+            if (ret) rv = 0f;
+            if (!ret && !groupOff && rv > 0f)                    // hidden arms are not posed
             {
                 if (instBus[i] || (t >= poseT0[i] && t <= poseT1[i])) { Pose(i, t, hb, tr); _poseState[i] = 0; }
                 else if (t < poseT0[i]) { if (_poseState[i] != 1) { Pose(i, t, hb, tr); _poseState[i] = 1; } }
                 else if (_poseState[i] != 2) { Pose(i, t, hb, tr); _poseState[i] = 2; }
             }
             if (revKind[i] == 2) continue;                       // the multitude: above, per group
-            if (rv == _lastRv[i]) continue;                      // nothing changed: no MPB writes
+            // the fingertip curl: smoothstep over its own duration (slow, staggered; no light changes with it)
+            float cu = 0f;
+            if (curlOn != null && i < curlOn.Length && curlOn[i]) cu = SS((t - curlStart[i]) / Mathf.Max(curlDur[i], 0.1f));
+            // the kept hands past the plane: dark silhouettes (fog only), ramped over 0.3 s from the retirement frame so the
+            // fog's hand-over (gate -> 4c) shows no colour jump; and no shadow pass (门内 10-26)
+            float sil = kept ? SS((t - (U9 - 0.05f)) / 0.3f) : 0f;
+            // their fog capped at holdFogCap (总导演 10-26: the 4c fog ate the curl), eased in with the silhouette and let go
+            // over the last holdFade s with the reveal: the hands sink into the 4c fog, they do not blink out. 1 = no cap
+            float hold = 0f;
+            if (kept) hold = Mathf.Lerp(Mathf.Lerp(1f, holdFogCap, sil), 1f, SS((t - (curlKeep[i] - holdFade)) / holdFade));
+            if (rv == _lastRv[i] && cu == _lastCurl[i] && sil == _lastSil[i] && hold == _lastHold[i]) continue; // nothing changed: no MPB writes
+            bool silChanged = (sil > 0f) != (_lastSil[i] > 0f);
             _lastRv[i] = rv;
-            WriteBlocks(i, rv);
+            _lastCurl[i] = cu;
+            _lastSil[i] = sil;
+            _lastHold[i] = hold;
+            WriteBlocks(i, rv, cu, sil, hold);
+            if (silChanged) SetShadows(i, sil <= 0f);
         }
         // the tide
         float tide = retired ? 0f : KeyAt(tideT, tideV, 0, tideT != null ? tideT.Length : 0, t);
@@ -358,7 +398,15 @@ public class LanbaiGateDriver : UdonSharpBehaviour
     }
 
     // every LOD renderer of instance i: its whole block (no GetPropertyBlock needed), the reveal, on / off
-    void WriteBlocks(int i, float rv)
+    void SetShadows(int i, bool on)
+    {
+        int s = instRendStart[i], c = instRendCount[i];
+        for (int k = s; k < s + c; k++)
+            if (rend[k] != null)
+                rend[k].shadowCastingMode = on ? UnityEngine.Rendering.ShadowCastingMode.On : UnityEngine.Rendering.ShadowCastingMode.Off;
+    }
+
+    void WriteBlocks(int i, float rv, float cu, float sil, float hold)
     {
         if (rend == null || instRendStart == null) return;
         int s = instRendStart[i], c = instRendCount[i];
@@ -377,6 +425,20 @@ public class LanbaiGateDriver : UdonSharpBehaviour
             _mpb.SetFloat(_idReveal, surge ? 1f : rv);
             if (rHasDims[k]) _mpb.SetVector(_idDims, rDims[k]);
             if (rOcc[k] != null) _mpb.SetTexture(_idOcc, rOcc[k]);
+            if (instGirth != null && i < instGirth.Length && instGirth[i].w > 0f)
+            {
+                _mpb.SetFloat(_idGirth, instGirth[i].x);
+                _mpb.SetFloat(_idGirthFalloff, instGirth[i].y);
+                _mpb.SetVector(_idDims, new Vector4(instGirth[i].z, 0f, 0f, 0f));
+            }
+            if (curlOn != null && i < curlOn.Length && curlOn[i])
+            {
+                _mpb.SetFloat(_idCurl, cu);
+                _mpb.SetFloat(_idSil, sil);
+                _mpb.SetFloat(_idFogHold, hold);
+                _mpb.SetVector(_idCurlPivot, curlPivot[i]);
+                _mpb.SetVector(_idCurlAxis, curlAxis[i]);
+            }
             r.SetPropertyBlock(_mpb);
         }
     }

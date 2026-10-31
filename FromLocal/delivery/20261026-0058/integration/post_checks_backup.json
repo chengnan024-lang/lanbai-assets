@@ -1,0 +1,30 @@
+[
+  {
+    "path": "Assets/Lanbai/Tests/Editor/LB_ApprovedTests.cs",
+    "sha256": "7fb398a01e6836385ccc69990a2ae82feb251257ae6b5d7ac3f79615962ea49c"
+  },
+  {
+    "path": "Assets/Lanbai/Tests/Editor/LB_DeliveryPerf.cs",
+    "sha256": "132190e1592d247cbd04846b50292d412e506c2468bd343e25bc437a1608114c"
+  },
+  {
+    "path": "Assets/Lanbai/Tests/Editor/LB_FullAssemblyBinding.cs",
+    "sha256": "f3db619e6205ba611241366170dac9c3b44ff326c95d54bdafc61cbef79d57f3"
+  },
+  {
+    "path": "Assets/Lanbai/Generated/PostProcess/LB_PP_White.asset",
+    "sha256": "896356aabfd946336e261f8eca6136830c8b3b6eac34b3d5aafdc9756e04cc3c"
+  },
+  {
+    "path": "Assets/Lanbai/Bus/Generated/Materials/M_Bus_Glass_Side.mat",
+    "sha256": "952e68382a3822dbbd60f04ca668b9a40183d25d16a4a698ef495d7c51da9587"
+  },
+  {
+    "path": "Assets/Lanbai/Bus/Generated/Materials/M_Bus_Glass_Skylight.mat",
+    "sha256": "6169bb471146f336165f7b2b6b02e3d7d3c19911b6b374c1fced6dff043b7891"
+  },
+  {
+    "path": "Assets/Lanbai/Bus/Generated/Materials/M_Bus_Glass_Windscreen.mat",
+    "sha256": "f21fc4dd63c085b9e37b31238fe50f511376b9b11ce4a2e66f97c233fa458238"
+  }
+]

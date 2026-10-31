@@ -21,7 +21,8 @@
    // ---- 字段 ----
    const int SP_NONE = 0, SP_BLACK = 1, SP_HOLD = 2, SP_FADE = 3, SP_PLATFORM = 4;
    int _sp = SP_NONE;
-   float _spBlackEnd, _spHandAt, _spFade0, _spT;
+   float _spBlackEnd, _spHandAt, _spFade0;       // _spBlackEnd / _spFade0 是 Time.time（真实秒），_spHandAt 是时间轴秒
+   bool _spawnFadeEnded;                         // 测试工具 1.2.x 的 Play 阶段默认等它为 true（clock.ready_vars），不要删
    public float spawnBlack = 3f;                 // 圣经 §1.9
    public float spawnLBlack = 0.0013f;           // 出生黑的亮度（#030409）
    public Color spawnFill = Color.black;         // 出生遮罩的填色（S1 行，本地定）
@@ -30,7 +31,8 @@
    void SpawnBegin(float t)
    {
        if (dispatcher != null) { dispatcher.LanbaiPrewarm(); dispatcher.LanbaiSpawnFadeBegin(); }
-       _sp = SP_BLACK; _spBlackEnd = t + spawnBlack;
+       _sp = SP_BLACK; _spBlackEnd = Time.time + spawnBlack; _spawnFadeEnded = false;
+       // 经过多久一律用 Time.time：站台上时间轴停在 0，用 t 算黑会永远不结束（阿白 10-25 指出）；t 只用来查窗口
    }
 
    // ---- 每帧，在 dispatcher.LanbaiDispatch(t) 和 ApplyGrades() 之后调；dEV = ApplyGrades 这一帧实际用的总 dEV ----
@@ -41,27 +43,27 @@
        if (_sp == SP_BLACK)
        {
            overlay.SetFlat(spawnFill, 1f, dEV);
-           if (t < _spBlackEnd) return;
-           if (beforeDeparture || dispatcher == null) { _sp = SP_PLATFORM; _spFade0 = t; }   // 站台：照旧 3 秒
+           if (Time.time < _spBlackEnd) return;
+           if (beforeDeparture || dispatcher == null) { _sp = SP_PLATFORM; _spFade0 = Time.time; }   // 站台：照旧 3 秒
            else
            {
                float T = dispatcher.LanbaiSpawnFadeLength(t, spawnLBlack);                // 往前看了驱动的曝光爬升；没有爬升时 ≤ 9.4 秒
                _spHandAt = dispatcher.LanbaiOverlayHandoverAt(t, t + T + 0.5f);          // 分发层记下“交没交”
-               if (_spHandAt >= 0f) _sp = SP_HOLD; else { _sp = SP_FADE; _spFade0 = t; }
+               if (_spHandAt >= 0f) _sp = SP_HOLD; else { _sp = SP_FADE; _spFade0 = Time.time; }
            }
        }
        if (_sp == SP_HOLD)
        {
            overlay.SetFlat(spawnFill, 1f, dEV);                                         // 保持黑
-           if (t >= _spHandAt && dispatcher.LanbaiCoversOverlay(t)) { dispatcher.LanbaiSpawnFadeEnd(); _sp = SP_NONE; return; }   // 交给驱动，不 Hide
-           if (t > _spHandAt + 1f) { dispatcher.LanbaiSpawnFadeOwn(); _sp = SP_FADE; _spFade0 = t; }   // 窗口没了（时间轴被拖走）：自己淡入
+           if (t >= _spHandAt && dispatcher.LanbaiCoversOverlay(t)) { dispatcher.LanbaiSpawnFadeEnd(); _sp = SP_NONE; _spawnFadeEnded = true; return; }   // 交给驱动，不 Hide
+           if (t > _spHandAt + 1f) { dispatcher.LanbaiSpawnFadeOwn(); _sp = SP_FADE; _spFade0 = Time.time; }   // 窗口没了（时间轴被拖走）：自己淡入
            else return;
        }
        if (_sp == SP_FADE)
        {
            float seen = dispatcher.LanbaiSpawnSeenL(t, dEV);                           // 最亮的非白视向，看到的亮度（≤ 1 × 2^dEV）
-           float ramp = 0.004f * Mathf.Pow(2f, 0.85f * (t - _spFade0));                // 从地板 0.004 起（再暗的看不出来）、EV 线性、0.85 EV/s
-           if (ramp >= seen) { overlay.Hide(); dispatcher.LanbaiSpawnFadeEnd(); _sp = SP_NONE; return; }
+           float ramp = 0.004f * Mathf.Pow(2f, 0.85f * (Time.time - _spFade0));        // 从地板 0.004 起（再暗的看不出来）、EV 线性、0.85 EV/s
+           if (ramp >= seen) { overlay.Hide(); dispatcher.LanbaiSpawnFadeEnd(); _sp = SP_NONE; _spawnFadeEnded = true; return; }
            // 看到的 = (1 − a)·seen + a·L黑 = ramp：a = (seen − ramp) / (seen − L黑)（遮罩画在 PPv2 之前，填色按 dEV 补偿）
            overlay.ClearLobes();
            overlay.SetFlat(spawnFill, Mathf.Clamp01((seen - ramp) / Mathf.Max(seen - spawnLBlack, 1e-5f)), dEV);
@@ -69,13 +71,15 @@
        }
        if (_sp == SP_PLATFORM)
        {
-           float tau = t - _spFade0;
+           float tau = Time.time - _spFade0;
            overlay.ClearLobes();
            overlay.SetCurve(spawnFill, dEV, tau, 3f, spawnLBlack, lPlatform, lPlatform, spawnLBlack);   // lPlatform = 站台最亮的视向
-           if (tau >= 3f) { overlay.Hide(); if (dispatcher != null) dispatcher.LanbaiSpawnFadeEnd(); _sp = SP_NONE; }
+           if (tau >= 3f) { overlay.Hide(); if (dispatcher != null) dispatcher.LanbaiSpawnFadeEnd(); _sp = SP_NONE; _spawnFadeEnded = true; }
        }
    }
    ```
+   - **经过多久用 `Time.time`，查窗口用 t**（10-25 改，阿白在本地补丁里先指出）：站台上时间轴固定为 0，原来 `_spBlackEnd = t + 3` 会让站台上出生的人一直黑着。旅程里 t 和真实时间同速，两种写法结果一样（`spawn_fade_sim` 的结论不变）；调试拖时间轴时，黑和淡入照真实时间走完。
+   - `dEV` 要传这一帧**实际**用的总 dEV（`LanbaiExposure.SetDeltaEV` 的返回值或 `GetAppliedDeltaEV()`），不是请求值：EXPO 被夹住时两者不一样，遮罩的补偿会错。
    - `LanbaiSpawnFadeLength` 往前看：每 0.25 s 用驱动的 `LanbaiGrade(t')`（`LanbaiGradeDEVAt`）算那时看到的亮度，算出这条 0.85 EV/s 的线要多久追上。所以“淡入期间有没有窗口”问的是真的淡入时长：第 10 幕白前的 `EXPO_UP` 会把淡入拉长到碰上白的遮罩窗口，这时就改成保持黑、交给白驱动（不然淡入一结束，白驱动照自己的时间表画遮罩，一帧 +0.56 EV，`spawn_fade_sim` 的 1130 s）。
    - 为什么 FADE 不用固定的 T：驱动的曝光爬升（比如第 10 幕白之前的 `EXPO_UP`、第 8 幕出海的放开）会在淡入期间把场景再抬几 EV；按固定 T 淡完一 `Hide()`，看到的亮度一帧跳上去。追着“看到的亮度”走，就永远 ≤ 0.85 EV/s。T 只用来问“淡入期间有没有窗口”。
    - `LanbaiSpawnFadeEnd` 只认第一次；Begin 之后 25 秒没有 End 当作已结束（`spawnFadeTimeout`）。时间轴拖回锁存时刻之前，分发层忘掉这次出生（`since` = 1e6）。

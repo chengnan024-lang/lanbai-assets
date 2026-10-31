@@ -4,8 +4,8 @@
    960,
    540
   ],
-  "APL": 32.5,
-  "EV_display": -5.872,
+  "APL": 37.83,
+  "EV_display": -5.516,
   "luma_lt12_pct": 0.0,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
@@ -16,7 +16,7 @@
   "purple_pct": 0.0,
   "purple_largest_region_pct": 0.0,
   "violet_strong_pct": 0.0,
-  "lavender_act6_pct": 0.161,
+  "lavender_act6_pct": 0.081,
   "brightest": {
    "bbox": [
     11,
@@ -25,21 +25,21 @@
     525
    ],
    "centroid": [
-    589.7,
-    308.6
+    592.1,
+    309.3
    ],
    "clusters": 78,
    "clusters_ge5pct": 4,
-   "min_luma": 114.0,
+   "min_luma": 115.5,
    "centroid_az_el": [
-    23.89,
-    45.02
+    23.97,
+    44.89
    ]
   },
   "top25_Lstar": {
-   "mean": 16.34,
-   "p50": 18.68,
-   "p90": 20.65
+   "mean": 17.67,
+   "p50": 18.72,
+   "p90": 20.72
   },
   "palette": {
    "act": "07a",
@@ -48,49 +48,49 @@
     {
      "hex": "#E6F3F8",
      "role": "斯涅尔窗 藍白",
-     "nearest_dE2000_p01": 38.6,
+     "nearest_dE2000_p01": 37.9,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#ACD4ED",
      "role": "座椅上的焦散",
-     "nearest_dE2000_p01": 28.3,
+     "nearest_dE2000_p01": 27.8,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#90BFE9",
      "role": "光柱",
-     "nearest_dE2000_p01": 22.4,
+     "nearest_dE2000_p01": 21.8,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#3876AB",
      "role": "浅水 縹",
-     "nearest_dE2000_p01": 10.9,
-     "within_dE5_pct": 0.01
+     "nearest_dE2000_p01": 6.0,
+     "within_dE5_pct": 0.06
     },
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
-     "nearest_dE2000_p01": 4.6,
-     "within_dE5_pct": 0.13
+     "nearest_dE2000_p01": 3.6,
+     "within_dE5_pct": 2.69
     },
     {
      "hex": "#697987",
      "role": "海雪",
-     "nearest_dE2000_p01": 16.0,
+     "nearest_dE2000_p01": 12.5,
      "within_dE5_pct": 0.0
     },
     {
      "hex": "#8AC6FF",
      "role": "生物荧光",
-     "nearest_dE2000_p01": 23.9,
+     "nearest_dE2000_p01": 23.3,
      "within_dE5_pct": 0.02
     }
    ],
-   "pixel_to_nearest_dE_median": 12.1,
-   "pixel_to_nearest_dE_p90": 13.1,
-   "pixels_within5_pct": 0.2
+   "pixel_to_nearest_dE_median": 9.6,
+   "pixel_to_nearest_dE_p90": 11.4,
+   "pixels_within5_pct": 2.8
   }
  },
  "cam": {
@@ -194,7 +194,7 @@
    540
   ]
  },
- "render_seconds": 8.6,
+ "render_seconds": 9.0,
  "lens": "none",
  "bloom_tint": "single",
  "note": "D-44 #5 beat 556.4 up 60 from the main seat"

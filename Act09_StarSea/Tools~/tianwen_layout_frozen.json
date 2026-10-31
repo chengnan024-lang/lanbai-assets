@@ -1,0 +1,2362 @@
+{
+ "_about": "天问（P09_Tianwen）的排版，冻结：从 Fonts/strings_all.json 原样拷出（字体套件 v4.1，生成于 2026-10-24 12:18 UTC，main 上最后一次改它的提交 35366a1）。第 9 幕的 16 颗星按它放（make_act09.py 只读这一份）；D-45：字体套件以后改 strings_all.json，星的位置不跟着动。不要手改。",
+ "source": "Fonts/strings_all.json @ 35366a1",
+ "poem": {
+  "id": "P09_Tianwen",
+  "scene": "9a",
+  "bible": "§7.5 #8 / §6·9",
+  "source": "屈原《天问》",
+  "source_en": "Qu Yuan, “Heavenly Questions”",
+  "original": {
+   "lang": "zh",
+   "font": "SourceHanSerifSC-Regular",
+   "lines": [
+    "遂古之初，谁传道之？",
+    "上下未形，何由考之？"
+   ],
+   "tmp_text": "遂古之初，谁传道之？\n上下未形，何由考之？"
+  },
+  "size_main": 2.2,
+  "size_tr": 1.8,
+  "color_target": "#D9E2E7",
+  "opacity": 0.9,
+  "scrim": null,
+  "place": [
+   0,
+   8,
+   50
+  ],
+  "cue": "第 9 幕 + 8.0（变暗结束）",
+  "t_appear": 1009.21,
+  "hold_s": 9.0,
+  "t_gone": 1019.41,
+  "trigger": "1009.21：8b 变暗结束 = 第 9 幕第 8.0 s；逐字对焦，≈1011.6 就位；天顶最后一颗星同一刻熄灭",
+  "hold_note": "到 F13 1018.21（9.0 s）；§7.4 公式 12.7 s，圣经例外 −3.7 s（夹在蓝时与 F13 之间，永不压缩）",
+  "exit": "F13 那一帧每个汉字的字心点燃一颗星（16 颗），字 1.2 s 内暗下（→ 1019.41）",
+  "treatment": "逐字对焦 0.6 s、120 ms 错开；标点不变星；星留在原处到第 9 幕结束",
+  "staging": "together, per-character focus",
+  "size_cjk": 2.2,
+  "size_lat": 2.0,
+  "size_note": "例外（D-30 #4）：汉字 2.2° 给所有人；不是中文的玩家下面另有一行 1.8°",
+  "picture": true,
+  "hold_formula_s": 12.7,
+  "hold_formula_count": 16,
+  "t_exit": 1018.21,
+  "segments": [
+   {
+    "main": [
+     "遂古之初，谁传道之？"
+    ],
+    "ja": [
+     "遂古の初め、誰か之を伝へ道ふ"
+    ],
+    "en": [
+     "At the far beginning of things,",
+     "who was there to tell of it?"
+    ],
+    "zht": [
+     "遂古之初，誰傳道之？"
+    ]
+   },
+   {
+    "main": [
+     "上下未形，何由考之？"
+    ],
+    "ja": [
+     "上下未だ形あらず",
+     "何に由りて之を考ふる"
+    ],
+    "en": [
+     "When above and below had no form,",
+     "how could it be known?"
+    ],
+    "zht": [
+     "上下未形，何由考之？"
+    ]
+   }
+  ],
+  "translations": {
+   "zht": {
+    "font": "SourceHanSerifTW-Regular",
+    "lines": [
+     "遂古之初，誰傳道之？",
+     "上下未形，何由考之？"
+    ],
+    "tmp_text": "遂古之初，誰傳道之？\n上下未形，何由考之？"
+   },
+   "ja": {
+    "font": "SourceHanSerifJP-Medium",
+    "lines": [
+     "遂古の初め、誰か之を伝へ道ふ",
+     "上下未だ形あらず",
+     "何に由りて之を考ふる"
+    ],
+    "tmp_text": "遂古の初め、誰か之を伝へ道ふ\n上下未だ形あらず\n何に由りて之を考ふる"
+   },
+   "en": {
+    "font": "EBGaramond-Regular",
+    "lines": [
+     "At the far beginning of things,",
+     "who was there to tell of it?",
+     "When above and below had no form,",
+     "how could it be known?"
+    ],
+    "tmp_text": "At the far beginning of things,\nwho was there to tell of it?\nWhen above and below had no form,\nhow could it be known?"
+   }
+  },
+  "display_by_player_language": {
+   "zh": {
+    "shown": "main",
+    "sub_line": null
+   },
+   "zht": {
+    "shown": "main",
+    "sub_line": null
+   },
+   "ja": {
+    "shown": "main",
+    "sub_line": "ja"
+   },
+   "en": {
+    "shown": "main",
+    "sub_line": "en"
+   },
+   "de": {
+    "shown": "main",
+    "sub_line": "en"
+   }
+  },
+  "layout": {
+   "zh": {
+    "player": "zh",
+    "shown": "main",
+    "shown_lang": "zh",
+    "translation": null,
+    "anchor": [
+     0,
+     8,
+     50
+    ],
+    "anchor_mode": "centre",
+    "block_center_el": 8.0,
+    "shift_deg": 0.0,
+    "objects": [
+     {
+      "role": "main",
+      "lang": "zh",
+      "font": "SourceHanSerifSC-Regular",
+      "tmp_asset": "Lanbai_SerifSC_Regular SDF",
+      "size_deg": 2.2,
+      "font_size": 19.21,
+      "character_spacing": 10.0,
+      "line_spacing": 16.3,
+      "alignment": "Baseline",
+      "lines": [
+       "遂古之初，谁传道之？",
+       "上下未形，何由考之？"
+      ],
+      "tmp_text": "遂古之初，谁传道之？\n上下未形，何由考之？",
+      "optical_offsets_em": [
+       0.255,
+       0.25
+      ],
+      "tmp_text_rich": "<space=0.51em>遂古之初，谁传道之？\n<space=0.5em>上下未形，何由考之？",
+      "first_baseline_el": 8.924,
+      "line_baselines_el": [
+       8.924,
+       5.404
+      ],
+      "top_el": 10.86,
+      "bottom_el": 5.14,
+      "center_el": 8.0,
+      "width_deg": [
+       23.98,
+       23.98
+      ],
+      "local_y_m": 0.8064,
+      "line_local_x_m": [
+       0.4898,
+       0.4802
+      ],
+      "scale_y": 1,
+      "shown": "main",
+      "star_points": [
+       {
+        "char": "遂",
+        "line": 0,
+        "x_em": -4.695,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "古",
+        "line": 0,
+        "x_em": -3.595,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "之",
+        "line": 0,
+        "x_em": -2.495,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "初",
+        "line": 0,
+        "x_em": -1.395,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "谁",
+        "line": 0,
+        "x_em": 0.805,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "传",
+        "line": 0,
+        "x_em": 1.905,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "道",
+        "line": 0,
+        "x_em": 3.005,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "之",
+        "line": 0,
+        "x_em": 4.105,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "上",
+        "line": 1,
+        "x_em": -4.7,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "下",
+        "line": 1,
+        "x_em": -3.6,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "未",
+        "line": 1,
+        "x_em": -2.5,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "形",
+        "line": 1,
+        "x_em": -1.4,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "何",
+        "line": 1,
+        "x_em": 0.8,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "由",
+        "line": 1,
+        "x_em": 1.9,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "考",
+        "line": 1,
+        "x_em": 3.0,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "之",
+        "line": 1,
+        "x_em": 4.1,
+        "y_em_above_baseline": 0.38
+       }
+      ],
+      "char_objects": [
+       {
+        "char": "遂",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.0,
+        "focus_s": 0.6,
+        "local_x_m": -9.0182,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "古",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.12,
+        "focus_s": 0.6,
+        "local_x_m": -6.9053,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "之",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.24,
+        "focus_s": 0.6,
+        "local_x_m": -4.7924,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "初",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.36,
+        "focus_s": 0.6,
+        "local_x_m": -2.6795,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "，",
+        "line": 0,
+        "star": false,
+        "focus_delay_s": 0.36,
+        "focus_s": 0.6,
+        "local_x_m": -0.5666,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "谁",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.48,
+        "focus_s": 0.6,
+        "local_x_m": 1.5462,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "传",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.6,
+        "focus_s": 0.6,
+        "local_x_m": 3.6591,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "道",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.72,
+        "focus_s": 0.6,
+        "local_x_m": 5.772,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "之",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.84,
+        "focus_s": 0.6,
+        "local_x_m": 7.8849,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "？",
+        "line": 0,
+        "star": false,
+        "focus_delay_s": 0.84,
+        "focus_s": 0.6,
+        "local_x_m": 9.9978,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "上",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 0.96,
+        "focus_s": 0.6,
+        "local_x_m": -9.0278,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "下",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.08,
+        "focus_s": 0.6,
+        "local_x_m": -6.9149,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "未",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.2,
+        "focus_s": 0.6,
+        "local_x_m": -4.802,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "形",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.32,
+        "focus_s": 0.6,
+        "local_x_m": -2.6891,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "，",
+        "line": 1,
+        "star": false,
+        "focus_delay_s": 1.32,
+        "focus_s": 0.6,
+        "local_x_m": -0.5762,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "何",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.44,
+        "focus_s": 0.6,
+        "local_x_m": 1.5366,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "由",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.56,
+        "focus_s": 0.6,
+        "local_x_m": 3.6495,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "考",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.68,
+        "focus_s": 0.6,
+        "local_x_m": 5.7624,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "之",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.8,
+        "focus_s": 0.6,
+        "local_x_m": 7.8753,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "？",
+        "line": 1,
+        "star": false,
+        "focus_delay_s": 1.8,
+        "focus_s": 0.6,
+        "local_x_m": 9.9882,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       }
+      ],
+      "alpha": 0.9,
+      "vertex_color": [
+       1,
+       1,
+       1,
+       0.9
+      ],
+      "material": "Lanbai_SerifSC_Regular SDF - P09_Tianwen",
+      "material_instance": "own",
+      "outline_softness_anim": [
+       0.9,
+       0.0
+      ],
+      "face_dilate": {
+       "desktop": 0.05,
+       "vr": 0.1
+      }
+     }
+    ],
+    "block": {
+     "width_deg": 23.98,
+     "height_deg": 5.72,
+     "az": [
+      -11.99,
+      11.99
+     ],
+     "el": [
+      5.14,
+      10.86
+     ],
+     "center": [
+      0,
+      8.0
+     ]
+    },
+    "scrims": [],
+    "timing": {
+     "cue": "第 9 幕 + 8.0（变暗结束）",
+     "t_appear": 1009.21,
+     "focus_s": 2.4,
+     "hold_s": 9.0,
+     "t_exit": 1018.21,
+     "t_gone": 1019.41,
+     "exit": "F13 那一帧每个汉字的字心点燃一颗星（16 颗），字 1.2 s 内暗下（→ 1019.41）",
+     "hold_formula_s": 12.7,
+     "note": "到 F13 1018.21（9.0 s）；§7.4 公式 12.7 s，圣经例外 −3.7 s（夹在蓝时与 F13 之间，永不压缩）",
+     "t_settled": 1011.61,
+     "focus_note": "主行逐字对焦：16 个汉字各 0.6 s、120 ms 错开，标点与前一个字一起（char_objects）；1011.61 就位（圣经 §7.5 #8 “≈1011.6 就位”）。译文物体照常 2.5 s 整块对焦"
+    }
+   },
+   "zht": {
+    "player": "zht",
+    "shown": "main",
+    "shown_lang": "zh",
+    "translation": null,
+    "anchor": [
+     0,
+     8,
+     50
+    ],
+    "anchor_mode": "centre",
+    "block_center_el": 8.0,
+    "shift_deg": 0.0,
+    "objects": [
+     {
+      "role": "main",
+      "lang": "zh",
+      "font": "SourceHanSerifSC-Regular",
+      "tmp_asset": "Lanbai_SerifSC_Regular SDF",
+      "size_deg": 2.2,
+      "font_size": 19.21,
+      "character_spacing": 10.0,
+      "line_spacing": 16.3,
+      "alignment": "Baseline",
+      "lines": [
+       "遂古之初，谁传道之？",
+       "上下未形，何由考之？"
+      ],
+      "tmp_text": "遂古之初，谁传道之？\n上下未形，何由考之？",
+      "optical_offsets_em": [
+       0.255,
+       0.25
+      ],
+      "tmp_text_rich": "<space=0.51em>遂古之初，谁传道之？\n<space=0.5em>上下未形，何由考之？",
+      "first_baseline_el": 8.924,
+      "line_baselines_el": [
+       8.924,
+       5.404
+      ],
+      "top_el": 10.86,
+      "bottom_el": 5.14,
+      "center_el": 8.0,
+      "width_deg": [
+       23.98,
+       23.98
+      ],
+      "local_y_m": 0.8064,
+      "line_local_x_m": [
+       0.4898,
+       0.4802
+      ],
+      "scale_y": 1,
+      "shown": "main",
+      "star_points": [
+       {
+        "char": "遂",
+        "line": 0,
+        "x_em": -4.695,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "古",
+        "line": 0,
+        "x_em": -3.595,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "之",
+        "line": 0,
+        "x_em": -2.495,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "初",
+        "line": 0,
+        "x_em": -1.395,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "谁",
+        "line": 0,
+        "x_em": 0.805,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "传",
+        "line": 0,
+        "x_em": 1.905,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "道",
+        "line": 0,
+        "x_em": 3.005,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "之",
+        "line": 0,
+        "x_em": 4.105,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "上",
+        "line": 1,
+        "x_em": -4.7,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "下",
+        "line": 1,
+        "x_em": -3.6,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "未",
+        "line": 1,
+        "x_em": -2.5,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "形",
+        "line": 1,
+        "x_em": -1.4,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "何",
+        "line": 1,
+        "x_em": 0.8,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "由",
+        "line": 1,
+        "x_em": 1.9,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "考",
+        "line": 1,
+        "x_em": 3.0,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "之",
+        "line": 1,
+        "x_em": 4.1,
+        "y_em_above_baseline": 0.38
+       }
+      ],
+      "char_objects": [
+       {
+        "char": "遂",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.0,
+        "focus_s": 0.6,
+        "local_x_m": -9.0182,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "古",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.12,
+        "focus_s": 0.6,
+        "local_x_m": -6.9053,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "之",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.24,
+        "focus_s": 0.6,
+        "local_x_m": -4.7924,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "初",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.36,
+        "focus_s": 0.6,
+        "local_x_m": -2.6795,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "，",
+        "line": 0,
+        "star": false,
+        "focus_delay_s": 0.36,
+        "focus_s": 0.6,
+        "local_x_m": -0.5666,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "谁",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.48,
+        "focus_s": 0.6,
+        "local_x_m": 1.5462,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "传",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.6,
+        "focus_s": 0.6,
+        "local_x_m": 3.6591,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "道",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.72,
+        "focus_s": 0.6,
+        "local_x_m": 5.772,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "之",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.84,
+        "focus_s": 0.6,
+        "local_x_m": 7.8849,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "？",
+        "line": 0,
+        "star": false,
+        "focus_delay_s": 0.84,
+        "focus_s": 0.6,
+        "local_x_m": 9.9978,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "上",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 0.96,
+        "focus_s": 0.6,
+        "local_x_m": -9.0278,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "下",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.08,
+        "focus_s": 0.6,
+        "local_x_m": -6.9149,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "未",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.2,
+        "focus_s": 0.6,
+        "local_x_m": -4.802,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "形",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.32,
+        "focus_s": 0.6,
+        "local_x_m": -2.6891,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "，",
+        "line": 1,
+        "star": false,
+        "focus_delay_s": 1.32,
+        "focus_s": 0.6,
+        "local_x_m": -0.5762,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "何",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.44,
+        "focus_s": 0.6,
+        "local_x_m": 1.5366,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "由",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.56,
+        "focus_s": 0.6,
+        "local_x_m": 3.6495,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "考",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.68,
+        "focus_s": 0.6,
+        "local_x_m": 5.7624,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "之",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.8,
+        "focus_s": 0.6,
+        "local_x_m": 7.8753,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "？",
+        "line": 1,
+        "star": false,
+        "focus_delay_s": 1.8,
+        "focus_s": 0.6,
+        "local_x_m": 9.9882,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       }
+      ],
+      "alpha": 0.9,
+      "vertex_color": [
+       1,
+       1,
+       1,
+       0.9
+      ],
+      "material": "Lanbai_SerifSC_Regular SDF - P09_Tianwen",
+      "material_instance": "own",
+      "outline_softness_anim": [
+       0.9,
+       0.0
+      ],
+      "face_dilate": {
+       "desktop": 0.05,
+       "vr": 0.1
+      }
+     }
+    ],
+    "block": {
+     "width_deg": 23.98,
+     "height_deg": 5.72,
+     "az": [
+      -11.99,
+      11.99
+     ],
+     "el": [
+      5.14,
+      10.86
+     ],
+     "center": [
+      0,
+      8.0
+     ]
+    },
+    "scrims": [],
+    "timing": {
+     "cue": "第 9 幕 + 8.0（变暗结束）",
+     "t_appear": 1009.21,
+     "focus_s": 2.4,
+     "hold_s": 9.0,
+     "t_exit": 1018.21,
+     "t_gone": 1019.41,
+     "exit": "F13 那一帧每个汉字的字心点燃一颗星（16 颗），字 1.2 s 内暗下（→ 1019.41）",
+     "hold_formula_s": 12.7,
+     "note": "到 F13 1018.21（9.0 s）；§7.4 公式 12.7 s，圣经例外 −3.7 s（夹在蓝时与 F13 之间，永不压缩）",
+     "t_settled": 1011.61,
+     "focus_note": "主行逐字对焦：16 个汉字各 0.6 s、120 ms 错开，标点与前一个字一起（char_objects）；1011.61 就位（圣经 §7.5 #8 “≈1011.6 就位”）。译文物体照常 2.5 s 整块对焦"
+    }
+   },
+   "ja": {
+    "player": "ja",
+    "shown": "main",
+    "shown_lang": "zh",
+    "translation": "ja",
+    "anchor": [
+     0,
+     8,
+     50
+    ],
+    "anchor_mode": "centre",
+    "block_center_el": 8.0,
+    "shift_deg": 0.0,
+    "objects": [
+     {
+      "role": "main",
+      "lang": "zh",
+      "font": "SourceHanSerifSC-Regular",
+      "tmp_asset": "Lanbai_SerifSC_Regular SDF",
+      "size_deg": 2.2,
+      "font_size": 19.21,
+      "character_spacing": 10.0,
+      "line_spacing": 16.3,
+      "alignment": "Baseline",
+      "lines": [
+       "遂古之初，谁传道之？",
+       "上下未形，何由考之？"
+      ],
+      "tmp_text": "遂古之初，谁传道之？\n上下未形，何由考之？",
+      "optical_offsets_em": [
+       0.255,
+       0.25
+      ],
+      "tmp_text_rich": "<space=0.51em>遂古之初，谁传道之？\n<space=0.5em>上下未形，何由考之？",
+      "first_baseline_el": 8.924,
+      "line_baselines_el": [
+       8.924,
+       5.404
+      ],
+      "top_el": 10.86,
+      "bottom_el": 5.14,
+      "center_el": 8.0,
+      "width_deg": [
+       23.98,
+       23.98
+      ],
+      "local_y_m": 0.8064,
+      "line_local_x_m": [
+       0.4898,
+       0.4802
+      ],
+      "scale_y": 1,
+      "shown": "main",
+      "star_points": [
+       {
+        "char": "遂",
+        "line": 0,
+        "x_em": -4.695,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "古",
+        "line": 0,
+        "x_em": -3.595,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "之",
+        "line": 0,
+        "x_em": -2.495,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "初",
+        "line": 0,
+        "x_em": -1.395,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "谁",
+        "line": 0,
+        "x_em": 0.805,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "传",
+        "line": 0,
+        "x_em": 1.905,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "道",
+        "line": 0,
+        "x_em": 3.005,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "之",
+        "line": 0,
+        "x_em": 4.105,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "上",
+        "line": 1,
+        "x_em": -4.7,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "下",
+        "line": 1,
+        "x_em": -3.6,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "未",
+        "line": 1,
+        "x_em": -2.5,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "形",
+        "line": 1,
+        "x_em": -1.4,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "何",
+        "line": 1,
+        "x_em": 0.8,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "由",
+        "line": 1,
+        "x_em": 1.9,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "考",
+        "line": 1,
+        "x_em": 3.0,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "之",
+        "line": 1,
+        "x_em": 4.1,
+        "y_em_above_baseline": 0.38
+       }
+      ],
+      "char_objects": [
+       {
+        "char": "遂",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.0,
+        "focus_s": 0.6,
+        "local_x_m": -9.0182,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "古",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.12,
+        "focus_s": 0.6,
+        "local_x_m": -6.9053,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "之",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.24,
+        "focus_s": 0.6,
+        "local_x_m": -4.7924,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "初",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.36,
+        "focus_s": 0.6,
+        "local_x_m": -2.6795,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "，",
+        "line": 0,
+        "star": false,
+        "focus_delay_s": 0.36,
+        "focus_s": 0.6,
+        "local_x_m": -0.5666,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "谁",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.48,
+        "focus_s": 0.6,
+        "local_x_m": 1.5462,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "传",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.6,
+        "focus_s": 0.6,
+        "local_x_m": 3.6591,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "道",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.72,
+        "focus_s": 0.6,
+        "local_x_m": 5.772,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "之",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.84,
+        "focus_s": 0.6,
+        "local_x_m": 7.8849,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "？",
+        "line": 0,
+        "star": false,
+        "focus_delay_s": 0.84,
+        "focus_s": 0.6,
+        "local_x_m": 9.9978,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "上",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 0.96,
+        "focus_s": 0.6,
+        "local_x_m": -9.0278,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "下",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.08,
+        "focus_s": 0.6,
+        "local_x_m": -6.9149,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "未",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.2,
+        "focus_s": 0.6,
+        "local_x_m": -4.802,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "形",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.32,
+        "focus_s": 0.6,
+        "local_x_m": -2.6891,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "，",
+        "line": 1,
+        "star": false,
+        "focus_delay_s": 1.32,
+        "focus_s": 0.6,
+        "local_x_m": -0.5762,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "何",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.44,
+        "focus_s": 0.6,
+        "local_x_m": 1.5366,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "由",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.56,
+        "focus_s": 0.6,
+        "local_x_m": 3.6495,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "考",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.68,
+        "focus_s": 0.6,
+        "local_x_m": 5.7624,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "之",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.8,
+        "focus_s": 0.6,
+        "local_x_m": 7.8753,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "？",
+        "line": 1,
+        "star": false,
+        "focus_delay_s": 1.8,
+        "focus_s": 0.6,
+        "local_x_m": 9.9882,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       }
+      ],
+      "alpha": 0.9,
+      "vertex_color": [
+       1,
+       1,
+       1,
+       0.9
+      ],
+      "material": "Lanbai_SerifSC_Regular SDF - P09_Tianwen",
+      "material_instance": "own",
+      "outline_softness_anim": [
+       0.9,
+       0.0
+      ],
+      "face_dilate": {
+       "desktop": 0.05,
+       "vr": 0.1
+      }
+     },
+     {
+      "role": "translation",
+      "lang": "ja",
+      "font": "SourceHanSerifJP-Medium",
+      "tmp_asset": "Lanbai_SerifJP_Medium SDF",
+      "size_deg": 1.8,
+      "font_size": 15.71,
+      "character_spacing": 10.0,
+      "line_spacing": 16.3,
+      "alignment": "Baseline",
+      "lines": [
+       "遂古の初め、誰か之を伝へ道ふ",
+       "上下未だ形あらず",
+       "何に由りて之を考ふる"
+      ],
+      "tmp_text": "遂古の初め、誰か之を伝へ道ふ\n上下未だ形あらず\n何に由りて之を考ふる",
+      "optical_offsets_em": [
+       0.0,
+       0.0,
+       0.077
+      ],
+      "tmp_text_rich": "遂古の初め、誰か之を伝へ道ふ\n上下未だ形あらず\n<space=0.154em>何に由りて之を考ふる",
+      "first_baseline_el": 1.754,
+      "line_baselines_el": [
+       1.754,
+       -1.126,
+       -4.006
+      ],
+      "top_el": 3.338,
+      "bottom_el": -4.222,
+      "center_el": -0.442,
+      "width_deg": [
+       27.54,
+       15.66,
+       19.62
+      ],
+      "local_y_m": -5.4724,
+      "line_local_x_m": [
+       0.0,
+       0.0,
+       0.121
+      ],
+      "scale_y": 1,
+      "alpha": 0.9,
+      "vertex_color": [
+       1,
+       1,
+       1,
+       0.9
+      ],
+      "material": "Lanbai_SerifJP_Medium SDF - P09_Tianwen",
+      "material_instance": "own",
+      "outline_softness_anim": [
+       0.9,
+       0.0
+      ],
+      "face_dilate": {
+       "desktop": 0.05,
+       "vr": 0.1
+      }
+     }
+    ],
+    "block": {
+     "width_deg": 27.54,
+     "height_deg": 15.08,
+     "az": [
+      -13.77,
+      13.77
+     ],
+     "el": [
+      -4.22,
+      10.86
+     ],
+     "center": [
+      0,
+      3.32
+     ]
+    },
+    "scrims": [],
+    "timing": {
+     "cue": "第 9 幕 + 8.0（变暗结束）",
+     "t_appear": 1009.21,
+     "focus_s": 2.4,
+     "hold_s": 9.0,
+     "t_exit": 1018.21,
+     "t_gone": 1019.41,
+     "exit": "F13 那一帧每个汉字的字心点燃一颗星（16 颗），字 1.2 s 内暗下（→ 1019.41）",
+     "hold_formula_s": 12.7,
+     "note": "到 F13 1018.21（9.0 s）；§7.4 公式 12.7 s，圣经例外 −3.7 s（夹在蓝时与 F13 之间，永不压缩）",
+     "t_settled": 1011.61,
+     "focus_note": "主行逐字对焦：16 个汉字各 0.6 s、120 ms 错开，标点与前一个字一起（char_objects）；1011.61 就位（圣经 §7.5 #8 “≈1011.6 就位”）。译文物体照常 2.5 s 整块对焦"
+    }
+   },
+   "en": {
+    "player": "en",
+    "shown": "main",
+    "shown_lang": "zh",
+    "translation": "en",
+    "anchor": [
+     0,
+     8,
+     50
+    ],
+    "anchor_mode": "centre",
+    "block_center_el": 8.0,
+    "shift_deg": 0.0,
+    "objects": [
+     {
+      "role": "main",
+      "lang": "zh",
+      "font": "SourceHanSerifSC-Regular",
+      "tmp_asset": "Lanbai_SerifSC_Regular SDF",
+      "size_deg": 2.2,
+      "font_size": 19.21,
+      "character_spacing": 10.0,
+      "line_spacing": 16.3,
+      "alignment": "Baseline",
+      "lines": [
+       "遂古之初，谁传道之？",
+       "上下未形，何由考之？"
+      ],
+      "tmp_text": "遂古之初，谁传道之？\n上下未形，何由考之？",
+      "optical_offsets_em": [
+       0.255,
+       0.25
+      ],
+      "tmp_text_rich": "<space=0.51em>遂古之初，谁传道之？\n<space=0.5em>上下未形，何由考之？",
+      "first_baseline_el": 8.924,
+      "line_baselines_el": [
+       8.924,
+       5.404
+      ],
+      "top_el": 10.86,
+      "bottom_el": 5.14,
+      "center_el": 8.0,
+      "width_deg": [
+       23.98,
+       23.98
+      ],
+      "local_y_m": 0.8064,
+      "line_local_x_m": [
+       0.4898,
+       0.4802
+      ],
+      "scale_y": 1,
+      "shown": "main",
+      "star_points": [
+       {
+        "char": "遂",
+        "line": 0,
+        "x_em": -4.695,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "古",
+        "line": 0,
+        "x_em": -3.595,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "之",
+        "line": 0,
+        "x_em": -2.495,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "初",
+        "line": 0,
+        "x_em": -1.395,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "谁",
+        "line": 0,
+        "x_em": 0.805,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "传",
+        "line": 0,
+        "x_em": 1.905,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "道",
+        "line": 0,
+        "x_em": 3.005,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "之",
+        "line": 0,
+        "x_em": 4.105,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "上",
+        "line": 1,
+        "x_em": -4.7,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "下",
+        "line": 1,
+        "x_em": -3.6,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "未",
+        "line": 1,
+        "x_em": -2.5,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "形",
+        "line": 1,
+        "x_em": -1.4,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "何",
+        "line": 1,
+        "x_em": 0.8,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "由",
+        "line": 1,
+        "x_em": 1.9,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "考",
+        "line": 1,
+        "x_em": 3.0,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "之",
+        "line": 1,
+        "x_em": 4.1,
+        "y_em_above_baseline": 0.38
+       }
+      ],
+      "char_objects": [
+       {
+        "char": "遂",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.0,
+        "focus_s": 0.6,
+        "local_x_m": -9.0182,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "古",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.12,
+        "focus_s": 0.6,
+        "local_x_m": -6.9053,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "之",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.24,
+        "focus_s": 0.6,
+        "local_x_m": -4.7924,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "初",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.36,
+        "focus_s": 0.6,
+        "local_x_m": -2.6795,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "，",
+        "line": 0,
+        "star": false,
+        "focus_delay_s": 0.36,
+        "focus_s": 0.6,
+        "local_x_m": -0.5666,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "谁",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.48,
+        "focus_s": 0.6,
+        "local_x_m": 1.5462,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "传",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.6,
+        "focus_s": 0.6,
+        "local_x_m": 3.6591,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "道",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.72,
+        "focus_s": 0.6,
+        "local_x_m": 5.772,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "之",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.84,
+        "focus_s": 0.6,
+        "local_x_m": 7.8849,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "？",
+        "line": 0,
+        "star": false,
+        "focus_delay_s": 0.84,
+        "focus_s": 0.6,
+        "local_x_m": 9.9978,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "上",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 0.96,
+        "focus_s": 0.6,
+        "local_x_m": -9.0278,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "下",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.08,
+        "focus_s": 0.6,
+        "local_x_m": -6.9149,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "未",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.2,
+        "focus_s": 0.6,
+        "local_x_m": -4.802,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "形",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.32,
+        "focus_s": 0.6,
+        "local_x_m": -2.6891,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "，",
+        "line": 1,
+        "star": false,
+        "focus_delay_s": 1.32,
+        "focus_s": 0.6,
+        "local_x_m": -0.5762,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "何",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.44,
+        "focus_s": 0.6,
+        "local_x_m": 1.5366,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "由",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.56,
+        "focus_s": 0.6,
+        "local_x_m": 3.6495,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "考",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.68,
+        "focus_s": 0.6,
+        "local_x_m": 5.7624,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "之",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.8,
+        "focus_s": 0.6,
+        "local_x_m": 7.8753,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "？",
+        "line": 1,
+        "star": false,
+        "focus_delay_s": 1.8,
+        "focus_s": 0.6,
+        "local_x_m": 9.9882,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       }
+      ],
+      "alpha": 0.9,
+      "vertex_color": [
+       1,
+       1,
+       1,
+       0.9
+      ],
+      "material": "Lanbai_SerifSC_Regular SDF - P09_Tianwen",
+      "material_instance": "own",
+      "outline_softness_anim": [
+       0.9,
+       0.0
+      ],
+      "face_dilate": {
+       "desktop": 0.05,
+       "vr": 0.1
+      }
+     },
+     {
+      "role": "translation",
+      "lang": "en",
+      "font": "EBGaramond-Regular",
+      "tmp_asset": "Lanbai_Garamond_Regular SDF",
+      "size_deg": 1.8,
+      "font_size": 15.71,
+      "character_spacing": 0.0,
+      "line_spacing": 4.5,
+      "alignment": "Baseline",
+      "lines": [
+       "At the far beginning of things,",
+       "who was there to tell of it?",
+       "When above and below had no form,",
+       "how could it be known?"
+      ],
+      "tmp_text": "At the far beginning of things,\nwho was there to tell of it?\nWhen above and below had no form,\nhow could it be known?",
+      "optical_offsets_em": [
+       0.0,
+       0.0,
+       0.0,
+       0.0
+      ],
+      "tmp_text_rich": null,
+      "first_baseline_el": 2.204,
+      "line_baselines_el": [
+       2.204,
+       -0.226,
+       -2.656,
+       -5.086
+      ],
+      "top_el": 3.5,
+      "bottom_el": -5.554,
+      "center_el": -1.027,
+      "width_deg": [
+       20.71,
+       17.95,
+       25.31,
+       16.5
+      ],
+      "local_y_m": -5.0753,
+      "line_local_x_m": [
+       0.0,
+       0.0,
+       0.0,
+       0.0
+      ],
+      "scale_y": 1,
+      "alpha": 0.9,
+      "vertex_color": [
+       1,
+       1,
+       1,
+       0.9
+      ],
+      "material": "Lanbai_Garamond_Regular SDF - P09_Tianwen",
+      "material_instance": "own",
+      "outline_softness_anim": [
+       0.9,
+       0.0
+      ],
+      "face_dilate": {
+       "desktop": 0.05,
+       "vr": 0.1
+      }
+     }
+    ],
+    "block": {
+     "width_deg": 25.31,
+     "height_deg": 16.41,
+     "az": [
+      -12.65,
+      12.65
+     ],
+     "el": [
+      -5.55,
+      10.86
+     ],
+     "center": [
+      0,
+      2.65
+     ]
+    },
+    "scrims": [],
+    "timing": {
+     "cue": "第 9 幕 + 8.0（变暗结束）",
+     "t_appear": 1009.21,
+     "focus_s": 2.4,
+     "hold_s": 9.0,
+     "t_exit": 1018.21,
+     "t_gone": 1019.41,
+     "exit": "F13 那一帧每个汉字的字心点燃一颗星（16 颗），字 1.2 s 内暗下（→ 1019.41）",
+     "hold_formula_s": 12.7,
+     "note": "到 F13 1018.21（9.0 s）；§7.4 公式 12.7 s，圣经例外 −3.7 s（夹在蓝时与 F13 之间，永不压缩）",
+     "t_settled": 1011.61,
+     "focus_note": "主行逐字对焦：16 个汉字各 0.6 s、120 ms 错开，标点与前一个字一起（char_objects）；1011.61 就位（圣经 §7.5 #8 “≈1011.6 就位”）。译文物体照常 2.5 s 整块对焦"
+    }
+   },
+   "de": {
+    "player": "de",
+    "shown": "main",
+    "shown_lang": "zh",
+    "translation": "en",
+    "anchor": [
+     0,
+     8,
+     50
+    ],
+    "anchor_mode": "centre",
+    "block_center_el": 8.0,
+    "shift_deg": 0.0,
+    "objects": [
+     {
+      "role": "main",
+      "lang": "zh",
+      "font": "SourceHanSerifSC-Regular",
+      "tmp_asset": "Lanbai_SerifSC_Regular SDF",
+      "size_deg": 2.2,
+      "font_size": 19.21,
+      "character_spacing": 10.0,
+      "line_spacing": 16.3,
+      "alignment": "Baseline",
+      "lines": [
+       "遂古之初，谁传道之？",
+       "上下未形，何由考之？"
+      ],
+      "tmp_text": "遂古之初，谁传道之？\n上下未形，何由考之？",
+      "optical_offsets_em": [
+       0.255,
+       0.25
+      ],
+      "tmp_text_rich": "<space=0.51em>遂古之初，谁传道之？\n<space=0.5em>上下未形，何由考之？",
+      "first_baseline_el": 8.924,
+      "line_baselines_el": [
+       8.924,
+       5.404
+      ],
+      "top_el": 10.86,
+      "bottom_el": 5.14,
+      "center_el": 8.0,
+      "width_deg": [
+       23.98,
+       23.98
+      ],
+      "local_y_m": 0.8064,
+      "line_local_x_m": [
+       0.4898,
+       0.4802
+      ],
+      "scale_y": 1,
+      "shown": "main",
+      "star_points": [
+       {
+        "char": "遂",
+        "line": 0,
+        "x_em": -4.695,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "古",
+        "line": 0,
+        "x_em": -3.595,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "之",
+        "line": 0,
+        "x_em": -2.495,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "初",
+        "line": 0,
+        "x_em": -1.395,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "谁",
+        "line": 0,
+        "x_em": 0.805,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "传",
+        "line": 0,
+        "x_em": 1.905,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "道",
+        "line": 0,
+        "x_em": 3.005,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "之",
+        "line": 0,
+        "x_em": 4.105,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "上",
+        "line": 1,
+        "x_em": -4.7,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "下",
+        "line": 1,
+        "x_em": -3.6,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "未",
+        "line": 1,
+        "x_em": -2.5,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "形",
+        "line": 1,
+        "x_em": -1.4,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "何",
+        "line": 1,
+        "x_em": 0.8,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "由",
+        "line": 1,
+        "x_em": 1.9,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "考",
+        "line": 1,
+        "x_em": 3.0,
+        "y_em_above_baseline": 0.38
+       },
+       {
+        "char": "之",
+        "line": 1,
+        "x_em": 4.1,
+        "y_em_above_baseline": 0.38
+       }
+      ],
+      "char_objects": [
+       {
+        "char": "遂",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.0,
+        "focus_s": 0.6,
+        "local_x_m": -9.0182,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "古",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.12,
+        "focus_s": 0.6,
+        "local_x_m": -6.9053,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "之",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.24,
+        "focus_s": 0.6,
+        "local_x_m": -4.7924,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "初",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.36,
+        "focus_s": 0.6,
+        "local_x_m": -2.6795,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "，",
+        "line": 0,
+        "star": false,
+        "focus_delay_s": 0.36,
+        "focus_s": 0.6,
+        "local_x_m": -0.5666,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "谁",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.48,
+        "focus_s": 0.6,
+        "local_x_m": 1.5462,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "传",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.6,
+        "focus_s": 0.6,
+        "local_x_m": 3.6591,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "道",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.72,
+        "focus_s": 0.6,
+        "local_x_m": 5.772,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "之",
+        "line": 0,
+        "star": true,
+        "focus_delay_s": 0.84,
+        "focus_s": 0.6,
+        "local_x_m": 7.8849,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "？",
+        "line": 0,
+        "star": false,
+        "focus_delay_s": 0.84,
+        "focus_s": 0.6,
+        "local_x_m": 9.9978,
+        "local_y_m": 0.8064,
+        "baseline_el": 8.924
+       },
+       {
+        "char": "上",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 0.96,
+        "focus_s": 0.6,
+        "local_x_m": -9.0278,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "下",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.08,
+        "focus_s": 0.6,
+        "local_x_m": -6.9149,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "未",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.2,
+        "focus_s": 0.6,
+        "local_x_m": -4.802,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "形",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.32,
+        "focus_s": 0.6,
+        "local_x_m": -2.6891,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "，",
+        "line": 1,
+        "star": false,
+        "focus_delay_s": 1.32,
+        "focus_s": 0.6,
+        "local_x_m": -0.5762,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "何",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.44,
+        "focus_s": 0.6,
+        "local_x_m": 1.5366,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "由",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.56,
+        "focus_s": 0.6,
+        "local_x_m": 3.6495,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "考",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.68,
+        "focus_s": 0.6,
+        "local_x_m": 5.7624,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "之",
+        "line": 1,
+        "star": true,
+        "focus_delay_s": 1.8,
+        "focus_s": 0.6,
+        "local_x_m": 7.8753,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       },
+       {
+        "char": "？",
+        "line": 1,
+        "star": false,
+        "focus_delay_s": 1.8,
+        "focus_s": 0.6,
+        "local_x_m": 9.9882,
+        "local_y_m": -2.267,
+        "baseline_el": 5.404
+       }
+      ],
+      "alpha": 0.9,
+      "vertex_color": [
+       1,
+       1,
+       1,
+       0.9
+      ],
+      "material": "Lanbai_SerifSC_Regular SDF - P09_Tianwen",
+      "material_instance": "own",
+      "outline_softness_anim": [
+       0.9,
+       0.0
+      ],
+      "face_dilate": {
+       "desktop": 0.05,
+       "vr": 0.1
+      }
+     },
+     {
+      "role": "translation",
+      "lang": "en",
+      "font": "EBGaramond-Regular",
+      "tmp_asset": "Lanbai_Garamond_Regular SDF",
+      "size_deg": 1.8,
+      "font_size": 15.71,
+      "character_spacing": 0.0,
+      "line_spacing": 4.5,
+      "alignment": "Baseline",
+      "lines": [
+       "At the far beginning of things,",
+       "who was there to tell of it?",
+       "When above and below had no form,",
+       "how could it be known?"
+      ],
+      "tmp_text": "At the far beginning of things,\nwho was there to tell of it?\nWhen above and below had no form,\nhow could it be known?",
+      "optical_offsets_em": [
+       0.0,
+       0.0,
+       0.0,
+       0.0
+      ],
+      "tmp_text_rich": null,
+      "first_baseline_el": 2.204,
+      "line_baselines_el": [
+       2.204,
+       -0.226,
+       -2.656,
+       -5.086
+      ],
+      "top_el": 3.5,
+      "bottom_el": -5.554,
+      "center_el": -1.027,
+      "width_deg": [
+       20.71,
+       17.95,
+       25.31,
+       16.5
+      ],
+      "local_y_m": -5.0753,
+      "line_local_x_m": [
+       0.0,
+       0.0,
+       0.0,
+       0.0
+      ],
+      "scale_y": 1,
+      "alpha": 0.9,
+      "vertex_color": [
+       1,
+       1,
+       1,
+       0.9
+      ],
+      "material": "Lanbai_Garamond_Regular SDF - P09_Tianwen",
+      "material_instance": "own",
+      "outline_softness_anim": [
+       0.9,
+       0.0
+      ],
+      "face_dilate": {
+       "desktop": 0.05,
+       "vr": 0.1
+      }
+     }
+    ],
+    "block": {
+     "width_deg": 25.31,
+     "height_deg": 16.41,
+     "az": [
+      -12.65,
+      12.65
+     ],
+     "el": [
+      -5.55,
+      10.86
+     ],
+     "center": [
+      0,
+      2.65
+     ]
+    },
+    "scrims": [],
+    "timing": {
+     "cue": "第 9 幕 + 8.0（变暗结束）",
+     "t_appear": 1009.21,
+     "focus_s": 2.4,
+     "hold_s": 9.0,
+     "t_exit": 1018.21,
+     "t_gone": 1019.41,
+     "exit": "F13 那一帧每个汉字的字心点燃一颗星（16 颗），字 1.2 s 内暗下（→ 1019.41）",
+     "hold_formula_s": 12.7,
+     "note": "到 F13 1018.21（9.0 s）；§7.4 公式 12.7 s，圣经例外 −3.7 s（夹在蓝时与 F13 之间，永不压缩）",
+     "t_settled": 1011.61,
+     "focus_note": "主行逐字对焦：16 个汉字各 0.6 s、120 ms 错开，标点与前一个字一起（char_objects）；1011.61 就位（圣经 §7.5 #8 “≈1011.6 就位”）。译文物体照常 2.5 s 整块对焦"
+    }
+   }
+  },
+  "grade": "S9a",
+  "profile": "S9a",
+  "face_color": {
+   "grade": "S9a",
+   "profile": "S9a",
+   "target": "#D9E2E7",
+   "fill_hdr": "#EBF9FA",
+   "fill_linear": [
+    0.8323,
+    0.9488,
+    0.9522
+   ],
+   "solve_error_codes": 0.0,
+   "screen_of_fill": "#D9E2E7",
+   "screen_luma": 224.4,
+   "x_T0": 0.963,
+   "bloom_share_opaque": 0.0,
+   "bloom_share_at_alpha": 0.0,
+   "alpha": 0.9,
+   "naive_vertex_colour_screen": "#DADFE5",
+   "naive_vertex_colour_luma": 222.4
+  }
+ }
+}

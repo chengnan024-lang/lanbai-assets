@@ -1,0 +1,17 @@
+{
+ "t": 995.0,
+ "cam": "vr_up",
+ "door": "bible_v2",
+ "h": 174.2,
+ "dEV": -0.241,
+ "APL": 51.0,
+ "purple_D21": 0.0,
+ "purple_D21_no_ceiling": 0.0,
+ "brightest_px": [
+  0.612,
+  0.974
+ ],
+ "reveal": 1.0,
+ "cards_standin": [],
+ "width": 1946
+}

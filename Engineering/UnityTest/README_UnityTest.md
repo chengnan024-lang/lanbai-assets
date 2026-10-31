@@ -46,7 +46,7 @@
 | `Editor/LanbaiTestMenu.cs` | 菜单 蓝白/Test/… |
 | `Editor/LanbaiTestJson.cs` | 小 JSON 读写 |
 | `Editor/LanbaiTestPlay.cs` | **Play 阶段**（1.2.0，§7.6）：存状态、进 Play、跳转、拍、退出 Play、reload 以后收尾；交接扫描的曲线和拼图 |
-| `tests/*.json` | 测试定义（§6）：`gate_clouds_test`、`act06_test`、`bus_slice`、`transitions_sweep`、`flicker_probe`（这两个在 Play 模式里拍，§7.6）、`act01_spawn`（占位）、`palace_hotspot`（占位） |
+| `tests/*.json` | 测试定义（§6）：`gate_clouds_test`、`act06_test`、`bus_slice`、`transitions_sweep`、`flicker_probe`（这两个在 Play 模式里拍，§7.6）、`tree_sample`（灯包的样板树，D-44 #6）、`act01_spawn`（占位）、`palace_hotspot`（占位） |
 | `tests/data/transitions_table.json` | 交接扫描用的交接表（圣经 §6.x，36 个；`kind` = check / cut / black / flash） |
 | `Tools~/lanbai_sync.ps1` | 仓库 → 工程的同步脚本（§2）。在 `~` 文件夹里，Unity 不导入 |
 
@@ -100,7 +100,8 @@
 
 ### 开跑之前工具自己查的几道关（HANDOFF_CHATGPT，只读）
 - **资源**：C 盘剩 ≥ 10 GB、工程所在盘剩 ≥ 10 GB、可用内存 ≥ 6 GB（测试定义的 `resources` 可改：`min_c_gb`、`min_project_gb`、`min_free_ram_gb`）。不够就 BLOCKED：**停，告诉小楠**（工具和阿白都不替小楠关程序、清文件；VRChat 开着就请小楠关）。
-- **小楠的同意**：第一次用这个工具之前要小楠同意。同意以后，阿白写 `<工程>/LanbaiReports/tests/CONSENT.json`：`{"by": "小楠", "date": "YYYY-MM-DD", "tool_version": "1.2.1", "tests": ["gate_clouds_test", "transitions_sweep", "flicker_probe"], "backup": "整工程备份的 zip 路径", "note": "小楠原话"}`。没有这个文件就 BLOCKED；**同意的范围**：`tool_version` 要和工具的版本一样（工具升了版本要重新问），`tests` 里要有这次跑的测试，不然 BLOCKED；备份的路径这台机器上找不到，只警告。工具只读它，不替人写。
+- **写入检查**（1.2.2）：按文件大小和修改时间比；材质、`.asset`、预制体、`.meta` 这类 ≤ 4 MB 的小文件开搭前另记内容哈希，存了但逐字节没变的列在 `tool_touched_restored`，不算“改了”（10-25 Sea / SeaB / WetGround 就是这种）。
+- **小楠的同意**：第一次用这个工具之前要小楠同意。同意以后，阿白写 `<工程>/LanbaiReports/tests/CONSENT.json`：`{"by": "小楠", "date": "YYYY-MM-DD", "tool_version": "1.2.2", "tests": ["gate_clouds_test", "transitions_sweep", "flicker_probe", "tree_sample"], "backup": "整工程备份的 zip 路径", "note": "小楠原话"}`。没有这个文件就 BLOCKED；**同意的范围**：`tool_version` 要和工具的版本一样（工具升了版本要重新问），`tests` 里要有这次跑的测试，不然 BLOCKED；备份的路径这台机器上找不到，只警告。工具只读它，不替人写。
 - **弹窗**：工具自己不弹（批处理没有；菜单只有开始前和跑完的两个框）。Unity / Hub / VCC / SDK 的弹窗照 HANDOFF_CHATGPT §C 第 5 步一律按“不改”回答。
 
 ### 菜单
@@ -173,7 +174,7 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json" -Encoding UTF8
 | `blocked` | 写了就整个 BLOCKED（占位测试用），值是原因 |
 | `requires` | 前置条件，缺一样就 BLOCKED：`unity`（默认 `2022.3.22f1`）、`packages`（默认 `com.vrchat.worlds` 3.10.5、`com.unity.postprocessing` 3.4.0）、`folders`、`files`、`types`（类型名，可以不带命名空间）、`menus`、`file_contains`（`{file 或 script, text: [...], absent: [...], why}`：脚本里有没有那几行补丁、JSON 里有没有新版本的标记）、`scene_objects`（打开场景以后查）、`scene_components` |
 | `scene` | `{path, mode}`：`copy`（默认：拷进沙盒再开，原场景不动）、`in_place`（就在原场景里：门测试的 `LB_GateTest` 写死了场景路径）、`new`（沙盒里的空场景） |
-| `allowed_writes` | 沙盒以外允许被改的地方（glob，`**` 跨文件夹）：只给现有搭建脚本本来就要写的地方 |
+| `allowed_writes` | 沙盒以外允许被改的地方（glob，`**` 跨文件夹）：只给现有搭建脚本本来就要写的地方。前面加 `new:`（1.2.2）= 只放过新建的文件，那里已有的文件被改、被删照常报（`SerializedUdonPrograms` 这类 U# 自己写的地方用它）。`udon_programs` 列的程序资产工具在记快照之前就建好，不用为它们开 `Assets/Lanbai/UdonPrograms/**` |
 | `backup_before` | 开搭之前原样拷进输出 `backup_before/` 的文件（glob） |
 | `camera_template` | 抄设置的参考相机（场景路径）；不写就用第一台带 PostProcessLayer 的相机 |
 | `time` | 怎么把场景定到时间 t 的步骤（`{t}` 换成数字），比如 `LB_GateTest.Apply("{t}")` |
@@ -219,7 +220,8 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json" -Encoding UTF8
 
 `eye [x,y,z]`；朝向 `euler [x,y,z]`（Unity 的 localEulerAngles）或 `yaw`、`pitch`、`roll`（= `(−pitch, yaw, roll)`，和渲染夹具一样）；`hfov`（水平视角，默认 90）或 `vfov`；`w`、`h`（默认 1920×1080）、`ss`（超采样，默认 2）；`t`；`ref`（参考图：`repo:<仓库里的路径>` 按同步记录的仓库路径找，或工程里的路径）、`ref_half`（`top` / `bottom`：`compare_*.png` 上半张是这一版的参照）；`before`（定好时间以后、拍之前的步骤，拍完改回）/ `after`（拍完以后的步骤，不登记改回）。
 
-近景：`look_at [x,y,z]` 或 `look_at_object`（场景路径，取包围盒中心）+ `distance`（米）+ `toward [x,y,z]`（相机退向这个点，比如主座位的眼）；`crop_deg [宽, 高]` + `ppd`（每度像素，默认 20：D-36 #1 的 Index 密度）时，尺寸按画面中心每度 `ppd` 个像素算。
+近景：`look_at [x,y,z]` 或 `look_at_object`（场景路径，取包围盒中心；加 `look_at_anchor [ax, ay, az]`（1.2.2）就取包围盒里的那个点，每轴 0 = min、1 = max，比如对着窗扣、窗框的一个角）+ `distance`（米）+ `toward [x,y,z]`（相机退向这个点，比如主座位的眼）；`crop_deg [宽, 高]` + `ppd`（每度像素，默认 20：D-36 #1 的 Index 密度）时，尺寸按画面中心每度 `ppd` 个像素算。
+截图可以写 `coverage_of [路径, ...]`（1.2.2）：同一机位关掉这些物体再渲一张，亮度差 > 2 的像素占比记成 `shot.<id>.coverage`（下限：和背景一样亮的像素数不进去），用来保证画面里真的有要审的东西（`bus_slice` 的侧窗：窗框 / 胶条 ≥ 30 %）。
 
 ### 6.3 检查项
 
@@ -248,6 +250,8 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json" -Encoding UTF8
 - `kind: "static"`：机位不动、时间不动的**对照**，只剩画面本身的时间噪声（抖动、时间性效果）。和同一机位的 `micro_motion` 一起看，才知道微动带来了多少闪烁。
 - 尺寸默认 1280×720、`ss` 默认 1（头显里没有超采样，闪烁才看得出来）；机位按 `ppd` 算过的就用它的尺寸。`eye_offset_mm` 可以把整段挪到左眼 / 右眼的位置。
 - **闪烁的主量 `shimmer`**（终审 r2 改）：每一帧在**同一个姿态**再渲一张高倍超采样的参考（`reference_ss`，默认 4×；0 = 不渲），逐像素量“测的图 − 参考图”的亮度差（0–255）随时间的标准差。真实的运动（边缘挪动）两张图一起挪，差里没有；剩下的是采样不足带来的闪烁、爬动、摩尔纹。报全画面平均、p99、超过 `shimmer_threshold`（默认 4）的像素占比，热图 `heat_shimmer.png`。
+- **只量被测物**（1.2.2，阿白 10-25 树的验收）：序列可以写 `"isolate": {"keep": ["根物体名", ...], "roi_dilate_px": 4}`。这个序列里只留这些根物体下的 Renderer，别的（旧车柱、灯杆、路、占位）关掉，结束还原；灯光不动。同一机位“有 / 没有被测物”各渲一张，亮度差 > 2 的像素再外扩 `roi_dilate_px` 就是 ROI（`seq/<id>/roi.png`，ROI 外压暗）。`shimmer_*` 三项只在 ROI 里算（占比的分母是 ROI），另报 `seq.<id>.roi_frac`。`keep` 里的物体找不到、ROI 是空的，这一项出错。
+- **MSAA**（1.2.2，阿白 10-25）：机位可以写 `"msaa": 1 | 2 | 4 | 8`（默认 1）。用 alpha-to-coverage 的东西（树叶）要写 4：没有 MSAA 就是整块卡片。
 - 另外两个量**只作参考，不是闪烁**：`motion_std`（逐像素亮度的时间标准差，含真实运动）、`hf_raw`（二阶时间差分的均方根 ÷ √6；平滑运动大多不算，但正常的边缘运动也会进来一部分）；热图 `heat_motion_std.png`、`heat_hf_raw.png`。还有每帧的 APL、最大的帧间跳变。热图颜色：黑 → 紫 → 红 → 橙 → 浅黄，很小的值显示平均画面的暗灰。
 - **这是编辑器里普通相机逐帧渲染的近似**：没有 SPS-I、没有头显的镜片和刷新；阈值是初值，第一次实测后由总工程师定。
 - 帧默认都存（`save_frames: false` 可关）：云端可以拿去跑 `flashcheck.py`。
@@ -328,5 +332,5 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json" -Encoding UTF8
 ## 11. 检查
 
 - C#：`bash Common/Tools~/compile_check/check_cs.sh Engineering/UnityTest` → `C# CHECK OK (0 assembly error(s), 0 lint warning(s))`（UnityEditor 2021.1 引用程序集 + PPv2 桩；不是 Unity 编译）。
-- 测试定义：7 个 `tests/*.json` 和 `tests/data/transitions_table.json` 都是合法 JSON，`gate_clouds_test` 的机位、时间、文件名对过 `Gate/GateLayout_v2.json` 的 `cameras` 和 HANDOFF_LOG。
+- 测试定义：8 个 `tests/*.json` 和 `tests/data/transitions_table.json` 都是合法 JSON，`gate_clouds_test` 的机位、时间、文件名对过 `Gate/GateLayout_v2.json` 的 `cameras` 和 HANDOFF_LOG。
 - 同步脚本：PowerShell 7.4.6 上用一个假仓库 + 假工程走过：只列出、`-Apply`、第二次全部“一样”、本地改过被拒（退出码 2，什么都没改）、`-Force`（先备份再覆盖）、仓库删了的文件只列出不删、工程里多出来的不动、没有“同步：”行时猜路径并要求 `-AcceptGuess`、`.git/index.lock` / 没提交的改动 / 不在 main 都停（退出码 4）；对真仓库的两条门的条目只列出过一次（猜到的路径见 `Engineering/给总导演.md`）。

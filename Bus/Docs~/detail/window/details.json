@@ -1,0 +1,29 @@
+{
+ "part": "window",
+ "model": "PAZ-672M 侧窗（车里看）：主座位旁边的 WinR1（z 1.30–2.57）",
+ "source_code": "Bus/Source/parts/window.py（r2：分档 TIERS，WinR1 用 hero 档，其余 low 档）",
+ "hero_eye": [0.55, 1.7, 2.05],
+ "distance_rule": "视距 = 主座位的眼到那处细节最近 / 最远的那一段（Unity 坐标直线距离）。范围 = [近, 远]。",
+ "visible_rule": "角像素 = 尺寸 ÷ 视距（弧度）× 180/π × 像素密度；≥ 2 px 记“看得出”。判定按 20 px/°（D-40a #6），14 px/° 只作参考（D-40b #2）。compare.py 算。",
+ "details": [
+  {"id": "frame_face", "name": "铝窗框贴墙的面（30 + 7 mm）", "size_mm": 37, "size_of": "面宽", "distance_m": [0.6, 0.96], "where": "WinR1 一圈（窗台中间最近，后下角最远）", "modelled": "几何：L 形断面扫一圈（FRAME）", "material": "Alu 阳极铝 #B8BBBD / 0.45 / 金属 1"},
+  {"id": "frame_proud", "name": "窗框凸出内墙的厚度 3 mm", "size_mm": 3, "size_of": "板厚", "distance_m": [0.6, 0.96], "where": "同上（框的边沿）", "modelled": "几何"},
+  {"id": "frame_lining", "name": "窗框伸进窗洞的内衬（深 18.5 mm）", "size_mm": 18.5, "size_of": "深", "distance_m": [0.6, 0.96], "where": "同上", "modelled": "几何"},
+  {"id": "corner_radius", "name": "窗角的大圆角 R70", "size_mm": 70, "size_of": "半径", "distance_m": [0.86, 0.96], "where": "WinR1 的四个角", "modelled": "几何（和车外一样的圆角）"},
+  {"id": "gasket", "name": "带唇的黑胶条（伸进窗洞 11 mm）", "size_mm": 11, "size_of": "露出的宽", "distance_m": [0.6, 0.96], "where": "玻璃里侧一圈", "modelled": "几何：GASKET 断面", "material": "Seal #2B2B2B / 0.30"},
+  {"id": "gasket_lip", "name": "胶条压在玻璃上的唇尖（约 1.5 mm 厚）", "size_mm": 1.5, "size_of": "唇尖厚", "distance_m": [0.6, 0.96], "where": "同上", "modelled": "几何（小于 3 mm：账本说进法线贴图也可以）；r2 hero 档唇尖 1 段圆角，low 档倒角"},
+  {"id": "transom", "name": "横档：双槽铝轨（21 mm 高、15 mm 深）", "size_mm": 21, "size_of": "高", "distance_m": [0.49, 0.9], "where": "玻璃上 1.905–1.935 m，横贯 WinR1", "modelled": "几何：TR 断面"},
+  {"id": "transom_groove", "name": "横档的槽（8 mm 宽、4 mm 深）", "size_mm": 8, "size_of": "槽宽", "distance_m": [0.49, 0.9], "where": "同上", "modelled": "几何"},
+  {"id": "sill", "name": "窗台板（凸出内墙 63 mm、30 mm 厚）", "size_mm": 30, "size_of": "厚", "distance_m": [0.6, 0.9], "where": "WinR1 下沿，主座位的右手边", "modelled": "几何：SILL 断面", "material": "Int_Enamel 奶白搪瓷 #D9D4C5 / 0.45"},
+  {"id": "sill_nose", "name": "窗台的圆鼻（R4）", "size_mm": 4, "size_of": "圆角半径", "distance_m": [0.6, 0.9], "where": "同上", "modelled": "几何（hero 档 2 段圆角，其余 1 段）"},
+  {"id": "sash_frame", "name": "推拉上扇的铝扇框（16 × 8 mm）", "size_mm": 16, "size_of": "面宽", "distance_m": [0.58, 0.9], "where": "横档以上的两扇小窗（1.937–2.218 m）", "modelled": "几何：两扇，里外错开一层"},
+  {"id": "sash_offset", "name": "两扇上扇里外错开的一层（7 mm）", "size_mm": 7, "size_of": "错开的深度 24 − 17", "distance_m": [0.58, 0.7], "where": "两扇相会处", "modelled": "几何"},
+  {"id": "latch", "name": "转子形窗扣旋钮（宽 16、厚 7 mm）", "size_mm": 16, "size_of": "宽", "distance_m": [0.57, 0.57], "where": "里面那扇的竖梃上，2.08 m 高", "modelled": "几何：Reuleaux 三角（Kolesa：“像马自达的转子”），hero 档 12 段、low 档 6 段", "material": "LatchCream 米白塑料 #D9CFB8 / 0.55（672M，据实物参考 README §6.2）"},
+  {"id": "latch_plate", "name": "窗扣下面的金属片（30 × 22 mm、1.8 mm 厚）", "size_mm": 1.8, "size_of": "板厚", "distance_m": [0.57, 0.57], "where": "里面那扇的竖梃上，2.08 m 高", "modelled": "几何：倒角小板", "material": "Alu"},
+  {"id": "latch_thickness", "name": "窗扣的厚度 7 mm", "size_mm": 7, "size_of": "厚", "distance_m": [0.57, 0.57], "where": "同上", "modelled": "几何"},
+  {"id": "keeper", "name": "对面的扣座（20 × 28 × 5 mm）", "size_mm": 20, "size_of": "宽", "distance_m": [0.58, 0.58], "where": "外面那扇的竖梃上", "modelled": "几何：倒角小板", "material": "Alu"},
+  {"id": "next_windows", "name": "后面几扇窗的窗框面 37 mm", "size_mm": 37, "size_of": "面宽", "distance_m": [1.48, 2.66], "where": "WinR2、WinR3（往车尾看）", "modelled": "几何（同一个模块）"},
+  {"id": "next_latch", "name": "后面几扇窗的窗扣 16 mm", "size_mm": 16, "size_of": "宽", "distance_m": [1.48, 2.66], "where": "WinR2、WinR3", "modelled": "几何"}
+ ],
+ "note": "尺寸取自 window.py 的断面（FRAME / GASKET / TR / SILL / SASH）和窗扣的参数；视距按 bus_spec 的 WinR1（z 1.30–2.57、内墙 x 0.99）算。没有在 Unity 里看过。 r2（10-25）：只减了面，断面尺寸没变；hero 档断面的 1.2 mm 圆角每个角 1 段，low 档变成倒角。窗扣改成 672M 的米白旋钮装在一块铝片上。"
+}

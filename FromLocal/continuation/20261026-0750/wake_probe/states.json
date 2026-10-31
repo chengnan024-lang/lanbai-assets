@@ -1,0 +1,42 @@
+[
+  {
+    "target_t": 1249.86,
+    "t": "1249.871",
+    "dEV": "0",
+    "white": "0.5",
+    "whiteTonemapper": "ACES",
+    "override": "False"
+  },
+  {
+    "target_t": 1249.96,
+    "t": "1249.973",
+    "dEV": "0.7979102",
+    "white": "0.4983673",
+    "whiteTonemapper": "ACES",
+    "override": "False"
+  },
+  {
+    "target_t": 1251.86,
+    "t": "1251.871",
+    "dEV": "0.4942187",
+    "white": "0.2611084",
+    "whiteTonemapper": "ACES",
+    "override": "False"
+  },
+  {
+    "target_t": 1251.96,
+    "t": "1251.972",
+    "dEV": "0.4780664",
+    "white": "0.2484894",
+    "whiteTonemapper": "ACES",
+    "override": "False"
+  },
+  {
+    "target_t": 1252.06,
+    "t": "1252.071",
+    "dEV": "0.4622266",
+    "white": "0.2361145",
+    "whiteTonemapper": "ACES",
+    "override": "False"
+  }
+]

@@ -1,0 +1,7 @@
+CC0 1.0 Universal
+Provider: Poly Haven
+Author: Rob Tuytel
+Asset: https://polyhaven.com/a/rusty_metal_02
+License confirmed 2026-10-26: https://polyhaven.com/license
+Asset files are declared CC0 by the provider. Original files, no edits.
+CC0 terms: https://creativecommons.org/publicdomain/zero/1.0/legalcode

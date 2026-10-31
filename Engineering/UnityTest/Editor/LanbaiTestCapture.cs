@@ -90,6 +90,11 @@ namespace Lanbai.Test
                 var b = rs[0].bounds;
                 foreach (var r in rs) b.Encapsulate(r.bounds);
                 look = new[] { b.center.x, b.center.y, b.center.z };
+                // look_at_anchor（1.2.2，车包 10-26：侧窗机位对着包围盒中心只拍到玻璃）：[ax, ay, az] = 包围盒里的点，
+                // 每轴 0 = min、1 = max、0.5 = 中心（比如窗扣、窗框的一个角）。跟着物体走，切片挪了也对
+                var an = TJson.Fa(TJson.G(d, "look_at_anchor"));
+                if (an != null && an.Length >= 3)
+                    look = new[] { b.min.x + an[0] * b.size.x, b.min.y + an[1] * b.size.y, b.min.z + an[2] * b.size.z };
             }
             var toward = TJson.Fa(TJson.G(d, "toward"));
             if (look != null && TJson.Has(d, "distance"))
@@ -252,7 +257,11 @@ namespace Lanbai.Test
                 go = MakeCam(ctx, c, w, h, withPP, out hasPP);
                 cam = go.GetComponent<Camera>();
                 // 渲进 HDR 目标：渲进 8 位目标的话，HDR 值在进 PPv2 之前就被夹到 1
-                big = new RenderTexture(w * ss, h * ss, 24, RenderTextureFormat.DefaultHDR, RenderTextureReadWrite.Linear) { antiAliasing = 1, filterMode = FilterMode.Bilinear };
+                // msaa（阿白 10-25，树的 alpha-to-coverage 要 MSAA）：机位可选 1 / 2 / 4 / 8，默认 1
+                int msaa = TJson.I(TJson.G(c.def, "msaa"), 1);
+                if (msaa != 1 && msaa != 2 && msaa != 4 && msaa != 8) throw new StepException("机位 " + c.id + "：msaa 只能是 1 / 2 / 4 / 8，现在是 " + msaa);
+                cam.allowMSAA = msaa > 1;
+                big = new RenderTexture(w * ss, h * ss, 24, RenderTextureFormat.DefaultHDR, RenderTextureReadWrite.Linear) { antiAliasing = msaa, filterMode = FilterMode.Bilinear };
                 big.Create();
                 small = new RenderTexture(w, h, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB) { filterMode = FilterMode.Bilinear };
                 small.Create();
@@ -272,6 +281,7 @@ namespace Lanbai.Test
             }
             public void Dispose()
             {
+                if (RenderTexture.active == big || RenderTexture.active == small) RenderTexture.active = null;   // 阿白 10-25：不释放正在用的 RT
                 if (cam != null) cam.targetTexture = null;
                 if (go != null) Object.DestroyImmediate(go);
                 if (big != null) { big.Release(); Object.DestroyImmediate(big); }
@@ -337,6 +347,29 @@ namespace Lanbai.Test
                 if (c.t.HasValue) rec["t"] = (double)c.t.Value;
                 if (TJson.Has(c.def, "label")) rec["label"] = TJson.G(c.def, "label");
                 if (TJson.Has(c.def, "ref")) Compare(ctx, c, px, key, rec, folder);
+                // coverage_of（1.2.2）：这些物体（路径，可以多个）在画面里占多少：同一机位关掉它们再渲一张，亮度差 > 2 的像素
+                // 比例 → shot.<id>.coverage。和背景一样亮的像素数不进去，所以是下限
+                var cov = TJson.Sa(TJson.G(c.def, "coverage_of"));
+                if (cov.Count > 0)
+                {
+                    var rs = new List<UnityEngine.Renderer>();
+                    foreach (var path in cov)
+                    {
+                        var tr = Scenes.Find(path);
+                        if (tr == null) throw new StepException("机位 " + c.id + "：coverage_of 里的 " + path + " 不在场景里");
+                        rs.AddRange(tr.GetComponentsInChildren<UnityEngine.Renderer>(false).Where(r => r.enabled));
+                    }
+                    foreach (var r in rs) r.enabled = false;
+                    Color32[] off;
+                    try { bool pp2; off = RenderOnce(ctx, c, c.w, c.h, c.ss, true, out pp2); }
+                    finally { foreach (var r in rs) if (r != null) r.enabled = true; }
+                    int hit = 0;
+                    for (int k = 0; k < px.Length; k++) if (Math.Abs(Img.Luma(px[k]) - Img.Luma(off[k])) > 2f) hit++;
+                    double frac = hit / (double)px.Length;
+                    ctx.Metric(key + ".coverage", frac, "coverage_of 的物体占画面的比例（关掉它们再渲一张、亮度差 > 2 的像素；下限）");
+                    rec["coverage_of"] = cov.Cast<object>().ToList();
+                    rec["coverage"] = frac;
+                }
                 RunAfter(ctx, c.def);
                 ctx.shots.Add(rec);
                 return rec;
@@ -487,13 +520,51 @@ namespace Lanbai.Test
             int mark = ctx.undo.Mark();
             Renderer2 r = null, rr = null;
             string dir = "seq/" + c.id;
+            // isolate（阿白 10-25 树的验收）：只留 keep 列出的根物体下的 Renderer，别的（旧车柱、灯杆、路……）在这个序列里关掉、
+            // 结束还原；闪烁只在 ROI 里算：ROI = 同一机位“有 / 没有被测物”两张图亮度差 > 2 的像素，再向外扩 roi_dilate_px
+            // （默认 4，盖住微动时挪动的边）。灯（Light）不关：光照和正式场景一样。
+            var iso = TJson.M(TJson.G(d, "isolate"));
+            var keep = iso != null ? TJson.L(TJson.G(iso, "keep")).Select(x => TJson.S(x)).ToList() : new List<string>();
+            var turnedOff = new List<UnityEngine.Renderer>();
+            var keptR = new List<UnityEngine.Renderer>();
+            bool[] roi = null;
+            int roiN = 0;
             try
             {
                 if (hasTime) ApplyTime(ctx, t0, false);
                 RunBefore(ctx, d, "before");
+                if (keep.Count > 0)
+                {
+                    var roots = keep.Select(nm => GameObject.Find(nm)).ToList();
+                    for (int i = 0; i < roots.Count; i++)
+                        if (roots[i] == null) throw new StepException("序列 " + c.id + "：isolate.keep 里的 " + keep[i] + " 在场景里找不到");
+                    foreach (var rend in Object.FindObjectsOfType<UnityEngine.Renderer>())
+                    {
+                        bool k = roots.Any(rt => rend.transform.IsChildOf(rt.transform));
+                        if (k) keptR.Add(rend);
+                        else if (rend.enabled) { rend.enabled = false; turnedOff.Add(rend); }
+                    }
+                }
                 r = new Renderer2(ctx, c, w, h, ss, true);
                 if (refSS > ss) rr = new Renderer2(ctx, c, w, h, refSS, true);
                 int N = w * h;
+                if (keep.Count > 0)
+                {
+                    var with = r.Frame(3);
+                    var keptOn = keptR.Where(x => x.enabled).ToList();
+                    foreach (var x in keptOn) x.enabled = false;
+                    var without = r.Frame(3);
+                    foreach (var x in keptOn) x.enabled = true;
+                    var m0 = new bool[N];
+                    for (int k = 0; k < N; k++) m0[k] = Math.Abs(Img.Luma(with[k]) - Img.Luma(without[k])) > 2f;
+                    roi = Img.Dilate(m0, w, h, TJson.I(TJson.G(iso, "roi_dilate_px"), 4));
+                    roiN = roi.Count(x => x);
+                    if (roiN == 0) throw new StepException("序列 " + c.id + "：ROI 是空的（被测物在这个机位里看不见）");
+                    var vis = new Color32[N];
+                    for (int k = 0; k < N; k++) vis[k] = roi[k] ? with[k] : new Color32((byte)(with[k].r / 4), (byte)(with[k].g / 4), (byte)(with[k].b / 4), 255);
+                    Img.SavePng(vis, w, h, ctx.Out(dir + "/roi.png"));
+                    ctx.AddFile(dir + "/roi.png");
+                }
                 var sum = new double[N]; var sum2 = new double[N]; var hf2 = new double[N];
                 var dsum = rr != null ? new double[N] : null; var dsum2 = rr != null ? new double[N] : null;
                 var p1 = new float[N]; var p2 = new float[N]; var cur = new float[N];
@@ -554,11 +625,14 @@ namespace Lanbai.Test
                 }
                 string pre = "seq." + c.id;
                 ctx.Metric(pre + ".frames", n);
+                if (roi != null) ctx.Metric(pre + ".roi_frac", roiN / (double)N, "ROI（被测物 + 外扩）占画面的比例；闪烁三项只在 ROI 里算");
                 if (sh != null)
                 {
-                    ctx.Metric(pre + ".shimmer_mean", Avg(sh), "闪烁（主量）：逐像素“测的图 − 同一姿态的 " + refSS + "× 超采样参考”的亮度差（0–255）随时间的标准差，全画面平均；真实运动两张一起挪、不算在里面");
-                    ctx.Metric(pre + ".shimmer_p99", Pct(sh, 0.99));
-                    ctx.Metric(pre + ".shimmer_frac", sh.Count(x => x > shThr) / (double)N, "shimmer > " + shThr.ToString("0.#", IC) + " 的像素占比");
+                    var shR = roi != null ? sh.Where((x, k) => roi[k]).ToArray() : sh;
+                    string where = roi != null ? "ROI 里平均" : "全画面平均";
+                    ctx.Metric(pre + ".shimmer_mean", Avg(shR), "闪烁（主量）：逐像素“测的图 − 同一姿态的 " + refSS + "× 超采样参考”的亮度差（0–255）随时间的标准差，" + where + "；真实运动两张一起挪、不算在里面");
+                    ctx.Metric(pre + ".shimmer_p99", Pct(shR, 0.99));
+                    ctx.Metric(pre + ".shimmer_frac", shR.Count(x => x > shThr) / (double)shR.Length, "shimmer > " + shThr.ToString("0.#", IC) + " 的像素占比（" + (roi != null ? "占 ROI" : "占全画面") + "）");
                 }
                 ctx.Metric(pre + ".motion_std_mean", Avg(std), "逐像素亮度（0–255）的时间标准差，全画面平均：含真实运动（边缘挪动），只作参考，不是闪烁");
                 ctx.Metric(pre + ".motion_std_p99", Pct(std, 0.99));
@@ -586,6 +660,8 @@ namespace Lanbai.Test
                     { "t0", hasTime ? (object)(double)t0 : null }, { "t1", advance ? (object)(double)t1 : null }, { "advance_time", advance },
                     { "heat_scale", (double)scale }, { "hf_threshold", (double)thr }, { "apl_per_frame", apl },
                     { "reference_ss", (double)(rr != null ? refSS : 0) }, { "shimmer_threshold", (double)shThr },
+                    { "isolate_keep", keep.Cast<object>().ToList() }, { "renderers_turned_off", (double)turnedOff.Count },
+                    { "roi_pixels", (double)roiN }, { "roi", roi != null ? dir + "/roi.png" : null },
                     { "heat_shimmer", sh != null ? dir + "/heat_shimmer.png" : null }, { "heat_motion_std", dir + "/heat_motion_std.png" }, { "heat_hf_raw", dir + "/heat_hf_raw.png" },
                     { "note", "编辑器里普通相机逐帧渲染（不是 SPS-I、不是头显）；热图颜色 0 → " + scale.ToString("0", IC) + "（亮度 0–255），底下是平均画面的灰度" }
                 };
@@ -597,6 +673,7 @@ namespace Lanbai.Test
             {
                 if (r != null) r.Dispose();
                 if (rr != null) rr.Dispose();
+                foreach (var x in turnedOff) if (x != null) x.enabled = true;
                 foreach (var e in ctx.undo.RollbackTo(mark)) ctx.Warn(e);
                 ctx.lastT = null;
             }
@@ -754,6 +831,29 @@ namespace Lanbai.Test
     public static class Img
     {
         public static float Luma(Color32 c) { return 0.2126f * c.r + 0.7152f * c.g + 0.0722f * c.b; }
+
+        /// <summary>二值图向外扩 r 像素（方形结构元，先横后竖）。</summary>
+        public static bool[] Dilate(bool[] m, int w, int h, int r)
+        {
+            if (r <= 0) return (bool[])m.Clone();
+            var a = new bool[m.Length];
+            for (int y = 0; y < h; y++)
+            {
+                int last = -1000000;
+                for (int x = 0; x < w; x++) { if (m[y * w + x]) last = x; a[y * w + x] = x - last <= r; }
+                last = 1000000;
+                for (int x = w - 1; x >= 0; x--) { if (m[y * w + x]) last = x; if (last - x <= r) a[y * w + x] = true; }
+            }
+            var b = new bool[m.Length];
+            for (int x = 0; x < w; x++)
+            {
+                int last = -1000000;
+                for (int y = 0; y < h; y++) { if (a[y * w + x]) last = y; b[y * w + x] = y - last <= r; }
+                last = 1000000;
+                for (int y = h - 1; y >= 0; y--) { if (a[y * w + x]) last = y; if (last - y <= r) b[y * w + x] = true; }
+            }
+            return b;
+        }
 
         /// <summary>[APL, 暗像素 % (&lt; 12), 削顶 % (≥ 250), 最亮]</summary>
         public static double[] Stats(Color32[] px)

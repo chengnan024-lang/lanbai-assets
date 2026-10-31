@@ -1,0 +1,22 @@
+--- a/Assets/Lanbai/Engineering/UnityTest/Editor/LanbaiTestCapture.cs
++++ b/Assets/Lanbai/Engineering/UnityTest/Editor/LanbaiTestCapture.cs
+@@ -252,7 +252,10 @@
+                 go = MakeCam(ctx, c, w, h, withPP, out hasPP);
+                 cam = go.GetComponent<Camera>();
+                 // 渲进 HDR 目标：渲进 8 位目标的话，HDR 值在进 PPv2 之前就被夹到 1
+-                big = new RenderTexture(w * ss, h * ss, 24, RenderTextureFormat.DefaultHDR, RenderTextureReadWrite.Linear) { antiAliasing = 1, filterMode = FilterMode.Bilinear };
++                int msaa = c.def != null && c.def.ContainsKey("msaa") ? Convert.ToInt32(c.def["msaa"]) : 1;
++                if (msaa != 1 && msaa != 2 && msaa != 4 && msaa != 8) throw new ArgumentException("Camera msaa must be 1/2/4/8");
++                cam.allowMSAA = msaa > 1;
++                big = new RenderTexture(w * ss, h * ss, 24, RenderTextureFormat.DefaultHDR, RenderTextureReadWrite.Linear) { antiAliasing = msaa, filterMode = FilterMode.Bilinear };
+                 big.Create();
+                 small = new RenderTexture(w, h, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB) { filterMode = FilterMode.Bilinear };
+                 small.Create();
+@@ -272,6 +275,7 @@
+             }
+             public void Dispose()
+             {
++                if (RenderTexture.active == big || RenderTexture.active == small) RenderTexture.active = null;
+                 if (cam != null) cam.targetTexture = null;
+                 if (go != null) Object.DestroyImmediate(go);
+                 if (big != null) { big.Release(); Object.DestroyImmediate(big); }

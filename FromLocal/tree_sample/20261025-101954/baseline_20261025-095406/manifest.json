@@ -1,0 +1,503 @@
+{
+  "tool": "Lanbai.Test.Runner",
+  "tool_version": "1.2.1",
+  "test_id": "tree_sample",
+  "run_id": "20261025-095406",
+  "fromlocal": "FromLocal/tree_sample/20261025-095406/",
+  "test_file": "E:\\IDMdownload\\VRCC\\dream\\Assets\\Lanbai\\Engineering\\UnityTest\\tests\\tree_sample.json",
+  "test_sha256": "c64eb24518951c9854150c6fda3e553187e229a4176ad4a15594b7893af0958b",
+  "mode": "bridge",
+  "started_utc": "2026-10-25T13:54:06.6287081Z",
+  "finished_utc": "2026-10-25T13:54:07.8631803Z",
+  "duration_s": 1.2,
+  "exit_code": 1,
+  "status": "fail",
+  "preflight_only": false,
+  "blocked_reason": null,
+  "error": null,
+  "repo": {
+    "repo_commit": "f703a951cbadf0eb6bc4df263f6d315e298dd0fc",
+    "repo_branch": "main",
+    "repo_dirty": null,
+    "repo_path": "E:\\IDMdownload\\VRCC\\lanbai-assets-gate-main-20261024",
+    "entry": "D-41 common Udon program repair and Engineering/UnityTest",
+    "synced_at": "2026-10-25T00:13:19.2541837-04:00",
+    "paths": null,
+    "tool_version": "local-20261025"
+  },
+  "copied": null,
+  "unity": {
+    "version": "2022.3.22f1",
+    "batch": false,
+    "color_space": "Linear",
+    "quality": "VRC High",
+    "build_target": "StandaloneWindows64",
+    "scene": "Assets/_LanbaiTest/Lanbai_copy.unity"
+  },
+  "packages": {
+    "com.vrchat.worlds": "3.10.5",
+    "com.vrchat.base": "3.10.5",
+    "com.unity.postprocessing": "3.4.0",
+    "com.unity.textmeshpro": "3.0.6"
+  },
+  "gpu": {
+    "name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "vendor": "NVIDIA",
+    "api": "Direct3D11",
+    "version": "Direct3D 11.0 [level 11.1]",
+    "vram_mb": 7956,
+    "cpu": "13th Gen Intel(R) Core(TM) i9-13980HX",
+    "cpu_threads": 32,
+    "ram_mb": 32386,
+    "os": "Windows 11  (10.0.26200) 64bit"
+  },
+  "consent": {
+    "tool_version": "1.2.1",
+    "tests": [
+      "gate_clouds_test",
+      "tree_sample"
+    ],
+    "authorized_locally": true,
+    "private_details": "omitted from public report"
+  },
+  "layers": {
+    "blender_offline": {
+      "status": "pending_cloud",
+      "note": "云端对照 Blender 参考帧后填；工具不填"
+    },
+    "unity_desktop": {
+      "status": "fail",
+      "note": "Unity 编辑器里的桌面渲染和编辑器估算的性能；工具检查全过也只记“待总导演看图”（D-41 #4）"
+    },
+    "vr_headset": {
+      "status": "not_tested",
+      "note": "工具不测头显，也不会把这一层标成通过；看 summary.md 末尾的头显清单"
+    }
+  },
+  "preflight": [
+    {
+      "item": "gpu",
+      "status": "ok",
+      "detail": "NVIDIA GeForce RTX 4060 Laptop GPU（Direct3D11，Direct3D 11.0 [level 11.1]，显存 7956 MB）"
+    },
+    {
+      "item": "resources",
+      "status": "ok",
+      "detail": "C:\\ 剩 38.4 GB，E:\\ 剩 70.6 GB，可用内存 10.2 GB"
+    },
+    {
+      "item": "consent",
+      "status": "ok",
+      "detail": "用户（当前聊天） 2026-10-25 同意（工具 1.2.1，测试 gate_clouds_test、tree_sample）；备份 E:\\IDMdownload\\VRCC\\Backups\\dream_20261025-000405.zip（在）"
+    },
+    {
+      "item": "unity",
+      "status": "ok",
+      "detail": "2022.3.22f1（要 2022.3.22f1）"
+    },
+    {
+      "item": "editor_state",
+      "status": "ok",
+      "detail": "Play False，编译中 False，导入中 False（要在编辑模式、编译和导入都完成后再跑）"
+    },
+    {
+      "item": "color_space",
+      "status": "ok",
+      "detail": "Linear（要 Linear）"
+    },
+    {
+      "item": "package:com.vrchat.worlds",
+      "status": "ok",
+      "detail": "3.10.5（要 3.10.5；读自 PackageManager）"
+    },
+    {
+      "item": "package:com.unity.postprocessing",
+      "status": "ok",
+      "detail": "3.4.0（要 3.4.0；读自 PackageManager）"
+    },
+    {
+      "item": "udonsharp",
+      "status": "ok",
+      "detail": "UdonSharp.UdonSharpBehaviour 在（UdonSharp.Runtime），随 VRChat Worlds SDK"
+    },
+    {
+      "item": "compile",
+      "status": "ok",
+      "detail": "scriptCompilationFailed False，Console 里的编译错误（含 UdonSharp 的）0 条（Console 共 23 条，原样在 console.jsonl）"
+    },
+    {
+      "item": "open_scenes",
+      "status": "ok",
+      "detail": "没有没保存的改动（Assets/Lanbai/Scenes/Lanbai_FullPreview.unity）"
+    },
+    {
+      "item": "sandbox",
+      "status": "ok",
+      "detail": "有上次遗留的沙盒（有标记），开跑时删掉重建"
+    },
+    {
+      "item": "grading",
+      "status": "warn",
+      "detail": "有旧的 Assets/Lanbai/Grades/，有套件的 Assets/Lanbai/Grading/；layer 4 =「Water」，layer 22 =「PostProcessing」。两套调色都在：工具不删，截图用的是参考相机上的那一套（PostProcessLayer 的 volumeLayer 写在 manifest 的截图记录里）"
+    },
+    {
+      "item": "sync_record",
+      "status": "ok",
+      "detail": "仓库提交 f703a951cbadf0eb6bc4df263f6d315e298dd0fc（2026-10-25T00:13:19.2541837-04:00 同步，条目：D-41 common Udon program repair and Engineering/UnityTest）"
+    },
+    {
+      "item": "git_status",
+      "status": "info",
+      "detail": "工程不是 git 仓库"
+    }
+  ],
+  "preconditions": [
+    {
+      "item": "文件夹 Assets/Lanbai/Common",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件夹 Assets/Lanbai/Grading",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件夹 Assets/Lanbai/Lamps/Tree",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件 Assets/Lanbai/Scenes/Lanbai.unity",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件 Assets/Lanbai/Lamps/Tree/Models/Tree_A1.fbx",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件 Assets/Lanbai/Lamps/Tree/Models/Tree_A2.fbx",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件 Assets/Lanbai/Lamps/Tree/Models/Tree_A3.fbx",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件 Assets/Lanbai/Lamps/Tree/Models/Tree_B1.fbx",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "类型 Lanbai.Lamps.LanbaiTreeBuilder",
+      "status": "ok",
+      "detail": "脚本没拷进来或没编译"
+    },
+    {
+      "item": "类型 Lanbai.Grading.LanbaiGradeBuilder",
+      "status": "ok",
+      "detail": "脚本没拷进来或没编译"
+    },
+    {
+      "item": "菜单 蓝白/Build/Sample Trees",
+      "status": "ok",
+      "detail": ""
+    }
+  ],
+  "git_status_porcelain": null,
+  "steps": [
+    {
+      "phase": "build",
+      "index": 0,
+      "type": "menu",
+      "desc": "菜单 蓝白/Build/Sample Trees",
+      "status": "ok",
+      "out": "执行了菜单 蓝白/Build/Sample Trees",
+      "ms": 515.9
+    },
+    {
+      "phase": "build",
+      "index": 1,
+      "type": "method",
+      "desc": "Lanbai.Grading.LanbaiGradeBuilder.Solo(S1)",
+      "why": "第 1 幕的调色（对照图是站台雨夜；本地 9-30 的对照用的是 Night profile，所以和旧图的亮度不完全可比）",
+      "status": "error",
+      "error": "返回里没有「solo S1」：no volumes: run Build Profiles & Volumes first",
+      "ms": 8.2
+    },
+    {
+      "phase": "build",
+      "index": 2,
+      "type": "set_field_objects_active",
+      "desc": "set_field_objects_active  = false",
+      "why": "关掉别的幕的占位组；路组若也被关，对照图里会没有路——那就把这一步删掉重跑（README §5）",
+      "status": "skipped"
+    },
+    {
+      "phase": "build",
+      "index": 3,
+      "type": "method",
+      "desc": "Lanbai.Lamps.LanbaiTreeBuilder.TestRow()",
+      "status": "skipped"
+    },
+    {
+      "phase": "build",
+      "index": 4,
+      "type": "assert_object",
+      "desc": "assert_object Lanbai_TreeTestRow",
+      "status": "skipped"
+    }
+  ],
+  "settings": [
+    {
+      "item": "vertex_compression_off",
+      "status": "ok",
+      "detail": "Player → Other Settings → Vertex Compression：要关掉 Color；现在的掩码 3846（ProjectSettings.asset 原文），都关了",
+      "changed_by_tool": false
+    }
+  ],
+  "checks": [
+    {
+      "id": "steps_ok",
+      "metric": "steps.errors",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "每一步都跑成功了",
+      "measured": 1,
+      "expect": "= 0",
+      "status": "fail"
+    },
+    {
+      "id": "no_compile_errors",
+      "metric": "console.compile_errors",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "跑的过程中没有新的编译错误",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "no_exceptions",
+      "metric": "console.exceptions",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "跑的过程中 Console 没有异常（工具自己的不算）",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "no_console_errors",
+      "metric": "console.errors",
+      "op": "==",
+      "value": 0,
+      "gate": false,
+      "why": "跑的过程中 Console 没有 Error（默认只警告；测试定义可以改成必须）",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "no_undeclared_writes",
+      "metric": "writes.undeclared",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "沙盒和 allowed_writes 以外没有文件被改",
+      "measured": 33,
+      "expect": "= 0",
+      "status": "fail"
+    },
+    {
+      "id": "project_settings_untouched",
+      "metric": "writes.project_settings_changed",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "ProjectSettings 没被改",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "setting_vertex_compression_off",
+      "metric": "settings.vertex_compression_off",
+      "op": "==",
+      "value": 1,
+      "gate": true,
+      "why": "Player → Other Settings → Vertex Compression：要关掉 Color；现在的掩码 3846（ProjectSettings.asset 原文），都关了",
+      "measured": 1,
+      "expect": "= 1",
+      "status": "pass"
+    },
+    {
+      "id": "hero_shimmer",
+      "metric": "seq.hero_micro.shimmer_p99",
+      "op": "<=",
+      "value": 12,
+      "gate": true,
+      "why": "初值：叶缘在 4× 超采样参考下的差，p99 ≤ 12（0–255）。第一次实测后由总工程师定",
+      "status": "fail",
+      "detail": "没量到（这一项的截图 / 序列 / 性能没跑成，或名字写错）"
+    },
+    {
+      "id": "hero_shimmer_frac",
+      "metric": "seq.hero_micro.shimmer_frac",
+      "op": "<=",
+      "value": 0.02,
+      "gate": true,
+      "why": "超过阈值 4 的像素 ≤ 2 %",
+      "status": "fail",
+      "detail": "没量到（这一项的截图 / 序列 / 性能没跑成，或名字写错）"
+    },
+    {
+      "id": "right_shimmer_frac",
+      "metric": "seq.right_micro.shimmer_frac",
+      "op": "<=",
+      "value": 0.02,
+      "gate": true,
+      "why": "远树（LOD1 / LOD2）同样不能闪",
+      "status": "fail",
+      "detail": "没量到（这一项的截图 / 序列 / 性能没跑成，或名字写错）"
+    },
+    {
+      "id": "overview_apl",
+      "metric": "shot.overview.apl",
+      "op": "between",
+      "value": [
+        12,
+        40
+      ],
+      "gate": false,
+      "why": "圣经第 1 幕 APL 22；这个机位里有车和灯，只作参考",
+      "status": "warn",
+      "detail": "没量到（这一项的截图 / 序列 / 性能没跑成，或名字写错）"
+    },
+    {
+      "id": "row_tris",
+      "metric": "perf.row.trees.triangles",
+      "op": "<=",
+      "value": 400000,
+      "gate": false,
+      "why": "整个画面的三角面，参考；7 棵树 LOD0 合计约 6 万",
+      "status": "warn",
+      "detail": "没量到（这一项的截图 / 序列 / 性能没跑成，或名字写错）"
+    }
+  ],
+  "shots": [],
+  "play": [],
+  "sequences": [],
+  "textures": [],
+  "metrics": {
+    "console.compile_errors": 0,
+    "console.compile_errors_at_start": 0,
+    "console.errors": 0,
+    "console.exceptions": 0,
+    "console.warnings": 0,
+    "resources.free_ram_gb": 10.221939086914062,
+    "scene.lightmaps": 0,
+    "settings.vertex_compression_off": 1,
+    "steps.errors": 1,
+    "writes.declared": 20,
+    "writes.project_settings_changed": 0,
+    "writes.undeclared": 33
+  },
+  "metric_notes": {
+    "settings.vertex_compression_off": "Player → Other Settings → Vertex Compression：要关掉 Color；现在的掩码 3846（ProjectSettings.asset 原文），都关了",
+    "scene.lightmaps": "打开的场景里的光照图张数",
+    "writes.undeclared": "沙盒和 allowed_writes 以外被改动的文件",
+    "writes.project_settings_changed": "ProjectSettings/*.asset 内容变了的个数（工具只查不改）"
+  },
+  "writes": {
+    "sandbox": "Assets/_LanbaiTest",
+    "allowed_writes": [
+      "Assets/Lanbai/Lamps/Tree/Generated/**",
+      "Assets/Lanbai/Lamps/Tree/Prefabs/**"
+    ],
+    "declared": [
+      "新建 Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Bark.mat",
+      "新建 Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Bark.mat.meta",
+      "新建 Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Impostor_Tree_A1.mat",
+      "新建 Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Impostor_Tree_A1.mat.meta",
+      "新建 Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Impostor_Tree_A2.mat",
+      "新建 Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Impostor_Tree_A2.mat.meta",
+      "新建 Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Impostor_Tree_A3.mat",
+      "新建 Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Impostor_Tree_A3.mat.meta",
+      "新建 Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Impostor_Tree_B1.mat",
+      "新建 Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Impostor_Tree_B1.mat.meta",
+      "新建 Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Leaf.mat",
+      "新建 Assets/Lanbai/Lamps/Tree/Generated/M_Tree_Leaf.mat.meta",
+      "新建 Assets/Lanbai/Lamps/Tree/Prefabs/Tree_A1.prefab",
+      "新建 Assets/Lanbai/Lamps/Tree/Prefabs/Tree_A1.prefab.meta",
+      "新建 Assets/Lanbai/Lamps/Tree/Prefabs/Tree_A2.prefab",
+      "新建 Assets/Lanbai/Lamps/Tree/Prefabs/Tree_A2.prefab.meta",
+      "新建 Assets/Lanbai/Lamps/Tree/Prefabs/Tree_A3.prefab",
+      "新建 Assets/Lanbai/Lamps/Tree/Prefabs/Tree_A3.prefab.meta",
+      "新建 Assets/Lanbai/Lamps/Tree/Prefabs/Tree_B1.prefab",
+      "新建 Assets/Lanbai/Lamps/Tree/Prefabs/Tree_B1.prefab.meta"
+    ],
+    "undeclared": [
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip1_Fringe.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip1_Hang.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip1_Sheet.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip2_Fringe.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip2_Hang.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip2_Sheet.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip2_Threads.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip3_Fringe.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip3_Hang.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip3_Sheet.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip3_Threads.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip6_Fringe.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip6_Hang.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip6_Sheet.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip6_Threads.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip7_Fringe.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip7_Hang.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip7_Sheet.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip8_Ply0_Fringe.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip8_Ply0_Sheet.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip8_Ply1_Sheet.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip8_Ply2_Sheet.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip8_Ply3_Sheet.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip8_Ply4_Fringe.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip8_Ply4_Sheet.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip8_Wall.mat",
+      "改了 Assets/Lanbai/Act07_Sea/Materials/Act07_CausticsCookie.asset",
+      "改了 Assets/Lanbai/Generated/Materials/LB_Cloud.mat",
+      "改了 Assets/Lanbai/Generated/Materials/LB_Sea.mat",
+      "改了 Assets/Lanbai/Generated/Materials/LB_SeaB.mat",
+      "改了 Assets/Lanbai/Generated/Materials/LB_WetGround.mat",
+      "新建 Assets/Lanbai/Lamps/Tree/Generated.meta",
+      "新建 Assets/Lanbai/Lamps/Tree/Prefabs.meta"
+    ],
+    "project_settings_changed": [],
+    "tool_touched_restored": [],
+    "note": "按文件大小和修改时间比的：搭建脚本存了但内容没变的文件也算“改了”；只在内存里改、没存盘的不算"
+  },
+  "allowed_writes": [
+    "Assets/Lanbai/Lamps/Tree/Generated/**",
+    "Assets/Lanbai/Lamps/Tree/Prefabs/**"
+  ],
+  "allowed_writes_why": "蓝白/Build/Sample Trees 只写这两处（材质、预制体）；导入设置由 LanbaiTreeImport 在 Lamps/Tree/ 里改",
+  "backup_before": [],
+  "warnings": [
+    "搭建有一步失败，后面的截图、序列、性能都没做"
+  ],
+  "files": [
+    "test_definition.json",
+    "console.jsonl",
+    "summary.md",
+    "manifest.json",
+    "result.json"
+  ],
+  "public_copy_note": "Consent private notes omitted; technical result unchanged. Baseline 100058 retains only sequence endpoint samples; full raw baseline remains local. Final 101954 includes all frames."
+}

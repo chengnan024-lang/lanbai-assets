@@ -4,9 +4,9 @@
    960,
    540
   ],
-  "APL": 17.33,
-  "EV_display": -7.133,
-  "luma_lt12_pct": 22.62,
+  "APL": 18.86,
+  "EV_display": -6.894,
+  "luma_lt12_pct": 22.61,
   "Lstar_gt85_pct": 0.0,
   "clip_black_pct": 0.0,
   "clip_white_pct": 0.0,
@@ -16,7 +16,7 @@
   "purple_pct": 0.0,
   "purple_largest_region_pct": 0.0,
   "violet_strong_pct": 0.0,
-  "lavender_act6_pct": 0.275,
+  "lavender_act6_pct": 0.258,
   "brightest": {
    "bbox": [
     34,
@@ -25,21 +25,21 @@
     539
    ],
    "centroid": [
-    373.2,
-    240.9
+    371.5,
+    240.4
    ],
    "clusters": 78,
    "clusters_ge5pct": 2,
-   "min_luma": 141.9,
+   "min_luma": 142.1,
    "centroid_az_el": [
-    -11.25,
-    3.0
+    -11.44,
+    3.05
    ]
   },
   "top25_Lstar": {
-   "mean": 7.93,
-   "p50": 8.4,
-   "p90": 9.88
+   "mean": 10.64,
+   "p50": 10.8,
+   "p90": 14.66
   },
   "palette": {
    "act": "07a",
@@ -66,19 +66,19 @@
     {
      "hex": "#3876AB",
      "role": "浅水 縹",
-     "nearest_dE2000_p01": 10.0,
-     "within_dE5_pct": 0.01
+     "nearest_dE2000_p01": 7.8,
+     "within_dE5_pct": 0.02
     },
     {
      "hex": "#11395E",
      "role": "窗外全反射的暗镜",
-     "nearest_dE2000_p01": 5.6,
-     "within_dE5_pct": 0.06
+     "nearest_dE2000_p01": 3.6,
+     "within_dE5_pct": 0.68
     },
     {
      "hex": "#697987",
      "role": "海雪",
-     "nearest_dE2000_p01": 15.4,
+     "nearest_dE2000_p01": 13.7,
      "within_dE5_pct": 0.0
     },
     {
@@ -90,7 +90,7 @@
    ],
    "pixel_to_nearest_dE_median": 14.3,
    "pixel_to_nearest_dE_p90": 19.3,
-   "pixels_within5_pct": 0.1
+   "pixels_within5_pct": 0.7
   }
  },
  "cam": {
@@ -194,7 +194,7 @@
    540
   ]
  },
- "render_seconds": 26.1,
+ "render_seconds": 29.4,
  "lens": "none",
  "bloom_tint": "single",
  "note": "F3e3 556.36: the last blue goes out (APL target 25)"

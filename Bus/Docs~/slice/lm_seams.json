@@ -1,0 +1,2104 @@
+{
+ "atlas": {
+  "res": [
+   2048,
+   2048
+  ],
+  "objects": 18,
+  "islands": 8047,
+  "covered_frac": 0.4014,
+  "nonblack_frac": 0.6248,
+  "texels_two_islands": 0,
+  "ring_outside_lit_black_frac": {
+   "n4": 0.0037,
+   "texels_n4": 458934,
+   "n8": 0.0071,
+   "texels_n8": 507066
+  },
+  "fill_sim": {
+   "passes": 3,
+   "neighbourhood": "3x3, mean of the non-black neighbours",
+   "texels_filled": {
+    "inside": 102961,
+    "inside_ring2": 142937
+   },
+   "black_frac_after": {
+    "inside": 0.3507,
+    "inside_ring2": 0.3412
+   }
+  },
+  "uv_fill": 0.4033,
+  "density_Cabin_Static": {
+   "p5": 81.6,
+   "p50": 86.3,
+   "p95": 86.3,
+   "mm_per_texel_p50": 11.59,
+   "area_m2": 144.2492,
+   "uv_area_texels": 1152463.2,
+   "zero_uv_area_tris": 8
+  },
+  "density_seats_p50": [
+   86.2,
+   150.6
+  ]
+ },
+ "objects": {
+  "Seat_SeatR0": {
+   "piece": "seat",
+   "triangles": 6936,
+   "area_cm2": 22036.2,
+   "visible_area_cm2": 9412.6,
+   "visible_in_bus_cm2": 9135.5,
+   "visible_in_slice_shots_cm2": 3992.1,
+   "slice_only_cm2": 277.1,
+   "metal_area_cm2": 45.4,
+   "counted_area_cm2": 9373.3,
+   "density": {
+    "p5": 137.7,
+    "p50": 150.6,
+    "p95": 152.1,
+    "mm_per_texel_p50": 6.64,
+    "area_m2": 2.2036,
+    "uv_area_texels": 54904.9,
+    "zero_uv_area_tris": 0
+   },
+   "islands": {
+    "count": 239,
+    "islands": 149,
+    "sub_texel": 0,
+    "gap_min": 4,
+    "gap_p5": 4.0,
+    "gap_le2": 0,
+    "baked_islands": 146,
+    "ring_black_frac_baked": 0.0245
+   },
+   "folds": {
+    "texels": 1084,
+    "counted_tris": 93,
+    "counted_area_cm2": 115.74
+   },
+   "black": {
+    "in_bus": {
+     "tris_gt_10pct": 2,
+     "tris_gt_25pct": 2,
+     "area_gt_10pct_cm2": 5.65,
+     "area_gt_25pct_cm2": 5.65,
+     "max": 1.0
+    },
+    "slice_shots": {
+     "tris_gt_10pct": 3,
+     "tris_gt_25pct": 3,
+     "area_gt_10pct_cm2": 44.29,
+     "area_gt_25pct_cm2": 44.29,
+     "max": 1.0
+    },
+    "slice_only": {
+     "tris_gt_10pct": 2,
+     "tris_gt_25pct": 2,
+     "area_gt_10pct_cm2": 43.47,
+     "area_gt_25pct_cm2": 43.47,
+     "max": 1.0
+    },
+    "visible_metal": {
+     "tris_gt_10pct": 30,
+     "tris_gt_25pct": 30,
+     "area_gt_10pct_cm2": 0.45,
+     "area_gt_25pct_cm2": 0.45,
+     "max": 0.987
+    },
+    "all": {
+     "tris_gt_10pct": 283,
+     "tris_gt_25pct": 269,
+     "area_gt_10pct_cm2": 6237.46,
+     "area_gt_25pct_cm2": 6228.02,
+     "max": 1.0
+    }
+   },
+   "unlit_nonmetal": {
+    "in_bus": {
+     "tris_gt_10pct": 200,
+     "tris_gt_25pct": 168,
+     "area_gt_10pct_cm2": 677.22,
+     "area_gt_25pct_cm2": 659.34,
+     "max": 1.0
+    },
+    "slice_only": {
+     "tris_gt_10pct": 99,
+     "tris_gt_25pct": 99,
+     "area_gt_10pct_cm2": 271.88,
+     "area_gt_25pct_cm2": 271.88,
+     "max": 1.0
+    }
+   },
+   "fill_sim": {
+    "inside": {
+     "in_bus": {
+      "tris_gt_10pct": 1,
+      "tris_gt_25pct": 1,
+      "area_gt_10pct_cm2": 0.83,
+      "area_gt_25pct_cm2": 0.83,
+      "max": 0.517
+     },
+     "slice_shots": {
+      "tris_gt_10pct": 3,
+      "tris_gt_25pct": 3,
+      "area_gt_10pct_cm2": 44.29,
+      "area_gt_25pct_cm2": 44.29,
+      "max": 1.0
+     },
+     "in_bus_left_by_cause_cm2": {
+      "no_texel": 0.0,
+      "thin": 0.83,
+      "enclosed": 0.0,
+      "open": 0.0
+     }
+    },
+    "inside_ring2": {
+     "in_bus": {
+      "tris_gt_10pct": 0,
+      "tris_gt_25pct": 0,
+      "area_gt_10pct_cm2": 0.0,
+      "area_gt_25pct_cm2": 0.0,
+      "max": 0.0
+     },
+     "slice_shots": {
+      "tris_gt_10pct": 1,
+      "tris_gt_25pct": 1,
+      "area_gt_10pct_cm2": 42.66,
+      "area_gt_25pct_cm2": 42.66,
+      "max": 1.0
+     },
+     "in_bus_left_by_cause_cm2": {
+      "no_texel": 0.0,
+      "thin": 0.0,
+      "enclosed": 0.0,
+      "open": 0.0
+     }
+    }
+   },
+   "neighbour_bleed": {
+    "counted": {
+     "tris_gt_10pct": 0,
+     "tris_gt_25pct": 0,
+     "area_gt_10pct_cm2": 0.0,
+     "area_gt_25pct_cm2": 0.0,
+     "max": 0.0
+    },
+    "all": {
+     "tris_gt_10pct": 0,
+     "tris_gt_25pct": 0,
+     "area_gt_10pct_cm2": 0.0,
+     "area_gt_25pct_cm2": 0.0,
+     "max": 0.0
+    }
+   },
+   "open_sample_points": {
+    "open": 576075,
+    "of": 653471
+   },
+   "seams": {
+    "all_seam_edges": 1848,
+    "counted_smooth_lt20": {
+     "edges": 101,
+     "length_m": 0.671,
+     "rel_p50": 0.126,
+     "rel_p95": 0.534,
+     "rel_max": 1.0,
+     "over_5pct": 86,
+     "over_10pct": 59,
+     "over_25pct": 32,
+     "length_over_10pct_m": 0.407,
+     "abs_E_max": 0.669
+    },
+    "counted_20_60": {
+     "edges": 309,
+     "length_m": 13.418,
+     "rel_p50": 0.171,
+     "rel_p95": 0.877,
+     "rel_max": 1.0,
+     "over_5pct": 249,
+     "over_10pct": 200,
+     "over_25pct": 123,
+     "length_over_10pct_m": 10.321,
+     "abs_E_max": 0.563
+    },
+    "counted_smooth_lt20_lit": {
+     "edges": 95,
+     "length_m": 0.622,
+     "rel_p50": 0.129,
+     "rel_p95": 0.531,
+     "rel_max": 0.712,
+     "over_5pct": 84,
+     "over_10pct": 57,
+     "over_25pct": 30,
+     "length_over_10pct_m": 0.378,
+     "abs_E_max": 0.3
+    },
+    "counted_20_60_lit": {
+     "edges": 276,
+     "length_m": 8.222,
+     "rel_p50": 0.169,
+     "rel_p95": 0.739,
+     "rel_max": 0.893,
+     "over_5pct": 227,
+     "over_10pct": 179,
+     "over_25pct": 103,
+     "length_over_10pct_m": 5.762,
+     "abs_E_max": 0.554
+    },
+    "all_smooth_lt20": {
+     "edges": 177,
+     "length_m": 1.159,
+     "rel_p50": 0.16,
+     "rel_p95": 1.0,
+     "rel_max": 1.0,
+     "over_5pct": 151,
+     "over_10pct": 114,
+     "over_25pct": 62,
+     "length_over_10pct_m": 0.766,
+     "abs_E_max": 0.669
+    }
+   },
+   "edge_dip": {
+    "boundary_edges": 1914,
+    "checked": 949,
+    "ratio_p5": 0.682,
+    "dark_lt_90pct": 268,
+    "dark_lt_75pct": 95,
+    "dark_lt_50pct": 10,
+    "length_dark_lt_75pct_m": 4.788
+   },
+   "mip_black_counted": {
+    "mip1": {
+     "tris_gt_10pct": 97,
+     "tris_gt_25pct": 14,
+     "area_gt_25pct_cm2": 126.5
+    },
+    "mip2": {
+     "tris_gt_10pct": 976,
+     "tris_gt_25pct": 94,
+     "area_gt_25pct_cm2": 243.1
+    }
+   },
+   "black_causes_in_bus": {
+    "no_texel": {
+     "tris": 0,
+     "area_cm2": 0.0,
+     "by_material": {}
+    },
+    "thin": {
+     "tris": 1,
+     "area_cm2": 0.83,
+     "by_material": {
+      "Part_SeatHero": 0.83
+     }
+    },
+    "enclosed": {
+     "tris": 0,
+     "area_cm2": 0.0,
+     "by_material": {}
+    },
+    "open": {
+     "tris": 1,
+     "area_cm2": 4.83,
+     "by_material": {
+      "Part_SeatHero": 4.83
+     }
+    },
+    "thin_islands": {
+     "count": 1,
+     "largest": [
+      {
+       "island": 105,
+       "texels": 102,
+       "tris": 9,
+       "area_cm2": 46.43,
+       "black_thin_cm2": 0.83,
+       "uv_bbox_texels": [
+        22.1,
+        9.21
+       ],
+       "uv_area_texels": 103.4,
+       "mat": "Part_SeatHero",
+       "at_unity": [
+        0.782,
+        0.964,
+        1.887
+       ],
+       "spot_unity": [
+        0.782,
+        0.991,
+        1.88
+       ],
+       "spot_normal": [
+        0.707,
+        0.543,
+        0.453
+       ]
+      }
+     ]
+    },
+    "counted_islands": {
+     "count": 137,
+     "without_texel": 0,
+     "under_4_texels": 0
+    },
+    "enclosed_spots": [],
+    "open_spots": [
+     {
+      "at_unity": [
+       0.582,
+       0.965,
+       2.274
+      ],
+      "normal_unity": [
+       0.005,
+       -0.406,
+       0.914
+      ],
+      "mat": "Part_SeatHero",
+      "area_cm2": 4.83,
+      "escape": 0.42
+     }
+    ]
+   },
+   "faces_black_in_bus": [
+    {
+     "face": 1057,
+     "weight": 1.0,
+     "area_cm2": 4.83,
+     "mat": "Part_SeatHero",
+     "at_unity": [
+      0.582,
+      0.965,
+      2.274
+     ],
+     "normal_unity": [
+      0.005,
+      -0.406,
+      0.914
+     ]
+    },
+    {
+     "face": 2223,
+     "weight": 0.52,
+     "area_cm2": 0.83,
+     "mat": "Part_SeatHero",
+     "at_unity": [
+      0.782,
+      0.991,
+      1.88
+     ],
+     "normal_unity": [
+      0.707,
+      0.543,
+      0.453
+     ]
+    }
+   ],
+   "faces_black_slice_only": [
+    {
+     "face": 2229,
+     "weight": 1.0,
+     "area_cm2": 42.66,
+     "mat": "Part_SeatHero",
+     "at_unity": [
+      0.78,
+      0.961,
+      1.884
+     ],
+     "normal_unity": [
+      -1.0,
+      0.0,
+      0.0
+     ]
+    },
+    {
+     "face": 2223,
+     "weight": 0.46,
+     "area_cm2": 0.81,
+     "mat": "Part_SeatHero",
+     "at_unity": [
+      0.782,
+      0.96,
+      1.917
+     ],
+     "normal_unity": [
+      0.707,
+      0.543,
+      0.453
+     ]
+    }
+   ],
+   "faces_unlit_in_bus": [
+    {
+     "face": 1058,
+     "weight": 1.0,
+     "area_cm2": 69.96,
+     "mat": "Part_SeatHero",
+     "at_unity": [
+      0.587,
+      0.991,
+      1.886
+     ],
+     "normal_unity": [
+      -0.0,
+      -0.001,
+      -1.0
+     ]
+    },
+    {
+     "face": 2192,
+     "weight": 1.0,
+     "area_cm2": 42.66,
+     "mat": "Part_SeatHero",
+     "at_unity": [
+      0.32,
+      0.961,
+      1.884
+     ],
+     "normal_unity": [
+      1.0,
+      0.0,
+      0.0
+     ]
+    },
+    {
+     "face": 1054,
+     "weight": 1.0,
+     "area_cm2": 18.21,
+     "mat": "Part_SeatHero",
+     "at_unity": [
+      0.512,
+      0.965,
+      1.886
+     ],
+     "normal_unity": [
+      -0.0,
+      -0.02,
+      -1.0
+     ]
+    },
+    {
+     "face": 670,
+     "weight": 1.0,
+     "area_cm2": 17.73,
+     "mat": "Part_SeatHero",
+     "at_unity": [
+      0.588,
+      0.959,
+      1.886
+     ],
+     "normal_unity": [
+      0.0,
+      -0.021,
+      -1.0
+     ]
+    },
+    {
+     "face": 2136,
+     "weight": 1.0,
+     "area_cm2": 16.95,
+     "mat": "Part_SeatHero",
+     "at_unity": [
+      0.476,
+      0.934,
+      1.919
+     ],
+     "normal_unity": [
+      0.0,
+      0.924,
+      -0.383
+     ]
+    },
+    {
+     "face": 2134,
+     "weight": 1.0,
+     "area_cm2": 16.95,
+     "mat": "Part_SeatHero",
+     "at_unity": [
+      0.624,
+      0.92,
+      1.913
+     ],
+     "normal_unity": [
+      0.0,
+      -0.383,
+      -0.924
+     ]
+    },
+    {
+     "face": 49,
+     "weight": 0.57,
+     "area_cm2": 50.07,
+     "mat": "Part_SeatHero",
+     "at_unity": [
+      0.36,
+      1.299,
+      1.769
+     ],
+     "normal_unity": [
+      0.0,
+      -0.174,
+      -0.985
+     ]
+    },
+    {
+     "face": 1932,
+     "weight": 1.0,
+     "area_cm2": 11.04,
+     "mat": "Part_SeatHero",
+     "at_unity": [
+      0.778,
+      1.104,
+      1.813
+     ],
+     "normal_unity": [
+      0.556,
+      -0.144,
+      -0.819
+     ]
+    }
+   ],
+   "counted_by_material": {
+    "Part_SeatHero": {
+     "area_cm2": 9373.3,
+     "in_bus_black_gt_25pct_cm2": 5.65,
+     "slice_only_black_gt_25pct_cm2": 43.47,
+     "in_bus_unlit_gt_25pct_cm2": 659.34
+    }
+   },
+   "worst_seams": [
+    {
+     "kind": "seam",
+     "rel": 0.712,
+     "E": [
+      0.039,
+      0.111
+     ],
+     "dihedral": 9.4,
+     "edge_mm": 4.9,
+     "at_unity": [
+      0.731,
+      1.45,
+      1.77
+     ],
+     "normal_unity": [
+      -0.242,
+      -0.689,
+      0.684
+     ],
+     "mat": [
+      "Part_SeatHero",
+      "Part_SeatHero"
+     ]
+    },
+    {
+     "kind": "seam",
+     "rel": 0.549,
+     "E": [
+      0.112,
+      0.199
+     ],
+     "dihedral": 1.6,
+     "edge_mm": 12.5,
+     "at_unity": [
+      0.754,
+      1.362,
+      1.759
+     ],
+     "normal_unity": [
+      0.683,
+      -0.117,
+      -0.721
+     ],
+     "mat": [
+      "Part_SeatHero",
+      "Part_SeatHero"
+     ]
+    },
+    {
+     "kind": "seam",
+     "rel": 0.531,
+     "E": [
+      0.156,
+      0.26
+     ],
+     "dihedral": 3.1,
+     "edge_mm": 72.1,
+     "at_unity": [
+      0.755,
+      1.32,
+      1.766
+     ],
+     "normal_unity": [
+      0.664,
+      -0.13,
+      -0.737
+     ],
+     "mat": [
+      "Part_SeatHero",
+      "Part_SeatHero"
+     ]
+    },
+    {
+     "kind": "seam",
+     "rel": 0.414,
+     "E": [
+      0.175,
+      0.133
+     ],
+     "dihedral": 4.0,
+     "edge_mm": 12.4,
+     "at_unity": [
+      0.353,
+      1.025,
+      1.852
+     ],
+     "normal_unity": [
+      -0.729,
+      -0.669,
+      0.148
+     ],
+     "mat": [
+      "Part_SeatHero",
+      "Part_SeatHero"
+     ]
+    },
+    {
+     "kind": "seam",
+     "rel": 0.338,
+     "E": [
+      0.162,
+      0.215
+     ],
+     "dihedral": 14.7,
+     "edge_mm": 14.4,
+     "at_unity": [
+      0.353,
+      1.028,
+      1.865
+     ],
+     "normal_unity": [
+      -0.63,
+      -0.742,
+      0.23
+     ],
+     "mat": [
+      "Part_SeatHero",
+      "Part_SeatHero"
+     ]
+    },
+    {
+     "kind": "seam",
+     "rel": 0.328,
+     "E": [
+      0.435,
+      0.303
+     ],
+     "dihedral": 16.9,
+     "edge_mm": 6.7,
+     "at_unity": [
+      0.323,
+      1.036,
+      2.272
+     ],
+     "normal_unity": [
+      -0.846,
+      -0.064,
+      0.53
+     ],
+     "mat": [
+      "Part_SeatHero",
+      "Part_SeatHero"
+     ]
+    }
+   ],
+   "worst_edge_dips": [
+    {
+     "kind": "edge_dip",
+     "ratio": 0.02,
+     "E_in": 0.247,
+     "edge_mm": 36.8,
+     "at_unity": [
+      0.783,
+      1.039,
+      1.92
+     ],
+     "normal_unity": [
+      0.705,
+      0.705,
+      -0.075
+     ],
+     "mat": "Part_SeatHero"
+    },
+    {
+     "kind": "edge_dip",
+     "ratio": 0.045,
+     "E_in": 0.38,
+     "edge_mm": 37.6,
+     "at_unity": [
+      0.786,
+      1.039,
+      1.957
+     ],
+     "normal_unity": [
+      0.707,
+      0.705,
+      -0.05
+     ],
+     "mat": "Part_SeatHero"
+    },
+    {
+     "kind": "edge_dip",
+     "ratio": 0.142,
+     "E_in": 0.62,
+     "edge_mm": 378.4,
+     "at_unity": [
+      0.311,
+      0.965,
+      2.08
+     ],
+     "normal_unity": [
+      0.0,
+      1.0,
+      0.0
+     ],
+     "mat": "Part_SeatHero"
+    },
+    {
+     "kind": "edge_dip",
+     "ratio": 0.249,
+     "E_in": 0.041,
+     "edge_mm": 7.7,
+     "at_unity": [
+      0.323,
+      0.951,
+      1.898
+     ],
+     "normal_unity": [
+      -0.741,
+      -0.008,
+      -0.671
+     ],
+     "mat": "Part_SeatHero"
+    }
+   ]
+  },
+  "Window_R1": {
+   "piece": "window",
+   "triangles": 7500,
+   "area_cm2": 11423.1,
+   "visible_area_cm2": 5831.0,
+   "visible_in_bus_cm2": 5831.0,
+   "visible_in_slice_shots_cm2": 575.7,
+   "slice_only_cm2": 0.0,
+   "metal_area_cm2": 7307.6,
+   "counted_area_cm2": 2162.6,
+   "density": {
+    "p5": 140.7,
+    "p50": 151.0,
+    "p95": 311.6,
+    "mm_per_texel_p50": 6.62,
+    "area_m2": 1.1423,
+    "uv_area_texels": 35500.2,
+    "zero_uv_area_tris": 0
+   },
+   "islands": {
+    "count": 188,
+    "islands": 21,
+    "sub_texel": 0,
+    "gap_min": 4,
+    "gap_p5": 4.0,
+    "gap_le2": 0,
+    "baked_islands": 21,
+    "ring_black_frac_baked": 0.0314
+   },
+   "folds": {
+    "texels": 0,
+    "counted_tris": 0,
+    "counted_area_cm2": 0.0
+   },
+   "black": {
+    "in_bus": {
+     "tris_gt_10pct": 2,
+     "tris_gt_25pct": 2,
+     "area_gt_10pct_cm2": 3.22,
+     "area_gt_25pct_cm2": 3.22,
+     "max": 1.0
+    },
+    "slice_shots": {
+     "tris_gt_10pct": 0,
+     "tris_gt_25pct": 0,
+     "area_gt_10pct_cm2": 0.0,
+     "area_gt_25pct_cm2": 0.0,
+     "max": 0.0
+    },
+    "slice_only": {
+     "tris_gt_10pct": 0,
+     "tris_gt_25pct": 0,
+     "area_gt_10pct_cm2": 0.0,
+     "area_gt_25pct_cm2": 0.0,
+     "max": 0.0
+    },
+    "visible_metal": {
+     "tris_gt_10pct": 13,
+     "tris_gt_25pct": 13,
+     "area_gt_10pct_cm2": 8.04,
+     "area_gt_25pct_cm2": 8.04,
+     "max": 1.0
+    },
+    "all": {
+     "tris_gt_10pct": 766,
+     "tris_gt_25pct": 704,
+     "area_gt_10pct_cm2": 1525.19,
+     "area_gt_25pct_cm2": 1442.77,
+     "max": 1.0
+    }
+   },
+   "unlit_nonmetal": {
+    "in_bus": {
+     "tris_gt_10pct": 110,
+     "tris_gt_25pct": 96,
+     "area_gt_10pct_cm2": 115.78,
+     "area_gt_25pct_cm2": 88.66,
+     "max": 1.0
+    },
+    "slice_only": {
+     "tris_gt_10pct": 0,
+     "tris_gt_25pct": 0,
+     "area_gt_10pct_cm2": 0.0,
+     "area_gt_25pct_cm2": 0.0,
+     "max": 0.0
+    }
+   },
+   "fill_sim": {
+    "inside": {
+     "in_bus": {
+      "tris_gt_10pct": 2,
+      "tris_gt_25pct": 2,
+      "area_gt_10pct_cm2": 3.22,
+      "area_gt_25pct_cm2": 3.22,
+      "max": 0.581
+     },
+     "slice_shots": {
+      "tris_gt_10pct": 0,
+      "tris_gt_25pct": 0,
+      "area_gt_10pct_cm2": 0.0,
+      "area_gt_25pct_cm2": 0.0,
+      "max": 0.0
+     },
+     "in_bus_left_by_cause_cm2": {
+      "no_texel": 0.0,
+      "thin": 3.22,
+      "enclosed": 0.0,
+      "open": 0.0
+     }
+    },
+    "inside_ring2": {
+     "in_bus": {
+      "tris_gt_10pct": 0,
+      "tris_gt_25pct": 0,
+      "area_gt_10pct_cm2": 0.0,
+      "area_gt_25pct_cm2": 0.0,
+      "max": 0.0
+     },
+     "slice_shots": {
+      "tris_gt_10pct": 0,
+      "tris_gt_25pct": 0,
+      "area_gt_10pct_cm2": 0.0,
+      "area_gt_25pct_cm2": 0.0,
+      "max": 0.0
+     },
+     "in_bus_left_by_cause_cm2": {
+      "no_texel": 0.0,
+      "thin": 0.0,
+      "enclosed": 0.0,
+      "open": 0.0
+     }
+    }
+   },
+   "neighbour_bleed": {
+    "counted": {
+     "tris_gt_10pct": 0,
+     "tris_gt_25pct": 0,
+     "area_gt_10pct_cm2": 0.0,
+     "area_gt_25pct_cm2": 0.0,
+     "max": 0.0
+    },
+    "all": {
+     "tris_gt_10pct": 0,
+     "tris_gt_25pct": 0,
+     "area_gt_10pct_cm2": 0.0,
+     "area_gt_25pct_cm2": 0.0,
+     "max": 0.0
+    }
+   },
+   "open_sample_points": {
+    "open": 575352,
+    "of": 619764
+   },
+   "seams": {
+    "all_seam_edges": 268,
+    "counted_smooth_lt20": {
+     "edges": 103,
+     "length_m": 8.035,
+     "rel_p50": 0.148,
+     "rel_p95": 1.0,
+     "rel_max": 1.0,
+     "over_5pct": 86,
+     "over_10pct": 66,
+     "over_25pct": 45,
+     "length_over_10pct_m": 4.893,
+     "abs_E_max": 0.36
+    },
+    "counted_20_60": {
+     "edges": 0
+    },
+    "counted_smooth_lt20_lit": {
+     "edges": 80,
+     "length_m": 5.705,
+     "rel_p50": 0.107,
+     "rel_p95": 0.589,
+     "rel_max": 0.933,
+     "over_5pct": 63,
+     "over_10pct": 43,
+     "over_25pct": 22,
+     "length_over_10pct_m": 2.563,
+     "abs_E_max": 0.34
+    },
+    "counted_20_60_lit": {
+     "edges": 0
+    },
+    "all_smooth_lt20": {
+     "edges": 250,
+     "length_m": 11.287,
+     "rel_p50": 0.136,
+     "rel_p95": 1.0,
+     "rel_max": 1.0,
+     "over_5pct": 162,
+     "over_10pct": 137,
+     "over_25pct": 110,
+     "length_over_10pct_m": 6.934,
+     "abs_E_max": 0.36
+    }
+   },
+   "edge_dip": {
+    "boundary_edges": 541,
+    "checked": 425,
+    "ratio_p5": 0.752,
+    "dark_lt_90pct": 60,
+    "dark_lt_75pct": 22,
+    "dark_lt_50pct": 5,
+    "length_dark_lt_75pct_m": 1.954
+   },
+   "mip_black_counted": {
+    "mip1": {
+     "tris_gt_10pct": 15,
+     "tris_gt_25pct": 3,
+     "area_gt_25pct_cm2": 5.7
+    },
+    "mip2": {
+     "tris_gt_10pct": 183,
+     "tris_gt_25pct": 49,
+     "area_gt_25pct_cm2": 35.6
+    }
+   },
+   "black_causes_in_bus": {
+    "no_texel": {
+     "tris": 0,
+     "area_cm2": 0.0,
+     "by_material": {}
+    },
+    "thin": {
+     "tris": 2,
+     "area_cm2": 3.22,
+     "by_material": {
+      "Seal": 3.22
+     }
+    },
+    "enclosed": {
+     "tris": 0,
+     "area_cm2": 0.0,
+     "by_material": {}
+    },
+    "open": {
+     "tris": 0,
+     "area_cm2": 0.0,
+     "by_material": {}
+    },
+    "thin_islands": {
+     "count": 1,
+     "largest": [
+      {
+       "island": 19,
+       "texels": 1598,
+       "tris": 1004,
+       "area_cm2": 737.73,
+       "black_thin_cm2": 3.22,
+       "uv_bbox_texels": [
+        140.68,
+        193.54
+       ],
+       "uv_area_texels": 1550.48,
+       "mat": "Seal",
+       "at_unity": [
+        1.005,
+        1.758,
+        1.935
+       ],
+       "spot_unity": [
+        0.994,
+        2.211,
+        1.956
+       ],
+       "spot_normal": [
+        -0.826,
+        -0.564,
+        0.0
+       ]
+      }
+     ]
+    },
+    "counted_islands": {
+     "count": 21,
+     "without_texel": 0,
+     "under_4_texels": 0
+    },
+    "enclosed_spots": [],
+    "open_spots": []
+   },
+   "faces_black_in_bus": [
+    {
+     "face": 1754,
+     "weight": 1.0,
+     "area_cm2": 2.46,
+     "mat": "Seal",
+     "at_unity": [
+      0.994,
+      2.211,
+      1.956
+     ],
+     "normal_unity": [
+      -0.826,
+      -0.564,
+      0.0
+     ]
+    },
+    {
+     "face": 1755,
+     "weight": 1.0,
+     "area_cm2": 0.75,
+     "mat": "Seal",
+     "at_unity": [
+      0.993,
+      2.213,
+      1.914
+     ],
+     "normal_unity": [
+      -0.835,
+      -0.55,
+      0.0
+     ]
+    }
+   ],
+   "faces_black_slice_only": [],
+   "faces_unlit_in_bus": [
+    {
+     "face": 1130,
+     "weight": 0.95,
+     "area_cm2": 3.52,
+     "mat": "Seal",
+     "at_unity": [
+      1.017,
+      1.298,
+      1.454
+     ],
+     "normal_unity": [
+      -1.0,
+      -0.029,
+      -0.0
+     ]
+    },
+    {
+     "face": 2060,
+     "weight": 1.0,
+     "area_cm2": 2.55,
+     "mat": "Seal",
+     "at_unity": [
+      1.014,
+      1.543,
+      1.309
+     ],
+     "normal_unity": [
+      -0.842,
+      -0.025,
+      0.539
+     ]
+    },
+    {
+     "face": 2006,
+     "weight": 1.0,
+     "area_cm2": 2.55,
+     "mat": "Seal",
+     "at_unity": [
+      1.003,
+      1.933,
+      1.309
+     ],
+     "normal_unity": [
+      -0.842,
+      -0.025,
+      0.539
+     ]
+    },
+    {
+     "face": 2060,
+     "weight": 1.0,
+     "area_cm2": 2.55,
+     "mat": "Seal",
+     "at_unity": [
+      1.012,
+      1.586,
+      1.308
+     ],
+     "normal_unity": [
+      -0.842,
+      -0.025,
+      0.539
+     ]
+    },
+    {
+     "face": 2042,
+     "weight": 1.0,
+     "area_cm2": 2.55,
+     "mat": "Seal",
+     "at_unity": [
+      1.009,
+      1.716,
+      1.308
+     ],
+     "normal_unity": [
+      -0.842,
+      -0.025,
+      0.539
+     ]
+    },
+    {
+     "face": 2042,
+     "weight": 1.0,
+     "area_cm2": 2.55,
+     "mat": "Seal",
+     "at_unity": [
+      1.01,
+      1.673,
+      1.309
+     ],
+     "normal_unity": [
+      -0.842,
+      -0.025,
+      0.539
+     ]
+    },
+    {
+     "face": 2024,
+     "weight": 1.0,
+     "area_cm2": 2.55,
+     "mat": "Seal",
+     "at_unity": [
+      1.007,
+      1.803,
+      1.309
+     ],
+     "normal_unity": [
+      -0.842,
+      -0.025,
+      0.539
+     ]
+    },
+    {
+     "face": 2078,
+     "weight": 1.0,
+     "area_cm2": 2.55,
+     "mat": "Seal",
+     "at_unity": [
+      1.016,
+      1.456,
+      1.308
+     ],
+     "normal_unity": [
+      -0.842,
+      -0.025,
+      0.539
+     ]
+    }
+   ],
+   "counted_by_material": {
+    "Int_Enamel": {
+     "area_cm2": 1887.7,
+     "in_bus_black_gt_25pct_cm2": 0.0,
+     "slice_only_black_gt_25pct_cm2": 0.0,
+     "in_bus_unlit_gt_25pct_cm2": 0.0
+    },
+    "LatchCream": {
+     "area_cm2": 5.3,
+     "in_bus_black_gt_25pct_cm2": 0.0,
+     "slice_only_black_gt_25pct_cm2": 0.0,
+     "in_bus_unlit_gt_25pct_cm2": 0.0
+    },
+    "Seal": {
+     "area_cm2": 269.6,
+     "in_bus_black_gt_25pct_cm2": 3.22,
+     "slice_only_black_gt_25pct_cm2": 0.0,
+     "in_bus_unlit_gt_25pct_cm2": 88.66
+    }
+   },
+   "worst_seams": [
+    {
+     "kind": "seam",
+     "rel": 0.82,
+     "E": [
+      0.079,
+      0.015
+     ],
+     "dihedral": 18.5,
+     "edge_mm": 125.6,
+     "at_unity": [
+      0.995,
+      2.209,
+      1.935
+     ],
+     "normal_unity": [
+      -0.604,
+      -0.797,
+      0.0
+     ],
+     "mat": [
+      "Seal",
+      "Seal"
+     ]
+    },
+    {
+     "kind": "seam",
+     "rel": 0.731,
+     "E": [
+      0.086,
+      0.175
+     ],
+     "dihedral": 13.2,
+     "edge_mm": 11.7,
+     "at_unity": [
+      0.997,
+      2.195,
+      2.538
+     ],
+     "normal_unity": [
+      0.743,
+      -0.508,
+      -0.435
+     ],
+     "mat": [
+      "Seal",
+      "Seal"
+     ]
+    },
+    {
+     "kind": "seam",
+     "rel": 0.649,
+     "E": [
+      0.08,
+      0.179
+     ],
+     "dihedral": 13.2,
+     "edge_mm": 11.7,
+     "at_unity": [
+      0.998,
+      2.177,
+      2.552
+     ],
+     "normal_unity": [
+      0.737,
+      -0.301,
+      -0.605
+     ],
+     "mat": [
+      "Seal",
+      "Seal"
+     ]
+    },
+    {
+     "kind": "seam",
+     "rel": 0.586,
+     "E": [
+      0.152,
+      0.096
+     ],
+     "dihedral": 18.6,
+     "edge_mm": 11.7,
+     "at_unity": [
+      0.996,
+      2.206,
+      1.353
+     ],
+     "normal_unity": [
+      -0.603,
+      -0.765,
+      0.227
+     ],
+     "mat": [
+      "Seal",
+      "Seal"
+     ]
+    },
+    {
+     "kind": "seam",
+     "rel": 0.526,
+     "E": [
+      0.241,
+      0.318
+     ],
+     "dihedral": 13.2,
+     "edge_mm": 11.7,
+     "at_unity": [
+      1.023,
+      1.313,
+      2.517
+     ],
+     "normal_unity": [
+      0.708,
+      0.677,
+      -0.199
+     ],
+     "mat": [
+      "Seal",
+      "Seal"
+     ]
+    },
+    {
+     "kind": "seam",
+     "rel": 0.524,
+     "E": [
+      0.158,
+      0.1
+     ],
+     "dihedral": 18.5,
+     "edge_mm": 11.7,
+     "at_unity": [
+      0.996,
+      2.202,
+      1.342
+     ],
+     "normal_unity": [
+      -0.605,
+      -0.706,
+      0.368
+     ],
+     "mat": [
+      "Seal",
+      "Seal"
+     ]
+    }
+   ],
+   "worst_edge_dips": [
+    {
+     "kind": "edge_dip",
+     "ratio": 0.07,
+     "E_in": 0.03,
+     "edge_mm": 125.6,
+     "at_unity": [
+      0.995,
+      2.209,
+      1.684
+     ],
+     "normal_unity": [
+      -0.826,
+      -0.564,
+      0.0
+     ],
+     "mat": "Seal"
+    },
+    {
+     "kind": "edge_dip",
+     "ratio": 0.351,
+     "E_in": 0.06,
+     "edge_mm": 125.5,
+     "at_unity": [
+      0.995,
+      2.209,
+      1.433
+     ],
+     "normal_unity": [
+      -0.826,
+      -0.564,
+      -0.0
+     ],
+     "mat": "Seal"
+    },
+    {
+     "kind": "edge_dip",
+     "ratio": 0.379,
+     "E_in": 0.046,
+     "edge_mm": 125.6,
+     "at_unity": [
+      0.995,
+      2.209,
+      1.809
+     ],
+     "normal_unity": [
+      -0.826,
+      -0.564,
+      0.0
+     ],
+     "mat": "Seal"
+    },
+    {
+     "kind": "edge_dip",
+     "ratio": 0.577,
+     "E_in": 0.251,
+     "edge_mm": 11.7,
+     "at_unity": [
+      0.996,
+      2.177,
+      1.318
+     ],
+     "normal_unity": [
+      -0.614,
+      -0.386,
+      0.688
+     ],
+     "mat": "Seal"
+    }
+   ]
+  },
+  "Pole_R0": {
+   "piece": "pillar",
+   "triangles": 4020,
+   "area_cm2": 2598.3,
+   "visible_area_cm2": 2368.3,
+   "visible_in_bus_cm2": 2368.3,
+   "visible_in_slice_shots_cm2": 88.6,
+   "slice_only_cm2": 0.0,
+   "metal_area_cm2": 2438.1,
+   "counted_area_cm2": 121.1,
+   "density": {
+    "p5": 127.0,
+    "p50": 145.2,
+    "p95": 151.0,
+    "mm_per_texel_p50": 6.89,
+    "area_m2": 0.2598,
+    "uv_area_texels": 5928.5,
+    "zero_uv_area_tris": 0
+   },
+   "islands": {
+    "count": 91,
+    "islands": 13,
+    "sub_texel": 0,
+    "gap_min": 4,
+    "gap_p5": 4.0,
+    "gap_le2": 0,
+    "baked_islands": 13,
+    "ring_black_frac_baked": 0.0
+   },
+   "folds": {
+    "texels": 8,
+    "counted_tris": 12,
+    "counted_area_cm2": 0.44
+   },
+   "black": {
+    "in_bus": {
+     "tris_gt_10pct": 0,
+     "tris_gt_25pct": 0,
+     "area_gt_10pct_cm2": 0.0,
+     "area_gt_25pct_cm2": 0.0,
+     "max": 0.0
+    },
+    "slice_shots": {
+     "tris_gt_10pct": 0,
+     "tris_gt_25pct": 0,
+     "area_gt_10pct_cm2": 0.0,
+     "area_gt_25pct_cm2": 0.0,
+     "max": 0.0
+    },
+    "slice_only": {
+     "tris_gt_10pct": 0,
+     "tris_gt_25pct": 0,
+     "area_gt_10pct_cm2": 0.0,
+     "area_gt_25pct_cm2": 0.0,
+     "max": 0.0
+    },
+    "visible_metal": {
+     "tris_gt_10pct": 26,
+     "tris_gt_25pct": 22,
+     "area_gt_10pct_cm2": 0.89,
+     "area_gt_25pct_cm2": 0.75,
+     "max": 1.0
+    },
+    "all": {
+     "tris_gt_10pct": 202,
+     "tris_gt_25pct": 187,
+     "area_gt_10pct_cm2": 115.65,
+     "area_gt_25pct_cm2": 111.37,
+     "max": 1.0
+    }
+   },
+   "unlit_nonmetal": {
+    "in_bus": {
+     "tris_gt_10pct": 39,
+     "tris_gt_25pct": 27,
+     "area_gt_10pct_cm2": 0.85,
+     "area_gt_25pct_cm2": 0.4,
+     "max": 0.916
+    },
+    "slice_only": {
+     "tris_gt_10pct": 0,
+     "tris_gt_25pct": 0,
+     "area_gt_10pct_cm2": 0.0,
+     "area_gt_25pct_cm2": 0.0,
+     "max": 0.0
+    }
+   },
+   "fill_sim": {
+    "inside": {
+     "in_bus": {
+      "tris_gt_10pct": 0,
+      "tris_gt_25pct": 0,
+      "area_gt_10pct_cm2": 0.0,
+      "area_gt_25pct_cm2": 0.0,
+      "max": 0.0
+     },
+     "slice_shots": {
+      "tris_gt_10pct": 0,
+      "tris_gt_25pct": 0,
+      "area_gt_10pct_cm2": 0.0,
+      "area_gt_25pct_cm2": 0.0,
+      "max": 0.0
+     },
+     "in_bus_left_by_cause_cm2": {
+      "no_texel": 0.0,
+      "thin": 0.0,
+      "enclosed": 0.0,
+      "open": 0.0
+     }
+    },
+    "inside_ring2": {
+     "in_bus": {
+      "tris_gt_10pct": 0,
+      "tris_gt_25pct": 0,
+      "area_gt_10pct_cm2": 0.0,
+      "area_gt_25pct_cm2": 0.0,
+      "max": 0.0
+     },
+     "slice_shots": {
+      "tris_gt_10pct": 0,
+      "tris_gt_25pct": 0,
+      "area_gt_10pct_cm2": 0.0,
+      "area_gt_25pct_cm2": 0.0,
+      "max": 0.0
+     },
+     "in_bus_left_by_cause_cm2": {
+      "no_texel": 0.0,
+      "thin": 0.0,
+      "enclosed": 0.0,
+      "open": 0.0
+     }
+    }
+   },
+   "neighbour_bleed": {
+    "counted": {
+     "tris_gt_10pct": 0,
+     "tris_gt_25pct": 0,
+     "area_gt_10pct_cm2": 0.0,
+     "area_gt_25pct_cm2": 0.0,
+     "max": 0.0
+    },
+    "all": {
+     "tris_gt_10pct": 0,
+     "tris_gt_25pct": 0,
+     "area_gt_10pct_cm2": 0.0,
+     "area_gt_25pct_cm2": 0.0,
+     "max": 0.0
+    }
+   },
+   "open_sample_points": {
+    "open": 15361,
+    "of": 16774
+   },
+   "seams": {
+    "all_seam_edges": 1000,
+    "counted_smooth_lt20": {
+     "edges": 7,
+     "length_m": 0.021,
+     "rel_p50": 0.597,
+     "rel_p95": 0.847,
+     "rel_max": 0.885,
+     "over_5pct": 7,
+     "over_10pct": 7,
+     "over_25pct": 7,
+     "length_over_10pct_m": 0.021,
+     "abs_E_max": 0.662
+    },
+    "counted_20_60": {
+     "edges": 70,
+     "length_m": 0.617,
+     "rel_p50": 0.235,
+     "rel_p95": 0.542,
+     "rel_max": 0.783,
+     "over_5pct": 70,
+     "over_10pct": 59,
+     "over_25pct": 34,
+     "length_over_10pct_m": 0.577,
+     "abs_E_max": 0.679
+    },
+    "counted_smooth_lt20_lit": {
+     "edges": 7,
+     "length_m": 0.021,
+     "rel_p50": 0.597,
+     "rel_p95": 0.847,
+     "rel_max": 0.885,
+     "over_5pct": 7,
+     "over_10pct": 7,
+     "over_25pct": 7,
+     "length_over_10pct_m": 0.021,
+     "abs_E_max": 0.662
+    },
+    "counted_20_60_lit": {
+     "edges": 70,
+     "length_m": 0.617,
+     "rel_p50": 0.235,
+     "rel_p95": 0.542,
+     "rel_max": 0.783,
+     "over_5pct": 70,
+     "over_10pct": 59,
+     "over_25pct": 34,
+     "length_over_10pct_m": 0.577,
+     "abs_E_max": 0.679
+    },
+    "all_smooth_lt20": {
+     "edges": 204,
+     "length_m": 8.645,
+     "rel_p50": 0.0,
+     "rel_p95": 0.0,
+     "rel_max": 0.885,
+     "over_5pct": 8,
+     "over_10pct": 8,
+     "over_25pct": 8,
+     "length_over_10pct_m": 0.025,
+     "abs_E_max": 0.662
+    }
+   },
+   "edge_dip": {
+    "boundary_edges": 225,
+    "checked": 66,
+    "ratio_p5": 0.955,
+    "dark_lt_90pct": 0,
+    "dark_lt_75pct": 0,
+    "dark_lt_50pct": 0,
+    "length_dark_lt_75pct_m": 0.0
+   },
+   "mip_black_counted": {
+    "mip1": {
+     "tris_gt_10pct": 13,
+     "tris_gt_25pct": 0,
+     "area_gt_25pct_cm2": 0.0
+    },
+    "mip2": {
+     "tris_gt_10pct": 206,
+     "tris_gt_25pct": 47,
+     "area_gt_25pct_cm2": 6.7
+    }
+   },
+   "black_causes_in_bus": {
+    "no_texel": {
+     "tris": 0,
+     "area_cm2": 0.0,
+     "by_material": {}
+    },
+    "thin": {
+     "tris": 0,
+     "area_cm2": 0.0,
+     "by_material": {}
+    },
+    "enclosed": {
+     "tris": 0,
+     "area_cm2": 0.0,
+     "by_material": {}
+    },
+    "open": {
+     "tris": 0,
+     "area_cm2": 0.0,
+     "by_material": {}
+    },
+    "thin_islands": {
+     "count": 0,
+     "largest": []
+    },
+    "counted_islands": {
+     "count": 13,
+     "without_texel": 0,
+     "under_4_texels": 0
+    },
+    "enclosed_spots": [],
+    "open_spots": []
+   },
+   "faces_black_in_bus": [],
+   "faces_black_slice_only": [],
+   "faces_unlit_in_bus": [
+    {
+     "face": 1788,
+     "weight": 0.86,
+     "area_cm2": 0.05,
+     "mat": "ButtonRed",
+     "at_unity": [
+      0.283,
+      1.49,
+      1.029
+     ],
+     "normal_unity": [
+      -0.562,
+      -0.733,
+      -0.383
+     ]
+    },
+    {
+     "face": 1760,
+     "weight": 0.41,
+     "area_cm2": 0.05,
+     "mat": "ButtonRed",
+     "at_unity": [
+      0.283,
+      1.51,
+      1.028
+     ],
+     "normal_unity": [
+      -0.562,
+      0.733,
+      -0.383
+     ]
+    },
+    {
+     "face": 1808,
+     "weight": 0.54,
+     "area_cm2": 0.0,
+     "mat": "ButtonRed",
+     "at_unity": [
+      0.303,
+      1.498,
+      1.03
+     ],
+     "normal_unity": [
+      0.0,
+      1.0,
+      0.0
+     ]
+    }
+   ],
+   "counted_by_material": {
+    "ButtonRed": {
+     "area_cm2": 9.6,
+     "in_bus_black_gt_25pct_cm2": 0.0,
+     "slice_only_black_gt_25pct_cm2": 0.0,
+     "in_bus_unlit_gt_25pct_cm2": 0.4
+    },
+    "Ext_Cream": {
+     "area_cm2": 111.5,
+     "in_bus_black_gt_25pct_cm2": 0.0,
+     "slice_only_black_gt_25pct_cm2": 0.0,
+     "in_bus_unlit_gt_25pct_cm2": 0.0
+    }
+   },
+   "worst_seams": [],
+   "worst_edge_dips": []
+  }
+ },
+ "viewpoints": {
+  "bus_eyes": 44,
+  "slice_cameras": [
+   {
+    "id": "seat_05m",
+    "eye": [
+     0.556,
+     1.667,
+     2.047
+    ],
+    "look_at": [
+     0.649,
+     1.177,
+     2.01
+    ]
+   },
+   {
+    "id": "seat_10m",
+    "eye": [
+     0.463,
+     2.157,
+     2.085
+    ],
+    "look_at": [
+     0.649,
+     1.177,
+     2.01
+    ]
+   },
+   {
+    "id": "window_05m",
+    "eye": [
+     0.502,
+     1.696,
+     2.063
+    ],
+    "look_at": [
+     0.983,
+     1.74,
+     1.935
+    ]
+   },
+   {
+    "id": "window_10m",
+    "eye": [
+     0.021,
+     1.651,
+     2.191
+    ],
+    "look_at": [
+     0.983,
+     1.74,
+     1.935
+    ]
+   },
+   {
+    "id": "pillar_05m",
+    "eye": [
+     0.417,
+     1.659,
+     1.547
+    ],
+    "look_at": [
+     0.29,
+     1.62,
+     1.065
+    ]
+   },
+   {
+    "id": "pillar_10m",
+    "eye": [
+     0.544,
+     1.698,
+     2.029
+    ],
+    "look_at": [
+     0.29,
+     1.62,
+     1.065
+    ]
+   }
+  ]
+ },
+ "spots": [
+  {
+   "obj": "Seat_SeatR0",
+   "piece": "seat",
+   "kind": "thin island",
+   "mat": "Part_SeatHero",
+   "at_unity": [
+    0.782,
+    0.991,
+    1.88
+   ],
+   "normal_unity": [
+    0.707,
+    0.543,
+    0.453
+   ]
+  },
+  {
+   "obj": "Seat_SeatR0",
+   "piece": "seat",
+   "kind": "under a part",
+   "mat": "Part_SeatHero",
+   "at_unity": [
+    0.582,
+    0.965,
+    2.274
+   ],
+   "normal_unity": [
+    0.005,
+    -0.406,
+    0.914
+   ]
+  },
+  {
+   "obj": "Seat_SeatR0",
+   "piece": "seat",
+   "kind": "seam 71%",
+   "mat": "Part_SeatHero",
+   "at_unity": [
+    0.731,
+    1.45,
+    1.77
+   ],
+   "normal_unity": [
+    -0.242,
+    -0.689,
+    0.684
+   ]
+  },
+  {
+   "obj": "Seat_SeatR0",
+   "piece": "seat",
+   "kind": "slice only",
+   "mat": "Part_SeatHero",
+   "at_unity": [
+    0.78,
+    0.961,
+    1.884
+   ],
+   "normal_unity": [
+    -1.0,
+    0.0,
+    0.0
+   ]
+  },
+  {
+   "obj": "Window_R1",
+   "piece": "window",
+   "kind": "thin island",
+   "mat": "Seal",
+   "at_unity": [
+    0.994,
+    2.211,
+    1.956
+   ],
+   "normal_unity": [
+    -0.826,
+    -0.564,
+    0.0
+   ]
+  }
+ ],
+ "source": {
+  "blend": "/tmp/bus/bus_final_ext.blend",
+  "exr": "Bus/Textures/Cabin_TubeLM.exr",
+  "uv": "UVLightmap",
+  "exr_stats": {
+   "E_lum_max": 1.277,
+   "E_lum_p99_nonblack": 0.863,
+   "texels_E_over_1": 9284
+  }
+ },
+ "onscreen_black": {
+  "views": {
+   "seat_05m": {
+    "nonmetal_px": 429165,
+    "black_ge25_pct": 0.06,
+    "black_ge50_pct": 0.04
+   },
+   "seat_10m": {
+    "nonmetal_px": 325423,
+    "black_ge25_pct": 0.04,
+    "black_ge50_pct": 0.03
+   },
+   "window_05m": {
+    "nonmetal_px": 0,
+    "black_ge25_pct": 0.0,
+    "black_ge50_pct": 0.0
+   },
+   "window_10m": {
+    "nonmetal_px": 0,
+    "black_ge25_pct": 0.0,
+    "black_ge50_pct": 0.0
+   },
+   "pillar_05m": {
+    "nonmetal_px": 5123,
+    "black_ge25_pct": 0.0,
+    "black_ge50_pct": 0.0
+   },
+   "pillar_10m": {
+    "nonmetal_px": 1809,
+    "black_ge25_pct": 0.0,
+    "black_ge50_pct": 0.0
+   },
+   "hero_window_yaw61": {
+    "nonmetal_px": 1656,
+    "black_ge25_pct": 0.0,
+    "black_ge50_pct": 0.0
+   },
+   "seatR1_at_R0_back": {
+    "nonmetal_px": 273054,
+    "black_ge25_pct": 0.0,
+    "black_ge50_pct": 0.0
+   },
+   "aisle_at_button_box": {
+    "nonmetal_px": 42820,
+    "black_ge25_pct": 0.0,
+    "black_ge50_pct": 0.0
+   }
+  },
+  "bus_views": [
+   {
+    "id": "hero_window_yaw61",
+    "eye": [
+     0.55,
+     1.7,
+     2.05
+    ],
+    "look_at": [
+     1.421,
+     1.613,
+     2.533
+    ],
+    "hfov": 90.0
+   },
+   {
+    "id": "seatR1_at_R0_back",
+    "eye": [
+     0.55,
+     1.7,
+     1.33
+    ],
+    "look_at": [
+     0.55,
+     1.25,
+     1.78
+    ],
+    "hfov": 60.0
+   },
+   {
+    "id": "aisle_at_button_box",
+    "eye": [
+     -0.1,
+     1.65,
+     0.2
+    ],
+    "look_at": [
+     0.29,
+     1.5,
+     1.04
+    ],
+    "hfov": 60.0
+   }
+  ],
+  "note": "share of the pieces' non-metal pixels whose bilinear _CabinTubeLM sample has >= 25 % / 50 % weight from black texels (E = 0 and AO = 0); metal slots (Steel, Alu, Chrome) excluded"
+ },
+ "renders": {
+  "files": [
+   "lm_slice_cams_E.png",
+   "lm_slice_cams_AO.png",
+   "lm_spots_E.png",
+   "lm_bus_views_E.png"
+  ],
+  "tile_px": [
+   556,
+   409
+  ],
+  "rendered_px": [
+   834,
+   614
+  ],
+  "fov_deg": [
+   40,
+   30
+  ],
+  "samples": 8,
+  "note": "emission only: E = _CabinTubeLM.rgb (exposure -1 EV) or AO = .a, bilinear mip 0; magenta = bilinear weight of black texels; spots: 0.20 m from the spot"
+ }
+}

@@ -761,7 +761,7 @@
    ]
   ],
   "last_shaft": {
-   "t_in": 506.36,
+   "t_in": 504.36,
    "fade_in_s": 2.0,
    "sweep_s": 4.0,
    "fade_out_s": 2.0,
@@ -789,6 +789,7 @@
     -1.5
    ],
    "p2_note": "D-44 #5 P2: PARALLEL to the refracted sun at both ends (the centre is 14 m up the sun axis from the foot, so foot - centre is constant): the sun never moves (总导演 10-25 #1); the foot sweeps from 14 m AHEAD (seen through the windscreen, the top fades out ahead-right toward the sun) over the roof onto the seats",
+   "t_note": "10-25 (总导演, 阿白 0949): full strength ON the F3e1 beat -- in from F3e1 - 2 s, the 4 s sweep starts at F3e1 with the foot still ~14 m ahead in the windscreen, out by F3e1 + 6 s (the window's dark-coin curve still starts at F3e1)",
    "top_above_centre_m": 2.0,
    "note": "F3e1: the last wide shaft sweeps across the seats (2 s in, 4 s sweep, 2 s out; seats <= luma 120): its foot moves from target_from to target_to (past the main seat at ~0.58), the beam light rides with it; the quad starts 2 m above its moving centre so the seats sit at uv.y ~0.45 (full strength), then all shafts are gone"
   }
@@ -29319,16 +29320,16 @@
     0.0176
    ],
    "rim": [
-    0.305,
-    0.6777,
-    1.2
+    0.61,
+    1.3553,
+    2.4
    ],
-   "rim_reach_m": 8.0,
-   "rim_near_m": 12.0,
+   "rim_reach_m": 14.0,
+   "rim_near_m": 22.0,
    "rim_wrap": 0.55,
-   "rim_face": 0.04,
+   "rim_face": 0.02,
    "rim_edge": 4.0,
-   "note": "low contrast: the faces sit just above the water fog of 105 m; only the silhouettes catch the hull bioluminescence #8AC6FF (bible: 只被船体生物荧光描出一道边), full strength out to rim_near_m, falling off over rim_reach_m beyond; wrap: the trails run along the whole hull"
+   "note": "low contrast: the faces sit just above the water fog of 105 m; only the silhouettes catch the hull bioluminescence #8AC6FF (bible: 只被船体生物荧光描出一道边), full strength out to rim_near_m, falling off over rim_reach_m beyond; wrap: the trails run along the whole hull. 10-25 (总导演, 阿白 0949: \"描边要读得出来\"): after the P3 turn the visible ridge is 12-27 m away, so full strength out to 22 m, rim x 2, faces halved (rim_face 0.02) so the faces stay where they were and only the edge reads"
   },
   "passes": {
    "enters_window_t": 520.36,
@@ -29997,7 +29998,7 @@
    2.74,
    1.2
   ],
-  "last_t0": 506.36,
+  "last_t0": 504.36,
   "last_in": 2.0,
   "last_sweep": 4.0,
   "last_out": 2.0,
@@ -30220,14 +30221,14 @@
    0.0176
   ],
   "ridge_rim": [
-   0.305,
-   0.6777,
-   1.2
+   0.61,
+   1.3553,
+   2.4
   ],
-  "ridge_reach": 8.0,
-  "ridge_near": 12.0,
+  "ridge_reach": 14.0,
+  "ridge_near": 22.0,
   "ridge_wrap": 0.55,
-  "ridge_face": 0.04,
+  "ridge_face": 0.02,
   "ridge_edge": 4.0
  }
 }

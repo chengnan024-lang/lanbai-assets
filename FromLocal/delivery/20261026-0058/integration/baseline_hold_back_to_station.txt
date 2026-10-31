@@ -1,0 +1,19 @@
+label=baseline_hold_back_to_station time=20.39385 batch=True audio=0
+dbgT=-1
+dbgSeg=0
+dbgDEV=0
+dbgB=0
+_sp=2
+_spHandAt=248.39
+_spBlackEnd=11.80609
+_spFade0=3.193844
+_spawnFadeEnded=False
+_journeyReady=True
+dispatcher.lastT=0
+dispatcher.activeCount=2
+dispatcher.gradeDEV=0
+dispatcher._fadeEndT=0
+dispatcher._fadeEnded=True
+dispatcher._fadeHanded=
+dispatcher._fadeBeginReal=
+overlay=(0.00, 0.00, 0.00, 1.00)

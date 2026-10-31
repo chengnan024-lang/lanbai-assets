@@ -1,0 +1,21 @@
+label=fixed_after_driver_rise time=86.39261 batch=True audio=0
+dbgT=264.8
+dbgSeg=6
+dbgDEV=0
+dbgB=-0.75
+_sp=0
+_spHandAt=248.39
+_spBlackEnd=64.60633
+_spFade0=29.39264
+_spawnFadeEnded=True
+_journeyReady=True
+dispatcher.lastT=264.8
+dispatcher.activeCount=2
+dispatcher.gradeDEV=0
+dispatcher.spawnFadeTimeout=25
+dispatcher.spawnFadeMax=9.4
+dispatcher._fadeEndT=248.411
+dispatcher._fadeEnded=True
+dispatcher._handState=1
+dispatcher._fadeBegin=61.60633
+overlay=(0.00, 0.00, 0.00, 1.00)

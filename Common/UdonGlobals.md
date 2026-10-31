@@ -53,6 +53,12 @@ VRChat 只允许 Udon 写 `_Udon_` 前缀的全局 shader 量（`VRCShader.SetGl
 | `_Udon_PalaceVeil` | float4：x 密度 /m、y 雾带上沿世界 y、z 厚度、w > 0 已设。从台地下方罩住宫殿建筑的雾（第 7b 幕 F7p；定义见 `Sea/README_Sea接口.md`、`Act07_Sea/PalaceFrame_约定.json` 的 `palace_veil`）（D-17） | 第 7 幕驱动（海） | 宫殿 shader |
 | `_Udon_SkyGlobals` / `_Udon_Sky_*`（一族，约 45 个） / `_Udon_SkyCubeTexA` / `_Udon_SkyCubeTexB` | 一个天空材质，各预设的差别全走全局量；`_Udon_Sky_<材质属性名>`；两张全局立方图（定义见 `Sky/README`）（D-18） | 天空预设 / `LanbaiSkyDriver` | `Lanbai/Sky` |
 | `_Udon_StarShape` | float4：x 最暗星等、y 雾带内的 EV、z 带半宽（D-18） | 天空预设 | `Lanbai/StarPoints` |
+| `_Udon_CloudVolume` | float4：x = 1 时体积云是门的云海（门里的窗口；`LanbaiActivate(false)` 写 0）、y 消光 / m（= 云海材质 `_Density`）、z 水平周期 m（520）、w 垂直周期 m（260）（D-44 #3） | 门的云驱动 `LanbaiGateClouds`（从云海材质抄） | `Lanbai/TentacleSway` v2.8、`Lanbai/GateVolumeDeck`（`LanbaiCloudVolume.cginc`）；云包的共用体积云要用时先定谁写 |
+| `_Udon_CloudVolumeWind` | float4：xy 风 m/s（= 云海材质 `_CloudWind.xy`，配 `_Udon_GateTime`），z 云海整体抬高 m（= 材质 `_Lift`，门第 10 轮），w 不用（D-44 #3） | 同上 | 同上 |
+| `_Udon_CloudVolumeTex` | 全局 3D 纹理（`sampler3D`）：128³ 云密度（R、G），= 云海材质的 `_NoiseVolume`（D-44 #3） | 同上 | 同上 |
+| `_Udon_GateSkirt0..7` | float4：x、z = 触手轴穿过云的位置（世界）、y = 强度 0..1（触手的显现）、w = 那里的半径 m（0 = 没有）；离车最近的 8 条（D-44 #3） | 门的云驱动 `LanbaiGateClouds` | `Lanbai/GateVolumeDeck`、`Lanbai/TentacleSway` v2.8 |
+| `_Udon_GateSkirtK` | float4：x 条数 0–8、y 宽 × 半径、z 贴着触手往上堆的高度 m、w 强度（D-44 #3） | 同上 | 同上 |
+| `_Udon_CloudClock` | float4：x = 时间轴秒、w > 0 = 已设（D-44 #2，2026-10-26 登记）；同一时刻只有一个写的人，以后门要用就在自己的窗口里写 | 第 6 幕驱动 `LanbaiAct06Driver`，248.64 → 363.62 | `Lanbai/CloudVolume`（`Clouds_v2/Volume/`；shader 里 `#ifndef LANBAI_DECL__Udon_CloudClock` 自己声明） |
 | `_Udon_WorldS` | （本地的时间轴里用的，含义见 `FromLocal/code/timeline_v1/`） | 本地 | 本地 |
 
 ## 预留（还没人写，先占名字）

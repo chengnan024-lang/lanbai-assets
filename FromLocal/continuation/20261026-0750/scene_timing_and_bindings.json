@@ -1,0 +1,164 @@
+{
+  "basis": "Saved FullPreview YAML; unchanged hash plus clean editor heartbeat; not a new runtime test",
+  "components": {
+    "Journey": [
+      {
+        "fileID": "647029932",
+        "object": "Lanbai/Systems/Journey",
+        "active_in_hierarchy": true,
+        "fields": {
+          "segStart": "- 0\n  - 0\n  - 50.3\n  - 150.3\n  - 179.55\n  - 248.64\n  - 251.64\n  - 363.26\n  - 922.36\n  - 987.06\n  - 1149.31\n  - 1178.46\n  - 1249.96\n  - 1729.96",
+          "cueU": "- 3.9\n  - 17.5\n  - 34\n  - 50.3\n  - 75.8\n  - 107.5\n  - 133.8\n  - 150.3\n  - 166.15\n  - 179.55\n  - 185.95\n  - 202.4\n  - 248.64",
+          "cueF": "- 251.64\n  - 281.86\n  - 352.06\n  - 367.21\n  - 446.01\n  - 644.96\n  - 735.56\n  - 748.26\n  - 835.16\n  - 929.11\n  - 942.26\n  - 969.76\n  - 987.06\n  - 1018.20996\n  - 1059.66\n  - 1115.36\n  - 1149.31",
+          "useGrades": "1",
+          "useDeliveredGate": "1",
+          "useDeliveredInside": "1",
+          "useDeliveredDawn": "1",
+          "useDeliveredSea": "1",
+          "useDeliveredSky": "1",
+          "useDeliveredDusk": "1",
+          "useDeliveredMirrors": "1",
+          "useDeliveredWhite": "1",
+          "doorPivot": "{fileID: 1572833673}",
+          "doorPivot2": "{fileID: 1301213215}",
+          "busRenderers": "- {fileID: 1714571386}\n  - {fileID: 1280783086}\n  - {fileID: 1301213218}\n  - {fileID: 1572833676}\n  - {fileID: 513166580}\n  - {fileID: 405527573}\n  - {fileID: 1737585384}\n  - {fileID: 1218063832}\n  - {fileID: 1691236014}\n  - {fileID: 209614693}\n  - {fileID: 418839124}\n  - {fileID: 754990875}\n  - {fileID: 522123473}\n  - {fileID: 2135783986}\n  - {fileID: 1406977021}\n  - {fileID: 1722454224}\n  - {fileID: 1958907449}\n  - {fileID: 1288445491}\n  - {fileID: 916483201}\n  - {fileID: 1668166300}\n  - {fileID: 1171242787}\n  - {fileID: 1937847019}\n  - {fileID: 1603354966}\n  - {fileID: 982749829}\n  - {fileID: 560128838}\n  - {fileID: 1834499232}\n  - {fileID: 813347763}\n  - {fileID: 328273781}\n  - {fileID: 1292905684}\n  - {fileID: 399070935}\n  - {fileID: 1912231513}\n  - {fileID: 1492174311}\n  - {fileID: 538919818}\n  - {fileID: 889875433}\n  - {fileID: 1900651320}\n  - {fileID: 97264142}\n  - {fileID: 1938326500}\n  - {fileID: 113058223}",
+          "ppWhite": "{fileID: 1198555039}",
+          "ppBlack": "{fileID: 1420566487}"
+        },
+        "resolved_references": {
+          "doorPivot": [
+            {
+              "fileID": "1572833673",
+              "path": "Lanbai/Bus/Model/Door1",
+              "active_in_hierarchy": false
+            }
+          ],
+          "doorPivot2": [
+            {
+              "fileID": "1301213215",
+              "path": "Lanbai/Bus/Model/Door1/Door0",
+              "active_in_hierarchy": false
+            }
+          ]
+        }
+      }
+    ],
+    "Gate": [
+      {
+        "fileID": "535997515",
+        "object": "Lanbai/Director/Gate_Driver",
+        "active_in_hierarchy": true,
+        "fields": {
+          "windowStart": "113.8",
+          "windowEnd": "185",
+          "skyFadeT0": "133.8",
+          "skyFadeT1": "163.8",
+          "U6": "133.8",
+          "U7": "150.3",
+          "U9": "179.55"
+        },
+        "resolved_references": {}
+      }
+    ],
+    "Dawn": [
+      {
+        "fileID": "1021435142",
+        "object": "Act06_Driver",
+        "active_in_hierarchy": true,
+        "fields": {
+          "windowStart": "248.64",
+          "windowEnd": "363.62",
+          "tApplySky": "248.64",
+          "tLight0": "252.64",
+          "tLight1": "363.615",
+          "tRS1": "362.26",
+          "tPreroll0": "252.64",
+          "tDawn0": "254.14",
+          "tOverlayOff": "266.44"
+        },
+        "resolved_references": {}
+      }
+    ],
+    "Inside": [
+      {
+        "fileID": "1454911645",
+        "object": "Lanbai_Inside/LanbaiInsideDriver",
+        "active_in_hierarchy": true,
+        "fields": {
+          "tU9": "179.55",
+          "tU12": "248.64",
+          "overlay": "{fileID: 1538633492}"
+        },
+        "resolved_references": {}
+      }
+    ],
+    "Cabin": [
+      {
+        "fileID": "792052311",
+        "object": "Lanbai/Bus/Lanbai_Bus/LanbaiCabinDriver",
+        "active_in_hierarchy": true,
+        "fields": {
+          "tF0": "251.64",
+          "tAct11": "1178.46",
+          "tAct12": "1251.96",
+          "insideFrom": "177.55",
+          "insideTo": "252.64",
+          "yieldToInside": "1",
+          "doorPanels": "- {fileID: 6324481208018456195}\n  - {fileID: 8280125620389420506}\n  - {fileID: 1796282519852602403}\n  - {fileID: 4708934950717488072}",
+          "journey": "{fileID: 647029932}"
+        },
+        "resolved_references": {
+          "doorPanels": [
+            {
+              "fileID": "6324481208018456195",
+              "path": "Lanbai/Bus/Lanbai_Bus/Model_PAZ672/Bus_Door0",
+              "active_in_hierarchy": true
+            },
+            {
+              "fileID": "8280125620389420506",
+              "path": "Lanbai/Bus/Lanbai_Bus/Model_PAZ672/Bus_Door1",
+              "active_in_hierarchy": true
+            },
+            {
+              "fileID": "1796282519852602403",
+              "path": "Lanbai/Bus/Lanbai_Bus/Model_PAZ672/Bus_Door2",
+              "active_in_hierarchy": true
+            },
+            {
+              "fileID": "4708934950717488072",
+              "path": "Lanbai/Bus/Lanbai_Bus/Model_PAZ672/Bus_Door3",
+              "active_in_hierarchy": true
+            }
+          ]
+        }
+      }
+    ],
+    "Dispatcher": [
+      {
+        "fileID": "1864981216",
+        "object": "Lanbai/Director",
+        "active_in_hierarchy": true,
+        "fields": {
+          "windowsFlat": "[]",
+          "atmosphereWindowsFlat": "[]",
+          "sunWindowsFlat": "[]",
+          "overlayWindowsFlat": "[]",
+          "d0": "- {fileID: 1061405499}",
+          "d1": "- {fileID: 1041904125}",
+          "d2": "- {fileID: 1540231407}",
+          "d3": "- {fileID: 1919659851}\n  - {fileID: 80761643}",
+          "d4": "- {fileID: 1021435142}",
+          "d5": "- {fileID: 1410807961}",
+          "d6": "- {fileID: 114462754}",
+          "d7": "- {fileID: 792052311}",
+          "d8": "- {fileID: 1384525301}",
+          "d9": "- {fileID: 535997515}",
+          "d10": "- {fileID: 1454911645}",
+          "d11": "- {fileID: 246848709}",
+          "d12": "- {fileID: 1237498297}"
+        },
+        "resolved_references": {}
+      }
+    ]
+  }
+}

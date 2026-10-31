@@ -525,6 +525,17 @@ namespace Lanbai.Test
         {
             public readonly Dictionary<string, KeyValuePair<long, long>> assets = new Dictionary<string, KeyValuePair<long, long>>();
             public readonly Dictionary<string, string> settings = new Dictionary<string, string>();
+            // 1.2.2（阿白 10-25：Sea / SeaB / WetGround 按 mtime 报了，逐字节其实一样）：搭建脚本常常整个重存的那几类小文件，
+            // 开搭前记内容哈希；mtime 变了而哈希没变 = “存了、内容没变”，不算改动。大文件（贴图、模型）仍只看大小和 mtime。
+            public readonly Dictionary<string, string> hashes = new Dictionary<string, string>();
+        }
+
+        static readonly string[] HashExt = { ".mat", ".asset", ".prefab", ".meta", ".controller", ".anim", ".json", ".shader", ".cginc", ".cs", ".physicMaterial", ".mask", ".overrideController" };
+        const long HashMaxBytes = 4L * 1024 * 1024;
+
+        static bool Hashable(string path, long len)
+        {
+            return len <= HashMaxBytes && HashExt.Any(e => path.EndsWith(e, StringComparison.OrdinalIgnoreCase));
         }
 
         public static Snapshot Take(string projectDir)
@@ -537,6 +548,7 @@ namespace Lanbai.Test
                 if (rel.StartsWith(Sandbox.DIR + "/", StringComparison.Ordinal) || rel == Sandbox.DIR + ".meta") continue;
                 var fi = new FileInfo(f);
                 s.assets[rel] = new KeyValuePair<long, long>(fi.Length, fi.LastWriteTimeUtc.Ticks);
+                if (Hashable(rel, fi.Length)) { try { s.hashes[rel] = Sha256(File.ReadAllBytes(f)); } catch { } }
             }
             string ps = Path.Combine(projectDir, "ProjectSettings");
             if (Directory.Exists(ps))
@@ -549,7 +561,10 @@ namespace Lanbai.Test
         {
             // 工具自己不 SaveAssets：只比搭建脚本自己存下来的。工具在内存里改的材质值不落盘（改回去以后也不落盘）
             var after = Take(ctx.projectDir);
-            var allowed = TJson.Sa(TJson.G(ctx.test, "allowed_writes")).Select(Glob).ToList();
+            // "new:<glob>"（1.2.2）：只放过新建的文件；这些地方已有的文件被改、被删，照常算没声明的写入
+            var aw = TJson.Sa(TJson.G(ctx.test, "allowed_writes"));
+            var allowed = aw.Where(x => !x.StartsWith("new:", StringComparison.Ordinal)).Select(Glob).ToList();
+            var allowedNew = aw.Where(x => x.StartsWith("new:", StringComparison.Ordinal)).Select(x => Glob(x.Substring(4))).ToList();
             var declared = new List<object>(); var undeclared = new List<object>(); var ps = new List<object>(); var touched = new List<object>();
             Action<string, string> classify = (path, what) =>
             {
@@ -560,7 +575,7 @@ namespace Lanbai.Test
                 {
                     try { if (File.ReadAllBytes(path).SequenceEqual(orig)) { touched.Add("写回了、内容和原来一样 " + path); return; } } catch { }
                 }
-                bool ok = allowed.Any(r => r.IsMatch(path) || r.IsMatch(p));
+                bool ok = allowed.Any(r => r.IsMatch(path) || r.IsMatch(p)) || (what == "新建" && allowedNew.Any(r => r.IsMatch(path) || r.IsMatch(p)));
                 // 工具临时改过又改回的材质（复核的次要项：按字节核对）：落了盘、和原来逐字节一样的上面已经豁免；不一样的照常算，
                 // 并注明是工具改过的（改回以后被谁 SaveAssets 落了盘，序列化和原来不同，或者没改回去）
                 if (!ok && what == "改了" && ctx.toolTouched.Contains(p)) { undeclared.Add(what + " " + path + "（工具临时改过的；落盘后和原来逐字节不一样）"); return; }
@@ -570,7 +585,13 @@ namespace Lanbai.Test
             {
                 KeyValuePair<long, long> b;
                 if (!ctx.before.assets.TryGetValue(kv.Key, out b)) classify(kv.Key, "新建");
-                else if (b.Key != kv.Value.Key || b.Value != kv.Value.Value) classify(kv.Key, "改了");
+                else if (b.Key != kv.Value.Key || b.Value != kv.Value.Value)
+                {
+                    string h0, h1;
+                    if (b.Key == kv.Value.Key && ctx.before.hashes.TryGetValue(kv.Key, out h0) && after.hashes.TryGetValue(kv.Key, out h1) && h0 == h1)
+                        touched.Add("存了、内容逐字节没变 " + kv.Key);
+                    else classify(kv.Key, "改了");
+                }
             }
             foreach (var kv in ctx.before.assets) if (!after.assets.ContainsKey(kv.Key)) classify(kv.Key, "删了");
             foreach (var kv in after.settings)
@@ -585,7 +606,7 @@ namespace Lanbai.Test
             {
                 { "sandbox", Sandbox.DIR }, { "allowed_writes", TJson.Sa(TJson.G(ctx.test, "allowed_writes")).Cast<object>().ToList() },
                 { "declared", declared }, { "undeclared", undeclared }, { "project_settings_changed", ps }, { "tool_touched_restored", touched },
-                { "note", "按文件大小和修改时间比的：搭建脚本存了但内容没变的文件也算“改了”；只在内存里改、没存盘的不算" }
+                { "note", "按文件大小和修改时间比；材质、.asset、预制体、.meta 这类 ≤ 4 MB 的小文件另比内容哈希，存了但逐字节没变的列在 tool_touched_restored、不算改动；只在内存里改、没存盘的不算" }
             };
         }
 

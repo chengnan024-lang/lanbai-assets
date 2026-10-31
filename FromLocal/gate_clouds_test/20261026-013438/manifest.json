@@ -1,0 +1,852 @@
+{
+  "tool": "Lanbai.Test.Runner",
+  "tool_version": "1.2.2",
+  "test_id": "gate_clouds_test",
+  "run_id": "20261026-013438",
+  "fromlocal": "FromLocal/gate_clouds_test/20261026-013438/",
+  "test_file": "E:\\IDMdownload\\VRCC\\Backups\\continuation_20261026\\delivery_0058\\gate_before.json",
+  "test_sha256": "ac7b2633287f9effe179cd2251903c1aec7dba636c9cf3e8da35a61612133f23",
+  "mode": "bridge",
+  "started_utc": "2026-10-26T05:34:38.7582780Z",
+  "finished_utc": "2026-10-26T05:34:56.7906357Z",
+  "duration_s": 18,
+  "exit_code": 0,
+  "status": "pass",
+  "preflight_only": false,
+  "blocked_reason": null,
+  "error": null,
+  "repo": {
+    "repo_commit": "11c2f447c56444e171beb4f0cbe26fa8b505a6ab",
+    "repo_branch": "main",
+    "repo_dirty": null,
+    "repo_path": "E:\\IDMdownload\\VRCC\\lanbai-assets-gate-main-20261024",
+    "entry": "2026-10-26 approved serial delivery; current applied group manifests in delivery_0058",
+    "synced_at": "2026-10-26T01:30:31.023819-04:00",
+    "paths": null,
+    "tool_version": "1.2.2"
+  },
+  "copied": null,
+  "unity": {
+    "version": "2022.3.22f1",
+    "batch": true,
+    "color_space": "Linear",
+    "quality": "VRC High",
+    "build_target": "StandaloneWindows64",
+    "scene": "Assets/_LanbaiTest/GateTest_play.unity"
+  },
+  "packages": {
+    "com.vrchat.worlds": "3.10.5",
+    "com.vrchat.base": "3.10.5",
+    "com.unity.postprocessing": "3.4.0",
+    "com.unity.textmeshpro": "3.0.6"
+  },
+  "gpu": {
+    "name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "vendor": "NVIDIA",
+    "api": "Direct3D11",
+    "version": "Direct3D 11.0 [level 11.1]",
+    "vram_mb": 7956,
+    "cpu": "13th Gen Intel(R) Core(TM) i9-13980HX",
+    "cpu_threads": 32,
+    "ram_mb": 32386,
+    "os": "Windows 11  (10.0.26200) 64bit"
+  },
+  "consent": {
+    "tool_version": "1.2.2",
+    "date": "2026-10-26",
+    "tests": [
+      "gate_clouds_test",
+      "tree_sample",
+      "flicker_probe",
+      "transitions_sweep",
+      "bus_slice",
+      "bus_dropin"
+    ],
+    "note": "User approved this version and scope; private approval record omitted."
+  },
+  "layers": {
+    "blender_offline": {
+      "status": "pending_cloud",
+      "note": "云端对照 Blender 参考帧后填；工具不填"
+    },
+    "unity_desktop": {
+      "status": "pass",
+      "note": "Unity 编辑器里的桌面渲染和编辑器估算的性能；工具检查全过也只记“待总导演看图”（D-41 #4）"
+    },
+    "vr_headset": {
+      "status": "not_tested",
+      "note": "工具不测头显，也不会把这一层标成通过；看 summary.md 末尾的头显清单"
+    }
+  },
+  "preflight": [
+    {
+      "item": "gpu",
+      "status": "ok",
+      "detail": "NVIDIA GeForce RTX 4060 Laptop GPU（Direct3D11，Direct3D 11.0 [level 11.1]，显存 7956 MB）"
+    },
+    {
+      "item": "resources",
+      "status": "ok",
+      "detail": "C:\\ 剩 38.5 GB，E:\\ 剩 67.8 GB，可用内存 14.6 GB"
+    },
+    {
+      "item": "consent",
+      "status": "ok",
+      "detail": "用户（当前聊天） 2026-10-26 同意（工具 1.2.2，测试 gate_clouds_test、tree_sample、flicker_probe、transitions_sweep、bus_slice、bus_dropin）；备份 E:\\IDMdownload\\VRCC\\Backups\\dream_20261025-000405.zip（在）"
+    },
+    {
+      "item": "unity",
+      "status": "ok",
+      "detail": "2022.3.22f1（要 2022.3.22f1）"
+    },
+    {
+      "item": "editor_state",
+      "status": "ok",
+      "detail": "Play False，编译中 False，导入中 False（要在编辑模式、编译和导入都完成后再跑）"
+    },
+    {
+      "item": "color_space",
+      "status": "ok",
+      "detail": "Linear（要 Linear）"
+    },
+    {
+      "item": "package:com.vrchat.worlds",
+      "status": "ok",
+      "detail": "3.10.5（要 3.10.5；读自 PackageManager）"
+    },
+    {
+      "item": "package:com.unity.postprocessing",
+      "status": "ok",
+      "detail": "3.4.0（要 3.4.0；读自 PackageManager）"
+    },
+    {
+      "item": "udonsharp",
+      "status": "ok",
+      "detail": "UdonSharp.UdonSharpBehaviour 在（UdonSharp.Runtime），随 VRChat Worlds SDK"
+    },
+    {
+      "item": "compile",
+      "status": "ok",
+      "detail": "scriptCompilationFailed False，Console 里的编译错误（含 UdonSharp 的）0 条（Console 共 3 条，原样在 console.jsonl）"
+    },
+    {
+      "item": "open_scenes",
+      "status": "ok",
+      "detail": "没有没保存的改动（Assets/Lanbai/Scenes/Lanbai_FullPreview.unity）"
+    },
+    {
+      "item": "sandbox",
+      "status": "ok",
+      "detail": "有上次遗留的沙盒（有标记），开跑时删掉重建"
+    },
+    {
+      "item": "grading",
+      "status": "warn",
+      "detail": "有旧的 Assets/Lanbai/Grades/，有套件的 Assets/Lanbai/Grading/；layer 4 =「Water」，layer 22 =「PostProcessing」。两套调色都在：工具不删，截图用的是参考相机上的那一套（PostProcessLayer 的 volumeLayer 写在 manifest 的截图记录里）"
+    },
+    {
+      "item": "sync_record",
+      "status": "ok",
+      "detail": "仓库提交 11c2f447c56444e171beb4f0cbe26fa8b505a6ab（2026-10-26T01:30:31.023819-04:00 同步，条目：2026-10-26 approved serial delivery; current applied group manifests in delivery_0058）"
+    },
+    {
+      "item": "git_status",
+      "status": "info",
+      "detail": "工程不是 git 仓库"
+    }
+  ],
+  "preconditions": [
+    {
+      "item": "文件夹 Assets/Lanbai/Common",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件夹 Assets/Lanbai/Gate",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件夹 Assets/Lanbai/GateClouds",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件夹 Assets/Lanbai/Tear",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件夹 Assets/Lanbai/Tentacles",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件夹 Assets/Lanbai/Tests",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件 Assets/Lanbai/Tests/GateTest.unity",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件 Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件 Assets/Lanbai/Gate/GateLayout_v2.json",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件 Assets/Lanbai/Gate/GateDriver_Bake.json",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件 Assets/Lanbai/GateClouds/GateClouds_Layout.json",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "类型 Lanbai.Tests.LB_GateTest",
+      "status": "ok",
+      "detail": "脚本没拷进来或没编译"
+    },
+    {
+      "item": "类型 LanbaiGateCloudsBuilder",
+      "status": "ok",
+      "detail": "脚本没拷进来或没编译"
+    },
+    {
+      "item": "类型 LanbaiGateDriverBuilder",
+      "status": "ok",
+      "detail": "脚本没拷进来或没编译"
+    },
+    {
+      "item": "类型 LanbaiGateDriver",
+      "status": "ok",
+      "detail": "脚本没拷进来或没编译"
+    },
+    {
+      "item": "类型 LanbaiGateClouds",
+      "status": "ok",
+      "detail": "脚本没拷进来或没编译"
+    },
+    {
+      "item": "脚本 LB_GateTest_Run 含「LanbaiGateCloudsBuilder.Apply(t)」",
+      "status": "ok",
+      "detail": "HANDOFF v1.5 第 4 步：LB_GateTest_Run.cs 的 4 处 SetPB 第 4 个参数改成 false，Apply 里加 LanbaiGateCloudsBuilder.Apply(t)（逐行对照 GateClouds/给本地_补丁_LB_GateTest_Run.md）。不改的话截图和帧时间都作废（Assets/Lanbai/Tests/Editor/LB_GateTest_Run.cs）"
+    },
+    {
+      "item": "脚本 LB_GateTest_Run 含「SetPB(tear, \"Tear_CloudGlow_Additive\", mpb, false」",
+      "status": "ok",
+      "detail": "HANDOFF v1.5 第 4 步：LB_GateTest_Run.cs 的 4 处 SetPB 第 4 个参数改成 false，Apply 里加 LanbaiGateCloudsBuilder.Apply(t)（逐行对照 GateClouds/给本地_补丁_LB_GateTest_Run.md）。不改的话截图和帧时间都作废（Assets/Lanbai/Tests/Editor/LB_GateTest_Run.cs）"
+    },
+    {
+      "item": "脚本 LB_GateTest_Run 含「SetPB(tear, \"Tear_CloudGlow\", mpb, false」",
+      "status": "ok",
+      "detail": "HANDOFF v1.5 第 4 步：LB_GateTest_Run.cs 的 4 处 SetPB 第 4 个参数改成 false，Apply 里加 LanbaiGateCloudsBuilder.Apply(t)（逐行对照 GateClouds/给本地_补丁_LB_GateTest_Run.md）。不改的话截图和帧时间都作废（Assets/Lanbai/Tests/Editor/LB_GateTest_Run.cs）"
+    },
+    {
+      "item": "脚本 LB_GateTest_Run 含「SetPB(tear, \"Tear_LightLane\", mpb, false」",
+      "status": "ok",
+      "detail": "HANDOFF v1.5 第 4 步：LB_GateTest_Run.cs 的 4 处 SetPB 第 4 个参数改成 false，Apply 里加 LanbaiGateCloudsBuilder.Apply(t)（逐行对照 GateClouds/给本地_补丁_LB_GateTest_Run.md）。不改的话截图和帧时间都作废（Assets/Lanbai/Tests/Editor/LB_GateTest_Run.cs）"
+    },
+    {
+      "item": "脚本 LB_GateTest_Run 含「SetPB(st, st.name, mpb, false」",
+      "status": "ok",
+      "detail": "HANDOFF v1.5 第 4 步：LB_GateTest_Run.cs 的 4 处 SetPB 第 4 个参数改成 false，Apply 里加 LanbaiGateCloudsBuilder.Apply(t)（逐行对照 GateClouds/给本地_补丁_LB_GateTest_Run.md）。不改的话截图和帧时间都作废（Assets/Lanbai/Tests/Editor/LB_GateTest_Run.cs）"
+    },
+    {
+      "item": "文件 Assets/Lanbai/GateClouds/GateClouds_Layout.json 含「Tower_Colossus_2_Back」",
+      "status": "ok",
+      "detail": "第 10 轮第 1 批的云（38 张卡）；画质档要是 default（截图一律用 default）（Assets/Lanbai/GateClouds/GateClouds_Layout.json）"
+    },
+    {
+      "item": "文件 Assets/Lanbai/GateClouds/GateClouds_Layout.json 含「\"quality\": \"default\"」",
+      "status": "ok",
+      "detail": "第 10 轮第 1 批的云（38 张卡）；画质档要是 default（截图一律用 default）（Assets/Lanbai/GateClouds/GateClouds_Layout.json）"
+    },
+    {
+      "item": "文件 Assets/Lanbai/Gate/GateLayout_v2.json 含「\"_Stars\": 0.055」",
+      "status": "ok",
+      "detail": "第 10 轮第 1 批的 GateLayout_v2.json（D-06：第 4 幕有星）（Assets/Lanbai/Gate/GateLayout_v2.json）"
+    }
+  ],
+  "git_status_porcelain": null,
+  "steps": [
+    {
+      "phase": "build",
+      "index": 0,
+      "type": "method",
+      "desc": "Lanbai.Tests.LB_GateTest.Build(155.1)",
+      "why": "HANDOFF 6.1：用新的 JSON 和 shader 把门重搭一遍",
+      "status": "ok",
+      "out": "搭好了：单独的臂 28 条、群臂 36 条（2 个档材质），给 64 个实例建了 LODGroup。t = 155.10：GateRoot (0, 92.12, 1442.95)，云顶 y -57.88；臂 0 条显现、64 条关着；群臂 group0 1.00 / group1 1.00；远潮 _Reveal 1.00；月盘增益 0.60；裂口 H 640.0 m（缩放 0.640）、张开 0.479、撕裂 0.216；叠加光池 ×1.00、布褶 ×1.00、光晕 ×1.00（D 1441 m）、光路 ×1.00（x 缩放 0.544）、光池 ×1.00\r\n备注：\r\n  · 裂口平行光只照车厢层（JSON lights.tear）：测试场景没有车，Culling Mask 设成 Nothing\r\n—— 逐条 ——\r\nPillar_R  M_Gate_Pillar_R  R_root 56.353 m（物体空间）× 缩放 1  L 1277.2  平铺 主 2.254 / 细节 56.35×64.81  _Colossus 1  遮罩 T_Gate_PR_Occlusion.png\r\nPillar_L  M_Gate_Pillar_L  R_root 34.397 m（物体空间）× 缩放 1  L 1029.2  平铺 主 1.376 / 细节 34.4×39.56  _Colossus 1  遮罩 T_Gate_PL_Occlusion.png\r\nColossus_3  M_Gate_Colossus_3  R_root 101.813 m（物体空间）× 缩放 1  L 2826.1  平铺 主 3 / 细节 64×73.6  _Colossus 1  遮罩 T_Gate_ENG_Occlusion.png\r\nHand_L0  M_Gate_Hand_L0  R_root 23.595 m（物体空间）× 缩放 1  L 630.4  平铺 主 1 / 细节 23.6×27.13  遮罩 T_Gate_HL0_Occlusion.png\r\nHand_L1  M_Gate_Hand_L1  R_root 18.018 m（物体空间）× 缩放 1  L 819.8  平铺 主 1 / 细节 18.02×20.72  遮罩 T_Gate_HL1_Occlusion.png\r\nHand_L2  M_Gate_Hand_L2  R_root 19.382 m（物体空间）× 缩放 1  L 658.3  平铺 主 1 / 细节 19.38×22.29  遮罩 T_Gate_HL2_Occlusion.png\r\nHand_R0  M_Gate_Hand_R0  R_root 32.629 m（物体空间）× 缩放 1  L 958.1  平铺 主 1.305 / 细节 32.63×37.52  遮罩 T_Gate_HR0_Occlusion.png\r\nHand_R1  M_Gate_Hand_R1  R_root 26.175 m（物体空间）× 缩放 1  L 1150  平铺 主 1.047 / 细节 26.17×30.1  遮罩 T_Gate_HR1_Occlusion.png\r\nHand_R2  M_Gate_Hand_R2  R_root 28.967 m（物体空间）× 缩放 1  L 985.2  平铺 主 1.159 / 细节 28.97×33.31  遮罩 T_Gate_HR2_Occlusion.png\r\nColossus_bg_00  M_Gate_Colossus_bg_00  R_root 33.963 m（物体空间）× 缩放 1  L 1142.3  平铺 主 1.359 / 细节 33.96×39.06  _Colossus 1  遮罩 T_Gate_BG0_Occlusion.png\r\nColossus_bg_01  M_Gate_Colossus_bg_01  R_root 35.711 m（物体空间）× 缩放 1  L 1217.2  平铺 主 1.428 / 细节 35.71×41.07  _Colossus 1  遮罩 T_Gate_BG1_Occlusion.png\r\nColossus_bg_02  M_Gate_Colossus_bg_02  R_root 42.93 m（物体空间）× 缩放 1  L 1345.9  平铺 主 1.717 / 细节 42.93×49.37  _Colossus 1  遮罩 T_Gate_BG2_Occlusion.png\r\nColossus_bg_03  M_Gate_Colossus_bg_03  R_root 38.592 m（物体空间）× 缩放 1  L 1285.2  平铺 主 1.544 / 细节 38.59×44.38  _Colossus 1  遮罩 T_Gate_BG3_Occlusion.png\r\nColossus_bg_04  M_Gate_Colossus_bg_04  R_root 35.333 m（物体空间）× 缩放 1  L 1173.6  平铺 主 1.413 / 细节 35.33×40.63  _Colossus 1  遮罩 T_Gate_BG4_Occlusion.png\r\nColossus_bg_05  M_Gate_Colossus_bg_05  R_root 40.745 m（物体空间）× 缩放 1  L 1413.6  平铺 主 1.63 / 细节 40.75×46.86  _Colossus 1  遮罩 T_Gate_BG5_Occlusion.png\r\nColossus_1  M_Gate_Colossus_1  R_root 23.709 m（物体空间）× 缩放 1  L 647.3  平铺 主 1 / 细节 23.71×27.27  _Colossus 1  遮罩 T_Gate_C1_Occlusion.png\r\nColossus_2  M_Gate_Colossus_2  R_root 52.964 m（物体空间）× 缩放 1  L 1157  平铺 主 2.119 / 细节 52.96×60.91  _Colossus 1  遮罩 T_Gate_C2_Occlusion.png\r\nMult_000  pose MU3m  M_Multitude_TierC_far  R_root 46.954 m（物体空间）× 缩放 0.659  L 1604.6  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU3m_Occlusion.png\r\nMult_001  pose MU2  M_Multitude_TierC_far  R_root 47.607 m（物体空间）× 缩放 0.331  L 1597.8  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU2_Occlusion.png\r\nMult_002  pose MU4m  M_Multitude_TierC_far  R_root 46.04 m（物体空间）× 缩放 0.515  L 1244.1  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU4m_Occlusion.png\r\nMult_003  pose MU1  M_Multitude_TierC_far  R_root 46.719 m（物体空间）× 缩放 1.036  L 1559.7  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU1_Occlusion.png\r\nMult_004  pose MU0  M_Multitude_TierC_far  R_root 46.655 m（物体空间）× 缩放 0.468  L 1543.1  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU0_Occlusion.png\r\nMult_005  pose MU1  M_Multitude_TierC_far  R_root 46.719 m（物体空间）× 缩放 0.649  L 1559.7  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU1_Occlusion.png\r\nMult_006  pose MU1m  M_Multitude_TierC_far  R_root 46.284 m（物体空间）× 缩放 0.589  L 1559.6  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU1m_Occlusion.png\r\nMult_007  pose MU1m  M_Multitude_TierC_far  R_root 46.284 m（物体空间）× 缩放 0.399  L 1559.7  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU1m_Occlusion.png\r\nMult_008  pose MU3  M_Multitude_TierC_far  R_root 46.085 m（物体空间）× 缩放 0.29  L 1604.5  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU3_Occlusion.png\r\nMult_009  pose MU1m  M_Multitude_TierC_far  R_root 46.284 m（物体空间）× 缩放 0.503  L 1559.7  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU1m_Occlusion.png\r\nMult_010  pose MU5m  M_Multitude_TierC_far  R_root 46.883 m（物体空间）× 缩放 0.243  L 1207.5  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU5m_Occlusion.png\r\nMult_011  pose MU2m  M_Multitude_TierC_far  R_root 47.162 m（物体空间）× 缩放 0.883  L 1597.8  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU2m_Occlusion.png\r\nMult_012  pose MU3  M_Multitude_TierC_far  R_root 46.085 m（物体空间）× 缩放 0.531  L 1604.5  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU3_Occlusion.png\r\nMult_013  pose MU0m  M_Multitude_TierC_far  R_root 46.906 m（物体空间）× 缩放 0.369  L 1543.1  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU0m_Occlusion.png\r\nMult_014  pose MU0  M_Multitude_TierB_mid  R_root 46.655 m（物体空间）× 缩放 0.371  L 1543.2  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU0_Occlusion.png\r\nMult_015  pose MU0  M_Multitude_TierB_mid  R_root 46.655 m（物体空间）× 缩放 0.463  L 1543.3  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU0_Occlusion.png\r\nMult_016  pose MU1  M_Multitude_TierB_mid  R_root 46.719 m（物体空间）× 缩放 0.996  L 1559.6  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU1_Occlusion.png\r\nMult_017  pose MU2m  M_Multitude_TierB_mid  R_root 47.162 m（物体空间）× 缩放 0.39  L 1597.5  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU2m_Occlusion.png\r\nMult_018  pose MU2m  M_Multitude_TierB_mid  R_root 47.162 m（物体空间）× 缩放 0.536  L 1597.8  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU2m_Occlusion.png\r\nMult_019  pose MU0m  M_Multitude_TierB_mid  R_root 46.906 m（物体空间）× 缩放 0.379  L 1543.1  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU0m_Occlusion.png\r\nMult_020  pose MU2m  M_Multitude_TierB_mid  R_root 47.162 m（物体空间）× 缩放 0.461  L 1597.9  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU2m_Occlusion.png\r\nMult_021  pose MU2m  M_Multitude_TierB_mid  R_root 47.162 m（物体空间）× 缩放 0.613  L 1597.8  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU2m_Occlusion.png\r\nMult_022  pose MU4  M_Multitude_TierB_mid  R_root 47.059 m（物体空间）× 缩放 0.5  L 1244.2  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU4_Occlusion.png\r\nMult_023  pose MU1  M_Multitude_TierB_mid  R_root 46.719 m（物体空间）× 缩放 0.364  L 1559.8  平铺 主 1 / 细节 16×18.4  遮罩 T_Gate_MU1_Occlusion.png\r\nMult_024  pose MU2  M_Multitude_TierB_mid  R_root 47.607 m（物体空间）× 缩放 1 …（截断，全文看 console.jsonl）",
+      "ms": 498.2
+    },
+    {
+      "phase": "build",
+      "index": 1,
+      "type": "set_light",
+      "desc": "set_light Gate_Lights/Fill_from_below",
+      "why": "D-07：补光一律 Not Important；Build 每次重建补光，每次都要设",
+      "status": "ok",
+      "out": "Gate_Lights/Fill_from_below：renderMode ForceVertex → ForceVertex",
+      "ms": 1.3
+    },
+    {
+      "phase": "build",
+      "index": 2,
+      "type": "set_material",
+      "desc": "材质 ：_HazeNear = [0.1085,0.113,0.1641]，_HazeFar = [0.0436,0.0504,0.0726]，_BandEl = [6,22,2]",
+      "why": "HANDOFF 6.1：远潮材质还是旧值，照 GateClouds_Layout.json 的 tide_material 填",
+      "status": "ok",
+      "out": "改了 6 处（2 个材质）：M_TentacleTide_v3_A._HazeNear (0.11, 0.11, 0.16, 1.00) → (0.11, 0.11, 0.16, 0.00)；M_TentacleTide_v3_A._HazeFar (0.04, 0.05, 0.07, 1.00) → (0.04, 0.05, 0.07, 0.00)；M_TentacleTide_v3_A._BandEl (6.00, 22.00, 2.00, 0.00) → (6.00, 22.00, 2.00, 0.00)；M_TentacleTide_v3_B._HazeNear (0.11, 0.11, 0.16, 1.00) → (0.11, 0.11, 0.16, 0.00)；M_TentacleTide_v3_B._HazeFar (0.04, 0.05, 0.07, 1.00) → (0.04, 0.05, 0.07, 0.00)；M_TentacleTide_v3_B._BandEl (6.00, 22.00, 2.00, 0.00) → (6.00, 22.00, 2.00, 0.00)",
+      "ms": 4
+    },
+    {
+      "phase": "build",
+      "index": 3,
+      "type": "set_material",
+      "desc": "材质 Assets/Lanbai/Tests/GateTest_Materials/M_GateAirSky.mat：_Stars = 0.055",
+      "why": "第 10 轮第 1 批：_Stars 填 0.055（v1.5 那条说的 0 已作废，D-06）",
+      "status": "ok",
+      "out": "改了 1 处（1 个材质）：M_GateAirSky._Stars 0.055 → 0.055",
+      "ms": 0.3
+    },
+    {
+      "phase": "build",
+      "index": 4,
+      "type": "menu",
+      "desc": "菜单 蓝白/Gate Clouds/Build",
+      "why": "HANDOFF 6.2",
+      "status": "ok",
+      "out": "执行了菜单 蓝白/Gate Clouds/Build",
+      "ms": 1044.6
+    },
+    {
+      "phase": "build",
+      "index": 5,
+      "type": "assert_log",
+      "desc": "assert_log ",
+      "why": "v1.5 那条写的是 37 张 / 9 座塔；第 10 轮加了 Tower_Colossus_2_Back，现在是 38 / 10",
+      "status": "ok",
+      "out": "有「[GateClouds] deck quality: default」；有「[GateClouds] built: deck, 38 cards (10 towers), 6 beams」",
+      "ms": 0.2
+    },
+    {
+      "phase": "build",
+      "index": 6,
+      "type": "method",
+      "desc": "Lanbai.Tests.LB_GateTest.Apply(155.1)",
+      "why": "HANDOFF 6.3",
+      "status": "ok",
+      "out": "t = 155.10：GateRoot (0, 92.12, 1442.95)，云顶 y -57.88；臂 0 条显现、64 条关着；群臂 group0 1.00 / group1 1.00；远潮 _Reveal 1.00；月盘增益 0.60；裂口 H 640.0 m（缩放 0.640）、张开 0.479、撕裂 0.216；叠加光池 ×1.00、布褶 ×1.00、光晕 ×1.00（D 1441 m）、光路 ×1.00（x 缩放 0.544）、光池 ×1.00",
+      "ms": 11
+    },
+    {
+      "phase": "build",
+      "index": 7,
+      "type": "menu",
+      "desc": "菜单 蓝白/Gate/Build Driver + Test Clock (Play mode only)",
+      "why": "门的总驱动那条，搭建顺序第 5 步（编辑模式里点；时钟只在 Play 里走）",
+      "status": "ok",
+      "out": "执行了菜单 蓝白/Gate/Build Driver + Test Clock (Play mode only)",
+      "ms": 7722.1
+    },
+    {
+      "phase": "build",
+      "index": 8,
+      "type": "assert_log",
+      "desc": "assert_log ",
+      "why": "门的总驱动那条第 2 步",
+      "status": "ok",
+      "out": "有「[GateDriver] built: 64 instances (0 missing)」；没有「_VariantDims」",
+      "ms": 0
+    },
+    {
+      "phase": "after_build",
+      "index": 0,
+      "type": "assert_no_component",
+      "desc": "assert_no_component ",
+      "why": "门的总驱动那条第 3 步：它会和驱动抢裂口的全局量",
+      "status": "ok",
+      "out": "场景里没有 LanbaiTearParams",
+      "ms": 0.8
+    },
+    {
+      "phase": "after_build",
+      "index": 1,
+      "type": "assert_renderer",
+      "desc": "assert_renderer **/Tear_CloudGlow = false",
+      "why": "HANDOFF 6.4：Build 关掉的几样要关着",
+      "status": "ok",
+      "out": "GateRoot/Tear_Root/Tear_CloudGlow Renderer.enabled False",
+      "ms": 0.4
+    },
+    {
+      "phase": "after_build",
+      "index": 2,
+      "type": "assert_renderer",
+      "desc": "assert_renderer **/Tear_CloudGlow_Additive = false",
+      "status": "ok",
+      "out": "GateRoot/Tear_Root/Tear_CloudGlow_Additive Renderer.enabled False",
+      "ms": 0.1
+    },
+    {
+      "phase": "after_build",
+      "index": 3,
+      "type": "assert_renderer",
+      "desc": "assert_renderer **/Tear_LightLane = false",
+      "status": "ok",
+      "out": "GateRoot/Tear_Root/Tear_LightLane Renderer.enabled False",
+      "ms": 0.1
+    },
+    {
+      "phase": "after_build",
+      "index": 4,
+      "type": "assert_renderer",
+      "desc": "assert_renderer **/Shaft_00 = false",
+      "status": "ok",
+      "out": "GateRoot/Tear_Root/Shaft_00 Renderer.enabled False",
+      "ms": 0.1
+    },
+    {
+      "phase": "after_build",
+      "index": 5,
+      "type": "assert_renderer",
+      "desc": "assert_renderer **/Shaft_01 = false",
+      "status": "ok",
+      "out": "GateRoot/Tear_Root/Shaft_01 Renderer.enabled False",
+      "ms": 0.1
+    },
+    {
+      "phase": "after_build",
+      "index": 6,
+      "type": "assert_renderer",
+      "desc": "assert_renderer **/GateBeam_Shaft_00 = true",
+      "status": "ok",
+      "out": "GateRoot/Tear_Root/GateBeam_Shaft_00 Renderer.enabled True",
+      "ms": 0.1
+    },
+    {
+      "phase": "after_build",
+      "index": 7,
+      "type": "assert_renderer",
+      "desc": "assert_renderer **/GateBeam_Shaft_01 = true",
+      "status": "ok",
+      "out": "GateRoot/Tear_Root/GateBeam_Shaft_01 Renderer.enabled True",
+      "ms": 0.1
+    },
+    {
+      "phase": "after_build",
+      "index": 8,
+      "type": "assert_light",
+      "desc": "assert_light Gate_Lights/Tear_CabinOnly",
+      "why": "门的总驱动那条第 5 步：Culling Mask 保持 Nothing",
+      "status": "ok",
+      "out": "Gate_Lights/Tear_CabinOnly：cullingMask 0，renderMode Auto，强度 0.8，颜色 #B9B6D6",
+      "ms": 0.3
+    },
+    {
+      "phase": "after_build",
+      "index": 9,
+      "type": "assert_light",
+      "desc": "assert_light Gate_Lights/Fill_from_below",
+      "status": "ok",
+      "out": "Gate_Lights/Fill_from_below：cullingMask -1，renderMode ForceVertex，强度 0.24，颜色 #5A6488",
+      "ms": 0.1
+    },
+    {
+      "phase": "after_build",
+      "index": 10,
+      "type": "collect",
+      "desc": "collect ",
+      "why": "交回改过的测试脚本",
+      "status": "ok",
+      "out": "Assets/Lanbai/Tests/Editor/LB_GateTest.cs → collected/LB_GateTest.cs",
+      "ms": 9.6
+    },
+    {
+      "phase": "after_build",
+      "index": 11,
+      "type": "collect",
+      "desc": "collect ",
+      "status": "ok",
+      "out": "Assets/Lanbai/Tests/Editor/LB_GateTest_Run.cs → collected/LB_GateTest_Run.cs",
+      "ms": 9.3
+    },
+    {
+      "phase": "after_build",
+      "index": 12,
+      "type": "collect",
+      "desc": "collect ",
+      "status": "ok",
+      "out": "Assets/Lanbai/Tests/Editor/LB_GateTest_Build.cs → collected/LB_GateTest_Build.cs",
+      "ms": 9.3
+    },
+    {
+      "phase": "time",
+      "index": 0,
+      "type": "method",
+      "desc": "Lanbai.Tests.LB_GateTest.Apply(155.1)",
+      "t": 155.10000610351562,
+      "status": "ok",
+      "out": "t = 155.10：GateRoot (0, 92.12, 1442.95)，云顶 y -57.88；臂 56 条显现、8 条关着；群臂 group0 1.00 / group1 1.00；远潮 _Reveal 1.00；月盘增益 0.60；裂口 H 640.0 m（缩放 0.640）、张开 0.479、撕裂 0.216；叠加光池 ×1.00、布褶 ×1.00、光晕 ×1.00（D 1441 m）、光路 ×1.00（x 缩放 0.544）、光池 ×1.00",
+      "ms": 13.4
+    },
+    {
+      "phase": "time",
+      "index": 0,
+      "type": "method",
+      "desc": "Lanbai.Tests.LB_GateTest.Apply(169.65)",
+      "t": 169.64999389648438,
+      "status": "ok",
+      "out": "t = 169.65：GateRoot (0, 47.66, 584.26)，云顶 y -102.34；臂 56 条显现、8 条关着；群臂 group0 1.00 / group1 0.00；远潮 _Reveal 0.00；月盘增益 0.00；裂口 H 851.3 m（缩放 0.851）、张开 1.000、撕裂 1.000；叠加光池 ×0.00、布褶 ×0.68、光晕 ×0.04（D 582 m）、光路 ×0.45（x 缩放 0.172）、光池 ×0.40",
+      "ms": 12
+    },
+    {
+      "phase": "post",
+      "index": 0,
+      "type": "save_scene_copy",
+      "desc": "save_scene_copy ",
+      "why": "搭好的门测试场景另存一份进沙盒（原场景不存）",
+      "status": "ok",
+      "out": "Assets/Lanbai/Tests/GateTest.unity 另存一份到 Assets/_LanbaiTest/GateTest_play.unity（原场景没存）",
+      "ms": 64.9
+    },
+    {
+      "phase": "post",
+      "index": 1,
+      "type": "open_scene",
+      "desc": "open_scene Assets/_LanbaiTest/GateTest_play.unity",
+      "status": "ok",
+      "out": "打开 Assets/_LanbaiTest/GateTest_play.unity（ 的改动没存）",
+      "ms": 247.5
+    },
+    {
+      "phase": "post",
+      "index": 2,
+      "type": "add_component",
+      "desc": "add_component ",
+      "why": "GateTest.unity 没有 VRC 场景描述符，Play 时 ClientSim 起不来（本地 10-08 的 console 写着 Playing without ClientSim）。只在沙盒里的拷贝上加",
+      "status": "ok",
+      "out": "VRCWorld 加了 VRC.SDK3.Components.VRCSceneDescriptor",
+      "ms": 0.7
+    },
+    {
+      "phase": "post",
+      "index": 3,
+      "type": "save_scene",
+      "desc": "save_scene ",
+      "why": "存沙盒里的拷贝。菜单跑完它就是打开着的场景：按 Play，ClientSim 起来以后量 Udon 时间（手动项第 1 条）",
+      "status": "ok",
+      "out": "存了 Assets/_LanbaiTest/GateTest_play.unity（沙盒里）",
+      "ms": 94.7
+    }
+  ],
+  "settings": [
+    {
+      "item": "vertex_compression_off",
+      "status": "ok",
+      "detail": "Player → Other Settings → Vertex Compression：要关掉 TexCoord0、TexCoord1、TexCoord2、TexCoord3、Color；现在的掩码 3846（ProjectSettings.asset 原文），都关了",
+      "changed_by_tool": false
+    },
+    {
+      "item": "lights_linear_intensity",
+      "status": "ok",
+      "detail": "GraphicsSettings.lightsUseLinearIntensity = True（要 True）",
+      "changed_by_tool": false
+    }
+  ],
+  "checks": [
+    {
+      "id": "steps_ok",
+      "metric": "steps.errors",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "每一步都跑成功了",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "no_compile_errors",
+      "metric": "console.compile_errors",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "跑的过程中没有新的编译错误",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "no_exceptions",
+      "metric": "console.exceptions",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "跑的过程中 Console 没有异常（工具自己的不算）",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "no_console_errors",
+      "metric": "console.errors",
+      "op": "==",
+      "value": 0,
+      "gate": false,
+      "why": "跑的过程中 Console 没有 Error（默认只警告；测试定义可以改成必须）",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "no_undeclared_writes",
+      "metric": "writes.undeclared",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "沙盒和 allowed_writes 以外没有文件被改",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "project_settings_untouched",
+      "metric": "writes.project_settings_changed",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "ProjectSettings 没被改",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "setting_vertex_compression_off",
+      "metric": "settings.vertex_compression_off",
+      "op": "==",
+      "value": 1,
+      "gate": true,
+      "why": "Player → Other Settings → Vertex Compression：要关掉 TexCoord0、TexCoord1、TexCoord2、TexCoord3、Color；现在的掩码 3846（ProjectSettings.asset 原文），都关了",
+      "measured": 1,
+      "expect": "= 1",
+      "status": "pass"
+    },
+    {
+      "id": "setting_lights_linear_intensity",
+      "metric": "settings.lights_linear_intensity",
+      "op": "==",
+      "value": 1,
+      "gate": true,
+      "why": "GraphicsSettings.lightsUseLinearIntensity = True（要 True）",
+      "measured": 1,
+      "expect": "= 1",
+      "status": "pass"
+    },
+    {
+      "id": "U7_vr_budget",
+      "metric": "perf.U7.all_on.vr_ms",
+      "op": "<=",
+      "value": 8.3,
+      "gate": false,
+      "why": "第 4 幕预算 8.3 ms（10-08 不带云的 VR 估算已经是 10.3 ms）。编辑器估算只报不卡：超了照实推，总导演按圣经 §1.9 定砍什么",
+      "measured": 11.55,
+      "expect": "≤ 8.3",
+      "status": "warn"
+    },
+    {
+      "id": "U8fwd_vr_budget",
+      "metric": "perf.U8fwd.all_on.vr_ms",
+      "op": "<=",
+      "value": 8.3,
+      "gate": false,
+      "why": "同上",
+      "measured": 11.79,
+      "expect": "≤ 8.3",
+      "status": "warn"
+    }
+  ],
+  "shots": [],
+  "play": [],
+  "sequences": [],
+  "textures": [],
+  "metrics": {
+    "backup_before.files": 332,
+    "console.compile_errors": 0,
+    "console.compile_errors_at_start": 0,
+    "console.errors": 0,
+    "console.exceptions": 0,
+    "console.warnings": 2,
+    "perf.U7.all_on.desktop_gpu_est_ms": 4.87,
+    "perf.U7.all_on.desktop_ms": 5.02,
+    "perf.U7.all_on.vr_cpu_ms": 3.38,
+    "perf.U7.all_on.vr_gpu_est_ms": 11.34,
+    "perf.U7.all_on.vr_ms": 11.55,
+    "perf.U7.all_on.vram_process_mb": 847.4,
+    "perf.U8fwd.all_on.desktop_gpu_est_ms": 4.62,
+    "perf.U8fwd.all_on.desktop_ms": 4.85,
+    "perf.U8fwd.all_on.vr_cpu_ms": 3.25,
+    "perf.U8fwd.all_on.vr_gpu_est_ms": 11.55,
+    "perf.U8fwd.all_on.vr_ms": 11.79,
+    "perf.U8fwd.all_on.vram_process_mb": 790.8,
+    "resources.free_ram_gb": 14.620826721191406,
+    "scene.lightmaps": 0,
+    "settings.lights_linear_intensity": 1,
+    "settings.vertex_compression_off": 1,
+    "steps.errors": 0,
+    "writes.declared": 1,
+    "writes.project_settings_changed": 0,
+    "writes.undeclared": 0
+  },
+  "metric_notes": {
+    "settings.vertex_compression_off": "Player → Other Settings → Vertex Compression：要关掉 TexCoord0、TexCoord1、TexCoord2、TexCoord3、Color；现在的掩码 3846（ProjectSettings.asset 原文），都关了",
+    "settings.lights_linear_intensity": "GraphicsSettings.lightsUseLinearIntensity = True（要 True）",
+    "scene.lightmaps": "打开的场景里的光照图张数",
+    "perf.U7.all_on.desktop_ms": "编辑器估算：电脑 1920×1080 一帧（CPU 提交 + 等 GPU）中位数",
+    "perf.U7.all_on.vr_ms": "编辑器估算：1832×1920 渲两次（VR 两只眼，同一方向）中位数；不是头显实测",
+    "perf.U7.all_on.desktop_gpu_est_ms": "合计 − 同尺寸空渲染（清屏 + 读回）的时间：近似 GPU 画这一帧的时间",
+    "perf.U7.all_on.vram_process_mb": "Unity 进程占的物理显存（含编辑器）；看状态之间的差",
+    "perf.U8fwd.all_on.desktop_ms": "编辑器估算：电脑 1920×1080 一帧（CPU 提交 + 等 GPU）中位数",
+    "perf.U8fwd.all_on.vr_ms": "编辑器估算：1832×1920 渲两次（VR 两只眼，同一方向）中位数；不是头显实测",
+    "perf.U8fwd.all_on.desktop_gpu_est_ms": "合计 − 同尺寸空渲染（清屏 + 读回）的时间：近似 GPU 画这一帧的时间",
+    "perf.U8fwd.all_on.vram_process_mb": "Unity 进程占的物理显存（含编辑器）；看状态之间的差",
+    "writes.undeclared": "沙盒和 allowed_writes 以外被改动的文件",
+    "writes.project_settings_changed": "ProjectSettings/*.asset 内容变了的个数（工具只查不改）"
+  },
+  "writes": {
+    "sandbox": "Assets/_LanbaiTest",
+    "allowed_writes": [
+      "Assets/Lanbai/Tests/**",
+      "Assets/Lanbai/GateClouds/Generated/**",
+      "Assets/Lanbai/GateClouds/Textures/**",
+      "Assets/Lanbai/GateClouds/GateClouds_Layout.json",
+      "Assets/Lanbai/UdonPrograms/**",
+      "Assets/Lanbai/Gate/Generated/**",
+      "Assets/SerializedUdonPrograms/**"
+    ],
+    "declared": [
+      "改了 Assets/Lanbai/Tests/GateTest.unity"
+    ],
+    "undeclared": [],
+    "project_settings_changed": [],
+    "tool_touched_restored": [
+      "存了、内容逐字节没变 Assets/Lanbai/Act07_Sea/Materials/Act07_CausticsCookie.asset",
+      "存了、内容逐字节没变 Assets/Lanbai/GateClouds/Generated/GateClouds_Beam_Shaft_00.asset",
+      "存了、内容逐字节没变 Assets/Lanbai/GateClouds/Generated/GateClouds_Beam_Shaft_01.asset",
+      "存了、内容逐字节没变 Assets/Lanbai/GateClouds/Generated/GateClouds_Beam_Wedge_Engel.asset",
+      "存了、内容逐字节没变 Assets/Lanbai/GateClouds/Generated/GateClouds_Beam_Wedge_Hand_L.asset",
+      "存了、内容逐字节没变 Assets/Lanbai/GateClouds/Generated/GateClouds_Beam_Wedge_Hand_R.asset",
+      "存了、内容逐字节没变 Assets/Lanbai/GateClouds/Generated/GateClouds_Beam_Wedge_Hand_R2.asset",
+      "存了、内容逐字节没变 Assets/Lanbai/GateClouds/Generated/GateClouds_Card_Bank.asset",
+      "存了、内容逐字节没变 Assets/Lanbai/GateClouds/Generated/GateClouds_Card_Congestus.asset",
+      "存了、内容逐字节没变 Assets/Lanbai/GateClouds/Generated/GateClouds_Card_Congestus_crop45.asset",
+      "存了、内容逐字节没变 Assets/Lanbai/GateClouds/Generated/GateClouds_Card_Puff.asset",
+      "存了、内容逐字节没变 Assets/Lanbai/GateClouds/Generated/GateClouds_Card_Strato.asset",
+      "存了、内容逐字节没变 Assets/Lanbai/GateClouds/Generated/GateClouds_Card_Wisp.asset",
+      "存了、内容逐字节没变 Assets/Lanbai/GateClouds/Generated/GateClouds_DeckQuad.asset",
+      "存了、内容逐字节没变 Assets/Lanbai/GateClouds/Generated/M_GateBeam_Shaft_00.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/GateClouds/Generated/M_GateBeam_Shaft_01.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/GateClouds/Generated/M_GateBeam_Wedge_Engel.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/GateClouds/Generated/M_GateBeam_Wedge_Hand_L.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/GateClouds/Generated/M_GateBeam_Wedge_Hand_R.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/GateClouds/Generated/M_GateBeam_Wedge_Hand_R2.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/GateClouds/Generated/M_GateCard_Bank_far.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/GateClouds/Generated/M_GateCard_Bank_horizon.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/GateClouds/Generated/M_GateCard_Bank_tower.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/GateClouds/Generated/M_GateCard_Congestus_far.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/GateClouds/Generated/M_GateCard_Congestus_tower.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/GateClouds/Generated/M_GateCard_Puff_horizon.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/GateClouds/Generated/M_GateCard_Strato_horizon.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/GateClouds/Generated/M_GateCard_Wisp_horizon.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/GateClouds/Generated/M_GateCard_Wisp_mist.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/GateClouds/Generated/M_GateCloudDeck.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Generated/Materials/LB_Sea.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Generated/Materials/LB_SeaB.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Generated/Materials/LB_WetGround.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_GateAirSky.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Gate_Colossus_1.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Gate_Colossus_2.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Gate_Colossus_3.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Gate_Colossus_bg_00.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Gate_Colossus_bg_01.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Gate_Colossus_bg_02.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Gate_Colossus_bg_03.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Gate_Colossus_bg_04.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Gate_Colossus_bg_05.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Gate_Hand_L0.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Gate_Hand_L1.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Gate_Hand_L2.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Gate_Hand_R0.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Gate_Hand_R1.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Gate_Hand_R2.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Gate_Near_0.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Gate_Near_1.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Gate_Near_2.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Gate_Pillar_L.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Gate_Pillar_R.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Gate_Rear_ArchA.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Gate_Rear_ArchB.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Gate_Rear_Hand0.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Gate_Rear_Hand1.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Gate_Rear_Hand2.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Gate_Rear_Hand2F.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Gate_Rear_Hand3.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Gate_Rear_Hand4.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Multitude_TierB_mid.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Multitude_TierC_far.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Tear_CloudGlow.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Tear_CloudGlow_Lit.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Tear_Flap.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Tear_FootSkyline.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Tear_FootSkylineIn.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Tear_Halo.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Tear_Lens.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Tear_LightLane.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Tear_Rip.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Tear_Shaft.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_Tear_SkyFolds.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_TentacleTide_v3_A.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Tests/GateTest_Materials/M_TentacleTide_v3_B.mat"
+    ],
+    "note": "按文件大小和修改时间比；材质、.asset、预制体、.meta 这类 ≤ 4 MB 的小文件另比内容哈希，存了但逐字节没变的列在 tool_touched_restored、不算改动；只在内存里改、没存盘的不算"
+  },
+  "allowed_writes": [
+    "Assets/Lanbai/Tests/**",
+    "Assets/Lanbai/GateClouds/Generated/**",
+    "Assets/Lanbai/GateClouds/Textures/**",
+    "Assets/Lanbai/GateClouds/GateClouds_Layout.json",
+    "Assets/Lanbai/UdonPrograms/**",
+    "Assets/Lanbai/Gate/Generated/**",
+    "Assets/SerializedUdonPrograms/**"
+  ],
+  "allowed_writes_why": "沙盒规则的例外：门测试本来就是这些搭建脚本搭的（LB_GateTest.Build 存 GateTest.unity 和 Tests/GateTest_Materials/；蓝白/Gate Clouds/Build 建 Generated/、设贴图导入、建 U# 程序资产；auto_lite 那一档临时改 GateClouds_Layout.json，量完逐字节写回）。别的地方被改就算没声明的写入；U# 编译把程序的序列化结果写进 Assets/SerializedUdonPrograms/（和 UdonPrograms 一起）",
+  "backup_before": [
+    "Assets/Lanbai/Tests/**",
+    "Assets/Lanbai/GateClouds/GateClouds_Layout.json",
+    "Assets/Lanbai/UdonPrograms/**",
+    "Assets/SerializedUdonPrograms/**"
+  ],
+  "warnings": [],
+  "files": [
+    "test_definition.json",
+    "backup_before/（332 个文件）",
+    "collected/LB_GateTest.cs",
+    "collected/LB_GateTest_Run.cs",
+    "collected/LB_GateTest_Build.cs",
+    "console.jsonl",
+    "perf.json",
+    "summary.md",
+    "manifest.json",
+    "result.json"
+  ]
+}

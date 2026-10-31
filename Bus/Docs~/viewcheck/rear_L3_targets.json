@@ -1,0 +1,138 @@
+{
+ "月": {
+  "az": -12,
+  "el": 8,
+  "visible": false,
+  "through": [
+   "TransomL2",
+   "WinL2"
+  ]
+ },
+ "暮日": {
+  "az": 0,
+  "el": 0.5,
+  "visible": true,
+  "through": [
+   "WindscreenL"
+  ]
+ },
+ "唱词 4b": {
+  "az": 0,
+  "el": -6,
+  "visible": false,
+  "through": [
+   "SeatL1_BackShell"
+  ]
+ },
+ "天问 / 庄子 11": {
+  "az": 0,
+  "el": 8,
+  "visible": false,
+  "through": [
+   "Header",
+   "HeaderLip",
+   "HeaderShelf",
+   "WindscreenL"
+  ]
+ },
+ "河伯": {
+  "az": -25,
+  "el": 6,
+  "visible": false,
+  "through": [
+   "CurtainL5a",
+   "WinL2"
+  ]
+ },
+ "裂口顶 U7": {
+  "az": 0,
+  "el": 18,
+  "visible": false,
+  "through": [
+   "Ceiling"
+  ]
+ },
+ "银心": {
+  "az": -30,
+  "el": 12,
+  "visible": true,
+  "through": [
+   "WinL2"
+  ]
+ },
+ "收音机": {
+  "az": -20,
+  "el": -12,
+  "visible": false,
+  "hit": "CurtainL5a"
+ },
+ "坠入深海": {
+  "az": -15,
+  "el": -12,
+  "visible": false,
+  "through": [
+   "SeatL2_BackShell"
+  ]
+ },
+ "里尔克": {
+  "az": 12,
+  "el": 3,
+  "visible": false,
+  "through": [
+   "Body",
+   "WindscreenL",
+   "WindscreenR"
+  ]
+ },
+ "晨日": {
+  "az": 30,
+  "el": 6,
+  "visible": false,
+  "through": [
+   "Body",
+   "PoleL0"
+  ]
+ },
+ "庄子 8-ii": {
+  "az": 35,
+  "el": 0,
+  "visible": false,
+  "through": [
+   "DoorGrab",
+   "DoorR_A_Frame1",
+   "SeatR0_Rail",
+   "TrimR0F",
+   "WinR1"
+  ]
+ },
+ "李白 3/12": {
+  "az": 50,
+  "el": -9,
+  "visible": false,
+  "through": [
+   "Body",
+   "TrimR0B",
+   "TrimR0Bot",
+   "TrimR0Sill",
+   "TrimR1Bot",
+   "TrimR1Sill"
+  ]
+ },
+ "济慈": {
+  "az": 50,
+  "el": -14,
+  "visible": false,
+  "through": [
+   "Body",
+   "SeatR1_BackShell"
+  ]
+ },
+ "天窗里的伤口 U8a": {
+  "az": 0,
+  "el": 49,
+  "visible": false,
+  "through": [
+   "Ceiling"
+  ]
+ }
+}

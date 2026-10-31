@@ -1,0 +1,242 @@
+[
+  {
+    "source_run": "20261026-023007",
+    "id": "window_05m",
+    "eye": [
+      0.5941508412361145,
+      1.733657717704773,
+      2.0382795333862305
+    ],
+    "euler": [
+      323.61669921875,
+      104.86687469482422,
+      0
+    ],
+    "hfov": 40,
+    "vfov_used": 30,
+    "w": 834,
+    "h": 614,
+    "ss": 2,
+    "coverage": 0.2385212351291605,
+    "coverage_of": [
+      "**/Slice_SideWindow/Window_R1"
+    ],
+    "distance_m": 0.5,
+    "reconstructed_target": [
+      0.983209,
+      2.03025,
+      1.935
+    ],
+    "note": "Target reconstructed from recorded camera and contract distance; no new render."
+  },
+  {
+    "source_run": "20261026-023007",
+    "id": "window_10m",
+    "eye": [
+      0.2601340413093567,
+      1.4790256023406982,
+      1.8831098079681396
+    ],
+    "euler": [
+      326.5489501953125,
+      60.0688362121582,
+      2.046542249445338e-06
+    ],
+    "hfov": 40,
+    "vfov_used": 30,
+    "w": 834,
+    "h": 614,
+    "ss": 2,
+    "coverage": 0.08642467133784829,
+    "coverage_of": [
+      "**/Slice_SideWindow/Window_R1"
+    ],
+    "distance_m": 1.0,
+    "reconstructed_target": [
+      0.983209,
+      2.03025,
+      2.29942
+    ],
+    "note": "Target reconstructed from recorded camera and contract distance; no new render."
+  },
+  {
+    "source_run": "20261026-025548",
+    "id": "window_05_rear",
+    "eye": [
+      0.6847149133682251,
+      1.8026976585388184,
+      1.9009149074554443
+    ],
+    "euler": [
+      332.9283447265625,
+      137.89869689941406,
+      -9.588242164682015e-07
+    ],
+    "hfov": 40,
+    "vfov_used": 30,
+    "w": 834,
+    "h": 614,
+    "ss": 2,
+    "coverage": 0.13054116967012708,
+    "coverage_of": [
+      "**/Slice_SideWindow/Window_R1"
+    ],
+    "distance_m": 0.5,
+    "reconstructed_target": [
+      0.983209,
+      2.03025,
+      1.57058
+    ],
+    "note": "Target reconstructed from recorded camera and contract distance; no new render."
+  },
+  {
+    "source_run": "20261026-025548",
+    "id": "window_05_rear_upper",
+    "eye": [
+      0.7496370673179626,
+      1.915452480316162,
+      1.739582896232605
+    ],
+    "euler": [
+      329.7249450683594,
+      147.25390625,
+      0
+    ],
+    "hfov": 40,
+    "vfov_used": 30,
+    "w": 834,
+    "h": 614,
+    "ss": 2,
+    "coverage": 0.023305134394113372,
+    "coverage_of": [
+      "**/Slice_SideWindow/Window_R1"
+    ],
+    "distance_m": 0.5,
+    "reconstructed_target": [
+      0.983209,
+      2.167528,
+      1.3764
+    ],
+    "note": "Target reconstructed from recorded camera and contract distance; no new render."
+  },
+  {
+    "source_run": "20261026-025548",
+    "id": "window_05_front_upper",
+    "eye": [
+      0.7042781710624695,
+      1.8665002584457397,
+      2.2079784870147705
+    ],
+    "euler": [
+      322.9826965332031,
+      44.321041107177734,
+      0
+    ],
+    "hfov": 40,
+    "vfov_used": 30,
+    "w": 834,
+    "h": 614,
+    "ss": 2,
+    "coverage": 0.01081089525773518,
+    "coverage_of": [
+      "**/Slice_SideWindow/Window_R1"
+    ],
+    "distance_m": 0.5,
+    "reconstructed_target": [
+      0.983209,
+      2.167528,
+      2.4936
+    ],
+    "note": "Target reconstructed from recorded camera and contract distance; no new render."
+  },
+  {
+    "source_run": "20261026-025548",
+    "id": "window_10_rear",
+    "eye": [
+      0.3862205743789673,
+      1.5751454830169678,
+      2.2312498092651367
+    ],
+    "euler": [
+      332.9283447265625,
+      137.89869689941406,
+      -9.588242164682015e-07
+    ],
+    "hfov": 40,
+    "vfov_used": 30,
+    "w": 834,
+    "h": 614,
+    "ss": 2,
+    "coverage": 0.09763785063154688,
+    "coverage_of": [
+      "**/Slice_SideWindow/Window_R1"
+    ],
+    "distance_m": 1.0,
+    "reconstructed_target": [
+      0.983209,
+      2.03025,
+      1.57058
+    ],
+    "note": "Target reconstructed from recorded camera and contract distance; no new render."
+  },
+  {
+    "source_run": "20261026-025548",
+    "id": "window_10_rear_upper",
+    "eye": [
+      0.5160649418830872,
+      1.6633765697479248,
+      2.1027657985687256
+    ],
+    "euler": [
+      329.7249450683594,
+      147.25390625,
+      0
+    ],
+    "hfov": 40,
+    "vfov_used": 30,
+    "w": 834,
+    "h": 614,
+    "ss": 2,
+    "coverage": 0.0692904959420086,
+    "coverage_of": [
+      "**/Slice_SideWindow/Window_R1"
+    ],
+    "distance_m": 1.0,
+    "reconstructed_target": [
+      0.983209,
+      2.167528,
+      1.3764
+    ],
+    "note": "Target reconstructed from recorded camera and contract distance; no new render."
+  },
+  {
+    "source_run": "20261026-025548",
+    "id": "window_10_front_upper",
+    "eye": [
+      0.42534714937210083,
+      1.56547212600708,
+      1.9223573207855225
+    ],
+    "euler": [
+      322.9826965332031,
+      44.321044921875,
+      -2.1385678792285034e-06
+    ],
+    "hfov": 40,
+    "vfov_used": 30,
+    "w": 834,
+    "h": 614,
+    "ss": 2,
+    "coverage": 0.05974308501081871,
+    "coverage_of": [
+      "**/Slice_SideWindow/Window_R1"
+    ],
+    "distance_m": 1.0,
+    "reconstructed_target": [
+      0.983209,
+      2.167528,
+      2.4936
+    ],
+    "note": "Target reconstructed from recorded camera and contract distance; no new render."
+  }
+]

@@ -1,0 +1,299 @@
+{
+ "part": "seat",
+ "model": "PAZ-672M 乘客座椅（10-25 按 Kolesa 那辆 1989 年 672M 重做：实物参考_PAZ细节/README.md §6）",
+ "source_code": "Bus/Source/parts/seat.py（r5，2026-10-25：按代码里的数对过）",
+ "hero_eye": [
+  0.55,
+  1.7,
+  2.05
+ ],
+ "distance_rule": "坐在座位上看：前排座椅的靠背 0.6–0.8 m，自己的座垫 0.5–0.9 m，靠背顶的管套 0.5–0.7 m（总导演 10-25）；地脚、墙托架、托盘按坐着的眼到那一处估。范围 = [近, 远]。",
+ "visible_rule": "角像素 = 尺寸 ÷ 视距（弧度）× 180/π × 像素密度；≥ 2 px 记“看得出”。判定按 20 px/°（D-40a #6），14 px/° 只作参考（D-40b #2）。compare.py 算。",
+ "colours": "管子、背板：漆的，#3C3E3D（圣经 §4.2 座椅框一行；总导演另有裁决就照裁决）；管套：黑色人造革；座垫、靠背：牛血红人造革 #5A2126；嵌线：米白。不照 trolleway 那辆的颜色（红座、奶油管、白背板）。",
+ "details": [
+  {
+   "id": "top_tube",
+   "name": "靠背顶横管 Ø25（横贯整个靠背，漆的，不是铬）",
+   "size_mm": 25,
+   "size_of": "管径",
+   "distance_m": [
+    0.6,
+    0.8
+   ],
+   "where": "前排座椅的靠背顶",
+   "modelled": "几何（Ø25，游戏网格 16 边）",
+   "fact": "§6.1：横贯；漆管"
+  },
+  {
+   "id": "tube_bend",
+   "name": "弯管的弯（半径约 60 mm），两头弯角露管",
+   "size_mm": 60,
+   "size_of": "弯曲半径",
+   "distance_m": [
+    0.6,
+    0.8
+   ],
+   "where": "前排靠背的两个上角",
+   "modelled": "几何（顶上两个弯 R 60，游戏网格每 90° 8 段；地上的弯 R 35）",
+   "fact": "§6.1：两头弯角不包，露出漆过的管子"
+  },
+  {
+   "id": "sleeve",
+   "name": "黑色人造革管套 Ø55（只套横的那一段）",
+   "size_mm": 55,
+   "size_of": "外径",
+   "distance_m": [
+    0.5,
+    0.7
+   ],
+   "where": "前排靠背顶",
+   "modelled": "几何（车床体 Ø55，32 / 16 边，泡沫下的微小起伏）",
+   "fact": "§6.1：黑色人造革管套，一道接缝"
+  },
+  {
+   "id": "sleeve_seam",
+   "name": "管套的一道接缝（约 3 mm 宽的缝边）",
+   "size_mm": 1.8,
+   "size_of": "缝边宽",
+   "distance_m": [
+    0.5,
+    0.7
+   ],
+   "where": "管套背面或下面",
+   "modelled": "几何（下后方一条 Ø1.8 的缝边；游戏网格靠法线图）"
+  },
+  {
+   "id": "sleeve_gathers",
+   "name": "管套两头的收口褶（约 5 mm）",
+   "size_mm": 5,
+   "size_of": "褶宽",
+   "distance_m": [
+    0.5,
+    0.7
+   ],
+   "where": "管套两端、弯角开始的地方",
+   "modelled": "几何（两头收口到管子 + 14 mm 处一道褶）"
+  },
+  {
+   "id": "piping",
+   "name": "米白嵌线 Ø3.8（座垫顶面一圈、靠背正面一圈）",
+   "size_mm": 3.8,
+   "size_of": "直径",
+   "distance_m": [
+    0.5,
+    0.9
+   ],
+   "where": "自己的座垫；别的座位靠背正面在 1 m 以外",
+   "modelled": "几何（Ø3.8 真滚条，贴着缝；游戏网格 4 边，形状靠法线图）",
+   "fact": "§6.1：边上一圈米白色嵌线；不分格、没有绗缝"
+  },
+  {
+   "id": "cushion",
+   "name": "座垫 100 mm 厚，前沿圆",
+   "size_mm": 100,
+   "size_of": "厚",
+   "distance_m": [
+    0.5,
+    0.9
+   ],
+   "where": "自己的座垫",
+   "modelled": "几何（100 mm，前沿圆、底下往里收）",
+   "fact": "§6.1：座垫厚，前沿圆"
+  },
+  {
+   "id": "back_pad",
+   "name": "靠背软垫约 60 mm 厚",
+   "size_mm": 60,
+   "size_of": "厚",
+   "distance_m": [
+    0.6,
+    0.8
+   ],
+   "where": "前排靠背的侧面和上沿",
+   "modelled": "几何（60 mm，前面略鼓）"
+  },
+  {
+   "id": "back_board",
+   "name": "冲压背板（一整块钢板，和管子同色）",
+   "size_mm": 400,
+   "size_of": "宽（约，单人座）",
+   "distance_m": [
+    0.6,
+    0.8
+   ],
+   "where": "前排靠背的背面",
+   "modelled": "几何（2.5 mm 冲压板）",
+   "fact": "§6.1：四边压出一圈凸边、中间凹下去"
+  },
+  {
+   "id": "board_rim",
+   "name": "背板四边的凸边（15–20 mm 宽）",
+   "size_mm": 18,
+   "size_of": "宽（取小的那头）",
+   "distance_m": [
+    0.6,
+    0.8
+   ],
+   "where": "同上",
+   "modelled": "几何（凸边平的一段 6–14 mm，24 mm 处收完）"
+  },
+  {
+   "id": "board_rim_height",
+   "name": "凸边的高（4–5 mm）",
+   "size_mm": 4.5,
+   "size_of": "高（取小的那头）",
+   "distance_m": [
+    0.6,
+    0.8
+   ],
+   "where": "同上（侧光下的那道阴影）",
+   "modelled": "几何（4.5 mm）"
+  },
+  {
+   "id": "screws",
+   "name": "一字槽圆头螺钉 Ø9（有几颗歪的、被漆盖住的）",
+   "size_mm": 8.4,
+   "size_of": "钉头直径",
+   "distance_m": [
+    0.6,
+    0.8
+   ],
+   "where": "背板边上",
+   "modelled": "几何（Ø8.4 盘头，7–8 颗：槽口方向各不同、两颗被漆盖住、两颗拧歪 4–7°、一颗没拧到底）",
+   "fact": "§6.1：边上有几个小螺钉"
+  },
+  {
+   "id": "screw_slot",
+   "name": "螺钉的一字槽（约 1.2 mm）",
+   "size_mm": 1.2,
+   "size_of": "槽宽",
+   "distance_m": [
+    0.6,
+    0.8
+   ],
+   "where": "同上",
+   "modelled": "法线贴图就够（小于 3 mm，账本）"
+  },
+  {
+   "id": "cushion_pan",
+   "name": "座垫托盘 3 mm 钢板",
+   "size_mm": 3,
+   "size_of": "板厚",
+   "distance_m": [
+    0.7,
+    0.9
+   ],
+   "where": "自己的座垫前沿底下",
+   "modelled": "几何（3 mm，两侧压出 25 mm 的侧条）"
+  },
+  {
+   "id": "pan_lip",
+   "name": "托盘的翻边 12 mm",
+   "size_mm": 12,
+   "size_of": "翻边高",
+   "distance_m": [
+    0.7,
+    0.9
+   ],
+   "where": "同上",
+   "modelled": "几何（前沿 12 mm 翻边）"
+  },
+  {
+   "id": "feet",
+   "name": "地脚板（两颗螺栓）",
+   "size_mm": 50,
+   "size_of": "宽（约）",
+   "distance_m": [
+    1.1,
+    1.5
+   ],
+   "where": "过道侧的腿落到地板上（前排、过道对面）",
+   "modelled": "几何（50 × 52 mm 脚板 + 立筋，两颗六角螺栓）"
+  },
+  {
+   "id": "feet_bolts",
+   "name": "地脚的螺栓头（约 13 mm）",
+   "size_mm": 10,
+   "size_of": "六角头外径（约，M8）",
+   "distance_m": [
+    1.1,
+    1.5
+   ],
+   "where": "同上",
+   "modelled": "几何（六角 Ø10）"
+  },
+  {
+   "id": "wall_bracket",
+   "name": "墙托架",
+   "size_mm": 40,
+   "size_of": "托臂宽（约）",
+   "distance_m": [
+    0.7,
+    1.1
+   ],
+   "where": "靠墙那侧，座垫下面",
+   "modelled": "几何（墙板 + 两颗螺栓 + 一根 Ø20 撑杆）"
+  },
+  {
+   "id": "leather_grain",
+   "name": "人造革的皮纹（约 0.5 mm）",
+   "size_mm": 0.5,
+   "size_of": "纹路",
+   "distance_m": [
+    0.5,
+    0.9
+   ],
+   "where": "座垫、靠背、管套",
+   "modelled": "法线贴图（Cabin_SeatLeather_N_0.30m，0.35）"
+  },
+  {
+   "id": "seam_cracks",
+   "name": "接缝开裂（露出底布 #8A6A60，圣经 §4.2；每座 2–5 处）",
+   "size_mm": 20,
+   "size_of": "裂口长",
+   "distance_m": [
+    0.5,
+    0.9
+   ],
+   "where": "座垫前角 / 大腿下的前沿 / 座垫后角 / 靠背下角 / 靠背上沿嵌线 / 管套两头",
+   "modelled": "图集遮罩 B（候选形状）× 每座顶点色 alpha（开哪几处）"
+  },
+  {
+   "id": "gusset",
+   "name": "座垫后角的压制连接板（F01）",
+   "size_mm": 100,
+   "size_of": "边长",
+   "distance_m": [
+    0.7,
+    1.0
+   ],
+   "where": "侧框后角外侧",
+   "modelled": "几何（3 mm 三角板）"
+  },
+  {
+   "id": "tube_screws",
+   "name": "靠背侧管上的小圆头螺钉（F01、F04）",
+   "size_mm": 7,
+   "size_of": "头径",
+   "distance_m": [
+    0.6,
+    0.8
+   ],
+   "where": "靠背两侧管的外侧",
+   "modelled": "几何"
+  },
+  {
+   "id": "hand_wear",
+   "name": "过道那头弯角被手磨穿的漆（露出深色亮金属）",
+   "size_mm": 60,
+   "size_of": "磨穿的范围",
+   "distance_m": [
+    0.5,
+    0.7
+   ],
+   "where": "过道一侧的顶管弯角",
+   "modelled": "图集（高模的 Zone G → 漆磨穿）"
+  }
+ ],
+ "note": "672M 座椅的事实来自 Bus/Docs~/实物参考_PAZ细节/README.md §6.1（Kolesa 1989 年 672M，照片有版权、只给链接）。标“约”的尺寸是估的，重做提交后按新代码改。没有在 Unity 里看过。"
+}

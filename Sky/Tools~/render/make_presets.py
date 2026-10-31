@@ -95,7 +95,11 @@ dusk_common = dict(_RotationA=fit['dusk']['rotation'], _ExposureA=0.0, _ClampA=1
                    _SunGlow=[0.25, 0.9, 0.06, 0.12], _SunGlowColor=v4(F('#FF855C')),
                    _Band2Color=v4(F('#FF9396 @ +0.92'), 0.25), _Band2Shape=[4.0, 3.0, 180, 55], _Band2Gain=0.6,
                    _NadirColor=v4(F('#3B4A78'), 0.6), _BelowShape=[-60, 0.7, 0.6, 0.8], _PurpleGuard=LAV_GUARD,
-                   _OtherGain=0.82, _OtherTint=[0.92, 0.95, 1.05, 0.85], _OtherSeam=1.0)   # .a: the lower half darkens to the nadir (art r0 #1)
+                   _OtherGain=0.82, _OtherTint=[0.88, 0.96, 0.98, 0.85], _OtherSeam=1.0,   # less blue (act 8 final review: with -0.3 EV on 8-ii the lower half's crossing graded to h 291)   # .a: the lower half darkens to the nadir (art r0 #1)
+                   # the HDRI's vertical brightness step 2.5 deg right of the sun (13 L*, in the middle of the thesis frame,
+                   # act 8 final review / art r2 #2): an ellipse +-14 deg x +-2.5 deg around the sun rebuilt row by row
+                   # (inpaint mode), 9.3 -> 1.7 L*/deg; the procedural disc + glow are the sun
+                   _SunRemove=[14.0, 0.0, 0.0, 2.5])
 P['dusk_8i'] = dict(acts='8-i（出海 → F10e）', profile='S8', sunAz=0.0, cubeA='syferfontein_0d_clear_puresky',
     hdri_file=os.path.join(HDRI, 'syferfontein_0d_clear_puresky_1k.hdr'),
     material=dict(dusk_common, _OtherSky=0.0, _BelowMirror=1.0, _BelowShape=[-45, 1.0, 0.6, 2.0], _NadirColor=v4(F('#3B4A78'), 0.0)),   # the sky continues below (mirrored elevation, log-darkened to the nadir): no 'ground' under the sunset (art r0 #3, r2 #1)
@@ -105,19 +109,25 @@ P['dusk_8i'] = dict(acts='8-i（出海 → F10e）', profile='S8', sunAz=0.0, cu
 P['dusk_8ii'] = dict(blend_skip=['_Udon_SunDisc'],   # F12 -> 8b: the clouds' driver writes the sun line (one writer, tech r2 #2b)
     acts='8-ii（另一片天，F10e → F12）', profile='S8', sunAz=0.0, cubeA='syferfontein_0d_clear_puresky',
     hdri_file=os.path.join(HDRI, 'syferfontein_0d_clear_puresky_1k.hdr'),
-    material=dict(dusk_common, _OtherSky=1.0),
+    material=dict(dusk_common, _OtherSky=1.0, _ExposureA=-0.3, _SunGlow=[0.15, 0.9, 0.04, 0.12],
+                  _Band1Color=v4(F('#3F5790'), 0.0), _Band1Shape=[14.0, -5.0, 0, 110]),   # = the blue hour's band (gain 0 here): its shape no longer flips sign over the fade   # act 8 final review: ~8 % of the frame clipped in red -> -0.3 EV on the cube, a smaller glow
     globals=dict(_Udon_SunDir=v4(SUN8, 1), _Udon_SunDisc=[1.0, 0.265, 0, 1], _Udon_SkyFx=[1.0, 0, 0, 1], _Udon_FogDensity=0.00025),
     fog_from_sky=dict(near_az=0.0, width=80.0, zen_el=60.0, nadir=F('#3B4A78')),
     notes='_OtherSky 0 → 1（956.36 → 964.36，8 秒 smoothstep）：下半球按 (−x, −y, z) 取样，×0.82、染 (0.92, 0.95, 1.05)，1° 软接缝；两个太阳在接缝上熔成一条线。F12 起日线：_Udon_SunDisc.z（线的半长）10° → 0、增益 → 0（987.06 → 993.06）。')
 
 bh_zen = inv_screen('#16223F', 'S8b')
 P['blue_hour'] = dict(acts='8b（蓝时，993.06 → 1001.21）+ 第 9 幕同一个材质', profile='S8b', cubeA=None, glow=True,
-    material=dict(_ProcWeight=1.0, _SunGain=0.0, _SunDir=v4(SUN8, 0), _Band1Color=v4(F('#3F5790'), 0.0), _Band1Shape=[14.0, -10.0, 0, 110], _Band1Gain=0.85,
+    # the cube-only values = dusk's (no cube here, so they do nothing in the blue hour itself): over the 8-ii -> blue hour
+    # fade the dusk cube keeps its own tints / rotation / exposure / sun removal (act 8 final review: lerping the tints to
+    # 1 showed the HDRI's raw lilac-pink at mid-fade, greyed by the guard into a dusty band)
+    material=dict(_RotationA=fit['dusk']['rotation'], _ExposureA=-0.3, _ClampA=16.0, **tints('dusk'),
+                  _ProcWeight=1.0, _SunGain=0.0, _SunDir=v4(SUN8, 0), _SunRemove=[14.0, 0.0, 0.0, 2.5], _Band1Color=v4(F('#3F5790'), 0.0), _Band1Shape=[14.0, -5.0, 0, 110], _Band1Gain=0.85,   # below its centre sigma 5 (was 10: its tail darkened the horizon more than the sky under it, the brightest row sat 6-10 deg below the horizon)
                   _NightMaskDir=v4(dir_az_el(0, 0), 0), _NightMaskShape=[40, 45, 6, 22], _NightColor=v4(F('#050000')),
                   _StarFloorAdd=v4(np.maximum(F('#0D0F23') - F('#050000'), 0)), _GalaxyGain=0.0, _PurpleGuard=LAV_GUARD),
-    globals=dict(_Udon_SunDir=v4(SUN8, 1), _Udon_HorizonColor=v4(F('#8093C2') * 0.80, 2.0), _Udon_FogBandColor=v4(F('#8093C2')), _Udon_FogBandDir=v4(dir_az_el(0, 0), 0),
+    globals=dict(_Udon_SunDir=v4(SUN8, 1), _Udon_HorizonColor=v4(F('#8093C2') * 0.62, 2.0),   # the side away from the sun (act 8 final review: the sun's side must read, dL* 1.8 -> ~10)
+                  _Udon_FogBandColor=v4(F('#8093C2')), _Udon_FogBandDir=v4(dir_az_el(0, 0), 0),
                  _Udon_FogBandWidth=90.0, _Udon_ZenithColor=v4(bh_zen), _Udon_NadirColor=v4(F('#1A2A4E') * 1.3),
-                 _Udon_FogShape=[1.0, 90.0, 0.8, 0], _Udon_FogBelow=[-60, 0, 1.0, 0], _Udon_SkyBlend=[0, 1, 0, 1], _Udon_SkyFx=[0, 0.85, 0, 1],
+                 _Udon_FogShape=[0.0, 90.0, 0.3, 0], _Udon_FogBelow=[-60, 0, 0.3, 0],   # steep both ways from 0 deg: the horizon seam is the brightest row _Udon_SkyBlend=[0, 1, 0, 1], _Udon_SkyFx=[0, 0.85, 0, 1],
                  _Udon_FogDensity=0.0),
     notes='天缝 / 地平线 #6F86B0（填 #8093C2）、最纯的蓝带 #2E4F8A（填 #3F5790）、天顶 #16223F、另一片天的天底 #1A2A4E。程序化（LanbaiHorizon 模型 B + 地平线带 1），上下对称。987.06 → 993.06 由暮的立方图 6 秒过渡到这里（_Udon_SkyBlend.y 0 → 1，与日线收缩同步）。1001.21 → 1009.21：_Udon_SkyBlend.z 0 → 1（夜的定向遮罩：前方 ±40° 的地平线带最后暗）。')
 

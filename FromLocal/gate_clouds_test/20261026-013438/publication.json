@@ -1,0 +1,52 @@
+{
+  "source_local": "E:\\IDMdownload\\VRCC\\dream\\LanbaiReports\\tests\\gate_clouds_test\\20261026-013438",
+  "visual_validity": "camera UI excluded; still requires visual review",
+  "omitted": "Private consent note; backup_before and transient state; invalid-run PNG bulk",
+  "files": [
+    {
+      "path": "console.jsonl",
+      "bytes": 35461,
+      "sha256": "e2f9d97ade407fa9271d71e4dd1a87bfab9d7309f9fcf5849865c9249d7c9ff4"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 44265,
+      "sha256": "ecbc2bf44f02e9e7bd53ddbc5377d3f7284e060a1319522a55ef6840c7c7c150"
+    },
+    {
+      "path": "perf.json",
+      "bytes": 4479,
+      "sha256": "09933905667c4132d988c45f1eeda51175f7f01032ff57d91d1479dcacc176f7"
+    },
+    {
+      "path": "result.json",
+      "bytes": 260,
+      "sha256": "54d0dd2e731bb2c6bb58a9b17675d7c1950e852dbc3cb6dab63f7977886d061f"
+    },
+    {
+      "path": "summary.md",
+      "bytes": 12099,
+      "sha256": "87b97af92e43cd51f7e99b17dc22c2eda9e0c13b0bdcb2ff04e1c52beff5d4b5"
+    },
+    {
+      "path": "test_definition.json",
+      "bytes": 13753,
+      "sha256": "ac7b2633287f9effe179cd2251903c1aec7dba636c9cf3e8da35a61612133f23"
+    },
+    {
+      "path": "collected/LB_GateTest.cs",
+      "bytes": 21640,
+      "sha256": "df8a65dbbd16e351e2bc5c9b976acdda1274ed6833f1dd72dc6a6b14fde039fe"
+    },
+    {
+      "path": "collected/LB_GateTest_Build.cs",
+      "bytes": 40258,
+      "sha256": "9d876469c015ff37f9697e628f058ee9b19242dcb440d4d025c9381a8482f8a7"
+    },
+    {
+      "path": "collected/LB_GateTest_Run.cs",
+      "bytes": 40235,
+      "sha256": "92871c861573f771616e61a5290e1c21c1e3fbc670477f2e5c3c874d93992831"
+    }
+  ]
+}

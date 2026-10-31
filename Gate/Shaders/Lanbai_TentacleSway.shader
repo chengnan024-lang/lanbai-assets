@@ -1,3 +1,25 @@
+//  v2.9 (gate round 10, 2026-10-26; UNCOMPILED): the fingertip curl (圣经 §I 喉: the arms stop at the first lip, their
+//    tips curl back). Instanced _Curl (0..1, the gate driver), _CurlPivot (object-space centreline point at t0, w = t0) and
+//    _CurlAxis (object-space axis, w = the angle at the tip in rad; both baked per arm, Gate/GateDriver_Bake.json curl):
+//    past t0 every vertex turns about the pivot by _Curl x angle x (t - t0) / (1 - t0). Off (0) everywhere else.
+//    Instanced _Silhouette (0..1): surface colour x (1 - s) before the fog (the kept hands looking back: fog only).
+//    Instanced _FogHold (0 off, else the fog cap at any distance, before the reveal): the kept hands' 0.7 in the 4c fog,
+//    let go to 1 over their fade (总导演 10-26).
+//  v2.8 (gate clouds kit, D-44 #3 the root seam, 2026-10-25; UNCOMPILED): the arms in 阿白's VOLUME cloud. Under the
+//    volume deck (Lanbai/GateVolumeDeck; the gate clouds driver sets _Udon_CloudVolume.x = 1) the visible cloud surface
+//    is 50-90 m under the nominal top (its threshold is 0.75 there), so v2.7's clip at top - 5 and the ragged fade to
+//    _CloudTopColor left a flat-cut dark stump standing on thin cloud ("a hard horizontal line"). In volume mode:
+//    * roots shallower than top - _RootReach (150 m; the near arms stand at top - 35) are stretched down to it over the
+//      lowest _RootSpan m, then EVERY arm's part below top - 100 (inside the dense cloud) is stretched so its root lands
+//      at top - _RootDeep (2000): from under the cloud the stems go on down into the dark, x _UnderDark below the deck's
+//      floor and fading into the floor behind it over the 120 m under it (vertex; every pass, so the shadow / depth
+//      agree); clip only at top - _RootClip (2010), no dissolve;
+//    * the surface is WET into the cloud: wet = _CloudWet.y (1 - exp(-k tau)), tau from three taps of the deck's own
+//      density IN FRONT of the skin (toward the eye: 3, 15, 40 m; LanbaiCloudVolume.cginc, skirts included), toward the
+//      deck's own lit colour there (ambient x height + moon x its self-shadow, x the deck gain); the cloud-top fog extra
+//      fades by (1 - wet) (the cloud fogs itself);
+//    * the deck gathers a SKIRT round every arm (the deck's side, LanbaiGateSkirt*).
+//    Without the volume (the global unset) v2.7d is unchanged. Reference: GateClouds/Source/seam_ref.py.
 //  v2.7d (gate clouds kit, 2026-10-22; UNCOMPILED): `noforwardadd` on the surface pragma. The gate_test found a real
 //    floating point division by zero in the generated ForwardAdd POINT variant; the gate has no point lights and the
 //    fill directional is Not Important (spherical harmonics), so the pass did nothing but cost a draw. Nothing else changed.
@@ -208,6 +230,11 @@ Shader "Lanbai/TentacleSway"
         [Toggle] _RimBackOnly ("Moon rims only when the moon is in front of the view (rear window: 0)", Float) = 1
         [Toggle] _UseUVRadius ("Use UV2.x = baked radius / root radius (GateArms_v3.fbx: 1; library meshes: 0)", Float) = 0
         _Reveal ("Reveal 0..1 (instanced; 0 = all haze, renderer off)", Range(0, 1)) = 1
+        _Curl ("v2.9 fingertip curl 0..1 (instanced; the gate driver, U9)", Range(0, 1)) = 0
+        _CurlPivot ("v2.9 curl pivot: object-space centreline point, w = t where the curl starts (instanced)", Vector) = (0, 0, 0, 0.75)
+        _CurlAxis ("v2.9 curl axis (object space), w = the angle at the tip, rad (instanced)", Vector) = (1, 0, 0, 2.2)
+        _Silhouette ("v2.9 0..1: the surface goes to black, only the fog is left (instanced; the hands kept past U9)", Range(0, 1)) = 0
+        _FogHold ("v2.9 fog cap at any distance (instanced; 0 or 1 = off; the hands kept past U9: 0.7, let go as they fade)", Range(0, 1)) = 0
         _MoonGlowFog ("Moon air in the fog colour", Range(0, 2)) = 0.35
         _MoonGlowColor ("Moon aureole #8FA3C8, linear", Vector) = (0.275, 0.366, 0.578, 1)
         _MoonGlowShape ("Aureole: a1, k1, a2, k2 (a1 e^-k1 deg + a2 e^-k2 deg)", Vector) = (1.6, 0.9, 0.06, 0.32)
@@ -220,6 +247,16 @@ Shader "Lanbai/TentacleSway"
         _Girth ("Girth (root radius multiplier, 1 = library; GateArms_v2 meshes have it baked: keep 1)", Range(1, 4)) = 1
         _GirthFalloff ("Girth Falloff (power of 1 - t)", Range(0.5, 4)) = 1.5
         [Toggle] _ClipBelowCloud ("Clip Below The Cloud-Sea Top", Float) = 1
+        [Header(v2.8 the volume cloud  only when _Udon_CloudVolume.x is 1)]
+        _RootClip ("v2.8: clip this far under the cloud top (m)", Float) = 2010
+        _RootReach ("v2.8: roots shallower than this under the top (m) are stretched down to it", Float) = 150
+        _RootSpan ("v2.8: the stretch runs over this much of the arm above the root (m)", Float) = 60
+        _RootDeep ("v2.8: every root goes on down to this far under the top (m; the deck's floor is 170; deep, so no root end is ever in view)", Float) = 2000
+        _UnderDark ("v2.8: under the deck's floor the arm is in the cloud's shadow: x this", Range(0, 1)) = 0.15
+        _CloudWet ("v2.8 wet: k, max, near tap, far tap toward the eye (m; the middle one is 15)", Vector) = (1.5, 0.95, 3, 40)
+        _CloudLit ("v2.8 the deck's light: moon E (deck _MoonE), gain (deck _Gain), -, -", Vector) = (0.38, 0.9, 0, 0)
+        _CloudMoonColor ("v2.8 the deck's _MoonColor, linear", Vector) = (0.6724, 0.7758, 1.0, 1)
+        _CloudAmbColor ("v2.8 the deck's _AmbColor, linear", Vector) = (0.0436, 0.0504, 0.0726, 1)
         _RimPx ("Pixel Rim Width N (px): far 2.2, near 5", Range(0, 10)) = 2.2
         _RimPxMoon ("Pixel Rim Moon Side Strength", Range(0, 4)) = 1.3
         _RimPxTear ("Pixel Rim Tear Side Strength", Range(0, 4)) = 2.2
@@ -340,6 +377,9 @@ Shader "Lanbai/TentacleSway"
         half _RimPxTear;
         half _ReflectionScale;
         #include "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc"
+        #include "Assets/Lanbai/GateClouds/Shaders/LanbaiCloudVolume.cginc"     // v2.8: the volume cloud's density
+        float _RootClip, _RootReach, _RootSpan, _RootDeep, _UnderDark;
+        float4 _CloudWet, _CloudLit, _CloudMoonColor, _CloudAmbColor;
 
         half _RimGain;
         half _RimLadderFloor;
@@ -361,6 +401,11 @@ Shader "Lanbai/TentacleSway"
             UNITY_DEFINE_INSTANCED_PROP(float, _Reveal)
             UNITY_DEFINE_INSTANCED_PROP(float, _FogCapI)
             UNITY_DEFINE_INSTANCED_PROP(float, _RevealGroup)
+            UNITY_DEFINE_INSTANCED_PROP(float, _Curl)
+            UNITY_DEFINE_INSTANCED_PROP(float, _FogHold)
+            UNITY_DEFINE_INSTANCED_PROP(float4, _CurlPivot)
+            UNITY_DEFINE_INSTANCED_PROP(float4, _CurlAxis)
+            UNITY_DEFINE_INSTANCED_PROP(float, _Silhouette)
         UNITY_INSTANCING_BUFFER_END(LanbaiGate)
 
         float4 _ThinK; half _ThinSmooth; float4 _ThinAlbedo;
@@ -543,6 +588,29 @@ Shader "Lanbai/TentacleSway"
             v.vertex.xyz += v.normal * (infl / objScale);
         #endif
 
+            // v2.9 (门第 10 轮, 圣经 §I 喉): the fingertip CURL. Past t0 (_CurlPivot.w) every vertex turns about the
+            // centreline point at t0 by an angle that grows from 0 there to _Curl x _CurlAxis.w at the tip: the tail rolls
+            // up (a straight tail becomes a spiral). Object space, before the sway, in every pass (shadows and depth follow).
+            float curl = UNITY_ACCESS_INSTANCED_PROP(LanbaiGate, _Curl);
+            if (curl > 0.0)
+            {
+                float4 cp = UNITY_ACCESS_INSTANCED_PROP(LanbaiGate, _CurlPivot);
+                float4 ca = UNITY_ACCESS_INSTANCED_PROP(LanbaiGate, _CurlAxis);
+                float cs = saturate((t - cp.w) / max(1.0 - cp.w, 1e-3));
+                float ang = curl * ca.w * cs;
+                if (ang != 0.0)
+                {
+                    float3 k = normalize(ca.xyz);
+                    float sa, co;
+                    sincos(ang, sa, co);
+                    // Rodrigues: r' = r cos + (k x r) sin + k (k . r)(1 - cos)
+                    float3 r = v.vertex.xyz - cp.xyz;
+                    v.vertex.xyz = cp.xyz + r * co + cross(k, r) * sa + k * dot(k, r) * (1.0 - co);
+                    v.normal = v.normal * co + cross(k, v.normal) * sa + k * dot(k, v.normal) * (1.0 - co);
+                    v.tangent.xyz = v.tangent.xyz * co + cross(k, v.tangent.xyz) * sa + k * dot(k, v.tangent.xyz) * (1.0 - co);
+                }
+            }
+
             float w = pow(t, _SwayStiffness);
             float tt = _Time.y * _SwayFrequency;
             const float TAU = 6.2831853;
@@ -554,6 +622,31 @@ Shader "Lanbai/TentacleSway"
             v.tangent.xyz = RotZ(RotX(v.tangent.xyz, a1), a2);
             o.swayT = t;
             o.rawU = v.texcoord.x;
+
+            // v2.8 (D-44 #3): in the volume cloud a root shallower than top - _RootReach is stretched down to it (the
+            // lowest _RootSpan m of the arm, (1 - s)^2; the near arms' roots stand at top - 35 m, above the dense floor)
+            if (LanbaiCloudVolumeOn() && _ClipBelowCloud > 0.5)
+            {
+                float top = CloudTop();
+                float3 rootW = mul(unity_ObjectToWorld, float4(0.0, 0.0, 0.0, 1.0)).xyz;
+                float wy = mul(unity_ObjectToWorld, float4(v.vertex.xyz, 1.0)).y;
+                float need = rootW.y - (top - _RootReach);
+                float dy = 0.0;
+                if (need > 0.0)
+                {
+                    float s = saturate((wy - rootW.y) / max(_RootSpan, 1.0));
+                    dy = -need * (1.0 - s) * (1.0 - s);
+                }
+                // and EVERY arm goes on down under the deck's floor to top - _RootDeep: the part below top - 100 m (inside
+                // the dense cloud, never seen from above) is stretched by k so its root lands there (seen from under
+                // the cloud: stems going down into the dark, no root ring at the floor)
+                float rootY = rootW.y - max(need, 0.0);
+                float L = top - 100.0, target = top - _RootDeep;
+                float y1 = wy + dy;
+                if (rootY < L - 1.0 && rootY > target && y1 < L)
+                    dy += (L - (L - y1) * (L - target) / (L - rootY)) - y1;
+                v.vertex.xyz += mul((float3x3)unity_WorldToObject, float3(0.0, dy, 0.0));
+            }
         }
 
         // v2.7: LanbaiBand / HaloProfile / the wound's air live in LanbaiGateSky.cginc (shared with the skybox)
@@ -566,10 +659,12 @@ Shader "Lanbai/TentacleSway"
         void surf(Input IN, inout SurfaceOutputStandard o)
         {
             // v2.2: the arm ends inside the cloud sea (also in the generated shadow caster, which runs surf for clip)
+            // v2.8: in the volume cloud only at its floor (top - _RootClip), and no dissolve (D-44 #3)
+            bool volCloud = LanbaiCloudVolumeOn();
             if (_ClipBelowCloud > 0.5)
-                clip(IN.worldPos.y - CloudTop() + 5.0);
+                clip(IN.worldPos.y - CloudTop() + (volCloud ? _RootClip : 5.0));
             // v2.5: the root dissolves in the lowest _RootDissolve m of the (ragged) cloud-top fade zone
-            if (_RootDissolve > 0.0)
+            if (_RootDissolve > 0.0 && !volCloud)
             {
                 float3 pN = NoisePos(IN.worldPos);           // v2.6: the cloud-sea frame (GateRoot moves)
                 float zd = IN.worldPos.y - CloudTop() + (VNoise(pN / 18.0) - 0.5) * 30.0;
@@ -746,11 +841,39 @@ Shader "Lanbai/TentacleSway"
             float dens = LanbaiGateDensity(_FogDensity);    // v2.7e: D-22 (_Udon_Fog first)
             // v2.4 (tech B3): the cloud-top extra is ADDED to the density scale (as in the renders)
             half ovr = OverWhite(IN.worldPos);                                // v2.7: the air in front of a silhouette over the white
-            float rho = dens * (_FogDensityScale + _FogExtra.x * exp(-h / max(_FogExtra.y, 1.0))) * (1.0 - _OverWhiteFog * ovr);
+            // v2.8 (D-44 #3): WET into the volume cloud -- the deck's density IN FRONT of the skin (toward the eye, at
+            // _CloudWet.z, 15 m and _CloudWet.w): an arm seen through a gap stays dark, one behind the cloud's lumps
+            // fades into them by their own shape (taps straight up made a pale glass column and a level line);
+            // the target is the deck's own lit colour at the near tap (x its gain)
+            bool volCloud = LanbaiCloudVolumeOn();
+            float wet = 0.0;
+            float3 wetCol = 0.0;
+            if (volCloud && IN.worldPos.y < CloudTop() + _Udon_CloudVolumeWind.z + 40.0)   // R10: + the deck's lift
+            {
+                float top = CloudTop();
+                float3 org = _Udon_GateOrigin.xyz;
+                float3 pOut = IN.worldPos - V * _CloudWet.z;
+                float d0 = LanbaiCloudDensityAt(pOut, top, org, _Udon_GateTime);
+                float d1 = LanbaiCloudDensityAt(IN.worldPos - V * 15.0, top, org, _Udon_GateTime);
+                float d2 = LanbaiCloudDensityAt(IN.worldPos - V * _CloudWet.w, top, org, _Udon_GateTime);
+                wet = _CloudWet.y * (1.0 - exp(-(d0 * 9.0 + d1 * 18.0 + d2 * 30.0) * _CloudWet.x));
+                if (wet > 0.002)
+                {
+                    float3 md = LanbaiMoonDir(_RimDir.xyz);
+                    float facing = pow(saturate(dot(V, md)), 5.0);
+                    wetCol = LanbaiCloudLitAt(pOut, top, org, _Udon_GateTime, md, facing, _CloudAmbColor.rgb,
+                                              _CloudMoonColor.rgb, _CloudLit.x) * _CloudLit.y;
+                }
+            }
+            float rho = dens * (_FogDensityScale + _FogExtra.x * exp(-h / max(_FogExtra.y, 1.0)) * (1.0 - wet)) * (1.0 - _OverWhiteFog * ovr);
             float f = 1.0 - exp(-dist * rho);
             float capI = UNITY_ACCESS_INSTANCED_PROP(LanbaiGate, _FogCapI);
             float fc = min(f, (capI > 0.0) ? capI : _FogCap) * (_FogCapHeight > 0.0 ? exp(-h / _FogCapHeight) : 1.0);
             f = lerp(f, fc, smoothstep(_FogCapFrom.x, _FogCapFrom.y, dist));
+            // v2.9: the kept hands' cap at any distance (总导演 10-26: the 4c fog ate the curl); before the reveal, so the
+            // reveal's fade still takes them all the way into the fog
+            float hold = UNITY_ACCESS_INSTANCED_PROP(LanbaiGate, _FogHold);
+            if (hold > 0.0) f = min(f, hold);
             // v2.4 (tech B1): the reveal comes AFTER the cap: at 0 the arm is all haze (and Udon turns it off)
             float rv = UNITY_ACCESS_INSTANCED_PROP(LanbaiGate, _Reveal);
             if (_UseGlobalReveal > 0.5)                                       // v2.7: the multitude's group reveal (one global)
@@ -762,8 +885,41 @@ Shader "Lanbai/TentacleSway"
         #ifdef UNITY_PASS_FORWARDADD
             color.rgb *= (1.0 - f) * (1.0 - cf);
         #else
-            color.rgb = lerp(color.rgb, (half3)_CloudTopColor.rgb, cf);
+            if (volCloud)
+            {
+                // v2.8: under the deck's floor (top - 160 .. - 220) the arm is in the cloud's shadow
+                float topL = CloudTop() + LanbaiCloudLift(IN.worldPos, _Udon_CloudVolumeWind.z);   // R10: the lifted deck's floor
+                color.rgb *= lerp(1.0, _UnderDark, 1.0 - smoothstep(topL - 220.0, topL - 160.0, IN.worldPos.y));
+                color.rgb = lerp(color.rgb, (half3)wetCol, (half)wet);           // v2.8: no dark cloud-top band
+            }
+            else
+                color.rgb = lerp(color.rgb, (half3)_CloudTopColor.rgb, cf);
+            // v2.9: the hands kept past U9 for the curl are dark silhouettes against 4c's dome (门内 10-26: never brighter
+            // than the fog behind them, linear Y <= 0.024): no surface light at all, only the fog (ramped by the driver)
+            color.rgb *= 1.0 - UNITY_ACCESS_INSTANCED_PROP(LanbaiGate, _Silhouette);
             color.rgb = lerp(color.rgb, LanbaiFogColour(V, dist, ovr), f);
+            // v2.8: under the deck's flat floor (top - 170) the stem fades, over the 120 m below it, into what the eye
+            // sees of the floor behind it: the deck's lit colour 60 m inside the floor along this ray, fogged by its
+            // distance (from under the cloud it was a dark block cut by the floor's level edge; never seen from above)
+            if (volCloud && V.y > 0.02)
+            {
+                float top = CloudTop() + LanbaiCloudLift(IN.worldPos, _Udon_CloudVolumeWind.z);   // R10: the lifted deck
+                // only UNDER the floor: rises toward it from top - 290, and is gone again by top - 120 (inside the dense
+                // cloud). (9af9a8a had only the first smoothstep: it stayed 1 ABOVE the floor, so every arm seen looking
+                // up took the floor's colour; caught in the R10 reference at U8fwd, 10-26)
+                float m = 0.95 * smoothstep(top - 290.0, top - 170.0, IN.worldPos.y)
+                               * (1.0 - smoothstep(top - 170.0, top - 120.0, IN.worldPos.y));
+                if (m > 0.002)
+                {
+                    float tq = (top - 110.0 - _WorldSpaceCameraPos.y) / V.y;
+                    float3 q = _WorldSpaceCameraPos + V * tq;
+                    float3 md = LanbaiMoonDir(_RimDir.xyz);
+                    float3 lc = LanbaiCloudLitAt(q, CloudTop(), _Udon_GateOrigin.xyz, _Udon_GateTime, md, pow(saturate(dot(V, md)), 5.0),
+                                                 _CloudAmbColor.rgb, _CloudMoonColor.rgb, _CloudLit.x) * _CloudLit.y;
+                    lc = lerp(lc, LanbaiFogColour(V, tq, ovr), 1.0 - exp(-dens * tq));
+                    color.rgb = lerp(color.rgb, (half3)lc, (half)m);
+                }
+            }
         #endif
             color.a = 1.0;
         }
