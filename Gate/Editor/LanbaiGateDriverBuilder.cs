@@ -6,8 +6,9 @@
 //    1. 读 Gate/GateDriver_Bake.json（Gate/Source/gate_driver_bake.py 从 GateLayout_v2.json 生成）；
 //    2. 在场景里找 GateRoot、NearRoot_bus、Tear_Root（Tear_SkyFolds、Tear_Halo）、GateRoot/TideRoot、
 //       Gate_Lights/Tear_CabinOnly、每个实例（GateRoot/<id> 或 NearRoot_bus/<id>）和它所有 LOD 的 renderer；
-//    3. 从 renderer 现有的 property block 里抄群臂的 _VariantDims / _OcclusionMap（LB_GateTest.Apply 写的：
-//       **先跑一次 LB_GateTest.Apply**，否则群臂少这两项，会报警告）；
+//    3. 群臂的 _VariantDims / _OcclusionMap 自己算（第 11 轮，D-50）：根半径从 GateMultitude_v2.fbx 的变体网格量
+//       （和 LB_GateTest 同一条规则），长度 = length_m / scale（GateDriver_Bake.json），遮蔽图 Textures/Occlusion/；
+//       不再依赖 LB_GateTest.Apply 先找到场景根（DeliveredGate 这样的容器里也能找到，GateRoot 等都是深度查找）；
 //    4. 在常开的物体 Gate_Driver 上（场景里有 Director 就挂在它下面）加 LanbaiGateDriver（U#），填好所有数组；
 //    5. 选了 Test Clock：再建 Gate_TestClock（LanbaiGateTestClock），连上门的驱动和 GateClouds_Driver。
 //  可以重复运行（先删上一次的）。顺序：LB_GateTest.Build → 蓝白/Gate Clouds/Build → LB_GateTest.Apply → 这个。
@@ -34,6 +35,7 @@ public static class LanbaiGateDriverBuilder
         public float drift_v; public float drift_tref;
         public float phase; public float fog_cap; public float pose_t0; public float pose_t1;
         public float[] girth; public int curl; public float[] curl_pivot; public float[] curl_axis; public float[] curl_t;   // round 10
+        public string variant; public float len_os;                                                                         // round 11: the multitude's dims
     }
     [Serializable] public class Bake
     {
@@ -116,6 +118,54 @@ public static class LanbaiGateDriverBuilder
         float[] f = new float[4] { 0f, 0f, 0f, w };
         for (int k = 0; k < l.Count && k < 4; k++) f[k] = Convert.ToSingle(l[k]);
         return new Vector4(f[0], f[1], f[2], f[3]);
+    }
+
+    // round 11 (D-50): the multitude's root radius per variant, measured from GateMultitude_v2.fbx as LB_GateTest does
+    // (README rule: the ring of vertices at the root, uv1.x = min, uv2.x > 0.05; median of |v - c| / uv2.x)
+    static readonly Dictionary<string, float> _rootR = new Dictionary<string, float>();
+
+    static float VariantRootRadius(string kit, string variant)
+    {
+        float r;
+        if (_rootR.TryGetValue(variant, out r)) return r;
+        r = -1f;
+        GameObject fbx = AssetDatabase.LoadAssetAtPath<GameObject>(kit + "/GateMultitude_v2.fbx");
+        Transform t = fbx != null ? LanbaiGateCloudsBuilder.FindDeepPublic(fbx.transform, variant) : null;
+        Mesh m = null;
+        if (t != null)
+        {
+            foreach (MeshFilter mf in t.GetComponentsInChildren<MeshFilter>(true))
+                if (mf.name.EndsWith("_LOD0") && mf.sharedMesh != null) { m = mf.sharedMesh; break; }
+            if (m == null) { MeshFilter any = t.GetComponentInChildren<MeshFilter>(true); m = any != null ? any.sharedMesh : null; }
+        }
+        if (m != null)
+        {
+            Vector3[] vs = m.vertices;
+            var u1 = new List<Vector2>(); m.GetUVs(1, u1);
+            var u2 = new List<Vector2>(); m.GetUVs(2, u2);
+            if (vs.Length > 0 && u1.Count == vs.Length && u2.Count == vs.Length)
+            {
+                float tmin = float.MaxValue;
+                for (int k = 0; k < vs.Length; k++) tmin = Mathf.Min(tmin, u1[k].x);
+                var ring = new List<int>();
+                for (int k = 0; k < vs.Length; k++) if (u1[k].x <= tmin + 0.002f && u2[k].x > 0.05f) ring.Add(k);
+                if (ring.Count >= 6)
+                {
+                    Vector3 c = Vector3.zero;
+                    foreach (int k in ring) c += vs[k];
+                    c /= ring.Count;
+                    float rmax = 0f;
+                    foreach (int k in ring) rmax = Mathf.Max(rmax, (vs[k] - c).magnitude);
+                    var est = new List<float>();
+                    foreach (int k in ring) if ((vs[k] - c).magnitude > 0.5f * rmax) est.Add((vs[k] - c).magnitude / u2[k].x);
+                    est.Sort();
+                    if (est.Count >= 4) r = est[est.Count / 2];
+                }
+            }
+        }
+        if (r <= 0f) Debug.LogWarning("[GateDriver] no root radius for multitude variant " + variant + " in " + kit + "/GateMultitude_v2.fbx");
+        _rootR[variant] = r;
+        return r;
     }
 
     static string FindAsset(string name, string ext)
@@ -310,6 +360,9 @@ public static class LanbaiGateDriverBuilder
         var rGroup = new List<float>(); var rDims = new List<Vector4>(); var rHasDims = new List<bool>(); var rOcc = new List<Texture>();
         var mpb = new MaterialPropertyBlock();
         int missing = 0, surgeNoDims = 0;
+        string gjk = FindAsset("GateLayout_v2", ".json");
+        string gateKit = gjk != null ? Path.GetDirectoryName(gjk).Replace('\\', '/') : "Assets/Lanbai/Gate";
+        _rootR.Clear();
         for (int i = 0; i < n; i++)
         {
             InstDef it = B.inst[i];
@@ -350,8 +403,19 @@ public static class LanbaiGateDriverBuilder
                     rGroup.Add(it.reveal_kind == 2 ? it.group : 0);
                     r.GetPropertyBlock(mpb);              // what LB_GateTest.Apply left: the multitude's dims / occlusion
                     bool hasDims = mpb.HasVector("_VariantDims");
-                    rDims.Add(hasDims ? mpb.GetVector("_VariantDims") : Vector4.zero); rHasDims.Add(hasDims);
-                    rOcc.Add(mpb.HasTexture("_OcclusionMap") ? mpb.GetTexture("_OcclusionMap") : null);
+                    Vector4 dims = hasDims ? mpb.GetVector("_VariantDims") : Vector4.zero;
+                    Texture occ = mpb.HasTexture("_OcclusionMap") ? mpb.GetTexture("_OcclusionMap") : null;
+                    // round 11 (D-50): the multitude's dims / occlusion from the kit itself, so the build does not depend on
+                    // LB_GateTest.Apply having found the roots (it only looks at the scene's top level: a DeliveredGate
+                    // container hid them and the 108 multitude renderers came out without dims)
+                    if (it.reveal_kind == 2 && !string.IsNullOrEmpty(it.variant))
+                    {
+                        float pr = VariantRootRadius(gateKit, it.variant);
+                        if (pr > 0f) { dims = new Vector4(pr, it.len_os, 0f, 0f); hasDims = true; }
+                        if (occ == null) occ = AssetDatabase.LoadAssetAtPath<Texture2D>(gateKit + "/Textures/Occlusion/T_Gate_" + it.variant + "_Occlusion.png");
+                    }
+                    rDims.Add(dims); rHasDims.Add(hasDims);
+                    rOcc.Add(occ);
                     if (it.reveal_kind == 2 && !hasDims) surgeNoDims++;
                 }
             d.instRendCount[i] = rend.Count - d.instRendStart[i];
@@ -361,7 +425,7 @@ public static class LanbaiGateDriverBuilder
         d.rGroup = rGroup.ToArray(); d.rDims = rDims.ToArray(); d.rHasDims = rHasDims.ToArray(); d.rOcc = rOcc.ToArray();
         LanbaiGateCloudsBuilder.SetupUdonSharp(d);
         if (missing > 0) Debug.LogWarning("[GateDriver] " + missing + " instances not found under GateRoot / NearRoot_bus");
-        if (surgeNoDims > 0) Debug.LogWarning("[GateDriver] " + surgeNoDims + " multitude renderers have no _VariantDims: run LB_GateTest.Apply once, then Build Driver again");
+        if (surgeNoDims > 0) Debug.LogWarning("[GateDriver] " + surgeNoDims + " multitude renderers have no _VariantDims (variant not found in GateMultitude_v2.fbx, or the bake is older than round 11: re-run gate_driver_bake.py)");
 
         // double writers (tech review driver #9): LanbaiTearParams writes the tear globals every frame, unwindowed
         foreach (MonoBehaviour mb in UnityEngine.Object.FindObjectsOfType<MonoBehaviour>(true))

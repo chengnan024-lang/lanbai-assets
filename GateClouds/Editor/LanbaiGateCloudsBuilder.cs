@@ -171,6 +171,68 @@ public static class LanbaiGateCloudsBuilder
     }
 
     // ---- materials ------------------------------------------------------------------------------------------------
+    // 阿白's CloudDensity128 (generate_density_only.py, seed 20261025): the four random lattices (4, 8, 16, 32 cells,
+    // float32, [i][j][k]) are stored in Textures/CloudDensity128_grids.bytes (150 KB instead of 8 MB); the smoothstep
+    // trilinear sum is redone here. R = 0.55 a + 0.30 b + 0.15 c, G = 0.7 c + 0.3 d, B = a, A = 1; bytes [i][j][k]
+    // with k fastest (= Unity x), as 阿白's file. Built once into Generated/CloudDensity128.asset
+    static Texture3D DensityVolume(string kit, string gen)
+    {
+        string tp = gen + "/CloudDensity128.asset";
+        Texture3D tex = AssetDatabase.LoadAssetAtPath<Texture3D>(tp);
+        if (tex != null) return tex;
+        string gp = kit + "/Textures/CloudDensity128_grids.bytes";
+        if (!File.Exists(gp)) { Debug.LogWarning("[GateClouds] " + gp + " missing"); return null; }
+        byte[] raw = File.ReadAllBytes(gp);
+        const int S = 128;
+        int[] ns = { 4, 8, 16, 32 };
+        var noise = new float[4][];
+        int off = 0;
+        for (int g = 0; g < 4; g++)
+        {
+            int n = ns[g];
+            var grid = new float[n * n * n];
+            for (int q = 0; q < grid.Length; q++) { grid[q] = BitConverter.ToSingle(raw, off); off += 4; }
+            var idx = new int[S]; var u = new float[S];
+            for (int k = 0; k < S; k++)
+            {
+                float co = k * (float)n / S;
+                idx[k] = (int)co;
+                float f = co - idx[k];
+                u[k] = f * f * (3f - 2f * f);
+            }
+            var o = new float[S * S * S];
+            for (int i = 0; i < S; i++)
+                for (int j = 0; j < S; j++)
+                    for (int k = 0; k < S; k++)
+                    {
+                        float acc = 0f;
+                        for (int x = 0; x < 2; x++)
+                            for (int y = 0; y < 2; y++)
+                                for (int z = 0; z < 2; z++)
+                                {
+                                    float w = (x == 1 ? u[i] : 1f - u[i]) * (y == 1 ? u[j] : 1f - u[j]) * (z == 1 ? u[k] : 1f - u[k]);
+                                    acc += grid[(((idx[i] + x) % n) * n + (idx[j] + y) % n) * n + (idx[k] + z) % n] * w;
+                                }
+                        o[(i * S + j) * S + k] = acc;
+                    }
+            noise[g] = o;
+        }
+        var px = new byte[S * S * S * 4];
+        for (int q = 0; q < S * S * S; q++)
+        {
+            float a = noise[0][q], b = noise[1][q], c = noise[2][q], d = noise[3][q];
+            px[q * 4 + 0] = (byte)Mathf.Clamp((a * 0.55f + b * 0.30f + c * 0.15f) * 255f, 0f, 255f);
+            px[q * 4 + 1] = (byte)Mathf.Clamp((c * 0.7f + d * 0.3f) * 255f, 0f, 255f);
+            px[q * 4 + 2] = (byte)Mathf.Clamp(a * 255f, 0f, 255f);
+            px[q * 4 + 3] = 255;
+        }
+        tex = new Texture3D(S, S, S, TextureFormat.RGBA32, true) { name = "CloudDensity128", wrapMode = TextureWrapMode.Repeat, filterMode = FilterMode.Trilinear };
+        tex.SetPixelData(px, 0);
+        tex.Apply(true, false);
+        AssetDatabase.CreateAsset(tex, tp);
+        return tex;
+    }
+
     static Material SaveMat(Shader sh, string path)
     {
         if (sh == null) throw new Exception("[GateClouds] a kit shader did not compile (Shader.Find returned null): see the Console, " + path);
@@ -259,6 +321,33 @@ public static class LanbaiGateCloudsBuilder
             V(deckMat, "_MarchRange", pick.march_range);
             deckMat.SetFloat("_Steps", Mathf.Clamp(pick.steps > 0 ? pick.steps : 128, 16, 160));   // a missing "steps" reads 0
             Debug.Log("[GateClouds] deck quality: " + pick.name);
+        }
+        // round 11 (D-50 #5): no volume deck in the scene (the gate test scene; 阿白's VolumeCloudDeck only lives in
+        // FullPreview): make our own on our quad, as 阿白 did there -- the same density volume (built from 阿白's seed),
+        // a copy of the heightfield deck's material switched to Lanbai/GateVolumeDeck, 阿白's values. Never the flat
+        // heightfield fallback any more (D-49 #1: the gate's cloud is the volume deck)
+        if (volMat == null)
+        {
+            Texture3D vt = DensityVolume(kit, gen);
+            Shader gv = Shader.Find("Lanbai/GateVolumeDeck");
+            if (vt != null && gv != null)
+            {
+                string mp = gen + "/M_GateVolumeDeck.mat";
+                volMat = AssetDatabase.LoadAssetAtPath<Material>(mp);
+                if (volMat == null) { volMat = new Material(deckMat); AssetDatabase.CreateAsset(volMat, mp); }
+                volMat.shader = gv;
+                volMat.renderQueue = 2980;
+                volMat.SetTexture("_NoiseVolume", vt);
+                volMat.SetFloat("_Density", 0.036f);
+                volMat.SetVector("_CloudWind", new Vector4(8f, 3f, -2f, 1f));
+                volMat.SetFloat("_MoonE", 0.38f);
+                volMat.SetFloat("_Gain", 0.95f);
+                EditorUtility.SetDirty(volMat);
+                volOnOurDeck = true;
+                foreach (Camera c in UnityEngine.Object.FindObjectsOfType<Camera>(true)) c.depthTextureMode |= DepthTextureMode.Depth;
+                Debug.Log("[GateClouds] no volume deck in the scene: made " + mp + " (Lanbai/GateVolumeDeck, CloudDensity128) on GateClouds/Deck");
+            }
+            else Debug.LogWarning("[GateClouds] could not make the volume deck (density volume or Lanbai/GateVolumeDeck missing): heightfield fallback");
         }
         var deck = new GameObject("Deck");
         deck.transform.SetParent(root, false);

@@ -141,6 +141,10 @@ def main():
             d['curl_t'] = [float(cu['t_start']), float(cu['duration_s']), float(cu.get('keep_until', 0.0))]
         rv = it.get('reveal') or {}
         if it.get('layer') == 'surge':
+            # round 11 (D-50): the multitude's own dims for the builder (it no longer copies LB_GateTest.Apply's block):
+            # the variant (root radius measured from GateMultitude_v2.fbx) and the length in object space
+            d['variant'] = str(it.get('variant', ''))
+            d['len_os'] = float(it.get('length_m', 1000.0)) / max(1e-3, float(it.get('scale', 1.0)))
             d['reveal_kind'] = 2
             d['group'] = int(rv.get('group', 0))
         elif rv.get('keys'):

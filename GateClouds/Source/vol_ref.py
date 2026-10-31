@@ -33,7 +33,8 @@ TEARCUT = {'U8fwd': ('U8fwd_unity_t169.65.png', (560, 1360), 640),
 AFTER = dict(on=True, E=0.5, R0=120.0, G=0.6, Tap=30.0, Pool=0.0, Lift=60.0, HashJitter=1.0, RefineF=4.0, RefineK=6.0)
 # --before r10: the before column is the round-10 batch-2 deck (7b5481c: no refine), for the grain fix (总导演 10-26 A)
 R10B = dict(AFTER, RefineF=1.0, RefineK=0.0)
-VOLKEYS = ('Lift', 'HashJitter', 'RefineF', 'RefineK')
+R10C = dict(AFTER, LightEvery=1.0, TransExit=0.015, PreStride=1.0, Grow=1.0, GrowMax=1.0)
+VOLKEYS = ('Lift', 'HashJitter', 'RefineF', 'RefineK', 'LightEvery', 'TransExit', 'PreStride', 'Grow', 'GrowMax')
 
 
 def cam_of(view):
@@ -103,6 +104,10 @@ def render(view, w, outdir, after, before=None):
         S.VOL['Lift'] = float(tl.get('Lift', 0.0))
         S.VOL['HashJitter'] = float(tl.get('HashJitter', 0.0))
         S.VOL['Refine'] = (int(tl.get('RefineF', 1)), float(tl.get('RefineK', 0)))
+        S.VOL['LightEvery'] = int(tl.get('LightEvery', 1))
+        S.VOL['TransExit'] = float(tl.get('TransExit', 0.015))
+        for k_ in ('PreStride', 'Grow', 'GrowMax'):
+            S.VOL[k_] = float(tl.get(k_, 1.0))
         c = S.Ctx(t, eye)
         c.pix = PIX
         c.skirts = S.skirts_runtime(t, arms, eye)
@@ -160,7 +165,9 @@ if __name__ == '__main__':
     if '--set' in a:
         for k, v in (x.split('=') for x in a[a.index('--set') + 1].split(',')):
             after[k] = float(v)
-    before = R10B if '--before' in a and a[a.index('--before') + 1] == 'r10' else None
+    bk = a[a.index('--before') + 1] if '--before' in a else None
+    # r10: the round-10 batch-2 deck (no refine); r10c: round 10 as merged (05985cb: refine, no perf changes)
+    before = R10B if bk == 'r10' else R10C if bk == 'r10c' else None
     if '--seq' in a:
         seq(a[0], int(a[a.index('--seq') + 1]), w, outdir, after, before=before)
     else:

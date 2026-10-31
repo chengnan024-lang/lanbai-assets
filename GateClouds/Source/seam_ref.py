@@ -87,6 +87,7 @@ def density_tex():
 
 
 TEX = None
+STATS = None          # dict(pre, fine, post): march samples by phase (cost studies)
 
 
 def tex3d(uvw):
@@ -276,15 +277,25 @@ def march(V, c, scene_d, new, tear, seed=0):
     rf, rk = VOL.get('Refine', (1, 0))
     rf = max(int(rf), 1)
     nf = int(rf * rk) if rf > 1 else 0
-    tt = s0 + jit * L
-    stp = L.copy()
+    # [R11] _Perf.y: before the first cloud sample the march strides PreStride coarse steps (the refine backs up as far)
+    pre_k = max(float(VOL.get('PreStride', 1.0)), 1.0) if nf else 1.0
+    grow, gmax = float(VOL.get('Grow', 1.0)), float(VOL.get('GrowMax', 1.0))
+    tt = s0 + jit * L * pre_k
+    stp = L * pre_k
     fine = np.zeros(len(idx), int)
     done = np.zeros(len(idx), bool) if nf else np.ones(len(idx), bool)
+    le = int(VOL.get('LightEvery', 1))
+    texit = float(VOL.get('TransExit', 0.015))
+    lastL = np.zeros((len(idx), 3))
+    age = np.zeros(len(idx), int)
     for s in range(80 + nf):
-        live = (tt < s1) & (tr >= 0.015)
+        live = (tt < s1) & (tr >= texit)
         if not live.any():
             break
         k = np.nonzero(live)[0]
+        if STATS is not None:
+            STATS['pre'] += int((~done[k]).sum()); STATS['fine'] += int((fine[k] > 0).sum())
+            STATS['post'] += int((done[k] & (fine[k] <= 0)).sum())
         p = eye + v[k] * tt[k][:, None]
         den = density(p, c, new)
         m = den > 0.00008
@@ -292,15 +303,27 @@ def march(V, c, scene_d, new, tear, seed=0):
         if hit.any():
             kh = k[hit]
             done[kh] = True
-            back = np.maximum(tt[kh] - L[kh], s0[kh])
+            back = np.maximum(tt[kh] - L[kh] * pre_k, s0[kh])
             stp[kh] = L[kh] / rf
             tt[kh] = back + jit[kh] * stp[kh]
-            fine[kh] = nf
+            fine[kh] = nf + int(round((pre_k - 1.0) * rf))     # the same depth past the hit as without the stride
             m &= ~hit
         if m.any():
             km = k[m]
             pm = p[m]
-            light = cloud_light(pm, c, tear, new, facing[km], v[km])
+            # GateVolumeDeck [R11] _Perf.x: the light (moon self-shadow 2 taps + the tear's tap) is worked out every
+            # LightEvery-th lit sample of a ray and held in between (it changes over tens of metres; the density, which
+            # makes the shape and the grain, is still taken at every sample)
+            if le > 1:
+                need = age[km] <= 0
+                if need.any():
+                    kn = km[need]
+                    lastL[kn] = cloud_light(pm[need], c, tear, new, facing[kn], v[kn])
+                    age[kn] = le
+                age[km] -= 1
+                light = lastL[km]
+            else:
+                light = cloud_light(pm, c, tear, new, facing[km], v[km])
             f = (1.0 - np.exp(-VOL['Fog'] * tt[km]))[:, None]
             light = (light * VOL['Gain']) * (1 - f) + fogc[km] * f
             a = 1.0 - np.exp(-den[m] * stp[km])
@@ -308,6 +331,11 @@ def march(V, c, scene_d, new, tear, seed=0):
             tr[km] *= 1.0 - a
         adv = k[~hit] if hit.any() else k
         tt[adv] += stp[adv]
+        # [R11] _Perf.z: past the surface layer the step grows by this factor each sample, up to _Perf.w x L (the light
+        # deep in the cloud is mostly hidden by what is in front of it)
+        if grow > 1.0:
+            pz = adv[done[adv] & (fine[adv] <= 0) & (nf > 0)]
+            stp[pz] = np.minimum(stp[pz] * grow, L[pz] * gmax)
         fz = adv[fine[adv] > 0]
         fine[fz] -= 1
         stp[fz[fine[fz] == 0]] = L[fz[fine[fz] == 0]]
