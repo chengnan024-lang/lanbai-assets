@@ -95,6 +95,15 @@ def build(lod=0, edge_x=-8.0, lip_y=-13.0, z0=-120.0, z1=520.0, x_far=-260.0):
             F.append((a, a + 1, a + nz + 1, a + nz))
     tmp = UB()
     tmp.add(V, F, 'Rock')
+    if BIG:
+        # 复核 r10d #3：坡顶圆过去的那一段（k ≤ 0.22，约 0.8 m）是被水磨光的石头（Stone，比淤泥的 Rock 浅），
+        # 离近列灯 0.4 m，接得到灯光——原图亮度下坡沿读得出是一条圆过去的亮边，不只是铺石的直边
+        from .common import SLOTS
+        rim = [i for i in range(len(ks) - 1) if ks[i + 1] <= 0.22 + 1e-6]
+        for i in rim:
+            for j in range(nz - 1):
+                if slope_wd(zs[j])[0] > 1.5 and slope_wd(zs[j + 1])[0] > 1.5:
+                    tmp.S[i * (nz - 1) + j] = SLOTS.index('Stone')
     _orient_up(tmp)
     u.merge(tmp)
     # ---- 神道铺石（抬高 0.12，四周有边）

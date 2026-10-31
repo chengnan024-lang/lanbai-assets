@@ -30,9 +30,11 @@ Shader "Lanbai/PalaceFlame"
         _LipY ("Terrace lip bottom y  palace frame, from Sea", Float) = -13
         [Header(Cliff occlusion fade  director 10-26)]
         _CliffEdge ("Cliff: edge x, lowest lip y, lip x, slope bump m", Vector) = (-8, -14.2, -8.6, 0.52)
-        _CliffSlope ("Cliff: slope width m, depth m, pad m, sink rate m per s", Vector) = (3.5, 6.0, 0.08, 1.5)
+        _CliffSlope ("Cliff: slope width m, depth m, pad m, sink rate m per s", Vector) = (3.6, 9.0, 0.08, 1.5)
         _CliffSlopeZ ("Cliff: slope z start, full start, full end, end", Vector) = (48, 54, 296, 306)
         _CliffFadeS ("Cliff: fade takes at least this many s while the bus sinks", Float) = 1.0
+        _CliffEyeF8 ("Cliff: main eye at F8 in palace coords  lamps hidden then stay hidden through F8", Vector) = (1.4025, -47.25, 309.2917, 0)
+        _CliffHaloK ("Cliff: halo radius <= this x margin / tL  halo never overlaps the brink", Float) = 0.6
         _SoftFade ("Soft particle fade m", Float) = 1.0
         _HaloMid ("Halo indigo mid linear  fill 446282", Vector) = (0.0578, 0.1221, 0.2232, 0)
         _Atten ("Attenuation per m  FogMode 2", Float) = 0.004
@@ -46,7 +48,7 @@ Shader "Lanbai/PalaceFlame"
     }
     SubShader
     {
-        Tags { "RenderType" = "Transparent" "Queue" = "Transparent+10" "IgnoreProjector" = "True" }
+        Tags { "DisableBatching"="True" "RenderType" = "Transparent" "Queue" = "Transparent+10" "IgnoreProjector" = "True" }
         Pass
         {
             Tags { "LightMode" = "ForwardBase" }
@@ -66,8 +68,8 @@ Shader "Lanbai/PalaceFlame"
 
             sampler2D _FlipTex;
             float4 _FlameColor, _FlameCore, _FlameSize, _HaloMid;
-            float4 _CliffEdge, _CliffSlope, _CliffSlopeZ;
-            float _CliffFadeS;
+            float4 _CliffEdge, _CliffSlope, _CliffSlopeZ, _CliffEyeF8;
+            float _CliffFadeS, _CliffHaloK;
             float _HaloRadius, _HaloWarm, _HaloWarmR, _RingGain, _HaloPull, _FlamePull, _BelowPull, _LipY, _Atten, _FPS, _MinPixels, _Gain, _SoftFade, _RingFar, _FadeStart, _FadeSpan, _FadeLen;
             UNITY_DECLARE_DEPTH_TEXTURE(_CameraDepthTexture);
 
@@ -94,10 +96,11 @@ Shader "Lanbai/PalaceFlame"
             // 物体空间 = 宫殿坐标（灯焰网格挂在 R_Palace 下、局部变换为单位），所以 R_Palace 的平移和 F7 的转角都不用管。
             float LanbaiCliffSmooth(float a, float b, float x) { float u = saturate((x - a) / (b - a)); return u * u * (3.0 - 2.0 * u); }
 
-            float LanbaiCliffVis(float3 e, float3 c)
+            // 返回（余量 m、视线在崖口处的参数 tL、可见度）；没有崖口挡时 (1e9, 0, 1)
+            float3 LanbaiCliffMargin(float3 e, float3 c)
             {
                 float edgeX = _CliffEdge.x;
-                if (e.x <= edgeX + 0.9 || c.x >= edgeX) return 1.0;
+                if (e.x <= edgeX + 0.9 || c.x >= edgeX) return float3(1e9, 0.0, 1.0);
                 float invDx = 1.0 / (c.x - e.x);
                 float3 dir = c - e;
                 // 坡在视线穿过崖口处的 z 上的宽、深
@@ -127,7 +130,15 @@ Shader "Lanbai/PalaceFlame"
                 float mUnder = _CliffEdge.y - (e.y + dir.y * tL) - _CliffSlope.z;
                 float m = max(mOver, mUnder);
                 float width = max(0.1, _CliffFadeS * _CliffSlope.w * (1.0 - tL));
-                return saturate(m / width);
+                return float3(m, tL, saturate(m / width));
+            }
+
+            // 复核 r10d #2：F8（_FadeStart）起，一盏灯不会比 F8 开始那一刻更亮——那时被崖口藏着的灯，F8 里不再回来（只看 _Udon_T，没有跨帧状态）
+            float LanbaiCliffVis(float3 e, float3 c)
+            {
+                float v = LanbaiCliffMargin(e, c).z;
+                if (_Udon_T >= _FadeStart) v = min(v, LanbaiCliffMargin(_CliffEyeF8.xyz, c).z);
+                return v;
             }
 
             v2f vert(appdata v)
@@ -152,6 +163,13 @@ Shader "Lanbai/PalaceFlame"
                 float sph = halo ? 1.0 : max(saturate((abs(fwd.y) - 0.34) * 3.0), below);   // 20° 起变圆；从下唇以下看一律是圆点
                 float3 upB = normalize(lerp(up, upS, sph));
                 float2 size = halo ? float2(_HaloRadius, _HaloRadius) : _FlameSize.xy;
+                float3 eyeO = mul(unity_WorldToObject, float4(eye, 1.0)).xyz;
+                if (halo)
+                {
+                    // 复核 r10d #1：晕的半径 ≤ _CliffHaloK × 余量 / tL——晕碰不到崖口的剪影，就不会被深度测试切成一条直边
+                    float3 cm = LanbaiCliffMargin(eyeO, v.vertex.xyz);
+                    if (cm.y > 0.0) size *= saturate(_CliffHaloK * max(cm.x, 0.0) / (cm.y * _HaloRadius));
+                }
                 // 最小像素：一个像素在 d 处的米数 = 2d / (P11 · 屏高)
                 float pix = 2.0 * d / (abs(unity_CameraProjection._m11) * _ScreenParams.y);
                 float s = halo ? 1.0 : max(1.0, _MinPixels * pix / max(size.x, 1e-4));
@@ -172,7 +190,7 @@ Shader "Lanbai/PalaceFlame"
                 o.projPos = ComputeScreenPos(cT);
                 o.projPos.z = -mul(UNITY_MATRIX_V, float4(pP, 1.0)).z;          // 软粒子按挪过以后的深度
                 o.corner = v.uv0;
-                float cliffVis = LanbaiCliffVis(mul(unity_WorldToObject, float4(eye, 1.0)).xyz, v.vertex.xyz);
+                float cliffVis = LanbaiCliffVis(eyeO, v.vertex.xyz);
                 o.info = float4(v.uv1.x, v.uv1.y, exp(-_Atten * d) * cliffVis, saturate(1.25 - d / max(_RingFar * 0.8, 1.0)) * (1.0 - below));   // 第 6 轮（D-34 #4）：远处的灯焰放大到 ≥ 2 px 且不压暗——稳定、分得清的暖点；w = 靛环的距离淡出；眼睛在台地以下时没有靛环（第 8 轮：被崖边切开的靛环读成半月）
                 return o;
             }

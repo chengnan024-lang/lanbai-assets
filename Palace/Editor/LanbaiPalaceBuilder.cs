@@ -206,6 +206,8 @@ public static class LanbaiPalaceBuilder
         fl.SetVector("_CliffSlope", LanbaiPalaceData.CliffSlope);
         fl.SetVector("_CliffSlopeZ", LanbaiPalaceData.CliffSlopeZ);
         fl.SetFloat("_CliffFadeS", LanbaiPalaceData.CliffFadeS);
+        fl.SetVector("_CliffEyeF8", LanbaiPalaceData.CliffEyeF8);
+        fl.SetFloat("_CliffHaloK", LanbaiPalaceData.CliffHaloK);
         d["Flame"] = fl;
         foreach (var m in d.Values) EditorUtility.SetDirty(m);
         return d;

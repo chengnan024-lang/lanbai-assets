@@ -267,14 +267,14 @@ def draw_lamps(img, shot, dist, flame_scale=1.0):
         below = min(1.0, max(0.0, (L.LIP_Y - eye_of(shot)[1] - 0.5) / 2.0))
         hpull = min(HALO_PULL, 0.5 * dd[i])
         fpull = max(FLAME_PULL * min(1.0, max(0.0, (-fy - 0.26) / 0.16)), below * BELOW_PULL)
-        rpx = HALO_R * ppm / zc[i]
+        rpx = L.cliff_halo_r(eye_of(shot), P[i], HALO_R) * ppm / zc[i]      # 复核 r10d #1：晕不碰崖口的剪影（shader 同式）
         if px[i] < -rpx or px[i] > W + rpx or py[i] < -rpx or py[i] > H + rpx:
             continue
         att = math.exp(-FLAME_ATTEN * dd[i])
         ph = (i * 0.618034) % 1.0                                          # = export_fbx.g_flames 的相位
         xf = min(1.0, max(0.0, (SHOTS[shot][0] - (835.16 + ph * 36.0)) / 4.0))
         att *= 1.0 - xf * xf * (3 - 2 * xf)                                # F8 → 7c：一盏盏暗下去（shader 同式）
-        att *= L.cliff_vis(eye_of(shot), P[i])                             # 总导演 10-26：被崖口挡住的灯按几何淡掉（shader 的 LanbaiCliffVis 同式）
+        att *= L.cliff_vis(eye_of(shot), P[i], SHOTS[shot][0])             # 总导演 10-26：被崖口挡住的灯按几何淡掉；F8 起不再回来（shader 的 LanbaiCliffVis 同式）
         x0, x1 = int(max(px[i] - rpx - 2, 0)), int(min(px[i] + rpx + 2, W))
         y0, y1 = int(max(py[i] - rpx - 2, 0)), int(min(py[i] + rpx + 2, H))
         if x1 <= x0 or y1 <= y0:

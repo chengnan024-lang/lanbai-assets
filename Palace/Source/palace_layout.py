@@ -39,13 +39,36 @@ CLIFF = dict(edge_x=FRAME['terrace']['edge_x'], lip_low=LIP_Y - 1.2, lip_x=FRAME
              bump=0.52, pad=0.08, fade_s=1.0, sink=1.5)
 
 
-def cliff_vis(e, c):
-    """眼 e、灯 c（宫殿坐标）之间的视线越过崖口的余量 → 可见度 0..1（= Lanbai/PalaceFlame 的 LanbaiCliffVis）。"""
+def cliff_vis(e, c, t=None):
+    """眼 e、灯 c（宫殿坐标）之间的视线越过崖口 → 可见度 0..1（= Lanbai/PalaceFlame 的 LanbaiCliffVis）。
+    复核 r10d #2：F8（835.16）起，一盏灯不会比 F8 开始那一刻更亮——那时被崖口藏着的灯，F8 里不再回来。"""
+    v = cliff_margin(e, c)[2]
+    if t is not None and t >= CUES['F8']:
+        v = min(v, cliff_margin(cliff_eye_f8(), c)[2])
+    return v
+
+
+def cliff_eye_f8():
+    """F8 那一刻主座位眼睛的宫殿坐标（带 F7 的 C 稿转角和横漂；shots._EYE_C）。Unity 里是常数 _CliffEyeF8。"""
+    import shots
+    return eye(CUES['F8']) + np.array([shots._EYE_C[0], 0.0, shots._EYE_C[1]])
+
+
+def cliff_halo_r(e, c, R):
+    """复核 r10d #1：晕的半径不超过视线越过崖口的余量（换到灯处 ÷ tL，再 × 0.6），晕不会碰到崖口的剪影，就不会被直线切。"""
+    m, tL, _ = cliff_margin(e, c)
+    if tL <= 0.0:
+        return R
+    return min(R, max(m, 0.0) * 0.6 / tL)
+
+
+def cliff_margin(e, c):
+    """返回（余量 m、视线在崖口处的参数 tL、可见度）。没有崖口挡的情况 m = 1e9、tL = 0。"""
     C = CLIFF
     ex, ey, ez = e
     cx, cy, cz = c
     if ex <= C['wall_out'] or cx >= C['edge_x']:
-        return 1.0
+        return 1e9, 0.0, 1.0
     def at(x):
         t = (x - ex) / (cx - ex)
         return ey + (cy - ey) * t, ez + (cz - ez) * t, t
@@ -76,7 +99,7 @@ def cliff_vis(e, c):
     m_under = C['lip_low'] - yl - C['pad']                            # 从下唇下面穿过
     m = max(m_over, m_under)
     width = max(0.1, C['fade_s'] * C['sink'] * (1.0 - te))          # 车下沉 1 s，视线在崖口处移动的米数
-    return min(1.0, max(0.0, m / width))
+    return m, te, min(1.0, max(0.0, m / width))
 AXIS_X = FRAME['avenue']['axis_x']
 COL_R_X, COL_L_X = FRAME['avenue']['columns_x']
 HALL = FRAME['hall']
