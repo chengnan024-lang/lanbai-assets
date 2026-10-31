@@ -1,4 +1,4 @@
-2026-10-26 UTC · 下一轮（D-48 一次交）在做：立柱的钢箍、法兰、按钮盒改平滑着色，切片侧窗两台机位按 bus_slice.json 的 look_at_anchor（main 90bf00c）对准，这两项先推了；光照图接缝缝合、靠墙固定板补烘在写；然后整车重出、切片终审图、主座位夜间图。上一版：切片可以终审了（0c8eefe）。没在 Unity 里编译过。卡点：无。
+2026-10-31 UTC · **暂停（小楠决定，全项目停）。** 停在 D-49 / D-50 这一轮的中间，最后这个提交是 WIP（WIP: paused），不要合 main。已写、未验：finish_bus.py 的 FBX 轴向修正（导出前绕竖轴转 180°，回读按 Unity 的读法；Blender 里模拟能复现阿白量的反向，新导出对上 BusLayout，独立复核没跑完）；三个搭建器收进阿白的补丁（AlignModelToLayout、删 FBX 自动 LODGroup、Piping / Sleeve / LatchCream、v5 诗座位、着色器 Header 去“-”；C# 检查没跑）；bake_lightmap.py 只有上周的缝合和靠墙固定板补烘，D-49 的修正（编码写明、half 写出、按存的值缝合、AO≤1）没做；Textures/Parts 是重出到一半的部件图集（含撑板 2 mm），和仓库里的 Bus.fbx、光照图不配套；d48_hero_night.py 已写，补光数值要按两条路重定。没做：HeadFill 两条路的定案（独立分析 B 的数在 scratch，结论：D44 路旧 CabinLight 从左后上来、主座位不暗，不加灯）、窗机位建议 + 切片反射探针、车顶侵蚀样子、目的地牌里面压暗、醒来车门 1.5 s。下一步：恢复后先复核轴向和搭建器（C# 检查），补 bake 的 D-49 修正，再整车 512 重出 → 切片终审图、主座位夜间图 → 一次交。上一个配套的版本：29549c0（main 上是 23d1ecf）。没在 Unity 里编译过。卡点：暂停。
 
 # 车 · 状态
 

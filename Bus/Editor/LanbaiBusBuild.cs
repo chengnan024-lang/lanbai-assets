@@ -58,6 +58,10 @@ public static class LanbaiBusBuild
         { "Int_Enamel", new object[] { "#D9D4C5", 0.45f, 0f } }, { "Int_Ceiling", new object[] { "#E2DDCF", 0.25f, 0f } },
         { "Seal", new object[] { "#2B2B2B", 0.30f, 0f } }, { "Vinyl", new object[] { "#5A2126", 0.45f, 0f } },
         { "SeatFrame", new object[] { "#3C3E3D", 0.35f, 0f } }, { "Floor", new object[] { "#323634", 0.22f, 0f } },
+        // 672M (D-36 r5, not in the bible's table): cream piping, black seat-back sleeve, cream sash latch (missing here until
+        // the integrator's 10-26 run: they fell back to Alu)
+        { "Piping", new object[] { "#C8BC9E", 0.40f, 0f } }, { "Sleeve", new object[] { "#2E2E2E", 0.45f, 0f } },
+        { "LatchCream", new object[] { "#D9CFB8", 0.55f, 0f } },
         { "Alu", new object[] { "#B8BBBD", 0.45f, 1f } }, { "SafetyYellow", new object[] { "#C9A227", 0.40f, 0f } },
         { "Steel", new object[] { "#C0C3C4", 0.55f, 1f } }, { "TubeDiffuser", new object[] { "#D8DBD6", 0.60f, 0f } },
         { "Dash", new object[] { "#353637", 0.30f, 0f } }, { "Bakelite", new object[] { "#2E2E2E", 0.45f, 0f } },
@@ -116,6 +120,9 @@ public static class LanbaiBusBuild
         Layout L = JsonUtility.FromJson<Layout>(layoutText.text);
         _parts = new Dictionary<string, PartInfo>();
         if (L.parts != null) foreach (var pi in L.parts) _parts[pi.type] = pi;
+        // FBX axes against BusLayout on the asset, before the scene is touched (AlignModelToLayout)
+        string axes;
+        if (ModelAxes(fbx.transform, L, out axes) == Axes.Unknown) { Debug.LogError("[Lanbai Bus] " + AxisRefusal(axes) + "; the scene is unchanged"); return; }
 
         // 1. delete the previous build
         var old = GameObject.Find(RootName);
@@ -129,6 +136,9 @@ public static class LanbaiBusBuild
         PrefabUtility.UnpackPrefabInstance(model, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
         model.transform.SetParent(root.transform, false);
         model.transform.localPosition = Vector3.zero; model.transform.localRotation = Quaternion.identity; model.transform.localScale = Vector3.one;
+        _rep.AppendLine(AlignModelToLayout(model.transform, L));
+        // 2a. the importer's own LODGroup goes: steps 4 / 4b build the explicit ones
+        _rep.AppendLine(DropImportedLods(model.transform));
 
         // 2b. door panes ride with their leaves (finish_bus.py exports Glass_DoorK separately: BusGlass, not Lanbai/Cabin)
         for (int k = 0; k < 4; k++)
@@ -185,7 +195,7 @@ public static class LanbaiBusBuild
         _rep.AppendLine("layers: Bus " + nBus + " renderers, BusExterior " + nExt);
         _rep.AppendLine("materials -> " + MatDir + "; glass panes " + glassRenderers.Count + "; Lanbai/Cabin renderers " + cabinRenderers.Count + "; curtains " + (curtains != null));
 
-        // 4. exterior LODGroup (CONTROL §6 pitfall 4: the importer does not group <name>_LOD0/1)
+        // 4. exterior LODGroup (CONTROL §6 pitfall 4: the importer makes one group on the FBX root out of every *_LODn, removed in 2a)
         var lod0 = FindDeep(model.transform, "Bus_Exterior_LOD0");
         var lod1 = FindDeep(model.transform, "Bus_Exterior_LOD1");
         if (lod0 != null && lod1 != null)
@@ -203,6 +213,9 @@ public static class LanbaiBusBuild
         else _rep.AppendLine("WARNING: Bus_Exterior_LOD0 / LOD1 not found");
         // 4b. D-36 seat LODs (finish_bus.seat_lods: Seat_<inst>_LOD1 / _LOD2)
         _rep.AppendLine(GroupSeatLods(model.transform));
+        string lodClash = LodOwnerClash(root.transform);
+        if (lodClash != null) Debug.LogError("[Lanbai Bus] " + lodClash);
+        _rep.AppendLine(lodClash != null ? "ERROR: " + lodClash : "LOD owners: no renderer in two LODGroups / levels");
 
         // 5. seats (VRCStation) and colliders
         var seatRoot = new GameObject("Seats"); seatRoot.transform.SetParent(root.transform, false);
@@ -531,7 +544,84 @@ public static class LanbaiBusBuild
         return null;
     }
 
+    // ------------------------------------------------------------------------------------------------ FBX axes vs BusLayout
+    // The integrator's 10-26 run (FromLocal/delivery/20261026-0058, views/bus_axes_before.txt): that Bus.fbx came into Unity
+    // turned 180 deg about Y against BusLayout.json (hero seat mesh at x/z (-0.65, -2.02), its station at (0.55, 2.12)).
+    // finish_bus.py now exports it the right way round, so a fresh import agrees and nothing is changed. Measured: the hero
+    // seat's mesh centre in the model frame (mesh bounds, so it also works on the FBX asset) against (hero.x, back_z + 0.25):
+    //   Agree     within AxisAgreeM as it is
+    //   Reversed  within AxisAgreeM turned 180 deg and >= AxisOffM as it is: a stale import
+    //   Unknown   anything else (also: no hero seat mesh): refused, no automatic correction
+    // Used by 蓝白/Build/车, the slice and the D-44 drop-in.
+    internal enum Axes { Agree, Reversed, Unknown }
+    internal const float AxisAgreeM = 0.5f, AxisOffM = 1f;
+    internal const string AxisCorrected = "axes CORRECTED";   // the drop-in and the slice count this line as a WARNING
+
+    internal static Axes ModelAxes(Transform model, Layout L, out string what)
+    {
+        var hero = L != null && L.seats != null ? L.seats.FirstOrDefault(x => x.hero) : null;
+        if (hero == null) { what = "BusLayout.json has no hero seat"; return Axes.Unknown; }
+        var seat = FindDeep(model, "Seat_" + hero.name);
+        var mf = seat != null ? seat.GetComponent<MeshFilter>() : null;
+        if (mf == null || mf.sharedMesh == null) { what = "Seat_" + hero.name + " (the hero seat mesh) is not in Bus.fbx"; return Axes.Unknown; }
+        Vector3 p = model.InverseTransformPoint(seat.TransformPoint(mf.sharedMesh.bounds.center));
+        var want = new Vector2(hero.x, hero.back_z + 0.25f);
+        float direct = Vector2.Distance(new Vector2(p.x, p.z), want), turned = Vector2.Distance(new Vector2(-p.x, -p.z), want);
+        what = "Seat_" + hero.name + " mesh centre x/z (" + p.x.ToString("0.00") + ", " + p.z.ToString("0.00") + "), BusLayout (" +
+               want.x.ToString("0.00") + ", " + want.y.ToString("0.00") + "): " + direct.ToString("0.00") + " m as it is, " +
+               turned.ToString("0.00") + " m turned 180 deg";
+        return direct < AxisAgreeM ? Axes.Agree : turned < AxisAgreeM && direct >= AxisOffM ? Axes.Reversed : Axes.Unknown;
+    }
+
+    internal static string AxisRefusal(string what)
+    {
+        return "axes REFUSED: Bus.fbx matches BusLayout.json neither as it is nor turned 180 deg (" + what + "); no automatic " +
+               "correction: Bus.fbx and BusLayout.json must come from the same finish_bus.py export";
+    }
+
+    // On the fresh instance (model root at identity), before anything is reparented. Reversed: the integrator's correction,
+    // the 180 deg baked into the model's direct children, the model root stays identity (BusLayout positions, doorClosedPos,
+    // the stations and colliders are all in the bus frame). Throws on Unknown (callers check ModelAxes on the asset first).
+    internal static string AlignModelToLayout(Transform model, Layout L)
+    {
+        string what;
+        Axes a = ModelAxes(model, L, out what);
+        if (a == Axes.Agree) return "axes: Bus.fbx agrees with BusLayout.json, nothing changed (" + what + ")";
+        if (a == Axes.Unknown) throw new InvalidOperationException(AxisRefusal(what));
+        var children = model.Cast<Transform>().ToArray();
+        model.localRotation = Quaternion.Euler(0f, 180f, 0f);
+        foreach (var c in children) c.SetParent(model.parent, true);
+        model.localRotation = Quaternion.identity;
+        foreach (var c in children) c.SetParent(model, true);
+        string was = what;
+        if (ModelAxes(model, L, out what) != Axes.Agree) throw new InvalidOperationException("axes: the 180 deg correction did not verify (" + what + ")");
+        return AxisCorrected + ": Bus.fbx came in with X / Z reversed against BusLayout.json (" + was + "; a Bus.fbx or its import from " +
+               "before finish_bus.py's axis fix): turned 180 deg about Y into the model's " + children.Length + " direct children, the model " +
+               "root stays identity. Re-import Bus.fbx from main";
+    }
+
     // ------------------------------------------------------------------------------------------------ helpers
+    // Unity's importer makes ONE LODGroup on the FBX root out of every *_LODn name (Bus_Exterior_LOD0/1, Seat_*_LOD1/2:
+    // CONTROL §6 pitfall 4; the integrator found it beside the explicit groups, 10-26). The builders destroy it on the fresh
+    // instance before they make the exterior / seat groups, then LodOwnerClash checks that no renderer is in two.
+    internal static string DropImportedLods(Transform model)
+    {
+        var lods = model.GetComponentsInChildren<LODGroup>(true);
+        foreach (var lg in lods) UnityEngine.Object.DestroyImmediate(lg);
+        return "imported LODGroups removed: " + lods.Length + " (the importer's group from the *_LOD names; the explicit groups own the LODs)";
+    }
+
+    // null = every renderer in at most one level of one LODGroup under root (the integrator's FixImportedBusLod check)
+    internal static string LodOwnerClash(Transform root)
+    {
+        var seen = new HashSet<Renderer>();
+        foreach (var lg in root.GetComponentsInChildren<LODGroup>(true))
+            foreach (var lod in lg.GetLODs())
+                foreach (var r in lod.renderers)
+                    if (r != null && !seen.Add(r)) return "renderer " + r.name + " is in two LODGroups / LOD levels (" + lg.name + ")";
+        return null;
+    }
+
     // D-36 budget: finish_bus.seat_lods exports every seat three times - Seat_<inst> (LOD0), Seat_<inst>_LOD1 (50 %) and
     // Seat_<inst>_LOD2 (25 %). Each seat keeps its place and name; its two copies go under it and a LODGroup on it switches
     // LOD1 in from about SeatLod1Dist and LOD2 from SeatLod2Dist for a headset's ~SeatLodFovDeg vertical field of view

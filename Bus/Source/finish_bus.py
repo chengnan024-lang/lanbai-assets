@@ -20,6 +20,10 @@
   Wheel_FR/FL/RR/RL           轮子，原点 = 轮心（LB_Journey 转它们）
   Glass_*                     每扇玻璃一个物体，原点在玻璃中心，法线朝车外（Rain/README_Rain.md §5.1）
   WiperPivot_L / _R (+ 子物体 Wiper_*)   雨刮枢轴：局部 +Y = 停放方向，+Z = 转轴（§5.5）
+
+坐标：Unity 里每个物体的位置、旋转、包围盒 = BusLayout.json 的车局部坐标（x 右 y 上 z 前）。Unity 导入 FBX 时把 x 取反，
+所以 Bus.fbx 是把场景绕 Unity Y 转 180° 以后导出的（R_UNITY，只转导出那一下，转完原样转回来）；Bus_fbx_readback.json
+按 Unity 的规则核对（readback）。
 """
 import argparse
 import json
@@ -385,6 +389,34 @@ def vertex_colours(ob, ao_samples=32):
     return dict(grime_mean=float(grime.mean()), wear_mean=float(wear.mean()))
 
 
+def wiper_basis():
+    """the pivots' Blender rotation. Unity basis: Y' = (1,0,0) (parked arm along +x), Z' = (0,0,1) (axis out of the
+    glass, forward), X' = Y' x Z'. The export maps a Blender local frame (x, y, z) to Unity's (x, z, y) (U2B on both
+    sides of the matrix), so the Blender columns are U2B(X'), U2B(Z'), U2B(Y'): a proper rotation (90 deg about
+    Blender Y). (Until 10-31 the columns were U2B(X', Y', Z'), det -1: Unity got scale -1, transform.up along the bus
+    and the sweep about x.)"""
+    Xu, Yu, Zu = Vector((0, -1, 0)), Vector((1, 0, 0)), Vector((0, 0, 1))
+    return Matrix((BB.U2B(Xu), BB.U2B(Zu), BB.U2B(Yu))).transposed()
+
+
+def wiper_pivot_fix(objs):
+    """a .blend saved before wiper_basis(): each WiperPivot gets that basis, its arm keeps its world matrix. Returns
+    the names changed."""
+    want = wiper_basis()
+    changed = []
+    for p in [o for o in objs if o.name.startswith('WiperPivot')]:
+        M = p.matrix_world
+        if max(abs(M[i][j] - want[i][j]) for i in range(3) for j in range(3)) < 1e-6:
+            continue
+        kids = [(c, c.matrix_world.copy()) for c in p.children]
+        p.matrix_world = Matrix.Translation(M.translation) @ want.to_4x4()
+        for c, mw in kids:
+            c.matrix_world = mw
+        changed.append(p.name)
+    bpy.context.view_layer.update()
+    return changed
+
+
 def wipers():
     """two pivots on the windscreen bottom: local +Y = parked arm direction (along the glass bottom), +Z = axis."""
     out = []
@@ -392,12 +424,7 @@ def wipers():
         piv = bpy.data.objects.new('WiperPivot_' + nm, None)
         bpy.context.scene.collection.objects.link(piv)
         loc = BB.U2B((px, B.WS_BOT - 0.022, BB.front_z(px, B.WS_BOT - 0.022) + 0.03))
-        # Unity basis: Y' = (1,0,0) (parked arm along +x), Z' = (0,0,1) (axis out of the glass, forward), X' = Y' x Z'
-        Yu, Zu = Vector((1, 0, 0)), Vector((0, 0, 1))
-        # convert the Unity basis to Blender: columns are images of local x,y,z under U2B; local axes stay Unity-local
-        Xb, Yb, Zb = BB.U2B(Vector((0, -1, 0))), BB.U2B(Yu), BB.U2B(Zu)
-        R = Matrix((Xb, Yb, Zb)).transposed().to_4x4()
-        piv.matrix_world = Matrix.Translation(loc) @ R
+        piv.matrix_world = Matrix.Translation(loc) @ wiper_basis().to_4x4()
         arm = [o for o in bpy.data.objects if o.name.startswith('Wiper') and not o.name.startswith('WiperPivot')]
         out.append(piv)
     # parent the arm meshes to the nearest pivot
@@ -900,27 +927,223 @@ def layout(out):
     )
 
 
-def readback(path, expect):
+# Unity's FBX import mirrors x: Unity = (-x, y, z) of the file (FromLocal 10-26, views/bus_axes_before.txt). export_unity
+# ('-Z' forward, 'Y' up) writes Blender (x, y, z) as (x, z, -y), so Bus.fbx came in turned 180 deg about Y (Seat_SeatR0
+# at (-0.65, 1.18, -2.02), BusLayout's hero station at (0.55, 1.03, 2.12)). Bus.fbx is written from the scene turned by
+# R_UNITY (180 deg about Blender Z = Unity Y, through the origin): Unity then sees U(Blender). The file's axes header
+# stays the standard Y-up one (what Unity does with another is unknown). The harness shell is read by Blender's
+# importer, which honours that header, so it is exported unturned.
+R_UNITY = Matrix.Diagonal((-1.0, -1.0, 1.0, 1.0))
+U4 = Matrix(((1, 0, 0, 0), (0, 0, 1, 0), (0, 1, 0, 0), (0, 0, 0, 1)))     # U on a frame: Unity matrix = U4 M U4
+
+
+def _flip(m):
+    """R_UNITY @ m @ R_UNITY for a 4x4: the entries with exactly one of row, column in x / y change sign (exact)."""
+    m = m.copy()
+    for i in range(4):
+        for j in range(4):
+            if (i < 2) != (j < 2):
+                m[i][j] = -m[i][j]
+    return m
+
+
+def _vsum(me):
+    co = np.empty(3 * len(me.vertices), np.float32)
+    me.vertices.foreach_get('co', co)
+    return zlib.crc32((co + np.float32(0)).tobytes())          # + 0: -0.0 and 0.0 count the same
+
+
+def turn_for_unity(objs, back=None):
+    """R_UNITY on objs for the Bus.fbx export: matrix_world -> R M R for each object (and its parents), each mesh by R
+    once. Done on the local transforms (location and euler x, y change sign, the parent inverse is conjugated, scale
+    stays): every local rotation stays as authored (the doors, the wiper pivots and the wheels turn at runtime on top
+    of it; a baked 180 deg would be overwritten) and a second call restores the scene bit for bit. back = what the
+    first call returned: the second call asserts every matrix_world and each mesh's vertex checksum are back."""
+    vl = bpy.context.view_layer
+    vl.update()
+    obs = []
+    for o in objs:
+        while o is not None and o not in obs:
+            obs.append(o)
+            o = o.parent
+    meshes = []
+    for o in obs:
+        if o.type == 'MESH' and o.data not in meshes:
+            meshes.append(o.data)
+    first = back is None
+    if first:
+        back = dict(M={o.name: np.array(o.matrix_world) for o in objs}, v={me.name: _vsum(me) for me in meshes})
+    for o in obs:
+        assert not o.constraints and (o.parent is None or o.parent_type == 'OBJECT'), o.name
+        o.location = (-o.location.x, -o.location.y, o.location.z)
+        o.delta_location = (-o.delta_location.x, -o.delta_location.y, o.delta_location.z)
+        for k in ('rotation_euler', 'delta_rotation_euler'):
+            e = getattr(o, k)
+            setattr(o, k, (-e.x, -e.y, e.z))
+        for k in ('rotation_quaternion', 'delta_rotation_quaternion'):
+            q = getattr(o, k)
+            setattr(o, k, (q.w, -q.x, -q.y, q.z))
+        a_ = o.rotation_axis_angle
+        o.rotation_axis_angle = (a_[0], -a_[1], -a_[2], a_[3])
+        o.matrix_parent_inverse = _flip(o.matrix_parent_inverse)
+    for me in meshes:
+        me.transform(R_UNITY, shape_keys=True)
+        me.update()
+    vl.update()
+    Rn = np.array(R_UNITY)
+    if first:                                                  # turned: R M R
+        err = max(float(np.abs(np.array(o.matrix_world) - Rn @ back['M'][o.name] @ Rn).max()) for o in objs)
+        assert err < 1e-5, 'turn_for_unity: matrix_world off R M R by %.2g' % err
+    else:                                                      # back: M, exactly
+        moved = [o.name for o in objs if not np.array_equal(np.array(o.matrix_world), back['M'][o.name])]
+        assert not moved, 'turn_for_unity: matrix_world not restored: %s' % moved[:5]
+        changed = [me.name for me in meshes if _vsum(me) != back['v'][me.name]]
+        assert not changed, 'turn_for_unity: vertices not restored: %s' % changed[:5]
+    return back
+
+
+# what Unity makes of Bus.fbx, from Blender's re-import: Blender reads the standard header (Y up, -Z forward) as
+# Blender = (x, -z, y) of the file and Unity mirrors x, so a point read back at p is at C_UNITY p in Unity, and a node
+# read back with matrix_world W (its mesh data = the file's) has the Unity matrix C_UNITY W S_UNITY. Checked against
+# 阿白's measurements on the unturned Bus.fbx (Seat_SeatR0, Window_R1, Pole_R0, Bus_Door0 bounds to 0.1 mm).
+C_UNITY = Matrix(((-1, 0, 0, 0), (0, 0, 1, 0), (0, -1, 0, 0), (0, 0, 0, 1)))
+S_UNITY = Matrix.Diagonal((-1.0, 1.0, 1.0, 1.0))
+FBX_AXES = dict(UpAxis=1, UpAxisSign=1, FrontAxis=2, FrontAxisSign=1, CoordAxis=0, CoordAxisSign=1)
+
+
+def fbx_axes(path):
+    """the axes header (GlobalSettings) of an FBX."""
+    import addon_utils
+    addon_utils.enable('io_scene_fbx')
+    from io_scene_fbx import parse_fbx
+    root, _ = parse_fbx.parse(path)
+    gs = next(e for e in root.elems if e.id == b'GlobalSettings')
+    p70 = next(e for e in gs.elems if e.id == b'Properties70')
+    return {e.props[0].decode(): e.props[4] for e in p70.elems if e.props[0].decode() in FBX_AXES}
+
+
+def unity_pose(W):
+    """position, eulerAngles (Unity's: Quaternion.Euler(x, y, z) = Ry Rx Rz), lossy scale of a Unity matrix (a mirror
+    shows as scale -1, the way Blender's decompose and the FBX write it)."""
+    M3 = W.to_3x3()
+    sc = np.array([M3.col[k].length for k in range(3)]) * (-1 if M3.determinant() < 0 else 1)
+    R = np.array([[M3[i][j] / sc[j] for j in range(3)] for i in range(3)])
+    eul = (math.degrees(math.asin(max(-1.0, min(1.0, -R[1, 2])))), math.degrees(math.atan2(R[0, 2], R[2, 2])),
+           math.degrees(math.atan2(R[1, 0], R[1, 1])))
+    return [round(v, 5) for v in W.translation], [round(v % 360.0, 3) % 360.0 for v in eul], [round(float(v), 5) for v in sc], R
+
+
+def readback(path, expect, lay):
+    """Bus.fbx read back with Blender's importer and mapped to what Unity will see (C_UNITY; world = the model at the
+    origin, identity): per object the Unity bounds against U(the Blender model), the Unity matrix against U4 M U4 (so
+    a baked turn shows), the pose, the uv / colour layers; under '_unity' the axes header, the hero seat against
+    BusLayout (as LanbaiBusBuild's AlignModelToLayout tests it), the door panels with BusLayout's open / closed poses
+    (as LanbaiCabinDriver.WriteDoor sets them), the wiper pivots' frame (LanbaiWipers: +Y = arm at rest, +Z = axis)."""
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    bpy.ops.import_scene.fbx(filepath=path, axis_forward='Z', axis_up='Y', global_scale=1.0)
+    bpy.ops.import_scene.fbx(filepath=path)                    # the axes come from the file's header
     got = {o.name: o for o in bpy.data.objects}
     rep = {}
-    for nm, (nv, bb) in expect.items():
+    pts = {}
+    for nm, ex in expect.items():
         o = got.get(nm)
         if o is None:
             rep[nm] = 'MISSING'
             continue
-        if o.type != 'MESH':
-            rep[nm] = 'ok (empty)'
+        W = C_UNITY @ o.matrix_world @ S_UNITY
+        merr = max(abs(W[i][j] - ex['unity_matrix'][i][j]) for i in range(3) for j in range(4))
+        pos, eul, sc, _ = unity_pose(W)
+        r = dict(unity_position=pos, unity_euler=eul, unity_scale=sc, matrix_err=round(merr, 6))
+        if o.type == 'MESH':
+            co = np.empty(3 * len(o.data.vertices), np.float64)
+            o.data.vertices.foreach_get('co', co)
+            M = np.array(C_UNITY @ o.matrix_world)
+            p = co.reshape(-1, 3) @ M[:3, :3].T + M[:3, 3]
+            pts[nm] = p
+            lo, hi = p.min(0), p.max(0)
+            err = float(max(np.max(np.abs(lo - ex['bounds'][0])), np.max(np.abs(hi - ex['bounds'][1]))))
+            r.update(verts=len(o.data.vertices), verts_expected=ex['verts'], bbox_err_m=round(err, 5),
+                     unity_bounds=[[round(float(v), 4) for v in lo], [round(float(v), 4) for v in hi]],
+                     uv_layers=[l.name for l in o.data.uv_layers], colours=[c.name for c in o.data.color_attributes])
+        rep[nm] = r
+    chk = dict(axes=fbx_axes(path), axes_expected=FBX_AXES)
+    hero = next((s for s in lay['seats'] if s['hero']), None)
+    if hero and 'Seat_' + hero['name'] in pts:
+        p = pts['Seat_' + hero['name']]
+        c = (p.min(0) + p.max(0)) / 2
+        want = np.array((hero['x'], hero['back_z'] + 0.25))
+        chk['hero_seat'] = dict(name='Seat_' + hero['name'], centre_xz=[round(float(c[0]), 4), round(float(c[2]), 4)],
+                                layout_xz=want.tolist(), direct_m=round(float(np.hypot(*(c[[0, 2]] - want))), 4),
+                                reversed_m=round(float(np.hypot(*(-c[[0, 2]] - want))), 4))
+    doors = []
+    for d in lay.get('door_panels', []):
+        o = got.get(d['name'])
+        if o is None or d['name'] not in pts:
             continue
-        bbw = [U(o.matrix_world @ Vector(c)) for c in o.bound_box]
-        lo = np.min(bbw, 0)
-        hi = np.max(bbw, 0)
-        err = float(max(np.max(np.abs(lo - bb[0])), np.max(np.abs(hi - bb[1]))))
-        uvs = [l.name for l in o.data.uv_layers]
-        rep[nm] = dict(verts=len(o.data.vertices), verts_expected=nv, bbox_err_m=round(err, 5), uv_layers=uvs,
-                       colours=[c.name for c in o.data.color_attributes])
+        W = C_UNITY @ o.matrix_world @ S_UNITY
+        pos, eul, sc, Rq = unity_pose(W)
+        y0 = math.radians(d['open']['yaw_deg'])
+        Ro = np.array([[math.cos(y0), 0, math.sin(y0)], [0, 1, 0], [-math.sin(y0), 0, math.cos(y0)]])
+        # LanbaiCabinDriver.WriteDoor: localPosition = closed.position, localRotation = open rotation * Euler(0, yaw, 0)
+        y1 = math.radians(d['closed']['yaw_deg'])
+        Ry = np.array([[math.cos(y1), 0, math.sin(y1)], [0, 1, 0], [-math.sin(y1), 0, math.cos(y1)]])
+        loc = (pts[d['name']] - np.array(pos)) @ Rq                    # Unity local x scale
+        q = loc @ (Rq @ Ry).T + np.array(d['closed']['position'])
+        doors.append(dict(name=d['name'], closed_position=d['closed']['position'],
+                          open_pos_err_m=round(float(np.abs(np.array(pos) - d['open']['position']).max()), 5),
+                          open_rot_err=round(float(np.abs(Rq - Ro).max()), 5),
+                          closed_x=[round(float(q[:, 0].min()), 4), round(float(q[:, 0].max()), 4)],
+                          closed_z=[round(float(q[:, 2].min()), 4), round(float(q[:, 2].max()), 4)]))
+    chk['door_panels'] = doors
+    wip = []
+    for nm in ('WiperPivot_L', 'WiperPivot_R'):
+        o = got.get(nm)
+        arm = [k for k in pts if o is not None and got[k].parent == o]
+        if o is None or not arm:
+            continue
+        pos, eul, sc, Rq = unity_pose(C_UNITY @ o.matrix_world @ S_UNITY)
+        p = pts[arm[0]]
+        far = p[np.argmax(np.linalg.norm(p - np.array(pos), axis=1))] - np.array(pos)   # the blade's far end
+        wip.append(dict(name=nm, arm=arm[0], scale=sc, up=[round(float(v), 4) for v in Rq[:, 1]],
+                        forward=[round(float(v), 4) for v in Rq[:, 2]],
+                        up_dot_arm=round(float(Rq[:, 1] @ far / np.linalg.norm(far)), 4)))
+    chk['wiper_pivots'] = wip
+    rep['_unity'] = chk
     return rep
+
+
+def readback_problems(rep, lay):
+    bad = [k for k, v in rep.items() if v == 'MISSING']
+    obs = {k: v for k, v in rep.items() if isinstance(v, dict) and not k.startswith('_')}
+    # what Unity will see: bounds and transforms in BusLayout's frame (the 180 deg turn of 10-26 shows here as ~4 m)
+    bad += ['%s Unity bbox off by %.3f m' % (k, v['bbox_err_m']) for k, v in obs.items() if v.get('bbox_err_m', 0) > 0.002]
+    bad += ['%s Unity transform off by %.4f' % (k, v['matrix_err']) for k, v in obs.items() if v['matrix_err'] > 0.002]
+    bad += ['%s verts %d < %d' % (k, v['verts'], v['verts_expected']) for k, v in obs.items()
+            if 'verts' in v and v['verts'] < v['verts_expected']]
+    # what Unity will see: uv1 = UVLightmap on every lightmapped separate object (read back from the FBX)
+    bad += ['%s uv %s' % (k, v['uv_layers']) for k, v in obs.items()
+            if k.startswith(LM_SEPARATE) and 'uv_layers' in v and v['uv_layers'] != list(LM_UV_ORDER)]
+    # what Unity will see: mesh.colors = the first colour set, which must be 'Col'
+    bad += ['%s colours %s' % (k, v['colours']) for k, v in obs.items() if v.get('colours') and v['colours'][0] != 'Col']
+    chk = rep.get('_unity', {})
+    if chk.get('axes') != FBX_AXES:
+        bad.append('FBX axes header %s, not the standard %s' % (chk.get('axes'), FBX_AXES))
+    h = chk.get('hero_seat')
+    if h is None or h['direct_m'] > 0.5:
+        bad.append('hero seat vs BusLayout: %s' % h)
+    if len(chk.get('door_panels', [])) != len(lay.get('door_panels', [])):
+        bad.append('door panels missing: %s' % [d['name'] for d in chk.get('door_panels', [])])
+    for d in chk.get('door_panels', []):
+        z0 = d['closed_position'][2]
+        # closed: in the wall plane (x = R_WALL), from closed.position forward by one panel
+        if d['open_pos_err_m'] > 0.002 or d['open_rot_err'] > 1e-3 or max(abs(x - B.R_WALL) for x in d['closed_x']) > 0.03 \
+                or not (z0 - 0.01 < d['closed_z'][0] and d['closed_z'][1] < z0 + B.DOOR_PANEL + 0.03):
+            bad.append('door %s: %s' % (d['name'], d))
+    if len(chk.get('wiper_pivots', [])) != 2:
+        bad.append('wiper pivots / arms missing: %s' % chk.get('wiper_pivots'))
+    for w in chk.get('wiper_pivots', []):
+        if min(w['scale']) < 0 or w['up_dot_arm'] < 0.95 or abs(w['forward'][2]) < 0.95:
+            bad.append('wiper %s frame: %s' % (w['name'], w))
+    return bad
 
 
 def main():
@@ -968,19 +1191,30 @@ def main():
                 o.data.color_attributes.render_color_index = list(o.data.color_attributes).index(o.data.color_attributes['Col'])
     if 'Cabin_DestBlind' in out:
         dest_blind_uv(out['Cabin_DestBlind'])
-    fbx = os.path.join(a.out, 'Bus.fbx')
-    export_fbx(fbx, objs)
-    expect = {}
-    for o in objs:
-        if o.type == 'MESH':
-            bbw = [U(o.matrix_world @ Vector(c)) for c in o.bound_box]
-            expect[o.name] = (len(o.data.vertices), (np.min(bbw, 0), np.max(bbw, 0)))
-        else:
-            expect[o.name] = (0, None)
     # the render harness shell 'paz672' (Engineering/render_harness: --bus fbx:Bus/Models/Bus_HarnessShell_paz672.fbx):
-    # everything but the glass (an FBX glass imports opaque there) and the LOD copies
+    # everything but the glass (an FBX glass imports opaque there) and the LOD copies. Blender reads it: not turned.
     shell = [o for o in objs if o.type == 'MESH' and not o.name.startswith('Glass_') and not o.name.endswith(('_LOD1', '_LOD2'))]
     export_fbx(os.path.join(a.out, 'Bus_HarnessShell_paz672.fbx'), shell)
+    # a .blend from before wiper_basis(): the pivots for Bus.fbx (after the shell: it has no pivots, its arms stay as
+    # they were, bit for bit)
+    info['wiper_pivots_fixed'] = wiper_pivot_fix(objs)
+    fbx = os.path.join(a.out, 'Bus.fbx')
+    back = turn_for_unity(objs)                 # R_UNITY: Unity sees U(Blender)
+    try:
+        export_fbx(fbx, objs)
+    finally:
+        turn_for_unity(objs, back)              # and back, checked, before the layout and the readback
+    # what Unity must see: U(the Blender model)
+    expect = {}
+    for o in objs:
+        ex = dict(verts=0, bounds=None, unity_matrix=[list(r) for r in U4 @ o.matrix_world @ U4])
+        if o.type == 'MESH':
+            co = np.empty(3 * len(o.data.vertices), np.float64)
+            o.data.vertices.foreach_get('co', co)
+            M = np.array(U4 @ o.matrix_world)
+            p = co.reshape(-1, 3) @ M[:3, :3].T + M[:3, 3]
+            ex.update(verts=len(o.data.vertices), bounds=(p.min(0), p.max(0)))
+        expect[o.name] = ex
     lay = layout(out)
     lay['door_panels'] = door_rows
     # D-36 part atlases (LanbaiBusBuild: M_Bus_Part_<type> -> _UsePart, Textures/Parts/Part_<type>_*_<res>.png;
@@ -992,17 +1226,13 @@ def main():
     lay['stats_lod0_tris'] = sum(v['tris'] for k, v in lay['stats'].items() if not k.endswith(('_LOD1', '_LOD2')))
     lay['seat_lods'] = dict(ratios={'LOD%d' % k: r for k, r in SEAT_LODS}, objects=[o.name for o in lods])
     json.dump(lay, open(os.path.join(a.out, 'BusLayout.json'), 'w'), ensure_ascii=False, indent=1)
-    rep = readback(fbx, expect)
+    rep = readback(fbx, expect, lay)
     json.dump(rep, open(os.path.join(a.out, 'Bus_fbx_readback.json'), 'w'), ensure_ascii=False, indent=1)
-    bad = [k for k, v in rep.items() if v == 'MISSING' or (isinstance(v, dict) and (v['bbox_err_m'] > 0.002 or v['verts'] < v['verts_expected']))]
-    # what Unity will see: uv1 = UVLightmap on every lightmapped separate object (read back from the FBX)
-    bad += ['%s uv %s' % (k, v['uv_layers']) for k, v in rep.items()
-            if k.startswith(LM_SEPARATE) and isinstance(v, dict) and v['uv_layers'] != list(LM_UV_ORDER)]
-    # what Unity will see: mesh.colors = the first colour set, which must be 'Col'
-    bad += ['%s colours %s' % (k, v['colours']) for k, v in rep.items()
-            if isinstance(v, dict) and v['colours'] and v['colours'][0] != 'Col']
+    bad = readback_problems(rep, lay)
     print('[finish] %d objects, %d tris total (%d in LOD0), readback problems: %s, %s'
           % (len(objs), lay['stats_total_tris'], lay['stats_lod0_tris'], bad or 'none', info))
+    if bad:                                     # never silently (set -e in the chain stops here)
+        sys.exit('[finish] READBACK FAILED: %d problems (Bus_fbx_readback.json)' % len(bad))
 
 
 if __name__ == '__main__':

@@ -107,9 +107,10 @@ public static class LanbaiBusCabinDropIn
         public string Finish(string what)
         {
             string text = sb.ToString();
-            // the shared material makers (LanbaiBusBuild) report missing inputs as plain lines: count them as warnings
+            // the shared material makers (LanbaiBusBuild) report missing inputs as plain lines, and the axis guard a corrected
+            // stale import: count them as warnings
             warnings += Count(text, "texture missing") + Count(text, "unknown material") + Count(text, "  no field ") +
-                        Count(text, "  no array field ") + Count(text, "not in BusLayout.json parts");
+                        Count(text, "  no array field ") + Count(text, "not in BusLayout.json parts") + Count(text, LanbaiBusBuild.AxisCorrected);
             string head = (errors > 0 ? "ERROR " : "OK ") + what + ": " + errors + " error(s), " + warnings + " warning(s)";
             if (errors > 0) Debug.LogError(Tag + head + "\n" + text);
             else if (warnings > 0) Debug.LogWarning(Tag + head + "\n" + text);
@@ -249,6 +250,13 @@ public static class LanbaiBusCabinDropIn
         else if (busRoot == null) R.Warn("LB_Journey.busRoot 是空的：搭在场景根上");
         else CheckIdentity(busRoot, R);
         CheckOtherWriters(R);
+        // Bus.fbx against BusLayout before anything changes (the correction of a stale import is in step 2)
+        string axes;
+        if (LanbaiBusBuild.ModelAxes(fbx.transform, L, out axes) == LanbaiBusBuild.Axes.Unknown)
+        {
+            R.Err(LanbaiBusBuild.AxisRefusal(axes) + "：场景没动");
+            return R.Finish(what + " - nothing done");
+        }
 
         Undo.IncrementCurrentGroup();
         Undo.SetCurrentGroupName("Build bus drop-in");
@@ -269,6 +277,10 @@ public static class LanbaiBusCabinDropIn
         model.name = ModelName;
         model.transform.SetParent(root.transform, false);
         Identity(model.transform);
+        try { R.Line(LanbaiBusBuild.AlignModelToLayout(model.transform, L)); }
+        catch (InvalidOperationException e) { R.Err(e.Message); }
+        // the importer's aggregate LODGroup (from the *_LOD names) goes: steps 5 / 5b build the only ones
+        R.Line(LanbaiBusBuild.DropImportedLods(model.transform));
         if (!exterior)
         {
             int cut = 0;
@@ -337,7 +349,7 @@ public static class LanbaiBusCabinDropIn
             if (l >= 0) r.gameObject.layer = l;
         }
 
-        // 5. the exterior LODGroup (CONTROL §6 pitfall 4: the importer does not group <name>_LOD0/1)
+        // 5. the exterior LODGroup (CONTROL §6 pitfall 4: the importer's one group on the FBX root was removed in step 2)
         if (exterior)
         {
             var lod0 = LanbaiBusBuild.FindDeep(model.transform, "Bus_Exterior_LOD0");
@@ -358,6 +370,9 @@ public static class LanbaiBusCabinDropIn
         // 5b. D-36 seat LODs (finish_bus.seat_lods: Seat_<inst>_LOD1 / _LOD2), the full builder's own grouping: without it
         //     an FBX with the copies would draw each seat three times, one inside the other
         R.Line(LanbaiBusBuild.GroupSeatLods(model.transform));
+        string lodClash = LanbaiBusBuild.LodOwnerClash(root.transform);
+        if (lodClash != null) R.Err(lodClash);
+        else R.Line("LOD owners: no renderer in two LODGroups / levels");
 
         // 6. seats: one VRCStation per BusLayout seat (23), facing +Z; the local LB_Seat when the project has it (its
         //    OnStationEntered tells LanbaiPoemDriver which seat you sit in), else the bus package's LanbaiBusSeat
@@ -418,8 +433,15 @@ public static class LanbaiBusCabinDropIn
         Type seatType = lbSeat ?? Lanbai.Udon.LanbaiUdonPrograms.TypeOfScript("LanbaiBusSeat");
         Component poems = One("LanbaiPoemDriver", R);
         var eyes = Field(poems, "seatEye") as Vector3[];
+        // LanbaiPoemDriver v5 (D-45, depthTable): SetSeat takes the BusLayout seat order (Fonts/subtitle_depth.json 'seats' =
+        // BusLayout.json seats, hero 0), not the nearest seatEye (integrator 10-26)
+        bool v5 = poems != null && poems.GetType().GetField("depthTable") != null;
         bool poemSeat = lbSeat != null && lbSeat.GetField("poemDriver") != null && lbSeat.GetField("poemSeatIndex") != null && poems != null;
-        if (poemSeat && (eyes == null || eyes.Length == 0)) R.Warn("LanbaiPoemDriver.seatEye 是空的：每个座位的诗都按主座位摆（Fonts/seat_positions.json 烘了吗？）");
+        if (poemSeat && !v5 && (eyes == null || eyes.Length == 0)) R.Warn("LanbaiPoemDriver.seatEye 是空的：每个座位的诗都按主座位摆（Fonts/seat_positions.json 烘了吗？）");
+        var depth = v5 ? Field(poems, "depthTable") as float[] : null;
+        if (poemSeat && v5 && (depth == null || depth.Length != L.seats.Length * 24 * 9))
+            R.Warn("LanbaiPoemDriver.depthTable 有 " + (depth != null ? depth.Length : 0) + " 格，BusLayout 的 " + L.seats.Length + " 个座位要 " +
+                   L.seats.Length * 24 * 9 + " 格：字幕深度按默认值走（Fonts 的 subtitle_depth.json 烘了吗？和这辆车是同一份吗？）");
         float worst = 0f;
         int made = 0;
         foreach (var s in L.seats)
@@ -449,8 +471,8 @@ public static class LanbaiBusCabinDropIn
                 LanbaiBusBuild.SetRef(sso, "station", st);
                 if (poemSeat)
                 {
-                    float d;
-                    int k = NearestEye(eyes, s, out d);
+                    float d = 0f;
+                    int k = v5 ? made - 1 : NearestEye(eyes, s, out d);   // made - 1 = this seat's index in L.seats (made++ above, every seat)
                     worst = Mathf.Max(worst, d);
                     LanbaiBusBuild.SetRef(sso, "poemDriver", poems);
                     LanbaiBusBuild.SetInt(sso, "poemSeatIndex", k);
@@ -464,7 +486,7 @@ public static class LanbaiBusCabinDropIn
         if (stationType == null) R.Warn("VRCStation 类型找不到（VRChat SDK？）：只建了座位的位置，没有 station");
         if (seatType == null) R.Warn("LB_Seat 和 LanbaiBusSeat 都找不到：station 没有“坐下”的交互");
         R.Line("seats: " + made + " VRCStation(s), sit script " + (seatType != null ? seatType.Name : "none") +
-               (poemSeat ? ", poem seat = nearest LanbaiPoemDriver.seatEye (worst " + worst.ToString("0.00") + " m)" : ""));
+               (poemSeat && v5 ? ", poem seat = v5 BusLayout order" : poemSeat ? ", poem seat = nearest LanbaiPoemDriver.seatEye (worst " + worst.ToString("0.00") + " m)" : ""));
         if (poemSeat && worst > 0.15f) R.Warn("有座位离最近的 seatEye 超过 0.15 m：Fonts/seat_positions.json 和 BusLayout.json 的座位对不上，诗的位置按别的座位算");
     }
 

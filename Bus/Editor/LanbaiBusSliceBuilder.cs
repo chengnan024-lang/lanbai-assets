@@ -9,7 +9,8 @@
 //     Slice_Globals        LanbaiBusSliceGlobals (Bus/Scripts): the cabin globals LanbaiCabinDriver writes in the world
 //     Slice_Camera         hero eye (0.55, 1.70, 2.05) looking +Z, 90 deg horizontal at 16:9, near 0.02, PPv2 PostProcessLayer
 //     Slice_Grade_S2       only if the grading kit's Lanbai_PP_S2 profile exists: a global PPv2 volume (night road)
-// The pieces come out of Bus.fbx with their world transforms; the rest of the FBX instance is destroyed. Names: BusLayout.json
+// The pieces come out of Bus.fbx with their world transforms (after LanbaiBusBuild.AlignModelToLayout: the FBX's axes against
+// BusLayout, a stale 180 deg import corrected, anything else refused); the rest of the FBX instance is destroyed. Names: BusLayout.json
 // 'slice' (finish_bus.py), the defaults below for an older layout. Materials: exactly the full build's makers
 // (LanbaiBusBuild.CabinMat / GlassMat / PartMat, the mode from LanbaiBusBuild.ModeFor) written to Bus/Generated/Materials;
 // what those makers report ('texture missing', 'unknown material', 'part X: not in BusLayout.json parts', ...) is counted
@@ -122,6 +123,14 @@ public static class LanbaiBusSliceBuilder
                            "This menu does not change project settings: untick them by hand (Bus/README.md §5)");
         }
         else rep.AppendLine("vertex compression: TexCoord0-3 and Color off (mask " + vcMask + ", " + vcHow + "; bus_slice.json settings.vertex_compression_off)");
+        // Bus.fbx against BusLayout before the scene is touched (LanbaiBusBuild.AlignModelToLayout corrects a stale import in step 2)
+        string axes;
+        if (L != null && LanbaiBusBuild.ModelAxes(fbx.transform, L, out axes) == LanbaiBusBuild.Axes.Unknown)
+        {
+            string e = "ERROR " + LanbaiBusBuild.AxisRefusal(axes) + "; the scene is unchanged";
+            Debug.LogError(Tag + e + "\n" + rep);
+            return e;
+        }
 
         Undo.IncrementCurrentGroup();
         Undo.SetCurrentGroupName("Build bus slice");
@@ -158,6 +167,17 @@ public static class LanbaiBusSliceBuilder
         PrefabUtility.UnpackPrefabInstance(model, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
         model.transform.SetParent(root.transform, false);
         model.transform.localPosition = Vector3.zero; model.transform.localRotation = Quaternion.identity; model.transform.localScale = Vector3.one;
+        if (L == null) { warnings++; rep.AppendLine("WARNING: axes not checked (no BusLayout.json): the pieces keep Bus.fbx's frame as imported"); }
+        else
+        {
+            try
+            {
+                string ax = LanbaiBusBuild.AlignModelToLayout(model.transform, L);
+                if (ax.StartsWith(LanbaiBusBuild.AxisCorrected, StringComparison.Ordinal)) { warnings++; ax = "WARNING: " + ax; }
+                rep.AppendLine(ax);
+            }
+            catch (InvalidOperationException e) { errors++; rep.AppendLine("ERROR: " + e.Message); }
+        }
         var pieces = new[] { new KeyValuePair<string, string[]>("Slice_Seat", seatN), new KeyValuePair<string, string[]>("Slice_SideWindow", windowN),
                              new KeyValuePair<string, string[]>("Slice_Pillar", pillarN) };
         var missing = new List<string>();
@@ -182,6 +202,11 @@ public static class LanbaiBusSliceBuilder
             }
         }
         UnityEngine.Object.DestroyImmediate(model);
+        // no LOD copies here (Seat_SeatR0 only): the importer's aggregate LODGroup (*_LOD names) sat on the FBX root and went with it
+        int strayLods = 0;
+        foreach (var lg in root.GetComponentsInChildren<LODGroup>(true)) { UnityEngine.Object.DestroyImmediate(lg); strayLods++; }
+        if (strayLods > 0) { warnings++; rep.AppendLine("WARNING: removed " + strayLods + " LODGroup(s) that came with the slice pieces (the slice keeps LOD0 only)"); }
+        else rep.AppendLine("LODGroups: none (LOD0 pieces only; the importer's group went with the rest of Bus.fbx)");
 
         // 3. materials, exactly as 蓝白/Build/车 makes them (Lanbai/Cabin with the tube light map on uv1; Lanbai/BusGlass for the pane)
         Shader cabin = Shader.Find("Lanbai/Cabin"), glass = Shader.Find("Lanbai/BusGlass");
