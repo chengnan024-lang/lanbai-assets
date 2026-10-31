@@ -273,6 +273,13 @@ namespace Lanbai.Test
                         var ct = Preflight.FindType(cn);
                         if (ct == null || !typeof(Component).IsAssignableFrom(ct)) throw new StepException("找不到组件类型 " + cn);
                         if (tr.GetComponent(ct) != null) return Scenes.PathOf(tr) + " 上已经有 " + ct.Name;
+                        // 1.3.0（D-50 #9）：场景里别的物体上已经有一个就不加（VRC 场景描述符只能有一个：本地 gate 测试加出了第二个）
+                        var other = Object.FindObjectsOfType(ct).Cast<Component>().FirstOrDefault(x => x.gameObject.scene == tr.gameObject.scene);
+                        if (other != null)
+                        {
+                            if (tr.GetComponents<Component>().Length <= 1 && tr.childCount == 0 && TJson.B(TJson.G(st, "create"))) Object.DestroyImmediate(tr.gameObject);
+                            return "场景里已经有 " + ct.Name + "（" + Scenes.PathOf(other.transform) + "），不再加";
+                        }
                         tr.gameObject.AddComponent(ct);
                         return Scenes.PathOf(tr) + " 加了 " + ct.FullName;
                     }

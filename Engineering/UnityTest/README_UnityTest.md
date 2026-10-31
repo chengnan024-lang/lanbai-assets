@@ -101,7 +101,7 @@
 ### 开跑之前工具自己查的几道关（HANDOFF_CHATGPT，只读）
 - **资源**：C 盘剩 ≥ 10 GB、工程所在盘剩 ≥ 10 GB、可用内存 ≥ 6 GB（测试定义的 `resources` 可改：`min_c_gb`、`min_project_gb`、`min_free_ram_gb`）。不够就 BLOCKED：**停，告诉小楠**（工具和阿白都不替小楠关程序、清文件；VRChat 开着就请小楠关）。
 - **写入检查**（1.2.2）：按文件大小和修改时间比；材质、`.asset`、预制体、`.meta` 这类 ≤ 4 MB 的小文件开搭前另记内容哈希，存了但逐字节没变的列在 `tool_touched_restored`，不算“改了”（10-25 Sea / SeaB / WetGround 就是这种）。
-- **小楠的同意**：第一次用这个工具之前要小楠同意。同意以后，阿白写 `<工程>/LanbaiReports/tests/CONSENT.json`：`{"by": "小楠", "date": "YYYY-MM-DD", "tool_version": "1.2.2", "tests": ["gate_clouds_test", "transitions_sweep", "flicker_probe", "tree_sample"], "backup": "整工程备份的 zip 路径", "note": "小楠原话"}`。没有这个文件就 BLOCKED；**同意的范围**：`tool_version` 要和工具的版本一样（工具升了版本要重新问），`tests` 里要有这次跑的测试，不然 BLOCKED；备份的路径这台机器上找不到，只警告。工具只读它，不替人写。
+- **小楠的同意**：第一次用这个工具之前要小楠同意。同意以后，阿白写 `<工程>/LanbaiReports/tests/CONSENT.json`：`{"by": "小楠", "date": "YYYY-MM-DD", "tool_version": "1.3.0", "tests": ["gate_clouds_test", "transitions_sweep", "flicker_probe", "tree_sample"], "backup": "整工程备份的 zip 路径", "note": "小楠原话"}`。没有这个文件就 BLOCKED；**同意的范围**：`tool_version` 要和工具的版本一样（工具升了版本要重新问），`tests` 里要有这次跑的测试，不然 BLOCKED；备份的路径这台机器上找不到，只警告。工具只读它，不替人写。
 - **弹窗**：工具自己不弹（批处理没有；菜单只有开始前和跑完的两个框）。Unity / Hub / VCC / SDK 的弹窗照 HANDOFF_CHATGPT §C 第 5 步一律按“不改”回答。
 
 ### 菜单
@@ -250,6 +250,16 @@ Get-Content "$proj\LanbaiReports\tests\$id\last_result.json" -Encoding UTF8
 - `kind: "static"`：机位不动、时间不动的**对照**，只剩画面本身的时间噪声（抖动、时间性效果）。和同一机位的 `micro_motion` 一起看，才知道微动带来了多少闪烁。
 - 尺寸默认 1280×720、`ss` 默认 1（头显里没有超采样，闪烁才看得出来）；机位按 `ppd` 算过的就用它的尺寸。`eye_offset_mm` 可以把整段挪到左眼 / 右眼的位置。
 - **闪烁的主量 `shimmer`**（终审 r2 改）：每一帧在**同一个姿态**再渲一张高倍超采样的参考（`reference_ss`，默认 4×；0 = 不渲），逐像素量“测的图 − 参考图”的亮度差（0–255）随时间的标准差。真实的运动（边缘挪动）两张图一起挪，差里没有；剩下的是采样不足带来的闪烁、爬动、摩尔纹。报全画面平均、p99、超过 `shimmer_threshold`（默认 4）的像素占比，热图 `heat_shimmer.png`。
+- **1.3.0 改了闪烁的量法（D-50 #9，阿白 10-26 的诊断）**，旧的闪烁数和新的不可比：
+  - **参考图逐级减半**：超采样的图按 2× 一级一级缩到输出尺寸（双线性从 2N 到 N 正好是 2×2 平均），4× 参考就是精确的 4×4 方框平均；以前一次双线性 Blit 只取了每个 4×4 格中间的 4 个样本。`ss` / `reference_ss` 只能是 1、2、4、8。
+  - **着色器时间每帧走**：编辑模式下手动渲染时 `_Time` 不走（两批 12 次都是同一个值），树风之类的顶点动画在序列里是冻住的。序列默认 `"shader_time": true`：每帧用命令缓冲把 `_Time` / `_SinTime` / `_CosTime` / `unity_DeltaTime` 设成 `shader_time_t0 + i / fps`（参考图同一个时刻）。阴影图在相机事件之前渲，仍是编辑器自己的时间。`false` = 以前的做法。
+  - **记 LOD**：被测物（`isolate.keep`，没写就是全场景）下的 LODGroup 每帧按相机算选中的级，`numbers.json` 的 `lod_per_frame`，`seq.<id>.lod_switches` = 换级次数（换级会算进闪烁，> 0 时要分开看）。
+  - 立柱、座椅（新加 `seat_shimmer`）、侧窗、树、门的闪烁阈值都是初值，第一次用 1.3.0 跑完以后由总工程师定；树那三项先改成不卡门（gate false）。
+- **写入检查的归因**（1.3.0）：开跑时内存里已经“脏”的资产记下来（`writes.dirty_before`）；它们后来被写了盘，就在那一行注明“被某个全局 `AssetDatabase.SaveAssets` 带着写了盘”，照样算没声明的写入。收尾时还脏着、没存的列在 `writes.dirty_now_unsaved`。10-26 的 bus_slice（门内 11 个材质 + 云）和 transitions_sweep（触手）就是这样来的：共用的 `LanbaiUdonPrograms.CreateMissing` 以前建了程序资产就调全局 `SaveAssets`，现在只存它建的那几个（`Common/Editor/LanbaiAssetSave.cs`，各包的搭建脚本也请改用它）。
+- **场景描述符不重复**（1.3.0）：`add_component` 先看整个场景里有没有这个组件，有了就不加（VRC 场景描述符只能有一个）。
+- **收尾以后的 Console**（1.3.0）：报告写完以后再听 3 秒；SDK 的 `RunBehaviourSetup` 这类延迟回调抛的错误记进 `late_console.jsonl`，`result.json` 加 `late_console_errors`，pass 降成 fail。批处理的退出也晚 3 秒。
+- **阿白的补丁**（1.3.0 收进）：截图相机不拍 VRChat 的 UI / 玩家层（5、9、10、12、18、19、20；字幕的层照拍）；Play 阶段用主座位的 VRCStation 坐下（新车厢的地板不在 0 高，站着传送会掉下去），收尾时离座；调试跳转以后至少等 2 帧再读时间（旧的 dbgT 会让下一段几乎整段被跳过）；内容哈希跨 reload 存下来。
+
 - **只量被测物**（1.2.2，阿白 10-25 树的验收）：序列可以写 `"isolate": {"keep": ["根物体名", ...], "roi_dilate_px": 4}`。这个序列里只留这些根物体下的 Renderer，别的（旧车柱、灯杆、路、占位）关掉，结束还原；灯光不动。同一机位“有 / 没有被测物”各渲一张，亮度差 > 2 的像素再外扩 `roi_dilate_px` 就是 ROI（`seq/<id>/roi.png`，ROI 外压暗）。`shimmer_*` 三项只在 ROI 里算（占比的分母是 ROI），另报 `seq.<id>.roi_frac`。`keep` 里的物体找不到、ROI 是空的，这一项出错。
 - **MSAA**（1.2.2，阿白 10-25）：机位可以写 `"msaa": 1 | 2 | 4 | 8`（默认 1）。用 alpha-to-coverage 的东西（树叶）要写 4：没有 MSAA 就是整块卡片。
 - 另外两个量**只作参考，不是闪烁**：`motion_std`（逐像素亮度的时间标准差，含真实运动）、`hf_raw`（二阶时间差分的均方根 ÷ √6；平滑运动大多不算，但正常的边缘运动也会进来一部分）；热图 `heat_motion_std.png`、`heat_hf_raw.png`。还有每帧的 APL、最大的帧间跳变。热图颜色：黑 → 紫 → 红 → 橙 → 浅黄，很小的值显示平均画面的暗灰。

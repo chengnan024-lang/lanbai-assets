@@ -117,7 +117,7 @@ namespace Lanbai.Test
     [InitializeOnLoad]
     public static class Runner
     {
-        public const string VERSION = "1.2.2";   // 1.2.2（2026-10-25）：机位 msaa、序列 isolate / ROI、WriteGuard 小文件按内容哈希；1.2.1（2026-10-25）：Play 阶段按复核 E1–E12 改；1.2.0：Play 阶段（transitions_sweep、flicker_probe，D-44 #4）；1.1.0：D-43 #6 copied、复核的次要项
+        public const string VERSION = "1.3.0";   // 1.3.0（2026-10-31，D-50 #9）：参考图逐级方框缩小、序列里着色器时间每帧走、记 LOD、阿白的 Play / Capture 补丁、全局保存的归因、重复的场景描述符、收尾后的 Console；1.2.2（2026-10-25）：机位 msaa、序列 isolate / ROI、WriteGuard 小文件按内容哈希；1.2.1（2026-10-25）：Play 阶段按复核 E1–E12 改；1.2.0：Play 阶段（transitions_sweep、flicker_probe，D-44 #4）；1.1.0：D-43 #6 copied、复核的次要项
         public const string TESTS_DIR = "Assets/Lanbai/Engineering/UnityTest/tests";
         public const string REPORTS = "LanbaiReports/tests";
         static readonly CultureInfo IC = CultureInfo.InvariantCulture;
@@ -362,7 +362,10 @@ namespace Lanbai.Test
             }
             finally { ctx.log.Stop(); }
             Final(ResultLine(ctx, exit));
-            if (done != null) done(exit, ctx.outDir);
+            // 1.3.0（D-50 #9）：报告写完以后再听 3 秒 Console：SDK 的 RunBehaviourSetup 这类延迟回调会在测试结束后才抛异常
+            // （本地 gate_clouds_test-06），以前没算进去。来了就记进 late_console.jsonl、改 result.json（pass 降成 fail）
+            if (ctx.outDir != null && !ctx.preflightOnly) LateConsole.Watch(ctx.outDir, 3.0, () => { if (done != null) done(exit, ctx.outDir); });
+            else if (done != null) done(exit, ctx.outDir);
         }
 
         static void Prepare(Ctx ctx)

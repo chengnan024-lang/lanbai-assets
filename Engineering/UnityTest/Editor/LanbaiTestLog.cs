@@ -170,4 +170,58 @@ namespace Lanbai.Test
             File.WriteAllText(path, sb.ToString(), new UTF8Encoding(false));
         }
     }
+
+    /// <summary>1.3.0：测试收尾以后的一小段时间里还在听 Console（延迟回调抛的异常、错误）。</summary>
+    public static class LateConsole
+    {
+        public static void Watch(string outDir, double seconds, Action then)
+        {
+            var rows = new List<Dictionary<string, object>>();
+            object lk = new object();
+            double t0 = EditorApplication.timeSinceStartup;
+            Application.LogCallback cb = (msg, stack, type) =>
+            {
+                if (type != LogType.Error && type != LogType.Exception && type != LogType.Assert) return;
+                if ((msg ?? "").StartsWith(LogCapture.TAG, StringComparison.Ordinal) || (msg ?? "").StartsWith("LANBAI_TEST_RESULT", StringComparison.Ordinal)) return;
+                lock (lk) rows.Add(new Dictionary<string, object> { { "t", Math.Round(EditorApplication.timeSinceStartup - t0, 3) }, { "type", type.ToString() }, { "msg", msg ?? "" }, { "stack", stack ?? "" } });
+            };
+            Application.logMessageReceivedThreaded += cb;
+            EditorApplication.CallbackFunction tick = null;
+            tick = () =>
+            {
+                if (EditorApplication.timeSinceStartup - t0 < seconds) return;
+                EditorApplication.update -= tick;
+                Application.logMessageReceivedThreaded -= cb;
+                List<Dictionary<string, object>> got;
+                lock (lk) got = new List<Dictionary<string, object>>(rows);
+                if (got.Count > 0)
+                {
+                    try
+                    {
+                        var u8 = new UTF8Encoding(false);
+                        var sb = new StringBuilder();
+                        foreach (var r in got) sb.AppendLine(TJson.Write(r, false));
+                        File.WriteAllText(Path.Combine(outDir, "late_console.jsonl"), sb.ToString(), u8);
+                        string rp = Path.Combine(outDir, "result.json");
+                        var res = File.Exists(rp) ? TJson.M(TJson.Parse(File.ReadAllText(rp))) : new Dictionary<string, object>();
+                        res["late_console_errors"] = (double)got.Count;
+                        res["late_console_first"] = got[0]["msg"];
+                        if (TJson.S(TJson.G(res, "status")) == "pass")
+                        {
+                            res["status"] = "fail";
+                            res["exit"] = 1.0;
+                            res["error"] = "测试结束后 " + seconds.ToString("0", System.Globalization.CultureInfo.InvariantCulture) + " 秒内 Console 又来了 " + got.Count + " 条错误 / 异常（late_console.jsonl）：" + got[0]["msg"];
+                        }
+                        File.WriteAllText(rp, TJson.Write(res), u8);
+                        string lr = Path.Combine(Path.GetDirectoryName(outDir), "last_result.json");
+                        if (File.Exists(lr)) File.WriteAllText(lr, TJson.Write(res), u8);
+                        Debug.LogWarning(LogCapture.TAG + " 收尾以后又来了 " + got.Count + " 条 Console 错误，记进了 " + outDir + "/late_console.jsonl，result.json 已更新");
+                    }
+                    catch (Exception e) { Debug.LogWarning(LogCapture.TAG + " late_console 写不出来：" + e.Message); }
+                }
+                if (then != null) then();
+            };
+            EditorApplication.update += tick;
+        }
+    }
 }

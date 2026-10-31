@@ -10,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.PostProcessing;
 using Object = UnityEngine.Object;
 
@@ -240,6 +241,8 @@ namespace Lanbai.Test
                 cam.nearClipPlane = 0.05f; cam.farClipPlane = 45000f; cam.allowHDR = true;
                 ctx.Warn("场景里没有相机可抄：截图用默认相机、没有 PPv2");
             }
+            // Evidence cameras exclude simulator UI/player-only layers; subtitle layer 24 remains visible.
+            cam.cullingMask &= ~((1 << 5) | (1 << 9) | (1 << 10) | (1 << 12) | (1 << 18) | (1 << 19) | (1 << 20));
             go.transform.position = c.eye;
             go.transform.rotation = c.rot;
             cam.aspect = (float)w / h;
@@ -251,9 +254,16 @@ namespace Lanbai.Test
         public sealed class Renderer2
         {
             public GameObject go; public Camera cam; public RenderTexture big, small; public Texture2D tex; public int w, h, ss; public bool hasPP;
+            // 1.3.0（D-50 #9，阿白 10-26 诊断）：编辑模式下手动 Render 时 _Time 不走（两批 12 次都是同一个值），树风之类的
+            // 顶点动画在“序列”里是冻住的。shaderTime 有值时，这台相机每次渲染前用命令缓冲把 _Time / _SinTime / _CosTime /
+            // unity_DeltaTime 设成它（不透明、深度、延迟各一处）；阴影图在相机事件之前渲，仍是编辑器自己的时间（报告注明）
+            public float? shaderTime; public float shaderDt = 1f / 90f;
+            CommandBuffer _timeCb;
+            static readonly CameraEvent[] TimeEvents = { CameraEvent.BeforeDepthTexture, CameraEvent.BeforeGBuffer, CameraEvent.BeforeForwardOpaque };
             public Renderer2(Ctx ctx, Cam c, int w, int h, int ss, bool withPP)
             {
                 this.w = w; this.h = h; this.ss = ss;
+                if (ss > 1 && (ss & (ss - 1)) != 0) throw new StepException("ss / reference_ss 只能是 1、2、4、8（逐级减半做精确的方框平均），现在是 " + ss);
                 go = MakeCam(ctx, c, w, h, withPP, out hasPP);
                 cam = go.GetComponent<Camera>();
                 // 渲进 HDR 目标：渲进 8 位目标的话，HDR 值在进 PPv2 之前就被夹到 1
@@ -268,10 +278,40 @@ namespace Lanbai.Test
                 tex = new Texture2D(w, h, TextureFormat.RGB24, false, false);
                 cam.targetTexture = big;
             }
+            void SetTime()
+            {
+                if (!shaderTime.HasValue) return;
+                if (_timeCb == null)
+                {
+                    _timeCb = new CommandBuffer { name = "LanbaiTest shader time" };
+                    foreach (var ev in TimeEvents) cam.AddCommandBuffer(ev, _timeCb);
+                }
+                float t = shaderTime.Value, dt = Mathf.Max(1e-4f, shaderDt);
+                _timeCb.Clear();
+                _timeCb.SetGlobalVector("_Time", new Vector4(t / 20f, t, 2f * t, 3f * t));
+                _timeCb.SetGlobalVector("_SinTime", new Vector4(Mathf.Sin(t / 8f), Mathf.Sin(t / 4f), Mathf.Sin(t / 2f), Mathf.Sin(t)));
+                _timeCb.SetGlobalVector("_CosTime", new Vector4(Mathf.Cos(t / 8f), Mathf.Cos(t / 4f), Mathf.Cos(t / 2f), Mathf.Cos(t)));
+                _timeCb.SetGlobalVector("unity_DeltaTime", new Vector4(dt, 1f / dt, dt, 1f / dt));
+            }
+
             public Color32[] Frame(int renders)
             {
+                SetTime();
                 for (int k = 0; k < Math.Max(1, renders); k++) cam.Render();
-                Graphics.Blit(big, small);
+                // 1.3.0（D-50 #9）：超采样的图逐级减半到输出尺寸。一次双线性 Blit 从 4× 缩到 1× 只取了每个 4×4 格中间的
+                // 4 个样本（阿白的校准图：正确 0.0625、旧做法 0）；双线性从 2N 缩到 N 正好是 2×2 平均，一级一级做就是精确的方框平均
+                var src = big;
+                var temps = new List<RenderTexture>();
+                for (int k = ss; k > 2; k /= 2)
+                {
+                    var t = RenderTexture.GetTemporary(w * k / 2, h * k / 2, 0, RenderTextureFormat.DefaultHDR, RenderTextureReadWrite.Linear);
+                    t.filterMode = FilterMode.Bilinear;
+                    Graphics.Blit(src, t);
+                    temps.Add(t);
+                    src = t;
+                }
+                Graphics.Blit(src, small);
+                foreach (var t in temps) RenderTexture.ReleaseTemporary(t);
                 var prev = RenderTexture.active;
                 RenderTexture.active = small;
                 tex.ReadPixels(new Rect(0, 0, w, h), 0, 0, false);
@@ -282,6 +322,7 @@ namespace Lanbai.Test
             public void Dispose()
             {
                 if (RenderTexture.active == big || RenderTexture.active == small) RenderTexture.active = null;   // 阿白 10-25：不释放正在用的 RT
+                if (_timeCb != null && cam != null) { foreach (var ev in TimeEvents) cam.RemoveCommandBuffer(ev, _timeCb); _timeCb.Release(); _timeCb = null; }
                 if (cam != null) cam.targetTexture = null;
                 if (go != null) Object.DestroyImmediate(go);
                 if (big != null) { big.Release(); Object.DestroyImmediate(big); }
@@ -502,6 +543,10 @@ namespace Lanbai.Test
             // 真实的运动（边缘挪动）两张图一起挪，差里没有；剩下的是采样不足带来的闪烁 / 爬动 / 摩尔纹。reference_ss: 0 = 不渲参考
             int refSS = Math.Max(0, TJson.I(TJson.G(d, "reference_ss"), 4));
             float shThr = TJson.F(TJson.G(d, "shimmer_threshold"), 4f);
+            // 1.3.0：着色器时间每帧走 1/fps（默认开；"shader_time": false = 编辑器自己的时间，以前的做法），起点 shader_time_t0
+            // （默认 0）。static 序列也走：静止机位下剩下的就是风这类随时间的变化
+            bool driveTime = TJson.B(TJson.G(d, "shader_time"), true);
+            float shaderT0 = TJson.F(TJson.G(d, "shader_time_t0"), 0f);
             // t0 写了就用 t0（机位自己的 t 只是截图用的时刻）；没写 t0 才用机位的 t
             float t0 = TJson.Has(d, "t0") ? TJson.F(TJson.G(d, "t0")) : (c.t ?? 0f);
             float t1 = TJson.F(TJson.G(d, "t1"), t0 + n / fps);
@@ -547,6 +592,19 @@ namespace Lanbai.Test
                 }
                 r = new Renderer2(ctx, c, w, h, ss, true);
                 if (refSS > ss) rr = new Renderer2(ctx, c, w, h, refSS, true);
+                if (driveTime)
+                {
+                    r.shaderTime = shaderT0; r.shaderDt = 1f / fps;
+                    if (rr != null) { rr.shaderTime = shaderT0; rr.shaderDt = 1f / fps; }
+                }
+                // LOD：被测物（isolate.keep）下的 LODGroup，没写 keep 就是场景里全部；每帧按这台相机算选中的那一级
+                var lodGroups = (keep.Count > 0
+                    ? keep.Select(nm => GameObject.Find(nm)).Where(g => g != null).SelectMany(g => g.GetComponentsInChildren<LODGroup>(false))
+                    : Object.FindObjectsOfType<LODGroup>()).Where(g => g.enabled).ToArray();
+                var lodPrev = new int[lodGroups.Length];
+                for (int k = 0; k < lodPrev.Length; k++) lodPrev[k] = -2;
+                int lodSwitches = 0;
+                var lodPerFrame = new List<object>();
                 int N = w * h;
                 if (keep.Count > 0)
                 {
@@ -586,6 +644,20 @@ namespace Lanbai.Test
                     }
                     r.go.transform.position = baseEye + c.rot * off;
                     r.go.transform.rotation = c.rot * q;
+                    if (driveTime) { r.shaderTime = shaderT0 + s; if (rr != null) rr.shaderTime = shaderT0 + s; }
+                    if (lodGroups.Length > 0)
+                    {
+                        var hist = new Dictionary<string, object>();
+                        for (int k = 0; k < lodGroups.Length; k++)
+                        {
+                            int lv = LodOf(lodGroups[k], r.cam);
+                            if (lodPrev[k] != -2 && lodPrev[k] != lv) lodSwitches++;
+                            lodPrev[k] = lv;
+                            string key = lv < 0 ? "culled" : "lod" + lv;
+                            hist[key] = (hist.ContainsKey(key) ? (double)hist[key] : 0.0) + 1.0;
+                        }
+                        lodPerFrame.Add(hist);
+                    }
                     var px = r.Frame(1);
                     Color32[] rpx = null;
                     if (rr != null)
@@ -625,6 +697,7 @@ namespace Lanbai.Test
                 }
                 string pre = "seq." + c.id;
                 ctx.Metric(pre + ".frames", n);
+                if (lodGroups.Length > 0) ctx.Metric(pre + ".lod_switches", lodSwitches, "序列里 LODGroup 换级的次数（" + lodGroups.Length + " 个 LODGroup）：换级会被算进闪烁，> 0 时闪烁要分开看");
                 if (roi != null) ctx.Metric(pre + ".roi_frac", roiN / (double)N, "ROI（被测物 + 外扩）占画面的比例；闪烁三项只在 ROI 里算");
                 if (sh != null)
                 {
@@ -661,6 +734,9 @@ namespace Lanbai.Test
                     { "heat_scale", (double)scale }, { "hf_threshold", (double)thr }, { "apl_per_frame", apl },
                     { "reference_ss", (double)(rr != null ? refSS : 0) }, { "shimmer_threshold", (double)shThr },
                     { "isolate_keep", keep.Cast<object>().ToList() }, { "renderers_turned_off", (double)turnedOff.Count },
+                    { "shader_time", driveTime ? (object)new List<object> { (double)shaderT0, (double)(shaderT0 + (n - 1) / fps) } : null },
+                    { "shader_time_note", driveTime ? "着色器时间每帧走 1/fps（命令缓冲设 _Time）；阴影图仍是编辑器自己的时间" : "编辑器自己的时间（编辑模式下手动渲染时基本不走）" },
+                    { "lod_groups", (double)lodGroups.Length }, { "lod_switches", (double)lodSwitches }, { "lod_per_frame", lodPerFrame },
                     { "roi_pixels", (double)roiN }, { "roi", roi != null ? dir + "/roi.png" : null },
                     { "heat_shimmer", sh != null ? dir + "/heat_shimmer.png" : null }, { "heat_motion_std", dir + "/heat_motion_std.png" }, { "heat_hf_raw", dir + "/heat_hf_raw.png" },
                     { "note", "编辑器里普通相机逐帧渲染（不是 SPS-I、不是头显）；热图颜色 0 → " + scale.ToString("0", IC) + "（亮度 0–255），底下是平均画面的灰度" }
@@ -677,6 +753,22 @@ namespace Lanbai.Test
                 foreach (var e in ctx.undo.RollbackTo(mark)) ctx.Warn(e);
                 ctx.lastT = null;
             }
+        }
+
+        /// <summary>这台相机下 LODGroup 选哪一级（Unity 的算法：包围球在屏幕上的相对高度 × lodBias 和每级的门槛比）；-1 = 剔除。</summary>
+        public static int LodOf(LODGroup g, Camera cam)
+        {
+            var lods = g.GetLODs();
+            if (lods.Length == 0) return 0;
+            var tr = g.transform;
+            Vector3 ws = tr.lossyScale;
+            float size = g.size * Mathf.Max(Mathf.Abs(ws.x), Mathf.Max(Mathf.Abs(ws.y), Mathf.Abs(ws.z)));
+            float dist = Vector3.Distance(cam.transform.position, tr.TransformPoint(g.localReferencePoint));
+            float rel = cam.orthographic ? size / (2f * cam.orthographicSize)
+                                         : size / (2f * Mathf.Max(1e-4f, dist) * Mathf.Tan(0.5f * cam.fieldOfView * Mathf.Deg2Rad));
+            rel *= QualitySettings.lodBias;
+            for (int i = 0; i < lods.Length; i++) if (rel >= lods[i].screenRelativeTransitionHeight) return i;
+            return -1;
         }
 
         static float W(float s, float f1, float p1, float f2, float p2)

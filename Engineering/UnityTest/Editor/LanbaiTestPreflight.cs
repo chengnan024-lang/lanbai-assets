@@ -528,6 +528,22 @@ namespace Lanbai.Test
             // 1.2.2（阿白 10-25：Sea / SeaB / WetGround 按 mtime 报了，逐字节其实一样）：搭建脚本常常整个重存的那几类小文件，
             // 开搭前记内容哈希；mtime 变了而哈希没变 = “存了、内容没变”，不算改动。大文件（贴图、模型）仍只看大小和 mtime。
             public readonly Dictionary<string, string> hashes = new Dictionary<string, string>();
+            // 1.3.0（D-50 #9）：开跑时内存里已经“脏”的资产（运行时 / 编辑模式的驱动改过的共享材质……）。它们要是被写了盘，
+            // 是某个全局 AssetDatabase.SaveAssets 把它们带上了，不是测试改的；报告里注明，照样算没声明的写入
+            public readonly HashSet<string> preDirty = new HashSet<string>();
+        }
+
+        /// <summary>内存里已改、还没存盘的资产（只看工程 Assets/ 里的）。</summary>
+        public static HashSet<string> DirtyAssets()
+        {
+            var r = new HashSet<string>();
+            foreach (var o in Resources.FindObjectsOfTypeAll<UnityEngine.Object>())
+            {
+                if (o == null || !EditorUtility.IsDirty(o) || !AssetDatabase.Contains(o)) continue;
+                string p = AssetDatabase.GetAssetPath(o);
+                if (!string.IsNullOrEmpty(p) && p.StartsWith("Assets/", StringComparison.Ordinal)) r.Add(p);
+            }
+            return r;
         }
 
         static readonly string[] HashExt = { ".mat", ".asset", ".prefab", ".meta", ".controller", ".anim", ".json", ".shader", ".cginc", ".cs", ".physicMaterial", ".mask", ".overrideController" };
@@ -550,6 +566,7 @@ namespace Lanbai.Test
                 s.assets[rel] = new KeyValuePair<long, long>(fi.Length, fi.LastWriteTimeUtc.Ticks);
                 if (Hashable(rel, fi.Length)) { try { s.hashes[rel] = Sha256(File.ReadAllBytes(f)); } catch { } }
             }
+            try { foreach (var p in DirtyAssets()) s.preDirty.Add(p); } catch { }
             string ps = Path.Combine(projectDir, "ProjectSettings");
             if (Directory.Exists(ps))
                 foreach (var f in Directory.GetFiles(ps, "*.asset"))
@@ -579,6 +596,7 @@ namespace Lanbai.Test
                 // 工具临时改过又改回的材质（复核的次要项：按字节核对）：落了盘、和原来逐字节一样的上面已经豁免；不一样的照常算，
                 // 并注明是工具改过的（改回以后被谁 SaveAssets 落了盘，序列化和原来不同，或者没改回去）
                 if (!ok && what == "改了" && ctx.toolTouched.Contains(p)) { undeclared.Add(what + " " + path + "（工具临时改过的；落盘后和原来逐字节不一样）"); return; }
+                if (!ok && what == "改了" && ctx.before.preDirty.Contains(p)) { undeclared.Add(what + " " + path + "（开跑时内存里就是脏的：被某个全局 AssetDatabase.SaveAssets 带着写了盘，不是测试本身改的；查是哪个搭建脚本 / 菜单调了它）"); return; }
                 (ok ? declared : undeclared).Add(what + " " + path);
             };
             foreach (var kv in after.assets)
@@ -599,6 +617,8 @@ namespace Lanbai.Test
                 string b;
                 if (!ctx.before.settings.TryGetValue(kv.Key, out b) || b != kv.Value) ps.Add(kv.Key);
             }
+            var dirtyNow = new List<object>();
+            try { foreach (var p in DirtyAssets()) dirtyNow.Add(p); } catch { }
             ctx.Metric("writes.undeclared", undeclared.Count, "沙盒和 allowed_writes 以外被改动的文件");
             ctx.Metric("writes.declared", declared.Count);
             ctx.Metric("writes.project_settings_changed", ps.Count, "ProjectSettings/*.asset 内容变了的个数（工具只查不改）");
@@ -606,6 +626,8 @@ namespace Lanbai.Test
             {
                 { "sandbox", Sandbox.DIR }, { "allowed_writes", TJson.Sa(TJson.G(ctx.test, "allowed_writes")).Cast<object>().ToList() },
                 { "declared", declared }, { "undeclared", undeclared }, { "project_settings_changed", ps }, { "tool_touched_restored", touched },
+                { "dirty_before", ctx.before.preDirty.OrderBy(x => x, StringComparer.Ordinal).Cast<object>().ToList() },
+                { "dirty_now_unsaved", dirtyNow },
                 { "note", "按文件大小和修改时间比；材质、.asset、预制体、.meta 这类 ≤ 4 MB 的小文件另比内容哈希，存了但逐字节没变的列在 tool_touched_restored、不算改动；只在内存里改、没存盘的不算" }
             };
         }
