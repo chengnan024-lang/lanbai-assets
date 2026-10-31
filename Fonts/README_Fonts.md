@@ -60,6 +60,9 @@
 - `LanbaiBoard(s)`：s ≤ 0 时不印“车将在 X 秒后开出”，只出设置卡和其余提示（本地 `LB_Journey` 现在传 0）。
 - 深度表（车包 `Bus/Docs~/viewcheck/subtitle_depth.json`，格式见 `Bus/给总控.md` #32；已到，main 25482ee）：`~` 文件夹 Unity 不导入，所以 `build_fonts.py` 每次构建从 `origin/pkg/bus`（或 `LANBAI_BUS_DIR`）读它，核对网格（偏航 24 格、格心 −180 + 15j；俯仰 9 格、格心 −40 + 10i）、形状（23 × 24 × 9）、取值（0.45–1.0 m）、座位顺序（= `BusLayout.json` = `SetSeat` 的座位号，SeatR0 = 0），不对就报错；对了写成 `Fonts/subtitle_depth.json`，烘焙菜单读这份。表里已经是最终深度（车包算过 clamp(0.92 × 最近不透明件, 0.45, 1.0)），驱动只取所在格和左右两格的最小值，不再乘 0.92。车包更新了表，总工程师重跑一次构建，本地重点一次烘焙菜单。
 
+- **D-50 #8 收进来的阿白修复**（10-26，总导演看过、过）：① 行晕的硬边：驱动每帧用 MaterialPropertyBlock 写颜色，盖掉了 SpriteRenderer 隐含的 `_MainTex`，行晕按白贴图采样成方框；烘焙菜单现在把 `Lanbai_Scrim_Line` 的贴图显式绑在行晕材质的 `_MainTex` 上。② 字幕行的位置改从 MeshRenderer 的 transform 设（`subBotR` / `subTopR`），公告板第一行的开关走 `Component.gameObject`。③ 新字段 `useLocalAppliedExposure` / `localAppliedDeltaEV`：本地 `LB_Journey` 自己管 PPv2 时，在 `ApplyGrades` 之后、`PostLateUpdate` 之前把这一帧实际的 dEV 写进来，填色按它补偿；不勾就照旧读 `LanbaiExposure`。
+- 烘焙菜单不再调全局 `AssetDatabase.SaveAssets`（D-50 #9：测试里会把别人的脏材质一起写盘），只存自己建的材质（`SaveAssetIfDirty`，按反射调；找不到就只标脏）。
+
 ### 00.4 本地接入顺序（I.6）
 
 1. 同步 `Fonts/`（`Runtime/LanbaiPoemDriver.cs`、`Editor/LanbaiPoemBake.cs` 现在可以被仓库版覆盖：v5 已经收进了 D-44 #7 的逐行文本做法——每行一个物体，换页给 `.text` 赋值）。
