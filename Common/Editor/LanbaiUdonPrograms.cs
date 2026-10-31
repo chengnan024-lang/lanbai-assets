@@ -190,6 +190,7 @@ namespace Lanbai.Udon
         {
             if (!Available) return 0;
             int made = 0;
+            var createdAssets = new List<Object>();
             foreach (var t in types)
             {
                 Object a; string d;
@@ -207,10 +208,12 @@ namespace Lanbai.Udon
                 if (src == null) throw new InvalidOperationException(TAG + "UdonSharpProgramAsset.sourceCsScript 不在：SDK 版本不对");
                 src.SetValue(asset, ScriptOf(t));
                 AssetDatabase.CreateAsset(asset, path);
+                createdAssets.Add(asset);
                 made++;
                 Debug.Log(TAG + who + "：建了 " + path + "（等 SDK 初始化版本，之后自动继续）");
             }
-            if (made > 0) { AssetDatabase.SaveAssets(); AssetDatabase.Refresh(); }
+            // D-50 #9：只存新建的程序资产，不调全局 SaveAssets（它会把别的包在内存里改脏的材质一起写盘）
+            if (made > 0) { LanbaiAssetSave.Only(createdAssets.ToArray()); AssetDatabase.Refresh(); }
             return made;
         }
 
