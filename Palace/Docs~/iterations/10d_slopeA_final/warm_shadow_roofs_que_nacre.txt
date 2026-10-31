@@ -1,0 +1,29 @@
+F5p all 0.054% outside halo discs 0.007%
+F6 all 0.086% outside halo discs 0.074%
+F7 all 0.449% outside halo discs 0.432%
+F7_vr all 0.232% outside halo discs 0.195%
+proc all 0.029% outside halo discs 0.005%
+proc_l all 0.358% outside halo discs 0.113%
+que_lamp all 0.134% outside halo discs 0.023%
+h722 all 0.039% outside halo discs 0.013%
+h728 all 0.028% outside halo discs 0.024%
+proc roof px 8648 frac >2x water 0.161 frac >1x 0.196
+proc_l roof px 29388 frac >2x water 0.166 frac >1x 0.202
+p706 roof px 5411 frac >2x water 0.210 frac >1x 0.241
+h722 roof px 8090 frac >2x water 0.000 frac >1x 0.002
+h728 roof px 5486 frac >2x water 0.000 frac >1x 0.000
+que_lamp que px 371734 top2% h 309 C* 11.4  medianC 15.4  meanRGB [46.9 42.8 58.8]
+   purple strip px 5403 top2% h 341 C* 27.8 meanRGB [104.7  55.6  86.2]
+   bbox 433 468 410 438
+F5p que px 134093 top2% h 320 C* 11.8  medianC 14.9  meanRGB [56.  45.1 60.3]
+   purple strip px 2047 top2% h 352 C* 17.1 meanRGB [104.5  70.3  84.6]
+   bbox 328 362 426 442
+que_l que px 194800 top2% h 319 C* 11.3  medianC 14.0  meanRGB [53.8 43.5 58. ]
+   purple strip px 3195 top2% h 355 C* 15.1 meanRGB [102.4  71.6  82.9]
+   bbox 711 727 633 649
+proc_l roof px 29388 luma p50 12 p95 106 p99.5 168 max 196
+  top3%: C* median 9.3; hue hist (C*>4): [  0   0   0  85 394 250 147]
+proc roof px 8648 luma p50 12 p95 88 p99.5 145 max 180
+  top3%: C* median 7.9; hue hist (C*>4): [  0   0   0   8 137  76  39]
+p706 roof px 5411 luma p50 12 p95 98 p99.5 153 max 169
+  top3%: C* median 7.4; hue hist (C*>4): [ 0  0  0 15 84 45 20]
