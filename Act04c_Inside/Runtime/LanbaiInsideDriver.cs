@@ -89,8 +89,16 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
     public float mainLightInside = 0.001f;
     public float gradeFadeFrom = 180.05f;         // S4 -> S4c window: the cabin / ambient changes ride on it
     public float gradeFadeDur = 8f;
-    public Color[] bandColour = new Color[8];     // linear E x colour of each crossing band (solved: seat top <= luma 120)
-    public float bandSoft = 1.5f, bandTail = 3.5f;
+    public Color[] bandColour = new Color[8];     // each crossing band's colour (only its chroma is used since D-50: see bandEV)
+    public float bandSoft = 1.5f, bandTail = 3.5f; // (D-50: the soft front / tail are now in seconds, bandRiseS / bandTailS)
+    // D-50 #1 (阿白's Unity flicker probe 10-26: +0.70 EV / 0.25 s ahead, +1.10 / 0.25 s and +1.60 / 1 s looking back at
+    // each crossing; bible §1.8 <= 0.5 / 0.25 s, <= 1.0 / 1 s, <= 1.8 / 2 s): the cabin brightens slower and softer.
+    // The ambient goes EV-linear over ambientRiseS (0.30 EV/s), not a smoothstep over 8 s (1.3 EV in its steepest second);
+    // a band adds bandEV over the cabin's CURRENT light (not a fixed E = 12-300 x the ambient), its soft front reaches a
+    // point over bandRiseS and its tail leaves it over bandTailS. Worst cabin point: +0.30 / 0.25 s, +0.80 / 1 s,
+    // +1.11 / 2 s (Tools~/cabin_ev_check.py); the frame's log-mean cannot rise faster than its fastest pixel.
+    public float ambientRiseS = 15f;
+    public float bandEV = 0.8f, bandRiseS = 1.2f, bandTailS = 1.0f;
     public Color dialBase = new Color(1.636f, 0.302f, 0.0015f);    // act 2's dial fill (#FF7703 @ +0.71); the build fills it from InsideLayoutData
     public Color dialBright = new Color(4.377f, 0.867f, 0f);       // #FF7B00 @ +2.13 (总导演终审: the old base was 1/4)
 
@@ -467,6 +475,28 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
         if (dotTransform != null) dotTransform.gameObject.SetActive(gain > 0f && t < tU12);
     }
 
+    // D-50: a band adds bandEV over the cabin's current light: its colour's chroma, scaled so its luminance is
+    // (2^bandEV - 1) x the ambient's (the cabin shader adds sliceColour x lit x window weight <= 1 to the ambient)
+    private Color BandRelative(Color band, Color amb)
+    {
+        float yb = 0.2126f * band.r + 0.7152f * band.g + 0.0722f * band.b;
+        float ya = 0.2126f * amb.r + 0.7152f * amb.g + 0.0722f * amb.b;
+        if (yb <= 0f) return Color.black;
+        return band * ((Mathf.Pow(2f, bandEV) - 1f) * ya / yb);
+    }
+
+    // EV-linear (per channel geometric) interpolation: a constant number of EV per second
+    private static Color LerpEV(Color a, Color b, float x)
+    {
+        return new Color(GeoLerp(a.r, b.r, x), GeoLerp(a.g, b.g, x), GeoLerp(a.b, b.b, x), 1f);
+    }
+
+    private static float GeoLerp(float a, float b, float x)
+    {
+        if (a <= 1e-6f || b <= 1e-6f) return Mathf.Lerp(a, b, x);
+        return a * Mathf.Pow(b / a, x);
+    }
+
     private static float SmootherStep(float x)
     {
         x = Mathf.Clamp01(x);
@@ -477,30 +507,36 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
     private void WriteCabin(float t)
     {
         float w = SS((t - gradeFadeFrom) / gradeFadeDur);
-        Color amb = Color.Lerp(cabinAmbientGate, cabinAmbientInside, w);
+        float xa = Mathf.Clamp01((t - gradeFadeFrom) / Mathf.Max(ambientRiseS, 1e-3f));     // D-50: EV-linear
+        Color amb = LerpEV(cabinAmbientGate, cabinAmbientInside, xa);
         if (t >= tU12) amb = cabinAmbientInside * 0f;                // act 5: the afterglow is under the full black
         VRCShader.SetGlobalVector(_idAmbient, new Vector4(amb.r, amb.g, amb.b, 1f));
         if (writeRenderSettings)
         {
-            RenderSettings.ambientSkyColor = Color.Lerp(triSkyGate, triSky, w);
-            RenderSettings.ambientEquatorColor = Color.Lerp(triEquatorGate, triEquator, w);
-            RenderSettings.ambientGroundColor = Color.Lerp(triGroundGate, triGround, w);
+            RenderSettings.ambientSkyColor = LerpEV(triSkyGate, triSky, xa);
+            RenderSettings.ambientEquatorColor = LerpEV(triEquatorGate, triEquator, xa);
+            RenderSettings.ambientGroundColor = LerpEV(triGroundGate, triGround, xa);
         }
         if (writeMainLight && worldMainLight != null) worldMainLight.intensity = Mathf.Lerp(mainLightGate, mainLightInside, w);
-        // crossing bands: soft front + exponential tail, front -> back; lip 8 stays, then retreats from the rear
+        // crossing bands: soft front + exponential tail, front -> back; lip 8 stays, then retreats from the rear.
+        // D-50: the front's soft width and the tail are the band's speed x bandRiseS / bandTailS; the front starts and
+        // ends half a soft width outside the cabin (no band is ever switched on or off over a lit seat)
         Vector4 slice = new Vector4(0f, bandSoft, bandTail, 0f);
         Color sc = Color.black;
         for (int k = 0; k < 8; k++)
         {
             float t0 = bandStart[k];
             float dur = bandSweep[k];
+            float v = 7.6f / Mathf.Max(k < 7 ? dur : 2.4f, 1e-3f);
+            float soft = Mathf.Max(v * bandRiseS, bandSoft);
+            float tail = v * bandTailS;
             if (k < 7)
             {
-                if (t >= t0 && t < t0 + dur + 1.2f)
+                if (t >= t0 && t < t0 + dur + bandRiseS + 1.2f)
                 {
                     float x = (t - t0) / dur;
-                    slice = new Vector4(3.6f - 7.6f * x, bandSoft, bandTail, 0f);
-                    sc = bandColour[k];
+                    slice = new Vector4(3.6f + 0.5f * soft - (7.6f + soft) * x, soft, tail, 0f);
+                    sc = BandRelative(bandColour[k], amb);
                 }
             }
             else
@@ -509,14 +545,14 @@ public class LanbaiInsideDriver : UdonSharpBehaviour
                 if (t >= t0 && t < out0)
                 {
                     float x = Mathf.Min((t - t0) / 2.4f, 1f);
-                    slice = new Vector4(3.6f - 7.6f * x, bandSoft, bandTail, 1f);
-                    sc = bandColour[k];
+                    slice = new Vector4(3.6f + 0.5f * soft - (7.6f + soft) * x, soft, tail, 1f);
+                    sc = BandRelative(bandColour[k], amb);
                 }
                 else if (t >= out0 && t < tSleeveExit)
                 {
                     float x = (t - out0) / 2.4f;
-                    slice = new Vector4(-4.0f + 7.6f * x, bandSoft, 0f, -1f);
-                    sc = bandColour[k];
+                    slice = new Vector4(-4.0f - 0.5f * soft + (7.6f + soft) * x, soft, 0f, -1f);
+                    sc = BandRelative(bandColour[k], amb);
                 }
             }
         }

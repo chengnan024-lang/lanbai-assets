@@ -180,25 +180,60 @@ def delta_ev(t):
     return 0.0
 
 
+# D-50 #1 (阿白's Unity flicker probe 10-26): the cabin brightens slower and softer (LanbaiInsideDriver mirrors these)
+CABIN_AMB_GATE = (0.0164 * 0.3, 0.0232 * 0.3, 0.0409 * 0.3)     # #232A3A x 0.3 (linear)
+CABIN_AMB_INSIDE = (0.4621 * 0.3, 0.5457 * 0.3, 0.7084 * 0.3)   # #B5C3DB x 0.30
+AMBIENT_FROM, AMBIENT_RISE_S = 180.05, 15.0                   # EV-linear: 4.55 EV in 15 s = 0.30 EV/s
+BAND_EV, BAND_RISE_S, BAND_TAIL_S = 0.8, 1.2, 1.0              # a band adds 0.8 EV over the cabin's current light
+
+
+def cabin_ambient(t):
+    """linear rgb of _Udon_CabinAmbient: EV-linear (geometric per channel) from the gate's to the inside's."""
+    x = float(np.clip((t - AMBIENT_FROM) / AMBIENT_RISE_S, 0.0, 1.0))
+    if t >= D.U12:
+        return (0.0, 0.0, 0.0)
+    return tuple(float(a * (b / a) ** x) for a, b in zip(CABIN_AMB_GATE, CABIN_AMB_INSIDE))
+
+
 def cabin_slice(t):
-    """the crossing light band: (front z in bus coordinates, front soft m, tail m, cover, colour key k, level 0..1).
-    Bus z runs -3.5 (rear) .. +3.5 (front). Lip 8: sweeps in front -> back over 2.4 s and stays (cover 1), then from
-    229.6 retreats from the REAR toward the front over 2.4 s (so the front rows stay lit ~6 s; review r1)."""
+    """the crossing light band, as LanbaiInsideDriver writes it: (front z in bus coordinates, soft m, tail m, cover,
+    k, gain) with gain = the band's luminance / the ambient's (2^BAND_EV - 1). Bus z runs -3.5 (rear) .. +3.5 (front).
+    D-50: the soft front and the tail are the band's speed x BAND_RISE_S / BAND_TAIL_S; the front starts and ends half a
+    soft width outside the cabin. Lip 8: sweeps in front -> back over 2.4 s and stays (cover 1), then retreats from
+    the REAR toward the front over 2.4 s (so the front rows stay lit ~6 s; review r1). The latest band started wins."""
+    out = None
     for k in range(1, 9):
         t0, dur = D.BAND_START[k - 1], D.BAND_SWEEP[k - 1]
+        v = 7.6 / (dur if k < 8 else 2.4)
+        soft, tail = max(v * BAND_RISE_S, 1.5), v * BAND_TAIL_S
+        g = 2.0 ** BAND_EV - 1.0
         if k < 8:
-            if t0 <= t < t0 + dur + 1.2:
+            if t0 <= t < t0 + dur + BAND_RISE_S + 1.2:
                 x = (t - t0) / dur
-                return dict(k=k, front=3.6 - 7.6 * x, soft=1.5, tail=3.5, cover=0.0, level=1.0)
+                out = dict(k=k, front=3.6 + 0.5 * soft - (7.6 + soft) * x, soft=soft, tail=tail, cover=0.0, gain=g)
         else:
             out0 = D.SLEEVE_BAND_END - 2.4
             if t0 <= t < out0:
                 x = min((t - t0) / 2.4, 1.0)
-                return dict(k=8, front=3.6 - 7.6 * x, soft=1.5, tail=3.5, cover=1.0, level=1.0)
-            if out0 <= t < D.SLEEVE_BAND_END:
+                out = dict(k=8, front=3.6 + 0.5 * soft - (7.6 + soft) * x, soft=soft, tail=tail, cover=1.0, gain=g)
+            elif out0 <= t < D.SLEEVE_BAND_END:
                 x = (t - out0) / 2.4
-                return dict(k=8, front=-4.0 + 7.6 * x, soft=1.5, tail=0.0, cover=-1.0, level=1.0)   # -1: lit AHEAD of the edge
-    return None
+                out = dict(k=8, front=-4.0 - 0.5 * soft + (7.6 + soft) * x, soft=soft, tail=0.0, cover=-1.0, gain=g)
+    return out
+
+
+def cabin_light(z, t, win=1.0):
+    """relative luminance of a cabin point at bus z (ambient + band, as Lanbai/Cabin adds them; window weight <= 1)."""
+    a = cabin_ambient(t)
+    y = 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2]
+    b = cabin_slice(t)
+    if b is None:
+        return y
+    d = z - b['front']
+    edge = min(max(d / max(b['soft'], 0.05) + 0.5, 0.0), 1.0)
+    tl = math.exp(-max(d, 0.0) / b['tail']) if b['tail'] > 0 else min(max(1.0 - max(d, 0.0) / b['soft'], 0.0), 1.0)
+    lit = edge if b['cover'] < 0 else edge * (tl + (1.0 - tl) * min(max(b['cover'], 0.0), 1.0))
+    return y * (1.0 + b['gain'] * lit * win)
 
 
 def dial(t):
