@@ -1,0 +1,20 @@
+--- a/Cabin/Shaders/LanbaiCabin.shader
++++ b/Cabin/Shaders/LanbaiCabin.shader
+@@ -68,7 +68,7 @@
+         [NoScaleOffset] _AtlasAlbedo ("Atlas albedo  sRGB", 2D) = "white" {}
+         [NoScaleOffset] _AtlasMask ("Atlas mask  R metal  G smoothness  B wet  A AO  linear", 2D) = "white" {}
+ 
+-        [Header(D-36 part textures on uv0)]
++        [Header(D36 part textures on uv0)]
+         _UsePart ("Use part textures  0 or 1", Float) = 0
+         [NoScaleOffset] _PartAlbedo ("Part albedo  sRGB (x _Color)  A leather mask for the grain detail", 2D) = "white" {}
+         [NoScaleOffset] _PartNormal ("Part normal  tangent space on uv0", 2D) = "bump" {}
+@@ -92,7 +92,7 @@
+         _WoundGuard ("D-08 wound light limiter", Range(0, 1)) = 1
+         _PurpleGuard ("D-21 band guard on added lights", Range(0, 1)) = 1
+ 
+-        [Header(Geometric specular AA  D-40 no. 4)]
++        [Header(Geometric specular AA  D40 no. 4)]
+         _SpecAAVariance ("Spec AA pixel variance sigma2  0 = off  (Tokuyoshi 2019 uses 1 over 2pi)", Range(0, 0.5)) = 0.15
+         _SpecAAThreshold ("Spec AA threshold kappa  max roughness2 added", Range(0, 1)) = 0.2
+         _SpecAAMapNormal ("Spec AA normal  1 shading normal with normal maps  0 vertex normal only", Float) = 1

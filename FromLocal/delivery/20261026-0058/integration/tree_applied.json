@@ -1,0 +1,153 @@
+{
+  "time": "2026-10-26T01:38:04.358553-04:00",
+  "source": "a5a75cb29f0e27bc864e5b0e332950331f406de1",
+  "files": [
+    {
+      "path": "Lamps/Tree/Editor/LanbaiTreeBuilder.cs",
+      "bytes": 12712,
+      "source_sha256": "70174712ab78c6425388ff4562939a1d6aeddce2d0b7752dcaf584d134525b5a",
+      "target_sha256": "0d42a37d1667d5d29e0fdcb195d8973028a137fd6ecfdc0d5dd37153f59674ac",
+      "action": "LOCAL_DIFF"
+    },
+    {
+      "path": "Lamps/Tree/Models/Tree_A1.fbx",
+      "bytes": 688764,
+      "source_sha256": "be0101c91bbfa97b9260c2a8b528bfca3408cf08e28a226d5c8d2b48fa68d069",
+      "target_sha256": "3f4588c49dec0d71c2b4bac4013d951177d0d998b175ca3999fc5e979a3517b3",
+      "action": "update"
+    },
+    {
+      "path": "Lamps/Tree/Models/Tree_A2.fbx",
+      "bytes": 878508,
+      "source_sha256": "8849ee239a67f40773bf4108ae226e0dc420d4d1c0d3118b31d59fcb59490a6e",
+      "target_sha256": "0ef283ee61142a476db5ebad070ae9f3140da5037f5002e4d531b4e590629283",
+      "action": "update"
+    },
+    {
+      "path": "Lamps/Tree/Models/Tree_A3.fbx",
+      "bytes": 1003164,
+      "source_sha256": "1efd8f1efe57da000d4f27a1b22020834bc0c88ee3470696b341897c26833b93",
+      "target_sha256": "dfd318329e9f2c31ef068312e38f94bbe343657c790cba2664d211801e40d095",
+      "action": "update"
+    },
+    {
+      "path": "Lamps/Tree/Models/Tree_B1.fbx",
+      "bytes": 622940,
+      "source_sha256": "bfe851e55f9fd3cae1f14397c5cbd19a7befbbffa34d5d0e69fac5321f6e3fa9",
+      "target_sha256": "430307d0748ab448c8d78e42ff6184acb4af6e7fa14586a097da82b490d97c22",
+      "action": "update"
+    },
+    {
+      "path": "Lamps/Tree/README_样板树.md",
+      "bytes": 11419,
+      "source_sha256": "ef1b4503ea51f5e44a2ef8c536900a3d8a1e99483e78a37b02274ad405b9e835",
+      "target_sha256": "7cbbaf3e278ab4598b584db61ae0289bf41c30e44c954087ddae583fb9e6fa70",
+      "action": "update"
+    },
+    {
+      "path": "Lamps/Tree/Shaders/LanbaiTree.cginc",
+      "bytes": 2907,
+      "source_sha256": "67ff5eda46dc9906bc714f498577d75ecdafa480ce6a1709db8c56c8db6569bd",
+      "target_sha256": "67ff5eda46dc9906bc714f498577d75ecdafa480ce6a1709db8c56c8db6569bd",
+      "action": "same"
+    },
+    {
+      "path": "Lamps/Tree/Shaders/Lanbai_TreeBark.shader",
+      "bytes": 3114,
+      "source_sha256": "723c7e6253fcf4b802e70540b2198aa8168a2aab0b718bf61e960be02849e89b",
+      "target_sha256": "723c7e6253fcf4b802e70540b2198aa8168a2aab0b718bf61e960be02849e89b",
+      "action": "same"
+    },
+    {
+      "path": "Lamps/Tree/Shaders/Lanbai_TreeLeaf.shader",
+      "bytes": 8886,
+      "source_sha256": "bbc577212ccfd24a52a8f8be0acb5a50bc8c005eac77efca9b4d42f5f8b46487",
+      "target_sha256": "4f14e3ad3c258c49da107a4d547a19cc50fe302dd45a3f0c5e5f9a772a2c7384",
+      "action": "LOCAL_DIFF"
+    },
+    {
+      "path": "Lamps/Tree/Textures/T_Tree_Bark_Albedo.png",
+      "bytes": 494944,
+      "source_sha256": "62727fa76ab850428a186b78622e2781ae97b404e50bec38f59fa353a922086f",
+      "target_sha256": "62727fa76ab850428a186b78622e2781ae97b404e50bec38f59fa353a922086f",
+      "action": "same"
+    },
+    {
+      "path": "Lamps/Tree/Textures/T_Tree_Bark_Mask.png",
+      "bytes": 3935,
+      "source_sha256": "756a4c3990889fc137388051d2c5fd18abad9d257d0ca0b65a1fbdcadcfbf638",
+      "target_sha256": "756a4c3990889fc137388051d2c5fd18abad9d257d0ca0b65a1fbdcadcfbf638",
+      "action": "same"
+    },
+    {
+      "path": "Lamps/Tree/Textures/T_Tree_Bark_Normal.png",
+      "bytes": 1474709,
+      "source_sha256": "f37f4c3b784250903c6f9c148c179161dfba126df16770a677fc517028c69dcd",
+      "target_sha256": "f37f4c3b784250903c6f9c148c179161dfba126df16770a677fc517028c69dcd",
+      "action": "same"
+    },
+    {
+      "path": "Lamps/Tree/Textures/T_Tree_Impostor_Tree_A1.png",
+      "bytes": 392281,
+      "source_sha256": "6c24e97831373740e7b9936577e121e9b99f07481021244b2bf649eb9a2e12ac",
+      "target_sha256": "aabdd81429e2713add16b5322ea2dd08eec93d537ae59adecb128444143255eb",
+      "action": "update"
+    },
+    {
+      "path": "Lamps/Tree/Textures/T_Tree_Impostor_Tree_A2.png",
+      "bytes": 531585,
+      "source_sha256": "a52b19b0f2c20adac809b7393e602d7c4f076d4d43301a7ef5c87e2ea348b975",
+      "target_sha256": "04cf5029ef6b7e656a579a3589b0e5a60bcb1b752d90ee2a2b229b348a7fb816",
+      "action": "update"
+    },
+    {
+      "path": "Lamps/Tree/Textures/T_Tree_Impostor_Tree_A3.png",
+      "bytes": 340319,
+      "source_sha256": "53ed28410d3778688230bf8e24907cb3644f362d61dced0bcb7a70879a691e4d",
+      "target_sha256": "fd1f3961c05520a763d540b5700affe468842ce0e817dd577b39d376d9b4f8be",
+      "action": "update"
+    },
+    {
+      "path": "Lamps/Tree/Textures/T_Tree_Impostor_Tree_B1.png",
+      "bytes": 675824,
+      "source_sha256": "0ea7959d5c55fdf7667248e835a8053359f7072cf30d650bd4752c3dde9ced06",
+      "target_sha256": "9cd3d8f1ed0b95b5e99864c308fa6f4217cbd9f87abadc1d9c0b85b391e1ad65",
+      "action": "update"
+    },
+    {
+      "path": "Lamps/Tree/Textures/T_Tree_LeafCluster_Albedo.png",
+      "bytes": 1036795,
+      "source_sha256": "8ae2cc23798d21ceeed316dcb0a2deffddaaaa700210c0031c3a341eb46b5973",
+      "target_sha256": "b5c666ea637bc584897ba1c14cbefa402f0394e9f559d751ccd8559ac3bc15af",
+      "action": "update"
+    },
+    {
+      "path": "Lamps/Tree/Textures/T_Tree_LeafCluster_Mask.png",
+      "bytes": 780513,
+      "source_sha256": "8a6bff9b81ab6a7cd6739c95fd08263e2b8d688a313ffa37e889cf1ef8a9dd1c",
+      "target_sha256": "d23987ca5f82a36d1ef35b40733a3040ef26865674ba8ecab36af8106d017dfe",
+      "action": "update"
+    },
+    {
+      "path": "Lamps/Tree/Textures/T_Tree_LeafCluster_Normal.png",
+      "bytes": 1378914,
+      "source_sha256": "c64f07520dcd410edfd09741617615c1f4c700d65f258b22dd984738660596a6",
+      "target_sha256": "ad3161e99be3670329138123d71073cf640fc096431806b309045728c9a28ad9",
+      "action": "update"
+    },
+    {
+      "path": "Lamps/Tree/Tree_Info.json",
+      "bytes": 1233,
+      "source_sha256": "e41e9701360cd6654abbde420547a259c4e11edbefab37f20cdd6dfd20ac5ecb",
+      "target_sha256": "e41e9701360cd6654abbde420547a259c4e11edbefab37f20cdd6dfd20ac5ecb",
+      "action": "same"
+    },
+    {
+      "path": "Lamps/Tree/UnityTest/tree_sample.json",
+      "bytes": 5897,
+      "source_sha256": "fcdd5ea89b7ba7f945653bd071d81ad408c5a6f19c4e46b704289bbcab8cbb93",
+      "target_sha256": "fcdd5ea89b7ba7f945653bd071d81ad408c5a6f19c4e46b704289bbcab8cbb93",
+      "action": "same"
+    }
+  ]
+}

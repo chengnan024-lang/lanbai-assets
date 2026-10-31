@@ -1,0 +1,13 @@
+Desktop ScreenCamera position=(0.55, 2.23, 2.22) rotation=(0.00000, 0.00000, 0.00000, 1.00000) fov=60 native=640x480 capture=1200x900
+Timeline=325.311 actualDEV=0 audio=0
+key=0
+seat=0
+_vr=False
+_pg=-1
+_sCur=-1
+_aTop=0
+_aBot=0
+_lbE=0
+_lbBar=0
+localAppliedDeltaEV=0
+letterboxActive=False subtitleLayer=24

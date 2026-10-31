@@ -1,0 +1,341 @@
+{
+  "prepared": "2026-10-26T09:33:21.097487-04:00",
+  "parent": "d51bf9e4ac0976efca843ec9387ddeb054574d8b",
+  "scope": "Only FromLocal diagnostic reports and evidence; no world source, HANDOFF, private conversations or credentials",
+  "files": 83,
+  "bytes": 15811409,
+  "inventory": [
+    {
+      "path": "existing_hashes_before.json",
+      "sha256": "d5a1dbdd9feecace1aadda12d5168b6559d68d59092005c64e5f8165086fde46"
+    },
+    {
+      "path": "protection.json",
+      "sha256": "391bb0399ace9ae7c105cfbeaa63d8d73ffd41bb485eb48835d10fcee9d09c3e"
+    },
+    {
+      "path": "README.md",
+      "sha256": "98a8e51c6c8bca9ced4325c9ac2036560c857a20483308ea540ea600b2aec39c"
+    },
+    {
+      "path": "reference_fix_scope.md",
+      "sha256": "d0fea837de23baace86f9a9a64dcaa8eba1de2bd28a858f0ad9c64a13e43680f"
+    },
+    {
+      "path": "code/LB_DiagnosticObjectId.shader",
+      "sha256": "89434dbb9ae7b0051aee85406b1513e133fa45adacb0a7634e84232c4be70785"
+    },
+    {
+      "path": "code/LB_DiagnosticTreeBark.shader",
+      "sha256": "33182b5bce47e8498d554b85fbb3cfccf862a784f6bb95a40fa7c6be7a221a9a"
+    },
+    {
+      "path": "code/LB_DiagnosticTreeLeaf.shader",
+      "sha256": "764d70a3369893159e80b5f47df26ba0303679bcbefbb9b1f0213f52e388b18d"
+    },
+    {
+      "path": "code/LB_SamplingTimeDiagnostic.cs",
+      "sha256": "15f9449159eff0cb12992875e86dd395c257e5451d8e4013726140fa6c9841bd"
+    },
+    {
+      "path": "code/LB_SamplingTimeDiagnostic.shader",
+      "sha256": "f1a47e3532123c75a0fd59db28e02dbaa3b1cbfac2e92966ad743acc090a7bbe"
+    },
+    {
+      "path": "code/LB_TreeControlledDiagnostic.cs",
+      "sha256": "c7f4254d5e5f7d2ee0ca231f2f1442ea3e4ad73b97a4c19be9b8e89e97af1830"
+    },
+    {
+      "path": "code/LB_WindowIdDiagnostic.cs",
+      "sha256": "9c1f5a4f27ef3b25e33cf782ba1a163dc8cfac44788095916ab9727843aba098"
+    },
+    {
+      "path": "requests/diagnostic_20261026_0910_install.json",
+      "sha256": "469cc107ea815c8e2fa6e61978116a17451de5ed81128de1ef0f286face10a99"
+    },
+    {
+      "path": "requests/diagnostic_20261026_0910_window.json",
+      "sha256": "3f31cf120c0d620280003c118463470074753df0898682ae2343467850b8e243"
+    },
+    {
+      "path": "requests/diagnostic_20261026_0914_window_precision.json",
+      "sha256": "a68a9a143b953744033e01f85fbc5dfe5e2aaff915d8a8cdadf9b1fabda8d0bb"
+    },
+    {
+      "path": "requests/diagnostic_20261026_0920_sampling_time.json",
+      "sha256": "333bea7b1cac56a8885ac6b214c001bd80e3f3dce9b30fd59c85a733d0cd9bce"
+    },
+    {
+      "path": "requests/diagnostic_20261026_0930_tree_control.json",
+      "sha256": "ee44bbb6834c311a2e06c65aa53708bea1167d88637f9e0685385e5676c6be40"
+    },
+    {
+      "path": "requests/diagnostic_20261026_0935_tree_specular.json",
+      "sha256": "51ae6c96982657d38d2bea9542c6dcc9bd9ad70a5e5dfa343cc1a4d50012f564"
+    },
+    {
+      "path": "requests/diagnostic_20261026_0940_tree_noise_control.json",
+      "sha256": "e8db76c6674b665eb9b601b45e31d88692d81ea3d43ca1899962b117ca5043dd"
+    },
+    {
+      "path": "requests/diagnostic_20261026_0950_tree_direct_specular.json",
+      "sha256": "c4469f3bda3077421a1e626c088809d11153835a17ee883a19b95505a08d96e6"
+    },
+    {
+      "path": "results/diagnostic_20261026_0910_install.json",
+      "sha256": "10bddeb2c86b84fe00c1e9f0d4178e465d74a0c2a645d2cf4dacae2b5bd1021c"
+    },
+    {
+      "path": "results/diagnostic_20261026_0910_window.json",
+      "sha256": "171377a003f24d13106c6fb8317695fd4d045c75cc981659525960963b3d4984"
+    },
+    {
+      "path": "results/diagnostic_20261026_0914_window_precision.json",
+      "sha256": "7ac32ee8fbc941134470404ae67f9cd58c50285265a822bec1aa60e2cc7d869d"
+    },
+    {
+      "path": "results/diagnostic_20261026_0920_sampling_time.json",
+      "sha256": "498ca4d6b3efbfe1a98b15e1340dc19402da4fe8c3cecfcc65658e09737d086c"
+    },
+    {
+      "path": "results/diagnostic_20261026_0930_tree_control.json",
+      "sha256": "21a407d46387032019b05529ea87291297fde80f03211dd6c6bae5731a58816f"
+    },
+    {
+      "path": "results/diagnostic_20261026_0935_tree_specular.json",
+      "sha256": "4f559c797f32fd43cbbcdbfe44bafb7cbb1f1b6f2986aaa910da29190d0c0678"
+    },
+    {
+      "path": "results/diagnostic_20261026_0940_tree_noise_control.json",
+      "sha256": "3748d7fa9734d50e74be42eadc1c18ceeb05a142564bab6ebf9101edfbd85079"
+    },
+    {
+      "path": "results/diagnostic_20261026_0950_tree_direct_specular.json",
+      "sha256": "c560b985b09627440c2a3915422fd781de258966610cc5e43069fe89d6c05b4a"
+    },
+    {
+      "path": "sampling_time/later_update_B.json",
+      "sha256": "ff71d4f1a44d31eeaf12d26fa40444dc9672e2d8776dc390dd03e77a598be300"
+    },
+    {
+      "path": "sampling_time/same_update_A.json",
+      "sha256": "872940ac3c796fe187d23efafbe213482d385ec837d2bb53383f80d5ab634aa1"
+    },
+    {
+      "path": "code/history/installed_window_v1.cs",
+      "sha256": "64eb34966fd726ebe1e8e8cb1081a7fcad22ff774d090978bb0f5ea574995203"
+    },
+    {
+      "path": "code/history/tree_control_before_noise_lock.cs",
+      "sha256": "18267e7eacdb253a9a3343c24902967f8db9a207a04e637e528a983ab16fd991"
+    },
+    {
+      "path": "code/history/tree_control_confounded_glossy_switch.cs",
+      "sha256": "8a9a8beddcf55473f9351444da18cb40ae1c3d159e5aa9e381bac3fdb703cb9a"
+    },
+    {
+      "path": "code/history/tree_control_v1.cs",
+      "sha256": "b20cc9e3070bf8c9f085759e4e70d6ea9272880880edf7da5e44b6f23fc4eb52"
+    },
+    {
+      "path": "tree/lod0_fixedphase_locked_dither/00_box_ref.png",
+      "sha256": "b1bbe9b36fa56b4db2fc4942acce41d78c043d605acf2c7d032723825f644cc2"
+    },
+    {
+      "path": "tree/lod0_fixedphase_locked_dither/00_legacy_ref.png",
+      "sha256": "6b4524b2f7427b5b0a30efba7b20b5e6343cabf3f6d0acdcaddc1452f711b0f3"
+    },
+    {
+      "path": "tree/lod0_fixedphase_locked_dither/00_low.png",
+      "sha256": "997da63e2e9d8e57538a6e02d77084ad987e5f7f3d314331f30e6ac8c1458e68"
+    },
+    {
+      "path": "tree/lod0_fixedphase_locked_dither/15_box_ref.png",
+      "sha256": "32655e34f90b5e041d78472c48cbb026a0f20a22b6162752d5fbfd86a29e86c0"
+    },
+    {
+      "path": "tree/lod0_fixedphase_locked_dither/15_legacy_ref.png",
+      "sha256": "1419c13a040cdb40463441766be987dcf51dd6a99f185f69dae8fb97b4cca4a7"
+    },
+    {
+      "path": "tree/lod0_fixedphase_locked_dither/15_low.png",
+      "sha256": "32968929aa96a6fbc390f5b9346a7bd41454db3f7040d715b611d7ff04a7e462"
+    },
+    {
+      "path": "tree/lod0_fixedphase_locked_dither/29_box_ref.png",
+      "sha256": "247a4d052f769829d41269ac30e3e2f0e3040537e7742baa810d3f99029060e6"
+    },
+    {
+      "path": "tree/lod0_fixedphase_locked_dither/29_legacy_ref.png",
+      "sha256": "4f87594be3ebb31d7a91d53fa1bc4171ad66525ee51ef63ed8b5309e72b6d822"
+    },
+    {
+      "path": "tree/lod0_fixedphase_locked_dither/29_low.png",
+      "sha256": "4cf523d963b8269df4bbd3354201bcac1c43f5c29d4538924e60a3f86c9adf9f"
+    },
+    {
+      "path": "tree/lod0_fixedphase_locked_dither/measurements.json",
+      "sha256": "84c545e6126178bc65325b94444d29876d62883d61d1fb10c22914486ebc1652"
+    },
+    {
+      "path": "tree/lod0_fixedphase_locked_dither/roi.png",
+      "sha256": "978392be744ced50d2263646779a551198b9d56248a5563bee3cba02e4b78366"
+    },
+    {
+      "path": "tree/lod0_fixedphase_locked_dither_nospec/00_box_ref.png",
+      "sha256": "274d4fc0740224c5bede1ace232f890907211f09b20e61dbb0d69f70cb09f5ee"
+    },
+    {
+      "path": "tree/lod0_fixedphase_locked_dither_nospec/00_legacy_ref.png",
+      "sha256": "48fafe32e4e98ef095945d656cf294b18a0ad2f87defd88e823f5044f5e0a4f0"
+    },
+    {
+      "path": "tree/lod0_fixedphase_locked_dither_nospec/00_low.png",
+      "sha256": "e5dc223bcaccb807f09f6ebb3433481640599207c6831111613907c4431e8b2e"
+    },
+    {
+      "path": "tree/lod0_fixedphase_locked_dither_nospec/15_box_ref.png",
+      "sha256": "2b5ccdcec7673a43110c4fb41b235c8727f642a8f34e74c1deaa32c89747cb5d"
+    },
+    {
+      "path": "tree/lod0_fixedphase_locked_dither_nospec/15_legacy_ref.png",
+      "sha256": "e4d3e47ab0ca44330a67979d02821636b9524f661d5ab85f6b1798d39e94a5c7"
+    },
+    {
+      "path": "tree/lod0_fixedphase_locked_dither_nospec/15_low.png",
+      "sha256": "94413e382096592d1ef39e1a3fa86b4d1b22d6cb413ea57b6a5c48fb1f375ae5"
+    },
+    {
+      "path": "tree/lod0_fixedphase_locked_dither_nospec/29_box_ref.png",
+      "sha256": "334cd1f22345140110ab1a2d3719fe251e0e44924845b952eb64cd30b034dd74"
+    },
+    {
+      "path": "tree/lod0_fixedphase_locked_dither_nospec/29_legacy_ref.png",
+      "sha256": "8515a5a0b76ea0edb5f9885ec44cdea3930100c80f3f443d571da37579e62b79"
+    },
+    {
+      "path": "tree/lod0_fixedphase_locked_dither_nospec/29_low.png",
+      "sha256": "44791746f9c762eadbf3867d6162d30d8ae1771f3fb9e47de841a74bf7ef6317"
+    },
+    {
+      "path": "tree/lod0_fixedphase_locked_dither_nospec/measurements.json",
+      "sha256": "70f84897f9a3cafaaf87e565a7fa97838b2f5dfafcfcecf59d22b3e54fa8246f"
+    },
+    {
+      "path": "tree/lod0_fixedphase_locked_dither_nospec/roi.png",
+      "sha256": "481fd86ed7f81f45410445f94f910e7fe3ea78850131637133d50650348eb705"
+    },
+    {
+      "path": "tree/lod0_fixedphase_locked_dither_nospec/不可用于纯高光归因.txt",
+      "sha256": "91632721935e3a3c618323e2911a2f1d858b52c00bb13a4ef73d6234b7f72998"
+    },
+    {
+      "path": "tree/lod0_fixedphase_reference_ab/00_box_ref.png",
+      "sha256": "a30958adc5cbc4ed15e56d2b976359b630b3dee40ad5e6ca62dc3177cdacb1e5"
+    },
+    {
+      "path": "tree/lod0_fixedphase_reference_ab/00_legacy_ref.png",
+      "sha256": "545244c334c86f8aff3e7d4b1097c9f179d8c73aadc551e9b46fd7c4ee9e3d5c"
+    },
+    {
+      "path": "tree/lod0_fixedphase_reference_ab/00_low.png",
+      "sha256": "0b246359f645affca6eb274b94b584e8ccb61384264178b30296b3ce0122b821"
+    },
+    {
+      "path": "tree/lod0_fixedphase_reference_ab/15_box_ref.png",
+      "sha256": "af07b707dd60a151a835d51a75f3e185c261a4a846e7e17b4eb79ec60dd14ac0"
+    },
+    {
+      "path": "tree/lod0_fixedphase_reference_ab/15_legacy_ref.png",
+      "sha256": "517675587bb366a418a47f0e49ca218d164f9376aae3e597621e641f90adac68"
+    },
+    {
+      "path": "tree/lod0_fixedphase_reference_ab/15_low.png",
+      "sha256": "e49708dc6571d8e09605ec3c2dad5554a4ea277e49b090ba196c6be1495cb9b3"
+    },
+    {
+      "path": "tree/lod0_fixedphase_reference_ab/29_box_ref.png",
+      "sha256": "157a2a1abdb172b9fcc6ad8127396341cc823f22c514f03cbf1b35e7a0cc81a4"
+    },
+    {
+      "path": "tree/lod0_fixedphase_reference_ab/29_legacy_ref.png",
+      "sha256": "b2e933e8b9caff16a01b67770e607ba816209159c85eda252785a9f5cc68bb43"
+    },
+    {
+      "path": "tree/lod0_fixedphase_reference_ab/29_low.png",
+      "sha256": "5bd4d6d6b7e56266d905efb7d200788a6ab16f7784cb97cde3d4272647b307d1"
+    },
+    {
+      "path": "tree/lod0_fixedphase_reference_ab/measurements.json",
+      "sha256": "bc82c4aa52bcc91e84a048d8e718320d80da1c8044a60fd121a783ab5dc82657"
+    },
+    {
+      "path": "tree/lod0_fixedphase_reference_ab/roi.png",
+      "sha256": "7e62245d102df99866082ce581824ef91137f7bbdb858f4c2053a8d4660b01aa"
+    },
+    {
+      "path": "window/official_two_cameras/measurements.json",
+      "sha256": "9d9e05bf185a14b8ecc657d66563667fbc334e4d27eb10f1e4e5579c8f5019b5"
+    },
+    {
+      "path": "window/official_two_cameras/window_05m_diff_mask.png",
+      "sha256": "1003f73383fe4a9b8c7ff1dd017c3c54aa9b89124832004124abd867e4b7661d"
+    },
+    {
+      "path": "window/official_two_cameras/window_05m_id_occluded.png",
+      "sha256": "701202d15784179a6982991509f58b3402cb6b6055b40f54fd782081eb19d7cb"
+    },
+    {
+      "path": "window/official_two_cameras/window_05m_id_unoccluded.png",
+      "sha256": "701202d15784179a6982991509f58b3402cb6b6055b40f54fd782081eb19d7cb"
+    },
+    {
+      "path": "window/official_two_cameras/window_05m_off.png",
+      "sha256": "6156bdcb1404377c8d9eac196598210a8887a30bfa010da42f2758c8aef93a5a"
+    },
+    {
+      "path": "window/official_two_cameras/window_05m_on.png",
+      "sha256": "ee7c75322b467b21afc403a083aae6b9bb1d74b71cfd6560d879df19f81d6ac2"
+    },
+    {
+      "path": "window/official_two_cameras/window_10m_diff_mask.png",
+      "sha256": "fa4ed5baded913df538bcb2e138abc28f816dc7d2d737fb471046f5b2b202b50"
+    },
+    {
+      "path": "window/official_two_cameras/window_10m_id_occluded.png",
+      "sha256": "cd0518ccba3f4b78333bd617cc9f6b539933da5569f2516cfb3e7aa25953922a"
+    },
+    {
+      "path": "window/official_two_cameras/window_10m_id_unoccluded.png",
+      "sha256": "cd0518ccba3f4b78333bd617cc9f6b539933da5569f2516cfb3e7aa25953922a"
+    },
+    {
+      "path": "window/official_two_cameras/window_10m_off.png",
+      "sha256": "7567dd15054c8f0b3a57dc0cd08ec3a44ba95aaebefcaab08d795f1089f3de48"
+    },
+    {
+      "path": "window/official_two_cameras/window_10m_on.png",
+      "sha256": "ea23b5489df29dd5ad98153bf5a4f3f8f596c9ca0243229044e34560ca0ddcb9"
+    },
+    {
+      "path": "window/precision_ss8_box/measurements.json",
+      "sha256": "6b04813dfb24b2ee334019c29a73f43642b6a5988e510dda64722f08d640ca68"
+    },
+    {
+      "path": "window/precision_ss8_box/window_05m_id_occluded.png",
+      "sha256": "31c7e0188859c09dc51a3382862f068ec06b7b4f4f727ca0ec03ed34dc5919ee"
+    },
+    {
+      "path": "window/precision_ss8_box/window_05m_id_unoccluded.png",
+      "sha256": "31c7e0188859c09dc51a3382862f068ec06b7b4f4f727ca0ec03ed34dc5919ee"
+    },
+    {
+      "path": "window/precision_ss8_box/window_10m_id_occluded.png",
+      "sha256": "f478214b086da4854b3d292632fd83968cb9c0cddc6f66943b8ffd7a8436b790"
+    },
+    {
+      "path": "window/precision_ss8_box/window_10m_id_unoccluded.png",
+      "sha256": "f478214b086da4854b3d292632fd83968cb9c0cddc6f66943b8ffd7a8436b790"
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "id": "flicker_probe",
+  "title": "flicker_dusk_front",
+  "source": "Approved 1.2.2 scoped flicker probe; actual saved FullPreview; as-is only, legacy diagnostic toggles are not relevant to delivered replacement.",
+  "requires": {
+    "files": [
+      "Assets/Lanbai/Scenes/Lanbai_FullPreview.unity"
+    ],
+    "types": [
+      "LB_Journey",
+      "LanbaiOverlay",
+      "LanbaiActDispatcher"
+    ],
+    "why": "本地的全程预览场景（FromLocal/full_preview/20261025-0103）：12 个包接好、LB_Journey 带调试跳转（debugSeekSeconds + _DebugSeekVar）。工程里没有这个场景就 BLOCKED"
+  },
+  "scene": {
+    "path": "Assets/Lanbai/Scenes/Lanbai_FullPreview.unity",
+    "mode": "copy",
+    "why": "拷进沙盒再进 Play：全程预览场景本身不动、不存"
+  },
+  "allowed_writes": [],
+  "allowed_writes_why": "同上",
+  "play": {
+    "clock": {
+      "component": "LB_Journey",
+      "time_var": "dbgT",
+      "seek_var": "debugSeekSeconds",
+      "seek_event": "_DebugSeekVar",
+      "why": "和本地的旅程进度面板一样：写 debugSeekSeconds、发 _DebugSeekVar 跳转；dbgT 是旅程每帧算出来的 t。进 Play 以后先等：本地玩家有了、ready_vars 都为 true、分发层 spawnFadeSince ≥ 0、再过 2 帧（最多 60 s，不然 BLOCKED）",
+      "ready_vars": [
+        "_journeyReady",
+        "_spawnFadeEnded"
+      ]
+    },
+    "camera": {
+      "relative_to": {
+        "component": "LB_Journey",
+        "field": "busRoot"
+      },
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 90,
+      "w": 640,
+      "h": 360,
+      "why": "主座位往前看：D-28 的主座位眼点 (0.55, 1.70, 2.05)（车的局部坐标；LB_Journey.heroEye 是作废的旧值，不用），相机挂在 LB_Journey.busRoot 上，车动相机跟着动。ClientSim 的玩家也挪到这里（seat_player），遮罩球每张拍之前挪到相机这里；manifest 记 play.head_cam_dist_max",
+      "eye": [
+        0.55,
+        1.7,
+        2.05
+      ]
+    },
+    "overlay_follow_camera": true,
+    "settle_s": 2,
+    "probes": [
+      {
+        "id": "f12",
+        "t0": 987,
+        "t1": 997,
+        "fps": 4,
+        "variants": [
+          {
+            "id": "as_is",
+            "why": "Actual integrated preview, no diagnostic toggles",
+            "toggles": []
+          }
+        ],
+        "why": "变体可以随便加减；toggle 的类型见 README_UnityTest §6（set_active、set_renderer、set_components_enabled、field_objects_active、field_renderers、udon_var、global_float、global_vector）"
+      }
+    ],
+    "seat_player": true,
+    "max_missed_frac": 0.1,
+    "max_missed_frac_why": "实时拍不满时漏掉的比例；超过 10 % 这一段算 fail（帧间的量只用中间没漏拍、间隔 ≤ 1.5 × 安排间隔的相邻两张）"
+  },
+  "checks": [],
+  "checks_why": "不设卡：看 summary.md 的表，哪个变体的 max_step_ev / flicker_px_frac 明显变小",
+  "manual": [
+    "结果和录屏一起放进 FromLocal/flicker_1025/<时间>/；工具只拍主座位往前，闪在别的方向就把 camera 的 yaw / pitch 改了再跑"
+  ]
+}

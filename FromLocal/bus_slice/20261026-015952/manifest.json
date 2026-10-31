@@ -1,0 +1,1763 @@
+{
+  "tool": "Lanbai.Test.Runner",
+  "tool_version": "1.2.2",
+  "test_id": "bus_slice",
+  "run_id": "20261026-015952",
+  "fromlocal": "FromLocal/bus_slice/20261026-015952/",
+  "test_file": "E:\\IDMdownload\\VRCC\\dream\\Assets\\Lanbai\\Engineering\\UnityTest\\tests\\bus_slice.json",
+  "test_sha256": "cad67a06574e656ef05cf1f68379ba92901842be3ca9ba1647abb2d02c573502",
+  "mode": "bridge",
+  "started_utc": "2026-10-26T05:59:52.6868759Z",
+  "finished_utc": "2026-10-26T06:01:03.8646600Z",
+  "duration_s": 71.2,
+  "exit_code": 1,
+  "status": "fail",
+  "preflight_only": false,
+  "blocked_reason": null,
+  "error": null,
+  "repo": {
+    "repo_commit": "11c2f447c56444e171beb4f0cbe26fa8b505a6ab",
+    "repo_branch": "main",
+    "repo_dirty": null,
+    "repo_path": "E:\\IDMdownload\\VRCC\\lanbai-assets-gate-main-20261024",
+    "entry": "2026-10-26 approved serial delivery; current applied group manifests in delivery_0058",
+    "synced_at": "2026-10-26T01:39:27.181258-04:00",
+    "paths": null,
+    "tool_version": "1.2.2"
+  },
+  "copied": null,
+  "unity": {
+    "version": "2022.3.22f1",
+    "batch": true,
+    "color_space": "Linear",
+    "quality": "VRC High",
+    "build_target": "StandaloneWindows64",
+    "scene": "Assets/_LanbaiTest/bus_slice_new.unity"
+  },
+  "packages": {
+    "com.vrchat.worlds": "3.10.5",
+    "com.vrchat.base": "3.10.5",
+    "com.unity.postprocessing": "3.4.0",
+    "com.unity.textmeshpro": "3.0.6"
+  },
+  "gpu": {
+    "name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "vendor": "NVIDIA",
+    "api": "Direct3D11",
+    "version": "Direct3D 11.0 [level 11.1]",
+    "vram_mb": 7956,
+    "cpu": "13th Gen Intel(R) Core(TM) i9-13980HX",
+    "cpu_threads": 32,
+    "ram_mb": 32386,
+    "os": "Windows 11  (10.0.26200) 64bit"
+  },
+  "consent": {
+    "tool_version": "1.2.2",
+    "date": "2026-10-26",
+    "tests": [
+      "gate_clouds_test",
+      "tree_sample",
+      "flicker_probe",
+      "transitions_sweep",
+      "bus_slice",
+      "bus_dropin"
+    ],
+    "note": "User approved this version and scope; private approval record omitted."
+  },
+  "layers": {
+    "blender_offline": {
+      "status": "pending_cloud",
+      "note": "云端对照 Blender 参考帧后填；工具不填"
+    },
+    "unity_desktop": {
+      "status": "fail",
+      "note": "Unity 编辑器里的桌面渲染和编辑器估算的性能；工具检查全过也只记“待总导演看图”（D-41 #4）"
+    },
+    "vr_headset": {
+      "status": "not_tested",
+      "note": "工具不测头显，也不会把这一层标成通过；看 summary.md 末尾的头显清单"
+    }
+  },
+  "preflight": [
+    {
+      "item": "gpu",
+      "status": "ok",
+      "detail": "NVIDIA GeForce RTX 4060 Laptop GPU（Direct3D11，Direct3D 11.0 [level 11.1]，显存 7956 MB）"
+    },
+    {
+      "item": "resources",
+      "status": "ok",
+      "detail": "C:\\ 剩 38.5 GB，E:\\ 剩 67.6 GB，可用内存 14.2 GB"
+    },
+    {
+      "item": "consent",
+      "status": "ok",
+      "detail": "用户（当前聊天） 2026-10-26 同意（工具 1.2.2，测试 gate_clouds_test、tree_sample、flicker_probe、transitions_sweep、bus_slice、bus_dropin）；备份 E:\\IDMdownload\\VRCC\\Backups\\dream_20261025-000405.zip（在）"
+    },
+    {
+      "item": "unity",
+      "status": "ok",
+      "detail": "2022.3.22f1（要 2022.3.22f1）"
+    },
+    {
+      "item": "editor_state",
+      "status": "ok",
+      "detail": "Play False，编译中 False，导入中 False（要在编辑模式、编译和导入都完成后再跑）"
+    },
+    {
+      "item": "color_space",
+      "status": "ok",
+      "detail": "Linear（要 Linear）"
+    },
+    {
+      "item": "package:com.vrchat.worlds",
+      "status": "ok",
+      "detail": "3.10.5（要 3.10.5；读自 PackageManager）"
+    },
+    {
+      "item": "package:com.unity.postprocessing",
+      "status": "ok",
+      "detail": "3.4.0（要 3.4.0；读自 PackageManager）"
+    },
+    {
+      "item": "udonsharp",
+      "status": "ok",
+      "detail": "UdonSharp.UdonSharpBehaviour 在（UdonSharp.Runtime），随 VRChat Worlds SDK"
+    },
+    {
+      "item": "compile",
+      "status": "ok",
+      "detail": "scriptCompilationFailed False，Console 里的编译错误（含 UdonSharp 的）0 条（Console 共 22 条，原样在 console.jsonl）"
+    },
+    {
+      "item": "open_scenes",
+      "status": "ok",
+      "detail": "没有没保存的改动（Assets/Lanbai/Scenes/Lanbai_FullPreview.unity）"
+    },
+    {
+      "item": "sandbox",
+      "status": "ok",
+      "detail": "有上次遗留的沙盒（有标记），开跑时删掉重建"
+    },
+    {
+      "item": "grading",
+      "status": "warn",
+      "detail": "有旧的 Assets/Lanbai/Grades/，有套件的 Assets/Lanbai/Grading/；layer 4 =「Water」，layer 22 =「PostProcessing」。两套调色都在：工具不删，截图用的是参考相机上的那一套（PostProcessLayer 的 volumeLayer 写在 manifest 的截图记录里）"
+    },
+    {
+      "item": "sync_record",
+      "status": "ok",
+      "detail": "仓库提交 11c2f447c56444e171beb4f0cbe26fa8b505a6ab（2026-10-26T01:39:27.181258-04:00 同步，条目：2026-10-26 approved serial delivery; current applied group manifests in delivery_0058）"
+    },
+    {
+      "item": "git_status",
+      "status": "info",
+      "detail": "工程不是 git 仓库"
+    }
+  ],
+  "preconditions": [
+    {
+      "item": "文件夹 Assets/Lanbai/Common",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件夹 Assets/Lanbai/Bus",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件夹 Assets/Lanbai/Bus/Editor",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "类型 LanbaiBusSliceBuilder",
+      "status": "ok",
+      "detail": "脚本没拷进来或没编译"
+    },
+    {
+      "item": "菜单 蓝白/Build/车 切片",
+      "status": "ok",
+      "detail": ""
+    }
+  ],
+  "git_status_porcelain": null,
+  "steps": [
+    {
+      "phase": "build",
+      "index": 0,
+      "type": "menu",
+      "desc": "菜单 蓝白/Build/车 切片",
+      "status": "ok",
+      "out": "执行了菜单 蓝白/Build/车 切片",
+      "ms": 360.3
+    },
+    {
+      "phase": "after_build",
+      "index": 0,
+      "type": "assert_object",
+      "desc": "assert_object **/Slice_Seat",
+      "status": "ok",
+      "out": "在",
+      "ms": 0.6
+    },
+    {
+      "phase": "after_build",
+      "index": 1,
+      "type": "assert_object",
+      "desc": "assert_object **/Slice_SideWindow",
+      "status": "ok",
+      "out": "在",
+      "ms": 0.2
+    },
+    {
+      "phase": "after_build",
+      "index": 2,
+      "type": "assert_object",
+      "desc": "assert_object **/Slice_Pillar",
+      "status": "ok",
+      "out": "在",
+      "ms": 0
+    }
+  ],
+  "settings": [
+    {
+      "item": "vertex_compression_off",
+      "status": "ok",
+      "detail": "Player → Other Settings → Vertex Compression：要关掉 TexCoord0、TexCoord1、TexCoord2、TexCoord3、Color；现在的掩码 3846（ProjectSettings.asset 原文），都关了",
+      "changed_by_tool": false
+    }
+  ],
+  "checks": [
+    {
+      "id": "steps_ok",
+      "metric": "steps.errors",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "每一步都跑成功了",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "no_compile_errors",
+      "metric": "console.compile_errors",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "跑的过程中没有新的编译错误",
+      "measured": 1,
+      "expect": "= 0",
+      "status": "fail"
+    },
+    {
+      "id": "no_exceptions",
+      "metric": "console.exceptions",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "跑的过程中 Console 没有异常（工具自己的不算）",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "no_console_errors",
+      "metric": "console.errors",
+      "op": "==",
+      "value": 0,
+      "gate": false,
+      "why": "跑的过程中 Console 没有 Error（默认只警告；测试定义可以改成必须）",
+      "measured": 1,
+      "expect": "= 0",
+      "status": "warn"
+    },
+    {
+      "id": "no_undeclared_writes",
+      "metric": "writes.undeclared",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "沙盒和 allowed_writes 以外没有文件被改",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "project_settings_untouched",
+      "metric": "writes.project_settings_changed",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "ProjectSettings 没被改",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "ppv2_effective",
+      "metric": "capture.ppv2_effective",
+      "op": "==",
+      "value": 1,
+      "gate": true,
+      "why": "截图经过了 PPv2（开 / 关 PPv2 各渲一张小图，要不一样）",
+      "measured": 1,
+      "expect": "= 1",
+      "status": "pass"
+    },
+    {
+      "id": "setting_vertex_compression_off",
+      "metric": "settings.vertex_compression_off",
+      "op": "==",
+      "value": 1,
+      "gate": true,
+      "why": "Player → Other Settings → Vertex Compression：要关掉 TexCoord0、TexCoord1、TexCoord2、TexCoord3、Color；现在的掩码 3846（ProjectSettings.asset 原文），都关了",
+      "measured": 1,
+      "expect": "= 1",
+      "status": "pass"
+    },
+    {
+      "id": "has_lightmaps",
+      "metric": "scene.lightmaps",
+      "op": ">=",
+      "value": 1,
+      "gate": false,
+      "why": "光照图接缝那一项要先有光照图（D-40 #1 第 4 项）。车用预烘的 _CabinTubeLM（D-32，uv1）时 Unity 的光照图是 0 张，所以只警告；接缝照样看近景图",
+      "measured": 0,
+      "expect": "≥ 1",
+      "status": "warn"
+    },
+    {
+      "id": "pillar_shimmer",
+      "metric": "seq.pillar_micro.shimmer_frac",
+      "op": "<=",
+      "value": 0.005,
+      "gate": false,
+      "why": "立柱 / 铬扶手：头部微动里来回跳的像素（初值，切片第一次实测后定）",
+      "measured": 0.028548496707519976,
+      "expect": "≤ 0.005",
+      "status": "warn"
+    },
+    {
+      "id": "window_frame_05m",
+      "metric": "shot.window_05m.coverage",
+      "op": ">=",
+      "value": 0.3,
+      "gate": true,
+      "why": "总导演 10-26：画面里至少 30 % 是窗框 / 胶条（Window_R1：铝框、胶条、横档、扇框、窗扣；玻璃是另一个物体，不算）。不过就是机位没对上，改 look_at_anchor",
+      "measured": 0.1452518766745561,
+      "expect": "≥ 0.3",
+      "status": "fail"
+    },
+    {
+      "id": "window_frame_10m",
+      "metric": "shot.window_10m.coverage",
+      "op": ">=",
+      "value": 0.3,
+      "gate": true,
+      "why": "同上",
+      "measured": 0.09342558526468728,
+      "expect": "≥ 0.3",
+      "status": "fail"
+    },
+    {
+      "id": "window_shimmer",
+      "metric": "seq.window_micro.shimmer_frac",
+      "op": "<=",
+      "value": 0.005,
+      "gate": false,
+      "why": "初值 0.005，先不动（总导演 10-26）：Blender 里 1.0 m 三台是 0.0059–0.0068，但 Blender 没有高光抗锯齿，等阿白的 Unity 数再定。机位改成对着窗框的角以后，画面里铝边多了，这一项会比原来的“全是玻璃”高",
+      "measured": 0.013029315960912053,
+      "expect": "≤ 0.005",
+      "status": "warn"
+    },
+    {
+      "id": "seat_crunch_psnr",
+      "metric": "tex.seat.crunch_q50.seat_05m.psnr",
+      "op": ">=",
+      "value": 38,
+      "gate": false,
+      "why": "0.5 m 处 Crunch 和不压缩比 ≥ 38 dB（初值；低了就是细节被压没了，D-40 #1）",
+      "measured": 48.42887863645551,
+      "expect": "≥ 38",
+      "status": "pass"
+    },
+    {
+      "id": "window_crunch_psnr",
+      "metric": "tex.window.crunch_q50.window_05m.psnr",
+      "op": ">=",
+      "value": 38,
+      "gate": false,
+      "why": "同上",
+      "measured": 75.08314461127196,
+      "expect": "≥ 38",
+      "status": "pass"
+    },
+    {
+      "id": "pillar_crunch_psnr",
+      "metric": "tex.pillar.crunch_q50.pillar_05m.psnr",
+      "op": ">=",
+      "value": 38,
+      "gate": false,
+      "why": "同上",
+      "measured": 53.34109844104654,
+      "expect": "≥ 38",
+      "status": "pass"
+    },
+    {
+      "id": "normal_crunch100_vs_bc5",
+      "metric": "tex.seat.ncrunch_q100.seat_05m.psnr",
+      "op": ">=",
+      "value": 38,
+      "gate": false,
+      "why": "法线：只把法线做 Crunch（质量 100，ncrunch:100）和不压缩比；BC5 那一档看 tex.seat.bc5.seat_05m.psnr，两档别的贴图都是 BC7，差别只来自法线；比完总工程师给全片统一一条（D-40b #6）",
+      "measured": 54.815422461862454,
+      "expect": "≥ 38",
+      "status": "pass"
+    }
+  ],
+  "shots": [
+    {
+      "id": "seat_05m",
+      "file": "shots/seat_05m.png",
+      "w": 834,
+      "h": 614,
+      "ss": 2,
+      "eye": [
+        -0.5086841583251953,
+        1.2385269403457642,
+        -1.534332275390625
+      ],
+      "euler": [
+        7.038908004760742,
+        196.45526123046875,
+        0
+      ],
+      "hfov": 40,
+      "vfov_used": 30,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 45.18730161590424,
+      "dark_pct": 0,
+      "clip_pct": 0,
+      "max_luma": 56.86880111694336
+    },
+    {
+      "id": "seat_10m",
+      "file": "shots/seat_10m.png",
+      "w": 834,
+      "h": 614,
+      "ss": 2,
+      "eye": [
+        -0.3681183457374573,
+        1.299798607826233,
+        -1.058425784111023
+      ],
+      "euler": [
+        7.038908958435059,
+        196.45526123046875,
+        0
+      ],
+      "hfov": 40,
+      "vfov_used": 30,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 35.73931358448217,
+      "dark_pct": 17.13202727720104,
+      "clip_pct": 0,
+      "max_luma": 151.56680297851562
+    },
+    {
+      "id": "window_05m",
+      "file": "shots/window_05m.png",
+      "w": 834,
+      "h": 614,
+      "ss": 2,
+      "eye": [
+        -0.8042015433311462,
+        1.9916919469833374,
+        -1.4697370529174805
+      ],
+      "euler": [
+        355.57720947265625,
+        201.0439910888672,
+        0
+      ],
+      "hfov": 40,
+      "vfov_used": 30,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 25.729121422323278,
+      "dark_pct": 39.6655965130176,
+      "clip_pct": 0,
+      "max_luma": 77.93579864501953,
+      "coverage_of": [
+        "**/Slice_SideWindow/Window_R1"
+      ],
+      "coverage": 0.1452518766745561
+    },
+    {
+      "id": "window_10m",
+      "file": "shots/window_10m.png",
+      "w": 834,
+      "h": 614,
+      "ss": 2,
+      "eye": [
+        -0.5946300029754639,
+        1.946550726890564,
+        -0.652974009513855
+      ],
+      "euler": [
+        355.19879150390625,
+        202.95123291015625,
+        0
+      ],
+      "hfov": 40,
+      "vfov_used": 30,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 17.791366966231713,
+      "dark_pct": 68.65894906224857,
+      "clip_pct": 0,
+      "max_luma": 71.93579864501953,
+      "coverage_of": [
+        "**/Slice_SideWindow/Window_R1"
+      ],
+      "coverage": 0.09342558526468728
+    },
+    {
+      "id": "pillar_05m",
+      "file": "shots/pillar_05m.png",
+      "w": 834,
+      "h": 614,
+      "ss": 2,
+      "eye": [
+        -0.15985873341560364,
+        1.6323943138122559,
+        -0.5823929309844971
+      ],
+      "euler": [
+        1.4204423427581787,
+        195.09156799316406,
+        0
+      ],
+      "hfov": 40,
+      "vfov_used": 30,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 21.13605353042582,
+      "dark_pct": 62.18471476890149,
+      "clip_pct": 0,
+      "max_luma": 187.49859619140625
+    },
+    {
+      "id": "pillar_10m",
+      "file": "shots/pillar_10m.png",
+      "w": 834,
+      "h": 614,
+      "ss": 2,
+      "eye": [
+        -0.029717475175857544,
+        1.6447887420654297,
+        -0.09978580474853516
+      ],
+      "euler": [
+        1.4204423427581787,
+        195.09156799316406,
+        0
+      ],
+      "hfov": 40,
+      "vfov_used": 30,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 19.620330934237025,
+      "dark_pct": 62.24759605995985,
+      "clip_pct": 0,
+      "max_luma": 187.42640686035156
+    },
+    {
+      "id": "pillar_05m_stereo",
+      "file": "stereo/pillar_05m_approx_LR.png",
+      "w": 1668,
+      "h": 614,
+      "label": "双眼近似：两台普通相机各偏 ±32 mm 分别渲染、左右并排；不是 SPS-I 单通道立体，不是头显测试",
+      "apl_left": 20.22788731102265,
+      "apl_right": 22.012077130126862
+    },
+    {
+      "id": "seat_05m__raw",
+      "file": "tex/seat/seat_05m__raw.png",
+      "w": 834,
+      "h": 614,
+      "ss": 2,
+      "eye": [
+        -0.5086841583251953,
+        1.2385269403457642,
+        -1.534332275390625
+      ],
+      "euler": [
+        7.038908004760742,
+        196.45526123046875,
+        0
+      ],
+      "hfov": 40,
+      "vfov_used": 30,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 45.11923059300015,
+      "dark_pct": 0,
+      "clip_pct": 0,
+      "max_luma": 56.941001892089844
+    },
+    {
+      "id": "seat_05m__bc7",
+      "file": "tex/seat/seat_05m__bc7.png",
+      "w": 834,
+      "h": 614,
+      "ss": 2,
+      "eye": [
+        -0.5086841583251953,
+        1.2385269403457642,
+        -1.534332275390625
+      ],
+      "euler": [
+        7.038908004760742,
+        196.45526123046875,
+        0
+      ],
+      "hfov": 40,
+      "vfov_used": 30,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 45.143444013818694,
+      "dark_pct": 0,
+      "clip_pct": 0,
+      "max_luma": 56.941001892089844
+    },
+    {
+      "id": "seat_05m__bc5",
+      "file": "tex/seat/seat_05m__bc5.png",
+      "w": 834,
+      "h": 614,
+      "ss": 2,
+      "eye": [
+        -0.5086841583251953,
+        1.2385269403457642,
+        -1.534332275390625
+      ],
+      "euler": [
+        7.038908004760742,
+        196.45526123046875,
+        0
+      ],
+      "hfov": 40,
+      "vfov_used": 30,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 45.143444013818694,
+      "dark_pct": 0,
+      "clip_pct": 0,
+      "max_luma": 56.941001892089844
+    },
+    {
+      "id": "seat_05m__crunch_q50",
+      "file": "tex/seat/seat_05m__crunch_q50.png",
+      "w": 834,
+      "h": 614,
+      "ss": 2,
+      "eye": [
+        -0.5086841583251953,
+        1.2385269403457642,
+        -1.534332275390625
+      ],
+      "euler": [
+        7.038908004760742,
+        196.45526123046875,
+        0
+      ],
+      "hfov": 40,
+      "vfov_used": 30,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 45.26666226984956,
+      "dark_pct": 0,
+      "clip_pct": 0,
+      "max_luma": 58.229801177978516
+    },
+    {
+      "id": "seat_05m__crunch_q100",
+      "file": "tex/seat/seat_05m__crunch_q100.png",
+      "w": 834,
+      "h": 614,
+      "ss": 2,
+      "eye": [
+        -0.5086841583251953,
+        1.2385269403457642,
+        -1.534332275390625
+      ],
+      "euler": [
+        7.038908004760742,
+        196.45526123046875,
+        0
+      ],
+      "hfov": 40,
+      "vfov_used": 30,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 45.23592645796679,
+      "dark_pct": 0,
+      "clip_pct": 0,
+      "max_luma": 58.44240188598633
+    },
+    {
+      "id": "seat_05m__ncrunch_q100",
+      "file": "tex/seat/seat_05m__ncrunch_q100.png",
+      "w": 834,
+      "h": 614,
+      "ss": 2,
+      "eye": [
+        -0.5086841583251953,
+        1.2385269403457642,
+        -1.534332275390625
+      ],
+      "euler": [
+        7.038908004760742,
+        196.45526123046875,
+        0
+      ],
+      "hfov": 40,
+      "vfov_used": 30,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 45.143444013818694,
+      "dark_pct": 0,
+      "clip_pct": 0,
+      "max_luma": 56.941001892089844
+    },
+    {
+      "id": "window_05m__raw",
+      "file": "tex/window/window_05m__raw.png",
+      "w": 834,
+      "h": 614,
+      "ss": 2,
+      "eye": [
+        -0.8042015433311462,
+        1.9916919469833374,
+        -1.4697370529174805
+      ],
+      "euler": [
+        355.57720947265625,
+        201.0439910888672,
+        0
+      ],
+      "hfov": 40,
+      "vfov_used": 30,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 25.729121148159326,
+      "dark_pct": 39.6655965130176,
+      "clip_pct": 0,
+      "max_luma": 77.93579864501953,
+      "coverage_of": [
+        "**/Slice_SideWindow/Window_R1"
+      ],
+      "coverage": 0.1452518766745561
+    },
+    {
+      "id": "window_05m__bc7",
+      "file": "tex/window/window_05m__bc7.png",
+      "w": 834,
+      "h": 614,
+      "ss": 2,
+      "eye": [
+        -0.8042015433311462,
+        1.9916919469833374,
+        -1.4697370529174805
+      ],
+      "euler": [
+        355.57720947265625,
+        201.0439910888672,
+        0
+      ],
+      "hfov": 40,
+      "vfov_used": 30,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 25.729111518500723,
+      "dark_pct": 39.66637764706801,
+      "clip_pct": 0,
+      "max_luma": 77.93579864501953,
+      "coverage_of": [
+        "**/Slice_SideWindow/Window_R1"
+      ],
+      "coverage": 0.1452518766745561
+    },
+    {
+      "id": "window_05m__bc5",
+      "file": "tex/window/window_05m__bc5.png",
+      "w": 834,
+      "h": 614,
+      "ss": 2,
+      "eye": [
+        -0.8042015433311462,
+        1.9916919469833374,
+        -1.4697370529174805
+      ],
+      "euler": [
+        355.57720947265625,
+        201.0439910888672,
+        0
+      ],
+      "hfov": 40,
+      "vfov_used": 30,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 25.729111518500723,
+      "dark_pct": 39.66637764706801,
+      "clip_pct": 0,
+      "max_luma": 77.93579864501953,
+      "coverage_of": [
+        "**/Slice_SideWindow/Window_R1"
+      ],
+      "coverage": 0.1452518766745561
+    },
+    {
+      "id": "window_05m__crunch_q50",
+      "file": "tex/window/window_05m__crunch_q50.png",
+      "w": 834,
+      "h": 614,
+      "ss": 2,
+      "eye": [
+        -0.8042015433311462,
+        1.9916919469833374,
+        -1.4697370529174805
+      ],
+      "euler": [
+        355.57720947265625,
+        201.0439910888672,
+        0
+      ],
+      "hfov": 40,
+      "vfov_used": 30,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 25.729663181023156,
+      "dark_pct": 39.66442481194198,
+      "clip_pct": 0,
+      "max_luma": 77.93579864501953,
+      "coverage_of": [
+        "**/Slice_SideWindow/Window_R1"
+      ],
+      "coverage": 0.1452518766745561
+    },
+    {
+      "id": "window_05m__crunch_q100",
+      "file": "tex/window/window_05m__crunch_q100.png",
+      "w": 834,
+      "h": 614,
+      "ss": 2,
+      "eye": [
+        -0.8042015433311462,
+        1.9916919469833374,
+        -1.4697370529174805
+      ],
+      "euler": [
+        355.57720947265625,
+        201.0439910888672,
+        0
+      ],
+      "hfov": 40,
+      "vfov_used": 30,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 25.729601070929107,
+      "dark_pct": 39.66520594599239,
+      "clip_pct": 0,
+      "max_luma": 77.93579864501953,
+      "coverage_of": [
+        "**/Slice_SideWindow/Window_R1"
+      ],
+      "coverage": 0.1452518766745561
+    },
+    {
+      "id": "window_05m__ncrunch_q100",
+      "file": "tex/window/window_05m__ncrunch_q100.png",
+      "w": 834,
+      "h": 614,
+      "ss": 2,
+      "eye": [
+        -0.8042015433311462,
+        1.9916919469833374,
+        -1.4697370529174805
+      ],
+      "euler": [
+        355.57720947265625,
+        201.0439910888672,
+        0
+      ],
+      "hfov": 40,
+      "vfov_used": 30,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 25.729111518500723,
+      "dark_pct": 39.66637764706801,
+      "clip_pct": 0,
+      "max_luma": 77.93579864501953,
+      "coverage_of": [
+        "**/Slice_SideWindow/Window_R1"
+      ],
+      "coverage": 0.1452518766745561
+    },
+    {
+      "id": "pillar_05m__raw",
+      "file": "tex/pillar/pillar_05m__raw.png",
+      "w": 834,
+      "h": 614,
+      "ss": 2,
+      "eye": [
+        -0.15985873341560364,
+        1.6323943138122559,
+        -0.5823929309844971
+      ],
+      "euler": [
+        1.4204423427581787,
+        195.09156799316406,
+        0
+      ],
+      "hfov": 40,
+      "vfov_used": 30,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 21.13611792204724,
+      "dark_pct": 62.18471476890149,
+      "clip_pct": 0,
+      "max_luma": 186.71119689941406
+    },
+    {
+      "id": "pillar_05m__bc7",
+      "file": "tex/pillar/pillar_05m__bc7.png",
+      "w": 834,
+      "h": 614,
+      "ss": 2,
+      "eye": [
+        -0.15985873341560364,
+        1.6323943138122559,
+        -0.5823929309844971
+      ],
+      "euler": [
+        1.4204423427581787,
+        195.09156799316406,
+        0
+      ],
+      "hfov": 40,
+      "vfov_used": 30,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 21.130961342548996,
+      "dark_pct": 62.18471476890149,
+      "clip_pct": 0,
+      "max_luma": 185.71119689941406
+    },
+    {
+      "id": "pillar_05m__bc5",
+      "file": "tex/pillar/pillar_05m__bc5.png",
+      "w": 834,
+      "h": 614,
+      "ss": 2,
+      "eye": [
+        -0.15985873341560364,
+        1.6323943138122559,
+        -0.5823929309844971
+      ],
+      "euler": [
+        1.4204423427581787,
+        195.09156799316406,
+        0
+      ],
+      "hfov": 40,
+      "vfov_used": 30,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 21.130961342548996,
+      "dark_pct": 62.18471476890149,
+      "clip_pct": 0,
+      "max_luma": 185.71119689941406
+    },
+    {
+      "id": "pillar_05m__crunch_q50",
+      "file": "tex/pillar/pillar_05m__crunch_q50.png",
+      "w": 834,
+      "h": 614,
+      "ss": 2,
+      "eye": [
+        -0.15985873341560364,
+        1.6323943138122559,
+        -0.5823929309844971
+      ],
+      "euler": [
+        1.4204423427581787,
+        195.09156799316406,
+        0
+      ],
+      "hfov": 40,
+      "vfov_used": 30,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 21.129960185347162,
+      "dark_pct": 62.18471476890149,
+      "clip_pct": 0,
+      "max_luma": 182.71119689941406
+    },
+    {
+      "id": "pillar_05m__crunch_q100",
+      "file": "tex/pillar/pillar_05m__crunch_q100.png",
+      "w": 834,
+      "h": 614,
+      "ss": 2,
+      "eye": [
+        -0.15985873341560364,
+        1.6323943138122559,
+        -0.5823929309844971
+      ],
+      "euler": [
+        1.4204423427581787,
+        195.09156799316406,
+        0
+      ],
+      "hfov": 40,
+      "vfov_used": 30,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 21.127026327382534,
+      "dark_pct": 62.18471476890149,
+      "clip_pct": 0,
+      "max_luma": 183.49859619140625
+    },
+    {
+      "id": "pillar_05m__ncrunch_q100",
+      "file": "tex/pillar/pillar_05m__ncrunch_q100.png",
+      "w": 834,
+      "h": 614,
+      "ss": 2,
+      "eye": [
+        -0.15985873341560364,
+        1.6323943138122559,
+        -0.5823929309844971
+      ],
+      "euler": [
+        1.4204423427581787,
+        195.09156799316406,
+        0
+      ],
+      "hfov": 40,
+      "vfov_used": 30,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 21.130961342548996,
+      "dark_pct": 62.18471476890149,
+      "clip_pct": 0,
+      "max_luma": 185.71119689941406
+    }
+  ],
+  "play": [],
+  "sequences": [
+    {
+      "id": "pillar_micro",
+      "kind": "micro_motion",
+      "fps": 90,
+      "frames": 90,
+      "w": 834,
+      "h": 614,
+      "ss": 1,
+      "amp_cm": 1.9999999552965164,
+      "amp_deg": 1,
+      "eye_offset_mm": 0,
+      "t0": null,
+      "t1": null,
+      "advance_time": false,
+      "heat_scale": 24,
+      "hf_threshold": 6,
+      "reference_ss": 4,
+      "shimmer_threshold": 4,
+      "isolate_keep": [],
+      "renderers_turned_off": 0,
+      "roi_pixels": 0,
+      "roi": null,
+      "heat_shimmer": "seq/pillar_micro/heat_shimmer.png",
+      "heat_motion_std": "seq/pillar_micro/heat_motion_std.png",
+      "heat_hf_raw": "seq/pillar_micro/heat_hf_raw.png",
+      "note": "编辑器里普通相机逐帧渲染（不是 SPS-I、不是头显）；热图颜色 0 → 24（亮度 0–255），底下是平均画面的灰度"
+    },
+    {
+      "id": "window_micro",
+      "kind": "micro_motion",
+      "fps": 90,
+      "frames": 90,
+      "w": 834,
+      "h": 614,
+      "ss": 1,
+      "amp_cm": 1.9999999552965164,
+      "amp_deg": 1,
+      "eye_offset_mm": 0,
+      "t0": null,
+      "t1": null,
+      "advance_time": false,
+      "heat_scale": 24,
+      "hf_threshold": 6,
+      "reference_ss": 4,
+      "shimmer_threshold": 4,
+      "isolate_keep": [],
+      "renderers_turned_off": 0,
+      "roi_pixels": 0,
+      "roi": null,
+      "heat_shimmer": "seq/window_micro/heat_shimmer.png",
+      "heat_motion_std": "seq/window_micro/heat_motion_std.png",
+      "heat_hf_raw": "seq/window_micro/heat_hf_raw.png",
+      "note": "编辑器里普通相机逐帧渲染（不是 SPS-I、不是头显）；热图颜色 0 → 24（亮度 0–255），底下是平均画面的灰度"
+    },
+    {
+      "id": "seat_micro",
+      "kind": "micro_motion",
+      "fps": 90,
+      "frames": 90,
+      "w": 834,
+      "h": 614,
+      "ss": 1,
+      "amp_cm": 1.9999999552965164,
+      "amp_deg": 1,
+      "eye_offset_mm": 0,
+      "t0": null,
+      "t1": null,
+      "advance_time": false,
+      "heat_scale": 24,
+      "hf_threshold": 6,
+      "reference_ss": 4,
+      "shimmer_threshold": 4,
+      "isolate_keep": [],
+      "renderers_turned_off": 0,
+      "roi_pixels": 0,
+      "roi": null,
+      "heat_shimmer": "seq/seat_micro/heat_shimmer.png",
+      "heat_motion_std": "seq/seat_micro/heat_motion_std.png",
+      "heat_hf_raw": "seq/seat_micro/heat_hf_raw.png",
+      "note": "编辑器里普通相机逐帧渲染（不是 SPS-I、不是头显）；热图颜色 0 → 24（亮度 0–255），底下是平均画面的灰度"
+    }
+  ],
+  "textures": [
+    {
+      "id": "seat",
+      "materials": [
+        "Assets/Lanbai/Bus/Generated/Materials/M_Bus_Part_SeatHero.mat"
+      ],
+      "textures": [
+        {
+          "path": "Assets/Lanbai/Bus/Textures/Cabin_TubeLM.exr",
+          "size": "2048×2048",
+          "format_now": "RGBAHalf",
+          "mip": true,
+          "aniso": 1,
+          "filter": "Bilinear",
+          "srgb": false,
+          "type": "Default",
+          "storage_mb_now": 42.666664123535156
+        },
+        {
+          "path": "Assets/Lanbai/Bus/Textures/Parts/Part_SeatHero_Albedo_2048.png",
+          "size": "2048×2048",
+          "format_now": "DXT5",
+          "mip": true,
+          "aniso": 4,
+          "filter": "Bilinear",
+          "srgb": true,
+          "type": "Default",
+          "storage_mb_now": 5.3333587646484375
+        },
+        {
+          "path": "Assets/Lanbai/Bus/Textures/Parts/Part_SeatHero_Normal_2048.png",
+          "size": "2048×2048",
+          "format_now": "DXT5",
+          "mip": true,
+          "aniso": 4,
+          "filter": "Bilinear",
+          "srgb": false,
+          "type": "NormalMap",
+          "storage_mb_now": 5.3333587646484375
+        },
+        {
+          "path": "Assets/Lanbai/Bus/Textures/Parts/Part_SeatHero_Mask_2048.png",
+          "size": "2048×2048",
+          "format_now": "DXT5",
+          "mip": true,
+          "aniso": 4,
+          "filter": "Bilinear",
+          "srgb": false,
+          "type": "Default",
+          "storage_mb_now": 5.3333587646484375
+        }
+      ],
+      "crunch_quality": 50,
+      "variants": {
+        "raw": {
+          "storage_mb": 85.33332824707031,
+          "renderers_swapped": 1,
+          "note": null
+        },
+        "bc7": {
+          "storage_mb": 21.33343505859375,
+          "renderers_swapped": 1,
+          "note": null,
+          "seat_05m_psnr": 54.815422461862454
+        },
+        "bc5": {
+          "storage_mb": 21.33343505859375,
+          "renderers_swapped": 1,
+          "note": "bc5 只对法线贴图生效，别的贴图这一档用 BC7",
+          "seat_05m_psnr": 54.815422461862454
+        },
+        "crunch_q50": {
+          "storage_mb": 3.127608299255371,
+          "renderers_swapped": 1,
+          "note": null,
+          "seat_05m_psnr": 48.42887863645551
+        },
+        "crunch_q100": {
+          "storage_mb": 3.5626144409179688,
+          "renderers_swapped": 1,
+          "note": null,
+          "seat_05m_psnr": 48.36227933823594
+        },
+        "ncrunch_q100": {
+          "storage_mb": 17.006080627441406,
+          "renderers_swapped": 1,
+          "note": "ncrunch 只对法线贴图做 Crunch，别的贴图这一档用 BC7（和 bc5 只差在法线上）",
+          "seat_05m_psnr": 54.815422461862454
+        }
+      },
+      "note": "贴图和材质都是沙盒里的拷贝，原资产的导入设置没动；场景里只是临时换了材质，没存"
+    },
+    {
+      "id": "window",
+      "materials": [
+        "Assets/Lanbai/Bus/Generated/Materials/M_Bus_Alu.mat",
+        "Assets/Lanbai/Bus/Generated/Materials/M_Bus_Seal.mat",
+        "Assets/Lanbai/Bus/Generated/Materials/M_Bus_Int_Enamel.mat",
+        "Assets/Lanbai/Bus/Generated/Materials/M_Bus_LatchCream.mat",
+        "Assets/Lanbai/Bus/Generated/Materials/M_Bus_Glass_Side.mat"
+      ],
+      "textures": [
+        {
+          "path": "Assets/Lanbai/Bus/Textures/Cabin_TubeLM.exr",
+          "size": "2048×2048",
+          "format_now": "RGBAHalf",
+          "mip": true,
+          "aniso": 1,
+          "filter": "Bilinear",
+          "srgb": false,
+          "type": "Default",
+          "storage_mb_now": 42.666664123535156
+        },
+        {
+          "path": "Assets/Lanbai/Rain/Textures/Glass/RainBeads_Vertical_Normal_1024.png",
+          "size": "1024×1024",
+          "format_now": "DXT1",
+          "mip": true,
+          "aniso": 1,
+          "filter": "Bilinear",
+          "srgb": false,
+          "type": "Default",
+          "storage_mb_now": 0.6666793823242188
+        },
+        {
+          "path": "Assets/Lanbai/Rain/Textures/Glass/RainBeads_Vertical_Data_1024.png",
+          "size": "1024×1024",
+          "format_now": "DXT5",
+          "mip": true,
+          "aniso": 1,
+          "filter": "Bilinear",
+          "srgb": false,
+          "type": "Default",
+          "storage_mb_now": 1.3333587646484375
+        },
+        {
+          "path": "Assets/Lanbai/Rain/Textures/Glass/GlassRunners_Flow_512x1024.png",
+          "size": "512×1024",
+          "format_now": "DXT5",
+          "mip": true,
+          "aniso": 1,
+          "filter": "Bilinear",
+          "srgb": false,
+          "type": "Default",
+          "storage_mb_now": 0.6667022705078125
+        }
+      ],
+      "crunch_quality": 50,
+      "variants": {
+        "raw": {
+          "storage_mb": 34.666664123535156,
+          "renderers_swapped": 2,
+          "note": null
+        },
+        "bc7": {
+          "storage_mb": 8.666778564453125,
+          "renderers_swapped": 2,
+          "note": null,
+          "window_05m_psnr": 80.74740041568568
+        },
+        "bc5": {
+          "storage_mb": 8.666778564453125,
+          "renderers_swapped": 2,
+          "note": "bc5 只对法线贴图生效，别的贴图这一档用 BC7",
+          "window_05m_psnr": 80.74740041568568
+        },
+        "crunch_q50": {
+          "storage_mb": 1.673421859741211,
+          "renderers_swapped": 2,
+          "note": null,
+          "window_05m_psnr": 75.08314461127196
+        },
+        "crunch_q100": {
+          "storage_mb": 1.9487743377685547,
+          "renderers_swapped": 2,
+          "note": null,
+          "window_05m_psnr": 74.5250013762647
+        },
+        "ncrunch_q100": {
+          "storage_mb": 8.666778564453125,
+          "renderers_swapped": 2,
+          "note": "ncrunch 只对法线贴图做 Crunch，别的贴图这一档用 BC7（和 bc5 只差在法线上）",
+          "window_05m_psnr": 80.74740041568568
+        }
+      },
+      "note": "贴图和材质都是沙盒里的拷贝，原资产的导入设置没动；场景里只是临时换了材质，没存"
+    },
+    {
+      "id": "pillar",
+      "materials": [
+        "Assets/Lanbai/Bus/Generated/Materials/M_Bus_Steel.mat",
+        "Assets/Lanbai/Bus/Generated/Materials/M_Bus_Ext_Cream.mat",
+        "Assets/Lanbai/Bus/Generated/Materials/M_Bus_Chrome.mat",
+        "Assets/Lanbai/Bus/Generated/Materials/M_Bus_ButtonRed.mat"
+      ],
+      "textures": [
+        {
+          "path": "Assets/Lanbai/Bus/Textures/Cabin_TubeLM.exr",
+          "size": "2048×2048",
+          "format_now": "RGBAHalf",
+          "mip": true,
+          "aniso": 1,
+          "filter": "Bilinear",
+          "srgb": false,
+          "type": "Default",
+          "storage_mb_now": 42.666664123535156
+        }
+      ],
+      "crunch_quality": 50,
+      "variants": {
+        "raw": {
+          "storage_mb": 21.333332061767578,
+          "renderers_swapped": 1,
+          "note": null
+        },
+        "bc7": {
+          "storage_mb": 5.3333587646484375,
+          "renderers_swapped": 1,
+          "note": null,
+          "pillar_05m_psnr": 63.74419165866903
+        },
+        "bc5": {
+          "storage_mb": 5.3333587646484375,
+          "renderers_swapped": 1,
+          "note": "bc5 只对法线贴图生效，别的贴图这一档用 BC7",
+          "pillar_05m_psnr": 63.74419165866903
+        },
+        "crunch_q50": {
+          "storage_mb": 0.9676313400268555,
+          "renderers_swapped": 1,
+          "note": null,
+          "pillar_05m_psnr": 53.34109844104654
+        },
+        "crunch_q100": {
+          "storage_mb": 1.113673210144043,
+          "renderers_swapped": 1,
+          "note": null,
+          "pillar_05m_psnr": 52.819362585726886
+        },
+        "ncrunch_q100": {
+          "storage_mb": 5.3333587646484375,
+          "renderers_swapped": 1,
+          "note": "ncrunch 只对法线贴图做 Crunch，别的贴图这一档用 BC7（和 bc5 只差在法线上）",
+          "pillar_05m_psnr": 63.74419165866903
+        }
+      },
+      "note": "贴图和材质都是沙盒里的拷贝，原资产的导入设置没动；场景里只是临时换了材质，没存"
+    }
+  ],
+  "metrics": {
+    "capture.ppv2_diff": 4.34496073866332,
+    "capture.ppv2_effective": 1,
+    "capture.ppv2_layer": 1,
+    "console.compile_errors": 1,
+    "console.compile_errors_at_start": 0,
+    "console.errors": 1,
+    "console.exceptions": 0,
+    "console.warnings": 0,
+    "resources.free_ram_gb": 14.16204833984375,
+    "scene.lightmaps": 0,
+    "seq.pillar_micro.apl_max": 20.31835020587445,
+    "seq.pillar_micro.apl_max_step": 0.10914789629876154,
+    "seq.pillar_micro.apl_min": 18.63117468305778,
+    "seq.pillar_micro.frames": 90,
+    "seq.pillar_micro.hf_raw_frac": 0.07705496840312766,
+    "seq.pillar_micro.hf_raw_mean": 1.7497841408241328,
+    "seq.pillar_micro.hf_raw_p99": 15.353490829467773,
+    "seq.pillar_micro.motion_std_mean": 6.850128125865147,
+    "seq.pillar_micro.motion_std_p99": 68.9903335571289,
+    "seq.pillar_micro.shimmer_frac": 0.028548496707519976,
+    "seq.pillar_micro.shimmer_mean": 0.8986865307844957,
+    "seq.pillar_micro.shimmer_p99": 9.088604927062988,
+    "seq.seat_micro.apl_max": 35.99849925114371,
+    "seq.seat_micro.apl_max_step": 0.11527145122425964,
+    "seq.seat_micro.apl_min": 34.13620585522614,
+    "seq.seat_micro.frames": 90,
+    "seq.seat_micro.hf_raw_frac": 0.030673181324647122,
+    "seq.seat_micro.hf_raw_mean": 1.3622839335745287,
+    "seq.seat_micro.hf_raw_p99": 11.539384841918945,
+    "seq.seat_micro.motion_std_mean": 5.058213081671002,
+    "seq.seat_micro.motion_std_p99": 62.78327560424805,
+    "seq.seat_micro.shimmer_frac": 0.009418523812871527,
+    "seq.seat_micro.shimmer_mean": 0.7060912360494955,
+    "seq.seat_micro.shimmer_p99": 3.8710596561431885,
+    "seq.window_micro.apl_max": 18.800849616351098,
+    "seq.window_micro.apl_max_step": 0.06064475501937139,
+    "seq.window_micro.apl_min": 17.509153257011796,
+    "seq.window_micro.frames": 90,
+    "seq.window_micro.hf_raw_frac": 0.03692420656308829,
+    "seq.window_micro.hf_raw_mean": 1.2745159436348572,
+    "seq.window_micro.hf_raw_p99": 8.27347469329834,
+    "seq.window_micro.motion_std_mean": 4.553077759112321,
+    "seq.window_micro.motion_std_p99": 31.0626220703125,
+    "seq.window_micro.shimmer_frac": 0.013029315960912053,
+    "seq.window_micro.shimmer_mean": 0.7149931416285635,
+    "seq.window_micro.shimmer_p99": 4.259587287902832,
+    "settings.vertex_compression_off": 1,
+    "shot.pillar_05m.apl": 21.13605353042582,
+    "shot.pillar_05m.clip_pct": 0,
+    "shot.pillar_05m.dark_pct": 62.18471476890149,
+    "shot.pillar_05m.max_luma": 187.49859619140625,
+    "shot.pillar_05m__bc5.apl": 21.130961342548996,
+    "shot.pillar_05m__bc5.clip_pct": 0,
+    "shot.pillar_05m__bc5.dark_pct": 62.18471476890149,
+    "shot.pillar_05m__bc5.max_luma": 185.71119689941406,
+    "shot.pillar_05m__bc7.apl": 21.130961342548996,
+    "shot.pillar_05m__bc7.clip_pct": 0,
+    "shot.pillar_05m__bc7.dark_pct": 62.18471476890149,
+    "shot.pillar_05m__bc7.max_luma": 185.71119689941406,
+    "shot.pillar_05m__crunch_q100.apl": 21.127026327382534,
+    "shot.pillar_05m__crunch_q100.clip_pct": 0,
+    "shot.pillar_05m__crunch_q100.dark_pct": 62.18471476890149,
+    "shot.pillar_05m__crunch_q100.max_luma": 183.49859619140625,
+    "shot.pillar_05m__crunch_q50.apl": 21.129960185347162,
+    "shot.pillar_05m__crunch_q50.clip_pct": 0,
+    "shot.pillar_05m__crunch_q50.dark_pct": 62.18471476890149,
+    "shot.pillar_05m__crunch_q50.max_luma": 182.71119689941406,
+    "shot.pillar_05m__ncrunch_q100.apl": 21.130961342548996,
+    "shot.pillar_05m__ncrunch_q100.clip_pct": 0,
+    "shot.pillar_05m__ncrunch_q100.dark_pct": 62.18471476890149,
+    "shot.pillar_05m__ncrunch_q100.max_luma": 185.71119689941406,
+    "shot.pillar_05m__raw.apl": 21.13611792204724,
+    "shot.pillar_05m__raw.clip_pct": 0,
+    "shot.pillar_05m__raw.dark_pct": 62.18471476890149,
+    "shot.pillar_05m__raw.max_luma": 186.71119689941406,
+    "shot.pillar_10m.apl": 19.620330934237025,
+    "shot.pillar_10m.clip_pct": 0,
+    "shot.pillar_10m.dark_pct": 62.24759605995985,
+    "shot.pillar_10m.max_luma": 187.42640686035156,
+    "shot.seat_05m.apl": 45.18730161590424,
+    "shot.seat_05m.clip_pct": 0,
+    "shot.seat_05m.dark_pct": 0,
+    "shot.seat_05m.max_luma": 56.86880111694336,
+    "shot.seat_05m__bc5.apl": 45.143444013818694,
+    "shot.seat_05m__bc5.clip_pct": 0,
+    "shot.seat_05m__bc5.dark_pct": 0,
+    "shot.seat_05m__bc5.max_luma": 56.941001892089844,
+    "shot.seat_05m__bc7.apl": 45.143444013818694,
+    "shot.seat_05m__bc7.clip_pct": 0,
+    "shot.seat_05m__bc7.dark_pct": 0,
+    "shot.seat_05m__bc7.max_luma": 56.941001892089844,
+    "shot.seat_05m__crunch_q100.apl": 45.23592645796679,
+    "shot.seat_05m__crunch_q100.clip_pct": 0,
+    "shot.seat_05m__crunch_q100.dark_pct": 0,
+    "shot.seat_05m__crunch_q100.max_luma": 58.44240188598633,
+    "shot.seat_05m__crunch_q50.apl": 45.26666226984956,
+    "shot.seat_05m__crunch_q50.clip_pct": 0,
+    "shot.seat_05m__crunch_q50.dark_pct": 0,
+    "shot.seat_05m__crunch_q50.max_luma": 58.229801177978516,
+    "shot.seat_05m__ncrunch_q100.apl": 45.143444013818694,
+    "shot.seat_05m__ncrunch_q100.clip_pct": 0,
+    "shot.seat_05m__ncrunch_q100.dark_pct": 0,
+    "shot.seat_05m__ncrunch_q100.max_luma": 56.941001892089844,
+    "shot.seat_05m__raw.apl": 45.11923059300015,
+    "shot.seat_05m__raw.clip_pct": 0,
+    "shot.seat_05m__raw.dark_pct": 0,
+    "shot.seat_05m__raw.max_luma": 56.941001892089844,
+    "shot.seat_10m.apl": 35.73931358448217,
+    "shot.seat_10m.clip_pct": 0,
+    "shot.seat_10m.dark_pct": 17.13202727720104,
+    "shot.seat_10m.max_luma": 151.56680297851562,
+    "shot.window_05m.apl": 25.729121422323278,
+    "shot.window_05m.clip_pct": 0,
+    "shot.window_05m.coverage": 0.1452518766745561,
+    "shot.window_05m.dark_pct": 39.6655965130176,
+    "shot.window_05m.max_luma": 77.93579864501953,
+    "shot.window_05m__bc5.apl": 25.729111518500723,
+    "shot.window_05m__bc5.clip_pct": 0,
+    "shot.window_05m__bc5.coverage": 0.1452518766745561,
+    "shot.window_05m__bc5.dark_pct": 39.66637764706801,
+    "shot.window_05m__bc5.max_luma": 77.93579864501953,
+    "shot.window_05m__bc7.apl": 25.729111518500723,
+    "shot.window_05m__bc7.clip_pct": 0,
+    "shot.window_05m__bc7.coverage": 0.1452518766745561,
+    "shot.window_05m__bc7.dark_pct": 39.66637764706801,
+    "shot.window_05m__bc7.max_luma": 77.93579864501953,
+    "shot.window_05m__crunch_q100.apl": 25.729601070929107,
+    "shot.window_05m__crunch_q100.clip_pct": 0,
+    "shot.window_05m__crunch_q100.coverage": 0.1452518766745561,
+    "shot.window_05m__crunch_q100.dark_pct": 39.66520594599239,
+    "shot.window_05m__crunch_q100.max_luma": 77.93579864501953,
+    "shot.window_05m__crunch_q50.apl": 25.729663181023156,
+    "shot.window_05m__crunch_q50.clip_pct": 0,
+    "shot.window_05m__crunch_q50.coverage": 0.1452518766745561,
+    "shot.window_05m__crunch_q50.dark_pct": 39.66442481194198,
+    "shot.window_05m__crunch_q50.max_luma": 77.93579864501953,
+    "shot.window_05m__ncrunch_q100.apl": 25.729111518500723,
+    "shot.window_05m__ncrunch_q100.clip_pct": 0,
+    "shot.window_05m__ncrunch_q100.coverage": 0.1452518766745561,
+    "shot.window_05m__ncrunch_q100.dark_pct": 39.66637764706801,
+    "shot.window_05m__ncrunch_q100.max_luma": 77.93579864501953,
+    "shot.window_05m__raw.apl": 25.729121148159326,
+    "shot.window_05m__raw.clip_pct": 0,
+    "shot.window_05m__raw.coverage": 0.1452518766745561,
+    "shot.window_05m__raw.dark_pct": 39.6655965130176,
+    "shot.window_05m__raw.max_luma": 77.93579864501953,
+    "shot.window_10m.apl": 17.791366966231713,
+    "shot.window_10m.clip_pct": 0,
+    "shot.window_10m.coverage": 0.09342558526468728,
+    "shot.window_10m.dark_pct": 68.65894906224857,
+    "shot.window_10m.max_luma": 71.93579864501953,
+    "steps.errors": 0,
+    "stereo.pillar_05m.apl_lr_diff": 1.7841898191042134,
+    "tex.pillar.bc5.pillar_05m.psnr": 63.74419165866903,
+    "tex.pillar.bc5.storage_mb": 5.3333587646484375,
+    "tex.pillar.bc7.pillar_05m.psnr": 63.74419165866903,
+    "tex.pillar.bc7.storage_mb": 5.3333587646484375,
+    "tex.pillar.crunch_q100.pillar_05m.psnr": 52.819362585726886,
+    "tex.pillar.crunch_q100.storage_mb": 1.113673210144043,
+    "tex.pillar.crunch_q50.pillar_05m.psnr": 53.34109844104654,
+    "tex.pillar.crunch_q50.storage_mb": 0.9676313400268555,
+    "tex.pillar.ncrunch_q100.pillar_05m.psnr": 63.74419165866903,
+    "tex.pillar.ncrunch_q100.storage_mb": 5.3333587646484375,
+    "tex.pillar.raw.storage_mb": 21.333332061767578,
+    "tex.seat.bc5.seat_05m.psnr": 54.815422461862454,
+    "tex.seat.bc5.storage_mb": 21.33343505859375,
+    "tex.seat.bc7.seat_05m.psnr": 54.815422461862454,
+    "tex.seat.bc7.storage_mb": 21.33343505859375,
+    "tex.seat.crunch_q100.seat_05m.psnr": 48.36227933823594,
+    "tex.seat.crunch_q100.storage_mb": 3.5626144409179688,
+    "tex.seat.crunch_q50.seat_05m.psnr": 48.42887863645551,
+    "tex.seat.crunch_q50.storage_mb": 3.127608299255371,
+    "tex.seat.ncrunch_q100.seat_05m.psnr": 54.815422461862454,
+    "tex.seat.ncrunch_q100.storage_mb": 17.006080627441406,
+    "tex.seat.raw.storage_mb": 85.33332824707031,
+    "tex.window.bc5.storage_mb": 8.666778564453125,
+    "tex.window.bc5.window_05m.psnr": 80.74740041568568,
+    "tex.window.bc7.storage_mb": 8.666778564453125,
+    "tex.window.bc7.window_05m.psnr": 80.74740041568568,
+    "tex.window.crunch_q100.storage_mb": 1.9487743377685547,
+    "tex.window.crunch_q100.window_05m.psnr": 74.5250013762647,
+    "tex.window.crunch_q50.storage_mb": 1.673421859741211,
+    "tex.window.crunch_q50.window_05m.psnr": 75.08314461127196,
+    "tex.window.ncrunch_q100.storage_mb": 8.666778564453125,
+    "tex.window.ncrunch_q100.window_05m.psnr": 80.74740041568568,
+    "tex.window.raw.storage_mb": 34.666664123535156,
+    "writes.declared": 0,
+    "writes.project_settings_changed": 0,
+    "writes.undeclared": 0
+  },
+  "metric_notes": {
+    "settings.vertex_compression_off": "Player → Other Settings → Vertex Compression：要关掉 TexCoord0、TexCoord1、TexCoord2、TexCoord3、Color；现在的掩码 3846（ProjectSettings.asset 原文），都关了",
+    "scene.lightmaps": "打开的场景里的光照图张数",
+    "capture.ppv2_layer": "参考相机上有 PostProcessLayer、新相机 Init 成功",
+    "capture.ppv2_diff": "开 / 关 PPv2 两张 192×108 小图的平均亮度差（sRGB 0–255）",
+    "shot.seat_05m.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "shot.seat_10m.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "shot.window_05m.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "shot.window_05m.coverage": "coverage_of 的物体占画面的比例（关掉它们再渲一张、亮度差 > 2 的像素；下限）",
+    "shot.window_10m.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "shot.window_10m.coverage": "coverage_of 的物体占画面的比例（关掉它们再渲一张、亮度差 > 2 的像素；下限）",
+    "shot.pillar_05m.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "shot.pillar_10m.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "stereo.pillar_05m.apl_lr_diff": "左右两台相机的 APL 差（近似，不是头显）",
+    "seq.pillar_micro.shimmer_mean": "闪烁（主量）：逐像素“测的图 − 同一姿态的 4× 超采样参考”的亮度差（0–255）随时间的标准差，全画面平均；真实运动两张一起挪、不算在里面",
+    "seq.pillar_micro.shimmer_frac": "shimmer > 4 的像素占比（占全画面）",
+    "seq.pillar_micro.motion_std_mean": "逐像素亮度（0–255）的时间标准差，全画面平均：含真实运动（边缘挪动），只作参考，不是闪烁",
+    "seq.pillar_micro.hf_raw_mean": "逐像素二阶时间差分的均方根 ÷ √6（0–255）：平滑运动大多不算，但正常的边缘运动也会进来一部分，只作参考；闪烁看 shimmer",
+    "seq.pillar_micro.hf_raw_frac": "hf_raw > 6 的像素占比",
+    "seq.pillar_micro.apl_max_step": "相邻两帧 APL 的最大跳变",
+    "seq.window_micro.shimmer_mean": "闪烁（主量）：逐像素“测的图 − 同一姿态的 4× 超采样参考”的亮度差（0–255）随时间的标准差，全画面平均；真实运动两张一起挪、不算在里面",
+    "seq.window_micro.shimmer_frac": "shimmer > 4 的像素占比（占全画面）",
+    "seq.window_micro.motion_std_mean": "逐像素亮度（0–255）的时间标准差，全画面平均：含真实运动（边缘挪动），只作参考，不是闪烁",
+    "seq.window_micro.hf_raw_mean": "逐像素二阶时间差分的均方根 ÷ √6（0–255）：平滑运动大多不算，但正常的边缘运动也会进来一部分，只作参考；闪烁看 shimmer",
+    "seq.window_micro.hf_raw_frac": "hf_raw > 6 的像素占比",
+    "seq.window_micro.apl_max_step": "相邻两帧 APL 的最大跳变",
+    "seq.seat_micro.shimmer_mean": "闪烁（主量）：逐像素“测的图 − 同一姿态的 4× 超采样参考”的亮度差（0–255）随时间的标准差，全画面平均；真实运动两张一起挪、不算在里面",
+    "seq.seat_micro.shimmer_frac": "shimmer > 4 的像素占比（占全画面）",
+    "seq.seat_micro.motion_std_mean": "逐像素亮度（0–255）的时间标准差，全画面平均：含真实运动（边缘挪动），只作参考，不是闪烁",
+    "seq.seat_micro.hf_raw_mean": "逐像素二阶时间差分的均方根 ÷ √6（0–255）：平滑运动大多不算，但正常的边缘运动也会进来一部分，只作参考；闪烁看 shimmer",
+    "seq.seat_micro.hf_raw_frac": "hf_raw > 6 的像素占比",
+    "seq.seat_micro.apl_max_step": "相邻两帧 APL 的最大跳变",
+    "tex.seat.raw.storage_mb": "这一档全部贴图的显存 / 存储读数（编辑器 TextureUtil；Crunch 的下载体积更小，以构建报告为准）",
+    "shot.seat_05m__raw.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "tex.seat.bc7.storage_mb": "这一档全部贴图的显存 / 存储读数（编辑器 TextureUtil；Crunch 的下载体积更小，以构建报告为准）",
+    "shot.seat_05m__bc7.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "tex.seat.bc7.seat_05m.psnr": "和不压缩那张比的 PSNR（dB，8 位 RGB）；越高越像",
+    "tex.seat.bc5.storage_mb": "这一档全部贴图的显存 / 存储读数（编辑器 TextureUtil；Crunch 的下载体积更小，以构建报告为准）",
+    "shot.seat_05m__bc5.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "tex.seat.bc5.seat_05m.psnr": "和不压缩那张比的 PSNR（dB，8 位 RGB）；越高越像",
+    "tex.seat.crunch_q50.storage_mb": "这一档全部贴图的显存 / 存储读数（编辑器 TextureUtil；Crunch 的下载体积更小，以构建报告为准）",
+    "shot.seat_05m__crunch_q50.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "tex.seat.crunch_q50.seat_05m.psnr": "和不压缩那张比的 PSNR（dB，8 位 RGB）；越高越像",
+    "tex.seat.crunch_q100.storage_mb": "这一档全部贴图的显存 / 存储读数（编辑器 TextureUtil；Crunch 的下载体积更小，以构建报告为准）",
+    "shot.seat_05m__crunch_q100.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "tex.seat.crunch_q100.seat_05m.psnr": "和不压缩那张比的 PSNR（dB，8 位 RGB）；越高越像",
+    "tex.seat.ncrunch_q100.storage_mb": "这一档全部贴图的显存 / 存储读数（编辑器 TextureUtil；Crunch 的下载体积更小，以构建报告为准）",
+    "shot.seat_05m__ncrunch_q100.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "tex.seat.ncrunch_q100.seat_05m.psnr": "和不压缩那张比的 PSNR（dB，8 位 RGB）；越高越像",
+    "tex.window.raw.storage_mb": "这一档全部贴图的显存 / 存储读数（编辑器 TextureUtil；Crunch 的下载体积更小，以构建报告为准）",
+    "shot.window_05m__raw.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "shot.window_05m__raw.coverage": "coverage_of 的物体占画面的比例（关掉它们再渲一张、亮度差 > 2 的像素；下限）",
+    "tex.window.bc7.storage_mb": "这一档全部贴图的显存 / 存储读数（编辑器 TextureUtil；Crunch 的下载体积更小，以构建报告为准）",
+    "shot.window_05m__bc7.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "shot.window_05m__bc7.coverage": "coverage_of 的物体占画面的比例（关掉它们再渲一张、亮度差 > 2 的像素；下限）",
+    "tex.window.bc7.window_05m.psnr": "和不压缩那张比的 PSNR（dB，8 位 RGB）；越高越像",
+    "tex.window.bc5.storage_mb": "这一档全部贴图的显存 / 存储读数（编辑器 TextureUtil；Crunch 的下载体积更小，以构建报告为准）",
+    "shot.window_05m__bc5.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "shot.window_05m__bc5.coverage": "coverage_of 的物体占画面的比例（关掉它们再渲一张、亮度差 > 2 的像素；下限）",
+    "tex.window.bc5.window_05m.psnr": "和不压缩那张比的 PSNR（dB，8 位 RGB）；越高越像",
+    "tex.window.crunch_q50.storage_mb": "这一档全部贴图的显存 / 存储读数（编辑器 TextureUtil；Crunch 的下载体积更小，以构建报告为准）",
+    "shot.window_05m__crunch_q50.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "shot.window_05m__crunch_q50.coverage": "coverage_of 的物体占画面的比例（关掉它们再渲一张、亮度差 > 2 的像素；下限）",
+    "tex.window.crunch_q50.window_05m.psnr": "和不压缩那张比的 PSNR（dB，8 位 RGB）；越高越像",
+    "tex.window.crunch_q100.storage_mb": "这一档全部贴图的显存 / 存储读数（编辑器 TextureUtil；Crunch 的下载体积更小，以构建报告为准）",
+    "shot.window_05m__crunch_q100.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "shot.window_05m__crunch_q100.coverage": "coverage_of 的物体占画面的比例（关掉它们再渲一张、亮度差 > 2 的像素；下限）",
+    "tex.window.crunch_q100.window_05m.psnr": "和不压缩那张比的 PSNR（dB，8 位 RGB）；越高越像",
+    "tex.window.ncrunch_q100.storage_mb": "这一档全部贴图的显存 / 存储读数（编辑器 TextureUtil；Crunch 的下载体积更小，以构建报告为准）",
+    "shot.window_05m__ncrunch_q100.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "shot.window_05m__ncrunch_q100.coverage": "coverage_of 的物体占画面的比例（关掉它们再渲一张、亮度差 > 2 的像素；下限）",
+    "tex.window.ncrunch_q100.window_05m.psnr": "和不压缩那张比的 PSNR（dB，8 位 RGB）；越高越像",
+    "tex.pillar.raw.storage_mb": "这一档全部贴图的显存 / 存储读数（编辑器 TextureUtil；Crunch 的下载体积更小，以构建报告为准）",
+    "shot.pillar_05m__raw.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "tex.pillar.bc7.storage_mb": "这一档全部贴图的显存 / 存储读数（编辑器 TextureUtil；Crunch 的下载体积更小，以构建报告为准）",
+    "shot.pillar_05m__bc7.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "tex.pillar.bc7.pillar_05m.psnr": "和不压缩那张比的 PSNR（dB，8 位 RGB）；越高越像",
+    "tex.pillar.bc5.storage_mb": "这一档全部贴图的显存 / 存储读数（编辑器 TextureUtil；Crunch 的下载体积更小，以构建报告为准）",
+    "shot.pillar_05m__bc5.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "tex.pillar.bc5.pillar_05m.psnr": "和不压缩那张比的 PSNR（dB，8 位 RGB）；越高越像",
+    "tex.pillar.crunch_q50.storage_mb": "这一档全部贴图的显存 / 存储读数（编辑器 TextureUtil；Crunch 的下载体积更小，以构建报告为准）",
+    "shot.pillar_05m__crunch_q50.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "tex.pillar.crunch_q50.pillar_05m.psnr": "和不压缩那张比的 PSNR（dB，8 位 RGB）；越高越像",
+    "tex.pillar.crunch_q100.storage_mb": "这一档全部贴图的显存 / 存储读数（编辑器 TextureUtil；Crunch 的下载体积更小，以构建报告为准）",
+    "shot.pillar_05m__crunch_q100.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "tex.pillar.crunch_q100.pillar_05m.psnr": "和不压缩那张比的 PSNR（dB，8 位 RGB）；越高越像",
+    "tex.pillar.ncrunch_q100.storage_mb": "这一档全部贴图的显存 / 存储读数（编辑器 TextureUtil；Crunch 的下载体积更小，以构建报告为准）",
+    "shot.pillar_05m__ncrunch_q100.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "tex.pillar.ncrunch_q100.pillar_05m.psnr": "和不压缩那张比的 PSNR（dB，8 位 RGB）；越高越像",
+    "writes.undeclared": "沙盒和 allowed_writes 以外被改动的文件",
+    "writes.project_settings_changed": "ProjectSettings/*.asset 内容变了的个数（工具只查不改）"
+  },
+  "writes": {
+    "sandbox": "Assets/_LanbaiTest",
+    "allowed_writes": [
+      "Assets/Lanbai/Bus/Generated/**",
+      "Assets/Lanbai/UdonPrograms/**",
+      "Assets/SerializedUdonPrograms/**"
+    ],
+    "declared": [],
+    "undeclared": [],
+    "project_settings_changed": [],
+    "tool_touched_restored": [
+      "存了、内容逐字节没变 Assets/Lanbai/Act07_Sea/Materials/Act07_CausticsCookie.asset",
+      "存了、内容逐字节没变 Assets/Lanbai/Generated/Materials/LB_Sea.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Generated/Materials/LB_SeaB.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Generated/Materials/LB_WetGround.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Bus/Generated/Materials/M_Bus_Alu.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Bus/Generated/Materials/M_Bus_ButtonRed.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Bus/Generated/Materials/M_Bus_Chrome.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Bus/Generated/Materials/M_Bus_Ext_Cream.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Bus/Generated/Materials/M_Bus_Glass_Side.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Bus/Generated/Materials/M_Bus_Int_Enamel.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Bus/Generated/Materials/M_Bus_LatchCream.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Bus/Generated/Materials/M_Bus_Part_SeatHero.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Bus/Generated/Materials/M_Bus_Seal.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Bus/Generated/Materials/M_Bus_Steel.mat"
+    ],
+    "note": "按文件大小和修改时间比；材质、.asset、预制体、.meta 这类 ≤ 4 MB 的小文件另比内容哈希，存了但逐字节没变的列在 tool_touched_restored、不算改动；只在内存里改、没存盘的不算"
+  },
+  "allowed_writes": [
+    "Assets/Lanbai/Bus/Generated/**",
+    "Assets/Lanbai/UdonPrograms/**",
+    "Assets/SerializedUdonPrograms/**"
+  ],
+  "allowed_writes_why": "车的切片搭建菜单生成的网格、材质、贴图导入设置",
+  "backup_before": [],
+  "warnings": [],
+  "files": [
+    "test_definition.json",
+    "shots/seat_05m.png",
+    "shots/seat_10m.png",
+    "shots/window_05m.png",
+    "shots/window_10m.png",
+    "shots/pillar_05m.png",
+    "shots/pillar_10m.png",
+    "stereo/pillar_05m_approx_LR.png",
+    "seq/pillar_micro/0000.png …（90 帧）",
+    "seq/pillar_micro/heat_motion_std.png",
+    "seq/pillar_micro/heat_hf_raw.png",
+    "seq/pillar_micro/heat_shimmer.png",
+    "seq/pillar_micro/numbers.json",
+    "seq/window_micro/0000.png …（90 帧）",
+    "seq/window_micro/heat_motion_std.png",
+    "seq/window_micro/heat_hf_raw.png",
+    "seq/window_micro/heat_shimmer.png",
+    "seq/window_micro/numbers.json",
+    "seq/seat_micro/0000.png …（90 帧）",
+    "seq/seat_micro/heat_motion_std.png",
+    "seq/seat_micro/heat_hf_raw.png",
+    "seq/seat_micro/heat_shimmer.png",
+    "seq/seat_micro/numbers.json",
+    "tex/seat/seat_05m__raw.png",
+    "tex/seat/seat_05m__bc7.png",
+    "tex/seat/seat_05m__bc5.png",
+    "tex/seat/seat_05m__crunch_q50.png",
+    "tex/seat/seat_05m__crunch_q100.png",
+    "tex/seat/seat_05m__ncrunch_q100.png",
+    "tex/window/window_05m__raw.png",
+    "tex/window/window_05m__bc7.png",
+    "tex/window/window_05m__bc5.png",
+    "tex/window/window_05m__crunch_q50.png",
+    "tex/window/window_05m__crunch_q100.png",
+    "tex/window/window_05m__ncrunch_q100.png",
+    "tex/pillar/pillar_05m__raw.png",
+    "tex/pillar/pillar_05m__bc7.png",
+    "tex/pillar/pillar_05m__bc5.png",
+    "tex/pillar/pillar_05m__crunch_q50.png",
+    "tex/pillar/pillar_05m__crunch_q100.png",
+    "tex/pillar/pillar_05m__ncrunch_q100.png",
+    "console.jsonl",
+    "summary.md",
+    "manifest.json",
+    "result.json"
+  ]
+}

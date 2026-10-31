@@ -1,0 +1,1895 @@
+{
+  "repo_commit": "11c2f447c56444e171beb4f0cbe26fa8b505a6ab",
+  "repo_branch": "main",
+  "repo_path": "E:\\IDMdownload\\VRCC\\lanbai-assets-gate-main-20261024",
+  "tool_version": "1.2.2",
+  "synced_at": "2026-10-26T03:23:42.141742-04:00",
+  "entry": "2026-10-26 approved serial delivery; current applied group manifests in delivery_0058",
+  "scope_note": "Only listed source files checked/copied; other project content inherited. Local integration patches are explicitly marked matches_upstream=false. Not a claim that the entire project equals repository HEAD.",
+  "files": [
+    {
+      "source": "Bus/Editor/LanbaiBusBuild.cs",
+      "project": "Assets/Lanbai/Bus/Editor/LanbaiBusBuild.cs",
+      "sha256": "61bacb8d6bdd3a80792307f53a0c63a3ccfdf829fb3a2414fa3466680a0ea54c",
+      "matches_upstream": false
+    },
+    {
+      "source": "Bus/Editor/LanbaiBusCabinDropIn.cs",
+      "project": "Assets/Lanbai/Bus/Editor/LanbaiBusCabinDropIn.cs",
+      "sha256": "7956a731fe5a86aa0c08acd4d08e0e625801d9ec974aace87e20a1fd477c282a",
+      "matches_upstream": false
+    },
+    {
+      "source": "Bus/Editor/LanbaiBusSliceBuilder.cs",
+      "project": "Assets/Lanbai/Bus/Editor/LanbaiBusSliceBuilder.cs",
+      "sha256": "cf53fb466548adbc354bfb3a8459e6fca50119741bbbd7a889fbf8293482f852",
+      "matches_upstream": false
+    },
+    {
+      "source": "Bus/Editor/README_Build.md",
+      "project": "Assets/Lanbai/Bus/Editor/README_Build.md",
+      "sha256": "3420fae70db185c30ba65a55a8a5d4e073172ce4114fd576994ceb308bb8c232",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Models/Bus.fbx",
+      "project": "Assets/Lanbai/Bus/Models/Bus.fbx",
+      "sha256": "9a555dbcab3a04cd6f17878eb16024fa63233488becd01042ddfd047160da4a7",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Models/BusLayout.json",
+      "project": "Assets/Lanbai/Bus/Models/BusLayout.json",
+      "sha256": "e9c49a5d28cf973145002290b666a6f05a2c7ab55717330424fe7ef3e94038de",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Models/Bus_HarnessShell_paz672.fbx",
+      "project": "Assets/Lanbai/Bus/Models/Bus_HarnessShell_paz672.fbx",
+      "sha256": "f00248bd4ff9a8638a91ad037bb96d984a1c27b782ab1762430fdc50dae23779",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Models/Bus_fbx_readback.json",
+      "project": "Assets/Lanbai/Bus/Models/Bus_fbx_readback.json",
+      "sha256": "aaaceb00405c52f98bfd051a23919a14ec5c333350fb1f8746aa85557427b73c",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Scripts/LanbaiBusSeat.cs",
+      "project": "Assets/Lanbai/Bus/Scripts/LanbaiBusSeat.cs",
+      "sha256": "0fd335b7f0d9273725317c7c4dbbd7fe0e4a60ba43b5e02eb25c240836735700",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Scripts/LanbaiBusSliceGlobals.cs",
+      "project": "Assets/Lanbai/Bus/Scripts/LanbaiBusSliceGlobals.cs",
+      "sha256": "4842a750e7841be4c8be00f7b108f993c405ac35628d8b20a9be269d8120d133",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Textures/Bus_DestBlind_1024x296.png",
+      "project": "Assets/Lanbai/Bus/Textures/Bus_DestBlind_1024x296.png",
+      "sha256": "e0be72a8a7db414985321104388dd27160a2e1bc7220b513b84ba2c515a25b36",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Textures/Bus_DestBlind_Blank_1024x296.png",
+      "project": "Assets/Lanbai/Bus/Textures/Bus_DestBlind_Blank_1024x296.png",
+      "sha256": "650ee4cc06f2b393397786b14c9480d17ceee8bdbe8112753ec8ef89b86a87fd",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Textures/Bus_Exterior_Albedo_2048.png",
+      "project": "Assets/Lanbai/Bus/Textures/Bus_Exterior_Albedo_2048.png",
+      "sha256": "5e1d77f8bb48425cd5b32a45b23644bfa6f0cfd1262485f33468b8ce4565e1e6",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Textures/Bus_Exterior_Mask_2048.png",
+      "project": "Assets/Lanbai/Bus/Textures/Bus_Exterior_Mask_2048.png",
+      "sha256": "a669f91ae78592e106cbebf60c056542f84c1bf38a0823b5e57c765cf486a9dd",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Textures/Cabin_CeilingPerf_M_0.12m.png",
+      "project": "Assets/Lanbai/Bus/Textures/Cabin_CeilingPerf_M_0.12m.png",
+      "sha256": "bb58e4f2a3bdac610fb8375c7df42bd0b7d84297192cde79cfa7d129cdc770c9",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Textures/Cabin_CeilingPerf_N_0.12m.png",
+      "project": "Assets/Lanbai/Bus/Textures/Cabin_CeilingPerf_N_0.12m.png",
+      "sha256": "7ab2ac598cc2bfd044a4eec68b0f0720fc0eeb29502701db1f7b4aed87c273ed",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Textures/Cabin_CurtainWeave_N_0.05m.png",
+      "project": "Assets/Lanbai/Bus/Textures/Cabin_CurtainWeave_N_0.05m.png",
+      "sha256": "72472d25ead9b517c184eb21ca7417a1c23274af2e1c330923c9c489f49f84ae",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Textures/Cabin_FloorStud_M_0.20m.png",
+      "project": "Assets/Lanbai/Bus/Textures/Cabin_FloorStud_M_0.20m.png",
+      "sha256": "01890f1b612dbac0224e6df2d3769ffb1df52d97214e3946750b430b18504931",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Textures/Cabin_FloorStud_N_0.20m.png",
+      "project": "Assets/Lanbai/Bus/Textures/Cabin_FloorStud_N_0.20m.png",
+      "sha256": "c8e158c26593e40f7db8fca5784857ff961f820901119d36a6c9bebab79214a9",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Textures/Cabin_RadioDial_512x256.png",
+      "project": "Assets/Lanbai/Bus/Textures/Cabin_RadioDial_512x256.png",
+      "sha256": "85d41388f92c3782bc28bddc2982f0e0eca25517b9e93ede49c099abc84053fa",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Textures/Cabin_RadioLeather_N_0.40m.jpg",
+      "project": "Assets/Lanbai/Bus/Textures/Cabin_RadioLeather_N_0.40m.jpg",
+      "sha256": "3386277290af50b4d464dc9a9f195bbf8dd6f137b9ae0274552397d2f0135c98",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Textures/Cabin_SeatLeather_N_0.30m.jpg",
+      "project": "Assets/Lanbai/Bus/Textures/Cabin_SeatLeather_N_0.30m.jpg",
+      "sha256": "abc7a2f6ac4803342a37ac881ad9c556dbc08b7a44c9bf9891d52c1b96266fa9",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Textures/Cabin_TubeLM.exr",
+      "project": "Assets/Lanbai/Bus/Textures/Cabin_TubeLM.exr",
+      "sha256": "555f6e3842cb461686355d3f86e17e37b4b42775cc47ae9df63243f5f8019cdf",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Textures/Cabin_VinylGrain_N_0.25m.png",
+      "project": "Assets/Lanbai/Bus/Textures/Cabin_VinylGrain_N_0.25m.png",
+      "sha256": "036b295143682e312ecdf7cb7429101baec818c25c91c76a459416dbb12fbff1",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Textures/Parts/Part_DriverSeat_Albedo_2048.png",
+      "project": "Assets/Lanbai/Bus/Textures/Parts/Part_DriverSeat_Albedo_2048.png",
+      "sha256": "08ef552f391bf8362a111ef8bb83feec8a6b9e8678b30141fc38dc0c58080e5b",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Textures/Parts/Part_DriverSeat_Mask_2048.png",
+      "project": "Assets/Lanbai/Bus/Textures/Parts/Part_DriverSeat_Mask_2048.png",
+      "sha256": "bcba0afe8aff9bf8d96d1d00f6366731a175ff2a7bbb0f46417844eb2b74509b",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Textures/Parts/Part_DriverSeat_Normal_2048.png",
+      "project": "Assets/Lanbai/Bus/Textures/Parts/Part_DriverSeat_Normal_2048.png",
+      "sha256": "b1ce58861db154002e495c3b17b307dc72bfc6f9053a0fc43846495d57f23376",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Textures/Parts/Part_RearBench_Albedo_1024.png",
+      "project": "Assets/Lanbai/Bus/Textures/Parts/Part_RearBench_Albedo_1024.png",
+      "sha256": "4bab4b90e54298dc30e539ed05140c135cd8bfe2ee67b5e302965fa827c75cc8",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Textures/Parts/Part_RearBench_Mask_1024.png",
+      "project": "Assets/Lanbai/Bus/Textures/Parts/Part_RearBench_Mask_1024.png",
+      "sha256": "9b116bd005bf225002f9648d477871545ee6f8700ef83dffe81d6465c284bc6a",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Textures/Parts/Part_RearBench_Normal_1024.png",
+      "project": "Assets/Lanbai/Bus/Textures/Parts/Part_RearBench_Normal_1024.png",
+      "sha256": "8a14f78a025d0ee5ddf779d77de326ff441e58136c82730c5dc9615f71dda4e1",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Textures/Parts/Part_SeatHero_Albedo_2048.png",
+      "project": "Assets/Lanbai/Bus/Textures/Parts/Part_SeatHero_Albedo_2048.png",
+      "sha256": "9ef60192ea4e62901b22dde214e28d03c8dd078c0ff24cd0655a2614ab858f87",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Textures/Parts/Part_SeatHero_Mask_2048.png",
+      "project": "Assets/Lanbai/Bus/Textures/Parts/Part_SeatHero_Mask_2048.png",
+      "sha256": "d22e407cb5c4a147533ab8ca6f7ddca2763778057df812f4679332e7632abecb",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Textures/Parts/Part_SeatHero_Normal_2048.png",
+      "project": "Assets/Lanbai/Bus/Textures/Parts/Part_SeatHero_Normal_2048.png",
+      "sha256": "d543c24664eb66fda3308f0e9559ca0851fb16efde4aba2c90fbaa0ed0423338",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Textures/Parts/Part_SeatLBox_Albedo_1024.png",
+      "project": "Assets/Lanbai/Bus/Textures/Parts/Part_SeatLBox_Albedo_1024.png",
+      "sha256": "4fa1f00b38d8f1e1764942bd73ac5b23d9c5c467bd76ae22a936508b86bc3ebe",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Textures/Parts/Part_SeatLBox_Mask_1024.png",
+      "project": "Assets/Lanbai/Bus/Textures/Parts/Part_SeatLBox_Mask_1024.png",
+      "sha256": "366d6c8454cdd9bfdc03aea9192bc129fed2f5658bcf28f0a9f95a7a151567cc",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Textures/Parts/Part_SeatLBox_Normal_1024.png",
+      "project": "Assets/Lanbai/Bus/Textures/Parts/Part_SeatLBox_Normal_1024.png",
+      "sha256": "7547de0478bc812ab5bb5ffe82d6daa9ac2b71bdffcc99e9f2891e417a643013",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Textures/Parts/Part_SeatL_Albedo_1024.png",
+      "project": "Assets/Lanbai/Bus/Textures/Parts/Part_SeatL_Albedo_1024.png",
+      "sha256": "1178cc9f3ba09573965eabe1f60d1530a7298c0f5cfd13314180dbfa0532e120",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Textures/Parts/Part_SeatL_Mask_1024.png",
+      "project": "Assets/Lanbai/Bus/Textures/Parts/Part_SeatL_Mask_1024.png",
+      "sha256": "7e1e972b9576c97b7e717bd4fc9560c893bb00b7ddffc0eba22e8af3b08dbe83",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Textures/Parts/Part_SeatL_Normal_1024.png",
+      "project": "Assets/Lanbai/Bus/Textures/Parts/Part_SeatL_Normal_1024.png",
+      "sha256": "f06ee549343d989c146dda395931c2b60e09604a85280b4a2ce56e7866fa7b22",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Textures/Parts/Part_SeatR_Albedo_2048.png",
+      "project": "Assets/Lanbai/Bus/Textures/Parts/Part_SeatR_Albedo_2048.png",
+      "sha256": "ea7909bbc2f535deffe2d236e3c0cb4c060216ec0e1a1b23fedceb06d3bc2e95",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Textures/Parts/Part_SeatR_Mask_2048.png",
+      "project": "Assets/Lanbai/Bus/Textures/Parts/Part_SeatR_Mask_2048.png",
+      "sha256": "b72b99543c366b8f35dbf4cd2183383a93406afe2496c5e45dbde4dfc4950aff",
+      "matches_upstream": true
+    },
+    {
+      "source": "Bus/Textures/Parts/Part_SeatR_Normal_2048.png",
+      "project": "Assets/Lanbai/Bus/Textures/Parts/Part_SeatR_Normal_2048.png",
+      "sha256": "a87567ccf940b0680705589f62e1a261dd3627aafd24cc486eb016c9e7b3f195",
+      "matches_upstream": true
+    },
+    {
+      "source": "Cabin/Editor/CabinTubeLM_说明.md",
+      "project": "Assets/Lanbai/Cabin/Editor/CabinTubeLM_说明.md",
+      "sha256": "47598f0898f54287e18b7dcd2983b3727ed52990a0812b847ef4c581c36c8bf9",
+      "matches_upstream": true
+    },
+    {
+      "source": "Cabin/Editor/LanbaiCabinImport.cs",
+      "project": "Assets/Lanbai/Cabin/Editor/LanbaiCabinImport.cs",
+      "sha256": "1488305281456238c9e436d5b94882999e91d656fa4ed1168c0c375f91ea567c",
+      "matches_upstream": true
+    },
+    {
+      "source": "Cabin/Scripts/LanbaiCabinDriver.cs",
+      "project": "Assets/Lanbai/Cabin/Scripts/LanbaiCabinDriver.cs",
+      "sha256": "8c36795850c4b01462aef1ef06f6b8e9513bca6b7adaae6e1be52b43db68c96a",
+      "matches_upstream": true
+    },
+    {
+      "source": "Cabin/Shaders/LanbaiCabin.shader",
+      "project": "Assets/Lanbai/Cabin/Shaders/LanbaiCabin.shader",
+      "sha256": "a6380d4627a7d455730f8fe049f211560a3ba2a4ecec2388eba5ce73908a161b",
+      "matches_upstream": false
+    },
+    {
+      "source": "Cabin/Shaders/LanbaiCabinCommon.cginc",
+      "project": "Assets/Lanbai/Cabin/Shaders/LanbaiCabinCommon.cginc",
+      "sha256": "351bc5a4c0a62ce8ef194a193852685ee3f4cc0faf2bd0807b92996af62d5fb8",
+      "matches_upstream": true
+    },
+    {
+      "source": "Cabin/Shaders/LanbaiThinCloth.shader",
+      "project": "Assets/Lanbai/Cabin/Shaders/LanbaiThinCloth.shader",
+      "sha256": "8638365547c8100ecf417f971c0c354d8659e5b55db2de8f3d452ea0c746c5b6",
+      "matches_upstream": true
+    },
+    {
+      "source": "Common/Editor/Lanbai.Common.Editor.asmdef",
+      "project": "Assets/Lanbai/Common/Editor/Lanbai.Common.Editor.asmdef",
+      "sha256": "4c42b061b86127c3dd5298197f262fdaa5a1702e5403634dae42248ebe63d26d",
+      "matches_upstream": true
+    },
+    {
+      "source": "Common/Editor/LanbaiUdonPrograms.cs",
+      "project": "Assets/Lanbai/Common/Editor/LanbaiUdonPrograms.cs",
+      "sha256": "b3178635e2e510d4267a00fd626a1b1d91afb5df3f0d5ea5a20df2d388bf851b",
+      "matches_upstream": true
+    },
+    {
+      "source": "Common/Editor/README_UdonPrograms.md",
+      "project": "Assets/Lanbai/Common/Editor/README_UdonPrograms.md",
+      "sha256": "9ab57ffc2dad515e64849e08908be5969c60873b8557478debd03d00c1992b87",
+      "matches_upstream": true
+    },
+    {
+      "source": "Common/Shaders/LanbaiCaustics.cginc",
+      "project": "Assets/Lanbai/Common/Shaders/LanbaiCaustics.cginc",
+      "sha256": "7f2e092da80fdda83465fffa152b89b04d7f077976b352e2ba95d7434c874371",
+      "matches_upstream": true
+    },
+    {
+      "source": "Common/Shaders/LanbaiFog.cginc",
+      "project": "Assets/Lanbai/Common/Shaders/LanbaiFog.cginc",
+      "sha256": "ca59813d7ca1312f4d912f1e224b47068e29dda02dac378e5f1fc42abc540eb9",
+      "matches_upstream": true
+    },
+    {
+      "source": "Common/Shaders/LanbaiGlobals.cginc",
+      "project": "Assets/Lanbai/Common/Shaders/LanbaiGlobals.cginc",
+      "sha256": "82b6d28d1c3b1893fa92ad335ebd41f7a150b499fdb86db6a039bdacabd44bf8",
+      "matches_upstream": true
+    },
+    {
+      "source": "Common/Shaders/LanbaiSky.cginc",
+      "project": "Assets/Lanbai/Common/Shaders/LanbaiSky.cginc",
+      "sha256": "2fd6ce5972ec3d77ff5f78e7a55d6833180be87b4cfba0b425a9563a71e10f69",
+      "matches_upstream": true
+    },
+    {
+      "source": "Common/Shaders/LanbaiVR.cginc",
+      "project": "Assets/Lanbai/Common/Shaders/LanbaiVR.cginc",
+      "sha256": "d2588fa188cb40167d4128ac29ec8e32d7b62e39de5a67cb849056364dfa5997",
+      "matches_upstream": true
+    },
+    {
+      "source": "Common/Shaders/README_LanbaiGlobals.md",
+      "project": "Assets/Lanbai/Common/Shaders/README_LanbaiGlobals.md",
+      "sha256": "767d0f92f25abd0337c825102c47b8ca036ba2cc50a7c588f2410a842e285340",
+      "matches_upstream": true
+    },
+    {
+      "source": "Rain/Shaders/LanbaiLamps.cginc",
+      "project": "Assets/Lanbai/Rain/Shaders/LanbaiLamps.cginc",
+      "sha256": "2808ae712206ca48a0b0e22eba9ece9c99df95224344ed5de572acb28af86df3",
+      "matches_upstream": true
+    },
+    {
+      "source": "Rain/Shaders/LanbaiRain.cginc",
+      "project": "Assets/Lanbai/Rain/Shaders/LanbaiRain.cginc",
+      "sha256": "b4d71ebf48fab9a018e02e89099828c741abff0a07de6bce5b0a88939df0f1b4",
+      "matches_upstream": true
+    },
+    {
+      "source": "Rain/Shaders/Lanbai_BusGlass.shader",
+      "project": "Assets/Lanbai/Rain/Shaders/Lanbai_BusGlass.shader",
+      "sha256": "d9939cab6fe9fc14770e0b887c2d9cfeac76d343868b697c66f46f69987fd42a",
+      "matches_upstream": true
+    },
+    {
+      "source": "Rain/Shaders/Lanbai_DripDrop.shader",
+      "project": "Assets/Lanbai/Rain/Shaders/Lanbai_DripDrop.shader",
+      "sha256": "3695b9f2d6f006cf5b957c8368f2d2c66aa5cd5fa34e138688e7825c86aa62a7",
+      "matches_upstream": true
+    },
+    {
+      "source": "Rain/Shaders/Lanbai_MirrorCopy.shader",
+      "project": "Assets/Lanbai/Rain/Shaders/Lanbai_MirrorCopy.shader",
+      "sha256": "8486349cbb3d94d4e2b02ba84fe4fbd6c1a5ec88b36c5649bc3986e0c2658b02",
+      "matches_upstream": true
+    },
+    {
+      "source": "Rain/Shaders/Lanbai_OneDrop.shader",
+      "project": "Assets/Lanbai/Rain/Shaders/Lanbai_OneDrop.shader",
+      "sha256": "81295403baee5755b6c452b3914ea75c5303ad74e26e8ef7dfe8f2bb60914f33",
+      "matches_upstream": true
+    },
+    {
+      "source": "Rain/Shaders/Lanbai_PuddleOverlay.shader",
+      "project": "Assets/Lanbai/Rain/Shaders/Lanbai_PuddleOverlay.shader",
+      "sha256": "7a9e8bf191a507c7da0e74e545377d594cc982d4a63200069db6db142e4a43a0",
+      "matches_upstream": true
+    },
+    {
+      "source": "Rain/Shaders/Lanbai_RainParticles.shader",
+      "project": "Assets/Lanbai/Rain/Shaders/Lanbai_RainParticles.shader",
+      "sha256": "24ba2d6a54b7aedd6c223a29c153b603794caa2c27b46a7fdd288615d4758eaf",
+      "matches_upstream": true
+    },
+    {
+      "source": "Rain/Shaders/Lanbai_StencilWindow.shader",
+      "project": "Assets/Lanbai/Rain/Shaders/Lanbai_StencilWindow.shader",
+      "sha256": "cabf62ca1a791339e2cd8fb7450593dfe7095ae953f098a376344d9dbd6ab7e0",
+      "matches_upstream": true
+    },
+    {
+      "source": "Rain/Shaders/Lanbai_WetOverlay.shader",
+      "project": "Assets/Lanbai/Rain/Shaders/Lanbai_WetOverlay.shader",
+      "sha256": "e6bc37d77fe05c78994b48419b7392df54ffb75c6b23940b8c7ff9315e2df699",
+      "matches_upstream": true
+    },
+    {
+      "source": "Rain/Shaders/Lanbai_WetSurface.shader",
+      "project": "Assets/Lanbai/Rain/Shaders/Lanbai_WetSurface.shader",
+      "sha256": "8e77b2208b34bd60030e7411712f3239c63ecf8928f1669486f0fad8c0bac783",
+      "matches_upstream": true
+    },
+    {
+      "source": "Rain/Textures/Glass/GlassRunners_Flow_512x1024.png",
+      "project": "Assets/Lanbai/Rain/Textures/Glass/GlassRunners_Flow_512x1024.png",
+      "sha256": "7c20cdf5a50455b638d6077c60593bc4aca2510f6f1e23c57ede0a7dae7cd893",
+      "matches_upstream": true
+    },
+    {
+      "source": "Rain/Textures/Glass/RainBeads_Horizontal_Data_1024.png",
+      "project": "Assets/Lanbai/Rain/Textures/Glass/RainBeads_Horizontal_Data_1024.png",
+      "sha256": "499442b0a791cec6dada91153302306c56784d4085ffd510f55cee270879490e",
+      "matches_upstream": true
+    },
+    {
+      "source": "Rain/Textures/Glass/RainBeads_Horizontal_Normal_1024.png",
+      "project": "Assets/Lanbai/Rain/Textures/Glass/RainBeads_Horizontal_Normal_1024.png",
+      "sha256": "39a67fd46ae76f7fb8cec6a868555ea3d18113a243061020e1e3c483a5d63bb8",
+      "matches_upstream": true
+    },
+    {
+      "source": "Rain/Textures/Glass/RainBeads_Vertical_Data_1024.png",
+      "project": "Assets/Lanbai/Rain/Textures/Glass/RainBeads_Vertical_Data_1024.png",
+      "sha256": "6cf4bba792c18c7cfe361ee82981eefd2ffadba56474f6360709e470a6250916",
+      "matches_upstream": true
+    },
+    {
+      "source": "Rain/Textures/Glass/RainBeads_Vertical_Normal_1024.png",
+      "project": "Assets/Lanbai/Rain/Textures/Glass/RainBeads_Vertical_Normal_1024.png",
+      "sha256": "ba81d3c1a79a3aa010bac7b24ce77734600b39013751d67fc2e68202076bb866",
+      "matches_upstream": true
+    },
+    {
+      "source": "Act07_Sea/Act07_Layout.json",
+      "project": "Assets/Lanbai/Act07_Sea/Act07_Layout.json",
+      "sha256": "205cf4bdfaf06cffe7613f5edcb202f7441bfa387c7ac1660986704cc6a182a1",
+      "matches_upstream": true
+    },
+    {
+      "source": "Act07_Sea/Editor/LanbaiAct07Builder.cs",
+      "project": "Assets/Lanbai/Act07_Sea/Editor/LanbaiAct07Builder.cs",
+      "sha256": "590bc619211f35cd333f0ddb1e1daa535092245e8a9a00306dbfc568a06131b0",
+      "matches_upstream": true
+    },
+    {
+      "source": "Act07_Sea/PalaceFrame_约定.json",
+      "project": "Assets/Lanbai/Act07_Sea/PalaceFrame_约定.json",
+      "sha256": "bc4a1a1650cf17004003c646f92c4645668b71a3933e2aad4e0d974c1f668f5d",
+      "matches_upstream": true
+    },
+    {
+      "source": "Act07_Sea/README_Act07a.md",
+      "project": "Assets/Lanbai/Act07_Sea/README_Act07a.md",
+      "sha256": "15ce4fdca45d706b8d305e4c2202f308adc188411cc1ffb53913b0702454729f",
+      "matches_upstream": true
+    },
+    {
+      "source": "Act07_Sea/Runtime/LanbaiAct07Driver.cs",
+      "project": "Assets/Lanbai/Act07_Sea/Runtime/LanbaiAct07Driver.cs",
+      "sha256": "bbfb9225aeac239ce7bb398fa5bea0c14407fa2a4822d27a0bd943597c036bc7",
+      "matches_upstream": true
+    },
+    {
+      "source": "Act07_Sea/Shaders/Lanbai_SeaRidge.shader",
+      "project": "Assets/Lanbai/Act07_Sea/Shaders/Lanbai_SeaRidge.shader",
+      "sha256": "3b44c7bf4116387986fe5f54e9148f94ed8729131c1c7785bdac8add4a2678cc",
+      "matches_upstream": true
+    },
+    {
+      "source": "Act07_Sea/总导演终审_7a.md",
+      "project": "Assets/Lanbai/Act07_Sea/总导演终审_7a.md",
+      "sha256": "37c8263281dc98b7935feacbd72ba3c4f82ec2a77ad7a729f83afd5c363661c0",
+      "matches_upstream": true
+    },
+    {
+      "source": "Act08_Dusk/Act08_Grade.json",
+      "project": "Assets/Lanbai/Act08_Dusk/Act08_Grade.json",
+      "sha256": "a0d69d17cdf9a37f8ead15f03533b7adc68160aa873ed669fbe793ab0ded4e8a",
+      "matches_upstream": true
+    },
+    {
+      "source": "Act08_Dusk/Act08_Layout.json",
+      "project": "Assets/Lanbai/Act08_Dusk/Act08_Layout.json",
+      "sha256": "49c6a340d04bc60a17e048b425baaea69020a380681fb44a5a8741f12406d694",
+      "matches_upstream": true
+    },
+    {
+      "source": "Act08_Dusk/Editor/LanbaiAct08Builder.cs",
+      "project": "Assets/Lanbai/Act08_Dusk/Editor/LanbaiAct08Builder.cs",
+      "sha256": "52e3cb121be0c353b4b0d7497cae6ba65113c7ce7cc93f4dadc4c9fc66a6e973",
+      "matches_upstream": true
+    },
+    {
+      "source": "Act08_Dusk/README_Act08.md",
+      "project": "Assets/Lanbai/Act08_Dusk/README_Act08.md",
+      "sha256": "af012bfcd4393f55b9a5bb14464e3289ab70ff218f3acc5288448db0f2516eef",
+      "matches_upstream": true
+    },
+    {
+      "source": "Act08_Dusk/Runtime/LanbaiAct08Driver.cs",
+      "project": "Assets/Lanbai/Act08_Dusk/Runtime/LanbaiAct08Driver.cs",
+      "sha256": "5c476ff6a34520235566b0d9481ba729f6ac10278ae84a0e0ac34560fc82252b",
+      "matches_upstream": true
+    },
+    {
+      "source": "Act08_Dusk/STATUS.md",
+      "project": "Assets/Lanbai/Act08_Dusk/STATUS.md",
+      "sha256": "6ec5a4a3d811dc4f330403b81be2f71826b70be962737fedb29814856ea09088",
+      "matches_upstream": true
+    },
+    {
+      "source": "Act08_Dusk/给总控.md",
+      "project": "Assets/Lanbai/Act08_Dusk/给总控.md",
+      "sha256": "b4287661b00c8a9f243bd99c6bdd30334f52aa92463de430edcf7710a1899ccb",
+      "matches_upstream": true
+    },
+    {
+      "source": "Act09_StarSea/Act09_StarSea.json",
+      "project": "Assets/Lanbai/Act09_StarSea/Act09_StarSea.json",
+      "sha256": "a9e8f2bc11aa53c93590292b7d8f6a4ed86a0a6cb28f3d9e877caa9084474965",
+      "matches_upstream": true
+    },
+    {
+      "source": "Act09_StarSea/Data/frames.json",
+      "project": "Assets/Lanbai/Act09_StarSea/Data/frames.json",
+      "sha256": "c9e5080016e3b37e952ce7e9e80b9db0d4b3490b739f9d6e6cfca6273c0fdf56",
+      "matches_upstream": true
+    },
+    {
+      "source": "Act09_StarSea/Data/ignition.json",
+      "project": "Assets/Lanbai/Act09_StarSea/Data/ignition.json",
+      "sha256": "39f39f4637a2e83d28c048d5dd45e0e0d0e0aab899b5a11622eb43765768330c",
+      "matches_upstream": true
+    },
+    {
+      "source": "Act09_StarSea/Editor/LanbaiAct09Build.cs",
+      "project": "Assets/Lanbai/Act09_StarSea/Editor/LanbaiAct09Build.cs",
+      "sha256": "b1cfbc7e1b165a4173ba282bc22f9438c861372e26da72d92d87cb7b8b1252a7",
+      "matches_upstream": true
+    },
+    {
+      "source": "Act09_StarSea/README_Act09.md",
+      "project": "Assets/Lanbai/Act09_StarSea/README_Act09.md",
+      "sha256": "7c079994a6466966df30bfe627d92a861ab959cb48ab487912b1d67e4753a8f9",
+      "matches_upstream": true
+    },
+    {
+      "source": "Act09_StarSea/Runtime/LanbaiAct09Driver.cs",
+      "project": "Assets/Lanbai/Act09_StarSea/Runtime/LanbaiAct09Driver.cs",
+      "sha256": "0e4b7cbb86d1250fdffeaa6d82e21eadf933ece6dc82761675de389beafc9c28",
+      "matches_upstream": true
+    },
+    {
+      "source": "Act09_StarSea/总导演终审.md",
+      "project": "Assets/Lanbai/Act09_StarSea/总导演终审.md",
+      "sha256": "aa57477bcc988ed244f7762ca7bc64f472e0a461ba254ea2fd3befdbd86d245a",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Editor/LanbaiCloudsV2Editor.cs",
+      "project": "Assets/Lanbai/Clouds_v2/Editor/LanbaiCloudsV2Editor.cs",
+      "sha256": "7fd8b68ea582df4eef7b3aa3ebae4c2b1f516cae79b106526e692794f7fe7162",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Shaders/Lanbai_CloudCard.shader",
+      "project": "Assets/Lanbai/Clouds_v2/Shaders/Lanbai_CloudCard.shader",
+      "sha256": "6fe62435a5954a19d0d4207669580eca98661d5aaca8fe890139bc4c67363603",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudSeaV2_1_dawn.json",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudSeaV2_1_dawn.json",
+      "sha256": "cb9a7a696c39f8c33b1ba69873430487773bdbb593c0fcc9c83436dc9feddb07",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudSeaV2_1_dawn_K.png",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudSeaV2_1_dawn_K.png",
+      "sha256": "c44e7d966da7e2d91d9f1714e99e19f6b9c57362c3753666029e62343f6807e7",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudSeaV2_1_dawn_S.png",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudSeaV2_1_dawn_S.png",
+      "sha256": "2743c6fad186ceb3487517b7086d4c6f7f02db14513d561d3e0ddf3af257655a",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudSeaV2_2_dawn.json",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudSeaV2_2_dawn.json",
+      "sha256": "290eaedcdc1ebf8e1afb23a96d1da94c2686071a118108d2b7d979788b2d2f7a",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudSeaV2_2_dawn_K.png",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudSeaV2_2_dawn_K.png",
+      "sha256": "f4c7669e9dcedc8814f06fb1b5f456f83ba7a44d1e477576822f81c11a82caaf",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudSeaV2_2_dawn_S.png",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudSeaV2_2_dawn_S.png",
+      "sha256": "6b3ebb30441dc449db444ea008db24757bc3ffff2235aabaf50dab69d5b0f2c7",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Bank_dawn.json",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Bank_dawn.json",
+      "sha256": "7467cb3da372c0f57ad681665af966582cb14740796999a87bfbce7f6954dbf0",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Bank_dawn_K.png",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Bank_dawn_K.png",
+      "sha256": "da5c209c64c8a4831d32ee55d3a42c760144467caf9ded096f05d7b065c951e7",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Bank_dawn_S.png",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Bank_dawn_S.png",
+      "sha256": "98b9555779a830689215682ef94cc708a47a54761f529835609b1eef17f940c7",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Bank_duskU.json",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Bank_duskU.json",
+      "sha256": "6a87492a6441ba12aac45859fa0eec6ad353434633a6d8bc999a28189093b524",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Bank_duskU_K.png",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Bank_duskU_K.png",
+      "sha256": "ccb181ea5c4a6370865b6ddd45d5eef85dff3104bc0568e5e5a86a0df1829f99",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Bank_duskU_S.png",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Bank_duskU_S.png",
+      "sha256": "6c81bdf32370cb4b113b0c5864f9614b7bcbb875d0723e85b9fd1f189b16244a",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Congestus_dawn.json",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Congestus_dawn.json",
+      "sha256": "aa92c866cb4545877c576e34b5f07b3580147165898198ae1bdbd36dacb76391",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Congestus_dawn_K.png",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Congestus_dawn_K.png",
+      "sha256": "41ff75fa095596c39ec837afa2b6f3b05f0e9c4889fe41ba2a577e6ace32cd37",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Congestus_dawn_S.png",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Congestus_dawn_S.png",
+      "sha256": "decbc71acace893ccfefc52cdf62243cc7ab49735c99724d5239cc5c97d04af8",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Congestus_duskD.json",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Congestus_duskD.json",
+      "sha256": "3c47f15a082266a34e4424fcef016359560dff071f68868926d836d28f70219f",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Congestus_duskD_K.png",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Congestus_duskD_K.png",
+      "sha256": "34e78a82bbfd42f86b997f7cd17576f88ce407371429ab6a965e7eaf4c5dfa85",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Congestus_duskD_S.png",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Congestus_duskD_S.png",
+      "sha256": "034e5f3a3adb860d3676c9a03a8e09646518155e658a1768a18a1d76f69eea4b",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Cumulus_dawn.json",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Cumulus_dawn.json",
+      "sha256": "07f4862339b66003c58e4b5101c78ea5b6157ac7433f774af89506a30d5d27aa",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Cumulus_dawn_K.png",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Cumulus_dawn_K.png",
+      "sha256": "aaa7257d36cfd0c5bad6967a593d7667741e8f137a843ec4b1b47640edaf8448",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Cumulus_dawn_S.png",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Cumulus_dawn_S.png",
+      "sha256": "99a7e3db7ecdad799593da1a6220dafde4f6ffa2ed7ff73269d7329e05a512d0",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Cumulus_duskD.json",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Cumulus_duskD.json",
+      "sha256": "3d6e0ccea4b9cf1e9429fc52074b5b51687895c6ee9a3f329b26aa1a5486a2b3",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Cumulus_duskD_K.png",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Cumulus_duskD_K.png",
+      "sha256": "a501743e9b07e388ca613734bcbf624745a4d8316febc17815b317e927adaf43",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Cumulus_duskD_S.png",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Cumulus_duskD_S.png",
+      "sha256": "76b702ab87a2e96a3c064d420767ded71e3fd20f43c8d429b94b3ef5bc5216cf",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Cumulus_duskU.json",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Cumulus_duskU.json",
+      "sha256": "fc6983d6e2548ede3a7b566ea0b46bdd2467e472cfd54b2b55b0038619a762a4",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Cumulus_duskU_K.png",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Cumulus_duskU_K.png",
+      "sha256": "ecd06b7b6b41c1281f626df34e24c4838e2dbc72c64d9f37b40b937e683e7051",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Cumulus_duskU_S.png",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Cumulus_duskU_S.png",
+      "sha256": "f926dc30bd418bf16f1b8580c9bed1163f4fb9363230a0d945d9133322db2338",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Puff_dawn.json",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Puff_dawn.json",
+      "sha256": "3347824d0d6918f3a226fc35abb500f8ccb49ff26e4e22f4ebf311bc3c229e86",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Puff_dawn_K.png",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Puff_dawn_K.png",
+      "sha256": "9873914e103f3a76580f9b07f2e9c0af1c64691c92fe326dcda2ed0cfe130a2f",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Puff_dawn_S.png",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Puff_dawn_S.png",
+      "sha256": "16100bbf0bc86af4dc915eb631be3f9939ab5eab4695a38b9c85cae36d5a9ba5",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Puff_duskD.json",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Puff_duskD.json",
+      "sha256": "87bd753e875c00debc1017656eac2eb0b35fc7e88fdf61187e832af2d6626b25",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Puff_duskD_K.png",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Puff_duskD_K.png",
+      "sha256": "7bc0d017db8e27b4a6c858e9a2de517c9fe8288ef5b46231e02bf77c73ed84d0",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Puff_duskD_S.png",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Puff_duskD_S.png",
+      "sha256": "5222aa041a1c974a780ecfac75fd3d2e3fd65959eb7dd9a183edd71d945683c2",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Strato_dawn.json",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Strato_dawn.json",
+      "sha256": "f2669b53f660514fbc7dc262bdcf80c153041175fd5f0286c38218b6441374d9",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Strato_dawn_K.png",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Strato_dawn_K.png",
+      "sha256": "4726c64ce26e4958af2ccd75877957c34fa614c116601a3dcc6530f028e86e62",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Strato_dawn_S.png",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Strato_dawn_S.png",
+      "sha256": "527fde831bebecc851d4ce26f64278fde1e63f0b6c488738c96a5a0bffb02056",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Strato_duskD.json",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Strato_duskD.json",
+      "sha256": "0f5ac7415087dccbe070366307d80b324c6c80f5a499cd5986b5c411061204ef",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Strato_duskD_K.png",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Strato_duskD_K.png",
+      "sha256": "860cefb98b39284c101373a6d31dabf17e0a53d3bbd43ffc3ba05d52ea6b25f7",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Strato_duskD_S.png",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Strato_duskD_S.png",
+      "sha256": "64457e6b7b1bbfa58ed9469078deab26690789b744674cfbdf5d5531e367d6bf",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Strato_duskU.json",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Strato_duskU.json",
+      "sha256": "6073436eca5ee5862ede14b035bd4ac6bbdea161a928a4496b1d793af787f8d4",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Strato_duskU_K.png",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Strato_duskU_K.png",
+      "sha256": "a2fbbe841887bd4940057e359acee5da48d156cc82f885384aba67c0cc8ed491",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Strato_duskU_S.png",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Strato_duskU_S.png",
+      "sha256": "d687fd88781ae23f6b7d9f1874d48ccf1b0054f35d536b1e7324489741dba27b",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Wisp_dawn.json",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Wisp_dawn.json",
+      "sha256": "376bd9af155ccbab89a60cad04f1c7f2eb837e3ab0cfa5940abcb255aca91836",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Wisp_dawn_K.png",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Wisp_dawn_K.png",
+      "sha256": "03140c1167e65b43135bee77e1fd849ce241a443a272daa77445affc82aa18fd",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Wisp_dawn_S.png",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Wisp_dawn_S.png",
+      "sha256": "d4789cd11f6382e2e2528f26a95dce9f64998db1c7c16deb1622dc63e0fa0b7c",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Wisp_duskU.json",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Wisp_duskU.json",
+      "sha256": "0a111ccb9c2744e577e149b3771ecf65a419dee1cb286cc3907836dc032a69df",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Wisp_duskU_K.png",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Wisp_duskU_K.png",
+      "sha256": "03ae99ba6a6b206c9a7d2afc5a39993421bf88fab11867ab19bbc5fa94ea480b",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/CloudV2_Wisp_duskU_S.png",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/CloudV2_Wisp_duskU_S.png",
+      "sha256": "d701fe668a62b5fe2b5bd2af48a941f272fc47dc6518fd451e20af44012ab645",
+      "matches_upstream": true
+    },
+    {
+      "source": "Clouds_v2/Textures/cards_v2.json",
+      "project": "Assets/Lanbai/Clouds_v2/Textures/cards_v2.json",
+      "sha256": "ec76c0776f1d5b8d9ce0966677109d07ec7087ae52cab3b37142436d359ea0ea",
+      "matches_upstream": true
+    },
+    {
+      "source": "Sky/Data/StarPoints_BSC5.csv",
+      "project": "Assets/Lanbai/Sky/Data/StarPoints_BSC5.csv",
+      "sha256": "b5d205eaf72c1ff553487ed104b75d640efbe93bb11d049d9338fd8ab76c4563",
+      "matches_upstream": true
+    },
+    {
+      "source": "Sky/Data/StarSky.json",
+      "project": "Assets/Lanbai/Sky/Data/StarSky.json",
+      "sha256": "a7ea16ac9191ef529fa893f0ef83d90de0459a628f399a9be9cab80c09226d6e",
+      "matches_upstream": true
+    },
+    {
+      "source": "Sky/Data/fit_dawn.json",
+      "project": "Assets/Lanbai/Sky/Data/fit_dawn.json",
+      "sha256": "3ce78218da89b0b6c14588e4475bfc36c5e1b861e17d11b65bb2dbd7ab95be93",
+      "matches_upstream": true
+    },
+    {
+      "source": "Sky/Data/fit_dusk.json",
+      "project": "Assets/Lanbai/Sky/Data/fit_dusk.json",
+      "sha256": "b1e5a9b5793c5c5069d245f4476902a0fcf31506d7cbaaa0e2425521f15dd927",
+      "matches_upstream": true
+    },
+    {
+      "source": "Sky/Data/stars_D06.json",
+      "project": "Assets/Lanbai/Sky/Data/stars_D06.json",
+      "sha256": "d2e89896089fc4fd77efbbbbfa6a75e47a5d39bee73d5e3eb5102ee8a148c1e1",
+      "matches_upstream": true
+    },
+    {
+      "source": "Sky/Editor/LanbaiSkyBuild.cs",
+      "project": "Assets/Lanbai/Sky/Editor/LanbaiSkyBuild.cs",
+      "sha256": "0f7e3b5325f44eaaf5eab0170ae601dac67e8405fdb8e7af4f57035f519b45b2",
+      "matches_upstream": true
+    },
+    {
+      "source": "Sky/Editor/LanbaiSkyImport.cs",
+      "project": "Assets/Lanbai/Sky/Editor/LanbaiSkyImport.cs",
+      "sha256": "95c0316652246c234119d7fe8fdb5d670b988bf696ef791ff531b7317eb72b59",
+      "matches_upstream": true
+    },
+    {
+      "source": "Sky/FogPresets.json",
+      "project": "Assets/Lanbai/Sky/FogPresets.json",
+      "sha256": "9e9fd73cf53432078b3c250f2fb6806922bac8e9b12aafa612653b4600842901",
+      "matches_upstream": true
+    },
+    {
+      "source": "Sky/README_Fog接口.md",
+      "project": "Assets/Lanbai/Sky/README_Fog接口.md",
+      "sha256": "94301a11cb31bad0824dd788596ed5756d5c9a4f9aadc672da2869bc181667ee",
+      "matches_upstream": true
+    },
+    {
+      "source": "Sky/README_Sky.md",
+      "project": "Assets/Lanbai/Sky/README_Sky.md",
+      "sha256": "a4cc41b6db95022ed3fe453cbb418ccfbc9099901273e04ac2b6e21219707fe9",
+      "matches_upstream": true
+    },
+    {
+      "source": "Sky/Runtime/LanbaiSkyDriver.cs",
+      "project": "Assets/Lanbai/Sky/Runtime/LanbaiSkyDriver.cs",
+      "sha256": "aaae59e4909224ad8c3fb7221f4337689feb15c0f54d052560bafa692d2a47f7",
+      "matches_upstream": true
+    },
+    {
+      "source": "Sky/Runtime/LanbaiSkyPreset.cs",
+      "project": "Assets/Lanbai/Sky/Runtime/LanbaiSkyPreset.cs",
+      "sha256": "8de2f38c8c1c4efaf73ba02d73a6e002b8f12b61875a61f3a7b059582c7abac3",
+      "matches_upstream": true
+    },
+    {
+      "source": "Sky/STATUS.md",
+      "project": "Assets/Lanbai/Sky/STATUS.md",
+      "sha256": "8471d4fd2401da257458b0760f867cf4f399e3a5d786f55c438f7bb2e4bc71ae",
+      "matches_upstream": true
+    },
+    {
+      "source": "Sky/Shaders/LanbaiSkyLayers.cginc",
+      "project": "Assets/Lanbai/Sky/Shaders/LanbaiSkyLayers.cginc",
+      "sha256": "7ac8845c48987f129426bb80d82e346e089e11b08ff8c4390a7a82423a28201e",
+      "matches_upstream": true
+    },
+    {
+      "source": "Sky/Shaders/Lanbai_Sky.shader",
+      "project": "Assets/Lanbai/Sky/Shaders/Lanbai_Sky.shader",
+      "sha256": "97aac9bee67c740c276b979cd3a75e89393439ae4f5accf601235dc36dfab574",
+      "matches_upstream": true
+    },
+    {
+      "source": "Sky/Shaders/Lanbai_StarPoints.shader",
+      "project": "Assets/Lanbai/Sky/Shaders/Lanbai_StarPoints.shader",
+      "sha256": "beddffad23feebddb829ebfef5d99a6467e649a57509955446130f1f48cb6c0a",
+      "matches_upstream": true
+    },
+    {
+      "source": "Sky/SkyPresets.json",
+      "project": "Assets/Lanbai/Sky/SkyPresets.json",
+      "sha256": "7fab02921a3fab984dbd75fc0b45dd0e9c652da38aee0890b1349906100cc7b1",
+      "matches_upstream": true
+    },
+    {
+      "source": "Sky/Textures/Moon_Disc_1024.png",
+      "project": "Assets/Lanbai/Sky/Textures/Moon_Disc_1024.png",
+      "sha256": "fc6aa727f9549ae8c7e4bef77b4531bf38e07b27e47d485c00c07a9ab851a0be",
+      "matches_upstream": true
+    },
+    {
+      "source": "Sky/Textures/Sky_Overcast_Night_2048x1024.hdr",
+      "project": "Assets/Lanbai/Sky/Textures/Sky_Overcast_Night_2048x1024.hdr",
+      "sha256": "3bde689ecb3c4b5c47b6c7e34e639f19ff6a6a409728cfda112bd52c08c40993",
+      "matches_upstream": true
+    },
+    {
+      "source": "Sky/Textures/Sky_Overcast_Night_TownGlow_2048x1024.hdr",
+      "project": "Assets/Lanbai/Sky/Textures/Sky_Overcast_Night_TownGlow_2048x1024.hdr",
+      "sha256": "644fc1f8b017017826829d19210d7efc1589c84c5ae85bb8437e209ec8fa4fa5",
+      "matches_upstream": true
+    },
+    {
+      "source": "Sky/Textures/StarSky_Glow_8192x4096.png",
+      "project": "Assets/Lanbai/Sky/Textures/StarSky_Glow_8192x4096.png",
+      "sha256": "8b7b4ce0a4ca6470ac2d0a6d99eef472166825f7e5f596d4ed4025286576b9cb",
+      "matches_upstream": true
+    },
+    {
+      "source": "Sky/总导演意见.md",
+      "project": "Assets/Lanbai/Sky/总导演意见.md",
+      "sha256": "59539b04c74cfd892f095c51b0bb412127cac49183854c11ad67da5ab3acb8f9",
+      "matches_upstream": true
+    },
+    {
+      "source": "Sky/总导演终审.md",
+      "project": "Assets/Lanbai/Sky/总导演终审.md",
+      "sha256": "0c4766614ccff37fa7e908d312d8af46a1fe3478be467a5ede0b83b6fc5edf15",
+      "matches_upstream": true
+    },
+    {
+      "source": "Sky/总工程师意见.md",
+      "project": "Assets/Lanbai/Sky/总工程师意见.md",
+      "sha256": "c0c7b13e87e94711efa6cef5f89083e726010bbc30b9740db28e2425e69308dd",
+      "matches_upstream": true
+    },
+    {
+      "source": "Sky/暂停总结.md",
+      "project": "Assets/Lanbai/Sky/暂停总结.md",
+      "sha256": "c8fd75cfcd4582156fa6667689e66bdebd4922cf76ec6a070699740b3558185a",
+      "matches_upstream": true
+    },
+    {
+      "source": "Sky/给总控.md",
+      "project": "Assets/Lanbai/Sky/给总控.md",
+      "sha256": "5ed02858216298b3e24f2817d96c0794988380434f5372b06757de06df3f8998",
+      "matches_upstream": true
+    },
+    {
+      "source": "Sky/美术审片意见.md",
+      "project": "Assets/Lanbai/Sky/美术审片意见.md",
+      "sha256": "f8c3c1487e09cf92ce40ea63e762f508f40f16c04fd7b1d44c2d72cfd3133c14",
+      "matches_upstream": true
+    },
+    {
+      "source": "Act10_White/Editor/LanbaiWhiteBuild.cs",
+      "project": "Assets/Lanbai/Act10_White/Editor/LanbaiWhiteBuild.cs",
+      "sha256": "c95c9ee82e390e5d13b261b17d8c3ed54093af3364cdc8bd06fd69b69b014855",
+      "matches_upstream": true
+    },
+    {
+      "source": "Act10_White/README_Act10.md",
+      "project": "Assets/Lanbai/Act10_White/README_Act10.md",
+      "sha256": "1e07c2087824d071021bf416c8b0c507971355ac4ec2d6b53d8afd27eec0d511",
+      "matches_upstream": true
+    },
+    {
+      "source": "Act10_White/Runtime/LanbaiWhiteDriver.cs",
+      "project": "Assets/Lanbai/Act10_White/Runtime/LanbaiWhiteDriver.cs",
+      "sha256": "4c1bc29e29e970ad68f5624b16a2d13eedb67c9c1fadbbe9e0f836d7ec363845",
+      "matches_upstream": true
+    },
+    {
+      "source": "Act10_White/STATUS.md",
+      "project": "Assets/Lanbai/Act10_White/STATUS.md",
+      "sha256": "20556bf48bd84be194a396de6742165ffad61c68044a47a19c61f77769b1612e",
+      "matches_upstream": true
+    },
+    {
+      "source": "Act10_White/WhiteSchedule.json",
+      "project": "Assets/Lanbai/Act10_White/WhiteSchedule.json",
+      "sha256": "64055b39c0ae7540d67a4f90dd8b674096e487b984be946219ed144f6aa8316e",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Charsets/charset_ALL_CJK.txt",
+      "project": "Assets/Lanbai/Fonts/Charsets/charset_ALL_CJK.txt",
+      "sha256": "38cfa03bd76e9f4ae0e3d49c753f872a2a6fb060b840afde77c606030c53d6f8",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Charsets/charset_BarlowSemiCondensed-SemiBold+ascii.txt",
+      "project": "Assets/Lanbai/Fonts/Charsets/charset_BarlowSemiCondensed-SemiBold+ascii.txt",
+      "sha256": "cb2a9233adc1225c5c495c46e62cf6308223c5e241ef33ad109f03141b57966a",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Charsets/charset_BarlowSemiCondensed-SemiBold.txt",
+      "project": "Assets/Lanbai/Fonts/Charsets/charset_BarlowSemiCondensed-SemiBold.txt",
+      "sha256": "26f25bfef83c4db729e61f504406527d394cc9c5f66e74f2b49c4338b783b996",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Charsets/charset_EBGaramond-Italic+ascii.txt",
+      "project": "Assets/Lanbai/Fonts/Charsets/charset_EBGaramond-Italic+ascii.txt",
+      "sha256": "52e2eccb0aa378bdf6b03f17b59257009736446cbad65ff9f8deb149b2de16b5",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Charsets/charset_EBGaramond-Italic.txt",
+      "project": "Assets/Lanbai/Fonts/Charsets/charset_EBGaramond-Italic.txt",
+      "sha256": "f03dfaa16b522cf3e5b17ee076be903c8bb3b194ba29320c58df9a24b6ade8ed",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Charsets/charset_EBGaramond-Regular+ascii.txt",
+      "project": "Assets/Lanbai/Fonts/Charsets/charset_EBGaramond-Regular+ascii.txt",
+      "sha256": "b0e621fc59a73f51dc0a5002f42d761bbd285e3905770fb2ba8ca12b9139861a",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Charsets/charset_EBGaramond-Regular.txt",
+      "project": "Assets/Lanbai/Fonts/Charsets/charset_EBGaramond-Regular.txt",
+      "sha256": "308d06f824cdc829743de1f9b9f43ad2ee86b3dff5b646832cddd8efbe1a9bb3",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Charsets/charset_IMFellEnglish-Roman+ascii.txt",
+      "project": "Assets/Lanbai/Fonts/Charsets/charset_IMFellEnglish-Roman+ascii.txt",
+      "sha256": "2093b2662ea2a88fdb3bdaa8a3a1ff6638a94d93b483eb926b1e896e835ba074",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Charsets/charset_IMFellEnglish-Roman.txt",
+      "project": "Assets/Lanbai/Fonts/Charsets/charset_IMFellEnglish-Roman.txt",
+      "sha256": "46f5c75addf7b3b2d1ccd9e6d9f490c7d1cae2736851accc38895f67d3c0eaf2",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Charsets/charset_IMFellEnglishSC+ascii.txt",
+      "project": "Assets/Lanbai/Fonts/Charsets/charset_IMFellEnglishSC+ascii.txt",
+      "sha256": "cb2a9233adc1225c5c495c46e62cf6308223c5e241ef33ad109f03141b57966a",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Charsets/charset_IMFellEnglishSC.txt",
+      "project": "Assets/Lanbai/Fonts/Charsets/charset_IMFellEnglishSC.txt",
+      "sha256": "af5528ccd631b17fb8cdd77d144e4681ddbb2574c2c805ae51da45705605161d",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Charsets/charset_SourceHanSansSC-Heavy.txt",
+      "project": "Assets/Lanbai/Fonts/Charsets/charset_SourceHanSansSC-Heavy.txt",
+      "sha256": "268c930154e759bbd47cca65f1750f72296893e1e307fbdeb35e6eaa105d285a",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Charsets/charset_SourceHanSerifJP-Medium.txt",
+      "project": "Assets/Lanbai/Fonts/Charsets/charset_SourceHanSerifJP-Medium.txt",
+      "sha256": "7a60ff4659f3f0c422a758a57dcce07594dd3aebbb539c5324b67bca725afc58",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Charsets/charset_SourceHanSerifJP-Regular.txt",
+      "project": "Assets/Lanbai/Fonts/Charsets/charset_SourceHanSerifJP-Regular.txt",
+      "sha256": "30c6813845a23e2be59f4c6fb376b8cf8768a765cf6e52adfd21f838bf7001f1",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Charsets/charset_SourceHanSerifSC-Medium.txt",
+      "project": "Assets/Lanbai/Fonts/Charsets/charset_SourceHanSerifSC-Medium.txt",
+      "sha256": "c3b2b840d74315f743fbb9f4aec06ef79845074e2e1dd8b9300e03bf359c057c",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Charsets/charset_SourceHanSerifSC-Regular.txt",
+      "project": "Assets/Lanbai/Fonts/Charsets/charset_SourceHanSerifSC-Regular.txt",
+      "sha256": "1543b5fb66fad874b45a647a62fdc41ab401140c6d1a0d708b25fe337e9aaa97",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Charsets/charset_SourceHanSerifTW-Regular.txt",
+      "project": "Assets/Lanbai/Fonts/Charsets/charset_SourceHanSerifTW-Regular.txt",
+      "sha256": "f40f4fd9c8f85f81da62fb5d65778980caf368752c6350f6f54f3b48b068e205",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Editor/Lanbai.Fonts.Editor.asmdef",
+      "project": "Assets/Lanbai/Fonts/Editor/Lanbai.Fonts.Editor.asmdef",
+      "sha256": "6de55425f5decd080d8c5f75e98e4e0a94ba0338480acf2f6eeced2ec98f73f5",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Editor/LanbaiPoemBake.cs",
+      "project": "Assets/Lanbai/Fonts/Editor/LanbaiPoemBake.cs",
+      "sha256": "e03005c918480305bc940b5bec2f6c0b56dc9e42afa4ca9e7ca82b8c3f6b0e14",
+      "matches_upstream": false
+    },
+    {
+      "source": "Fonts/Editor/LanbaiPoemMaterials.cs",
+      "project": "Assets/Lanbai/Fonts/Editor/LanbaiPoemMaterials.cs",
+      "sha256": "976dec9a5715dfc48a70ccc96fe53f4eb2df10745bb676e1331da8e925238b28",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Editor/LanbaiScrimTextureImport.cs",
+      "project": "Assets/Lanbai/Fonts/Editor/LanbaiScrimTextureImport.cs",
+      "sha256": "fb0d3f235b7cd22c0a2b710935c89878b0634bfa1d6f2e33365890eecf344a96",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Editor/LanbaiTMPFontBuilder.cs",
+      "project": "Assets/Lanbai/Fonts/Editor/LanbaiTMPFontBuilder.cs",
+      "sha256": "15d0444209ef8872945ad4d0b89914d83acdbcc9b989497340892b39ff065ee8",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Licenses/LICENSE_SourceHanSans.txt",
+      "project": "Assets/Lanbai/Fonts/Licenses/LICENSE_SourceHanSans.txt",
+      "sha256": "fcac737e761ec63dbfbdce11030a1780161920d80315edba9c8beff1c2bac5a2",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Licenses/LICENSE_SourceHanSerif.txt",
+      "project": "Assets/Lanbai/Fonts/Licenses/LICENSE_SourceHanSerif.txt",
+      "sha256": "9ff5bb567e1b92c801fc1069e5fbf992ff8efccacb9db94e5959a5b3ba9bb903",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Licenses/OFL_BarlowSemiCondensed.txt",
+      "project": "Assets/Lanbai/Fonts/Licenses/OFL_BarlowSemiCondensed.txt",
+      "sha256": "186d750eb496a4c17a76385f82be6aea2ac1cf2de074a811d63786cf374ea73f",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Licenses/OFL_EBGaramond.txt",
+      "project": "Assets/Lanbai/Fonts/Licenses/OFL_EBGaramond.txt",
+      "sha256": "0985066662eb755ed3683ae5482a81a9195b49ce3f7e165cc2388b3dbece7dd7",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Licenses/OFL_IMFellEnglish.txt",
+      "project": "Assets/Lanbai/Fonts/Licenses/OFL_IMFellEnglish.txt",
+      "sha256": "2a3ca501fc4d5efcad9798531e3e06962b1e20c60e464f6cbd6c17630112c773",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Licenses/OFL_IMFellEnglishSC.txt",
+      "project": "Assets/Lanbai/Fonts/Licenses/OFL_IMFellEnglishSC.txt",
+      "sha256": "2a3ca501fc4d5efcad9798531e3e06962b1e20c60e464f6cbd6c17630112c773",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/README_Fonts.md",
+      "project": "Assets/Lanbai/Fonts/README_Fonts.md",
+      "sha256": "2153619fa1138a0d360403c1dc2bd610e0bc4e19b6bb73cacb063a8b3624820b",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Runtime/LanbaiLangButton.cs",
+      "project": "Assets/Lanbai/Fonts/Runtime/LanbaiLangButton.cs",
+      "sha256": "484c73df59f48b18f3df06dd711f0f0c0f5107b4ea449fb3fd9b46ea9f3305b7",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Runtime/LanbaiPoemDriver.cs",
+      "project": "Assets/Lanbai/Fonts/Runtime/LanbaiPoemDriver.cs",
+      "sha256": "f0e0d9e98d1f600a5270c20f7c6f4928f4d459c60277133641048c9da0a6b1ee",
+      "matches_upstream": false
+    },
+    {
+      "source": "Fonts/Shaders/Lanbai_Letterbox.shader",
+      "project": "Assets/Lanbai/Fonts/Shaders/Lanbai_Letterbox.shader",
+      "sha256": "96e1f4d38f5e82954c37f17c4976eb909aeaa2513f07976c2194ed6aeb099a70",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Shaders/Lanbai_Subtitle.shader",
+      "project": "Assets/Lanbai/Fonts/Shaders/Lanbai_Subtitle.shader",
+      "sha256": "f5dc90bd850968293302c5a24a55bccd0fb66db5a7cfca649fd1c7003699581d",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Shaders/Lanbai_SubtitleHalo.shader",
+      "project": "Assets/Lanbai/Fonts/Shaders/Lanbai_SubtitleHalo.shader",
+      "sha256": "200296a7b61e025c6b056e5a6dbf5116316a6459ded1968735d17fa35e94b5d6",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Subset/BarlowSemiCondensed-SemiBold.Lanbai.ttf",
+      "project": "Assets/Lanbai/Fonts/Subset/BarlowSemiCondensed-SemiBold.Lanbai.ttf",
+      "sha256": "8821f57aab4843abdc1c38a8fb07338dd0136251e7818fa8eb4d34053153d2ed",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Subset/EBGaramond-Italic.Lanbai.ttf",
+      "project": "Assets/Lanbai/Fonts/Subset/EBGaramond-Italic.Lanbai.ttf",
+      "sha256": "e6a3c784b2a341c918bffdc74ab84957e146108769f1f3b99d3f039dbaf54c96",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Subset/EBGaramond-Regular.Lanbai.ttf",
+      "project": "Assets/Lanbai/Fonts/Subset/EBGaramond-Regular.Lanbai.ttf",
+      "sha256": "9058856351ac27533f895d8dacc33042f16601a08ee2c5bcb2f460754a818338",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Subset/LanbaiSansSC-Heavy.otf",
+      "project": "Assets/Lanbai/Fonts/Subset/LanbaiSansSC-Heavy.otf",
+      "sha256": "310b8c9a7e874aa2c866194ff8fca1c4cee54c4c53cb07ddc99261f4cde6a768",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Subset/LanbaiSerifJP-Medium.otf",
+      "project": "Assets/Lanbai/Fonts/Subset/LanbaiSerifJP-Medium.otf",
+      "sha256": "c4f9deebe9a32e62fd19477efec4728d0007f5a4fc00f56799f7da2c79eaeaec",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Subset/LanbaiSerifJP-Regular.otf",
+      "project": "Assets/Lanbai/Fonts/Subset/LanbaiSerifJP-Regular.otf",
+      "sha256": "fea72c735b379f373722110bb35a4e50928d0829a3bf88bc0746475ef020f3ee",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Subset/LanbaiSerifSC-Medium.otf",
+      "project": "Assets/Lanbai/Fonts/Subset/LanbaiSerifSC-Medium.otf",
+      "sha256": "6fad1c4557f895d1f7a0810f71820e7b76b55a7c4214db3ad882a972c905669d",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Subset/LanbaiSerifSC-Regular.otf",
+      "project": "Assets/Lanbai/Fonts/Subset/LanbaiSerifSC-Regular.otf",
+      "sha256": "821e9dd0422f4464d1948b0ee16c3fdb63f0f62f8c25eb7f5305d07ce49e8e98",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Subset/LanbaiSerifTC-Regular.otf",
+      "project": "Assets/Lanbai/Fonts/Subset/LanbaiSerifTC-Regular.otf",
+      "sha256": "0f12d1e1b73c59a6952d74c54724ce0bd30009ceaaa3264ce6e3965225a95eff",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Subset/LanbaiSlip-Regular.ttf",
+      "project": "Assets/Lanbai/Fonts/Subset/LanbaiSlip-Regular.ttf",
+      "sha256": "f3fa190fdefc869443a189bfedee04bdbd454df254d997ed42b196dc6d29f3d1",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Subset/LanbaiSlipSC-Regular.ttf",
+      "project": "Assets/Lanbai/Fonts/Subset/LanbaiSlipSC-Regular.ttf",
+      "sha256": "dec3a9d2c58429dd15e9d796359160236ff2941e93a3bbc0a10966d1222135d2",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Textures/Lanbai_Scrim_Block.png",
+      "project": "Assets/Lanbai/Fonts/Textures/Lanbai_Scrim_Block.png",
+      "sha256": "bba2cfc216501b8eb634f4ca1f9f7d167a4fa93e529b1bb7bc9306c00f5d3ccf",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/Textures/Lanbai_Scrim_Line.png",
+      "project": "Assets/Lanbai/Fonts/Textures/Lanbai_Scrim_Line.png",
+      "sha256": "ccc308c88ae15e47a3679388bd7ea084a5d29dda4af7a63e47ac58a539a94f1d",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/seat_positions.json",
+      "project": "Assets/Lanbai/Fonts/seat_positions.json",
+      "sha256": "854f63afa049d9cf75d89c3fbc4735403b084f6e90f09d71cd4fd0ba1601fdfa",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/strings_all.json",
+      "project": "Assets/Lanbai/Fonts/strings_all.json",
+      "sha256": "9cffbada84bb0c11e03e2331715cfcbc2018f5bab27ee8162d4950b183c904d9",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/subtitle_depth.json",
+      "project": "Assets/Lanbai/Fonts/subtitle_depth.json",
+      "sha256": "a663724c43b6094e313e74899aa3b7c894290ac0752c7efa032e4445bda31849",
+      "matches_upstream": true
+    },
+    {
+      "source": "Fonts/verify.md",
+      "project": "Assets/Lanbai/Fonts/verify.md",
+      "sha256": "a3c48966a6cdd1c1efbcf874bc202296b435e0f217f001fa4a19a2fc75bb0ce7",
+      "matches_upstream": true
+    },
+    {
+      "source": "Mirrors/Editor/LanbaiMirrorsBuild.cs",
+      "project": "Assets/Lanbai/Mirrors/Editor/LanbaiMirrorsBuild.cs",
+      "sha256": "b15ac6ee123d7e0ae1559b4ec4108de062c36266b709990a2532eff92c8462c7",
+      "matches_upstream": true
+    },
+    {
+      "source": "Mirrors/Editor/LanbaiMirrorsData.cs",
+      "project": "Assets/Lanbai/Mirrors/Editor/LanbaiMirrorsData.cs",
+      "sha256": "96dd315bff9aecdd883b2899e9ba7968bc427c1f71597ac73923cd641768def7",
+      "matches_upstream": true
+    },
+    {
+      "source": "Mirrors/MirrorSchedule.json",
+      "project": "Assets/Lanbai/Mirrors/MirrorSchedule.json",
+      "sha256": "af499bee1fdbb1cbdc31da416c5e84366a3cce0ce0773248730d5ff51d5d19ad",
+      "matches_upstream": true
+    },
+    {
+      "source": "Mirrors/Models/BronzeMirror.fbx",
+      "project": "Assets/Lanbai/Mirrors/Models/BronzeMirror.fbx",
+      "sha256": "9a1bf221a642ca287efed719fdb2b7652a7425f3624a94dc985562629a5c98d3",
+      "matches_upstream": true
+    },
+    {
+      "source": "Mirrors/README_Mirrors.md",
+      "project": "Assets/Lanbai/Mirrors/README_Mirrors.md",
+      "sha256": "b1901f7389f84c8e9685d85146d89e4de8000f0b08189a3f7841ece08aa0375f",
+      "matches_upstream": true
+    },
+    {
+      "source": "Mirrors/Runtime/LanbaiMirrorsDriver.cs",
+      "project": "Assets/Lanbai/Mirrors/Runtime/LanbaiMirrorsDriver.cs",
+      "sha256": "6b19a14c39bb53eb19316976106802ac1d99a23ca9593c67c7bad7e455cf1c8b",
+      "matches_upstream": true
+    },
+    {
+      "source": "Mirrors/STATUS.md",
+      "project": "Assets/Lanbai/Mirrors/STATUS.md",
+      "sha256": "a16bf0cbf795d43d6a97183a4fcc0fdc5bf39178ebb6e13094e734c869d2b404",
+      "matches_upstream": true
+    },
+    {
+      "source": "Mirrors/Shaders/LanbaiMirror.cginc",
+      "project": "Assets/Lanbai/Mirrors/Shaders/LanbaiMirror.cginc",
+      "sha256": "3e7c58554279b518a81173f4789bcafb9b4c4ad6c4c52868092e4db588e53522",
+      "matches_upstream": true
+    },
+    {
+      "source": "Mirrors/Shaders/Lanbai_BronzeMirror.shader",
+      "project": "Assets/Lanbai/Mirrors/Shaders/Lanbai_BronzeMirror.shader",
+      "sha256": "a67c4e09e4c66d1bf3bc01968cc694f6c813368d65760a4866562fbb8f92a1bf",
+      "matches_upstream": true
+    },
+    {
+      "source": "Mirrors/Shaders/Lanbai_MirrorDust.shader",
+      "project": "Assets/Lanbai/Mirrors/Shaders/Lanbai_MirrorDust.shader",
+      "sha256": "c73fe369a5b9472210f5ccf2791148253c77d893a1aa6d958684b21842420288",
+      "matches_upstream": true
+    },
+    {
+      "source": "Mirrors/Shaders/Lanbai_MirrorStars.shader",
+      "project": "Assets/Lanbai/Mirrors/Shaders/Lanbai_MirrorStars.shader",
+      "sha256": "e11ae71f232a588afe050101cf5148433872780e47ff86776eb484f712cabc4c",
+      "matches_upstream": true
+    },
+    {
+      "source": "Mirrors/Textures/T_MirrorBackSky_Cube.png",
+      "project": "Assets/Lanbai/Mirrors/Textures/T_MirrorBackSky_Cube.png",
+      "sha256": "a8acb40cbd209e291f9a065bee9216e8d135a9aed7c1585758ab73e2ab86ab59",
+      "matches_upstream": true
+    },
+    {
+      "source": "Mirrors/Textures/T_MirrorBack_Centre_Mask_2048.png",
+      "project": "Assets/Lanbai/Mirrors/Textures/T_MirrorBack_Centre_Mask_2048.png",
+      "sha256": "d9158d528df850d7b006b9110114a6c26a2f86b1e6e945896a5a9e55bc8df666",
+      "matches_upstream": true
+    },
+    {
+      "source": "Mirrors/Textures/T_MirrorBack_Centre_Normal_2048.png",
+      "project": "Assets/Lanbai/Mirrors/Textures/T_MirrorBack_Centre_Normal_2048.png",
+      "sha256": "5a0f45793763e94d8e0fce9acd3c8485077e2ac88de3a4f24402c2c2143e7edb",
+      "matches_upstream": true
+    },
+    {
+      "source": "Mirrors/Textures/T_MirrorBack_Mask_2048.png",
+      "project": "Assets/Lanbai/Mirrors/Textures/T_MirrorBack_Mask_2048.png",
+      "sha256": "682f1c296bcae7b826b656af1b4eded7d81c74cd48b671d9fbfcc4a4066e4eb4",
+      "matches_upstream": true
+    },
+    {
+      "source": "Mirrors/Textures/T_MirrorBack_Normal_2048.png",
+      "project": "Assets/Lanbai/Mirrors/Textures/T_MirrorBack_Normal_2048.png",
+      "sha256": "5b86c658b5137e1fcd27a535ffd414aa10a4796d6aa0780be1d1ae4be96a4814",
+      "matches_upstream": true
+    },
+    {
+      "source": "Mirrors/Textures/T_MirrorFace_2048.png",
+      "project": "Assets/Lanbai/Mirrors/Textures/T_MirrorFace_2048.png",
+      "sha256": "50e8289070f2a169e8ca820fccb63f12e1fd28c3e62deb91c79e202de9a7a704",
+      "matches_upstream": true
+    },
+    {
+      "source": "Mirrors/Textures/T_MirrorGlyphs_1024.png",
+      "project": "Assets/Lanbai/Mirrors/Textures/T_MirrorGlyphs_1024.png",
+      "sha256": "e2fb9ba3e0be867857755d91815748c37deb25a06f7e1860d286222dbcfea213",
+      "matches_upstream": true
+    },
+    {
+      "source": "Mirrors/Textures/T_MirrorRimCloud_2048x256.png",
+      "project": "Assets/Lanbai/Mirrors/Textures/T_MirrorRimCloud_2048x256.png",
+      "sha256": "0365c0d21b99a0c6b109a9f7b34539537d460108b433131d21915ced2d8c2423",
+      "matches_upstream": true
+    },
+    {
+      "source": "Mirrors/总导演意见.md",
+      "project": "Assets/Lanbai/Mirrors/总导演意见.md",
+      "sha256": "1e812ce4b262accb321febaeee7241e1ed07cc2a1ac1798bae72ee0a451c702f",
+      "matches_upstream": true
+    },
+    {
+      "source": "Mirrors/总工程师意见.md",
+      "project": "Assets/Lanbai/Mirrors/总工程师意见.md",
+      "sha256": "9847d34a52bdedddb31ddd0f5b0121e2a235d09bec153b5b777b7fec31defd89",
+      "matches_upstream": true
+    },
+    {
+      "source": "Mirrors/暂停总结.md",
+      "project": "Assets/Lanbai/Mirrors/暂停总结.md",
+      "sha256": "d9cf22579d0d027bde30b102fa6959efb76d323715b1e72a2074554c2362c49b",
+      "matches_upstream": true
+    },
+    {
+      "source": "Mirrors/给总控.md",
+      "project": "Assets/Lanbai/Mirrors/给总控.md",
+      "sha256": "e4606aef3847ed427172754db0618c5668654a336c44b8b0dfcfef08f8df370e",
+      "matches_upstream": true
+    },
+    {
+      "source": "Act04c_Inside/Runtime/LanbaiInsideDriver.cs",
+      "project": "Assets/Lanbai/Act04c_Inside/Runtime/LanbaiInsideDriver.cs",
+      "sha256": "e0ddb2b40ad240fd8959851fa80973393da0a826c2f2d9e61fe8b8899ab5283a",
+      "matches_upstream": true
+    },
+    {
+      "source": "Act04c_Inside/Runtime/LanbaiInsideTestClock.cs",
+      "project": "Assets/Lanbai/Act04c_Inside/Runtime/LanbaiInsideTestClock.cs",
+      "sha256": "5d91f99d0daf31bc011583f27d29d956e8b47f0709d75f3cdbbb65f38ff92698",
+      "matches_upstream": true
+    },
+    {
+      "source": "Act04c_Inside/Runtime/LanbaiSkylightSpot.cs",
+      "project": "Assets/Lanbai/Act04c_Inside/Runtime/LanbaiSkylightSpot.cs",
+      "sha256": "92c12f59e1bf93f0ff26f53132eb25029bd598a374221881284db247be1238a6",
+      "matches_upstream": true
+    },
+    {
+      "source": "Gate/Editor/LanbaiGateDriverBuilder.cs",
+      "project": "Assets/Lanbai/Gate/Editor/LanbaiGateDriverBuilder.cs",
+      "sha256": "f511fdbcb274e2e4bef4ac647b3a58880699bb5fffd29484dd10425977d42052",
+      "matches_upstream": true
+    },
+    {
+      "source": "Gate/GateDriver_Bake.json",
+      "project": "Assets/Lanbai/Gate/GateDriver_Bake.json",
+      "sha256": "e73a1e5eaae76709bb36b0b94b58cf9809583080b2a0522103306eda6b977c31",
+      "matches_upstream": true
+    },
+    {
+      "source": "Gate/GateLayout_v2.json",
+      "project": "Assets/Lanbai/Gate/GateLayout_v2.json",
+      "sha256": "33137b0162ac4173aeb932918a29fd840ff01b6c474f48b659b4faa75ce62922",
+      "matches_upstream": true
+    },
+    {
+      "source": "Gate/Runtime/LanbaiGateDriver.cs",
+      "project": "Assets/Lanbai/Gate/Runtime/LanbaiGateDriver.cs",
+      "sha256": "cda86a28184beaaf21fa49d5690c90dc5f8320c1dda119d43811bf2815ae7ae1",
+      "matches_upstream": true
+    },
+    {
+      "source": "Gate/Runtime/LanbaiGateTestClock.cs",
+      "project": "Assets/Lanbai/Gate/Runtime/LanbaiGateTestClock.cs",
+      "sha256": "d0c566fd1be55434c300dd688b8d8587442b3302b96300deea743a609ddd38cc",
+      "matches_upstream": true
+    },
+    {
+      "source": "Gate/Shaders/LanbaiGateSky.cginc",
+      "project": "Assets/Lanbai/Gate/Shaders/LanbaiGateSky.cginc",
+      "sha256": "70ddb6a5e3f1d91fc850918ddc93a8405a6485e6be033615a9974661f8136b70",
+      "matches_upstream": true
+    },
+    {
+      "source": "Gate/Shaders/Lanbai_GateAirSky.shader",
+      "project": "Assets/Lanbai/Gate/Shaders/Lanbai_GateAirSky.shader",
+      "sha256": "85ed7c4b5bddf774edd46043e738836cbb1bdd0b4b40ec71677c5ecfc6d6c1c4",
+      "matches_upstream": true
+    },
+    {
+      "source": "Gate/Shaders/Lanbai_TentacleSway.shader",
+      "project": "Assets/Lanbai/Gate/Shaders/Lanbai_TentacleSway.shader",
+      "sha256": "b26cc9f3c62fc6b5b26ede4728e0cb5e9df3781b42778299fc5557dc3e263069",
+      "matches_upstream": true
+    },
+    {
+      "source": "Gate/Shaders/Lanbai_TentacleTide_v2.shader",
+      "project": "Assets/Lanbai/Gate/Shaders/Lanbai_TentacleTide_v2.shader",
+      "sha256": "b6b61037bd3a62c6642923852afce42f2a176e1737727f2d214d20709f4fb5ae",
+      "matches_upstream": true
+    },
+    {
+      "source": "GateClouds/Editor/LanbaiGateCloudsBuilder.cs",
+      "project": "Assets/Lanbai/GateClouds/Editor/LanbaiGateCloudsBuilder.cs",
+      "sha256": "82f773901d77661ae90c1a9bed689542008c5a2497a57d867a181605fa064640",
+      "matches_upstream": true
+    },
+    {
+      "source": "GateClouds/GateClouds_Layout.json",
+      "project": "Assets/Lanbai/GateClouds/GateClouds_Layout.json",
+      "sha256": "0ea864e0e7780cf1aff560afecbe76980f89800897ba71a193b4fb2dfeb74591",
+      "matches_upstream": true
+    },
+    {
+      "source": "GateClouds/GateClouds_Skirts.json",
+      "project": "Assets/Lanbai/GateClouds/GateClouds_Skirts.json",
+      "sha256": "82fbd3a3b068027686cb207695f456a019dbba466967ea3db916e2c0c16877bd",
+      "matches_upstream": true
+    },
+    {
+      "source": "GateClouds/README_GateClouds.md",
+      "project": "Assets/Lanbai/GateClouds/README_GateClouds.md",
+      "sha256": "2ca3bf93955e51f0a1bef08691fda1700b986cc6f878db7eeafa3cb34cc87f40",
+      "matches_upstream": true
+    },
+    {
+      "source": "GateClouds/Runtime/LanbaiGateClouds.cs",
+      "project": "Assets/Lanbai/GateClouds/Runtime/LanbaiGateClouds.cs",
+      "sha256": "dedcdac58d4e18134df5d114e611f79c9908042e3aad9a22bfe400530d2b2f47",
+      "matches_upstream": true
+    },
+    {
+      "source": "GateClouds/STATUS.md",
+      "project": "Assets/Lanbai/GateClouds/STATUS.md",
+      "sha256": "64221c3d2ae811f413a74ddb720aa9035ffba319a93e15739ae3604245ceae79",
+      "matches_upstream": true
+    },
+    {
+      "source": "GateClouds/Shaders/LanbaiCloudVolume.cginc",
+      "project": "Assets/Lanbai/GateClouds/Shaders/LanbaiCloudVolume.cginc",
+      "sha256": "c4526abab69e767c222a7595442aa28b1da53a1133f9d2ad7144091237b063ef",
+      "matches_upstream": true
+    },
+    {
+      "source": "GateClouds/Shaders/Lanbai_GateBeam.shader",
+      "project": "Assets/Lanbai/GateClouds/Shaders/Lanbai_GateBeam.shader",
+      "sha256": "fd93cbc2d3156086bc6c9462437b479eb20064395d8ffa05051cf8df8080b7f0",
+      "matches_upstream": true
+    },
+    {
+      "source": "GateClouds/Shaders/Lanbai_GateCloudCard.shader",
+      "project": "Assets/Lanbai/GateClouds/Shaders/Lanbai_GateCloudCard.shader",
+      "sha256": "55257942146d5aa1cb869bf10b7aa1545758a52ee60dd6c6268f8333ba449f5a",
+      "matches_upstream": true
+    },
+    {
+      "source": "GateClouds/Shaders/Lanbai_GateCloudDeck.shader",
+      "project": "Assets/Lanbai/GateClouds/Shaders/Lanbai_GateCloudDeck.shader",
+      "sha256": "d862622d09945ec9d9557dc4d87b914a957e483a1396974a3250b59b4f8322c7",
+      "matches_upstream": true
+    },
+    {
+      "source": "GateClouds/Shaders/Lanbai_GateVolumeDeck.shader",
+      "project": "Assets/Lanbai/GateClouds/Shaders/Lanbai_GateVolumeDeck.shader",
+      "sha256": "f5f34b33a4a9a2fbc822b59f712f077c58866d0058300ebd911ff549acdae513",
+      "matches_upstream": true
+    },
+    {
+      "source": "GateClouds/Textures/Deck_Detail_1024.png",
+      "project": "Assets/Lanbai/GateClouds/Textures/Deck_Detail_1024.png",
+      "sha256": "7c9ebda436f49e08d71423c95f0264db3985efe8f0fcc9cb2de14ffa520faef1",
+      "matches_upstream": true
+    },
+    {
+      "source": "GateClouds/Textures/Deck_Macro_512.png",
+      "project": "Assets/Lanbai/GateClouds/Textures/Deck_Macro_512.png",
+      "sha256": "bc35f451862b1928e57e14b7a17040c6133ff6fb52d88563a0083d06559998df",
+      "matches_upstream": true
+    },
+    {
+      "source": "GateClouds/Textures/GateCard_Bank.png",
+      "project": "Assets/Lanbai/GateClouds/Textures/GateCard_Bank.png",
+      "sha256": "b7b4a9d14352ce38e7d4aeb293083dc533a81b68f6def7884d60c020c3907998",
+      "matches_upstream": true
+    },
+    {
+      "source": "GateClouds/Textures/GateCard_Congestus.png",
+      "project": "Assets/Lanbai/GateClouds/Textures/GateCard_Congestus.png",
+      "sha256": "28444fdea6d17e65d20b38461d9048d4d5087f156ddc7310e3eb9c961f5d3ee3",
+      "matches_upstream": true
+    },
+    {
+      "source": "GateClouds/Textures/GateCard_Puff.png",
+      "project": "Assets/Lanbai/GateClouds/Textures/GateCard_Puff.png",
+      "sha256": "d2abf07dbeece03474056d8447c294ee635e530e870668ed17bfc9e2751eb515",
+      "matches_upstream": true
+    },
+    {
+      "source": "GateClouds/Textures/GateCard_Strato.png",
+      "project": "Assets/Lanbai/GateClouds/Textures/GateCard_Strato.png",
+      "sha256": "bf977064a7d427beba4ce9be5503fcc60abd0a837156443455371a4822c48d16",
+      "matches_upstream": true
+    },
+    {
+      "source": "GateClouds/Textures/GateCard_Wisp.png",
+      "project": "Assets/Lanbai/GateClouds/Textures/GateCard_Wisp.png",
+      "sha256": "e6a171b555befa2b9f88c1c0ba469a716b8ba3b5e7c71bc46a4ee00597733f36",
+      "matches_upstream": true
+    },
+    {
+      "source": "GateClouds/Textures/deck_tiles.json",
+      "project": "Assets/Lanbai/GateClouds/Textures/deck_tiles.json",
+      "sha256": "898c6e964b08ece147d6af3272d7a5134e78fb0806147e7fcceace2851c7d06d",
+      "matches_upstream": true
+    },
+    {
+      "source": "GateClouds/Textures/gate_cards.json",
+      "project": "Assets/Lanbai/GateClouds/Textures/gate_cards.json",
+      "sha256": "46c8c2777dfe453b7ae87a4bd19210f1c0cfa727a2547737e060385abad759a6",
+      "matches_upstream": true
+    },
+    {
+      "source": "GateClouds/总工程师意见.md",
+      "project": "Assets/Lanbai/GateClouds/总工程师意见.md",
+      "sha256": "1fe31ab49b8e232c75a3627e109a8b59813f0febea6d1273585630e8f66dfcf6",
+      "matches_upstream": true
+    },
+    {
+      "source": "GateClouds/暂停总结.md",
+      "project": "Assets/Lanbai/GateClouds/暂停总结.md",
+      "sha256": "a38ac6eee3312373ce86f395e3ce8cd664e63ae1aaa6f87a219e0983f68e2582",
+      "matches_upstream": true
+    },
+    {
+      "source": "GateClouds/给总控.md",
+      "project": "Assets/Lanbai/GateClouds/给总控.md",
+      "sha256": "bc32d5095a4761a6b3999fd7c4ab06393b431289a141d9dc3e94db226f67f6bf",
+      "matches_upstream": true
+    },
+    {
+      "source": "GateClouds/给本地_补丁_LB_GateTest_Run.md",
+      "project": "Assets/Lanbai/GateClouds/给本地_补丁_LB_GateTest_Run.md",
+      "sha256": "95cc2bcd60056915ea4ac6ae522723af50050e550ad6722805862459c28b1612",
+      "matches_upstream": true
+    },
+    {
+      "source": "GateClouds/美术审片意见.md",
+      "project": "Assets/Lanbai/GateClouds/美术审片意见.md",
+      "sha256": "71904ada18e350ea32b9cd33ebb1cbc0daa3ba07c814a9b8c0f618446f3b6140",
+      "matches_upstream": true
+    },
+    {
+      "source": "Lamps/Tree/Editor/LanbaiTreeBuilder.cs",
+      "project": "Assets/Lanbai/Lamps/Tree/Editor/LanbaiTreeBuilder.cs",
+      "sha256": "70174712ab78c6425388ff4562939a1d6aeddce2d0b7752dcaf584d134525b5a",
+      "matches_upstream": true
+    },
+    {
+      "source": "Lamps/Tree/Models/Tree_A1.fbx",
+      "project": "Assets/Lanbai/Lamps/Tree/Models/Tree_A1.fbx",
+      "sha256": "be0101c91bbfa97b9260c2a8b528bfca3408cf08e28a226d5c8d2b48fa68d069",
+      "matches_upstream": true
+    },
+    {
+      "source": "Lamps/Tree/Models/Tree_A2.fbx",
+      "project": "Assets/Lanbai/Lamps/Tree/Models/Tree_A2.fbx",
+      "sha256": "8849ee239a67f40773bf4108ae226e0dc420d4d1c0d3118b31d59fcb59490a6e",
+      "matches_upstream": true
+    },
+    {
+      "source": "Lamps/Tree/Models/Tree_A3.fbx",
+      "project": "Assets/Lanbai/Lamps/Tree/Models/Tree_A3.fbx",
+      "sha256": "1efd8f1efe57da000d4f27a1b22020834bc0c88ee3470696b341897c26833b93",
+      "matches_upstream": true
+    },
+    {
+      "source": "Lamps/Tree/Models/Tree_B1.fbx",
+      "project": "Assets/Lanbai/Lamps/Tree/Models/Tree_B1.fbx",
+      "sha256": "bfe851e55f9fd3cae1f14397c5cbd19a7befbbffa34d5d0e69fac5321f6e3fa9",
+      "matches_upstream": true
+    },
+    {
+      "source": "Lamps/Tree/README_样板树.md",
+      "project": "Assets/Lanbai/Lamps/Tree/README_样板树.md",
+      "sha256": "ef1b4503ea51f5e44a2ef8c536900a3d8a1e99483e78a37b02274ad405b9e835",
+      "matches_upstream": true
+    },
+    {
+      "source": "Lamps/Tree/Shaders/LanbaiTree.cginc",
+      "project": "Assets/Lanbai/Lamps/Tree/Shaders/LanbaiTree.cginc",
+      "sha256": "67ff5eda46dc9906bc714f498577d75ecdafa480ce6a1709db8c56c8db6569bd",
+      "matches_upstream": true
+    },
+    {
+      "source": "Lamps/Tree/Shaders/Lanbai_TreeBark.shader",
+      "project": "Assets/Lanbai/Lamps/Tree/Shaders/Lanbai_TreeBark.shader",
+      "sha256": "723c7e6253fcf4b802e70540b2198aa8168a2aab0b718bf61e960be02849e89b",
+      "matches_upstream": true
+    },
+    {
+      "source": "Lamps/Tree/Shaders/Lanbai_TreeLeaf.shader",
+      "project": "Assets/Lanbai/Lamps/Tree/Shaders/Lanbai_TreeLeaf.shader",
+      "sha256": "bbc577212ccfd24a52a8f8be0acb5a50bc8c005eac77efca9b4d42f5f8b46487",
+      "matches_upstream": true
+    },
+    {
+      "source": "Lamps/Tree/Textures/T_Tree_Bark_Albedo.png",
+      "project": "Assets/Lanbai/Lamps/Tree/Textures/T_Tree_Bark_Albedo.png",
+      "sha256": "62727fa76ab850428a186b78622e2781ae97b404e50bec38f59fa353a922086f",
+      "matches_upstream": true
+    },
+    {
+      "source": "Lamps/Tree/Textures/T_Tree_Bark_Mask.png",
+      "project": "Assets/Lanbai/Lamps/Tree/Textures/T_Tree_Bark_Mask.png",
+      "sha256": "756a4c3990889fc137388051d2c5fd18abad9d257d0ca0b65a1fbdcadcfbf638",
+      "matches_upstream": true
+    },
+    {
+      "source": "Lamps/Tree/Textures/T_Tree_Bark_Normal.png",
+      "project": "Assets/Lanbai/Lamps/Tree/Textures/T_Tree_Bark_Normal.png",
+      "sha256": "f37f4c3b784250903c6f9c148c179161dfba126df16770a677fc517028c69dcd",
+      "matches_upstream": true
+    },
+    {
+      "source": "Lamps/Tree/Textures/T_Tree_Impostor_Tree_A1.png",
+      "project": "Assets/Lanbai/Lamps/Tree/Textures/T_Tree_Impostor_Tree_A1.png",
+      "sha256": "6c24e97831373740e7b9936577e121e9b99f07481021244b2bf649eb9a2e12ac",
+      "matches_upstream": true
+    },
+    {
+      "source": "Lamps/Tree/Textures/T_Tree_Impostor_Tree_A2.png",
+      "project": "Assets/Lanbai/Lamps/Tree/Textures/T_Tree_Impostor_Tree_A2.png",
+      "sha256": "a52b19b0f2c20adac809b7393e602d7c4f076d4d43301a7ef5c87e2ea348b975",
+      "matches_upstream": true
+    },
+    {
+      "source": "Lamps/Tree/Textures/T_Tree_Impostor_Tree_A3.png",
+      "project": "Assets/Lanbai/Lamps/Tree/Textures/T_Tree_Impostor_Tree_A3.png",
+      "sha256": "53ed28410d3778688230bf8e24907cb3644f362d61dced0bcb7a70879a691e4d",
+      "matches_upstream": true
+    },
+    {
+      "source": "Lamps/Tree/Textures/T_Tree_Impostor_Tree_B1.png",
+      "project": "Assets/Lanbai/Lamps/Tree/Textures/T_Tree_Impostor_Tree_B1.png",
+      "sha256": "0ea7959d5c55fdf7667248e835a8053359f7072cf30d650bd4752c3dde9ced06",
+      "matches_upstream": true
+    },
+    {
+      "source": "Lamps/Tree/Textures/T_Tree_LeafCluster_Albedo.png",
+      "project": "Assets/Lanbai/Lamps/Tree/Textures/T_Tree_LeafCluster_Albedo.png",
+      "sha256": "8ae2cc23798d21ceeed316dcb0a2deffddaaaa700210c0031c3a341eb46b5973",
+      "matches_upstream": true
+    },
+    {
+      "source": "Lamps/Tree/Textures/T_Tree_LeafCluster_Mask.png",
+      "project": "Assets/Lanbai/Lamps/Tree/Textures/T_Tree_LeafCluster_Mask.png",
+      "sha256": "8a6bff9b81ab6a7cd6739c95fd08263e2b8d688a313ffa37e889cf1ef8a9dd1c",
+      "matches_upstream": true
+    },
+    {
+      "source": "Lamps/Tree/Textures/T_Tree_LeafCluster_Normal.png",
+      "project": "Assets/Lanbai/Lamps/Tree/Textures/T_Tree_LeafCluster_Normal.png",
+      "sha256": "c64f07520dcd410edfd09741617615c1f4c700d65f258b22dd984738660596a6",
+      "matches_upstream": true
+    },
+    {
+      "source": "Lamps/Tree/Tree_Info.json",
+      "project": "Assets/Lanbai/Lamps/Tree/Tree_Info.json",
+      "sha256": "e41e9701360cd6654abbde420547a259c4e11edbefab37f20cdd6dfd20ac5ecb",
+      "matches_upstream": true
+    },
+    {
+      "source": "Lamps/Tree/UnityTest/tree_sample.json",
+      "project": "Assets/Lanbai/Lamps/Tree/UnityTest/tree_sample.json",
+      "sha256": "fcdd5ea89b7ba7f945653bd071d81ad408c5a6f19c4e46b704289bbcab8cbb93",
+      "matches_upstream": true
+    },
+    {
+      "source": null,
+      "project": "Assets/Lanbai/Scripts/LB_Journey.cs",
+      "sha256": "b97b838aa5a32bd9f2ab63d726ec60925749a48ec4c3368694a67dde3443a9e8",
+      "matches_upstream": false
+    },
+    {
+      "source": null,
+      "project": "Assets/Lanbai/Scripts/LB_Seat.cs",
+      "sha256": "2f3f92962c2d8bc5fcea3a4ae6292776e3171a942e15a544058c60c4cf8c7882",
+      "matches_upstream": false
+    },
+    {
+      "source": "Director/Runtime/LanbaiActDispatcher.cs",
+      "project": "Assets/Lanbai/Director/Runtime/LanbaiActDispatcher.cs",
+      "sha256": "3bdc706092d5c7691c74cadb08f4a392975cb043df312e93de5981915da1ef5d",
+      "matches_upstream": false
+    },
+    {
+      "source": "Director/Editor/LanbaiDirectorGen.cs",
+      "project": "Assets/Lanbai/Director/Editor/LanbaiDirectorGen.cs",
+      "sha256": "3d68bf6cf95e1859f951cff16f17cc7280e6740df9e35ee318e856a85a6d00ee",
+      "matches_upstream": true
+    },
+    {
+      "source": "Overlay/Runtime/LanbaiOverlay.cs",
+      "project": "Assets/Lanbai/Overlay/Runtime/LanbaiOverlay.cs",
+      "sha256": "4a6a18cb53ea39f5a1aab92534fc7e1591acd64700a0c5ee360fb9b964be8c4b",
+      "matches_upstream": true
+    }
+  ]
+}

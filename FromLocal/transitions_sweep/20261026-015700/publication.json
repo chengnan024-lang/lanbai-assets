@@ -1,0 +1,32 @@
+{
+  "source_local": "E:\\IDMdownload\\VRCC\\dream\\LanbaiReports\\tests\\transitions_sweep\\20261026-015700",
+  "visual_validity": "camera UI excluded; still requires visual review",
+  "omitted": "Private consent note; backup_before and transient state; invalid-run PNG bulk",
+  "files": [
+    {
+      "path": "console.jsonl",
+      "bytes": 8247,
+      "sha256": "384f782677ff8e2a306f6187c036fe87e65b1bf9d39c779c8fccba709dd7b98a"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 8531,
+      "sha256": "5c8651392935ae6989637565b61a26c622087d793f3278fd7252743e7da3ca3b"
+    },
+    {
+      "path": "result.json",
+      "bytes": 397,
+      "sha256": "33f2fd918999576423460416ed188101ceb2ea37dfc59a13714f355f8330b32a"
+    },
+    {
+      "path": "summary.md",
+      "bytes": 4986,
+      "sha256": "40a6c7b1741a3e92d8e46487c330f4acddd3b3ac6026bad4e8dad803ba862479"
+    },
+    {
+      "path": "test_definition.json",
+      "bytes": 3631,
+      "sha256": "2246d9a913b0afbf78dce347f72ab18bc8af6679b35ff515a9c70aeb89a5c800"
+    }
+  ]
+}

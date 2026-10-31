@@ -1,0 +1,132 @@
+{
+  "source_local": "E:\\IDMdownload\\VRCC\\dream\\LanbaiReports\\tests\\flicker_probe\\20261026-020219",
+  "visual_validity": "camera UI excluded; still requires visual review",
+  "omitted": "Private consent note; backup_before and transient state; invalid-run PNG bulk",
+  "files": [
+    {
+      "path": "console.jsonl",
+      "bytes": 97139,
+      "sha256": "ff84b70673d2abb3ef4259ec67e99fb350fb72faa91e16b96008b0efd5e304da"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 13549,
+      "sha256": "bac069d51a69eb6d4d7bce7540d922d628c112ad3e0e5b8e06d2fd929d39b73a"
+    },
+    {
+      "path": "result.json",
+      "bytes": 254,
+      "sha256": "0b99fadda3b41370f7dec4299c2bf832c143855ee0af35ca3e32aa71461d2fea"
+    },
+    {
+      "path": "summary.md",
+      "bytes": 6534,
+      "sha256": "542bb9992fc2a36fb1c5f53266381c658116660f04b6b61a10cccfa105440a58"
+    },
+    {
+      "path": "test_definition.json",
+      "bytes": 3135,
+      "sha256": "46ca62b5b8a8baaa3d403a0001e0d5a281640b20966c8ce6cc8d90cd38f2d0f2"
+    },
+    {
+      "path": "probe/f12/as_is/curve.png",
+      "bytes": 6688,
+      "sha256": "2cd9a49c15b2320b2bed40f2e72389d27cab392bc64b61a35e77e04ad6589e94"
+    },
+    {
+      "path": "probe/f12/as_is/diff_0991.501_frame.png",
+      "bytes": 297003,
+      "sha256": "e513d869ba6a18a2f8c9b92654bf9420366767bcdd0db2b1de156dd3f15696bf"
+    },
+    {
+      "path": "probe/f12/as_is/diff_0991.501_heat.png",
+      "bytes": 285612,
+      "sha256": "09850bf35dbd8f774679897388c6c33477a0f6e9481917c9f343976eebfc797b"
+    },
+    {
+      "path": "probe/f12/as_is/diff_0991.759_frame.png",
+      "bytes": 294736,
+      "sha256": "742ced85e5b869578c8d23d1b77c216da7985a44983aa425a9b7f6b7909ec659"
+    },
+    {
+      "path": "probe/f12/as_is/diff_0991.759_heat.png",
+      "bytes": 284653,
+      "sha256": "7929902453e7f18f86d33468bdc14fc49f49bfbc406f0fc6a54a23da51dccff7"
+    },
+    {
+      "path": "probe/f12/as_is/diff_0992.003_frame.png",
+      "bytes": 292247,
+      "sha256": "9fbb45d3cfaf293e1805b833e0d6c593c3ded950eabaa1e778bf5dfadad20c1b"
+    },
+    {
+      "path": "probe/f12/as_is/diff_0992.003_heat.png",
+      "bytes": 274044,
+      "sha256": "ab79d36e641111c92e92a74aa669081721831ebaa8ccff4ea014fd27c56be0ad"
+    },
+    {
+      "path": "probe/f12/as_is/diff_0992.249_frame.png",
+      "bytes": 289981,
+      "sha256": "2691c46ecd31fc0447403252e83518096a785e89c806623133e5db309a39c979"
+    },
+    {
+      "path": "probe/f12/as_is/diff_0992.249_heat.png",
+      "bytes": 268069,
+      "sha256": "ce9f87f6ded3f397e2de36a45e932cd41af2d396fa48a44e0e778e643b6e54f1"
+    },
+    {
+      "path": "probe/f12/as_is/diff_0992.506_frame.png",
+      "bytes": 288141,
+      "sha256": "7ebfc29b8ef7563a79324737dcae9f6262a02692e09a269e8ca74b2abefc6ca8"
+    },
+    {
+      "path": "probe/f12/as_is/diff_0992.506_heat.png",
+      "bytes": 265168,
+      "sha256": "ce19c34cb7cbaa2ba2d254c9b1027e27a805bc746c78983016fe32586512102c"
+    },
+    {
+      "path": "probe/f12/as_is/diff_0994.254_frame.png",
+      "bytes": 274271,
+      "sha256": "4945189c52c2c767675270f1b00b05123af94f060fab0b97b4ee6505555b51ed"
+    },
+    {
+      "path": "probe/f12/as_is/diff_0994.254_heat.png",
+      "bytes": 263861,
+      "sha256": "e5459ce373f22ee110a8dc44b57af64444c91639d1afa66fedd2923cedcfb754"
+    },
+    {
+      "path": "probe/f12/as_is/diff_0994.500_frame.png",
+      "bytes": 273742,
+      "sha256": "8fa022570645ad765803e38ec6d3f5ed38c4ac08d8f9464c050ee8a75d3dd53c"
+    },
+    {
+      "path": "probe/f12/as_is/diff_0994.500_heat.png",
+      "bytes": 283588,
+      "sha256": "35326df7d86b8f54a1317f78fc5ecb7ce055197378e0f47435ce7af53755ab20"
+    },
+    {
+      "path": "probe/f12/as_is/diff_0994.749_frame.png",
+      "bytes": 272652,
+      "sha256": "c610aadafb0578a038d24a6a066829e2c93156ba2b91f0ef3b66ed01e4307c51"
+    },
+    {
+      "path": "probe/f12/as_is/diff_0994.749_heat.png",
+      "bytes": 288753,
+      "sha256": "14672dfbd99117054eafeb80979956df1388faca86e0ca7cd890a5e16751774e"
+    },
+    {
+      "path": "probe/f12/as_is/flicker_count.png",
+      "bytes": 102580,
+      "sha256": "9f573c30dfeddacafc1bb36d3e76459c06a224303ab920fa5a779eab7f7114c3"
+    },
+    {
+      "path": "probe/f12/as_is/frames.csv",
+      "bytes": 1985,
+      "sha256": "45f2fd3c2a29fe748af40fb3483d5441bb96d906722afd05a3551af1436fcfb7"
+    },
+    {
+      "path": "probe/f12/as_is/max_diff.png",
+      "bytes": 243069,
+      "sha256": "802bc1e43357010b4c6ebe5b9ad9448eeb7b98703d48dfe03d2e609c07f863e2"
+    }
+  ]
+}

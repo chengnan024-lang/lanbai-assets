@@ -1,0 +1,10 @@
+{
+  "test": "flicker_probe",
+  "run": "20261026-020323",
+  "exit": 0,
+  "status": "pass",
+  "preflight_only": false,
+  "out": "E:\\IDMdownload\\VRCC\\dream\\LanbaiReports/tests\\flicker_probe\\20261026-020323",
+  "blocked_reason": null,
+  "error": null
+}

@@ -1,0 +1,21 @@
+label=interact_departure time=17.99477 batch=True audio=0
+dbgT=4.802
+dbgSeg=1
+dbgDEV=0
+dbgB=0
+_sp=0
+_spHandAt=0
+_spBlackEnd=3.185891
+_spFade0=3.187625
+_spawnFadeEnded=True
+_journeyReady=True
+dispatcher.lastT=4.802
+dispatcher.activeCount=3
+dispatcher.gradeDEV=0
+dispatcher.spawnFadeTimeout=25
+dispatcher.spawnFadeMax=9.4
+dispatcher._fadeEndT=0
+dispatcher._fadeEnded=True
+dispatcher._handState=2
+dispatcher._fadeBegin=0.1858915
+overlay=(0.00, 0.00, 0.00, 0.00)

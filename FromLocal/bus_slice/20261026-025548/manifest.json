@@ -1,0 +1,680 @@
+{
+  "tool": "Lanbai.Test.Runner",
+  "tool_version": "1.2.2",
+  "test_id": "bus_slice",
+  "run_id": "20261026-025548",
+  "fromlocal": "FromLocal/bus_slice/20261026-025548/",
+  "test_file": "E:\\IDMdownload\\VRCC\\Backups\\continuation_20261026\\delivery_0058\\bus_window_calibration.json",
+  "test_sha256": "1e1e6b484049f52b49ae74114bc6150d7635446757a5e1bd14dfb1feca7c5414",
+  "mode": "bridge",
+  "started_utc": "2026-10-26T06:55:48.3834516Z",
+  "finished_utc": "2026-10-26T06:55:50.6054149Z",
+  "duration_s": 2.2,
+  "exit_code": 0,
+  "status": "pass",
+  "preflight_only": false,
+  "blocked_reason": null,
+  "error": null,
+  "repo": {
+    "repo_commit": "11c2f447c56444e171beb4f0cbe26fa8b505a6ab",
+    "repo_branch": "main",
+    "repo_dirty": null,
+    "repo_path": "E:\\IDMdownload\\VRCC\\lanbai-assets-gate-main-20261024",
+    "entry": "2026-10-26 approved serial delivery; current applied group manifests in delivery_0058",
+    "synced_at": "2026-10-26T01:39:27.181258-04:00",
+    "paths": null,
+    "tool_version": "1.2.2"
+  },
+  "copied": null,
+  "unity": {
+    "version": "2022.3.22f1",
+    "batch": true,
+    "color_space": "Linear",
+    "quality": "VRC High",
+    "build_target": "StandaloneWindows64",
+    "scene": "Assets/_LanbaiTest/bus_slice_new.unity"
+  },
+  "packages": {
+    "com.vrchat.worlds": "3.10.5",
+    "com.vrchat.base": "3.10.5",
+    "com.unity.postprocessing": "3.4.0",
+    "com.unity.textmeshpro": "3.0.6"
+  },
+  "gpu": {
+    "name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "vendor": "NVIDIA",
+    "api": "Direct3D11",
+    "version": "Direct3D 11.0 [level 11.1]",
+    "vram_mb": 7956,
+    "cpu": "13th Gen Intel(R) Core(TM) i9-13980HX",
+    "cpu_threads": 32,
+    "ram_mb": 32386,
+    "os": "Windows 11  (10.0.26200) 64bit"
+  },
+  "consent": {
+    "tool_version": "1.2.2",
+    "date": "2026-10-26",
+    "tests": [
+      "gate_clouds_test",
+      "tree_sample",
+      "flicker_probe",
+      "transitions_sweep",
+      "bus_slice",
+      "bus_dropin"
+    ],
+    "note": "User approved this version and scope; private approval record omitted."
+  },
+  "layers": {
+    "blender_offline": {
+      "status": "pending_cloud",
+      "note": "云端对照 Blender 参考帧后填；工具不填"
+    },
+    "unity_desktop": {
+      "status": "pass",
+      "note": "Unity 编辑器里的桌面渲染和编辑器估算的性能；工具检查全过也只记“待总导演看图”（D-41 #4）"
+    },
+    "vr_headset": {
+      "status": "not_tested",
+      "note": "工具不测头显，也不会把这一层标成通过；看 summary.md 末尾的头显清单"
+    }
+  },
+  "preflight": [
+    {
+      "item": "gpu",
+      "status": "ok",
+      "detail": "NVIDIA GeForce RTX 4060 Laptop GPU（Direct3D11，Direct3D 11.0 [level 11.1]，显存 7956 MB）"
+    },
+    {
+      "item": "resources",
+      "status": "ok",
+      "detail": "C:\\ 剩 38.4 GB，E:\\ 剩 66.3 GB，可用内存 12.6 GB"
+    },
+    {
+      "item": "consent",
+      "status": "ok",
+      "detail": "用户（当前聊天） 2026-10-26 同意（工具 1.2.2，测试 gate_clouds_test、tree_sample、flicker_probe、transitions_sweep、bus_slice、bus_dropin）；备份 E:\\IDMdownload\\VRCC\\Backups\\dream_20261025-000405.zip（在）"
+    },
+    {
+      "item": "unity",
+      "status": "ok",
+      "detail": "2022.3.22f1（要 2022.3.22f1）"
+    },
+    {
+      "item": "editor_state",
+      "status": "ok",
+      "detail": "Play False，编译中 False，导入中 False（要在编辑模式、编译和导入都完成后再跑）"
+    },
+    {
+      "item": "color_space",
+      "status": "ok",
+      "detail": "Linear（要 Linear）"
+    },
+    {
+      "item": "package:com.vrchat.worlds",
+      "status": "ok",
+      "detail": "3.10.5（要 3.10.5；读自 PackageManager）"
+    },
+    {
+      "item": "package:com.unity.postprocessing",
+      "status": "ok",
+      "detail": "3.4.0（要 3.4.0；读自 PackageManager）"
+    },
+    {
+      "item": "udonsharp",
+      "status": "ok",
+      "detail": "UdonSharp.UdonSharpBehaviour 在（UdonSharp.Runtime），随 VRChat Worlds SDK"
+    },
+    {
+      "item": "compile",
+      "status": "ok",
+      "detail": "scriptCompilationFailed False，Console 里的编译错误（含 UdonSharp 的）0 条（Console 共 4 条，原样在 console.jsonl）"
+    },
+    {
+      "item": "open_scenes",
+      "status": "ok",
+      "detail": "没有没保存的改动（Assets/Lanbai/Scenes/Lanbai_FullPreview.unity）"
+    },
+    {
+      "item": "sandbox",
+      "status": "ok",
+      "detail": "有上次遗留的沙盒（有标记），开跑时删掉重建"
+    },
+    {
+      "item": "grading",
+      "status": "warn",
+      "detail": "有旧的 Assets/Lanbai/Grades/，有套件的 Assets/Lanbai/Grading/；layer 4 =「Water」，layer 22 =「PostProcessing」。两套调色都在：工具不删，截图用的是参考相机上的那一套（PostProcessLayer 的 volumeLayer 写在 manifest 的截图记录里）"
+    },
+    {
+      "item": "sync_record",
+      "status": "ok",
+      "detail": "仓库提交 11c2f447c56444e171beb4f0cbe26fa8b505a6ab（2026-10-26T01:39:27.181258-04:00 同步，条目：2026-10-26 approved serial delivery; current applied group manifests in delivery_0058）"
+    },
+    {
+      "item": "git_status",
+      "status": "info",
+      "detail": "工程不是 git 仓库"
+    }
+  ],
+  "preconditions": [
+    {
+      "item": "文件夹 Assets/Lanbai/Common",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件夹 Assets/Lanbai/Bus",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "文件夹 Assets/Lanbai/Bus/Editor",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "类型 LanbaiBusSliceBuilder",
+      "status": "ok",
+      "detail": "脚本没拷进来或没编译"
+    },
+    {
+      "item": "菜单 蓝白/Build/车 切片",
+      "status": "ok",
+      "detail": ""
+    }
+  ],
+  "git_status_porcelain": null,
+  "steps": [
+    {
+      "phase": "build",
+      "index": 0,
+      "type": "menu",
+      "desc": "菜单 蓝白/Build/车 切片",
+      "status": "ok",
+      "out": "执行了菜单 蓝白/Build/车 切片",
+      "ms": 391.4
+    },
+    {
+      "phase": "after_build",
+      "index": 0,
+      "type": "assert_object",
+      "desc": "assert_object **/Slice_Seat",
+      "status": "ok",
+      "out": "在",
+      "ms": 0.6
+    },
+    {
+      "phase": "after_build",
+      "index": 1,
+      "type": "assert_object",
+      "desc": "assert_object **/Slice_SideWindow",
+      "status": "ok",
+      "out": "在",
+      "ms": 0.1
+    },
+    {
+      "phase": "after_build",
+      "index": 2,
+      "type": "assert_object",
+      "desc": "assert_object **/Slice_Pillar",
+      "status": "ok",
+      "out": "在",
+      "ms": 0
+    }
+  ],
+  "settings": [
+    {
+      "item": "vertex_compression_off",
+      "status": "ok",
+      "detail": "Player → Other Settings → Vertex Compression：要关掉 TexCoord0、TexCoord1、TexCoord2、TexCoord3、Color；现在的掩码 3846（ProjectSettings.asset 原文），都关了",
+      "changed_by_tool": false
+    }
+  ],
+  "checks": [
+    {
+      "id": "steps_ok",
+      "metric": "steps.errors",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "每一步都跑成功了",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "no_compile_errors",
+      "metric": "console.compile_errors",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "跑的过程中没有新的编译错误",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "no_exceptions",
+      "metric": "console.exceptions",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "跑的过程中 Console 没有异常（工具自己的不算）",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "no_console_errors",
+      "metric": "console.errors",
+      "op": "==",
+      "value": 0,
+      "gate": false,
+      "why": "跑的过程中 Console 没有 Error（默认只警告；测试定义可以改成必须）",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "no_undeclared_writes",
+      "metric": "writes.undeclared",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "沙盒和 allowed_writes 以外没有文件被改",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "project_settings_untouched",
+      "metric": "writes.project_settings_changed",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "ProjectSettings 没被改",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "ppv2_effective",
+      "metric": "capture.ppv2_effective",
+      "op": "==",
+      "value": 1,
+      "gate": true,
+      "why": "截图经过了 PPv2（开 / 关 PPv2 各渲一张小图，要不一样）",
+      "measured": 1,
+      "expect": "= 1",
+      "status": "pass"
+    },
+    {
+      "id": "setting_vertex_compression_off",
+      "metric": "settings.vertex_compression_off",
+      "op": "==",
+      "value": 1,
+      "gate": true,
+      "why": "Player → Other Settings → Vertex Compression：要关掉 TexCoord0、TexCoord1、TexCoord2、TexCoord3、Color；现在的掩码 3846（ProjectSettings.asset 原文），都关了",
+      "measured": 1,
+      "expect": "= 1",
+      "status": "pass"
+    },
+    {
+      "id": "window_05_rear_coverage",
+      "metric": "shot.window_05_rear.coverage",
+      "op": ">=",
+      "value": 0.3,
+      "gate": false,
+      "why": "Calibration measurement; does not relax official gate",
+      "measured": 0.13054116967012708,
+      "expect": "≥ 0.3",
+      "status": "warn"
+    },
+    {
+      "id": "window_05_rear_upper_coverage",
+      "metric": "shot.window_05_rear_upper.coverage",
+      "op": ">=",
+      "value": 0.3,
+      "gate": false,
+      "why": "Calibration measurement; does not relax official gate",
+      "measured": 0.023305134394113372,
+      "expect": "≥ 0.3",
+      "status": "warn"
+    },
+    {
+      "id": "window_05_front_upper_coverage",
+      "metric": "shot.window_05_front_upper.coverage",
+      "op": ">=",
+      "value": 0.3,
+      "gate": false,
+      "why": "Calibration measurement; does not relax official gate",
+      "measured": 0.01081089525773518,
+      "expect": "≥ 0.3",
+      "status": "warn"
+    },
+    {
+      "id": "window_10_rear_coverage",
+      "metric": "shot.window_10_rear.coverage",
+      "op": ">=",
+      "value": 0.3,
+      "gate": false,
+      "why": "Calibration measurement; does not relax official gate",
+      "measured": 0.09763785063154688,
+      "expect": "≥ 0.3",
+      "status": "warn"
+    },
+    {
+      "id": "window_10_rear_upper_coverage",
+      "metric": "shot.window_10_rear_upper.coverage",
+      "op": ">=",
+      "value": 0.3,
+      "gate": false,
+      "why": "Calibration measurement; does not relax official gate",
+      "measured": 0.0692904959420086,
+      "expect": "≥ 0.3",
+      "status": "warn"
+    },
+    {
+      "id": "window_10_front_upper_coverage",
+      "metric": "shot.window_10_front_upper.coverage",
+      "op": ">=",
+      "value": 0.3,
+      "gate": false,
+      "why": "Calibration measurement; does not relax official gate",
+      "measured": 0.05974308501081871,
+      "expect": "≥ 0.3",
+      "status": "warn"
+    }
+  ],
+  "shots": [
+    {
+      "id": "window_05_rear",
+      "file": "shots/window_05_rear.png",
+      "w": 834,
+      "h": 614,
+      "ss": 2,
+      "eye": [
+        0.6847149133682251,
+        1.8026976585388184,
+        1.9009149074554443
+      ],
+      "euler": [
+        332.9283447265625,
+        137.89869689941406,
+        -9.588242164682015e-07
+      ],
+      "hfov": 40,
+      "vfov_used": 30,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 27.607736396770367,
+      "dark_pct": 42.84930361899406,
+      "clip_pct": 0,
+      "max_luma": 80.6510009765625,
+      "coverage_of": [
+        "**/Slice_SideWindow/Window_R1"
+      ],
+      "coverage": 0.13054116967012708
+    },
+    {
+      "id": "window_05_rear_upper",
+      "file": "shots/window_05_rear_upper.png",
+      "w": 834,
+      "h": 614,
+      "ss": 2,
+      "eye": [
+        0.7496370673179626,
+        1.915452480316162,
+        1.739582896232605
+      ],
+      "euler": [
+        329.7249450683594,
+        147.25390625,
+        0
+      ],
+      "hfov": 40,
+      "vfov_used": 30,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 21.986553914897893,
+      "dark_pct": 57.283684453088995,
+      "clip_pct": 0,
+      "max_luma": 74.93579864501953,
+      "coverage_of": [
+        "**/Slice_SideWindow/Window_R1"
+      ],
+      "coverage": 0.023305134394113372
+    },
+    {
+      "id": "window_05_front_upper",
+      "file": "shots/window_05_front_upper.png",
+      "w": 834,
+      "h": 614,
+      "ss": 2,
+      "eye": [
+        0.7042781710624695,
+        1.8665002584457397,
+        2.2079784870147705
+      ],
+      "euler": [
+        322.9826965332031,
+        44.321041107177734,
+        0
+      ],
+      "hfov": 40,
+      "vfov_used": 30,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 11.588809289890273,
+      "dark_pct": 75.96489583577437,
+      "clip_pct": 0,
+      "max_luma": 36.578800201416016,
+      "coverage_of": [
+        "**/Slice_SideWindow/Window_R1"
+      ],
+      "coverage": 0.01081089525773518
+    },
+    {
+      "id": "window_10_rear",
+      "file": "shots/window_10_rear.png",
+      "w": 834,
+      "h": 614,
+      "ss": 2,
+      "eye": [
+        0.3862205743789673,
+        1.5751454830169678,
+        2.2312498092651367
+      ],
+      "euler": [
+        332.9283447265625,
+        137.89869689941406,
+        -9.588242164682015e-07
+      ],
+      "hfov": 40,
+      "vfov_used": 30,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 21.02670254462733,
+      "dark_pct": 56.367023644927706,
+      "clip_pct": 0,
+      "max_luma": 159.42239379882812,
+      "coverage_of": [
+        "**/Slice_SideWindow/Window_R1"
+      ],
+      "coverage": 0.09763785063154688
+    },
+    {
+      "id": "window_10_rear_upper",
+      "file": "shots/window_10_rear_upper.png",
+      "w": 834,
+      "h": 614,
+      "ss": 2,
+      "eye": [
+        0.5160649418830872,
+        1.6633765697479248,
+        2.1027657985687256
+      ],
+      "euler": [
+        329.7249450683594,
+        147.25390625,
+        0
+      ],
+      "hfov": 40,
+      "vfov_used": 30,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 18.478525830669685,
+      "dark_pct": 65.98258852201626,
+      "clip_pct": 0,
+      "max_luma": 72.93579864501953,
+      "coverage_of": [
+        "**/Slice_SideWindow/Window_R1"
+      ],
+      "coverage": 0.0692904959420086
+    },
+    {
+      "id": "window_10_front_upper",
+      "file": "shots/window_10_front_upper.png",
+      "w": 834,
+      "h": 614,
+      "ss": 2,
+      "eye": [
+        0.42534714937210083,
+        1.56547212600708,
+        1.9223573207855225
+      ],
+      "euler": [
+        322.9826965332031,
+        44.321044921875,
+        -2.1385678792285034e-06
+      ],
+      "hfov": 40,
+      "vfov_used": 30,
+      "ppv2": true,
+      "pp_volume_layer": 4194304,
+      "apl": 11.862975758408508,
+      "dark_pct": 75.37435849366109,
+      "clip_pct": 0,
+      "max_luma": 52.6510009765625,
+      "coverage_of": [
+        "**/Slice_SideWindow/Window_R1"
+      ],
+      "coverage": 0.05974308501081871
+    }
+  ],
+  "play": [],
+  "sequences": [],
+  "textures": [],
+  "metrics": {
+    "capture.ppv2_diff": 4.6806026429719765,
+    "capture.ppv2_effective": 1,
+    "capture.ppv2_layer": 1,
+    "console.compile_errors": 0,
+    "console.compile_errors_at_start": 0,
+    "console.errors": 0,
+    "console.exceptions": 0,
+    "console.warnings": 0,
+    "resources.free_ram_gb": 12.609790802001953,
+    "scene.lightmaps": 0,
+    "settings.vertex_compression_off": 1,
+    "shot.window_05_front_upper.apl": 11.588809289890273,
+    "shot.window_05_front_upper.clip_pct": 0,
+    "shot.window_05_front_upper.coverage": 0.01081089525773518,
+    "shot.window_05_front_upper.dark_pct": 75.96489583577437,
+    "shot.window_05_front_upper.max_luma": 36.578800201416016,
+    "shot.window_05_rear.apl": 27.607736396770367,
+    "shot.window_05_rear.clip_pct": 0,
+    "shot.window_05_rear.coverage": 0.13054116967012708,
+    "shot.window_05_rear.dark_pct": 42.84930361899406,
+    "shot.window_05_rear.max_luma": 80.6510009765625,
+    "shot.window_05_rear_upper.apl": 21.986553914897893,
+    "shot.window_05_rear_upper.clip_pct": 0,
+    "shot.window_05_rear_upper.coverage": 0.023305134394113372,
+    "shot.window_05_rear_upper.dark_pct": 57.283684453088995,
+    "shot.window_05_rear_upper.max_luma": 74.93579864501953,
+    "shot.window_10_front_upper.apl": 11.862975758408508,
+    "shot.window_10_front_upper.clip_pct": 0,
+    "shot.window_10_front_upper.coverage": 0.05974308501081871,
+    "shot.window_10_front_upper.dark_pct": 75.37435849366109,
+    "shot.window_10_front_upper.max_luma": 52.6510009765625,
+    "shot.window_10_rear.apl": 21.02670254462733,
+    "shot.window_10_rear.clip_pct": 0,
+    "shot.window_10_rear.coverage": 0.09763785063154688,
+    "shot.window_10_rear.dark_pct": 56.367023644927706,
+    "shot.window_10_rear.max_luma": 159.42239379882812,
+    "shot.window_10_rear_upper.apl": 18.478525830669685,
+    "shot.window_10_rear_upper.clip_pct": 0,
+    "shot.window_10_rear_upper.coverage": 0.0692904959420086,
+    "shot.window_10_rear_upper.dark_pct": 65.98258852201626,
+    "shot.window_10_rear_upper.max_luma": 72.93579864501953,
+    "steps.errors": 0,
+    "writes.declared": 0,
+    "writes.project_settings_changed": 0,
+    "writes.undeclared": 0
+  },
+  "metric_notes": {
+    "settings.vertex_compression_off": "Player → Other Settings → Vertex Compression：要关掉 TexCoord0、TexCoord1、TexCoord2、TexCoord3、Color；现在的掩码 3846（ProjectSettings.asset 原文），都关了",
+    "scene.lightmaps": "打开的场景里的光照图张数",
+    "capture.ppv2_layer": "参考相机上有 PostProcessLayer、新相机 Init 成功",
+    "capture.ppv2_diff": "开 / 关 PPv2 两张 192×108 小图的平均亮度差（sRGB 0–255）",
+    "shot.window_05_rear.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "shot.window_05_rear.coverage": "coverage_of 的物体占画面的比例（关掉它们再渲一张、亮度差 > 2 的像素；下限）",
+    "shot.window_05_rear_upper.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "shot.window_05_rear_upper.coverage": "coverage_of 的物体占画面的比例（关掉它们再渲一张、亮度差 > 2 的像素；下限）",
+    "shot.window_05_front_upper.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "shot.window_05_front_upper.coverage": "coverage_of 的物体占画面的比例（关掉它们再渲一张、亮度差 > 2 的像素；下限）",
+    "shot.window_10_rear.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "shot.window_10_rear.coverage": "coverage_of 的物体占画面的比例（关掉它们再渲一张、亮度差 > 2 的像素；下限）",
+    "shot.window_10_rear_upper.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "shot.window_10_rear_upper.coverage": "coverage_of 的物体占画面的比例（关掉它们再渲一张、亮度差 > 2 的像素；下限）",
+    "shot.window_10_front_upper.apl": "平均亮度（8 位 sRGB，Rec.709 权重，0–255；和门测试、渲染夹具的 APL 同一个量）",
+    "shot.window_10_front_upper.coverage": "coverage_of 的物体占画面的比例（关掉它们再渲一张、亮度差 > 2 的像素；下限）",
+    "writes.undeclared": "沙盒和 allowed_writes 以外被改动的文件",
+    "writes.project_settings_changed": "ProjectSettings/*.asset 内容变了的个数（工具只查不改）"
+  },
+  "writes": {
+    "sandbox": "Assets/_LanbaiTest",
+    "allowed_writes": [
+      "Assets/Lanbai/Bus/Generated/**",
+      "Assets/Lanbai/UdonPrograms/**",
+      "Assets/SerializedUdonPrograms/**"
+    ],
+    "declared": [],
+    "undeclared": [],
+    "project_settings_changed": [],
+    "tool_touched_restored": [
+      "存了、内容逐字节没变 Assets/Lanbai/Act07_Sea/Materials/Act07_CausticsCookie.asset",
+      "存了、内容逐字节没变 Assets/Lanbai/Bus/Generated/Materials/M_Bus_Alu.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Bus/Generated/Materials/M_Bus_ButtonRed.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Bus/Generated/Materials/M_Bus_Chrome.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Bus/Generated/Materials/M_Bus_Ext_Cream.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Bus/Generated/Materials/M_Bus_Glass_Side.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Bus/Generated/Materials/M_Bus_Int_Enamel.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Bus/Generated/Materials/M_Bus_LatchCream.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Bus/Generated/Materials/M_Bus_Part_SeatHero.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Bus/Generated/Materials/M_Bus_Seal.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Bus/Generated/Materials/M_Bus_Steel.mat"
+    ],
+    "note": "按文件大小和修改时间比；材质、.asset、预制体、.meta 这类 ≤ 4 MB 的小文件另比内容哈希，存了但逐字节没变的列在 tool_touched_restored、不算改动；只在内存里改、没存盘的不算"
+  },
+  "allowed_writes": [
+    "Assets/Lanbai/Bus/Generated/**",
+    "Assets/Lanbai/UdonPrograms/**",
+    "Assets/SerializedUdonPrograms/**"
+  ],
+  "allowed_writes_why": "车的切片搭建菜单生成的网格、材质、贴图导入设置",
+  "backup_before": [],
+  "warnings": [],
+  "files": [
+    "test_definition.json",
+    "shots/window_05_rear.png",
+    "shots/window_05_rear_upper.png",
+    "shots/window_05_front_upper.png",
+    "shots/window_10_rear.png",
+    "shots/window_10_rear_upper.png",
+    "shots/window_10_front_upper.png",
+    "console.jsonl",
+    "summary.md",
+    "manifest.json",
+    "result.json"
+  ]
+}

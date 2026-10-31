@@ -1,0 +1,23 @@
+{
+    "id": "diagnostic_20261026_0920_sampling_time",
+    "state": "done",
+    "step": 4,
+    "total": 4,
+    "started": "2026-10-26 09:16:36",
+    "finished": "2026-10-26 09:16:45",
+    "error": "",
+    "log": [
+        "09:16:36 收到请求，共 4 步",
+        "09:16:36 刷新导入（AssetDatabase.Refresh）",
+        "09:16:41 （脚本重新加载，接着做第 1 步）",
+        "09:16:43 导入和编译完成",
+        "09:16:43 调用 Lanbai.Tests.LB_SamplingTimeDiagnostic.Run（same_update_A）",
+        "09:16:43   用时 0.0 秒",
+        "09:16:43   返回：E:/IDMdownload/VRCC/Backups/continuation_20261026/sampling_time_0920/same_update_A.json",
+        "09:16:45 调用 Lanbai.Tests.LB_SamplingTimeDiagnostic.Run（later_update_B）",
+        "09:16:45   用时 0.0 秒",
+        "09:16:45   返回：E:/IDMdownload/VRCC/Backups/continuation_20261026/sampling_time_0920/later_update_B.json",
+        "09:16:45 全部完成"
+    ],
+    "files": []
+}

@@ -1,0 +1,37 @@
+{
+  "source_local": "E:\\IDMdownload\\VRCC\\dream\\LanbaiReports\\tests\\flicker_probe\\20261026-013039",
+  "visual_validity": "invalid: simulator UI contaminated",
+  "omitted": "Private consent note; backup_before and transient state; invalid-run PNG bulk",
+  "files": [
+    {
+      "path": "console.jsonl",
+      "bytes": 88991,
+      "sha256": "e98b088af2b7c611af483c5c0ab0d56bc3b7c8fde6de868b13a2b6619219c91b"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 13629,
+      "sha256": "2eab63d83b123df23763a507e4ba63fc5da0ba6274952c7f420dc1e3ac482e64"
+    },
+    {
+      "path": "result.json",
+      "bytes": 254,
+      "sha256": "f088d804fb423635c2393ff60a6780f3f31346a78b2317a2385991dd5ebc4af5"
+    },
+    {
+      "path": "summary.md",
+      "bytes": 6470,
+      "sha256": "41b2fc07df0d53b1f5a03aadd72b07db3779e3fd1239ce4d71a7712809d62720"
+    },
+    {
+      "path": "test_definition.json",
+      "bytes": 3141,
+      "sha256": "295277c523619f19451a7a5bc68f498a8de819d7d9ec4798a11204d1e94b2eb1"
+    },
+    {
+      "path": "probe/gate179/as_is/frames.csv",
+      "bytes": 16767,
+      "sha256": "85c2907b26624f79faaf925968e83aff62fa1c4b11f33b72db63f8d62c4be0a5"
+    }
+  ]
+}

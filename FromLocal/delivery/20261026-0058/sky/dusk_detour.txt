@@ -1,0 +1,8 @@
+t=1000.011
+Lanbai_SkyDriver_Acts1to3 lastIndex=1 fade=True active=True
+Lanbai_SkyDriver_Acts11to12 lastIndex=0 fade=False active=True
+_Udon_SkyBlend=(0.000000, 1.000000, 0.000000, 1.000000)
+_Udon_Sky_NightColor=(0.001518, 0.000000, 0.000000, 1.000000)
+_Udon_Sky_NightMaskDir=(0.000000, 0.000000, 1.000000, 0.000000)
+_Udon_Sky_NightMaskShape=(40.000000, 45.000000, 6.000000, 22.000000)
+fog=RGBA(0.435, 0.526, 0.690, 1.000) density=2.118327E-05 skybox=M_Sky (UnityEngine.Material)

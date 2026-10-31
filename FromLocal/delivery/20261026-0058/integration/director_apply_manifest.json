@@ -1,0 +1,42 @@
+{
+  "files": [
+    {
+      "path": "Act04c_Inside/Runtime/LanbaiInsideDriver.cs",
+      "before": "e2eddcd255d05b853f1bc06c874ca5c35d31cbdedd0921258efb48ce504fb273",
+      "after": "085ad6fada7b53beadd6ce883204a12445d5bd9af0aed3064c5f171725e37284"
+    },
+    {
+      "path": "Act06_Dawn/Runtime/LanbaiAct06Driver.cs",
+      "before": "0f5a50bceac42daad6b7416f0afbe464d59ffe2c9a868466069fe6cb953fcda9",
+      "after": "343c7bd50ec66187679005de7a1774eb3ca39b66e420dd938f9b4f61a4e7bc28"
+    },
+    {
+      "path": "Director/Editor/LanbaiDirectorGen.cs",
+      "before": "127ca85770d82af853f5c28d27c959484a21604fc47c1077c019ce90f68968cd",
+      "after": "3d68bf6cf95e1859f951cff16f17cc7280e6740df9e35ee318e856a85a6d00ee"
+    },
+    {
+      "path": "Director/README_Director.md",
+      "before": "a40ea9f89d8b72cbae0e19fcfbd015c5364e690e47202c61751872f2a6768e84",
+      "after": "3e331cab08bffb56d3c1dff47d33a4906552ce2eb5dc2dab9fa87d27fd8f2183"
+    },
+    {
+      "path": "Director/Runtime/LanbaiActDispatcher.cs",
+      "before": "7d8998f64a06dad8de190cfc37b90702f51d02007b4f1e69007ce54fcbff8c3d",
+      "after": "163b2723ab627fb8748a9254f9a603c568f8a03c6c7b41e2261dab67462d001d"
+    },
+    {
+      "path": "Overlay/Editor/LanbaiOverlayBuild.cs",
+      "before": "6a105db5722b46cc0d4e543b6645d31704f6b6b7bb8fb8c22b95a18dcf235697",
+      "after": "5063532da315c8c74f6f7d25cadd5c330d6c828ac5ce4923f6054f2c48f8fdd2"
+    },
+    {
+      "path": "Overlay/README_Overlay.md",
+      "before": "bee2b5cace5247a51274d1b19494d8ca084334208a451e988e7593586e4c6aa9",
+      "after": "26836d15dd93d00861f547815a223bf29c2c8f4979d21724c432101c6d7e9fe9"
+    }
+  ],
+  "journey_before": "d6893348a86fe361a6267a8b766be1f3f5e6bc970f35f2251538587904f9f0c1",
+  "journey_after": "0dd6ef18b38eab27c376b829800aabfb5a828443c31eeea5b9eb59e4bee2fc78",
+  "backup_reused": "E:\\IDMdownload\\VRCC\\Backups\\continuation_20261025\\delivery_0940\\before_director_pending"
+}

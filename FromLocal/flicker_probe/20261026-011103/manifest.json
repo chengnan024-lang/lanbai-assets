@@ -1,0 +1,403 @@
+{
+  "tool": "Lanbai.Test.Runner",
+  "tool_version": "1.2.1",
+  "test_id": "flicker_probe",
+  "run_id": "20261026-011103",
+  "fromlocal": "FromLocal/flicker_probe/20261026-011103/",
+  "test_file": "E:\\IDMdownload\\VRCC\\Backups\\continuation_20261026\\delivery_0058\\flicker_before_bus.json",
+  "test_sha256": "b8f96aa80bf04ed0e0ee08cf4ab7a8df76f7fcf86d6fbf66cd2153a18476256f",
+  "mode": "bridge",
+  "started_utc": "2026-10-26T05:11:03.6437491Z",
+  "finished_utc": "2026-10-26T05:11:43.0930086Z",
+  "duration_s": 39.4,
+  "exit_code": 1,
+  "status": "fail",
+  "preflight_only": false,
+  "blocked_reason": null,
+  "error": null,
+  "repo": {
+    "repo_commit": "f703a951cbadf0eb6bc4df263f6d315e298dd0fc",
+    "repo_branch": "main",
+    "repo_dirty": null,
+    "repo_path": "E:\\IDMdownload\\VRCC\\lanbai-assets-gate-main-20261024",
+    "entry": "D-41 common Udon program repair and Engineering/UnityTest",
+    "synced_at": "2026-10-25T00:13:19.2541837-04:00",
+    "paths": null,
+    "tool_version": "local-20261025"
+  },
+  "copied": null,
+  "unity": {
+    "version": "2022.3.22f1",
+    "batch": true,
+    "color_space": "Linear",
+    "quality": "VRC High",
+    "build_target": "StandaloneWindows64",
+    "scene": "Assets/_LanbaiTest/Lanbai_FullPreview_copy.unity"
+  },
+  "packages": {
+    "com.vrchat.worlds": "3.10.5",
+    "com.vrchat.base": "3.10.5",
+    "com.unity.postprocessing": "3.4.0",
+    "com.unity.textmeshpro": "3.0.6"
+  },
+  "gpu": {
+    "name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "vendor": "NVIDIA",
+    "api": "Direct3D11",
+    "version": "Direct3D 11.0 [level 11.1]",
+    "vram_mb": 7956,
+    "cpu": "13th Gen Intel(R) Core(TM) i9-13980HX",
+    "cpu_threads": 32,
+    "ram_mb": 32386,
+    "os": "Windows 11  (10.0.26200) 64bit"
+  },
+  "consent": {
+    "tool_version": "1.2.1",
+    "date": "2026-10-26",
+    "tests": [
+      "gate_clouds_test",
+      "tree_sample",
+      "flicker_probe",
+      "transitions_sweep"
+    ],
+    "note": "User approved this version and scope; private approval record omitted."
+  },
+  "layers": {
+    "blender_offline": {
+      "status": "pending_cloud",
+      "note": "云端对照 Blender 参考帧后填；工具不填"
+    },
+    "unity_desktop": {
+      "status": "fail",
+      "note": "Unity 编辑器里的桌面渲染和编辑器估算的性能；工具检查全过也只记“待总导演看图”（D-41 #4）"
+    },
+    "vr_headset": {
+      "status": "not_tested",
+      "note": "工具不测头显，也不会把这一层标成通过；看 summary.md 末尾的头显清单"
+    }
+  },
+  "preflight": [
+    {
+      "item": "gpu",
+      "status": "ok",
+      "detail": "NVIDIA GeForce RTX 4060 Laptop GPU（Direct3D11，Direct3D 11.0 [level 11.1]，显存 7956 MB）"
+    },
+    {
+      "item": "resources",
+      "status": "ok",
+      "detail": "C:\\ 剩 38.5 GB，E:\\ 剩 68.5 GB，可用内存 10.2 GB"
+    },
+    {
+      "item": "consent",
+      "status": "ok",
+      "detail": "用户（当前聊天） 2026-10-26 同意（工具 1.2.1，测试 gate_clouds_test、tree_sample、flicker_probe、transitions_sweep）；备份 E:\\IDMdownload\\VRCC\\Backups\\dream_20261025-000405.zip（在）"
+    },
+    {
+      "item": "unity",
+      "status": "ok",
+      "detail": "2022.3.22f1（要 2022.3.22f1）"
+    },
+    {
+      "item": "editor_state",
+      "status": "ok",
+      "detail": "Play False，编译中 False，导入中 False（要在编辑模式、编译和导入都完成后再跑）"
+    },
+    {
+      "item": "color_space",
+      "status": "ok",
+      "detail": "Linear（要 Linear）"
+    },
+    {
+      "item": "package:com.vrchat.worlds",
+      "status": "ok",
+      "detail": "3.10.5（要 3.10.5；读自 PackageManager）"
+    },
+    {
+      "item": "package:com.unity.postprocessing",
+      "status": "ok",
+      "detail": "3.4.0（要 3.4.0；读自 PackageManager）"
+    },
+    {
+      "item": "udonsharp",
+      "status": "ok",
+      "detail": "UdonSharp.UdonSharpBehaviour 在（UdonSharp.Runtime），随 VRChat Worlds SDK"
+    },
+    {
+      "item": "compile",
+      "status": "ok",
+      "detail": "scriptCompilationFailed False，Console 里的编译错误（含 UdonSharp 的）0 条（Console 共 3 条，原样在 console.jsonl）"
+    },
+    {
+      "item": "open_scenes",
+      "status": "ok",
+      "detail": "没有没保存的改动（Assets/Lanbai/Scenes/Lanbai_FullPreview.unity）"
+    },
+    {
+      "item": "sandbox",
+      "status": "ok",
+      "detail": "有上次遗留的沙盒（有标记），开跑时删掉重建"
+    },
+    {
+      "item": "grading",
+      "status": "warn",
+      "detail": "有旧的 Assets/Lanbai/Grades/，有套件的 Assets/Lanbai/Grading/；layer 4 =「Water」，layer 22 =「PostProcessing」。两套调色都在：工具不删，截图用的是参考相机上的那一套（PostProcessLayer 的 volumeLayer 写在 manifest 的截图记录里）"
+    },
+    {
+      "item": "sync_record",
+      "status": "ok",
+      "detail": "仓库提交 f703a951cbadf0eb6bc4df263f6d315e298dd0fc（2026-10-25T00:13:19.2541837-04:00 同步，条目：D-41 common Udon program repair and Engineering/UnityTest）"
+    },
+    {
+      "item": "git_status",
+      "status": "info",
+      "detail": "工程不是 git 仓库"
+    }
+  ],
+  "preconditions": [
+    {
+      "item": "文件 Assets/Lanbai/Scenes/Lanbai_FullPreview.unity",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "类型 LB_Journey",
+      "status": "ok",
+      "detail": "脚本没拷进来或没编译"
+    },
+    {
+      "item": "类型 LanbaiOverlay",
+      "status": "ok",
+      "detail": "脚本没拷进来或没编译"
+    },
+    {
+      "item": "类型 LanbaiActDispatcher",
+      "status": "ok",
+      "detail": "脚本没拷进来或没编译"
+    }
+  ],
+  "git_status_porcelain": null,
+  "steps": [],
+  "settings": [],
+  "checks": [
+    {
+      "id": "steps_ok",
+      "metric": "steps.errors",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "每一步都跑成功了",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "no_compile_errors",
+      "metric": "console.compile_errors",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "跑的过程中没有新的编译错误",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "no_exceptions",
+      "metric": "console.exceptions",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "跑的过程中 Console 没有异常（工具自己的不算）",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "no_console_errors",
+      "metric": "console.errors",
+      "op": "==",
+      "value": 0,
+      "gate": false,
+      "why": "跑的过程中 Console 没有 Error（默认只警告；测试定义可以改成必须）",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "no_undeclared_writes",
+      "metric": "writes.undeclared",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "沙盒和 allowed_writes 以外没有文件被改",
+      "measured": 25,
+      "expect": "= 0",
+      "status": "fail"
+    },
+    {
+      "id": "project_settings_untouched",
+      "metric": "writes.project_settings_changed",
+      "op": "==",
+      "value": 0,
+      "gate": true,
+      "why": "ProjectSettings 没被改",
+      "measured": 0,
+      "expect": "= 0",
+      "status": "pass"
+    },
+    {
+      "id": "play_ppv2_effective",
+      "metric": "play.ppv2_effective",
+      "op": "==",
+      "value": 1,
+      "gate": true,
+      "why": "Play 里拍的画面经过了 PPv2（开 / 关各渲一张，要不一样）；没生效，曲线就是没调色的画面",
+      "measured": 1,
+      "expect": "= 1",
+      "status": "pass"
+    },
+    {
+      "id": "probe_p1025_as_is_missed",
+      "metric": "probe.p1025.as_is.missed_frac",
+      "op": "<=",
+      "value": 0.10000000149011612,
+      "gate": true,
+      "why": "漏拍的比例（实时拍不满）；超过门槛，这一段的帧间量不能信",
+      "measured": 0.003841229193341844,
+      "expect": "≤ 0.1",
+      "status": "pass"
+    }
+  ],
+  "shots": [],
+  "play": [
+    {
+      "group": "probe",
+      "id": "p1025",
+      "variant": "as_is",
+      "name": "三样都开着（对照）",
+      "kind": "probe",
+      "note": null,
+      "t": 1016,
+      "t0": 1016,
+      "t1": 1042,
+      "samples": 781,
+      "captured": 778,
+      "missed": 3,
+      "valid_pairs": 772,
+      "toggles": [],
+      "dir": "probe/p1025/as_is",
+      "max_missed_frac": 0.10000000149011612,
+      "max_step_at": 1037.6990966796875,
+      "top_diffs": [
+        "probe/p1025/as_is/diff_1038.043",
+        "probe/p1025/as_is/diff_1041.787",
+        "probe/p1025/as_is/diff_1032.500",
+        "probe/p1025/as_is/diff_1041.366",
+        "probe/p1025/as_is/diff_1034.667",
+        "probe/p1025/as_is/diff_1037.699",
+        "probe/p1025/as_is/diff_1032.474",
+        "probe/p1025/as_is/diff_1032.670"
+      ],
+      "flicker_count_max": 543
+    }
+  ],
+  "sequences": [],
+  "textures": [],
+  "metrics": {
+    "console.compile_errors": 0,
+    "console.compile_errors_at_start": 0,
+    "console.errors": 0,
+    "console.exceptions": 0,
+    "console.warnings": 4,
+    "play.error_pauses": 0,
+    "play.head_cam_dist_max": 79.53392028808594,
+    "play.ppv2_diff": 2.7028822604866907,
+    "play.ppv2_effective": 1,
+    "play.ppv2_layer": 1,
+    "probe.p1025.as_is.achieved_fps": 29.883422808866644,
+    "probe.p1025.as_is.captured": 778,
+    "probe.p1025.as_is.flicker_px_frac": 0.8743272569444445,
+    "probe.p1025.as_is.max_step_ev": 0.5136794605105495,
+    "probe.p1025.as_is.missed": 3,
+    "probe.p1025.as_is.missed_frac": 0.003841229193341844,
+    "probe.p1025.as_is.rise_025": 0.6699134995484011,
+    "probe.p1025.as_is.rise_1": 0.7370512914593217,
+    "probe.p1025.as_is.rise_2": 0.7714719630600753,
+    "probe.p1025.as_is.steps_over_01ev": 12,
+    "resources.free_ram_gb": 10.235736846923828,
+    "steps.errors": 0,
+    "writes.declared": 0,
+    "writes.project_settings_changed": 0,
+    "writes.undeclared": 25
+  },
+  "metric_notes": {
+    "play.ppv2_layer": "Play 里参考相机上有 PostProcessLayer、工具的相机 Init 成功",
+    "play.ppv2_diff": "Play 里同一机位开 / 关 PPv2 的平均亮度差（sRGB 0–255）",
+    "play.ppv2_effective": "Play 里 PPv2 真的生效了（曲线是调过色的画面）",
+    "probe.p1025.as_is.missed": "要拍、但编辑器那一帧已经走过去了的时刻（时间轴是实时走的）",
+    "probe.p1025.as_is.missed_frac": "漏拍的比例；超过 play.max_missed_frac（默认 0.1）算 fail",
+    "probe.p1025.as_is.achieved_fps": "实际拍到的帧率（张数 / 时间轴秒）",
+    "probe.p1025.as_is.max_step_ev": "有效的相邻两张（中间没漏拍、间隔 ≤ 1.5 × 安排的间隔）平均对数亮度 mean(log2(max(L, 0.004))) 的最大差（EV，升降都算）",
+    "probe.p1025.as_is.rise_025": "0.25 s 窗口里平均对数亮度最多升了多少 EV（圣经 §1.8：≤ 0.5，那里是每个视向，这里是全画面平均）",
+    "probe.p1025.as_is.rise_1": "1 s 窗口里平均对数亮度最多升了多少 EV（圣经 §1.8：≤ 1.0，那里是每个视向，这里是全画面平均）",
+    "probe.p1025.as_is.rise_2": "2 s 窗口里平均对数亮度最多升了多少 EV（圣经 §1.8：≤ 1.8，那里是每个视向，这里是全画面平均）",
+    "probe.p1025.as_is.steps_over_01ev": "有效的相邻两帧平均对数亮度差 > 0.1 EV 的次数",
+    "probe.p1025.as_is.flicker_px_frac": "这一段里有效的相邻两帧亮度差 > 24（0–255）的次数 ≥ 4 的像素占比（局部的闪看这个和 flicker_count.png）",
+    "play.head_cam_dist_max": "拍的时候玩家的头离工具相机最远多少米（遮罩球每张都挪到相机这里；这个数大说明玩家没坐到主座位）",
+    "play.error_pauses": "Error Pause 停住 Play 的次数（工具每次都恢复了）",
+    "writes.undeclared": "沙盒和 allowed_writes 以外被改动的文件",
+    "writes.project_settings_changed": "ProjectSettings/*.asset 内容变了的个数（工具只查不改）"
+  },
+  "writes": {
+    "sandbox": "Assets/_LanbaiTest",
+    "allowed_writes": [],
+    "declared": [],
+    "undeclared": [
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip1_Fringe.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip1_Hang.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip1_Sheet.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip2_Fringe.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip2_Hang.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip2_Sheet.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip2_Threads.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip3_Fringe.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip3_Hang.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip3_Sheet.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip3_Threads.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip8_Ply0_Fringe.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip8_Ply0_Sheet.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip8_Ply1_Sheet.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip8_Ply2_Sheet.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip8_Ply3_Sheet.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip8_Ply4_Fringe.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip8_Ply4_Sheet.mat",
+      "改了 Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip8_Wall.mat",
+      "改了 Assets/Lanbai/Act07_Sea/Materials/Act07_CausticsCookie.asset",
+      "改了 Assets/Lanbai/Generated/Materials/LB_Cloud.mat",
+      "改了 Assets/Lanbai/Generated/Materials/LB_Sea.mat",
+      "改了 Assets/Lanbai/Generated/Materials/LB_SeaB.mat",
+      "改了 Assets/Lanbai/Generated/Materials/LB_Tentacle.mat",
+      "改了 Assets/Lanbai/Generated/Materials/LB_WetGround.mat"
+    ],
+    "project_settings_changed": [],
+    "tool_touched_restored": [],
+    "note": "按文件大小和修改时间比的：搭建脚本存了但内容没变的文件也算“改了”；只在内存里改、没存盘的不算"
+  },
+  "allowed_writes": [],
+  "allowed_writes_why": "同上",
+  "backup_before": [],
+  "warnings": [
+    "批处理下进 Play 模式没在阿白的机器上试过；不行就用菜单跑"
+  ],
+  "files": [
+    "test_definition.json",
+    "probe/p1025/as_is/frames.csv",
+    "probe/p1025/as_is/curve.png",
+    "probe/p1025/as_is/flicker_count.png",
+    "probe/p1025/as_is/max_diff.png",
+    "console.jsonl",
+    "summary.md",
+    "manifest.json",
+    "result.json"
+  ]
+}

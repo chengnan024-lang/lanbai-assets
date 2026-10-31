@@ -1,0 +1,8 @@
+{
+  "id": "diagnostic_20261026_0910_install",
+  "steps": [
+    {
+      "op": "refresh"
+    }
+  ]
+}

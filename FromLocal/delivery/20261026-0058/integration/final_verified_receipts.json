@@ -1,0 +1,47 @@
+[
+  {
+    "request": "0215",
+    "test": "transitions_final_verified",
+    "folder": "E:\\IDMdownload\\VRCC\\dream\\LanbaiReports\\tests\\transitions_sweep\\20261026-031057",
+    "result": {
+      "test": "transitions_sweep",
+      "run": "20261026-031057",
+      "exit": 0,
+      "status": "pass",
+      "preflight_only": false,
+      "out": "E:\\IDMdownload\\VRCC\\dream\\LanbaiReports/tests\\transitions_sweep\\20261026-031057",
+      "blocked_reason": null,
+      "error": null
+    }
+  },
+  {
+    "request": "0216",
+    "test": "flicker_after_gate",
+    "folder": "E:\\IDMdownload\\VRCC\\dream\\LanbaiReports\\tests\\flicker_probe\\20261026-031149",
+    "result": {
+      "test": "flicker_probe",
+      "run": "20261026-031149",
+      "exit": 0,
+      "status": "pass",
+      "preflight_only": false,
+      "out": "E:\\IDMdownload\\VRCC\\dream\\LanbaiReports/tests\\flicker_probe\\20261026-031149",
+      "blocked_reason": null,
+      "error": null
+    }
+  },
+  {
+    "request": "0217",
+    "test": "flicker_gate_back",
+    "folder": "E:\\IDMdownload\\VRCC\\dream\\LanbaiReports\\tests\\flicker_probe\\20261026-031222",
+    "result": {
+      "test": "flicker_probe",
+      "run": "20261026-031222",
+      "exit": 0,
+      "status": "pass",
+      "preflight_only": false,
+      "out": "E:\\IDMdownload\\VRCC\\dream\\LanbaiReports/tests\\flicker_probe\\20261026-031222",
+      "blocked_reason": null,
+      "error": null
+    }
+  }
+]

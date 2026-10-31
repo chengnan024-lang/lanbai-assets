@@ -1,0 +1,108 @@
+[
+  {
+    "project": "Assets/Lanbai/Scripts/LB_Journey.cs",
+    "sha256": "b97b838aa5a32bd9f2ab63d726ec60925749a48ec4c3368694a67dde3443a9e8",
+    "excerpts": [
+      {
+        "start_line": 356,
+        "end_line": 410,
+        "text": "        void ApplyIdle()\n        {\n            if (!_wasIdle) { _wasIdle = true; _lastT = -1f; }\n            ApplyAll(0f, S_IDLE, 0f, 0f);\n        }\n\n        void ApplyAll(float t, int seg, float tl, float u)\n        {\n            dbgT = seg == S_IDLE ? -1f : t; dbgSeg = seg;\n            ApplyGroups(t, seg, tl);\n            ApplyRoad(t, seg, tl);\n            ApplyLift(t, seg);\n            ApplyGate(t, seg);\n            ApplyFall(t, seg, tl);\n            ApplySky(t, seg, tl);\n            ApplyDelivered(t, seg);\n            ApplyPost(t, seg, tl);\n            if (deliveredPoems != null && deliveredPoems.useLocalAppliedExposure) deliveredPoems.localAppliedDeltaEV = dbgDEV;\n            if (_deliveredStarted) SpawnTick(t, dbgDEV, seg == S_IDLE);\n            ApplyBus(t, seg, tl);\n            ApplyAudio(t, seg, tl);\n            if (deliveredPoems == null) ApplyPoem(seg == S_IDLE ? -1f : t);\n            else {\n                if (poemRoot != null) poemRoot.gameObject.SetActive(false);\n                if (seg == S_IDLE) deliveredPoems.LanbaiBoard(0f);\n                else deliveredPoems.LanbaiBoardHide();\n            }\n            _lastSeg = seg;\n            _lastT = seg == S_IDLE ? -1f : t;\n        }\n\n        void ApplyDelivered(float t, int seg)\n        {\n            if (deliveredDispatcher == null) return;\n            if (!_journeyReady) { if (deliveredOverlay != null) deliveredOverlay.SetFlat(Color.black, 1f, 0f); return; }\n            if (_deliveredWaitFrames < 3) { _deliveredWaitFrames++; if (deliveredOverlay != null) deliveredOverlay.SetFlat(Color.black, 1f, 0f); return; }\n            if (!_deliveredStarted) {\n                SpawnBegin(t); _deliveredStarted = true;\n            }\n            if (useDeliveredGate && gateGroup != null) gateGroup.SetActive(false);\n            if (useDeliveredGate && cloudSea != null && t >= 113.8f) cloudSea.gameObject.SetActive(false);\n            if (useDeliveredSky && skyDome != null) skyDome.enabled = false;\n            if ((useDeliveredDawn && t >= 248.64f && t < 363.62f) || (useDeliveredSea && t >= 363.26f && t < 922.36f) || (useDeliveredDusk && t >= 922.36f && t < 1010f) || (useDeliveredMirrors && t >= 1010f && t < 1150.31f))\n            {\n                if (skyGroup != null) skyGroup.SetActive(false);\n                if (seaA != null) seaA.gameObject.SetActive(false);\n                if (seaB != null) seaB.gameObject.SetActive(false);\n                if (deepGroup != null) deepGroup.SetActive(false);\n            }\n            // Keep the legacy sky fallback only until the delivered Act 8 driver is wired.\n            int region = t >= 922.36f && t < 1001.21f ? 1 : (t >= 1001.21f && t < 1149.31f ? 2 : 0);\n            if (!useDeliveredDusk && region == 1 && fallbackDusk != null && fallbackBlue != null)\n                fallbackDusk.ApplyBlend(fallbackBlue, Smooth((t - 992.06f) / 9.15f));\n            if (!useDeliveredDusk && region == 2 && _fallbackRegion != 2 && fallbackBlue != null) fallbackBlue.Apply();\n            _fallbackRegion = region;"
+      },
+      {
+        "start_line": 1134,
+        "end_line": 1151,
+        "text": "            float w0 = F16 - 10.2f;             // 白：冲击 1.2 秒 → 膨胀 6 秒 → 遮罩 3 秒，结束在 F16\n            float dEV = 0f, white = 0f, black = 0f, wSat = 0f, wBloom = 0f;\n            switch (seg)\n            {\n                case S_IDLE: _gw[G_S1] = 1f; break;\n                case S_ROAD:\n                case S_LIFT:\n                case S_GATE:\n                    // S1 → S2：U1 起 8 秒；S3 叠在 S2 上：U2 起 40 秒到 0.3，入云（U5）后 7 秒到 1（白雾遮挡里），S2 才归 0；S4：U6 起 30 秒\n                    Cross(G_S1, G_S2, Smooth((t - U1) / 8f));\n                    if (t >= U2)\n                    {\n                        float s3 = t >= U5 ? 0.3f + 0.7f * Lin((t - U5) / 7f) : 0.3f * Smooth((t - U2) / 40f);\n                        _gw[G_S3] = s3;\n                        if (s3 >= 1f) _gw[G_S2] = 0f;\n                    }\n                    if (t >= U6) Cross(G_S3, G_S4, Smooth((t - U6) / 30f));\n                    dEV += 0.5f * Pulse(t, U6, 0.4f, 3f);                        // 破云：+0.5 EV"
+      },
+      {
+        "start_line": 1193,
+        "end_line": 1215,
+        "text": "                case S_FALSE:\n                    _gw[G_S11] = 1f;\n                    white = 1f - Lin(tl / 8f);                                    // 白收缩进灯里\n                    dEV += 1.0f * (1f - Lin(tl / 4f));                            // +1.0 EV，4 秒衰减\n                    if (tl >= 62f) white = Mathf.Max(white, 0.5f * Lin((tl - 62f) / 6.5f));   // 第二次白\n                    break;\n                case S_WAKE:\n                    _gw[G_S12] = 1f;\n                    white = 0.5f * (1f - Lin(tl / 4f));                           // 收缩进站台的灯管\n                    dEV += 0.8f * (1f - Lin(tl / 5f));                            // +0.8 EV，5 秒衰减\n                    break;\n            }\n            // The delivered white driver owns the first white, its exposure and its exit.\n            // Later false-awakening/wake events remain on the original timeline.\n            if (useDeliveredWhite && t >= 1136.58f && t <= 1186.46f) { dEV=0f; wSat=0f; wBloom=0f; white=0f; }\n            if (deliveredDispatcher != null)\n            {\n                dEV += deliveredDispatcher.gradeDEV;\n                wSat = Mathf.Max(wSat, deliveredDispatcher.gradeWhiteSat);\n                wBloom = Mathf.Max(wBloom, deliveredDispatcher.gradeWhiteBloom);\n                if ((useDeliveredInside && t >= 248.39f && t < 252.64f) || (useDeliveredDawn && t >= 252.64f && t < 266.4f)) { white = 0f; black = 0f; }\n            }\n            // 底值 b：按 priority 顺序把场景调色的 postExposure 混出来（PPv2：param = lerp(当前, 覆盖值, weight)）"
+      },
+      {
+        "start_line": 1259,
+        "end_line": 1269,
+        "text": "        //  车：门、轮子、挂件、管灯、慢慢消失\n        // ═════════════════════════════════════════════════════════════\n        void ApplyBus(float t, int seg, float tl)\n        {\n            // 门：圣经——车门不关。只有假醒是关着的（在白里关上）；醒来时在第二次白里打开\n            bool closed = (seg == S_WHITE && tl > 3f) || seg == S_FALSE;\n            float target = closed ? 0f : doorOpenAngle;\n            if (seg == S_WHITE || seg == S_FALSE || seg == S_WAKE) _doorAngle = target;\n            else _doorAngle = Mathf.MoveTowards(_doorAngle, target, Time.deltaTime * 60f);\n            if (doorPivot != null) doorPivot.localRotation = Quaternion.Euler(0f, _doorAngle, 0f);\n            if (doorPivot2 != null) doorPivot2.localRotation = Quaternion.Euler(0f, -_doorAngle * 2f, 0f);"
+      }
+    ]
+  },
+  {
+    "project": "Assets/Lanbai/Cabin/Scripts/LanbaiCabinDriver.cs",
+    "sha256": "8c36795850c4b01462aef1ef06f6b8e9513bca6b7adaae6e1be52b43db68c96a",
+    "excerpts": [
+      {
+        "start_line": 63,
+        "end_line": 68,
+        "text": "    public float tDark9 = 1009.21f; // bible 6.8b: the first 8 s of act 9 (darkening) end\n    public float tF16 = 1149.31f;   // cues.json F.F16: the 13th mirror, white (cut 2)\n    public float tAct11 = 1178.46f; // bible 6.11: false awakening, the cabin snaps back under the white\n    public float tRadioOff = 1238.46f; // bible 4.4: act 11 + 60 s, the radio clicks off\n    public float tAct12 = 1251.96f; // bible 6.11 -> 12: the second white is full, act 12\n    // cues.json derived.mirror_crossings_snapped_t, mirrors 1..12 (each +0.027 erosion over 1.2 s)"
+      },
+      {
+        "start_line": 253,
+        "end_line": 277,
+        "text": "\n    // bible §3 / D-28d: the door is never closed, except in act 11 (closed under the white at 1178.46, open again\n    // under the second white before act 12). Poses from BusLayout.json door_panels.\n    private void WriteDoor(float t, bool force)\n    {\n        if (doorPanels == null || _doorOpenPos == null) return;\n        int closed = (t >= tAct11 && t < tAct12) ? 1 : 0;\n        if (!force && closed == _doorClosed) return;\n        _doorClosed = closed;\n        for (int i = 0; i < doorPanels.Length && i < _doorOpenPos.Length; i++)\n        {\n            Transform d = doorPanels[i];\n            if (d == null) continue;\n            bool haveClosed = doorClosedPos != null && doorClosedYaw != null && i < doorClosedPos.Length && i < doorClosedYaw.Length;\n            if (closed == 1 && haveClosed)\n            {\n                d.localPosition = doorClosedPos[i];\n                d.localRotation = _doorOpenRot[i] * Quaternion.Euler(0f, doorClosedYaw[i], 0f);\n            }\n            else\n            {\n                d.localPosition = _doorOpenPos[i];\n                d.localRotation = _doorOpenRot[i];\n            }\n        }"
+      }
+    ]
+  },
+  {
+    "project": "Assets/Lanbai/Act04c_Inside/Runtime/LanbaiInsideDriver.cs",
+    "sha256": "e0ddb2b40ad240fd8959851fa80973393da0a826c2f2d9e61fe8b8899ab5283a",
+    "excerpts": [
+      {
+        "start_line": 537,
+        "end_line": 568,
+        "text": "        if (_spawnSince < 0f) return;                   // Director v1.2: LB_Journey's spawn fade has the overlay\n        float tb = tU12 - 0.25f;\n        float Ls = 0.2f, Lb = 0.00129f;\n        // Director v1.2: a late joiner whose spawn fade ended while the overlay was ours comes up from black at\n        // <= 0.85 EV/s (the frame's ~7.6 EV in ~9 s); the darker of that and the scheduled black wins\n        float te = t - _spawnSince;\n        bool catchUp = _spawnSince < 1e5f && te >= tb && te < tU12 + 4.0f;\n        float aC = 0f;\n        if (catchUp)\n        {\n            float range = Mathf.Log(Ls / Mathf.Max(Lb, 0.004f), 2f);\n            aC = EvOverlayAlpha(_spawnSince * 0.85f / Mathf.Max(range, 1e-3f), Lb, Ls, Ls, Lb);\n        }\n        if (t < tb)\n        {\n            if (catchUp && aC > 0f) overlay.SetFlat(blackFillS4c, aC, FlashFor(t));\n            return;\n        }\n        if (t < tU12)\n        {\n            // EV-linear from the frame (APL ~90 at the flash's end) to #030409; darkening is free (bible §1.8)\n            float x = (t - tb) / 0.25f;\n            float a = EvOverlayAlpha(x, Ls, Lb, Ls, Lb);\n            overlay.SetFlat(blackFillS4c, Mathf.Max(a, aC), FlashFor(t));\n        }\n        else if (t < tU12 + 4.0f)\n        {\n            overlay.SetFlat(blackFillS6, 1f, 0f);       // cut 1: LB_Journey.ApplyGrades hard-cuts S4c -> S6 in the same frame\n        }\n    }\n}"
+      }
+    ]
+  },
+  {
+    "project": "Assets/Lanbai/Act06_Dawn/Runtime/LanbaiAct06Driver.cs",
+    "sha256": "343c7bd50ec66187679005de7a1774eb3ca39b66e420dd938f9b4f61a4e7bc28",
+    "excerpts": [
+      {
+        "start_line": 50,
+        "end_line": 58,
+        "text": "    public Texture reflCube;                   // _Udon_ReflCube for the sea (the dawn cube, when Control bakes it)\n\n    [Header(\"Timeline (Act06_Layout.json)\")]\n    public float windowStart = 248.64f, windowEnd = 363.62f;\n    public float tApplySky = 248.64f, tLight0 = 252.64f, tLight1 = 363.615f, tRS1 = 362.26f;\n    public float tF0 = 251.64f, tSeaOn = 300f, tEntry = 363.26f;\n    public float tPreroll0 = 252.64f, tDawn0 = 254.14f, dawnT = 8.65f, tOverlayOff = 266.4f;\n    public float slotOpen0 = 281.86f, slotOpen1 = 287.86f;\n    public float ringOff0 = 285.86f, ringOff1 = 289.86f;"
+      },
+      {
+        "start_line": 389,
+        "end_line": 424,
+        "text": "        bool catchUp = !held && _spawnSince < 1e5f && t - _spawnSince >= tPreroll0 && t - _spawnSince < OverlayHandEnd();\n        float floorL = 0.004f;\n        float rangeEV = Mathf.Log(Mathf.Max(lDawn, floorL) / Mathf.Max(lBlack, floorL), 2f);\n        float tauC = catchUp ? _spawnSince * 0.85f * dawnT / Mathf.Max(rangeEV, 1e-3f) : 1e6f;   // the curve's tau the 0.85 EV/s ramp has reached\n        float maxLead = Mathf.Max(Mathf.Max(leadZenith, leadBelow), Mathf.Max(leadSun, leadElse));\n        if (driveOverlay && overlay != null && !held && !_overlayHidden && t >= tPreroll0)\n        {\n            if (t < tDawn0)\n            {\n                float a0 = EvAlpha(0f);\n                float x = (t - tPreroll0) / Mathf.Max(tDawn0 - tPreroll0, 1e-3f);\n                // EV-linear from the black to the curve's floor\n                float aCur = Mathf.Lerp(1f, a0, x);\n                if (catchUp) aCur = Mathf.Max(aCur, EvAlpha(tauC / Mathf.Max(dawnT, 1e-3f)));   // never brighter than the catch-up\n                overlay.SetFlat(overlayFill, aCur, 0f);\n            }\n            else if (t < tOverlayOff || (catchUp && tauC < dawnT + maxLead))\n            {\n                if (!_lobesSet)\n                {\n                    // zenith / skylight first, below +2.2, the sun's sector (az +30, D-12) +3.3, everything else +2.0\n                    overlay.SetLobe(0, lobeZenith, lobeZenithDeg, leadZenith);\n                    overlay.SetLobe(1, Vector3.down, lobeBelowDeg, leadBelow);\n                    overlay.SetLobe(2, new Vector3(sunDir.x, 0f, sunDir.z).normalized, lobeSunDeg, leadSun);\n                    overlay.SetLeadElse(leadElse, leadSoft);\n                    _lobesSet = true;\n                }\n                overlay.SetCurve(overlayFill, 0f, Mathf.Min(t - tDawn0, tauC), dawnT, lBlack, lDawn, lDawn, lBlack);\n            }\n            else\n            {\n                overlay.Hide();\n                _overlayHidden = true;\n            }\n        }\n"
+      }
+    ]
+  },
+  {
+    "project": "Assets/Lanbai/Engineering/UnityTest/Editor/LanbaiTestCapture.cs",
+    "sha256": "f063b73141d873f534829ea7aee0303554ad5175a9b4105ee96486508410b95d",
+    "excerpts": [
+      {
+        "start_line": 84,
+        "end_line": 103,
+        "text": "            {\n                // 看一个物体：取它（和子物体）所有 renderer 包围盒的中心\n                var tr = Scenes.Find(lookObj);\n                if (tr == null) throw new StepException(\"机位 \" + c.id + \" 要看的物体不在：\" + lookObj);\n                var rs = tr.GetComponentsInChildren<Renderer>(true).Where(r => r.enabled && r.gameObject.activeInHierarchy).ToArray();\n                if (rs.Length == 0) throw new StepException(lookObj + \" 下面没有开着的 renderer\");\n                var b = rs[0].bounds;\n                foreach (var r in rs) b.Encapsulate(r.bounds);\n                look = new[] { b.center.x, b.center.y, b.center.z };\n                // look_at_anchor（1.2.2，车包 10-26：侧窗机位对着包围盒中心只拍到玻璃）：[ax, ay, az] = 包围盒里的点，\n                // 每轴 0 = min、1 = max、0.5 = 中心（比如窗扣、窗框的一个角）。跟着物体走，切片挪了也对\n                var an = TJson.Fa(TJson.G(d, \"look_at_anchor\"));\n                if (an != null && an.Length >= 3)\n                    look = new[] { b.min.x + an[0] * b.size.x, b.min.y + an[1] * b.size.y, b.min.z + an[2] * b.size.z };\n            }\n            var toward = TJson.Fa(TJson.G(d, \"toward\"));\n            if (look != null && TJson.Has(d, \"distance\"))\n            {\n                // 近景：从 look_at 往回退 distance。toward 给了就退向那个点（比如主座位的眼），没给就沿 euler / yaw、pitch 的视线往回退\n                var target = new Vector3(look[0], look[1], look[2]);"
+      },
+      {
+        "start_line": 352,
+        "end_line": 373,
+        "text": "                // coverage_of（1.2.2）：这些物体（路径，可以多个）在画面里占多少：同一机位关掉它们再渲一张，亮度差 > 2 的像素\n                // 比例 → shot.<id>.coverage。和背景一样亮的像素数不进去，所以是下限\n                var cov = TJson.Sa(TJson.G(c.def, \"coverage_of\"));\n                if (cov.Count > 0)\n                {\n                    var rs = new List<UnityEngine.Renderer>();\n                    foreach (var path in cov)\n                    {\n                        var tr = Scenes.Find(path);\n                        if (tr == null) throw new StepException(\"机位 \" + c.id + \"：coverage_of 里的 \" + path + \" 不在场景里\");\n                        rs.AddRange(tr.GetComponentsInChildren<UnityEngine.Renderer>(false).Where(r => r.enabled));\n                    }\n                    foreach (var r in rs) r.enabled = false;\n                    Color32[] off;\n                    try { bool pp2; off = RenderOnce(ctx, c, c.w, c.h, c.ss, true, out pp2); }\n                    finally { foreach (var r in rs) if (r != null) r.enabled = true; }\n                    int hit = 0;\n                    for (int k = 0; k < px.Length; k++) if (Math.Abs(Img.Luma(px[k]) - Img.Luma(off[k])) > 2f) hit++;\n                    double frac = hit / (double)px.Length;\n                    ctx.Metric(key + \".coverage\", frac, \"coverage_of 的物体占画面的比例（关掉它们再渲一张、亮度差 > 2 的像素；下限）\");\n                    rec[\"coverage_of\"] = cov.Cast<object>().ToList();\n                    rec[\"coverage\"] = frac;"
+      },
+      {
+        "start_line": 500,
+        "end_line": 512,
+        "text": "            float eyeOff = TJson.F(TJson.G(d, \"eye_offset_mm\"), 0f) * 0.001f;\n            bool save = TJson.B(TJson.G(d, \"save_frames\"), true);\n            float thr = TJson.F(TJson.G(d, \"hf_threshold\"), 6f), scale = TJson.F(TJson.G(d, \"heat_scale\"), 24f);\n            // 闪烁的主量（终审 r2）：每一帧同一个姿态再渲一张高倍超采样的参考（默认 4×），量“测的图 − 参考图”随时间的抖动。\n            // 真实的运动（边缘挪动）两张图一起挪，差里没有；剩下的是采样不足带来的闪烁 / 爬动 / 摩尔纹。reference_ss: 0 = 不渲参考\n            int refSS = Math.Max(0, TJson.I(TJson.G(d, \"reference_ss\"), 4));\n            float shThr = TJson.F(TJson.G(d, \"shimmer_threshold\"), 4f);\n            // t0 写了就用 t0（机位自己的 t 只是截图用的时刻）；没写 t0 才用机位的 t\n            float t0 = TJson.Has(d, \"t0\") ? TJson.F(TJson.G(d, \"t0\")) : (c.t ?? 0f);\n            float t1 = TJson.F(TJson.G(d, \"t1\"), t0 + n / fps);\n            bool advance = kind == \"time\" || TJson.B(TJson.G(d, \"advance_time\"));\n            bool hasTime = TJson.Has(d, \"t\") || TJson.Has(d, \"t0\");\n            if (kind != \"micro_motion\" && kind != \"time\" && kind != \"static\")"
+      },
+      {
+        "start_line": 580,
+        "end_line": 607,
+        "text": "                    float s = i / fps;\n                    if (advance && hasTime) { ctx.lastT = null; ApplyTime(ctx, t0 + s, true); }\n                    Vector3 off = Vector3.zero; Quaternion q = Quaternion.identity;\n                    if (kind == \"micro_motion\")\n                    {\n                        // 固定的伪随机头部微动：两个正弦叠加（0.6 + 0.4），所以位置在 ±amp 之内、角度在 ±amp_deg 之内；每次跑都一样\n                        off = new Vector3(W(s, 0.83f, 0.3f, 2.1f, 1.7f), W(s, 0.61f, 2.2f, 1.7f, 0.4f), W(s, 0.47f, 1.1f, 1.3f, 2.9f)) * ampM;\n                        q = Quaternion.Euler(W(s, 0.53f, 0.2f, 1.6f, 2.0f) * ampDeg, W(s, 0.71f, 0.9f, 1.9f, 2.4f) * ampDeg, W(s, 0.37f, 1.4f, 1.1f, 0.6f) * ampDeg * 0.5f);\n                    }\n                    r.go.transform.position = baseEye + c.rot * off;\n                    r.go.transform.rotation = c.rot * q;\n                    var px = r.Frame(1);\n                    Color32[] rpx = null;\n                    if (rr != null)\n                    {\n                        rr.go.transform.position = r.go.transform.position;\n                        rr.go.transform.rotation = r.go.transform.rotation;\n                        rpx = rr.Frame(1);\n                    }\n                    double fsum = 0;\n                    for (int k = 0; k < N; k++)\n                    {\n                        float y = Img.Luma(px[k]);\n                        cur[k] = y; fsum += y;\n                        sum[k] += y; sum2[k] += (double)y * y;\n                        if (i >= 2) { double dd = y - 2f * p1[k] + p2[k]; hf2[k] += dd * dd; }\n                        if (rpx != null) { double df = y - Img.Luma(rpx[k]); dsum[k] += df; dsum2[k] += df * df; }\n                    }"
+      }
+    ]
+  },
+  {
+    "project": "Assets/Lanbai/Lamps/Tree/Shaders/LanbaiTree.cginc",
+    "sha256": "67ff5eda46dc9906bc714f498577d75ecdafa480ce6a1709db8c56c8db6569bd",
+    "excerpts": [
+      {
+        "start_line": 33,
+        "end_line": 47,
+        "text": "}\n\n// objectPos / objectNormal in object space; returns the displaced object-space position\ninline float3 LanbaiTreeWind(float3 objectPos, float3 objectNormal, float4 vcol)\n{\n    float t = _Time.y;\n    float3 root = mul(unity_ObjectToWorld, float4(0, 0, 0, 1)).xyz;\n    float flex = vcol.r * vcol.r;\n    float sway = _WindStrength * flex * sin(t * _WindFreq + 0.07 * (root.x + root.z) + 1.3 * vcol.g);\n    // a second, slower, smaller component so the crown never moves as one rigid sheet\n    sway += 0.35 * _WindStrength * flex * sin(t * _WindFreq * 0.61 + 4.0 * vcol.g);\n    float flut = _Flutter * vcol.b * sin(t * _FlutterFreq + 6.2831853 * vcol.g);\n    float3 dirW = normalize(_WindDir.xyz + float3(0, 1e-4, 0));\n    float3 dirO = mul((float3x3)unity_WorldToObject, dirW);\n    dirO.y = 0;                                   // horizontal only: the tree never bobs (VR, bible §1.8)"
+      }
+    ]
+  }
+]

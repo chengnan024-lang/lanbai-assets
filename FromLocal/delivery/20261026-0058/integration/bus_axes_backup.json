@@ -1,0 +1,547 @@
+[
+  {
+    "path": "Assets\\Lanbai\\Scenes\\Lanbai_FullPreview.unity",
+    "sha256": "2eb2ec5fbf85e2eaac98179baae2e5339a6264b023ba489e7e33eb3f6d2d70a0",
+    "bytes": 6955584
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials.meta",
+    "sha256": "9e3228fec1d051a08b7c16073d46afa29bd93d2828707038161ed442c194c607",
+    "bytes": 172
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Alu.mat",
+    "sha256": "071d361bab178883bba80326a8873afafa7510d2f655fbd50c8c86facae61da2",
+    "bytes": 4245
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Alu.mat.meta",
+    "sha256": "112d8ed91f7491afbb7f0327c07dbcf02851578acd238c925f42fde13f7718c0",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Alu_ExtAtlas.mat",
+    "sha256": "2bf999fda384ea6359d857523048dd4ddb40e88f7a695b33f18425537300a43d",
+    "bytes": 4283
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Alu_ExtAtlas.mat.meta",
+    "sha256": "6d9335ae2723fa16eb79e4b87e69e69af4640123706c9e8e8caae7f3cefed2bf",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Bakelite.mat",
+    "sha256": "e7c55066730c4f7c5045c34474468df67035f0ee39d12bbf4626266742879e86",
+    "bytes": 4252
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Bakelite.mat.meta",
+    "sha256": "b334e3c81a095e75a06f88962fd61562bbb0d08e3f40d62e8b08d86446ddecc2",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_ButtonRed.mat",
+    "sha256": "2012a158b7da80b090057a2e3fe014a56ffe4c50ce310a681ba8cfb3ebc5caf3",
+    "bytes": 4253
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_ButtonRed.mat.meta",
+    "sha256": "908c20dde53b14e3c4301d72fdf4089c2913eb9852fff24ee0f2136e12c6b9f9",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Chrome.mat",
+    "sha256": "85b5048c93926526a44b2210752321722e980ac16c50bdf77c3c56ce7d741909",
+    "bytes": 4247
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Chrome.mat.meta",
+    "sha256": "95ef2e89c616582f6d25a2463c0260aa09639edb657dda1fbf8dc8d413f59642",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Chrome_ExtAtlas.mat",
+    "sha256": "d0255d124dfaf4256198a6f2067fd0a9826b60682abad75ad91a3f1ab94fb982",
+    "bytes": 4287
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Chrome_ExtAtlas.mat.meta",
+    "sha256": "0383e9a67e22e49dd97d946f728abd5ad8001b8f2148072e34d701127d820379",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Chrome_NoLM.mat",
+    "sha256": "b38bef3e47ac22a1e762f7e9ad61de840ee3bc16d6d4d48f1df5e8b1a2897620",
+    "bytes": 4197
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Chrome_NoLM.mat.meta",
+    "sha256": "787538dea54e0828a7b47b1814e2e53327c79965c1aec297b7adac62717fc56f",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Curtain_Cloth.mat",
+    "sha256": "14dc5bb60f98921778f54793b22f2c0715f4261e995fc070fc124be0e363d5a2",
+    "bytes": 2719
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Curtain_Cloth.mat.meta",
+    "sha256": "736f6421784ada48cdab4b904c7376a8bda9609d975cf3b64f048d6d153d9921",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Dash.mat",
+    "sha256": "f4af9c9dd54b96219375e11c562bb945bb24232112623b6300c9db256466244d",
+    "bytes": 4245
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Dash.mat.meta",
+    "sha256": "14cbbd779fef011e6a5ec0669fc23140535377c68338a2f4456bd32c8fa5e2d9",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Ext_Black.mat",
+    "sha256": "4accfd4377687179d7b6cb460c37bb5ab06e7bb475d6c1c0a0a31ccb96cbb7ef",
+    "bytes": 4252
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Ext_Black.mat.meta",
+    "sha256": "8c1c5b398ffcb9921a10b01f8ca457e038c11cfa48cf9a06f99a4dabe90e1a9a",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Ext_Black_Ext.mat",
+    "sha256": "4dd647aaaa49c450bc12e884a5d16cf2a035df379b54de75aca643d164d82134",
+    "bytes": 4201
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Ext_Black_Ext.mat.meta",
+    "sha256": "5b04179dc382e8646526823df466a94d42dde69dc4b087004b3c948cd4fccc1e",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Ext_Black_ExtAtlas.mat",
+    "sha256": "6adcc87e92540544a2f03e817b373b1675a43c727b72773f27fda5c0de0bd1f7",
+    "bytes": 4289
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Ext_Black_ExtAtlas.mat.meta",
+    "sha256": "ba7bf43c1331bc7adb52260391bf51818ff75c035364e523f78d4b3209834008",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Ext_Cream.mat",
+    "sha256": "e4ca1b6d8b93929ab46cc81a5c4dd195d6002ad9900dcea179a748422ea7786f",
+    "bytes": 4251
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Ext_Cream.mat.meta",
+    "sha256": "26e534be680f6ea399815b07ebfc9427aeb901fdb3463442bc9d060c41a200ce",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Ext_Cream_ExtAtlas.mat",
+    "sha256": "f9bf003b7ba4fc44f572a50e3130ae4f17e1e7cdf5a7061b280fa303479f8e9d",
+    "bytes": 4290
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Ext_Cream_ExtAtlas.mat.meta",
+    "sha256": "68030e6ba3347493b31d42500455c86fbc7667bb33615abdef5c14415ccdf19a",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Ext_Cream_NoLM.mat",
+    "sha256": "0c075797940b06aefa26cb7428fc08f2c17d0b60dbf04c5f13272a192fcc8627",
+    "bytes": 4201
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Ext_Cream_NoLM.mat.meta",
+    "sha256": "75864782cc46e11c7ed30cfbf38905a3d4dc547e9e91fbeff58f0d38d9b8668b",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Ext_Indigo.mat",
+    "sha256": "b7ec1686c14b2e75e4ad9108d8dd8c601f3667164f8171c011a54639f98e9db1",
+    "bytes": 4252
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Ext_Indigo.mat.meta",
+    "sha256": "6d75fe8adabf1a12dc71522b1e582965af64ffa6e725b41cddb7b715961f74d5",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Ext_Indigo_ExtAtlas.mat",
+    "sha256": "baf513a919fdb5ad21e2d04a4600f5ef08f0eea3820bab17de0180d938c3b3f5",
+    "bytes": 4290
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Ext_Indigo_ExtAtlas.mat.meta",
+    "sha256": "57fbb7332178e8eac936c10e02072d3a000d2d68c2b11f75f4614774c0e4ce5c",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Ext_Indigo_NoLM.mat",
+    "sha256": "6759f06fbaa0ec2b641da422cf8eb69cdf56b9e23bcb79b84dd370923a691ab3",
+    "bytes": 4202
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Ext_Indigo_NoLM.mat.meta",
+    "sha256": "c9e785e8252bc3e6c467a15f4520124d757a0bed4fb972d72d9afe32fe4b9818",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Ext_Silver_ExtAtlas.mat",
+    "sha256": "cd1a72feddb60fd95c35868b537058991a42dced4d756b0a83c4eef5270e230d",
+    "bytes": 4290
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Ext_Silver_ExtAtlas.mat.meta",
+    "sha256": "6e9a47fac61126783bb321f1a87e3352c047aceb124bb30702791e1682106715",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Ext_Silver_NoLM.mat",
+    "sha256": "c4c3e3de15b77e7ac7b1142b15501721efa465b2572c9a99a76bce0a334075b9",
+    "bytes": 4201
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Ext_Silver_NoLM.mat.meta",
+    "sha256": "8913b8d8b03b4b181c74aa65229d065540fe6d65c60d2d063ff1a95ab76024bb",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Floor.mat",
+    "sha256": "93b1d1775e2822ba5a0e5b496a82cee2d680848d13d43bac3796580bd7a87c92",
+    "bytes": 4389
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Floor.mat.meta",
+    "sha256": "de706d162215851c2f9b04a0f199088c617116ae98b8bca9369bbf31250d59f1",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Glass_Side.mat",
+    "sha256": "952e68382a3822dbbd60f04ca668b9a40183d25d16a4a698ef495d7c51da9587",
+    "bytes": 2270
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Glass_Side.mat.meta",
+    "sha256": "0065becf45e3fba8eb0726daa11cecbc8ca7eaaf958bf5fe31470ef136897009",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Glass_Skylight.mat",
+    "sha256": "6169bb471146f336165f7b2b6b02e3d7d3c19911b6b374c1fced6dff043b7891",
+    "bytes": 2274
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Glass_Skylight.mat.meta",
+    "sha256": "d4e17687839123f22babb075c6a0600f5eedc783686f5c375af507572cb472b7",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Glass_Windscreen.mat",
+    "sha256": "f21fc4dd63c085b9e37b31238fe50f511376b9b11ce4a2e66f97c233fa458238",
+    "bytes": 2276
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Glass_Windscreen.mat.meta",
+    "sha256": "ae9f468c5b3fc385c47a5d94bde7cbcb863102d8db23d18ffbd97d8f692ef8d7",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Int_Ceiling.mat",
+    "sha256": "2b9a7834bef45d37160d117ac9b974680ac24096c88ccf06b17ad8bbf1e6bb29",
+    "bytes": 4390
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Int_Ceiling.mat.meta",
+    "sha256": "72b637b1f7defe97cc0eeb7fa4421a2e2d138e586aedd03acda3548df7837850",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Int_Enamel.mat",
+    "sha256": "def47349d37bd85db42c637e317dd242df897f253a7550f2dc82c3547e532535",
+    "bytes": 4250
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Int_Enamel.mat.meta",
+    "sha256": "ffce4010fb2339c0010672c4be5d12bca7f7dce9001ac50a2f5608844497bb38",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Lamp_Amber_ExtAtlas.mat",
+    "sha256": "6db01755e68718773401e71041163977680d0a978b07ac1bddb2914de1f119d6",
+    "bytes": 4290
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Lamp_Amber_ExtAtlas.mat.meta",
+    "sha256": "18371a2e65aaf4e3fc5892861531b720bded673b3fed3e74ff35cccc2f89e06a",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Lamp_Head_ExtAtlas.mat",
+    "sha256": "c921856043779bb2e4dc1c95803d60a3ea4e8b151b0468fef3e3c074e36c0f6f",
+    "bytes": 4305
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Lamp_Head_ExtAtlas.mat.meta",
+    "sha256": "77937b85bcfa23c042148ccebd1d50ac74e34ee3fe59ed6c46d741fddf6f72ef",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Lamp_Tail_ExtAtlas.mat",
+    "sha256": "38bbd278bba39ad1aa25be17ac533458ec1c08d7a47a4469e6b4af1c7bad01b3",
+    "bytes": 4308
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Lamp_Tail_ExtAtlas.mat.meta",
+    "sha256": "9295cf13bbf63c4944c6765c1bce6be487e13b3881ab11df13e3874dc6abf35b",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_LatchCream.mat",
+    "sha256": "1b8639f314c4b906898d0d049ef6c7b0a1b0900feb5cbade42b81884c572d72e",
+    "bytes": 4253
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_LatchCream.mat.meta",
+    "sha256": "d332332538c17810464a1285eb6ac5063bf5e5b1f63d22a9279ae67c9169508f",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Linen_NoLM.mat",
+    "sha256": "236ff849783f2a6514fcbf594e9cd72e878ecf911584d75ec2ec954a4a9f57b6",
+    "bytes": 4264
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Linen_NoLM.mat.meta",
+    "sha256": "2f07cf54e62705558f02d7f4a9a0ae4bc37a559ef4a84b554c4f34b0f39662ff",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Part_DriverSeat.mat",
+    "sha256": "6f057e59ea3765233e3559bacf611fbdf30f3837a1f33e0881922f4f826c2b49",
+    "bytes": 4424
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Part_DriverSeat.mat.meta",
+    "sha256": "2dc1e67851d99f51648c3aed1025816d7a155a5a15ee722afdbada4086ae6cd4",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Part_RearBench.mat",
+    "sha256": "ecca312698655070ca0803c2a6be2d2ff7476b76fb7b259a4b0b279fa77cb701",
+    "bytes": 4423
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Part_RearBench.mat.meta",
+    "sha256": "9a5a0ba9ef1d874bc8ebca5d0aaac0b5fa3975b84ac82a034cc5e199d1b7518a",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Part_SeatHero.mat",
+    "sha256": "cf902fdd88f79a33fd1728081f0e62161ea522423dce28c4e65d8d368fe7317f",
+    "bytes": 4422
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Part_SeatHero.mat.meta",
+    "sha256": "ca7f9de6df1a370a80cad76e62c514a826cbbcf785c14428e6e319e388a2ac1c",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Part_SeatL.mat",
+    "sha256": "0a10452046338891dcdd119242b1720ec39563aef473365a83bcc8d4e2146aa2",
+    "bytes": 4419
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Part_SeatL.mat.meta",
+    "sha256": "8275401117fef94bc481418d12ab3d4648862fc847d30c10cc994574bf43ece4",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Part_SeatLBox.mat",
+    "sha256": "4f4d133d393a024128527708a1500bfb4871ec4cd3ccd85e2baef570b67175fc",
+    "bytes": 4422
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Part_SeatLBox.mat.meta",
+    "sha256": "1eea0037d23573b404dd592d3cc09cfc23bb04510b2b75ce574b9b6a44a7a62e",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Part_SeatR.mat",
+    "sha256": "1c487e820a8977baec5a0d026305508bd1e0a596f1007ce69bf02e553ce0b698",
+    "bytes": 4419
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Part_SeatR.mat.meta",
+    "sha256": "ce13c0ae44e223d5c14b1c6dfd6c6b2b3a1d777d08060b3938dc6b5d505fba25",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_RadioDial_NoLM.mat",
+    "sha256": "69249af07e6fce2b6332e7c1aaf92699f1b5890deb22d1b73f3afe46da5840a7",
+    "bytes": 4285
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_RadioDial_NoLM.mat.meta",
+    "sha256": "06fa3a847b45c3fd67f70f211b608a90a1d356fb6bc15ca249dfe2ac0293de23",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_RadioGrille_NoLM.mat",
+    "sha256": "05f89ea0bd2405557f78aee8f8c6b127246a52d02e7e86228b226c82ff3220c0",
+    "bytes": 4204
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_RadioGrille_NoLM.mat.meta",
+    "sha256": "f6c90b09c26910bc54e4b5dcc8abc385f8bb61f5626c7178c7971f7881c7c490",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_RadioLeather_NoLM.mat",
+    "sha256": "c012abba501063cb5b1c82000981dfcea7df06d62d2e5dff5f7e3a31933848d0",
+    "bytes": 4262
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_RadioLeather_NoLM.mat.meta",
+    "sha256": "44ac62836af87b2f753e354e33c97a7d73f6d7c2aa4a628576db05cd57d28a78",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Rim_Ext.mat",
+    "sha256": "5bcb01084a5c92c0cefa2bcdf561f77036018bf9740c01b32fd25cc283aff64a",
+    "bytes": 4194
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Rim_Ext.mat.meta",
+    "sha256": "35791d9a42af32c511cae7291ffe87d4d11f829a724c745123aa033e8655a6c4",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_SafetyYellow.mat",
+    "sha256": "a176d65439ab360294e182243f072e0b21a5881fcaa4045819f321eed4159de2",
+    "bytes": 4254
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_SafetyYellow.mat.meta",
+    "sha256": "2bb14479adcbad46ca4bfccb1a5e1f417fdf554cae56743054fd039dc664caac",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Seal.mat",
+    "sha256": "b6e7d9af05e2405c143907e9e14c8f09f58d5c921577d34fa1be61b74ccf3ed5",
+    "bytes": 4247
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Seal.mat.meta",
+    "sha256": "f778147ef92783d148a9cfe99239ad4e8738c06bda9a686d854469bdb82ee984",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Seal_ExtAtlas.mat",
+    "sha256": "2fc27c2048aff07a1ad28e2b9d59ece31b801bd03024f6301dbc2e14aa77c054",
+    "bytes": 4284
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Seal_ExtAtlas.mat.meta",
+    "sha256": "a92b7fd4f76fd8cb064768fd13304b9049efd0245544d9d444f8fa970a70ddf9",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_SeatFrame.mat",
+    "sha256": "68eb8fd48f168b28e1b75988aa9f830e4bed108ce9194cbee8242db91277e713",
+    "bytes": 4252
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_SeatFrame.mat.meta",
+    "sha256": "d9a6584599b2780d3759370065d254fd1d50fdd40217fff031613b8032ed7bcc",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_SeatFrame_ExtAtlas.mat",
+    "sha256": "780e732687f5680c7561277d741722fa35ce0dfaf10c627b2f28676f7f48b81e",
+    "bytes": 4289
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_SeatFrame_ExtAtlas.mat.meta",
+    "sha256": "7d92725bc62741eab974c7b80a665178ccef8a427c86a9b44237bee124c3c54a",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Steel.mat",
+    "sha256": "c71ac262d0caa05ca34c4141b4aaf0f00035fcef510662a8b6bf173f7e64a088",
+    "bytes": 4249
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Steel.mat.meta",
+    "sha256": "a28c261ec257740e4973d6d574d5685bfecb983a899b6454f34c712b83744e42",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Steel_NoLM.mat",
+    "sha256": "cd4c762769f8eebc4c600ffb6982a40dd8931ec71b2cee6af5415fc378ac82a3",
+    "bytes": 4199
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Steel_NoLM.mat.meta",
+    "sha256": "d348e121de8ed6dc20c4d8236d362e3c6dc0ebe414d387bc9746bafd64e894dd",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_TubeDiffuser_NoLM.mat",
+    "sha256": "7f8edf82062f04ba4551c997b257c4f49ca484382b133ba295052eac405f3c1a",
+    "bytes": 4216
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_TubeDiffuser_NoLM.mat.meta",
+    "sha256": "a6506a85fbfbc94db437a403cd55e1f54dbccfbe0db9c3f62d9c4466a40a63f2",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Tyre_Ext.mat",
+    "sha256": "d187675d873b054ccc99bbd5b6a8e4a1dbf172f8e73478c86bc6c96a630f5070",
+    "bytes": 4197
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Tyre_Ext.mat.meta",
+    "sha256": "166b31c1dcfd04d39e9e66e58fdeefcff948a365832872c65a9ae0219a9bedeb",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Tyre_ExtAtlas.mat",
+    "sha256": "3cce8b8f1782854b785273a9596efbcbc8bba9169db89e997f25e2357479eb7d",
+    "bytes": 4285
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Tyre_ExtAtlas.mat.meta",
+    "sha256": "a71b896a9c36f43920b63cfd4d05c265f6968e4338cef3e39108b767634b91f0",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Vinyl.mat",
+    "sha256": "39bab67e414d265f2b061aab736b6e0fbe0d95b11fee3936d0792a68c55ce83f",
+    "bytes": 4251
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Generated\\Materials\\M_Bus_Vinyl.mat.meta",
+    "sha256": "909d29c3d513c764ef48c4148f772352979104623d0f21169e3d2046c5dddcba",
+    "bytes": 188
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Editor\\LanbaiBusBuild.cs",
+    "sha256": "25a5170fd87a52866c0641903ea2645dc91a6879c3a36d82f67b52c3f487de86",
+    "bytes": 41453
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Editor\\LanbaiBusCabinDropIn.cs",
+    "sha256": "48a2648417bb0033215e95711e3cd8df8b4c553287469bdd001a561509a4d39c",
+    "bytes": 87989
+  },
+  {
+    "path": "Assets\\Lanbai\\Bus\\Editor\\LanbaiBusSliceBuilder.cs",
+    "sha256": "141f9258cd7afea560f4a1200730190b6b11f2568867929bb3f879aba3bc05cb",
+    "bytes": 39006
+  }
+]

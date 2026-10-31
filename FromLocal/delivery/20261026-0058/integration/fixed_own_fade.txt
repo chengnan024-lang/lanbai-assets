@@ -1,0 +1,21 @@
+label=fixed_own_fade time=102.7926 batch=True audio=0
+dbgT=916.0001
+dbgSeg=7
+dbgDEV=0
+dbgB=-0.4
+_sp=0
+_spHandAt=-1
+_spBlackEnd=89.80763
+_spFade0=89.81481
+_spawnFadeEnded=True
+_journeyReady=True
+dispatcher.lastT=916.0001
+dispatcher.activeCount=2
+dispatcher.gradeDEV=0
+dispatcher.spawnFadeTimeout=25
+dispatcher.spawnFadeMax=9.4
+dispatcher._fadeEndT=912.4111
+dispatcher._fadeEnded=True
+dispatcher._handState=2
+dispatcher._fadeBegin=86.80763
+overlay=(0.00, 0.00, 0.00, 0.00)

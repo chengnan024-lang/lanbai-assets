@@ -1,0 +1,559 @@
+{
+  "time": "2026-10-26T01:22:08.922802-04:00",
+  "source": "a5a75cb29f0e27bc864e5b0e332950331f406de1",
+  "files": [
+    {
+      "path": "Act10_White/Editor/LanbaiWhiteBuild.cs",
+      "bytes": 3378,
+      "source_sha256": "c95c9ee82e390e5d13b261b17d8c3ed54093af3364cdc8bd06fd69b69b014855",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Act10_White/README_Act10.md",
+      "bytes": 10204,
+      "source_sha256": "1e07c2087824d071021bf416c8b0c507971355ac4ec2d6b53d8afd27eec0d511",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Act10_White/Runtime/LanbaiWhiteDriver.cs",
+      "bytes": 18972,
+      "source_sha256": "4c1bc29e29e970ad68f5624b16a2d13eedb67c9c1fadbbe9e0f836d7ec363845",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Act10_White/STATUS.md",
+      "bytes": 362,
+      "source_sha256": "20556bf48bd84be194a396de6742165ffad61c68044a47a19c61f77769b1612e",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Act10_White/WhiteSchedule.json",
+      "bytes": 7286,
+      "source_sha256": "64055b39c0ae7540d67a4f90dd8b674096e487b984be946219ed144f6aa8316e",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Fonts/Charsets/charset_ALL_CJK.txt",
+      "bytes": 897,
+      "source_sha256": "38cfa03bd76e9f4ae0e3d49c753f872a2a6fb060b840afde77c606030c53d6f8",
+      "target_sha256": "117ca6632918e5e1e7ffd2c57d037ea741fcd599e041fe31f5d02c5d00a87b51",
+      "action": "update"
+    },
+    {
+      "path": "Fonts/Charsets/charset_BarlowSemiCondensed-SemiBold+ascii.txt",
+      "bytes": 95,
+      "source_sha256": "cb2a9233adc1225c5c495c46e62cf6308223c5e241ef33ad109f03141b57966a",
+      "target_sha256": "cb2a9233adc1225c5c495c46e62cf6308223c5e241ef33ad109f03141b57966a",
+      "action": "same"
+    },
+    {
+      "path": "Fonts/Charsets/charset_BarlowSemiCondensed-SemiBold.txt",
+      "bytes": 5,
+      "source_sha256": "26f25bfef83c4db729e61f504406527d394cc9c5f66e74f2b49c4338b783b996",
+      "target_sha256": "26f25bfef83c4db729e61f504406527d394cc9c5f66e74f2b49c4338b783b996",
+      "action": "same"
+    },
+    {
+      "path": "Fonts/Charsets/charset_EBGaramond-Italic+ascii.txt",
+      "bytes": 97,
+      "source_sha256": "52e2eccb0aa378bdf6b03f17b59257009736446cbad65ff9f8deb149b2de16b5",
+      "target_sha256": "f939d3e40c8fddc6de43df8f5102fb4e865ea9809910a0fb0b1be6a6dbf43342",
+      "action": "update"
+    },
+    {
+      "path": "Fonts/Charsets/charset_EBGaramond-Italic.txt",
+      "bytes": 41,
+      "source_sha256": "f03dfaa16b522cf3e5b17ee076be903c8bb3b194ba29320c58df9a24b6ade8ed",
+      "target_sha256": "6e18cfa2171f803157b82048619dcff2fea784c8f05e36cc4ceb30b999d58568",
+      "action": "update"
+    },
+    {
+      "path": "Fonts/Charsets/charset_EBGaramond-Regular+ascii.txt",
+      "bytes": 113,
+      "source_sha256": "b0e621fc59a73f51dc0a5002f42d761bbd285e3905770fb2ba8ca12b9139861a",
+      "target_sha256": "f7acfd03956eaa21a912410c0dc7dfe38ea46434ab836955c09a7de816717901",
+      "action": "update"
+    },
+    {
+      "path": "Fonts/Charsets/charset_EBGaramond-Regular.txt",
+      "bytes": 86,
+      "source_sha256": "308d06f824cdc829743de1f9b9f43ad2ee86b3dff5b646832cddd8efbe1a9bb3",
+      "target_sha256": "a5d6a1f3fe558867617f25aab4e8cc605de327e0def0f7d6bb40faed2dff0989",
+      "action": "update"
+    },
+    {
+      "path": "Fonts/Charsets/charset_IMFellEnglish-Roman+ascii.txt",
+      "bytes": 104,
+      "source_sha256": "2093b2662ea2a88fdb3bdaa8a3a1ff6638a94d93b483eb926b1e896e835ba074",
+      "target_sha256": "2093b2662ea2a88fdb3bdaa8a3a1ff6638a94d93b483eb926b1e896e835ba074",
+      "action": "same"
+    },
+    {
+      "path": "Fonts/Charsets/charset_IMFellEnglish-Roman.txt",
+      "bytes": 43,
+      "source_sha256": "46f5c75addf7b3b2d1ccd9e6d9f490c7d1cae2736851accc38895f67d3c0eaf2",
+      "target_sha256": "46f5c75addf7b3b2d1ccd9e6d9f490c7d1cae2736851accc38895f67d3c0eaf2",
+      "action": "same"
+    },
+    {
+      "path": "Fonts/Charsets/charset_IMFellEnglishSC+ascii.txt",
+      "bytes": 95,
+      "source_sha256": "cb2a9233adc1225c5c495c46e62cf6308223c5e241ef33ad109f03141b57966a",
+      "target_sha256": "cb2a9233adc1225c5c495c46e62cf6308223c5e241ef33ad109f03141b57966a",
+      "action": "same"
+    },
+    {
+      "path": "Fonts/Charsets/charset_IMFellEnglishSC.txt",
+      "bytes": 16,
+      "source_sha256": "af5528ccd631b17fb8cdd77d144e4681ddbb2574c2c805ae51da45705605161d",
+      "target_sha256": "af5528ccd631b17fb8cdd77d144e4681ddbb2574c2c805ae51da45705605161d",
+      "action": "same"
+    },
+    {
+      "path": "Fonts/Charsets/charset_SourceHanSansSC-Heavy.txt",
+      "bytes": 6,
+      "source_sha256": "268c930154e759bbd47cca65f1750f72296893e1e307fbdeb35e6eaa105d285a",
+      "target_sha256": "268c930154e759bbd47cca65f1750f72296893e1e307fbdeb35e6eaa105d285a",
+      "action": "same"
+    },
+    {
+      "path": "Fonts/Charsets/charset_SourceHanSerifJP-Medium.txt",
+      "bytes": 87,
+      "source_sha256": "7a60ff4659f3f0c422a758a57dcce07594dd3aebbb539c5324b67bca725afc58",
+      "target_sha256": "7a60ff4659f3f0c422a758a57dcce07594dd3aebbb539c5324b67bca725afc58",
+      "action": "same"
+    },
+    {
+      "path": "Fonts/Charsets/charset_SourceHanSerifJP-Regular.txt",
+      "bytes": 478,
+      "source_sha256": "30c6813845a23e2be59f4c6fb376b8cf8768a765cf6e52adfd21f838bf7001f1",
+      "target_sha256": "998a36c86114c68b65a31b8db5b749918d68c93e0c089893364362a422c803fc",
+      "action": "update"
+    },
+    {
+      "path": "Fonts/Charsets/charset_SourceHanSerifSC-Medium.txt",
+      "bytes": 64,
+      "source_sha256": "c3b2b840d74315f743fbb9f4aec06ef79845074e2e1dd8b9300e03bf359c057c",
+      "target_sha256": "c3b2b840d74315f743fbb9f4aec06ef79845074e2e1dd8b9300e03bf359c057c",
+      "action": "same"
+    },
+    {
+      "path": "Fonts/Charsets/charset_SourceHanSerifSC-Regular.txt",
+      "bytes": 528,
+      "source_sha256": "1543b5fb66fad874b45a647a62fdc41ab401140c6d1a0d708b25fe337e9aaa97",
+      "target_sha256": "818cbb6cf697580de5dd35da826557ccce227666f8e9f2a4a55f483b574d81e3",
+      "action": "update"
+    },
+    {
+      "path": "Fonts/Charsets/charset_SourceHanSerifTW-Regular.txt",
+      "bytes": 427,
+      "source_sha256": "f40f4fd9c8f85f81da62fb5d65778980caf368752c6350f6f54f3b48b068e205",
+      "target_sha256": "3637fa1a040c638174190bf9c6170a9eb3bfcf43885d7d438d4c20e91d338d70",
+      "action": "update"
+    },
+    {
+      "path": "Fonts/Editor/Lanbai.Fonts.Editor.asmdef",
+      "bytes": 441,
+      "source_sha256": "6de55425f5decd080d8c5f75e98e4e0a94ba0338480acf2f6eeced2ec98f73f5",
+      "target_sha256": "6de55425f5decd080d8c5f75e98e4e0a94ba0338480acf2f6eeced2ec98f73f5",
+      "action": "same"
+    },
+    {
+      "path": "Fonts/Editor/LanbaiPoemBake.cs",
+      "bytes": 53227,
+      "source_sha256": "2f66dc1fea96ac85ac0485a92a0b5f3d63a0fb8f553b05653e5a391a2749e133",
+      "target_sha256": "0ca384271e4e6f3d973225c43e40c674bc5cef0f8634bad63ecb6369cb5f0439",
+      "action": "LOCAL_DIFF"
+    },
+    {
+      "path": "Fonts/Editor/LanbaiPoemMaterials.cs",
+      "bytes": 9642,
+      "source_sha256": "976dec9a5715dfc48a70ccc96fe53f4eb2df10745bb676e1331da8e925238b28",
+      "target_sha256": "5298377c7bc8b572288c202f29534a717f6267124cc659521040c17b46a35478",
+      "action": "update"
+    },
+    {
+      "path": "Fonts/Editor/LanbaiScrimTextureImport.cs",
+      "bytes": 1920,
+      "source_sha256": "fb0d3f235b7cd22c0a2b710935c89878b0634bfa1d6f2e33365890eecf344a96",
+      "target_sha256": "fb0d3f235b7cd22c0a2b710935c89878b0634bfa1d6f2e33365890eecf344a96",
+      "action": "same"
+    },
+    {
+      "path": "Fonts/Editor/LanbaiTMPFontBuilder.cs",
+      "bytes": 20247,
+      "source_sha256": "15d0444209ef8872945ad4d0b89914d83acdbcc9b989497340892b39ff065ee8",
+      "target_sha256": "5802e13f358372327364b4f5621d2ece8e0c575c61feed7f879928ea373bd572",
+      "action": "update"
+    },
+    {
+      "path": "Fonts/Licenses/LICENSE_SourceHanSans.txt",
+      "bytes": 4463,
+      "source_sha256": "fcac737e761ec63dbfbdce11030a1780161920d80315edba9c8beff1c2bac5a2",
+      "target_sha256": "fcac737e761ec63dbfbdce11030a1780161920d80315edba9c8beff1c2bac5a2",
+      "action": "same"
+    },
+    {
+      "path": "Fonts/Licenses/LICENSE_SourceHanSerif.txt",
+      "bytes": 4463,
+      "source_sha256": "9ff5bb567e1b92c801fc1069e5fbf992ff8efccacb9db94e5959a5b3ba9bb903",
+      "target_sha256": "9ff5bb567e1b92c801fc1069e5fbf992ff8efccacb9db94e5959a5b3ba9bb903",
+      "action": "same"
+    },
+    {
+      "path": "Fonts/Licenses/OFL_BarlowSemiCondensed.txt",
+      "bytes": 4377,
+      "source_sha256": "186d750eb496a4c17a76385f82be6aea2ac1cf2de074a811d63786cf374ea73f",
+      "target_sha256": "186d750eb496a4c17a76385f82be6aea2ac1cf2de074a811d63786cf374ea73f",
+      "action": "same"
+    },
+    {
+      "path": "Fonts/Licenses/OFL_EBGaramond.txt",
+      "bytes": 4398,
+      "source_sha256": "0985066662eb755ed3683ae5482a81a9195b49ce3f7e165cc2388b3dbece7dd7",
+      "target_sha256": "0985066662eb755ed3683ae5482a81a9195b49ce3f7e165cc2388b3dbece7dd7",
+      "action": "same"
+    },
+    {
+      "path": "Fonts/Licenses/OFL_IMFellEnglish.txt",
+      "bytes": 4452,
+      "source_sha256": "2a3ca501fc4d5efcad9798531e3e06962b1e20c60e464f6cbd6c17630112c773",
+      "target_sha256": "2a3ca501fc4d5efcad9798531e3e06962b1e20c60e464f6cbd6c17630112c773",
+      "action": "same"
+    },
+    {
+      "path": "Fonts/Licenses/OFL_IMFellEnglishSC.txt",
+      "bytes": 4452,
+      "source_sha256": "2a3ca501fc4d5efcad9798531e3e06962b1e20c60e464f6cbd6c17630112c773",
+      "target_sha256": "2a3ca501fc4d5efcad9798531e3e06962b1e20c60e464f6cbd6c17630112c773",
+      "action": "same"
+    },
+    {
+      "path": "Fonts/README_Fonts.md",
+      "bytes": 99487,
+      "source_sha256": "2153619fa1138a0d360403c1dc2bd610e0bc4e19b6bb73cacb063a8b3624820b",
+      "target_sha256": "4c4b58a3ef6578ef079f17c96c00d9401269dafdece9554a16ea54f014314f83",
+      "action": "update"
+    },
+    {
+      "path": "Fonts/Runtime/LanbaiLangButton.cs",
+      "bytes": 688,
+      "source_sha256": "484c73df59f48b18f3df06dd711f0f0c0f5107b4ea449fb3fd9b46ea9f3305b7",
+      "target_sha256": "484c73df59f48b18f3df06dd711f0f0c0f5107b4ea449fb3fd9b46ea9f3305b7",
+      "action": "same"
+    },
+    {
+      "path": "Fonts/Runtime/LanbaiPoemDriver.cs",
+      "bytes": 38988,
+      "source_sha256": "12901dd67dd1711bfd8591a8aca8f4c51a921a5543133f777f99147f273a2931",
+      "target_sha256": "60c644b8e7c67c8b358fcbb445c889c2295a9dd47fae4d3fe868a0c5596c6764",
+      "action": "LOCAL_DIFF"
+    },
+    {
+      "path": "Fonts/Shaders/Lanbai_Letterbox.shader",
+      "bytes": 4728,
+      "source_sha256": "96e1f4d38f5e82954c37f17c4976eb909aeaa2513f07976c2194ed6aeb099a70",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Fonts/Shaders/Lanbai_Subtitle.shader",
+      "bytes": 8399,
+      "source_sha256": "f5dc90bd850968293302c5a24a55bccd0fb66db5a7cfca649fd1c7003699581d",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Fonts/Shaders/Lanbai_SubtitleHalo.shader",
+      "bytes": 3159,
+      "source_sha256": "200296a7b61e025c6b056e5a6dbf5116316a6459ded1968735d17fa35e94b5d6",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Fonts/Subset/BarlowSemiCondensed-SemiBold.Lanbai.ttf",
+      "bytes": 67124,
+      "source_sha256": "8821f57aab4843abdc1c38a8fb07338dd0136251e7818fa8eb4d34053153d2ed",
+      "target_sha256": "8821f57aab4843abdc1c38a8fb07338dd0136251e7818fa8eb4d34053153d2ed",
+      "action": "same"
+    },
+    {
+      "path": "Fonts/Subset/EBGaramond-Italic.Lanbai.ttf",
+      "bytes": 54164,
+      "source_sha256": "e6a3c784b2a341c918bffdc74ab84957e146108769f1f3b99d3f039dbaf54c96",
+      "target_sha256": "26dc4a304e9e96fe491db3b9103d505b8ea718189306f7aabdf675bc27b36cf9",
+      "action": "update"
+    },
+    {
+      "path": "Fonts/Subset/EBGaramond-Regular.Lanbai.ttf",
+      "bytes": 56468,
+      "source_sha256": "9058856351ac27533f895d8dacc33042f16601a08ee2c5bcb2f460754a818338",
+      "target_sha256": "28884775ba023ad84986e13c74c14f0db68dec18809d438fd572cde431e2f8a3",
+      "action": "update"
+    },
+    {
+      "path": "Fonts/Subset/LanbaiSansSC-Heavy.otf",
+      "bytes": 27264,
+      "source_sha256": "310b8c9a7e874aa2c866194ff8fca1c4cee54c4c53cb07ddc99261f4cde6a768",
+      "target_sha256": "310b8c9a7e874aa2c866194ff8fca1c4cee54c4c53cb07ddc99261f4cde6a768",
+      "action": "same"
+    },
+    {
+      "path": "Fonts/Subset/LanbaiSerifJP-Medium.otf",
+      "bytes": 44660,
+      "source_sha256": "c4f9deebe9a32e62fd19477efec4728d0007f5a4fc00f56799f7da2c79eaeaec",
+      "target_sha256": "c4f9deebe9a32e62fd19477efec4728d0007f5a4fc00f56799f7da2c79eaeaec",
+      "action": "same"
+    },
+    {
+      "path": "Fonts/Subset/LanbaiSerifJP-Regular.otf",
+      "bytes": 87636,
+      "source_sha256": "fea72c735b379f373722110bb35a4e50928d0829a3bf88bc0746475ef020f3ee",
+      "target_sha256": "7eb74a0a9449b956e9eea05ef29bd4fcf0de6ce67c897d5a492ea6f8df68a126",
+      "action": "update"
+    },
+    {
+      "path": "Fonts/Subset/LanbaiSerifSC-Medium.otf",
+      "bytes": 40036,
+      "source_sha256": "6fad1c4557f895d1f7a0810f71820e7b76b55a7c4214db3ad882a972c905669d",
+      "target_sha256": "6fad1c4557f895d1f7a0810f71820e7b76b55a7c4214db3ad882a972c905669d",
+      "action": "same"
+    },
+    {
+      "path": "Fonts/Subset/LanbaiSerifSC-Regular.otf",
+      "bytes": 86156,
+      "source_sha256": "821e9dd0422f4464d1948b0ee16c3fdb63f0f62f8c25eb7f5305d07ce49e8e98",
+      "target_sha256": "296c23c6d115aa9bfed50bc9001dbac0c65e7466d9a5021fedf64b8d91ff0b78",
+      "action": "update"
+    },
+    {
+      "path": "Fonts/Subset/LanbaiSerifTC-Regular.otf",
+      "bytes": 86864,
+      "source_sha256": "0f12d1e1b73c59a6952d74c54724ce0bd30009ceaaa3264ce6e3965225a95eff",
+      "target_sha256": "85cefda30368aac36fa4eb4dc4273052b923081080ce77a0256cac0322bf11b1",
+      "action": "update"
+    },
+    {
+      "path": "Fonts/Subset/LanbaiSlip-Regular.ttf",
+      "bytes": 110076,
+      "source_sha256": "f3fa190fdefc869443a189bfedee04bdbd454df254d997ed42b196dc6d29f3d1",
+      "target_sha256": "f3fa190fdefc869443a189bfedee04bdbd454df254d997ed42b196dc6d29f3d1",
+      "action": "same"
+    },
+    {
+      "path": "Fonts/Subset/LanbaiSlipSC-Regular.ttf",
+      "bytes": 112560,
+      "source_sha256": "dec3a9d2c58429dd15e9d796359160236ff2941e93a3bbc0a10966d1222135d2",
+      "target_sha256": "dec3a9d2c58429dd15e9d796359160236ff2941e93a3bbc0a10966d1222135d2",
+      "action": "same"
+    },
+    {
+      "path": "Fonts/Textures/Lanbai_Scrim_Block.png",
+      "bytes": 16362,
+      "source_sha256": "bba2cfc216501b8eb634f4ca1f9f7d167a4fa93e529b1bb7bc9306c00f5d3ccf",
+      "target_sha256": "bba2cfc216501b8eb634f4ca1f9f7d167a4fa93e529b1bb7bc9306c00f5d3ccf",
+      "action": "same"
+    },
+    {
+      "path": "Fonts/Textures/Lanbai_Scrim_Line.png",
+      "bytes": 7644,
+      "source_sha256": "ccc308c88ae15e47a3679388bd7ea084a5d29dda4af7a63e47ac58a539a94f1d",
+      "target_sha256": "ccc308c88ae15e47a3679388bd7ea084a5d29dda4af7a63e47ac58a539a94f1d",
+      "action": "same"
+    },
+    {
+      "path": "Fonts/seat_positions.json",
+      "bytes": 462454,
+      "source_sha256": "854f63afa049d9cf75d89c3fbc4735403b084f6e90f09d71cd4fd0ba1601fdfa",
+      "target_sha256": "854f63afa049d9cf75d89c3fbc4735403b084f6e90f09d71cd4fd0ba1601fdfa",
+      "action": "same"
+    },
+    {
+      "path": "Fonts/strings_all.json",
+      "bytes": 202309,
+      "source_sha256": "9cffbada84bb0c11e03e2331715cfcbc2018f5bab27ee8162d4950b183c904d9",
+      "target_sha256": "b9e449411787c64879235ba43c01529708d9313ffed05697c41d8409d3c7f5bd",
+      "action": "update"
+    },
+    {
+      "path": "Fonts/subtitle_depth.json",
+      "bytes": 26087,
+      "source_sha256": "a663724c43b6094e313e74899aa3b7c894290ac0752c7efa032e4445bda31849",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Fonts/verify.md",
+      "bytes": 17816,
+      "source_sha256": "a3c48966a6cdd1c1efbcf874bc202296b435e0f217f001fa4a19a2fc75bb0ce7",
+      "target_sha256": "a3c48966a6cdd1c1efbcf874bc202296b435e0f217f001fa4a19a2fc75bb0ce7",
+      "action": "same"
+    },
+    {
+      "path": "Mirrors/Editor/LanbaiMirrorsBuild.cs",
+      "bytes": 17404,
+      "source_sha256": "b15ac6ee123d7e0ae1559b4ec4108de062c36266b709990a2532eff92c8462c7",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Mirrors/Editor/LanbaiMirrorsData.cs",
+      "bytes": 47164,
+      "source_sha256": "96dd315bff9aecdd883b2899e9ba7968bc427c1f71597ac73923cd641768def7",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Mirrors/MirrorSchedule.json",
+      "bytes": 110190,
+      "source_sha256": "af499bee1fdbb1cbdc31da416c5e84366a3cce0ce0773248730d5ff51d5d19ad",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Mirrors/Models/BronzeMirror.fbx",
+      "bytes": 4767932,
+      "source_sha256": "9a1bf221a642ca287efed719fdb2b7652a7425f3624a94dc985562629a5c98d3",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Mirrors/README_Mirrors.md",
+      "bytes": 35577,
+      "source_sha256": "b1901f7389f84c8e9685d85146d89e4de8000f0b08189a3f7841ece08aa0375f",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Mirrors/Runtime/LanbaiMirrorsDriver.cs",
+      "bytes": 27198,
+      "source_sha256": "6b19a14c39bb53eb19316976106802ac1d99a23ca9593c67c7bad7e455cf1c8b",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Mirrors/STATUS.md",
+      "bytes": 1195,
+      "source_sha256": "a16bf0cbf795d43d6a97183a4fcc0fdc5bf39178ebb6e13094e734c869d2b404",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Mirrors/Shaders/LanbaiMirror.cginc",
+      "bytes": 14581,
+      "source_sha256": "3e7c58554279b518a81173f4789bcafb9b4c4ad6c4c52868092e4db588e53522",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Mirrors/Shaders/Lanbai_BronzeMirror.shader",
+      "bytes": 21715,
+      "source_sha256": "a67c4e09e4c66d1bf3bc01968cc694f6c813368d65760a4866562fbb8f92a1bf",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Mirrors/Shaders/Lanbai_MirrorDust.shader",
+      "bytes": 7881,
+      "source_sha256": "c73fe369a5b9472210f5ccf2791148253c77d893a1aa6d958684b21842420288",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Mirrors/Shaders/Lanbai_MirrorStars.shader",
+      "bytes": 9430,
+      "source_sha256": "e11ae71f232a588afe050101cf5148433872780e47ff86776eb484f712cabc4c",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Mirrors/Textures/T_MirrorBackSky_Cube.png",
+      "bytes": 4808,
+      "source_sha256": "a8acb40cbd209e291f9a065bee9216e8d135a9aed7c1585758ab73e2ab86ab59",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Mirrors/Textures/T_MirrorBack_Centre_Mask_2048.png",
+      "bytes": 7436712,
+      "source_sha256": "d9158d528df850d7b006b9110114a6c26a2f86b1e6e945896a5a9e55bc8df666",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Mirrors/Textures/T_MirrorBack_Centre_Normal_2048.png",
+      "bytes": 7784124,
+      "source_sha256": "5a0f45793763e94d8e0fce9acd3c8485077e2ac88de3a4f24402c2c2143e7edb",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Mirrors/Textures/T_MirrorBack_Mask_2048.png",
+      "bytes": 7447157,
+      "source_sha256": "682f1c296bcae7b826b656af1b4eded7d81c74cd48b671d9fbfcc4a4066e4eb4",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Mirrors/Textures/T_MirrorBack_Normal_2048.png",
+      "bytes": 7797290,
+      "source_sha256": "5b86c658b5137e1fcd27a535ffd414aa10a4796d6aa0780be1d1ae4be96a4814",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Mirrors/Textures/T_MirrorFace_2048.png",
+      "bytes": 2396914,
+      "source_sha256": "50e8289070f2a169e8ca820fccb63f12e1fd28c3e62deb91c79e202de9a7a704",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Mirrors/Textures/T_MirrorGlyphs_1024.png",
+      "bytes": 109057,
+      "source_sha256": "e2fb9ba3e0be867857755d91815748c37deb25a06f7e1860d286222dbcfea213",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Mirrors/Textures/T_MirrorRimCloud_2048x256.png",
+      "bytes": 395987,
+      "source_sha256": "0365c0d21b99a0c6b109a9f7b34539537d460108b433131d21915ced2d8c2423",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Mirrors/总导演意见.md",
+      "bytes": 2714,
+      "source_sha256": "1e812ce4b262accb321febaeee7241e1ed07cc2a1ac1798bae72ee0a451c702f",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Mirrors/总工程师意见.md",
+      "bytes": 3021,
+      "source_sha256": "9847d34a52bdedddb31ddd0f5b0121e2a235d09bec153b5b777b7fec31defd89",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Mirrors/暂停总结.md",
+      "bytes": 3570,
+      "source_sha256": "d9cf22579d0d027bde30b102fa6959efb76d323715b1e72a2074554c2362c49b",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Mirrors/给总控.md",
+      "bytes": 7925,
+      "source_sha256": "e4606aef3847ed427172754db0618c5668654a336c44b8b0dfcfef08f8df370e",
+      "target_sha256": null,
+      "action": "new"
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+--- a/Fonts/Runtime/LanbaiPoemDriver.cs
++++ b/Fonts/Runtime/LanbaiPoemDriver.cs
+@@ -42,6 +42,8 @@
+     public Transform poemsRoot;                      // world text (Tianwen's sky characters, the Zhuangzi column)
+     public Vector3 eyeLocal = new Vector3(0.55f, 1.70f, 2.05f);   // the main seat's eye in bus space (BusLayout.json)
+     public LanbaiExposure exposure;                  // ΔEV the EXPO helpers apply (null -> 0)
++    public bool useLocalAppliedExposure;             // Local Journey owns PPv2; updated after ApplyGrades, before PostLateUpdate.
++    public float localAppliedDeltaEV;
+ 
+     // ------------------------------------------------------------------------------- 2. world text (v4.1 path)
+     [Header("World text (one entry per poem that keeps world text)")]
+@@ -301,12 +303,12 @@
+         float c = fontCentre[f];
+         bool two = pgTop[p].Length > 0;
+         subBot[f].text = pgBot[p];
+-        subBot[f].transform.localPosition = new Vector3(pgBotX[p] * em, -c * em, 0f);
+-        subTop[f].gameObject.SetActive(two);
++        subBotR[f].transform.localPosition = new Vector3(pgBotX[p] * em, -c * em, 0f);
++        subTopR[f].gameObject.SetActive(two);
+         if (two)
+         {
+             subTop[f].text = pgTop[p];
+-            subTop[f].transform.localPosition = new Vector3(pgTopX[p] * em, (fontPitch[f] - c) * em, 0f);
++            subTopR[f].transform.localPosition = new Vector3(pgTopX[p] * em, (fontPitch[f] - c) * em, 0f);
+         }
+         // halos: one per line, centred on the line's em box (B.4 #4)
+         if (haloBot != null)
+@@ -344,7 +346,7 @@
+     private void Draw()
+     {
+         int s = _sCur, f = pgFont[_pg];
+-        float ev = exposure != null ? exposure.GetAppliedDeltaEV() : 0f;
++        float ev = useLocalAppliedExposure ? localAppliedDeltaEV : (exposure != null ? exposure.GetAppliedDeltaEV() : 0f);
+         float k = Mathf.Pow(2f, -ev);
+         float vis = _vr ? _fade : 1f;
+         float dil = _vr ? dilateVR : dilateDesk;
+@@ -772,7 +774,8 @@
+         if (boardLine1 != null && k < boardLine1.Length && boardLine1[k] != null)
+         {
+             bool count = secondsToDeparture > 0f;
+-            if (boardLine1[k].gameObject.activeSelf != count) boardLine1[k].gameObject.SetActive(count);
++            GameObject lineObject = ((Component)boardLine1[k]).gameObject;
++            if (lineObject.activeSelf != count) lineObject.SetActive(count);
+             if (count) boardLine1[k].text = boardPrefix[k] + Mathf.CeilToInt(secondsToDeparture).ToString() + boardSuffix[k];
+         }
+     }

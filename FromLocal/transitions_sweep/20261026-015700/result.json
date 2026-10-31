@@ -1,0 +1,10 @@
+{
+  "test": "transitions_sweep",
+  "run": "20261026-015700",
+  "exit": 3,
+  "status": "error",
+  "preflight_only": false,
+  "out": "E:\\IDMdownload\\VRCC\\dream\\LanbaiReports/tests\\transitions_sweep\\20261026-015700",
+  "blocked_reason": null,
+  "error": "StepException: sweep.table 找不到：E:\\IDMdownload\\VRCC\\Backups\\continuation_20261026\\delivery_0058\\data/transitions_table.json"
+}

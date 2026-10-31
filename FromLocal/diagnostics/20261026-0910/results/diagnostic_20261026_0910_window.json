@@ -1,0 +1,17 @@
+{
+    "id": "diagnostic_20261026_0910_window",
+    "state": "done",
+    "step": 1,
+    "total": 1,
+    "started": "2026-10-26 09:10:41",
+    "finished": "2026-10-26 09:10:42",
+    "error": "",
+    "log": [
+        "09:10:41 收到请求，共 1 步",
+        "09:10:41 调用 Lanbai.Tests.LB_WindowIdDiagnostic.Run（official_two_cameras）",
+        "09:10:42   用时 0.6 秒",
+        "09:10:42   返回：Diagnostic captured two original cameras, no world edits: E:/IDMdownload/VRCC/Backups/continuation_20261026/window_id_0910/official_two_cameras",
+        "09:10:42 全部完成"
+    ],
+    "files": []
+}

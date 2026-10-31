@@ -1,0 +1,75 @@
+{
+  "id": "bus_dropin",
+  "title": "车厢先交：FullPreview 里换上新车（D-44）",
+  "source": "车包 Bus/Docs~/D44_车厢先交.md §8 第 2 条的草稿；总工程师 10-25 审过放进来",
+  "source_why": "和草稿的不同：① allowed_writes 收紧（见 allowed_writes_why）；② 加 requires，前置条件不满足记 BLOCKED 而不是搭到一半失败；③ expect 写成“OK built”“OK check”，只认那一行的开头；④ 照 D-46，测试由阿白跑",
+  "requires": {
+    "folders": [
+      "Assets/Lanbai/Common",
+      "Assets/Lanbai/Bus",
+      "Assets/Lanbai/Bus/Editor",
+      "Assets/Lanbai/Cabin"
+    ],
+    "files": [
+      "Assets/Lanbai/Scenes/Lanbai_FullPreview.unity"
+    ],
+    "types": [
+      "LanbaiBusCabinDropIn",
+      "LanbaiCabinDriver"
+    ],
+    "why": "车厢先交的搭建类、车厢驱动要先拷进来编译完（Bus/Editor、Bus/Scripts、Cabin/Scripts）"
+  },
+  "scene": {
+    "path": "Assets/Lanbai/Scenes/Lanbai_FullPreview.unity",
+    "mode": "copy",
+    "why": "拷进沙盒：新车只搭在拷贝里，FullPreview 原场景不动（搭建菜单本身也拒绝正式场景 Lanbai.unity，D-46 #3）"
+  },
+  "udon_programs": [
+    "LanbaiCabinDriver",
+    "LanbaiBusSeat",
+    "LB_Seat"
+  ],
+  "udon_programs_why": "工具在开搭之前、记写入快照之前把缺的程序资产建好（Assets/Lanbai/UdonPrograms/），所以搭建时不会再建；LB_Seat 是本地的，没有就记 BLOCKED",
+  "allowed_writes": [
+    "Assets/Lanbai/Bus/Generated/**",
+    "Assets/Lanbai/Bus/Generated.meta",
+    "new:Assets/Lanbai/Bus/Programs/**",
+    "new:Assets/Lanbai/Bus/Programs.meta",
+    "new:Assets/SerializedUdonPrograms/**"
+  ],
+  "allowed_writes_why": "材质写进 Bus/Generated/Materials（重搭会改，放开）。草稿里的 Assets/Lanbai/UdonPrograms/** 拿掉了：udon_programs 列的程序资产工具在记快照之前就建好，搭建期间那里再有写入就是真的意外（比如改了别的脚本的程序资产），要报出来。Bus/Programs 和 SerializedUdonPrograms 只放过“新建”（new:）：万一搭建脚本自己建了程序资产、U# 编译写了新的序列化程序，算声明过；已有的文件被改或被删照常报。重存但逐字节没变的文件工具 1.2.2 起不算改动",
+  "build": [
+    {
+      "type": "method",
+      "name": "LanbaiBusCabinDropIn.BuildAll",
+      "expect": "OK built"
+    },
+    {
+      "type": "method",
+      "name": "LanbaiBusCabinDropIn.Check",
+      "expect": "OK check"
+    }
+  ],
+  "build_why": "Check 只读。分发层的 1 Generate 会改源码、要重新编译，不在测试里做；不做的话 Check 只报警告（“OK check … N warning(s)”）",
+  "settings": {
+    "vertex_compression_off": [
+      "TexCoord0",
+      "TexCoord1",
+      "TexCoord2",
+      "TexCoord3",
+      "Color"
+    ],
+    "gate": true
+  },
+  "after_build": [
+    {
+      "type": "assert_object",
+      "path": "**/Lanbai_Bus/Model_PAZ672"
+    },
+    {
+      "type": "assert_object",
+      "path": "**/Lanbai_Bus/LanbaiCabinDriver"
+    }
+  ],
+  "later": "截图机位和闪烁序列（§6 的时刻，尤其 1025 s）要在 Play 里拍：用工具 1.2.x 的 Play 阶段（flicker_probe 的写法）另加，等阿白第一次跑完这份再加"
+}

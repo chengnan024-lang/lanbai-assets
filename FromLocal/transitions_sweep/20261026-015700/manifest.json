@@ -1,0 +1,225 @@
+{
+  "tool": "Lanbai.Test.Runner",
+  "tool_version": "1.2.2",
+  "test_id": "transitions_sweep",
+  "run_id": "20261026-015700",
+  "fromlocal": "FromLocal/transitions_sweep/20261026-015700/",
+  "test_file": "E:\\IDMdownload\\VRCC\\Backups\\continuation_20261026\\delivery_0058\\transitions_missing.json",
+  "test_sha256": "2246d9a913b0afbf78dce347f72ab18bc8af6679b35ff515a9c70aeb89a5c800",
+  "mode": "bridge",
+  "started_utc": "2026-10-26T05:57:00.5191461Z",
+  "finished_utc": "2026-10-26T05:57:02.1125205Z",
+  "duration_s": 1.6,
+  "exit_code": 3,
+  "status": "error",
+  "preflight_only": false,
+  "blocked_reason": null,
+  "error": "StepException: sweep.table 找不到：E:\\IDMdownload\\VRCC\\Backups\\continuation_20261026\\delivery_0058\\data/transitions_table.json",
+  "error_stack": "  at Lanbai.Test.PlayPhase+Plan.Build (Lanbai.Test.Ctx ctx) [0x00642] in E:\\IDMdownload\\VRCC\\dream\\Assets\\Lanbai\\Engineering\\UnityTest\\Editor\\LanbaiTestPlay.cs:281 \r\n  at Lanbai.Test.PlayPhase.Begin (Lanbai.Test.Ctx ctx) [0x00079] in E:\\IDMdownload\\VRCC\\dream\\Assets\\Lanbai\\Engineering\\UnityTest\\Editor\\LanbaiTestPlay.cs:79 \r\n  at Lanbai.Test.Runner.Body (Lanbai.Test.Ctx ctx) [0x00044] in E:\\IDMdownload\\VRCC\\dream\\Assets\\Lanbai\\Engineering\\UnityTest\\Editor\\LanbaiTestRunner.cs:386 \r\n  at Lanbai.Test.Runner.Start (System.String testId, System.String testFile, System.Boolean preflightOnly, System.String mode, System.Action`2[T1,T2] done) [0x003bc] in E:\\IDMdownload\\VRCC\\dream\\Assets\\Lanbai\\Engineering\\UnityTest\\Editor\\LanbaiTestRunner.cs:250 ",
+  "repo": {
+    "repo_commit": "11c2f447c56444e171beb4f0cbe26fa8b505a6ab",
+    "repo_branch": "main",
+    "repo_dirty": null,
+    "repo_path": "E:\\IDMdownload\\VRCC\\lanbai-assets-gate-main-20261024",
+    "entry": "2026-10-26 approved serial delivery; current applied group manifests in delivery_0058",
+    "synced_at": "2026-10-26T01:39:27.181258-04:00",
+    "paths": null,
+    "tool_version": "1.2.2"
+  },
+  "copied": null,
+  "unity": {
+    "version": "2022.3.22f1",
+    "batch": true,
+    "color_space": "Linear",
+    "quality": "VRC High",
+    "build_target": "StandaloneWindows64",
+    "scene": "Assets/_LanbaiTest/Lanbai_FullPreview_copy.unity"
+  },
+  "packages": {
+    "com.vrchat.worlds": "3.10.5",
+    "com.vrchat.base": "3.10.5",
+    "com.unity.postprocessing": "3.4.0",
+    "com.unity.textmeshpro": "3.0.6"
+  },
+  "gpu": {
+    "name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "vendor": "NVIDIA",
+    "api": "Direct3D11",
+    "version": "Direct3D 11.0 [level 11.1]",
+    "vram_mb": 7956,
+    "cpu": "13th Gen Intel(R) Core(TM) i9-13980HX",
+    "cpu_threads": 32,
+    "ram_mb": 32386,
+    "os": "Windows 11  (10.0.26200) 64bit"
+  },
+  "consent": {
+    "tool_version": "1.2.2",
+    "date": "2026-10-26",
+    "tests": [
+      "gate_clouds_test",
+      "tree_sample",
+      "flicker_probe",
+      "transitions_sweep",
+      "bus_slice",
+      "bus_dropin"
+    ],
+    "note": "User approved this version and scope; private approval record omitted."
+  },
+  "layers": {
+    "blender_offline": {
+      "status": "pending_cloud",
+      "note": "云端对照 Blender 参考帧后填；工具不填"
+    },
+    "unity_desktop": {
+      "status": "error",
+      "note": "Unity 编辑器里的桌面渲染和编辑器估算的性能；工具检查全过也只记“待总导演看图”（D-41 #4）"
+    },
+    "vr_headset": {
+      "status": "not_tested",
+      "note": "工具不测头显，也不会把这一层标成通过；看 summary.md 末尾的头显清单"
+    }
+  },
+  "preflight": [
+    {
+      "item": "gpu",
+      "status": "ok",
+      "detail": "NVIDIA GeForce RTX 4060 Laptop GPU（Direct3D11，Direct3D 11.0 [level 11.1]，显存 7956 MB）"
+    },
+    {
+      "item": "resources",
+      "status": "ok",
+      "detail": "C:\\ 剩 38.5 GB，E:\\ 剩 67.6 GB，可用内存 14.3 GB"
+    },
+    {
+      "item": "consent",
+      "status": "ok",
+      "detail": "用户（当前聊天） 2026-10-26 同意（工具 1.2.2，测试 gate_clouds_test、tree_sample、flicker_probe、transitions_sweep、bus_slice、bus_dropin）；备份 E:\\IDMdownload\\VRCC\\Backups\\dream_20261025-000405.zip（在）"
+    },
+    {
+      "item": "unity",
+      "status": "ok",
+      "detail": "2022.3.22f1（要 2022.3.22f1）"
+    },
+    {
+      "item": "editor_state",
+      "status": "ok",
+      "detail": "Play False，编译中 False，导入中 False（要在编辑模式、编译和导入都完成后再跑）"
+    },
+    {
+      "item": "color_space",
+      "status": "ok",
+      "detail": "Linear（要 Linear）"
+    },
+    {
+      "item": "package:com.vrchat.worlds",
+      "status": "ok",
+      "detail": "3.10.5（要 3.10.5；读自 PackageManager）"
+    },
+    {
+      "item": "package:com.unity.postprocessing",
+      "status": "ok",
+      "detail": "3.4.0（要 3.4.0；读自 PackageManager）"
+    },
+    {
+      "item": "udonsharp",
+      "status": "ok",
+      "detail": "UdonSharp.UdonSharpBehaviour 在（UdonSharp.Runtime），随 VRChat Worlds SDK"
+    },
+    {
+      "item": "compile",
+      "status": "ok",
+      "detail": "scriptCompilationFailed False，Console 里的编译错误（含 UdonSharp 的）0 条（Console 共 3 条，原样在 console.jsonl）"
+    },
+    {
+      "item": "open_scenes",
+      "status": "ok",
+      "detail": "没有没保存的改动（Assets/Lanbai/Scenes/Lanbai_FullPreview.unity）"
+    },
+    {
+      "item": "sandbox",
+      "status": "ok",
+      "detail": "有上次遗留的沙盒（有标记），开跑时删掉重建"
+    },
+    {
+      "item": "grading",
+      "status": "warn",
+      "detail": "有旧的 Assets/Lanbai/Grades/，有套件的 Assets/Lanbai/Grading/；layer 4 =「Water」，layer 22 =「PostProcessing」。两套调色都在：工具不删，截图用的是参考相机上的那一套（PostProcessLayer 的 volumeLayer 写在 manifest 的截图记录里）"
+    },
+    {
+      "item": "sync_record",
+      "status": "ok",
+      "detail": "仓库提交 11c2f447c56444e171beb4f0cbe26fa8b505a6ab（2026-10-26T01:39:27.181258-04:00 同步，条目：2026-10-26 approved serial delivery; current applied group manifests in delivery_0058）"
+    },
+    {
+      "item": "git_status",
+      "status": "info",
+      "detail": "工程不是 git 仓库"
+    }
+  ],
+  "preconditions": [
+    {
+      "item": "文件 Assets/Lanbai/Scenes/Lanbai_FullPreview.unity",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "item": "类型 LB_Journey",
+      "status": "ok",
+      "detail": "脚本没拷进来或没编译"
+    },
+    {
+      "item": "类型 LanbaiOverlay",
+      "status": "ok",
+      "detail": "脚本没拷进来或没编译"
+    },
+    {
+      "item": "类型 LanbaiActDispatcher",
+      "status": "ok",
+      "detail": "脚本没拷进来或没编译"
+    }
+  ],
+  "git_status_porcelain": null,
+  "steps": [],
+  "settings": [],
+  "checks": [],
+  "shots": [],
+  "play": [],
+  "sequences": [],
+  "textures": [],
+  "metrics": {
+    "console.compile_errors_at_start": 0,
+    "resources.free_ram_gb": 14.302860260009766,
+    "writes.declared": 0,
+    "writes.project_settings_changed": 0,
+    "writes.undeclared": 0
+  },
+  "metric_notes": {
+    "writes.undeclared": "沙盒和 allowed_writes 以外被改动的文件",
+    "writes.project_settings_changed": "ProjectSettings/*.asset 内容变了的个数（工具只查不改）"
+  },
+  "writes": {
+    "sandbox": "Assets/_LanbaiTest",
+    "allowed_writes": [],
+    "declared": [],
+    "undeclared": [],
+    "project_settings_changed": [],
+    "tool_touched_restored": [
+      "存了、内容逐字节没变 Assets/Lanbai/Act07_Sea/Materials/Act07_CausticsCookie.asset",
+      "存了、内容逐字节没变 Assets/Lanbai/Generated/Materials/LB_Sea.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Generated/Materials/LB_SeaB.mat",
+      "存了、内容逐字节没变 Assets/Lanbai/Generated/Materials/LB_WetGround.mat"
+    ],
+    "note": "按文件大小和修改时间比；材质、.asset、预制体、.meta 这类 ≤ 4 MB 的小文件另比内容哈希，存了但逐字节没变的列在 tool_touched_restored、不算改动；只在内存里改、没存盘的不算"
+  },
+  "allowed_writes": [],
+  "allowed_writes_why": "Play 模式只在内存里跑，不应该写工程里的文件；写了就会列成没声明的写入",
+  "backup_before": [],
+  "warnings": [],
+  "files": [
+    "test_definition.json",
+    "console.jsonl",
+    "summary.md",
+    "manifest.json",
+    "result.json"
+  ]
+}

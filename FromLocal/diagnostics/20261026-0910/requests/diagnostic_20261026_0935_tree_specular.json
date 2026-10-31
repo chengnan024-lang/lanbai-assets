@@ -1,0 +1,13 @@
+{
+  "id": "diagnostic_20261026_0935_tree_specular",
+  "steps": [
+    {
+      "op": "refresh"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_TreeControlledDiagnostic.NoSpecular",
+      "arg": "lod0_fixedphase_nospec"
+    }
+  ]
+}

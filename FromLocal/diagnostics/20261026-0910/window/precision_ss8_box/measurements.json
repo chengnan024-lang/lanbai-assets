@@ -1,0 +1,107 @@
+{
+  "status": "diagnostic_only",
+  "source_scene": "Assets/Lanbai/Scenes/Lanbai_FullPreview.unity",
+  "geometry": [
+    {
+      "name": "Seat_SeatR0",
+      "mesh": "Assets/Lanbai/Bus/Models/Bus.fbx",
+      "mesh_name": "Seat_SeatR0",
+      "vertices": 7214,
+      "submeshes": 1,
+      "materials": [
+        "Assets/Lanbai/Bus/Generated/Materials/M_Bus_Part_SeatHero.mat"
+      ],
+      "position": [0.64925020933151245, 1.1828337907791138, 2.0209724903106689],
+      "euler": [0, 180, 0],
+      "scale": [1, 1, 1],
+      "bounds_min": [0.30850011110305786, 0.86450004577636719, 1.733009934425354],
+      "bounds_max": [0.99000018835067749, 1.4900104999542236, 2.2874679565429688]
+    },
+    {
+      "name": "Window_R1",
+      "mesh": "Assets/Lanbai/Bus/Models/Bus.fbx",
+      "mesh_name": "Window_R1",
+      "vertices": 5618,
+      "submeshes": 4,
+      "materials": [
+        "Assets/Lanbai/Bus/Generated/Materials/M_Bus_Alu.mat",
+        "Assets/Lanbai/Bus/Generated/Materials/M_Bus_Seal.mat",
+        "Assets/Lanbai/Bus/Generated/Materials/M_Bus_Int_Enamel.mat",
+        "Assets/Lanbai/Bus/Generated/Materials/M_Bus_LatchCream.mat"
+      ],
+      "position": [0.98312991857528687, 1.7404392957687378, 1.9350000619888306],
+      "euler": [0, 180, 0],
+      "scale": [1, 1, 1],
+      "bounds_min": [0.94200003147125244, 1.2320001125335693, 1.2699998617172241],
+      "bounds_max": [1.0242596864700317, 2.2488787174224854, 2.5999999046325684]
+    },
+    {
+      "name": "Glass_WinR1",
+      "mesh": "Assets/Lanbai/Bus/Models/Bus.fbx",
+      "mesh_name": "Glass_WinR1",
+      "vertices": 56,
+      "submeshes": 1,
+      "materials": [
+        "Assets/Lanbai/Bus/Generated/Materials/M_Bus_Glass_Side.mat"
+      ],
+      "position": [1.010888934135437, 1.7595589160919189, 1.9349998235702515],
+      "euler": [0, 180, 0],
+      "scale": [1, 1, 1],
+      "bounds_min": [0.9973595142364502, 1.2995588779449463, 1.2999998331069946],
+      "bounds_max": [1.0244183540344238, 2.2195589542388916, 2.5699996948242188]
+    },
+    {
+      "name": "Pole_R0",
+      "mesh": "Assets/Lanbai/Bus/Models/Bus.fbx",
+      "mesh_name": "Pole_R0",
+      "vertices": 7352,
+      "submeshes": 4,
+      "materials": [
+        "Assets/Lanbai/Bus/Generated/Materials/M_Bus_Steel.mat",
+        "Assets/Lanbai/Bus/Generated/Materials/M_Bus_Ext_Cream.mat",
+        "Assets/Lanbai/Bus/Generated/Materials/M_Bus_Chrome.mat",
+        "Assets/Lanbai/Bus/Generated/Materials/M_Bus_ButtonRed.mat"
+      ],
+      "position": [0.29000008106231689, 1.619999885559082, 1.065000057220459],
+      "euler": [0, 180, 0],
+      "scale": [1, 1, 1],
+      "bounds_min": [0.25600007176399231, 0.61999994516372681, 1.0260000228881836],
+      "bounds_max": [0.32400009036064148, 2.619999885559082, 1.1040000915527344]
+    }
+  ],
+  "shots": [
+    {
+      "id": "window_05m",
+      "eye": [0.5941508412361145, 1.7336577177047729, 2.0382795333862305],
+      "euler": [323.61669921875, 104.86688232421875, -2.1210012164374348E-06],
+      "width": 834,
+      "height": 614,
+      "id_ss": 8,
+      "vfov": 30,
+      "diff_coverage": null,
+      "id_fractional_area": 0.29798751533358481,
+      "id_binary_area": 0.29824088611846677,
+      "id_unoccluded_fractional_area": 0.29798751533358481,
+      "original_diff_coverage": 0.238521235129,
+      "threshold_unchanged": 0.3
+    },
+    {
+      "id": "window_10m",
+      "eye": [0.26013404130935669, 1.4790256023406982, 1.8831098079681396],
+      "euler": [326.5489501953125, 60.0688362121582, 4.0930858631327283E-06],
+      "width": 834,
+      "height": 614,
+      "id_ss": 8,
+      "vfov": 30,
+      "diff_coverage": null,
+      "id_fractional_area": 0.16200320448756916,
+      "id_binary_area": 0.16209312680149041,
+      "id_unoccluded_fractional_area": 0.16200320448756916,
+      "original_diff_coverage": 0.086424671338,
+      "threshold_unchanged": 0.3
+    }
+  ],
+  "profile": "Assets/Lanbai/Grading/Profiles/Lanbai_PP_S2.asset",
+  "glass_policy": "Glass_WinR1 is transparent ZWrite Off; omitted from geometric ownership/depth, never counted as frame. On/off beauty retains original glass. Opaque seat and pillar remain depth-tested black occluders, target Window_R1 white; backface culling and near plane retained.",
+  "limitations": "Read-only mesh/material copies from current FullPreview; original unsaved test scene no longer exists. Original FAIL retained; paired re-render checks reconstruction. No builders, SaveAssets, scene save, Play or global resets."
+}

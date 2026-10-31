@@ -1,0 +1,89 @@
+--- a/Engineering/UnityTest/Editor/LanbaiTestPlay.cs
++++ b/Engineering/UnityTest/Editor/LanbaiTestPlay.cs
+@@ -143,6 +143,7 @@
+                         if (_run.done)
+                         {
+                             var r = _run; _run = null;
++                            r.ReleaseSeat();
+                             string e2 = r.Save(out bool bl);
+                             _bridge.Clear(); _bridge.Start();
+                             SetState(outDir, "exit", mode, test, e2, bl);
+@@ -574,6 +575,7 @@
+             string fatal; bool fatalBlocked;
+             readonly Restorer rs = new Restorer();
+             float headCamMax = -1f;
++            bool usedHeroStation;
+             static readonly float[] Lin = BuildLin();
+ 
+             public Run(string outDir, List<Dictionary<string, object>> bridged)
+@@ -695,10 +697,37 @@
+             }
+ 
+             /// <summary>E4：ClientSim 的玩家放到主座位（头对准相机）；记下头和相机的距离。</summary>
++            int seekIssuedFrame;
++            public void ReleaseSeat()
++            {
++                if (!usedHeroStation) return;
++                var lp = Player.Local();
++                var t = Preflight.FindType("VRC.SDK3.Components.VRCStation");
++                if (lp == null || t == null) return;
++                var hero = Object.FindObjectsOfType(t).Cast<Component>().FirstOrDefault(x => x.name == "Station_SeatR0_HERO");
++                if (hero != null) t.GetMethod("ExitStation", new[] { lp.GetType() })?.Invoke(hero, new[] { lp });
++                usedHeroStation = false;
++            }
+             void SeatPlayer()
+             {
+                 if (!TJson.B(TJson.G(plan.play, "seat_player"), true)) return;
++                // Dismiss the simulator's local informational overlay via its public API.
++                // This changes only the simulator session, not scene or package settings.
++                var menuType = Preflight.FindType("VRC.SDK3.ClientSim.ClientSimMenu");
++                if (menuType != null)
++                    foreach (var menu in Object.FindObjectsOfType(menuType))
++                        menuType.GetMethod("WarningAccepted", Type.EmptyTypes)?.Invoke(menu, null);
+                 var lp = Player.Local();
++                if (usedHeroStation) return;
++                // New cabin's floor is above zero. A standing-height teleport placed the
++                // player's feet below it; use its actual station so gravity cannot drop the player.
++                var stationType = Preflight.FindType("VRC.SDK3.Components.VRCStation");
++                if (lp != null && stationType != null)
++                {
++                    var hero = Object.FindObjectsOfType(stationType).Cast<Component>().FirstOrDefault(x => x.name == "Station_SeatR0_HERO");
++                    var use = stationType.GetMethod("UseStation", new[] { lp.GetType() });
++                    if (hero != null && use != null) { use.Invoke(hero, new[] { lp }); usedHeroStation = true; return; }
++                }
+                 var head = Player.Head(lp); var pos = Player.Position(lp);
+                 var camPos = anchor.TransformPoint(eyeLocal);
+                 if (lp == null || head == null || pos == null) { ctx.Warn("读不到本地玩家的头 / 位置：玩家没挪到主座位（遮罩球照样挪到相机这里）"); return; }
+@@ -740,12 +769,16 @@
+                             foreach (var tg in seg.toggles) data.toggleLog.Add(Toggles.Apply(ctx, TJson.M(tg), rs));
+                             Udon.Set(clock, seekVar, Math.Max(0f, seg.t0 - plan.settle));
+                             Udon.Send(clock, seekEvent);
++                            seekIssuedFrame = Time.frameCount;
+                             sampleIdx = 0;
+                             state = "settle"; stateAt = now;
+                             EditorUtility.DisplayProgressBar("蓝白测试 · Play", (seg.group == "sweep" ? "交接 " + seg.id + " " + seg.name : "探测 " + seg.id + " / " + seg.variant) + "（" + (segIdx + 1) + "/" + plan.segs.Count + "）", (segIdx + 0.5f) / plan.segs.Count);
+                             return;
+                         case "settle":
+                             {
++                                // Editor.update can run again before Udon.Update refreshes dbgT.
++                                // In overlapping windows that stale time skips nearly the entire next segment.
++                                if (Time.frameCount < seekIssuedFrame + 2) return;
+                                 float t = Now();
+                                 if (t >= seg.samples[0] - 1e-3f) { SeatPlayer(); state = "capture"; stateAt = now; goto case "capture"; }
+                                 if (now - stateAt > plan.settle + 30.0) throw new StepException("跳到 " + (seg.t0 - plan.settle).ToString("0.##", IC) + " 以后时间轴 30 秒没走到 " + seg.samples[0].ToString("0.##", IC) + "（现在 " + t.ToString("0.##", IC) + "）：调试跳转没起作用？");
+@@ -1025,6 +1058,7 @@
+                     {
+                         { "assets", c.before.assets.ToDictionary(kv => kv.Key, kv => (object)new List<object> { (double)kv.Value.Key, kv.Value.Value.ToString(IC) }) },
+                         { "settings", c.before.settings.ToDictionary(kv => kv.Key, kv => (object)kv.Value) },
++                        { "hashes", c.before.hashes.ToDictionary(kv => kv.Key, kv => (object)kv.Value) },
+                     };
+                 File.WriteAllText(P(c.outDir, "ctx.json"), TJson.Write(d, false), new UTF8Encoding(false));
+                 var sb = new StringBuilder();
+@@ -1078,6 +1112,7 @@
+                         c.before.assets[kv.Key] = new KeyValuePair<long, long>(sz, tk);
+                     }
+                     foreach (var kv in TJson.M(TJson.G(b, "settings")) ?? new Dictionary<string, object>()) c.before.settings[kv.Key] = TJson.S(kv.Value, "");
++                    foreach (var kv in TJson.M(TJson.G(b, "hashes")) ?? new Dictionary<string, object>()) c.before.hashes[kv.Key] = TJson.S(kv.Value, "");
+                 }
+                 // E9：存下的 Console + reload 之前桥里没存的那一段，按顺序接上（去重）
+                 var rows = ReadJsonl(P(outDir, "console.jsonl"));

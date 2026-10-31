@@ -1,0 +1,16 @@
+--- a/Fonts/Editor/LanbaiPoemBake.cs
++++ b/Fonts/Editor/LanbaiPoemBake.cs
+@@ -299,6 +299,13 @@
+             var halo = (Dictionary<string, object>)rig["halo"];
+             var sprite = FindAsset<Sprite>(Path.GetFileNameWithoutExtension((string)halo["texture"]));
+             if (sprite == null) missing++;
++            // The runtime colour MPB replaces SpriteRenderer's implicit _MainTex.
++            // Keep the same alpha-gradient texture on this dedicated material too.
++            if (sprite != null && mats.Halo != null) {
++                mats.Halo.SetTexture("_MainTex", sprite.texture);
++                EditorUtility.SetDirty(mats.Halo);
++                AssetDatabase.SaveAssetIfDirty(mats.Halo);
++            }
+             SpriteRenderer haloT = null, haloB = null;
+             for (int li = 0; li < 2; li++)
+             {

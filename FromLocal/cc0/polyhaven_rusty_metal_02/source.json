@@ -1,0 +1,72 @@
+{
+  "asset": "rusty_metal_02",
+  "title": "Rusty Metal 02",
+  "authors": {
+    "Rob Tuytel": "All"
+  },
+  "source_url": "https://polyhaven.com/a/rusty_metal_02",
+  "metadata_url": "https://api.polyhaven.com/info/rusty_metal_02",
+  "files_metadata_url": "https://api.polyhaven.com/files/rusty_metal_02",
+  "license": "CC0-1.0",
+  "license_url": "https://polyhaven.com/license",
+  "downloaded_at": "2026-10-26T10:23:42.960685+00:00",
+  "status": "DOWNLOADED_AND_VERIFIED",
+  "unity_imported": false,
+  "maps": [
+    {
+      "file": "rusty_metal_02_diff_2k.png",
+      "role": "Diffuse",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/rusty_metal_02/rusty_metal_02_diff_2k.png",
+      "bytes": 6323414,
+      "sha256": "7e99c3c2d94712a6b04de2100729907f91d2feb841da7e97c50229df097bd302",
+      "source_md5": "e7dc606c454c6f6f5dd91c64a6378ec7",
+      "source_md5_matches": true,
+      "width": 2048,
+      "height": 2048,
+      "mode": "RGB"
+    },
+    {
+      "file": "rusty_metal_02_nor_gl_2k.png",
+      "role": "nor_gl",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/rusty_metal_02/rusty_metal_02_nor_gl_2k.png",
+      "bytes": 3897537,
+      "sha256": "6ad252152bc4baecfe3553e0a5472d96e895d39c4f77f9ef059be5ba22ae0e6f",
+      "source_md5": "ffbde4a17f2977baebcec7d3c3301b29",
+      "source_md5_matches": true,
+      "width": 2048,
+      "height": 2048,
+      "mode": "RGB"
+    },
+    {
+      "file": "rusty_metal_02_arm_2k.png",
+      "role": "arm",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/rusty_metal_02/rusty_metal_02_arm_2k.png",
+      "bytes": 5067593,
+      "sha256": "4d36db2e58b4f044f70b3547f5917ce84f783f5d5543a83ed72884f8542930a3",
+      "source_md5": "b844a82aff1adb28453411dd94d40556",
+      "source_md5_matches": true,
+      "width": 2048,
+      "height": 2048,
+      "mode": "RGB"
+    },
+    {
+      "file": "rusty_metal_02_disp_2k.png",
+      "role": "Displacement",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/rusty_metal_02/rusty_metal_02_disp_2k.png",
+      "bytes": 7813121,
+      "sha256": "a0f551c9b91471d158e15edf16c8ffbfe96f51898fd51af81d538963274fd9de",
+      "source_md5": "86cbabef75abf1068248a47aeef05257",
+      "source_md5_matches": true,
+      "width": 2048,
+      "height": 2048,
+      "mode": "RGBA"
+    }
+  ],
+  "downloaded_bytes": 23101665,
+  "source_tags": [
+    "rust",
+    "old",
+    "weathered",
+    "painted"
+  ]
+}

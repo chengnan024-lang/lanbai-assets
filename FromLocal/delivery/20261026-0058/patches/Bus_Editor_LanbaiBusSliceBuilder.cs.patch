@@ -1,0 +1,10 @@
+--- a/Bus/Editor/LanbaiBusSliceBuilder.cs
++++ b/Bus/Editor/LanbaiBusSliceBuilder.cs
+@@ -158,6 +158,7 @@
+         PrefabUtility.UnpackPrefabInstance(model, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+         model.transform.SetParent(root.transform, false);
+         model.transform.localPosition = Vector3.zero; model.transform.localRotation = Quaternion.identity; model.transform.localScale = Vector3.one;
++        rep.AppendLine(LanbaiBusBuild.AlignModelToLayout(model.transform, L));
+         var pieces = new[] { new KeyValuePair<string, string[]>("Slice_Seat", seatN), new KeyValuePair<string, string[]>("Slice_SideWindow", windowN),
+                              new KeyValuePair<string, string[]>("Slice_Pillar", pillarN) };
+         var missing = new List<string>();

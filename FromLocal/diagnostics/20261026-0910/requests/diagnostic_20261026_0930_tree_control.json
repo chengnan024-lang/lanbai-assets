@@ -1,0 +1,13 @@
+{
+  "id": "diagnostic_20261026_0930_tree_control",
+  "steps": [
+    {
+      "op": "refresh"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_TreeControlledDiagnostic.Run",
+      "arg": "lod0_fixedphase_reference_ab"
+    }
+  ]
+}

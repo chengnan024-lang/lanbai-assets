@@ -1,0 +1,19 @@
+label=baseline_hold_243 time=13.19383 batch=True audio=0
+dbgT=244.4
+dbgSeg=4
+dbgDEV=0
+dbgB=-0.9
+_sp=2
+_spHandAt=248.39
+_spBlackEnd=11.80609
+_spFade0=3.193844
+_spawnFadeEnded=False
+_journeyReady=True
+dispatcher.lastT=244.4
+dispatcher.activeCount=2
+dispatcher.gradeDEV=0
+dispatcher._fadeEndT=-1
+dispatcher._fadeEnded=False
+dispatcher._fadeHanded=
+dispatcher._fadeBeginReal=
+overlay=(0.00, 0.00, 0.00, 1.00)

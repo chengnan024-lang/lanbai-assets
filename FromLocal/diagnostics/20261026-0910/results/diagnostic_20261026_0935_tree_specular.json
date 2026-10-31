@@ -1,0 +1,18 @@
+{
+    "id": "diagnostic_20261026_0935_tree_specular",
+    "state": "failed",
+    "step": 1,
+    "total": 2,
+    "started": "2026-10-26 09:22:26",
+    "finished": "2026-10-26 09:22:36",
+    "error": "Exception: Diagnostic shader keyword-off differs from original: 2.00000000000001\n  at Lanbai.Tests.LB_TreeControlledDiagnostic.Core (System.String label, System.Boolean noSpecular) [0x009a6] in E:\\IDMdownload\\VRCC\\dream\\Assets\\Lanbai\\Tests\\Editor\\LB_TreeControlledDiagnostic.cs:48 \r\n  at Lanbai.Tests.LB_TreeControlledDiagnostic.NoSpecular (System.String label) [0x00000] in E:\\IDMdownload\\VRCC\\dream\\Assets\\Lanbai\\Tests\\Editor\\LB_TreeControlledDiagnostic.cs:26 \r\n  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)\r\n  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <27124aa0e30a41659b903b822b959bc7>:0 \r\n--- End of stack trace from previous location where exception was thrown ---\r\n\r\n  at Lanbai.Remote.LB_Remote.StepCall (Lanbai.Remote.RStep s) [0x00130] in E:\\IDMdownload\\VRCC\\dream\\Assets\\Lanbai\\Editor\\Remote\\LB_Remote.cs:551 \r\n  at Lanbai.Remote.LB_Remote.Advance (System.Double now) [0x0027f] in E:\\IDMdownload\\VRCC\\dream\\Assets\\Lanbai\\Editor\\Remote\\LB_Remote.cs:445 \r\n  at Lanbai.Remote.LB_Remote.Tick () [0x00061] in E:\\IDMdownload\\VRCC\\dream\\Assets\\Lanbai\\Editor\\Remote\\LB_Remote.cs:313 ",
+    "log": [
+        "09:22:26 收到请求，共 2 步",
+        "09:22:26 刷新导入（AssetDatabase.Refresh）",
+        "09:22:33 （脚本重新加载，接着做第 1 步）",
+        "09:22:35 导入和编译完成",
+        "09:22:35 调用 Lanbai.Tests.LB_TreeControlledDiagnostic.NoSpecular（lod0_fixedphase_nospec）",
+        "09:22:36 出错：Exception: Diagnostic shader keyword-off differs from original: 2.00000000000001"
+    ],
+    "files": []
+}

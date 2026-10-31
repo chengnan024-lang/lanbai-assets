@@ -1,0 +1,152 @@
+{
+  "source_local": "E:\\IDMdownload\\VRCC\\dream\\LanbaiReports\\tests\\transitions_sweep\\20261026-030411",
+  "visual_validity": "camera UI excluded; still requires visual review",
+  "omitted": "Private consent note; backup_before and transient state; invalid-run PNG bulk",
+  "files": [
+    {
+      "path": "console.jsonl",
+      "bytes": 61783,
+      "sha256": "42f43b40c9a144ef032ca2686f68662d780d36763f0d755f7edd3c4db0f39d0e"
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 29947,
+      "sha256": "d77c5eda3fb4a1977d90adc6442c60582b4b52f573d0121d550da72525701a46"
+    },
+    {
+      "path": "result.json",
+      "bytes": 262,
+      "sha256": "8de986bab268dbc9a925e2af239b6058d62117e53caf5bf85bbbb895bb0d6416"
+    },
+    {
+      "path": "summary.md",
+      "bytes": 7902,
+      "sha256": "1dedbf0ba3acbc792cfb33be0565d1f306c0256d3b243d205896adfb387f5852"
+    },
+    {
+      "path": "test_definition.json",
+      "bytes": 3797,
+      "sha256": "09d07f38b3f4956f4a0218e8763c5170dc76bdf39e22c31666c91159ac65e59f"
+    },
+    {
+      "path": "sweep/x02/curve.png",
+      "bytes": 6475,
+      "sha256": "d71cccdc697f2a97ff527dfdd67255e5532e77111f7b7e658292d3e53a8f3bf6"
+    },
+    {
+      "path": "sweep/x02/frames.csv",
+      "bytes": 1254,
+      "sha256": "5b4ff448499e46b5f4685e4345f59dd93666389c1b0fce5541ee0935b30a38e4"
+    },
+    {
+      "path": "sweep/x02/strip_1s.png",
+      "bytes": 313983,
+      "sha256": "8b8fa007a83be238084ffa38b597b75d6a93b03fe8c11c086b66c5ac4ae7d625"
+    },
+    {
+      "path": "sweep/x02/strip_fine.png",
+      "bytes": 439142,
+      "sha256": "5bf95062b17b1952d973d532365e40aa0232cedd9de7dd0d70501cbf60e517d1"
+    },
+    {
+      "path": "sweep/x06/curve.png",
+      "bytes": 6399,
+      "sha256": "7f7af1736b098193b902163a437735ff0a425fa039d4f9684670ded6c570c58e"
+    },
+    {
+      "path": "sweep/x06/frames.csv",
+      "bytes": 1310,
+      "sha256": "1f7b7370c05fab2b84528055d5963b5e7fd4e9aeb08653235ee0cf76af1e5ecc"
+    },
+    {
+      "path": "sweep/x06/strip_1s.png",
+      "bytes": 220004,
+      "sha256": "3694c252d7ea70830a72ac3712fe235cff6946fafb27ff429840f64db57fb339"
+    },
+    {
+      "path": "sweep/x06/strip_fine.png",
+      "bytes": 297891,
+      "sha256": "2abd60d2d3875bd16856bdc474e4c6e90318365fe37b46e505619210ca860391"
+    },
+    {
+      "path": "sweep/x12/curve.png",
+      "bytes": 8236,
+      "sha256": "57654a23bb3ffbf45f95c2559c093cac07d1dfbef15feb4116736240e3d913dc"
+    },
+    {
+      "path": "sweep/x12/frames.csv",
+      "bytes": 1439,
+      "sha256": "6a6a1bce7b85b81c1825e6a590abed00d0b3180584aac6530fd9318d7de2e107"
+    },
+    {
+      "path": "sweep/x12/strip_1s.png",
+      "bytes": 251442,
+      "sha256": "3aba93ce92296c9d620b73e421a64241165a111c5ee3e0345db63f4e4c982053"
+    },
+    {
+      "path": "sweep/x12/strip_fine.png",
+      "bytes": 305685,
+      "sha256": "82341efb1c8e0c823fc793051f90cbf82e40eaadc3d06260f5bcd719de0651b3"
+    },
+    {
+      "path": "sweep/x38/curve.png",
+      "bytes": 7448,
+      "sha256": "8c4e22d0c0e3f1d4a2888fae31ffa0405b5b21e14ffb6b495fe088316af33a7b"
+    },
+    {
+      "path": "sweep/x38/frames.csv",
+      "bytes": 1600,
+      "sha256": "3c148d6821609d1afd4a0e387a989e5734af50cf542b797f1da4e8513ce5a119"
+    },
+    {
+      "path": "sweep/x38/strip_1s.png",
+      "bytes": 316950,
+      "sha256": "ff772c464a4a0b10296a1f0fce8ab543283581bbbb6d63daa123197e87f94e42"
+    },
+    {
+      "path": "sweep/x38/strip_fine.png",
+      "bytes": 424485,
+      "sha256": "f058a1a2c30acf1ed593c0a54437abd0bfa46b9cadd89a5ede96205165c2e38c"
+    },
+    {
+      "path": "sweep/x39/curve.png",
+      "bytes": 7885,
+      "sha256": "7af9d4716f946cfeb3db893c42a3ae8f64518bb0f38b82fd9ce1547e280e5df5"
+    },
+    {
+      "path": "sweep/x39/frames.csv",
+      "bytes": 1619,
+      "sha256": "58662e4cd95348a0af23008170fc1aef0caa5c0a47959fe6dcf419067242b096"
+    },
+    {
+      "path": "sweep/x39/strip_1s.png",
+      "bytes": 300878,
+      "sha256": "6c8978eb75ce483e81718315c2278919ce0bd8b94ac88c1aeac91b8d064f6248"
+    },
+    {
+      "path": "sweep/x39/strip_fine.png",
+      "bytes": 441757,
+      "sha256": "92180b8df790fc2814302cdeb32eab12f3ae1351486a03bf7942619260832df3"
+    },
+    {
+      "path": "sweep/x40/curve.png",
+      "bytes": 7718,
+      "sha256": "309cad492ef45cc8a1de5ac29cbb498872a8876eb10bc59cdacbf7a237485f3e"
+    },
+    {
+      "path": "sweep/x40/frames.csv",
+      "bytes": 1598,
+      "sha256": "9d21c7a87fa16c5e9e91222c86a516712509ec3082abe5feea714bbeb87e1bbc"
+    },
+    {
+      "path": "sweep/x40/strip_1s.png",
+      "bytes": 288404,
+      "sha256": "ad619a756b03f16609de8b9961067272d29ff891f7c7e4ee462931de837215ce"
+    },
+    {
+      "path": "sweep/x40/strip_fine.png",
+      "bytes": 371221,
+      "sha256": "7e062c823255f10ad5a427c4de40cc5e7b0cef71372a5e079dd1716c96b0b30a"
+    }
+  ]
+}

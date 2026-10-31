@@ -1,0 +1,13 @@
+{
+  "id": "diagnostic_20261026_0914_window_precision",
+  "steps": [
+    {
+      "op": "refresh"
+    },
+    {
+      "op": "call",
+      "target": "Lanbai.Tests.LB_WindowIdDiagnostic.Convergence",
+      "arg": "precision_ss8_box"
+    }
+  ]
+}

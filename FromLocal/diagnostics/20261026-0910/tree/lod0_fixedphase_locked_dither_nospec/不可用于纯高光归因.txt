@@ -1,0 +1,1 @@
+此组同时改变直接高光与环境镜面反射模型。UnityGlobalIllumination.cginc中_GLOSSYREFLECTIONS_OFF用unity_IndirectSpecColor常量，非归零，因此不得作为纯高光归因/通过证据。原数据保留。后续0950仅直接高光尝试在副本精确性自检中终止，尚无有效直接高光对照。

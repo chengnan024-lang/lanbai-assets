@@ -1,0 +1,74 @@
+[
+  {
+    "path": "Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip2_Fringe.mat",
+    "baseline": "E:\\IDMdownload\\VRCC\\Backups\\continuation_20261026\\delivery_0058\\before_gate\\Assets\\Lanbai\\Act04c_Inside\\Materials\\M_04c_Lip2_Fringe.mat",
+    "baseline_sha256": "77aecce10ac4fc01ffc54347ee97e24d79e828d2cf00e388dc7190f88e145a59",
+    "after_sha256": "247c837ed2c18ea2c985d65a329825f7d9998f1b54cfa58549e27ee17766a0b0"
+  },
+  {
+    "path": "Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip2_Hang.mat",
+    "baseline": "E:\\IDMdownload\\VRCC\\Backups\\continuation_20261026\\delivery_0058\\before_gate\\Assets\\Lanbai\\Act04c_Inside\\Materials\\M_04c_Lip2_Hang.mat",
+    "baseline_sha256": "0acee1363b778b787c0190230487a06ebda08abf57f57297db21d8ffb44ab88b",
+    "after_sha256": "fd965d901ab8fff1bd2364956eda5dcbbb9ee040660cbd1a8f87b37ece8b42c5"
+  },
+  {
+    "path": "Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip2_Sheet.mat",
+    "baseline": "E:\\IDMdownload\\VRCC\\Backups\\continuation_20261026\\delivery_0058\\before_gate\\Assets\\Lanbai\\Act04c_Inside\\Materials\\M_04c_Lip2_Sheet.mat",
+    "baseline_sha256": "6ceab109fdde1b63de51814824fe19b831621bbbc9a11362bcdc7387ee6ec5a8",
+    "after_sha256": "753ee9943a0468e84519fb9cfb733814716d17777a82e280285220c66493e624"
+  },
+  {
+    "path": "Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip2_Threads.mat",
+    "baseline": "E:\\IDMdownload\\VRCC\\Backups\\continuation_20261026\\delivery_0058\\before_gate\\Assets\\Lanbai\\Act04c_Inside\\Materials\\M_04c_Lip2_Threads.mat",
+    "baseline_sha256": "37097cb27242ee5faf2b242f9646e13cae5f62797f648156eab2ae050d9c3d19",
+    "after_sha256": "56530d6b52ffd46093ae35313db8ec46a3b832088d634ba22d2a382fa550d6e7"
+  },
+  {
+    "path": "Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip4_Fringe.mat",
+    "baseline": "E:\\IDMdownload\\VRCC\\Backups\\continuation_20261026\\delivery_0058\\before_gate\\Assets\\Lanbai\\Act04c_Inside\\Materials\\M_04c_Lip4_Fringe.mat",
+    "baseline_sha256": "cd8cae3f16be9ce90c6f8081a9b311c6736b298339501c844c257ac85de0e63b",
+    "after_sha256": "b14038607cd4a1219bd666241c76593bfdcd10bfac3fbb38e5687731954fba47"
+  },
+  {
+    "path": "Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip4_Hang.mat",
+    "baseline": "E:\\IDMdownload\\VRCC\\Backups\\continuation_20261026\\delivery_0058\\before_gate\\Assets\\Lanbai\\Act04c_Inside\\Materials\\M_04c_Lip4_Hang.mat",
+    "baseline_sha256": "f9188aa7c4ff71bc2a85bcd3ec4ef1b69668d48861ac8998b78ce4706dafa980",
+    "after_sha256": "33d7482d5e1c34edcffcc99bcec6769eec9f5978d7c908877a61535cce06a701"
+  },
+  {
+    "path": "Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip4_Sheet.mat",
+    "baseline": "E:\\IDMdownload\\VRCC\\Backups\\continuation_20261026\\delivery_0058\\before_gate\\Assets\\Lanbai\\Act04c_Inside\\Materials\\M_04c_Lip4_Sheet.mat",
+    "baseline_sha256": "6dccd0048fbec738a7bcd8ad46945a11a08351b6083c053a2fe47d692d7b6f6d",
+    "after_sha256": "d84281b0ada74e3a979b6133c48b38892f256eaf6812a36f46233372adf2821c"
+  },
+  {
+    "path": "Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip5_Fringe.mat",
+    "baseline": "E:\\IDMdownload\\VRCC\\Backups\\continuation_20261026\\delivery_0058\\before_gate\\Assets\\Lanbai\\Act04c_Inside\\Materials\\M_04c_Lip5_Fringe.mat",
+    "baseline_sha256": "39dd1f91010412808d77d6e5d1b7f1314953d8060d1118143535d3db0811cfce",
+    "after_sha256": "b14e30ef1933b9542f54deb025d153c63dbea8f2228674fff1b99ff990844dd8"
+  },
+  {
+    "path": "Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip5_Hang.mat",
+    "baseline": "E:\\IDMdownload\\VRCC\\Backups\\continuation_20261026\\delivery_0058\\before_gate\\Assets\\Lanbai\\Act04c_Inside\\Materials\\M_04c_Lip5_Hang.mat",
+    "baseline_sha256": "fc76bf1cb439cf8213e8b99865347aadc4a976723c3b86117cbef8469045f737",
+    "after_sha256": "bfed92d1b27ee78668e87b1c917266120550c2e7c958f701a44a5191e62f2215"
+  },
+  {
+    "path": "Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip5_Sheet.mat",
+    "baseline": "E:\\IDMdownload\\VRCC\\Backups\\continuation_20261026\\delivery_0058\\before_gate\\Assets\\Lanbai\\Act04c_Inside\\Materials\\M_04c_Lip5_Sheet.mat",
+    "baseline_sha256": "e29c9482854363ee309144b1cd04eb2ea21a0bdcc59a00e1455e0ceef8bf187a",
+    "after_sha256": "0599a6a681f614694495c285d6a97c5bbae91e1fd76acdec713572cae3507797"
+  },
+  {
+    "path": "Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip5_Threads.mat",
+    "baseline": "E:\\IDMdownload\\VRCC\\Backups\\continuation_20261026\\delivery_0058\\before_gate\\Assets\\Lanbai\\Act04c_Inside\\Materials\\M_04c_Lip5_Threads.mat",
+    "baseline_sha256": "0cea565ae6dc5a552f8a912afad1af793972066a6a9641134f0e70c667a810f9",
+    "after_sha256": "062505f070b7d1ce6c3c05ba64ad05fe3581d20b31b3327d03ddc7c4eeba0287"
+  },
+  {
+    "path": "Assets/Lanbai/Generated/Materials/LB_Cloud.mat",
+    "baseline": "E:\\IDMdownload\\VRCC\\Backups\\continuation_20261025\\delivery_0940\\after_first_tree_run\\Assets\\Lanbai\\Generated\\Materials\\LB_Cloud.mat",
+    "baseline_sha256": "7d68d6ee6789763ac4e36fb6be047b83bec89f1db16ccb08227e61ba76ae91d4",
+    "after_sha256": "d92c6612f9d0e2be207b79ee55a60d64d44ba3800be44964fa57f067c71e1fd2"
+  }
+]

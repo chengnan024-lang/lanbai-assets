@@ -1,0 +1,1 @@
+t=1253.961 dEV=0.1598242 white=0 whiteTonemapper=ACES override=False

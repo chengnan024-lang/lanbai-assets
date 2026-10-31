@@ -1,0 +1,11 @@
+--- a/Engineering/UnityTest/Editor/LanbaiTestCapture.cs
++++ b/Engineering/UnityTest/Editor/LanbaiTestCapture.cs
+@@ -240,6 +240,8 @@
+                 cam.nearClipPlane = 0.05f; cam.farClipPlane = 45000f; cam.allowHDR = true;
+                 ctx.Warn("场景里没有相机可抄：截图用默认相机、没有 PPv2");
+             }
++            // Evidence cameras exclude simulator UI/player-only layers; subtitle layer 24 remains visible.
++            cam.cullingMask &= ~((1 << 5) | (1 << 9) | (1 << 10) | (1 << 12) | (1 << 18) | (1 << 19) | (1 << 20));
+             go.transform.position = c.eye;
+             go.transform.rotation = c.rot;
+             cam.aspect = (float)w / h;

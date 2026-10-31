@@ -1,0 +1,182 @@
+--- a/Assets/Lanbai/Scripts/LB_Journey.cs
++++ b/Assets/Lanbai/Scripts/LB_Journey.cs
+@@ -26,8 +26,8 @@
+         public LanbaiOverlay deliveredOverlay;
+         public Lanbai.Sky.LanbaiSkyPreset fallbackDusk, fallbackBlue;
+         public bool useDeliveredGate, useDeliveredInside, useDeliveredDawn, useDeliveredSea, useDeliveredSky;
+-        private bool _deliveredStarted, _journeyReady, _spawnFadeEnded;
+-        private float _spawnTime;
++        public bool useDeliveredDusk, useDeliveredMirrors, useDeliveredWhite;
++        private bool _deliveredStarted, _journeyReady;
+         private int _deliveredWaitFrames;
+         private int _fallbackRegion = -1;
+ 
+@@ -370,6 +370,8 @@
+             ApplySky(t, seg, tl);
+             ApplyDelivered(t, seg);
+             ApplyPost(t, seg, tl);
++            if (deliveredPoems != null && deliveredPoems.useLocalAppliedExposure) deliveredPoems.localAppliedDeltaEV = dbgDEV;
++            if (_deliveredStarted) SpawnTick(t, dbgDEV, seg == S_IDLE);
+             ApplyBus(t, seg, tl);
+             ApplyAudio(t, seg, tl);
+             if (deliveredPoems == null) ApplyPoem(seg == S_IDLE ? -1f : t);
+@@ -388,29 +390,23 @@
+             if (!_journeyReady) { if (deliveredOverlay != null) deliveredOverlay.SetFlat(Color.black, 1f, 0f); return; }
+             if (_deliveredWaitFrames < 3) { _deliveredWaitFrames++; if (deliveredOverlay != null) deliveredOverlay.SetFlat(Color.black, 1f, 0f); return; }
+             if (!_deliveredStarted) {
+-                deliveredDispatcher.LanbaiPrewarm(); deliveredDispatcher.LanbaiSpawnFadeBegin();
+-                _spawnTime = Time.time; _deliveredStarted = true;
+-            }
+-            float age = Time.time - _spawnTime;
+-            if (!_spawnFadeEnded && age >= 3f) {
+-                if (deliveredOverlay != null) deliveredOverlay.Hide();
+-                deliveredDispatcher.LanbaiSpawnFadeEnd(); _spawnFadeEnded = true;
++                SpawnBegin(t); _deliveredStarted = true;
+             }
+             if (useDeliveredGate && gateGroup != null) gateGroup.SetActive(false);
+             if (useDeliveredGate && cloudSea != null && t >= 113.8f) cloudSea.gameObject.SetActive(false);
+             if (useDeliveredSky && skyDome != null) skyDome.enabled = false;
+-            if ((useDeliveredDawn && t >= 248.64f && t < 363.62f) || (useDeliveredSea && t >= 363.26f && t < 922.36f))
++            if ((useDeliveredDawn && t >= 248.64f && t < 363.62f) || (useDeliveredSea && t >= 363.26f && t < 922.36f) || (useDeliveredDusk && t >= 922.36f && t < 1010f) || (useDeliveredMirrors && t >= 1010f && t < 1150.31f))
+             {
+                 if (skyGroup != null) skyGroup.SetActive(false);
+                 if (seaA != null) seaA.gameObject.SetActive(false);
+                 if (seaB != null) seaB.gameObject.SetActive(false);
+                 if (deepGroup != null) deepGroup.SetActive(false);
+             }
+-            // Act 8's final package is not delivered. Use existing scenery and the supplied sky presets.
++            // Keep the legacy sky fallback only until the delivered Act 8 driver is wired.
+             int region = t >= 922.36f && t < 1001.21f ? 1 : (t >= 1001.21f && t < 1149.31f ? 2 : 0);
+-            if (region == 1 && fallbackDusk != null && fallbackBlue != null)
++            if (!useDeliveredDusk && region == 1 && fallbackDusk != null && fallbackBlue != null)
+                 fallbackDusk.ApplyBlend(fallbackBlue, Smooth((t - 992.06f) / 9.15f));
+-            if (region == 2 && _fallbackRegion != 2 && fallbackBlue != null) fallbackBlue.Apply();
++            if (!useDeliveredDusk && region == 2 && _fallbackRegion != 2 && fallbackBlue != null) fallbackBlue.Apply();
+             _fallbackRegion = region;
+             // Rain clears after leaving the rain band; dry later acts must not inherit the old glass streaks.
+             if (glassRenderers != null) {
+@@ -420,9 +416,75 @@
+                 }
+             }
+             deliveredDispatcher.LanbaiDispatch(t);
+-            if (!_spawnFadeEnded && deliveredOverlay != null) {
+-                bool held = deliveredDispatcher.LanbaiCoversOverlay(t) || deliveredDispatcher.LanbaiCoversOverlay(t + 3f);
+-                deliveredOverlay.SetFlat(Color.black, held ? 1f : 1f - Smooth((age - 1f) / 2f), 0f);
++
++        }
++
++        // ---- 字段 ----
++        const int SP_NONE = 0, SP_BLACK = 1, SP_HOLD = 2, SP_FADE = 3, SP_PLATFORM = 4;
++        int _sp = SP_NONE;
++        float _spBlackEnd, _spHandAt, _spFade0, _spHoldStartT, _spHoldDeadline;
++        private bool _spawnFadeEnded; // Existing Play readiness contract, retained for all terminal paths.
++        public float spawnPlatformL = 1f; // Conservative upper bound; calibrate the platform brightest view.
++        public float spawnBlack = 3f;                 // 圣经 §1.9
++        public float spawnLBlack = 0.0013f;           // 出生黑的亮度（#030409）
++        public Color spawnFill = Color.black;         // 出生遮罩的填色（S1 行，本地定）
++        
++        // ---- 出生那一帧（Start 里、或玩家进来那一刻），t = 时间轴秒 ----
++        void SpawnBegin(float t)
++        {
++            if (deliveredDispatcher != null) { deliveredDispatcher.LanbaiPrewarm(); deliveredDispatcher.LanbaiSpawnFadeBegin(); }
++            _sp = SP_BLACK; _spBlackEnd = Time.time + spawnBlack; _spawnFadeEnded = false;
++        }
++        
++        // ---- 每帧，在 deliveredDispatcher.LanbaiDispatch(t) 和 ApplyGrades() 之后调；dEV = ApplyGrades 这一帧实际用的总 dEV ----
++        //      （LB_Journey 自己的事件 + deliveredDispatcher.gradeDEV），遮罩的填色要按它补偿（SetFlat 的第 3 个参数）
++        void SpawnTick(float t, float dEV, bool beforeDeparture)
++        {
++            if (_sp == SP_NONE || deliveredOverlay == null) return;
++            if (_sp == SP_BLACK)
++            {
++                deliveredOverlay.SetFlat(spawnFill, 1f, dEV);
++                if (Time.time < _spBlackEnd) return;
++                if (beforeDeparture || deliveredDispatcher == null) { _sp = SP_PLATFORM; _spFade0 = Time.time; }   // 站台：照旧 3 秒
++                else
++                {
++                    float T = deliveredDispatcher.LanbaiSpawnFadeLength(t, spawnLBlack);                // 往前看了驱动的曝光爬升；没有爬升时 ≤ 9.4 秒
++                    _spHandAt = deliveredDispatcher.LanbaiOverlayHandoverAt(t, t + T + 0.5f);          // 分发层记下“交没交”
++                    if (_spHandAt >= 0f) {
++                        _sp = SP_HOLD; _spHoldStartT = t;
++                        _spHoldDeadline = Time.time + Mathf.Max(0f, _spHandAt - t) + 1f;
++                    } else { _sp = SP_FADE; _spFade0 = Time.time; }
++                }
++            }
++            if (_sp == SP_HOLD)
++            {
++                deliveredOverlay.SetFlat(spawnFill, 1f, dEV);                                         // 保持黑
++                if (beforeDeparture) {
++                    deliveredDispatcher.LanbaiSpawnFadeOwn(); _sp = SP_PLATFORM; _spFade0 = Time.time;
++                }
++                else if (t >= _spHandAt && deliveredDispatcher.LanbaiCoversOverlay(t)) { deliveredDispatcher.LanbaiSpawnFadeEnd(); _sp = SP_NONE; _spawnFadeEnded = true; return; }   // 交给驱动，不 Hide
++                else if (t > _spHandAt + 1f || t < _spHoldStartT - 0.05f || Time.time >= _spHoldDeadline) {
++                    // A scrub backward or a paused timeline must not wait forever for an obsolete handover.
++                    deliveredDispatcher.LanbaiSpawnFadeOwn(); _sp = SP_FADE; _spFade0 = Time.time;
++                }
++                else return;
++            }
++            if (_sp == SP_FADE)
++            {
++                float seen = deliveredDispatcher.LanbaiSpawnSeenL(t, dEV);                           // 最亮的非白视向，看到的亮度（≤ 1 × 2^dEV）
++                float ramp = 0.004f * Mathf.Pow(2f, 0.85f * (Time.time - _spFade0));                // 从地板 0.004 起（再暗的看不出来）、EV 线性、0.85 EV/s
++                if (ramp >= seen) { deliveredOverlay.Hide(); deliveredDispatcher.LanbaiSpawnFadeEnd(); _sp = SP_NONE; _spawnFadeEnded = true; return; }
++                // 看到的 = (1 − a)·seen + a·L黑 = ramp：a = (seen − ramp) / (seen − L黑)（遮罩画在 PPv2 之前，填色按 dEV 补偿）
++                deliveredOverlay.ClearLobes();
++                deliveredOverlay.SetFlat(spawnFill, Mathf.Clamp01((seen - ramp) / Mathf.Max(seen - spawnLBlack, 1e-5f)), dEV);
++                return;
++            }
++            if (_sp == SP_PLATFORM)
++            {
++                float tau = Time.time - _spFade0;
++                deliveredOverlay.ClearLobes();
++                deliveredOverlay.SetCurve(spawnFill, dEV, tau, 3f, spawnLBlack, spawnPlatformL, spawnPlatformL, spawnLBlack);   // spawnPlatformL = 站台最亮的视向
++                if (tau >= 3f) { deliveredOverlay.Hide(); if (deliveredDispatcher != null) deliveredDispatcher.LanbaiSpawnFadeEnd(); _sp = SP_NONE; _spawnFadeEnded = true; }
+             }
+         }
+ 
+@@ -1110,13 +1172,13 @@
+                     break;
+                 case S_SKY2:
+                     Cross(G_S7B, G_S8, Lin((t - F9b) / 6f));                      // 出海：≥ 6 秒 EV 线性
+-                    dEV += 0.8f * Pulse(t, F9b + 6f, 0.4f, 4f);                   // 末尾 +0.8 EV，4 秒衰减
++                    if (!useDeliveredDusk) dEV += 0.8f * Pulse(t, F9b + 6f, 0.4f, 4f);                   // 末尾 +0.8 EV，4 秒衰减
+                     break;
+                 case S_SKY3:
+                     Cross(G_S8, G_S8B, Smooth((t - F12) / 8f));                   // 蓝时
+                     if (t >= F12 + 15f) Cross(G_S8B, G_S9A, Smooth((t - (F12 + 15f)) / 8f));   // 跟着变暗走
+                     if (t >= F13) _gw[G_S9B] = Mathf.Pow(Lin((t - F13) / (F16 - F13)), 2.5f);  // F13 → F16：x^2.5
+-                    if (starCross != null)
++                    if (!useDeliveredMirrors && starCross != null)
+                         for (int i = 0; i < starCross.Length && i < 9; i++) dEV += 0.35f * Pulse(t, starCross[i], 0.08f, 0.35f);   // 镜子（第 10–12 面不加）
+                     if (t >= w0)
+                     {
+@@ -1140,6 +1202,9 @@
+                     dEV += 0.8f * (1f - Lin(tl / 5f));                            // +0.8 EV，5 秒衰减
+                     break;
+             }
++            // The delivered white driver owns the first white, its exposure and its exit.
++            // Later false-awakening/wake events remain on the original timeline.
++            if (useDeliveredWhite && t >= 1136.58f && t <= 1186.46f) { dEV=0f; wSat=0f; wBloom=0f; white=0f; }
+             if (deliveredDispatcher != null)
+             {
+                 dEV += deliveredDispatcher.gradeDEV;
+@@ -1156,8 +1221,8 @@
+             float lensClean = 1f, lensArchive = 0f;
+             if (seg == S_ROAD || seg == S_LIFT) lensArchive = Smooth((t - U0) / 8f) * (1f - Smooth((t - U3) / 8f));
+             else if (seg == S_FALSE) lensArchive = 1f;
+-            if (seg == S_SKY3 && t >= w0 + 1.2f) lensClean = 1f - Lin((t - w0 - 1.2f) / 6f);
+-            if (seg == S_WHITE) lensClean = 0f;
++            if (!useDeliveredWhite && seg == S_SKY3 && t >= w0 + 1.2f) lensClean = 1f - Lin((t - w0 - 1.2f) / 6f);
++            if (!useDeliveredWhite && seg == S_WHITE) lensClean = 0f;
+             if (deliveredDispatcher != null) lensClean *= deliveredDispatcher.gradeLensClean;
+             if (_inVR) { lensClean = 0f; lensArchive = 0f; }
+             for (int i = 0; i < 15; i++) if (ppGrade[i] != null) ppGrade[i].weight = _gw[i];
+@@ -1179,7 +1244,7 @@
+             if (ppDeep != null) ppDeep.weight = 0f;
+             if (ppWhite != null) ppWhite.weight = Mathf.Clamp01(white);
+             if (ppBlack != null) ppBlack.weight = Mathf.Clamp01(black);
+-            dbgDEV = dEV; dbgB = b;
++            dbgDEV = (expoTarget - b) * wUp + (-expoTarget - b) * wDown; dbgB = b; // Actual clamped PPv2 exposure delta, used by spawn compensation.
+         }
+ 
+         /// <summary>一个脉冲：在 t0 起 rise 秒线性升到 1，再 decay 秒线性落回 0。</summary>

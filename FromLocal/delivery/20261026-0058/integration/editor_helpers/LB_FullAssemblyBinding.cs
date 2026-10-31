@@ -1,0 +1,210 @@
+#if UNITY_EDITOR
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.Rendering.PostProcessing;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UdonSharp;
+using UdonSharpEditor;
+
+namespace Lanbai.Tests
+{
+ public static partial class LB_FullAssembly
+ {
+  static T One<T>() where T:Component { return UnityEngine.Object.FindObjectsOfType<T>(true).Single(); }
+  static void Sync(UdonSharpBehaviour b) { EditorUtility.SetDirty(b); Lanbai.Udon.LanbaiUdonPrograms.CopyProxyToUdon(b); }
+  static Lanbai.Sky.LanbaiSkyPreset Preset(string name) { return UnityEngine.Object.FindObjectsOfType<Lanbai.Sky.LanbaiSkyPreset>(true).Single(p=>p.presetName==name); }
+  public static string ConfigureHdris()
+  {
+   Guard();
+   foreach(var id in new[]{"syferfontein_6d_clear_puresky","syferfontein_0d_clear_puresky"}) {
+    string path="Assets/Lanbai/LocalIntegration/HDRI/"+id+"_8k.hdr";
+    if(!File.Exists(path)) throw new FileNotFoundException(path);
+    var ti=AssetImporter.GetAtPath(path) as TextureImporter;
+    ti.textureShape=TextureImporterShape.TextureCube; ti.generateCubemap=TextureImporterGenerateCubemap.Cylindrical;
+    ti.maxTextureSize=8192; ti.mipmapEnabled=true; ti.filterMode=FilterMode.Trilinear; ti.sRGBTexture=false;
+    var ps=ti.GetPlatformTextureSettings("Standalone"); ps.name="Standalone"; ps.overridden=true; ps.maxTextureSize=8192; ps.format=TextureImporterFormat.BC6H; ti.SetPlatformTextureSettings(ps);
+    ti.SaveAndReimport();
+   }
+   return "Two original HDRIs imported as BC6H cubes with mipmaps";
+  }
+  public static string Bind()
+  {
+   Guard(); var j=One<Lanbai.LB_Journey>(); var overlay=One<LanbaiOverlay>();
+   j.deliveredDispatcher=One<LanbaiActDispatcher>(); j.deliveredPoems=One<LanbaiPoemDriver>(); j.deliveredOverlay=overlay;
+   j.useDeliveredGate=j.useDeliveredInside=j.useDeliveredDawn=j.useDeliveredSea=j.useDeliveredSky=true;
+   j.fallbackDusk=Preset("dusk_8i"); j.fallbackBlue=Preset("blue_hour");
+   j.segStart[Lanbai.LB_Journey.S_DEEP1]=363.26f; j.segStart[Lanbai.LB_Journey.S_SKY2]=922.36f;
+   j.cueX[Lanbai.LB_Journey.X_F9B]=922.36f;
+   var inside=One<LanbaiInsideDriver>(); inside.overlay=overlay; inside.worldMainLight=j.sun;
+   inside.writeRenderSettings=true; inside.writeMainLight=true; inside.writeExposure=false; Sync(inside);
+   var dawn=One<LanbaiAct06Driver>(); dawn.overlay=overlay; dawn.worldSun=j.sun; dawn.skyPreset=Preset("dawn");
+   dawn.writeRenderSettings=true; dawn.writeMainLight=true; Sync(dawn);
+   var sea=One<LanbaiAct07Driver>(); sea.worldSun=j.sun; sea.writeRenderSettings=true; sea.writeMainLight=true;
+   // A dedicated user layer for bus-only spotlights; existing reserved layers remain untouched.
+   int busLayer=LayerMask.NameToLayer("Bus");
+   if(busLayer<0) {
+    var tags=new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
+    var layers=tags.FindProperty("layers");
+    for(int k=23;k<32;k++) if(string.IsNullOrEmpty(layers.GetArrayElementAtIndex(k).stringValue)) { layers.GetArrayElementAtIndex(k).stringValue="Bus"; busLayer=k; break; }
+    if(busLayer<0) throw new Exception("No user layer for Bus"); tags.ApplyModifiedProperties();
+   }
+   foreach(var r in j.busRoot.GetComponentsInChildren<Renderer>(true)) if(r.gameObject.layer==0) r.gameObject.layer=busLayer;
+   if(sea.beam!=null) sea.beam.cullingMask=1<<busLayer;
+   if(sea.roseLights!=null) foreach(var l in sea.roseLights) if(l!=null) l.cullingMask=1<<busLayer;
+   Folder("Assets/Lanbai/LocalIntegration/Materials");
+   string wlPath="Assets/Lanbai/LocalIntegration/Materials/SeaWaterline.mat";
+   var wlMat=AssetDatabase.LoadAssetAtPath<Material>(wlPath);
+   if(wlMat==null) { wlMat=new Material(Shader.Find("Lanbai/SeaWaterline")); AssetDatabase.CreateAsset(wlMat,wlPath); }
+   var waterlines=new List<Renderer>();
+   foreach(var glass in j.glassRenderers) {
+    if(glass==null || glass.GetComponent<MeshFilter>()==null) continue;
+    var old=glass.transform.Find("DeliveredWaterline");
+    var g=old==null?new GameObject("DeliveredWaterline"):old.gameObject;
+    g.transform.SetParent(glass.transform,false); g.layer=busLayer;
+    var mf=g.GetComponent<MeshFilter>(); if(mf==null) mf=g.AddComponent<MeshFilter>(); mf.sharedMesh=glass.GetComponent<MeshFilter>().sharedMesh;
+    var mr=g.GetComponent<MeshRenderer>(); if(mr==null) mr=g.AddComponent<MeshRenderer>(); mr.sharedMaterial=wlMat; mr.enabled=false;
+    mr.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off; mr.receiveShadows=false; waterlines.Add(mr);
+   }
+   sea.waterlines=waterlines.ToArray(); Sync(sea);
+   LB_NewDelivery.BindPoems();
+   var gradeRoot=GameObject.Find("Lanbai_Grades");
+   var grades=gradeRoot.GetComponentsInChildren<PostProcessVolume>(true).ToDictionary(v=>v.name.Substring("PPV_".Length));
+   string[] ids={"S1","S2","S3","S4","S4c","S6","S7a","S7b","S8","S8b","S9a","S9b","S10","S11","S12"};
+   j.ppGrade=ids.Select(id=>grades[id]).ToArray();
+   j.gradePE=ids.Select(id=>Lanbai.Grading.LanbaiGradeData.Find(id).postExposure??0f).ToArray();
+   j.ppHelper=new[]{"EXPO_UP","EXPO_DOWN","WHITE_SAT","WHITE_BLOOM","LENS_CLEAN","LENS_ARCHIVE"}.Select(id=>grades[id]).ToArray();
+   j.useGrades=true; int ppLayer=LayerMask.NameToLayer("PostProcessing");
+   foreach(var v in UnityEngine.Object.FindObjectsOfType<PostProcessVolume>(true)) {
+    if(v.transform.IsChildOf(gradeRoot.transform)) continue;
+    if(v==j.ppWhite || v==j.ppBlack) {
+     v.gameObject.layer=ppLayer; v.weight=0;
+     // The legacy white mask must be evaluated after the delivered scene grades.
+     if(v==j.ppWhite) {
+      v.priority=Lanbai.EditorTools.LB_Grades.MASK_PRIORITY;
+      var previewWhite=AssetDatabase.LoadAssetAtPath<PostProcessProfile>("Assets/Lanbai/Generated/PostProcess/LB_PP_White_FullPreview.asset");
+      if(previewWhite!=null) v.sharedProfile=previewWhite; // Keep neutral scene mapping through the old white fade.
+     }
+    }
+    else { v.weight=0; v.enabled=false; }
+   }
+   foreach(var camera in UnityEngine.Object.FindObjectsOfType<Camera>(true)) {
+    camera.allowHDR=true; camera.clearFlags=CameraClearFlags.Skybox; camera.farClipPlane=45000; camera.nearClipPlane=.05f;
+    var layer=camera.GetComponent<PostProcessLayer>(); if(layer!=null) { layer.volumeLayer=1<<ppLayer; layer.volumeTrigger=camera.transform; layer.stopNaNPropagation=true; }
+   }
+   if(j.skyDome!=null) j.skyDome.enabled=false;
+   Sync(j); EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+   return "Bound all delivered acts, one timeline and main light, "+waterlines.Count+" glass waterlines, 21 grade layers, poem reveals and seat mapping. "+Inspect();
+  }
+  public static string SoftenClouds()
+  {
+   Guard(); var shader=Shader.Find("Lanbai/Local/SoftCloudDeck"); if(shader==null) throw new Exception("Local cloud shader missing");
+   Folder("Assets/Lanbai/LocalIntegration/Materials"); int count=0;
+   foreach(var r in UnityEngine.Object.FindObjectsOfType<Renderer>(true)) {
+    var mats=r.sharedMaterials; bool changed=false;
+    for(int i=0;i<mats.Length;i++) {
+     var old=mats[i]; if(old==null || (old.shader.name!="Lanbai/GateCloudDeck" && old.shader!=shader)) continue;
+     var path="Assets/Lanbai/LocalIntegration/Materials/Soft_"+old.name.Replace("Soft_","")+".mat";
+     var m=AssetDatabase.LoadAssetAtPath<Material>(path); if(m==null){m=new Material(old);AssetDatabase.CreateAsset(m,path);}
+     m.shader=shader; m.SetVector("_CloudWind",new Vector4(8,3,-2,1));
+     m.SetVector("_Micro",new Vector4(1,.25f,.12f,0)); m.SetVector("_AmpRange",new Vector4(.25f,.6f,.88f,1.08f));
+     m.SetVector("_Skin",new Vector4(.1f,3f,.12f,.07f)); m.SetVector("_Surf",new Vector4(.09f,.015f,.45f,.18f));
+     m.SetVector("_Trough",new Vector4(3.5f,24,.22f,.9f)); m.SetFloat("_AmbK",.65f); m.SetFloat("_LodBias",.7f);
+     var foot=m.GetVector("_FootPool");foot.z=2f;m.SetVector("_FootPool",foot); m.SetFloat("_Gain",.9f);
+     EditorUtility.SetDirty(m); mats[i]=m; changed=true; count++;
+    }
+    if(changed) r.sharedMaterials=mats;
+   }
+   if(count==0) throw new Exception("No gate cloud deck found");
+   return "Soft cloud variant bound to "+count+" deck renderer(s); baseline material preserved";
+  }
+  public static string Seek(string seconds)
+  {
+   if(!EditorApplication.isPlaying) throw new Exception("Play required");
+   var j=One<Lanbai.LB_Journey>(); var u=UdonSharpEditorUtility.GetBackingUdonBehaviour(j);
+   float t=float.Parse(seconds,System.Globalization.CultureInfo.InvariantCulture);
+   u.SetProgramVariable("debugSeekSeconds",t);u.SendCustomEvent("_DebugSeekVar");
+   return "Runtime timeline seek "+t;
+  }
+  public static string Validate()
+  {
+   Guard(); var all=SceneManager.GetActiveScene().GetRootGameObjects().SelectMany(r=>r.GetComponentsInChildren<Transform>(true)).ToArray();
+   var errors=new List<string>();
+   foreach(var t in all) if(GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(t.gameObject)>0) errors.Add("Missing script: "+PathOf(t));
+   foreach(var m in all.SelectMany(t=>t.GetComponents<Renderer>()).SelectMany(r=>r.sharedMaterials).Where(m=>m!=null).Distinct())
+    if(m.shader==null || !m.shader.isSupported || ShaderUtil.ShaderHasError(m.shader)) errors.Add("Shader error: "+m.name);
+   if(all.SelectMany(t=>t.GetComponents<VRC.SDK3.Components.VRCSceneDescriptor>()).Count()!=1) errors.Add("Expected exactly one world descriptor");
+   var j=One<Lanbai.LB_Journey>();
+   if(j.deliveredDispatcher==null || j.deliveredPoems==null || j.deliveredOverlay==null) errors.Add("Missing integration reference");
+   if(j.ppGrade.Length!=15 || j.ppHelper.Length!=6) errors.Add("Grade count");
+   if(One<LanbaiAct07Driver>().waterlines.Length==0) errors.Add("Missing waterlines");
+   if(One<LanbaiPoemDriver>().pgBot==null || One<LanbaiPoemDriver>().pgBot.Length==0) errors.Add("Missing v5 subtitle pages");
+   string udon; if(!Lanbai.Udon.LanbaiUdonPrograms.AllReady(ProgramTypes(),out udon)) errors.Add(udon);
+   if(errors.Count>0) throw new Exception(string.Join("\n",errors));
+   return "PASS: one descriptor, no missing scripts or unsupported/error shaders, all program assets ready, 15+6 grades, waterlines and poem reveal data bound.\n"+Inspect();
+  }
+  public static string RuntimeState()
+  {
+   if(!EditorApplication.isPlaying) throw new Exception("Play required");
+   var j=One<Lanbai.LB_Journey>();var ju=UdonSharpEditorUtility.GetBackingUdonBehaviour(j);
+   var d=One<LanbaiActDispatcher>();var du=UdonSharpEditorUtility.GetBackingUdonBehaviour(d);
+   var sb=new System.Text.StringBuilder();
+   sb.AppendLine("Journey t="+ju.GetProgramVariable("dbgT")+" seg="+ju.GetProgramVariable("dbgSeg"));
+   sb.AppendLine("Dispatcher t="+du.GetProgramVariable("lastT")+" active="+du.GetProgramVariable("activeCount"));
+   sb.AppendLine("Cloud clock="+Shader.GetGlobalFloat("_Udon_GateTime")+" origin="+Shader.GetGlobalVector("_Udon_GateOrigin"));
+   sb.AppendLine("Sky cube="+Shader.GetGlobalTexture("_Udon_SkyCubeTexA")+" stars="+Shader.GetGlobalVector("_Udon_StarGain"));
+   sb.AppendLine("Overlay="+Shader.GetGlobalVector("_Udon_OverlayColor")+" sea="+Shader.GetGlobalFloat("_Udon_SeaLevel"));
+   sb.AppendLine("Editor smooth frame ms="+(Time.smoothDeltaTime*1000f).ToString("F2"));
+   foreach(var c in UnityEngine.Object.FindObjectsOfType<Camera>(true)) sb.AppendLine("Camera "+PathOf(c.transform)+" enabled="+c.enabled+" pos="+c.transform.position);
+   foreach(var r in SceneManager.GetActiveScene().GetRootGameObjects()) sb.AppendLine("Root "+r.name+" active="+r.activeSelf);
+   return sb.ToString();
+  }
+  public static string Capture(string label)
+  {
+   if(!EditorApplication.isPlaying) throw new Exception("Play required");
+   var j=One<Lanbai.LB_Journey>(); var desc=One<VRC.SDK3.Components.VRCSceneDescriptor>();
+   var src=desc.ReferenceCamera==null?null:desc.ReferenceCamera.GetComponent<Camera>();
+   var go=new GameObject("FullPreview_Capture"); var cam=go.AddComponent<Camera>();
+   var previous=RenderTexture.active; RenderTexture hdr=null,ldr=null; Texture2D image=null;
+   try {
+    if(src!=null)cam.CopyFrom(src); cam.enabled=false; cam.allowHDR=true; cam.farClipPlane=45000; cam.clearFlags=CameraClearFlags.Skybox;
+    cam.transform.position=j.busRoot.TransformPoint(new Vector3(.55f,1.7f,2.05f));
+    if(label.Contains("云体")) cam.transform.position=j.busRoot.TransformPoint(new Vector3(0,3,6));
+    float pitch=label.Contains("云体")?18f:0f;
+    cam.transform.rotation=j.busRoot.rotation*Quaternion.Euler(pitch,0,0);cam.aspect=16f/9f;cam.fieldOfView=58.7155f;
+    var pp=go.AddComponent<PostProcessLayer>();
+    pp.volumeLayer=1<<LayerMask.NameToLayer("PostProcessing");pp.volumeTrigger=cam.transform;pp.stopNaNPropagation=true;
+    var srcPP=src==null?null:src.GetComponent<PostProcessLayer>();
+    if(srcPP!=null){var f=typeof(PostProcessLayer).GetField("m_Resources",BindingFlags.NonPublic|BindingFlags.Instance);var resources=f?.GetValue(srcPP) as PostProcessResources;if(resources!=null)pp.Init(resources);}
+    hdr=new RenderTexture(1600,900,24,RenderTextureFormat.ARGBHalf,RenderTextureReadWrite.Linear);hdr.Create();cam.targetTexture=hdr;
+    for(int k=0;k<3;k++)cam.Render();
+    ldr=new RenderTexture(1600,900,0,RenderTextureFormat.ARGB32,RenderTextureReadWrite.sRGB);ldr.Create();Graphics.Blit(hdr,ldr);
+    RenderTexture.active=ldr;image=new Texture2D(1600,900,TextureFormat.RGB24,false,false);image.ReadPixels(new Rect(0,0,1600,900),0,0);image.Apply();
+    var folder=@"C:\Users\29742\Documents\Codex\2026-10-24\zha\outputs\完整旅程预览";Directory.CreateDirectory(folder);
+    var file=Path.Combine(folder,label+".png");File.WriteAllBytes(file,image.EncodeToPNG());File.WriteAllText(Path.Combine(folder,label+".txt"),RuntimeState());
+    return file+"\n"+RuntimeState();
+   } finally { RenderTexture.active=previous;cam.targetTexture=null;UnityEngine.Object.DestroyImmediate(go);if(hdr!=null){hdr.Release();UnityEngine.Object.DestroyImmediate(hdr);}if(ldr!=null){ldr.Release();UnityEngine.Object.DestroyImmediate(ldr);}if(image!=null)UnityEngine.Object.DestroyImmediate(image); }
+  }
+  public static void Overview()
+  {
+   if(!EditorApplication.isPlaying)return;
+   var old=GameObject.Find("FullPreview_Viewer"); if(old!=null)UnityEngine.Object.DestroyImmediate(old);
+   var j=One<Lanbai.LB_Journey>();var desc=One<VRC.SDK3.Components.VRCSceneDescriptor>();
+   var src=desc.ReferenceCamera.GetComponent<Camera>();var go=new GameObject("FullPreview_Viewer");var cam=go.AddComponent<Camera>();cam.CopyFrom(src);
+   cam.enabled=true;cam.depth=99;cam.clearFlags=CameraClearFlags.Skybox;cam.allowHDR=true;cam.depthTextureMode|=DepthTextureMode.Depth;
+   cam.transform.position=new Vector3(0,3,6);cam.transform.rotation=Quaternion.Euler(10,0,0);cam.fieldOfView=58.7155f;
+   cam.cullingMask&=~((1<<9)|(1<<10)|(1<<5)|(1<<12)|(1<<19));
+   var pp=go.AddComponent<PostProcessLayer>();pp.volumeLayer=1<<LayerMask.NameToLayer("PostProcessing");pp.volumeTrigger=cam.transform;pp.stopNaNPropagation=true;
+   var srcPP=src.GetComponent<PostProcessLayer>();var f=typeof(PostProcessLayer).GetField("m_Resources",BindingFlags.NonPublic|BindingFlags.Instance);
+   var resource=f?.GetValue(srcPP) as PostProcessResources;if(resource!=null)pp.Init(resource);
+   var poem=One<LanbaiPoemDriver>();UdonSharpEditorUtility.GetBackingUdonBehaviour(poem).SendCustomEvent("_LangZh");
+  }
+  public static void InsideView(){var viewer=GameObject.Find("FullPreview_Viewer");if(viewer!=null)UnityEngine.Object.DestroyImmediate(viewer);}
+ }
+}
+#endif

@@ -1,0 +1,699 @@
+{
+  "time": "2026-10-26T01:19:40.395196-04:00",
+  "source": "a5a75cb29f0e27bc864e5b0e332950331f406de1",
+  "files": [
+    {
+      "path": "Act07_Sea/Act07_Layout.json",
+      "bytes": 359494,
+      "source_sha256": "205cf4bdfaf06cffe7613f5edcb202f7441bfa387c7ac1660986704cc6a182a1",
+      "target_sha256": "0a6b9d5dac923774b0f49c7f9a5be7dd16e8c0af90032b9ea465de13bd14f51a",
+      "action": "update"
+    },
+    {
+      "path": "Act07_Sea/Editor/LanbaiAct07Builder.cs",
+      "bytes": 33255,
+      "source_sha256": "590bc619211f35cd333f0ddb1e1daa535092245e8a9a00306dbfc568a06131b0",
+      "target_sha256": "590bc619211f35cd333f0ddb1e1daa535092245e8a9a00306dbfc568a06131b0",
+      "action": "same"
+    },
+    {
+      "path": "Act07_Sea/PalaceFrame_约定.json",
+      "bytes": 73389,
+      "source_sha256": "bc4a1a1650cf17004003c646f92c4645668b71a3933e2aad4e0d974c1f668f5d",
+      "target_sha256": "bc4a1a1650cf17004003c646f92c4645668b71a3933e2aad4e0d974c1f668f5d",
+      "action": "same"
+    },
+    {
+      "path": "Act07_Sea/README_Act07a.md",
+      "bytes": 38561,
+      "source_sha256": "15ce4fdca45d706b8d305e4c2202f308adc188411cc1ffb53913b0702454729f",
+      "target_sha256": "547d51ff811e0640c753789e4cae27dbb3baf0c0fe89d619647aa339fe2d9baf",
+      "action": "update"
+    },
+    {
+      "path": "Act07_Sea/Runtime/LanbaiAct07Driver.cs",
+      "bytes": 30526,
+      "source_sha256": "bbfb9225aeac239ce7bb398fa5bea0c14407fa2a4822d27a0bd943597c036bc7",
+      "target_sha256": "9d686c1cdcff0ebbb78fe1b9c2f5086236329ff2142ed07b3c17f54d178aed66",
+      "action": "update"
+    },
+    {
+      "path": "Act07_Sea/Shaders/Lanbai_SeaRidge.shader",
+      "bytes": 4438,
+      "source_sha256": "3b44c7bf4116387986fe5f54e9148f94ed8729131c1c7785bdac8add4a2678cc",
+      "target_sha256": "3b44c7bf4116387986fe5f54e9148f94ed8729131c1c7785bdac8add4a2678cc",
+      "action": "same"
+    },
+    {
+      "path": "Act07_Sea/总导演终审_7a.md",
+      "bytes": 26043,
+      "source_sha256": "37c8263281dc98b7935feacbd72ba3c4f82ec2a77ad7a729f83afd5c363661c0",
+      "target_sha256": "37c8263281dc98b7935feacbd72ba3c4f82ec2a77ad7a729f83afd5c363661c0",
+      "action": "same"
+    },
+    {
+      "path": "Act08_Dusk/Act08_Grade.json",
+      "bytes": 1263,
+      "source_sha256": "a0d69d17cdf9a37f8ead15f03533b7adc68160aa873ed669fbe793ab0ded4e8a",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Act08_Dusk/Act08_Layout.json",
+      "bytes": 43554,
+      "source_sha256": "49c6a340d04bc60a17e048b425baaea69020a380681fb44a5a8741f12406d694",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Act08_Dusk/Editor/LanbaiAct08Builder.cs",
+      "bytes": 20100,
+      "source_sha256": "52e3cb121be0c353b4b0d7497cae6ba65113c7ce7cc93f4dadc4c9fc66a6e973",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Act08_Dusk/README_Act08.md",
+      "bytes": 29405,
+      "source_sha256": "af012bfcd4393f55b9a5bb14464e3289ab70ff218f3acc5288448db0f2516eef",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Act08_Dusk/Runtime/LanbaiAct08Driver.cs",
+      "bytes": 25672,
+      "source_sha256": "5c476ff6a34520235566b0d9481ba729f6ac10278ae84a0e0ac34560fc82252b",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Act08_Dusk/STATUS.md",
+      "bytes": 733,
+      "source_sha256": "6ec5a4a3d811dc4f330403b81be2f71826b70be962737fedb29814856ea09088",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Act08_Dusk/给总控.md",
+      "bytes": 3836,
+      "source_sha256": "b4287661b00c8a9f243bd99c6bdd30334f52aa92463de430edcf7710a1899ccb",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Act09_StarSea/Act09_StarSea.json",
+      "bytes": 14373,
+      "source_sha256": "a9e8f2bc11aa53c93590292b7d8f6a4ed86a0a6cb28f3d9e877caa9084474965",
+      "target_sha256": "746cac76b47420726c78b063b3249247b9458f49c63cfa1015824062cf0a9a01",
+      "action": "update"
+    },
+    {
+      "path": "Act09_StarSea/Data/frames.json",
+      "bytes": 2201,
+      "source_sha256": "c9e5080016e3b37e952ce7e9e80b9db0d4b3490b739f9d6e6cfca6273c0fdf56",
+      "target_sha256": "c9e5080016e3b37e952ce7e9e80b9db0d4b3490b739f9d6e6cfca6273c0fdf56",
+      "action": "same"
+    },
+    {
+      "path": "Act09_StarSea/Data/ignition.json",
+      "bytes": 13209,
+      "source_sha256": "39f39f4637a2e83d28c048d5dd45e0e0d0e0aab899b5a11622eb43765768330c",
+      "target_sha256": "39f39f4637a2e83d28c048d5dd45e0e0d0e0aab899b5a11622eb43765768330c",
+      "action": "same"
+    },
+    {
+      "path": "Act09_StarSea/Editor/LanbaiAct09Build.cs",
+      "bytes": 11183,
+      "source_sha256": "b1cfbc7e1b165a4173ba282bc22f9438c861372e26da72d92d87cb7b8b1252a7",
+      "target_sha256": "b1cfbc7e1b165a4173ba282bc22f9438c861372e26da72d92d87cb7b8b1252a7",
+      "action": "same"
+    },
+    {
+      "path": "Act09_StarSea/README_Act09.md",
+      "bytes": 15862,
+      "source_sha256": "7c079994a6466966df30bfe627d92a861ab959cb48ab487912b1d67e4753a8f9",
+      "target_sha256": "a13a365f487ab6654a67c1ea31b0008cda3476c1fe139b222d9410e1dab00f4d",
+      "action": "update"
+    },
+    {
+      "path": "Act09_StarSea/Runtime/LanbaiAct09Driver.cs",
+      "bytes": 9202,
+      "source_sha256": "0e4b7cbb86d1250fdffeaa6d82e21eadf933ece6dc82761675de389beafc9c28",
+      "target_sha256": "0e4b7cbb86d1250fdffeaa6d82e21eadf933ece6dc82761675de389beafc9c28",
+      "action": "same"
+    },
+    {
+      "path": "Act09_StarSea/总导演终审.md",
+      "bytes": 30240,
+      "source_sha256": "aa57477bcc988ed244f7762ca7bc64f472e0a461ba254ea2fd3befdbd86d245a",
+      "target_sha256": "aa57477bcc988ed244f7762ca7bc64f472e0a461ba254ea2fd3befdbd86d245a",
+      "action": "same"
+    },
+    {
+      "path": "Clouds_v2/Editor/LanbaiCloudsV2Editor.cs",
+      "bytes": 11911,
+      "source_sha256": "7fd8b68ea582df4eef7b3aa3ebae4c2b1f516cae79b106526e692794f7fe7162",
+      "target_sha256": "7fd8b68ea582df4eef7b3aa3ebae4c2b1f516cae79b106526e692794f7fe7162",
+      "action": "same"
+    },
+    {
+      "path": "Clouds_v2/Shaders/Lanbai_CloudCard.shader",
+      "bytes": 10820,
+      "source_sha256": "6fe62435a5954a19d0d4207669580eca98661d5aaca8fe890139bc4c67363603",
+      "target_sha256": "7b93debd471c103edeea4b081b243aaa21bd3bd5206e6261bb781cd3307a61bb",
+      "action": "update"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudSeaV2_1_dawn.json",
+      "bytes": 462,
+      "source_sha256": "cb9a7a696c39f8c33b1ba69873430487773bdbb593c0fcc9c83436dc9feddb07",
+      "target_sha256": "cb9a7a696c39f8c33b1ba69873430487773bdbb593c0fcc9c83436dc9feddb07",
+      "action": "same"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudSeaV2_1_dawn_K.png",
+      "bytes": 1013700,
+      "source_sha256": "c44e7d966da7e2d91d9f1714e99e19f6b9c57362c3753666029e62343f6807e7",
+      "target_sha256": "c44e7d966da7e2d91d9f1714e99e19f6b9c57362c3753666029e62343f6807e7",
+      "action": "same"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudSeaV2_1_dawn_S.png",
+      "bytes": 352282,
+      "source_sha256": "2743c6fad186ceb3487517b7086d4c6f7f02db14513d561d3e0ddf3af257655a",
+      "target_sha256": "2743c6fad186ceb3487517b7086d4c6f7f02db14513d561d3e0ddf3af257655a",
+      "action": "same"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudSeaV2_2_dawn.json",
+      "bytes": 463,
+      "source_sha256": "290eaedcdc1ebf8e1afb23a96d1da94c2686071a118108d2b7d979788b2d2f7a",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudSeaV2_2_dawn_K.png",
+      "bytes": 1022176,
+      "source_sha256": "f4c7669e9dcedc8814f06fb1b5f456f83ba7a44d1e477576822f81c11a82caaf",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudSeaV2_2_dawn_S.png",
+      "bytes": 398135,
+      "source_sha256": "6b3ebb30441dc449db444ea008db24757bc3ffff2235aabaf50dab69d5b0f2c7",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Bank_dawn.json",
+      "bytes": 465,
+      "source_sha256": "7467cb3da372c0f57ad681665af966582cb14740796999a87bfbce7f6954dbf0",
+      "target_sha256": "7467cb3da372c0f57ad681665af966582cb14740796999a87bfbce7f6954dbf0",
+      "action": "same"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Bank_dawn_K.png",
+      "bytes": 1360311,
+      "source_sha256": "da5c209c64c8a4831d32ee55d3a42c760144467caf9ded096f05d7b065c951e7",
+      "target_sha256": "da5c209c64c8a4831d32ee55d3a42c760144467caf9ded096f05d7b065c951e7",
+      "action": "same"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Bank_dawn_S.png",
+      "bytes": 564325,
+      "source_sha256": "98b9555779a830689215682ef94cc708a47a54761f529835609b1eef17f940c7",
+      "target_sha256": "98b9555779a830689215682ef94cc708a47a54761f529835609b1eef17f940c7",
+      "action": "same"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Bank_duskU.json",
+      "bytes": 466,
+      "source_sha256": "6a87492a6441ba12aac45859fa0eec6ad353434633a6d8bc999a28189093b524",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Bank_duskU_K.png",
+      "bytes": 1162092,
+      "source_sha256": "ccb181ea5c4a6370865b6ddd45d5eef85dff3104bc0568e5e5a86a0df1829f99",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Bank_duskU_S.png",
+      "bytes": 570468,
+      "source_sha256": "6c81bdf32370cb4b113b0c5864f9614b7bcbb875d0723e85b9fd1f189b16244a",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Congestus_dawn.json",
+      "bytes": 474,
+      "source_sha256": "aa92c866cb4545877c576e34b5f07b3580147165898198ae1bdbd36dacb76391",
+      "target_sha256": "aa92c866cb4545877c576e34b5f07b3580147165898198ae1bdbd36dacb76391",
+      "action": "same"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Congestus_dawn_K.png",
+      "bytes": 775677,
+      "source_sha256": "41ff75fa095596c39ec837afa2b6f3b05f0e9c4889fe41ba2a577e6ace32cd37",
+      "target_sha256": "41ff75fa095596c39ec837afa2b6f3b05f0e9c4889fe41ba2a577e6ace32cd37",
+      "action": "same"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Congestus_dawn_S.png",
+      "bytes": 454632,
+      "source_sha256": "decbc71acace893ccfefc52cdf62243cc7ab49735c99724d5239cc5c97d04af8",
+      "target_sha256": "decbc71acace893ccfefc52cdf62243cc7ab49735c99724d5239cc5c97d04af8",
+      "action": "same"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Congestus_duskD.json",
+      "bytes": 458,
+      "source_sha256": "3c47f15a082266a34e4424fcef016359560dff071f68868926d836d28f70219f",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Congestus_duskD_K.png",
+      "bytes": 767925,
+      "source_sha256": "34e78a82bbfd42f86b997f7cd17576f88ce407371429ab6a965e7eaf4c5dfa85",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Congestus_duskD_S.png",
+      "bytes": 395183,
+      "source_sha256": "034e5f3a3adb860d3676c9a03a8e09646518155e658a1768a18a1d76f69eea4b",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Cumulus_dawn.json",
+      "bytes": 453,
+      "source_sha256": "07f4862339b66003c58e4b5101c78ea5b6157ac7433f774af89506a30d5d27aa",
+      "target_sha256": "07f4862339b66003c58e4b5101c78ea5b6157ac7433f774af89506a30d5d27aa",
+      "action": "same"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Cumulus_dawn_K.png",
+      "bytes": 687608,
+      "source_sha256": "aaa7257d36cfd0c5bad6967a593d7667741e8f137a843ec4b1b47640edaf8448",
+      "target_sha256": "aaa7257d36cfd0c5bad6967a593d7667741e8f137a843ec4b1b47640edaf8448",
+      "action": "same"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Cumulus_dawn_S.png",
+      "bytes": 301032,
+      "source_sha256": "99a7e3db7ecdad799593da1a6220dafde4f6ffa2ed7ff73269d7329e05a512d0",
+      "target_sha256": "99a7e3db7ecdad799593da1a6220dafde4f6ffa2ed7ff73269d7329e05a512d0",
+      "action": "same"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Cumulus_duskD.json",
+      "bytes": 454,
+      "source_sha256": "3d6e0ccea4b9cf1e9429fc52074b5b51687895c6ee9a3f329b26aa1a5486a2b3",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Cumulus_duskD_K.png",
+      "bytes": 743717,
+      "source_sha256": "a501743e9b07e388ca613734bcbf624745a4d8316febc17815b317e927adaf43",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Cumulus_duskD_S.png",
+      "bytes": 417315,
+      "source_sha256": "76b702ab87a2e96a3c064d420767ded71e3fd20f43c8d429b94b3ef5bc5216cf",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Cumulus_duskU.json",
+      "bytes": 454,
+      "source_sha256": "fc6983d6e2548ede3a7b566ea0b46bdd2467e472cfd54b2b55b0038619a762a4",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Cumulus_duskU_K.png",
+      "bytes": 672167,
+      "source_sha256": "ecd06b7b6b41c1281f626df34e24c4838e2dbc72c64d9f37b40b937e683e7051",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Cumulus_duskU_S.png",
+      "bytes": 294977,
+      "source_sha256": "f926dc30bd418bf16f1b8580c9bed1163f4fb9363230a0d945d9133322db2338",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Puff_dawn.json",
+      "bytes": 443,
+      "source_sha256": "3347824d0d6918f3a226fc35abb500f8ccb49ff26e4e22f4ebf311bc3c229e86",
+      "target_sha256": "3347824d0d6918f3a226fc35abb500f8ccb49ff26e4e22f4ebf311bc3c229e86",
+      "action": "same"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Puff_dawn_K.png",
+      "bytes": 715471,
+      "source_sha256": "9873914e103f3a76580f9b07f2e9c0af1c64691c92fe326dcda2ed0cfe130a2f",
+      "target_sha256": "9873914e103f3a76580f9b07f2e9c0af1c64691c92fe326dcda2ed0cfe130a2f",
+      "action": "same"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Puff_dawn_S.png",
+      "bytes": 302217,
+      "source_sha256": "16100bbf0bc86af4dc915eb631be3f9939ab5eab4695a38b9c85cae36d5a9ba5",
+      "target_sha256": "16100bbf0bc86af4dc915eb631be3f9939ab5eab4695a38b9c85cae36d5a9ba5",
+      "action": "same"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Puff_duskD.json",
+      "bytes": 449,
+      "source_sha256": "87bd753e875c00debc1017656eac2eb0b35fc7e88fdf61187e832af2d6626b25",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Puff_duskD_K.png",
+      "bytes": 715210,
+      "source_sha256": "7bc0d017db8e27b4a6c858e9a2de517c9fe8288ef5b46231e02bf77c73ed84d0",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Puff_duskD_S.png",
+      "bytes": 347435,
+      "source_sha256": "5222aa041a1c974a780ecfac75fd3d2e3fd65959eb7dd9a183edd71d945683c2",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Strato_dawn.json",
+      "bytes": 453,
+      "source_sha256": "f2669b53f660514fbc7dc262bdcf80c153041175fd5f0286c38218b6441374d9",
+      "target_sha256": "f2669b53f660514fbc7dc262bdcf80c153041175fd5f0286c38218b6441374d9",
+      "action": "same"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Strato_dawn_K.png",
+      "bytes": 1211073,
+      "source_sha256": "4726c64ce26e4958af2ccd75877957c34fa614c116601a3dcc6530f028e86e62",
+      "target_sha256": "4726c64ce26e4958af2ccd75877957c34fa614c116601a3dcc6530f028e86e62",
+      "action": "same"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Strato_dawn_S.png",
+      "bytes": 548284,
+      "source_sha256": "527fde831bebecc851d4ce26f64278fde1e63f0b6c488738c96a5a0bffb02056",
+      "target_sha256": "527fde831bebecc851d4ce26f64278fde1e63f0b6c488738c96a5a0bffb02056",
+      "action": "same"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Strato_duskD.json",
+      "bytes": 455,
+      "source_sha256": "0f5ac7415087dccbe070366307d80b324c6c80f5a499cd5986b5c411061204ef",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Strato_duskD_K.png",
+      "bytes": 1543982,
+      "source_sha256": "860cefb98b39284c101373a6d31dabf17e0a53d3bbd43ffc3ba05d52ea6b25f7",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Strato_duskD_S.png",
+      "bytes": 815017,
+      "source_sha256": "64457e6b7b1bbfa58ed9469078deab26690789b744674cfbdf5d5531e367d6bf",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Strato_duskU.json",
+      "bytes": 454,
+      "source_sha256": "6073436eca5ee5862ede14b035bd4ac6bbdea161a928a4496b1d793af787f8d4",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Strato_duskU_K.png",
+      "bytes": 1216071,
+      "source_sha256": "a2fbbe841887bd4940057e359acee5da48d156cc82f885384aba67c0cc8ed491",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Strato_duskU_S.png",
+      "bytes": 507265,
+      "source_sha256": "d687fd88781ae23f6b7d9f1874d48ccf1b0054f35d536b1e7324489741dba27b",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Wisp_dawn.json",
+      "bytes": 464,
+      "source_sha256": "376bd9af155ccbab89a60cad04f1c7f2eb837e3ab0cfa5940abcb255aca91836",
+      "target_sha256": "376bd9af155ccbab89a60cad04f1c7f2eb837e3ab0cfa5940abcb255aca91836",
+      "action": "same"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Wisp_dawn_K.png",
+      "bytes": 1374498,
+      "source_sha256": "03140c1167e65b43135bee77e1fd849ce241a443a272daa77445affc82aa18fd",
+      "target_sha256": "03140c1167e65b43135bee77e1fd849ce241a443a272daa77445affc82aa18fd",
+      "action": "same"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Wisp_dawn_S.png",
+      "bytes": 367029,
+      "source_sha256": "d4789cd11f6382e2e2528f26a95dce9f64998db1c7c16deb1622dc63e0fa0b7c",
+      "target_sha256": "d4789cd11f6382e2e2528f26a95dce9f64998db1c7c16deb1622dc63e0fa0b7c",
+      "action": "same"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Wisp_duskU.json",
+      "bytes": 470,
+      "source_sha256": "0a111ccb9c2744e577e149b3771ecf65a419dee1cb286cc3907836dc032a69df",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Wisp_duskU_K.png",
+      "bytes": 1077236,
+      "source_sha256": "03ae99ba6a6b206c9a7d2afc5a39993421bf88fab11867ab19bbc5fa94ea480b",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Clouds_v2/Textures/CloudV2_Wisp_duskU_S.png",
+      "bytes": 398246,
+      "source_sha256": "d701fe668a62b5fe2b5bd2af48a941f272fc47dc6518fd451e20af44012ab645",
+      "target_sha256": null,
+      "action": "new"
+    },
+    {
+      "path": "Clouds_v2/Textures/cards_v2.json",
+      "bytes": 11876,
+      "source_sha256": "ec76c0776f1d5b8d9ce0966677109d07ec7087ae52cab3b37142436d359ea0ea",
+      "target_sha256": "70739b3a8525ff5af9f393ce420255a5451a5f642dd2c203536345ef6f011b21",
+      "action": "update"
+    },
+    {
+      "path": "Sky/Data/StarPoints_BSC5.csv",
+      "bytes": 584002,
+      "source_sha256": "b5d205eaf72c1ff553487ed104b75d640efbe93bb11d049d9338fd8ab76c4563",
+      "target_sha256": "b5d205eaf72c1ff553487ed104b75d640efbe93bb11d049d9338fd8ab76c4563",
+      "action": "same"
+    },
+    {
+      "path": "Sky/Data/StarSky.json",
+      "bytes": 1560,
+      "source_sha256": "a7ea16ac9191ef529fa893f0ef83d90de0459a628f399a9be9cab80c09226d6e",
+      "target_sha256": "a7ea16ac9191ef529fa893f0ef83d90de0459a628f399a9be9cab80c09226d6e",
+      "action": "same"
+    },
+    {
+      "path": "Sky/Data/fit_dawn.json",
+      "bytes": 866,
+      "source_sha256": "3ce78218da89b0b6c14588e4475bfc36c5e1b861e17d11b65bb2dbd7ab95be93",
+      "target_sha256": "3ce78218da89b0b6c14588e4475bfc36c5e1b861e17d11b65bb2dbd7ab95be93",
+      "action": "same"
+    },
+    {
+      "path": "Sky/Data/fit_dusk.json",
+      "bytes": 998,
+      "source_sha256": "b1e5a9b5793c5c5069d245f4476902a0fcf31506d7cbaaa0e2425521f15dd927",
+      "target_sha256": "b1e5a9b5793c5c5069d245f4476902a0fcf31506d7cbaaa0e2425521f15dd927",
+      "action": "same"
+    },
+    {
+      "path": "Sky/Data/stars_D06.json",
+      "bytes": 169,
+      "source_sha256": "d2e89896089fc4fd77efbbbbfa6a75e47a5d39bee73d5e3eb5102ee8a148c1e1",
+      "target_sha256": "d2e89896089fc4fd77efbbbbfa6a75e47a5d39bee73d5e3eb5102ee8a148c1e1",
+      "action": "same"
+    },
+    {
+      "path": "Sky/Editor/LanbaiSkyBuild.cs",
+      "bytes": 31353,
+      "source_sha256": "0f7e3b5325f44eaaf5eab0170ae601dac67e8405fdb8e7af4f57035f519b45b2",
+      "target_sha256": "0f7e3b5325f44eaaf5eab0170ae601dac67e8405fdb8e7af4f57035f519b45b2",
+      "action": "same"
+    },
+    {
+      "path": "Sky/Editor/LanbaiSkyImport.cs",
+      "bytes": 3555,
+      "source_sha256": "95c0316652246c234119d7fe8fdb5d670b988bf696ef791ff531b7317eb72b59",
+      "target_sha256": "95c0316652246c234119d7fe8fdb5d670b988bf696ef791ff531b7317eb72b59",
+      "action": "same"
+    },
+    {
+      "path": "Sky/FogPresets.json",
+      "bytes": 9642,
+      "source_sha256": "9e9fd73cf53432078b3c250f2fb6806922bac8e9b12aafa612653b4600842901",
+      "target_sha256": "9e9fd73cf53432078b3c250f2fb6806922bac8e9b12aafa612653b4600842901",
+      "action": "same"
+    },
+    {
+      "path": "Sky/README_Fog接口.md",
+      "bytes": 13654,
+      "source_sha256": "94301a11cb31bad0824dd788596ed5756d5c9a4f9aadc672da2869bc181667ee",
+      "target_sha256": "94301a11cb31bad0824dd788596ed5756d5c9a4f9aadc672da2869bc181667ee",
+      "action": "same"
+    },
+    {
+      "path": "Sky/README_Sky.md",
+      "bytes": 43125,
+      "source_sha256": "a4cc41b6db95022ed3fe453cbb418ccfbc9099901273e04ac2b6e21219707fe9",
+      "target_sha256": "a4cc41b6db95022ed3fe453cbb418ccfbc9099901273e04ac2b6e21219707fe9",
+      "action": "same"
+    },
+    {
+      "path": "Sky/Runtime/LanbaiSkyDriver.cs",
+      "bytes": 5039,
+      "source_sha256": "aaae59e4909224ad8c3fb7221f4337689feb15c0f54d052560bafa692d2a47f7",
+      "target_sha256": "3bc84f9e9b9ffaf3fc7e14320dede889652f322cedaa898322c139d264653dc8",
+      "action": "LOCAL_DIFF"
+    },
+    {
+      "path": "Sky/Runtime/LanbaiSkyPreset.cs",
+      "bytes": 13355,
+      "source_sha256": "8de2f38c8c1c4efaf73ba02d73a6e002b8f12b61875a61f3a7b059582c7abac3",
+      "target_sha256": "8de2f38c8c1c4efaf73ba02d73a6e002b8f12b61875a61f3a7b059582c7abac3",
+      "action": "same"
+    },
+    {
+      "path": "Sky/STATUS.md",
+      "bytes": 7433,
+      "source_sha256": "8471d4fd2401da257458b0760f867cf4f399e3a5d786f55c438f7bb2e4bc71ae",
+      "target_sha256": "8471d4fd2401da257458b0760f867cf4f399e3a5d786f55c438f7bb2e4bc71ae",
+      "action": "same"
+    },
+    {
+      "path": "Sky/Shaders/LanbaiSkyLayers.cginc",
+      "bytes": 45644,
+      "source_sha256": "7ac8845c48987f129426bb80d82e346e089e11b08ff8c4390a7a82423a28201e",
+      "target_sha256": "7ac8845c48987f129426bb80d82e346e089e11b08ff8c4390a7a82423a28201e",
+      "action": "same"
+    },
+    {
+      "path": "Sky/Shaders/Lanbai_Sky.shader",
+      "bytes": 10174,
+      "source_sha256": "97aac9bee67c740c276b979cd3a75e89393439ae4f5accf601235dc36dfab574",
+      "target_sha256": "97aac9bee67c740c276b979cd3a75e89393439ae4f5accf601235dc36dfab574",
+      "action": "same"
+    },
+    {
+      "path": "Sky/Shaders/Lanbai_StarPoints.shader",
+      "bytes": 7590,
+      "source_sha256": "beddffad23feebddb829ebfef5d99a6467e649a57509955446130f1f48cb6c0a",
+      "target_sha256": "beddffad23feebddb829ebfef5d99a6467e649a57509955446130f1f48cb6c0a",
+      "action": "same"
+    },
+    {
+      "path": "Sky/SkyPresets.json",
+      "bytes": 97275,
+      "source_sha256": "7fab02921a3fab984dbd75fc0b45dd0e9c652da38aee0890b1349906100cc7b1",
+      "target_sha256": "7fab02921a3fab984dbd75fc0b45dd0e9c652da38aee0890b1349906100cc7b1",
+      "action": "same"
+    },
+    {
+      "path": "Sky/Textures/Moon_Disc_1024.png",
+      "bytes": 2300173,
+      "source_sha256": "fc6aa727f9549ae8c7e4bef77b4531bf38e07b27e47d485c00c07a9ab851a0be",
+      "target_sha256": "fc6aa727f9549ae8c7e4bef77b4531bf38e07b27e47d485c00c07a9ab851a0be",
+      "action": "same"
+    },
+    {
+      "path": "Sky/Textures/Sky_Overcast_Night_2048x1024.hdr",
+      "bytes": 8388659,
+      "source_sha256": "3bde689ecb3c4b5c47b6c7e34e639f19ff6a6a409728cfda112bd52c08c40993",
+      "target_sha256": "3bde689ecb3c4b5c47b6c7e34e639f19ff6a6a409728cfda112bd52c08c40993",
+      "action": "same"
+    },
+    {
+      "path": "Sky/Textures/Sky_Overcast_Night_TownGlow_2048x1024.hdr",
+      "bytes": 8388659,
+      "source_sha256": "644fc1f8b017017826829d19210d7efc1589c84c5ae85bb8437e209ec8fa4fa5",
+      "target_sha256": "644fc1f8b017017826829d19210d7efc1589c84c5ae85bb8437e209ec8fa4fa5",
+      "action": "same"
+    },
+    {
+      "path": "Sky/Textures/StarSky_Glow_8192x4096.png",
+      "bytes": 28015519,
+      "source_sha256": "8b7b4ce0a4ca6470ac2d0a6d99eef472166825f7e5f596d4ed4025286576b9cb",
+      "target_sha256": "8b7b4ce0a4ca6470ac2d0a6d99eef472166825f7e5f596d4ed4025286576b9cb",
+      "action": "same"
+    },
+    {
+      "path": "Sky/总导演意见.md",
+      "bytes": 3840,
+      "source_sha256": "59539b04c74cfd892f095c51b0bb412127cac49183854c11ad67da5ab3acb8f9",
+      "target_sha256": "59539b04c74cfd892f095c51b0bb412127cac49183854c11ad67da5ab3acb8f9",
+      "action": "same"
+    },
+    {
+      "path": "Sky/总导演终审.md",
+      "bytes": 43339,
+      "source_sha256": "0c4766614ccff37fa7e908d312d8af46a1fe3478be467a5ede0b83b6fc5edf15",
+      "target_sha256": "0c4766614ccff37fa7e908d312d8af46a1fe3478be467a5ede0b83b6fc5edf15",
+      "action": "same"
+    },
+    {
+      "path": "Sky/总工程师意见.md",
+      "bytes": 22864,
+      "source_sha256": "c0c7b13e87e94711efa6cef5f89083e726010bbc30b9740db28e2425e69308dd",
+      "target_sha256": "c0c7b13e87e94711efa6cef5f89083e726010bbc30b9740db28e2425e69308dd",
+      "action": "same"
+    },
+    {
+      "path": "Sky/暂停总结.md",
+      "bytes": 6913,
+      "source_sha256": "c8fd75cfcd4582156fa6667689e66bdebd4922cf76ec6a070699740b3558185a",
+      "target_sha256": "c8fd75cfcd4582156fa6667689e66bdebd4922cf76ec6a070699740b3558185a",
+      "action": "same"
+    },
+    {
+      "path": "Sky/给总控.md",
+      "bytes": 10447,
+      "source_sha256": "5ed02858216298b3e24f2817d96c0794988380434f5372b06757de06df3f8998",
+      "target_sha256": "5ed02858216298b3e24f2817d96c0794988380434f5372b06757de06df3f8998",
+      "action": "same"
+    },
+    {
+      "path": "Sky/美术审片意见.md",
+      "bytes": 4876,
+      "source_sha256": "f8c3c1487e09cf92ce40ea63e762f508f40f16c04fd7b1d44c2d72cfd3133c14",
+      "target_sha256": "f8c3c1487e09cf92ce40ea63e762f508f40f16c04fd7b1d44c2d72cfd3133c14",
+      "action": "same"
+    }
+  ]
+}

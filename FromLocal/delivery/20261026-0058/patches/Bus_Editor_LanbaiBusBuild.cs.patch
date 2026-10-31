@@ -1,0 +1,50 @@
+--- a/Bus/Editor/LanbaiBusBuild.cs
++++ b/Bus/Editor/LanbaiBusBuild.cs
+@@ -56,6 +56,8 @@
+         { "Lamp_Tail", new object[] { "#8A1A1E", 0.80f, 0f } }, { "Lamp_Amber", new object[] { "#E3D69B", 0.80f, 0f } },
+         { "ButtonRed", new object[] { "#8A1A1E", 0.55f, 0f } },
+         { "Int_Enamel", new object[] { "#D9D4C5", 0.45f, 0f } }, { "Int_Ceiling", new object[] { "#E2DDCF", 0.25f, 0f } },
++        { "Piping", new object[] { "#C8BC9E", 0.40f, 0f } }, { "Sleeve", new object[] { "#2E2E2E", 0.45f, 0f } },
++        { "LatchCream", new object[] { "#D9CFB8", 0.55f, 0f } }, // Exact current Bus/Source/build_bus.py MAT_TABLE
+         { "Seal", new object[] { "#2B2B2B", 0.30f, 0f } }, { "Vinyl", new object[] { "#5A2126", 0.45f, 0f } },
+         { "SeatFrame", new object[] { "#3C3E3D", 0.35f, 0f } }, { "Floor", new object[] { "#323634", 0.22f, 0f } },
+         { "Alu", new object[] { "#B8BBBD", 0.45f, 1f } }, { "SafetyYellow", new object[] { "#C9A227", 0.40f, 0f } },
+@@ -86,6 +88,30 @@
+ 
+     // which Lanbai/Cabin variant an FBX object gets. Window_* / Pole_* are the D-40 #1 slice pieces that finish_bus.py
+     // now exports on their own (Window_R1, Pole_R0): they were part of Cabin_Static and stay on its tube light map.
++    // The imported FBX has the opposite X/Z basis from BusLayout.json on this Unity import.
++    // Correct only the proven 180-degree case, then bake the correction into child transforms
++    // so the model stays identity and doorClosedPos (layout/world coordinates) remains valid.
++    internal static string AlignModelToLayout(Transform model, Layout layout)
++    {
++        var hero = layout.seats.First(x => x.hero);
++        var seat = FindDeep(model, "Seat_" + hero.name);
++        if (seat == null || seat.GetComponent<Renderer>() == null) throw new Exception("Hero mesh missing for layout-axis verification");
++        Vector3 p = model.InverseTransformPoint(seat.GetComponent<Renderer>().bounds.center);
++        Vector2 expected = new Vector2(hero.x, hero.back_z + 0.25f);
++        float direct = Vector2.Distance(new Vector2(p.x, p.z), expected);
++        float reversed = Vector2.Distance(new Vector2(-p.x, -p.z), expected);
++        if (direct < 0.5f) return "FBX/model axes agree with BusLayout hero seat";
++        if (reversed > 0.5f || direct < 1f) throw new Exception("Unknown FBX/layout mismatch; refusing automatic correction");
++        var children = model.Cast<Transform>().ToArray();
++        model.localRotation = Quaternion.Euler(0f, 180f, 0f);
++        foreach (var child in children) child.SetParent(model.parent, true);
++        model.localRotation = Quaternion.identity;
++        foreach (var child in children) child.SetParent(model, true);
++        Vector3 after = model.InverseTransformPoint(seat.GetComponent<Renderer>().bounds.center);
++        if (Vector2.Distance(new Vector2(after.x, after.z), expected) > 0.5f) throw new Exception("FBX axis correction verification failed");
++        return "Corrected imported FBX X/Z reversal against BusLayout; model identity, mesh/station/collider frame aligned";
++    }
++
+     internal static Mode ModeFor(string n)
+     {
+         return n == "Cabin_Static" || n.StartsWith("Seat_") || n.StartsWith("Window_") || n.StartsWith("Pole_") ? Mode.CabinLM  // D-36 seats share the LM atlas
+@@ -129,6 +155,7 @@
+         PrefabUtility.UnpackPrefabInstance(model, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+         model.transform.SetParent(root.transform, false);
+         model.transform.localPosition = Vector3.zero; model.transform.localRotation = Quaternion.identity; model.transform.localScale = Vector3.one;
++        _rep.AppendLine(AlignModelToLayout(model.transform, L));
+ 
+         // 2b. door panes ride with their leaves (finish_bus.py exports Glass_DoorK separately: BusGlass, not Lanbai/Cabin)
+         for (int k = 0; k < 4; k++)

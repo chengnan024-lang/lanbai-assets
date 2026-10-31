@@ -1,0 +1,10 @@
+{
+  "test": "bus_dropin",
+  "run": "20261026-020111",
+  "exit": 0,
+  "status": "pass",
+  "preflight_only": false,
+  "out": "E:\\IDMdownload\\VRCC\\dream\\LanbaiReports/tests\\bus_dropin\\20261026-020111",
+  "blocked_reason": null,
+  "error": null
+}

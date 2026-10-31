@@ -1,0 +1,80 @@
+{
+  "id": "transitions_sweep",
+  "title": "Only x06 and fixed white tail; verify cleanup guard and capture completeness",
+  "source": "D-44 #4：按圣经 §6.x 的交接表，每个交接前后各 7 秒；主座位每秒一张、交接点前后 1 秒 10 fps；出对比图和每帧平均对数亮度曲线，量出跳变；有意的硬切单独标",
+  "requires": {
+    "files": [
+      "Assets/Lanbai/Scenes/Lanbai_FullPreview.unity"
+    ],
+    "types": [
+      "LB_Journey",
+      "LanbaiOverlay",
+      "LanbaiActDispatcher"
+    ],
+    "why": "本地的全程预览场景（FromLocal/full_preview/20261025-0103）：12 个包接好、LB_Journey 带调试跳转（debugSeekSeconds + _DebugSeekVar）。工程里没有这个场景就 BLOCKED"
+  },
+  "scene": {
+    "path": "Assets/Lanbai/Scenes/Lanbai_FullPreview.unity",
+    "mode": "copy",
+    "why": "拷进沙盒再进 Play：全程预览场景本身不动、不存"
+  },
+  "allowed_writes": [],
+  "allowed_writes_why": "Play 模式只在内存里跑，不应该写工程里的文件；写了就会列成没声明的写入",
+  "play": {
+    "clock": {
+      "component": "LB_Journey",
+      "time_var": "dbgT",
+      "seek_var": "debugSeekSeconds",
+      "seek_event": "_DebugSeekVar",
+      "why": "和本地的旅程进度面板一样：写 debugSeekSeconds、发 _DebugSeekVar 跳转；dbgT 是旅程每帧算出来的 t。进 Play 以后先等：本地玩家有了、ready_vars 都为 true、分发层 spawnFadeSince ≥ 0、再过 2 帧（最多 60 s，不然 BLOCKED）",
+      "ready_vars": [
+        "_journeyReady",
+        "_spawnFadeEnded"
+      ]
+    },
+    "camera": {
+      "relative_to": {
+        "component": "LB_Journey",
+        "field": "busRoot"
+      },
+      "yaw": 0,
+      "pitch": 0,
+      "hfov": 90,
+      "w": 640,
+      "h": 360,
+      "why": "主座位往前看：D-28 的主座位眼点 (0.55, 1.70, 2.05)（车的局部坐标；LB_Journey.heroEye 是作废的旧值，不用），相机挂在 LB_Journey.busRoot 上，车动相机跟着动。ClientSim 的玩家也挪到这里（seat_player），遮罩球每张拍之前挪到相机这里；manifest 记 play.head_cam_dist_max",
+      "eye": [
+        0.55,
+        1.7,
+        2.05
+      ]
+    },
+    "overlay_follow_camera": true,
+    "settle_s": 2,
+    "sweep": {
+      "table": "E:\\IDMdownload\\VRCC\\dream\\Assets\\Lanbai\\Engineering\\UnityTest\\tests\\data\\transitions_table.json",
+      "pre_s": 7,
+      "post_s": 7,
+      "coarse_fps": 1,
+      "fine_s": 1,
+      "fine_fps": 10,
+      "only": [
+        "x06",
+        "x40"
+      ],
+      "why": "only 留空 = 表里全部（36 个，实时约 36 × (14 + 2) s ≈ 10 分钟）；只想看几个就写它们的 id，比如 [\"x22\", \"x26\"]"
+    },
+    "seat_player": true,
+    "max_missed_frac": 0.1,
+    "max_missed_frac_why": "实时拍不满时漏掉的比例；超过 10 % 这一段算 fail（帧间的量只用中间没漏拍、间隔 ≤ 1.5 × 安排间隔的相邻两张）"
+  },
+  "checks": [],
+  "checks_why": "不设卡：这是找问题的扫描，不是验收。summary.md 的表里，类别是“要查”的交接超过圣经 §1.8 的三个窗口（0.25 / 1 / 2 s 里 0.5 / 1.0 / 1.8 EV，那里是每个视向，这里是全画面平均）会标 ⚠️",
+  "headset_checklist": [
+    "交接扫描只看全画面平均和主座位往前：转头、头显里的感受另看"
+  ],
+  "manual": [
+    "跑之前：全程预览场景能正常 Play（ClientSim 起来、旅程走），Console 没有编译错误",
+    "跑的时候别碰编辑器：工具自己进 Play、跳转、拍、退出 Play，约 10 分钟"
+  ]
+}

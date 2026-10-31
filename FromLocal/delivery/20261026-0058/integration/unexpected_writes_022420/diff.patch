@@ -1,0 +1,124 @@
+--- baseline/Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip2_Fringe.mat
++++ written/Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip2_Fringe.mat
+@@ -43,5 +43,5 @@
+     - _FogHeightFalloff: 0
+     - _FringeGain: 2.75
+-    - _Gain: 0.001196742
++    - _Gain: 1
+     - _GrainRoll: 28.85
+     - _LipGlow: 3.15
+
+--- baseline/Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip2_Hang.mat
++++ written/Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip2_Hang.mat
+@@ -43,5 +43,5 @@
+     - _FogHeightFalloff: 0
+     - _FringeGain: 4.4
+-    - _Gain: 0.001196742
++    - _Gain: 1
+     - _GrainRoll: 28.85
+     - _LipGlow: 3.15
+
+--- baseline/Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip2_Sheet.mat
++++ written/Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip2_Sheet.mat
+@@ -43,5 +43,5 @@
+     - _FogHeightFalloff: 0
+     - _FringeGain: 2.75
+-    - _Gain: 0.001196742
++    - _Gain: 1
+     - _GrainRoll: 28.85
+     - _LipGlow: 3.15
+
+--- baseline/Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip2_Threads.mat
++++ written/Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip2_Threads.mat
+@@ -43,5 +43,5 @@
+     - _FogHeightFalloff: 0
+     - _FringeGain: 2.75
+-    - _Gain: 0.001196742
++    - _Gain: 1
+     - _GrainRoll: 28.85
+     - _LipGlow: 3.15
+
+--- baseline/Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip4_Fringe.mat
++++ written/Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip4_Fringe.mat
+@@ -43,5 +43,5 @@
+     - _FogHeightFalloff: 0
+     - _FringeGain: 2.75
+-    - _Gain: 0.99976444
++    - _Gain: 0
+     - _GrainRoll: 4.26
+     - _LipGlow: 3.15
+
+--- baseline/Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip4_Hang.mat
++++ written/Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip4_Hang.mat
+@@ -43,5 +43,5 @@
+     - _FogHeightFalloff: 0
+     - _FringeGain: 4.4
+-    - _Gain: 0.99976444
++    - _Gain: 0
+     - _GrainRoll: 4.26
+     - _LipGlow: 3.15
+
+--- baseline/Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip4_Sheet.mat
++++ written/Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip4_Sheet.mat
+@@ -43,5 +43,5 @@
+     - _FogHeightFalloff: 0
+     - _FringeGain: 2.75
+-    - _Gain: 0.99976444
++    - _Gain: 0
+     - _GrainRoll: 4.26
+     - _LipGlow: 3.15
+
+--- baseline/Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip5_Fringe.mat
++++ written/Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip5_Fringe.mat
+@@ -43,5 +43,5 @@
+     - _FogHeightFalloff: 0
+     - _FringeGain: 2.75
+-    - _Gain: 0.9982146
++    - _Gain: 0
+     - _GrainRoll: -26
+     - _LipGlow: 3.15
+
+--- baseline/Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip5_Hang.mat
++++ written/Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip5_Hang.mat
+@@ -43,5 +43,5 @@
+     - _FogHeightFalloff: 0
+     - _FringeGain: 4.4
+-    - _Gain: 0.9982146
++    - _Gain: 0
+     - _GrainRoll: -26
+     - _LipGlow: 3.15
+
+--- baseline/Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip5_Sheet.mat
++++ written/Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip5_Sheet.mat
+@@ -43,5 +43,5 @@
+     - _FogHeightFalloff: 0
+     - _FringeGain: 2.75
+-    - _Gain: 0.9982146
++    - _Gain: 0
+     - _GrainRoll: -26
+     - _LipGlow: 3.15
+
+--- baseline/Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip5_Threads.mat
++++ written/Assets/Lanbai/Act04c_Inside/Materials/M_04c_Lip5_Threads.mat
+@@ -43,5 +43,5 @@
+     - _FogHeightFalloff: 0
+     - _FringeGain: 2.75
+-    - _Gain: 0.9982146
++    - _Gain: 0
+     - _GrainRoll: -26
+     - _LipGlow: 3.15
+
+--- baseline/Assets/Lanbai/Generated/Materials/LB_Cloud.mat
++++ written/Assets/Lanbai/Generated/Materials/LB_Cloud.mat
+@@ -36,7 +36,7 @@
+     - _Soft: 0.22
+     m_Colors:
+-    - _Color: {r: 0.38568628, g: 0.49784315, b: 0.58960783, a: 1}
+-    - _Shade: {r: 0.107647054, g: 0.3282353, b: 0.48352942, a: 1}
+-    - _SunColor: {r: 0.27980393, g: 0.4807843, b: 0.6343137, a: 1}
+-    - _SunDir: {r: 0.15, g: 0.95, b: 0.2, a: 5.5}
++    - _Color: {r: 0.9413726, g: 0.8190196, b: 0.737451, a: 1}
++    - _Shade: {r: 0.4852941, g: 0.46411765, b: 0.5470588, a: 1}
++    - _SunColor: {r: 0.45490196, g: 0.36078432, b: 0.29803923, a: 1}
++    - _SunDir: {r: 0.645, g: 0.08, b: 0.76, a: 2.2}
+   m_BuildTextureStacks: []
