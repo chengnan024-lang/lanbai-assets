@@ -415,7 +415,9 @@ def driver_tables():
         dict(name='Lanbai_SkyDriver_Acts1to3', entries=[
             dict(preset='overcast_rain_night_town', t0=0.0, t1=cue_t('U1'), fade=0.0, label='0 → U1'),
             dict(preset='overcast_rain_night', t0=cue_t('U1'), t1=cue_t('U6k'), fade=10.0, label='U1 → U6k（钠光 10 秒淡掉）'),
-            dict(preset='moon_night', t0=cue_t('U6k'), t1=cue_t('U6'), fade=0.0, label='U6k 破云（云里，遮挡下）→ U6（门接手雾）')]),
+            # D-50 #1: the break-out is a 2.5 s fade (bible §6·3c: fog 0.067 -> 0.00035 in 2.5 s, EXPO_UP +0.5 EV over 0.6 s),
+            # not a cut: in Unity the cut (fade 0) was a +1.008 EV step in one frame at 129.1 (阿白's sweep x09, 10-26)
+            dict(preset='moon_night', t0=cue_t('U6k'), t1=cue_t('U6'), fade=2.5, label='U6k 破云：2.5 秒淡开（月夜）→ U6（门接手雾）')]),
         dict(name='Lanbai_SkyDriver_Acts11to12', entries=[
             dict(preset='overcast_rain_night', t0=cue_t('F16'), t1=100000.0, fade=0.0, label='F16 白遮罩下 → 片尾')]),
     ]
