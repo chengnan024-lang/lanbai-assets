@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """第 6 幕体积云的数据（给搭建器和驱动）：act06_vol.py 的场景 -> Act06_Dawn/Act06_Volume.json（单一来源，别手改）。
   material：Lanbai/CloudVolume 的各项（层 A / B、颜色、相函数、阴影）
-  towers / blobs：云塔的球（搭建器用 Material.SetVectorArray 写进 _TowerBox / _Blobs）
+  towers / tower_env / tower_lean：云塔的包络（搭建器用 Material.SetVectorArray 写进 _TowerBox / _TowerEnv / _TowerLean）
   puffs：漂过车的三团（_Puff / _PuffWind）
   open：谷（A）和下层（B）散开的时间（驱动写 _CovOpen）
   sun_table：从主座位沿太阳方向在体积里步进出的透过率，每 0.25 s（驱动按它写主光，再平滑 2.2 s；取代旧云原的 sun_table）
@@ -28,24 +28,23 @@ def main():
     B = [l for l in S.layers if l.name == 'B'][0]
     g = AV.GEO
     mat = dict(
-        _A_Y=[A.y0, A.y1, A.sigma, A.scale], _A_Shape=[A.erode, A.hvar, A.soft_pow, A.base_soft], _A_Wind=r(A.wind) + [0],
-        _B_Y=[B.y0, B.y1, B.sigma, B.scale], _B_Shape=[B.erode, B.hvar, B.soft_pow, B.base_soft], _B_Wind=r(B.wind) + [0],
+        _A_Y=[A.y0, A.y1, A.sigma, A.scale], _A_Shape=[A.erode, A.hvar, A.soft_pow, A.base_soft], _A_Wind=r(A.wind) + [A.dscale],
+        _B_Y=[B.y0, B.y1, B.sigma, B.scale], _B_Shape=[B.erode, B.hvar, B.soft_pow, B.base_soft], _B_Wind=r(B.wind) + [B.dscale],
         _B_Strato=1.0 if B.kind == 'strato' else 0.0,
         _SunColor=r(sc.sun_col) + [0], _SkyColor=r(sc.sky_col) + [0], _GndColor=r(sc.gnd_col) + [0],
         _Phase=list(sc.phase) + [sc.ms], _Shadow=[sc.cast_k, sc.ao_k, 150.0, 0.0],
         _SunDirFallback=r(sc.sun) + [0], _SeaY=float(AV.SEA_Y), _CovExtent=24000.0,
         _NoiseLo=r(sc.vol.lo) + [0], _NoiseHi=r(sc.vol.hi) + [1],
-        _MaxSteps=96.0, _StepK=0.015, _MaxDist=60000.0, _NearClear=[2.0, 18.0, 0.0, 0.0])
-    # towers: the blob lists act06_vol built (rebuilt here the same way: deterministic seeds)
-    towers, blobs = [], []
-    for k_t, tw in enumerate(g['T']):
-        a = math.radians(tw['az'])
-        tx, tz = tw['r'] * math.sin(a), tw['r'] * math.cos(a)
-        towers.append([round(tx, 1), round(tz, 1), round(tw['rad'] * 1.4, 1), g['A']['y0']])
-    for (tx, tz, R, sph) in S.tower_blobs:
-        lst = [r(s_, 1) for s_ in sph][:40]
-        lst += [[0, 0, 0, 0]] * (40 - len(lst))
-        blobs += lst
+        _MaxSteps=96.0, _StepK=0.015, _MaxDist=60000.0, _NearClear=[2.0, 18.0, 0.0, 0.0],
+        _TowerShape=[AV.TOWER_DISP[0], AV.TOWER_DISP[1], AV.TOWER_BILLOW[2], AV.TOWER_SIGMA],
+        _TowerFoot=[AV.TOWER_FOOT[0], AV.TOWER_FOOT[1], AV.TOWER_LIGHT[0], AV.TOWER_LIGHT[1]],
+        _TowerTop=round(max(e[2] + e[1] for (_, _, _, e) in S.towers) + 50.0, 1))
+    # towers: the envelopes act06_vol built (tower_of: x, z, bounding R; W, H, base y; lean)
+    towers, tower_env, tower_lean = [], [], []
+    for (tx, tz, R, (W, H, yb, lx, lz)) in S.towers:
+        towers.append([round(tx, 1), round(tz, 1), round(R, 1), 0.0])
+        tower_env.append([round(W, 1), round(H, 1), round(yb, 1), 0.0])
+        tower_lean.append([round(lx, 1), round(lz, 1), 0.0, 0.0])
     puffs, pw = [], []
     for (t_c, wind, rad, thick) in g['P']:
         d_c, _ = AV.AL.descent(t_c)
@@ -63,7 +62,7 @@ def main():
         tab.append(round(float(T[0]), 3))
     out = dict(
         about='第 6 幕体积云（D-44 #2）：Source/act06_vol_export.py 生成，别手改。层的高度是 layout 坐标（F0 的眼高 = 0，R_Dawn 上移 d(t)）',
-        material=mat, towers=towers, blobs=blobs, puffs=puffs, puff_wind=pw,
+        material=mat, towers=towers, tower_env=tower_env, tower_lean=tower_lean, puffs=puffs, puff_wind=pw,
         open=dict(A=g['A']['valley']['open'], B=g['B']['open']),
         under_fog_k=AV.UNDER_FOG_K, fog_under_density=LAYOUT_FOG_BASE(),
         tower_answer=[[266.36, 4.0, 0.7], [267.86, 4.0, 0.7], [269.36, 4.0, 0.7]],

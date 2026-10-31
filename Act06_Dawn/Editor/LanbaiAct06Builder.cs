@@ -103,12 +103,13 @@ public static class LanbaiAct06Builder
             if (kv.Value is List<object>) m.SetVector(kv.Key, V4(L(kv.Value)));
             else m.SetFloat(kv.Key, F(kv.Value));
         }
-        var tw = L(VJ["towers"]); var bl = L(VJ["blobs"]); var pf = L(VJ["puffs"]); var pw = L(VJ["puff_wind"]);
-        var towerBox = new Vector4[3]; var blobs = new Vector4[120]; var puff = new Vector4[3]; var puffWind = new Vector4[3];
-        for (int i = 0; i < tw.Count && i < 3; i++) towerBox[i] = V4(L(tw[i]));
-        for (int i = 0; i < bl.Count && i < 120; i++) blobs[i] = V4(L(bl[i]));
+        var tw = L(VJ["towers"]); var te = L(VJ["tower_env"]); var tl = L(VJ["tower_lean"]);
+        var pf = L(VJ["puffs"]); var pw = L(VJ["puff_wind"]);
+        var towerBox = new Vector4[3]; var towerEnv = new Vector4[3]; var towerLean = new Vector4[3];
+        var puff = new Vector4[3]; var puffWind = new Vector4[3];
+        for (int i = 0; i < tw.Count && i < 3; i++) { towerBox[i] = V4(L(tw[i])); towerEnv[i] = V4(L(te[i])); towerLean[i] = V4(L(tl[i])); }
         for (int i = 0; i < pf.Count && i < 3; i++) { puff[i] = V4(L(pf[i])); puffWind[i] = V4(L(pw[i])); }
-        m.SetVectorArray("_TowerBox", towerBox); m.SetVectorArray("_Blobs", blobs);
+        m.SetVectorArray("_TowerBox", towerBox); m.SetVectorArray("_TowerEnv", towerEnv); m.SetVectorArray("_TowerLean", towerLean);
         m.SetVectorArray("_Puff", puff); m.SetVectorArray("_PuffWind", puffWind);
         m.SetFloat("_TowerCount", Mathf.Min(tw.Count, 3)); m.SetFloat("_PuffCount", Mathf.Min(pf.Count, 3));
         m.renderQueue = 2980;

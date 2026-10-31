@@ -8,11 +8,12 @@
 //    * looks every way: a camera-centred proxy (inside-out box, depth-tested so the cabin hides it); the march runs between
 //      the cloud slab's bounds both ways, stops at the sea plane and at the scene depth;
 //    * two horizontal layers (A, B) with a baked 2-D coverage (Act06_CloudCoverage: A closed / open, B c0 / gap; mirror
-//      wrapped -> the deck goes to the horizon, no edge), a height profile with a wandering base and top (no flat base,
-//      review 4), Perlin-Worley shape NORMALISED to its p10..p90 (raw it barely moves in 3-D and the 2-D coverage alone
-//      draws extruded blocks: review 2), Worley erosion (wispy base, crisp heads);
-//    * towers from blobs (up to 3 x 40 spheres, review 1: cauliflower, no vertical plane) + up to 3 drifting puffs the
-//      bus really goes through;
+//      wrapped -> the deck goes to the horizon, no edge), a height profile over a wandering base (no flat base, review 4;
+//      the profile is 0 at both ends, nothing cut flat: review r2's slices), Perlin-Worley shape NORMALISED to its
+//      p10..p90 (raw it barely moves in 3-D and the 2-D coverage alone draws extruded blocks: review 2), Worley erosion;
+//      stratiform layers are lenses that thin where the coverage falls (no full-height columns, no pebbles: review r2);
+//    * towers: a tapering envelope with a dome top, its outline pushed in and out by two noises and billowed by inverted
+//      Worley (review r2: the blob towers read as a teddy bear) + up to 3 drifting puffs the bus really goes through;
 //    * light: one near sun sample every 2nd step + the upper layer's coverage along the sun ray (its long shadow) and
 //      over the sample (sky occlusion under the cover, review 3), dual HG, ambient sky / ground by height;
 //    * the fog per sample (LanbaiFog amount, LanbaiHorizon colour once per pixel) x _UnderFogK (the haze under the cover);
@@ -36,10 +37,10 @@ Shader "Lanbai/CloudVolume"
 
         _A_Y ("Layer A: y0, y1 (layout), sigma (1/m), noise scale (m)", Vector) = (-1134, -533, 0.05, 1700)
         _A_Shape ("Layer A: erode, height wander, soft power, base soft", Vector) = (0.25, 0.15, 1, 0.06)
-        _A_Wind ("Layer A wind m/s (xyz)", Vector) = (4, 0, 1.5, 0)
-        _B_Y ("Layer B: y0, y1, sigma, scale", Vector) = (-1950, -1700, 0.04, 600)
-        _B_Shape ("Layer B: erode, wander, soft power, base soft", Vector) = (0.42, 0.3, 2, 0.1)
-        _B_Wind ("Layer B wind", Vector) = (3, 0, 2.5, 0)
+        _A_Wind ("Layer A wind m/s (xyz), w detail scale (period = scale / w)", Vector) = (4, 0, 1.5, 4)
+        _B_Y ("Layer B: y0, y1, sigma, scale", Vector) = (-2000, -1700, 0.03, 2400)
+        _B_Shape ("Layer B: erode, base rise (x thickness), soft power, base soft", Vector) = (0.12, 0.25, 2, 0.1)
+        _B_Wind ("Layer B wind, w detail scale", Vector) = (3, 0, 2.5, 3)
         _B_Strato ("Layer B profile: 1 stratiform (soft both ends), 0 cumulus", Float) = 1
 
         _SunColor ("Sun x E in the volume (linear; act 6: the bible's shaft gold #FFD9A8)", Vector) = (3.5, 2.6, 1.7, 0)
@@ -57,6 +58,9 @@ Shader "Lanbai/CloudVolume"
         _NearClear ("Comfort: density x smoothstep(x, y, distance) (no billow in the face)", Vector) = (2, 18, 0, 0)
         _TowerCount ("Towers (0..3)", Float) = 0
         _TowerGain ("Per-tower light gain (the towers answer F0s: +0.7 EV each) - MPB / driver", Vector) = (1, 1, 1, 0)
+        _TowerShape ("Towers: outline push 900 m, 380 m; small billow weight; sigma", Vector) = (0.6, 0.3, 0.15, 0.07)
+        _TowerFoot ("Towers: flat base y0, y1 (layout); sun gain; ambient gain", Vector) = (-860, -680, 3.5, 0.5)
+        _TowerTop ("Highest tower top (layout y): the slab's top", Float) = 1100
         _PuffCount ("Drifting puffs (0..3)", Float) = 0
     }
 
@@ -96,11 +100,12 @@ Shader "Lanbai/CloudVolume"
             float4 _A_Y, _A_Shape, _A_Wind, _B_Y, _B_Shape, _B_Wind;
             float _B_Strato;
             float4 _SunColor, _SkyColor, _GndColor, _Phase, _Shadow, _SunDirFallback, _NearClear;
-            float _UnderFogK, _SeaY, _MaxSteps, _StepK, _MaxDist, _TowerCount, _PuffCount;
-            float4 _TowerGain;
+            float _UnderFogK, _SeaY, _MaxSteps, _StepK, _MaxDist, _TowerCount, _PuffCount, _TowerTop;
+            float4 _TowerGain, _TowerShape, _TowerFoot;
             // set from the builder with Material.SetVectorArray (not in Properties)
-            float4 _TowerBox[3];      // x, z (layout), R (bounding half size), y0 (flat base)
-            float4 _Blobs[120];       // 40 per tower: xyz (layout), radius; radius 0 = unused
+            float4 _TowerBox[3];      // x, z (layout), R (bounding half size), -
+            float4 _TowerEnv[3];      // W (half width at the base), H, yb (base, layout), - (act06_vol.tower_of)
+            float4 _TowerLean[3];     // x, z offset of the top (m); the axis leans as u^1.5
             float4 _Puff[3];          // t_c, y_c (layout), radius, thickness
             float4 _PuffWind[3];      // xyz m/s (the puff crosses the bus column at t_c)
             UNITY_DECLARE_DEPTH_TEXTURE(_CameraDepthTexture);
@@ -130,6 +135,7 @@ Shader "Lanbai/CloudVolume"
             float Clock() { return _Udon_CloudClock.w > 0.0 ? _Udon_CloudClock.x : _Time.y; }
 
             float SS(float a, float b, float x) { float t = saturate((x - a) / (b - a)); return t * t * (3.0 - 2.0 * t); }
+            float Sq(float x) { return x * x; }
 
             float4 Cov(float2 xz)
             {
@@ -143,34 +149,43 @@ Shader "Lanbai/CloudVolume"
 
             float NormN(float v, int ch) { return saturate((v - _NoiseLo[ch]) / max(_NoiseHi[ch] - _NoiseLo[ch], 1e-3)); }
 
-            // one layer's density at p (layout space); y4 = (y0, y1, sigma, scale); sh = (erode, wander, soft power, base soft)
-            float LayerDensity(float3 p, float c, float4 y4, float4 sh, float3 wind, float strato, float t, bool detail)
+            // one layer's density at p (layout space); y4 = (y0, y1, sigma, scale); sh = (erode, base rise, soft power, base
+            // soft); wind.w = detail scale. = vol_ref.Scene.density
+            float LayerDensity(float3 p, float c, float4 y4, float4 sh, float4 wind, float strato, float t, bool detail)
             {
                 if (c <= 0.01) return 0.0;
                 float k = 1.0 / y4.w;
-                float h = (p.y - y4.x) / (y4.y - y4.x);
-                if (sh.y > 0.0)
+                float yb = y4.x;
+                if (sh.y > 0.0)                                       // the base rises with a low noise: an uneven base
+                    yb += sh.y * (y4.y - y4.x) * NormN(tex3Dlod(_DensityTex, float4(p.x * k * 0.35, 40.0 / 128.0, p.z * k * 0.35, 0)).r, 0);
+                float h = (p.y - yb) / (y4.y - yb);
+                if (h <= 0.0) return 0.0;
+                h = min(h, 1.0);
+                float prof;
+                if (strato > 0.5)
                 {
-                    float wv = NormN(tex3Dlod(_DensityTex, float4(p.x * k * 0.35, 40.0 / 128.0, p.z * k * 0.35, 0)).r, 0);
-                    h += sh.y * 2.0 * (wv - 0.5);
+                    // a lens; where the coverage falls it thins and lifts off the base (no full-height columns at a gap's edge)
+                    float b = 0.25 * (1.0 - c), top = 0.4 + 0.6 * c;
+                    prof = SS(b, b + 0.2, h) * (1.0 - SS(b + 0.1, top, h));
                 }
-                if (h <= 0.0 || h >= 1.0) return 0.0;
-                float prof = strato > 0.5 ? SS(0.0, 0.25, h) * (1.0 - SS(0.6, 1.0, h))
-                                          : SS(0.0, sh.w, h) * (1.0 - SS((0.35 + 0.65 * c) * 0.6, 0.35 + 0.65 * c, h));
-                float3 q = (p - wind * t) * k;
+                else prof = SS(0.0, sh.w, h) * (1.0 - SS((0.35 + 0.65 * c) * 0.6, 0.35 + 0.65 * c, h));
+                float3 q = (p - wind.xyz * t) * k;
                 float n0 = NormN(tex3Dlod(_DensityTex, float4(q, 0)).r, 0);
                 float base = saturate((n0 * prof - (1.0 - c)) / max(c, 1e-3));
                 if (detail && base > 0.0)
                 {
-                    float3 q2 = (p - wind * t * 1.6) * (k * 4.0);
+                    float3 q2 = (p - wind.xyz * t * 1.6) * (k * wind.w);
                     float g = NormN(tex3Dlod(_DensityTex, float4(q2, 0)).g, 1);
                     float er = sh.x * (0.35 + 0.65 * (1.0 - h));
-                    base = saturate((base - g * er) / max(1.0 - g * er, 1e-3));
+                    base = strato > 0.5 ? saturate(base - g * er) : saturate((base - g * er) / max(1.0 - g * er, 1e-3));
                 }
-                return (sh.z != 1.0 ? pow(base, sh.z) : base) * y4.z;
+                float s = (sh.z != 1.0 ? pow(base, sh.z) : base) * y4.z;
+                return strato > 0.5 ? s * SS(0.25, 0.7, c) : s;      // the last clumps at a gap's edge thin to wisps
             }
 
-            float TowerDensity(float3 p, float t, inout float gain)
+            // = act06_vol tower_field: an envelope (half width W at the base, 0.72 W at 70 % of H, then a dome), its outline
+            // pushed in and out by 900 m and 380 m noise, billowed by inverted Worley (450 m, 160 m); a flat base in the deck
+            float TowerDensity(float3 p, float t, inout float gain, inout float ambK, inout float hOut)
             {
                 float s = 0.0;
                 [loop] for (int ti = 0; ti < 3; ti++)
@@ -178,20 +193,22 @@ Shader "Lanbai/CloudVolume"
                     if (ti >= (int)_TowerCount) break;
                     float4 b = _TowerBox[ti];
                     if (abs(p.x - b.x) > b.z || abs(p.z - b.y) > b.z) continue;
-                    float f = 0.0;
-                    [loop] for (int bi = 0; bi < 40; bi++)
-                    {
-                        float4 sp = _Blobs[ti * 40 + bi];
-                        if (sp.w <= 0.0) break;
-                        f = max(f, 1.0 - length(p - sp.xyz) / sp.w);
-                    }
-                    float shape = SS(0.0, 0.5, f) * SS(b.w, b.w + 80.0, p.y);
+                    float4 e = _TowerEnv[ti];
+                    if (p.y > e.z + e.y) continue;
+                    float u = saturate((p.y - e.z) / e.y);
+                    float2 ax = b.xy + _TowerLean[ti].xy * pow(u, 1.5);
+                    float R = u < 0.7 ? e.x * (1.0 - 0.4 * u) : 0.72 * e.x * sqrt(saturate(1.0 - Sq((u - 0.7) / 0.3)));
+                    float f = 1.0 - length(p.xz - ax) / max(R, 1.0);
+                    if (f < -_TowerShape.x * 0.5 - _TowerShape.y * 0.5) continue;      // beyond any push of the outline
+                    f += _TowerShape.x * (NormN(tex3Dlod(_DensityTex, float4(p / 900.0 + 57.0 / 128.0, 0)).r, 0) - 0.5)
+                       + _TowerShape.y * (NormN(tex3Dlod(_DensityTex, float4(p / 380.0 + 13.0 / 128.0, 0)).r, 0) - 0.5);
+                    float shape = SS(0.0, 0.35, f) * SS(_TowerFoot.x, _TowerFoot.y, p.y);
                     if (shape <= 0.01) continue;
                     float3 wq = p - float3(2.0, 0.0, 1.0) * t;
-                    float e1 = 1.0 - tex3Dlod(_DensityTex, float4(wq / 700.0, 0)).g;     // Worley distance: high at cell borders
-                    float e2 = 1.0 - tex3Dlod(_DensityTex, float4(wq / 190.0 + 31.0 / 128.0, 0)).g;
-                    float base = saturate((shape - 0.55 * e1 * (1.0 - 0.4 * f) - 0.22 * e2) / 0.45);
-                    if (base * 0.05 > s) { s = base * 0.05; gain = _TowerGain[ti]; }
+                    float e1 = 1.0 - tex3Dlod(_DensityTex, float4(wq / 450.0, 0)).g;     // Worley distance: high at cell borders
+                    float e2 = 1.0 - tex3Dlod(_DensityTex, float4(wq / 160.0 + 31.0 / 128.0, 0)).g;
+                    float base = saturate((shape - 0.5 * e1 * (1.0 - 0.5 * saturate(f)) - _TowerShape.z * e2) / 0.45);
+                    if (base * _TowerShape.w > s) { s = base * _TowerShape.w; gain = _TowerGain[ti] * _TowerFoot.z; ambK = _TowerFoot.w; hOut = saturate((p.y - _A_Y.x) / 2600.0); }
                 }
                 return s;
             }
@@ -209,29 +226,30 @@ Shader "Lanbai/CloudVolume"
                     float dd = length(p.xz - c) + 0.35 * pf.z * 2.0 * (n - 0.5);
                     float cv = SS(pf.z, pf.z * 0.3, dd) * 0.75;      // = act06_vol covP_for
                     s += LayerDensity(p, cv, float4(pf.y - pf.w * 0.5, pf.y + pf.w * 0.5, 0.012, 900.0),
-                                      float4(0.45, 0.0, 1.0, 0.2), _PuffWind[i].xyz, 0.0, t, true);
+                                      float4(0.45, 0.0, 1.0, 0.2), float4(_PuffWind[i].xyz, 4.0), 1.0, t, true);
                 }
                 return s;
             }
 
             // total density + the height in its layer (for the ambient)
-            float Density(float3 p, float t, bool detail, out float hOut, out float gain)
+            float Density(float3 p, float t, bool detail, out float hOut, out float gain, out float ambK)
             {
                 hOut = 0.5;
                 gain = 1.0;
+                ambK = 1.0;
                 float4 c = Cov(p.xz);
                 float s = 0.0;
                 if (p.y >= _A_Y.x && p.y <= _A_Y.y)
                 {
-                    s += LayerDensity(p, CovA(c), _A_Y, _A_Shape, _A_Wind.xyz, 0.0, t, detail);
+                    s += LayerDensity(p, CovA(c), _A_Y, _A_Shape, _A_Wind, 0.0, t, detail);
                     hOut = (p.y - _A_Y.x) / (_A_Y.y - _A_Y.x);
                 }
                 if (p.y >= _B_Y.x && p.y <= _B_Y.y)
                 {
-                    s += LayerDensity(p, CovB(c), _B_Y, _B_Shape, _B_Wind.xyz, _B_Strato, t, detail);
+                    s += LayerDensity(p, CovB(c), _B_Y, _B_Shape, _B_Wind, _B_Strato, t, detail);
                     hOut = (p.y - _B_Y.x) / (_B_Y.y - _B_Y.x);
                 }
-                if (_TowerCount > 0.0) s += TowerDensity(p, t, gain);
+                if (_TowerCount > 0.0) s += TowerDensity(p, t, gain, ambK, hOut);
                 if (_PuffCount > 0.0) s += PuffDensity(p, t);
                 return s;
             }
@@ -264,7 +282,7 @@ Shader "Lanbai/CloudVolume"
                 float t = Clock();
 
                 // the slab: A, B, towers and puffs all inside [ymin, ymax]
-                float ymin = min(_B_Y.x, _A_Y.x), ymax = max(_A_Y.y, _A_Y.y + 2600.0 * step(0.5, _TowerCount));
+                float ymin = min(_B_Y.x, _A_Y.x), ymax = _TowerCount > 0.0 ? max(_A_Y.y, _TowerTop) : _A_Y.y;
                 float t0, t1;
                 if (abs(V.y) < 1e-5) { t0 = (eye.y >= ymin && eye.y <= ymax) ? 0.0 : 1e9; t1 = _MaxDist; }
                 else
@@ -297,17 +315,20 @@ Shader "Lanbai/CloudVolume"
                     if (s >= (int)_MaxSteps || d >= t1 || T < 0.03) break;
                     float dt = clamp(d * _StepK, 10.0, 450.0);
                     float3 p = eye + V * (d + 0.5 * dt);
-                    float h, tg;
-                    float sig = Density(p, t, true, h, tg) * SS(_NearClear.x, _NearClear.y, d);
+                    float h, tg, ak;
+                    float sig = Density(p, t, true, h, tg, ak) * SS(_NearClear.x, _NearClear.y, d);
                     if (sig > 1e-5)
                     {
                         if ((s & 1) == 0)                              // the near sun sample every 2nd step
                         {
-                            float hs, gs;
-                            sunT = exp(-Density(p + sunD * _Shadow.z, t, false, hs, gs) * _Shadow.z) * DeckT(p, sunD);
+                            float hs, gs, as_;
+                            float tau = Density(p + sunD * _Shadow.z, t, false, hs, gs, as_) * _Shadow.z;
+                            if (p.y > _A_Y.y)                          // above the deck (the towers): a second, far sample
+                                tau += Density(p + sunD * (_Shadow.z * 4.0), t, false, hs, gs, as_) * _Shadow.z * 3.0;
+                            sunT = exp(-tau) * DeckT(p, sunD);
                         }
                         float occ = (p.y < _A_Y.x) ? CovA(Cov(p.xz)) : 0.0;
-                        float3 amb = lerp(_GndColor.rgb, _SkyColor.rgb, h) * (1.0 - _Shadow.y * occ);
+                        float3 amb = lerp(_GndColor.rgb, _SkyColor.rgb, h) * (1.0 - _Shadow.y * occ) * ak;
                         float ms = 1.0 + _Phase.w * (1.0 - exp(-sig * 200.0));
                         float3 src = _SunColor.rgb * (sunT * ph * ms * 0.25 * tg) + amb;
                         float fa = LanbaiFogAmount(eyeW + V * d, eyeW);

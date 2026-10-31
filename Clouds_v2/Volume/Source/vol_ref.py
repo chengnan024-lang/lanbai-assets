@@ -53,24 +53,37 @@ class Volume:
 class Layer:
     """y0 base, y1 top (world m); cov(x, z, t) -> 0..1; scale = metres per volume period (R); kind 'cumulus' | 'strato'"""
     def __init__(self, name, y0, y1, cov, scale=2400.0, wind=(5.0, 0.0, 2.0), sigma=0.045, kind='cumulus', erode=0.35,
-                 base_soft=0.06, soft_pow=1.0, hvar=0.0):
+                 base_soft=0.06, soft_pow=1.0, hvar=0.0, dscale=4.0):
         self.soft_pow = soft_pow                       # > 1: density rounds off near the threshold (no flat-topped blocks)
-        self.hvar = hvar                               # base / top heights wander (fraction of the layer): no ruler-straight
-                                                       # base and top lines on a thin layer seen from the side
+        self.hvar = hvar                               # the base rises by up to hvar x the layer's thickness (low-frequency
+                                                       # noise): an uneven base. The profile is 0 at the base and the top, so
+                                                       # nothing is cut off flat (the old mask on the wandered height cut
+                                                       # horizontal slices through a thin layer, review r2 326.5)
+        self.dscale = dscale                           # the detail noise's period = scale / dscale
         self.name, self.y0, self.y1, self.cov, self.scale = name, y0, y1, cov, scale
         self.wind, self.sigma, self.kind, self.erode, self.base_soft = np.array(wind, float), sigma, kind, erode, base_soft
 
     def profile(self, h, c):
         if self.kind == 'strato':
-            return ss(0.0, 0.25, h) * (1 - ss(0.6, 1.0, h))
+            # a lens: a quick rise at the base (bases roughly level), a long dome to the top. With the noise x profile
+            # threshold, a clump's middle fills most of the thickness and its edge only a thin sliver at the profile's
+            # peak: clumps taper to soft edges (no vertical walls: the paper cut / extruded streaks of review r2)
+            # where the coverage falls (a gap's edge) the lens itself gets thinner and lifts off the base, so a clump at
+            # the edge is a thin sliver in the middle of the layer, not a full-height column (the white "pebbles")
+            b = 0.25 * (1 - c)
+            top = 0.4 + 0.6 * c
+            return ss(b, b + 0.2, h) * (1 - ss(b + 0.1, top, h))
         top = 0.35 + 0.65 * c                          # heads reach higher where the coverage is higher
         return ss(0.0, self.base_soft, h) * (1 - ss(top * 0.6, top, h))
 
 
 class FieldLayer:
-    """a layer whose density is its own field (e.g. a cumulus tower built from blobs): field(P, t, vol) -> (sigma, h01)"""
-    def __init__(self, name, y0, y1, field):
+    """a layer whose density is its own field (e.g. a cumulus tower built from blobs): field(P, t, vol) -> (sigma, h01).
+    sun_gain / amb_gain: a deep body (a tower kilometres thick) scatters many times, so its lit face reads brighter than
+    the single-scatter phase gives (x sun_gain), and a point on its shaded face sees only part of the sky (x amb_gain)"""
+    def __init__(self, name, y0, y1, field, sun_gain=1.0, amb_gain=1.0):
         self.name, self.y0, self.y1, self.field = name, y0, y1, field
+        self.sun_gain, self.amb_gain = sun_gain, amb_gain
         self.cov = lambda x, z, t: np.ones_like(x)
 
 
@@ -88,11 +101,13 @@ class Scene:
         self.ymin = min(l.y0 for l in layers)
         self.ymax = max(l.y1 for l in layers)
 
-    def density(self, P, t, detail=True):
-        """P (M, 3) world -> (sigma (M,), h01 (M,)) summed over the layers (h of the densest one)"""
+    def density(self, P, t, detail=True, gains=False):
+        """P (M, 3) world -> (sigma (M,), h01 (M,)) summed over the layers (h of the densest one); gains=True adds
+        (sun gain, ambient gain) (M, 2) of the densest one"""
         M = len(P)
         sig = np.zeros(M, np.float32)
         hh = np.zeros(M, np.float32)
+        gg = np.ones((M, 2), np.float32)
         for L in self.layers:
             inside = (P[:, 1] >= L.y0) & (P[:, 1] <= L.y1)
             if not inside.any():
@@ -103,6 +118,7 @@ class Scene:
                 s, h = L.field(Q, t, self.vol)
                 better = s > sig[idx]
                 hh[idx[better]] = h[better]
+                gg[idx[better]] = (L.sun_gain, L.amb_gain)
                 sig[idx] += s
                 continue
             c = L.cov(Q[:, 0], Q[:, 2], t)
@@ -110,25 +126,32 @@ class Scene:
             if not keep.any():
                 continue
             idx, Q, c = idx[keep], Q[keep], c[keep]
-            h = (Q[:, 1] - L.y0) / (L.y1 - L.y0)
             k = self.vol.n / L.scale
+            yb = np.full(len(Q), L.y0, np.float32)
             if L.hvar:
                 pv = np.stack([Q[:, 0] * k * 0.35, np.full(len(Q), 40.0, np.float32), Q[:, 2] * k * 0.35], -1)
-                h = h + L.hvar * 2 * (self.vol.sample(pv, 0) - 0.67) / 0.24
-            prof = L.profile(np.clip(h, 0, 1), c) * ((h >= 0) & (h <= 1))
+                yb = yb + L.hvar * (L.y1 - L.y0) * self.vol.norm(self.vol.sample(pv, 0), 0)
+            h = (Q[:, 1] - yb) / (L.y1 - yb)
+            prof = L.profile(np.clip(h, 0, 1), c) * (h > 0)
             q = (Q - L.wind[None] * t) * k
             n0 = self.vol.norm(self.vol.sample(q[:, [0, 1, 2]], 0), 0)
             base = np.clip((n0 * prof - (1 - c)) / np.maximum(c, 1e-3), 0, 1)
             if detail:
-                q2 = (Q - L.wind[None] * t * 1.6) * (k * 4.0)
+                q2 = (Q - L.wind[None] * t * 1.6) * (k * L.dscale)
                 g = self.vol.norm(self.vol.sample(q2, 1), 1)
                 er = L.erode * (0.35 + 0.65 * (1 - h))          # wispy at the base, crisp at the heads
-                base = np.clip((base - g * er) / np.maximum(1 - g * er, 1e-3), 0, 1)
+                if L.kind == 'strato':                 # no re-stretch: what the erosion leaves of a thin bit stays thin
+                    base = np.clip(base - g * er, 0, 1)
+                else:
+                    base = np.clip((base - g * er) / np.maximum(1 - g * er, 1e-3), 0, 1)
             s = (base ** L.soft_pow if L.soft_pow != 1.0 else base) * L.sigma
+            if L.kind == 'strato':                     # where the coverage thins out (a gap's edge) the last clumps
+                s = s * ss(0.25, 0.7, c)               # thin to wisps instead of standing there as bright pebbles
             better = s > sig[idx]
             hh[idx[better]] = h[better]
+            gg[idx[better]] = 1.0
             sig[idx] += s
-        return sig, hh
+        return (sig, hh, gg) if gains else (sig, hh)
 
     def sun_T(self, P, t):
         tau = np.zeros(len(P), np.float32)
@@ -197,7 +220,7 @@ class Scene:
             d = cur[act]
             dt = np.clip(d * self.step_k, self.step_min, self.step_max)
             P = eye[None] + V[act] * (d + 0.5 * dt)[:, None]
-            sig, h = self.density(P, t)
+            sig, h, gg = self.density(P, t, gains=True)
             hit = sig > 1e-5
             if hit.any():
                 ia = act[hit]
@@ -205,11 +228,11 @@ class Scene:
                 dts = dt[hit]
                 Ph = P[hit]
                 Ts = self.sun_T(Ph, t)
-                amb = self.gnd_col[None] * (1 - h[hit])[:, None] + self.sky_col[None] * h[hit][:, None]
+                amb = (self.gnd_col[None] * (1 - h[hit])[:, None] + self.sky_col[None] * h[hit][:, None]) * gg[hit, 1:2]
                 if self.casters:
                     amb = amb * (1 - self.ao_k * self.sky_occlusion(Ph, t))[:, None]
                 ms = 1.0 + self.ms * (1 - np.exp(-s * 200.0))
-                Lsrc = self.sun_col[None] * (Ts * ph[ia] * 4 * np.pi * ms)[:, None] * 0.25 + amb * self.amb_k
+                Lsrc = self.sun_col[None] * (Ts * ph[ia] * 4 * np.pi * ms * gg[hit, 0])[:, None] * 0.25 + amb * self.amb_k
                 if self.fog_fn is not None:
                     fc, fa = self.fog_fn(V[ia], d[hit])
                     Lsrc = Lsrc * (1 - fa)[:, None] + fc * fa[:, None]

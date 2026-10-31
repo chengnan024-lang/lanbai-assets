@@ -50,17 +50,33 @@ GEO = dict(
            valley=dict(a=(-1400.0, 4200.0), hw=(800.0, 900.0), c_off=0.0, warp=220.0, basin=400.0, soft=260.0, inside=0.14, end_warp=220.0,
                        open=[F1, F1 + 6.0]),
            bay=dict(a=(5310.0, 23000.0), hw=(500.0, 6500.0), c_off=0.0, warp=300.0, soft=700.0, axis_clear=250.0)),
-    B=dict(y0=-1950.0, y1=-1700.0, base=0.88, far_r=12000.0, open=[305.4, 311.0],
-           column=dict(a=(-1300.0, 1300.0), hw=(1100.0, 1100.0), c_off=0.0, warp=380.0, soft=300.0, end_warp=500.0),
-           bay=dict(a=(500.0, 12500.0), hw=(1200.0, 3600.0), c_off=0.0, warp=650.0, soft=350.0, end_warp=900.0)),
+    B=dict(y0=-2000.0, y1=-1700.0, base=0.88, far_r=12000.0, open=[305.4, 311.0],
+           column=dict(a=(-1300.0, 1300.0), hw=(1100.0, 1100.0), c_off=0.0, warp=380.0, soft=800.0, end_warp=500.0),
+           bay=dict(a=(500.0, 12500.0), hw=(1200.0, 3600.0), c_off=0.0, warp=650.0, soft=900.0, end_warp=900.0)),
     P=[(291.0, (4.0, 0.0, 1.5), 260.0, 110.0), (299.0, (-3.0, 0.0, 3.0), 300.0, 140.0), (326.0, (3.0, 0.0, 2.5), 320.0, 120.0)],
-    T=[dict(az=-25.0, r=7500.0, rad=1300.0, top=1500.0), dict(az=75.0, r=9000.0, rad=1100.0, top=1200.0),
-       dict(az=120.0, r=10000.0, rad=1000.0, top=1300.0)],
+    # w: half width of the column where it leaves the deck; top: the highest bud; lean: downwind tilt of the top (x, z) m.
+    # Distances 4.5-5.5 km (at 1.2e-4 /m the haze takes 42-48 %: farther and the tower is a flat grey shape, review r2)
+    T=[dict(az=-36.0, r=4500.0, w=430.0, top=860.0, lean=(220.0, 80.0), side=1.0),
+       dict(az=75.0, r=5000.0, w=380.0, top=800.0, lean=(190.0, 70.0), side=-1.0),
+       dict(az=120.0, r=5500.0, w=400.0, top=1000.0, lean=(200.0, 80.0), side=1.0)],
 )
 
 
 def ss(e0, e1, x):
     return VR.ss(e0, e1, x)
+
+
+def tower_of(tw):
+    """-> (tx, tz, Rbox, (W, H, yb, lean_x, lean_z)): the tower's envelope. Its half width W where it leaves the deck
+    (y = yb), narrowing to 0.79 W at 70 % of its height, then a broad rounded dome to the top (a cauliflower head as wide
+    as the body). The shape inside it is the noise in tower_field (TOWER_* below); the shader reads the same five numbers."""
+    a = math.radians(tw['az'])
+    tx, tz = tw['r'] * math.sin(a), tw['r'] * math.cos(a)
+    yb = TOWER_FOOT[1] + 40.0
+    H = tw['top'] - yb
+    lean = tw['lean']
+    Rbox = tw['w'] * 1.5 + math.hypot(*lean)
+    return (tx, tz, Rbox, (tw['w'], H, yb, lean[0], lean[1]))
 
 
 def AV_descent(t):
@@ -107,6 +123,10 @@ class Act06Scene:
             puffs = v['inside'] + 0.22 * (n2(x, z, 900.0, 0, 33.0) - 0.45)
             c = c * (1 - inside * op) + np.clip(puffs, 0, 1) * inside * op
             c = c * (1 - lake(x, z, A['bay'], 2.0))
+            for tw in g['T']:                      # the deck is full round each tower's foot (it sits in the deck)
+                a_ = math.radians(tw['az'])
+                dd = np.hypot(x - tw['r'] * math.sin(a_), z - tw['r'] * math.cos(a_))
+                c = np.maximum(c, 0.92 * ss(3.2 * tw['w'], 1.8 * tw['w'], dd))
             return np.clip(c, 0, 1)
 
         def covB_raw(x, z):
@@ -123,66 +143,47 @@ class Act06Scene:
 
         self.lake_of, self.covB_raw = lake, covB_raw      # act06_cov_bake.py takes the coverage apart for the shader
 
-        towers = []
-        for tw in g['T']:
-            a = math.radians(tw['az'])
-            towers.append((tw['r'] * math.sin(a), tw['r'] * math.cos(a), tw['rad']))
-
-        # (D-44 #2 review 1) the towers: cumulus congestus built from blobs, not an extruded disc (that read as ice / a
-        # mesa: flat top, straight walls, vertical stripes). Rows of spheres narrowing upward + a crown of smaller heads
-        # (big lumps on small lumps); edges eroded by inverted multi-scale Worley (round cauliflower lumps); flat-ish base;
-        # self-shadow from the sun march. No vertical plane anywhere.
+        # the towers: cumulus congestus (D-44 #2 review 1: not an extruded disc). Review r2 (10-26): built from spheres they
+        # read as a sitting teddy bear (round head, two "ears", shoulders); every sphere layout tried after it still read as
+        # something (organ pipes, a stack of balls, a hooded figure): parts the size of a third of the width read as limbs
+        # and heads. Now one continuous envelope (tower_of: wide base, slowly narrowing, a broad dome top; visible height
+        # ~2x the width), its outline pushed in and out by two noises (turrets, bulges) and billowed by inverted Worley
+        # (round cauliflower lumps), a flat base inside the deck. No parts, no vertical plane.
         y0T = g['A']['y0']
-        blobs = []
-        for k_t, (tx, tz, rad) in enumerate(towers):
-            top = g['T'][k_t]['top']
-            H = top - y0T
-            rng = np.random.default_rng(100 + k_t)
-            sph = []
-            rows = 7
-            for r_i in range(rows):
-                u = r_i / (rows - 1)
-                yc = y0T + H * (0.10 + 0.78 * u)
-                rr = rad * (1.0 - 0.55 * u)
-                nb = 5 if u < 0.5 else 4
-                for _ in range(nb):
-                    ang = rng.uniform(0, 2 * math.pi)
-                    off = rr * rng.uniform(0.2, 0.55)
-                    sph.append((tx + off * math.cos(ang), yc + rng.uniform(-0.05, 0.05) * H, tz + off * math.sin(ang),
-                                rr * rng.uniform(0.55, 0.75)))
-            for _ in range(7):                                   # the crown: small heads on the big ones
-                ang = rng.uniform(0, 2 * math.pi)
-                off = rad * 0.45 * rng.uniform(0.0, 0.8)
-                sph.append((tx + off * math.cos(ang), top - H * rng.uniform(0.04, 0.14), tz + off * math.sin(ang),
-                            rad * rng.uniform(0.18, 0.3)))
-            blobs.append((tx, tz, rad * 1.4, np.array(sph, np.float32)))
-
-        self.tower_blobs = blobs                         # act06_vol_export.py -> the shader's _Blobs
+        towers = [tower_of(tw) for tw in g['T']]
+        self.towers = towers                             # act06_vol_export.py -> the shader's _TowerBox / _TowerShape
 
         def tower_field(Q, t, vol):
             sig = np.zeros(len(Q), np.float32)
             hh = np.zeros(len(Q), np.float32)
-            for (tx, tz, R, sph) in blobs:
-                near = (np.abs(Q[:, 0] - tx) < R) & (np.abs(Q[:, 2] - tz) < R)
+            for (tx, tz, Rb, (W, H, yb, lx, lz)) in towers:
+                near = (np.abs(Q[:, 0] - tx) < Rb) & (np.abs(Q[:, 2] - tz) < Rb)
                 if not near.any():
                     continue
                 idx = np.nonzero(near)[0]
                 q = Q[idx]
-                f = np.zeros(len(q), np.float32)
-                for (cx, cy, cz, r) in sph:
-                    d = np.sqrt((q[:, 0] - cx) ** 2 + (q[:, 1] - cy) ** 2 + (q[:, 2] - cz) ** 2)
-                    f = np.maximum(f, 1.0 - d / r)
-                shape = ss(0.0, 0.5, f) * ss(y0T, y0T + 80.0, q[:, 1])
+                u = np.clip((q[:, 1] - yb) / H, 0.0, 1.0)
+                cx, cz = tx + lx * u ** 1.5, tz + lz * u ** 1.5
+                dh = np.hypot(q[:, 0] - cx, q[:, 2] - cz)
+                R = np.where(u < 0.7, W * (1.0 - 0.4 * u), 0.72 * W * np.sqrt(np.clip(1.0 - ((u - 0.7) / 0.3) ** 2, 0.0, 1.0)))
+                f = 1.0 - dh / np.maximum(R, 1.0)
+                f = np.where(q[:, 1] > yb + H, -1.0, f)
+                # the outline: broad turrets (650 m) and bulges (280 m) pushed in and out, so no part of it reads as a
+                # limb or a head; a flat base inside the deck (TOWER_FOOT)
+                d1 = vol.norm(vol.sample(q * (vol.n / 900.0) + 57.0, 0), 0) - 0.5
+                d2 = vol.norm(vol.sample(q * (vol.n / 380.0) + 13.0, 0), 0) - 0.5
+                f = f + TOWER_DISP[0] * d1 + TOWER_DISP[1] * d2
+                shape = ss(0.0, 0.35, f) * ss(TOWER_FOOT[0], TOWER_FOOT[1], q[:, 1])
                 live = shape > 0.01
                 if not live.any():
                     continue
-                k1, k2 = vol.n / 700.0, vol.n / 190.0
+                k1, k2 = vol.n / TOWER_BILLOW[0], vol.n / TOWER_BILLOW[1]
                 wq = q - np.array([2.0, 0.0, 1.0], np.float32) * t
-                e1 = 1.0 - vol.sample(wq * k1, 1)                # Worley distance: high at the cell borders
+                e1 = 1.0 - vol.sample(wq * k1, 1)                # Worley distance: high at the cell borders -> round lumps
                 e2 = 1.0 - vol.sample(wq * k2 + 31.0, 1)
-                base = np.clip(shape - 0.55 * e1 * (1.0 - 0.4 * f) - 0.22 * e2, 0, 1)
+                base = np.clip(shape - 0.5 * e1 * (1.0 - 0.5 * np.clip(f, 0, 1)) - TOWER_BILLOW[2] * e2, 0, 1)
                 base = np.clip(base / 0.45, 0, 1)
-                sig[idx] = np.maximum(sig[idx], base * 0.05)
+                sig[idx] = np.maximum(sig[idx], base * TOWER_SIGMA)
                 hh[idx] = np.clip((q[:, 1] - y0T) / 2600.0, 0, 1)
             return sig, hh
 
@@ -202,13 +203,13 @@ class Act06Scene:
                 return ss(rad, rad * 0.3, dd) * 0.75
             return cov
 
-        top_t = max(tw['top'] for tw in g['T'])
+        top_t = max(tw_[3][2] + tw_[3][1] for tw_ in towers) + 50.0
         self.layers = [VR.Layer('P%d' % k, pf[1] - pf[4] * 0.5, pf[1] + pf[4] * 0.5, covP_for(pf), scale=900.0, wind=tuple(pf[2]),
-                                sigma=0.012, erode=0.45, base_soft=0.2) for k, pf in enumerate(puffs)] + [
+                                sigma=0.012, erode=0.45, base_soft=0.2, kind='strato') for k, pf in enumerate(puffs)] + [
             VR.Layer('A', g['A']['y0'], g['A']['y1'], covA, scale=1700.0, wind=(4.0, 0.0, 1.5), sigma=0.05, erode=0.25, hvar=0.15),
-            VR.Layer('B', g['B']['y0'], g['B']['y1'], covB, scale=600.0, wind=(3.0, 0.0, 2.5), sigma=0.04, kind='strato',
-                     erode=0.42, base_soft=0.1, soft_pow=2.0, hvar=0.3),
-            VR.FieldLayer('T', g['A']['y0'], top_t, tower_field),
+            VR.Layer('B', g['B']['y0'], g['B']['y1'], covB, scale=2400.0, wind=(3.0, 0.0, 2.5), sigma=0.03, kind='strato',
+                     erode=0.12, base_soft=0.1, soft_pow=2.0, hvar=0.25, dscale=3.0),
+            VR.FieldLayer('T', g['A']['y0'], top_t, tower_field, sun_gain=TOWER_LIGHT[0], amb_gain=TOWER_LIGHT[1]),
         ]
         sun = np.array([S_AX[0] * math.cos(math.radians(SUN_EL)), math.sin(math.radians(SUN_EL)), S_AX[1] * math.cos(math.radians(SUN_EL))])
         col = A6.COL
@@ -230,6 +231,11 @@ class Act06Scene:
         return fc, fa
 
 
+TOWER_FOOT = (-860.0, -680.0)     # the towers' flat base, inside the deck (A tops ~ -533): they sit in it, no cut
+TOWER_SIGMA = 0.07
+TOWER_DISP = (0.6, 0.3)            # how far the 900 m / 380 m noise pushes the outline in and out (in units of R)
+TOWER_BILLOW = (450.0, 160.0, 0.15)  # Worley scales (m) of the billows and the weight of the small one
+TOWER_LIGHT = (3.5, 0.5)          # sun gain (a deep body scatters many times), ambient gain (its shaded face sees part of the sky)
 UNDER_FOG_K = 0.25                # the haze under the cover, in its shadow
 GND_K = 0.5                      # light from below (sea, the lower layer): the cover's base is lit by a dark sea (review 3)
 AO_K = 1.0                      # under the cover the sky light is the cover's dark base (review 3)
